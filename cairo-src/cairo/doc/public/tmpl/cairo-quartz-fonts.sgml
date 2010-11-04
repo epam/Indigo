@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+Quartz (CGFont) Fonts
+
+<!-- ##### SECTION Short_Description ##### -->
+Font support via CGFont on OS X
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The Quartz font backend is primarily used to render text on Apple
+MacOS X systems.  The CGFont API is used for the internal
+implementation of the font backend methods.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<itemizedlist>
+<listitem>#cairo_font_face_t</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO CAIRO_HAS_QUARTZ_FONT ##### -->
+<para>
+Defined if the Quartz font backend is available.
+This macro can be used to conditionally compile backend-specific code.
+</para>
+
+
+
+<!-- ##### FUNCTION cairo_quartz_font_face_create_for_cgfont ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_quartz_font_face_create_for_atsu_font_id ##### -->
+<para>
+
+</para>
+
+@font_id: 
+@Returns: 
+
+

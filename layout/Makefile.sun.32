@@ -1,0 +1,10 @@
+CCC = CC
+CXX = CC
+BASICOPTS = -xO3 -s -misalign
+CCFLAGS = $(BASICOPTS)
+CXXFLAGS = $(BASICOPTS)
+CCADMIN = CCadmin -clean
+
+TARGETDIR_liblayout.a=sparc32
+
+include Makefile.sun.common

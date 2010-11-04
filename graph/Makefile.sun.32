@@ -1,0 +1,14 @@
+CC = cc
+CCC = CC
+CXX = CC
+BASICOPTS = -xO3 -s -misalign
+CFLAGS = $(BASICOPTS) -xCC
+CCFLAGS = $(BASICOPTS)
+CXXFLAGS = $(BASICOPTS)
+CCADMIN = CCadmin -clean
+
+
+TARGETDIR_libgraph.a=sparc32
+
+include Makefile.sun.common
+

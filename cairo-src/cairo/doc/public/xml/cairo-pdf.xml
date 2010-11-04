@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8'?> 
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!ENTITY version SYSTEM "version.xml">
+]>
+<refentry id="cairo-pdf-surface">
+<refmeta>
+<refentrytitle role="top_of_page" id="cairo-pdf-surface.top_of_page">PDF Surfaces</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CAIRO Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>PDF Surfaces</refname>
+<refpurpose>Rendering PDF documents</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="cairo-pdf-surface.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+#define             <link linkend="CAIRO-HAS-PDF-SURFACE--CAPS">CAIRO_HAS_PDF_SURFACE</link>
+<link linkend="cairo-surface-t">cairo_surface_t</link> *   <link linkend="cairo-pdf-surface-create">cairo_pdf_surface_create</link>            (const <link linkend="char">char</link> *filename,
+                                                         <link linkend="double">double</link> width_in_points,
+                                                         <link linkend="double">double</link> height_in_points);
+<link linkend="cairo-surface-t">cairo_surface_t</link> *   <link linkend="cairo-pdf-surface-create-for-stream">cairo_pdf_surface_create_for_stream</link> (<link linkend="cairo-write-func-t">cairo_write_func_t</link> write_func,
+                                                         <link linkend="void">void</link> *closure,
+                                                         <link linkend="double">double</link> width_in_points,
+                                                         <link linkend="double">double</link> height_in_points);
+<link linkend="void">void</link>                <link linkend="cairo-pdf-surface-set-size">cairo_pdf_surface_set_size</link>          (<link linkend="cairo-surface-t">cairo_surface_t</link> *surface,
+                                                         <link linkend="double">double</link> width_in_points,
+                                                         <link linkend="double">double</link> height_in_points);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 id="cairo-pdf-surface.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+The PDF surface is used to render cairo graphics to Adobe
+PDF files and is a multi-page vector surface backend.
+</para>
+</refsect1>
+
+<refsect1 id="cairo-pdf-surface.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="CAIRO-HAS-PDF-SURFACE--CAPS" role="macro">
+<title>CAIRO_HAS_PDF_SURFACE</title>
+<indexterm zone="CAIRO-HAS-PDF-SURFACE--CAPS"><primary sortas="CAIRO_HAS_PDF_SURFACE">CAIRO_HAS_PDF_SURFACE</primary></indexterm><programlisting>#define CAIRO_HAS_PDF_SURFACE 1
+</programlisting>
+<para>
+Defined if the PDF surface backend is available.
+This macro can be used to conditionally compile backend-specific code.
+</para></refsect2>
+<refsect2 id="cairo-pdf-surface-create" role="function" condition="since:1.2">
+<title>cairo_pdf_surface_create ()</title>
+<indexterm zone="cairo-pdf-surface-create" role="1.2"><primary sortas="cairo_pdf_surface_create">cairo_pdf_surface_create</primary></indexterm><programlisting><link linkend="cairo-surface-t">cairo_surface_t</link> *   cairo_pdf_surface_create            (const <link linkend="char">char</link> *filename,
+                                                         <link linkend="double">double</link> width_in_points,
+                                                         <link linkend="double">double</link> height_in_points);</programlisting>
+<para>
+Creates a PDF surface of the specified size in points to be written
+to <parameter>filename</parameter>.</para>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>filename</parameter>&#160;:</term>
+<listitem><simpara> a filename for the PDF output (must be writable), <link linkend="NULL--CAPS"><literal>NULL</literal></link> may be
+           used to specify no output. This will generate a PDF surface that
+           may be queried and used as a source, without generating a
+           temporary file.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>width_in_points</parameter>&#160;:</term>
+<listitem><simpara> width of the surface, in points (1 point == 1/72.0 inch)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>height_in_points</parameter>&#160;:</term>
+<listitem><simpara> height of the surface, in points (1 point == 1/72.0 inch)
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara> a pointer to the newly created surface. The caller
+owns the surface and should call <link linkend="cairo-surface-destroy"><function>cairo_surface_destroy()</function></link> when done
+with it.
+
+This function always returns a valid pointer, but it will return a
+pointer to a "nil" surface if an error such as out of memory
+occurs. You can use <link linkend="cairo-surface-status"><function>cairo_surface_status()</function></link> to check for this.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since 1.2</para></refsect2>
+<refsect2 id="cairo-pdf-surface-create-for-stream" role="function" condition="since:1.2">
+<title>cairo_pdf_surface_create_for_stream ()</title>
+<indexterm zone="cairo-pdf-surface-create-for-stream" role="1.2"><primary sortas="cairo_pdf_surface_create_for_stream">cairo_pdf_surface_create_for_stream</primary></indexterm><programlisting><link linkend="cairo-surface-t">cairo_surface_t</link> *   cairo_pdf_surface_create_for_stream (<link linkend="cairo-write-func-t">cairo_write_func_t</link> write_func,
+                                                         <link linkend="void">void</link> *closure,
+                                                         <link linkend="double">double</link> width_in_points,
+                                                         <link linkend="double">double</link> height_in_points);</programlisting>
+<para>
+Creates a PDF surface of the specified size in points to be written
+incrementally to the stream represented by <parameter>write_func</parameter> and <parameter>closure</parameter>.</para>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>write_func</parameter>&#160;:</term>
+<listitem><simpara> a <link linkend="cairo-write-func-t"><type>cairo_write_func_t</type></link> to accept the output data, may be <link linkend="NULL--CAPS"><literal>NULL</literal></link>
+             to indicate a no-op <parameter>write_func</parameter>. With a no-op <parameter>write_func</parameter>,
+             the surface may be queried or used as a source without
+             generating any temporary files.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>closure</parameter>&#160;:</term>
+<listitem><simpara> the closure argument for <parameter>write_func</parameter>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>width_in_points</parameter>&#160;:</term>
+<listitem><simpara> width of the surface, in points (1 point == 1/72.0 inch)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>height_in_points</parameter>&#160;:</term>
+<listitem><simpara> height of the surface, in points (1 point == 1/72.0 inch)
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara> a pointer to the newly created surface. The caller
+owns the surface and should call <link linkend="cairo-surface-destroy"><function>cairo_surface_destroy()</function></link> when done
+with it.
+
+This function always returns a valid pointer, but it will return a
+pointer to a "nil" surface if an error such as out of memory
+occurs. You can use <link linkend="cairo-surface-status"><function>cairo_surface_status()</function></link> to check for this.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since 1.2</para></refsect2>
+<refsect2 id="cairo-pdf-surface-set-size" role="function" condition="since:1.2">
+<title>cairo_pdf_surface_set_size ()</title>
+<indexterm zone="cairo-pdf-surface-set-size" role="1.2"><primary sortas="cairo_pdf_surface_set_size">cairo_pdf_surface_set_size</primary></indexterm><programlisting><link linkend="void">void</link>                cairo_pdf_surface_set_size          (<link linkend="cairo-surface-t">cairo_surface_t</link> *surface,
+                                                         <link linkend="double">double</link> width_in_points,
+                                                         <link linkend="double">double</link> height_in_points);</programlisting>
+<para>
+Changes the size of a PDF surface for the current (and
+subsequent) pages.
+</para>
+<para>
+This function should only be called before any drawing operations
+have been performed on the current page. The simplest way to do
+this is to call this function immediately after creating the
+surface or immediately after completing a page with either
+<link linkend="cairo-show-page"><function>cairo_show_page()</function></link> or <link linkend="cairo-copy-page"><function>cairo_copy_page()</function></link>.</para>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>surface</parameter>&#160;:</term>
+<listitem><simpara> a PDF <link linkend="cairo-surface-t"><type>cairo_surface_t</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>width_in_points</parameter>&#160;:</term>
+<listitem><simpara> new surface width, in points (1 point == 1/72.0 inch)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>height_in_points</parameter>&#160;:</term>
+<listitem><simpara> new surface height, in points (1 point == 1/72.0 inch)
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since 1.2</para></refsect2>
+
+</refsect1>
+
+
+
+<refsect1 id="cairo-pdf-surface.see-also">
+<title>See Also</title>
+<para>
+<itemizedlist>
+<listitem><link linkend="cairo-surface-t"><type>cairo_surface_t</type></link></listitem>
+</itemizedlist>
+</para>
+</refsect1>
+
+</refentry>

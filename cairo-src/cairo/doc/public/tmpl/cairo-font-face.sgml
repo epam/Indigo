@@ -1,0 +1,113 @@
+<!-- ##### SECTION Title ##### -->
+cairo_font_face_t
+
+<!-- ##### SECTION Short_Description ##### -->
+Base class for font faces
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#cairo_font_face_t represents a particular font at a particular weight,
+slant, and other characteristic but no size, transformation, or size.
+</para>
+<para>
+Font faces are created using <firstterm>font-backend</firstterm>-specific
+constructors, typically of the form
+cairo_<emphasis>backend</emphasis>_font_face_create(),
+or implicitly using the <firstterm>toy</firstterm> text API by way of
+cairo_select_font_face().  The resulting face can be accessed using
+cairo_get_font_face().
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<itemizedlist>
+<listitem>#cairo_scaled_font_t</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### TYPEDEF cairo_font_face_t ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION cairo_font_face_reference ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_font_face_destroy ##### -->
+<para>
+
+</para>
+
+@font_face: 
+
+
+<!-- ##### FUNCTION cairo_font_face_status ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@Returns: 
+
+
+<!-- ##### ENUM cairo_font_type_t ##### -->
+<para>
+
+</para>
+
+@CAIRO_FONT_TYPE_TOY: 
+@CAIRO_FONT_TYPE_FT: 
+@CAIRO_FONT_TYPE_WIN32: 
+@CAIRO_FONT_TYPE_QUARTZ: 
+@CAIRO_FONT_TYPE_USER: 
+
+<!-- ##### FUNCTION cairo_font_face_get_type ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_font_face_get_reference_count ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_font_face_set_user_data ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@key: 
+@user_data: 
+@destroy: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_font_face_get_user_data ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@key: 
+@Returns: 
+
+

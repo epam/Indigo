@@ -1,0 +1,261 @@
+<!-- ##### SECTION Title ##### -->
+cairo_surface_t
+
+<!-- ##### SECTION Short_Description ##### -->
+Base class for surfaces
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#cairo_surface_t is the abstract type representing all different drawing
+targets that cairo can render to.  The actual drawings are
+performed using a cairo <firstterm>context</firstterm>.
+</para>
+<para>
+A cairo surface is created by using <firstterm>backend</firstterm>-specific
+constructors, typically of the form
+cairo_<emphasis>backend</emphasis>_surface_create().
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<itemizedlist>
+<listitem>#cairo_t()</listitem>
+<listitem>#cairo_pattern_t()</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### TYPEDEF cairo_surface_t ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM cairo_content_t ##### -->
+<para>
+
+</para>
+
+@CAIRO_CONTENT_COLOR: 
+@CAIRO_CONTENT_ALPHA: 
+@CAIRO_CONTENT_COLOR_ALPHA: 
+
+<!-- ##### FUNCTION cairo_surface_create_similar ##### -->
+<para>
+
+</para>
+
+@other: 
+@content: 
+@width: 
+@height: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_reference ##### -->
+<para>
+
+</para>
+
+@surface: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_destroy ##### -->
+<para>
+
+</para>
+
+@surface: 
+
+
+<!-- ##### FUNCTION cairo_surface_status ##### -->
+<para>
+
+</para>
+
+@surface: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_finish ##### -->
+<para>
+
+</para>
+
+@surface: 
+
+
+<!-- ##### FUNCTION cairo_surface_flush ##### -->
+<para>
+
+</para>
+
+@surface: 
+
+
+<!-- ##### FUNCTION cairo_surface_get_font_options ##### -->
+<para>
+
+</para>
+
+@surface: 
+@options: 
+
+
+<!-- ##### FUNCTION cairo_surface_get_content ##### -->
+<para>
+
+</para>
+
+@surface: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_mark_dirty ##### -->
+<para>
+
+</para>
+
+@surface: 
+
+
+<!-- ##### FUNCTION cairo_surface_mark_dirty_rectangle ##### -->
+<para>
+
+</para>
+
+@surface: 
+@x: 
+@y: 
+@width: 
+@height: 
+
+
+<!-- ##### FUNCTION cairo_surface_set_device_offset ##### -->
+<para>
+
+</para>
+
+@surface: 
+@x_offset: 
+@y_offset: 
+
+
+<!-- ##### FUNCTION cairo_surface_get_device_offset ##### -->
+<para>
+
+</para>
+
+@surface: 
+@x_offset: 
+@y_offset: 
+
+
+<!-- ##### FUNCTION cairo_surface_set_fallback_resolution ##### -->
+<para>
+
+</para>
+
+@surface: 
+@x_pixels_per_inch: 
+@y_pixels_per_inch: 
+
+
+<!-- ##### FUNCTION cairo_surface_get_fallback_resolution ##### -->
+<para>
+
+</para>
+
+@surface: 
+@x_pixels_per_inch: 
+@y_pixels_per_inch: 
+
+
+<!-- ##### ENUM cairo_surface_type_t ##### -->
+<para>
+
+</para>
+
+@CAIRO_SURFACE_TYPE_IMAGE: 
+@CAIRO_SURFACE_TYPE_PDF: 
+@CAIRO_SURFACE_TYPE_PS: 
+@CAIRO_SURFACE_TYPE_XLIB: 
+@CAIRO_SURFACE_TYPE_XCB: 
+@CAIRO_SURFACE_TYPE_GLITZ: 
+@CAIRO_SURFACE_TYPE_QUARTZ: 
+@CAIRO_SURFACE_TYPE_WIN32: 
+@CAIRO_SURFACE_TYPE_BEOS: 
+@CAIRO_SURFACE_TYPE_DIRECTFB: 
+@CAIRO_SURFACE_TYPE_SVG: 
+@CAIRO_SURFACE_TYPE_OS2: 
+@CAIRO_SURFACE_TYPE_WIN32_PRINTING: 
+@CAIRO_SURFACE_TYPE_QUARTZ_IMAGE: 
+
+<!-- ##### FUNCTION cairo_surface_get_type ##### -->
+<para>
+
+</para>
+
+@surface: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_get_reference_count ##### -->
+<para>
+
+</para>
+
+@surface: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_set_user_data ##### -->
+<para>
+
+</para>
+
+@surface: 
+@key: 
+@user_data: 
+@destroy: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_get_user_data ##### -->
+<para>
+
+</para>
+
+@surface: 
+@key: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_copy_page ##### -->
+<para>
+
+</para>
+
+@surface: 
+
+
+<!-- ##### FUNCTION cairo_surface_show_page ##### -->
+<para>
+
+</para>
+
+@surface: 
+
+
+<!-- ##### FUNCTION cairo_surface_has_show_text_glyphs ##### -->
+<para>
+
+</para>
+
+@surface: 
+@Returns: 
+
+

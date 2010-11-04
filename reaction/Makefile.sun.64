@@ -1,0 +1,11 @@
+CCC = CC
+CXX = CC
+BASICOPTS = -xO3 -s -misalign -xarch=generic64 -xcode=abs64
+CCFLAGS = $(BASICOPTS)
+CXXFLAGS = $(BASICOPTS)
+CCADMIN = CCadmin -clean
+
+TARGETDIR_libreaction.a=sparc64
+
+include Makefile.sun.common
+

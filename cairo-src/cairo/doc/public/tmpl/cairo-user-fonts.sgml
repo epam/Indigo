@@ -1,0 +1,165 @@
+<!-- ##### SECTION Title ##### -->
+User Fonts
+
+<!-- ##### SECTION Short_Description ##### -->
+Font support with font data provided by the user
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The user-font feature allows the cairo user to provide drawings for glyphs
+in a font.  This is most useful in implementing fonts in non-standard
+formats, like SVG fonts and Flash fonts, but can also be used by games and
+other application to draw "funky" fonts.
+
+<!-- Include samples here -->
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO CAIRO_HAS_USER_FONT ##### -->
+<para>
+Defined if the user font backend is available.
+This macro can be used to conditionally compile backend-specific code.
+The user font backend is always built in versions of cairo that support
+this feature (1.8 and later).
+</para>
+
+@Since: 1.8
+
+
+<!-- ##### USER_FUNCTION cairo_user_scaled_font_init_func_t ##### -->
+<para>
+
+</para>
+
+@scaled_font: 
+@cr: 
+@extents: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION cairo_user_scaled_font_render_glyph_func_t ##### -->
+<para>
+
+</para>
+
+@scaled_font: 
+@glyph: 
+@cr: 
+@extents: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION cairo_user_scaled_font_text_to_glyphs_func_t ##### -->
+<para>
+
+</para>
+
+@scaled_font: 
+@utf8: 
+@utf8_len: 
+@glyphs: 
+@num_glyphs: 
+@clusters: 
+@num_clusters: 
+@cluster_flags: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION cairo_user_scaled_font_unicode_to_glyph_func_t ##### -->
+<para>
+
+</para>
+
+@scaled_font: 
+@unicode: 
+@glyph_index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_user_font_face_create ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_user_font_face_set_init_func ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@init_func: 
+
+
+<!-- ##### FUNCTION cairo_user_font_face_get_init_func ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_user_font_face_set_render_glyph_func ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@render_glyph_func: 
+
+
+<!-- ##### FUNCTION cairo_user_font_face_get_render_glyph_func ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_user_font_face_set_unicode_to_glyph_func ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@unicode_to_glyph_func: 
+
+
+<!-- ##### FUNCTION cairo_user_font_face_get_unicode_to_glyph_func ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_user_font_face_set_text_to_glyphs_func ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@text_to_glyphs_func: 
+
+
+<!-- ##### FUNCTION cairo_user_font_face_get_text_to_glyphs_func ##### -->
+<para>
+
+</para>
+
+@font_face: 
+@Returns: 
+
+

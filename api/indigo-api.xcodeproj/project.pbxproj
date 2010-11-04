@@ -1,0 +1,615 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		814A51DD127F5ABC00FA58F0 /* indigo_fingerprints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 814A51DC127F5ABC00FA58F0 /* indigo_fingerprints.cpp */; };
+		814A51DE127F5ABC00FA58F0 /* indigo_fingerprints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 814A51DC127F5ABC00FA58F0 /* indigo_fingerprints.cpp */; };
+		817B69C211F88DB600BC3D88 /* indigo_match.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A811F88B8E00BC3D88 /* indigo_match.cpp */; };
+		817B69C311F88DB600BC3D88 /* indigo_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A411F88B8E00BC3D88 /* indigo_io.cpp */; };
+		817B69C411F88DB600BC3D88 /* indigo_molecule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69AA11F88B8E00BC3D88 /* indigo_molecule.cpp */; };
+		817B69C511F88DB600BC3D88 /* indigo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69AE11F88B8E00BC3D88 /* indigo.cpp */; };
+		817B69C611F88DB600BC3D88 /* indigo_loaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A611F88B8E00BC3D88 /* indigo_loaders.cpp */; };
+		817B69C711F88DB600BC3D88 /* indigo_reaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69AC11F88B8E00BC3D88 /* indigo_reaction.cpp */; };
+		817B69C811F88DB600BC3D88 /* indigo_object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69AB11F88B8E00BC3D88 /* indigo_object.cpp */; };
+		817B69C911F88DB600BC3D88 /* indigo_misc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A911F88B8E00BC3D88 /* indigo_misc.cpp */; };
+		817B69CA11F88DB600BC3D88 /* indigo_basic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A211F88B8E00BC3D88 /* indigo_basic.cpp */; };
+		817B69CB11F88DB600BC3D88 /* indigo_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A511F88B8E00BC3D88 /* indigo_layout.cpp */; };
+		817B69CC11F88DB600BC3D88 /* indigo_macros.c in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A711F88B8E00BC3D88 /* indigo_macros.c */; };
+		817B6A0711F88FEB00BC3D88 /* indigo_match.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A811F88B8E00BC3D88 /* indigo_match.cpp */; };
+		817B6A0811F88FEB00BC3D88 /* indigo_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A411F88B8E00BC3D88 /* indigo_io.cpp */; };
+		817B6A0911F88FEB00BC3D88 /* indigo_molecule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69AA11F88B8E00BC3D88 /* indigo_molecule.cpp */; };
+		817B6A0A11F88FEB00BC3D88 /* indigo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69AE11F88B8E00BC3D88 /* indigo.cpp */; };
+		817B6A0B11F88FEB00BC3D88 /* indigo_loaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A611F88B8E00BC3D88 /* indigo_loaders.cpp */; };
+		817B6A0C11F88FEB00BC3D88 /* indigo_reaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69AC11F88B8E00BC3D88 /* indigo_reaction.cpp */; };
+		817B6A0D11F88FEB00BC3D88 /* indigo_object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69AB11F88B8E00BC3D88 /* indigo_object.cpp */; };
+		817B6A0E11F88FEB00BC3D88 /* indigo_misc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A911F88B8E00BC3D88 /* indigo_misc.cpp */; };
+		817B6A0F11F88FEB00BC3D88 /* indigo_basic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A211F88B8E00BC3D88 /* indigo_basic.cpp */; };
+		817B6A1011F88FEB00BC3D88 /* indigo_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A511F88B8E00BC3D88 /* indigo_layout.cpp */; };
+		817B6A1111F88FEB00BC3D88 /* indigo_macros.c in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A711F88B8E00BC3D88 /* indigo_macros.c */; };
+		817B6A1311F8900C00BC3D88 /* liblayout.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 817B69ED11F88F0D00BC3D88 /* liblayout.a */; };
+		817B6A1411F8901000BC3D88 /* libreaction.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 817B69E711F88EFD00BC3D88 /* libreaction.a */; };
+		817B6A1511F8901400BC3D88 /* libmolecule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 817B69E111F88EE800BC3D88 /* libmolecule.a */; };
+		817B6A1611F8901900BC3D88 /* libgraph.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 817B69DB11F88ED200BC3D88 /* libgraph.a */; };
+		817B6A1A11F891F200BC3D88 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 817B6A1911F891F200BC3D88 /* libz.dylib */; };
+		817B6A1C11F8922400BC3D88 /* libcairo.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 817B6A1B11F8922400BC3D88 /* libcairo.dylib */; };
+		819EB1A7125F797300CE1D88 /* indigo_array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1A6125F797300CE1D88 /* indigo_array.cpp */; };
+		819EB1A8125F797300CE1D88 /* indigo_array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1A6125F797300CE1D88 /* indigo_array.cpp */; };
+		819EB1AA125F798000CE1D88 /* indigo_deconvolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1A9125F798000CE1D88 /* indigo_deconvolution.cpp */; };
+		819EB1AB125F798000CE1D88 /* indigo_deconvolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1A9125F798000CE1D88 /* indigo_deconvolution.cpp */; };
+		819EB1AD125F799300CE1D88 /* indigo_product_enumerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1AC125F799300CE1D88 /* indigo_product_enumerator.cpp */; };
+		819EB1AE125F799300CE1D88 /* indigo_product_enumerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1AC125F799300CE1D88 /* indigo_product_enumerator.cpp */; };
+		819EB1B0125F799D00CE1D88 /* indigo_scaffold.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1AF125F799D00CE1D88 /* indigo_scaffold.cpp */; };
+		819EB1B1125F799D00CE1D88 /* indigo_scaffold.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1AF125F799D00CE1D88 /* indigo_scaffold.cpp */; };
+		819EB1B3125F79A700CE1D88 /* option_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1B2125F79A700CE1D88 /* option_manager.cpp */; };
+		819EB1B4125F79A700CE1D88 /* option_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1B2125F79A700CE1D88 /* option_manager.cpp */; };
+		819EB1B6125F79B600CE1D88 /* option_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 819EB1B5125F79B600CE1D88 /* option_manager.h */; };
+		819EB1B7125F79B600CE1D88 /* option_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 819EB1B5125F79B600CE1D88 /* option_manager.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		817B69DA11F88ED200BC3D88 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 817B69D611F88ED200BC3D88 /* graph.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7EDA3FC10624B53006CBFAF;
+			remoteInfo = graph;
+		};
+		817B69E011F88EE800BC3D88 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 817B69DC11F88EE800BC3D88 /* molecule.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7EDA4CE10624F33006CBFAF;
+			remoteInfo = molecule;
+		};
+		817B69E611F88EFD00BC3D88 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 817B69E211F88EFD00BC3D88 /* reaction.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7EDA55610625076006CBFAF;
+			remoteInfo = reaction;
+		};
+		817B69EC11F88F0D00BC3D88 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 817B69E811F88F0D00BC3D88 /* layout.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7EDA5CA106251C3006CBFAF;
+			remoteInfo = layout;
+		};
+		817B69FC11F88FB300BC3D88 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 817B69D611F88ED200BC3D88 /* graph.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA3FB10624B53006CBFAF;
+			remoteInfo = graph;
+		};
+		817B69FE11F88FB700BC3D88 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 817B69E211F88EFD00BC3D88 /* reaction.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA55510625076006CBFAF;
+			remoteInfo = reaction;
+		};
+		817B6A0011F88FBA00BC3D88 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 817B69E811F88F0D00BC3D88 /* layout.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA5C9106251C3006CBFAF;
+			remoteInfo = layout;
+		};
+		817B6A0411F88FC200BC3D88 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 817B69DC11F88EE800BC3D88 /* molecule.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA4CD10624F33006CBFAF;
+			remoteInfo = molecule;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		814A51DC127F5ABC00FA58F0 /* indigo_fingerprints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_fingerprints.cpp; path = src/indigo_fingerprints.cpp; sourceTree = "<group>"; };
+		817B69A211F88B8E00BC3D88 /* indigo_basic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_basic.cpp; path = src/indigo_basic.cpp; sourceTree = "<group>"; };
+		817B69A311F88B8E00BC3D88 /* indigo_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_internal.h; path = src/indigo_internal.h; sourceTree = "<group>"; };
+		817B69A411F88B8E00BC3D88 /* indigo_io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_io.cpp; path = src/indigo_io.cpp; sourceTree = "<group>"; };
+		817B69A511F88B8E00BC3D88 /* indigo_layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_layout.cpp; path = src/indigo_layout.cpp; sourceTree = "<group>"; };
+		817B69A611F88B8E00BC3D88 /* indigo_loaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_loaders.cpp; path = src/indigo_loaders.cpp; sourceTree = "<group>"; };
+		817B69A711F88B8E00BC3D88 /* indigo_macros.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = indigo_macros.c; path = src/indigo_macros.c; sourceTree = "<group>"; };
+		817B69A811F88B8E00BC3D88 /* indigo_match.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_match.cpp; path = src/indigo_match.cpp; sourceTree = "<group>"; };
+		817B69A911F88B8E00BC3D88 /* indigo_misc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_misc.cpp; path = src/indigo_misc.cpp; sourceTree = "<group>"; };
+		817B69AA11F88B8E00BC3D88 /* indigo_molecule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_molecule.cpp; path = src/indigo_molecule.cpp; sourceTree = "<group>"; };
+		817B69AB11F88B8E00BC3D88 /* indigo_object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_object.cpp; path = src/indigo_object.cpp; sourceTree = "<group>"; };
+		817B69AC11F88B8E00BC3D88 /* indigo_reaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_reaction.cpp; path = src/indigo_reaction.cpp; sourceTree = "<group>"; };
+		817B69AE11F88B8E00BC3D88 /* indigo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo.cpp; path = src/indigo.cpp; sourceTree = "<group>"; };
+		817B69BD11F88C0E00BC3D88 /* libindigo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libindigo.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		817B69D611F88ED200BC3D88 /* graph.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = graph.xcodeproj; path = ../graph/graph.xcodeproj; sourceTree = SOURCE_ROOT; };
+		817B69DC11F88EE800BC3D88 /* molecule.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = molecule.xcodeproj; path = ../molecule/molecule.xcodeproj; sourceTree = SOURCE_ROOT; };
+		817B69E211F88EFD00BC3D88 /* reaction.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = reaction.xcodeproj; path = ../reaction/reaction.xcodeproj; sourceTree = SOURCE_ROOT; };
+		817B69E811F88F0D00BC3D88 /* layout.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = layout.xcodeproj; path = ../layout/layout.xcodeproj; sourceTree = SOURCE_ROOT; };
+		817B69F811F88F3B00BC3D88 /* libindigo.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libindigo.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		817B6A1911F891F200BC3D88 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = /usr/lib/libz.dylib; sourceTree = "<absolute>"; };
+		817B6A1B11F8922400BC3D88 /* libcairo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcairo.dylib; path = /opt/local/lib/libcairo.dylib; sourceTree = "<absolute>"; };
+		819EB1A6125F797300CE1D88 /* indigo_array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_array.cpp; path = src/indigo_array.cpp; sourceTree = "<group>"; };
+		819EB1A9125F798000CE1D88 /* indigo_deconvolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_deconvolution.cpp; path = src/indigo_deconvolution.cpp; sourceTree = "<group>"; };
+		819EB1AC125F799300CE1D88 /* indigo_product_enumerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_product_enumerator.cpp; path = src/indigo_product_enumerator.cpp; sourceTree = "<group>"; };
+		819EB1AF125F799D00CE1D88 /* indigo_scaffold.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_scaffold.cpp; path = src/indigo_scaffold.cpp; sourceTree = "<group>"; };
+		819EB1B2125F79A700CE1D88 /* option_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = option_manager.cpp; path = src/option_manager.cpp; sourceTree = "<group>"; };
+		819EB1B5125F79B600CE1D88 /* option_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = option_manager.h; path = src/option_manager.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		817B69BB11F88C0D00BC3D88 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		817B69F611F88F3B00BC3D88 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				817B6A1611F8901900BC3D88 /* libgraph.a in Frameworks */,
+				817B6A1511F8901400BC3D88 /* libmolecule.a in Frameworks */,
+				817B6A1411F8901000BC3D88 /* libreaction.a in Frameworks */,
+				817B6A1311F8900C00BC3D88 /* liblayout.a in Frameworks */,
+				817B6A1A11F891F200BC3D88 /* libz.dylib in Frameworks */,
+				817B6A1C11F8922400BC3D88 /* libcairo.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		817B699411F88B1F00BC3D88 = {
+			isa = PBXGroup;
+			children = (
+				817B69E811F88F0D00BC3D88 /* layout.xcodeproj */,
+				817B69E211F88EFD00BC3D88 /* reaction.xcodeproj */,
+				817B69DC11F88EE800BC3D88 /* molecule.xcodeproj */,
+				817B69D611F88ED200BC3D88 /* graph.xcodeproj */,
+				817B69A111F88B3C00BC3D88 /* src */,
+				817B69B511F88BDC00BC3D88 /* Products */,
+				817B6A1911F891F200BC3D88 /* libz.dylib */,
+				817B6A1B11F8922400BC3D88 /* libcairo.dylib */,
+			);
+			sourceTree = "<group>";
+		};
+		817B69A111F88B3C00BC3D88 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				814A51DC127F5ABC00FA58F0 /* indigo_fingerprints.cpp */,
+				819EB1B5125F79B600CE1D88 /* option_manager.h */,
+				819EB1B2125F79A700CE1D88 /* option_manager.cpp */,
+				819EB1AF125F799D00CE1D88 /* indigo_scaffold.cpp */,
+				819EB1AC125F799300CE1D88 /* indigo_product_enumerator.cpp */,
+				819EB1A9125F798000CE1D88 /* indigo_deconvolution.cpp */,
+				819EB1A6125F797300CE1D88 /* indigo_array.cpp */,
+				817B69A211F88B8E00BC3D88 /* indigo_basic.cpp */,
+				817B69A311F88B8E00BC3D88 /* indigo_internal.h */,
+				817B69A411F88B8E00BC3D88 /* indigo_io.cpp */,
+				817B69A511F88B8E00BC3D88 /* indigo_layout.cpp */,
+				817B69A611F88B8E00BC3D88 /* indigo_loaders.cpp */,
+				817B69A711F88B8E00BC3D88 /* indigo_macros.c */,
+				817B69A811F88B8E00BC3D88 /* indigo_match.cpp */,
+				817B69A911F88B8E00BC3D88 /* indigo_misc.cpp */,
+				817B69AA11F88B8E00BC3D88 /* indigo_molecule.cpp */,
+				817B69AB11F88B8E00BC3D88 /* indigo_object.cpp */,
+				817B69AC11F88B8E00BC3D88 /* indigo_reaction.cpp */,
+				817B69AE11F88B8E00BC3D88 /* indigo.cpp */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		817B69B511F88BDC00BC3D88 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				817B69BD11F88C0E00BC3D88 /* libindigo.a */,
+				817B69F811F88F3B00BC3D88 /* libindigo.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		817B69D711F88ED200BC3D88 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				817B69DB11F88ED200BC3D88 /* libgraph.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		817B69DD11F88EE800BC3D88 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				817B69E111F88EE800BC3D88 /* libmolecule.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		817B69E311F88EFD00BC3D88 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				817B69E711F88EFD00BC3D88 /* libreaction.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		817B69E911F88F0D00BC3D88 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				817B69ED11F88F0D00BC3D88 /* liblayout.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		817B69B911F88C0D00BC3D88 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				819EB1B6125F79B600CE1D88 /* option_manager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		817B69F411F88F3B00BC3D88 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				819EB1B7125F79B600CE1D88 /* option_manager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		817B69BC11F88C0D00BC3D88 /* indigo-static */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 817B69C011F88C3400BC3D88 /* Build configuration list for PBXNativeTarget "indigo-static" */;
+			buildPhases = (
+				817B69B911F88C0D00BC3D88 /* Headers */,
+				817B69BA11F88C0D00BC3D88 /* Sources */,
+				817B69BB11F88C0D00BC3D88 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "indigo-static";
+			productName = indigo;
+			productReference = 817B69BD11F88C0E00BC3D88 /* libindigo.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		817B69F711F88F3B00BC3D88 /* indigo-shared */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 817B69FB11F88F6900BC3D88 /* Build configuration list for PBXNativeTarget "indigo-shared" */;
+			buildPhases = (
+				817B69F411F88F3B00BC3D88 /* Headers */,
+				817B69F511F88F3B00BC3D88 /* Sources */,
+				817B69F611F88F3B00BC3D88 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				817B69FD11F88FB300BC3D88 /* PBXTargetDependency */,
+				817B69FF11F88FB700BC3D88 /* PBXTargetDependency */,
+				817B6A0111F88FBA00BC3D88 /* PBXTargetDependency */,
+				817B6A0511F88FC200BC3D88 /* PBXTargetDependency */,
+			);
+			name = "indigo-shared";
+			productName = indigo;
+			productReference = 817B69F811F88F3B00BC3D88 /* libindigo.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		817B699611F88B1F00BC3D88 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 817B699911F88B1F00BC3D88 /* Build configuration list for PBXProject "indigo-api" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 817B699411F88B1F00BC3D88;
+			productRefGroup = 817B69B511F88BDC00BC3D88 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 817B69D711F88ED200BC3D88 /* Products */;
+					ProjectRef = 817B69D611F88ED200BC3D88 /* graph.xcodeproj */;
+				},
+				{
+					ProductGroup = 817B69E911F88F0D00BC3D88 /* Products */;
+					ProjectRef = 817B69E811F88F0D00BC3D88 /* layout.xcodeproj */;
+				},
+				{
+					ProductGroup = 817B69DD11F88EE800BC3D88 /* Products */;
+					ProjectRef = 817B69DC11F88EE800BC3D88 /* molecule.xcodeproj */;
+				},
+				{
+					ProductGroup = 817B69E311F88EFD00BC3D88 /* Products */;
+					ProjectRef = 817B69E211F88EFD00BC3D88 /* reaction.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				817B69BC11F88C0D00BC3D88 /* indigo-static */,
+				817B69F711F88F3B00BC3D88 /* indigo-shared */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		817B69DB11F88ED200BC3D88 /* libgraph.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libgraph.a;
+			remoteRef = 817B69DA11F88ED200BC3D88 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		817B69E111F88EE800BC3D88 /* libmolecule.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libmolecule.a;
+			remoteRef = 817B69E011F88EE800BC3D88 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		817B69E711F88EFD00BC3D88 /* libreaction.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libreaction.a;
+			remoteRef = 817B69E611F88EFD00BC3D88 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		817B69ED11F88F0D00BC3D88 /* liblayout.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liblayout.a;
+			remoteRef = 817B69EC11F88F0D00BC3D88 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		817B69BA11F88C0D00BC3D88 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				817B69C211F88DB600BC3D88 /* indigo_match.cpp in Sources */,
+				817B69C311F88DB600BC3D88 /* indigo_io.cpp in Sources */,
+				817B69C411F88DB600BC3D88 /* indigo_molecule.cpp in Sources */,
+				817B69C511F88DB600BC3D88 /* indigo.cpp in Sources */,
+				817B69C611F88DB600BC3D88 /* indigo_loaders.cpp in Sources */,
+				817B69C711F88DB600BC3D88 /* indigo_reaction.cpp in Sources */,
+				817B69C811F88DB600BC3D88 /* indigo_object.cpp in Sources */,
+				817B69C911F88DB600BC3D88 /* indigo_misc.cpp in Sources */,
+				817B69CA11F88DB600BC3D88 /* indigo_basic.cpp in Sources */,
+				817B69CB11F88DB600BC3D88 /* indigo_layout.cpp in Sources */,
+				817B69CC11F88DB600BC3D88 /* indigo_macros.c in Sources */,
+				819EB1A7125F797300CE1D88 /* indigo_array.cpp in Sources */,
+				819EB1AA125F798000CE1D88 /* indigo_deconvolution.cpp in Sources */,
+				819EB1AD125F799300CE1D88 /* indigo_product_enumerator.cpp in Sources */,
+				819EB1B0125F799D00CE1D88 /* indigo_scaffold.cpp in Sources */,
+				819EB1B3125F79A700CE1D88 /* option_manager.cpp in Sources */,
+				814A51DD127F5ABC00FA58F0 /* indigo_fingerprints.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		817B69F511F88F3B00BC3D88 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				817B6A0711F88FEB00BC3D88 /* indigo_match.cpp in Sources */,
+				817B6A0811F88FEB00BC3D88 /* indigo_io.cpp in Sources */,
+				817B6A0911F88FEB00BC3D88 /* indigo_molecule.cpp in Sources */,
+				817B6A0A11F88FEB00BC3D88 /* indigo.cpp in Sources */,
+				817B6A0B11F88FEB00BC3D88 /* indigo_loaders.cpp in Sources */,
+				817B6A0C11F88FEB00BC3D88 /* indigo_reaction.cpp in Sources */,
+				817B6A0D11F88FEB00BC3D88 /* indigo_object.cpp in Sources */,
+				817B6A0E11F88FEB00BC3D88 /* indigo_misc.cpp in Sources */,
+				817B6A0F11F88FEB00BC3D88 /* indigo_basic.cpp in Sources */,
+				817B6A1011F88FEB00BC3D88 /* indigo_layout.cpp in Sources */,
+				817B6A1111F88FEB00BC3D88 /* indigo_macros.c in Sources */,
+				819EB1A8125F797300CE1D88 /* indigo_array.cpp in Sources */,
+				819EB1AB125F798000CE1D88 /* indigo_deconvolution.cpp in Sources */,
+				819EB1AE125F799300CE1D88 /* indigo_product_enumerator.cpp in Sources */,
+				819EB1B1125F799D00CE1D88 /* indigo_scaffold.cpp in Sources */,
+				819EB1B4125F79A700CE1D88 /* option_manager.cpp in Sources */,
+				814A51DE127F5ABC00FA58F0 /* indigo_fingerprints.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		817B69FD11F88FB300BC3D88 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = graph;
+			targetProxy = 817B69FC11F88FB300BC3D88 /* PBXContainerItemProxy */;
+		};
+		817B69FF11F88FB700BC3D88 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = reaction;
+			targetProxy = 817B69FE11F88FB700BC3D88 /* PBXContainerItemProxy */;
+		};
+		817B6A0111F88FBA00BC3D88 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = layout;
+			targetProxy = 817B6A0011F88FBA00BC3D88 /* PBXContainerItemProxy */;
+		};
+		817B6A0511F88FC200BC3D88 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = molecule;
+			targetProxy = 817B6A0411F88FC200BC3D88 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		817B699711F88B1F00BC3D88 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		817B699811F88B1F00BC3D88 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+		817B69BE11F88C0E00BC3D88 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					.,
+					../common,
+					..,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
+				PREBINDING = NO;
+				PRODUCT_NAME = indigo;
+			};
+			name = Debug;
+		};
+		817B69BF11F88C0E00BC3D88 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					.,
+					..,
+					../common,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = indigo;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		817B69F911F88F3C00BC3D88 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_PREFIX = lib;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					.,
+					..,
+					../common,
+				);
+				INSTALL_PATH = "";
+				LD_DYLIB_INSTALL_NAME = /usr/local/lib/libindigo.dylib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-flat_namespace";
+				PREBINDING = NO;
+				PRODUCT_NAME = indigo;
+			};
+			name = Debug;
+		};
+		817B69FA11F88F3C00BC3D88 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					.,
+					..,
+					../common,
+				);
+				INSTALL_PATH = "";
+				LD_DYLIB_INSTALL_NAME = /usr/local/lib/libindigo.dylib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-flat_namespace";
+				PREBINDING = NO;
+				PRODUCT_NAME = indigo;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		817B699911F88B1F00BC3D88 /* Build configuration list for PBXProject "indigo-api" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				817B699711F88B1F00BC3D88 /* Debug */,
+				817B699811F88B1F00BC3D88 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		817B69C011F88C3400BC3D88 /* Build configuration list for PBXNativeTarget "indigo-static" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				817B69BE11F88C0E00BC3D88 /* Debug */,
+				817B69BF11F88C0E00BC3D88 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		817B69FB11F88F6900BC3D88 /* Build configuration list for PBXNativeTarget "indigo-shared" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				817B69F911F88F3C00BC3D88 /* Debug */,
+				817B69FA11F88F3C00BC3D88 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 817B699611F88B1F00BC3D88 /* Project object */;
+}

@@ -1,0 +1,251 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A756FD0811860B0E00B3B2DE /* render_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A756FCB5118603F200B3B2DE /* render_base.cpp */; };
+		A756FD0911860B0E00B3B2DE /* render_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A756FCB6118603F200B3B2DE /* render_common.cpp */; };
+		A756FD0A11860B0E00B3B2DE /* render_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A756FCB7118603F200B3B2DE /* render_context.cpp */; };
+		A756FD0B11860B0E00B3B2DE /* render_fonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A756FCB8118603F200B3B2DE /* render_fonts.cpp */; };
+		A756FD0C11860B0E00B3B2DE /* render_internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A756FCB9118603F200B3B2DE /* render_internal.cpp */; };
+		A756FD0D11860B0E00B3B2DE /* render_molecule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A756FCBA118603F200B3B2DE /* render_molecule.cpp */; };
+		A756FD0E11860B0E00B3B2DE /* render_reaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A756FCBB118603F200B3B2DE /* render_reaction.cpp */; };
+		A7FD719A1191D6DF0024BE5F /* render_params.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7FD71991191D6DF0024BE5F /* render_params.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A756FCB5118603F200B3B2DE /* render_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = render_base.cpp; path = src/render_base.cpp; sourceTree = "<group>"; };
+		A756FCB6118603F200B3B2DE /* render_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = render_common.cpp; path = src/render_common.cpp; sourceTree = "<group>"; };
+		A756FCB7118603F200B3B2DE /* render_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = render_context.cpp; path = src/render_context.cpp; sourceTree = "<group>"; };
+		A756FCB8118603F200B3B2DE /* render_fonts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = render_fonts.cpp; path = src/render_fonts.cpp; sourceTree = "<group>"; };
+		A756FCB9118603F200B3B2DE /* render_internal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = render_internal.cpp; path = src/render_internal.cpp; sourceTree = "<group>"; };
+		A756FCBA118603F200B3B2DE /* render_molecule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = render_molecule.cpp; path = src/render_molecule.cpp; sourceTree = "<group>"; };
+		A756FCBB118603F200B3B2DE /* render_reaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = render_reaction.cpp; path = src/render_reaction.cpp; sourceTree = "<group>"; };
+		A756FCBC118603FD00B3B2DE /* render_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_base.h; sourceTree = "<group>"; };
+		A756FCBD118603FD00B3B2DE /* render_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_common.h; sourceTree = "<group>"; };
+		A756FCBE118603FD00B3B2DE /* render_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_context.h; sourceTree = "<group>"; };
+		A756FCBF118603FD00B3B2DE /* render_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_internal.h; sourceTree = "<group>"; };
+		A756FCC0118603FD00B3B2DE /* render_molecule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_molecule.h; sourceTree = "<group>"; };
+		A756FCC1118603FD00B3B2DE /* render_reaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_reaction.h; sourceTree = "<group>"; };
+		A756FCDE11860A5D00B3B2DE /* librender2d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librender2d.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7FD71991191D6DF0024BE5F /* render_params.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = render_params.cpp; path = src/render_params.cpp; sourceTree = "<group>"; };
+		A7FD719D1191D6F30024BE5F /* render_params.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_params.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A756FCDC11860A5D00B3B2DE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A756FCA7118603D500B3B2DE = {
+			isa = PBXGroup;
+			children = (
+				A756FCB4118603E300B3B2DE /* src */,
+				A756FCDF11860A5D00B3B2DE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A756FCB4118603E300B3B2DE /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A7FD719D1191D6F30024BE5F /* render_params.h */,
+				A7FD71991191D6DF0024BE5F /* render_params.cpp */,
+				A756FCBC118603FD00B3B2DE /* render_base.h */,
+				A756FCBD118603FD00B3B2DE /* render_common.h */,
+				A756FCBE118603FD00B3B2DE /* render_context.h */,
+				A756FCBF118603FD00B3B2DE /* render_internal.h */,
+				A756FCC0118603FD00B3B2DE /* render_molecule.h */,
+				A756FCC1118603FD00B3B2DE /* render_reaction.h */,
+				A756FCB5118603F200B3B2DE /* render_base.cpp */,
+				A756FCB6118603F200B3B2DE /* render_common.cpp */,
+				A756FCB7118603F200B3B2DE /* render_context.cpp */,
+				A756FCB8118603F200B3B2DE /* render_fonts.cpp */,
+				A756FCB9118603F200B3B2DE /* render_internal.cpp */,
+				A756FCBA118603F200B3B2DE /* render_molecule.cpp */,
+				A756FCBB118603F200B3B2DE /* render_reaction.cpp */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		A756FCDF11860A5D00B3B2DE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A756FCDE11860A5D00B3B2DE /* librender2d.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A756FCDA11860A5D00B3B2DE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A756FCDD11860A5D00B3B2DE /* render2d */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A756FCE211860A5E00B3B2DE /* Build configuration list for PBXNativeTarget "render2d" */;
+			buildPhases = (
+				A756FCDA11860A5D00B3B2DE /* Headers */,
+				A756FCDB11860A5D00B3B2DE /* Sources */,
+				A756FCDC11860A5D00B3B2DE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = render2d;
+			productName = render2d;
+			productReference = A756FCDE11860A5D00B3B2DE /* librender2d.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A756FCA9118603D500B3B2DE /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = A756FCAC118603D500B3B2DE /* Build configuration list for PBXProject "render2d" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = A756FCA7118603D500B3B2DE;
+			productRefGroup = A756FCDF11860A5D00B3B2DE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A756FCDD11860A5D00B3B2DE /* render2d */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A756FCDB11860A5D00B3B2DE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A756FD0811860B0E00B3B2DE /* render_base.cpp in Sources */,
+				A756FD0911860B0E00B3B2DE /* render_common.cpp in Sources */,
+				A756FD0A11860B0E00B3B2DE /* render_context.cpp in Sources */,
+				A756FD0B11860B0E00B3B2DE /* render_fonts.cpp in Sources */,
+				A756FD0C11860B0E00B3B2DE /* render_internal.cpp in Sources */,
+				A756FD0D11860B0E00B3B2DE /* render_molecule.cpp in Sources */,
+				A756FD0E11860B0E00B3B2DE /* render_reaction.cpp in Sources */,
+				A7FD719A1191D6DF0024BE5F /* render_params.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A756FCAA118603D500B3B2DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		A756FCAB118603D500B3B2DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+		A756FCE011860A5E00B3B2DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					/opt/local/include,
+					/opt/local/include/cairo,
+					/opt/local/include/freetype2,
+					../common,
+					..,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
+				PREBINDING = NO;
+				PRODUCT_NAME = render2d;
+			};
+			name = Debug;
+		};
+		A756FCE111860A5E00B3B2DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					/opt/local/include,
+					/opt/local/include/cairo,
+					/opt/local/include/freetype2,
+					../common,
+					..,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				PRODUCT_NAME = render2d;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A756FCAC118603D500B3B2DE /* Build configuration list for PBXProject "render2d" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A756FCAA118603D500B3B2DE /* Debug */,
+				A756FCAB118603D500B3B2DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A756FCE211860A5E00B3B2DE /* Build configuration list for PBXNativeTarget "render2d" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A756FCE011860A5E00B3B2DE /* Debug */,
+				A756FCE111860A5E00B3B2DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A756FCA9118603D500B3B2DE /* Project object */;
+}

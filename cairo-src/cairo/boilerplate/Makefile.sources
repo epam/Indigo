@@ -1,0 +1,53 @@
+# Makefile.sources
+#
+# This file is pretty similar to $(top_srcdir)/src/Makefile.sources,
+# but for boilerplate.  Unlike that file, there are no special headers.
+#
+
+cairo_boilerplate_headers = \
+	cairo-boilerplate-getopt.h \
+	cairo-boilerplate-scaled-font.h \
+	cairo-boilerplate-system.h \
+	cairo-boilerplate.h \
+	$(NULL)
+cairo_boilerplate_sources = \
+	cairo-boilerplate-getopt.c \
+	cairo-boilerplate-system.c \
+	cairo-boilerplate.c \
+	$(NULL)
+
+# automake is stupid enough to always use c++ linker if we enable the
+# following lines, even if beos surface is not enabled.  Disable it for now.
+cairo_boilerplate_beos_private = cairo-boilerplate-beos-private.h
+#libcairoboilerplate_la_SOURCES += cairo-boilerplate-beos.cpp
+
+cairo_boilerplate_directfb_private = cairo-boilerplate-directfb-private.h
+cairo_boilerplate_directfb_sources = cairo-boilerplate-directfb.c
+
+cairo_boilerplate_glitz_private = cairo-boilerplate-glitz-private.h
+cairo_boilerplate_glitz_sources = cairo-boilerplate-glitz.c
+
+cairo_boilerplate_pdf_private = cairo-boilerplate-pdf-private.h
+cairo_boilerplate_pdf_sources = cairo-boilerplate-pdf.c
+
+cairo_boilerplate_ps_private = cairo-boilerplate-ps-private.h
+cairo_boilerplate_ps_sources = cairo-boilerplate-ps.c
+
+cairo_boilerplate_quartz_private = cairo-boilerplate-quartz-private.h
+cairo_boilerplate_quartz_sources = cairo-boilerplate-quartz.c
+
+cairo_boilerplate_svg_private = cairo-boilerplate-svg-private.h
+cairo_boilerplate_svg_sources = cairo-boilerplate-svg.c
+
+cairo_boilerplate_test_surfaces_private = cairo-boilerplate-test-surfaces-private.h
+cairo_boilerplate_test_surfaces_sources = cairo-boilerplate-test-surfaces.c
+
+cairo_boilerplate_win32_private = cairo-boilerplate-win32-private.h
+cairo_boilerplate_win32_sources = cairo-boilerplate-win32.c cairo-boilerplate-win32-printing.c
+
+cairo_boilerplate_xcb_private = cairo-boilerplate-xcb-private.h
+cairo_boilerplate_xcb_sources = cairo-boilerplate-xcb.c
+
+cairo_boilerplate_xlib_headers = cairo-boilerplate-xlib.h
+cairo_boilerplate_xlib_private = cairo-boilerplate-xlib-private.h
+cairo_boilerplate_xlib_sources = cairo-boilerplate-xlib.c

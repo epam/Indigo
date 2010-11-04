@@ -1,0 +1,19 @@
+top_srcdir = ..
+include $(top_srcdir)/build/Makefile.win32.common
+include Makefile.win32.features
+
+CFLAGS += -I../src
+
+SOURCES = \
+	$(enabled_cairo_boilerplate_headers) \
+	$(enabled_cairo_boilerplate_private) \
+	$(enabled_cairo_boilerplate_sources) \
+	$(NULL)
+
+OBJECTS = $(patsubst %.c, $(CFG)/%.obj, $(SOURCES))
+
+
+all: $(CFG)/boiler.lib
+
+$(CFG)/boiler.lib: $(OBJECTS)
+	lib -NOLOGO -OUT:$@ $(OBJECTS) $(WIN_LIBS)

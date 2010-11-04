@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="69">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <itemPath>indigo_renderer_jni.c</itemPath>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <incDir>
+            <pElem>..</pElem>
+            <pElem>../..</pElem>
+            <pElem>../../jni</pElem>
+            <pElem>../../../common/jni</pElem>
+            <pElem>../../../common/jni/linux</pElem>
+          </incDir>
+          <commandLine>-fPIC</commandLine>
+          <warningLevel>2</warningLevel>
+        </cTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libindigo-renderer-jni.so</output>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL=".."
+                            CT="3"
+                            CN="DebugStatic"
+                            AC="false"
+                            BL="true"
+                            WD=".."
+                            BC="${MAKE}  -f Makefile CONF=DebugStatic"
+                            CC="${MAKE}  -f Makefile CONF=DebugStatic clean"
+                            OP="dist/DebugStatic/GNU-Linux-x86/libindigo-renderer.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../../render2d"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../../render2d"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/librender2d.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibStdlibItem>Mathematics</linkerLibStdlibItem>
+            <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+            <linkerOptionItem>-lcairo</linkerOptionItem>
+            <linkerOptionItem>-lstdc++</linkerOptionItem>
+          </linkerLibItems>
+          <commandLine>-rdynamic</commandLine>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="Release32" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>6</developmentMode>
+          <stripSymbols>true</stripSymbols>
+          <architecture>1</architecture>
+          <incDir>
+            <pElem>..</pElem>
+            <pElem>../..</pElem>
+            <pElem>../../jni</pElem>
+            <pElem>../../../common/jni</pElem>
+            <pElem>../../../common/jni/linux</pElem>
+          </incDir>
+          <commandLine>-fPIC</commandLine>
+          <warningLevel>2</warningLevel>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libindigo-renderer-jni.so</output>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL=".."
+                            CT="3"
+                            CN="ReleaseStatic32"
+                            AC="false"
+                            BL="true"
+                            WD=".."
+                            BC="${MAKE}  -f Makefile CONF=ReleaseStatic32"
+                            CC="${MAKE}  -f Makefile CONF=ReleaseStatic32 clean"
+                            OP="dist/ReleaseStatic32/GNU-Linux-x86/libindigo-renderer.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../../render2d"
+                            CT="3"
+                            CN="Release32"
+                            AC="false"
+                            BL="true"
+                            WD="../../../render2d"
+                            BC="${MAKE}  -f Makefile CONF=Release32"
+                            CC="${MAKE}  -f Makefile CONF=Release32 clean"
+                            OP="dist/Release32/GNU-Linux-x86/librender2d.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibStdlibItem>Mathematics</linkerLibStdlibItem>
+            <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+            <linkerOptionItem>-lcairo</linkerOptionItem>
+            <linkerOptionItem>-lstdc++</linkerOptionItem>
+          </linkerLibItems>
+          <commandLine>-rdynamic</commandLine>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="Release64" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>6</developmentMode>
+          <stripSymbols>true</stripSymbols>
+          <architecture>2</architecture>
+          <incDir>
+            <pElem>..</pElem>
+            <pElem>../..</pElem>
+            <pElem>../../jni</pElem>
+            <pElem>../../../common/jni</pElem>
+            <pElem>../../../common/jni/linux</pElem>
+          </incDir>
+          <commandLine>-fPIC</commandLine>
+          <warningLevel>2</warningLevel>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libindigo-renderer-jni.so</output>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL=".."
+                            CT="3"
+                            CN="ReleaseStatic64"
+                            AC="false"
+                            BL="true"
+                            WD=".."
+                            BC="${MAKE}  -f Makefile CONF=ReleaseStatic64"
+                            CC="${MAKE}  -f Makefile CONF=ReleaseStatic64 clean"
+                            OP="dist/ReleaseStatic64/GNU-Linux-x86/libindigo-renderer.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../../render2d"
+                            CT="3"
+                            CN="Release64"
+                            AC="false"
+                            BL="true"
+                            WD="../../../render2d"
+                            BC="${MAKE}  -f Makefile CONF=Release64"
+                            CC="${MAKE}  -f Makefile CONF=Release64 clean"
+                            OP="dist/Release64/GNU-Linux-x86/librender2d.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibStdlibItem>Mathematics</linkerLibStdlibItem>
+            <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+            <linkerOptionItem>-lcairo</linkerOptionItem>
+            <linkerOptionItem>-lstdc++</linkerOptionItem>
+          </linkerLibItems>
+          <commandLine>-rdynamic</commandLine>
+        </linkerTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>

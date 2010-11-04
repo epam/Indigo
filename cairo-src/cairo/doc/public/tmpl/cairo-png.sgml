@@ -1,0 +1,93 @@
+<!-- ##### SECTION Title ##### -->
+PNG Support
+
+<!-- ##### SECTION Short_Description ##### -->
+Reading and writing PNG images
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The PNG functions allow reading PNG images into image surfaces, and writing
+any surface to a PNG file.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<itemizedlist>
+<listitem>#cairo_surface_t</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO CAIRO_HAS_PNG_FUNCTIONS ##### -->
+<para>
+Defined if the PNG functions are available.
+This macro can be used to conditionally compile code using the cairo
+PNG functions.
+</para>
+
+
+
+<!-- ##### FUNCTION cairo_image_surface_create_from_png ##### -->
+<para>
+
+</para>
+
+@filename: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION cairo_read_func_t ##### -->
+<para>
+
+</para>
+
+@closure: 
+@data: 
+@length: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_image_surface_create_from_png_stream ##### -->
+<para>
+
+</para>
+
+@read_func: 
+@closure: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_write_to_png ##### -->
+<para>
+
+</para>
+
+@surface: 
+@filename: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION cairo_write_func_t ##### -->
+<para>
+
+</para>
+
+@closure: 
+@data: 
+@length: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_write_to_png_stream ##### -->
+<para>
+
+</para>
+
+@surface: 
+@write_func: 
+@closure: 
+@Returns: 
+
+

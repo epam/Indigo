@@ -1,0 +1,58 @@
+use $(database)
+
+exec [$(bingo)]._DropAllIndices
+go
+
+:r bingo_drop_methods.sql
+
+drop procedure [$(bingo)].log_events
+go
+
+drop event notification $(bingo)_logout_notify on server;
+go
+
+drop route $(bingo)_notify_route;
+go
+
+drop service $(bingo)_notify_service;
+go
+
+drop queue [$(bingo)].notify_queue;
+go
+                     
+drop table [$(bingo)].CONFIG
+go
+
+drop table [$(bingo)].CONFIG_BIN
+go
+
+drop table [$(bingo)].CONTEXT;
+go
+
+drop table [$(bingo)].TAUTOMER_RULES
+go
+
+DROP ROLE $(bingo)_operator;
+GO
+
+DROP ROLE $(bingo)_reader;
+GO
+
+DROP SCHEMA $(bingo);
+GO
+
+DROP USER $(bingo);
+GO
+
+DROP CERTIFICATE $(bingo)_certificate;
+GO
+
+DROP ASSEMBLY $(bingo)_assembly;
+GO
+
+DROP LOGIN $(bingo)_assembly_login;
+GO
+
+use master;
+DROP ASYMMETRIC KEY $(bingo)_assembly_key
+GO

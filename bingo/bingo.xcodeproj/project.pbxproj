@@ -1,0 +1,720 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A70B43E3112B4FD600AE35BA /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A70B43E2112B4FD600AE35BA /* libz.dylib */; };
+		A73CF3CC106276ED000A182B /* liborasdk.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A73CF3CB106276ED000A182B /* liborasdk.dylib */; };
+		A73CF40310627BC8000A182B /* libgraph.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A73CF3CA106276D6000A182B /* libgraph.a */; };
+		A73CF40410627BCA000A182B /* libmolecule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A73CF3D210627707000A182B /* libmolecule.a */; };
+		A73CF40510627BCD000A182B /* libreaction.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A73CF3D810627739000A182B /* libreaction.a */; };
+		A73CF445106286B6000A182B /* liblayout.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7EDA6B5106254C6006CBFAF /* liblayout.a */; };
+		A75139EE1069306300E2FF81 /* bingo_profiling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A75139EC1069306300E2FF81 /* bingo_profiling.cpp */; };
+		A7EDA653106253B6006CBFAF /* ringo_aam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA60F106252FF006CBFAF /* ringo_aam.cpp */; };
+		A7EDA654106253B6006CBFAF /* mango_fetch_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6261062533D006CBFAF /* mango_fetch_context.cpp */; };
+		A7EDA655106253B6006CBFAF /* ora_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA600106252E2006CBFAF /* ora_wrap.cpp */; };
+		A7EDA656106253B6006CBFAF /* ora_error.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5FD106252E2006CBFAF /* ora_error.cpp */; };
+		A7EDA657106253B6006CBFAF /* rowid_saver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6441062533D006CBFAF /* rowid_saver.cpp */; };
+		A7EDA658106253B6006CBFAF /* ringo_shadow_fetch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA63E1062533D006CBFAF /* ringo_shadow_fetch.cpp */; };
+		A7EDA659106253B6006CBFAF /* dll_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6231062533D006CBFAF /* dll_main.cpp */; };
+		A7EDA65A106253B6006CBFAF /* bingo_oracle_parallel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA61C1062533D006CBFAF /* bingo_oracle_parallel.cpp */; };
+		A7EDA65B106253B6006CBFAF /* bingo_fingerprints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6171062533D006CBFAF /* bingo_fingerprints.cpp */; };
+		A7EDA65C106253B6006CBFAF /* mango_substructure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA60D106252FF006CBFAF /* mango_substructure.cpp */; };
+		A7EDA65D106253B6006CBFAF /* chunk_storage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5F7106252BA006CBFAF /* chunk_storage.cpp */; };
+		A7EDA65E106253B6006CBFAF /* ringo_oracle_fetch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6391062533D006CBFAF /* ringo_oracle_fetch.cpp */; };
+		A7EDA65F106253B6006CBFAF /* mango_oracle_index_parallel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA62A1062533D006CBFAF /* mango_oracle_index_parallel.cpp */; };
+		A7EDA660106253B6006CBFAF /* mango_shadow_fetch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6301062533D006CBFAF /* mango_shadow_fetch.cpp */; };
+		A7EDA661106253B6006CBFAF /* bingo_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA602106252FF006CBFAF /* bingo_context.cpp */; };
+		A7EDA662106253B6006CBFAF /* mango_exact.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA607106252FF006CBFAF /* mango_exact.cpp */; };
+		A7EDA663106253B6006CBFAF /* ringo_substructure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA615106252FF006CBFAF /* ringo_substructure.cpp */; };
+		A7EDA664106253B6006CBFAF /* ringo_oracle_index.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA63A1062533D006CBFAF /* ringo_oracle_index.cpp */; };
+		A7EDA665106253B6006CBFAF /* mango_gross.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA608106252FF006CBFAF /* mango_gross.cpp */; };
+		A7EDA666106253B6006CBFAF /* bingo_oracle_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA61A1062533D006CBFAF /* bingo_oracle_context.cpp */; };
+		A7EDA667106253B6006CBFAF /* ringo_index.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA612106252FF006CBFAF /* ringo_index.cpp */; };
+		A7EDA668106253B6006CBFAF /* ringo_fast_index.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6341062533D006CBFAF /* ringo_fast_index.cpp */; };
+		A7EDA669106253B6006CBFAF /* mango_oracle_fetch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6291062533D006CBFAF /* mango_oracle_fetch.cpp */; };
+		A7EDA66A106253B6006CBFAF /* mango_index.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA609106252FF006CBFAF /* mango_index.cpp */; };
+		A7EDA66B106253B6006CBFAF /* bingo_oracle_config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6191062533D006CBFAF /* bingo_oracle_config.cpp */; };
+		A7EDA66C106253B6006CBFAF /* ringo_operators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6381062533D006CBFAF /* ringo_operators.cpp */; };
+		A7EDA66D106253B6006CBFAF /* bingo_oracle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA61F1062533D006CBFAF /* bingo_oracle.cpp */; };
+		A7EDA66E106253B6006CBFAF /* mango_oracle_index.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA62C1062533D006CBFAF /* mango_oracle_index.cpp */; };
+		A7EDA66F106253B6006CBFAF /* mango_similarity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA60C106252FF006CBFAF /* mango_similarity.cpp */; };
+		A7EDA670106253B6006CBFAF /* mango_fast_index.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6241062533D006CBFAF /* mango_fast_index.cpp */; };
+		A7EDA671106253B6006CBFAF /* ora_logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5FE106252E2006CBFAF /* ora_logger.cpp */; };
+		A7EDA672106253B6006CBFAF /* rowid_loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6421062533D006CBFAF /* rowid_loader.cpp */; };
+		A7EDA673106253B6006CBFAF /* ringo_shadow_table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6401062533D006CBFAF /* ringo_shadow_table.cpp */; };
+		A7EDA674106253B6006CBFAF /* bingo_storage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6211062533D006CBFAF /* bingo_storage.cpp */; };
+		A7EDA675106253B6006CBFAF /* ringo_oracle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA63C1062533D006CBFAF /* ringo_oracle.cpp */; };
+		A7EDA676106253B6006CBFAF /* mango_oracle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA62E1062533D006CBFAF /* mango_oracle.cpp */; };
+		A7EDA677106253B6006CBFAF /* mango_tautomer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA60E106252FF006CBFAF /* mango_tautomer.cpp */; };
+		A7EDA678106253B6006CBFAF /* mango_oracle_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA62D1062533D006CBFAF /* mango_oracle_util.cpp */; };
+		A7EDA679106253B6006CBFAF /* ringo_fetch_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6361062533D006CBFAF /* ringo_fetch_context.cpp */; };
+		A7EDA67A106253B6006CBFAF /* ringo_oracle_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA63B1062533D006CBFAF /* ringo_oracle_util.cpp */; };
+		A7EDA67B106253B6006CBFAF /* ringo_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA610106252FF006CBFAF /* ringo_context.cpp */; };
+		A7EDA67C106253B6006CBFAF /* bingo_oracle_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA61E1062533D006CBFAF /* bingo_oracle_util.cpp */; };
+		A7EDA67D106253B6006CBFAF /* shmem_posix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5F9106252BA006CBFAF /* shmem_posix.cpp */; };
+		A7EDA67E106253B6006CBFAF /* mango_shadow_table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6321062533D006CBFAF /* mango_shadow_table.cpp */; };
+		A7EDA67F106253B6006CBFAF /* mango_operators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6281062533D006CBFAF /* mango_operators.cpp */; };
+		A7EDA680106253B6006CBFAF /* mango_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA605106252FF006CBFAF /* mango_context.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A73CF3C9106276D6000A182B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A73CF3C5106276D6000A182B /* graph.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7EDA3FC10624B53006CBFAF;
+			remoteInfo = graph;
+		};
+		A73CF3D110627707000A182B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A73CF3CD10627707000A182B /* molecule.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7EDA4CE10624F33006CBFAF;
+			remoteInfo = molecule;
+		};
+		A73CF3D710627739000A182B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A73CF3D310627739000A182B /* reaction.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7EDA55610625076006CBFAF;
+			remoteInfo = reaction;
+		};
+		A73CF3F31062798B000A182B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A73CF3C5106276D6000A182B /* graph.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA3FB10624B53006CBFAF;
+			remoteInfo = graph;
+		};
+		A73CF3F51062798F000A182B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A73CF3CD10627707000A182B /* molecule.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA4CD10624F33006CBFAF;
+			remoteInfo = molecule;
+		};
+		A73CF3F710627992000A182B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A73CF3D310627739000A182B /* reaction.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA55510625076006CBFAF;
+			remoteInfo = reaction;
+		};
+		A73CF3F910627994000A182B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7EDA6AA106254C6006CBFAF /* layout.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA5C9106251C3006CBFAF;
+			remoteInfo = layout;
+		};
+		A7EDA6B4106254C6006CBFAF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7EDA6AA106254C6006CBFAF /* layout.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7EDA5CA106251C3006CBFAF;
+			remoteInfo = layout;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A740C7C71063E86E003C9A87 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A70B43E2112B4FD600AE35BA /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = /usr/lib/libz.dylib; sourceTree = "<absolute>"; };
+		A713FA5E11F1835B00372A08 /* bingo_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_error.h; path = src/core/bingo_error.h; sourceTree = "<group>"; };
+		A73CF3C5106276D6000A182B /* graph.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = graph.xcodeproj; path = ../graph/graph.xcodeproj; sourceTree = SOURCE_ROOT; };
+		A73CF3CB106276ED000A182B /* liborasdk.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liborasdk.dylib; path = ../oci/lib64/liborasdk.dylib; sourceTree = SOURCE_ROOT; };
+		A73CF3CD10627707000A182B /* molecule.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = molecule.xcodeproj; path = ../molecule/molecule.xcodeproj; sourceTree = SOURCE_ROOT; };
+		A73CF3D310627739000A182B /* reaction.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = reaction.xcodeproj; path = ../reaction/reaction.xcodeproj; sourceTree = SOURCE_ROOT; };
+		A75139EC1069306300E2FF81 /* bingo_profiling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_profiling.cpp; path = src/oracle/bingo_profiling.cpp; sourceTree = "<group>"; };
+		A75139ED1069306300E2FF81 /* bingo_profiling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_profiling.h; path = src/oracle/bingo_profiling.h; sourceTree = "<group>"; };
+		A7EDA5F7106252BA006CBFAF /* chunk_storage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = chunk_storage.cpp; path = ../common/base_cpp/chunk_storage.cpp; sourceTree = SOURCE_ROOT; };
+		A7EDA5F8106252BA006CBFAF /* chunk_storage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = chunk_storage.h; path = ../common/base_cpp/chunk_storage.h; sourceTree = SOURCE_ROOT; };
+		A7EDA5F9106252BA006CBFAF /* shmem_posix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shmem_posix.cpp; path = ../common/base_cpp/shmem_posix.cpp; sourceTree = SOURCE_ROOT; };
+		A7EDA5FA106252BA006CBFAF /* shmem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shmem.h; path = ../common/base_cpp/shmem.h; sourceTree = SOURCE_ROOT; };
+		A7EDA5FD106252E2006CBFAF /* ora_error.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ora_error.cpp; path = ../common/oracle/ora_error.cpp; sourceTree = SOURCE_ROOT; };
+		A7EDA5FE106252E2006CBFAF /* ora_logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ora_logger.cpp; path = ../common/oracle/ora_logger.cpp; sourceTree = SOURCE_ROOT; };
+		A7EDA5FF106252E2006CBFAF /* ora_logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ora_logger.h; path = ../common/oracle/ora_logger.h; sourceTree = SOURCE_ROOT; };
+		A7EDA600106252E2006CBFAF /* ora_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ora_wrap.cpp; path = ../common/oracle/ora_wrap.cpp; sourceTree = SOURCE_ROOT; };
+		A7EDA601106252E2006CBFAF /* ora_wrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ora_wrap.h; path = ../common/oracle/ora_wrap.h; sourceTree = SOURCE_ROOT; };
+		A7EDA602106252FF006CBFAF /* bingo_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_context.cpp; path = src/core/bingo_context.cpp; sourceTree = "<group>"; };
+		A7EDA603106252FF006CBFAF /* bingo_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_context.h; path = src/core/bingo_context.h; sourceTree = "<group>"; };
+		A7EDA605106252FF006CBFAF /* mango_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_context.cpp; path = src/core/mango_context.cpp; sourceTree = "<group>"; };
+		A7EDA606106252FF006CBFAF /* mango_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mango_context.h; path = src/core/mango_context.h; sourceTree = "<group>"; };
+		A7EDA607106252FF006CBFAF /* mango_exact.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_exact.cpp; path = src/core/mango_exact.cpp; sourceTree = "<group>"; };
+		A7EDA608106252FF006CBFAF /* mango_gross.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_gross.cpp; path = src/core/mango_gross.cpp; sourceTree = "<group>"; };
+		A7EDA609106252FF006CBFAF /* mango_index.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_index.cpp; path = src/core/mango_index.cpp; sourceTree = "<group>"; };
+		A7EDA60A106252FF006CBFAF /* mango_index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mango_index.h; path = src/core/mango_index.h; sourceTree = "<group>"; };
+		A7EDA60B106252FF006CBFAF /* mango_matchers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mango_matchers.h; path = src/core/mango_matchers.h; sourceTree = "<group>"; };
+		A7EDA60C106252FF006CBFAF /* mango_similarity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_similarity.cpp; path = src/core/mango_similarity.cpp; sourceTree = "<group>"; };
+		A7EDA60D106252FF006CBFAF /* mango_substructure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_substructure.cpp; path = src/core/mango_substructure.cpp; sourceTree = "<group>"; };
+		A7EDA60E106252FF006CBFAF /* mango_tautomer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_tautomer.cpp; path = src/core/mango_tautomer.cpp; sourceTree = "<group>"; };
+		A7EDA60F106252FF006CBFAF /* ringo_aam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_aam.cpp; path = src/core/ringo_aam.cpp; sourceTree = "<group>"; };
+		A7EDA610106252FF006CBFAF /* ringo_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_context.cpp; path = src/core/ringo_context.cpp; sourceTree = "<group>"; };
+		A7EDA611106252FF006CBFAF /* ringo_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ringo_context.h; path = src/core/ringo_context.h; sourceTree = "<group>"; };
+		A7EDA612106252FF006CBFAF /* ringo_index.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_index.cpp; path = src/core/ringo_index.cpp; sourceTree = "<group>"; };
+		A7EDA613106252FF006CBFAF /* ringo_index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ringo_index.h; path = src/core/ringo_index.h; sourceTree = "<group>"; };
+		A7EDA614106252FF006CBFAF /* ringo_matchers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ringo_matchers.h; path = src/core/ringo_matchers.h; sourceTree = "<group>"; };
+		A7EDA615106252FF006CBFAF /* ringo_substructure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_substructure.cpp; path = src/core/ringo_substructure.cpp; sourceTree = "<group>"; };
+		A7EDA6161062533D006CBFAF /* bingo_fetch_engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_fetch_engine.h; path = src/oracle/bingo_fetch_engine.h; sourceTree = "<group>"; };
+		A7EDA6171062533D006CBFAF /* bingo_fingerprints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_fingerprints.cpp; path = src/oracle/bingo_fingerprints.cpp; sourceTree = "<group>"; };
+		A7EDA6181062533D006CBFAF /* bingo_fingerprints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_fingerprints.h; path = src/oracle/bingo_fingerprints.h; sourceTree = "<group>"; };
+		A7EDA6191062533D006CBFAF /* bingo_oracle_config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_oracle_config.cpp; path = src/oracle/bingo_oracle_config.cpp; sourceTree = "<group>"; };
+		A7EDA61A1062533D006CBFAF /* bingo_oracle_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_oracle_context.cpp; path = src/oracle/bingo_oracle_context.cpp; sourceTree = "<group>"; };
+		A7EDA61B1062533D006CBFAF /* bingo_oracle_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_oracle_context.h; path = src/oracle/bingo_oracle_context.h; sourceTree = "<group>"; };
+		A7EDA61C1062533D006CBFAF /* bingo_oracle_parallel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_oracle_parallel.cpp; path = src/oracle/bingo_oracle_parallel.cpp; sourceTree = "<group>"; };
+		A7EDA61D1062533D006CBFAF /* bingo_oracle_parallel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_oracle_parallel.h; path = src/oracle/bingo_oracle_parallel.h; sourceTree = "<group>"; };
+		A7EDA61E1062533D006CBFAF /* bingo_oracle_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_oracle_util.cpp; path = src/oracle/bingo_oracle_util.cpp; sourceTree = "<group>"; };
+		A7EDA61F1062533D006CBFAF /* bingo_oracle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_oracle.cpp; path = src/oracle/bingo_oracle.cpp; sourceTree = "<group>"; };
+		A7EDA6201062533D006CBFAF /* bingo_oracle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_oracle.h; path = src/oracle/bingo_oracle.h; sourceTree = "<group>"; };
+		A7EDA6211062533D006CBFAF /* bingo_storage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_storage.cpp; path = src/oracle/bingo_storage.cpp; sourceTree = "<group>"; };
+		A7EDA6221062533D006CBFAF /* bingo_storage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_storage.h; path = src/oracle/bingo_storage.h; sourceTree = "<group>"; };
+		A7EDA6231062533D006CBFAF /* dll_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dll_main.cpp; path = src/oracle/dll_main.cpp; sourceTree = "<group>"; };
+		A7EDA6241062533D006CBFAF /* mango_fast_index.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_fast_index.cpp; path = src/oracle/mango_fast_index.cpp; sourceTree = "<group>"; };
+		A7EDA6251062533D006CBFAF /* mango_fast_index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mango_fast_index.h; path = src/oracle/mango_fast_index.h; sourceTree = "<group>"; };
+		A7EDA6261062533D006CBFAF /* mango_fetch_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_fetch_context.cpp; path = src/oracle/mango_fetch_context.cpp; sourceTree = "<group>"; };
+		A7EDA6271062533D006CBFAF /* mango_fetch_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mango_fetch_context.h; path = src/oracle/mango_fetch_context.h; sourceTree = "<group>"; };
+		A7EDA6281062533D006CBFAF /* mango_operators.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_operators.cpp; path = src/oracle/mango_operators.cpp; sourceTree = "<group>"; };
+		A7EDA6291062533D006CBFAF /* mango_oracle_fetch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_oracle_fetch.cpp; path = src/oracle/mango_oracle_fetch.cpp; sourceTree = "<group>"; };
+		A7EDA62A1062533D006CBFAF /* mango_oracle_index_parallel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_oracle_index_parallel.cpp; path = src/oracle/mango_oracle_index_parallel.cpp; sourceTree = "<group>"; };
+		A7EDA62B1062533D006CBFAF /* mango_oracle_index_parallel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mango_oracle_index_parallel.h; path = src/oracle/mango_oracle_index_parallel.h; sourceTree = "<group>"; };
+		A7EDA62C1062533D006CBFAF /* mango_oracle_index.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_oracle_index.cpp; path = src/oracle/mango_oracle_index.cpp; sourceTree = "<group>"; };
+		A7EDA62D1062533D006CBFAF /* mango_oracle_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_oracle_util.cpp; path = src/oracle/mango_oracle_util.cpp; sourceTree = "<group>"; };
+		A7EDA62E1062533D006CBFAF /* mango_oracle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_oracle.cpp; path = src/oracle/mango_oracle.cpp; sourceTree = "<group>"; };
+		A7EDA62F1062533D006CBFAF /* mango_oracle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mango_oracle.h; path = src/oracle/mango_oracle.h; sourceTree = "<group>"; };
+		A7EDA6301062533D006CBFAF /* mango_shadow_fetch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_shadow_fetch.cpp; path = src/oracle/mango_shadow_fetch.cpp; sourceTree = "<group>"; };
+		A7EDA6311062533D006CBFAF /* mango_shadow_fetch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mango_shadow_fetch.h; path = src/oracle/mango_shadow_fetch.h; sourceTree = "<group>"; };
+		A7EDA6321062533D006CBFAF /* mango_shadow_table.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mango_shadow_table.cpp; path = src/oracle/mango_shadow_table.cpp; sourceTree = "<group>"; };
+		A7EDA6331062533D006CBFAF /* mango_shadow_table.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mango_shadow_table.h; path = src/oracle/mango_shadow_table.h; sourceTree = "<group>"; };
+		A7EDA6341062533D006CBFAF /* ringo_fast_index.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_fast_index.cpp; path = src/oracle/ringo_fast_index.cpp; sourceTree = "<group>"; };
+		A7EDA6351062533D006CBFAF /* ringo_fast_index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ringo_fast_index.h; path = src/oracle/ringo_fast_index.h; sourceTree = "<group>"; };
+		A7EDA6361062533D006CBFAF /* ringo_fetch_context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_fetch_context.cpp; path = src/oracle/ringo_fetch_context.cpp; sourceTree = "<group>"; };
+		A7EDA6371062533D006CBFAF /* ringo_fetch_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ringo_fetch_context.h; path = src/oracle/ringo_fetch_context.h; sourceTree = "<group>"; };
+		A7EDA6381062533D006CBFAF /* ringo_operators.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_operators.cpp; path = src/oracle/ringo_operators.cpp; sourceTree = "<group>"; };
+		A7EDA6391062533D006CBFAF /* ringo_oracle_fetch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_oracle_fetch.cpp; path = src/oracle/ringo_oracle_fetch.cpp; sourceTree = "<group>"; };
+		A7EDA63A1062533D006CBFAF /* ringo_oracle_index.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_oracle_index.cpp; path = src/oracle/ringo_oracle_index.cpp; sourceTree = "<group>"; };
+		A7EDA63B1062533D006CBFAF /* ringo_oracle_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_oracle_util.cpp; path = src/oracle/ringo_oracle_util.cpp; sourceTree = "<group>"; };
+		A7EDA63C1062533D006CBFAF /* ringo_oracle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_oracle.cpp; path = src/oracle/ringo_oracle.cpp; sourceTree = "<group>"; };
+		A7EDA63D1062533D006CBFAF /* ringo_oracle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ringo_oracle.h; path = src/oracle/ringo_oracle.h; sourceTree = "<group>"; };
+		A7EDA63E1062533D006CBFAF /* ringo_shadow_fetch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_shadow_fetch.cpp; path = src/oracle/ringo_shadow_fetch.cpp; sourceTree = "<group>"; };
+		A7EDA63F1062533D006CBFAF /* ringo_shadow_fetch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ringo_shadow_fetch.h; path = src/oracle/ringo_shadow_fetch.h; sourceTree = "<group>"; };
+		A7EDA6401062533D006CBFAF /* ringo_shadow_table.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_shadow_table.cpp; path = src/oracle/ringo_shadow_table.cpp; sourceTree = "<group>"; };
+		A7EDA6411062533D006CBFAF /* ringo_shadow_table.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ringo_shadow_table.h; path = src/oracle/ringo_shadow_table.h; sourceTree = "<group>"; };
+		A7EDA6421062533D006CBFAF /* rowid_loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rowid_loader.cpp; path = src/oracle/rowid_loader.cpp; sourceTree = "<group>"; };
+		A7EDA6431062533D006CBFAF /* rowid_loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rowid_loader.h; path = src/oracle/rowid_loader.h; sourceTree = "<group>"; };
+		A7EDA6441062533D006CBFAF /* rowid_saver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rowid_saver.cpp; path = src/oracle/rowid_saver.cpp; sourceTree = "<group>"; };
+		A7EDA6451062533D006CBFAF /* rowid_saver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rowid_saver.h; path = src/oracle/rowid_saver.h; sourceTree = "<group>"; };
+		A7EDA6461062533D006CBFAF /* rowid_symbol_codes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rowid_symbol_codes.h; path = src/oracle/rowid_symbol_codes.h; sourceTree = "<group>"; };
+		A7EDA64B10625378006CBFAF /* libbingo.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libbingo.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7EDA6AA106254C6006CBFAF /* layout.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = layout.xcodeproj; path = ../layout/layout.xcodeproj; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A7EDA64910625378006CBFAF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A73CF445106286B6000A182B /* liblayout.a in Frameworks */,
+				A73CF40510627BCD000A182B /* libreaction.a in Frameworks */,
+				A73CF40410627BCA000A182B /* libmolecule.a in Frameworks */,
+				A73CF40310627BC8000A182B /* libgraph.a in Frameworks */,
+				A73CF3CC106276ED000A182B /* liborasdk.dylib in Frameworks */,
+				A70B43E3112B4FD600AE35BA /* libz.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A73CF3C6106276D6000A182B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A73CF3CA106276D6000A182B /* libgraph.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A73CF3CE10627707000A182B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A73CF3D210627707000A182B /* libmolecule.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A73CF3D410627739000A182B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A73CF3D810627739000A182B /* libreaction.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A7EDA5E410625230006CBFAF = {
+			isa = PBXGroup;
+			children = (
+				A73CF3C5106276D6000A182B /* graph.xcodeproj */,
+				A73CF3CD10627707000A182B /* molecule.xcodeproj */,
+				A73CF3D310627739000A182B /* reaction.xcodeproj */,
+				A7EDA6AA106254C6006CBFAF /* layout.xcodeproj */,
+				A73CF3CB106276ED000A182B /* liborasdk.dylib */,
+				A70B43E2112B4FD600AE35BA /* libz.dylib */,
+				A7EDA5F11062524A006CBFAF /* common */,
+				A7EDA5F410625269006CBFAF /* src */,
+				A7EDA64C10625378006CBFAF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A7EDA5F11062524A006CBFAF /* common */ = {
+			isa = PBXGroup;
+			children = (
+				A7EDA5F210625250006CBFAF /* base */,
+				A7EDA5F310625255006CBFAF /* oracle */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
+		A7EDA5F210625250006CBFAF /* base */ = {
+			isa = PBXGroup;
+			children = (
+				A7EDA5F7106252BA006CBFAF /* chunk_storage.cpp */,
+				A7EDA5F8106252BA006CBFAF /* chunk_storage.h */,
+				A7EDA5F9106252BA006CBFAF /* shmem_posix.cpp */,
+				A7EDA5FA106252BA006CBFAF /* shmem.h */,
+			);
+			name = base;
+			sourceTree = "<group>";
+		};
+		A7EDA5F310625255006CBFAF /* oracle */ = {
+			isa = PBXGroup;
+			children = (
+				A7EDA5FD106252E2006CBFAF /* ora_error.cpp */,
+				A7EDA5FE106252E2006CBFAF /* ora_logger.cpp */,
+				A7EDA5FF106252E2006CBFAF /* ora_logger.h */,
+				A7EDA600106252E2006CBFAF /* ora_wrap.cpp */,
+				A7EDA601106252E2006CBFAF /* ora_wrap.h */,
+			);
+			name = oracle;
+			sourceTree = "<group>";
+		};
+		A7EDA5F410625269006CBFAF /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A7EDA5F51062526F006CBFAF /* core */,
+				A7EDA5F610625275006CBFAF /* oracle */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		A7EDA5F51062526F006CBFAF /* core */ = {
+			isa = PBXGroup;
+			children = (
+				A713FA5E11F1835B00372A08 /* bingo_error.h */,
+				A7EDA602106252FF006CBFAF /* bingo_context.cpp */,
+				A7EDA603106252FF006CBFAF /* bingo_context.h */,
+				A7EDA605106252FF006CBFAF /* mango_context.cpp */,
+				A7EDA606106252FF006CBFAF /* mango_context.h */,
+				A7EDA607106252FF006CBFAF /* mango_exact.cpp */,
+				A7EDA608106252FF006CBFAF /* mango_gross.cpp */,
+				A7EDA609106252FF006CBFAF /* mango_index.cpp */,
+				A7EDA60A106252FF006CBFAF /* mango_index.h */,
+				A7EDA60B106252FF006CBFAF /* mango_matchers.h */,
+				A7EDA60C106252FF006CBFAF /* mango_similarity.cpp */,
+				A7EDA60D106252FF006CBFAF /* mango_substructure.cpp */,
+				A7EDA60E106252FF006CBFAF /* mango_tautomer.cpp */,
+				A7EDA60F106252FF006CBFAF /* ringo_aam.cpp */,
+				A7EDA610106252FF006CBFAF /* ringo_context.cpp */,
+				A7EDA611106252FF006CBFAF /* ringo_context.h */,
+				A7EDA612106252FF006CBFAF /* ringo_index.cpp */,
+				A7EDA613106252FF006CBFAF /* ringo_index.h */,
+				A7EDA614106252FF006CBFAF /* ringo_matchers.h */,
+				A7EDA615106252FF006CBFAF /* ringo_substructure.cpp */,
+			);
+			name = core;
+			sourceTree = "<group>";
+		};
+		A7EDA5F610625275006CBFAF /* oracle */ = {
+			isa = PBXGroup;
+			children = (
+				A75139EC1069306300E2FF81 /* bingo_profiling.cpp */,
+				A75139ED1069306300E2FF81 /* bingo_profiling.h */,
+				A7EDA6161062533D006CBFAF /* bingo_fetch_engine.h */,
+				A7EDA6171062533D006CBFAF /* bingo_fingerprints.cpp */,
+				A7EDA6181062533D006CBFAF /* bingo_fingerprints.h */,
+				A7EDA6191062533D006CBFAF /* bingo_oracle_config.cpp */,
+				A7EDA61A1062533D006CBFAF /* bingo_oracle_context.cpp */,
+				A7EDA61B1062533D006CBFAF /* bingo_oracle_context.h */,
+				A7EDA61C1062533D006CBFAF /* bingo_oracle_parallel.cpp */,
+				A7EDA61D1062533D006CBFAF /* bingo_oracle_parallel.h */,
+				A7EDA61E1062533D006CBFAF /* bingo_oracle_util.cpp */,
+				A7EDA61F1062533D006CBFAF /* bingo_oracle.cpp */,
+				A7EDA6201062533D006CBFAF /* bingo_oracle.h */,
+				A7EDA6211062533D006CBFAF /* bingo_storage.cpp */,
+				A7EDA6221062533D006CBFAF /* bingo_storage.h */,
+				A7EDA6231062533D006CBFAF /* dll_main.cpp */,
+				A7EDA6241062533D006CBFAF /* mango_fast_index.cpp */,
+				A7EDA6251062533D006CBFAF /* mango_fast_index.h */,
+				A7EDA6261062533D006CBFAF /* mango_fetch_context.cpp */,
+				A7EDA6271062533D006CBFAF /* mango_fetch_context.h */,
+				A7EDA6281062533D006CBFAF /* mango_operators.cpp */,
+				A7EDA6291062533D006CBFAF /* mango_oracle_fetch.cpp */,
+				A7EDA62A1062533D006CBFAF /* mango_oracle_index_parallel.cpp */,
+				A7EDA62B1062533D006CBFAF /* mango_oracle_index_parallel.h */,
+				A7EDA62C1062533D006CBFAF /* mango_oracle_index.cpp */,
+				A7EDA62D1062533D006CBFAF /* mango_oracle_util.cpp */,
+				A7EDA62E1062533D006CBFAF /* mango_oracle.cpp */,
+				A7EDA62F1062533D006CBFAF /* mango_oracle.h */,
+				A7EDA6301062533D006CBFAF /* mango_shadow_fetch.cpp */,
+				A7EDA6311062533D006CBFAF /* mango_shadow_fetch.h */,
+				A7EDA6321062533D006CBFAF /* mango_shadow_table.cpp */,
+				A7EDA6331062533D006CBFAF /* mango_shadow_table.h */,
+				A7EDA6341062533D006CBFAF /* ringo_fast_index.cpp */,
+				A7EDA6351062533D006CBFAF /* ringo_fast_index.h */,
+				A7EDA6361062533D006CBFAF /* ringo_fetch_context.cpp */,
+				A7EDA6371062533D006CBFAF /* ringo_fetch_context.h */,
+				A7EDA6381062533D006CBFAF /* ringo_operators.cpp */,
+				A7EDA6391062533D006CBFAF /* ringo_oracle_fetch.cpp */,
+				A7EDA63A1062533D006CBFAF /* ringo_oracle_index.cpp */,
+				A7EDA63B1062533D006CBFAF /* ringo_oracle_util.cpp */,
+				A7EDA63C1062533D006CBFAF /* ringo_oracle.cpp */,
+				A7EDA63D1062533D006CBFAF /* ringo_oracle.h */,
+				A7EDA63E1062533D006CBFAF /* ringo_shadow_fetch.cpp */,
+				A7EDA63F1062533D006CBFAF /* ringo_shadow_fetch.h */,
+				A7EDA6401062533D006CBFAF /* ringo_shadow_table.cpp */,
+				A7EDA6411062533D006CBFAF /* ringo_shadow_table.h */,
+				A7EDA6421062533D006CBFAF /* rowid_loader.cpp */,
+				A7EDA6431062533D006CBFAF /* rowid_loader.h */,
+				A7EDA6441062533D006CBFAF /* rowid_saver.cpp */,
+				A7EDA6451062533D006CBFAF /* rowid_saver.h */,
+				A7EDA6461062533D006CBFAF /* rowid_symbol_codes.h */,
+			);
+			name = oracle;
+			sourceTree = "<group>";
+		};
+		A7EDA64C10625378006CBFAF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A7EDA64B10625378006CBFAF /* libbingo.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A7EDA6AB106254C6006CBFAF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A7EDA6B5106254C6006CBFAF /* liblayout.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A7EDA64710625378006CBFAF /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A7EDA64A10625378006CBFAF /* bingo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7EDA64F10625378006CBFAF /* Build configuration list for PBXNativeTarget "bingo" */;
+			buildPhases = (
+				A7EDA64710625378006CBFAF /* Headers */,
+				A7EDA64810625378006CBFAF /* Sources */,
+				A7EDA64910625378006CBFAF /* Frameworks */,
+				A740C7C71063E86E003C9A87 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A73CF3F41062798B000A182B /* PBXTargetDependency */,
+				A73CF3F61062798F000A182B /* PBXTargetDependency */,
+				A73CF3F810627992000A182B /* PBXTargetDependency */,
+				A73CF3FA10627994000A182B /* PBXTargetDependency */,
+			);
+			name = bingo;
+			productName = bingo;
+			productReference = A7EDA64B10625378006CBFAF /* libbingo.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A7EDA5E610625230006CBFAF /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = A7EDA5E910625230006CBFAF /* Build configuration list for PBXProject "bingo" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = A7EDA5E410625230006CBFAF;
+			productRefGroup = A7EDA64C10625378006CBFAF /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A73CF3C6106276D6000A182B /* Products */;
+					ProjectRef = A73CF3C5106276D6000A182B /* graph.xcodeproj */;
+				},
+				{
+					ProductGroup = A7EDA6AB106254C6006CBFAF /* Products */;
+					ProjectRef = A7EDA6AA106254C6006CBFAF /* layout.xcodeproj */;
+				},
+				{
+					ProductGroup = A73CF3CE10627707000A182B /* Products */;
+					ProjectRef = A73CF3CD10627707000A182B /* molecule.xcodeproj */;
+				},
+				{
+					ProductGroup = A73CF3D410627739000A182B /* Products */;
+					ProjectRef = A73CF3D310627739000A182B /* reaction.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				A7EDA64A10625378006CBFAF /* bingo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A73CF3CA106276D6000A182B /* libgraph.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libgraph.a;
+			remoteRef = A73CF3C9106276D6000A182B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A73CF3D210627707000A182B /* libmolecule.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libmolecule.a;
+			remoteRef = A73CF3D110627707000A182B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A73CF3D810627739000A182B /* libreaction.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libreaction.a;
+			remoteRef = A73CF3D710627739000A182B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7EDA6B5106254C6006CBFAF /* liblayout.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liblayout.a;
+			remoteRef = A7EDA6B4106254C6006CBFAF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A7EDA64810625378006CBFAF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7EDA653106253B6006CBFAF /* ringo_aam.cpp in Sources */,
+				A7EDA654106253B6006CBFAF /* mango_fetch_context.cpp in Sources */,
+				A7EDA655106253B6006CBFAF /* ora_wrap.cpp in Sources */,
+				A7EDA656106253B6006CBFAF /* ora_error.cpp in Sources */,
+				A7EDA657106253B6006CBFAF /* rowid_saver.cpp in Sources */,
+				A7EDA658106253B6006CBFAF /* ringo_shadow_fetch.cpp in Sources */,
+				A7EDA659106253B6006CBFAF /* dll_main.cpp in Sources */,
+				A7EDA65A106253B6006CBFAF /* bingo_oracle_parallel.cpp in Sources */,
+				A7EDA65B106253B6006CBFAF /* bingo_fingerprints.cpp in Sources */,
+				A7EDA65C106253B6006CBFAF /* mango_substructure.cpp in Sources */,
+				A7EDA65D106253B6006CBFAF /* chunk_storage.cpp in Sources */,
+				A7EDA65E106253B6006CBFAF /* ringo_oracle_fetch.cpp in Sources */,
+				A7EDA65F106253B6006CBFAF /* mango_oracle_index_parallel.cpp in Sources */,
+				A7EDA660106253B6006CBFAF /* mango_shadow_fetch.cpp in Sources */,
+				A7EDA661106253B6006CBFAF /* bingo_context.cpp in Sources */,
+				A7EDA662106253B6006CBFAF /* mango_exact.cpp in Sources */,
+				A7EDA663106253B6006CBFAF /* ringo_substructure.cpp in Sources */,
+				A7EDA664106253B6006CBFAF /* ringo_oracle_index.cpp in Sources */,
+				A7EDA665106253B6006CBFAF /* mango_gross.cpp in Sources */,
+				A7EDA666106253B6006CBFAF /* bingo_oracle_context.cpp in Sources */,
+				A7EDA667106253B6006CBFAF /* ringo_index.cpp in Sources */,
+				A7EDA668106253B6006CBFAF /* ringo_fast_index.cpp in Sources */,
+				A7EDA669106253B6006CBFAF /* mango_oracle_fetch.cpp in Sources */,
+				A7EDA66A106253B6006CBFAF /* mango_index.cpp in Sources */,
+				A7EDA66B106253B6006CBFAF /* bingo_oracle_config.cpp in Sources */,
+				A7EDA66C106253B6006CBFAF /* ringo_operators.cpp in Sources */,
+				A7EDA66D106253B6006CBFAF /* bingo_oracle.cpp in Sources */,
+				A7EDA66E106253B6006CBFAF /* mango_oracle_index.cpp in Sources */,
+				A7EDA66F106253B6006CBFAF /* mango_similarity.cpp in Sources */,
+				A7EDA670106253B6006CBFAF /* mango_fast_index.cpp in Sources */,
+				A7EDA671106253B6006CBFAF /* ora_logger.cpp in Sources */,
+				A7EDA672106253B6006CBFAF /* rowid_loader.cpp in Sources */,
+				A7EDA673106253B6006CBFAF /* ringo_shadow_table.cpp in Sources */,
+				A7EDA674106253B6006CBFAF /* bingo_storage.cpp in Sources */,
+				A7EDA675106253B6006CBFAF /* ringo_oracle.cpp in Sources */,
+				A7EDA676106253B6006CBFAF /* mango_oracle.cpp in Sources */,
+				A7EDA677106253B6006CBFAF /* mango_tautomer.cpp in Sources */,
+				A7EDA678106253B6006CBFAF /* mango_oracle_util.cpp in Sources */,
+				A7EDA679106253B6006CBFAF /* ringo_fetch_context.cpp in Sources */,
+				A7EDA67A106253B6006CBFAF /* ringo_oracle_util.cpp in Sources */,
+				A7EDA67B106253B6006CBFAF /* ringo_context.cpp in Sources */,
+				A7EDA67C106253B6006CBFAF /* bingo_oracle_util.cpp in Sources */,
+				A7EDA67D106253B6006CBFAF /* shmem_posix.cpp in Sources */,
+				A7EDA67E106253B6006CBFAF /* mango_shadow_table.cpp in Sources */,
+				A7EDA67F106253B6006CBFAF /* mango_operators.cpp in Sources */,
+				A7EDA680106253B6006CBFAF /* mango_context.cpp in Sources */,
+				A75139EE1069306300E2FF81 /* bingo_profiling.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A73CF3F41062798B000A182B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = graph;
+			targetProxy = A73CF3F31062798B000A182B /* PBXContainerItemProxy */;
+		};
+		A73CF3F61062798F000A182B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = molecule;
+			targetProxy = A73CF3F51062798F000A182B /* PBXContainerItemProxy */;
+		};
+		A73CF3F810627992000A182B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = reaction;
+			targetProxy = A73CF3F710627992000A182B /* PBXContainerItemProxy */;
+		};
+		A73CF3FA10627994000A182B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = layout;
+			targetProxy = A73CF3F910627994000A182B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A7EDA5E710625230006CBFAF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		A7EDA5E810625230006CBFAF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+		A7EDA64D10625378006CBFAF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
+				EXECUTABLE_PREFIX = lib;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../common,
+					../oci/include,
+					src,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../oci/lib64\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../oci/lib64\"";
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_64)";
+				PREBINDING = NO;
+				PRODUCT_NAME = bingo;
+				SDKROOT = "";
+			};
+			name = Debug;
+		};
+		A7EDA64E10625378006CBFAF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_LOCATION = NO;
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../common,
+					../oci/include,
+					src,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../oci/lib64\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../oci/lib64\"";
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_64)";
+				PREBINDING = NO;
+				PRODUCT_NAME = bingo;
+				SKIP_INSTALL = NO;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A7EDA5E910625230006CBFAF /* Build configuration list for PBXProject "bingo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7EDA5E710625230006CBFAF /* Debug */,
+				A7EDA5E810625230006CBFAF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A7EDA64F10625378006CBFAF /* Build configuration list for PBXNativeTarget "bingo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7EDA64D10625378006CBFAF /* Debug */,
+				A7EDA64E10625378006CBFAF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A7EDA5E610625230006CBFAF /* Project object */;
+}

@@ -1,0 +1,100 @@
+all: $(TARGETDIR_libreaction.a)/libreaction.a
+
+## Target: libreaction.a
+CPPFLAGS_libreaction.a = \
+	-I.. \
+	-I../common
+OBJS_libreaction.a =  \
+	$(TARGETDIR_libreaction.a)/crf_loader.o \
+	$(TARGETDIR_libreaction.a)/crf_saver.o \
+	$(TARGETDIR_libreaction.a)/icr_loader.o \
+	$(TARGETDIR_libreaction.a)/icr_saver.o \
+	$(TARGETDIR_libreaction.a)/reaction.o \
+	$(TARGETDIR_libreaction.a)/reaction_auto_loader.o \
+	$(TARGETDIR_libreaction.a)/reaction_automapper.o \
+	$(TARGETDIR_libreaction.a)/reaction_fingerprint.o \
+	$(TARGETDIR_libreaction.a)/reaction_substructure_matcher.o \
+	$(TARGETDIR_libreaction.a)/rsmiles_loader.o \
+	$(TARGETDIR_libreaction.a)/rsmiles_saver.o \
+	$(TARGETDIR_libreaction.a)/rxnfile_loader.o \
+	$(TARGETDIR_libreaction.a)/rxnfile_saver.o
+
+
+# Link or archive
+ARCPP = $(CCC) -xar -o $@ 
+$(TARGETDIR_libreaction.a)/libreaction.a: $(TARGETDIR_libreaction.a) $(OBJS_libreaction.a)
+	$(ARCPP) $(OBJS_libreaction.a)
+
+
+# Compile source files into .o files
+$(TARGETDIR_libreaction.a)/crf_loader.o: $(TARGETDIR_libreaction.a) src/crf_loader.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/crf_loader.cpp
+
+$(TARGETDIR_libreaction.a)/crf_saver.o: $(TARGETDIR_libreaction.a) src/crf_saver.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/crf_saver.cpp
+
+$(TARGETDIR_libreaction.a)/icr_loader.o: $(TARGETDIR_libreaction.a) src/icr_loader.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/icr_loader.cpp
+
+$(TARGETDIR_libreaction.a)/icr_saver.o: $(TARGETDIR_libreaction.a) src/icr_saver.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/icr_saver.cpp
+
+$(TARGETDIR_libreaction.a)/reaction.o: $(TARGETDIR_libreaction.a) src/reaction.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction.cpp
+
+$(TARGETDIR_libreaction.a)/reaction_auto_loader.o: $(TARGETDIR_libreaction.a) src/reaction_auto_loader.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_auto_loader.cpp
+
+$(TARGETDIR_libreaction.a)/reaction_automapper.o: $(TARGETDIR_libreaction.a) src/reaction_automapper.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_automapper.cpp
+
+$(TARGETDIR_libreaction.a)/reaction_fingerprint.o: $(TARGETDIR_libreaction.a) src/reaction_fingerprint.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_fingerprint.cpp
+
+$(TARGETDIR_libreaction.a)/reaction_substructure_matcher.o: $(TARGETDIR_libreaction.a) src/reaction_substructure_matcher.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_substructure_matcher.cpp
+
+$(TARGETDIR_libreaction.a)/rsmiles_loader.o: $(TARGETDIR_libreaction.a) src/rsmiles_loader.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/rsmiles_loader.cpp
+
+$(TARGETDIR_libreaction.a)/rsmiles_saver.o: $(TARGETDIR_libreaction.a) src/rsmiles_saver.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/rsmiles_saver.cpp
+
+$(TARGETDIR_libreaction.a)/rxnfile_loader.o: $(TARGETDIR_libreaction.a) src/rxnfile_loader.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/rxnfile_loader.cpp
+
+$(TARGETDIR_libreaction.a)/rxnfile_saver.o: $(TARGETDIR_libreaction.a) src/rxnfile_saver.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/rxnfile_saver.cpp
+
+
+
+#### Clean target deletes all generated files ####
+clean:
+	rm -f \
+		$(TARGETDIR_libreaction.a)/libreaction.a \
+		$(TARGETDIR_libreaction.a)/crf_loader.o \
+		$(TARGETDIR_libreaction.a)/crf_saver.o \
+		$(TARGETDIR_libreaction.a)/icr_loader.o \
+		$(TARGETDIR_libreaction.a)/icr_saver.o \
+		$(TARGETDIR_libreaction.a)/reaction.o \
+		$(TARGETDIR_libreaction.a)/reaction_auto_loader.o \
+		$(TARGETDIR_libreaction.a)/reaction_automapper.o \
+		$(TARGETDIR_libreaction.a)/reaction_fingerprint.o \
+		$(TARGETDIR_libreaction.a)/reaction_substructure_matcher.o \
+		$(TARGETDIR_libreaction.a)/rsmiles_loader.o \
+		$(TARGETDIR_libreaction.a)/rsmiles_saver.o \
+		$(TARGETDIR_libreaction.a)/rxnfile_loader.o \
+		$(TARGETDIR_libreaction.a)/rxnfile_saver.o
+	$(CCADMIN)
+	rm -f -r $(TARGETDIR_libreaction.a)
+
+
+# Create the target directory (if needed)
+$(TARGETDIR_libreaction.a):
+	mkdir -p $(TARGETDIR_libreaction.a)
+
+
+# Enable dependency checking
+.KEEP_STATE:
+.KEEP_STATE_FILE:.make.state.Sun-sparc-Solaris
+

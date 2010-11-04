@@ -1,0 +1,1077 @@
+/****************************************************************************
+* Copyright (C) 2009-2010 GGA Software Services LLC
+*
+* This file is part of Indigo toolkit.
+*
+* This file may be distributed and/or modified under the terms of the
+* GNU General Public License version 3 as published by the Free Software
+* Foundation and appearing in the file LICENSE.GPL included in the
+* packaging of this file.
+*
+* This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+* WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+***************************************************************************/
+
+#include "base_cpp/array.h"
+#include "base_cpp/obj_array.h"
+#include "base_cpp/output.h"
+#include "molecule/molecule.h"
+#include "reaction/reaction.h"
+#include "render_context.h"
+
+RenderContext::TextLock RenderContext::_tlock;
+
+#ifdef _WIN32
+
+#define NOMINMAX
+#include <windows.h>
+#include "cairo-win32.h"
+
+cairo_surface_t* RenderContext::createWin32PrintingSurfaceForHDC ()
+{
+   cairo_surface_t* surface = cairo_win32_printing_surface_create((HDC)_hdc);
+   cairoCheckStatus();
+   return surface;
+}
+
+cairo_surface_t* RenderContext::createWin32Surface ()
+{
+   cairo_surface_t* surface = cairo_win32_surface_create((HDC)_hdc);
+   cairoCheckStatus();
+   return surface;
+}
+
+static void _init_language_pack ()
+{
+    typedef BOOL (WINAPI *gdi_init_lang_pack_func_t)(int);
+    gdi_init_lang_pack_func_t gdi_init_lang_pack;
+    HMODULE module;
+
+    if (GetModuleHandleA ("LPK.DLL"))
+	return;
+
+    module = GetModuleHandleA ("GDI32.DLL");
+    if (module) {
+	gdi_init_lang_pack = (gdi_init_lang_pack_func_t)
+	    GetProcAddress (module, "GdiInitializeLanguagePack");
+	if (gdi_init_lang_pack)
+	    gdi_init_lang_pack (0);
+    }
+}
+
+cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile (bool& isLarge)
+{
+   HDC dc = GetDC(NULL);
+   int hr = GetDeviceCaps(dc, HORZRES);
+   int hs = GetDeviceCaps(dc, HORZSIZE);
+   int vr = GetDeviceCaps(dc, VERTRES);
+   int vs = GetDeviceCaps(dc, VERTSIZE);
+   // physical display size in millimeters, divided over the resolution and 
+   //    multiplied by 100, as metafile dimensions are specified in 0.01mm units
+   float cfx = hs * 100.0f / hr;
+   float cfy = vs * 100.0f / vr; // it may differ for x and y
+   int w = (int)(_width * cfx);
+   int h = (int)(_height * cfy);
+   RECT rc = {0, 0, w, h}, crc;
+   _init_language_pack();
+   GetClipBox(dc, &crc);
+   isLarge = (_width >= crc.right || _height >= crc.bottom);
+   HDC hdc = CreateEnhMetaFileA(dc, 0, &rc, "Indigo Render2D\0\0");
+   ReleaseDC(NULL, dc);
+   cairo_surface_t* s = cairo_win32_printing_surface_create(hdc);
+   cairoCheckStatus();
+   StartPage(hdc);
+
+   _hdc = hdc;
+   return s;
+}
+
+void RenderContext::storeAndDestroyMetafile ()
+{
+   HDC hdc = (HDC)_hdc;
+   cairo_surface_show_page(_surface);
+   cairoCheckStatus();
+   EndPage(hdc);
+   cairo_surface_destroy(_surface);
+   cairoCheckStatus();
+   _surface = NULL;
+   HENHMETAFILE hemf = CloseEnhMetaFile(hdc);
+
+   int size = GetEnhMetaFileBits(hemf, 0, NULL);
+   Array<char> buf;
+   buf.resize(size);
+   GetEnhMetaFileBits(hemf, size, (BYTE*)(buf.ptr()));
+   _output->writeArray(buf);
+   DeleteEnhMetaFile(hemf);
+}
+
+#endif
+
+RenderContext::RenderContext (): TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
+metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _output(NULL), _hdc(NULL), _mode(MODE_NONE)
+{
+   bprintf(_fontfamily, "Arial");
+   _backColor.set(-1,-1,-1);
+   bbmin.x = bbmin.y = 1;
+   bbmax.x = bbmax.y = -1;
+   _defaultScale = 0.0f;
+}
+
+void RenderContext::bbIncludePoint (const Vec2f& v)
+{
+   double x = v.x, y = v.y;
+   cairo_user_to_device(_cr, &x, &y);
+   Vec2f u((float)x, (float)y);
+   if (bbmin.x > bbmax.x) { // init
+      bbmin.x = bbmax.x = u.x;
+      bbmin.y = bbmax.y = u.y;
+   } else {
+      bbmin.min(u);
+      bbmax.max(u);
+   }
+}
+
+void RenderContext::_bbVecToUser (Vec2f& d, const Vec2f& s)
+{
+   double x = s.x, y = s.y;
+   cairo_device_to_user(_cr, &x, &y);
+   d.set((float)x, (float)y);
+}
+
+void RenderContext::bbGetMin (Vec2f& v)
+{
+   _bbVecToUser(v, bbmin);
+}
+
+void RenderContext::bbGetMax (Vec2f& v)
+{
+   _bbVecToUser(v, bbmax);
+}
+
+void RenderContext::bbIncludePoint (double x, double y)
+{
+   Vec2f v((float)x, (float)y);
+   bbIncludePoint(v);
+}
+
+void RenderContext::bbIncludePath (bool stroke)
+{
+   double x1, x2, y1, y2;
+   if (stroke)
+      cairo_stroke_extents(_cr, &x1, &y1, &x2, &y2);
+   else
+      cairo_path_extents(_cr, &x1, &y1, &x2, &y2);
+   bbIncludePoint(x1, y1);
+   bbIncludePoint(x2, y2);
+}
+
+void RenderContext::setScaleFactor (float sf)
+{
+   _settings.init(sf);
+}
+
+void RenderContext::setDefaultScale (float scale)
+{  
+   _defaultScale = scale;
+}
+
+void RenderContext::setHDC (PVOID hdc)
+{
+   _hdc = hdc;
+}
+
+void RenderContext::setFontFamily (const char* ff)
+{
+   bprintf(_fontfamily, "%s", ff);
+}
+
+void RenderContext::setMode (DINGO_MODE mode)
+{
+   _mode = mode;
+}
+void RenderContext::setBaseColor (const Vec3f& c)
+{
+   _baseColor.copy(c);
+}
+
+int RenderContext::getMaxPageSize () const
+{
+   if (_mode == MODE_PDF)
+      return 14400;
+   return -1;
+}
+
+cairo_status_t RenderContext::writer (void *closure, const unsigned char *data, unsigned int length)
+{
+   try {
+      ((Output*)closure)->write(data, length);
+   }
+   catch (Output::Error &)
+   {
+      return CAIRO_STATUS_WRITE_ERROR;
+   }
+   return CAIRO_STATUS_SUCCESS;
+}
+
+void RenderContext::setOutput (Output* output)
+{
+   _output = output;
+}
+
+void RenderContext::setHighlightingOptions (const HighlightingOptions* hlOpt)
+{
+   _hlOpt = hlOpt;
+}
+
+void RenderContext::setRenderContextOptions (const RenderContextOptions* rcOpt)
+{
+   _rcOpt = rcOpt;
+}
+
+void RenderContext::initMetaSurface() {
+   _meta_surface = cairo_pdf_surface_create_for_stream(NULL, NULL, 1, 1);
+   cairoCheckStatus();
+   _meta_cr = cairo_create(_meta_surface);
+   cairoCheckStatus();
+   cairo_scale(_meta_cr, _defaultScale, _defaultScale);
+   cairo_select_font_face(_meta_cr, "Arial", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+   cairoCheckStatus();
+}
+
+void RenderContext::destroyMetaSurface() {
+   if (_meta_cr != NULL)
+      cairo_destroy(_meta_cr);
+   if (_meta_surface != NULL)
+      cairo_surface_destroy(_meta_surface);
+}
+
+void RenderContext::getTextSize(Vec2f& sz, Vec2f& r, FONT_SIZE fontSize, const char* text) {
+   fontsSetFont(_meta_cr, fontSize, false);
+   fontsGetTextExtents(_meta_cr, text, fontSize, sz.x, sz.y, r.x, r.y);
+}
+
+void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int width, int height)
+{
+   switch (_mode)
+   {
+   case MODE_NONE:
+      throw Error("mode not set");
+   case MODE_PDF:
+      _surface = cairo_pdf_surface_create_for_stream(writer, _output, _width, _height);
+      cairoCheckStatus();
+      break;
+   case MODE_SVG:
+      _surface = cairo_svg_surface_create_for_stream(writer, _output, _width, _height);
+      cairoCheckStatus();
+      break;
+   case MODE_PNG:
+      _surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, _width, _height);
+      cairoCheckStatus();
+      break;
+   case MODE_HDC:
+#ifdef _WIN32
+      _surface = createWin32Surface();
+#else
+      throw Error("mode \"HDC\" is not supported on this platform");
+#endif
+      break;
+   case MODE_PRN:
+#ifdef _WIN32
+      _surface = createWin32PrintingSurfaceForHDC();
+#else
+      throw Error("mode \"PRN\" is not supported on this platform");
+#endif
+      break;
+   case MODE_EMF:
+#ifdef _WIN32
+      bool isLarge;
+      _surface = createWin32PrintingSurfaceForMetafile(isLarge);
+      if (isLarge)
+         metafileFontsToCurves = true;
+#else
+      throw Error("mode \"EMF\" is not supported on this platform");
+#endif
+      break;
+   default:
+      throw Error("unknown mode: %d", _mode);
+   }
+}
+
+void RenderContext::init()
+{
+   fontsInit();
+
+   cairo_text_extents_t te;
+   cairo_select_font_face(_cr, "Arial", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+   cairoCheckStatus();
+   cairo_set_font_size(_cr, _settings.fzz[FONT_SIZE_ATTR]);
+   cairoCheckStatus();
+   _tlock.lock();
+   cairo_text_extents(_cr, "N", &te);
+   _tlock.unlock();
+   cairoCheckStatus();
+
+   cairo_set_antialias(_cr, CAIRO_ANTIALIAS_GRAY);
+   cairoCheckStatus();
+
+   _currentLineWidth = _settings.bondLineWidth;
+}
+
+void RenderContext::setBackground(const Vec3f& color)
+{
+   _backColor.copy(color);
+}
+
+void RenderContext::fillBackground()
+{
+   cairo_set_source_rgb(_cr, _backColor.x, _backColor.y, _backColor.z);
+   cairoCheckStatus();
+   cairo_paint(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::initNullContext ()
+{
+   _width = 10;
+   _height = 10;
+   if (_surface != NULL || _cr != NULL)
+      throw Error("context is already open (or invalid)");
+   createSurface(NULL, NULL, 1, 1);
+   cairoCheckStatus();
+   _cr = cairo_create(_surface);
+   scale(_defaultScale, _defaultScale);
+}
+
+void RenderContext::initContext (int width, int height)
+{
+   _width = width;
+   _height = height;
+   if (_output == NULL)
+      throw Error("output not set");
+   if (_surface != NULL || _cr != NULL)
+      throw Error("context is already open (or invalid)");
+
+   createSurface(writer, _output, _width, _height);
+   _cr = cairo_create(_surface);
+   if (_backColor.x >= 0 && _backColor.y >= 0 && _backColor.z >= 0)
+      fillBackground();
+}
+
+void RenderContext::resetContext ()
+{
+   if (_cr != NULL)
+   {
+      cairo_destroy (_cr);
+      _cr = NULL;
+   }
+
+   if (_surface != NULL)
+   {
+      cairo_surface_destroy (_surface);
+      _surface = NULL;
+   }
+
+   bbmin.x = bbmin.y = 1;
+   bbmax.x = bbmax.y = -1;
+
+   fontsDispose();
+}
+
+void RenderContext::closeContext ()
+{
+   if (_cr != NULL)
+   {
+      cairo_destroy (_cr);
+      _cr = NULL;
+   }
+
+   switch (_mode)
+   {
+   case MODE_NONE:
+      throw Error("mode not set");
+   case MODE_PNG:
+      cairo_surface_write_to_png_stream(_surface, writer, _output);
+      break;
+   case MODE_PDF:
+   case MODE_SVG:
+   case MODE_HDC:
+   case MODE_PRN:
+      break;
+   case MODE_EMF:
+#ifdef _WIN32
+      storeAndDestroyMetafile();
+#endif
+      break;
+   default:
+      throw Error("unknown mode: %d", _mode);
+   }
+
+   if (_surface != NULL)
+   {
+      cairo_surface_destroy (_surface);
+      _surface = NULL;
+   }
+
+   fontsDispose();
+}
+
+void RenderContext::translate (float dx, float dy)
+{
+   cairo_translate(_cr, dx, dy);
+   cairoCheckStatus();
+}
+
+void RenderContext::scale (float sx, float sy)
+{
+   cairo_scale(_cr, sx, sy);
+   cairoCheckStatus();
+}
+
+void RenderContext::storeTransform ()
+{
+   cairo_matrix_t& t = transforms.push();
+   cairo_get_matrix(_cr, &t);
+   cairoCheckStatus();
+}
+void RenderContext::restoreTransform ()
+{
+   cairo_matrix_t& t = transforms.top();
+   cairo_set_matrix(_cr, &t);
+   cairoCheckStatus();
+}
+void RenderContext::removeStoredTransform ()
+{
+   transforms.pop();
+}
+
+void RenderContext::resetTransform ()
+{
+   cairo_matrix_t t;
+   cairo_matrix_init_identity(&t);
+   cairo_set_matrix(_cr, &t);
+   cairoCheckStatus();
+}
+
+void RenderContext::setLineWidth (double width)
+{
+   _currentLineWidth = (float)width;
+   cairo_set_line_width(_cr, width);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawRectangle (const Vec2f& p, const Vec2f& sz)
+{
+   cairo_rectangle(_cr, p.x, p.y, sz.x, sz.y);
+   cairoCheckStatus();
+   checkPathNonEmpty();
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawItemBackground (const RenderItem& item)
+{
+   cairo_rectangle(_cr, item.bbp.x, item.bbp.y, item.bbsz.x, item.bbsz.y);
+   cairoCheckStatus();
+   if (_backColor.x >= 0 && _backColor.y >= 0 && _backColor.z >= 0)
+      setSingleSource(_backColor);
+   else
+      setSingleSource(CWC_WHITE);
+
+   checkPathNonEmpty();
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawTextItemText (const TextItem& ti)
+{
+   bool bold = ti.highlighted && _hlOpt->highlightThicknessEnable;
+
+   Vec3f color;
+   if (ti.ritype == RenderItem::RIT_AAM)
+      color.copy(_rcOpt->aamColor);
+   else
+   {
+      getColorVec(color, ti.color);
+      if (ti.highlighted && _hlOpt->highlightColorEnable)
+         color.copy(_hlOpt->highlightColor);
+   }
+   drawTextItemText (ti, color, bold);
+}
+
+void RenderContext::drawTextItemText (const TextItem& ti, const Vec3f& color, bool bold)
+{
+   fontsSetFont(_cr, ti.fontsize, bold);
+   fontsDrawText(ti, color, bold);
+}
+
+void RenderContext::drawLine (const Vec2f& v0, const Vec2f& v1)
+{
+   moveTo(v0);
+   lineTo(v1);
+   checkPathNonEmpty();
+   bbIncludePath(true);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawPoly (const Array<Vec2f>& v)
+{
+   moveTo(v[0]);
+   for (int i = 1; i < v.size(); ++i)
+      lineTo(v[i]);
+   lineTo(v[0]);
+   checkPathNonEmpty();
+   bbIncludePath(true);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawTriangle (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2)
+{
+   moveTo(v0);
+   lineTo(v1);
+   lineTo(v2);
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::checkPathNonEmpty () const
+{
+#ifdef DEBUG
+   cairo_path_t* p = cairo_copy_path(_cr);
+   cairoCheckStatus();
+   if (p->num_data == 0)
+      throw Error("Empty path");
+   cairo_path_destroy(p);
+   cairoCheckStatus();
+#endif
+}
+
+void RenderContext::fillQuad (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3)
+{
+   moveTo(v0);
+   lineTo(v1);
+   lineTo(v2);
+   lineTo(v3);
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawQuad (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3)
+{
+   moveTo(v0);
+   lineTo(v1);
+   lineTo(v2);
+   lineTo(v3);
+   cairo_close_path(_cr);
+   cairoCheckStatus();
+   checkPathNonEmpty();
+   bbIncludePath(true);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawTriangleZigzag (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, int cnt)
+{
+   Vec2f r(v0), dr;
+   Vec2f l(v0), dl;
+   dr.diff(v1, v0); dr.scale(1.0f/cnt);
+   dl.diff(v2, v0); dl.scale(1.0f/cnt);
+
+   cairo_set_line_join(_cr, CAIRO_LINE_JOIN_MITER);
+   cairoCheckStatus();
+
+   moveTo(v0);
+   if (cnt < 3)
+      cnt = 3;
+   for (int i = 0; i < cnt; ++i)
+   {
+      r.add(dr);
+      l.add(dl);
+      if (i & 1)
+         lineTo(l);
+      else
+         lineTo(r);
+   }
+   checkPathNonEmpty();
+   bbIncludePath(true);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+   cairo_set_line_join(_cr, CAIRO_LINE_JOIN_BEVEL);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawTriangleStripes (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, int cnt)
+{
+   Vec2f r(v0), dr;
+   Vec2f l(v0), dl;
+   dr.diff(v1, v0); dr.scale(1.0f/cnt);
+   dl.diff(v2, v0); dl.scale(1.0f/cnt);
+
+   if (cnt < 3)
+      cnt = 3;
+   for (int i = 0; i < cnt; ++i)
+   {
+      r.add(dr);
+      l.add(dl);
+      moveTo(r);
+      lineTo(l);
+   }
+   checkPathNonEmpty();
+   bbIncludePath(true);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawCircle (const Vec2f& center, const float r)
+{
+   cairo_arc(_cr, center.x, center.y, r, 0, 2 * PI);
+   cairoCheckStatus();
+   checkPathNonEmpty();
+   bbIncludePath(true);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::fillCircle (const Vec2f& center, const float r)
+{
+   cairo_arc(_cr, center.x, center.y, r, 0, 2 * PI);
+   cairoCheckStatus();
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawArc (const Vec2f& center, const float r, const float a0, const float a1)
+{
+   cairo_new_path(_cr);
+   cairoCheckStatus();
+   cairo_arc(_cr, center.x, center.y, r, a0, a1);
+   cairoCheckStatus();
+   checkPathNonEmpty();
+   bbIncludePath(true);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::setFontSize (double fontSize)
+{
+   cairo_set_font_size(_cr, fontSize);
+   cairoCheckStatus();
+}
+
+void RenderContext::setTextItemSize (TextItem& ti)
+{
+   bool bold = ti.highlighted && _hlOpt->highlightThicknessEnable;
+   
+   fontsSetFont(_cr, ti.fontsize, bold);
+   fontsGetTextExtents(_cr, ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
+}
+
+void RenderContext::setTextItemSize (TextItem& ti, const Vec2f& c)
+{
+   setTextItemSize(ti);
+
+   cairo_font_extents_t fe;
+   cairo_font_extents (_cr, &fe);
+   ti.bbp.x = c.x - ti.bbsz.x / 2;
+   ti.bbp.y = c.y - ti.bbsz.y / 2;
+}
+
+void RenderContext::setGraphItemSizeDot (GraphItem& gi)
+{
+   gi.type = GraphItem::DOT;
+   gi.bbsz.set(2 * _settings.graphItemDotRadius, 2 * _settings.graphItemDotRadius);
+   gi.relpos.set(_settings.graphItemDotRadius, _settings.graphItemDotRadius);
+}
+
+void RenderContext::setGraphItemSizeCap (GraphItem& gi)
+{
+   gi.type = GraphItem::CAP;
+   gi.bbsz.set(2 * _settings.graphItemCapWidth, _settings.graphItemCapWidth * _settings.graphItemCapSlope);
+   gi.relpos.set(0, _settings.graphItemCapWidth * _settings.graphItemCapSlope);
+}
+
+void RenderContext::setGraphItemSizeSign (GraphItem& gi, GraphItem::TYPE type)
+{
+   gi.type = type;
+   gi.bbsz.set(_settings.graphItemDigitWidth, _settings.graphItemDigitHeight);
+   gi.relpos.set(0, 0);
+}
+
+void RenderContext::drawGraphItem (GraphItem& gi)
+{
+   setSingleSource(gi.color);
+   if (gi.highlighted && _hlOpt->highlightColorEnable)
+      setSingleSource(_hlOpt->highlightColor);
+
+   Vec2f v0;
+   v0.sum(gi.bbp, gi.relpos);
+   switch (gi.type)
+   {
+   case GraphItem::CAP:
+      moveTo(v0);
+      lineToRel(_settings.graphItemCapWidth, _settings.graphItemCapSlope * -_settings.graphItemCapWidth);
+      lineToRel(_settings.graphItemCapWidth, _settings.graphItemCapSlope * _settings.graphItemCapWidth);
+      lineToRel(-_settings.graphItemCapBase, 0);
+      lineToRel(_settings.graphItemCapBase - _settings.graphItemCapWidth, 
+         _settings.graphItemCapSlope * (_settings.graphItemCapBase - _settings.graphItemCapWidth));
+      lineToRel(_settings.graphItemCapBase - _settings.graphItemCapWidth, 
+         _settings.graphItemCapSlope * (_settings.graphItemCapWidth - _settings.graphItemCapBase));
+      break;
+   case GraphItem::DOT:
+      moveTo(v0);
+      cairo_arc(_cr, v0.x, v0.y, _settings.graphItemDotRadius, 0, 2 * M_PI);
+      cairoCheckStatus();
+      break;
+   case GraphItem::PLUS:
+      moveTo(v0);
+      moveToRel(0, (_settings.graphItemDigitHeight - _settings.graphItemSignLineWidth) / 2);
+      lineToRel(_settings.graphItemPlusEdge, 0);
+      lineToRel(0, -_settings.graphItemPlusEdge);
+      lineToRel(_settings.graphItemSignLineWidth, 0);
+      lineToRel(0, _settings.graphItemPlusEdge);
+      lineToRel(_settings.graphItemPlusEdge, 0);
+      lineToRel(0, _settings.graphItemSignLineWidth);
+      lineToRel(-_settings.graphItemPlusEdge, 0);
+      lineToRel(0, _settings.graphItemPlusEdge);
+      lineToRel(-_settings.graphItemSignLineWidth, 0);
+      lineToRel(0, -_settings.graphItemPlusEdge);
+      lineToRel(-_settings.graphItemPlusEdge, 0);
+      break;
+   case GraphItem::MINUS:
+      moveTo(v0);
+      moveToRel(0, (_settings.graphItemDigitHeight - _settings.graphItemSignLineWidth) / 2);
+      lineToRel(_settings.graphItemDigitWidth, 0);
+      lineToRel(0, _settings.graphItemSignLineWidth);
+      lineToRel(-_settings.graphItemDigitWidth, 0);
+      break;
+   }
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::fillRect (double x, double y, double w, double h)
+{
+   cairo_rectangle(_cr, x, y, w, h);
+   cairoCheckStatus();
+   checkPathNonEmpty();
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawEquality (const Vec2f& pos, const float linewidth, const float size, const float interval)
+{
+   moveTo(pos);
+   moveToRel(0, -interval/2);
+   lineToRel(size, 0);
+   moveTo(pos);
+   moveToRel(0, interval/2);
+   lineToRel(size, 0);
+   setLineWidth(linewidth);
+   checkPathNonEmpty();
+   bbIncludePath(true);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawPlus (const Vec2f& pos, const float linewidth, const float size)
+{
+   float hsz = size / 2;
+   moveTo(pos);
+
+   moveToRel(-hsz, 0);
+   lineToRel(2 * hsz, 0);
+   moveToRel(-hsz, -hsz);
+   lineToRel(0, 2 * hsz);
+   setLineWidth(linewidth);
+   checkPathNonEmpty();
+   bbIncludePath(true);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::drawArrow (const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
+{
+   Vec2f d, n, p(p1);
+   d.diff(p2, p1);
+   float len = d.length();
+   d.normalize();
+   n.copy(d);
+   n.rotate(1, 0);
+
+   p.addScaled(n, width / 2);
+   moveTo(p);
+   p.addScaled(d, len - headsize);
+   lineTo(p);
+   p.addScaled(n, (headwidth - width) / 2);
+   lineTo(p);
+   p.addScaled(n, -headwidth / 2);
+   p.addScaled(d, headsize);
+   lineTo(p);
+   p.addScaled(n, -headwidth / 2);
+   p.addScaled(d, -headsize);
+   lineTo(p);
+   p.addScaled(n, (headwidth - width) / 2);
+   lineTo(p);
+   p.addScaled(d, -len + headsize);
+   lineTo(p);
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
+float RenderContext::highlightedBondLineWidth () const
+{
+   return _settings.bondLineWidth * (_hlOpt->highlightThicknessEnable ? _hlOpt->highlightThicknessFactor : 1.0f);
+}
+
+float RenderContext::currentLineWidth () const
+{
+   return _currentLineWidth;
+}
+
+void RenderContext::setHighlight()
+{
+   if (_hlOpt->highlightColorEnable)
+      setSingleSource(_hlOpt->highlightColor);
+   if (_hlOpt->highlightThicknessEnable)
+      setLineWidth(_hlOpt->highlightThicknessFactor * _settings.bondLineWidth);
+}
+
+void RenderContext::resetHighlightThickness()
+{
+   setLineWidth(_settings.bondLineWidth);
+}
+
+void RenderContext::resetHighlight()
+{
+   setSingleSource(CWC_BASE);
+   resetHighlightThickness();
+}
+
+void RenderContext::getColorVec (Vec3f& v, int color)
+{
+   getColor(v.x, v.y, v.z, color);
+   float y, ymax = 0.5f;
+   if (color >= CWC_COUNT)
+   {
+      y = 0.299f * v.x + 0.587f * v.y + 0.114f * v.z;
+      if (y > ymax)
+         v.scale(ymax / y);
+   }
+}
+
+void RenderContext::setSingleSource (int color)
+{
+   Vec3f v;
+   getColorVec(v, color);
+   cairo_set_source_rgb(_cr, v.x, v.y, v.z);
+   cairoCheckStatus();
+}
+
+void RenderContext::setSingleSource (const Vec3f& color)
+{
+   cairo_set_source_rgb(_cr, color.x, color.y, color.z);
+   cairoCheckStatus();
+}
+
+float RenderContext::_getDashedLineAlignmentOffset (float length)
+{
+   float offset = 0;
+   float delta = length - floorf(length / _settings.dashUnit);
+   if (delta > 0.5)
+      offset = 1-delta - _settings.eps * _settings.dashUnit;
+   else
+      offset = -delta - _settings.eps * _settings.dashUnit;
+   return offset;
+}
+
+void RenderContext::setDash (const Array<double>& dash, float length)
+{
+   cairo_set_dash(_cr, dash.ptr(), dash.size(), _getDashedLineAlignmentOffset(length));
+   cairoCheckStatus();
+}
+
+void RenderContext::resetDash ()
+{
+   cairo_set_dash(_cr, NULL, 0, 0);
+   cairoCheckStatus();
+}
+
+void RenderContext::lineTo (const Vec2f& v)
+{
+   cairo_line_to(_cr, v.x, v.y);
+   cairoCheckStatus();
+}
+
+void RenderContext::lineToRel (float x, float y)
+{
+   cairo_rel_line_to(_cr, x, y);
+   cairoCheckStatus();
+}
+
+void RenderContext::lineToRel (const Vec2f& v)
+{
+   cairo_rel_line_to(_cr, v.x, v.y);
+   cairoCheckStatus();
+}
+
+void RenderContext::moveTo (const Vec2f& v)
+{
+   cairo_move_to(_cr, v.x, v.y);
+   cairoCheckStatus();
+}
+
+void RenderContext::moveToRel (float x, float y)
+{
+   cairo_rel_move_to(_cr, x, y);
+   cairoCheckStatus();
+}
+
+void RenderContext::moveToRel (const Vec2f& v)
+{
+   cairo_rel_move_to(_cr, v.x, v.y);
+   cairoCheckStatus();
+}
+
+
+int RenderContext::getElementColor (int label)
+{
+   return label - ELEM_H + CWC_COUNT;
+}
+
+void RenderContext::getColor (float& r, float& g, float& b, int c)
+{
+   static double colors[][3] = {
+      {1.0f, 1.0f, 1.0f}, // WHITE
+      {0.0f, 0.0f, 0.0f}, // BLACK
+      {1.0f, 0.0f, 0.0f}, // RED
+      {0.0f, 0.8f, 0.0f}, // GREEN
+      {0.0f, 0.0f, 1.0f}, // BLUE
+      {0.0f, 0.5f, 0.0f}, // DARKGREEN
+
+      {0.0, 0.0, 0.0}, // ELEM_H
+      {0.85, 1.0, 1.0}, // ....
+      {0.80, 0.50, 1.0},
+      {0.76, 1.0, 0},
+      {1.0, 0.71, 0.71},
+      {0.0, 0.0, 0.0},
+      {0.19, 0.31, 0.97},
+      {1.0, 0.051, 0.051},
+      {0.56, 0.88, 0.31},
+      {0.70, 0.89, 0.96},
+      {0.67, 0.36, 0.95},
+      {0.54, 1.0, 0},
+      {0.75, 0.65, 0.65},
+      {0.94, 0.78, 0.63},
+      {1.0, 0.50, 0},
+      {0.85, 0.65, 0.10},
+      {0.12, 0.94, 0.12},
+      {0.50, 0.82, 0.89},
+      {0.56, 0.25, 0.83},
+      {0.24, 1.0, 0},
+      {0.90, 0.90, 0.90},
+      {0.75, 0.76, 0.78},
+      {0.65, 0.65, 0.67},
+      {0.54, 0.60, 0.78},
+      {0.61, 0.48, 0.78},
+      {0.88, 0.40, 0.20},
+      {0.94, 0.56, 0.63},
+      {0.31, 0.82, 0.31},
+      {0.78, 0.50, 0.20},
+      {0.49, 0.50, 0.69},
+      {0.76, 0.56, 0.56},
+      {0.40, 0.56, 0.56},
+      {0.74, 0.50, 0.89},
+      {1.0, 0.63, 0},
+      {0.65, 0.16, 0.16},
+      {0.36, 0.72, 0.82},
+      {0.44, 0.18, 0.69},
+      {0, 1.0, 0},
+      {0.58, 1.0, 1.0},
+      {0.58, 0.88, 0.88},
+      {0.45, 0.76, 0.79},
+      {0.33, 0.71, 0.71},
+      {0.23, 0.62, 0.62},
+      {0.14, 0.56, 0.56},
+      {0.039, 0.49, 0.55},
+      {0, 0.41, 0.52},
+      {0.75, 0.75, 0.75},
+      {1.0, 0.85, 0.56},
+      {0.65, 0.46, 0.45},
+      {0.40, 0.50, 0.50},
+      {0.62, 0.39, 0.71},
+      {0.83, 0.48, 0},
+      {0.58, 0, 0.58},
+      {0.26, 0.62, 0.69},
+      {0.34, 0.090, 0.56},
+      {0, 0.79, 0},
+      {0.44, 0.83, 1.0},
+      {1.0, 1.0, 0.78},
+      {0.85, 1.0, 0.78},
+      {0.78, 1.0, 0.78},
+      {0.64, 1.0, 0.78},
+      {0.56, 1.0, 0.78},
+      {0.38, 1.0, 0.78},
+      {0.27, 1.0, 0.78},
+      {0.19, 1.0, 0.78},
+      {0.12, 1.0, 0.78},
+      {0, 1.0, 0.61},
+      {0, 0.90, 0.46},
+      {0, 0.83, 0.32},
+      {0, 0.75, 0.22},
+      {0, 0.67, 0.14},
+      {0.30, 0.76, 1.0},
+      {0.30, 0.65, 1.0},
+      {0.13, 0.58, 0.84},
+      {0.15, 0.49, 0.67},
+      {0.15, 0.40, 0.59},
+      {0.090, 0.33, 0.53},
+      {0.82, 0.82, 0.88},
+      {1.0, 0.82, 0.14},
+      {0.72, 0.72, 0.82},
+      {0.65, 0.33, 0.30},
+      {0.34, 0.35, 0.38},
+      {0.62, 0.31, 0.71},
+      {0.67, 0.36, 0},
+      {0.46, 0.31, 0.27},
+      {0.26, 0.51, 0.59},
+      {0.26, 0, 0.40},
+      {0, 0.49, 0},
+      {0.44, 0.67, 0.98},
+      {0, 0.73, 1.0},
+      {0, 0.63, 1.0},
+      {0, 0.56, 1.0},
+      {0, 0.50, 1.0},
+      {0, 0.42, 1.0},
+      {0.33, 0.36, 0.95},
+      {0.47, 0.36, 0.89},
+      {0.54, 0.31, 0.89},
+      {0.63, 0.21, 0.83},
+      {0.70, 0.12, 0.83}
+   };
+
+   if (c == CWC_BASE)
+   {
+      r = (float)_baseColor.x;
+      g = (float)_baseColor.y;
+      b = (float)_baseColor.z;
+      return;
+   }
+
+   if (c < 0 || c >= NELEM(colors))
+      throw Error("unknown color: %d", c);
+
+   r = (float)colors[c][0];
+   g = (float)colors[c][1];
+   b = (float)colors[c][2];
+}

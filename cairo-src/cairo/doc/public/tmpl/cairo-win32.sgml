@@ -1,0 +1,98 @@
+<!-- ##### SECTION Title ##### -->
+Win32 Surfaces
+
+<!-- ##### SECTION Short_Description ##### -->
+Microsoft Windows surface support
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The Microsoft Windows surface is used to render cairo graphics to
+Microsoft Windows windows, bitmaps, and printing device contexts.
+</para>
+<para>
+The surface returned by cairo_win32_printing_surface_create() is of surface
+type %CAIRO_SURFACE_TYPE_WIN32_PRINTING and is a multi-page vector surface
+type.
+</para>
+<para>
+The surface returned by the other win32 constructors is of surface type
+%CAIRO_SURFACE_TYPE_WIN32 and is a raster surface type.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<itemizedlist>
+<listitem>#cairo_surface_t</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO CAIRO_HAS_WIN32_SURFACE ##### -->
+<para>
+Defined if the Microsoft Windows surface backend is available.
+This macro can be used to conditionally compile backend-specific code.
+</para>
+
+
+
+<!-- ##### FUNCTION cairo_win32_surface_create ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_win32_surface_create_with_dib ##### -->
+<para>
+
+</para>
+
+@format: 
+@width: 
+@height: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_win32_surface_create_with_ddb ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@format: 
+@width: 
+@height: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_win32_printing_surface_create ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_win32_surface_get_dc ##### -->
+<para>
+
+</para>
+
+@surface: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_win32_surface_get_image ##### -->
+<para>
+
+</para>
+
+@surface: 
+@Returns: 
+
+

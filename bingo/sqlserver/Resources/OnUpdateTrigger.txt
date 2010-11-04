@@ -1,0 +1,32 @@
+CREATE TRIGGER {0}
+	ON {1}
+	FOR UPDATE
+AS
+	declare @ID int;
+	declare @data nvarchar(max);
+	declare Cur cursor LOCAL for select {2}, {3} from inserted;
+
+	IF UPDATE({2}) 
+	BEGIN 
+		RAISERROR ('{2} column cannot be changes after Bingo index created.', 16, 1);
+		ROLLBACK TRANSACTION
+	END
+	
+	IF NOT UPDATE({3}) 
+	BEGIN 
+		RETURN 
+	END
+	
+	open Cur
+
+	fetch next from Cur into @ID, @data
+
+	while @@fetch_status = 0
+	begin
+		exec {4}._OnDeleteRecordTrigger '{5}', @ID
+		exec {4}._OnInsertRecordTrigger '{5}', @ID, @data
+		
+		fetch next from Cur into @ID, @data
+	end
+  close Cur
+  deallocate Cur

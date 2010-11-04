@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8'?> 
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!ENTITY version SYSTEM "version.xml">
+]>
+<refentry id="cairo-types">
+<refmeta>
+<refentrytitle role="top_of_page" id="cairo-types.top_of_page">Types</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>CAIRO Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>Types</refname>
+<refpurpose>Generic data types</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="cairo-types.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+typedef             <link linkend="cairo-bool-t">cairo_bool_t</link>;
+                    <link linkend="cairo-user-data-key-t">cairo_user_data_key_t</link>;
+<link linkend="void">void</link>                (<link linkend="cairo-destroy-func-t">*cairo_destroy_func_t</link>)             (<link linkend="void">void</link> *data);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 id="cairo-types.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+Generic data types used in the cairo API
+</para>
+</refsect1>
+
+<refsect1 id="cairo-types.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="cairo-bool-t" role="typedef">
+<title>cairo_bool_t</title>
+<indexterm zone="cairo-bool-t"><primary sortas="cairo_bool_t">cairo_bool_t</primary></indexterm><programlisting>typedef int cairo_bool_t;
+</programlisting>
+<para>
+<link linkend="cairo-bool-t"><type>cairo_bool_t</type></link> is used for boolean values. Returns of type
+<link linkend="cairo-bool-t"><type>cairo_bool_t</type></link> will always be either 0 or 1, but testing against
+these values explicitly is not encouraged; just use the
+value as a boolean condition.
+</para>
+<para>
+<informalexample><programlisting>
+ if (cairo_in_stroke (cr, x, y)) {
+     /<!-- -->* do something *<!-- -->/
+ }
+</programlisting></informalexample></para>
+<para>
+</para></refsect2>
+<refsect2 id="cairo-user-data-key-t" role="struct">
+<title>cairo_user_data_key_t</title>
+<indexterm zone="cairo-user-data-key-t"><primary sortas="cairo_user_data_key_t">cairo_user_data_key_t</primary></indexterm><programlisting>typedef struct {
+    int unused;
+} cairo_user_data_key_t;
+</programlisting>
+<para>
+<link linkend="cairo-user-data-key-t"><type>cairo_user_data_key_t</type></link> is used for attaching user data to cairo
+data structures.  The actual contents of the struct is never used,
+and there is no need to initialize the object; only the unique
+address of a <link linkend="cairo-data-key-t"><type>cairo_data_key_t</type></link> object is used.  Typically, you
+would just use the address of a static <link linkend="cairo-data-key-t"><type>cairo_data_key_t</type></link> object.</para>
+<para>
+</para><variablelist role="struct">
+<varlistentry>
+<term><link linkend="int">int</link>&#160;<structfield>unused</structfield>;</term>
+<listitem><simpara> not used; ignore.
+</simpara></listitem>
+</varlistentry>
+</variablelist></refsect2>
+<refsect2 id="cairo-destroy-func-t" role="function">
+<title>cairo_destroy_func_t ()</title>
+<indexterm zone="cairo-destroy-func-t"><primary sortas="cairo_destroy_func_t">cairo_destroy_func_t</primary></indexterm><programlisting><link linkend="void">void</link>                (*cairo_destroy_func_t)             (<link linkend="void">void</link> *data);</programlisting>
+<para>
+<link linkend="cairo-destroy-func-t"><type>cairo_destroy_func_t</type></link> the type of function which is called when a
+data element is destroyed. It is passed the pointer to the data
+element and should free any memory and resources allocated for it.</para>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>data</parameter>&#160;:</term>
+<listitem><simpara> The data element being destroyed.
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

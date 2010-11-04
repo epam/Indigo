@@ -1,0 +1,63 @@
+<!-- ##### SECTION Title ##### -->
+PDF Surfaces
+
+<!-- ##### SECTION Short_Description ##### -->
+Rendering PDF documents
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The PDF surface is used to render cairo graphics to Adobe
+PDF files and is a multi-page vector surface backend.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<itemizedlist>
+<listitem>#cairo_surface_t</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO CAIRO_HAS_PDF_SURFACE ##### -->
+<para>
+Defined if the PDF surface backend is available.
+This macro can be used to conditionally compile backend-specific code.
+</para>
+
+
+
+<!-- ##### FUNCTION cairo_pdf_surface_create ##### -->
+<para>
+
+</para>
+
+@filename: 
+@width_in_points: 
+@height_in_points: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_pdf_surface_create_for_stream ##### -->
+<para>
+
+</para>
+
+@write_func: 
+@closure: 
+@width_in_points: 
+@height_in_points: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_pdf_surface_set_size ##### -->
+<para>
+
+</para>
+
+@surface: 
+@width_in_points: 
+@height_in_points: 
+
+

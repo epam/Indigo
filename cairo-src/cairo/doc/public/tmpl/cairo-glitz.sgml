@@ -1,0 +1,22 @@
+<!-- ##### SECTION Title ##### -->
+Glitz Surfaces
+
+<!-- ##### SECTION Short_Description ##### -->
+OpenGL accelerated rendering using the Glitz library
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The Glitz surface is used to render cairo graphics targeting the
+OpenGL hardware using the Glitz library.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<itemizedlist>
+<listitem>#cairo_surface_t</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+

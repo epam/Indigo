@@ -1,0 +1,272 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A7EDA5CF106251FB006CBFAF /* molecule_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA59E1062515D006CBFAF /* molecule_layout.cpp */; };
+		A7EDA5D0106251FB006CBFAF /* molecule_layout_graph_cycle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA59A1062515D006CBFAF /* molecule_layout_graph_cycle.cpp */; };
+		A7EDA5D1106251FB006CBFAF /* refinement_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5A01062515D006CBFAF /* refinement_state.cpp */; };
+		A7EDA5D2106251FB006CBFAF /* reaction_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA59F1062515D006CBFAF /* reaction_layout.cpp */; };
+		A7EDA5D3106251FB006CBFAF /* metalayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5961062515D006CBFAF /* metalayout.cpp */; };
+		A7EDA5D4106251FB006CBFAF /* molecule_layout_graph_assign.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5971062515D006CBFAF /* molecule_layout_graph_assign.cpp */; };
+		A7EDA5D5106251FB006CBFAF /* molecule_layout_graph_border.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5991062515D006CBFAF /* molecule_layout_graph_border.cpp */; };
+		A7EDA5D6106251FB006CBFAF /* molecule_layout_graph_refine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA59C1062515D006CBFAF /* molecule_layout_graph_refine.cpp */; };
+		A7EDA5D7106251FB006CBFAF /* attachment_layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5931062515D006CBFAF /* attachment_layout.cpp */; };
+		A7EDA5D8106251FB006CBFAF /* molecule_layout_graph_attach.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5981062515D006CBFAF /* molecule_layout_graph_attach.cpp */; };
+		A7EDA5D9106251FB006CBFAF /* molecule_layout_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA59D1062515D006CBFAF /* molecule_layout_graph.cpp */; };
+		A7EDA5DA106251FB006CBFAF /* molecule_layout_graph_geom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA59B1062515D006CBFAF /* molecule_layout_graph_geom.cpp */; };
+		A7EDA5DB106251FB006CBFAF /* layout_pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA5941062515D006CBFAF /* layout_pattern.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A7EDA5931062515D006CBFAF /* attachment_layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = attachment_layout.cpp; path = src/attachment_layout.cpp; sourceTree = "<group>"; };
+		A7EDA5941062515D006CBFAF /* layout_pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = layout_pattern.cpp; path = src/layout_pattern.cpp; sourceTree = "<group>"; };
+		A7EDA5951062515D006CBFAF /* layout_patterns.inc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.pascal; name = layout_patterns.inc; path = src/layout_patterns.inc; sourceTree = "<group>"; };
+		A7EDA5961062515D006CBFAF /* metalayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = metalayout.cpp; path = src/metalayout.cpp; sourceTree = "<group>"; };
+		A7EDA5971062515D006CBFAF /* molecule_layout_graph_assign.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_layout_graph_assign.cpp; path = src/molecule_layout_graph_assign.cpp; sourceTree = "<group>"; };
+		A7EDA5981062515D006CBFAF /* molecule_layout_graph_attach.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_layout_graph_attach.cpp; path = src/molecule_layout_graph_attach.cpp; sourceTree = "<group>"; };
+		A7EDA5991062515D006CBFAF /* molecule_layout_graph_border.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_layout_graph_border.cpp; path = src/molecule_layout_graph_border.cpp; sourceTree = "<group>"; };
+		A7EDA59A1062515D006CBFAF /* molecule_layout_graph_cycle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_layout_graph_cycle.cpp; path = src/molecule_layout_graph_cycle.cpp; sourceTree = "<group>"; };
+		A7EDA59B1062515D006CBFAF /* molecule_layout_graph_geom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_layout_graph_geom.cpp; path = src/molecule_layout_graph_geom.cpp; sourceTree = "<group>"; };
+		A7EDA59C1062515D006CBFAF /* molecule_layout_graph_refine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_layout_graph_refine.cpp; path = src/molecule_layout_graph_refine.cpp; sourceTree = "<group>"; };
+		A7EDA59D1062515D006CBFAF /* molecule_layout_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_layout_graph.cpp; path = src/molecule_layout_graph.cpp; sourceTree = "<group>"; };
+		A7EDA59E1062515D006CBFAF /* molecule_layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_layout.cpp; path = src/molecule_layout.cpp; sourceTree = "<group>"; };
+		A7EDA59F1062515D006CBFAF /* reaction_layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reaction_layout.cpp; path = src/reaction_layout.cpp; sourceTree = "<group>"; };
+		A7EDA5A01062515D006CBFAF /* refinement_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = refinement_state.cpp; path = src/refinement_state.cpp; sourceTree = "<group>"; };
+		A7EDA5A11062518B006CBFAF /* attachment_layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attachment_layout.h; sourceTree = "<group>"; };
+		A7EDA5A21062518B006CBFAF /* layout_pattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = layout_pattern.h; sourceTree = "<group>"; };
+		A7EDA5A31062518B006CBFAF /* metalayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metalayout.h; sourceTree = "<group>"; };
+		A7EDA5A41062518B006CBFAF /* molecule_layout_graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_layout_graph.h; sourceTree = "<group>"; };
+		A7EDA5A51062518B006CBFAF /* molecule_layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_layout.h; sourceTree = "<group>"; };
+		A7EDA5A61062518B006CBFAF /* reaction_layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reaction_layout.h; sourceTree = "<group>"; };
+		A7EDA5A71062518B006CBFAF /* refinement_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = refinement_state.h; sourceTree = "<group>"; };
+		A7EDA5CA106251C3006CBFAF /* liblayout.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblayout.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A7EDA5C8106251C3006CBFAF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A7EDA5851062512E006CBFAF = {
+			isa = PBXGroup;
+			children = (
+				A7EDA59210625145006CBFAF /* src */,
+				A7EDA5CB106251C3006CBFAF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A7EDA59210625145006CBFAF /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A7EDA5A11062518B006CBFAF /* attachment_layout.h */,
+				A7EDA5A21062518B006CBFAF /* layout_pattern.h */,
+				A7EDA5A31062518B006CBFAF /* metalayout.h */,
+				A7EDA5A41062518B006CBFAF /* molecule_layout_graph.h */,
+				A7EDA5A51062518B006CBFAF /* molecule_layout.h */,
+				A7EDA5A61062518B006CBFAF /* reaction_layout.h */,
+				A7EDA5A71062518B006CBFAF /* refinement_state.h */,
+				A7EDA5931062515D006CBFAF /* attachment_layout.cpp */,
+				A7EDA5941062515D006CBFAF /* layout_pattern.cpp */,
+				A7EDA5951062515D006CBFAF /* layout_patterns.inc */,
+				A7EDA5961062515D006CBFAF /* metalayout.cpp */,
+				A7EDA5971062515D006CBFAF /* molecule_layout_graph_assign.cpp */,
+				A7EDA5981062515D006CBFAF /* molecule_layout_graph_attach.cpp */,
+				A7EDA5991062515D006CBFAF /* molecule_layout_graph_border.cpp */,
+				A7EDA59A1062515D006CBFAF /* molecule_layout_graph_cycle.cpp */,
+				A7EDA59B1062515D006CBFAF /* molecule_layout_graph_geom.cpp */,
+				A7EDA59C1062515D006CBFAF /* molecule_layout_graph_refine.cpp */,
+				A7EDA59D1062515D006CBFAF /* molecule_layout_graph.cpp */,
+				A7EDA59E1062515D006CBFAF /* molecule_layout.cpp */,
+				A7EDA59F1062515D006CBFAF /* reaction_layout.cpp */,
+				A7EDA5A01062515D006CBFAF /* refinement_state.cpp */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		A7EDA5CB106251C3006CBFAF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A7EDA5CA106251C3006CBFAF /* liblayout.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A7EDA5C6106251C3006CBFAF /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A7EDA5C9106251C3006CBFAF /* layout */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7EDA5CE106251C4006CBFAF /* Build configuration list for PBXNativeTarget "layout" */;
+			buildPhases = (
+				A7EDA5C6106251C3006CBFAF /* Headers */,
+				A7EDA5C7106251C3006CBFAF /* Sources */,
+				A7EDA5C8106251C3006CBFAF /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = layout;
+			productName = layout;
+			productReference = A7EDA5CA106251C3006CBFAF /* liblayout.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A7EDA5871062512E006CBFAF /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = A7EDA58A1062512E006CBFAF /* Build configuration list for PBXProject "layout" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = A7EDA5851062512E006CBFAF;
+			productRefGroup = A7EDA5CB106251C3006CBFAF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A7EDA5C9106251C3006CBFAF /* layout */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A7EDA5C7106251C3006CBFAF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7EDA5CF106251FB006CBFAF /* molecule_layout.cpp in Sources */,
+				A7EDA5D0106251FB006CBFAF /* molecule_layout_graph_cycle.cpp in Sources */,
+				A7EDA5D1106251FB006CBFAF /* refinement_state.cpp in Sources */,
+				A7EDA5D2106251FB006CBFAF /* reaction_layout.cpp in Sources */,
+				A7EDA5D3106251FB006CBFAF /* metalayout.cpp in Sources */,
+				A7EDA5D4106251FB006CBFAF /* molecule_layout_graph_assign.cpp in Sources */,
+				A7EDA5D5106251FB006CBFAF /* molecule_layout_graph_border.cpp in Sources */,
+				A7EDA5D6106251FB006CBFAF /* molecule_layout_graph_refine.cpp in Sources */,
+				A7EDA5D7106251FB006CBFAF /* attachment_layout.cpp in Sources */,
+				A7EDA5D8106251FB006CBFAF /* molecule_layout_graph_attach.cpp in Sources */,
+				A7EDA5D9106251FB006CBFAF /* molecule_layout_graph.cpp in Sources */,
+				A7EDA5DA106251FB006CBFAF /* molecule_layout_graph_geom.cpp in Sources */,
+				A7EDA5DB106251FB006CBFAF /* layout_pattern.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A7EDA5881062512E006CBFAF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		A7EDA5891062512E006CBFAF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+		A7EDA5CC106251C3006CBFAF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../common,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
+				PREBINDING = NO;
+				PRODUCT_NAME = layout;
+				SDKROOT = "";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		A7EDA5CD106251C3006CBFAF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../common,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				PRODUCT_NAME = layout;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A7EDA58A1062512E006CBFAF /* Build configuration list for PBXProject "layout" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7EDA5881062512E006CBFAF /* Debug */,
+				A7EDA5891062512E006CBFAF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A7EDA5CE106251C4006CBFAF /* Build configuration list for PBXNativeTarget "layout" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7EDA5CC106251C3006CBFAF /* Debug */,
+				A7EDA5CD106251C3006CBFAF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A7EDA5871062512E006CBFAF /* Project object */;
+}

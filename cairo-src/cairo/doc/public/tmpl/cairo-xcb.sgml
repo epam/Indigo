@@ -1,0 +1,26 @@
+<!-- ##### SECTION Title ##### -->
+XCB Surfaces
+
+<!-- ##### SECTION Short_Description ##### -->
+X Window System rendering using the XCB library
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The XCB surface is used to render cairo graphics to X Window System
+windows and pixmaps using the XCB library.
+</para>
+<para>
+Note that the XCB surface automatically takes advantage of the X render
+extension if it is available.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<itemizedlist>
+<listitem>#cairo_surface_t</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+

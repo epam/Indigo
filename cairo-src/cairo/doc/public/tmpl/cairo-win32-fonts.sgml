@@ -1,0 +1,103 @@
+<!-- ##### SECTION Title ##### -->
+Win32 Fonts
+
+<!-- ##### SECTION Short_Description ##### -->
+Font support for Microsoft Windows
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The Microsoft Windows font backend is primarily used to render text on
+Microsoft Windows systems.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<itemizedlist>
+<listitem>#cairo_font_face_t</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO CAIRO_HAS_WIN32_FONT ##### -->
+<para>
+Defined if the Microsoft Windows font backend is available.
+This macro can be used to conditionally compile backend-specific code.
+</para>
+
+
+
+<!-- ##### FUNCTION cairo_win32_font_face_create_for_logfontw ##### -->
+<para>
+
+</para>
+
+@logfont: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_win32_font_face_create_for_hfont ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_win32_font_face_create_for_logfontw_hfont ##### -->
+<para>
+
+</para>
+
+@logfont: 
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_win32_scaled_font_select_font ##### -->
+<para>
+
+</para>
+
+@scaled_font: 
+@hdc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_win32_scaled_font_done_font ##### -->
+<para>
+
+</para>
+
+@scaled_font: 
+
+
+<!-- ##### FUNCTION cairo_win32_scaled_font_get_metrics_factor ##### -->
+<para>
+
+</para>
+
+@scaled_font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_win32_scaled_font_get_logical_to_device ##### -->
+<para>
+
+</para>
+
+@scaled_font: 
+@logical_to_device: 
+
+
+<!-- ##### FUNCTION cairo_win32_scaled_font_get_device_to_logical ##### -->
+<para>
+
+</para>
+
+@scaled_font: 
+@device_to_logical: 
+
+

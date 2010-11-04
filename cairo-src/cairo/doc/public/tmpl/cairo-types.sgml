@@ -1,0 +1,40 @@
+<!-- ##### SECTION Title ##### -->
+Types
+
+<!-- ##### SECTION Short_Description ##### -->
+Generic data types
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Generic data types used in the cairo API
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### TYPEDEF cairo_bool_t ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT cairo_user_data_key_t ##### -->
+<para>
+
+</para>
+
+@unused: 
+
+<!-- ##### USER_FUNCTION cairo_destroy_func_t ##### -->
+<para>
+
+</para>
+
+@data: 
+
+

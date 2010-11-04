@@ -1,0 +1,338 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		81611BBC127C1CE900D787C7 /* libindigo-renderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 81611BB7127C1CB200D787C7 /* libindigo-renderer.a */; };
+		81611BC2127C1D5C00D787C7 /* libcairo.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 81611BC1127C1D5C00D787C7 /* libcairo.dylib */; };
+		81611BC4127C1D7000D787C7 /* indigo_renderer_jni.c in Sources */ = {isa = PBXBuildFile; fileRef = 81611BC3127C1D7000D787C7 /* indigo_renderer_jni.c */; };
+		81611BE7127C25B600D787C7 /* librender2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 81611BE6127C259E00D787C7 /* librender2d.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		81611BB6127C1CB200D787C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81611BB1127C1CB200D787C7 /* indigo-renderer-api.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 81BBA9C0127B4338004CD27A;
+			remoteInfo = "indigo-renderer-static";
+		};
+		81611BB8127C1CB200D787C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81611BB1127C1CB200D787C7 /* indigo-renderer-api.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 81BBA9C9127B435A004CD27A;
+			remoteInfo = "indigo-renderer-shared";
+		};
+		81611BE5127C259E00D787C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81611BE1127C259E00D787C7 /* render2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A756FCDE11860A5D00B3B2DE;
+			remoteInfo = render2d;
+		};
+		81611BE8127C25C700D787C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81611BB1127C1CB200D787C7 /* indigo-renderer-api.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 81BBA9BF127B4338004CD27A;
+			remoteInfo = "indigo-renderer-static";
+		};
+		81611BEA127C25CA00D787C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81611BE1127C259E00D787C7 /* render2d.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A756FCDD11860A5D00B3B2DE;
+			remoteInfo = render2d;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		81611BA2127C1BD300D787C7 /* libindigo-renderer-jni.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libindigo-renderer-jni.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
+		81611BB1127C1CB200D787C7 /* indigo-renderer-api.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "indigo-renderer-api.xcodeproj"; path = "../indigo-renderer-api.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		81611BC1127C1D5C00D787C7 /* libcairo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcairo.dylib; path = /opt/local/lib/libcairo.dylib; sourceTree = "<absolute>"; };
+		81611BC3127C1D7000D787C7 /* indigo_renderer_jni.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = indigo_renderer_jni.c; sourceTree = "<group>"; };
+		81611BE1127C259E00D787C7 /* render2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = render2d.xcodeproj; path = ../../../render2d/render2d.xcodeproj; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		81611BA0127C1BD300D787C7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81611BE7127C25B600D787C7 /* librender2d.a in Frameworks */,
+				81611BBC127C1CE900D787C7 /* libindigo-renderer.a in Frameworks */,
+				81611BC2127C1D5C00D787C7 /* libcairo.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		81611B8B127C1B8200D787C7 = {
+			isa = PBXGroup;
+			children = (
+				81611BE1127C259E00D787C7 /* render2d.xcodeproj */,
+				81611BC3127C1D7000D787C7 /* indigo_renderer_jni.c */,
+				81611BC1127C1D5C00D787C7 /* libcairo.dylib */,
+				81611BB1127C1CB200D787C7 /* indigo-renderer-api.xcodeproj */,
+				81611BA3127C1BD300D787C7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		81611BA3127C1BD300D787C7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				81611BA2127C1BD300D787C7 /* libindigo-renderer-jni.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		81611BB2127C1CB200D787C7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				81611BB7127C1CB200D787C7 /* libindigo-renderer.a */,
+				81611BB9127C1CB200D787C7 /* libindigo-renderer.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		81611BE2127C259E00D787C7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				81611BE6127C259E00D787C7 /* librender2d.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		81611B9E127C1BD300D787C7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		81611BA1127C1BD300D787C7 /* indigo-renderer-jni */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 81611BA6127C1BD300D787C7 /* Build configuration list for PBXNativeTarget "indigo-renderer-jni" */;
+			buildPhases = (
+				81611B9E127C1BD300D787C7 /* Headers */,
+				81611B9F127C1BD300D787C7 /* Sources */,
+				81611BA0127C1BD300D787C7 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				81611BE9127C25C700D787C7 /* PBXTargetDependency */,
+				81611BEB127C25CA00D787C7 /* PBXTargetDependency */,
+			);
+			name = "indigo-renderer-jni";
+			productName = "indigo-renderer-jni";
+			productReference = 81611BA2127C1BD300D787C7 /* libindigo-renderer-jni.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		81611B8D127C1B8200D787C7 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 81611B90127C1B8200D787C7 /* Build configuration list for PBXProject "indigo-renderer-jni" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 81611B8B127C1B8200D787C7;
+			productRefGroup = 81611BA3127C1BD300D787C7 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 81611BB2127C1CB200D787C7 /* Products */;
+					ProjectRef = 81611BB1127C1CB200D787C7 /* indigo-renderer-api.xcodeproj */;
+				},
+				{
+					ProductGroup = 81611BE2127C259E00D787C7 /* Products */;
+					ProjectRef = 81611BE1127C259E00D787C7 /* render2d.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				81611BA1127C1BD300D787C7 /* indigo-renderer-jni */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		81611BB7127C1CB200D787C7 /* libindigo-renderer.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libindigo-renderer.a";
+			remoteRef = 81611BB6127C1CB200D787C7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		81611BB9127C1CB200D787C7 /* libindigo-renderer.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = "libindigo-renderer.dylib";
+			remoteRef = 81611BB8127C1CB200D787C7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		81611BE6127C259E00D787C7 /* librender2d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librender2d.a;
+			remoteRef = 81611BE5127C259E00D787C7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		81611B9F127C1BD300D787C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81611BC4127C1D7000D787C7 /* indigo_renderer_jni.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		81611BE9127C25C700D787C7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "indigo-renderer-static";
+			targetProxy = 81611BE8127C25C700D787C7 /* PBXContainerItemProxy */;
+		};
+		81611BEB127C25CA00D787C7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = render2d;
+			targetProxy = 81611BEA127C25CA00D787C7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		81611B8E127C1B8200D787C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				HEADER_SEARCH_PATHS = (
+					../..,
+					..,
+					../../jni,
+					../../..,
+					../../../common,
+					../../../common/jni,
+					../../../common/jni/osx,
+				);
+			};
+			name = Debug;
+		};
+		81611B8F127C1B8200D787C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				HEADER_SEARCH_PATHS = (
+					../..,
+					..,
+					../../jni,
+					../../..,
+					../../../common,
+					../../../common/jni,
+					../../../common/jni/osx,
+				);
+			};
+			name = Release;
+		};
+		81611BA4127C1BD300D787C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_PREFIX = lib;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+					"-flat_namespace",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "indigo-renderer-jni";
+			};
+			name = Debug;
+		};
+		81611BA5127C1BD300D787C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-undefined",
+					dynamic_lookup,
+					"-flat_namespace",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "indigo-renderer-jni";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		81611B90127C1B8200D787C7 /* Build configuration list for PBXProject "indigo-renderer-jni" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				81611B8E127C1B8200D787C7 /* Debug */,
+				81611B8F127C1B8200D787C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		81611BA6127C1BD300D787C7 /* Build configuration list for PBXNativeTarget "indigo-renderer-jni" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				81611BA4127C1BD300D787C7 /* Debug */,
+				81611BA5127C1BD300D787C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 81611B8D127C1B8200D787C7 /* Project object */;
+}

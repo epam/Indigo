@@ -1,0 +1,74 @@
+dnl
+dnl Non-failing checks for functions, headers, libraries, etc go here
+dnl
+
+dnl ====================================================================
+dnl Feature checks
+dnl ====================================================================
+
+AM_CONDITIONAL(CROSS_COMPILING, test "x$cross_compiling" = "xyes")
+CAIRO_BIGENDIAN
+CAIRO_CHECK_NATIVE_ATOMIC_PRIMITIVES
+CAIRO_CHECK_ATOMIC_OP_NEEDS_MEMORY_BARRIER
+
+AC_MSG_CHECKING([for native Win32])
+case "$host" in
+  *-*-mingw*)
+    cairo_os_win32=yes
+    ;;
+  *)
+    cairo_os_win32=no
+    ;;
+esac
+AC_MSG_RESULT([$cairo_os_win32])
+AM_CONDITIONAL(OS_WIN32, test "$cairo_os_win32" = "yes")
+
+AC_MSG_CHECKING([for Sun Solaris (non-POSIX ctime_r)])
+case "$host" in
+    *-*-solaris*)
+	CFLAGS="$CFLAGS -D_POSIX_PTHREAD_SEMANTICS"
+	solaris_posix_pthread=yes
+	;;
+    *)
+	solaris_posix_pthread=no
+	;;
+esac
+AC_MSG_RESULT([$solaris_posix_pthread])
+
+dnl ====================================================================
+dnl Library checks
+dnl ====================================================================
+
+AC_CHECK_LIBM
+LIBS="$LIBS $LIBM"
+
+AC_CHECK_LIB(rt, sched_yield, [RT_LIBS=-lrt], [RT_LIBS=])
+CAIROPERF_LIBS=$RT_LIBS
+AC_SUBST(CAIROPERF_LIBS)
+
+dnl ====================================================================
+dnl Header/function checks
+dnl ====================================================================
+
+dnl Checks for precise integer types
+AC_CHECK_HEADERS([stdint.h inttypes.h sys/int_types.h])
+AC_CHECK_TYPES([uint64_t, uint128_t])
+
+dnl Check for socket support for any2ppm daemon
+AC_CHECK_HEADERS([fcntl.h unistd.h signal.h sys/stat.h sys/socket.h sys/poll.h sys/un.h])
+
+dnl check for CPU affinity support
+AC_CHECK_HEADERS([sched.h],
+	[AC_CHECK_FUNCS([sched_getaffinity])])
+
+dnl check for GNU-extensions to fenv
+AC_CHECK_HEADER(fenv.h,
+	[AC_CHECK_FUNCS(feenableexcept fedisableexcept)])
+
+dnl check for misc headers and functions
+AC_CHECK_HEADERS([libgen.h byteswap.h signal.h setjmp.h])
+AC_CHECK_FUNCS([vasnprintf link ctime_r drand48 flockfile])
+
+dnl check for win32 headers (this detects mingw as well)
+AC_CHECK_HEADERS([windows.h], have_windows=yes, have_windows=no)
+
