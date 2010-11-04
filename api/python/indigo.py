@@ -414,14 +414,14 @@ class Indigo:
     self.createQueryReaction = self._static_obj(self._lib.indigoCreateQueryReaction)
     self.createArray = self._static_obj(self._lib.indigoCreateArray)
 
-    self.commonBits = self._static_int_int_int(self._lib.indigoCommonBits)
+    self.commonBits = self._static_int_obj_obj(self._lib.indigoCommonBits)
 
     self.iterateSDFile = self._static_obj_string(self._lib.indigoIterateSDFile)
     self.iterateRDFile = self._static_obj_string(self._lib.indigoIterateRDFile)
     self.iterateSmilesFile = self._static_obj_string(self._lib.indigoIterateSmilesFile)
 
     self.matchSubstructure = self._static_obj_obj_obj(self._lib.indigoMatchSubstructure)
-    self.countSubstructureMatches = self._static_int(self._lib.indigoCountSubstructureMatches)
+    self.countSubstructureMatches = self._static_int_obj_obj(self._lib.indigoCountSubstructureMatches)
     self.extractCommonScaffold = self._static_obj_obj_string(self._lib.indigoExtractCommonScaffold)
     self.decomposeMolecules = self._static_obj_obj_obj(self._lib.indigoDecomposeMolecules)
     self.reactionProductEnumerate = self._static_obj_obj_obj(self._lib.indigoReactionProductEnumerate)
@@ -535,7 +535,7 @@ class Indigo:
       return self._checkResult(func())
     return newfunc
 
-  def _static_int_int_int (self, func):
+  def _static_int_obj_obj (self, func):
     def newfunc (item1, item2):
       self._setSID()
       return self._checkResult(func(item1.id, item2.id))
