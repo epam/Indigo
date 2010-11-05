@@ -99,7 +99,6 @@
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
             <linkerOptionItem>-lstdc++</linkerOptionItem>
-            <linkerLibStdlibItem>DynamicLinking</linkerLibStdlibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -192,7 +191,6 @@
                             OP="dist/Release32/GNU-Linux-x86/libgraph.a">
               </makeArtifact>
             </linkerLibProjectItem>
-            <linkerLibStdlibItem>DynamicLinking</linkerLibStdlibItem>
             <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerOptionItem>-lstdc++</linkerOptionItem>
@@ -288,7 +286,6 @@
                             OP="dist/Release64/GNU-Linux-x86/libgraph.a">
               </makeArtifact>
             </linkerLibProjectItem>
-            <linkerLibStdlibItem>DynamicLinking</linkerLibStdlibItem>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
             <linkerOptionItem>-lstdc++</linkerOptionItem>

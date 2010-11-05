@@ -12,10 +12,6 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef _WIN32
-#include <dlfcn.h>
-#endif
-
 #include "indigo_internal.h"
 #include "molecule/molecule_fingerprint.h"
 
@@ -163,18 +159,6 @@ int Indigo::countObjects ()
    OsLocker lock(_objects_lock);
 
    return _objects.size();
-}
-
-CEXPORT int indigoRtldGlobal (const char *path)
-{
-   INDIGO_BEGIN
-   {
-#ifndef _WIN32
-      if (dlopen(path, RTLD_NOW | RTLD_NOLOAD | RTLD_GLOBAL) == NULL)
-         throw IndigoError("%s", dlerror());
-#endif
-   }
-   INDIGO_END(0, -1)
 }
 
 IndigoError::IndigoError (const char *format, ...) :

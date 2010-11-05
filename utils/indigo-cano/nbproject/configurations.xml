@@ -94,7 +94,6 @@
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
             <linkerOptionItem>-lstdc++</linkerOptionItem>
-            <linkerLibStdlibItem>DynamicLinking</linkerLibStdlibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

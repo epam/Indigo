@@ -51,7 +51,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../../api/dist/ReleaseStatic32/GNU-Linux-x86/libindigo.a ../../layout/dist/Release32/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release32/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a -ldl -lz -lpthread -lstdc++
+LDLIBSOPTIONS=../../api/dist/ReleaseStatic32/GNU-Linux-x86/libindigo.a ../../layout/dist/Release32/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release32/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a -lz -lpthread -lstdc++
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

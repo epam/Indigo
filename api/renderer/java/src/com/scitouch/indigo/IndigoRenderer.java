@@ -30,7 +30,6 @@ public class IndigoRenderer
       else // os == Indigo.OS_WINDOWS
          System.load(full_dll_path + File.separator + "indigo-renderer-jni.dll");
 
-      System.out.println(" done");
       _sid = indigo.getSid();
       _indigo = indigo;
    }

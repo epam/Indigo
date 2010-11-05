@@ -110,6 +110,7 @@
             <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerOptionItem>-lstdc++</linkerOptionItem>
+            <linkerLibStdlibItem>DynamicLinking</linkerLibStdlibItem>
           </linkerLibItems>
           <commandLine>-rdynamic</commandLine>
         </linkerTool>
@@ -223,6 +224,7 @@
             <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerOptionItem>-lstdc++</linkerOptionItem>
+            <linkerLibStdlibItem>DynamicLinking</linkerLibStdlibItem>
           </linkerLibItems>
           <commandLine>-rdynamic</commandLine>
         </linkerTool>
@@ -336,6 +338,7 @@
             <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerOptionItem>-lstdc++</linkerOptionItem>
+            <linkerLibStdlibItem>DynamicLinking</linkerLibStdlibItem>
           </linkerLibItems>
           <commandLine>-rdynamic</commandLine>
         </linkerTool>

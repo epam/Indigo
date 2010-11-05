@@ -17,7 +17,7 @@
 #include "indigo.h"
 #include "indigo_jni_base.h"
 
-static void _indigoThrowException (JNIEnv *env, const char *message)
+void indigoThrowJNIException (JNIEnv *env, const char *message)
 {
    jclass cls = (*env)->FindClass(env, "com/scitouch/indigo/IndigoException");
 
@@ -31,7 +31,7 @@ static void _indigoThrowException (JNIEnv *env, const char *message)
 static void _indigoErrorHandler (const char *message, void *context)
 {
    JNIEnv *env = (JNIEnv *)context;
-   _indigoThrowException(env, message);
+   indigoThrowJNIException(env, message);
 }
 
 JNIEXPORT void indigoJniSetSession (JNIEnv *env, jobject obj)
@@ -54,4 +54,3 @@ static const char *_className (JNIEnv *env, jobject obj)
    jstring clsName=(jstring)((*env)->CallObjectMethod(env, cls, classNameMethodID));
    return (*env)->GetStringUTFChars(env, clsName, NULL);
 }*/
-

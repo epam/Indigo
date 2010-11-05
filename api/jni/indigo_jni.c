@@ -12,6 +12,10 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#ifndef _WIN32
+#include <dlfcn.h>
+#endif
+
 #include <jni.h>
 
 #include "indigo.h"
@@ -265,4 +269,20 @@ JNIEXPORT jbyteArray JNINAME(indigoToBuffer) (JNIEnv *env, jobject obj, jint han
 }
 
 JNI_FUNC_jint_jint_jint(indigoReactionProductEnumerate);
-JNI_FUNC_jint_jstring(indigoRtldGlobal);
+
+JNIEXPORT jint JNINAME(indigoRtldGlobal) (JNIEnv *env, jobject obj, jstring j_param1)
+{
+#ifndef _WIN32
+   const char *path;
+
+   indigoJniSetSession(env, obj);
+   path = (*env)->GetStringUTFChars(env, j_param1, NULL);
+   if (dlopen(path, RTLD_NOW | RTLD_NOLOAD | RTLD_GLOBAL) == NULL)
+   {
+      indigoThrowJNIException(env, dlerror());
+      return -1;
+   }
+   (*env)->ReleaseStringUTFChars(env, j_param1, path);
+#endif
+   return 1;
+}

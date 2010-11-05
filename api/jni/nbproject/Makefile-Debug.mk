@@ -51,7 +51,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../dist/DebugStatic/GNU-Linux-x86/libindigo.a ../../render2d/dist/Debug/GNU-Linux-x86/librender2d.a ../../layout/dist/Debug/GNU-Linux-x86/liblayout.a ../../reaction/dist/Debug/GNU-Linux-x86/libreaction.a ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a -lm -lz -lpthread -lstdc++
+LDLIBSOPTIONS=../dist/DebugStatic/GNU-Linux-x86/libindigo.a ../../render2d/dist/Debug/GNU-Linux-x86/librender2d.a ../../layout/dist/Debug/GNU-Linux-x86/liblayout.a ../../reaction/dist/Debug/GNU-Linux-x86/libreaction.a ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a -lm -lz -lpthread -lstdc++ -ldl
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
