@@ -98,8 +98,10 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool b
    setSingleSource(color);
    moveTo(ti.bbp);
    moveToRel(ti.relpos);
+   _tlock.lock();
    cairo_text_path(_cr, ti.text.ptr());
    bbIncludePath(false);
+   _tlock.unlock();
    cairo_new_path(_cr);
    moveTo(ti.bbp);
    moveToRel(ti.relpos);
