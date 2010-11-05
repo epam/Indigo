@@ -456,6 +456,8 @@ CEXPORT const char * indigoRawData (int handler)
 
          self.tmp_string.copy(data.getRawData());
       }
+      else if (obj.type == IndigoObject::PROPERTY)
+         self.tmp_string.copy(((IndigoProperty &)obj).getValue());
       else
          throw IndigoError("%s does not have raw data", obj.debugInfo());
       self.tmp_string.push(0);

@@ -166,6 +166,11 @@ const char * IndigoProperty::getName ()
    return _props.key(_idx);
 }
 
+Array<char> & IndigoProperty::getValue ()
+{
+   return _props.value(_idx);
+}
+
 int IndigoProperty::getIndex ()
 {
    return _idx;

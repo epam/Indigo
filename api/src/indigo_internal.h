@@ -779,6 +779,8 @@ public:
    virtual const char * getName ();
    virtual int getIndex ();
 
+   Array<char> & getValue ();
+
 protected:
    RedBlackStringObjMap< Array<char> > &_props;
    int _idx;
