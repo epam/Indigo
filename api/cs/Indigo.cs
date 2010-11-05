@@ -14,6 +14,11 @@ namespace com.scitouch.indigo
 
       private long _sid = -1;
 
+      public long getSID ()
+      {
+         return _sid;
+      }
+
       public String version ()
       {
          return new String(indigoVersion());
@@ -31,6 +36,8 @@ namespace com.scitouch.indigo
          return dllpath;
       }
 
+      private ErrorHandler _errh;
+
       private void init (string prefix)
       {
          string subprefix = (IntPtr.Size == 8) ? "Win/x64/" : "Win/x86/";
@@ -41,7 +48,8 @@ namespace com.scitouch.indigo
 
          _sid = indigoAllocSessionId();
          indigoSetSessionId(_sid);
-         indigoSetErrorHandler(new ErrorHandler(_handleError), this);
+         _errh = new ErrorHandler(_handleError);
+         indigoSetErrorHandler(_errh, this);
       }
 
       public Indigo (string prefix)

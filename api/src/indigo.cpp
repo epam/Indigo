@@ -48,12 +48,20 @@ Indigo::Indigo ()
    fp_params.ord_qwords = 25;
 }
 
-Indigo::~Indigo ()
+void Indigo::removeAllObjects ()
 {
+   OsLocker lock(_objects_lock);
    int i;
 
    for (i = _objects.begin(); i != _objects.end(); i = _objects.next(i))
       delete _objects.value(i);
+
+   _objects.clear();
+}
+
+Indigo::~Indigo ()
+{
+   removeAllObjects();
 }
 
 CEXPORT qword indigoAllocSessionId ()
@@ -68,6 +76,9 @@ CEXPORT void indigoSetSessionId (qword id)
 
 CEXPORT void indigoReleaseSessionId (qword id)
 {
+   TL_SET_SESSION_ID(id);
+   TL_GET(Indigo, indigo_self);
+   indigo_self.removeAllObjects();
    TL_RELEASE_SESSION_ID(id);
 }
 

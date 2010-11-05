@@ -6,7 +6,7 @@ using System.IO;
 
 namespace com.scitouch.indigo
 {
-   public unsafe class IndigoObject : IEnumerable
+   public unsafe class IndigoObject : IEnumerable, IDisposable
    {
       public int self;
       private Indigo dispatcher;
@@ -26,8 +26,15 @@ namespace com.scitouch.indigo
       {
          if (self >= 0)
          {
-            dispatcher.free(self);
-            self = -1;
+            // Check that the session is still alive
+            // (.NET has no problem disposing referenced
+            // objects before the objects that reference to them)
+            if (dispatcher.getSID() >= 0)
+            {
+               dispatcher.setSessionID();
+               dispatcher.free(self);
+               self = -1;
+            }
          }
       }
 

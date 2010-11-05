@@ -828,6 +828,8 @@ public:
 
    DLLEXPORT void removeObject (int id);
 
+   DLLEXPORT void removeAllObjects ();
+
    Array<char> tmp_string;
 
    ProductEnumeratorParams rpe_params;
