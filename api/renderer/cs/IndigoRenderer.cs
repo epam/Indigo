@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace com.scitouch.indigo
+namespace com.gga.indigo
 {
    public unsafe class IndigoRenderer
    {
