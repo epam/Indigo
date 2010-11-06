@@ -200,12 +200,12 @@ CEXPORT const char * indigoRxnfile (int reaction);
 
 // Automatic reaction atom-to-atom mapping
 // mode is one of the following:
-//    "discard" : discards the existing mappings entirely and considers only
+//    "discard" : discards the existing mapping entirely and considers only
 //                the existing reaction centers (the default)
 //    "keep"    : keeps the existing mapping and maps unmapped atoms
 //    "alter"   : alters the existing mapping, and maps the rest of the
 //                reaction but may change the existing mapping
-//    "clear"   : removes the mappings from the reaction.
+//    "clear"   : removes the mapping from the reaction.
 CEXPORT int indigoAutomap (int reaction, const char *mode);
 
 /* Accessing a molecule */
@@ -220,7 +220,7 @@ CEXPORT int indigoIsPseudoatom (int atom);
 CEXPORT int indigoIsRSite (int atom);
 CEXPORT int indigoSingleAllowedRGroup (int rsite);
 
-// Applicable to an R-Group, not to a molecule
+// Applicable to an R-Group, but not to a molecule
 CEXPORT int indigoIterateRGroupFragments (int rgroup);
 CEXPORT int indigoCountAttachmentPoints (int rgroup);
 
@@ -312,6 +312,16 @@ CEXPORT const char * indigoCheckAmbiguousH (int handle);
 //   indigoToString() -- to get hexadecimal representation
 //   indigoToBuffer() -- to get raw byte data
 //   indigoSimilarity() -- to calculate similarity with another fingerprint
+// The following fingerprint types are available:
+//   "sim"     -- "Similarity fingerprint", useful for calculating
+//                 similarity measures (the default)
+//   "sub"     -- "Substructure fingerprint", useful for substructure screening
+//   "sub-res" -- "Resonance substructure fingerprint", useful for resonance
+//                 substructure screening
+//   "sub-tau" -- "Tautomer substructure fingerprint", useful for tautomer
+//                 substructure screening
+//   "full"    -- "Full fingerprint", which has all the mentioned
+//                 fingerprint types included
 CEXPORT int indigoFingerprint (int item, const char *type);
 
 // Counts the nonzero (i.e. one) bits in a fingerprint
