@@ -21,7 +21,7 @@
 #include "indigo.h"
 #include "indigo_jni_base.h"
 
-#define JNINAME(name) JNICALL Java_com_scitouch_indigo_Indigo_##name
+#define JNINAME(name) JNICALL Java_com_gga_indigo_Indigo_##name
 
 JNIEXPORT jstring JNINAME(version) (JNIEnv *env, jobject obj)
 {

@@ -19,7 +19,7 @@
 
 void indigoThrowJNIException (JNIEnv *env, const char *message)
 {
-   jclass cls = (*env)->FindClass(env, "com/scitouch/indigo/IndigoException");
+   jclass cls = (*env)->FindClass(env, "com/gga/indigo/IndigoException");
 
    if (cls == NULL)
       return;

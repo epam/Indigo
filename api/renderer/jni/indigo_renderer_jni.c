@@ -17,7 +17,7 @@
 #include "indigo-renderer.h"
 #include "indigo_jni_base.h"
 
-#define JNINAME(name) JNICALL Java_com_scitouch_indigo_IndigoRenderer_##name
+#define JNINAME(name) JNICALL Java_com_gga_indigo_IndigoRenderer_##name
 
 JNI_FUNC_jint_jint_jint(indigoRender);
 JNI_FUNC_jint_jint_jstring(indigoRenderToFile);
