@@ -21,6 +21,8 @@
 #include "reaction/reaction_highlighting.h"
 #include "molecule/molfile_saver.h"
 
+using namespace indigo;
+
 RxnfileSaver::RxnfileSaver(Output &output) : 
    highlighting(0),
    _output(output)

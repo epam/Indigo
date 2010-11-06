@@ -17,6 +17,8 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 class Graph;
 
 class Filter
@@ -60,5 +62,7 @@ protected:
 private:
    Filter (const Filter &); // no implicit copy
 };
+
+}
 
 #endif

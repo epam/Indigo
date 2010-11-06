@@ -24,6 +24,8 @@
 
 #include "graph/dfs_walk.h"
 
+using namespace indigo;
+
 CmfSaver::CmfSaver (LzwDict &dict, Output &output) :
 TL_CP_GET(_atom_sequence)
 {

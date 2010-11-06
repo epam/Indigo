@@ -18,6 +18,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
+namespace indigo {
+
 class Graph;
 class Filter;
 
@@ -66,5 +68,7 @@ protected:
 private:
    GraphHighlighting (const GraphHighlighting &); // no implicit copy
 };
+
+}
 
 #endif

@@ -17,6 +17,8 @@
 
 #include "molecule/base_molecule.h"
 
+namespace indigo {
+
 class Molecule : public BaseMolecule
 {      
 public:
@@ -156,5 +158,7 @@ protected:
 private:
    Molecule (const Molecule &); // no implicit copy
 };
+
+}
 
 #endif

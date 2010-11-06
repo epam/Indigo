@@ -32,6 +32,8 @@
 #include "graph/graph.h"
 #include "molecule/query_molecule.h"
 
+using namespace indigo;
+
 MoleculeSubstructureMatcher::MarkushContext::MarkushContext (QueryMolecule &query_, BaseMolecule &target_) :
 TL_CP_GET(query),
 TL_CP_GET(query_marking),

@@ -15,6 +15,8 @@
 #ifndef __icr_saver__
 #define __icr_saver__
 
+namespace indigo {
+
 class Reaction;
 class Output;
 
@@ -38,5 +40,7 @@ protected:
 private:
    IcrSaver (const IcrSaver &); // no implicit copy
 };
+
+}
 
 #endif

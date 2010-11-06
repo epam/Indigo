@@ -19,6 +19,8 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 
+namespace indigo {
+
 //class for searching scaffold molecule from molecules set
 class MoleculeScaffoldDetection: public ScaffoldDetection {
    public:
@@ -88,5 +90,7 @@ public:
 
    DEF_ERROR("Molecule Scaffold detection");
 };
+
+}
 
 #endif

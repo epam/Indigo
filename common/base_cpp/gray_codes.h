@@ -18,6 +18,8 @@
 #include "base_c/defs.h"
 #include "base_cpp/tlscont.h"
 
+namespace indigo {
+
 // Enumerate all gray codes starting with zero without loops
 class GrayCodesEnumerator
 {
@@ -41,5 +43,7 @@ private:
    bool _needFullCode;
    int  _bitChangeIndex;
 };
+
+}
 
 #endif

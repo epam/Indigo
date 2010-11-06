@@ -14,6 +14,8 @@
 
 #include "layout/molecule_layout_graph.h"
 
+using namespace indigo;
+
 MoleculeLayoutGraph::Cycle::Cycle () :
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges)

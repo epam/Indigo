@@ -17,6 +17,8 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 template <typename T> class PtrArray
 {
 public:
@@ -131,5 +133,7 @@ protected:
 private:
    PtrArray (const PtrArray &); // no implicit copy
 };
+
+}
 
 #endif

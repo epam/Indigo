@@ -22,6 +22,8 @@
 #include "base_cpp/d_bitset.h"
 #include "graph/graph_perfect_matching.h"
 
+namespace indigo {
+
 class BaseMolecule;
 class Molecule;
 class Scanner;
@@ -296,5 +298,6 @@ private:
    Molecule &_mol;
 };
 
+}
 
 #endif // __molecule_dearom_h__

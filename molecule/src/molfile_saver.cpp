@@ -22,6 +22,8 @@
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 MolfileSaver::MolfileSaver (Output &output) : highlighting(0),
 reactionAtomMapping(0),
 reactionAtomInversion(0),

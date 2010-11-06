@@ -32,10 +32,16 @@
 #include "option_manager.h"
 #include "molecule/molecule_fingerprint.h"
 
+using namespace indigo;
+
+namespace indigo
+{
 class Output;
 class Scanner;
 class SdfLoader;
 class RdfLoader;
+}
+
 class IndigoAtom;
 class IndigoRGroup;
 class IndigoArray;

@@ -17,6 +17,8 @@
 
 #include "graph/graph_decomposer.h"
 
+namespace indigo {
+
 class BaseMolecule;
 
 class MoleculeDecomposer : public GraphDecomposer
@@ -31,5 +33,7 @@ public:
 protected:
    BaseMolecule &_mol;
 };
+
+}
 
 #endif

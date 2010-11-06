@@ -17,6 +17,7 @@
 #include "graph/biconnected_decomposer.h"
 #include "base_cpp/tlscont.h"
 
+using namespace indigo;
 
 void CycleBasis::create(const Graph& graph) {
    QS_DEF(Array<int>, mapping_out);

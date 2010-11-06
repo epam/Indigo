@@ -15,12 +15,17 @@
 #ifndef __rowid_loader_h__
 #define __rowid_loader_h__
 
-class Molecule;
-class Scanner;
-
 #include "base_cpp/bitinworker.h"
 #include "lzw/lzw_dictionary.h"
 #include "lzw/lzw_decoder.h"
+
+using namespace indigo;
+
+namespace indigo
+{
+   class Molecule;
+   class Scanner;
+}
 
 class RowIDLoader
 {

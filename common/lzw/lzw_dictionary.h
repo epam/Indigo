@@ -19,6 +19,8 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/tlscont.h"
 
+namespace indigo {
+
 class Output;
 class Scanner;
 
@@ -110,5 +112,7 @@ private:
    LzwDict( const LzwDict & );
 
 };
+
+}
 
 #endif

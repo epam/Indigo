@@ -12,9 +12,11 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include <string.h>
+
 #include "base_cpp/smart_output.h"
 
-#include <string.h>
+using namespace indigo;
 
 SmartTableOutput::SmartTableOutput (Output &output, bool use_smart_printing) :
    TL_CP_GET(_lines),

@@ -19,6 +19,8 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 
+namespace indigo {
+
 class Reaction;
 class QueryReaction;
 
@@ -139,5 +141,6 @@ private:
    BaseReaction(const BaseReaction&);//no implicit copy
 };
 
+}
 
 #endif

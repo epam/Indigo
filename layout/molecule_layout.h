@@ -20,6 +20,8 @@
 #include "layout/molecule_layout_graph.h"
 #include "layout/metalayout.h"
 
+namespace indigo {
+
 class MoleculeLayout
 {      
 public:
@@ -50,5 +52,7 @@ protected:
    Array<BaseMolecule*> _map;
    bool _query;
 };
+
+}
 
 #endif

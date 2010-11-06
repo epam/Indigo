@@ -15,6 +15,8 @@
 #include "graph/aux_path_finder.h"
 #include "graph/simple_cycle_basis.h"
 
+using namespace indigo;
+
 AuxPathFinder::AuxPathFinder (AuxiliaryGraph &graph, int max_size) : _graph(graph)
 {
    _queue.setLength(max_size);

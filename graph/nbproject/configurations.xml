@@ -4,6 +4,7 @@
     <logicalFolder name="f2" displayName="common" projectFiles="true">
       <itemPath>../common/base_cpp/array.h</itemPath>
       <itemPath>../common/base_cpp/crc32.cpp</itemPath>
+      <itemPath>../common/base_cpp/crc32.h</itemPath>
       <itemPath>../common/base_cpp/d_bitset.cpp</itemPath>
       <itemPath>../common/base_cpp/d_bitset.h</itemPath>
       <itemPath>../common/base_cpp/exception.cpp</itemPath>
@@ -24,14 +25,32 @@
       <itemPath>../common/base_cpp/os_thread_wrapper.h</itemPath>
       <itemPath>../common/base_c/os_tls.h</itemPath>
       <itemPath>../common/base_c/os_tls_posix.c</itemPath>
+      <itemPath>../common/base_cpp/output.cpp</itemPath>
+      <itemPath>../common/base_cpp/output.h</itemPath>
       <itemPath>../common/base_cpp/pool.h</itemPath>
+      <itemPath>../common/base_cpp/profiling.cpp</itemPath>
+      <itemPath>../common/base_cpp/profiling.h</itemPath>
       <itemPath>../common/base_cpp/ptr.h</itemPath>
       <itemPath>../common/base_cpp/ptr_array.h</itemPath>
       <itemPath>../common/base_cpp/red_black.h</itemPath>
       <itemPath>../common/base_cpp/reusable_obj_array.h</itemPath>
       <itemPath>../common/base_cpp/smart_output.cpp</itemPath>
+      <itemPath>../common/base_cpp/smart_output.h</itemPath>
+      <itemPath>../common/base_cpp/string_pool.cpp</itemPath>
+      <itemPath>../common/base_cpp/string_pool.h</itemPath>
       <itemPath>../common/base_cpp/tlscont.cpp</itemPath>
       <itemPath>../common/base_cpp/tlscont.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="f3" displayName="math" projectFiles="true">
+      <itemPath>../common/math/algebra.h</itemPath>
+      <itemPath>../common/math/best_fit.cpp</itemPath>
+      <itemPath>../common/math/line3f.cpp</itemPath>
+      <itemPath>../common/math/lseg3f.cpp</itemPath>
+      <itemPath>../common/math/matr3x3d.cpp</itemPath>
+      <itemPath>../common/math/plane3f.cpp</itemPath>
+      <itemPath>../common/math/transform3f.cpp</itemPath>
+      <itemPath>../common/math/vec2f.cpp</itemPath>
+      <itemPath>../common/math/vec3f.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="f1" displayName="src" projectFiles="true">
       <itemPath>../common/base_cpp/auto_ptr.h</itemPath>
@@ -41,7 +60,6 @@
       <itemPath>aux_path_finder.h</itemPath>
       <itemPath>src/biconnected_decomposer.cpp</itemPath>
       <itemPath>biconnected_decomposer.h</itemPath>
-      <itemPath>../common/base_cpp/crc32.h</itemPath>
       <itemPath>src/cycle_basis.cpp</itemPath>
       <itemPath>cycle_basis.h</itemPath>
       <itemPath>src/cycle_enumerator.cpp</itemPath>
@@ -81,10 +99,7 @@
       <itemPath>morgan_code.h</itemPath>
       <itemPath>src/path_enumerator.cpp</itemPath>
       <itemPath>path_enumerator.h</itemPath>
-      <itemPath>../common/base_cpp/profiling.cpp</itemPath>
       <itemPath>../common/base_cpp/queue.h</itemPath>
-      <itemPath>src/ring_canonizer.cpp</itemPath>
-      <itemPath>ring_canonizer.h</itemPath>
       <itemPath>src/scaffold_detection.cpp</itemPath>
       <itemPath>scaffold_detection.h</itemPath>
       <itemPath>src/shortest_path_finder.cpp</itemPath>
@@ -99,8 +114,6 @@
       <itemPath>spanning_tree.h</itemPath>
       <itemPath>src/subgraph_hash.cpp</itemPath>
       <itemPath>subgraph_hash.h</itemPath>
-      <itemPath>src/tree_canonizer.cpp</itemPath>
-      <itemPath>tree_canonizer.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

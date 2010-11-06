@@ -24,6 +24,8 @@
 #include "reaction/reaction_highlighting.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 RSmilesLoader::RSmilesLoader (Scanner &scanner) : _scanner(scanner)
 {
    highlighting = 0;

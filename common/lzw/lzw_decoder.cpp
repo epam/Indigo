@@ -16,6 +16,8 @@
 #include "lzw/lzw_dictionary.h"
 #include "base_cpp/scanner.h"
 
+using namespace indigo;
+
 LzwDecoder::LzwDecoder( LzwDict &NewDict, Scanner &NewIn ) : _dict(NewDict), 
    _bitin(_dict.getBitCodeSize(), NewIn), TL_CP_GET(_symbolsBuf) 
 {    

@@ -18,6 +18,8 @@
 #include "base_cpp/tlscont.h"
 #include "graph/graph.h"
 
+namespace indigo {
+
 class GraphSubchainEnumerator
 {
 public:
@@ -50,5 +52,6 @@ protected:
    TL_CP_DECL(Array<int>, _chain_edges);
 };
 
+}
 
 #endif

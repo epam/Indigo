@@ -19,6 +19,9 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo
+{
+
 class ChunkStorage
 {
 public:
@@ -38,5 +41,7 @@ private:
    Array<byte> _arr;
    Array<int> _offset;
 };
+
+}
 
 #endif // __chunk_storage_h__

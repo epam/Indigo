@@ -21,6 +21,8 @@
 #include "molecule/elements.h"
 #include "base_cpp/auto_ptr.h"
 
+using namespace indigo;
+
 ReactionAutomapper::ReactionAutomapper(BaseReaction& reaction):
 _reaction(reaction){
 }

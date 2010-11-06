@@ -19,6 +19,8 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 
+namespace indigo {
+
 class QueryMolecule;
 
 struct RGroup
@@ -98,5 +100,7 @@ struct MoleculeRGroupFragment
 protected:
    ObjArray< Array<int> > _attachment_index;
 };
+
+}
 
 #endif

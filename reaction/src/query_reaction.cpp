@@ -16,6 +16,8 @@
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 QueryReaction::QueryReaction ()
 {
 }

@@ -18,6 +18,8 @@
 #include "base_cpp/red_black.h"
 #include "math/algebra.h"
 
+namespace indigo {
+
 class BaseMolecule;
 class Filter;
 
@@ -86,5 +88,7 @@ protected:
    static int _sameside (BaseMolecule &mol, int i_beg, int i_end, int i_nei_beg, int i_nei_end);
    bool _sortSubstituents (BaseMolecule &mol, int *substituents);
 };
+
+}
 
 #endif

@@ -16,6 +16,8 @@
 #include "graph/graph.h"
 #include "graph/filter.h"
 
+using namespace indigo;
+
 GraphDecomposer::GraphDecomposer (const Graph &graph) :
 need_component_size(false),
 _graph(graph),

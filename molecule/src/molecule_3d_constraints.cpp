@@ -12,11 +12,11 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-
 #include "base_cpp/red_black.h"
-
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/query_molecule.h"
+
+using namespace indigo;
 
 QueryMolecule & Molecule3dConstraints::_getMolecule ()
 {

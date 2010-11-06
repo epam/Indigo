@@ -19,6 +19,8 @@
 #include "base_cpp/output.h"
 #include "molecule/cmf_symbol_codes.h"
 
+using namespace indigo;
+
 CrfSaver::CrfSaver (LzwDict &dict, Output &output) : _output(output)
 {
    if (!dict.isInitialized())

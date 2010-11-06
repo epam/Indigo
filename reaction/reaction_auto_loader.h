@@ -17,6 +17,8 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 class Scanner;
 class BaseReaction;
 class Reaction;
@@ -54,5 +56,7 @@ protected:
 private:
    ReactionAutoLoader (const ReactionAutoLoader &); // no implicit copy
 };
+
+}
 
 #endif

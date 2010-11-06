@@ -21,6 +21,8 @@
 #include "molecule/molecule_decomposer.h"
 #include "reaction/reaction_enumerator_state.h"
 
+namespace indigo {
+
 class ReactionProductEnumerator
 {
 public:
@@ -62,5 +64,7 @@ private:
 
    void _buildTubesGrid( void );
 };
+
+}
 
 #endif /* __reaction_product_enumerator__ */

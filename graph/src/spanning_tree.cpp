@@ -16,6 +16,8 @@
 #include "base_cpp/tlscont.h"
 #include "graph/filter.h"
 
+using namespace indigo;
+
 SpanningTree::SpanningTree (Graph &graph, const Filter *vertex_filter, const Filter *edge_filter) : _graph(graph),
 TL_CP_GET(_edges_list),
 TL_CP_GET(_depth_counters),

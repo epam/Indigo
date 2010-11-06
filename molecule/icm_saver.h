@@ -15,10 +15,12 @@
 #ifndef __icm_saver__
 #define __icm_saver__
 
+#include "base_cpp/exception.h"
+
+namespace indigo {
+
 class Molecule;
 class Output;
-
-#include "base_cpp/exception.h"
 
 class IcmSaver
 {
@@ -38,5 +40,7 @@ protected:
 private:
    IcmSaver (const IcmSaver &); // no implicit copy
 };
+
+}
 
 #endif

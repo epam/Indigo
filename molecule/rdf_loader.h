@@ -19,6 +19,8 @@
 #include "base_cpp/red_black.h"
 #include "base_cpp/obj.h"
 
+namespace indigo {
+
 class Scanner;
 /*
  * RD files loader
@@ -70,6 +72,8 @@ protected:
    bool _isMolecule;
    
 };
+
+}
 
 #endif	/* _RDF_READER_H */
 

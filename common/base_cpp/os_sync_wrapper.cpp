@@ -14,6 +14,8 @@
 
 #include "base_cpp/os_sync_wrapper.h"
 
+using namespace indigo;
+
 //
 // osLock
 //
@@ -99,10 +101,11 @@ OsMessageSystem::OsMessageSystem() :
 // ThreadSafeStaticObj
 //
 
+namespace indigo
+{
 DLLEXPORT OsLock & osStaticObjConstructionLock ()
 {
    static OsLock _static_obj_construction_lock;
    return _static_obj_construction_lock;
 }
-
-
+}

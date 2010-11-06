@@ -17,6 +17,8 @@
 
 #include "reaction/base_reaction.h"
 
+namespace indigo {
+
 class QueryMolecule;
 
 class QueryReaction : public BaseReaction
@@ -72,5 +74,7 @@ protected:
 private:
    QueryReaction (const QueryReaction &); // no implicit copy
 };
+
+}
 
 #endif

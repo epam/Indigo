@@ -21,6 +21,9 @@
 #include "math/algebra.h"
 #include "molecule/molecule_cis_trans.h"
 
+namespace indigo
+{
+
 enum
 {
    CHARGE_UNKNOWN = -100
@@ -191,5 +194,7 @@ protected:
 
    Array<Vec3f> _xyz;
 };
+
+}
 
 #endif

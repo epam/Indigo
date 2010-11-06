@@ -17,6 +17,8 @@
 
 #include "base_cpp/tlscont.h"
 
+namespace indigo {
+
 class Graph;
 class Molecule;
 class QueryMolecule;
@@ -153,5 +155,6 @@ private:
    Array<bool> can_bond_be_aromatic;
 };
 
+}
 
 #endif

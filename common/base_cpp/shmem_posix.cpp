@@ -24,6 +24,8 @@
 
 #include "base_cpp/shmem.h"
 
+using namespace indigo;
+
 SharedMemory::SharedMemory (const char *name, int size, bool no_map_if_first)
 {
    snprintf(_filename, sizeof(_filename), "/tmp/indigo_shm_%s", name);

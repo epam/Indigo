@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 class Scanner
 {
 public:
@@ -115,5 +117,7 @@ private:
    // no implicit copy
    BufferScanner (const BufferScanner &);
 };
+
+}
 
 #endif

@@ -11,6 +11,8 @@
 #include <cairo-win32.h>
 #endif 
 
+using namespace indigo;
+
 void RenderContext::cairoCheckStatus () const
 {
 #ifdef DEBUG

@@ -41,6 +41,8 @@
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/cyclic_array.h"
 
+namespace indigo {
+
 class OsCommandResult
 {
 public:
@@ -126,6 +128,8 @@ private:
    bool _same_session_IDs;
    qword _parent_session_ID;
 };
+
+}
 
 int osGetProcessorsCount (void);
 

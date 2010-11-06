@@ -22,8 +22,14 @@
 #include "reaction/reaction_neighborhood_counters.h"
 #include "reaction/reaction_highlighting.h"
 
+using namespace indigo;
+
+namespace indigo
+{
+   class Scanner;
+}
+
 class BingoContext;
-class Scanner;
 
 class RingoSubstructure
 {

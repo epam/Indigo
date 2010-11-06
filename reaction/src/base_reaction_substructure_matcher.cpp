@@ -23,6 +23,8 @@
 #include "molecule/molecule_neighbourhood_counters.h"
 #include "reaction/base_reaction_substructure_matcher.h"
 
+using namespace indigo;
+
 BaseReactionSubstructureMatcher::BaseReactionSubstructureMatcher (Reaction &target) :
 _target(target),
 TL_CP_GET(_matchers),

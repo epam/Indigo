@@ -17,6 +17,8 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 class Graph;
 class SpanningTree;
 class Filter;
@@ -44,4 +46,5 @@ private:
    CycleEnumerator (const CycleEnumerator &); // no implicit copy
 };
 
+}
 #endif

@@ -17,6 +17,8 @@
 #include "base_c/defs.h"
 #include "base_cpp/crc32.h"
 
+using namespace indigo;
+
 CRC32 _crc; // singletone
 
 unsigned _Reflect (unsigned ref, char ch)

@@ -24,6 +24,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
+namespace indigo {
+
 class Graph;
 
 // Graph matching problem solver
@@ -97,6 +99,8 @@ protected:
    int                  _pathFinderUsedMark;
       
 };
+
+}
 
 #endif
 

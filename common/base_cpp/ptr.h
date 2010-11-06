@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 // Pointer with default constructor
 template <typename T>
 class Ptr
@@ -91,5 +93,7 @@ private:
 
    Ptr (const Ptr &); // no implicit copy
 };
+
+}
 
 #endif // __ptr_h__

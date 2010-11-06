@@ -21,6 +21,8 @@
 #include "base_cpp/output.h"
 #include "base_cpp/reusable_obj_array.h"
 
+namespace indigo {
+
 class SmartTableOutput : public Output
 {
 public:
@@ -51,5 +53,7 @@ private:
    bool _use_smart_printing;
    Output &_output;
 };
+
+}
 
 #endif // __smart_output_h__

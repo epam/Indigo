@@ -19,6 +19,8 @@
 #include "oracle/ora_logger.h"
 #include "base_c/defs.h"
 
+using namespace indigo;
+
 int OracleLogger::dbgPrintfV (const char *format, va_list args)
 {
    if (_file == NULL)

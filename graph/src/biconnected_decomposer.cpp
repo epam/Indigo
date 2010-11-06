@@ -16,6 +16,8 @@
 #include "graph/filter.h"
 #include "graph/biconnected_decomposer.h"
 
+using namespace indigo;
+
 BiconnectedDecomposer::BiconnectedDecomposer (const Graph &graph) :
 _graph(graph),
 TL_CP_GET(_components),

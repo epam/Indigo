@@ -20,6 +20,8 @@
 #include "base_cpp/tlscont.h"
 #include "reaction.h"
 
+namespace indigo {
+
 class Output;
 class BaseReaction;
 class QueryReaction;
@@ -68,5 +70,7 @@ protected:
 private:
    RSmilesSaver (const RSmilesSaver &); // no implicit copy
 };
+
+}
 
 #endif

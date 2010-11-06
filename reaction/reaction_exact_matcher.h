@@ -15,10 +15,12 @@
 #ifndef __reaction_exact_matcher__
 #define __reaction_exact_matcher__
 
-class Reaction;
-
 #include "base_cpp/exception.h"
 #include "reaction/base_reaction_substructure_matcher.h"
+
+namespace indigo {
+
+class Reaction;
 
 class ReactionExactMatcher : public BaseReactionSubstructureMatcher
 {
@@ -46,5 +48,7 @@ protected:
    static bool _prepare_ee (EmbeddingEnumerator &ee, BaseMolecule &submol, Molecule &supermol, void *context);
 
 };
+
+}
 
 #endif

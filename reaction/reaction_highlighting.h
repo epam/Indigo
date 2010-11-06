@@ -18,6 +18,8 @@
 #include "graph/graph_highlighting.h"
 #include "base_cpp/obj_array.h"
 
+namespace indigo {
+
 class BaseReaction;
 
 class ReactionHighlighting
@@ -37,5 +39,7 @@ public:
 protected:
    ObjArray<GraphHighlighting> _graphHighlightings;
 };
+
+}
 
 #endif

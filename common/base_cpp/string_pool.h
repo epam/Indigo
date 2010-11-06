@@ -17,6 +17,8 @@
 
 #include "base_cpp/pool.h"
 
+namespace indigo {
+
 class StringPool
 {
 public:
@@ -52,5 +54,6 @@ private:
    StringPool (const StringPool &); // no implicit copy
 };
 
+}
 
 #endif

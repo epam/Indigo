@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+using namespace indigo;
+
 class BingoError : public Exception
 {
 public:

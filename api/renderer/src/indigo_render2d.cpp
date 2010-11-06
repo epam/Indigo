@@ -19,6 +19,8 @@
 #include "graph/graph_highlighting.h"
 #include "option_manager.h"
 
+using namespace indigo;
+
 TL_DEF_EXT(IndigoRenderer, indigo_renderer_self);
 
 #define CHECKRGB(r, g, b) \

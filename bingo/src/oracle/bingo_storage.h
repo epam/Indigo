@@ -19,9 +19,14 @@
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/shmem.h"
 
-class OracleEnv;
-class OracleLOB;
-class SharedMemory;
+using namespace indigo;
+
+namespace indigo
+{
+   class OracleEnv;
+   class OracleLOB;
+   class SharedMemory;
+}
 
 class BingoStorage
 {

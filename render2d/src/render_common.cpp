@@ -21,6 +21,10 @@
 #include "reaction/query_reaction.h"
 #include "render_common.h"
 
+using namespace indigo;
+
+namespace indigo
+{
 // cos(a) to cos(a/2) 
 double cos2c (const double cs)
 {
@@ -44,7 +48,7 @@ double ctg2c (const double cs)
 {
    return sqrt((1 + cs) / (1 - cs));
 }
-
+}
 
 RenderItem::RenderItem()
 {

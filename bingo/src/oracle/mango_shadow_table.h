@@ -20,6 +20,8 @@
 #include "oracle/bingo_fetch_engine.h"
 #include "core/mango_matchers.h"
 
+using namespace indigo;
+
 class MangoIndex;
 
 class MangoShadowTable

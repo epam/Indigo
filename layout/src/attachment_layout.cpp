@@ -14,6 +14,8 @@
 
 #include "layout/attachment_layout.h"
 
+using namespace indigo;
+
 AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer &bc_decom,
                                    const ObjArray<MoleculeLayoutGraph> &bc_components,
                                    const Array<int> &bc_tree,

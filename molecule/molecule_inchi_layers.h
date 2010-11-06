@@ -19,6 +19,8 @@
 #include "base_cpp/exception.h"
 #include "molecule/molecule_inchi_utils.h"
 
+namespace indigo {
+
 class Molecule;
 class Output;
 class MoleculeStereocenters;
@@ -160,6 +162,8 @@ private:
 };
 
 };
+
+}
 
 #endif // __molecule_inchi_layers_h__
 

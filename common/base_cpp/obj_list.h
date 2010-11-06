@@ -17,6 +17,8 @@
 
 #include "base_cpp/list.h"
 
+namespace indigo {
+
 template <typename T> class ObjList
 {
 public:
@@ -125,5 +127,7 @@ private:
 
    ObjList (const ObjList<T> & ); // no implicit copy
 };
+
+}
 
 #endif

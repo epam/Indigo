@@ -15,9 +15,10 @@
 #ifndef _AUX_PATH_FINDER_H__
 #define	_AUX_PATH_FINDER_H__
 
-
 #include "base_cpp/array.h"
 #include "base_cpp/queue.h"
+
+namespace indigo {
 
 class AuxiliaryGraph;
 class AuxPathFinder {
@@ -31,6 +32,8 @@ private:
    AuxiliaryGraph &_graph;
    AuxPathFinder(const AuxPathFinder&);
 };
+
+}
 
 #endif	/* _AUX_PATH_FINDER_H */
 

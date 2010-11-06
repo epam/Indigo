@@ -17,6 +17,8 @@
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
 
+using namespace indigo;
+
 ReactionLayout::ReactionLayout (BaseReaction& r) :
 bond_length(1),
 plus_interval_factor(4),

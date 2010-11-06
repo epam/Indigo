@@ -21,6 +21,8 @@
 #include "render_context.h"
 #include "render_molecule.h"
 
+using namespace indigo;
+
 MoleculeRender::MoleculeRender (RenderContext& rc) : RenderBase(rc), _mol(NULL)
 {
 }

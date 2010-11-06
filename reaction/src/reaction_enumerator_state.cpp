@@ -34,6 +34,8 @@
 #include "graph/dfs_walk.h"
 #include "layout/molecule_layout.h"
 
+using namespace indigo;
+
 ReactionEnumeratorState::ReactionMonomers::ReactionMonomers() : TL_CP_GET(_monomers), 
     TL_CP_GET(_reactant_indexes), TL_CP_GET(_deep_levels), TL_CP_GET(_tube_indexes)
 {

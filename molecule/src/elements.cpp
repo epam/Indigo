@@ -22,6 +22,8 @@
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 Element Element::_instance;
 
 Element::Element ()

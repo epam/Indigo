@@ -16,6 +16,8 @@
 #include "base_cpp/bitoutworker.h"
 #include "base_cpp/output.h"
 
+using namespace indigo;
+
 LzwEncoder::LzwEncoder( LzwDict &NewDict, Output &NewOut ) : 
 _dict(NewDict), _bitout(_dict.getBitCodeSize(), NewOut) 
 {

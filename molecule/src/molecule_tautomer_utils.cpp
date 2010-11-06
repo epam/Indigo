@@ -17,6 +17,8 @@
 #include "molecule/elements.h"
 #include "graph/graph_highlighting.h"
 
+using namespace indigo;
+
 bool MoleculeTautomerUtils::_isRepMetal (int elem)
 {
    static const int list[] =

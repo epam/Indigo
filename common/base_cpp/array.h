@@ -24,14 +24,28 @@
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 template <typename T> class Array
 {
 public:
    DEF_ERROR("array");
 
-   explicit Array ();
+   explicit Array ()
+   {
+      _reserved = 0;
+      _length = 0;
+      _array = NULL;
+   }
    
-   ~Array ();
+   ~Array ()
+   {
+      if (_array != NULL)
+      {
+         free(_array);
+         _array = NULL;
+      }
+   }
 
    void clear ()
    {
@@ -446,23 +460,7 @@ private:
    Array (const Array &); // no implicit copy
 };
 
-//#ifndef INDIGO_PLUGIN
-template <typename T> Array<T>::Array ()
-{
-   _reserved = 0;
-   _length = 0;
-   _array = NULL;
 }
-
-template <typename T> Array<T>::~Array ()
-{
-   if (_array != NULL)
-   {
-      free(_array);
-      _array = NULL;
-   }
-}
-//#endif
 
 // operators defined here for use with ObjArray<> and ObjPool<>
 template <typename T> void * operator new (size_t size, T *allocated_area)

@@ -21,6 +21,8 @@
 
 #include "render_common.h"
 
+namespace indigo {
+   
 class RenderContext 
 {
 public:
@@ -200,5 +202,7 @@ private:
    PVOID _hdc;
    DINGO_MODE _mode;
 };
+
+}
 
 #endif

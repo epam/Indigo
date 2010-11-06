@@ -22,6 +22,8 @@
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/obj.h"
 
+namespace indigo {
+
 class Molecule;
 class GraphHighlighting;
 class AromaticityMatcher;
@@ -196,5 +198,7 @@ protected:
    static int _compare_in_loop (BaseMolecule &mol, int i1, int i2);
    static int _compare (int &i1, int &i2, void *context);
 };
+
+}
 
 #endif

@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 template <typename T> class AutoPtr
 {
 public:
@@ -84,5 +86,7 @@ protected:
 private:
    AutoPtr (const AutoPtr &); // no implicit copy
 };
+
+}
 
 #endif

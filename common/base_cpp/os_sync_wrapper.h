@@ -19,6 +19,8 @@
 #include "base_c/os_sync.h"
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 // os_mutex wrapper
 class OsLock
 {
@@ -163,5 +165,7 @@ private:
    char _obj_data[sizeof(T)];
    volatile bool _was_created; // Zero for static objects
 };
+
+}
 
 #endif // __os_sync_wrapper_h__

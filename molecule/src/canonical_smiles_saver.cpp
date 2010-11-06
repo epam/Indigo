@@ -18,6 +18,8 @@
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 CanonicalSmilesSaver::CanonicalSmilesSaver (Output &output) : _output(output)
 {
    find_invalid_stereo = true;

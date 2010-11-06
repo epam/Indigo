@@ -33,6 +33,8 @@
 #include "molecule/icm_loader.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 static OCINumber * _mangoSub (OracleEnv &env, MangoOracleContext &context,
                               const Array<char> &query_buf,
                               const Array<char> &target_buf, const char *params)

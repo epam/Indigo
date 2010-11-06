@@ -16,6 +16,8 @@
 #include "molecule/base_molecule.h"
 #include "graph/filter.h"
 
+using namespace indigo;
+
 MoleculeDecomposer::MoleculeDecomposer (BaseMolecule &mol) :
 GraphDecomposer(mol),
 _mol(mol)

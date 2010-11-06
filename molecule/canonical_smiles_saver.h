@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class Molecule;
 class Output;
 
@@ -37,5 +39,7 @@ protected:
 
    Output &_output;
 };
+
+}
 
 #endif

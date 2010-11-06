@@ -20,6 +20,8 @@
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/string_pool.h"
 
+namespace indigo {
+
 struct RedBlackNodeBase
 {
    int left;
@@ -1191,5 +1193,7 @@ protected:
 private:
    RedBlackStringObjMap(const RedBlackStringObjMap &); // no implicit copy
 };
+
+}
 
 #endif

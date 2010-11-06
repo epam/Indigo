@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class Scanner;
 class BaseReaction;
 class Reaction;
@@ -59,6 +61,6 @@ protected:
    bool _v3000;
 };
 
-
+}
 
 #endif

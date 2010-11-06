@@ -18,6 +18,8 @@
 #include "graph/spanning_tree.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 MoleculePiSystemsMatcher::MoleculePiSystemsMatcher (Molecule &target) 
    : _target(target),
    TL_CP_GET(_atom_pi_system_idx),

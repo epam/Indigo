@@ -15,6 +15,8 @@
 #include "base_cpp/tlscont.h"
 #include "graph/morgan_code.h"
 
+using namespace indigo;
+
 MorganCode::MorganCode (const Graph &g) :
 _g(g)
 {

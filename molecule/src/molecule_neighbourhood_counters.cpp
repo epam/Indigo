@@ -20,6 +20,8 @@
 #include "molecule/elements.h"
 #include "molecule/query_molecule.h"
 
+using namespace indigo;
+
 void MoleculeAtomNeighbourhoodCounters::calculate (Molecule &mol)
 {
    _calculate(mol, false);

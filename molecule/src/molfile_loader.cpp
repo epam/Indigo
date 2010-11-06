@@ -24,6 +24,8 @@
 #include "graph/graph_highlighting.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 MolfileLoader::MolfileLoader (Scanner &scanner) : 
 _scanner(scanner),
 TL_CP_GET(_stereo_care_atoms),

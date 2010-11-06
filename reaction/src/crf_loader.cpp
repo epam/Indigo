@@ -17,6 +17,8 @@
 #include "molecule/cmf_loader.h"
 #include "reaction/reaction.h"
 
+using namespace indigo;
+
 CrfLoader::CrfLoader (LzwDict &dict, Scanner &scanner) :
 _scanner(scanner)
 {

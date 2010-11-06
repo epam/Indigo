@@ -17,6 +17,8 @@
 
 #include "base_cpp/pool.h"
 
+namespace indigo {
+
 template <typename T> class List
 {
 public:
@@ -225,5 +227,7 @@ private:
 
    List (const List<T> & ); // no implicit copy
 };
+
+}
 
 #endif

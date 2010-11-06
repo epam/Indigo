@@ -16,6 +16,8 @@
 #include "reaction/icr_saver.h"
 #include "reaction/crf_saver.h"
 
+using namespace indigo;
+
 IcrSaver::IcrSaver (Output &output) : _output(output)
 {
 }

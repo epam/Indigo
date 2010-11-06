@@ -18,6 +18,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 
+namespace indigo {
+
 class BaseMolecule;
 class Molecule;
 class QueryMolecule;
@@ -75,5 +77,6 @@ public:
    Array<int> _use_atom;
 };
 
+}
 
 #endif // __molecule_neighbourhood_counters_h__

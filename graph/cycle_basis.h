@@ -17,6 +17,8 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/red_black.h"
 
+namespace indigo {
+
 class Graph;
 
 class CycleBasis {
@@ -37,6 +39,6 @@ private:
    RedBlackSet<int> _cycleVertices;
 };
 
-
+}
 #endif	/* _CYCLE_BASIS_H */
 

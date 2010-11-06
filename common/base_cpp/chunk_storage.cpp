@@ -14,6 +14,8 @@
 
 #include "base_cpp/chunk_storage.h"
 
+using namespace indigo;
+
 ChunkStorage::ChunkStorage ()
 {
    _offset.push(0);

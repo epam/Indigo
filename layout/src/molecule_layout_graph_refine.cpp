@@ -20,6 +20,8 @@
 #include "layout/molecule_layout_graph.h"
 #include "layout/refinement_state.h"
 
+using namespace indigo;
+
 /*
 bool MoleculeLayoutGraph::edge_check (const Graph &gr, int e_idx, void *context_)
 {

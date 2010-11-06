@@ -13,10 +13,7 @@
  ***************************************************************************/
 
 #include "molecule/query_molecule.h"
-
-
 #include "molecule/molecule_dearom.h"
-
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -24,6 +21,8 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/elements.h"
+
+using namespace indigo;
 
 static int _dearomatizationParams = Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION;
 

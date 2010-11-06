@@ -15,6 +15,8 @@
 #ifndef __graph_vertex_equivalence__
 #define __graph_vertex_equivalence__
 
+namespace indigo {
+
 class Graph;
 class Output;
 class Scanner;
@@ -44,6 +46,8 @@ public:
    // This method shouldn't be here...
    virtual void setNeighbourhoodRadius (int radius) {}
 };
+
+}
 
 #endif // __graph_vertex_equivalence__
 

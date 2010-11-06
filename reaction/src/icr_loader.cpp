@@ -17,6 +17,8 @@
 #include "reaction/crf_loader.h"
 #include "reaction/reaction.h"
 
+using namespace indigo;
+
 IcrLoader::IcrLoader (Scanner &scanner) : _scanner(scanner)
 {
 }

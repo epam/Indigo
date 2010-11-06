@@ -18,6 +18,8 @@
 #include "layout/molecule_layout_graph.h"
 #include "graph/biconnected_decomposer.h"
 
+namespace indigo {
+
 class AttachmentLayout
 {
 public:
@@ -63,5 +65,7 @@ private:
    TL_CP_DECL(Array<int>, _rest_numbers);
    AttachmentLayout &_layout;
 };
+
+}
 
 #endif

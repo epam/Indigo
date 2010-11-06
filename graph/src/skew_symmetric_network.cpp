@@ -14,6 +14,8 @@
 
 #include "graph/skew_symmetric_network.h"
 
+using namespace indigo;
+
 const Graph& SkewSymmetricNetwork::g() const
 {
    return _g;

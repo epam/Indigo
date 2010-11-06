@@ -20,6 +20,8 @@
 #include "graph/embedding_enumerator.h"
 #include "graph/morgan_code.h"
 
+using namespace indigo;
+
 enum
 {
    QUERY_BOND_SINGLE_OR_DOUBLE = 5,

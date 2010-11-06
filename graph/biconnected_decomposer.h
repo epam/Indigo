@@ -19,6 +19,8 @@
 #include "base_cpp/ptr_array.h"
 #include "graph/graph.h"
 
+namespace indigo {
+
 class BiconnectedDecomposer
 {
 public:
@@ -48,5 +50,7 @@ protected:
    TL_CP_DECL(Array<Edge>, _edges_stack);
    int _cur_order;
 };
+
+}
 
 #endif

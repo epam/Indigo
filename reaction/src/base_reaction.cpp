@@ -15,6 +15,8 @@
 #include "reaction/base_reaction.h"
 #include "base_cpp/tlscont.h"
 
+using namespace indigo;
+
 BaseReaction::BaseReaction ()
 {
    clear();

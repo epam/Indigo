@@ -21,6 +21,8 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_inchi_layers.h"
 
+namespace indigo {
+
 // Whole InChI component with component molecule and InChI layers
 struct MoleculeInChICompoment
 {
@@ -50,6 +52,7 @@ private:
    static bool _checkAutomorphism (Graph &graph, const Array<int> &mapping, const void *context);
 };
 
+}
 
 #endif // __molecule_inchi_component_h__
 

@@ -22,6 +22,8 @@
 #include "graph/filter.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 MoleculeExactMatcher::MoleculeExactMatcher (BaseMolecule &query, BaseMolecule &target) :
 _query(query),
 _target(target),

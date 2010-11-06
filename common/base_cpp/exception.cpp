@@ -18,6 +18,8 @@
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
 
+using namespace indigo;
+
 Exception::Exception (const char *format, ...)
 {
    va_list args;

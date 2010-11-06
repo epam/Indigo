@@ -18,6 +18,8 @@
 #include "base_cpp/red_black.h"
 #include "base_cpp/os_sync_wrapper.h"
 
+using namespace indigo;
+
 #define DECL_SET_OPT_HANDLER(suffix, ftype, type, map)               \
    DLLEXPORT void setOptionHandler##suffix (const char* name, ftype func);     \
 

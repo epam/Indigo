@@ -18,6 +18,8 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/red_black.h"
 
+namespace indigo {
+
 class Scanner;
 
 class SdfLoader
@@ -38,5 +40,7 @@ protected:
    Scanner *_scanner;
    bool     _own_scanner;
 };
+
+}
 
 #endif

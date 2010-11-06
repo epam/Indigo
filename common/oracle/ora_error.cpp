@@ -28,6 +28,8 @@
 
 #include "base_c/defs.h"
 
+using namespace indigo;
+
 OracleError::OracleError (OCIError *errhp, int oracle_rc, const char *message, int my_rc)
 {
    if (oracle_rc == OCI_NO_DATA)

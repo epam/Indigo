@@ -16,6 +16,8 @@
 #include "graph/morgan_code.h"
 #include "layout/layout_pattern.h"
 
+using namespace indigo;
+
 PatternLayout::PatternLayout () : _morgan_code(0), _fixed(false)
 {
 }

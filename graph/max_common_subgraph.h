@@ -24,6 +24,8 @@
 #include "math.h"
 #include "base_cpp/obj_list.h"
 
+namespace indigo {
+
 class MaxCommonSubgraph{
 public:
 
@@ -650,6 +652,8 @@ private:
    SubstructureMcs (const SubstructureMcs &); // no implicit copy
 
 };
+
+}
 
 #endif
 

@@ -17,6 +17,8 @@
 #include "base_cpp/tlscont.h"
 #include "graph/graph.h"
 
+using namespace indigo;
+
 GraphAffineMatcher::GraphAffineMatcher (Graph &subgraph, Graph &supergraph, const int *mapping) :
 _subgraph(subgraph),
 _supergraph(supergraph),

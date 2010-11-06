@@ -19,6 +19,8 @@
 #include "molecule/molecule_tautomer.h"
 #include "base_cpp/auto_ptr.h"
 
+namespace indigo {
+
 class Molecule;
 class GraphHighlighting;
 class AromaticityMatcher;
@@ -65,5 +67,7 @@ protected:
    Obj<GraphDecomposer> _query_decomposer;
    Obj<GraphDecomposer> _target_decomposer;
 };
+
+}
 
 #endif

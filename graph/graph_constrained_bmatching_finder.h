@@ -23,6 +23,8 @@
 
 #include "graph/skew_symmetric_network.h"
 
+namespace indigo {
+
 class Graph;
 
 /* A b-matching M of G=(V,E) is defined as a subset of E with
@@ -102,6 +104,8 @@ private:
 
    int _source_edge;
 };
+
+}
 
 #endif // __graph_constrained_bmatching_h__
 

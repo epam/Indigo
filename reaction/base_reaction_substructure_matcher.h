@@ -21,6 +21,8 @@
 #include "base_cpp/obj.h"
 #include "graph/embedding_enumerator.h"
 
+namespace indigo {
+
 class Reaction;
 class ReactionHighlighting;
 class ReactionAtomNeighbourhoodCounters;
@@ -143,5 +145,6 @@ protected:
       *_query_nei_counters, *_target_nei_counters;
 };
 
+}
 
 #endif

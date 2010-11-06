@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class Graph;
 struct Vec3f;
 
@@ -48,5 +50,6 @@ private:
    EdgeRotationMatcher (const EdgeRotationMatcher &); // no implicit copy
 };
 
+}
 
 #endif

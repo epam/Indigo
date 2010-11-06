@@ -18,6 +18,9 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+namespace indigo
+{
+
 class OracleLogger
 {
 public:
@@ -38,5 +41,7 @@ public:
 private:
    FILE *_file;
 };
+
+}
 
 #endif

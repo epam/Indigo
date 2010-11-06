@@ -19,9 +19,14 @@
 #include "core/bingo_context.h"
 #include "oracle/bingo_storage.h"
 
-class BingoContext;
-class OracleEnv;
-class SharedMemory;
+using namespace indigo;
+
+namespace ingido
+{
+   class BingoContext;
+   class OracleEnv;
+   class SharedMemory;
+}
 
 class BingoOracleContext : public BingoContext
 {

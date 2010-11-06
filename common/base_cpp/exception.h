@@ -20,6 +20,8 @@
 
 #include "base_c/defs.h"
 
+namespace indigo {
+
 class Exception
 {
 public:
@@ -45,6 +47,8 @@ protected:
    char _message[1024];
 private:
 };
+
+}
 
 #define DEF_ERROR(error_prefix) \
    class Error : public Exception                     \
@@ -76,6 +80,5 @@ private:
          other._cloneTo(this); \
       }\
    }
-
 
 #endif // __exception_h__

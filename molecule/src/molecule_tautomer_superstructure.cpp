@@ -20,6 +20,8 @@
 #include "molecule/elements.h"
 #include "molecule/molecule_fingerprint.h"
 
+using namespace indigo;
+
 // Tautomer superstrucure - molecule with all bonds that can appear in tautomer
 // This structure is needed to enumerate all submolecule of a tautomer
 

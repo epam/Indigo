@@ -19,6 +19,8 @@
 #include "molecule/molecule_tautomer.h"
 #include "lzw/lzw_dictionary.h"
 
+using namespace indigo;
+
 extern const char *bingo_version_string;
 
 class BingoContext

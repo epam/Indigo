@@ -28,6 +28,8 @@ struct OCIRowid;
 struct OCIRaw;
 struct OCINumber;
 
+namespace indigo {
+
 class OracleLogger;
 class OracleLOB;
 class OracleRowID;
@@ -231,5 +233,7 @@ public:
    static float  numberToFloat  (OracleEnv &env, OCINumber *number);
    static double numberToDouble (OracleEnv &env, OCINumber *number);
 };
+
+}
 
 #endif

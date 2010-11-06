@@ -18,6 +18,8 @@
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 ReactionExactMatcher::ReactionExactMatcher (Reaction &query, Reaction &target) :
 BaseReactionSubstructureMatcher(target),
 _query(query), _target(target)

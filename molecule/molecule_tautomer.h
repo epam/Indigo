@@ -24,6 +24,8 @@
 #include "molecule/molecule_dearom.h"
 #include "molecule/base_molecule.h"
 
+namespace indigo {
+
 class Molecule;
 class AromaticityMatcher;
 class Dearomatizer;
@@ -282,5 +284,6 @@ protected:
    TL_CP_DECL(Array<int>,  _edge_mapping);
 };
 
+}
 
 #endif

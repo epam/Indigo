@@ -19,6 +19,8 @@
 #include "base_cpp/tlscont.h"
 #include "graph/graph.h"
 
+namespace indigo {
+
 class AutomorphismSearch
 {
 public:
@@ -132,5 +134,7 @@ protected:
 
    static int _cmp_vertices (int idx1, int idx2, void *context);
 };
+
+}
 
 #endif

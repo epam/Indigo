@@ -27,6 +27,8 @@
 
 #define ORAEXT CEXPORT
 
+using namespace indigo;
+
 extern OracleLogger logger;
 extern const char *log_filename;
 

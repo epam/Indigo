@@ -20,6 +20,7 @@
 #include "base_cpp/obj_pool.h"
 #include "graph/filter.h"
 
+namespace indigo {
 enum
 {
    FILTER_EQ,
@@ -166,4 +167,5 @@ private:
    Graph (const Graph &); // no implicit copy
 };
 
+}
 #endif

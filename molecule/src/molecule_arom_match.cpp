@@ -20,6 +20,8 @@
 #include "molecule/query_molecule.h"
 #include "molecule/molecule_dearom.h"
 
+using namespace indigo;
+
 AromaticityMatcher::AromaticityMatcher (QueryMolecule &query, BaseMolecule &base) :
    _query(query), _base(base),
    TL_CP_GET(_matching_edges_state)

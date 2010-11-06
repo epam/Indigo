@@ -19,6 +19,9 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo
+{
+
 class Output
 {
 public:
@@ -101,4 +104,6 @@ protected:
 
 DLLEXPORT void bprintf (Array<char>& buf, const char *format, ...);
 
+}
+ 
 #endif

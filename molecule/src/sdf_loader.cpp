@@ -17,6 +17,8 @@
 #include "base_cpp/scanner.h"
 #include "gzip/gzip_scanner.h"
 
+using namespace indigo;
+
 SdfLoader::SdfLoader (Scanner &scanner) :
 TL_CP_GET(data),
 TL_CP_GET(properties)

@@ -22,6 +22,8 @@
 #include "render_context.h"
 #include "render_reaction.h"
 
+using namespace indigo;
+
 ReactionRender::ReactionRender (RenderContext& rc) : RenderBase(rc), _highlighting(NULL), _r(NULL)
 {
 

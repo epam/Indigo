@@ -19,6 +19,8 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_cis_trans.h"
 
+using namespace indigo;
+
 //
 // Sorted atoms lables
 //

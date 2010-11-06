@@ -24,6 +24,7 @@
 #include "molecule/molecule_electrons_localizer.h"
 #include "molecule/molecule_decomposer.h"
 
+namespace indigo {
 class Molecule;
 
 class MoleculePiSystemsMatcher
@@ -96,5 +97,7 @@ private:
    TL_CP_DECL(ReusableObjArray<_Pi_System>, _pi_systems);
    TL_CP_DECL(Array<int>, _connectivity);
 };
+
+}
 
 #endif // __molecule_pi_systems_matcher__

@@ -21,7 +21,12 @@
 #include "oracle/ringo_shadow_fetch.h"
 #include "oracle/ringo_oracle.h"
 
-class RingoShadowFetch;
+using namespace indigo;
+
+namespace ingido
+{
+   class RingoShadowFetch;
+}
 
 class RingoFetchContext
 {

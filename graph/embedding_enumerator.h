@@ -20,6 +20,8 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/obj_array.h"
 
+namespace indigo {
+
 class Graph;
 class GraphVertexEquivalence;
 
@@ -149,5 +151,7 @@ protected:
 
    TL_CP_DECL(ObjArray<_Enumerator>, _enumerators);
 };
+
+}
 
 #endif

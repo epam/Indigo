@@ -17,6 +17,8 @@
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 MoleculeCmlSaver::MoleculeCmlSaver (Output &output) : _output(output)
 {
 }

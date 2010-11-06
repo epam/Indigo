@@ -15,6 +15,8 @@
 #include "graph/graph_constrained_bmatching_finder.h"
 #include "graph/skew_symmetric_flow_finder.h"
 
+using namespace indigo;
+
 GraphConstrainedBMatchingFinder::GraphConstrainedBMatchingFinder (
    const Graph &g, const ObjArray< Array<int> > &nodes_per_set,
    const Array<int> *per_set_set_id)

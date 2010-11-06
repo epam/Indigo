@@ -17,6 +17,8 @@
 
 #include "render_common.h"
 
+namespace indigo {
+
 class RenderContext;
 
 class MoleculeRenderInternal {
@@ -123,5 +125,7 @@ private:
    const RenderSettings& _settings;
    TL_CP_DECL(MoleculeRenderData, _data);
 };
+
+}
 
 #endif //__render_internal_h__

@@ -15,6 +15,12 @@
                 <make-dep-project>../molecule</make-dep-project>
                 <make-dep-project>../reaction</make-dep-project>
             </make-dep-projects>
+            <sourceRootList/>
+            <confList>
+                <confElem>Debug</confElem>
+                <confElem>Release32</confElem>
+                <confElem>Release64</confElem>
+            </confList>
         </data>
     </configuration>
 </project>

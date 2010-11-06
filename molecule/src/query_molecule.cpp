@@ -17,6 +17,8 @@
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 QueryMolecule::QueryMolecule ()
 {
 }

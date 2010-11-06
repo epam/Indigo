@@ -11,12 +11,8 @@
         <itemPath>../common/base_cpp/bitoutworker.h</itemPath>
         <itemPath>../common/base_cpp/gray_codes.cpp</itemPath>
         <itemPath>../common/base_cpp/gray_codes.h</itemPath>
-        <itemPath>../common/base_cpp/output.cpp</itemPath>
-        <itemPath>../common/base_cpp/output.h</itemPath>
         <itemPath>../common/base_cpp/scanner.cpp</itemPath>
         <itemPath>../common/base_cpp/scanner.h</itemPath>
-        <itemPath>../common/base_cpp/string_pool.cpp</itemPath>
-        <itemPath>../common/base_cpp/string_pool.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f4" displayName="gzip" projectFiles="true">
         <itemPath>../common/gzip/gzip_output.cpp</itemPath>
@@ -31,17 +27,6 @@
         <itemPath>../common/lzw/lzw_dictionary.h</itemPath>
         <itemPath>../common/lzw/lzw_encoder.cpp</itemPath>
         <itemPath>../common/lzw/lzw_encoder.h</itemPath>
-      </logicalFolder>
-      <logicalFolder name="f1" displayName="math" projectFiles="true">
-        <itemPath>../common/math/algebra.h</itemPath>
-        <itemPath>../common/math/best_fit.cpp</itemPath>
-        <itemPath>../common/math/line3f.cpp</itemPath>
-        <itemPath>../common/math/lseg3f.cpp</itemPath>
-        <itemPath>../common/math/matr3x3d.cpp</itemPath>
-        <itemPath>../common/math/plane3f.cpp</itemPath>
-        <itemPath>../common/math/transform3f.cpp</itemPath>
-        <itemPath>../common/math/vec2f.cpp</itemPath>
-        <itemPath>../common/math/vec3f.cpp</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="local" displayName="src" projectFiles="true">

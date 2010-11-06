@@ -16,6 +16,7 @@
 #include "base_cpp/auto_ptr.h"
 #include "molecule/query_molecule.h"
 
+using namespace indigo;
 
 RGroup::RGroup () : if_then(0), rest_h(0)
 {

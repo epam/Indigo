@@ -22,6 +22,8 @@
 #include "base_cpp/list.h"
 #include "base_cpp/pool.h"
 
+using namespace indigo;
+
 LzwDict::LzwDict( void ) : 
    TL_CP_GET(_storage), 
    TL_CP_GET(_nextPointers), 

@@ -17,6 +17,7 @@
 
 #include "base_cpp/ptr_array.h"
 
+namespace indigo {
 class SharedMemory
 {
 public:
@@ -40,5 +41,7 @@ private:
    char   _filename[1024];
 #endif
 };
+
+}
 
 #endif

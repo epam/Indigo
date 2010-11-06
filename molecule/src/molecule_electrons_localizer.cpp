@@ -18,6 +18,8 @@
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 enum { BOND_SINGLE_OR_DOUBLE = -100 };
 
 MoleculeElectronsLocalizer::MoleculeElectronsLocalizer (Molecule &skeleton) :

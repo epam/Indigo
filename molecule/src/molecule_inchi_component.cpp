@@ -17,7 +17,8 @@
 #include "graph/automorphism_search.h"
 #include "molecule/elements.h"
 
-using namespace MoleculeInChILayers;
+using namespace indigo;
+using namespace indigo::MoleculeInChILayers;
 
 // Code for debug
 void (*dbg_handle_canonical_component_cb) (const Molecule &cano_component);

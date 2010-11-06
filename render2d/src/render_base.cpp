@@ -26,6 +26,8 @@
 #include "render_context.h"
 #include "render_base.h"
 
+using namespace indigo;
+
 RenderBase::RenderBase (RenderContext& rc) : _rc(rc), _settings(rc.getRenderSettings())
 {}
 

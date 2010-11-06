@@ -21,8 +21,13 @@
 #include "base_cpp/tlscont.h"
 #include "core/bingo_context.h"
 
-class OracleEnv;
-class SharedMemory;
+using namespace indigo;
+
+namespace indigo
+{
+   class OracleEnv;
+   class SharedMemory;
+}
 
 class BingoFingerprints
 {

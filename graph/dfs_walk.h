@@ -19,6 +19,8 @@
 #include "base_cpp/tlscont.h"
 #include "graph.h"
 
+namespace indigo {
+
 class Graph;
 
 class DfsWalk
@@ -79,6 +81,6 @@ protected:
 
    
 };
-
+}
 
 #endif

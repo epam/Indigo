@@ -22,6 +22,8 @@
 #include "base_cpp/list.h"
 #include "base_cpp/obj_array.h"
 
+namespace indigo {
+
 class Output;
 class BaseMolecule;
 class QueryMolecule;
@@ -117,5 +119,7 @@ protected:
 private:
    SmilesSaver (const SmilesSaver &); // no implicit copy
 };
+
+}
 
 #endif

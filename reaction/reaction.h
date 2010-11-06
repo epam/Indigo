@@ -20,6 +20,8 @@
 #include "molecule/molecule.h"
 #include "reaction/base_reaction.h"
 
+namespace indigo {
+
 // Stereo changes during reaction
 enum
 {
@@ -76,6 +78,6 @@ private:
    Reaction (const Reaction&);//no implicit copy
 };
 
-
+}
 
 #endif

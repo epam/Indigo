@@ -20,6 +20,9 @@
 #include "math/algebra.h"
 #include "graph/graph.h"
 
+namespace indigo
+{
+
 struct PatternAtom
 {
    explicit PatternAtom (Vec2f pos_) : pos(pos_) {}
@@ -72,5 +75,7 @@ protected:
    // no implicit copy
    PatternLayout (const PatternLayout &);
 };
+
+}
 
 #endif

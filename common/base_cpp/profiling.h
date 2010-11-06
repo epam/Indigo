@@ -61,6 +61,7 @@
 
 #define profGetStatistics(output, all) ProfilingSystem::getInstance().getStatistics(output, all)
 
+namespace indigo {
 class Output;
 
 class ProfilingSystem
@@ -135,6 +136,8 @@ private:
 };
 
 extern OsLock _profiling_global_lock;
+
+}
 
 #endif // __profiling_h__
 

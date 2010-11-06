@@ -20,6 +20,8 @@
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
 
+using namespace indigo;
+
 class PathRulesChecker;
 
 TautomerSearchContext::TautomerSearchContext (BaseMolecule &g1_, BaseMolecule &g2_, GraphDecomposer &decomposer1_,

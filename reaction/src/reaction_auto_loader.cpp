@@ -21,6 +21,8 @@
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
 
+using namespace indigo;
+
 void ReactionAutoLoader::_init ()
 {
    highlighting = 0;

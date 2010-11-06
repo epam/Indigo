@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 // Reusable storage for object
 template <typename T> class Obj
 {
@@ -126,5 +128,6 @@ private:
    Obj (const Obj &); // no implicit copy
 };
 
+}
 
 #endif

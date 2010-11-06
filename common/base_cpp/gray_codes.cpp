@@ -19,6 +19,8 @@
 #include "base_cpp/gray_codes.h"
 #include "base_c/bitarray.h"
 
+using namespace indigo;
+
 GrayCodesEnumerator::GrayCodesEnumerator (int length, bool needFullCode) :
    TL_CP_GET(_indices), TL_CP_GET(_code)
 

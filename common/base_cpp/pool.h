@@ -18,6 +18,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 template <typename T> class Pool
 {
 public:
@@ -149,5 +151,7 @@ protected:
 private:
    Pool (const Pool<T> & ); // no implicit copy
 };
+
+}
 
 #endif

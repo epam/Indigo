@@ -19,6 +19,8 @@
 
 #include "base_cpp/shmem.h"
 
+using namespace indigo;
+
 SharedMemory::SharedMemory (const char *name, int size, bool no_map_if_first)
 {
    char *winapi_error;

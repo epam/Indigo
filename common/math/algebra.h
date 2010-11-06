@@ -33,11 +33,14 @@
 #undef PI
 #endif
 
+namespace indigo {
+   
 const float EPSILON = 0.000001f;
 
 const float PI = 3.14159265358979323846f;
 
 const float INFINITY = 1000000.f;
+
 
 struct Transform3f;
 
@@ -447,5 +450,7 @@ protected:
    Vec3f _norm;
    float _d;
 };
+
+}
 
 #endif

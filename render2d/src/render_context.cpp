@@ -19,6 +19,8 @@
 #include "reaction/reaction.h"
 #include "render_context.h"
 
+using namespace indigo;
+
 RenderContext::TextLock RenderContext::_tlock;
 
 #ifdef _WIN32

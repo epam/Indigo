@@ -18,6 +18,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
+namespace indigo {
+
 class Graph;
 
 class SubgraphHash
@@ -46,6 +48,8 @@ private:
    Graph &_g;
    int _different_codes_count;
 };
+
+}
 
 #endif // __subgraph_hash__
 

@@ -15,6 +15,8 @@
 #include "base_cpp/bitinworker.h"
 #include "base_cpp/scanner.h"
 
+using namespace indigo;
+
 BitInWorker::BitInWorker( int StartBits, Scanner &NewIn ) : 
    _bits(StartBits), _scanner(NewIn)
 {

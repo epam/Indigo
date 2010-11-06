@@ -16,6 +16,8 @@
 #define _d_bitset_
 #include "array.h"
 
+namespace indigo {
+
 class Dbitset {
    //bitsets are packed into arrays of "words."  Currently a word is
    //a long long, which consists of 64 bits, requiring 6 address bits.
@@ -134,5 +136,7 @@ public:
 
    DEF_ERROR("Dynamic bitset");
 };
+
+}
 
 #endif

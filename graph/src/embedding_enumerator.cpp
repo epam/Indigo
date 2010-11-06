@@ -18,6 +18,8 @@
 #include "graph/embedding_enumerator.h"
 #include "graph/graph_vertex_equivalence.h"
 
+using namespace indigo;
+
 EmbeddingEnumerator::EmbeddingEnumerator (Graph &supergraph) :
 TL_CP_GET(_core_1),
 TL_CP_GET(_core_2),

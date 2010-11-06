@@ -16,6 +16,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_exact_matcher.h"
 
+using namespace indigo;
 
 MaxCommonSubmolecule::MaxCommonSubmolecule(BaseMolecule &submol, BaseMolecule &supermol):
 MaxCommonSubgraph(submol,supermol)

@@ -18,6 +18,8 @@
 #include "base_cpp/obj_array.h"
 #include "molecule/molecule_neighbourhood_counters.h"
 
+namespace indigo {
+
 class BaseReaction;
 class Reaction;
 class QueryReaction;
@@ -34,5 +36,7 @@ public:
 private:
    ObjArray<MoleculeAtomNeighbourhoodCounters> _counters;
 };
+
+}
 
 #endif

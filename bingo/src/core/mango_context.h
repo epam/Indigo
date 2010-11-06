@@ -20,6 +20,8 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/ptr.h"
 
+using namespace indigo;
+
 class MangoContext
 {
 public:

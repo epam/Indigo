@@ -25,6 +25,8 @@
 #include "base_cpp/red_black.h"
 #include "base_cpp/obj.h"
 
+namespace indigo {
+
 class ReactionEnumeratorState
 {
 public:
@@ -166,5 +168,6 @@ private:
       int *core_sub, int *core_super, void *userdata );
 };
 
+}
 
 #endif /* __reaction_enumerator_state__ */

@@ -19,6 +19,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
+namespace indigo {
+
 class Graph;
 class Filter;
 
@@ -54,5 +56,7 @@ protected:
 private:
    GraphDecomposer (const GraphDecomposer &);
 };
+
+}
 
 #endif

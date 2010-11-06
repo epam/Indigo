@@ -18,6 +18,8 @@
 #include "bingo_fetch_engine.h"
 #include "bingo_fingerprints.h"
 
+using namespace indigo;
+
 class RingoFetchContext;
 
 class RingoFastIndex : public BingoFetchEngine

@@ -19,6 +19,8 @@
 #include "oracle/bingo_fetch_engine.h"
 #include "oracle/mango_shadow_table.h"
 
+using namespace indigo;
+
 class MangoFetchContext;
 
 class MangoShadowFetch : public BingoFetchEngine

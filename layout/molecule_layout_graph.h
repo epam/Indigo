@@ -24,6 +24,8 @@
 #include "layout/layout_pattern.h"
 #include "base_cpp/obj.h"
 
+namespace indigo {
+
 class BiconnectedDecomposer;
 
 #ifdef _DEBUG
@@ -232,5 +234,7 @@ protected:
 
    TL_DECL(ObjArray<PatternLayout>, _patterns);
 };
+
+}
 
 #endif

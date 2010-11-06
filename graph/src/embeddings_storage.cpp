@@ -16,6 +16,8 @@
 #include "graph/graph.h"
 #include "graph/embeddings_storage.h"
 
+using namespace indigo;
+
 bool GraphEmbeddingsStorage::addEmbedding (const Array<int> &vertices, const Array<int> &edges)
 {
    dword hash = _calcSetHash(vertices) ^ _calcSetHash(edges);

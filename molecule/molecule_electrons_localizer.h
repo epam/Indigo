@@ -21,6 +21,8 @@
 #include "base_cpp/exception.h"
 #include "graph/graph_constrained_bmatching_finder.h"
 
+namespace indigo {
+
 class BaseMolecule;
 class Molecule;
 class Graph;
@@ -193,5 +195,7 @@ private:
    // Array with fixed edges
    TL_CP_DECL(Array<int>, _edges_fixed_type);
 };
+
+}
 
 #endif // __molecule_electrons_localizer__

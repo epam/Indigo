@@ -14,6 +14,8 @@
 
 #include "graph/graph_subtree_enumerator.h"
 
+using namespace indigo;
+
 GraphSubtreeEnumerator::GraphSubtreeEnumerator (Graph &graph) :
 _graph(graph),
 TL_CP_GET(_subtree),

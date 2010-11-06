@@ -15,14 +15,16 @@
 #ifndef __cmf_loader_h__
 #define __cmf_loader_h__
 
-class Molecule;
-class Scanner;
-struct Vec3f;
-
 #include "base_cpp/bitinworker.h"
 #include "lzw/lzw_dictionary.h"
 #include "lzw/lzw_decoder.h"
 #include "base_cpp/obj.h"
+
+namespace indigo {
+
+class Molecule;
+class Scanner;
+struct Vec3f;
 
 class CmfLoader
 {
@@ -102,5 +104,7 @@ protected:
 private:
    CmfLoader (const CmfLoader &); // no implicit copy
 };
+
+}
 
 #endif /* __cmf_loader_h__ */

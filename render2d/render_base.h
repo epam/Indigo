@@ -17,6 +17,8 @@
 
 #include "render_internal.h"
 
+namespace indigo {
+
 class Metalayout;
 
 class RenderBase {
@@ -48,5 +50,7 @@ protected:
    RenderContext& _rc;
    const RenderSettings& _settings;
 };
+
+}
 
 #endif //__render_base_h__

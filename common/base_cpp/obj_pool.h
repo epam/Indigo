@@ -17,6 +17,8 @@
 
 #include "base_cpp/pool.h"
 
+namespace indigo {
+
 template <typename T> class ObjPool
 {
 public:
@@ -123,5 +125,7 @@ protected:
 private:
    ObjPool (const ObjPool<T> & ); // no implicit copy
 };
+
+}
 
 #endif

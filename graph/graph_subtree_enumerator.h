@@ -20,6 +20,8 @@
 #include "base_cpp/list.h"
 #include "base_cpp/obj_array.h"
 
+namespace indigo {
+
 class Filter;
 
 class GraphSubtreeEnumerator
@@ -68,5 +70,6 @@ protected:
    int  _fCIS ();
 };
 
+}
 
 #endif

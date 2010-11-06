@@ -17,6 +17,8 @@
 #include "graph/morgan_code.h"
 #include "layout/molecule_layout_graph.h"
 
+using namespace indigo;
+
 TL_DEF(MoleculeLayoutGraph, ObjArray<PatternLayout>, _patterns);
 
 MoleculeLayoutGraph::MoleculeLayoutGraph ()

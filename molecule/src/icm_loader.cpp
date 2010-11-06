@@ -17,6 +17,8 @@
 #include "molecule/cmf_loader.h"
 #include "molecule/molecule.h"
 
+using namespace indigo;
+
 IcmLoader::IcmLoader (Scanner &scanner) : _scanner(scanner)
 {
 }

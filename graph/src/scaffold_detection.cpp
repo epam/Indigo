@@ -18,6 +18,8 @@
 #include "graph/graph_decomposer.h"
 #include "base_cpp/ptr_array.h"
 
+using namespace indigo;
+
 ScaffoldDetection::ScaffoldDetection (ObjArray<Graph>* graph_set):
 cbEdgeWeight(0), 
 cbVerticesColor(0),

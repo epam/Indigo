@@ -22,6 +22,8 @@
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_arom.h"
 
+namespace indigo {
+
 enum
 {
    SKIP_3D_CONSTRAINTS = 0x0100,
@@ -328,5 +330,7 @@ protected:
 
    AutoPtr<MoleculeRGroupFragment> _rgroup_fragment;
 };
+
+}
 
 #endif

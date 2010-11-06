@@ -20,6 +20,8 @@
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/smart_output.h"
 
+using namespace indigo;
+
 //
 // _ProfilingTimer
 //
@@ -57,7 +59,10 @@ qword _ProfilingTimer::getTime () const
 // Profiling functionality
 //
 
+namespace indigo
+{
 OsLock _profiling_global_lock, _profiling_global_names_lock;
+}
 ObjArray< Array<char> > ProfilingSystem::_names;
 
 TL_DECL(ProfilingSystem, _profiling_system);

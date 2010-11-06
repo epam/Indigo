@@ -15,11 +15,14 @@
 #ifndef __render_common_h__
 #define __render_common_h__
 
-typedef void* PVOID;
-
 #include "molecule/elements.h"
 #include "base_cpp/tlscont.h"
 #include "layout/metalayout.h"
+
+typedef void* PVOID;
+
+namespace indigo {
+
 struct Vec2f;
 struct Edge;
 class BaseMolecule;
@@ -330,6 +333,8 @@ public:
 private:
    RenderOptions (const RenderOptions& );
 };
+
+}
 
 #define QUERY_MOL_BEGIN if (_mol->isQueryMolecule()) { QueryMolecule& qmol = _mol->asQueryMolecule()
 #define QUERY_MOL_END }

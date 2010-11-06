@@ -17,6 +17,8 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 class Graph;
 struct Vec3f;
 
@@ -43,5 +45,7 @@ protected:
 private:
    GraphAffineMatcher (const GraphAffineMatcher &); // guess what? tip: look at any other class
 };
+
+}
 
 #endif

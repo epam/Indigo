@@ -16,6 +16,8 @@
 #include "graph/graph.h"
 #include "graph/path_enumerator.h"
 
+using namespace indigo;
+
 PathEnumerator::PathEnumerator (Graph &graph, int begin, int end) :
 _graph(graph),
 _begin(begin),

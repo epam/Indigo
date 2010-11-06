@@ -15,6 +15,8 @@
 #ifndef __crc32_h__
 #define __crc32_h__
 
+namespace indigo {
+
 class CRC32  
 {
 public:
@@ -27,5 +29,6 @@ private:
    unsigned _table[256];
 };
 
+}
 #endif
 

@@ -15,14 +15,19 @@
 #ifndef __rowid_saver_h__
 #define __rowid_saver_h__
 
-class Output;
-
 #include "base_cpp/bitoutworker.h"
 #include "lzw/lzw_dictionary.h"
 #include "lzw/lzw_encoder.h"
 
 #include "oracle/rowid_symbol_codes.h"
 #include "base_cpp/obj.h"
+
+using namespace indigo;
+
+namespace indigo
+{
+   class Output;
+}
 
 class RowIDSaver
 {

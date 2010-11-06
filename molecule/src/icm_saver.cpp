@@ -16,6 +16,8 @@
 #include "molecule/icm_saver.h"
 #include "molecule/cmf_saver.h"
 
+using namespace indigo;
+
 IcmSaver::IcmSaver (Output &output) : _output(output)
 {
 }

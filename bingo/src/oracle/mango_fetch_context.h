@@ -21,6 +21,8 @@
 #include "oracle/mango_shadow_fetch.h"
 #include "oracle/mango_oracle.h"
 
+using namespace indigo;
+
 class MangoShadowFetch;
 
 class MangoFetchContext

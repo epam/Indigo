@@ -15,6 +15,8 @@
 #ifndef __path_enumerator_h__
 #define __path_enumerator_h__
 
+namespace indigo {
+
 #include "base_cpp/array.h"
 
 class Graph;
@@ -48,5 +50,7 @@ protected:
 private:
    PathEnumerator (const PathEnumerator &); // no implicit copy
 };
+
+}
 
 #endif

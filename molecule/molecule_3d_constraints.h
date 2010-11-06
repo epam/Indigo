@@ -20,6 +20,8 @@
 #include "base_cpp/tlscont.h"
 #include "math/algebra.h"
 
+namespace indigo {
+
 class BaseMolecule;
 class QueryMolecule;
 
@@ -306,5 +308,7 @@ protected:
 
    TL_CP_DECL(RedBlackSet<int>, _cache_mark);
 };
+
+}
 
 #endif

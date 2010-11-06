@@ -14,6 +14,8 @@
 
 #include "math/algebra.h"
 
+using namespace indigo;
+
 float Vec3f::length () const
 {
    return (float)sqrt(lengthSqr());

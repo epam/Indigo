@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class Scanner;
 class Molecule;
 
@@ -37,5 +39,7 @@ protected:
 private:
    IcmLoader (const IcmLoader &); // no implicit copy
 };
+
+}
 
 #endif

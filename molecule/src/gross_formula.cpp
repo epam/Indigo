@@ -23,6 +23,8 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 
+using namespace indigo;
+
 int GrossFormula::_cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
 {
    if (ec1.counter == 0)

@@ -17,6 +17,8 @@
 
 #include "base_cpp/reusable_obj_array.h"
 
+namespace indigo {
+
 class BaseMolecule;
 enum ALIGNMENT {ALIGNMENT_LEFT = 0, ALIGNMENT_CENTER, ALIGNMENT_RIGHT};
 
@@ -83,5 +85,7 @@ private:
 
    ReusableObjArray<LayoutLine> _layout;
 };
+
+}
 
 #endif //__metalayout_h__

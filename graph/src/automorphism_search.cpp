@@ -13,7 +13,8 @@
  ***************************************************************************/
 
 #include "graph/automorphism_search.h"
-#include "base_cpp/profiling.h"
+
+using namespace indigo;
 
 AutomorphismSearch::AutomorphismSearch () :
 TL_CP_GET(_lab),

@@ -24,6 +24,8 @@
 #include "base_cpp/ptr_array.h"
 #include "base_c/os_tls.h"
 
+namespace indigo {
+
 // Session identifiers manager.
 // Every thread have local session ID that corresponds to the all
 // local session variables.
@@ -162,6 +164,7 @@ private:
    _ReusableVariablesPool< T >* _var_pool;
 };                   
 
+}
 
 // "Quasi-static" variable definition
 #define QS_DEF(TYPE, name) \

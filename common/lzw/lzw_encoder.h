@@ -18,6 +18,8 @@
 #include "base_cpp/bitoutworker.h"
 #include "lzw/lzw_dictionary.h"
 
+namespace indigo {
+
 class Output;
 
 class LzwEncoder
@@ -52,6 +54,8 @@ private:
    LzwEncoder( const LzwEncoder & );
 
 };
+
+}
 
 #endif 
 

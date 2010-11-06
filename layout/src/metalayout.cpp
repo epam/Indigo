@@ -16,6 +16,8 @@
 #include "layout/metalayout.h"
 #include "base_cpp/tlscont.h"
 
+using namespace indigo;
+
 Metalayout::LayoutLine::LayoutLine ()
 {
    clear();

@@ -25,6 +25,8 @@
 #include "oracle/ora_logger.h"
 #include "base_c/defs.h"
 
+using namespace indigo;
+
 OracleStatement::OracleStatement (OracleEnv &env) : _env(env)
 {                                                 
    dvoid *res = 0;

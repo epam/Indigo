@@ -19,6 +19,8 @@
 #include "base_cpp/obj.h"
 #include "crf_saver.h"
 
+namespace indigo {
+
 class Reaction;
 
 class CrfLoader
@@ -53,5 +55,7 @@ protected:
 private:
    CrfLoader (const CrfLoader &); // no implicit copy
 };
+
+}
 
 #endif

@@ -21,6 +21,8 @@
 #include "molecule/molecule_decomposer.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 MoleculeAutomorphismSearch::MoleculeAutomorphismSearch () :
    TL_CP_GET(_approximation_orbits),
    TL_CP_GET(_hcount),

@@ -17,6 +17,8 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 // Cyclic array
 template <typename T> struct CyclicArray
 {
@@ -64,5 +66,6 @@ private:
    CyclicArray (const CyclicArray &); // no implicit copy
 };
 
+}
 
 #endif // __cyclic_array_h__

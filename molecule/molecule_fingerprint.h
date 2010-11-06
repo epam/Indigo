@@ -18,6 +18,8 @@
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
 
+namespace indigo {
+
 class TautomerSuperStructure;
 
 // Fingerprint consists of 5 parts: EXT + ORD + ANY + TAU + SIM.
@@ -118,5 +120,7 @@ protected:
 private:
    MoleculeFingerprintBuilder (const MoleculeFingerprintBuilder &); // no implicit copy
 };
+
+}
 
 #endif

@@ -21,6 +21,8 @@
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 RSmilesSaver::RSmilesSaver (Output &output) :
 _output(output),
 TL_CP_GET(_written_atoms),

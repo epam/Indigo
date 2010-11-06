@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class Scanner;
 class Reaction;
 
@@ -37,5 +39,7 @@ protected:
 private:
    IcrLoader (const IcrLoader &); // no implicit copy
 };
+
+}
 
 #endif

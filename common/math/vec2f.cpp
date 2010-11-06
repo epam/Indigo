@@ -14,6 +14,8 @@
 
 #include "math/algebra.h"
 
+using namespace indigo;
+
 bool Vec2f::normalize ()
 {
    float l = lengthSqr();

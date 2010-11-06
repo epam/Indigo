@@ -19,6 +19,8 @@
 #include "graph/graph.h"
 #include "base_cpp/tlscont.h"
 
+namespace indigo {
+
 class Filter;
 
 class SpanningTree
@@ -91,5 +93,7 @@ protected:
 
    int         _current_depth;
 };
+
+}
 
 #endif

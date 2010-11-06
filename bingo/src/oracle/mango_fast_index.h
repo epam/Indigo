@@ -21,6 +21,8 @@
 #include "oracle/bingo_fetch_engine.h"
 #include "oracle/bingo_fingerprints.h"
 
+using namespace indigo;
+
 class MangoFetchContext;
 
 class MangoFastIndex : public BingoFetchEngine

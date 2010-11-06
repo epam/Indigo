@@ -17,6 +17,8 @@
 
 #include "graph/automorphism_search.h"
 
+namespace indigo {
+
 class Molecule;
 class MoleculeStereocenters;
 
@@ -92,5 +94,6 @@ protected:
    int _fixed_atom;
 };
 
+}
 
 #endif

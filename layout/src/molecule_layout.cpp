@@ -17,6 +17,8 @@
 #include "graph/filter.h"
 #include "layout/molecule_layout.h"
 
+using namespace indigo;
+
 MoleculeLayout::MoleculeLayout (BaseMolecule &molecule) :
 _molecule(molecule)
 {

@@ -22,6 +22,8 @@
 #include "molecule/query_molecule.h"
 #include "gzip/gzip_scanner.h"
 
+using namespace indigo;
+
 void MoleculeAutoLoader::_init ()
 {
    highlighting = 0;

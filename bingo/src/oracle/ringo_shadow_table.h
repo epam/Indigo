@@ -19,6 +19,8 @@
 #include "oracle/ora_wrap.h"
 #include "oracle/bingo_fetch_engine.h"
 
+using namespace indigo;
+
 class RingoIndex;
 
 class RingoShadowTable

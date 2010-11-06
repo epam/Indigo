@@ -15,14 +15,14 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "math/algebra.h"
-
 #include "base_c/defs.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph.h"
 #include "graph/spanning_tree.h"
 #include "graph/cycle_basis.h"
 #include "graph/graph_decomposer.h"
+
+using namespace indigo;
 
 int Vertex::findNeiVertex (int idx) const
 {

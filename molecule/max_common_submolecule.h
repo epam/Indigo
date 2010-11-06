@@ -21,6 +21,7 @@
 #include "time.h"
 #include "molecule/molecule.h"
 
+namespace indigo {
 
 class MaxCommonSubmolecule: public MaxCommonSubgraph{
 public:
@@ -31,5 +32,6 @@ public:
    
 };
 
+}
 
 #endif

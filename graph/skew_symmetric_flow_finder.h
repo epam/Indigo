@@ -19,6 +19,8 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class SkewSymmetricNetwork;
 
 /* Find maximum integer skew-symmetric flow in 
@@ -57,5 +59,7 @@ private:
    int _network_sink;
    const SkewSymmetricNetwork &_network;
 };
+
+}
 
 #endif // __skew_symmetric_flow_finder_h__

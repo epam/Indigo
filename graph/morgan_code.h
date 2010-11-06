@@ -17,6 +17,8 @@
 
 #include "graph/graph.h"
 
+namespace indigo {
+
 class MorganCode
 {
 public:
@@ -28,5 +30,7 @@ protected:
 
    const Graph &_g;
 };
+
+}
 
 #endif

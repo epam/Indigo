@@ -29,6 +29,8 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/auto_ptr.h"
 
+using namespace indigo;
+
 // Messages
 enum {
    MSG_NEED_TASK,

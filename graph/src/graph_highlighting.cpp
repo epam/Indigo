@@ -16,6 +16,8 @@
 #include "graph/graph.h"
 #include "graph/filter.h"
 
+using namespace indigo;
+
 GraphHighlighting::GraphHighlighting ()
 {
    _graph = 0;

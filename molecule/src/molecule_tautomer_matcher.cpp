@@ -20,6 +20,8 @@
 #include "molecule/molecule_tautomer_utils.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 MoleculeTautomerMatcher::MoleculeTautomerMatcher (Molecule &target, bool substructure) :
 _substructure(substructure),
 _force_hydrogens(false),

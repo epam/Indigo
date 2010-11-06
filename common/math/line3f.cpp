@@ -14,6 +14,8 @@
 
 #include "math/algebra.h"
 
+using namespace indigo;
+
 Line3f::Line3f ()
 {
    org.zero();

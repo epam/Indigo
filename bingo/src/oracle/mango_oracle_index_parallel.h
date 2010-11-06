@@ -5,6 +5,8 @@
 #include "oracle/bingo_oracle_parallel.h"
 #include "oracle/mango_oracle.h"
 
+using namespace indigo;
+
 //
 // Classes for parallelized index creation
 //

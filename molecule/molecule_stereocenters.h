@@ -18,6 +18,8 @@
 #include "base_cpp/red_black.h"
 #include "math/algebra.h"
 
+namespace indigo {
+
 class BaseMolecule;
 class Filter;
 
@@ -166,5 +168,7 @@ protected:
 private:
    MoleculeStereocenters (const MoleculeStereocenters &); // no implicit copy
 };
+
+}
 
 #endif

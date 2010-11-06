@@ -23,6 +23,8 @@
 #include "molecule/molecule_inchi_layers.h"
 #include "molecule/molecule_inchi_component.h"
 
+namespace indigo {
+
 class Output;
 class Graph;
 
@@ -77,5 +79,7 @@ private:
    TL_CP_DECL(ReusableObjArray<MoleculeInChICompoment>, _components);
    TL_CP_DECL(Array<int>, _component_indices);
 };
+
+}
 
 #endif // __molecule_inchi_canonicalizer_h__

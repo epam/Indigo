@@ -19,6 +19,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
+namespace indigo {
+
 class Scanner;
 class BaseMolecule;
 class Molecule;
@@ -119,5 +121,7 @@ protected:
 private:
    MolfileLoader (const MolfileLoader &); // no implicit copy
 };
+
+}
 
 #endif

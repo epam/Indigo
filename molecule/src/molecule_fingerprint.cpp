@@ -26,6 +26,8 @@
 #include "molecule/elements.h"
 #include "molecule/query_molecule.h"
 
+using namespace indigo;
+
 MoleculeFingerprintBuilder::MoleculeFingerprintBuilder (BaseMolecule &mol,
                      const MoleculeFingerprintParameters &parameters):
 _mol(mol),

@@ -18,6 +18,8 @@
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 MoleculeStereocenters::MoleculeStereocenters ()
 {
 }

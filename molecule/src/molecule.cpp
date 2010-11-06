@@ -20,6 +20,8 @@
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_dearom.h"
 
+using namespace indigo;
+
 Molecule::Molecule ()
 {
 }

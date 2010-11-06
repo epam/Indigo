@@ -18,6 +18,7 @@
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/query_molecule.h"
 
+using namespace indigo;
 
 MoleculeScaffoldDetection::MoleculeScaffoldDetection (ObjArray<Molecule>* mol_set):
 ScaffoldDetection(0),

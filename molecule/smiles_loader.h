@@ -20,6 +20,8 @@
 #include "base_cpp/tlscont.h"
 #include "molecule/query_molecule.h"
 
+namespace indigo {
+
 class Scanner;
 class BaseMolecule;
 class Molecule;
@@ -135,5 +137,7 @@ protected:
 private:
    SmilesLoader (const SmilesLoader &); // no implicit copy
 };
+
+}
 
 #endif

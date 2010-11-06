@@ -17,6 +17,8 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 class Molecule;
 class QueryMolecule;
 class BaseMolecule;
@@ -78,6 +80,6 @@ private:
    MolfileSaver (const MolfileSaver &); // no implicit copy
 };
 
-
+}
 
 #endif

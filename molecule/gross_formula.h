@@ -15,6 +15,8 @@
 #ifndef __gross_formula__
 #define __gross_formula__
 
+namespace indigo {
+
 #include "base_cpp/array.h"
 
 class BaseMolecule;
@@ -44,6 +46,8 @@ protected:
    static int _cmp      (_ElemCounter &ec1, _ElemCounter &ec2, void *context);
    static int _cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void *context);
 };
+
+}
 
 #endif
 

@@ -19,6 +19,8 @@
 #include "base_cpp/list.h"
 #include "base_cpp/tlscont.h"
 
+using namespace indigo;
+
 class BingoFetchEngine
 {
 public:

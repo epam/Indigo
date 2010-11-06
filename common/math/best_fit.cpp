@@ -16,6 +16,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
+using namespace indigo;
+
 bool Transform3f::bestFit (int npoints, const Vec3f points[], const Vec3f goals[], float *sqsum_out)
 {
    QS_DEF(Array<double>, X); //set of points

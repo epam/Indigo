@@ -22,8 +22,14 @@
 
 #include "core/bingo_error.h"
 
+using namespace indigo;
+
+namespace indigo
+{
+   class Reaction;
+}
+
 class BingoContext;
-class Reaction;
 
 class RingoIndex
 {

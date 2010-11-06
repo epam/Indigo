@@ -17,6 +17,8 @@
 
 #include "layout/molecule_layout_graph.h"
 
+namespace indigo {
+
 struct RefinementState  
 {
    explicit RefinementState (MoleculeLayoutGraph &graph);
@@ -44,5 +46,7 @@ private:
 
    MoleculeLayoutGraph &_graph;
 };
+
+}
 
 #endif

@@ -12,11 +12,12 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-
 #ifndef __cmf_symbol_codes_h__
 #define __cmf_symbol_codes_h__
 
 #include "molecule/elements.h"
+
+namespace indigo {
 
 /* Compressed molecule symbols constants */
 enum {
@@ -136,6 +137,8 @@ enum {
 };
 
 /***********************************/
+
+}
 
 #endif /* __cmf_symbol_codes_h__ */
 

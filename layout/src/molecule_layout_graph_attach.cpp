@@ -14,6 +14,8 @@
 
 #include "layout/molecule_layout_graph.h"
 
+using namespace indigo;
+
 void MoleculeLayoutGraph::_setChainType (const Array<int> &chain, const Array<int> &mapping, int type)
 {
    for (int i = 0; i < chain.size() - 1; i++)

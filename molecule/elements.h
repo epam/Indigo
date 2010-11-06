@@ -18,6 +18,7 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/red_black.h"
 
+namespace indigo {
 
 class Scanner;
 
@@ -249,5 +250,7 @@ private:
    };
    RedBlackMap<_IsotopeKey, _IsotopeValue> _isotope_parameters_map;
 };
+
+}
 
 #endif

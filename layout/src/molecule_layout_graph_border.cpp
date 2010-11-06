@@ -14,6 +14,8 @@
 
 #include "layout/molecule_layout_graph.h"
 
+using namespace indigo;
+
 bool _isRayIntersect (float a, float b, const Vec2f &p, const Vec2f &v1, const Vec2f &v2) 
 {
    // Ray x=at+p.x, y=bt+p.y, t>=0 and segment [V1,V2];

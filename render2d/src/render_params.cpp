@@ -39,6 +39,8 @@
 #include "render_reaction.h"
 #include "render_params.h"
 
+using namespace indigo;
+
 RenderParams::RenderParams ()
 {
    clear();

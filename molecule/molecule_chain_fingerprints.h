@@ -18,6 +18,8 @@
 #include "base_cpp/tlscont.h"
 #include "graph/graph_subchain_enumerator.h"
 
+namespace indigo {
+
 struct MoleculeChainFingerprintParameters
 {
    MoleculeChainFingerprintParameters ()
@@ -61,5 +63,7 @@ protected:
 private:
    MoleculeChainFingerprintBuilder (const MoleculeChainFingerprintBuilder &); // no implicit copy
 };
+
+}
 
 #endif

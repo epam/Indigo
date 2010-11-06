@@ -14,6 +14,8 @@
 
 #include "math/algebra.h"
 
+using namespace indigo;
+
 Plane3f::Plane3f ()
 {
    _norm.set(0, 0, 1);

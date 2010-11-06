@@ -15,6 +15,8 @@
 #ifndef __molecule_tautomer_utils__
 #define __molecule_tautomer_utils__
 
+namespace indigo {
+
 class Graph;
 class Molecule;
 class GraphHighlighting;
@@ -32,5 +34,7 @@ private:
 
    static bool _isRepMetal (int elem);
 };
+
+}
 
 #endif

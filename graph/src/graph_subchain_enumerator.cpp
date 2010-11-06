@@ -14,6 +14,8 @@
 
 #include "graph/graph_subchain_enumerator.h"
 
+using namespace indigo;
+
 GraphSubchainEnumerator::GraphSubchainEnumerator (Graph &graph, int min_edges, int max_edges, int mode) :
 _graph(graph),
 _max_edges(max_edges),

@@ -12,7 +12,12 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#ifndef __reaction_layout__
+
 #include "layout/metalayout.h"
+
+namespace indigo {
+
 class Reaction;
 class Molecule;
 struct Vec2f;
@@ -43,3 +48,7 @@ private:
    BaseReaction& _r;
    Metalayout _ml;
 };
+
+}
+
+#endif

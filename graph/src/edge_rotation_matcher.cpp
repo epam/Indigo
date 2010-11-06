@@ -19,6 +19,7 @@
 #include "math/algebra.h"
 #include "graph/graph_decomposer.h"
 
+using namespace indigo;
 
 EdgeRotationMatcher::EdgeRotationMatcher (Graph &subgraph, Graph &supergraph, const int *mapping) :
 _subgraph(subgraph),

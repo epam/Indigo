@@ -15,6 +15,8 @@
 #include "base_cpp/bitoutworker.h"
 #include "base_cpp/output.h"
 
+using namespace indigo;
+
 BitOutWorker::BitOutWorker( int StartBits, Output &NewOut ) : 
    _bits(StartBits), _output(NewOut)
 {  

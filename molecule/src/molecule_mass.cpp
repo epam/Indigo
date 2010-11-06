@@ -17,6 +17,8 @@
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 MoleculeMass::MoleculeMass()
 {
    relative_atomic_mass_map = NULL;

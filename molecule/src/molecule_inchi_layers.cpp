@@ -22,7 +22,8 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/elements.h"
 
-using namespace MoleculeInChILayers;
+using namespace indigo;
+using namespace indigo::MoleculeInChILayers;
 
 //
 // AbstractLayer

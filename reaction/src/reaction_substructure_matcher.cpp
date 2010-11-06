@@ -22,6 +22,8 @@
 #include "reaction/reaction_neighborhood_counters.h"
 #include "molecule/molecule_neighbourhood_counters.h"
 
+using namespace indigo;
+
 ReactionSubstructureMatcher::ReactionSubstructureMatcher (Reaction &target) :
 BaseReactionSubstructureMatcher(target)
 {

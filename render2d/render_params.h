@@ -20,6 +20,8 @@
 #include "graph/graph_highlighting.h"
 #include "reaction/reaction_highlighting.h"
 
+namespace indigo {
+
 class BaseMolecule;
 class Reaction;
 class Scanner;
@@ -70,5 +72,7 @@ private:
    RenderParamInterface ();
    RenderParamInterface (const RenderParamInterface&);
 };
+
+}
 
 #endif //__render_params_h__

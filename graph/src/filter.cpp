@@ -16,6 +16,8 @@
 #include "graph/filter.h"
 #include "graph/graph.h"
 
+using namespace indigo;
+
 Filter::Filter () :
 _filter(0),
 _value(0),

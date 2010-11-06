@@ -20,7 +20,13 @@
 #include "base_cpp/output.h"
 #include "core/mango_matchers.h"
 
-class Scanner;
+using namespace indigo;
+
+namespace indigo
+{
+   class Scanner;
+}
+
 class BingoContext;
 
 class MangoIndex

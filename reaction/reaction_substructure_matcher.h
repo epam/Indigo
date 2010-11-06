@@ -21,6 +21,8 @@
 #include "base_cpp/obj.h"
 #include "reaction/base_reaction_substructure_matcher.h"
 
+namespace indigo {
+
 class QueryReaction;
 
 class ReactionSubstructureMatcher : public BaseReactionSubstructureMatcher
@@ -49,5 +51,6 @@ protected:
                          BaseMolecule &submol, Molecule &supermol, void *context);
 };
 
+}
 
 #endif

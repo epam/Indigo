@@ -18,9 +18,10 @@
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class Graph;
 class Output;
-template<typename T> class DLLEXPORT Array;
 
 class RingCanonizer
 {
@@ -47,4 +48,5 @@ protected:
                    Array<int> &codes, Array<int> &indices);
 };
 
+}
 #endif

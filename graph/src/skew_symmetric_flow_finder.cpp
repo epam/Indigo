@@ -13,8 +13,9 @@
  ***************************************************************************/
 
 #include "graph/skew_symmetric_flow_finder.h"
-
 #include "graph/skew_symmetric_network.h"
+
+using namespace indigo;
 
 SkewSymmetricFlowFinder::SkewSymmetricFlowFinder 
    (const SkewSymmetricNetwork &network) :

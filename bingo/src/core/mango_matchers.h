@@ -25,6 +25,8 @@
 #include "base_cpp/auto_ptr.h"
 #include "molecule/molecule_substructure_matcher.h"
 
+using namespace indigo;
+
 class BingoContext;
 
 class MangoSubstructure

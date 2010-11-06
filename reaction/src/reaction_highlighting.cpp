@@ -15,6 +15,8 @@
 #include "reaction/reaction_highlighting.h"
 #include "reaction/base_reaction.h"
 
+using namespace indigo;
+
 ReactionHighlighting::ReactionHighlighting ()
 {
 }

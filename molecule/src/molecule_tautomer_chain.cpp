@@ -21,6 +21,8 @@
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
 
+using namespace indigo;
+
 enum
 {
    BOND_ZEROED = 0  // Bond can appear during tautomerism

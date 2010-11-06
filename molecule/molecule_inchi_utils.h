@@ -18,6 +18,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class Molecule;
 
 // Utility class for InChI code creation
@@ -61,5 +63,7 @@ private:
    static Array<int> _atom_lables_ranks;
    
 };
+
+}
 
 #endif // __molecule_inchi_utils_h__

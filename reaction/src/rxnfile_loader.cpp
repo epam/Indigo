@@ -20,6 +20,8 @@
 #include "molecule/molfile_loader.h"
 #include "base_cpp/scanner.h"
 
+using namespace indigo;
+
 RxnfileLoader::RxnfileLoader (Scanner& scanner): _scanner(scanner){
    highlighting = 0;
    _v3000 = false;

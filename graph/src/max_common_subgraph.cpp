@@ -17,6 +17,8 @@
 #include "graph/graph_decomposer.h"
 #include "time.h"
 
+using namespace indigo;
+
 MaxCommonSubgraph::MaxCommonSubgraph(Graph &subgraph, Graph &supergraph) :
    conditionEdgeWeight(0),
    conditionVerticesColor(0),

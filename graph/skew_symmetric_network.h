@@ -19,6 +19,8 @@
 #include "base_cpp/exception.h"
 #include "graph/graph.h"
 
+namespace indigo {
+
 enum 
 {
    ARC_IN,  // Incoming arc
@@ -91,5 +93,7 @@ private:
    };
    Array<Arc> _arcs;
 };
+
+}
 
 #endif // __skew_symmetric_network_h__

@@ -17,6 +17,8 @@
 #include "reaction/base_reaction.h"
 #include "base_c/bitarray.h"
 
+using namespace indigo;
+
 ReactionFingerprintBuilder::ReactionFingerprintBuilder (BaseReaction &reaction,
         const MoleculeFingerprintParameters &parameters) :
 _reaction(reaction),

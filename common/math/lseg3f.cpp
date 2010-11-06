@@ -14,6 +14,8 @@
 
 #include "math/algebra.h"
 
+using namespace indigo;
+
 LSeg3f::LSeg3f(const Vec3f &beg, const Vec3f &end) :
 _beg(beg),
 _end(end)

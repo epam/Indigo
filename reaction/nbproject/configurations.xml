@@ -31,6 +31,7 @@
       <itemPath>src/reaction_highlighting.cpp</itemPath>
       <itemPath>reaction_highlighting.h</itemPath>
       <itemPath>src/reaction_neighborhood_counters.cpp</itemPath>
+      <itemPath>reaction_neighborhood_counters.h</itemPath>
       <itemPath>src/reaction_product_enumerator.cpp</itemPath>
       <itemPath>reaction_product_enumerator.h</itemPath>
       <itemPath>src/reaction_substructure_matcher.cpp</itemPath>

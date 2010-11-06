@@ -17,6 +17,8 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 template <typename T> class ReusableObjArray
 {
 public:
@@ -108,5 +110,7 @@ protected:
 private:
    ReusableObjArray (const ReusableObjArray &); // no implicit copy
 };
+
+}
 
 #endif

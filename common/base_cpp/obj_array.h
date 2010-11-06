@@ -17,6 +17,8 @@
 
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 template <typename T> class ObjArray
 {
 public:
@@ -132,5 +134,7 @@ protected:
 private:
    ObjArray (const ObjArray &); // no implicit copy
 };
+
+}
 
 #endif

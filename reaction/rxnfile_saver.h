@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class Output;
 class Reaction;
 class BaseReaction;
@@ -60,5 +62,6 @@ protected:
    void _writeRxnFooter ();
 };
 
+}
 
 #endif

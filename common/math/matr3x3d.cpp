@@ -12,9 +12,11 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include <string.h>
+
 #include "math/algebra.h"
 
-#include <string.h>
+using namespace indigo;
 
 Matr3x3d::Matr3x3d ()
 {

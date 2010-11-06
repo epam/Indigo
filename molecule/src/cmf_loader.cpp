@@ -18,6 +18,8 @@
 #include "molecule/cmf_loader.h"
 #include "molecule/cmf_symbol_codes.h"
 
+using namespace indigo;
+
 CmfLoader::CmfLoader (LzwDict &dict, Scanner &scanner) :
 TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels)
 {

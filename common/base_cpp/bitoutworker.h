@@ -17,6 +17,8 @@
 
 #include "base_c/defs.h"
 
+namespace indigo {
+
 class Output;
 
 class BitOutWorker
@@ -44,6 +46,8 @@ private:
    BitOutWorker( const BitOutWorker & );
 
 };
+
+}
 
 #endif /* __bitoutworker_h__ */
 

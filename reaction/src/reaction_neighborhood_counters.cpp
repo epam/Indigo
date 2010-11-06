@@ -17,6 +17,8 @@
 #include "reaction/query_reaction.h"
 #include "molecule/molecule_neighbourhood_counters.h"
 
+using namespace indigo;
+
 void ReactionAtomNeighbourhoodCounters::calculate(Reaction &reac) {
    int i;
 

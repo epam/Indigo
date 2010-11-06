@@ -21,6 +21,8 @@
 #include "render_context.h"
 #include "render_internal.h"
 
+using namespace indigo;
+
 static bool ElementHygrodenOnLeft[] =
 {
    false,  // filler

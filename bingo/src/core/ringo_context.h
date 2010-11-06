@@ -19,7 +19,12 @@
 #include "core/ringo_index.h"
 #include "base_cpp/tlscont.h"
 
-class BingoContext;
+using namespace indigo;
+
+namespace ingido
+{
+   class BingoContext;
+}
 
 class RingoContext
 {

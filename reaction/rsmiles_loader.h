@@ -17,6 +17,8 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class Scanner;
 class ReactionHighlighting;
 class BaseReaction;
@@ -59,5 +61,7 @@ protected:
 private:
    RSmilesLoader (const RSmilesLoader &); // no implicit copy
 };
+
+}
 
 #endif

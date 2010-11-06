@@ -14,6 +14,8 @@
 
 #include "base_cpp/tlscont.h"
 
+using namespace indigo;
+
 _SIDManager _SIDManager::_instance;
 OsLock _SIDManager::_lock;
 

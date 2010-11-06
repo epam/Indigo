@@ -17,6 +17,8 @@
 
 #include "base_cpp/red_black.h"
 
+namespace indigo {
+
 class Molecule;
 
 // Molecular mass calculation
@@ -48,5 +50,7 @@ public:
     */
    int nominalMass (Molecule &mol);
 };
+
+}
 
 #endif // __molecule_mass_h__

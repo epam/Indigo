@@ -1,15 +1,34 @@
+/****************************************************************************
+ * Copyright (C) 2009-2010 GGA Software Services LLC
+ *
+ * This file is part of Indigo toolkit.
+ *
+ * This file may be distributed and/or modified under the terms of the
+ * GNU General Public License version 3 as published by the Free Software
+ * Foundation and appearing in the file LICENSE.GPL included in the
+ * packaging of this file.
+ *
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ ***************************************************************************/
+
 #ifndef __bingo_parallel_h__
 #define __bingo_parallel_h__
 
 #include "base_cpp/os_thread_wrapper.h"
 #include "base_cpp/chunk_storage.h"
 
-// Helpful class for parallelizing algorithms with 
+// Helper class for parallelizing algorithms with
 // fetching packs of BLOBs or CLOBS from the database
 
-class OracleStatement;
-class OracleLOB;
-class OracleEnv;
+using namespace indigo;
+
+namespace indigo
+{
+   class OracleStatement;
+   class OracleLOB;
+   class OracleEnv;
+}
 
 // Base class for command.
 // This command contains pack of the blobs (molecules in the raw format) 

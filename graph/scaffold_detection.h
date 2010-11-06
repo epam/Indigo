@@ -14,7 +14,10 @@
 
 #ifndef __scaffold_detection_h_
 #define __scaffold_detection_h_
+
 #include "graph/max_common_subgraph.h"
+
+namespace indigo {
 
 class ScaffoldDetection {
 public:
@@ -122,5 +125,6 @@ private:
    void _searchScaffold(Graph& scaffold, bool approximate);
 };
 
+}
 
 #endif

@@ -16,6 +16,8 @@
 
 #include "base_cpp/tlscont.h"
 
+namespace indigo {
+
 class BaseReaction;
 struct MoleculeFingerprintParameters;
 
@@ -38,5 +40,7 @@ protected:
 private:
    ReactionFingerprintBuilder (const ReactionFingerprintBuilder &); // no implicit copy
 };
+
+}
 
 #endif

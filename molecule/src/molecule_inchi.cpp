@@ -22,6 +22,8 @@
 #include "molecule/molecule_inchi_utils.h"
 #include "molecule/molecule_automorphism_search.h"
 
+using namespace indigo;
+
 using namespace MoleculeInChILayers;
 
 MoleculeInChI::MoleculeInChI (Output &output) :

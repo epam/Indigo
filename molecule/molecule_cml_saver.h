@@ -15,6 +15,8 @@
 #ifndef __cml_saver_h__
 #define __cml_saver_h__
 
+namespace indigo {
+
 class Molecule;
 class Output;
 
@@ -35,6 +37,7 @@ private:
    MoleculeCmlSaver (const MoleculeCmlSaver &); // no implicit copy
 };
 
+}
 
 #endif
 

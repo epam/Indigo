@@ -17,6 +17,8 @@
 
 #include "render_base.h"
 
+namespace indigo {
+
 class MoleculeRender : public RenderBase {
 public:
    MoleculeRender (RenderContext& rc);
@@ -46,5 +48,7 @@ private:
    Array<BaseMolecule*> _map; 
    const GraphHighlighting* _highlighting;
 };
+
+}
 
 #endif //__render_molecule_h__

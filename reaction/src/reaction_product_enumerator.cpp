@@ -28,6 +28,8 @@
 #include "molecule/canonical_smiles_saver.h"
 #include "graph/dfs_walk.h"
 
+using namespace indigo;
+
 ReactionProductEnumerator::ReactionProductEnumerator( QueryReaction &reaction ) : 
         is_multistep_reaction(false), is_self_react(false),
         is_one_tube(false), max_product_count(1000), max_deep_level(2),

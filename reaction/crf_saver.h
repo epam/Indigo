@@ -18,6 +18,8 @@
 #include "lzw/lzw_encoder.h"
 #include "base_cpp/obj.h"
 
+namespace indigo {
+
 class Molecule;
 class Reaction;
 class LzwDict;
@@ -55,5 +57,7 @@ protected:
 private:
    CrfSaver (const CrfSaver &); // no implicit copy
 };
+
+}
 
 #endif

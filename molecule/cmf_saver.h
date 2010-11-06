@@ -15,11 +15,13 @@
 #ifndef __cmf_saver_h__
 #define __cmf_saver_h__
 
-class Molecule;
-class Output;
-
 #include "base_cpp/obj.h"
 #include "lzw/lzw_encoder.h"
+
+namespace indigo {
+
+class Molecule;
+class Output;
 
 class CmfSaver
 {
@@ -69,5 +71,6 @@ private:
    CmfSaver (const CmfSaver &); // no implicit copy
 };
 
-#endif /* __cmf_saver_h__ */
+}
 
+#endif /* __cmf_saver_h__ */

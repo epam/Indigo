@@ -23,6 +23,8 @@
 #include "graph/graph.h"
 #include "base_c/bitarray.h"
 
+using namespace indigo;
+
 GraphPerfectMatching::GraphPerfectMatching (const Graph &graph, int params) :
    _graph(graph),
    TL_CP_GET(_matchingEdgesLocal),

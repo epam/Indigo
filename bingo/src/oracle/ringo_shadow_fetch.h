@@ -18,6 +18,8 @@
 #include "base_cpp/auto_ptr.h"
 #include "oracle/bingo_fetch_engine.h"
 
+using namespace indigo;
+
 class RingoFetchContext;
 
 class RingoShadowFetch : public BingoFetchEngine

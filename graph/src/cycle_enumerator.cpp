@@ -15,6 +15,8 @@
 #include "graph/cycle_enumerator.h"
 #include "graph/spanning_tree.h"
 
+using namespace indigo;
+
 CycleEnumerator::CycleEnumerator (Graph &graph) :
 _graph(graph)
 {

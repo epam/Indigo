@@ -21,6 +21,8 @@
 #include "base_cpp/list.h"
 #include "graph/aux_path_finder.h"
 
+using namespace indigo;
+
 SimpleCycleBasis::SimpleCycleBasis(const Graph& graph) :
 _graph(graph),_isMinimized(false) {
 

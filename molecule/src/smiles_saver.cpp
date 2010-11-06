@@ -26,6 +26,8 @@
 #include "graph/graph_highlighting.h"
 #include "molecule/molecule_arom_match.h"
 
+using namespace indigo;
+
 SmilesSaver::SmilesSaver (Output &output) : _output(output),
 TL_CP_GET(_neipool),
 TL_CP_GET(_atoms),

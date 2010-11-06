@@ -19,6 +19,8 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/array.h"
 
+namespace indigo {
+
 // Queue with fixed max length
 template <typename T> class Queue
 {
@@ -72,5 +74,7 @@ protected:
 private:
    Queue (const Queue &); // no implicit copy
 };
+
+}
 
 #endif // __queue_h__

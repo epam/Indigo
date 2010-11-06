@@ -20,7 +20,12 @@
 #include "oracle/mango_shadow_table.h"
 #include "oracle/bingo_fingerprints.h"
 
-class OracleEnv;
+using namespace indigo;
+
+namespace indigo
+{
+   class OracleEnv;
+}
 
 class BingoOracleContext;
 

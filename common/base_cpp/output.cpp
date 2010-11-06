@@ -22,6 +22,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
+using namespace indigo;
+
 Output::Output ()
 {
 }
@@ -299,6 +301,8 @@ void StandardOutput::flush()
    fflush(stdout);
 }
 
+namespace indigo
+{
 void bprintf (Array<char>& buf, const char *format, ...)
 {
    va_list args;
@@ -307,4 +311,5 @@ void bprintf (Array<char>& buf, const char *format, ...)
    output.vprintf(format, args);
    output.writeChar(0);
    va_end(args);
+}
 }

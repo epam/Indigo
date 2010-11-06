@@ -19,6 +19,8 @@
 #include "graph/embedding_enumerator.h"
 #include "graph/graph_decomposer.h"
 
+namespace indigo {
+
 class Molecule;
 
 class MoleculeExactSubstructureMatcher
@@ -59,5 +61,6 @@ private:
 
 };
 
+}
 
 #endif

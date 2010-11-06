@@ -17,6 +17,9 @@
 
 #include "base_c/defs.h"
 
+namespace indigo
+{
+
 class Scanner;
 
 class BitInWorker
@@ -44,6 +47,8 @@ private:
    BitInWorker( const BitInWorker & );
 
 };
+
+}
 
 #endif /* __bitinworker_h__ */
 

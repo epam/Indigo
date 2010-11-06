@@ -20,6 +20,8 @@
 #include "base_cpp/exception.h"
 #include "molecule/molecule.h"
 
+namespace indigo {
+
 class Molecule;
 class QueryMolecule;
 
@@ -73,5 +75,7 @@ protected:
    TL_CP_DECL(Array<int>, _matching_edges_state);
    Ptr<BaseMolecule> _submolecule;
 };
+
+}
 
 #endif

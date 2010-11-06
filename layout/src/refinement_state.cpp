@@ -14,6 +14,8 @@
 
 #include "layout/refinement_state.h"
 
+using namespace indigo;
+
 RefinementState::RefinementState (MoleculeLayoutGraph &graph) :
 dist(0.f),
 energy(0),

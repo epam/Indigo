@@ -16,6 +16,8 @@
 
 #include "base_cpp/string_pool.h"
 
+using namespace indigo;
+
 StringPool::StringPool ()
 {
 }

@@ -20,6 +20,7 @@
 #include "base_cpp/array.h"
 #include "graph/graph.h"
 
+namespace indigo {
 
 class SimpleCycleBasis {
 public:
@@ -91,6 +92,7 @@ public:
     int edge(int auxEdge);
 };
 
+}
 
 #endif	/* _SIMPLE_CYCLE_BASIS_H */
 

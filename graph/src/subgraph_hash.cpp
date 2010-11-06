@@ -15,6 +15,8 @@
 #include "graph/subgraph_hash.h"
 #include "graph/graph.h"
 
+using namespace indigo;
+
 SubgraphHash::SubgraphHash (Graph &g) : _g(g)
 {
    context = 0;

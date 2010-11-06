@@ -20,6 +20,8 @@
 #include "base_cpp/red_black.h"
 #include "base_cpp/exception.h"
 
+namespace indigo {
+
 class Graph;
 
 class GraphEmbeddingsStorage
@@ -53,5 +55,7 @@ private:
 
    static int _cmp_int (int v1, int v2, void *);
 };
+
+}
 
 #endif // __embeddings_storage__

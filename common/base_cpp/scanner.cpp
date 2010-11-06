@@ -21,6 +21,8 @@
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 
+using namespace indigo;
+
 Scanner::~Scanner ()
 {
 }

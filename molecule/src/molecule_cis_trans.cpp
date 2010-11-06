@@ -19,6 +19,8 @@
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 BaseMolecule & MoleculeCisTrans::_getMolecule ()
 {
    char dummy[sizeof(BaseMolecule)];

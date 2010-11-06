@@ -18,8 +18,10 @@
 #include "base_cpp/array.h"
 #include "base_cpp/ptr_array.h"
 #include "molecule/max_common_submolecule.h"
-class BaseReaction;
 
+namespace indigo {
+
+class BaseReaction;
 
 //util class for keeping map generating from aam in reaction
 class ReactionMapMatchingData{
@@ -151,7 +153,8 @@ private:
    BaseReaction& _reaction;
    int _subReactNumber;
    int _superProductNumber;
-
-
 };
+
+}
+
 #endif

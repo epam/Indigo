@@ -18,6 +18,8 @@
 #include "base_cpp/bitinworker.h"
 #include "lzw/lzw_dictionary.h"
 
+namespace indigo {
+
 class Scanner;
 
 class LzwDecoder
@@ -44,5 +46,7 @@ private:
    LzwDecoder( const LzwDecoder & );
 
 };
+
+}
 
 #endif

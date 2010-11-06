@@ -19,6 +19,8 @@
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 MoleculeChainFingerprintBuilder::MoleculeChainFingerprintBuilder
         (Molecule &mol, const MoleculeChainFingerprintParameters &parameters) :
 _mol(mol), _parameters(parameters),

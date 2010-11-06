@@ -17,6 +17,8 @@
 
 #include "render_base.h"
 
+namespace indigo {
+
 class Reaction;
 class ReactionHighlighting;
 
@@ -49,5 +51,7 @@ private:
    BaseReaction* _r;
    float _ax;
 };
+
+}
 
 #endif //__render_reaction_h__

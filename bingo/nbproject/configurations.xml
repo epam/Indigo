@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="62">
+<configurationDescriptor version="69">
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <logicalFolder name="f1" displayName="common" projectFiles="true">
       <logicalFolder name="f1" displayName="base" projectFiles="true">
@@ -7,8 +7,6 @@
         <itemPath>../common/base_cpp/chunk_storage.h</itemPath>
         <itemPath>../common/base_c/nano.h</itemPath>
         <itemPath>../common/base_c/nano_posix.c</itemPath>
-        <itemPath>../common/base_cpp/profiling.cpp</itemPath>
-        <itemPath>../common/base_cpp/profiling.h</itemPath>
         <itemPath>../common/base_cpp/shmem.h</itemPath>
         <itemPath>../common/base_cpp/shmem_posix.cpp</itemPath>
       </logicalFolder>
@@ -24,6 +22,7 @@
       <logicalFolder name="core" displayName="core" projectFiles="true">
         <itemPath>src/core/bingo_context.cpp</itemPath>
         <itemPath>src/core/bingo_context.h</itemPath>
+        <itemPath>src/core/bingo_error.h</itemPath>
         <itemPath>src/core/mango_context.cpp</itemPath>
         <itemPath>src/core/mango_context.h</itemPath>
         <itemPath>src/core/mango_exact.cpp</itemPath>

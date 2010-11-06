@@ -16,6 +16,8 @@
 #include "graph/graph.h"
 #include "base_cpp/array.h"
 
+using namespace indigo;
+
 DfsWalk::DfsWalk (const Graph &graph) :
 _graph(graph),
 TL_CP_GET(_vertices),

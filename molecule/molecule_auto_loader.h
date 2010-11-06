@@ -18,6 +18,8 @@
 #include "base_cpp/array.h"
 #include "graph/graph_highlighting.h"
 
+namespace indigo {
+
 class Scanner;
 class Molecule;
 class QueryMolecule;
@@ -52,6 +54,9 @@ protected:
    void _loadMolecule (BaseMolecule &mol, bool query);
 private:
    MoleculeAutoLoader (const MoleculeAutoLoader &); // no implicit copy
+
 };
+
+}
 
 #endif

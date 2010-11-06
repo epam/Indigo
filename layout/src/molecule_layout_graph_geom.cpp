@@ -14,6 +14,8 @@
 
 #include "layout/molecule_layout_graph.h"
 
+using namespace indigo;
+
 float f1 (float X, int L, float s)
 {
    int i,  min1;

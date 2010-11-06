@@ -17,6 +17,8 @@
 #include "molecule/molecule_dearom.h"
 #include "reaction/reaction_automapper.h"
 
+using namespace indigo;
+
 Reaction::Reaction()
 {
 }
