@@ -106,6 +106,7 @@ JNI_FUNC_jint_jint(indigoIterateMolecules)
 JNI_FUNC_jint_jint_jint(indigoSaveRxnfile)
 JNI_FUNC_jint_jint_jstring(indigoSaveRxnfileToFile)
 JNI_FUNC_jstring_jint(indigoRxnfile)
+JNI_FUNC_jint_jint_jstring(indigoAutomap);
 
 JNI_FUNC_jint_jint(indigoIterateAtoms)
 JNI_FUNC_jint_jint(indigoIteratePseudoatoms)

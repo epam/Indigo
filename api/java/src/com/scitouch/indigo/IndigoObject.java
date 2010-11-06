@@ -109,6 +109,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.indigoSaveRxnfileToFile(self, filename);
    }
 
+   public void automap (String mode)
+   {
+      if (mode == null)
+         mode = "";
+      dispatcher.indigoAutomap(self, mode);
+   }
 
    public IndigoObject iterateAtoms ()
    {

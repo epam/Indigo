@@ -16,6 +16,7 @@
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_saver.h"
 #include "base_cpp/output.h"
+#include "reaction/reaction_automapper.h"
 
 IndigoBaseReaction::IndigoBaseReaction (int type_) : IndigoObject(type_)
 {
@@ -363,6 +364,34 @@ CEXPORT int indigoCountMolecules (int handle)
          return obj.getReaction().count();
       else
          throw IndigoError("can not count molecules of %s", obj.debugInfo());
+   }
+   INDIGO_END(0, -1);
+}
+
+CEXPORT int indigoAutomap (int reaction, const char *mode)
+{
+   INDIGO_BEGIN
+   {
+      BaseReaction &rxn = self.getObject(reaction).getReaction();
+      int nmode;
+
+      if (mode == 0 || mode[0] == 0 || strcasecmp(mode, "discard") == 0)
+         nmode = ReactionAutomapper::AAM_REGEN_DISCARD;
+      else if (strcasecmp(mode, "alter") == 0)
+         nmode = ReactionAutomapper::AAM_REGEN_ALTER;
+      else if (strcasecmp(mode, "keep") == 0)
+         nmode = ReactionAutomapper::AAM_REGEN_KEEP;
+      else if (strcasecmp(mode, "clear") == 0)
+      {
+         rxn.clearAAM();
+         return 0;
+      }
+      else
+         throw IndigoError("indigoAutomap(): unknown mode: %s", mode);
+
+      ReactionAutomapper ram(rxn);
+
+      ram.automap(nmode);
    }
    INDIGO_END(0, -1);
 }

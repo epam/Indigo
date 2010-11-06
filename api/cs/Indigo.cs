@@ -435,6 +435,8 @@ namespace com.scitouch.indigo
       public static extern int indigoSaveRxnfileToFile (int reaction, string filename);
       [DllImport("indigo.dll")]
       public static extern sbyte * indigoRxnfile (int reaction);
+      [DllImport("indigo.dll")]
+      public static extern int indigoAutomap (int reaction, string filename);
 
       [DllImport("indigo.dll")]
       public static extern int indigoIterateAtoms (int molecule);

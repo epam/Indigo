@@ -391,6 +391,7 @@ public class Indigo
    public native int indigoSaveRxnfile (int molecule, int output);
    public native int indigoSaveRxnfileToFile (int molecule, String filename);
    public native String indigoRxnfile (int molecule);
+   public native int indigoAutomap (int reaction, String mode);
 
    public native int indigoIterateAtoms (int molecule);
    public native int indigoIteratePseudoatoms (int molecule);

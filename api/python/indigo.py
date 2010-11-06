@@ -231,6 +231,8 @@ class Indigo:
     self._lib.indigoSaveRxnfileToFile.argtypes = [c_int, c_char_p]
     self._lib.indigoRxnfile.restype = c_char_p
     self._lib.indigoRxnfile.argtypes = [c_int]
+    self._lib.indigoAutomap.restype = c_int
+    self._lib.indigoAutomap.argtypes = [c_int, c_char_p]
     self._lib.indigoIterateAtoms.restype = c_int
     self._lib.indigoIterateAtoms.argtypes = [c_int]
     self._lib.indigoIteratePseudoatoms.restype = c_int
@@ -443,6 +445,7 @@ class Indigo:
 
     self.IndigoObject.rxnfile = self._member_string(self._lib.indigoRxnfile)
     self.IndigoObject.saveRxnfile = self._member_void_string(self._lib.indigoSaveRxnfileToFile)
+    self.IndigoObject.automap = self._member_void_string(self._lib.indigoAutomap)
 
     self.IndigoObject.iterateAtoms = self._member_obj(self._lib.indigoIterateAtoms)
     self.IndigoObject.iteratePseudoatoms = self._member_obj(self._lib.indigoIteratePseudoatoms)

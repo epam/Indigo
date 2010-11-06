@@ -198,6 +198,16 @@ CEXPORT int indigoSaveRxnfile (int reaction, int output);
 CEXPORT int indigoSaveRxnfileToFile (int reaction, const char *filename);
 CEXPORT const char * indigoRxnfile (int reaction);
 
+// Automatic reaction atom-to-atom mapping
+// mode is one of the following:
+//    "discard" : discards the existing mappings entirely and considers only
+//                the existing reaction centers (the default)
+//    "keep"    : keeps the existing mapping and maps unmapped atoms
+//    "alter"   : alters the existing mapping, and maps the rest of the
+//                reaction but may change the existing mapping
+//    "clear"   : removes the mappings from the reaction.
+CEXPORT int indigoAutomap (int reaction, const char *mode);
+
 /* Accessing a molecule */
 
 // Returns an iterator for all atoms of the given

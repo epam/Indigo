@@ -134,6 +134,14 @@ namespace com.scitouch.indigo
          Indigo.indigoFree(s);
       }
 
+      public void automap (String mode)
+      {
+         if (mode == null)
+            mode = "";
+         dispatcher.setSessionID();
+         Indigo.indigoAutomap(self, mode);
+      }
+
       public System.Collections.IEnumerable iterateAtoms ()
       {
          dispatcher.setSessionID();
