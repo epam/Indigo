@@ -26,7 +26,6 @@
 		A7EDA40C10624C6A006CBFAF /* filter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3CD10624B20006CBFAF /* filter.cpp */; };
 		A7EDA40D10624C6A006CBFAF /* dfs_walk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3CA10624B20006CBFAF /* dfs_walk.cpp */; };
 		A7EDA40E10624C6A006CBFAF /* automorphism_search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3C710624B20006CBFAF /* automorphism_search.cpp */; };
-		A7EDA40F10624C6A006CBFAF /* tree_canonizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3DE10624B20006CBFAF /* tree_canonizer.cpp */; };
 		A7EDA41010624C6A006CBFAF /* skew_symmetric_flow_finder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3DB10624B20006CBFAF /* skew_symmetric_flow_finder.cpp */; };
 		A7EDA41110624C6A006CBFAF /* max_common_subgraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3D610624B20006CBFAF /* max_common_subgraph.cpp */; };
 		A7EDA41210624C6A006CBFAF /* morgan_code.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3D710624B20006CBFAF /* morgan_code.cpp */; };
@@ -39,7 +38,6 @@
 		A7EDA41910624C6A006CBFAF /* edge_rotation_matcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3CB10624B20006CBFAF /* edge_rotation_matcher.cpp */; };
 		A7EDA41A10624C6A006CBFAF /* cycle_enumerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3C910624B20006CBFAF /* cycle_enumerator.cpp */; };
 		A7EDA41B10624C6A006CBFAF /* graph_affine_matcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3CE10624B20006CBFAF /* graph_affine_matcher.cpp */; };
-		A7EDA41C10624C6A006CBFAF /* ring_canonizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3D910624B20006CBFAF /* ring_canonizer.cpp */; };
 		A7EDA41D10624C82006CBFAF /* tlscont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3C510624B0A006CBFAF /* tlscont.cpp */; };
 		A7EDA41E10624C82006CBFAF /* os_thread_wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3BE10624B0A006CBFAF /* os_thread_wrapper.cpp */; };
 		A7EDA41F10624C82006CBFAF /* os_sync_wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3BC10624B0A006CBFAF /* os_sync_wrapper.cpp */; };
@@ -106,12 +104,10 @@
 		A7EDA3D610624B20006CBFAF /* max_common_subgraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = max_common_subgraph.cpp; path = src/max_common_subgraph.cpp; sourceTree = "<group>"; };
 		A7EDA3D710624B20006CBFAF /* morgan_code.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = morgan_code.cpp; path = src/morgan_code.cpp; sourceTree = "<group>"; };
 		A7EDA3D810624B20006CBFAF /* path_enumerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = path_enumerator.cpp; path = src/path_enumerator.cpp; sourceTree = "<group>"; };
-		A7EDA3D910624B20006CBFAF /* ring_canonizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ring_canonizer.cpp; path = src/ring_canonizer.cpp; sourceTree = "<group>"; };
 		A7EDA3DA10624B20006CBFAF /* scaffold_detection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scaffold_detection.cpp; path = src/scaffold_detection.cpp; sourceTree = "<group>"; };
 		A7EDA3DB10624B20006CBFAF /* skew_symmetric_flow_finder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = skew_symmetric_flow_finder.cpp; path = src/skew_symmetric_flow_finder.cpp; sourceTree = "<group>"; };
 		A7EDA3DC10624B20006CBFAF /* skew_symmetric_network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = skew_symmetric_network.cpp; path = src/skew_symmetric_network.cpp; sourceTree = "<group>"; };
 		A7EDA3DD10624B20006CBFAF /* spanning_tree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = spanning_tree.cpp; path = src/spanning_tree.cpp; sourceTree = "<group>"; };
-		A7EDA3DE10624B20006CBFAF /* tree_canonizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tree_canonizer.cpp; path = src/tree_canonizer.cpp; sourceTree = "<group>"; };
 		A7EDA3DF10624B3B006CBFAF /* automorphism_search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = automorphism_search.h; sourceTree = "<group>"; };
 		A7EDA3E010624B3B006CBFAF /* biconnected_decomposer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = biconnected_decomposer.h; sourceTree = "<group>"; };
 		A7EDA3E110624B3B006CBFAF /* cycle_enumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cycle_enumerator.h; sourceTree = "<group>"; };
@@ -131,12 +127,10 @@
 		A7EDA3EF10624B3B006CBFAF /* max_common_subgraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = max_common_subgraph.h; sourceTree = "<group>"; };
 		A7EDA3F010624B3B006CBFAF /* morgan_code.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = morgan_code.h; sourceTree = "<group>"; };
 		A7EDA3F110624B3B006CBFAF /* path_enumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = path_enumerator.h; sourceTree = "<group>"; };
-		A7EDA3F210624B3B006CBFAF /* ring_canonizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ring_canonizer.h; sourceTree = "<group>"; };
 		A7EDA3F310624B3B006CBFAF /* scaffold_detection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scaffold_detection.h; sourceTree = "<group>"; };
 		A7EDA3F410624B3B006CBFAF /* skew_symmetric_flow_finder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = skew_symmetric_flow_finder.h; sourceTree = "<group>"; };
 		A7EDA3F510624B3B006CBFAF /* skew_symmetric_network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = skew_symmetric_network.h; sourceTree = "<group>"; };
 		A7EDA3F610624B3B006CBFAF /* spanning_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spanning_tree.h; sourceTree = "<group>"; };
-		A7EDA3F710624B3B006CBFAF /* tree_canonizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tree_canonizer.h; sourceTree = "<group>"; };
 		A7EDA3FC10624B53006CBFAF /* libgraph.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgraph.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -229,12 +223,10 @@
 				A7EDA3EF10624B3B006CBFAF /* max_common_subgraph.h */,
 				A7EDA3F010624B3B006CBFAF /* morgan_code.h */,
 				A7EDA3F110624B3B006CBFAF /* path_enumerator.h */,
-				A7EDA3F210624B3B006CBFAF /* ring_canonizer.h */,
 				A7EDA3F310624B3B006CBFAF /* scaffold_detection.h */,
 				A7EDA3F410624B3B006CBFAF /* skew_symmetric_flow_finder.h */,
 				A7EDA3F510624B3B006CBFAF /* skew_symmetric_network.h */,
 				A7EDA3F610624B3B006CBFAF /* spanning_tree.h */,
-				A7EDA3F710624B3B006CBFAF /* tree_canonizer.h */,
 				A7EDA3C710624B20006CBFAF /* automorphism_search.cpp */,
 				A7EDA3C810624B20006CBFAF /* biconnected_decomposer.cpp */,
 				A7EDA3C910624B20006CBFAF /* cycle_enumerator.cpp */,
@@ -253,12 +245,10 @@
 				A7EDA3D610624B20006CBFAF /* max_common_subgraph.cpp */,
 				A7EDA3D710624B20006CBFAF /* morgan_code.cpp */,
 				A7EDA3D810624B20006CBFAF /* path_enumerator.cpp */,
-				A7EDA3D910624B20006CBFAF /* ring_canonizer.cpp */,
 				A7EDA3DA10624B20006CBFAF /* scaffold_detection.cpp */,
 				A7EDA3DB10624B20006CBFAF /* skew_symmetric_flow_finder.cpp */,
 				A7EDA3DC10624B20006CBFAF /* skew_symmetric_network.cpp */,
 				A7EDA3DD10624B20006CBFAF /* spanning_tree.cpp */,
-				A7EDA3DE10624B20006CBFAF /* tree_canonizer.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -346,7 +336,6 @@
 				A7EDA40C10624C6A006CBFAF /* filter.cpp in Sources */,
 				A7EDA40D10624C6A006CBFAF /* dfs_walk.cpp in Sources */,
 				A7EDA40E10624C6A006CBFAF /* automorphism_search.cpp in Sources */,
-				A7EDA40F10624C6A006CBFAF /* tree_canonizer.cpp in Sources */,
 				A7EDA41010624C6A006CBFAF /* skew_symmetric_flow_finder.cpp in Sources */,
 				A7EDA41110624C6A006CBFAF /* max_common_subgraph.cpp in Sources */,
 				A7EDA41210624C6A006CBFAF /* morgan_code.cpp in Sources */,
@@ -359,7 +348,6 @@
 				A7EDA41910624C6A006CBFAF /* edge_rotation_matcher.cpp in Sources */,
 				A7EDA41A10624C6A006CBFAF /* cycle_enumerator.cpp in Sources */,
 				A7EDA41B10624C6A006CBFAF /* graph_affine_matcher.cpp in Sources */,
-				A7EDA41C10624C6A006CBFAF /* ring_canonizer.cpp in Sources */,
 				A73CF4281062857A000A182B /* os_tls_posix.c in Sources */,
 				A73CF43510628601000A182B /* os_sync_posix.c in Sources */,
 				A73CF43D1062868E000A182B /* os_thread_posix.c in Sources */,
