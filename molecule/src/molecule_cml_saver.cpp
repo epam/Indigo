@@ -100,7 +100,7 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          }
          else
          {
-            if (_mol->stereocenters.getType(i) > 0)
+            if (_mol->stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
             {
                _output.printf(">\n      <atomParity atomRefs4=\"");
                const int *pyramid = _mol->stereocenters.getPyramid(i);
@@ -138,7 +138,8 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          int dir = _mol->stereocenters.getBondDirection(i);
          int parity = _mol->cis_trans.getParity(i);
 
-         if (_mol->have_xyz && dir != 0)
+         if (_mol->have_xyz && dir != 0 &&
+             _mol->stereocenters.getType(edge.beg) > MoleculeStereocenters::ATOM_ANY)
          {
             _output.printf(">\n      <bondStereo>%s</bondStereo>\n    </bond>\n",
                     (dir == MoleculeStereocenters::BOND_UP) ? "W" : "H");
