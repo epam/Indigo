@@ -1856,7 +1856,7 @@ bool QueryMolecule::isSingleOrDouble (QueryMolecule::Bond& qb)
 }
 
 int QueryMolecule::getQueryBondType (QueryMolecule::Bond& qb) {
-   if (qb.type == QueryMolecule::OP_NONE)
+   if (!qb.hasConstraint(QueryMolecule::BOND_ORDER))
       return QUERY_BOND_ANY;
    if (isSingleOrDouble(qb) || isOrBond(qb, BOND_SINGLE, BOND_DOUBLE))
          return QUERY_BOND_SINGLE_OR_DOUBLE;
