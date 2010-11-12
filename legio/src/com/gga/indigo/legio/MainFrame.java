@@ -535,13 +535,13 @@ public class MainFrame extends javax.swing.JFrame
 
             FileWriter out_fstream = new FileWriter(out_file_path);
 
+            out_fstream.write("$RDFILE 1\n$DATM 1\n");
             for (int i = 0; i < legio.getProductsCount(); i++)
             {
+               out_fstream.write("$RFMT\n");
                String reaction_str = legio.getOutReactionString(i);
 
                out_fstream.write(reaction_str);
-
-               out_fstream.write("$$$$\n");
             }
 
             out_fstream.close();

@@ -32,7 +32,6 @@
 #include "molecule/molecule_arom_match.h"
 #include "molecule/elements.h"
 #include "graph/dfs_walk.h"
-#include "layout/molecule_layout.h"
 
 using namespace indigo;
 
@@ -342,13 +341,6 @@ void ReactionEnumeratorState::_productProcess( void )
 
    ready_product.dearomatize();
 
-   MoleculeLayout mol_layout(ready_product);
-   mol_layout.respect_existing_layout = false;
-   mol_layout.bond_length = 2;
-   mol_layout.make();
-
-   ready_product.stereocenters.markBonds();
-
    QS_DEF(Array<char>, cur_smiles);
    cur_smiles.clear();
 
@@ -393,10 +385,7 @@ void ReactionEnumeratorState::_productProcess( void )
 
       ready_product.name.push('+');
    }
-   if (ready_product.name.size() > 0)
-      ready_product.name.top() = 0;
-   else
-      ready_product.name.push(0);
+   ready_product.name.top() = 0;
 
    /* Adding a product to monomers lists */
    if (is_multistep_reaction)

@@ -1,4 +1,3 @@
-
 package com.gga.indigo.legio;
 
 import com.gga.indigo.Indigo;
@@ -113,5 +112,13 @@ public class LegioData
    public void react()
    {
       output_reactions = indigo.reactionProductEnumerate(reaction, monomers_table);
+
+      for ( int i = 0; i < output_reactions.arrayCount(); i++)
+      {
+         for (IndigoObject iterr : output_reactions.arrayAt(i).iterateProducts())
+         {
+            iterr.layout();
+         }
+      }
    }
 }
