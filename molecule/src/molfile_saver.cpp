@@ -623,13 +623,18 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    QS_DEF(Array<int>, isotopes);
    QS_DEF(Array<int>, pseudoatoms);
    QS_DEF(Array<int>, atom_lists);
+   QS_DEF(Array<int>, atom_mapping);
+
+   atom_mapping.clear_resize(mol.vertexEnd());
 
    radicals.clear();
    charges.clear();
    isotopes.clear();
    pseudoatoms.clear();
 
-   for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+   int iw = 1;
+
+   for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i), iw++)
    {
       char label[3] = {' ', ' ', ' '};
       int valence = 0, radical = 0, charge = 0, stereo_parity = 0,
@@ -640,6 +645,8 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       int atom_isotope = mol.getAtomIsotope(i);
       int atom_charge = mol.getAtomCharge(i);
       int atom_radical = 0;
+
+      atom_mapping[i] = iw;
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
          atom_radical = mol.getAtomRadical(i);
@@ -762,8 +769,8 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       if(reactionBondReactingCenter != 0 && reactionBondReactingCenter->at(i) != 0)
          reacting_center = reactionBondReactingCenter->at(i);
 
-      output.printfCR("%3d%3d%3d%3d%3d%3d%3d", edge.beg + 1, edge.end + 1, bond_order,
-         stereo, 0, topology, reacting_center);
+      output.printfCR("%3d%3d%3d%3d%3d%3d%3d", atom_mapping[edge.beg], atom_mapping[edge.end],
+                bond_order, stereo, 0, topology, reacting_center);
    }
 
    if (charges.size() > 0)
