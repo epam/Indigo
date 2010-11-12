@@ -48,6 +48,7 @@ void BaseMolecule::clear ()
    stereocenters.clear();
    cis_trans.clear();
    _xyz.clear();
+   _rsite_attachment_points.clear();
    Graph::clear();
 }
 
