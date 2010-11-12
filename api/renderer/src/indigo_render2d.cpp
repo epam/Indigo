@@ -33,6 +33,11 @@ if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
       try { self.error_message.clear(); \
             RenderParams& rp = renderer_self.renderParams
 
+#define INDIGO_RENDER_BEGIN_2 { \
+      Indigo &self = indigoGetInstance(); \
+      TL_GET2(IndigoRenderer, renderer_self, indigo_renderer_self); \
+      try { self.error_message.clear();
+
 
 #define INDIGO_RENDER_END INDIGO_END(1, -1)
 
@@ -350,11 +355,11 @@ CEXPORT int indigoRenderReset (int render)
 
 CEXPORT int indigoRenderWriteHDC (void* hdc, int printingHdc)
 {
-   INDIGO_BEGIN
+   INDIGO_RENDER_BEGIN_2;
    {
       return self.addObject(new IndigoHDCOutput(hdc, printingHdc != 0));
    }
-   INDIGO_END(1, -1)
+   INDIGO_RENDER_END;
 }
 
 class _IndigoRenderingOptionsHandlersSetter
