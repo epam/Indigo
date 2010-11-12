@@ -181,14 +181,16 @@ float RenderBase::_getScale (const Vec2f& delta, int absMargX, int absMargY)
 
 void RenderBase::_setSize (Metalayout::LayoutItem& item)
 {
-   _rc.initNullContext();
-   Vec2f bbmin, bbmax;
-   _drawMol(item);
-   _rc.bbGetMin(bbmin);
-   _rc.bbGetMax(bbmax);
-   _rc.resetContext();
-   item.scaledSize.diff(bbmax, bbmin);
-   item.scaledOffset.copy(bbmin);
+   if (item.type == ITEM_TYPE_BASE_MOL) {
+      _rc.initNullContext();
+      Vec2f bbmin, bbmax;
+      _drawMol(item);
+      _rc.bbGetMin(bbmin);
+      _rc.bbGetMax(bbmax);
+      _rc.resetContext();
+      item.scaledSize.diff(bbmax, bbmin);
+      item.scaledOffset.copy(bbmin);
+   }
 }  
 
 BaseMolecule& RenderBase::cb_getMol (int id, void* context)
@@ -206,6 +208,5 @@ void RenderBase::cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, voi
 void RenderBase::cb_prepare (Metalayout::LayoutItem& item, const Vec2f& pos, void* context)
 {
    RenderBase* render = (RenderBase*)context;
-   if (item.type == ITEM_TYPE_BASE_MOL)
-      render->_setSize(item);
+   render->_setSize(item);
 }

@@ -61,7 +61,7 @@ void MoleculeRender::_initLayout ()
       MoleculeRGroups& rGroups = qmol.rgroups;
       if (_getRIfThenHeight() > 0)
          _pushSymbol(_ml.newLine(), ITEM_TYPE_MOL_RIFTHEN);
-      for (int i = 1; i < rGroups.getRGroupCount(); ++i)
+      for (int i = 1; i <= rGroups.getRGroupCount(); ++i)
       {
          RGroup& rg = rGroups.getRGroup(i);
          Metalayout::LayoutLine& line = _ml.newLine();
