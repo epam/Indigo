@@ -29,14 +29,6 @@ TL_CP_GET(_crf)
 {
 }
 
-void RingoIndex::checkForConsistency (Reaction &rxn)
-{
-   int i;
-
-   for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-      MangoIndex::checkForConsistency(rxn.getMolecule(i));
-}
-
 void RingoIndex::prepare (Scanner &rxnfile, Output &output)
 {
    QS_DEF(Reaction, reaction);
@@ -47,7 +39,7 @@ void RingoIndex::prepare (Scanner &rxnfile, Output &output)
            _context.ignore_closing_bond_direction_mismatch;
    rrd.loadReaction(reaction);
 
-   checkForConsistency(reaction);
+   Reaction::checkForConsistency(reaction);
 
    ReactionAutomapper ram(reaction);
    ram.correctReactingCenters(true);

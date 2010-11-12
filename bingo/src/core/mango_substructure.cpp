@@ -161,7 +161,7 @@ void MangoSubstructure::loadTarget (Scanner &scanner)
            ignore_closing_bond_direction_mismatch;
    loader.loadMolecule(_target);
    _initTarget(false);
-   MangoIndex::checkForConsistency(_target);
+   Molecule::checkForConsistency(_target);
 }
 
 bool MangoSubstructure::matchLoadedTarget ()

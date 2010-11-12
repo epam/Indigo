@@ -68,6 +68,8 @@ public:
    DLLEXPORT static void saveBondOrders (Reaction& reaction, ObjArray< Array<int> > &bond_types);
    DLLEXPORT static void loadBondOrders (Reaction& reaction, ObjArray< Array<int> > &bond_types);
 
+   DLLEXPORT static void checkForConsistency (Reaction &rxn);
+
    DEF_ERROR("reaction");
 
 protected:

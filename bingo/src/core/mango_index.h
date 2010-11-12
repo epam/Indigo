@@ -53,8 +53,6 @@ public:
 
    int getFpSimilarityBitsCount () const;
 
-   static void checkForConsistency (Molecule &mol);
-
    static const int counted_elements[6];
 
 

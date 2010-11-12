@@ -45,7 +45,7 @@ void MangoExact::loadQuery (Scanner &scanner)
    loader.ignore_closing_bond_direction_mismatch =
            ignore_closing_bond_direction_mismatch;
    loader.loadMolecule(_query);
-   MangoIndex::checkForConsistency(_query);
+   Molecule::checkForConsistency(_query);
 
    _initQuery(_query);
 
@@ -136,7 +136,7 @@ void MangoExact::loadTarget (Scanner &scanner)
    loader.ignore_closing_bond_direction_mismatch =
            ignore_closing_bond_direction_mismatch;
    loader.loadMolecule(_target);
-   MangoIndex::checkForConsistency(_target);
+   Molecule::checkForConsistency(_target);
    _initTarget(_target, false);
 }
 

@@ -116,6 +116,8 @@ public:
 
    DLLEXPORT void invalidateHCounters ();
 
+   DLLEXPORT static void checkForConsistency (Molecule &mol);
+
 protected:
    struct _Atom
    {

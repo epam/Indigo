@@ -962,3 +962,24 @@ void Molecule::invalidateHCounters ()
    _total_h.clear();
    _connectivity.clear();
 }
+
+ void Molecule::checkForConsistency (Molecule &mol)
+ {
+    int i;
+
+   for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      const Vertex &vertex = mol.getVertex(i);
+
+      if (mol.isPseudoAtom(i) || mol.isRSite(i))
+         continue;
+
+      // check that all explicit hydrogens are lone or 1-connected
+      if (mol.getAtomNumber(i) == ELEM_H && vertex.degree() > 1)
+         throw Error("%d-connected hydrogen atom", vertex.degree());
+
+      // check if molecule was drawn with inconsistent aromatic bonds (or query bonds)
+      if (mol.getImplicitH(i) == -1)
+         throw Error("can not calculate implicit hydrogens on atom %d", i);
+   }
+}

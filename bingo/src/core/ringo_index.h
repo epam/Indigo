@@ -43,8 +43,6 @@ public:
 
    const Array<char> & getCrf ();
 
-   static void checkForConsistency (Reaction &rxn);
-
 protected:
    BingoContext &_context;
 

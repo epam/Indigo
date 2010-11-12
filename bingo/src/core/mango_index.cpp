@@ -41,27 +41,6 @@ TL_CP_GET(_counted_elems_str)
 {
 }
 
-void MangoIndex::checkForConsistency (Molecule &mol)
-{
-   int i;
-
-   // check that all explicit hydrogens are lone or 1-connected
-   for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
-   {
-      const Vertex &vertex = mol.getVertex(i);
-
-      if (mol.isPseudoAtom(i) || mol.isRSite(i))
-         continue;
-
-      if (mol.getAtomNumber(i) == ELEM_H && vertex.degree() > 1)
-         throw Molecule::Error("%d-connected hydrogen atom", vertex.degree());
-
-      // check if molecule was drawn with inconsistent aromatic bonds (or query bonds)
-      if (mol.getImplicitH(i) == -1)
-         throw Molecule::Error("can not calculate implicit hydrogens on atom %d", i);
-   }
-}
-
 void MangoIndex::prepare (Scanner &molfile, Output &output, 
                           OsLock *lock_for_exclusive_access)
 {
@@ -76,7 +55,7 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
            _context.ignore_closing_bond_direction_mismatch;
    loader.loadMolecule(mol);
 
-   checkForConsistency(mol);
+   Molecule::checkForConsistency(mol);
 
    // Make aromatic molecule
    MoleculeAromatizer::aromatizeBonds(mol);

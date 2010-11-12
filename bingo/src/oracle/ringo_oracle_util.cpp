@@ -130,7 +130,7 @@ ORAEXT OCIString * oraRingoCheckReaction (OCIExtProcContext *ctx,
             loader.ignore_closing_bond_direction_mismatch =
                  context.ignore_closing_bond_direction_mismatch;
             loader.loadReaction(reaction);
-            RingoIndex::checkForConsistency(reaction);
+            Reaction::checkForConsistency(reaction);
          }
          CATCH_READ_TARGET_RXN(
             OCIStringAssignText(env.envhp(), env.errhp(), (text *)e.message(), strlen(e.message()), &result);

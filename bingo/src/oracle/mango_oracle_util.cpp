@@ -208,7 +208,7 @@ ORAEXT OCIString * oraMangoCheckMolecule (OCIExtProcContext *ctx,
             loader.ignore_closing_bond_direction_mismatch =
                     context.ignore_closing_bond_direction_mismatch;
             loader.loadMolecule(mol);
-            MangoIndex::checkForConsistency(mol);
+            Molecule::checkForConsistency(mol);
          }
          CATCH_READ_TARGET_MOL
          (

@@ -162,3 +162,11 @@ BaseReaction * Reaction::neu ()
 {
    return new Reaction();
 }
+
+void Reaction::checkForConsistency (Reaction &rxn)
+{
+   int i;
+
+   for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+      Molecule::checkForConsistency(rxn.getMolecule(i));
+}
