@@ -955,7 +955,13 @@ void MoleculeStereocenters::_removeBondDir (int atom_from, int atom_to)
       if (stereo_atom->pyramid[3] == -1)
          _stereocenters.remove(atom_to);
       else
-         _convertAtomToImplicitHydrogen(stereo_atom->pyramid, atom_from);
+      {
+         BaseMolecule &mol = _getMolecule();
+
+         if (mol.isQueryMolecule() && 
+             (mol.possibleAtomNumber(atom_from, ELEM_H) || mol.isRSite(atom_from)))
+            _convertAtomToImplicitHydrogen(stereo_atom->pyramid, atom_from);
+      }
    }
 }
 
@@ -1290,124 +1296,131 @@ void MoleculeStereocenters::_convertAtomToImplicitHydrogen (int pyramid[4], int 
    moveImplicitHydrogenToEnd(pyramid);
 }
 
-void MoleculeStereocenters::markBonds ()
+void MoleculeStereocenters::_markBonds_One (int atom_idx)
 {
    BaseMolecule &mol = _getMolecule();
-   int i, j;
+   const _Atom &atom = _stereocenters.at(atom_idx);
+   int pyramid[4];
+   int mult = 1;
+   int size = 0;
+   int j;
 
-   _bond_directions.clear_resize(mol.edgeEnd());
-   _bond_directions.zerofill();
+   memcpy(pyramid, atom.pyramid, 4 * sizeof(int));
 
-   for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+   if (atom.type <= ATOM_ANY)
    {
-      int atom_idx = _stereocenters.key(i);
-      const _Atom &atom = _stereocenters.value(i);
-      int pyramid[4];
-      int mult = 1;
-      int size = 0;
-      
-      memcpy(pyramid, atom.pyramid, 4 * sizeof(int));
+      const Vertex &vertex = mol.getVertex(atom_idx);
 
-      if (atom.type <= ATOM_ANY)
-      {
-         const Vertex &vertex = mol.getVertex(atom_idx);
+      // fill the pyramid
+      for (j = vertex.neiBegin(); j != vertex.neiEnd() && size < 4; j = vertex.neiNext(j))
+         pyramid[size++] = vertex.neiVertex(j);
+   }
+   else
+      size = (pyramid[3] == -1 ? 3 : 4);
 
-         // fill the pyramid
-         for (j = vertex.neiBegin(); j != vertex.neiEnd() && size < 4; j = vertex.neiNext(j))
-            pyramid[size++] = vertex.neiVertex(j);
-      }
-      else
-         size = (pyramid[3] == -1 ? 3 : 4);
+   for (j = 0; j < size; j++)
+   {
+      int ei = mol.findEdgeIndex(atom_idx, pyramid[j]);
+      _bond_directions.expandFill(ei + 1, 0);
+      _bond_directions[ei] = 0;
+   }
 
-      int edge_idx = -1;
+   int edge_idx = -1;
 
+   for (j = 0; j < size; j++)
+   {
+      edge_idx = mol.findEdgeIndex(atom_idx, pyramid[size - 1]);
+      if (_bond_directions[edge_idx] == 0 && mol.getVertex(pyramid[size - 1]).degree() == 1)
+         break;
+      _rotatePyramid(pyramid);
+      if (size == 4)
+         mult = -mult;
+   }
+
+   if (j == size)
+   {
       for (j = 0; j < size; j++)
       {
          edge_idx = mol.findEdgeIndex(atom_idx, pyramid[size - 1]);
-         if (_bond_directions[edge_idx] == 0 && mol.getVertex(pyramid[size - 1]).degree() == 1)
+         if (_bond_directions[edge_idx] == 0 &&
+             mol.getBondTopology(edge_idx) == TOPOLOGY_CHAIN &&
+             getType(pyramid[size - 1]) == 0)
             break;
          _rotatePyramid(pyramid);
          if (size == 4)
             mult = -mult;
       }
-
-      if (j == size)
-      {
-         for (j = 0; j < size; j++)
-         {
-            edge_idx = mol.findEdgeIndex(atom_idx, pyramid[size - 1]);
-            if (_bond_directions[edge_idx] == 0 &&
-                mol.getBondTopology(edge_idx) == TOPOLOGY_CHAIN &&
-                getType(pyramid[size - 1]) == 0)
-               break;
-            _rotatePyramid(pyramid);
-            if (size == 4)
-               mult = -mult;
-         }
-      }
-
-      if (j == size)
-      {
-         for (j = 0; j < size; j++)
-         {
-            edge_idx = mol.findEdgeIndex(atom_idx, pyramid[size - 1]);
-            if (_bond_directions[edge_idx] == 0 && getType(pyramid[size - 1]) == 0)
-               break;
-            _rotatePyramid(pyramid);
-            if (size == 4)
-               mult = -mult;
-         }
-      }
-
-      if (j == size)
-      {
-         for (j = 0; j < size; j++)
-         {
-            edge_idx = mol.findEdgeIndex(atom_idx, pyramid[size - 1]);
-            if (_bond_directions[edge_idx] == 0 && mol.getBondTopology(edge_idx) == TOPOLOGY_CHAIN)
-               break;
-            _rotatePyramid(pyramid);
-            if (size == 4)
-               mult = -mult;
-         }
-      }
-
-      if (j == size)
-      {
-         for (j = 0; j < size; j++)
-         {
-            edge_idx = mol.findEdgeIndex(atom_idx, pyramid[size - 1]);
-            if (_bond_directions[edge_idx] == 0)
-               break;
-            _rotatePyramid(pyramid);
-            if (size == 4)
-               mult = -mult;
-         }
-      }
-
-      if (j == size)
-         throw Error("no bond can be marked");
-
-      if (mol.getEdge(edge_idx).beg != atom_idx)
-         mol.swapEdgeEnds(edge_idx);
-
-      if (atom.type > ATOM_ANY)
-      {
-         Vec3f dirs[4];
-
-         for (j = 0; j < size; j++)
-            dirs[j] = mol.getAtomXyz(pyramid[j]);
-
-         int sign = _sign(dirs[0], dirs[1], dirs[2]);
-
-         if (size == 3)
-            _bond_directions[edge_idx] = (sign == 1) ? BOND_DOWN : BOND_UP;
-         else
-            _bond_directions[edge_idx] = (sign * mult == 1) ? BOND_UP : BOND_DOWN;
-      }
-      else
-         _bond_directions[edge_idx] = BOND_EITHER;
    }
+
+   if (j == size)
+   {
+      for (j = 0; j < size; j++)
+      {
+         edge_idx = mol.findEdgeIndex(atom_idx, pyramid[size - 1]);
+         if (_bond_directions[edge_idx] == 0 && getType(pyramid[size - 1]) == 0)
+            break;
+         _rotatePyramid(pyramid);
+         if (size == 4)
+            mult = -mult;
+      }
+   }
+
+   if (j == size)
+   {
+      for (j = 0; j < size; j++)
+      {
+         edge_idx = mol.findEdgeIndex(atom_idx, pyramid[size - 1]);
+         if (_bond_directions[edge_idx] == 0 && mol.getBondTopology(edge_idx) == TOPOLOGY_CHAIN)
+            break;
+         _rotatePyramid(pyramid);
+         if (size == 4)
+            mult = -mult;
+      }
+   }
+
+   if (j == size)
+   {
+      for (j = 0; j < size; j++)
+      {
+         edge_idx = mol.findEdgeIndex(atom_idx, pyramid[size - 1]);
+         if (_bond_directions[edge_idx] == 0)
+            break;
+         _rotatePyramid(pyramid);
+         if (size == 4)
+            mult = -mult;
+      }
+   }
+
+   if (j == size)
+      throw Error("no bond can be marked");
+
+   if (mol.getEdge(edge_idx).beg != atom_idx)
+      mol.swapEdgeEnds(edge_idx);
+
+   if (atom.type > ATOM_ANY)
+   {
+      Vec3f dirs[4];
+
+      for (j = 0; j < size; j++)
+         dirs[j] = mol.getAtomXyz(pyramid[j]);
+
+      int sign = _sign(dirs[0], dirs[1], dirs[2]);
+
+      if (size == 3)
+         _bond_directions[edge_idx] = (sign == 1) ? BOND_DOWN : BOND_UP;
+      else
+         _bond_directions[edge_idx] = (sign * mult == 1) ? BOND_UP : BOND_DOWN;
+   }
+   else
+      _bond_directions[edge_idx] = BOND_EITHER;
+}
+
+void MoleculeStereocenters::markBonds ()
+{
+   int i;
+
+   for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+      _markBonds_One(_stereocenters.key(i));
 }
 
 bool MoleculeStereocenters::isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *filter)

@@ -161,6 +161,7 @@ protected:
 
    static void _convertAtomToImplicitHydrogen (int pyramid[4], int atom_to_remove);
 
+   void _markBonds_One  (int atom_idx);
    void _removeBondDir (int atom_from, int atom_to);
 
    BaseMolecule & _getMolecule() const;
