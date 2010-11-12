@@ -48,44 +48,20 @@ class MoleculeRGroups
 public:
 
    DLLEXPORT MoleculeRGroups ();
+   DLLEXPORT ~MoleculeRGroups ();
 
    DEF_ERROR("molecule rgroups");
 
    DLLEXPORT void copyRGroupsFromMolecule (MoleculeRGroups &other);
-   DLLEXPORT void copySitesFromMolecule (MoleculeRGroups &other, const int *mapping);
-
-   DLLEXPORT void setAttachmentOrder (int atom_idx, int order, int att_atom_idx);
-   DLLEXPORT void removeSites (const Array<int> &indices);
-
-   DLLEXPORT void initRGroupAtom (int atom_idx);
-   DLLEXPORT bool isRGroupAtom (int atom_idx) const;
-
-   DLLEXPORT int  getAttachmentOrder (int idx, int order) const;
 
    DLLEXPORT RGroup &getRGroup  (int idx);
    DLLEXPORT int getRGroupCount () const;
 
-   DLLEXPORT int begin () const;
-   DLLEXPORT int end () const;
-   DLLEXPORT int next (int i) const;
-   DLLEXPORT int count () const;
-
    DLLEXPORT void clear ();
 
-   DLLEXPORT int atomIdx (int site) const;
-
 protected:
-
-   struct _Atom
-   {
-      _Atom () {}
-
-      Array<int> rgroup_list;
-      Array<int> attachment_order;
-   };
-
-   RedBlackObjMap<int, _Atom> _rgroup_atoms;
-   ObjArray<RGroup>           _rgroups;
+   
+   ObjArray<RGroup> _rgroups;
 };
 
 struct MoleculeRGroupFragment

@@ -719,7 +719,24 @@ void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> 
    if (!(skip_flags & SKIP_RGROUPS))
    {
       rgroups.copyRGroupsFromMolecule(mol.rgroups);
-      rgroups.copySitesFromMolecule(mol.rgroups, mapping.ptr());
+
+      for (i = 0; i < vertices.size(); i++)
+      {
+         if (!mol.isRSite(vertices[i]))
+            continue;
+
+         int atom_idx = mapping[vertices[i]];
+
+         if (atom_idx == -1)
+            continue;
+
+         Array<int> &ap = mol._rsite_attachment_points[vertices[i]];
+         int j;
+
+         for (j = 0; j < ap.size(); j++)
+            if (mapping[ap[j]] >= 0)
+               setRSiteAttachmentOrder(atom_idx, mapping[ap[j]], j);
+      }
    }
 }
 
@@ -737,7 +754,6 @@ void QueryMolecule::_postMergeWithSubmolecule (BaseMolecule &bmol, const Array<i
 void QueryMolecule::_removeAtoms (const Array<int> &indices, const int *mapping)
 {
    spatial_constraints.removeAtoms(mapping);
-   rgroups.removeSites(indices);
 
    if (isRGroupFragment())
    {
@@ -760,7 +776,12 @@ void QueryMolecule::_removeAtoms (const Array<int> &indices, const int *mapping)
    }
 
    for (int i = 0; i < indices.size(); i++)
-      _atoms.reset(indices[i]);
+   {
+      int idx = indices[i];
+      _atoms.reset(idx);
+      if (idx < _rsite_attachment_points.size())
+         _rsite_attachment_points[idx].clear();
+   }
 
    // Collect bonds to remove
    QS_DEF(Array<int>, edges_to_remove);

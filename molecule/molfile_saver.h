@@ -16,6 +16,7 @@
 #define __molfile_saver__
 
 #include "base_cpp/array.h"
+#include "base_cpp/tlscont.h"
 
 namespace indigo {
 
@@ -72,9 +73,13 @@ protected:
    void _writeRGroupIndices2000 (Output &output, BaseMolecule &mol);
    void _printOccurrenceRanges (Output &out, const Array<int> &occurrences);
    void _writeAttachemtValues2000 (Output &output, QueryMolecule &fragment);
+   static bool _checkAttPointOrder (BaseMolecule &mol, int rsite);
 
    Output &_output;
    bool    _v2000;
+
+   TL_CP_DECL(Array<int>, _atom_mapping);
+   TL_CP_DECL(Array<int>, _bond_mapping);
 
 private:
    MolfileSaver (const MolfileSaver &); // no implicit copy

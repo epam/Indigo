@@ -60,6 +60,10 @@ MoleculeRGroups::MoleculeRGroups ()
 {
 }
 
+MoleculeRGroups::~MoleculeRGroups ()
+{
+}
+
 void MoleculeRGroups::copyRGroupsFromMolecule (MoleculeRGroups &other)
 {
    int n_rgroups = other.getRGroupCount();
@@ -73,81 +77,9 @@ void MoleculeRGroups::copyRGroupsFromMolecule (MoleculeRGroups &other)
    }
 }
 
-void MoleculeRGroups::copySitesFromMolecule (MoleculeRGroups &other, const int *mapping)
-{
-   for (int i = other.begin(); i < other.end(); i = other.next(i))
-   {
-      int atom_idx = mapping[other._rgroup_atoms.key(i)];
-
-      if (atom_idx == -1)
-         continue;
-
-      _Atom &other_atom = other._rgroup_atoms.value(i);
-      _Atom &atom = _rgroup_atoms.insert(atom_idx);
-
-      atom.attachment_order.resize(other_atom.attachment_order.size());
-
-      for (int j = 0; j < atom.attachment_order.size(); j++)
-         atom.attachment_order[j] = mapping[other_atom.attachment_order[j]];
-   }
-}
-
-void MoleculeRGroups::initRGroupAtom (int atom_idx)
-{
-   _rgroup_atoms.insert(atom_idx);
-}
-
-void MoleculeRGroups::setAttachmentOrder (int atom_idx, int order, int att_atom_idx)
-{
-   _Atom *atom = _rgroup_atoms.at2(atom_idx);
-
-   if (atom == 0)
-   {
-      _Atom &new_atom = _rgroup_atoms.insert(atom_idx);
-
-      new_atom.attachment_order.resize(order + 1);
-      new_atom.attachment_order.fffill();
-      new_atom.attachment_order[order] = att_atom_idx;
-   } else {
-      atom->attachment_order.expand(order + 1);
-      atom->attachment_order[order] = att_atom_idx;
-   }
-}
-
-void MoleculeRGroups::removeSites (const Array<int> &indices)
-{
-   for (int i = 0; i < indices.size(); i++)
-      if (_rgroup_atoms.find(indices[i]))
-         _rgroup_atoms.remove(indices[i]);
-}
-
 void MoleculeRGroups::clear ()
 {
-   int i;
-
-   for (i = _rgroup_atoms.begin(); i != _rgroup_atoms.end();
-        i = _rgroup_atoms.next(i))
-   {
-      _rgroup_atoms.value(i).attachment_order.clear();
-   }
-
    _rgroups.clear();
-   _rgroup_atoms.clear();
-}
-
-bool MoleculeRGroups::isRGroupAtom (int atom_idx) const
-{
-   return _rgroup_atoms.at2(atom_idx) != 0;
-}
-
-int MoleculeRGroups::getAttachmentOrder (int idx, int order) const
-{
-   _Atom &atom = _rgroup_atoms.at(idx);
-
-   if (order < atom.attachment_order.size())
-      return atom.attachment_order[order];
-
-   return -1;
 }
 
 RGroup & MoleculeRGroups::getRGroup (int idx)
@@ -161,31 +93,6 @@ RGroup & MoleculeRGroups::getRGroup (int idx)
 int MoleculeRGroups::getRGroupCount () const
 {
    return _rgroups.size();
-}
-
-int MoleculeRGroups::begin () const
-{
-   return _rgroup_atoms.begin();
-}
-
-int MoleculeRGroups::end () const
-{
-   return _rgroup_atoms.end();
-}
-
-int MoleculeRGroups::next (int i) const
-{
-   return _rgroup_atoms.next(i);
-}
-
-int MoleculeRGroups::count() const
-{
-   return _rgroup_atoms.size();
-}
-
-int MoleculeRGroups::atomIdx (int site) const
-{
-   return _rgroup_atoms.key(site);
 }
 
 void MoleculeRGroupFragment::addAttachmentPoint (int order, int index)

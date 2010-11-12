@@ -20,6 +20,7 @@
 #include "molecule/molecule_stereocenters.h"
 #include "math/algebra.h"
 #include "molecule/molecule_cis_trans.h"
+#include "base_cpp/obj_array.h"
 
 namespace indigo
 {
@@ -91,12 +92,16 @@ public:
    virtual bool isPseudoAtom (int idx) = 0;
    virtual const char * getPseudoAtom (int idx) = 0;
 
+   int countRSites ();
+
    virtual bool isRSite (int atom_idx) = 0;
    virtual int  getRSiteBits (int atom_idx) = 0;
    virtual void allowRGroupOnRSite (int atom_idx, int rg_idx) = 0;
 
    DLLEXPORT void getAllowedRGroups (int atom_idx, Array<int> &rgroup_list);
    DLLEXPORT int  getSingleAllowedRGroup (int atom_idx);
+   DLLEXPORT int  getRSiteAttachmentPointByOrder (int idx, int order) const;
+   DLLEXPORT void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
 
    virtual bool isSaturatedAtom    (int idx) = 0;
 
@@ -193,6 +198,7 @@ protected:
    int _addBaseBond (int beg, int end);
 
    Array<Vec3f> _xyz;
+   ObjArray< Array<int> > _rsite_attachment_points;
 };
 
 }

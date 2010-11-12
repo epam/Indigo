@@ -44,11 +44,11 @@ depth(0)
 
    query.clone(query_, 0, 0);
 
-   MoleculeRGroups &rgroups = query.rgroups;
    sites.clear();
 
-   for (i = rgroups.begin(); i < rgroups.end(); i = rgroups.next(i))
-      sites.push(rgroups.atomIdx(i));
+   for (i = query.vertexBegin(); i != query.vertexEnd(); i = query.vertexNext(i))
+      if (query.isRSite(i))
+         sites.push(i);
 
    query_marking.clear_resize(query.vertexEnd());
 
@@ -837,8 +837,8 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue (int *core1, int *cor
       int nei_idx1 = cur_site_vertex.neiBegin();
       int nei_idx2 = cur_site_vertex.neiNext(nei_idx1);
 
-      int nei_atom_idx1 = context.query.rgroups.getAttachmentOrder(cur_site, 0);
-      int nei_atom_idx2 = context.query.rgroups.getAttachmentOrder(cur_site, 1);
+      int nei_atom_idx1 = context.query.getRSiteAttachmentPointByOrder(cur_site, 0);
+      int nei_atom_idx2 = context.query.getRSiteAttachmentPointByOrder(cur_site, 1);
 
       if (two_attachment_points)
       {
@@ -917,7 +917,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue (int *core1, int *cor
       context.query.removeBond(cur_site_vertex.neiEdge(nei_idx1));
    }
 
-   // From MR: Why to create new EmbeddingEnumerator? Is it possible to use 
+   // From MR: Why create new EmbeddingEnumerator? Is it possible to use 
    // current without recreating all structures? Just attach and continue...
 
    // Init new embedding enumerator context
@@ -1101,12 +1101,17 @@ bool MoleculeSubstructureMatcher::_checkRGroupConditions ()
       // Check RestH
       if (rgroup.rest_h == 1)
       {
-         for (int site_idx = rgroups.begin(), j = 0; site_idx < rgroups.end() && resth_satisfied; site_idx = rgroups.next(site_idx), j++)
+         int site_idx, j = 0;
+         
+         for (site_idx = _query->vertexBegin(); site_idx != _query->vertexEnd();
+              site_idx = _query->vertexNext(site_idx))
          {
+            if (!_query->isRSite(site_idx))
+               continue;
+            
             QS_DEF(Array<int>, rg_list);
-
-            _query->getAllowedRGroups(rgroups.atomIdx(site_idx), rg_list);
-
+            
+            _query->getAllowedRGroups(site_idx, rg_list);
             for (k = 0; k < rg_list.size() && resth_satisfied; k++)
                if (rg_list[k] == i)
                {
@@ -1114,6 +1119,10 @@ bool MoleculeSubstructureMatcher::_checkRGroupConditions ()
                      resth_satisfied = false;
                   break;
                }
+
+            if (!resth_satisfied)
+               break;
+            j++;
          }
          if (!resth_satisfied)
             continue;

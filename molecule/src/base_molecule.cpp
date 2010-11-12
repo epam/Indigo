@@ -475,3 +475,32 @@ int BaseMolecule::getSingleAllowedRGroup (int atom_idx)
 
    throw Error("getSingleAllowedRGroup(): no r-groups defined on atom #%d", atom_idx);
 }
+
+int BaseMolecule::countRSites ()
+{
+   int i, sum = 0;
+
+   for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+      if (isRSite(i))
+         sum++;
+
+   return sum;
+}
+
+int BaseMolecule::getRSiteAttachmentPointByOrder (int idx, int order) const
+{
+   if (idx >= _rsite_attachment_points.size())
+      return -1;
+
+   if (order >= _rsite_attachment_points[idx].size())
+      return -1;
+
+   return _rsite_attachment_points[idx][order];
+}
+
+void BaseMolecule::setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order)
+{
+   _rsite_attachment_points.expand(atom_idx + 1);
+   _rsite_attachment_points[atom_idx].expandFill(order + 1, -1);
+   _rsite_attachment_points[atom_idx][order] = att_atom_idx;
+}

@@ -350,11 +350,11 @@ CEXPORT int indigoRenderReset (int render)
 
 CEXPORT int indigoRenderWriteHDC (void* hdc, int printingHdc)
 {
-   INDIGO_RENDER_BEGIN;
+   INDIGO_BEGIN
    {
       return self.addObject(new IndigoHDCOutput(hdc, printingHdc != 0));
    }
-   INDIGO_RENDER_END;
+   INDIGO_END(1, -1)
 }
 
 class _IndigoRenderingOptionsHandlersSetter

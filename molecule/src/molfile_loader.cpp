@@ -389,9 +389,6 @@ void MolfileLoader::_readCtab2000 ()
 
          idx = _qmol->addAtom(atom.release());
          _bmol->setAtomXyz(idx, x, y, z);
-         if (atom_type == _ATOM_R && _qmol != 0)
-            _qmol->rgroups.initRGroupAtom(idx);
-
       }
 
       if (stereo_care)
@@ -825,9 +822,7 @@ void MolfileLoader::_readCtab2000 ()
          }
          else if (strncmp(chars, "AAL", 3) == 0)
          {
-            if (_qmol == 0)
-               throw Error("rgroups attachment orders are allowed only for queries");
-
+            _scanner.skip(1);
             int site_idx = _scanner.readIntFix(3) - 1;
             int n = _scanner.readIntFix(3);
 
@@ -838,7 +833,7 @@ void MolfileLoader::_readCtab2000 ()
                _scanner.skip(1);
                int att_type = _scanner.readIntFix(3);
 
-               _qmol->rgroups.setAttachmentOrder(site_idx, att_type - 1, atom_idx);
+               _bmol->setRSiteAttachmentOrder(site_idx, atom_idx, att_type - 1);
             }
             _scanner.skipString();
          }
@@ -1318,52 +1313,51 @@ void MolfileLoader::_postLoad ()
 {
    int i;
 
+   for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
+   {
+      // Update attachment orders for rgroup bonds if they were not specified explicitly
+      if (!_bmol->isRSite(i))
+         continue;
+
+      const Vertex &vertex = _bmol->getVertex(i);
+
+      if (vertex.degree() == 1 && _bmol->getRSiteAttachmentPointByOrder(i, 0) == -1)
+         _bmol->setRSiteAttachmentOrder(i, vertex.neiVertex(vertex.neiBegin()), 0);
+      else if (vertex.degree() == 2 &&
+              (_bmol->getRSiteAttachmentPointByOrder(i, 0) == -1 ||
+               _bmol->getRSiteAttachmentPointByOrder(i, 1) == -1))
+      {
+         int nei_idx_1 = vertex.neiVertex(vertex.neiBegin());
+         int nei_idx_2 = vertex.neiVertex(vertex.neiNext(vertex.neiBegin()));
+
+         _bmol->setRSiteAttachmentOrder(i, __min(nei_idx_1, nei_idx_2), 0);
+         _bmol->setRSiteAttachmentOrder(i, __max(nei_idx_1, nei_idx_2), 1);
+      }
+      else if (vertex.degree() > 2)
+      {
+         int j;
+
+         for (j = 0; j < vertex.degree(); j++)
+            if (_bmol->getRSiteAttachmentPointByOrder(i, j) == -1)
+            {
+               QS_DEF(Array<int>, nei_indices);
+
+               nei_indices.clear_resize(vertex.degree());
+
+               for (int nei_idx = vertex.neiBegin(); nei_idx < vertex.neiEnd(); nei_idx = vertex.neiNext(nei_idx))
+                  nei_indices.push(vertex.neiVertex(nei_idx));
+
+               nei_indices.qsort(_asc_cmp_cb, 0);
+
+               for (int order = 0; order < vertex.degree(); order++)
+                  _bmol->setRSiteAttachmentOrder(i, nei_indices[order], order);
+               break;
+            }
+      }
+   }
+
    if (_qmol != 0)
    {
-      MoleculeRGroups *rgroups = &_qmol->rgroups;
-
-      for (i = _qmol->vertexBegin(); i < _qmol->vertexEnd(); i = _qmol->vertexNext(i))
-      {
-         // Update attachment orders for rgroup bonds if they were not specified explicitly
-         if (_qmol->isRSite(i))
-         {
-            const Vertex &vertex = _qmol->getVertex(i);
-
-            if (vertex.degree() == 1 && rgroups->getAttachmentOrder(i, 0) == -1)
-            {
-               rgroups->setAttachmentOrder(i, 0, vertex.neiVertex(vertex.neiBegin()));
-            } else if (vertex.degree() == 2 &&
-               (rgroups->getAttachmentOrder(i, 0) == -1 || rgroups->getAttachmentOrder(i, 1) == -1))
-            {
-               int nei_idx_1 = vertex.neiVertex(vertex.neiBegin());
-               int nei_idx_2 = vertex.neiVertex(vertex.neiNext(vertex.neiBegin()));
-
-               rgroups->setAttachmentOrder(i, 0, __min(nei_idx_1, nei_idx_2));
-               rgroups->setAttachmentOrder(i, 1, __max(nei_idx_1, nei_idx_2));
-            } else if (vertex.degree() > 2)
-            {
-               int j;
-
-               for (j = 0; j < vertex.degree(); j++)
-                  if (rgroups->getAttachmentOrder(i, j) == -1)
-                  {
-                     QS_DEF(Array<int>, nei_indices);
-
-                     nei_indices.clear_resize(vertex.degree());
-
-                     for (int nei_idx = vertex.neiBegin(); nei_idx < vertex.neiEnd(); nei_idx = vertex.neiNext(nei_idx))
-                        nei_indices.push(vertex.neiVertex(nei_idx));
-
-                     nei_indices.qsort(_asc_cmp_cb, 0);
-
-                     for (int order = 0; order < vertex.degree(); order++)
-                        rgroups->setAttachmentOrder(i, order, nei_indices[order]);
-                     break;
-                  }
-            }
-         }
-      }
-
       for (i = _qmol->edgeBegin(); i < _qmol->edgeEnd(); i = _qmol->edgeNext(i))
       {
          if (_ignore_cistrans[i])
@@ -1381,10 +1375,7 @@ void MolfileLoader::_postLoad ()
                _qmol->setBondStereoCare(i, true);
          }
       }
-   }
 
-   if (_qmol != 0)
-   {
       int k;
       for (k = 0; k < _atoms_num; k++)
       {
@@ -1699,10 +1690,7 @@ void MolfileLoader::_readCtab3000 ()
                            QueryMolecule::Atom::nicht(
                               new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C))));
          else // _ATOM_R
-         {
             _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
-            _qmol->rgroups.initRGroupAtom(i);
-         }
       }
 
       int hcount = 0;
@@ -1872,12 +1860,12 @@ void MolfileLoader::_readCtab3000 ()
             int n_items, nei_idx, att_type;
 
             strscan.skip(1); // skip '('
-            n_items = strscan.readInt1();
+            n_items = strscan.readInt1() / 2;
             while (n_items-- > 0)
             {
                nei_idx = strscan.readInt1();
                att_type = strscan.readInt1();
-               _qmol->rgroups.setAttachmentOrder(i, att_type - 1, nei_idx);
+               _qmol->setRSiteAttachmentOrder(i, nei_idx - 1, att_type - 1);
             }
          }
          else

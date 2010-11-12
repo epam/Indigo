@@ -140,7 +140,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
    _tube_idx = -1;
 
    for (int i = _reaction.reactantBegin(); i != _reaction.reactantEnd(); i = _reaction.reactantNext(i))
-      if (_reaction.getQueryMolecule(i).rgroups.count() != 0)
+      if (_reaction.getQueryMolecule(i).countRSites() != 0)
          _is_rg_exist = true;
    
    _deep_level = 0;

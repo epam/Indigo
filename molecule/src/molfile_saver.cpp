@@ -29,7 +29,9 @@ reactionAtomMapping(0),
 reactionAtomInversion(0),
 reactionAtomExactChange(0),
 reactionBondReactingCenter(0),
- _output(output)
+ _output(output),
+TL_CP_GET(_atom_mapping),
+TL_CP_GET(_bond_mapping)
 {
    mode = MODE_AUTO;
 }
@@ -243,7 +245,6 @@ void MolfileSaver::_writeMultiString (Output &output, const char *string, int le
 }
 
 
-// For queries only RGroups are supported!!!!
 void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 {
    QueryMolecule *qmol = 0;
@@ -258,11 +259,9 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
    int i;
    int iw = 1;
    QS_DEF(Array<char>, buf);
-   QS_DEF(Array<int>, atom_mapping);
-   QS_DEF(Array<int>, bond_mapping);
 
-   atom_mapping.clear_resize(mol.vertexEnd());
-   bond_mapping.clear_resize(mol.edgeEnd());
+   _atom_mapping.clear_resize(mol.vertexEnd());
+   _bond_mapping.clear_resize(mol.edgeEnd());
 
    for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i), iw++)
    {
@@ -270,7 +269,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       int isotope = mol.getAtomIsotope(i);
       ArrayOutput out(buf);
 
-      atom_mapping[i] = iw;
+      _atom_mapping[i] = iw;
       out.printf("%d ", iw);
       QS_DEF(Array<int>, list);
       int query_atom_type;
@@ -372,23 +371,15 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
                out.printf(" %d", rg_list[k]);
             out.writeChar(')');
 
-            if (qmol != 0)
+            if (!_checkAttPointOrder(mol, i))
             {
-               MoleculeRGroups &rgroups = qmol->rgroups;
+               const Vertex &vertex = mol.getVertex(i);
+               
+               out.printf(" ATTCHORD=(%d", vertex.degree() * 2);
+               for (k = 0; k < vertex.degree(); k++)
+                  out.printf(" %d %d", _atom_mapping[mol.getRSiteAttachmentPointByOrder(i, k)], k + 1);
 
-               int order1 = rgroups.getAttachmentOrder(i, 0);
-               int order2 = rgroups.getAttachmentOrder(i, 1);
-
-               int n_att_points = order1 >= 0 && order2 >= 0 ? 2 : 1;
-
-               if (n_att_points == 2 && order1 > order2)
-               {
-                  out.printf(" ATTCHORD=(2");
-
-                  out.printf(" %d 1 %d 2", order1 + 1, order2 + 1);
-
-                  out.writeChar(')');
-               }
+               out.writeChar(')');
             }
          }
       }
@@ -432,7 +423,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       int bond_order = mol.getBondOrder(i);
       ArrayOutput out(buf);
 
-      bond_mapping[i] = iw;
+      _bond_mapping[i] = iw;
 
       if (bond_order < 0)
       {
@@ -452,8 +443,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             throw Error("unrepresentable query bond");
       }
 
-      out.printf("%d %d %d %d", iw, bond_order, atom_mapping[edge.beg],
-         atom_mapping[edge.end]);
+      out.printf("%d %d %d %d", iw, bond_order, _atom_mapping[edge.beg], _atom_mapping[edge.end]);
 
       int direction = mol.stereocenters.getBondDirection(i);
 
@@ -519,7 +509,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
          out.printf("%d", list.size());
          for (j = 0; j < list.size(); j++)
-            out.printf(" %d", atom_mapping[list[j]]);
+            out.printf(" %d", _atom_mapping[list[j]]);
          out.writeChar(')');
 
          _writeMultiString(output, buf.ptr(), buf.size());
@@ -536,7 +526,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             out.printf("%d", highlighting->numEdges());
             for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
                if (h_bonds[i])
-                  out.printf(" %d", bond_mapping[i]);
+                  out.printf(" %d", _bond_mapping[i]);
             out.writeChar(')');
 
             _writeMultiString(output, buf.ptr(), buf.size());
@@ -550,7 +540,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             out.printf("%d", highlighting->numVertices());
             for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
                if (h_atoms[i])
-                  out.printf(" %d", atom_mapping[i]);
+                  out.printf(" %d", _atom_mapping[i]);
             out.writeChar(')');
 
             _writeMultiString(output, buf.ptr(), buf.size());
@@ -623,9 +613,8 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    QS_DEF(Array<int>, isotopes);
    QS_DEF(Array<int>, pseudoatoms);
    QS_DEF(Array<int>, atom_lists);
-   QS_DEF(Array<int>, atom_mapping);
 
-   atom_mapping.clear_resize(mol.vertexEnd());
+   _atom_mapping.clear_resize(mol.vertexEnd());
 
    radicals.clear();
    charges.clear();
@@ -646,7 +635,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       int atom_charge = mol.getAtomCharge(i);
       int atom_radical = 0;
 
-      atom_mapping[i] = iw;
+      _atom_mapping[i] = iw;
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
          atom_radical = mol.getAtomRadical(i);
@@ -769,7 +758,8 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       if(reactionBondReactingCenter != 0 && reactionBondReactingCenter->at(i) != 0)
          reacting_center = reactionBondReactingCenter->at(i);
 
-      output.printfCR("%3d%3d%3d%3d%3d%3d%3d", atom_mapping[edge.beg], atom_mapping[edge.end],
+      output.printfCR("%3d%3d%3d%3d%3d%3d%3d",
+                _atom_mapping[edge.beg], _atom_mapping[edge.end],
                 bond_order, stereo, 0, topology, reacting_center);
    }
 
@@ -780,7 +770,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       {
          output.printf("M  CHG%3d", __min(charges.size(), j + 8) - j);
          for (i = j; i < __min(charges.size(), j + 8); i++)
-            output.printf(" %3d %3d", charges[i] + 1, mol.getAtomCharge(charges[i]));
+            output.printf(" %3d %3d", _atom_mapping[charges[i]], mol.getAtomCharge(charges[i]));
          output.writeCR();
          j += 8;
       }
@@ -793,7 +783,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       {
          output.printf("M  RAD%3d", __min(radicals.size(), j + 8) - j);
          for (i = j; i < __min(radicals.size(), j + 8); i++)
-            output.printf(" %3d %3d", radicals[i] + 1, mol.getAtomRadical(radicals[i]));
+            output.printf(" %3d %3d", _atom_mapping[radicals[i]], mol.getAtomRadical(radicals[i]));
          output.writeCR();
          j += 8;
       }
@@ -806,7 +796,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       {
          output.printf("M  ISO%3d", __min(isotopes.size(), j + 8) - j);
          for (i = j; i < __min(isotopes.size(), j + 8); i++)
-            output.printf(" %3d %3d", isotopes[i] + 1, mol.getAtomIsotope(isotopes[i]));
+            output.printf(" %3d %3d", _atom_mapping[isotopes[i]], mol.getAtomIsotope(isotopes[i]));
          output.writeCR();
          j += 8;
       }
@@ -826,7 +816,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       if (list.size() < 1)
          throw Error("internal: atom list size is zero");
 
-      output.printf("M  ALS %3d%3d %c ", atom_idx + 1, list.size(),
+      output.printf("M  ALS %3d%3d %c ", _atom_mapping[atom_idx], list.size(),
          query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST ? 'T' : 'F');
 
       int j;
@@ -847,7 +837,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    
    for (i = 0; i < pseudoatoms.size(); i++)
    {
-      output.printfCR("A  %3d", pseudoatoms[i] + 1);
+      output.printfCR("A  %3d", _atom_mapping[pseudoatoms[i]]);
       output.writeString(mol.getPseudoAtom(pseudoatoms[i]));
       output.writeCR();
    }
@@ -874,7 +864,7 @@ void MolfileSaver::_writeRGroupIndices2000 (Output &output, BaseMolecule &mol)
 
       for (j = 0; j < rg_list.size(); j++)
       {
-         atom_ids.push(i + 1);
+         atom_ids.push(_atom_mapping[i]);
          rg_ids.push(rg_list[j]);
       }
    }
@@ -885,6 +875,24 @@ void MolfileSaver::_writeRGroupIndices2000 (Output &output, BaseMolecule &mol)
       for (i = 0; i < atom_ids.size(); i++)
          output.printf(" %3d %3d", atom_ids[i], rg_ids[i]);
       output.writeCR();
+   }
+
+   for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      if (!mol.isRSite(i))
+         continue;
+      
+      if (!_checkAttPointOrder(mol, i))
+      {
+         const Vertex &vertex = mol.getVertex(i);
+         int k;
+
+         output.printf("M  AAL %3d%3d", _atom_mapping[i], vertex.degree());
+         for (k = 0; k < vertex.degree(); k++)
+            output.printf(" %3d %3d", _atom_mapping[mol.getRSiteAttachmentPointByOrder(i, k)], k + 1);
+
+         output.writeCR();
+      }
    }
 }
 
@@ -944,4 +952,24 @@ void MolfileSaver::_writeAttachemtValues2000 (Output &output, QueryMolecule &fra
       output.printf(" %3d %3d", orders.key(i), orders.value(i));
 
    output.writeCR();
+}
+
+bool MolfileSaver::_checkAttPointOrder (BaseMolecule &mol, int rsite)
+{
+   const Vertex &vertex = mol.getVertex(rsite);
+   int i;
+
+   for (i = 0; i < vertex.degree() - 1; i++)
+   {
+      int cur = mol.getRSiteAttachmentPointByOrder(rsite, i);
+      int next = mol.getRSiteAttachmentPointByOrder(rsite, i + 1);
+
+      if (cur == -1 || next == -1)
+         return true; // here we treat "undefined" as "ok"
+
+      if (cur > next)
+         return false;
+   }
+
+   return true;
 }

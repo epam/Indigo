@@ -284,8 +284,6 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
       if (!r_molecule.isRSite(i))
          continue;
       
-      mol_rgroups.initRGroupAtom(i);
-      
       int r = r_molecule.getSingleAllowedRGroup(i);
       RGroup & r_group = mol_rgroups.getRGroup(r);
       /*
