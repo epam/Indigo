@@ -812,7 +812,7 @@ void MoleculeRenderInternal::_initAtomData ()
             if (ad.queryLabel < 0) {
                bm.getAtomDescription(i, ad.pseudo);
                ad.type = AtomDesc::TYPE_PSEUDO;
-               ad.preudoAtomStringVerbose = true;
+               ad.pseudoAtomStringVerbose = true;
             }
             QUERY_MOL_END;
          }
@@ -1776,7 +1776,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
    ad.height = fake.bbsz.y;
    ad.leftMargin = ad.rightMargin = xpos;
 
-   if (ad.preudoAtomStringVerbose) {
+   if (ad.pseudoAtomStringVerbose) {
       int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
       tis.push(id);
       TextItem& item = _data.textitems[id];

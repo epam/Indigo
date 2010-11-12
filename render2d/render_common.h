@@ -107,7 +107,7 @@ struct AtomDesc {
    bool shiftLeft;
    bool isRGroupAttachmentPoint;
    bool fixed;
-   bool preudoAtomStringVerbose;
+   bool pseudoAtomStringVerbose;
    Vec2f pos;
    Vec2f boundBoxMin;
    Vec2f boundBoxMax;

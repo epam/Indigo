@@ -81,6 +81,7 @@ void AtomDesc::clear ()
    stereoGroupType = 
       stereoGroupNumber = -1;
    isRGroupAttachmentPoint = false;
+   pseudoAtomStringVerbose = false;
    fixed = false;
    color = CWC_BASE;
 }
