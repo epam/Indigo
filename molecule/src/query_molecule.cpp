@@ -1790,6 +1790,8 @@ int QueryMolecule::parseQueryAtom (QueryMolecule& qm, int aid, Array<int>& list)
    bool notList = false;
    if (collectAtomList(qa, list, notList) || 
       (qa.type == QueryMolecule::OP_NOT && collectAtomList(*qa.child(0), list, notList) && !notList)) { // !notList is to check there's no double negation
+      if (list.size() == 0)
+         return -1;
       notList = notList || qa.type == QueryMolecule::OP_NOT;
       if (!notList && list.size() == 5 && list[0] == ELEM_F && list[1] == ELEM_Cl && list[2] == ELEM_Br && list[3] == ELEM_I && list[4] == ELEM_At)
          return QUERY_ATOM_X;
@@ -1797,7 +1799,6 @@ int QueryMolecule::parseQueryAtom (QueryMolecule& qm, int aid, Array<int>& list)
          return QUERY_ATOM_Q;
       return notList ? QUERY_ATOM_NOTLIST : QUERY_ATOM_LIST;
    }
-
    return -1;
 }
 

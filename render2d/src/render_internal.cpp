@@ -790,13 +790,13 @@ void MoleculeRenderInternal::_initAtomData ()
       //printf("%s\n", buf.ptr());
 
       int atomNumber = bm.getAtomNumber(i);
-      if (atomNumber < 0 || atomNumber == ELEM_RSITE)
-         ad.type = AtomDesc::TYPE_QUERY;
-      else if (_mol->isPseudoAtom(i))
+      if (_mol->isPseudoAtom(i))
       {
          ad.type = AtomDesc::TYPE_PSEUDO;
          ad.pseudo.readString(_mol->getPseudoAtom(i), true);
       }
+      else if (atomNumber < 0 || atomNumber == ELEM_RSITE)
+         ad.type = AtomDesc::TYPE_QUERY;
       else
          ad.type = AtomDesc::TYPE_REGULAR;
 
@@ -1266,7 +1266,7 @@ void MoleculeRenderInternal::_initBondData ()
                d.topology = TOPOLOGY_CHAIN;
             }
             if (ringPossible && !chainPossible) {
-               d.topology = TOPOLOGY_CHAIN;
+               d.topology = TOPOLOGY_RING;
             }
          }
       }
