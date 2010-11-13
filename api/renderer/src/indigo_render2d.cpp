@@ -35,7 +35,6 @@ if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
 
 #define INDIGO_RENDER_BEGIN_2 { \
       Indigo &self = indigoGetInstance(); \
-      TL_GET2(IndigoRenderer, renderer_self, indigo_renderer_self); \
       try { self.error_message.clear();
 
 

@@ -55,6 +55,7 @@
             <pElem>../common</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
+          <warningLevel>2</warningLevel>
         </ccTool>
         <archiverTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libindigo.a</output>
@@ -85,6 +86,7 @@
             <pElem>../common</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
+          <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libindigo.so</output>

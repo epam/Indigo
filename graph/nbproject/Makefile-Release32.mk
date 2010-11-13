@@ -55,12 +55,12 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/380065930/d_bitset.o \
 	${OBJECTDIR}/_ext/380065930/exception.o \
 	${OBJECTDIR}/_ext/380065930/output.o \
-	${OBJECTDIR}/_ext/1705077469/matr3x3d.o \
 	${OBJECTDIR}/src/graph_subtree_enumerator.o \
+	${OBJECTDIR}/_ext/1705077469/matr3x3d.o \
 	${OBJECTDIR}/_ext/380065930/tlscont.o \
 	${OBJECTDIR}/_ext/1705077469/lseg3f.o \
-	${OBJECTDIR}/_ext/1705077469/vec3f.o \
 	${OBJECTDIR}/src/biconnected_decomposer.o \
+	${OBJECTDIR}/_ext/1705077469/vec3f.o \
 	${OBJECTDIR}/src/graph.o \
 	${OBJECTDIR}/src/graph_subchain_enumerator.o \
 	${OBJECTDIR}/src/skew_symmetric_network.o \
@@ -71,15 +71,15 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/aux_path_finder.o \
 	${OBJECTDIR}/_ext/1705077469/transform3f.o \
 	${OBJECTDIR}/src/embeddings_storage.o \
-	${OBJECTDIR}/src/graph_affine_matcher.o \
 	${OBJECTDIR}/src/edge_rotation_matcher.o \
+	${OBJECTDIR}/src/graph_affine_matcher.o \
 	${OBJECTDIR}/src/shortest_path_finder.o \
 	${OBJECTDIR}/src/scaffold_detection.o \
 	${OBJECTDIR}/_ext/1705077469/plane3f.o \
 	${OBJECTDIR}/_ext/1881957642/nano_posix.o \
 	${OBJECTDIR}/src/dfs_walk.o \
-	${OBJECTDIR}/_ext/1705077469/best_fit.o \
 	${OBJECTDIR}/src/graph_constrained_bmatching_finder.o \
+	${OBJECTDIR}/_ext/1705077469/best_fit.o \
 	${OBJECTDIR}/src/graph_decomposer.o \
 	${OBJECTDIR}/src/max_common_subgraph.o \
 	${OBJECTDIR}/_ext/380065930/crc32.o
@@ -221,15 +221,15 @@ ${OBJECTDIR}/_ext/380065930/output.o: ../common/base_cpp/output.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/380065930/output.o ../common/base_cpp/output.cpp
 
-${OBJECTDIR}/_ext/1705077469/matr3x3d.o: ../common/math/matr3x3d.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1705077469
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1705077469/matr3x3d.o ../common/math/matr3x3d.cpp
-
 ${OBJECTDIR}/src/graph_subtree_enumerator.o: src/graph_subtree_enumerator.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/graph_subtree_enumerator.o src/graph_subtree_enumerator.cpp
+
+${OBJECTDIR}/_ext/1705077469/matr3x3d.o: ../common/math/matr3x3d.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1705077469
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1705077469/matr3x3d.o ../common/math/matr3x3d.cpp
 
 ${OBJECTDIR}/_ext/380065930/tlscont.o: ../common/base_cpp/tlscont.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/380065930
@@ -241,15 +241,15 @@ ${OBJECTDIR}/_ext/1705077469/lseg3f.o: ../common/math/lseg3f.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1705077469/lseg3f.o ../common/math/lseg3f.cpp
 
-${OBJECTDIR}/_ext/1705077469/vec3f.o: ../common/math/vec3f.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1705077469
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1705077469/vec3f.o ../common/math/vec3f.cpp
-
 ${OBJECTDIR}/src/biconnected_decomposer.o: src/biconnected_decomposer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/biconnected_decomposer.o src/biconnected_decomposer.cpp
+
+${OBJECTDIR}/_ext/1705077469/vec3f.o: ../common/math/vec3f.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1705077469
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1705077469/vec3f.o ../common/math/vec3f.cpp
 
 ${OBJECTDIR}/src/graph.o: src/graph.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -301,15 +301,15 @@ ${OBJECTDIR}/src/embeddings_storage.o: src/embeddings_storage.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/embeddings_storage.o src/embeddings_storage.cpp
 
-${OBJECTDIR}/src/graph_affine_matcher.o: src/graph_affine_matcher.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/graph_affine_matcher.o src/graph_affine_matcher.cpp
-
 ${OBJECTDIR}/src/edge_rotation_matcher.o: src/edge_rotation_matcher.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/edge_rotation_matcher.o src/edge_rotation_matcher.cpp
+
+${OBJECTDIR}/src/graph_affine_matcher.o: src/graph_affine_matcher.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/graph_affine_matcher.o src/graph_affine_matcher.cpp
 
 ${OBJECTDIR}/src/shortest_path_finder.o: src/shortest_path_finder.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -336,15 +336,15 @@ ${OBJECTDIR}/src/dfs_walk.o: src/dfs_walk.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/dfs_walk.o src/dfs_walk.cpp
 
-${OBJECTDIR}/_ext/1705077469/best_fit.o: ../common/math/best_fit.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1705077469
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1705077469/best_fit.o ../common/math/best_fit.cpp
-
 ${OBJECTDIR}/src/graph_constrained_bmatching_finder.o: src/graph_constrained_bmatching_finder.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/graph_constrained_bmatching_finder.o src/graph_constrained_bmatching_finder.cpp
+
+${OBJECTDIR}/_ext/1705077469/best_fit.o: ../common/math/best_fit.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1705077469
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1705077469/best_fit.o ../common/math/best_fit.cpp
 
 ${OBJECTDIR}/src/graph_decomposer.o: src/graph_decomposer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

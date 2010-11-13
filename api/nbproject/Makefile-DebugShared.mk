@@ -87,62 +87,62 @@ dist/DebugShared/GNU-Linux-x86/libindigo.so: ${OBJECTFILES}
 ${OBJECTDIR}/src/indigo_molecule.o: src/indigo_molecule.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_molecule.o src/indigo_molecule.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_molecule.o src/indigo_molecule.cpp
 
 ${OBJECTDIR}/src/indigo_loaders.o: src/indigo_loaders.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_loaders.o src/indigo_loaders.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_loaders.o src/indigo_loaders.cpp
 
 ${OBJECTDIR}/src/indigo_io.o: src/indigo_io.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_io.o src/indigo_io.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_io.o src/indigo_io.cpp
 
 ${OBJECTDIR}/src/indigo_array.o: src/indigo_array.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_array.o src/indigo_array.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_array.o src/indigo_array.cpp
 
 ${OBJECTDIR}/src/indigo.o: src/indigo.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo.o src/indigo.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo.o src/indigo.cpp
 
 ${OBJECTDIR}/src/indigo_scaffold.o: src/indigo_scaffold.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_scaffold.o src/indigo_scaffold.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_scaffold.o src/indigo_scaffold.cpp
 
 ${OBJECTDIR}/src/indigo_match.o: src/indigo_match.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_match.o src/indigo_match.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_match.o src/indigo_match.cpp
 
 ${OBJECTDIR}/src/indigo_reaction.o: src/indigo_reaction.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_reaction.o src/indigo_reaction.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_reaction.o src/indigo_reaction.cpp
 
 ${OBJECTDIR}/src/indigo_product_enumerator.o: src/indigo_product_enumerator.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_product_enumerator.o src/indigo_product_enumerator.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_product_enumerator.o src/indigo_product_enumerator.cpp
 
 ${OBJECTDIR}/src/indigo_fingerprints.o: src/indigo_fingerprints.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_fingerprints.o src/indigo_fingerprints.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_fingerprints.o src/indigo_fingerprints.cpp
 
 ${OBJECTDIR}/src/option_manager.o: src/option_manager.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/option_manager.o src/option_manager.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/option_manager.o src/option_manager.cpp
 
 ${OBJECTDIR}/src/indigo_object.o: src/indigo_object.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_object.o src/indigo_object.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_object.o src/indigo_object.cpp
 
 ${OBJECTDIR}/src/indigo_macros.o: src/indigo_macros.c 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -152,22 +152,22 @@ ${OBJECTDIR}/src/indigo_macros.o: src/indigo_macros.c
 ${OBJECTDIR}/src/indigo_basic.o: src/indigo_basic.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_basic.o src/indigo_basic.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_basic.o src/indigo_basic.cpp
 
 ${OBJECTDIR}/src/indigo_misc.o: src/indigo_misc.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_misc.o src/indigo_misc.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_misc.o src/indigo_misc.cpp
 
 ${OBJECTDIR}/src/indigo_layout.o: src/indigo_layout.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_layout.o src/indigo_layout.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_layout.o src/indigo_layout.cpp
 
 ${OBJECTDIR}/src/indigo_deconvolution.o: src/indigo_deconvolution.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_deconvolution.o src/indigo_deconvolution.cpp
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_deconvolution.o src/indigo_deconvolution.cpp
 
 # Subprojects
 .build-subprojects:

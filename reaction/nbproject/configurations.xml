@@ -63,6 +63,7 @@
       <compileType>
         <cTool>
           <commandLine>-fPIC</commandLine>
+          <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
           <incDir>

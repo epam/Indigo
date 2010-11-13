@@ -77,67 +77,67 @@ dist/Debug/GNU-Linux-x86/liblayout.a: ${OBJECTFILES}
 ${OBJECTDIR}/src/molecule_layout_graph.o: src/molecule_layout_graph.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph.o src/molecule_layout_graph.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph.o src/molecule_layout_graph.cpp
 
 ${OBJECTDIR}/src/molecule_layout.o: src/molecule_layout.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout.o src/molecule_layout.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout.o src/molecule_layout.cpp
 
 ${OBJECTDIR}/src/molecule_layout_graph_cycle.o: src/molecule_layout_graph_cycle.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_cycle.o src/molecule_layout_graph_cycle.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_cycle.o src/molecule_layout_graph_cycle.cpp
 
 ${OBJECTDIR}/src/molecule_layout_graph_geom.o: src/molecule_layout_graph_geom.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_geom.o src/molecule_layout_graph_geom.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_geom.o src/molecule_layout_graph_geom.cpp
 
 ${OBJECTDIR}/src/molecule_layout_graph_border.o: src/molecule_layout_graph_border.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_border.o src/molecule_layout_graph_border.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_border.o src/molecule_layout_graph_border.cpp
 
 ${OBJECTDIR}/src/layout_pattern.o: src/layout_pattern.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/layout_pattern.o src/layout_pattern.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/layout_pattern.o src/layout_pattern.cpp
 
 ${OBJECTDIR}/src/molecule_layout_graph_assign.o: src/molecule_layout_graph_assign.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_assign.o src/molecule_layout_graph_assign.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_assign.o src/molecule_layout_graph_assign.cpp
 
 ${OBJECTDIR}/src/refinement_state.o: src/refinement_state.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/refinement_state.o src/refinement_state.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/refinement_state.o src/refinement_state.cpp
 
 ${OBJECTDIR}/src/molecule_layout_graph_refine.o: src/molecule_layout_graph_refine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_refine.o src/molecule_layout_graph_refine.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_refine.o src/molecule_layout_graph_refine.cpp
 
 ${OBJECTDIR}/src/attachment_layout.o: src/attachment_layout.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/attachment_layout.o src/attachment_layout.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/attachment_layout.o src/attachment_layout.cpp
 
 ${OBJECTDIR}/src/molecule_layout_graph_attach.o: src/molecule_layout_graph_attach.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_attach.o src/molecule_layout_graph_attach.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_layout_graph_attach.o src/molecule_layout_graph_attach.cpp
 
 ${OBJECTDIR}/src/metalayout.o: src/metalayout.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/metalayout.o src/metalayout.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/metalayout.o src/metalayout.cpp
 
 ${OBJECTDIR}/src/reaction_layout.o: src/reaction_layout.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_layout.o src/reaction_layout.cpp
+	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_layout.o src/reaction_layout.cpp
 
 # Subprojects
 .build-subprojects:

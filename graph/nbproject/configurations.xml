@@ -136,6 +136,7 @@
             <pElem>..</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
+          <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
           <incDir>
@@ -143,6 +144,7 @@
             <pElem>..</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
+          <warningLevel>2</warningLevel>
         </ccTool>
         <archiverTool>
         </archiverTool>

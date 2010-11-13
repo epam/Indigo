@@ -45,10 +45,10 @@ void Dbitset::_expandTo(int wordIndex) {
 int Dbitset::_bitCount(qword b) const {
    b = (b & 0x5555555555555555LL) + ((b >> 1) & 0x5555555555555555LL);
    b = (b & 0x3333333333333333LL) + ((b >> 2) & 0x3333333333333333LL);
-   b = b + (b >> 4) & 0x0F0F0F0F0F0F0F0FLL;
+   b = (b + (b >> 4)) & 0x0F0F0F0F0F0F0F0FLL;
    b = b + (b >> 8);
    b = b + (b >> 16);
-   b = b + (b >> 32) & 0x0000007F;
+   b = (b + (b >> 32)) & 0x0000007F;
    return (int) b;
 }
 

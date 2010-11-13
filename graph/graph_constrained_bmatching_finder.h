@@ -91,9 +91,9 @@ private:
    void _createEdges    ();
    void _connectVerticesWithSets (const ObjArray< Array<int> > &nodes_per_set);
 
-   TL_CP_DECL(SkewSymmetricNetwork, _network);
-   const Graph &_g;     
+   const Graph &_g;
 
+   TL_CP_DECL(SkewSymmetricNetwork, _network);
    // Edges mapping between graph and network
    TL_CP_DECL(Array<int>, _edges_graph_to_net);
    TL_CP_DECL(Array<int>, _vertices_graph_to_net);

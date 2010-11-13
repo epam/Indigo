@@ -31,6 +31,9 @@
         <platform>2</platform>
       </toolsSet>
       <compileType>
+        <cTool>
+          <warningLevel>2</warningLevel>
+        </cTool>
         <ccTool>
           <incDir>
             <pElem>.</pElem>

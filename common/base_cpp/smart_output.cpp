@@ -88,7 +88,6 @@ void SmartTableOutput::flush ()
    QS_DEF(Array<int>, column_widths);
    column_widths.clear();
 
-   int size = _lines.size();
    for (int i = 0; i < _lines.size(); i++)
       _updateColumnWidths(i, column_widths);
    for (int i = 0; i < _lines.size(); i++)

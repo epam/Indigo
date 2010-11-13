@@ -724,6 +724,8 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
       case QueryMolecule::OP_NONE:
          _output.writeChar('*');
          break;
+      default:
+         ;
    }
 
    if (depth == 0)
@@ -769,6 +771,8 @@ void SmilesSaver::_writeSmartsBond (int idx, QueryMolecule::Bond *bond) const
             _output.writeChar(':');
          break;
       }
+      default:
+         ;
    }
 }
 

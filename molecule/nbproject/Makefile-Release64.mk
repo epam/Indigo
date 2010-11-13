@@ -36,9 +36,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/molecule_dearom.o \
 	${OBJECTDIR}/src/molecule_arom_match.o \
 	${OBJECTDIR}/_ext/1704922415/gzip_scanner.o \
-	${OBJECTDIR}/src/elements.o \
 	${OBJECTDIR}/_ext/380065930/gray_codes.o \
 	${OBJECTDIR}/src/molecule_substructure_matcher.o \
+	${OBJECTDIR}/src/elements.o \
 	${OBJECTDIR}/src/molecule_mass.o \
 	${OBJECTDIR}/src/molecule_3d_constraints.o \
 	${OBJECTDIR}/src/molecule_scaffold_detection.o \
@@ -57,8 +57,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/380065930/bitinworker.o \
 	${OBJECTDIR}/src/molecule_inchi_layers.o \
 	${OBJECTDIR}/_ext/637734348/lzw_decoder.o \
-	${OBJECTDIR}/src/query_molecule.o \
 	${OBJECTDIR}/_ext/380065930/bitoutworker.o \
+	${OBJECTDIR}/src/query_molecule.o \
 	${OBJECTDIR}/src/smiles_saver.o \
 	${OBJECTDIR}/src/molecule_rgroups.o \
 	${OBJECTDIR}/src/molecule_automorphism_search.o \
@@ -71,9 +71,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/molecule_exact_matcher.o \
 	${OBJECTDIR}/src/rdf_loader.o \
 	${OBJECTDIR}/src/molecule_arom.o \
-	${OBJECTDIR}/src/molecule_tautomer_chain.o \
 	${OBJECTDIR}/src/icm_loader.o \
 	${OBJECTDIR}/src/molecule_neighbourhood_counters.o \
+	${OBJECTDIR}/src/molecule_tautomer_chain.o \
 	${OBJECTDIR}/_ext/637734348/lzw_encoder.o \
 	${OBJECTDIR}/src/sdf_loader.o \
 	${OBJECTDIR}/_ext/637734348/lzw_dictionary.o \
@@ -133,11 +133,6 @@ ${OBJECTDIR}/_ext/1704922415/gzip_scanner.o: ../common/gzip/gzip_scanner.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1704922415/gzip_scanner.o ../common/gzip/gzip_scanner.cpp
 
-${OBJECTDIR}/src/elements.o: src/elements.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/elements.o src/elements.cpp
-
 ${OBJECTDIR}/_ext/380065930/gray_codes.o: ../common/base_cpp/gray_codes.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/380065930
 	${RM} $@.d
@@ -147,6 +142,11 @@ ${OBJECTDIR}/src/molecule_substructure_matcher.o: src/molecule_substructure_matc
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_substructure_matcher.o src/molecule_substructure_matcher.cpp
+
+${OBJECTDIR}/src/elements.o: src/elements.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/elements.o src/elements.cpp
 
 ${OBJECTDIR}/src/molecule_mass.o: src/molecule_mass.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -238,15 +238,15 @@ ${OBJECTDIR}/_ext/637734348/lzw_decoder.o: ../common/lzw/lzw_decoder.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/637734348/lzw_decoder.o ../common/lzw/lzw_decoder.cpp
 
-${OBJECTDIR}/src/query_molecule.o: src/query_molecule.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/query_molecule.o src/query_molecule.cpp
-
 ${OBJECTDIR}/_ext/380065930/bitoutworker.o: ../common/base_cpp/bitoutworker.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/380065930
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/380065930/bitoutworker.o ../common/base_cpp/bitoutworker.cpp
+
+${OBJECTDIR}/src/query_molecule.o: src/query_molecule.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/query_molecule.o src/query_molecule.cpp
 
 ${OBJECTDIR}/src/smiles_saver.o: src/smiles_saver.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -308,11 +308,6 @@ ${OBJECTDIR}/src/molecule_arom.o: src/molecule_arom.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_arom.o src/molecule_arom.cpp
 
-${OBJECTDIR}/src/molecule_tautomer_chain.o: src/molecule_tautomer_chain.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_tautomer_chain.o src/molecule_tautomer_chain.cpp
-
 ${OBJECTDIR}/src/icm_loader.o: src/icm_loader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -322,6 +317,11 @@ ${OBJECTDIR}/src/molecule_neighbourhood_counters.o: src/molecule_neighbourhood_c
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_neighbourhood_counters.o src/molecule_neighbourhood_counters.cpp
+
+${OBJECTDIR}/src/molecule_tautomer_chain.o: src/molecule_tautomer_chain.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_tautomer_chain.o src/molecule_tautomer_chain.cpp
 
 ${OBJECTDIR}/_ext/637734348/lzw_encoder.o: ../common/lzw/lzw_encoder.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/637734348
