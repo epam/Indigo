@@ -64,10 +64,17 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          _output.printf("    <atom id=\"a%d\" elementType=\"%s\"", i, atom_str);
 
          if (_mol->getAtomIsotope(i) != 0)
+         {
             _output.printf(" isotope=\"%d\"", _mol->getAtomIsotope(i));
+            // for inchi-1 program which ignores "isotope" property (version 1.03)
+            _output.printf(" isotopeNumber=\"%d\"", _mol->getAtomIsotope(i));
+         }
 
          if (_mol->getAtomCharge(i) != 0)
             _output.printf(" formalCharge=\"%d\"", _mol->getAtomCharge(i));
+
+         if (_mol->getAtomRadical(i) != 0)
+            _output.printf(" spinMultiplicity=\"%d\"", _mol->getAtomRadical(i));
 
          if (_mol->getAtomRadical(i) != 0 ||
              (_mol->getAtomAromaticity(i) == ATOM_AROMATIC &&
@@ -138,8 +145,8 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          int dir = _mol->stereocenters.getBondDirection(i);
          int parity = _mol->cis_trans.getParity(i);
 
-         if (_mol->have_xyz && dir != 0 &&
-             _mol->stereocenters.getType(edge.beg) > MoleculeStereocenters::ATOM_ANY)
+         if (_mol->have_xyz && (dir == MoleculeStereocenters::BOND_UP ||
+                                dir == MoleculeStereocenters::BOND_DOWN))
          {
             _output.printf(">\n      <bondStereo>%s</bondStereo>\n    </bond>\n",
                     (dir == MoleculeStereocenters::BOND_UP) ? "W" : "H");

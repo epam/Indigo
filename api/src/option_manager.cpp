@@ -107,10 +107,12 @@ int OptionManager::_parseInt (const char *str, int &val)
 
 int OptionManager::_parseBool (const char *str, int &val)
 {
-   if (strcasecmp(str, "true") == 0) {
+   if (strcasecmp(str, "true") == 0 || strcasecmp(str, "on") == 0 ||
+       strcasecmp(str, "yes") == 0) {
       val = 1;
       return 1;
-   } else if (strcasecmp(str, "false") == 0) {
+   } else if (strcasecmp(str, "false") == 0 || strcasecmp(str, "off") == 0 ||
+              strcasecmp(str, "no") == 0) {
       val = 0;
       return 1;
    } else
