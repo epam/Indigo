@@ -236,6 +236,21 @@ namespace com.gga.indigo
          return Indigo.indigoCountRSites(self);
       }
 
+      public System.Collections.IEnumerable iterateBonds ()
+      {
+         return new IndigoObject(dispatcher, Indigo.indigoIterateBonds(self));
+      }
+
+      public int bondOrder ()
+      {
+         return Indigo.indigoBondOrder(self);
+      }
+
+      public int bondStereo ()
+      {
+         return Indigo.indigoBondStereo(self);
+      }
+
       public void cisTransClear ()
       {
          dispatcher.setSessionID();

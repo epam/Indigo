@@ -469,6 +469,12 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoCountRSites (int molecule);
       [DllImport("indigo.dll")]
+      public static extern int indigoIterateBonds (int molecule);
+      [DllImport("indigo.dll")]
+      public static extern int indigoBondOrder (int molecule);
+      [DllImport("indigo.dll")]
+      public static extern int indigoBondStereo (int molecule);
+      [DllImport("indigo.dll")]
       public static extern int indigoCisTransClear (int molecule);
       [DllImport("indigo.dll")]
       public static extern int indigoStereocentersClear (int molecule);
