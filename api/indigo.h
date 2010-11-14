@@ -118,7 +118,7 @@ CEXPORT int indigoWriteBuffer (void);
  *    return;
  * }
  *
- * while ((item = indigoNext(iter))
+ * while (item = indigoNext(iter))
  * {
  *    if (item == -1)
  *    {
@@ -245,6 +245,25 @@ CEXPORT int indigoCountAtoms (int molecule);
 CEXPORT int indigoCountBonds (int molecule);
 CEXPORT int indigoCountPseudoatoms (int molecule);
 CEXPORT int indigoCountRSites (int molecule);
+
+CEXPORT int indigoIterateBonds (int molecule);
+// Returns 1/2/3 if the bond is a single/double/triple bond
+// Returns 4 if the bond is an aromatic bond
+// Returns zero if the bond is ambiguous (query bond)
+CEXPORT int indigoBondOrder  (int bond);
+
+enum
+{
+   INDIGO_UP = 1,
+   INDIGO_DOWN = 2,
+   INDIGO_EITHER = 3,
+   INDIGO_CIS = 4,
+   INDIGO_TRANS = 5
+};
+
+// Returns INDIGO_{UP/DOWN/EITHER/CIS/TRANS},
+// or zero if the bond is not a stereobond
+CEXPORT int indigoBondStereo (int bond);
 
 CEXPORT int indigoCisTransClear (int handle);
 CEXPORT int indigoStereocentersClear (int handle);

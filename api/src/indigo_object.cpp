@@ -189,3 +189,16 @@ IndigoFingerprint & IndigoObject::asFingerprint()
 {
    throw IndigoError("%s is not a fingerprint", debugInfo());
 }
+
+IndigoBond & IndigoObject::asBond ()
+{
+   if (type == BOND)
+      return *(IndigoBond *)this;
+   if (type == ARRAY_ELEMENT)
+   {
+      IndigoArrayElement &ae = *(IndigoArrayElement *)this;
+
+      return ae.array->objects[ae.idx]->asBond();
+   }
+   throw IndigoError("%s is not a bond", debugInfo());
+}

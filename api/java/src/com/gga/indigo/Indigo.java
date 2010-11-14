@@ -18,6 +18,12 @@ import java.io.*;
 
 public class Indigo
 {
+   public static final int UP = 1;
+   public static final int DOWN = 2;
+   public static final int EITHER = 3;
+   public static final int CIS = 4;
+   public static final int TRANS = 5;
+
    public native String version ();
 
    public int countReferences ()
@@ -234,31 +240,6 @@ public class Indigo
 
    private String _full_dll_path = null;
 
-	public static void addDir(String s) throws IOException {
-		try {
-			// This enables the java.library.path to be modified at runtime
-			// From a Sun engineer at http://forums.sun.com/thread.jspa?threadID=707176
-			//
-			java.lang.reflect.Field field = ClassLoader.class.getDeclaredField("usr_paths");
-			field.setAccessible(true);
-			String[] paths = (String[])field.get(null);
-			for (int i = 0; i < paths.length; i++) {
-				if (s.equals(paths[i])) {
-					return;
-				}
-			}
-			String[] tmp = new String[paths.length+1];
-			System.arraycopy(paths,0,tmp,0,paths.length);
-			tmp[paths.length] = s;
-			field.set(null,tmp);
-			System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + s);
-		} catch (IllegalAccessException e) {
-			throw new IOException("Failed to get permissions to set library path");
-		} catch (NoSuchFieldException e) {
-			throw new IOException("Failed to get field handle to set library path");
-		}
-	}
-
    public Indigo (String path)
    {
       path = path + File.separator + _dllpath;
@@ -267,7 +248,6 @@ public class Indigo
       try
       {
          _full_dll_path = (new File(path)).getCanonicalPath();
-         addDir(_full_dll_path);
       }
       catch (Exception e)
       {
@@ -320,9 +300,7 @@ public class Indigo
    private static native long allocSessionId ();
    private static native void releaseSessionId (long id);
 
-   //private static native long dlopen(java.lang.String arg0, int arg1);
-
-   public native int indigoRtldGlobal (String path);
+   public native final int indigoRtldGlobal (String path);
    public native int indigoFree (int handle);
    public native int indigoClone (int handle);
    public native int indigoCountReferences ();
@@ -415,6 +393,10 @@ public class Indigo
    public native int indigoCountBonds (int molecule);
    public native int indigoCountPseudoatoms (int molecule);
    public native int indigoCountRSites (int molecule);
+
+   public native int indigoIterateBonds (int molecule);
+   public native int indigoBondOrder (int molecule);
+   public native int indigoBondStereo (int molecule);
 
    public native int indigoCisTransClear (int molecule);
    public native int indigoStereocentersClear (int molecule);

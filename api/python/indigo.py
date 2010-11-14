@@ -27,6 +27,12 @@ class IndigoException (Exception):
     return repr(self.value)
 
 class Indigo:
+  UP = 1
+  DOWN = 2
+  EITHER = 3
+  CIS = 4
+  TRANS = 5
+
   class IndigoObject:
     def __init__ (self, dispatcher, id):
       self.id = id
@@ -273,6 +279,12 @@ class Indigo:
     self._lib.indigoCountPseudoatoms.argtypes = [c_int]
     self._lib.indigoCountRSites.restype = c_int
     self._lib.indigoCountRSites.argtypes = [c_int]
+    self._lib.indigoIterateBonds.restype = c_int
+    self._lib.indigoIterateBonds.argtypes = [c_int]
+    self._lib.indigoBondOrder.restype = c_int
+    self._lib.indigoBondOrder.argtypes = [c_int]
+    self._lib.indigoBondStereo.restype = c_int
+    self._lib.indigoBondStereo.argtypes = [c_int]
     self._lib.indigoCisTransClear.restype = c_int
     self._lib.indigoCisTransClear.argtypes = [c_int]
     self._lib.indigoStereocentersClear.restype = c_int
@@ -469,6 +481,10 @@ class Indigo:
     self.IndigoObject.countBonds = self._member_int(self._lib.indigoCountBonds)
     self.IndigoObject.countPseudoatoms = self._member_int(self._lib.indigoCountPseudoatoms)
     self.IndigoObject.countRSites = self._member_int(self._lib.indigoCountRSites)
+
+    self.IndigoObject.iterateBonds = self._member_obj(self._lib.indigoIterateBonds)
+    self.IndigoObject.bondOrder = self._member_int(self._lib.indigoBondOrder)
+    self.IndigoObject.bondStereo = self._member_int(self._lib.indigoBondStereo)
 
     self.IndigoObject.cisTransClear = self._member_void(self._lib.indigoCisTransClear)
     self.IndigoObject.stereocentersClear = self._member_void(self._lib.indigoStereocentersClear)

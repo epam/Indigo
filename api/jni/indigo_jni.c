@@ -130,6 +130,10 @@ JNI_FUNC_jint_jint(indigoCountBonds)
 JNI_FUNC_jint_jint(indigoCountPseudoatoms)
 JNI_FUNC_jint_jint(indigoCountRSites)
 
+JNI_FUNC_jint_jint(indigoIterateBonds)
+JNI_FUNC_jint_jint(indigoBondOrder)
+JNI_FUNC_jint_jint(indigoBondStereo)
+
 JNI_FUNC_jint_jint(indigoCisTransClear)
 JNI_FUNC_jint_jint(indigoStereocentersClear)
 JNI_FUNC_jint_jint(indigoCountStereocenters)

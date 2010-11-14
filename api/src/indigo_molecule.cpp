@@ -203,6 +203,83 @@ int IndigoAtomsIter::getIndex ()
    return _idx;
 }
 
+IndigoBond::IndigoBond (BaseMolecule &mol_, int idx_) : IndigoObject(BOND)
+{
+   mol = &mol_;
+   idx = idx_;
+}
+
+IndigoBond::~IndigoBond ()
+{
+}
+
+int IndigoBond::getIndex ()
+{
+   return idx;
+}
+
+IndigoBondsIter::IndigoBondsIter (BaseMolecule *mol) : IndigoObject(BONDS_ITER)
+{
+   _mol = mol;
+   _idx = -1;
+}
+
+IndigoBondsIter::~IndigoBondsIter ()
+{
+}
+
+bool IndigoBondsIter::hasNext ()
+{
+   if (_idx == _mol->edgeEnd())
+      return false;
+
+   int next_idx;
+
+   if (_idx == -1)
+      next_idx = _mol->edgeBegin();
+   else
+      next_idx = _mol->edgeNext(_idx);
+
+   return next_idx != _mol->edgeEnd();
+}
+
+IndigoObject * IndigoBondsIter::next ()
+{
+   if (_idx == -1)
+      _idx = _mol->edgeBegin();
+   else
+      _idx = _mol->edgeNext(_idx);
+
+   if (_idx == _mol->edgeEnd())
+      return 0;
+
+   AutoPtr<IndigoBond> bond(new IndigoBond(*_mol, _idx));
+
+   return bond.release();
+}
+
+int IndigoBondsIter::getIndex ()
+{
+   if (_idx < 0)
+      throw IndigoError("next() must be called prior to accessing the bond");
+
+   return _idx;
+}
+
+CEXPORT int indigoIterateBonds (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      AutoPtr<IndigoBondsIter> newiter(new IndigoBondsIter(&mol));
+
+      return self.addObject(newiter.release());
+   }
+   INDIGO_END(0, -1);
+}
+
+
 CEXPORT int indigoLoadMolecule (int source)
 {
    INDIGO_BEGIN
@@ -1035,4 +1112,42 @@ CEXPORT int indigoCountStereocenters (int molecule)
       return mol.stereocenters.size();
    }
    INDIGO_END(0, -1)
+}
+
+CEXPORT int indigoBondOrder (int bondd)
+{
+   INDIGO_BEGIN
+   {
+      IndigoBond &bond = self.getObject(bondd).asBond();
+
+      int num = bond.mol->getBondOrder(bond.idx);
+      return num == -1 ? 0 : num;
+   }
+   INDIGO_END(0, -1);
+}
+
+CEXPORT int indigoBondStereo (int bondd)
+{
+   INDIGO_BEGIN
+   {
+      IndigoBond &bond = self.getObject(bondd).asBond();
+      BaseMolecule &mol = *bond.mol;
+
+      int dir = mol.stereocenters.getBondDirection(bond.idx);
+
+      if (dir == MoleculeStereocenters::BOND_UP)
+         return INDIGO_UP;
+      if (dir == MoleculeStereocenters::BOND_DOWN)
+         return INDIGO_DOWN;
+      if (dir == MoleculeStereocenters::BOND_EITHER)
+         return INDIGO_EITHER;
+
+      int parity = mol.cis_trans.getParity(bond.idx);
+
+      if (parity == MoleculeCisTrans::CIS)
+         return INDIGO_CIS;
+      if (parity == MoleculeCisTrans::TRANS)
+         return INDIGO_TRANS;
+   }
+   INDIGO_END(0, -1);
 }

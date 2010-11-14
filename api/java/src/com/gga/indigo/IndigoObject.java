@@ -216,6 +216,21 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return dispatcher.indigoCountRSites(self);
    }
 
+   public IndigoObject iterateBonds ()
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoIterateBonds(self));
+   }
+
+   public int bondOrder ()
+   {
+      return dispatcher.indigoBondOrder(self);
+   }
+
+   public int bondStereo ()
+   {
+      return dispatcher.indigoBondStereo(self);
+   }
+
    public void cisTransClear ()
    {
       dispatcher.indigoCisTransClear(self);

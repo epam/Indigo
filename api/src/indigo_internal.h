@@ -43,6 +43,7 @@ class RdfLoader;
 }
 
 class IndigoAtom;
+class IndigoBond;
 class IndigoRGroup;
 class IndigoArray;
 class IndigoDeconvolution;
@@ -91,7 +92,9 @@ public:
       DECONVOLUTION_ITER,
       PROPERTIES_ITER,
       PROPERTY,
-      FINGERPRINT
+      FINGERPRINT,
+      BOND,
+      BONDS_ITER
    };
 
    int type;
@@ -120,6 +123,7 @@ public:
    virtual DLLEXPORT const char * getName ();
 
    virtual DLLEXPORT IndigoAtom & getAtom ();
+   DLLEXPORT IndigoBond & asBond ();
    virtual DLLEXPORT IndigoRGroup & getRGroup ();
    virtual DLLEXPORT int getIndex ();
 
@@ -227,6 +231,18 @@ public:
 
    IndigoRGroup rgroup;
    int frag_idx;
+};
+
+class IndigoBond : public IndigoObject
+{
+public:
+   IndigoBond (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoBond ();
+
+   BaseMolecule *mol;
+   int idx;
+
+   virtual int getIndex ();
 };
 
 class IndigoBaseReaction : public IndigoObject
@@ -534,6 +550,24 @@ protected:
    int _shift (int idx);
 
    int _type;
+   int _idx;
+   BaseMolecule *_mol;
+};
+
+class IndigoBondsIter : public IndigoObject
+{
+public:
+   IndigoBondsIter (BaseMolecule *molecule);
+
+   virtual ~IndigoBondsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+   virtual int getIndex ();
+
+protected:
+
+   int _shift (int idx);
    int _idx;
    BaseMolecule *_mol;
 };
