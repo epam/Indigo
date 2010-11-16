@@ -509,8 +509,10 @@ int Molecule::getImplicitH (int idx)
 
    if (atom.explicit_valence)
    {
-      implicit_h = _valence[idx] - Element::calcValenceMinusHyd(atom.number,
-              atom.charge, radical, conn);
+      // Explicit valence means that the molecule was converted from Molfile.
+      // Conventions are that if we have explicit valence, we discard radical
+      // and charge when calculating implicit hydgogens.
+      implicit_h = _valence[idx] - Element::calcValenceMinusHyd(atom.number, 0, 0, conn);
 
       if (implicit_h < 0)
          throw Error("valence %d specified on %s, charge %d, radical %d, but %d bonds are drawn",
