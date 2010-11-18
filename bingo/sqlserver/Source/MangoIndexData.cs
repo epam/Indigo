@@ -10,6 +10,8 @@ namespace indigo
 {
    public class MangoIndexData : BingoIndexData
    {
+      object _sync_object = new Object();
+
       public MangoIndexData (BingoIndexID id, string id_column, string data_column, string bingo_schema) :
          base(id, id_column, data_column, bingo_schema)
       {
@@ -82,35 +84,38 @@ namespace indigo
 
       public void addToShadowTable (SqlConnection conn, MangoIndex index, int id, int storage_id)
       {
-         if (shadow_datatable == null)
-            _createDataTables();
-
-         if (shadow_datatable.Rows.Count >= 10000)
-            _flushShadowTable(conn);
-
-         DataRow shadow_row = shadow_datatable.NewRow();
-         shadow_row["id"] = id;
-         shadow_row["storage_id"] = storage_id;
-         shadow_row["gross"] = index.gross;
-         shadow_row["cmf"] = index.cmf;
-         shadow_row["xyz"] = index.xyz;
-         shadow_row["mass"] = index.mass;
-         shadow_row["fragments"] = index.hash.elements.Count;
-
-         string[] counted = index.counted_elements_str.Split(',');
-         for (int i = 0; i < MangoIndex.COUNTED_ELEMENTS_COUNT; i++)
-            shadow_row[BingoCore.mangoGetCountedElementName(i)] = Convert.ToInt32(counted[i + 1]);
-
-         shadow_datatable.Rows.Add(shadow_row);
-
-         foreach (MoleculeHashElement elem in index.hash.elements)
+         lock (_sync_object)
          {
-            DataRow comp_row = components_datatable.NewRow();
-            comp_row["id"] = id;
-            comp_row["hash"] = elem.hash;
-            comp_row["count"] = elem.count;
+            if (shadow_datatable == null)
+               _createDataTables();
 
-            components_datatable.Rows.Add(comp_row);
+            if (shadow_datatable.Rows.Count >= 10000)
+               _flushShadowTable(conn);
+
+            DataRow shadow_row = shadow_datatable.NewRow();
+            shadow_row["id"] = id;
+            shadow_row["storage_id"] = storage_id;
+            shadow_row["gross"] = index.gross;
+            shadow_row["cmf"] = index.cmf;
+            shadow_row["xyz"] = index.xyz;
+            shadow_row["mass"] = index.mass;
+            shadow_row["fragments"] = index.hash.elements.Count;
+
+            string[] counted = index.counted_elements_str.Split(',');
+            for (int i = 0; i < MangoIndex.COUNTED_ELEMENTS_COUNT; i++)
+               shadow_row[BingoCore.mangoGetCountedElementName(i)] = Convert.ToInt32(counted[i + 1]);
+
+            shadow_datatable.Rows.Add(shadow_row);
+
+            foreach (MoleculeHashElement elem in index.hash.elements)
+            {
+               DataRow comp_row = components_datatable.NewRow();
+               comp_row["id"] = id;
+               comp_row["hash"] = elem.hash;
+               comp_row["count"] = elem.count;
+
+               components_datatable.Rows.Add(comp_row);
+            }
          }
       }
 
@@ -139,15 +144,21 @@ namespace indigo
 
       public override bool needFlush()
       {
-         if (base.needFlush())
-            return true;
-         return shadow_datatable != null && (shadow_datatable.Rows.Count > 0 || components_datatable.Rows.Count > 0);
+         lock (_sync_object)
+         {
+            if (base.needFlush())
+               return true;
+            return shadow_datatable != null && (shadow_datatable.Rows.Count > 0 || components_datatable.Rows.Count > 0);
+         }
       }
 
       public override void flush(SqlConnection conn)
       {
-         base.flush(conn);
-         _flushShadowTable(conn);
+         lock (_sync_object)
+         {
+            base.flush(conn);
+            _flushShadowTable(conn);
+         }
       }
 
       private void _flushShadowTable (SqlConnection conn)
@@ -262,14 +273,20 @@ namespace indigo
 
       public override void prepareForDeleteRecord (SqlConnection conn)
       {
-         _flushShadowTable(conn);
+         lock (_sync_object)
+         {
+            _flushShadowTable(conn);
+         }
       }
 
       public override void deleteRecordById (int id, SqlConnection conn)
       {
-         base.deleteRecordById(id, conn);
-         BingoSqlUtils.ExecNonQuery(conn, "DELETE from {0} where id={1}",
-            componentsTable, id);
+         lock (_sync_object)
+         {
+            base.deleteRecordById(id, conn);
+            BingoSqlUtils.ExecNonQuery(conn, "DELETE from {0} where id={1}",
+               componentsTable, id);
+         }
       }
 
       public string componentsTable

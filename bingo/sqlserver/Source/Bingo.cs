@@ -284,7 +284,8 @@ namespace indigo
          DROP_ON_EXCEPTION = 0x02,
          LOAD_TAU_RULES = 0x04,
          LOAD_CMF = 0x08,
-         NON_CONTEXT_CONN = 0x10
+         NON_CONTEXT_CONN = 0x10,
+         LOCK_INDEX = 0x20
       }
 
       // Method for executing abstract operation with BingoIndexData
@@ -317,10 +318,16 @@ namespace indigo
                   BingoTimer timer = new BingoTimer("total");
 
                   BingoIndexData index_data = getBingoDataDelegate(ctx_conn, conn, bingo_schema);
+                  if (index_data.locked)
+                  {
+                     BingoLog.logMessage("Attempt to get locked index for the tabel {0}", table_name.Value);
+                     throw new Exception("MoleculeIndex for the table '" + table_name.Value + "' is locked");
+                  }
+                  if ((op_flags & BingoOp.LOCK_INDEX) != 0)
+                     index_data.locked = true;
 
                   ContextFlags flags = ContextFlags.FLAG_X_PSEUDO | ContextFlags.FLAG_IGNORE_CBDM
                                                                   | ContextFlags.FLAG_FINGERPRINTS;
-
                   if ((op_flags & BingoOp.LOAD_TAU_RULES) != 0)
                      flags |= ContextFlags.FLAG_TAU_RULES;
                   if ((op_flags & BingoOp.LOAD_CMF) != 0)
@@ -337,11 +344,17 @@ namespace indigo
                   {
                      BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
 
+                     if ((op_flags & BingoOp.LOCK_INDEX) != 0)
+                        index_data.locked = false;
+
                      if ((op_flags & BingoOp.DROP_ON_EXCEPTION) != 0)
                         BingoIndexData.DropIndexData(conn, bingo_schema.Value, table_name.Value);
 
                      throw;
                   }
+
+                  if ((op_flags & BingoOp.LOCK_INDEX) != 0)
+                     index_data.locked = false;
 
                   timer.end();
 
@@ -474,8 +487,8 @@ namespace indigo
                      conn, schema.Value, table.Value, id_column.Value, data_column.Value, reaction);
 
          _ExecuteBingoOperationChangeIndex(table, bingo_schema, opWithIndex,
-            createDataDelegate, BingoOp.DROP_ON_EXCEPTION | BingoOp.NEED_STAT | 
-            BingoOp.NON_CONTEXT_CONN);
+            createDataDelegate, BingoOp.DROP_ON_EXCEPTION | BingoOp.NEED_STAT |
+            BingoOp.NON_CONTEXT_CONN | BingoOp.LOCK_INDEX);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
@@ -1462,15 +1475,7 @@ namespace indigo
       [BingoSqlFunction(access_level = AccessLevelKind.None)]
       public static void _FlushInAllSessions (SqlString bingo_schema)
       {
-         BingoDll.load(bingo_schema);
-         using (SqlConnection conn = new SqlConnection("context connection=true"))
-         {
-            conn.Open();
-            using (BingoSession session = new BingoSession())
-            {
-               BingoIndexData.FlushInAllSessions(-1, false);
-            }
-         }
+         BingoIndexData.FlushInAllSessions(-1, false);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,

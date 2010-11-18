@@ -229,65 +229,65 @@ namespace indigo
 
       public void addFingerprint (SqlConnection conn, byte[] fp, int id)
       {
-         _allocatePendingBlock(conn);
-
-         Block last = _all_blocks[_all_blocks.Count - 1];
-         last = _all_blocks[_all_blocks.Count - 1];
-
-         _validateBlockIndices(conn, last);
-
-         int index = last.indices.Count;
-         last.indices.Add(id);
-
-         for (int i = 0; i < _fp_bytes; i++)
+         lock (_sync_object)
          {
-            byte cur_byte = fp[i];
-            for (int j = 0; j < 8; j++)
-            {
-               int bit = 8 * i + j;
-               //int offset_chunk = () * _chunk_bytes;
-               int offset_bytes = index / 8;
-               int offset_bit = index % 8;
-               if ((cur_byte & (1 << j)) == 0)
-               {
-                  last.bits[bit][offset_bytes] &= (byte)(~(1 << offset_bit));
-                  /*
-                  last.bits[offset_bytes] =
-                     (byte)(last.bits[offset_bytes] & (~(1 << offset_bit)));
-                  */
-               }
-               else
-               {
-                  last.counters[bit]++;
-                  last.bits[bit][offset_bytes] |= (byte)(1 << offset_bit);
-                  /*
-                  last.bits[offset_bytes] =
-                     (byte)(last.bits[offset_bytes] | (1 << offset_bit));
-                   */
-               }
+            _allocatePendingBlock(conn);
 
+            Block last = _all_blocks[_all_blocks.Count - 1];
+            last = _all_blocks[_all_blocks.Count - 1];
+
+            _validateBlockIndices(conn, last);
+
+            int index = last.indices.Count;
+            last.indices.Add(id);
+
+            for (int i = 0; i < _fp_bytes; i++)
+            {
+               byte cur_byte = fp[i];
+               for (int j = 0; j < 8; j++)
+               {
+                  int bit = 8 * i + j;
+                  //int offset_chunk = () * _chunk_bytes;
+                  int offset_bytes = index / 8;
+                  int offset_bit = index % 8;
+                  if ((cur_byte & (1 << j)) == 0)
+                  {
+                     last.bits[bit][offset_bytes] &= (byte)(~(1 << offset_bit));
+                  }
+                  else
+                  {
+                     last.counters[bit]++;
+                     last.bits[bit][offset_bytes] |= (byte)(1 << offset_bit);
+                  }
+               }
             }
          }
       }
 
       public bool needFlush()
       {
-         foreach (Block b in _all_blocks)
+         lock (_sync_object)
          {
-            if (!b.pending || b.indices == null || b.indices.Count == 0)
-               continue;
-            return true;
+            foreach (Block b in _all_blocks)
+            {
+               if (!b.pending || b.indices == null || b.indices.Count == 0)
+                  continue;
+               return true;
+            }
+            return false;
          }
-         return false;
       }
 
       public void flush (SqlConnection conn)
       {
-         foreach (Block b in _all_blocks)
+         lock (_sync_object)
          {
-            if (!b.pending || b.indices == null || b.indices.Count == 0)
-               continue;
-            _flushBlock(b, conn);
+            foreach (Block b in _all_blocks)
+            {
+               if (!b.pending || b.indices == null || b.indices.Count == 0)
+                  continue;
+               _flushBlock(b, conn);
+            }
          }
       }
 
