@@ -134,6 +134,12 @@ namespace com.gga.indigo
          return new IndigoObject(this, indigoWriteFile(filename));
       }
 
+      public IndigoObject writeBuffer ()
+      {
+         setSessionID();
+         return new IndigoObject(this, indigoWriteBuffer());
+      }
+
       public IndigoObject loadMolecule (String str)
       {
          setSessionID();
@@ -396,6 +402,8 @@ namespace com.gga.indigo
       public static extern int indigoSaveCmlToFile (int molecule, string filename);
       [DllImport("indigo.dll")]
       public static extern sbyte * indigoCml (int molecule);
+      [DllImport("indigo.dll")]
+      public static extern int indigoSaveMDLCT (int item, int output);
 
       [DllImport("indigo.dll")]
       public static extern int indigoLoadReactionFromString (string str);

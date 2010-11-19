@@ -72,6 +72,14 @@ namespace com.gga.indigo
          Indigo.indigoFree(s);
       }
 
+      public byte[] mdlct ()
+      {
+         dispatcher.setSessionID();
+         IndigoObject buf = dispatcher.writeBuffer();
+         Indigo.indigoSaveMDLCT(self, buf.self);
+         return buf.toBuffer();
+      }
+
       public void addReactant (IndigoObject molecule)
       {
          dispatcher.setSessionID();

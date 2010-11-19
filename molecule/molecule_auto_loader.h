@@ -45,6 +45,8 @@ public:
 
    DEF_ERROR("molecule auto loader");
 
+   static bool tryMDLCT (Scanner &scanner, Array<char> &outbuf);
+
 protected:
    Scanner *_scanner;
    bool     _own_scanner;

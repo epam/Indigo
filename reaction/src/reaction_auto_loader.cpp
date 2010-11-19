@@ -20,6 +20,7 @@
 #include "reaction/reaction_highlighting.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
+#include "molecule/molecule_auto_loader.h"
 
 using namespace indigo;
 
@@ -94,6 +95,24 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
             loader2.loadQueryReaction((QueryReaction &)reaction);
          else
             loader2.loadReaction((Reaction &)reaction);
+         return;
+      }
+   }
+
+   // check for MDLCT format
+   {
+      QS_DEF(Array<char>, buf);
+      if (MoleculeAutoLoader::tryMDLCT(*_scanner, buf))
+      {
+         BufferScanner scanner2(buf);
+         RxnfileLoader loader(scanner2);
+         loader.highlighting = highlighting;
+         loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+         loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+         if (query)
+            loader.loadQueryReaction((QueryReaction &)reaction);
+         else
+            loader.loadReaction((Reaction &)reaction);
          return;
       }
    }

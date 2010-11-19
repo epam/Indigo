@@ -167,6 +167,10 @@ CEXPORT int indigoSaveCml (int object, int output);
 CEXPORT int indigoSaveCmlToFile (int object, const char *filename);
 CEXPORT const char * indigoCml (int object);
 
+// the output must be a file or a buffer, but not a string
+// (because the MDLCT data can contain zeroes)
+CEXPORT int indigoSaveMDLCT (int item, int output);
+
 /* Reactions, query reactions */
 
 CEXPORT int indigoLoadReaction  (int source);
