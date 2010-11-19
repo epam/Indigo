@@ -273,11 +273,14 @@ CEXPORT int indigoSaveRxnfile (int reaction, int output)
 {
    INDIGO_BEGIN
    {
-      Reaction &rxn = self.getObject(reaction).getReaction();
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
       Output &out = self.getObject(output).getOutput();
       
       RxnfileSaver saver(out);
-      saver.saveReaction(rxn);
+      if (rxn.isQueryReaction())
+         saver.saveQueryReaction(rxn.asQueryReaction());
+      else
+         saver.saveReaction(rxn.asReaction());
       out.flush();
    }
    INDIGO_END(1, -1)
@@ -360,8 +363,8 @@ CEXPORT int indigoCountMolecules (int handle)
    {
       IndigoObject &obj = self.getObject(handle);
 
-      if (obj.type == IndigoObject::REACTION)
-         return obj.getReaction().count();
+      if (obj.isBaseReaction())
+         return obj.getBaseReaction().count();
       else
          throw IndigoError("can not count molecules of %s", obj.debugInfo());
    }
@@ -372,7 +375,7 @@ CEXPORT int indigoAutomap (int reaction, const char *mode)
 {
    INDIGO_BEGIN
    {
-      BaseReaction &rxn = self.getObject(reaction).getReaction();
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
       int nmode;
 
       if (mode == 0 || mode[0] == 0 || strcasecmp(mode, "discard") == 0)
