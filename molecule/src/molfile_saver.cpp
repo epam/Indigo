@@ -425,23 +425,22 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
       _bond_mapping[i] = iw;
 
-      if (bond_order < 0)
+      if (bond_order < 0 && qmol != 0)
       {
-         if (mol.possibleBondOrder(i, BOND_SINGLE) && mol.possibleBondOrder(i, BOND_DOUBLE) &&
-             !mol.possibleBondOrder(i, BOND_AROMATIC) && !mol.possibleBondOrder(i, BOND_TRIPLE))
+         int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
+
+         if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
             bond_order = 5;
-         else if (mol.possibleBondOrder(i, BOND_SINGLE) && mol.possibleBondOrder(i, BOND_AROMATIC) &&
-             !mol.possibleBondOrder(i, BOND_DOUBLE) && !mol.possibleBondOrder(i, BOND_TRIPLE))
+         else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
             bond_order = 6;
-         else if (mol.possibleBondOrder(i, BOND_DOUBLE) && mol.possibleBondOrder(i, BOND_AROMATIC) &&
-             !mol.possibleBondOrder(i, BOND_SINGLE) && !mol.possibleBondOrder(i, BOND_TRIPLE))
+         else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
             bond_order = 7;
-         else if (mol.possibleBondOrder(i, BOND_DOUBLE) && mol.possibleBondOrder(i, BOND_AROMATIC) &&
-             mol.possibleBondOrder(i, BOND_SINGLE) && mol.possibleBondOrder(i, BOND_TRIPLE))
+         else if (qb == QueryMolecule::QUERY_BOND_ANY)
             bond_order = 8;
-         else
-            throw Error("unrepresentable query bond");
       }
+
+      if (bond_order < 0)
+         throw Error("unrepresentable query bond");
 
       out.printf("%d %d %d %d", iw, bond_order, _atom_mapping[edge.beg], _atom_mapping[edge.end]);
 
@@ -739,8 +738,22 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       const Edge &edge = mol.getEdge(i);
       int bond_order = mol.getBondOrder(i);
 
+      if (bond_order < 0 && qmol != 0)
+      {
+         int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
+
+         if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
+            bond_order = 5;
+         else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
+            bond_order = 6;
+         else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
+            bond_order = 7;
+         else if (qb == QueryMolecule::QUERY_BOND_ANY)
+            bond_order = 8;
+      }
+
       if (bond_order < 0)
-         throw Error("saving query bonds not supported");
+         throw Error("unrepresentable query bond");
 
       int stereo = 0;
       int topology = 0;
