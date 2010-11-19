@@ -59,6 +59,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.indigoSaveCmlToFile(self, filename);
    }
 
+   public byte[] mdlct ()
+   {
+      IndigoObject buf = dispatcher.writeBuffer();
+      dispatcher.indigoSaveMDLCT(self, buf.self);
+      return buf.toBuffer();
+   }
+
    public void addReactant (IndigoObject molecule)
    {
       dispatcher.indigoAddReactant(self, molecule.self);

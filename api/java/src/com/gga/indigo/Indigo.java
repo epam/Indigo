@@ -66,9 +66,14 @@ public class Indigo
       indigoSetOptionFloat(option, (float)value);
    }
 
-   public IndigoObject writeFile(String filename)
+   public IndigoObject writeFile (String filename)
    {
       return new IndigoObject(this, indigoWriteFile(filename));
+   }
+
+   public IndigoObject writeBuffer ()
+   {
+      return new IndigoObject(this, indigoWriteBuffer());
    }
 
    public IndigoObject loadMolecule (String str)
@@ -341,6 +346,8 @@ public class Indigo
    public native int indigoSaveCml (int molecule, int output);
    public native int indigoSaveCmlToFile (int molecule, String filename);
    public native String indigoCml (int molecule);
+
+   public native int indigoSaveMDLCT (int molecule, int output);
 
    public native int indigoLoadReaction (int source);
    public native int indigoLoadReactionFromString (String source);

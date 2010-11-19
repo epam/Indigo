@@ -79,6 +79,8 @@ JNI_FUNC_jint_jint_jint(indigoSaveCml)
 JNI_FUNC_jint_jint_jstring(indigoSaveCmlToFile)
 JNI_FUNC_jstring_jint(indigoCml)
 
+JNI_FUNC_jint_jint_jint(indigoSaveMDLCT)
+
 JNI_FUNC_jint_jint(indigoLoadReaction)
 JNI_FUNC_jint_jstring(indigoLoadReactionFromString)
 JNI_FUNC_jint_jstring(indigoLoadReactionFromFile)

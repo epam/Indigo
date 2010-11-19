@@ -61,6 +61,12 @@ class Indigo:
         res.append(c_buf[i])
       return res
 
+    def mdlct (self):
+      self.dispatcher._setSID()
+      buf = self.dispatcher.writeBuffer()
+      self.dispatcher._checkResult(self._lib.indigoSaveMDLCT(self.id, buf.id))
+      return buf.toBuffer()
+
     def __del__ (self):
       self.dispatcher._setSID()
       self._lib.indigoFree(self.id)
@@ -195,6 +201,8 @@ class Indigo:
     self._lib.indigoSaveCmlToFile.argtypes = [c_int, c_char_p]
     self._lib.indigoCml.restype = c_char_p
     self._lib.indigoCml.argtypes = [c_int]
+    self._lib.indigoSaveMDLCT.restype = c_int
+    self._lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
     self._lib.indigoLoadReaction.restype = c_int
     self._lib.indigoLoadReaction.argtypes = [c_int]
     self._lib.indigoLoadReactionFromString.restype = c_int
