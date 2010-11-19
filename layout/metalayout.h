@@ -25,10 +25,20 @@ enum ALIGNMENT {ALIGNMENT_LEFT = 0, ALIGNMENT_CENTER, ALIGNMENT_RIGHT};
 class Metalayout {
 public:
    struct LayoutItem {
+      LayoutItem () {
+         clear();
+      }              
+      void clear() {
+         explicitVerticalOffset = false;
+         over = false;
+         fragment = false;
+      }
       int type;
       int id;
       bool fragment;
       bool over;
+      bool explicitVerticalOffset;
+      float verticalOffset;
 
       Vec2f min, max;
       Vec2f scaledSize, scaledOffset;
@@ -41,7 +51,7 @@ public:
       DLLEXPORT ~LayoutLine ();
       DLLEXPORT void clear ();
 
-      Array<LayoutItem> items;
+      ObjArray<LayoutItem> items;
       float height;
       float width;
    private:

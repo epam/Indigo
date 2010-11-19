@@ -26,12 +26,10 @@ using namespace indigo;
 
 ReactionRender::ReactionRender (RenderContext& rc) : RenderBase(rc), _highlighting(NULL), _r(NULL)
 {
-
 }
 
 ReactionRender::~ReactionRender ()
 {
-
 }
 
 void ReactionRender::setReaction (BaseReaction* r)
@@ -90,8 +88,6 @@ void ReactionRender::_initLayout ()
       return;
 
    _ml.context = this;
-   _ml.cb_process = cb_process;
-   _ml.cb_getMol = cb_getMol;
 
    Metalayout::LayoutLine& line = _ml.newLine();
 
@@ -127,7 +123,7 @@ BaseMolecule& ReactionRender::_getMol (int id)
    return _r->getBaseMolecule(id);
 }
 
-void ReactionRender::_drawMol (const Metalayout::LayoutItem& item)
+void ReactionRender::_drawMol (Metalayout::LayoutItem& item)
 {
    _rc.translate(0, -item.scaledSize.y / 2);
    //_rc.setSingleSource(CWC_WHITE);
@@ -164,36 +160,38 @@ void ReactionRender::_drawArrow (float length)
       _settings.arrowHeadSize); 
 }
 
-void ReactionRender::cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, void* context)
+void ReactionRender::_drawItem (Metalayout::LayoutItem& item, const Vec2f& pos, bool ignoreTransform)
 {
-   ReactionRender* render = (ReactionRender*)context;
-   render->_rc.restoreTransform();
-   render->_rc.translate(pos.x, pos.y);
+   if (!ignoreTransform) {
+      _rc.restoreTransform();
+      _rc.translate(pos.x, pos.y);
+   }
 
    switch (item.type)
    {
    case ITEM_TYPE_BASE_MOL:  
-      if (item.over)
-         render->_rc.translate(0, -item.scaledSize.y / 2 - 1);
-      render->_drawMol(item);
+      if (!ignoreTransform && item.over)
+         _rc.translate(0, -item.scaledSize.y / 2 - 1);
+      _drawMol(item);
       break;
    case ITEM_TYPE_RXN_PLUS:
-      render->_drawPlus();
+      _drawPlus();
       break;
    case ITEM_TYPE_RXN_ARROW:
-      render->_drawArrow();
+      _drawArrow();
       break;
    case ITEM_TYPE_RXN_BEGIN_ARROW:
-      render->_ax = pos.x;
+      _ax = pos.x;
       break;
    case ITEM_TYPE_RXN_END_ARROW:
-      render->_ax = pos.x - render->_ax;
-      render->_rc.translate(-render->_ax, 0);
-      render->_drawArrow(render->_ax);
+      _ax = pos.x - _ax;
+      if (!ignoreTransform)
+         _rc.translate(-_ax, 0);
+      _drawArrow(_ax);
       break;
    case ITEM_TYPE_RXN_SPACE:
       break;
    default:
-      RenderBase::cb_process(item, pos, context);
+      throw new Error("Unknown item type");
    }
 }

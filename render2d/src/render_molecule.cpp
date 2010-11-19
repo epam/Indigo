@@ -50,8 +50,6 @@ void MoleculeRender::_initLayout ()
       return;
 
    _ml.context = this;
-   _ml.cb_process = cb_process;
-   _ml.cb_getMol = cb_getMol;
    
    _map.clear();
    _pushMol(_ml.newLine(), *_mol);
@@ -106,7 +104,7 @@ BaseMolecule& MoleculeRender::_getMol (int id)
    return *_map[id];
 }
 
-void MoleculeRender::_drawMol (const Metalayout::LayoutItem& item)
+void MoleculeRender::_drawMol (Metalayout::LayoutItem& item)
 {
    //_rc.setSingleSource(CWC_WHITE);
    //_rc.drawRectangle(Vec2f(), item.scaledSize);
@@ -120,7 +118,7 @@ void MoleculeRender::_drawMol (const Metalayout::LayoutItem& item)
    render.render();   
 }
 
-void MoleculeRender::_drawRGroupLabel (const Metalayout::LayoutItem& item)
+void MoleculeRender::_drawRGroupLabel (Metalayout::LayoutItem& item)
 {
    QUERY_MOL_BEGIN;
    {
@@ -132,6 +130,8 @@ void MoleculeRender::_drawRGroupLabel (const Metalayout::LayoutItem& item)
       tiR.color = CWC_BASE;
       bprintf(tiR.text, "R%d=", item.id); 
       _rc.setTextItemSize(tiR);
+      item.verticalOffset = tiR.bbsz.y / 2;
+      item.explicitVerticalOffset = true;
       tiR.bbp.set(0,0);
       _rc.drawTextItemText(tiR);
 
@@ -183,7 +183,7 @@ void MoleculeRender::_drawRGroupLabel (const Metalayout::LayoutItem& item)
    QUERY_MOL_END;
 }
 
-void MoleculeRender::_drawRIfThen (const Metalayout::LayoutItem& item)
+void MoleculeRender::_drawRIfThen (Metalayout::LayoutItem& item)
 {
    QUERY_MOL_BEGIN;
    {
@@ -225,24 +225,28 @@ int MoleculeRender::_getRIfThenHeight ()
    throw Error("internal: _getRIfThenHeight()");
 }
 
-void MoleculeRender::cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, void* context)
+void MoleculeRender::_drawItem (Metalayout::LayoutItem& item, const Vec2f& pos, bool ignoreTransform)
 {
-   MoleculeRender* render = (MoleculeRender*)context;
-   render->_rc.restoreTransform();
-   render->_rc.translate(pos.x, pos.y - item.scaledSize.y / 2);
+   if (!ignoreTransform) {
+      _rc.restoreTransform();
+      if (item.explicitVerticalOffset)
+         _rc.translate(pos.x, pos.y - item.verticalOffset);
+      else
+         _rc.translate(pos.x, pos.y - item.scaledSize.y / 2);
+   }
 
    switch (item.type)
    {
    case ITEM_TYPE_BASE_MOL:  
-      render->_drawMol(item);
+      _drawMol(item);
       break;
    case ITEM_TYPE_MOL_RLABEL:
-      render->_drawRGroupLabel(item);
+      _drawRGroupLabel(item);
       break;
    case ITEM_TYPE_MOL_RIFTHEN:
-      render->_drawRIfThen(item);
+      _drawRIfThen(item);
       break;
    default:
-      RenderBase::cb_process(item, pos, context);
+      throw new Error("Unknown item type");
    }
 }
