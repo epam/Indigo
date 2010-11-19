@@ -200,6 +200,9 @@ void MoleculeSubstructureMatcher::setQuery (QueryMolecule &query)
    else
       _did_h_unfold = false;
 
+   if (_ee.get() != 0)
+     _ee.free();
+   
    _ee.create(_target);
    _ee->cb_match_vertex = _matchAtoms;
    _ee->cb_match_edge = _matchBonds;
