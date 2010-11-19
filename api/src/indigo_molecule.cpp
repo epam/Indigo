@@ -195,14 +195,6 @@ IndigoObject * IndigoAtomsIter::next ()
    return atom.release();
 }
 
-int IndigoAtomsIter::getIndex ()
-{
-   if (_idx < 0)
-      throw IndigoError("next() must be called prior to accessing the atom");
-
-   return _idx;
-}
-
 IndigoBond::IndigoBond (BaseMolecule &mol_, int idx_) : IndigoObject(BOND)
 {
    mol = &mol_;
@@ -256,14 +248,6 @@ IndigoObject * IndigoBondsIter::next ()
    AutoPtr<IndigoBond> bond(new IndigoBond(*_mol, _idx));
 
    return bond.release();
-}
-
-int IndigoBondsIter::getIndex ()
-{
-   if (_idx < 0)
-      throw IndigoError("next() must be called prior to accessing the bond");
-
-   return _idx;
 }
 
 CEXPORT int indigoIterateBonds (int molecule)
@@ -720,14 +704,6 @@ IndigoObject * IndigoRGroupFragmentsIter::next ()
    return rgroup.release();
 }
 
-int IndigoRGroupFragmentsIter::getIndex ()
-{
-   if (_frag_idx < 0)
-      throw IndigoError("next() must be called prior to accessing the r-group fragment");
-
-   return _frag_idx;
-}
-
 CEXPORT int indigoIterateRGroupFragments (int rgroup)
 {
    INDIGO_BEGIN
@@ -756,14 +732,6 @@ IndigoObject * IndigoRGroupsIter::next ()
    rgroup->mol = _mol;
    rgroup->idx = _idx;
    return rgroup.release();
-}
-
-int IndigoRGroupsIter::getIndex ()
-{
-   if (_idx <= 0)
-      throw IndigoError("next() must be called prior to accessing the r-group");
-
-   return _idx;
 }
 
 CEXPORT int indigoCountAttachmentPoints (int rgroupp)
@@ -1150,4 +1118,105 @@ CEXPORT int indigoBondStereo (int bondd)
          return INDIGO_TRANS;
    }
    INDIGO_END(0, -1);
+}
+
+CEXPORT int indigoGetAtom (int molecule, int idx)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return self.addObject(new IndigoAtom(mol, idx));
+   }
+   INDIGO_END(0, -1)
+}
+
+CEXPORT int indigoGetBond (int molecule, int idx)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return self.addObject(new IndigoBond(mol, idx));
+   }
+   INDIGO_END(0, -1)
+}
+
+IndigoAtomNeighbor::IndigoAtomNeighbor (BaseMolecule &mol_, int atom_idx, int bond_idx_) :
+         IndigoAtom(mol_, atom_idx)
+{
+   type = ATOM_NEIGHBOR;
+
+   bond_idx = bond_idx_;
+}
+
+IndigoAtomNeighbor::~IndigoAtomNeighbor ()
+{
+}
+
+IndigoAtomNeighborsIter::IndigoAtomNeighborsIter (BaseMolecule *molecule, int atom_idx) :
+         IndigoObject(ATOM_NEIGHBORS_ITER)
+{
+   _mol = molecule;
+   _atom_idx = atom_idx;
+   _nei_idx = -1;
+}
+
+IndigoAtomNeighborsIter::~IndigoAtomNeighborsIter ()
+{
+}
+
+IndigoObject * IndigoAtomNeighborsIter::next ()
+{
+   const Vertex &vertex = _mol->getVertex(_atom_idx);
+
+   if (_nei_idx == -1)
+      _nei_idx = vertex.neiBegin();
+   else if (_nei_idx != vertex.neiEnd())
+      _nei_idx = vertex.neiNext(_nei_idx);
+
+   if (_nei_idx == vertex.neiEnd())
+      return 0;
+
+   return new IndigoAtomNeighbor(*_mol, vertex.neiVertex(_nei_idx), vertex.neiEdge(_nei_idx));
+}
+
+bool IndigoAtomNeighborsIter::hasNext ()
+{
+   const Vertex &vertex = _mol->getVertex(_atom_idx);
+
+   if (_nei_idx == -1)
+      return vertex.neiBegin() != vertex.neiEnd();
+
+   if (_nei_idx == vertex.neiEnd())
+      return false;
+
+   return vertex.neiNext(_nei_idx) != vertex.neiEnd();
+}
+
+CEXPORT int indigoIterateNeighbors (int atomm)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &atom = self.getObject(atomm).getAtom();
+      
+      return self.addObject(new IndigoAtomNeighborsIter(atom.mol, atom.idx));
+   }
+   INDIGO_END(0, -1)
+}
+
+CEXPORT int indigoBond (int nei)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(nei);
+
+      if (obj.type != IndigoObject::ATOM_NEIGHBOR)
+         throw IndigoError("indigoBond(): not applicable to %s", obj.debugInfo());
+
+      IndigoAtomNeighbor &atomnei = (IndigoAtomNeighbor &)obj;
+
+      return self.addObject(new IndigoBond(*atomnei.mol, atomnei.bond_idx));
+   }
+   INDIGO_END(0, -1)
 }

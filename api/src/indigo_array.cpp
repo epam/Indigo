@@ -117,13 +117,6 @@ IndigoArrayIter::~IndigoArrayIter ()
 {
 }
 
-int IndigoArrayIter::getIndex ()
-{
-   if (_idx < 0)
-      throw IndigoError("must call next() prior to accessing an iterator");
-   return _idx;
-}
-
 IndigoObject * IndigoArrayIter::next ()
 {
    if (!hasNext())
