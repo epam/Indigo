@@ -405,6 +405,11 @@ public class Indigo
    public native int indigoBondOrder (int molecule);
    public native int indigoBondStereo (int molecule);
 
+   public native int indigoIterateNeighbors (int atom);
+   public native int indigoBond (int nei);
+   public native int indigoGetAtom (int molecule, int idx);
+   public native int indigoGetBond (int molecule, int idx);
+
    public native int indigoCisTransClear (int molecule);
    public native int indigoStereocentersClear (int molecule);
    public native int indigoCountStereocenters (int molecule);

@@ -136,6 +136,11 @@ JNI_FUNC_jint_jint(indigoIterateBonds)
 JNI_FUNC_jint_jint(indigoBondOrder)
 JNI_FUNC_jint_jint(indigoBondStereo)
 
+JNI_FUNC_jint_jint(indigoIterateNeighbors)
+JNI_FUNC_jint_jint(indigoBond)
+JNI_FUNC_jint_jint_jint(indigoGetAtom)
+JNI_FUNC_jint_jint_jint(indigoGetBond)
+
 JNI_FUNC_jint_jint(indigoCisTransClear)
 JNI_FUNC_jint_jint(indigoStereocentersClear)
 JNI_FUNC_jint_jint(indigoCountStereocenters)

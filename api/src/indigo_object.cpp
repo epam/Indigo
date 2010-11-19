@@ -172,7 +172,7 @@ bool IndigoObject::isBaseReaction ()
 
 bool IndigoObject::isAtom ()
 {
-   return type == ATOM || type == ATOMS_ITER;
+   return type == ATOM || type == ATOMS_ITER || type == ATOM_NEIGHBOR;
 }
 
 IndigoArray & IndigoObject::asArray ()

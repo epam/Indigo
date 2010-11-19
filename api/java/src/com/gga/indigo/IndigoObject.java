@@ -238,6 +238,26 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return dispatcher.indigoBondStereo(self);
    }
 
+   public IndigoObject iterateNeighbors ()
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoIterateNeighbors(self));
+   }
+
+   public IndigoObject bond ()
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoBond(self));
+   }
+
+   public IndigoObject getAtom (int idx)
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoGetAtom(self, idx));
+   }
+
+   public IndigoObject getBond (int idx)
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoGetBond(self, idx));
+   }
+
    public void cisTransClear ()
    {
       dispatcher.indigoCisTransClear(self);
