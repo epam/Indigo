@@ -214,10 +214,54 @@ namespace com.gga.indigo
          return new String(Indigo.indigoPseudoatomLabel(self));
       }
 
-      public int atomDegree ()
+      public int degree ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoAtomDegree(self);
+         return Indigo.indigoDegree(self);
+      }
+
+      public int? charge ()
+      {
+         int c;
+         dispatcher.setSessionID();
+
+         if (Indigo.indigoGetCharge(self, &c) == 1)
+            return c;
+         return null;
+      }
+
+      public int? explicitValence ()
+      {
+         int c;
+         dispatcher.setSessionID();
+
+         if (Indigo.indigoGetExplicitValence(self, &c) == 1)
+            return c;
+         return null;
+      }
+
+      public int? radicalElectrons ()
+      {
+         int c;
+         dispatcher.setSessionID();
+
+         if (Indigo.indigoGetRadicalElectrons(self, &c) == 1)
+            return c;
+         return null;
+      }
+
+      public int atomNumber ()
+      {
+         dispatcher.setSessionID();
+
+         return Indigo.indigoAtomNumber(self);
+      }
+
+      public int atomIsotope ()
+      {
+         dispatcher.setSessionID();
+
+         return Indigo.indigoAtomIsotope(self);
       }
 
       public int countAtoms ()
@@ -257,6 +301,26 @@ namespace com.gga.indigo
       public int bondStereo ()
       {
          return Indigo.indigoBondStereo(self);
+      }
+
+      public System.Collections.IEnumerable iterateNeighbors ()
+      {
+         return new IndigoObject(dispatcher, Indigo.indigoIterateNeighbors(self));
+      }
+
+      public IndigoObject bond ()
+      {
+         return new IndigoObject(dispatcher, Indigo.indigoBond(self));
+      }
+
+      public IndigoObject getAtom (int idx)
+      {
+         return new IndigoObject(dispatcher, Indigo.indigoGetAtom(self, idx));
+      }
+
+      public IndigoObject getBond (int idx)
+      {
+         return new IndigoObject(dispatcher, Indigo.indigoGetBond(self, idx));
       }
 
       public void cisTransClear ()
