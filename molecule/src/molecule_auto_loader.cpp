@@ -69,6 +69,73 @@ void MoleculeAutoLoader::loadQueryMolecule (QueryMolecule &qmol)
    _loadMolecule(qmol, true);
 }
 
+bool MoleculeAutoLoader::tryMDLCT (Scanner &scanner, Array<char> &outbuf)
+{
+   int pos = scanner.tell();
+   bool endmark = false;
+   QS_DEF(Array<char>, curline);
+
+   outbuf.clear();
+   while (!scanner.isEOF())
+   {
+      int len = scanner.readByte();
+
+      if (len > 90) // Molfiles and Rxnfiles actually have 80 characters limit
+      {
+         scanner.seek(pos, SEEK_SET);
+         // Garbage after endmark means end of data.
+         // (See the note below about endmarks)
+         if (endmark)
+            return true;
+         return false;
+      }
+
+      curline.clear();
+
+      while (len-- > 0)
+      {
+         if (scanner.isEOF())
+         {
+            scanner.seek(pos, SEEK_SET);
+            return false;
+         }
+         int c = scanner.readChar();
+         curline.push(c);
+      }
+
+      curline.push(0);
+
+      if (endmark)
+      {
+         // We can not properly read the data to the end as there
+         // is often garbage after the actual MDLCT data.
+         // Instead, we are doing this lousy check:
+         // "M  END" or "$END MOL" can be followed only
+         // by "$END CTAB" (in Markush queries), or
+         // by "$MOL" (in Rxnfiles). Otherwise, this
+         // is actually the end of data.
+         if (strcmp(curline.ptr(), "$END CTAB") != 0 &&
+             strcmp(curline.ptr(), "$MOL") != 0)
+         {
+            scanner.seek(pos, SEEK_SET);
+            return true;
+         }
+      }
+
+      if (strcmp(curline.ptr(), "M  END") == 0)
+         endmark = true;
+      else if (strcmp(curline.ptr(), "$END MOL") == 0)
+         endmark = true;
+      else
+         endmark = false;
+
+      outbuf.appendString(curline.ptr(), false);
+      outbuf.push('\n');
+   }
+   scanner.seek(pos, SEEK_SET);
+   return true;
+}
+
 void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 {
    if (highlighting != 0)
@@ -95,6 +162,25 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          loader2.ignore_stereocenter_errors = ignore_stereocenter_errors;
          loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          loader2.loadMolecule((Molecule &)mol);
+         return;
+      }
+   }
+
+   // check for MDLCT format
+   {
+      QS_DEF(Array<char>, buf);
+      if (tryMDLCT(*_scanner, buf))
+      {
+         BufferScanner scanner2(buf);
+         MolfileLoader loader(scanner2);
+         loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+         loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+         loader.highlighting = highlighting;
+
+         if (query)
+            loader.loadQueryMolecule((QueryMolecule &)mol);
+         else
+            loader.loadMolecule((Molecule &)mol);
          return;
       }
    }

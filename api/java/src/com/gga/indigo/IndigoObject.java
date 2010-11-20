@@ -59,6 +59,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.indigoSaveCmlToFile(self, filename);
    }
 
+   public byte[] mdlct ()
+   {
+      IndigoObject buf = dispatcher.writeBuffer();
+      dispatcher.indigoSaveMDLCT(self, buf.self);
+      return buf.toBuffer();
+   }
+
    public void addReactant (IndigoObject molecule)
    {
       dispatcher.indigoAddReactant(self, molecule.self);
@@ -229,6 +236,26 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public int bondStereo ()
    {
       return dispatcher.indigoBondStereo(self);
+   }
+
+   public IndigoObject iterateNeighbors ()
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoIterateNeighbors(self));
+   }
+
+   public IndigoObject bond ()
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoBond(self));
+   }
+
+   public IndigoObject getAtom (int idx)
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoGetAtom(self, idx));
+   }
+
+   public IndigoObject getBond (int idx)
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoGetBond(self, idx));
    }
 
    public void cisTransClear ()

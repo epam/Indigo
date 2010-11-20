@@ -79,6 +79,8 @@ JNI_FUNC_jint_jint_jint(indigoSaveCml)
 JNI_FUNC_jint_jint_jstring(indigoSaveCmlToFile)
 JNI_FUNC_jstring_jint(indigoCml)
 
+JNI_FUNC_jint_jint_jint(indigoSaveMDLCT)
+
 JNI_FUNC_jint_jint(indigoLoadReaction)
 JNI_FUNC_jint_jstring(indigoLoadReactionFromString)
 JNI_FUNC_jint_jstring(indigoLoadReactionFromFile)
@@ -133,6 +135,11 @@ JNI_FUNC_jint_jint(indigoCountRSites)
 JNI_FUNC_jint_jint(indigoIterateBonds)
 JNI_FUNC_jint_jint(indigoBondOrder)
 JNI_FUNC_jint_jint(indigoBondStereo)
+
+JNI_FUNC_jint_jint(indigoIterateNeighbors)
+JNI_FUNC_jint_jint(indigoBond)
+JNI_FUNC_jint_jint_jint(indigoGetAtom)
+JNI_FUNC_jint_jint_jint(indigoGetBond)
 
 JNI_FUNC_jint_jint(indigoCisTransClear)
 JNI_FUNC_jint_jint(indigoStereocentersClear)

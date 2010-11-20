@@ -169,26 +169,32 @@ namespace indigo
 
       public bool needFlush()
       {
-         foreach (_Block b in _blocks)
-            if (b != null && b.dirty)
-               return true;
-         return false;
+         lock (_sync_object)
+         {
+            foreach (_Block b in _blocks)
+               if (b != null && b.dirty)
+                  return true;
+            return false;
+         }
       }
 
       public void flush (SqlConnection conn)
       {
-         for (int i = 0; i < _blocks.Count; i++)
+         lock (_sync_object)
          {
-            _Block b = _blocks[i];
-            if (b != null)
+            for (int i = 0; i < _blocks.Count; i++)
             {
-               if (b.dirty)
+               _Block b = _blocks[i];
+               if (b != null)
                {
-                  _flushBlock(conn, b);
+                  if (b.dirty)
+                  {
+                     _flushBlock(conn, b);
 
-                  BingoLog.logMessage("Disposing memory for block {0}...", b.block_index);
-                  _blocks[i] = null;
-                  BingoLog.logMessage("   Done");
+                     BingoLog.logMessage("Disposing memory for block {0}...", b.block_index);
+                     _blocks[i] = null;
+                     BingoLog.logMessage("   Done");
+                  }
                }
             }
          }
@@ -249,24 +255,27 @@ namespace indigo
 
       public int add (byte[] data, SqlConnection conn)
       {
-         _Block b = _getPendingBlock(data.Length, conn);
+         lock (_sync_object)
+         {
+            _Block b = _getPendingBlock(data.Length, conn);
 
-         // Add one byte for remove mark
-         b.pending_data.Add(1);
+            // Add one byte for remove mark
+            b.pending_data.Add(1);
 
-         b.pending_offsets.Add(b.pending_data.Count);
-         if (data.Length > short.MaxValue)
-            throw new Exception("Data length is to long. Unexpected.");
+            b.pending_offsets.Add(b.pending_data.Count);
+            if (data.Length > short.MaxValue)
+               throw new Exception("Data length is to long. Unexpected.");
 
-         b.pending_lengths.Add((short)data.Length);
+            b.pending_lengths.Add((short)data.Length);
 
-         b.pending_data.AddRange(data);
+            b.pending_data.AddRange(data);
 
-         total_items++;
-         b.end_index++;
+            total_items++;
+            b.end_index++;
 
-         b.dirty = true;
-         return total_items - 1;
+            b.dirty = true;
+            return total_items - 1;
+         }
       }
 
       private _Block _getPendingBlock (int data_length, SqlConnection conn)
@@ -467,23 +476,26 @@ namespace indigo
 
       public void deleteRecord (int storage_id, SqlConnection conn)
       {
-         int cache_index = 0;
-         _Block b = _getBlockByIndex(conn, storage_id, ref cache_index);
+         lock (_sync_object)
+         {
+            int cache_index = 0;
+            _Block b = _getBlockByIndex(conn, storage_id, ref cache_index);
 
-         int data_offset;
-         if (b.offsets != null)
-            data_offset = b.offsets[storage_id - b.first_index];
-         else
-            data_offset = b.pending_offsets[storage_id - b.first_index];
+            int data_offset;
+            if (b.offsets != null)
+               data_offset = b.offsets[storage_id - b.first_index];
+            else
+               data_offset = b.pending_offsets[storage_id - b.first_index];
 
-         if (b.data != null)
-            b.data[data_offset - 1] = 0;
-         else if (b.pending_data != null)
-            b.pending_data[data_offset - 1] = 0;
-         else
-            throw new Exception("Internal error: cannot delete record");
+            if (b.data != null)
+               b.data[data_offset - 1] = 0;
+            else if (b.pending_data != null)
+               b.pending_data[data_offset - 1] = 0;
+            else
+               throw new Exception("Internal error: cannot delete record");
 
-         b.dirty = true;
+            b.dirty = true;
+         }
       }
    }
 }

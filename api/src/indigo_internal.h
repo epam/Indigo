@@ -94,7 +94,9 @@ public:
       PROPERTY,
       FINGERPRINT,
       BOND,
-      BONDS_ITER
+      BONDS_ITER,
+      ATOM_NEIGHBOR,
+      ATOM_NEIGHBORS_ITER
    };
 
    int type;
@@ -543,7 +545,6 @@ public:
    
    virtual IndigoObject * next ();
    virtual bool hasNext ();
-   virtual int getIndex ();
 
 protected:
 
@@ -563,12 +564,36 @@ public:
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
-   virtual int getIndex ();
 
 protected:
 
-   int _shift (int idx);
    int _idx;
+   BaseMolecule *_mol;
+};
+
+class IndigoAtomNeighbor : public IndigoAtom
+{
+public:
+   explicit IndigoAtomNeighbor (BaseMolecule &mol_, int atom_idx, int bond_idx);
+   virtual ~IndigoAtomNeighbor ();
+
+   int bond_idx;
+};
+
+class IndigoAtomNeighborsIter : public IndigoObject
+{
+public:
+   IndigoAtomNeighborsIter (BaseMolecule *molecule, int atom_idx);
+
+   virtual ~IndigoAtomNeighborsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+
+   int _atom_idx;
+   int _nei_idx;
    BaseMolecule *_mol;
 };
 
@@ -581,7 +606,6 @@ public:
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
-   virtual int getIndex ();
 
 protected:
    QueryMolecule *_mol;
@@ -596,7 +620,6 @@ public:
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
-   virtual int getIndex ();
 
 protected:
    QueryMolecule *_mol;
@@ -652,7 +675,6 @@ public:
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
-   virtual int getIndex ();
 protected:
    IndigoArray *_arr;
    int _idx;

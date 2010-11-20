@@ -61,6 +61,12 @@ class Indigo:
         res.append(c_buf[i])
       return res
 
+    def mdlct (self):
+      self.dispatcher._setSID()
+      buf = self.dispatcher.writeBuffer()
+      self.dispatcher._checkResult(self._lib.indigoSaveMDLCT(self.id, buf.id))
+      return buf.toBuffer()
+
     def __del__ (self):
       self.dispatcher._setSID()
       self._lib.indigoFree(self.id)
@@ -195,6 +201,8 @@ class Indigo:
     self._lib.indigoSaveCmlToFile.argtypes = [c_int, c_char_p]
     self._lib.indigoCml.restype = c_char_p
     self._lib.indigoCml.argtypes = [c_int]
+    self._lib.indigoSaveMDLCT.restype = c_int
+    self._lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
     self._lib.indigoLoadReaction.restype = c_int
     self._lib.indigoLoadReaction.argtypes = [c_int]
     self._lib.indigoLoadReactionFromString.restype = c_int
@@ -285,6 +293,14 @@ class Indigo:
     self._lib.indigoBondOrder.argtypes = [c_int]
     self._lib.indigoBondStereo.restype = c_int
     self._lib.indigoBondStereo.argtypes = [c_int]
+    self._lib.indigoIterateNeighbors.restype = c_int
+    self._lib.indigoIterateNeighbors.argtypes = [c_int]
+    self._lib.indigoBond.restype = c_int
+    self._lib.indigoBond.argtypes = [c_int]
+    self._lib.indigoGetAtom.restype = c_int
+    self._lib.indigoGetAtom.argtypes = [c_int, c_int]
+    self._lib.indigoGetBond.restype = c_int
+    self._lib.indigoGetBond.argtypes = [c_int, c_int]
     self._lib.indigoCisTransClear.restype = c_int
     self._lib.indigoCisTransClear.argtypes = [c_int]
     self._lib.indigoStereocentersClear.restype = c_int
@@ -485,6 +501,11 @@ class Indigo:
     self.IndigoObject.iterateBonds = self._member_obj(self._lib.indigoIterateBonds)
     self.IndigoObject.bondOrder = self._member_int(self._lib.indigoBondOrder)
     self.IndigoObject.bondStereo = self._member_int(self._lib.indigoBondStereo)
+
+    self.IndigoObject.iterateNeighbors = self._member_obj(self._lib.indigoIterateNeighbors)
+    self.IndigoObject.bond = self._member_obj(self._lib.indigoBond)
+    self.IndigoObject.getAtom = self._member_obj_int(self._lib.indigoGetAtom)
+    self.IndigoObject.getBond = self._member_obj_int(self._lib.indigoGetBond)
 
     self.IndigoObject.cisTransClear = self._member_void(self._lib.indigoCisTransClear)
     self.IndigoObject.stereocentersClear = self._member_void(self._lib.indigoStereocentersClear)

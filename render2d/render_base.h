@@ -34,21 +34,21 @@ protected:
    enum ITEM_TYPE_BASE {ITEM_TYPE_BASE_MOL = 0, ITEM_TYPE_BASE_MAX};
    virtual void _initLayout () = 0;   
    virtual BaseMolecule& _getMol (int id) = 0;
-   virtual void _drawMol (const Metalayout::LayoutItem& item) = 0;
+   virtual void _drawItem (Metalayout::LayoutItem& item, const Vec2f& pos, bool ignoreTransform) = 0;
    void _setSize (Metalayout::LayoutItem& item);
 
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, int type, int id, BaseMolecule& mol, bool catalyst = false);
    Metalayout::LayoutItem& _pushItem (Metalayout::LayoutLine& line, int type, int id = -1);
 
-   static void cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
-   static void cb_prepare (Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
-
-   float _getScale (const Vec2f& delta, int absMargX, int absMargY);
-   static BaseMolecule& cb_getMol (int id, void* context);
-
    Metalayout _ml;
    RenderContext& _rc;
    const RenderSettings& _settings;
+
+private:
+   static void cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
+   static void cb_prepare (Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
+   static BaseMolecule& cb_getMol (int id, void* context);
+   float _getScale (const Vec2f& delta, int absMargX, int absMargY);
 };
 
 }

@@ -32,18 +32,18 @@ protected:
    enum ITEM_TYPE_MOL {ITEM_TYPE_MOL_RLABEL = ITEM_TYPE_BASE_MAX, ITEM_TYPE_MOL_RIFTHEN, ITEM_TYPE_MOL_MAX};
 
    virtual void _initLayout ();
-   virtual void _drawMol (const Metalayout::LayoutItem& item);
-   virtual void _drawRGroupLabel (const Metalayout::LayoutItem& item);
-   virtual void _drawRIfThen (const Metalayout::LayoutItem& item);
-   virtual int _getRIfThenHeight ();
+   virtual void _drawItem (Metalayout::LayoutItem& item, const Vec2f& pos, bool ignoreTransform);
    virtual BaseMolecule& _getMol (int id);
 
+private:
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, BaseMolecule& mol);
    Metalayout::LayoutItem& _pushSymbol (Metalayout::LayoutLine& line, int type, int idx = -1);
 
-   static void cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
+   void _drawMol (Metalayout::LayoutItem& item);
+   void _drawRGroupLabel (Metalayout::LayoutItem& item);
+   void _drawRIfThen (Metalayout::LayoutItem& item);
+   int _getRIfThenHeight ();
 
-private:
    BaseMolecule* _mol;
    Array<BaseMolecule*> _map; 
    const GraphHighlighting* _highlighting;

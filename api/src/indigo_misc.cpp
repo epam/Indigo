@@ -20,6 +20,8 @@
 #include "molecule/smiles_saver.h"
 #include "reaction/rsmiles_saver.h"
 #include "molecule/elements.h"
+#include "molecule/molfile_saver.h"
+#include "reaction/rxnfile_saver.h"
 
 #define CHECKRGB(r, g, b) \
 if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
@@ -331,4 +333,54 @@ CEXPORT const char * indigoSmiles (int item)
       return self.tmp_string.ptr();
    }
    INDIGO_END(0, 0);
+}
+
+CEXPORT int indigoSaveMDLCT (int item, int output)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+      QS_DEF(Array<char>, buf);
+      ArrayOutput out(buf);
+
+      if (obj.isBaseMolecule())
+      {
+         BaseMolecule &mol = obj.getBaseMolecule();
+
+         MolfileSaver saver(out);
+         saver.mode = self.molfile_saving_mode;
+         saver.highlighting = obj.getMoleculeHighlighting();
+         if (mol.isQueryMolecule())
+            saver.saveQueryMolecule(mol.asQueryMolecule());
+         else
+            saver.saveMolecule(mol.asMolecule());
+      }
+      else if (obj.isBaseReaction())
+      {
+         BaseReaction &rxn = obj.getBaseReaction();
+         RxnfileSaver saver(out);
+
+         saver.molfile_saving_mode = self.molfile_saving_mode;
+         saver.highlighting = obj.getReactionHighlighting();
+         if (rxn.isQueryReaction())
+            saver.saveQueryReaction(rxn.asQueryReaction());
+         else
+            saver.saveReaction(rxn.asReaction());
+      }
+
+      Output &out2 = self.getObject(output).getOutput();
+
+      BufferScanner scanner(buf);
+      QS_DEF(Array<char>, line);
+
+      while (!scanner.isEOF())
+      {
+         scanner.readString(line, false);
+         if (line.size() > 255)
+            throw IndigoError("indigoSaveMDLCT: line too big (%d)", line.size());
+         out2.writeChar(line.size());
+         out2.writeArray(line);
+      }
+   }
+   INDIGO_END(1, -1)
 }

@@ -21,6 +21,7 @@ namespace indigo
       public enum IndexType { Molecule, Reaction }
 
       public bool keep_cache;
+      public bool locked = false;
 
       public BingoIndexData (BingoIndexID id, string id_column, string data_column, string bingo_schema)
       {
@@ -165,7 +166,11 @@ namespace indigo
                    index_data_refs.index_data.bingo_schema.Equals(bingo_schema))
                {
                   if (!index_data_refs.session_ids.Contains(spid))
+                  {
+                     BingoLog.logMessage("Existing BingoIndexData added for spid={0} table={1}",
+                        spid, table);
                      index_data_refs.session_ids.Add(spid);
+                  }
                   return index_data_refs.index_data;
                }
             }
@@ -259,8 +264,6 @@ namespace indigo
                if (ctx_conn != null)
                   ctx_conn.Close();
             }
-
-
          }
       }
 

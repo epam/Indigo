@@ -48,6 +48,7 @@ void RenderBase::draw ()
       (cnvOpt.height >= 0 && commentHeight > cnvOpt.height))
       throw Error("Comment doesn't fit in the picture size requested");
 
+   _ml.cb_getMol = cb_getMol;
    _initLayout(); 
 
    _rc.fontsClear();
@@ -63,11 +64,8 @@ void RenderBase::draw ()
    _ml.prepare();
 
    int minMarg = 2; // small absolute margin to allow for cairo font scaling errors
-   void (*cb_process_tmp) (Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
-   cb_process_tmp = _ml.cb_process;
    _ml.cb_process = cb_prepare;
    _ml.process();
-   _ml.cb_process = cb_process_tmp;
 
    _ml.calcContentSize();
    Vec2f sz;
@@ -95,6 +93,7 @@ void RenderBase::draw ()
    _rc.init();
 
    _rc.storeTransform();
+   _ml.cb_process = cb_process;
    _ml.process();
    _rc.removeStoredTransform();
    _rc.resetTransform();
@@ -181,16 +180,15 @@ float RenderBase::_getScale (const Vec2f& delta, int absMargX, int absMargY)
 
 void RenderBase::_setSize (Metalayout::LayoutItem& item)
 {
-   if (item.type == ITEM_TYPE_BASE_MOL) {
-      _rc.initNullContext();
-      Vec2f bbmin, bbmax;
-      _drawMol(item);
-      _rc.bbGetMin(bbmin);
-      _rc.bbGetMax(bbmax);
-      _rc.resetContext();
-      item.scaledSize.diff(bbmax, bbmin);
-      item.scaledOffset.copy(bbmin);
-   }
+   _rc.initNullContext();
+   Vec2f bbmin, bbmax;
+   Vec2f pos;
+   _drawItem(item, pos, true);
+   _rc.bbGetMin(bbmin);
+   _rc.bbGetMax(bbmax);
+   _rc.resetContext();
+   item.scaledSize.diff(bbmax, bbmin);
+   item.scaledOffset.copy(bbmin);
 }  
 
 BaseMolecule& RenderBase::cb_getMol (int id, void* context)
@@ -201,8 +199,7 @@ BaseMolecule& RenderBase::cb_getMol (int id, void* context)
 void RenderBase::cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, void* context)
 {
    RenderBase* render = (RenderBase*)context;
-   render->_rc.restoreTransform();
-   render->_rc.translate(pos.x, pos.y - item.scaledSize.y / 2);
+   render->_drawItem(item, pos, false);
 }
 
 void RenderBase::cb_prepare (Metalayout::LayoutItem& item, const Vec2f& pos, void* context)

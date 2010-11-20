@@ -35,18 +35,18 @@ protected:
       ITEM_TYPE_RXN_BEGIN_ARROW, ITEM_TYPE_RXN_END_ARROW, ITEM_TYPE_RXN_SPACE, ITEM_TYPE_RXN_MAX};
 
    virtual void _initLayout ();
-   void _drawMol (const Metalayout::LayoutItem& item);
-   void _drawPlus ();
-   void _drawArrow (float length = -1);
+   virtual void _drawItem (Metalayout::LayoutItem& item, const Vec2f& pos, bool ignoreTransform);
    virtual BaseMolecule& _getMol (int id);
 
+private:
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, int id, bool catalyst = false);
    Metalayout::LayoutItem& _pushSymbol (Metalayout::LayoutLine& line, int type);
    Metalayout::LayoutItem& _pushSpace (Metalayout::LayoutLine& line, float size);
 
-   static void cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
+   void _drawMol (Metalayout::LayoutItem& item);
+   void _drawPlus ();
+   void _drawArrow (float length = -1);
 
-private:
    ReactionHighlighting* _highlighting;
    BaseReaction* _r;
    float _ax;

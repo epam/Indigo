@@ -9,6 +9,8 @@ namespace indigo
 {
    public class RingoIndexData : BingoIndexData
    {
+      object _sync_object = new Object();
+
       public RingoIndexData (BingoIndexID id, string id_column, string data_column, string bingo_schema) :
          base(id, id_column, data_column, bingo_schema)
       {
@@ -50,18 +52,21 @@ namespace indigo
 
       public void addToShadowTable (SqlConnection conn, RingoIndex index, int id, int storage_id)
       {
-         if (shadow_datatable == null)
-            _createDataTable();
+         lock (_sync_object)
+         {
+            if (shadow_datatable == null)
+               _createDataTable();
 
-         if (shadow_datatable.Rows.Count >= 10000)
-            _flushShadowTable(conn);
+            if (shadow_datatable.Rows.Count >= 10000)
+               _flushShadowTable(conn);
 
-         DataRow shadow_row = shadow_datatable.NewRow();
-         shadow_row["id"] = id;
-         shadow_row["storage_id"] = storage_id;
-         shadow_row["crf"] = index.crf;
+            DataRow shadow_row = shadow_datatable.NewRow();
+            shadow_row["id"] = id;
+            shadow_row["storage_id"] = storage_id;
+            shadow_row["crf"] = index.crf;
 
-         shadow_datatable.Rows.Add(shadow_row);
+            shadow_datatable.Rows.Add(shadow_row);
+         }
       }
 
       private void _createDataTable ()
@@ -76,15 +81,21 @@ namespace indigo
 
       public override bool needFlush()
       {
-         if (base.needFlush())
-            return true;
-         return shadow_datatable != null && shadow_datatable.Rows.Count > 0;
+         lock (_sync_object)
+         {
+            if (base.needFlush())
+               return true;
+            return shadow_datatable != null && shadow_datatable.Rows.Count > 0;
+         }
       }
 
       public override void flush(SqlConnection conn)
       {
-         base.flush(conn);
-         _flushShadowTable(conn);
+         lock (_sync_object)
+         {
+            base.flush(conn);
+            _flushShadowTable(conn);
+         }
       }
 
       private void _flushShadowTable (SqlConnection conn)
@@ -152,7 +163,10 @@ namespace indigo
 
       public override void prepareForDeleteRecord (SqlConnection conn)
       {
-         _flushShadowTable(conn);
+         lock (_sync_object)
+         {
+            _flushShadowTable(conn);
+         }
       }
    }
 }

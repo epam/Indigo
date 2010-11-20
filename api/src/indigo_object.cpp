@@ -95,7 +95,7 @@ Reaction & IndigoObject::getReaction ()
 
 BaseReaction & IndigoObject::getBaseReaction ()
 {
-   throw IndigoError("%s is not a query reaction", debugInfo());
+   throw IndigoError("%s is not a base reaction", debugInfo());
 }
 
 QueryReaction & IndigoObject::getQueryReaction ()
@@ -172,7 +172,7 @@ bool IndigoObject::isBaseReaction ()
 
 bool IndigoObject::isAtom ()
 {
-   return type == ATOM || type == ATOMS_ITER;
+   return type == ATOM || type == ATOMS_ITER || type == ATOM_NEIGHBOR;
 }
 
 IndigoArray & IndigoObject::asArray ()

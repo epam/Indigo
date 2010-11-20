@@ -167,6 +167,10 @@ CEXPORT int indigoSaveCml (int object, int output);
 CEXPORT int indigoSaveCmlToFile (int object, const char *filename);
 CEXPORT const char * indigoCml (int object);
 
+// the output must be a file or a buffer, but not a string
+// (because the MDLCT data can contain zeroes)
+CEXPORT int indigoSaveMDLCT (int item, int output);
+
 /* Reactions, query reactions */
 
 CEXPORT int indigoLoadReaction  (int source);
@@ -264,6 +268,18 @@ enum
 // Returns INDIGO_{UP/DOWN/EITHER/CIS/TRANS},
 // or zero if the bond is not a stereobond
 CEXPORT int indigoBondStereo (int bond);
+
+// Returns an iterator whose elements can be treated as atoms.
+// At the same time, they support indigoBond() call.
+CEXPORT int indigoIterateNeighbors (int atom);
+
+// Applicable exclusively to the "atom neighbors iterator".
+// Returns a bond to the neighbor atom.
+CEXPORT int indigoBond (int nei);
+
+// Accessing atoms and bonds by index
+CEXPORT int indigoGetAtom (int molecule, int idx);
+CEXPORT int indigoGetBond (int molecule, int idx);
 
 CEXPORT int indigoCisTransClear (int handle);
 CEXPORT int indigoStereocentersClear (int handle);
