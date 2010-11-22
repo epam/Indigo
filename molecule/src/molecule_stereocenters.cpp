@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "molecule/molecule_stereocenters.h"
+#include "molecule/molecule_automorphism_search.h"
 #include "molecule/base_molecule.h"
 #include "graph/filter.h"
 #include "molecule/molecule.h"
@@ -63,6 +64,184 @@ void MoleculeStereocenters::buildFromBonds (const int *atom_types, const int *at
       else
          _buildOneCenter(atom_idx, atom_groups[atom_idx], atom_types[atom_idx], bond_orientations);
    }
+}
+
+void MoleculeStereocenters::buildFrom3dCoordinates ( void )
+{
+   clear();
+   BaseMolecule &bmol = _getMolecule();
+
+   if (bmol.isQueryMolecule())
+      return;
+
+   Molecule &mol = bmol.asMolecule();
+
+   int i;
+   for (i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
+      if (bmol.getAtomXyz(i).z != 0)
+         break;
+   if (i == bmol.vertexEnd())
+      return;
+
+   for (i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
+   {
+      const Vertex &v = bmol.getVertex(i);
+      Vec3f &v_pos = bmol.getAtomXyz(i);
+
+      if (!_isPossibleStereocenter(i))
+         continue;
+
+      int pyramid[4];
+
+      try
+      {
+         _restorePyramid(i, pyramid, false);
+      }
+      catch (Exception &)
+      {
+         continue;
+      }
+
+      Vec3f nei_coords[4];
+      int nei_cnt = 0;
+      for (int j = 0; j < 4; j++)
+      {
+         if (pyramid[j] != -1)
+            nei_coords[nei_cnt++] = bmol.getAtomXyz(pyramid[j]);
+      }
+
+      if (nei_cnt != 4)
+      {
+         Vec3f v1, v2, v3;
+         v1.copy(nei_coords[0]);
+         v2.copy(nei_coords[1]);
+         v3.copy(nei_coords[2]);
+         v1.sub(v_pos);
+         v2.sub(v_pos);
+         v3.sub(v_pos);
+         v1.normalize();
+         v2.normalize();
+         v3.normalize();
+         nei_coords[3] = Vec3f(0, 0, 0);
+         nei_coords[3].add(v1);
+         nei_coords[3].add(v2);
+         nei_coords[3].add(v3);
+         nei_coords[3].scale(-1);
+         nei_coords[3].normalize();
+         nei_coords[3].add(v_pos);
+      }
+
+      int plane_sign = _onPlane(nei_coords[0], nei_coords[1], nei_coords[2], nei_coords[3]);
+
+      if (plane_sign == 0)
+         continue;
+
+      if (plane_sign > 0)
+         add(i, ATOM_ABS, 0, true);
+      else
+         add(i, ATOM_ABS, 0, false);
+   }
+
+   MoleculeAutomorphismSearch am;
+   am.detect_invalid_stereocenters = true;
+   am.process(mol);
+
+   for (i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
+   {
+      if (!bmol.stereocenters.exists(i))
+         continue;
+
+      if (am.invalidStereocenter(i))
+         remove(i);
+   }
+}
+
+bool MoleculeStereocenters::_isPossibleStereocenter (int atom_idx, 
+         bool *possible_implicit_h, bool *possible_lone_pair )
+{
+   BaseMolecule &mol = _getMolecule();
+   const Vertex &vertex = mol.getVertex(atom_idx);
+
+   int sure_double_bonds = 0;
+   int possible_double_bonds = 0;
+
+   int n_pure_hydrogens = 0;
+
+   if (vertex.degree() > 4)
+      return 0;
+
+   for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+   {
+      int e_idx = vertex.neiEdge(i);
+      int v_idx = vertex.neiVertex(i);
+
+      Vec3f edge_vec;
+      edge_vec.diff(mol.getAtomXyz(v_idx), mol.getAtomXyz(atom_idx));
+
+      if (!edge_vec.normalize())
+         return false;
+
+      if (mol.getBondOrder(e_idx) == BOND_TRIPLE)
+         return false;
+      if (mol.getBondOrder(e_idx) == BOND_AROMATIC)
+         return false;
+
+      if (mol.getBondOrder(e_idx) == BOND_DOUBLE)
+         sure_double_bonds++;
+      else if (mol.possibleBondOrder(e_idx, BOND_DOUBLE))
+         possible_double_bonds++;
+   }
+
+   static const _Configuration allowed_stereocenters [] =
+   {
+      // element, charge, degree, double bonds, implicit degree
+      {ELEM_C,  0, 3, 0, 4},
+      {ELEM_C,  0, 4, 0, 4},
+      {ELEM_Si, 0, 3, 0, 4},
+      {ELEM_Si, 0, 4, 0, 4},
+      {ELEM_N,  1, 3, 0, 4},
+      {ELEM_N,  1, 4, 0, 4},
+      {ELEM_N,  0, 3, 0, 3},
+      {ELEM_S,  0, 4, 2, 4},
+      {ELEM_S,  1, 3, 0, 3},
+      {ELEM_S,  1, 4, 1, 4},
+      {ELEM_S,  0, 3, 1, 3},
+      {ELEM_P,  0, 3, 0, 3},
+      {ELEM_P,  1, 4, 0, 4},
+      {ELEM_P,  0, 4, 1, 4}
+   };
+
+   bool possible = false;
+   if (possible_implicit_h != 0)
+      *possible_implicit_h = false;
+   if (possible_lone_pair != 0)
+      *possible_lone_pair = false;
+   int i;
+
+   for (i = 0; i < (int)NELEM(allowed_stereocenters); i++)
+   {
+      const _Configuration & as = allowed_stereocenters[i];
+
+      if (as.degree != vertex.degree())
+         continue;
+
+      if (as.n_double_bonds < sure_double_bonds ||
+          as.n_double_bonds > sure_double_bonds + possible_double_bonds)
+         continue;
+
+      if (!mol.possibleAtomNumberAndCharge(atom_idx, as.elem, as.charge))
+         continue;
+
+      possible = true;
+
+      if (possible_implicit_h != 0 && as.implicit_degree == 4 && vertex.degree() == 3)
+         *possible_implicit_h = true;
+      
+      if (possible_lone_pair != 0 && as.implicit_degree == 3)
+         *possible_lone_pair = true;
+   }
+
+   return possible;
 }
 
 void MoleculeStereocenters::_buildOneCenter (int atom_idx, int group, int type, const int *bond_orientations)
@@ -133,52 +312,12 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int group, int type, 
 
    _EdgeIndVec tmp;
 
-   static const _Configuration allowed_stereocenters [] =
-   {
-      // element, charge, degree, double bonds, implicit degree
-      {ELEM_C,  0, 3, 0, 4},
-      {ELEM_C,  0, 4, 0, 4},
-      {ELEM_Si, 0, 3, 0, 4},
-      {ELEM_Si, 0, 4, 0, 4},
-      {ELEM_N,  1, 3, 0, 4},
-      {ELEM_N,  1, 4, 0, 4},
-      {ELEM_N,  0, 3, 0, 3},
-      {ELEM_S,  0, 4, 2, 4},
-      {ELEM_S,  1, 3, 0, 3},
-      {ELEM_S,  1, 4, 1, 4},
-      {ELEM_S,  0, 3, 1, 3},
-      {ELEM_P,  0, 3, 0, 3},
-      {ELEM_P,  1, 4, 0, 4},
-      {ELEM_P,  0, 4, 1, 4},
-   };
-
    bool possible = false;
    bool possible_implicit_h = false;
    bool possible_lone_pair = false;
    int i;
 
-   for (i = 0; i < (int)NELEM(allowed_stereocenters); i++)
-   {
-      const _Configuration & as = allowed_stereocenters[i];
-
-      if (as.degree != degree)
-         continue;
-
-      if (as.n_double_bonds < sure_double_bonds ||
-          as.n_double_bonds > sure_double_bonds + possible_double_bonds)
-         continue;
-
-      if (!mol.possibleAtomNumberAndCharge(atom_idx, as.elem, as.charge))
-         continue;
-
-      possible = true;
-
-      if (as.implicit_degree == 4 && degree == 3)
-         possible_implicit_h = true;
-      
-      if (as.implicit_degree == 3)
-         possible_lone_pair = true;
-   }
+   possible = _isPossibleStereocenter(atom_idx, &possible_implicit_h, &possible_lone_pair);
 
    if (!possible)
    {
@@ -453,6 +592,37 @@ int MoleculeStereocenters::_sign (const Vec3f &v1, const Vec3f &v2, const Vec3f 
       return -1;
 
    throw Error("degenerate triangle");
+}
+
+int MoleculeStereocenters::_onPlane (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3, const Vec3f &u)
+{
+   Vec3f v1u, v2u, v3u, p;
+   float eps = 0.01f;
+
+   v1u.diff(v1, u);
+   v1u.normalize();
+   v2u.diff(v2, u);
+   v2u.normalize();
+   v3u.diff(v3, u);
+   v3u.normalize();
+
+   float a12, a23, a13;
+   Vec3f::angle(v1u, v2u, a12);
+   Vec3f::angle(v2u, v3u, a23);
+   Vec3f::angle(v1u, v3u, a13);
+
+   float angle_sum = a12 + a23 + a13;
+
+   if (fabs(angle_sum - 2*PI) < eps)
+      return 0;
+
+   p.cross(v2u, v3u);
+   float det = Vec3f::dot(v1u, p);
+   
+   if (det > 0)
+      return 1;
+   else
+      return -1;
 }
 
 int MoleculeStereocenters::getType (int idx) const

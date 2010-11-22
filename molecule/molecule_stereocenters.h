@@ -48,6 +48,8 @@ public:
 
    DLLEXPORT void buildFromBonds (const int *atom_types, const int *atom_groups, const int *bond_types, bool ignore_errors);
 
+   DLLEXPORT void buildFrom3dCoordinates ( void );
+
    DLLEXPORT void markBonds ();
 
    // takes mapping from supermolecule to submolecule
@@ -150,7 +152,9 @@ protected:
 
    static int _sign  (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3);
    static int _xyzzy (const Vec3f &v1, const Vec3f &v2, const Vec3f &u);
+   static int _onPlane (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3, const Vec3f &v4);
 
+   bool _isPossibleStereocenter (int atom_idx, bool *possible_implicit_h = 0, bool *possible_lone_pair = 0);
    void _buildOneCenter (int atom_idx, int group, int type, const int *bond_orientations);
 
    void _getGroups (int type, Array<int> &numbers);

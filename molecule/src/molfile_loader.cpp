@@ -54,6 +54,9 @@ void MolfileLoader::loadMolecule (Molecule &mol)
    _mol = &mol;
    _qmol = 0;
    _loadMolecule();
+
+   if (mol.stereocenters.size() == 0)
+      mol.stereocenters.buildFrom3dCoordinates();
 }
 
 void MolfileLoader::loadQueryMolecule (QueryMolecule &mol)
@@ -63,6 +66,9 @@ void MolfileLoader::loadQueryMolecule (QueryMolecule &mol)
    _qmol = &mol;
    _mol = 0;
    _loadMolecule();
+
+   if (mol.stereocenters.size() == 0)
+      mol.stereocenters.buildFrom3dCoordinates();
 }
 
 void MolfileLoader::_loadMolecule ()
