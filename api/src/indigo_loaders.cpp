@@ -38,7 +38,7 @@ IndigoObject(SDF_LOADER)
    _counter = 0;
    sdf_loader = 0;
 
-   _own_scanner = new FileScanner(filename);
+   _own_scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);
    sdf_loader = new SdfLoader(*_own_scanner);
 }
 
@@ -257,7 +257,7 @@ IndigoObject(RDF_LOADER)
    _own_scanner = 0;
    rdf_loader = 0;
    
-   _own_scanner = new FileScanner(filename);
+   _own_scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);
    rdf_loader = new RdfLoader(*_own_scanner);
 }
 
@@ -402,7 +402,7 @@ IndigoObject(MULTILINE_SMILES_LOADER)
 {
    _counter = 0;
    _scanner = 0;
-   _scanner = new FileScanner(filename);
+   _scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);
    _own_scanner = true;
 }
 

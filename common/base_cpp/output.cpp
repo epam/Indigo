@@ -152,6 +152,14 @@ void Output::skip (int count)
    seek(count, SEEK_CUR);
 }
 
+FileOutput::FileOutput (Encoding filename_encoding, const char *filename)
+{
+   _file = openFile(filename_encoding, filename, "wb");
+
+   if (_file == NULL)
+      throw Error("can't open file %s", filename);
+}
+
 FileOutput::FileOutput (const char *filename)
 {
    _file = fopen(filename, "wb");

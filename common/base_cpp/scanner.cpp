@@ -364,6 +364,20 @@ bool Scanner::isSingleLine (Scanner &scanner)
    return res;
 }
 
+FileScanner::FileScanner (Encoding filename_encoding, const char *filename) : Scanner()
+{
+   _file = 0;
+   _file_len = 0;
+
+   _file = openFile(filename_encoding, filename, "rb");
+
+   if (_file == NULL)
+      throw Error("can't open file %s", filename);
+
+   fseek(_file, 0, SEEK_END);
+   _file_len = ftell(_file);
+   fseek(_file, 0, SEEK_SET);
+}
 
 FileScanner::FileScanner (const char *format, ...) : Scanner ()
 {

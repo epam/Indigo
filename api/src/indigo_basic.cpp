@@ -256,6 +256,20 @@ int indigoSetMolfileSavingMode (const char *mode)
    INDIGO_END(1, 0);
 }
 
+int indigoSetFilenameEncoding (const char *encoding)
+{
+   INDIGO_BEGIN
+   {
+      if (strcasecmp(encoding, "ASCII") == 0)
+         self.filename_encoding = ENCODING_ASCII;
+      else if (strcasecmp(encoding, "UTF-8") == 0)
+         self.filename_encoding = ENCODING_UTF8;
+      else
+         throw IndigoError("unknown value: %s", encoding);
+   }
+   INDIGO_END(1, 0);
+}
+
 int indigoSetFPOrdQwords (int qwords)
 {
    INDIGO_BEGIN
@@ -308,6 +322,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("treat-x-as-pseudoatom", indigoTreatXAsPseudoatom);
    mgr.setOptionHandlerBool("deconvolution-aromatization", indigoDeconvolutionAromatization);
    mgr.setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode);
+   mgr.setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding);
    mgr.setOptionHandlerInt("fp-ord-qwords", indigoSetFPOrdQwords);
    mgr.setOptionHandlerInt("fp-sim-qwords", indigoSetFPSimQwords);
    mgr.setOptionHandlerInt("fp-any-qwords", indigoSetFPAnyQwords);

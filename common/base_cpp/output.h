@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 #include "base_cpp/array.h"
+#include "base_cpp/io_base.h"
 
 namespace indigo
 {
@@ -57,6 +58,7 @@ public:
 class FileOutput : public Output
 {
 public:
+   DLLEXPORT FileOutput (Encoding filename_encoding, const char *filename);
    DLLEXPORT explicit FileOutput (const char *name);
    //explicit FileOutput (const char *format, ...);
    DLLEXPORT explicit FileOutput (bool append, const char *format, ...);

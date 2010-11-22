@@ -77,7 +77,7 @@ CEXPORT int indigoReadFile (const char *filename)
 {
    INDIGO_BEGIN
    {
-      return self.addObject(new IndigoScanner(new FileScanner(filename)));
+      return self.addObject(new IndigoScanner(new FileScanner(self.filename_encoding, filename)));
    }
    INDIGO_END(0, -1)
 }

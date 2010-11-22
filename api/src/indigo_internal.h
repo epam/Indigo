@@ -20,6 +20,7 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/obj.h"
+#include "base_cpp/io_base.h"
 
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
@@ -907,6 +908,7 @@ public:
 
    int  molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
 
+   Encoding filename_encoding;
 protected:
 
    RedBlackMap<int, IndigoObject *> _objects;

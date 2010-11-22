@@ -198,6 +198,7 @@ IndigoObject * IndigoReaction::clone ()
    AutoPtr<IndigoReaction> rxnptr;
    rxnptr.reset(new IndigoReaction());
    rxnptr->rxn.clone(rxn, 0, 0);
+   rxnptr->highlighting.init(rxnptr->rxn);
    rxnptr->copyProperties(properties);
    return rxnptr.release();
 }
@@ -207,6 +208,7 @@ IndigoObject * IndigoQueryReaction::clone ()
    AutoPtr<IndigoQueryReaction> rxnptr;
    rxnptr.reset(new IndigoQueryReaction());
    rxnptr->rxn.clone(rxn, 0, 0);
+   rxnptr->highlighting.init(rxnptr->rxn);
    rxnptr->copyProperties(properties);
    return rxnptr.release();
 }

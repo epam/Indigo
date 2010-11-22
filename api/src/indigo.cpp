@@ -38,6 +38,7 @@ Indigo::Indigo ()
    treat_x_as_pseudoatom = false;
    deconvolution_aromatization = true;
    molfile_saving_mode = 0;
+   filename_encoding = ENCODING_ASCII;
    fp_params.any_qwords = 15;
    fp_params.sim_qwords = 8;
    fp_params.tau_qwords = 10;

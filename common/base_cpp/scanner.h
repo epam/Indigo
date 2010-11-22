@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include "base_cpp/array.h"
+#include "base_cpp/io_base.h"
 
 namespace indigo {
 
@@ -62,14 +63,13 @@ public:
    // when delimiters = 0, any isspace() character is considered delimiter
    void readWord (Array<char> &word, const char *delimiters);
 
-   
-
    static bool isSingleLine (Scanner &scanner);
 };
 
 class FileScanner : public Scanner
 {
 public:
+   FileScanner (Encoding filename_encoding, const char *filename);
    explicit FileScanner (const char *format, ...);
    virtual ~FileScanner ();
 
