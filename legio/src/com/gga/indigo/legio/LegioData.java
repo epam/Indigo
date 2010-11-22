@@ -7,7 +7,7 @@ public class LegioData
 {
    IndigoObject reaction;
    IndigoObject monomers_table;
-   IndigoObject output_reactions;
+   private IndigoObject output_reactions;
    Indigo indigo;
 
    public LegioData( Indigo cur_indigo )
@@ -51,7 +51,9 @@ public class LegioData
       if (idx >=  output_reactions.arrayCount())
          return null;
 
-      for (IndigoObject iterr : output_reactions.arrayAt(idx).iterateProducts())
+      IndigoObject rxn = output_reactions.arrayAt(idx);
+
+      for (IndigoObject iterr : rxn.iterateProducts())
       {
          return iterr.molfile();
       }

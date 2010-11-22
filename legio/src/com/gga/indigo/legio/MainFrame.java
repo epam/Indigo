@@ -32,6 +32,7 @@ public class MainFrame extends javax.swing.JFrame
       legio = new LegioData(indigo);
       cur_dir = new CurDir();
       
+      indigo.setOption("filename-encoding", "UTF-8");
       indigo.setOption("render-margins", "5,2");
       indigo.setOption("render-comment-margins", "5,2");
       indigo.setOption("molfile-saving-mode", "3000");
