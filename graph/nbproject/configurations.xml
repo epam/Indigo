@@ -9,6 +9,8 @@
       <itemPath>../common/base_cpp/d_bitset.h</itemPath>
       <itemPath>../common/base_cpp/exception.cpp</itemPath>
       <itemPath>../common/base_cpp/exception.h</itemPath>
+      <itemPath>../common/base_cpp/io_base.cpp</itemPath>
+      <itemPath>../common/base_cpp/io_base.h</itemPath>
       <itemPath>../common/base_cpp/list.h</itemPath>
       <itemPath>../common/base_c/nano_posix.c</itemPath>
       <itemPath>../common/base_cpp/obj.h</itemPath>
