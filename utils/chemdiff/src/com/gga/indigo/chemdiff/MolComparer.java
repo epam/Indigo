@@ -126,49 +126,6 @@ public class MolComparer
          uniq_mols.add(new CompMol(mols.get(i), i));
    }
 
-/*
-   public void compare()
-   {
-      conc_mols.clear();
-
-//      clearSame();
-
-      for (int i = 0; i < uniq_csmiles1.size(); i++)
-         for (int j = 0; j < uniq_csmiles2.size(); j++)
-             if (uniq_csmiles1.get(i).smiles.compareTo(
-                 uniq_csmiles2.get(j).smiles) == 0)
-             {
-                uniq_csmiles1.get(i).is_uniq = false;
-                uniq_csmiles2.get(j).is_uniq = false;
-             }
-
-      int i = 0;
-      while (i < uniq_csmiles1.size())
-      {
-         if (!uniq_csmiles1.get(i).is_uniq)
-         {
-            conc_mols.add(uniq_mols1.get(i));
-            uniq_mols1.remove(i);
-            uniq_csmiles1.remove(i);
-         }
-         else
-            i++;
-      }
-
-      i = 0;
-      while (i < uniq_csmiles2.size())
-      {
-         if (!uniq_csmiles2.get(i).is_uniq)
-         {
-            uniq_mols2.remove(i);
-            uniq_csmiles2.remove(i);
-         }
-         else
-            i++;
-      }
-   }
- */
-
    class MolComparerThread extends Thread
    {
       int sort_pos;

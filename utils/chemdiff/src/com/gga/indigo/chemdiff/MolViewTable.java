@@ -199,6 +199,8 @@ public class MolViewTable extends JPanel
           FileWriter fwriter = new FileWriter(out_file_path);
           for (int i = 0; i < molecules.size(); i++)
           {
+             if (molecules.get(i) == null)
+                continue;
              fwriter.write(molecules.get(i).molfile());
              String[] orig_id_strs = (String[])table.getValueAt(i, 0);
              fwriter.write("> <original_id>\n" + orig_id_strs[0] + "\n\n");
@@ -263,6 +265,7 @@ public class MolViewTable extends JPanel
       mtm.setMols(mols, indexes1, indexes2, is_reactions_mode);
       mtm.setColumnName(1, mols.size() + " molecules");
       table.setModel(mtm);
+      molecules.clear();
       molecules.addAll(mols);
 
       int msize = mols.size();
@@ -320,6 +323,8 @@ public class MolViewTable extends JPanel
       tc.setMinWidth(idx_column_w);
       table.setRowHeight(cell_h);
       update();
+
+      molecules.clear();
    }
 
 
