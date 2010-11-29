@@ -50,6 +50,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/380065930/smart_output.o \
 	${OBJECTDIR}/_ext/380065930/string_pool.o \
 	${OBJECTDIR}/src/cycle_basis.o \
+	${OBJECTDIR}/_ext/380065930/io_base.o \
 	${OBJECTDIR}/src/simple_cycle_basis.o \
 	${OBJECTDIR}/src/spanning_tree.o \
 	${OBJECTDIR}/_ext/380065930/d_bitset.o \
@@ -195,6 +196,11 @@ ${OBJECTDIR}/src/cycle_basis.o: src/cycle_basis.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/cycle_basis.o src/cycle_basis.cpp
+
+${OBJECTDIR}/_ext/380065930/io_base.o: ../common/base_cpp/io_base.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/380065930
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/380065930/io_base.o ../common/base_cpp/io_base.cpp
 
 ${OBJECTDIR}/src/simple_cycle_basis.o: src/simple_cycle_basis.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
