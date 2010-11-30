@@ -38,5 +38,5 @@ CEXPORT int indigoLayout (int object)
       }
       return 0;
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }

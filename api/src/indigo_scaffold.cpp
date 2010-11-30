@@ -75,7 +75,7 @@ CEXPORT int indigoExtractCommonScaffold (int structures, const char* options)
 
       return self.addObject(scaf.release());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 Molecule & IndigoScaffold::getMolecule ()
@@ -117,5 +117,5 @@ CEXPORT int indigoAllScaffolds (int extracted)
 
       return self.addObject(arr.release());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }

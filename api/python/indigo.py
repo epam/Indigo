@@ -741,6 +741,14 @@ class Indigo:
       return dispatcher.IndigoObject(dispatcher, newobj)
     return newfunc
 
+  def _member_obj_obj (self, func):
+    dispatcher = self
+    def newfunc (self, param):
+      dispatcher._setSID()
+      newobj = dispatcher._checkResult(func(self.id, param.id))
+      return dispatcher.IndigoObject(dispatcher, newobj)
+    return newfunc
+
   def _member_obj_string (self, func):
     dispatcher = self
     def newfunc (self, param):

@@ -968,7 +968,7 @@ void AutomorphismSearch::_refineByCell (int split1, int split2, int level, int &
          }
 
          int c1 = cell1, c2;
-         int maxcell = -1, maxpos;
+         int maxcell = -1, maxpos = -1;
          int last_c1 = -1;
 
          for (i = bmin; i < _bucket.size(); i++)

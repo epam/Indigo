@@ -75,9 +75,6 @@ void Molecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vert
       if (mol.isPseudoAtom(vertices[i]))
          setPseudoAtom(newidx, mol.getPseudoAtom(vertices[i]));
 
-      // DPX: TODO: check that all the neighbors are mapped
-      // prior to translating the connectivity, valence, radicals,
-      // and implicit H counters
       bool nei_mapped = 
          (getVertex(newidx).degree() == mol.getVertex(vertices[i]).degree());
 
@@ -431,13 +428,39 @@ void Molecule::_removeAtoms (const Array<int> &indices, const int *mapping)
    {
       int idx = indices[i];
       const Vertex &vertex = getVertex(idx);
+      int j;
 
-      if (_atoms[idx].number == ELEM_H && _atoms[idx].isotope == 0 && vertex.degree() == 1)
+      for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
       {
-         int nidx = vertex.neiVertex(vertex.neiBegin());
+         int nei = vertex.neiVertex(j);
+         int order = getBondOrder(vertex.neiEdge(j));
 
-         if (_implicit_h.size() > nidx && _implicit_h[nidx] >= 0)
-            _implicit_h[nidx]++;
+         if (mapping[nei] < 0) // the neighbor is marked for removal too
+            continue;
+
+         if (_implicit_h.size() > nei)
+         {
+            if (order == BOND_SINGLE)
+               _implicit_h[nei]++;
+            else if (order == BOND_DOUBLE)
+               _implicit_h[nei] += 2;
+            else if (order == BOND_TRIPLE)
+               _implicit_h[nei] += 3;
+            else
+               _implicit_h[nei] = -1;
+         }
+
+         if (_connectivity.size() > nei)
+         {
+            if (order == BOND_SINGLE)
+               _connectivity[nei]--;
+            else if (order == BOND_DOUBLE)
+               _connectivity[nei] -= 2;
+            else if (order == BOND_TRIPLE)
+               _connectivity[nei] -= 3;
+            else
+               _connectivity[nei] = -1;
+         }
       }
    }
 }

@@ -5,7 +5,8 @@
 #include "base_cpp/ptr_array.h"
 #include "test_failure.h"
 
-
+namespace indigo
+{
 
 class TestResult {
 public:
@@ -33,5 +34,6 @@ protected:
 
     PtrArray<Failure> _failures;
 };
+}
 
 #endif

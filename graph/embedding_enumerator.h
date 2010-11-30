@@ -37,9 +37,9 @@ public:
 
    bool allow_many_to_one;
 
-   EmbeddingEnumerator (Graph &supergraph);
+   DLLEXPORT EmbeddingEnumerator (Graph &supergraph);
 
-   ~EmbeddingEnumerator ();
+   DLLEXPORT ~EmbeddingEnumerator ();
 
    // when cb_embedding returns zero, enumeration stops
    int  (*cb_embedding) (Graph &subgraph, Graph &supergraph,
@@ -59,30 +59,30 @@ public:
 
    void *userdata;
 
-   void setSubgraph (Graph &subgraph);
+   DLLEXPORT void setSubgraph (Graph &subgraph);
 
-   void ignoreSubgraphVertex (int idx);
-   void ignoreSupergraphVertex (int idx);
+   DLLEXPORT void ignoreSubgraphVertex (int idx);
+   DLLEXPORT void ignoreSupergraphVertex (int idx);
 
-   int countUnmappedSubgraphVertices ();
-   int countUnmappedSupergraphVertices ();
+   DLLEXPORT int countUnmappedSubgraphVertices ();
+   DLLEXPORT int countUnmappedSupergraphVertices ();
 
-   int countUnmappedSubgraphEdges ();
-   int countUnmappedSupergraphEdges ();
+   DLLEXPORT int countUnmappedSubgraphEdges ();
+   DLLEXPORT int countUnmappedSupergraphEdges ();
 
-   void setEquivalenceHandler (GraphVertexEquivalence *equivalence_handler);
+   DLLEXPORT void setEquivalenceHandler (GraphVertexEquivalence *equivalence_handler);
 
-   bool fix (int node1, int node2);
-   bool unsafeFix (int node1, int node2);
+   DLLEXPORT bool fix (int node1, int node2);
+   DLLEXPORT bool unsafeFix (int node1, int node2);
 
    // returns 0 if cb_embedding returned 0, 1 otherwise
-   int process ();
-   void processStart ();
-   bool processNext ();
+   DLLEXPORT int process ();
+   DLLEXPORT void processStart ();
+   DLLEXPORT bool processNext ();
 
-   const int * getSubgraphMapping ();
+   DLLEXPORT const int * getSubgraphMapping ();
 
-   const int * getSupergraphMapping ();
+   DLLEXPORT const int * getSupergraphMapping ();
 
    DEF_ERROR("embedding enumerator");
 

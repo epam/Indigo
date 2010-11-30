@@ -222,7 +222,7 @@ int _indigoIterateReaction (int reaction, int subtype)
 
       return self.addObject(new IndigoReactionIter(rxn, hl, subtype));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoLoadReaction (int source)
@@ -245,7 +245,7 @@ CEXPORT int indigoLoadReaction (int source)
       loader.loadReaction(rxn);
       return self.addObject(rxnptr.release());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoLoadQueryReaction (int source)
@@ -268,7 +268,7 @@ CEXPORT int indigoLoadQueryReaction (int source)
       loader.loadQueryReaction(rxn);
       return self.addObject(rxnptr.release());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoSaveRxnfile (int reaction, int output)
@@ -284,8 +284,9 @@ CEXPORT int indigoSaveRxnfile (int reaction, int output)
       else
          saver.saveReaction(rxn.asReaction());
       out.flush();
+      return 1;
    }
-   INDIGO_END(1, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoIterateReactants (int reaction)
@@ -309,7 +310,7 @@ CEXPORT int indigoCreateReaction (void)
    {
       return self.addObject(new IndigoReaction());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCreateQueryReaction (void)
@@ -321,24 +322,32 @@ CEXPORT int indigoAddReactant (int reaction, int molecule)
 {
    INDIGO_BEGIN
    {
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      IndigoObject &robj = self.getObject(reaction);
+      BaseReaction &rxn = robj.getBaseReaction();
 
-      rxn.addReactantCopy(mol, 0, 0);
+      rxn.addReactantCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
+      ReactionHighlighting *hl = robj.getReactionHighlighting();
+      if (hl != 0)
+         hl->nondestructiveInit(rxn);
+      return 1;
    }
-   INDIGO_END(1, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoAddProduct (int reaction, int molecule)
 {
    INDIGO_BEGIN
    {
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      IndigoObject &robj = self.getObject(reaction);
+      BaseReaction &rxn = robj.getBaseReaction();
 
-      rxn.addProductCopy(mol, 0, 0);
+      rxn.addProductCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
+      ReactionHighlighting *hl = robj.getReactionHighlighting();
+      if (hl != 0)
+         hl->nondestructiveInit(rxn);
+      return 1;
    }
-   INDIGO_END(1, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCountReactants (int reaction)
@@ -347,7 +356,7 @@ CEXPORT int indigoCountReactants (int reaction)
    {
       return self.getObject(reaction).getBaseReaction().reactantsCount();
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCountProducts (int reaction)
@@ -356,7 +365,7 @@ CEXPORT int indigoCountProducts (int reaction)
    {
       return self.getObject(reaction).getBaseReaction().productsCount();
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCountMolecules (int handle)
@@ -367,10 +376,10 @@ CEXPORT int indigoCountMolecules (int handle)
 
       if (obj.isBaseReaction())
          return obj.getBaseReaction().count();
-      else
-         throw IndigoError("can not count molecules of %s", obj.debugInfo());
+      
+      throw IndigoError("can not count molecules of %s", obj.debugInfo());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoAutomap (int reaction, const char *mode)
@@ -397,6 +406,7 @@ CEXPORT int indigoAutomap (int reaction, const char *mode)
       ReactionAutomapper ram(rxn);
 
       ram.automap(nmode);
+      return 1;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }

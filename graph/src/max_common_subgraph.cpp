@@ -41,6 +41,15 @@ MaxCommonSubgraph::MaxCommonSubgraph(Graph &subgraph, Graph &supergraph) :
 
 }
 
+MaxCommonSubgraph::~MaxCommonSubgraph ()
+{
+}
+
+void MaxCommonSubgraph::setGraphs(Graph& subgraph, Graph& supergraph)
+{
+   _subgraph = &subgraph; _supergraph = &supergraph;
+}
+
 void MaxCommonSubgraph::findExactMCS(){
 
    ReGraph regraph;

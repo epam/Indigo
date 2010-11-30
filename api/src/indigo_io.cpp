@@ -79,7 +79,7 @@ CEXPORT int indigoReadFile (const char *filename)
    {
       return self.addObject(new IndigoScanner(new FileScanner(self.filename_encoding, filename)));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoReadString (const char *str)
@@ -88,7 +88,7 @@ CEXPORT int indigoReadString (const char *str)
    {
       return self.addObject(new IndigoScanner(new BufferScanner(str)));
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoReadBuffer (const char *buffer, int size)
@@ -97,7 +97,7 @@ CEXPORT int indigoReadBuffer (const char *buffer, int size)
    {
       return self.addObject(new IndigoScanner(new BufferScanner(buffer, size)));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoLoadString (const char *str)
@@ -106,7 +106,7 @@ CEXPORT int indigoLoadString (const char *str)
    {
       return self.addObject(new IndigoScanner(str));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoLoadBuffer (const char *buffer, int size)
@@ -115,7 +115,7 @@ CEXPORT int indigoLoadBuffer (const char *buffer, int size)
    {
       return self.addObject(new IndigoScanner(buffer, size));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoWriteFile (const char *filename)
@@ -124,7 +124,7 @@ CEXPORT int indigoWriteFile (const char *filename)
    {
       return self.addObject(new IndigoOutput(new FileOutput(filename)));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoWriteBuffer (void)
@@ -133,7 +133,7 @@ CEXPORT int indigoWriteBuffer (void)
    {
       return self.addObject(new IndigoOutput());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT const char * indigoToString (int handle)
@@ -147,7 +147,7 @@ CEXPORT const char * indigoToString (int handle)
 
       return self.tmp_string.ptr();
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(0);
 }
 
 CEXPORT int indigoToBuffer (int handle, char **buf, int *size)
@@ -160,8 +160,9 @@ CEXPORT int indigoToBuffer (int handle, char **buf, int *size)
 
      *buf = self.tmp_string.ptr();
      *size = self.tmp_string.size();
+     return 1;
    }
-   INDIGO_END(1, 0);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateSDF (int reader)
@@ -172,7 +173,7 @@ CEXPORT int indigoIterateSDF (int reader)
       
       return self.addObject(new IndigoSdfLoader(obj.getScanner()));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoIterateRDF (int reader)
@@ -183,7 +184,7 @@ CEXPORT int indigoIterateRDF (int reader)
 
       return self.addObject(new IndigoRdfLoader(obj.getScanner()));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoIterateSmiles (int reader)
@@ -194,7 +195,7 @@ CEXPORT int indigoIterateSmiles (int reader)
       
       return self.addObject(new IndigoMultilineSmilesLoader(obj.getScanner()));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 
@@ -218,7 +219,7 @@ CEXPORT int indigoTell (int handle)
 
       throw IndigoError("indigoTell(): not applicable to %s", obj.debugInfo());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoIterateSDFile (const char *filename)
@@ -227,7 +228,7 @@ CEXPORT int indigoIterateSDFile (const char *filename)
    {
       return self.addObject(new IndigoSdfLoader(filename));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoIterateRDFile (const char *filename)
@@ -236,7 +237,7 @@ CEXPORT int indigoIterateRDFile (const char *filename)
    {
       return self.addObject(new IndigoRdfLoader(filename));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoIterateSmilesFile (const char *filename)
@@ -245,5 +246,5 @@ CEXPORT int indigoIterateSmilesFile (const char *filename)
    {
       return self.addObject(new IndigoMultilineSmilesLoader(filename));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }

@@ -31,14 +31,15 @@ public:
 
    DEF_ERROR("MCS");
 
-   MaxCommonSubgraph(Graph& subgraph, Graph& supergraph);
+   DLLEXPORT MaxCommonSubgraph(Graph& subgraph, Graph& supergraph);
+   DLLEXPORT ~MaxCommonSubgraph();
 
-   void setGraphs(Graph& subgraph, Graph& supergraph) { _subgraph = &subgraph; _supergraph = &supergraph; }
+   DLLEXPORT void setGraphs(Graph& subgraph, Graph& supergraph);
    //two main methods for maximum common subgraph search
    //exact searching mcs method. Hanser's algorithm used
-   void findExactMCS();
+   DLLEXPORT void findExactMCS();
    //approximate method for searching mcs. 2DOM algorithm used
-   void findApproximateMCS();
+   DLLEXPORT void findApproximateMCS();
 
    //parameters for exact method
    struct ParametersForExact{
@@ -74,11 +75,11 @@ public:
    //array for accept input mapping and working with it
    Array<int> incomingMap;
    //this method sorts solutions and maximizes number of the rings in graph
-   static int ringsSolutionTerm(Array<int>&, Array<int>&, void*);
+   DLLEXPORT static int ringsSolutionTerm(Array<int>&, Array<int>&, void*);
    //returns all maps-solutions-mcs
-   void getSolutionMaps(ObjArray< Array<int> >* v_maps, ObjArray< Array<int> >* e_maps) const;
+   DLLEXPORT void getSolutionMaps(ObjArray< Array<int> >* v_maps, ObjArray< Array<int> >* e_maps) const;
    //returns first element in sorted solution array
-   void getMaxSolutionMap(Array<int>* v_map, Array<int>* e_map) const;
+   DLLEXPORT void getMaxSolutionMap(Array<int>* v_map, Array<int>* e_map) const;
    //callback for sorting solutions (see _vertEdgeSolMap)
    int (*cbSolutionTerm) (Array<int>& array1, Array<int>& array2, void* userdata);
    //context for all callbacks (edge and vertices matching and sort solutions

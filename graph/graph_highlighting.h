@@ -31,7 +31,7 @@ public:
    DLLEXPORT void init (const Graph &graph);
    DLLEXPORT void clear ();
 
-   DLLEXPORT void copy (const GraphHighlighting &other, const Array<int> &mapping);
+   DLLEXPORT void copy (const GraphHighlighting &other, const Array<int> *mapping);
 
    DLLEXPORT void onVertex (int idx);
    DLLEXPORT void onEdge (int idx);

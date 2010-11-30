@@ -5,7 +5,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/output.h"
-
+namespace indigo
+{
 class AssertException: public Exception {
 public:
    AssertException(const char* message, Failure* f):
@@ -178,7 +179,7 @@ private:
       }                                                                          \
    } while(0);                                                                   \
 
-
+}
 #endif
 
 

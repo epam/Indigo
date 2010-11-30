@@ -1,4 +1,5 @@
 #include "test_failure.h"
+using namespace indigo;
 Failure::Failure(const char* exception, const char* message, const char* test_name,
         const char* file_name, int line_number) :
 _lineNumber(line_number) {

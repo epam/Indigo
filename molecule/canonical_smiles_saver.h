@@ -26,12 +26,13 @@ class CanonicalSmilesSaver
 {
 public:
 
-   explicit CanonicalSmilesSaver (Output &output);
+   DLLEXPORT explicit CanonicalSmilesSaver (Output &output);
+   DLLEXPORT ~CanonicalSmilesSaver ();
 
    bool find_invalid_stereo;
    bool ignore_invalid_hcount;
 
-   void saveMolecule (Molecule &mol) const;
+   DLLEXPORT void saveMolecule (Molecule &mol) const;
 
    DEF_ERROR("canonical SMILES saver");
 

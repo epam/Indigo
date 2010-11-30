@@ -53,7 +53,7 @@ void ReactionHighlighting::copy (ReactionHighlighting &rhl, const ObjArray< Arra
 {
    for(int i = 0; i < rhl.getCount(); ++i)
       if (_graphHighlightings[i].numVertices() > 0)
-         _graphHighlightings[i].copy(rhl.getGraphHighlighting(i), mapping[i]);
+         _graphHighlightings[i].copy(rhl.getGraphHighlighting(i), &mapping[i]);
 }
 
 

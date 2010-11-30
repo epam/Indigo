@@ -27,21 +27,22 @@ class Filter;
 class GraphDecomposer
 {
 public:
-   explicit GraphDecomposer (const Graph &graph);
+   DLLEXPORT GraphDecomposer (const Graph &graph);
+   DLLEXPORT ~GraphDecomposer ();
 
    bool need_component_size;
 
    // returns the amount of connected components
-   int decompose (const Filter *filter = NULL, const Filter *edge_filter = NULL);
+   DLLEXPORT int decompose (const Filter *filter = NULL, const Filter *edge_filter = NULL);
 
-   const Array<int> & getDecomposition () const;
+   DLLEXPORT const Array<int> & getDecomposition () const;
 
-   int getComponent       (int vertex) const;
-   int getComponentsCount ()           const;
+   DLLEXPORT int getComponent       (int vertex) const;
+   DLLEXPORT int getComponentsCount ()           const;
 
    // Set need_component_size flag to true if you need this functionality
-   int getComponentVerticesCount (int component) const;
-   int getComponentEdgesCount    (int component) const;
+   DLLEXPORT int getComponentVerticesCount (int component) const;
+   DLLEXPORT int getComponentEdgesCount    (int component) const;
 
    DEF_ERROR("Graph decomposer");
 protected:

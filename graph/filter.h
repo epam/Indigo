@@ -32,22 +32,22 @@ public:
       MORE = 4
    };
 
-   Filter ();
-   Filter (const int *filter, int type, int value);
+   DLLEXPORT Filter ();
+   DLLEXPORT Filter (const int *filter, int type, int value);
 
-   void init (const int *filter, int type, int value);
+   DLLEXPORT void init (const int *filter, int type, int value);
 
-   void initAll (int size);
-   void initNone (int size);
+   DLLEXPORT void initAll (int size);
+   DLLEXPORT void initNone (int size);
 
-   void hide (int idx);
-   void unhide (int idx);
+   DLLEXPORT void hide (int idx);
+   DLLEXPORT void unhide (int idx);
 
-   bool valid (int idx) const;
+   DLLEXPORT bool valid (int idx) const;
 
-   void collectGraphVertices (const Graph &graph, Array<int> &indices) const;
-   void collectGraphEdges (const Graph &graph, Array<int> &indices) const;
-   int  count (const Graph &graph) const;
+   DLLEXPORT void collectGraphVertices (const Graph &graph, Array<int> &indices) const;
+   DLLEXPORT void collectGraphEdges (const Graph &graph, Array<int> &indices) const;
+   DLLEXPORT int  count (const Graph &graph) const;
 
    DEF_ERROR("filter");
 

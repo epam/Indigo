@@ -513,7 +513,7 @@ CEXPORT int indigoDecomposeMolecules (int scaffold, int structures) {
       deco->makeRGroups(scaf);
       return self.addObject(deco.release());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoIterateDecomposedMolecules (int decomp)
@@ -529,7 +529,7 @@ CEXPORT int indigoIterateDecomposedMolecules (int decomp)
 
       return self.addObject(new IndigoDeconvolutionIter(deco.getItems()));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoDecomposedMoleculeScaffold (int decomp) {
@@ -548,7 +548,7 @@ CEXPORT int indigoDecomposedMoleculeScaffold (int decomp) {
 
       return self.addObject(mol_ptr.release());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoDecomposedMoleculeHighlighted (int decomp) {
@@ -567,12 +567,12 @@ CEXPORT int indigoDecomposedMoleculeHighlighted (int decomp) {
       QS_DEF(Array<int>, map);
       mol->mol.clone(elem.item.mol_out, &map, 0);
       mol->highlighting.init(mol->mol);
-      mol->highlighting.copy(elem.item.highlight, map);
+      mol->highlighting.copy(elem.item.highlight, &map);
       mol->copyProperties(elem.item.properties);
 
       return self.addObject(mol.release());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoDecomposedMoleculeSubstituents (int decomp) {
@@ -588,7 +588,7 @@ CEXPORT int indigoDecomposedMoleculeSubstituents (int decomp) {
       QueryMolecule* qmol = &elem.item.rgroup_mol;
       return self.addObject(new IndigoRGroupsIter(qmol));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp) {
@@ -606,5 +606,5 @@ CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp) {
       qmol_ptr->copyProperties(elem.item.properties);
       return self.addObject(qmol_ptr.release());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }

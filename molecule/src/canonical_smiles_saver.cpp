@@ -26,6 +26,9 @@ CanonicalSmilesSaver::CanonicalSmilesSaver (Output &output) : _output(output)
    ignore_invalid_hcount = false;
 }
 
+CanonicalSmilesSaver::~CanonicalSmilesSaver ()
+{
+}
 
 void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
 {

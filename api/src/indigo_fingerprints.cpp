@@ -91,9 +91,8 @@ CEXPORT int indigoFingerprint (int item, const char *type)
       }
       return 1;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
-
 
 void IndigoFingerprint::toString (Array<char> &str)
 {
@@ -170,10 +169,13 @@ CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics)
 {
    INDIGO_BEGIN
    {
+      IndigoObject &obj1 = self.getObject(item1);
+      IndigoObject &obj2 = self.getObject(item2);
+
       if (self.getObject(item1).isBaseMolecule())
       {
-         Molecule &mol1 = self.getObject(item1).getMolecule();
-         Molecule &mol2 = self.getObject(item2).getMolecule();
+         Molecule &mol1 = obj1.getMolecule();
+         Molecule &mol2 = obj2.getMolecule();
 
          MoleculeFingerprintBuilder builder1(mol1, self.fp_params);
          MoleculeFingerprintBuilder builder2(mol2, self.fp_params);
@@ -193,13 +195,15 @@ CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics)
       }
       else if (self.getObject(item1).type == IndigoObject::FINGERPRINT)
       {
-         IndigoFingerprint &fp1 = self.getObject(item1).asFingerprint();
-         IndigoFingerprint &fp2 = self.getObject(item2).asFingerprint();
+         IndigoFingerprint &fp1 = obj1.asFingerprint();
+         IndigoFingerprint &fp2 = obj2.asFingerprint();
 
          return _indigoSimilarity(fp1.bytes, fp2.bytes, metrics);
       }
+      else
+         throw IndigoError("indigoSimilarity(): can not accept %s", obj1.debugInfo());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCountBits (int fingerprint)
@@ -209,7 +213,7 @@ CEXPORT int indigoCountBits (int fingerprint)
       IndigoFingerprint &fp = self.getObject(fingerprint).asFingerprint();
       return bitGetOnesCount(fp.bytes.ptr(), fp.bytes.size());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2)
@@ -224,5 +228,5 @@ CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2)
 
       return bitCommonOnes(fp1.ptr(), fp2.ptr(), fp1.size());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }

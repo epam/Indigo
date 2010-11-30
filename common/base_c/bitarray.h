@@ -21,40 +21,40 @@ extern "C" {
 
 #include "base_c/defs.h"
 
-int   bitGetBit  (const void *bitarray, int bitno);
-void  bitSetBit  (void *bitarray, int bitno, int value);
-void  bitFlipBit (void *bitarray, int bitno);
-int   bitTestEquality (const void *bits1, const void *bits2, int nbits);
-int   bitTestEquality_Array (const void *bits, const void *bitarray, 
+DLLEXPORT int   bitGetBit  (const void *bitarray, int bitno);
+DLLEXPORT void  bitSetBit  (void *bitarray, int bitno, int value);
+DLLEXPORT void  bitFlipBit (void *bitarray, int bitno);
+DLLEXPORT int   bitTestEquality (const void *bits1, const void *bits2, int nbits);
+DLLEXPORT int   bitTestEquality_Array (const void *bits, const void *bitarray, 
                              int array_start, int nbits);
-int   bitTestEqualityByMask (const void *bits1, const void *bits2, 
+DLLEXPORT int   bitTestEqualityByMask (const void *bits1, const void *bits2, 
                              const void *bitMask, int nbits);
 
 // res = a & (b ^ ~c)
-int   bitGetAandBxorNotC (const void *a, const void *b, const void *c, void *res, int nbits);
+DLLEXPORT int   bitGetAandBxorNotC (const void *a, const void *b, const void *c, void *res, int nbits);
 // Get number of ones
-int   bitGetOnesCountByte (byte value);
-int   bitGetOnesCount (const byte *data, int size);
+DLLEXPORT int   bitGetOnesCountByte (byte value);
+DLLEXPORT int   bitGetOnesCount (const byte *data, int size);
 // Get high-order 1-bit in byte
-int   bitGetOneHOIndex  (byte value);
+DLLEXPORT int   bitGetOneHOIndex  (byte value);
 // Get low-order 1-bit in byte
-int   bitGetOneLOIndex  (byte value);
+DLLEXPORT int   bitGetOneLOIndex  (byte value);
 
-int   bitGetSize (int nbits);
+DLLEXPORT int   bitGetSize (int nbits);
 
-int bitTestOnes      (const byte *pattern, const byte *candidate, int n_bytes);
-int bitIdecticalBits (const byte *bit1, const byte *bit2, int n_bytes);
-int bitCommonOnes    (const byte *bit1, const byte *bit2, int n_bytes);
-int bitUniqueOnes    (const byte *bit1, const byte *bit2, int n_bytes);
+DLLEXPORT int bitTestOnes      (const byte *pattern, const byte *candidate, int n_bytes);
+DLLEXPORT int bitIdecticalBits (const byte *bit1, const byte *bit2, int n_bytes);
+DLLEXPORT int bitCommonOnes    (const byte *bit1, const byte *bit2, int n_bytes);
+DLLEXPORT int bitUniqueOnes    (const byte *bit1, const byte *bit2, int n_bytes);
 
-int bitDifferentOnes (const byte *bit1, const byte *bit2, int n_bytes);
-int bitUnionOnes     (const byte *bit1, const byte *bit2, int n_bytes);
+DLLEXPORT int bitDifferentOnes (const byte *bit1, const byte *bit2, int n_bytes);
+DLLEXPORT int bitUnionOnes     (const byte *bit1, const byte *bit2, int n_bytes);
 
-void bitAnd (byte *a, const byte *b, int n_bytes);
-void bitOr (byte *a, const byte *b, int nbytes);
+DLLEXPORT void bitAnd (byte *a, const byte *b, int n_bytes);
+DLLEXPORT void bitOr (byte *a, const byte *b, int nbytes);
 
 // Check whether bit array is zero
-int bitIsAllZero (const void *bits, int nbytes);
+DLLEXPORT int bitIsAllZero (const void *bits, int nbytes);
 
 #ifdef __cplusplus
 }

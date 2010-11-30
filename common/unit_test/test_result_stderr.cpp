@@ -6,7 +6,7 @@
 #include <windows.h>
 #endif
 #include <iostream>
-
+using namespace indigo;
 void TestResultStdErr::appendInfoLine(const char* message) const {
    printf("%s\n", message);
 }

@@ -29,6 +29,10 @@ TL_CP_GET(_component_edges_count)
    _component_edges_count.clear();
 }
 
+GraphDecomposer::~GraphDecomposer ()
+{
+}
+
 int GraphDecomposer::decompose (const Filter *filter, const Filter *edge_filter)
 {
    if (_graph.vertexCount() < 1)

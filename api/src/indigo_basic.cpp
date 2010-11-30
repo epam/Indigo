@@ -29,7 +29,7 @@ CEXPORT int indigoNext (int iter)
       
       return self.addObject(nextobj);
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoHasNext (int iter)
@@ -38,7 +38,7 @@ CEXPORT int indigoHasNext (int iter)
    {
       return self.getObject(iter).hasNext() ? 1 : 0;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT const char * indigoName (int handle)
@@ -47,7 +47,7 @@ CEXPORT const char * indigoName (int handle)
    {
       return self.getObject(handle).getName();
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(0);
 }
 
 CEXPORT int indigoIndex (int handle)
@@ -56,7 +56,7 @@ CEXPORT int indigoIndex (int handle)
    {
       return self.getObject(handle).getIndex();
    }
-   INDIGO_END(-1, -1);
+   INDIGO_END(-1);
 }
 
 
@@ -68,7 +68,7 @@ CEXPORT int indigoClone (int object)
 
       return self.addObject(obj.clone());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoSetName (int handle, const char *name)
@@ -83,9 +83,9 @@ CEXPORT int indigoSetName (int handle, const char *name)
          obj.getBaseReaction().name.readString(name, true);
       else
          throw IndigoError("The object provided is neither a molecule, nor a reaction");
-
+      return 1;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 
@@ -101,7 +101,7 @@ CEXPORT int indigoHasProperty (int handle, const char *prop)
 
       return props->at2(prop) != 0;
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 const char * indigoGetProperty (int handle, const char *prop)
@@ -118,7 +118,7 @@ const char * indigoGetProperty (int handle, const char *prop)
       self.tmp_string.push(0); // just for safety; a zero byte must be already there
       return self.tmp_string.ptr();
    }
-   INDIGO_END(0, 0)
+   INDIGO_END(0)
 }
 
 int indigoSetProperty (int handle, const char *prop, const char *value)
@@ -135,8 +135,9 @@ int indigoSetProperty (int handle, const char *prop, const char *value)
          props->at(prop).readString(value, true);
       else
          props->value(props->insert(prop)).readString(value, true);
+      return 1;
    }
-   INDIGO_END(1, 0)
+   INDIGO_END(-1)
 }
 
 IndigoPropertiesIter::IndigoPropertiesIter (RedBlackStringObjMap< Array<char> > &props) :
@@ -209,108 +210,80 @@ int indigoIterateProperties (int handle)
 
       return self.addObject(new IndigoPropertiesIter(*props));
    }
-   INDIGO_END(1, 0)
+   INDIGO_END(-1)
 }
 
 
-int indigoIgnoreStereochemistryErrors (int enabled)
+void indigoIgnoreStereochemistryErrors (int enabled)
 {
-   INDIGO_BEGIN
-   {
-      self.ignore_stereochemistry_errors = (enabled != 0);
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.ignore_stereochemistry_errors = (enabled != 0);
 }
 
-int indigoTreatXAsPseudoatom (int enabled)
+void indigoTreatXAsPseudoatom (int enabled)
 {
-   INDIGO_BEGIN
-   {
-      self.treat_x_as_pseudoatom = (enabled != 0);
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.treat_x_as_pseudoatom = (enabled != 0);
 }
 
-int indigoDeconvolutionAromatization (int enabled)
+void indigoDeconvolutionAromatization (int enabled)
 {
-   INDIGO_BEGIN
-   {
-      self.deconvolution_aromatization = (enabled != 0);
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.deconvolution_aromatization = (enabled != 0);
 }
 
-int indigoSetMolfileSavingMode (const char *mode)
+void indigoSetMolfileSavingMode (const char *mode)
 {
-   INDIGO_BEGIN
-   {
-      if (strcasecmp(mode, "2000") == 0)
-         self.molfile_saving_mode = MolfileSaver::MODE_2000;
-      else if (strcasecmp(mode, "3000") == 0)
-         self.molfile_saving_mode = MolfileSaver::MODE_3000;
-      else if (strcasecmp(mode, "auto") == 0)
-         self.molfile_saving_mode = MolfileSaver::MODE_AUTO;
-      else
-         throw IndigoError("unknown value: %s", mode);
-   }
-   INDIGO_END(1, 0);
+   TL_GET2(Indigo, self, indigo_self);
+   if (strcasecmp(mode, "2000") == 0)
+      self.molfile_saving_mode = MolfileSaver::MODE_2000;
+   else if (strcasecmp(mode, "3000") == 0)
+      self.molfile_saving_mode = MolfileSaver::MODE_3000;
+   else if (strcasecmp(mode, "auto") == 0)
+      self.molfile_saving_mode = MolfileSaver::MODE_AUTO;
+   else
+      throw IndigoError("unknown value: %s", mode);
 }
 
-int indigoSetFilenameEncoding (const char *encoding)
+void indigoSetFilenameEncoding (const char *encoding)
 {
-   INDIGO_BEGIN
-   {
-      if (strcasecmp(encoding, "ASCII") == 0)
-         self.filename_encoding = ENCODING_ASCII;
-      else if (strcasecmp(encoding, "UTF-8") == 0)
-         self.filename_encoding = ENCODING_UTF8;
-      else
-         throw IndigoError("unknown value: %s", encoding);
-   }
-   INDIGO_END(1, 0);
+   TL_GET2(Indigo, self, indigo_self);
+   if (strcasecmp(encoding, "ASCII") == 0)
+      self.filename_encoding = ENCODING_ASCII;
+   else if (strcasecmp(encoding, "UTF-8") == 0)
+      self.filename_encoding = ENCODING_UTF8;
+   else
+      throw IndigoError("unknown value: %s", encoding);
 }
 
-int indigoSetFPOrdQwords (int qwords)
+void indigoSetFPOrdQwords (int qwords)
 {
-   INDIGO_BEGIN
-   {
-      self.fp_params.ord_qwords = qwords;
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.fp_params.ord_qwords = qwords;
 }
 
-int indigoSetFPSimQwords (int qwords)
+void indigoSetFPSimQwords (int qwords)
 {
-   INDIGO_BEGIN
-   {
-      self.fp_params.sim_qwords = qwords;
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.fp_params.sim_qwords = qwords;
 }
 
-int indigoSetFPTauQwords (int qwords)
+void indigoSetFPTauQwords (int qwords)
 {
-   INDIGO_BEGIN
-   {
-      self.fp_params.tau_qwords = qwords;
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.fp_params.tau_qwords = qwords;
 }
 
-int indigoSetFPAnyQwords (int qwords)
+void indigoSetFPAnyQwords (int qwords)
 {
-   INDIGO_BEGIN
-   {
-      self.fp_params.any_qwords = qwords;
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.fp_params.any_qwords = qwords;
 }
 
 class _IndigoBasicOptionsHandlersSetter
 {
 public:
    _IndigoBasicOptionsHandlersSetter ();
-
 };
 
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()

@@ -102,7 +102,7 @@ public:
 
    int type;
 
-   const char * debugInfo ();
+   DLLEXPORT const char * debugInfo ();
 
    virtual DLLEXPORT void toString (Array<char> &str);
    virtual DLLEXPORT void toBuffer (Array<char> &buf);
@@ -150,12 +150,12 @@ protected:
 class IndigoBaseMolecule : public IndigoObject
 {
 public:
-   explicit IndigoBaseMolecule (int type_);
+   DLLEXPORT explicit IndigoBaseMolecule (int type_);
 
-   virtual ~IndigoBaseMolecule ();
+   DLLEXPORT virtual ~IndigoBaseMolecule ();
 
-   virtual GraphHighlighting * getMoleculeHighlighting ();
-   virtual RedBlackStringObjMap< Array<char> > * getProperties ();
+   DLLEXPORT virtual GraphHighlighting * getMoleculeHighlighting ();
+   DLLEXPORT virtual RedBlackStringObjMap< Array<char> > * getProperties ();
 
    GraphHighlighting highlighting;
 
@@ -165,15 +165,15 @@ public:
 class IndigoMolecule : public IndigoBaseMolecule
 {
 public:
-   IndigoMolecule ();
+   DLLEXPORT IndigoMolecule ();
    
-   virtual ~IndigoMolecule ();
+   DLLEXPORT virtual ~IndigoMolecule ();
 
-   virtual BaseMolecule & getBaseMolecule ();
-   virtual Molecule & getMolecule ();
-   virtual const char * getName ();
+   DLLEXPORT virtual BaseMolecule & getBaseMolecule ();
+   DLLEXPORT virtual Molecule & getMolecule ();
+   DLLEXPORT virtual const char * getName ();
 
-   virtual IndigoObject * clone ();
+   DLLEXPORT virtual IndigoObject * clone ();
 
    Molecule mol;
 };
@@ -181,15 +181,15 @@ public:
 class IndigoQueryMolecule : public IndigoBaseMolecule
 {
 public:
-   IndigoQueryMolecule ();
+   DLLEXPORT IndigoQueryMolecule ();
 
-   virtual ~IndigoQueryMolecule ();
+   DLLEXPORT virtual ~IndigoQueryMolecule ();
 
-   virtual BaseMolecule & getBaseMolecule ();
-   virtual QueryMolecule & getQueryMolecule ();
-   virtual const char * getName ();
+   DLLEXPORT virtual BaseMolecule & getBaseMolecule ();
+   DLLEXPORT virtual QueryMolecule & getQueryMolecule ();
+   DLLEXPORT virtual const char * getName ();
 
-   virtual IndigoObject * clone ();
+   DLLEXPORT virtual IndigoObject * clone ();
 
    QueryMolecule qmol;
 };
@@ -265,14 +265,14 @@ public:
 class IndigoReaction : public IndigoBaseReaction
 {
 public:
-   IndigoReaction ();
-   virtual ~IndigoReaction ();
+   DLLEXPORT IndigoReaction ();
+   DLLEXPORT virtual ~IndigoReaction ();
 
-   virtual BaseReaction & getBaseReaction ();
-   virtual Reaction & getReaction ();
-   virtual const char * getName ();
+   DLLEXPORT virtual BaseReaction & getBaseReaction ();
+   DLLEXPORT virtual Reaction & getReaction ();
+   DLLEXPORT virtual const char * getName ();
 
-   virtual IndigoObject * clone();
+   DLLEXPORT virtual IndigoObject * clone();
 
    Reaction rxn;
 };
@@ -280,14 +280,14 @@ public:
 class IndigoQueryReaction : public IndigoBaseReaction
 {
 public:
-   IndigoQueryReaction ();
-   virtual ~IndigoQueryReaction ();
+   DLLEXPORT IndigoQueryReaction ();
+   DLLEXPORT virtual ~IndigoQueryReaction ();
 
-   virtual BaseReaction & getBaseReaction ();
-   virtual QueryReaction & getQueryReaction ();
-   virtual const char * getName ();
+   DLLEXPORT virtual BaseReaction & getBaseReaction ();
+   DLLEXPORT virtual QueryReaction & getQueryReaction ();
+   DLLEXPORT virtual const char * getName ();
 
-   virtual IndigoObject * clone();
+   DLLEXPORT virtual IndigoObject * clone();
    
    QueryReaction rxn;
 };
@@ -919,10 +919,10 @@ protected:
 
 
 
-#define INDIGO_BEGIN { TL_GET2(Indigo, self, indigo_self); \
+#define INDIGO_BEGIN { Indigo &self = indigoGetInstance(); \
       try { self.error_message.clear();
 
-#define INDIGO_END(success, fail) } \
+#define INDIGO_END(fail) } \
       catch (Exception &ex)         \
       {                             \
           self.error_message.readString(ex.message(), true); \
@@ -930,8 +930,8 @@ protected:
              self.error_handler(ex.message(),                \
                                 self.error_handler_context); \
           return fail;                                       \
-      }                                                      \
-      return success; }                                      
+      } }
+
 
 #define INDIGO_END_CHECKMSG(success, fail) } \
       catch (Exception &ex)         \

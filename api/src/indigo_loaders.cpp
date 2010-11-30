@@ -207,6 +207,7 @@ IndigoObject * IndigoRdfReaction::clone ()
    AutoPtr<IndigoReaction> rxnptr;
    rxnptr.reset(new IndigoReaction());
    rxnptr->rxn.clone(getReaction(), 0, 0);
+   rxnptr->highlighting.init(rxnptr->rxn);
    rxnptr->copyProperties(_properties);
    return rxnptr.release();
 }
@@ -386,6 +387,7 @@ IndigoObject * IndigoSmilesReaction::clone ()
    AutoPtr<IndigoReaction> rxnptr;
    rxnptr.reset(new IndigoReaction());
    rxnptr->rxn.clone(getReaction(), 0, 0);
+   rxnptr->highlighting.init(rxnptr->rxn);
    return rxnptr.release();
 }
 
@@ -463,5 +465,5 @@ CEXPORT const char * indigoRawData (int handler)
       self.tmp_string.push(0);
       return self.tmp_string.ptr();
    }
-   INDIGO_END(0, 0)
+   INDIGO_END(0)
 }

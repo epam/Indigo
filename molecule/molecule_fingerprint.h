@@ -53,7 +53,8 @@ struct MoleculeFingerprintParameters
 class MoleculeFingerprintBuilder
 {
 public:
-   MoleculeFingerprintBuilder (BaseMolecule &mol, const MoleculeFingerprintParameters &parameters);
+   DLLEXPORT MoleculeFingerprintBuilder (BaseMolecule &mol, const MoleculeFingerprintParameters &parameters);
+   DLLEXPORT ~MoleculeFingerprintBuilder ();
 
    bool query;
 
@@ -67,15 +68,15 @@ public:
    bool skip_any_bonds; // don't build 'any bonds' part of the fingerprint
    bool skip_any_atoms_bonds; // don't build 'any atoms, any bonds' part of the fingerprint
 
-   void process ();
+   DLLEXPORT void process ();
 
-   const byte * get ();
-   byte * getSim ();
-   byte * getOrd ();
-   byte * getAny ();
-   byte * getTau ();
+   DLLEXPORT const byte * get ();
+   DLLEXPORT byte * getSim ();
+   DLLEXPORT byte * getOrd ();
+   DLLEXPORT byte * getAny ();
+   DLLEXPORT byte * getTau ();
    
-   int countBits_Sim ();
+   DLLEXPORT int countBits_Sim ();
 
    void (*cb_fragment) (BaseMolecule &mol, const Array<int> &vertices, const Array<int> &edges,
                         bool use_atoms, bool use_bonds, dword hash);

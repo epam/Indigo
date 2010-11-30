@@ -136,7 +136,7 @@ bool MoleculeTautomerMatcher::find ()
          MoleculeTautomerUtils::highlightChains(*_query.get(), *_supermol, _context->chains_2, 0, *highlighting_p);
 
       if (_substructure)
-         highlighting->copy(highlighting_tmp, _target->getInvMapping());
+         highlighting->copy(highlighting_tmp, &_target->getInvMapping());
    }
 
    return found;

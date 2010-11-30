@@ -43,12 +43,13 @@ public:
 
    typedef ObjArray< RedBlackStringMap<int> > FragmentMatchCache;
 
-   MoleculeSubstructureMatcher (BaseMolecule &target);
+   DLLEXPORT MoleculeSubstructureMatcher (BaseMolecule &target);
+   DLLEXPORT ~MoleculeSubstructureMatcher ();
 
-   void setQuery (QueryMolecule &query);
+   DLLEXPORT void setQuery (QueryMolecule &query);
 
    // Set vertex neibourhood counters for effective matching
-   void setNeiCounters (const MoleculeAtomNeighbourhoodCounters *query_counters, 
+   DLLEXPORT void setNeiCounters (const MoleculeAtomNeighbourhoodCounters *query_counters, 
                         const MoleculeAtomNeighbourhoodCounters *target_counters);
 
    bool use_aromaticity_matcher;
@@ -64,14 +65,14 @@ public:
 
    GraphHighlighting *highlighting;
 
-   void ignoreQueryAtom (int idx);
-   void ignoreTargetAtom (int idx);
-   bool fix (int query_atom_idx, int target_atom_idx);
+   DLLEXPORT void ignoreQueryAtom (int idx);
+   DLLEXPORT void ignoreTargetAtom (int idx);
+   DLLEXPORT bool fix (int query_atom_idx, int target_atom_idx);
 
    // for finding the first embedding
-   bool find ();
-   const int * getQueryMapping ();
-   const int * getTargetMapping ();
+   DLLEXPORT bool find ();
+   DLLEXPORT const int * getQueryMapping ();
+   DLLEXPORT const int * getTargetMapping ();
 
    // for finding all embeddings
    bool find_all_embeddings; // false by default
@@ -79,17 +80,17 @@ public:
    void (*cb_embedding) (Graph &sub, Graph &super, const int *core1, const int *core2, void *context);
    void  *cb_embedding_context;
 
-   static bool needCoords (int match_3d, QueryMolecule &query);
+   DLLEXPORT static bool needCoords (int match_3d, QueryMolecule &query);
 
-   static void removeAtom (Graph &subgraph, int sub_idx, AromaticityMatcher *am);
+   DLLEXPORT static void removeAtom (Graph &subgraph, int sub_idx, AromaticityMatcher *am);
 
-   static void addBond (Graph &subgraph, Graph &supergraph,
+   DLLEXPORT static void addBond (Graph &subgraph, Graph &supergraph,
       int sub_idx, int super_idx, AromaticityMatcher *am);
 
-   static void markIgnoredHydrogens (BaseMolecule &mol, int *arr, int value_keep, int value_ignore);
-   static void markIgnoredQueryHydrogens (QueryMolecule &mol, int *arr, int value_keep, int value_ignore);
+   DLLEXPORT static void markIgnoredHydrogens (BaseMolecule &mol, int *arr, int value_keep, int value_ignore);
+   DLLEXPORT static void markIgnoredQueryHydrogens (QueryMolecule &mol, int *arr, int value_keep, int value_ignore);
 
-   static void getAtomPos (Graph &graph, int vertex_idx, Vec3f &pos);
+   DLLEXPORT static void getAtomPos (Graph &graph, int vertex_idx, Vec3f &pos);
 
    // Flags for matchQueryAtom and matchQueryBond (by default all flags should be set)
    enum
@@ -117,13 +118,13 @@ public:
       MATCH_DISABLED_AS_TRUE = 0x1000, 
    };
 
-   static bool matchQueryAtom (QueryMolecule::Atom *query, BaseMolecule &target,
+   DLLEXPORT static bool matchQueryAtom (QueryMolecule::Atom *query, BaseMolecule &target,
                   int super_idx, FragmentMatchCache *fmcache, dword flags);
 
-   static bool matchQueryBond (QueryMolecule::Bond *query,
+   DLLEXPORT static bool matchQueryBond (QueryMolecule::Bond *query,
              BaseMolecule &target, int sub_idx, int super_idx, AromaticityMatcher *am, dword flags);
 
-   static void makeTransposition (BaseMolecule &mol, Array<int> &transposition);
+   DLLEXPORT static void makeTransposition (BaseMolecule &mol, Array<int> &transposition);
 
    DEF_ERROR("molecule substructure matcher");
 

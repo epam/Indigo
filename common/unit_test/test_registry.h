@@ -4,7 +4,8 @@
 
 
 #include "base_cpp/ptr_array.h"
-
+namespace indigo
+{
 
 class Test;
 class TestResult;
@@ -20,7 +21,7 @@ public:
 private:
     PtrArray<Test> _tests;
 };
-
+}
 
 
 #endif

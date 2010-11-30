@@ -45,7 +45,7 @@ CEXPORT int indigoExactMatch (int handler1, int handler2)
             return 0;
       }
 
-      return 1;
+      throw IndigoError("indigoExactMatch(): %s is neither a molecule nor a reaction", obj1.debugInfo());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }

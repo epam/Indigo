@@ -39,8 +39,9 @@ CEXPORT int indigoAromatize (int object)
          obj.getBaseReaction().aromatize();
       else
          throw IndigoError("Only molecules and reactions can be aromatized");
+      return 1;
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoDearomatize (int object)
@@ -49,75 +50,51 @@ CEXPORT int indigoDearomatize (int object)
    {
       IndigoObject &obj = self.getObject(object);
 
-      if (obj.isBaseMolecule()) {
+      if (obj.isBaseMolecule())
          obj.getBaseMolecule().dearomatize();
-      } else if (obj.isBaseReaction()) {
+      else if (obj.isBaseReaction())
          obj.getBaseReaction().dearomatize();
-      } else {
+      else
          throw IndigoError("Only molecules and reactions can be dearomatized");
-      }      
+      return 1;
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetOption (const char *name, const char *value)
-{
-   INDIGO_BEGIN
-   {
-      if (indigoGetOptionManager().callOptionHandler(name, value) == 0)
-         throw IndigoError("Can't set property %s", name);
-   }
-   INDIGO_END(0, -1)
-}
+#define INDIGO_SET_OPTION(SUFFIX, TYPE)                                  \
+  CEXPORT int indigoSetOption##SUFFIX (const char *name, TYPE value)     \
+  {                                                                      \
+     INDIGO_BEGIN                                                        \
+     {                                                                   \
+        indigoGetOptionManager().callOptionHandler##SUFFIX(name, value); \
+        return 1;                                                        \
+     }                                                                   \
+     INDIGO_END(-1)                                                      \
+  }
 
-CEXPORT int indigoSetOptionInt (const char *name, int value)
-{
-   INDIGO_BEGIN
-   {
-      if (indigoGetOptionManager().callOptionHandlerInt(name, value) == 0)
-         throw IndigoError("Can't set property %s", name);
-   }
-   INDIGO_END(0, -1)
-}
+INDIGO_SET_OPTION(, const char *)
+INDIGO_SET_OPTION(Int, int)
+INDIGO_SET_OPTION(Bool, int)
+INDIGO_SET_OPTION(Float, float)
 
-CEXPORT int indigoSetOptionBool (const char *name, int value)
-{
-   INDIGO_BEGIN
-   {
-      if (indigoGetOptionManager().callOptionHandlerBool(name, value) == 0)
-         throw IndigoError("Can't set property %s", name);
-   }
-   INDIGO_END(0, -1)
-}
-
-CEXPORT int indigoSetOptionFloat (const char *name, float value)
-{
-   INDIGO_BEGIN
-   {
-      if (indigoGetOptionManager().callOptionHandlerFloat(name, value) == 0)
-         throw IndigoError("Can't set property %s", name);
-   }
-   INDIGO_END(0, -1)
-}
 CEXPORT int indigoSetOptionColor (const char *name, float r, float g, float b)
 {
    INDIGO_BEGIN
    {
-      if (indigoGetOptionManager().callOptionHandlerColor(name, r, g, b) == 0)
-         throw IndigoError("Can't set property %s", name);
+      indigoGetOptionManager().callOptionHandlerColor(name, r, g, b);
+      return 1;
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 CEXPORT int indigoSetOptionXY (const char *name, int x, int y)
 {
    INDIGO_BEGIN
    {
-      if (indigoGetOptionManager().callOptionHandlerXY(name, x, y) == 0)
-         throw IndigoError("Can't set property %s", name);
+      indigoGetOptionManager().callOptionHandlerXY(name, x, y);
+      return 1;
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
-
 
 CEXPORT const char * indigoCheckBadValence (int handle)
 {
@@ -179,7 +156,7 @@ CEXPORT const char * indigoCheckBadValence (int handle)
       
       return "";
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(0);
 }
 
 void _indigoCheckAmbiguousH (Molecule &mol)
@@ -248,7 +225,7 @@ CEXPORT const char * indigoCheckAmbiguousH (int handle)
 
       return "";
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(0);
 }
 
 CEXPORT int indigoCisTransClear (int object)
@@ -269,8 +246,9 @@ CEXPORT int indigoCisTransClear (int object)
       }
       else
          throw IndigoError("only molecules and reactions have cis-trans");
+      return 1;
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoStereocentersClear (int object)
@@ -291,8 +269,9 @@ CEXPORT int indigoStereocentersClear (int object)
       }
       else
          throw IndigoError("only molecules and reactions have stereocenters");
+      return 1;
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT const char * indigoSmiles (int item)
@@ -332,7 +311,7 @@ CEXPORT const char * indigoSmiles (int item)
       self.tmp_string.push(0);
       return self.tmp_string.ptr();
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(0);
 }
 
 CEXPORT int indigoSaveMDLCT (int item, int output)
@@ -381,6 +360,7 @@ CEXPORT int indigoSaveMDLCT (int item, int output)
          out2.writeChar(line.size());
          out2.writeArray(line);
       }
+      return 1;
    }
-   INDIGO_END(1, -1)
+   INDIGO_END(-1)
 }

@@ -35,10 +35,11 @@ class SmilesSaver
 public:
    DEF_ERROR("SMILES saver");
 
-   SmilesSaver (Output &output);
+   DLLEXPORT SmilesSaver (Output &output);
+   DLLEXPORT ~SmilesSaver ();
 
-   void saveMolecule (Molecule &mol);
-   void saveQueryMolecule (QueryMolecule &mol);
+   DLLEXPORT void saveMolecule (Molecule &mol);
+   DLLEXPORT void saveQueryMolecule (QueryMolecule &mol);
 
    int *vertex_ranks;
    const int *atom_atom_mapping;
@@ -50,10 +51,10 @@ public:
    bool write_extra_info;
 
    int writtenComponents ();
-   const Array<int> & writtenAtoms ();
-   const Array<int> & writtenBonds ();
+   DLLEXPORT const Array<int> & writtenAtoms ();
+   DLLEXPORT const Array<int> & writtenBonds ();
 
-   static void writePseudoAtom (const char *label, Output &out);
+   DLLEXPORT static void writePseudoAtom (const char *label, Output &out);
 
    bool smarts_mode;
    bool ignore_invalid_hcount;

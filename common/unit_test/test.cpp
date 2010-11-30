@@ -6,6 +6,7 @@
 #include "test_failure.h"
 #include "base_cpp/output.h"
 
+using namespace indigo;
 
 Test::Test (const char * testName, 
             const char * filename, int linenumber)

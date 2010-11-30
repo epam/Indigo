@@ -43,7 +43,6 @@ bool AuxPathFinder::find (Array<int>& vertices, Array<int>& edges, int u, int v)
       const Vertex& vert = _graph.getVertexAndBuild(w);
       for (int i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
       {
-         int e = vert.neiEdge(i);
          int n = vert.neiVertex(i);
          if (_prev[n] >= 0)
             continue; // vertex is already done

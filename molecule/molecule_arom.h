@@ -83,12 +83,12 @@ class MoleculeAromatizer : public AromatizerBase
 {
 public:
    // Interface function for aromatization
-   static void aromatizeBonds (Molecule &mol);
+   DLLEXPORT static void aromatizeBonds (Molecule &mol);
 
-   explicit MoleculeAromatizer (Molecule &molecule);
-   void precalculatePiLabels ();
+   DLLEXPORT MoleculeAromatizer (Molecule &molecule);
+   DLLEXPORT void precalculatePiLabels ();
 
-   static void findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds);
+   DLLEXPORT static void findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds);
 
 protected:
    virtual bool _checkVertex      (int v_idx);

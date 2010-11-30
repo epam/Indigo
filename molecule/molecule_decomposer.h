@@ -24,10 +24,10 @@ class BaseMolecule;
 class MoleculeDecomposer : public GraphDecomposer
 {
 public:
-   explicit MoleculeDecomposer (BaseMolecule &mol);
-   virtual ~MoleculeDecomposer ();
+   DLLEXPORT MoleculeDecomposer (BaseMolecule &mol);
+   DLLEXPORT virtual ~MoleculeDecomposer ();
 
-   void buildComponentMolecule (int ncomp, BaseMolecule &comp_mol,
+   DLLEXPORT void buildComponentMolecule (int ncomp, BaseMolecule &comp_mol,
       Array<int> *mapping_out = 0, Array<int> *inv_mapping = 0);
 
 protected:

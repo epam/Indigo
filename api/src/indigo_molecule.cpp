@@ -260,7 +260,7 @@ CEXPORT int indigoIterateBonds (int molecule)
 
       return self.addObject(newiter.release());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 
@@ -283,7 +283,7 @@ CEXPORT int indigoLoadMolecule (int source)
       loader.loadMolecule(mol);
       return self.addObject(molptr.release());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoLoadQueryMolecule (int source)
@@ -304,7 +304,7 @@ CEXPORT int indigoLoadQueryMolecule (int source)
       loader.loadQueryMolecule(qmol);
       return self.addObject(molptr.release());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoLoadSmarts (int source)
@@ -321,7 +321,7 @@ CEXPORT int indigoLoadSmarts (int source)
       loader.loadSMARTS(qmol);
       return self.addObject(molptr.release());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoSaveMolfile (int molecule, int output)
@@ -340,8 +340,9 @@ CEXPORT int indigoSaveMolfile (int molecule, int output)
       else
          saver.saveMolecule(mol.asMolecule());
       out.flush();
+      return 1;
    }
-   INDIGO_END(1, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoSaveCml (int molecule, int output)
@@ -354,8 +355,9 @@ CEXPORT int indigoSaveCml (int molecule, int output)
       MoleculeCmlSaver saver(out);
       saver.saveMolecule(mol);
       out.flush();
+      return 1;
    }
-   INDIGO_END(1, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoSdfAppend (int output, int molecule)
@@ -384,8 +386,9 @@ CEXPORT int indigoSdfAppend (int output, int molecule)
 
       out.printfCR("$$$$");
       out.flush();
+      return 1;
    }
-   INDIGO_END(1, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoSmilesAppend (int output, int molecule)
@@ -402,8 +405,9 @@ CEXPORT int indigoSmilesAppend (int output, int molecule)
          saver.saveMolecule(mol.asMolecule());
       out.writeCR();
       out.flush();
+      return 1;
    }
-   INDIGO_END(1, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoGrossFormula (int molecule)
@@ -416,7 +420,7 @@ CEXPORT int indigoGrossFormula (int molecule)
       GrossFormula::collect(mol, grossptr->gross);
       return self.addObject(grossptr.release());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT float indigoMolecularWeight (int molecule)
@@ -428,7 +432,7 @@ CEXPORT float indigoMolecularWeight (int molecule)
       MoleculeMass mass;
       return mass.molecularWeight(mol);
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT float indigoMostAbundantMass (int molecule)
@@ -440,7 +444,7 @@ CEXPORT float indigoMostAbundantMass (int molecule)
       MoleculeMass mass;
       return mass.mostAbundantMass(mol);
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT float indigoMonoisotopicMass (int molecule)
@@ -452,7 +456,7 @@ CEXPORT float indigoMonoisotopicMass (int molecule)
       MoleculeMass mass;
       return mass.monoisotopicMass(mol);
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 int _indigoIterateAtoms (Indigo &self, int molecule, int type)
@@ -470,7 +474,7 @@ CEXPORT int indigoIterateAtoms (int molecule)
    {
       return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::ALL);
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCountAtoms (int molecule)
@@ -481,7 +485,7 @@ CEXPORT int indigoCountAtoms (int molecule)
       
       return mol.vertexCount();
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCountBonds (int molecule)
@@ -492,7 +496,7 @@ CEXPORT int indigoCountBonds (int molecule)
 
       return mol.edgeCount();
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCountPseudoatoms (int molecule)
@@ -508,7 +512,7 @@ CEXPORT int indigoCountPseudoatoms (int molecule)
 
       return res;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCountRSites (int molecule)
@@ -524,7 +528,7 @@ CEXPORT int indigoCountRSites (int molecule)
 
       return res;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoIteratePseudoatoms (int molecule)
@@ -533,7 +537,7 @@ CEXPORT int indigoIteratePseudoatoms (int molecule)
    {
       return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::PSEUDO);
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateRSites (int molecule)
@@ -542,7 +546,7 @@ CEXPORT int indigoIterateRSites (int molecule)
    {
       return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::RSITE);
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT const char * indigoPseudoatomLabel (int atomm)
@@ -556,7 +560,7 @@ CEXPORT const char * indigoPseudoatomLabel (int atomm)
 
       return atom.mol->getPseudoAtom(atom.idx);
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(0);
 }
 
 CEXPORT int indigoIsPseudoatom (int atomm)
@@ -567,8 +571,9 @@ CEXPORT int indigoIsPseudoatom (int atomm)
 
       if (atom.mol->isPseudoAtom(atom.idx))
          return 1;
+      return 0;
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoIsRSite (int atomm)
@@ -579,8 +584,9 @@ CEXPORT int indigoIsRSite (int atomm)
 
       if (atom.mol->isRSite(atom.idx))
          return 1;
+      return 0;
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoSingleAllowedRGroup (int atomm)
@@ -591,7 +597,7 @@ CEXPORT int indigoSingleAllowedRGroup (int atomm)
 
       return atom.mol->getSingleAllowedRGroup(atom.idx);
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(-1);
 }
 
 
@@ -638,7 +644,7 @@ CEXPORT int indigoIterateRGroups (int molecule)
 
       throw IndigoError("%s can not have r-groups", obj.debugInfo());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 IndigoRGroupFragment::IndigoRGroupFragment (IndigoRGroup &rgp, int idx) : IndigoObject(RGROUP_FRAGMENT)
@@ -713,7 +719,7 @@ CEXPORT int indigoIterateRGroupFragments (int rgroup)
       AutoPtr<IndigoRGroupFragmentsIter> newiter(new IndigoRGroupFragmentsIter(rgp));
       return self.addObject(newiter.release());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 bool IndigoRGroupsIter::hasNext ()
@@ -743,7 +749,7 @@ CEXPORT int indigoCountAttachmentPoints (int rgroupp)
       return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[0]->
                getRGroupFragment().attachmentPointCount();
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoDegree (int atomm)
@@ -754,7 +760,7 @@ CEXPORT int indigoDegree (int atomm)
 
       return atom.mol->getVertex(atom.idx).degree();
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoGetCharge (int atomm, int *charge)
@@ -771,7 +777,7 @@ CEXPORT int indigoGetCharge (int atomm, int *charge)
       *charge = ch;
       return 1;
    }
-   INDIGO_END(1, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoGetExplicitValence (int atomm, int *valence)
@@ -788,7 +794,7 @@ CEXPORT int indigoGetExplicitValence (int atomm, int *valence)
       *valence = val;
       return 1;
    }
-   INDIGO_END(1, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoAtomIsotope (int atomm)
@@ -799,7 +805,7 @@ CEXPORT int indigoAtomIsotope (int atomm)
       int iso = atom.mol->getAtomIsotope(atom.idx);
       return iso == -1 ? 0 : iso;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoAtomNumber (int atomm)
@@ -816,7 +822,7 @@ CEXPORT int indigoAtomNumber (int atomm)
       int num = atom.mol->getAtomNumber(atom.idx);
       return num == -1 ? 0 : num;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoGetRadicalElectrons (int atomm, int *electrons)
@@ -835,7 +841,7 @@ CEXPORT int indigoGetRadicalElectrons (int atomm, int *electrons)
       *electrons = Element::radicalElectrons(rad);
       return 1;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT const char * indigoCanonicalSmiles (int molecule)
@@ -851,7 +857,7 @@ CEXPORT const char * indigoCanonicalSmiles (int molecule)
       self.tmp_string.push(0);
       return self.tmp_string.ptr();
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(0);
 }
 
 CEXPORT const char * indigoLayeredCode (int molecule)
@@ -868,7 +874,7 @@ CEXPORT const char * indigoLayeredCode (int molecule)
       self.tmp_string.push(0);
       return self.tmp_string.ptr();
    }
-   INDIGO_END(0, 0);
+   INDIGO_END(0);
 }
 
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices)
@@ -896,7 +902,7 @@ CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices)
          return self.addObject(molptr.release());
       }
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices,
@@ -927,7 +933,7 @@ CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *verti
          return self.addObject(molptr.release());
       }
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 IndigoObject * IndigoMolecule::clone ()
@@ -982,7 +988,7 @@ CEXPORT int indigoMatchSubstructure (int query, int target)
 
       return self.addObject(mptr.release());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoMatchHighlight (int match)
@@ -1021,7 +1027,7 @@ CEXPORT int indigoMatchHighlight (int match)
 
       return self.addObject(mol.release());
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 static void _matchCountEmbeddingsCallback (Graph &sub, Graph &super, 
@@ -1053,7 +1059,7 @@ CEXPORT int indigoCountSubstructureMatches (int query, int target)
       matcher.find();
       return embeddings_count;
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoCountComponents (int molecule)
@@ -1068,7 +1074,7 @@ CEXPORT int indigoCountComponents (int molecule)
       
       return decomposer.getComponentsCount();
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoCountStereocenters (int molecule)
@@ -1079,7 +1085,7 @@ CEXPORT int indigoCountStereocenters (int molecule)
 
       return mol.stereocenters.size();
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoBondOrder (int bondd)
@@ -1091,7 +1097,7 @@ CEXPORT int indigoBondOrder (int bondd)
       int num = bond.mol->getBondOrder(bond.idx);
       return num == -1 ? 0 : num;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoBondStereo (int bondd)
@@ -1116,8 +1122,9 @@ CEXPORT int indigoBondStereo (int bondd)
          return INDIGO_CIS;
       if (parity == MoleculeCisTrans::TRANS)
          return INDIGO_TRANS;
+      return 0;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoGetAtom (int molecule, int idx)
@@ -1128,7 +1135,7 @@ CEXPORT int indigoGetAtom (int molecule, int idx)
 
       return self.addObject(new IndigoAtom(mol, idx));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoGetBond (int molecule, int idx)
@@ -1139,7 +1146,7 @@ CEXPORT int indigoGetBond (int molecule, int idx)
 
       return self.addObject(new IndigoBond(mol, idx));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 IndigoAtomNeighbor::IndigoAtomNeighbor (BaseMolecule &mol_, int atom_idx, int bond_idx_) :
@@ -1202,7 +1209,7 @@ CEXPORT int indigoIterateNeighbors (int atomm)
       
       return self.addObject(new IndigoAtomNeighborsIter(atom.mol, atom.idx));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoBond (int nei)
@@ -1218,5 +1225,5 @@ CEXPORT int indigoBond (int nei)
 
       return self.addObject(new IndigoBond(*atomnei.mol, atomnei.bond_idx));
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }

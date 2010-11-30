@@ -133,7 +133,11 @@ bool MoleculeAutoLoader::tryMDLCT (Scanner &scanner, Array<char> &outbuf)
       outbuf.push('\n');
    }
    scanner.seek(pos, SEEK_SET);
-   return true;
+   // It happened once that a valid Molfile had successfully
+   // made its way through the above while() cycle, and thus
+   // falsely recognized as MDLCT. To fight this case, we include
+   // here a check that the last line was actually an endmark
+   return endmark;
 }
 
 void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)

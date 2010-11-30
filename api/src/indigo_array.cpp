@@ -140,7 +140,7 @@ CEXPORT int indigoCreateArray ()
    {
       return self.addObject(new IndigoArray());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoArrayAdd (int arr, int handle)
@@ -155,7 +155,7 @@ CEXPORT int indigoArrayAdd (int arr, int handle)
 
       return res;
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoArrayCount (int arr)
@@ -166,7 +166,7 @@ CEXPORT int indigoArrayCount (int arr)
 
       return array.objects.size();
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoArrayClear (int arr)
@@ -176,8 +176,9 @@ CEXPORT int indigoArrayClear (int arr)
       IndigoArray &array = self.getObject(arr).asArray();
 
       array.objects.clear();
+      return 1;
    }
-   INDIGO_END(1, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoArrayAt (int arr, int index)
@@ -190,7 +191,7 @@ CEXPORT int indigoArrayAt (int arr, int index)
 
       return self.addObject(res.release());
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateArray (int arr)
@@ -201,5 +202,5 @@ CEXPORT int indigoIterateArray (int arr)
 
       return self.addObject(new IndigoArrayIter(array));
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }

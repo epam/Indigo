@@ -100,8 +100,9 @@ CEXPORT int indigoFree (int handle)
    INDIGO_BEGIN
    {
       self.removeObject(handle);
+      return 1;
    }
-   INDIGO_END(1, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoCountReferences (void)
@@ -110,7 +111,7 @@ CEXPORT int indigoCountReferences (void)
    {
       return self.countObjects();
    }
-   INDIGO_END(0, -1);
+   INDIGO_END(-1);
 }
 
 CEXPORT void indigoSetErrorMessage (const char *message)

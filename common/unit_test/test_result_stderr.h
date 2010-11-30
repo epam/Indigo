@@ -2,7 +2,8 @@
 #define TESTRESULTSTDERR_H
 
 #include "test_result.h"
-
+namespace indigo
+{
 class TestResultStdErr : public TestResult {
    enum {
       TEST_WIN_RED = 4,
@@ -22,7 +23,7 @@ public:
    
    virtual void endTests();
 };
-
+}
 
 #endif
 

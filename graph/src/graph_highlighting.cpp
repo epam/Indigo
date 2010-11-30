@@ -45,7 +45,7 @@ void GraphHighlighting::clear ()
    _n_edges = 0;
 }
 
-void GraphHighlighting::copy (const GraphHighlighting &other, const Array<int> &mapping)
+void GraphHighlighting::copy (const GraphHighlighting &other, const Array<int> *mapping)
 {
    if (other._graph == 0 || _graph == 0)
       throw Error("no graph");
@@ -54,14 +54,17 @@ void GraphHighlighting::copy (const GraphHighlighting &other, const Array<int> &
 
    for (i = other._graph->vertexBegin(); i != other._graph->vertexEnd(); i = other._graph->vertexNext(i))
       if (other.hasVertex(i))
-         onVertex(mapping[i]);
+         onVertex(mapping == 0 ? i : mapping->at(i));
 
    for (i = other._graph->edgeBegin(); i != other._graph->edgeEnd(); i = other._graph->edgeNext(i))
       if (other.hasEdge(i))
       {
          const Edge &edge = other._graph->getEdge(i);
 
-         onEdge(_graph->findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
+         if (mapping == 0)
+            onEdge(_graph->findEdgeIndex(edge.beg, edge.end));
+         else
+            onEdge(_graph->findEdgeIndex(mapping->at(edge.beg), mapping->at(edge.end)));
       }
 }
 

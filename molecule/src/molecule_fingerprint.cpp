@@ -50,6 +50,10 @@ TL_CP_GET(_total_fingerprint)
    skip_any_atoms_bonds = false;
 }
 
+MoleculeFingerprintBuilder::~MoleculeFingerprintBuilder ()
+{
+}
+
 void MoleculeFingerprintBuilder::process ()
 {
    _total_fingerprint.zerofill();

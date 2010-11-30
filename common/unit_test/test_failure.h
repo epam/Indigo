@@ -2,7 +2,8 @@
 #ifndef TEST_FAILURE_H
 #define TEST_FAILURE_H
 #include "base_cpp/array.h"
-
+namespace indigo
+{
 class Failure
 {
 public:
@@ -28,6 +29,6 @@ private:
     int _lineNumber;
 };
 
-
+}
 #endif
 

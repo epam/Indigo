@@ -47,6 +47,10 @@ TL_CP_GET(_written_bonds)
    ignore_invalid_hcount = false;
 }
 
+SmilesSaver::~SmilesSaver ()
+{
+}
+
 void SmilesSaver::saveMolecule (Molecule &mol)
 {
    _bmol = &mol;
@@ -119,7 +123,7 @@ void SmilesSaver::_saveMolecule ()
          if (_hcount[i] < 0)
          {
             if (!ignore_invalid_hcount)
-               throw Error("unexpected: _hcount < 0");
+               throw Error("unexpected: _hcount < 0 on atom #%d", i);
          }
          else for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
          {

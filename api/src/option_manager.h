@@ -41,12 +41,12 @@ using namespace indigo;
 
 class OptionManager {
 public:
-   typedef int (*optf_string_t) (const char* value);
-   typedef int (*optf_int_t) (int value);
-   typedef int (*optf_bool_t) (int value);
-   typedef int (*optf_float_t) (float value);
-   typedef int (*optf_color_t) (float r, float g, float b);
-   typedef int (*optf_xy_t) (int x, int y);
+   typedef void (*optf_string_t) (const char* value);
+   typedef void (*optf_int_t) (int value);
+   typedef void (*optf_bool_t) (int value);
+   typedef void (*optf_float_t) (float value);
+   typedef void (*optf_color_t) (float r, float g, float b);
+   typedef void (*optf_xy_t) (int x, int y);
    OptionManager ();
 
    DEF_ERROR("option manager");
@@ -60,12 +60,12 @@ public:
 
    bool hasOptionHandler (const char* name);
 
-   int callOptionHandlerInt (const char* name, int value);
-   int callOptionHandlerBool (const char* name, int value);
-   int callOptionHandlerFloat (const char* name, float value);
-   int callOptionHandlerColor (const char* name, float r, float g, float b);
-   int callOptionHandlerXY (const char* name, int x, int y);
-   int callOptionHandler (const char* name, const char* value);
+   void callOptionHandlerInt (const char* name, int value);
+   void callOptionHandlerBool (const char* name, int value);
+   void callOptionHandlerFloat (const char* name, float value);
+   void callOptionHandlerColor (const char* name, float r, float g, float b);
+   void callOptionHandlerXY (const char* name, int x, int y);
+   void callOptionHandler (const char* name, const char* value);
    int nOptions () const;
 
    OsLock lock;

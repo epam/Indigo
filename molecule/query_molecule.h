@@ -180,24 +180,24 @@ public:
    class Bond : public Node
    {
    public:
-      Bond ();
-      Bond (int type_, int value_);
-      virtual ~Bond ();
+      DLLEXPORT Bond ();
+      DLLEXPORT Bond (int type_, int value_);
+      DLLEXPORT virtual ~Bond ();
 
       int value;
 
-      Bond * clone ();
+      DLLEXPORT Bond * clone ();
 
-      Bond * child (int idx);
+      DLLEXPORT Bond * child (int idx);
 
       // "und" means "and" in German. "and" is a C++ keyword.
-      static Bond * und (Bond *node1, Bond *node2);
+      DLLEXPORT static Bond * und (Bond *node1, Bond *node2);
 
       // "oder" means "or" in German. "or" is a C++ keyword.
-      static Bond * oder (Bond *node1, Bond *node2);
+      DLLEXPORT static Bond * oder (Bond *node1, Bond *node2);
 
       // "nicht" means "not" in German. "not" is a C++ keyword.
-      static Bond * nicht (Bond *node);
+      DLLEXPORT static Bond * nicht (Bond *node);
 
    protected:
       virtual Node * _neu ();

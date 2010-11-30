@@ -1,7 +1,7 @@
 #include "test_registry.h"
 #include "test.h"
 #include "test_result.h"
-
+using namespace indigo;
 TestRegistry::TestRegistry() {
 }
 

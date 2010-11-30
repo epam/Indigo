@@ -86,6 +86,9 @@ TL_CP_GET(_used_target_h)
    // 3d features, hydrogen isotopes, etc.
 }
 
+MoleculeSubstructureMatcher::~MoleculeSubstructureMatcher ()
+{
+}
 bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom)
 {
    if (atom->type == QueryMolecule::ATOM_FRAGMENT)

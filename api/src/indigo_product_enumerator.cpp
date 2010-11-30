@@ -117,57 +117,42 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
 
       return out_array;
    }
-   INDIGO_END(0, -1)
+   INDIGO_END(-1)
 }
 
-int indigoProductEnumeratorSetMultistepReactionFlag (int is_multistep_reactions)
+void indigoProductEnumeratorSetMultistepReactionFlag (int is_multistep_reactions)
 {
-   INDIGO_BEGIN
-   {
-      self.rpe_params.is_multistep_reactions = (is_multistep_reactions != 0);
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.rpe_params.is_multistep_reactions = (is_multistep_reactions != 0);
 }
 
-int indigoProductEnumeratorSetOneTubeMode (const char *mode_string)
+void indigoProductEnumeratorSetOneTubeMode (const char *mode_string)
 {
-   INDIGO_BEGIN
-   {
-      if (strcmp(mode_string, "one-tube") == 0)
-         self.rpe_params.is_one_tube = true;
-      else if (strcmp(mode_string, "grid") == 0)
-         self.rpe_params.is_one_tube = false;
-      else
-         throw IndigoError("%s is bad reaction product enumerator mode string", mode_string);
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   if (strcmp(mode_string, "one-tube") == 0)
+      self.rpe_params.is_one_tube = true;
+   else if (strcmp(mode_string, "grid") == 0)
+      self.rpe_params.is_one_tube = false;
+   else
+      throw IndigoError("%s is bad reaction product enumerator mode string", mode_string);
 }
 
-int indigoProductEnumeratorSetSelfReactionFlag (int is_self_react)
+void indigoProductEnumeratorSetSelfReactionFlag (int is_self_react)
 {
-   INDIGO_BEGIN
-   {
-      self.rpe_params.is_self_react = (is_self_react != 0);
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.rpe_params.is_self_react = (is_self_react != 0);
 }
 
-int indigoProductEnumeratorSetMaximumSearchDepth (int max_depth)
+void indigoProductEnumeratorSetMaximumSearchDepth (int max_depth)
 {
-   INDIGO_BEGIN
-   {
-      self.rpe_params.max_deep_level = max_depth;
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.rpe_params.max_deep_level = max_depth;
 }
 
-int indigoProductEnumeratorSetMaximumProductsCount (int max_pr_cnt)
+void indigoProductEnumeratorSetMaximumProductsCount (int max_pr_cnt)
 {
-   INDIGO_BEGIN
-   {
-      self.rpe_params.max_product_count = max_pr_cnt;
-   }
-   INDIGO_END(1, 0)
+   TL_GET2(Indigo, self, indigo_self);
+   self.rpe_params.max_product_count = max_pr_cnt;
 }
 
 

@@ -85,7 +85,6 @@ void MoleculeStereocenters::buildFrom3dCoordinates ( void )
 
    for (i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
    {
-      const Vertex &v = bmol.getVertex(i);
       Vec3f &v_pos = bmol.getAtomXyz(i);
 
       if (!_isPossibleStereocenter(i))
@@ -164,8 +163,6 @@ bool MoleculeStereocenters::_isPossibleStereocenter (int atom_idx,
 
    int sure_double_bonds = 0;
    int possible_double_bonds = 0;
-
-   int n_pure_hydrogens = 0;
 
    if (vertex.degree() > 4)
       return 0;
