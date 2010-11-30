@@ -69,6 +69,7 @@ void OptionManager::callOptionHandler (const char* name, const char* value) {
    {
    case OPTION_STRING:
       hMapString.at(name)(value);
+      break;
    case OPTION_INT:
       if (_parseInt(value, x) < 0)
          throw Error("Cannot recognize \"%s\" as an integer value", value);
