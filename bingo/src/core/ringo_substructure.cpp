@@ -94,9 +94,10 @@ void RingoSubstructure::_validateQueryData ()
    ReactionFingerprintBuilder builder(_query_reaction, _context.fp_parameters);
    
    builder.query = true;
+   builder.skip_sim = true;
    builder.process();
    
-   _query_fp.copy(builder.getFingerprint(), _context.fp_parameters.fingerprintSizeExtOrd() * 2);
+   _query_fp.copy(builder.get(), _context.fp_parameters.fingerprintSizeExtOrd() * 2);
    
    _query_data_valid = true;
 }

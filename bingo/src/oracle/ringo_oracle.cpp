@@ -60,7 +60,7 @@ RingoOracleContext & RingoOracleContext::get (OracleEnv &env, int id, bool lock)
 
    if (config_reloaded)
    {
-      roc->fingerprints.init(context, context.fp_parameters.fingerprintSizeExtOrd() * 2);
+      roc->fingerprints.init(context, context.fp_parameters.fingerprintSizeExtOrdSim() * 2);
 
       roc->ringoAAM.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
       roc->substructure.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;

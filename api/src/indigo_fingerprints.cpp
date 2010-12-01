@@ -2,6 +2,7 @@
 #include "molecule/molecule_fingerprint.h"
 #include "base_cpp/output.h"
 #include "base_c/bitarray.h"
+#include "reaction/reaction_fingerprint.h"
 
 IndigoFingerprint::IndigoFingerprint () : IndigoObject(FINGERPRINT)
 {
@@ -67,6 +68,30 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       throw IndigoError("unknown molecule fingerprint type: %s", type);
 }
 
+void _indigoParseReactionFingerprintType (ReactionFingerprintBuilder &builder, const char *type,
+                                          bool query)
+{
+   builder.query = query;
+
+   if (type == 0 || *type == 0 || strcasecmp(type, "sim") == 0)
+   {
+      // similarity
+      builder.skip_ext = true;
+      builder.skip_ord = true;
+   }
+   else if (strcasecmp(type, "sub") == 0)
+      // substructure
+      builder.skip_sim = true;
+   else if (strcasecmp(type, "full") == 0)
+   {
+      if (query)
+         throw IndigoError("there can not be 'full' fingerprint of a query reaction");
+      // full (non-query) fingerprint, do not skip anything
+   }
+   else
+      throw IndigoError("unknown molecule fingerprint type: %s", type);
+}
+
 CEXPORT int indigoFingerprint (int item, const char *type)
 {
    INDIGO_BEGIN
@@ -86,9 +111,17 @@ CEXPORT int indigoFingerprint (int item, const char *type)
       }
       else if (obj.isBaseReaction())
       {
-         throw IndigoError("reaction fingerprints not ready yet");
-         //Reaction
+         BaseReaction &rxn = obj.getBaseReaction();
+         ReactionFingerprintBuilder builder(rxn, self.fp_params);
+
+         _indigoParseReactionFingerprintType(builder, type, rxn.isQueryReaction());
+         builder.process();
+         AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
+         fp->bytes.copy(builder.get(), self.fp_params.fingerprintSizeExtOrdSim() * 2);
+         return self.addObject(fp.release());
       }
+      else
+         throw IndigoError("indigoFingerprint(): accepting only molecules and reactions, got %s", obj.debugInfo());
       return 1;
    }
    INDIGO_END(-1);
@@ -191,7 +224,20 @@ CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics)
       }
       else if (self.getObject(item1).isBaseReaction())
       {
-         throw new IndigoError("reaction fingerprints not ready yet");
+         Reaction &rxn1 = obj1.getReaction();
+         Reaction &rxn2 = obj2.getReaction();
+
+         ReactionFingerprintBuilder builder1(rxn1, self.fp_params);
+         ReactionFingerprintBuilder builder2(rxn2, self.fp_params);
+
+         _indigoParseReactionFingerprintType(builder1, "sim", false);
+         _indigoParseReactionFingerprintType(builder2, "sim", false);
+
+         builder1.process();
+         builder2.process();
+
+         return _indigoSimilarity2(builder1.getSim(), builder2.getSim(),
+                                   self.fp_params.fingerprintSizeSim() * 2, metrics);
       }
       else if (self.getObject(item1).type == IndigoObject::FINGERPRINT)
       {
