@@ -103,7 +103,7 @@ QueryReaction & IndigoObject::getQueryReaction ()
    throw IndigoError("%s is not a query reaction", debugInfo());
 }
 
-ReactionHighlighting * IndigoObject::getReactionHighlighting()
+ReactionHighlighting * IndigoObject::getReactionHighlighting ()
 {
    throw IndigoError("%s does not have a reaction highlighting", debugInfo());
 }

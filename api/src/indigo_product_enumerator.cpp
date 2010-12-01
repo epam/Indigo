@@ -122,13 +122,13 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
 
 void indigoProductEnumeratorSetMultistepReactionFlag (int is_multistep_reactions)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.rpe_params.is_multistep_reactions = (is_multistep_reactions != 0);
 }
 
 void indigoProductEnumeratorSetOneTubeMode (const char *mode_string)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    if (strcmp(mode_string, "one-tube") == 0)
       self.rpe_params.is_one_tube = true;
    else if (strcmp(mode_string, "grid") == 0)
@@ -139,19 +139,19 @@ void indigoProductEnumeratorSetOneTubeMode (const char *mode_string)
 
 void indigoProductEnumeratorSetSelfReactionFlag (int is_self_react)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.rpe_params.is_self_react = (is_self_react != 0);
 }
 
 void indigoProductEnumeratorSetMaximumSearchDepth (int max_depth)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.rpe_params.max_deep_level = max_depth;
 }
 
 void indigoProductEnumeratorSetMaximumProductsCount (int max_pr_cnt)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.rpe_params.max_product_count = max_pr_cnt;
 }
 

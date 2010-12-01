@@ -543,7 +543,4 @@ void RSmilesLoader::_loadReaction ()
          }
       }
    }
-
-   if (highlighting != 0)
-      highlighting->nondestructiveInit(*_brxn);
 }

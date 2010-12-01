@@ -331,6 +331,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.indigoDearomatize(self);
    }
 
+   public void foldHydrogens ()
+   {
+      dispatcher.indigoFoldHydrogens(self);
+   }
+
+   public void unfoldHydrogens ()
+   {
+      dispatcher.indigoUnfoldHydrogens(self);
+   }
+
    public void layout ()
    {
       dispatcher.indigoLayout(self);

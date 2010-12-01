@@ -36,6 +36,15 @@ void GraphHighlighting::init (const Graph &graph)
    _n_edges = 0;
 }
 
+void GraphHighlighting::nondestructiveUpdate ()
+{
+   if (_graph == 0)
+      throw Error("no graph");
+   
+   _v_flags.expandFill(_graph->vertexEnd(), 0);
+   _e_flags.expandFill(_graph->edgeEnd(), 0);
+}
+
 void GraphHighlighting::clear ()
 {
    _v_flags.clear();

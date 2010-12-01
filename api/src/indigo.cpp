@@ -74,23 +74,20 @@ CEXPORT void indigoSetSessionId (qword id)
 CEXPORT void indigoReleaseSessionId (qword id)
 {
    TL_SET_SESSION_ID(id);
-   TL_GET(Indigo, indigo_self);
-   indigo_self.removeAllObjects();
+   indigoGetInstance().removeAllObjects();
    TL_RELEASE_SESSION_ID(id);
 }
 
 CEXPORT const char * indigoGetLastError (void)
 {
-   TL_GET2(Indigo, self, indigo_self);
-
+   Indigo &self = indigoGetInstance();
    return self.error_message.ptr();
 }
 
 CEXPORT void indigoSetErrorHandler (void (*handler)
                  (const char *message, void *context), void *context)
 {
-   TL_GET2(Indigo, self, indigo_self);
-
+   Indigo &self = indigoGetInstance();
    self.error_handler = handler;
    self.error_handler_context = context;
 }
@@ -116,8 +113,7 @@ CEXPORT int indigoCountReferences (void)
 
 CEXPORT void indigoSetErrorMessage (const char *message)
 {
-   TL_GET2(Indigo, self, indigo_self);
-
+   Indigo &self = indigoGetInstance();
    self.error_message.readString(message, true);
 }
 

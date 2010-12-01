@@ -29,6 +29,7 @@ public:
    DLLEXPORT GraphHighlighting ();
 
    DLLEXPORT void init (const Graph &graph);
+   DLLEXPORT void nondestructiveUpdate ();
    DLLEXPORT void clear ();
 
    DLLEXPORT void copy (const GraphHighlighting &other, const Array<int> *mapping);

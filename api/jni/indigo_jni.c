@@ -189,6 +189,8 @@ JNIEXPORT jint JNINAME(indigoCreateEdgeSubmolecule) (JNIEnv *env, jobject obj, j
 
 JNI_FUNC_jint_jint(indigoAromatize);
 JNI_FUNC_jint_jint(indigoDearomatize);
+JNI_FUNC_jint_jint(indigoFoldHydrogens);
+JNI_FUNC_jint_jint(indigoUnfoldHydrogens);
 JNI_FUNC_jint_jint(indigoLayout);
 
 JNI_FUNC_jstring_jint(indigoSmiles);

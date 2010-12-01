@@ -1125,8 +1125,8 @@ void MoleculeStereocenters::_removeBondDir (int atom_from, int atom_to)
       {
          BaseMolecule &mol = _getMolecule();
 
-         if (mol.isQueryMolecule() && 
-             (mol.possibleAtomNumber(atom_from, ELEM_H) || mol.isRSite(atom_from)))
+         if (!mol.isQueryMolecule() ||
+             mol.possibleAtomNumber(atom_from, ELEM_H) || mol.isRSite(atom_from))
             _convertAtomToImplicitHydrogen(stereo_atom->pyramid, atom_from);
       }
    }

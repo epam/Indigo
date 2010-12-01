@@ -329,6 +329,10 @@ class Indigo:
     self._lib.indigoAromatize.argtypes = [c_int]
     self._lib.indigoDearomatize.restype = c_int
     self._lib.indigoDearomatize.argtypes = [c_int]
+    self._lib.indigoFoldHydrogens.restype = c_int
+    self._lib.indigoFoldHydrogens.argtypes = [c_int]
+    self._lib.indigoUnfoldHydrogens.restype = c_int
+    self._lib.indigoUnfoldHydrogens.argtypes = [c_int]
     self._lib.indigoLayout.restype = c_int
     self._lib.indigoLayout.argtypes = [c_int]
     self._lib.indigoSmiles.restype = c_char_p
@@ -521,6 +525,8 @@ class Indigo:
     
     self.IndigoObject.aromatize = self._member_void(self._lib.indigoAromatize)
     self.IndigoObject.dearomatize = self._member_void(self._lib.indigoDearomatize)
+    self.IndigoObject.foldHydrogens = self._member_void(self._lib.indigoFoldHydrogens)
+    self.IndigoObject.unfoldHydrogens = self._member_void(self._lib.indigoUnfoldHydrogens)
     self.IndigoObject.layout = self._member_void(self._lib.indigoLayout)
 
     self.IndigoObject.smiles = self._member_string(self._lib.indigoSmiles)

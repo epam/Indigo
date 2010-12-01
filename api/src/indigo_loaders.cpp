@@ -107,7 +107,7 @@ Molecule & IndigoRdfMolecule::getMolecule ()
 {
    if (!_loaded)
    {
-      TL_GET2(Indigo, self, indigo_self);
+      Indigo &self = indigoGetInstance();
       BufferScanner scanner(_data);
       MolfileLoader loader(scanner);
 
@@ -136,7 +136,7 @@ const char * IndigoRdfMolecule::getName ()
    if (_loaded)
       return _mol.name.ptr();
 
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
 
    BufferScanner scanner(_data);
    scanner.readString(self.tmp_string, true);
@@ -166,7 +166,7 @@ Reaction & IndigoRdfReaction::getReaction ()
 {
    if (!_loaded)
    {
-      TL_GET2(Indigo, self, indigo_self);
+      Indigo &self = indigoGetInstance();
       BufferScanner scanner(_data);
       RxnfileLoader loader(scanner);
 
@@ -195,7 +195,7 @@ const char * IndigoRdfReaction::getName ()
    if (_loaded)
       return _rxn.name.ptr();
 
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
 
    BufferScanner scanner(_data);
    scanner.readString(self.tmp_string, true);

@@ -168,7 +168,7 @@ CEXPORT int indigoSaveCmlToFile (int object, const char *filename);
 CEXPORT const char * indigoCml (int object);
 
 // the output must be a file or a buffer, but not a string
-// (because the MDLCT data can contain zeroes)
+// (because MDLCT data usually contains zeroes)
 CEXPORT int indigoSaveMDLCT (int item, int output);
 
 /* Reactions, query reactions */
@@ -301,10 +301,13 @@ CEXPORT int indigoCountComponents (int molecule);
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices);
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices, int nedges, int *edges);
 
-/* Things that work both for molecules and reactions */
+/* Things that work for both molecules and reactions */
 
-CEXPORT int indigoAromatize (int object);
-CEXPORT int indigoDearomatize (int object);
+CEXPORT int indigoAromatize (int item);
+CEXPORT int indigoDearomatize (int item);
+
+CEXPORT int indigoFoldHydrogens (int item);
+CEXPORT int indigoUnfoldHydrogens (int item);
 
 CEXPORT int indigoLayout (int object);
 

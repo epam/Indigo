@@ -364,3 +364,86 @@ CEXPORT int indigoSaveMDLCT (int item, int output)
    }
    INDIGO_END(-1)
 }
+
+CEXPORT int indigoUnfoldHydrogens (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (obj.isBaseMolecule())
+      {
+         QS_DEF(Array<int>, markers);
+         obj.getMolecule().unfoldHydrogens(&markers, -1);
+
+         GraphHighlighting *hl = obj.getMoleculeHighlighting();
+         if (hl != 0)
+            hl->nondestructiveUpdate();
+      }
+      else if (obj.isBaseReaction())
+      {
+         int i;
+         Reaction &rxn = obj.getReaction();
+
+         for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            rxn.getMolecule(i).unfoldHydrogens(0, -1);
+
+         ReactionHighlighting *hl = obj.getReactionHighlighting();
+         if (hl != 0)
+         {
+            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+               hl->getGraphHighlighting(i).nondestructiveUpdate();
+         }
+      }
+      else
+         throw IndigoError("indigoUnfoldHydrogens(): %s given", obj.debugInfo());
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+static void _removeHydrogens (Molecule &mol, GraphHighlighting *hl)
+{
+   QS_DEF(Array<int>, to_remove);
+   int i;
+
+   to_remove.clear();
+   for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      if (mol.getAtomNumber(i) == ELEM_H && mol.getAtomIsotope(i) == 0)
+         to_remove.push(i);
+   }
+
+   if (to_remove.size() > 0)
+      mol.removeAtoms(to_remove);
+
+   if (hl != 0)
+      for (i = 0; i < to_remove.size(); i++)
+         hl->removeVertex(to_remove[i]);
+}
+
+CEXPORT int indigoFoldHydrogens (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (obj.isBaseMolecule())
+         _removeHydrogens(obj.getMolecule(), obj.getMoleculeHighlighting());
+      else if (obj.isBaseReaction())
+      {
+         int i;
+         Reaction &rxn = obj.getReaction();
+         ReactionHighlighting *hl = obj.getReactionHighlighting();
+
+         for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            _removeHydrogens(rxn.getMolecule(i), hl == 0 ? 0 : &hl->getGraphHighlighting(i));
+      }
+      else
+         throw IndigoError("indigoFoldHydrogens(): %s given", obj.debugInfo());
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}

@@ -951,8 +951,6 @@ protected:
       }                                                     \
       return success; }
 
-TL_DECL_EXT(Indigo, indigo_self);
-
 DLLEXPORT Indigo & indigoGetInstance ();
 
 class IndigoError : public Exception

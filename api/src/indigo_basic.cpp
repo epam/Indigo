@@ -216,25 +216,25 @@ int indigoIterateProperties (int handle)
 
 void indigoIgnoreStereochemistryErrors (int enabled)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.ignore_stereochemistry_errors = (enabled != 0);
 }
 
 void indigoTreatXAsPseudoatom (int enabled)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.treat_x_as_pseudoatom = (enabled != 0);
 }
 
 void indigoDeconvolutionAromatization (int enabled)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.deconvolution_aromatization = (enabled != 0);
 }
 
 void indigoSetMolfileSavingMode (const char *mode)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    if (strcasecmp(mode, "2000") == 0)
       self.molfile_saving_mode = MolfileSaver::MODE_2000;
    else if (strcasecmp(mode, "3000") == 0)
@@ -247,7 +247,7 @@ void indigoSetMolfileSavingMode (const char *mode)
 
 void indigoSetFilenameEncoding (const char *encoding)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    if (strcasecmp(encoding, "ASCII") == 0)
       self.filename_encoding = ENCODING_ASCII;
    else if (strcasecmp(encoding, "UTF-8") == 0)
@@ -258,25 +258,25 @@ void indigoSetFilenameEncoding (const char *encoding)
 
 void indigoSetFPOrdQwords (int qwords)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.fp_params.ord_qwords = qwords;
 }
 
 void indigoSetFPSimQwords (int qwords)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.fp_params.sim_qwords = qwords;
 }
 
 void indigoSetFPTauQwords (int qwords)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.fp_params.tau_qwords = qwords;
 }
 
 void indigoSetFPAnyQwords (int qwords)
 {
-   TL_GET2(Indigo, self, indigo_self);
+   Indigo &self = indigoGetInstance();
    self.fp_params.any_qwords = qwords;
 }
 

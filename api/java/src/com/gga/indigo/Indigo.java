@@ -429,13 +429,15 @@ public class Indigo
 
    public native float indigoSimilarity (int molecule1, int molecule2, String metrics);
    
-   public native int indigoAromatize (int molecule);
-   public native int indigoDearomatize (int molecule);
-   public native int indigoLayout (int molecule);
+   public native int indigoAromatize (int item);
+   public native int indigoDearomatize (int item);
+   public native int indigoFoldHydrogens (int item);
+   public native int indigoUnfoldHydrogens (int item);
+   public native int indigoLayout (int item);
 
-   public native String indigoSmiles (int handle);
+   public native String indigoSmiles (int item);
    
-   public native int indigoExactMatch (int handle1, int handle2);
+   public native int indigoExactMatch (int item1, int item2);
 
    public native String indigoName (int handle);
    public native int indigoSetName (int handle, String name);

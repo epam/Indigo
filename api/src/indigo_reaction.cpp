@@ -243,6 +243,8 @@ CEXPORT int indigoLoadReaction (int source)
       loader.highlighting = &rxnptr->highlighting;
 
       loader.loadReaction(rxn);
+      if (rxnptr->highlighting.getCount() == 0)
+         rxnptr->highlighting.init(rxnptr->rxn);
       return self.addObject(rxnptr.release());
    }
    INDIGO_END(-1)
@@ -266,6 +268,9 @@ CEXPORT int indigoLoadQueryReaction (int source)
       loader.highlighting = &rxnptr->highlighting;
 
       loader.loadQueryReaction(rxn);
+      if (rxnptr->highlighting.getCount() == 0)
+         rxnptr->highlighting.init(rxnptr->rxn);
+
       return self.addObject(rxnptr.release());
    }
    INDIGO_END(-1)
