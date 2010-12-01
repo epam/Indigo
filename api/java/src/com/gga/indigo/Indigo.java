@@ -447,9 +447,10 @@ public class Indigo
    public native String indigoName (int handle);
    public native int indigoSetName (int handle, String name);
 
-   public native int indigoHasProperty (int handle, String field);
-   public native String indigoGetProperty (int handle, String field);
-   public native int indigoSetProperty (int handle, String field, String value);
+   public native int indigoHasProperty (int handle, String prop);
+   public native String indigoGetProperty (int handle, String prop);
+   public native int indigoSetProperty (int handle, String prop, String value);
+   public native int indigoRemoveProperty (int handle, String prop);
    public native int indigoIterateProperties (int handle);
 
    public native String indigoCheckBadValence (int handle);

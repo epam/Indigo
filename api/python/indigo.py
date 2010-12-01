@@ -357,6 +357,8 @@ class Indigo:
     self._lib.indigoGetProperty.argtypes = [c_int, c_char_p]
     self._lib.indigoSetProperty.restype = c_int
     self._lib.indigoSetProperty.argtypes = [c_int, c_char_p, c_char_p]
+    self._lib.indigoRemoveProperty.restype = c_int
+    self._lib.indigoRemoveProperty.argtypes = [c_int, c_char_p]
     self._lib.indigoIterateProperties.restype = c_int
     self._lib.indigoIterateProperties.argtypes = [c_int]
     self._lib.indigoCheckBadValence.restype = c_char_p
@@ -548,6 +550,7 @@ class Indigo:
     self.IndigoObject.hasProperty = self._member_bool_string(self._lib.indigoHasProperty)
     self.IndigoObject.getProperty = self._member_string_string(self._lib.indigoGetProperty)
     self.IndigoObject.setProperty = self._member_void_string_string(self._lib.indigoSetProperty)
+    self.IndigoObject.removeProperty = self._member_void_string(self._lib.indigoRemoveProperty)
     self.IndigoObject.iterateProperties = self._member_obj(self._lib.indigoIterateProperties)
 
     self.IndigoObject.checkBadValence = self._member_string(self._lib.indigoCheckBadValence)

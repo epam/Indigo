@@ -342,20 +342,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.indigoSetName(self, name);
    }
    
-   public boolean hasProperty (String prop)
-   {
-      return dispatcher.indigoHasProperty(self, prop) == 1;
-   }
-
-   public String getProperty (String prop)
-   {
-      return dispatcher.indigoGetProperty(self, prop);
-   }
-
-   public void setProperty (String prop, String value)
-   {
-      dispatcher.indigoSetProperty(self, prop, value);
-   }
+   public boolean hasProperty (String prop) { return dispatcher.indigoHasProperty(self, prop) == 1; }
+   public String getProperty (String prop) { return dispatcher.indigoGetProperty(self, prop); }
+   public void setProperty (String prop, String value) { dispatcher.indigoSetProperty(self, prop, value); }
+   public void removeProperty (String prop) { dispatcher.indigoRemoveProperty(self, prop); }
 
    public IndigoObject iterateProperties ()
    {

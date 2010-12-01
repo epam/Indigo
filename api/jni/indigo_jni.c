@@ -208,6 +208,7 @@ JNI_FUNC_jint_jint_jstring(indigoSetName);
 JNI_FUNC_jint_jint_jstring(indigoHasProperty);
 JNI_FUNC_jstring_jint_jstring(indigoGetProperty);
 JNI_FUNC_jint_jint_jstring_jstring(indigoSetProperty);
+JNI_FUNC_jint_jint_jstring(indigoRemoveProperty);
 JNI_FUNC_jint_jint(indigoIterateProperties);
 
 JNI_FUNC_jstring_jint(indigoCheckBadValence);

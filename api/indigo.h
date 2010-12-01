@@ -326,13 +326,16 @@ CEXPORT int indigoSetName (int handle, const char *name);
 
 // Applicable to molecules/reactions obtained from SDF or RDF files,
 // and to their clones, and to their R-Group deconvolutions.
-CEXPORT int indigoHasProperty (int handle, const char *field);
-CEXPORT const char * indigoGetProperty (int handle, const char *field);
+CEXPORT int indigoHasProperty (int handle, const char *prop);
+CEXPORT const char * indigoGetProperty (int handle, const char *prop);
 
 // Applicable to newly created or cloned molecules/reactions,
 // and also to molecules/reactions obtained from SDF or RDF files.
 // If the property with the given name does not exist, it is created automatically.
-CEXPORT int indigoSetProperty (int handle, const char *field, const char *value);
+CEXPORT int indigoSetProperty (int item, const char *prop, const char *value);
+
+// Does not raise an error if the given property does not exist
+CEXPORT int indigoRemoveProperty (int item, const char *prop);
 
 // Returns an iterator that one can pass to indigoName() to
 // know the name of the property. The value of the property can be
