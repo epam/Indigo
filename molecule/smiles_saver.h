@@ -72,9 +72,6 @@ protected:
       _Atom (Pool<List<int>::Elem> &neipool);
       ~_Atom ();
 
-      void pending (int cycle);
-      void closure (int cycle, int end);
-
       List<int> neighbors;
       int parent;
       
