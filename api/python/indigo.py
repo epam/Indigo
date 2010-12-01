@@ -279,6 +279,14 @@ class Indigo:
     self._lib.indigoAtomNumber.argtypes = [c_int]
     self._lib.indigoAtomIsotope.restype = c_int
     self._lib.indigoAtomIsotope.argtypes = [c_int]
+    self._lib.indigoResetCharge.restype = c_int
+    self._lib.indigoResetCharge.argtypes = [c_int]
+    self._lib.indigoResetExplicitValence.restype = c_int
+    self._lib.indigoResetExplicitValence.argtypes = [c_int]
+    self._lib.indigoResetRadical.restype = c_int
+    self._lib.indigoResetRadical.argtypes = [c_int]
+    self._lib.indigoResetIsotope.restype = c_int
+    self._lib.indigoResetIsotope.argtypes = [c_int]
     self._lib.indigoCountAtoms.restype = c_int
     self._lib.indigoCountAtoms.argtypes = [c_int]
     self._lib.indigoCountBonds.restype = c_int
@@ -496,6 +504,11 @@ class Indigo:
     self.IndigoObject.radicalElectrons = self._member_intptr(self._lib.indigoGetRadicalElectrons)
     self.IndigoObject.atomNumber = self._member_int(self._lib.indigoAtomNumber)
     self.IndigoObject.atomIsotope = self._member_int(self._lib.indigoAtomIsotope)
+
+    self.IndigoObject.resetCharge = self._member_void(self._lib.indigoResetCharge)
+    self.IndigoObject.resetExplicitValence = self._member_void(self._lib.indigoResetExplicitValence)
+    self.IndigoObject.resetRadical = self._member_void(self._lib.indigoResetRadical)
+    self.IndigoObject.resetIsotope = self._member_void(self._lib.indigoResetIsotope)
 
     self.IndigoObject.countAtoms = self._member_int(self._lib.indigoCountAtoms)
     self.IndigoObject.countBonds = self._member_int(self._lib.indigoCountBonds)

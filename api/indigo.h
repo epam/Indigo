@@ -245,6 +245,11 @@ CEXPORT int indigoAtomNumber (int atom);
 // Returns zero on unspecified or ambiguous isotope
 CEXPORT int indigoAtomIsotope (int atom);
 
+CEXPORT int indigoResetCharge (int atom);
+CEXPORT int indigoResetExplicitValence (int atom);
+CEXPORT int indigoResetRadical (int atom);
+CEXPORT int indigoResetIsotope (int atom);
+
 CEXPORT int indigoCountAtoms (int molecule);
 CEXPORT int indigoCountBonds (int molecule);
 CEXPORT int indigoCountPseudoatoms (int molecule);

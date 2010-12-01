@@ -193,35 +193,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return dispatcher.indigoGetRadicalElectrons(self);
    }
 
-   public int atomNumber ()
-   {
-      return dispatcher.indigoAtomNumber(self);
-   }
-
-   public int atomIsotope ()
-   {
-      return dispatcher.indigoAtomIsotope(self);
-   }
-
-   public int countAtoms ()
-   {
-      return dispatcher.indigoCountAtoms(self);
-   }
-
-   public int countBonds ()
-   {
-      return dispatcher.indigoCountBonds(self);
-   }
-   
-   public int countPseudoatoms ()
-   {
-      return dispatcher.indigoCountPseudoatoms(self);
-   }
-
-   public int countRSites ()
-   {
-      return dispatcher.indigoCountRSites(self);
-   }
+   public int  atomNumber ()   { return dispatcher.indigoAtomNumber(self);  }
+   public int  atomIsotope ()  { return dispatcher.indigoAtomIsotope(self); }
+   public void resetCharge () { dispatcher.indigoResetCharge(self); }
+   public void resetExplicitValence () { dispatcher.indigoResetExplicitValence(self); }
+   public void resetRadical () { dispatcher.indigoResetRadical(self); }
+   public void resetIsotope () { dispatcher.indigoResetIsotope(self); }
+   public int  countAtoms ()  { return dispatcher.indigoCountAtoms(self); }
+   public int  countBonds () { return dispatcher.indigoCountBonds(self); }
+   public int  countPseudoatoms () { return dispatcher.indigoCountPseudoatoms(self); }
+   public int  countRSites () { return dispatcher.indigoCountRSites(self); }
 
    public IndigoObject iterateBonds ()
    {

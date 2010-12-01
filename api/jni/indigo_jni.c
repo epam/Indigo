@@ -127,6 +127,11 @@ JNI_FUNC_jobj_jint_intptr(indigoGetRadicalElectrons)
 JNI_FUNC_jint_jint(indigoAtomNumber)
 JNI_FUNC_jint_jint(indigoAtomIsotope)
 
+JNI_FUNC_jint_jint(indigoResetCharge)
+JNI_FUNC_jint_jint(indigoResetExplicitValence)
+JNI_FUNC_jint_jint(indigoResetRadical)
+JNI_FUNC_jint_jint(indigoResetIsotope)
+
 JNI_FUNC_jint_jint(indigoCountAtoms)
 JNI_FUNC_jint_jint(indigoCountBonds)
 JNI_FUNC_jint_jint(indigoCountPseudoatoms)

@@ -844,6 +844,71 @@ CEXPORT int indigoGetRadicalElectrons (int atomm, int *electrons)
    INDIGO_END(-1);
 }
 
+
+CEXPORT int indigoResetCharge (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+      BaseMolecule *mol = ia.mol;
+
+      if (mol->isQueryMolecule())
+         mol->asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_CHARGE);
+      else
+         mol->asMolecule().setAtomCharge(ia.idx, 0);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoResetExplicitValence (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+      BaseMolecule *mol = ia.mol;
+
+      if (mol->isQueryMolecule())
+         mol->asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_VALENCE);
+      else
+         mol->asMolecule().resetExplicitValence(ia.idx);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoResetRadical (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+      BaseMolecule *mol = ia.mol;
+
+      if (mol->isQueryMolecule())
+         mol->asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_RADICAL);
+      else
+         mol->asMolecule().setAtomRadical(ia.idx, 0);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoResetIsotope (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+      BaseMolecule *mol = ia.mol;
+
+      if (mol->isQueryMolecule())
+         mol->asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_ISOTOPE);
+      else
+         mol->asMolecule().setAtomIsotope(ia.idx, 0);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT const char * indigoCanonicalSmiles (int molecule)
 {
    INDIGO_BEGIN

@@ -236,6 +236,15 @@ void Molecule::setExplicitValence (int idx, int valence)
    // _validateVertexConnectivity(idx, false);
 }
 
+void Molecule::resetExplicitValence (int idx)
+{
+   if (_valence.size() > idx)
+      _valence[idx] = -1;
+   _atoms[idx].explicit_valence = false;
+
+   // _validateVertexConnectivity(idx, false);
+}
+
 void Molecule::setValence (int idx, int valence)
 {
    _valence.expandFill(idx + 1, -1);

@@ -396,6 +396,11 @@ public class Indigo
    public native int indigoAtomNumber (int atom);
    public native int indigoAtomIsotope (int atom);
 
+   public native int indigoResetCharge (int atom);
+   public native int indigoResetExplicitValence (int atom);
+   public native int indigoResetRadical (int atom);
+   public native int indigoResetIsotope (int atom);
+
    public native int indigoCountAtoms (int molecule);
    public native int indigoCountBonds (int molecule);
    public native int indigoCountPseudoatoms (int molecule);
