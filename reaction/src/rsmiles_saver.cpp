@@ -199,6 +199,18 @@ void RSmilesSaver::_writeStereogroups ()
    QS_DEF(Array<int>, marked);
    int i, j;
 
+   for (i = 0; i < _written_atoms.size(); i++)
+   {
+      const _Idx &idx = _written_atoms[i];
+      int type = _brxn->getBaseMolecule(idx.mol).stereocenters.getType(idx.idx);
+
+      if (type != 0 && type != MoleculeStereocenters::ATOM_ABS)
+         break;
+   }
+
+   if (i == _written_atoms.size())
+      return;
+
    marked.clear_resize(_written_atoms.size());
    marked.zerofill();
 
