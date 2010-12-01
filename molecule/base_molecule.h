@@ -149,7 +149,7 @@ public:
 
    Array<char> name;
 
-   DLLEXPORT static bool haveZCoord (BaseMolecule &mol);
+   DLLEXPORT static bool hasZCoord (BaseMolecule &mol);
 
    DLLEXPORT void mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
                               const Array<int> *edges, Array<int> *mapping_out,

@@ -737,6 +737,8 @@ int main (int argc, char *argv[])
 
    indigoSetErrorHandler(onError, 0);
 
+   indigoSetOption("ignore-stereochemistry-errors", "on");
+
    if (parseParams(&p, argc, argv) < 0)
       return -1;
 

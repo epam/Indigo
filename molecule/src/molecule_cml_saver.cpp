@@ -42,7 +42,7 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
       _output.printf("<molecule>\n");
 
    bool have_hyz = _mol->have_xyz;
-   bool have_z = BaseMolecule::haveZCoord(*_mol);
+   bool have_z = BaseMolecule::hasZCoord(*_mol);
 
    if (_mol->vertexCount() > 0)
    {

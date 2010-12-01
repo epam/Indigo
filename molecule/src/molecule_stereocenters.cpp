@@ -68,7 +68,6 @@ void MoleculeStereocenters::buildFromBonds (const int *atom_types, const int *at
 
 void MoleculeStereocenters::buildFrom3dCoordinates ( void )
 {
-   clear();
    BaseMolecule &bmol = _getMolecule();
 
    if (bmol.isQueryMolecule())
@@ -76,12 +75,12 @@ void MoleculeStereocenters::buildFrom3dCoordinates ( void )
 
    Molecule &mol = bmol.asMolecule();
 
-   int i;
-   for (i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
-      if (bmol.getAtomXyz(i).z != 0)
-         break;
-   if (i == bmol.vertexEnd())
+   if (!BaseMolecule::hasZCoord(mol))
       return;
+
+   _stereocenters.clear();
+   
+   int i;
 
    for (i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
    {
@@ -295,7 +294,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int group, int type, 
          throw Error("zero bond length");
 
       if (mol.getBondOrder(e_idx) == BOND_TRIPLE)
-         throw Error("non-single bonds not allowed near stereocenter");
+         throw Error("triple bonds not allowed near stereocenter");
       if (mol.getBondOrder(e_idx) == BOND_AROMATIC)
          throw Error("aromatic bonds not allowed near stereocenter");
 
