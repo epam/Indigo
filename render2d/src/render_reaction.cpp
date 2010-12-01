@@ -126,21 +126,19 @@ BaseMolecule& ReactionRender::_getMol (int id)
 void ReactionRender::_drawMol (Metalayout::LayoutItem& item)
 {
    _rc.translate(0, -item.scaledSize.y / 2);
-   //_rc.setSingleSource(CWC_WHITE);
-   //_rc.drawRectangle(Vec2f(), item.scaledSize);
    _rc.translate(-item.scaledOffset.x, -item.scaledOffset.y);
    MoleculeRenderInternal render(opt, _settings, _rc);
    BaseMolecule& mol = _r->getBaseMolecule(item.id);
    render.setMolecule(&mol);
    if (_highlighting != NULL && item.id < _highlighting->getCount())
       render.setHighlighting(&_highlighting->getGraphHighlighting(item.id));
-   render.setScaleFactor(_ml.getScaleFactor(), item.min, item.max);
-   render.setReactionComponentProperties(
-      _r->getAAMArray(item.id),
-      _r->getReactingCenterArray(item.id),
-      _r->getInversionArray(item.id));
+      render.setScaleFactor(_ml.getScaleFactor(), item.min, item.max);
+      render.setReactionComponentProperties(
+      &_r->getAAMArray(item.id),
+      &_r->getReactingCenterArray(item.id),
+      &_r->getInversionArray(item.id));
    QUERY_RXN_BEGIN;
-   render.setQueryReactionComponentProperties(qr.getExactChangeArray(item.id));
+   render.setQueryReactionComponentProperties(&qr.getExactChangeArray(item.id));
    QUERY_RXN_END;
    render.render();
 }

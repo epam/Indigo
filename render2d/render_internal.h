@@ -28,8 +28,8 @@ public:
    void setScaleFactor (const float scaleFactor, const Vec2f& min, const Vec2f& max);
    void render ();
 
-   void setReactionComponentProperties (const Array<int>& aam, const Array<int>& reactingCenters, const Array<int>& inversions);
-   void setQueryReactionComponentProperties (const Array<int>& exactChanges);
+   void setReactionComponentProperties (const Array<int>* aam, const Array<int>* reactingCenters, const Array<int>* inversions);
+   void setQueryReactionComponentProperties (const Array<int>* exactChanges);
 
    void setHighlighting (const GraphHighlighting* highlighting);
 

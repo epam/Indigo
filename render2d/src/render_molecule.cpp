@@ -106,8 +106,6 @@ BaseMolecule& MoleculeRender::_getMol (int id)
 
 void MoleculeRender::_drawMol (Metalayout::LayoutItem& item)
 {
-   //_rc.setSingleSource(CWC_WHITE);
-   //_rc.drawRectangle(Vec2f(), item.scaledSize);
    _rc.translate(-item.scaledOffset.x, -item.scaledOffset.y);
    BaseMolecule& mol = _getMol(item.id);
    MoleculeRenderInternal render(opt, _settings, _rc);

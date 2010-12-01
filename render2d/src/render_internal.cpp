@@ -216,18 +216,22 @@ void MoleculeRenderInternal::setScaleFactor (const float scaleFactor, const Vec2
    _max.copy(max);
 }
 
-void MoleculeRenderInternal::setReactionComponentProperties (const Array<int>& aam, 
-                                                             const Array<int>& reactingCenters,
-                                                             const Array<int>& inversions)
+void MoleculeRenderInternal::setReactionComponentProperties (const Array<int>* aam, 
+                                                             const Array<int>* reactingCenters,
+                                                             const Array<int>* inversions)
 {
-   _data.aam.copy(aam);
-   _data.reactingCenters.copy(reactingCenters);
-   _data.inversions.copy(inversions);
+   if (aam != NULL)
+      _data.aam.copy(*aam);
+   if (reactingCenters != NULL)
+      _data.reactingCenters.copy(*reactingCenters);
+   if (inversions != NULL)
+      _data.inversions.copy(*inversions);
 }
 
-void MoleculeRenderInternal::setQueryReactionComponentProperties (const Array<int>& exactChanges)
+void MoleculeRenderInternal::setQueryReactionComponentProperties (const Array<int>* exactChanges)
 {
-   _data.exactChanges.copy(exactChanges);
+   if (exactChanges != NULL)
+      _data.exactChanges.copy(*exactChanges);
 }
 
 void MoleculeRenderInternal::setHighlighting (const GraphHighlighting* highlighting)
