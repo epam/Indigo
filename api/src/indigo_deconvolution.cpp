@@ -271,6 +271,8 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
                     qmol_set.getBondOrder(edge_idx)));
             r_molecule.addBond(new_atom_idx, inv_scaf_map[att_order], r_bond.release());
          }
+
+         r_molecule.setRSiteAttachmentOrder(new_atom_idx, inv_scaf_map[att_order], point_att);
       }
    }
    r_molecule.stereocenters.clear();
