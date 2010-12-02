@@ -166,6 +166,11 @@ public class Indigo
       return indigoExactMatch(obj1.self, obj2.self) == 1;
    }
 
+   public float alignAtoms (IndigoObject mol, int[] atom_ids, float[] desired_xyz)
+   {
+      return indigoAlignAtoms(mol.self, atom_ids, desired_xyz);
+   }
+
    public float similarity (IndigoObject obj1, IndigoObject obj2, String metrics)
    {
       if (metrics == null)
@@ -433,6 +438,8 @@ public class Indigo
 
    public native int indigoCreateSubmolecule (int molecule, int[] vertices);
    public native int indigoCreateEdgeSubmolecule (int molecule, int[] vertices, int[] edges);
+
+   public native float indigoAlignAtoms (int molecule, int[] atom_ids, float[] desired_xyz);
 
    public native float indigoSimilarity (int molecule1, int molecule2, String metrics);
    

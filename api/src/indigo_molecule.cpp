@@ -1336,3 +1336,44 @@ CEXPORT int indigoBond (int nei)
    }
    INDIGO_END(-1)
 }
+
+float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *desired_xyz)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      QS_DEF(Array<Vec3f>, points);
+      QS_DEF(Array<Vec3f>, goals);
+      int i;
+
+      if (natoms < 1)
+         throw IndigoError("indigoAlignAtoms(): can not align %d atoms", natoms);
+
+      if (atom_ids == 0 || desired_xyz == 0)
+         throw IndigoError("indigoAlignAtoms(): zero pointer given as input");
+         
+      points.clear();
+      goals.clear();
+
+      for (i= 0; i < natoms; i++)
+      {
+         points.push(mol.getAtomXyz(atom_ids[i]));
+         goals.push(Vec3f(desired_xyz[i * 3], desired_xyz[i * 3 + 1], desired_xyz[i * 3 + 2]));
+      }
+
+      if (points.size() < 1)
+         return true;
+
+      float sqsum;
+      Transform3f matr;
+
+      if (!matr.bestFit(points.size(), points.ptr(), goals.ptr(), &sqsum))
+         return false;
+
+      for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+         mol.getAtomXyz(i).transformPoint(matr);
+
+      return (float)(sqrt(sqsum / natoms));
+   }
+   INDIGO_END(-1)
+}

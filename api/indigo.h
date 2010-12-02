@@ -315,6 +315,13 @@ CEXPORT int indigoHasZCoord (int molecule);
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices);
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices, int nedges, int *edges);
 
+// Determines and applies the best transformation to the given molecule
+// so that the specified atoms move as close as possible to the desired
+// positions. The size of desired_xyz is equal to 3 * natoms.
+// The return value is the root-mean-square measure of the difference
+// between the desired and obtained positions.
+CEXPORT float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *desired_xyz);
+
 /* Things that work for both molecules and reactions */
 
 CEXPORT int indigoAromatize (int item);

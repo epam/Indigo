@@ -206,6 +206,31 @@ JNIEXPORT jint JNINAME(indigoCreateEdgeSubmolecule) (JNIEnv *env, jobject obj, j
    return ret;
 }
 
+JNIEXPORT jfloat JNINAME(indigoAlignAtoms) (JNIEnv *env, jobject obj,
+        jint molecule, jintArray jatom_ids, jfloatArray jdesired_xyz)
+{
+   int natoms, nxyz;
+   jint *atoms;
+   jfloat *xyz;
+   float ret;
+
+   indigoJniSetSession(env, obj);
+   natoms = (*env)->GetArrayLength(env, jatom_ids);
+   nxyz = (*env)->GetArrayLength(env, jdesired_xyz);
+
+   if (natoms * 3 != nxyz)
+      indigoThrowJNIException(env, "alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]");
+
+   atoms = (*env)->GetIntArrayElements(env, jatom_ids, 0);
+   xyz = (*env)->GetFloatArrayElements(env, jdesired_xyz, 0);
+
+   ret = indigoAlignAtoms(molecule, natoms, atoms, xyz);
+   (*env)->ReleaseIntArrayElements(env, jatom_ids, atoms, 0);
+   (*env)->ReleaseFloatArrayElements(env, jdesired_xyz, xyz, 0);
+   return ret;
+}
+
+
 JNI_FUNC_jint_jint(indigoAromatize);
 JNI_FUNC_jint_jint(indigoDearomatize);
 JNI_FUNC_jint_jint(indigoFoldHydrogens);

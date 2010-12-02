@@ -342,6 +342,8 @@ class Indigo:
     self._lib.indigoCreateSubmolecule.argtypes = [c_int, c_int, POINTER(c_int)]
     self._lib.indigoCreateEdgeSubmolecule.restype = c_int
     self._lib.indigoCreateEdgeSubmolecule.argtypes = [c_int, c_int, POINTER(c_int), c_int, POINTER(c_int)]
+    self._lib.indigoAlignAtoms.restype = c_float
+    self._lib.indigoAlignAtoms.argtypes = [c_int, c_int, POINTER(c_int), POINTER(c_float)]
     self._lib.indigoAromatize.restype = c_int
     self._lib.indigoAromatize.argtypes = [c_int]
     self._lib.indigoDearomatize.restype = c_int
@@ -818,6 +820,20 @@ class Indigo:
   def version (self):
     return self._lib.indigoVersion()
 
+  def alignAtoms (self, mol, atom_ids, desired_xyz):
+    self._lib.indigoSetSessionId(self._sid)
+    self._checkResultFloat
+    if len(atom_ids) * 3 != len(desired_xyz):
+      raise IndigoException("alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]")
+    atoms = (c_int * len(atom_ids))()
+    for i in xrange(len(atoms)):
+      atoms[i] = atom_ids[i]
+    xyz = (c_float * len(desired_xyz))()
+    for i in xrange(len(desired_xyz)):
+      xyz[i] = desired_xyz[i]
+    return self._checkResultFloat(
+      self._lib.indigoAlignAtoms(mol.id, len(atoms), atoms, xyz))
+
   def similarity (self, item1, item2, metrics = None):
     self._lib.indigoSetSessionId(self._sid)
     if metrics is None:
@@ -855,7 +871,6 @@ class Indigo:
       self._checkResult(self._lib.indigoSetOptionColor(option, value1, value2, value3))
     else:
       raise IndigoException("bad options")
-      
 
   def _checkResult (self, result):
     if result < 0:
