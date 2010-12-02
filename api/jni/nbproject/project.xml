@@ -14,7 +14,6 @@
                 <make-dep-project>../../reaction</make-dep-project>
                 <make-dep-project>../../graph</make-dep-project>
                 <make-dep-project>..</make-dep-project>
-                <make-dep-project>../../render2d</make-dep-project>
                 <make-dep-project>../../molecule</make-dep-project>
             </make-dep-projects>
             <sourceRootList/>
