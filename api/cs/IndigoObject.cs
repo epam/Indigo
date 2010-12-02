@@ -253,15 +253,48 @@ namespace com.gga.indigo
       public int atomNumber ()
       {
          dispatcher.setSessionID();
-
          return Indigo.indigoAtomNumber(self);
       }
 
       public int atomIsotope ()
       {
          dispatcher.setSessionID();
-
          return Indigo.indigoAtomIsotope(self);
+      }
+
+      public float[] xyz ()
+      {
+         dispatcher.setSessionID();
+         float *ptr = Indigo.indigoXYZ(self);
+         float[] res = new float[3];
+         res[0] = ptr[0];
+         res[1] = ptr[1];
+         res[2] = ptr[2];
+         return res;
+      }
+
+      public void resetCharge ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoResetCharge(self);
+      }
+
+      public void resetExplicitValence ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoResetExplicitValence(self);
+      }
+
+      public void resetRadical ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoResetRadical(self);
+      }
+
+      public void resetIsotope ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoResetIsotope (self);
       }
 
       public int countAtoms ()
@@ -386,6 +419,12 @@ namespace com.gga.indigo
          return Indigo.indigoCountComponents(self);
       }
 
+      public bool hasZCoord ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoHasZCoord(self) == 1;
+      }
+
       public IndigoObject createSubmolecule (int[] vertices)
       {
          dispatcher.setSessionID();
@@ -399,6 +438,14 @@ namespace com.gga.indigo
             vertices.Length, vertices, edges.Length, edges));
       }
 
+      public float alignAtoms (int[] atom_ids, float[] desired_xyz)
+      {
+         dispatcher.setSessionID();
+         if (atom_ids.Length * 3 != desired_xyz.Length)
+            throw new IndigoException("alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]");
+         return Indigo.indigoAlignAtoms(self, atom_ids.Length, atom_ids, desired_xyz);
+      }
+
       public void aromatize ()
       {
          dispatcher.setSessionID();
@@ -409,6 +456,18 @@ namespace com.gga.indigo
       {
          dispatcher.setSessionID();
          Indigo.indigoDearomatize(self);
+      }
+
+      public void foldHydrogens ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoFoldHydrogens(self);
+      }
+
+      public void unfoldHydrogens ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoUnfoldHydrogens(self);
       }
 
       public void layout ()
@@ -451,6 +510,12 @@ namespace com.gga.indigo
       {
          dispatcher.setSessionID();
          Indigo.indigoSetProperty(self, name, value);
+      }
+
+      public void removeProperty (string name)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoRemoveProperty(self, name);
       }
 
       public System.Collections.IEnumerable iterateProperties ()
@@ -550,6 +615,12 @@ namespace com.gga.indigo
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, Indigo.indigoMatchHighlight(self));
+      }
+
+      public IndigoObject mapAtom (IndigoObject query_atom)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoMapAtom(self, query_atom.self));
       }
 
       public IndigoObject allScaffolds ()
