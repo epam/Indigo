@@ -282,6 +282,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, dispatcher.indigoCreateEdgeSubmolecule(self, vertices, edges));
    }
 
+   public float alignAtoms (int[] atom_ids, float[] desired_xyz)
+   {
+      return dispatcher.indigoAlignAtoms(self, atom_ids, desired_xyz);
+   }
+
    public void aromatize ()
    {
       dispatcher.indigoAromatize(self);
