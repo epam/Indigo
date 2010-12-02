@@ -407,6 +407,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, dispatcher.indigoMatchHighlight(self));
    }
 
+   public IndigoObject mapAtom (IndigoObject atom)
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoMapAtom(self, atom.self));
+   }
+
    public IndigoObject allScaffolds ()
    {
       return new IndigoObject(dispatcher, dispatcher.indigoAllScaffolds(self));

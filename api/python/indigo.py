@@ -418,6 +418,8 @@ class Indigo:
     self._lib.indigoMatchSubstructure.argtypes = [c_int, c_int]
     self._lib.indigoMatchHighlight.restype = c_int
     self._lib.indigoMatchHighlight.argtypes = [c_int]
+    self._lib.indigoMapAtom.restype = c_int
+    self._lib.indigoMapAtom.argtypes = [c_int, c_int]
     self._lib.indigoCountSubstructureMatches.restype = c_int
     self._lib.indigoCountSubstructureMatches.argtypes = [c_int, c_int]
     self._lib.indigoExtractCommonScaffold.restype = c_int
@@ -580,6 +582,7 @@ class Indigo:
     self.IndigoObject.arrayAt = self._member_obj_int(self._lib.indigoArrayAt)
     
     self.IndigoObject.matchHighlight = self._member_obj(self._lib.indigoMatchHighlight);
+    self.IndigoObject.mapAtom = self._member_obj_obj(self._lib.indigoMapAtom);
     self.IndigoObject.allScaffolds = self._member_obj(self._lib.indigoAllScaffolds);
     self.IndigoObject.decomposedMoleculeScaffold = self._member_obj(self._lib.indigoDecomposedMoleculeScaffold)
     self.IndigoObject.iterateDecomposedMolecules = self._member_obj(self._lib.indigoIterateDecomposedMolecules)

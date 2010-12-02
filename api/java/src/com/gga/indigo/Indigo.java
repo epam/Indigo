@@ -485,6 +485,7 @@ public class Indigo
 
    public native int indigoMatchSubstructure (int query, int target);
    public native int indigoMatchHighlight (int match);
+   public native int indigoMapAtom (int match, int query_atom);
    public native int indigoCountSubstructureMatches (int query, int target);
 
    public native int indigoExtractCommonScaffold (int structures, String options);

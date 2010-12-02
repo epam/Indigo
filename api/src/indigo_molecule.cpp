@@ -1110,6 +1110,24 @@ CEXPORT int indigoMatchHighlight (int match)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoMapAtom (int match, int query_atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(match);
+      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCHER)
+         throw IndigoError("indigoMatchHighlight(): matcher must be given, not %s", obj.debugInfo());
+      IndigoAtom &ia = self.getObject(query_atom).getAtom();
+      
+      IndigoMoleculeSubstructureMatcher &matcher = (IndigoMoleculeSubstructureMatcher &)obj;
+      matcher.matcher.getQuery().getAtom(ia.idx); // will throw an exception if the atom index is invalid
+      int idx = matcher.matcher.getQueryMapping()[ia.idx];
+
+      return self.addObject(new IndigoAtom(matcher.target, idx));
+   }
+   INDIGO_END(-1)
+}
+
 static void _matchCountEmbeddingsCallback (Graph &sub, Graph &super, 
                                            const int *core1, const int *core2, void *context)
 {

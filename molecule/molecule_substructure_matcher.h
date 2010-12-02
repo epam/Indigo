@@ -47,6 +47,7 @@ public:
    DLLEXPORT ~MoleculeSubstructureMatcher ();
 
    DLLEXPORT void setQuery (QueryMolecule &query);
+   DLLEXPORT QueryMolecule & getQuery ();
 
    // Set vertex neibourhood counters for effective matching
    DLLEXPORT void setNeiCounters (const MoleculeAtomNeighbourhoodCounters *query_counters, 

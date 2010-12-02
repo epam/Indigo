@@ -271,6 +271,7 @@ JNI_FUNC_jint_jint(indigoIterateArray)
 
 JNI_FUNC_jint_jint_jint(indigoMatchSubstructure)
 JNI_FUNC_jint_jint(indigoMatchHighlight)
+JNI_FUNC_jint_jint_jint(indigoMapAtom)
 JNI_FUNC_jint_jint_jint(indigoCountSubstructureMatches)
 
 JNI_FUNC_jint_jint_jstring(indigoExtractCommonScaffold)

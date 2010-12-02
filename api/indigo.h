@@ -410,9 +410,9 @@ CEXPORT const char * indigoRawData (int item);
 // Returns the offset in the SDF/RDF file.
 CEXPORT int indigoTell (int handle);
 
-// Saves molecule to an SDF output stream
+// Saves the molecule to an SDF output stream
 CEXPORT int indigoSdfAppend (int output, int item);
-// Saves molecule to a multiline SMILES output stream
+// Saves the molecule to a multiline SMILES output stream
 CEXPORT int indigoSmilesAppend (int output, int item);
 
 /* Arrays */
@@ -434,8 +434,13 @@ CEXPORT int indigoMatchSubstructure (int query, int target);
 // Returns a new molecule which has the query highlighted.
 CEXPORT int indigoMatchHighlight (int match);
 
-// Count number of embeddings of query into target molecule.
-// Returns a number if embeddings.
+// Accepts an atom from the query, not an atom index.
+//   You can use indigoGetAtom() to obtain the atom by its index.
+// Returns the corresponding target atom, not an atom index.
+//   You can use indigoGetIndex() to obtain the index of the returned atom.
+CEXPORT int indigoMapAtom (int match, int query_atom);
+
+// Counts the number of embeddings of the query structure into the target
 CEXPORT int indigoCountSubstructureMatches (int query, int target);
 
 /* Scaffold detection */
