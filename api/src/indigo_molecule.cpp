@@ -844,6 +844,21 @@ CEXPORT int indigoGetRadicalElectrons (int atomm, int *electrons)
    INDIGO_END(-1);
 }
 
+CEXPORT float * indigoXYZ (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+      BaseMolecule *mol = ia.mol;
+
+      Vec3f &pos = mol->getAtomXyz(ia.idx);
+      self.tmp_xyz[0] = pos.x;
+      self.tmp_xyz[1] = pos.y;
+      self.tmp_xyz[2] = pos.z;
+      return self.tmp_xyz;
+   }
+   INDIGO_END(0)
+}
 
 CEXPORT int indigoResetCharge (int atom)
 {
@@ -1138,6 +1153,17 @@ CEXPORT int indigoCountComponents (int molecule)
       decomposer.decompose();
       
       return decomposer.getComponentsCount();
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoHasZCoord (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return BaseMolecule::hasZCoord(mol) ? 1 : 0;
    }
    INDIGO_END(-1)
 }

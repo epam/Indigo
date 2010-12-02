@@ -66,6 +66,13 @@ class Indigo:
       buf = self.dispatcher.writeBuffer()
       self.dispatcher._checkResult(self._lib.indigoSaveMDLCT(self.id, buf.id))
       return buf.toBuffer()
+    
+    def xyz (self):
+      self.dispatcher._setSID()
+      xyz = self._lib.indigoXYZ(self.id)
+      if xyz is None:
+        raise IndigoException(self._lib.indigoGetLastError())
+      return [xyz[0], xyz[1], xyz[2]]
 
     def __del__ (self):
       self.dispatcher._setSID()
@@ -329,6 +336,8 @@ class Indigo:
     self._lib.indigoLayeredCode.argtypes = [c_int]
     self._lib.indigoCountComponents.restype = c_int
     self._lib.indigoCountComponents.argtypes = [c_int]
+    self._lib.indigoXYZ.restype = POINTER(c_float)
+    self._lib.indigoXYZ.argtypes = [c_int]
     self._lib.indigoCreateSubmolecule.restype = c_int
     self._lib.indigoCreateSubmolecule.argtypes = [c_int, c_int, POINTER(c_int)]
     self._lib.indigoCreateEdgeSubmolecule.restype = c_int
@@ -537,6 +546,7 @@ class Indigo:
     self.IndigoObject.canonicalSmiles = self._member_string(self._lib.indigoCanonicalSmiles)
     self.IndigoObject.layeredCode = self._member_string(self._lib.indigoLayeredCode)
     self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
+    self.IndigoObject.hasZCoord = self._member_bool(self._lib.indigoHasZCoord)
     
     self.IndigoObject.aromatize = self._member_void(self._lib.indigoAromatize)
     self.IndigoObject.dearomatize = self._member_void(self._lib.indigoDearomatize)
@@ -581,8 +591,6 @@ class Indigo:
 
     self.IndigoObject.createSubmolecule = self._member_obj_iarr(self._lib.indigoCreateSubmolecule)
     self.IndigoObject.createEdgeSubmolecule = self._member_obj_iarr_iarr(self._lib.indigoCreateEdgeSubmolecule)
-
-    self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
 
   def _static_obj (self, func):
     def newfunc ():

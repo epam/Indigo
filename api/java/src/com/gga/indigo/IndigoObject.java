@@ -262,35 +262,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return result;
    }
    
-   public float molecularWeight ()
-   {
-      return dispatcher.indigoMolecularWeight(self);
-   }
+   public float molecularWeight () { return dispatcher.indigoMolecularWeight(self); }
+   public float mostAbundantMass () { return dispatcher.indigoMostAbundantMass(self); }
+   public float monoisotopicMass () { return dispatcher.indigoMonoisotopicMass(self); }
+   public String canonicalSmiles () { return dispatcher.indigoCanonicalSmiles(self); }
+   public String layeredCode () { return dispatcher.indigoLayeredCode(self); }
+   public int countComponents () { return dispatcher.indigoCountComponents(self); }
+   public boolean hasZCoord () { return dispatcher.indigoHasZCoord(self) == 1; }
 
-   public float mostAbundantMass ()
-   {
-      return dispatcher.indigoMostAbundantMass(self);
-   }
-
-   public float monoisotopicMass ()
-   {
-      return dispatcher.indigoMonoisotopicMass(self);
-   }
-
-   public String canonicalSmiles ()
-   {
-      return dispatcher.indigoCanonicalSmiles(self);
-   }
-   
-   public String layeredCode ()
-   {
-      return dispatcher.indigoLayeredCode(self);
-   }
-
-   public int countComponents ()
-   {
-      return dispatcher.indigoCountComponents(self);
-   }
+   public float[] xyz () { return dispatcher.indigoXYZ(self); }
 
    public IndigoObject createSubmolecule (int[] vertices)
    {

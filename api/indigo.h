@@ -49,6 +49,9 @@ typedef unsigned char byte;
 /* All integer and float functions return -1 on error. */
 /* All string functions return zero pointer on error. */
 
+/* Almost all string functions return the same pointer on success;
+   you should not free() it, but rather strdup() it if you want to keep it. */
+
 /* System */
 
 CEXPORT const char * indigoVersion ();
@@ -245,6 +248,10 @@ CEXPORT int indigoAtomNumber (int atom);
 // Returns zero on unspecified or ambiguous isotope
 CEXPORT int indigoAtomIsotope (int atom);
 
+// On success, returns always the same pointer to a 3-element array;
+// you should not free() it, but rather memcpy() it if you want to keep it.
+CEXPORT float * indigoXYZ (int atom);
+
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetRadical (int atom);
@@ -302,6 +309,8 @@ CEXPORT const char * indigoLayeredCode (int molecule);
 
 // Returns the number of connected components
 CEXPORT int indigoCountComponents (int molecule);
+
+CEXPORT int indigoHasZCoord (int molecule);
 
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices);
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices, int nedges, int *edges);

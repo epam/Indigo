@@ -127,6 +127,19 @@ JNI_FUNC_jobj_jint_intptr(indigoGetRadicalElectrons)
 JNI_FUNC_jint_jint(indigoAtomNumber)
 JNI_FUNC_jint_jint(indigoAtomIsotope)
 
+JNIEXPORT jfloatArray JNINAME(indigoXYZ) (JNIEnv *env, jobject obj, jint atom)
+{
+   float *xyz;
+   jfloatArray jarr;
+
+   indigoJniSetSession(env, obj);
+   xyz = indigoXYZ(atom);
+   jarr = (*env)->NewFloatArray(env, 3);
+   (*env)->SetFloatArrayRegion(env, jarr, 0, 3, (jfloat *)xyz);
+
+   return jarr;
+}
+
 JNI_FUNC_jint_jint(indigoResetCharge)
 JNI_FUNC_jint_jint(indigoResetExplicitValence)
 JNI_FUNC_jint_jint(indigoResetRadical)
@@ -159,6 +172,7 @@ JNI_FUNC_jstring_jint(indigoCanonicalSmiles)
 JNI_FUNC_jstring_jint(indigoLayeredCode)
 
 JNI_FUNC_jint_jint(indigoCountComponents)
+JNI_FUNC_jint_jint(indigoHasZCoord)
 
 JNIEXPORT jint JNINAME(indigoCreateSubmolecule) (JNIEnv *env, jobject obj, jint mol, jintArray jvertices)
 {

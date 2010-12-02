@@ -395,6 +395,7 @@ public class Indigo
    public native Integer indigoGetRadicalElectrons (int atom);
    public native int indigoAtomNumber (int atom);
    public native int indigoAtomIsotope (int atom);
+   public native float[] indigoXYZ (int atom);
 
    public native int indigoResetCharge (int atom);
    public native int indigoResetExplicitValence (int atom);
@@ -428,6 +429,7 @@ public class Indigo
    public native String indigoLayeredCode (int handle);
 
    public native int indigoCountComponents (int molecule);
+   public native int indigoHasZCoord (int molecule);
 
    public native int indigoCreateSubmolecule (int molecule, int[] vertices);
    public native int indigoCreateEdgeSubmolecule (int molecule, int[] vertices, int[] edges);
