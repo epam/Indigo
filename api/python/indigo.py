@@ -66,6 +66,26 @@ class Indigo:
       buf = self.dispatcher.writeBuffer()
       self.dispatcher._checkResult(self._lib.indigoSaveMDLCT(self.id, buf.id))
       return buf.toBuffer()
+    
+    def xyz (self):
+      self.dispatcher._setSID()
+      xyz = self._lib.indigoXYZ(self.id)
+      if xyz is None:
+        raise IndigoException(self._lib.indigoGetLastError())
+      return [xyz[0], xyz[1], xyz[2]]
+
+    def alignAtoms (self, atom_ids, desired_xyz):
+      self.dispatcher._setSID()
+      if len(atom_ids) * 3 != len(desired_xyz):
+        raise IndigoException("alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]")
+      atoms = (c_int * len(atom_ids))()
+      for i in xrange(len(atoms)):
+        atoms[i] = atom_ids[i]
+      xyz = (c_float * len(desired_xyz))()
+      for i in xrange(len(desired_xyz)):
+        xyz[i] = desired_xyz[i]
+      return self.dispatcher._checkResultFloat(
+        self._lib.indigoAlignAtoms(self.id, len(atoms), atoms, xyz))
 
     def __del__ (self):
       self.dispatcher._setSID()
@@ -279,6 +299,14 @@ class Indigo:
     self._lib.indigoAtomNumber.argtypes = [c_int]
     self._lib.indigoAtomIsotope.restype = c_int
     self._lib.indigoAtomIsotope.argtypes = [c_int]
+    self._lib.indigoResetCharge.restype = c_int
+    self._lib.indigoResetCharge.argtypes = [c_int]
+    self._lib.indigoResetExplicitValence.restype = c_int
+    self._lib.indigoResetExplicitValence.argtypes = [c_int]
+    self._lib.indigoResetRadical.restype = c_int
+    self._lib.indigoResetRadical.argtypes = [c_int]
+    self._lib.indigoResetIsotope.restype = c_int
+    self._lib.indigoResetIsotope.argtypes = [c_int]
     self._lib.indigoCountAtoms.restype = c_int
     self._lib.indigoCountAtoms.argtypes = [c_int]
     self._lib.indigoCountBonds.restype = c_int
@@ -321,10 +349,14 @@ class Indigo:
     self._lib.indigoLayeredCode.argtypes = [c_int]
     self._lib.indigoCountComponents.restype = c_int
     self._lib.indigoCountComponents.argtypes = [c_int]
+    self._lib.indigoXYZ.restype = POINTER(c_float)
+    self._lib.indigoXYZ.argtypes = [c_int]
     self._lib.indigoCreateSubmolecule.restype = c_int
     self._lib.indigoCreateSubmolecule.argtypes = [c_int, c_int, POINTER(c_int)]
     self._lib.indigoCreateEdgeSubmolecule.restype = c_int
     self._lib.indigoCreateEdgeSubmolecule.argtypes = [c_int, c_int, POINTER(c_int), c_int, POINTER(c_int)]
+    self._lib.indigoAlignAtoms.restype = c_float
+    self._lib.indigoAlignAtoms.argtypes = [c_int, c_int, POINTER(c_int), POINTER(c_float)]
     self._lib.indigoAromatize.restype = c_int
     self._lib.indigoAromatize.argtypes = [c_int]
     self._lib.indigoDearomatize.restype = c_int
@@ -349,6 +381,8 @@ class Indigo:
     self._lib.indigoGetProperty.argtypes = [c_int, c_char_p]
     self._lib.indigoSetProperty.restype = c_int
     self._lib.indigoSetProperty.argtypes = [c_int, c_char_p, c_char_p]
+    self._lib.indigoRemoveProperty.restype = c_int
+    self._lib.indigoRemoveProperty.argtypes = [c_int, c_char_p]
     self._lib.indigoIterateProperties.restype = c_int
     self._lib.indigoIterateProperties.argtypes = [c_int]
     self._lib.indigoCheckBadValence.restype = c_char_p
@@ -399,6 +433,8 @@ class Indigo:
     self._lib.indigoMatchSubstructure.argtypes = [c_int, c_int]
     self._lib.indigoMatchHighlight.restype = c_int
     self._lib.indigoMatchHighlight.argtypes = [c_int]
+    self._lib.indigoMapAtom.restype = c_int
+    self._lib.indigoMapAtom.argtypes = [c_int, c_int]
     self._lib.indigoCountSubstructureMatches.restype = c_int
     self._lib.indigoCountSubstructureMatches.argtypes = [c_int, c_int]
     self._lib.indigoExtractCommonScaffold.restype = c_int
@@ -497,6 +533,11 @@ class Indigo:
     self.IndigoObject.atomNumber = self._member_int(self._lib.indigoAtomNumber)
     self.IndigoObject.atomIsotope = self._member_int(self._lib.indigoAtomIsotope)
 
+    self.IndigoObject.resetCharge = self._member_void(self._lib.indigoResetCharge)
+    self.IndigoObject.resetExplicitValence = self._member_void(self._lib.indigoResetExplicitValence)
+    self.IndigoObject.resetRadical = self._member_void(self._lib.indigoResetRadical)
+    self.IndigoObject.resetIsotope = self._member_void(self._lib.indigoResetIsotope)
+
     self.IndigoObject.countAtoms = self._member_int(self._lib.indigoCountAtoms)
     self.IndigoObject.countBonds = self._member_int(self._lib.indigoCountBonds)
     self.IndigoObject.countPseudoatoms = self._member_int(self._lib.indigoCountPseudoatoms)
@@ -522,6 +563,7 @@ class Indigo:
     self.IndigoObject.canonicalSmiles = self._member_string(self._lib.indigoCanonicalSmiles)
     self.IndigoObject.layeredCode = self._member_string(self._lib.indigoLayeredCode)
     self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
+    self.IndigoObject.hasZCoord = self._member_bool(self._lib.indigoHasZCoord)
     
     self.IndigoObject.aromatize = self._member_void(self._lib.indigoAromatize)
     self.IndigoObject.dearomatize = self._member_void(self._lib.indigoDearomatize)
@@ -535,6 +577,7 @@ class Indigo:
     self.IndigoObject.hasProperty = self._member_bool_string(self._lib.indigoHasProperty)
     self.IndigoObject.getProperty = self._member_string_string(self._lib.indigoGetProperty)
     self.IndigoObject.setProperty = self._member_void_string_string(self._lib.indigoSetProperty)
+    self.IndigoObject.removeProperty = self._member_void_string(self._lib.indigoRemoveProperty)
     self.IndigoObject.iterateProperties = self._member_obj(self._lib.indigoIterateProperties)
 
     self.IndigoObject.checkBadValence = self._member_string(self._lib.indigoCheckBadValence)
@@ -554,6 +597,7 @@ class Indigo:
     self.IndigoObject.arrayAt = self._member_obj_int(self._lib.indigoArrayAt)
     
     self.IndigoObject.matchHighlight = self._member_obj(self._lib.indigoMatchHighlight);
+    self.IndigoObject.mapAtom = self._member_obj_obj(self._lib.indigoMapAtom);
     self.IndigoObject.allScaffolds = self._member_obj(self._lib.indigoAllScaffolds);
     self.IndigoObject.decomposedMoleculeScaffold = self._member_obj(self._lib.indigoDecomposedMoleculeScaffold)
     self.IndigoObject.iterateDecomposedMolecules = self._member_obj(self._lib.indigoIterateDecomposedMolecules)
@@ -565,8 +609,6 @@ class Indigo:
 
     self.IndigoObject.createSubmolecule = self._member_obj_iarr(self._lib.indigoCreateSubmolecule)
     self.IndigoObject.createEdgeSubmolecule = self._member_obj_iarr_iarr(self._lib.indigoCreateEdgeSubmolecule)
-
-    self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
 
   def _static_obj (self, func):
     def newfunc ():
@@ -828,7 +870,6 @@ class Indigo:
       self._checkResult(self._lib.indigoSetOptionColor(option, value1, value2, value3))
     else:
       raise IndigoException("bad options")
-      
 
   def _checkResult (self, result):
     if result < 0:

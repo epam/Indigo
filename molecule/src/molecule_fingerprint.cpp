@@ -469,7 +469,7 @@ byte * MoleculeFingerprintBuilder::getOrd ()
    return _total_fingerprint.ptr() + 3;
 }
 
-byte * MoleculeFingerprintBuilder::getAny ()
+byte * MoleculeFingerprintBuilder::getSim ()
 {
    return _total_fingerprint.ptr() + 3 + _parameters.fingerprintSizeOrd();
 }
@@ -477,13 +477,13 @@ byte * MoleculeFingerprintBuilder::getAny ()
 byte * MoleculeFingerprintBuilder::getTau ()
 {
    return _total_fingerprint.ptr() + 3 + _parameters.fingerprintSizeOrd() +
-          _parameters.fingerprintSizeAny();
+          _parameters.fingerprintSizeSim();
 }
 
-byte * MoleculeFingerprintBuilder::getSim ()
+byte * MoleculeFingerprintBuilder::getAny ()
 {
    return _total_fingerprint.ptr() + 3 + _parameters.fingerprintSizeOrd() +
-        _parameters.fingerprintSizeAny() + _parameters.fingerprintSizeTau();
+        _parameters.fingerprintSizeSim() + _parameters.fingerprintSizeTau();
 }
 
 int MoleculeFingerprintBuilder::countBits_Sim ()

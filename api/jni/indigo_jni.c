@@ -127,6 +127,24 @@ JNI_FUNC_jobj_jint_intptr(indigoGetRadicalElectrons)
 JNI_FUNC_jint_jint(indigoAtomNumber)
 JNI_FUNC_jint_jint(indigoAtomIsotope)
 
+JNIEXPORT jfloatArray JNINAME(indigoXYZ) (JNIEnv *env, jobject obj, jint atom)
+{
+   float *xyz;
+   jfloatArray jarr;
+
+   indigoJniSetSession(env, obj);
+   xyz = indigoXYZ(atom);
+   jarr = (*env)->NewFloatArray(env, 3);
+   (*env)->SetFloatArrayRegion(env, jarr, 0, 3, (jfloat *)xyz);
+
+   return jarr;
+}
+
+JNI_FUNC_jint_jint(indigoResetCharge)
+JNI_FUNC_jint_jint(indigoResetExplicitValence)
+JNI_FUNC_jint_jint(indigoResetRadical)
+JNI_FUNC_jint_jint(indigoResetIsotope)
+
 JNI_FUNC_jint_jint(indigoCountAtoms)
 JNI_FUNC_jint_jint(indigoCountBonds)
 JNI_FUNC_jint_jint(indigoCountPseudoatoms)
@@ -154,6 +172,7 @@ JNI_FUNC_jstring_jint(indigoCanonicalSmiles)
 JNI_FUNC_jstring_jint(indigoLayeredCode)
 
 JNI_FUNC_jint_jint(indigoCountComponents)
+JNI_FUNC_jint_jint(indigoHasZCoord)
 
 JNIEXPORT jint JNINAME(indigoCreateSubmolecule) (JNIEnv *env, jobject obj, jint mol, jintArray jvertices)
 {
@@ -187,6 +206,31 @@ JNIEXPORT jint JNINAME(indigoCreateEdgeSubmolecule) (JNIEnv *env, jobject obj, j
    return ret;
 }
 
+JNIEXPORT jfloat JNINAME(indigoAlignAtoms) (JNIEnv *env, jobject obj,
+        jint molecule, jintArray jatom_ids, jfloatArray jdesired_xyz)
+{
+   int natoms, nxyz;
+   jint *atoms;
+   jfloat *xyz;
+   float ret;
+
+   indigoJniSetSession(env, obj);
+   natoms = (*env)->GetArrayLength(env, jatom_ids);
+   nxyz = (*env)->GetArrayLength(env, jdesired_xyz);
+
+   if (natoms * 3 != nxyz)
+      indigoThrowJNIException(env, "alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]");
+
+   atoms = (*env)->GetIntArrayElements(env, jatom_ids, 0);
+   xyz = (*env)->GetFloatArrayElements(env, jdesired_xyz, 0);
+
+   ret = indigoAlignAtoms(molecule, natoms, atoms, xyz);
+   (*env)->ReleaseIntArrayElements(env, jatom_ids, atoms, 0);
+   (*env)->ReleaseFloatArrayElements(env, jdesired_xyz, xyz, 0);
+   return ret;
+}
+
+
 JNI_FUNC_jint_jint(indigoAromatize);
 JNI_FUNC_jint_jint(indigoDearomatize);
 JNI_FUNC_jint_jint(indigoFoldHydrogens);
@@ -203,6 +247,7 @@ JNI_FUNC_jint_jint_jstring(indigoSetName);
 JNI_FUNC_jint_jint_jstring(indigoHasProperty);
 JNI_FUNC_jstring_jint_jstring(indigoGetProperty);
 JNI_FUNC_jint_jint_jstring_jstring(indigoSetProperty);
+JNI_FUNC_jint_jint_jstring(indigoRemoveProperty);
 JNI_FUNC_jint_jint(indigoIterateProperties);
 
 JNI_FUNC_jstring_jint(indigoCheckBadValence);
@@ -251,6 +296,7 @@ JNI_FUNC_jint_jint(indigoIterateArray)
 
 JNI_FUNC_jint_jint_jint(indigoMatchSubstructure)
 JNI_FUNC_jint_jint(indigoMatchHighlight)
+JNI_FUNC_jint_jint_jint(indigoMapAtom)
 JNI_FUNC_jint_jint_jint(indigoCountSubstructureMatches)
 
 JNI_FUNC_jint_jint_jstring(indigoExtractCommonScaffold)

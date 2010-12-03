@@ -395,6 +395,12 @@ public class Indigo
    public native Integer indigoGetRadicalElectrons (int atom);
    public native int indigoAtomNumber (int atom);
    public native int indigoAtomIsotope (int atom);
+   public native float[] indigoXYZ (int atom);
+
+   public native int indigoResetCharge (int atom);
+   public native int indigoResetExplicitValence (int atom);
+   public native int indigoResetRadical (int atom);
+   public native int indigoResetIsotope (int atom);
 
    public native int indigoCountAtoms (int molecule);
    public native int indigoCountBonds (int molecule);
@@ -423,9 +429,12 @@ public class Indigo
    public native String indigoLayeredCode (int handle);
 
    public native int indigoCountComponents (int molecule);
+   public native int indigoHasZCoord (int molecule);
 
    public native int indigoCreateSubmolecule (int molecule, int[] vertices);
    public native int indigoCreateEdgeSubmolecule (int molecule, int[] vertices, int[] edges);
+
+   public native float indigoAlignAtoms (int molecule, int[] atom_ids, float[] desired_xyz);
 
    public native float indigoSimilarity (int molecule1, int molecule2, String metrics);
    
@@ -442,9 +451,10 @@ public class Indigo
    public native String indigoName (int handle);
    public native int indigoSetName (int handle, String name);
 
-   public native int indigoHasProperty (int handle, String field);
-   public native String indigoGetProperty (int handle, String field);
-   public native int indigoSetProperty (int handle, String field, String value);
+   public native int indigoHasProperty (int handle, String prop);
+   public native String indigoGetProperty (int handle, String prop);
+   public native int indigoSetProperty (int handle, String prop, String value);
+   public native int indigoRemoveProperty (int handle, String prop);
    public native int indigoIterateProperties (int handle);
 
    public native String indigoCheckBadValence (int handle);
@@ -477,6 +487,7 @@ public class Indigo
 
    public native int indigoMatchSubstructure (int query, int target);
    public native int indigoMatchHighlight (int match);
+   public native int indigoMapAtom (int match, int query_atom);
    public native int indigoCountSubstructureMatches (int query, int target);
 
    public native int indigoExtractCommonScaffold (int structures, String options);

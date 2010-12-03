@@ -844,6 +844,86 @@ CEXPORT int indigoGetRadicalElectrons (int atomm, int *electrons)
    INDIGO_END(-1);
 }
 
+CEXPORT float * indigoXYZ (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+      BaseMolecule *mol = ia.mol;
+
+      Vec3f &pos = mol->getAtomXyz(ia.idx);
+      self.tmp_xyz[0] = pos.x;
+      self.tmp_xyz[1] = pos.y;
+      self.tmp_xyz[2] = pos.z;
+      return self.tmp_xyz;
+   }
+   INDIGO_END(0)
+}
+
+CEXPORT int indigoResetCharge (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+      BaseMolecule *mol = ia.mol;
+
+      if (mol->isQueryMolecule())
+         mol->asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_CHARGE);
+      else
+         mol->asMolecule().setAtomCharge(ia.idx, 0);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoResetExplicitValence (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+      BaseMolecule *mol = ia.mol;
+
+      if (mol->isQueryMolecule())
+         mol->asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_VALENCE);
+      else
+         mol->asMolecule().resetExplicitValence(ia.idx);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoResetRadical (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+      BaseMolecule *mol = ia.mol;
+
+      if (mol->isQueryMolecule())
+         mol->asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_RADICAL);
+      else
+         mol->asMolecule().setAtomRadical(ia.idx, 0);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoResetIsotope (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+      BaseMolecule *mol = ia.mol;
+
+      if (mol->isQueryMolecule())
+         mol->asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_ISOTOPE);
+      else
+         mol->asMolecule().setAtomIsotope(ia.idx, 0);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT const char * indigoCanonicalSmiles (int molecule)
 {
    INDIGO_BEGIN
@@ -1030,6 +1110,24 @@ CEXPORT int indigoMatchHighlight (int match)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoMapAtom (int match, int query_atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(match);
+      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCHER)
+         throw IndigoError("indigoMatchHighlight(): matcher must be given, not %s", obj.debugInfo());
+      IndigoAtom &ia = self.getObject(query_atom).getAtom();
+      
+      IndigoMoleculeSubstructureMatcher &matcher = (IndigoMoleculeSubstructureMatcher &)obj;
+      matcher.matcher.getQuery().getAtom(ia.idx); // will throw an exception if the atom index is invalid
+      int idx = matcher.matcher.getQueryMapping()[ia.idx];
+
+      return self.addObject(new IndigoAtom(matcher.target, idx));
+   }
+   INDIGO_END(-1)
+}
+
 struct MatchCountContext
 {
    int embeddings_count, max_count;
@@ -1083,6 +1181,17 @@ CEXPORT int indigoCountComponents (int molecule)
       decomposer.decompose();
       
       return decomposer.getComponentsCount();
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoHasZCoord (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return BaseMolecule::hasZCoord(mol) ? 1 : 0;
    }
    INDIGO_END(-1)
 }
@@ -1234,6 +1343,47 @@ CEXPORT int indigoBond (int nei)
       IndigoAtomNeighbor &atomnei = (IndigoAtomNeighbor &)obj;
 
       return self.addObject(new IndigoBond(*atomnei.mol, atomnei.bond_idx));
+   }
+   INDIGO_END(-1)
+}
+
+float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *desired_xyz)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      QS_DEF(Array<Vec3f>, points);
+      QS_DEF(Array<Vec3f>, goals);
+      int i;
+
+      if (natoms < 1)
+         throw IndigoError("indigoAlignAtoms(): can not align %d atoms", natoms);
+
+      if (atom_ids == 0 || desired_xyz == 0)
+         throw IndigoError("indigoAlignAtoms(): zero pointer given as input");
+         
+      points.clear();
+      goals.clear();
+
+      for (i= 0; i < natoms; i++)
+      {
+         points.push(mol.getAtomXyz(atom_ids[i]));
+         goals.push(Vec3f(desired_xyz[i * 3], desired_xyz[i * 3 + 1], desired_xyz[i * 3 + 2]));
+      }
+
+      if (points.size() < 1)
+         return true;
+
+      float sqsum;
+      Transform3f matr;
+
+      if (!matr.bestFit(points.size(), points.ptr(), goals.ptr(), &sqsum))
+         return false;
+
+      for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+         mol.getAtomXyz(i).transformPoint(matr);
+
+      return (float)(sqrt(sqsum / natoms));
    }
    INDIGO_END(-1)
 }

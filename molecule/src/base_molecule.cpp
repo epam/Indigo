@@ -52,7 +52,7 @@ void BaseMolecule::clear ()
    Graph::clear();
 }
 
-bool BaseMolecule::haveZCoord (BaseMolecule &mol)
+bool BaseMolecule::hasZCoord (BaseMolecule &mol)
 {
    int i;
 

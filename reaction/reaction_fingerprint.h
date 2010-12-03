@@ -27,9 +27,14 @@ public:
    ReactionFingerprintBuilder (BaseReaction &reaction, const MoleculeFingerprintParameters &parameters);
 
    bool query;
+   bool skip_ord;
+   bool skip_sim;
+   bool skip_ext;
+
    void process ();
    
-   const byte * getFingerprint ();
+   byte * get ();
+   byte * getSim ();
 
 protected:
          BaseReaction                  &_reaction;

@@ -225,6 +225,14 @@ void MoleculeSubstructureMatcher::setQuery (QueryMolecule &query)
 
 }
 
+QueryMolecule & MoleculeSubstructureMatcher::getQuery ()
+{
+   if (_query == 0)
+      throw Error("query not set");
+
+   return *_query;
+}
+
 void MoleculeSubstructureMatcher::setNeiCounters (
    const MoleculeAtomNeighbourhoodCounters *query_counters,
    const MoleculeAtomNeighbourhoodCounters *target_counters)

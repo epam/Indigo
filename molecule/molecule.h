@@ -42,6 +42,7 @@ public:
    DLLEXPORT void setAtomRadical (int idx, int radical);
    DLLEXPORT void setValence (int idx, int valence);
    DLLEXPORT void setExplicitValence (int idx, int valence);
+   DLLEXPORT void resetExplicitValence (int idx);
    DLLEXPORT void setImplicitH       (int idx, int impl_h); // in fact, this is 'explicit implicit H'
    DLLEXPORT void resetImplicitH     (int idx);
 

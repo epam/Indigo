@@ -1,0 +1,1 @@
+start javaw -jar -Xss1m chemdiff.jar

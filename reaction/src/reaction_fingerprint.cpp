@@ -26,11 +26,14 @@ _parameters(parameters),
 TL_CP_GET(_fingerprint)
 {
    query = false;
+   skip_sim = false;
+   skip_ord = false;
+   skip_ext = false;
 }
 
 void ReactionFingerprintBuilder::process ()
 {
-   int i, one_fp_size = _parameters.fingerprintSizeExtOrd();
+   int i, one_fp_size = _parameters.fingerprintSizeExtOrdSim();
    
    _fingerprint.clear_resize(one_fp_size * 2);
    _fingerprint.zerofill();
@@ -41,9 +44,15 @@ void ReactionFingerprintBuilder::process ()
 
       builder.query = query;
       builder.skip_tau = true;
-      builder.skip_sim = true;
+      builder.skip_sim = skip_sim;
+      builder.skip_ord = skip_ord;
+      builder.skip_ext = skip_ext;
+      builder.skip_any_atoms = true;
+      builder.skip_any_bonds = true;
+      builder.skip_any_atoms_bonds = true;
       builder.process();
-      bitOr(_fingerprint.ptr(), builder.get(), one_fp_size);
+      bitOr(get(), builder.get(), _parameters.fingerprintSizeExtOrd());
+      bitOr(getSim(), builder.getSim(), _parameters.fingerprintSizeSim());
    }
    for (i = _reaction.productBegin(); i < _reaction.productEnd(); i = _reaction.productNext(i))
    {
@@ -51,13 +60,26 @@ void ReactionFingerprintBuilder::process ()
 
       builder.query = query;
       builder.skip_tau = true;
-      builder.skip_sim = true;
+      builder.skip_sim = skip_sim;
+      builder.skip_ord = skip_ord;
+      builder.skip_ext = skip_ext;
+      builder.skip_any_atoms = true;
+      builder.skip_any_bonds = true;
+      builder.skip_any_atoms_bonds = true;
       builder.process();
-      bitOr(_fingerprint.ptr() + one_fp_size, builder.get(), one_fp_size);
+      bitOr(get() + _parameters.fingerprintSizeExtOrd(),
+            builder.get(), _parameters.fingerprintSizeExtOrd());
+      bitOr(getSim() + + _parameters.fingerprintSizeSim(),
+            builder.getSim(), _parameters.fingerprintSizeSim());
    }
 }
 
-const byte * ReactionFingerprintBuilder::getFingerprint ()
+byte * ReactionFingerprintBuilder::get ()
 {
    return _fingerprint.ptr();
+}
+
+byte * ReactionFingerprintBuilder::getSim ()
+{
+   return _fingerprint.ptr() + _parameters.fingerprintSizeExtOrd() * 2;
 }

@@ -51,15 +51,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../dist/DebugStatic/GNU-Linux-x86/libindigo.a ../../render2d/dist/Debug/GNU-Linux-x86/librender2d.a ../../layout/dist/Debug/GNU-Linux-x86/liblayout.a ../../reaction/dist/Debug/GNU-Linux-x86/libreaction.a ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a -lm -lz -lpthread -lstdc++ -ldl
+LDLIBSOPTIONS=../dist/DebugStatic/GNU-Linux-x86/libindigo.a ../../layout/dist/Debug/GNU-Linux-x86/liblayout.a ../../reaction/dist/Debug/GNU-Linux-x86/libreaction.a ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a -lm -lz -lpthread -lstdc++ -ldl
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-Debug.mk dist/Debug/GNU-Linux-x86/libindigo-jni.so
 
 dist/Debug/GNU-Linux-x86/libindigo-jni.so: ../dist/DebugStatic/GNU-Linux-x86/libindigo.a
-
-dist/Debug/GNU-Linux-x86/libindigo-jni.so: ../../render2d/dist/Debug/GNU-Linux-x86/librender2d.a
 
 dist/Debug/GNU-Linux-x86/libindigo-jni.so: ../../layout/dist/Debug/GNU-Linux-x86/liblayout.a
 
@@ -86,7 +84,6 @@ ${OBJECTDIR}/indigo_jni.o: indigo_jni.c
 # Subprojects
 .build-subprojects:
 	cd .. && ${MAKE}  -f Makefile CONF=DebugStatic
-	cd ../../render2d && ${MAKE}  -f Makefile CONF=Debug
 	cd ../../layout && ${MAKE}  -f Makefile CONF=Debug
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Debug
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Debug
@@ -100,7 +97,6 @@ ${OBJECTDIR}/indigo_jni.o: indigo_jni.c
 # Subprojects
 .clean-subprojects:
 	cd .. && ${MAKE}  -f Makefile CONF=DebugStatic clean
-	cd ../../render2d && ${MAKE}  -f Makefile CONF=Debug clean
 	cd ../../layout && ${MAKE}  -f Makefile CONF=Debug clean
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Debug clean
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Debug clean

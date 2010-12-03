@@ -51,15 +51,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../dist/ReleaseStatic32/GNU-Linux-x86/libindigo.a ../../render2d/dist/Release32/GNU-Linux-x86/librender2d.a ../../layout/dist/Release32/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release32/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a -lm -lz -lpthread -lstdc++ -ldl
+LDLIBSOPTIONS=../dist/ReleaseStatic32/GNU-Linux-x86/libindigo.a ../../layout/dist/Release32/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release32/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a -lm -lz -lpthread -lstdc++ -ldl
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-Release32.mk dist/Release32/GNU-Linux-x86/libindigo-jni.so
 
 dist/Release32/GNU-Linux-x86/libindigo-jni.so: ../dist/ReleaseStatic32/GNU-Linux-x86/libindigo.a
-
-dist/Release32/GNU-Linux-x86/libindigo-jni.so: ../../render2d/dist/Release32/GNU-Linux-x86/librender2d.a
 
 dist/Release32/GNU-Linux-x86/libindigo-jni.so: ../../layout/dist/Release32/GNU-Linux-x86/liblayout.a
 
@@ -86,7 +84,6 @@ ${OBJECTDIR}/indigo_jni.o: indigo_jni.c
 # Subprojects
 .build-subprojects:
 	cd .. && ${MAKE}  -f Makefile CONF=ReleaseStatic32
-	cd ../../render2d && ${MAKE}  -f Makefile CONF=Release32
 	cd ../../layout && ${MAKE}  -f Makefile CONF=Release32
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Release32
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Release32
@@ -100,7 +97,6 @@ ${OBJECTDIR}/indigo_jni.o: indigo_jni.c
 # Subprojects
 .clean-subprojects:
 	cd .. && ${MAKE}  -f Makefile CONF=ReleaseStatic32 clean
-	cd ../../render2d && ${MAKE}  -f Makefile CONF=Release32 clean
 	cd ../../layout && ${MAKE}  -f Makefile CONF=Release32 clean
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Release32 clean
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Release32 clean

@@ -49,7 +49,7 @@ void RingoIndex::prepare (Scanner &rxnfile, Output &output)
    ReactionFingerprintBuilder builder(reaction, _context.fp_parameters);
 
    builder.process();
-   _fp.copy(builder.getFingerprint(), _context.fp_parameters.fingerprintSizeExtOrd() * 2);
+   _fp.copy(builder.get(), _context.fp_parameters.fingerprintSizeExtOrdSim() * 2);
 
    ArrayOutput output_crf(_crf);
 

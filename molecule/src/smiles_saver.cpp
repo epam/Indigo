@@ -216,10 +216,6 @@ void SmilesSaver::_saveMolecule ()
 
       int pyramid_mapping[4];
       int counter = 0;
-      QS_DEF(Array<int>, used);
-
-      used.clear_resize(_bmol->vertexEnd());
-      used.zerofill();
 
       _Atom &atom = _atoms[atom_idx];
 
@@ -1273,28 +1269,4 @@ SmilesSaver::_Atom::_Atom (Pool<List<int>::Elem> &neipool) :
 
 SmilesSaver::_Atom::~_Atom ()
 {
-}
-
-void SmilesSaver::_Atom::pending (int cycle)
-{
-   if (cycle < 1)
-      throw Error("cycle number %d is not allowed", cycle);
-   neighbors.add(-cycle);
-}
-
-void SmilesSaver::_Atom::closure (int cycle, int end)
-{
-   int i;
-
-   if (cycle < 1)
-      throw Error("cycle number %d is not allowed", cycle);
-
-   for (i = neighbors.begin(); i != neighbors.end(); i = neighbors.next(i))
-   {
-      if (neighbors.at(i) == -cycle)
-      {
-         neighbors.at(i) = end;
-         break;
-      }
-   }
 }

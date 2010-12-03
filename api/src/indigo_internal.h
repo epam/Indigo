@@ -896,6 +896,7 @@ public:
    DLLEXPORT void removeAllObjects ();
 
    Array<char> tmp_string;
+   float tmp_xyz[3];
 
    ProductEnumeratorParams rpe_params;
 

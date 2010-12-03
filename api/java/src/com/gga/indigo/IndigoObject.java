@@ -193,35 +193,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return dispatcher.indigoGetRadicalElectrons(self);
    }
 
-   public int atomNumber ()
-   {
-      return dispatcher.indigoAtomNumber(self);
-   }
-
-   public int atomIsotope ()
-   {
-      return dispatcher.indigoAtomIsotope(self);
-   }
-
-   public int countAtoms ()
-   {
-      return dispatcher.indigoCountAtoms(self);
-   }
-
-   public int countBonds ()
-   {
-      return dispatcher.indigoCountBonds(self);
-   }
-   
-   public int countPseudoatoms ()
-   {
-      return dispatcher.indigoCountPseudoatoms(self);
-   }
-
-   public int countRSites ()
-   {
-      return dispatcher.indigoCountRSites(self);
-   }
+   public int  atomNumber ()   { return dispatcher.indigoAtomNumber(self);  }
+   public int  atomIsotope ()  { return dispatcher.indigoAtomIsotope(self); }
+   public void resetCharge () { dispatcher.indigoResetCharge(self); }
+   public void resetExplicitValence () { dispatcher.indigoResetExplicitValence(self); }
+   public void resetRadical () { dispatcher.indigoResetRadical(self); }
+   public void resetIsotope () { dispatcher.indigoResetIsotope(self); }
+   public int  countAtoms ()  { return dispatcher.indigoCountAtoms(self); }
+   public int  countBonds () { return dispatcher.indigoCountBonds(self); }
+   public int  countPseudoatoms () { return dispatcher.indigoCountPseudoatoms(self); }
+   public int  countRSites () { return dispatcher.indigoCountRSites(self); }
 
    public IndigoObject iterateBonds ()
    {
@@ -281,35 +262,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return result;
    }
    
-   public float molecularWeight ()
-   {
-      return dispatcher.indigoMolecularWeight(self);
-   }
+   public float molecularWeight () { return dispatcher.indigoMolecularWeight(self); }
+   public float mostAbundantMass () { return dispatcher.indigoMostAbundantMass(self); }
+   public float monoisotopicMass () { return dispatcher.indigoMonoisotopicMass(self); }
+   public String canonicalSmiles () { return dispatcher.indigoCanonicalSmiles(self); }
+   public String layeredCode () { return dispatcher.indigoLayeredCode(self); }
+   public int countComponents () { return dispatcher.indigoCountComponents(self); }
+   public boolean hasZCoord () { return dispatcher.indigoHasZCoord(self) == 1; }
 
-   public float mostAbundantMass ()
-   {
-      return dispatcher.indigoMostAbundantMass(self);
-   }
-
-   public float monoisotopicMass ()
-   {
-      return dispatcher.indigoMonoisotopicMass(self);
-   }
-
-   public String canonicalSmiles ()
-   {
-      return dispatcher.indigoCanonicalSmiles(self);
-   }
-   
-   public String layeredCode ()
-   {
-      return dispatcher.indigoLayeredCode(self);
-   }
-
-   public int countComponents ()
-   {
-      return dispatcher.indigoCountComponents(self);
-   }
+   public float[] xyz () { return dispatcher.indigoXYZ(self); }
 
    public IndigoObject createSubmolecule (int[] vertices)
    {
@@ -319,6 +280,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject createEdgeSubmolecule (int[] vertices, int[] edges)
    {
       return new IndigoObject(dispatcher, dispatcher.indigoCreateEdgeSubmolecule(self, vertices, edges));
+   }
+
+   public float alignAtoms (int[] atom_ids, float[] desired_xyz)
+   {
+      return dispatcher.indigoAlignAtoms(self, atom_ids, desired_xyz);
    }
 
    public void aromatize ()
@@ -361,20 +327,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.indigoSetName(self, name);
    }
    
-   public boolean hasProperty (String prop)
-   {
-      return dispatcher.indigoHasProperty(self, prop) == 1;
-   }
-
-   public String getProperty (String prop)
-   {
-      return dispatcher.indigoGetProperty(self, prop);
-   }
-
-   public void setProperty (String prop, String value)
-   {
-      dispatcher.indigoSetProperty(self, prop, value);
-   }
+   public boolean hasProperty (String prop) { return dispatcher.indigoHasProperty(self, prop) == 1; }
+   public String getProperty (String prop) { return dispatcher.indigoGetProperty(self, prop); }
+   public void setProperty (String prop, String value) { dispatcher.indigoSetProperty(self, prop, value); }
+   public void removeProperty (String prop) { dispatcher.indigoRemoveProperty(self, prop); }
 
    public IndigoObject iterateProperties ()
    {
@@ -454,6 +410,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject matchHighlight ()
    {
       return new IndigoObject(dispatcher, dispatcher.indigoMatchHighlight(self));
+   }
+
+   public IndigoObject mapAtom (IndigoObject atom)
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoMapAtom(self, atom.self));
    }
 
    public IndigoObject allScaffolds ()

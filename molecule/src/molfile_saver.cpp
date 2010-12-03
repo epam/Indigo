@@ -86,7 +86,7 @@ void MolfileSaver::_saveMolecule (BaseMolecule &mol, bool query)
       _output.writeStringCR("$HDR");
    }
       
-   _writeHeader(mol, _output, BaseMolecule::haveZCoord(mol));
+   _writeHeader(mol, _output, BaseMolecule::hasZCoord(mol));
 
    if (rg2000)
    {

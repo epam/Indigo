@@ -39,15 +39,16 @@ struct MoleculeFingerprintParameters
 {
    int ord_qwords, any_qwords, tau_qwords, sim_qwords;
 
-   int fingerprintSize       () const { return 3 + (ord_qwords + any_qwords + tau_qwords + sim_qwords) * 8; }
-   int fingerprintSizeExt    () const { return 3; }
-   int fingerprintSizeExtOrd () const { return 3 + ord_qwords * 8;}
-   int fingerprintSizeOrd    () const { return ord_qwords * 8; }
-   int fingerprintSizeAny    () const { return any_qwords * 8; }
-   int fingerprintSizeTau    () const { return tau_qwords * 8; }
-   int fingerprintSizeSim    () const { return sim_qwords * 8; }
+   int fingerprintSize    () const { return 3 + (ord_qwords + any_qwords + tau_qwords + sim_qwords) * 8; }
+   int fingerprintSizeExt () const { return 3; }
+   int fingerprintSizeOrd () const { return ord_qwords * 8; }
+   int fingerprintSizeSim () const { return sim_qwords * 8; }
+   int fingerprintSizeTau () const { return tau_qwords * 8; }
+   int fingerprintSizeAny () const { return any_qwords * 8; }
 
-   int fingerprintOffsetSim  () const { return 3 + (ord_qwords + any_qwords + tau_qwords) * 8; }
+   int fingerprintSizeExtOrd () const { return 3 + ord_qwords * 8;}
+   int fingerprintSizeExtOrdSim () const { return 3 + ord_qwords * 8 + sim_qwords * 8;}
+
 };
 
 class MoleculeFingerprintBuilder
@@ -71,10 +72,10 @@ public:
    DLLEXPORT void process ();
 
    DLLEXPORT const byte * get ();
-   DLLEXPORT byte * getSim ();
    DLLEXPORT byte * getOrd ();
-   DLLEXPORT byte * getAny ();
+   DLLEXPORT byte * getSim ();
    DLLEXPORT byte * getTau ();
+   DLLEXPORT byte * getAny ();
    
    DLLEXPORT int countBits_Sim ();
 

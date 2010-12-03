@@ -49,6 +49,9 @@ typedef unsigned char byte;
 /* All integer and float functions return -1 on error. */
 /* All string functions return zero pointer on error. */
 
+/* Almost all string functions return the same pointer on success;
+   you should not free() it, but rather strdup() it if you want to keep it. */
+
 /* System */
 
 CEXPORT const char * indigoVersion ();
@@ -245,6 +248,15 @@ CEXPORT int indigoAtomNumber (int atom);
 // Returns zero on unspecified or ambiguous isotope
 CEXPORT int indigoAtomIsotope (int atom);
 
+// On success, returns always the same pointer to a 3-element array;
+// you should not free() it, but rather memcpy() it if you want to keep it.
+CEXPORT float * indigoXYZ (int atom);
+
+CEXPORT int indigoResetCharge (int atom);
+CEXPORT int indigoResetExplicitValence (int atom);
+CEXPORT int indigoResetRadical (int atom);
+CEXPORT int indigoResetIsotope (int atom);
+
 CEXPORT int indigoCountAtoms (int molecule);
 CEXPORT int indigoCountBonds (int molecule);
 CEXPORT int indigoCountPseudoatoms (int molecule);
@@ -298,8 +310,17 @@ CEXPORT const char * indigoLayeredCode (int molecule);
 // Returns the number of connected components
 CEXPORT int indigoCountComponents (int molecule);
 
+CEXPORT int indigoHasZCoord (int molecule);
+
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices);
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices, int nedges, int *edges);
+
+// Determines and applies the best transformation to the given molecule
+// so that the specified atoms move as close as possible to the desired
+// positions. The size of desired_xyz is equal to 3 * natoms.
+// The return value is the root-mean-square measure of the difference
+// between the desired and obtained positions.
+CEXPORT float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *desired_xyz);
 
 /* Things that work for both molecules and reactions */
 
@@ -321,13 +342,16 @@ CEXPORT int indigoSetName (int handle, const char *name);
 
 // Applicable to molecules/reactions obtained from SDF or RDF files,
 // and to their clones, and to their R-Group deconvolutions.
-CEXPORT int indigoHasProperty (int handle, const char *field);
-CEXPORT const char * indigoGetProperty (int handle, const char *field);
+CEXPORT int indigoHasProperty (int handle, const char *prop);
+CEXPORT const char * indigoGetProperty (int handle, const char *prop);
 
 // Applicable to newly created or cloned molecules/reactions,
 // and also to molecules/reactions obtained from SDF or RDF files.
 // If the property with the given name does not exist, it is created automatically.
-CEXPORT int indigoSetProperty (int handle, const char *field, const char *value);
+CEXPORT int indigoSetProperty (int item, const char *prop, const char *value);
+
+// Does not raise an error if the given property does not exist
+CEXPORT int indigoRemoveProperty (int item, const char *prop);
 
 // Returns an iterator that one can pass to indigoName() to
 // know the name of the property. The value of the property can be
@@ -393,9 +417,9 @@ CEXPORT const char * indigoRawData (int item);
 // Returns the offset in the SDF/RDF file.
 CEXPORT int indigoTell (int handle);
 
-// Saves molecule to an SDF output stream
+// Saves the molecule to an SDF output stream
 CEXPORT int indigoSdfAppend (int output, int item);
-// Saves molecule to a multiline SMILES output stream
+// Saves the molecule to a multiline SMILES output stream
 CEXPORT int indigoSmilesAppend (int output, int item);
 
 /* Arrays */
@@ -417,8 +441,13 @@ CEXPORT int indigoMatchSubstructure (int query, int target);
 // Returns a new molecule which has the query highlighted.
 CEXPORT int indigoMatchHighlight (int match);
 
-// Count number of embeddings of query into target molecule.
-// Returns a number if embeddings.
+// Accepts an atom from the query, not an atom index.
+//   You can use indigoGetAtom() to obtain the atom by its index.
+// Returns the corresponding target atom, not an atom index.
+//   You can use indigoGetIndex() to obtain the index of the returned atom.
+CEXPORT int indigoMapAtom (int match, int query_atom);
+
+// Counts the number of embeddings of the query structure into the target
 CEXPORT int indigoCountSubstructureMatches (int query, int target);
 
 /* Scaffold detection */

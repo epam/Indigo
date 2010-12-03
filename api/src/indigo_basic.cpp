@@ -140,6 +140,23 @@ int indigoSetProperty (int handle, const char *prop, const char *value)
    INDIGO_END(-1)
 }
 
+int indigoRemoveProperty (int handle, const char *prop)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+      RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
+
+      if (props == 0)
+         throw IndigoError("%s does not have properties", obj.debugInfo());
+
+      if (props->at2(prop) != 0)
+         props->remove(prop);
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 IndigoPropertiesIter::IndigoPropertiesIter (RedBlackStringObjMap< Array<char> > &props) :
 IndigoObject(PROPERTIES_ITER),
 _props(props)
