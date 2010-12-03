@@ -48,7 +48,7 @@ OracleError::OracleError (OCIError *errhp, int oracle_rc, const char *message, i
          snprintf(_message, sizeof(_message), "%s: %.*s\n", message, 512, errbuf);
       }
       else
-          snprintf(_message, sizeof(_message), "(can't get error because errhp is null)\n");
+          snprintf(_message, sizeof(_message), "(can not get the error messahe because errhp is null)\n");
    }
    _my_rc = my_rc;
 }
