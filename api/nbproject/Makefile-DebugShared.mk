@@ -35,9 +35,11 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/src/indigo_molecule.o \
 	${OBJECTDIR}/src/indigo_loaders.o \
+	${OBJECTDIR}/src/indigo_properties.o \
 	${OBJECTDIR}/src/indigo_io.o \
 	${OBJECTDIR}/src/indigo_array.o \
 	${OBJECTDIR}/src/indigo.o \
+	${OBJECTDIR}/src/indigo_options.o \
 	${OBJECTDIR}/src/indigo_scaffold.o \
 	${OBJECTDIR}/src/indigo_match.o \
 	${OBJECTDIR}/src/indigo_reaction.o \
@@ -49,6 +51,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/indigo_basic.o \
 	${OBJECTDIR}/src/indigo_misc.o \
 	${OBJECTDIR}/src/indigo_layout.o \
+	${OBJECTDIR}/src/indigo_stereo.o \
 	${OBJECTDIR}/src/indigo_deconvolution.o
 
 
@@ -94,6 +97,11 @@ ${OBJECTDIR}/src/indigo_loaders.o: src/indigo_loaders.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_loaders.o src/indigo_loaders.cpp
 
+${OBJECTDIR}/src/indigo_properties.o: src/indigo_properties.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_properties.o src/indigo_properties.cpp
+
 ${OBJECTDIR}/src/indigo_io.o: src/indigo_io.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -108,6 +116,11 @@ ${OBJECTDIR}/src/indigo.o: src/indigo.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo.o src/indigo.cpp
+
+${OBJECTDIR}/src/indigo_options.o: src/indigo_options.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_options.o src/indigo_options.cpp
 
 ${OBJECTDIR}/src/indigo_scaffold.o: src/indigo_scaffold.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -163,6 +176,11 @@ ${OBJECTDIR}/src/indigo_layout.o: src/indigo_layout.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_layout.o src/indigo_layout.cpp
+
+${OBJECTDIR}/src/indigo_stereo.o: src/indigo_stereo.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_stereo.o src/indigo_stereo.cpp
 
 ${OBJECTDIR}/src/indigo_deconvolution.o: src/indigo_deconvolution.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
