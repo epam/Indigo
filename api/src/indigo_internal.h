@@ -909,6 +909,10 @@ public:
    int  molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
 
    Encoding filename_encoding;
+
+   bool embedding_edges_uniqueness;
+   int max_embeddings;
+
 protected:
 
    RedBlackMap<int, IndigoObject *> _objects;

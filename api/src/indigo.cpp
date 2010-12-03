@@ -43,6 +43,9 @@ Indigo::Indigo ()
    fp_params.sim_qwords = 8;
    fp_params.tau_qwords = 10;
    fp_params.ord_qwords = 25;
+
+   embedding_edges_uniqueness = false;
+   max_embeddings = 1000;
 }
 
 void Indigo::removeAllObjects ()

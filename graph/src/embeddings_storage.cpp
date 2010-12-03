@@ -18,17 +18,29 @@
 
 using namespace indigo;
 
+GraphEmbeddingsStorage::GraphEmbeddingsStorage ()
+{
+   unique_by_edges = false;
+}
+ 
 bool GraphEmbeddingsStorage::addEmbedding (const Array<int> &vertices, const Array<int> &edges)
 {
-   dword hash = _calcSetHash(vertices) ^ _calcSetHash(edges);
+   dword hash = _calcSetHash(vertices);
+   if (unique_by_edges)
+      hash ^= _calcSetHash(edges);
 
    QS_DEF(Array<int>, sorted_vertices);
    sorted_vertices.copy(vertices);
    sorted_vertices.qsort(_cmp_int, 0);
 
    QS_DEF(Array<int>, sorted_edges);
-   sorted_edges.copy(edges);
-   sorted_edges.qsort(_cmp_int, 0);
+   if (unique_by_edges)
+   {
+      sorted_edges.copy(edges);
+      sorted_edges.qsort(_cmp_int, 0);
+   }
+   else
+      sorted_edges.clear();
 
    // Try to find element with the same hash
    int *id = _map_hash_to_id.at2(hash);
@@ -81,18 +93,21 @@ bool GraphEmbeddingsStorage::addEmbedding (const Graph &super, const Graph &sub,
          vertices.push(core_sub[i]);
 
    edges.clear();
-   for (int i = sub.edgeBegin(); i != sub.edgeEnd(); i = sub.edgeNext(i))
+   if (unique_by_edges)
    {
-      const Edge &e = sub.getEdge(i);
-      if (core_sub[e.beg] < 0 || core_sub[e.end] < 0)
-         // Such edge isn't mapped because one vertex is ignored
-         continue;
+      for (int i = sub.edgeBegin(); i != sub.edgeEnd(); i = sub.edgeNext(i))
+      {
+         const Edge &e = sub.getEdge(i);
+         if (core_sub[e.beg] < 0 || core_sub[e.end] < 0)
+            // Such edge isn't mapped because one vertex is ignored
+            continue;
 
-      int edge_index = Graph::findMappedEdge(sub, super, i, core_sub);
-      if (edge_index == -1)
-         throw Error("Edge should be mapped");
+         int edge_index = Graph::findMappedEdge(sub, super, i, core_sub);
+         if (edge_index == -1)
+            throw Error("Edge should be mapped");
 
-      edges.push(edge_index);
+         edges.push(edge_index);
+      }
    }
 
    return addEmbedding(vertices, edges);

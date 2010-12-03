@@ -27,6 +27,11 @@ class Graph;
 class GraphEmbeddingsStorage
 {
 public:
+   GraphEmbeddingsStorage ();
+
+   // True if to take into account edges with checking for unique embedding
+   bool unique_by_edges;
+
    // Add embedding to the storage and returns true if such embedding 
    // hasn't already been in the storage.
    // Embeddings with the same set of vertices and edges are equivalent.

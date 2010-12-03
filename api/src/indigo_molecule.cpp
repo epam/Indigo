@@ -1030,11 +1030,19 @@ CEXPORT int indigoMatchHighlight (int match)
    INDIGO_END(-1)
 }
 
-static void _matchCountEmbeddingsCallback (Graph &sub, Graph &super, 
-                                           const int *core1, const int *core2, void *context)
+struct MatchCountContext
 {
-   int &embeddings_count = *(int *)context;
-   embeddings_count++;
+   int embeddings_count, max_count;
+};
+
+static bool _matchCountEmbeddingsCallback (Graph &sub, Graph &super, 
+                                           const int *core1, const int *core2, void *context_)
+{
+   MatchCountContext *context = (MatchCountContext *)context_;
+   context->embeddings_count++;
+   if (context->embeddings_count >= context->max_count)
+      return false;
+   return true;
 }
 
 CEXPORT int indigoCountSubstructureMatches (int query, int target)
@@ -1050,14 +1058,16 @@ CEXPORT int indigoCountSubstructureMatches (int query, int target)
       matcher.setQuery(querymol);
       matcher.fmcache = &fmcache;
 
-      int embeddings_count = 0;
-
+      MatchCountContext context;
+      context.embeddings_count = 0;
+      context.max_count = self.max_embeddings;
       matcher.find_all_embeddings = true;
       matcher.find_unique_embeddings = true;
+      matcher.find_unique_by_edges = self.embedding_edges_uniqueness;
       matcher.cb_embedding = _matchCountEmbeddingsCallback;
-      matcher.cb_embedding_context = &embeddings_count;
+      matcher.cb_embedding_context = &context;
       matcher.find();
-      return embeddings_count;
+      return context.embeddings_count;
    }
    INDIGO_END(-1)
 }

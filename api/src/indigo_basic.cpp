@@ -214,25 +214,25 @@ int indigoIterateProperties (int handle)
 }
 
 
-void indigoIgnoreStereochemistryErrors (int enabled)
+static void indigoIgnoreStereochemistryErrors (int enabled)
 {
    Indigo &self = indigoGetInstance();
    self.ignore_stereochemistry_errors = (enabled != 0);
 }
 
-void indigoTreatXAsPseudoatom (int enabled)
+static void indigoTreatXAsPseudoatom (int enabled)
 {
    Indigo &self = indigoGetInstance();
    self.treat_x_as_pseudoatom = (enabled != 0);
 }
 
-void indigoDeconvolutionAromatization (int enabled)
+static void indigoDeconvolutionAromatization (int enabled)
 {
    Indigo &self = indigoGetInstance();
    self.deconvolution_aromatization = (enabled != 0);
 }
 
-void indigoSetMolfileSavingMode (const char *mode)
+static void indigoSetMolfileSavingMode (const char *mode)
 {
    Indigo &self = indigoGetInstance();
    if (strcasecmp(mode, "2000") == 0)
@@ -245,7 +245,7 @@ void indigoSetMolfileSavingMode (const char *mode)
       throw IndigoError("unknown value: %s", mode);
 }
 
-void indigoSetFilenameEncoding (const char *encoding)
+static void indigoSetFilenameEncoding (const char *encoding)
 {
    Indigo &self = indigoGetInstance();
    if (strcasecmp(encoding, "ASCII") == 0)
@@ -256,28 +256,45 @@ void indigoSetFilenameEncoding (const char *encoding)
       throw IndigoError("unknown value: %s", encoding);
 }
 
-void indigoSetFPOrdQwords (int qwords)
+static void indigoSetFPOrdQwords (int qwords)
 {
    Indigo &self = indigoGetInstance();
    self.fp_params.ord_qwords = qwords;
 }
 
-void indigoSetFPSimQwords (int qwords)
+static void indigoSetFPSimQwords (int qwords)
 {
    Indigo &self = indigoGetInstance();
    self.fp_params.sim_qwords = qwords;
 }
 
-void indigoSetFPTauQwords (int qwords)
+static void indigoSetFPTauQwords (int qwords)
 {
    Indigo &self = indigoGetInstance();
    self.fp_params.tau_qwords = qwords;
 }
 
-void indigoSetFPAnyQwords (int qwords)
+static void indigoSetFPAnyQwords (int qwords)
 {
    Indigo &self = indigoGetInstance();
    self.fp_params.any_qwords = qwords;
+}
+
+static void indigoSetEmbeddingUniqueness (const char *mode)
+{
+   Indigo &self = indigoGetInstance();
+   if (strcasecmp(mode, "atoms") == 0)
+      self.embedding_edges_uniqueness = false;
+   else if (strcasecmp(mode, "bonds") == 0)
+      self.embedding_edges_uniqueness = true;
+   else
+      throw IndigoError("unknown value: %s", mode);
+}
+
+static void indigoSetMaxEmbeddings (int value)
+{
+   Indigo &self = indigoGetInstance();
+   self.max_embeddings = value;
 }
 
 class _IndigoBasicOptionsHandlersSetter
@@ -300,6 +317,9 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("fp-sim-qwords", indigoSetFPSimQwords);
    mgr.setOptionHandlerInt("fp-any-qwords", indigoSetFPAnyQwords);
    mgr.setOptionHandlerInt("fp-tau-qwords", indigoSetFPTauQwords);
+
+   mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness);
+   mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings);
 }
 
 _IndigoBasicOptionsHandlersSetter _indigo_basic_options_handlers_setter;

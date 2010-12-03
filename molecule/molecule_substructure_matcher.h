@@ -77,7 +77,9 @@ public:
    // for finding all embeddings
    bool find_all_embeddings; // false by default
    bool find_unique_embeddings; // true if to find only unique embeddings. false by default
-   void (*cb_embedding) (Graph &sub, Graph &super, const int *core1, const int *core2, void *context);
+   bool find_unique_by_edges; // true if to find edges-unique embeddings. false by default
+   // Embedding callback. Returns true to continue enumeration.
+   bool (*cb_embedding) (Graph &sub, Graph &super, const int *core1, const int *core2, void *context);
    void  *cb_embedding_context;
 
    DLLEXPORT static bool needCoords (int match_3d, QueryMolecule &query);

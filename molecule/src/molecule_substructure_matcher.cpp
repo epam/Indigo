@@ -73,6 +73,7 @@ TL_CP_GET(_used_target_h)
    rms_threshold = 0;
    find_all_embeddings = false;
    find_unique_embeddings = false;
+   find_unique_by_edges = false;
    fmcache = 0;
 
    disable_unfolding_implicit_h = false;
@@ -723,13 +724,17 @@ int MoleculeSubstructureMatcher::_embedding_common (int *core_sub, int *core_sup
       if (find_unique_embeddings)
       {
          if (_embeddings_storage.get() == 0)
+         {
             _embeddings_storage.create();
+            _embeddings_storage->unique_by_edges = find_unique_by_edges;
+         }
 
          if (!_embeddings_storage->addEmbedding(_target, query, core_sub))
             call_cb = false;
       }
       if (cb_embedding != 0 && call_cb)
-         cb_embedding(query, _target, core_sub, core_super, cb_embedding_context);
+         if (!cb_embedding(query, _target, core_sub, core_super, cb_embedding_context))
+            return 0;
 
       return 1;
    }
