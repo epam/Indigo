@@ -118,14 +118,14 @@ JNI_FUNC_jint_jint(indigoIterateRGroupFragments)
 JNI_FUNC_jint_jint(indigoIsPseudoatom)
 JNI_FUNC_jint_jint(indigoIsRSite)
 JNI_FUNC_jint_jint(indigoSingleAllowedRGroup)
-JNI_FUNC_jstring_jint(indigoPseudoatomLabel)
+JNI_FUNC_jstring_jint(indigoSymbol)
 
 JNI_FUNC_jint_jint(indigoDegree)
 JNI_FUNC_jobj_jint_intptr(indigoGetCharge)
 JNI_FUNC_jobj_jint_intptr(indigoGetExplicitValence)
 JNI_FUNC_jobj_jint_intptr(indigoGetRadicalElectrons)
-JNI_FUNC_jint_jint(indigoAtomNumber)
-JNI_FUNC_jint_jint(indigoAtomIsotope)
+JNI_FUNC_jint_jint(indigoAtomicNumber)
+JNI_FUNC_jint_jint(indigoIsotope)
 
 JNIEXPORT jfloatArray JNINAME(indigoXYZ) (JNIEnv *env, jobject obj, jint atom)
 {
@@ -159,8 +159,8 @@ JNI_FUNC_jint_jint(indigoBond)
 JNI_FUNC_jint_jint_jint(indigoGetAtom)
 JNI_FUNC_jint_jint_jint(indigoGetBond)
 
-JNI_FUNC_jint_jint(indigoCisTransClear)
-JNI_FUNC_jint_jint(indigoStereocentersClear)
+JNI_FUNC_jint_jint(indigoClearCisTrans)
+JNI_FUNC_jint_jint(indigoClearStereocenters)
 JNI_FUNC_jint_jint(indigoCountStereocenters)
 
 JNI_FUNC_jint_jint(indigoGrossFormula)

@@ -231,7 +231,7 @@ CEXPORT int indigoSingleAllowedRGroup (int rsite);
 CEXPORT int indigoIterateRGroupFragments (int rgroup);
 CEXPORT int indigoCountAttachmentPoints (int rgroup);
 
-CEXPORT const char * indigoPseudoatomLabel (int atom);
+CEXPORT const char * indigoSymbol (int atom);
 CEXPORT int indigoDegree (int atom);
 
 // Returns zero if the charge is ambiguous
@@ -244,9 +244,9 @@ CEXPORT int indigoGetRadicalElectrons (int atom, int *electrons);
 // Returns a number of element from the periodic table.
 // Returns zero on ambiguous atom.
 // Can not be applied to pseudo-atoms and R-sites.
-CEXPORT int indigoAtomNumber (int atom);
+CEXPORT int indigoAtomicNumber (int atom);
 // Returns zero on unspecified or ambiguous isotope
-CEXPORT int indigoAtomIsotope (int atom);
+CEXPORT int indigoIsotope (int atom);
 
 // On success, returns always the same pointer to a 3-element array;
 // you should not free() it, but rather memcpy() it if you want to keep it.
@@ -293,8 +293,8 @@ CEXPORT int indigoBond (int nei);
 CEXPORT int indigoGetAtom (int molecule, int idx);
 CEXPORT int indigoGetBond (int molecule, int idx);
 
-CEXPORT int indigoCisTransClear (int handle);
-CEXPORT int indigoStereocentersClear (int handle);
+CEXPORT int indigoClearCisTrans (int handle);
+CEXPORT int indigoClearStereocenters (int handle);
 CEXPORT int indigoCountStereocenters (int molecule);
 
 /* Calculation on molecules */

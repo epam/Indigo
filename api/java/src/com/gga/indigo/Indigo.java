@@ -387,14 +387,14 @@ public class Indigo
    public native int indigoIsPseudoatom (int atom);
    public native int indigoIsRSite (int atom);
    public native int indigoSingleAllowedRGroup (int atom);
-   public native String indigoPseudoatomLabel (int atom);
+   public native String indigoSymbol (int atom);
 
    public native int indigoDegree (int atom);
    public native Integer indigoGetCharge (int atom);
    public native Integer indigoGetExplicitValence (int atom);
    public native Integer indigoGetRadicalElectrons (int atom);
-   public native int indigoAtomNumber (int atom);
-   public native int indigoAtomIsotope (int atom);
+   public native int indigoAtomicNumber (int atom);
+   public native int indigoIsotope (int atom);
    public native float[] indigoXYZ (int atom);
 
    public native int indigoResetCharge (int atom);
@@ -416,8 +416,8 @@ public class Indigo
    public native int indigoGetAtom (int molecule, int idx);
    public native int indigoGetBond (int molecule, int idx);
 
-   public native int indigoCisTransClear (int molecule);
-   public native int indigoStereocentersClear (int molecule);
+   public native int indigoClearCisTrans (int molecule);
+   public native int indigoClearStereocenters (int molecule);
    public native int indigoCountStereocenters (int molecule);
 
    public native int indigoGrossFormula (int molecule);

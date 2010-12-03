@@ -168,9 +168,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return dispatcher.indigoSingleAllowedRGroup(self);
    }
 
-   public String pseudoatomLabel ()
+   public String symbol ()
    {
-      return dispatcher.indigoPseudoatomLabel(self);
+      return dispatcher.indigoSymbol(self);
    }
 
    public int degree ()
@@ -178,23 +178,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return dispatcher.indigoDegree(self);
    }
 
-   public Integer charge ()
-   {
-      return dispatcher.indigoGetCharge(self);
-   }
+   public Integer charge () {return dispatcher.indigoGetCharge(self); }
+   public Integer explicitValence () { return dispatcher.indigoGetExplicitValence(self); }
+   public Integer radicalElectrons () { return dispatcher.indigoGetRadicalElectrons(self); }
 
-   public Integer explicitValence ()
-   {
-      return dispatcher.indigoGetExplicitValence(self);
-   }
-
-   public Integer radicalElectrons ()
-   {
-      return dispatcher.indigoGetRadicalElectrons(self);
-   }
-
-   public int  atomNumber ()   { return dispatcher.indigoAtomNumber(self);  }
-   public int  atomIsotope ()  { return dispatcher.indigoAtomIsotope(self); }
+   public int  atomicNumber ()   { return dispatcher.indigoAtomicNumber(self);  }
+   public int  isotope ()  { return dispatcher.indigoIsotope(self); }
    public void resetCharge () { dispatcher.indigoResetCharge(self); }
    public void resetExplicitValence () { dispatcher.indigoResetExplicitValence(self); }
    public void resetRadical () { dispatcher.indigoResetRadical(self); }
@@ -239,14 +228,14 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, dispatcher.indigoGetBond(self, idx));
    }
 
-   public void cisTransClear ()
+   public void clearCisTrans ()
    {
-      dispatcher.indigoCisTransClear(self);
+      dispatcher.indigoClearCisTrans(self);
    }
    
-   public void stereocentersClear ()
+   public void clearStereocenters ()
    {
-      dispatcher.indigoStereocentersClear(self);
+      dispatcher.indigoClearStereocenters(self);
    }
 
    public int countStereocenters ()
