@@ -48,7 +48,7 @@ void RenderItemMolecule::init ()
    _factory.getItemHLine(lineCore).items.push(_core);
    _lines.push(lineCore);
 
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
    {
       MoleculeRGroups& rGroups = qmol.rgroups;
       if (_getRIfThenCount() > 0) {
@@ -71,6 +71,7 @@ void RenderItemMolecule::init ()
          int label = _factory.addItemAuxiliary();
          _factory.getItemAuxiliary(label).init();
          _factory.getItemAuxiliary(label).type = RenderItemAuxiliary::AUX_RGROUP_LABEL;
+         _factory.getItemAuxiliary(label).mol = _mol;
          _factory.getItemAuxiliary(label).rLabelIdx = i;
          _factory.getItemHLine(lineRFrag).items.push(label);
 
@@ -87,7 +88,7 @@ void RenderItemMolecule::init ()
 
 int RenderItemMolecule::_getRIfThenCount ()
 {
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
    {
       MoleculeRGroups& rgs = qmol.rgroups;
       int cnt = 0;

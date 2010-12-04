@@ -42,6 +42,8 @@ public:
    BaseMolecule* mol;
    int rLabelIdx;
 private:
+   void _drawRGroupLabel ();
+   void _drawRIfThen ();
    void _drawText ();
 };
 

@@ -54,7 +54,7 @@ void MoleculeRender::_initLayout ()
    _map.clear();
    _pushMol(_ml.newLine(), *_mol);
 
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
    {
       MoleculeRGroups& rGroups = qmol.rgroups;
       if (_getRIfThenHeight() > 0)
@@ -118,7 +118,7 @@ void MoleculeRender::_drawMol (Metalayout::LayoutItem& item)
 
 void MoleculeRender::_drawRGroupLabel (Metalayout::LayoutItem& item)
 {
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
    {
       MoleculeRGroups& rgs = qmol.rgroups;
       RGroup& rg = rgs.getRGroup(item.id);
@@ -183,7 +183,7 @@ void MoleculeRender::_drawRGroupLabel (Metalayout::LayoutItem& item)
 
 void MoleculeRender::_drawRIfThen (Metalayout::LayoutItem& item)
 {
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
    {
       MoleculeRGroups& rgs = qmol.rgroups;
 
@@ -210,7 +210,7 @@ void MoleculeRender::_drawRIfThen (Metalayout::LayoutItem& item)
 
 int MoleculeRender::_getRIfThenHeight ()
 {
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
    {
       MoleculeRGroups& rgs = qmol.rgroups;
       int cnt = 0;

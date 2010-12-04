@@ -42,6 +42,7 @@ public:
 
    Vec2f size;
    Vec2f origin;
+   float referenceY;
 protected:
    void renderIdle ();
 

@@ -42,7 +42,7 @@ void RenderItemHLine::estimateSize ()
    size.set(0,0);
    for (int i = 0; i < items.size(); ++i) {
       RenderItemBase& item = _factory.getItem(items[i]);
-      size.y = __max(size.y, item.size.y);
+      size.y = __max(size.y, 2 * (fabs(item.referenceY) + item.size.y / 2));
       size.x += (i > 0 ? hSpace : 0) + item.size.x;
    }
 }
@@ -54,7 +54,7 @@ void RenderItemHLine::render ()
    for (int i = 0; i < items.size(); ++i) {
       RenderItemBase& item = _factory.getItem(items[i]);
       _rc.storeTransform();
-      _rc.translate(0, size.y - item.size.y);
+      _rc.translate(0, 0.5f * (size.y - item.size.y) + item.referenceY);
       item.render();
       _rc.restoreTransform();
       _rc.removeStoredTransform();

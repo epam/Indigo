@@ -38,10 +38,16 @@ Render::~Render()
 void Render::draw ()
 {     
    _rc.initMetaSurface();
+   _rc.fontsClear();
 
    _item.init();
-
-   _rc.fontsClear();
+   double objScale = 1.0f;
+   int bondCount = _item.getBondCount();
+   if (bondCount > 0)
+      objScale = _item.getTotalBondLength() / bondCount;
+   int atomCount = _item.getAtomCount();
+   if (atomCount > 0)
+      objScale = _item.getTotalClosestAtomDistance() / atomCount;
 
    int minMarg = 2; // small absolute margin to allow for cairo font scaling errors
 
@@ -53,15 +59,11 @@ void Render::draw ()
 
    float scale = _getScale(delta, _cnvOpt.marginX + minMarg, _cnvOpt.marginY + minMarg);
 
-   //if (cnvOpt.width < commentWidth)
-   //   cnvOpt.width = commentWidth;
    _rc.initContext(_cnvOpt.width + 2 * _cnvOpt.commentMarginX, _cnvOpt.height + 2 * _cnvOpt.commentMarginY);
    _rc.translate((float)_cnvOpt.commentMarginX, (float)_cnvOpt.commentMarginY);
    _rc.storeTransform();
    if (_cnvOpt.xOffset > 0 || _cnvOpt.yOffset > 0)
       _rc.translate((float)_cnvOpt.xOffset, (float)_cnvOpt.yOffset);
-   //if (opt.commentPos == COMMENT_POS_TOP)
-   //   _rc.translate(0, (float)commentHeight);
    _rc.translate((_cnvOpt.width - delta.x * scale) / 2, 
       (_cnvOpt.height - delta.y * scale) / 2);
    _rc.scale(scale, scale);
@@ -69,8 +71,6 @@ void Render::draw ()
 
    _rc.storeTransform();
    _item.render();
-   //_ml.cb_process = cb_process;
-   //_ml.process();
    _rc.removeStoredTransform();
    _rc.resetTransform();
    //if (opt.comment.size() > 1) {
@@ -97,28 +97,7 @@ void Render::draw ()
 
    _rc.destroyMetaSurface();
 }
-//
-//Metalayout::LayoutItem& Render::_pushItem (Metalayout::LayoutLine& line, int type, int id)
-//{
-//   Metalayout::LayoutItem& item = line.items.push();
-//   item.type = type;
-//   item.id = id;
-//   item.over = false;
-//   item.fragment = false;
-//   return item;
-//}  
-//
-//Metalayout::LayoutItem& Render::_pushMol (Metalayout::LayoutLine& line, int type, int id, BaseMolecule& mol, bool catalyst)
-//{
-//   Metalayout::LayoutItem& item = _pushItem(line, type, id);
-//   Metalayout::getBoundRect(item.min, item.max, mol);
-//   item.over = catalyst;
-//   item.fragment = true;
-//   item.size.diff(item.max, item.min);
-//   item.origin.set(0, 0);
-//   return item;
-//}
-//
+
 float Render::_getScale (const Vec2f& delta, int absMargX, int absMargY)
 {
    float scale;

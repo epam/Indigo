@@ -541,7 +541,7 @@ void MoleculeRenderInternal::_checkSettings ()
 
 void MoleculeRenderInternal::_initRGroups()
 {
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
       if (qmol.isRGroupFragment()) {
          MoleculeRGroupFragment& rfragment = qmol.getRGroupFragment();
          for (int i = 0; i < rfragment.attachmentPointCount(); ++i)
@@ -764,7 +764,7 @@ bool MoleculeRenderInternal::_edgeIsHighlighted (int bid)
 bool MoleculeRenderInternal::_hasQueryModifiers (int aid)
 {
    bool hasConstraints = false;
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
    QueryMolecule::Atom& qa = qmol.getAtom(aid);
    hasConstraints = qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS) ||
       qa.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS) ||
@@ -777,7 +777,7 @@ bool MoleculeRenderInternal::_hasQueryModifiers (int aid)
 
 void MoleculeRenderInternal::_initAtomData ()
 {
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
    for (int i = 0; i < qmol.fixed_atoms.size(); ++i)
       _ad(i).fixed = true;
    QUERY_MOL_END;
@@ -811,7 +811,7 @@ void MoleculeRenderInternal::_initAtomData ()
       ad.queryLabel = -1;
       if (ad.type == AtomDesc::TYPE_QUERY) {
          if (!bm.isRSite(i)) {
-            QUERY_MOL_BEGIN;
+            QUERY_MOL_BEGIN(_mol);
             ad.queryLabel = QueryMolecule::parseQueryAtom(qmol, i, ad.list);
             if (ad.queryLabel < 0) {
                bm.getAtomDescription(i, ad.pseudo);
@@ -1257,7 +1257,7 @@ void MoleculeRenderInternal::_initBondData ()
       d.type = _mol->getBondOrder(i);
       d.thickness = _edgeIsHighlighted(i) ? thicknessHighlighted : _settings.bondLineWidth;
       d.queryType = -1;
-      QUERY_MOL_BEGIN;
+      QUERY_MOL_BEGIN(_mol);
       {
          QueryMolecule::Bond& qb = qmol.getBond(i);
          d.queryType = QueryMolecule::getQueryBondType(qb);
@@ -1450,7 +1450,7 @@ QueryMolecule::Atom* atomNodeInConjunction (QueryMolecule::Atom& qa, int type) {
 
 void MoleculeRenderInternal::_writeQueryModifier (Output& output, int aid)
 {
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
    {
       bool needDelimiter = false;
       QueryMolecule::Atom& qa = qmol.getAtom(aid);
@@ -2215,7 +2215,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
 
    // prepare R-group attachment point labels
    QS_DEF(Array<int>, rGroupAttachmentIndices);
-   QUERY_MOL_BEGIN;
+   QUERY_MOL_BEGIN(_mol);
    if (ad.isRGroupAttachmentPoint) {
       rGroupAttachmentIndices.clear();
       MoleculeRGroupFragment& rfragment = qmol.getRGroupFragment();
