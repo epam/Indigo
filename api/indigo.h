@@ -217,14 +217,30 @@ CEXPORT int indigoAutomap (int reaction, const char *mode);
 
 /* Accessing a molecule */
 
+enum
+{
+   INDIGO_ABS = 1,
+   INDIGO_OR = 2,
+   INDIGO_AND = 3,
+   INDIGO_EITHER = 4,
+   INDIGO_UP = 5,
+   INDIGO_DOWN = 6,
+   INDIGO_CIS = 7,
+   INDIGO_TRANS = 8
+};
+
 // Returns an iterator for all atoms of the given
 // molecule, including r-sites and pseudoatoms.
 CEXPORT int indigoIterateAtoms (int molecule);
 CEXPORT int indigoIteratePseudoatoms (int molecule);
 CEXPORT int indigoIterateRSites (int molecule);
+CEXPORT int indigoIterateStereocenters (int molecule);
 CEXPORT int indigoIterateRGroups (int molecule);
 CEXPORT int indigoIsPseudoatom (int atom);
 CEXPORT int indigoIsRSite (int atom);
+// returns INDIGO_{ABS,OR,AND,EITHER}
+// or zero if the atom is not a stereoatom
+CEXPORT int indigoStereocenterType (int atom);
 CEXPORT int indigoSingleAllowedRGroup (int rsite);
 
 // Applicable to an R-Group, but not to a molecule
@@ -257,6 +273,8 @@ CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetRadical (int atom);
 CEXPORT int indigoResetIsotope (int atom);
 
+CEXPORT int indigoInvertStereo (int item);
+
 CEXPORT int indigoCountAtoms (int molecule);
 CEXPORT int indigoCountBonds (int molecule);
 CEXPORT int indigoCountPseudoatoms (int molecule);
@@ -267,15 +285,6 @@ CEXPORT int indigoIterateBonds (int molecule);
 // Returns 4 if the bond is an aromatic bond
 // Returns zero if the bond is ambiguous (query bond)
 CEXPORT int indigoBondOrder  (int bond);
-
-enum
-{
-   INDIGO_UP = 1,
-   INDIGO_DOWN = 2,
-   INDIGO_EITHER = 3,
-   INDIGO_CIS = 4,
-   INDIGO_TRANS = 5
-};
 
 // Returns INDIGO_{UP/DOWN/EITHER/CIS/TRANS},
 // or zero if the bond is not a stereobond

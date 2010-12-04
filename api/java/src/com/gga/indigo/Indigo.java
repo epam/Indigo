@@ -18,11 +18,14 @@ import java.io.*;
 
 public class Indigo
 {
-   public static final int UP = 1;
-   public static final int DOWN = 2;
-   public static final int EITHER = 3;
-   public static final int CIS = 4;
-   public static final int TRANS = 5;
+   public static final int ABS = 1;
+   public static final int OR = 2;
+   public static final int AND = 3;
+   public static final int EITHER = 4;
+   public static final int UP = 5;
+   public static final int DOWN = 6;
+   public static final int CIS = 7;
+   public static final int TRANS = 8;
 
    public native String version ();
 
@@ -381,11 +384,13 @@ public class Indigo
    public native int indigoIterateAtoms (int molecule);
    public native int indigoIteratePseudoatoms (int molecule);
    public native int indigoIterateRSites (int molecule);
+   public native int indigoIterateStereocenters (int molecule);
    public native int indigoIterateRGroups (int molecule);
    public native int indigoIterateRGroupFragments (int rgroup);
    public native int indigoCountAttachmentPoints (int rgroup);
    public native int indigoIsPseudoatom (int atom);
    public native int indigoIsRSite (int atom);
+   public native int indigoStereocenterType (int atom);
    public native int indigoSingleAllowedRGroup (int atom);
    public native String indigoSymbol (int atom);
 
@@ -401,6 +406,8 @@ public class Indigo
    public native int indigoResetExplicitValence (int atom);
    public native int indigoResetRadical (int atom);
    public native int indigoResetIsotope (int atom);
+
+   public native int indigoInvertStereo (int item);
 
    public native int indigoCountAtoms (int molecule);
    public native int indigoCountBonds (int molecule);

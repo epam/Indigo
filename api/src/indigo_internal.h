@@ -537,7 +537,8 @@ public:
    {
       ALL,
       PSEUDO,
-      RSITE
+      RSITE,
+      STEREOCENTER
    };
 
    IndigoAtomsIter (BaseMolecule *molecule, int type);

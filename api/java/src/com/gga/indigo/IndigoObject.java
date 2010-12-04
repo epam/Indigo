@@ -138,6 +138,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, dispatcher.indigoIterateRSites(self));
    }
 
+   public IndigoObject iterateStereocenters ()
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoIterateStereocenters(self));
+   }
+
    public IndigoObject iterateRGroups ()
    {
       return new IndigoObject(dispatcher, dispatcher.indigoIterateRGroups(self));
@@ -161,6 +166,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public boolean isRSite ()
    {
       return dispatcher.indigoIsRSite(self) == 1;
+   }
+
+   public int stereocenterType ()
+   {
+      return dispatcher.indigoStereocenterType(self);
    }
 
    public int singleAllowedRGroup ()
@@ -188,6 +198,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void resetExplicitValence () { dispatcher.indigoResetExplicitValence(self); }
    public void resetRadical () { dispatcher.indigoResetRadical(self); }
    public void resetIsotope () { dispatcher.indigoResetIsotope(self); }
+   public void invertStereo () { dispatcher.indigoInvertStereo(self); }
    public int  countAtoms ()  { return dispatcher.indigoCountAtoms(self); }
    public int  countBonds () { return dispatcher.indigoCountBonds(self); }
    public int  countPseudoatoms () { return dispatcher.indigoCountPseudoatoms(self); }

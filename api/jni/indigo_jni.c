@@ -113,10 +113,12 @@ JNI_FUNC_jint_jint_jstring(indigoAutomap);
 JNI_FUNC_jint_jint(indigoIterateAtoms)
 JNI_FUNC_jint_jint(indigoIteratePseudoatoms)
 JNI_FUNC_jint_jint(indigoIterateRSites)
+JNI_FUNC_jint_jint(indigoIterateStereocenters)
 JNI_FUNC_jint_jint(indigoIterateRGroups)
 JNI_FUNC_jint_jint(indigoIterateRGroupFragments)
 JNI_FUNC_jint_jint(indigoIsPseudoatom)
 JNI_FUNC_jint_jint(indigoIsRSite)
+JNI_FUNC_jint_jint(indigoStereocenterType)
 JNI_FUNC_jint_jint(indigoSingleAllowedRGroup)
 JNI_FUNC_jstring_jint(indigoSymbol)
 
@@ -144,6 +146,8 @@ JNI_FUNC_jint_jint(indigoResetCharge)
 JNI_FUNC_jint_jint(indigoResetExplicitValence)
 JNI_FUNC_jint_jint(indigoResetRadical)
 JNI_FUNC_jint_jint(indigoResetIsotope)
+
+JNI_FUNC_jint_jint(indigoInvertStereo)
 
 JNI_FUNC_jint_jint(indigoCountAtoms)
 JNI_FUNC_jint_jint(indigoCountBonds)

@@ -159,6 +159,12 @@ int IndigoAtomsIter::_shift (int idx)
          if (_mol->isRSite(idx))
             break;
    }
+   else if (_type == STEREOCENTER)
+   {
+      for (; idx != _mol->vertexEnd(); idx = _mol->vertexNext(idx))
+         if (_mol->stereocenters.getType(idx) != 0)
+            break;
+   }
 
    return idx;
 }
@@ -549,6 +555,15 @@ CEXPORT int indigoIterateRSites (int molecule)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoIterateStereocenters (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::STEREOCENTER);
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT const char * indigoSymbol (int atom)
 {
    INDIGO_BEGIN
@@ -643,6 +658,25 @@ CEXPORT int indigoIsRSite (int atomm)
 
       if (atom.mol->isRSite(atom.idx))
          return 1;
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoStereocenterType (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+
+      switch (ia.mol->stereocenters.getType(ia.idx))
+      {
+         case MoleculeStereocenters::ATOM_ABS: return INDIGO_ABS;
+         case MoleculeStereocenters::ATOM_OR: return INDIGO_OR;
+         case MoleculeStereocenters::ATOM_AND: return INDIGO_AND;
+         case MoleculeStereocenters::ATOM_ANY: return INDIGO_EITHER;
+         default: return 0;
+      }
       return 0;
    }
    INDIGO_END(-1);
@@ -1406,7 +1440,7 @@ CEXPORT int indigoBond (int nei)
    INDIGO_END(-1)
 }
 
-float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *desired_xyz)
+CEXPORT float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *desired_xyz)
 {
    INDIGO_BEGIN
    {
@@ -1443,6 +1477,21 @@ float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *desired_
          mol.getAtomXyz(i).transformPoint(matr);
 
       return (float)(sqrt(sqsum / natoms));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoInvertStereo (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(item).getAtom();
+
+      int k, *pyramid = ia.mol->stereocenters.getPyramid(ia.idx);
+      if (pyramid == 0)
+         throw IndigoError("indigoInvertStereo: not a stereoatom");
+      __swap(pyramid[0], pyramid[1], k);
+      return 1;
    }
    INDIGO_END(-1)
 }
