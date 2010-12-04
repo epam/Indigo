@@ -18,12 +18,14 @@
 #include "layout/metalayout.h"
 #include "render_context.h"
 #include "render_internal.h"
+#include "render_item_factory.h"
 #include "render_item_fragment.h"
 
 using namespace indigo;
 
-RenderItemFragment::RenderItemFragment (RenderContext& rc) : 
-   RenderItemBase(rc),
+
+RenderItemFragment::RenderItemFragment (RenderItemFactory& factory) : 
+   RenderItemBase(factory),
    _mol(NULL),
    _highlighting(NULL),
    _aam(NULL),

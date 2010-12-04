@@ -18,10 +18,12 @@
 #include "render_item.h"
 
 namespace indigo {
+   
+class RenderItemFactory;
 
 class RenderItemFragment : public RenderItemBase {
 public:
-   RenderItemFragment (RenderContext& rc);
+   RenderItemFragment (RenderItemFactory& factory);
    virtual ~RenderItemFragment ();
    void setMolecule (BaseMolecule* mol);
    void setMoleculeHighlighting (GraphHighlighting* highlighting);

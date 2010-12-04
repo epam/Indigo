@@ -39,6 +39,7 @@
 #include "render_reaction.h"
 #include "render_params.h"
 #include "render_item_molecule.h"
+#include "render_item_factory.h"
 #include "render.h"
 
 using namespace indigo;
@@ -217,7 +218,9 @@ void RenderParamInterface::render (RenderParams& params)
 
    if (params.rmode == RENDER_MOL) {
       //MoleculeRender render(rc);
-      RenderItemMolecule rim(rc);
+      RenderItemFactory factory(rc); 
+      int id = factory.addItemMolecule();
+      RenderItemMolecule& rim = factory.getItemMolecule(id);
       BaseMolecule& bm = params.mol.ref();
 
       //render.opt.copy(params.rOpt);

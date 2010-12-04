@@ -12,36 +12,33 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __render_item_molecule_h__
-#define __render_item_molecule_h__
+#ifndef __render_item_hline_h__
+#define __render_item_hline_h__
 
-#include "render_item_fragment.h"
-#include "render_item_aux.h"
-#include "render_item_hline.h"
+#include "render_item.h"
 
 namespace indigo {
 
-class RenderItemMolecule : public RenderItemHLine {
+class RenderItemHLine : public RenderItemBase {
 public:
-   RenderItemMolecule (RenderItemFactory& factory);
-   virtual ~RenderItemMolecule () {}
-   void setMolecule (BaseMolecule* mol) { _mol = mol; }
-   void setMoleculeHighlighting (GraphHighlighting* highlighting) { _highlighting = highlighting; }
+   RenderItemHLine (RenderItemFactory& factory);
+   virtual ~RenderItemHLine () {}
 
-   DEF_ERROR("RenderItemMolecule");
+   DEF_ERROR("RenderItemHLine");
 
    virtual void init ();
    virtual void estimateSize ();
    virtual void render ();
+   virtual void setObjScale (float scale);
+   virtual double getTotalBondLength ();
+   virtual double getTotalClosestAtomDistance ();
+   virtual int getBondCount ();
+   virtual int getAtomCount ();
 
-private:
-   int _getRIfThenCount ();
-
-   Array<int> _lines;
-   BaseMolecule* _mol;
-   GraphHighlighting* _highlighting;
+   float hSpace;
+   Array<int> items;
 };
 
 }
 
-#endif //__render_item_molecule_h__
+#endif //__render_item_hline_h__

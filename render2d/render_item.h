@@ -19,11 +19,12 @@
 
 namespace indigo {
 
+class RenderItemFactory;
+
 class RenderItemBase {
 public:
-   RenderItemBase (RenderContext& rc) : _rc(rc), _settings(rc._settings), _opt(rc.opt)
-   { // TODO: make RenderOptions const
-   }
+   RenderItemBase (RenderItemFactory& factory);
+
    virtual ~RenderItemBase ()
    {
    }
@@ -47,6 +48,7 @@ protected:
    const RenderSettings& _settings;
    RenderOptions& _opt;
    RenderContext& _rc;
+   RenderItemFactory& _factory;
 };
 
 }

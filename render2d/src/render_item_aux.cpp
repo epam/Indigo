@@ -22,8 +22,8 @@
 
 using namespace indigo;
 
-RenderItemAuxiliary::RenderItemAuxiliary (RenderContext& rc) : 
-   RenderItemBase(rc)
+RenderItemAuxiliary::RenderItemAuxiliary (RenderItemFactory& factory) : 
+   RenderItemBase(factory)
 {
 }
 
@@ -44,7 +44,7 @@ void RenderItemAuxiliary::_drawText ()
 
 void RenderItemAuxiliary::render ()
 {
-   //_rc.translate(-origin.x, -origin.y);
+   _rc.translate(-origin.x, -origin.y);
    // TODO: draw
    switch (type) {
       case AUX_TEXT:
@@ -60,12 +60,4 @@ void RenderItemAuxiliary::render ()
       default:
          throw Error("Item type not set or invalid");
    }
-   //MoleculeRenderInternal render(_opt, _settings, context);
-   //render.setMolecule(_mol);
-   //if (_highlighting != NULL)
-   //   render.setHighlighting(_highlighting);
-   //render.setScaleFactor(scaleFactor, _min, _max);
-   //render.setReactionComponentProperties(_aam, _reactingCenters, _inversionArray);
-   //render.setQueryReactionComponentProperties(_exactChangeArray);
-   //render.render();
 }

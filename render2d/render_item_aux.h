@@ -23,7 +23,7 @@ class RenderItemAuxiliary : public RenderItemBase {
 public:
    enum AUX_TYPE {AUX_TEXT = 0, AUX_RXN_PLUS, AUX_RXN_ARROW, AUX_RGROUP_LABEL, AUX_RGROUP_IFTHEN};
 
-   RenderItemAuxiliary (RenderContext& rc);
+   RenderItemAuxiliary (RenderItemFactory& factory);
    virtual ~RenderItemAuxiliary ();
    DEF_ERROR("RenderItemAuxiliary");
 

@@ -15,8 +15,13 @@
 #include "molecule/base_molecule.h"
 #include "base_cpp/output.h"
 #include "render_item.h"
+#include "render_item_factory.h"
 
 using namespace indigo;
+
+RenderItemBase::RenderItemBase (RenderItemFactory& factory) : _factory(factory), _rc(factory.rc), _settings(factory.rc._settings), _opt(factory.rc.opt)
+{
+}
 
 void RenderItemBase::renderIdle ()
 {

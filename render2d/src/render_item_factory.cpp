@@ -12,31 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __render_item_container_h__
-#define __render_item_container_h__
+#include "molecule/base_molecule.h"
+#include "base_cpp/output.h"
 
-#include "render_item.h"
-
-namespace indigo {
-
-class RenderItemContainer : public RenderItemBase {
-public:
-   RenderItemContainer (RenderContext& rc);
-   virtual ~RenderItemContainer () {}
-
-   DEF_ERROR("RenderItemContainer");
-
-   virtual void estimateSize ();
-   virtual void setObjScale (float scale);
-   virtual double getTotalBondLength ();
-   virtual double getTotalClosestAtomDistance ();
-   virtual int getBondCount ();
-   virtual int getAtomCount ();
-
-protected:
-   Array<RenderItemBase*> _items;
-};
-
-}
-
-#endif //__render_item_container_h__
+using namespace indigo;

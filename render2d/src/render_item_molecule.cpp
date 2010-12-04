@@ -19,14 +19,14 @@
 #include "render_context.h"
 #include "render_internal.h"
 #include "render_item_molecule.h"
+#include "render_item_factory.h"
 
 using namespace indigo;
 
-RenderItemMolecule::RenderItemMolecule (RenderContext& rc) : 
-   RenderItemContainer(rc),
+RenderItemMolecule::RenderItemMolecule (RenderItemFactory& factory) : 
+   RenderItemHLine(factory),
    _mol(NULL),
-   _highlighting(NULL),
-   _core(NULL)
+   _highlighting(NULL)
 {
 }
 
@@ -38,39 +38,51 @@ void RenderItemMolecule::init ()
    if (_mol->vertexCount() == 0)
       return;
 
-   _core = _fragments.add(_rc);
-   _fragments[_core].setMolecule(_mol);
-   _fragments[_core].setMoleculeHighlighting(_highlighting);
+   int _core = _factory.addItemFragment();
+   _factory.getItemFragment(_core).init();
+   _factory.getItemFragment(_core).setMolecule(_mol);
+   _factory.getItemFragment(_core).setMoleculeHighlighting(_highlighting);
+   
+   int lineCore = _factory.addItemHLine();
+   _factory.getItemHLine(lineCore).init();
+   _factory.getItemHLine(lineCore).items.push(_core);
+   _lines.push(lineCore);
 
    QUERY_MOL_BEGIN;
    {
       MoleculeRGroups& rGroups = qmol.rgroups;
       if (_getRIfThenCount() > 0) {
-         _ifThen = _aux.add(_rc);
-         _aux[_ifThen].type = RenderItemAuxiliary::AUX_RGROUP_IFTHEN;
-         _aux[_ifThen].mol = _mol;
+         int _ifThen = _factory.addItemAuxiliary();
+         _factory.getItemAuxiliary(_ifThen).init();
+         _factory.getItemAuxiliary(_ifThen).type = RenderItemAuxiliary::AUX_RGROUP_IFTHEN;
+         _factory.getItemAuxiliary(_ifThen).mol = _mol;
+         int lineIfThen = _factory.addItemHLine();
+         _factory.getItemHLine(lineIfThen).init();
+         _factory.getItemHLine(lineIfThen).items.push(_ifThen);
+         _lines.push(_ifThen);
       }
       for (int i = 1; i <= rGroups.getRGroupCount(); ++i)
       {
+         int lineRFrag = _factory.addItemHLine();
+         _factory.getItemHLine(lineRFrag).init();
+         _lines.push(lineRFrag);
+
          RGroup& rg = rGroups.getRGroup(i);
-         Array<int>& line = _rGroupFragments.push();
-         int label = _aux.add(_rc);
-         _aux[label].type = RenderItemAuxiliary::AUX_RGROUP_LABEL;
-         _aux[label].rLabelIdx = i;
-         _rGroupLabels.push(label);
+         int label = _factory.addItemAuxiliary();
+         _factory.getItemAuxiliary(label).init();
+         _factory.getItemAuxiliary(label).type = RenderItemAuxiliary::AUX_RGROUP_LABEL;
+         _factory.getItemAuxiliary(label).rLabelIdx = i;
+         _factory.getItemHLine(lineRFrag).items.push(label);
 
          for (int j = 0; j < rg.fragmentsCount(); ++j) {
-            int id = _fragments.add(_rc);
-            _fragments[id].setMolecule(rg.fragments[j]);
-            line.push(id);
+            int id = _factory.addItemFragment();
+            _factory.getItemFragment(id).init();
+            _factory.getItemFragment(id).setMolecule(rg.fragments[j]);
+            _factory.getItemHLine(lineRFrag).items.push(id);
          }
       }
    }
    QUERY_MOL_END;
-   for (int i = 0; i < _fragments.size(); ++i)
-      _items.push(&_fragments[i]);
-   for (int i = 0; i < _aux.size(); ++i)
-      _items.push(&_aux[i]);
 }
 
 int RenderItemMolecule::_getRIfThenCount ()
@@ -88,60 +100,22 @@ int RenderItemMolecule::_getRIfThenCount ()
    throw Error("internal: _getRIfThenCount()");
 }
 
-
-//Metalayout::LayoutItem& RenderItemMolecule::_pushMol (Metalayout::LayoutLine& line, BaseMolecule& mol)
-//{  
-//   Metalayout::LayoutItem& item = RenderBase::_pushMol(line, ITEM_TYPE_BASE_MOL, _map.size(), mol);
-//   _map.push(&mol);
-//   return item;   
-//}
-//
-//Metalayout::LayoutItem& RenderItemMolecule::_pushSymbol (Metalayout::LayoutLine& line, int type, int id)
-//{
-//   Metalayout::LayoutItem& item = RenderBase::_pushItem(line, type, id);
-//   switch (type)
-//   {
-//   case ITEM_TYPE_MOL_RLABEL:
-//      item.size.set(1, _settings.fzz[FONT_SIZE_RGROUP_LOGIC]);
-//      break;
-//   case ITEM_TYPE_MOL_RIFTHEN:
-//      item.size.set(1, _getRIfThenCount() *
-//         (_settings.fzz[FONT_SIZE_RGROUP_LOGIC] + _settings.rGroupIfThenInterval) - _settings.rGroupIfThenInterval - 
-//         _settings.layoutMarginHorizontal / 2/* dirty hack to reduce the gap */);
-//      break;
-//   default:
-//      throw Error("unknown layout item type: %d", type);
-//   }
-//
-//   return item;
-//}
-
 void RenderItemMolecule::estimateSize ()
 {
-   RenderItemContainer::estimateSize();
-   float vSpace = _settings.layoutMarginVertical;
-   float hSpace = _settings.layoutMarginHorizontal;
-   origin.set(0, 0);
-   size.copy(_fragments[_core].size);
-
-   if (_ifThen >= 0) {
-      RenderItemAuxiliary& ifThenItem = _aux[_ifThen];
-      size.y += vSpace + ifThenItem.size.y;
-      size.x = __max(size.x, ifThenItem.size.x);
+   for (int i = 0; i < _lines.size(); ++i) {
+      RenderItemHLine& line = _factory.getItemHLine(_lines[i]);
+      line.estimateSize();
    }
+   origin.set(0, 0);
+   size.set(0, 0);
 
-   for (int i = 0; i < _rGroupFragments.size(); ++i) {
-      size.y += vSpace;
-      RenderItemAuxiliary& label = _aux[_rGroupLabels[i]];
-      float lineHeight = label.size.y;
-      float lineWidth = label.size.x;
-      for (int j = 0; j < _rGroupFragments[i].size(); ++j) {
-         RenderItemFragment& frag = _fragments[_rGroupFragments[i][j]];
-         lineHeight = __max(lineHeight, frag.size.y);
-         lineWidth += hSpace + frag.size.x;
-      }
-      size.y += lineHeight;
-      size.x = __max(size.x, lineWidth);
+   float vSpace = _settings.layoutMarginVertical;
+   for (int i = 0; i < _lines.size(); ++i) {
+      RenderItemHLine& line = _factory.getItemHLine(_lines[i]);
+      size.x = __max(size.x, line.size.x);
+      if (i > 0)
+         size.y += vSpace;
+      size.y += line.size.y;
    }
 }
 
@@ -149,47 +123,9 @@ void RenderItemMolecule::render ()
 {                                     
    _rc.translate(-origin.x, -origin.y);
    float vSpace = _settings.layoutMarginVertical;
-   float hSpace = _settings.layoutMarginHorizontal;
-   _fragments[_core].render();
-   _rc.translate(0, _fragments[_core].size.y);
-
-   if (_ifThen >= 0) {
-      RenderItemAuxiliary& ifThenItem = _aux[_ifThen];
-      _rc.translate(0, vSpace);
-      ifThenItem.render();
-      _rc.translate(0, ifThenItem.size.y);
-   }
-
-   for (int i = 0; i < _rGroupFragments.size(); ++i) {
-      _rc.translate(0, vSpace);
-      RenderItemAuxiliary& label = _aux[_rGroupLabels[i]];
-      float lineHeight = label.size.y;
-      for (int j = 0; j < _rGroupFragments[i].size(); ++j) {
-         RenderItemFragment& frag = _fragments[_rGroupFragments[i][j]];
-         lineHeight = __max(lineHeight, frag.size.y);
-      }
-      _rc.storeTransform();
-      _rc.translate(0, lineHeight - label.size.y);
-      label.render();
-      _rc.restoreTransform();
-      _rc.removeStoredTransform();
-      _rc.translate(label.size.x, 0);
-      for (int j = 0; j < _rGroupFragments[i].size(); ++j) {
-         _rc.translate(hSpace, 0);
-         _rc.storeTransform();
-         RenderItemFragment& frag = _fragments[_rGroupFragments[i][j]];
-         _rc.translate(0, lineHeight - frag.size.y);
-         frag.render();
-         _rc.restoreTransform();
-         _rc.removeStoredTransform();
-         _rc.translate(frag.size.x, 0);
-      }
-      _rc.translate(0, lineHeight);
-   }
-
-   for (int i = 0; i < _rGroupFragments.size(); ++i) {
-      for (int j = 0; j < _rGroupFragments[i].size(); ++j) {
-         _fragments[_rGroupFragments[i][j]].render();
-      }
+   for (int i = 0; i < _lines.size(); ++i) {
+      RenderItemHLine& line = _factory.getItemHLine(_lines[i]);
+      line.render();
+      _rc.translate(0, line.size.y + vSpace);
    }
 }

@@ -596,11 +596,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\render_item_container.cpp"
+			RelativePath=".\src\render_item_factory.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\render_item_container.h"
+			RelativePath=".\render_item_factory.h"
 			>
 		</File>
 		<File
@@ -609,6 +609,14 @@
 		</File>
 		<File
 			RelativePath=".\render_item_fragment.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\render_item_hline.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\render_item_hline.h"
 			>
 		</File>
 		<File
