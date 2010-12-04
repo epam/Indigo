@@ -168,6 +168,12 @@ namespace com.gga.indigo
          return new IndigoObject(dispatcher, Indigo.indigoIterateRSites(self));
       }
 
+      public System.Collections.IEnumerable iterateStereocenters ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoIterateStereocenters(self));
+      }
+
       public System.Collections.IEnumerable iterateRGroups ()
       {
          dispatcher.setSessionID();
@@ -200,6 +206,12 @@ namespace com.gga.indigo
          if (Indigo.indigoIsRSite(self) == 1)
             return true;
          return false;
+      }
+
+      public int stereocenterType ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoStereocenterType(self);
       }
 
       public int singleAllowedRGroup ()
@@ -295,6 +307,12 @@ namespace com.gga.indigo
       {
          dispatcher.setSessionID();
          Indigo.indigoResetIsotope (self);
+      }
+
+      public void invertStereo ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoInvertStereo(self);
       }
 
       public int countAtoms ()
