@@ -180,7 +180,6 @@ private:
 
    static TextLock _tlock;
 
-   RenderSettings _settings;
    TL_CP_DECL(Array<char>, _fontfamily);
    TL_CP_DECL(Array<cairo_matrix_t>, transforms);
 #ifdef _WIN32
@@ -201,6 +200,11 @@ private:
    Output *_output;
    PVOID _hdc;
    DINGO_MODE _mode;
+
+public:
+   RenderSettings _settings;
+   RenderOptions opt;
+   CanvasOptions cnvOpt;
 };
 
 }

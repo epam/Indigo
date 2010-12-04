@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __render_component_h__
-#define __render_component_h__
+#ifndef __render_item_fragment_h__
+#define __render_item_fragment_h__
 
 #include "render_item.h"
 
@@ -21,7 +21,7 @@ namespace indigo {
 
 class RenderItemFragment : public RenderItemBase {
 public:
-   RenderItemFragment (const RenderSettings& settings, RenderOptions& opt);
+   RenderItemFragment (RenderContext& rc);
    virtual ~RenderItemFragment ();
    void setMolecule (BaseMolecule* mol);
    void setMoleculeHighlighting (GraphHighlighting* highlighting);
@@ -30,17 +30,16 @@ public:
    void setInversionArray (Array<int>* inversionArray);
    void setExactChangeArray (Array<int>* exactChangeArray);
 
-   DEF_ERROR("molecule render");
+   DEF_ERROR("RenderItemFragment");
 
-   virtual void estimateSize (Vec2f& sz, const float scaleFactor);
-   virtual void render (RenderContext& context, const float scaleFactor);
+   virtual void estimateSize () { renderIdle(); }
+   virtual void setObjScale (float scale) { _scaleFactor = scale; }
+   virtual void init () {}
+   virtual void render ();
    virtual double getTotalBondLength ();
    virtual double getTotalClosestAtomDistance ();
    virtual int getBondCount ();
    virtual int getAtomCount ();
-
-protected:
-   virtual void _draw (RenderContext& context);
 
 private:
    BaseMolecule* _mol;
@@ -49,9 +48,10 @@ private:
    Array<int>* _reactingCenters;
    Array<int>* _inversionArray;
    Array<int>* _exactChangeArray;
+   float _scaleFactor;
    Vec2f _min, _max;
 };
 
 }
 
-#endif //__render_component_h__
+#endif //__render_item_fragment_h__

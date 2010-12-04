@@ -21,23 +21,32 @@ namespace indigo {
 
 class RenderItemBase {
 public:
-   RenderItemBase (const RenderSettings& settings, RenderOptions& opt) : _settings(settings), _opt(opt)
+   RenderItemBase (RenderContext& rc) : _rc(rc), _settings(rc._settings), _opt(rc.opt)
    { // TODO: make RenderOptions const
    }
-   virtual ~RenderItemBase ();
+   virtual ~RenderItemBase ()
+   {
+   }
 
-   DEF_ERROR("item render");
+   DEF_ERROR("RenderItemBase");
 
-   virtual void estimateSize (Vec2f& sz, const float scale) = 0;
-   virtual void render (RenderContext& context) = 0;
+   virtual void estimateSize () = 0;
+   virtual void setObjScale (float scale) = 0;
+   virtual void init () = 0;
+   virtual void render () = 0;
    virtual double getTotalBondLength () = 0;
    virtual double getTotalClosestAtomDistance() = 0;
    virtual int getBondCount () = 0;
    virtual int getAtomCount () = 0;
 
+   Vec2f size;
+   Vec2f origin;
 protected:
+   void renderIdle ();
+
    const RenderSettings& _settings;
    RenderOptions& _opt;
+   RenderContext& _rc;
 };
 
 }

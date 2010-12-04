@@ -12,21 +12,30 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "molecule/base_molecule.h"
-#include "base_cpp/output.h"
-#include "render_item.h"
+#ifndef __render_h__
+#define __render_h__
 
-using namespace indigo;
+#include "render_internal.h"
 
-void RenderItemBase::renderIdle ()
-{
-   _rc.initNullContext();
-   Vec2f bbmin, bbmax;
-   Vec2f pos;
-   render();
-   _rc.bbGetMin(bbmin);
-   _rc.bbGetMax(bbmax);
-   _rc.resetContext();
-   size.diff(bbmax, bbmin);
-   origin.copy(bbmin);
+namespace indigo {
+
+class Render {
+public:
+   Render (RenderContext& rc, RenderItemBase& item);
+   virtual ~Render();
+   void draw ();
+
+   DEF_ERROR("Render");
+
+private:
+   float _getScale (const Vec2f& delta, int absMargX, int absMargY);
+
+   RenderItemBase& _item;
+   RenderContext& _rc;
+   const RenderSettings& _settings;
+   CanvasOptions& _cnvOpt;
+};
+
 }
+
+#endif //__render_h__

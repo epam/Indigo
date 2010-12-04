@@ -18,18 +18,19 @@
 #include "layout/metalayout.h"
 #include "render_context.h"
 #include "render_internal.h"
-#include "render_item_frag.h"
+#include "render_item_fragment.h"
 
 using namespace indigo;
 
-RenderItemFragment::RenderItemFragment (const RenderSettings& settings, RenderOptions& opt) : 
-   RenderItemBase(settings, opt),
+RenderItemFragment::RenderItemFragment (RenderContext& rc) : 
+   RenderItemBase(rc),
    _mol(NULL),
    _highlighting(NULL),
    _aam(NULL),
    _reactingCenters(NULL),
    _inversionArray(NULL),
-   _exactChangeArray(NULL)
+   _exactChangeArray(NULL),
+   _scaleFactor(1.0)
 {
 }
 
@@ -79,23 +80,17 @@ void RenderItemFragment::setExactChangeArray (Array<int>* exactChangeArray)
    _exactChangeArray = exactChangeArray;
 }
 
-void RenderItemFragment::estimateSize (Vec2f& sz, const float scaleFactor)
+void RenderItemFragment::render ()
 {
-   // ...
-}
-
-void RenderItemFragment::render (RenderContext& context, const float scaleFactor)
-{
-   //_rc.translate(0, -item.scaledSize.y / 2);
-   //_rc.translate(-item.scaledOffset.x, -item.scaledOffset.y);
-   MoleculeRenderInternal render(_opt, _settings, context);
-   render.setMolecule(_mol);
+   _rc.translate(-origin.x, -origin.y); // TODO: shouldn't we take the scaleFactor into account here as well?
+   MoleculeRenderInternal rnd(_opt, _settings, _rc);
+   rnd.setMolecule(_mol);
    if (_highlighting != NULL)
-      render.setHighlighting(_highlighting);
-   render.setScaleFactor(scaleFactor, _min, _max);
-   render.setReactionComponentProperties(_aam, _reactingCenters, _inversionArray);
-   render.setQueryReactionComponentProperties(_exactChangeArray);
-   render.render();
+      rnd.setHighlighting(_highlighting);
+   rnd.setScaleFactor(_scaleFactor, _min, _max);
+   rnd.setReactionComponentProperties(_aam, _reactingCenters, _inversionArray);
+   rnd.setQueryReactionComponentProperties(_exactChangeArray);
+   rnd.render();
 }
 
 static double get2dDist (const Vec3f& v1, const Vec3f& v2)

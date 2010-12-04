@@ -64,9 +64,14 @@ void RenderItem::clear()
    highlighted = false;
 }
 
-void TextItem::clear() { text.clear(); }
+void TextItem::clear() { 
+   RenderItem::clear();
+   text.clear(); 
+}
 
-void GraphItem::clear() {}
+void GraphItem::clear() {
+   RenderItem::clear();
+}
           
 AtomDesc::AtomDesc() 
 { 

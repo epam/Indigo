@@ -536,6 +536,14 @@
 	</References>
 	<Files>
 		<File
+			RelativePath=".\src\render.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\render.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\render_base.cpp"
 			>
 		</File>
@@ -574,31 +582,41 @@
 		<File
 			RelativePath=".\src\render_item.cpp"
 			>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-				/>
-			</FileConfiguration>
 		</File>
 		<File
 			RelativePath=".\render_item.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\render_item_frag.cpp"
+			RelativePath=".\src\render_item_aux.cpp"
 			>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-				/>
-			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\render_item_frag.h"
+			RelativePath=".\render_item_aux.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\render_item_container.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\render_item_container.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\render_item_fragment.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\render_item_fragment.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\render_item_molecule.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\render_item_molecule.h"
 			>
 		</File>
 		<File

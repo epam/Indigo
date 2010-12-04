@@ -38,6 +38,8 @@
 #include "render_molecule.h"
 #include "render_reaction.h"
 #include "render_params.h"
+#include "render_item_molecule.h"
+#include "render.h"
 
 using namespace indigo;
 
@@ -206,16 +208,20 @@ void RenderParamInterface::render (RenderParams& params)
    rc.setHDC(params.hdc);
    rc.setBackground(params.backgroundColor);
    rc.setBaseColor(params.baseColor);
+   
+   rc.opt.copy(params.rOpt);
+   rc.cnvOpt = params.cnvOpt;
 
    if (params.query)
       params.rOpt.implHMode = IHM_NONE;
 
    if (params.rmode == RENDER_MOL) {
-      MoleculeRender render(rc);
+      //MoleculeRender render(rc);
+      RenderItemMolecule rim(rc);
       BaseMolecule& bm = params.mol.ref();
 
-      render.opt.copy(params.rOpt);
-      render.cnvOpt = params.cnvOpt;
+      //render.opt.copy(params.rOpt);
+      //render.cnvOpt = params.cnvOpt;
       if (needsLayout(bm))
       {
          MoleculeLayout ml(bm);
@@ -227,9 +233,10 @@ void RenderParamInterface::render (RenderParams& params)
          bm.aromatize();
       else if (params.aromatization < 0)
          bm.dearomatize();
-      render.setMolecule(&bm);
-      render.setMoleculeHighlighting(&params.molhl);
+      rim.setMolecule(&bm);
+      rim.setMoleculeHighlighting(&params.molhl);
 
+      Render render(rc, rim);
       render.draw();
    } else if (params.rmode == RENDER_RXN) {
       ReactionRender render(rc);

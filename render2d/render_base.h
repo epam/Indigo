@@ -24,7 +24,7 @@ class Metalayout;
 class RenderBase {
 public:
    RenderBase (RenderContext& rc);
-   virtual ~RenderBase() = 0;  
+   virtual ~RenderBase() = 0;
    void draw ();
    RenderOptions opt;
    CanvasOptions cnvOpt;

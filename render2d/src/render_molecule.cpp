@@ -220,7 +220,7 @@ int MoleculeRender::_getRIfThenHeight ()
       return cnt;
    }
    QUERY_MOL_END;
-   throw Error("internal: _getRIfThenHeight()");
+   throw Error("internal: _getRIfThenCount()");
 }
 
 void MoleculeRender::_drawItem (Metalayout::LayoutItem& item, const Vec2f& pos, bool ignoreTransform)
