@@ -157,7 +157,7 @@ void MolfileSaver::_saveMolecule (BaseMolecule &mol, bool query)
             _writeCtabHeader2000(_output, *fragment);
             _writeCtab2000(_output, *fragment, true);
             _writeRGroupIndices2000(_output, *fragment);
-            _writeAttachemtValues2000(_output, *fragment);
+            _writeAttachmentValues2000(_output, *fragment);
 
             _output.writeStringCR("M  END");
             _output.writeStringCR("$END CTAB");
@@ -909,27 +909,7 @@ void MolfileSaver::_writeRGroupIndices2000 (Output &output, BaseMolecule &mol)
    }
 }
 
-void MolfileSaver::_printOccurrenceRanges (Output &out, const Array<int> &occurrences)
-{
-   for (int i = 0; i < occurrences.size(); i++)
-   {
-      int occurrence = occurrences[i];
-
-      if ((occurrence & 0xFFFF) == 0xFFFF)
-         out.printf(">%d", (occurrence >> 16) - 1);
-      else if ((occurrence >> 16) == (occurrence & 0xFFFF))
-         out.printf("%d", occurrence >> 16);
-      else if ((occurrence >> 16) == 0)
-         out.printf("<%d", (occurrence & 0xFFFF) + 1);
-      else
-         out.printf("%d-%d", occurrence >> 16, occurrence & 0xFFFF);
-
-      if (i != occurrences.size() - 1)
-         out.printf(", ");
-   }
-}
-
-void MolfileSaver::_writeAttachemtValues2000 (Output &output, QueryMolecule &fragment)
+void MolfileSaver::_writeAttachmentValues2000 (Output &output, QueryMolecule &fragment)
 {
    if (!fragment.isRGroupFragment())
       return;

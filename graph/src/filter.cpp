@@ -54,7 +54,7 @@ void Filter::initNone (int size)
    _own.clear_resize(size);
    _own.zerofill();
    _filter = _own.ptr();
-   _type = EQ;
+   _type = NEQ;
    _value = 0;
 }
 
