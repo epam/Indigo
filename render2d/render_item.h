@@ -35,8 +35,8 @@ public:
    virtual void setObjScale (float scale) = 0;
    virtual void init () = 0;
    virtual void render () = 0;
-   virtual double getTotalBondLength () = 0;
-   virtual double getTotalClosestAtomDistance() = 0;
+   virtual float getTotalBondLength () = 0;
+   virtual float getTotalClosestAtomDistance() = 0;
    virtual int getBondCount () = 0;
    virtual int getAtomCount () = 0;
 

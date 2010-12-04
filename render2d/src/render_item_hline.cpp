@@ -24,7 +24,7 @@
 using namespace indigo;
 
 RenderItemHLine::RenderItemHLine (RenderItemFactory& factory) : 
-   RenderItemBase(factory)
+   RenderItemContainer(factory)
 {
 }
 
@@ -35,10 +35,7 @@ void RenderItemHLine::init ()
 
 void RenderItemHLine::estimateSize ()
 {
-   for (int i = 0; i < items.size(); ++i) {
-      RenderItemBase& item = _factory.getItem(items[i]);
-      item.estimateSize();
-   }                                        
+   RenderItemContainer::estimateSize();
    size.set(0,0);
    for (int i = 0; i < items.size(); ++i) {
       RenderItemBase& item = _factory.getItem(items[i]);
@@ -62,52 +59,4 @@ void RenderItemHLine::render ()
    }
    _rc.restoreTransform();
    _rc.removeStoredTransform();
-}
-
-void RenderItemHLine::setObjScale (float scale)
-{
-   for (int i = 0; i < items.size(); ++i) {
-      RenderItemBase& item = _factory.getItem(items[i]);
-      item.setObjScale(scale);
-   }                                        
-}
-
-double RenderItemHLine::getTotalBondLength ()
-{
-   double sum = 0.0;
-   for (int i = 0; i < items.size(); ++i) {
-      RenderItemBase& item = _factory.getItem(items[i]);
-      sum += item.getTotalBondLength();
-   }                                        
-   return sum;
-}
-
-double RenderItemHLine::getTotalClosestAtomDistance()
-{
-   double sum = 0.0;
-   for (int i = 0; i < items.size(); ++i) {
-      RenderItemBase& item = _factory.getItem(items[i]);
-      sum += item.getTotalClosestAtomDistance();
-   }
-   return sum;
-}
-
-int RenderItemHLine::getBondCount ()
-{
-   int sum = 0;
-   for (int i = 0; i < items.size(); ++i) {
-      RenderItemBase& item = _factory.getItem(items[i]);
-      sum += item.getBondCount();
-   }
-   return sum;
-}
-
-int RenderItemHLine::getAtomCount ()
-{
-   int sum = 0;
-   for (int i = 0; i < items.size(); ++i) {
-      RenderItemBase& item = _factory.getItem(items[i]);
-      sum += item.getAtomCount();
-   }
-   return sum;
 }

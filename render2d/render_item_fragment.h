@@ -35,11 +35,13 @@ public:
    DEF_ERROR("RenderItemFragment");
 
    virtual void estimateSize () { renderIdle(); }
-   virtual void setObjScale (float scale) { _scaleFactor = scale; }
+   virtual void setObjScale (float scale) { 
+      _scaleFactor = scale; 
+   }
    virtual void init () {}
    virtual void render ();
-   virtual double getTotalBondLength ();
-   virtual double getTotalClosestAtomDistance ();
+   virtual float getTotalBondLength ();
+   virtual float getTotalClosestAtomDistance ();
    virtual int getBondCount ();
    virtual int getAtomCount ();
 

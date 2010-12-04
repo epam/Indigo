@@ -41,13 +41,17 @@ void Render::draw ()
    _rc.fontsClear();
 
    _item.init();
-   double objScale = 1.0f;
+   float avgBondLength = 1.0f;
    int bondCount = _item.getBondCount();
-   if (bondCount > 0)
-      objScale = _item.getTotalBondLength() / bondCount;
-   int atomCount = _item.getAtomCount();
-   if (atomCount > 0)
-      objScale = _item.getTotalClosestAtomDistance() / atomCount;
+   if (bondCount > 0) {
+      avgBondLength = _item.getTotalBondLength() / bondCount;
+   } else {
+      int atomCount = _item.getAtomCount();
+      if (atomCount > 0)
+         avgBondLength = _item.getTotalClosestAtomDistance() / atomCount;
+   }
+   float objScale = 1 / avgBondLength;
+   _item.setObjScale(objScale);
 
    int minMarg = 2; // small absolute margin to allow for cairo font scaling errors
 

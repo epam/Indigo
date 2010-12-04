@@ -596,6 +596,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\render_item_container.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\render_item_container.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\render_item_factory.cpp"
 			>
 		</File>

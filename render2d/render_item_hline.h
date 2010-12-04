@@ -15,11 +15,11 @@
 #ifndef __render_item_hline_h__
 #define __render_item_hline_h__
 
-#include "render_item.h"
+#include "render_item_container.h"
 
 namespace indigo {
 
-class RenderItemHLine : public RenderItemBase {
+class RenderItemHLine : public RenderItemContainer {
 public:
    RenderItemHLine (RenderItemFactory& factory);
    virtual ~RenderItemHLine () {}
@@ -29,14 +29,8 @@ public:
    virtual void init ();
    virtual void estimateSize ();
    virtual void render ();
-   virtual void setObjScale (float scale);
-   virtual double getTotalBondLength ();
-   virtual double getTotalClosestAtomDistance ();
-   virtual int getBondCount ();
-   virtual int getAtomCount ();
 
    float hSpace;
-   Array<int> items;
 };
 
 }

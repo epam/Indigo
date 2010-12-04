@@ -240,12 +240,9 @@ void RenderSettings::init (float sf)
       bondDashAny.push(val);
       bondDashAromatic.push(val);
    }
-
-   fontPathRegular = "fonts/dejavu-2.30/DejaVuSans.ttf"; 
-   fontPathBold = "fonts/dejavu-2.30/DejaVuSans-Bold.ttf";   
    
-   layoutMarginHorizontal = 1;
-   layoutMarginVertical = 1;
+   layoutMarginHorizontal = 0.4f;
+   layoutMarginVertical = 0.6f;
    plusSize = 0.5;
    metaLineWidth = 1.0 / 16;
    arrowLength = 3 * plusSize;

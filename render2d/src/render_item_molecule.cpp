@@ -24,7 +24,7 @@
 using namespace indigo;
 
 RenderItemMolecule::RenderItemMolecule (RenderItemFactory& factory) : 
-   RenderItemHLine(factory),
+   RenderItemContainer(factory),
    _mol(NULL),
    _highlighting(NULL)
 {
@@ -46,7 +46,7 @@ void RenderItemMolecule::init ()
    int lineCore = _factory.addItemHLine();
    _factory.getItemHLine(lineCore).init();
    _factory.getItemHLine(lineCore).items.push(_core);
-   _lines.push(lineCore);
+   items.push(lineCore);
 
    QUERY_MOL_BEGIN(_mol);
    {
@@ -59,13 +59,13 @@ void RenderItemMolecule::init ()
          int lineIfThen = _factory.addItemHLine();
          _factory.getItemHLine(lineIfThen).init();
          _factory.getItemHLine(lineIfThen).items.push(_ifThen);
-         _lines.push(_ifThen);
+         items.push(_ifThen);
       }
       for (int i = 1; i <= rGroups.getRGroupCount(); ++i)
       {
          int lineRFrag = _factory.addItemHLine();
          _factory.getItemHLine(lineRFrag).init();
-         _lines.push(lineRFrag);
+         items.push(lineRFrag);
 
          RGroup& rg = rGroups.getRGroup(i);
          int label = _factory.addItemAuxiliary();
@@ -103,16 +103,13 @@ int RenderItemMolecule::_getRIfThenCount ()
 
 void RenderItemMolecule::estimateSize ()
 {
-   for (int i = 0; i < _lines.size(); ++i) {
-      RenderItemHLine& line = _factory.getItemHLine(_lines[i]);
-      line.estimateSize();
-   }
+   RenderItemContainer::estimateSize();
    origin.set(0, 0);
    size.set(0, 0);
 
    float vSpace = _settings.layoutMarginVertical;
-   for (int i = 0; i < _lines.size(); ++i) {
-      RenderItemHLine& line = _factory.getItemHLine(_lines[i]);
+   for (int i = 0; i < items.size(); ++i) {
+      RenderItemHLine& line = _factory.getItemHLine(items[i]);
       size.x = __max(size.x, line.size.x);
       if (i > 0)
          size.y += vSpace;
@@ -124,8 +121,8 @@ void RenderItemMolecule::render ()
 {                                     
    _rc.translate(-origin.x, -origin.y);
    float vSpace = _settings.layoutMarginVertical;
-   for (int i = 0; i < _lines.size(); ++i) {
-      RenderItemHLine& line = _factory.getItemHLine(_lines[i]);
+   for (int i = 0; i < items.size(); ++i) {
+      RenderItemHLine& line = _factory.getItemHLine(items[i]);
       line.render();
       _rc.translate(0, line.size.y + vSpace);
    }

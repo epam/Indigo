@@ -268,8 +268,6 @@ public:
    float arrowHeadSize;
    float equalityInterval;
    float rGroupIfThenInterval;
-   const char* fontPathRegular;
-   const char* fontPathBold;
 
 private:
    RenderSettings (const RenderSettings& settings);
