@@ -264,6 +264,7 @@ void CanvasOptions::clear ()
    bondLength = 100;
    marginX = marginY = 0;
    commentMarginX = commentMarginY = 0;
+   commentOffset = 0;
 }
 
 RenderContextOptions::RenderContextOptions ()

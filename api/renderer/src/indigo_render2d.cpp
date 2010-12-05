@@ -219,6 +219,12 @@ void indigoRenderSetCommentFontSize (float fontSize)
    rp.rcOpt.commentFontFactor = fontSize;
 }
 
+void indigoRenderSetCommentOffset (float offset)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.commentOffset = offset;
+}
+
 void indigoRenderSetCommentPosition (const char* pos)
 {
    TL_DECL_GET(StringIntMap, map);
@@ -362,6 +368,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);
    mgr.setOptionHandlerFloat("render-comment-font-size", indigoRenderSetCommentFontSize);
+   mgr.setOptionHandlerFloat("render-comment-offset", indigoRenderSetCommentOffset);
 
    mgr.setOptionHandlerColor("render-background-color", indigoRenderSetBackgroundColor);
    mgr.setOptionHandlerColor("render-base-color", indigoRenderSetBaseColor);

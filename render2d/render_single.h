@@ -12,31 +12,35 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __render_h__
-#define __render_h__
+#ifndef __render_single_h__
+#define __render_single_h__
 
-#include "render_internal.h"
+#include "render.h"
 
 namespace indigo {
 
-class Render {
+class RenderSingle : Render {
 public:
-   Render (RenderContext& rc, RenderItemFactory& factory);
-   virtual ~Render() = 0;
+   RenderSingle (RenderContext& rc, RenderItemFactory& factory);
+   virtual ~RenderSingle();
+   void draw ();
 
-   DEF_ERROR("Render");
+   DEF_ERROR("RenderSingle");
 
-protected:
-   float _getObjScale (int item);
-
-   int minMarg;
-   RenderContext& _rc;
-   const RenderSettings& _settings;
-   CanvasOptions& _cnvOpt;
-   RenderOptions& _opt;
-   RenderItemFactory& _factory;
+   int obj;
+   int comment;
+   float scale;
+   float commentOffset;
+   Vec2f objSize;
+   Vec2f commentSize;
+   Vec2f outerMargin;
+   Vec2f objArea;
+private:
+   float _getScale ();
+   void _drawComment ();
+   void _drawObj ();
 };
 
 }
 
-#endif //__render_h__
+#endif //__render_single_h__

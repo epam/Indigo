@@ -675,6 +675,14 @@
 			RelativePath=".\render_reaction.h"
 			>
 		</File>
+		<File
+			RelativePath=".\src\render_single.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\render_single.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

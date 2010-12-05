@@ -40,7 +40,7 @@
 #include "render_params.h"
 #include "render_item_molecule.h"
 #include "render_item_factory.h"
-#include "render.h"
+#include "render_single.h"
 
 using namespace indigo;
 
@@ -217,9 +217,9 @@ void RenderParamInterface::render (RenderParams& params)
       params.rOpt.implHMode = IHM_NONE;
 
    RenderItemFactory factory(rc); 
-   int topId = -1;
+   int obj = -1;
    if (params.rmode == RENDER_MOL) {
-      topId = factory.addItemMolecule();
+      obj = factory.addItemMolecule();
       BaseMolecule& bm = params.mol.ref();
 
       if (needsLayout(bm))
@@ -233,11 +233,11 @@ void RenderParamInterface::render (RenderParams& params)
          bm.aromatize();
       else if (params.aromatization < 0)
          bm.dearomatize();
-      factory.getItemMolecule(topId).mol = &bm;
-      factory.getItemMolecule(topId).highlighting = &params.molhl;
+      factory.getItemMolecule(obj).mol = &bm;
+      factory.getItemMolecule(obj).highlighting = &params.molhl;
    } else if (params.rmode == RENDER_RXN) {
-      topId = factory.addItemReaction();
-      factory.getItemReaction(topId);
+      obj = factory.addItemReaction();
+      factory.getItemReaction(obj);
       BaseReaction& rxn = params.rxn.ref();
 
       for (int i = rxn.begin(); i < rxn.end(); i = rxn.next(i))
@@ -256,19 +256,23 @@ void RenderParamInterface::render (RenderParams& params)
       else if (params.aromatization < 0)
          rxn.dearomatize();
 
-      factory.getItemReaction(topId).rxn = &rxn;
-      factory.getItemReaction(topId).highlighting = &params.rhl;
+      factory.getItemReaction(obj).rxn = &rxn;
+      factory.getItemReaction(obj).highlighting = &params.rhl;
    } else {
       throw Error("Invalid rendering mode: %i", params.rmode);
    }
 
+   int comment = -1;
    if (rc.opt.comment.size() > 0) {
-      int comment = factory.addItemComment();
-      factory.getItemComment(comment).obj = topId;
-      topId = comment;
+      comment = factory.addItemAuxiliary();
+      factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
+      factory.getItemAuxiliary(comment).text.copy(rc.opt.comment);
+      factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
    }
 
-   Render render(rc, factory, topId);
+   RenderSingle render(rc, factory);
+   render.obj = obj;
+   render.comment = comment;
    render.draw();
    rc.closeContext();
 }
