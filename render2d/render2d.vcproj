@@ -544,14 +544,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\render_base.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\render_base.h"
-			>
-		</File>
-		<File
 			RelativePath=".\src\render_common.cpp"
 			>
 		</File>
@@ -652,27 +644,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\render_molecule.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\render_molecule.h"
-			>
-		</File>
-		<File
 			RelativePath=".\src\render_params.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\render_params.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\render_reaction.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\render_reaction.h"
 			>
 		</File>
 		<File

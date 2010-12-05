@@ -35,8 +35,6 @@
 #include "reaction/rxnfile_saver.h"
 
 #include "render_context.h"
-#include "render_molecule.h"
-#include "render_reaction.h"
 #include "render_params.h"
 #include "render_item_molecule.h"
 #include "render_item_factory.h"
