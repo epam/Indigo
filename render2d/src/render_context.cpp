@@ -341,7 +341,7 @@ void RenderContext::initNullContext ()
    createSurface(NULL, NULL, 1, 1);
    cairoCheckStatus();
    _cr = cairo_create(_surface);
-   scale(_defaultScale, _defaultScale);
+   scale(_defaultScale);
 }
 
 void RenderContext::initContext (int width, int height)
@@ -423,9 +423,9 @@ void RenderContext::translate (float dx, float dy)
    cairoCheckStatus();
 }
 
-void RenderContext::scale (float sx, float sy)
+void RenderContext::scale (float s)
 {
-   cairo_scale(_cr, sx, sy);
+   cairo_scale(_cr, s, s);
    cairoCheckStatus();
 }
 

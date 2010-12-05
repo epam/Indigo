@@ -54,7 +54,7 @@ public:
    void resetContext ();
    void closeContext ();
    void translate (float dx, float dy);
-   void scale (float sx, float sy);
+   void scale (float s);
    void storeTransform ();
    void restoreTransform ();
    void resetTransform ();

@@ -71,7 +71,7 @@ void Render::draw ()
       _rc.translate((float)_cnvOpt.xOffset, (float)_cnvOpt.yOffset);
    _rc.translate((_cnvOpt.width - delta.x * scale) / 2, 
       (_cnvOpt.height - delta.y * scale) / 2);
-   _rc.scale(scale, scale);
+   _rc.scale(scale);
    _rc.init();
 
    _rc.storeTransform();

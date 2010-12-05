@@ -89,7 +89,7 @@ void RenderBase::draw ()
       _rc.translate(0, (float)commentHeight);
    _rc.translate((cnvOpt.width - delta.x * scale) / 2, 
       (cnvOpt.height - commentHeight - delta.y * scale) / 2);
-   _rc.scale(scale, scale);
+   _rc.scale(scale);
    _rc.init();
 
    _rc.storeTransform();
