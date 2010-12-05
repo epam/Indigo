@@ -217,9 +217,9 @@ void RenderParamInterface::render (RenderParams& params)
       params.rOpt.implHMode = IHM_NONE;
 
    RenderItemFactory factory(rc); 
+   int topId = -1;
    if (params.rmode == RENDER_MOL) {
-      int id = factory.addItemMolecule();
-      RenderItemMolecule& ri = factory.getItemMolecule(id);
+      topId = factory.addItemMolecule();
       BaseMolecule& bm = params.mol.ref();
 
       if (needsLayout(bm))
@@ -233,14 +233,11 @@ void RenderParamInterface::render (RenderParams& params)
          bm.aromatize();
       else if (params.aromatization < 0)
          bm.dearomatize();
-      ri.mol = &bm;
-      ri.highlighting = &params.molhl;
-
-      Render render(rc, ri);
-      render.draw();
+      factory.getItemMolecule(topId).mol = &bm;
+      factory.getItemMolecule(topId).highlighting = &params.molhl;
    } else if (params.rmode == RENDER_RXN) {
-      int id = factory.addItemReaction();
-      RenderItemReaction& ri = factory.getItemReaction(id);
+      topId = factory.addItemReaction();
+      factory.getItemReaction(topId);
       BaseReaction& rxn = params.rxn.ref();
 
       for (int i = rxn.begin(); i < rxn.end(); i = rxn.next(i))
@@ -259,12 +256,19 @@ void RenderParamInterface::render (RenderParams& params)
       else if (params.aromatization < 0)
          rxn.dearomatize();
 
-      ri.rxn = &rxn;
-      ri.highlighting = &params.rhl;
-      Render render(rc, ri);
-      render.draw();
+      factory.getItemReaction(topId).rxn = &rxn;
+      factory.getItemReaction(topId).highlighting = &params.rhl;
    } else {
       throw Error("Invalid rendering mode: %i", params.rmode);
    }
+
+   if (rc.opt.comment.size() > 0) {
+      int comment = factory.addItemComment();
+      factory.getItemComment(comment).obj = topId;
+      topId = comment;
+   }
+
+   Render render(rc, factory, topId);
+   render.draw();
    rc.closeContext();
 }

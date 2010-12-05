@@ -12,31 +12,33 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __render_h__
-#define __render_h__
+#ifndef __render_item_comment_h__
+#define __render_item_comment_h__
 
-#include "render_internal.h"
+#include "render_item_container.h"
 
 namespace indigo {
 
-class Render {
+class RenderItemComment : public RenderItemContainer {
 public:
-   Render (RenderContext& rc, RenderItemFactory& factory, int id);
-   virtual ~Render();
-   void draw ();
+   RenderItemComment (RenderItemFactory& factory);
+   virtual ~RenderItemComment () {}
 
-   DEF_ERROR("Render");
+   DEF_ERROR("RenderItemComment");
+
+   virtual void init ();
+   virtual void estimateSize ();
+   virtual void render ();
+
+   int obj;
+   int comment;
+   float vSpace;
 
 private:
-   float _getScale (const Vec2f& delta, int absMargX, int absMargY);
-
-   int _item;
-   RenderContext& _rc;
-   const RenderSettings& _settings;
-   CanvasOptions& _cnvOpt;
-   RenderItemFactory& _factory;
+   void _renderComment ();
+   void _renderObj ();
 };
 
 }
 
-#endif //__render_h__
+#endif //__render_item_comment_h__

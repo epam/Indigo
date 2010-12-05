@@ -129,37 +129,49 @@ void RenderItemReaction::render ()
 {                                     
    _rc.translate(-origin.x, -origin.y);
    _rc.storeTransform();
-   RenderItemBase& reactants = _factory.getItem(_reactantLine);
-   RenderItemBase& products = _factory.getItem(_productLine);
-   RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
-   _rc.storeTransform();
-   _rc.translate(0, 0.5f * (size.y - reactants.size.y));
-   reactants.render();
-   _rc.restoreTransform();
-   _rc.removeStoredTransform();
-   _rc.translate(reactants.size.x + hSpace, 0);
-
-   float arrowWidth = arrow.size.x;
-   if (_catalystLine >= 0) {
-      RenderItemBase& catalysts = _factory.getItem(_catalystLine);
-      arrowWidth = __max(arrowWidth, catalysts.size.x);
+   {
+      RenderItemBase& reactants = _factory.getItem(_reactantLine);
+      RenderItemBase& products = _factory.getItem(_productLine);
+      RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
       _rc.storeTransform();
-      _rc.translate(0.5f * (arrowWidth - catalysts.size.x), 0.5f * (size.y - arrow.size.y) - catalysts.size.y - catalystOffset);
-      catalysts.render();
+      {
+         _rc.translate(0, 0.5f * (size.y - reactants.size.y));
+         reactants.render();
+      }
+      _rc.restoreTransform();
+      _rc.removeStoredTransform();
+      _rc.translate(reactants.size.x + hSpace, 0);
+
+      float arrowWidth = arrow.size.x;
+      if (_catalystLine >= 0) {
+         RenderItemBase& catalysts = _factory.getItem(_catalystLine);
+         arrowWidth = __max(arrowWidth, catalysts.size.x);
+         _rc.storeTransform();
+         {
+            _rc.translate(0.5f * (arrowWidth - catalysts.size.x), 0.5f * (size.y - arrow.size.y) - catalysts.size.y - catalystOffset);
+            catalysts.render();
+         }
+         _rc.restoreTransform();
+         _rc.removeStoredTransform();
+      }
+      _rc.storeTransform();
+      _rc.translate(0, 0.5f * (size.y - arrow.size.y));
+      {
+         arrow.arrowLength = arrowWidth;
+         arrow.render();
+      }
+      _rc.restoreTransform();
+      _rc.removeStoredTransform();
+      _rc.translate(arrowWidth + hSpace, 0);
+
+      _rc.storeTransform();
+      _rc.translate(0, 0.5f * (size.y - products.size.y));
+      {
+         products.render();
+      }
       _rc.restoreTransform();
       _rc.removeStoredTransform();
    }
-   _rc.storeTransform();
-   _rc.translate(0, 0.5f * (size.y - arrow.size.y));
-   arrow.arrowLength = arrowWidth;
-   arrow.render();
-   _rc.restoreTransform();
-   _rc.removeStoredTransform();
-   _rc.translate(arrowWidth + hSpace, 0);
-
-   _rc.storeTransform();
-   _rc.translate(0, 0.5f * (size.y - products.size.y));
-   products.render();
    _rc.restoreTransform();
    _rc.removeStoredTransform();
 }

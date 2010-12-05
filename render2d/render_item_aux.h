@@ -38,7 +38,7 @@ public:
 
    AUX_TYPE type;
    Array<char> text;
-   float fontsz;
+   FONT_SIZE fontsz;
    BaseMolecule* mol;
    int rLabelIdx;
    float arrowLength;

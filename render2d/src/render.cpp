@@ -25,11 +25,12 @@
 #include "reaction/query_reaction.h"
 #include "render_context.h"
 #include "render_item.h"
+#include "render_item_factory.h"
 #include "render.h"
 
 using namespace indigo;
 
-Render::Render (RenderContext& rc, RenderItemBase& item) : _rc(rc), _settings(rc.getRenderSettings()), _cnvOpt(rc.cnvOpt), _item(item)
+Render::Render (RenderContext& rc, RenderItemFactory& factory, int id) : _rc(rc), _settings(rc.getRenderSettings()), _cnvOpt(rc.cnvOpt), _factory(factory), _item(id)
 {}
 
 Render::~Render()
@@ -40,23 +41,23 @@ void Render::draw ()
    _rc.initMetaSurface();
    _rc.fontsClear();
 
-   _item.init();
+   _factory.getItem(_item).init();
    float avgBondLength = 1.0f;
-   int bondCount = _item.getBondCount();
+   int bondCount = _factory.getItem(_item).getBondCount();
    if (bondCount > 0) {
-      avgBondLength = _item.getTotalBondLength() / bondCount;
+      avgBondLength = _factory.getItem(_item).getTotalBondLength() / bondCount;
    } else {
-      int atomCount = _item.getAtomCount();
+      int atomCount = _factory.getItem(_item).getAtomCount();
       if (atomCount > 0)
-         avgBondLength = _item.getTotalClosestAtomDistance() / atomCount;
+         avgBondLength = _factory.getItem(_item).getTotalClosestAtomDistance() / atomCount;
    }
    float objScale = 1 / avgBondLength;
-   _item.setObjScale(objScale);
+   _factory.getItem(_item).setObjScale(objScale);
 
    int minMarg = 2; // small absolute margin to allow for cairo font scaling errors
 
-   _item.estimateSize();
-   const Vec2f& sz = _item.size;
+   _factory.getItem(_item).estimateSize();
+   const Vec2f& sz = _factory.getItem(_item).size;
 
    Vec2f delta;
    delta.set(sz.x, sz.y);
@@ -74,31 +75,10 @@ void Render::draw ()
    _rc.init();
 
    _rc.storeTransform();
-   _item.render();
+   _factory.getItem(_item).render();
    _rc.removeStoredTransform();
    _rc.resetTransform();
-   //if (opt.comment.size() > 1) {
-   //   _rc.restoreTransform();
-   //   TextItem ti;
-   //   ti.text.copy(opt.comment);
-   //   ti.fontsize = FONT_SIZE_COMMENT;
-   //   Vec2f c;
-   //   if (opt.commentAlign == ALIGNMENT_LEFT)
-   //      c.x = 0.5f * commentWidth;
-   //   else if (opt.commentAlign == ALIGNMENT_CENTER)
-   //      c.x = 0.5f * _cnvOpt.width;
-   //   else
-   //      c.x = _cnvOpt.width - 0.5f * commentWidth;
-   //   if (opt.commentPos == COMMENT_POS_TOP) {
-   //      c.y = commentHeight/2.0f;
-   //   } else {
-   //      c.y = _cnvOpt.height - commentHeight/2.0f;
-   //   }
-   //   _rc.setTextItemSize(ti, c);
-   //   _rc.drawTextItemText(ti, opt.commentColor, false);
-   //}
    _rc.removeStoredTransform();
-
    _rc.destroyMetaSurface();
 }
 
@@ -136,33 +116,3 @@ float Render::_getScale (const Vec2f& delta, int absMargX, int absMargY)
 
    return scale;
 }
-//
-//void Render::_setSize (Metalayout::LayoutItem& item)
-//{
-//   _rc.initNullContext();
-//   Vec2f bbmin, bbmax;
-//   Vec2f pos;
-//   _drawItem(item, pos, true);
-//   _rc.bbGetMin(bbmin);
-//   _rc.bbGetMax(bbmax);
-//   _rc.resetContext();
-//   item.size.diff(bbmax, bbmin);
-//   item.origin.copy(bbmin);
-//}  
-//
-//BaseMolecule& Render::cb_getMol (int id, void* context)
-//{
-//   return ((Render*)context)->_getMol(id);
-//}
-//
-//void Render::cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, void* context)
-//{
-//   Render* render = (Render*)context;
-//   render->_drawItem(item, pos, false);
-//}
-//
-//void Render::cb_prepare (Metalayout::LayoutItem& item, const Vec2f& pos, void* context)
-//{
-//   Render* render = (Render*)context;
-//   render->_setSize(item);
-//}

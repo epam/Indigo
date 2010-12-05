@@ -36,10 +36,9 @@ void RenderItemAuxiliary::_drawText ()
 {                                  
    TextItem ti;
    ti.text.copy(text);
-   ti.fontsize = FONT_SIZE_COMMENT;
-   Vec2f c;
-   c.scaled(size, 0.5f);
-   _rc.setTextItemSize(ti, c);
+   ti.fontsize = fontsz;
+   _rc.setTextItemSize(ti);
+   ti.bbp.set(0,0);
    _rc.drawTextItemText(ti);
 }
 
@@ -153,6 +152,7 @@ void RenderItemAuxiliary::render ()
    _rc.translate(-origin.x, -origin.y);
    switch (type) {
       case AUX_TEXT:
+         _drawText();
          return;
       case AUX_RXN_PLUS:
          _drawPlus();
