@@ -636,6 +636,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\render_item_reaction.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\render_item_reaction.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\render_molecule.cpp"
 			>
 		</File>

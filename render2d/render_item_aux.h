@@ -38,13 +38,16 @@ public:
 
    AUX_TYPE type;
    Array<char> text;
-   double fontsz;
+   float fontsz;
    BaseMolecule* mol;
    int rLabelIdx;
+   float arrowLength;
 private:
    void _drawRGroupLabel ();
    void _drawRIfThen ();
    void _drawText ();
+   void _drawPlus ();
+   void _drawArrow ();
 };
 
 }

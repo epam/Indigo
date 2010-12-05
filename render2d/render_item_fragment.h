@@ -25,12 +25,6 @@ class RenderItemFragment : public RenderItemBase {
 public:
    RenderItemFragment (RenderItemFactory& factory);
    virtual ~RenderItemFragment ();
-   void setMolecule (BaseMolecule* mol);
-   void setMoleculeHighlighting (GraphHighlighting* highlighting);
-   void setAAM (Array<int>* aam);
-   void setReactingCenters (Array<int>* reactingCenters);
-   void setInversionArray (Array<int>* inversionArray);
-   void setExactChangeArray (Array<int>* exactChangeArray);
 
    DEF_ERROR("RenderItemFragment");
 
@@ -38,20 +32,21 @@ public:
    virtual void setObjScale (float scale) { 
       _scaleFactor = scale; 
    }
-   virtual void init () {}
+   virtual void init ();
    virtual void render ();
    virtual float getTotalBondLength ();
    virtual float getTotalClosestAtomDistance ();
    virtual int getBondCount ();
    virtual int getAtomCount ();
 
+   BaseMolecule* mol;
+   GraphHighlighting* highlighting;
+   Array<int>* aam;
+   Array<int>* reactingCenters;
+   Array<int>* inversionArray;
+   Array<int>* exactChangeArray;
+
 private:
-   BaseMolecule* _mol;
-   GraphHighlighting* _highlighting;
-   Array<int>* _aam;
-   Array<int>* _reactingCenters;
-   Array<int>* _inversionArray;
-   Array<int>* _exactChangeArray;
    float _scaleFactor;
    Vec2f _min, _max;
 };

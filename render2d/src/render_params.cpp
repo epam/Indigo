@@ -216,15 +216,12 @@ void RenderParamInterface::render (RenderParams& params)
    if (params.query)
       params.rOpt.implHMode = IHM_NONE;
 
+   RenderItemFactory factory(rc); 
    if (params.rmode == RENDER_MOL) {
-      //MoleculeRender render(rc);
-      RenderItemFactory factory(rc); 
       int id = factory.addItemMolecule();
-      RenderItemMolecule& rim = factory.getItemMolecule(id);
+      RenderItemMolecule& ri = factory.getItemMolecule(id);
       BaseMolecule& bm = params.mol.ref();
 
-      //render.opt.copy(params.rOpt);
-      //render.cnvOpt = params.cnvOpt;
       if (needsLayout(bm))
       {
          MoleculeLayout ml(bm);
@@ -236,17 +233,16 @@ void RenderParamInterface::render (RenderParams& params)
          bm.aromatize();
       else if (params.aromatization < 0)
          bm.dearomatize();
-      rim.setMolecule(&bm);
-      rim.setMoleculeHighlighting(&params.molhl);
+      ri.mol = &bm;
+      ri.highlighting = &params.molhl;
 
-      Render render(rc, rim);
+      Render render(rc, ri);
       render.draw();
    } else if (params.rmode == RENDER_RXN) {
-      ReactionRender render(rc);
+      int id = factory.addItemReaction();
+      RenderItemReaction& ri = factory.getItemReaction(id);
       BaseReaction& rxn = params.rxn.ref();
 
-      render.opt.copy(params.rOpt);
-      render.cnvOpt = params.cnvOpt;
       for (int i = rxn.begin(); i < rxn.end(); i = rxn.next(i))
       {
          BaseMolecule& mol = rxn.getBaseMolecule(i);
@@ -263,8 +259,9 @@ void RenderParamInterface::render (RenderParams& params)
       else if (params.aromatization < 0)
          rxn.dearomatize();
 
-      render.setReactionHighlighting(&params.rhl);
-      render.setReaction(&rxn);
+      ri.rxn = &rxn;
+      ri.highlighting = &params.rhl;
+      Render render(rc, ri);
       render.draw();
    } else {
       throw Error("Invalid rendering mode: %i", params.rmode);

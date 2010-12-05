@@ -21,6 +21,7 @@
 #include "render_item_aux.h"
 #include "render_item_hline.h"
 #include "render_item_molecule.h"
+#include "render_item_reaction.h"
 
 namespace indigo {
 
@@ -61,6 +62,7 @@ public:
       TYPE_Auxiliary,
       TYPE_HLine,
       TYPE_Molecule,
+      TYPE_Reaction,
    };
 
    RenderItemBase& getItem (int i)
@@ -71,6 +73,7 @@ public:
          GET_ITEM(Auxiliary);
          GET_ITEM(HLine);
          GET_ITEM(Molecule);
+         GET_ITEM(Reaction);
          default: throw Error("Item type unrecognized");
       }
    }
@@ -79,7 +82,8 @@ public:
    IMPL_ITEM(Auxiliary);
    IMPL_ITEM(HLine);
    IMPL_ITEM(Molecule);
-
+   IMPL_ITEM(Reaction);
+      
    RenderContext& rc;
 private:
    struct Item {
@@ -93,6 +97,7 @@ private:
    DEF_POOL(Auxiliary);
    DEF_POOL(HLine);
    DEF_POOL(Molecule);
+   DEF_POOL(Reaction);
 
    ObjPool<Item> _items;
 };

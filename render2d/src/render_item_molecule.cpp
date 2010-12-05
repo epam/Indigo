@@ -25,40 +25,40 @@ using namespace indigo;
 
 RenderItemMolecule::RenderItemMolecule (RenderItemFactory& factory) : 
    RenderItemContainer(factory),
-   _mol(NULL),
-   _highlighting(NULL)
+   mol(NULL),
+   highlighting(NULL)
 {
 }
 
 void RenderItemMolecule::init ()
 {
-   if (_mol == NULL)
+   if (mol == NULL)
       throw Error("molecule not set");
 
-   if (_mol->vertexCount() == 0)
+   if (mol->vertexCount() == 0)
       return;
 
    int _core = _factory.addItemFragment();
+   _factory.getItemFragment(_core).mol = mol;
+   _factory.getItemFragment(_core).highlighting = highlighting;
    _factory.getItemFragment(_core).init();
-   _factory.getItemFragment(_core).setMolecule(_mol);
-   _factory.getItemFragment(_core).setMoleculeHighlighting(_highlighting);
    
    int lineCore = _factory.addItemHLine();
    _factory.getItemHLine(lineCore).init();
    _factory.getItemHLine(lineCore).items.push(_core);
    items.push(lineCore);
 
-   QUERY_MOL_BEGIN(_mol);
+   QUERY_MOL_BEGIN(mol);
    {
       MoleculeRGroups& rGroups = qmol.rgroups;
       if (_getRIfThenCount() > 0) {
          int _ifThen = _factory.addItemAuxiliary();
-         _factory.getItemAuxiliary(_ifThen).init();
          _factory.getItemAuxiliary(_ifThen).type = RenderItemAuxiliary::AUX_RGROUP_IFTHEN;
-         _factory.getItemAuxiliary(_ifThen).mol = _mol;
+         _factory.getItemAuxiliary(_ifThen).mol = mol;
          int lineIfThen = _factory.addItemHLine();
          _factory.getItemHLine(lineIfThen).init();
          _factory.getItemHLine(lineIfThen).items.push(_ifThen);
+         _factory.getItemAuxiliary(_ifThen).init();
          items.push(_ifThen);
       }
       for (int i = 1; i <= rGroups.getRGroupCount(); ++i)
@@ -69,16 +69,16 @@ void RenderItemMolecule::init ()
 
          RGroup& rg = rGroups.getRGroup(i);
          int label = _factory.addItemAuxiliary();
-         _factory.getItemAuxiliary(label).init();
          _factory.getItemAuxiliary(label).type = RenderItemAuxiliary::AUX_RGROUP_LABEL;
-         _factory.getItemAuxiliary(label).mol = _mol;
+         _factory.getItemAuxiliary(label).mol = mol;
          _factory.getItemAuxiliary(label).rLabelIdx = i;
          _factory.getItemHLine(lineRFrag).items.push(label);
+         _factory.getItemAuxiliary(label).init();
 
          for (int j = 0; j < rg.fragmentsCount(); ++j) {
             int id = _factory.addItemFragment();
+            _factory.getItemFragment(id).mol = rg.fragments[j];
             _factory.getItemFragment(id).init();
-            _factory.getItemFragment(id).setMolecule(rg.fragments[j]);
             _factory.getItemHLine(lineRFrag).items.push(id);
          }
       }
@@ -88,7 +88,7 @@ void RenderItemMolecule::init ()
 
 int RenderItemMolecule::_getRIfThenCount ()
 {
-   QUERY_MOL_BEGIN(_mol);
+   QUERY_MOL_BEGIN(mol);
    {
       MoleculeRGroups& rgs = qmol.rgroups;
       int cnt = 0;

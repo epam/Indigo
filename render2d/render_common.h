@@ -337,6 +337,8 @@ private:
 #define QUERY_MOL_BEGIN(mol) if (mol->isQueryMolecule()) { QueryMolecule& qmol = mol->asQueryMolecule()
 #define QUERY_MOL_END }
 
+#define QUERY_RXN_BEGIN1(rxn) if (rxn->isQueryReaction()) { QueryReaction& qr = rxn->asQueryReaction()
+
 #define QUERY_RXN_BEGIN if (_r->isQueryReaction()) { QueryReaction& qr = _r->asQueryReaction()
 #define QUERY_RXN_END }
 

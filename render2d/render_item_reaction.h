@@ -12,32 +12,36 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __render_item_molecule_h__
-#define __render_item_molecule_h__
+#ifndef __render_item_reaction_h__
+#define __render_item_reaction_h__
 
+#include "reaction/reaction_highlighting.h"
 #include "render_item_fragment.h"
 #include "render_item_aux.h"
 #include "render_item_hline.h"
 
 namespace indigo {
 
-class RenderItemMolecule : public RenderItemContainer {
+class RenderItemReaction : public RenderItemContainer {
 public:
-   RenderItemMolecule (RenderItemFactory& factory);
-   virtual ~RenderItemMolecule () {}
+   RenderItemReaction (RenderItemFactory& factory);
+   virtual ~RenderItemReaction () {}
 
-   DEF_ERROR("RenderItemMolecule");
+   DEF_ERROR("RenderItemReaction");
 
    virtual void init ();
    virtual void estimateSize ();
    virtual void render ();
 
-   BaseMolecule* mol;
-   GraphHighlighting* highlighting;
+   BaseReaction* rxn;
+   ReactionHighlighting* highlighting;
+   float hSpace, catalystOffset;
 private:
-   int _getRIfThenCount ();
+   int _addFragment (int id);
+   int _addPlus ();
+   int _reactantLine, _catalystLine, _productLine, _arrow;
 };
 
 }
 
-#endif //__render_item_molecule_h__
+#endif //__render_item_reaction_h__

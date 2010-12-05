@@ -23,7 +23,8 @@
 using namespace indigo;
 
 RenderItemAuxiliary::RenderItemAuxiliary (RenderItemFactory& factory) : 
-   RenderItemBase(factory)
+   RenderItemBase(factory),
+   arrowLength(_settings.arrowLength)
 {
 }
 
@@ -133,6 +134,20 @@ void RenderItemAuxiliary::_drawRIfThen ()
    QUERY_MOL_END;
 }
 
+void RenderItemAuxiliary::_drawPlus ()
+{
+   _rc.setSingleSource(CWC_BASE);
+   _rc.drawPlus(Vec2f(_settings.plusSize/2, 0),
+      _settings.metaLineWidth, _settings.plusSize);
+}
+
+void RenderItemAuxiliary::_drawArrow ()
+{
+   _rc.setSingleSource(CWC_BASE);
+   _rc.drawArrow(Vec2f(0, 0), Vec2f(arrowLength, 0), 
+      _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize); 
+}
+
 void RenderItemAuxiliary::render ()
 {
    _rc.translate(-origin.x, -origin.y);
@@ -140,8 +155,10 @@ void RenderItemAuxiliary::render ()
       case AUX_TEXT:
          return;
       case AUX_RXN_PLUS:
+         _drawPlus();
          return;
       case AUX_RXN_ARROW:
+         _drawArrow();
          return;
       case AUX_RGROUP_LABEL:
          _drawRGroupLabel();
