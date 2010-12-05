@@ -185,7 +185,7 @@ float _indigoSimilarity2 (const byte *arr1, const byte *arr2, int size, const ch
 
       float denom = (ones1 - common_ones) * alpha + (ones2 - common_ones) * beta + common_ones;
 
-      if (denom < 0.001)
+      if (denom < 1e-6f)
          throw IndigoError("bad denominator");
 
       return common_ones / denom;
