@@ -174,7 +174,7 @@ protected:
       QueryMolecule *fragment, bool two_attachment_points,
       int att_idx1, int att_idx2, int rgroup_idx);
 
-   void _unfoldHydrogens ();
+   void _removeUnfoldedHydrogens ();
 
    BaseMolecule &_target;
    QueryMolecule *_query;

@@ -203,7 +203,6 @@ void MoleculeSubstructureMatcher::setQuery (QueryMolecule &query)
            !_target.isQueryMolecule())
    {
       _did_h_unfold = true;
-     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
    }
    else
       _did_h_unfold = false;
@@ -256,6 +255,12 @@ bool MoleculeSubstructureMatcher::find ()
    if (match_3d != 0 && !_target.have_xyz)
       return false;
 
+   if (_did_h_unfold)
+   {
+     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
+     _ee->validate();
+   }
+
    if (highlighting != 0)
       highlighting->init(_target);
 
@@ -290,7 +295,7 @@ bool MoleculeSubstructureMatcher::find ()
    int result = _ee->process();
 
    if (_did_h_unfold)
-      _unfoldHydrogens();
+      _removeUnfoldedHydrogens();
 
    if (!find_all_embeddings)
       return result == 0;
@@ -302,7 +307,7 @@ bool MoleculeSubstructureMatcher::find ()
    }
 }
 
-void MoleculeSubstructureMatcher::_unfoldHydrogens ()
+void MoleculeSubstructureMatcher::_removeUnfoldedHydrogens ()
 {
    QS_DEF(Array<int>, atoms_to_remove);
    atoms_to_remove.clear();
@@ -328,7 +333,7 @@ DLLEXPORT bool MoleculeSubstructureMatcher::findNext ()
    bool found = _ee->processNext();
 
    if (_did_h_unfold)
-      _unfoldHydrogens();
+      _removeUnfoldedHydrogens();
 
    return found;
 }

@@ -1140,6 +1140,8 @@ CEXPORT int indigoMatchSubstructure (int query, int target)
       QueryMolecule &querymol = self.getObject(query).getQueryMolecule();
 
       IndigoMoleculeSubstructureMatchIter match_iter(targetmol, querymol, false, false);
+      if (!match_iter.hasNext())
+         return 0;
       return self.addObject(match_iter.next());
    }
    INDIGO_END(-1)
