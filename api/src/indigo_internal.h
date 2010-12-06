@@ -632,7 +632,8 @@ private:
 class _IndigoBasicOptionsHandlersSetter
 {
 public:
-   _IndigoBasicOptionsHandlersSetter ();
+   DLLEXPORT _IndigoBasicOptionsHandlersSetter ();
+   DLLEXPORT ~_IndigoBasicOptionsHandlersSetter ();
 };
 
 

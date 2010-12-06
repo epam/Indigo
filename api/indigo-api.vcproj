@@ -591,6 +591,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\indigo_loaders.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\indigo_macros.c"
 			>
 		</File>
@@ -624,10 +628,6 @@
 		</File>
 		<File
 			RelativePath=".\src\indigo_product_enumerator.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\indigo_product_enumerator.h"
 			>
 		</File>
 		<File

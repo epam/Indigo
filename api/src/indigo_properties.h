@@ -26,7 +26,7 @@ public:
    virtual const char * getName ();
    virtual int getIndex ();
 
-   Array<char> & getValue ();
+   DLLEXPORT Array<char> & getValue ();
 
 protected:
    RedBlackStringObjMap< Array<char> > &_props;
