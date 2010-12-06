@@ -159,6 +159,12 @@ int IndigoAtomsIter::_shift (int idx)
          if (_mol->isRSite(idx))
             break;
    }
+   else if (_type == STEREOCENTER)
+   {
+      for (; idx != _mol->vertexEnd(); idx = _mol->vertexNext(idx))
+         if (_mol->stereocenters.getType(idx) != 0)
+            break;
+   }
 
    return idx;
 }
@@ -549,16 +555,84 @@ CEXPORT int indigoIterateRSites (int molecule)
    INDIGO_END(-1);
 }
 
-CEXPORT const char * indigoPseudoatomLabel (int atomm)
+CEXPORT int indigoIterateStereocenters (int molecule)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
+      return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::STEREOCENTER);
+   }
+   INDIGO_END(-1);
+}
 
-      if (!atom.mol->isPseudoAtom(atom.idx))
-         throw IndigoError("not a pseudo-atom");
+CEXPORT const char * indigoSymbol (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
 
-      return atom.mol->getPseudoAtom(atom.idx);
+      if (ia.mol->isPseudoAtom(ia.idx))
+         return ia.mol->getPseudoAtom(ia.idx);
+      else if (ia.mol->isRSite(ia.idx))
+      {
+         QS_DEF(Array<int>, rgroups);
+         int i;
+         ia.mol->getAllowedRGroups(ia.idx, rgroups);
+
+         if (rgroups.size() == 0)
+            return "R";
+
+         ArrayOutput output(self.tmp_string);
+         for (i = 0; i < rgroups.size(); i++)
+         {
+            if (i > 0)
+               output.writeChar(',');
+            output.printf("R%d", rgroups[i]);
+         }
+         output.writeChar(0);
+         return self.tmp_string.ptr();
+      }
+      else 
+      {
+         int number = ia.mol->getAtomNumber(ia.idx);
+         QS_DEF(Array<int>, list);
+
+         if (number != -1)
+            return Element::toString(number);
+
+         int query_atom_type;
+
+         if (ia.mol->isQueryMolecule() &&
+               (query_atom_type = QueryMolecule::parseQueryAtom(ia.mol->asQueryMolecule(), ia.idx, list)) != -1)
+         {
+            if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
+               return "A";
+            if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
+               return "Q";
+            else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
+               return "X";
+            else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
+                     query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+            {
+               int k;
+               ArrayOutput output(self.tmp_string);
+
+               if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                  output.writeString("NOT");
+
+               output.writeChar('[');
+               for (k = 0; k < list.size(); k++)
+               {
+                  if (k > 0)
+                     output.writeChar(',');
+                  output.writeString(Element::toString(list[k]));
+               }
+               output.writeChar(']');
+               output.writeChar(0);
+               return self.tmp_string.ptr();
+            }
+         }
+      }
+      return "*";
    }
    INDIGO_END(0);
 }
@@ -584,6 +658,25 @@ CEXPORT int indigoIsRSite (int atomm)
 
       if (atom.mol->isRSite(atom.idx))
          return 1;
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoStereocenterType (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(atom).getAtom();
+
+      switch (ia.mol->stereocenters.getType(ia.idx))
+      {
+         case MoleculeStereocenters::ATOM_ABS: return INDIGO_ABS;
+         case MoleculeStereocenters::ATOM_OR: return INDIGO_OR;
+         case MoleculeStereocenters::ATOM_AND: return INDIGO_AND;
+         case MoleculeStereocenters::ATOM_ANY: return INDIGO_EITHER;
+         default: return 0;
+      }
       return 0;
    }
    INDIGO_END(-1);
@@ -797,7 +890,7 @@ CEXPORT int indigoGetExplicitValence (int atomm, int *valence)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoAtomIsotope (int atomm)
+CEXPORT int indigoIsotope (int atomm)
 {
    INDIGO_BEGIN
    {
@@ -808,16 +901,16 @@ CEXPORT int indigoAtomIsotope (int atomm)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoAtomNumber (int atomm)
+CEXPORT int indigoAtomicNumber (int atomm)
 {
    INDIGO_BEGIN
    {
       IndigoAtom &atom = self.getObject(atomm).getAtom();
 
       if (atom.mol->isPseudoAtom(atom.idx))
-         throw IndigoError("indigoAtomNumber() called on a pseudoatom");
+         throw IndigoError("indigoAtomicNumber() called on a pseudoatom");
       if (atom.mol->isRSite(atom.idx))
-         throw IndigoError("indigoAtomNumber() called on an R-site");
+         throw IndigoError("indigoAtomicNumber() called on an R-site");
 
       int num = atom.mol->getAtomNumber(atom.idx);
       return num == -1 ? 0 : num;
@@ -1404,7 +1497,7 @@ CEXPORT int indigoBond (int nei)
    INDIGO_END(-1)
 }
 
-float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *desired_xyz)
+CEXPORT float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *desired_xyz)
 {
    INDIGO_BEGIN
    {
@@ -1441,6 +1534,21 @@ float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *desired_
          mol.getAtomXyz(i).transformPoint(matr);
 
       return (float)(sqrt(sqsum / natoms));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoInvertStereo (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = self.getObject(item).getAtom();
+
+      int k, *pyramid = ia.mol->stereocenters.getPyramid(ia.idx);
+      if (pyramid == 0)
+         throw IndigoError("indigoInvertStereo: not a stereoatom");
+      __swap(pyramid[0], pyramid[1], k);
+      return 1;
    }
    INDIGO_END(-1)
 }

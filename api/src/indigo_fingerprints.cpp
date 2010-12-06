@@ -1,3 +1,17 @@
+/****************************************************************************
+ * Copyright (C) 2010 GGA Software Services LLC
+ *
+ * This file is part of Indigo toolkit.
+ *
+ * This file may be distributed and/or modified under the terms of the
+ * GNU General Public License version 3 as published by the Free Software
+ * Foundation and appearing in the file LICENSE.GPL included in the
+ * packaging of this file.
+ *
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ ***************************************************************************/
+
 #include "indigo_internal.h"
 #include "molecule/molecule_fingerprint.h"
 #include "base_cpp/output.h"
@@ -171,7 +185,7 @@ float _indigoSimilarity2 (const byte *arr1, const byte *arr2, int size, const ch
 
       float denom = (ones1 - common_ones) * alpha + (ones2 - common_ones) * beta + common_ones;
 
-      if (denom < 0.001)
+      if (denom < 1e-6f)
          throw IndigoError("bad denominator");
 
       return common_ones / denom;

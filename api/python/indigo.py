@@ -27,11 +27,14 @@ class IndigoException (Exception):
     return repr(self.value)
 
 class Indigo:
-  UP = 1
-  DOWN = 2
-  EITHER = 3
-  CIS = 4
-  TRANS = 5
+  ABS = 1
+  OR = 2
+  AND = 3
+  EITHER = 4
+  UP = 5
+  DOWN = 6
+  CIS = 7
+  TRANS = 8
 
   class IndigoObject:
     def __init__ (self, dispatcher, id):
@@ -273,6 +276,8 @@ class Indigo:
     self._lib.indigoIteratePseudoatoms.argtypes = [c_int]
     self._lib.indigoIterateRSites.restype = c_int
     self._lib.indigoIterateRSites.argtypes = [c_int]
+    self._lib.indigoIterateStereocenters.restype = c_int
+    self._lib.indigoIterateStereocenters.argtypes = [c_int]
     self._lib.indigoIterateRGroups.restype = c_int
     self._lib.indigoIterateRGroups.argtypes = [c_int]
     self._lib.indigoIterateRGroupFragments.restype = c_int
@@ -283,10 +288,12 @@ class Indigo:
     self._lib.indigoIsPseudoatom.argtypes = [c_int]
     self._lib.indigoIsRSite.restype = c_int
     self._lib.indigoIsRSite.argtypes = [c_int]
+    self._lib.indigoStereocenterType.restype = c_int
+    self._lib.indigoStereocenterType.argtypes = [c_int]
     self._lib.indigoSingleAllowedRGroup.restype = c_int
     self._lib.indigoSingleAllowedRGroup.argtypes = [c_int]
-    self._lib.indigoPseudoatomLabel.restype = c_char_p
-    self._lib.indigoPseudoatomLabel.argtypes = [c_int]
+    self._lib.indigoSymbol.restype = c_char_p
+    self._lib.indigoSymbol.argtypes = [c_int]
     self._lib.indigoDegree.restype = c_int
     self._lib.indigoDegree.argtypes = [c_int]
     self._lib.indigoGetCharge.restype = c_int
@@ -295,10 +302,10 @@ class Indigo:
     self._lib.indigoGetExplicitValence.argtypes = [c_int, POINTER(c_int)]
     self._lib.indigoGetRadicalElectrons.restype = c_int
     self._lib.indigoGetRadicalElectrons.argtypes = [c_int, POINTER(c_int)]
-    self._lib.indigoAtomNumber.restype = c_int
-    self._lib.indigoAtomNumber.argtypes = [c_int]
-    self._lib.indigoAtomIsotope.restype = c_int
-    self._lib.indigoAtomIsotope.argtypes = [c_int]
+    self._lib.indigoAtomicNumber.restype = c_int
+    self._lib.indigoAtomicNumber.argtypes = [c_int]
+    self._lib.indigoIsotope.restype = c_int
+    self._lib.indigoIsotope.argtypes = [c_int]
     self._lib.indigoResetCharge.restype = c_int
     self._lib.indigoResetCharge.argtypes = [c_int]
     self._lib.indigoResetExplicitValence.restype = c_int
@@ -307,6 +314,8 @@ class Indigo:
     self._lib.indigoResetRadical.argtypes = [c_int]
     self._lib.indigoResetIsotope.restype = c_int
     self._lib.indigoResetIsotope.argtypes = [c_int]
+    self._lib.indigoInvertStereo.restype = c_int
+    self._lib.indigoInvertStereo.argtypes = [c_int]
     self._lib.indigoCountAtoms.restype = c_int
     self._lib.indigoCountAtoms.argtypes = [c_int]
     self._lib.indigoCountBonds.restype = c_int
@@ -329,10 +338,10 @@ class Indigo:
     self._lib.indigoGetAtom.argtypes = [c_int, c_int]
     self._lib.indigoGetBond.restype = c_int
     self._lib.indigoGetBond.argtypes = [c_int, c_int]
-    self._lib.indigoCisTransClear.restype = c_int
-    self._lib.indigoCisTransClear.argtypes = [c_int]
-    self._lib.indigoStereocentersClear.restype = c_int
-    self._lib.indigoStereocentersClear.argtypes = [c_int]
+    self._lib.indigoClearCisTrans.restype = c_int
+    self._lib.indigoClearCisTrans.argtypes = [c_int]
+    self._lib.indigoClearStereocenters.restype = c_int
+    self._lib.indigoClearStereocenters.argtypes = [c_int]
     self._lib.indigoCountStereocenters.restype = c_int
     self._lib.indigoCountStereocenters.argtypes = [c_int]
     self._lib.indigoGrossFormula.restype = c_int
@@ -518,25 +527,28 @@ class Indigo:
     self.IndigoObject.iterateAtoms = self._member_obj(self._lib.indigoIterateAtoms)
     self.IndigoObject.iteratePseudoatoms = self._member_obj(self._lib.indigoIteratePseudoatoms)
     self.IndigoObject.iterateRSites = self._member_obj(self._lib.indigoIterateRSites)
+    self.IndigoObject.iterateStereocenters = self._member_obj(self._lib.indigoIterateStereocenters)
     self.IndigoObject.iterateRGroups = self._member_obj(self._lib.indigoIterateRGroups)
     self.IndigoObject.iterateRGroupFragments = self._member_obj(self._lib.indigoIterateRGroupFragments)
     self.IndigoObject.countAttachmentPoints = self._member_int(self._lib.indigoCountAttachmentPoints)
     self.IndigoObject.isPseudoatom = self._member_bool(self._lib.indigoIsPseudoatom)
     self.IndigoObject.isRSite = self._member_bool(self._lib.indigoIsRSite)
+    self.IndigoObject.stereocenterType = self._member_int(self._lib.indigoStereocenterType)
     self.IndigoObject.singleAllowedRGroup = self._member_int(self._lib.indigoSingleAllowedRGroup)
-    self.IndigoObject.pseudoatomLabel = self._member_string(self._lib.indigoPseudoatomLabel)
+    self.IndigoObject.symbol = self._member_string(self._lib.indigoSymbol)
 
     self.IndigoObject.degree = self._member_int(self._lib.indigoDegree)
     self.IndigoObject.charge = self._member_intptr(self._lib.indigoGetCharge)
     self.IndigoObject.explicitValence = self._member_intptr(self._lib.indigoGetExplicitValence)
     self.IndigoObject.radicalElectrons = self._member_intptr(self._lib.indigoGetRadicalElectrons)
-    self.IndigoObject.atomNumber = self._member_int(self._lib.indigoAtomNumber)
-    self.IndigoObject.atomIsotope = self._member_int(self._lib.indigoAtomIsotope)
+    self.IndigoObject.atomicNumber = self._member_int(self._lib.indigoAtomicNumber)
+    self.IndigoObject.isotope = self._member_int(self._lib.indigoIsotope)
 
     self.IndigoObject.resetCharge = self._member_void(self._lib.indigoResetCharge)
     self.IndigoObject.resetExplicitValence = self._member_void(self._lib.indigoResetExplicitValence)
     self.IndigoObject.resetRadical = self._member_void(self._lib.indigoResetRadical)
     self.IndigoObject.resetIsotope = self._member_void(self._lib.indigoResetIsotope)
+    self.IndigoObject.invertStereo = self._member_void(self._lib.indigoInvertStereo)
 
     self.IndigoObject.countAtoms = self._member_int(self._lib.indigoCountAtoms)
     self.IndigoObject.countBonds = self._member_int(self._lib.indigoCountBonds)
@@ -552,8 +564,8 @@ class Indigo:
     self.IndigoObject.getAtom = self._member_obj_int(self._lib.indigoGetAtom)
     self.IndigoObject.getBond = self._member_obj_int(self._lib.indigoGetBond)
 
-    self.IndigoObject.cisTransClear = self._member_void(self._lib.indigoCisTransClear)
-    self.IndigoObject.stereocentersClear = self._member_void(self._lib.indigoStereocentersClear)
+    self.IndigoObject.clearCisTrans = self._member_void(self._lib.indigoClearCisTrans)
+    self.IndigoObject.clearStereocenters = self._member_void(self._lib.indigoClearStereocenters)
     self.IndigoObject.countStereocenters = self._member_int(self._lib.indigoCountStereocenters)
 
     self.IndigoObject.molecularWeight = self._member_float(self._lib.indigoMolecularWeight)

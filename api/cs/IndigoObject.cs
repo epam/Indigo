@@ -168,6 +168,12 @@ namespace com.gga.indigo
          return new IndigoObject(dispatcher, Indigo.indigoIterateRSites(self));
       }
 
+      public System.Collections.IEnumerable iterateStereocenters ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoIterateStereocenters(self));
+      }
+
       public System.Collections.IEnumerable iterateRGroups ()
       {
          dispatcher.setSessionID();
@@ -202,16 +208,22 @@ namespace com.gga.indigo
          return false;
       }
 
+      public int stereocenterType ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoStereocenterType(self);
+      }
+
       public int singleAllowedRGroup ()
       {
          dispatcher.setSessionID();
          return Indigo.indigoSingleAllowedRGroup(self);
       }
 
-      public string pseudoatomLabel ()
+      public string symbol ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoPseudoatomLabel(self));
+         return new String(Indigo.indigoSymbol(self));
       }
 
       public int degree ()
@@ -250,16 +262,16 @@ namespace com.gga.indigo
          return null;
       }
 
-      public int atomNumber ()
+      public int atomicNumber ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoAtomNumber(self);
+         return Indigo.indigoAtomicNumber(self);
       }
 
-      public int atomIsotope ()
+      public int isotope ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoAtomIsotope(self);
+         return Indigo.indigoIsotope(self);
       }
 
       public float[] xyz ()
@@ -295,6 +307,12 @@ namespace com.gga.indigo
       {
          dispatcher.setSessionID();
          Indigo.indigoResetIsotope (self);
+      }
+
+      public void invertStereo ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoInvertStereo(self);
       }
 
       public int countAtoms ()
@@ -356,16 +374,16 @@ namespace com.gga.indigo
          return new IndigoObject(dispatcher, Indigo.indigoGetBond(self, idx));
       }
 
-      public void cisTransClear ()
+      public void clearCisTrans ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoCisTransClear(self);
+         Indigo.indigoClearCisTrans(self);
       }
 
-      public void stereocentersClear ()
+      public void clearStereocenters()
       {
          dispatcher.setSessionID();
-         Indigo.indigoStereocentersClear(self);
+         Indigo.indigoClearStereocenters(self);
       }
 
       public int countStereocenters ()

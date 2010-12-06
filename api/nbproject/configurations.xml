@@ -5,21 +5,35 @@
       <itemPath>src/indigo.cpp</itemPath>
       <itemPath>indigo.h</itemPath>
       <itemPath>src/indigo_array.cpp</itemPath>
+      <itemPath>src/indigo_array.h</itemPath>
       <itemPath>src/indigo_basic.cpp</itemPath>
       <itemPath>src/indigo_deconvolution.cpp</itemPath>
+      <itemPath>src/indigo_deconvolution.h</itemPath>
       <itemPath>src/indigo_fingerprints.cpp</itemPath>
+      <itemPath>src/indigo_fingerprints.h</itemPath>
       <itemPath>src/indigo_internal.h</itemPath>
       <itemPath>src/indigo_io.cpp</itemPath>
+      <itemPath>src/indigo_io.h</itemPath>
       <itemPath>src/indigo_layout.cpp</itemPath>
       <itemPath>src/indigo_loaders.cpp</itemPath>
       <itemPath>src/indigo_macros.c</itemPath>
       <itemPath>src/indigo_match.cpp</itemPath>
+      <itemPath>src/indigo_match.h</itemPath>
       <itemPath>src/indigo_misc.cpp</itemPath>
       <itemPath>src/indigo_molecule.cpp</itemPath>
+      <itemPath>src/indigo_molecule.h</itemPath>
       <itemPath>src/indigo_object.cpp</itemPath>
+      <itemPath>src/indigo_options.cpp</itemPath>
       <itemPath>src/indigo_product_enumerator.cpp</itemPath>
+      <itemPath>src/indigo_product_enumerator.h</itemPath>
+      <itemPath>src/indigo_properties.cpp</itemPath>
+      <itemPath>src/indigo_properties.h</itemPath>
       <itemPath>src/indigo_reaction.cpp</itemPath>
+      <itemPath>src/indigo_reaction.h</itemPath>
       <itemPath>src/indigo_scaffold.cpp</itemPath>
+      <itemPath>src/indigo_scaffold.h</itemPath>
+      <itemPath>src/indigo_stereo.cpp</itemPath>
+      <itemPath>src/indigo_stereo.h</itemPath>
       <itemPath>src/option_manager.cpp</itemPath>
       <itemPath>src/option_manager.h</itemPath>
     </logicalFolder>

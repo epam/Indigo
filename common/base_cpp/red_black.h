@@ -1066,17 +1066,6 @@ public:
       return 0;
    }
 
-   Value * ptr (const char* key) const
-   {
-      int sign;
-      int idx = this->_findClosest(key, sign);
-
-      if (idx != -1 && sign == 0)
-         return &this->_nodes->at(idx).value;
-
-      return 0;
-   }
-
    int insert (const char* key)
    {
       int sign;

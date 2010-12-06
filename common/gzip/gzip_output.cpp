@@ -51,7 +51,7 @@ GZipOutput::~GZipOutput ()
    int rc = _deflate(Z_FINISH);
 
    if (rc != Z_STREAM_END)
-      throw Error("unexpected zlib error (%d)", rc);
+      return;//throw Error("unexpected zlib error (%d)", rc);
    
    deflateEnd(&_zstream);
 }

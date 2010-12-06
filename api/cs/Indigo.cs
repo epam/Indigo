@@ -9,6 +9,15 @@ namespace com.gga.indigo
 {
    public unsafe class Indigo : IDisposable
    {
+      public const int ABS = 1;
+      public const int OR = 2;
+      public const int AND = 3;
+      public const int EITHER = 4;
+      public const int UP = 5;
+      public const int DOWN = 6;
+      public const int CIS = 7;
+      public const int TRANS = 8;
+
       [DllImport("kernel32")]
       public static extern IntPtr LoadLibrary(string lpFileName);
 
@@ -453,6 +462,8 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoIterateRSites (int molecule);
       [DllImport("indigo.dll")]
+      public static extern int indigoIterateStereocenters (int molecule);
+      [DllImport("indigo.dll")]
       public static extern int indigoIterateRGroups (int molecule);
       [DllImport("indigo.dll")]
       public static extern int indigoIterateRGroupFragments (int rgroup);
@@ -463,9 +474,11 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoIsRSite (int atom);
       [DllImport("indigo.dll")]
+      public static extern int indigoStereocenterType (int atom);
+      [DllImport("indigo.dll")]
       public static extern int indigoSingleAllowedRGroup (int rsite);
       [DllImport("indigo.dll")]
-      public static extern sbyte * indigoPseudoatomLabel (int atom);
+      public static extern sbyte * indigoSymbol (int atom);
       [DllImport("indigo.dll")]
       public static extern int indigoDegree (int atom);
       [DllImport("indigo.dll")]
@@ -475,9 +488,9 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoGetRadicalElectrons (int atom, int* electrons);
       [DllImport("indigo.dll")]
-      public static extern int indigoAtomNumber (int atom);
+      public static extern int indigoAtomicNumber (int atom);
       [DllImport("indigo.dll")]
-      public static extern int indigoAtomIsotope (int atom);
+      public static extern int indigoIsotope (int atom);
       [DllImport("indigo.dll")]
       public static extern float * indigoXYZ (int atom);
       [DllImport("indigo.dll")]
@@ -488,6 +501,8 @@ namespace com.gga.indigo
       public static extern int indigoResetRadical (int atom);
       [DllImport("indigo.dll")]
       public static extern int indigoResetIsotope (int atom);
+      [DllImport("indigo.dll")]
+      public static extern int indigoInvertStereo (int atom);
       [DllImport("indigo.dll")]
       public static extern int indigoCountAtoms (int molecule);
       [DllImport("indigo.dll")]
@@ -511,11 +526,11 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoGetBond (int molecule, int idx);
       [DllImport("indigo.dll")]
-      public static extern int indigoCisTransClear (int molecule);
+      public static extern int indigoClearCisTrans (int item);
       [DllImport("indigo.dll")]
-      public static extern int indigoStereocentersClear (int molecule);
+      public static extern int indigoClearStereocenters (int item);
       [DllImport("indigo.dll")]
-      public static extern int indigoCountStereocenters (int molecule);
+      public static extern int indigoCountStereocenters (int item);
 
       [DllImport("indigo.dll")]
       public static extern int   indigoGrossFormula    (int molecule);

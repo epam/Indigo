@@ -539,6 +539,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\indigo_array.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\indigo_basic.cpp"
 			>
 		</File>
@@ -547,7 +551,15 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\indigo_deconvolution.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\indigo_fingerprints.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\indigo_fingerprints.h"
 			>
 		</File>
 		<File
@@ -556,6 +568,10 @@
 		</File>
 		<File
 			RelativePath=".\src\indigo_io.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\indigo_io.h"
 			>
 		</File>
 		<File
@@ -575,6 +591,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\indigo_match.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\indigo_misc.cpp"
 			>
 		</File>
@@ -583,7 +603,15 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\indigo_molecule.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\indigo_object.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\indigo_options.cpp"
 			>
 		</File>
 		<File
@@ -591,11 +619,39 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\indigo_product_enumerator.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\indigo_properties.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\indigo_properties.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\indigo_reaction.cpp"
 			>
 		</File>
 		<File
+			RelativePath=".\src\indigo_reaction.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\indigo_scaffold.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\indigo_scaffold.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\indigo_stereo.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\indigo_stereo.h"
 			>
 		</File>
 		<File

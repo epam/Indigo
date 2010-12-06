@@ -217,21 +217,37 @@ CEXPORT int indigoAutomap (int reaction, const char *mode);
 
 /* Accessing a molecule */
 
+enum
+{
+   INDIGO_ABS = 1,
+   INDIGO_OR = 2,
+   INDIGO_AND = 3,
+   INDIGO_EITHER = 4,
+   INDIGO_UP = 5,
+   INDIGO_DOWN = 6,
+   INDIGO_CIS = 7,
+   INDIGO_TRANS = 8
+};
+
 // Returns an iterator for all atoms of the given
 // molecule, including r-sites and pseudoatoms.
 CEXPORT int indigoIterateAtoms (int molecule);
 CEXPORT int indigoIteratePseudoatoms (int molecule);
 CEXPORT int indigoIterateRSites (int molecule);
+CEXPORT int indigoIterateStereocenters (int molecule);
 CEXPORT int indigoIterateRGroups (int molecule);
 CEXPORT int indigoIsPseudoatom (int atom);
 CEXPORT int indigoIsRSite (int atom);
+// returns INDIGO_{ABS,OR,AND,EITHER}
+// or zero if the atom is not a stereoatom
+CEXPORT int indigoStereocenterType (int atom);
 CEXPORT int indigoSingleAllowedRGroup (int rsite);
 
 // Applicable to an R-Group, but not to a molecule
 CEXPORT int indigoIterateRGroupFragments (int rgroup);
 CEXPORT int indigoCountAttachmentPoints (int rgroup);
 
-CEXPORT const char * indigoPseudoatomLabel (int atom);
+CEXPORT const char * indigoSymbol (int atom);
 CEXPORT int indigoDegree (int atom);
 
 // Returns zero if the charge is ambiguous
@@ -244,9 +260,9 @@ CEXPORT int indigoGetRadicalElectrons (int atom, int *electrons);
 // Returns a number of element from the periodic table.
 // Returns zero on ambiguous atom.
 // Can not be applied to pseudo-atoms and R-sites.
-CEXPORT int indigoAtomNumber (int atom);
+CEXPORT int indigoAtomicNumber (int atom);
 // Returns zero on unspecified or ambiguous isotope
-CEXPORT int indigoAtomIsotope (int atom);
+CEXPORT int indigoIsotope (int atom);
 
 // On success, returns always the same pointer to a 3-element array;
 // you should not free() it, but rather memcpy() it if you want to keep it.
@@ -256,6 +272,8 @@ CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetRadical (int atom);
 CEXPORT int indigoResetIsotope (int atom);
+
+CEXPORT int indigoInvertStereo (int item);
 
 CEXPORT int indigoCountAtoms (int molecule);
 CEXPORT int indigoCountBonds (int molecule);
@@ -267,15 +285,6 @@ CEXPORT int indigoIterateBonds (int molecule);
 // Returns 4 if the bond is an aromatic bond
 // Returns zero if the bond is ambiguous (query bond)
 CEXPORT int indigoBondOrder  (int bond);
-
-enum
-{
-   INDIGO_UP = 1,
-   INDIGO_DOWN = 2,
-   INDIGO_EITHER = 3,
-   INDIGO_CIS = 4,
-   INDIGO_TRANS = 5
-};
 
 // Returns INDIGO_{UP/DOWN/EITHER/CIS/TRANS},
 // or zero if the bond is not a stereobond
@@ -293,8 +302,8 @@ CEXPORT int indigoBond (int nei);
 CEXPORT int indigoGetAtom (int molecule, int idx);
 CEXPORT int indigoGetBond (int molecule, int idx);
 
-CEXPORT int indigoCisTransClear (int handle);
-CEXPORT int indigoStereocentersClear (int handle);
+CEXPORT int indigoClearCisTrans (int handle);
+CEXPORT int indigoClearStereocenters (int handle);
 CEXPORT int indigoCountStereocenters (int molecule);
 
 /* Calculation on molecules */

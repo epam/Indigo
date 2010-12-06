@@ -228,7 +228,7 @@ CEXPORT const char * indigoCheckAmbiguousH (int handle)
    INDIGO_END(0);
 }
 
-CEXPORT int indigoCisTransClear (int object)
+CEXPORT int indigoClearCisTrans (int object)
 {
    INDIGO_BEGIN
    {
@@ -251,7 +251,7 @@ CEXPORT int indigoCisTransClear (int object)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoStereocentersClear (int object)
+CEXPORT int indigoClearStereocenters (int object)
 {
    INDIGO_BEGIN
    {
