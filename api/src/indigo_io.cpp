@@ -18,17 +18,17 @@
 #include "base_cpp/auto_ptr.h"
 #include "molecule/gross_formula.h"
 
-IndigoScanner::IndigoScanner (Scanner *scanner) : IndigoObject(SCANNER, "<scanner>"), ptr(scanner)
+IndigoScanner::IndigoScanner (Scanner *scanner) : IndigoObject(SCANNER), ptr(scanner)
 {
 }
 
-IndigoScanner::IndigoScanner (const char *str) : IndigoObject(SCANNER, "<scanner with stored string>")
+IndigoScanner::IndigoScanner (const char *str) : IndigoObject(SCANNER)
 {
    _buf.readString(str, false);
    ptr = new BufferScanner(_buf);
 }
 
-IndigoScanner::IndigoScanner (const char *buf, int size) : IndigoObject(SCANNER, "<scanner with stored buffer>")
+IndigoScanner::IndigoScanner (const char *buf, int size) : IndigoObject(SCANNER)
 {
    _buf.copy(buf, size);
    ptr = new BufferScanner(_buf);
@@ -39,12 +39,12 @@ IndigoScanner::~IndigoScanner ()
    delete ptr;
 }
 
-IndigoOutput::IndigoOutput (Output *output) : IndigoObject(OUTPUT, "<output>"), ptr(output)
+IndigoOutput::IndigoOutput (Output *output) : IndigoObject(OUTPUT), ptr(output)
 {
    _own_buf = false;
 }
 
-IndigoOutput::IndigoOutput () : IndigoObject(OUTPUT, "<output with stored buffer>")
+IndigoOutput::IndigoOutput () : IndigoObject(OUTPUT)
 {
    ptr = new ArrayOutput(_buf);
    _own_buf = true;

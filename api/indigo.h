@@ -453,8 +453,14 @@ CEXPORT int indigoMatchHighlight (int match);
 // Accepts an atom from the query, not an atom index.
 //   You can use indigoGetAtom() to obtain the atom by its index.
 // Returns the corresponding target atom, not an atom index.
-//   You can use indigoGetIndex() to obtain the index of the returned atom.
+//   You can use indigoIndex() to obtain the index of the returned atom.
 CEXPORT int indigoMapAtom (int match, int query_atom);
+
+// Accepts a bond from the query, not a bond index.
+//   You can use indigoGetBond() to obtain the bond by its index.
+// Returns the corresponding target bond, not a bond index.
+//   You can use indigoIndex() to obtain the index of the returned bond.
+CEXPORT int indigoMapBond (int match, int query_bond);
 
 // Counts the number of embeddings of the query structure into the target
 CEXPORT int indigoCountSubstructureMatches (int query, int target);

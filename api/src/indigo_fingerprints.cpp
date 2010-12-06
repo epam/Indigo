@@ -18,7 +18,7 @@
 #include "base_c/bitarray.h"
 #include "reaction/reaction_fingerprint.h"
 
-IndigoFingerprint::IndigoFingerprint () : IndigoObject(FINGERPRINT, "<fingerprint>")
+IndigoFingerprint::IndigoFingerprint () : IndigoObject(FINGERPRINT)
 {
 }
 

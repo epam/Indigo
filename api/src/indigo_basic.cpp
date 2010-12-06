@@ -158,7 +158,7 @@ int indigoRemoveProperty (int handle, const char *prop)
 }
 
 IndigoPropertiesIter::IndigoPropertiesIter (RedBlackStringObjMap< Array<char> > &props) :
-IndigoObject(PROPERTIES_ITER, "<properties iterator>"),
+IndigoObject(PROPERTIES_ITER),
 _props(props)
 {
    _idx = -1;
@@ -169,7 +169,7 @@ IndigoPropertiesIter::~IndigoPropertiesIter ()
 }
 
 IndigoProperty::IndigoProperty (RedBlackStringObjMap< Array<char> > &props, int idx) :
-IndigoObject(PROPERTY, "<property>"),
+IndigoObject(PROPERTY),
 _props(props),
 _idx(idx)
 {

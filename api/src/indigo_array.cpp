@@ -15,7 +15,7 @@
 #include "api/indigo.h"
 #include "indigo_internal.h"
 
-IndigoArray::IndigoArray () : IndigoObject(ARRAY, "<array>")
+IndigoArray::IndigoArray () : IndigoObject(ARRAY)
 {
 }
 
@@ -41,7 +41,7 @@ IndigoArray & IndigoArray::asArray ()
 }
 
 IndigoArrayElement::IndigoArrayElement (IndigoArray &arr, int idx_) :
-IndigoObject(ARRAY_ELEMENT, "<array element>")
+IndigoObject(ARRAY_ELEMENT)
 {
    array = &arr;
    idx = idx_;
@@ -49,6 +49,11 @@ IndigoObject(ARRAY_ELEMENT, "<array element>")
 
 IndigoArrayElement::~IndigoArrayElement ()
 {
+}
+
+IndigoObject & IndigoArrayElement::get ()
+{
+   return *array->objects[idx];
 }
 
 BaseMolecule & IndigoArrayElement::getBaseMolecule ()
@@ -106,7 +111,7 @@ int IndigoArrayElement::getIndex ()
    return idx;
 }
 
-IndigoArrayIter::IndigoArrayIter (IndigoArray &arr) : IndigoObject(ARRAY_ITER, "<array iterator>")
+IndigoArrayIter::IndigoArrayIter (IndigoArray &arr) : IndigoObject(ARRAY_ITER)
 {
    _arr = &arr;
    _idx = -1;

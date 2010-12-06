@@ -18,7 +18,7 @@
 #include "base_cpp/output.h"
 #include "reaction/reaction_automapper.h"
 
-IndigoBaseReaction::IndigoBaseReaction (int type_) : IndigoObject(type_, "<base reaction>")
+IndigoBaseReaction::IndigoBaseReaction (int type_) : IndigoObject(type_)
 {
 }
 
@@ -38,7 +38,6 @@ RedBlackStringObjMap< Array<char> > * IndigoBaseReaction::getProperties ()
 
 IndigoReaction::IndigoReaction () : IndigoBaseReaction(REACTION)
 {
-   _dbg_info_ptr = "<reaction>";
 }
 
 IndigoReaction::~IndigoReaction ()
@@ -64,7 +63,6 @@ const char * IndigoReaction::getName ()
 
 IndigoQueryReaction::IndigoQueryReaction () : IndigoBaseReaction(QUERY_REACTION)
 {
-   _dbg_info_ptr = "<query reaction>";
 }
 
 IndigoQueryReaction::~IndigoQueryReaction ()
@@ -89,7 +87,7 @@ const char * IndigoQueryReaction::getName ()
 }
 
 IndigoReactionMolecule::IndigoReactionMolecule (BaseReaction &reaction, ReactionHighlighting *highlighting, int index) :
-IndigoObject(REACTION_MOLECULE, "<reaction molecule>"),
+IndigoObject(REACTION_MOLECULE),
 rxn(reaction),
 idx(index)
 {
@@ -130,7 +128,7 @@ int IndigoReactionMolecule::getIndex ()
 
 
 IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, ReactionHighlighting *hl, int subtype) :
-IndigoObject(REACTION_ITER, "<reaction iterator>"),
+IndigoObject(REACTION_ITER),
 _rxn(rxn)
 {
    _subtype = subtype;

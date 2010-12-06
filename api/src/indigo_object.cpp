@@ -19,10 +19,9 @@
 #include "molecule/rdf_loader.h"
 #include "reaction/reaction.h"
 
-IndigoObject::IndigoObject (int type_, const char *dbg_info)
+IndigoObject::IndigoObject (int type_)
 {
    type = type_;
-   _dbg_info_ptr = dbg_info;
 }
 
 IndigoObject::~IndigoObject ()
@@ -31,17 +30,10 @@ IndigoObject::~IndigoObject ()
 
 const char * IndigoObject::debugInfo ()
 {
-   if (_dbg_info_ptr == 0)
-   {
-      if (_dbg_info.size() == 0)
-      {
-         ArrayOutput out(_dbg_info);
-         out.printf("<type %d>", type);
-         out.writeChar(0);
-      }
-      _dbg_info_ptr = _dbg_info.ptr();
-   }
-   return _dbg_info_ptr;
+   ArrayOutput out(_dbg_info);
+   out.printf("<type %d>", type);
+   out.writeChar(0);
+   return _dbg_info.ptr();
 }
 
 void IndigoObject::toString (Array<char> &str)
@@ -142,11 +134,6 @@ bool IndigoObject::hasNext ()
 const char * IndigoObject::getName ()
 {
    throw IndigoError("%s does not have a name", debugInfo());
-}
-
-IndigoAtom & IndigoObject::getAtom ()
-{
-   throw IndigoError("%s does not represent an atom", debugInfo());
 }
 
 int IndigoObject::getIndex ()

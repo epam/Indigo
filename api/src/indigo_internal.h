@@ -55,7 +55,7 @@ extern DLLEXPORT OptionManager & indigoGetOptionManager ();
 class IndigoObject
 {
 public:
-   explicit DLLEXPORT IndigoObject (int type_, const char *dbg_info = 0);
+   explicit DLLEXPORT IndigoObject (int type_);
    virtual DLLEXPORT ~IndigoObject ();
 
    enum
@@ -103,7 +103,7 @@ public:
 
    int type;
 
-   DLLEXPORT const char * debugInfo ();
+   virtual DLLEXPORT const char * debugInfo ();
 
    virtual DLLEXPORT void toString (Array<char> &str);
    virtual DLLEXPORT void toBuffer (Array<char> &buf);
@@ -126,7 +126,6 @@ public:
 
    virtual DLLEXPORT const char * getName ();
 
-   virtual DLLEXPORT IndigoAtom & getAtom ();
    DLLEXPORT IndigoBond & asBond ();
    virtual DLLEXPORT IndigoRGroup & getRGroup ();
    virtual DLLEXPORT int getIndex ();
@@ -145,8 +144,7 @@ public:
    void DLLEXPORT copyProperties (RedBlackStringObjMap< Array<char> > &other);
 
 protected:
-   Array<char> _dbg_info;
-   const char *_dbg_info_ptr;
+   Array<char> _dbg_info; // allocated by debugInfo() on demand
 };
 
 class IndigoBaseMolecule : public IndigoObject
@@ -202,10 +200,11 @@ public:
    IndigoAtom (BaseMolecule &mol_, int idx_);
    virtual ~IndigoAtom ();
 
+   DLLEXPORT static IndigoAtom & cast (IndigoObject &obj);
+
    BaseMolecule *mol;
    int idx;
 
-   virtual IndigoAtom & getAtom ();
    virtual int getIndex ();
 };
 
@@ -243,6 +242,8 @@ class IndigoBond : public IndigoObject
 public:
    IndigoBond (BaseMolecule &mol_, int idx_);
    virtual ~IndigoBond ();
+
+   DLLEXPORT static IndigoBond & cast (IndigoObject &obj);
 
    BaseMolecule *mol;
    int idx;
@@ -650,6 +651,8 @@ public:
    IndigoArrayElement (IndigoArray &arr, int idx_);
    virtual ~IndigoArrayElement ();
 
+   DLLEXPORT IndigoObject & get ();
+
    virtual BaseMolecule & getBaseMolecule ();
    virtual Molecule & getMolecule ();
    virtual GraphHighlighting * getMoleculeHighlighting();
@@ -689,7 +692,7 @@ class IndigoMoleculeSubstructureMatch : public IndigoObject
 {
 public:
    IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query);
-   virtual ~IndigoMoleculeSubstructureMatch () {}
+   virtual ~IndigoMoleculeSubstructureMatch ();
 
    GraphHighlighting highlighting;
    Array<int> query_atom_mapping;

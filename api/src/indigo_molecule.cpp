@@ -30,7 +30,7 @@
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/elements.h"
 
-IndigoGross::IndigoGross() : IndigoObject(GROSS, "<gross formula>")
+IndigoGross::IndigoGross() : IndigoObject(GROSS)
 {
 }
 
@@ -43,7 +43,7 @@ void IndigoGross::toString (Array<char> &str)
    GrossFormula::toString(gross, str);
 }
 
-IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_, "<base molecule>")
+IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
 {
    highlighting.clear();
 }
@@ -64,7 +64,6 @@ RedBlackStringObjMap< Array<char> > * IndigoBaseMolecule::getProperties ()
 
 IndigoMolecule::IndigoMolecule () : IndigoBaseMolecule(MOLECULE)
 {
-   _dbg_info_ptr = "<molecule>";
 }
 
 IndigoMolecule::~IndigoMolecule ()
@@ -90,7 +89,6 @@ const char * IndigoMolecule::getName ()
 
 IndigoQueryMolecule::IndigoQueryMolecule () : IndigoBaseMolecule(QUERY_MOLECULE)
 {
-   _dbg_info_ptr = "<query molecule>";
 }
 
 IndigoQueryMolecule::~IndigoQueryMolecule ()
@@ -115,7 +113,7 @@ const char * IndigoQueryMolecule::getName ()
 }
 
 
-IndigoAtom::IndigoAtom (BaseMolecule &mol_, int idx_) : IndigoObject (ATOM, "<atom>")
+IndigoAtom::IndigoAtom (BaseMolecule &mol_, int idx_) : IndigoObject (ATOM)
 {
    mol = &mol_;
    idx = idx_;
@@ -125,17 +123,22 @@ IndigoAtom::~IndigoAtom ()
 {
 }
 
-IndigoAtom & IndigoAtom::getAtom ()
-{
-   return *this;
-}
-
 int IndigoAtom::getIndex ()
 {
    return idx;
 }
 
-IndigoAtomsIter::IndigoAtomsIter (BaseMolecule *mol, int type) : IndigoObject(ATOMS_ITER, "<atom iterator>")
+IndigoAtom & IndigoAtom::cast (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::ATOM)
+      return (IndigoAtom &)obj;
+   if (obj.type == IndigoObject::ARRAY_ELEMENT)
+      return cast(((IndigoArrayElement &)obj).get());
+   throw IndigoError("%s does not represent an atom", obj.debugInfo());
+}
+
+
+IndigoAtomsIter::IndigoAtomsIter (BaseMolecule *mol, int type) : IndigoObject(ATOMS_ITER)
 {
    _mol = mol;
    _type = type;
@@ -202,7 +205,7 @@ IndigoObject * IndigoAtomsIter::next ()
    return atom.release();
 }
 
-IndigoBond::IndigoBond (BaseMolecule &mol_, int idx_) : IndigoObject(BOND, "<bond>")
+IndigoBond::IndigoBond (BaseMolecule &mol_, int idx_) : IndigoObject(BOND)
 {
    mol = &mol_;
    idx = idx_;
@@ -217,7 +220,16 @@ int IndigoBond::getIndex ()
    return idx;
 }
 
-IndigoBondsIter::IndigoBondsIter (BaseMolecule *mol) : IndigoObject(BONDS_ITER, "<bond iterator>")
+IndigoBond & IndigoBond::cast (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::BOND)
+      return (IndigoBond &)obj;
+   if (obj.type == IndigoObject::ARRAY_ELEMENT)
+      return cast(((IndigoArrayElement &)obj).get());
+   throw IndigoError("%s does not represent an atom", obj.debugInfo());
+}
+
+IndigoBondsIter::IndigoBondsIter (BaseMolecule *mol) : IndigoObject(BONDS_ITER)
 {
    _mol = mol;
    _idx = -1;
@@ -569,7 +581,7 @@ CEXPORT const char * indigoSymbol (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &ia = self.getObject(atom).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
       if (ia.mol->isPseudoAtom(ia.idx))
          return ia.mol->getPseudoAtom(ia.idx);
@@ -638,26 +650,26 @@ CEXPORT const char * indigoSymbol (int atom)
    INDIGO_END(0);
 }
 
-CEXPORT int indigoIsPseudoatom (int atomm)
+CEXPORT int indigoIsPseudoatom (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
-      if (atom.mol->isPseudoAtom(atom.idx))
+      if (ia.mol->isPseudoAtom(ia.idx))
          return 1;
       return 0;
    }
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoIsRSite (int atomm)
+CEXPORT int indigoIsRSite (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
-      if (atom.mol->isRSite(atom.idx))
+      if (ia.mol->isRSite(ia.idx))
          return 1;
       return 0;
    }
@@ -668,7 +680,7 @@ CEXPORT int indigoStereocenterType (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &ia = self.getObject(atom).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
       switch (ia.mol->stereocenters.getType(ia.idx))
       {
@@ -683,19 +695,19 @@ CEXPORT int indigoStereocenterType (int atom)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoSingleAllowedRGroup (int atomm)
+CEXPORT int indigoSingleAllowedRGroup (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
-      return atom.mol->getSingleAllowedRGroup(atom.idx);
+      return ia.mol->getSingleAllowedRGroup(ia.idx);
    }
    INDIGO_END(-1);
 }
 
 
-IndigoRGroup::IndigoRGroup () : IndigoObject(RGROUP, "<R-group>")
+IndigoRGroup::IndigoRGroup () : IndigoObject(RGROUP)
 {
 }
 
@@ -713,7 +725,7 @@ IndigoRGroup & IndigoRGroup::getRGroup ()
    return *this;
 }
 
-IndigoRGroupsIter::IndigoRGroupsIter (QueryMolecule *mol) : IndigoObject(RGROUPS_ITER, "<R-group iterator>")
+IndigoRGroupsIter::IndigoRGroupsIter (QueryMolecule *mol) : IndigoObject(RGROUPS_ITER)
 {
    _mol = mol;
    _idx = 0;
@@ -741,7 +753,7 @@ CEXPORT int indigoIterateRGroups (int molecule)
    INDIGO_END(-1);
 }
 
-IndigoRGroupFragment::IndigoRGroupFragment (IndigoRGroup &rgp, int idx) : IndigoObject(RGROUP_FRAGMENT, "R-group fragment")
+IndigoRGroupFragment::IndigoRGroupFragment (IndigoRGroup &rgp, int idx) : IndigoObject(RGROUP_FRAGMENT)
 {
    rgroup.idx = rgp.idx;
    rgroup.mol = rgp.mol;
@@ -749,7 +761,7 @@ IndigoRGroupFragment::IndigoRGroupFragment (IndigoRGroup &rgp, int idx) : Indigo
 }
 
 IndigoRGroupFragment::IndigoRGroupFragment (QueryMolecule *mol, int rgroup_idx, int fragment_idx) :
-IndigoObject(RGROUP_FRAGMENT, "<R-group fragment>")
+IndigoObject(RGROUP_FRAGMENT)
 {
    rgroup.mol = mol;
    rgroup.idx = rgroup_idx;
@@ -776,7 +788,7 @@ BaseMolecule & IndigoRGroupFragment::getBaseMolecule ()
 }
 
 IndigoRGroupFragmentsIter::IndigoRGroupFragmentsIter (IndigoRGroup& rgp) :
-IndigoObject(RGROUP_FRAGMENTS_ITER, "<R-group fragment iterator>")
+IndigoObject(RGROUP_FRAGMENTS_ITER)
 {
    _mol = &rgp.mol->asQueryMolecule();
    _rgroup_idx = rgp.idx;
@@ -846,23 +858,23 @@ CEXPORT int indigoCountAttachmentPoints (int rgroupp)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoDegree (int atomm)
+CEXPORT int indigoDegree (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
-      return atom.mol->getVertex(atom.idx).degree();
+      return ia.mol->getVertex(ia.idx).degree();
    }
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoGetCharge (int atomm, int *charge)
+CEXPORT int indigoGetCharge (int atom, int *charge)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
-      int ch = atom.mol->getAtomCharge(atom.idx);
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      int ch = ia.mol->getAtomCharge(ia.idx);
       if (ch == CHARGE_UNKNOWN)
       {
          *charge = 0;
@@ -874,12 +886,12 @@ CEXPORT int indigoGetCharge (int atomm, int *charge)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoGetExplicitValence (int atomm, int *valence)
+CEXPORT int indigoGetExplicitValence (int atom, int *valence)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
-      int val = atom.mol->getExplicitValence(atom.idx);
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      int val = ia.mol->getExplicitValence(ia.idx);
       if (val == -1)
       {
          *valence = 0;
@@ -891,41 +903,40 @@ CEXPORT int indigoGetExplicitValence (int atomm, int *valence)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoIsotope (int atomm)
+CEXPORT int indigoIsotope (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
-      int iso = atom.mol->getAtomIsotope(atom.idx);
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      int iso = ia.mol->getAtomIsotope(ia.idx);
       return iso == -1 ? 0 : iso;
    }
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoAtomicNumber (int atomm)
+CEXPORT int indigoAtomicNumber (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
-      if (atom.mol->isPseudoAtom(atom.idx))
+      if (ia.mol->isPseudoAtom(ia.idx))
          throw IndigoError("indigoAtomicNumber() called on a pseudoatom");
-      if (atom.mol->isRSite(atom.idx))
+      if (ia.mol->isRSite(ia.idx))
          throw IndigoError("indigoAtomicNumber() called on an R-site");
 
-      int num = atom.mol->getAtomNumber(atom.idx);
+      int num = ia.mol->getAtomNumber(ia.idx);
       return num == -1 ? 0 : num;
    }
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoGetRadicalElectrons (int atomm, int *electrons)
+CEXPORT int indigoGetRadicalElectrons (int atom, int *electrons)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
-
-      int rad = atom.mol->getAtomRadical(atom.idx);
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      int rad = ia.mol->getAtomRadical(ia.idx);
 
       if (rad == -1)
       {
@@ -942,7 +953,7 @@ CEXPORT float * indigoXYZ (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &ia = self.getObject(atom).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
       BaseMolecule *mol = ia.mol;
 
       Vec3f &pos = mol->getAtomXyz(ia.idx);
@@ -958,7 +969,7 @@ CEXPORT int indigoResetCharge (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &ia = self.getObject(atom).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
       BaseMolecule *mol = ia.mol;
 
       if (mol->isQueryMolecule())
@@ -974,7 +985,7 @@ CEXPORT int indigoResetExplicitValence (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &ia = self.getObject(atom).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
       BaseMolecule *mol = ia.mol;
 
       if (mol->isQueryMolecule())
@@ -990,7 +1001,7 @@ CEXPORT int indigoResetRadical (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &ia = self.getObject(atom).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
       BaseMolecule *mol = ia.mol;
 
       if (mol->isQueryMolecule())
@@ -1006,7 +1017,7 @@ CEXPORT int indigoResetIsotope (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &ia = self.getObject(atom).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
       BaseMolecule *mol = ia.mol;
 
       if (mol->isQueryMolecule())
@@ -1129,7 +1140,11 @@ IndigoObject * IndigoQueryMolecule::clone ()
 }
 
 IndigoMoleculeSubstructureMatch::IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query) :
-   IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH, "<molecule substructure match>"), target(target), query(query)
+   IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH), target(target), query(query)
+{
+}
+
+IndigoMoleculeSubstructureMatch::~IndigoMoleculeSubstructureMatch ()
 {
 }
 
@@ -1191,7 +1206,7 @@ CEXPORT int indigoMapAtom (int match, int query_atom)
       IndigoObject &obj = self.getObject(match);
       if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
          throw IndigoError("indigoMatchHighlight(): match must be given, not %s", obj.debugInfo());
-      IndigoAtom &ia = self.getObject(query_atom).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(query_atom));
       
       IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
       match.query.getAtom(ia.idx); // will throw an exception if the atom index is invalid
@@ -1202,11 +1217,30 @@ CEXPORT int indigoMapAtom (int match, int query_atom)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoMapBond (int match, int query_bond)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(match);
+      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
+         throw IndigoError("indigoMatchHighlight(): match must be given, not %s", obj.debugInfo());
+      IndigoBond &ib = IndigoBond::cast(self.getObject(query_bond));
+
+      IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
+      const Edge &edge = match.query.getEdge(ib.idx);
+      int idx = match.target.findEdgeIndex(match.query_atom_mapping[edge.beg],
+                                           match.query_atom_mapping[edge.end]);
+      
+      return self.addObject(new IndigoBond(match.target, idx));
+   }
+   INDIGO_END(-1)
+}
+
 IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecule &target, 
                                                                           QueryMolecule &query,
                                                                           bool unique_matches,
                                                                           bool embedding_edges_uniqueness) :
-        IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER, "<molecule substructure match iterator>"),
+        IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER),
         matcher(target),
         target(target),
         query(query)
@@ -1434,7 +1468,7 @@ IndigoAtomNeighbor::~IndigoAtomNeighbor ()
 }
 
 IndigoAtomNeighborsIter::IndigoAtomNeighborsIter (BaseMolecule *molecule, int atom_idx) :
-         IndigoObject(ATOM_NEIGHBORS_ITER, "<atom neighbors iterator>")
+         IndigoObject(ATOM_NEIGHBORS_ITER)
 {
    _mol = molecule;
    _atom_idx = atom_idx;
@@ -1473,13 +1507,13 @@ bool IndigoAtomNeighborsIter::hasNext ()
    return vertex.neiNext(_nei_idx) != vertex.neiEnd();
 }
 
-CEXPORT int indigoIterateNeighbors (int atomm)
+CEXPORT int indigoIterateNeighbors (int atom)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &atom = self.getObject(atomm).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
       
-      return self.addObject(new IndigoAtomNeighborsIter(atom.mol, atom.idx));
+      return self.addObject(new IndigoAtomNeighborsIter(ia.mol, ia.idx));
    }
    INDIGO_END(-1)
 }
@@ -1545,7 +1579,7 @@ CEXPORT int indigoInvertStereo (int item)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &ia = self.getObject(item).getAtom();
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(item));
 
       int k, *pyramid = ia.mol->stereocenters.getPyramid(ia.idx);
       if (pyramid == 0)
