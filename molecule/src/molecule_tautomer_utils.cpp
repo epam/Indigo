@@ -81,7 +81,7 @@ void MoleculeTautomerUtils::highlightChains (BaseMolecule &g1, BaseMolecule &g2,
       if (g2.getBondOrder(i) == -1 && g2.possibleBondOrder(i, BOND_SINGLE))
          continue;
 
-      if (chains_2[edge.beg] > 0 && chains_2[edge.beg] > 0 && abs(chains_2[edge.beg] - chains_2[edge.end]) == 1)
+      if (chains_2[edge.beg] > 0 && chains_2[edge.end] > 0 && abs(chains_2[edge.beg] - chains_2[edge.end]) == 1)
          highlighting.onEdge(i);
       else if (core_2 != 0 && core_2[edge.beg] >= 0 && core_2[edge.end] >= 0)
       {
