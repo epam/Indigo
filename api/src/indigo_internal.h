@@ -88,6 +88,7 @@ public:
       ARRAY_ELEMENT,
       MOLECULE_SUBSTRUCTURE_MATCH,
       MOLECULE_SUBSTRUCTURE_MATCH_ITER,
+      MOLECULE_SUBSTRUCTURE_MATCHER,
       SCAFFOLD,
       DECONVOLUTION,
       DECONVOLUTION_ELEM,
@@ -154,6 +155,8 @@ public:
    DLLEXPORT virtual GraphHighlighting * getMoleculeHighlighting ();
    DLLEXPORT virtual RedBlackStringObjMap< Array<char> > * getProperties ();
 
+   DLLEXPORT const char * debugInfo ();
+
    GraphHighlighting highlighting;
 
    RedBlackStringObjMap< Array<char> > properties;
@@ -170,6 +173,8 @@ public:
    DLLEXPORT virtual Molecule & getMolecule ();
    DLLEXPORT virtual const char * getName ();
 
+   DLLEXPORT const char * debugInfo ();
+
    DLLEXPORT virtual IndigoObject * clone ();
 
    Molecule mol;
@@ -185,6 +190,8 @@ public:
    DLLEXPORT virtual BaseMolecule & getBaseMolecule ();
    DLLEXPORT virtual QueryMolecule & getQueryMolecule ();
    DLLEXPORT virtual const char * getName ();
+
+   DLLEXPORT const char * debugInfo ();
 
    DLLEXPORT virtual IndigoObject * clone ();
 
@@ -660,6 +667,8 @@ public:
    IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query);
    virtual ~IndigoMoleculeSubstructureMatch ();
 
+   DLLEXPORT const char * debugInfo ();
+
    GraphHighlighting highlighting;
    Array<int> query_atom_mapping;
    Molecule &target;
@@ -670,22 +679,47 @@ public:
 class IndigoMoleculeSubstructureMatchIter : public IndigoObject
 {
 public:
-   IndigoMoleculeSubstructureMatchIter (Molecule &target, QueryMolecule &query, 
-      bool unique_matches, bool embedding_edges_uniqueness);
+   IndigoMoleculeSubstructureMatchIter (Molecule &target, QueryMolecule &query, Molecule &original_target);
 
    virtual ~IndigoMoleculeSubstructureMatchIter ();
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
+   int countMatches (int max_embeddings);
+
+   DLLEXPORT const char * debugInfo ();
+
    MoleculeSubstructureMatcher matcher;
    MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
    GraphHighlighting highlighting;
-   Molecule &target;
+   Molecule &target, &original_target;
    QueryMolecule &query;
+
+   Array<int> mapping;
 
 private:
    bool _initialized, _found, _need_find;
+};
+
+// Matcher class for matching queries on a specified target molecule
+class IndigoMoleculeSubstructureMatcher : public IndigoObject
+{
+public:
+   IndigoMoleculeSubstructureMatcher (Molecule &target);
+
+   virtual ~IndigoMoleculeSubstructureMatcher ();
+
+   IndigoMoleculeSubstructureMatchIter* iterateQueryMatches (QueryMolecule &query, 
+      bool embedding_edges_uniqueness);
+
+   DLLEXPORT const char * debugInfo ();
+
+   Molecule &target;
+
+private:
+   Molecule _target_arom_h_unfolded, _target_arom;
+   Array<int> _mapping_arom_h_unfolded, _mapping_arom;
 };
 
 class IndigoDeconvolution : public IndigoObject {

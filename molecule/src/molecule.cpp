@@ -24,6 +24,7 @@ using namespace indigo;
 
 Molecule::Molecule ()
 {
+   _aromatized = false;
 }
 
 Molecule::~Molecule ()
@@ -48,6 +49,8 @@ void Molecule::clear ()
    _total_h.clear();
    _valence.clear();
    _radicals.clear();
+
+   _aromatized = false;
 }
 
 void Molecule::_flipBond (int atom_parent, int atom_from, int atom_to)
@@ -200,6 +203,8 @@ void Molecule::setBondOrder (int idx, int order, bool keep_connectivity)
 
    if (order != BOND_DOUBLE)
       cis_trans.setParity(idx, 0);
+
+   _aromatized = false;
 }
 
 void Molecule::setBondOrder_Silent (int idx, int order)
@@ -860,6 +865,7 @@ int Molecule::addBond (int beg, int end, int order)
    _bond_orders[idx] = order;
 
    _aromaticity.clear();
+   _aromatized = false;
 
    return idx;
 }
@@ -900,6 +906,7 @@ bool Molecule::bondStereoCare (int idx)
 void Molecule::aromatize ()
 {
    MoleculeAromatizer::aromatizeBonds(*this);
+   _aromatized = true;
 }
 
 void Molecule::dearomatize ()
@@ -997,10 +1004,9 @@ void Molecule::invalidateHCounters ()
    _connectivity.clear();
 }
 
- void Molecule::checkForConsistency (Molecule &mol)
- {
-    int i;
-
+void Molecule::checkForConsistency (Molecule &mol)
+{
+   int i;
    for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
    {
       const Vertex &vertex = mol.getVertex(i);
@@ -1016,4 +1022,9 @@ void Molecule::invalidateHCounters ()
       if (mol.getImplicitH(i) == -1)
          throw Error("can not calculate implicit hydrogens on atom %d", i);
    }
+}
+
+bool Molecule::isAromatized ()
+{
+   return _aromatized;
 }

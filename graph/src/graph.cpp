@@ -357,9 +357,7 @@ void Graph::_mergeWithSubgraph (const Graph &other, const Array<int> &vertices, 
       mapping = &tmp_mapping;
 
    mapping->clear_resize(other.vertexEnd());
-
-   for (i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
-      mapping->at(i) = -1;
+   mapping->fffill();
 
    for (i = 0; i < vertices.size(); i++)
    {

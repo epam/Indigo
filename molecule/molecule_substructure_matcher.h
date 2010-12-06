@@ -60,6 +60,7 @@ public:
    FragmentMatchCache *fmcache;
 
    bool disable_unfolding_implicit_h;
+   bool restore_unfolded_h;
 
    int   match_3d;       // 0 or AFFINE or CONFORMATION
    float rms_threshold;  // for AFFINE and CONFORMATION
@@ -132,6 +133,7 @@ public:
 
    DEF_ERROR("molecule substructure matcher");
 
+   DLLEXPORT static bool shouldUnfoldTargetHydrogens (QueryMolecule &query);
 protected:
    
    struct MarkushContext
@@ -164,7 +166,6 @@ protected:
    static bool _canUseEquivalenceHeuristic (QueryMolecule &query);
    static bool _isSingleBond (Graph &graph, int edge_idx);
 
-   static bool _shouldUnfoldTargetHydrogens (QueryMolecule &query);
    static bool _shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom);
 
    static int _countSubstituents (Molecule &mol, int idx);

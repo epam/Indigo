@@ -119,6 +119,8 @@ public:
 
    DLLEXPORT static void checkForConsistency (Molecule &mol);
 
+   DLLEXPORT bool isAromatized ();
+
 protected:
    struct _Atom
    {
@@ -144,7 +146,8 @@ protected:
    Array<int>   _radicals;
 
    StringPool _pseudo_atom_values;
-   
+
+   bool _aromatized;
 
    virtual void _mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vertices,
                                        const Array<int> *edges, const Array<int> &mapping, 
