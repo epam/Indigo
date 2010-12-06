@@ -52,6 +52,8 @@ public:
    ReactionHighlighting rhl;
    PtrArray<BaseMolecule> mols;
    ObjArray<GraphHighlighting> molhls;
+   PtrArray<BaseReaction> rxns;
+   ObjArray<ReactionHighlighting> rxnhls;
 
    PVOID hdc;
    Array<char> outfile;

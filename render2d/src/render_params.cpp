@@ -270,12 +270,23 @@ void RenderParamInterface::render (RenderParams& params)
          }
       }
    } else if (params.rmode == RENDER_RXN) {
-      obj = factory.addItemReaction();
-      factory.getItemReaction(obj);
-      BaseReaction& rxn = params.rxn.ref();
-      _prepareReaction(params, rxn);
-      factory.getItemReaction(obj).rxn = &rxn;
-      factory.getItemReaction(obj).highlighting = &params.rhl;
+      if (params.rxns.size() == 0) {
+         obj = factory.addItemReaction();
+         factory.getItemReaction(obj);
+         BaseReaction& rxn = params.rxn.ref();
+         _prepareReaction(params, rxn);
+         factory.getItemReaction(obj).rxn = &rxn;
+         factory.getItemReaction(obj).highlighting = &params.rhl;
+      } else {
+         for (int i = 0; i < params.rxns.size(); ++i) {
+            int rxn = factory.addItemReaction();
+            BaseReaction& br = *params.rxns[i];
+            _prepareReaction(params, br);
+            factory.getItemReaction(rxn).rxn = &br;
+            factory.getItemReaction(rxn).highlighting = &params.rxnhls[i];
+            objs.push(rxn);
+         }
+      }
    } else {
       throw Error("Invalid rendering mode: %i", params.rmode);
    }

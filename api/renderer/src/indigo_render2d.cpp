@@ -309,18 +309,22 @@ CEXPORT int indigoRender (int object, int output)
          }
          else if (objects[0]->isBaseReaction())
          {
-            //if (obj.getBaseReaction().isQueryReaction())
-            //   rp.rxn.reset(new QueryReaction());
-            //else
-            //   rp.rxn.reset(new Reaction());
-            //ObjArray< Array<int> > mapping;
-            //rp.rxn->clone(self.getObject(object).getBaseReaction(), &mapping, 0);
-            //ReactionHighlighting *hl = self.getObject(object).getReactionHighlighting();
-            //if (hl != 0 && hl->getCount() > 0) {
-            //   rp.rhl.init(*rp.rxn.get());
-            //   rp.rhl.copy(*hl, mapping);
-            //}
-            //rp.rmode = RENDER_RXN;
+            for (int i = 0; i < objects.size(); ++i) {
+               if (objects[i]->getBaseReaction().isQueryReaction())
+                  rp.rxns.add(new QueryReaction());
+               else
+                  rp.rxns.add(new Reaction());
+               ReactionHighlighting& rxnhl = rp.rxnhls.push();
+               
+               QS_DEF(ObjArray< Array<int> >, mapping);
+               rp.rxns.top()->clone(objects[i]->getBaseReaction(), &mapping, 0);
+               ReactionHighlighting *hl = objects[i]->getReactionHighlighting();
+               if (hl != 0) {
+                  rxnhl.init(*rp.rxns.top());
+                  rxnhl.copy(*hl, mapping);
+               }
+               rp.rmode = RENDER_RXN;
+            }
          } else {
             throw IndigoError("The array elements should be molecules or reactions");
          }
