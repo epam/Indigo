@@ -12,7 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "indigo_internal.h"
+#include "indigo_deconvolution.h"
+#include "indigo_array.h"
 #include "molecule/query_molecule.h"
 #include "graph/graph_highlighting.h"
 #include "base_cpp/array.h"

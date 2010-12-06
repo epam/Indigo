@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "indigo_internal.h"
+#include "indigo_io.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
 #include "base_cpp/auto_ptr.h"
@@ -39,6 +39,13 @@ IndigoScanner::~IndigoScanner ()
    delete ptr;
 }
 
+Scanner & IndigoScanner::get (IndigoObject &obj)
+{
+   if (obj.type == SCANNER)
+      return *((IndigoScanner &)obj).ptr;
+   throw IndigoError("%s is not a scanner", obj.debugInfo());
+}
+
 IndigoOutput::IndigoOutput (Output *output) : IndigoObject(OUTPUT), ptr(output)
 {
    _own_buf = false;
@@ -58,14 +65,16 @@ void IndigoOutput::toString (Array<char> &str)
       throw IndigoError("can not convert %s to string", debugInfo());
 }
 
-Output & IndigoOutput::getOutput ()
-{
-   return *ptr;
-}
-
 IndigoOutput::~IndigoOutput ()
 {
    delete ptr;
+}
+
+Output & IndigoOutput::get (IndigoObject &obj)
+{
+   if (obj.type == OUTPUT)
+      return *((IndigoOutput &)obj).ptr;
+   throw IndigoError("%s is not an output", obj.debugInfo());
 }
 
 CEXPORT int indigoReadFile (const char *filename)
@@ -158,88 +167,4 @@ CEXPORT int indigoToBuffer (int handle, char **buf, int *size)
      return 1;
    }
    INDIGO_END(-1);
-}
-
-CEXPORT int indigoIterateSDF (int reader)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(reader);
-      
-      return self.addObject(new IndigoSdfLoader(obj.getScanner()));
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoIterateRDF (int reader)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(reader);
-
-      return self.addObject(new IndigoRdfLoader(obj.getScanner()));
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoIterateSmiles (int reader)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(reader);
-      
-      return self.addObject(new IndigoMultilineSmilesLoader(obj.getScanner()));
-   }
-   INDIGO_END(-1)
-}
-
-
-CEXPORT int indigoTell (int handle)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(handle);
-
-      if (obj.type == IndigoObject::SDF_LOADER)
-         return ((IndigoSdfLoader &)obj).tell();
-      if (obj.type == IndigoObject::RDF_LOADER)
-         return ((IndigoRdfLoader &)obj).tell();
-      if (obj.type == IndigoObject::MULTILINE_SMILES_LOADER)
-         return ((IndigoMultilineSmilesLoader &)obj).tell();
-      if (obj.type == IndigoObject::RDF_MOLECULE ||
-          obj.type == IndigoObject::RDF_REACTION ||
-          obj.type == IndigoObject::SMILES_MOLECULE ||
-          obj.type == IndigoObject::SMILES_REACTION)
-         return ((IndigoRdfData &)obj).tell();
-
-      throw IndigoError("indigoTell(): not applicable to %s", obj.debugInfo());
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoIterateSDFile (const char *filename)
-{
-   INDIGO_BEGIN
-   {
-      return self.addObject(new IndigoSdfLoader(filename));
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoIterateRDFile (const char *filename)
-{
-   INDIGO_BEGIN
-   {
-      return self.addObject(new IndigoRdfLoader(filename));
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoIterateSmilesFile (const char *filename)
-{
-   INDIGO_BEGIN
-   {
-      return self.addObject(new IndigoMultilineSmilesLoader(filename));
-   }
-   INDIGO_END(-1)
 }

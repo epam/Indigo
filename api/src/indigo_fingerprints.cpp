@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "indigo_internal.h"
+#include "indigo_fingerprints.h"
 #include "molecule/molecule_fingerprint.h"
 #include "base_cpp/output.h"
 #include "base_c/bitarray.h"

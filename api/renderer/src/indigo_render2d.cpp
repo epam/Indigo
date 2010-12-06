@@ -13,6 +13,8 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "indigo_io.h"
+#include "indigo_array.h"
 #include "indigo_renderer_internal.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
@@ -21,12 +23,11 @@
 
 using namespace indigo;
 
-TL_DEF_EXT(IndigoRenderer, indigo_renderer_self);
+_SessionLocalContainer<IndigoRenderer> indigo_renderer_self;
 
 IndigoRenderer &indigoRendererGetInstance ()
 {
-   TL_GET(IndigoRenderer, indigo_renderer_self);
-   return indigo_renderer_self;
+   return indigo_renderer_self.getLocalCopy();
 }
 
 #define CHECKRGB(r, g, b) \
@@ -344,7 +345,7 @@ CEXPORT int indigoRender (int object, int output)
          rp.hdc = hdcOut.dc;
          rp.mode = hdcOut.prn ? MODE_PRN : MODE_HDC;
       } else if (out.type == IndigoObject::OUTPUT) {
-         rp.output = &out.getOutput();
+         rp.output = &IndigoOutput::get(out);
       } else {
          throw IndigoError("Invalid output object type");
       }

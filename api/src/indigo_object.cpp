@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "indigo_array.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "molecule/sdf_loader.h"
@@ -105,20 +106,6 @@ QueryReaction & IndigoObject::getQueryReaction ()
 ReactionHighlighting * IndigoObject::getReactionHighlighting ()
 {
    throw IndigoError("%s does not have a reaction highlighting", debugInfo());
-}
-
-Scanner & IndigoObject::getScanner ()
-{
-   if (type == SCANNER)
-      return *((IndigoScanner *)this)->ptr;
-   throw IndigoError("%s is not a scanner", debugInfo());
-}
-
-Output & IndigoObject::getOutput ()
-{
-   if (type == OUTPUT)
-      return *((IndigoOutput *)this)->ptr;
-   throw IndigoError("%s is not an output", debugInfo());
 }
 
 IndigoObject * IndigoObject::next ()

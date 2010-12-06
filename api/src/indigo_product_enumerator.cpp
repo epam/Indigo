@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "indigo_array.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
 #include "layout/molecule_layout.h"

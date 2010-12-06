@@ -13,6 +13,9 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "indigo_properties.h"
+#include "indigo_io.h"
+#include "indigo_loaders.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
 #include "molecule/molecule_arom.h"
@@ -347,7 +350,7 @@ CEXPORT int indigoSaveMDLCT (int item, int output)
             saver.saveReaction(rxn.asReaction());
       }
 
-      Output &out2 = self.getObject(output).getOutput();
+      Output &out2 = IndigoOutput::get(self.getObject(output));
 
       BufferScanner scanner(buf);
       QS_DEF(Array<char>, line);
@@ -446,4 +449,55 @@ CEXPORT int indigoFoldHydrogens (int item)
       return 1;
    }
    INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetName (int handle, const char *name)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+
+      if (obj.isBaseMolecule())
+         obj.getBaseMolecule().name.readString(name, true);
+      else if (obj.isBaseReaction())
+         obj.getBaseReaction().name.readString(name, true);
+      else
+         throw IndigoError("The object provided is neither a molecule, nor a reaction");
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT const char * indigoName (int handle)
+{
+   INDIGO_BEGIN
+   {
+      return self.getObject(handle).getName();
+   }
+   INDIGO_END(0);
+}
+
+CEXPORT const char * indigoRawData (int handler)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handler);
+
+      if (obj.type == IndigoObject::RDF_MOLECULE ||
+          obj.type == IndigoObject::RDF_REACTION ||
+          obj.type == IndigoObject::SMILES_MOLECULE ||
+          obj.type == IndigoObject::SMILES_REACTION)
+      {
+         IndigoRdfData &data = (IndigoRdfData &)obj;
+
+         self.tmp_string.copy(data.getRawData());
+      }
+      else if (obj.type == IndigoObject::PROPERTY)
+         self.tmp_string.copy(((IndigoProperty &)obj).getValue());
+      else
+         throw IndigoError("%s does not have raw data", obj.debugInfo());
+      self.tmp_string.push(0);
+      return self.tmp_string.ptr();
+   }
+   INDIGO_END(0)
 }

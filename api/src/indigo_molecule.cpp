@@ -13,6 +13,8 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "indigo_io.h"
+#include "indigo_array.h"
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/molfile_saver.h"
 #include "base_cpp/output.h"
@@ -294,7 +296,7 @@ CEXPORT int indigoLoadMolecule (int source)
    {
       IndigoObject &obj = self.getObject(source);
 
-      MoleculeAutoLoader loader(obj.getScanner());
+      MoleculeAutoLoader loader(IndigoScanner::get(obj));
 
       loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
@@ -316,7 +318,7 @@ CEXPORT int indigoLoadQueryMolecule (int source)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(source);
-      MoleculeAutoLoader loader(obj.getScanner());
+      MoleculeAutoLoader loader(IndigoScanner::get(obj));
 
       loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
@@ -337,7 +339,7 @@ CEXPORT int indigoLoadSmarts (int source)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(source);
-      SmilesLoader loader(obj.getScanner());
+      SmilesLoader loader(IndigoScanner::get(obj));
 
       AutoPtr<IndigoQueryMolecule> molptr(new IndigoQueryMolecule());
 
@@ -355,7 +357,7 @@ CEXPORT int indigoSaveMolfile (int molecule, int output)
    {
       IndigoObject &obj = self.getObject(molecule);
       BaseMolecule &mol = obj.getBaseMolecule();
-      Output &out = self.getObject(output).getOutput();
+      Output &out = IndigoOutput::get(self.getObject(output));
 
       MolfileSaver saver(out);
       saver.mode = self.molfile_saving_mode;
@@ -375,7 +377,7 @@ CEXPORT int indigoSaveCml (int molecule, int output)
    INDIGO_BEGIN
    {
       Molecule &mol = self.getObject(molecule).getMolecule();
-      Output &out = self.getObject(output).getOutput();
+      Output &out = IndigoOutput::get(self.getObject(output));
 
       MoleculeCmlSaver saver(out);
       saver.saveMolecule(mol);
@@ -391,7 +393,7 @@ CEXPORT int indigoSdfAppend (int output, int molecule)
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
       RedBlackStringObjMap< Array<char> > *props = self.getObject(molecule).getProperties();
-      Output &out = self.getObject(output).getOutput();
+      Output &out = IndigoOutput::get(self.getObject(output));
 
       MolfileSaver saver(out);
       saver.mode = self.molfile_saving_mode;
@@ -421,7 +423,7 @@ CEXPORT int indigoSmilesAppend (int output, int molecule)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      Output &out = self.getObject(output).getOutput();
+      Output &out = IndigoOutput::get(self.getObject(output));
 
       SmilesSaver saver(out);
       if (mol.isQueryMolecule())

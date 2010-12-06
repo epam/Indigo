@@ -13,7 +13,7 @@
  ***************************************************************************/
 
 #include "api/indigo.h"
-#include "indigo_internal.h"
+#include "indigo_array.h"
 
 IndigoArray::IndigoArray () : IndigoObject(ARRAY)
 {
