@@ -359,7 +359,7 @@ void ReactionEnumeratorState::_productProcess( void )
    if (_smiles_array.find(cur_smiles.ptr()))
    {
       int *found_count = _smiles_array.at2(cur_smiles.ptr());
-      *found_count++;
+      (*found_count)++;
       return;
    }
    _product_count++;
