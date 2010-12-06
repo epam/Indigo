@@ -1104,7 +1104,7 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
    {
       QS_DEF(Array<char>, substring);
       AutoPtr<QueryMolecule::Atom> subqatom;
-      int i;
+      int i, k = 0;
       
       if (qatom.get() == 0)
          throw Error("';' is allowed only for query molecules");
@@ -1115,9 +1115,10 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
          if (i == atom_str.size() || atom_str_copy[i] == ';')
          {
             subqatom.reset(new QueryMolecule::Atom);
-            _readAtom(substring, first_in_brackets && (i == 0), atom, subqatom);
+            _readAtom(substring, first_in_brackets && (k == 0), atom, subqatom);
             qatom.reset(QueryMolecule::Atom::und(qatom.release(), subqatom.release()));
             substring.clear();
+            k++;
          }
          else
             substring.push(atom_str[i]);
@@ -1129,7 +1130,7 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
    {
       QS_DEF(Array<char>, substring);
       AutoPtr<QueryMolecule::Atom> subqatom;
-      int i;
+      int i, k = 0;
       
       if (qatom.get() == 0)
          throw Error("',' is allowed only for query molecules");
@@ -1140,12 +1141,13 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
          if (i == atom_str.size() || atom_str_copy[i] == ',')
          {
             subqatom.reset(new QueryMolecule::Atom);
-            _readAtom(substring, first_in_brackets && (i == 0), atom, subqatom);
+            _readAtom(substring, first_in_brackets && (k == 0), atom, subqatom);
             if (qatom->type == 0)
                qatom.reset(subqatom.release());
             else
                qatom.reset(QueryMolecule::Atom::oder(qatom.release(), subqatom.release()));
             substring.clear();
+            k++;
          }
          else
             substring.push(atom_str[i]);
@@ -1157,7 +1159,7 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
    {
       QS_DEF(Array<char>, substring);
       AutoPtr<QueryMolecule::Atom> subqatom;
-      int i;
+      int i, k = 0;
       
       if (qatom.get() == 0)
          throw Error("'&' is allowed only for query molecules");
@@ -1168,9 +1170,10 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
          if (i == atom_str.size() || atom_str_copy[i] == '&')
          {
             subqatom.reset(new QueryMolecule::Atom);
-            _readAtom(substring, first_in_brackets && (i == 0), atom, subqatom);
+            _readAtom(substring, first_in_brackets && (k == 0), atom, subqatom);
             qatom.reset(QueryMolecule::Atom::und(qatom.release(), subqatom.release()));
             substring.clear();
+            k++;
          }
          else
             substring.push(atom_str[i]);

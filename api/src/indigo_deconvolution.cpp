@@ -29,7 +29,7 @@
 #include "molecule/elements.h"
 
 IndigoDeconvolution::IndigoDeconvolution(bool aromatize):
-IndigoObject(IndigoObject::DECONVOLUTION),
+IndigoObject(IndigoObject::DECONVOLUTION, "<deconvolution>"),
 flags(MoleculeExactMatcher::CONDITION_ALL&(~MoleculeExactMatcher::CONDITION_STEREO)),
 cbEmbedding(0),
 embeddingUserdata(0),
@@ -310,7 +310,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
 }
 
 IndigoDeconvolutionElem::IndigoDeconvolutionElem (IndigoDeconvolution::Item &item_, int index) :
-IndigoObject(DECONVOLUTION_ELEM), item(item_), idx(index)
+IndigoObject(DECONVOLUTION_ELEM, "<deconvolution element>"), item(item_), idx(index)
 {
 }
 
@@ -323,7 +323,7 @@ IndigoDeconvolutionElem::~IndigoDeconvolutionElem ()
 }
 
 IndigoDeconvolutionIter::IndigoDeconvolutionIter(ObjArray<IndigoDeconvolution::Item>& items) :
-IndigoObject(DECONVOLUTION_ITER),
+IndigoObject(DECONVOLUTION_ITER, "<deconvolution iterator>"),
 _items(items)
 {
    _index = -1;

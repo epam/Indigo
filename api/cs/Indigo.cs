@@ -131,6 +131,12 @@ namespace com.gga.indigo
          indigoSetOptionFloat(name, value);
       }
 
+      public void setOption (string name, int value)
+      {
+         setSessionID();
+         indigoSetOptionInt(name, value);
+      }
+
       public void setOption (string name, Color value)
       {
          setSessionID();
@@ -306,6 +312,15 @@ namespace com.gga.indigo
       {
          setSessionID();
          return indigoCountSubstructureMatches(query.self, target.self);
+      }
+
+      public IndigoObject iterateSubstructureMatches (IndigoObject query, IndigoObject target)
+      {
+         setSessionID();
+         int res = indigoIterateSubstructureMatches(query.self, target.self);
+         if (res == 0)
+            return null;
+         return new IndigoObject(this, res);
       }
 
       public IndigoObject extractCommonScaffold (IndigoObject structures, string options)
@@ -639,6 +654,8 @@ namespace com.gga.indigo
       public static extern int indigoMapAtom (int match, int query_atom);
       [DllImport("indigo.dll")]
       public static extern int indigoCountSubstructureMatches (int query, int target);
+      [DllImport("indigo.dll")]
+      public static extern int indigoIterateSubstructureMatches (int query, int target);
 
       [DllImport("indigo.dll")]
       public static extern int indigoExtractCommonScaffold (int structures, string options);

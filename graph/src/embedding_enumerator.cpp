@@ -28,10 +28,7 @@ TL_CP_GET(_l_pool),
 TL_CP_GET(_enumerators)
 {
    _g2 = &supergraph;
-
-   _core_2.clear_resize(supergraph.vertexEnd());
-
-   _core_2.fffill(); // fill with UNMAPPED
+   validate();
 
    cb_embedding = 0;
    cb_match_vertex = 0;
@@ -51,6 +48,12 @@ TL_CP_GET(_enumerators)
 
 EmbeddingEnumerator::~EmbeddingEnumerator ()
 {
+}
+
+void EmbeddingEnumerator::validate ()
+{
+   _core_2.clear_resize(_g2->vertexEnd());
+   _core_2.fffill(); // fill with UNMAPPED
 }
 
 void EmbeddingEnumerator::setSubgraph (Graph &subgraph)
@@ -107,10 +110,6 @@ bool EmbeddingEnumerator::unsafeFix (int node1, int node2)
 
 int EmbeddingEnumerator::process ()
 {
-   // Restore enumerators stack
-   while (_enumerators.size() > 1)
-      _enumerators.pop();
-
    processStart();
 
    if (processNext())
@@ -131,6 +130,10 @@ void EmbeddingEnumerator::processStart ()
       _enumerators[0].setUseEquivalence(_equivalence_handler->useHeuristicFurther());
    else
       _enumerators[0].setUseEquivalence(false);
+
+   // Restore enumerators stack
+   while (_enumerators.size() > 1)
+      _enumerators.pop();
 }
 
 bool EmbeddingEnumerator::processNext ()

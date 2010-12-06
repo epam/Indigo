@@ -84,6 +84,9 @@ public:
 
    DLLEXPORT const int * getSupergraphMapping ();
 
+   // Update internal structures to fit all target vertices that might be added
+   DLLEXPORT void validate ();
+
    DEF_ERROR("embedding enumerator");
 
 protected:

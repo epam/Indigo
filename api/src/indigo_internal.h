@@ -55,7 +55,7 @@ extern DLLEXPORT OptionManager & indigoGetOptionManager ();
 class IndigoObject
 {
 public:
-   explicit DLLEXPORT IndigoObject (int type_);
+   explicit DLLEXPORT IndigoObject (int type_, const char *dbg_info = 0);
    virtual DLLEXPORT ~IndigoObject ();
 
    enum
@@ -146,6 +146,7 @@ public:
 
 protected:
    Array<char> _dbg_info;
+   const char *_dbg_info_ptr;
 };
 
 class IndigoBaseMolecule : public IndigoObject

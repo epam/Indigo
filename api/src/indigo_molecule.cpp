@@ -30,9 +30,8 @@
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/elements.h"
 
-IndigoGross::IndigoGross() : IndigoObject(GROSS)
+IndigoGross::IndigoGross() : IndigoObject(GROSS, "<gross formula>")
 {
-   _dbg_info.readString("<gross formula>", true);
 }
 
 IndigoGross::~IndigoGross ()
@@ -44,7 +43,7 @@ void IndigoGross::toString (Array<char> &str)
    GrossFormula::toString(gross, str);
 }
 
-IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
+IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_, "<base molecule>")
 {
    highlighting.clear();
 }
@@ -65,6 +64,7 @@ RedBlackStringObjMap< Array<char> > * IndigoBaseMolecule::getProperties ()
 
 IndigoMolecule::IndigoMolecule () : IndigoBaseMolecule(MOLECULE)
 {
+   _dbg_info_ptr = "<molecule>";
 }
 
 IndigoMolecule::~IndigoMolecule ()
@@ -90,6 +90,7 @@ const char * IndigoMolecule::getName ()
 
 IndigoQueryMolecule::IndigoQueryMolecule () : IndigoBaseMolecule(QUERY_MOLECULE)
 {
+   _dbg_info_ptr = "<query molecule>";
 }
 
 IndigoQueryMolecule::~IndigoQueryMolecule ()
@@ -114,7 +115,7 @@ const char * IndigoQueryMolecule::getName ()
 }
 
 
-IndigoAtom::IndigoAtom (BaseMolecule &mol_, int idx_) : IndigoObject (ATOM)
+IndigoAtom::IndigoAtom (BaseMolecule &mol_, int idx_) : IndigoObject (ATOM, "<atom>")
 {
    mol = &mol_;
    idx = idx_;
@@ -134,7 +135,7 @@ int IndigoAtom::getIndex ()
    return idx;
 }
 
-IndigoAtomsIter::IndigoAtomsIter (BaseMolecule *mol, int type) : IndigoObject(ATOMS_ITER)
+IndigoAtomsIter::IndigoAtomsIter (BaseMolecule *mol, int type) : IndigoObject(ATOMS_ITER, "<atom iterator>")
 {
    _mol = mol;
    _type = type;
@@ -201,7 +202,7 @@ IndigoObject * IndigoAtomsIter::next ()
    return atom.release();
 }
 
-IndigoBond::IndigoBond (BaseMolecule &mol_, int idx_) : IndigoObject(BOND)
+IndigoBond::IndigoBond (BaseMolecule &mol_, int idx_) : IndigoObject(BOND, "<bond>")
 {
    mol = &mol_;
    idx = idx_;
@@ -216,7 +217,7 @@ int IndigoBond::getIndex ()
    return idx;
 }
 
-IndigoBondsIter::IndigoBondsIter (BaseMolecule *mol) : IndigoObject(BONDS_ITER)
+IndigoBondsIter::IndigoBondsIter (BaseMolecule *mol) : IndigoObject(BONDS_ITER, "<bond iterator>")
 {
    _mol = mol;
    _idx = -1;
@@ -694,7 +695,7 @@ CEXPORT int indigoSingleAllowedRGroup (int atomm)
 }
 
 
-IndigoRGroup::IndigoRGroup () : IndigoObject(RGROUP)
+IndigoRGroup::IndigoRGroup () : IndigoObject(RGROUP, "<R-group>")
 {
 }
 
@@ -712,7 +713,7 @@ IndigoRGroup & IndigoRGroup::getRGroup ()
    return *this;
 }
 
-IndigoRGroupsIter::IndigoRGroupsIter (QueryMolecule *mol) : IndigoObject(RGROUPS_ITER)
+IndigoRGroupsIter::IndigoRGroupsIter (QueryMolecule *mol) : IndigoObject(RGROUPS_ITER, "<R-group iterator>")
 {
    _mol = mol;
    _idx = 0;
@@ -740,7 +741,7 @@ CEXPORT int indigoIterateRGroups (int molecule)
    INDIGO_END(-1);
 }
 
-IndigoRGroupFragment::IndigoRGroupFragment (IndigoRGroup &rgp, int idx) : IndigoObject(RGROUP_FRAGMENT)
+IndigoRGroupFragment::IndigoRGroupFragment (IndigoRGroup &rgp, int idx) : IndigoObject(RGROUP_FRAGMENT, "R-group fragment")
 {
    rgroup.idx = rgp.idx;
    rgroup.mol = rgp.mol;
@@ -748,7 +749,7 @@ IndigoRGroupFragment::IndigoRGroupFragment (IndigoRGroup &rgp, int idx) : Indigo
 }
 
 IndigoRGroupFragment::IndigoRGroupFragment (QueryMolecule *mol, int rgroup_idx, int fragment_idx) :
-IndigoObject(RGROUP_FRAGMENT)
+IndigoObject(RGROUP_FRAGMENT, "<R-group fragment>")
 {
    rgroup.mol = mol;
    rgroup.idx = rgroup_idx;
@@ -775,7 +776,7 @@ BaseMolecule & IndigoRGroupFragment::getBaseMolecule ()
 }
 
 IndigoRGroupFragmentsIter::IndigoRGroupFragmentsIter (IndigoRGroup& rgp) :
-IndigoObject(RGROUP_FRAGMENTS_ITER)
+IndigoObject(RGROUP_FRAGMENTS_ITER, "<R-group fragment iterator>")
 {
    _mol = &rgp.mol->asQueryMolecule();
    _rgroup_idx = rgp.idx;
@@ -1128,7 +1129,7 @@ IndigoObject * IndigoQueryMolecule::clone ()
 }
 
 IndigoMoleculeSubstructureMatch::IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query) :
-   IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH), target(target), query(query)
+   IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH, "<molecule substructure match>"), target(target), query(query)
 {
 }
 
@@ -1140,6 +1141,8 @@ CEXPORT int indigoMatchSubstructure (int query, int target)
       QueryMolecule &querymol = self.getObject(query).getQueryMolecule();
 
       IndigoMoleculeSubstructureMatchIter match_iter(targetmol, querymol, false, false);
+      if (!match_iter.hasNext())
+         return 0;
       return self.addObject(match_iter.next());
    }
    INDIGO_END(-1)
@@ -1203,7 +1206,7 @@ IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecu
                                                                           QueryMolecule &query,
                                                                           bool unique_matches,
                                                                           bool embedding_edges_uniqueness) :
-        IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER),
+        IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER, "<molecule substructure match iterator>"),
         matcher(target),
         target(target),
         query(query)
@@ -1431,7 +1434,7 @@ IndigoAtomNeighbor::~IndigoAtomNeighbor ()
 }
 
 IndigoAtomNeighborsIter::IndigoAtomNeighborsIter (BaseMolecule *molecule, int atom_idx) :
-         IndigoObject(ATOM_NEIGHBORS_ITER)
+         IndigoObject(ATOM_NEIGHBORS_ITER, "<atom neighbors iterator>")
 {
    _mol = molecule;
    _atom_idx = atom_idx;

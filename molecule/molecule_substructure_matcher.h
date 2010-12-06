@@ -174,7 +174,7 @@ protected:
       QueryMolecule *fragment, bool two_attachment_points,
       int att_idx1, int att_idx2, int rgroup_idx);
 
-   void _unfoldHydrogens ();
+   void _removeUnfoldedHydrogens ();
 
    BaseMolecule &_target;
    QueryMolecule *_query;
@@ -193,7 +193,7 @@ protected:
    // be critical
    Obj<GraphEmbeddingsStorage> _embeddings_storage;
 
-   bool _did_h_unfold; // implicit target hydrogens unfolded
+   bool _h_unfold; // implicit target hydrogens unfolded
 
    TL_CP_DECL(Array<int>, _3d_constrained_atoms);
    TL_CP_DECL(Array<int>, _unfolded_target_h);

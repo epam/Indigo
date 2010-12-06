@@ -17,7 +17,7 @@
 #include "molecule/molecule_exact_matcher.h"
 #include "base_cpp/scanner.h"
 
-IndigoScaffold::IndigoScaffold () : IndigoObject(SCAFFOLD)
+IndigoScaffold::IndigoScaffold () : IndigoObject(SCAFFOLD, "<scaffold>")
 {
 }
 

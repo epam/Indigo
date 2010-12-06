@@ -23,7 +23,7 @@
 #include "molecule/sdf_loader.h"
 
 IndigoSdfLoader::IndigoSdfLoader (Scanner &scanner) :
-IndigoObject(SDF_LOADER)
+IndigoObject(SDF_LOADER, "<sdf loader>")
 {
    _own_scanner = 0;
    _counter = 0;
@@ -32,7 +32,7 @@ IndigoObject(SDF_LOADER)
 }
 
 IndigoSdfLoader::IndigoSdfLoader (const char *filename) :
-IndigoObject(SDF_LOADER)
+IndigoObject(SDF_LOADER, "<sdf loader>")
 {
    _own_scanner = 0;
    _counter = 0;
@@ -242,7 +242,7 @@ int IndigoSdfLoader::tell ()
 }
 
 IndigoRdfLoader::IndigoRdfLoader (Scanner &scanner) :
-IndigoObject(RDF_LOADER)
+IndigoObject(RDF_LOADER, "<rdf loader>")
 {
    _counter = 0;
    _own_scanner = 0;
@@ -252,7 +252,7 @@ IndigoObject(RDF_LOADER)
 }
 
 IndigoRdfLoader::IndigoRdfLoader (const char *filename) :
-IndigoObject(RDF_LOADER)
+IndigoObject(RDF_LOADER, "<rdf loader>")
 {
    _counter = 0;
    _own_scanner = 0;
@@ -392,7 +392,7 @@ IndigoObject * IndigoSmilesReaction::clone ()
 }
 
 IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (Scanner &scanner) :
-IndigoObject(MULTILINE_SMILES_LOADER)
+IndigoObject(MULTILINE_SMILES_LOADER, "<multiline smiles loader>")
 {
    _counter = 0;
    _own_scanner = false;
@@ -400,7 +400,7 @@ IndigoObject(MULTILINE_SMILES_LOADER)
 }
 
 IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (const char *filename) :
-IndigoObject(MULTILINE_SMILES_LOADER)
+IndigoObject(MULTILINE_SMILES_LOADER, "<multiline smiles loader>")
 {
    _counter = 0;
    _scanner = 0;

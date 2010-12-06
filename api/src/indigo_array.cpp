@@ -15,9 +15,8 @@
 #include "api/indigo.h"
 #include "indigo_internal.h"
 
-IndigoArray::IndigoArray () : IndigoObject(ARRAY)
+IndigoArray::IndigoArray () : IndigoObject(ARRAY, "<array>")
 {
-   _dbg_info.readString("<array>", true);
 }
 
 IndigoArray::~IndigoArray ()
@@ -42,7 +41,7 @@ IndigoArray & IndigoArray::asArray ()
 }
 
 IndigoArrayElement::IndigoArrayElement (IndigoArray &arr, int idx_) :
-IndigoObject(ARRAY_ELEMENT)
+IndigoObject(ARRAY_ELEMENT, "<array element>")
 {
    array = &arr;
    idx = idx_;
@@ -107,7 +106,7 @@ int IndigoArrayElement::getIndex ()
    return idx;
 }
 
-IndigoArrayIter::IndigoArrayIter (IndigoArray &arr) : IndigoObject(ARRAY_ITER)
+IndigoArrayIter::IndigoArrayIter (IndigoArray &arr) : IndigoObject(ARRAY_ITER, "<array iterator>")
 {
    _arr = &arr;
    _idx = -1;

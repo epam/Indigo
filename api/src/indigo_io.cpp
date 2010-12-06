@@ -18,23 +18,20 @@
 #include "base_cpp/auto_ptr.h"
 #include "molecule/gross_formula.h"
 
-IndigoScanner::IndigoScanner (Scanner *scanner) : IndigoObject(SCANNER), ptr(scanner)
+IndigoScanner::IndigoScanner (Scanner *scanner) : IndigoObject(SCANNER, "<scanner>"), ptr(scanner)
 {
-   _dbg_info.appendString("<scanner>", true);
 }
 
-IndigoScanner::IndigoScanner (const char *str) : IndigoObject(SCANNER)
+IndigoScanner::IndigoScanner (const char *str) : IndigoObject(SCANNER, "<scanner with stored string>")
 {
    _buf.readString(str, false);
    ptr = new BufferScanner(_buf);
-   _dbg_info.appendString("<scanner with stored string>", true);
 }
 
-IndigoScanner::IndigoScanner (const char *buf, int size) : IndigoObject(SCANNER)
+IndigoScanner::IndigoScanner (const char *buf, int size) : IndigoObject(SCANNER, "<scanner with stored buffer>")
 {
    _buf.copy(buf, size);
    ptr = new BufferScanner(_buf);
-   _dbg_info.appendString("<scanner with stored buffer>", true);
 }
 
 IndigoScanner::~IndigoScanner ()
@@ -42,16 +39,14 @@ IndigoScanner::~IndigoScanner ()
    delete ptr;
 }
 
-IndigoOutput::IndigoOutput (Output *output) : IndigoObject(OUTPUT), ptr(output)
+IndigoOutput::IndigoOutput (Output *output) : IndigoObject(OUTPUT, "<output>"), ptr(output)
 {
-   _dbg_info.appendString("<output>", true);
    _own_buf = false;
 }
 
-IndigoOutput::IndigoOutput () : IndigoObject(OUTPUT)
+IndigoOutput::IndigoOutput () : IndigoObject(OUTPUT, "<output with stored buffer>")
 {
    ptr = new ArrayOutput(_buf);
-   _dbg_info.appendString("<output with stored buffer>", true);
    _own_buf = true;
 }
 

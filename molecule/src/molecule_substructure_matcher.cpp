@@ -202,11 +202,10 @@ void MoleculeSubstructureMatcher::setQuery (QueryMolecule &query)
        _shouldUnfoldTargetHydrogens(*_query) &&
            !_target.isQueryMolecule())
    {
-      _did_h_unfold = true;
-     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
+      _h_unfold = true;
    }
    else
-      _did_h_unfold = false;
+      _h_unfold = false;
 
    if (_ee.get() != 0)
      _ee.free();
@@ -256,6 +255,12 @@ bool MoleculeSubstructureMatcher::find ()
    if (match_3d != 0 && !_target.have_xyz)
       return false;
 
+   if (_h_unfold)
+   {
+     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
+     _ee->validate();
+   }
+
    if (highlighting != 0)
       highlighting->init(_target);
 
@@ -289,8 +294,8 @@ bool MoleculeSubstructureMatcher::find ()
 
    int result = _ee->process();
 
-   if (_did_h_unfold)
-      _unfoldHydrogens();
+   if (_h_unfold)
+      _removeUnfoldedHydrogens();
 
    if (!find_all_embeddings)
       return result == 0;
@@ -302,7 +307,7 @@ bool MoleculeSubstructureMatcher::find ()
    }
 }
 
-void MoleculeSubstructureMatcher::_unfoldHydrogens ()
+void MoleculeSubstructureMatcher::_removeUnfoldedHydrogens ()
 {
    QS_DEF(Array<int>, atoms_to_remove);
    atoms_to_remove.clear();
@@ -322,13 +327,13 @@ void MoleculeSubstructureMatcher::_unfoldHydrogens ()
 
 DLLEXPORT bool MoleculeSubstructureMatcher::findNext ()
 {
-   if (_did_h_unfold)
+   if (_h_unfold)
      _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
 
    bool found = _ee->processNext();
 
-   if (_did_h_unfold)
-      _unfoldHydrogens();
+   if (_h_unfold)
+      _removeUnfoldedHydrogens();
 
    return found;
 }
@@ -500,7 +505,7 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph &subgraph, Graph &supergraph
 {
    MoleculeSubstructureMatcher *self = (MoleculeSubstructureMatcher *)userdata;
 
-   if (self->_did_h_unfold && (&subgraph == (Graph *)self->_query))
+   if (self->_h_unfold && (&subgraph == (Graph *)self->_query))
    {
       if (sub_idx < self->_3d_constrained_atoms.size() && self->_3d_constrained_atoms[sub_idx])
          // we can't check 3D constraint on unfolded atom, because it has no actual position
