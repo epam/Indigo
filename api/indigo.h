@@ -450,6 +450,9 @@ CEXPORT int indigoMapAtom (int match, int query_atom);
 // Counts the number of embeddings of the query structure into the target
 CEXPORT int indigoCountSubstructureMatches (int query, int target);
 
+// Returns substructure matches iterator
+CEXPORT int indigoIterateSubstructureMatches (int query, int target);
+
 /* Scaffold detection */
 
 // Returns zero if no common substructure is found.

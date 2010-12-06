@@ -1034,15 +1034,8 @@ IndigoObject * IndigoQueryMolecule::clone ()
    return molptr.release();
 }
 
-IndigoMoleculeSubstructureMatcher::IndigoMoleculeSubstructureMatcher (Molecule &target_) :
-        IndigoObject(MOLECULE_SUBSTRUCTURE_MATCHER),
-        matcher(target_),
-        target(target_)
-{
-   
-}
-
-IndigoMoleculeSubstructureMatcher::~IndigoMoleculeSubstructureMatcher ()
+IndigoMoleculeSubstructureMatch::IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query) :
+   IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH), target(target), query(query)
 {
 }
 
@@ -1053,55 +1046,40 @@ CEXPORT int indigoMatchSubstructure (int query, int target)
       Molecule &targetmol = self.getObject(target).getMolecule();
       QueryMolecule &querymol = self.getObject(query).getQueryMolecule();
 
-      AutoPtr<IndigoMoleculeSubstructureMatcher> mptr(
-            new IndigoMoleculeSubstructureMatcher(targetmol));
-
-      mptr->matcher.setQuery(querymol);
-      mptr->matcher.fmcache = &(mptr->fmcache);
-      mptr->matcher.highlighting = &mptr->highlighting;
-
-      mptr->highlighting.init(mptr->target);
-      Molecule::saveBondOrders(targetmol, mptr->target_bond_orders);
-
-      if (!mptr->matcher.find())
-         return 0;
-
-      return self.addObject(mptr.release());
+      IndigoMoleculeSubstructureMatchIter match_iter(targetmol, querymol, false, false);
+      return self.addObject(match_iter.next());
    }
    INDIGO_END(-1)
-}
+}       
 
 CEXPORT int indigoMatchHighlight (int match)
 {
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(match);
-      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCHER)
-         throw IndigoError("indigoMatchHighlight(): matcher must be given, not %s", obj.debugInfo());
+      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
+         throw IndigoError("indigoMatchHighlight(): match must be given, not %s", obj.debugInfo());
 
-      IndigoMoleculeSubstructureMatcher &matcher = (IndigoMoleculeSubstructureMatcher &)obj;
+      IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
 
       AutoPtr<IndigoMolecule> mol(new IndigoMolecule());
 
       QS_DEF(Array<int>, mapping);
-      Molecule::loadBondOrders(matcher.target, matcher.target_bond_orders);
-      mol->mol.clone(matcher.target, &mapping, 0);
-
-      int i;
+      mol->mol.clone(match.target, &mapping, 0);
 
       mol->highlighting.init(mol->mol);
 
-      for (i = mol->mol.vertexBegin(); i != mol->mol.vertexEnd(); i = mol->mol.vertexNext(i))
+      for (int i = mol->mol.vertexBegin(); i != mol->mol.vertexEnd(); i = mol->mol.vertexNext(i))
       {
-         if (matcher.matcher.highlighting->hasVertex(mapping[i]))
+         if (match.highlighting.hasVertex(mapping[i]))
             mol->highlighting.onVertex(i);
       }
 
-      for (i = mol->mol.edgeBegin(); i != mol->mol.edgeEnd(); i = mol->mol.edgeNext(i))
+      for (int i = mol->mol.edgeBegin(); i != mol->mol.edgeEnd(); i = mol->mol.edgeNext(i))
       {
          const Edge &edge = mol->mol.getEdge(i);
 
-         if (matcher.matcher.highlighting->hasEdge(matcher.target.findEdgeIndex(mapping[edge.beg], mapping[edge.end])))
+         if (match.highlighting.hasEdge(match.target.findEdgeIndex(mapping[edge.beg], mapping[edge.end])))
             mol->highlighting.onEdge(i);
       }
 
@@ -1115,15 +1093,94 @@ CEXPORT int indigoMapAtom (int match, int query_atom)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(match);
-      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCHER)
-         throw IndigoError("indigoMatchHighlight(): matcher must be given, not %s", obj.debugInfo());
+      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
+         throw IndigoError("indigoMatchHighlight(): match must be given, not %s", obj.debugInfo());
       IndigoAtom &ia = self.getObject(query_atom).getAtom();
       
-      IndigoMoleculeSubstructureMatcher &matcher = (IndigoMoleculeSubstructureMatcher &)obj;
-      matcher.matcher.getQuery().getAtom(ia.idx); // will throw an exception if the atom index is invalid
-      int idx = matcher.matcher.getQueryMapping()[ia.idx];
+      IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
+      match.query.getAtom(ia.idx); // will throw an exception if the atom index is invalid
+      int idx = match.query_atom_mapping[ia.idx];
 
-      return self.addObject(new IndigoAtom(matcher.target, idx));
+      return self.addObject(new IndigoAtom(match.target, idx));
+   }
+   INDIGO_END(-1)
+}
+
+IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecule &target, 
+                                                                          QueryMolecule &query,
+                                                                          bool unique_matches,
+                                                                          bool embedding_edges_uniqueness) :
+        IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER),
+        matcher(target),
+        target(target),
+        query(query)
+{
+   matcher.setQuery(query);
+   matcher.fmcache = &fmcache;
+   matcher.highlighting = &highlighting;
+
+   if (unique_matches)
+   {
+      matcher.find_unique_embeddings = true;
+      matcher.find_unique_by_edges = embedding_edges_uniqueness;
+   }
+
+   highlighting.init(target);
+
+   _initialized = false;
+   _found = false;
+   _need_find = true;
+}
+
+IndigoMoleculeSubstructureMatchIter::~IndigoMoleculeSubstructureMatchIter ()
+{
+}
+
+IndigoObject * IndigoMoleculeSubstructureMatchIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   AutoPtr<IndigoMoleculeSubstructureMatch> mptr(
+         new IndigoMoleculeSubstructureMatch(target, query));
+
+   mptr->highlighting.init(target);
+   mptr->highlighting.copy(highlighting, 0);
+   mptr->query_atom_mapping.copy(matcher.getQueryMapping(), query.vertexEnd());
+
+   _need_find = true;
+   return mptr.release();
+}
+
+bool IndigoMoleculeSubstructureMatchIter::hasNext ()
+{
+   if (!_need_find)
+      return _found;
+
+   if (!_initialized)
+   {
+      _initialized = true;
+      _found = matcher.find();
+   }
+   else
+      _found = matcher.findNext();
+
+   _need_find = false;
+   return _found;
+}
+
+CEXPORT int indigoIterateSubstructureMatches (int query, int target)
+{
+   INDIGO_BEGIN
+   {
+      Molecule &targetmol = self.getObject(target).getMolecule();
+      QueryMolecule &querymol = self.getObject(query).getQueryMolecule();
+
+      AutoPtr<IndigoMoleculeSubstructureMatchIter> mptr(
+         new IndigoMoleculeSubstructureMatchIter(targetmol, querymol, 
+            true, self.embedding_edges_uniqueness));
+
+      return self.addObject(mptr.release());
    }
    INDIGO_END(-1)
 }

@@ -86,7 +86,8 @@ public:
       ARRAY,
       ARRAY_ITER,
       ARRAY_ELEMENT,
-      MOLECULE_SUBSTRUCTURE_MATCHER,
+      MOLECULE_SUBSTRUCTURE_MATCH,
+      MOLECULE_SUBSTRUCTURE_MATCH_ITER,
       SCAFFOLD,
       DECONVOLUTION,
       DECONVOLUTION_ELEM,
@@ -681,19 +682,39 @@ protected:
    int _idx;
 };
 
-class IndigoMoleculeSubstructureMatcher : public IndigoObject
+// Query to the target match instance
+class IndigoMoleculeSubstructureMatch : public IndigoObject
 {
 public:
-   IndigoMoleculeSubstructureMatcher (Molecule &target_);
+   IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query);
+   virtual ~IndigoMoleculeSubstructureMatch () {}
 
-   virtual ~IndigoMoleculeSubstructureMatcher ();
+   GraphHighlighting highlighting;
+   Array<int> query_atom_mapping;
+   Molecule &target;
+   QueryMolecule &query;
+};
+
+// Iterator for all possible matches
+class IndigoMoleculeSubstructureMatchIter : public IndigoObject
+{
+public:
+   IndigoMoleculeSubstructureMatchIter (Molecule &target, QueryMolecule &query, 
+      bool unique_matches, bool embedding_edges_uniqueness);
+
+   virtual ~IndigoMoleculeSubstructureMatchIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
 
    MoleculeSubstructureMatcher matcher;
    MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
    GraphHighlighting highlighting;
-   Array<int> target_bond_orders;
-
    Molecule &target;
+   QueryMolecule &query;
+
+private:
+   bool _initialized, _found, _need_find;
 };
 
 struct ProductEnumeratorParams 

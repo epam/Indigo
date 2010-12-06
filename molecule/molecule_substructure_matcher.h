@@ -72,6 +72,7 @@ public:
 
    // for finding the first embedding
    DLLEXPORT bool find ();
+   DLLEXPORT bool findNext ();
    DLLEXPORT const int * getQueryMapping ();
    DLLEXPORT const int * getTargetMapping ();
 
@@ -172,6 +173,8 @@ protected:
    bool _attachRGroupAndContinue (int *core1, int *core2,
       QueryMolecule *fragment, bool two_attachment_points,
       int att_idx1, int att_idx2, int rgroup_idx);
+
+   void _unfoldHydrogens ();
 
    BaseMolecule &_target;
    QueryMolecule *_query;

@@ -71,9 +71,13 @@ TL_CP_GET(_used_target_h)
    _pi_systems_matcher = 0;
    match_3d = 0;
    rms_threshold = 0;
+
    find_all_embeddings = false;
    find_unique_embeddings = false;
    find_unique_by_edges = false;
+   cb_embedding = 0;
+   cb_embedding_context = 0;
+
    fmcache = 0;
 
    disable_unfolding_implicit_h = false;
@@ -286,22 +290,7 @@ bool MoleculeSubstructureMatcher::find ()
    int result = _ee->process();
 
    if (_did_h_unfold)
-   {
-      QS_DEF(Array<int>, atoms_to_remove);
-      atoms_to_remove.clear();
-      for (int i = 0; i < _unfolded_target_h.size(); i++)
-      {
-         if (_unfolded_target_h[i])
-         {
-            // Remove from highlighting
-            if (highlighting != 0)
-               highlighting->removeVertex(i);
-            atoms_to_remove.push(i);
-         }
-      }
-      if (atoms_to_remove.size() > 0)
-         _target.removeAtoms(atoms_to_remove);
-   }
+      _unfoldHydrogens();
 
    if (!find_all_embeddings)
       return result == 0;
@@ -311,6 +300,37 @@ bool MoleculeSubstructureMatcher::find ()
         return false;
       return !_embeddings_storage->isEmpty();
    }
+}
+
+void MoleculeSubstructureMatcher::_unfoldHydrogens ()
+{
+   QS_DEF(Array<int>, atoms_to_remove);
+   atoms_to_remove.clear();
+   for (int i = 0; i < _unfolded_target_h.size(); i++)
+   {
+      if (_unfolded_target_h[i])
+      {
+         // Remove from highlighting
+         if (highlighting != 0)
+            highlighting->removeVertex(i);
+         atoms_to_remove.push(i);
+      }
+   }
+   if (atoms_to_remove.size() > 0)
+      _target.removeAtoms(atoms_to_remove);
+}
+
+DLLEXPORT bool MoleculeSubstructureMatcher::findNext ()
+{
+   if (_did_h_unfold)
+     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
+
+   bool found = _ee->processNext();
+
+   if (_did_h_unfold)
+      _unfoldHydrogens();
+
+   return found;
 }
 
 bool MoleculeSubstructureMatcher::matchQueryAtom
@@ -726,26 +746,24 @@ int MoleculeSubstructureMatcher::_embedding_common (int *core_sub, int *core_sup
    if (highlighting != 0)
       highlighting->onSubgraph(query, core_sub);
    
-   if (find_all_embeddings)
+   if (find_unique_embeddings)
    {
-      bool call_cb = true;
-      if (find_unique_embeddings)
+      if (_embeddings_storage.get() == 0)
       {
-         if (_embeddings_storage.get() == 0)
-         {
-            _embeddings_storage.create();
-            _embeddings_storage->unique_by_edges = find_unique_by_edges;
-         }
-
-         if (!_embeddings_storage->addEmbedding(_target, query, core_sub))
-            call_cb = false;
+         _embeddings_storage.create();
+         _embeddings_storage->unique_by_edges = find_unique_by_edges;
       }
-      if (cb_embedding != 0 && call_cb)
-         if (!cb_embedding(query, _target, core_sub, core_super, cb_embedding_context))
-            return 0;
 
-      return 1;
+      if (!_embeddings_storage->addEmbedding(_target, query, core_sub))
+         // This match has already been handled
+         return 1;
    }
+   if (cb_embedding != 0)
+      if (!cb_embedding(query, _target, core_sub, core_super, cb_embedding_context))
+         return 0;
+
+   if (find_all_embeddings)
+      return 1;
 
    return 0;
 }

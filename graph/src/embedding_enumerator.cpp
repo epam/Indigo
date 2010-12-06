@@ -107,14 +107,14 @@ bool EmbeddingEnumerator::unsafeFix (int node1, int node2)
 
 int EmbeddingEnumerator::process ()
 {
+   // Restore enumerators stack
+   while (_enumerators.size() > 1)
+      _enumerators.pop();
+
    processStart();
 
    if (processNext())
-   {
-      while (_enumerators.size() > 1)
-         _enumerators.pop();
       return 0;
-   }
 
    return 1;
 }
