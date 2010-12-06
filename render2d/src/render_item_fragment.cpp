@@ -57,9 +57,21 @@ void RenderItemFragment::init ()
    }
 }
 
+void RenderItemFragment::estimateSize ()
+{ 
+   renderIdle();
+   if (refAtom >= 0) {
+      const Vec3f& v = mol->getAtomXyz(refAtom);
+      Vec2f v2(v.x, v.y);
+      refAtomPos.set(v2.x - _min.x, _max.y - v2.y);
+      refAtomPos.scale(_scaleFactor);
+      refAtomPos.sub(origin);
+   }
+}
+
 void RenderItemFragment::render ()
 {
-   _rc.translate(-origin.x, -origin.y); // TODO: shouldn't we take the scaleFactor into account here as well?
+   _rc.translate(-origin.x, -origin.y);
    MoleculeRenderInternal rnd(_opt, _settings, _rc);
    rnd.setMolecule(mol);
    if (highlighting != NULL)

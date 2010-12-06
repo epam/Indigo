@@ -38,9 +38,10 @@ void RenderItemMolecule::init ()
    if (mol->vertexCount() == 0)
       return;
 
-   int _core = _factory.addItemFragment();
+   _core = _factory.addItemFragment();
    _factory.getItemFragment(_core).mol = mol;
    _factory.getItemFragment(_core).highlighting = highlighting;
+   _factory.getItemFragment(_core).refAtom = refAtom;
    _factory.getItemFragment(_core).init();
    
    int lineCore = _factory.addItemHLine();
@@ -115,6 +116,7 @@ void RenderItemMolecule::estimateSize ()
          size.y += vSpace;
       size.y += line.size.y;
    }
+   refAtomPos.copy(_factory.getItemFragment(_core).refAtomPos);
 }
 
 void RenderItemMolecule::render ()

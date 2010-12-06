@@ -43,6 +43,11 @@ namespace indigo {
       if (item.type != TYPE_##name) \
          throw Error("Item type mismatch"); \
       return _item##name[item.id]; \
+   } \
+   bool isItem##name (int i) \
+   { \
+      Item& item = _items[i]; \
+      return item.type == TYPE_##name; \
    }
 
 #define DEF_POOL(name) ObjPool<RenderItem##name> _item##name;

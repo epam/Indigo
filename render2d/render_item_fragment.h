@@ -28,7 +28,7 @@ public:
 
    DEF_ERROR("RenderItemFragment");
 
-   virtual void estimateSize () { renderIdle(); }
+   virtual void estimateSize ();
    virtual void setObjScale (float scale) { 
       _scaleFactor = scale; 
    }
@@ -45,6 +45,8 @@ public:
    Array<int>* reactingCenters;
    Array<int>* inversionArray;
    Array<int>* exactChangeArray;
+   int refAtom;
+   Vec2f refAtomPos;
 
 private:
    float _scaleFactor;

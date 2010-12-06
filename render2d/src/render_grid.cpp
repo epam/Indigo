@@ -42,7 +42,7 @@ void RenderGrid::draw ()
    _rc.initMetaSurface();
    _rc.fontsClear();
        
-   bool enableRefAtoms = refAtoms.size() > 0;
+   bool enableRefAtoms = refAtoms.size() > 0 && _factory.isItemMolecule(objs[0]);
    if (enableRefAtoms && refAtoms.size() != objs.size())
       throw Error("Number of reference atoms should be same as the number of objects");
    bool enableComments = comments.size() > 0;
@@ -50,12 +50,25 @@ void RenderGrid::draw ()
       throw Error("Number of comments should be same as the number of objects");
 
    maxsz.set(0,0);
+   Vec2f refSizeLT, refSizeRB;
    for (int i = 0; i < objs.size(); ++i) {
+      if (enableRefAtoms)
+         _factory.getItemMolecule(objs[i]).refAtom = refAtoms[i];
       _factory.getItem(objs[i]).init();
       _factory.getItem(objs[i]).setObjScale(_getObjScale(objs[i]));
       _factory.getItem(objs[i]).estimateSize();
-      maxsz.max(_factory.getItem(objs[i]).size);
+      if (enableRefAtoms) {
+         refSizeLT.max(_factory.getItemMolecule(objs[i]).refAtomPos);
+         Vec2f d;
+         d.diff(_factory.getItemMolecule(objs[i]).size, 
+            _factory.getItemMolecule(objs[i]).refAtomPos);
+         refSizeRB.max(d);
+      } else {
+         maxsz.max(_factory.getItem(objs[i]).size);
+      }
    }
+   if (enableRefAtoms)
+      maxsz.sum(refSizeLT, refSizeRB);
 
    nRows = (objs.size() + nColumns - 1) / nColumns;
 
@@ -92,7 +105,15 @@ void RenderGrid::draw ()
             _rc.translate(x * (cellsz.x + _cnvOpt.gridMarginX), y * (cellsz.y + _cnvOpt.gridMarginY));
             _rc.storeTransform();
             {
-               _rc.translate(0.5f * (cellsz.x - size.x * scale), 0.5f * (maxsz.y - size.y) * scale);
+               if (enableRefAtoms) {
+                  _rc.translate(0.5f * (cellsz.x - maxsz.x * scale), 0);
+                  Vec2f d;
+                  d.diff(refSizeLT, _factory.getItemMolecule(objs[i]).refAtomPos);
+                  d.scale(scale);
+                  _rc.translate(d.x, d.y);
+               } else {
+                  _rc.translate(0.5f * (cellsz.x - size.x * scale), 0.5f * (maxsz.y - size.y) * scale);
+               }
                _rc.scale(scale);
                _factory.getItem(objs[i]).render();
             }

@@ -34,7 +34,10 @@ public:
 
    BaseMolecule* mol;
    GraphHighlighting* highlighting;
+   int refAtom;
+   Vec2f refAtomPos;
 private:
+   int _core;
    int _getRIfThenCount ();
 };
 

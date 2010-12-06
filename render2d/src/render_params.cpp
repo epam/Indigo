@@ -253,6 +253,7 @@ void RenderParamInterface::render (RenderParams& params)
    int obj = -1;
    Array<int> objs;
    Array<int> comments;
+   Array<int> refAtoms;
    if (params.rmode == RENDER_MOL) {
       if (params.mols.size() == 0) {
          obj = factory.addItemMolecule();
@@ -276,6 +277,8 @@ void RenderParamInterface::render (RenderParams& params)
             out.writeChar(0);
             factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
             comments.push(comment);
+            // reference atom
+            refAtoms.push(0);
          }
       }
    } else if (params.rmode == RENDER_RXN) {
@@ -326,6 +329,7 @@ void RenderParamInterface::render (RenderParams& params)
       render.objs.copy(objs);
       render.nColumns = 2;
       render.comments.copy(comments);
+      render.refAtoms.copy(refAtoms);
       render.draw();
    }
    rc.closeContext();
