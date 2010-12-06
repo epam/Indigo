@@ -81,6 +81,8 @@ TL_CP_GET(_used_target_h)
    fmcache = 0;
 
    disable_unfolding_implicit_h = false;
+   restore_unfolded_h = true;
+   _h_unfold = false;
 
    _query_nei_counters = 0;
    _target_nei_counters = 0;
@@ -94,11 +96,12 @@ TL_CP_GET(_used_target_h)
 MoleculeSubstructureMatcher::~MoleculeSubstructureMatcher ()
 {
 }
+
 bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom)
 {
    if (atom->type == QueryMolecule::ATOM_FRAGMENT)
    {
-      if (_shouldUnfoldTargetHydrogens(atom->fragment.ref()))
+      if (shouldUnfoldTargetHydrogens(atom->fragment.ref()))
          return true;
    }
    else if (atom->type == QueryMolecule::OP_AND ||
@@ -115,7 +118,7 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A (QueryMolecule:
    return false;
 }
 
-bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens (QueryMolecule &query)
+bool MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens (QueryMolecule &query)
 {
    int i, j;
 
@@ -162,7 +165,7 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens (QueryMolecule &q
    int n_rgroups = rgroups.getRGroupCount();
    for (i = 1; i <= n_rgroups; i++)
       for (j = 0; j < rgroups.getRGroup(i).fragments.size(); j++)
-         if (_shouldUnfoldTargetHydrogens(*rgroups.getRGroup(i).fragments[j]))
+         if (shouldUnfoldTargetHydrogens(*rgroups.getRGroup(i).fragments[j]))
             return true;
 
    return false;
@@ -199,7 +202,7 @@ void MoleculeSubstructureMatcher::setQuery (QueryMolecule &query)
    }
 
    if (!disable_unfolding_implicit_h &&
-       _shouldUnfoldTargetHydrogens(*_query) &&
+       shouldUnfoldTargetHydrogens(*_query) &&
            !_target.isQueryMolecule())
    {
       _h_unfold = true;
@@ -294,7 +297,7 @@ bool MoleculeSubstructureMatcher::find ()
 
    int result = _ee->process();
 
-   if (_h_unfold)
+   if (_h_unfold && restore_unfolded_h)
       _removeUnfoldedHydrogens();
 
    if (!find_all_embeddings)
@@ -330,9 +333,12 @@ DLLEXPORT bool MoleculeSubstructureMatcher::findNext ()
    if (_h_unfold)
      _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
 
+   if (highlighting != 0)
+      highlighting->init(_target);
+
    bool found = _ee->processNext();
 
-   if (_h_unfold)
+   if (_h_unfold && restore_unfolded_h)
       _removeUnfoldedHydrogens();
 
    return found;
@@ -748,9 +754,6 @@ int MoleculeSubstructureMatcher::_embedding_common (int *core_sub, int *core_sup
       if (!_checkRGroupConditions())
          return 1;
 
-   if (highlighting != 0)
-      highlighting->onSubgraph(query, core_sub);
-   
    if (find_unique_embeddings)
    {
       if (_embeddings_storage.get() == 0)
@@ -763,10 +766,14 @@ int MoleculeSubstructureMatcher::_embedding_common (int *core_sub, int *core_sup
          // This match has already been handled
          return 1;
    }
+
+   if (highlighting != 0)
+      highlighting->onSubgraph(query, core_sub);
+
    if (cb_embedding != 0)
       if (!cb_embedding(query, _target, core_sub, core_super, cb_embedding_context))
          return 0;
-
+   
    if (find_all_embeddings)
       return 1;
 

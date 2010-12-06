@@ -63,7 +63,16 @@ void GraphHighlighting::copy (const GraphHighlighting &other, const Array<int> *
 
    for (i = other._graph->vertexBegin(); i != other._graph->vertexEnd(); i = other._graph->vertexNext(i))
       if (other.hasVertex(i))
-         onVertex(mapping == 0 ? i : mapping->at(i));
+      {
+         if (mapping == 0)
+            onVertex(i);
+         else
+         {
+            int mapped = mapping->at(i);
+            if (mapped >= 0)
+               onVertex(mapped);
+         }
+      }
 
    for (i = other._graph->edgeBegin(); i != other._graph->edgeEnd(); i = other._graph->edgeNext(i))
       if (other.hasEdge(i))
@@ -73,7 +82,12 @@ void GraphHighlighting::copy (const GraphHighlighting &other, const Array<int> *
          if (mapping == 0)
             onEdge(_graph->findEdgeIndex(edge.beg, edge.end));
          else
-            onEdge(_graph->findEdgeIndex(mapping->at(edge.beg), mapping->at(edge.end)));
+         {
+            int mapped1 = mapping->at(edge.beg);
+            int mapped2 = mapping->at(edge.end);
+            if (mapped1 >= 0 && mapped2 >= 0)
+               onEdge(_graph->findEdgeIndex(mapped1, mapped2));
+         }
       }
 }
 

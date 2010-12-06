@@ -443,8 +443,18 @@ CEXPORT int indigoIterateArray (int arr);
 
 /* Substructure matching */
 
+// Returns a new 'matcher' object
+CEXPORT int indigoSubstructureMatcher (int target);
+
 // Returns a new 'match' object on success, zero on fail
-CEXPORT int indigoMatchSubstructure (int query, int target);
+//    target_matcher is an matcher object returned by indigoSubstructureMatcher
+CEXPORT int indigoMatch (int target_matcher, int query);
+
+// Counts the number of embeddings of the query structure into the target
+CEXPORT int indigoCountMatches (int target_matcher, int query);
+
+// Returns substructure matches iterator
+CEXPORT int indigoIterateMatches (int target_matcher, int query);
 
 // Accepts a 'match' object obtained from indigoMatchSubstructure.
 // Returns a new molecule which has the query highlighted.
@@ -461,12 +471,6 @@ CEXPORT int indigoMapAtom (int match, int query_atom);
 // Returns the corresponding target bond, not a bond index.
 //   You can use indigoIndex() to obtain the index of the returned bond.
 CEXPORT int indigoMapBond (int match, int query_bond);
-
-// Counts the number of embeddings of the query structure into the target
-CEXPORT int indigoCountSubstructureMatches (int query, int target);
-
-// Returns substructure matches iterator
-CEXPORT int indigoIterateSubstructureMatches (int query, int target);
 
 /* Scaffold detection */
 
