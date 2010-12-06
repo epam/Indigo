@@ -157,6 +157,8 @@ public:
    DLLEXPORT virtual GraphHighlighting * getMoleculeHighlighting ();
    DLLEXPORT virtual RedBlackStringObjMap< Array<char> > * getProperties ();
 
+   DLLEXPORT const char * debugInfo ();
+
    GraphHighlighting highlighting;
 
    RedBlackStringObjMap< Array<char> > properties;
@@ -173,6 +175,8 @@ public:
    DLLEXPORT virtual Molecule & getMolecule ();
    DLLEXPORT virtual const char * getName ();
 
+   DLLEXPORT const char * debugInfo ();
+
    DLLEXPORT virtual IndigoObject * clone ();
 
    Molecule mol;
@@ -188,6 +192,8 @@ public:
    DLLEXPORT virtual BaseMolecule & getBaseMolecule ();
    DLLEXPORT virtual QueryMolecule & getQueryMolecule ();
    DLLEXPORT virtual const char * getName ();
+
+   DLLEXPORT const char * debugInfo ();
 
    DLLEXPORT virtual IndigoObject * clone ();
 

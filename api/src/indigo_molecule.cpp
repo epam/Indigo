@@ -62,6 +62,11 @@ RedBlackStringObjMap< Array<char> > * IndigoBaseMolecule::getProperties ()
    return &properties;
 }
 
+DLLEXPORT const char * IndigoBaseMolecule::debugInfo ()
+{
+   return "<base molecule>";
+}
+
 IndigoMolecule::IndigoMolecule () : IndigoBaseMolecule(MOLECULE)
 {
 }
@@ -1130,6 +1135,11 @@ IndigoObject * IndigoMolecule::clone ()
    return molptr.release();
 }
 
+DLLEXPORT const char * IndigoMolecule::debugInfo ()
+{
+   return "<molecule>";
+}
+
 IndigoObject * IndigoQueryMolecule::clone ()
 {
    AutoPtr<IndigoQueryMolecule> molptr;
@@ -1137,6 +1147,11 @@ IndigoObject * IndigoQueryMolecule::clone ()
    molptr->qmol.clone(qmol, 0, 0);
    molptr->copyProperties(properties);
    return molptr.release();
+}
+
+DLLEXPORT const char * IndigoQueryMolecule::debugInfo ()
+{
+   return "<query molecule>";
 }
 
 IndigoMoleculeSubstructureMatch::IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query) :
