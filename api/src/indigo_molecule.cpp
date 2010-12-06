@@ -1221,6 +1221,8 @@ CEXPORT int indigoMapAtom (int match, int query_atom)
       IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
       match.query.getAtom(ia.idx); // will throw an exception if the atom index is invalid
       int idx = match.query_atom_mapping[ia.idx];
+      if (idx < 0)
+         return 0;
 
       return self.addObject(new IndigoAtom(match.target, idx));
    }
@@ -1238,8 +1240,17 @@ CEXPORT int indigoMapBond (int match, int query_bond)
 
       IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
       const Edge &edge = match.query.getEdge(ib.idx);
+
+      int beg_mapped = match.query_atom_mapping[edge.beg];
+      int end_mapped = match.query_atom_mapping[edge.end];
+      if (beg_mapped < 0 || end_mapped < 0)
+         return 0;
+
       int idx = match.target.findEdgeIndex(match.query_atom_mapping[edge.beg],
                                            match.query_atom_mapping[edge.end]);
+
+      if (idx == -1)
+         throw IndigoError("indigoMapBond(): internal error, idx == -1");
       
       return self.addObject(new IndigoBond(match.target, idx));
    }
@@ -1298,7 +1309,8 @@ IndigoObject * IndigoMoleculeSubstructureMatchIter::next ()
    for (int v = query.vertexBegin(); v != query.vertexEnd(); v = query.vertexNext(v))
    {
       int mapped = mptr->query_atom_mapping[v];
-      mptr->query_atom_mapping[v] = mapping[mapped];
+      if (mapped >= 0)
+         mptr->query_atom_mapping[v] = mapping[mapped];
    }
 
    _need_find = true;

@@ -462,13 +462,17 @@ CEXPORT int indigoMatchHighlight (int match);
 
 // Accepts an atom from the query, not an atom index.
 //   You can use indigoGetAtom() to obtain the atom by its index.
-// Returns the corresponding target atom, not an atom index.
+// Returns the corresponding target atom, not an atom index. If query 
+// atom doesn't match particular atom in the target (R-group or explicit 
+// hydrogen) then return value is zero.
 //   You can use indigoIndex() to obtain the index of the returned atom.
 CEXPORT int indigoMapAtom (int match, int query_atom);
 
 // Accepts a bond from the query, not a bond index.
 //   You can use indigoGetBond() to obtain the bond by its index.
-// Returns the corresponding target bond, not a bond index.
+// Returns the corresponding target bond, not a bond index. If query 
+// bond doesn't match particular bond in the target (R-group or explicit 
+// hydrogen) then return value is zero.
 //   You can use indigoIndex() to obtain the index of the returned bond.
 CEXPORT int indigoMapBond (int match, int query_bond);
 
