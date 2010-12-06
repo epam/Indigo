@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "indigo_scaffold.h"
+#include "indigo_array.h"
 #include "molecule/molecule_scaffold_detection.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "base_cpp/scanner.h"

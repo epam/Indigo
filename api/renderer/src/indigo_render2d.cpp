@@ -14,6 +14,7 @@
 
 #include "indigo_internal.h"
 #include "indigo_io.h"
+#include "indigo_array.h"
 #include "indigo_renderer_internal.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"

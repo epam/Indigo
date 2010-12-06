@@ -14,6 +14,7 @@
 
 #include "indigo_internal.h"
 #include "indigo_io.h"
+#include "indigo_array.h"
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/molfile_saver.h"
 #include "base_cpp/output.h"

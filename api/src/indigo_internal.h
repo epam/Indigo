@@ -454,61 +454,6 @@ protected:
    int _frag_idx;
 };
 
-class IndigoArray : public IndigoObject
-{
-public:
-   IndigoArray ();
-
-   virtual ~IndigoArray ();
-
-   virtual IndigoObject * clone ();
-   virtual IndigoArray & asArray ();
-
-   PtrArray<IndigoObject> objects;
-};
-
-class IndigoArrayElement : public IndigoObject
-{
-public:
-   IndigoArrayElement (IndigoArray &arr, int idx_);
-   virtual ~IndigoArrayElement ();
-
-   DLLEXPORT IndigoObject & get ();
-
-   virtual BaseMolecule & getBaseMolecule ();
-   virtual Molecule & getMolecule ();
-   virtual GraphHighlighting * getMoleculeHighlighting();
-
-   virtual BaseReaction & getBaseReaction ();
-   virtual Reaction & getReaction ();
-   virtual ReactionHighlighting * getReactionHighlighting();
-
-   virtual IndigoObject * clone ();
-
-   virtual const char * getName ();
-
-   virtual IndigoArray & asArray ();
-   virtual IndigoFingerprint & asFingerprint ();
-
-   virtual int getIndex ();
-
-   IndigoArray *array;
-   int idx;
-};
-
-class IndigoArrayIter : public IndigoObject
-{
-public:
-   IndigoArrayIter (IndigoArray &arr);
-   virtual ~IndigoArrayIter ();
-
-   virtual IndigoObject * next ();
-   virtual bool hasNext ();
-protected:
-   IndigoArray *_arr;
-   int _idx;
-};
-
 // Query to the target match instance
 class IndigoMoleculeSubstructureMatch : public IndigoObject
 {
