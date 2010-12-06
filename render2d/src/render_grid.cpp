@@ -37,45 +37,6 @@ RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory) :
 RenderGrid::~RenderGrid()
 {}
 
-//void RenderGrid::_drawObj ()
-//{
-//   _rc.storeTransform();
-//   {
-//      _rc.translate((objArea.x - objSize.x * scale) / 2, (objArea.y - objSize.y * scale) / 2);
-//      _rc.scale(scale);
-//      _factory.getItem(obj).render();
-//   }
-//   _rc.restoreTransform();
-//   _rc.removeStoredTransform();
-//   _rc.translate(0, objArea.y);
-//}
-//
-//void RenderGrid::_drawComment ()
-//{
-//   if (comment < 0)
-//      return;
-//   _rc.storeTransform();
-//   {
-//      float diff = (float)(_cnvOpt.width - 2 * outerMargin.x - commentSize.x);
-//      switch (_opt.commentAlign) {
-//         case ALIGNMENT_LEFT:
-//            break;
-//         case ALIGNMENT_CENTER:
-//            _rc.translate(0.5f * diff, 0);
-//            break;
-//         case ALIGNMENT_RIGHT:
-//            _rc.translate(diff, 0);
-//            break;
-//         default:
-//            throw Error("Alignment value invalid");
-//      }     
-//      _factory.getItem(comment).render();
-//   }
-//   _rc.restoreTransform();
-//   _rc.removeStoredTransform();
-//   _rc.translate(0, commentSize.y);
-//}
-
 void RenderGrid::draw ()
 {     
    _rc.initMetaSurface();
@@ -96,36 +57,25 @@ void RenderGrid::draw ()
       maxsz.max(_factory.getItem(objs[i]).size);
    }
 
-   int nRows = (objs.size() + nColumns - 1) / nColumns;
-   totalsz.copy(maxsz);
-   totalsz.x *= nColumns;
-   totalsz.y *= nRows;
-   
-   //for (int i = 0; i < objs.size(); ++i) {
-   //   _factory.getItem(objs[i]).init();
-   //   _factory.getItem(objs[i]).setObjScale(_getObjScale(objs[i]));
-   //}
+   nRows = (objs.size() + nColumns - 1) / nColumns;
 
-   //for (int i = 0; i < comments.size(); ++i) {
-   //   _factory.getItem(comments[i]).init();
-   //}
+   maxCommentSize.set(0,0);
+   if (enableComments) {
+      commentOffset = _cnvOpt.commentOffset;
+      for (int i = 0; i < comments.size(); ++i) {
+         _factory.getItem(comments[i]).init();
+         _factory.getItem(comments[i]).estimateSize();
+         maxCommentSize.max(_factory.getItem(comments[i]).size);
+      }
+   }
 
-   //commentSize.set(0,0);
-   //commentOffset = 0;
-   //if (comment >= 0) {
-   //   _factory.getItem(comment).init();
-   //   _factory.getItem(comment).estimateSize();
-   //   commentSize.copy(_factory.getItem(comment).size);
-   //   commentOffset = _cnvOpt.commentOffset;
-   //}
    outerMargin.x = (float)(minMarg + _cnvOpt.commentMarginX);
    outerMargin.y = (float)(minMarg + _cnvOpt.commentMarginY);
    
    scale = _getScale();
    _rc.initContext(_cnvOpt.width, _cnvOpt.height);
-   clientArea.set((float)_cnvOpt.width, (float)_cnvOpt.height);
-   clientArea.sub(outerMargin);
-   //objArea.y -= commentSize.y + commentOffset;
+   cellsz.set(__max(maxsz.x * scale, maxCommentSize.x),
+      maxsz.y * scale + maxCommentSize.y + commentOffset);
    _rc.init();
    _rc.translate((float)outerMargin.x, (float)outerMargin.y);
    if (_cnvOpt.xOffset > 0 || _cnvOpt.yOffset > 0)
@@ -139,23 +89,24 @@ void RenderGrid::draw ()
             int x = i / nRows;
             Vec2f size(_factory.getItem(objs[i]).size);
 
-            _rc.translate(x * maxsz.x * scale, y * maxsz.y * scale);
-            _rc.scale(scale);
-            _rc.translate(0.5f * (maxsz.x - size.x), 0.5f * (maxsz.y - size.y));
-            _factory.getItem(objs[i]).render();
+            _rc.translate(x * cellsz.x, y * cellsz.y);
+            _rc.storeTransform();
+            {
+               _rc.translate(0.5f * (cellsz.x - size.x * scale), 0.5f * (maxsz.y - size.y) * scale);
+               _rc.scale(scale);
+               _factory.getItem(objs[i]).render();
+            }
+            _rc.restoreTransform();
+            _rc.removeStoredTransform();
+            _rc.translate(0, maxsz.y * scale + commentOffset);
+
+            Vec2f commentSize(_factory.getItem(comments[i]).size);
+            _rc.translate(0.5f * (cellsz.x - commentSize.x), 0.5f * (maxCommentSize.y - commentSize.y));
+            _factory.getItem(comments[i]).render();
          }
          _rc.restoreTransform();
          _rc.removeStoredTransform();
       }
-      //if (_opt.commentPos == COMMENT_POS_TOP) {
-      //   _drawComment();
-      //   _rc.translate(0, commentOffset);
-      //   _drawObj();
-      //} else {
-      //   _drawObj();
-      //   _rc.translate(0, commentOffset);
-      //  _drawComment();
-      //}
    }
    _rc.resetTransform();
    _rc.removeStoredTransform();
@@ -172,8 +123,8 @@ float RenderGrid::_getScale ()
 
       //_cnvOpt.width = (int)ceil(__max(total.x * s, commentSize.x) + outerMargin.x * 2);
       //_cnvOpt.height = (int)ceil(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2);
-      _cnvOpt.width = (int)ceil(totalsz.x * s + outerMargin.x * 2);
-      _cnvOpt.height = (int)ceil(totalsz.y * s + outerMargin.y * 2);
+      _cnvOpt.width = (int)ceil(__max(maxsz.x * s, maxCommentSize.x) * nColumns + outerMargin.x * 2);
+      _cnvOpt.height = (int)ceil((maxsz.y * s + maxCommentSize.y + commentOffset) * nRows + outerMargin.y * 2);
 
       //if (maxPageSize < 0 || __max(_cnvOpt.width, _cnvOpt.height) < maxPageSize)
       //   return s;

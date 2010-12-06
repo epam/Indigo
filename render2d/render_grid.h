@@ -30,14 +30,17 @@ public:
    Array<int> objs;
    Array<int> refAtoms;
    Array<int> comments;
-   float scale;
    float commentOffset;
    int nColumns;
-   Vec2f clientArea;
-   Vec2f maxsz;
-   Vec2f totalsz;
-   Vec2f outerMargin;
+
 private:
+   int nRows;
+   float scale;
+   Vec2f maxsz;
+   Vec2f cellsz;
+   Vec2f outerMargin;
+   Vec2f maxCommentSize;
+
    float _getScale ();
    void _drawComment ();
    void _drawObj ();

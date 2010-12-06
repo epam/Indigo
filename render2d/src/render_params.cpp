@@ -252,6 +252,7 @@ void RenderParamInterface::render (RenderParams& params)
    RenderItemFactory factory(rc); 
    int obj = -1;
    Array<int> objs;
+   Array<int> comments;
    if (params.rmode == RENDER_MOL) {
       if (params.mols.size() == 0) {
          obj = factory.addItemMolecule();
@@ -267,6 +268,14 @@ void RenderParamInterface::render (RenderParams& params)
             factory.getItemMolecule(mol).mol = &bm;
             factory.getItemMolecule(mol).highlighting = &params.molhls[i];
             objs.push(mol);
+            // fake comment
+            int comment = factory.addItemAuxiliary();
+            factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
+            ArrayOutput out(factory.getItemAuxiliary(comment).text);
+            out.printf("Molecule %d", i);
+            out.writeChar(0);
+            factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
+            comments.push(comment);
          }
       }
    } else if (params.rmode == RENDER_RXN) {
@@ -285,6 +294,14 @@ void RenderParamInterface::render (RenderParams& params)
             factory.getItemReaction(rxn).rxn = &br;
             factory.getItemReaction(rxn).highlighting = &params.rxnhls[i];
             objs.push(rxn);
+            // fake comment
+            int comment = factory.addItemAuxiliary();
+            factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
+            ArrayOutput out(factory.getItemAuxiliary(comment).text);
+            out.printf("Reaction %d", i);
+            out.writeChar(0);
+            factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
+            comments.push(comment);
          }
       }
    } else {
@@ -308,7 +325,7 @@ void RenderParamInterface::render (RenderParams& params)
       RenderGrid render(rc, factory);
       render.objs.copy(objs);
       render.nColumns = 2;
-      //render.comment = comment;
+      render.comments.copy(comments);
       render.draw();
    }
    rc.closeContext();
