@@ -130,12 +130,14 @@ float RenderSingle::_getScale ()
       _cnvOpt.height = __min(_cnvOpt.height, maxPageSize);
    }
 
-   float x = _cnvOpt.width - 2 * outerMargin.x,
-      y = _cnvOpt.height - (commentSize.y + 2 * outerMargin.y + commentOffset);
-   if (x < 1 || y < 1)
+   float absX = 2 * outerMargin.x;
+   float absY = commentSize.y + 2 * outerMargin.y + commentOffset;
+   float x = _cnvOpt.width - absX,
+      y = _cnvOpt.height - absY;
+   if (x < commentSize.x + 1 || y < 1)
       throw Error("Image too small, the layout requires at least %dx%d", 
-         2 * outerMargin.x + 1, 
-         commentSize.y + 2 * outerMargin.y + commentOffset + 1);
+         (int)(absX + commentSize.x + 2), 
+         (int)(absY + 2));
    if (x * objSize.y < y * objSize.x)
       s = x / objSize.x;
    else

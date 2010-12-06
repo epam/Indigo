@@ -40,6 +40,7 @@ private:
    Vec2f cellsz;
    Vec2f outerMargin;
    Vec2f maxCommentSize;
+   Vec2f clientArea;
 
    float _getScale ();
    void _drawComment ();
