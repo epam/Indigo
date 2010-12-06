@@ -33,14 +33,23 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/src/render_item_fragment.o \
 	${OBJECTDIR}/src/render_internal.o \
-	${OBJECTDIR}/src/render_base.o \
+	${OBJECTDIR}/src/render_item_factory.o \
+	${OBJECTDIR}/src/render_grid.o \
+	${OBJECTDIR}/src/render_item_hline.o \
+	${OBJECTDIR}/src/render_item_aux.o \
 	${OBJECTDIR}/src/render_fonts.o \
+	${OBJECTDIR}/src/render_item_molecule.o \
 	${OBJECTDIR}/src/render_params.o \
-	${OBJECTDIR}/src/render_reaction.o \
+	${OBJECTDIR}/src/render.o \
+	${OBJECTDIR}/src/render_item_comment.o \
+	${OBJECTDIR}/src/render_item_reaction.o \
 	${OBJECTDIR}/src/render_common.o \
 	${OBJECTDIR}/src/render_context.o \
-	${OBJECTDIR}/src/render_molecule.o
+	${OBJECTDIR}/src/render_item_container.o \
+	${OBJECTDIR}/src/render_single.o \
+	${OBJECTDIR}/src/render_item.o
 
 
 # C Compiler Flags
@@ -69,30 +78,65 @@ dist/Debug/GNU-Linux-x86/librender2d.a: ${OBJECTFILES}
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/librender2d.a ${OBJECTFILES} 
 	$(RANLIB) dist/Debug/GNU-Linux-x86/librender2d.a
 
+${OBJECTDIR}/src/render_item_fragment.o: src/render_item_fragment.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item_fragment.o src/render_item_fragment.cpp
+
 ${OBJECTDIR}/src/render_internal.o: src/render_internal.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_internal.o src/render_internal.cpp
 
-${OBJECTDIR}/src/render_base.o: src/render_base.cpp 
+${OBJECTDIR}/src/render_item_factory.o: src/render_item_factory.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_base.o src/render_base.cpp
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item_factory.o src/render_item_factory.cpp
+
+${OBJECTDIR}/src/render_grid.o: src/render_grid.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_grid.o src/render_grid.cpp
+
+${OBJECTDIR}/src/render_item_hline.o: src/render_item_hline.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item_hline.o src/render_item_hline.cpp
+
+${OBJECTDIR}/src/render_item_aux.o: src/render_item_aux.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item_aux.o src/render_item_aux.cpp
 
 ${OBJECTDIR}/src/render_fonts.o: src/render_fonts.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_fonts.o src/render_fonts.cpp
 
+${OBJECTDIR}/src/render_item_molecule.o: src/render_item_molecule.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item_molecule.o src/render_item_molecule.cpp
+
 ${OBJECTDIR}/src/render_params.o: src/render_params.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_params.o src/render_params.cpp
 
-${OBJECTDIR}/src/render_reaction.o: src/render_reaction.cpp 
+${OBJECTDIR}/src/render.o: src/render.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_reaction.o src/render_reaction.cpp
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render.o src/render.cpp
+
+${OBJECTDIR}/src/render_item_comment.o: src/render_item_comment.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item_comment.o src/render_item_comment.cpp
+
+${OBJECTDIR}/src/render_item_reaction.o: src/render_item_reaction.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item_reaction.o src/render_item_reaction.cpp
 
 ${OBJECTDIR}/src/render_common.o: src/render_common.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -104,10 +148,20 @@ ${OBJECTDIR}/src/render_context.o: src/render_context.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_context.o src/render_context.cpp
 
-${OBJECTDIR}/src/render_molecule.o: src/render_molecule.cpp 
+${OBJECTDIR}/src/render_item_container.o: src/render_item_container.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_molecule.o src/render_molecule.cpp
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item_container.o src/render_item_container.cpp
+
+${OBJECTDIR}/src/render_single.o: src/render_single.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_single.o src/render_single.cpp
+
+${OBJECTDIR}/src/render_item.o: src/render_item.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item.o src/render_item.cpp
 
 # Subprojects
 .build-subprojects:

@@ -6,21 +6,39 @@
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <itemPath>src/render_base.cpp</itemPath>
-    <itemPath>render_base.h</itemPath>
+    <itemPath>src/render.cpp</itemPath>
+    <itemPath>render.h</itemPath>
     <itemPath>src/render_common.cpp</itemPath>
     <itemPath>render_common.h</itemPath>
     <itemPath>src/render_context.cpp</itemPath>
     <itemPath>render_context.h</itemPath>
     <itemPath>src/render_fonts.cpp</itemPath>
+    <itemPath>src/render_grid.cpp</itemPath>
+    <itemPath>render_grid.h</itemPath>
     <itemPath>src/render_internal.cpp</itemPath>
     <itemPath>render_internal.h</itemPath>
-    <itemPath>src/render_molecule.cpp</itemPath>
-    <itemPath>render_molecule.h</itemPath>
+    <itemPath>src/render_item.cpp</itemPath>
+    <itemPath>render_item.h</itemPath>
+    <itemPath>src/render_item_aux.cpp</itemPath>
+    <itemPath>render_item_aux.h</itemPath>
+    <itemPath>src/render_item_comment.cpp</itemPath>
+    <itemPath>render_item_comment.h</itemPath>
+    <itemPath>src/render_item_container.cpp</itemPath>
+    <itemPath>render_item_container.h</itemPath>
+    <itemPath>src/render_item_factory.cpp</itemPath>
+    <itemPath>render_item_factory.h</itemPath>
+    <itemPath>src/render_item_fragment.cpp</itemPath>
+    <itemPath>render_item_fragment.h</itemPath>
+    <itemPath>src/render_item_hline.cpp</itemPath>
+    <itemPath>render_item_hline.h</itemPath>
+    <itemPath>src/render_item_molecule.cpp</itemPath>
+    <itemPath>render_item_molecule.h</itemPath>
+    <itemPath>src/render_item_reaction.cpp</itemPath>
+    <itemPath>render_item_reaction.h</itemPath>
     <itemPath>src/render_params.cpp</itemPath>
     <itemPath>render_params.h</itemPath>
-    <itemPath>src/render_reaction.cpp</itemPath>
-    <itemPath>render_reaction.h</itemPath>
+    <itemPath>src/render_single.cpp</itemPath>
+    <itemPath>render_single.h</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
