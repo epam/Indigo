@@ -89,7 +89,7 @@ void RenderGrid::draw ()
             int x = i / nRows;
             Vec2f size(_factory.getItem(objs[i]).size);
 
-            _rc.translate(x * cellsz.x, y * cellsz.y);
+            _rc.translate(x * (cellsz.x + _cnvOpt.gridMarginX), y * (cellsz.y + _cnvOpt.gridMarginY));
             _rc.storeTransform();
             {
                _rc.translate(0.5f * (cellsz.x - size.x * scale), 0.5f * (maxsz.y - size.y) * scale);
@@ -123,8 +123,8 @@ float RenderGrid::_getScale ()
 
       //_cnvOpt.width = (int)ceil(__max(total.x * s, commentSize.x) + outerMargin.x * 2);
       //_cnvOpt.height = (int)ceil(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2);
-      _cnvOpt.width = (int)ceil(__max(maxsz.x * s, maxCommentSize.x) * nColumns + outerMargin.x * 2);
-      _cnvOpt.height = (int)ceil((maxsz.y * s + maxCommentSize.y + commentOffset) * nRows + outerMargin.y * 2);
+      _cnvOpt.width = (int)ceil(__max(maxsz.x * s, maxCommentSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2);
+      _cnvOpt.height = (int)ceil((maxsz.y * s + maxCommentSize.y + commentOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2);
 
       //if (maxPageSize < 0 || __max(_cnvOpt.width, _cnvOpt.height) < maxPageSize)
       //   return s;

@@ -70,19 +70,20 @@ void indigoRenderSetHDCOffset (int x, int y)
    rp.cnvOpt.yOffset = y;
 }
 
-void indigoRenderSetMargins (int x, int y)
-{
-   RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.cnvOpt.marginX = x;
-   rp.cnvOpt.marginY = y;
-}
-
 void indigoRenderSetCommentMargins (int x, int y)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.cnvOpt.commentMarginX = x;
    rp.cnvOpt.commentMarginY = y;
 }
+
+void indigoRenderSetGridMargins (int x, int y)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.gridMarginX = x;
+   rp.cnvOpt.gridMarginY = y;
+}
+
 
 void indigoRenderSetBondLength (float length)
 {
@@ -422,8 +423,8 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
 
    mgr.setOptionHandlerXY("render-image-size", indigoRenderSetImageSize);
    mgr.setOptionHandlerXY("render-hdc-offset", indigoRenderSetHDCOffset);
-   mgr.setOptionHandlerXY("render-margins", indigoRenderSetMargins);
    mgr.setOptionHandlerXY("render-comment-margins", indigoRenderSetCommentMargins);
+   mgr.setOptionHandlerXY("render-grid-margins", indigoRenderSetGridMargins);
 }
 
 _IndigoRenderingOptionsHandlersSetter _indigo_rendering_options_handlers_setter;

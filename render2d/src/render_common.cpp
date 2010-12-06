@@ -262,7 +262,7 @@ void CanvasOptions::clear ()
    width = height = -1;
    xOffset = yOffset = 0;
    bondLength = 100;
-   marginX = marginY = 0;
+   gridMarginX = gridMarginY = 0;
    commentMarginX = commentMarginY = 0;
    commentOffset = 0;
 }
