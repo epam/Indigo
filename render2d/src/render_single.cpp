@@ -56,18 +56,7 @@ void RenderSingle::_drawComment ()
    _rc.storeTransform();
    {
       float diff = (float)(_cnvOpt.width - 2 * outerMargin.x - commentSize.x);
-      switch (_opt.commentAlign) {
-         case ALIGNMENT_LEFT:
-            break;
-         case ALIGNMENT_CENTER:
-            _rc.translate(0.5f * diff, 0);
-            break;
-         case ALIGNMENT_RIGHT:
-            _rc.translate(diff, 0);
-            break;
-         default:
-            throw Error("Alignment value invalid");
-      }     
+      _rc.translate(diff * _opt.commentAlign / 2, 0);
       _factory.getItem(comment).render();
    }
    _rc.restoreTransform();
@@ -101,7 +90,7 @@ void RenderSingle::draw ()
    scale = _getScale();
    _rc.initContext(_cnvOpt.width, _cnvOpt.height);
    objArea.set((float)_cnvOpt.width, (float)_cnvOpt.height);
-   objArea.sub(outerMargin);
+   objArea.addScaled(outerMargin, -2);
    objArea.y -= commentSize.y + commentOffset;
    _rc.init();
    _rc.translate((float)outerMargin.x, (float)outerMargin.y);
