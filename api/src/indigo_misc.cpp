@@ -15,6 +15,7 @@
 #include "indigo_internal.h"
 #include "indigo_properties.h"
 #include "indigo_io.h"
+#include "indigo_loaders.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
 #include "molecule/molecule_arom.h"

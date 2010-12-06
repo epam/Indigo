@@ -16,6 +16,7 @@
       <itemPath>src/indigo_io.h</itemPath>
       <itemPath>src/indigo_layout.cpp</itemPath>
       <itemPath>src/indigo_loaders.cpp</itemPath>
+      <itemPath>src/indigo_loaders.h</itemPath>
       <itemPath>src/indigo_macros.c</itemPath>
       <itemPath>src/indigo_match.cpp</itemPath>
       <itemPath>src/indigo_match.h</itemPath>
@@ -25,7 +26,6 @@
       <itemPath>src/indigo_object.cpp</itemPath>
       <itemPath>src/indigo_options.cpp</itemPath>
       <itemPath>src/indigo_product_enumerator.cpp</itemPath>
-      <itemPath>src/indigo_product_enumerator.h</itemPath>
       <itemPath>src/indigo_properties.cpp</itemPath>
       <itemPath>src/indigo_properties.h</itemPath>
       <itemPath>src/indigo_reaction.cpp</itemPath>
