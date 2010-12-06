@@ -15,4 +15,41 @@
 #ifndef __indigo_io__
 #define __indigo_io__
 
+#include "indigo_internal.h"
+
+class IndigoScanner : public IndigoObject
+{
+public:
+   IndigoScanner (Scanner *scanner);
+   IndigoScanner (const char *str);
+   IndigoScanner (const char *buf, int size);
+
+   static DLLEXPORT Scanner & get (IndigoObject &obj);
+
+   virtual ~IndigoScanner ();
+
+   Scanner *ptr;
+protected:
+   Array<char> _buf;
+};
+
+class IndigoOutput : public IndigoObject
+{
+public:
+   IndigoOutput ();
+   IndigoOutput (Output *output);
+   virtual ~IndigoOutput ();
+
+   virtual void toString (Array<char> &str);
+
+   virtual Output & getOutput ();
+
+   static DLLEXPORT Output & get (IndigoObject &obj);
+
+   Output *ptr;
+protected:
+   bool        _own_buf;
+   Array<char> _buf;
+};
+
 #endif

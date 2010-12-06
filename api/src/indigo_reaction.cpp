@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "indigo_io.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_saver.h"
 #include "base_cpp/output.h"
@@ -230,7 +231,7 @@ CEXPORT int indigoLoadReaction (int source)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(source);
-      Scanner &scanner = obj.getScanner();
+      Scanner &scanner = IndigoScanner::get(obj);
 
       ReactionAutoLoader loader(scanner);
 
@@ -255,7 +256,7 @@ CEXPORT int indigoLoadQueryReaction (int source)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(source);
-      Scanner &scanner = obj.getScanner();
+      Scanner &scanner = IndigoScanner::get(obj);
 
       ReactionAutoLoader loader(scanner);
 
@@ -281,7 +282,7 @@ CEXPORT int indigoSaveRxnfile (int reaction, int output)
    INDIGO_BEGIN
    {
       BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      Output &out = self.getObject(output).getOutput();
+      Output &out = IndigoOutput::get(self.getObject(output));
       
       RxnfileSaver saver(out);
       if (rxn.isQueryReaction())

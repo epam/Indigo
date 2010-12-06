@@ -11,3 +11,36 @@
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
+
+#ifndef __indigo_deconvolution__
+#define __indigo_deconvolution__
+
+#include "indigo_internal.h"
+
+class IndigoDeconvolutionIter : public IndigoObject {
+public:
+
+   IndigoDeconvolutionIter(ObjArray<IndigoDeconvolution::Item>& items);
+   virtual ~IndigoDeconvolutionIter();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   int _index;
+   ObjArray<IndigoDeconvolution::Item>& _items;
+};
+
+class IndigoDeconvolutionElem : public IndigoObject
+{
+public:
+   IndigoDeconvolutionElem (IndigoDeconvolution::Item &item, int index);
+   ~IndigoDeconvolutionElem ();
+
+   virtual int getIndex ();
+
+   IndigoDeconvolution::Item &item;
+   int idx;
+};
+
+#endif

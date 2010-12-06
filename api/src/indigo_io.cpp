@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "indigo_internal.h"
+#include "indigo_io.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
 #include "base_cpp/auto_ptr.h"
@@ -37,6 +37,13 @@ IndigoScanner::IndigoScanner (const char *buf, int size) : IndigoObject(SCANNER)
 IndigoScanner::~IndigoScanner ()
 {
    delete ptr;
+}
+
+Scanner & IndigoScanner::get (IndigoObject &obj)
+{
+   if (obj.type == SCANNER)
+      return *((IndigoScanner &)obj).ptr;
+   throw IndigoError("%s is not a scanner", obj.debugInfo());
 }
 
 IndigoOutput::IndigoOutput (Output *output) : IndigoObject(OUTPUT), ptr(output)
@@ -166,7 +173,7 @@ CEXPORT int indigoIterateSDF (int reader)
    {
       IndigoObject &obj = self.getObject(reader);
       
-      return self.addObject(new IndigoSdfLoader(obj.getScanner()));
+      return self.addObject(new IndigoSdfLoader(IndigoScanner::get(obj)));
    }
    INDIGO_END(-1)
 }
@@ -177,7 +184,7 @@ CEXPORT int indigoIterateRDF (int reader)
    {
       IndigoObject &obj = self.getObject(reader);
 
-      return self.addObject(new IndigoRdfLoader(obj.getScanner()));
+      return self.addObject(new IndigoRdfLoader(IndigoScanner::get(obj)));
    }
    INDIGO_END(-1)
 }
@@ -188,7 +195,7 @@ CEXPORT int indigoIterateSmiles (int reader)
    {
       IndigoObject &obj = self.getObject(reader);
       
-      return self.addObject(new IndigoMultilineSmilesLoader(obj.getScanner()));
+      return self.addObject(new IndigoMultilineSmilesLoader(IndigoScanner::get(obj)));
    }
    INDIGO_END(-1)
 }

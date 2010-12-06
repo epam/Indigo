@@ -21,12 +21,11 @@
 
 using namespace indigo;
 
-TL_DEF_EXT(IndigoRenderer, indigo_renderer_self);
+_SessionLocalContainer<IndigoRenderer> indigo_renderer_self;
 
 IndigoRenderer &indigoRendererGetInstance ()
 {
-   TL_GET(IndigoRenderer, indigo_renderer_self);
-   return indigo_renderer_self;
+   return indigo_renderer_self.getLocalCopy();
 }
 
 #define CHECKRGB(r, g, b) \

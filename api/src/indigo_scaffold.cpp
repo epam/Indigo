@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "indigo_internal.h"
+#include "indigo_scaffold.h"
 #include "molecule/molecule_scaffold_detection.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "base_cpp/scanner.h"

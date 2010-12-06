@@ -11,3 +11,26 @@
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
+
+#ifndef __indigo_scaffold__
+#define __indigo_scaffold__
+
+#include "indigo_internal.h"
+
+class IndigoScaffold : public IndigoObject
+{
+public:
+   IndigoScaffold ();
+   virtual ~IndigoScaffold ();
+
+   void extractScaffold ();
+
+   virtual Molecule & getMolecule();
+   virtual BaseMolecule & getBaseMolecule ();
+   virtual GraphHighlighting * getMoleculeHighlighting ();
+
+   Molecule           max_scaffold;
+   ObjArray<Molecule> all_scaffolds;
+};
+
+#endif

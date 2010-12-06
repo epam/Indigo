@@ -121,9 +121,6 @@ public:
    
    virtual DLLEXPORT IndigoObject * clone ();
 
-   DLLEXPORT Scanner & getScanner ();
-   DLLEXPORT Output  & getOutput ();
-
    virtual DLLEXPORT const char * getName ();
 
    DLLEXPORT IndigoBond & asBond ();
@@ -293,37 +290,6 @@ public:
    DLLEXPORT virtual IndigoObject * clone();
    
    QueryReaction rxn;
-};
-
-class IndigoScanner : public IndigoObject
-{
-public:
-   IndigoScanner (Scanner *scanner);
-   IndigoScanner (const char *str);
-   IndigoScanner (const char *buf, int size);
-
-   virtual ~IndigoScanner ();
-
-   Scanner *ptr;
-protected:
-   Array<char> _buf;
-};
-
-class IndigoOutput : public IndigoObject
-{
-public:
-   IndigoOutput ();
-   IndigoOutput (Output *output);
-   virtual ~IndigoOutput ();
-
-   virtual void toString (Array<char> &str);
-
-   virtual Output & getOutput ();
-
-   Output *ptr;
-protected:
-   bool        _own_buf;
-   Array<char> _buf;
 };
 
 class IndigoGross : public IndigoObject
@@ -722,45 +688,6 @@ private:
    bool _initialized, _found, _need_find;
 };
 
-struct ProductEnumeratorParams 
-{
-   ProductEnumeratorParams ()
-   {
-      clear();
-   }
-
-   void clear ()
-   {
-      is_multistep_reactions = false;
-      is_one_tube = false;
-      is_self_react = false;
-      max_deep_level = 2;
-      max_product_count = 1000;
-   }
-
-   bool is_multistep_reactions;
-   bool is_one_tube;
-   bool is_self_react;
-   int max_deep_level;
-   int max_product_count;
-};
-
-class IndigoScaffold : public IndigoObject
-{
-public:
-   IndigoScaffold ();
-   virtual ~IndigoScaffold ();
-
-   void extractScaffold ();
-
-   virtual Molecule & getMolecule();
-   virtual BaseMolecule & getBaseMolecule ();
-   virtual GraphHighlighting * getMoleculeHighlighting ();
-
-   Molecule           max_scaffold;
-   ObjArray<Molecule> all_scaffolds;
-};
-
 class IndigoDeconvolution : public IndigoObject {
 private:
    enum {
@@ -833,73 +760,27 @@ private:
    DEF_ERROR("R-Group deconvolution");
 };
 
-class IndigoDeconvolutionIter : public IndigoObject {
-public:
-
-   IndigoDeconvolutionIter(ObjArray<IndigoDeconvolution::Item>& items);
-   virtual ~IndigoDeconvolutionIter();
-
-   virtual IndigoObject * next ();
-   virtual bool hasNext ();
-
-protected:
-   int _index;
-   ObjArray<IndigoDeconvolution::Item>& _items;
-};
-
-class IndigoDeconvolutionElem : public IndigoObject
+struct ProductEnumeratorParams
 {
-public:
-   IndigoDeconvolutionElem (IndigoDeconvolution::Item &item, int index);
-   ~IndigoDeconvolutionElem ();
+   ProductEnumeratorParams ()
+   {
+      clear();
+   }
 
-   virtual int getIndex ();
-   
-   IndigoDeconvolution::Item &item;
-   int idx;
-};
+   void clear ()
+   {
+      is_multistep_reactions = false;
+      is_one_tube = false;
+      is_self_react = false;
+      max_deep_level = 2;
+      max_product_count = 1000;
+   }
 
-class IndigoProperty : public IndigoObject
-{
-public:
-   IndigoProperty (RedBlackStringObjMap< Array<char> > &props, int idx);
-   virtual ~IndigoProperty ();
-
-   virtual const char * getName ();
-   virtual int getIndex ();
-
-   Array<char> & getValue ();
-
-protected:
-   RedBlackStringObjMap< Array<char> > &_props;
-   int _idx;
-};
-
-class IndigoPropertiesIter : public IndigoObject
-{
-public:
-   IndigoPropertiesIter (RedBlackStringObjMap< Array<char> > &props);
-   virtual ~IndigoPropertiesIter ();
-
-   virtual IndigoObject * next ();
-   virtual bool hasNext ();
-   
-protected:
-   RedBlackStringObjMap< Array<char> > &_props;
-   int _idx;
-};
-
-class IndigoFingerprint : public IndigoObject
-{
-public:
-   IndigoFingerprint ();
-   virtual ~IndigoFingerprint ();
-
-   virtual DLLEXPORT void toString (Array<char> &str);
-   virtual DLLEXPORT void toBuffer (Array<char> &buf);
-   virtual IndigoFingerprint & asFingerprint ();
-
-   Array<byte> bytes;
+   bool is_multistep_reactions;
+   bool is_one_tube;
+   bool is_self_react;
+   int max_deep_level;
+   int max_product_count;
 };
 
 class Indigo

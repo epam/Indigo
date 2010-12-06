@@ -15,12 +15,11 @@
 #include "indigo_internal.h"
 #include "molecule/molecule_fingerprint.h"
 
-TL_DEF_EXT(Indigo, indigo_self);
+_SessionLocalContainer<Indigo> indigo_self;
 
 DLLEXPORT Indigo & indigoGetInstance ()
 {
-   TL_GET(Indigo, indigo_self);
-   return indigo_self;
+   return indigo_self.getLocalCopy();
 }
 
 CEXPORT const char * indigoVersion ()

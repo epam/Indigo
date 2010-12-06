@@ -442,28 +442,3 @@ int IndigoMultilineSmilesLoader::tell ()
 {
    return _scanner->tell();
 }
-
-CEXPORT const char * indigoRawData (int handler)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(handler);
-
-      if (obj.type == IndigoObject::RDF_MOLECULE ||
-          obj.type == IndigoObject::RDF_REACTION ||
-          obj.type == IndigoObject::SMILES_MOLECULE ||
-          obj.type == IndigoObject::SMILES_REACTION)
-      {
-         IndigoRdfData &data = (IndigoRdfData &)obj;
-
-         self.tmp_string.copy(data.getRawData());
-      }
-      else if (obj.type == IndigoObject::PROPERTY)
-         self.tmp_string.copy(((IndigoProperty &)obj).getValue());
-      else
-         throw IndigoError("%s does not have raw data", obj.debugInfo());
-      self.tmp_string.push(0);
-      return self.tmp_string.ptr();
-   }
-   INDIGO_END(0)
-}

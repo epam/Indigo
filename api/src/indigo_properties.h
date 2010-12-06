@@ -15,4 +15,36 @@
 #ifndef __indigo_properties__
 #define __indigo_properties__
 
+#include "indigo_internal.h"
+
+class IndigoProperty : public IndigoObject
+{
+public:
+   IndigoProperty (RedBlackStringObjMap< Array<char> > &props, int idx);
+   virtual ~IndigoProperty ();
+
+   virtual const char * getName ();
+   virtual int getIndex ();
+
+   Array<char> & getValue ();
+
+protected:
+   RedBlackStringObjMap< Array<char> > &_props;
+   int _idx;
+};
+
+class IndigoPropertiesIter : public IndigoObject
+{
+public:
+   IndigoPropertiesIter (RedBlackStringObjMap< Array<char> > &props);
+   virtual ~IndigoPropertiesIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   RedBlackStringObjMap< Array<char> > &_props;
+   int _idx;
+};
+
 #endif
