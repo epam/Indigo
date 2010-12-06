@@ -204,7 +204,6 @@ void RenderSettings::init (float sf)
    radicalTopOffset = 0.8f * bondLineWidth;
    radicalTopDistDot = bondLineWidth;
    radicalTopDistCap = bondLineWidth / 2;
-   radicalTopDistCap = bondLineWidth / 2;
    dashUnit = bondLineWidth;
    eps = 1e-4f;
    cosineTreshold = 0.98f;
