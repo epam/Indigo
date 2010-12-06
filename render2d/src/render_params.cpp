@@ -327,7 +327,7 @@ void RenderParamInterface::render (RenderParams& params)
    } else {
       RenderGrid render(rc, factory);
       render.objs.copy(objs);
-      render.nColumns = 2;
+      render.nColumns = rc.opt.gridColumnNumber;
       render.comments.copy(comments);
       render.refAtoms.copy(refAtoms);
       render.draw();

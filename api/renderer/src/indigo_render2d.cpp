@@ -84,6 +84,11 @@ void indigoRenderSetGridMargins (int x, int y)
    rp.cnvOpt.gridMarginY = y;
 }
 
+void indigoRenderSetGridColumns (int n)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.gridColumnNumber = n;
+}                                     
 
 void indigoRenderSetBondLength (float length)
 {
@@ -393,6 +398,8 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
    OsLocker locker(mgr.lock);
+
+   mgr.setOptionHandlerInt("render-grid-columns", indigoRenderSetGridColumns);
 
    mgr.setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat);
    mgr.setOptionHandlerString("render-implicit-hydrogen-mode", indigoRenderSetImplicitHydrogenMode);

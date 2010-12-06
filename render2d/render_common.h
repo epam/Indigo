@@ -319,6 +319,7 @@ public:
    Vec3f commentColor;
    LABEL_MODE labelMode;
    IMPLICIT_HYDROGEN_MODE implHMode;
+   int gridColumnNumber;
    bool showBondIds;
    bool showBondEndIds;
    bool showNeighborArcs;

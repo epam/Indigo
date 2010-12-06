@@ -152,6 +152,7 @@ void RenderOptions::clear()
    commentPos = COMMENT_POS_BOTTOM;
    commentAlign = ALIGNMENT_CENTER;
    commentColor.set(0,0,0);
+   gridColumnNumber = 1;
    showAtomIds = false;
    showBondIds = false;
    showBondEndIds = false;
@@ -172,6 +173,7 @@ void RenderOptions::copy(const RenderOptions& other)
    commentAlign = other.commentAlign;
    commentPos = other.commentPos;
    commentColor.copy(other.commentColor);
+   gridColumnNumber = other.gridColumnNumber;
    showAtomIds = other.showAtomIds;
    showBondIds = other.showBondIds;
    showBondEndIds = other.showBondEndIds;
