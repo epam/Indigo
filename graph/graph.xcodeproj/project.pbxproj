@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8114383B12AD6C7800547F1F /* io_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8114383912AD6C7800547F1F /* io_base.cpp */; };
+		8114383C12AD6C7800547F1F /* io_base.h in Headers */ = {isa = PBXBuildFile; fileRef = 8114383A12AD6C7800547F1F /* io_base.h */; };
 		A713FA6E11F1840A00372A08 /* aux_path_finder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A713FA6B11F1840A00372A08 /* aux_path_finder.cpp */; };
 		A713FA6F11F1840A00372A08 /* cycle_basis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A713FA6C11F1840A00372A08 /* cycle_basis.cpp */; };
 		A713FA7011F1840A00372A08 /* simple_cycle_basis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A713FA6D11F1840A00372A08 /* simple_cycle_basis.cpp */; };
@@ -46,6 +48,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8114383912AD6C7800547F1F /* io_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = io_base.cpp; path = ../common/base_cpp/io_base.cpp; sourceTree = SOURCE_ROOT; };
+		8114383A12AD6C7800547F1F /* io_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = io_base.h; path = ../common/base_cpp/io_base.h; sourceTree = SOURCE_ROOT; };
 		A713FA6811F183F900372A08 /* aux_path_finder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aux_path_finder.h; sourceTree = "<group>"; };
 		A713FA6911F183F900372A08 /* cycle_basis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cycle_basis.h; sourceTree = "<group>"; };
 		A713FA6A11F183F900372A08 /* simple_cycle_basis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simple_cycle_basis.h; sourceTree = "<group>"; };
@@ -157,6 +161,8 @@
 		A7EDA3AD10624A95006CBFAF /* common */ = {
 			isa = PBXGroup;
 			children = (
+				8114383912AD6C7800547F1F /* io_base.cpp */,
+				8114383A12AD6C7800547F1F /* io_base.h */,
 				A73CF6A710629BC9000A182B /* defs.h */,
 				A73CF43B1062868E000A182B /* os_thread_posix.c */,
 				A73CF43C1062868E000A182B /* os_thread.h */,
@@ -268,6 +274,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8114383C12AD6C7800547F1F /* io_base.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,6 +364,7 @@
 				A713FA6F11F1840A00372A08 /* cycle_basis.cpp in Sources */,
 				A713FA7011F1840A00372A08 /* simple_cycle_basis.cpp in Sources */,
 				A778DF251250AE1B0098784F /* embeddings_storage.cpp in Sources */,
+				8114383B12AD6C7800547F1F /* io_base.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
