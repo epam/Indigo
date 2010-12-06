@@ -216,6 +216,14 @@ public class Indigo
       return indigoCountSubstructureMatches(query.self, target.self);
    }
 
+   public IndigoObject iterateSubstructureMatches (IndigoObject query, IndigoObject target)
+   {
+      int res = indigoIterateSubstructureMatches(query.self, target.self);
+      if (res == 0)
+         return null;
+      return new IndigoObject(this, res);
+   }
+
    public IndigoObject extractCommonScaffold (IndigoObject structures, String options)
    {
       int res = indigoExtractCommonScaffold(structures.self, options);
@@ -496,6 +504,7 @@ public class Indigo
    public native int indigoMatchHighlight (int match);
    public native int indigoMapAtom (int match, int query_atom);
    public native int indigoCountSubstructureMatches (int query, int target);
+   public native int indigoIterateSubstructureMatches (int query, int target);
 
    public native int indigoExtractCommonScaffold (int structures, String options);
    public native int indigoAllScaffolds (int extracted);
