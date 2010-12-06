@@ -42,8 +42,6 @@ public:
 
    virtual void toString (Array<char> &str);
 
-   virtual Output & getOutput ();
-
    static DLLEXPORT Output & get (IndigoObject &obj);
 
    Output *ptr;

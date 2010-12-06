@@ -97,12 +97,6 @@ static void indigoSetMaxEmbeddings (int value)
    self.max_embeddings = value;
 }
 
-class _IndigoBasicOptionsHandlersSetter
-{
-public:
-   _IndigoBasicOptionsHandlersSetter ();
-};
-
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -121,5 +115,3 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness);
    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings);
 }
-
-_IndigoBasicOptionsHandlersSetter _indigo_basic_options_handlers_setter;

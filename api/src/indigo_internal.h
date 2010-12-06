@@ -907,4 +907,11 @@ public:
 private:
 };
 
+class _IndigoBasicOptionsHandlersSetter
+{
+public:
+   _IndigoBasicOptionsHandlersSetter ();
+};
+
+
 #endif

@@ -65,14 +65,16 @@ void IndigoOutput::toString (Array<char> &str)
       throw IndigoError("can not convert %s to string", debugInfo());
 }
 
-Output & IndigoOutput::getOutput ()
-{
-   return *ptr;
-}
-
 IndigoOutput::~IndigoOutput ()
 {
    delete ptr;
+}
+
+Output & IndigoOutput::get (IndigoObject &obj)
+{
+   if (obj.type == OUTPUT)
+      return *((IndigoOutput &)obj).ptr;
+   throw IndigoError("%s is not an output", obj.debugInfo());
 }
 
 CEXPORT int indigoReadFile (const char *filename)
