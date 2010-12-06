@@ -21,9 +21,11 @@ mkdir $pythondistr
 
 cp LICENSE.GPL $jnidistr/
 cp java/dist/indigo-java.jar $jnidistr
+cp renderer/java/dist/indigo-renderer-java.jar $jnidistr
 
 cp LICENSE.GPL $pythondistr/
 cp python/indigo.py $pythondistr/
+cp renderer/python/indigo-renderer.py $pythondistr/
 
 for osxver in '10.5' '10.6'; do
    libdistr=indigo-libs-$version-osx$osxver

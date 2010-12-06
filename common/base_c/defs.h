@@ -64,6 +64,7 @@ typedef unsigned char byte;
 #define DLLEXPORT
 #endif
 
+#ifndef CEXPORT
 #ifdef _WIN32
 #ifndef __cplusplus
    #define CEXPORT __declspec(dllexport)
@@ -77,8 +78,7 @@ typedef unsigned char byte;
    #define CEXPORT extern "C"
 #endif
 #endif
-
-//#define CEXPORT extern "C" DLLEXPORT
+#endif
 
 #ifdef _WIN32
 #define qword unsigned _int64
