@@ -284,8 +284,8 @@ struct CanvasOptions {
    float bondLength;
    int gridMarginX;
    int gridMarginY;
-   int commentMarginX;
-   int commentMarginY;
+   int marginX;
+   int marginY;
    float commentOffset;
 };
 

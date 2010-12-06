@@ -84,8 +84,8 @@ void RenderSingle::draw ()
       commentSize.copy(_factory.getItem(comment).size);
       commentOffset = _cnvOpt.commentOffset;
    }
-   outerMargin.x = (float)(minMarg + _cnvOpt.commentMarginX);
-   outerMargin.y = (float)(minMarg + _cnvOpt.commentMarginY);
+   outerMargin.x = (float)(minMarg + _cnvOpt.marginX);
+   outerMargin.y = (float)(minMarg + _cnvOpt.marginY);
    
    scale = _getScale();
    _rc.initContext(_cnvOpt.width, _cnvOpt.height);
