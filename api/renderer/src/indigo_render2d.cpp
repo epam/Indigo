@@ -255,6 +255,8 @@ CEXPORT int indigoRender (int object, int output)
       RenderParams& rp = indigoRendererGetInstance().renderParams;
       IndigoObject &obj = self.getObject(object);
 
+      rp.mols.clear();
+      rp.molhls.clear();
       if (obj.isBaseMolecule())
       {
          Array<int> mapping;
@@ -284,9 +286,47 @@ CEXPORT int indigoRender (int object, int output)
             rp.rhl.copy(*hl, mapping);
          }
          rp.rmode = RENDER_RXN;
+      } else if (obj.type == IndigoObject::ARRAY) {
+         PtrArray<IndigoObject>& objects = obj.asArray().objects;
+         if (objects[0]->isBaseMolecule())
+         {
+            for (int i = 0; i < objects.size(); ++i) {
+               if (objects[i]->getBaseMolecule().isQueryMolecule())
+                  rp.mols.add(new QueryMolecule());
+               else
+                  rp.mols.add(new Molecule());
+               GraphHighlighting& molhl = rp.molhls.push();
+               
+               QS_DEF(Array<int>, mapping);
+               rp.mols.top()->clone(objects[i]->getBaseMolecule(), &mapping, 0);
+               GraphHighlighting* hl = objects[i]->getMoleculeHighlighting();
+               if (hl != 0 && hl->numVertices() > 0) {
+                  molhl.init(*rp.mols.top());
+                  molhl.copy(*hl, &mapping);
+               }
+               rp.rmode = RENDER_MOL;
+            }
+         }
+         else if (objects[0]->isBaseReaction())
+         {
+            //if (obj.getBaseReaction().isQueryReaction())
+            //   rp.rxn.reset(new QueryReaction());
+            //else
+            //   rp.rxn.reset(new Reaction());
+            //ObjArray< Array<int> > mapping;
+            //rp.rxn->clone(self.getObject(object).getBaseReaction(), &mapping, 0);
+            //ReactionHighlighting *hl = self.getObject(object).getReactionHighlighting();
+            //if (hl != 0 && hl->getCount() > 0) {
+            //   rp.rhl.init(*rp.rxn.get());
+            //   rp.rhl.copy(*hl, mapping);
+            //}
+            //rp.rmode = RENDER_RXN;
+         } else {
+            throw IndigoError("The array elements should be molecules or reactions");
+         }
+      } else {
+         throw IndigoError("The object provided should be a molecule, a reaction or an array of such");
       }
-      else
-         throw IndigoError("The object provided is neither a molecule, nor a reaction");
 
       IndigoObject& out = self.getObject(output);
       if (out.type == IndigoHDCOutput::HDC_OUTPUT) {

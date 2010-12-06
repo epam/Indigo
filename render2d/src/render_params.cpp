@@ -39,6 +39,7 @@
 #include "render_item_molecule.h"
 #include "render_item_factory.h"
 #include "render_single.h"
+#include "render_grid.h"
 
 using namespace indigo;
 
@@ -191,6 +192,40 @@ bool RenderParamInterface::needsLayout (BaseMolecule& mol)
    return false;
 }
 
+void RenderParamInterface::_prepareMolecule (RenderParams& params, BaseMolecule& bm)
+{
+   if (needsLayout(bm))
+   {
+      MoleculeLayout ml(bm);
+      ml.make();
+      bm.stereocenters.markBonds();
+   }
+
+   if (params.aromatization > 0)
+      bm.aromatize();
+   else if (params.aromatization < 0)
+      bm.dearomatize();
+}
+
+void RenderParamInterface::_prepareReaction (RenderParams& params, BaseReaction& rxn)
+{
+   for (int i = rxn.begin(); i < rxn.end(); i = rxn.next(i))
+   {
+      BaseMolecule& mol = rxn.getBaseMolecule(i);
+      if (needsLayout(mol))
+      {
+         MoleculeLayout ml(mol);
+         ml.make();
+         mol.stereocenters.markBonds();
+      }
+   }
+
+   if (params.aromatization > 0)
+      rxn.aromatize();
+   else if (params.aromatization < 0)
+      rxn.dearomatize();
+}
+
 void RenderParamInterface::render (RenderParams& params)
 {
    if (params.rmode == RENDER_NONE)
@@ -216,44 +251,29 @@ void RenderParamInterface::render (RenderParams& params)
 
    RenderItemFactory factory(rc); 
    int obj = -1;
+   Array<int> objs;
    if (params.rmode == RENDER_MOL) {
-      obj = factory.addItemMolecule();
-      BaseMolecule& bm = params.mol.ref();
-
-      if (needsLayout(bm))
-      {
-         MoleculeLayout ml(bm);
-         ml.make();
-         bm.stereocenters.markBonds();
+      if (params.mols.size() == 0) {
+         obj = factory.addItemMolecule();
+         BaseMolecule& bm = params.mol.ref();
+         _prepareMolecule(params, bm);
+         factory.getItemMolecule(obj).mol = &bm;
+         factory.getItemMolecule(obj).highlighting = &params.molhl;
+      } else {
+         for (int i = 0; i < params.mols.size(); ++i) {
+            int mol = factory.addItemMolecule();
+            BaseMolecule& bm = *params.mols[i];
+            _prepareMolecule(params, bm);
+            factory.getItemMolecule(mol).mol = &bm;
+            factory.getItemMolecule(mol).highlighting = &params.molhls[i];
+            objs.push(mol);
+         }
       }
-
-      if (params.aromatization > 0)
-         bm.aromatize();
-      else if (params.aromatization < 0)
-         bm.dearomatize();
-      factory.getItemMolecule(obj).mol = &bm;
-      factory.getItemMolecule(obj).highlighting = &params.molhl;
    } else if (params.rmode == RENDER_RXN) {
       obj = factory.addItemReaction();
       factory.getItemReaction(obj);
       BaseReaction& rxn = params.rxn.ref();
-
-      for (int i = rxn.begin(); i < rxn.end(); i = rxn.next(i))
-      {
-         BaseMolecule& mol = rxn.getBaseMolecule(i);
-         if (needsLayout(mol))
-         {
-            MoleculeLayout ml(mol);
-            ml.make();
-            mol.stereocenters.markBonds();
-         }
-      }
-
-      if (params.aromatization > 0)
-         rxn.aromatize();
-      else if (params.aromatization < 0)
-         rxn.dearomatize();
-
+      _prepareReaction(params, rxn);
       factory.getItemReaction(obj).rxn = &rxn;
       factory.getItemReaction(obj).highlighting = &params.rhl;
    } else {
@@ -268,9 +288,17 @@ void RenderParamInterface::render (RenderParams& params)
       factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
    }
 
-   RenderSingle render(rc, factory);
-   render.obj = obj;
-   render.comment = comment;
-   render.draw();
+   if (obj >= 0) {
+      RenderSingle render(rc, factory);
+      render.obj = obj;
+      render.comment = comment;
+      render.draw();
+   } else {
+      RenderGrid render(rc, factory);
+      render.objs.copy(objs);
+      render.nColumns = 2;
+      //render.comment = comment;
+      render.draw();
+   }
    rc.closeContext();
 }

@@ -50,6 +50,8 @@ public:
    GraphHighlighting molhl;
    AutoPtr<BaseReaction> rxn;
    ReactionHighlighting rhl;
+   PtrArray<BaseMolecule> mols;
+   ObjArray<GraphHighlighting> molhls;
 
    PVOID hdc;
    Array<char> outfile;
@@ -67,6 +69,8 @@ public:
    static void render (RenderParams& params);
 
 private:
+   static void _prepareMolecule (RenderParams& params, BaseMolecule& bm);
+   static void _prepareReaction (RenderParams& params, BaseReaction& rxn);
    static bool needsLayoutSub (BaseMolecule& mol);
    static bool needsLayout (BaseMolecule& mol);
    RenderParamInterface ();

@@ -564,6 +564,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\render_grid.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\render_grid.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\render_internal.cpp"
 			>
 		</File>
