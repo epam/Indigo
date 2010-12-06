@@ -7,6 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		811437B512AD6AF500547F1F /* indigo_array.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437A712AD6AF500547F1F /* indigo_array.h */; };
+		811437B612AD6AF500547F1F /* indigo_deconvolution.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437A812AD6AF500547F1F /* indigo_deconvolution.h */; };
+		811437B712AD6AF500547F1F /* indigo_fingerprints.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437A912AD6AF500547F1F /* indigo_fingerprints.h */; };
+		811437B812AD6AF500547F1F /* indigo_io.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437AA12AD6AF500547F1F /* indigo_io.h */; };
+		811437B912AD6AF500547F1F /* indigo_match.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437AB12AD6AF500547F1F /* indigo_match.h */; };
+		811437BA12AD6AF500547F1F /* indigo_molecule.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437AC12AD6AF500547F1F /* indigo_molecule.h */; };
+		811437BB12AD6AF500547F1F /* indigo_options.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 811437AD12AD6AF500547F1F /* indigo_options.cpp */; };
+		811437BC12AD6AF500547F1F /* indigo_product_enumerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437AE12AD6AF500547F1F /* indigo_product_enumerator.h */; };
+		811437BD12AD6AF500547F1F /* indigo_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 811437AF12AD6AF500547F1F /* indigo_properties.cpp */; };
+		811437BE12AD6AF500547F1F /* indigo_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437B012AD6AF500547F1F /* indigo_properties.h */; };
+		811437BF12AD6AF500547F1F /* indigo_reaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437B112AD6AF500547F1F /* indigo_reaction.h */; };
+		811437C012AD6AF500547F1F /* indigo_scaffold.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437B212AD6AF500547F1F /* indigo_scaffold.h */; };
+		811437C112AD6AF500547F1F /* indigo_stereo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 811437B312AD6AF500547F1F /* indigo_stereo.cpp */; };
+		811437C212AD6AF500547F1F /* indigo_stereo.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437B412AD6AF500547F1F /* indigo_stereo.h */; };
+		811437C312AD6AF500547F1F /* indigo_array.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437A712AD6AF500547F1F /* indigo_array.h */; };
+		811437C412AD6AF500547F1F /* indigo_deconvolution.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437A812AD6AF500547F1F /* indigo_deconvolution.h */; };
+		811437C512AD6AF500547F1F /* indigo_fingerprints.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437A912AD6AF500547F1F /* indigo_fingerprints.h */; };
+		811437C612AD6AF500547F1F /* indigo_io.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437AA12AD6AF500547F1F /* indigo_io.h */; };
+		811437C712AD6AF500547F1F /* indigo_match.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437AB12AD6AF500547F1F /* indigo_match.h */; };
+		811437C812AD6AF500547F1F /* indigo_molecule.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437AC12AD6AF500547F1F /* indigo_molecule.h */; };
+		811437C912AD6AF500547F1F /* indigo_options.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 811437AD12AD6AF500547F1F /* indigo_options.cpp */; };
+		811437CA12AD6AF500547F1F /* indigo_product_enumerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437AE12AD6AF500547F1F /* indigo_product_enumerator.h */; };
+		811437CB12AD6AF500547F1F /* indigo_properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 811437AF12AD6AF500547F1F /* indigo_properties.cpp */; };
+		811437CC12AD6AF500547F1F /* indigo_properties.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437B012AD6AF500547F1F /* indigo_properties.h */; };
+		811437CD12AD6AF500547F1F /* indigo_reaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437B112AD6AF500547F1F /* indigo_reaction.h */; };
+		811437CE12AD6AF500547F1F /* indigo_scaffold.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437B212AD6AF500547F1F /* indigo_scaffold.h */; };
+		811437CF12AD6AF500547F1F /* indigo_stereo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 811437B312AD6AF500547F1F /* indigo_stereo.cpp */; };
+		811437D012AD6AF500547F1F /* indigo_stereo.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437B412AD6AF500547F1F /* indigo_stereo.h */; };
 		814A51DD127F5ABC00FA58F0 /* indigo_fingerprints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 814A51DC127F5ABC00FA58F0 /* indigo_fingerprints.cpp */; };
 		814A51DE127F5ABC00FA58F0 /* indigo_fingerprints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 814A51DC127F5ABC00FA58F0 /* indigo_fingerprints.cpp */; };
 		817B69C211F88DB600BC3D88 /* indigo_match.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 817B69A811F88B8E00BC3D88 /* indigo_match.cpp */; };
@@ -111,6 +139,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		811437A712AD6AF500547F1F /* indigo_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_array.h; path = src/indigo_array.h; sourceTree = "<group>"; };
+		811437A812AD6AF500547F1F /* indigo_deconvolution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_deconvolution.h; path = src/indigo_deconvolution.h; sourceTree = "<group>"; };
+		811437A912AD6AF500547F1F /* indigo_fingerprints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_fingerprints.h; path = src/indigo_fingerprints.h; sourceTree = "<group>"; };
+		811437AA12AD6AF500547F1F /* indigo_io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_io.h; path = src/indigo_io.h; sourceTree = "<group>"; };
+		811437AB12AD6AF500547F1F /* indigo_match.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_match.h; path = src/indigo_match.h; sourceTree = "<group>"; };
+		811437AC12AD6AF500547F1F /* indigo_molecule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_molecule.h; path = src/indigo_molecule.h; sourceTree = "<group>"; };
+		811437AD12AD6AF500547F1F /* indigo_options.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_options.cpp; path = src/indigo_options.cpp; sourceTree = "<group>"; };
+		811437AE12AD6AF500547F1F /* indigo_product_enumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_product_enumerator.h; path = src/indigo_product_enumerator.h; sourceTree = "<group>"; };
+		811437AF12AD6AF500547F1F /* indigo_properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_properties.cpp; path = src/indigo_properties.cpp; sourceTree = "<group>"; };
+		811437B012AD6AF500547F1F /* indigo_properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_properties.h; path = src/indigo_properties.h; sourceTree = "<group>"; };
+		811437B112AD6AF500547F1F /* indigo_reaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_reaction.h; path = src/indigo_reaction.h; sourceTree = "<group>"; };
+		811437B212AD6AF500547F1F /* indigo_scaffold.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_scaffold.h; path = src/indigo_scaffold.h; sourceTree = "<group>"; };
+		811437B312AD6AF500547F1F /* indigo_stereo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_stereo.cpp; path = src/indigo_stereo.cpp; sourceTree = "<group>"; };
+		811437B412AD6AF500547F1F /* indigo_stereo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_stereo.h; path = src/indigo_stereo.h; sourceTree = "<group>"; };
 		814A51DC127F5ABC00FA58F0 /* indigo_fingerprints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_fingerprints.cpp; path = src/indigo_fingerprints.cpp; sourceTree = "<group>"; };
 		817B69A211F88B8E00BC3D88 /* indigo_basic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_basic.cpp; path = src/indigo_basic.cpp; sourceTree = "<group>"; };
 		817B69A311F88B8E00BC3D88 /* indigo_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_internal.h; path = src/indigo_internal.h; sourceTree = "<group>"; };
@@ -181,6 +223,20 @@
 		817B69A111F88B3C00BC3D88 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				811437A712AD6AF500547F1F /* indigo_array.h */,
+				811437A812AD6AF500547F1F /* indigo_deconvolution.h */,
+				811437A912AD6AF500547F1F /* indigo_fingerprints.h */,
+				811437AA12AD6AF500547F1F /* indigo_io.h */,
+				811437AB12AD6AF500547F1F /* indigo_match.h */,
+				811437AC12AD6AF500547F1F /* indigo_molecule.h */,
+				811437AD12AD6AF500547F1F /* indigo_options.cpp */,
+				811437AE12AD6AF500547F1F /* indigo_product_enumerator.h */,
+				811437AF12AD6AF500547F1F /* indigo_properties.cpp */,
+				811437B012AD6AF500547F1F /* indigo_properties.h */,
+				811437B112AD6AF500547F1F /* indigo_reaction.h */,
+				811437B212AD6AF500547F1F /* indigo_scaffold.h */,
+				811437B312AD6AF500547F1F /* indigo_stereo.cpp */,
+				811437B412AD6AF500547F1F /* indigo_stereo.h */,
 				814A51DC127F5ABC00FA58F0 /* indigo_fingerprints.cpp */,
 				819EB1B5125F79B600CE1D88 /* option_manager.h */,
 				819EB1B2125F79A700CE1D88 /* option_manager.cpp */,
@@ -253,6 +309,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				819EB1B6125F79B600CE1D88 /* option_manager.h in Headers */,
+				811437B512AD6AF500547F1F /* indigo_array.h in Headers */,
+				811437B612AD6AF500547F1F /* indigo_deconvolution.h in Headers */,
+				811437B712AD6AF500547F1F /* indigo_fingerprints.h in Headers */,
+				811437B812AD6AF500547F1F /* indigo_io.h in Headers */,
+				811437B912AD6AF500547F1F /* indigo_match.h in Headers */,
+				811437BA12AD6AF500547F1F /* indigo_molecule.h in Headers */,
+				811437BC12AD6AF500547F1F /* indigo_product_enumerator.h in Headers */,
+				811437BE12AD6AF500547F1F /* indigo_properties.h in Headers */,
+				811437BF12AD6AF500547F1F /* indigo_reaction.h in Headers */,
+				811437C012AD6AF500547F1F /* indigo_scaffold.h in Headers */,
+				811437C212AD6AF500547F1F /* indigo_stereo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,6 +328,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				819EB1B7125F79B600CE1D88 /* option_manager.h in Headers */,
+				811437C312AD6AF500547F1F /* indigo_array.h in Headers */,
+				811437C412AD6AF500547F1F /* indigo_deconvolution.h in Headers */,
+				811437C512AD6AF500547F1F /* indigo_fingerprints.h in Headers */,
+				811437C612AD6AF500547F1F /* indigo_io.h in Headers */,
+				811437C712AD6AF500547F1F /* indigo_match.h in Headers */,
+				811437C812AD6AF500547F1F /* indigo_molecule.h in Headers */,
+				811437CA12AD6AF500547F1F /* indigo_product_enumerator.h in Headers */,
+				811437CC12AD6AF500547F1F /* indigo_properties.h in Headers */,
+				811437CD12AD6AF500547F1F /* indigo_reaction.h in Headers */,
+				811437CE12AD6AF500547F1F /* indigo_scaffold.h in Headers */,
+				811437D012AD6AF500547F1F /* indigo_stereo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,6 +480,9 @@
 				819EB1B0125F799D00CE1D88 /* indigo_scaffold.cpp in Sources */,
 				819EB1B3125F79A700CE1D88 /* option_manager.cpp in Sources */,
 				814A51DD127F5ABC00FA58F0 /* indigo_fingerprints.cpp in Sources */,
+				811437BB12AD6AF500547F1F /* indigo_options.cpp in Sources */,
+				811437BD12AD6AF500547F1F /* indigo_properties.cpp in Sources */,
+				811437C112AD6AF500547F1F /* indigo_stereo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,6 +507,9 @@
 				819EB1B1125F799D00CE1D88 /* indigo_scaffold.cpp in Sources */,
 				819EB1B4125F79A700CE1D88 /* option_manager.cpp in Sources */,
 				814A51DE127F5ABC00FA58F0 /* indigo_fingerprints.cpp in Sources */,
+				811437C912AD6AF500547F1F /* indigo_options.cpp in Sources */,
+				811437CB12AD6AF500547F1F /* indigo_properties.cpp in Sources */,
+				811437CF12AD6AF500547F1F /* indigo_stereo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
