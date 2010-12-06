@@ -101,7 +101,7 @@ void RenderGrid::draw ()
             _rc.translate(0, maxsz.y * scale + commentOffset);
 
             Vec2f commentSize(_factory.getItem(comments[i]).size);
-            _rc.translate(0.5f * (cellsz.x - commentSize.x), 0.5f * (maxCommentSize.y - commentSize.y));
+            _rc.translate(_opt.commentAlign * (cellsz.x - commentSize.x) / 2, 0.5f * (maxCommentSize.y - commentSize.y));
             _factory.getItem(comments[i]).render();
          }
          _rc.restoreTransform();
