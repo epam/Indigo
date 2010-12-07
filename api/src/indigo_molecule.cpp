@@ -1353,6 +1353,9 @@ static bool _matchCountEmbeddingsCallback (Graph &sub, Graph &super,
 
 int IndigoMoleculeSubstructureMatchIter::countMatches (int max_embeddings)
 {
+   if (max_embeddings <= 0)
+      return 0;
+
    MatchCountContext context;
    context.embeddings_count = 0;
    context.max_count = max_embeddings;

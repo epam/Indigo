@@ -438,16 +438,22 @@ class Indigo:
     self._lib.indigoArrayClear.argtypes = [c_int]
     self._lib.indigoIterateArray.restype = c_int
     self._lib.indigoIterateArray.argtypes = [c_int]
-    self._lib.indigoMatchSubstructure.restype = c_int
-    self._lib.indigoMatchSubstructure.argtypes = [c_int, c_int]
+	
+    self._lib.indigoSubstructureMatcher.restype = c_int
+    self._lib.indigoSubstructureMatcher.argtypes = [c_int]
+    self._lib.indigoMatch.restype = c_int
+    self._lib.indigoMatch.argtypes = [c_int, c_int]
+    self._lib.indigoCountMatches.restype = c_int
+    self._lib.indigoCountMatches.argtypes = [c_int, c_int]
+    self._lib.indigoIterateMatches.restype = c_int
+    self._lib.indigoIterateMatches.argtypes = [c_int, c_int]
     self._lib.indigoMatchHighlight.restype = c_int
     self._lib.indigoMatchHighlight.argtypes = [c_int]
     self._lib.indigoMapAtom.restype = c_int
     self._lib.indigoMapAtom.argtypes = [c_int, c_int]
-    self._lib.indigoCountSubstructureMatches.restype = c_int
-    self._lib.indigoCountSubstructureMatches.argtypes = [c_int, c_int]
-    self._lib.indigoIterateSubstructureMatches.restype = c_int
-    self._lib.indigoIterateSubstructureMatches.argtypes = [c_int, c_int]
+    self._lib.indigoMapBond.restype = c_int
+    self._lib.indigoMapBond.argtypes = [c_int, c_int]
+	
     self._lib.indigoExtractCommonScaffold.restype = c_int
     self._lib.indigoExtractCommonScaffold.argtypes = [c_int, c_char_p]
     self._lib.indigoAllScaffolds.restype = c_int
@@ -501,9 +507,8 @@ class Indigo:
     self.iterateRDFile = self._static_obj_string(self._lib.indigoIterateRDFile)
     self.iterateSmilesFile = self._static_obj_string(self._lib.indigoIterateSmilesFile)
 
-    self.matchSubstructure = self._static_obj_obj_obj(self._lib.indigoMatchSubstructure)
-    self.countSubstructureMatches = self._static_int_obj_obj(self._lib.indigoCountSubstructureMatches)
-    self.iterateSubstructureMatches = self._static_obj_obj_obj(self._lib.indigoIterateSubstructureMatches)
+    self.substructureMatcher = self._static_obj_obj(self._lib.indigoSubstructureMatcher)
+
     self.extractCommonScaffold = self._static_obj_obj_string(self._lib.indigoExtractCommonScaffold)
     self.decomposeMolecules = self._static_obj_obj_obj(self._lib.indigoDecomposeMolecules)
     self.reactionProductEnumerate = self._static_obj_obj_obj(self._lib.indigoReactionProductEnumerate)
@@ -611,8 +616,13 @@ class Indigo:
     self.IndigoObject.arrayAdd = self._member_void_obj(self._lib.indigoArrayAdd)
     self.IndigoObject.arrayAt = self._member_obj_int(self._lib.indigoArrayAt)
     
+    self.IndigoObject.match = self._member_obj_obj(self._lib.indigoMatch)
+    self.IndigoObject.countMatches = self._member_int_obj(self._lib.indigoCountMatches)
+    self.IndigoObject.iterateMatches = self._member_obj_obj(self._lib.indigoIterateMatches)
     self.IndigoObject.matchHighlight = self._member_obj(self._lib.indigoMatchHighlight);
     self.IndigoObject.mapAtom = self._member_obj_obj(self._lib.indigoMapAtom);
+    self.IndigoObject.mapBond = self._member_obj_obj(self._lib.indigoMapBond);	
+	
     self.IndigoObject.allScaffolds = self._member_obj(self._lib.indigoAllScaffolds);
     self.IndigoObject.decomposedMoleculeScaffold = self._member_obj(self._lib.indigoDecomposedMoleculeScaffold)
     self.IndigoObject.iterateDecomposedMolecules = self._member_obj(self._lib.indigoIterateDecomposedMolecules)
@@ -629,6 +639,8 @@ class Indigo:
     def newfunc ():
       self._setSID()
       res = self._checkResult(func())
+      if res == 0:
+        return None
       return self.IndigoObject(self, res)
     return newfunc
 
@@ -648,6 +660,8 @@ class Indigo:
     def newfunc (str):
       self._setSID()
       res = self._checkResult(func(str))
+      if res == 0:
+        return None
       return self.IndigoObject(self, res)
     return newfunc
 
@@ -660,6 +674,15 @@ class Indigo:
       return self.IndigoObject(self, self._checkResult(res))
     return newfunc
 
+  def _static_obj_obj (self, func):
+    def newfunc (obj):
+      self._setSID()
+      res = func(obj.id)
+      if res == 0:
+        return None
+      return self.IndigoObject(self, self._checkResult(res))
+    return newfunc
+	
   def _static_obj_obj_obj (self, func):
     def newfunc (obj1, obj2):
       self._setSID()
@@ -793,6 +816,8 @@ class Indigo:
     def newfunc (self):
       dispatcher._setSID()
       newobj = dispatcher._checkResult(func(self.id))
+      if newobj == 0:
+        return None
       return dispatcher.IndigoObject(dispatcher, newobj)
     return newfunc
 
@@ -801,14 +826,25 @@ class Indigo:
     def newfunc (self, param):
       dispatcher._setSID()
       newobj = dispatcher._checkResult(func(self.id, param))
+      if newobj == 0:
+        return None
       return dispatcher.IndigoObject(dispatcher, newobj)
     return newfunc
 
+  def _member_int_obj (self, func):
+    dispatcher = self
+    def newfunc (self, param):
+      dispatcher._setSID()
+      return dispatcher._checkResult(func(self.id, param.id))
+    return newfunc
+	
   def _member_obj_obj (self, func):
     dispatcher = self
     def newfunc (self, param):
       dispatcher._setSID()
       newobj = dispatcher._checkResult(func(self.id, param.id))
+      if newobj == 0:
+        return None
       return dispatcher.IndigoObject(dispatcher, newobj)
     return newfunc
 
@@ -817,6 +853,8 @@ class Indigo:
     def newfunc (self, param):
       dispatcher._setSID()
       newobj = dispatcher._checkResult(func(self.id, param))
+      if newobj == 0:
+        return None
       return dispatcher.IndigoObject(dispatcher, newobj)
     return newfunc
 
@@ -828,6 +866,8 @@ class Indigo:
         arr[i] = intarr[i]
       dispatcher._setSID()
       newobj = dispatcher._checkResult(func(self.id, len(intarr), arr))
+      if newobj == 0:
+        return None
       return dispatcher.IndigoObject(dispatcher, newobj)
     return newfunc
 
@@ -842,6 +882,8 @@ class Indigo:
         arr2[i] = intarr2[i]
       dispatcher._setSID()
       newobj = dispatcher._checkResult(func(self.id, len(intarr1), arr1, len(intarr2), arr2))
+      if newobj == 0:
+        return None
       return dispatcher.IndigoObject(dispatcher, newobj)
     return newfunc
 

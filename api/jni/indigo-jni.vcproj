@@ -42,6 +42,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="0"
 				AdditionalIncludeDirectories="..,..\..;..\..\common,..\..\common\jni;..\..\common\jni\win32"
 				MinimalRebuild="true"
@@ -111,6 +112,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="0"
 				AdditionalIncludeDirectories="..,..\..;..\..\common,..\..\common\jni;..\..\common\jni\win32"
 				MinimalRebuild="true"
@@ -180,6 +182,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="..,..\..;..\..\common,..\..\common\jni;..\..\common\jni\win32"
@@ -252,6 +255,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="..,..\..;..\..\common,..\..\common\jni;..\..\common\jni\win32"
