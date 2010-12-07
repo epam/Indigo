@@ -459,7 +459,7 @@ CEXPORT int indigoIterateMatches (int matcher, int query);
 
 // Accepts a 'match' object obtained from indigoMatchSubstructure.
 // Returns a new molecule which has the query highlighted.
-CEXPORT int indigoMatchHighlight (int match);
+CEXPORT int indigoHighlightedTarget (int match);
 
 // Accepts an atom from the query, not an atom index.
 //   You can use indigoGetAtom() to obtain the atom by its index.

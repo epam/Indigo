@@ -298,11 +298,11 @@ JNI_FUNC_jint_jint(indigoArrayCount)
 JNI_FUNC_jint_jint(indigoArrayClear)
 JNI_FUNC_jint_jint(indigoIterateArray)
 
-JNI_FUNC_jint_jint(indigoSubstructureMatcher)
+JNI_FUNC_jint_jint_jstring(indigoSubstructureMatcher)
 JNI_FUNC_jint_jint_jint(indigoMatch)
 JNI_FUNC_jint_jint_jint(indigoCountMatches)
 JNI_FUNC_jint_jint_jint(indigoIterateMatches)
-JNI_FUNC_jint_jint(indigoMatchHighlight)
+JNI_FUNC_jint_jint(indigoHighlightedTarget)
 JNI_FUNC_jint_jint_jint(indigoMapAtom)
 JNI_FUNC_jint_jint_jint(indigoMapBond)
 

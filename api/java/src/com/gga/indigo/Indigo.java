@@ -201,27 +201,14 @@ public class Indigo
       return new IndigoObject(this, indigoIterateSmilesFile(filename));
    }
 
-   public IndigoObject matchSubstructure (IndigoObject query, IndigoObject target)
+   public IndigoObject substructureMatcher (IndigoObject target, String mode)
    {
-      int res = indigoMatchSubstructure(query.self, target.self);
-
-      if (res == 0)
-         return null;
-
-      return new IndigoObject(this, res);
+      return new IndigoObject(this, indigoSubstructureMatcher(target.self, mode));
    }
 
-   public int countSubstructureMatches (IndigoObject query, IndigoObject target)
+   public IndigoObject substructureMatcher (IndigoObject target)
    {
-      return indigoCountSubstructureMatches(query.self, target.self);
-   }
-
-   public IndigoObject iterateSubstructureMatches (IndigoObject query, IndigoObject target)
-   {
-      int res = indigoIterateSubstructureMatches(query.self, target.self);
-      if (res == 0)
-         return null;
-      return new IndigoObject(this, res);
+      return substructureMatcher(target, "");
    }
 
    public IndigoObject extractCommonScaffold (IndigoObject structures, String options)
@@ -500,11 +487,13 @@ public class Indigo
    public native int indigoArrayClear (int arr);
    public native int indigoIterateArray (int arr);
 
-   public native int indigoMatchSubstructure (int query, int target);
-   public native int indigoMatchHighlight (int match);
+   public native int indigoSubstructureMatcher (int target, String mode);
+   public native int indigoMatch (int matcher, int query);
+   public native int indigoCountMatches (int matcher, int query);
+   public native int indigoIterateMatches (int matcher, int query);
+   public native int indigoHighlightedTarget (int match);
    public native int indigoMapAtom (int match, int query_atom);
-   public native int indigoCountSubstructureMatches (int query, int target);
-   public native int indigoIterateSubstructureMatches (int query, int target);
+   public native int indigoMapBond (int match, int query_bond);
 
    public native int indigoExtractCommonScaffold (int structures, String options);
    public native int indigoAllScaffolds (int extracted);

@@ -407,14 +407,45 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, dispatcher.indigoArrayAt(self, idx));
    }
 
-   public IndigoObject matchHighlight ()
+   public IndigoObject match (IndigoObject query)
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoMatchHighlight(self));
+      int res = dispatcher.indigoMatch(self, query.self);
+
+      if (res == 0)
+         return null;
+      
+      return new IndigoObject(dispatcher, res);
    }
 
-   public IndigoObject mapAtom (IndigoObject atom)
+   public int countMatches (IndigoObject query)
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoMapAtom(self, atom.self));
+      return dispatcher.indigoCountMatches(self, query.self);
+   }
+   
+   public IndigoObject iterateMatches (IndigoObject query)
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoIterateMatches(self, query.self));
+   }
+
+   public IndigoObject highlightedTarget ()
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoHighlightedTarget(self));
+   }
+
+   public IndigoObject mapAtom (IndigoObject query_atom)
+   {
+      int res = dispatcher.indigoMapAtom(self, query_atom.self);
+      if (res == 0)
+         return null;
+      return new IndigoObject(dispatcher, res);
+   }
+
+   public IndigoObject mapBond (IndigoObject query_bond)
+   {
+      int res = dispatcher.indigoMapBond(self, query_bond.self);
+      if (res == 0)
+         return null;
+      return new IndigoObject(dispatcher, res);
    }
 
    public IndigoObject allScaffolds ()

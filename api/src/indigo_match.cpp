@@ -67,13 +67,13 @@ const char * IndigoMoleculeSubstructureMatch::debugInfo ()
    return "<molecule substructure match>";
 }
 
-CEXPORT int indigoMatchHighlight (int match)
+CEXPORT int indigoHighlightedTarget (int match)
 {
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(match);
       if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
-         throw IndigoError("indigoMatchHighlight(): match must be given, not %s", obj.debugInfo());
+         throw IndigoError("indigoHighlightedTarget(): match must be given, not %s", obj.debugInfo());
 
       IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
 
@@ -109,7 +109,7 @@ CEXPORT int indigoMapAtom (int match, int query_atom)
    {
       IndigoObject &obj = self.getObject(match);
       if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
-         throw IndigoError("indigoMatchHighlight(): match must be given, not %s", obj.debugInfo());
+         throw IndigoError("indigoMapAtom(): match must be given, not %s", obj.debugInfo());
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(query_atom));
 
       IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
@@ -129,7 +129,7 @@ CEXPORT int indigoMapBond (int match, int query_bond)
    {
       IndigoObject &obj = self.getObject(match);
       if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
-         throw IndigoError("indigoMatchHighlight(): match must be given, not %s", obj.debugInfo());
+         throw IndigoError("indigoMapBond(): match must be given, not %s", obj.debugInfo());
       IndigoBond &ib = IndigoBond::cast(self.getObject(query_bond));
 
       IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
