@@ -24,6 +24,15 @@ namespace com.gga.indigo
 
       public void Dispose ()
       {
+         if (dispatcher == null)
+         {
+            // This happens exclusively in 32-bit .NET environment
+            // after an IndigoObject constructor throws an exception.
+            // In fact, the object is not created in this case,
+            // but for some reason the .NET VM disposes it, despite it
+            // has not been initialized.
+            return;
+         }
          if (self >= 0)
          {
             // Check that the session is still alive
