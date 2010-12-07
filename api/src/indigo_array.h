@@ -25,7 +25,8 @@ public:
    virtual ~IndigoArray ();
 
    virtual IndigoObject * clone ();
-   virtual IndigoArray & asArray ();
+
+   static DLLEXPORT IndigoArray & cast (IndigoObject &obj);
 
    PtrArray<IndigoObject> objects;
 };
@@ -49,9 +50,6 @@ public:
    virtual IndigoObject * clone ();
 
    virtual const char * getName ();
-
-   virtual IndigoArray & asArray ();
-   virtual IndigoFingerprint & asFingerprint ();
 
    virtual int getIndex ();
 

@@ -14,6 +14,7 @@
 
 #include "api/indigo.h"
 #include "indigo_array.h"
+#include "base_cpp/auto_ptr.h"
 
 IndigoArray::IndigoArray () : IndigoObject(ARRAY)
 {
@@ -21,6 +22,15 @@ IndigoArray::IndigoArray () : IndigoObject(ARRAY)
 
 IndigoArray::~IndigoArray ()
 {
+}
+
+IndigoArray & IndigoArray::cast (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::ARRAY)
+      return (IndigoArray &)obj;
+   if (obj.type == IndigoObject::ARRAY_ELEMENT)
+      return cast(((IndigoArrayElement &)obj).get());
+   throw IndigoError("%s is not an array", obj.debugInfo());
 }
 
 IndigoObject * IndigoArray::clone ()
@@ -33,11 +43,6 @@ IndigoObject * IndigoArray::clone ()
       res->objects.add(objects.at(i)->clone());
 
    return res.release();
-}
-
-IndigoArray & IndigoArray::asArray ()
-{
-   return *this;
 }
 
 IndigoArrayElement::IndigoArrayElement (IndigoArray &arr, int idx_) :
@@ -96,16 +101,6 @@ const char * IndigoArrayElement::getName ()
    return array->objects[idx]->getName();
 }
 
-IndigoArray & IndigoArrayElement::asArray ()
-{
-   return array->objects[idx]->asArray();
-}
-
-IndigoFingerprint & IndigoArrayElement::asFingerprint ()
-{
-   return array->objects[idx]->asFingerprint();
-}
-
 int IndigoArrayElement::getIndex ()
 {
    return idx;
@@ -151,7 +146,7 @@ CEXPORT int indigoArrayAdd (int arr, int handle)
 {
    INDIGO_BEGIN
    {
-      IndigoArray &array = self.getObject(arr).asArray();
+      IndigoArray &array = IndigoArray::cast(self.getObject(arr));
       IndigoObject &obj = self.getObject(handle);
 
       int res = array.objects.size();
@@ -166,7 +161,7 @@ CEXPORT int indigoArrayCount (int arr)
 {
    INDIGO_BEGIN
    {
-      IndigoArray &array = self.getObject(arr).asArray();
+      IndigoArray &array = IndigoArray::cast(self.getObject(arr));
 
       return array.objects.size();
    }
@@ -177,7 +172,7 @@ CEXPORT int indigoArrayClear (int arr)
 {
    INDIGO_BEGIN
    {
-      IndigoArray &array = self.getObject(arr).asArray();
+      IndigoArray &array = IndigoArray::cast(self.getObject(arr));
 
       array.objects.clear();
       return 1;
@@ -189,7 +184,7 @@ CEXPORT int indigoArrayAt (int arr, int index)
 {
    INDIGO_BEGIN
    {
-      IndigoArray &array = self.getObject(arr).asArray();
+      IndigoArray &array = IndigoArray::cast(self.getObject(arr));
 
       AutoPtr<IndigoArrayElement> res(new IndigoArrayElement(array, index));
 
@@ -202,7 +197,7 @@ CEXPORT int indigoIterateArray (int arr)
 {
    INDIGO_BEGIN
    {
-      IndigoArray &array = self.getObject(arr).asArray();
+      IndigoArray &array = IndigoArray::cast(self.getObject(arr));
 
       return self.addObject(new IndigoArrayIter(array));
    }

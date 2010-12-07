@@ -25,8 +25,9 @@ public:
 
    virtual DLLEXPORT void toString (Array<char> &str);
    virtual DLLEXPORT void toBuffer (Array<char> &buf);
-   virtual IndigoFingerprint & asFingerprint ();
 
+   static DLLEXPORT IndigoFingerprint & cast (IndigoObject &obj);
+   
    Array<byte> bytes;
 };
 

@@ -14,6 +14,7 @@
 
 #include "indigo_scaffold.h"
 #include "indigo_array.h"
+#include "indigo_molecule.h"
 #include "molecule/molecule_scaffold_detection.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "base_cpp/scanner.h"
@@ -31,7 +32,7 @@ CEXPORT int indigoExtractCommonScaffold (int structures, const char* options)
    INDIGO_BEGIN
    {
       QS_DEF(ObjArray<Molecule>, mol_set);
-      IndigoArray &arr = self.getObject(structures).asArray();
+      IndigoArray &arr = IndigoArray::cast(self.getObject(structures));
       int i;
 
       mol_set.clear();

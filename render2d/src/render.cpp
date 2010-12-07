@@ -30,9 +30,10 @@
 
 using namespace indigo;
 
-Render::Render (RenderContext& rc, RenderItemFactory& factory) : 
+Render::Render (RenderContext& rc, RenderItemFactory& factory) :
+   minMarg(2),
    _rc(rc), _settings(rc.getRenderSettings()), _cnvOpt(rc.cnvOpt), _opt(rc.opt), 
-   _factory(factory), minMarg(2)
+   _factory(factory)
 {}
 
 Render::~Render()

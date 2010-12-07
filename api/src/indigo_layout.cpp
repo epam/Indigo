@@ -15,6 +15,7 @@
 #include "indigo_internal.h"
 #include "layout/reaction_layout.h"
 #include "layout/molecule_layout.h"
+#include "reaction/base_reaction.h"
 
 CEXPORT int indigoLayout (int object)
 {

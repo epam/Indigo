@@ -12,12 +12,13 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "indigo_internal.h"
 #include "indigo_io.h"
+#include "indigo_reaction.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_saver.h"
 #include "base_cpp/output.h"
 #include "reaction/reaction_automapper.h"
+#include "base_cpp/auto_ptr.h"
 
 IndigoBaseReaction::IndigoBaseReaction (int type_) : IndigoObject(type_)
 {

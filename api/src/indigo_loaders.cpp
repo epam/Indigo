@@ -14,6 +14,8 @@
 
 #include "indigo_loaders.h"
 #include "indigo_io.h"
+#include "indigo_molecule.h"
+#include "indigo_reaction.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/rdf_loader.h"
 #include "molecule/molfile_loader.h"

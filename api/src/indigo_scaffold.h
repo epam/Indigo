@@ -16,6 +16,7 @@
 #define __indigo_scaffold__
 
 #include "indigo_internal.h"
+#include "molecule/molecule.h"
 
 class IndigoScaffold : public IndigoObject
 {

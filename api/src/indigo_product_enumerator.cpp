@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "indigo_reaction.h"
 #include "indigo_array.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
@@ -66,7 +67,7 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
    INDIGO_BEGIN
    {
       QueryReaction &query_rxn = self.getObject(reaction).getQueryReaction();
-      IndigoArray &monomers_object = self.getObject(monomers).asArray();
+      IndigoArray &monomers_object = IndigoArray::cast(self.getObject(monomers));
 
       ReactionProductEnumerator rpe(query_rxn);
 
@@ -80,7 +81,7 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
                i != query_rxn.reactantEnd();
                i = query_rxn.reactantNext(i))
       {
-         IndigoArray &reactant_monomers_object = monomers_object.objects[i]->asArray();
+         IndigoArray &reactant_monomers_object = IndigoArray::cast(*monomers_object.objects[i]);
          
          for (int j = 0; j < reactant_monomers_object.objects.size(); j++)
          {

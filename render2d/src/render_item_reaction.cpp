@@ -27,12 +27,12 @@ RenderItemReaction::RenderItemReaction (RenderItemFactory& factory) :
    RenderItemContainer(factory),
    rxn(NULL),
    highlighting(NULL),
+   hSpace(_settings.layoutMarginHorizontal),
+   catalystOffset(_settings.layoutMarginVertical / 2),
    _reactantLine(-1),
    _catalystLine(-1),
    _productLine(-1),
-   _arrow(-1),
-   hSpace(_settings.layoutMarginHorizontal),
-   catalystOffset(_settings.layoutMarginVertical / 2)
+   _arrow(-1)
 {
 }
 

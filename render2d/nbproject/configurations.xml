@@ -21,8 +21,6 @@
     <itemPath>render_item.h</itemPath>
     <itemPath>src/render_item_aux.cpp</itemPath>
     <itemPath>render_item_aux.h</itemPath>
-    <itemPath>src/render_item_comment.cpp</itemPath>
-    <itemPath>render_item_comment.h</itemPath>
     <itemPath>src/render_item_container.cpp</itemPath>
     <itemPath>render_item_container.h</itemPath>
     <itemPath>src/render_item_factory.cpp</itemPath>

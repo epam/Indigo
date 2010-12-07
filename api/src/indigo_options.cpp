@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "molecule/molfile_saver.h"
 
 static void indigoIgnoreStereochemistryErrors (int enabled)
 {

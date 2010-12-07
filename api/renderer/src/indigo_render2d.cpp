@@ -19,6 +19,10 @@
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
 #include "graph/graph_highlighting.h"
+#include "molecule/molecule.h"
+#include "molecule/query_molecule.h"
+#include "reaction/reaction.h"
+#include "reaction/query_reaction.h"
 #include "option_manager.h"
 
 using namespace indigo;
@@ -348,7 +352,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
    {
       RenderParams& rp = indigoRendererGetInstance().renderParams;
 
-      PtrArray<IndigoObject>& objs = self.getObject(objects).asArray().objects;
+      PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
       if (objs[0]->isBaseMolecule())
       {
          for (int i = 0; i < objs.size(); ++i) {

@@ -17,6 +17,8 @@
 #include "base_cpp/output.h"
 #include "base_c/bitarray.h"
 #include "reaction/reaction_fingerprint.h"
+#include "base_cpp/auto_ptr.h"
+#include "reaction/reaction.h"
 
 IndigoFingerprint::IndigoFingerprint () : IndigoObject(FINGERPRINT)
 {
@@ -26,9 +28,11 @@ IndigoFingerprint::~IndigoFingerprint ()
 {
 }
 
-IndigoFingerprint & IndigoFingerprint::asFingerprint ()
+IndigoFingerprint & IndigoFingerprint::cast (IndigoObject &obj)
 {
-   return *this;
+   if (obj.type == IndigoObject::FINGERPRINT)
+      return (IndigoFingerprint &)obj;
+   throw IndigoError("%s is not a fingerprint", obj.debugInfo());
 }
 
 void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, const char *type,
@@ -255,8 +259,8 @@ CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics)
       }
       else if (self.getObject(item1).type == IndigoObject::FINGERPRINT)
       {
-         IndigoFingerprint &fp1 = obj1.asFingerprint();
-         IndigoFingerprint &fp2 = obj2.asFingerprint();
+         IndigoFingerprint &fp1 = IndigoFingerprint::cast(obj1);
+         IndigoFingerprint &fp2 = IndigoFingerprint::cast(obj2);
 
          return _indigoSimilarity(fp1.bytes, fp2.bytes, metrics);
       }
@@ -270,7 +274,7 @@ CEXPORT int indigoCountBits (int fingerprint)
 {
    INDIGO_BEGIN
    {
-      IndigoFingerprint &fp = self.getObject(fingerprint).asFingerprint();
+      IndigoFingerprint &fp = IndigoFingerprint::cast(self.getObject(fingerprint));
       return bitGetOnesCount(fp.bytes.ptr(), fp.bytes.size());
    }
    INDIGO_END(-1);
@@ -280,8 +284,8 @@ CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2)
 {
    INDIGO_BEGIN
    {
-      Array<byte> &fp1 = self.getObject(fingerprint1).asFingerprint().bytes;
-      Array<byte> &fp2 = self.getObject(fingerprint2).asFingerprint().bytes;
+      Array<byte> &fp1 = IndigoFingerprint::cast(self.getObject(fingerprint1)).bytes;
+      Array<byte> &fp2 = IndigoFingerprint::cast(self.getObject(fingerprint2)).bytes;
 
       if (fp1.size() != fp2.size())
          throw IndigoError("fingerprint sizes do not match (%d and %d)", fp1.size(), fp2.size());

@@ -17,6 +17,11 @@
 
 #include "indigo_internal.h"
 
+#include "molecule/molecule.h"
+#include "graph/graph_highlighting.h"
+#include "reaction/reaction.h"
+#include "reaction/reaction_highlighting.h"
+
 class IndigoRdfData : public IndigoObject
 {
 public:

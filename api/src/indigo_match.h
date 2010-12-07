@@ -15,4 +15,70 @@
 #ifndef __indigo_match__
 #define __indigo_match__
 
+#include "indigo_internal.h"
+#include "graph/graph_highlighting.h"
+#include "molecule/molecule_substructure_matcher.h"
+
+// Query to the target match instance
+class IndigoMoleculeSubstructureMatch : public IndigoObject
+{
+public:
+   IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query);
+   virtual ~IndigoMoleculeSubstructureMatch ();
+
+   DLLEXPORT const char * debugInfo ();
+
+   GraphHighlighting highlighting;
+   Array<int> query_atom_mapping;
+   Molecule &target;
+   QueryMolecule &query;
+};
+
+// Iterator for all possible matches
+class IndigoMoleculeSubstructureMatchIter : public IndigoObject
+{
+public:
+   IndigoMoleculeSubstructureMatchIter (Molecule &target, QueryMolecule &query, Molecule &original_target);
+
+   virtual ~IndigoMoleculeSubstructureMatchIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+   int countMatches (int max_embeddings);
+
+   DLLEXPORT const char * debugInfo ();
+
+   MoleculeSubstructureMatcher matcher;
+   MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
+   GraphHighlighting highlighting;
+   Molecule &target, &original_target;
+   QueryMolecule &query;
+
+   Array<int> mapping;
+
+private:
+   bool _initialized, _found, _need_find;
+};
+
+// Matcher class for matching queries on a specified target molecule
+class IndigoMoleculeSubstructureMatcher : public IndigoObject
+{
+public:
+   IndigoMoleculeSubstructureMatcher (Molecule &target);
+
+   virtual ~IndigoMoleculeSubstructureMatcher ();
+
+   IndigoMoleculeSubstructureMatchIter* iterateQueryMatches (QueryMolecule &query,
+      bool embedding_edges_uniqueness);
+
+   DLLEXPORT const char * debugInfo ();
+
+   Molecule &target;
+
+private:
+   Molecule _target_arom_h_unfolded, _target_arom;
+   Array<int> _mapping_arom_h_unfolded, _mapping_arom;
+};
+
 #endif
