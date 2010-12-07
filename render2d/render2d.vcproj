@@ -604,14 +604,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\render_item_comment.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\render_item_comment.h"
-			>
-		</File>
-		<File
 			RelativePath=".\src\render_item_container.cpp"
 			>
 		</File>

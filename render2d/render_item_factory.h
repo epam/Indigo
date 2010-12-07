@@ -22,7 +22,6 @@
 #include "render_item_hline.h"
 #include "render_item_molecule.h"
 #include "render_item_reaction.h"
-#include "render_item_comment.h"
 
 namespace indigo {
 
@@ -81,7 +80,6 @@ public:
          GET_ITEM(HLine);
          GET_ITEM(Molecule);
          GET_ITEM(Reaction);
-         GET_ITEM(Comment);
          default: throw Error("Item type unrecognized");
       }
    }
@@ -91,7 +89,6 @@ public:
    IMPL_ITEM(HLine);
    IMPL_ITEM(Molecule);
    IMPL_ITEM(Reaction);
-   IMPL_ITEM(Comment);
       
    RenderContext& rc;
 private:
@@ -107,7 +104,6 @@ private:
    DEF_POOL(HLine);
    DEF_POOL(Molecule);
    DEF_POOL(Reaction);
-   DEF_POOL(Comment);
 
    ObjPool<Item> _items;
 };
