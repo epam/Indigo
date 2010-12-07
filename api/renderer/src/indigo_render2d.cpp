@@ -332,7 +332,7 @@ CEXPORT int indigoRender (int object, int output)
          rp.hdc = hdcOut.dc;
          rp.mode = hdcOut.prn ? MODE_PRN : MODE_HDC;
       } else if (out.type == IndigoObject::OUTPUT) {
-         rp.output = &out.getOutput();
+         rp.output = &IndigoOutput::get(out);
       } else {
          throw IndigoError("Invalid output object type");
       }
