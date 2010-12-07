@@ -447,8 +447,8 @@ class Indigo:
     self._lib.indigoCountMatches.argtypes = [c_int, c_int]
     self._lib.indigoIterateMatches.restype = c_int
     self._lib.indigoIterateMatches.argtypes = [c_int, c_int]
-    self._lib.indigoMatchHighlight.restype = c_int
-    self._lib.indigoMatchHighlight.argtypes = [c_int]
+    self._lib.indigoHighlightedTarget.restype = c_int
+    self._lib.indigoHighlightedTarget.argtypes = [c_int]
     self._lib.indigoMapAtom.restype = c_int
     self._lib.indigoMapAtom.argtypes = [c_int, c_int]
     self._lib.indigoMapBond.restype = c_int
@@ -619,7 +619,7 @@ class Indigo:
     self.IndigoObject.match = self._member_obj_obj(self._lib.indigoMatch)
     self.IndigoObject.countMatches = self._member_int_obj(self._lib.indigoCountMatches)
     self.IndigoObject.iterateMatches = self._member_obj_obj(self._lib.indigoIterateMatches)
-    self.IndigoObject.matchHighlight = self._member_obj(self._lib.indigoMatchHighlight);
+    self.IndigoObject.highlightedTarget = self._member_obj(self._lib.indigoHighlightedTarget);
     self.IndigoObject.mapAtom = self._member_obj_obj(self._lib.indigoMapAtom);
     self.IndigoObject.mapBond = self._member_obj_obj(self._lib.indigoMapBond);	
 	
