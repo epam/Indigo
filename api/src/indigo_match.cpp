@@ -34,6 +34,7 @@ CEXPORT int indigoExactMatch (int handler1, int handler2)
          matcher.flags = MoleculeExactMatcher::CONDITION_ALL;
          if (!matcher.find())
             return 0;
+         return 1;
       }
       else if (obj1.isBaseReaction())
       {
@@ -44,6 +45,7 @@ CEXPORT int indigoExactMatch (int handler1, int handler2)
          matcher.flags = MoleculeExactMatcher::CONDITION_ALL;
          if (!matcher.find())
             return 0;
+         return 1;
       }
 
       throw IndigoError("indigoExactMatch(): %s is neither a molecule nor a reaction", obj1.debugInfo());
@@ -302,7 +304,7 @@ IndigoMoleculeSubstructureMatchIter*
    return iter.release();
 }
 
-CEXPORT int indigoSubstructureMatcher (int target)
+CEXPORT int indigoSubstructureMatcher (int target, const char *mode)
 {
    INDIGO_BEGIN
    {

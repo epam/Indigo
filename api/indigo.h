@@ -444,7 +444,8 @@ CEXPORT int indigoIterateArray (int arr);
 /* Substructure matching */
 
 // Returns a new 'matcher' object
-CEXPORT int indigoSubstructureMatcher (int target);
+// 'mode' is reserved for future use; currently its value is ignored
+CEXPORT int indigoSubstructureMatcher (int target, const char *mode);
 
 // Returns a new 'match' object on success, zero on fail
 //    matcher is an matcher object returned by indigoSubstructureMatcher
