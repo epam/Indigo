@@ -31,7 +31,7 @@
 using namespace indigo;
 
 RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory) : 
-   Render(rc, factory), nColumns(1)
+   Render(rc, factory), nColumns(rc.opt.gridColumnNumber)
 {}
 
 RenderGrid::~RenderGrid()
@@ -101,8 +101,8 @@ void RenderGrid::draw ()
       for (int i = 0; i < objs.size(); ++i) {
          _rc.storeTransform();
          {
-            int y = i % nRows;
-            int x = i / nRows;
+            int y = i / nColumns;
+            int x = i % nColumns;
             Vec2f size(_factory.getItem(objs[i]).size);
 
             _rc.translate(x * (cellsz.x + _cnvOpt.gridMarginX), y * (cellsz.y + _cnvOpt.gridMarginY));
