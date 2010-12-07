@@ -73,6 +73,7 @@ void RenderGrid::draw ()
    nRows = (objs.size() + nColumns - 1) / nColumns;
 
    maxCommentSize.set(0,0);
+   commentOffset = 0;
    if (enableComments) {
       commentOffset = _cnvOpt.commentOffset;
       for (int i = 0; i < comments.size(); ++i) {
@@ -123,9 +124,11 @@ void RenderGrid::draw ()
             _rc.removeStoredTransform();
             _rc.translate(0, maxsz.y * scale + commentOffset);
 
-            Vec2f commentSize(_factory.getItem(comments[i]).size);
-            _rc.translate(_opt.commentAlign * (cellsz.x - commentSize.x) / 2, 0.5f * (maxCommentSize.y - commentSize.y));
-            _factory.getItem(comments[i]).render();
+            if (enableComments) {
+               Vec2f commentSize(_factory.getItem(comments[i]).size);
+               _rc.translate(_opt.commentAlign * (cellsz.x - commentSize.x) / 2, 0.5f * (maxCommentSize.y - commentSize.y));
+               _factory.getItem(comments[i]).render();
+            }
          }
          _rc.restoreTransform();
          _rc.removeStoredTransform();

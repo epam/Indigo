@@ -63,10 +63,17 @@ void RenderParams::clear ()
    rmode = RENDER_NONE;
    mode = MODE_NONE;
    inputFormat = INPUT_FORMAT_UNKNOWN;
+   titles.clear();
+   titleProp.clear();
+   titleProp.appendString("^NAME", true);
    mol.reset(NULL);
    molhl.clear();
+   mols.clear();
+   molhls.clear();
    rxn.reset(NULL);
    rhl.clear();
+   rxns.clear();
+   rxnhls.clear();
    hdc = 0;
    outfile.clear();
    rOpt.clear();
@@ -269,14 +276,15 @@ void RenderParamInterface::render (RenderParams& params)
             factory.getItemMolecule(mol).mol = &bm;
             factory.getItemMolecule(mol).highlighting = &params.molhls[i];
             objs.push(mol);
-            // fake comment
-            int comment = factory.addItemAuxiliary();
-            factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
-            ArrayOutput out(factory.getItemAuxiliary(comment).text);
-            out.printf("Molecule %d", i);
-            out.writeChar(0);
-            factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
-            comments.push(comment);
+
+            if (params.titles.size() > 0) {
+               int comment = factory.addItemAuxiliary();
+               factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
+               factory.getItemAuxiliary(comment).text.copy(params.titles[i]);
+               factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
+               comments.push(comment);
+            }
+
             // reference atom
             refAtoms.push(0);
          }
@@ -297,14 +305,14 @@ void RenderParamInterface::render (RenderParams& params)
             factory.getItemReaction(rxn).rxn = &br;
             factory.getItemReaction(rxn).highlighting = &params.rxnhls[i];
             objs.push(rxn);
-            // fake comment
-            int comment = factory.addItemAuxiliary();
-            factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
-            ArrayOutput out(factory.getItemAuxiliary(comment).text);
-            out.printf("Reaction %d", i);
-            out.writeChar(0);
-            factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
-            comments.push(comment);
+
+            if (params.titles.size() > 0) {
+               int comment = factory.addItemAuxiliary();
+               factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
+               factory.getItemAuxiliary(comment).text.copy(params.titles[i]);
+               factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
+               comments.push(comment);
+            }
          }
       }
    } else {

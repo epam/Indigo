@@ -255,6 +255,13 @@ void indigoRenderSetCommentAlignment (const char* align)
    rp.rOpt.commentAlign = (ALIGNMENT)map.at(align);
 }
 
+void indigoRenderSetGridTitleProperty (const char* prop)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.titleProp.clear();
+   rp.titleProp.appendString(prop, true);
+}                                      
+
 CEXPORT int indigoRender (int object, int output)
 {
    INDIGO_BEGIN
@@ -303,6 +310,9 @@ CEXPORT int indigoRender (int object, int output)
                else
                   rp.mols.add(new Molecule());
                GraphHighlighting& molhl = rp.molhls.push();
+               Array<char>& title = rp.titles.push();
+               if (objects[i]->getProperties()->find(rp.titleProp.ptr()))
+                  title.copy(objects[i]->getProperties()->at(rp.titleProp.ptr()));
                
                QS_DEF(Array<int>, mapping);
                rp.mols.top()->clone(objects[i]->getBaseMolecule(), &mapping, 0);
@@ -322,6 +332,9 @@ CEXPORT int indigoRender (int object, int output)
                else
                   rp.rxns.add(new Reaction());
                ReactionHighlighting& rxnhl = rp.rxnhls.push();
+               Array<char>& title = rp.titles.push();
+               if (objects[i]->getProperties()->find(rp.titleProp.ptr()))
+                  title.copy(objects[i]->getProperties()->at(rp.titleProp.ptr()));
                
                QS_DEF(ObjArray< Array<int> >, mapping);
                rp.rxns.top()->clone(objects[i]->getBaseReaction(), &mapping, 0);
@@ -338,6 +351,16 @@ CEXPORT int indigoRender (int object, int output)
       } else {
          throw IndigoError("The object provided should be a molecule, a reaction or an array of such");
       }
+
+      bool hasNonemptyTitles = false;
+      for (int i = 0; i < rp.titles.size(); ++i) {
+         if (rp.titles[i].size() > 0) {
+            hasNonemptyTitles = true;
+            break;
+         }
+      }
+      if (!hasNonemptyTitles)
+         rp.titles.clear();
 
       IndigoObject& out = self.getObject(output);
       if (out.type == IndigoHDCOutput::HDC_OUTPUT) {
@@ -408,6 +431,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-comment", indigoRenderSetComment);
    mgr.setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition);
    mgr.setOptionHandlerString("render-comment-alignment", indigoRenderSetCommentAlignment);
+   mgr.setOptionHandlerString("render-grid-title-property", indigoRenderSetGridTitleProperty);
 
    mgr.setOptionHandlerBool("render-coloring", indigoRenderSetColoring);
    mgr.setOptionHandlerBool("render-valences-visible", indigoRenderSetValencesVisible);
