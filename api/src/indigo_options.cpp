@@ -115,3 +115,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness);
    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings);
 }
+
+_IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()
+{
+}
