@@ -447,14 +447,14 @@ CEXPORT int indigoIterateArray (int arr);
 CEXPORT int indigoSubstructureMatcher (int target);
 
 // Returns a new 'match' object on success, zero on fail
-//    target_matcher is an matcher object returned by indigoSubstructureMatcher
-CEXPORT int indigoMatch (int target_matcher, int query);
+//    matcher is an matcher object returned by indigoSubstructureMatcher
+CEXPORT int indigoMatch (int matcher, int query);
 
 // Counts the number of embeddings of the query structure into the target
-CEXPORT int indigoCountMatches (int target_matcher, int query);
+CEXPORT int indigoCountMatches (int matcher, int query);
 
 // Returns substructure matches iterator
-CEXPORT int indigoIterateMatches (int target_matcher, int query);
+CEXPORT int indigoIterateMatches (int matcher, int query);
 
 // Accepts a 'match' object obtained from indigoMatchSubstructure.
 // Returns a new molecule which has the query highlighted.

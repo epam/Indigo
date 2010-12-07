@@ -629,6 +629,27 @@ namespace com.gga.indigo
          return new IndigoObject(dispatcher, Indigo.indigoIterateArray(self));
       }
 
+      public IndigoObject match (IndigoObject query)
+      {
+         dispatcher.setSessionID();
+         int res = Indigo.indigoMatch(self, query.self);
+         if (res == 0)
+            return null;
+         return new IndigoObject(dispatcher, res);
+      }
+
+      public int countMatches (IndigoObject query)
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoCountMatches(self, query.self);
+      }
+
+      public System.Collections.IEnumerable iterateMatches (IndigoObject query)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoIterateMatches(self, query.self));
+      }
+
       public IndigoObject matchHighlight ()
       {
          dispatcher.setSessionID();
