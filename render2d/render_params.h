@@ -56,6 +56,7 @@ public:
    ObjArray<ReactionHighlighting> rxnhls;
    ObjArray<Array<char>> titles;
    Array<char> titleProp;
+   Array<int> refAtoms;
 
    PVOID hdc;
    Array<char> outfile;

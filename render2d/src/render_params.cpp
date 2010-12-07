@@ -260,7 +260,6 @@ void RenderParamInterface::render (RenderParams& params)
    int obj = -1;
    Array<int> objs;
    Array<int> titles;
-   Array<int> refAtoms;
    if (params.rmode == RENDER_MOL) {
       if (params.mols.size() == 0) {
          obj = factory.addItemMolecule();
@@ -283,9 +282,6 @@ void RenderParamInterface::render (RenderParams& params)
                factory.getItemAuxiliary(title).text.copy(params.titles[i]);
                titles.push(title);
             }
-
-            // reference atom
-            refAtoms.push(0);
          }
       }
    } else if (params.rmode == RENDER_RXN) {
@@ -334,7 +330,7 @@ void RenderParamInterface::render (RenderParams& params)
       render.objs.copy(objs);
       render.nColumns = rc.opt.gridColumnNumber;
       render.titles.copy(titles);
-      render.refAtoms.copy(refAtoms);
+      render.refAtoms.copy(params.refAtoms);
       render.draw();
    }
    rc.closeContext();

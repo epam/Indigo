@@ -28,8 +28,8 @@ public:
    DEF_ERROR("RenderGrid");
 
    Array<int> objs;
-   Array<int> refAtoms;
    Array<int> titles;
+   Array<int> refAtoms;
    float titleOffset;
    int nColumns;
 

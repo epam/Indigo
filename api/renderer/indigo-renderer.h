@@ -21,6 +21,7 @@
 
 CEXPORT int indigoRenderWriteHDC (void* hdc, int printingHdc);
 CEXPORT int indigoRender (int object, int output);
+CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int output);
 CEXPORT int indigoRenderToFile (int object, const char *filename);
 CEXPORT int indigoRenderReset (int render);
 
