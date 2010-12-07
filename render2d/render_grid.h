@@ -29,8 +29,8 @@ public:
 
    Array<int> objs;
    Array<int> refAtoms;
-   Array<int> comments;
-   float commentOffset;
+   Array<int> titles;
+   float titleOffset;
    int nColumns;
 
 private:
@@ -39,12 +39,10 @@ private:
    Vec2f maxsz;
    Vec2f cellsz;
    Vec2f outerMargin;
-   Vec2f maxCommentSize;
+   Vec2f maxTitleSize;
    Vec2f clientArea;
 
    float _getScale ();
-   void _drawComment ();
-   void _drawObj ();
 };
 
 }

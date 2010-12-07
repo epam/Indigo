@@ -275,6 +275,7 @@ void RenderContextOptions::clear()
 {
    aamColor.set(0, 0, 0);
    commentFontFactor = 20;
+   titleFontFactor = 20;
 }
 
 HighlightingOptions::HighlightingOptions ()

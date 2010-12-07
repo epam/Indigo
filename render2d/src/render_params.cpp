@@ -259,7 +259,7 @@ void RenderParamInterface::render (RenderParams& params)
    RenderItemFactory factory(rc); 
    int obj = -1;
    Array<int> objs;
-   Array<int> comments;
+   Array<int> titles;
    Array<int> refAtoms;
    if (params.rmode == RENDER_MOL) {
       if (params.mols.size() == 0) {
@@ -278,11 +278,10 @@ void RenderParamInterface::render (RenderParams& params)
             objs.push(mol);
 
             if (params.titles.size() > 0) {
-               int comment = factory.addItemAuxiliary();
-               factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
-               factory.getItemAuxiliary(comment).text.copy(params.titles[i]);
-               factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
-               comments.push(comment);
+               int title = factory.addItemAuxiliary();
+               factory.getItemAuxiliary(title).type = RenderItemAuxiliary::AUX_TITLE;
+               factory.getItemAuxiliary(title).text.copy(params.titles[i]);
+               titles.push(title);
             }
 
             // reference atom
@@ -307,11 +306,10 @@ void RenderParamInterface::render (RenderParams& params)
             objs.push(rxn);
 
             if (params.titles.size() > 0) {
-               int comment = factory.addItemAuxiliary();
-               factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
-               factory.getItemAuxiliary(comment).text.copy(params.titles[i]);
-               factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
-               comments.push(comment);
+               int title = factory.addItemAuxiliary();
+               factory.getItemAuxiliary(title).type = RenderItemAuxiliary::AUX_TITLE;
+               factory.getItemAuxiliary(title).text.copy(params.titles[i]);
+               titles.push(title);
             }
          }
       }
@@ -322,9 +320,8 @@ void RenderParamInterface::render (RenderParams& params)
    int comment = -1;
    if (rc.opt.comment.size() > 0) {
       comment = factory.addItemAuxiliary();
-      factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
+      factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_COMMENT;
       factory.getItemAuxiliary(comment).text.copy(rc.opt.comment);
-      factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
    }
 
    if (obj >= 0) {
@@ -336,7 +333,7 @@ void RenderParamInterface::render (RenderParams& params)
       RenderGrid render(rc, factory);
       render.objs.copy(objs);
       render.nColumns = rc.opt.gridColumnNumber;
-      render.comments.copy(comments);
+      render.titles.copy(titles);
       render.refAtoms.copy(refAtoms);
       render.draw();
    }

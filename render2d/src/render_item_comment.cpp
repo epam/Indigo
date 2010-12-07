@@ -37,9 +37,8 @@ void RenderItemComment::init ()
    items.push(obj);
 
    comment = _factory.addItemAuxiliary();
-   _factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_TEXT;
+   _factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_COMMENT;
    _factory.getItemAuxiliary(comment).text.copy(_opt.comment);
-   _factory.getItemAuxiliary(comment).fontsz = FONT_SIZE_COMMENT;
    _factory.getItemAuxiliary(comment).init();
    items.push(comment);
 }
@@ -57,18 +56,7 @@ void RenderItemComment::_renderComment ()
 {
    RenderItemBase& itemComment = _factory.getItem(comment);
    _rc.storeTransform();
-   switch (_opt.commentAlign) {
-      case ALIGNMENT_LEFT:
-         break;
-      case ALIGNMENT_CENTER:
-         _rc.translate(0.5f * (size.x - itemComment.size.x), 0);
-         break;
-      case ALIGNMENT_RIGHT:
-         _rc.translate(size.x - itemComment.size.x, 0);
-         break;
-      default:
-         throw Error("Alignment value invalid");
-   }
+   _rc.translate(_opt.commentAlign * 0.5f * (size.x - itemComment.size.x), 0);
    itemComment.render();
    _rc.restoreTransform();
    _rc.removeStoredTransform();

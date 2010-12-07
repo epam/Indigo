@@ -36,7 +36,12 @@ void RenderItemAuxiliary::_drawText ()
 {                                  
    TextItem ti;
    ti.text.copy(text);
-   ti.fontsize = fontsz;
+   if (type == AUX_COMMENT)
+      ti.fontsize = FONT_SIZE_COMMENT;
+   else if (type == AUX_TITLE)
+      ti.fontsize = FONT_SIZE_TITLE;
+   else
+      throw Error("Font size unknown");
    _rc.setTextItemSize(ti);
    ti.bbp.set(0,0);
    _rc.drawTextItemText(ti);
@@ -151,7 +156,8 @@ void RenderItemAuxiliary::render ()
 {
    _rc.translate(-origin.x, -origin.y);
    switch (type) {
-      case AUX_TEXT:
+      case AUX_COMMENT:
+      case AUX_TITLE:
          _drawText();
          return;
       case AUX_RXN_PLUS:

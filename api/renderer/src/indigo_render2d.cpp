@@ -226,11 +226,23 @@ void indigoRenderSetCommentFontSize (float fontSize)
    rp.rcOpt.commentFontFactor = fontSize;
 }
 
+void indigoRenderSetTitleFontSize (float fontSize)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rcOpt.titleFontFactor = fontSize;
+}                                
+
 void indigoRenderSetCommentOffset (float offset)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.cnvOpt.commentOffset = offset;
 }
+
+void indigoRenderSetTitleOffset (float offset)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.titleOffset = offset;
+}                    
 
 void indigoRenderSetCommentPosition (const char* pos)
 {
@@ -254,6 +266,18 @@ void indigoRenderSetCommentAlignment (const char* align)
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.rOpt.commentAlign = (ALIGNMENT)map.at(align);
 }
+
+void indigoRenderSetTitleAlignment (const char* align)
+{
+   TL_DECL_GET(StringIntMap, map);
+   if (map.size() == 0) {
+      map.insert("left", ALIGNMENT_LEFT);
+      map.insert("center", ALIGNMENT_CENTER);
+      map.insert("right", ALIGNMENT_RIGHT);
+   }
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.titleAlign = (ALIGNMENT)map.at(align);
+}                                  
 
 void indigoRenderSetGridTitleProperty (const char* prop)
 {
@@ -313,7 +337,7 @@ CEXPORT int indigoRender (int object, int output)
                Array<char>& title = rp.titles.push();
                if (objects[i]->getProperties()->find(rp.titleProp.ptr()))
                   title.copy(objects[i]->getProperties()->at(rp.titleProp.ptr()));
-               
+
                QS_DEF(Array<int>, mapping);
                rp.mols.top()->clone(objects[i]->getBaseMolecule(), &mapping, 0);
                GraphHighlighting* hl = objects[i]->getMoleculeHighlighting();
@@ -431,6 +455,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-comment", indigoRenderSetComment);
    mgr.setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition);
    mgr.setOptionHandlerString("render-comment-alignment", indigoRenderSetCommentAlignment);
+   mgr.setOptionHandlerString("render-title-alignment", indigoRenderSetTitleAlignment);
    mgr.setOptionHandlerString("render-grid-title-property", indigoRenderSetGridTitleProperty);
 
    mgr.setOptionHandlerBool("render-coloring", indigoRenderSetColoring);
@@ -446,6 +471,8 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);
    mgr.setOptionHandlerFloat("render-comment-font-size", indigoRenderSetCommentFontSize);
    mgr.setOptionHandlerFloat("render-comment-offset", indigoRenderSetCommentOffset);
+   mgr.setOptionHandlerFloat("render-title-font-size", indigoRenderSetTitleFontSize);
+   mgr.setOptionHandlerFloat("render-title-offset", indigoRenderSetTitleOffset);
 
    mgr.setOptionHandlerColor("render-background-color", indigoRenderSetBackgroundColor);
    mgr.setOptionHandlerColor("render-base-color", indigoRenderSetBaseColor);

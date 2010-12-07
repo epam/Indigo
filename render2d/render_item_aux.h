@@ -21,7 +21,7 @@ namespace indigo {
 
 class RenderItemAuxiliary : public RenderItemBase {
 public:
-   enum AUX_TYPE {AUX_TEXT = 0, AUX_RXN_PLUS, AUX_RXN_ARROW, AUX_RGROUP_LABEL, AUX_RGROUP_IFTHEN};
+   enum AUX_TYPE {AUX_COMMENT = 0, AUX_TITLE, AUX_RXN_PLUS, AUX_RXN_ARROW, AUX_RGROUP_LABEL, AUX_RGROUP_IFTHEN};
 
    RenderItemAuxiliary (RenderItemFactory& factory);
    virtual ~RenderItemAuxiliary ();
@@ -38,7 +38,6 @@ public:
 
    AUX_TYPE type;
    Array<char> text;
-   FONT_SIZE fontsz;
    BaseMolecule* mol;
    int rLabelIdx;
    float arrowLength;

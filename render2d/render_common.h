@@ -38,7 +38,7 @@ enum INPUT_FORMAT {INPUT_FORMAT_UNKNOWN, INPUT_FORMAT_MOLFILE, INPUT_FORMAT_RXNF
 enum LABEL_MODE {LABEL_MODE_NORMAL, LABEL_MODE_FORCESHOW, LABEL_MODE_HIDETERMINAL, LABEL_MODE_FORCEHIDE};
 enum IMPLICIT_HYDROGEN_MODE {IHM_NONE, IHM_TERMINAL, IHM_HETERO, IHM_TERMINAL_HETERO, IHM_ALL};
 enum {CWC_BASE = -2, CWC_WHITE=0, CWC_BLACK, CWC_RED, CWC_GREEN, CWC_BLUE, CWC_DARKGREEN, CWC_COUNT};
-enum FONT_SIZE {FONT_SIZE_LABEL=0, FONT_SIZE_ATTR, FONT_SIZE_RGROUP_LOGIC, FONT_SIZE_RGROUP_LOGIC_INDEX, FONT_SIZE_INDICES, FONT_SIZE_COMMENT, FONT_SIZE_COUNT/*must be the last*/};
+enum FONT_SIZE {FONT_SIZE_LABEL=0, FONT_SIZE_ATTR, FONT_SIZE_RGROUP_LOGIC, FONT_SIZE_RGROUP_LOGIC_INDEX, FONT_SIZE_INDICES, FONT_SIZE_COMMENT, FONT_SIZE_TITLE, FONT_SIZE_COUNT/*must be the last*/};
 enum COMMENT_POS {COMMENT_POS_TOP, COMMENT_POS_BOTTOM};
 
 // cos(a) to cos(a/2) 
@@ -287,6 +287,7 @@ struct CanvasOptions {
    int marginX;
    int marginY;
    float commentOffset;
+   float titleOffset;
 };
 
 struct HighlightingOptions {
@@ -305,6 +306,7 @@ struct RenderContextOptions {
 
    Vec3f aamColor;
    float commentFontFactor;
+   float titleFontFactor;
 };
 
 class RenderOptions {
@@ -316,6 +318,7 @@ public:
    Array<char> comment;
    COMMENT_POS commentPos;
    ALIGNMENT commentAlign;
+   ALIGNMENT titleAlign;
    Vec3f commentColor;
    LABEL_MODE labelMode;
    IMPLICIT_HYDROGEN_MODE implHMode;

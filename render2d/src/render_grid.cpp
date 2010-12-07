@@ -45,9 +45,9 @@ void RenderGrid::draw ()
    bool enableRefAtoms = refAtoms.size() > 0 && _factory.isItemMolecule(objs[0]);
    if (enableRefAtoms && refAtoms.size() != objs.size())
       throw Error("Number of reference atoms should be same as the number of objects");
-   bool enableComments = comments.size() > 0;
-   if (enableComments && comments.size() != objs.size())
-      throw Error("Number of comments should be same as the number of objects");
+   bool enableTitles = titles.size() > 0;
+   if (enableTitles && titles.size() != objs.size())
+      throw Error("Number of titles should be same as the number of objects");
 
    maxsz.set(0,0);
    Vec2f refSizeLT, refSizeRB;
@@ -72,14 +72,14 @@ void RenderGrid::draw ()
 
    nRows = (objs.size() + nColumns - 1) / nColumns;
 
-   maxCommentSize.set(0,0);
-   commentOffset = 0;
-   if (enableComments) {
-      commentOffset = _cnvOpt.commentOffset;
-      for (int i = 0; i < comments.size(); ++i) {
-         _factory.getItem(comments[i]).init();
-         _factory.getItem(comments[i]).estimateSize();
-         maxCommentSize.max(_factory.getItem(comments[i]).size);
+   maxTitleSize.set(0,0);
+   titleOffset = 0;
+   if (enableTitles) {
+      titleOffset = _cnvOpt.titleOffset;
+      for (int i = 0; i < titles.size(); ++i) {
+         _factory.getItem(titles[i]).init();
+         _factory.getItem(titles[i]).estimateSize();
+         maxTitleSize.max(_factory.getItem(titles[i]).size);
       }
    }
 
@@ -88,8 +88,8 @@ void RenderGrid::draw ()
    
    scale = _getScale();
    _rc.initContext(_cnvOpt.width, _cnvOpt.height);
-   cellsz.set(__max(maxsz.x * scale, maxCommentSize.x),
-      maxsz.y * scale + maxCommentSize.y + commentOffset);
+   cellsz.set(__max(maxsz.x * scale, maxTitleSize.x),
+      maxsz.y * scale + maxTitleSize.y + titleOffset);
    clientArea.set(cellsz.x * nColumns + _cnvOpt.gridMarginX * (nColumns - 1),
       cellsz.y * nRows + _cnvOpt.gridMarginY * (nRows - 1));
    _rc.init();
@@ -122,12 +122,12 @@ void RenderGrid::draw ()
             }
             _rc.restoreTransform();
             _rc.removeStoredTransform();
-            _rc.translate(0, maxsz.y * scale + commentOffset);
+            _rc.translate(0, maxsz.y * scale + titleOffset);
 
-            if (enableComments) {
-               Vec2f commentSize(_factory.getItem(comments[i]).size);
-               _rc.translate(_opt.commentAlign * (cellsz.x - commentSize.x) / 2, 0.5f * (maxCommentSize.y - commentSize.y));
-               _factory.getItem(comments[i]).render();
+            if (enableTitles) {
+               Vec2f titleSize(_factory.getItem(titles[i]).size);
+               _rc.translate(_opt.titleAlign * 0.5f * (cellsz.x - titleSize.x), 0.5f * (maxTitleSize.y - titleSize.y));
+               _factory.getItem(titles[i]).render();
             }
          }
          _rc.restoreTransform();
@@ -147,8 +147,8 @@ float RenderGrid::_getScale ()
    {
       s = _cnvOpt.bondLength;
 
-      _cnvOpt.width = (int)ceil(__max(maxsz.x * s, maxCommentSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2);
-      _cnvOpt.height = (int)ceil((maxsz.y * s + maxCommentSize.y + commentOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2);
+      _cnvOpt.width = (int)ceil(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2);
+      _cnvOpt.height = (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2);
 
       if (maxPageSize < 0 || __max(_cnvOpt.width, _cnvOpt.height) < maxPageSize)
          return s;
@@ -157,12 +157,12 @@ float RenderGrid::_getScale ()
    }
 
    float absX = _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2;
-   float absY = (maxCommentSize.y + commentOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2;
+   float absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2;
    float x = _cnvOpt.width - absX,
       y = _cnvOpt.height - absY;
-   if (x < maxCommentSize.x * nRows + 1 || y < 1)
+   if (x < maxTitleSize.x * nRows + 1 || y < 1)
       throw Error("Image too small, the layout requires at least %dx%d", 
-         (int)(absX + maxCommentSize.x * nRows + 2), 
+         (int)(absX + maxTitleSize.x * nRows + 2), 
          (int)(absY + 2));
    Vec2f totalScaleableSize(maxsz.x * nColumns, maxsz.y * nRows);
    if (x * totalScaleableSize.y < y * totalScaleableSize.x)
