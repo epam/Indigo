@@ -32,8 +32,8 @@ RenderItemFragment::RenderItemFragment (RenderItemFactory& factory) :
    reactingCenters(NULL),
    inversionArray(NULL),
    exactChangeArray(NULL),
-   _scaleFactor(1.0),
-   refAtom(-1)
+   refAtom(-1),
+   _scaleFactor(1.0)
 {
 }
 
