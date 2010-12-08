@@ -89,12 +89,6 @@ void indigoRenderSetGridMargins (int x, int y)
    rp.cnvOpt.gridMarginY = y;
 }
 
-void indigoRenderSetGridColumns (int n)
-{
-   RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.gridColumnNumber = n;
-}                                     
-
 void indigoRenderSetBondLength (float length)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -404,6 +398,8 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
          rp.refAtoms.copy(refAtoms, objs.size());
       }
 
+      rp.rOpt.gridColumnNumber = nColumns;
+
       bool hasNonemptyTitles = false;
       for (int i = 0; i < rp.titles.size(); ++i) {
          if (rp.titles[i].size() > 0) {
@@ -474,8 +470,6 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
    OsLocker locker(mgr.lock);
-
-   mgr.setOptionHandlerInt("render-grid-columns", indigoRenderSetGridColumns);
 
    mgr.setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat);
    mgr.setOptionHandlerString("render-implicit-hydrogen-mode", indigoRenderSetImplicitHydrogenMode);
