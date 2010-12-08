@@ -1133,10 +1133,13 @@ CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *verti
 
 IndigoObject * IndigoMolecule::clone ()
 {
+   QS_DEF(Array<int>, mapping);
    AutoPtr<IndigoMolecule> molptr;
    molptr.reset(new IndigoMolecule());
-   molptr->mol.clone(mol, 0, 0);
+   molptr->mol.clone(mol, 0, &mapping);
    molptr->copyProperties(properties);
+   molptr->highlighting.init(molptr->mol);
+   molptr->highlighting.copy(highlighting, &mapping);
    return molptr.release();
 }
 
@@ -1147,10 +1150,13 @@ DLLEXPORT const char * IndigoMolecule::debugInfo ()
 
 IndigoObject * IndigoQueryMolecule::clone ()
 {
+   QS_DEF(Array<int>, mapping);
    AutoPtr<IndigoQueryMolecule> molptr;
    molptr.reset(new IndigoQueryMolecule());
-   molptr->qmol.clone(qmol, 0, 0);
+   molptr->qmol.clone(qmol, 0, &mapping);
    molptr->copyProperties(properties);
+   molptr->highlighting.init(molptr->qmol);
+   molptr->highlighting.copy(highlighting, &mapping);
    return molptr.release();
 }
 

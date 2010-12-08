@@ -366,4 +366,3 @@ int indigoIterateMatches (int target_matcher, int query)
    }
    INDIGO_END(-1)
 }
-
