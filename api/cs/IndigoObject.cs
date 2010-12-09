@@ -620,16 +620,16 @@ namespace com.gga.indigo
          return new IndigoObject(dispatcher, Indigo.indigoArrayAt(self, index));
       }
 
-      public int arrayCount ()
+      public int size ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoArrayCount(self);
+         return Indigo.indigoSize(self);
       }
 
-      public void arrayClear ()
+      public void clear ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoArrayClear(self);
+         Indigo.indigoClear(self);
       }
 
       public System.Collections.IEnumerable iterateArray ()

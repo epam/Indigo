@@ -29,16 +29,15 @@ namespace com.gga.indigo
       public byte[] renderToBuffer (IndigoObject obj)
       {
          _indigo.setSessionID();
-         int bufh = Indigo.indigoWriteBuffer();
-         indigoRender(obj.self, bufh);
+         IndigoObject bufh = _indigo.writeBuffer();
+         indigoRender(obj.self, bufh.self);
          byte* buf;
          int bufsize;
-         Indigo.indigoToBuffer(bufh, &buf, &bufsize);
+         Indigo.indigoToBuffer(bufh.self, &buf, &bufsize);
 
          byte[] res = new byte[bufsize];
          for (int i = 0; i < bufsize; ++i)
             res[i] = buf[i];
-         Indigo.indigoFree(bufh);
          return res;
       }
 
@@ -76,6 +75,25 @@ namespace com.gga.indigo
          return mf;
       }
 
+      public byte[] renderGridToBuffer (IndigoObject items, int[] refatoms, int ncolumns)
+      {
+         IndigoObject bufh = _indigo.writeBuffer();
+
+         if (refatoms.Length != items.size())
+            throw new IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects");
+
+         indigoRenderGrid(items.self, refatoms, ncolumns, bufh.self);
+         return bufh.toBuffer();
+      }
+
+      public void renderGridToFile (IndigoObject items, int[] refatoms, int ncolumns, string filename)
+      {
+         if (refatoms.Length != items.size())
+            throw new IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects");
+
+         indigoRenderGridToFile(items.self, refatoms, ncolumns, filename);
+      }
+
       public static void SaveMetafile (Metafile mf, Stream stream)
       {
          IntPtr henh = mf.GetHenhmetafile();
@@ -106,5 +124,9 @@ namespace com.gga.indigo
       public static extern int indigoRender (int item, int output);
       [DllImport("indigo-renderer.dll")]
       public static extern int indigoRenderToFile (int item, string filename);
+      [DllImport("indigo-renderer.dll")]
+      public static extern int indigoRenderGrid (int items, int[] refAtoms, int nColumns, int output);
+      [DllImport("indigo-renderer.dll")]
+      public static extern int indigoRenderGridToFile (int items, int[] refAtoms, int nColumns, string filename);
    }
 }
