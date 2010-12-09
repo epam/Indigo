@@ -17,19 +17,9 @@
 
 #include "indigo.h"
 
-#include "base_cpp/tlscont.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj.h"
 #include "base_cpp/io_base.h"
 
-#include "molecule/molecule.h"
-#include "molecule/query_molecule.h"
-#include "molecule/molfile_saver.h"
-#include "reaction/reaction.h"
-#include "reaction/query_reaction.h"
-#include "reaction/reaction_product_enumerator.h"
-#include "reaction/reaction_highlighting.h"
-#include "molecule/molecule_substructure_matcher.h"
 #include "option_manager.h"
 #include "molecule/molecule_fingerprint.h"
 
@@ -37,18 +27,16 @@ using namespace indigo;
 
 namespace indigo
 {
+   class GraphHighlighting;
+   class BaseReaction;
+   class QueryReaction;
+   class Reaction;
+   class ReactionHighlighting;
 class Output;
 class Scanner;
 class SdfLoader;
 class RdfLoader;
 }
-
-class IndigoAtom;
-class IndigoBond;
-class IndigoRGroup;
-class IndigoArray;
-class IndigoDeconvolution;
-class IndigoFingerprint;
 
 extern DLLEXPORT OptionManager & indigoGetOptionManager ();
 
@@ -124,179 +112,19 @@ public:
 
    virtual DLLEXPORT const char * getName ();
 
-   DLLEXPORT IndigoBond & asBond ();
-   virtual DLLEXPORT IndigoRGroup & getRGroup ();
    virtual DLLEXPORT int getIndex ();
 
    virtual DLLEXPORT IndigoObject * next ();
    
    virtual DLLEXPORT bool hasNext ();
 
-   virtual DLLEXPORT IndigoArray & asArray ();
-   virtual DLLEXPORT IndigoFingerprint & asFingerprint ();
-   
    bool DLLEXPORT isBaseMolecule ();
    bool DLLEXPORT isBaseReaction ();
-   bool DLLEXPORT isAtom ();
 
    void DLLEXPORT copyProperties (RedBlackStringObjMap< Array<char> > &other);
 
 protected:
    Array<char> _dbg_info; // allocated by debugInfo() on demand
-};
-
-class IndigoBaseMolecule : public IndigoObject
-{
-public:
-   DLLEXPORT explicit IndigoBaseMolecule (int type_);
-
-   DLLEXPORT virtual ~IndigoBaseMolecule ();
-
-   DLLEXPORT virtual GraphHighlighting * getMoleculeHighlighting ();
-   DLLEXPORT virtual RedBlackStringObjMap< Array<char> > * getProperties ();
-
-   DLLEXPORT const char * debugInfo ();
-
-   GraphHighlighting highlighting;
-
-   RedBlackStringObjMap< Array<char> > properties;
-};
-
-class IndigoMolecule : public IndigoBaseMolecule
-{
-public:
-   DLLEXPORT IndigoMolecule ();
-   
-   DLLEXPORT virtual ~IndigoMolecule ();
-
-   DLLEXPORT virtual BaseMolecule & getBaseMolecule ();
-   DLLEXPORT virtual Molecule & getMolecule ();
-   DLLEXPORT virtual const char * getName ();
-
-   DLLEXPORT const char * debugInfo ();
-
-   DLLEXPORT virtual IndigoObject * clone ();
-
-   Molecule mol;
-};
-
-class IndigoQueryMolecule : public IndigoBaseMolecule
-{
-public:
-   DLLEXPORT IndigoQueryMolecule ();
-
-   DLLEXPORT virtual ~IndigoQueryMolecule ();
-
-   DLLEXPORT virtual BaseMolecule & getBaseMolecule ();
-   DLLEXPORT virtual QueryMolecule & getQueryMolecule ();
-   DLLEXPORT virtual const char * getName ();
-
-   DLLEXPORT const char * debugInfo ();
-
-   DLLEXPORT virtual IndigoObject * clone ();
-
-   QueryMolecule qmol;
-};
-
-class IndigoAtom : public IndigoObject
-{
-public:
-   IndigoAtom (BaseMolecule &mol_, int idx_);
-   virtual ~IndigoAtom ();
-
-   DLLEXPORT static IndigoAtom & cast (IndigoObject &obj);
-
-   BaseMolecule *mol;
-   int idx;
-
-   virtual int getIndex ();
-};
-
-class IndigoRGroup : public IndigoObject
-{
-public:
-   IndigoRGroup ();
-   virtual ~IndigoRGroup ();
-
-   virtual IndigoRGroup & getRGroup ();
-   virtual int getIndex ();
-
-   QueryMolecule *mol;
-   int idx;
-};
-
-class IndigoRGroupFragment : public IndigoObject
-{
-public:
-   IndigoRGroupFragment (IndigoRGroup &rgp, int idx);
-   IndigoRGroupFragment (QueryMolecule *mol, int rgroup_idx, int fragment_idx);
-   
-   virtual ~IndigoRGroupFragment ();
-
-   virtual QueryMolecule & getQueryMolecule ();
-   virtual BaseMolecule & getBaseMolecule ();
-   virtual int getIndex ();
-
-   IndigoRGroup rgroup;
-   int frag_idx;
-};
-
-class IndigoBond : public IndigoObject
-{
-public:
-   IndigoBond (BaseMolecule &mol_, int idx_);
-   virtual ~IndigoBond ();
-
-   DLLEXPORT static IndigoBond & cast (IndigoObject &obj);
-
-   BaseMolecule *mol;
-   int idx;
-
-   virtual int getIndex ();
-};
-
-class IndigoBaseReaction : public IndigoObject
-{
-public:
-   explicit IndigoBaseReaction (int type_);
-
-   virtual ~IndigoBaseReaction ();
-
-   virtual ReactionHighlighting * getReactionHighlighting ();
-   virtual RedBlackStringObjMap< Array<char> > * getProperties ();
-
-   ReactionHighlighting highlighting;
-   RedBlackStringObjMap< Array<char> > properties;
-};
-
-class IndigoReaction : public IndigoBaseReaction
-{
-public:
-   DLLEXPORT IndigoReaction ();
-   DLLEXPORT virtual ~IndigoReaction ();
-
-   DLLEXPORT virtual BaseReaction & getBaseReaction ();
-   DLLEXPORT virtual Reaction & getReaction ();
-   DLLEXPORT virtual const char * getName ();
-
-   DLLEXPORT virtual IndigoObject * clone();
-
-   Reaction rxn;
-};
-
-class IndigoQueryReaction : public IndigoBaseReaction
-{
-public:
-   DLLEXPORT IndigoQueryReaction ();
-   DLLEXPORT virtual ~IndigoQueryReaction ();
-
-   DLLEXPORT virtual BaseReaction & getBaseReaction ();
-   DLLEXPORT virtual QueryReaction & getQueryReaction ();
-   DLLEXPORT virtual const char * getName ();
-
-   DLLEXPORT virtual IndigoObject * clone();
-   
-   QueryReaction rxn;
 };
 
 class IndigoGross : public IndigoObject
@@ -308,212 +136,6 @@ public:
    virtual void toString (Array<char> &str);
 
    Array<int> gross;
-};
-
-class IndigoReactionMolecule : public IndigoObject
-{
-public:
-   IndigoReactionMolecule (BaseReaction &reaction, ReactionHighlighting *highlighting, int index);
-   virtual ~IndigoReactionMolecule ();
-
-   virtual BaseMolecule & getBaseMolecule ();
-   virtual QueryMolecule & getQueryMolecule ();
-   virtual Molecule & getMolecule ();
-   virtual GraphHighlighting * getMoleculeHighlighting ();
-   virtual int getIndex ();
-
-   BaseReaction &rxn;
-   ReactionHighlighting *hl;
-   int idx;
-};
-
-class IndigoReactionIter : public IndigoObject
-{
-public:
-   enum
-   {
-      REACTANTS,
-      PRODUCTS,
-      MOLECULES
-   };
-
-   IndigoReactionIter (BaseReaction &rxn, ReactionHighlighting *hl, int subtype);
-   virtual ~IndigoReactionIter ();
-   
-   virtual IndigoObject * next ();
-   virtual bool hasNext ();
-
-protected:
-
-   int _begin ();
-   int _end ();
-   int _next (int i);
-
-   int _subtype;
-   BaseReaction &_rxn;
-   ReactionHighlighting *_hl;
-   int _idx;
-};
-
-class IndigoAtomsIter : public IndigoObject
-{
-public:
-   enum
-   {
-      ALL,
-      PSEUDO,
-      RSITE,
-      STEREOCENTER
-   };
-
-   IndigoAtomsIter (BaseMolecule *molecule, int type);
-
-   virtual ~IndigoAtomsIter ();
-   
-   virtual IndigoObject * next ();
-   virtual bool hasNext ();
-
-protected:
-
-   int _shift (int idx);
-
-   int _type;
-   int _idx;
-   BaseMolecule *_mol;
-};
-
-class IndigoBondsIter : public IndigoObject
-{
-public:
-   IndigoBondsIter (BaseMolecule *molecule);
-
-   virtual ~IndigoBondsIter ();
-
-   virtual IndigoObject * next ();
-   virtual bool hasNext ();
-
-protected:
-
-   int _idx;
-   BaseMolecule *_mol;
-};
-
-class IndigoAtomNeighbor : public IndigoAtom
-{
-public:
-   explicit IndigoAtomNeighbor (BaseMolecule &mol_, int atom_idx, int bond_idx);
-   virtual ~IndigoAtomNeighbor ();
-
-   int bond_idx;
-};
-
-class IndigoAtomNeighborsIter : public IndigoObject
-{
-public:
-   IndigoAtomNeighborsIter (BaseMolecule *molecule, int atom_idx);
-
-   virtual ~IndigoAtomNeighborsIter ();
-
-   virtual IndigoObject * next ();
-   virtual bool hasNext ();
-
-protected:
-
-   int _atom_idx;
-   int _nei_idx;
-   BaseMolecule *_mol;
-};
-
-class IndigoRGroupsIter : public IndigoObject
-{
-public:
-   IndigoRGroupsIter (QueryMolecule *mol);
-
-   virtual ~IndigoRGroupsIter ();
-
-   virtual IndigoObject * next ();
-   virtual bool hasNext ();
-
-protected:
-   QueryMolecule *_mol;
-   int _idx;
-};
-
-class IndigoRGroupFragmentsIter : public IndigoObject
-{
-public:
-   IndigoRGroupFragmentsIter (IndigoRGroup &rgroup);
-   virtual ~IndigoRGroupFragmentsIter ();
-
-   virtual IndigoObject * next ();
-   virtual bool hasNext ();
-
-protected:
-   QueryMolecule *_mol;
-   int _rgroup_idx;
-   int _frag_idx;
-};
-
-// Query to the target match instance
-class IndigoMoleculeSubstructureMatch : public IndigoObject
-{
-public:
-   IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query);
-   virtual ~IndigoMoleculeSubstructureMatch ();
-
-   DLLEXPORT const char * debugInfo ();
-
-   GraphHighlighting highlighting;
-   Array<int> query_atom_mapping;
-   Molecule &target;
-   QueryMolecule &query;
-};
-
-// Iterator for all possible matches
-class IndigoMoleculeSubstructureMatchIter : public IndigoObject
-{
-public:
-   IndigoMoleculeSubstructureMatchIter (Molecule &target, QueryMolecule &query, Molecule &original_target);
-
-   virtual ~IndigoMoleculeSubstructureMatchIter ();
-
-   virtual IndigoObject * next ();
-   virtual bool hasNext ();
-
-   int countMatches (int max_embeddings);
-
-   DLLEXPORT const char * debugInfo ();
-
-   MoleculeSubstructureMatcher matcher;
-   MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
-   GraphHighlighting highlighting;
-   Molecule &target, &original_target;
-   QueryMolecule &query;
-
-   Array<int> mapping;
-
-private:
-   bool _initialized, _found, _need_find;
-};
-
-// Matcher class for matching queries on a specified target molecule
-class IndigoMoleculeSubstructureMatcher : public IndigoObject
-{
-public:
-   IndigoMoleculeSubstructureMatcher (Molecule &target);
-
-   virtual ~IndigoMoleculeSubstructureMatcher ();
-
-   IndigoMoleculeSubstructureMatchIter* iterateQueryMatches (QueryMolecule &query, 
-      bool embedding_edges_uniqueness);
-
-   DLLEXPORT const char * debugInfo ();
-
-   Molecule &target;
-
-private:
-   Molecule _target_arom_h_unfolded, _target_arom;
-   Array<int> _mapping_arom_h_unfolded, _mapping_arom;
 };
 
 struct ProductEnumeratorParams
@@ -635,6 +257,5 @@ public:
    DLLEXPORT _IndigoBasicOptionsHandlersSetter ();
    DLLEXPORT ~_IndigoBasicOptionsHandlersSetter ();
 };
-
 
 #endif

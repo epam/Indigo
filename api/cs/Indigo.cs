@@ -299,10 +299,15 @@ namespace com.gga.indigo
          return new IndigoObject(this, Indigo.indigoIterateSmilesFile(filename));
       }
 
-      public IndigoObject substructureMatcher (IndigoObject target)
+      public IndigoObject substructureMatcher (IndigoObject target, string mode)
       {
          setSessionID();
-         return new IndigoObject(this, indigoSubstructureMatcher(target.self));
+         return new IndigoObject(this, indigoSubstructureMatcher(target.self, mode));
+      }
+
+      public IndigoObject substructureMatcher (IndigoObject target)
+      {
+         return substructureMatcher(target, "");
       }
 
       public int countSubstructureMatches (IndigoObject query, IndigoObject target)
@@ -644,7 +649,7 @@ namespace com.gga.indigo
       public static extern int indigoIterateArray (int arr);
 
       [DllImport("indigo.dll")]
-      public static extern int indigoSubstructureMatcher (int target);
+      public static extern int indigoSubstructureMatcher (int target, string mode);
       [DllImport("indigo.dll")]
       public static extern int indigoMatch (int matcher, int query);
       [DllImport("indigo.dll")]
@@ -652,7 +657,7 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoIterateMatches (int matcher, int query);
       [DllImport("indigo.dll")]
-      public static extern int indigoMatchHighlight (int match);
+      public static extern int indigoHighlightedTarget (int match);
       [DllImport("indigo.dll")]
       public static extern int indigoMapAtom (int match, int query_atom);
       [DllImport("indigo.dll")]

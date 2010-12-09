@@ -32,8 +32,12 @@ public:
    Array<int> refAtoms;
    float titleOffset;
    int nColumns;
+   float commentOffset;
+   int comment;
 
 private:
+   void _drawComment();
+
    int nRows;
    float scale;
    Vec2f maxsz;
@@ -41,6 +45,7 @@ private:
    Vec2f outerMargin;
    Vec2f maxTitleSize;
    Vec2f clientArea;
+   Vec2f commentSize;
 
    float _getScale ();
 };

@@ -659,16 +659,22 @@ namespace com.gga.indigo
          return new IndigoObject(dispatcher, Indigo.indigoIterateMatches(self, query.self));
       }
 
-      public IndigoObject matchHighlight ()
+      public IndigoObject highlightedTarget ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoMatchHighlight(self));
+         return new IndigoObject(dispatcher, Indigo.indigoHighlightedTarget(self));
       }
 
       public IndigoObject mapAtom (IndigoObject query_atom)
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, Indigo.indigoMapAtom(self, query_atom.self));
+      }
+
+      public IndigoObject mapBond (IndigoObject query_bond)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoMapBond(self, query_bond.self));
       }
 
       public IndigoObject allScaffolds ()

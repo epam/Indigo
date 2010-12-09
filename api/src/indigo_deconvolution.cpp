@@ -14,6 +14,7 @@
 
 #include "indigo_deconvolution.h"
 #include "indigo_array.h"
+#include "indigo_molecule.h"
 #include "molecule/query_molecule.h"
 #include "graph/graph_highlighting.h"
 #include "base_cpp/array.h"
@@ -499,7 +500,7 @@ int IndigoDeconvolution::_findOrAddFullRGroup(Array<int>& att_order, Array<int>&
 CEXPORT int indigoDecomposeMolecules (int scaffold, int structures) {
    INDIGO_BEGIN
    {
-      IndigoArray& mol_array = self.getObject(structures).asArray();
+      IndigoArray& mol_array = IndigoArray::cast(self.getObject(structures));
 
       AutoPtr<IndigoDeconvolution> deco(new IndigoDeconvolution(self.deconvolution_aromatization));
       int i;

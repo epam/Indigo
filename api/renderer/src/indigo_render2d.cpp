@@ -19,6 +19,10 @@
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
 #include "graph/graph_highlighting.h"
+#include "molecule/molecule.h"
+#include "molecule/query_molecule.h"
+#include "reaction/reaction.h"
+#include "reaction/query_reaction.h"
 #include "option_manager.h"
 
 using namespace indigo;
@@ -84,12 +88,6 @@ void indigoRenderSetGridMargins (int x, int y)
    rp.cnvOpt.gridMarginX = x;
    rp.cnvOpt.gridMarginY = y;
 }
-
-void indigoRenderSetGridColumns (int n)
-{
-   RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.gridColumnNumber = n;
-}                                     
 
 void indigoRenderSetBondLength (float length)
 {
@@ -348,7 +346,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
    {
       RenderParams& rp = indigoRendererGetInstance().renderParams;
 
-      PtrArray<IndigoObject>& objs = self.getObject(objects).asArray().objects;
+      PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
       if (objs[0]->isBaseMolecule())
       {
          for (int i = 0; i < objs.size(); ++i) {
@@ -399,6 +397,8 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
       if (refAtoms != NULL) {                    
          rp.refAtoms.copy(refAtoms, objs.size());
       }
+
+      rp.rOpt.gridColumnNumber = nColumns;
 
       bool hasNonemptyTitles = false;
       for (int i = 0; i < rp.titles.size(); ++i) {
@@ -470,8 +470,6 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
    OsLocker locker(mgr.lock);
-
-   mgr.setOptionHandlerInt("render-grid-columns", indigoRenderSetGridColumns);
 
    mgr.setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat);
    mgr.setOptionHandlerString("render-implicit-hydrogen-mode", indigoRenderSetImplicitHydrogenMode);

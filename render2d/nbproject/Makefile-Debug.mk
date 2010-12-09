@@ -43,10 +43,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/render_item_molecule.o \
 	${OBJECTDIR}/src/render_params.o \
 	${OBJECTDIR}/src/render.o \
-	${OBJECTDIR}/src/render_item_comment.o \
 	${OBJECTDIR}/src/render_item_reaction.o \
-	${OBJECTDIR}/src/render_common.o \
 	${OBJECTDIR}/src/render_context.o \
+	${OBJECTDIR}/src/render_common.o \
 	${OBJECTDIR}/src/render_item_container.o \
 	${OBJECTDIR}/src/render_single.o \
 	${OBJECTDIR}/src/render_item.o
@@ -128,25 +127,20 @@ ${OBJECTDIR}/src/render.o: src/render.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render.o src/render.cpp
 
-${OBJECTDIR}/src/render_item_comment.o: src/render_item_comment.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item_comment.o src/render_item_comment.cpp
-
 ${OBJECTDIR}/src/render_item_reaction.o: src/render_item_reaction.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_item_reaction.o src/render_item_reaction.cpp
 
-${OBJECTDIR}/src/render_common.o: src/render_common.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_common.o src/render_common.cpp
-
 ${OBJECTDIR}/src/render_context.o: src/render_context.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_context.o src/render_context.cpp
+
+${OBJECTDIR}/src/render_common.o: src/render_common.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -I.. -I../common -I/usr/include/cairo -I/usr/include/freetype2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/render_common.o src/render_common.cpp
 
 ${OBJECTDIR}/src/render_item_container.o: src/render_item_container.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

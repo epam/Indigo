@@ -660,6 +660,7 @@ void MoleculeRenderInternal::_findRings()
          if (type == BOND_DOUBLE)
             dblBondCount++;
       }
+      ring.dblBondCount = dblBondCount;
    }
 
    for (int i = 0; i < _data.bonds.size(); ++i)

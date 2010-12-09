@@ -54,7 +54,7 @@ public:
    ObjArray<GraphHighlighting> molhls;
    PtrArray<BaseReaction> rxns;
    ObjArray<ReactionHighlighting> rxnhls;
-   ObjArray<Array<char>> titles;
+   ObjArray<Array <char> > titles;
    Array<char> titleProp;
    Array<int> refAtoms;
 

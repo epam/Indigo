@@ -440,15 +440,15 @@ class Indigo:
     self._lib.indigoIterateArray.argtypes = [c_int]
 	
     self._lib.indigoSubstructureMatcher.restype = c_int
-    self._lib.indigoSubstructureMatcher.argtypes = [c_int]
+    self._lib.indigoSubstructureMatcher.argtypes = [c_int, c_char_p]
     self._lib.indigoMatch.restype = c_int
     self._lib.indigoMatch.argtypes = [c_int, c_int]
     self._lib.indigoCountMatches.restype = c_int
     self._lib.indigoCountMatches.argtypes = [c_int, c_int]
     self._lib.indigoIterateMatches.restype = c_int
     self._lib.indigoIterateMatches.argtypes = [c_int, c_int]
-    self._lib.indigoMatchHighlight.restype = c_int
-    self._lib.indigoMatchHighlight.argtypes = [c_int]
+    self._lib.indigoHighlightedTarget.restype = c_int
+    self._lib.indigoHighlightedTarget.argtypes = [c_int]
     self._lib.indigoMapAtom.restype = c_int
     self._lib.indigoMapAtom.argtypes = [c_int, c_int]
     self._lib.indigoMapBond.restype = c_int
@@ -507,7 +507,7 @@ class Indigo:
     self.iterateRDFile = self._static_obj_string(self._lib.indigoIterateRDFile)
     self.iterateSmilesFile = self._static_obj_string(self._lib.indigoIterateSmilesFile)
 
-    self.substructureMatcher = self._static_obj_obj(self._lib.indigoSubstructureMatcher)
+    self.substructureMatcher = self._static_obj_obj_string(self._lib.indigoSubstructureMatcher)
 
     self.extractCommonScaffold = self._static_obj_obj_string(self._lib.indigoExtractCommonScaffold)
     self.decomposeMolecules = self._static_obj_obj_obj(self._lib.indigoDecomposeMolecules)
@@ -619,7 +619,7 @@ class Indigo:
     self.IndigoObject.match = self._member_obj_obj(self._lib.indigoMatch)
     self.IndigoObject.countMatches = self._member_int_obj(self._lib.indigoCountMatches)
     self.IndigoObject.iterateMatches = self._member_obj_obj(self._lib.indigoIterateMatches)
-    self.IndigoObject.matchHighlight = self._member_obj(self._lib.indigoMatchHighlight);
+    self.IndigoObject.highlightedTarget = self._member_obj(self._lib.indigoHighlightedTarget);
     self.IndigoObject.mapAtom = self._member_obj_obj(self._lib.indigoMapAtom);
     self.IndigoObject.mapBond = self._member_obj_obj(self._lib.indigoMapBond);	
 	
@@ -666,9 +666,11 @@ class Indigo:
     return newfunc
 
   def _static_obj_obj_string (self, func):
-    def newfunc (obj1, string):
+    def newfunc (obj, string = None):
       self._setSID()
-      res = func(obj1.id, string)
+      if string is None:
+        string = ''
+      res = func(obj.id, string)
       if res == 0:
         return None
       return self.IndigoObject(self, self._checkResult(res))

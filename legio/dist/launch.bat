@@ -1,1 +1,0 @@
-javaw -jar -Xss1m legio.jar

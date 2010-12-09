@@ -128,11 +128,6 @@ int IndigoObject::getIndex ()
    throw IndigoError("%s does not have an index", debugInfo());
 }
 
-IndigoRGroup & IndigoObject::getRGroup ()
-{
-   throw IndigoError("%s does not represent an r-rgroup", debugInfo());
-}
-
 bool IndigoObject::isBaseMolecule ()
 {
    if (type == MOLECULE || type == QUERY_MOLECULE ||
@@ -151,35 +146,7 @@ bool IndigoObject::isBaseReaction ()
    return false;
 }
 
-bool IndigoObject::isAtom ()
-{
-   return type == ATOM || type == ATOMS_ITER || type == ATOM_NEIGHBOR;
-}
-
-IndigoArray & IndigoObject::asArray ()
-{
-   throw IndigoError("%s is not an array", debugInfo());
-}
-
 IndigoObject * IndigoObject::clone ()
 {
    throw IndigoError("%s is not cloneable", debugInfo());
-}
-
-IndigoFingerprint & IndigoObject::asFingerprint()
-{
-   throw IndigoError("%s is not a fingerprint", debugInfo());
-}
-
-IndigoBond & IndigoObject::asBond ()
-{
-   if (type == BOND)
-      return *(IndigoBond *)this;
-   if (type == ARRAY_ELEMENT)
-   {
-      IndigoArrayElement &ae = *(IndigoArrayElement *)this;
-
-      return ae.array->objects[ae.idx]->asBond();
-   }
-   throw IndigoError("%s is not a bond", debugInfo());
 }
