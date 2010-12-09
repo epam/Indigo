@@ -44,7 +44,7 @@ void RenderGrid::_drawComment ()
    _rc.storeTransform();
    {
       float diff = (float)(_cnvOpt.width - 2 * outerMargin.x - commentSize.x);
-      _rc.translate(diff * _opt.commentAlign / 2, 0);
+      _rc.translate(diff * _opt.commentAlign, 0);
       _factory.getItem(comment).render();
    }
    _rc.restoreTransform();
@@ -168,7 +168,7 @@ void RenderGrid::draw ()
 
             if (enableTitles) {
                Vec2f titleSize(_factory.getItem(titles[i]).size);
-               _rc.translate(_opt.titleAlign * 0.5f * (cellsz.x - titleSize.x), 0.5f * (maxTitleSize.y - titleSize.y));
+               _rc.translate(_opt.titleAlign * (cellsz.x - titleSize.x), 0.5f * (maxTitleSize.y - titleSize.y));
                _factory.getItem(titles[i]).render();
             }
          }

@@ -243,6 +243,18 @@ void indigoRenderSetTitleOffset (float offset)
    rp.cnvOpt.titleOffset = offset;
 }                    
 
+void indigoRenderSetCommentAlignment (float align)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.commentAlign = align;
+}
+
+void indigoRenderSetTitleAlignment (float align)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.titleAlign = align;
+}
+
 void indigoRenderSetCommentPosition (const char* pos)
 {
    TL_DECL_GET(StringIntMap, map);
@@ -253,30 +265,6 @@ void indigoRenderSetCommentPosition (const char* pos)
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.rOpt.commentPos = (COMMENT_POS)map.at(pos);
 }
-
-void indigoRenderSetCommentAlignment (const char* align)
-{
-   TL_DECL_GET(StringIntMap, map);
-   if (map.size() == 0) {
-      map.insert("left", ALIGNMENT_LEFT);
-      map.insert("center", ALIGNMENT_CENTER);
-      map.insert("right", ALIGNMENT_RIGHT);
-   }
-   RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.commentAlign = (ALIGNMENT)map.at(align);
-}
-
-void indigoRenderSetTitleAlignment (const char* align)
-{
-   TL_DECL_GET(StringIntMap, map);
-   if (map.size() == 0) {
-      map.insert("left", ALIGNMENT_LEFT);
-      map.insert("center", ALIGNMENT_CENTER);
-      map.insert("right", ALIGNMENT_RIGHT);
-   }
-   RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.titleAlign = (ALIGNMENT)map.at(align);
-}                                  
 
 void indigoRenderSetGridTitleProperty (const char* prop)
 {
@@ -490,8 +478,6 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode);
    mgr.setOptionHandlerString("render-comment", indigoRenderSetComment);
    mgr.setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition);
-   mgr.setOptionHandlerString("render-comment-alignment", indigoRenderSetCommentAlignment);
-   mgr.setOptionHandlerString("render-title-alignment", indigoRenderSetTitleAlignment);
    mgr.setOptionHandlerString("render-grid-title-property", indigoRenderSetGridTitleProperty);
 
    mgr.setOptionHandlerBool("render-coloring", indigoRenderSetColoring);
@@ -509,6 +495,8 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerFloat("render-comment-offset", indigoRenderSetCommentOffset);
    mgr.setOptionHandlerFloat("render-title-font-size", indigoRenderSetTitleFontSize);
    mgr.setOptionHandlerFloat("render-title-offset", indigoRenderSetTitleOffset);
+   mgr.setOptionHandlerFloat("render-comment-alignment", indigoRenderSetCommentAlignment);
+   mgr.setOptionHandlerFloat("render-title-alignment", indigoRenderSetTitleAlignment);
 
    mgr.setOptionHandlerColor("render-background-color", indigoRenderSetBackgroundColor);
    mgr.setOptionHandlerColor("render-base-color", indigoRenderSetBaseColor);

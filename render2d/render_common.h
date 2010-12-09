@@ -317,8 +317,8 @@ public:
 
    Array<char> comment;
    COMMENT_POS commentPos;
-   ALIGNMENT commentAlign;
-   ALIGNMENT titleAlign;
+   float commentAlign;
+   float titleAlign;
    Vec3f commentColor;
    LABEL_MODE labelMode;
    IMPLICIT_HYDROGEN_MODE implHMode;
