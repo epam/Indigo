@@ -51,6 +51,11 @@ void RenderGrid::draw ()
 
    maxsz.set(0,0);
    Vec2f refSizeLT, refSizeRB;
+   Array<float> columnExtentLeft, columnExtentRight;
+   columnExtentLeft.clear_resize(nColumns);
+   columnExtentRight.clear_resize(nColumns);
+   columnExtentLeft.fill(0);
+   columnExtentRight.fill(0);
    for (int i = 0; i < objs.size(); ++i) {
       if (enableRefAtoms)
          _factory.getItemMolecule(objs[i]).refAtom = refAtoms[i];
@@ -58,10 +63,13 @@ void RenderGrid::draw ()
       _factory.getItem(objs[i]).setObjScale(_getObjScale(objs[i]));
       _factory.getItem(objs[i]).estimateSize();
       if (enableRefAtoms) {
-         refSizeLT.max(_factory.getItemMolecule(objs[i]).refAtomPos);
+         const Vec2f& r = _factory.getItemMolecule(objs[i]).refAtomPos;
          Vec2f d;
-         d.diff(_factory.getItemMolecule(objs[i]).size, 
-            _factory.getItemMolecule(objs[i]).refAtomPos);
+         d.diff(_factory.getItemMolecule(objs[i]).size, r);
+         refSizeLT.max(r);
+         int col = i % nColumns;
+         columnExtentLeft[col] = __max(columnExtentLeft[col], r.x);
+         columnExtentRight[col] = __max(columnExtentRight[col], d.x);
          refSizeRB.max(d);
       } else {
          maxsz.max(_factory.getItem(objs[i]).size);
@@ -109,11 +117,9 @@ void RenderGrid::draw ()
             _rc.storeTransform();
             {
                if (enableRefAtoms) {
-                  _rc.translate(0.5f * (cellsz.x - maxsz.x * scale), 0);
-                  Vec2f d;
-                  d.diff(refSizeLT, _factory.getItemMolecule(objs[i]).refAtomPos);
-                  d.scale(scale);
-                  _rc.translate(d.x, d.y);
+                  _rc.translate(0.5f * (cellsz.x - (columnExtentRight[x] + columnExtentLeft[x]) * scale), 0);
+                  const Vec2f r = _factory.getItemMolecule(objs[i]).refAtomPos;
+                  _rc.translate((columnExtentLeft[x] - r.x) * scale, (refSizeLT.y - r.y) * scale);
                } else {
                   _rc.translate(0.5f * (cellsz.x - size.x * scale), 0.5f * (maxsz.y - size.y) * scale);
                }
