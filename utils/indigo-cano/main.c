@@ -55,10 +55,10 @@ void usage ()
 void processMolecule (int mol, int smiles, int no_arom, int no_cistrans, int no_tetra)
 {
    if (no_cistrans)
-      indigoCisTransClear(mol);
+      indigoClearCisTrans(mol);
 
    if (no_tetra)
-      indigoStereocentersClear(mol);
+      indigoClearStereocenters(mol);
 
    if (smiles && !no_arom)
       indigoAromatize(mol);

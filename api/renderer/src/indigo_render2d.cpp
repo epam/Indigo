@@ -24,6 +24,7 @@
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
 #include "option_manager.h"
+#include "indigo-renderer.h"
 
 using namespace indigo;
 
@@ -429,12 +430,24 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
 CEXPORT int indigoRenderToFile (int object, const char *filename)
 {
    int f = indigoWriteFile(filename);
-   int res;
 
    if (f == -1)
       return -1;
 
-   res = indigoRender(object, f);
+   int res = indigoRender(object, f);
+
+   indigoFree(f);
+   return res;
+}
+
+CEXPORT int indigoRenderGridToFile (int objects, int* refAtoms, int nColumns, const char *filename)
+{
+   int f = indigoWriteFile(filename);
+
+   if (f == -1)
+      return -1;
+
+   int res = indigoRenderGrid(objects, refAtoms, nColumns, f);
 
    indigoFree(f);
    return res;

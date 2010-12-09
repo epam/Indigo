@@ -54,8 +54,25 @@ public class IndigoRenderer
       return result;
    }
 
+   public void renderGridToFile (IndigoObject objects, int[] refAtoms, int ncolumns, String filename)
+   {
+      indigoRenderGridToFile(objects.self, refAtoms, ncolumns, filename);
+   }
+
+   public byte[] renderGridToBuffer (IndigoObject objects, int[] refAtoms, int ncolumns)
+   {
+      int b = _indigo.indigoWriteBuffer();
+      indigoRenderGrid(objects.self, refAtoms, ncolumns, b);
+      byte[] result = _indigo.indigoToBuffer(b);
+      _indigo.indigoFree(b);
+      return result;
+   }
+
    public native int indigoRender (int handle, int output);
    public native int indigoRenderToFile (int handle, String filename);
+
+   public native int indigoRenderGrid (int objects, int[] refAtoms, int ncolumns, int output);
+   public native int indigoRenderGridToFile (int objects, int[] refAtoms, int ncolumns, String filename);
 
    private long _sid;
    private Indigo _indigo;

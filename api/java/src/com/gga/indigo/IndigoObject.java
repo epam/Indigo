@@ -387,14 +387,14 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, dispatcher.indigoIterateArray(self));
    }
 
-   public int arrayCount ()
+   public int size ()
    {
-      return dispatcher.indigoArrayCount(self);
+      return dispatcher.indigoSize(self);
    }
 
-   public void arrayClear ()
+   public void clear ()
    {
-      dispatcher.indigoArrayClear(self);
+      dispatcher.indigoClear(self);
    }
 
    public IndigoObject arrayAdd (IndigoObject other)

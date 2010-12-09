@@ -157,7 +157,7 @@ CEXPORT int indigoArrayAdd (int arr, int handle)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoArrayCount (int arr)
+CEXPORT int indigoSize (int arr)
 {
    INDIGO_BEGIN
    {
@@ -168,7 +168,7 @@ CEXPORT int indigoArrayCount (int arr)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoArrayClear (int arr)
+CEXPORT int indigoClear (int arr)
 {
    INDIGO_BEGIN
    {
