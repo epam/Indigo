@@ -31,11 +31,26 @@
 using namespace indigo;
 
 RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory) : 
-   Render(rc, factory), nColumns(rc.opt.gridColumnNumber)
+   Render(rc, factory), nColumns(rc.opt.gridColumnNumber), comment(-1)
 {}
 
 RenderGrid::~RenderGrid()
 {}
+
+void RenderGrid::_drawComment ()
+{
+   if (comment < 0)
+      return;
+   _rc.storeTransform();
+   {
+      float diff = (float)(_cnvOpt.width - 2 * outerMargin.x - commentSize.x);
+      _rc.translate(diff * _opt.commentAlign / 2, 0);
+      _factory.getItem(comment).render();
+   }
+   _rc.restoreTransform();
+   _rc.removeStoredTransform();
+   _rc.translate(0, commentSize.y);
+}
 
 void RenderGrid::draw ()
 {     
@@ -50,6 +65,15 @@ void RenderGrid::draw ()
       throw Error("Number of titles should be same as the number of objects");
 
    nRows = (objs.size() + nColumns - 1) / nColumns;
+
+   commentSize.set(0,0);
+   commentOffset = 0;
+   if (comment >= 0) {
+      _factory.getItem(comment).init();
+      _factory.getItem(comment).estimateSize();
+      commentSize.copy(_factory.getItem(comment).size);
+      commentOffset = _cnvOpt.commentOffset;
+   }
 
    maxsz.set(0,0);
    Vec2f refSizeLT, refSizeRB;
@@ -108,11 +132,16 @@ void RenderGrid::draw ()
    clientArea.set(cellsz.x * nColumns + _cnvOpt.gridMarginX * (nColumns - 1),
       cellsz.y * nRows + _cnvOpt.gridMarginY * (nRows - 1));
    _rc.init();
-   _rc.translate((_cnvOpt.width - clientArea.x) / 2, (_cnvOpt.height - clientArea.y) / 2);
    if (_cnvOpt.xOffset > 0 || _cnvOpt.yOffset > 0)
       _rc.translate((float)_cnvOpt.xOffset, (float)_cnvOpt.yOffset);
+   _rc.translate(outerMargin.x, outerMargin.y);
+   if (_opt.commentPos == COMMENT_POS_TOP) {
+      _drawComment();
+      _rc.translate(0, commentOffset);
+   }
    _rc.storeTransform();
    {
+      _rc.translate((_cnvOpt.width - clientArea.x) / 2 - outerMargin.x, (_cnvOpt.height - commentSize.y - commentOffset - clientArea.y) / 2 - outerMargin.y);
       for (int i = 0; i < objs.size(); ++i) {
          _rc.storeTransform();
          {
@@ -147,8 +176,12 @@ void RenderGrid::draw ()
          _rc.removeStoredTransform();
       }
    }
-   _rc.resetTransform();
+   _rc.restoreTransform();
    _rc.removeStoredTransform();
+   if (_opt.commentPos == COMMENT_POS_BOTTOM) {                                           
+      _rc.translate(0, _cnvOpt.height - commentOffset - commentSize.y - 2*outerMargin.y);
+      _drawComment();
+   }
    _rc.destroyMetaSurface();
 }
 
@@ -160,8 +193,8 @@ float RenderGrid::_getScale ()
    {
       s = _cnvOpt.bondLength;
 
-      _cnvOpt.width = (int)ceil(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2);
-      _cnvOpt.height = (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2);
+      _cnvOpt.width = (int)ceil(__max(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), commentSize.x) + outerMargin.x * 2);
+      _cnvOpt.height = (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset);
 
       if (maxPageSize < 0 || __max(_cnvOpt.width, _cnvOpt.height) < maxPageSize)
          return s;
@@ -170,12 +203,12 @@ float RenderGrid::_getScale ()
    }
 
    float absX = _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2;
-   float absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2;
+   float absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset;
    float x = _cnvOpt.width - absX,
       y = _cnvOpt.height - absY;
-   if (x < maxTitleSize.x * nRows + 1 || y < 1)
+   if (x < maxTitleSize.x * nRows + 1 || _cnvOpt.width < commentSize.x + outerMargin.x * 2 + 1 || y < 1)
       throw Error("Image too small, the layout requires at least %dx%d", 
-         (int)(absX + maxTitleSize.x * nRows + 2), 
+         (int)__max(absX + maxTitleSize.x * nRows + 2,commentSize.x + outerMargin.x * 2 + 2), 
          (int)(absY + 2));
    Vec2f totalScaleableSize(maxsz.x * nColumns, maxsz.y * nRows);
    if (x * totalScaleableSize.y < y * totalScaleableSize.x)

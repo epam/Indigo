@@ -329,6 +329,7 @@ void RenderParamInterface::render (RenderParams& params)
       RenderGrid render(rc, factory);
       render.objs.copy(objs);
       render.nColumns = rc.opt.gridColumnNumber;
+      render.comment = comment;
       render.titles.copy(titles);
       render.refAtoms.copy(params.refAtoms);
       render.draw();
