@@ -49,13 +49,19 @@ void RenderGrid::draw ()
    if (enableTitles && titles.size() != objs.size())
       throw Error("Number of titles should be same as the number of objects");
 
+   nRows = (objs.size() + nColumns - 1) / nColumns;
+
    maxsz.set(0,0);
    Vec2f refSizeLT, refSizeRB;
-   Array<float> columnExtentLeft, columnExtentRight;
+   Array<float> columnExtentLeft, columnExtentRight, rowExtentTop, rowExtentBottom;
    columnExtentLeft.clear_resize(nColumns);
    columnExtentRight.clear_resize(nColumns);
    columnExtentLeft.fill(0);
    columnExtentRight.fill(0);
+   rowExtentTop.clear_resize(nRows);
+   rowExtentBottom.clear_resize(nRows);
+   rowExtentTop.fill(0);
+   rowExtentBottom.fill(0);
    for (int i = 0; i < objs.size(); ++i) {
       if (enableRefAtoms)
          _factory.getItemMolecule(objs[i]).refAtom = refAtoms[i];
@@ -68,8 +74,11 @@ void RenderGrid::draw ()
          d.diff(_factory.getItemMolecule(objs[i]).size, r);
          refSizeLT.max(r);
          int col = i % nColumns;
+         int row = i / nColumns;
          columnExtentLeft[col] = __max(columnExtentLeft[col], r.x);
          columnExtentRight[col] = __max(columnExtentRight[col], d.x);
+         rowExtentTop[row] = __max(rowExtentTop[row], r.y);
+         rowExtentBottom[row] = __max(rowExtentBottom[row], d.y);
          refSizeRB.max(d);
       } else {
          maxsz.max(_factory.getItem(objs[i]).size);
@@ -77,8 +86,6 @@ void RenderGrid::draw ()
    }
    if (enableRefAtoms)
       maxsz.sum(refSizeLT, refSizeRB);
-
-   nRows = (objs.size() + nColumns - 1) / nColumns;
 
    maxTitleSize.set(0,0);
    titleOffset = 0;
@@ -117,9 +124,9 @@ void RenderGrid::draw ()
             _rc.storeTransform();
             {
                if (enableRefAtoms) {
-                  _rc.translate(0.5f * (cellsz.x - (columnExtentRight[x] + columnExtentLeft[x]) * scale), 0);
+                  _rc.translate(0.5f * (cellsz.x - (columnExtentRight[x] + columnExtentLeft[x]) * scale), 0.5f * (maxsz.y - (rowExtentBottom[y]+ rowExtentTop[y])) * scale);
                   const Vec2f r = _factory.getItemMolecule(objs[i]).refAtomPos;
-                  _rc.translate((columnExtentLeft[x] - r.x) * scale, (refSizeLT.y - r.y) * scale);
+                  _rc.translate((columnExtentLeft[x] - r.x) * scale, (rowExtentTop[y] - r.y) * scale);
                } else {
                   _rc.translate(0.5f * (cellsz.x - size.x * scale), 0.5f * (maxsz.y - size.y) * scale);
                }
