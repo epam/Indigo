@@ -346,6 +346,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
    INDIGO_BEGIN
    {
       RenderParams& rp = indigoRendererGetInstance().renderParams;
+      rp.clearArrays();
 
       PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
       if (objs[0]->isBaseMolecule())

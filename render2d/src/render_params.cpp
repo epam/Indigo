@@ -52,6 +52,16 @@ RenderParams::~RenderParams ()
 {
 }
 
+void RenderParams::clearArrays ()
+{
+   mols.clear();
+   molhls.clear();
+   rxns.clear();
+   rxnhls.clear();
+   titles.clear();
+   refAtoms.clear();
+}
+
 void RenderParams::clear ()
 {
    query = false;
@@ -63,23 +73,19 @@ void RenderParams::clear ()
    rmode = RENDER_NONE;
    mode = MODE_NONE;
    inputFormat = INPUT_FORMAT_UNKNOWN;
-   titles.clear();
    titleProp.clear();
    titleProp.appendString("^NAME", true);
    mol.reset(NULL);
    molhl.clear();
-   mols.clear();
-   molhls.clear();
    rxn.reset(NULL);
    rhl.clear();
-   rxns.clear();
-   rxnhls.clear();
    hdc = 0;
    outfile.clear();
    rOpt.clear();
    cnvOpt.clear();
    hlOpt.clear();
    rcOpt.clear();
+   clearArrays();
 }
 
 void RenderParamInterface::loadMol (RenderParams& params, Scanner& scanner)
