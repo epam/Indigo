@@ -820,6 +820,7 @@ int main (int argc, char *argv[])
       i = -1;
       while ((item = indigoNext(obj))) {
          ++i;
+         _prepare(item, p.aromatization);
          if (p.action == ACTION_LAYOUT)
             indigoLayout(item);
 
