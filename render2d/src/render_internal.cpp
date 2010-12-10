@@ -150,8 +150,8 @@ void RenderOptions::clear()
    implHMode = IHM_TERMINAL_HETERO;
    comment.clear();
    commentPos = COMMENT_POS_BOTTOM;
-   commentAlign = ALIGNMENT_CENTER;
-   titleAlign = ALIGNMENT_CENTER;
+   commentAlign = 0.5f;
+   titleAlign = 0.5f;
    commentColor.set(0,0,0);
    gridColumnNumber = 1;
    showAtomIds = false;

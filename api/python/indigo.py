@@ -432,10 +432,10 @@ class Indigo:
     self._lib.indigoArrayAdd.argtypes = [c_int, c_int]
     self._lib.indigoArrayAt.restype = c_int
     self._lib.indigoArrayAt.argtypes = [c_int, c_int]
-    self._lib.indigoArrayCount.restype = c_int
-    self._lib.indigoArrayCount.argtypes = [c_int]
-    self._lib.indigoArrayClear.restype = c_int
-    self._lib.indigoArrayClear.argtypes = [c_int]
+    self._lib.indigoSize.restype = c_int
+    self._lib.indigoSize.argtypes = [c_int]
+    self._lib.indigoClear.restype = c_int
+    self._lib.indigoClear.argtypes = [c_int]
     self._lib.indigoIterateArray.restype = c_int
     self._lib.indigoIterateArray.argtypes = [c_int]
 	
@@ -615,8 +615,8 @@ class Indigo:
     self.IndigoObject.smilesAppend = self._member_void_obj(self._lib.indigoSmilesAppend)
 
     self.IndigoObject.iterateArray = self._member_obj(self._lib.indigoIterateArray)
-    self.IndigoObject.arrayCount = self._member_int(self._lib.indigoArrayCount)
-    self.IndigoObject.arrayClear = self._member_void(self._lib.indigoArrayClear)
+    self.IndigoObject.size = self._member_int(self._lib.indigoSize)
+    self.IndigoObject.clear = self._member_void(self._lib.indigoClear)
     self.IndigoObject.arrayAdd = self._member_void_obj(self._lib.indigoArrayAdd)
     self.IndigoObject.arrayAt = self._member_obj_int(self._lib.indigoArrayAt)
     

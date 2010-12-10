@@ -14,7 +14,7 @@ mkdir -p $name/examples
 
 rm -f indigo-java-api-$version-universal.zip
 rm -rf indigo-java-api-$version-universal
-wget http://scitouch.net/downloads/indigo-java-api-$version-universal.zip
+wget http://ggasoftware.com/downloads/indigo-java-api-$version-universal.zip
 unzip indigo-java-api-$version-universal.zip 
 
 cp -r indigo-java-api-$version-universal/lib $name/

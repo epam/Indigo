@@ -40,8 +40,6 @@ void usage (void)
            "   Average bond length in pixels (conflicts with -w and -h)\n"
            "-margins <number> <number>\n"
            "   Horizontal and vertical margins, in pixels. No margins by default\n"
-           "-commentmargins <number> <number>\n"
-           "   Horizontal and vertical margins around comment. No margins by default\n"
            "-thickness <number>\n"
            "   Set relative thickness factor. Default is 1.0\n"
            "-hydro <none|terminal|hetero|terminalhetero|all>\n"
@@ -61,6 +59,8 @@ void usage (void)
            "   (default is molecule/reaction number)\n"
            "-comment <string>\n"
            "   Text comment to be put above the molecule or reaction. No default value\n"
+           "-commentoffset <number> \n"
+           "   Vertical space (in pixels) between the comment and the structure\n"
            "-commentfield <string>\n"
            "   Use specified SDF/RDF field as a comment\n"
            "-commentname\n"
@@ -69,8 +69,8 @@ void usage (void)
            "   Text comment font size factor relative to bond thickness (default 6)\n"
            "-commentpos <top|bottom>\n"
            "   Text comment position (bottom by default)\n"
-           "-commentalign <left|center|right>\n"
-           "   Text comment alignment (center by default)\n"
+           "-commentalign <0..1>\n"
+           "   Text comment alignment, a float value: 0 = left, 0.5 = center, 1 = right\n"
            "-coloring <on|off>\n"
            "   Enable/disable coloring (enabled by default)\n"
            "-hlthick\n"
@@ -360,30 +360,6 @@ int parseParams (Params* p, int argc, char *argv[]) {
          indigoSetOptionXY("render-margins", horz, vert);
          i += 2;
       }
-      else if (strcmp(argv[i], "-commentmargins") == 0)
-      {
-         int horz, vert;
-
-         if (i + 2 >= argc)
-         {
-            fprintf(stderr, "expecting two numbers after -margins\n");
-            return -1;
-         }
-
-         if (sscanf(argv[i + 1], "%d", &horz) != 1 || horz < 0)
-         {
-            fprintf(stderr, "%s is not a valid horizontal margin\n", argv[i]);
-            return -1;
-         }
-         if (sscanf(argv[i + 2], "%d", &vert) != 1 || vert < 0)
-         {
-            fprintf(stderr, "%s is not a valid vertical margin\n", argv[i + 1]);
-            return -1;
-         }
-
-         indigoSetOptionXY("render-comment-margins", horz, vert);
-         i += 2;
-      }
       else if (strcmp(argv[i], "-thickness") == 0)
       {
          float rt;
@@ -572,6 +548,24 @@ int parseParams (Params* p, int argc, char *argv[]) {
          }
 
          p->comment = argv[i];
+      }
+      else if (strcmp(argv[i], "-commentoffset") == 0)
+      {
+         int offset;
+
+         if (++i >= argc)
+         {
+            fprintf(stderr, "expecting an integer after -commentoffset\n");
+            return -1;
+         }
+
+         if (sscanf(argv[i], "%d", &offset) != 1 || offset < 0)
+         {
+            fprintf(stderr, "%s is not a valid comment offset\n", argv[i]);
+            return -1;
+         }
+
+         indigoSetOptionInt("render-comment-offset", offset);
       }
       else if (strcmp(argv[i], "-commentfield") == 0)
       {
@@ -820,6 +814,7 @@ int main (int argc, char *argv[])
       i = -1;
       while ((item = indigoNext(obj))) {
          ++i;
+         _prepare(item, p.aromatization);
          if (p.action == ACTION_LAYOUT)
             indigoLayout(item);
 

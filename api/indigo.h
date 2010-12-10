@@ -437,8 +437,8 @@ CEXPORT int indigoCreateArray ();
 // Note: a clone of the object is added, not the object itself
 CEXPORT int indigoArrayAdd (int arr, int object);
 CEXPORT int indigoArrayAt (int arr, int index);
-CEXPORT int indigoArrayCount (int arr);
-CEXPORT int indigoArrayClear (int arr);
+CEXPORT int indigoSize (int arr);
+CEXPORT int indigoClear (int arr);
 CEXPORT int indigoIterateArray (int arr);
 
 /* Substructure matching */

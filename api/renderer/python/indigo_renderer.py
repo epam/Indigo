@@ -32,6 +32,10 @@ class IndigoRenderer:
     self._lib.indigoRender.argtypes = [c_int, c_int]
     self._lib.indigoRenderToFile.restype = c_int
     self._lib.indigoRenderToFile.argtypes = [c_int, c_char_p]
+    self._lib.indigoRenderGrid.restype = c_int
+    self._lib.indigoRenderGrid.argtypes = [c_int, POINTER(c_int), c_int, c_int]
+    self._lib.indigoRenderGridToFile.restype = c_int
+    self._lib.indigoRenderGridToFile.argtypes = [c_int, POINTER(c_int), c_int, c_char_p]
     self._lib.indigoRenderReset.restype = c_int
     self._lib.indigoRenderReset.argtypes = [c_int]
     
@@ -44,3 +48,29 @@ class IndigoRenderer:
   def renderToFile (self, obj, filename):
     self.indigo._setSID()
     self.indigo._checkResult(self._lib.indigoRenderToFile(obj.id, filename))
+
+  def renderGridToFile (self, objects, refatoms, ncolumns, filename):
+    self.indigo._setSID()
+    arr = None
+    if refatoms:
+      if len(refatoms) != objects.size():
+        raise IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects")
+      arr = (c_int * len(refatoms))()
+      for i in xrange(len(refatoms)):
+        arr[i] = refatoms[i]
+    self.indigo._checkResult(
+      self._lib.indigoRenderGridToFile(objects.id, arr, ncolumns, filename))
+
+  def renderGridToBuffer (self, objects, refatoms, ncolumns):
+    self.indigo._setSID()
+    arr = None
+    if refatoms:
+      if len(refatoms) != objects.size():
+        raise IndigoException("renderGridToBuffer(): refatoms[] size must be equal to the number of objects")
+      arr = (c_int * len(refatoms))()
+      for i in xrange(len(refatoms)):
+        arr[i] = refatoms[i]
+    wb = self.indigo.writeBuffer()
+    self.indigo._checkResult(
+      self._lib.indigoRenderGrid(objects.id, arr, ncolumns, wb.id))
+    return wb.toBuffer()

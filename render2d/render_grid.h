@@ -30,9 +30,9 @@ public:
    Array<int> objs;
    Array<int> titles;
    Array<int> refAtoms;
-   float titleOffset;
+   int titleOffset;
    int nColumns;
-   float commentOffset;
+   int commentOffset;
    int comment;
 
 private:

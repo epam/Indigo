@@ -35,6 +35,7 @@ public:
    ~RenderParams ();
 
    void clear ();
+   void clearArrays ();
 
    bool query;
    float relativeThickness;

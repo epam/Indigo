@@ -20,7 +20,6 @@
 namespace indigo {
 
 class BaseMolecule;
-enum ALIGNMENT {ALIGNMENT_LEFT = 0, ALIGNMENT_CENTER, ALIGNMENT_RIGHT};
 
 class Metalayout {
 public:

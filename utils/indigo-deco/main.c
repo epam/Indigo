@@ -296,14 +296,14 @@ int main (int argc, const char** argv)
       }
    }
 
-   if (indigoArrayCount(structures) < 1)
+   if (indigoSize(structures) < 1)
    {
       fprintf(stderr, "no input structures\n");
       _printHelpMessage();
       return -1;
    }
 
-   printf("got %d input structures\n", indigoArrayCount(structures));
+   printf("got %d input structures\n", indigoSize(structures));
 
    indigoSetOptionBool("deconvolution-aromatization", aromatic);
 
@@ -332,7 +332,7 @@ int main (int argc, const char** argv)
       int item, iter = indigoIterateArray(allscafs);
 
       printf("saving all obtained scaffolds (%d total) to %s\n",
-              indigoArrayCount(allscafs), outfile_allscafs);
+              indigoSize(allscafs), outfile_allscafs);
 
       while ((item = indigoNext(iter)))
       {
