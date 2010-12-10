@@ -94,6 +94,15 @@ const char * IndigoMolecule::getName ()
    return mol.name.ptr();
 }
 
+IndigoMolecule * IndigoMolecule::cloneFrom( IndigoObject & obj )
+{
+   AutoPtr<IndigoMolecule> molptr;
+   molptr.reset(new IndigoMolecule());
+   molptr->highlighting.copy(*(obj.getMoleculeHighlighting()), 0);
+   molptr->mol.clone(obj.getMolecule(), 0, 0);
+   return molptr.release();
+}
+
 IndigoQueryMolecule::IndigoQueryMolecule () : IndigoBaseMolecule(QUERY_MOLECULE)
 {
 }
@@ -105,6 +114,15 @@ IndigoQueryMolecule::~IndigoQueryMolecule ()
 QueryMolecule & IndigoQueryMolecule::getQueryMolecule ()
 {
    return qmol;
+}
+
+IndigoQueryMolecule * IndigoQueryMolecule::cloneFrom( IndigoObject & obj )
+{
+   AutoPtr<IndigoQueryMolecule> molptr;
+   molptr.reset(new IndigoQueryMolecule());
+   molptr->highlighting.copy(*(obj.getMoleculeHighlighting()), 0);
+   molptr->qmol.clone(obj.getQueryMolecule(), 0, 0);
+   return molptr.release();
 }
 
 BaseMolecule & IndigoQueryMolecule::getBaseMolecule ()

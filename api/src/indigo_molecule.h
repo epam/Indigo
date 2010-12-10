@@ -48,6 +48,8 @@ public:
    DLLEXPORT virtual QueryMolecule & getQueryMolecule ();
    DLLEXPORT virtual const char * getName ();
 
+   static IndigoQueryMolecule * cloneFrom( IndigoObject & obj );
+
    DLLEXPORT const char * debugInfo ();
 
    DLLEXPORT virtual IndigoObject * clone ();
@@ -65,6 +67,8 @@ public:
    DLLEXPORT virtual BaseMolecule & getBaseMolecule ();
    DLLEXPORT virtual Molecule & getMolecule ();
    DLLEXPORT virtual const char * getName ();
+
+   static IndigoMolecule * cloneFrom( IndigoObject & obj );
 
    DLLEXPORT const char * debugInfo ();
 

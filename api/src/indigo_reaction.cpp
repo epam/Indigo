@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "indigo_io.h"
+#include "indigo_molecule.h"
 #include "indigo_reaction.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_saver.h"
@@ -128,6 +129,13 @@ int IndigoReactionMolecule::getIndex ()
    return idx;
 }
 
+IndigoObject * IndigoReactionMolecule::clone ()
+{
+   if (rxn.isQueryReaction())
+      return IndigoQueryMolecule::cloneFrom(*this);
+   else
+      return IndigoMolecule::cloneFrom(*this); 
+}
 
 IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, ReactionHighlighting *hl, int subtype) :
 IndigoObject(REACTION_ITER),
