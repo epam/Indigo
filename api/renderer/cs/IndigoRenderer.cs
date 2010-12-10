@@ -79,8 +79,9 @@ namespace com.gga.indigo
       {
          IndigoObject bufh = _indigo.writeBuffer();
 
-         if (refatoms.Length != items.size())
-            throw new IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects");
+         if (refatoms != null)
+            if (refatoms.Length != items.size())
+               throw new IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects");
 
          indigoRenderGrid(items.self, refatoms, ncolumns, bufh.self);
          return bufh.toBuffer();
@@ -88,8 +89,9 @@ namespace com.gga.indigo
 
       public void renderGridToFile (IndigoObject items, int[] refatoms, int ncolumns, string filename)
       {
-         if (refatoms.Length != items.size())
-            throw new IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects");
+         if (refatoms != null)
+            if (refatoms.Length != items.size())
+               throw new IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects");
 
          indigoRenderGridToFile(items.self, refatoms, ncolumns, filename);
       }
