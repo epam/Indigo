@@ -17,6 +17,7 @@
 		819EB253125F887E00CE1D88 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 819EB252125F887E00CE1D88 /* libstdc++.dylib */; };
 		819EB255125F888800CE1D88 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 819EB254125F888800CE1D88 /* libz.dylib */; };
 		819EB257125F88C100CE1D88 /* libcairo.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 819EB256125F88C100CE1D88 /* libcairo.dylib */; };
+		81FA4B4412B26C800027DBC4 /* libindigo-renderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 81FA4B3F12B26C220027DBC4 /* libindigo-renderer.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,92 +25,113 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB1F5125F843F00CE1D88 /* graph.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A7EDA3FC10624B53006CBFAF /* libgraph.a */;
+			remoteGlobalIDString = A7EDA3FC10624B53006CBFAF;
 			remoteInfo = graph;
 		};
 		819EB20B125F843F00CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB1F8125F843F00CE1D88 /* molecule.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A7EDA4CE10624F33006CBFAF /* libmolecule.a */;
+			remoteGlobalIDString = A7EDA4CE10624F33006CBFAF;
 			remoteInfo = molecule;
 		};
 		819EB20E125F843F00CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB1FB125F843F00CE1D88 /* reaction.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A7EDA55610625076006CBFAF /* libreaction.a */;
+			remoteGlobalIDString = A7EDA55610625076006CBFAF;
 			remoteInfo = reaction;
 		};
 		819EB211125F843F00CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB1FE125F843F00CE1D88 /* layout.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A7EDA5CA106251C3006CBFAF /* liblayout.a */;
+			remoteGlobalIDString = A7EDA5CA106251C3006CBFAF;
 			remoteInfo = layout;
 		};
 		819EB214125F843F00CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB201125F843F00CE1D88 /* render2d.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A756FCDE11860A5D00B3B2DE /* librender2d.a */;
+			remoteGlobalIDString = A756FCDE11860A5D00B3B2DE;
 			remoteInfo = render2d;
 		};
 		819EB218125F843F00CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB204125F843F00CE1D88 /* indigo-api.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 817B69BD11F88C0E00BC3D88 /* libindigo.a */;
+			remoteGlobalIDString = 817B69BD11F88C0E00BC3D88;
 			remoteInfo = "indigo-static";
 		};
 		819EB21A125F843F00CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB204125F843F00CE1D88 /* indigo-api.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 817B69F811F88F3B00BC3D88 /* libindigo.dylib */;
+			remoteGlobalIDString = 817B69F811F88F3B00BC3D88;
 			remoteInfo = "indigo-shared";
 		};
 		819EB225125F845E00CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB1F8125F843F00CE1D88 /* molecule.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A7EDA4CD10624F33006CBFAF /* molecule */;
+			remoteGlobalIDString = A7EDA4CD10624F33006CBFAF;
 			remoteInfo = molecule;
 		};
 		819EB227125F846200CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB1FB125F843F00CE1D88 /* reaction.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A7EDA55510625076006CBFAF /* reaction */;
+			remoteGlobalIDString = A7EDA55510625076006CBFAF;
 			remoteInfo = reaction;
 		};
 		819EB229125F846500CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB1FE125F843F00CE1D88 /* layout.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A7EDA5C9106251C3006CBFAF /* layout */;
+			remoteGlobalIDString = A7EDA5C9106251C3006CBFAF;
 			remoteInfo = layout;
 		};
 		819EB22B125F846800CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB1F5125F843F00CE1D88 /* graph.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A7EDA3FB10624B53006CBFAF /* graph */;
+			remoteGlobalIDString = A7EDA3FB10624B53006CBFAF;
 			remoteInfo = graph;
 		};
 		819EB22D125F846B00CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB201125F843F00CE1D88 /* render2d.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A756FCDD11860A5D00B3B2DE /* render2d */;
+			remoteGlobalIDString = A756FCDD11860A5D00B3B2DE;
 			remoteInfo = render2d;
 		};
 		819EB22F125F846D00CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB204125F843F00CE1D88 /* indigo-api.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 817B69BC11F88C0D00BC3D88 /* indigo-static */;
+			remoteGlobalIDString = 817B69BC11F88C0D00BC3D88;
 			remoteInfo = "indigo-static";
+		};
+		81FA4B3E12B26C220027DBC4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81FA4B3512B26C220027DBC4 /* indigo-renderer-api.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 81BBA9C0127B4338004CD27A /* libindigo-renderer.a */;
+			remoteInfo = "indigo-renderer-static";
+		};
+		81FA4B4012B26C220027DBC4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81FA4B3512B26C220027DBC4 /* indigo-renderer-api.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 81BBA9C9127B435A004CD27A /* libindigo-renderer.dylib */;
+			remoteInfo = "indigo-renderer-shared";
+		};
+		81FA4B4212B26C500027DBC4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81FA4B3512B26C220027DBC4 /* indigo-renderer-api.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 81BBA9BF127B4338004CD27A /* indigo-renderer-static */;
+			remoteInfo = "indigo-renderer-static";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -125,6 +147,7 @@
 		819EB252125F887E00CE1D88 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "/usr/lib/gcc/i686-apple-darwin10/4.0.1/libstdc++.dylib"; sourceTree = "<absolute>"; };
 		819EB254125F888800CE1D88 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = /usr/lib/libz.dylib; sourceTree = "<absolute>"; };
 		819EB256125F88C100CE1D88 /* libcairo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcairo.dylib; path = /opt/local/lib/libcairo.dylib; sourceTree = "<absolute>"; };
+		81FA4B3512B26C220027DBC4 /* indigo-renderer-api.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "indigo-renderer-api.xcodeproj"; path = "../../api/renderer/indigo-renderer-api.xcodeproj"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +155,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81FA4B4412B26C800027DBC4 /* libindigo-renderer.a in Frameworks */,
 				819EB236125F84DF00CE1D88 /* libindigo.a in Frameworks */,
 				819EB235125F84D800CE1D88 /* librender2d.a in Frameworks */,
 				819EB233125F84C500CE1D88 /* libreaction.a in Frameworks */,
@@ -150,6 +174,7 @@
 		819EB1D7125F83F000CE1D88 = {
 			isa = PBXGroup;
 			children = (
+				81FA4B3512B26C220027DBC4 /* indigo-renderer-api.xcodeproj */,
 				819EB1F5125F843F00CE1D88 /* graph.xcodeproj */,
 				819EB1F8125F843F00CE1D88 /* molecule.xcodeproj */,
 				819EB1FB125F843F00CE1D88 /* reaction.xcodeproj */,
@@ -221,6 +246,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		81FA4B3612B26C220027DBC4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				81FA4B3F12B26C220027DBC4 /* libindigo-renderer.a */,
+				81FA4B4112B26C220027DBC4 /* libindigo-renderer.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -239,6 +273,7 @@
 				819EB22A125F846500CE1D88 /* PBXTargetDependency */,
 				819EB22C125F846800CE1D88 /* PBXTargetDependency */,
 				819EB22E125F846B00CE1D88 /* PBXTargetDependency */,
+				81FA4B4312B26C500027DBC4 /* PBXTargetDependency */,
 				819EB230125F846D00CE1D88 /* PBXTargetDependency */,
 			);
 			name = "indigo-depict";
@@ -272,6 +307,10 @@
 				{
 					ProductGroup = 819EB205125F843F00CE1D88 /* Products */;
 					ProjectRef = 819EB204125F843F00CE1D88 /* indigo-api.xcodeproj */;
+				},
+				{
+					ProductGroup = 81FA4B3612B26C220027DBC4 /* Products */;
+					ProjectRef = 81FA4B3512B26C220027DBC4 /* indigo-renderer-api.xcodeproj */;
 				},
 				{
 					ProductGroup = 819EB1FF125F843F00CE1D88 /* Products */;
@@ -347,6 +386,20 @@
 			remoteRef = 819EB21A125F843F00CE1D88 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		81FA4B3F12B26C220027DBC4 /* libindigo-renderer.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libindigo-renderer.a";
+			remoteRef = 81FA4B3E12B26C220027DBC4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		81FA4B4112B26C220027DBC4 /* libindigo-renderer.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = "libindigo-renderer.dylib";
+			remoteRef = 81FA4B4012B26C220027DBC4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -391,6 +444,11 @@
 			name = "indigo-static";
 			targetProxy = 819EB22F125F846D00CE1D88 /* PBXContainerItemProxy */;
 		};
+		81FA4B4312B26C500027DBC4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "indigo-renderer-static";
+			targetProxy = 81FA4B4212B26C500027DBC4 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -423,6 +481,7 @@
 					../..,
 					../../common,
 					../../api,
+					../../api/renderer,
 				);
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = /opt/local/lib;
@@ -449,6 +508,7 @@
 					../..,
 					../../common,
 					../../api,
+					../../api/renderer,
 				);
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = /opt/local/lib;
