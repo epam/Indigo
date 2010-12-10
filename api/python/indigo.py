@@ -478,6 +478,8 @@ class Indigo:
     self._lib.indigoToString.argtypes = [c_int]
     self._lib.indigoReactionProductEnumerate.restype = c_int
     self._lib.indigoReactionProductEnumerate.argtypes = [c_int, c_int]
+    self._lib.indigoDbgBreakpoint.restype = None
+    self._lib.indigoDbgBreakpoint.argtypes = None
 
     self._lib.indigoToBuffer.restype = c_int
     self._lib.indigoToBuffer.argtypes = [c_int, POINTER(POINTER(c_char)), POINTER(c_int)]
@@ -513,6 +515,8 @@ class Indigo:
     self.decomposeMolecules = self._static_obj_obj_obj(self._lib.indigoDecomposeMolecules)
     self.reactionProductEnumerate = self._static_obj_obj_obj(self._lib.indigoReactionProductEnumerate)
 
+    self.dbgBreakpoint = self._lib.indigoDbgBreakpoint
+    
     self.IndigoObject.clone = self._member_obj(self._lib.indigoClone)
 
     self.IndigoObject.molfile = self._member_string(self._lib.indigoMolfile)

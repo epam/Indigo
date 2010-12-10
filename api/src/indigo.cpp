@@ -175,3 +175,24 @@ IndigoError::IndigoError (const IndigoError &other) : Exception()
 {
    other._cloneTo(this);
 }
+
+// 
+// Debug methods
+//
+
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
+CEXPORT void indigoDbgBreakpoint (void)
+{
+#ifdef _WIN32
+   if (!IsDebuggerPresent())
+   {
+      MessageBox(NULL, "Waiting for a debugger...", "", MB_OK);
+      while (!IsDebuggerPresent())
+         Sleep(100);
+   }
+#else
+#endif
+}
