@@ -3,9 +3,9 @@ if [ -z $1 ]; then
   exit;
 fi
 
-wget http://scitouch.net/downloads/indigo-java-api-$1-windows.zip
-wget http://scitouch.net/downloads/indigo-java-api-$1-linux.zip
-wget http://scitouch.net/downloads/indigo-java-api-$1-osx.zip
+wget http://ggasoftware.com/downloads/indigo-java-api-$1-windows.zip
+wget http://ggasoftware.com/downloads/indigo-java-api-$1-linux.zip
+wget http://ggasoftware.com/downloads/indigo-java-api-$1-osx.zip
 unzip indigo-java-api-$1-windows.zip
 unzip indigo-java-api-$1-linux.zip
 unzip indigo-java-api-$1-osx.zip
