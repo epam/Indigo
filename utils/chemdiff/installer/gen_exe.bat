@@ -1,0 +1,1 @@
+..\..\..\makensis\makensis.exe chemdiff_installer.nsi

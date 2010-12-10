@@ -23,17 +23,17 @@ public class LegioData
    public void clearReactantMonomers( int reactant_idx )
    {
       IndigoObject reactant_monomers = monomers_table.arrayAt(reactant_idx);
-      reactant_monomers.arrayClear();
+      reactant_monomers.clear();
    }
 
    public int getProductsCount()
    {
-      return output_reactions.arrayCount();
+      return output_reactions.size();
    }
 
    public IndigoObject getOutReaction( int idx )
    {
-      if (idx >=  output_reactions.arrayCount())
+      if (idx >=  output_reactions.size())
          return null;
 
       return output_reactions.arrayAt(idx);
@@ -41,7 +41,7 @@ public class LegioData
 
    public IndigoObject getOutProduct( int idx )
    {
-      if (idx >=  output_reactions.arrayCount())
+      if (idx >=  output_reactions.size())
          return null;
 
       IndigoObject rxn = output_reactions.arrayAt(idx);
@@ -56,7 +56,7 @@ public class LegioData
 
    public String getOutReactionString( int idx )
    {
-      if (idx >=  output_reactions.arrayCount())
+      if (idx >=  output_reactions.size())
          return null;
 
       return output_reactions.arrayAt(idx).rxnfile();
@@ -64,7 +64,7 @@ public class LegioData
 
    public String getOutProductString( int idx )
    {
-      if (idx >=  output_reactions.arrayCount())
+      if (idx >=  output_reactions.size())
          return null;
 
       IndigoObject rxn = output_reactions.arrayAt(idx);
@@ -79,7 +79,7 @@ public class LegioData
 
    public int getMonomersCount( int reactant_idx )
    {
-      return monomers_table.arrayAt(reactant_idx).arrayCount();
+      return monomers_table.arrayAt(reactant_idx).size();
    }
 
    public IndigoObject getMonomer( int reactant_idx, int mon_idx )
@@ -89,9 +89,9 @@ public class LegioData
 
    public String getMonomerString( int reactant_idx, int mon_idx )
    {
-      if (reactant_idx >= monomers_table.arrayCount())
+      if (reactant_idx >= monomers_table.size())
          return null;
-      if (mon_idx >= monomers_table.arrayAt(reactant_idx).arrayCount())
+      if (mon_idx >= monomers_table.arrayAt(reactant_idx).size())
          return null;
 
       return monomers_table.arrayAt(reactant_idx).arrayAt(mon_idx).molfile();
@@ -131,15 +131,15 @@ public class LegioData
 
    public void clear()
    {
-      monomers_table.arrayClear();
-      output_reactions.arrayClear();
+      monomers_table.clear();
+      output_reactions.clear();
    }
 
    public void react() throws IOException
    {
       output_reactions = indigo.reactionProductEnumerate(reaction, monomers_table);
 
-      for ( int i = 0; i < output_reactions.arrayCount(); i++)
+      for ( int i = 0; i < output_reactions.size(); i++)
       {
          for (IndigoObject iterr : output_reactions.arrayAt(i).iterateProducts())
          {

@@ -1,0 +1,1 @@
+..\..\makensis\makensis.exe legio_installer.nsi

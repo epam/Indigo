@@ -148,9 +148,9 @@ public class MolComparer
                if (main_frame.getAromatizeCheckState())
                   mol.aromatize();
                if (main_frame.getCisTransCheckState())
-                  mol.cisTransClear();
+                  mol.clearCisTrans();
                if (main_frame.getStereocentersCheckState())
-                  mol.stereocentersClear();
+                  mol.clearStereocenters();
                uniq_mols.get(i).smiles = mol.canonicalSmiles().trim();
             }
             catch (Exception ex)
