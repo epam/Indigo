@@ -49,6 +49,18 @@ IndigoRenderer::~IndigoRenderer ()
 {
 }
 
+void indigoRenderSetCommentOffset (int offset)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.commentOffset = offset;
+}
+
+void indigoRenderSetTitleOffset (int offset)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.titleOffset = offset;
+}                    
+
 void indigoRenderSetOutputFormat (const char *format)
 {
    TL_DECL_GET(StringIntMap, outFmtMap);
@@ -230,18 +242,6 @@ void indigoRenderSetTitleFontSize (float fontSize)
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.rcOpt.titleFontFactor = fontSize;
 }                                
-
-void indigoRenderSetCommentOffset (float offset)
-{
-   RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.cnvOpt.commentOffset = offset;
-}
-
-void indigoRenderSetTitleOffset (float offset)
-{
-   RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.cnvOpt.titleOffset = offset;
-}                    
 
 void indigoRenderSetCommentAlignment (float align)
 {
@@ -473,6 +473,9 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    OptionManager &mgr = indigoGetOptionManager();
    OsLocker locker(mgr.lock);
 
+   mgr.setOptionHandlerInt("render-comment-offset", indigoRenderSetCommentOffset);
+   mgr.setOptionHandlerInt("render-title-offset", indigoRenderSetTitleOffset);
+
    mgr.setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat);
    mgr.setOptionHandlerString("render-implicit-hydrogen-mode", indigoRenderSetImplicitHydrogenMode);
    mgr.setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode);
@@ -492,9 +495,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);
    mgr.setOptionHandlerFloat("render-comment-font-size", indigoRenderSetCommentFontSize);
-   mgr.setOptionHandlerFloat("render-comment-offset", indigoRenderSetCommentOffset);
    mgr.setOptionHandlerFloat("render-title-font-size", indigoRenderSetTitleFontSize);
-   mgr.setOptionHandlerFloat("render-title-offset", indigoRenderSetTitleOffset);
    mgr.setOptionHandlerFloat("render-comment-alignment", indigoRenderSetCommentAlignment);
    mgr.setOptionHandlerFloat("render-title-alignment", indigoRenderSetTitleAlignment);
 

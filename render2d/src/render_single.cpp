@@ -100,11 +100,11 @@ void RenderSingle::draw ()
    {
       if (_opt.commentPos == COMMENT_POS_TOP) {
          _drawComment();
-         _rc.translate(0, commentOffset);
+         _rc.translate(0, (float)commentOffset);
          _drawObj();
       } else {
          _drawObj();
-         _rc.translate(0, commentOffset);
+         _rc.translate(0, (float)commentOffset);
         _drawComment();
       }
    }

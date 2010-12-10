@@ -137,7 +137,7 @@ void RenderGrid::draw ()
    _rc.translate(outerMargin.x, outerMargin.y);
    if (_opt.commentPos == COMMENT_POS_TOP) {
       _drawComment();
-      _rc.translate(0, commentOffset);
+      _rc.translate(0, (float)commentOffset);
    }
    _rc.storeTransform();
    {

@@ -30,7 +30,7 @@ public:
    int obj;
    int comment;
    float scale;
-   float commentOffset;
+   int commentOffset;
    Vec2f objSize;
    Vec2f commentSize;
    Vec2f outerMargin;

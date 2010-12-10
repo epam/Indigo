@@ -286,8 +286,8 @@ struct CanvasOptions {
    int gridMarginY;
    int marginX;
    int marginY;
-   float commentOffset;
-   float titleOffset;
+   int commentOffset;
+   int titleOffset;
 };
 
 struct HighlightingOptions {
