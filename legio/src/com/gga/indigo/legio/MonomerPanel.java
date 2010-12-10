@@ -113,14 +113,7 @@ public class MonomerPanel
             else if (mon_paths.size() > 1)
                mon_path_label.setText("several files");
 
-            try
-            {
-               legio.addMonomerFromFile(reactant_idx, mon_paths.get(mon_paths.size() - 1));
-            } catch (Exception ex)
-            {
-               JOptionPane msg_box = new JOptionPane();
-               msg_box.showMessageDialog(parent, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            legio.addMonomerFromFile(reactant_idx, mon_paths.get(mon_paths.size() - 1));
 
             IndigoObject obj = new IndigoObject(indigo, legio.monomers_table.arrayAt(0).arrayAt(0).self);
             ArrayList<IndigoObject> mols = new ArrayList<IndigoObject>();

@@ -2,6 +2,9 @@ package com.gga.indigo.legio;
 
 import com.gga.indigo.Indigo;
 import com.gga.indigo.IndigoObject;
+import java.io.FileWriter;
+import java.io.IOException;
+import javax.swing.JOptionPane;
 
 public class LegioData
 {
@@ -30,12 +33,25 @@ public class LegioData
 
    public IndigoObject getOutReaction( int idx )
    {
+      if (idx >=  output_reactions.arrayCount())
+         return null;
+
       return output_reactions.arrayAt(idx);
    }
 
    public IndigoObject getOutProduct( int idx )
    {
-      return output_reactions.arrayAt(idx).iterateProducts();
+      if (idx >=  output_reactions.arrayCount())
+         return null;
+
+      IndigoObject rxn = output_reactions.arrayAt(idx);
+
+      for (IndigoObject iterr : rxn.iterateProducts())
+      {
+         return iterr;
+      }
+
+      return null;
    }
 
    public String getOutReactionString( int idx )
@@ -83,9 +99,17 @@ public class LegioData
 
    public void addMonomerFromFile( int reatcnt_idx, String mon_path )
    {
-      for (IndigoObject iterr : indigo.iterateSDFile(mon_path))
+      IndigoObject mons_iterator = indigo.iterateSDFile(mon_path);
+      for (IndigoObject iterr : mons_iterator)
       {
-         monomers_table.arrayAt(reatcnt_idx).arrayAdd(iterr.clone());
+         try
+         {
+            monomers_table.arrayAt(reatcnt_idx).arrayAdd(iterr.clone());
+         } catch (Exception ex)
+         {
+            int i;
+            i = 1;
+         }
       }
    }
 
@@ -111,7 +135,7 @@ public class LegioData
       output_reactions.arrayClear();
    }
 
-   public void react()
+   public void react() throws IOException
    {
       output_reactions = indigo.reactionProductEnumerate(reaction, monomers_table);
 
@@ -122,5 +146,19 @@ public class LegioData
             iterr.layout();
          }
       }
+
+      FileWriter out_fstream = new FileWriter("C:\\usr\\ingido-git\\indigo\\tests\\rpe-python-test.ac\\tests\\1\\rpe_prod.sdf");
+
+      for (int i = 0; i < getProductsCount(); i++)
+      {
+         String product_str = getOutProductString(i);
+         String product_csmiles = getOutProduct(i).canonicalSmiles();
+
+         out_fstream.write(product_str);
+
+         out_fstream.write("$$$$\n");
+      }
+
+      out_fstream.close();
    }
 }
