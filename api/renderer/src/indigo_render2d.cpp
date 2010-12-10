@@ -474,14 +474,12 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    OsLocker locker(mgr.lock);
 
    mgr.setOptionHandlerInt("render-comment-offset", indigoRenderSetCommentOffset);
-   mgr.setOptionHandlerInt("render-title-offset", indigoRenderSetTitleOffset);
 
    mgr.setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat);
    mgr.setOptionHandlerString("render-implicit-hydrogen-mode", indigoRenderSetImplicitHydrogenMode);
    mgr.setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode);
    mgr.setOptionHandlerString("render-comment", indigoRenderSetComment);
    mgr.setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition);
-   mgr.setOptionHandlerString("render-grid-title-property", indigoRenderSetGridTitleProperty);
 
    mgr.setOptionHandlerBool("render-coloring", indigoRenderSetColoring);
    mgr.setOptionHandlerBool("render-valences-visible", indigoRenderSetValencesVisible);
@@ -495,9 +493,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);
    mgr.setOptionHandlerFloat("render-comment-font-size", indigoRenderSetCommentFontSize);
-   mgr.setOptionHandlerFloat("render-title-font-size", indigoRenderSetTitleFontSize);
    mgr.setOptionHandlerFloat("render-comment-alignment", indigoRenderSetCommentAlignment);
-   mgr.setOptionHandlerFloat("render-title-alignment", indigoRenderSetTitleAlignment);
 
    mgr.setOptionHandlerColor("render-background-color", indigoRenderSetBackgroundColor);
    mgr.setOptionHandlerColor("render-base-color", indigoRenderSetBaseColor);
@@ -508,7 +504,13 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerXY("render-image-size", indigoRenderSetImageSize);
    mgr.setOptionHandlerXY("render-hdc-offset", indigoRenderSetHDCOffset);
    mgr.setOptionHandlerXY("render-margins", indigoRenderSetMargins);
+
    mgr.setOptionHandlerXY("render-grid-margins", indigoRenderSetGridMargins);
+   mgr.setOptionHandlerFloat("render-grid-title-alignment", indigoRenderSetTitleAlignment);
+   mgr.setOptionHandlerFloat("render-grid-title-font-size", indigoRenderSetTitleFontSize);
+   mgr.setOptionHandlerString("render-grid-title-property", indigoRenderSetGridTitleProperty);
+   mgr.setOptionHandlerInt("render-grid-title-offset", indigoRenderSetTitleOffset);
+
 }
 
 _IndigoRenderingOptionsHandlersSetter _indigo_rendering_options_handlers_setter;
