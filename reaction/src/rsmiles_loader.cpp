@@ -453,7 +453,7 @@ void RSmilesLoader::_loadReaction ()
    QS_DEF(Array<int>, hl_atoms_frag);
    QS_DEF(Array<int>, hl_bonds_frag);
 
-   if (have_highlighting && highlighting != 0)
+   if (highlighting != 0)
       highlighting->init(*_brxn);
 
    if (_rxn != 0)

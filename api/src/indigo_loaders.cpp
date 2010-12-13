@@ -148,15 +148,7 @@ const char * IndigoRdfMolecule::getName ()
 
 IndigoObject * IndigoRdfMolecule::clone ()
 {
-   QS_DEF(Array<int>, mapping);
-   AutoPtr<IndigoMolecule> molptr;
-   molptr.reset(new IndigoMolecule());
-   molptr->mol.clone(getMolecule(), 0, &mapping);
-   molptr->copyProperties(_properties);
-   molptr->highlighting.init(molptr->mol);
-   if (getMoleculeHighlighting())
-      molptr->highlighting.copy(*getMoleculeHighlighting(), &mapping);
-   return molptr.release();
+   return IndigoMolecule::cloneFrom(*this);
 }
 
 IndigoRdfMolecule::~IndigoRdfMolecule ()
@@ -211,12 +203,7 @@ const char * IndigoRdfReaction::getName ()
 
 IndigoObject * IndigoRdfReaction::clone ()
 {
-   AutoPtr<IndigoReaction> rxnptr;
-   rxnptr.reset(new IndigoReaction());
-   rxnptr->rxn.clone(getReaction(), 0, 0);
-   rxnptr->highlighting.init(rxnptr->rxn);
-   rxnptr->copyProperties(_properties);
-   return rxnptr.release();
+   return IndigoReaction::cloneFrom(*this);
 }
 
 IndigoRdfReaction::~IndigoRdfReaction ()
@@ -345,10 +332,7 @@ const char * IndigoSmilesMolecule::getName ()
 
 IndigoObject * IndigoSmilesMolecule::clone ()
 {
-   AutoPtr<IndigoMolecule> molptr;
-   molptr.reset(new IndigoMolecule());
-   molptr->mol.clone(getMolecule(), 0, 0);
-   return molptr.release();
+   return IndigoMolecule::cloneFrom(*this);
 }
 
 IndigoSmilesReaction::IndigoSmilesReaction (Array<char> &smiles, int index, int offset) :
@@ -391,11 +375,7 @@ const char * IndigoSmilesReaction::getName ()
 
 IndigoObject * IndigoSmilesReaction::clone ()
 {
-   AutoPtr<IndigoReaction> rxnptr;
-   rxnptr.reset(new IndigoReaction());
-   rxnptr->rxn.clone(getReaction(), 0, 0);
-   rxnptr->highlighting.init(rxnptr->rxn);
-   return rxnptr.release();
+   return IndigoReaction::cloneFrom(*this);
 }
 
 IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (Scanner &scanner) :

@@ -94,12 +94,22 @@ const char * IndigoMolecule::getName ()
    return mol.name.ptr();
 }
 
-IndigoMolecule * IndigoMolecule::cloneFrom( IndigoObject & obj )
+IndigoMolecule * IndigoMolecule::cloneFrom (IndigoObject & obj)
 {
-   AutoPtr<IndigoMolecule> molptr;
-   molptr.reset(new IndigoMolecule());
-   molptr->highlighting.copy(*(obj.getMoleculeHighlighting()), 0);
-   molptr->mol.clone(obj.getMolecule(), 0, 0);
+   AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
+   QS_DEF(Array<int>, mapping);
+
+   molptr->mol.clone(obj.getMolecule(), 0, &mapping);
+   molptr->highlighting.init(molptr->mol);
+   
+   GraphHighlighting *hl = obj.getMoleculeHighlighting();
+   if (hl != 0)
+      molptr->highlighting.copy(*hl, &mapping);
+
+   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
+   if (props != 0)
+      molptr->copyProperties(*props);
+
    return molptr.release();
 }
 
@@ -118,10 +128,20 @@ QueryMolecule & IndigoQueryMolecule::getQueryMolecule ()
 
 IndigoQueryMolecule * IndigoQueryMolecule::cloneFrom( IndigoObject & obj )
 {
-   AutoPtr<IndigoQueryMolecule> molptr;
-   molptr.reset(new IndigoQueryMolecule());
-   molptr->highlighting.copy(*(obj.getMoleculeHighlighting()), 0);
-   molptr->qmol.clone(obj.getQueryMolecule(), 0, 0);
+   AutoPtr<IndigoQueryMolecule> molptr(new IndigoQueryMolecule());
+   QS_DEF(Array<int>, mapping);
+
+   molptr->qmol.clone(obj.getQueryMolecule(), 0, &mapping);
+   molptr->highlighting.init(molptr->qmol);
+
+   GraphHighlighting *hl = obj.getMoleculeHighlighting();
+   if (hl != 0)
+      molptr->highlighting.copy(*hl, &mapping);
+
+   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
+   if (props != 0)
+      molptr->copyProperties(*props);
+
    return molptr.release();
 }
 
@@ -1151,14 +1171,7 @@ CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *verti
 
 IndigoObject * IndigoMolecule::clone ()
 {
-   QS_DEF(Array<int>, mapping);
-   AutoPtr<IndigoMolecule> molptr;
-   molptr.reset(new IndigoMolecule());
-   molptr->mol.clone(mol, 0, &mapping);
-   molptr->copyProperties(properties);
-   molptr->highlighting.init(molptr->mol);
-   molptr->highlighting.copy(highlighting, &mapping);
-   return molptr.release();
+   return cloneFrom(*this);
 }
 
 DLLEXPORT const char * IndigoMolecule::debugInfo ()
@@ -1168,14 +1181,7 @@ DLLEXPORT const char * IndigoMolecule::debugInfo ()
 
 IndigoObject * IndigoQueryMolecule::clone ()
 {
-   QS_DEF(Array<int>, mapping);
-   AutoPtr<IndigoQueryMolecule> molptr;
-   molptr.reset(new IndigoQueryMolecule());
-   molptr->qmol.clone(qmol, 0, &mapping);
-   molptr->copyProperties(properties);
-   molptr->highlighting.init(molptr->qmol);
-   molptr->highlighting.copy(highlighting, &mapping);
-   return molptr.release();
+   return cloneFrom(*this);
 }
 
 DLLEXPORT const char * IndigoQueryMolecule::debugInfo ()
