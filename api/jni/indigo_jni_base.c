@@ -17,7 +17,7 @@
 #include "indigo.h"
 #include "indigo_jni_base.h"
 
-JNIEXPORT void indigoThrowJNIException (JNIEnv *env, const char *message)
+CEXPORT void indigoThrowJNIException (JNIEnv *env, const char *message)
 {
    jclass cls = (*env)->FindClass(env, "com/gga/indigo/IndigoException");
 
@@ -34,7 +34,7 @@ static void _indigoErrorHandler (const char *message, void *context)
    indigoThrowJNIException(env, message);
 }
 
-JNIEXPORT void indigoJniSetSession (JNIEnv *env, jobject obj)
+CEXPORT void indigoJniSetSession (JNIEnv *env, jobject obj)
 {
    jclass cls = (*env)->GetObjectClass(env, obj);
    jfieldID id = (*env)->GetFieldID(env, cls, "_sid", "J");

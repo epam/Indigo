@@ -15,9 +15,9 @@
 #ifndef __indigo_jni_base__
 #define __indigo_jni_base__
 
-JNIEXPORT void indigoJniSetSession (JNIEnv *env, jobject obj);
+CEXPORT void indigoJniSetSession (JNIEnv *env, jobject obj);
 
-extern JNIEXPORT void indigoThrowJNIException (JNIEnv *env, const char *message);
+CEXPORT void indigoThrowJNIException (JNIEnv *env, const char *message);
 
 #define JNI_FUNC_jint_jint(name)                                     \
 JNIEXPORT jint JNINAME(name) (JNIEnv *env, jobject obj, jint param1) \
