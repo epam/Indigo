@@ -146,19 +146,5 @@ public class LegioData
             iterr.layout();
          }
       }
-
-      FileWriter out_fstream = new FileWriter("C:\\usr\\ingido-git\\indigo\\tests\\rpe-python-test.ac\\tests\\1\\rpe_prod.sdf");
-
-      for (int i = 0; i < getProductsCount(); i++)
-      {
-         String product_str = getOutProductString(i);
-         String product_csmiles = getOutProduct(i).canonicalSmiles();
-
-         out_fstream.write(product_str);
-
-         out_fstream.write("$$$$\n");
-      }
-
-      out_fstream.close();
    }
 }

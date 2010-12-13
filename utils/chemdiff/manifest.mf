@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
+Class-Path: lib\indigo-java.jar lib\indigo-renderer-java.jar
 X-COMMENT: Main-Class will be added automatically by build
 
