@@ -1975,7 +1975,10 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       // hydrogen drawing
       ad.showHydro = false;
       if (!bm.isQueryMolecule()) {
-         int implicit_h = bm.asMolecule().getImplicitH(aid);
+         int implicit_h = 0;
+
+         if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
+            implicit_h = bm.asMolecule().getImplicitH(aid);
          if (implicit_h > 0 && showImplHydrogens)
          {
             ad.showHydro = true;
