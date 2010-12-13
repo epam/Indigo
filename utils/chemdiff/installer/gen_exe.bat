@@ -1,1 +1,9 @@
-..\..\..\makensis\makensis.exe chemdiff_installer.nsi
+cd ..\
+
+echo start javaw -jar -Xss1m chemdiff.jar > dist\launch.bat
+
+mkdir dist\lib
+copy ..\..\api\java\dist\indigo-java.jar dist\lib\
+copy ..\..\api\renderer\java\dist\indigo-renderer-java.jar dist\lib\
+
+"%ProgramFiles%\NSIS\makensis.exe" installer\chemdiff_installer.nsi

@@ -49,7 +49,6 @@ public class MainFrame extends javax.swing.JFrame
       indigo_renderer = new IndigoRenderer(indigo);
       //indigo.setOption("ignore-stereochemistry-errors", true);
       indigo.setOption("render-margins", "5,2");
-      indigo.setOption("render-comment-margins", "5,2");
       indigo.setOption("molfile-saving-mode", "3000");
       initComponents();
       
