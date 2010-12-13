@@ -17,7 +17,7 @@
 #include "indigo.h"
 #include "indigo_jni_base.h"
 
-void indigoThrowJNIException (JNIEnv *env, const char *message)
+JNIEXPORT void indigoThrowJNIException (JNIEnv *env, const char *message)
 {
    jclass cls = (*env)->FindClass(env, "com/gga/indigo/IndigoException");
 

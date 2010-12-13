@@ -17,7 +17,7 @@
 
 JNIEXPORT void indigoJniSetSession (JNIEnv *env, jobject obj);
 
-extern void indigoThrowJNIException (JNIEnv *env, const char *message);
+extern JNIEXPORT void indigoThrowJNIException (JNIEnv *env, const char *message);
 
 #define JNI_FUNC_jint_jint(name)                                     \
 JNIEXPORT jint JNINAME(name) (JNIEnv *env, jobject obj, jint param1) \
