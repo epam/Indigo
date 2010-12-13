@@ -561,6 +561,8 @@ void ReactionEnumeratorState::_changeQueryNode( QueryMolecule &ee_reactant, int 
       int nv_idx = vertex.neiVertex(j);
       
       int new_atom_idx = reactant_copy.addAtom(atom.clone());
+
+      reactant_copy.setRSiteAttachmentOrder(new_atom_idx, nv_idx, 0);
       
       reactant_copy.flipBond(nv_idx, change_atom_idx, new_atom_idx);
    }
