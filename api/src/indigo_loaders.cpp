@@ -148,10 +148,14 @@ const char * IndigoRdfMolecule::getName ()
 
 IndigoObject * IndigoRdfMolecule::clone ()
 {
+   QS_DEF(Array<int>, mapping);
    AutoPtr<IndigoMolecule> molptr;
    molptr.reset(new IndigoMolecule());
-   molptr->mol.clone(getMolecule(), 0, 0);
+   molptr->mol.clone(getMolecule(), 0, &mapping);
    molptr->copyProperties(_properties);
+   molptr->highlighting.init(molptr->mol);
+   if (getMoleculeHighlighting())
+      molptr->highlighting.copy(*getMoleculeHighlighting(), &mapping);
    return molptr.release();
 }
 
