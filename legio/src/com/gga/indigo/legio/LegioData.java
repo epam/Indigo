@@ -141,6 +141,10 @@ public class LegioData
 
       for ( int i = 0; i < output_reactions.size(); i++)
       {
+         for (IndigoObject iterr : output_reactions.arrayAt(i).iterateReactants())
+         {
+            iterr.layout();
+         }
          for (IndigoObject iterr : output_reactions.arrayAt(i).iterateProducts())
          {
             iterr.layout();

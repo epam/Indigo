@@ -21,6 +21,8 @@ Section "Legio"
   SetOutPath "$INSTDIR\lib\"
   File /r "..\lib\"
   File /r "..\dist\lib\"
+  SetOutPath "$INSTDIR\tests\"
+  File /r "..\tests\"
   SetOutPath $INSTDIR
   File "..\dist\legio.jar"
   File "..\dist\launch.bat"
@@ -50,6 +52,7 @@ Section "Uninstall"
   DeleteRegKey HKLM SOFTWARE\Legio
 
   RMDir /r $INSTDIR\lib
+  RMDir /r $INSTDIR\tests
   Delete $INSTDIR\legio.jar
   Delete $INSTDIR\launch.bat
   Delete $INSTDIR\uninstall.exe

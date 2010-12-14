@@ -1,6 +1,6 @@
 cd ..\
 
-echo start javaw -jar -Xss1m chemdiff.jar > dist\launch.bat
+echo start javaw -jar -Xss10m chemdiff.jar > dist\launch.bat
 
 mkdir dist\lib
 copy ..\..\api\java\dist\indigo-java.jar dist\lib\
