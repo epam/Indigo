@@ -203,24 +203,62 @@ bool IndigoReactionIter::hasNext ()
    return _next(_idx) != _end();
 }
 
-IndigoObject * IndigoReaction::clone ()
+IndigoReaction * IndigoReaction::cloneFrom (IndigoObject & obj)
 {
+   QS_DEF(ObjArray< Array<int> >, mappings);
+   Reaction &rxn = obj.getReaction();
+
    AutoPtr<IndigoReaction> rxnptr;
    rxnptr.reset(new IndigoReaction());
-   rxnptr->rxn.clone(rxn, 0, 0);
+   rxnptr->rxn.clone(rxn, 0, &mappings);
    rxnptr->highlighting.init(rxnptr->rxn);
-   rxnptr->copyProperties(properties);
+
+   ReactionHighlighting *hl = obj.getReactionHighlighting();
+   if (hl != 0)
+   {
+      int i;
+      for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+         rxnptr->highlighting.getGraphHighlighting(i).copy(hl->getGraphHighlighting(i), &mappings[i]);
+   }
+
+   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
+   if (props != 0)
+      rxnptr->copyProperties(*props);
    return rxnptr.release();
+}
+
+IndigoQueryReaction * IndigoQueryReaction::cloneFrom (IndigoObject & obj)
+{
+   QS_DEF(ObjArray< Array<int> >, mappings);
+   QueryReaction &rxn = obj.getQueryReaction();
+
+   AutoPtr<IndigoQueryReaction> rxnptr;
+   rxnptr.reset(new IndigoQueryReaction());
+   rxnptr->rxn.clone(rxn, 0, &mappings);
+   rxnptr->highlighting.init(rxnptr->rxn);
+
+   ReactionHighlighting *hl = obj.getReactionHighlighting();
+   if (hl != 0)
+   {
+      int i;
+      for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+         rxnptr->highlighting.getGraphHighlighting(i).copy(hl->getGraphHighlighting(i), &mappings[i]);
+   }
+
+   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
+   if (props != 0)
+      rxnptr->copyProperties(*props);
+   return rxnptr.release();
+}
+
+IndigoObject * IndigoReaction::clone ()
+{
+   return cloneFrom(*this);
 }
 
 IndigoObject * IndigoQueryReaction::clone ()
 {
-   AutoPtr<IndigoQueryReaction> rxnptr;
-   rxnptr.reset(new IndigoQueryReaction());
-   rxnptr->rxn.clone(rxn, 0, 0);
-   rxnptr->highlighting.init(rxnptr->rxn);
-   rxnptr->copyProperties(properties);
-   return rxnptr.release();
+   return cloneFrom(*this);
 }
 
 int _indigoIterateReaction (int reaction, int subtype)

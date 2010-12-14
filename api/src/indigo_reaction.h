@@ -44,7 +44,9 @@ public:
    DLLEXPORT virtual Reaction & getReaction ();
    DLLEXPORT virtual const char * getName ();
 
-   DLLEXPORT virtual IndigoObject * clone();
+   DLLEXPORT virtual IndigoObject * clone ();
+
+   DLLEXPORT static IndigoReaction * cloneFrom (IndigoObject & obj);
 
    Reaction rxn;
 };
@@ -60,6 +62,8 @@ public:
    DLLEXPORT virtual const char * getName ();
 
    DLLEXPORT virtual IndigoObject * clone();
+
+   DLLEXPORT static IndigoQueryReaction * cloneFrom (IndigoObject & obj);
 
    QueryReaction rxn;
 };

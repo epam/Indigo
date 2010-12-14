@@ -235,12 +235,13 @@ void BaseReaction::clone (BaseReaction &other, ObjArray< Array<int> >* mappings,
             break;
       }
 
-      for(int j = rmol.vertexBegin(); j < rmol.vertexEnd(); j = rmol.vertexNext(j)) {
+      BaseMolecule &lmol = getBaseMolecule(index);
+      for(int j = lmol.vertexBegin(); j < lmol.vertexEnd(); j = lmol.vertexNext(j)) {
          getAAMArray(index).at(j) = other.getAAM(i, mol_mappings->at(i)[j]);
          getInversionArray(index).at(j) = other.getInversion(i, mol_mappings->at(i)[j]);
       }
-      for (int j = getBaseMolecule(index).edgeBegin(); j < getBaseMolecule(index).edgeEnd(); j = getBaseMolecule(index).edgeNext(j)) {
-         const Edge &edge = getBaseMolecule(index).getEdge(j);
+      for (int j = lmol.edgeBegin(); j < lmol.edgeEnd(); j = lmol.edgeNext(j)) {
+         const Edge &edge = lmol.getEdge(j);
          int edge_idx = other.getBaseMolecule(i).findEdgeIndex(mol_mappings->at(i)[edge.beg], mol_mappings->at(i)[edge.end]);
          getReactingCenterArray(index).at(j) = other.getReactingCenter(i, edge_idx);
       }

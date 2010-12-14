@@ -180,8 +180,6 @@ void SmilesLoader::_readOtherStuff ()
 {
    MoleculeStereocenters &stereocenters = _bmol->stereocenters;
    
-   bool highlighting_initialized = false;
-
    while (1)
    {
       char c = _scanner.readChar();
@@ -335,12 +333,6 @@ void SmilesLoader::_readOtherStuff ()
 
          if (_scanner.readChar() != ':')
             throw Error("colon expected after 'h%c'", a ? 'a' : 'b');
-
-         if (highlighting != 0 && !highlighting_initialized)
-         {
-            highlighting->init(*_bmol);
-            highlighting_initialized = true;
-         }
 
          while (isdigit(_scanner.lookNext()))
          {
@@ -861,6 +853,9 @@ void SmilesLoader::_loadMolecule ()
 
    _calcStereocenters();
    _calcCisTrans();
+
+   if (highlighting != 0)
+      highlighting->init(*_bmol);
 
    _scanner.skipSpace();
 

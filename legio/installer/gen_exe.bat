@@ -7,3 +7,5 @@ copy ..\api\java\dist\indigo-java.jar dist\lib\
 copy ..\api\renderer\java\dist\indigo-renderer-java.jar dist\lib\
 
 "%ProgramFiles%\NSIS\makensis.exe" installer\legio_installer.nsi
+
+cd installer
