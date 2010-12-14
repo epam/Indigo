@@ -22,14 +22,14 @@
 namespace indigo {
 
 // os_mutex wrapper
-class OsLock
+class DLLEXPORT OsLock
 {
 public:
-   DLLEXPORT OsLock  ();
-   DLLEXPORT ~OsLock ();
+   OsLock  ();
+   ~OsLock ();
 
-   DLLEXPORT void Lock ();
-   DLLEXPORT void Unlock ();
+   void Lock ();
+   void Unlock ();
 private:
    os_mutex _mutex;
 };
@@ -114,7 +114,7 @@ DLLEXPORT OsLock & osStaticObjConstructionLock ();
 // This object should be declared as ONLY static object because
 // _was_created variable should be zero by default.
 template <typename T>
-class ThreadSafeStaticObj
+class DLLEXPORT ThreadSafeStaticObj
 {
 public:
    ~ThreadSafeStaticObj()

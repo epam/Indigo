@@ -18,12 +18,17 @@
 #include "base_cpp/red_black.h"
 #include "math/algebra.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class BaseMolecule;
 class Filter;
 
-class MoleculeCisTrans
+class DLLEXPORT MoleculeCisTrans
 {
 public:
    enum
@@ -32,45 +37,45 @@ public:
       TRANS = 2
    };
 
-   DLLEXPORT void clear ();
-   DLLEXPORT void clear (BaseMolecule &mol);
-   DLLEXPORT void build (BaseMolecule &mol, int *exclude_bonds);
-   DLLEXPORT void buildFromSmiles (int *dirs);
+   void clear ();
+   void clear (BaseMolecule &mol);
+   void build (BaseMolecule &mol, int *exclude_bonds);
+   void buildFromSmiles (int *dirs);
 
-   DLLEXPORT bool exists () const;
+   bool exists () const;
 
-   DLLEXPORT int count ();
+   int count ();
 
-   DLLEXPORT void setParity (int bond_idx, int parity);
-   DLLEXPORT int  getParity (int bond_idx) const;
+   void setParity (int bond_idx, int parity);
+   int  getParity (int bond_idx) const;
 
-   DLLEXPORT void registerBond (int idx);
+   void registerBond (int idx);
 
-   DLLEXPORT void flipBond (BaseMolecule &mol, int atom_parent, int atom_from, int atom_to);
+   void flipBond (BaseMolecule &mol, int atom_parent, int atom_from, int atom_to);
 
-   DLLEXPORT const int * getSubstituents (int bond_idx) const;
-   DLLEXPORT void getSubstituents_All (BaseMolecule &mol, int bond_idx, int subst[4]) const;
+   const int * getSubstituents (int bond_idx) const;
+   void getSubstituents_All (BaseMolecule &mol, int bond_idx, int subst[4]) const;
 
-   DLLEXPORT void add (int bond_idx, int substituents[4], int parity);
+   void add (int bond_idx, int substituents[4], int parity);
 
-   DLLEXPORT int applyMapping (int idx, const int *mapping) const;
-   DLLEXPORT static int applyMapping (int parity, const int *substituents, const int *mapping);
+   int applyMapping (int idx, const int *mapping) const;
+   static int applyMapping (int parity, const int *substituents, const int *mapping);
 
-   DLLEXPORT static int getMappingParitySign (BaseMolecule &query, BaseMolecule &target,
+   static int getMappingParitySign (BaseMolecule &query, BaseMolecule &target,
                                     int bond_idx, const int *mapping);
 
-   DLLEXPORT static bool checkSub (BaseMolecule &query, BaseMolecule &target, const int *mapping);
+   static bool checkSub (BaseMolecule &query, BaseMolecule &target, const int *mapping);
 
-   DLLEXPORT void buildOnSubmolecule (BaseMolecule &super, BaseMolecule &sub, int *mapping);
+   void buildOnSubmolecule (BaseMolecule &super, BaseMolecule &sub, int *mapping);
 
-   DLLEXPORT void restoreSubstituents (BaseMolecule &mol, int bond_idx);
+   void restoreSubstituents (BaseMolecule &mol, int bond_idx);
 
-   DLLEXPORT static bool isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *edge_filter = NULL);
+   static bool isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *edge_filter = NULL);
 
    DEF_ERROR("cis-trans");
 
-   DLLEXPORT static bool isGeomStereoBond (BaseMolecule &mol, int bond_idx, int *substituents, bool have_xyz);
-   DLLEXPORT static int  sameside (const Vec3f &beg, const Vec3f &end, const Vec3f &nei_beg, const Vec3f &nei_end);
+   static bool isGeomStereoBond (BaseMolecule &mol, int bond_idx, int *substituents, bool have_xyz);
+   static int  sameside (const Vec3f &beg, const Vec3f &end, const Vec3f &nei_beg, const Vec3f &nei_end);
 
 protected:
 
@@ -90,5 +95,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

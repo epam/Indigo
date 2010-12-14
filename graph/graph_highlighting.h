@@ -18,44 +18,49 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Graph;
 class Filter;
 
-class GraphHighlighting
+class DLLEXPORT GraphHighlighting
 {
 public:
-   DLLEXPORT GraphHighlighting ();
+   GraphHighlighting ();
 
-   DLLEXPORT void init (const Graph &graph);
-   DLLEXPORT void nondestructiveUpdate ();
-   DLLEXPORT void clear ();
+   void init (const Graph &graph);
+   void nondestructiveUpdate ();
+   void clear ();
 
-   DLLEXPORT void copy (const GraphHighlighting &other, const Array<int> *mapping);
+   void copy (const GraphHighlighting &other, const Array<int> *mapping);
 
-   DLLEXPORT void onVertex (int idx);
-   DLLEXPORT void onEdge (int idx);
+   void onVertex (int idx);
+   void onEdge (int idx);
 
-   DLLEXPORT bool hasVertex (int idx) const;
-   DLLEXPORT bool hasEdge (int idx) const;
+   bool hasVertex (int idx) const;
+   bool hasEdge (int idx) const;
 
-   DLLEXPORT const Array<int> & getVertices () const;
-   DLLEXPORT const Array<int> & getEdges () const;
+   const Array<int> & getVertices () const;
+   const Array<int> & getEdges () const;
 
-   DLLEXPORT void onVertices (const Filter & filter);
-   DLLEXPORT void onEdges (const Filter &filter);
+   void onVertices (const Filter & filter);
+   void onEdges (const Filter &filter);
 
-   DLLEXPORT void onSubgraph (const Graph &subgraph, const int *mapping);
+   void onSubgraph (const Graph &subgraph, const int *mapping);
 
-   DLLEXPORT void removeVertex (int idx);
-   DLLEXPORT void removeVertexOnly (int idx);
-   DLLEXPORT void removeEdge   (int idx);
+   void removeVertex (int idx);
+   void removeVertexOnly (int idx);
+   void removeEdge   (int idx);
 
-   DLLEXPORT int numVertices () const;
-   DLLEXPORT int numEdges    () const;
+   int numVertices () const;
+   int numEdges    () const;
 
-   DLLEXPORT void invert ();
+   void invert ();
 
    DEF_ERROR("graph highlighting");
 
@@ -71,5 +76,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

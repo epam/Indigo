@@ -24,22 +24,27 @@
 #include "math.h"
 #include "base_cpp/obj_list.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
-class MaxCommonSubgraph{
+class DLLEXPORT MaxCommonSubgraph{
 public:
 
    DEF_ERROR("MCS");
 
-   DLLEXPORT MaxCommonSubgraph(Graph& subgraph, Graph& supergraph);
-   DLLEXPORT ~MaxCommonSubgraph();
+   MaxCommonSubgraph(Graph& subgraph, Graph& supergraph);
+   ~MaxCommonSubgraph();
 
-   DLLEXPORT void setGraphs(Graph& subgraph, Graph& supergraph);
+   void setGraphs(Graph& subgraph, Graph& supergraph);
    //two main methods for maximum common subgraph search
    //exact searching mcs method. Hanser's algorithm used
-   DLLEXPORT void findExactMCS();
+   void findExactMCS();
    //approximate method for searching mcs. 2DOM algorithm used
-   DLLEXPORT void findApproximateMCS();
+   void findApproximateMCS();
 
    //parameters for exact method
    struct ParametersForExact{
@@ -75,11 +80,11 @@ public:
    //array for accept input mapping and working with it
    Array<int> incomingMap;
    //this method sorts solutions and maximizes number of the rings in graph
-   DLLEXPORT static int ringsSolutionTerm(Array<int>&, Array<int>&, void*);
+   static int ringsSolutionTerm(Array<int>&, Array<int>&, void*);
    //returns all maps-solutions-mcs
-   DLLEXPORT void getSolutionMaps(ObjArray< Array<int> >* v_maps, ObjArray< Array<int> >* e_maps) const;
+   void getSolutionMaps(ObjArray< Array<int> >* v_maps, ObjArray< Array<int> >* e_maps) const;
    //returns first element in sorted solution array
-   DLLEXPORT void getMaxSolutionMap(Array<int>* v_map, Array<int>* e_map) const;
+   void getMaxSolutionMap(Array<int>* v_map, Array<int>* e_map) const;
    //callback for sorting solutions (see _vertEdgeSolMap)
    int (*cbSolutionTerm) (Array<int>& array1, Array<int>& array2, void* userdata);
    //context for all callbacks (edge and vertices matching and sort solutions
@@ -503,7 +508,7 @@ public:
    };
    
    //Randomizator for approximate algorithm
-   class RandomHandler{
+   class DLLEXPORT RandomHandler{
    public:
       enum {
          DEFSEED=54217137,
@@ -655,6 +660,10 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif
 

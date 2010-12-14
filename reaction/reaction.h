@@ -43,32 +43,32 @@ enum
    RC_TOTAL          = 16
 };
 
-class Reaction : public BaseReaction {
+class DLLEXPORT Reaction : public BaseReaction {
 public:
 
-   DLLEXPORT Reaction ();
-   DLLEXPORT virtual ~Reaction ();
+   Reaction ();
+   virtual ~Reaction ();
 
-   DLLEXPORT virtual void clear();
+   virtual void clear();
 
-   DLLEXPORT virtual BaseReaction * neu ();
+   virtual BaseReaction * neu ();
 
-   DLLEXPORT Molecule & getMolecule (int index);
+   Molecule & getMolecule (int index);
 
-   DLLEXPORT virtual void aromatize();
-   DLLEXPORT virtual void dearomatize();
+   virtual void aromatize();
+   virtual void dearomatize();
 
-   DLLEXPORT virtual Reaction & asReaction ();
+   virtual Reaction & asReaction ();
 
    /*
    void dearomatizeBonds();
    void aromatizeQueryBonds();
    bool isAllConnected() const;*/
 
-   DLLEXPORT static void saveBondOrders (Reaction& reaction, ObjArray< Array<int> > &bond_types);
-   DLLEXPORT static void loadBondOrders (Reaction& reaction, ObjArray< Array<int> > &bond_types);
+   static void saveBondOrders (Reaction& reaction, ObjArray< Array<int> > &bond_types);
+   static void loadBondOrders (Reaction& reaction, ObjArray< Array<int> > &bond_types);
 
-   DLLEXPORT static void checkForConsistency (Reaction &rxn);
+   static void checkForConsistency (Reaction &rxn);
 
    DEF_ERROR("reaction");
 

@@ -22,17 +22,17 @@ namespace indigo {
 class Molecule;
 class Output;
 
-class CanonicalSmilesSaver
+class DLLEXPORT CanonicalSmilesSaver
 {
 public:
 
-   DLLEXPORT explicit CanonicalSmilesSaver (Output &output);
-   DLLEXPORT ~CanonicalSmilesSaver ();
+   explicit CanonicalSmilesSaver (Output &output);
+   ~CanonicalSmilesSaver ();
 
    bool find_invalid_stereo;
    bool ignore_invalid_hcount;
 
-   DLLEXPORT void saveMolecule (Molecule &mol) const;
+   void saveMolecule (Molecule &mol) const;
 
    DEF_ERROR("canonical SMILES saver");
 

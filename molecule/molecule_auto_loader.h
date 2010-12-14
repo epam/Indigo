@@ -25,17 +25,17 @@ class Molecule;
 class QueryMolecule;
 class BaseMolecule;
 
-class MoleculeAutoLoader
+class DLLEXPORT MoleculeAutoLoader
 {
 public:
-   DLLEXPORT MoleculeAutoLoader (Scanner &scanner);
-   DLLEXPORT MoleculeAutoLoader (const Array<char> &arr);
-   DLLEXPORT MoleculeAutoLoader (const char *str);
+   MoleculeAutoLoader (Scanner &scanner);
+   MoleculeAutoLoader (const Array<char> &arr);
+   MoleculeAutoLoader (const char *str);
 
-   DLLEXPORT ~MoleculeAutoLoader ();
+   ~MoleculeAutoLoader ();
 
-   DLLEXPORT void loadMolecule (Molecule &mol);
-   DLLEXPORT void loadQueryMolecule (QueryMolecule &qmol);
+   void loadMolecule (Molecule &mol);
+   void loadQueryMolecule (QueryMolecule &qmol);
 
    GraphHighlighting *highlighting;
 

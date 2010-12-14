@@ -15,6 +15,11 @@
 #ifndef __base_reaction_h__
 #define __base_reaction_h__
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 #include "molecule/base_molecule.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
@@ -24,7 +29,7 @@ namespace indigo {
 class Reaction;
 class QueryReaction;
 
-class BaseReaction {
+class DLLEXPORT BaseReaction {
 public:
    enum
    {
@@ -33,11 +38,11 @@ public:
       CATALYST = 4
    };
 
-   DLLEXPORT BaseReaction();
-   DLLEXPORT virtual ~BaseReaction ();
+   BaseReaction();
+   virtual ~BaseReaction ();
 
    // 'neu' means 'new' in German
-   DLLEXPORT virtual BaseReaction * neu () = 0;
+   virtual BaseReaction * neu () = 0;
 
    int begin() const                   { return _nextElement(REACTANT | PRODUCT | CATALYST, -1); }
    int next(int index) const           { return _nextElement(REACTANT | PRODUCT | CATALYST, index); }
@@ -66,39 +71,39 @@ public:
    int productsCount() const { return _productCount; }
    int catalystCount() const { return _catalystCount; }
    
-   DLLEXPORT virtual void clear();
+   virtual void clear();
 
-   DLLEXPORT virtual void aromatize() = 0;
-   DLLEXPORT virtual void dearomatize() = 0;
+   virtual void aromatize() = 0;
+   virtual void dearomatize() = 0;
 
    // poor man's dynamic casting
-   DLLEXPORT virtual Reaction & asReaction ();
-   DLLEXPORT virtual QueryReaction & asQueryReaction ();
-   DLLEXPORT virtual bool isQueryReaction ();
+   virtual Reaction & asReaction ();
+   virtual QueryReaction & asQueryReaction ();
+   virtual bool isQueryReaction ();
 
-   DLLEXPORT BaseMolecule & getBaseMolecule(int index)  { return *_allMolecules.at(index); }
+   BaseMolecule & getBaseMolecule(int index)  { return *_allMolecules.at(index); }
 
-   DLLEXPORT int getAAM(int index, int atom);
-   DLLEXPORT int getReactingCenter(int index, int bond);
-   DLLEXPORT int getInversion (int index, int atom);
+   int getAAM(int index, int atom);
+   int getReactingCenter(int index, int bond);
+   int getInversion (int index, int atom);
 
-   DLLEXPORT Array<int> & getAAMArray(int index);
-   DLLEXPORT Array<int> & getReactingCenterArray(int index);
-   DLLEXPORT Array<int> & getInversionArray (int index);
+   Array<int> & getAAMArray(int index);
+   Array<int> & getReactingCenterArray(int index);
+   Array<int> & getInversionArray (int index);
 
-   DLLEXPORT void clearAAM ();
+   void clearAAM ();
 
-   DLLEXPORT int addReactant ();
-   DLLEXPORT int addProduct ();
-   DLLEXPORT int addCatalyst ();
+   int addReactant ();
+   int addProduct ();
+   int addCatalyst ();
 
-   DLLEXPORT int addReactantCopy (BaseMolecule &mol, Array<int>* mapping, Array<int> *inv_mapping);
-   DLLEXPORT int addProductCopy (BaseMolecule &mol, Array<int>* mapping, Array<int> *inv_mapping);
-   DLLEXPORT int addCatalystCopy (BaseMolecule &mol, Array<int>* mapping, Array<int> *inv_mapping);
+   int addReactantCopy (BaseMolecule &mol, Array<int>* mapping, Array<int> *inv_mapping);
+   int addProductCopy (BaseMolecule &mol, Array<int>* mapping, Array<int> *inv_mapping);
+   int addCatalystCopy (BaseMolecule &mol, Array<int>* mapping, Array<int> *inv_mapping);
 
-   DLLEXPORT int findAtomByAAM (int mol_idx, int aam);
-   DLLEXPORT int findAamNumber (BaseMolecule *mol, int atom_number);
-   DLLEXPORT int findReactingCenter (BaseMolecule *mol, int bond_number);
+   int findAtomByAAM (int mol_idx, int aam);
+   int findAamNumber (BaseMolecule *mol, int atom_number);
+   int findReactingCenter (BaseMolecule *mol, int bond_number);
 
    //int findMoleculeSideIdx(const Molecule* qmol) const;
    //int findMoleculeIdx(const Molecule* qmol) const;
@@ -106,11 +111,11 @@ public:
    //int findExactChange(const Molecule* qmol, int atom_number) const;
 
    //bool isAllConnected() const;
-   DLLEXPORT void markStereocenterBonds();
+   void markStereocenterBonds();
 
-   DLLEXPORT static bool haveCoord (BaseReaction &reaction);
+   static bool haveCoord (BaseReaction &reaction);
 
-   DLLEXPORT void clone (BaseReaction& other, ObjArray< Array<int> >* mappings, ObjArray< Array<int> >* inv_mappings);
+   void clone (BaseReaction& other, ObjArray< Array<int> >* mappings, ObjArray< Array<int> >* inv_mappings);
 
    Array<char> name;
 
@@ -133,7 +138,7 @@ protected:
    int _productCount;
    int _catalystCount;
 
-   DLLEXPORT int _nextElement(int type, int index) const;
+   int _nextElement(int type, int index) const;
 
    virtual void _clone (BaseReaction &other, int index, int i, ObjArray< Array<int> >* mol_mappings);
 
@@ -142,5 +147,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

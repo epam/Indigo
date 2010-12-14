@@ -17,11 +17,16 @@
 
 #include "base_cpp/array.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Graph;
 
-class Filter
+class DLLEXPORT Filter
 {
 public:
    enum
@@ -32,22 +37,22 @@ public:
       MORE = 4
    };
 
-   DLLEXPORT Filter ();
-   DLLEXPORT Filter (const int *filter, int type, int value);
+   Filter ();
+   Filter (const int *filter, int type, int value);
 
-   DLLEXPORT void init (const int *filter, int type, int value);
+   void init (const int *filter, int type, int value);
 
-   DLLEXPORT void initAll (int size);
-   DLLEXPORT void initNone (int size);
+   void initAll (int size);
+   void initNone (int size);
 
-   DLLEXPORT void hide (int idx);
-   DLLEXPORT void unhide (int idx);
+   void hide (int idx);
+   void unhide (int idx);
 
-   DLLEXPORT bool valid (int idx) const;
+   bool valid (int idx) const;
 
-   DLLEXPORT void collectGraphVertices (const Graph &graph, Array<int> &indices) const;
-   DLLEXPORT void collectGraphEdges (const Graph &graph, Array<int> &indices) const;
-   DLLEXPORT int  count (const Graph &graph) const;
+   void collectGraphVertices (const Graph &graph, Array<int> &indices) const;
+   void collectGraphEdges (const Graph &graph, Array<int> &indices) const;
+   int  count (const Graph &graph) const;
 
    DEF_ERROR("filter");
 
@@ -64,5 +69,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

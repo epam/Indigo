@@ -20,8 +20,7 @@
 namespace indigo {
 
 // Pointer with default constructor
-template <typename T>
-class Ptr
+template <typename T> class Ptr
 {
 public:
    Ptr () : _ptr(0)

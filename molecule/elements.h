@@ -18,6 +18,11 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/red_black.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Scanner;
@@ -142,47 +147,47 @@ enum
    RADICAL_TRIPLET = 3
 };
 
-class Element
+class DLLEXPORT Element
 {
 public:
    DEF_ERROR("element");
 
-   DLLEXPORT static const char * toString (int element);
-   DLLEXPORT static int fromString (const char *name);
-   DLLEXPORT static int fromString2 (const char *name);
-   DLLEXPORT static int fromChar (char c);
-   DLLEXPORT static int fromTwoChars (char c1, char c2);
-   DLLEXPORT static int fromTwoChars2 (char c1, char c2);
+   static const char * toString (int element);
+   static int fromString (const char *name);
+   static int fromString2 (const char *name);
+   static int fromChar (char c);
+   static int fromTwoChars (char c1, char c2);
+   static int fromTwoChars2 (char c1, char c2);
    
-   DLLEXPORT static int radicalElectrons (int radical);
-   DLLEXPORT static int radicalOrbitals  (int radical);
+   static int radicalElectrons (int radical);
+   static int radicalOrbitals  (int radical);
 
-   DLLEXPORT static bool calcValence (int elem, int charge, int radical, int conn, int &valence, int &hyd, bool to_throw);
-   DLLEXPORT static int  calcValenceByCharge (int elem, int charge);
-   DLLEXPORT static int  calcValenceMinusHyd (int elem, int charge, int radical, int conn);
+   static bool calcValence (int elem, int charge, int radical, int conn, int &valence, int &hyd, bool to_throw);
+   static int  calcValenceByCharge (int elem, int charge);
+   static int  calcValenceMinusHyd (int elem, int charge, int radical, int conn);
 
    // Calculate maximum number of single bonds that 
    // can be attached to specified atom.
-   DLLEXPORT static int getMaximumConnectivity (int elem, int charge, 
+   static int getMaximumConnectivity (int elem, int charge, 
                                       int radical, bool use_d_orbital);
-   DLLEXPORT static int orbitals (int elem, bool use_d_orbital);
-   DLLEXPORT static int electrons (int elem, int charge);
+   static int orbitals (int elem, bool use_d_orbital);
+   static int electrons (int elem, int charge);
 
-   DLLEXPORT static int group (int element);
-   DLLEXPORT static int period (int period);
-   DLLEXPORT static int read (Scanner &scanner);
+   static int group (int element);
+   static int period (int period);
+   static int read (Scanner &scanner);
 
-   DLLEXPORT static bool isHalogen (int element);
+   static bool isHalogen (int element);
 
-   DLLEXPORT static int   getDefaultIsotope       (int element);
-   DLLEXPORT static float getRelativeIsotopicMass (int element, int isotope);
-   DLLEXPORT static float getStandardAtomicWeight (int element);
-   DLLEXPORT static float getIsotopicComposition  (int element, int isotope);
-   DLLEXPORT static void  getMinMaxIsotopeIndex   (int element, int &min, int &max);
+   static int   getDefaultIsotope       (int element);
+   static float getRelativeIsotopicMass (int element, int isotope);
+   static float getStandardAtomicWeight (int element);
+   static float getIsotopicComposition  (int element, int isotope);
+   static void  getMinMaxIsotopeIndex   (int element, int &min, int &max);
 
-   DLLEXPORT static bool  canBeAromatic (int element);
+   static bool  canBeAromatic (int element);
 
-   DLLEXPORT static Array<int> & tautomerHeteroatoms ();
+   static Array<int> & tautomerHeteroatoms ();
 
 private:
 
@@ -225,7 +230,7 @@ private:
    Array<_Parameters> _element_parameters;
 
    // Isotopes mass key
-   struct _IsotopeKey
+   struct DLLEXPORT _IsotopeKey
    {
       int element;
       int isotope; // Can be equal to NATURAL
@@ -252,5 +257,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

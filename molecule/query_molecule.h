@@ -22,6 +22,11 @@
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_arom.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 enum
@@ -35,7 +40,7 @@ enum
 
 class Output;
 
-class QueryMolecule : public BaseMolecule
+class DLLEXPORT QueryMolecule : public BaseMolecule
 {
 public:
 
@@ -70,7 +75,7 @@ public:
       BOND_TOPOLOGY
    };
 
-   class Node
+   class DLLEXPORT Node
    {
    public:
       Node (int type_);
@@ -84,26 +89,26 @@ public:
       PtrArray<Node> children;
 
       // Check if node has any constraint of the specific type
-      DLLEXPORT bool hasConstraint      (int what_type);
+      bool hasConstraint      (int what_type);
 
       // Check if there is no other constraint, except specified ones
-      DLLEXPORT bool hasNoConstraintExcept (int what_type);
-      DLLEXPORT bool hasNoConstraintExcept (int what_type1, int what_type2);
+      bool hasNoConstraintExcept (int what_type);
+      bool hasNoConstraintExcept (int what_type1, int what_type2);
 
       // Remove all constraints of the given type
-      DLLEXPORT void removeConstraints (int what_type);
+      void removeConstraints (int what_type);
 
-      DLLEXPORT bool sureValue         (int what_type, int &value);
-      DLLEXPORT bool sureValueInv      (int what_type, int &value);
-      DLLEXPORT bool possibleValue     (int what_type, int what_value);
-      DLLEXPORT bool possibleValueInv  (int what_type, int what_value);
-      DLLEXPORT bool possibleValuePair (int what_type1, int what_value1,
+      bool sureValue         (int what_type, int &value);
+      bool sureValueInv      (int what_type, int &value);
+      bool possibleValue     (int what_type, int what_value);
+      bool possibleValueInv  (int what_type, int what_value);
+      bool possibleValuePair (int what_type1, int what_value1,
                               int what_type2, int what_value2);
-      DLLEXPORT bool possibleValuePairInv (int what_type1, int what_value1,
+      bool possibleValuePairInv (int what_type1, int what_value1,
                                  int what_type2, int what_value2);
 
-      DLLEXPORT bool sureValueBelongs    (int what_type, const int *arr, int count);
-      DLLEXPORT bool sureValueBelongsInv (int what_type, const int *arr, int count);
+      bool sureValueBelongs    (int what_type, const int *arr, int count);
+      bool sureValueBelongsInv (int what_type, const int *arr, int count);
 
    protected:
       // "neu" means "new" in German. This should have been a static
@@ -122,21 +127,21 @@ public:
       virtual bool _sureValueBelongs (int what_type, const int *arr, int count) = 0;
    };
 
-   class Atom : public Node
+   class DLLEXPORT Atom : public Node
    {
    public:
-      DLLEXPORT Atom ();
+      Atom ();
 
-      DLLEXPORT Atom (int type, int value);
-      DLLEXPORT Atom (int type, int value_min, int value_max);
-      DLLEXPORT Atom (int type, const char *value);
-      DLLEXPORT Atom (int type, QueryMolecule *value);
+      Atom (int type, int value);
+      Atom (int type, int value_min, int value_max);
+      Atom (int type, const char *value);
+      Atom (int type, QueryMolecule *value);
       
-      DLLEXPORT virtual ~Atom ();
+      virtual ~Atom ();
 
-      DLLEXPORT Atom * clone ();
+      Atom * clone ();
 
-      DLLEXPORT Atom * child (int idx);
+      Atom * child (int idx);
 
       bool valueWithinRange (int value);
 
@@ -156,13 +161,13 @@ public:
       // to go for this atom. Simple 'R' atoms have this field equal to zero.
 
       // "und" means "and" in German. "and" is a C++ keyword.
-      DLLEXPORT static Atom * und (Atom *atom1, Atom *atom2);
+      static Atom * und (Atom *atom1, Atom *atom2);
 
       // "oder" means "or" in German. "or" is a C++ keyword.
-      DLLEXPORT static Atom * oder (Atom *atom1, Atom *atom2);
+      static Atom * oder (Atom *atom1, Atom *atom2);
 
       // "nicht" means "not" in German. "not" is a C++ keyword.
-      DLLEXPORT static Atom * nicht (Atom *atom);
+      static Atom * nicht (Atom *atom);
 
    protected:
 
@@ -177,27 +182,27 @@ public:
       DEF_ERROR("query atom");
    };
 
-   class Bond : public Node
+   class DLLEXPORT Bond : public Node
    {
    public:
-      DLLEXPORT Bond ();
-      DLLEXPORT Bond (int type_, int value_);
-      DLLEXPORT virtual ~Bond ();
+      Bond ();
+      Bond (int type_, int value_);
+      virtual ~Bond ();
 
       int value;
 
-      DLLEXPORT Bond * clone ();
+      Bond * clone ();
 
-      DLLEXPORT Bond * child (int idx);
+      Bond * child (int idx);
 
       // "und" means "and" in German. "and" is a C++ keyword.
-      DLLEXPORT static Bond * und (Bond *node1, Bond *node2);
+      static Bond * und (Bond *node1, Bond *node2);
 
       // "oder" means "or" in German. "or" is a C++ keyword.
-      DLLEXPORT static Bond * oder (Bond *node1, Bond *node2);
+      static Bond * oder (Bond *node1, Bond *node2);
 
       // "nicht" means "not" in German. "not" is a C++ keyword.
-      DLLEXPORT static Bond * nicht (Bond *node);
+      static Bond * nicht (Bond *node);
 
    protected:
       virtual Node * _neu ();
@@ -209,15 +214,15 @@ public:
       virtual bool _sureValueBelongs (int what_type, const int *arr, int count);
    };
 
-   DLLEXPORT QueryMolecule ();
-   DLLEXPORT virtual ~QueryMolecule ();
+   QueryMolecule ();
+   virtual ~QueryMolecule ();
 
-   DLLEXPORT virtual void clear ();
+   virtual void clear ();
 
-   DLLEXPORT virtual BaseMolecule * neu ();
+   virtual BaseMolecule * neu ();
 
-   DLLEXPORT virtual QueryMolecule& asQueryMolecule ();
-   DLLEXPORT virtual bool isQueryMolecule ();
+   virtual QueryMolecule& asQueryMolecule ();
+   virtual bool isQueryMolecule ();
 
    virtual int getAtomNumber  (int idx);
    virtual int getAtomCharge  (int idx); 
@@ -257,40 +262,40 @@ public:
 
    enum QUERY_ATOM {QUERY_ATOM_A, QUERY_ATOM_X, QUERY_ATOM_Q, QUERY_ATOM_LIST, QUERY_ATOM_NOTLIST};
    enum QUERY_BOND {QUERY_BOND_DOUBLE_OR_AROMATIC = 0, QUERY_BOND_SINGLE_OR_AROMATIC, QUERY_BOND_SINGLE_OR_DOUBLE, QUERY_BOND_ANY};
-   DLLEXPORT static bool isKnownAttr (QueryMolecule::Atom& qa);
-   DLLEXPORT static bool isNotAtom (QueryMolecule::Atom& qa, int elem);
-   DLLEXPORT static QueryMolecule::Atom* stripKnownAttrs (QueryMolecule::Atom& qa);
-   DLLEXPORT static bool collectAtomList (Atom& qa, Array<int>& list, bool& notList);
-   DLLEXPORT static int parseQueryAtom (QueryMolecule& qm, int aid, Array<int>& list);
-   DLLEXPORT static Bond* getBondOrderTerm (Bond& qb, bool& complex);
-   DLLEXPORT static bool isOrBond (Bond& qb, int type1, int type2);
-   DLLEXPORT static bool isSingleOrDouble (Bond& qb);
-   DLLEXPORT static int getQueryBondType (Bond& qb);
+   static bool isKnownAttr (QueryMolecule::Atom& qa);
+   static bool isNotAtom (QueryMolecule::Atom& qa, int elem);
+   static QueryMolecule::Atom* stripKnownAttrs (QueryMolecule::Atom& qa);
+   static bool collectAtomList (Atom& qa, Array<int>& list, bool& notList);
+   static int parseQueryAtom (QueryMolecule& qm, int aid, Array<int>& list);
+   static Bond* getBondOrderTerm (Bond& qb, bool& complex);
+   static bool isOrBond (Bond& qb, int type1, int type2);
+   static bool isSingleOrDouble (Bond& qb);
+   static int getQueryBondType (Bond& qb);
 
-   DLLEXPORT virtual bool bondStereoCare (int idx);
-   DLLEXPORT void setBondStereoCare (int idx, bool stereo_care);
+   virtual bool bondStereoCare (int idx);
+   void setBondStereoCare (int idx, bool stereo_care);
 
-   DLLEXPORT virtual void aromatize ();
-   DLLEXPORT virtual void dearomatize ();
+   virtual void aromatize ();
+   virtual void dearomatize ();
 
-   DLLEXPORT int addAtom (Atom *atom);
-   DLLEXPORT Atom & getAtom (int idx);
-   DLLEXPORT Atom * releaseAtom (int idx);
-   DLLEXPORT void   resetAtom (int idx, Atom *atom);
+   int addAtom (Atom *atom);
+   Atom & getAtom (int idx);
+   Atom * releaseAtom (int idx);
+   void   resetAtom (int idx, Atom *atom);
 
-   DLLEXPORT Bond & getBond (int idx);
-   DLLEXPORT Bond * releaseBond (int idx);
-   DLLEXPORT void   resetBond (int idx, Bond *bond);
-   DLLEXPORT int addBond (int beg, int end, Bond *bond);
+   Bond & getBond (int idx);
+   Bond * releaseBond (int idx);
+   void   resetBond (int idx, Bond *bond);
+   int addBond (int beg, int end, Bond *bond);
 
    MoleculeRGroups rgroups;
 
    Molecule3dConstraints spatial_constraints;
    Array<int> fixed_atoms;
    
-   DLLEXPORT bool isRGroupFragment ();
-   DLLEXPORT void createRGroupFragment ();
-   DLLEXPORT MoleculeRGroupFragment & getRGroupFragment ();
+   bool isRGroupFragment ();
+   void createRGroupFragment ();
+   MoleculeRGroupFragment & getRGroupFragment ();
 
    QueryMoleculeAromaticity aromaticity;
 
@@ -332,5 +337,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

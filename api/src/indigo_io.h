@@ -17,14 +17,19 @@
 
 #include "indigo_internal.h"
 
-class IndigoScanner : public IndigoObject
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
+class DLLEXPORT IndigoScanner : public IndigoObject
 {
 public:
    IndigoScanner (Scanner *scanner);
    IndigoScanner (const char *str);
    IndigoScanner (const char *buf, int size);
 
-   static DLLEXPORT Scanner & get (IndigoObject &obj);
+   static Scanner & get (IndigoObject &obj);
 
    virtual ~IndigoScanner ();
 
@@ -33,7 +38,7 @@ protected:
    Array<char> _buf;
 };
 
-class IndigoOutput : public IndigoObject
+class DLLEXPORT IndigoOutput : public IndigoObject
 {
 public:
    IndigoOutput ();
@@ -42,12 +47,16 @@ public:
 
    virtual void toString (Array<char> &str);
 
-   static DLLEXPORT Output & get (IndigoObject &obj);
+   static Output & get (IndigoObject &obj);
 
    Output *ptr;
 protected:
    bool        _own_buf;
    Array<char> _buf;
 };
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

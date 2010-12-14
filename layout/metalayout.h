@@ -16,14 +16,21 @@
 #define __metalayout_h__
 
 #include "base_cpp/reusable_obj_array.h"
+#include "math/algebra.h"
+#include "base_cpp/obj_array.h"
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
 
 namespace indigo {
 
 class BaseMolecule;
 
-class Metalayout {
+class DLLEXPORT Metalayout {
 public:
-   struct LayoutItem {
+   struct DLLEXPORT LayoutItem {
       LayoutItem () {
          clear();
       }              
@@ -44,11 +51,11 @@ public:
       Vec2f scaleFactor;
    };
 
-   class LayoutLine {
+   class DLLEXPORT LayoutLine {
    public:
-      DLLEXPORT LayoutLine ();
-      DLLEXPORT ~LayoutLine ();
-      DLLEXPORT void clear ();
+      LayoutLine ();
+      ~LayoutLine ();
+      void clear ();
 
       ObjArray<LayoutItem> items;
       float height;
@@ -57,26 +64,26 @@ public:
       LayoutLine (const LayoutLine&);
    };
 
-   DLLEXPORT Metalayout ();
-   DLLEXPORT void clear ();
-   DLLEXPORT bool isEmpty () const;
-   DLLEXPORT void prepare ();
-   DLLEXPORT float getAverageBondLength () const;
-   DLLEXPORT float getScaleFactor () const;
-   DLLEXPORT const Vec2f& getContentSize () const;
-   DLLEXPORT void setScaleFactor ();
-   DLLEXPORT void process ();
-   DLLEXPORT LayoutLine& newLine ();
-   DLLEXPORT static void getBoundRect (Vec2f& min, Vec2f& max, BaseMolecule& mol);
-   DLLEXPORT void calcContentSize();
-   DLLEXPORT void scaleSz();
+   Metalayout ();
+   void clear ();
+   bool isEmpty () const;
+   void prepare ();
+   float getAverageBondLength () const;
+   float getScaleFactor () const;
+   const Vec2f& getContentSize () const;
+   void setScaleFactor ();
+   void process ();
+   LayoutLine& newLine ();
+   static void getBoundRect (Vec2f& min, Vec2f& max, BaseMolecule& mol);
+   void calcContentSize();
+   void scaleSz();
 
    void* context;
    void (*cb_process) (LayoutItem& item, const Vec2f& pos, void* context);
    BaseMolecule& (*cb_getMol) (int id, void* context);
 
-   DLLEXPORT static float getTotalMoleculeBondLength (BaseMolecule& mol);
-   DLLEXPORT static float getTotalMoleculeClosestDist (BaseMolecule& mol);
+   static float getTotalMoleculeBondLength (BaseMolecule& mol);
+   static float getTotalMoleculeClosestDist (BaseMolecule& mol);
 
    // utility function to use in MoleculeLayout & ReactionLayout
    void adjustMol (BaseMolecule& mol, const Vec2f& min, const Vec2f& pos);
@@ -96,5 +103,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif //__metalayout_h__

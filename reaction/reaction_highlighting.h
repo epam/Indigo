@@ -18,28 +18,37 @@
 #include "graph/graph_highlighting.h"
 #include "base_cpp/obj_array.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class BaseReaction;
 
-class ReactionHighlighting
+class DLLEXPORT ReactionHighlighting
 {
 public:
-   DLLEXPORT ReactionHighlighting ();
-   DLLEXPORT ~ReactionHighlighting ();
+   ReactionHighlighting ();
+   ~ReactionHighlighting ();
 
-   DLLEXPORT void clear ();
-   DLLEXPORT void init (BaseReaction &reaction);
-   DLLEXPORT void nondestructiveInit (BaseReaction &reaction);
+   void clear ();
+   void init (BaseReaction &reaction);
+   void nondestructiveInit (BaseReaction &reaction);
 
-   DLLEXPORT void copy (ReactionHighlighting &reaction, const ObjArray< Array<int> >& mapping);
+   void copy (ReactionHighlighting &reaction, const ObjArray< Array<int> >& mapping);
 
-   DLLEXPORT GraphHighlighting & getGraphHighlighting (int index);
-   DLLEXPORT int getCount() const;
+   GraphHighlighting & getGraphHighlighting (int index);
+   int getCount() const;
 protected:
    ObjArray<GraphHighlighting> _graphHighlightings;
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

@@ -25,17 +25,17 @@ class Reaction;
 class QueryReaction;
 class ReactionHighlighting;
 
-class ReactionAutoLoader
+class DLLEXPORT ReactionAutoLoader
 {
 public:
-   DLLEXPORT ReactionAutoLoader (Scanner &scanner);
-   DLLEXPORT ReactionAutoLoader (const Array<char> &arr);
-   DLLEXPORT ReactionAutoLoader (const char *);
+   ReactionAutoLoader (Scanner &scanner);
+   ReactionAutoLoader (const Array<char> &arr);
+   ReactionAutoLoader (const char *);
 
-   DLLEXPORT ~ReactionAutoLoader ();
+   ~ReactionAutoLoader ();
 
-   DLLEXPORT void loadReaction (Reaction &reaction);
-   DLLEXPORT void loadQueryReaction (QueryReaction &reaction);
+   void loadReaction (Reaction &reaction);
+   void loadQueryReaction (QueryReaction &reaction);
 
    ReactionHighlighting *highlighting;
 
@@ -49,9 +49,9 @@ protected:
    Scanner *_scanner;
    bool     _own_scanner;
 
-   DLLEXPORT void _init ();
-   DLLEXPORT void _loadReaction (BaseReaction &reaction, bool query);
-   DLLEXPORT bool _isSingleLine ();
+   void _init ();
+   void _loadReaction (BaseReaction &reaction, bool query);
+   bool _isSingleLine ();
    
 private:
    ReactionAutoLoader (const ReactionAutoLoader &); // no implicit copy

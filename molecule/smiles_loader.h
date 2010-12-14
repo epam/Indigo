@@ -20,6 +20,11 @@
 #include "base_cpp/tlscont.h"
 #include "molecule/query_molecule.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Scanner;
@@ -28,19 +33,19 @@ class Molecule;
 class QueryMolecule;
 class GraphHighlighting;
 
-class SmilesLoader
+class DLLEXPORT SmilesLoader
 {
 public:
    DEF_ERROR("SMILES loader");
 
-   DLLEXPORT SmilesLoader (Scanner &scanner);
+   SmilesLoader (Scanner &scanner);
 
-   DLLEXPORT void loadMolecule      (Molecule &mol);
-   DLLEXPORT void loadQueryMolecule (QueryMolecule &mol);
+   void loadMolecule      (Molecule &mol);
+   void loadQueryMolecule (QueryMolecule &mol);
 
-   DLLEXPORT void loadSMARTS (QueryMolecule &mol);
+   void loadSMARTS (QueryMolecule &mol);
 
-   DLLEXPORT void checkQueryAtoms ();
+   void checkQueryAtoms ();
 
    Array<int> * reaction_atom_mapping;
 
@@ -63,7 +68,7 @@ protected:
       _ANY_BOND = -2
    };
 
-   class _AtomDesc
+   class DLLEXPORT _AtomDesc
    {
    public:
       _AtomDesc (Pool<List<int>::Elem> &neipool);
@@ -139,5 +144,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

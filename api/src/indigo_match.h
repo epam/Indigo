@@ -19,14 +19,19 @@
 #include "graph/graph_highlighting.h"
 #include "molecule/molecule_substructure_matcher.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 // Query to the target match instance
-class IndigoMoleculeSubstructureMatch : public IndigoObject
+class DLLEXPORT IndigoMoleculeSubstructureMatch : public IndigoObject
 {
 public:
    IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query);
    virtual ~IndigoMoleculeSubstructureMatch ();
 
-   DLLEXPORT const char * debugInfo ();
+   const char * debugInfo ();
 
    GraphHighlighting highlighting;
    Array<int> query_atom_mapping;
@@ -47,7 +52,7 @@ public:
 
    int countMatches (int max_embeddings);
 
-   DLLEXPORT const char * debugInfo ();
+   const char * debugInfo ();
 
    MoleculeSubstructureMatcher matcher;
    MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
@@ -62,7 +67,7 @@ private:
 };
 
 // Matcher class for matching queries on a specified target molecule
-class IndigoMoleculeSubstructureMatcher : public IndigoObject
+class DLLEXPORT IndigoMoleculeSubstructureMatcher : public IndigoObject
 {
 public:
    IndigoMoleculeSubstructureMatcher (Molecule &target);
@@ -72,7 +77,7 @@ public:
    IndigoMoleculeSubstructureMatchIter* iterateQueryMatches (QueryMolecule &query,
       bool embedding_edges_uniqueness);
 
-   DLLEXPORT const char * debugInfo ();
+   const char * debugInfo ();
 
    Molecule &target;
 
@@ -80,5 +85,9 @@ private:
    Molecule _target_arom_h_unfolded, _target_arom;
    Array<int> _mapping_arom_h_unfolded, _mapping_arom;
 };
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

@@ -22,6 +22,11 @@
 #include "base_cpp/list.h"
 #include "base_cpp/obj_array.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Output;
@@ -30,16 +35,16 @@ class QueryMolecule;
 class Molecule;
 class GraphHighlighting;
 
-class SmilesSaver
+class DLLEXPORT SmilesSaver
 {
 public:
    DEF_ERROR("SMILES saver");
 
-   DLLEXPORT SmilesSaver (Output &output);
-   DLLEXPORT ~SmilesSaver ();
+   SmilesSaver (Output &output);
+   ~SmilesSaver ();
 
-   DLLEXPORT void saveMolecule (Molecule &mol);
-   DLLEXPORT void saveQueryMolecule (QueryMolecule &mol);
+   void saveMolecule (Molecule &mol);
+   void saveQueryMolecule (QueryMolecule &mol);
 
    int *vertex_ranks;
    const int *atom_atom_mapping;
@@ -51,10 +56,10 @@ public:
    bool write_extra_info;
 
    int writtenComponents ();
-   DLLEXPORT const Array<int> & writtenAtoms ();
-   DLLEXPORT const Array<int> & writtenBonds ();
+   const Array<int> & writtenAtoms ();
+   const Array<int> & writtenBonds ();
 
-   DLLEXPORT static void writePseudoAtom (const char *label, Output &out);
+   static void writePseudoAtom (const char *label, Output &out);
 
    bool smarts_mode;
    bool ignore_invalid_hcount;
@@ -119,5 +124,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

@@ -20,7 +20,12 @@
 #include "reaction/query_reaction.h"
 #include "reaction/reaction_highlighting.h"
 
-class IndigoBaseReaction : public IndigoObject
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
+class DLLEXPORT IndigoBaseReaction : public IndigoObject
 {
 public:
    explicit IndigoBaseReaction (int type_);
@@ -34,36 +39,36 @@ public:
    RedBlackStringObjMap< Array<char> > properties;
 };
 
-class IndigoReaction : public IndigoBaseReaction
+class DLLEXPORT IndigoReaction : public IndigoBaseReaction
 {
 public:
-   DLLEXPORT IndigoReaction ();
-   DLLEXPORT virtual ~IndigoReaction ();
+   IndigoReaction ();
+   virtual ~IndigoReaction ();
 
-   DLLEXPORT virtual BaseReaction & getBaseReaction ();
-   DLLEXPORT virtual Reaction & getReaction ();
-   DLLEXPORT virtual const char * getName ();
+   virtual BaseReaction & getBaseReaction ();
+   virtual Reaction & getReaction ();
+   virtual const char * getName ();
 
-   DLLEXPORT virtual IndigoObject * clone ();
+   virtual IndigoObject * clone ();
 
-   DLLEXPORT static IndigoReaction * cloneFrom (IndigoObject & obj);
+   static IndigoReaction * cloneFrom (IndigoObject & obj);
 
    Reaction rxn;
 };
 
-class IndigoQueryReaction : public IndigoBaseReaction
+class DLLEXPORT IndigoQueryReaction : public IndigoBaseReaction
 {
 public:
-   DLLEXPORT IndigoQueryReaction ();
-   DLLEXPORT virtual ~IndigoQueryReaction ();
+   IndigoQueryReaction ();
+   virtual ~IndigoQueryReaction ();
 
-   DLLEXPORT virtual BaseReaction & getBaseReaction ();
-   DLLEXPORT virtual QueryReaction & getQueryReaction ();
-   DLLEXPORT virtual const char * getName ();
+   virtual BaseReaction & getBaseReaction ();
+   virtual QueryReaction & getQueryReaction ();
+   virtual const char * getName ();
 
-   DLLEXPORT virtual IndigoObject * clone();
+   virtual IndigoObject * clone();
 
-   DLLEXPORT static IndigoQueryReaction * cloneFrom (IndigoObject & obj);
+   static IndigoQueryReaction * cloneFrom (IndigoObject & obj);
 
    QueryReaction rxn;
 };
@@ -114,5 +119,8 @@ protected:
    int _idx;
 };
 
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

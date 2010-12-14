@@ -647,6 +647,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\common\base_cpp\pool.h"
+				>
+			</File>
+			<File
 				RelativePath="..\common\base_cpp\profiling.cpp"
 				>
 			</File>

@@ -17,26 +17,30 @@
 
 #include "base_cpp/pool.h"
 
-namespace indigo {
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
 
-class StringPool
+namespace indigo {
+class DLLEXPORT StringPool
 {
 public:
 
-   DLLEXPORT StringPool ();
-   DLLEXPORT ~StringPool ();
+   StringPool ();
+   ~StringPool ();
 
-   DLLEXPORT int  add (const char *str);
-   DLLEXPORT int  add (int size);
-   DLLEXPORT void remove (int idx);
-   DLLEXPORT int  size () const;
-   DLLEXPORT int  begin () const;
-   DLLEXPORT int  end () const;
-   DLLEXPORT int  next (int i) const;
-   DLLEXPORT void clear ();
+   int  add (const char *str);
+   int  add (int size);
+   void remove (int idx);
+   int  size () const;
+   int  begin () const;
+   int  end () const;
+   int  next (int i) const;
+   void clear ();
 
-   DLLEXPORT char * at (int idx);
-   DLLEXPORT const char * at (int idx) const;
+   char * at (int idx);
+   const char * at (int idx) const;
 
 protected:
    DEF_ERROR("string pool");
@@ -55,5 +59,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

@@ -19,30 +19,35 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Graph;
 class Filter;
 
-class GraphDecomposer
+class DLLEXPORT GraphDecomposer
 {
 public:
-   DLLEXPORT GraphDecomposer (const Graph &graph);
-   DLLEXPORT ~GraphDecomposer ();
+   GraphDecomposer (const Graph &graph);
+   ~GraphDecomposer ();
 
    bool need_component_size;
 
    // returns the amount of connected components
-   DLLEXPORT int decompose (const Filter *filter = NULL, const Filter *edge_filter = NULL);
+   int decompose (const Filter *filter = NULL, const Filter *edge_filter = NULL);
 
-   DLLEXPORT const Array<int> & getDecomposition () const;
+   const Array<int> & getDecomposition () const;
 
-   DLLEXPORT int getComponent       (int vertex) const;
-   DLLEXPORT int getComponentsCount ()           const;
+   int getComponent       (int vertex) const;
+   int getComponentsCount ()           const;
 
    // Set need_component_size flag to true if you need this functionality
-   DLLEXPORT int getComponentVerticesCount (int component) const;
-   DLLEXPORT int getComponentEdgesCount    (int component) const;
+   int getComponentVerticesCount (int component) const;
+   int getComponentEdgesCount    (int component) const;
 
    DEF_ERROR("Graph decomposer");
 protected:
@@ -59,5 +64,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

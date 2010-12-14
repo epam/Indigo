@@ -14,11 +14,17 @@
 
 #ifndef _d_bitset_
 #define _d_bitset_
-#include "array.h"
+
+#include "base_cpp/array.h"
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
 
 namespace indigo {
 
-class Dbitset {
+class DLLEXPORT Dbitset {
    //bitsets are packed into arrays of "words."  Currently a word is
    //a long long, which consists of 64 bits, requiring 6 address bits.
    //The choice of word size is determined purely by performance concerns.
@@ -138,5 +144,9 @@ public:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

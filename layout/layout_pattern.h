@@ -20,6 +20,11 @@
 #include "math/algebra.h"
 #include "graph/graph.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo
 {
 
@@ -37,7 +42,7 @@ struct PatternBond
    int parity;
 };
 
-class PatternLayout : public Graph
+class DLLEXPORT PatternLayout : public Graph
 {      
 public:
    explicit PatternLayout ();
@@ -77,5 +82,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

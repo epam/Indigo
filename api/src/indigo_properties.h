@@ -17,7 +17,7 @@
 
 #include "indigo_internal.h"
 
-class IndigoProperty : public IndigoObject
+class DLLEXPORT IndigoProperty : public IndigoObject
 {
 public:
    IndigoProperty (RedBlackStringObjMap< Array<char> > &props, int idx);
@@ -26,7 +26,7 @@ public:
    virtual const char * getName ();
    virtual int getIndex ();
 
-   DLLEXPORT Array<char> & getValue ();
+   Array<char> & getValue ();
 
 protected:
    RedBlackStringObjMap< Array<char> > &_props;

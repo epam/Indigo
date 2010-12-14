@@ -19,6 +19,11 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class QueryMolecule;
@@ -43,28 +48,28 @@ protected:
    explicit RGroup (RGroup &other);
 };
 
-class MoleculeRGroups
+class DLLEXPORT MoleculeRGroups
 {
 public:
 
-   DLLEXPORT MoleculeRGroups ();
-   DLLEXPORT ~MoleculeRGroups ();
+   MoleculeRGroups ();
+   ~MoleculeRGroups ();
 
    DEF_ERROR("molecule rgroups");
 
-   DLLEXPORT void copyRGroupsFromMolecule (MoleculeRGroups &other);
+   void copyRGroupsFromMolecule (MoleculeRGroups &other);
 
-   DLLEXPORT RGroup &getRGroup  (int idx);
-   DLLEXPORT int getRGroupCount () const;
+   RGroup &getRGroup  (int idx);
+   int getRGroupCount () const;
 
-   DLLEXPORT void clear ();
+   void clear ();
 
 protected:
    
    ObjArray<RGroup> _rgroups;
 };
 
-struct MoleculeRGroupFragment
+struct DLLEXPORT MoleculeRGroupFragment
 {
    MoleculeRGroupFragment () {}
 
@@ -78,5 +83,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

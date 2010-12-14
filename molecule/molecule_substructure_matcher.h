@@ -22,6 +22,11 @@
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/obj.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Molecule;
@@ -32,7 +37,7 @@ class GraphVertexEquivalence;
 class MoleculeAtomNeighbourhoodCounters;
 class MoleculePiSystemsMatcher;
 
-class MoleculeSubstructureMatcher
+class DLLEXPORT MoleculeSubstructureMatcher
 {
 public:
    enum
@@ -43,14 +48,14 @@ public:
 
    typedef ObjArray< RedBlackStringMap<int> > FragmentMatchCache;
 
-   DLLEXPORT MoleculeSubstructureMatcher (BaseMolecule &target);
-   DLLEXPORT ~MoleculeSubstructureMatcher ();
+   MoleculeSubstructureMatcher (BaseMolecule &target);
+   ~MoleculeSubstructureMatcher ();
 
-   DLLEXPORT void setQuery (QueryMolecule &query);
-   DLLEXPORT QueryMolecule & getQuery ();
+   void setQuery (QueryMolecule &query);
+   QueryMolecule & getQuery ();
 
    // Set vertex neibourhood counters for effective matching
-   DLLEXPORT void setNeiCounters (const MoleculeAtomNeighbourhoodCounters *query_counters, 
+   void setNeiCounters (const MoleculeAtomNeighbourhoodCounters *query_counters, 
                         const MoleculeAtomNeighbourhoodCounters *target_counters);
 
    bool use_aromaticity_matcher;
@@ -67,15 +72,15 @@ public:
 
    GraphHighlighting *highlighting;
 
-   DLLEXPORT void ignoreQueryAtom (int idx);
-   DLLEXPORT void ignoreTargetAtom (int idx);
-   DLLEXPORT bool fix (int query_atom_idx, int target_atom_idx);
+   void ignoreQueryAtom (int idx);
+   void ignoreTargetAtom (int idx);
+   bool fix (int query_atom_idx, int target_atom_idx);
 
    // for finding the first embedding
-   DLLEXPORT bool find ();
-   DLLEXPORT bool findNext ();
-   DLLEXPORT const int * getQueryMapping ();
-   DLLEXPORT const int * getTargetMapping ();
+   bool find ();
+   bool findNext ();
+   const int * getQueryMapping ();
+   const int * getTargetMapping ();
 
    // for finding all embeddings
    bool find_all_embeddings; // false by default
@@ -85,17 +90,17 @@ public:
    bool (*cb_embedding) (Graph &sub, Graph &super, const int *core1, const int *core2, void *context);
    void  *cb_embedding_context;
 
-   DLLEXPORT static bool needCoords (int match_3d, QueryMolecule &query);
+   static bool needCoords (int match_3d, QueryMolecule &query);
 
-   DLLEXPORT static void removeAtom (Graph &subgraph, int sub_idx, AromaticityMatcher *am);
+   static void removeAtom (Graph &subgraph, int sub_idx, AromaticityMatcher *am);
 
-   DLLEXPORT static void addBond (Graph &subgraph, Graph &supergraph,
+   static void addBond (Graph &subgraph, Graph &supergraph,
       int sub_idx, int super_idx, AromaticityMatcher *am);
 
-   DLLEXPORT static void markIgnoredHydrogens (BaseMolecule &mol, int *arr, int value_keep, int value_ignore);
-   DLLEXPORT static void markIgnoredQueryHydrogens (QueryMolecule &mol, int *arr, int value_keep, int value_ignore);
+   static void markIgnoredHydrogens (BaseMolecule &mol, int *arr, int value_keep, int value_ignore);
+   static void markIgnoredQueryHydrogens (QueryMolecule &mol, int *arr, int value_keep, int value_ignore);
 
-   DLLEXPORT static void getAtomPos (Graph &graph, int vertex_idx, Vec3f &pos);
+   static void getAtomPos (Graph &graph, int vertex_idx, Vec3f &pos);
 
    // Flags for matchQueryAtom and matchQueryBond (by default all flags should be set)
    enum
@@ -123,17 +128,17 @@ public:
       MATCH_DISABLED_AS_TRUE = 0x1000, 
    };
 
-   DLLEXPORT static bool matchQueryAtom (QueryMolecule::Atom *query, BaseMolecule &target,
+   static bool matchQueryAtom (QueryMolecule::Atom *query, BaseMolecule &target,
                   int super_idx, FragmentMatchCache *fmcache, dword flags);
 
-   DLLEXPORT static bool matchQueryBond (QueryMolecule::Bond *query,
+   static bool matchQueryBond (QueryMolecule::Bond *query,
              BaseMolecule &target, int sub_idx, int super_idx, AromaticityMatcher *am, dword flags);
 
-   DLLEXPORT static void makeTransposition (BaseMolecule &mol, Array<int> &transposition);
+   static void makeTransposition (BaseMolecule &mol, Array<int> &transposition);
 
    DEF_ERROR("molecule substructure matcher");
 
-   DLLEXPORT static bool shouldUnfoldTargetHydrogens (QueryMolecule &query);
+   static bool shouldUnfoldTargetHydrogens (QueryMolecule &query);
 protected:
    
    struct MarkushContext
@@ -208,5 +213,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

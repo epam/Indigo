@@ -24,23 +24,28 @@
 #include "base_cpp/ptr_array.h"
 #include "base_c/os_tls.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 // Session identifiers manager.
 // Every thread have local session ID that corresponds to the all
 // local session variables.
-class _SIDManager {
+class DLLEXPORT _SIDManager {
 public:
-   DLLEXPORT static _SIDManager& getInst (void);
-   DLLEXPORT ~_SIDManager (void);
+   static _SIDManager& getInst (void);
+   ~_SIDManager (void);
 
-   DLLEXPORT void  setSessionId     (qword id);
-   DLLEXPORT qword allocSessionId   (void);
-   DLLEXPORT qword getSessionId     (void);
+   void  setSessionId     (qword id);
+   qword allocSessionId   (void);
+   qword getSessionId     (void);
    // Add specified SID to the vacant list. 
    // This method should be called before thread exit if SID was 
    // assigned automatically (not by manual TL_SET_SESSION_ID call)
-   DLLEXPORT void releaseSessionId (qword id);
+   void releaseSessionId (qword id);
 
    DEF_ERROR("TLS error");
 
@@ -195,5 +200,9 @@ private:
 // Add this to constructor initialization list
 #define TL_CP_GET(name) \
    name(_GET_##name##_REF(_POOL_##name##_auto_release))
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif // __os_tlscont_h__

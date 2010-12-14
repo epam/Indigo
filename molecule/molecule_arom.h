@@ -17,6 +17,11 @@
 
 #include "base_cpp/tlscont.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Graph;
@@ -25,7 +30,7 @@ class QueryMolecule;
 class BaseMolecule;
 
 // Aromatization classes
-class AromatizerBase
+class DLLEXPORT AromatizerBase
 {
 public:
    explicit AromatizerBase (BaseMolecule &molecule);
@@ -79,16 +84,16 @@ protected:
    int _unsureCyclesCount;
 };
 
-class MoleculeAromatizer : public AromatizerBase
+class DLLEXPORT MoleculeAromatizer : public AromatizerBase
 {
 public:
    // Interface function for aromatization
-   DLLEXPORT static void aromatizeBonds (Molecule &mol);
+   static void aromatizeBonds (Molecule &mol);
 
-   DLLEXPORT MoleculeAromatizer (Molecule &molecule);
-   DLLEXPORT void precalculatePiLabels ();
+   MoleculeAromatizer (Molecule &molecule);
+   void precalculatePiLabels ();
 
-   DLLEXPORT static void findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds);
+   static void findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds);
 
 protected:
    virtual bool _checkVertex      (int v_idx);
@@ -144,7 +149,7 @@ protected:
 
 // Structure that keeps query infromation abount bonds that 
 // can be aromatic in the substructure search.
-class QueryMoleculeAromaticity
+class DLLEXPORT QueryMoleculeAromaticity
 {
 public:
    bool canBeAromatic (int edge_index) const;
@@ -156,5 +161,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

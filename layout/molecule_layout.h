@@ -20,14 +20,19 @@
 #include "layout/molecule_layout_graph.h"
 #include "layout/metalayout.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
-class MoleculeLayout
+class DLLEXPORT MoleculeLayout
 {      
 public:
-   explicit DLLEXPORT MoleculeLayout (BaseMolecule &molecule);
+   explicit MoleculeLayout (BaseMolecule &molecule);
 
-   DLLEXPORT void make ();
+   void make ();
 
    float bond_length;
    bool respect_existing_layout;
@@ -54,5 +59,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

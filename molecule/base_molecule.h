@@ -22,6 +22,11 @@
 #include "molecule/molecule_cis_trans.h"
 #include "base_cpp/obj_array.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo
 {
 
@@ -57,18 +62,18 @@ enum
 class Molecule;
 class QueryMolecule;
 
-class BaseMolecule : public Graph
+class DLLEXPORT BaseMolecule : public Graph
 {
 public:
-   DLLEXPORT BaseMolecule ();
-   DLLEXPORT virtual ~BaseMolecule ();
+   BaseMolecule ();
+   virtual ~BaseMolecule ();
 
    // Casting methods. Invalid casting throws exceptions.
-   DLLEXPORT virtual Molecule& asMolecule ();
-   DLLEXPORT virtual QueryMolecule& asQueryMolecule ();
-   DLLEXPORT virtual bool isQueryMolecule ();
+   virtual Molecule& asMolecule ();
+   virtual QueryMolecule& asQueryMolecule ();
+   virtual bool isQueryMolecule ();
 
-   DLLEXPORT virtual void clear ();
+   virtual void clear ();
 
    // 'neu' means 'new' in German
    virtual BaseMolecule * neu () = 0;
@@ -98,10 +103,10 @@ public:
    virtual int  getRSiteBits (int atom_idx) = 0;
    virtual void allowRGroupOnRSite (int atom_idx, int rg_idx) = 0;
 
-   DLLEXPORT void getAllowedRGroups (int atom_idx, Array<int> &rgroup_list);
-   DLLEXPORT int  getSingleAllowedRGroup (int atom_idx);
-   DLLEXPORT int  getRSiteAttachmentPointByOrder (int idx, int order) const;
-   DLLEXPORT void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
+   void getAllowedRGroups (int atom_idx, Array<int> &rgroup_list);
+   int  getSingleAllowedRGroup (int atom_idx);
+   int  getRSiteAttachmentPointByOrder (int idx, int order) const;
+   void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
 
    virtual bool isSaturatedAtom    (int idx) = 0;
 
@@ -139,8 +144,8 @@ public:
    virtual void aromatize () = 0;
    virtual void dearomatize () = 0;
 
-   DLLEXPORT Vec3f & getAtomXyz (int idx);
-   DLLEXPORT void setAtomXyz (int idx, float x, float y, float z);
+   Vec3f & getAtomXyz (int idx);
+   void setAtomXyz (int idx, float x, float y, float z);
 
    MoleculeStereocenters stereocenters;
    MoleculeCisTrans cis_trans;
@@ -149,36 +154,36 @@ public:
 
    Array<char> name;
 
-   DLLEXPORT static bool hasZCoord (BaseMolecule &mol);
+   static bool hasZCoord (BaseMolecule &mol);
 
-   DLLEXPORT void mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
+   void mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
                               const Array<int> *edges, Array<int> *mapping_out,
                               int skip_flags = 0);
 
-   DLLEXPORT int mergeAtoms (int atom1, int atom2);
+   int mergeAtoms (int atom1, int atom2);
 
-   DLLEXPORT void flipBond (int atom_parent, int atom_from, int atom_to);
+   void flipBond (int atom_parent, int atom_from, int atom_to);
 
-   DLLEXPORT void makeSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
+   void makeSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
                          Array<int> *mapping_out, int skip_flags = 0);
-   DLLEXPORT void makeSubmolecule (BaseMolecule &other, const Filter &filter,
+   void makeSubmolecule (BaseMolecule &other, const Filter &filter,
                          Array<int> *mapping_out, Array<int> *inv_mapping,
                          int skip_flags = 0);
-   DLLEXPORT void makeEdgeSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
+   void makeEdgeSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
                              const Array<int> &edges, Array<int> *v_mapping,
                              int skip_flags = 0);
    
-   DLLEXPORT void clone (BaseMolecule &other, Array<int> *mapping, Array<int> *inv_mapping, int skip_flags = 0);
+   void clone (BaseMolecule &other, Array<int> *mapping, Array<int> *inv_mapping, int skip_flags = 0);
 
-   DLLEXPORT void mergeWithMolecule (BaseMolecule &other, Array<int> *mapping, int skip_flags = 0);
+   void mergeWithMolecule (BaseMolecule &other, Array<int> *mapping, int skip_flags = 0);
 
-   DLLEXPORT void removeAtoms (const Array<int> &indices);
-   DLLEXPORT void removeAtoms (const Filter &filter);
-   DLLEXPORT void removeAtom  (int idx);
-   DLLEXPORT void removeBonds (const Array<int> &indices);
-   DLLEXPORT void removeBond  (int idx);
+   void removeAtoms (const Array<int> &indices);
+   void removeAtoms (const Filter &filter);
+   void removeAtom  (int idx);
+   void removeBonds (const Array<int> &indices);
+   void removeBond  (int idx);
 
-   DLLEXPORT static int getVacantPiOrbitals (int group, int charge, int radical, int conn, int *lonepairs_out);
+   static int getVacantPiOrbitals (int group, int charge, int radical, int conn, int *lonepairs_out);
 
    DEF_ERROR("molecule");
 protected:
@@ -202,5 +207,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

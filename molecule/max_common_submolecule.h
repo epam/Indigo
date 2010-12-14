@@ -23,12 +23,12 @@
 
 namespace indigo {
 
-class MaxCommonSubmolecule: public MaxCommonSubgraph{
+class DLLEXPORT MaxCommonSubmolecule: public MaxCommonSubgraph{
 public:
-   DLLEXPORT MaxCommonSubmolecule(BaseMolecule& submol, BaseMolecule& supermol);
+   MaxCommonSubmolecule(BaseMolecule& submol, BaseMolecule& supermol);
 
-   DLLEXPORT static bool matchBonds (Graph &g1, Graph &g2, int i, int j, void* userdata);
-   DLLEXPORT static bool matchAtoms (Graph &g1, Graph &g2, const int *core_sub, int i, int j, void* userdata);
+   static bool matchBonds (Graph &g1, Graph &g2, int i, int j, void* userdata);
+   static bool matchAtoms (Graph &g1, Graph &g2, const int *core_sub, int i, int j, void* userdata);
    
 };
 

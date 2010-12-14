@@ -18,6 +18,8 @@
 #include "molecule/elements.h"
 #include "base_cpp/tlscont.h"
 #include "layout/metalayout.h"
+#include "graph/graph.h"
+#include "reaction/base_reaction.h"
 
 typedef void* PVOID;
 

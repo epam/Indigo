@@ -17,7 +17,7 @@
 
 #include "indigo_internal.h"
 
-class IndigoArray : public IndigoObject
+class DLLEXPORT IndigoArray : public IndigoObject
 {
 public:
    IndigoArray ();
@@ -26,18 +26,18 @@ public:
 
    virtual IndigoObject * clone ();
 
-   static DLLEXPORT IndigoArray & cast (IndigoObject &obj);
+   static IndigoArray & cast (IndigoObject &obj);
 
    PtrArray<IndigoObject> objects;
 };
 
-class IndigoArrayElement : public IndigoObject
+class DLLEXPORT IndigoArrayElement : public IndigoObject
 {
 public:
    IndigoArrayElement (IndigoArray &arr, int idx_);
    virtual ~IndigoArrayElement ();
 
-   DLLEXPORT IndigoObject & get ();
+   IndigoObject & get ();
 
    virtual BaseMolecule & getBaseMolecule ();
    virtual Molecule & getMolecule ();

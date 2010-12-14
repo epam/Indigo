@@ -25,15 +25,15 @@ class BaseReaction;
 class Reaction;
 class QueryReaction;
 
-class RSmilesLoader
+class DLLEXPORT RSmilesLoader
 {
 public:
    DEF_ERROR("reaction SMILES loader");
 
-   DLLEXPORT RSmilesLoader (Scanner &scanner);
+   RSmilesLoader (Scanner &scanner);
 
-   DLLEXPORT void loadReaction (Reaction &rxn);
-   DLLEXPORT void loadQueryReaction (QueryReaction &rxn);
+   void loadReaction (Reaction &rxn);
+   void loadQueryReaction (QueryReaction &rxn);
 
    // see comment in SmilesLoader
    bool ignore_closing_bond_direction_mismatch;

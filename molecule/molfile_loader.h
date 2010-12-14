@@ -27,19 +27,24 @@ class Molecule;
 class QueryMolecule;
 class GraphHighlighting;
 
-class MolfileLoader
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
+class DLLEXPORT MolfileLoader
 {
 public:
    DEF_ERROR("molfile loader");
 
-   DLLEXPORT MolfileLoader (Scanner &scanner);
+   MolfileLoader (Scanner &scanner);
 
-   DLLEXPORT void loadMolecule      (Molecule &mol);
-   DLLEXPORT void loadQueryMolecule (QueryMolecule &mol);
+   void loadMolecule      (Molecule &mol);
+   void loadQueryMolecule (QueryMolecule &mol);
 
    // for Rxnfiles v3000
-   DLLEXPORT void loadCtab3000 (Molecule &mol);
-   DLLEXPORT void loadQueryCtab3000 (QueryMolecule &mol);
+   void loadCtab3000 (Molecule &mol);
+   void loadQueryCtab3000 (QueryMolecule &mol);
 
    // optional parameters for reaction
    Array<int> * reaction_atom_mapping;
@@ -123,5 +128,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

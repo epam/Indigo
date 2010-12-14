@@ -15,6 +15,11 @@
 #ifndef __embedding_enumerator__
 #define __embedding_enumerator__
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 #include "base_cpp/red_black.h"
 #include "base_cpp/list.h"
 #include "base_cpp/tlscont.h"
@@ -25,7 +30,7 @@ namespace indigo {
 class Graph;
 class GraphVertexEquivalence;
 
-class EmbeddingEnumerator
+class DLLEXPORT EmbeddingEnumerator
 {
 public:
    enum
@@ -37,9 +42,9 @@ public:
 
    bool allow_many_to_one;
 
-   DLLEXPORT EmbeddingEnumerator (Graph &supergraph);
+   EmbeddingEnumerator (Graph &supergraph);
 
-   DLLEXPORT ~EmbeddingEnumerator ();
+   ~EmbeddingEnumerator ();
 
    // when cb_embedding returns zero, enumeration stops
    int  (*cb_embedding) (Graph &subgraph, Graph &supergraph,
@@ -59,33 +64,33 @@ public:
 
    void *userdata;
 
-   DLLEXPORT void setSubgraph (Graph &subgraph);
+   void setSubgraph (Graph &subgraph);
 
-   DLLEXPORT void ignoreSubgraphVertex (int idx);
-   DLLEXPORT void ignoreSupergraphVertex (int idx);
+   void ignoreSubgraphVertex (int idx);
+   void ignoreSupergraphVertex (int idx);
 
-   DLLEXPORT int countUnmappedSubgraphVertices ();
-   DLLEXPORT int countUnmappedSupergraphVertices ();
+   int countUnmappedSubgraphVertices ();
+   int countUnmappedSupergraphVertices ();
 
-   DLLEXPORT int countUnmappedSubgraphEdges ();
-   DLLEXPORT int countUnmappedSupergraphEdges ();
+   int countUnmappedSubgraphEdges ();
+   int countUnmappedSupergraphEdges ();
 
-   DLLEXPORT void setEquivalenceHandler (GraphVertexEquivalence *equivalence_handler);
+   void setEquivalenceHandler (GraphVertexEquivalence *equivalence_handler);
 
-   DLLEXPORT bool fix (int node1, int node2);
-   DLLEXPORT bool unsafeFix (int node1, int node2);
+   bool fix (int node1, int node2);
+   bool unsafeFix (int node1, int node2);
 
    // returns 0 if cb_embedding returned 0, 1 otherwise
-   DLLEXPORT int process ();
-   DLLEXPORT void processStart ();
-   DLLEXPORT bool processNext ();
+   int process ();
+   void processStart ();
+   bool processNext ();
 
-   DLLEXPORT const int * getSubgraphMapping ();
+   const int * getSubgraphMapping ();
 
-   DLLEXPORT const int * getSupergraphMapping ();
+   const int * getSupergraphMapping ();
 
    // Update internal structures to fit all target vertices that might be added
-   DLLEXPORT void validate ();
+   void validate ();
 
    DEF_ERROR("embedding enumerator");
 
@@ -156,5 +161,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

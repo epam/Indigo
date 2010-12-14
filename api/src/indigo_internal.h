@@ -15,6 +15,11 @@
 #ifndef __indigo_internal__
 #define __indigo_internal__
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 #include "indigo.h"
 
 #include "base_cpp/exception.h"
@@ -40,11 +45,11 @@ class RdfLoader;
 
 extern DLLEXPORT OptionManager & indigoGetOptionManager ();
 
-class IndigoObject
+class DLLEXPORT IndigoObject
 {
 public:
-   explicit DLLEXPORT IndigoObject (int type_);
-   virtual DLLEXPORT ~IndigoObject ();
+   explicit IndigoObject (int type_);
+   virtual ~IndigoObject ();
 
    enum
    {
@@ -92,36 +97,36 @@ public:
 
    int type;
 
-   virtual DLLEXPORT const char * debugInfo ();
+   virtual const char * debugInfo ();
 
-   virtual DLLEXPORT void toString (Array<char> &str);
-   virtual DLLEXPORT void toBuffer (Array<char> &buf);
-   virtual DLLEXPORT BaseMolecule & getBaseMolecule ();
-   virtual DLLEXPORT QueryMolecule & getQueryMolecule ();
-   virtual DLLEXPORT Molecule & getMolecule ();
-   virtual DLLEXPORT GraphHighlighting * getMoleculeHighlighting();
+   virtual void toString (Array<char> &str);
+   virtual void toBuffer (Array<char> &buf);
+   virtual BaseMolecule & getBaseMolecule ();
+   virtual QueryMolecule & getQueryMolecule ();
+   virtual Molecule & getMolecule ();
+   virtual GraphHighlighting * getMoleculeHighlighting();
 
-   virtual DLLEXPORT BaseReaction & getBaseReaction ();
-   virtual DLLEXPORT QueryReaction & getQueryReaction ();
-   virtual DLLEXPORT Reaction & getReaction ();
-   virtual DLLEXPORT ReactionHighlighting * getReactionHighlighting();
+   virtual BaseReaction & getBaseReaction ();
+   virtual QueryReaction & getQueryReaction ();
+   virtual Reaction & getReaction ();
+   virtual ReactionHighlighting * getReactionHighlighting();
 
-   virtual DLLEXPORT RedBlackStringObjMap< Array<char> > * getProperties();
+   virtual RedBlackStringObjMap< Array<char> > * getProperties();
    
-   virtual DLLEXPORT IndigoObject * clone ();
+   virtual IndigoObject * clone ();
 
-   virtual DLLEXPORT const char * getName ();
+   virtual const char * getName ();
 
-   virtual DLLEXPORT int getIndex ();
+   virtual int getIndex ();
 
-   virtual DLLEXPORT IndigoObject * next ();
+   virtual IndigoObject * next ();
    
-   virtual DLLEXPORT bool hasNext ();
+   virtual bool hasNext ();
 
-   bool DLLEXPORT isBaseMolecule ();
-   bool DLLEXPORT isBaseReaction ();
+   bool isBaseMolecule ();
+   bool isBaseReaction ();
 
-   void DLLEXPORT copyProperties (RedBlackStringObjMap< Array<char> > &other);
+   void copyProperties (RedBlackStringObjMap< Array<char> > &other);
 
 protected:
    Array<char> _dbg_info; // allocated by debugInfo() on demand
@@ -138,7 +143,7 @@ public:
    Array<int> gross;
 };
 
-struct ProductEnumeratorParams
+struct DLLEXPORT ProductEnumeratorParams
 {
    ProductEnumeratorParams ()
    {
@@ -161,7 +166,7 @@ struct ProductEnumeratorParams
    int max_product_count;
 };
 
-class Indigo
+class DLLEXPORT Indigo
 {
 public:
    Indigo ();
@@ -171,14 +176,14 @@ public:
    INDIGO_ERROR_HANDLER error_handler;
    void  *error_handler_context;
 
-   DLLEXPORT IndigoObject & getObject (int handle);
-   DLLEXPORT int countObjects ();
+   IndigoObject & getObject (int handle);
+   int countObjects ();
 
-   DLLEXPORT int addObject (IndigoObject *obj);
+   int addObject (IndigoObject *obj);
 
-   DLLEXPORT void removeObject (int id);
+   void removeObject (int id);
 
-   DLLEXPORT void removeAllObjects ();
+   void removeAllObjects ();
 
    Array<char> tmp_string;
    float tmp_xyz[3];
@@ -243,19 +248,23 @@ protected:
 
 DLLEXPORT Indigo & indigoGetInstance ();
 
-class IndigoError : public Exception
+class DLLEXPORT IndigoError : public Exception
 {
 public:
-   explicit DLLEXPORT IndigoError (const char *format, ...);
-   DLLEXPORT IndigoError (const IndigoError &);
+   explicit IndigoError (const char *format, ...);
+   IndigoError (const IndigoError &);
 private:
 };
 
 class _IndigoBasicOptionsHandlersSetter
 {
 public:
-   DLLEXPORT _IndigoBasicOptionsHandlersSetter ();
-   DLLEXPORT ~_IndigoBasicOptionsHandlersSetter ();
+   _IndigoBasicOptionsHandlersSetter ();
+   ~_IndigoBasicOptionsHandlersSetter ();
 };
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

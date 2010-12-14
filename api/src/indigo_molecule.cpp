@@ -64,7 +64,7 @@ RedBlackStringObjMap< Array<char> > * IndigoBaseMolecule::getProperties ()
    return &properties;
 }
 
-DLLEXPORT const char * IndigoBaseMolecule::debugInfo ()
+const char * IndigoBaseMolecule::debugInfo ()
 {
    return "<base molecule>";
 }
@@ -1174,7 +1174,7 @@ IndigoObject * IndigoMolecule::clone ()
    return cloneFrom(*this);
 }
 
-DLLEXPORT const char * IndigoMolecule::debugInfo ()
+const char * IndigoMolecule::debugInfo ()
 {
    return "<molecule>";
 }
@@ -1184,7 +1184,7 @@ IndigoObject * IndigoQueryMolecule::clone ()
    return cloneFrom(*this);
 }
 
-DLLEXPORT const char * IndigoQueryMolecule::debugInfo ()
+const char * IndigoQueryMolecule::debugInfo ()
 {
    return "<query molecule>";
 }

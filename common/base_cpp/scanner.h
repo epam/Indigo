@@ -21,12 +21,12 @@
 
 namespace indigo {
 
-class Scanner
+class DLLEXPORT Scanner
 {
 public:
    DEF_ERROR("scanner");
 
-   DLLEXPORT virtual ~Scanner ();
+   virtual ~Scanner ();
 
    virtual void read (int length, void *res) = 0;
    virtual void skip (int n) = 0;
@@ -36,50 +36,50 @@ public:
    virtual int  length () = 0;
    virtual int  tell () = 0;
 
-   DLLEXPORT virtual byte readByte ();
-   DLLEXPORT virtual void readAll (Array<char> &arr);
+   virtual byte readByte ();
+   virtual void readAll (Array<char> &arr);
 
-   DLLEXPORT void readString (Array<char> &out, bool append_zero);
+   void readString (Array<char> &out, bool append_zero);
    
-   DLLEXPORT char  readChar ();
-   DLLEXPORT word  readBinaryWord ();
-   DLLEXPORT int   readBinaryInt ();
-   DLLEXPORT dword readBinaryDword ();
-   DLLEXPORT float readBinaryFloat ();
-   DLLEXPORT short readPackedShort ();
+   char  readChar ();
+   word  readBinaryWord ();
+   int   readBinaryInt ();
+   dword readBinaryDword ();
+   float readBinaryFloat ();
+   short readPackedShort ();
 
-   DLLEXPORT bool  skipString ();
-   DLLEXPORT void  readCharsFix (int n, char *chars_out);
-   DLLEXPORT float readFloatFix (int digits);
-   DLLEXPORT int   readIntFix (int digits);
-   DLLEXPORT void  skipSpace ();
+   bool  skipString ();
+   void  readCharsFix (int n, char *chars_out);
+   float readFloatFix (int digits);
+   int   readIntFix (int digits);
+   void  skipSpace ();
 
-   DLLEXPORT float readFloat (void);
-   DLLEXPORT bool  tryReadFloat (float &value);
-   DLLEXPORT int readInt (void);
-   DLLEXPORT int readInt1 (void);
-   DLLEXPORT int readUnsigned ();
+   float readFloat (void);
+   bool  tryReadFloat (float &value);
+   int readInt (void);
+   int readInt1 (void);
+   int readUnsigned ();
 
    // when delimiters = 0, any isspace() character is considered delimiter
-   DLLEXPORT void readWord (Array<char> &word, const char *delimiters);
+   void readWord (Array<char> &word, const char *delimiters);
 
-   DLLEXPORT static bool isSingleLine (Scanner &scanner);
+   static bool isSingleLine (Scanner &scanner);
 };
 
-class FileScanner : public Scanner
+class DLLEXPORT FileScanner : public Scanner
 {
 public:
-   DLLEXPORT FileScanner (Encoding filename_encoding, const char *filename);
-   DLLEXPORT explicit FileScanner (const char *format, ...);
-   DLLEXPORT virtual ~FileScanner ();
+   FileScanner (Encoding filename_encoding, const char *filename);
+   explicit FileScanner (const char *format, ...);
+   virtual ~FileScanner ();
 
-   DLLEXPORT virtual void read (int length, void *res);
-   DLLEXPORT virtual bool isEOF ();
-   DLLEXPORT virtual void skip (int n);
-   DLLEXPORT virtual int  lookNext ();
-   DLLEXPORT virtual void seek (int pos, int from);
-   DLLEXPORT virtual int  length ();
-   DLLEXPORT virtual int  tell ();
+   virtual void read (int length, void *res);
+   virtual bool isEOF ();
+   virtual void skip (int n);
+   virtual int  lookNext ();
+   virtual void seek (int pos, int from);
+   virtual int  length ();
+   virtual int  tell ();
 
 private:
    FILE *_file;
@@ -89,24 +89,24 @@ private:
    FileScanner (const FileScanner &);
 };
 
-class BufferScanner : public Scanner
+class DLLEXPORT BufferScanner : public Scanner
 {
 public:
-   DLLEXPORT explicit BufferScanner (const char *buffer, int buffer_size);
-   DLLEXPORT explicit BufferScanner (const byte *buffer, int buffer_size);
-   DLLEXPORT explicit BufferScanner (const char *str);
-   DLLEXPORT explicit BufferScanner (const Array<char> &arr);
+   explicit BufferScanner (const char *buffer, int buffer_size);
+   explicit BufferScanner (const byte *buffer, int buffer_size);
+   explicit BufferScanner (const char *str);
+   explicit BufferScanner (const Array<char> &arr);
 
-   DLLEXPORT virtual bool isEOF ();
-   DLLEXPORT virtual void read (int length, void *res);
-   DLLEXPORT virtual void skip (int n);
-   DLLEXPORT virtual int  lookNext ();
-   DLLEXPORT virtual void seek (int pos, int from);
-   DLLEXPORT virtual int  length ();
-   DLLEXPORT virtual int  tell ();
-   DLLEXPORT virtual byte readByte ();
+   virtual bool isEOF ();
+   virtual void read (int length, void *res);
+   virtual void skip (int n);
+   virtual int  lookNext ();
+   virtual void seek (int pos, int from);
+   virtual int  length ();
+   virtual int  tell ();
+   virtual byte readByte ();
 
-   DLLEXPORT const void * curptr ();
+   const void * curptr ();
 private:
    const char *_buffer;
    int   _size;

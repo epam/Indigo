@@ -17,9 +17,14 @@
 
 #include "base_cpp/array.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
-template <typename T> class PtrArray
+template <typename T> class DLLEXPORT PtrArray
 {
 public:
    explicit PtrArray ()
@@ -135,5 +140,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

@@ -17,109 +17,113 @@
 
 #include "molecule/base_molecule.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
-class Molecule : public BaseMolecule
+class DLLEXPORT Molecule : public BaseMolecule
 {      
 public:
-   DLLEXPORT Molecule ();
-   DLLEXPORT virtual ~Molecule ();
+   Molecule ();
+   virtual ~Molecule ();
 
-   DLLEXPORT virtual Molecule & asMolecule ();
+   virtual Molecule & asMolecule ();
 
-   DLLEXPORT virtual void clear ();
+   virtual void clear ();
 
-   DLLEXPORT virtual BaseMolecule * neu ();
+   virtual BaseMolecule * neu ();
 
-   DLLEXPORT int addAtom (int label);
+   int addAtom (int label);
    
-   DLLEXPORT void setPseudoAtom (int idx, const char *text);
+   void setPseudoAtom (int idx, const char *text);
 
-   DLLEXPORT int addBond (int beg, int end, int order);
+   int addBond (int beg, int end, int order);
 
-   DLLEXPORT void setAtomCharge (int idx, int charge);
-   DLLEXPORT void setAtomIsotope (int idx, int isotope);
-   DLLEXPORT void setAtomRadical (int idx, int radical);
-   DLLEXPORT void setValence (int idx, int valence);
-   DLLEXPORT void setExplicitValence (int idx, int valence);
-   DLLEXPORT void resetExplicitValence (int idx);
-   DLLEXPORT void setImplicitH       (int idx, int impl_h); // in fact, this is 'explicit implicit H'
-   DLLEXPORT void resetImplicitH     (int idx);
+   void setAtomCharge (int idx, int charge);
+   void setAtomIsotope (int idx, int isotope);
+   void setAtomRadical (int idx, int radical);
+   void setValence (int idx, int valence);
+   void setExplicitValence (int idx, int valence);
+   void resetExplicitValence (int idx);
+   void setImplicitH       (int idx, int impl_h); // in fact, this is 'explicit implicit H'
+   void resetImplicitH     (int idx);
 
    // Set bond order method.
    // If keep_connectivity is false then connectivity to bond ends 
    // will be recalculated. Connectivity should be kept only when bond order 
    // is changed to/from aromatic.
-   DLLEXPORT void setBondOrder (int idx, int order, bool keep_connectivity = false);
+   void setBondOrder (int idx, int order, bool keep_connectivity = false);
 
-   DLLEXPORT void setBondOrder_Silent (int idx, int order);
+   void setBondOrder_Silent (int idx, int order);
    
-   DLLEXPORT virtual int getAtomNumber  (int idx);
-   DLLEXPORT virtual int getAtomCharge  (int idx);
-   DLLEXPORT virtual int getAtomIsotope (int idx);
-   DLLEXPORT virtual int getAtomRadical (int idx);
-   DLLEXPORT virtual int getBondOrder      (int idx);
-   DLLEXPORT virtual int getBondTopology   (int idx);
-   DLLEXPORT virtual int getAtomAromaticity (int idx);
-   DLLEXPORT virtual int getExplicitValence (int idx);
-   DLLEXPORT virtual int getAtomValence (int idx);
-   DLLEXPORT virtual int getAtomSubstCount (int idx);
-   DLLEXPORT virtual int getAtomRingBondsCount (int idx);
+   virtual int getAtomNumber  (int idx);
+   virtual int getAtomCharge  (int idx);
+   virtual int getAtomIsotope (int idx);
+   virtual int getAtomRadical (int idx);
+   virtual int getBondOrder      (int idx);
+   virtual int getBondTopology   (int idx);
+   virtual int getAtomAromaticity (int idx);
+   virtual int getExplicitValence (int idx);
+   virtual int getAtomValence (int idx);
+   virtual int getAtomSubstCount (int idx);
+   virtual int getAtomRingBondsCount (int idx);
 
-   DLLEXPORT virtual int getAtomMaxH   (int idx);
-   DLLEXPORT virtual int getAtomMinH   (int idx);
-   DLLEXPORT virtual int getAtomTotalH (int idx);
+   virtual int getAtomMaxH   (int idx);
+   virtual int getAtomMinH   (int idx);
+   virtual int getAtomTotalH (int idx);
 
-   DLLEXPORT virtual bool isPseudoAtom (int idx);
-   DLLEXPORT virtual const char * getPseudoAtom (int idx);
-
-   DLLEXPORT virtual bool isRSite (int atom_idx);
-   DLLEXPORT virtual int  getRSiteBits (int atom_idx);
-   DLLEXPORT virtual void allowRGroupOnRSite (int atom_idx, int rg_idx);
+   virtual bool isPseudoAtom (int idx);
+   virtual const char * getPseudoAtom (int idx);
+   virtual bool isRSite (int atom_idx);
+   virtual int  getRSiteBits (int atom_idx);
+   virtual void allowRGroupOnRSite (int atom_idx, int rg_idx);
            void setRSiteBits (int atom_idx, int bits);
 
-   DLLEXPORT virtual bool bondStereoCare (int idx);
+   virtual bool bondStereoCare (int idx);
 
-   DLLEXPORT virtual void aromatize ();
-   DLLEXPORT virtual void dearomatize ();
+   virtual void aromatize ();
+   virtual void dearomatize ();
 
-   DLLEXPORT int getImplicitH (int idx);
+   int getImplicitH (int idx);
 
-   DLLEXPORT int getAtomConnectivity (int idx);
-   DLLEXPORT int getAtomConnectivity_noImplH (int idx);
-   DLLEXPORT int calcAtomConnectivity_noImplH (int idx);
-   DLLEXPORT bool isSaturatedAtom (int idx);
+   int getAtomConnectivity (int idx);
+   int getAtomConnectivity_noImplH (int idx);
+   int calcAtomConnectivity_noImplH (int idx);
+   bool isSaturatedAtom (int idx);
 
-   DLLEXPORT int totalHydrogensCount ();
+   int totalHydrogensCount ();
 
-   DLLEXPORT virtual bool atomNumberBelongs (int idx, const int *numbers, int count);
-   DLLEXPORT virtual bool possibleAtomNumber (int idx, int number);
-   DLLEXPORT virtual bool possibleAtomNumberAndCharge (int idx, int number, int charge);
-   DLLEXPORT virtual bool possibleAtomNumberAndIsotope (int idx, int number, int isotope);
-   DLLEXPORT virtual bool possibleAtomIsotope (int idx, int isotope);
-   DLLEXPORT virtual bool possibleAtomCharge (int idx, int charge);
-   DLLEXPORT virtual void getAtomDescription (int idx, Array<char> &description);
-   DLLEXPORT virtual void getBondDescription (int idx, Array<char> &description);
-   DLLEXPORT virtual bool possibleBondOrder (int idx, int order);
+   virtual bool atomNumberBelongs (int idx, const int *numbers, int count);
+   virtual bool possibleAtomNumber (int idx, int number);
+   virtual bool possibleAtomNumberAndCharge (int idx, int number, int charge);
+   virtual bool possibleAtomNumberAndIsotope (int idx, int number, int isotope);
+   virtual bool possibleAtomIsotope (int idx, int isotope);
+   virtual bool possibleAtomCharge (int idx, int charge);
+   virtual void getAtomDescription (int idx, Array<char> &description);
+   virtual void getBondDescription (int idx, Array<char> &description);
+   virtual bool possibleBondOrder (int idx, int order);
 
-   DLLEXPORT int getVacantPiOrbitals (int atom_idx, int *lonepairs_out);
-   DLLEXPORT int getVacantPiOrbitals (int atom_idx, int conn, int *lonepairs_out);
+   int getVacantPiOrbitals (int atom_idx, int *lonepairs_out);
+   int getVacantPiOrbitals (int atom_idx, int conn, int *lonepairs_out);
 
-   DLLEXPORT static int matchAtomsCmp (Graph &g1, Graph &g2, int idx1, int idx2,
+   static int matchAtomsCmp (Graph &g1, Graph &g2, int idx1, int idx2,
                              void *userdata);
 
-   DLLEXPORT void unfoldHydrogens (Array<int> *markers_out, int max_h_cnt = -1);
+   void unfoldHydrogens (Array<int> *markers_out, int max_h_cnt = -1);
 
-   DLLEXPORT static void saveBondOrders (Molecule &mol, Array<int> &orders);
-   DLLEXPORT static void loadBondOrders (Molecule &mol, Array<int> &orders);
+   static void saveBondOrders (Molecule &mol, Array<int> &orders);
+   static void loadBondOrders (Molecule &mol, Array<int> &orders);
 
-   DLLEXPORT bool convertableToImplicitHydrogen (int idx);
+   bool convertableToImplicitHydrogen (int idx);
 
-   DLLEXPORT void invalidateHCounters ();
+   void invalidateHCounters ();
 
-   DLLEXPORT static void checkForConsistency (Molecule &mol);
+   static void checkForConsistency (Molecule &mol);
 
-   DLLEXPORT bool isAromatized ();
+   bool isAromatized ();
 
 protected:
    struct _Atom
@@ -166,5 +170,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

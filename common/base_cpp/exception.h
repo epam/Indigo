@@ -22,26 +22,26 @@
 
 namespace indigo {
 
-class Exception
+class DLLEXPORT Exception
 {
 public:
-   DLLEXPORT explicit Exception (const char *format, ...);
-   DLLEXPORT virtual ~Exception ();
+   explicit Exception (const char *format, ...);
+   virtual ~Exception ();
 
-   DLLEXPORT int code ();
-   DLLEXPORT const char * message ();
+   int code ();
+   const char * message ();
 
-   DLLEXPORT virtual Exception * clone      ();
-   DLLEXPORT virtual void        throwSelf  ();
+   virtual Exception * clone      ();
+   virtual void        throwSelf  ();
 
-   DLLEXPORT Exception (const Exception &);
+   Exception (const Exception &);
 protected:
-   DLLEXPORT explicit Exception ();
+   explicit Exception ();
 
-   DLLEXPORT void _init (const char *format, va_list args);
-   DLLEXPORT void _init (const char *prefix, const char *format, va_list args);
+   void _init (const char *format, va_list args);
+   void _init (const char *prefix, const char *format, va_list args);
 
-   DLLEXPORT void _cloneTo (Exception *dest) const;
+   void _cloneTo (Exception *dest) const;
 
    int  _code;
    char _message[1024];

@@ -17,16 +17,16 @@
 
 #include "indigo_internal.h"
 
-class IndigoFingerprint : public IndigoObject
+class DLLEXPORT IndigoFingerprint : public IndigoObject
 {
 public:
    IndigoFingerprint ();
    virtual ~IndigoFingerprint ();
 
-   virtual DLLEXPORT void toString (Array<char> &str);
-   virtual DLLEXPORT void toBuffer (Array<char> &buf);
+   virtual void toString (Array<char> &str);
+   virtual void toBuffer (Array<char> &buf);
 
-   static DLLEXPORT IndigoFingerprint & cast (IndigoObject &obj);
+   static IndigoFingerprint & cast (IndigoObject &obj);
    
    Array<byte> bytes;
 };

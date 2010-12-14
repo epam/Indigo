@@ -26,13 +26,13 @@ class QueryReaction;
 class ReactionHighlighting;
 class MolfileLoader;
 
-class RxnfileLoader{
+class DLLEXPORT RxnfileLoader {
 public:
-   DLLEXPORT RxnfileLoader (Scanner &scanner);
-   DLLEXPORT ~RxnfileLoader ();
+   RxnfileLoader (Scanner &scanner);
+   ~RxnfileLoader ();
 
-   DLLEXPORT void loadReaction (Reaction& reaction);
-   DLLEXPORT void loadQueryReaction (QueryReaction& reaction);
+   void loadReaction (Reaction& reaction);
+   void loadQueryReaction (QueryReaction& reaction);
 
    ReactionHighlighting *highlighting;
 

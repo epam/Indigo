@@ -20,6 +20,11 @@
 #include "base_cpp/obj_pool.h"
 #include "graph/filter.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 enum
 {
@@ -81,67 +86,67 @@ struct Edge
    }
 };
 
-class Graph
+class DLLEXPORT Graph
 {
 public:
    DEF_ERROR("graph");
 
-   DLLEXPORT explicit Graph ();
-   DLLEXPORT virtual ~Graph ();
+   explicit Graph ();
+   virtual ~Graph ();
 
-   DLLEXPORT virtual void clear ();
+   virtual void clear ();
 
-   DLLEXPORT const Vertex & getVertex (int idx) const;
+   const Vertex & getVertex (int idx) const;
 
-   DLLEXPORT const Edge & getEdge   (int idx) const;
+   const Edge & getEdge   (int idx) const;
 
-   DLLEXPORT int vertexBegin ()      const {return _vertices->begin();}
-   DLLEXPORT int vertexEnd   ()      const {return _vertices->end();}
-   DLLEXPORT int vertexNext  (int i) const {return _vertices->next(i); }
-   DLLEXPORT int vertexCount ()      const {return _vertices->size(); }
+   int vertexBegin ()      const {return _vertices->begin();}
+   int vertexEnd   ()      const {return _vertices->end();}
+   int vertexNext  (int i) const {return _vertices->next(i); }
+   int vertexCount ()      const {return _vertices->size(); }
 
-   DLLEXPORT int edgeBegin ()      const {return _edges.begin();}
-   DLLEXPORT int edgeEnd   ()      const {return _edges.end();}
-   DLLEXPORT int edgeNext  (int i) const {return _edges.next(i); }
-   DLLEXPORT int edgeCount ()      const {return _edges.size(); }
+   int edgeBegin ()      const {return _edges.begin();}
+   int edgeEnd   ()      const {return _edges.end();}
+   int edgeNext  (int i) const {return _edges.next(i); }
+   int edgeCount ()      const {return _edges.size(); }
 
-   DLLEXPORT int addVertex ();
-   DLLEXPORT int addEdge   (int beg, int end);
+   int addVertex ();
+   int addEdge   (int beg, int end);
 
-   DLLEXPORT int  findEdgeIndex (int beg, int end) const;
-   DLLEXPORT bool haveEdge (int beg, int end) const; 
+   int  findEdgeIndex (int beg, int end) const;
+   bool haveEdge (int beg, int end) const; 
 
-   DLLEXPORT void swapEdgeEnds (int edge_idx);
-   DLLEXPORT void removeEdge (int idx);
-   DLLEXPORT void removeVertex (int idx);
-   DLLEXPORT void removeAllEdges ();
+   void swapEdgeEnds (int edge_idx);
+   void removeEdge (int idx);
+   void removeVertex (int idx);
+   void removeAllEdges ();
 
-   DLLEXPORT bool findPath (int from, int where, Array<int> &path_out) const;
+   bool findPath (int from, int where, Array<int> &path_out) const;
 
-   DLLEXPORT void makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *mapping);
-   DLLEXPORT void makeSubgraph (const Graph &other, const Filter &filter, Array<int> *mapping_out, Array<int> *inv_mapping);
-   DLLEXPORT void cloneGraph (const Graph &other, Array<int> *mapping);
+   void makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *mapping);
+   void makeSubgraph (const Graph &other, const Filter &filter, Array<int> *mapping_out, Array<int> *inv_mapping);
+   void cloneGraph (const Graph &other, Array<int> *mapping);
 
-   DLLEXPORT void mergeWith (const Graph &other, Array<int> *mapping);
+   void mergeWith (const Graph &other, Array<int> *mapping);
 
-   DLLEXPORT void makeEdgeSubgraph (const Graph &other, const Array<int> &vertices, const Array<int> &edges, Array<int> *v_mapping, Array<int> *e_mapping);
+   void makeEdgeSubgraph (const Graph &other, const Array<int> &vertices, const Array<int> &edges, Array<int> *v_mapping, Array<int> *e_mapping);
 
-   DLLEXPORT int  getEdgeTopology (int idx);
-   DLLEXPORT void setEdgeTopology (int idx, int topology);
-   DLLEXPORT void validateEdgeTopologies ();
+   int  getEdgeTopology (int idx);
+   void setEdgeTopology (int idx, int topology);
+   void validateEdgeTopologies ();
 
-   DLLEXPORT static bool isConnected (const Graph &graph);
-   DLLEXPORT static bool isChain_AssumingConnected (const Graph &graph);
-   DLLEXPORT static bool isTree (const Graph &graph);
-   DLLEXPORT static void filterVertices (const Graph &graph, const int *filter, int filter_type, int filter_value, Array<int> &result);
-   DLLEXPORT static void filterEdges (const Graph &graph, const int *filter, int filter_type, int filter_value, Array<int> &result);
-   DLLEXPORT static int  findMappedEdge (const Graph &graph, const Graph &mapped_graph, int edge_idx, const int *mapping);
+   static bool isConnected (const Graph &graph);
+   static bool isChain_AssumingConnected (const Graph &graph);
+   static bool isTree (const Graph &graph);
+   static void filterVertices (const Graph &graph, const int *filter, int filter_type, int filter_value, Array<int> &result);
+   static void filterEdges (const Graph &graph, const int *filter, int filter_type, int filter_value, Array<int> &result);
+   static int  findMappedEdge (const Graph &graph, const Graph &mapped_graph, int edge_idx, const int *mapping);
 
-   DLLEXPORT int vertexCountSSSR (int idx);
-   DLLEXPORT int vertexSmallestRingSize (int idx);
+   int vertexCountSSSR (int idx);
+   int vertexSmallestRingSize (int idx);
    bool vertexInRing(int idx);
 
-   DLLEXPORT int getComponentNumber (int v_idx);
+   int getComponentNumber (int v_idx);
 
 protected:
    void _mergeWithSubgraph (const Graph &other, const Array<int> &vertices, const Array<int> *edges, Array<int> *mapping);
@@ -168,4 +173,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
+
 #endif

@@ -45,7 +45,7 @@ const float INFINITY = 1000000.f;
 struct Transform3f;
 
 struct Vec3f;
-struct Vec2f
+struct DLLEXPORT Vec2f
 {
    DEF_ERROR("Vec2f");
    
@@ -127,13 +127,13 @@ struct Vec2f
       return (float)sqrt(lengthSqr());
    }
 
-   DLLEXPORT bool normalize ();
+   bool normalize ();
 
-   DLLEXPORT bool normalization (const Vec2f &v);
+   bool normalization (const Vec2f &v);
 
-   DLLEXPORT float tiltAngle ();
+   float tiltAngle ();
 
-   DLLEXPORT float tiltAngle2 ();
+   float tiltAngle2 ();
 
    inline void scale (float s)
    {
@@ -165,21 +165,21 @@ struct Vec2f
       y = a.y * ta + b.y * tb;
    }
 
-   DLLEXPORT void rotate (float angle);
-   DLLEXPORT void rotate (float si, float co);
-   DLLEXPORT void rotateL (float angle);
-   DLLEXPORT void rotateL (float si, float co);
-   DLLEXPORT void rotateAroundSegmentEnd (const Vec2f &a, const Vec2f &b, float angle);
+   void rotate (float angle);
+   void rotate (float si, float co);
+   void rotateL (float angle);
+   void rotateL (float si, float co);
+   void rotateAroundSegmentEnd (const Vec2f &a, const Vec2f &b, float angle);
    
-   DLLEXPORT static float distSqr (const Vec2f &a, const Vec2f &b);
-   DLLEXPORT static float dist    (const Vec2f &a, const Vec2f &b);
-   DLLEXPORT static float dot     (const Vec2f &a, const Vec2f &b);
-   DLLEXPORT static float cross   (const Vec2f &a, const Vec2f &b);
-   DLLEXPORT static void projectZ (Vec2f& v2, const Vec3f& v3);
-   DLLEXPORT static bool intersection (const Vec2f &v1_1, const Vec2f &v1_2, const Vec2f &v2_1, const Vec2f &v2_2, Vec2f &p);
+   static float distSqr (const Vec2f &a, const Vec2f &b);
+   static float dist    (const Vec2f &a, const Vec2f &b);
+   static float dot     (const Vec2f &a, const Vec2f &b);
+   static float cross   (const Vec2f &a, const Vec2f &b);
+   static void projectZ (Vec2f& v2, const Vec3f& v3);
+   static bool intersection (const Vec2f &v1_1, const Vec2f &v1_2, const Vec2f &v2_1, const Vec2f &v2_2, Vec2f &p);
 };
 
-struct Vec3f
+struct DLLEXPORT Vec3f
 {
    Vec3f () : x(0), y(0), z(0) {}
    Vec3f (float xx, float yy, float zz) : x(xx), y(yy), z(zz) {}
@@ -271,10 +271,10 @@ struct Vec3f
       return x * x + y * y + z * z;
    }
 
-   DLLEXPORT float length () const;
+   float length () const;
 
-   DLLEXPORT bool normalize ();
-   DLLEXPORT bool normalization (const Vec3f &v);
+   bool normalize ();
+   bool normalization (const Vec3f &v);
 
    inline void scale (float s)
    {
@@ -311,25 +311,25 @@ struct Vec3f
       z = a.z * ta + b.z * tb;
    }
 
-   DLLEXPORT void rotateX (float angle);
-   DLLEXPORT void rotateY (float angle);
-   DLLEXPORT void rotateZ (float angle);
+   void rotateX (float angle);
+   void rotateY (float angle);
+   void rotateZ (float angle);
 
-   DLLEXPORT void rotate (const Vec3f &around, float angle);
+   void rotate (const Vec3f &around, float angle);
 
-   DLLEXPORT void transformPoint  (const Transform3f &matr);
-   DLLEXPORT void transformVector (const Transform3f &matr);
-   DLLEXPORT void invTransformVector (const Transform3f &matr);
+   void transformPoint  (const Transform3f &matr);
+   void transformVector (const Transform3f &matr);
+   void invTransformVector (const Transform3f &matr);
 
-   DLLEXPORT void pointTransformation     (const Vec3f &v, const Transform3f &matr);
-   DLLEXPORT void vectorTransformation    (const Vec3f &v, const Transform3f &matr);
-   DLLEXPORT void invVectorTransformation (const Vec3f &v, const Transform3f &matr);
+   void pointTransformation     (const Vec3f &v, const Transform3f &matr);
+   void vectorTransformation    (const Vec3f &v, const Transform3f &matr);
+   void invVectorTransformation (const Vec3f &v, const Transform3f &matr);
    
    // returns value in range 0..pi
-   DLLEXPORT static bool  angle   (const Vec3f &a, const Vec3f &b, float &res);
-   DLLEXPORT static float dot     (const Vec3f &a, const Vec3f &b);
-   DLLEXPORT static float dist    (const Vec3f &a, const Vec3f &b);
-   DLLEXPORT static float distSqr (const Vec3f &a, const Vec3f &b);
+   static bool  angle   (const Vec3f &a, const Vec3f &b, float &res);
+   static float dot     (const Vec3f &a, const Vec3f &b);
+   static float dist    (const Vec3f &a, const Vec3f &b);
+   static float distSqr (const Vec3f &a, const Vec3f &b);
 };
 
 const Vec3f VZero3f (0.f, 0.f, 0.f);

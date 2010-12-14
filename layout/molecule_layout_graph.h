@@ -24,6 +24,11 @@
 #include "layout/layout_pattern.h"
 #include "base_cpp/obj.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class BiconnectedDecomposer;
@@ -62,11 +67,11 @@ struct LayoutEdge
    int  type;
 };
 
-class MoleculeLayoutGraph : public Graph
+class DLLEXPORT MoleculeLayoutGraph : public Graph
 {
 public:
-   explicit DLLEXPORT MoleculeLayoutGraph ();
-   DLLEXPORT virtual ~MoleculeLayoutGraph ();
+   explicit MoleculeLayoutGraph ();
+   virtual ~MoleculeLayoutGraph ();
 
    virtual void clear ();
 
@@ -236,5 +241,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

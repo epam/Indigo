@@ -18,6 +18,11 @@
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class TautomerSuperStructure;
@@ -51,11 +56,11 @@ struct MoleculeFingerprintParameters
 
 };
 
-class MoleculeFingerprintBuilder
+class DLLEXPORT MoleculeFingerprintBuilder
 {
 public:
-   DLLEXPORT MoleculeFingerprintBuilder (BaseMolecule &mol, const MoleculeFingerprintParameters &parameters);
-   DLLEXPORT ~MoleculeFingerprintBuilder ();
+   MoleculeFingerprintBuilder (BaseMolecule &mol, const MoleculeFingerprintParameters &parameters);
+   ~MoleculeFingerprintBuilder ();
 
    bool query;
 
@@ -69,15 +74,15 @@ public:
    bool skip_any_bonds; // don't build 'any bonds' part of the fingerprint
    bool skip_any_atoms_bonds; // don't build 'any atoms, any bonds' part of the fingerprint
 
-   DLLEXPORT void process ();
+   void process ();
 
-   DLLEXPORT const byte * get ();
-   DLLEXPORT byte * getOrd ();
-   DLLEXPORT byte * getSim ();
-   DLLEXPORT byte * getTau ();
-   DLLEXPORT byte * getAny ();
+   const byte * get ();
+   byte * getOrd ();
+   byte * getSim ();
+   byte * getTau ();
+   byte * getAny ();
    
-   DLLEXPORT int countBits_Sim ();
+   int countBits_Sim ();
 
    void (*cb_fragment) (BaseMolecule &mol, const Array<int> &vertices, const Array<int> &edges,
                         bool use_atoms, bool use_bonds, dword hash);
@@ -124,5 +129,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

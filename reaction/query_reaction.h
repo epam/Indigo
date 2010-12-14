@@ -17,42 +17,47 @@
 
 #include "reaction/base_reaction.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class QueryMolecule;
 
-class QueryReaction : public BaseReaction
+class DLLEXPORT QueryReaction : public BaseReaction
 {
 public:
-   DLLEXPORT QueryReaction ();
-   DLLEXPORT virtual ~QueryReaction ();
+   QueryReaction ();
+   virtual ~QueryReaction ();
 
-   DLLEXPORT virtual void clear ();
+   virtual void clear ();
 
-   DLLEXPORT QueryMolecule & getQueryMolecule (int index);
+   QueryMolecule & getQueryMolecule (int index);
 
-   DLLEXPORT Array<int> & getExactChangeArray (int index);
+   Array<int> & getExactChangeArray (int index);
    
-   DLLEXPORT int getExactChange (int index, int atom);
+   int getExactChange (int index, int atom);
 
-   DLLEXPORT void makeTransposedForSubstructure (QueryReaction &other);
+   void makeTransposedForSubstructure (QueryReaction &other);
 
-   DLLEXPORT int _addedQueryMolecule (int side, QueryMolecule &mol);
+   int _addedQueryMolecule (int side, QueryMolecule &mol);
 
-   DLLEXPORT virtual void aromatize ();
-   DLLEXPORT virtual void dearomatize ();
+   virtual void aromatize ();
+   virtual void dearomatize ();
 
-   DLLEXPORT virtual BaseReaction * neu ();
+   virtual BaseReaction * neu ();
 
-   DLLEXPORT virtual QueryReaction & asQueryReaction ();
-   DLLEXPORT virtual bool isQueryReaction ();
+   virtual QueryReaction & asQueryReaction ();
+   virtual bool isQueryReaction ();
 
 protected:
-   DLLEXPORT void _transposeMoleculeForSubstructure (int index, Array<int> &transposition);
+   void _transposeMoleculeForSubstructure (int index, Array<int> &transposition);
 
-   DLLEXPORT virtual int _addBaseMolecule (int side);
+   virtual int _addBaseMolecule (int side);
 
-   DLLEXPORT virtual void _addedBaseMolecule (int idx, int side, BaseMolecule &mol);
+   virtual void _addedBaseMolecule (int idx, int side, BaseMolecule &mol);
 
    struct _SortingContext
    {
@@ -69,12 +74,16 @@ protected:
 
    ObjArray< Array<int> > _exactChanges;
 
-   DLLEXPORT virtual void _clone (BaseReaction &other, int index, int i, ObjArray< Array<int> >* mol_mappings);
+   virtual void _clone (BaseReaction &other, int index, int i, ObjArray< Array<int> >* mol_mappings);
 
 private:
    QueryReaction (const QueryReaction &); // no implicit copy
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

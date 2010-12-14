@@ -25,7 +25,7 @@ namespace indigo {
 class BaseMolecule;
 class QueryMolecule;
 
-class Molecule3dConstraints
+class DLLEXPORT Molecule3dConstraints
 {
 public:
    Molecule3dConstraints ();

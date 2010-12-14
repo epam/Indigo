@@ -15,75 +15,80 @@
 #ifndef __indigo_molecule__
 #define __indigo_molecule__
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 #include "indigo_internal.h"
 #include "graph/graph_highlighting.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule.h"
 
-class IndigoBaseMolecule : public IndigoObject
+class DLLEXPORT IndigoBaseMolecule : public IndigoObject
 {
 public:
-   DLLEXPORT explicit IndigoBaseMolecule (int type_);
+   explicit IndigoBaseMolecule (int type_);
 
-   DLLEXPORT virtual ~IndigoBaseMolecule ();
+   virtual ~IndigoBaseMolecule ();
 
-   DLLEXPORT virtual GraphHighlighting * getMoleculeHighlighting ();
-   DLLEXPORT virtual RedBlackStringObjMap< Array<char> > * getProperties ();
+   virtual GraphHighlighting * getMoleculeHighlighting ();
+   virtual RedBlackStringObjMap< Array<char> > * getProperties ();
 
-   DLLEXPORT const char * debugInfo ();
+   const char * debugInfo ();
 
    GraphHighlighting highlighting;
 
    RedBlackStringObjMap< Array<char> > properties;
 };
 
-class IndigoQueryMolecule : public IndigoBaseMolecule
+class DLLEXPORT IndigoQueryMolecule : public IndigoBaseMolecule
 {
 public:
-   DLLEXPORT IndigoQueryMolecule ();
+   IndigoQueryMolecule ();
 
-   DLLEXPORT virtual ~IndigoQueryMolecule ();
+   virtual ~IndigoQueryMolecule ();
 
-   DLLEXPORT virtual BaseMolecule & getBaseMolecule ();
-   DLLEXPORT virtual QueryMolecule & getQueryMolecule ();
-   DLLEXPORT virtual const char * getName ();
+   virtual BaseMolecule & getBaseMolecule ();
+   virtual QueryMolecule & getQueryMolecule ();
+   virtual const char * getName ();
 
-   DLLEXPORT static IndigoQueryMolecule * cloneFrom (IndigoObject & obj);
+   static IndigoQueryMolecule * cloneFrom (IndigoObject & obj);
 
-   DLLEXPORT const char * debugInfo ();
+   const char * debugInfo ();
 
-   DLLEXPORT virtual IndigoObject * clone ();
+   virtual IndigoObject * clone ();
 
    QueryMolecule qmol;
 };
 
-class IndigoMolecule : public IndigoBaseMolecule
+class DLLEXPORT IndigoMolecule : public IndigoBaseMolecule
 {
 public:
-   DLLEXPORT IndigoMolecule ();
+   IndigoMolecule ();
 
-   DLLEXPORT virtual ~IndigoMolecule ();
+   virtual ~IndigoMolecule ();
 
-   DLLEXPORT virtual BaseMolecule & getBaseMolecule ();
-   DLLEXPORT virtual Molecule & getMolecule ();
-   DLLEXPORT virtual const char * getName ();
+   virtual BaseMolecule & getBaseMolecule ();
+   virtual Molecule & getMolecule ();
+   virtual const char * getName ();
 
-   DLLEXPORT static IndigoMolecule * cloneFrom (IndigoObject & obj);
+   static IndigoMolecule * cloneFrom (IndigoObject & obj);
 
-   DLLEXPORT const char * debugInfo ();
+   const char * debugInfo ();
 
-   DLLEXPORT virtual IndigoObject * clone ();
+   virtual IndigoObject * clone ();
 
    Molecule mol;
 };
 
-class IndigoAtom : public IndigoObject
+class DLLEXPORT IndigoAtom : public IndigoObject
 {
 public:
    IndigoAtom (BaseMolecule &mol_, int idx_);
    virtual ~IndigoAtom ();
 
-   DLLEXPORT static IndigoAtom & cast (IndigoObject &obj);
+   static IndigoAtom & cast (IndigoObject &obj);
 
    BaseMolecule *mol;
    int idx;
@@ -91,7 +96,7 @@ public:
    virtual int getIndex ();
 };
 
-class IndigoRGroup : public IndigoObject
+class DLLEXPORT IndigoRGroup : public IndigoObject
 {
 public:
    IndigoRGroup ();
@@ -99,13 +104,13 @@ public:
 
    virtual int getIndex ();
 
-   static DLLEXPORT IndigoRGroup & cast (IndigoObject &obj);
+   static IndigoRGroup & cast (IndigoObject &obj);
 
    QueryMolecule *mol;
    int idx;
 };
 
-class IndigoRGroupFragment : public IndigoObject
+class DLLEXPORT IndigoRGroupFragment : public IndigoObject
 {
 public:
    IndigoRGroupFragment (IndigoRGroup &rgp, int idx);
@@ -121,13 +126,13 @@ public:
    int frag_idx;
 };
 
-class IndigoBond : public IndigoObject
+class DLLEXPORT IndigoBond : public IndigoObject
 {
 public:
    IndigoBond (BaseMolecule &mol_, int idx_);
    virtual ~IndigoBond ();
 
-   DLLEXPORT static IndigoBond & cast (IndigoObject &obj);
+   static IndigoBond & cast (IndigoObject &obj);
 
    BaseMolecule *mol;
    int idx;
@@ -233,5 +238,10 @@ protected:
    int _idx;
    BaseMolecule *_mol;
 };
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
+
 
 #endif

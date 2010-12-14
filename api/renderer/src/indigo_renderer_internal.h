@@ -12,6 +12,9 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#ifndef __indigo_renderer_internal__
+#define __indigo_renderer_internal__
+
 #include "render2d/render_params.h"
 #include "base_cpp/tlscont.h"
 #include "indigo_internal.h"
@@ -46,3 +49,5 @@ protected:
 
 
 //TL_DECL_EXT(IndigoRenderer, indigo_renderer_self);
+
+#endif

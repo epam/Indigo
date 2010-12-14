@@ -328,7 +328,7 @@ void MoleculeSubstructureMatcher::_removeUnfoldedHydrogens ()
       _target.removeAtoms(atoms_to_remove);
 }
 
-DLLEXPORT bool MoleculeSubstructureMatcher::findNext ()
+bool MoleculeSubstructureMatcher::findNext ()
 {
    if (_h_unfold)
      _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);

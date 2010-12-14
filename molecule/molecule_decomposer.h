@@ -21,13 +21,13 @@ namespace indigo {
 
 class BaseMolecule;
 
-class MoleculeDecomposer : public GraphDecomposer
+class DLLEXPORT MoleculeDecomposer : public GraphDecomposer
 {
 public:
-   DLLEXPORT MoleculeDecomposer (BaseMolecule &mol);
-   DLLEXPORT virtual ~MoleculeDecomposer ();
+   MoleculeDecomposer (BaseMolecule &mol);
+   virtual ~MoleculeDecomposer ();
 
-   DLLEXPORT void buildComponentMolecule (int ncomp, BaseMolecule &comp_mol,
+   void buildComponentMolecule (int ncomp, BaseMolecule &comp_mol,
       Array<int> *mapping_out = 0, Array<int> *inv_mapping = 0);
 
 protected:

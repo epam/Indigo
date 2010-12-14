@@ -23,7 +23,7 @@
 namespace indigo
 {
 
-class Output
+class DLLEXPORT Output
 {
 public:
    DEF_ERROR("output");
@@ -36,70 +36,70 @@ public:
    virtual int  tell  () = 0;
    virtual void flush () = 0;
 
-   DLLEXPORT void writeByte        (byte value);
-   DLLEXPORT void writeChar        (char value);
-   DLLEXPORT void writeBinaryInt   (int   value);
-   DLLEXPORT void writeBinaryDword (dword value);
-   DLLEXPORT void writeBinaryWord  (word value);
-   DLLEXPORT void writeBinaryFloat (float value);
-   DLLEXPORT void writePackedShort (short value);
-   DLLEXPORT void writeString      (const char *string);
-   DLLEXPORT void writeStringCR    (const char *string);
-   DLLEXPORT void writeCR          ();
-   DLLEXPORT void writeArray       (const Array<char> &data);
+   void writeByte        (byte value);
+   void writeChar        (char value);
+   void writeBinaryInt   (int   value);
+   void writeBinaryDword (dword value);
+   void writeBinaryWord  (word value);
+   void writeBinaryFloat (float value);
+   void writePackedShort (short value);
+   void writeString      (const char *string);
+   void writeStringCR    (const char *string);
+   void writeCR          ();
+   void writeArray       (const Array<char> &data);
    
-   DLLEXPORT void skip             (int count);
+   void skip             (int count);
 
-   DLLEXPORT void printf   (const char *format, ...);
-   DLLEXPORT void vprintf  (const char *format, va_list args);
-   DLLEXPORT void printfCR (const char *format, ...);
+   void printf   (const char *format, ...);
+   void vprintf  (const char *format, va_list args);
+   void printfCR (const char *format, ...);
 };
 
-class FileOutput : public Output
+class DLLEXPORT FileOutput : public Output
 {
 public:
-   DLLEXPORT FileOutput (Encoding filename_encoding, const char *filename);
-   DLLEXPORT explicit FileOutput (const char *name);
+   FileOutput (Encoding filename_encoding, const char *filename);
+   explicit FileOutput (const char *name);
    //explicit FileOutput (const char *format, ...);
-   DLLEXPORT explicit FileOutput (bool append, const char *format, ...);
-   DLLEXPORT virtual ~FileOutput ();
+   explicit FileOutput (bool append, const char *format, ...);
+   virtual ~FileOutput ();
 
-   DLLEXPORT virtual void write (const void *data, int size);
-   DLLEXPORT virtual void seek  (int offset, int from);
-   DLLEXPORT virtual int  tell  ();
-   DLLEXPORT virtual void flush ();
+   virtual void write (const void *data, int size);
+   virtual void seek  (int offset, int from);
+   virtual int  tell  ();
+   virtual void flush ();
    
 protected:
    FILE *_file;
 };
 
-class ArrayOutput : public Output
+class DLLEXPORT ArrayOutput : public Output
 {
 public:
-   DLLEXPORT explicit ArrayOutput (Array<char> &arr);
-   DLLEXPORT virtual ~ArrayOutput ();
+   explicit ArrayOutput (Array<char> &arr);
+   virtual ~ArrayOutput ();
 
-   DLLEXPORT virtual void write (const void *data, int size);
-   DLLEXPORT virtual void seek  (int offset, int from);
-   DLLEXPORT virtual int  tell  ();
-   DLLEXPORT virtual void flush ();
+   virtual void write (const void *data, int size);
+   virtual void seek  (int offset, int from);
+   virtual int  tell  ();
+   virtual void flush ();
 
-   DLLEXPORT void clear ();
+   void clear ();
 
 protected:
    Array<char> &_arr;
 };
 
-class StandardOutput : public Output
+class DLLEXPORT StandardOutput : public Output
 {
 public:
    explicit StandardOutput ();
    virtual ~StandardOutput ();
 
-   DLLEXPORT virtual void write (const void *data, int size);
-   DLLEXPORT virtual void seek  (int offset, int from);
-   DLLEXPORT virtual int  tell  ();
-   DLLEXPORT virtual void flush ();
+   virtual void write (const void *data, int size);
+   virtual void seek  (int offset, int from);
+   virtual int  tell  ();
+   virtual void flush ();
 protected:
    int _count;
 };

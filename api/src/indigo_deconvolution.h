@@ -20,7 +20,12 @@
 #include "molecule/query_molecule.h"
 #include "molecule/molecule.h"
 
-class IndigoDeconvolution : public IndigoObject {
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
+class DLLEXPORT IndigoDeconvolution : public IndigoObject {
 private:
    enum {
       SHIFT_IDX = 2
@@ -92,7 +97,7 @@ private:
    DEF_ERROR("R-Group deconvolution");
 };
 
-class IndigoDeconvolutionIter : public IndigoObject {
+class DLLEXPORT IndigoDeconvolutionIter : public IndigoObject {
 public:
 
    IndigoDeconvolutionIter(ObjArray<IndigoDeconvolution::Item>& items);
@@ -106,7 +111,7 @@ protected:
    ObjArray<IndigoDeconvolution::Item>& _items;
 };
 
-class IndigoDeconvolutionElem : public IndigoObject
+class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
 {
 public:
    IndigoDeconvolutionElem (IndigoDeconvolution::Item &item, int index);
@@ -117,5 +122,9 @@ public:
    IndigoDeconvolution::Item &item;
    int idx;
 };
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

@@ -18,12 +18,17 @@
 #include "base_cpp/red_black.h"
 #include "math/algebra.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class BaseMolecule;
 class Filter;
 
-class MoleculeStereocenters
+class DLLEXPORT MoleculeStereocenters
 {
 public:
    
@@ -42,77 +47,77 @@ public:
       BOND_DOWN = 3
    };
 
-   explicit DLLEXPORT MoleculeStereocenters ();
+   explicit MoleculeStereocenters ();
 
-   DLLEXPORT void clear ();
+   void clear ();
 
-   DLLEXPORT void buildFromBonds (const int *atom_types, const int *atom_groups, const int *bond_types, bool ignore_errors);
+   void buildFromBonds (const int *atom_types, const int *atom_groups, const int *bond_types, bool ignore_errors);
 
-   DLLEXPORT void buildFrom3dCoordinates ( void );
+   void buildFrom3dCoordinates ( void );
 
-   DLLEXPORT void markBonds ();
+   void markBonds ();
 
    // takes mapping from supermolecule to submolecule
-   DLLEXPORT void buildOnSubmolecule (const MoleculeStereocenters &super, int *mapping);
+   void buildOnSubmolecule (const MoleculeStereocenters &super, int *mapping);
 
-   DLLEXPORT void removeAtoms (const Array<int> &indices);
-   DLLEXPORT void removeBonds (const Array<int> &indices);
+   void removeAtoms (const Array<int> &indices);
+   void removeBonds (const Array<int> &indices);
 
-   DLLEXPORT int size () const;
+   int size () const;
 
-   DLLEXPORT void add (int atom_idx, int type, int group, bool inverse_pyramid);
-   DLLEXPORT void add (int atom_idx, int type, int group, const int pyramid[4]);
-   DLLEXPORT void get (int i, int &atom_idx, int &type, int &group, int *pyramid) const;
-   DLLEXPORT void remove (int idx);
+   void add (int atom_idx, int type, int group, bool inverse_pyramid);
+   void add (int atom_idx, int type, int group, const int pyramid[4]);
+   void get (int i, int &atom_idx, int &type, int &group, int *pyramid) const;
+   void remove (int idx);
 
-   DLLEXPORT bool exists (int atom_idx) const;
-   DLLEXPORT void get (int atom_idx, int &type, int &group, int *pyramid) const;
+   bool exists (int atom_idx) const;
+   void get (int atom_idx, int &type, int &group, int *pyramid) const;
 
-   DLLEXPORT int getType  (int idx) const;
-   DLLEXPORT int getGroup (int idx) const;
-   DLLEXPORT const int * getPyramid (int idx) const;
-   DLLEXPORT int * getPyramid (int idx);
-   DLLEXPORT void setType (int idx, int type, int group);
-   DLLEXPORT void inversePyramid (int idx);
+   int getType  (int idx) const;
+   int getGroup (int idx) const;
+   const int * getPyramid (int idx) const;
+   int * getPyramid (int idx);
+   void setType (int idx, int type, int group);
+   void inversePyramid (int idx);
 
-   DLLEXPORT bool sameGroup (int idx1, int idx2);
+   bool sameGroup (int idx1, int idx2);
 
-   DLLEXPORT void getAbsAtoms  (Array<int> &indices);
-   DLLEXPORT void getOrGroups  (Array<int> &numbers);
-   DLLEXPORT void getAndGroups (Array<int> &numbers);
-   DLLEXPORT void getOrGroup   (int number, Array<int> &indices);
-   DLLEXPORT void getAndGroup  (int number, Array<int> &indices);
+   void getAbsAtoms  (Array<int> &indices);
+   void getOrGroups  (Array<int> &numbers);
+   void getAndGroups (Array<int> &numbers);
+   void getOrGroup   (int number, Array<int> &indices);
+   void getAndGroup  (int number, Array<int> &indices);
 
-   DLLEXPORT bool haveAllAbs ();
-   DLLEXPORT bool haveAllAbsAny ();
-   DLLEXPORT bool haveAllAndAny ();
-   DLLEXPORT int  getBondDirection (int idx) const;
+   bool haveAllAbs ();
+   bool haveAllAbsAny ();
+   bool haveAllAndAny ();
+   int  getBondDirection (int idx) const;
 
-   DLLEXPORT void registerUnfoldedHydrogen (int atom_idx, int added_hydrogen);
+   void registerUnfoldedHydrogen (int atom_idx, int added_hydrogen);
 
-   DLLEXPORT void flipBond (int atom_parent, int atom_from, int atom_to);
+   void flipBond (int atom_parent, int atom_from, int atom_to);
 
-   DLLEXPORT int begin () const;
-   DLLEXPORT int end () const;
-   DLLEXPORT int next (int i) const;
+   int begin () const;
+   int end () const;
+   int next (int i) const;
 
-   DLLEXPORT int getAtomIndex (int i) const;
+   int getAtomIndex (int i) const;
 
-   DLLEXPORT static bool checkSub (const MoleculeStereocenters &query, const MoleculeStereocenters &target, 
+   static bool checkSub (const MoleculeStereocenters &query, const MoleculeStereocenters &target, 
       const int *mapping, bool reset_h_isotopes, Filter *stereocenters_vertex_filter = 0);
 
-   DLLEXPORT static bool isPyramidMappingRigid (const int *pyramid, int size, const int *mapping);
-   DLLEXPORT static bool isPyramidMappingRigid (const int mapping[4]);
-   DLLEXPORT static bool isPyramidMappingRigid_Sort (int *pyramid, const int *mapping);
+   static bool isPyramidMappingRigid (const int *pyramid, int size, const int *mapping);
+   static bool isPyramidMappingRigid (const int mapping[4]);
+   static bool isPyramidMappingRigid_Sort (int *pyramid, const int *mapping);
 
-   DLLEXPORT static void moveImplicitHydrogenToEnd (int pyramid[4]);
-   DLLEXPORT static void moveMinimalToEnd (int pyramid[4]);
+   static void moveImplicitHydrogenToEnd (int pyramid[4]);
+   static void moveMinimalToEnd (int pyramid[4]);
 
-   DLLEXPORT static bool isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *filter = NULL);
+   static bool isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *filter = NULL);
 
    DEF_ERROR("stereocenters");
 
-   DLLEXPORT static void getPyramidMapping (const MoleculeStereocenters &query,
+   static void getPyramidMapping (const MoleculeStereocenters &query,
                                   const MoleculeStereocenters &target,
                                   int query_atom, const int *mapping, int *mapping_out, bool reset_h_isotopes);
 
@@ -175,5 +180,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif
