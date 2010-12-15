@@ -151,6 +151,7 @@ public:
    MoleculeCisTrans cis_trans;
 
    bool have_xyz;
+   bool chiral; // read-only; can be true only when loaded from Molfile
 
    Array<char> name;
 

@@ -24,7 +24,7 @@
 
 namespace indigo {
 
-template <typename T> class DLLEXPORT PtrArray
+template <typename T> class PtrArray
 {
 public:
    explicit PtrArray ()

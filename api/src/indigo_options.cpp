@@ -27,6 +27,12 @@ static void indigoTreatXAsPseudoatom (int enabled)
    self.treat_x_as_pseudoatom = (enabled != 0);
 }
 
+static void indigoSkip3dChirality (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.skip_3d_chirality = (enabled != 0);
+}
+
 static void indigoDeconvolutionAromatization (int enabled)
 {
    Indigo &self = indigoGetInstance();
@@ -105,6 +111,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 
    mgr.setOptionHandlerBool("ignore-stereochemistry-errors", indigoIgnoreStereochemistryErrors);
    mgr.setOptionHandlerBool("treat-x-as-pseudoatom", indigoTreatXAsPseudoatom);
+   mgr.setOptionHandlerBool("skip-3d-chirality", indigoSkip3dChirality);
    mgr.setOptionHandlerBool("deconvolution-aromatization", indigoDeconvolutionAromatization);
    mgr.setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode);
    mgr.setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding);

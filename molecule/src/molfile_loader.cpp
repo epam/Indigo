@@ -45,6 +45,7 @@ TL_CP_GET(_hcount)
    _rgfile = false;
    ignore_stereocenter_errors = false;
    treat_x_as_pseudoatom = false;
+   skip_3d_chirality = false;
 }
 
 void MolfileLoader::loadMolecule (Molecule &mol)
@@ -55,7 +56,7 @@ void MolfileLoader::loadMolecule (Molecule &mol)
    _qmol = 0;
    _loadMolecule();
 
-   if (mol.stereocenters.size() == 0)
+   if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
       mol.stereocenters.buildFrom3dCoordinates();
 }
 
@@ -170,6 +171,7 @@ void MolfileLoader::_readCtabHeader ()
          throw Error("bad molfile version : %s", version);
 
       _chiral = (chiral_int != 0);
+      _bmol->chiral = _chiral;
    }
    catch (Scanner::Error &)
    {

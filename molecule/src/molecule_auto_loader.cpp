@@ -30,6 +30,7 @@ void MoleculeAutoLoader::_init ()
    ignore_stereocenter_errors = false;
    treat_x_as_pseudoatom = false;
    ignore_closing_bond_direction_mismatch = false;
+   skip_3d_chirality = false;
 }
 
 MoleculeAutoLoader::MoleculeAutoLoader (Scanner &scanner)
@@ -165,6 +166,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          loader2.highlighting = highlighting;
          loader2.ignore_stereocenter_errors = ignore_stereocenter_errors;
          loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+         loader2.skip_3d_chirality = skip_3d_chirality;
          loader2.loadMolecule((Molecule &)mol);
          return;
       }
@@ -178,6 +180,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          BufferScanner scanner2(buf);
          MolfileLoader loader(scanner2);
          loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+         loader.skip_3d_chirality = skip_3d_chirality;
          loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          loader.highlighting = highlighting;
 
@@ -227,6 +230,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
    {
       MolfileLoader loader(*_scanner);
       loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+      loader.skip_3d_chirality = skip_3d_chirality;
       loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
       loader.highlighting = highlighting;
 

@@ -57,6 +57,7 @@ public:
 
    bool ignore_stereocenter_errors;
    bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
+   bool skip_3d_chirality; // do not compute chirality from 3D coordinates
 
 protected:
 

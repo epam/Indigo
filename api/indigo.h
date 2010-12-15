@@ -323,6 +323,7 @@ CEXPORT const char * indigoLayeredCode (int molecule);
 CEXPORT int indigoCountComponents (int molecule);
 
 CEXPORT int indigoHasZCoord (int molecule);
+CEXPORT int indigoIsChiral (int molecule);
 
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices);
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices, int nedges, int *edges);

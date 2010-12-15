@@ -17,6 +17,11 @@
 
 #include "indigo_internal.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 class DLLEXPORT IndigoArray : public IndigoObject
 {
 public:
@@ -69,5 +74,9 @@ protected:
    IndigoArray *_arr;
    int _idx;
 };
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

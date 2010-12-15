@@ -116,6 +116,7 @@ Molecule & IndigoRdfMolecule::getMolecule ()
 
       loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+      loader.skip_3d_chirality = self.skip_3d_chirality;
       loader.highlighting = &_highlighting;
       loader.loadMolecule(_mol);
       _loaded = true;

@@ -35,6 +35,7 @@ Indigo::Indigo ()
 
    ignore_stereochemistry_errors = false;
    treat_x_as_pseudoatom = false;
+   skip_3d_chirality = false;
    deconvolution_aromatization = true;
    molfile_saving_mode = 0;
    filename_encoding = ENCODING_ASCII;

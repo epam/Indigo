@@ -194,6 +194,7 @@ public:
    
    bool ignore_stereochemistry_errors;
    bool treat_x_as_pseudoatom;
+   bool skip_3d_chirality;
 
    bool deconvolution_aromatization;
 

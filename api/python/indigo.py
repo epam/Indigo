@@ -194,6 +194,8 @@ class Indigo:
     self._lib.indigoWriteFile.argtypes = [c_char_p]
     self._lib.indigoWriteBuffer.restype = c_int
     self._lib.indigoWriteBuffer.argtypes = None
+    self._lib.indigoClose.restype = c_int
+    self._lib.indigoClose.argtypes = [c_int]
     self._lib.indigoLoadMolecule.restype = c_int
     self._lib.indigoLoadMolecule.argtypes = [c_int]
     self._lib.indigoLoadMoleculeFromString.restype = c_int
@@ -364,6 +366,10 @@ class Indigo:
     self._lib.indigoLayeredCode.argtypes = [c_int]
     self._lib.indigoCountComponents.restype = c_int
     self._lib.indigoCountComponents.argtypes = [c_int]
+    self._lib.indigoHasZCoord.restype = c_int
+    self._lib.indigoHasZCoord.argtypes = [c_int]
+    self._lib.indigoIsChiral.restype = c_int
+    self._lib.indigoIsChiral.argtypes = [c_int]
     self._lib.indigoXYZ.restype = POINTER(c_float)
     self._lib.indigoXYZ.argtypes = [c_int]
     self._lib.indigoCreateSubmolecule.restype = c_int
@@ -595,7 +601,13 @@ class Indigo:
     self.IndigoObject.layeredCode = self._member_string(self._lib.indigoLayeredCode)
     self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
     self.IndigoObject.hasZCoord = self._member_bool(self._lib.indigoHasZCoord)
+    self.IndigoObject.isChiral = self._member_bool(self._lib.indigoIsChiral)
     
+    self.IndigoObject.aromatize = self._member_void(self._lib.indigoAromatize)
+    self.IndigoObject.dearomatize = self._member_void(self._lib.indigoDearomatize)
+    self.IndigoObject.foldHydrogens = self._member_void(self._lib.indigoFoldHydrogens)
+    self.IndigoObject.unfoldHydrogens = self._member_void(self._lib.indigoUnfoldHydrogens)
+    self.IndigoObject.layout = self._member_void(self._lib.indigoLayout)    
     self.IndigoObject.aromatize = self._member_void(self._lib.indigoAromatize)
     self.IndigoObject.dearomatize = self._member_void(self._lib.indigoDearomatize)
     self.IndigoObject.foldHydrogens = self._member_void(self._lib.indigoFoldHydrogens)

@@ -44,6 +44,7 @@ bool BaseMolecule::isQueryMolecule ()
 void BaseMolecule::clear ()
 {
    have_xyz = false;
+   chiral = false;
    name.clear();
    stereocenters.clear();
    cis_trans.clear();

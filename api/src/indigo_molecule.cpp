@@ -338,6 +338,7 @@ CEXPORT int indigoLoadMolecule (int source)
 
       loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+      loader.skip_3d_chirality = self.skip_3d_chirality;
 
       AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
 
@@ -1192,6 +1193,17 @@ CEXPORT int indigoHasZCoord (int molecule)
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
 
       return BaseMolecule::hasZCoord(mol) ? 1 : 0;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoIsChiral (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return mol.chiral ? 1 : 0;
    }
    INDIGO_END(-1)
 }
