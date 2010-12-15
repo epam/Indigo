@@ -36,7 +36,8 @@ IndigoScanner::IndigoScanner (const char *buf, int size) : IndigoObject(SCANNER)
 
 IndigoScanner::~IndigoScanner ()
 {
-   delete ptr;
+   if (ptr != 0) // can be zero after indigoClose()
+      delete ptr;
 }
 
 Scanner & IndigoScanner::get (IndigoObject &obj)
@@ -73,7 +74,13 @@ IndigoOutput::~IndigoOutput ()
 Output & IndigoOutput::get (IndigoObject &obj)
 {
    if (obj.type == OUTPUT)
-      return *((IndigoOutput &)obj).ptr;
+   {
+      Output *ptr = ((IndigoOutput &)obj).ptr;
+
+      if (ptr == 0)
+         throw IndigoError("output stream has been closed");
+      return *ptr;
+   }
    throw IndigoError("%s is not an output", obj.debugInfo());
 }
 
@@ -127,6 +134,21 @@ CEXPORT int indigoWriteFile (const char *filename)
    INDIGO_BEGIN
    {
       return self.addObject(new IndigoOutput(new FileOutput(filename)));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoClose (int output)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(output);
+      if (obj.type != IndigoObject::OUTPUT)
+         throw IndigoError("indigoClose(): does not accept %s", obj.debugInfo());
+      IndigoOutput &out = ((IndigoOutput &)obj);
+      delete out.ptr;
+      out.ptr = 0;
+      return 1;
    }
    INDIGO_END(-1)
 }

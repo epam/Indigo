@@ -90,9 +90,15 @@ class Indigo:
       return self.dispatcher._checkResultFloat(
         self._lib.indigoAlignAtoms(self.id, len(atoms), atoms, xyz))
 
+    def __enter__ (self):
+      return self
+    def __exit__ (self, exc_type, exc_value, traceback):
+      self.dispatcher._setSID()
+      self._lib.indigoClose(self.id)
     def __del__ (self):
       self.dispatcher._setSID()
       self._lib.indigoFree(self.id)
+        
     def __iter__ (self):
       return self
     def next (self):
@@ -517,6 +523,7 @@ class Indigo:
 
     self.dbgBreakpoint = self._lib.indigoDbgBreakpoint
     
+    self.IndigoObject.close = self._member_void(self._lib.indigoClose)
     self.IndigoObject.clone = self._member_obj(self._lib.indigoClone)
 
     self.IndigoObject.molfile = self._member_string(self._lib.indigoMolfile)

@@ -231,52 +231,6 @@ CEXPORT const char * indigoCheckAmbiguousH (int handle)
    INDIGO_END(0);
 }
 
-CEXPORT int indigoClearCisTrans (int object)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(object);
-
-      if (obj.isBaseMolecule())
-         obj.getBaseMolecule().cis_trans.clear();
-      else if (obj.isBaseReaction())
-      {
-         BaseReaction &rxn = obj.getBaseReaction();
-         int i;
-
-         for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-            rxn.getBaseMolecule(i).cis_trans.clear();
-      }
-      else
-         throw IndigoError("only molecules and reactions have cis-trans");
-      return 1;
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoClearStereocenters (int object)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(object);
-
-      if (obj.isBaseMolecule())
-         obj.getBaseMolecule().stereocenters.clear();
-      else if (obj.isBaseReaction())
-      {
-         BaseReaction &rxn = obj.getBaseReaction();
-         int i;
-
-         for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-            rxn.getBaseMolecule(i).stereocenters.clear();
-      }
-      else
-         throw IndigoError("only molecules and reactions have stereocenters");
-      return 1;
-   }
-   INDIGO_END(-1)
-}
-
 CEXPORT const char * indigoSmiles (int item)
 {
    INDIGO_BEGIN

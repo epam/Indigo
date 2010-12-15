@@ -722,25 +722,6 @@ CEXPORT int indigoIsRSite (int atom)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoStereocenterType (int atom)
-{
-   INDIGO_BEGIN
-   {
-      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
-
-      switch (ia.mol->stereocenters.getType(ia.idx))
-      {
-         case MoleculeStereocenters::ATOM_ABS: return INDIGO_ABS;
-         case MoleculeStereocenters::ATOM_OR: return INDIGO_OR;
-         case MoleculeStereocenters::ATOM_AND: return INDIGO_AND;
-         case MoleculeStereocenters::ATOM_ANY: return INDIGO_EITHER;
-         default: return 0;
-      }
-      return 0;
-   }
-   INDIGO_END(-1);
-}
-
 CEXPORT int indigoSingleAllowedRGroup (int atom)
 {
    INDIGO_BEGIN
@@ -1215,17 +1196,6 @@ CEXPORT int indigoHasZCoord (int molecule)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoCountStereocenters (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-
-      return mol.stereocenters.size();
-   }
-   INDIGO_END(-1)
-}
-
 CEXPORT int indigoBondOrder (int bond)
 {
    INDIGO_BEGIN
@@ -1234,33 +1204,6 @@ CEXPORT int indigoBondOrder (int bond)
 
       int num = ib.mol->getBondOrder(ib.idx);
       return num == -1 ? 0 : num;
-   }
-   INDIGO_END(-1);
-}
-
-CEXPORT int indigoBondStereo (int bond)
-{
-   INDIGO_BEGIN
-   {
-      IndigoBond &ib = IndigoBond::cast(self.getObject(bond));
-      BaseMolecule &mol = *ib.mol;
-
-      int dir = mol.stereocenters.getBondDirection(ib.idx);
-
-      if (dir == MoleculeStereocenters::BOND_UP)
-         return INDIGO_UP;
-      if (dir == MoleculeStereocenters::BOND_DOWN)
-         return INDIGO_DOWN;
-      if (dir == MoleculeStereocenters::BOND_EITHER)
-         return INDIGO_EITHER;
-
-      int parity = mol.cis_trans.getParity(ib.idx);
-
-      if (parity == MoleculeCisTrans::CIS)
-         return INDIGO_CIS;
-      if (parity == MoleculeCisTrans::TRANS)
-         return INDIGO_TRANS;
-      return 0;
    }
    INDIGO_END(-1);
 }
@@ -1403,21 +1346,6 @@ CEXPORT float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *
          mol.getAtomXyz(i).transformPoint(matr);
 
       return (float)(sqrt(sqsum / natoms));
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoInvertStereo (int item)
-{
-   INDIGO_BEGIN
-   {
-      IndigoAtom &ia = IndigoAtom::cast(self.getObject(item));
-
-      int k, *pyramid = ia.mol->stereocenters.getPyramid(ia.idx);
-      if (pyramid == 0)
-         throw IndigoError("indigoInvertStereo: not a stereoatom");
-      __swap(pyramid[0], pyramid[1], k);
-      return 1;
    }
    INDIGO_END(-1)
 }

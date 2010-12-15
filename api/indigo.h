@@ -109,6 +109,9 @@ CEXPORT int indigoLoadBuffer (const char *buffer, int size);
 CEXPORT int indigoWriteFile   (const char *filename);
 CEXPORT int indigoWriteBuffer (void);
 
+// Closes the file output stream but does not delete the object
+CEXPORT int indigoClose (int output);
+
 /* Iterators */
 
 /* Iterators work in the following way:
