@@ -126,11 +126,11 @@ float Scanner::readFloat (void)
 
    while (!isEOF())
    {
-      char c = readChar();
+      int c = lookNext();
 
       if (!isdigit(c) && c != '-' && c != '+' && c != '.')
          break;
-      buf.push(c);
+      buf.push(readChar());
    }
 
    buf.push(0);
@@ -227,7 +227,7 @@ byte Scanner::readByte ()
    return c;
 }
 
-bool Scanner::skipString ()
+bool Scanner::skipLine ()
 {
    char c;
 
@@ -235,7 +235,7 @@ bool Scanner::skipString ()
       return false;
 
    while (!isEOF())
-   {  
+   {
       c = readChar();
       if (c == '\n')
       {
@@ -254,24 +254,25 @@ bool Scanner::skipString ()
    return false;
 }
 
+bool Scanner::skipString ()
+{
+   return skipLine();
+}
+
 void Scanner::skipSpace ()
 {
    while (isspace(lookNext()))
       skip(1);
 }
 
-void Scanner::readString (Array<char> &out, bool append_zero)
+void Scanner::appendLine (Array<char> &out, bool append_zero)
 {
-   char c;
-
-   out.clear();
-
    if (isEOF())
-      throw Error("readString(): end of stream");
+      throw Error("appendLine(): end of stream");
 
    do
-   {  
-      c = readChar();
+   {
+      char c = readChar();
 
       if (c == '\r')
       {
@@ -287,6 +288,18 @@ void Scanner::readString (Array<char> &out, bool append_zero)
 
    if (append_zero)
       out.push(0);
+}
+
+void Scanner::readString (Array<char> &out, bool append_zero)
+{
+   out.clear();
+   appendLine(out, append_zero);
+}
+
+void Scanner::readLine (Array<char> &out, bool append_zero)
+{
+   out.clear();
+   appendLine(out, append_zero);
 }
 
 void Scanner::readCharsFix (int n, char *chars_out)

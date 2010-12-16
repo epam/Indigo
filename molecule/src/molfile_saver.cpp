@@ -614,6 +614,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    QS_DEF(Array<int>, atom_lists);
 
    _atom_mapping.clear_resize(mol.vertexEnd());
+   _bond_mapping.clear_resize(mol.edgeEnd());
 
    radicals.clear();
    charges.clear();
@@ -733,6 +734,8 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          aam, irflag, ecflag);
    }
 
+   iw = 1;
+
    for (i = mol.edgeBegin(); i < mol.edgeEnd(); i = mol.edgeNext(i))
    {
       const Edge &edge = mol.getEdge(i);
@@ -774,6 +777,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       output.printfCR("%3d%3d%3d%3d%3d%3d%3d",
                 _atom_mapping[edge.beg], _atom_mapping[edge.end],
                 bond_order, stereo, 0, topology, reacting_center);
+      _bond_mapping[i] = iw++;
    }
 
    if (charges.size() > 0)
@@ -854,6 +858,102 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       output.writeString(mol.getPseudoAtom(pseudoatoms[i]));
       output.writeCR();
    }
+
+   int n_sgroups = mol.data_sgroups.size() + mol.superatoms.size();
+   if (n_sgroups > 0)
+   {
+      int j;
+      for (j = 0; j < n_sgroups; j += 8)
+      {
+         output.printf("M  STY%3d", __min(n_sgroups, j + 8) - j);
+         for (i = j; i < __min(n_sgroups, j + 8); i++)
+            output.printf(" %3d %s", i + 1, i < mol.superatoms.size() ? "SUP" : "DAT");
+         output.writeCR();
+      }
+      for (j = 0; j < n_sgroups; j += 8)
+      {
+         output.printf("M  SLB%3d", __min(n_sgroups, j + 8) - j);
+         for (i = j; i < __min(n_sgroups, j + 8); i++)
+            output.printf(" %3d %3d", i + 1, i + 1);
+         output.writeCR();
+      }
+      for (i = 0; i < n_sgroups; i++)
+      {
+         BaseMolecule::SGroup *sgroup;
+         if (i < mol.superatoms.size())
+            sgroup = &mol.superatoms[i];
+         else
+            sgroup = &mol.data_sgroups[i - mol.superatoms.size()];
+
+         for (j = 0; j < sgroup->atoms.size(); j += 8)
+         {
+            int k;
+            output.printf("M  SAL %3d%3d", i + 1, __min(sgroup->atoms.size(), j + 8) - j);
+            for (k = j; k < __min(sgroup->atoms.size(), j + 8); k++)
+               output.printf(" %3d", _atom_mapping[sgroup->atoms[k]]);
+            output.writeCR();
+         }
+         for (j = 0; j < sgroup->bonds.size(); j += 8)
+         {
+            int k;
+            output.printf("M  SBL %3d%3d", i + 1, __min(sgroup->bonds.size(), j + 8) - j);
+            for (k = j; k < __min(sgroup->bonds.size(), j + 8); k++)
+               output.printf(" %3d", _bond_mapping[sgroup->bonds[k]]);
+            output.writeCR();
+         }
+
+         if (i < mol.superatoms.size())
+         {
+            BaseMolecule::Superatom &superatom = mol.superatoms[i];
+
+            if (superatom.subscript.size() > 1)
+               output.printf("M  SMT %3d %s\n", i + 1, superatom.subscript.ptr());
+            if (superatom.bond_idx >= 0)
+            {
+               output.printf("M  SBV %3d %3d %9.4f %9.4f", i + 1,
+                       _bond_mapping[superatom.bond_idx], superatom.bond_dir.x, superatom.bond_dir.y);
+            }
+            output.writeCR();
+         }
+         else
+         {
+            BaseMolecule::DataSGroup &datasgroup = mol.data_sgroups[i - mol.superatoms.size()];
+            int k = 30;
+
+            output.printf("M  SDT %3d ", i + 1);
+            if (datasgroup.description.size() > 1)
+            {
+               output.printf("%s", datasgroup.description.ptr());
+               k -= datasgroup.description.size() - 1;
+            }
+            while (k-- > 0)
+               output.writeChar(' ');
+            output.writeChar('F');
+            output.writeCR();
+
+            output.printf("M  SDD %3d %10.4f%10.4f    %c%c%c   ALL  1       %1d  ",
+                i + 1, datasgroup.display_pos.x, datasgroup.display_pos.y,
+                datasgroup.attached ? 'A' : 'D',
+                datasgroup.relative ? 'R' : 'A',
+                datasgroup.display_units ? 'U' : ' ',
+                datasgroup.dasp_pos);
+            output.writeCR();
+
+            k = datasgroup.data.size();
+            char *ptr = datasgroup.data.ptr();
+            while (k > 69)
+            {
+               output.printf("M  SCD %3d %69s", i + 1, ptr);
+               ptr += 69;
+               k -= 69;
+               output.writeCR();
+            }
+            output.printf("M  SED %3d %.*s", i + 1, k, ptr);
+            output.writeCR();
+         }
+      }
+   }
+
 }
 
 void MolfileSaver::_writeRGroupIndices2000 (Output &output, BaseMolecule &mol)

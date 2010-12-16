@@ -39,7 +39,13 @@ public:
    virtual byte readByte ();
    virtual void readAll (Array<char> &arr);
 
+   // DEPRECATED
+   bool  skipString ();
    void readString (Array<char> &out, bool append_zero);
+
+   void readLine (Array<char> &out, bool append_zero);
+   void appendLine (Array<char> &out, bool append_zero);
+   bool skipLine ();
    
    char  readChar ();
    word  readBinaryWord ();
@@ -48,7 +54,6 @@ public:
    float readBinaryFloat ();
    short readPackedShort ();
 
-   bool  skipString ();
    void  readCharsFix (int n, char *chars_out);
    float readFloatFix (int digits);
    int   readIntFix (int digits);

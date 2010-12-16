@@ -65,6 +65,38 @@ class QueryMolecule;
 class DLLEXPORT BaseMolecule : public Graph
 {
 public:
+   class DLLEXPORT SGroup
+   {
+   public:
+      Array<int> atoms; // SAL in Molfile format
+      Array<int> bonds; // SBL in Molfile format
+      virtual ~SGroup ();
+   };
+
+   class DLLEXPORT DataSGroup : public SGroup
+   {
+   public:
+      DataSGroup ();
+
+      Array<char> description; // SDT in Molfile format
+      Array<char> data;        // SCD/SED in Molfile format
+      Vec2f       display_pos; // SDD in Molfile format
+      bool        attached;    // or detached
+      bool        relative;    // or absolute
+      bool        display_units;
+      int         dasp_pos;
+   };
+
+   class DLLEXPORT Superatom : public SGroup
+   {
+   public:
+      Superatom ();
+      Array<char> subscript; // SMT in Molfile format
+      int   bond_idx;        // bond index (-1 if absent); SBV in Molfile format
+      Vec2f bond_dir;        // bond direction
+   };
+
+
    BaseMolecule ();
    virtual ~BaseMolecule ();
 
@@ -152,6 +184,9 @@ public:
 
    bool have_xyz;
    bool chiral; // read-only; can be true only when loaded from Molfile
+
+   ObjArray<DataSGroup> data_sgroups;
+   ObjArray<Superatom>  superatoms;
 
    Array<char> name;
 

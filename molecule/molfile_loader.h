@@ -91,9 +91,18 @@ protected:
       _BOND_ANY = 8
    };
 
+   enum
+   {
+      _SGROUP_TYPE_SUP = 1,
+      _SGROUP_TYPE_DAT = 2,
+      _SGROUP_TYPE_OTHER = 3 // one of unsupported types
+   };
+
 
    TL_CP_DECL(Array<int>, _atom_types);
    TL_CP_DECL(Array<int>, _hcount);
+   TL_CP_DECL(Array<int>, _sgroup_types);
+   TL_CP_DECL(Array<int>, _sgroup_mapping);
 
    bool  _v2000;
    int   _atoms_num;

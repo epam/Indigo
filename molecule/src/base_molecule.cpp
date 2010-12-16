@@ -506,3 +506,20 @@ void BaseMolecule::setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int 
    _rsite_attachment_points[atom_idx].expandFill(order + 1, -1);
    _rsite_attachment_points[atom_idx][order] = att_atom_idx;
 }
+
+BaseMolecule::SGroup::~SGroup ()
+{
+}
+
+BaseMolecule::DataSGroup::DataSGroup ()
+{
+   attached = false;
+   relative = false;
+   display_units = false;
+   dasp_pos = 1;
+}
+
+BaseMolecule::Superatom::Superatom ()
+{
+   bond_idx = -1;
+}

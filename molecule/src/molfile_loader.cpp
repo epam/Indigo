@@ -35,7 +35,9 @@ TL_CP_GET(_stereocenter_groups),
 TL_CP_GET(_bond_directions),
 TL_CP_GET(_ignore_cistrans),
 TL_CP_GET(_atom_types),
-TL_CP_GET(_hcount)
+TL_CP_GET(_hcount),
+TL_CP_GET(_sgroup_types),
+TL_CP_GET(_sgroup_mapping)
 {
    reaction_atom_mapping = 0;
    reaction_atom_inversion = 0;
@@ -913,8 +915,150 @@ void MolfileLoader::_readCtab2000 ()
 
             _scanner.skipString();
          }
-         else
+         else if (strncmp(chars, "STY", 3) == 0)
+         {
+            int n = _scanner.readIntFix(3);
+
+            while (n-- > 0)
+            {
+               _scanner.skip(1);
+               char type[4] = {0, 0, 0, 0};
+               int sgroup_idx = _scanner.readIntFix(3) - 1;
+               _scanner.skip(1);
+               _scanner.readCharsFix(3, type);
+               _sgroup_types.expandFill(sgroup_idx + 1, -1);
+               _sgroup_mapping.expandFill(sgroup_idx + 1, -1);
+               if (strncmp(type, "SUP", 3) == 0)
+               {
+                  _sgroup_types[sgroup_idx] = _SGROUP_TYPE_SUP;
+                  _bmol->superatoms.push();
+                  _sgroup_mapping[sgroup_idx] = _bmol->superatoms.size() - 1;
+               }
+               else if (strncmp(type, "DAT", 3) == 0)
+               {
+                  _sgroup_types[sgroup_idx] = _SGROUP_TYPE_DAT;
+                  _bmol->data_sgroups.push();
+                  _sgroup_mapping[sgroup_idx] = _bmol->data_sgroups.size() - 1;
+               }
+               else
+                  _sgroup_types[sgroup_idx] = _SGROUP_TYPE_OTHER;
+            }
             _scanner.skipString();
+         }
+         else if (strncmp(chars, "SAL", 3) == 0 || strncmp(chars, "SBL", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+
+            if (_sgroup_mapping[sgroup_idx] >= 0)
+            {
+               int n = _scanner.readIntFix(3);
+               BaseMolecule::SGroup *sgroup;
+               if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_DAT)
+                  sgroup = &_bmol->data_sgroups[_sgroup_mapping[sgroup_idx]];
+               else
+                  sgroup = &_bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+               while (n-- > 0)
+               {
+                  _scanner.skip(1);
+                  if (strncmp(chars, "SAL", 3) == 0)
+                     sgroup->atoms.push(_scanner.readIntFix(3) - 1);
+                  else
+                     sgroup->bonds.push(_scanner.readIntFix(3) - 1);
+               }
+            }
+            _scanner.skipString();
+         }
+         else if (strncmp(chars, "SDT", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+            
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_DAT)
+            {
+               char desc[30] = {0};
+               int k;
+               _scanner.skip(1);
+               _scanner.readCharsFix(30, desc);
+               BaseMolecule::DataSGroup &sgroup = _bmol->data_sgroups[_sgroup_mapping[sgroup_idx]];
+               for (k = 0; k < 30 && desc[k] != ' '; k++)
+                  sgroup.description.push(desc[k]);
+               sgroup.description.push(0);
+            }
+         }
+         else if (strncmp(chars, "SDD", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_DAT)
+            {
+               _scanner.skip(1);
+               BaseMolecule::DataSGroup &sgroup = _bmol->data_sgroups[_sgroup_mapping[sgroup_idx]];
+
+               sgroup.display_pos.x = _scanner.readFloatFix(10);
+               sgroup.display_pos.y = _scanner.readFloatFix(10);
+               _scanner.skip(4);
+               if (_scanner.readChar() == 'A')
+                  sgroup.attached = true;
+               if (_scanner.readChar() == 'R')
+                  sgroup.relative = true;
+               if (_scanner.readChar() == 'U')
+                  sgroup.display_units = true;
+               _scanner.skip(16);
+               int c = _scanner.readChar();
+               if (c >= '1' && c <= '9')
+                  sgroup.dasp_pos = c - '0';
+            }
+            _scanner.skipLine();
+         }
+         else if (strncmp(chars, "SED", 3) == 0 || strncmp(chars, "SCD", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_DAT)
+            {
+               _scanner.skip(1);
+               BaseMolecule::DataSGroup &sgroup = _bmol->data_sgroups[_sgroup_mapping[sgroup_idx]];
+               if (sgroup.data.size() > 0 && sgroup.data[sgroup.data.size() - 1] == 0)
+                  sgroup.data.pop();
+               _scanner.appendLine(sgroup.data, true);
+            }
+            else
+               _scanner.skipLine();
+         }
+         else if (strncmp(chars, "SMT", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SUP)
+            {
+               _scanner.skip(1);
+               BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+               _scanner.readLine(sup.subscript, true);
+            }
+            else
+               _scanner.skipLine();
+         }
+         else if (strncmp(chars, "SBV", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SUP)
+            {
+               BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+               _scanner.skip(1);
+               sup.bond_idx = _scanner.readIntFix(3) - 1;
+               _scanner.skipSpace();
+               sup.bond_dir.x = _scanner.readFloat();
+               _scanner.skipSpace();
+               sup.bond_dir.y = _scanner.readFloat();
+               int k;
+               k = 1;
+            }
+            _scanner.skipLine();
+         }
+         else
+            _scanner.skipLine();
       }
       else if (c == 'A')
       {
@@ -2133,11 +2277,6 @@ void MolfileLoader::_preparePseudoAtomLabel (Array<char> &pseudo)
       pseudo.remove(0);
    }
 
-   // make the first letter capital and the others lowercase
-   //pseudo.tolower();
-   //if (pseudo.size() > 0 && isalpha(pseudo[0]))
-   //   pseudo[0] = toupper(pseudo[0]);
-
    if (pseudo.size() <= 1)
       throw Error("empty pseudo-atom");
 }
@@ -2247,6 +2386,8 @@ void MolfileLoader::_init ()
 {
    _hcount.clear();
    _atom_types.clear();
+   _sgroup_types.clear();
+   _sgroup_mapping.clear();
    _stereo_care_atoms.clear_resize(_atoms_num);
    _stereo_care_atoms.zerofill();
    _stereo_care_bonds.clear_resize(_bonds_num);
