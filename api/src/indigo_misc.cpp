@@ -25,6 +25,7 @@
 #include "molecule/elements.h"
 #include "molecule/molfile_saver.h"
 #include "reaction/rxnfile_saver.h"
+#include "indigo_molecule.h"
 
 #define CHECKRGB(r, g, b) \
 if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
@@ -448,10 +449,26 @@ CEXPORT const char * indigoRawData (int handler)
       }
       else if (obj.type == IndigoObject::PROPERTY)
          self.tmp_string.copy(((IndigoProperty &)obj).getValue());
+      else if (obj.type == IndigoObject::DATA_SGROUP)
+      {
+         self.tmp_string.copy(((IndigoDataSGroup &)obj).get().data);
+      }
       else
          throw IndigoError("%s does not have raw data", obj.debugInfo());
       self.tmp_string.push(0);
       return self.tmp_string.ptr();
    }
    INDIGO_END(0)
+}
+
+CEXPORT int indigoRemove (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      obj.remove();
+      return 1;
+   }
+   INDIGO_END(-1)
 }

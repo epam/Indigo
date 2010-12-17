@@ -118,6 +118,11 @@ bool IndigoObject::hasNext ()
    throw IndigoError("%s is not iterable", debugInfo());
 }
 
+void IndigoObject::remove ()
+{
+   throw IndigoError("%s is not removeable", debugInfo());
+}
+
 const char * IndigoObject::getName ()
 {
    throw IndigoError("%s does not have a name", debugInfo());

@@ -106,6 +106,12 @@ public:
       }
    }
 
+   void remove (int idx)
+   {
+      _array[idx].~T();
+      _array.remove(idx);
+   }
+
    T & top ()
    {
       return _array.top();

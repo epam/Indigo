@@ -400,6 +400,7 @@ CEXPORT int indigoSaveMolfile (int molecule, int output)
 
       MolfileSaver saver(out);
       saver.mode = self.molfile_saving_mode;
+      saver.no_chiral = self.molfile_saving_no_chiral;
       saver.highlighting = obj.getMoleculeHighlighting();
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());
@@ -436,6 +437,7 @@ CEXPORT int indigoSdfAppend (int output, int molecule)
 
       MolfileSaver saver(out);
       saver.mode = self.molfile_saving_mode;
+      saver.no_chiral = self.molfile_saving_no_chiral;
       saver.highlighting = self.getObject(molecule).getMoleculeHighlighting();
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());
@@ -860,7 +862,7 @@ CEXPORT int indigoIterateRGroupFragments (int rgroup)
 
 bool IndigoRGroupsIter::hasNext ()
 {
-   return _idx + 1 <= _mol->rgroups.getRGroupCount();
+   return _idx + 1 < _mol->rgroups.getRGroupCount();
 }
 
 IndigoObject * IndigoRGroupsIter::next ()
@@ -1358,6 +1360,144 @@ CEXPORT float indigoAlignAtoms (int molecule, int natoms, int *atom_ids, float *
          mol.getAtomXyz(i).transformPoint(matr);
 
       return (float)(sqrt(sqsum / natoms));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCountSuperatoms (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return mol.superatoms.size();
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCountDataSGroups (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return mol.data_sgroups.size();
+   }
+   INDIGO_END(-1)
+}
+
+IndigoDataSGroupsIter::IndigoDataSGroupsIter (BaseMolecule &molecule) :
+        IndigoObject(DATA_SGROUPS_ITER),
+        _mol(molecule)
+{
+   _idx = -1;
+}
+
+IndigoDataSGroupsIter::~IndigoDataSGroupsIter ()
+{
+}
+
+bool IndigoDataSGroupsIter::hasNext ()
+{
+   return _idx + 1 < _mol.data_sgroups.size();
+}
+
+IndigoObject * IndigoDataSGroupsIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   _idx++;
+   AutoPtr<IndigoDataSGroup> sgroup(new IndigoDataSGroup(_mol, _idx));
+   return sgroup.release();
+}
+
+
+CEXPORT int indigoIterateDataSGroups (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoDataSGroupsIter(mol));
+   }
+   INDIGO_END(-1)
+}
+
+IndigoDataSGroup::IndigoDataSGroup (BaseMolecule &mol_, int idx_) :
+         IndigoObject(DATA_SGROUP)
+{
+   mol = &mol_;
+   idx = idx_;
+}
+
+IndigoDataSGroup & IndigoDataSGroup::cast (IndigoObject &obj)
+{
+   if (obj.type != DATA_SGROUP)
+      throw IndigoError("%s is not a data sgroup", obj.debugInfo());
+   return (IndigoDataSGroup &)obj;
+}
+
+BaseMolecule::DataSGroup & IndigoDataSGroup::get ()
+{
+   return mol->data_sgroups[idx];
+}
+
+void IndigoDataSGroup::remove ()
+{
+   mol->data_sgroups.remove(idx);
+}
+
+IndigoDataSGroup::~IndigoDataSGroup ()
+{
+}
+
+int IndigoDataSGroup::getIndex ()
+{
+   return idx;
+}
+
+CEXPORT const char * indigoDescription (int data_sgroup)
+{
+   INDIGO_BEGIN
+   {
+      IndigoDataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(data_sgroup));
+      if (dsg.get().description.size() < 1)
+         return "";
+      return dsg.get().description.ptr();
+   }
+   INDIGO_END(0)
+}
+
+CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
+        int nbonds, int *bonds, const char *description, const char *data)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      BaseMolecule::DataSGroup &dsg =  mol.data_sgroups.push();
+      int i;
+      if (atoms != 0)
+         for (i = 0; i < natoms; i++)
+            dsg.atoms.push(atoms[i]);
+      if (bonds != 0)
+         for (i = 0; i < nbonds; i++)
+            dsg.bonds.push(bonds[i]);
+      if (data != 0)
+         dsg.data.readString(data, false);
+      if (description != 0)
+         dsg.description.readString(description, true);
+      return self.addObject(new IndigoDataSGroup(mol, mol.data_sgroups.size() - 1));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *options)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      dsg.display_pos.x = x;
+      dsg.display_pos.y = y;
+      return 1;
    }
    INDIGO_END(-1)
 }

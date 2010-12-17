@@ -92,7 +92,9 @@ public:
       BOND,
       BONDS_ITER,
       ATOM_NEIGHBOR,
-      ATOM_NEIGHBORS_ITER
+      ATOM_NEIGHBORS_ITER,
+      DATA_SGROUP,
+      DATA_SGROUPS_ITER
    };
 
    int type;
@@ -122,6 +124,8 @@ public:
    virtual IndigoObject * next ();
    
    virtual bool hasNext ();
+
+   virtual void remove ();
 
    bool isBaseMolecule ();
    bool isBaseReaction ();
@@ -199,6 +203,7 @@ public:
    bool deconvolution_aromatization;
 
    int  molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
+   bool molfile_saving_no_chiral;
 
    Encoding filename_encoding;
 

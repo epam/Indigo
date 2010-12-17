@@ -239,6 +239,35 @@ protected:
    BaseMolecule *_mol;
 };
 
+class IndigoDataSGroup : public IndigoObject
+{
+public:
+   IndigoDataSGroup (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoDataSGroup ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   static IndigoDataSGroup & cast (IndigoObject &obj);
+   BaseMolecule::DataSGroup & get();
+
+   BaseMolecule *mol;
+   int idx;
+};
+
+class IndigoDataSGroupsIter : public IndigoObject
+{
+public:
+   IndigoDataSGroupsIter (BaseMolecule &molecule);
+   virtual ~IndigoDataSGroupsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+protected:
+   int _idx;
+   BaseMolecule &_mol;
+};
+
 #ifdef _WIN32
 #pragma warning(pop)
 #endif

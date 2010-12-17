@@ -34,6 +34,7 @@ TL_CP_GET(_atom_mapping),
 TL_CP_GET(_bond_mapping)
 {
    mode = MODE_AUTO;
+   no_chiral = false;
 }
 
 void MolfileSaver::saveBaseMolecule (BaseMolecule &mol)
@@ -211,7 +212,7 @@ void MolfileSaver::_writeCtabHeader2000 (Output &output, BaseMolecule &mol)
 {
    int chiral = 0;
 
-   if (mol.stereocenters.size() != 0 && mol.stereocenters.haveAllAbsAny())
+   if (!no_chiral && mol.stereocenters.size() != 0 && mol.stereocenters.haveAllAbsAny())
       chiral = 1;
 
    output.printfCR("%3d%3d%3d%3d%3d%3d%3d%3d%3d%3d%3d V2000",

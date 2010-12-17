@@ -47,6 +47,7 @@ public:
    void saveQueryCtab3000  (QueryMolecule &mol);
 
    int mode; // one of MODE_***, MODE_AUTO by default
+   bool no_chiral; // skip the 'chiral' flag, not regarding of the actual stereochemistry
 
    const GraphHighlighting *highlighting;
 

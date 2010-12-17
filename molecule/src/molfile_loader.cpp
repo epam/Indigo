@@ -1019,9 +1019,7 @@ void MolfileLoader::_readCtab2000 ()
             {
                _scanner.skip(1);
                BaseMolecule::DataSGroup &sgroup = _bmol->data_sgroups[_sgroup_mapping[sgroup_idx]];
-               if (sgroup.data.size() > 0 && sgroup.data[sgroup.data.size() - 1] == 0)
-                  sgroup.data.pop();
-               _scanner.appendLine(sgroup.data, true);
+               _scanner.appendLine(sgroup.data, false);
             }
             else
                _scanner.skipLine();

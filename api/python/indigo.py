@@ -569,6 +569,12 @@ class Indigo:
     self.IndigoObject.atomicNumber = self._member_int(self._lib.indigoAtomicNumber)
     self.IndigoObject.isotope = self._member_int(self._lib.indigoIsotope)
 
+    self.IndigoObject.countSuperatoms = self._member_int(self._lib.indigoCountSuperatoms)
+    self.IndigoObject.countDataSGroups = self._member_int(self._lib.indigoCountDataSGroups)
+    self.IndigoObject.iterateDataSGroups = self._member_obj(self._lib.indigoIterateDataSGroups)
+    self.IndigoObject.description = self._member_string(self._lib.indigoDescription)
+    self.IndigoObject.remove = self._member_void(self._lib.indigoRemove)
+
     self.IndigoObject.resetCharge = self._member_void(self._lib.indigoResetCharge)
     self.IndigoObject.resetExplicitValence = self._member_void(self._lib.indigoResetExplicitValence)
     self.IndigoObject.resetRadical = self._member_void(self._lib.indigoResetRadical)
@@ -657,6 +663,8 @@ class Indigo:
 
     self.IndigoObject.createSubmolecule = self._member_obj_iarr(self._lib.indigoCreateSubmolecule)
     self.IndigoObject.createEdgeSubmolecule = self._member_obj_iarr_iarr(self._lib.indigoCreateEdgeSubmolecule)
+    self.IndigoObject.addDataSGroup = self._member_obj_iarr_iarr_string_string(self._lib.indigoAddDataSGroup)
+    self.IndigoObject.setDataSGroupXY = self._member_void_float_float_string(self._lib.indigoSetDataSGroupXY)
 
   def _static_obj (self, func):
     def newfunc ():
@@ -720,7 +728,9 @@ class Indigo:
   def _setSID (self):
     self._lib.indigoSetSessionId(self._sid)
 
-  def _member_string (self, func):
+  def _member_string (self, func): 
+    func.restype = c_char_p
+    func.argtypes = [c_int]
     dispatcher = self
     def newfunc (self):
       dispatcher._setSID()
@@ -777,6 +787,8 @@ class Indigo:
     return newfunc
 
   def _member_void (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int]
     dispatcher = self
     def newfunc (self):
       dispatcher._setSID()
@@ -809,6 +821,8 @@ class Indigo:
     return newfunc
 
   def _member_int (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int]
     dispatcher = self
     def newfunc (self):
       dispatcher._setSID()
@@ -838,6 +852,8 @@ class Indigo:
 
   def _member_obj (self, func):
     dispatcher = self
+    func.restype = c_int
+    func.argtypes = [c_int]
     def newfunc (self):
       dispatcher._setSID()
       newobj = dispatcher._checkResult(func(self.id))
@@ -910,6 +926,33 @@ class Indigo:
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)
+    return newfunc
+
+  def _member_obj_iarr_iarr_string_string (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int, POINTER(c_int), c_int, POINTER(c_int), c_char_p, c_char_p]
+    dispatcher = self
+    def newfunc (self, intarr1, intarr2, str1, str2):
+      arr1 = (c_int * len(intarr1))()
+      for i in xrange(len(intarr1)):
+        arr1[i] = intarr1[i]
+      arr2 = (c_int * len(intarr2))()
+      for i in xrange(len(intarr2)):
+        arr2[i] = intarr2[i]
+      dispatcher._setSID()
+      newobj = dispatcher._checkResult(func(self.id, len(intarr1), arr1, len(intarr2), arr2, str1, str2))
+      if newobj == 0:
+        return None
+      return dispatcher.IndigoObject(dispatcher, newobj)
+    return newfunc
+
+  def _member_void_float_float_string (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_float, c_float, c_char_p]
+    dispatcher = self
+    def newfunc (self, x, y, s):
+      dispatcher._setSID()
+      return dispatcher._checkResult(func(self.id, x, y, s))
     return newfunc
 
   def version (self):

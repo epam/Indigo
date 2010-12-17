@@ -271,6 +271,18 @@ CEXPORT int indigoIsotope (int atom);
 // you should not free() it, but rather memcpy() it if you want to keep it.
 CEXPORT float * indigoXYZ (int atom);
 
+CEXPORT int indigoCountSuperatoms (int molecule);
+CEXPORT int indigoCountDataSGroups (int molecule);
+CEXPORT int indigoIterateDataSGroups (int molecule);
+CEXPORT const char * indigoDescription (int data_sgroup);
+
+CEXPORT int indigoRemove (int item);
+
+CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
+        int nbonds, int *bonds, const char *description, const char *data);
+
+CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *options);
+
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetRadical (int atom);

@@ -52,6 +52,12 @@ static void indigoSetMolfileSavingMode (const char *mode)
       throw IndigoError("unknown value: %s", mode);
 }
 
+static void indigoSetMolfileSavingNoChiral (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.molfile_saving_no_chiral = (enabled != 0);
+}
+
 static void indigoSetFilenameEncoding (const char *encoding)
 {
    Indigo &self = indigoGetInstance();
@@ -114,6 +120,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("skip-3d-chirality", indigoSkip3dChirality);
    mgr.setOptionHandlerBool("deconvolution-aromatization", indigoDeconvolutionAromatization);
    mgr.setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode);
+   mgr.setOptionHandlerBool("molfile-saving-no-chiral", indigoSetMolfileSavingNoChiral);
    mgr.setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding);
    mgr.setOptionHandlerInt("fp-ord-qwords", indigoSetFPOrdQwords);
    mgr.setOptionHandlerInt("fp-sim-qwords", indigoSetFPSimQwords);
