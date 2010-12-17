@@ -101,12 +101,14 @@ class Indigo:
         
     def __iter__ (self):
       return self
-    def next (self):
+    def __next__ (self):
       self.dispatcher._setSID()
       res = self.dispatcher._checkResult(self._lib.indigoNext(self.id))
       if res == 0:
         raise StopIteration
       return Indigo.IndigoObject(self.dispatcher, res)
+    def next (self):
+      return self.__next__()
 
   def __init__ (self, path = None):
     if not path:
