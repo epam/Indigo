@@ -37,13 +37,9 @@ public:
    void clear ();
    void clearArrays ();
 
-   bool query;
    float relativeThickness;
-   bool loadHighlighting;
    RENDER_MODE rmode;
    DINGO_MODE mode;
-   INPUT_FORMAT inputFormat;
-   int aromatization;
    AutoPtr<BaseMolecule> mol;
    Output* output;
    GraphHighlighting molhl;
@@ -58,7 +54,6 @@ public:
    Array<int> refAtoms;
 
    PVOID hdc;
-   Array<char> outfile;
    RenderOptions rOpt;
    CanvasOptions cnvOpt;
 };
@@ -66,8 +61,6 @@ public:
 class RenderParamInterface {
 public:
    DEF_ERROR("render param interface");
-   static void loadMol (RenderParams& params, Scanner& scanner);
-   static void loadRxn (RenderParams& params, Scanner& scanner);
    static void render (RenderParams& params);
 
 private:

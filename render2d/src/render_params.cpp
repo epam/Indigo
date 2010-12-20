@@ -64,13 +64,9 @@ void RenderParams::clearArrays ()
 
 void RenderParams::clear ()
 {
-   query = false;
    relativeThickness = 1.0f;
-   loadHighlighting = true;
-   aromatization = 0;
    rmode = RENDER_NONE;
    mode = MODE_NONE;
-   inputFormat = INPUT_FORMAT_UNKNOWN;
    titleProp.clear();
    titleProp.appendString("^NAME", true);
    mol.reset(NULL);
@@ -78,94 +74,9 @@ void RenderParams::clear ()
    rxn.reset(NULL);
    rhl.clear();
    hdc = 0;
-   outfile.clear();
    rOpt.clear();
    cnvOpt.clear();
    clearArrays();
-}
-
-void RenderParamInterface::loadMol (RenderParams& params, Scanner& scanner)
-{
-   params.mol.reset(params.query ? (BaseMolecule*)new QueryMolecule() : (BaseMolecule*)new Molecule());
-   if (params.inputFormat == INPUT_FORMAT_MOLFILE)
-   {
-      MolfileLoader loader(scanner);
-
-      if (params.loadHighlighting)
-         loader.highlighting = &params.molhl;
-      loader.ignore_stereocenter_errors = true;
-      if (!params.query)
-         loader.loadMolecule(params.mol.ref().asMolecule());
-      else
-         loader.loadQueryMolecule(params.mol.ref().asQueryMolecule());
-   }
-   else if (params.inputFormat == INPUT_FORMAT_SMILES)
-   {
-      SmilesLoader loader(scanner);
-
-      if (params.loadHighlighting)
-         loader.highlighting = &params.molhl;
-      if (!params.query)
-         loader.loadMolecule(params.mol.ref().asMolecule());
-      else
-         loader.loadQueryMolecule(params.mol.ref().asQueryMolecule());
-   }
-   else // INPUT_FORMAT_UNKNOWN
-   {
-      MoleculeAutoLoader loader(scanner);
-
-      if (params.loadHighlighting)
-         loader.highlighting = &params.molhl;
-      loader.ignore_stereocenter_errors = true;
-      if (!params.query)
-         loader.loadMolecule(params.mol.ref().asMolecule());
-      else
-         loader.loadQueryMolecule(params.mol.ref().asQueryMolecule());
-   }
-   params.rmode = RENDER_MOL;
-}
-
-void RenderParamInterface::loadRxn (RenderParams& params, Scanner& scanner)
-{
-   params.rxn.reset(params.query ? (BaseReaction*)new QueryReaction() : (BaseReaction*)new Reaction());
-   if (params.inputFormat == INPUT_FORMAT_RXNFILE)
-   {
-      RxnfileLoader loader(scanner);
-
-      if (params.loadHighlighting)
-         loader.highlighting = &params.rhl;
-
-      loader.ignore_stereocenter_errors = true;
-      if (!params.query)
-         loader.loadReaction(params.rxn.ref().asReaction());
-      else
-         loader.loadQueryReaction(params.rxn.ref().asQueryReaction());
-   }
-   else if (params.inputFormat == INPUT_FORMAT_REACTION_SMILES)
-   {
-      RSmilesLoader loader(scanner);
-
-      if (params.loadHighlighting)
-         loader.highlighting = &params.rhl;
-
-      if (!params.query)
-         loader.loadReaction(params.rxn.ref().asReaction());
-      else
-         loader.loadQueryReaction(params.rxn.ref().asQueryReaction());
-   }
-   else // INPUT_FORMAT_UNKNOWN
-   {
-      ReactionAutoLoader loader(scanner);
-      if (params.loadHighlighting)
-         loader.highlighting = &params.rhl;
-      loader.ignore_stereocenter_errors = true;
-      if (!params.query)
-         loader.loadReaction(params.rxn.ref().asReaction());
-      else
-         loader.loadQueryReaction(params.rxn.ref().asQueryReaction());
-   }
-   
-   params.rmode = RENDER_RXN;
 }
 
 bool RenderParamInterface::needsLayoutSub (BaseMolecule& mol)
@@ -209,11 +120,6 @@ void RenderParamInterface::_prepareMolecule (RenderParams& params, BaseMolecule&
       ml.make();
       bm.stereocenters.markBonds();
    }
-
-   if (params.aromatization > 0)
-      bm.aromatize();
-   else if (params.aromatization < 0)
-      bm.dearomatize();
 }
 
 void RenderParamInterface::_prepareReaction (RenderParams& params, BaseReaction& rxn)
@@ -228,11 +134,6 @@ void RenderParamInterface::_prepareReaction (RenderParams& params, BaseReaction&
          mol.stereocenters.markBonds();
       }
    }
-
-   if (params.aromatization > 0)
-      rxn.aromatize();
-   else if (params.aromatization < 0)
-      rxn.dearomatize();
 }
 
 void RenderParamInterface::render (RenderParams& params)
@@ -243,14 +144,10 @@ void RenderParamInterface::render (RenderParams& params)
    RenderContext rc(params.rOpt);
    rc.setScaleFactor(params.relativeThickness);
    rc.setDefaultScale(params.cnvOpt.bondLength);
-
    rc.setOutput(params.output);
    rc.setMode(params.mode);
    rc.setHDC(params.hdc);
    
-   if (params.query)
-      params.rOpt.implHMode = IHM_NONE;
-
    RenderItemFactory factory(rc); 
    int obj = -1;
    Array<int> objs;
