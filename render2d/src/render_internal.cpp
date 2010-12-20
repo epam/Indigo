@@ -146,6 +146,13 @@ RenderOptions::RenderOptions ()
 
 void RenderOptions::clear()
 {
+   highlightThicknessEnable = false;
+   highlightThicknessFactor = 1.8f;
+   highlightColorEnable = true;
+   highlightColor.set(1, 0, 0);
+   aamColor.set(0, 0, 0);
+   commentFontFactor = 20;
+   titleFontFactor = 20;
    labelMode = LABEL_MODE_NORMAL;
    implHMode = IHM_TERMINAL_HETERO;
    comment.clear();

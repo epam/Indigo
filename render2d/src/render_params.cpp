@@ -83,8 +83,6 @@ void RenderParams::clear ()
    outfile.clear();
    rOpt.clear();
    cnvOpt.clear();
-   hlOpt.clear();
-   rcOpt.clear();
    clearArrays();
 }
 
@@ -247,8 +245,6 @@ void RenderParamInterface::render (RenderParams& params)
    RenderContext rc(params.rOpt);
    rc.setScaleFactor(params.relativeThickness);
    rc.setDefaultScale(params.cnvOpt.bondLength);
-   rc.setHighlightingOptions(&params.hlOpt);
-   rc.setRenderContextOptions(&params.rcOpt);
 
    rc.setOutput(params.output);
    rc.setMode(params.mode);

@@ -265,28 +265,3 @@ void CanvasOptions::clear ()
    marginX = marginY = 0;
    commentOffset = 0;
 }
-
-RenderContextOptions::RenderContextOptions ()
-{
-   clear();
-}
-
-void RenderContextOptions::clear()
-{
-   aamColor.set(0, 0, 0);
-   commentFontFactor = 20;
-   titleFontFactor = 20;
-}
-
-HighlightingOptions::HighlightingOptions ()
-{
-   clear();
-}
-
-void HighlightingOptions::clear()
-{
-   highlightThicknessEnable = false;
-   highlightThicknessFactor = 1.8f;
-   highlightColorEnable = true;
-   highlightColor.set(1, 0, 0);
-}

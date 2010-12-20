@@ -220,16 +220,6 @@ void RenderContext::setOutput (Output* output)
    _output = output;
 }
 
-void RenderContext::setHighlightingOptions (const HighlightingOptions* hlOpt)
-{
-   _hlOpt = hlOpt;
-}
-
-void RenderContext::setRenderContextOptions (const RenderContextOptions* rcOpt)
-{
-   _rcOpt = rcOpt;
-}
-
 void RenderContext::initMetaSurface() {
    _meta_surface = cairo_pdf_surface_create_for_stream(NULL, NULL, 1, 1);
    cairoCheckStatus();
@@ -486,16 +476,16 @@ void RenderContext::drawItemBackground (const RenderItem& item)
 
 void RenderContext::drawTextItemText (const TextItem& ti)
 {
-   bool bold = ti.highlighted && _hlOpt->highlightThicknessEnable;
+   bool bold = ti.highlighted && opt.highlightThicknessEnable;
 
    Vec3f color;
    if (ti.ritype == RenderItem::RIT_AAM)
-      color.copy(_rcOpt->aamColor);
+      color.copy(opt.aamColor);
    else
    {
       getColorVec(color, ti.color);
-      if (ti.highlighted && _hlOpt->highlightColorEnable)
-         color.copy(_hlOpt->highlightColor);
+      if (ti.highlighted && opt.highlightColorEnable)
+         color.copy(opt.highlightColor);
    }
    drawTextItemText (ti, color, bold);
 }
@@ -669,7 +659,7 @@ void RenderContext::setFontSize (double fontSize)
 
 void RenderContext::setTextItemSize (TextItem& ti)
 {
-   bool bold = ti.highlighted && _hlOpt->highlightThicknessEnable;
+   bool bold = ti.highlighted && opt.highlightThicknessEnable;
    
    fontsSetFont(_cr, ti.fontsize, bold);
    fontsGetTextExtents(_cr, ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
@@ -709,8 +699,8 @@ void RenderContext::setGraphItemSizeSign (GraphItem& gi, GraphItem::TYPE type)
 void RenderContext::drawGraphItem (GraphItem& gi)
 {
    setSingleSource(gi.color);
-   if (gi.highlighted && _hlOpt->highlightColorEnable)
-      setSingleSource(_hlOpt->highlightColor);
+   if (gi.highlighted && opt.highlightColorEnable)
+      setSingleSource(opt.highlightColor);
 
    Vec2f v0;
    v0.sum(gi.bbp, gi.relpos);
@@ -833,7 +823,7 @@ void RenderContext::drawArrow (const Vec2f& p1, const Vec2f& p2, const float wid
 
 float RenderContext::highlightedBondLineWidth () const
 {
-   return _settings.bondLineWidth * (_hlOpt->highlightThicknessEnable ? _hlOpt->highlightThicknessFactor : 1.0f);
+   return _settings.bondLineWidth * (opt.highlightThicknessEnable ? opt.highlightThicknessFactor : 1.0f);
 }
 
 float RenderContext::currentLineWidth () const
@@ -843,10 +833,10 @@ float RenderContext::currentLineWidth () const
 
 void RenderContext::setHighlight()
 {
-   if (_hlOpt->highlightColorEnable)
-      setSingleSource(_hlOpt->highlightColor);
-   if (_hlOpt->highlightThicknessEnable)
-      setLineWidth(_hlOpt->highlightThicknessFactor * _settings.bondLineWidth);
+   if (opt.highlightColorEnable)
+      setSingleSource(opt.highlightColor);
+   if (opt.highlightThicknessEnable)
+      setLineWidth(opt.highlightThicknessFactor * _settings.bondLineWidth);
 }
 
 void RenderContext::resetHighlightThickness()

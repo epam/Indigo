@@ -63,8 +63,6 @@ public:
    Array<char> outfile;
    RenderOptions rOpt;
    CanvasOptions cnvOpt;
-   HighlightingOptions hlOpt;
-   RenderContextOptions rcOpt;
 };
      
 class RenderParamInterface {

@@ -295,30 +295,18 @@ private:
    CanvasOptions (const CanvasOptions&);
 };
 
-struct HighlightingOptions {
-   HighlightingOptions ();
+class RenderOptions {
+public:
+   RenderOptions ();
    void clear();
 
    bool highlightThicknessEnable;
    float highlightThicknessFactor;
    bool highlightColorEnable;
    Vec3f highlightColor;
-};
-
-struct RenderContextOptions {
-   RenderContextOptions ();
-   void clear();
-
    Vec3f aamColor;
    float commentFontFactor;
    float titleFontFactor;
-};
-
-class RenderOptions {
-public:
-   RenderOptions ();
-   void clear();
-
    Array<char> comment;
    COMMENT_POS commentPos;
    float commentAlign;

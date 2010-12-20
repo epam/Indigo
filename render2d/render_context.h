@@ -28,9 +28,6 @@ class RenderContext
 public:
    DEF_ERROR("render context");
 
-   const HighlightingOptions* _hlOpt;
-   const RenderContextOptions* _rcOpt;
-
    void checkPathNonEmpty () const;
 
    RenderContext (const RenderOptions&);
@@ -43,8 +40,6 @@ public:
    void setLineWidth (double width);
    void setFontFamily (const char* ff);
    void setOutput (Output* output);
-   void setHighlightingOptions (const HighlightingOptions* hlOpt);
-   void setRenderContextOptions (const RenderContextOptions* rcOpt);
    void createSurface(cairo_write_func_t writer, Output* output, int width, int height);
    void init();
    void setBackground(const Vec3f& color);

@@ -169,20 +169,20 @@ void indigoRenderSetBondIdsVisible (int enabled)
 void indigoRenderSetHighlightThicknessEnabled (int enabled)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.hlOpt.highlightThicknessEnable = enabled != 0;
+   rp.rOpt.highlightThicknessEnable = enabled != 0;
 }
 
 void indigoRenderSetHighlightColorEnabled (int enabled)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.hlOpt.highlightColorEnable = enabled != 0;
+   rp.rOpt.highlightColorEnable = enabled != 0;
 }
 
 void indigoRenderSetHighlightColor (float r, float g, float b)
 {
    CHECKRGB(r, g, b);
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.hlOpt.highlightColor.set(r, g, b);
+   rp.rOpt.highlightColor.set(r, g, b);
 }
 
 void indigoRenderSetStereoOldStyle (int enabled)
@@ -208,7 +208,7 @@ void indigoRenderSetAAMColor (float r, float g, float b)
 {
    CHECKRGB(r, g, b);
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rcOpt.aamColor.set(r, g, b);
+   rp.rOpt.aamColor.set(r, g, b);
 }
 
 void indigoRenderSetCommentColor (float r, float g, float b)
@@ -234,13 +234,13 @@ void indigoRenderSetComment (const char* comment)
 void indigoRenderSetCommentFontSize (float fontSize)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rcOpt.commentFontFactor = fontSize;
+   rp.rOpt.commentFontFactor = fontSize;
 }
 
 void indigoRenderSetTitleFontSize (float fontSize)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rcOpt.titleFontFactor = fontSize;
+   rp.rOpt.titleFontFactor = fontSize;
 }                                
 
 void indigoRenderSetCommentAlignment (float align)
