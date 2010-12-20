@@ -175,7 +175,7 @@ int IndigoAtom::getIndex ()
 
 IndigoAtom & IndigoAtom::cast (IndigoObject &obj)
 {
-   if (obj.type == IndigoObject::ATOM)
+   if (obj.type == IndigoObject::ATOM || obj.type == IndigoObject::ATOM_NEIGHBOR)
       return (IndigoAtom &)obj;
    if (obj.type == IndigoObject::ARRAY_ELEMENT)
       return cast(((IndigoArrayElement &)obj).get());
