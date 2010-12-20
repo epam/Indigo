@@ -601,6 +601,7 @@ class Indigo:
     self.IndigoObject.clearStereocenters = self._member_void(self._lib.indigoClearStereocenters)
     self.IndigoObject.countStereocenters = self._member_int(self._lib.indigoCountStereocenters)
 
+    self.IndigoObject.countHeavyAtoms = self._member_int(self._lib.indigoCountHeavyAtoms)
     self.IndigoObject.molecularWeight = self._member_float(self._lib.indigoMolecularWeight)
     self.IndigoObject.monoisotopicMass = self._member_float(self._lib.indigoMonoisotopicMass)
     self.IndigoObject.mostAbundantMass = self._member_float(self._lib.indigoMostAbundantMass)

@@ -323,6 +323,7 @@ CEXPORT int indigoCountStereocenters (int molecule);
 
 /* Calculation on molecules */
 
+CEXPORT int   indigoCountHeavyAtoms (int molecule);
 CEXPORT int   indigoGrossFormula    (int molecule);
 CEXPORT float indigoMolecularWeight (int molecule);
 CEXPORT float indigoMostAbundantMass (int molecule);

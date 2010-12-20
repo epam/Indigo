@@ -1501,3 +1501,19 @@ CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *opt
    }
    INDIGO_END(-1)
 }
+
+CEXPORT int indigoCountHeavyAtoms (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      int i, cnt = 0;
+
+      for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+         if (!mol.possibleAtomNumber(i, ELEM_H))
+            cnt++;
+
+      return cnt;
+   }
+   INDIGO_END(-1)
+}
