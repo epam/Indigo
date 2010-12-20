@@ -596,6 +596,8 @@ class Indigo:
     self.IndigoObject.bond = self._member_obj(self._lib.indigoBond)
     self.IndigoObject.getAtom = self._member_obj_int(self._lib.indigoGetAtom)
     self.IndigoObject.getBond = self._member_obj_int(self._lib.indigoGetBond)
+    self.IndigoObject.source = self._member_obj(self._lib.indigoSource)
+    self.IndigoObject.destination = self._member_obj(self._lib.indigoDestination)
 
     self.IndigoObject.clearCisTrans = self._member_void(self._lib.indigoClearCisTrans)
     self.IndigoObject.clearStereocenters = self._member_void(self._lib.indigoClearStereocenters)

@@ -317,6 +317,9 @@ CEXPORT int indigoBond (int nei);
 CEXPORT int indigoGetAtom (int molecule, int idx);
 CEXPORT int indigoGetBond (int molecule, int idx);
 
+CEXPORT int indigoSource (int bond);
+CEXPORT int indigoDestination (int bond);
+
 CEXPORT int indigoClearCisTrans (int handle);
 CEXPORT int indigoClearStereocenters (int handle);
 CEXPORT int indigoCountStereocenters (int molecule);

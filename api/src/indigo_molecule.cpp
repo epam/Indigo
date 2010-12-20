@@ -1244,6 +1244,26 @@ CEXPORT int indigoGetBond (int molecule, int idx)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoSource (int bond)
+{
+   INDIGO_BEGIN
+   {
+      IndigoBond &ib = IndigoBond::cast(self.getObject(bond));
+      return self.addObject(new IndigoAtom(*ib.mol, ib.mol->getEdge(ib.idx).beg));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoDestination (int bond)
+{
+   INDIGO_BEGIN
+   {
+      IndigoBond &ib = IndigoBond::cast(self.getObject(bond));
+      return self.addObject(new IndigoAtom(*ib.mol, ib.mol->getEdge(ib.idx).end));
+   }
+   INDIGO_END(-1)
+}
+
 IndigoAtomNeighbor::IndigoAtomNeighbor (BaseMolecule &mol_, int atom_idx, int bond_idx_) :
          IndigoAtom(mol_, atom_idx)
 {
