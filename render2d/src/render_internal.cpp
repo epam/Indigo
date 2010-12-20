@@ -166,32 +166,9 @@ void RenderOptions::clear()
    showCycles = false;
 }
 
-void RenderOptions::copy(const RenderOptions& other)
-{
-   labelMode = other.labelMode;
-   implHMode = other.implHMode;
-   comment.copy(other.comment);
-   commentAlign = other.commentAlign;
-   titleAlign = other.titleAlign;
-   commentPos = other.commentPos;
-   commentColor.copy(other.commentColor);
-   gridColumnNumber = other.gridColumnNumber;
-   showAtomIds = other.showAtomIds;
-   showBondIds = other.showBondIds;
-   showBondEndIds = other.showBondEndIds;
-   showNeighborArcs = other.showNeighborArcs;
-   showValences = other.showValences;
-   atomColoring = other.atomColoring;
-   useOldStereoNotation = other.useOldStereoNotation;   
-   showReactingCenterUnchanged = other.showReactingCenterUnchanged; 
-   centerDoubleBondWhenStereoAdjacent = other.centerDoubleBondWhenStereoAdjacent;
-   showCycles = other.showCycles;
-}
-
 MoleculeRenderInternal::MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw) :
-_mol(NULL), _cw(cw), _highlighting(NULL), _settings(settings), TL_CP_GET(_data)
+_mol(NULL), _cw(cw), _highlighting(NULL), _settings(settings), _opt(opt), TL_CP_GET(_data)
 {
-   _opt.copy(opt);
    _data.clear();
 }
 
@@ -525,6 +502,7 @@ const char* MoleculeRenderInternal::_getStereoGroupText (int type)
 
 void MoleculeRenderInternal::_checkSettings ()
 {
+   _data.labelMode = _opt.labelMode;
    switch (_opt.implHMode)
    {
    case IHM_NONE:
@@ -532,13 +510,13 @@ void MoleculeRenderInternal::_checkSettings ()
    case IHM_TERMINAL:
    case IHM_TERMINAL_HETERO:
       if (_opt.labelMode == LABEL_MODE_HIDETERMINAL)
-         _opt.labelMode = LABEL_MODE_NORMAL;
+         _data.labelMode = LABEL_MODE_NORMAL;
    case IHM_HETERO:
       if (_opt.labelMode == LABEL_MODE_FORCEHIDE)
-         _opt.labelMode = LABEL_MODE_NORMAL;
+         _data.labelMode = LABEL_MODE_NORMAL;
       break;
    case IHM_ALL:
-      _opt.labelMode = LABEL_MODE_FORCESHOW;
+      _data.labelMode = LABEL_MODE_FORCESHOW;
       break;
    }
 }
@@ -859,12 +837,12 @@ void MoleculeRenderInternal::_initAtomData ()
 
 
       ad.showLabel = true;
-      if (_opt.labelMode == LABEL_MODE_FORCESHOW)
+      if (_data.labelMode == LABEL_MODE_FORCESHOW)
          ;
-      else if (_opt.labelMode == LABEL_MODE_FORCEHIDE)
+      else if (_data.labelMode == LABEL_MODE_FORCEHIDE)
          ad.showLabel = false;
       else if (plainCarbon && 
-         (_opt.labelMode == LABEL_MODE_HIDETERMINAL || vertex.degree() > 1) && 
+         (_data.labelMode == LABEL_MODE_HIDETERMINAL || vertex.degree() > 1) && 
          !_isSingleHighlighted(i))
       {
          if (vertex.degree() == 2)

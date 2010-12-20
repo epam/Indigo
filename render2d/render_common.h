@@ -217,6 +217,7 @@ struct MoleculeRenderData {
    Array<int> reactingCenters;
    Array<int> inversions;
    Array<int> exactChanges;
+   LABEL_MODE labelMode;
 private:
    MoleculeRenderData (const MoleculeRenderData& data);
 };
@@ -290,6 +291,8 @@ struct CanvasOptions {
    int marginY;
    int commentOffset;
    int titleOffset;
+private:
+   CanvasOptions (const CanvasOptions&);
 };
 
 struct HighlightingOptions {
@@ -315,7 +318,6 @@ class RenderOptions {
 public:
    RenderOptions ();
    void clear();
-   void copy(const RenderOptions& other);
 
    Array<char> comment;
    COMMENT_POS commentPos;

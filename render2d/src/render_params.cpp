@@ -244,7 +244,7 @@ void RenderParamInterface::render (RenderParams& params)
    if (params.rmode == RENDER_NONE)
       throw Error("No object to render specified");
 
-   RenderContext rc;
+   RenderContext rc(params.rOpt);
    rc.setScaleFactor(params.relativeThickness);
    rc.setDefaultScale(params.cnvOpt.bondLength);
    rc.setHighlightingOptions(&params.hlOpt);
@@ -256,9 +256,6 @@ void RenderParamInterface::render (RenderParams& params)
    rc.setBackground(params.backgroundColor);
    rc.setBaseColor(params.baseColor);
    
-   rc.opt.copy(params.rOpt);
-   rc.cnvOpt = params.cnvOpt;
-
    if (params.query)
       params.rOpt.implHMode = IHM_NONE;
 
@@ -327,12 +324,12 @@ void RenderParamInterface::render (RenderParams& params)
    }
 
    if (obj >= 0) {
-      RenderSingle render(rc, factory);
+      RenderSingle render(rc, factory, params.cnvOpt);
       render.obj = obj;
       render.comment = comment;
       render.draw();
    } else {
-      RenderGrid render(rc, factory);
+      RenderGrid render(rc, factory, params.cnvOpt);
       render.objs.copy(objs);
       render.nColumns = rc.opt.gridColumnNumber;
       render.comment = comment;

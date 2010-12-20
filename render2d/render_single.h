@@ -21,7 +21,7 @@ namespace indigo {
 
 class RenderSingle : Render {
 public:
-   RenderSingle (RenderContext& rc, RenderItemFactory& factory);
+   RenderSingle (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt);
    virtual ~RenderSingle();
    void draw ();
 
@@ -35,6 +35,7 @@ public:
    Vec2f commentSize;
    Vec2f outerMargin;
    Vec2f objArea;
+   int width, height;
 private:
    float _getScale ();
    void _drawComment ();

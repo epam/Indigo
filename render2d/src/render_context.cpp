@@ -109,8 +109,8 @@ void RenderContext::storeAndDestroyMetafile ()
 
 #endif
 
-RenderContext::RenderContext (): TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
-metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _output(NULL), _hdc(NULL), _mode(MODE_NONE)
+RenderContext::RenderContext (const RenderOptions& ropt): TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
+metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _output(NULL), _hdc(NULL), _mode(MODE_NONE), opt(ropt)
 {
    bprintf(_fontfamily, "Arial");
    _backColor.set(-1,-1,-1);

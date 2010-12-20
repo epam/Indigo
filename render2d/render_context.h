@@ -33,7 +33,7 @@ public:
 
    void checkPathNonEmpty () const;
 
-   RenderContext ();
+   RenderContext (const RenderOptions&);
    void setScaleFactor (float sf);
    void setDefaultScale (float scale);
    void setHDC (PVOID hdc);
@@ -203,8 +203,7 @@ private:
 
 public:
    RenderSettings _settings;
-   RenderOptions opt;
-   CanvasOptions cnvOpt;
+   const RenderOptions& opt;
 };
 
 }

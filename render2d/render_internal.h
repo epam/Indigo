@@ -119,7 +119,7 @@ private:
    RenderContext& _cw;
    float _scale;
    Vec2f _min, _max;
-   RenderOptions _opt;
+   const RenderOptions& _opt;
    LocalOptions _lopt;
    const GraphHighlighting* _highlighting;
    const RenderSettings& _settings;
