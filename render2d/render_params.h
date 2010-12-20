@@ -40,8 +40,6 @@ public:
    bool query;
    float relativeThickness;
    bool loadHighlighting;
-   Vec3f backgroundColor;
-   Vec3f baseColor;
    RENDER_MODE rmode;
    DINGO_MODE mode;
    INPUT_FORMAT inputFormat;

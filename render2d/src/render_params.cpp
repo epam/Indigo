@@ -67,9 +67,7 @@ void RenderParams::clear ()
    query = false;
    relativeThickness = 1.0f;
    loadHighlighting = true;
-   backgroundColor.set(-1, -1, -1);
    aromatization = 0;
-   baseColor.set(0, 0, 0);
    rmode = RENDER_NONE;
    mode = MODE_NONE;
    inputFormat = INPUT_FORMAT_UNKNOWN;
@@ -249,8 +247,6 @@ void RenderParamInterface::render (RenderParams& params)
    rc.setOutput(params.output);
    rc.setMode(params.mode);
    rc.setHDC(params.hdc);
-   rc.setBackground(params.backgroundColor);
-   rc.setBaseColor(params.baseColor);
    
    if (params.query)
       params.rOpt.implHMode = IHM_NONE;

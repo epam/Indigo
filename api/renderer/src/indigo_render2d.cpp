@@ -119,13 +119,13 @@ void indigoRenderSetRelativeThickness (float rt)
 void indigoRenderSetBackgroundColor (float r, float g, float b)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.backgroundColor.set((float)r, (float)g, (float)b);
+   rp.rOpt.backgroundColor.set((float)r, (float)g, (float)b);
 }
 
 void indigoRenderSetBaseColor (float r, float g, float b)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.baseColor.set((float)r, (float)g, (float)b);
+   rp.rOpt.baseColor.set((float)r, (float)g, (float)b);
 }
 
 void indigoRenderSetImplicitHydrogenMode (const char* mode)

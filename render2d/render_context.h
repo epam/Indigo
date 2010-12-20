@@ -35,14 +35,12 @@ public:
    void setDefaultScale (float scale);
    void setHDC (PVOID hdc);
    void setMode (DINGO_MODE mode);
-   void setBaseColor (const Vec3f& c);
    int  getMaxPageSize () const;
    void setLineWidth (double width);
    void setFontFamily (const char* ff);
    void setOutput (Output* output);
    void createSurface(cairo_write_func_t writer, Output* output, int width, int height);
    void init();
-   void setBackground(const Vec3f& color);
    void fillBackground();
    void initNullContext ();
    void initContext (int width, int height);   

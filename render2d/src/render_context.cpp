@@ -113,7 +113,6 @@ RenderContext::RenderContext (const RenderOptions& ropt): TL_CP_GET(_fontfamily)
 metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _output(NULL), _hdc(NULL), _mode(MODE_NONE), opt(ropt)
 {
    bprintf(_fontfamily, "Arial");
-   _backColor.set(-1,-1,-1);
    bbmin.x = bbmin.y = 1;
    bbmax.x = bbmax.y = -1;
    _defaultScale = 0.0f;
@@ -190,10 +189,6 @@ void RenderContext::setFontFamily (const char* ff)
 void RenderContext::setMode (DINGO_MODE mode)
 {
    _mode = mode;
-}
-void RenderContext::setBaseColor (const Vec3f& c)
-{
-   _baseColor.copy(c);
 }
 
 int RenderContext::getMaxPageSize () const
@@ -309,14 +304,9 @@ void RenderContext::init()
    _currentLineWidth = _settings.bondLineWidth;
 }
 
-void RenderContext::setBackground(const Vec3f& color)
-{
-   _backColor.copy(color);
-}
-
 void RenderContext::fillBackground()
 {
-   cairo_set_source_rgb(_cr, _backColor.x, _backColor.y, _backColor.z);
+   cairo_set_source_rgb(_cr, opt.backgroundColor.x, opt.backgroundColor.y, opt.backgroundColor.z);
    cairoCheckStatus();
    cairo_paint(_cr);
    cairoCheckStatus();
@@ -345,7 +335,7 @@ void RenderContext::initContext (int width, int height)
 
    createSurface(writer, _output, _width, _height);
    _cr = cairo_create(_surface);
-   if (_backColor.x >= 0 && _backColor.y >= 0 && _backColor.z >= 0)
+   if (opt.backgroundColor.x >= 0 && opt.backgroundColor.y >= 0 && opt.backgroundColor.z >= 0)
       fillBackground();
 }
 
@@ -464,8 +454,8 @@ void RenderContext::drawItemBackground (const RenderItem& item)
 {
    cairo_rectangle(_cr, item.bbp.x, item.bbp.y, item.bbsz.x, item.bbsz.y);
    cairoCheckStatus();
-   if (_backColor.x >= 0 && _backColor.y >= 0 && _backColor.z >= 0)
-      setSingleSource(_backColor);
+   if (opt.backgroundColor.x >= 0 && opt.backgroundColor.y >= 0 && opt.backgroundColor.z >= 0)
+      setSingleSource(opt.backgroundColor);
    else
       setSingleSource(CWC_WHITE);
 
@@ -1054,9 +1044,9 @@ void RenderContext::getColor (float& r, float& g, float& b, int c)
 
    if (c == CWC_BASE)
    {
-      r = (float)_baseColor.x;
-      g = (float)_baseColor.y;
-      b = (float)_baseColor.z;
+      r = (float)opt.baseColor.x;
+      g = (float)opt.baseColor.y;
+      b = (float)opt.baseColor.z;
       return;
    }
 

@@ -146,6 +146,8 @@ RenderOptions::RenderOptions ()
 
 void RenderOptions::clear()
 {
+   baseColor.set(0, 0, 0);
+   backgroundColor.set(-1, -1, -1);
    highlightThicknessEnable = false;
    highlightThicknessFactor = 1.8f;
    highlightColorEnable = true;

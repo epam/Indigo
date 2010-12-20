@@ -300,6 +300,8 @@ public:
    RenderOptions ();
    void clear();
 
+   Vec3f backgroundColor;
+   Vec3f baseColor;
    bool highlightThicknessEnable;
    float highlightThicknessFactor;
    bool highlightColorEnable;
