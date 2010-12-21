@@ -173,6 +173,15 @@ int IndigoAtom::getIndex ()
    return idx;
 }
 
+bool IndigoAtom::is (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::ATOM || obj.type == IndigoObject::ATOM_NEIGHBOR)
+      return true;
+   if (obj.type == IndigoObject::ARRAY_ELEMENT)
+      return is(((IndigoArrayElement &)obj).get());
+   return false;
+}
+
 IndigoAtom & IndigoAtom::cast (IndigoObject &obj)
 {
    if (obj.type == IndigoObject::ATOM || obj.type == IndigoObject::ATOM_NEIGHBOR)
@@ -263,6 +272,15 @@ IndigoBond::~IndigoBond ()
 int IndigoBond::getIndex ()
 {
    return idx;
+}
+
+bool IndigoBond::is (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::BOND)
+      return true;
+   if (obj.type == IndigoObject::ARRAY_ELEMENT)
+      return is(((IndigoArrayElement &)obj).get());
+   return false;
 }
 
 IndigoBond & IndigoBond::cast (IndigoObject &obj)
@@ -1149,6 +1167,21 @@ CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *verti
          molptr->mol.makeEdgeSubmolecule(mol, vertices_arr, edges_arr, 0, 0);
          return self.addObject(molptr.release());
       }
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoRemoveAtoms (int molecule, int nvertices, int *vertices)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      QS_DEF(Array<int>, indices);
+
+      indices.copy(vertices, nvertices);
+
+      mol.removeAtoms(indices);
+      return 1;
    }
    INDIGO_END(-1)
 }

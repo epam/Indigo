@@ -278,8 +278,6 @@ CEXPORT int indigoCountDataSGroups (int molecule);
 CEXPORT int indigoIterateDataSGroups (int molecule);
 CEXPORT const char * indigoDescription (int data_sgroup);
 
-CEXPORT int indigoRemove (int item);
-
 CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
         int nbonds, int *bonds, const char *description, const char *data);
 
@@ -290,6 +288,7 @@ CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetRadical (int atom);
 CEXPORT int indigoResetIsotope (int atom);
 
+CEXPORT int indigoResetStereo (int item);
 CEXPORT int indigoInvertStereo (int item);
 
 CEXPORT int indigoCountAtoms (int molecule);
@@ -348,6 +347,8 @@ CEXPORT int indigoIsChiral (int molecule);
 
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices);
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices, int nedges, int *edges);
+
+CEXPORT int indigoRemoveAtoms (int molecule, int nvertices, int *vertices);
 
 // Determines and applies the best transformation to the given molecule
 // so that the specified atoms move as close as possible to the desired

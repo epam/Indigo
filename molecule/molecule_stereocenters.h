@@ -92,6 +92,7 @@ public:
    bool haveAllAbsAny ();
    bool haveAllAndAny ();
    int  getBondDirection (int idx) const;
+   void setBondDirection (int idx, int dir);
 
    void registerUnfoldedHydrogen (int atom_idx, int added_hydrogen);
 
