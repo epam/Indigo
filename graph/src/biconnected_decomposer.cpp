@@ -43,82 +43,102 @@ BiconnectedDecomposer::~BiconnectedDecomposer ()
 
 int BiconnectedDecomposer::decompose ()
 {
-   int i, j;
-
-   j = -1;
-
+   QS_DEF(Array<int>, dfs_stack);
+   Edge new_edge;
+   int i, j, v, w, u;
+   
    for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
       if (_dfs_order[i] == 0)
-         _biconnect (i, j);
-
-   return _components.size();
-}
-
-void BiconnectedDecomposer::_biconnect (int v, int u)
-{
-   int i, w;
-
-   _cur_order++;	
-   _dfs_order[v] = _lowest_order[v] = _cur_order;
-
-   const Vertex &v_vert = _graph.getVertex(v);
-
-   Edge new_edge;
-
-   for (i = v_vert.neiBegin(); i < v_vert.neiEnd(); i = v_vert.neiNext(i))
-   {
-      w = v_vert.neiVertex(i);
-
-      if (_dfs_order[w] == 0)
       {
-         new_edge.beg = v;
-         new_edge.end = w;
-
-         _edges_stack.push(new_edge);
-
-         _biconnect(w, v);
-
-         if (_lowest_order[w] < _lowest_order[v])
-            _lowest_order[v] = _lowest_order[w];
-
-         if (_lowest_order[w] >= _dfs_order[v])
+         dfs_stack.clear();
+         dfs_stack.push(i);
+         _cur_order++;	
+         _dfs_order[i] = _lowest_order[i] = _cur_order;
+       
+         // Start DFS
+         while (dfs_stack.size() > 0)
          {
-            //v -articulation point in G;
-            //start new BCcomp;
-            Array<int> &new_comp = _components.add(new Array<int>());
-            new_comp.clear_resize(_graph.vertexEnd());
-            new_comp.zerofill();
-
-            int cur_comp = _components.size() - 1;
-
-            if (_component_ids[v] == 0)
-               _component_ids[v] = &_component_lists.add(new Array<int>());
-
-            _component_ids[v]->push(cur_comp);
-
-            while (_dfs_order[_edges_stack.top().beg] >= _dfs_order[w])
+            v = dfs_stack.top();
+            const Vertex &v_vert = _graph.getVertex(v);
+            bool no_push = true;
+            
+            if (dfs_stack.size() > 1)
+               u = dfs_stack[dfs_stack.size() - 2];
+            else
+               u = -1;
+            
+            for (j = v_vert.neiBegin(); j < v_vert.neiEnd(); j = v_vert.neiNext(j))
             {
-               _components[cur_comp]->at(_edges_stack.top().beg) = 1;
-               _components[cur_comp]->at(_edges_stack.top().end) = 1;
-               _edges_stack.pop();
+               w = v_vert.neiVertex(j);
+               
+               if (_dfs_order[w] == 0)
+               { 
+                  // Push new edge
+                  new_edge.beg = v;
+                  new_edge.end = w;
+                  
+                  _edges_stack.push(new_edge);
+                  dfs_stack.push(w);
+                  
+                  _cur_order++;	
+                  _dfs_order[w] = _lowest_order[w] = _cur_order;
+                  no_push = false;
+                  break;
+               } else if  (_dfs_order[w] < _dfs_order[v] && w != u)
+               {
+                  new_edge.beg = v;
+                  new_edge.end = w;
+                  _edges_stack.push(new_edge);
+                  
+                  if  (_lowest_order[v] > _dfs_order[w])
+                     _lowest_order[v] = _dfs_order[w];
+               }
             }
-
-            _components[cur_comp]->at(v) = 1;
-            _components[cur_comp]->at(w) = 1;
-            _edges_stack.pop();
-         }
-      } else {
-         if  (_dfs_order[w] < _dfs_order[v] && w != u)
-         {
-            new_edge.beg = v;
-            new_edge.end = w;
-            _edges_stack.push(new_edge);
-
-            if  (_lowest_order[v] > _dfs_order[w])
-               _lowest_order[v] = _dfs_order[w];
+            
+            if (no_push)
+            {
+               dfs_stack.pop();
+               
+               if (dfs_stack.size() == 0)
+                  continue;
+               
+               w = v;
+               v = dfs_stack.top();
+               
+               if (_lowest_order[w] < _lowest_order[v])
+                  _lowest_order[v] = _lowest_order[w];
+               
+               if (_lowest_order[w] >= _dfs_order[v])
+               {
+                  //v -articulation point in G;
+                  //start new BCcomp;
+                  Array<int> &new_comp = _components.add(new Array<int>());
+                  new_comp.clear_resize(_graph.vertexEnd());
+                  new_comp.zerofill();
+                  
+                  int cur_comp = _components.size() - 1;
+                  
+                  if (_component_ids[v] == 0)
+                     _component_ids[v] = &_component_lists.add(new Array<int>());
+                  
+                  _component_ids[v]->push(cur_comp);
+                  
+                  while (_dfs_order[_edges_stack.top().beg] >= _dfs_order[w])
+                  {
+                     _components[cur_comp]->at(_edges_stack.top().beg) = 1;
+                     _components[cur_comp]->at(_edges_stack.top().end) = 1;
+                     _edges_stack.pop();
+                  }
+                  
+                  _components[cur_comp]->at(v) = 1;
+                  _components[cur_comp]->at(w) = 1;
+                  _edges_stack.pop();
+               }
+            }
          }
       }
-   }
+   
+   return _components.size();
 }
 
 void BiconnectedDecomposer::getComponent (int idx, Filter &filter) const

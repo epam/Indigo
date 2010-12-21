@@ -43,10 +43,6 @@ protected:
    int _begin;
    int _end;
 
-   TL_CP_DECL(Array<int>, vertices);
-   TL_CP_DECL(Array<int>, edges);
-   TL_CP_DECL(Array<int>, flags);
-
 private:
    PathEnumerator (const PathEnumerator &); // no implicit copy
 };

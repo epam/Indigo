@@ -21,10 +21,7 @@ using namespace indigo;
 PathEnumerator::PathEnumerator (Graph &graph, int begin, int end) :
 _graph(graph),
 _begin(begin),
-_end(end),
-TL_CP_GET(vertices),
-TL_CP_GET(edges),
-TL_CP_GET(flags)
+_end(end)
 {
    max_length = graph.vertexCount();
    context = 0;
@@ -39,57 +36,70 @@ PathEnumerator::~PathEnumerator ()
 
 void PathEnumerator::process ()
 {
-   flags.clear_resize(_graph.vertexEnd());
-   flags.zerofill();
-
+   QS_DEF(Array<int>, vertices);
+   QS_DEF(Array<int>, edges);
+   QS_DEF(Array<int>, visited_vertices);
+   int cur_start_idx = 0;
+   
    vertices.clear();
    edges.clear();
 
    vertices.push(_begin);
-   flags[_begin] = 1;
+   visited_vertices.clear_resize(_graph.getVertex(_begin).neiEnd());
 
-	_pathFinder();
-}    
-
-bool PathEnumerator::_pathFinder ()
-{
-   if (vertices.size() > max_length)
-      return true;
-
-   const Vertex &v_vertex = _graph.getVertex(vertices.top());
-
-   for (int i = v_vertex.neiBegin(); i != v_vertex.neiEnd(); i = v_vertex.neiNext(i))
+   // DFS all paths from given vertex
+   while (vertices.size() > 0)
    {
-      int u = v_vertex.neiVertex(i);
-      int e = v_vertex.neiEdge(i);
-      bool path = (vertices.size() > 2) && u == _end;
-
-      _graph.getEdge(e);
-
-      if (flags[u] != 0)
-         continue;
-      if (cb_check_vertex != 0 && !cb_check_vertex(_graph, u, context))
-         continue;
-      if (cb_check_edge != 0 && !cb_check_edge(_graph, e, context))
-         continue;
-
-      vertices.push(u);
-      edges.push(e);
-      if (path)
+      const Vertex &v_vertex = _graph.getVertex(vertices.top());
+      bool no_push = true;
+      
+      if (vertices.size() < max_length)
       {
-         if (cb_handle_path != 0 && !cb_handle_path(_graph, vertices, edges, context))
-            return false;
+         for (int i = v_vertex.neiBegin(); i != v_vertex.neiEnd(); i = v_vertex.neiNext(i))
+         {
+            if (visited_vertices[cur_start_idx + i])
+               continue;
+            
+            int u = v_vertex.neiVertex(i);
+            int e = v_vertex.neiEdge(i);
+            
+            if (cb_check_vertex != 0 && !cb_check_vertex(_graph, u, context))
+               continue;
+            if (cb_check_edge != 0 && !cb_check_edge(_graph, e, context))
+               continue;
+            
+            bool path = (vertices.size() > 1) && u == _end;
+            
+            vertices.push(u);
+            edges.push(e);
+            if (path)
+            {
+               if (cb_handle_path != 0 && !cb_handle_path(_graph, vertices, edges, context))
+                  return;
+               
+               edges.pop();
+               vertices.pop();
+            }
+            else
+            {
+               visited_vertices[cur_start_idx + i] = 1;
+               cur_start_idx += v_vertex.neiEnd();
+
+               const Vertex &u_vertex = _graph.getVertex(u);
+               visited_vertices.expand(cur_start_idx + u_vertex.neiEnd());
+               memset(&visited_vertices[cur_start_idx], 0, u_vertex.neiEnd() * sizeof(int));
+               
+               no_push = false;
+               break;
+            }
+         }
       }
-      else
+      
+      if (no_push)
       {
-         flags[u] = 1;
-         if (!_pathFinder())
-            return false;
-         flags[u] = 0;
+         edges.pop();
+         vertices.pop();
+         cur_start_idx -= v_vertex.neiEnd();
       }
-      edges.pop();
-      vertices.pop();
    }
-
-   return true;
 }
