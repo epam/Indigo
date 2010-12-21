@@ -157,12 +157,10 @@ void RenderOptions::clear()
    titleFontFactor = 20;
    labelMode = LABEL_MODE_NORMAL;
    implHMode = IHM_TERMINAL_HETERO;
-   comment.clear();
-   commentPos = COMMENT_POS_BOTTOM;
-   commentAlign = 0.5f;
-   titleAlign = 0.5f;
    commentColor.set(0,0,0);
-   gridColumnNumber = 1;
+   mode = MODE_NONE;
+   hdc = 0;
+   output = NULL;
    showAtomIds = false;
    showBondIds = false;
    showBondEndIds = false;

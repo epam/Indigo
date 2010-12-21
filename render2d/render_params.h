@@ -39,21 +39,20 @@ public:
 
    float relativeThickness;
    RENDER_MODE rmode;
-   DINGO_MODE mode;
+
    AutoPtr<BaseMolecule> mol;
-   Output* output;
    GraphHighlighting molhl;
    AutoPtr<BaseReaction> rxn;
    ReactionHighlighting rhl;
+   
    PtrArray<BaseMolecule> mols;
    ObjArray<GraphHighlighting> molhls;
    PtrArray<BaseReaction> rxns;
    ObjArray<ReactionHighlighting> rxnhls;
+   
    ObjArray<Array <char> > titles;
-   Array<char> titleProp;
    Array<int> refAtoms;
 
-   PVOID hdc;
    RenderOptions rOpt;
    CanvasOptions cnvOpt;
 };

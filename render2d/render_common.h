@@ -290,6 +290,12 @@ struct CanvasOptions {
    int marginY;
    int commentOffset;
    int titleOffset;
+   Array<char> comment;
+   Array<char> titleProp;  
+   COMMENT_POS commentPos;
+   float commentAlign;
+   float titleAlign;
+   int gridColumnNumber;
 private:
    CanvasOptions (const CanvasOptions&);
 };
@@ -308,14 +314,12 @@ public:
    Vec3f aamColor;
    float commentFontFactor;
    float titleFontFactor;
-   Array<char> comment;
-   COMMENT_POS commentPos;
-   float commentAlign;
-   float titleAlign;
    Vec3f commentColor;
    LABEL_MODE labelMode;
    IMPLICIT_HYDROGEN_MODE implHMode;
-   int gridColumnNumber;
+   DINGO_MODE mode;
+   Output* output;
+   PVOID hdc;
    bool showBondIds;
    bool showBondEndIds;
    bool showNeighborArcs;

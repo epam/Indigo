@@ -66,14 +66,10 @@ void RenderParams::clear ()
 {
    relativeThickness = 1.0f;
    rmode = RENDER_NONE;
-   mode = MODE_NONE;
-   titleProp.clear();
-   titleProp.appendString("^NAME", true);
    mol.reset(NULL);
    molhl.clear();
    rxn.reset(NULL);
    rhl.clear();
-   hdc = 0;
    rOpt.clear();
    cnvOpt.clear();
    clearArrays();
@@ -141,12 +137,8 @@ void RenderParamInterface::render (RenderParams& params)
    if (params.rmode == RENDER_NONE)
       throw Error("No object to render specified");
 
-   RenderContext rc(params.rOpt);
-   rc.setScaleFactor(params.relativeThickness);
+   RenderContext rc(params.rOpt, params.relativeThickness);
    rc.setDefaultScale(params.cnvOpt.bondLength);
-   rc.setOutput(params.output);
-   rc.setMode(params.mode);
-   rc.setHDC(params.hdc);
    
    RenderItemFactory factory(rc); 
    int obj = -1;
@@ -206,10 +198,10 @@ void RenderParamInterface::render (RenderParams& params)
    }
 
    int comment = -1;
-   if (rc.opt.comment.size() > 0) {
+   if (params.cnvOpt.comment.size() > 0) {
       comment = factory.addItemAuxiliary();
       factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_COMMENT;
-      factory.getItemAuxiliary(comment).text.copy(rc.opt.comment);
+      factory.getItemAuxiliary(comment).text.copy(params.cnvOpt.comment);
    }
 
    if (obj >= 0) {
@@ -220,7 +212,6 @@ void RenderParamInterface::render (RenderParams& params)
    } else {
       RenderGrid render(rc, factory, params.cnvOpt);
       render.objs.copy(objs);
-      render.nColumns = rc.opt.gridColumnNumber;
       render.comment = comment;
       render.titles.copy(titles);
       render.refAtoms.copy(params.refAtoms);

@@ -31,7 +31,7 @@
 using namespace indigo;
 
 RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt) : 
-   Render(rc, factory, cnvOpt), nColumns(rc.opt.gridColumnNumber), comment(-1)
+   Render(rc, factory, cnvOpt), nColumns(cnvOpt.gridColumnNumber), comment(-1)
 {}
 
 RenderGrid::~RenderGrid()
@@ -44,7 +44,7 @@ void RenderGrid::_drawComment ()
    _rc.storeTransform();
    {
       float diff = (float)(_width - 2 * outerMargin.x - commentSize.x);
-      _rc.translate(diff * _opt.commentAlign, 0);
+      _rc.translate(diff * _cnvOpt.commentAlign, 0);
       _factory.getItem(comment).render();
    }
    _rc.restoreTransform();
@@ -137,7 +137,7 @@ void RenderGrid::draw ()
    if (_cnvOpt.xOffset > 0 || _cnvOpt.yOffset > 0)
       _rc.translate((float)_cnvOpt.xOffset, (float)_cnvOpt.yOffset);
    _rc.translate(outerMargin.x, outerMargin.y);
-   if (_opt.commentPos == COMMENT_POS_TOP) {
+   if (_cnvOpt.commentPos == COMMENT_POS_TOP) {
       _drawComment();
       _rc.translate(0, (float)commentOffset);
    }
@@ -170,7 +170,7 @@ void RenderGrid::draw ()
 
             if (enableTitles) {
                Vec2f titleSize(_factory.getItem(titles[i]).size);
-               _rc.translate(_opt.titleAlign * (cellsz.x - titleSize.x), 0.5f * (maxTitleSize.y - titleSize.y));
+               _rc.translate(_cnvOpt.titleAlign * (cellsz.x - titleSize.x), 0.5f * (maxTitleSize.y - titleSize.y));
                _factory.getItem(titles[i]).render();
             }
          }
@@ -180,7 +180,7 @@ void RenderGrid::draw ()
    }
    _rc.restoreTransform();
    _rc.removeStoredTransform();
-   if (_opt.commentPos == COMMENT_POS_BOTTOM) {                                           
+   if (_cnvOpt.commentPos == COMMENT_POS_BOTTOM) {                                           
       _rc.translate(0, _height - commentOffset - commentSize.y - 2*outerMargin.y);
       _drawComment();
    }

@@ -264,4 +264,11 @@ void CanvasOptions::clear ()
    gridMarginX = gridMarginY = 0;
    marginX = marginY = 0;
    commentOffset = 0;
+   commentPos = COMMENT_POS_BOTTOM;
+   commentAlign = 0.5f;
+   titleAlign = 0.5f;
+   gridColumnNumber = 1;
+   comment.clear();
+   titleProp.clear();
+   titleProp.appendString("^NAME", true);
 }

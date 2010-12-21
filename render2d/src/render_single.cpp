@@ -56,7 +56,7 @@ void RenderSingle::_drawComment ()
    _rc.storeTransform();
    {
       float diff = (float)(width - 2 * outerMargin.x - commentSize.x);
-      _rc.translate(diff * _opt.commentAlign, 0);
+      _rc.translate(diff * _cnvOpt.commentAlign, 0);
       _factory.getItem(comment).render();
    }
    _rc.restoreTransform();
@@ -100,7 +100,7 @@ void RenderSingle::draw ()
       _rc.translate((float)_cnvOpt.xOffset, (float)_cnvOpt.yOffset);
    _rc.storeTransform();
    {
-      if (_opt.commentPos == COMMENT_POS_TOP) {
+      if (_cnvOpt.commentPos == COMMENT_POS_TOP) {
          _drawComment();
          _rc.translate(0, (float)commentOffset);
          _drawObj();

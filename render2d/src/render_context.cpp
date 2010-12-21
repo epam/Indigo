@@ -31,14 +31,14 @@ RenderContext::TextLock RenderContext::_tlock;
 
 cairo_surface_t* RenderContext::createWin32PrintingSurfaceForHDC ()
 {
-   cairo_surface_t* surface = cairo_win32_printing_surface_create((HDC)_hdc);
+   cairo_surface_t* surface = cairo_win32_printing_surface_create((HDC)opt.hdc);
    cairoCheckStatus();
    return surface;
 }
 
 cairo_surface_t* RenderContext::createWin32Surface ()
 {
-   cairo_surface_t* surface = cairo_win32_surface_create((HDC)_hdc);
+   cairo_surface_t* surface = cairo_win32_surface_create((HDC)opt.hdc);
    cairoCheckStatus();
    return surface;
 }
@@ -78,40 +78,38 @@ cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile (bool& isL
    _init_language_pack();
    GetClipBox(dc, &crc);
    isLarge = (_width >= crc.right || _height >= crc.bottom);
-   HDC hdc = CreateEnhMetaFileA(dc, 0, &rc, "Indigo Render2D\0\0");
+   _meta_hdc = CreateEnhMetaFileA(dc, 0, &rc, "Indigo Render2D\0\0");
    ReleaseDC(NULL, dc);
-   cairo_surface_t* s = cairo_win32_printing_surface_create(hdc);
+   cairo_surface_t* s = cairo_win32_printing_surface_create((HDC)_meta_hdc);
    cairoCheckStatus();
-   StartPage(hdc);
-
-   _hdc = hdc;
+   StartPage((HDC)_meta_hdc);
    return s;
 }
 
 void RenderContext::storeAndDestroyMetafile ()
 {
-   HDC hdc = (HDC)_hdc;
    cairo_surface_show_page(_surface);
    cairoCheckStatus();
-   EndPage(hdc);
+   EndPage((HDC)_meta_hdc);
    cairo_surface_destroy(_surface);
    cairoCheckStatus();
    _surface = NULL;
-   HENHMETAFILE hemf = CloseEnhMetaFile(hdc);
+   HENHMETAFILE hemf = CloseEnhMetaFile((HDC)_meta_hdc);
 
    int size = GetEnhMetaFileBits(hemf, 0, NULL);
    Array<char> buf;
    buf.resize(size);
    GetEnhMetaFileBits(hemf, size, (BYTE*)(buf.ptr()));
-   _output->writeArray(buf);
+   opt.output->writeArray(buf);
    DeleteEnhMetaFile(hemf);
 }
 
 #endif
 
-RenderContext::RenderContext (const RenderOptions& ropt): TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
-metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _output(NULL), _hdc(NULL), _mode(MODE_NONE), opt(ropt)
+RenderContext::RenderContext (const RenderOptions& ropt, float sf): TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
+metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt)
 {
+   _settings.init(sf);
    bprintf(_fontfamily, "Arial");
    bbmin.x = bbmin.y = 1;
    bbmax.x = bbmax.y = -1;
@@ -166,19 +164,9 @@ void RenderContext::bbIncludePath (bool stroke)
    bbIncludePoint(x2, y2);
 }
 
-void RenderContext::setScaleFactor (float sf)
-{
-   _settings.init(sf);
-}
-
 void RenderContext::setDefaultScale (float scale)
 {  
    _defaultScale = scale;
-}
-
-void RenderContext::setHDC (PVOID hdc)
-{
-   _hdc = hdc;
 }
 
 void RenderContext::setFontFamily (const char* ff)
@@ -186,14 +174,9 @@ void RenderContext::setFontFamily (const char* ff)
    bprintf(_fontfamily, "%s", ff);
 }
 
-void RenderContext::setMode (DINGO_MODE mode)
-{
-   _mode = mode;
-}
-
 int RenderContext::getMaxPageSize () const
 {
-   if (_mode == MODE_PDF)
+   if (opt.mode == MODE_PDF)
       return 14400;
    return -1;
 }
@@ -208,11 +191,6 @@ cairo_status_t RenderContext::writer (void *closure, const unsigned char *data, 
       return CAIRO_STATUS_WRITE_ERROR;
    }
    return CAIRO_STATUS_SUCCESS;
-}
-
-void RenderContext::setOutput (Output* output)
-{
-   _output = output;
 }
 
 void RenderContext::initMetaSurface() {
@@ -239,16 +217,16 @@ void RenderContext::getTextSize(Vec2f& sz, Vec2f& r, FONT_SIZE fontSize, const c
 
 void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int width, int height)
 {
-   switch (_mode)
+   switch (opt.mode)
    {
    case MODE_NONE:
       throw Error("mode not set");
    case MODE_PDF:
-      _surface = cairo_pdf_surface_create_for_stream(writer, _output, _width, _height);
+      _surface = cairo_pdf_surface_create_for_stream(writer, opt.output, _width, _height);
       cairoCheckStatus();
       break;
    case MODE_SVG:
-      _surface = cairo_svg_surface_create_for_stream(writer, _output, _width, _height);
+      _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
       cairoCheckStatus();
       break;
    case MODE_PNG:
@@ -280,7 +258,7 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int
 #endif
       break;
    default:
-      throw Error("unknown mode: %d", _mode);
+      throw Error("unknown mode: %d", opt.mode);
    }
 }
 
@@ -328,12 +306,12 @@ void RenderContext::initContext (int width, int height)
 {
    _width = width;
    _height = height;
-   if (_output == NULL)
+   if (opt.output == NULL)
       throw Error("output not set");
    if (_surface != NULL || _cr != NULL)
       throw Error("context is already open (or invalid)");
 
-   createSurface(writer, _output, _width, _height);
+   createSurface(writer, opt.output, _width, _height);
    _cr = cairo_create(_surface);
    if (opt.backgroundColor.x >= 0 && opt.backgroundColor.y >= 0 && opt.backgroundColor.z >= 0)
       fillBackground();
@@ -367,12 +345,12 @@ void RenderContext::closeContext ()
       _cr = NULL;
    }
 
-   switch (_mode)
+   switch (opt.mode)
    {
    case MODE_NONE:
       throw Error("mode not set");
    case MODE_PNG:
-      cairo_surface_write_to_png_stream(_surface, writer, _output);
+      cairo_surface_write_to_png_stream(_surface, writer, opt.output);
       break;
    case MODE_PDF:
    case MODE_SVG:
@@ -385,7 +363,7 @@ void RenderContext::closeContext ()
 #endif
       break;
    default:
-      throw Error("unknown mode: %d", _mode);
+      throw Error("unknown mode: %d", opt.mode);
    }
 
    if (_surface != NULL)

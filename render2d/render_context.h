@@ -30,11 +30,10 @@ public:
 
    void checkPathNonEmpty () const;
 
-   RenderContext (const RenderOptions&);
+   RenderContext (const RenderOptions& opt, float sf);
    void setScaleFactor (float sf);
    void setDefaultScale (float scale);
    void setHDC (PVOID hdc);
-   void setMode (DINGO_MODE mode);
    int  getMaxPageSize () const;
    void setLineWidth (double width);
    void setFontFamily (const char* ff);
@@ -190,9 +189,7 @@ private:
    bool metafileFontsToCurves;
    cairo_t* _cr;
    cairo_surface_t* _surface;
-   Output *_output;
-   PVOID _hdc;
-   DINGO_MODE _mode;
+   void* _meta_hdc;
 
 public:
    RenderSettings _settings;
