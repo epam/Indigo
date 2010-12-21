@@ -97,7 +97,8 @@ void PathEnumerator::process ()
       
       if (no_push)
       {
-         edges.pop();
+         if (edges.size() > 0)
+            edges.pop();
          vertices.pop();
          cur_start_idx -= v_vertex.neiEnd();
       }
