@@ -1222,6 +1222,23 @@ CEXPORT int indigoBondOrder (int bond)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoTopology (int bond)
+{
+   INDIGO_BEGIN
+   {
+      IndigoBond &ib = IndigoBond::cast(self.getObject(bond));
+
+      int topology = ib.mol->getBondTopology(ib.idx);
+      if (topology == TOPOLOGY_RING)
+         return INDIGO_RING;
+      if (topology == TOPOLOGY_CHAIN)
+         return INDIGO_CHAIN;
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
+
 CEXPORT int indigoGetAtom (int molecule, int idx)
 {
    INDIGO_BEGIN

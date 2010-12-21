@@ -35,6 +35,8 @@ class Indigo:
   DOWN = 6
   CIS = 7
   TRANS = 8
+  CHAIN = 9
+  RING = 10
 
   class IndigoObject:
     def __init__ (self, dispatcher, id):
@@ -590,6 +592,7 @@ class Indigo:
 
     self.IndigoObject.iterateBonds = self._member_obj(self._lib.indigoIterateBonds)
     self.IndigoObject.bondOrder = self._member_int(self._lib.indigoBondOrder)
+    self.IndigoObject.topology = self._member_int(self._lib.indigoTopology)
     self.IndigoObject.bondStereo = self._member_int(self._lib.indigoBondStereo)
 
     self.IndigoObject.iterateNeighbors = self._member_obj(self._lib.indigoIterateNeighbors)

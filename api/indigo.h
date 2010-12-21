@@ -229,7 +229,9 @@ enum
    INDIGO_UP = 5,
    INDIGO_DOWN = 6,
    INDIGO_CIS = 7,
-   INDIGO_TRANS = 8
+   INDIGO_TRANS = 8,
+   INDIGO_CHAIN = 9,
+   INDIGO_RING = 10
 };
 
 // Returns an iterator for all atoms of the given
@@ -304,6 +306,9 @@ CEXPORT int indigoBondOrder  (int bond);
 // Returns INDIGO_{UP/DOWN/EITHER/CIS/TRANS},
 // or zero if the bond is not a stereobond
 CEXPORT int indigoBondStereo (int bond);
+
+// Returns INDIGO_{CHAIN/RING},
+CEXPORT int indigoTopology (int bond);
 
 // Returns an iterator whose elements can be treated as atoms.
 // At the same time, they support indigoBond() call.
