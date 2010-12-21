@@ -56,31 +56,43 @@ void MoleculeLayoutGraph::_makeBranches (Array<int> &branches, int edge, Filter 
 {
    branches.clear_resize(vertexEnd());
    branches.zerofill();
-
-   _findBranch(branches, _first_vertex_idx, edge);
-
-   filter.init(branches.ptr(), Filter::EQ, 1);
-}
-
-// DFS: find paths from v avoiding given edge
-void MoleculeLayoutGraph::_findBranch (Array<int> &branches, int v, int edge) const
-{
-   int i, u;
-
-   branches[v] = 1;
-
-   const Vertex &vert = getVertex(v);
-
-   for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
+   
+   QS_DEF(Array<int>, dfs_stack);
+   
+   dfs_stack.clear();
+   dfs_stack.push(_first_vertex_idx);
+   
+   int i, v, u;
+   
+   // DFS: find paths from v avoiding given edge
+   while (dfs_stack.size() > 0)
    {
-      if (vert.neiEdge(i) == edge)
-         continue;
+      v = dfs_stack.top();
+      branches[v] = 1;
+      
+      const Vertex &vert = getVertex(v);
+      bool no_push = true;
+      
+      for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
+      {
+         if (vert.neiEdge(i) == edge)
+            continue;
+         
+         u = vert.neiVertex(i);
+         
+         if  (!branches[u]) 
+         {
+            dfs_stack.push(u);
+            no_push = false;
+            break;
+         }
+      }
 
-      u = vert.neiVertex(i);
-
-      if  (!branches[u]) 
-         _findBranch(branches, u, edge);
+      if (no_push)
+         dfs_stack.pop();
    }
+   
+   filter.init(branches.ptr(), Filter::EQ, 1);
 }
 
 bool MoleculeLayoutGraph::_allowRotateAroundVertex (int idx) const

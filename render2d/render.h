@@ -21,7 +21,7 @@ namespace indigo {
 
 class Render {
 public:
-   Render (RenderContext& rc, RenderItemFactory& factory);
+   Render (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt);
    virtual ~Render() = 0;
 
    DEF_ERROR("Render");
@@ -32,8 +32,8 @@ protected:
    int minMarg;
    RenderContext& _rc;
    const RenderSettings& _settings;
-   CanvasOptions& _cnvOpt;
-   RenderOptions& _opt;
+   const CanvasOptions& _cnvOpt;
+   const RenderOptions& _opt;
    RenderItemFactory& _factory;
 };
 

@@ -31,14 +31,14 @@ RenderContext::TextLock RenderContext::_tlock;
 
 cairo_surface_t* RenderContext::createWin32PrintingSurfaceForHDC ()
 {
-   cairo_surface_t* surface = cairo_win32_printing_surface_create((HDC)_hdc);
+   cairo_surface_t* surface = cairo_win32_printing_surface_create((HDC)opt.hdc);
    cairoCheckStatus();
    return surface;
 }
 
 cairo_surface_t* RenderContext::createWin32Surface ()
 {
-   cairo_surface_t* surface = cairo_win32_surface_create((HDC)_hdc);
+   cairo_surface_t* surface = cairo_win32_surface_create((HDC)opt.hdc);
    cairoCheckStatus();
    return surface;
 }
@@ -78,42 +78,39 @@ cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile (bool& isL
    _init_language_pack();
    GetClipBox(dc, &crc);
    isLarge = (_width >= crc.right || _height >= crc.bottom);
-   HDC hdc = CreateEnhMetaFileA(dc, 0, &rc, "Indigo Render2D\0\0");
+   _meta_hdc = CreateEnhMetaFileA(dc, 0, &rc, "Indigo Render2D\0\0");
    ReleaseDC(NULL, dc);
-   cairo_surface_t* s = cairo_win32_printing_surface_create(hdc);
+   cairo_surface_t* s = cairo_win32_printing_surface_create((HDC)_meta_hdc);
    cairoCheckStatus();
-   StartPage(hdc);
-
-   _hdc = hdc;
+   StartPage((HDC)_meta_hdc);
    return s;
 }
 
 void RenderContext::storeAndDestroyMetafile ()
 {
-   HDC hdc = (HDC)_hdc;
    cairo_surface_show_page(_surface);
    cairoCheckStatus();
-   EndPage(hdc);
+   EndPage((HDC)_meta_hdc);
    cairo_surface_destroy(_surface);
    cairoCheckStatus();
    _surface = NULL;
-   HENHMETAFILE hemf = CloseEnhMetaFile(hdc);
+   HENHMETAFILE hemf = CloseEnhMetaFile((HDC)_meta_hdc);
 
    int size = GetEnhMetaFileBits(hemf, 0, NULL);
    Array<char> buf;
    buf.resize(size);
    GetEnhMetaFileBits(hemf, size, (BYTE*)(buf.ptr()));
-   _output->writeArray(buf);
+   opt.output->writeArray(buf);
    DeleteEnhMetaFile(hemf);
 }
 
 #endif
 
-RenderContext::RenderContext (): TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
-metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _output(NULL), _hdc(NULL), _mode(MODE_NONE)
+RenderContext::RenderContext (const RenderOptions& ropt, float sf): TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
+metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt)
 {
+   _settings.init(sf);
    bprintf(_fontfamily, "Arial");
-   _backColor.set(-1,-1,-1);
    bbmin.x = bbmin.y = 1;
    bbmax.x = bbmax.y = -1;
    _defaultScale = 0.0f;
@@ -167,19 +164,9 @@ void RenderContext::bbIncludePath (bool stroke)
    bbIncludePoint(x2, y2);
 }
 
-void RenderContext::setScaleFactor (float sf)
-{
-   _settings.init(sf);
-}
-
 void RenderContext::setDefaultScale (float scale)
 {  
    _defaultScale = scale;
-}
-
-void RenderContext::setHDC (PVOID hdc)
-{
-   _hdc = hdc;
 }
 
 void RenderContext::setFontFamily (const char* ff)
@@ -187,18 +174,9 @@ void RenderContext::setFontFamily (const char* ff)
    bprintf(_fontfamily, "%s", ff);
 }
 
-void RenderContext::setMode (DINGO_MODE mode)
-{
-   _mode = mode;
-}
-void RenderContext::setBaseColor (const Vec3f& c)
-{
-   _baseColor.copy(c);
-}
-
 int RenderContext::getMaxPageSize () const
 {
-   if (_mode == MODE_PDF)
+   if (opt.mode == MODE_PDF)
       return 14400;
    return -1;
 }
@@ -213,21 +191,6 @@ cairo_status_t RenderContext::writer (void *closure, const unsigned char *data, 
       return CAIRO_STATUS_WRITE_ERROR;
    }
    return CAIRO_STATUS_SUCCESS;
-}
-
-void RenderContext::setOutput (Output* output)
-{
-   _output = output;
-}
-
-void RenderContext::setHighlightingOptions (const HighlightingOptions* hlOpt)
-{
-   _hlOpt = hlOpt;
-}
-
-void RenderContext::setRenderContextOptions (const RenderContextOptions* rcOpt)
-{
-   _rcOpt = rcOpt;
 }
 
 void RenderContext::initMetaSurface() {
@@ -254,16 +217,16 @@ void RenderContext::getTextSize(Vec2f& sz, Vec2f& r, FONT_SIZE fontSize, const c
 
 void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int width, int height)
 {
-   switch (_mode)
+   switch (opt.mode)
    {
    case MODE_NONE:
       throw Error("mode not set");
    case MODE_PDF:
-      _surface = cairo_pdf_surface_create_for_stream(writer, _output, _width, _height);
+      _surface = cairo_pdf_surface_create_for_stream(writer, opt.output, _width, _height);
       cairoCheckStatus();
       break;
    case MODE_SVG:
-      _surface = cairo_svg_surface_create_for_stream(writer, _output, _width, _height);
+      _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
       cairoCheckStatus();
       break;
    case MODE_PNG:
@@ -295,7 +258,7 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int
 #endif
       break;
    default:
-      throw Error("unknown mode: %d", _mode);
+      throw Error("unknown mode: %d", opt.mode);
    }
 }
 
@@ -319,14 +282,9 @@ void RenderContext::init()
    _currentLineWidth = _settings.bondLineWidth;
 }
 
-void RenderContext::setBackground(const Vec3f& color)
-{
-   _backColor.copy(color);
-}
-
 void RenderContext::fillBackground()
 {
-   cairo_set_source_rgb(_cr, _backColor.x, _backColor.y, _backColor.z);
+   cairo_set_source_rgb(_cr, opt.backgroundColor.x, opt.backgroundColor.y, opt.backgroundColor.z);
    cairoCheckStatus();
    cairo_paint(_cr);
    cairoCheckStatus();
@@ -348,14 +306,14 @@ void RenderContext::initContext (int width, int height)
 {
    _width = width;
    _height = height;
-   if (_output == NULL)
+   if (opt.output == NULL)
       throw Error("output not set");
    if (_surface != NULL || _cr != NULL)
       throw Error("context is already open (or invalid)");
 
-   createSurface(writer, _output, _width, _height);
+   createSurface(writer, opt.output, _width, _height);
    _cr = cairo_create(_surface);
-   if (_backColor.x >= 0 && _backColor.y >= 0 && _backColor.z >= 0)
+   if (opt.backgroundColor.x >= 0 && opt.backgroundColor.y >= 0 && opt.backgroundColor.z >= 0)
       fillBackground();
 }
 
@@ -387,12 +345,12 @@ void RenderContext::closeContext ()
       _cr = NULL;
    }
 
-   switch (_mode)
+   switch (opt.mode)
    {
    case MODE_NONE:
       throw Error("mode not set");
    case MODE_PNG:
-      cairo_surface_write_to_png_stream(_surface, writer, _output);
+      cairo_surface_write_to_png_stream(_surface, writer, opt.output);
       break;
    case MODE_PDF:
    case MODE_SVG:
@@ -405,7 +363,7 @@ void RenderContext::closeContext ()
 #endif
       break;
    default:
-      throw Error("unknown mode: %d", _mode);
+      throw Error("unknown mode: %d", opt.mode);
    }
 
    if (_surface != NULL)
@@ -474,8 +432,8 @@ void RenderContext::drawItemBackground (const RenderItem& item)
 {
    cairo_rectangle(_cr, item.bbp.x, item.bbp.y, item.bbsz.x, item.bbsz.y);
    cairoCheckStatus();
-   if (_backColor.x >= 0 && _backColor.y >= 0 && _backColor.z >= 0)
-      setSingleSource(_backColor);
+   if (opt.backgroundColor.x >= 0 && opt.backgroundColor.y >= 0 && opt.backgroundColor.z >= 0)
+      setSingleSource(opt.backgroundColor);
    else
       setSingleSource(CWC_WHITE);
 
@@ -486,16 +444,16 @@ void RenderContext::drawItemBackground (const RenderItem& item)
 
 void RenderContext::drawTextItemText (const TextItem& ti)
 {
-   bool bold = ti.highlighted && _hlOpt->highlightThicknessEnable;
+   bool bold = ti.highlighted && opt.highlightThicknessEnable;
 
    Vec3f color;
    if (ti.ritype == RenderItem::RIT_AAM)
-      color.copy(_rcOpt->aamColor);
+      color.copy(opt.aamColor);
    else
    {
       getColorVec(color, ti.color);
-      if (ti.highlighted && _hlOpt->highlightColorEnable)
-         color.copy(_hlOpt->highlightColor);
+      if (ti.highlighted && opt.highlightColorEnable)
+         color.copy(opt.highlightColor);
    }
    drawTextItemText (ti, color, bold);
 }
@@ -669,7 +627,7 @@ void RenderContext::setFontSize (double fontSize)
 
 void RenderContext::setTextItemSize (TextItem& ti)
 {
-   bool bold = ti.highlighted && _hlOpt->highlightThicknessEnable;
+   bool bold = ti.highlighted && opt.highlightThicknessEnable;
    
    fontsSetFont(_cr, ti.fontsize, bold);
    fontsGetTextExtents(_cr, ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
@@ -709,8 +667,8 @@ void RenderContext::setGraphItemSizeSign (GraphItem& gi, GraphItem::TYPE type)
 void RenderContext::drawGraphItem (GraphItem& gi)
 {
    setSingleSource(gi.color);
-   if (gi.highlighted && _hlOpt->highlightColorEnable)
-      setSingleSource(_hlOpt->highlightColor);
+   if (gi.highlighted && opt.highlightColorEnable)
+      setSingleSource(opt.highlightColor);
 
    Vec2f v0;
    v0.sum(gi.bbp, gi.relpos);
@@ -833,7 +791,7 @@ void RenderContext::drawArrow (const Vec2f& p1, const Vec2f& p2, const float wid
 
 float RenderContext::highlightedBondLineWidth () const
 {
-   return _settings.bondLineWidth * (_hlOpt->highlightThicknessEnable ? _hlOpt->highlightThicknessFactor : 1.0f);
+   return _settings.bondLineWidth * (opt.highlightThicknessEnable ? opt.highlightThicknessFactor : 1.0f);
 }
 
 float RenderContext::currentLineWidth () const
@@ -843,10 +801,10 @@ float RenderContext::currentLineWidth () const
 
 void RenderContext::setHighlight()
 {
-   if (_hlOpt->highlightColorEnable)
-      setSingleSource(_hlOpt->highlightColor);
-   if (_hlOpt->highlightThicknessEnable)
-      setLineWidth(_hlOpt->highlightThicknessFactor * _settings.bondLineWidth);
+   if (opt.highlightColorEnable)
+      setSingleSource(opt.highlightColor);
+   if (opt.highlightThicknessEnable)
+      setLineWidth(opt.highlightThicknessFactor * _settings.bondLineWidth);
 }
 
 void RenderContext::resetHighlightThickness()
@@ -1064,9 +1022,9 @@ void RenderContext::getColor (float& r, float& g, float& b, int c)
 
    if (c == CWC_BASE)
    {
-      r = (float)_baseColor.x;
-      g = (float)_baseColor.y;
-      b = (float)_baseColor.z;
+      r = (float)opt.baseColor.x;
+      g = (float)opt.baseColor.y;
+      b = (float)opt.baseColor.z;
       return;
    }
 

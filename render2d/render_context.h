@@ -28,26 +28,18 @@ class RenderContext
 public:
    DEF_ERROR("render context");
 
-   const HighlightingOptions* _hlOpt;
-   const RenderContextOptions* _rcOpt;
-
    void checkPathNonEmpty () const;
 
-   RenderContext ();
+   RenderContext (const RenderOptions& opt, float sf);
    void setScaleFactor (float sf);
    void setDefaultScale (float scale);
    void setHDC (PVOID hdc);
-   void setMode (DINGO_MODE mode);
-   void setBaseColor (const Vec3f& c);
    int  getMaxPageSize () const;
    void setLineWidth (double width);
    void setFontFamily (const char* ff);
    void setOutput (Output* output);
-   void setHighlightingOptions (const HighlightingOptions* hlOpt);
-   void setRenderContextOptions (const RenderContextOptions* rcOpt);
    void createSurface(cairo_write_func_t writer, Output* output, int width, int height);
    void init();
-   void setBackground(const Vec3f& color);
    void fillBackground();
    void initNullContext ();
    void initContext (int width, int height);   
@@ -197,14 +189,11 @@ private:
    bool metafileFontsToCurves;
    cairo_t* _cr;
    cairo_surface_t* _surface;
-   Output *_output;
-   PVOID _hdc;
-   DINGO_MODE _mode;
+   void* _meta_hdc;
 
 public:
    RenderSettings _settings;
-   RenderOptions opt;
-   CanvasOptions cnvOpt;
+   const RenderOptions& opt;
 };
 
 }

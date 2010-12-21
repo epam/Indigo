@@ -30,7 +30,7 @@
 
 using namespace indigo;
 
-RenderSingle::RenderSingle (RenderContext& rc, RenderItemFactory& factory) : Render(rc, factory)
+RenderSingle::RenderSingle (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt) : Render(rc, factory, cnvOpt)
 {}
 
 RenderSingle::~RenderSingle()
@@ -55,8 +55,8 @@ void RenderSingle::_drawComment ()
       return;
    _rc.storeTransform();
    {
-      float diff = (float)(_cnvOpt.width - 2 * outerMargin.x - commentSize.x);
-      _rc.translate(diff * _opt.commentAlign, 0);
+      float diff = (float)(width - 2 * outerMargin.x - commentSize.x);
+      _rc.translate(diff * _cnvOpt.commentAlign, 0);
       _factory.getItem(comment).render();
    }
    _rc.restoreTransform();
@@ -66,6 +66,8 @@ void RenderSingle::_drawComment ()
 
 void RenderSingle::draw ()
 {     
+   width = _cnvOpt.width;
+   height = _cnvOpt.height;
    _rc.initMetaSurface();
    _rc.fontsClear();
 
@@ -88,8 +90,8 @@ void RenderSingle::draw ()
    outerMargin.y = (float)(minMarg + _cnvOpt.marginY);
    
    scale = _getScale();
-   _rc.initContext(_cnvOpt.width, _cnvOpt.height);
-   objArea.set((float)_cnvOpt.width, (float)_cnvOpt.height);
+   _rc.initContext(width, height);
+   objArea.set((float)width, (float)height);
    objArea.addScaled(outerMargin, -2);
    objArea.y -= commentSize.y + commentOffset;
    _rc.init();
@@ -98,7 +100,7 @@ void RenderSingle::draw ()
       _rc.translate((float)_cnvOpt.xOffset, (float)_cnvOpt.yOffset);
    _rc.storeTransform();
    {
-      if (_opt.commentPos == COMMENT_POS_TOP) {
+      if (_cnvOpt.commentPos == COMMENT_POS_TOP) {
          _drawComment();
          _rc.translate(0, (float)commentOffset);
          _drawObj();
@@ -117,23 +119,23 @@ float RenderSingle::_getScale ()
 {
    int maxPageSize = _rc.getMaxPageSize();
    float s;
-   if (_cnvOpt.width <= 0 || _cnvOpt.height <= 0)
+   if (width <= 0 || height <= 0)
    {
       s = _cnvOpt.bondLength;
 
-      _cnvOpt.width = (int)ceil(__max(objSize.x * s, commentSize.x) + outerMargin.x * 2);
-      _cnvOpt.height = (int)ceil(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2);
+      width = (int)ceil(__max(objSize.x * s, commentSize.x) + outerMargin.x * 2);
+      height = (int)ceil(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2);
 
-      if (maxPageSize < 0 || __max(_cnvOpt.width, _cnvOpt.height) < maxPageSize)
+      if (maxPageSize < 0 || __max(width, height) < maxPageSize)
          return s;
-      _cnvOpt.width = __min(_cnvOpt.width, maxPageSize);
-      _cnvOpt.height = __min(_cnvOpt.height, maxPageSize);
+      width = __min(width, maxPageSize);
+      height = __min(height, maxPageSize);
    }
 
    float absX = 2 * outerMargin.x;
    float absY = commentSize.y + 2 * outerMargin.y + commentOffset;
-   float x = _cnvOpt.width - absX,
-      y = _cnvOpt.height - absY;
+   float x = width - absX,
+      y = height - absY;
    if (x < commentSize.x + 1 || y < 1)
       throw Error("Image too small, the layout requires at least %dx%d", 
          (int)(absX + commentSize.x + 2), 

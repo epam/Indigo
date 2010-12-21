@@ -64,112 +64,15 @@ void RenderParams::clearArrays ()
 
 void RenderParams::clear ()
 {
-   query = false;
    relativeThickness = 1.0f;
-   loadHighlighting = true;
-   backgroundColor.set(-1, -1, -1);
-   aromatization = 0;
-   baseColor.set(0, 0, 0);
    rmode = RENDER_NONE;
-   mode = MODE_NONE;
-   inputFormat = INPUT_FORMAT_UNKNOWN;
-   titleProp.clear();
-   titleProp.appendString("^NAME", true);
    mol.reset(NULL);
    molhl.clear();
    rxn.reset(NULL);
    rhl.clear();
-   hdc = 0;
-   outfile.clear();
    rOpt.clear();
    cnvOpt.clear();
-   hlOpt.clear();
-   rcOpt.clear();
    clearArrays();
-}
-
-void RenderParamInterface::loadMol (RenderParams& params, Scanner& scanner)
-{
-   params.mol.reset(params.query ? (BaseMolecule*)new QueryMolecule() : (BaseMolecule*)new Molecule());
-   if (params.inputFormat == INPUT_FORMAT_MOLFILE)
-   {
-      MolfileLoader loader(scanner);
-
-      if (params.loadHighlighting)
-         loader.highlighting = &params.molhl;
-      loader.ignore_stereocenter_errors = true;
-      if (!params.query)
-         loader.loadMolecule(params.mol.ref().asMolecule());
-      else
-         loader.loadQueryMolecule(params.mol.ref().asQueryMolecule());
-   }
-   else if (params.inputFormat == INPUT_FORMAT_SMILES)
-   {
-      SmilesLoader loader(scanner);
-
-      if (params.loadHighlighting)
-         loader.highlighting = &params.molhl;
-      if (!params.query)
-         loader.loadMolecule(params.mol.ref().asMolecule());
-      else
-         loader.loadQueryMolecule(params.mol.ref().asQueryMolecule());
-   }
-   else // INPUT_FORMAT_UNKNOWN
-   {
-      MoleculeAutoLoader loader(scanner);
-
-      if (params.loadHighlighting)
-         loader.highlighting = &params.molhl;
-      loader.ignore_stereocenter_errors = true;
-      if (!params.query)
-         loader.loadMolecule(params.mol.ref().asMolecule());
-      else
-         loader.loadQueryMolecule(params.mol.ref().asQueryMolecule());
-   }
-   params.rmode = RENDER_MOL;
-}
-
-void RenderParamInterface::loadRxn (RenderParams& params, Scanner& scanner)
-{
-   params.rxn.reset(params.query ? (BaseReaction*)new QueryReaction() : (BaseReaction*)new Reaction());
-   if (params.inputFormat == INPUT_FORMAT_RXNFILE)
-   {
-      RxnfileLoader loader(scanner);
-
-      if (params.loadHighlighting)
-         loader.highlighting = &params.rhl;
-
-      loader.ignore_stereocenter_errors = true;
-      if (!params.query)
-         loader.loadReaction(params.rxn.ref().asReaction());
-      else
-         loader.loadQueryReaction(params.rxn.ref().asQueryReaction());
-   }
-   else if (params.inputFormat == INPUT_FORMAT_REACTION_SMILES)
-   {
-      RSmilesLoader loader(scanner);
-
-      if (params.loadHighlighting)
-         loader.highlighting = &params.rhl;
-
-      if (!params.query)
-         loader.loadReaction(params.rxn.ref().asReaction());
-      else
-         loader.loadQueryReaction(params.rxn.ref().asQueryReaction());
-   }
-   else // INPUT_FORMAT_UNKNOWN
-   {
-      ReactionAutoLoader loader(scanner);
-      if (params.loadHighlighting)
-         loader.highlighting = &params.rhl;
-      loader.ignore_stereocenter_errors = true;
-      if (!params.query)
-         loader.loadReaction(params.rxn.ref().asReaction());
-      else
-         loader.loadQueryReaction(params.rxn.ref().asQueryReaction());
-   }
-   
-   params.rmode = RENDER_RXN;
 }
 
 bool RenderParamInterface::needsLayoutSub (BaseMolecule& mol)
@@ -213,11 +116,6 @@ void RenderParamInterface::_prepareMolecule (RenderParams& params, BaseMolecule&
       ml.make();
       bm.stereocenters.markBonds();
    }
-
-   if (params.aromatization > 0)
-      bm.aromatize();
-   else if (params.aromatization < 0)
-      bm.dearomatize();
 }
 
 void RenderParamInterface::_prepareReaction (RenderParams& params, BaseReaction& rxn)
@@ -232,11 +130,6 @@ void RenderParamInterface::_prepareReaction (RenderParams& params, BaseReaction&
          mol.stereocenters.markBonds();
       }
    }
-
-   if (params.aromatization > 0)
-      rxn.aromatize();
-   else if (params.aromatization < 0)
-      rxn.dearomatize();
 }
 
 void RenderParamInterface::render (RenderParams& params)
@@ -244,24 +137,9 @@ void RenderParamInterface::render (RenderParams& params)
    if (params.rmode == RENDER_NONE)
       throw Error("No object to render specified");
 
-   RenderContext rc;
-   rc.setScaleFactor(params.relativeThickness);
+   RenderContext rc(params.rOpt, params.relativeThickness);
    rc.setDefaultScale(params.cnvOpt.bondLength);
-   rc.setHighlightingOptions(&params.hlOpt);
-   rc.setRenderContextOptions(&params.rcOpt);
-
-   rc.setOutput(params.output);
-   rc.setMode(params.mode);
-   rc.setHDC(params.hdc);
-   rc.setBackground(params.backgroundColor);
-   rc.setBaseColor(params.baseColor);
    
-   rc.opt.copy(params.rOpt);
-   rc.cnvOpt = params.cnvOpt;
-
-   if (params.query)
-      params.rOpt.implHMode = IHM_NONE;
-
    RenderItemFactory factory(rc); 
    int obj = -1;
    Array<int> objs;
@@ -320,21 +198,20 @@ void RenderParamInterface::render (RenderParams& params)
    }
 
    int comment = -1;
-   if (rc.opt.comment.size() > 0) {
+   if (params.cnvOpt.comment.size() > 0) {
       comment = factory.addItemAuxiliary();
       factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_COMMENT;
-      factory.getItemAuxiliary(comment).text.copy(rc.opt.comment);
+      factory.getItemAuxiliary(comment).text.copy(params.cnvOpt.comment);
    }
 
    if (obj >= 0) {
-      RenderSingle render(rc, factory);
+      RenderSingle render(rc, factory, params.cnvOpt);
       render.obj = obj;
       render.comment = comment;
       render.draw();
    } else {
-      RenderGrid render(rc, factory);
+      RenderGrid render(rc, factory, params.cnvOpt);
       render.objs.copy(objs);
-      render.nColumns = rc.opt.gridColumnNumber;
       render.comment = comment;
       render.titles.copy(titles);
       render.refAtoms.copy(params.refAtoms);

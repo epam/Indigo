@@ -36,7 +36,6 @@ class QueryReaction;
 class GraphHighlighting;
 
 enum DINGO_MODE {MODE_NONE, MODE_PDF, MODE_PNG, MODE_SVG, MODE_EMF, MODE_HDC, MODE_PRN};
-enum INPUT_FORMAT {INPUT_FORMAT_UNKNOWN, INPUT_FORMAT_MOLFILE, INPUT_FORMAT_RXNFILE, INPUT_FORMAT_SMILES, INPUT_FORMAT_REACTION_SMILES};
 enum LABEL_MODE {LABEL_MODE_NORMAL, LABEL_MODE_FORCESHOW, LABEL_MODE_HIDETERMINAL, LABEL_MODE_FORCEHIDE};
 enum IMPLICIT_HYDROGEN_MODE {IHM_NONE, IHM_TERMINAL, IHM_HETERO, IHM_TERMINAL_HETERO, IHM_ALL};
 enum {CWC_BASE = -2, CWC_WHITE=0, CWC_BLACK, CWC_RED, CWC_GREEN, CWC_BLUE, CWC_DARKGREEN, CWC_COUNT};
@@ -217,6 +216,7 @@ struct MoleculeRenderData {
    Array<int> reactingCenters;
    Array<int> inversions;
    Array<int> exactChanges;
+   LABEL_MODE labelMode;
 private:
    MoleculeRenderData (const MoleculeRenderData& data);
 };
@@ -290,41 +290,36 @@ struct CanvasOptions {
    int marginY;
    int commentOffset;
    int titleOffset;
-};
-
-struct HighlightingOptions {
-   HighlightingOptions ();
-   void clear();
-
-   bool highlightThicknessEnable;
-   float highlightThicknessFactor;
-   bool highlightColorEnable;
-   Vec3f highlightColor;
-};
-
-struct RenderContextOptions {
-   RenderContextOptions ();
-   void clear();
-
-   Vec3f aamColor;
-   float commentFontFactor;
-   float titleFontFactor;
+   Array<char> comment;
+   Array<char> titleProp;  
+   COMMENT_POS commentPos;
+   float commentAlign;
+   float titleAlign;
+   int gridColumnNumber;
+private:
+   CanvasOptions (const CanvasOptions&);
 };
 
 class RenderOptions {
 public:
    RenderOptions ();
    void clear();
-   void copy(const RenderOptions& other);
 
-   Array<char> comment;
-   COMMENT_POS commentPos;
-   float commentAlign;
-   float titleAlign;
+   Vec3f backgroundColor;
+   Vec3f baseColor;
+   bool highlightThicknessEnable;
+   float highlightThicknessFactor;
+   bool highlightColorEnable;
+   Vec3f highlightColor;
+   Vec3f aamColor;
+   float commentFontFactor;
+   float titleFontFactor;
    Vec3f commentColor;
    LABEL_MODE labelMode;
    IMPLICIT_HYDROGEN_MODE implHMode;
-   int gridColumnNumber;
+   DINGO_MODE mode;
+   Output* output;
+   PVOID hdc;
    bool showBondIds;
    bool showBondEndIds;
    bool showNeighborArcs;

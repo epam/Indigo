@@ -78,9 +78,9 @@ void RenderContext::fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold)
    cairo_select_font_face(cr, "Arial", CAIRO_FONT_SLANT_NORMAL, bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
    cairoCheckStatus();
    if (size == FONT_SIZE_COMMENT)
-      cairo_set_font_size(cr, _rcOpt->commentFontFactor);
+      cairo_set_font_size(cr, opt.commentFontFactor);
    else if (size == FONT_SIZE_TITLE)
-      cairo_set_font_size(cr, _rcOpt->titleFontFactor);
+      cairo_set_font_size(cr, opt.titleFontFactor);
    else
       cairo_set_font_size(cr, _settings.fzz[size]);
    cairoCheckStatus();

@@ -264,29 +264,11 @@ void CanvasOptions::clear ()
    gridMarginX = gridMarginY = 0;
    marginX = marginY = 0;
    commentOffset = 0;
-}
-
-RenderContextOptions::RenderContextOptions ()
-{
-   clear();
-}
-
-void RenderContextOptions::clear()
-{
-   aamColor.set(0, 0, 0);
-   commentFontFactor = 20;
-   titleFontFactor = 20;
-}
-
-HighlightingOptions::HighlightingOptions ()
-{
-   clear();
-}
-
-void HighlightingOptions::clear()
-{
-   highlightThicknessEnable = false;
-   highlightThicknessFactor = 1.8f;
-   highlightColorEnable = true;
-   highlightColor.set(1, 0, 0);
+   commentPos = COMMENT_POS_BOTTOM;
+   commentAlign = 0.5f;
+   titleAlign = 0.5f;
+   gridColumnNumber = 1;
+   comment.clear();
+   titleProp.clear();
+   titleProp.appendString("^NAME", true);
 }
