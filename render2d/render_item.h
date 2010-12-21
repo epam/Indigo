@@ -47,7 +47,7 @@ protected:
    void renderIdle ();
 
    const RenderSettings& _settings;
-   RenderOptions& _opt;
+   const RenderOptions& _opt;
    RenderContext& _rc;
    RenderItemFactory& _factory;
 };

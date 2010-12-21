@@ -30,8 +30,8 @@
 
 using namespace indigo;
 
-RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory) : 
-   Render(rc, factory), nColumns(rc.opt.gridColumnNumber), comment(-1)
+RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt) : 
+   Render(rc, factory, cnvOpt), nColumns(cnvOpt.gridColumnNumber), comment(-1)
 {}
 
 RenderGrid::~RenderGrid()
@@ -43,8 +43,8 @@ void RenderGrid::_drawComment ()
       return;
    _rc.storeTransform();
    {
-      float diff = (float)(_cnvOpt.width - 2 * outerMargin.x - commentSize.x);
-      _rc.translate(diff * _opt.commentAlign, 0);
+      float diff = (float)(_width - 2 * outerMargin.x - commentSize.x);
+      _rc.translate(diff * _cnvOpt.commentAlign, 0);
       _factory.getItem(comment).render();
    }
    _rc.restoreTransform();
@@ -54,6 +54,8 @@ void RenderGrid::_drawComment ()
 
 void RenderGrid::draw ()
 {     
+   _width = _cnvOpt.width;
+   _height = _cnvOpt.height;
    _rc.initMetaSurface();
    _rc.fontsClear();
        
@@ -126,7 +128,7 @@ void RenderGrid::draw ()
    outerMargin.y = (float)(minMarg + _cnvOpt.marginY);
    
    scale = _getScale();
-   _rc.initContext(_cnvOpt.width, _cnvOpt.height);
+   _rc.initContext(_width, _height);
    cellsz.set(__max(maxsz.x * scale, maxTitleSize.x),
       maxsz.y * scale + maxTitleSize.y + titleOffset);
    clientArea.set(cellsz.x * nColumns + _cnvOpt.gridMarginX * (nColumns - 1),
@@ -135,13 +137,13 @@ void RenderGrid::draw ()
    if (_cnvOpt.xOffset > 0 || _cnvOpt.yOffset > 0)
       _rc.translate((float)_cnvOpt.xOffset, (float)_cnvOpt.yOffset);
    _rc.translate(outerMargin.x, outerMargin.y);
-   if (_opt.commentPos == COMMENT_POS_TOP) {
+   if (_cnvOpt.commentPos == COMMENT_POS_TOP) {
       _drawComment();
       _rc.translate(0, (float)commentOffset);
    }
    _rc.storeTransform();
    {
-      _rc.translate((_cnvOpt.width - clientArea.x) / 2 - outerMargin.x, (_cnvOpt.height - commentSize.y - commentOffset - clientArea.y) / 2 - outerMargin.y);
+      _rc.translate((_width - clientArea.x) / 2 - outerMargin.x, (_height - commentSize.y - commentOffset - clientArea.y) / 2 - outerMargin.y);
       for (int i = 0; i < objs.size(); ++i) {
          _rc.storeTransform();
          {
@@ -168,7 +170,7 @@ void RenderGrid::draw ()
 
             if (enableTitles) {
                Vec2f titleSize(_factory.getItem(titles[i]).size);
-               _rc.translate(_opt.titleAlign * (cellsz.x - titleSize.x), 0.5f * (maxTitleSize.y - titleSize.y));
+               _rc.translate(_cnvOpt.titleAlign * (cellsz.x - titleSize.x), 0.5f * (maxTitleSize.y - titleSize.y));
                _factory.getItem(titles[i]).render();
             }
          }
@@ -178,8 +180,8 @@ void RenderGrid::draw ()
    }
    _rc.restoreTransform();
    _rc.removeStoredTransform();
-   if (_opt.commentPos == COMMENT_POS_BOTTOM) {                                           
-      _rc.translate(0, _cnvOpt.height - commentOffset - commentSize.y - 2*outerMargin.y);
+   if (_cnvOpt.commentPos == COMMENT_POS_BOTTOM) {                                           
+      _rc.translate(0, _height - commentOffset - commentSize.y - 2*outerMargin.y);
       _drawComment();
    }
    _rc.destroyMetaSurface();
@@ -189,24 +191,24 @@ float RenderGrid::_getScale ()
 {
    int maxPageSize = _rc.getMaxPageSize();
    float s;
-   if (_cnvOpt.width <= 0 || _cnvOpt.height <= 0)
+   if (_width <= 0 || _height <= 0)
    {
       s = _cnvOpt.bondLength;
 
-      _cnvOpt.width = (int)ceil(__max(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), commentSize.x) + outerMargin.x * 2);
-      _cnvOpt.height = (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset);
+      _width = (int)ceil(__max(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), commentSize.x) + outerMargin.x * 2);
+      _height = (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset);
 
-      if (maxPageSize < 0 || __max(_cnvOpt.width, _cnvOpt.height) < maxPageSize)
+      if (maxPageSize < 0 || __max(_width, _height) < maxPageSize)
          return s;
-      _cnvOpt.width = __min(_cnvOpt.width, maxPageSize);
-      _cnvOpt.height = __min(_cnvOpt.height, maxPageSize);
+      _width = __min(_width, maxPageSize);
+      _height = __min(_height, maxPageSize);
    }
 
    float absX = _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2;
    float absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset;
-   float x = _cnvOpt.width - absX,
-      y = _cnvOpt.height - absY;
-   if (x < maxTitleSize.x * nRows + 1 || _cnvOpt.width < commentSize.x + outerMargin.x * 2 + 1 || y < 1)
+   float x = _width - absX,
+      y = _height - absY;
+   if (x < maxTitleSize.x * nRows + 1 || _width < commentSize.x + outerMargin.x * 2 + 1 || y < 1)
       throw Error("Image too small, the layout requires at least %dx%d", 
          (int)__max(absX + maxTitleSize.x * nRows + 2,commentSize.x + outerMargin.x * 2 + 2), 
          (int)(absY + 2));

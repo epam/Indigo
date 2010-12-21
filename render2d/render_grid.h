@@ -21,7 +21,7 @@ namespace indigo {
 
 class RenderGrid : Render {
 public:
-   RenderGrid (RenderContext& rc, RenderItemFactory& factory);
+   RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt);
    virtual ~RenderGrid();
    void draw ();
 
@@ -46,6 +46,7 @@ private:
    Vec2f maxTitleSize;
    Vec2f clientArea;
    Vec2f commentSize;
+   int _width, _height;
 
    float _getScale ();
 };

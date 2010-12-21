@@ -37,41 +37,29 @@ public:
    void clear ();
    void clearArrays ();
 
-   bool query;
    float relativeThickness;
-   bool loadHighlighting;
-   Vec3f backgroundColor;
-   Vec3f baseColor;
    RENDER_MODE rmode;
-   DINGO_MODE mode;
-   INPUT_FORMAT inputFormat;
-   int aromatization;
+
    AutoPtr<BaseMolecule> mol;
-   Output* output;
    GraphHighlighting molhl;
    AutoPtr<BaseReaction> rxn;
    ReactionHighlighting rhl;
+   
    PtrArray<BaseMolecule> mols;
    ObjArray<GraphHighlighting> molhls;
    PtrArray<BaseReaction> rxns;
    ObjArray<ReactionHighlighting> rxnhls;
+   
    ObjArray<Array <char> > titles;
-   Array<char> titleProp;
    Array<int> refAtoms;
 
-   PVOID hdc;
-   Array<char> outfile;
    RenderOptions rOpt;
    CanvasOptions cnvOpt;
-   HighlightingOptions hlOpt;
-   RenderContextOptions rcOpt;
 };
      
 class RenderParamInterface {
 public:
    DEF_ERROR("render param interface");
-   static void loadMol (RenderParams& params, Scanner& scanner);
-   static void loadRxn (RenderParams& params, Scanner& scanner);
    static void render (RenderParams& params);
 
 private:

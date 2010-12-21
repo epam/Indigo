@@ -71,7 +71,7 @@ void indigoRenderSetOutputFormat (const char *format)
       outFmtMap.insert("emf", MODE_EMF);
    }
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.mode = (DINGO_MODE)outFmtMap.at(format);
+   rp.rOpt.mode = (DINGO_MODE)outFmtMap.at(format);
 }
 
 void indigoRenderSetImageSize (int width, int height)
@@ -119,13 +119,13 @@ void indigoRenderSetRelativeThickness (float rt)
 void indigoRenderSetBackgroundColor (float r, float g, float b)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.backgroundColor.set((float)r, (float)g, (float)b);
+   rp.rOpt.backgroundColor.set((float)r, (float)g, (float)b);
 }
 
 void indigoRenderSetBaseColor (float r, float g, float b)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.baseColor.set((float)r, (float)g, (float)b);
+   rp.rOpt.baseColor.set((float)r, (float)g, (float)b);
 }
 
 void indigoRenderSetImplicitHydrogenMode (const char* mode)
@@ -169,20 +169,20 @@ void indigoRenderSetBondIdsVisible (int enabled)
 void indigoRenderSetHighlightThicknessEnabled (int enabled)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.hlOpt.highlightThicknessEnable = enabled != 0;
+   rp.rOpt.highlightThicknessEnable = enabled != 0;
 }
 
 void indigoRenderSetHighlightColorEnabled (int enabled)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.hlOpt.highlightColorEnable = enabled != 0;
+   rp.rOpt.highlightColorEnable = enabled != 0;
 }
 
 void indigoRenderSetHighlightColor (float r, float g, float b)
 {
    CHECKRGB(r, g, b);
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.hlOpt.highlightColor.set(r, g, b);
+   rp.rOpt.highlightColor.set(r, g, b);
 }
 
 void indigoRenderSetStereoOldStyle (int enabled)
@@ -208,7 +208,7 @@ void indigoRenderSetAAMColor (float r, float g, float b)
 {
    CHECKRGB(r, g, b);
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rcOpt.aamColor.set(r, g, b);
+   rp.rOpt.aamColor.set(r, g, b);
 }
 
 void indigoRenderSetCommentColor (float r, float g, float b)
@@ -227,32 +227,32 @@ void indigoRenderSetCenterDoubleBondWhenStereoAdjacent (int enabled)
 void indigoRenderSetComment (const char* comment)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.comment.clear();
-   rp.rOpt.comment.appendString(comment, true);
+   rp.cnvOpt.comment.clear();
+   rp.cnvOpt.comment.appendString(comment, true);
 }
 
 void indigoRenderSetCommentFontSize (float fontSize)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rcOpt.commentFontFactor = fontSize;
+   rp.rOpt.commentFontFactor = fontSize;
 }
 
 void indigoRenderSetTitleFontSize (float fontSize)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rcOpt.titleFontFactor = fontSize;
+   rp.rOpt.titleFontFactor = fontSize;
 }                                
 
 void indigoRenderSetCommentAlignment (float align)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.commentAlign = align;
+   rp.cnvOpt.commentAlign = align;
 }
 
 void indigoRenderSetTitleAlignment (float align)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.titleAlign = align;
+   rp.cnvOpt.titleAlign = align;
 }
 
 void indigoRenderSetCommentPosition (const char* pos)
@@ -263,14 +263,14 @@ void indigoRenderSetCommentPosition (const char* pos)
       map.insert("bottom", COMMENT_POS_BOTTOM);
    }
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.commentPos = (COMMENT_POS)map.at(pos);
+   rp.cnvOpt.commentPos = (COMMENT_POS)map.at(pos);
 }
 
 void indigoRenderSetGridTitleProperty (const char* prop)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.titleProp.clear();
-   rp.titleProp.appendString(prop, true);
+   rp.cnvOpt.titleProp.clear();
+   rp.cnvOpt.titleProp.appendString(prop, true);
 }                                      
 
 CEXPORT int indigoRender (int object, int output)
@@ -316,10 +316,10 @@ CEXPORT int indigoRender (int object, int output)
       IndigoObject& out = self.getObject(output);
       if (out.type == IndigoHDCOutput::HDC_OUTPUT) {
          IndigoHDCOutput& hdcOut = (IndigoHDCOutput&)self.getObject(output);
-         rp.hdc = hdcOut.dc;
-         rp.mode = hdcOut.prn ? MODE_PRN : MODE_HDC;
+         rp.rOpt.hdc = hdcOut.dc;
+         rp.rOpt.mode = hdcOut.prn ? MODE_PRN : MODE_HDC;
       } else if (out.type == IndigoObject::OUTPUT) {
-         rp.output = &IndigoOutput::get(out);
+         rp.rOpt.output = &IndigoOutput::get(out);
       } else {
          throw IndigoError("Invalid output object type");
       }
@@ -346,8 +346,8 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
                rp.mols.add(new Molecule());
             GraphHighlighting& molhl = rp.molhls.push();
             Array<char>& title = rp.titles.push();
-            if (objs[i]->getProperties()->find(rp.titleProp.ptr()))
-               title.copy(objs[i]->getProperties()->at(rp.titleProp.ptr()));
+            if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
+               title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
 
             QS_DEF(Array<int>, mapping);
             rp.mols.top()->clone(objs[i]->getBaseMolecule(), &mapping, 0);
@@ -368,8 +368,8 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
                rp.rxns.add(new Reaction());
             ReactionHighlighting& rxnhl = rp.rxnhls.push();
             Array<char>& title = rp.titles.push();
-            if (objs[i]->getProperties()->find(rp.titleProp.ptr()))
-               title.copy(objs[i]->getProperties()->at(rp.titleProp.ptr()));
+            if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
+               title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
             
             QS_DEF(ObjArray< Array<int> >, mapping);
             rp.rxns.top()->clone(objs[i]->getBaseReaction(), &mapping, 0);
@@ -388,7 +388,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
          rp.refAtoms.copy(refAtoms, objs.size());
       }
 
-      rp.rOpt.gridColumnNumber = nColumns;
+      rp.cnvOpt.gridColumnNumber = nColumns;
 
       bool hasNonemptyTitles = false;
       for (int i = 0; i < rp.titles.size(); ++i) {
@@ -403,10 +403,10 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
       IndigoObject& out = self.getObject(output);
       if (out.type == IndigoHDCOutput::HDC_OUTPUT) {
          IndigoHDCOutput& hdcOut = (IndigoHDCOutput&)self.getObject(output);
-         rp.hdc = hdcOut.dc;
-         rp.mode = hdcOut.prn ? MODE_PRN : MODE_HDC;
+         rp.rOpt.hdc = hdcOut.dc;
+         rp.rOpt.mode = hdcOut.prn ? MODE_PRN : MODE_HDC;
       } else if (out.type == IndigoObject::OUTPUT) {
-         rp.output = &IndigoOutput::get(out);
+         rp.rOpt.output = &IndigoOutput::get(out);
       } else {
          throw IndigoError("Invalid output object type");
       }
