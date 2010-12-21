@@ -8,6 +8,8 @@ set MAKENSIS="%ProgramFiles%\NSIS\makensis.exe"
 
 cd ..\
 
+call dll-copy.bat
+
 echo start javaw -jar -Xss10m chemdiff.jar > dist\launch.bat
 
 mkdir dist\lib

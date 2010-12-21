@@ -9,11 +9,11 @@ SetCompressor /SOLID lzma
   !define MULTIUSER_EXECUTIONLEVEL Highest
   !define MULTIUSER_MUI
   !define MULTIUSER_INSTALLMODE_COMMANDLINE
-  !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "Software\GGA Software\Legio"
+  !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "Software\GGA Software\${APP_NAME}"
   !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME ""
-  !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "Software\GGA Software\Legio"
+  !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "Software\GGA Software\${APP_NAME}"
   !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME ""
-  !define MULTIUSER_INSTALLMODE_INSTDIR "GGA Software\Legio"
+  !define MULTIUSER_INSTALLMODE_INSTDIR "GGA Software\${APP_NAME}"
   !include "MultiUser.nsh"
   !include "MUI2.nsh"
  
@@ -21,8 +21,8 @@ SetCompressor /SOLID lzma
 ;General
  
   ;Name and file
-  Name "Legio"
-  OutFile "setup_legio.exe"
+  Name "${APP_NAME}"
+  OutFile "Setup_${APP_NAME}.exe"
  
 ;--------------------------------
 ;Variables
@@ -39,7 +39,7 @@ SetCompressor /SOLID lzma
  
   ;Remember the installer language
   !define MUI_LANGDLL_REGISTRY_ROOT "SHCTX" 
-  !define MUI_LANGDLL_REGISTRY_KEY "Software\GGA Software\Legio" 
+  !define MUI_LANGDLL_REGISTRY_KEY "Software\GGA Software\${APP_NAME}" 
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
  
 ;--------------------------------
@@ -51,9 +51,9 @@ SetCompressor /SOLID lzma
   !insertmacro MUI_PAGE_DIRECTORY
  
   ;Start Menu Folder Page Configuration
-  !define MUI_STARTMENUPAGE_DEFAULTFOLDER "GGA Software\Legio"
+  !define MUI_STARTMENUPAGE_DEFAULTFOLDER "GGA Software\${APP_NAME}"
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "SHCTX" 
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\GGA Software\Legio" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\GGA Software\${APP_NAME}" 
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
  
   !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
@@ -62,7 +62,7 @@ SetCompressor /SOLID lzma
 
   
 	Function finishpageaction
-		CreateShortCut "$DESKTOP\Legio.lnk" "$INSTDIR\launch.bat"
+		CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\launch.bat"
 	FunctionEnd
  
 	!define MUI_FINISHPAGE_RUN $INSTDIR\launch.bat
@@ -83,7 +83,7 @@ SetCompressor /SOLID lzma
 ;--------------------------------
 ;Installer Sections
  
-Section "Legio"
+Section "${APP_NAME}"
  
   SetOutPath "$INSTDIR\lib\"
   File /r "..\lib\"
@@ -97,7 +97,7 @@ Section "Legio"
   ;%NSIS_INSTALL_FILES
  
   ;Store installation folder
-  WriteRegStr SHCTX "Software\GGA Software\Legio" "" $INSTDIR
+  WriteRegStr SHCTX "Software\GGA Software\${APP_NAME}" "" $INSTDIR
  
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -106,7 +106,7 @@ Section "Legio"
  
     ;Create shortcuts
     CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Legio.lnk" "$INSTDIR\launch.bat" ""
+    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\${APP_NAME}.lnk" "$INSTDIR\launch.bat" ""
     CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 	!ifdef WEB_SITE
 		WriteIniStr "$INSTDIR\${APP_NAME} website.url" "InternetShortcut" "URL" "${WEB_SITE}"
@@ -158,7 +158,7 @@ Section "Uninstall"
  
   !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
  
-  Delete "$SMPROGRAMS\$StartMenuFolder\Legio.lnk"
+  Delete "$SMPROGRAMS\$StartMenuFolder\${APP_NAME}.lnk"
   Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"
 	!ifdef WEB_SITE
 		Delete "$SMPROGRAMS\$StartMenuFolder\Website.lnk"
@@ -167,9 +167,9 @@ Section "Uninstall"
   RMDir "$SMPROGRAMS\$StartMenuFolder"
   ${RMDirUP} "$SMPROGRAMS\$StartMenuFolder"
  
-  Delete "$DESKTOP\Legio.lnk"
+  Delete "$DESKTOP\${APP_NAME}.lnk"
  
-  DeleteRegKey SHCTX "Software\GGA Software\Legio"
+  DeleteRegKey SHCTX "Software\GGA Software\${APP_NAME}"
   DeleteRegKey /ifempty SHCTX "Software\GGA Software"
  
 SectionEnd
