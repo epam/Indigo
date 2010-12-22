@@ -741,10 +741,10 @@ bool QueryMoleculeAromatizer::_aromatizeBondsFuzzy (QueryMolecule &mol)
 
 void MoleculeAromatizer::findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds)
 {
-   Ptr<BaseMolecule> clone;
+   AutoPtr<BaseMolecule> clone;
    QS_DEF(Array<int>, mapping);
 
-   clone.set(mol.neu());
+   clone.reset(mol.neu());
    mapping.clear();
 
    if (atoms != 0)

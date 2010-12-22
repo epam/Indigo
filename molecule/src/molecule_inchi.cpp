@@ -15,7 +15,6 @@
 #include "molecule/molecule_inchi.h"
 
 #include "base_cpp/output.h"
-#include "base_cpp/ptr.h"
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_decomposer.h"

@@ -85,6 +85,7 @@ protected:
 
 private:
    AutoPtr (const AutoPtr &); // no implicit copy
+   AutoPtr<T> & operator = (const AutoPtr<T> &other);
 };
 
 }

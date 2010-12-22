@@ -20,9 +20,9 @@
 #include "base_cpp/pool.h"
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/red_black.h"
-#include "base_cpp/ptr.h"
 #include "base_cpp/ptr_array.h"
 #include "base_c/os_tls.h"
+#include "base_cpp/auto_ptr.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -82,14 +82,14 @@ public:
    T& getLocalCopy (const qword id)
    {
       OsLocker locker(_lock.ref());
-      Ptr<T>& ptr = _map.findOrInsert(id);
+      AutoPtr<T>& ptr = _map.findOrInsert(id);
       if (ptr.get() == NULL)
-         ptr.set(new T());
-      return *ptr;
+         ptr.reset(new T());
+      return ptr.ref();
    }
 
 private:
-   typedef RedBlackObjMap<qword, Ptr<T> > _Map;
+   typedef RedBlackObjMap<qword, AutoPtr<T> > _Map;
 
    _Map           _map;
    ThreadSafeStaticObj<OsLock> _lock;
