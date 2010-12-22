@@ -973,16 +973,26 @@ void MolfileLoader::_readCtab2000 ()
          {
             _scanner.skip(1);
             int sgroup_idx = _scanner.readIntFix(3) - 1;
+            _scanner.skip(1);
             
             if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_DAT)
             {
-               char desc[30] = {0};
-               int k;
-               _scanner.skip(1);
-               _scanner.readCharsFix(30, desc);
+               QS_DEF(Array<char>, rest);
+
+               _scanner.readLine(rest, false);
+               BufferScanner strscan(rest);
                BaseMolecule::DataSGroup &sgroup = _bmol->data_sgroups[_sgroup_mapping[sgroup_idx]];
-               for (k = 0; k < 30 && desc[k] != ' '; k++)
-                  sgroup.description.push(desc[k]);
+
+               int k = 30;
+               while (k-- > 0)
+               {
+                  if (strscan.isEOF())
+                     break;
+                  int c = strscan.readChar();
+                  if (isspace(c))
+                     break;
+                  sgroup.description.push(c);
+               }
                sgroup.description.push(0);
             }
          }

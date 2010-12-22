@@ -173,6 +173,15 @@ int IndigoAtom::getIndex ()
    return idx;
 }
 
+bool IndigoAtom::is (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::ATOM || obj.type == IndigoObject::ATOM_NEIGHBOR)
+      return true;
+   if (obj.type == IndigoObject::ARRAY_ELEMENT)
+      return is(((IndigoArrayElement &)obj).get());
+   return false;
+}
+
 IndigoAtom & IndigoAtom::cast (IndigoObject &obj)
 {
    if (obj.type == IndigoObject::ATOM || obj.type == IndigoObject::ATOM_NEIGHBOR)
@@ -263,6 +272,15 @@ IndigoBond::~IndigoBond ()
 int IndigoBond::getIndex ()
 {
    return idx;
+}
+
+bool IndigoBond::is (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::BOND)
+      return true;
+   if (obj.type == IndigoObject::ARRAY_ELEMENT)
+      return is(((IndigoArrayElement &)obj).get());
+   return false;
 }
 
 IndigoBond & IndigoBond::cast (IndigoObject &obj)
@@ -1153,6 +1171,21 @@ CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *verti
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoRemoveAtoms (int molecule, int nvertices, int *vertices)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      QS_DEF(Array<int>, indices);
+
+      indices.copy(vertices, nvertices);
+
+      mol.removeAtoms(indices);
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 IndigoObject * IndigoMolecule::clone ()
 {
    return cloneFrom(*this);
@@ -1171,21 +1204,6 @@ IndigoObject * IndigoQueryMolecule::clone ()
 const char * IndigoQueryMolecule::debugInfo ()
 {
    return "<query molecule>";
-}
-
-CEXPORT int indigoCountComponents (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-
-      GraphDecomposer decomposer(mol);
-
-      decomposer.decompose();
-      
-      return decomposer.getComponentsCount();
-   }
-   INDIGO_END(-1)
 }
 
 CEXPORT int indigoHasZCoord (int molecule)
@@ -1221,6 +1239,23 @@ CEXPORT int indigoBondOrder (int bond)
    }
    INDIGO_END(-1);
 }
+
+CEXPORT int indigoTopology (int bond)
+{
+   INDIGO_BEGIN
+   {
+      IndigoBond &ib = IndigoBond::cast(self.getObject(bond));
+
+      int topology = ib.mol->getBondTopology(ib.idx);
+      if (topology == TOPOLOGY_RING)
+         return INDIGO_RING;
+      if (topology == TOPOLOGY_CHAIN)
+         return INDIGO_CHAIN;
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
 
 CEXPORT int indigoGetAtom (int molecule, int idx)
 {

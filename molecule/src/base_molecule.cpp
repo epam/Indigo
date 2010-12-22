@@ -280,7 +280,7 @@ void BaseMolecule::mergeWithMolecule (BaseMolecule &other, Array<int> *mapping, 
 void BaseMolecule::removeAtoms (const Array<int> &indices)
 {
    QS_DEF(Array<int>, mapping);
-   int i;
+   int i, j;
    
    mapping.clear_resize(vertexEnd());
 
@@ -297,9 +297,24 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
    stereocenters.removeAtoms(indices);
    cis_trans.buildOnSubmolecule(*this, *this, mapping.ptr());
 
+   // sgroups
+   for (j = data_sgroups.size() - 1; j >= 0; j--)
+   {
+      _removeAtomsFromSGroup(data_sgroups[j], mapping);
+      if (data_sgroups[j].atoms.size() < 1)
+         data_sgroups.remove(j);
+   }
+   for (j = superatoms.size() - 1; j >= 0; j--)
+   {
+      _removeAtomsFromSGroup(superatoms[j], mapping);
+      if (superatoms[j].atoms.size() < 1)
+         superatoms.remove(j);
+   }
+
    // Remove vertices from graph
    for (i = 0; i < indices.size(); i++)
       removeVertex(indices[i]);
+
 }
 
 void BaseMolecule::removeAtom (int idx)
@@ -522,4 +537,20 @@ BaseMolecule::DataSGroup::DataSGroup ()
 BaseMolecule::Superatom::Superatom ()
 {
    bond_idx = -1;
+}
+
+void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
+{
+   int i;
+
+   for (i = sgroup.atoms.size() - 1; i >= 0; i--)
+      if (mapping[i] == -1)
+         sgroup.atoms.remove(i);
+
+   for (i = sgroup.bonds.size() - 1; i >= 0; i--)
+   {
+      const Edge &edge = getEdge(i);
+      if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
+         sgroup.bonds.remove(i);
+   }
 }

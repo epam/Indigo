@@ -35,6 +35,8 @@ class Indigo:
   DOWN = 6
   CIS = 7
   TRANS = 8
+  CHAIN = 9
+  RING = 10
 
   class IndigoObject:
     def __init__ (self, dispatcher, id):
@@ -581,6 +583,7 @@ class Indigo:
     self.IndigoObject.resetExplicitValence = self._member_void(self._lib.indigoResetExplicitValence)
     self.IndigoObject.resetRadical = self._member_void(self._lib.indigoResetRadical)
     self.IndigoObject.resetIsotope = self._member_void(self._lib.indigoResetIsotope)
+    self.IndigoObject.resetStereo = self._member_void(self._lib.indigoResetStereo)
     self.IndigoObject.invertStereo = self._member_void(self._lib.indigoInvertStereo)
 
     self.IndigoObject.countAtoms = self._member_int(self._lib.indigoCountAtoms)
@@ -590,6 +593,7 @@ class Indigo:
 
     self.IndigoObject.iterateBonds = self._member_obj(self._lib.indigoIterateBonds)
     self.IndigoObject.bondOrder = self._member_int(self._lib.indigoBondOrder)
+    self.IndigoObject.topology = self._member_int(self._lib.indigoTopology)
     self.IndigoObject.bondStereo = self._member_int(self._lib.indigoBondStereo)
 
     self.IndigoObject.iterateNeighbors = self._member_obj(self._lib.indigoIterateNeighbors)
@@ -610,7 +614,15 @@ class Indigo:
 
     self.IndigoObject.canonicalSmiles = self._member_string(self._lib.indigoCanonicalSmiles)
     self.IndigoObject.layeredCode = self._member_string(self._lib.indigoLayeredCode)
+
+    self.IndigoObject.decomposition = self._member_obj(self._lib.indigoDecomposition)
     self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
+    self.IndigoObject.iterateComponents = self._member_obj(self._lib.indigoIterateComponents)
+    self.IndigoObject.iterateComponentAtoms = self._member_obj_int(self._lib.indigoIterateComponentAtoms)
+    self.IndigoObject.iterateComponentBonds = self._member_obj_int(self._lib.indigoIterateComponentBonds)
+    self.IndigoObject.component = self._member_obj_int(self._lib.indigoComponent)
+    self.IndigoObject.atomComponentIndex = self._member_int_obj(self._lib.indigoAtomComponentIndex)
+
     self.IndigoObject.hasZCoord = self._member_bool(self._lib.indigoHasZCoord)
     self.IndigoObject.isChiral = self._member_bool(self._lib.indigoIsChiral)
     
@@ -668,6 +680,7 @@ class Indigo:
 
     self.IndigoObject.createSubmolecule = self._member_obj_iarr(self._lib.indigoCreateSubmolecule)
     self.IndigoObject.createEdgeSubmolecule = self._member_obj_iarr_iarr(self._lib.indigoCreateEdgeSubmolecule)
+    self.IndigoObject.removeAtoms = self._member_void_iarr(self._lib.indigoRemoveAtoms)
     self.IndigoObject.addDataSGroup = self._member_obj_iarr_iarr_string_string(self._lib.indigoAddDataSGroup)
     self.IndigoObject.setDataSGroupXY = self._member_void_float_float_string(self._lib.indigoSetDataSGroupXY)
 
@@ -868,6 +881,8 @@ class Indigo:
     return newfunc
 
   def _member_obj_int (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int]
     dispatcher = self
     def newfunc (self, param):
       dispatcher._setSID()
@@ -878,6 +893,8 @@ class Indigo:
     return newfunc
 
   def _member_int_obj (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int]
     dispatcher = self
     def newfunc (self, param):
       dispatcher._setSID()
@@ -902,6 +919,18 @@ class Indigo:
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)
+    return newfunc
+
+  def _member_void_iarr (self, func):
+    dispatcher = self
+    func.restype = c_int
+    func.argtypes = [c_int, c_int, POINTER(c_int)]
+    def newfunc (self, intarr):
+      arr = (c_int * len(intarr))()
+      for i in xrange(len(intarr)):
+        arr[i] = intarr[i]
+      dispatcher._setSID()
+      dispatcher._checkResult(func(self.id, len(intarr), arr))
     return newfunc
 
   def _member_obj_iarr (self, func):

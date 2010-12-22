@@ -229,7 +229,9 @@ enum
    INDIGO_UP = 5,
    INDIGO_DOWN = 6,
    INDIGO_CIS = 7,
-   INDIGO_TRANS = 8
+   INDIGO_TRANS = 8,
+   INDIGO_CHAIN = 9,
+   INDIGO_RING = 10
 };
 
 // Returns an iterator for all atoms of the given
@@ -276,8 +278,6 @@ CEXPORT int indigoCountDataSGroups (int molecule);
 CEXPORT int indigoIterateDataSGroups (int molecule);
 CEXPORT const char * indigoDescription (int data_sgroup);
 
-CEXPORT int indigoRemove (int item);
-
 CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
         int nbonds, int *bonds, const char *description, const char *data);
 
@@ -288,6 +288,7 @@ CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetRadical (int atom);
 CEXPORT int indigoResetIsotope (int atom);
 
+CEXPORT int indigoResetStereo (int item);
 CEXPORT int indigoInvertStereo (int item);
 
 CEXPORT int indigoCountAtoms (int molecule);
@@ -304,6 +305,9 @@ CEXPORT int indigoBondOrder  (int bond);
 // Returns INDIGO_{UP/DOWN/EITHER/CIS/TRANS},
 // or zero if the bond is not a stereobond
 CEXPORT int indigoBondStereo (int bond);
+
+// Returns INDIGO_{CHAIN/RING},
+CEXPORT int indigoTopology (int bond);
 
 // Returns an iterator whose elements can be treated as atoms.
 // At the same time, they support indigoBond() call.
@@ -335,14 +339,21 @@ CEXPORT float indigoMonoisotopicMass (int molecule);
 CEXPORT const char * indigoCanonicalSmiles (int molecule);
 CEXPORT const char * indigoLayeredCode (int molecule);
 
-// Returns the number of connected components
-CEXPORT int indigoCountComponents (int molecule);
+CEXPORT int indigoDecomposition (int molecule);
+CEXPORT int indigoCountComponents (int decomposition);
+CEXPORT int indigoIterateComponents (int decomposition);
+CEXPORT int indigoAtomComponentIndex (int decomposition, int atom);
+CEXPORT int indigoIterateComponentAtoms (int decomposition, int index);
+CEXPORT int indigoIterateComponentBonds (int decomposition, int index);
+CEXPORT int indigoComponent (int decomposition, int index);
 
 CEXPORT int indigoHasZCoord (int molecule);
 CEXPORT int indigoIsChiral (int molecule);
 
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices);
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices, int nedges, int *edges);
+
+CEXPORT int indigoRemoveAtoms (int molecule, int nvertices, int *vertices);
 
 // Determines and applies the best transformation to the given molecule
 // so that the specified atoms move as close as possible to the desired

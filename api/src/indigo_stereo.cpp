@@ -87,6 +87,32 @@ CEXPORT int indigoInvertStereo (int item)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoResetStereo (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoAtom::is(obj))
+      {
+         IndigoAtom &ia = IndigoAtom::cast(self.getObject(item));
+
+         ia.mol->stereocenters.setType(ia.idx, 0, 0);
+      }
+      else if (IndigoBond::is(obj))
+      {
+         IndigoBond &ib = IndigoBond::cast(self.getObject(item));
+
+         ib.mol->stereocenters.setBondDirection(ib.idx, 0);
+      }
+      else
+         throw IndigoError("indigoResetStereo(): %s given", obj.debugInfo());
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+
 CEXPORT int indigoClearStereocenters (int object)
 {
    INDIGO_BEGIN
