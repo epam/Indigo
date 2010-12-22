@@ -558,8 +558,17 @@ int Molecule::getImplicitH (int idx)
    else
    {
       int valence;
-      Element::calcValence(atom.number, atom.charge, radical,
-                           conn, valence, implicit_h, true);
+
+      // special case of 5-connected nitrogen like "CN(=O)=O".
+      // It should really be C[N+](O-)=O, but we let people live in happy ignorance.
+      if (atom.number == ELEM_N && atom.charge == 0 && radical == 0 && conn == 5)
+      {
+         valence = 4;
+         implicit_h = 0;
+      }
+      else
+         Element::calcValence(atom.number, atom.charge, radical,
+                              conn, valence, implicit_h, true);
       _valence.expandFill(idx + 1, -1);
       _valence[idx] = valence;
    }
