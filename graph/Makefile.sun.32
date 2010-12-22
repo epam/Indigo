@@ -1,14 +1,25 @@
+## -*- Makefile -*-
+##
+## User: dpavlov
+## Time: Dec 22, 2010 9:06:22 PM
+## Makefile created by Sun Studio.
+##
+## This file is generated automatically.
+##
+
+
+#### Compiler and tool definitions shared by all build targets #####
 CC = cc
 CCC = CC
 CXX = CC
-BASICOPTS = -xO3 -s -misalign
+BASICOPTS = -xO3 -misalign
 CFLAGS = $(BASICOPTS) -xCC
 CCFLAGS = $(BASICOPTS)
 CXXFLAGS = $(BASICOPTS)
 CCADMIN = CCadmin -clean
 
 
+# Define the target directories.
 TARGETDIR_libgraph.a=sparc32
 
 include Makefile.sun.common
-

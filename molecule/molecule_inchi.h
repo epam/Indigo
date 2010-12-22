@@ -82,4 +82,4 @@ private:
 
 }
 
-#endif // __molecule_inchi_canonicalizer_h__
+#endif // __molecule_inchi_h__

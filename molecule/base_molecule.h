@@ -56,7 +56,7 @@ enum
    SKIP_ALL = -1,
    SKIP_CIS_TRANS = 0x01,
    SKIP_STEREOCENTERS = 0x02,
-   SKIP_XYZ = 0x04,
+   SKIP_XYZ = 0x04
 };
 
 class Molecule;

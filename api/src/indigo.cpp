@@ -87,8 +87,7 @@ CEXPORT const char * indigoGetLastError (void)
    return self.error_message.ptr();
 }
 
-CEXPORT void indigoSetErrorHandler (void (*handler)
-                 (const char *message, void *context), void *context)
+CEXPORT void indigoSetErrorHandler (INDIGO_ERROR_HANDLER handler, void *context)
 {
    Indigo &self = indigoGetInstance();
    self.error_handler = handler;

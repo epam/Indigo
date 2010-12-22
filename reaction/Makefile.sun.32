@@ -1,6 +1,6 @@
 CCC = CC
 CXX = CC
-BASICOPTS = -xO3 -s -misalign
+BASICOPTS = -xO3
 CCFLAGS = $(BASICOPTS)
 CXXFLAGS = $(BASICOPTS)
 CCADMIN = CCadmin -clean
@@ -8,4 +8,3 @@ CCADMIN = CCadmin -clean
 TARGETDIR_libreaction.a=sparc32
 
 include Makefile.sun.common
-

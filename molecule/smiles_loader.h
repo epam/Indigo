@@ -137,7 +137,7 @@ protected:
                    _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
 
    void _readBond (Array<char> &bond_str, _BondDesc &bond,
-                   AutoPtr<QueryMolecule::Bond> &qbond, bool smarts_mode);
+                   AutoPtr<QueryMolecule::Bond> &qbond);
 
 private:
    SmilesLoader (const SmilesLoader &); // no implicit copy
