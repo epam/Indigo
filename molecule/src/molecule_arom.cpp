@@ -62,7 +62,11 @@ bool AromatizerBase::_checkDoubleBonds (const int *cycle, int cycle_len)
          int type = _basemol.getBondOrder(e_idx);
          if (type == BOND_DOUBLE && !isBondAromatic(e_idx)) {
             if (nei_idx != v_left_idx && nei_idx != v_right_idx)
-               return false;
+            {
+               // Double bond going outside 
+               if (!_acceptOutgoingDoubleBond(v_center_idx, e_idx))
+                  return false;
+            }
             else if (nei_idx == v_left_idx || nei_idx == v_right_idx)
                internal_double_bond_count++;
          }
@@ -313,6 +317,21 @@ bool MoleculeAromatizer::_isCycleAromatic (const int *cycle, int cycle_len)
    if (((count - 2) % 4) != 0) 
       return false;
    return true;
+}
+
+bool MoleculeAromatizer::_acceptOutgoingDoubleBond (int atom, int bond)
+{
+   /*
+   // Bonds in rings are not accepted
+   if (_basemol.getBondTopology(bond) != TOPOLOGY_CHAIN)
+      return false;
+   */
+
+   Molecule &mol = _basemol.asMolecule();
+   if (mol.isNitrogentV5(atom))
+      return true;
+
+   return false;
 }
 
 bool MoleculeAromatizer::aromatizeBonds (Molecule &mol)

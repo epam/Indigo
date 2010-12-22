@@ -54,6 +54,7 @@ protected:
    virtual bool _checkVertex         (int v_idx);
    virtual bool _isCycleAromatic     (const int *cycle, int cycle_len) = 0;
    virtual void _handleAromaticCycle (const int *cycle, int cycle_len);
+   virtual bool _acceptOutgoingDoubleBond (int atom, int bond) { return false; }
 
 protected:
 
@@ -98,6 +99,7 @@ public:
 protected:
    virtual bool _checkVertex      (int v_idx);
    virtual bool _isCycleAromatic  (const int *cycle, int cycle_len);
+   virtual bool _acceptOutgoingDoubleBond (int atom, int bond);
 
    int _getPiLabel (int v_idx);
    TL_CP_DECL(Array<int>, _pi_labels);

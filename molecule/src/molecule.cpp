@@ -561,7 +561,7 @@ int Molecule::getImplicitH (int idx)
 
       // special case of 5-connected nitrogen like "CN(=O)=O".
       // It should really be C[N+](O-)=O, but we let people live in happy ignorance.
-      if (atom.number == ELEM_N && atom.charge == 0 && radical == 0 && conn == 5)
+      if (isNitrogentV5(idx))
       {
          valence = 4;
          implicit_h = 0;
@@ -577,6 +577,23 @@ int Molecule::getImplicitH (int idx)
    _implicit_h[idx] = implicit_h;
 
    return implicit_h;
+}
+
+bool Molecule::isNitrogentV5 (int idx)
+{
+   if (getAtomNumber(idx) != ELEM_N)
+      return false;
+
+   if (getAtomCharge(idx) != 0)
+      return false;
+
+   int radical = 0;
+
+   if (_radicals.size() > idx && _radicals[idx] >= 0)
+      radical = _radicals[idx];
+
+   int conn = getAtomConnectivity_noImplH(idx);
+   return (radical == 0 && conn == 5) || (radical == 1 && conn == 4);
 }
 
 int Molecule::getAtomNumber (int idx)
