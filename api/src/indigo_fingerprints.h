@@ -17,6 +17,11 @@
 
 #include "indigo_internal.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 class DLLEXPORT IndigoFingerprint : public IndigoObject
 {
 public:
@@ -30,5 +35,9 @@ public:
    
    Array<byte> bytes;
 };
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif
