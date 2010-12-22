@@ -64,4 +64,38 @@ protected:
    int _idx;
 };
 
+class IndigoComponentAtomsIterator : public IndigoObject
+{
+public:
+   IndigoComponentAtomsIterator (IndigoDecomposition &decomp, int cidx);
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+
+   int _next ();
+
+   IndigoDecomposition &_decomp;
+   int _cidx;
+   int _idx;
+};
+
+class IndigoComponentBondsIterator : public IndigoObject
+{
+public:
+   IndigoComponentBondsIterator (IndigoDecomposition &decomp, int cidx);
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+
+   int _next ();
+
+   IndigoDecomposition &_decomp;
+   int _cidx;
+   int _idx;
+};
+
 #endif

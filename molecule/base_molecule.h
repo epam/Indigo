@@ -238,6 +238,8 @@ protected:
    int _addBaseAtom ();
    int _addBaseBond (int beg, int end);
 
+   void _removeAtomsFromSGroup (SGroup &sgroup, Array<int> &indices);
+
    Array<Vec3f> _xyz;
    ObjArray< Array<int> > _rsite_attachment_points;
 };

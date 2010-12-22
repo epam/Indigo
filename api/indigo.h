@@ -339,11 +339,13 @@ CEXPORT float indigoMonoisotopicMass (int molecule);
 CEXPORT const char * indigoCanonicalSmiles (int molecule);
 CEXPORT const char * indigoLayeredCode (int molecule);
 
-// Returns the number of connected components
 CEXPORT int indigoDecomposition (int molecule);
 CEXPORT int indigoCountComponents (int decomposition);
 CEXPORT int indigoIterateComponents (int decomposition);
-CEXPORT int indigoComponentIndex (int decomposition, int atom);
+CEXPORT int indigoAtomComponentIndex (int decomposition, int atom);
+CEXPORT int indigoIterateComponentAtoms (int decomposition, int index);
+CEXPORT int indigoIterateComponentBonds (int decomposition, int index);
+CEXPORT int indigoComponent (int decomposition, int index);
 
 CEXPORT int indigoHasZCoord (int molecule);
 CEXPORT int indigoIsChiral (int molecule);
