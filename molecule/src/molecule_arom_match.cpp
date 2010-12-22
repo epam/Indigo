@@ -26,7 +26,7 @@ AromaticityMatcher::AromaticityMatcher (QueryMolecule &query, BaseMolecule &base
    _query(query), _base(base),
    TL_CP_GET(_matching_edges_state)
 {
-   _submolecule.set(base.neu());
+   _submolecule.reset(base.neu());
    _matching_edges_state.clear();
    
    validateQuery();
