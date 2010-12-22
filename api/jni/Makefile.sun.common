@@ -9,8 +9,7 @@ CPPFLAGS_libindigo-jni.so = \
 OBJS_libindigo-jni.so =  \
 	$(TARGETDIR_libindigo-jni.so)/indigo_jni.o \
 	$(TARGETDIR_libindigo-jni.so)/indigo_jni_base.o
-LDLIBS_libindigo-jni.so = $(USERLIBS_libindigo-jni.so)
-
+LDLIBS_libindigo-jni.so = $(USERLIBS_libindigo-jni.so) -lpthread -lz -lm -lrt
 
 # Link or archive
 SHAREDLIB_FLAGS_libindigo-jni.so = -G -norunpath -h libindigo-jni.so 

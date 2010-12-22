@@ -1,4 +1,4 @@
-   /****************************************************************************
+/****************************************************************************
  * Copyright (C) 2010 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
@@ -15,6 +15,8 @@
 package com.gga.indigo;
 
 import java.io.*;
+import java.lang.*;
+import java.util.*;
 
 public class Indigo
 {
@@ -243,6 +245,53 @@ public class Indigo
 
    private String _full_dll_path = null;
 
+   private static boolean checkIfLoaded ()
+   {
+      try
+      {
+         Vector libraries = (Vector)LIBRARIES.get(ClassLoader.getSystemClassLoader());
+
+         Enumeration e = libraries.elements();
+         while (e.hasMoreElements())
+         {
+            if (((String)e.nextElement()).indexOf("indigo") != -1)
+               return true;
+         }
+      }
+      catch (Exception e)
+      {
+      }
+      return false;
+   }
+
+   private static java.lang.reflect.Field LIBRARIES = null;
+   static
+   {
+      try
+      {
+         LIBRARIES = ClassLoader.class.getDeclaredField("loadedLibraryNames");
+         LIBRARIES.setAccessible(true);
+      } catch (NoSuchFieldException e) { }
+   }
+
+   private synchronized static void loadIndigo (String path)
+   {
+      if (checkIfLoaded())
+         return;
+
+      if (_os == OS_LINUX)
+         System.load(path + File.separator + "libindigo-jni.so");
+      else if (_os == OS_SOLARIS)
+         System.load(path + File.separator + "libindigo-jni.so");
+      else if (_os == OS_MACOS)
+         System.load(path + File.separator + "libindigo-jni.dylib");
+      else // _os == OS_WINDOWS
+      {
+         System.load(path + File.separator + "zlib.dll");
+         System.load(path + File.separator + "indigo-jni.dll");
+      }
+   }
+
    public Indigo (String path)
    {
       path = path + File.separator + _dllpath;
@@ -256,18 +305,9 @@ public class Indigo
       {
       }
 
+      loadIndigo(_full_dll_path);
       if (_os == OS_LINUX)
-      {
-         System.load(_full_dll_path + File.separator + "libindigo-jni.so");
          indigoRtldGlobal(_full_dll_path + File.separator + "libindigo-jni.so");
-      }
-      else if (_os == OS_MACOS)
-         System.load(_full_dll_path + File.separator + "libindigo-jni.dylib");
-      else // _os == OS_WINDOWS
-      {
-         System.load(_full_dll_path + File.separator + "zlib.dll");
-         System.load(_full_dll_path + File.separator + "indigo-jni.dll");
-      }
 
       _sid = allocSessionId();
    }
@@ -521,6 +561,7 @@ public class Indigo
    public static final int OS_WINDOWS = 1;
    public static final int OS_MACOS = 2;
    public static final int OS_LINUX = 3;
+   public static final int OS_SOLARIS = 4;
 
    private static int _os = 0;
    private static String _dllpath = "";
@@ -534,6 +575,8 @@ public class Indigo
            return OS_MACOS;
        else if (namestr.matches("^Linux.*"))
            return OS_LINUX;
+       else if (namestr.matches("^SunOS.*"))
+           return OS_SOLARIS;
        else
            throw new Error("Operating system not recognized");
    }
@@ -548,6 +591,9 @@ public class Indigo
             break;
          case OS_LINUX:
             path += "Linux";
+            break;
+         case OS_SOLARIS:
+            path += "Sun";
             break;
          case OS_MACOS:
             path += "Mac";
@@ -567,6 +613,15 @@ public class Indigo
             path += "10.6";
          else
             throw new Error("OS version not supported");
+      }
+      else if (_os == OS_SOLARIS)
+      {
+         String model = System.getProperty("sun.arch.data.model");
+
+         if (model.equals("32"))
+            path += "sparc32";
+         else
+            path += "sparc64";
       }
       else
       {
