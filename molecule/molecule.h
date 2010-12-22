@@ -84,8 +84,8 @@ public:
 
    virtual bool bondStereoCare (int idx);
 
-   virtual void aromatize ();
-   virtual void dearomatize ();
+   virtual bool aromatize ();
+   virtual bool dearomatize ();
 
    int getImplicitH (int idx);
 

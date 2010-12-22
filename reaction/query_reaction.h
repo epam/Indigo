@@ -44,8 +44,8 @@ public:
 
    int _addedQueryMolecule (int side, QueryMolecule &mol);
 
-   virtual void aromatize ();
-   virtual void dearomatize ();
+   virtual bool aromatize ();
+   virtual bool dearomatize ();
 
    virtual BaseReaction * neu ();
 

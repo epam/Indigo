@@ -315,16 +315,21 @@ bool MoleculeAromatizer::_isCycleAromatic (const int *cycle, int cycle_len)
    return true;
 }
 
-void MoleculeAromatizer::aromatizeBonds (Molecule &mol)
+bool MoleculeAromatizer::aromatizeBonds (Molecule &mol)
 {
    MoleculeAromatizer aromatizer(mol);
 
    aromatizer.precalculatePiLabels();
    aromatizer.aromatize();
 
+   bool aromatic_bond_found = false;
    for (int e_idx = mol.edgeBegin(); e_idx < mol.edgeEnd(); e_idx = mol.edgeNext(e_idx))
       if (aromatizer.isBondAromatic(e_idx))
+      {
          mol.setBondOrder(e_idx, BOND_AROMATIC, true);
+         aromatic_bond_found = true;
+      }
+   return aromatic_bond_found;
 }
 
 //
@@ -552,17 +557,18 @@ void QueryMoleculeAromatizer::setMode (int mode)
    _mode = mode;
 }
 
-void QueryMoleculeAromatizer::aromatizeBonds (QueryMolecule &mol)
+bool QueryMoleculeAromatizer::aromatizeBonds (QueryMolecule &mol)
 {
-   _aromatizeBonds(mol, -1);
+   return _aromatizeBonds(mol, -1);
 }
 
-void QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additional_atom)
+bool QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additional_atom)
 {
+   bool aromatized = false;
    // Mark edges that can be aromatic in some matching
-   _aromatizeBondsFuzzy(mol);
+   aromatized |= _aromatizeBondsFuzzy(mol);
    // Aromatize all aromatic cycles
-   _aromatizeBondsExact(mol);
+   aromatized |= _aromatizeBondsExact(mol);
 
    MoleculeRGroups &rgroups = mol.rgroups;
    int n_rgroups = rgroups.getRGroupCount();
@@ -613,13 +619,14 @@ void QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additiona
          {
             QueryMolecule &fragment = *rgroup.fragments[j];
 
-            _aromatizeRGroupFragment(fragment, rgroups_attached_single[i]);
+            aromatized |= _aromatizeRGroupFragment(fragment, rgroups_attached_single[i]);
          }
       }
    }
+   return aromatized;
 }
 
-void QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment, 
+bool QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment, 
                                                         bool add_single_bonds)
 {
    // Add additional atom to attachment points
@@ -654,18 +661,20 @@ void QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment,
       }
    }
 
-   _aromatizeBonds(fragment, additional_atom);
+   bool aromatized = _aromatizeBonds(fragment, additional_atom);
 
    QS_DEF(Array<int>, indices);
    indices.clear();
    indices.push(additional_atom);
 
    fragment.removeAtoms(indices);
+   return aromatized;
 }
 
 // Some cycles with query features can be aromatized
-void QueryMoleculeAromatizer::_aromatizeBondsExact (QueryMolecule &qmol)
+bool QueryMoleculeAromatizer::_aromatizeBondsExact (QueryMolecule &qmol)
 {
+   bool aromatized = false;
    QueryMoleculeAromatizer aromatizer(qmol);
 
    aromatizer.setMode(QueryMoleculeAromatizer::EXACT);
@@ -682,11 +691,15 @@ void QueryMoleculeAromatizer::_aromatizeBondsExact (QueryMolecule &qmol)
             new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC));
 
          qmol.resetBond(e_idx, QueryMolecule::Bond::und(bond.release(), arom_bond.release()));
+
+         aromatized = true;
       }
+   return aromatized;
 }
 
-void QueryMoleculeAromatizer::_aromatizeBondsFuzzy (QueryMolecule &mol)
+bool QueryMoleculeAromatizer::_aromatizeBondsFuzzy (QueryMolecule &mol)
 {
+   bool aromatized = false;
    QueryMoleculeAromatizer aromatizer(mol);
 
    aromatizer.setMode(QueryMoleculeAromatizer::FUZZY);
@@ -699,8 +712,12 @@ void QueryMoleculeAromatizer::_aromatizeBondsFuzzy (QueryMolecule &mol)
       bool aromatic_constraint = 
          mol.getBond(e_idx).possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC);
       if (aromatic_constraint || aromatizer.isBondAromatic(e_idx))
+      {
          mol.aromaticity.setCanBeAromatic(e_idx, true);
+         aromatized = true;
+      }
    }
+   return aromatized;
 }
 
 void MoleculeAromatizer::findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds)

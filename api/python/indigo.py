@@ -626,16 +626,11 @@ class Indigo:
     self.IndigoObject.hasZCoord = self._member_bool(self._lib.indigoHasZCoord)
     self.IndigoObject.isChiral = self._member_bool(self._lib.indigoIsChiral)
     
-    self.IndigoObject.aromatize = self._member_void(self._lib.indigoAromatize)
-    self.IndigoObject.dearomatize = self._member_void(self._lib.indigoDearomatize)
+    self.IndigoObject.aromatize = self._member_bool(self._lib.indigoAromatize)
+    self.IndigoObject.dearomatize = self._member_bool(self._lib.indigoDearomatize)
     self.IndigoObject.foldHydrogens = self._member_void(self._lib.indigoFoldHydrogens)
     self.IndigoObject.unfoldHydrogens = self._member_void(self._lib.indigoUnfoldHydrogens)
     self.IndigoObject.layout = self._member_void(self._lib.indigoLayout)    
-    self.IndigoObject.aromatize = self._member_void(self._lib.indigoAromatize)
-    self.IndigoObject.dearomatize = self._member_void(self._lib.indigoDearomatize)
-    self.IndigoObject.foldHydrogens = self._member_void(self._lib.indigoFoldHydrogens)
-    self.IndigoObject.unfoldHydrogens = self._member_void(self._lib.indigoUnfoldHydrogens)
-    self.IndigoObject.layout = self._member_void(self._lib.indigoLayout)
 
     self.IndigoObject.smiles = self._member_string(self._lib.indigoSmiles)
     self.IndigoObject.name = self._member_string(self._lib.indigoName)

@@ -55,8 +55,8 @@ public:
 
    Molecule & getMolecule (int index);
 
-   virtual void aromatize();
-   virtual void dearomatize();
+   virtual bool aromatize();
+   virtual bool dearomatize();
 
    virtual Reaction & asReaction ();
 

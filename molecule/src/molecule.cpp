@@ -912,15 +912,16 @@ bool Molecule::bondStereoCare (int idx)
    return cis_trans.getParity(idx) != 0;
 }
 
-void Molecule::aromatize ()
+bool Molecule::aromatize ()
 {
-   MoleculeAromatizer::aromatizeBonds(*this);
+   bool arom_found = MoleculeAromatizer::aromatizeBonds(*this);
    _aromatized = true;
+   return arom_found;
 }
 
-void Molecule::dearomatize ()
+bool Molecule::dearomatize ()
 {
-   MoleculeDearomatizer::dearomatizeMolecule(*this);
+   return MoleculeDearomatizer::dearomatizeMolecule(*this);
 }
 
 int Molecule::getAtomMaxH (int idx)

@@ -275,8 +275,8 @@ public:
    virtual bool bondStereoCare (int idx);
    void setBondStereoCare (int idx, bool stereo_care);
 
-   virtual void aromatize ();
-   virtual void dearomatize ();
+   virtual bool aromatize ();
+   virtual bool dearomatize ();
 
    int addAtom (Atom *atom);
    Atom & getAtom (int idx);
