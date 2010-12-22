@@ -192,7 +192,7 @@ CEXPORT void indigoDbgBreakpoint (void)
    {
       int ret = MessageBox(NULL, "Wait for a debugger?", 
          "Debugging (indigoDbgBreakpoint)", MB_OKCANCEL);
-      if (ret == MB_OK)
+      if (ret == IDOK)
       {
          while (!IsDebuggerPresent())
             Sleep(100);
