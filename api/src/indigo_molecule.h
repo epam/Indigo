@@ -88,6 +88,7 @@ public:
    IndigoAtom (BaseMolecule &mol_, int idx_);
    virtual ~IndigoAtom ();
 
+   static bool is (IndigoObject &obj);
    static IndigoAtom & cast (IndigoObject &obj);
 
    BaseMolecule *mol;
@@ -132,6 +133,7 @@ public:
    IndigoBond (BaseMolecule &mol_, int idx_);
    virtual ~IndigoBond ();
 
+   static bool is (IndigoObject &obj);
    static IndigoBond & cast (IndigoObject &obj);
 
    BaseMolecule *mol;

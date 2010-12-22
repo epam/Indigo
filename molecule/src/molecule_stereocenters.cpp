@@ -758,6 +758,12 @@ int MoleculeStereocenters::getBondDirection (int idx) const
    return _bond_directions[idx];
 }
 
+void MoleculeStereocenters::setBondDirection (int idx, int dir)
+{
+   _bond_directions.expandFill(idx + 1, 0);
+   _bond_directions[idx] = dir;
+}
+
 bool MoleculeStereocenters::haveAllAbs ()
 {
    int i;
