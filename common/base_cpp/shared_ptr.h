@@ -5,6 +5,9 @@
 #include "base_cpp/red_black.h"
 #include "base_cpp/os_sync_wrapper.h"
 
+namespace indigo
+{
+
 class SharedPtrStaticData
 {
 protected:
@@ -12,7 +15,7 @@ protected:
    static OsLock _lock;
 };
 
-template <typename T> class DLLEXPORT SharedPtr : public SharedPtrStaticData
+template <typename T> class SharedPtr : public SharedPtrStaticData
 {
 public:
    explicit SharedPtr (T *ptr = 0)
@@ -97,5 +100,7 @@ protected:
 private:
    SharedPtr (const SharedPtr &); // no implicit copy
 };
+
+}
 
 #endif
