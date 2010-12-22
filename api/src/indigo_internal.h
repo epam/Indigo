@@ -37,10 +37,10 @@ namespace indigo
    class QueryReaction;
    class Reaction;
    class ReactionHighlighting;
-class Output;
-class Scanner;
-class SdfLoader;
-class RdfLoader;
+   class Output;
+   class Scanner;
+   class SdfLoader;
+   class RdfLoader;
 }
 
 extern DLLEXPORT OptionManager & indigoGetOptionManager ();
@@ -94,7 +94,10 @@ public:
       ATOM_NEIGHBOR,
       ATOM_NEIGHBORS_ITER,
       DATA_SGROUP,
-      DATA_SGROUPS_ITER
+      DATA_SGROUPS_ITER,
+      DECOMPOSITION,
+      COMPONENTS_ITERATOR,
+      MOLECULE_COMPONENT
    };
 
    int type;

@@ -1206,21 +1206,6 @@ const char * IndigoQueryMolecule::debugInfo ()
    return "<query molecule>";
 }
 
-CEXPORT int indigoCountComponents (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-
-      GraphDecomposer decomposer(mol);
-
-      decomposer.decompose();
-      
-      return decomposer.getComponentsCount();
-   }
-   INDIGO_END(-1)
-}
-
 CEXPORT int indigoHasZCoord (int molecule)
 {
    INDIGO_BEGIN

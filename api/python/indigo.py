@@ -614,7 +614,12 @@ class Indigo:
 
     self.IndigoObject.canonicalSmiles = self._member_string(self._lib.indigoCanonicalSmiles)
     self.IndigoObject.layeredCode = self._member_string(self._lib.indigoLayeredCode)
+
+    self.IndigoObject.decomposition = self._member_obj(self._lib.indigoDecomposition)
     self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
+    self.IndigoObject.iterateComponents = self._member_obj(self._lib.indigoIterateComponents)
+    self.IndigoObject.componentIndex = self._member_int_obj(self._lib.indigoComponentIndex)
+
     self.IndigoObject.hasZCoord = self._member_bool(self._lib.indigoHasZCoord)
     self.IndigoObject.isChiral = self._member_bool(self._lib.indigoIsChiral)
     
@@ -883,6 +888,8 @@ class Indigo:
     return newfunc
 
   def _member_int_obj (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int]
     dispatcher = self
     def newfunc (self, param):
       dispatcher._setSID()

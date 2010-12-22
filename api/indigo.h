@@ -340,7 +340,10 @@ CEXPORT const char * indigoCanonicalSmiles (int molecule);
 CEXPORT const char * indigoLayeredCode (int molecule);
 
 // Returns the number of connected components
-CEXPORT int indigoCountComponents (int molecule);
+CEXPORT int indigoDecomposition (int molecule);
+CEXPORT int indigoCountComponents (int decomposition);
+CEXPORT int indigoIterateComponents (int decomposition);
+CEXPORT int indigoComponentIndex (int decomposition, int atom);
 
 CEXPORT int indigoHasZCoord (int molecule);
 CEXPORT int indigoIsChiral (int molecule);
