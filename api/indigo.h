@@ -328,6 +328,8 @@ CEXPORT int indigoClearCisTrans (int handle);
 CEXPORT int indigoClearStereocenters (int handle);
 CEXPORT int indigoCountStereocenters (int molecule);
 
+CEXPORT int indigoResetSymmetricCisTrans (int handle);
+
 /* Calculation on molecules */
 
 CEXPORT int   indigoCountHeavyAtoms (int molecule);
