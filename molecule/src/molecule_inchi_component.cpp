@@ -47,13 +47,13 @@ void MoleculeInChICompoment::construct (Molecule &original_component)
 }
 
 void MoleculeInChICompoment::_getCanonicalMolecule 
-      (Molecule &mol, Molecule &cano_mol)
+      (Molecule &source_mol, Molecule &cano_mol)
 {
    QS_DEF(Array<int>, ignored);
-   ignored.clear_resize(mol.vertexEnd());
+   ignored.clear_resize(source_mol.vertexEnd());
    ignored.zerofill();
-   for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
-      if (mol.getAtomNumber(i) == ELEM_H && mol.getVertex(i).degree() == 1)
+   for (int i = source_mol.vertexBegin(); i < source_mol.vertexEnd(); i = source_mol.vertexNext(i))
+      if (source_mol.getAtomNumber(i) == ELEM_H && source_mol.getVertex(i).degree() == 1)
          ignored[i] = 1;
 
    AutomorphismSearch as;
@@ -67,12 +67,12 @@ void MoleculeInChICompoment::_getCanonicalMolecule
    as.cb_check_automorphism = _checkAutomorphism;
    as.context = (void *)this;
 
-   as.process(mol);
+   as.process(source_mol);
 
    QS_DEF(Array<int>, canonical_order);
    as.getCanonicalNumbering(canonical_order);
 
-   cano_mol.makeSubmolecule(mol, canonical_order, NULL);
+   cano_mol.makeSubmolecule(source_mol, canonical_order, NULL);
 
    if (dbg_handle_canonical_component_cb != NULL)
       dbg_handle_canonical_component_cb(cano_mol);
