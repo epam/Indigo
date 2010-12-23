@@ -593,7 +593,8 @@ bool Molecule::isNitrogentV5 (int idx)
       radical = _radicals[idx];
 
    int conn = getAtomConnectivity_noImplH(idx);
-   return (radical == 0 && conn == 5) || (radical == 1 && conn == 4);
+   int radical_elections = Element::radicalElectrons(radical);
+   return (radical_elections == 0 && conn == 5) || (radical_elections == 1 && conn == 4);
 }
 
 int Molecule::getAtomNumber (int idx)
