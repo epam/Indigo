@@ -15,7 +15,6 @@
 #include "molecule/molecule_inchi.h"
 
 #include "base_cpp/output.h"
-#include "base_cpp/ptr.h"
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_decomposer.h"
@@ -135,7 +134,7 @@ void MoleculeInChI::_printInChI ()
 }
 
 bool MoleculeInChI::_printInChILayer (_PrintLayerFuncBase &print_func, 
-   const char *delim, const char *multiplier, const char *prefix)
+   const char *delim, const char *multiplier, const char *layer_prefix)
 {
    QS_DEF(Array<char>, layer_string);
 
@@ -212,7 +211,7 @@ bool MoleculeInChI::_printInChILayer (_PrintLayerFuncBase &print_func,
 
    if (layer_string.size() != 0 && layer_string[0] != 0)
    {
-      _output.printf(prefix);
+      _output.printf(layer_prefix);
       _output.writeString(layer_string.ptr());
       return true;
    }

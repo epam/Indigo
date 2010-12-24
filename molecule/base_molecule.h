@@ -56,7 +56,7 @@ enum
    SKIP_ALL = -1,
    SKIP_CIS_TRANS = 0x01,
    SKIP_STEREOCENTERS = 0x02,
-   SKIP_XYZ = 0x04,
+   SKIP_XYZ = 0x04
 };
 
 class Molecule;
@@ -173,8 +173,10 @@ public:
    // true if bond stereoconfiguration is important
    virtual bool bondStereoCare (int idx) = 0;
 
-   virtual void aromatize () = 0;
-   virtual void dearomatize () = 0;
+   // Returns true if some bonds were changed
+   virtual bool aromatize () = 0;
+   // Returns true if all bonds were dearomatized
+   virtual bool dearomatize () = 0;
 
    Vec3f & getAtomXyz (int idx);
    void setAtomXyz (int idx, float x, float y, float z);

@@ -54,6 +54,7 @@ protected:
    virtual bool _checkVertex         (int v_idx);
    virtual bool _isCycleAromatic     (const int *cycle, int cycle_len) = 0;
    virtual void _handleAromaticCycle (const int *cycle, int cycle_len);
+   virtual bool _acceptOutgoingDoubleBond (int atom, int bond) { return false; }
 
 protected:
 
@@ -88,7 +89,7 @@ class DLLEXPORT MoleculeAromatizer : public AromatizerBase
 {
 public:
    // Interface function for aromatization
-   static void aromatizeBonds (Molecule &mol);
+   static bool aromatizeBonds (Molecule &mol);
 
    MoleculeAromatizer (Molecule &molecule);
    void precalculatePiLabels ();
@@ -98,6 +99,7 @@ public:
 protected:
    virtual bool _checkVertex      (int v_idx);
    virtual bool _isCycleAromatic  (const int *cycle, int cycle_len);
+   virtual bool _acceptOutgoingDoubleBond (int atom, int bond);
 
    int _getPiLabel (int v_idx);
    TL_CP_DECL(Array<int>, _pi_labels);
@@ -107,7 +109,7 @@ class QueryMoleculeAromatizer : public AromatizerBase
 {
 public:
    // Interface function for query molecule aromatization
-   static void aromatizeBonds (QueryMolecule &mol);
+   static bool aromatizeBonds (QueryMolecule &mol);
 
    enum { EXACT, FUZZY };
 
@@ -131,12 +133,12 @@ protected:
    virtual bool _isCycleAromatic     (const int *cycle, int cycle_len);
    virtual void _handleAromaticCycle (const int *cycle, int cycle_len);
 
-   static void _aromatizeBondsExact (QueryMolecule &mol);
-   static void _aromatizeBondsFuzzy (QueryMolecule &mol);
+   static bool _aromatizeBondsExact (QueryMolecule &mol);
+   static bool _aromatizeBondsFuzzy (QueryMolecule &mol);
 
-   static void _aromatizeBonds (QueryMolecule &mol, int additional_atom);
+   static bool _aromatizeBonds (QueryMolecule &mol, int additional_atom);
 
-   static void _aromatizeRGroupFragment (QueryMolecule &fragment, bool add_single_bonds);
+   static bool _aromatizeRGroupFragment (QueryMolecule &fragment, bool add_single_bonds);
 
    PiValue _getPiLabel           (int v_idx);
 

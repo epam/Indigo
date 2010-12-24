@@ -1,0 +1,18 @@
+CC = cc
+CCC = CC
+CXX = CC
+BASICOPTS = -xO3 -s
+CFLAGS = $(BASICOPTS) -xCC
+CCFLAGS = $(BASICOPTS)
+CXXFLAGS = $(BASICOPTS)
+CCADMIN = CCadmin -clean
+
+
+# Define the target directories.
+TARGETDIR_libindigo.a=sparc32static
+TARGETDIR_libindigo.so=sparc32shared
+
+USERLIBS_libindigo.so = ../graph/sparc32/libgraph.a ../molecule/sparc32/libmolecule.a ../reaction/sparc32/libreaction.a ../layout/sparc32/liblayout.a 
+DEPLIBS_libindigo.so = ../graph/sparc32/libgraph.a  ../molecule/sparc32/libmolecule.a  ../reaction/sparc32/libreaction.a  ../layout/sparc32/liblayout.a  
+
+include Makefile.sun.common

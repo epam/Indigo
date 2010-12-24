@@ -84,8 +84,8 @@ public:
 
    virtual bool bondStereoCare (int idx);
 
-   virtual void aromatize ();
-   virtual void dearomatize ();
+   virtual bool aromatize ();
+   virtual bool dearomatize ();
 
    int getImplicitH (int idx);
 
@@ -125,6 +125,8 @@ public:
 
    bool isAromatized ();
 
+   // Check 
+   bool isNitrogentV5 (int atom_index);
 protected:
    struct _Atom
    {

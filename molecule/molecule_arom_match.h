@@ -73,7 +73,7 @@ protected:
       ANY = 0, AROMATIC, NONAROMATIC
    };
    TL_CP_DECL(Array<int>, _matching_edges_state);
-   Ptr<BaseMolecule> _submolecule;
+   AutoPtr<BaseMolecule> _submolecule;
 };
 
 }

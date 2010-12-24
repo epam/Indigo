@@ -14,6 +14,7 @@
 
 #include "indigo_molecule.h"
 #include "reaction/reaction.h"
+#include "molecule/molecule_automorphism_search.h"
 
 CEXPORT int indigoStereocenterType (int atom)
 {
@@ -155,6 +156,50 @@ CEXPORT int indigoClearCisTrans (int object)
       else
          throw IndigoError("only molecules and reactions have cis-trans");
       return 1;
+   }
+   INDIGO_END(-1)
+}
+
+static int _resetSymmetricCisTrans (Molecule &mol)
+{
+   MoleculeAutomorphismSearch am;
+   int i, sum = 0;
+
+   am.detect_invalid_cistrans_bonds = true;
+   am.process(mol);
+
+   for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   {
+      if (mol.cis_trans.getParity(i) == 0)
+         continue;
+
+      if (am.invalidCisTransBond(i))
+      {
+         mol.cis_trans.setParity(i, 0);
+         sum++;
+      }
+   }
+   return sum;
+}
+
+CEXPORT int indigoResetSymmetricCisTrans (int handle)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+
+      if (obj.isBaseMolecule())
+         return _resetSymmetricCisTrans(obj.getMolecule());
+      else if (obj.isBaseReaction())
+      {
+         Reaction &rxn = obj.getReaction();
+         int i, sum = 0;
+
+         for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            sum += _resetSymmetricCisTrans(rxn.getMolecule(i));
+         return sum;
+      }
+      throw IndigoError("only molecules and reactions have cis-trans");
    }
    INDIGO_END(-1)
 }

@@ -33,9 +33,9 @@ bool Transform3f::inversion (const Transform3f &matr)
    if (&matr == this)
       throw Error("can not do inversion() of self");
 
-   if (fabsf(matr.elements[3] > EPSILON) ||
-       fabsf(matr.elements[7] > EPSILON) ||
-       fabsf(matr.elements[11] > EPSILON))
+   if ((float)fabs(matr.elements[3]) > EPSILON ||
+       (float)fabs(matr.elements[7]) > EPSILON ||
+       (float)fabs(matr.elements[11]) > EPSILON)
       return false;
 
    elements[0] = matr.elements[0];

@@ -560,9 +560,9 @@ int MoleculeStereocenters::_xyzzy (const Vec3f &v1, const Vec3f &v2, const Vec3f
    float sine2 = cross.z;
    float cosine2 = Vec3f::dot(v1 ,u);
 
-   if (fabsf(sine1) < eps)
+   if ((float)fabs(sine1) < eps)
    {
-      if (fabsf(sine2) < eps)
+      if ((float)fabs(sine2) < eps)
          throw Error("degenerate case -- bonds overlap");
 
       return (sine2 > 0) ? 4 : 8;

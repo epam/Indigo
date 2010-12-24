@@ -255,7 +255,7 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
       float x_min, x_max, x_start = 0.f, dx;
       float y_min, y_max, y_start = 0.f, max_height = 0.f, dy;
       int i, j;
-      int col_count = (int)ceilf(sqrt((float)n_components));
+      int col_count = (int)ceil(sqrt((float)n_components));
       int row, col;
       
       molecule_edge_mapping.clear_resize(edgeEnd());

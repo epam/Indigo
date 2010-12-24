@@ -192,10 +192,10 @@ IndigoAtom & IndigoAtom::cast (IndigoObject &obj)
 }
 
 
-IndigoAtomsIter::IndigoAtomsIter (BaseMolecule *mol, int type) : IndigoObject(ATOMS_ITER)
+IndigoAtomsIter::IndigoAtomsIter (BaseMolecule *mol, int type_) : IndigoObject(ATOMS_ITER)
 {
    _mol = mol;
-   _type = type;
+   _type = type_;
    _idx = -1;
 }
 

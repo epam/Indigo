@@ -561,7 +561,7 @@ void SmilesLoader::_loadMolecule ()
             //    is detected after the scanning cycle (see below)
          }
          else
-            _readBond(bond_str, *bond, qbond, smarts_mode);
+            _readBond(bond_str, *bond, qbond);
 
          if (bond_str.size() > 0)
          {
@@ -885,7 +885,7 @@ void SmilesLoader::_loadMolecule ()
 }
 
 void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
-                              AutoPtr<QueryMolecule::Bond> &qbond, bool smarts_mode)
+                              AutoPtr<QueryMolecule::Bond> &qbond)
 {
    if (bond_str.find(';') != -1)
    {
@@ -902,7 +902,7 @@ void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
          if (i == bond_str.size() || bond_str[i] == ';')
          {
             subqbond.reset(new QueryMolecule::Bond);
-            _readBond(substring, bond, subqbond, smarts_mode);
+            _readBond(substring, bond, subqbond);
             qbond.reset(QueryMolecule::Bond::und(qbond.release(), subqbond.release()));
             substring.clear();
          }
@@ -926,7 +926,7 @@ void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
          if (i == bond_str.size() || bond_str[i] == ',')
          {
             subqbond.reset(new QueryMolecule::Bond);
-            _readBond(substring, bond, subqbond, smarts_mode);
+            _readBond(substring, bond, subqbond);
             if (qbond->type == 0)
                qbond.reset(subqbond.release());
             else
@@ -953,7 +953,7 @@ void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
          if (i == bond_str.size() || bond_str[i] == '&')
          {
             subqbond.reset(new QueryMolecule::Bond);
-            _readBond(substring, bond, subqbond, smarts_mode);
+            _readBond(substring, bond, subqbond);
             qbond.reset(QueryMolecule::Bond::und(qbond.release(), subqbond.release()));
             substring.clear();
          }

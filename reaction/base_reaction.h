@@ -73,8 +73,10 @@ public:
    
    virtual void clear();
 
-   virtual void aromatize() = 0;
-   virtual void dearomatize() = 0;
+   // Returns true if some bonds were changed
+   virtual bool aromatize() = 0;
+   // Returns true if all bonds were dearomatized
+   virtual bool dearomatize() = 0;
 
    // poor man's dynamic casting
    virtual Reaction & asReaction ();

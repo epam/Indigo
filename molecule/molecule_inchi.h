@@ -67,7 +67,7 @@ private:
    class _ComponentLayerPrintFunction;
 
    bool _printInChILayer (_PrintLayerFuncBase &func, const char *delim, const char *multiplier,
-      const char *prefix);
+      const char *layer_prefix);
 
    void _printInChIComponentCisTrans (MoleculeInChICompoment &comp, Array<char> &result);
 
@@ -82,4 +82,4 @@ private:
 
 }
 
-#endif // __molecule_inchi_canonicalizer_h__
+#endif // __molecule_inchi_h__

@@ -1499,12 +1499,12 @@ void QueryMolecule::setBondStereoCare (int idx, bool stereo_care)
    _bond_stereo_care[idx] = stereo_care;
 }
 
-void QueryMolecule::aromatize ()
+bool QueryMolecule::aromatize ()
 {
-   QueryMoleculeAromatizer::aromatizeBonds(*this);
+   return QueryMoleculeAromatizer::aromatizeBonds(*this);
 }
 
-void QueryMolecule::dearomatize ()
+bool QueryMolecule::dearomatize ()
 {
    throw Error("Dearomatization not implemented");
 }

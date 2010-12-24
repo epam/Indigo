@@ -558,8 +558,17 @@ int Molecule::getImplicitH (int idx)
    else
    {
       int valence;
-      Element::calcValence(atom.number, atom.charge, radical,
-                           conn, valence, implicit_h, true);
+
+      // special case of 5-connected nitrogen like "CN(=O)=O".
+      // It should really be C[N+](O-)=O, but we let people live in happy ignorance.
+      if (isNitrogentV5(idx))
+      {
+         valence = 4;
+         implicit_h = 0;
+      }
+      else
+         Element::calcValence(atom.number, atom.charge, radical,
+                              conn, valence, implicit_h, true);
       _valence.expandFill(idx + 1, -1);
       _valence[idx] = valence;
    }
@@ -568,6 +577,24 @@ int Molecule::getImplicitH (int idx)
    _implicit_h[idx] = implicit_h;
 
    return implicit_h;
+}
+
+bool Molecule::isNitrogentV5 (int idx)
+{
+   if (getAtomNumber(idx) != ELEM_N)
+      return false;
+
+   if (getAtomCharge(idx) != 0)
+      return false;
+
+   int radical = 0;
+
+   if (_radicals.size() > idx && _radicals[idx] >= 0)
+      radical = _radicals[idx];
+
+   int conn = getAtomConnectivity_noImplH(idx);
+   int radical_elections = Element::radicalElectrons(radical);
+   return (radical_elections == 0 && conn == 5) || (radical_elections == 1 && conn == 4);
 }
 
 int Molecule::getAtomNumber (int idx)
@@ -903,15 +930,16 @@ bool Molecule::bondStereoCare (int idx)
    return cis_trans.getParity(idx) != 0;
 }
 
-void Molecule::aromatize ()
+bool Molecule::aromatize ()
 {
-   MoleculeAromatizer::aromatizeBonds(*this);
+   bool arom_found = MoleculeAromatizer::aromatizeBonds(*this);
    _aromatized = true;
+   return arom_found;
 }
 
-void Molecule::dearomatize ()
+bool Molecule::dearomatize ()
 {
-   MoleculeDearomatizer::dearomatizeMolecule(*this);
+   return MoleculeDearomatizer::dearomatizeMolecule(*this);
 }
 
 int Molecule::getAtomMaxH (int idx)

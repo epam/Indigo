@@ -1,0 +1,61 @@
+## -*- Makefile -*-
+##
+## User: dpavlov
+## Time: Dec 22, 2010 10:09:18 PM
+## Makefile created by Sun Studio.
+##
+## This file is generated automatically.
+##
+
+
+#### Compiler and tool definitions shared by all build targets #####
+CC = cc
+BASICOPTS = -xO3 -s
+CFLAGS = $(BASICOPTS) -xCC
+
+
+# Define the target directories.
+TARGETDIR_indigo-cano=sparc32
+
+
+all: $(TARGETDIR_indigo-cano)/indigo-cano
+
+## Target: indigo-cano
+CPPFLAGS_indigo-cano = \
+	-I../../api
+OBJS_indigo-cano =  \
+	$(TARGETDIR_indigo-cano)/main.o
+SYSLIBS_indigo-cano = -lm -lpthread -lz -lCrun -lrt
+USERLIBS_indigo-cano = ../../api/sparc32static/libindigo.a ../../layout/sparc32/liblayout.a ../../reaction/sparc32/libreaction.a ../../molecule/sparc32/libmolecule.a ../../graph/sparc32/libgraph.a $(SYSLIBS_indigo-cano) 
+DEPLIBS_indigo-cano = ../../api/sparc32static/libindigo.a  ../../layout/sparc32/liblayout.a  ../../reaction/sparc32/libreaction.a  ../../molecule/sparc32/libmolecule.a  ../../graph/sparc32/libgraph.a   
+LDLIBS_indigo-cano = $(USERLIBS_indigo-cano)
+
+
+# Link or archive
+$(TARGETDIR_indigo-cano)/indigo-cano: $(TARGETDIR_indigo-cano) $(OBJS_indigo-cano) $(DEPLIBS_indigo-cano)
+	$(LINK.c) $(CFLAGS_indigo-cano) $(CPPFLAGS_indigo-cano) -o $@ $(OBJS_indigo-cano) $(LDLIBS_indigo-cano)
+
+
+# Compile source files into .o files
+$(TARGETDIR_indigo-cano)/main.o: $(TARGETDIR_indigo-cano) main.c
+	$(COMPILE.c) $(CFLAGS_indigo-cano) $(CPPFLAGS_indigo-cano) -o $@ main.c
+
+
+
+#### Clean target deletes all generated files ####
+clean:
+	rm -f \
+		$(TARGETDIR_indigo-cano)/indigo-cano \
+		$(TARGETDIR_indigo-cano)/main.o
+	rm -f -r $(TARGETDIR_indigo-cano)
+
+
+# Create the target directory (if needed)
+$(TARGETDIR_indigo-cano):
+	mkdir -p $(TARGETDIR_indigo-cano)
+
+
+# Enable dependency checking
+.KEEP_STATE:
+.KEEP_STATE_FILE:.make.state.Sun-sparc-Solaris
+

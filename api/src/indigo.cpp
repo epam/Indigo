@@ -87,8 +87,7 @@ CEXPORT const char * indigoGetLastError (void)
    return self.error_message.ptr();
 }
 
-CEXPORT void indigoSetErrorHandler (void (*handler)
-                 (const char *message, void *context), void *context)
+CEXPORT void indigoSetErrorHandler (INDIGO_ERROR_HANDLER handler, void *context)
 {
    Indigo &self = indigoGetInstance();
    self.error_handler = handler;
@@ -190,9 +189,13 @@ CEXPORT void indigoDbgBreakpoint (void)
 #ifdef _WIN32
    if (!IsDebuggerPresent())
    {
-      MessageBox(NULL, "Waiting for a debugger...", "", MB_OK);
-      while (!IsDebuggerPresent())
-         Sleep(100);
+      int ret = MessageBox(NULL, "Wait for a debugger?", 
+         "Debugging (indigoDbgBreakpoint)", MB_OKCANCEL);
+      if (ret == IDOK)
+      {
+         while (!IsDebuggerPresent())
+            Sleep(100);
+      }
    }
 #else
 #endif

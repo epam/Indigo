@@ -16,22 +16,22 @@
 #define __indigo__
 
 #ifdef _WIN32
-   #define qword unsigned _int64
+#define qword unsigned _int64
 #ifdef INDIGO_PLUGIN
 #define DLLEXPORT __declspec(dllimport)
 #else
 #define DLLEXPORT __declspec(dllexport)
 #endif
 #else
-   #define qword unsigned long long
-   #define DLLEXPORT
+#define qword unsigned long long
+#define DLLEXPORT
 #endif
 
 #ifdef _WIN32
 #ifndef __cplusplus
-   #define CEXPORT __declspec(dllexport)
+#define CEXPORT __declspec(dllexport)
 #else
-   #define CEXPORT extern "C" __declspec(dllexport)
+#define CEXPORT extern "C" __declspec(dllexport)
 #endif
 #else
 #ifndef __cplusplus
@@ -327,6 +327,8 @@ CEXPORT int indigoDestination (int bond);
 CEXPORT int indigoClearCisTrans (int handle);
 CEXPORT int indigoClearStereocenters (int handle);
 CEXPORT int indigoCountStereocenters (int molecule);
+
+CEXPORT int indigoResetSymmetricCisTrans (int handle);
 
 /* Calculation on molecules */
 

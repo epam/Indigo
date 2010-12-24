@@ -16,6 +16,7 @@ import platform
 import ctypes
 import array
 import inspect
+import new
 
 from array import *
 from ctypes import *
@@ -104,11 +105,10 @@ class Indigo:
     def __iter__ (self):
       return self
     def __next__ (self):
-      self.dispatcher._setSID()
-      res = self.dispatcher._checkResult(self._lib.indigoNext(self.id))
-      if res == 0:
+      obj = self._next()
+      if obj == None:
         raise StopIteration
-      return Indigo.IndigoObject(self.dispatcher, res)
+      return obj
     def next (self):
       return self.__next__()
 
@@ -486,6 +486,7 @@ class Indigo:
     self._lib.indigoDecomposedMoleculeWithRGroups.argtypes = [c_int]
     self._lib.indigoNext.restype = c_int
     self._lib.indigoNext.argtypes = [c_int]
+    
     self._lib.indigoHasNext.restype = c_int
     self._lib.indigoHasNext.argtypes = [c_int]
     self._lib.indigoIndex.restype = c_int
@@ -502,9 +503,8 @@ class Indigo:
  
     self._sid = self._lib.indigoAllocSessionId()
     self._lib.indigoSetSessionId(self._sid)
-
+    
     self.countReferences = self._static_int(self._lib.indigoCountReferences)
-
     self.loadMolecule = self._static_obj_string(self._lib.indigoLoadMoleculeFromString)
     self.loadMoleculeFromFile = self._static_obj_string(self._lib.indigoLoadMoleculeFromFile)
     self.loadQueryMolecule = self._static_obj_string(self._lib.indigoLoadQueryMoleculeFromString)
@@ -606,6 +606,7 @@ class Indigo:
     self.IndigoObject.clearCisTrans = self._member_void(self._lib.indigoClearCisTrans)
     self.IndigoObject.clearStereocenters = self._member_void(self._lib.indigoClearStereocenters)
     self.IndigoObject.countStereocenters = self._member_int(self._lib.indigoCountStereocenters)
+    self.IndigoObject.resetSymmetricCisTrans = self._member_int(self._lib.indigoResetSymmetricCisTrans)
 
     self.IndigoObject.countHeavyAtoms = self._member_int(self._lib.indigoCountHeavyAtoms)
     self.IndigoObject.molecularWeight = self._member_float(self._lib.indigoMolecularWeight)
@@ -626,16 +627,11 @@ class Indigo:
     self.IndigoObject.hasZCoord = self._member_bool(self._lib.indigoHasZCoord)
     self.IndigoObject.isChiral = self._member_bool(self._lib.indigoIsChiral)
     
-    self.IndigoObject.aromatize = self._member_void(self._lib.indigoAromatize)
-    self.IndigoObject.dearomatize = self._member_void(self._lib.indigoDearomatize)
+    self.IndigoObject.aromatize = self._member_bool(self._lib.indigoAromatize)
+    self.IndigoObject.dearomatize = self._member_bool(self._lib.indigoDearomatize)
     self.IndigoObject.foldHydrogens = self._member_void(self._lib.indigoFoldHydrogens)
     self.IndigoObject.unfoldHydrogens = self._member_void(self._lib.indigoUnfoldHydrogens)
     self.IndigoObject.layout = self._member_void(self._lib.indigoLayout)    
-    self.IndigoObject.aromatize = self._member_void(self._lib.indigoAromatize)
-    self.IndigoObject.dearomatize = self._member_void(self._lib.indigoDearomatize)
-    self.IndigoObject.foldHydrogens = self._member_void(self._lib.indigoFoldHydrogens)
-    self.IndigoObject.unfoldHydrogens = self._member_void(self._lib.indigoUnfoldHydrogens)
-    self.IndigoObject.layout = self._member_void(self._lib.indigoLayout)
 
     self.IndigoObject.smiles = self._member_string(self._lib.indigoSmiles)
     self.IndigoObject.name = self._member_string(self._lib.indigoName)
@@ -684,6 +680,20 @@ class Indigo:
     self.IndigoObject.addDataSGroup = self._member_obj_iarr_iarr_string_string(self._lib.indigoAddDataSGroup)
     self.IndigoObject.setDataSGroupXY = self._member_void_float_float_string(self._lib.indigoSetDataSGroupXY)
 
+    self.IndigoObject._next = self._member_obj(self._lib.indigoNext)
+    
+  def _make_wrapper_func (self, wrapper, func):
+    """Return wrapper function with changed name 
+    """    
+    name = func.__name__ + "_wrapper"
+    c = wrapper.func_code
+    newcode = new.code( c.co_argcount, c.co_nlocals, c.co_stacksize,
+                        c.co_flags, c.co_code, c.co_consts, c.co_names,
+                        c.co_varnames, "indigo core", name, 1, c.co_lnotab, c.co_freevars, c.co_cellvars )
+               
+    new_wrapper = new.function(newcode, globals(), name=name, closure=wrapper.func_closure )
+    return new_wrapper
+     
   def _static_obj (self, func):
     def newfunc ():
       self._setSID()
@@ -691,19 +701,19 @@ class Indigo:
       if res == 0:
         return None
       return self.IndigoObject(self, res)
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _static_int (self, func):
     def newfunc ():
       self._setSID()
       return self._checkResult(func())
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _static_int_obj_obj (self, func):
     def newfunc (item1, item2):
       self._setSID()
       return self._checkResult(func(item1.id, item2.id))
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
    
   def _static_obj_string (self, func):
     def newfunc (str):
@@ -712,7 +722,7 @@ class Indigo:
       if res == 0:
         return None
       return self.IndigoObject(self, res)
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _static_obj_obj_string (self, func):
     def newfunc (obj, string = None):
@@ -723,7 +733,7 @@ class Indigo:
       if res == 0:
         return None
       return self.IndigoObject(self, self._checkResult(res))
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _static_obj_obj (self, func):
     def newfunc (obj):
@@ -732,8 +742,8 @@ class Indigo:
       if res == 0:
         return None
       return self.IndigoObject(self, self._checkResult(res))
-    return newfunc
-	
+    return self._make_wrapper_func(newfunc, func)
+		
   def _static_obj_obj_obj (self, func):
     def newfunc (obj1, obj2):
       self._setSID()
@@ -741,7 +751,7 @@ class Indigo:
       if res == 0:
         return None
       return self.IndigoObject(self, self._checkResult(res))
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _setSID (self):
     self._lib.indigoSetSessionId(self._sid)
@@ -753,7 +763,7 @@ class Indigo:
     def newfunc (self):
       dispatcher._setSID()
       return dispatcher._checkResultString(func(self.id))
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_bool (self, func):
     dispatcher = self
@@ -761,7 +771,7 @@ class Indigo:
       dispatcher._setSID()
       res = dispatcher._checkResult(func(self.id))
       return res == 1                                                 
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_bool_string (self, func):
     dispatcher = self
@@ -769,14 +779,14 @@ class Indigo:
       dispatcher._setSID()
       res = dispatcher._checkResult(func(self.id, str))
       return res == 1                                                 
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_string_string (self, func):
     dispatcher = self
     def newfunc (self, str):
       dispatcher._setSID()
       return dispatcher._checkResultString(func(self.id, str))
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_string_buf (self, func):
     dispatcher = self
@@ -786,7 +796,7 @@ class Indigo:
       dispatcher._checkResult(func(self.id, wb.id))
       res = dispatcher._checkResultString(dispatcher._lib.indigoToString(wb.id))
       return res
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_string_file (self, func):
     dispatcher = self
@@ -795,14 +805,14 @@ class Indigo:
       wf = dispatcher.writeFile(filename)
       res = dispatcher._checkResult(func(self.id, wf.id))
       return res
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
     
   def _member_float (self, func):
     dispatcher = self
     def newfunc (self):
       dispatcher._setSID()
       return dispatcher._checkResultFloat(func(self.id))
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_void (self, func):
     func.restype = c_int
@@ -812,7 +822,7 @@ class Indigo:
       dispatcher._setSID()
       dispatcher._checkResult(func(self.id))
       return
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_void_obj (self, func):
     dispatcher = self
@@ -820,7 +830,7 @@ class Indigo:
       dispatcher._setSID()
       dispatcher._checkResult(func(self.id, other.id))
       return
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_void_string (self, func):
     dispatcher = self
@@ -828,7 +838,7 @@ class Indigo:
       dispatcher._setSID()
       dispatcher._checkResult(func(self.id, str))
       return
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_void_string_string (self, func):
     dispatcher = self
@@ -836,7 +846,7 @@ class Indigo:
       dispatcher._setSID()
       dispatcher._checkResult(func(self.id, str1, str2))
       return
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_int (self, func):
     func.restype = c_int
@@ -845,7 +855,7 @@ class Indigo:
     def newfunc (self):
       dispatcher._setSID()
       return dispatcher._checkResult(func(self.id))
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_intptr (self, func):
     dispatcher = self
@@ -856,7 +866,7 @@ class Indigo:
       if res == 0:
         return None
       return value.value
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_intz (self, func):
     dispatcher = self
@@ -866,7 +876,7 @@ class Indigo:
       if res == 0:
         return None
       return res
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_obj (self, func):
     dispatcher = self
@@ -878,7 +888,7 @@ class Indigo:
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_obj_int (self, func):
     func.restype = c_int
@@ -890,7 +900,7 @@ class Indigo:
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_int_obj (self, func):
     func.restype = c_int
@@ -899,7 +909,7 @@ class Indigo:
     def newfunc (self, param):
       dispatcher._setSID()
       return dispatcher._checkResult(func(self.id, param.id))
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 	
   def _member_obj_obj (self, func):
     dispatcher = self
@@ -909,7 +919,7 @@ class Indigo:
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_obj_string (self, func):
     dispatcher = self
@@ -919,7 +929,7 @@ class Indigo:
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_void_iarr (self, func):
     dispatcher = self
@@ -931,7 +941,7 @@ class Indigo:
         arr[i] = intarr[i]
       dispatcher._setSID()
       dispatcher._checkResult(func(self.id, len(intarr), arr))
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_obj_iarr (self, func):
     dispatcher = self
@@ -944,7 +954,7 @@ class Indigo:
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_obj_iarr_iarr (self, func):
     dispatcher = self
@@ -960,7 +970,7 @@ class Indigo:
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_obj_iarr_iarr_string_string (self, func):
     func.restype = c_int
@@ -978,7 +988,7 @@ class Indigo:
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def _member_void_float_float_string (self, func):
     func.restype = c_int
@@ -987,7 +997,7 @@ class Indigo:
     def newfunc (self, x, y, s):
       dispatcher._setSID()
       return dispatcher._checkResult(func(self.id, x, y, s))
-    return newfunc
+    return self._make_wrapper_func(newfunc, func)
 
   def version (self):
     return self._lib.indigoVersion()

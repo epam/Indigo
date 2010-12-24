@@ -151,14 +151,14 @@ CEXPORT int indigoMapBond (int match, int query_bond)
    INDIGO_END(-1)
 }
 
-IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecule &target,
-                                                                          QueryMolecule &query,
-                                                                          Molecule &original_target) :
+IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecule &target_,
+                                                                          QueryMolecule &query_,
+                                                                          Molecule &original_target_) :
         IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER),
-        matcher(target),
-        target(target),
-        original_target(original_target),
-        query(query)
+        matcher(target_),
+        target(target_),
+        original_target(original_target_),
+        query(query_)
 {
    matcher.setQuery(query);
    matcher.fmcache = &fmcache;
