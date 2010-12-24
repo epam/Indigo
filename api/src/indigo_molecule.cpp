@@ -1091,17 +1091,15 @@ CEXPORT int indigoResetRsite (int atom) {
    INDIGO_END(-1);
 }
 
-//CEXPORT int indigoSetAttachmentPoint (int atom) {
-//   INDIGO_BEGIN
-//   {
-//      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
-//
-//      if (ia.mol->setRSiteAttachmentOrder()isRSite(ia.idx))
-//         return 1;
-//      return 0;
-//   }
-//   INDIGO_END(-1);
-//}
+CEXPORT int indigoSetAttachmentPoint (int atom, int order) {
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      ia.mol->addAttachmentPoint(order, ia.idx);
+   }
+   INDIGO_END(-1);
+}
 
 CEXPORT const char * indigoCanonicalSmiles (int molecule)
 {

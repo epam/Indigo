@@ -289,7 +289,7 @@ CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetRadical (int atom);
 CEXPORT int indigoResetIsotope (int atom);
 CEXPORT int indigoResetRsite (int atom);
-CEXPORT int indigoSetAttachmentPoint (int atom);
+CEXPORT int indigoSetAttachmentPoint (int atom, int order);
 
 CEXPORT int indigoResetStereo (int item);
 CEXPORT int indigoInvertStereo (int item);
