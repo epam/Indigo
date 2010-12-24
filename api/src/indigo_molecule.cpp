@@ -903,8 +903,7 @@ CEXPORT int indigoCountAttachmentPoints (int rgroup)
    {
       IndigoRGroup &rgp = IndigoRGroup::cast(self.getObject(rgroup));
 
-      return rgp.mol->rgroups.getRGroup(rgp.idx).fragments[0]->
-               getRGroupFragment().attachmentPointCount();
+      return rgp.mol->rgroups.getRGroup(rgp.idx).fragments[0]->attachmentPointCount();
    }
    INDIGO_END(-1);
 }

@@ -95,24 +95,3 @@ int MoleculeRGroups::getRGroupCount () const
    return _rgroups.size();
 }
 
-void MoleculeRGroupFragment::addAttachmentPoint (int order, int index)
-{
-   if (_attachment_index.size() <= order)
-      _attachment_index.resize(order + 1);
-
-   _attachment_index[order].push(index);
-}
-
-void MoleculeRGroupFragment::removeAttachmentPoint (int index)
-{
-   int i, j;
-
-   for (i = 0; i < _attachment_index.size(); i++)
-      if ((j = _attachment_index[i].find(index)) != -1)
-      {
-         if (j == _attachment_index[i].size() - 1)
-            _attachment_index[i].pop();
-         else
-            _attachment_index[i][j] = _attachment_index[i].pop();
-      }
-}

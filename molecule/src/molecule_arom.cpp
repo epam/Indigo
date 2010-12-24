@@ -651,17 +651,15 @@ bool QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment,
    // Add additional atom to attachment points
    int additional_atom = fragment.addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 1));
 
-   MoleculeRGroupFragment &rgroupFragment = fragment.getRGroupFragment();
-
    // Connect it with attachment points
-   int maxOrder = rgroupFragment.attachmentPointCount();
+   int maxOrder = fragment.attachmentPointCount();
    for (int i = 0; i < maxOrder; i++) 
    {
       int pointIndex = 0;
       int point;
       while (true)
       {
-         point = rgroupFragment.getAttachmentPoint(i, pointIndex);
+         point = fragment.getAttachmentPoint(i, pointIndex);
          if (point == -1)
             break;
 

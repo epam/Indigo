@@ -293,10 +293,6 @@ public:
    Molecule3dConstraints spatial_constraints;
    Array<int> fixed_atoms;
    
-   bool isRGroupFragment ();
-   void createRGroupFragment ();
-   MoleculeRGroupFragment & getRGroupFragment ();
-
    QueryMoleculeAromaticity aromaticity;
 
    Array<char> fragment_smarts;
@@ -333,7 +329,6 @@ protected:
    PtrArray<Atom> _atoms;
    PtrArray<Bond> _bonds;
 
-   AutoPtr<MoleculeRGroupFragment> _rgroup_fragment;
 };
 
 }

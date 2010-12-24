@@ -385,24 +385,22 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          }
       }
 
-      if (qmol != 0 && qmol->isRGroupFragment())
+      if (qmol != 0 && qmol->attachmentPointCount() > 0)
       {
-         MoleculeRGroupFragment &fragment = qmol->getRGroupFragment();
-
          int val = 0;
 
-         for (int idx = 0; idx < fragment.attachmentPointCount(); idx++)
+         for (int idx = 0; idx < qmol->attachmentPointCount(); idx++)
          {
             int j;
 
-            for (j = 0; fragment.getAttachmentPoint(idx, j) != -1; j++)
-               if (fragment.getAttachmentPoint(idx, j) == i)
+            for (j = 0; qmol->getAttachmentPoint(idx, j) != -1; j++)
+               if (qmol->getAttachmentPoint(idx, j) == i)
                {
                   val |= 1 << idx;
                   break;
                }
 
-            if (fragment.getAttachmentPoint(idx, j) != -1)
+            if (qmol->getAttachmentPoint(idx, j) != -1)
                break;
          }
 
@@ -1012,23 +1010,18 @@ void MolfileSaver::_writeRGroupIndices2000 (Output &output, BaseMolecule &mol)
 
 void MolfileSaver::_writeAttachmentValues2000 (Output &output, QueryMolecule &fragment)
 {
-   if (!fragment.isRGroupFragment())
-      return;
-
-   MoleculeRGroupFragment &rg_fragment = fragment.getRGroupFragment();
-
-   if (rg_fragment.attachmentPointCount() == 0)
+   if (fragment.attachmentPointCount() == 0)
       return;
 
    RedBlackMap<int, int> orders;
    int i;
 
-   for (i = 0; i < rg_fragment.attachmentPointCount(); i++)
+   for (i = 0; i < fragment.attachmentPointCount(); i++)
    {
       int j = 0;
       int idx;
 
-      while ((idx = rg_fragment.getAttachmentPoint(i, j++)) != -1)
+      while ((idx = fragment.getAttachmentPoint(i, j++)) != -1)
       {
          int *val;
 

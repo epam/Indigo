@@ -69,18 +69,6 @@ protected:
    ObjArray<RGroup> _rgroups;
 };
 
-struct DLLEXPORT MoleculeRGroupFragment
-{
-   MoleculeRGroupFragment () {}
-
-   void addAttachmentPoint (int order, int index);
-   int  getAttachmentPoint (int order, int index) const { return index < _attachment_index[order].size() ? _attachment_index[order][index] : -1; }
-   void removeAttachmentPoint (int index);
-   int  attachmentPointCount () const { return _attachment_index.size(); }
-
-protected:
-   ObjArray< Array<int> > _attachment_index;
-};
 
 }
 

@@ -140,6 +140,11 @@ public:
    int  getRSiteAttachmentPointByOrder (int idx, int order) const;
    void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
 
+   void addAttachmentPoint (int order, int index);
+   int  getAttachmentPoint (int order, int index) const { return index < _attachment_index[order].size() ? _attachment_index[order][index] : -1; }
+   void removeAttachmentPoint (int index);
+   int  attachmentPointCount () const { return _attachment_index.size(); }
+
    virtual bool isSaturatedAtom    (int idx) = 0;
 
    virtual int  getBondOrder      (int idx) = 0; // > 0 -- BOND_***, -1 -- not sure
@@ -244,6 +249,9 @@ protected:
 
    Array<Vec3f> _xyz;
    ObjArray< Array<int> > _rsite_attachment_points;
+   bool _rGroupFragment;
+
+   ObjArray< Array<int> > _attachment_index;
 };
 
 }

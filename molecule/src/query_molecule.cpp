@@ -695,22 +695,15 @@ void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> 
    // RGroup fragments
    if (!(skip_flags & SKIP_RGROUP_FRAGMENTS))
    {
-      if (mol.isRGroupFragment())
+      if (mol.attachmentPointCount() > 0)
       {
-         MoleculeRGroupFragment &other_fragment = mol.getRGroupFragment();
-
-         if (!isRGroupFragment())
-            createRGroupFragment();
-
-         MoleculeRGroupFragment &fragment = getRGroupFragment();
-
-         for (i = 0; i < other_fragment.attachmentPointCount(); i++)
+         for (i = 0; i < mol.attachmentPointCount(); i++)
          {
             int att_idx;
             int j;
 
-            for (j = 0; (att_idx = other_fragment.getAttachmentPoint(i, j)) != -1; j++)
-               fragment.addAttachmentPoint(i, mapping[att_idx]);
+            for (j = 0; (att_idx = mol.getAttachmentPoint(i, j)) != -1; j++)
+               this->addAttachmentPoint(i, mapping[att_idx]);
          }
       }
    }
@@ -755,24 +748,24 @@ void QueryMolecule::_removeAtoms (const Array<int> &indices, const int *mapping)
 {
    spatial_constraints.removeAtoms(mapping);
 
-   if (isRGroupFragment())
+   if (attachmentPointCount() > 0)
    {
       int i;
       
       for (i = 0; i < indices.size(); i++)
-         _rgroup_fragment->removeAttachmentPoint(indices[i]);
+         this->removeAttachmentPoint(indices[i]);
 
       bool empty = true;
 
-      for (i = 0; i < _rgroup_fragment->attachmentPointCount(); i++)
-         if (_rgroup_fragment->getAttachmentPoint(i, 0) != -1)
+      for (i = 0; i < this->attachmentPointCount(); i++)
+         if (this->getAttachmentPoint(i, 0) != -1)
          {
             empty = false;
             break;
          }
 
       if (empty)
-         _rgroup_fragment.reset(0);
+         _attachment_index.clear();
    }
 
    for (int i = 0; i < indices.size(); i++)
@@ -1339,21 +1332,6 @@ void QueryMolecule::resetBond (int idx, QueryMolecule::Bond *bond)
    _min_h.clear();
 }
 
-bool QueryMolecule::isRGroupFragment ()
-{
-   return _rgroup_fragment.get() != 0;
-}
-
-void QueryMolecule::createRGroupFragment ()
-{
-   _rgroup_fragment.create();
-}
-
-MoleculeRGroupFragment & QueryMolecule::getRGroupFragment ()
-{
-   return _rgroup_fragment.ref();
-}
-
 QueryMolecule::Atom * QueryMolecule::Atom::clone ()
 {
    AutoPtr<Atom> res(new Atom());
@@ -1464,7 +1442,6 @@ void QueryMolecule::clear ()
    _atoms.clear();
    _bonds.clear();
    rgroups.clear();
-   _rgroup_fragment.reset(0);
    spatial_constraints.clear();
    fixed_atoms.clear();
    _bond_stereo_care.clear();
