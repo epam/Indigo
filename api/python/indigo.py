@@ -110,7 +110,7 @@ class Indigo:
         raise StopIteration
       return obj
     def next (self):
-      return self._next()
+      return self.__next__()
 
   def __init__ (self, path = None):
     if not path:
