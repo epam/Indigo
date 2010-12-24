@@ -398,12 +398,12 @@ bool Scanner::isSingleLine (Scanner &scanner)
 // FileScanner
 //
 
-FileScanner::FileScanner (Encoding filename_encoding, const char *filename) : Scanner()
+FileScanner::FileScanner (Encoding filename_encoding, const char *filename)
 {
    _init(filename_encoding, filename);
 }
 
-FileScanner::FileScanner (const char *format, ...) : Scanner ()
+FileScanner::FileScanner (const char *format, ...)
 {
    char filename[1024];
 
