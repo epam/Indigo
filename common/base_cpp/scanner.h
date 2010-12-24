@@ -47,7 +47,7 @@ public:
    void appendLine (Array<char> &out, bool append_zero);
    bool skipLine ();
    
-   char  readChar ();
+   virtual char readChar ();
    word  readBinaryWord ();
    int   readBinaryInt ();
    dword readBinaryDword ();
@@ -86,6 +86,7 @@ public:
    virtual int  length ();
    virtual int  tell ();
 
+   virtual char readChar ();
 private:
    FILE *_file;
    int   _file_len;

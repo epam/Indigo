@@ -31,14 +31,22 @@ int Scanner::readIntFix (int digits)
 {
    int result;
 
-   QS_DEF(Array<char>, buf);
+   char buf[20];
+   if (digits >= NELEM(buf) - 1)
+      throw Error("readIntFix(): digits = %d", digits);
 
-   buf.clear_resize(digits + 1);
-   read(digits, buf.ptr());
+   read(digits, buf);
    buf[digits] = 0;
 
-   if (sscanf(buf.ptr(), "%d", &result) != 1)
-      throw Error("readIntFix()");
+   char *end;
+   result = strtol(buf, &end, 10);
+   // Check that unread part contains onle spaces
+   while (end != buf + digits)
+   {
+      if (!isspace(*end))
+         throw Error("readIntFix(): invalid number representation: %s", buf);
+      end++;
+   }
 
    return result;
 }
@@ -198,15 +206,24 @@ void Scanner::readWord (Array<char> &word, const char *delimiters)
 
 float Scanner::readFloatFix (int digits)
 {
-   QS_DEF(Array<char>, buf);
+   char buf[40];
+   if (digits >= NELEM(buf) - 1)
+      throw Error("readFloatFix(): digits = %d", digits);
+
    float result;
 
-   buf.clear_resize(digits + 1);
-   read(digits, buf.ptr());
+   read(digits, buf);
    buf[digits] = 0;
 
-   if (sscanf(buf.ptr(), "%f", &result) != 1)
-      throw Error("readFloatFix()");
+   char *end;
+   result = (float)strtod(buf, &end);
+   // Check that unread part contains onle spaces
+   while (end != buf + digits)
+   {
+      if (!isspace(*end))
+         throw Error("readIntFix(): invalid number representation: %s", buf);
+      end++;
+   }
 
    return result;
 }
@@ -466,6 +483,8 @@ bool FileScanner::isEOF ()
 {
    if (_file == NULL)
       return true;
+   if (_cache_pos < _max_cache)
+      return false;
 
    return tell() == _file_len;
 }
@@ -495,6 +514,14 @@ void FileScanner::seek (int pos, int from)
 int FileScanner::length ()
 {
    return _file_len;
+}
+
+char FileScanner::readChar ()
+{
+   _validateCache();
+   if (_cache_pos == _max_cache)
+      throw Error("readChar() passes after end of file");
+   return _cache[_cache_pos++];
 }
 
 FileScanner::~FileScanner ()
