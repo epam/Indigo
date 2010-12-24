@@ -243,6 +243,7 @@ CEXPORT int indigoIterateStereocenters (int molecule);
 CEXPORT int indigoIterateRGroups (int molecule);
 CEXPORT int indigoIsPseudoatom (int atom);
 CEXPORT int indigoIsRSite (int atom);
+
 // returns INDIGO_{ABS,OR,AND,EITHER}
 // or zero if the atom is not a stereoatom
 CEXPORT int indigoStereocenterType (int atom);
@@ -287,6 +288,8 @@ CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetRadical (int atom);
 CEXPORT int indigoResetIsotope (int atom);
+CEXPORT int indigoResetRsite (int atom);
+CEXPORT int indigoSetAttachmentPoint (int atom);
 
 CEXPORT int indigoResetStereo (int item);
 CEXPORT int indigoInvertStereo (int item);
@@ -559,5 +562,11 @@ CEXPORT int indigoToBuffer (int handle, char **buf, int *size);
 // of substituents corresponding to the R-Sites. Returns an array of
 // reactions with R-Sites replaced by the actual substituents.
 CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers);
+
+
+
+
+
+
 
 #endif
