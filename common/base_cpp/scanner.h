@@ -90,6 +90,13 @@ private:
    FILE *_file;
    int   _file_len;
 
+   char _cache[1024];
+   int _cache_pos, _max_cache;
+
+   void _validateCache ();
+   void _invalidateCache ();
+   void _init (Encoding filename_encoding, const char *filename);
+
    // no implicit copy
    FileScanner (const FileScanner &);
 };

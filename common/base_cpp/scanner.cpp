@@ -377,19 +377,13 @@ bool Scanner::isSingleLine (Scanner &scanner)
    return res;
 }
 
+//
+// FileScanner
+//
+
 FileScanner::FileScanner (Encoding filename_encoding, const char *filename) : Scanner()
 {
-   _file = 0;
-   _file_len = 0;
-
-   _file = openFile(filename_encoding, filename, "rb");
-
-   if (_file == NULL)
-      throw Error("can't open file %s", filename);
-
-   fseek(_file, 0, SEEK_END);
-   _file_len = ftell(_file);
-   fseek(_file, 0, SEEK_SET);
+   _init(filename_encoding, filename);
 }
 
 FileScanner::FileScanner (const char *format, ...) : Scanner ()
@@ -402,8 +396,15 @@ FileScanner::FileScanner (const char *format, ...) : Scanner ()
    vsnprintf(filename, sizeof(filename), format, args);
    va_end(args);
 
+   _init(ENCODING_ASCII, filename);
+}
+
+void FileScanner::_init (Encoding filename_encoding, const char *filename)
+{
+   _file = 0;
    _file_len = 0;
-   _file = fopen(filename, "rb");
+
+   _file = openFile(filename_encoding, filename, "rb");
 
    if (_file == NULL)
       throw Error("can't open file %s", filename);
@@ -411,65 +412,54 @@ FileScanner::FileScanner (const char *format, ...) : Scanner ()
    fseek(_file, 0, SEEK_END);
    _file_len = ftell(_file);
    fseek(_file, 0, SEEK_SET);
+   _invalidateCache();
 }
 
 int FileScanner::lookNext ()
 {
-   char res;
-   size_t nread = fread(&res, 1, 1, _file);
-
-   if (nread == 0)
+   _validateCache();
+   if (_cache_pos == _max_cache)
       return -1;
+   
+   return _cache[_cache_pos];
+}
 
-   fseek(_file, -1, SEEK_CUR);
+void FileScanner::_invalidateCache ()
+{
+   _max_cache = 0;
+   _cache_pos = 0;
+}
 
-   return res;
+void FileScanner::_validateCache ()
+{
+   if (_cache_pos < _max_cache)
+      return;
+
+   size_t nread = fread(_cache, 1, NELEM(_cache), _file);
+   _max_cache = nread;
+   _cache_pos = 0;
 }
 
 int FileScanner::tell ()
 {
-   return ftell(_file);
+   _validateCache();
+   return ftell(_file) - _max_cache + _cache_pos;
 }
 
 void FileScanner::read (int length, void *res)
 {
-   size_t nread = fread(res, 1, length, _file);
+   int to_read_from_cache = __min(length, _max_cache - _cache_pos);
+   memcpy(res, _cache + _cache_pos, to_read_from_cache);
+   _cache_pos += to_read_from_cache;
 
-   if (nread != (size_t)length)
-      throw Error("FileScanner::read() error");
-}
-
-void BufferScanner::skip (int n)
-{
-   _offset += n;
-
-   if (_size >= 0 && _offset > _size)
-      throw Error("skip() passes after end of buffer");
-}
-
-void BufferScanner::seek (int pos, int from)
-{
-   if (from == SEEK_SET)
-      _offset = pos;
-   else if (from == SEEK_CUR)
-      _offset += pos;
-   else // SEEK_END
+   if (to_read_from_cache != length)
    {
-      if (_size < 0)
-         throw Error("can not seek from end: buffer is unlimited");
-      _offset = _size - pos;
+      int left = length - to_read_from_cache;
+      size_t nread = fread((char*)res + to_read_from_cache, 1, left, _file);
+
+      if (nread != (size_t)left)
+         throw Error("FileScanner::read() error");
    }
-
-   if ((_size >= 0 && _offset > _size) || _offset < 0)
-      throw Error("size = %d, offset = %d after seek()", _size, _offset);
-}
-
-byte BufferScanner::readByte ()
-{
-   if (_size >= 0 && _offset >= _size)
-      throw Error("readByte(): end of buffer");
-
-   return _buffer[_offset++];
 }
 
 bool FileScanner::isEOF ()
@@ -477,20 +467,29 @@ bool FileScanner::isEOF ()
    if (_file == NULL)
       return true;
 
-   return ftell(_file) == _file_len;
+   return tell() == _file_len;
 }
 
 void FileScanner::skip (int n)
 {
-   int res = fseek(_file, n, SEEK_CUR);
+   _validateCache();
+   _cache_pos += n;
 
-   if (res != 0)
-      throw Error("skip() passes after end of file");
+   if (_cache_pos > _max_cache)
+   {
+      int delta = _max_cache - _cache_pos;
+      int res = fseek(_file, delta, SEEK_CUR);
+      _invalidateCache();
+
+      if (res != 0)
+         throw Error("skip() passes after end of file");
+   }
 }
 
 void FileScanner::seek (int pos, int from)
 {
    fseek(_file, pos, from);
+   _invalidateCache();
 }
 
 int FileScanner::length ()
@@ -503,6 +502,10 @@ FileScanner::~FileScanner ()
    if (_file != NULL)
       fclose(_file);
 }
+
+//
+// BufferScanner
+//
 
 void BufferScanner::_init (const char *buffer, int size)
 {
@@ -572,4 +575,37 @@ int BufferScanner::tell ()
 const void * BufferScanner::curptr ()
 {
    return _buffer + _offset;
+}
+
+void BufferScanner::skip (int n)
+{
+   _offset += n;
+
+   if (_size >= 0 && _offset > _size)
+      throw Error("skip() passes after end of buffer");
+}
+
+void BufferScanner::seek (int pos, int from)
+{
+   if (from == SEEK_SET)
+      _offset = pos;
+   else if (from == SEEK_CUR)
+      _offset += pos;
+   else // SEEK_END
+   {
+      if (_size < 0)
+         throw Error("can not seek from end: buffer is unlimited");
+      _offset = _size - pos;
+   }
+
+   if ((_size >= 0 && _offset > _size) || _offset < 0)
+      throw Error("size = %d, offset = %d after seek()", _size, _offset);
+}
+
+byte BufferScanner::readByte ()
+{
+   if (_size >= 0 && _offset >= _size)
+      throw Error("readByte(): end of buffer");
+
+   return _buffer[_offset++];
 }
