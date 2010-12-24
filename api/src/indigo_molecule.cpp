@@ -1097,6 +1097,7 @@ CEXPORT int indigoSetAttachmentPoint (int atom, int order) {
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
       ia.mol->addAttachmentPoint(order, ia.idx);
+      return 1;
    }
    INDIGO_END(-1);
 }

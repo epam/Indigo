@@ -389,6 +389,22 @@ int BaseMolecule::getVacantPiOrbitals (int group, int charge, int radical,
 void BaseMolecule::_mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
            const Array<int> *edges, const Array<int> &mapping, int skip_flags)
 {
+   int i;
+   // RGroup fragments
+   if (!(skip_flags & SKIP_RGROUP_FRAGMENTS))
+   {
+      if (mol.attachmentPointCount() > 0)
+      {
+         for (i = 0; i < mol.attachmentPointCount(); i++)
+         {
+            int att_idx;
+            int j;
+
+            for (j = 0; (att_idx = mol.getAttachmentPoint(i, j)) != -1; j++)
+               this->addAttachmentPoint(i, mapping[att_idx]);
+         }
+      }
+   }
 }
 
 void BaseMolecule::_postMergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,

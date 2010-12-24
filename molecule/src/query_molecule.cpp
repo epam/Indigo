@@ -622,6 +622,8 @@ void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> 
    QueryMolecule &mol = bmol.asQueryMolecule();
    int i;
 
+   BaseMolecule::_mergeWithSubmolecule(bmol, vertices, edges, mapping, skip_flags);
+
    // atoms
    for (i = 0; i < vertices.size(); i++)
    {
@@ -689,22 +691,6 @@ void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> 
 
          if (idx >= 0)
             fixed_atoms.push(idx);
-      }
-   }
-
-   // RGroup fragments
-   if (!(skip_flags & SKIP_RGROUP_FRAGMENTS))
-   {
-      if (mol.attachmentPointCount() > 0)
-      {
-         for (i = 0; i < mol.attachmentPointCount(); i++)
-         {
-            int att_idx;
-            int j;
-
-            for (j = 0; (att_idx = mol.getAttachmentPoint(i, j)) != -1; j++)
-               this->addAttachmentPoint(i, mapping[att_idx]);
-         }
       }
    }
 

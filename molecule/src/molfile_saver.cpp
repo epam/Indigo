@@ -385,22 +385,22 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          }
       }
 
-      if (qmol != 0 && qmol->attachmentPointCount() > 0)
+      if (mol.attachmentPointCount() > 0)
       {
          int val = 0;
 
-         for (int idx = 0; idx < qmol->attachmentPointCount(); idx++)
+         for (int idx = 0; idx < mol.attachmentPointCount(); idx++)
          {
             int j;
 
-            for (j = 0; qmol->getAttachmentPoint(idx, j) != -1; j++)
-               if (qmol->getAttachmentPoint(idx, j) == i)
+            for (j = 0; mol.getAttachmentPoint(idx, j) != -1; j++)
+               if (mol.getAttachmentPoint(idx, j) == i)
                {
                   val |= 1 << idx;
                   break;
                }
 
-            if (qmol->getAttachmentPoint(idx, j) != -1)
+            if (mol.getAttachmentPoint(idx, j) != -1)
                break;
          }
 

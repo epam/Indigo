@@ -64,6 +64,8 @@ void Molecule::_flipBond (int atom_parent, int atom_from, int atom_to)
 void Molecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vertices,
            const Array<int> *edges, const Array<int> &mapping, int skip_flags)
 {
+   BaseMolecule::_mergeWithSubmolecule(bmol, vertices, edges, mapping, skip_flags);
+   
    Molecule &mol = bmol.asMolecule();
    int i;
 
