@@ -85,7 +85,7 @@ void SdfLoader::readNext ()
          pending_emptyline = false;
 
       if (!pending_emptyline)
-         output.printf("%s\n", str.ptr());
+         output.writeStringCR(str.ptr());
    }
    
    while (1)
