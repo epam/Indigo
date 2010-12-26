@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: com.gga.indigo.legio.Main
-Class-Path: lib\indigo-java.jar lib\indigo-renderer-java.jar
+Class-Path: lib/indigo-java.jar lib/indigo-renderer-java.jar
 

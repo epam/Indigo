@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
+import java.net.*;
 
 /*
  * To change this template, choose Tools | Templates
@@ -42,10 +43,30 @@ public class MainFrame extends javax.swing.JFrame
    Indigo indigo;
    IndigoRenderer indigo_renderer;
 
+   public static String getPathToJarfileDir(Class classToUse) {
+      String url = classToUse.getResource("/" + classToUse.getName().replaceAll("\\.", "/") + ".class").toString();
+      url = url.substring(4).replaceFirst("/[^/]+\\.jar!.*$", "/");
+      try {
+         File dir = new File(new URL(url).toURI());
+         url = dir.getAbsolutePath();
+      } catch (MalformedURLException mue) {
+         System.err.println(mue.getMessage());
+         url = null;
+      } catch (URISyntaxException ue) {
+         System.err.println(ue.getMessage());
+         url = null;
+      }
+      return url;
+    }
+
    /** Creates new form MainFrame */
    public MainFrame()
    {
-      indigo = new Indigo();
+      String path = getPathToJarfileDir(MainFrame.class);
+      if (path == null)
+         indigo = new Indigo();
+      else
+         indigo = new Indigo(path + File.separator + "lib");
       indigo_renderer = new IndigoRenderer(indigo);
       //indigo.setOption("ignore-stereochemistry-errors", true);
       indigo.setOption("render-margins", "5,2");

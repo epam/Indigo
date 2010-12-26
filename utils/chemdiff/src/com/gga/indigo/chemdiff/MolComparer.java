@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ListSelectionEvent;
+import java.io.*;
 
 /**
  *
@@ -84,7 +85,11 @@ public class MolComparer
    {
       try
       {
-         indigo = new Indigo();
+         String path = MainFrame.getPathToJarfileDir(MainFrame.class);
+         if (path == null)
+            indigo = new Indigo();
+         else
+            indigo = new Indigo(path + File.separator + "lib");
          conc_mols = new ArrayList<CompMol>();
          uniq_mols2 = new ArrayList<CompMol>();
          uniq_mols1 = new ArrayList<CompMol>();

@@ -9,6 +9,7 @@ import com.gga.indigo.IndigoObject;
 import com.gga.indigo.IndigoRenderer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.*;
 
 public class MainFrame extends javax.swing.JFrame
 {
@@ -23,9 +24,29 @@ public class MainFrame extends javax.swing.JFrame
    Indigo indigo;
    IndigoRenderer indigo_renderer;
 
+   public static String getPathToJarfileDir(Class classToUse) {
+      String url = classToUse.getResource("/" + classToUse.getName().replaceAll("\\.", "/") + ".class").toString();
+      url = url.substring(4).replaceFirst("/[^/]+\\.jar!.*$", "/");
+      try {
+         File dir = new File(new URL(url).toURI());
+         url = dir.getAbsolutePath();
+      } catch (MalformedURLException mue) {
+         System.err.println(mue.getMessage());
+         url = null;
+      } catch (URISyntaxException ue) {
+         System.err.println(ue.getMessage());
+         url = null;
+      }
+      return url;
+    }
+
    /* Creates new form MainFrame */
    public MainFrame() {
-      indigo = new Indigo();
+      String path = getPathToJarfileDir(MainFrame.class);
+      if (path == null)
+         indigo = new Indigo();
+      else
+         indigo = new Indigo(path + File.separator + "lib");
       indigo_renderer = new IndigoRenderer(indigo);
       mon_panels = new ArrayList<MonomerPanel>();
       rct_view = new MolViewPanel(indigo, indigo_renderer);
