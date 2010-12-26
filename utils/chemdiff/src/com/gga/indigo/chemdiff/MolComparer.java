@@ -174,7 +174,7 @@ public class MolComparer
       private void _calcCanonicalSmiles()
       {
          int i;
-         main_frame.getMainProgressBar().setString("Canonical smiles computing");
+         main_frame.getMainProgressBar().setString("Computing Canonical SMILES");
          main_frame.getMainProgressBar().setMaximum(uniq_mols1.size() + uniq_mols2.size());
          main_frame.getMainProgressBar().setValue(0);
 
@@ -216,7 +216,7 @@ public class MolComparer
          Collections.sort(uniq_mols1);
          Collections.sort(uniq_mols2);
 
-         main_frame.getMainProgressBar().setString("Molecules comparing");
+         main_frame.getMainProgressBar().setString("Comparing structures");
          main_frame.getMainProgressBar().setMaximum(1000);
          main_frame.getMainProgressBar().setValue(0);
 
