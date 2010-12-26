@@ -22,7 +22,7 @@ SetCompressor /SOLID lzma
  
   ;Name and file
   Name "${APP_NAME}"
-  OutFile "Setup_${APP_NAME}.exe"
+  OutFile "Install_${APP_NAME}_${VERSION}.exe"
  
 ;--------------------------------
 ;Variables
@@ -46,7 +46,7 @@ SetCompressor /SOLID lzma
 ;Pages
  
   !insertmacro MUI_PAGE_WELCOME
-  !insertmacro MUI_PAGE_LICENSE "..\LICENSE.GPL"
+  !insertmacro MUI_PAGE_LICENSE "LICENSE.GPL"
   !insertmacro MULTIUSER_PAGE_INSTALLMODE
   !insertmacro MUI_PAGE_DIRECTORY
  
@@ -86,13 +86,10 @@ SetCompressor /SOLID lzma
 Section "${APP_NAME}"
  
   SetOutPath "$INSTDIR\lib\"
-  File /r "..\lib\"
-  File /r "..\dist\lib\"
-  SetOutPath "$INSTDIR\tests\"
-  File /r "..\tests\"
+  File /r "lib\"
   SetOutPath $INSTDIR
-  File "..\dist\chemdiff.jar"
-  File "..\dist\launch.bat"
+  File "chemdiff.jar"
+  File "launch.bat"
  
   ;%NSIS_INSTALL_FILES
  
