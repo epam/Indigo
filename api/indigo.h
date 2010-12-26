@@ -467,6 +467,9 @@ CEXPORT int indigoSdfAppend (int output, int item);
 // Saves the molecule to a multiline SMILES output stream
 CEXPORT int indigoSmilesAppend (int output, int item);
 
+CEXPORT int indigoRdfHeader (int output);
+CEXPORT int indigoRdfAppend (int output, int item);
+
 /* Arrays */
 
 CEXPORT int indigoCreateArray ();
@@ -562,11 +565,5 @@ CEXPORT int indigoToBuffer (int handle, char **buf, int *size);
 // of substituents corresponding to the R-Sites. Returns an array of
 // reactions with R-Sites replaced by the actual substituents.
 CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers);
-
-
-
-
-
-
 
 #endif

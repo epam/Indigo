@@ -477,25 +477,6 @@ CEXPORT int indigoSdfAppend (int output, int molecule)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSmilesAppend (int output, int molecule)
-{
-   INDIGO_BEGIN
-   {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      Output &out = IndigoOutput::get(self.getObject(output));
-
-      SmilesSaver saver(out);
-      if (mol.isQueryMolecule())
-         saver.saveQueryMolecule(mol.asQueryMolecule());
-      else
-         saver.saveMolecule(mol.asMolecule());
-      out.writeCR();
-      out.flush();
-      return 1;
-   }
-   INDIGO_END(-1)
-}
-
 CEXPORT int indigoGrossFormula (int molecule)
 {
    INDIGO_BEGIN
