@@ -30,7 +30,7 @@ jar cvfm ..\chemdiff.jar ..\manifest.mf com/gga/indigo/chemdiff/*.class
 cd ..
 
 call dll-copy.bat
-echo start javaw -jar -Xss10m chemdiff.jar > launch.bat
+echo start javaw -jar -Xss10m %%0\..\chemdiff.jar > launch.bat
 
 %MAKENSIS% /DVERSION=%1 chemdiff_installer.nsi 
 goto END
