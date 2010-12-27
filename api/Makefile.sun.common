@@ -10,7 +10,6 @@ OBJS_libindigo.a =  \
 	$(TARGETDIR_libindigo.a)/indigo.o \
 	$(TARGETDIR_libindigo.a)/indigo_array.o \
 	$(TARGETDIR_libindigo.a)/indigo_basic.o \
-	$(TARGETDIR_libindigo.a)/indigo_decomposition.o \
 	$(TARGETDIR_libindigo.a)/indigo_deconvolution.o \
 	$(TARGETDIR_libindigo.a)/indigo_fingerprints.o \
 	$(TARGETDIR_libindigo.a)/indigo_io.o \
@@ -45,9 +44,6 @@ $(TARGETDIR_libindigo.a)/indigo_array.o: $(TARGETDIR_libindigo.a) src/indigo_arr
 
 $(TARGETDIR_libindigo.a)/indigo_basic.o: $(TARGETDIR_libindigo.a) src/indigo_basic.cpp
 	$(COMPILE.cc) $(CCFLAGS_libindigo.a) $(CPPFLAGS_libindigo.a) -o $@ src/indigo_basic.cpp
-
-$(TARGETDIR_libindigo.a)/indigo_decomposition.o: $(TARGETDIR_libindigo.a) src/indigo_decomposition.cpp
-	$(COMPILE.cc) $(CCFLAGS_libindigo.a) $(CPPFLAGS_libindigo.a) -o $@ src/indigo_decomposition.cpp
 
 $(TARGETDIR_libindigo.a)/indigo_deconvolution.o: $(TARGETDIR_libindigo.a) src/indigo_deconvolution.cpp
 	$(COMPILE.cc) $(CCFLAGS_libindigo.a) $(CPPFLAGS_libindigo.a) -o $@ src/indigo_deconvolution.cpp
@@ -114,7 +110,6 @@ OBJS_libindigo.so =  \
 	$(TARGETDIR_libindigo.so)/indigo.o \
 	$(TARGETDIR_libindigo.so)/indigo_array.o \
 	$(TARGETDIR_libindigo.so)/indigo_basic.o \
-	$(TARGETDIR_libindigo.so)/indigo_decomposition.o \
 	$(TARGETDIR_libindigo.so)/indigo_deconvolution.o \
 	$(TARGETDIR_libindigo.so)/indigo_fingerprints.o \
 	$(TARGETDIR_libindigo.so)/indigo_io.o \
@@ -150,9 +145,6 @@ $(TARGETDIR_libindigo.so)/indigo_array.o: $(TARGETDIR_libindigo.so) src/indigo_a
 
 $(TARGETDIR_libindigo.so)/indigo_basic.o: $(TARGETDIR_libindigo.so) src/indigo_basic.cpp
 	$(COMPILE.cc) $(CCFLAGS_libindigo.so) $(CPPFLAGS_libindigo.so) -o $@ src/indigo_basic.cpp
-
-$(TARGETDIR_libindigo.so)/indigo_decomposition.o: $(TARGETDIR_libindigo.so) src/indigo_decomposition.cpp
-	$(COMPILE.cc) $(CCFLAGS_libindigo.so) $(CPPFLAGS_libindigo.so) -o $@ src/indigo_decomposition.cpp
 
 $(TARGETDIR_libindigo.so)/indigo_deconvolution.o: $(TARGETDIR_libindigo.so) src/indigo_deconvolution.cpp
 	$(COMPILE.cc) $(CCFLAGS_libindigo.so) $(CPPFLAGS_libindigo.so) -o $@ src/indigo_deconvolution.cpp
@@ -214,7 +206,6 @@ clean:
 		$(TARGETDIR_libindigo.a)/indigo.o \
 		$(TARGETDIR_libindigo.a)/indigo_array.o \
 		$(TARGETDIR_libindigo.a)/indigo_basic.o \
-		$(TARGETDIR_libindigo.a)/indigo_decomposition.o \
 		$(TARGETDIR_libindigo.a)/indigo_deconvolution.o \
 		$(TARGETDIR_libindigo.a)/indigo_fingerprints.o \
 		$(TARGETDIR_libindigo.a)/indigo_io.o \
@@ -236,7 +227,6 @@ clean:
 		$(TARGETDIR_libindigo.so)/indigo.o \
 		$(TARGETDIR_libindigo.so)/indigo_array.o \
 		$(TARGETDIR_libindigo.so)/indigo_basic.o \
-		$(TARGETDIR_libindigo.so)/indigo_decomposition.o \
 		$(TARGETDIR_libindigo.so)/indigo_deconvolution.o \
 		$(TARGETDIR_libindigo.so)/indigo_fingerprints.o \
 		$(TARGETDIR_libindigo.so)/indigo_io.o \
