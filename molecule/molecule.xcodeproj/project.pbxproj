@@ -53,7 +53,6 @@
 		A7EDA4F110624F71006CBFAF /* molecule_fingerprint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA48A10624EE9006CBFAF /* molecule_fingerprint.cpp */; };
 		A7EDA4F210624F71006CBFAF /* matr3x3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA45510624E26006CBFAF /* matr3x3d.cpp */; };
 		A7EDA4F310624F71006CBFAF /* molfile_saver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA49D10624EE9006CBFAF /* molfile_saver.cpp */; };
-		A7EDA4F510624F71006CBFAF /* molecule_decomposer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA48710624EE9006CBFAF /* molecule_decomposer.cpp */; };
 		A7EDA4F610624F71006CBFAF /* molecule_stereocenters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA49210624EE9006CBFAF /* molecule_stereocenters.cpp */; };
 		A7EDA4F710624F71006CBFAF /* smiles_saver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA4A110624EE9006CBFAF /* smiles_saver.cpp */; };
 		A7EDA4F810624F71006CBFAF /* plane3f.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA45610624E26006CBFAF /* plane3f.cpp */; };
@@ -157,7 +156,6 @@
 		A7EDA48410624EE9006CBFAF /* molecule_automorphism_search.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_automorphism_search.cpp; path = src/molecule_automorphism_search.cpp; sourceTree = "<group>"; };
 		A7EDA48510624EE9006CBFAF /* molecule_cis_trans.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_cis_trans.cpp; path = src/molecule_cis_trans.cpp; sourceTree = "<group>"; };
 		A7EDA48610624EE9006CBFAF /* molecule_dearom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_dearom.cpp; path = src/molecule_dearom.cpp; sourceTree = "<group>"; };
-		A7EDA48710624EE9006CBFAF /* molecule_decomposer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_decomposer.cpp; path = src/molecule_decomposer.cpp; sourceTree = "<group>"; };
 		A7EDA48810624EE9006CBFAF /* molecule_electrons_localizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_electrons_localizer.cpp; path = src/molecule_electrons_localizer.cpp; sourceTree = "<group>"; };
 		A7EDA48910624EE9006CBFAF /* molecule_exact_matcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_exact_matcher.cpp; path = src/molecule_exact_matcher.cpp; sourceTree = "<group>"; };
 		A7EDA48A10624EE9006CBFAF /* molecule_fingerprint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_fingerprint.cpp; path = src/molecule_fingerprint.cpp; sourceTree = "<group>"; };
@@ -196,7 +194,6 @@
 		A7EDA4B010624F17006CBFAF /* molecule_automorphism_search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_automorphism_search.h; sourceTree = "<group>"; };
 		A7EDA4B110624F17006CBFAF /* molecule_cis_trans.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_cis_trans.h; sourceTree = "<group>"; };
 		A7EDA4B210624F17006CBFAF /* molecule_dearom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_dearom.h; sourceTree = "<group>"; };
-		A7EDA4B310624F17006CBFAF /* molecule_decomposer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_decomposer.h; sourceTree = "<group>"; };
 		A7EDA4B410624F17006CBFAF /* molecule_electrons_localizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_electrons_localizer.h; sourceTree = "<group>"; };
 		A7EDA4B510624F17006CBFAF /* molecule_exact_matcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_exact_matcher.h; sourceTree = "<group>"; };
 		A7EDA4B610624F17006CBFAF /* molecule_fingerprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_fingerprint.h; sourceTree = "<group>"; };
@@ -288,7 +285,6 @@
 				A7EDA4B010624F17006CBFAF /* molecule_automorphism_search.h */,
 				A7EDA4B110624F17006CBFAF /* molecule_cis_trans.h */,
 				A7EDA4B210624F17006CBFAF /* molecule_dearom.h */,
-				A7EDA4B310624F17006CBFAF /* molecule_decomposer.h */,
 				A7EDA4B410624F17006CBFAF /* molecule_electrons_localizer.h */,
 				A7EDA4B510624F17006CBFAF /* molecule_exact_matcher.h */,
 				A7EDA4B610624F17006CBFAF /* molecule_fingerprint.h */,
@@ -324,7 +320,6 @@
 				A7EDA48410624EE9006CBFAF /* molecule_automorphism_search.cpp */,
 				A7EDA48510624EE9006CBFAF /* molecule_cis_trans.cpp */,
 				A7EDA48610624EE9006CBFAF /* molecule_dearom.cpp */,
-				A7EDA48710624EE9006CBFAF /* molecule_decomposer.cpp */,
 				A7EDA48810624EE9006CBFAF /* molecule_electrons_localizer.cpp */,
 				A7EDA48910624EE9006CBFAF /* molecule_exact_matcher.cpp */,
 				A7EDA48A10624EE9006CBFAF /* molecule_fingerprint.cpp */,
@@ -525,7 +520,6 @@
 				A7EDA4F110624F71006CBFAF /* molecule_fingerprint.cpp in Sources */,
 				A7EDA4F210624F71006CBFAF /* matr3x3d.cpp in Sources */,
 				A7EDA4F310624F71006CBFAF /* molfile_saver.cpp in Sources */,
-				A7EDA4F510624F71006CBFAF /* molecule_decomposer.cpp in Sources */,
 				A7EDA4F610624F71006CBFAF /* molecule_stereocenters.cpp in Sources */,
 				A7EDA4F710624F71006CBFAF /* smiles_saver.cpp in Sources */,
 				A7EDA4F810624F71006CBFAF /* plane3f.cpp in Sources */,
