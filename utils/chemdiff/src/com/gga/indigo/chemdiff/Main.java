@@ -5,8 +5,6 @@
 
 package com.gga.indigo.chemdiff;
 
-import java.awt.Graphics;
-
 /**
  *
  * @author achurinov
@@ -18,6 +16,7 @@ public class Main {
      */
     public static void main(String[] args) {
         MainFrame mf = new MainFrame();
+        mf.setLocationRelativeTo(null);
         mf.setVisible(true);
     }
 }

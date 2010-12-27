@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 import java.net.*;
+import javax.swing.UIManager;
 
 /*
  * To change this template, choose Tools | Templates
@@ -62,6 +63,11 @@ public class MainFrame extends javax.swing.JFrame
    /** Creates new form MainFrame */
    public MainFrame()
    {
+      try {
+      //   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      }
+      catch (Exception e) {}
+      
       String path = getPathToJarfileDir(MainFrame.class);
       if (path == null)
          indigo = new Indigo();
@@ -126,7 +132,7 @@ public class MainFrame extends javax.swing.JFrame
       out_gl3.setVerticalGroup(out_gl3.createSequentialGroup().
                addComponent(out_table3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
 
-      setTitle("Chemdiff");
+      setTitle("ChemDiff");
    }
 
     /** This method is called from within the constructor to
