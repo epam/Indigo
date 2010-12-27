@@ -617,7 +617,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
    ce.process();
 
    if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber)
-      throw Error("number of cycles exceeded %d ", cycle_context.iterationNumber);
+      throw Error("number of cycles exceeded %d ", cycle_context.maxIterationNumber);
 
    sorted_cycles.clear();
    for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))

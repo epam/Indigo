@@ -34,16 +34,6 @@ CycleEnumerator::~CycleEnumerator ()
 bool CycleEnumerator::process ()
 {
    int i;
-   QS_DEF(Array<int>, vertices);
-   QS_DEF(Array<int>, edges);
-   QS_DEF(Array<int>, flags);
-
-   flags.clear_resize(_graph.vertexEnd());
-   flags.zerofill();
-
-   vertices.clear();
-   edges.clear();
-
    SpanningTree spt(_graph, vfilter);
 
    for (i = 0; i < spt.getEdgesNum(); i++)
@@ -56,27 +46,8 @@ bool CycleEnumerator::process ()
 		if (cb_check_vertex == 0 ||
           (cb_check_vertex(_graph, v, context) && cb_check_vertex(_graph, w, context)))
       {
-         while (vertices.size() > 0)
-         {
-            int v = vertices.pop();
-            flags[v] = 0;
-         }
-
-         vertices.push(v);
-         vertices.push(w);
-         flags[v] = 1;
-         flags[w] = 1;
-
-         edges.push(ext_edge.ext_edge_idx);
-
-		   if (!_pathFinder(spt, vertices, edges, flags))
+		   if (!_pathFinder(spt, v, w, ext_edge.ext_edge_idx))
             return true;
-
-         vertices.pop();
-         vertices.pop();
-         edges.pop();
-         flags[v] = 0;
-         flags[w] = 0;
       }
 
       spt.addEdge(ext_edge.beg_idx, ext_edge.end_idx, ext_edge.ext_edge_idx);
@@ -85,48 +56,87 @@ bool CycleEnumerator::process ()
    return false;
 }    
 
-bool CycleEnumerator::_pathFinder (const SpanningTree &spt, Array<int> &vertices,
-                                   Array<int> &edges, Array<int> &flags)
+bool CycleEnumerator::_pathFinder (const SpanningTree &spt, int ext_v1, int ext_v2, int ext_e)
 {
-   if (vertices.size() > max_length)
-      return true;
-
-   const Vertex &v_vertex = spt.getVertexFromExtIdx(vertices.top());
-
-   for (int i = v_vertex.neiBegin(); i != v_vertex.neiEnd(); i = v_vertex.neiNext(i))
+   
+   QS_DEF(Array<int>, vertices);
+   QS_DEF(Array<int>, edges);
+   QS_DEF(Array<int>, flags);
+   QS_DEF(Array<int>, visited_vertices);
+   int cur_start_idx = 0;
+   
+   vertices.clear();
+   edges.clear();
+   flags.clear_resize(_graph.vertexEnd());
+   flags.zerofill();
+   
+   vertices.push(ext_v1);
+   vertices.push(ext_v2);
+   flags[ext_v1] = 1;
+   flags[ext_v2] = 1;
+   edges.push(ext_e);
+   visited_vertices.clear_resize(spt.getVertexFromExtIdx(ext_v2).neiEnd());
+   visited_vertices.zerofill();
+   
+   // DFS all cycles with given edge
+   while (vertices.size() > 1)
    {
-      int u = spt.getExtVertexIndex(v_vertex.neiVertex(i));
-      int e = spt.getExtEdgeIndex(v_vertex.neiEdge(i));
-      int cycle = (vertices.size() > 2) && u == vertices[0];
+      const Vertex &v_vertex = spt.getVertexFromExtIdx(vertices.top());
+      bool no_push = true;
+      
+      if (vertices.size() <= max_length)
+      {
+         for (int i = v_vertex.neiBegin(); i != v_vertex.neiEnd(); i = v_vertex.neiNext(i))
+         {
+            if (visited_vertices[cur_start_idx + i])
+               continue;
+            
+            int u = spt.getExtVertexIndex(v_vertex.neiVertex(i));
+            int e = spt.getExtEdgeIndex(v_vertex.neiEdge(i));
+            
+            bool cycle = (vertices.size() > 2) && u == vertices[0];
+            
+            if (!cycle)
+            {
+               if (flags[u])
+                  continue;
+               if (cb_check_vertex != 0 && !cb_check_vertex(_graph, u, context))
+                  continue;
+            }
+            
+            edges.push(e);
+            if (cycle)
+            {
+               if (cb_handle_cycle != 0 && !cb_handle_cycle(_graph, vertices, edges, context))
+                  return false;
+               edges.pop();
+            }
+            else
+            {
+               vertices.push(u);
+               visited_vertices[cur_start_idx + i] = 1;
+               flags[u] = 1;
 
-      _graph.getEdge(e);
-      if (!cycle)
-      {
-         if (flags[u] != 0)
-            continue;
-         if (cb_check_vertex != 0 && !cb_check_vertex(_graph, u, context))
-            continue;
+               cur_start_idx += v_vertex.neiEnd();
+               
+               const Vertex &u_vertex = spt.getVertexFromExtIdx(u);
+               visited_vertices.expand(cur_start_idx + u_vertex.neiEnd());
+               memset(&visited_vertices[cur_start_idx], 0, u_vertex.neiEnd() * sizeof(int));
+               
+               no_push = false;
+               break;
+            }
+         }
       }
-
-      if (cycle)
+      
+      if (no_push)
       {
-         edges.push(e);
-         if (cb_handle_cycle != 0 && !cb_handle_cycle(_graph, vertices, edges, context))
-            return false;
-         edges.pop();
-      }
-      else
-      {
-         vertices.push(u);
-         edges.push(e);
-         flags[u] = 1;
-         if (!_pathFinder(spt, vertices, edges, flags))
-            return false;
-         flags[u] = 0;
-         vertices.pop();
-         edges.pop();
+         if (edges.size() > 0)
+            edges.pop();
+         flags[vertices.pop()] = 0;
+         cur_start_idx -= v_vertex.neiEnd();
       }
    }
-
+   
    return true;
 }
