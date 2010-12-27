@@ -655,7 +655,7 @@ class Indigo:
                         c.co_flags, c.co_code, c.co_consts, c.co_names,
                         c.co_varnames, "indigo core", name, 1, c.co_lnotab, c.co_freevars, c.co_cellvars )
                
-    new_wrapper = new.function(newcode, globals(), name=name, closure=wrapper.func_closure )
+    new_wrapper = new.function(newcode, globals(), name=name, closure=wrapper.func_closure, argdefs=wrapper.func_defaults)
     return new_wrapper
      
   def _static_obj (self, func):
