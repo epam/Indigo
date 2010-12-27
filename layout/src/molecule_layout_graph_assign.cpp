@@ -14,7 +14,6 @@
 
 #include "layout/molecule_layout_graph.h"
 #include "layout/attachment_layout.h"
-#include "graph/graph_decomposer.h"
 #include "graph/biconnected_decomposer.h"
 #include "graph/cycle_enumerator.h"
 #include "graph/embedding_enumerator.h"
@@ -150,10 +149,8 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
          _n_fixed = fixed_filter.count(*this);
       else
       {  // fixed subgraph is not connected - choose its greatest component
-         GraphDecomposer fixed_decom(fixed_graph);
-
-         int n = fixed_decom.decompose();
-         const Array<int> &decomposition = fixed_decom.getDecomposition();
+         int n = fixed_graph.countComponents();
+         const Array<int> &decomposition = fixed_graph.getDecomposition();
 
          fixed_count.clear_resize(n);
          fixed_count.zerofill();

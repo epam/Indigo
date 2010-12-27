@@ -552,10 +552,10 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph &subgraph, Graph &supergraph
             continue;
 
          if (query.components[i] == query.components[sub_idx] &&
-             target.getComponentNumber(core_sub[i]) != target.getComponentNumber(super_idx))
+             target.vertexComponent(core_sub[i]) != target.vertexComponent(super_idx))
             return false;
          if (query.components[i] != query.components[sub_idx] &&
-             target.getComponentNumber(core_sub[i]) == target.getComponentNumber(super_idx))
+             target.vertexComponent(core_sub[i]) == target.vertexComponent(super_idx))
             return false;
       }
    }

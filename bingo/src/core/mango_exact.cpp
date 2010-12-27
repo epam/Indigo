@@ -18,7 +18,6 @@
 #include "graph/filter.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_auto_loader.h"
-#include "molecule/molecule_decomposer.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "graph/subgraph_hash.h"
 #include "molecule/cmf_loader.h"
@@ -69,13 +68,13 @@ void MangoExact::calculateHash (Molecule &mol, Hash &hash)
    mol_without_h.makeSubmolecule(mol, vertices, 0);
 
    // Decompose into connected components
-   MoleculeDecomposer decomp(mol_without_h);
-   int n_comp = decomp.decompose();
+   int n_comp = mol_without_h.countComponents();
    QS_DEF(Molecule, component);
 
    for (int i = 0; i < n_comp; i++)
    {
-      decomp.buildComponentMolecule(i, component);
+      Filter filter(mol_without_h.getDecomposition().ptr(), Filter::EQ, i);
+      component.makeSubmolecule(mol_without_h, filter, 0, 0);
 
       SubgraphHash hh(component);
 

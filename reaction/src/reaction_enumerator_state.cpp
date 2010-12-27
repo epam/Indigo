@@ -26,7 +26,6 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule_arom.h"
-#include "molecule/molecule_decomposer.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_arom_match.h"

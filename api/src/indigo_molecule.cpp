@@ -26,7 +26,6 @@
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/molecule_cml_saver.h"
 #include "molecule/molecule_substructure_matcher.h"
-#include "graph/graph_decomposer.h"
 #include "molecule/molecule_inchi.h"
 #include "base_c/bitarray.h"
 #include "molecule/molecule_fingerprint.h"
@@ -332,19 +331,6 @@ IndigoObject * IndigoBondsIter::next ()
    return bond.release();
 }
 
-CEXPORT int indigoIterateBonds (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-
-      AutoPtr<IndigoBondsIter> newiter(new IndigoBondsIter(&mol));
-
-      return self.addObject(newiter.release());
-   }
-   INDIGO_END(-1);
-}
-
 
 CEXPORT int indigoLoadMolecule (int source)
 {
@@ -526,6 +512,43 @@ CEXPORT float indigoMonoisotopicMass (int molecule)
    INDIGO_END(-1)
 }
 
+IndigoMoleculeComponent::IndigoMoleculeComponent (BaseMolecule &mol_, int index_) :
+IndigoObject(MOLECULE_COMPONENT),
+mol(mol_)
+{
+   index = index_;
+}
+
+IndigoMoleculeComponent::~IndigoMoleculeComponent ()
+{
+}
+
+int IndigoMoleculeComponent::getIndex ()
+{
+   return index;
+}
+
+IndigoObject * IndigoMoleculeComponent::clone ()
+{
+   AutoPtr<IndigoObject> res;
+   BaseMolecule *newmol;
+
+   if (mol.isQueryMolecule())
+   {
+      res.reset(new IndigoQueryMolecule());
+      newmol = &(((IndigoQueryMolecule *)res.get())->qmol);
+   }
+   else
+   {
+      res.reset(new IndigoMolecule());
+      newmol = &(((IndigoMolecule *)res.get())->mol);
+   }
+   
+   Filter filter(mol.getDecomposition().ptr(), Filter::EQ, index);
+   newmol->makeSubmolecule(mol, filter, 0, 0);
+   return res.release();
+}
+
 int _indigoIterateAtoms (Indigo &self, int molecule, int type)
 {
    BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
@@ -539,16 +562,53 @@ CEXPORT int indigoIterateAtoms (int molecule)
 {
    INDIGO_BEGIN
    {
+      IndigoObject &obj = self.getObject(molecule);
+
+      if (obj.type == IndigoObject::MOLECULE_COMPONENT)
+      {
+         IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
+         return self.addObject(new IndigoComponentAtomsIter(mc.mol, mc.index));
+      }
       return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::ALL);
    }
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoIterateBonds (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(molecule);
+
+      if (obj.type == IndigoObject::MOLECULE_COMPONENT)
+      {
+         IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
+         return self.addObject(new IndigoComponentBondsIter(mc.mol, mc.index));
+      }
+
+      BaseMolecule &mol = obj.getBaseMolecule();
+
+      AutoPtr<IndigoBondsIter> newiter(new IndigoBondsIter(&mol));
+
+      return self.addObject(newiter.release());
+   }
+   INDIGO_END(-1);
+}
+
+
 CEXPORT int indigoCountAtoms (int molecule)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      IndigoObject &obj = self.getObject(molecule);
+
+      if (obj.type == IndigoObject::MOLECULE_COMPONENT)
+      {
+         IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
+         return mc.mol.countComponentVertices(mc.index);
+      }
+
+      BaseMolecule &mol = obj.getBaseMolecule();
       
       return mol.vertexCount();
    }
@@ -559,7 +619,15 @@ CEXPORT int indigoCountBonds (int molecule)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      IndigoObject &obj = self.getObject(molecule);
+
+      if (obj.type == IndigoObject::MOLECULE_COMPONENT)
+      {
+         IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
+         return mc.mol.countComponentEdges(mc.index);
+      }
+
+      BaseMolecule &mol = obj.getBaseMolecule();
 
       return mol.edgeCount();
    }
@@ -1573,6 +1641,196 @@ CEXPORT int indigoCountHeavyAtoms (int molecule)
             cnt++;
 
       return cnt;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCountComponents (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &bm = self.getObject(molecule).getBaseMolecule();
+
+      return bm.countComponents();
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCloneComponent (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &bm = self.getObject(molecule).getBaseMolecule();
+      if (index < 0 || index >= bm.countComponents())
+         throw IndigoError("indigoCloneComponent(): bad index %d (0-%d allowed)",
+                 bm.countComponents() - 1);
+
+      Filter filter(bm.getDecomposition().ptr(), Filter::EQ, index);
+      AutoPtr<IndigoMolecule> im(new IndigoMolecule());
+      im->mol.makeSubmolecule(bm, filter, 0, 0);
+      return self.addObject(im.release());
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoComponentIndex (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      return ia.mol->vertexComponent(ia.idx);
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoComponent (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &bm = self.getObject(molecule).getBaseMolecule();
+
+      if (index < 0 || index >= bm.countComponents())
+         throw IndigoError("indigoComponent(): bad index %d (0-%d allowed)",
+                 bm.countComponents() - 1);
+
+      return self.addObject(new IndigoMoleculeComponent(bm, index));
+   }
+   INDIGO_END(-1)
+}
+
+
+IndigoComponentAtomsIter::IndigoComponentAtomsIter (BaseMolecule &mol, int cidx) :
+IndigoObject(COMPONENT_ATOMS_ITERATOR),
+_mol(mol)
+{
+   if (cidx < 0 || cidx > mol.countComponents())
+      throw IndigoError("%d is not a valid component number (0-%d allowed)",
+              cidx, _mol.countComponents() - 1);
+   _idx = -1;
+   _cidx = cidx;
+}
+
+bool IndigoComponentAtomsIter::hasNext ()
+{
+   return _next() != _mol.vertexEnd();
+}
+
+IndigoObject * IndigoComponentAtomsIter::next ()
+{
+   int idx = _next();
+
+   if (idx == _mol.vertexEnd())
+      return 0;
+   _idx = idx;
+   return new IndigoAtom(_mol, idx);
+}
+
+int IndigoComponentAtomsIter::_next ()
+{
+   int idx;
+
+   if (_idx == -1)
+      idx = _mol.vertexBegin();
+   else
+      idx = _mol.vertexNext(_idx);
+
+   for (; idx != _mol.vertexEnd(); idx = _mol.vertexNext(idx))
+      if (_mol.vertexComponent(idx) == _cidx)
+         break;
+   return idx;
+}
+
+IndigoComponentBondsIter::IndigoComponentBondsIter (BaseMolecule &mol, int cidx) :
+IndigoObject(COMPONENT_ATOMS_ITERATOR),
+_mol(mol)
+{
+   if (cidx < 0 || cidx > _mol.countComponents())
+      throw IndigoError("%d is not a valid component number (0-%d allowed)",
+              cidx, _mol.countComponents() - 1);
+   _idx = -1;
+   _cidx = cidx;
+}
+
+bool IndigoComponentBondsIter::hasNext ()
+{
+   return _next() != _mol.edgeEnd();
+}
+
+IndigoObject * IndigoComponentBondsIter::next ()
+{
+   int idx = _next();
+
+   if (idx == _mol.edgeEnd())
+      return 0;
+   _idx = idx;
+   return new IndigoBond(_mol, idx);
+}
+
+int IndigoComponentBondsIter::_next ()
+{
+   int idx;
+
+   if (_idx == -1)
+      idx = _mol.edgeBegin();
+   else
+      idx = _mol.edgeNext(_idx);
+
+   for (; idx != _mol.edgeEnd(); idx = _mol.edgeNext(idx))
+   {
+      const Edge &edge = _mol.getEdge(idx);
+
+      int comp = _mol.vertexComponent(edge.beg);
+
+      if (comp != _mol.vertexComponent(edge.end))
+         throw IndigoError("internal: edge ends belong to different components");
+
+      if (comp == _cidx)
+         break;
+   }
+   return idx;
+}
+
+CEXPORT int indigoIterateComponentAtoms (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &bm = self.getObject(molecule).getBaseMolecule();
+
+      return self.addObject(new IndigoComponentAtomsIter(bm, index));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoIterateComponentBonds (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &bm = self.getObject(molecule).getBaseMolecule();
+
+      return self.addObject(new IndigoComponentBondsIter(bm, index));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCountComponentAtoms (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &bm = self.getObject(molecule).getBaseMolecule();
+
+      return bm.countComponentVertices(index);
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCountComponentBonds (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &bm = self.getObject(molecule).getBaseMolecule();
+
+      return bm.countComponentEdges(index);
    }
    INDIGO_END(-1)
 }
