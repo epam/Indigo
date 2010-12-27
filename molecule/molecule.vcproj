@@ -828,14 +828,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\molecule_decomposer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\molecule_decomposer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\src\molecule_electrons_localizer.cpp"
 				>
 			</File>
