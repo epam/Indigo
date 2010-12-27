@@ -619,6 +619,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    charges.clear();
    isotopes.clear();
    pseudoatoms.clear();
+   atom_lists.clear();
 
    int iw = 1;
 

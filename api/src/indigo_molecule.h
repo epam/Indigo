@@ -270,6 +270,54 @@ protected:
    BaseMolecule &_mol;
 };
 
+class IndigoMoleculeComponent : public IndigoObject
+{
+public:
+   IndigoMoleculeComponent (BaseMolecule &mol_, int index_);
+   virtual ~IndigoMoleculeComponent ();
+
+   virtual int getIndex ();
+   virtual IndigoObject * clone ();
+
+   int index;
+   BaseMolecule &mol;
+};
+
+class IndigoComponentAtomsIter : public IndigoObject
+{
+public:
+   IndigoComponentAtomsIter (BaseMolecule &mol, int cidx);
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+
+   int _next ();
+
+   BaseMolecule &_mol;
+   int _cidx;
+   int _idx;
+};
+
+class IndigoComponentBondsIter : public IndigoObject
+{
+public:
+   IndigoComponentBondsIter (BaseMolecule &mol, int cidx);
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+
+   int _next ();
+
+   BaseMolecule &_mol;
+   int _cidx;
+   int _idx;
+};
+
+
 #ifdef _WIN32
 #pragma warning(pop)
 #endif

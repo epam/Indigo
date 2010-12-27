@@ -333,6 +333,16 @@ CEXPORT int indigoCountStereocenters (int molecule);
 
 CEXPORT int indigoResetSymmetricCisTrans (int handle);
 
+/* Connected components of molecules */
+
+CEXPORT int indigoCountComponents (int molecule);
+CEXPORT int indigoComponentIndex (int atom);
+
+// Returns a 'molecule component' object, which can not be used as a
+// [query] molecule, but supports the indigo{Count,Iterate}{Atoms,Bonds} calls,
+// and also the indigoClone() call, which returns a [query] molecule.
+CEXPORT int indigoComponent (int molecule, int index);
+
 /* Calculation on molecules */
 
 CEXPORT int   indigoCountHeavyAtoms (int molecule);
@@ -343,14 +353,6 @@ CEXPORT float indigoMonoisotopicMass (int molecule);
 
 CEXPORT const char * indigoCanonicalSmiles (int molecule);
 CEXPORT const char * indigoLayeredCode (int molecule);
-
-CEXPORT int indigoDecomposition (int molecule);
-CEXPORT int indigoCountComponents (int decomposition);
-CEXPORT int indigoIterateComponents (int decomposition);
-CEXPORT int indigoAtomComponentIndex (int decomposition, int atom);
-CEXPORT int indigoIterateComponentAtoms (int decomposition, int index);
-CEXPORT int indigoIterateComponentBonds (int decomposition, int index);
-CEXPORT int indigoComponent (int decomposition, int index);
 
 CEXPORT int indigoHasZCoord (int molecule);
 CEXPORT int indigoIsChiral (int molecule);

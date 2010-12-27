@@ -104,7 +104,6 @@ void MoleculeExactMatcher::_collectConnectedComponentsInfo ()
 
    // Target decomposition
    _target_decomposer.create(_target);
-   _target_decomposer->need_component_size = true;
    _target_decomposer->decompose(&target_vertices_filter);
 
    // Query vertices filter initialization
@@ -114,7 +113,6 @@ void MoleculeExactMatcher::_collectConnectedComponentsInfo ()
 
    // Query decomposition
    _query_decomposer.create(_query);
-   _query_decomposer->need_component_size = true;
    _query_decomposer->decompose(&query_vertices_filter);
 }
 

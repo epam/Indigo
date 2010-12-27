@@ -15,7 +15,6 @@
 #include "graph/scaffold_detection.h"
 #include "base_cpp/array.h"
 #include "graph/max_common_subgraph.h"
-#include "graph/graph_decomposer.h"
 #include "base_cpp/ptr_array.h"
 
 using namespace indigo;

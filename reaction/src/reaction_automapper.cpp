@@ -17,7 +17,6 @@
 #include "reaction/query_reaction.h"
 #include "molecule/molecule_arom.h"
 #include "base_cpp/red_black.h" 
-#include "graph/graph_decomposer.h"
 #include "molecule/elements.h"
 #include "base_cpp/auto_ptr.h"
 
@@ -630,14 +629,12 @@ int ReactionAutomapper::_validMapFound(BaseReaction& reaction, int react, int pr
 }
 
 void ReactionAutomapper::_removeSmallComponents(BaseMolecule& mol) const {
-   GraphDecomposer decomposer(mol);
-   decomposer.need_component_size = true;
 
-   int ncomp = decomposer.decompose();
-   const Array<int> &decomposition = decomposer.getDecomposition();
+   int ncomp = mol.countComponents();
+   const Array<int> &decomposition = mol.getDecomposition();
 
    for(int i = 0; i < ncomp; ++i) {
-      if(decomposer.getComponentVerticesCount(i) < _MIN_VERTEX_SUB) {
+      if(mol.countComponentVertices(i) < _MIN_VERTEX_SUB) {
          for(int j = mol.vertexBegin(); j < mol.vertexEnd(); j = mol.vertexNext(j))
             if(decomposition[j] == i)
                mol.removeVertex(j);
@@ -1195,9 +1192,8 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
    if(proc == 1)
       return -1;
 
-   GraphDecomposer decomposer(*_sub);
-   int ncomp = decomposer.decompose();
-   const Array<int> &decomposition = decomposer.getDecomposition();
+   int ncomp = _sub->countComponents();
+   const Array<int> &decomposition = _sub->getDecomposition();
 
    int max_index = MaxCommonSubgraph::AdjMatricesStore::getMaximumComponentIndex(decomposition, ncomp);
 

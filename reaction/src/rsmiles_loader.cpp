@@ -15,7 +15,6 @@
 #include "reaction/rsmiles_loader.h"
 #include "base_cpp/scanner.h"
 #include "molecule/smiles_loader.h"
-#include "molecule/molecule_decomposer.h"
 #include "reaction/base_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
@@ -186,23 +185,14 @@ void RSmilesLoader::_loadReaction ()
       p_loader.loadQueryMolecule((QueryMolecule &)prod.ref());
    }
 
-   MoleculeDecomposer r_decomp(rcnt.ref());
-   MoleculeDecomposer c_decomp(ctlt.ref());
-   MoleculeDecomposer p_decomp(prod.ref());
-   MoleculeDecomposer *decomp[] = {&r_decomp, &c_decomp, &p_decomp};
-
-   int ncomp_r = r_decomp.decompose();
-   int ncomp_c = c_decomp.decompose();
-   int ncomp_p = p_decomp.decompose();
-
    QS_DEF(Array<int>, r_fragments);
    QS_DEF(Array<int>, c_fragments);
    QS_DEF(Array<int>, p_fragments);
    Array<int>* fragments[] = {&r_fragments, &c_fragments, &p_fragments};
 
-   r_fragments.clear_resize(ncomp_r);
-   c_fragments.clear_resize(ncomp_c);
-   p_fragments.clear_resize(ncomp_p);
+   r_fragments.clear_resize(rcnt->countComponents());
+   c_fragments.clear_resize(ctlt->countComponents());
+   p_fragments.clear_resize(prod->countComponents());
 
    for (i = 0; i < r_fragments.size(); i++)
       r_fragments[i] = i;
@@ -487,7 +477,8 @@ void RSmilesLoader::_loadReaction ()
             if ((*fragments[v])[j] == i)
             {
                (*fragments[v])[j] = -1;
-               decomp[v]->buildComponentMolecule(j, fragment.ref(), &mapping, 0);
+               Filter filt(mols[v]->ref().getDecomposition().ptr(), Filter::EQ, j);
+               fragment->makeSubmolecule(mols[v]->ref(), filt, &mapping, 0);
 
                mol->mergeWithMolecule(fragment.ref(), 0);
 

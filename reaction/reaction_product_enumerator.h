@@ -18,7 +18,6 @@
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
 #include "base_cpp/reusable_obj_array.h"
-#include "molecule/molecule_decomposer.h"
 #include "reaction/reaction_enumerator_state.h"
 
 namespace indigo {

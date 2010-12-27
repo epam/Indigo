@@ -22,7 +22,7 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule_electrons_localizer.h"
-#include "molecule/molecule_decomposer.h"
+#include "graph/graph_decomposer.h"
 
 namespace indigo {
 class Molecule;
@@ -73,7 +73,7 @@ private:
    enum { _NOT_IN_PI_SYSTEM = -3, _UNKNOWN = -2, _IN_AROMATIC  = -1 };
 
    Molecule &_target;
-   Obj<MoleculeDecomposer> _decomposer;
+   Obj<GraphDecomposer> _decomposer;
 
    TL_CP_DECL(Array<int>, _atom_pi_system_idx);
 

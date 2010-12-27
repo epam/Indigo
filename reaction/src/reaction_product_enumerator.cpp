@@ -24,7 +24,6 @@
 #include "graph/embedding_enumerator.h"
 #include "graph/spanning_tree.h"
 #include "molecule/molecule.h"
-#include "molecule/molecule_decomposer.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "graph/dfs_walk.h"
 

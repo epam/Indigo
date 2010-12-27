@@ -70,8 +70,6 @@
       <itemPath>molecule_cml_saver.h</itemPath>
       <itemPath>src/molecule_dearom.cpp</itemPath>
       <itemPath>molecule_dearom.h</itemPath>
-      <itemPath>src/molecule_decomposer.cpp</itemPath>
-      <itemPath>molecule_decomposer.h</itemPath>
       <itemPath>src/molecule_electrons_localizer.cpp</itemPath>
       <itemPath>molecule_electrons_localizer.h</itemPath>
       <itemPath>src/molecule_exact_matcher.cpp</itemPath>

@@ -17,7 +17,6 @@
 #include "graph/spanning_tree.h"
 #include "graph/graph_affine_matcher.h"
 #include "math/algebra.h"
-#include "graph/graph_decomposer.h"
 
 using namespace indigo;
 

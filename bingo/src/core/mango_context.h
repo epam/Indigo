@@ -18,7 +18,6 @@
 #include "core/mango_matchers.h"
 #include "core/mango_index.h"
 #include "base_cpp/tlscont.h"
-#include "base_cpp/ptr.h"
 
 using namespace indigo;
 
