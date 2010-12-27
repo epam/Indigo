@@ -107,7 +107,7 @@ void RenderSingle::draw ()
       } else {
          _drawObj();
          _rc.translate(0, (float)commentOffset);
-        _drawComment();
+         _drawComment();
       }
    }
    _rc.resetTransform();
