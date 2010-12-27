@@ -7,8 +7,6 @@
       <itemPath>src/indigo_array.cpp</itemPath>
       <itemPath>src/indigo_array.h</itemPath>
       <itemPath>src/indigo_basic.cpp</itemPath>
-      <itemPath>src/indigo_decomposition.cpp</itemPath>
-      <itemPath>src/indigo_decomposition.h</itemPath>
       <itemPath>src/indigo_deconvolution.cpp</itemPath>
       <itemPath>src/indigo_deconvolution.h</itemPath>
       <itemPath>src/indigo_fingerprints.cpp</itemPath>

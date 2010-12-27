@@ -20,7 +20,6 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule_stereocenters.h"
-#include "molecule/molecule_decomposer.h"
 #include "graph/dfs_walk.h"
 #include "molecule/elements.h"
 #include "graph/graph_highlighting.h"

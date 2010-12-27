@@ -67,7 +67,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/molecule.o \
 	${OBJECTDIR}/_ext/1881957642/bitarray.o \
 	${OBJECTDIR}/src/molecule_tautomer_match.o \
-	${OBJECTDIR}/src/molecule_decomposer.o \
 	${OBJECTDIR}/src/molecule_exact_matcher.o \
 	${OBJECTDIR}/src/rdf_loader.o \
 	${OBJECTDIR}/src/molecule_arom.o \
@@ -287,11 +286,6 @@ ${OBJECTDIR}/src/molecule_tautomer_match.o: src/molecule_tautomer_match.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_tautomer_match.o src/molecule_tautomer_match.cpp
-
-${OBJECTDIR}/src/molecule_decomposer.o: src/molecule_decomposer.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_decomposer.o src/molecule_decomposer.cpp
 
 ${OBJECTDIR}/src/molecule_exact_matcher.o: src/molecule_exact_matcher.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

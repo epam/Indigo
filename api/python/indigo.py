@@ -153,7 +153,6 @@ class Indigo:
     #self._lib.indigoSetErrorHandler.restype = None
     #self._lib.indigoSetErrorHandler.argtypes = [ERRFUNC, c_void_p]
     
-    # auto-generated with "generate-python.py indigo.h"
     self._lib.indigoVersion.restype = c_char_p
     self._lib.indigoVersion.argtypes = None
     self._lib.indigoAllocSessionId.restype = c_ulonglong
@@ -168,10 +167,6 @@ class Indigo:
     self._lib.indigoSetErrorMessage.argtypes = [c_char_p]
     self._lib.indigoFree.restype = c_int
     self._lib.indigoFree.argtypes = [c_int]
-    self._lib.indigoClone.restype = c_int
-    self._lib.indigoClone.argtypes = [c_int]
-    self._lib.indigoCountReferences.restype = c_int
-    self._lib.indigoCountReferences.argtypes = None
     self._lib.indigoSetOption.restype = c_int
     self._lib.indigoSetOption.argtypes = [c_char_p, c_char_p]
     self._lib.indigoSetOptionInt.restype = c_int
@@ -262,18 +257,6 @@ class Indigo:
     self._lib.indigoAddReactant.argtypes = [c_int, c_int]
     self._lib.indigoAddProduct.restype = c_int
     self._lib.indigoAddProduct.argtypes = [c_int, c_int]
-    self._lib.indigoCountReactants.restype = c_int
-    self._lib.indigoCountReactants.argtypes = [c_int]
-    self._lib.indigoCountProducts.restype = c_int
-    self._lib.indigoCountProducts.argtypes = [c_int]
-    self._lib.indigoCountMolecules.restype = c_int
-    self._lib.indigoCountMolecules.argtypes = [c_int]
-    self._lib.indigoIterateReactants.restype = c_int
-    self._lib.indigoIterateReactants.argtypes = [c_int]
-    self._lib.indigoIterateProducts.restype = c_int
-    self._lib.indigoIterateProducts.argtypes = [c_int]
-    self._lib.indigoIterateMolecules.restype = c_int
-    self._lib.indigoIterateMolecules.argtypes = [c_int]
     self._lib.indigoSaveRxnfile.restype = c_int
     self._lib.indigoSaveRxnfile.argtypes = [c_int, c_int]
     self._lib.indigoSaveRxnfileToFile.restype = c_int
@@ -346,10 +329,6 @@ class Indigo:
     self._lib.indigoIterateNeighbors.argtypes = [c_int]
     self._lib.indigoBond.restype = c_int
     self._lib.indigoBond.argtypes = [c_int]
-    self._lib.indigoGetAtom.restype = c_int
-    self._lib.indigoGetAtom.argtypes = [c_int, c_int]
-    self._lib.indigoGetBond.restype = c_int
-    self._lib.indigoGetBond.argtypes = [c_int, c_int]
     self._lib.indigoClearCisTrans.restype = c_int
     self._lib.indigoClearCisTrans.argtypes = [c_int]
     self._lib.indigoClearStereocenters.restype = c_int
@@ -368,8 +347,6 @@ class Indigo:
     self._lib.indigoCanonicalSmiles.argtypes = [c_int]
     self._lib.indigoLayeredCode.restype = c_char_p
     self._lib.indigoLayeredCode.argtypes = [c_int]
-    self._lib.indigoCountComponents.restype = c_int
-    self._lib.indigoCountComponents.argtypes = [c_int]
     self._lib.indigoHasZCoord.restype = c_int
     self._lib.indigoHasZCoord.argtypes = [c_int]
     self._lib.indigoIsChiral.restype = c_int
@@ -446,8 +423,6 @@ class Indigo:
     self._lib.indigoCreateArray.argtypes = None
     self._lib.indigoArrayAdd.restype = c_int
     self._lib.indigoArrayAdd.argtypes = [c_int, c_int]
-    self._lib.indigoArrayAt.restype = c_int
-    self._lib.indigoArrayAt.argtypes = [c_int, c_int]
     self._lib.indigoSize.restype = c_int
     self._lib.indigoSize.argtypes = [c_int]
     self._lib.indigoClear.restype = c_int
@@ -484,13 +459,6 @@ class Indigo:
     self._lib.indigoDecomposedMoleculeHighlighted.argtypes = [c_int]
     self._lib.indigoDecomposedMoleculeWithRGroups.restype = c_int
     self._lib.indigoDecomposedMoleculeWithRGroups.argtypes = [c_int]
-    self._lib.indigoNext.restype = c_int
-    self._lib.indigoNext.argtypes = [c_int]
-    
-    self._lib.indigoHasNext.restype = c_int
-    self._lib.indigoHasNext.argtypes = [c_int]
-    self._lib.indigoIndex.restype = c_int
-    self._lib.indigoIndex.argtypes = [c_int]
     self._lib.indigoToString.restype = c_char_p
     self._lib.indigoToString.argtypes = [c_int]
     self._lib.indigoReactionProductEnumerate.restype = c_int
@@ -608,6 +576,10 @@ class Indigo:
     self.IndigoObject.countStereocenters = self._member_int(self._lib.indigoCountStereocenters)
     self.IndigoObject.resetSymmetricCisTrans = self._member_int(self._lib.indigoResetSymmetricCisTrans)
 
+    self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
+    self.IndigoObject.componentIndex = self._member_int(self._lib.indigoComponentIndex)
+    self.IndigoObject.component = self._member_obj_int(self._lib.indigoComponent)
+
     self.IndigoObject.countHeavyAtoms = self._member_int(self._lib.indigoCountHeavyAtoms)
     self.IndigoObject.molecularWeight = self._member_float(self._lib.indigoMolecularWeight)
     self.IndigoObject.monoisotopicMass = self._member_float(self._lib.indigoMonoisotopicMass)
@@ -615,14 +587,6 @@ class Indigo:
 
     self.IndigoObject.canonicalSmiles = self._member_string(self._lib.indigoCanonicalSmiles)
     self.IndigoObject.layeredCode = self._member_string(self._lib.indigoLayeredCode)
-
-    self.IndigoObject.decomposition = self._member_obj(self._lib.indigoDecomposition)
-    self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
-    self.IndigoObject.iterateComponents = self._member_obj(self._lib.indigoIterateComponents)
-    self.IndigoObject.iterateComponentAtoms = self._member_obj_int(self._lib.indigoIterateComponentAtoms)
-    self.IndigoObject.iterateComponentBonds = self._member_obj_int(self._lib.indigoIterateComponentBonds)
-    self.IndigoObject.component = self._member_obj_int(self._lib.indigoComponent)
-    self.IndigoObject.atomComponentIndex = self._member_int_obj(self._lib.indigoAtomComponentIndex)
 
     self.IndigoObject.hasZCoord = self._member_bool(self._lib.indigoHasZCoord)
     self.IndigoObject.isChiral = self._member_bool(self._lib.indigoIsChiral)
@@ -704,6 +668,8 @@ class Indigo:
     return self._make_wrapper_func(newfunc, func)
 
   def _static_int (self, func):
+    func.restype = c_int
+    func.argtypes = []
     def newfunc ():
       self._setSID()
       return self._checkResult(func())

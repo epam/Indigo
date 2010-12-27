@@ -12,7 +12,6 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "graph/graph_decomposer.h"
 #include "graph/biconnected_decomposer.h"
 #include "graph/morgan_code.h"
 #include "layout/molecule_layout_graph.h"
@@ -239,19 +238,17 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
    if (molecule.vertexCount() == 0)
       return;
 
-   GraphDecomposer decomposer(*this);
-   
    if (_patterns.size() == 0)
       _initPatterns();
 
-   int n_components = decomposer.decompose();
+   int n_components = countComponents();
 
    if (fabs(bond_length) < EPSILON)
       throw Error("zero bond length");
 
    if (n_components > 1)
    {
-      const Array<int> &decomposition = decomposer.getDecomposition();
+      const Array<int> &decomposition = getDecomposition();
       float x_min, x_max, x_start = 0.f, dx;
       float y_min, y_max, y_start = 0.f, max_height = 0.f, dy;
       int i, j;

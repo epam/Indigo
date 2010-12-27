@@ -301,8 +301,8 @@ void MoleculePiSystemsMatcher::_extractPiSystem (int pi_system_index)
    pi_system.initialized = true;
 
    Molecule &ps = pi_system.pi_system;
-   _decomposer->buildComponentMolecule(pi_system_index, ps, 
-      &pi_system.mapping, &pi_system.inv_mapping);
+   Filter filt(_decomposer->getDecomposition().ptr(), Filter::EQ, pi_system_index);
+   ps.makeSubmolecule(_target, filt, &pi_system.mapping, &pi_system.inv_mapping);
 
    // Replace bonds outside pi-system to implicit hydrogens
    QS_DEF(Array<int>, conn);
