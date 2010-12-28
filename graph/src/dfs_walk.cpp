@@ -22,14 +22,23 @@ DfsWalk::DfsWalk (const Graph &graph) :
 _graph(graph),
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
-TL_CP_GET(_v_seq)
+TL_CP_GET(_v_seq),
+TL_CP_GET(_edges_walk_backwards)
 {
    ignored_vertices = 0;
    vertex_ranks = 0;
+   _edges_walk_backwards.clear();
 }
 
 DfsWalk::~DfsWalk ()
 {
+}
+
+void DfsWalk::markEdgeWalkBackwards (int beg, int end)
+{
+   Edge &edge = _edges_walk_backwards.push();
+   edge.beg = beg;
+   edge.end = end;
 }
 
 void DfsWalk::walk ()
@@ -94,10 +103,22 @@ void DfsWalk::walk ()
       
       for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
       {
+         int nei_v = vertex.neiVertex(i);
+
+         for (j = 0; j < _edges_walk_backwards.size(); j++)
+         {
+            if (_edges_walk_backwards[j].beg == v_idx &&
+                _edges_walk_backwards[j].end == nei_v)
+               break;
+         }
+
+         if (j != _edges_walk_backwards.size())
+            continue;
+
          VertexEdge &ve = nei.push();
 
          ve.e = vertex.neiEdge(i);
-         ve.v = vertex.neiVertex(i);
+         ve.v = nei_v;
       }
 
       if (vertex_ranks != 0)
@@ -120,17 +141,17 @@ void DfsWalk::walk ()
 
             j = v_idx;
 
-            while (j != -1)
-            {
-               if (_vertices[j].parent_vertex == nei_idx)
-                  break;
-               j = _vertices[j].parent_vertex;
-            }
+            //while (j != -1)
+           // {
+            //   if (_vertices[j].parent_vertex == nei_idx)
+            //      break;
+            //   j = _vertices[j].parent_vertex;
+           // }
 
-            if (j == -1)
-               throw Error("cycle unwind error");
+            //if (j != -1)
+             //  _edges[_vertices[j].parent_edge].opening_cycles++;
 
-            _edges[_vertices[j].parent_edge].opening_cycles++;
+            _vertices[nei_idx].openings++;
             _vertices[v_idx].branches++;
 
             SeqElem &seq_elem = _v_seq.push();
@@ -171,7 +192,7 @@ const Array<DfsWalk::SeqElem> & DfsWalk::getSequence () const
    return _v_seq;
 }
 
-bool DfsWalk::edgeClosingCycle (int e_idx) const
+bool DfsWalk::isClosure (int e_idx) const
 {
    return _edges[e_idx].closing_cycle != 0;
 }
@@ -181,9 +202,9 @@ int DfsWalk::numBranches (int v_idx) const
    return _vertices[v_idx].branches;
 }
 
-int DfsWalk::numOpeningCycles (int e_idx) const
+int DfsWalk::numOpenings (int v_idx) const
 {
-   return _edges[e_idx].opening_cycles;
+   return _vertices[v_idx].openings;
 }
 
 void DfsWalk::calcMapping (Array<int> &mapping) const

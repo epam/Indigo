@@ -111,38 +111,20 @@ void CmfSaver::saveMolecule (Molecule &mol)
             if (branch_counters[v_prev_idx] > 0)
                _encode(CMF_CLOSE_BRACKET);
 
-         int opening_cycles = walk.numOpeningCycles(e_idx);
+         int branches = walk.numBranches(v_prev_idx);
 
-         for (j = 0; j < opening_cycles; j++)
-         {
-            for (k = 0; k < cycle_numbers.size(); k++)
-               if (cycle_numbers[k] == -1)
-                  break;
-            if (k == cycle_numbers.size())
-               cycle_numbers.push(v_prev_idx);
-            else
-               cycle_numbers[k] = v_prev_idx;
+         if (branches > 1)
+            if (branch_counters[v_prev_idx] < branches - 1)
+               _encode(CMF_OPEN_BRACKET);
 
-            _encodeCycleNumer(k);
-         }
+         branch_counters[v_prev_idx]++;
 
-         if (v_prev_idx >= 0)
-         {
-            int branches = walk.numBranches(v_prev_idx);
-
-            if (branches > 1)
-               if (branch_counters[v_prev_idx] < branches - 1)
-                  _encode(CMF_OPEN_BRACKET);
-
-            branch_counters[v_prev_idx]++;
-
-            if (branch_counters[v_prev_idx] > branches)
-               throw Error("unexpected branch");
-         }
+         if (branch_counters[v_prev_idx] > branches)
+            throw Error("unexpected branch");
 
          _encodeBond(mol, e_idx, mapping.ptr());
          
-         if (walk.edgeClosingCycle(e_idx))
+         if (walk.isClosure(e_idx))
          {
             for (j = 0; j < cycle_numbers.size(); j++)
                if (cycle_numbers[j] == v_idx)
@@ -164,6 +146,21 @@ void CmfSaver::saveMolecule (Molecule &mol)
       {
          _encodeAtom(mol, v_idx, mapping.ptr());
          _atom_sequence.push(v_idx);
+         
+         int openings = walk.numOpenings(v_idx);
+
+         for (j = 0; j < openings; j++)
+         {
+            for (k = 0; k < cycle_numbers.size(); k++)
+               if (cycle_numbers[k] == -1)
+                  break;
+            if (k == cycle_numbers.size())
+               cycle_numbers.push(v_idx);
+            else
+               cycle_numbers[k] = v_idx;
+
+            _encodeCycleNumer(k);
+         }
       }
    }
 

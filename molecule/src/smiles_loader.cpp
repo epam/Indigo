@@ -71,7 +71,6 @@ void SmilesLoader::checkQueryAtoms ()
    }
 }
 
-
 void SmilesLoader::_calcStereocenters ()
 {
    int i, j, tmp;

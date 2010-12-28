@@ -299,7 +299,7 @@ void MainLayerConnections::printConnectionTable (Array<char> &result)
 
       if (item.parent_vertex != -1)
       {
-         if (dfs_walk.edgeClosingCycle(item.parent_edge))
+         if (dfs_walk.isClosure(item.parent_edge))
             descedants_size[item.parent_vertex] += 1;
          else
          {
@@ -319,7 +319,7 @@ void MainLayerConnections::printConnectionTable (Array<char> &result)
    {
       const DfsWalk::SeqElem &item = sequence[i];
 
-      if (item.parent_edge != -1 && !dfs_walk.edgeClosingCycle(item.parent_edge))
+      if (item.parent_edge != -1 && !dfs_walk.isClosure(item.parent_edge))
          edge_in_dfs[item.parent_edge] = 1;
    }
 
