@@ -23,22 +23,22 @@ _graph(graph),
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
 TL_CP_GET(_v_seq),
-TL_CP_GET(_edges_walk_backwards)
+TL_CP_GET(_root_vertices),
+TL_CP_GET(_closures)
 {
    ignored_vertices = 0;
    vertex_ranks = 0;
-   _edges_walk_backwards.clear();
+   _root_vertices.resize(graph.vertexEnd());
+   _root_vertices.zerofill();
 }
 
 DfsWalk::~DfsWalk ()
 {
 }
 
-void DfsWalk::markEdgeWalkBackwards (int beg, int end)
+void DfsWalk::mustBeRootVertex (int v_idx)
 {
-   Edge &edge = _edges_walk_backwards.push();
-   edge.beg = beg;
-   edge.end = end;
+   _root_vertices[v_idx] = 1;
 }
 
 void DfsWalk::walk ()
@@ -50,6 +50,7 @@ void DfsWalk::walk ()
    _edges.clear_resize(_graph.edgeEnd());
    _vertices.zerofill();
    _edges.zerofill();
+   _closures.clear();
 
    v_stack.clear();
 
@@ -105,14 +106,7 @@ void DfsWalk::walk ()
       {
          int nei_v = vertex.neiVertex(i);
 
-         for (j = 0; j < _edges_walk_backwards.size(); j++)
-         {
-            if (_edges_walk_backwards[j].beg == v_idx &&
-                _edges_walk_backwards[j].end == nei_v)
-               break;
-         }
-
-         if (j != _edges_walk_backwards.size())
+         if (_root_vertices[nei_v] == 1 && _vertices[nei_v].dfs_state == 0)
             continue;
 
          VertexEdge &ve = nei.push();
@@ -138,18 +132,9 @@ void DfsWalk::walk ()
          if (_vertices[nei_idx].dfs_state == 2)
          {
             _edges[edge_idx].closing_cycle = 1;
-
-            j = v_idx;
-
-            //while (j != -1)
-           // {
-            //   if (_vertices[j].parent_vertex == nei_idx)
-            //      break;
-            //   j = _vertices[j].parent_vertex;
-           // }
-
-            //if (j != -1)
-             //  _edges[_vertices[j].parent_edge].opening_cycles++;
+            Edge &e = _closures.push();
+            e.beg = v_idx;
+            e.end = nei_idx;
 
             _vertices[nei_idx].openings++;
             _vertices[v_idx].branches++;
@@ -226,4 +211,16 @@ int DfsWalk::_cmp (VertexEdge &ve1, VertexEdge &ve2, void *context)
    int *ranks = (int *)context;
 
    return ranks[ve2.v] - ranks[ve1.v];
+}
+
+void DfsWalk::getNeighborsClosing (int v_idx, Array<int> &res)
+{
+   int i;
+
+   res.clear();
+   for (i = 0; i < _closures.size(); i++)
+   {
+      if (_closures[i].end == v_idx)
+         res.push(_closures[i].beg);
+   }
 }

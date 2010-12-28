@@ -50,7 +50,9 @@ public:
    int *ignored_vertices;
    int *vertex_ranks;
 
-   void markEdgeWalkBackwards (int beg, int end);
+   void mustBeRootVertex (int v_idx);
+
+   void getNeighborsClosing (int v_idx, Array<int> &res);
 
    DEF_ERROR("DFS walk");
 protected:
@@ -78,7 +80,8 @@ protected:
    TL_CP_DECL(Array<_EdgeDesc>,      _edges);
    
    TL_CP_DECL(Array<SeqElem>, _v_seq);
-   TL_CP_DECL(Array<Edge>, _edges_walk_backwards);
+   TL_CP_DECL(Array<int>, _root_vertices);
+   TL_CP_DECL(Array<Edge>, _closures);
 };
 }
 

@@ -150,14 +150,9 @@ void SmilesSaver::_saveMolecule ()
    for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
    {
       if (_bmol->isRSite(i))
-      {
          // We break the DFS walk when goind from R-sites. For details, see
          // http://blueobelisk.shapado.com/questions/how-r-group-atoms-should-be-represented-in-smiles
-         const Vertex &v = _bmol->getVertex(i);
-
-         for (j = v.neiBegin(); j != v.neiEnd(); j = v.neiNext(j))
-            walk.markEdgeWalkBackwards(i, v.neiVertex(j));
-      }
+         walk.mustBeRootVertex(i);
    }
 
    walk.walk();
@@ -350,9 +345,11 @@ void SmilesSaver::_saveMolecule ()
    // cycle_numbers[i] == n means that the number is used by vertex n
    QS_DEF(Array<int>, cycle_numbers);
 
+   int rsites_closures_starting_num = 91;
+
    cycle_numbers.clear();
    cycle_numbers.push(0); // never used
-
+   
    bool first_component = true;
    
    for (i = 0; i < v_seq.size(); i++)
@@ -448,13 +445,25 @@ void SmilesSaver::_saveMolecule ()
          else
             _writeSmartsAtom(v_idx, &_qmol->getAtom(v_idx), _atoms[v_idx].chirality, 0, false);
 
-         int openings = walk.numOpenings(v_idx);
+         QS_DEF(Array<int>, closing);
 
-         for (j = 0; j < openings; j++)
+         walk.getNeighborsClosing(v_idx, closing);
+
+         for (j = 0; j < closing.size(); j++)
          {
-            for (k = 1; k < cycle_numbers.size(); k++)
-               if (cycle_numbers[k] == -1)
-                  break;
+            if (_bmol->isRSite(closing[j]))
+            {
+               cycle_numbers.expandFill(rsites_closures_starting_num + 1, -1);
+               for (k = rsites_closures_starting_num; k < cycle_numbers.size(); k++)
+                  if (cycle_numbers[k] == -1)
+                     break;
+            }
+            else
+            {
+               for (k = 1; k < cycle_numbers.size(); k++)
+                  if (cycle_numbers[k] == -1)
+                     break;
+            }
             if (k == cycle_numbers.size())
                cycle_numbers.push(v_idx);
             else
