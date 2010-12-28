@@ -40,7 +40,7 @@ public:
    bool process ();
 
 protected:
-   bool _pathFinder (const SpanningTree &spt, Array<int> &vertices, Array<int> &edges, Array<int> &flags);
+   bool _pathFinder (const SpanningTree &spt, int ext_v1, int ext_v2, int ext_e);
    Graph &_graph;
 private:
    CycleEnumerator (const CycleEnumerator &); // no implicit copy

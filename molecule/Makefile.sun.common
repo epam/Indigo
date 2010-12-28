@@ -34,7 +34,6 @@ OBJS_libmolecule.a =  \
 	$(TARGETDIR_libmolecule.a)/molecule_cis_trans.o \
 	$(TARGETDIR_libmolecule.a)/molecule_cml_saver.o \
 	$(TARGETDIR_libmolecule.a)/molecule_dearom.o \
-	$(TARGETDIR_libmolecule.a)/molecule_decomposer.o \
 	$(TARGETDIR_libmolecule.a)/molecule_electrons_localizer.o \
 	$(TARGETDIR_libmolecule.a)/molecule_exact_matcher.o \
 	$(TARGETDIR_libmolecule.a)/molecule_exact_substructure_matcher.o \
@@ -158,9 +157,6 @@ $(TARGETDIR_libmolecule.a)/molecule_cml_saver.o: $(TARGETDIR_libmolecule.a) src/
 $(TARGETDIR_libmolecule.a)/molecule_dearom.o: $(TARGETDIR_libmolecule.a) src/molecule_dearom.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_dearom.cpp
 
-$(TARGETDIR_libmolecule.a)/molecule_decomposer.o: $(TARGETDIR_libmolecule.a) src/molecule_decomposer.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_decomposer.cpp
-
 $(TARGETDIR_libmolecule.a)/molecule_electrons_localizer.o: $(TARGETDIR_libmolecule.a) src/molecule_electrons_localizer.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_electrons_localizer.cpp
 
@@ -277,7 +273,6 @@ clean:
 		$(TARGETDIR_libmolecule.a)/molecule_cis_trans.o \
 		$(TARGETDIR_libmolecule.a)/molecule_cml_saver.o \
 		$(TARGETDIR_libmolecule.a)/molecule_dearom.o \
-		$(TARGETDIR_libmolecule.a)/molecule_decomposer.o \
 		$(TARGETDIR_libmolecule.a)/molecule_electrons_localizer.o \
 		$(TARGETDIR_libmolecule.a)/molecule_exact_matcher.o \
 		$(TARGETDIR_libmolecule.a)/molecule_exact_substructure_matcher.o \

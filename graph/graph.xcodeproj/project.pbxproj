@@ -85,7 +85,6 @@
 		A7EDA3BF10624B0A006CBFAF /* os_thread_wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = os_thread_wrapper.h; path = ../common/base_cpp/os_thread_wrapper.h; sourceTree = SOURCE_ROOT; };
 		A7EDA3C010624B0A006CBFAF /* pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pool.h; path = ../common/base_cpp/pool.h; sourceTree = SOURCE_ROOT; };
 		A7EDA3C110624B0A006CBFAF /* ptr_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ptr_array.h; path = ../common/base_cpp/ptr_array.h; sourceTree = SOURCE_ROOT; };
-		A7EDA3C210624B0A006CBFAF /* ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ptr.h; path = ../common/base_cpp/ptr.h; sourceTree = SOURCE_ROOT; };
 		A7EDA3C310624B0A006CBFAF /* red_black.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = red_black.h; path = ../common/base_cpp/red_black.h; sourceTree = SOURCE_ROOT; };
 		A7EDA3C410624B0A006CBFAF /* reusable_obj_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = reusable_obj_array.h; path = ../common/base_cpp/reusable_obj_array.h; sourceTree = SOURCE_ROOT; };
 		A7EDA3C510624B0A006CBFAF /* tlscont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tlscont.cpp; path = ../common/base_cpp/tlscont.cpp; sourceTree = SOURCE_ROOT; };
@@ -186,7 +185,6 @@
 				A7EDA3BF10624B0A006CBFAF /* os_thread_wrapper.h */,
 				A7EDA3C010624B0A006CBFAF /* pool.h */,
 				A7EDA3C110624B0A006CBFAF /* ptr_array.h */,
-				A7EDA3C210624B0A006CBFAF /* ptr.h */,
 				A7EDA3C310624B0A006CBFAF /* red_black.h */,
 				A7EDA3C410624B0A006CBFAF /* reusable_obj_array.h */,
 				A7EDA3C510624B0A006CBFAF /* tlscont.cpp */,

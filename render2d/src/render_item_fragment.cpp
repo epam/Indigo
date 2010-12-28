@@ -33,7 +33,7 @@ RenderItemFragment::RenderItemFragment (RenderItemFactory& factory) :
    inversionArray(NULL),
    exactChangeArray(NULL),
    refAtom(-1),
-   _scaleFactor(1.0)
+   _scaleFactor(1.0f)
 {
 }
 
