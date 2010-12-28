@@ -1,5 +1,11 @@
 rd /S /Q %1
 
+cd java
+call compile.bat
+cd ..\renderer\java
+call compile.bat
+cd ..\..\
+
 mkdir %1\lib\Win\x86
 mkdir %1\lib\Win\x64
 
