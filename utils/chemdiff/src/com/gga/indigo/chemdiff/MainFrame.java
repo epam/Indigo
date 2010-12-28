@@ -150,19 +150,16 @@ public class MainFrame extends javax.swing.JFrame
       in_table_panel1 = new javax.swing.JPanel();
       load_progress_bar1 = new javax.swing.JProgressBar();
       jPanel1 = new javax.swing.JPanel();
-      load_button1 = new javax.swing.JButton();
-      action_panel = new javax.swing.JPanel();
-      compare_button = new javax.swing.JButton();
-      main_progress_bar = new javax.swing.JProgressBar();
+      load_first = new javax.swing.JButton();
       in_panel2 = new javax.swing.JPanel();
       in_table_panel2 = new javax.swing.JPanel();
       load_progress_bar2 = new javax.swing.JProgressBar();
       jPanel2 = new javax.swing.JPanel();
-      load_button2 = new javax.swing.JButton();
-      options_panel = new javax.swing.JPanel();
-      aromatize_check = new java.awt.Checkbox();
-      stereocenters_check = new java.awt.Checkbox();
-      cistrans_check = new java.awt.Checkbox();
+      load_second = new javax.swing.JButton();
+      filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
+      action_panel = new javax.swing.JPanel();
+      compare_button = new javax.swing.JButton();
+      main_progress_bar = new javax.swing.JProgressBar();
       out_tab = new javax.swing.JPanel();
       out_panel1 = new javax.swing.JPanel();
       out_tabel_label1 = new javax.swing.JLabel();
@@ -179,6 +176,16 @@ public class MainFrame extends javax.swing.JFrame
       out_table_panel3 = new javax.swing.JPanel();
       save_panel3 = new javax.swing.JPanel();
       save_button3 = new javax.swing.JButton();
+      jMainMenuBar = new javax.swing.JMenuBar();
+      jMenuFile = new javax.swing.JMenu();
+      jMenuLoadLeft = new javax.swing.JMenuItem();
+      jMenuLoadRight = new javax.swing.JMenuItem();
+      jSeparator1 = new javax.swing.JPopupMenu.Separator();
+      jMenuExit = new javax.swing.JMenuItem();
+      jMenuOptions = new javax.swing.JMenu();
+      aromatizer_check = new javax.swing.JCheckBoxMenuItem();
+      stereocenters_check = new javax.swing.JCheckBoxMenuItem();
+      cistrans_check = new javax.swing.JCheckBoxMenuItem();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -196,31 +203,31 @@ public class MainFrame extends javax.swing.JFrame
       in_table_panel1.setLayout(in_table_panel1Layout);
       in_table_panel1Layout.setHorizontalGroup(
          in_table_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 316, Short.MAX_VALUE)
+         .addGap(0, 418, Short.MAX_VALUE)
       );
       in_table_panel1Layout.setVerticalGroup(
          in_table_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 761, Short.MAX_VALUE)
+         .addGap(0, 464, Short.MAX_VALUE)
       );
 
-      load_button1.setText("Load first file");
-      load_button1.setMaximumSize(new java.awt.Dimension(150, 26));
-      load_button1.setMinimumSize(new java.awt.Dimension(150, 26));
-      load_button1.setPreferredSize(new java.awt.Dimension(150, 26));
-      load_button1.addActionListener(new java.awt.event.ActionListener() {
+      load_first.setText("Load first file");
+      load_first.setMaximumSize(new java.awt.Dimension(150, 26));
+      load_first.setMinimumSize(new java.awt.Dimension(150, 26));
+      load_first.setPreferredSize(new java.awt.Dimension(150, 26));
+      load_first.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
-            load_button1ActionPerformed(evt);
+            load_firstActionPerformed(evt);
          }
       });
-      jPanel1.add(load_button1);
+      jPanel1.add(load_first);
 
       javax.swing.GroupLayout in_panel1Layout = new javax.swing.GroupLayout(in_panel1);
       in_panel1.setLayout(in_panel1Layout);
       in_panel1Layout.setHorizontalGroup(
          in_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(in_table_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
-         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
-         .addComponent(load_progress_bar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
+         .addComponent(in_table_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
+         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
+         .addComponent(load_progress_bar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
       );
       in_panel1Layout.setVerticalGroup(
          in_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -229,7 +236,53 @@ public class MainFrame extends javax.swing.JFrame
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(load_progress_bar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(in_table_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE))
+            .addComponent(in_table_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
+      );
+
+      in_panel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+      in_panel2.setPreferredSize(new java.awt.Dimension(300, 670));
+
+      in_table_panel2.setPreferredSize(new java.awt.Dimension(350, 617));
+
+      javax.swing.GroupLayout in_table_panel2Layout = new javax.swing.GroupLayout(in_table_panel2);
+      in_table_panel2.setLayout(in_table_panel2Layout);
+      in_table_panel2Layout.setHorizontalGroup(
+         in_table_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGap(0, 413, Short.MAX_VALUE)
+      );
+      in_table_panel2Layout.setVerticalGroup(
+         in_table_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGap(0, 465, Short.MAX_VALUE)
+      );
+
+      load_second.setText("Load second file");
+      load_second.setMaximumSize(new java.awt.Dimension(150, 26));
+      load_second.setMinimumSize(new java.awt.Dimension(150, 26));
+      load_second.setPreferredSize(new java.awt.Dimension(150, 26));
+      load_second.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            load_secondActionPerformed(evt);
+         }
+      });
+      jPanel2.add(load_second);
+      jPanel2.add(filler1);
+
+      javax.swing.GroupLayout in_panel2Layout = new javax.swing.GroupLayout(in_panel2);
+      in_panel2.setLayout(in_panel2Layout);
+      in_panel2Layout.setHorizontalGroup(
+         in_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+         .addComponent(load_progress_bar2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+         .addComponent(in_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+      );
+      in_panel2Layout.setVerticalGroup(
+         in_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(in_panel2Layout.createSequentialGroup()
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(load_progress_bar2, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(in_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE))
       );
 
       compare_button.setText("Compare");
@@ -250,102 +303,26 @@ public class MainFrame extends javax.swing.JFrame
       );
       action_panelLayout.setVerticalGroup(
          action_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(main_progress_bar, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-         .addComponent(compare_button, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-      );
-
-      in_panel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-      in_panel2.setPreferredSize(new java.awt.Dimension(300, 670));
-
-      in_table_panel2.setPreferredSize(new java.awt.Dimension(350, 617));
-
-      javax.swing.GroupLayout in_table_panel2Layout = new javax.swing.GroupLayout(in_table_panel2);
-      in_table_panel2.setLayout(in_table_panel2Layout);
-      in_table_panel2Layout.setHorizontalGroup(
-         in_table_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 316, Short.MAX_VALUE)
-      );
-      in_table_panel2Layout.setVerticalGroup(
-         in_table_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 762, Short.MAX_VALUE)
-      );
-
-      load_button2.setText("Load second file");
-      load_button2.setMaximumSize(new java.awt.Dimension(150, 26));
-      load_button2.setMinimumSize(new java.awt.Dimension(150, 26));
-      load_button2.setPreferredSize(new java.awt.Dimension(150, 26));
-      load_button2.addActionListener(new java.awt.event.ActionListener() {
-         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            load_button2ActionPerformed(evt);
-         }
-      });
-      jPanel2.add(load_button2);
-
-      javax.swing.GroupLayout in_panel2Layout = new javax.swing.GroupLayout(in_panel2);
-      in_panel2.setLayout(in_panel2Layout);
-      in_panel2Layout.setHorizontalGroup(
-         in_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
-         .addComponent(load_progress_bar2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
-         .addComponent(in_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
-      );
-      in_panel2Layout.setVerticalGroup(
-         in_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(in_panel2Layout.createSequentialGroup()
-            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(load_progress_bar2, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(in_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 762, Short.MAX_VALUE))
-      );
-
-      aromatize_check.setLabel("aromatize molecules");
-
-      stereocenters_check.setLabel("ignore stereocenters");
-
-      cistrans_check.setLabel("ignore cis-trans");
-
-      javax.swing.GroupLayout options_panelLayout = new javax.swing.GroupLayout(options_panel);
-      options_panel.setLayout(options_panelLayout);
-      options_panelLayout.setHorizontalGroup(
-         options_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(options_panelLayout.createSequentialGroup()
-            .addGroup(options_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addComponent(aromatize_check, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
-               .addComponent(stereocenters_check, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
-               .addComponent(cistrans_check, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
-            .addContainerGap())
-      );
-      options_panelLayout.setVerticalGroup(
-         options_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(options_panelLayout.createSequentialGroup()
-            .addComponent(aromatize_check, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(stereocenters_check, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(cistrans_check, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(714, Short.MAX_VALUE))
+         .addComponent(main_progress_bar, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+         .addComponent(compare_button, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
       );
 
       javax.swing.GroupLayout in_tabLayout = new javax.swing.GroupLayout(in_tab);
       in_tab.setLayout(in_tabLayout);
       in_tabLayout.setHorizontalGroup(
          in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, in_tabLayout.createSequentialGroup()
-            .addComponent(options_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+         .addGroup(in_tabLayout.createSequentialGroup()
+            .addComponent(in_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(in_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(in_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE))
+            .addComponent(in_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE))
          .addComponent(action_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
       );
       in_tabLayout.setVerticalGroup(
          in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, in_tabLayout.createSequentialGroup()
-            .addGroup(in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-               .addComponent(in_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 833, Short.MAX_VALUE)
-               .addComponent(options_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-               .addComponent(in_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 833, Short.MAX_VALUE))
+         .addGroup(in_tabLayout.createSequentialGroup()
+            .addGroup(in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addComponent(in_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
+               .addComponent(in_panel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(action_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
@@ -353,6 +330,7 @@ public class MainFrame extends javax.swing.JFrame
       jTabbedPane1.addTab("input", in_tab);
 
       out_tab.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+      out_tab.setLayout(new java.awt.GridLayout(1, 0, 3, 3));
 
       out_panel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
       out_panel1.setPreferredSize(new java.awt.Dimension(350, 670));
@@ -368,11 +346,11 @@ public class MainFrame extends javax.swing.JFrame
       out_table_panel1.setLayout(out_table_panel1Layout);
       out_table_panel1Layout.setHorizontalGroup(
          out_table_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 271, Short.MAX_VALUE)
+         .addGap(0, 273, Short.MAX_VALUE)
       );
       out_table_panel1Layout.setVerticalGroup(
          out_table_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 796, Short.MAX_VALUE)
+         .addGap(0, 498, Short.MAX_VALUE)
       );
 
       save_button1.setText("Save");
@@ -390,19 +368,21 @@ public class MainFrame extends javax.swing.JFrame
       out_panel1.setLayout(out_panel1Layout);
       out_panel1Layout.setHorizontalGroup(
          out_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(out_tabel_label1, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
-         .addComponent(save_panel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
-         .addComponent(out_table_panel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+         .addComponent(out_tabel_label1, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+         .addComponent(save_panel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+         .addComponent(out_table_panel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
       );
       out_panel1Layout.setVerticalGroup(
          out_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(out_panel1Layout.createSequentialGroup()
             .addComponent(out_tabel_label1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(out_table_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 798, Short.MAX_VALUE)
+            .addComponent(out_table_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(save_panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
+
+      out_tab.add(out_panel1);
 
       out_panel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
       out_panel2.setPreferredSize(new java.awt.Dimension(350, 670));
@@ -418,11 +398,11 @@ public class MainFrame extends javax.swing.JFrame
       out_table_panel2.setLayout(out_table_panel2Layout);
       out_table_panel2Layout.setHorizontalGroup(
          out_table_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 272, Short.MAX_VALUE)
+         .addGap(0, 273, Short.MAX_VALUE)
       );
       out_table_panel2Layout.setVerticalGroup(
          out_table_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 797, Short.MAX_VALUE)
+         .addGap(0, 499, Short.MAX_VALUE)
       );
 
       save_button2.setText("Save");
@@ -440,19 +420,21 @@ public class MainFrame extends javax.swing.JFrame
       out_panel2.setLayout(out_panel2Layout);
       out_panel2Layout.setHorizontalGroup(
          out_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(out_tabel_label2, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
-         .addComponent(out_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
-         .addComponent(save_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
+         .addComponent(out_tabel_label2, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+         .addComponent(out_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+         .addComponent(save_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
       );
       out_panel2Layout.setVerticalGroup(
          out_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(out_panel2Layout.createSequentialGroup()
             .addComponent(out_tabel_label2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(out_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 799, Short.MAX_VALUE)
+            .addComponent(out_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
             .addGap(5, 5, 5)
             .addComponent(save_panel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
+
+      out_tab.add(out_panel2);
 
       out_panel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
       out_panel3.setPreferredSize(new java.awt.Dimension(350, 670));
@@ -468,11 +450,11 @@ public class MainFrame extends javax.swing.JFrame
       out_table_panel3.setLayout(out_table_panel3Layout);
       out_table_panel3Layout.setHorizontalGroup(
          out_table_panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 272, Short.MAX_VALUE)
+         .addGap(0, 273, Short.MAX_VALUE)
       );
       out_table_panel3Layout.setVerticalGroup(
          out_table_panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 796, Short.MAX_VALUE)
+         .addGap(0, 498, Short.MAX_VALUE)
       );
 
       save_button3.setText("Save");
@@ -490,39 +472,73 @@ public class MainFrame extends javax.swing.JFrame
       out_panel3.setLayout(out_panel3Layout);
       out_panel3Layout.setHorizontalGroup(
          out_panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(out_tabel_label3, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
-         .addComponent(out_table_panel3, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
-         .addComponent(save_panel3, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
+         .addComponent(out_tabel_label3, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+         .addComponent(out_table_panel3, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+         .addComponent(save_panel3, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
       );
       out_panel3Layout.setVerticalGroup(
          out_panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(out_panel3Layout.createSequentialGroup()
             .addComponent(out_tabel_label3, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(out_table_panel3, javax.swing.GroupLayout.DEFAULT_SIZE, 798, Short.MAX_VALUE)
+            .addComponent(out_table_panel3, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(save_panel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
 
-      javax.swing.GroupLayout out_tabLayout = new javax.swing.GroupLayout(out_tab);
-      out_tab.setLayout(out_tabLayout);
-      out_tabLayout.setHorizontalGroup(
-         out_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(out_tabLayout.createSequentialGroup()
-            .addComponent(out_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(out_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(out_panel3, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE))
-      );
-      out_tabLayout.setVerticalGroup(
-         out_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(out_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 872, Short.MAX_VALUE)
-         .addComponent(out_panel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 872, Short.MAX_VALUE)
-         .addComponent(out_panel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 872, Short.MAX_VALUE)
-      );
+      out_tab.add(out_panel3);
 
       jTabbedPane1.addTab("output", out_tab);
+
+      jMenuFile.setText("File");
+      jMenuFile.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            load_secondActionPerformed(evt);
+         }
+      });
+
+      jMenuLoadLeft.setText("Load left");
+      jMenuLoadLeft.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            load_firstActionPerformed(evt);
+         }
+      });
+      jMenuFile.add(jMenuLoadLeft);
+
+      jMenuLoadRight.setText("Load right");
+      jMenuLoadRight.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            load_secondActionPerformed(evt);
+         }
+      });
+      jMenuFile.add(jMenuLoadRight);
+      jMenuFile.add(jSeparator1);
+
+      jMenuExit.setText("Exit");
+      jMenuExit.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuExitActionPerformed(evt);
+         }
+      });
+      jMenuFile.add(jMenuExit);
+
+      jMainMenuBar.add(jMenuFile);
+
+      jMenuOptions.setText("Options");
+
+      aromatizer_check.setSelected(true);
+      aromatizer_check.setText("Aromatizer molecules");
+      jMenuOptions.add(aromatizer_check);
+
+      stereocenters_check.setText("Ignore stereocenters");
+      jMenuOptions.add(stereocenters_check);
+
+      cistrans_check.setText("Ignore cis-trans bonds");
+      jMenuOptions.add(cistrans_check);
+
+      jMainMenuBar.add(jMenuOptions);
+
+      setJMenuBar(jMainMenuBar);
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
@@ -532,29 +548,29 @@ public class MainFrame extends javax.swing.JFrame
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 910, Short.MAX_VALUE)
+         .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE)
       );
 
       pack();
    }// </editor-fold>//GEN-END:initComponents
 
-    private void load_button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_button1ActionPerformed
+    private void load_firstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_firstActionPerformed
        String path = in_table1.openSdf(cur_dir);
        if (path != null)
        {
           load_progress_bar1.setString(path);
           load_progress_bar1.setStringPainted(true);
        }
-    }//GEN-LAST:event_load_button1ActionPerformed
+    }//GEN-LAST:event_load_firstActionPerformed
 
-    private void load_button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_button2ActionPerformed
+    private void load_secondActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_secondActionPerformed
        String path = in_table2.openSdf(cur_dir);
        if (path != null)
        {
           load_progress_bar2.setString(path);
           load_progress_bar2.setStringPainted(true);
        }
-    }//GEN-LAST:event_load_button2ActionPerformed
+    }//GEN-LAST:event_load_secondActionPerformed
 
     private void save_button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_button1ActionPerformed
        out_table1.saveSdf(cur_dir);
@@ -580,6 +596,10 @@ public class MainFrame extends javax.swing.JFrame
     private void save_button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_button3ActionPerformed
        out_table3.saveSdf(cur_dir);
     }//GEN-LAST:event_save_button3ActionPerformed
+
+    private void jMenuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuExitActionPerformed
+       dispose();
+    }//GEN-LAST:event_jMenuExitActionPerformed
 
     /**
     * @param args the command line arguments
@@ -613,9 +633,9 @@ public class MainFrame extends javax.swing.JFrame
     public JButton getLoadButton( int table_idx )
     {
        if (table_idx == 0)
-          return load_button1;
+          return load_first;
        else
-          return load_button2;
+          return load_second;
     }
 
     public MolViewTable getInputTable( int table_idx )
@@ -643,7 +663,7 @@ public class MainFrame extends javax.swing.JFrame
 
     public boolean getAromatizeCheckState()
     {
-       return aromatize_check.getState();
+       return aromatizer_check.getState();
     }
 
     public boolean getStereocentersCheckState()
@@ -658,23 +678,30 @@ public class MainFrame extends javax.swing.JFrame
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JPanel action_panel;
-   private java.awt.Checkbox aromatize_check;
-   private java.awt.Checkbox cistrans_check;
+   private javax.swing.JCheckBoxMenuItem aromatizer_check;
+   private javax.swing.JCheckBoxMenuItem cistrans_check;
    private javax.swing.JButton compare_button;
+   private javax.swing.Box.Filler filler1;
    private javax.swing.JPanel in_panel1;
    private javax.swing.JPanel in_panel2;
    private javax.swing.JPanel in_tab;
    private javax.swing.JPanel in_table_panel1;
    private javax.swing.JPanel in_table_panel2;
+   private javax.swing.JMenuBar jMainMenuBar;
+   private javax.swing.JMenuItem jMenuExit;
+   private javax.swing.JMenu jMenuFile;
+   private javax.swing.JMenuItem jMenuLoadLeft;
+   private javax.swing.JMenuItem jMenuLoadRight;
+   private javax.swing.JMenu jMenuOptions;
    private javax.swing.JPanel jPanel1;
    private javax.swing.JPanel jPanel2;
+   private javax.swing.JSeparator jSeparator1;
    private javax.swing.JTabbedPane jTabbedPane1;
-   private javax.swing.JButton load_button1;
-   private javax.swing.JButton load_button2;
+   private javax.swing.JButton load_first;
    private javax.swing.JProgressBar load_progress_bar1;
    private javax.swing.JProgressBar load_progress_bar2;
+   private javax.swing.JButton load_second;
    private javax.swing.JProgressBar main_progress_bar;
-   private javax.swing.JPanel options_panel;
    private javax.swing.JPanel out_panel1;
    private javax.swing.JPanel out_panel2;
    private javax.swing.JPanel out_panel3;
@@ -691,6 +718,6 @@ public class MainFrame extends javax.swing.JFrame
    private javax.swing.JPanel save_panel1;
    private javax.swing.JPanel save_panel2;
    private javax.swing.JPanel save_panel3;
-   private java.awt.Checkbox stereocenters_check;
+   private javax.swing.JCheckBoxMenuItem stereocenters_check;
    // End of variables declaration//GEN-END:variables
 }
