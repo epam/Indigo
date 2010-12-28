@@ -30,6 +30,7 @@
 #include "base_c/bitarray.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/elements.h"
+#include "base_cpp/scanner.h"
 
 IndigoGross::IndigoGross() : IndigoObject(GROSS)
 {
@@ -142,6 +143,16 @@ IndigoQueryMolecule * IndigoQueryMolecule::cloneFrom( IndigoObject & obj )
       molptr->copyProperties(*props);
 
    return molptr.release();
+}
+
+void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* value, AutoPtr<QueryMolecule::Atom>& atom) {
+   if(strcasecmp(type, "atomic-number") == 0) {
+      BufferScanner buf_scanner(value);
+      int atom_number = buf_scanner.readInt();
+      atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, atom_number));
+   } else {
+      throw IndigoError("unsupported constraint type: %s", type);
+   }
 }
 
 BaseMolecule & IndigoQueryMolecule::getBaseMolecule ()
@@ -1128,7 +1139,8 @@ CEXPORT int indigoResetIsotope (int atom)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoResetRsite (int atom) {
+CEXPORT int indigoResetRsite (int atom)
+{
    INDIGO_BEGIN
    {
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
@@ -1140,12 +1152,99 @@ CEXPORT int indigoResetRsite (int atom) {
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoSetAttachmentPoint (int atom, int order) {
+CEXPORT int indigoSetAttachmentPoint (int atom, int order)
+{
    INDIGO_BEGIN
    {
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
       ia.mol->addAttachmentPoint(order, ia.idx);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoRemoveConstraints(int atom, const char* type)
+{
+   INDIGO_BEGIN
+   {
+      //IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      //TODO
+
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoAddConstraintAnd(int atom, const char* type, const char* value)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      BaseMolecule *mol = ia.mol;
+      QueryMolecule& qmol = mol->asQueryMolecule();
+      AutoPtr<QueryMolecule::Atom> atom_constraint;
+
+      IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
+      
+      qmol.resetAtom(ia.idx, QueryMolecule::Atom::und(qmol.releaseAtom(ia.idx), atom_constraint.release()));
+
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoAddConstraintAndNot(int atom, const char* type, const char* value)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      BaseMolecule *mol = ia.mol;
+      QueryMolecule& qmol = mol->asQueryMolecule();
+      AutoPtr<QueryMolecule::Atom> atom_constraint;
+
+      IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
+
+      qmol.resetAtom(ia.idx, QueryMolecule::Atom::und(qmol.releaseAtom(ia.idx), QueryMolecule::Atom::nicht(atom_constraint.release())));
+
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+CEXPORT int indigoAddConstraintOr(int atom, const char* type, const char* value)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      BaseMolecule *mol = ia.mol;
+      QueryMolecule& qmol = mol->asQueryMolecule();
+      AutoPtr<QueryMolecule::Atom> atom_constraint;
+
+      IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
+
+      qmol.resetAtom(ia.idx, QueryMolecule::Atom::oder(qmol.releaseAtom(ia.idx), atom_constraint.release()));
+
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+CEXPORT int indigoAddConstraintOrNot(int atom, const char* type, const char* value)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      BaseMolecule *mol = ia.mol;
+      QueryMolecule& qmol = mol->asQueryMolecule();
+      AutoPtr<QueryMolecule::Atom> atom_constraint;
+
+      IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
+
+      qmol.resetAtom(ia.idx, QueryMolecule::Atom::oder(qmol.releaseAtom(ia.idx), QueryMolecule::Atom::nicht(atom_constraint.release())));
+
       return 1;
    }
    INDIGO_END(-1);
