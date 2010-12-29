@@ -40,5 +40,6 @@ cp ../../api/jni/dist/Release64/GNU-Linux-x86/libindigo-jni.so $name/lib/Linux/x
 cp ../../api/renderer/jni/dist/Release32/GNU-Linux-x86/libindigo-renderer-jni.so $name/lib/Linux/x86
 cp ../../api/renderer/jni/dist/Release64/GNU-Linux-x86/libindigo-renderer-jni.so $name/lib/Linux/x64
 cp chemdiff.sh $name/chemdiff
+cp -r tests $name/
 
 zip -r -9 $name.zip $name
