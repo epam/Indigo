@@ -27,10 +27,8 @@ for osxver in '10.5' '10.6'; do
 done
 
 cd java
-chmod +x compile.sh
 ./compile.sh
 cd ../renderer/java
-chmod +x compile.sh
 ./compile.sh
 cd ../../../utils/chemdiff/src
 

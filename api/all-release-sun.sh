@@ -26,6 +26,8 @@ make -f Makefile.sun.64
 cd jni
 make -f Makefile.sun.32
 make -f Makefile.sun.64
+cd ../java
+./compile.sh
 cd ..
 
 ./indigo-libs-release-sun.sh indigo-libs-$1-sun32 32

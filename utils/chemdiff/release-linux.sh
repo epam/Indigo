@@ -11,13 +11,11 @@ cd ../../api/jni
 make CONF=Release32
 make CONF=Release64
 cd ../java
-chmod +x compile.sh
 ./compile.sh
 cd ../renderer/jni
 make CONF=Release32
 make CONF=Release64
 cd ../java
-chmod +x compile.sh
 ./compile.sh
 cd ../../../utils/chemdiff/src
 
