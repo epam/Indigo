@@ -55,6 +55,7 @@ JNI_FUNC_jint_jbuf(indigoLoadBuffer)
 
 JNI_FUNC_jint_jstring(indigoWriteFile)
 JNI_FUNC_jint(indigoWriteBuffer)
+JNI_FUNC_jint_jint(indigoClose)
 
 JNI_FUNC_jint_jint(indigoLoadMolecule)
 JNI_FUNC_jint_jstring(indigoLoadMoleculeFromString)
@@ -290,6 +291,8 @@ JNI_FUNC_jint_jint(indigoTell)
 
 JNI_FUNC_jint_jint_jint(indigoSdfAppend)
 JNI_FUNC_jint_jint_jint(indigoSmilesAppend)
+JNI_FUNC_jint_jint(indigoRdfHeader)
+JNI_FUNC_jint_jint_jint(indigoRdfAppend)
 
 JNI_FUNC_jint(indigoCreateArray)
 JNI_FUNC_jint_jint_jint(indigoArrayAdd)

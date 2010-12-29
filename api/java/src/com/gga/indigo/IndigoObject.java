@@ -382,6 +382,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.indigoSmilesAppend(self, item.self);
    }
 
+   public void rdfHeader ()
+   {
+      dispatcher.indigoRdfHeader(self);
+   }
+
+   public void rdfAppend (IndigoObject item)
+   {
+      dispatcher.indigoRdfAppend(self, item.self);
+   }
+
    public IndigoObject iterateArray ()
    {
       return new IndigoObject(dispatcher, dispatcher.indigoIterateArray(self));
@@ -481,6 +491,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void remove () throws UnsupportedOperationException
    {
       throw new UnsupportedOperationException();
+   }
+
+   public void close ()
+   {
+      dispatcher.indigoClose(self);
    }
 
    public IndigoObject next () throws NoSuchElementException
