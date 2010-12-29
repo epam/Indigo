@@ -161,8 +161,16 @@ bool MoleculeLayoutGraph::_cycle_cb (Graph &graph, const Array<int> &vertices, c
 
    int cycle_idx = cycles.add(vertices, edges);
    Cycle &new_cycle = cycles[cycle_idx];
-
+   
    new_cycle.canonize();
+   
+   // Mark covered edges in graph
+   for (int i = 0; i < edges.size(); i++)
+      if (cycle_context.covered_edges[edges[i]] == 0)
+      {
+         cycle_context.covered_edges[edges[i]] = 1;
+         cycle_context.uncovered_edges--;
+      }
 
    for (int i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
    {

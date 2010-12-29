@@ -146,6 +146,8 @@ protected:
    struct CycleContext 
    {
       ObjPool<Cycle> cycles;
+      Array<int> covered_edges;
+      int uncovered_edges;
       int iterationNumber;
       int maxIterationNumber;
    };

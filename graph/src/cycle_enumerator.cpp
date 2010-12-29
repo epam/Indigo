@@ -20,6 +20,7 @@ using namespace indigo;
 CycleEnumerator::CycleEnumerator (Graph &graph) :
 _graph(graph)
 {
+   min_length = 0;
    max_length = graph.vertexCount();
    context = 0;
    cb_check_vertex = 0;
@@ -104,15 +105,18 @@ bool CycleEnumerator::_pathFinder (const SpanningTree &spt, int ext_v1, int ext_
                   continue;
             }
             
-            edges.push(e);
             if (cycle)
             {
+               if (min_length != 0 && vertices.size() < min_length)
+                  continue;
+               edges.push(e);
                if (cb_handle_cycle != 0 && !cb_handle_cycle(_graph, vertices, edges, context))
                   return false;
                edges.pop();
             }
             else
             {
+               edges.push(e);
                vertices.push(u);
                visited_vertices[cur_start_idx + i] = 1;
                flags[u] = 1;

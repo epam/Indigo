@@ -596,8 +596,6 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       }
    }
 
-   CycleEnumerator ce(*this);
-
    //TODO: repair exception with vec2f
 
    QS_DEF(CycleContext, cycle_context);
@@ -607,14 +605,30 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
    cycles.clear();
    cycle_context.maxIterationNumber = max_iterations;
    cycle_context.iterationNumber = 0;
+   cycle_context.uncovered_edges = edgeCount();
+   cycle_context.covered_edges.clear_resize(edgeEnd());
+   cycle_context.covered_edges.zerofill();
 
-   ce.context = &cycle_context;
-   ce.cb_handle_cycle = _cycle_cb;
-
-   ce.process();
-
-   if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber)
-      throw Error("number of cycles exceeded %d ", cycle_context.maxIterationNumber);
+   int min_length = 0;
+   int max_length = 12;
+   
+   while (cycle_context.uncovered_edges > 0) 
+   {
+      CycleEnumerator ce(*this);
+      
+      ce.context = &cycle_context;
+      ce.cb_handle_cycle = _cycle_cb;
+      ce.min_length = min_length;
+      ce.max_length = max_length;
+      
+      ce.process();
+      
+      if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber)
+         throw Error("number of cycles exceeded %d ", cycle_context.maxIterationNumber);
+      
+      min_length = max_length + 1;
+      max_length += 2;
+   }
 
    sorted_cycles.clear();
    for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))

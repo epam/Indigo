@@ -29,6 +29,7 @@ public:
    explicit CycleEnumerator (Graph &graph);
            ~CycleEnumerator ();
 
+   int   min_length;
    int   max_length;
    void *context;
 
