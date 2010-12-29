@@ -40,6 +40,8 @@ public:
     */
    void readNext ();
 
+   void readAt (int index);
+
    int tell ();
 
    /*
@@ -56,6 +58,8 @@ public:
     */
    bool isMolecule() const { return _isMolecule;}
 
+   DEF_ERROR("RDF loader");
+
 protected:
 
    bool _readIdentifiers(bool);
@@ -70,7 +74,10 @@ protected:
    bool _ownScanner;
    Scanner *_scanner;
    bool _isMolecule;
-   
+
+   TL_CP_DECL(Array<int>, _offsets);
+   int _current_number;
+   int _max_offset;
 };
 
 }

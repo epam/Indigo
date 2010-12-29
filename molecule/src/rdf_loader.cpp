@@ -24,7 +24,8 @@ TL_CP_GET(data),
 TL_CP_GET(properties),
 TL_CP_GET(_innerBuffer),
 _scanner(0),
-_isMolecule(false) {
+_isMolecule(false),
+TL_CP_GET(_offsets) {
    data.clear();
    properties.clear();
    _innerBuffer.clear();
@@ -45,6 +46,10 @@ _isMolecule(false) {
       _scanner = &scanner;
       _ownScanner = false;
    }
+
+   _current_number = 0;
+   _max_offset = 0;
+   _offsets.clear();
 }
 
 RdfLoader::~RdfLoader() {
@@ -61,6 +66,13 @@ void RdfLoader::readNext() {
    ArrayOutput output(data);
    data.clear();
    properties.clear();
+
+   if (_scanner->isEOF())
+      throw Error("end of stream");
+
+   _offsets.expand(_current_number + 1);
+   _offsets[_current_number++] = _scanner->tell();
+
    /*
     * Read data
     */
@@ -166,6 +178,9 @@ void RdfLoader::readNext() {
       }
       
    } while(_readString(_getScanner(), _innerBuffer));
+
+   if (_scanner->tell() > _max_offset)
+      _max_offset = _scanner->tell();
 }
 
 Scanner& RdfLoader::_getScanner() const {
@@ -228,4 +243,22 @@ bool RdfLoader::_readString(Scanner& scanner, Array<char>& buffer) {
 
 int RdfLoader::tell () {
    return _scanner->tell();
+}
+
+void RdfLoader::readAt (int index)
+{
+   if (index < _offsets.size())
+   {
+      _scanner->seek(_offsets[index], SEEK_SET);
+      readNext();
+   }
+   else
+   {
+      _scanner->seek(_max_offset, SEEK_SET);
+      do
+      {
+         readNext();
+      } while (index + 1 != _offsets.size());
+   }
+   _current_number = index + 1;
 }

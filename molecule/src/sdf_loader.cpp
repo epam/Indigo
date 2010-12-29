@@ -12,6 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include <fcntl.h>
+
 #include "molecule/sdf_loader.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -21,7 +23,8 @@ using namespace indigo;
 
 SdfLoader::SdfLoader (Scanner &scanner) :
 TL_CP_GET(data),
-TL_CP_GET(properties)
+TL_CP_GET(properties),
+TL_CP_GET(_offsets)
 {
    data.clear();
    properties.clear();
@@ -43,6 +46,9 @@ TL_CP_GET(properties)
       _scanner = &scanner;
       _own_scanner = false;
    }
+   _current_number = 0;
+   _max_offset = 0;
+   _offsets.clear();
 }
 
 SdfLoader::~SdfLoader()
@@ -66,13 +72,19 @@ void SdfLoader::readNext ()
    ArrayOutput output(data);
    QS_DEF(Array<char>, str);
 
+   if (_scanner->isEOF())
+      throw Error("end of stream");
+
+   _offsets.expand(_current_number + 1);
+   _offsets[_current_number++] = _scanner->tell();
+
    properties.clear();
 
    bool pending_emptyline = false;
 
    while (!_scanner->isEOF())
    {
-      _scanner->readString(str, true);
+      _scanner->readLine(str, true);
       if (str.size() > 0 && str[0] == '>')
          break;
       if (str.size() > 3 && strncmp(str.ptr(), "$$$$", 4) == 0)
@@ -141,4 +153,25 @@ void SdfLoader::readNext ()
 
       _scanner->readString(str, true);
    }
+
+   if (_scanner->tell() > _max_offset)
+      _max_offset = _scanner->tell();
+}
+
+void SdfLoader::readAt (int index)
+{
+   if (index < _offsets.size())
+   {
+      _scanner->seek(_offsets[index], SEEK_SET);
+      readNext();
+   }
+   else
+   {
+      _scanner->seek(_max_offset, SEEK_SET);
+      do
+      {
+         readNext();
+      } while (index + 1 != _offsets.size());
+   }
+   _current_number = index + 1;
 }

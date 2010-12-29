@@ -33,12 +33,19 @@ public:
 
    int tell ();
 
+   void readAt (int index);
+
    TL_CP_DECL(Array<char>, data);
    TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
+
+   DEF_ERROR("SDF loader");
 
 protected:
    Scanner *_scanner;
    bool     _own_scanner;
+   TL_CP_DECL(Array<int>, _offsets);
+   int _current_number;
+   int _max_offset;
 };
 
 }
