@@ -210,7 +210,7 @@ public class MainFrame extends javax.swing.JFrame
          .addGap(0, 464, Short.MAX_VALUE)
       );
 
-      load_first.setText("Load first file");
+      load_first.setText("Load the first file");
       load_first.setMaximumSize(new java.awt.Dimension(150, 26));
       load_first.setMinimumSize(new java.awt.Dimension(150, 26));
       load_first.setPreferredSize(new java.awt.Dimension(150, 26));
@@ -255,7 +255,7 @@ public class MainFrame extends javax.swing.JFrame
          .addGap(0, 465, Short.MAX_VALUE)
       );
 
-      load_second.setText("Load second file");
+      load_second.setText("Load the second file");
       load_second.setMaximumSize(new java.awt.Dimension(150, 26));
       load_second.setMinimumSize(new java.awt.Dimension(150, 26));
       load_second.setPreferredSize(new java.awt.Dimension(150, 26));
@@ -388,7 +388,7 @@ public class MainFrame extends javax.swing.JFrame
       out_panel2.setPreferredSize(new java.awt.Dimension(350, 670));
 
       out_tabel_label2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-      out_tabel_label2.setText("Unique Molecules from First File");
+      out_tabel_label2.setText("Unique Molecules from the First File");
       out_tabel_label2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
       out_table_panel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -440,7 +440,7 @@ public class MainFrame extends javax.swing.JFrame
       out_panel3.setPreferredSize(new java.awt.Dimension(350, 670));
 
       out_tabel_label3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-      out_tabel_label3.setText("Unique Molecules from Second File");
+      out_tabel_label3.setText("Unique Molecules from the Second File");
       out_tabel_label3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
       out_table_panel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -497,7 +497,7 @@ public class MainFrame extends javax.swing.JFrame
          }
       });
 
-      jMenuLoadLeft.setText("Load left");
+      jMenuLoadLeft.setText("Load first");
       jMenuLoadLeft.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             load_firstActionPerformed(evt);
@@ -505,7 +505,7 @@ public class MainFrame extends javax.swing.JFrame
       });
       jMenuFile.add(jMenuLoadLeft);
 
-      jMenuLoadRight.setText("Load right");
+      jMenuLoadRight.setText("Load second");
       jMenuLoadRight.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             load_secondActionPerformed(evt);
@@ -527,7 +527,7 @@ public class MainFrame extends javax.swing.JFrame
       jMenuOptions.setText("Options");
 
       aromatizer_check.setSelected(true);
-      aromatizer_check.setText("Aromatizer molecules");
+      aromatizer_check.setText("Aromatize molecules");
       jMenuOptions.add(aromatizer_check);
 
       stereocenters_check.setText("Ignore stereocenters");

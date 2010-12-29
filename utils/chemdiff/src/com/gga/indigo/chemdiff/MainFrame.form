@@ -14,7 +14,7 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuLoadLeft">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Load left"/>
+                <Property name="text" type="java.lang.String" value="Load first"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="load_firstActionPerformed"/>
@@ -22,7 +22,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuLoadRight">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Load right"/>
+                <Property name="text" type="java.lang.String" value="Load second"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="load_secondActionPerformed"/>
@@ -48,7 +48,7 @@
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="aromatizer_check">
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="Aromatizer molecules"/>
+                <Property name="text" type="java.lang.String" value="Aromatize molecules"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="stereocenters_check">
@@ -212,7 +212,7 @@
                   <SubComponents>
                     <Component class="javax.swing.JButton" name="load_first">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Load first file"/>
+                        <Property name="text" type="java.lang.String" value="Load the first file"/>
                         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[150, 26]"/>
                         </Property>
@@ -292,7 +292,7 @@
                   <SubComponents>
                     <Component class="javax.swing.JButton" name="load_second">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Load second file"/>
+                        <Property name="text" type="java.lang.String" value="Load the second file"/>
                         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[150, 26]"/>
                         </Property>
@@ -508,7 +508,7 @@
                 <Component class="javax.swing.JLabel" name="out_tabel_label2">
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="0"/>
-                    <Property name="text" type="java.lang.String" value="Unique Molecules from First File"/>
+                    <Property name="text" type="java.lang.String" value="Unique Molecules from the First File"/>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
                         <LineBorder/>
@@ -602,7 +602,7 @@
                 <Component class="javax.swing.JLabel" name="out_tabel_label3">
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="0"/>
-                    <Property name="text" type="java.lang.String" value="Unique Molecules from Second File"/>
+                    <Property name="text" type="java.lang.String" value="Unique Molecules from the Second File"/>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
                         <LineBorder/>
