@@ -45,8 +45,6 @@ public:
 
    void loadSMARTS (QueryMolecule &mol);
 
-   void checkQueryAtoms ();
-
    Array<int> * reaction_atom_mapping;
 
    GraphHighlighting * highlighting;
@@ -64,7 +62,6 @@ protected:
 
    enum
    {
-      _STAR_ATOM = 1,
       _ANY_BOND = -2
    };
 
@@ -89,7 +86,7 @@ protected:
       int aam;
       bool brackets;
 
-      int query_type;
+      bool star_atom;
    };
 
    struct _BondDesc

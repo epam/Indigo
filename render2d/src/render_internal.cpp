@@ -2058,7 +2058,11 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       }
 
       // radical
-      int radical = bm.getAtomRadical(aid);
+      int radical = 0;
+      
+      if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
+         radical = bm.getAtomRadical(aid);
+      
       if (radical > 0)
       {
          const TextItem& label = _data.textitems[tilabel];

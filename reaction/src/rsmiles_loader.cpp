@@ -430,13 +430,6 @@ void RSmilesLoader::_loadReaction ()
       }
    }
    
-   if (_rxn != 0)
-   {
-      r_loader.checkQueryAtoms();
-      c_loader.checkQueryAtoms();
-      p_loader.checkQueryAtoms();
-   }
-
    AutoPtr<BaseMolecule> mol;
    QS_DEF(Array<int>, aam);
    QS_DEF(Array<int>, mapping);

@@ -61,16 +61,6 @@ void SmilesLoader::loadQueryMolecule (QueryMolecule &mol)
    _loadMolecule();
 }
 
-
-void SmilesLoader::checkQueryAtoms ()
-{
-   for (int i = 0; i < _atoms.size(); i++)
-   {
-      if (_atoms[i].query_type != 0 && !_bmol->isPseudoAtom(i))
-         throw Error("'*' atoms accepted only within queries (unless they are pseudo-atoms)");
-   }
-}
-
 void SmilesLoader::_calcStereocenters ()
 {
    int i, j, tmp;
@@ -303,18 +293,31 @@ void SmilesLoader::_readOtherStuff ()
                throw Error("only %d atoms found in pseudo-atoms $...$ block", i + 1);
             if (c == ';' && i == _bmol->vertexCount() - 1)
                throw Error("extra ';' in pseudo-atoms $...$ block");
+
             if (label.size() > 0)
             {
                label.push(0);
+               int rnum;
 
-               if (_mol != 0)
-                  _mol->setPseudoAtom(i, label.ptr());
+               if (label.size() > 3 && label[0] == '_' && label[1] == 'R' &&
+                   sscanf(label.ptr() + 2, "%d", &rnum) == 1)
+               {
+                  if (_qmol != 0)
+                     _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+                  // ChemAxon's Extended SMILES notation for R-sites
+                  _bmol->allowRGroupOnRSite(i, rnum);
+               }
                else
                {
-                  QueryMolecule::Atom *atom = _qmol->releaseAtom(i);
-                  atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
-                  _qmol->resetAtom(i, QueryMolecule::Atom::und(atom,
-                       new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                  if (_mol != 0)
+                     _mol->setPseudoAtom(i, label.ptr());
+                  else
+                  {
+                     QueryMolecule::Atom *atom = _qmol->releaseAtom(i);
+                     atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
+                     _qmol->resetAtom(i, QueryMolecule::Atom::und(atom,
+                          new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                  }
                }
             }
          }
@@ -831,7 +834,7 @@ void SmilesLoader::_loadMolecule ()
       // Forbid matching SMARTS atoms to hydrogens
       for (i = 0; i < _atoms.size(); i++)
       {
-         // not needed if it is a sure atom or a list without hydrogen
+         // not needed if it is a sure atom or a list without a hydrogen
          if (_qmol->getAtomNumber(i) == -1 && _qmol->possibleAtomNumber(i, ELEM_H))
          {
             // not desired if it is a list with hydrogen
@@ -850,6 +853,15 @@ void SmilesLoader::_loadMolecule ()
       }
    }
 
+   if (!inside_rsmiles)
+      for (i = 0; i < _atoms.size(); i++)
+         if (_atoms[i].star_atom && _atoms[i].aam != 0)
+         {
+            if (_qmol != 0)
+               _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+            _bmol->allowRGroupOnRSite(i, _atoms[i].aam);
+         }
+
    _calcStereocenters();
    _calcCisTrans();
 
@@ -864,8 +876,18 @@ void SmilesLoader::_loadMolecule ()
       _readOtherStuff();
    }
 
-   if (!inside_rsmiles && _mol != 0)
-      checkQueryAtoms();
+   // Update attachment orders for rsites
+   for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
+   {
+      if (!_bmol->isRSite(i))
+         continue;
+
+      const Vertex &vertex = _bmol->getVertex(i);
+
+      int j, k = 0;
+      for (j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
+         _bmol->setRSiteAttachmentOrder(i, vertex.neiVertex(j), k++);
+   }
 
    if (!inside_rsmiles)
    {
@@ -1363,8 +1385,9 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       }
       else if (next == '*')
       {
+         atom.star_atom = true;
          if (qatom.get() == 0)
-            atom.query_type = _STAR_ATOM;
+            atom.label = ELEM_RSITE;
          else
             subatom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom
                (QueryMolecule::ATOM_NUMBER, ELEM_H)));
@@ -1585,8 +1608,8 @@ SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :
    aromatic = 0;
    aam = 0;
    brackets = false;
+   star_atom = false;
 
-   query_type = 0;
    parent = -1;
 }
 
