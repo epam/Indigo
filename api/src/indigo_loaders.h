@@ -92,6 +92,8 @@ public:
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
+   IndigoObject * at (int index);
+
    int tell ();
 
    GraphHighlighting highlighting;
@@ -111,6 +113,8 @@ public:
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
+
+   IndigoObject * at (int index);
 
    int tell ();
 
@@ -166,11 +170,19 @@ public:
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
+   IndigoObject * at (int index);
+
 protected:
    Scanner    *_scanner;
    Array<char> _str;
    bool      _own_scanner;
    int       _counter;
+
+   void _advance ();
+
+   TL_CP_DECL(Array<int>, _offsets);
+   int _current_number;
+   int _max_offset;
 };
 
 

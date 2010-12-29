@@ -26,6 +26,9 @@
 #include "molecule/molfile_saver.h"
 #include "reaction/rxnfile_saver.h"
 #include "indigo_molecule.h"
+#include "molecule/sdf_loader.h"
+#include "molecule/rdf_loader.h"
+#include "indigo_array.h"
 
 #include <time.h>
 
@@ -551,4 +554,38 @@ CEXPORT int indigoRdfAppend (int output, int item)
       return 1;
    }
    INDIGO_END(-1)
+}
+
+CEXPORT int indigoAt (int item, int index)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+      if (obj.type == IndigoObject::SDF_LOADER)
+      {
+         IndigoObject * newobj = ((IndigoSdfLoader &)obj).at(index);
+         if (newobj == 0)
+            return 0;
+         return self.addObject(newobj);
+      }
+      if (obj.type == IndigoObject::RDF_LOADER)
+      {
+         IndigoObject * newobj = ((IndigoRdfLoader &)obj).at(index);
+         if (newobj == 0)
+            return 0;
+         return self.addObject(newobj);
+      }
+      else if (obj.type == IndigoObject::MULTILINE_SMILES_LOADER)
+      {
+      }
+      else if (IndigoArray::is(obj))
+      {
+         IndigoArray &arr = IndigoArray::cast(obj);
+
+         return self.addObject(new IndigoArrayElement(arr, index));
+      }
+      else
+         throw IndigoError("indigoAt(): not accepting %s", obj.debugInfo());
+   }
+   INDIGO_END(-1);
 }

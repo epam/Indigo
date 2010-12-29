@@ -293,7 +293,7 @@ JNI_FUNC_jint_jint_jint(indigoSmilesAppend)
 
 JNI_FUNC_jint(indigoCreateArray)
 JNI_FUNC_jint_jint_jint(indigoArrayAdd)
-JNI_FUNC_jint_jint_jint(indigoArrayAt)
+JNI_FUNC_jint_jint_jint(indigoAt)
 JNI_FUNC_jint_jint(indigoSize)
 JNI_FUNC_jint_jint(indigoClear)
 JNI_FUNC_jint_jint(indigoIterateArray)

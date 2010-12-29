@@ -281,19 +281,19 @@ namespace com.gga.indigo
          return indigoCommonBits(obj1.self, obj2.self);
       }
 
-      public System.Collections.IEnumerable iterateSDFile (string filename)
+      public IndigoObject iterateSDFile (string filename)
       {
          setSessionID();
          return new IndigoObject(this, Indigo.indigoIterateSDFile(filename));
       }
 
-      public System.Collections.IEnumerable iterateRDFile (string filename)
+      public IndigoObject iterateRDFile (string filename)
       {
          setSessionID();
          return new IndigoObject(this, Indigo.indigoIterateRDFile(filename));
       }
 
-      public System.Collections.IEnumerable iterateSmilesFile (string filename)
+      public IndigoObject iterateSmilesFile (string filename)
       {
          setSessionID();
          return new IndigoObject(this, Indigo.indigoIterateSmilesFile(filename));
@@ -640,7 +640,7 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoArrayAdd (int arr, int item);
       [DllImport("indigo.dll")]
-      public static extern int indigoArrayAt (int arr, int index);
+      public static extern int indigoAt (int item, int index);
       [DllImport("indigo.dll")]
       public static extern int indigoSize (int arr);
       [DllImport("indigo.dll")]

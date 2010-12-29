@@ -24,6 +24,15 @@ IndigoArray::~IndigoArray ()
 {
 }
 
+bool IndigoArray::is (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::ARRAY)
+      return true;
+   if (obj.type == IndigoObject::ARRAY_ELEMENT)
+      return is((IndigoArrayElement &)obj);
+   return false;
+}
+
 IndigoArray & IndigoArray::cast (IndigoObject &obj)
 {
    if (obj.type == IndigoObject::ARRAY)
@@ -176,19 +185,6 @@ CEXPORT int indigoClear (int arr)
 
       array.objects.clear();
       return 1;
-   }
-   INDIGO_END(-1);
-}
-
-CEXPORT int indigoArrayAt (int arr, int index)
-{
-   INDIGO_BEGIN
-   {
-      IndigoArray &array = IndigoArray::cast(self.getObject(arr));
-
-      AutoPtr<IndigoArrayElement> res(new IndigoArrayElement(array, index));
-
-      return self.addObject(res.release());
    }
    INDIGO_END(-1);
 }

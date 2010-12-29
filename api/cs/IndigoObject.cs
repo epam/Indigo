@@ -614,10 +614,10 @@ namespace com.gga.indigo
          Indigo.indigoArrayAdd(self, item.self);
       }
 
-      public IndigoObject arrayAt (int index)
+      public IndigoObject at (int index)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoArrayAt(self, index));
+         return new IndigoObject(dispatcher, Indigo.indigoAt(self, index));
       }
 
       public int size ()
@@ -717,6 +717,15 @@ namespace com.gga.indigo
                break;
             yield return new IndigoObject(dispatcher, next);
          }
+      }
+
+      public IndigoObject next ()
+      {
+         dispatcher.setSessionID();
+         int next = Indigo.indigoNext(self);
+         if (next == 0)
+            return null;
+         return new IndigoObject(dispatcher, next);
       }
 
       public int index ()

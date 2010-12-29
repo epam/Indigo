@@ -31,6 +31,7 @@ public:
 
    virtual IndigoObject * clone ();
 
+   static bool is (IndigoObject &obj);
    static IndigoArray & cast (IndigoObject &obj);
 
    PtrArray<IndigoObject> objects;
