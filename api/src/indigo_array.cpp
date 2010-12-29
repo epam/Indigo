@@ -29,7 +29,7 @@ bool IndigoArray::is (IndigoObject &obj)
    if (obj.type == IndigoObject::ARRAY)
       return true;
    if (obj.type == IndigoObject::ARRAY_ELEMENT)
-      return is((IndigoArrayElement &)obj);
+      return is(((IndigoArrayElement &)obj).get());
    return false;
 }
 

@@ -343,6 +343,7 @@ CEXPORT int indigoResetSymmetricCisTrans (int handle);
 
 CEXPORT int indigoCountComponents (int molecule);
 CEXPORT int indigoComponentIndex (int atom);
+CEXPORT int indigoIterateComponents (int molecule);
 
 // Returns a 'molecule component' object, which can not be used as a
 // [query] molecule, but supports the indigo{Count,Iterate}{Atoms,Bonds} calls,

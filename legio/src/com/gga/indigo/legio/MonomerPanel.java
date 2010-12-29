@@ -115,7 +115,7 @@ public class MonomerPanel
 
             legio.addMonomerFromFile(reactant_idx, mon_paths.get(mon_paths.size() - 1));
 
-            IndigoObject obj = new IndigoObject(indigo, legio.monomers_table.arrayAt(0).arrayAt(0).self);
+            IndigoObject obj = new IndigoObject(indigo, legio.monomers_table.at(0).at(0).self);
             ArrayList<IndigoObject> mols = new ArrayList<IndigoObject>();
             for (int i = 0; i < legio.getMonomersCount(reactant_idx); i++)
             {
