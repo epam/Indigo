@@ -211,9 +211,9 @@ public class MainFrame extends javax.swing.JFrame
       );
 
       load_first.setText("Load the first file");
-      load_first.setMaximumSize(new java.awt.Dimension(150, 26));
-      load_first.setMinimumSize(new java.awt.Dimension(150, 26));
-      load_first.setPreferredSize(new java.awt.Dimension(150, 26));
+      load_first.setMaximumSize(new java.awt.Dimension(160, 26));
+      load_first.setMinimumSize(new java.awt.Dimension(160, 26));
+      load_first.setPreferredSize(new java.awt.Dimension(160, 26));
       load_first.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             load_firstActionPerformed(evt);
@@ -256,9 +256,9 @@ public class MainFrame extends javax.swing.JFrame
       );
 
       load_second.setText("Load the second file");
-      load_second.setMaximumSize(new java.awt.Dimension(150, 26));
-      load_second.setMinimumSize(new java.awt.Dimension(150, 26));
-      load_second.setPreferredSize(new java.awt.Dimension(150, 26));
+      load_second.setMaximumSize(new java.awt.Dimension(160, 26));
+      load_second.setMinimumSize(new java.awt.Dimension(160, 26));
+      load_second.setPreferredSize(new java.awt.Dimension(160, 26));
       load_second.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             load_secondActionPerformed(evt);

@@ -214,13 +214,13 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Load the first file"/>
                         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                          <Dimension value="[150, 26]"/>
+                          <Dimension value="[160, 26]"/>
                         </Property>
                         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                          <Dimension value="[150, 26]"/>
+                          <Dimension value="[160, 26]"/>
                         </Property>
                         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                          <Dimension value="[150, 26]"/>
+                          <Dimension value="[160, 26]"/>
                         </Property>
                       </Properties>
                       <Events>
@@ -294,13 +294,13 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Load the second file"/>
                         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                          <Dimension value="[150, 26]"/>
+                          <Dimension value="[160, 26]"/>
                         </Property>
                         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                          <Dimension value="[150, 26]"/>
+                          <Dimension value="[160, 26]"/>
                         </Property>
                         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                          <Dimension value="[150, 26]"/>
+                          <Dimension value="[160, 26]"/>
                         </Property>
                       </Properties>
                       <Events>
