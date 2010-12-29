@@ -402,9 +402,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, dispatcher.indigoArrayAdd(self, other.self));
    }
 
-   public IndigoObject arrayAt (int idx)
+   public IndigoObject at (int idx)
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoArrayAt(self, idx));
+      return new IndigoObject(dispatcher, dispatcher.indigoAt(self, idx));
    }
 
    public IndigoObject match (IndigoObject query)

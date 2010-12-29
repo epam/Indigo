@@ -347,7 +347,7 @@ class Indigo:
     self.IndigoObject.size = self._member_int(self._lib.indigoSize)
     self.IndigoObject.clear = self._member_void(self._lib.indigoClear)
     self.IndigoObject.arrayAdd = self._member_void_obj(self._lib.indigoArrayAdd)
-    self.IndigoObject.arrayAt = self._member_obj_int(self._lib.indigoArrayAt)
+    self.IndigoObject.at = self._member_obj_int(self._lib.indigoAt)
     
     self.IndigoObject.match = self._member_obj_obj(self._lib.indigoMatch)
     self.IndigoObject.countMatches = self._member_int_obj(self._lib.indigoCountMatches)
