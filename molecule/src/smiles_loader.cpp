@@ -753,6 +753,8 @@ void SmilesLoader::_loadMolecule ()
    {
       for (i = 0; i < _atoms.size(); i++)
       {
+         if (_atoms[i].label == 0)
+            throw Error("atom without a label");
          int idx = _mol->addAtom(_atoms[i].label);
 
          _mol->setAtomCharge(idx, _atoms[i].charge);
