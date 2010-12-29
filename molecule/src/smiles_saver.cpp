@@ -150,7 +150,7 @@ void SmilesSaver::_saveMolecule ()
    for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
    {
       if (_bmol->isRSite(i))
-         // We break the DFS walk when goind from R-sites. For details, see
+         // We break the DFS walk when going through R-sites. For details, see
          // http://blueobelisk.shapado.com/questions/how-r-group-atoms-should-be-represented-in-smiles
          walk.mustBeRootVertex(i);
    }
@@ -166,15 +166,10 @@ void SmilesSaver::_saveMolecule ()
       int e_idx = v_seq[i].parent_edge;
       int v_prev_idx = v_seq[i].parent_vertex;
 
-      int openings = walk.numOpenings(v_idx);
-
-      for (j = 0; j < openings; j++)
-         _atoms[v_idx].neighbors.add(-1);
+      _Atom &atom = _atoms[v_idx];
 
       if (e_idx >= 0)
       {
-         _Atom &atom = _atoms[v_idx];
-
          if (walk.isClosure(e_idx))
          {
             int k;
@@ -196,6 +191,14 @@ void SmilesSaver::_saveMolecule ()
             atom.parent = v_prev_idx;
          }
          _atoms[v_prev_idx].neighbors.add(v_idx);
+      }
+
+      if (e_idx < 0 || !walk.isClosure(e_idx))
+      {
+         int openings = walk.numOpenings(v_idx);
+
+         for (j = 0; j < openings; j++)
+            atom.neighbors.add(-1);
       }
    }
 

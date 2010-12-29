@@ -577,6 +577,10 @@ CEXPORT int indigoAt (int item, int index)
       }
       else if (obj.type == IndigoObject::MULTILINE_SMILES_LOADER)
       {
+         IndigoObject * newobj = ((IndigoMultilineSmilesLoader &)obj).at(index);
+         if (newobj == 0)
+            return 0;
+         return self.addObject(newobj);
       }
       else if (IndigoArray::is(obj))
       {
