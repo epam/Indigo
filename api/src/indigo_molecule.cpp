@@ -524,7 +524,7 @@ CEXPORT float indigoMonoisotopicMass (int molecule)
 }
 
 IndigoMoleculeComponent::IndigoMoleculeComponent (BaseMolecule &mol_, int index_) :
-IndigoObject(MOLECULE_COMPONENT),
+IndigoObject(COMPONENT),
 mol(mol_)
 {
    index = index_;
@@ -560,6 +560,31 @@ IndigoObject * IndigoMoleculeComponent::clone ()
    return res.release();
 }
 
+IndigoComponentsIter::IndigoComponentsIter (BaseMolecule &mol_) :
+IndigoObject(COMPONENT),
+mol(mol_)
+{
+   _idx = -1;
+}
+
+IndigoComponentsIter::~IndigoComponentsIter ()
+{
+}
+
+bool IndigoComponentsIter::hasNext ()
+{
+   return _idx + 1 < mol.countComponents();
+}
+
+IndigoObject * IndigoComponentsIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   _idx++;
+   return new IndigoMoleculeComponent(mol, _idx);
+}
+
 int _indigoIterateAtoms (Indigo &self, int molecule, int type)
 {
    BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
@@ -575,7 +600,7 @@ CEXPORT int indigoIterateAtoms (int molecule)
    {
       IndigoObject &obj = self.getObject(molecule);
 
-      if (obj.type == IndigoObject::MOLECULE_COMPONENT)
+      if (obj.type == IndigoObject::COMPONENT)
       {
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return self.addObject(new IndigoComponentAtomsIter(mc.mol, mc.index));
@@ -591,7 +616,7 @@ CEXPORT int indigoIterateBonds (int molecule)
    {
       IndigoObject &obj = self.getObject(molecule);
 
-      if (obj.type == IndigoObject::MOLECULE_COMPONENT)
+      if (obj.type == IndigoObject::COMPONENT)
       {
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return self.addObject(new IndigoComponentBondsIter(mc.mol, mc.index));
@@ -613,7 +638,7 @@ CEXPORT int indigoCountAtoms (int molecule)
    {
       IndigoObject &obj = self.getObject(molecule);
 
-      if (obj.type == IndigoObject::MOLECULE_COMPONENT)
+      if (obj.type == IndigoObject::COMPONENT)
       {
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return mc.mol.countComponentVertices(mc.index);
@@ -632,7 +657,7 @@ CEXPORT int indigoCountBonds (int molecule)
    {
       IndigoObject &obj = self.getObject(molecule);
 
-      if (obj.type == IndigoObject::MOLECULE_COMPONENT)
+      if (obj.type == IndigoObject::COMPONENT)
       {
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return mc.mol.countComponentEdges(mc.index);
@@ -1800,7 +1825,7 @@ CEXPORT int indigoComponent (int molecule, int index)
 
 
 IndigoComponentAtomsIter::IndigoComponentAtomsIter (BaseMolecule &mol, int cidx) :
-IndigoObject(COMPONENT_ATOMS_ITERATOR),
+IndigoObject(COMPONENT_ATOMS_ITER),
 _mol(mol)
 {
    if (cidx < 0 || cidx > mol.countComponents())
@@ -1841,7 +1866,7 @@ int IndigoComponentAtomsIter::_next ()
 }
 
 IndigoComponentBondsIter::IndigoComponentBondsIter (BaseMolecule &mol, int cidx) :
-IndigoObject(COMPONENT_ATOMS_ITERATOR),
+IndigoObject(COMPONENT_BONDS_ITER),
 _mol(mol)
 {
    if (cidx < 0 || cidx > _mol.countComponents())
@@ -1888,6 +1913,17 @@ int IndigoComponentBondsIter::_next ()
          break;
    }
    return idx;
+}
+
+CEXPORT int indigoIterateComponents (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &bm = self.getObject(molecule).getBaseMolecule();
+
+      return self.addObject(new IndigoComponentsIter(bm));
+   }
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoIterateComponentAtoms (int molecule, int index)

@@ -204,54 +204,35 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public int  countPseudoatoms () { return dispatcher.indigoCountPseudoatoms(self); }
    public int  countRSites () { return dispatcher.indigoCountRSites(self); }
 
-   public IndigoObject iterateBonds ()
-   {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateBonds(self));
-   }
-
-   public int bondOrder ()
-   {
-      return dispatcher.indigoBondOrder(self);
-   }
-
-   public int bondStereo ()
-   {
-      return dispatcher.indigoBondStereo(self);
-   }
+   public IndigoObject iterateBonds () { return new IndigoObject(dispatcher, dispatcher.indigoIterateBonds(self)); }
+   public int bondOrder () { return dispatcher.indigoBondOrder(self); }
+   public int bondStereo () { return dispatcher.indigoBondStereo(self); }
+   public int topology () { return dispatcher.indigoTopology(self); }
 
    public IndigoObject iterateNeighbors ()
    {
       return new IndigoObject(dispatcher, dispatcher.indigoIterateNeighbors(self));
    }
 
-   public IndigoObject bond ()
-   {
-      return new IndigoObject(dispatcher, dispatcher.indigoBond(self));
-   }
+   public IndigoObject bond () {return new IndigoObject(dispatcher, dispatcher.indigoBond(self)); }
 
-   public IndigoObject getAtom (int idx)
-   {
-      return new IndigoObject(dispatcher, dispatcher.indigoGetAtom(self, idx));
-   }
+   public IndigoObject getAtom (int idx) { return new IndigoObject(dispatcher, dispatcher.indigoGetAtom(self, idx)); }
+   public IndigoObject getBond (int idx) { return new IndigoObject(dispatcher, dispatcher.indigoGetBond(self, idx)); }
+   public IndigoObject source () { return new IndigoObject(dispatcher, dispatcher.indigoSource(self)); }
+   public IndigoObject destination () { return new IndigoObject(dispatcher, dispatcher.indigoDestination(self)); }
 
-   public IndigoObject getBond (int idx)
-   {
-      return new IndigoObject(dispatcher, dispatcher.indigoGetBond(self, idx));
-   }
+   public void clearCisTrans () { dispatcher.indigoClearCisTrans(self); }
+   public void clearStereocenters () { dispatcher.indigoClearStereocenters(self); }
+   public int countStereocenters () { return dispatcher.indigoCountStereocenters(self); }
 
-   public void clearCisTrans ()
-   {
-      dispatcher.indigoClearCisTrans(self);
-   }
-   
-   public void clearStereocenters ()
-   {
-      dispatcher.indigoClearStereocenters(self);
-   }
+   public int countComponents () { return dispatcher.indigoCountComponents(self); }
+   public int componentIndex () { return dispatcher.indigoComponentIndex(self); }
+   public IndigoObject iterateComponents () {return new IndigoObject(dispatcher, dispatcher.indigoIterateComponents(self));}
+   public IndigoObject component (int index) { return new IndigoObject(dispatcher, dispatcher.indigoComponent(self, index)); }
 
-   public int countStereocenters ()
+   public int countHeavyAtoms ()
    {
-      return dispatcher.indigoCountStereocenters(self);
+      return dispatcher.indigoCountHeavyAtoms(self);
    }
 
    public String grossFormula ()
@@ -267,7 +248,6 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public float monoisotopicMass () { return dispatcher.indigoMonoisotopicMass(self); }
    public String canonicalSmiles () { return dispatcher.indigoCanonicalSmiles(self); }
    public String layeredCode () { return dispatcher.indigoLayeredCode(self); }
-   public int countComponents () { return dispatcher.indigoCountComponents(self); }
    public boolean hasZCoord () { return dispatcher.indigoHasZCoord(self) == 1; }
 
    public float[] xyz () { return dispatcher.indigoXYZ(self); }

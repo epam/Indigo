@@ -158,15 +158,25 @@ JNI_FUNC_jint_jint(indigoCountRSites)
 JNI_FUNC_jint_jint(indigoIterateBonds)
 JNI_FUNC_jint_jint(indigoBondOrder)
 JNI_FUNC_jint_jint(indigoBondStereo)
+JNI_FUNC_jint_jint(indigoTopology)
 
 JNI_FUNC_jint_jint(indigoIterateNeighbors)
 JNI_FUNC_jint_jint(indigoBond)
 JNI_FUNC_jint_jint_jint(indigoGetAtom)
 JNI_FUNC_jint_jint_jint(indigoGetBond)
+JNI_FUNC_jint_jint(indigoSource)
+JNI_FUNC_jint_jint(indigoDestination)
 
 JNI_FUNC_jint_jint(indigoClearCisTrans)
 JNI_FUNC_jint_jint(indigoClearStereocenters)
 JNI_FUNC_jint_jint(indigoCountStereocenters)
+
+JNI_FUNC_jint_jint(indigoCountComponents)
+JNI_FUNC_jint_jint(indigoComponentIndex)
+JNI_FUNC_jint_jint(indigoIterateComponents)
+JNI_FUNC_jint_jint_jint(indigoComponent)
+
+JNI_FUNC_jint_jint(indigoCountHeavyAtoms)
 
 JNI_FUNC_jint_jint(indigoGrossFormula)
 JNI_FUNC_jfloat_jint(indigoMolecularWeight)
@@ -176,7 +186,6 @@ JNI_FUNC_jfloat_jint(indigoMonoisotopicMass)
 JNI_FUNC_jstring_jint(indigoCanonicalSmiles)
 JNI_FUNC_jstring_jint(indigoLayeredCode)
 
-JNI_FUNC_jint_jint(indigoCountComponents)
 JNI_FUNC_jint_jint(indigoHasZCoord)
 
 JNIEXPORT jint JNINAME(indigoCreateSubmolecule) (JNIEnv *env, jobject obj, jint mol, jintArray jvertices)

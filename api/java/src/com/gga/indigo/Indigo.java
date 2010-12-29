@@ -451,18 +451,27 @@ public class Indigo
    public native int indigoCountRSites (int molecule);
 
    public native int indigoIterateBonds (int molecule);
-   public native int indigoBondOrder (int molecule);
-   public native int indigoBondStereo (int molecule);
+   public native int indigoBondOrder (int bond);
+   public native int indigoBondStereo (int bond);
+   public native int indigoTopology (int bond);
 
    public native int indigoIterateNeighbors (int atom);
    public native int indigoBond (int nei);
    public native int indigoGetAtom (int molecule, int idx);
    public native int indigoGetBond (int molecule, int idx);
+   public native int indigoSource (int bond);
+   public native int indigoDestination (int bond);
 
    public native int indigoClearCisTrans (int molecule);
    public native int indigoClearStereocenters (int molecule);
    public native int indigoCountStereocenters (int molecule);
 
+   public native int indigoCountComponents (int molecule);
+   public native int indigoComponentIndex (int atom);
+   public native int indigoIterateComponents (int molecule);
+   public native int indigoComponent (int molecule, int index);
+
+   public native int indigoCountHeavyAtoms (int molecule);
    public native int indigoGrossFormula (int molecule);
    public native float indigoMolecularWeight (int molecule);
    public native float indigoMostAbundantMass (int molecule);
@@ -471,7 +480,6 @@ public class Indigo
    public native String indigoCanonicalSmiles (int handle);
    public native String indigoLayeredCode (int handle);
 
-   public native int indigoCountComponents (int molecule);
    public native int indigoHasZCoord (int molecule);
 
    public native int indigoCreateSubmolecule (int molecule, int[] vertices);

@@ -284,6 +284,20 @@ public:
    BaseMolecule &mol;
 };
 
+class IndigoComponentsIter : public IndigoObject
+{
+public:
+   IndigoComponentsIter (BaseMolecule &mol_);
+   virtual ~IndigoComponentsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+   BaseMolecule &mol;
+protected:
+   int _idx;
+};
+
 class IndigoComponentAtomsIter : public IndigoObject
 {
 public:
