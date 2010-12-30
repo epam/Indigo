@@ -17,6 +17,8 @@ namespace com.gga.indigo
       public const int DOWN = 6;
       public const int CIS = 7;
       public const int TRANS = 8;
+      public const int CHAIN = 9;
+      public const int RING = 10;
 
       [DllImport("kernel32")]
       public static extern IntPtr LoadLibrary(string lpFileName);
@@ -397,6 +399,8 @@ namespace com.gga.indigo
       public static extern int indigoWriteFile (string filename);
       [DllImport("indigo.dll")]
       public static extern int indigoWriteBuffer ();
+      [DllImport("indigo.dll")]
+      public static extern int indigoClose (int item);
 
       [DllImport("indigo.dll")]
       public static extern int indigoLoadMoleculeFromString (string str);
@@ -521,6 +525,8 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoInvertStereo (int atom);
       [DllImport("indigo.dll")]
+      public static extern int indigoResetStereo (int atom);
+      [DllImport("indigo.dll")]
       public static extern int indigoCountAtoms (int molecule);
       [DllImport("indigo.dll")]
       public static extern int indigoCountBonds (int molecule);
@@ -535,6 +541,8 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoBondStereo (int molecule);
       [DllImport("indigo.dll")]
+      public static extern int indigoTopology (int bond);
+      [DllImport("indigo.dll")]
       public static extern int indigoIterateNeighbors (int atom);
       [DllImport("indigo.dll")]
       public static extern int indigoBond (int nei);
@@ -543,12 +551,29 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoGetBond (int molecule, int idx);
       [DllImport("indigo.dll")]
+      public static extern int indigoSource (int bond);
+      [DllImport("indigo.dll")]
+      public static extern int indigoDestination (int bond);
+      [DllImport("indigo.dll")]
       public static extern int indigoClearCisTrans (int item);
       [DllImport("indigo.dll")]
       public static extern int indigoClearStereocenters (int item);
       [DllImport("indigo.dll")]
       public static extern int indigoCountStereocenters (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoResetSymmetricCisTrans (int handle);
 
+      [DllImport("indigo.dll")]
+      public static extern int indigoCountComponents (int molecule);
+      [DllImport("indigo.dll")]
+      public static extern int indigoComponentIndex (int atom);
+      [DllImport("indigo.dll")]
+      public static extern int indigoIterateComponents (int molecule);
+      [DllImport("indigo.dll")]
+      public static extern int indigoComponent (int molecule, int index);
+
+      [DllImport("indigo.dll")]
+      public static extern int indigoCountHeavyAtoms (int molecule);
       [DllImport("indigo.dll")]
       public static extern int   indigoGrossFormula    (int molecule);
       [DllImport("indigo.dll")]
@@ -562,14 +587,16 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern sbyte * indigoLayeredCode (int molecule);
       [DllImport("indigo.dll")]
-      public static extern int indigoCountComponents (int molecule);
-      [DllImport("indigo.dll")]
       public static extern int indigoHasZCoord (int molecule);
+      [DllImport("indigo.dll")]
+      public static extern int indigoIsChiral (int molecule);
       [DllImport("indigo.dll")]
       public static extern int indigoCreateSubmolecule (int molecule, int nvertices, int[] vertices);
       [DllImport("indigo.dll")]
       public static extern int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int[] vertices,
                                          int nedges, int[] edges);
+      [DllImport("indigo.dll")]
+      public static extern int indigoRemoveAtoms (int molecule, int nvertices, int[] vertices);
       [DllImport("indigo.dll")]
       public static extern float indigoAlignAtoms (int molecule, int natoms, int[] atom_ids, float[] desired_xyz);
       [DllImport("indigo.dll")]
@@ -634,6 +661,10 @@ namespace com.gga.indigo
       public static extern int indigoSdfAppend (int output, int item);
       [DllImport("indigo.dll")]
       public static extern int indigoSmilesAppend (int output, int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoRdfHeader (int output);
+      [DllImport("indigo.dll")]
+      public static extern int indigoRdfAppend (int output, int item);
 
       [DllImport("indigo.dll")]
       public static extern int indigoCreateArray ();

@@ -53,6 +53,12 @@ namespace com.gga.indigo
          return new IndigoObject(dispatcher, Indigo.indigoClone(self));
       }
 
+      public void close ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoClose(self);
+      }
+
       public String molfile ()
       {
          dispatcher.setSessionID();
@@ -324,6 +330,12 @@ namespace com.gga.indigo
          Indigo.indigoInvertStereo(self);
       }
 
+      public void resetStereo ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoResetStereo(self);
+      }
+
       public int countAtoms ()
       {
          dispatcher.setSessionID();
@@ -350,37 +362,62 @@ namespace com.gga.indigo
 
       public System.Collections.IEnumerable iterateBonds ()
       {
+         dispatcher.setSessionID();
          return new IndigoObject(dispatcher, Indigo.indigoIterateBonds(self));
       }
 
       public int bondOrder ()
       {
+         dispatcher.setSessionID();
          return Indigo.indigoBondOrder(self);
       }
 
       public int bondStereo ()
       {
+         dispatcher.setSessionID();
          return Indigo.indigoBondStereo(self);
+      }
+
+      public int topology ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoTopology(self);
       }
 
       public System.Collections.IEnumerable iterateNeighbors ()
       {
+         dispatcher.setSessionID();
          return new IndigoObject(dispatcher, Indigo.indigoIterateNeighbors(self));
       }
 
       public IndigoObject bond ()
       {
+         dispatcher.setSessionID();
          return new IndigoObject(dispatcher, Indigo.indigoBond(self));
       }
 
       public IndigoObject getAtom (int idx)
       {
+         dispatcher.setSessionID();
          return new IndigoObject(dispatcher, Indigo.indigoGetAtom(self, idx));
       }
 
       public IndigoObject getBond (int idx)
       {
+         dispatcher.setSessionID();
          return new IndigoObject(dispatcher, Indigo.indigoGetBond(self, idx));
+      }
+
+      public IndigoObject source ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoSource(self));
+      }
+
+      public IndigoObject destination ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoDestination(self));
       }
 
       public void clearCisTrans ()
@@ -399,6 +436,42 @@ namespace com.gga.indigo
       {
          dispatcher.setSessionID();
          return Indigo.indigoCountStereocenters(self);
+      }
+
+      public int resetSymmetricCisTrans ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoResetSymmetricCisTrans(self);
+      }
+
+      public int countComponents ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoCountComponents(self);
+      }
+
+      public int componentIndex ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoComponentIndex(self);
+      }
+
+      public IndigoObject iterateComponents ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoIterateComponents(self));
+      }
+
+      public IndigoObject component (int index)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoComponent(self, index));
+      }
+
+      public int countHeavyAtoms ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoCountHeavyAtoms(self);
       }
 
       public String grossFormula ()
@@ -440,16 +513,16 @@ namespace com.gga.indigo
          return new String(Indigo.indigoLayeredCode(self));
       }
 
-      public int countComponents ()
-      {
-         dispatcher.setSessionID();
-         return Indigo.indigoCountComponents(self);
-      }
-
       public bool hasZCoord ()
       {
          dispatcher.setSessionID();
          return Indigo.indigoHasZCoord(self) == 1;
+      }
+
+      public bool isChiral ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoIsChiral(self) == 1;
       }
 
       public IndigoObject createSubmolecule (int[] vertices)
@@ -463,6 +536,12 @@ namespace com.gga.indigo
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, Indigo.indigoCreateEdgeSubmolecule(self,
             vertices.Length, vertices, edges.Length, edges));
+      }
+
+      public void removeAtoms (int[] vertices)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoRemoveAtoms(self, vertices.Length, vertices);
       }
 
       public float alignAtoms (int[] atom_ids, float[] desired_xyz)
@@ -606,6 +685,18 @@ namespace com.gga.indigo
       {
          dispatcher.setSessionID();
          Indigo.indigoSmilesAppend(self, item.self);
+      }
+
+      public void rdfHeader ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoRdfHeader(self);
+      }
+
+      public void rdfAppend (IndigoObject item)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoRdfAppend(self, item.self);
       }
 
       public void arrayAdd (IndigoObject item)
