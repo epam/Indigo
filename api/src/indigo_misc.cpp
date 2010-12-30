@@ -128,7 +128,10 @@ CEXPORT const char * indigoCheckBadValence (int handle)
             int i;
 
             for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+            {
                mol.getAtomValence(i);
+               mol.getImplicitH(i);
+            }
          }
          catch (Exception &e)
          {
@@ -154,7 +157,10 @@ CEXPORT const char * indigoCheckBadValence (int handle)
                Molecule &mol = rxn.getMolecule(j);
                
                for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+               {
                   mol.getAtomValence(i);
+                  mol.getImplicitH(i);
+               }
             }
          }
          catch (Exception &e)
@@ -164,7 +170,7 @@ CEXPORT const char * indigoCheckBadValence (int handle)
          }
       }
       else
-         throw IndigoError("object %s is meither a molecule nor a reaction", obj.debugInfo());
+         throw IndigoError("object %s is neither a molecule nor a reaction", obj.debugInfo());
       
       return "";
    }
