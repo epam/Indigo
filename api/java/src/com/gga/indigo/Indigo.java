@@ -28,6 +28,8 @@ public class Indigo
    public static final int DOWN = 6;
    public static final int CIS = 7;
    public static final int TRANS = 8;
+   public static final int CHAIN = 9;
+   public static final int RING = 10;
 
    public native String version ();
 
@@ -443,6 +445,7 @@ public class Indigo
    public native int indigoResetRadical (int atom);
    public native int indigoResetIsotope (int atom);
 
+   public native int indigoResetStereo (int item);
    public native int indigoInvertStereo (int item);
 
    public native int indigoCountAtoms (int molecule);
@@ -466,6 +469,8 @@ public class Indigo
    public native int indigoClearStereocenters (int molecule);
    public native int indigoCountStereocenters (int molecule);
 
+   public native int indigoResetSymmetricCisTrans (int handle);
+
    public native int indigoCountComponents (int molecule);
    public native int indigoComponentIndex (int atom);
    public native int indigoIterateComponents (int molecule);
@@ -481,9 +486,11 @@ public class Indigo
    public native String indigoLayeredCode (int handle);
 
    public native int indigoHasZCoord (int molecule);
+   public native int indigoIsChiral (int molecule);
 
    public native int indigoCreateSubmolecule (int molecule, int[] vertices);
    public native int indigoCreateEdgeSubmolecule (int molecule, int[] vertices, int[] edges);
+   public native int indigoRemoveAtoms (int molecule, int[] vertices);
 
    public native float indigoAlignAtoms (int molecule, int[] atom_ids, float[] desired_xyz);
 

@@ -198,6 +198,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void resetExplicitValence () { dispatcher.indigoResetExplicitValence(self); }
    public void resetRadical () { dispatcher.indigoResetRadical(self); }
    public void resetIsotope () { dispatcher.indigoResetIsotope(self); }
+   public void resetStereo () { dispatcher.indigoResetStereo(self); }
    public void invertStereo () { dispatcher.indigoInvertStereo(self); }
    public int  countAtoms ()  { return dispatcher.indigoCountAtoms(self); }
    public int  countBonds () { return dispatcher.indigoCountBonds(self); }
@@ -224,6 +225,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void clearCisTrans () { dispatcher.indigoClearCisTrans(self); }
    public void clearStereocenters () { dispatcher.indigoClearStereocenters(self); }
    public int countStereocenters () { return dispatcher.indigoCountStereocenters(self); }
+   public int resetSymmetricCisTrans () { return dispatcher.indigoResetSymmetricCisTrans(self); }
 
    public int countComponents () { return dispatcher.indigoCountComponents(self); }
    public int componentIndex () { return dispatcher.indigoComponentIndex(self); }
@@ -249,6 +251,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public String canonicalSmiles () { return dispatcher.indigoCanonicalSmiles(self); }
    public String layeredCode () { return dispatcher.indigoLayeredCode(self); }
    public boolean hasZCoord () { return dispatcher.indigoHasZCoord(self) == 1; }
+   public boolean isChiral () { return dispatcher.indigoIsChiral(self) == 1; }
 
    public float[] xyz () { return dispatcher.indigoXYZ(self); }
 
@@ -262,50 +265,21 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, dispatcher.indigoCreateEdgeSubmolecule(self, vertices, edges));
    }
 
+   public int removeAtoms (int[] vertices) { return dispatcher.indigoRemoveAtoms(self, vertices); }
+
    public float alignAtoms (int[] atom_ids, float[] desired_xyz)
    {
       return dispatcher.indigoAlignAtoms(self, atom_ids, desired_xyz);
    }
 
-   public void aromatize ()
-   {
-      dispatcher.indigoAromatize(self);
-   }
-
-   public void dearomatize ()
-   {
-      dispatcher.indigoDearomatize(self);
-   }
-
-   public void foldHydrogens ()
-   {
-      dispatcher.indigoFoldHydrogens(self);
-   }
-
-   public void unfoldHydrogens ()
-   {
-      dispatcher.indigoUnfoldHydrogens(self);
-   }
-
-   public void layout ()
-   {
-      dispatcher.indigoLayout(self);
-   }
-
-   public String smiles ()
-   {
-      return dispatcher.indigoSmiles(self);
-   }
-
-   public String name ()
-   {
-      return dispatcher.indigoName(self);
-   }
-
-   public void setName (String name)
-   {
-      dispatcher.indigoSetName(self, name);
-   }
+   public void aromatize () { dispatcher.indigoAromatize(self); }
+   public void dearomatize () { dispatcher.indigoDearomatize(self); }
+   public void foldHydrogens () { dispatcher.indigoFoldHydrogens(self); }
+   public void unfoldHydrogens () { dispatcher.indigoUnfoldHydrogens(self); }
+   public void layout () { dispatcher.indigoLayout(self); }
+   public String smiles () { return dispatcher.indigoSmiles(self); }
+   public String name () { return dispatcher.indigoName(self); }
+   public void setName (String name) { dispatcher.indigoSetName(self, name); }
    
    public boolean hasProperty (String prop) { return dispatcher.indigoHasProperty(self, prop) == 1; }
    public String getProperty (String prop) { return dispatcher.indigoGetProperty(self, prop); }

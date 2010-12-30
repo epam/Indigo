@@ -98,7 +98,8 @@ CEXPORT int indigoResetStereo (int item)
       {
          IndigoAtom &ia = IndigoAtom::cast(self.getObject(item));
 
-         ia.mol->stereocenters.setType(ia.idx, 0, 0);
+         if (ia.mol->stereocenters.getType(ia.idx) != 0)
+            ia.mol->stereocenters.remove(ia.idx);
       }
       else if (IndigoBond::is(obj))
       {
