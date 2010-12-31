@@ -38,6 +38,7 @@ Indigo::Indigo ()
    skip_3d_chirality = false;
    deconvolution_aromatization = true;
    molfile_saving_mode = 0;
+   molfile_saving_no_chiral = false;
    filename_encoding = ENCODING_ASCII;
    fp_params.any_qwords = 15;
    fp_params.sim_qwords = 8;
