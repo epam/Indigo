@@ -403,7 +403,8 @@ void BaseMolecule::_mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &v
             int j;
 
             for (j = 0; (att_idx = mol.getAttachmentPoint(i, j)) != -1; j++)
-               this->addAttachmentPoint(i, mapping[att_idx]);
+               if (mapping[att_idx] != -1)
+                  this->addAttachmentPoint(i, mapping[att_idx]);
          }
       }
    }
