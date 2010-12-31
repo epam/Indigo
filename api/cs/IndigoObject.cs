@@ -321,7 +321,31 @@ namespace com.gga.indigo
       public void resetIsotope ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoResetIsotope (self);
+         Indigo.indigoResetIsotope(self);
+      }
+
+      public void setAttachmentPoint (int order)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoSetAttachmentPoint(self, order);
+      }
+
+      public void removeConstraints (string type)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoRemoveConstraints(self, type);
+      }
+
+      public void addConstraint (string type, string value)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoAddConstraint(self, type, value);
+      }
+
+      public void addConstraintNot (string type, string value)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoAddConstraintNot(self, type, value);
       }
 
       public void invertStereo ()

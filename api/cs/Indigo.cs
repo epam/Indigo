@@ -523,6 +523,14 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoResetIsotope (int atom);
       [DllImport("indigo.dll")]
+      public static extern int indigoSetAttachmentPoint (int atom, int order);
+      [DllImport("indigo.dll")]
+      public static extern int indigoRemoveConstraints (int item, string type);
+      [DllImport("indigo.dll")]
+      public static extern int indigoAddConstraint (int item, string type, string value);
+      [DllImport("indigo.dll")]
+      public static extern int indigoAddConstraintNot (int item, string type, string value);
+      [DllImport("indigo.dll")]
       public static extern int indigoInvertStereo (int atom);
       [DllImport("indigo.dll")]
       public static extern int indigoResetStereo (int atom);
