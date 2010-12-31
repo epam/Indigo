@@ -291,12 +291,6 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
    for (i = 0; i < indices.size(); i++)
       mapping[indices[i]] = -1;
 
-   // subclass (Molecule or QueryMolecule) removes its data
-   _removeAtoms(indices, mapping.ptr());
-
-   stereocenters.removeAtoms(indices);
-   cis_trans.buildOnSubmolecule(*this, *this, mapping.ptr());
-
    // sgroups
    for (j = data_sgroups.size() - 1; j >= 0; j--)
    {
@@ -310,6 +304,12 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
       if (superatoms[j].atoms.size() < 1)
          superatoms.remove(j);
    }
+
+   stereocenters.removeAtoms(indices);
+   cis_trans.buildOnSubmolecule(*this, *this, mapping.ptr());
+
+   // subclass (Molecule or QueryMolecule) removes its data
+   _removeAtoms(indices, mapping.ptr());
 
    // Remove vertices from graph
    for (i = 0; i < indices.size(); i++)
@@ -582,12 +582,12 @@ void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
    int i;
 
    for (i = sgroup.atoms.size() - 1; i >= 0; i--)
-      if (mapping[i] == -1)
+      if (mapping[sgroup.atoms[i]] == -1)
          sgroup.atoms.remove(i);
 
    for (i = sgroup.bonds.size() - 1; i >= 0; i--)
    {
-      const Edge &edge = getEdge(i);
+      const Edge &edge = getEdge(sgroup.bonds[i]);
       if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
          sgroup.bonds.remove(i);
    }
