@@ -50,6 +50,8 @@ void BaseMolecule::clear ()
    cis_trans.clear();
    _xyz.clear();
    _rsite_attachment_points.clear();
+   data_sgroups.clear();
+   superatoms.clear();
    Graph::clear();
 }
 
