@@ -526,6 +526,16 @@ class Indigo:
       return
     return self._make_wrapper_func(newfunc, func)
 
+  def _member_void_int (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int]
+    dispatcher = self
+    def newfunc (self, param):
+      dispatcher._setSID()
+      dispatcher._checkResult(func(self.id, param))
+      return
+    return self._make_wrapper_func(newfunc, func)
+
   def _member_void_obj (self, func):
     func.restype = c_int
     func.argtypes = [c_int, c_int]
