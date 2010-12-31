@@ -107,7 +107,10 @@ void MolfileSaver::_saveMolecule (BaseMolecule &mol, bool query)
    }
 
    if (_v2000)
+   {
       _writeRGroupIndices2000(_output, mol);
+      _writeAttachmentValues2000(_output, mol);
+   }
    
    if (rg2000)
    {
@@ -389,14 +392,14 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       {
          int val = 0;
 
-         for (int idx = 0; idx < mol.attachmentPointCount(); idx++)
+         for (int idx = 1; idx < mol.attachmentPointCount(); idx++)
          {
             int j;
 
             for (j = 0; mol.getAttachmentPoint(idx, j) != -1; j++)
                if (mol.getAttachmentPoint(idx, j) == i)
                {
-                  val |= 1 << idx;
+                  val |= 1 << (idx - 1);
                   break;
                }
 
@@ -1009,7 +1012,7 @@ void MolfileSaver::_writeRGroupIndices2000 (Output &output, BaseMolecule &mol)
    }
 }
 
-void MolfileSaver::_writeAttachmentValues2000 (Output &output, QueryMolecule &fragment)
+void MolfileSaver::_writeAttachmentValues2000 (Output &output, BaseMolecule &fragment)
 {
    if (fragment.attachmentPointCount() == 0)
       return;
@@ -1017,7 +1020,7 @@ void MolfileSaver::_writeAttachmentValues2000 (Output &output, QueryMolecule &fr
    RedBlackMap<int, int> orders;
    int i;
 
-   for (i = 0; i < fragment.attachmentPointCount(); i++)
+   for (i = 1; i < fragment.attachmentPointCount(); i++)
    {
       int j = 0;
       int idx;
@@ -1027,9 +1030,9 @@ void MolfileSaver::_writeAttachmentValues2000 (Output &output, QueryMolecule &fr
          int *val;
 
          if ((val = orders.at2(idx + 1)) == 0)
-            orders.insert(idx + 1, 1 << i);            
+            orders.insert(_atom_mapping[idx], 1 << (i - 1));
          else
-            *val |= 1 << i;
+            *val |= 1 << (i - 1);
       }
 
    }
