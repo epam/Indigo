@@ -302,10 +302,12 @@ class Indigo:
     self.IndigoObject.clearStereocenters = self._member_void(self._lib.indigoClearStereocenters)
     self.IndigoObject.countStereocenters = self._member_int(self._lib.indigoCountStereocenters)
     self.IndigoObject.resetSymmetricCisTrans = self._member_int(self._lib.indigoResetSymmetricCisTrans)
+    self.IndigoObject.unseparateCharges = self._member_int(self._lib.indigoUnseparateCharges)
 
     self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
     self.IndigoObject.componentIndex = self._member_int(self._lib.indigoComponentIndex)
     self.IndigoObject.component = self._member_obj_int(self._lib.indigoComponent)
+    self.IndigoObject.iterateComponents = self._member_obj(self._lib.indigoIterateComponents)
 
     self.IndigoObject.countHeavyAtoms = self._member_int(self._lib.indigoCountHeavyAtoms)
     self.IndigoObject.molecularWeight = self._member_float(self._lib.indigoMolecularWeight)

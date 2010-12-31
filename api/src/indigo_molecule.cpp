@@ -1969,3 +1969,54 @@ CEXPORT int indigoCountComponentBonds (int molecule, int index)
    }
    INDIGO_END(-1)
 }
+
+CEXPORT int indigoUnseparateCharges (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      Molecule &mol = self.getObject(molecule).getMolecule();
+      int cnt = 0, old_cnt;
+      int i;
+
+      do
+      {
+         old_cnt = cnt;
+
+         for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+         {
+            const Edge &edge = mol.getEdge(i);
+
+            if (mol.getVertex(edge.beg).degree() > 1 && mol.getVertex(edge.end).degree() > 1)
+               continue;
+
+            int order = mol.getBondOrder(i);
+
+            if (order != BOND_SINGLE && order != BOND_DOUBLE)
+               continue;
+
+            int charge_beg = mol.getAtomCharge(edge.beg);
+            int charge_end = mol.getAtomCharge(edge.end);
+
+            if (charge_beg > 0 && charge_end < 0)
+            {
+               mol.setAtomCharge(edge.beg, charge_beg - 1);
+               mol.setAtomCharge(edge.end, charge_end + 1);
+               mol.setBondOrder(i, order + 1, false);
+               cnt++;
+               break;
+            }
+            else if (charge_beg < 0 && charge_end > 0)
+            {
+               mol.setAtomCharge(edge.beg, charge_beg + 1);
+               mol.setAtomCharge(edge.end, charge_end - 1);
+               mol.setBondOrder(i, order + 1, false);
+               cnt++;
+               break;
+            }
+         }
+      } while (cnt != old_cnt);
+
+      return cnt;
+   }
+   INDIGO_END(-1)
+}
