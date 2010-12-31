@@ -148,6 +148,12 @@ JNI_FUNC_jint_jint(indigoResetExplicitValence)
 JNI_FUNC_jint_jint(indigoResetRadical)
 JNI_FUNC_jint_jint(indigoResetIsotope)
 
+JNI_FUNC_jint_jint_jint(indigoSetAttachmentPoint)
+
+JNI_FUNC_jint_jint_jstring(indigoRemoveConstraints)
+JNI_FUNC_jint_jint_jstring_jstring(indigoAddConstraint)
+JNI_FUNC_jint_jint_jstring_jstring(indigoAddConstraintNot)
+
 JNI_FUNC_jint_jint(indigoResetStereo)
 JNI_FUNC_jint_jint(indigoInvertStereo)
 

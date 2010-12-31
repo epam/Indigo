@@ -198,6 +198,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void resetExplicitValence () { dispatcher.indigoResetExplicitValence(self); }
    public void resetRadical () { dispatcher.indigoResetRadical(self); }
    public void resetIsotope () { dispatcher.indigoResetIsotope(self); }
+
+   public void setAttachmentPoint (int order) { dispatcher.indigoSetAttachmentPoint(self, order); }
+   public void removeConstraints (String type) { dispatcher.indigoRemoveConstraints(self, type); }
+   public void addConstraint (String type, String value) { dispatcher.indigoAddConstraint(self, type, value);}
+   public void addConstraintNot (String type, String value) { dispatcher.indigoAddConstraintNot(self, type, value);}
+
    public void resetStereo () { dispatcher.indigoResetStereo(self); }
    public void invertStereo () { dispatcher.indigoInvertStereo(self); }
    public int  countAtoms ()  { return dispatcher.indigoCountAtoms(self); }

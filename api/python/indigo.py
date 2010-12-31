@@ -281,6 +281,12 @@ class Indigo:
     self.IndigoObject.resetStereo = self._member_void(self._lib.indigoResetStereo)
     self.IndigoObject.invertStereo = self._member_void(self._lib.indigoInvertStereo)
 
+    self.IndigoObject.setAttachmentPoint = self._member_void_int(self._lib.indigoSetAttachmentPoint)
+
+    self.IndigoObject.removeConstraints = self._member_void_string(self._lib.indigoRemoveConstraints)
+    self.IndigoObject.addConstraint = self._member_void_string_string(self._lib.indigoAddConstraint)
+    self.IndigoObject.addConstraintNot = self._member_void_string_string(self._lib.indigoAddConstraintNot)
+
     self.IndigoObject.countAtoms = self._member_int(self._lib.indigoCountAtoms)
     self.IndigoObject.countBonds = self._member_int(self._lib.indigoCountBonds)
     self.IndigoObject.countPseudoatoms = self._member_int(self._lib.indigoCountPseudoatoms)

@@ -288,14 +288,12 @@ CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetRadical (int atom);
 CEXPORT int indigoResetIsotope (int atom);
-CEXPORT int indigoResetRsite (int atom);
+
 CEXPORT int indigoSetAttachmentPoint (int atom, int order);
 
-CEXPORT int indigoRemoveConstraints(int atom, const char* type);
-CEXPORT int indigoAddConstraintAnd(int atom, const char* type, const char* value);
-CEXPORT int indigoAddConstraintAndNot(int atom, const char* type, const char* value);
-CEXPORT int indigoAddConstraintOr(int atom, const char* type, const char* value);
-CEXPORT int indigoAddConstraintOrNot(int atom, const char* type, const char* value);
+CEXPORT int indigoRemoveConstraints   (int item, const char *type);
+CEXPORT int indigoAddConstraint    (int item, const char *type, const char *value);
+CEXPORT int indigoAddConstraintNot (int item, const char *type, const char *value);
 
 CEXPORT int indigoResetStereo (int item);
 CEXPORT int indigoInvertStereo (int item);

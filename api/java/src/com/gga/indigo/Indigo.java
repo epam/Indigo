@@ -445,6 +445,12 @@ public class Indigo
    public native int indigoResetRadical (int atom);
    public native int indigoResetIsotope (int atom);
 
+   public native int indigoSetAttachmentPoint (int atom, int order);
+
+   public native int indigoRemoveConstraints (int item, String type);
+   public native int indigoAddConstraint     (int item, String type, String value);
+   public native int indigoAddConstraintNot  (int item, String type, String value);
+
    public native int indigoResetStereo (int item);
    public native int indigoInvertStereo (int item);
 

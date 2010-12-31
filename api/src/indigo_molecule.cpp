@@ -1189,19 +1189,30 @@ CEXPORT int indigoSetAttachmentPoint (int atom, int order)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoRemoveConstraints(int atom, const char* type)
+CEXPORT int indigoRemoveConstraints (int item, const char *str_type)
 {
    INDIGO_BEGIN
    {
-      //IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
-      //TODO
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(item));
+      QueryMolecule &qmol = ia.mol->asQueryMolecule();
+
+      int type;
+
+      if (strcasecmp(str_type, "atomic-number") == 0)
+         type = QueryMolecule::ATOM_NUMBER;
+      else if (strcasecmp(str_type, "rsite") == 0)
+         type = QueryMolecule::ATOM_RSITE;
+      else
+         throw IndigoError("indigoRemoveConstraints(): can not parse type: %s", str_type);
+
+      qmol.getAtom(ia.idx).removeConstraints(type);
 
       return 1;
    }
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoAddConstraintAnd(int atom, const char* type, const char* value)
+CEXPORT int indigoAddConstraint (int atom, const char *type, const char *value)
 {
    INDIGO_BEGIN
    {
@@ -1220,7 +1231,7 @@ CEXPORT int indigoAddConstraintAnd(int atom, const char* type, const char* value
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoAddConstraintAndNot(int atom, const char* type, const char* value)
+CEXPORT int indigoAddConstraintNot (int atom, const char *type, const char *value)
 {
    INDIGO_BEGIN
    {
@@ -1238,6 +1249,8 @@ CEXPORT int indigoAddConstraintAndNot(int atom, const char* type, const char* va
    }
    INDIGO_END(-1);
 }
+
+/*
 CEXPORT int indigoAddConstraintOr(int atom, const char* type, const char* value)
 {
    INDIGO_BEGIN
@@ -1274,6 +1287,7 @@ CEXPORT int indigoAddConstraintOrNot(int atom, const char* type, const char* val
    }
    INDIGO_END(-1);
 }
+ * */
 
 CEXPORT const char * indigoCanonicalSmiles (int molecule)
 {
