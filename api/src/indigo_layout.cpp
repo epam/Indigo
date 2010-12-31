@@ -25,12 +25,14 @@ CEXPORT int indigoLayout (int object)
       if (obj.isBaseMolecule()) {
          BaseMolecule &mol = obj.getBaseMolecule();
          MoleculeLayout ml(mol);
+         ml.max_iterations = self.layout_max_iterations;
          ml.bond_length = 1.6f;
          ml.make();
          mol.stereocenters.markBonds();
       } else if (obj.isBaseReaction()) {
          BaseReaction &rxn = obj.getBaseReaction();
          ReactionLayout rl(rxn);
+         rl.max_iterations = self.layout_max_iterations;
          rl.bond_length = 1.6f;
          rl.make();
          rxn.markStereocenterBonds();

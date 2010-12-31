@@ -47,6 +47,8 @@ Indigo::Indigo ()
 
    embedding_edges_uniqueness = false;
    max_embeddings = 1000;
+
+   layout_max_iterations = 0;
 }
 
 void Indigo::removeAllObjects ()

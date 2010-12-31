@@ -215,6 +215,8 @@ public:
    bool embedding_edges_uniqueness;
    int max_embeddings;
 
+   int layout_max_iterations; // default is zero -- no limit
+
 protected:
 
    RedBlackMap<int, IndigoObject *> _objects;

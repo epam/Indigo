@@ -32,6 +32,7 @@ public:
    float plus_interval_factor;
    float arrow_interval_factor;
    bool preserve_molecule_layout;
+   int  max_iterations;
 
 private:
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, int id);
