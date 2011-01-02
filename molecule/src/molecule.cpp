@@ -369,8 +369,21 @@ int Molecule::matchAtomsCmp (Graph &g1, Graph &g2,
    if (!m1.isPseudoAtom(idx1) && m2.isPseudoAtom(idx2))
       return -1;
 
+   if (m1.isRSite(idx1) && !m2.isRSite(idx2))
+      return 1;
+
+   if (!m1.isRSite(idx1) && m2.isRSite(idx2))
+      return -1;
+
    bool pseudo = false;
 
+   if (m1.isRSite(idx1) && m2.isRSite(idx2))
+   {
+      int res = m2.getRSiteBits(idx2) - m1.getRSiteBits(idx1);
+      if (res != 0)
+         return res;
+      pseudo = true;
+   }
    if (m1.isPseudoAtom(idx1) && m2.isPseudoAtom(idx2))
    {
       int res = strcmp(m1.getPseudoAtom(idx1), m2.getPseudoAtom(idx2));
