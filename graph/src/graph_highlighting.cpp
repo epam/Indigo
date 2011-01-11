@@ -21,6 +21,8 @@ using namespace indigo;
 GraphHighlighting::GraphHighlighting ()
 {
    _graph = 0;
+   _n_vertices = 0;
+   _n_edges = 0;
 }
 
 void GraphHighlighting::init (const Graph &graph)
