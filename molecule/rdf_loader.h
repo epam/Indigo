@@ -44,6 +44,8 @@ public:
 
    int tell ();
 
+   int currentNumber ();
+
    /*
     * Data buffer with reaction or molecule for current record
     */

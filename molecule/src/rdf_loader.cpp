@@ -245,20 +245,25 @@ int RdfLoader::tell () {
    return _scanner->tell();
 }
 
+int RdfLoader::currentNumber () {
+   return _current_number;
+}
+
 void RdfLoader::readAt (int index)
 {
    if (index < _offsets.size())
    {
       _scanner->seek(_offsets[index], SEEK_SET);
+      _current_number = index;
       readNext();
    }
    else
    {
       _scanner->seek(_max_offset, SEEK_SET);
+      _current_number = _offsets.size();
       do
       {
          readNext();
       } while (index + 1 != _offsets.size());
    }
-   _current_number = index + 1;
 }

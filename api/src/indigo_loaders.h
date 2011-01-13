@@ -101,7 +101,6 @@ public:
 
 protected:
    Scanner  *_own_scanner;
-   int       _counter;
 };
 
 class IndigoRdfLoader : public IndigoObject
@@ -120,7 +119,6 @@ public:
 
    RdfLoader *rdf_loader;
 protected:
-   int       _counter;
    Scanner  *_own_scanner;
 };
 
@@ -176,7 +174,6 @@ protected:
    Scanner    *_scanner;
    Array<char> _str;
    bool      _own_scanner;
-   int       _counter;
 
    void _advance ();
 

@@ -32,6 +32,7 @@ public:
    void readNext ();
 
    int tell ();
+   int currentNumber ();
 
    void readAt (int index);
 
