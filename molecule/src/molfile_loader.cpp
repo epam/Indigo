@@ -165,9 +165,9 @@ void MolfileLoader::_readCtabHeader ()
 
       version[5] = 0;
 
-      if (strcmp(version, "V2000") == 0)
+      if (strcasecmp(version, "V2000") == 0)
          _v2000 = true;
-      else if (strcmp(version, "V3000") == 0)
+      else if (strcasecmp(version, "V3000") == 0)
          _v2000 = false;
       else
          throw Error("bad molfile version : %s", version);
