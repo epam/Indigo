@@ -200,7 +200,7 @@ protected:
 
    // border functions
    void _getBorder (Cycle &border) const;
-   void _splitBorder (int v1, int v2, Array<int> &part1, Array<int> &part2) const;
+   void _splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const;
    bool _isPointOutside (const Vec2f &p) const;
    bool _isPointOutsideCycle   (const Cycle &cycle, const Vec2f &p) const;
    bool _isPointOutsideCycleEx (const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const;

@@ -119,8 +119,10 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
    int n_common_e = 0, n_common_v = 0;
    bool is_attached = false;
    QS_DEF(Array<int>, cycle_vertex_types);
-   QS_DEF(Array<int>, border1);
-   QS_DEF(Array<int>, border2);
+   QS_DEF(Array<int>, border1v);
+   QS_DEF(Array<int>, border1e);
+   QS_DEF(Array<int>, border2v);
+   QS_DEF(Array<int>, border2e);
    Vec2f p;
 
    cycle_vertex_types.clear_resize(cycle.vertexCount());
@@ -177,41 +179,41 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
 
                if  (_isPointOutside(p))
                {
-                  _splitBorder(cycle.getVertex(i), cycle.getVertexC(i + 1), border1, border2);
+                  _splitBorder(cycle.getVertex(i), cycle.getVertexC(i + 1), border1v, border1e, border2v, border2e);
 
                   _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
 
                   // Ignore border1 and check if vertices are inside new bound
                   // if no then restore Border1 and ignore Border2
-                  for (j = 0; j < border1.size() - 1; j++)
+                  for (j = 0; j < border1e.size(); j++)
                   {
                      if (j > 0)
-                        _layout_vertices[border1[j]].type = ELEMENT_IGNORE;
-                     _layout_edges[border1[j]].type = ELEMENT_IGNORE;
+                        _layout_vertices[border1v[j]].type = ELEMENT_IGNORE;
+                     _layout_edges[border1e[j]].type = ELEMENT_IGNORE;
                   }
 
-                  p.lineCombin2(_layout_vertices[border1[1]].pos, 0.9f, _layout_vertices[border1[2]].pos, 0.1f);
+                  p.lineCombin2(_layout_vertices[border1v[1]].pos, 0.9f, _layout_vertices[border1v[2]].pos, 0.1f);
 
                   if (!_isPointOutside(p))
                   {
-                     for (j = 0; j < border1.size() - 1; j++)
+                     for (j = 0; j < border1e.size(); j++)
                      {
                         if (j > 0)
-                           _layout_vertices[border1[j]].type = ELEMENT_INTERNAL;
-                        _layout_edges[border1[j]].type = ELEMENT_INTERNAL;
+                           _layout_vertices[border1v[j]].type = ELEMENT_INTERNAL;
+                        _layout_edges[border1e[j]].type = ELEMENT_INTERNAL;
                      }
                   } else {
-                     for (j = 0; j < border1.size() - 1; j++)
+                     for (j = 0; j < border1e.size(); j++)
                      {
                         if (j > 0)
-                           _layout_vertices[border1[j]].type = ELEMENT_BOUNDARY;
-                        _layout_edges[border1[j]].type = ELEMENT_BOUNDARY;
+                           _layout_vertices[border1v[j]].type = ELEMENT_BOUNDARY;
+                        _layout_edges[border1e[j]].type = ELEMENT_BOUNDARY;
                      }
-                     for (j = 0; j < border2.size() - 1; j++)
+                     for (j = 0; j < border2e.size(); j++)
                      {
                         if (j > 0)
-                           _layout_vertices[border2[j]].type = ELEMENT_INTERNAL;
-                        _layout_edges[border2[j]].type = ELEMENT_INTERNAL;
+                           _layout_vertices[border2v[j]].type = ELEMENT_INTERNAL;
+                        _layout_edges[border2e[j]].type = ELEMENT_INTERNAL;
                      }
                   }
                } else
@@ -237,7 +239,7 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
       return false;
 
    // Make Border1, Border2 from component border (borders have two common vertices)
-   _splitBorder(c_beg, c_end, border1, border2);
+   _splitBorder(c_beg, c_end, border1v, border1e, border2v, border2e);
 
    QS_DEF(MoleculeLayoutGraph, next_bc);
    QS_DEF(Array<int>, mapping);
@@ -312,17 +314,17 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
       // In both cases chain_ext becomes external.
       // Ignore border1 and check if vertices are inside new bound
       // if no then restore Border1 and ignore Border2
-      next_bc._setChainType(border1, mapping, ELEMENT_IGNORE);
+      next_bc._setChainType(border1v, mapping, ELEMENT_IGNORE);
 
-      p.lineCombin2(next_bc._layout_vertices[mapping[border1[0]]].pos, 0.9f,
-         next_bc._layout_vertices[mapping[border1[1]]].pos, 0.1f);
+      p.lineCombin2(next_bc._layout_vertices[mapping[border1v[0]]].pos, 0.9f,
+         next_bc._layout_vertices[mapping[border1v[1]]].pos, 0.1f);
 
       if (!next_bc._isPointOutside(p))
-         next_bc._setChainType(border1, mapping, ELEMENT_INTERNAL);
+         next_bc._setChainType(border1v, mapping, ELEMENT_INTERNAL);
       else
       {
-         next_bc._setChainType(border1, mapping, ELEMENT_BOUNDARY);
-         next_bc._setChainType(border2, mapping, ELEMENT_INTERNAL);
+         next_bc._setChainType(border1v, mapping, ELEMENT_BOUNDARY);
+         next_bc._setChainType(border2v, mapping, ELEMENT_INTERNAL);
       }
       // Replace chain_ext by single edge and check if chain_ext is outside (try to draw convex polygon)
       if (n_try == 0 && chain_ext.size() > 2)
@@ -355,12 +357,12 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
       // (draw cycle outside not inside)
       if (n_try == 0)
       {
-         for (i = 1; i < border1.size() - 1 && !is_attached; i++)
-            if (next_bc._isPointOutsideCycleEx(cycle, next_bc._layout_vertices[mapping[border1[i]]].pos, mapping))
+         for (i = 1; i < border1v.size() - 1 && !is_attached; i++)
+            if (next_bc._isPointOutsideCycleEx(cycle, next_bc._layout_vertices[mapping[border1v[i]]].pos, mapping))
                is_attached = true;
 
-         for (i = 1; i < border2.size() - 1 && !is_attached; i++)
-            if (next_bc._isPointOutsideCycleEx(cycle, next_bc._layout_vertices[mapping[border2[i]]].pos, mapping))
+         for (i = 1; i < border2v.size() - 1 && !is_attached; i++)
+            if (next_bc._isPointOutsideCycleEx(cycle, next_bc._layout_vertices[mapping[border2v[i]]].pos, mapping))
                is_attached = true;
       } else
          is_attached = true;
