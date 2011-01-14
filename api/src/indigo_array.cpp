@@ -15,6 +15,7 @@
 #include "api/indigo.h"
 #include "indigo_array.h"
 #include "base_cpp/auto_ptr.h"
+#include "indigo_loaders.h"
 
 IndigoArray::IndigoArray () : IndigoObject(ARRAY)
 {
@@ -162,17 +163,6 @@ CEXPORT int indigoArrayAdd (int arr, int handle)
       array.objects.add(obj.clone());
 
       return res;
-   }
-   INDIGO_END(-1);
-}
-
-CEXPORT int indigoSize (int arr)
-{
-   INDIGO_BEGIN
-   {
-      IndigoArray &array = IndigoArray::cast(self.getObject(arr));
-
-      return array.objects.size();
    }
    INDIGO_END(-1);
 }

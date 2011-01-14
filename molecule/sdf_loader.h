@@ -33,6 +33,7 @@ public:
 
    int tell ();
    int currentNumber ();
+   int count ();
 
    void readAt (int index);
 

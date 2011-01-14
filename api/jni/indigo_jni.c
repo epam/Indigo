@@ -321,7 +321,7 @@ JNI_FUNC_jint_jint_jint(indigoRdfAppend)
 JNI_FUNC_jint(indigoCreateArray)
 JNI_FUNC_jint_jint_jint(indigoArrayAdd)
 JNI_FUNC_jint_jint_jint(indigoAt)
-JNI_FUNC_jint_jint(indigoSize)
+JNI_FUNC_jint_jint(indigoCount)
 JNI_FUNC_jint_jint(indigoClear)
 JNI_FUNC_jint_jint(indigoIterateArray)
 

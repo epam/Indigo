@@ -461,6 +461,31 @@ int IndigoMultilineSmilesLoader::tell ()
    return _scanner->tell();
 }
 
+int IndigoMultilineSmilesLoader::count ()
+{
+   int offset = _scanner->tell();
+   int cn = _current_number;
+
+   if (offset != _max_offset)
+   {
+      _scanner->seek(_max_offset, SEEK_SET);
+      _current_number = _offsets.size();
+   }
+
+   while (!_scanner->isEOF())
+      _advance();
+
+   int res = _current_number;
+
+   if (res != cn)
+   {
+      _scanner->seek(offset, SEEK_SET);
+      _current_number = cn;
+   }
+
+   return res;
+}
+
 IndigoObject * IndigoMultilineSmilesLoader::at (int index)
 {
    if (index < _offsets.size())

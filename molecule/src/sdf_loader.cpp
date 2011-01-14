@@ -12,8 +12,6 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include <fcntl.h>
-
 #include "molecule/sdf_loader.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -65,6 +63,31 @@ int SdfLoader::tell ()
 int SdfLoader::currentNumber ()
 {
    return _current_number;
+}
+
+int SdfLoader::count ()
+{
+   int offset = _scanner->tell();
+   int cn = _current_number;
+
+   if (offset != _max_offset)
+   {
+      _scanner->seek(_max_offset, SEEK_SET);
+      _current_number = _offsets.size();
+   }
+
+   while (!isEOF())
+      readNext();
+
+   int res = _current_number;
+
+   if (res != cn)
+   {
+      _scanner->seek(offset, SEEK_SET);
+      _current_number = cn;
+   }
+
+   return res;
 }
 
 bool SdfLoader::isEOF()

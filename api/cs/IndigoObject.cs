@@ -735,10 +735,10 @@ namespace com.gga.indigo
          return new IndigoObject(dispatcher, Indigo.indigoAt(self, index));
       }
 
-      public int size ()
+      public int count ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoSize(self);
+         return Indigo.indigoCount(self);
       }
 
       public void clear ()

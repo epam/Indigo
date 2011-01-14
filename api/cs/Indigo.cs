@@ -681,7 +681,7 @@ namespace com.gga.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoAt (int item, int index);
       [DllImport("indigo.dll")]
-      public static extern int indigoSize (int arr);
+      public static extern int indigoCount (int arr);
       [DllImport("indigo.dll")]
       public static extern int indigoClear (int arr);
       [DllImport("indigo.dll")]

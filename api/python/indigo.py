@@ -352,7 +352,7 @@ class Indigo:
     self.IndigoObject.smilesAppend = self._member_void_obj(self._lib.indigoSmilesAppend)
 
     self.IndigoObject.iterateArray = self._member_obj(self._lib.indigoIterateArray)
-    self.IndigoObject.size = self._member_int(self._lib.indigoSize)
+    self.IndigoObject.count = self._member_int(self._lib.indigoCount)
     self.IndigoObject.clear = self._member_void(self._lib.indigoClear)
     self.IndigoObject.arrayAdd = self._member_void_obj(self._lib.indigoArrayAdd)
     self.IndigoObject.at = self._member_obj_int(self._lib.indigoAt)

@@ -599,3 +599,27 @@ CEXPORT int indigoAt (int item, int index)
    }
    INDIGO_END(-1);
 }
+
+CEXPORT int indigoCount (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoArray::is(obj))
+         return IndigoArray::cast(obj).objects.size();
+
+      if (obj.type == IndigoObject::SDF_LOADER)
+         return ((IndigoSdfLoader &)obj).sdf_loader->count();
+
+      if (obj.type == IndigoObject::RDF_LOADER)
+         return ((IndigoRdfLoader &)obj).rdf_loader->count();
+
+      if (obj.type == IndigoObject::MULTILINE_SMILES_LOADER)
+         return ((IndigoMultilineSmilesLoader &)obj).count();
+
+      throw IndigoError("indigoCount(): can not handle %s", obj.debugInfo());
+   }
+   INDIGO_END(-1);
+}
+

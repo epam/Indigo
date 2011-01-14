@@ -36,7 +36,7 @@ JNIEXPORT jint JNINAME(indigoRenderGrid) (JNIEnv *env, jobject obj,
       nrefatoms = (*env)->GetArrayLength(env, jrefAtoms);
       refatoms = (*env)->GetIntArrayElements(env, jrefAtoms, 0);
 
-      if (nrefatoms != indigoSize(objects))
+      if (nrefatoms != indigoCount(objects))
          indigoThrowJNIException(env,
         "indigoRenderGrid(): refAtoms size does not match the number of objects");
    }
@@ -62,7 +62,7 @@ JNIEXPORT jint JNINAME(indigoRenderGridToFile) (JNIEnv *env, jobject obj,
    {
       nrefatoms = (*env)->GetArrayLength(env, jrefAtoms);
       refatoms = (*env)->GetIntArrayElements(env, jrefAtoms, 0);
-      if (nrefatoms != indigoSize(objects))
+      if (nrefatoms != indigoCount(objects))
          indigoThrowJNIException(env,
         "indigoRenderGridToFile(): refAtoms size does not match the number of objects");
    }

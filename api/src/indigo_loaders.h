@@ -169,6 +169,7 @@ public:
    virtual bool hasNext ();
 
    IndigoObject * at (int index);
+   int count ();
 
 protected:
    Scanner    *_scanner;

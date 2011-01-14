@@ -483,7 +483,7 @@ CEXPORT int indigoCreateArray ();
 // Note: a clone of the object is added, not the object itself
 CEXPORT int indigoArrayAdd (int arr, int object);
 CEXPORT int indigoAt (int item, int index);
-CEXPORT int indigoSize (int arr);
+CEXPORT int indigoCount (int item);
 CEXPORT int indigoClear (int arr);
 CEXPORT int indigoIterateArray (int arr);
 

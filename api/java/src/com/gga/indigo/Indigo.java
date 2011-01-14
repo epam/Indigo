@@ -547,7 +547,7 @@ public class Indigo
    public native int indigoCreateArray ();
    public native int indigoArrayAdd (int arr, int obj);
    public native int indigoAt (int arr, int index);
-   public native int indigoSize (int arr);
+   public native int indigoCount (int arr);
    public native int indigoClear (int arr);
    public native int indigoIterateArray (int arr);
 

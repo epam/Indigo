@@ -35,16 +35,11 @@ public:
    ~RdfLoader ();
 
    bool isEOF ();
-   /*
-    * Read next record
-    */
    void readNext ();
-
    void readAt (int index);
-
    int tell ();
-
    int currentNumber ();
+   int count ();
 
    /*
     * Data buffer with reaction or molecule for current record
