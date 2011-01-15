@@ -482,8 +482,9 @@ void SmilesLoader::_loadMolecule ()
          else
          {
             if (atom_stack.size() < 1)
-               throw Error("probably mispaced '.'");
-            atom_stack.pop();
+               ; // we allow misplaced dots because we are so kind
+            else
+               atom_stack.pop();
          }
          first_atom = true;
          continue;
