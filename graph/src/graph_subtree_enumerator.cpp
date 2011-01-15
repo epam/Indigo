@@ -36,6 +36,7 @@ TL_CP_GET(_pool)
 
 GraphSubtreeEnumerator::~GraphSubtreeEnumerator ()
 {
+   _dfs_front.clear(); // to avoid data race
 }
 
 void GraphSubtreeEnumerator::process ()
