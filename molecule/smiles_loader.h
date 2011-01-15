@@ -39,6 +39,7 @@ public:
    DEF_ERROR("SMILES loader");
 
    SmilesLoader (Scanner &scanner);
+   ~SmilesLoader ();
 
    void loadMolecule      (Molecule &mol);
    void loadQueryMolecule (QueryMolecule &mol);

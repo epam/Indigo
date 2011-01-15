@@ -43,6 +43,11 @@ TL_CP_GET(_bonds)
    _inside_smarts_component = false;
 }
 
+SmilesLoader::~SmilesLoader ()
+{
+   _atoms.clear(); // to avoid data race when it is reused in another thread
+}
+
 void SmilesLoader::loadMolecule (Molecule &mol)
 {
    mol.clear();

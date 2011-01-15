@@ -48,6 +48,7 @@ TL_CP_GET(_written_bonds)
 
 SmilesSaver::~SmilesSaver ()
 {
+   _atoms.clear(); // to avoid data race when it is reused in another thread
 }
 
 void SmilesSaver::saveMolecule (Molecule &mol)

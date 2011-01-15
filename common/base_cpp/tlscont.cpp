@@ -99,4 +99,3 @@ _SIDManager::_SIDManager (void) : _lastNewSID(0)
    if (osTlsAlloc(&_tlsIdx) == 0)
       throw Error("can't allocate thread local storage cell");
 }    
-
