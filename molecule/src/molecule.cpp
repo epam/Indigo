@@ -711,7 +711,13 @@ int Molecule::getAtomRadical (int idx)
    int impl_h = getImplicitH(idx);
    int normal_val, normal_hyd;
 
-   Element::calcValence(atom.number, atom.charge, 0, conn, normal_val, normal_hyd, true);
+   if (isNitrogentV5(idx))
+   {
+      normal_val = 4;
+      normal_hyd = 0;
+   }
+   else
+      Element::calcValence(atom.number, atom.charge, 0, conn, normal_val, normal_hyd, true);
 
    if (impl_h != normal_hyd)
    {
