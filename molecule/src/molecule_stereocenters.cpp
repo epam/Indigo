@@ -1231,10 +1231,10 @@ void MoleculeStereocenters::add (int atom_idx, int type, int group, bool inverse
 
 void MoleculeStereocenters::add (int atom_idx, int type, int group, const int pyramid[4])
 {
-   if (atom_idx == -1)
+   if (atom_idx < 0)
       throw Error("stereocenter index is invalid");
    if (pyramid[0] == -1 || pyramid[1] == -1 || pyramid[2] == -1)
-      throw Error("stereocenter pyramid must have at least 3 atoms");
+      throw Error("stereocenter (%d) pyramid must have at least 3 atoms", atom_idx);
 
    _Atom center;
 

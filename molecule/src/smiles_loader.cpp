@@ -444,6 +444,7 @@ void SmilesLoader::_loadMolecule ()
                bond->end = atom_stack.top();
                added_bond = true;
                _atoms[bond->end].neighbors.add(cycles[number].beg);
+               _atoms[cycles[number].beg].closure(number, bond->end);
 
                cycles[number].clear();
                
@@ -635,6 +636,7 @@ void SmilesLoader::_loadMolecule ()
 
                   pending_bond.end = bond->beg;
                   _atoms[pending_bond.end].neighbors.add(pending_bond.beg);
+                  _atoms[pending_bond.beg].closure(number, pending_bond.end);
 
                   // forget the closing bond
                   _bonds.pop();
