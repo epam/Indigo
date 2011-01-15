@@ -170,7 +170,6 @@ void ReactionProductEnumerator::_buildTubesGrid_old( void )
 void ReactionProductEnumerator::_buildTubesGrid( void )
 {
    QS_DEF(ObjArray< Array<int> >, digits);
-   digits.clearObjects();
    digits.clear();
 
    int digit_idx = 0;

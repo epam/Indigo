@@ -78,12 +78,6 @@ public:
          pop();
    }
 
-   void clearObjects ()
-   {
-      for (int i = 0; i < _array.size(); i++)
-         _array[i].clear();
-   }
-
    void resize (int newSize)
    {
       while  (newSize < size()) {

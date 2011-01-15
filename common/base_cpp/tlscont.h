@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __os_tlscont_h__
-#define __os_tlscont_h__
+#ifndef __tlscont_h__
+#define __tlscont_h__
 
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
@@ -47,7 +47,7 @@ public:
    // assigned automatically (not by manual TL_SET_SESSION_ID call)
    void releaseSessionId (qword id);
 
-   DEF_ERROR("TLS error");
+   DEF_ERROR("TLS");
 
 private:
    _SIDManager (void);
@@ -159,8 +159,8 @@ public:
    {
       if (_var_pool == 0)
          return;
-      // Check if pool destructor wasn't called
-      // This may happen at program exit
+      // Check if the _var_pool destructor have not been called already
+      // (this can happen on program exit)
       if (_var_pool->isValid())
          _var_pool->release(_idx);
    }
@@ -205,4 +205,4 @@ private:
 #pragma warning(pop)
 #endif
 
-#endif // __os_tlscont_h__
+#endif // __tlscont_h__

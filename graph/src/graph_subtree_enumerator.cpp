@@ -36,17 +36,14 @@ TL_CP_GET(_pool)
 
 GraphSubtreeEnumerator::~GraphSubtreeEnumerator ()
 {
-   _dfs_front.clearObjects();
 }
 
 void GraphSubtreeEnumerator::process ()
 {
    int i;
 
-   if (_dfs_front.size() < 1)
-      _dfs_front.push(_pool);
-   for (int i = 0; i < _dfs_front.size(); i++)
-      _dfs_front[i].clearAndResetPool(_pool);
+   _dfs_front.clear();
+   _dfs_front.push(_pool);
 
    _subtree.clear();
    _v_mapping.clear_resize(_graph.vertexEnd());

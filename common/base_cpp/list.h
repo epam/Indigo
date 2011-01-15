@@ -44,15 +44,6 @@ public:
          delete _pool;
    }
 
-   void clearAndResetPool (Pool<Elem> &pool)
-   {
-      clear();
-      if (_own_pool)
-         delete _pool;
-      _own_pool = false;
-      _pool = &pool;
-   }
-
    int add ()
    {
       if (_size == 0)
