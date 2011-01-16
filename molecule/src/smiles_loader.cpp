@@ -46,7 +46,8 @@ TL_CP_GET(_bonds)
 
 SmilesLoader::~SmilesLoader ()
 {
-   _atoms.clear(); // to avoid data race when it is reused in another thread
+    // clear pool-dependent data in this thread to avoid data races
+   _atoms.clear();
 }
 
 void SmilesLoader::loadMolecule (Molecule &mol)
@@ -373,12 +374,14 @@ void SmilesLoader::loadSMARTS (QueryMolecule &mol)
 
 void SmilesLoader::_loadMolecule ()
 {
+   QS_DEF(StringPool, pending_bonds_pool);
    QS_DEF(Array<_CycleDesc>, cycles);
    QS_DEF(Array<int>, atom_stack);
 
    _atoms.clear();
    _bonds.clear();
    cycles.clear();
+   pending_bonds_pool.clear();
    atom_stack.clear();
    if (highlighting != 0)
       highlighting->clear();
@@ -444,17 +447,19 @@ void SmilesLoader::_loadMolecule ()
                bond = &_bonds[cycles[number].pending_bond];
                bond->end = atom_stack.top();
                added_bond = true;
-               _atoms[bond->end].neighbors.add(cycles[number].beg);
-               _atoms[cycles[number].beg].closure(number, bond->end);
+               _atoms[bond->end].neighbors.add(bond->beg);
+               _atoms[bond->beg].closure(number, bond->end);
 
                cycles[number].clear();
                
                if (_qmol != 0)
                {
-                  if (bond->type == -1)
-                     throw Error("unsure pending bond type");
-                  _qmol->addBond(bond->beg, bond->end,
-                          new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, bond->type));
+                  QS_DEF(Array<char>, bond_str);
+                  AutoPtr<QueryMolecule::Bond> qbond;
+
+                  bond_str.readString(pending_bonds_pool.at(cycles[number].pending_bond_str), false);
+                  _readBond(bond_str, *bond, qbond);
+                  _qmol->addBond(bond->beg, bond->end, qbond.release());
                }
                break;
             }
@@ -573,6 +578,17 @@ void SmilesLoader::_loadMolecule ()
          else
             _readBond(bond_str, *bond, qbond);
 
+         // The bond "directions" are already saved in _BondDesc::dir,
+         // so we can safely discard them. We are doing that to succeed
+         // the later check 'pending bond vs. closing bond'.
+         {
+            int i;
+            
+            for (i = 0; i < bond_str.size(); i++)
+               if (bond_str[i] == '/' || bond_str[i] == '\\')
+                  bond_str[i] = '-';
+         }
+
          if (bond_str.size() > 0)
          {
             if (isdigit(next) || next == '%')
@@ -604,26 +620,7 @@ void SmilesLoader::_loadMolecule ()
                {
                   _BondDesc &pending_bond = _bonds[cycles[number].pending_bond];
 
-                  if (_qmol != 0)
-                  {
-                     int type;
-                     
-                     if (!qbond->sureValue(QueryMolecule::BOND_ORDER, type))
-                        throw Error("unsure pending bond type");
-
-                     if (pending_bond.type != type)
-                        throw Error("conflicting pending bond types");
-
-                     _qmol->addBond(pending_bond.beg, bond->beg, qbond.release());
-                  }
-                  else
-                  {
-                     if (bond->type != pending_bond.type)
-                        throw Error("cycle %d: closing bond (%d) does not match pending bond (%d)",
-                           number, bond->type, pending_bond.type);
-                  }
-
-                  // transfer data from closing bond to pending bond
+                  // transfer direction from closing bond to pending bond
                   if (bond->dir > 0)
                   {
                      if (bond->dir == pending_bond.dir)
@@ -635,6 +632,24 @@ void SmilesLoader::_loadMolecule ()
                      else
                         pending_bond.dir = 3 - bond->dir;
                   }
+
+                  // apart from the direction, check that the closing bond matches the pending bond
+                  const char *str = pending_bonds_pool.at(cycles[number].pending_bond_str);
+
+                  if (bond_str.size() > 0)
+                  {
+                     if ((int)strlen(str) != bond_str.size() || memcmp(str, bond_str.ptr(), strlen(str)) != 0)
+                        throw Error("cycle %d: closing bond description %.*s does not match pending bond description %s",
+                             number, bond_str.size(), bond_str.ptr(), str);
+                  }
+                  else
+                  {
+                     bond_str.readString(str, false);
+                     _readBond(bond_str, *bond, qbond);
+                  }
+
+                  if (_qmol != 0)
+                     _qmol->addBond(pending_bond.beg, bond->beg, qbond.release());
 
                   pending_bond.end = bond->beg;
                   _atoms[pending_bond.end].neighbors.add(pending_bond.beg);
@@ -648,23 +663,13 @@ void SmilesLoader::_loadMolecule ()
                // opening some pending cycle bond, like the first '1' in C=1C=CC=CC=1
                else
                {
-                  //if (_qmol != 0)
-                  //   throw Error("bond cycle indices are not allowed within query molecules");
-
                   while (cycles.size() <= number)
                      cycles.push().clear();
                   cycles[number].pending_bond = _bonds.size() - 1;
+                  cycles[number].pending_bond_str = pending_bonds_pool.add(bond_str);
                   cycles[number].beg = -1; // have it already in the bond
                   _atoms[bond->beg].pending(number);
 
-                  if (_qmol != 0)
-                  {
-                     int order;
-                     if (qbond->sureValue(QueryMolecule::BOND_ORDER, order))
-                        _bonds.top().type = order;
-                     else
-                        _bonds.top().type = -1;
-                  }
                   continue;
                }
             }
@@ -1640,12 +1645,6 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       if (!isotope_set)
          first_in_brackets = false;
    }
-
-   //if (qatom.get() == 0)
-   //{
-   //   if (atom.label < 1)
-   //      throw Error("no atom label in the atom designator");
-   //}
 }
 
 SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :

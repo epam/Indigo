@@ -47,11 +47,20 @@ int StringPool::add (int size)
    Desc &desc = _pool[idx];
 
    desc.start = _storage.size();
-   desc.length = size;
+   desc.length = size + 1;
 
    _storage.resize(desc.start + desc.length);
    return idx;
 }
+
+int StringPool::add (Array<char> &str)
+{
+   int idx = add(str.size());
+   memcpy(at(idx), str.ptr(), str.size());
+   at(idx)[str.size()] = 0;
+   return idx;
+}
+
 
 void StringPool::remove (int idx)
 {

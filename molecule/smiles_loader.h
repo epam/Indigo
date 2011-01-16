@@ -105,10 +105,12 @@ protected:
       {
          beg = -1;
          pending_bond = -1;
+         pending_bond_str = -1;
       }
 
       int beg;
       int pending_bond;
+      int pending_bond_str; // index in pending_bonds_pool;
    };
 
    Scanner &_scanner;
