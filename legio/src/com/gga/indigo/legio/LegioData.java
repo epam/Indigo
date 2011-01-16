@@ -28,12 +28,12 @@ public class LegioData
 
    public int getProductsCount()
    {
-      return output_reactions.size();
+      return output_reactions.count();
    }
 
    public IndigoObject getOutReaction( int idx )
    {
-      if (idx >=  output_reactions.size())
+      if (idx >=  output_reactions.count())
          return null;
 
       return output_reactions.at(idx);
@@ -41,7 +41,7 @@ public class LegioData
 
    public IndigoObject getOutProduct( int idx )
    {
-      if (idx >=  output_reactions.size())
+      if (idx >=  output_reactions.count())
          return null;
 
       IndigoObject rxn = output_reactions.at(idx);
@@ -56,7 +56,7 @@ public class LegioData
 
    public String getOutReactionString( int idx )
    {
-      if (idx >=  output_reactions.size())
+      if (idx >=  output_reactions.count())
          return null;
 
       return output_reactions.at(idx).rxnfile();
@@ -64,7 +64,7 @@ public class LegioData
 
    public String getOutProductString( int idx )
    {
-      if (idx >=  output_reactions.size())
+      if (idx >=  output_reactions.count())
          return null;
 
       IndigoObject rxn = output_reactions.at(idx);
@@ -79,7 +79,7 @@ public class LegioData
 
    public int getMonomersCount( int reactant_idx )
    {
-      return monomers_table.at(reactant_idx).size();
+      return monomers_table.at(reactant_idx).count();
    }
 
    public IndigoObject getMonomer( int reactant_idx, int mon_idx )
@@ -89,9 +89,9 @@ public class LegioData
 
    public String getMonomerString( int reactant_idx, int mon_idx )
    {
-      if (reactant_idx >= monomers_table.size())
+      if (reactant_idx >= monomers_table.count())
          return null;
-      if (mon_idx >= monomers_table.at(reactant_idx).size())
+      if (mon_idx >= monomers_table.at(reactant_idx).count())
          return null;
 
       return monomers_table.at(reactant_idx).at(mon_idx).molfile();
@@ -139,7 +139,7 @@ public class LegioData
    {
       output_reactions = indigo.reactionProductEnumerate(reaction, monomers_table);
 
-      for ( int i = 0; i < output_reactions.size(); i++)
+      for ( int i = 0; i < output_reactions.count(); i++)
       {
          for (IndigoObject iterr : output_reactions.at(i).iterateReactants())
          {
