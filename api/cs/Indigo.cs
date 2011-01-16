@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Drawing;
 
-namespace com.gga.indigo
+namespace com.ggasoftware.indigo
 {
    public unsafe class Indigo : IDisposable
    {

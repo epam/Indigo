@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace com.gga.indigo
+namespace com.ggasoftware.indigo
 {
    public class IndigoException : Exception
    {
