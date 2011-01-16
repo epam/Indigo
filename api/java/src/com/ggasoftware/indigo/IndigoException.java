@@ -14,7 +14,7 @@
 
 package com.ggasoftware.indigo;
 
-public class IndigoException extends Exception
+public class IndigoException extends RuntimeException
 {
    public IndigoException (String message)
    {
