@@ -93,6 +93,14 @@ void CmfSaver::saveMolecule (Molecule &mol)
    {
       _encodeAtom(mol, v_seq[0].idx, mapping.ptr());
       _atom_sequence.push(v_seq[0].idx);
+      
+      int j, openings = walk.numOpenings(v_seq[0].idx);
+
+      for (j = 0; j < openings; j++)
+      {
+         cycle_numbers.push(v_seq[0].idx);
+         _encodeCycleNumer(j);
+      }
    }
 
    /* Main cycle */
