@@ -19,8 +19,8 @@ cd ../java
 ./compile.sh
 cd ../../../utils/chemdiff/src
 
-javac -cp ../../../api/java/dist/indigo-java.jar:../../../api/renderer/java/dist/indigo-renderer-java.jar com/gga/indigo/chemdiff/*.java
-jar cvfm ../chemdiff.jar ../manifest.mf com/gga/indigo/chemdiff/*.class
+javac -cp ../../../api/java/dist/indigo-java.jar:../../../api/renderer/java/dist/indigo-renderer-java.jar com/ggasoftware/indigo/chemdiff/*.java
+jar cvfm ../chemdiff.jar ../manifest.mf com/ggasoftware/indigo/chemdiff/*.class
 cd ..
 
 name=chemdiff-$version-linux

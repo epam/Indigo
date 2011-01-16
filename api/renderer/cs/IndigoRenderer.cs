@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace com.gga.indigo
+namespace com.ggasoftware.indigo
 {
    public unsafe class IndigoRenderer
    {

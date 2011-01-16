@@ -25,8 +25,8 @@ cd ..\..\..\utils\chemdiff
 copy ..\..\api\java\dist\indigo-java.jar lib\
 copy ..\..\api\renderer\java\dist\indigo-renderer-java.jar lib\
 cd src
-javac -cp ..\lib\indigo-java.jar;..\lib\indigo-renderer-java.jar com/gga/indigo/chemdiff/*.java
-jar cvfm ..\chemdiff.jar ..\manifest.mf com/gga/indigo/chemdiff/*.class
+javac -cp ..\lib\indigo-java.jar;..\lib\indigo-renderer-java.jar com/ggasoftware/indigo/chemdiff/*.java
+jar cvfm ..\chemdiff.jar ..\manifest.mf com/ggasoftware/indigo/chemdiff/*.class
 cd ..
 
 call dll-copy.bat

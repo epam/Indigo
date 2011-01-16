@@ -25,8 +25,8 @@ cd ..\..\..\legio
 copy ..\api\java\dist\indigo-java.jar lib\
 copy ..\api\renderer\java\dist\indigo-renderer-java.jar lib\
 cd src
-javac -cp ..\lib\indigo-java.jar;..\lib\indigo-renderer-java.jar com/gga/indigo/legio/*.java
-jar cvfm ..\legio.jar ..\manifest.mf com/gga/indigo/legio/*.class
+javac -cp ..\lib\indigo-java.jar;..\lib\indigo-renderer-java.jar com/ggasoftware/indigo/legio/*.java
+jar cvfm ..\legio.jar ..\manifest.mf com/ggasoftware/indigo/legio/*.class
 cd ..
 
 call dll-copy.bat

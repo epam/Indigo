@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace com.gga.indigo
+namespace com.ggasoftware.indigo
 {
    public unsafe class IndigoObject : IEnumerable, IDisposable
    {
