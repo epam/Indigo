@@ -22,6 +22,7 @@
 #include "molecule/molecule_stereocenters.h"
 #include "graph/graph_highlighting.h"
 #include "molecule/elements.h"
+#include "graph/cycle_basis.h"
 
 using namespace indigo;
 
@@ -782,28 +783,64 @@ void SmilesLoader::_loadMolecule ()
 
    if (!smarts_mode)
    {
-      for (i = 0; i < _bonds.size(); i++)
+      CycleBasis basis;
+      basis.create(*_bmol);
+
+      // mark all 'empty' bonds in "aromatic" rings as aromatic
+      for (i = 0; i < basis.getCyclesCount(); i++)
       {
-         int beg = _bonds[i].beg;
-         int end = _bonds[i].end;
+         const Array<int> &cycle = basis.getCycle(i);
+         int j;
+         bool needs_modification = false;
 
-         if (_bonds[i].type == -1)
+         for (j = 0; j < cycle.size(); j++)
          {
-            int order;
+            int idx = cycle[j];
+            const Edge &edge = _bmol->getEdge(idx);
+            if (!_atoms[edge.beg].aromatic || !_atoms[edge.end].aromatic)
+               break;
+            if (_bonds[idx].type == BOND_SINGLE || _bonds[idx].type == BOND_DOUBLE || _bonds[idx].type == BOND_TRIPLE)
+               break;
+            if (_qmol != 0 && !_qmol->possibleBondOrder(idx, BOND_AROMATIC))
+               break;
+            if (_bonds[idx].type == -1)
+               needs_modification = true;
+         }
 
-            if (_atoms[beg].aromatic && _atoms[end].aromatic &&
-                _bmol->getBondTopology(i) == TOPOLOGY_RING)
-               order = BOND_AROMATIC;
-            else
-               order = BOND_SINGLE;
+         if (j != cycle.size())
+            continue;
 
-            if (_mol != 0)
-               _mol->setBondOrder_Silent(i, order);
-            if (_qmol != 0)
-               _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(i),
-                       new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order)));
+         if (needs_modification)
+         {
+            for (j = 0; j < cycle.size(); j++)
+            {
+               int idx = cycle[j];
+               if (_bonds[idx].type == -1)
+               {
+                  _bonds[idx].type = BOND_AROMATIC;
+                  if (_mol != 0)
+                     _mol->setBondOrder_Silent(idx, BOND_AROMATIC);
+                  if (_qmol != 0)
+                     _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(idx),
+                             new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
+               }
+            }
          }
       }
+
+      // mark the rest 'empty' bonds as single
+      for (i = 0; i < _bonds.size(); i++)
+      {
+         if (_bonds[i].type == -1)
+         {
+            if (_mol != 0)
+               _mol->setBondOrder_Silent(i, BOND_SINGLE);
+            if (_qmol != 0)
+               _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(i),
+                       new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE)));
+         }
+      }
+
    }
 
    if (_mol != 0)
