@@ -134,6 +134,8 @@ CEXPORT const char * indigoCheckBadValence (int handle)
 
             for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
             {
+               if (mol.isPseudoAtom(i) || mol.isRSite(i))
+                  continue;
                mol.getAtomValence(i);
                mol.getImplicitH(i);
             }
@@ -149,7 +151,7 @@ CEXPORT const char * indigoCheckBadValence (int handle)
          BaseReaction &brxn = obj.getBaseReaction();
 
          if (brxn.isQueryReaction())
-            throw IndigoError("indigoCheckBadValence(): query molecules not allowed");
+            throw IndigoError("indigoCheckBadValence(): query reactions not allowed");
 
          Reaction &rxn = brxn.asReaction();
 
@@ -163,6 +165,8 @@ CEXPORT const char * indigoCheckBadValence (int handle)
                
                for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
                {
+                  if (mol.isPseudoAtom(i) || mol.isRSite(i))
+                     continue;
                   mol.getAtomValence(i);
                   mol.getImplicitH(i);
                }
