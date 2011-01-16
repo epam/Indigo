@@ -217,7 +217,7 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
                      }
                   }
                } else
-                   _layout_edges[cycle.getVertex(i)].type = ELEMENT_INTERNAL;
+                   _layout_edges[cycle.getEdge(i)].type = ELEMENT_INTERNAL;
             }
          }
       }
