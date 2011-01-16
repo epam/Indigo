@@ -34,8 +34,8 @@ chmod +x compile.sh
 ./compile.sh
 cd ../../../legio/src
 
-javac -cp ../../api/java/dist/indigo-java.jar:../../api/renderer/java/dist/indigo-renderer-java.jar com/gga/indigo/legio/*.java
-jar cvfm ../legio.jar ../manifest.mf com/gga/indigo/legio/*.class
+javac -cp ../../api/java/dist/indigo-java.jar:../../api/renderer/java/dist/indigo-renderer-java.jar com/ggasoftware/indigo/legio/*.java
+jar cvfm ../legio.jar ../manifest.mf com/ggasoftware/indigo/legio/*.class
 cd ..
 
 
