@@ -29,6 +29,11 @@
 #include "molecule/sdf_loader.h"
 #include "molecule/rdf_loader.h"
 #include "indigo_array.h"
+#include "molecule/icm_saver.h"
+#include "molecule/icm_loader.h"
+#include "reaction/icr_saver.h"
+#include "reaction/icr_loader.h"
+#include "indigo_reaction.h"
 
 #include <time.h>
 
@@ -623,3 +628,58 @@ CEXPORT int indigoCount (int item)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoSerialize (int item, char **buf, int *size)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+      ArrayOutput out(self.tmp_string);
+
+      if (obj.isBaseMolecule())
+      {
+         Molecule &mol = obj.getMolecule();
+
+         IcmSaver saver(out);
+         saver.saveMolecule(mol);
+      }
+      else if (obj.isBaseReaction())
+      {
+         Reaction &rxn = obj.getReaction();
+         IcrSaver saver(out);
+         saver.saveReaction(rxn);
+      }
+
+      *buf = self.tmp_string.ptr();
+      *size = self.tmp_string.size();
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoUnserialize (char *buf, int size)
+{
+   INDIGO_BEGIN
+   {
+      if (size > 3 && memcmp(buf, "ICM", 3) == 0)
+      {
+         BufferScanner scanner(buf, size);
+         IcmLoader loader(scanner);
+         AutoPtr<IndigoMolecule> im(new IndigoMolecule());
+         loader.loadMolecule(im->mol);
+         im->highlighting.init(im->mol);
+         return self.addObject(im.release());
+      }
+      else if (size > 3 && memcmp(buf, "ICR", 3) == 0)
+      {
+         BufferScanner scanner(buf, size);
+         IcrLoader loader(scanner);
+         AutoPtr<IndigoReaction> ir(new IndigoReaction());
+         loader.loadReaction(ir->rxn);
+         ir->highlighting.init(ir->rxn);
+         return self.addObject(ir.release());
+      }
+      else
+         throw IndigoError("indigoUnserialize(): format not recognized");
+   }
+   INDIGO_END(-1)
+}
