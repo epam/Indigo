@@ -791,7 +791,7 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
              mol.getAtomIsotope(vertex.neiVertex(j)) == 0)
             _hcount[i]++;
 
-         if (ignored_vertices != 0 && ignored_vertices[vertex.neiVertex(j)] == 0)
+         if (ignored_vertices == 0 || ignored_vertices[vertex.neiVertex(j)] == 0)
             _degree[i]++;
       }
    }

@@ -114,6 +114,12 @@ void MoleculeStereocenters::buildFrom3dCoordinates ( void )
          v1.copy(nei_coords[0]);
          v2.copy(nei_coords[1]);
          v3.copy(nei_coords[2]);
+
+         // Check if substituents with center atom are on the same plane
+         int plane_sign_v_pos = _onPlane(v1, v2, v3, v_pos);
+         if (plane_sign_v_pos == 0)
+            continue;
+
          v1.sub(v_pos);
          v2.sub(v_pos);
          v3.sub(v_pos);
@@ -594,7 +600,7 @@ int MoleculeStereocenters::_sign (const Vec3f &v1, const Vec3f &v2, const Vec3f 
 int MoleculeStereocenters::_onPlane (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3, const Vec3f &u)
 {
    Vec3f v1u, v2u, v3u, p;
-   float eps = 0.01f;
+   float eps = 0.1f;
 
    v1u.diff(v1, u);
    v1u.normalize();
