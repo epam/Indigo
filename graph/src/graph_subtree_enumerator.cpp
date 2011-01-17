@@ -22,8 +22,8 @@ TL_CP_GET(_subtree),
 TL_CP_GET(_v_mapping),
 TL_CP_GET(_e_mapping),
 TL_CP_GET(_inv_e_mapping),
-TL_CP_GET(_dfs_front),
-TL_CP_GET(_pool)
+TL_CP_GET(_pool),
+TL_CP_GET(_dfs_front)
 {
    min_vertices = 1;
    max_vertices = graph.vertexCount();

@@ -613,7 +613,7 @@ bool MoleculePiSystemsMatcher::_fixBonds (QueryMolecule &query, const int *mappi
       if (can_be_single && can_be_double && can_be_triple)
          continue;
 
-      bool ret;
+      bool ret = false; // initializing to avoid compiler warning
       if (can_be_single && can_be_double)
          // Here can_be_triple = false because of previous check
          ret = pi_system.localizer->fixBondSingleDouble(pi_sys_edge);

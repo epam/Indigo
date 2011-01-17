@@ -794,7 +794,7 @@ bool QueryMolecule::Node::sureValue (int what_type, int &value_out)
          // "(C || O) && (C || N)", but we do not claim to have perfect
          // logic here, and we do not need one.
          
-         int  child_value;
+         int  child_value = -1;
          bool child_value_valid = false;
 
          for (i = 0; i < children.size(); i++)
@@ -824,7 +824,7 @@ bool QueryMolecule::Node::sureValue (int what_type, int &value_out)
       }
       case OP_OR:
       {
-         int child_value;
+         int child_value = -1;
 
          for (i = 0; i < children.size(); i++)
          {
@@ -859,7 +859,7 @@ bool QueryMolecule::Node::sureValueInv (int what_type, int &value_out)
    {
       case OP_OR:
       {
-         int  child_value;
+         int  child_value = -1;
          bool child_value_valid = false;
 
          for (i = 0; i < children.size(); i++)
@@ -889,7 +889,7 @@ bool QueryMolecule::Node::sureValueInv (int what_type, int &value_out)
       }
       case OP_AND:
       {
-         int child_value;
+         int child_value = -1;
 
          for (i = 0; i < children.size(); i++)
          {
