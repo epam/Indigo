@@ -261,6 +261,14 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public float[] xyz () { return dispatcher.indigoXYZ(self); }
 
+   public int countSuperatoms () { return dispatcher.indigoCountSuperatoms(self); }
+   public int countDataSGgroups () { return dispatcher.indigoCountDataSGroups(self); }
+   public IndigoObject iterateDataSGroups () { return new IndigoObject(dispatcher, dispatcher.indigoIterateDataSGroups(self)); }
+   public String description () { return dispatcher.indigoDescription(self); }
+   public IndigoObject addDataSGroup (int[] atoms, int[] bonds, String description, String data)
+   { return new IndigoObject (dispatcher, dispatcher.indigoAddDataSGroup(self, atoms, bonds, description, data)); }
+   public void setDataSGroupXY (float x, float y, String options) { dispatcher.indigoSetDataSGroupXY(self, x, y, options); }
+
    public IndigoObject createSubmolecule (int[] vertices)
    {
       return new IndigoObject(dispatcher, dispatcher.indigoCreateSubmolecule(self, vertices));
@@ -448,9 +456,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return this;
    }
 
-   public void remove () throws UnsupportedOperationException
+   public void remove ()
    {
-      throw new UnsupportedOperationException();
+      dispatcher.indigoRemove(self);
    }
 
    public void close ()

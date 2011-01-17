@@ -148,6 +148,9 @@ CEXPORT int indigoHasNext (int iter);
 // Returns the index of the element
 CEXPORT int indigoIndex (int item);
 
+// Removes the item from its container (usually a molecule)
+CEXPORT int indigoRemove (int item);
+
 /* Molecules, query molecules, SMARTS */
 
 CEXPORT int indigoLoadMolecule  (int source);

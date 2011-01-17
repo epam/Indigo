@@ -19,7 +19,7 @@
 
 CEXPORT void indigoThrowJNIException (JNIEnv *env, const char *message)
 {
-   jclass cls = (*env)->FindClass(env, "com/gga/indigo/IndigoException");
+   jclass cls = (*env)->FindClass(env, "com/ggasoftware/indigo/IndigoException");
 
    if (cls == NULL)
       return;

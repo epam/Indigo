@@ -221,4 +221,17 @@ JNIEXPORT jstring JNINAME(name) (JNIEnv *env, jobject obj, jint p1, jstring j_p2
    return (*env)->NewStringUTF(env, ret);                                      \
 }
 
+#define JNI_FUNC_jint_jint_jfloat_jfloat_jstring(name)                         \
+JNIEXPORT jint JNINAME(name) (JNIEnv *env, jobject obj, jint p0, jfloat p1, jfloat p2, jstring j_p3) \
+{                                                                              \
+   const char *p3;                                                             \
+   int ret;                                                                    \
+                                                                               \
+   indigoJniSetSession(env, obj);                                              \
+   p3 = (*env)->GetStringUTFChars(env, j_p3, NULL);                            \
+   ret = name(p0, p1, p2, p3);                                                 \
+   (*env)->ReleaseStringUTFChars(env, j_p3, p3);                               \
+   return ret;                                                                 \
+}
+
 #endif

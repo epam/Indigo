@@ -143,6 +143,36 @@ JNIEXPORT jfloatArray JNINAME(indigoXYZ) (JNIEnv *env, jobject obj, jint atom)
    return jarr;
 }
 
+JNI_FUNC_jint_jint(indigoCountSuperatoms)
+JNI_FUNC_jint_jint(indigoCountDataSGroups)
+JNI_FUNC_jint_jint(indigoIterateDataSGroups)
+JNI_FUNC_jstring_jint(indigoDescription)
+
+JNIEXPORT jint JNINAME(indigoAddDataSGroup) (JNIEnv *env, jobject obj, jint mol,
+        jintArray jatoms, jintArray jbonds, jstring jdescription, jstring jdata)
+{
+   jsize natoms, nbonds;
+   jint *atoms, *bonds;
+   const char *description, *data;
+   int ret;
+
+   indigoJniSetSession(env, obj);
+   natoms = (*env)->GetArrayLength(env, jatoms);
+   nbonds = (*env)->GetArrayLength(env, jbonds);
+   atoms = (*env)->GetIntArrayElements(env, jatoms, 0);
+   bonds = (*env)->GetIntArrayElements(env, jbonds, 0);
+   description = (*env)->GetStringUTFChars(env, jdescription, NULL);
+   data = (*env)->GetStringUTFChars(env, jdata, NULL);
+   ret = indigoAddDataSGroup(mol, natoms, atoms, nbonds, bonds, description, data);
+   (*env)->ReleaseStringUTFChars(env, jdescription, description);
+   (*env)->ReleaseStringUTFChars(env, jdata, data);
+   (*env)->ReleaseIntArrayElements(env, jatoms, atoms, 0);
+   (*env)->ReleaseIntArrayElements(env, jbonds, bonds, 0);
+   return ret;
+}
+
+JNI_FUNC_jint_jint_jfloat_jfloat_jstring(indigoSetDataSGroupXY);
+
 JNI_FUNC_jint_jint(indigoResetCharge)
 JNI_FUNC_jint_jint(indigoResetExplicitValence)
 JNI_FUNC_jint_jint(indigoResetRadical)
@@ -345,6 +375,7 @@ JNI_FUNC_jint_jint(indigoDecomposedMoleculeWithRGroups)
 JNI_FUNC_jint_jint(indigoNext)
 JNI_FUNC_jint_jint(indigoHasNext)
 JNI_FUNC_jint_jint(indigoIndex)
+JNI_FUNC_jint_jint(indigoRemove)
 
 JNI_FUNC_jstring_jint(indigoToString);
 
