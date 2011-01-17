@@ -1179,7 +1179,7 @@ void SmilesSaver::writePseudoAtom (const char *label, Output &out)
 
    do
    {
-      if (isspace(*label))
+      if (*label == '\n' || *label == '\r' || *label == '\t')
          throw Error("character 0x%x is not allowed inside pseudo-atom", *label);
       if (*label == '$' || *label == ';')
          throw Error("'%c' not allowed inside pseudo-atom", *label);
