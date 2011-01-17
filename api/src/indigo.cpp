@@ -99,12 +99,15 @@ CEXPORT void indigoSetErrorHandler (INDIGO_ERROR_HANDLER handler, void *context)
 
 CEXPORT int indigoFree (int handle)
 {
-   INDIGO_BEGIN
+   try
    {
+      Indigo &self = indigoGetInstance();
       self.removeObject(handle);
-      return 1;
    }
-   INDIGO_END(-1);
+   catch (Exception &)
+   {
+   }
+   return 1;
 }
 
 CEXPORT int indigoCountReferences (void)
@@ -137,7 +140,7 @@ void Indigo::removeObject (int id)
    OsLocker lock(_objects_lock);
 
    if (_objects.at2(id) == 0)
-     return;
+      return;
 
    delete _objects.at(id);
    _objects.remove(id);

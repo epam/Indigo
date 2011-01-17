@@ -38,7 +38,19 @@ JNIEXPORT void JNINAME(releaseSessionId) (JNIEnv *env, jclass cls, jlong id)
    indigoReleaseSessionId(id);
 }
 
-JNI_FUNC_jint_jint(indigoFree)
+JNIEXPORT jint JNINAME(indigoFree) (JNIEnv *env, jobject obj, jint handle)
+{
+   // do not set error handler because
+   // (i) indigoFree never reports an error
+   // (ii) setting the handler implies setting the context (JNIEnv *),
+   //      which can cause a fatal error ("Using JNIEnv in the wrong thread")
+   //      if the main thread is throwing and exception at the same time.
+   //      Actually, the fatal error is raised only with -Xcheck:jni option;
+   //      otherwise, the JVM just crashes.
+   indigoJniSetSession_NoErrorHandler(env, obj);
+   return indigoFree(handle);
+}
+
 JNI_FUNC_jint_jint(indigoClone)
 JNI_FUNC_jint(indigoCountReferences)
 

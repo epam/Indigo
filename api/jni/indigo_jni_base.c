@@ -25,6 +25,8 @@ CEXPORT void indigoThrowJNIException (JNIEnv *env, const char *message)
       return;
 
    (*env)->ThrowNew(env, cls, message);
+   // Not really sure if DeleteLocalRef() call is OK when an exception is pending;
+   // however, it did not cause any harm so far.
    (*env)->DeleteLocalRef(env, cls);
 }
 
@@ -44,6 +46,15 @@ CEXPORT void indigoJniSetSession (JNIEnv *env, jobject obj)
    indigoSetErrorHandler(_indigoErrorHandler, env);
 }
 
+
+CEXPORT void indigoJniSetSession_NoErrorHandler (JNIEnv *env, jobject obj)
+{
+   jclass cls = (*env)->GetObjectClass(env, obj);
+   jfieldID id = (*env)->GetFieldID(env, cls, "_sid", "J");
+   jlong sid = (*env)->GetLongField(env, obj, id);
+
+   indigoSetSessionId(sid);
+}
 
 /*
 static const char *_className (JNIEnv *env, jobject obj)
