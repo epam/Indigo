@@ -2008,6 +2008,14 @@ CEXPORT int indigoUnseparateCharges (int molecule)
             if (order != BOND_SINGLE && order != BOND_DOUBLE)
                continue;
 
+            int allowed[] = {ELEM_C, ELEM_O, ELEM_N, ELEM_P, ELEM_S};
+
+            if (!mol.atomNumberBelongs(edge.beg, allowed, NELEM(allowed)))
+               continue;
+
+            if (!mol.atomNumberBelongs(edge.end, allowed, NELEM(allowed)))
+               continue;
+
             int charge_beg = mol.getAtomCharge(edge.beg);
             int charge_end = mol.getAtomCharge(edge.end);
 
