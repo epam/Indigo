@@ -102,6 +102,8 @@ protected:
    virtual bool _acceptOutgoingDoubleBond (int atom, int bond);
 
    int _getPiLabel (int v_idx);
+   int _getPiLabelByConn (int v_idx, int conn);
+
    TL_CP_DECL(Array<int>, _pi_labels);
 };
 

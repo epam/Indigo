@@ -537,18 +537,31 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt )
 
 int Molecule::getImplicitH (int idx)
 {
+   int conn = getAtomConnectivity_noImplH(idx);
+   return _getImplicitHForConnectivity(idx, conn, true, true);
+}
+
+int Molecule::calcImplicitHForConnectivity (int idx, int conn)
+{
+   return _getImplicitHForConnectivity(idx, conn, false, false);
+}
+ 
+int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache, bool to_throw)
+{
    if (_atoms[idx].number == ELEM_PSEUDO)
       throw Error("getImplicitH() does not work on pseudo-atoms");
 
    if (_atoms[idx].number == ELEM_RSITE)
       throw Error("getImplicitH() does not work on R-sites");
 
-   if (_implicit_h.size() > idx && _implicit_h[idx] >= 0)
-      return _implicit_h[idx];
+   if (use_cache)
+   {
+      if (_implicit_h.size() > idx && _implicit_h[idx] >= 0)
+         return _implicit_h[idx];
+   }
 
    const _Atom &atom = _atoms[idx];
 
-   int conn = getAtomConnectivity_noImplH(idx);
    int radical = 0;
 
    if (_radicals.size() > idx && _radicals[idx] >= 0)
@@ -566,7 +579,7 @@ int Molecule::getImplicitH (int idx)
       // and charge when calculating implicit hydgogens.
       implicit_h = _valence[idx] - Element::calcValenceMinusHyd(atom.number, 0, 0, conn);
 
-      if (implicit_h < 0)
+      if (implicit_h < 0 && to_throw)
          throw Error("valence %d specified on %s, charge %d, radical %d, but %d bonds are drawn",
                     _valence[idx], Element::toString(atom.number), atom.charge, radical, conn);
    }
@@ -583,16 +596,23 @@ int Molecule::getImplicitH (int idx)
       }
       else
          Element::calcValence(atom.number, atom.charge, radical,
-                              conn, valence, implicit_h, true);
-      _valence.expandFill(idx + 1, -1);
-      _valence[idx] = valence;
+                              conn, valence, implicit_h, to_throw);
+      if (use_cache)
+      {
+         _valence.expandFill(idx + 1, -1);
+         _valence[idx] = valence;
+      }
    }
 
-   _implicit_h.expandFill(idx + 1, -1);
-   _implicit_h[idx] = implicit_h;
+   if (use_cache)
+   {
+      _implicit_h.expandFill(idx + 1, -1);
+      _implicit_h[idx] = implicit_h;
+   }
 
    return implicit_h;
 }
+
 
 bool Molecule::isNitrogentV5 (int idx)
 {

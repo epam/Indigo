@@ -88,6 +88,7 @@ public:
    virtual bool dearomatize ();
 
    int getImplicitH (int idx);
+   int calcImplicitHForConnectivity (int idx, int conn);
 
    int getAtomConnectivity (int idx);
    int getAtomConnectivity_noImplH (int idx);
@@ -169,6 +170,8 @@ protected:
 
 private:
    Molecule (const Molecule &); // no implicit copy
+
+   int _getImplicitHForConnectivity (int idx, int conn, bool use_cache, bool to_throw);
 };
 
 }

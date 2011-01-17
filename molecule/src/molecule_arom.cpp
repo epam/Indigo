@@ -258,8 +258,7 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
       return -1;
 
    const Vertex &vertex = _basemol.getVertex(v_idx);
-   int lonepairs = 0;
-   
+  
    if (_basemol.isPseudoAtom(v_idx))
       return -1;
 
@@ -268,24 +267,69 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
 
    if (!Element::canBeAromatic(_basemol.getAtomNumber(v_idx)))
       return -1;
-   
+
+   int non_arom_conn = 0, arom_bonds = 0;
    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
    {
       int type = _basemol.getBondOrder(vertex.neiEdge(i));
       if (type == BOND_DOUBLE)
          return 1;
+      if (type == BOND_TRIPLE)
+         return -1;
       if (type == BOND_AROMATIC)
-         // Atom is already aromatic and in general number of hydrogens 
-         // cannot be deduced. Just ignore such atom.
-         return -1; 
+         arom_bonds++;
+      else
+         non_arom_conn++;
    }
 
+   Molecule &mol = (Molecule &)_basemol;
+   int conn = mol.getAtomConnectivity(v_idx);
+   // Atom is already aromatic and in general number of hydrogens 
+   // cannot be deduced. But if atom can have one single or onle 
+   // double bond while being aromatic then pi label can be calculated
+   if (arom_bonds != 0)
+   {
+      int single_bonds_conn = non_arom_conn + arom_bonds;
+      int h_with_single = mol.calcImplicitHForConnectivity(v_idx, single_bonds_conn);
+
+      bool can_have_single_bonds = false;
+      if (h_with_single >= 0 && _getPiLabelByConn(v_idx, single_bonds_conn) >= 0)
+      {
+         can_have_single_bonds = true;
+         conn = single_bonds_conn;
+      }
+
+      bool can_have_one_double_bond = 
+         (mol.calcImplicitHForConnectivity(v_idx, single_bonds_conn + 1) >= 0);
+
+      bool can_have_more_double_bonds = false;
+      for (int i = 2; i < arom_bonds; i++)
+      {
+         int h_with_double = mol.calcImplicitHForConnectivity(v_idx, single_bonds_conn + i);
+         if (h_with_double >= 0)
+            can_have_more_double_bonds = true;
+      }
+
+      if (!can_have_single_bonds && can_have_one_double_bond && !can_have_more_double_bonds)
+         return 1; // This atom must have double bond
+      if (can_have_single_bonds && !can_have_one_double_bond && !can_have_more_double_bonds)
+         ; // This atom must have only single bonds as aromatic ones
+      else
+         return -1; // This case is ambiguous. Treat as nonaromatic.
+   }
+
+   return _getPiLabelByConn(v_idx, conn);
+}
+
+int MoleculeAromatizer::_getPiLabelByConn (int v_idx, int conn)
+{
+   Molecule &mol = (Molecule &)_basemol;
    int radical = _basemol.getAtomRadical(v_idx);
    if (radical > 0)
       return 1;
 
-   Molecule &mol = (Molecule &)_basemol;
-   if (mol.getVacantPiOrbitals(v_idx, &lonepairs) > 0)
+   int lonepairs = 0;
+   if (mol.getVacantPiOrbitals(v_idx, conn, &lonepairs) > 0)
       return 0;
 
    if (lonepairs > 0)
