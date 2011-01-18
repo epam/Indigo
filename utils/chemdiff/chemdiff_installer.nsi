@@ -22,7 +22,7 @@ SetCompressor /SOLID lzma
  
   ;Name and file
   Name "${APP_NAME}"
-  OutFile "Install_${APP_NAME}_${VERSION}.exe"
+  OutFile "chemdiff-${VERSION}-installer.exe"
  
 ;--------------------------------
 ;Variables

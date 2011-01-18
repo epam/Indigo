@@ -22,7 +22,7 @@ SetCompressor /SOLID lzma
  
   ;Name and file
   Name "${APP_NAME}"
-  OutFile "Install_${APP_NAME}_${VERSION}.exe"
+  OutFile "legio-${VERSION}-installer.exe"
  
 ;--------------------------------
 ;Variables
