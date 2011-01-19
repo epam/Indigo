@@ -839,12 +839,11 @@ void MoleculeLayoutGraph::_attachCrossingEdges ()
 
 void MoleculeLayoutGraph::_buildOutline (void)
 {
-   Vec2f v, old_v, inter;
+   Vec2f v, inter;
    Vec2f pos_i;
    int i, j;
    int first_idx = vertexBegin();
    float min_y = getPos(first_idx).y;
-   bool overlap;
 
    for (i = vertexNext(first_idx); i < vertexEnd(); i = vertexNext(i))
    {
@@ -871,28 +870,18 @@ void MoleculeLayoutGraph::_buildOutline (void)
    while (true)
    {
       const Vertex &vert = getVertex(i);
-      overlap = false;
 
       if (i != first_idx)
       {
-         old_v = v;
-         
          v = pos_i;
          pos_i = getPos(i);
          v.sub(pos_i);
-         
-         if (v.length() < 0.0001f)
-         {
-            v = old_v;
-            overlap = true;
-         }
 
          i_angle = v.tiltAngle2();
       } else if (_outline->size() > 0)
          break;
       
-      if (!overlap)
-         _outline->push(pos_i);
+      _outline->push(pos_i);
 
       max_angle = 0.f;
 
@@ -920,6 +909,8 @@ void MoleculeLayoutGraph::_buildOutline (void)
       int int_edge = -1;
       Vec2f cur_v1 = pos_i;
       Vec2f cur_v2 = getPos(i);
+      int prev_edge = -1;
+      int cur_edge = vert.neiEdge(next_nei);
 
       while (min_dist < 10000.f)
       {
@@ -934,17 +925,20 @@ void MoleculeLayoutGraph::_buildOutline (void)
             if (Vec2f::intersection(cur_v1, cur_v2, cur_v3, cur_v4, v))
                if ((dist = Vec2f::dist(cur_v1, v)) < min_dist)
                {
-                  inter = v;
-                  min_dist = dist;
-                  int_edge = j;
+                  if (dist > EPSILON || j != prev_edge)
+                  {
+                     inter = v;
+                     min_dist = dist;
+                     int_edge = j;
+                  }
                }
          }
 
          if (min_dist < 10000.f)
          {
-            if (min_dist > 0.0001f)
+            if (min_dist > EPSILON)
                _outline->push(v);
-
+            
             const Edge &edge = getEdge(int_edge);
             const Vec2f &cur_v3 = getPos(edge.beg);
             const Vec2f &cur_v4 = getPos(edge.end);
@@ -954,14 +948,8 @@ void MoleculeLayoutGraph::_buildOutline (void)
             Vec2f cur_v4v;
 
             cur_v1v.diff(cur_v1, inter);
-            if (cur_v1v.length() < 0.0001f)
-               cur_v1v.diff(inter, cur_v2);
             cur_v3v.diff(cur_v3, inter);
-            if (cur_v3v.length() < 0.0001f)
-               cur_v3v.diff(inter, cur_v4);
             cur_v4v.diff(cur_v4, inter);
-            if (cur_v4v.length() < 0.0001f)
-               cur_v4v.diff(inter, cur_v3);
 
             float angle1 = cur_v1v.tiltAngle2();
             float angle3 = cur_v3v.tiltAngle2() - angle1;
@@ -983,6 +971,9 @@ void MoleculeLayoutGraph::_buildOutline (void)
                cur_v2 = cur_v4;
                i = edge.end;
             }
+            
+            prev_edge = cur_edge;
+            cur_edge = int_edge;
          }
       }
    }
