@@ -57,7 +57,8 @@ enum
    SKIP_CIS_TRANS = 0x01,
    SKIP_STEREOCENTERS = 0x02,
    SKIP_XYZ = 0x04,
-   SKIP_RGROUP_FRAGMENTS = 0x08
+   SKIP_RGROUP_FRAGMENTS = 0x08,
+   SKIP_ATTACHMENT_POINTS = 0x16
 };
 
 class Molecule;
@@ -142,9 +143,9 @@ public:
    void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
 
    void addAttachmentPoint (int order, int index);
-   int  getAttachmentPoint (int order, int index) const { return index < _attachment_index[order].size() ? _attachment_index[order][index] : -1; }
+   int  getAttachmentPoint (int order, int index) const;
    void removeAttachmentPoint (int index);
-   int  attachmentPointCount () const { return _attachment_index.size(); }
+   int  attachmentPointCount () const;
 
    virtual bool isSaturatedAtom    (int idx) = 0;
 
@@ -233,7 +234,7 @@ public:
 protected:
 
    virtual void _mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
-           const Array<int> *edges, const Array<int> &mapping, int skip_flags);
+           const Array<int> *edges, const Array<int> &mapping, int skip_flags) = 0;
 
    virtual void _postMergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
            const Array<int> *edges, const Array<int> &mapping, int skip_flags);
