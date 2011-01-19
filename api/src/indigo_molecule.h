@@ -122,6 +122,7 @@ public:
 
    virtual QueryMolecule & getQueryMolecule ();
    virtual BaseMolecule & getBaseMolecule ();
+   virtual GraphHighlighting * getMoleculeHighlighting ();
    virtual int getIndex ();
 
    IndigoRGroup rgroup;

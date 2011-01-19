@@ -392,7 +392,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       {
          int val = 0;
 
-         for (int idx = 1; idx < mol.attachmentPointCount(); idx++)
+         for (int idx = 1; idx <= mol.attachmentPointCount(); idx++)
          {
             int j;
 
@@ -1020,7 +1020,7 @@ void MolfileSaver::_writeAttachmentValues2000 (Output &output, BaseMolecule &fra
    RedBlackMap<int, int> orders;
    int i;
 
-   for (i = 1; i < fragment.attachmentPointCount(); i++)
+   for (i = 1; i <= fragment.attachmentPointCount(); i++)
    {
       int j = 0;
       int idx;
@@ -1029,7 +1029,7 @@ void MolfileSaver::_writeAttachmentValues2000 (Output &output, BaseMolecule &fra
       {
          int *val;
 
-         if ((val = orders.at2(idx + 1)) == 0)
+         if ((val = orders.at2(_atom_mapping[idx])) == 0)
             orders.insert(_atom_mapping[idx], 1 << (i - 1));
          else
             *val |= 1 << (i - 1);

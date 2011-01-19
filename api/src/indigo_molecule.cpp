@@ -923,6 +923,11 @@ BaseMolecule & IndigoRGroupFragment::getBaseMolecule ()
    return getQueryMolecule();
 }
 
+GraphHighlighting * IndigoRGroupFragment::getMoleculeHighlighting ()
+{
+   return 0;
+}
+
 IndigoRGroupFragmentsIter::IndigoRGroupFragmentsIter (IndigoRGroup& rgp) :
 IndigoObject(RGROUP_FRAGMENTS_ITER)
 {
@@ -966,7 +971,7 @@ CEXPORT int indigoIterateRGroupFragments (int rgroup)
 
 bool IndigoRGroupsIter::hasNext ()
 {
-   return _idx + 1 < _mol->rgroups.getRGroupCount();
+   return _idx + 1 <= _mol->rgroups.getRGroupCount();
 }
 
 IndigoObject * IndigoRGroupsIter::next ()

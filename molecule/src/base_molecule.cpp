@@ -99,6 +99,22 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
    else
       _xyz.zerofill();
 
+   if (!(skip_flags & SKIP_ATTACHMENT_POINTS))
+   {
+      if (mol.attachmentPointCount() > 0)
+      {
+         for (i = 1; i <= mol.attachmentPointCount(); i++)
+         {
+            int att_idx;
+            int j;
+
+            for (j = 0; (att_idx = mol.getAttachmentPoint(i, j)) != -1; j++)
+               if (mapping_out->at(att_idx) != -1)
+                  this->addAttachmentPoint(i, mapping_out->at(att_idx));
+         }
+      }
+   }
+
    // subclass stuff (Molecule or QueryMolecule)
    _mergeWithSubmolecule(mol, vertices, edges, *mapping_out, skip_flags);
 
@@ -388,28 +404,6 @@ int BaseMolecule::getVacantPiOrbitals (int group, int charge, int radical,
 }
 
 
-void BaseMolecule::_mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
-           const Array<int> *edges, const Array<int> &mapping, int skip_flags)
-{
-   int i;
-   // RGroup fragments
-   if (!(skip_flags & SKIP_RGROUP_FRAGMENTS))
-   {
-      if (mol.attachmentPointCount() > 0)
-      {
-         for (i = 0; i < mol.attachmentPointCount(); i++)
-         {
-            int att_idx;
-            int j;
-
-            for (j = 0; (att_idx = mol.getAttachmentPoint(i, j)) != -1; j++)
-               if (mapping[att_idx] != -1)
-                  this->addAttachmentPoint(i, mapping[att_idx]);
-         }
-      }
-   }
-}
-
 void BaseMolecule::_postMergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
         const Array<int> *edges, const Array<int> &mapping, int skip_flags)
 {
@@ -539,14 +533,23 @@ void BaseMolecule::setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int 
    _rsite_attachment_points.expand(atom_idx + 1);
    _rsite_attachment_points[atom_idx].expandFill(order + 1, -1);
    _rsite_attachment_points[atom_idx][order] = att_atom_idx;
+
+}
+
+int BaseMolecule::attachmentPointCount () const
+{
+   return _attachment_index.size();
 }
 
 void BaseMolecule::addAttachmentPoint (int order, int index)
 {
-   if (_attachment_index.size() <= order)
-      _attachment_index.resize(order + 1);
+   if (order < 1)
+      throw Error("attachment point order %d no allowed (should start from 1)", order);
 
-   _attachment_index[order].push(index);
+   if (_attachment_index.size() < order)
+      _attachment_index.resize(order);
+
+   _attachment_index[order - 1].push(index);
 }
 
 void BaseMolecule::removeAttachmentPoint (int index)
@@ -561,6 +564,14 @@ void BaseMolecule::removeAttachmentPoint (int index)
          else
             _attachment_index[i][j] = _attachment_index[i].pop();
       }
+}
+
+int BaseMolecule::getAttachmentPoint (int order, int index) const
+{
+   if (order < 1)
+      throw Error("attachment point order %d no allowed (should start from 1)", order);
+
+   return index < _attachment_index[order - 1].size() ? _attachment_index[order - 1][index] : -1;
 }
 
 BaseMolecule::SGroup::~SGroup ()

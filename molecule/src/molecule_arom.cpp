@@ -697,7 +697,7 @@ bool QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment,
 
    // Connect it with attachment points
    int maxOrder = fragment.attachmentPointCount();
-   for (int i = 0; i < maxOrder; i++) 
+   for (int i = 1; i <= maxOrder; i++)
    {
       int pointIndex = 0;
       int point;

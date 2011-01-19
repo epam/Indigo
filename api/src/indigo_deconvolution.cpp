@@ -300,7 +300,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
       fragment.makeSubmolecule(qmol_set, sub_filter_fr, 0, &rg_mapping);
 
       for (int att_idx = 0; att_idx < attachment_index[rg_idx].size(); ++att_idx) {
-         fragment.addAttachmentPoint(att_idx, rg_mapping.at(attachment_index[rg_idx][att_idx]));
+         fragment.addAttachmentPoint(att_idx + 1, rg_mapping.at(attachment_index[rg_idx][att_idx]));
       }
 
    }

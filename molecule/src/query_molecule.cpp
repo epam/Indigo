@@ -622,8 +622,6 @@ void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> 
    QueryMolecule &mol = bmol.asQueryMolecule();
    int i;
 
-   BaseMolecule::_mergeWithSubmolecule(bmol, vertices, edges, mapping, skip_flags);
-
    // atoms
    for (i = 0; i < vertices.size(); i++)
    {
