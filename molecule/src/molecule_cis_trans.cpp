@@ -249,9 +249,13 @@ void MoleculeCisTrans::build (BaseMolecule &mol, int *exclude_bonds)
    for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {
       _bonds[i].parity = 0;
+      _bonds[i].ignored = 0;
 
       if (exclude_bonds != 0 && exclude_bonds[i])
+      {
+         _bonds[i].ignored = 1;
          continue;
+      }
 
       int beg = mol.getEdge(i).beg;
       int end = mol.getEdge(i).end;
@@ -411,6 +415,11 @@ int MoleculeCisTrans::getParity (int bond_idx) const
    if (bond_idx >= _bonds.size())
       return 0;
    return _bonds[bond_idx].parity;
+}
+
+bool MoleculeCisTrans::isIgnored (int bond_idx) const
+{
+   return _bonds[bond_idx].ignored == 1;
 }
 
 void MoleculeCisTrans::setParity (int bond_idx, int parity)

@@ -194,7 +194,7 @@ public:
    bool have_xyz;
    bool chiral; // read-only; can be true only when loaded from Molfile
 
-   ObjArray<DataSGroup> data_sgroups;
+   ObjPool<DataSGroup> data_sgroups;
    ObjArray<Superatom>  superatoms;
 
    Array<char> name;

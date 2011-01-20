@@ -1667,7 +1667,9 @@ IndigoDataSGroupsIter::~IndigoDataSGroupsIter ()
 
 bool IndigoDataSGroupsIter::hasNext ()
 {
-   return _idx + 1 < _mol.data_sgroups.size();
+   if (_idx == -1)
+      return _mol.data_sgroups.begin() != _mol.data_sgroups.end();
+   return _mol.data_sgroups.next(_idx) != _mol.data_sgroups.end();
 }
 
 IndigoObject * IndigoDataSGroupsIter::next ()
@@ -1675,7 +1677,11 @@ IndigoObject * IndigoDataSGroupsIter::next ()
    if (!hasNext())
       return 0;
 
-   _idx++;
+   if (_idx == -1)
+      _idx = _mol.data_sgroups.begin();
+   else
+      _idx = _mol.data_sgroups.next(_idx);
+
    AutoPtr<IndigoDataSGroup> sgroup(new IndigoDataSGroup(_mol, _idx));
    return sgroup.release();
 }
@@ -1742,7 +1748,8 @@ CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      BaseMolecule::DataSGroup &dsg =  mol.data_sgroups.push();
+      int idx = mol.data_sgroups.add();
+      BaseMolecule::DataSGroup &dsg =  mol.data_sgroups.at(idx);
       int i;
       if (atoms != 0)
          for (i = 0; i < natoms; i++)
@@ -1754,7 +1761,7 @@ CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
          dsg.data.readString(data, false);
       if (description != 0)
          dsg.description.readString(description, true);
-      return self.addObject(new IndigoDataSGroup(mol, mol.data_sgroups.size() - 1));
+      return self.addObject(new IndigoDataSGroup(mol, idx));
    }
    INDIGO_END(-1)
 }

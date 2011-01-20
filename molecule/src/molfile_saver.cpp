@@ -772,6 +772,10 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          case MoleculeStereocenters::BOND_UP: stereo = 1; break;
          case MoleculeStereocenters::BOND_DOWN: stereo = 6; break;
          case MoleculeStereocenters::BOND_EITHER: stereo = 4; break;
+         case 0:
+            if (mol.cis_trans.isIgnored(i))
+               stereo = 3;
+            break;
       }
 
       if(reactionBondReactingCenter != 0 && reactionBondReactingCenter->at(i) != 0)
@@ -863,6 +867,15 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    }
 
    int n_sgroups = mol.data_sgroups.size() + mol.superatoms.size();
+
+   QS_DEF(Array<int>, sgroup_ids);
+
+   sgroup_ids.clear();
+   for (i = 0; i < mol.superatoms.size(); i++)
+      sgroup_ids.push(i);
+   for (i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
+      sgroup_ids.push(i);
+
    if (n_sgroups > 0)
    {
       int j;
@@ -886,7 +899,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          if (i < mol.superatoms.size())
             sgroup = &mol.superatoms[i];
          else
-            sgroup = &mol.data_sgroups[i - mol.superatoms.size()];
+            sgroup = &mol.data_sgroups[sgroup_ids[i]];
 
          for (j = 0; j < sgroup->atoms.size(); j += 8)
          {
@@ -920,7 +933,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          }
          else
          {
-            BaseMolecule::DataSGroup &datasgroup = mol.data_sgroups[i - mol.superatoms.size()];
+            BaseMolecule::DataSGroup &datasgroup = mol.data_sgroups[sgroup_ids[i]];
             int k = 30;
 
             output.printf("M  SDT %3d ", i + 1);

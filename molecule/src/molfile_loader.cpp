@@ -932,8 +932,8 @@ void MolfileLoader::_readCtab2000 ()
                else if (strncmp(type, "DAT", 3) == 0)
                {
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_DAT;
-                  _bmol->data_sgroups.push();
-                  _sgroup_mapping[sgroup_idx] = _bmol->data_sgroups.size() - 1;
+                  int idx = _bmol->data_sgroups.add();
+                  _sgroup_mapping[sgroup_idx] = idx;
                }
                else
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_OTHER;

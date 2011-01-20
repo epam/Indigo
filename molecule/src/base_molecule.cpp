@@ -310,7 +310,7 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
       mapping[indices[i]] = -1;
 
    // sgroups
-   for (j = data_sgroups.size() - 1; j >= 0; j--)
+   for (j = data_sgroups.begin(); j != data_sgroups.end(); j = data_sgroups.next(j))
    {
       _removeAtomsFromSGroup(data_sgroups[j], mapping);
       if (data_sgroups[j].atoms.size() < 1)
