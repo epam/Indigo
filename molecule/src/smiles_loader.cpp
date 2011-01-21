@@ -826,7 +826,7 @@ void SmilesLoader::_loadMolecule ()
                   if (_mol != 0)
                      _mol->setBondOrder_Silent(idx, BOND_AROMATIC);
                   if (_qmol != 0)
-                     _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(idx),
+                     _qmol->resetBond(idx, QueryMolecule::Bond::und(_qmol->releaseBond(idx),
                              new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
                }
             }
