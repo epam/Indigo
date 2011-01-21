@@ -152,11 +152,6 @@ bool MoleculeLayoutGraph::_cycle_cb (Graph &graph, const Array<int> &vertices, c
 {
    CycleContext &cycle_context = *(CycleContext *)context;
 
-   if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber)
-      return false;
-
-   ++cycle_context.iterationNumber;
-
    ObjPool<Cycle>& cycles = cycle_context.cycles;
 
    int cycle_idx = cycles.add(vertices, edges);

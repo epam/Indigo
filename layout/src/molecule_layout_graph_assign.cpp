@@ -485,6 +485,17 @@ int MoleculeLayoutGraph::_pattern_embedding (Graph &subgraph, Graph &supergraph,
    return 0;
 }
 
+bool MoleculeLayoutGraph::_vertex_cb (Graph &graph, int v_idx, void *context)
+{
+   CycleContext &cycle_context = *(CycleContext *)context;
+
+   if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber * 10000)
+      throw Error("number of cycles exceeded %d ", cycle_context.maxIterationNumber * 10000);
+   
+   cycle_context.iterationNumber++;
+   return true;
+}
+
 void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph)
 {
    int i;
@@ -502,7 +513,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       if (fixed_component)
       {
          _layout_vertices[idx1].pos = supergraph.getPos(getVertexExtIdx(idx1));
-         _layout_vertices[idx2].pos = supergraph.getPos(getVertexExtIdx(idx2));;
+         _layout_vertices[idx2].pos = supergraph.getPos(getVertexExtIdx(idx2));
       } else
       {
          _layout_vertices[idx1].pos.set(0.f, 0.f);
@@ -523,6 +534,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       CycleEnumerator ce(*this);
 
       ce.context = this;
+      ce.cb_check_vertex = _vertex_cb;
       ce.cb_handle_cycle = _border_cb;
 
       if (ce.process())
@@ -617,14 +629,12 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       CycleEnumerator ce(*this);
       
       ce.context = &cycle_context;
+      ce.cb_check_vertex = _vertex_cb;
       ce.cb_handle_cycle = _cycle_cb;
       ce.min_length = min_length;
       ce.max_length = max_length;
       
       ce.process();
-      
-      if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber)
-         throw Error("number of cycles exceeded %d ", cycle_context.maxIterationNumber);
       
       min_length = max_length + 1;
       max_length += 2;

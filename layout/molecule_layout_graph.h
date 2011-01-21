@@ -217,6 +217,7 @@ protected:
    static float _dichotomy2  (float a0, float b0, int L, float s);
    static void _calculatePos (float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v);
 
+   static bool _vertex_cb (Graph &graph, int v_idx, void *context);
    static bool _border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _cycle_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
