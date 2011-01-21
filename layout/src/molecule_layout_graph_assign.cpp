@@ -490,7 +490,7 @@ bool MoleculeLayoutGraph::_vertex_cb (Graph &graph, int v_idx, void *context)
    CycleContext &cycle_context = *(CycleContext *)context;
 
    if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber * 10000)
-      throw Error("number of cycles exceeded %d ", cycle_context.maxIterationNumber * 10000);
+      throw Error("number of iterations exceeded %d ", cycle_context.maxIterationNumber * 10000);
    
    cycle_context.iterationNumber++;
    return true;
@@ -534,7 +534,6 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       CycleEnumerator ce(*this);
 
       ce.context = this;
-      ce.cb_check_vertex = _vertex_cb;
       ce.cb_handle_cycle = _border_cb;
 
       if (ce.process())

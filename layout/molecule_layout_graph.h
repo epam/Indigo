@@ -156,6 +156,8 @@ protected:
    {
       const MoleculeLayoutGraph *graph;
       RedBlackSet<int> *edges;
+      int iterationNumber;
+      int maxIterationNumber;
    };
 
    // patterns
@@ -165,7 +167,7 @@ protected:
    static bool _match_pattern_bond (Graph &subgraph, Graph &supergraph, int self_idx, int other_idx, void *userdata);
    static int  _pattern_embedding (Graph &subgraph, Graph &supergraph, int *core_sub, int *core_super, void *userdata);
 
-   static bool path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
+   static bool _path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
    // for whole graph
    void _assignAbsoluteCoordinates (float bond_length);
@@ -220,6 +222,7 @@ protected:
    static bool _vertex_cb (Graph &graph, int v_idx, void *context);
    static bool _border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _cycle_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
+   static bool _edge_check (Graph &graph, int e_idx, void *context);
 
    // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
    static void _makeComponentsTree (BiconnectedDecomposer &decon,
