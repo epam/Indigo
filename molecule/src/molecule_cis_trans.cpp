@@ -419,6 +419,8 @@ int MoleculeCisTrans::getParity (int bond_idx) const
 
 bool MoleculeCisTrans::isIgnored (int bond_idx) const
 {
+   if (bond_idx >= _bonds.size())
+      return false;
    return _bonds[bond_idx].ignored == 1;
 }
 

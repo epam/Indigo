@@ -70,8 +70,8 @@ public:
    class DLLEXPORT SGroup
    {
    public:
-      Array<int> atoms; // SAL in Molfile format
-      Array<int> bonds; // SBL in Molfile format
+      Array<int> atoms; // represented with SAL in Molfile format
+      Array<int> bonds; // represented with SBL in Molfile format
       virtual ~SGroup ();
    };
 
@@ -195,7 +195,7 @@ public:
    bool chiral; // read-only; can be true only when loaded from Molfile
 
    ObjPool<DataSGroup> data_sgroups;
-   ObjArray<Superatom>  superatoms;
+   ObjPool<Superatom>  superatoms;
 
    Array<char> name;
 

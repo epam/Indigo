@@ -926,8 +926,8 @@ void MolfileLoader::_readCtab2000 ()
                if (strncmp(type, "SUP", 3) == 0)
                {
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_SUP;
-                  _bmol->superatoms.push();
-                  _sgroup_mapping[sgroup_idx] = _bmol->superatoms.size() - 1;
+                  int idx = _bmol->superatoms.add();
+                  _sgroup_mapping[sgroup_idx] = idx;
                }
                else if (strncmp(type, "DAT", 3) == 0)
                {

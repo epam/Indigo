@@ -871,7 +871,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    QS_DEF(Array<int>, sgroup_ids);
 
    sgroup_ids.clear();
-   for (i = 0; i < mol.superatoms.size(); i++)
+   for (i = mol.superatoms.begin(); i != mol.superatoms.end(); i = mol.superatoms.next(i))
       sgroup_ids.push(i);
    for (i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
       sgroup_ids.push(i);
@@ -897,7 +897,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       {
          BaseMolecule::SGroup *sgroup;
          if (i < mol.superatoms.size())
-            sgroup = &mol.superatoms[i];
+            sgroup = &mol.superatoms[sgroup_ids[i]];
          else
             sgroup = &mol.data_sgroups[sgroup_ids[i]];
 
@@ -920,7 +920,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
 
          if (i < mol.superatoms.size())
          {
-            BaseMolecule::Superatom &superatom = mol.superatoms[i];
+            BaseMolecule::Superatom &superatom = mol.superatoms[sgroup_ids[i]];
 
             if (superatom.subscript.size() > 1)
                output.printf("M  SMT %3d %s\n", i + 1, superatom.subscript.ptr());

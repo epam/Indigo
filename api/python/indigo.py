@@ -270,7 +270,10 @@ class Indigo:
 
     self.IndigoObject.countSuperatoms = self._member_int(self._lib.indigoCountSuperatoms)
     self.IndigoObject.countDataSGroups = self._member_int(self._lib.indigoCountDataSGroups)
+    self.IndigoObject.iterateSuperatoms = self._member_obj(self._lib.indigoIterateSuperatoms)
     self.IndigoObject.iterateDataSGroups = self._member_obj(self._lib.indigoIterateDataSGroups)
+    self.IndigoObject.getSuperatom = self._member_obj_int(self._lib.indigoGetSuperatom)
+    self.IndigoObject.getDataSGroup = self._member_obj_int(self._lib.indigoGetDataSGroup)
     self.IndigoObject.description = self._member_string(self._lib.indigoDescription)
     self.IndigoObject.remove = self._member_void(self._lib.indigoRemove)
 

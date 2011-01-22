@@ -272,6 +272,65 @@ protected:
    BaseMolecule &_mol;
 };
 
+class IndigoSuperatom : public IndigoObject
+{
+public:
+   IndigoSuperatom (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoSuperatom ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   static IndigoSuperatom & cast (IndigoObject &obj);
+   BaseMolecule::Superatom & get();
+
+   BaseMolecule &mol;
+   int idx;
+};
+
+class IndigoSuperatomsIter : public IndigoObject
+{
+public:
+   IndigoSuperatomsIter (BaseMolecule &molecule);
+   virtual ~IndigoSuperatomsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+protected:
+   int _idx;
+   BaseMolecule &_mol;
+};
+
+class IndigoSGroupAtomsIter : public IndigoObject
+{
+public:
+   IndigoSGroupAtomsIter (BaseMolecule &mol, BaseMolecule::SGroup &sgroup);
+   virtual ~IndigoSGroupAtomsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   BaseMolecule &_mol;
+   BaseMolecule::SGroup &_sgroup;
+   int _idx;
+};
+
+class IndigoSGroupBondsIter : public IndigoObject
+{
+public:
+   IndigoSGroupBondsIter (BaseMolecule &mol, BaseMolecule::SGroup &sgroup);
+   virtual ~IndigoSGroupBondsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   BaseMolecule &_mol;
+   BaseMolecule::SGroup &_sgroup;
+   int _idx;
+};
+
 class IndigoMoleculeComponent : public IndigoObject
 {
 public:

@@ -585,6 +585,58 @@ IndigoObject * IndigoComponentsIter::next ()
    return new IndigoMoleculeComponent(mol, _idx);
 }
 
+IndigoSGroupAtomsIter::IndigoSGroupAtomsIter (BaseMolecule &mol, BaseMolecule::SGroup &sgroup) :
+IndigoObject(SGROUP_ATOMS_ITER),
+_mol(mol),
+_sgroup(sgroup)
+{
+   _idx = -1;
+}
+
+IndigoSGroupAtomsIter::~IndigoSGroupAtomsIter ()
+{
+}
+
+bool IndigoSGroupAtomsIter::hasNext ()
+{
+   return _idx + 1 < _sgroup.atoms.size();
+}
+
+IndigoObject * IndigoSGroupAtomsIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   _idx++;
+   return new IndigoAtom(_mol, _sgroup.atoms[_idx]);
+}
+
+IndigoSGroupBondsIter::IndigoSGroupBondsIter (BaseMolecule &mol, BaseMolecule::SGroup &sgroup) :
+IndigoObject(SGROUP_ATOMS_ITER),
+_mol(mol),
+_sgroup(sgroup)
+{
+   _idx = -1;
+}
+
+IndigoSGroupBondsIter::~IndigoSGroupBondsIter ()
+{
+}
+
+bool IndigoSGroupBondsIter::hasNext ()
+{
+   return _idx + 1 < _sgroup.bonds.size();
+}
+
+IndigoObject * IndigoSGroupBondsIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   _idx++;
+   return new IndigoBond(_mol, _sgroup.bonds[_idx]);
+}
+
 int _indigoIterateAtoms (Indigo &self, int molecule, int type)
 {
    BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
@@ -605,6 +657,18 @@ CEXPORT int indigoIterateAtoms (int molecule)
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return self.addObject(new IndigoComponentAtomsIter(mc.mol, mc.index));
       }
+      if (obj.type == IndigoObject::DATA_SGROUP)
+      {
+         IndigoDataSGroup &dsg = IndigoDataSGroup::cast(obj);
+         return self.addObject(new IndigoSGroupAtomsIter(*dsg.mol, dsg.mol->data_sgroups[dsg.idx]));
+      }
+      if (obj.type == IndigoObject::SUPERATOM)
+      {
+         IndigoSuperatom &sa = IndigoSuperatom::cast(obj);
+         return self.addObject(new IndigoSGroupAtomsIter(sa.mol, sa.mol.superatoms[sa.idx]));
+      }
+
+
       return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::ALL);
    }
    INDIGO_END(-1);
@@ -620,6 +684,16 @@ CEXPORT int indigoIterateBonds (int molecule)
       {
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return self.addObject(new IndigoComponentBondsIter(mc.mol, mc.index));
+      }
+      if (obj.type == IndigoObject::DATA_SGROUP)
+      {
+         IndigoDataSGroup &dsg = IndigoDataSGroup::cast(obj);
+         return self.addObject(new IndigoSGroupBondsIter(*dsg.mol, dsg.mol->data_sgroups[dsg.idx]));
+      }
+      if (obj.type == IndigoObject::SUPERATOM)
+      {
+         IndigoSuperatom &sa = IndigoSuperatom::cast(obj);
+         return self.addObject(new IndigoSGroupBondsIter(sa.mol, sa.mol.superatoms[sa.idx]));
       }
 
       BaseMolecule &mol = obj.getBaseMolecule();
@@ -643,6 +717,16 @@ CEXPORT int indigoCountAtoms (int molecule)
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return mc.mol.countComponentVertices(mc.index);
       }
+      if (obj.type == IndigoObject::DATA_SGROUP)
+      {
+         IndigoDataSGroup &dsg = IndigoDataSGroup::cast(obj);
+         return dsg.get().atoms.size();
+      }
+      if (obj.type == IndigoObject::SUPERATOM)
+      {
+         IndigoSuperatom &sa = IndigoSuperatom::cast(obj);
+         return sa.get().atoms.size();
+      }
 
       BaseMolecule &mol = obj.getBaseMolecule();
       
@@ -661,6 +745,16 @@ CEXPORT int indigoCountBonds (int molecule)
       {
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return mc.mol.countComponentEdges(mc.index);
+      }
+      if (obj.type == IndigoObject::DATA_SGROUP)
+      {
+         IndigoDataSGroup &dsg = IndigoDataSGroup::cast(obj);
+         return dsg.get().bonds.size();
+      }
+      if (obj.type == IndigoObject::SUPERATOM)
+      {
+         IndigoSuperatom &sa = IndigoSuperatom::cast(obj);
+         return sa.get().bonds.size();
       }
 
       BaseMolecule &mol = obj.getBaseMolecule();
@@ -1728,6 +1822,101 @@ IndigoDataSGroup::~IndigoDataSGroup ()
 int IndigoDataSGroup::getIndex ()
 {
    return idx;
+}
+
+IndigoSuperatom::IndigoSuperatom (BaseMolecule &mol_, int idx_) :
+IndigoObject(SUPERATOM),
+mol(mol_)
+{
+   idx = idx_;
+}
+
+IndigoSuperatom::~IndigoSuperatom ()
+{
+}
+
+int IndigoSuperatom::getIndex ()
+{
+   return idx;
+}
+
+void IndigoSuperatom::remove ()
+{
+   mol.superatoms.remove(idx);
+}
+
+IndigoSuperatom & IndigoSuperatom::cast (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::SUPERATOM)
+      return (IndigoSuperatom &)obj;
+
+   throw IndigoError("%s is not a superatom", obj.debugInfo());
+}
+
+Molecule::Superatom & IndigoSuperatom::get ()
+{
+   return mol.superatoms[idx];
+}
+
+IndigoSuperatomsIter::IndigoSuperatomsIter (BaseMolecule &molecule) :
+IndigoObject(SUPERATOMS_ITER),
+_mol(molecule)
+{
+   _idx = -1;
+}
+
+IndigoSuperatomsIter::~IndigoSuperatomsIter ()
+{
+}
+
+bool IndigoSuperatomsIter::hasNext ()
+{
+   if (_idx == -1)
+      return _mol.superatoms.begin() != _mol.superatoms.end();
+   return _mol.superatoms.next(_idx) != _mol.superatoms.end();
+}
+
+IndigoObject * IndigoSuperatomsIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   if (_idx == -1)
+      _idx = _mol.superatoms.begin();
+   else
+      _idx = _mol.superatoms.next(_idx);
+
+   return new IndigoSuperatom(_mol, _idx);
+}
+
+CEXPORT int indigoIterateSuperatoms (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoSuperatomsIter(mol));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoGetSuperatom (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoSuperatom(mol, index));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoGetDataSGroup (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoDataSGroup(mol, index));
+   }
+   INDIGO_END(-1)
 }
 
 CEXPORT const char * indigoDescription (int data_sgroup)
