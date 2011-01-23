@@ -103,26 +103,6 @@ CEXPORT int indigoHighlightedTarget (int match)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoMapAtom (int match, int query_atom)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(match);
-      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
-         throw IndigoError("indigoMapAtom(): match must be given, not %s", obj.debugInfo());
-      IndigoAtom &ia = IndigoAtom::cast(self.getObject(query_atom));
-
-      IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
-      match.query.getAtom(ia.idx); // will throw an exception if the atom index is invalid
-      int idx = match.query_atom_mapping[ia.idx];
-      if (idx < 0)
-         return 0;
-
-      return self.addObject(new IndigoAtom(match.target, idx));
-   }
-   INDIGO_END(-1)
-}
-
 CEXPORT int indigoMapBond (int match, int query_bond)
 {
    INDIGO_BEGIN

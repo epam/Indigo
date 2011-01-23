@@ -143,14 +143,14 @@ void GraphHighlighting::onEdge (int idx)
 
 bool GraphHighlighting::hasVertex (int idx) const
 {
-   if (_v_flags.size() < 1)
+   if (_v_flags.size() < idx + 1)
       return false;
    return _v_flags[idx] != 0;
 }
 
 bool GraphHighlighting::hasEdge (int idx) const
 {
-   if (_e_flags.size() < 1)
+   if (_e_flags.size() < idx + 1)
       return false;
    return _e_flags[idx] != 0;
 }

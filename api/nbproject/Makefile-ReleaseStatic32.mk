@@ -37,6 +37,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/indigo_loaders.o \
 	${OBJECTDIR}/src/indigo_properties.o \
 	${OBJECTDIR}/src/indigo_io.o \
+	${OBJECTDIR}/src/indigo_mapping.o \
 	${OBJECTDIR}/src/indigo_array.o \
 	${OBJECTDIR}/src/indigo.o \
 	${OBJECTDIR}/src/indigo_options.o \
@@ -47,8 +48,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/indigo_fingerprints.o \
 	${OBJECTDIR}/src/option_manager.o \
 	${OBJECTDIR}/src/indigo_object.o \
-	${OBJECTDIR}/src/indigo_macros.o \
 	${OBJECTDIR}/src/indigo_basic.o \
+	${OBJECTDIR}/src/indigo_macros.o \
 	${OBJECTDIR}/src/indigo_misc.o \
 	${OBJECTDIR}/src/indigo_layout.o \
 	${OBJECTDIR}/src/indigo_stereo.o \
@@ -101,6 +102,11 @@ ${OBJECTDIR}/src/indigo_io.o: src/indigo_io.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I. -Isrc -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_io.o src/indigo_io.cpp
 
+${OBJECTDIR}/src/indigo_mapping.o: src/indigo_mapping.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I. -Isrc -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_mapping.o src/indigo_mapping.cpp
+
 ${OBJECTDIR}/src/indigo_array.o: src/indigo_array.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -151,15 +157,15 @@ ${OBJECTDIR}/src/indigo_object.o: src/indigo_object.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I. -Isrc -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_object.o src/indigo_object.cpp
 
-${OBJECTDIR}/src/indigo_macros.o: src/indigo_macros.c 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.c) -O3 -Wall -s -I. -Isrc -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_macros.o src/indigo_macros.c
-
 ${OBJECTDIR}/src/indigo_basic.o: src/indigo_basic.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I. -Isrc -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_basic.o src/indigo_basic.cpp
+
+${OBJECTDIR}/src/indigo_macros.o: src/indigo_macros.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -O3 -Wall -s -I. -Isrc -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_macros.o src/indigo_macros.c
 
 ${OBJECTDIR}/src/indigo_misc.o: src/indigo_misc.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

@@ -69,6 +69,8 @@ JNI_FUNC_jint_jstring(indigoWriteFile)
 JNI_FUNC_jint(indigoWriteBuffer)
 JNI_FUNC_jint_jint(indigoClose)
 
+JNI_FUNC_jint(indigoCreateMolecule)
+JNI_FUNC_jint(indigoCreateQueryMolecule)
 JNI_FUNC_jint_jint(indigoLoadMolecule)
 JNI_FUNC_jint_jstring(indigoLoadMoleculeFromString)
 JNI_FUNC_jint_jstring(indigoLoadMoleculeFromFile)
@@ -221,6 +223,13 @@ JNI_FUNC_jint_jint(indigoClearStereocenters)
 JNI_FUNC_jint_jint(indigoCountStereocenters)
 
 JNI_FUNC_jint_jint(indigoResetSymmetricCisTrans)
+
+JNI_FUNC_jint_jint_jstring(indigoAddAtom)
+JNI_FUNC_jint_jint_jint(indigoSetCharge)
+JNI_FUNC_jint_jint_jint(indigoSetIsotope)
+JNI_FUNC_jint_jint_jint_jint(indigoAddBond)
+JNI_FUNC_jint_jint_jint(indigoSetOrder)
+JNI_FUNC_jint_jint_jint(indigoMerge)
 
 JNI_FUNC_jint_jint(indigoCountComponents)
 JNI_FUNC_jint_jint(indigoComponentIndex)

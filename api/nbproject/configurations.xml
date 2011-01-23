@@ -18,6 +18,8 @@
       <itemPath>src/indigo_loaders.cpp</itemPath>
       <itemPath>src/indigo_loaders.h</itemPath>
       <itemPath>src/indigo_macros.c</itemPath>
+      <itemPath>src/indigo_mapping.cpp</itemPath>
+      <itemPath>src/indigo_mapping.h</itemPath>
       <itemPath>src/indigo_match.cpp</itemPath>
       <itemPath>src/indigo_match.h</itemPath>
       <itemPath>src/indigo_misc.cpp</itemPath>

@@ -103,7 +103,8 @@ public:
       COMPONENT,
       COMPONENTS_ITER,
       COMPONENT_ATOMS_ITER,
-      COMPONENT_BONDS_ITER
+      COMPONENT_BONDS_ITER,
+      MAPPING
    };
 
    int type;
@@ -143,6 +144,8 @@ public:
 
 protected:
    Array<char> _dbg_info; // allocated by debugInfo() on demand
+private:
+   IndigoObject (const IndigoObject &);
 };
 
 class IndigoGross : public IndigoObject

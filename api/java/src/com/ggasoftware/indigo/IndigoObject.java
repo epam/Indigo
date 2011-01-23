@@ -27,6 +27,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    }
 
    @Override
+   @SuppressWarnings("FinalizeDeclaration")
    protected void finalize () throws Throwable
    {
       dispatcher.indigoFree(self);
@@ -232,6 +233,17 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void clearStereocenters () { dispatcher.indigoClearStereocenters(self); }
    public int countStereocenters () { return dispatcher.indigoCountStereocenters(self); }
    public int resetSymmetricCisTrans () { return dispatcher.indigoResetSymmetricCisTrans(self); }
+
+   public IndigoObject addAtom (String symbol) { return new IndigoObject(dispatcher, dispatcher.indigoAddAtom(self, symbol)); }
+   public void setCharge (int charge) { dispatcher.indigoSetCharge(self, charge); }
+   public void setIsotope (int isotope) { dispatcher.indigoSetIsotope(self, isotope); }
+   public IndigoObject addBond (IndigoObject atom, int order)
+   {
+      return new IndigoObject(dispatcher, dispatcher.indigoAddBond(self, atom.self, order));
+   }
+   public void setOrder (int order) { dispatcher.indigoSetOrder(self, order); };
+
+   public IndigoObject merge (IndigoObject other) { return new IndigoObject(dispatcher, dispatcher.indigoMerge(self, other.self)); }
 
    public int countComponents () { return dispatcher.indigoCountComponents(self); }
    public int componentIndex () { return dispatcher.indigoComponentIndex(self); }

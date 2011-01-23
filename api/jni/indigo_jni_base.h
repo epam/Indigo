@@ -57,6 +57,13 @@ JNIEXPORT jint JNINAME(name) (JNIEnv *env, jobject obj, jint p1, jint p2) \
    return name(p1, p2);                                                   \
 }
 
+#define JNI_FUNC_jint_jint_jint_jint(name)                                     \
+JNIEXPORT jint JNINAME(name) (JNIEnv *env, jobject obj, jint p1, jint p2, jint p3) \
+{                                                                         \
+   indigoJniSetSession(env, obj);                                         \
+   return name(p1, p2, p3);                                               \
+}
+
 #define JNI_FUNC_jint_jstring(name)                                       \
 JNIEXPORT jint JNINAME(name) (JNIEnv *env, jobject obj, jstring j_param1) \
 {                                                                         \

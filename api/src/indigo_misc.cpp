@@ -34,6 +34,8 @@
 #include "reaction/icr_saver.h"
 #include "reaction/icr_loader.h"
 #include "indigo_reaction.h"
+#include "indigo_mapping.h"
+#include "indigo_match.h"
 
 #include <time.h>
 
@@ -684,6 +686,41 @@ CEXPORT int indigoUnserialize (char *buf, int size)
       }
       else
          throw IndigoError("indigoUnserialize(): format not recognized");
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoMapAtom (int handle, int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+
+      if (obj.type == IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
+      {
+         IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+         IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
+         match.query.getAtom(ia.idx); // will throw an exception if the atom index is invalid
+         int idx = match.query_atom_mapping[ia.idx];
+         if (idx < 0)
+            return 0;
+
+         return self.addObject(new IndigoAtom(match.target, idx));
+      }
+      if (obj.type == IndigoObject::MAPPING)
+      {
+         IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+         IndigoMapping &mapping = (IndigoMapping &)obj;
+
+         int mapped = mapping.mapping[ia.idx];
+         if (mapped < 0)
+            return 0;
+         return self.addObject(new IndigoAtom(mapping.to, mapped));
+      }
+
+      throw IndigoError("indigoMapAtom(): not applicable to %s", obj.debugInfo());
    }
    INDIGO_END(-1)
 }

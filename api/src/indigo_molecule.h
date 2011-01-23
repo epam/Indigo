@@ -91,8 +91,9 @@ public:
 
    static bool is (IndigoObject &obj);
    static IndigoAtom & cast (IndigoObject &obj);
+   virtual void remove ();
 
-   BaseMolecule *mol;
+   BaseMolecule &mol;
    int idx;
 
    virtual int getIndex ();
@@ -137,8 +138,9 @@ public:
 
    static bool is (IndigoObject &obj);
    static IndigoBond & cast (IndigoObject &obj);
+   virtual void remove ();
 
-   BaseMolecule *mol;
+   BaseMolecule &mol;
    int idx;
 
    virtual int getIndex ();
@@ -156,7 +158,7 @@ public:
 class IndigoAtomNeighborsIter : public IndigoObject
 {
 public:
-   IndigoAtomNeighborsIter (BaseMolecule *molecule, int atom_idx);
+   IndigoAtomNeighborsIter (BaseMolecule &molecule, int atom_idx);
 
    virtual ~IndigoAtomNeighborsIter ();
 
@@ -167,7 +169,7 @@ protected:
 
    int _atom_idx;
    int _nei_idx;
-   BaseMolecule *_mol;
+   BaseMolecule &_mol;
 };
 
 class IndigoRGroupsIter : public IndigoObject
@@ -230,7 +232,7 @@ protected:
 class IndigoBondsIter : public IndigoObject
 {
 public:
-   IndigoBondsIter (BaseMolecule *molecule);
+   IndigoBondsIter (BaseMolecule &molecule);
 
    virtual ~IndigoBondsIter ();
 
@@ -240,7 +242,7 @@ public:
 protected:
 
    int _idx;
-   BaseMolecule *_mol;
+   BaseMolecule &_mol;
 };
 
 class IndigoDataSGroup : public IndigoObject

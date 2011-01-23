@@ -200,6 +200,8 @@ class Indigo:
     self._lib.indigoSetSessionId(self._sid)
     
     self.countReferences = self._static_int(self._lib.indigoCountReferences)
+    self.createMolecule = self._static_obj(self._lib.indigoCreateMolecule)
+    self.createQueryMolefile = self._static_obj(self._lib.indigoCreateQueryMolecule)
     self.loadMolecule = self._static_obj_string(self._lib.indigoLoadMoleculeFromString)
     self.loadMoleculeFromFile = self._static_obj_string(self._lib.indigoLoadMoleculeFromFile)
     self.loadQueryMolecule = self._static_obj_string(self._lib.indigoLoadQueryMoleculeFromString)
@@ -312,6 +314,12 @@ class Indigo:
     self.IndigoObject.countStereocenters = self._member_int(self._lib.indigoCountStereocenters)
     self.IndigoObject.resetSymmetricCisTrans = self._member_int(self._lib.indigoResetSymmetricCisTrans)
     self.IndigoObject.unseparateCharges = self._member_int(self._lib.indigoUnseparateCharges)
+    self.IndigoObject.addAtom = self._member_obj_string(self._lib.indigoAddAtom)
+    self.IndigoObject.setCharge = self._member_void_int(self._lib.indigoSetCharge)
+    self.IndigoObject.setIsotope = self._member_void_int(self._lib.indigoSetIsotope)
+    self.IndigoObject.addBond = self._member_obj_obj_int(self._lib.indigoAddBond)
+    self.IndigoObject.setOrder = self._member_void_int(self._lib.indigoSetOrder)
+    self.IndigoObject.merge = self._member_obj_obj(self._lib.indigoMerge)
 
     self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
     self.IndigoObject.componentIndex = self._member_int(self._lib.indigoComponentIndex)
@@ -631,6 +639,18 @@ class Indigo:
     def newfunc (self, param):
       dispatcher._setSID()
       newobj = dispatcher._checkResult(func(self.id, param.id))
+      if newobj == 0:
+        return None
+      return dispatcher.IndigoObject(dispatcher, newobj)
+    return self._make_wrapper_func(newfunc, func)
+
+  def _member_obj_obj_int (self, func):
+    dispatcher = self
+    func.restype = c_int
+    func.argtypes = [c_int, c_int, c_int]
+    def newfunc (self, param, param2):
+      dispatcher._setSID()
+      newobj = dispatcher._checkResult(func(self.id, param.id, param2))
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)

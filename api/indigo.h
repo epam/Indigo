@@ -153,6 +153,9 @@ CEXPORT int indigoRemove (int item);
 
 /* Molecules, query molecules, SMARTS */
 
+CEXPORT int indigoCreateMolecule (void);
+CEXPORT int indigoCreateQueryMolecule (void);
+
 CEXPORT int indigoLoadMolecule  (int source);
 CEXPORT int indigoLoadMoleculeFromString (const char *string);
 CEXPORT int indigoLoadMoleculeFromFile   (const char *filename);
@@ -342,6 +345,21 @@ CEXPORT int indigoClearStereocenters (int handle);
 CEXPORT int indigoCountStereocenters (int molecule);
 
 CEXPORT int indigoResetSymmetricCisTrans (int handle);
+
+// Accepts a symbol from the periodic table (like "C" or "Br"),
+// or a pseudoatom symbol, like "Pol". Returns the added atom.
+CEXPORT int indigoAddAtom (int molecule, const char *symbol);
+
+CEXPORT int indigoSetCharge (int atom, int charge);
+CEXPORT int indigoSetIsotope (int atom, int isotope);
+
+// Accepts two atoms (source and destination) and the order of the new bond
+// (1/2/3/4 = single/double/triple/aromatic). Returns the added bond.
+CEXPORT int indigoAddBond (int source, int destination, int order);
+
+CEXPORT int indigoSetOrder (int bond, int order);
+
+CEXPORT int indigoMerge (int where, int what);
 
 /* Connected components of molecules */
 

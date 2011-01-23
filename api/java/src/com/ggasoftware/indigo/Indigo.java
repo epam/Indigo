@@ -83,6 +83,16 @@ public class Indigo
       return new IndigoObject(this, indigoWriteBuffer());
    }
 
+   public IndigoObject createMolecule ()
+   {
+      return new IndigoObject(this, indigoCreateMolecule());
+   }
+
+   public IndigoObject createQueryMolecule ()
+   {
+      return new IndigoObject(this, indigoCreateQueryMolecule());
+   }
+
    public IndigoObject loadMolecule (String str)
    {
       return new IndigoObject(this, indigoLoadMoleculeFromString(str));
@@ -365,6 +375,8 @@ public class Indigo
    public native int indigoWriteBuffer ();
    public native int indigoClose       (int item);
 
+   public native int indigoCreateMolecule ();
+   public native int indigoCreateQueryMolecule ();
    public native int indigoLoadMolecule (int source);
    public native int indigoLoadMoleculeFromFile   (String filename);
    public native int indigoLoadMoleculeFromString (String source);
@@ -482,6 +494,13 @@ public class Indigo
    public native int indigoCountStereocenters (int molecule);
 
    public native int indigoResetSymmetricCisTrans (int handle);
+
+   public native int indigoAddAtom (int molecule, String symbol);
+   public native int indigoSetCharge (int atom, int charge);
+   public native int indigoSetIsotope (int atom, int isotope);
+   public native int indigoAddBond (int source, int destination, int order);
+   public native int indigoSetOrder (int bond, int order);
+   public native int indigoMerge (int where, int what);
 
    public native int indigoCountComponents (int molecule);
    public native int indigoComponentIndex (int atom);
