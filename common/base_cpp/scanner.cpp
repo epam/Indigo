@@ -496,7 +496,7 @@ void FileScanner::skip (int n)
 
    if (_cache_pos > _max_cache)
    {
-      int delta = _max_cache - _cache_pos;
+      int delta = _cache_pos - _max_cache;
       int res = fseek(_file, delta, SEEK_CUR);
       _invalidateCache();
 
