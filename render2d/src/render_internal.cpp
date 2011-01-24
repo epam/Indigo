@@ -532,7 +532,7 @@ void MoleculeRenderInternal::_initRGroups()
 {
    QUERY_MOL_BEGIN(_mol);
       if (qmol.attachmentPointCount() > 0) {
-         for (int i = 0; i < qmol.attachmentPointCount(); ++i)
+         for (int i = 1; i <= qmol.attachmentPointCount(); ++i)
             for (int j = 0, k; (k = qmol.getAttachmentPoint(i, j)) >= 0; ++j)
                _ad(k).isRGroupAttachmentPoint = true;
       }
@@ -2217,7 +2217,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
    QUERY_MOL_BEGIN(_mol);
    if (ad.isRGroupAttachmentPoint) {
       rGroupAttachmentIndices.clear();
-      for (int i = 0; i < qmol.attachmentPointCount(); ++i)
+      for (int i = 1; i <= qmol.attachmentPointCount(); ++i)
          for (int j = 0, k; (k = qmol.getAttachmentPoint(i, j)) >= 0; ++j)
             if (k == aid)
                rGroupAttachmentIndices.push(i);

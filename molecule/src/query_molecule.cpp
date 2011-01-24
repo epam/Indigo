@@ -741,7 +741,7 @@ void QueryMolecule::_removeAtoms (const Array<int> &indices, const int *mapping)
 
       bool empty = true;
 
-      for (i = 0; i < this->attachmentPointCount(); i++)
+      for (i = 1; i <= this->attachmentPointCount(); i++)
          if (this->getAttachmentPoint(i, 0) != -1)
          {
             empty = false;
