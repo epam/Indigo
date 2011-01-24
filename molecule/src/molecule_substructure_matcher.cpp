@@ -829,11 +829,11 @@ int MoleculeSubstructureMatcher::_embedding_markush (int *core_sub, int *core_su
          int att_idx2;
          int i, j;
 
-         for (i = 0; (att_idx1 = fragment.getAttachmentPoint(0, i)) != -1; i++)
+         for (i = 0; (att_idx1 = fragment.getAttachmentPoint(1, i)) != -1; i++)
          {
             if (two_att_points)
             {
-               for (j = 0; (att_idx2 = fragment.getAttachmentPoint(1, j)) != -1; j++)
+               for (j = 0; (att_idx2 = fragment.getAttachmentPoint(2, j)) != -1; j++)
                   if (!_attachRGroupAndContinue(core_sub, core_super,
                           &fragment, true, att_idx1, att_idx2, old_site_rgroups[rg_idx]))
                      return 0;
