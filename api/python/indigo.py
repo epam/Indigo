@@ -317,7 +317,6 @@ class Indigo:
     self.IndigoObject.clearStereocenters = self._member_void(self._lib.indigoClearStereocenters)
     self.IndigoObject.countStereocenters = self._member_int(self._lib.indigoCountStereocenters)
     self.IndigoObject.resetSymmetricCisTrans = self._member_int(self._lib.indigoResetSymmetricCisTrans)
-    self.IndigoObject.unseparateCharges = self._member_int(self._lib.indigoUnseparateCharges)
     self.IndigoObject.addAtom = self._member_obj_string(self._lib.indigoAddAtom)
     self.IndigoObject.setCharge = self._member_void_int(self._lib.indigoSetCharge)
     self.IndigoObject.setIsotope = self._member_void_int(self._lib.indigoSetIsotope)
