@@ -193,6 +193,10 @@ class Indigo:
     self._lib.indigoToString.argtypes = [c_int]
     self._lib.indigoToBuffer.restype = c_int
     self._lib.indigoToBuffer.argtypes = [c_int, POINTER(POINTER(c_char)), POINTER(c_int)]
+    self._lib.indigoSimilarity.restype = c_float
+    self._lib.indigoSimilarity.argtypes = [c_int, c_int, c_char_p]
+    self._lib.indigoExactMatch.restype = c_int
+    self._lib.indigoExactMatch.argtypes = [c_int, c_int]
     self._lib.indigoDbgBreakpoint.restype = None
     self._lib.indigoDbgBreakpoint.argtypes = None
  
