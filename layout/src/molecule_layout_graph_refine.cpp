@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -22,16 +22,23 @@
 
 using namespace indigo;
 
-/*
-bool MoleculeLayoutGraph::edge_check (const Graph &gr, int e_idx, void *context_)
+bool MoleculeLayoutGraph::_edge_check (Graph &graph, int e_idx, void *context_)
 {
-EnumContext &context = *(EnumContext *)context_;
+   /*
+   EnumContext &context = *(EnumContext *)context_;
 
-return !context.graph->getLayoutEdge(e_idx).is_cyclic;
+   return !context.graph->getLayoutEdge(e_idx).is_cyclic;
+   */
+   EnumContext &context = *(EnumContext *)context_;
+   
+   if(context.maxIterationNumber && context.iterationNumber > context.maxIterationNumber * 10000)
+      throw Error("number of iterations exceeded %d ", context.maxIterationNumber * 10000);
+   
+   context.iterationNumber++;
+   return true;
 }
-*/
 
-bool MoleculeLayoutGraph::path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context_)
+bool MoleculeLayoutGraph::_path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context_)
 {
    EnumContext &context = *(EnumContext *)context_;
    int i;
@@ -145,6 +152,7 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
 
    context.edges = &edges;
    context.graph = this;
+   context.maxIterationNumber = max_iterations;
 
    while (improved)
    {
@@ -187,11 +195,18 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
             // Find acyclic edges on the all paths between v1 and v2
             PathEnumerator path_enum(*this, v1, v2);
 
-            //path_enum.cb_check_edge = edge_check;
-            path_enum.cb_handle_path = path_handle;
+            path_enum.cb_check_edge = _edge_check;
+            path_enum.cb_handle_path = _path_handle;
             path_enum.context = &context;
 
-            path_enum.process();
+            context.iterationNumber = 0;
+            
+            try {
+               path_enum.process();
+            }
+            catch (Error) {
+               // iterations limit reached
+            }
 
             if (edges.size() == n_edges)
                continue;

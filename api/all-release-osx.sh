@@ -19,6 +19,12 @@ mkdir $jnidistr
 rm -rf ./$pythondistr ./$pythondistr.zip
 mkdir $pythondistr
 
+cd java
+./compile.sh
+cd ../renderer/java
+./compile.sh
+cd ../..
+
 cp LICENSE.GPL $jnidistr/
 cp java/dist/indigo-java.jar $jnidistr
 cp renderer/java/dist/indigo-renderer-java.jar $jnidistr

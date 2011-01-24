@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,22 +16,22 @@
 #define __indigo__
 
 #ifdef _WIN32
-   #define qword unsigned _int64
+#define qword unsigned _int64
 #ifdef INDIGO_PLUGIN
 #define DLLEXPORT __declspec(dllimport)
 #else
 #define DLLEXPORT __declspec(dllexport)
 #endif
 #else
-   #define qword unsigned long long
-   #define DLLEXPORT
+#define qword unsigned long long
+#define DLLEXPORT
 #endif
 
 #ifdef _WIN32
 #ifndef __cplusplus
-   #define CEXPORT __declspec(dllexport)
+#define CEXPORT __declspec(dllexport)
 #else
-   #define CEXPORT extern "C" __declspec(dllexport)
+#define CEXPORT extern "C" __declspec(dllexport)
 #endif
 #else
 #ifndef __cplusplus
@@ -148,7 +148,13 @@ CEXPORT int indigoHasNext (int iter);
 // Returns the index of the element
 CEXPORT int indigoIndex (int item);
 
+// Removes the item from its container (usually a molecule)
+CEXPORT int indigoRemove (int item);
+
 /* Molecules, query molecules, SMARTS */
+
+CEXPORT int indigoCreateMolecule (void);
+CEXPORT int indigoCreateQueryMolecule (void);
 
 CEXPORT int indigoLoadMolecule  (int source);
 CEXPORT int indigoLoadMoleculeFromString (const char *string);
@@ -243,6 +249,7 @@ CEXPORT int indigoIterateStereocenters (int molecule);
 CEXPORT int indigoIterateRGroups (int molecule);
 CEXPORT int indigoIsPseudoatom (int atom);
 CEXPORT int indigoIsRSite (int atom);
+
 // returns INDIGO_{ABS,OR,AND,EITHER}
 // or zero if the atom is not a stereoatom
 CEXPORT int indigoStereocenterType (int atom);
@@ -276,6 +283,9 @@ CEXPORT float * indigoXYZ (int atom);
 CEXPORT int indigoCountSuperatoms (int molecule);
 CEXPORT int indigoCountDataSGroups (int molecule);
 CEXPORT int indigoIterateDataSGroups (int molecule);
+CEXPORT int indigoIterateSuperatoms (int molecule);
+CEXPORT int indigoGetSuperatom (int molecule, int index);
+CEXPORT int indigoGetDataSGroup (int molecule, int index);
 CEXPORT const char * indigoDescription (int data_sgroup);
 
 CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
@@ -287,6 +297,12 @@ CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetRadical (int atom);
 CEXPORT int indigoResetIsotope (int atom);
+
+CEXPORT int indigoSetAttachmentPoint (int atom, int order);
+
+CEXPORT int indigoRemoveConstraints   (int item, const char *type);
+CEXPORT int indigoAddConstraint    (int item, const char *type, const char *value);
+CEXPORT int indigoAddConstraintNot (int item, const char *type, const char *value);
 
 CEXPORT int indigoResetStereo (int item);
 CEXPORT int indigoInvertStereo (int item);
@@ -328,6 +344,34 @@ CEXPORT int indigoClearCisTrans (int handle);
 CEXPORT int indigoClearStereocenters (int handle);
 CEXPORT int indigoCountStereocenters (int molecule);
 
+CEXPORT int indigoResetSymmetricCisTrans (int handle);
+
+// Accepts a symbol from the periodic table (like "C" or "Br"),
+// or a pseudoatom symbol, like "Pol". Returns the added atom.
+CEXPORT int indigoAddAtom (int molecule, const char *symbol);
+
+CEXPORT int indigoSetCharge (int atom, int charge);
+CEXPORT int indigoSetIsotope (int atom, int isotope);
+
+// Accepts two atoms (source and destination) and the order of the new bond
+// (1/2/3/4 = single/double/triple/aromatic). Returns the added bond.
+CEXPORT int indigoAddBond (int source, int destination, int order);
+
+CEXPORT int indigoSetOrder (int bond, int order);
+
+CEXPORT int indigoMerge (int where, int what);
+
+/* Connected components of molecules */
+
+CEXPORT int indigoCountComponents (int molecule);
+CEXPORT int indigoComponentIndex (int atom);
+CEXPORT int indigoIterateComponents (int molecule);
+
+// Returns a 'molecule component' object, which can not be used as a
+// [query] molecule, but supports the indigo{Count,Iterate}{Atoms,Bonds} calls,
+// and also the indigoClone() call, which returns a [query] molecule.
+CEXPORT int indigoComponent (int molecule, int index);
+
 /* Calculation on molecules */
 
 CEXPORT int   indigoCountHeavyAtoms (int molecule);
@@ -338,14 +382,6 @@ CEXPORT float indigoMonoisotopicMass (int molecule);
 
 CEXPORT const char * indigoCanonicalSmiles (int molecule);
 CEXPORT const char * indigoLayeredCode (int molecule);
-
-CEXPORT int indigoDecomposition (int molecule);
-CEXPORT int indigoCountComponents (int decomposition);
-CEXPORT int indigoIterateComponents (int decomposition);
-CEXPORT int indigoAtomComponentIndex (int decomposition, int atom);
-CEXPORT int indigoIterateComponentAtoms (int decomposition, int index);
-CEXPORT int indigoIterateComponentBonds (int decomposition, int index);
-CEXPORT int indigoComponent (int decomposition, int index);
 
 CEXPORT int indigoHasZCoord (int molecule);
 CEXPORT int indigoIsChiral (int molecule);
@@ -379,6 +415,11 @@ CEXPORT int indigoExactMatch (int item1, int item2);
 
 CEXPORT const char * indigoName (int handle);
 CEXPORT int indigoSetName (int handle, const char *name);
+
+// You should not free() the obtained buffer, but rather memcpy() it if you want to keep it
+CEXPORT int indigoSerialize (int handle, char **buf, int *size);
+
+CEXPORT int indigoUnserialize (char *buf, int size);
 
 // Applicable to molecules/reactions obtained from SDF or RDF files,
 // and to their clones, and to their R-Group deconvolutions.
@@ -462,13 +503,16 @@ CEXPORT int indigoSdfAppend (int output, int item);
 // Saves the molecule to a multiline SMILES output stream
 CEXPORT int indigoSmilesAppend (int output, int item);
 
+CEXPORT int indigoRdfHeader (int output);
+CEXPORT int indigoRdfAppend (int output, int item);
+
 /* Arrays */
 
 CEXPORT int indigoCreateArray ();
 // Note: a clone of the object is added, not the object itself
 CEXPORT int indigoArrayAdd (int arr, int object);
-CEXPORT int indigoArrayAt (int arr, int index);
-CEXPORT int indigoSize (int arr);
+CEXPORT int indigoAt (int item, int index);
+CEXPORT int indigoCount (int item);
 CEXPORT int indigoClear (int arr);
 CEXPORT int indigoIterateArray (int arr);
 

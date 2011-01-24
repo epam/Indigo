@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -21,7 +21,8 @@ using namespace indigo;
 
 SdfLoader::SdfLoader (Scanner &scanner) :
 TL_CP_GET(data),
-TL_CP_GET(properties)
+TL_CP_GET(properties),
+TL_CP_GET(_offsets)
 {
    data.clear();
    properties.clear();
@@ -43,6 +44,9 @@ TL_CP_GET(properties)
       _scanner = &scanner;
       _own_scanner = false;
    }
+   _current_number = 0;
+   _max_offset = 0;
+   _offsets.clear();
 }
 
 SdfLoader::~SdfLoader()
@@ -56,6 +60,36 @@ int SdfLoader::tell ()
    return _scanner->tell();
 }
 
+int SdfLoader::currentNumber ()
+{
+   return _current_number;
+}
+
+int SdfLoader::count ()
+{
+   int offset = _scanner->tell();
+   int cn = _current_number;
+
+   if (offset != _max_offset)
+   {
+      _scanner->seek(_max_offset, SEEK_SET);
+      _current_number = _offsets.size();
+   }
+
+   while (!isEOF())
+      readNext();
+
+   int res = _current_number;
+
+   if (res != cn)
+   {
+      _scanner->seek(offset, SEEK_SET);
+      _current_number = cn;
+   }
+
+   return res;
+}
+
 bool SdfLoader::isEOF()
 {
    return _scanner->isEOF();
@@ -66,13 +100,19 @@ void SdfLoader::readNext ()
    ArrayOutput output(data);
    QS_DEF(Array<char>, str);
 
+   if (_scanner->isEOF())
+      throw Error("end of stream");
+
+   _offsets.expand(_current_number + 1);
+   _offsets[_current_number++] = _scanner->tell();
+
    properties.clear();
 
    bool pending_emptyline = false;
 
    while (!_scanner->isEOF())
    {
-      _scanner->readString(str, true);
+      _scanner->readLine(str, true);
       if (str.size() > 0 && str[0] == '>')
          break;
       if (str.size() > 3 && strncmp(str.ptr(), "$$$$", 4) == 0)
@@ -85,7 +125,7 @@ void SdfLoader::readNext ()
          pending_emptyline = false;
 
       if (!pending_emptyline)
-         output.printf("%s\n", str.ptr());
+         output.writeStringCR(str.ptr());
    }
    
    while (1)
@@ -140,5 +180,27 @@ void SdfLoader::readNext ()
          break;
 
       _scanner->readString(str, true);
+   }
+
+   if (_scanner->tell() > _max_offset)
+      _max_offset = _scanner->tell();
+}
+
+void SdfLoader::readAt (int index)
+{
+   if (index < _offsets.size())
+   {
+      _scanner->seek(_offsets[index], SEEK_SET);
+      _current_number = index;
+      readNext();
+   }
+   else
+   {
+      _scanner->seek(_max_offset, SEEK_SET);
+      _current_number = _offsets.size();
+      do
+      {
+         readNext();
+      } while (index + 1 != _offsets.size());
    }
 }

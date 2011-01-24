@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -47,7 +47,7 @@ public:
    void appendLine (Array<char> &out, bool append_zero);
    bool skipLine ();
    
-   char  readChar ();
+   virtual char readChar ();
    word  readBinaryWord ();
    int   readBinaryInt ();
    dword readBinaryDword ();
@@ -86,9 +86,17 @@ public:
    virtual int  length ();
    virtual int  tell ();
 
+   virtual char readChar ();
 private:
    FILE *_file;
    int   _file_len;
+
+   char _cache[1024];
+   int _cache_pos, _max_cache;
+
+   void _validateCache ();
+   void _invalidateCache ();
+   void _init (Encoding filename_encoding, const char *filename);
 
    // no implicit copy
    FileScanner (const FileScanner &);

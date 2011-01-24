@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -69,18 +69,6 @@ protected:
    ObjArray<RGroup> _rgroups;
 };
 
-struct DLLEXPORT MoleculeRGroupFragment
-{
-   MoleculeRGroupFragment () {}
-
-   void addAttachmentPoint (int order, int index);
-   int  getAttachmentPoint (int order, int index) const { return index < _attachment_index[order].size() ? _attachment_index[order][index] : -1; }
-   void removeAttachmentPoint (int index);
-   int  attachmentPointCount () const { return _attachment_index.size(); }
-
-protected:
-   ObjArray< Array<int> > _attachment_index;
-};
 
 }
 

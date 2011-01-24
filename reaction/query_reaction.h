@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -44,8 +44,8 @@ public:
 
    int _addedQueryMolecule (int side, QueryMolecule &mol);
 
-   virtual void aromatize ();
-   virtual void dearomatize ();
+   virtual bool aromatize ();
+   virtual bool dearomatize ();
 
    virtual BaseReaction * neu ();
 

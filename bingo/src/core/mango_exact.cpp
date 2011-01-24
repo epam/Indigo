@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,7 +18,6 @@
 #include "graph/filter.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_auto_loader.h"
-#include "molecule/molecule_decomposer.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "graph/subgraph_hash.h"
 #include "molecule/cmf_loader.h"
@@ -44,6 +43,7 @@ void MangoExact::loadQuery (Scanner &scanner)
    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
            ignore_closing_bond_direction_mismatch;
+   loader.skip_3d_chirality = true;
    loader.loadMolecule(_query);
    Molecule::checkForConsistency(_query);
 
@@ -69,13 +69,13 @@ void MangoExact::calculateHash (Molecule &mol, Hash &hash)
    mol_without_h.makeSubmolecule(mol, vertices, 0);
 
    // Decompose into connected components
-   MoleculeDecomposer decomp(mol_without_h);
-   int n_comp = decomp.decompose();
+   int n_comp = mol_without_h.countComponents();
    QS_DEF(Molecule, component);
 
    for (int i = 0; i < n_comp; i++)
    {
-      decomp.buildComponentMolecule(i, component);
+      Filter filter(mol_without_h.getDecomposition().ptr(), Filter::EQ, i);
+      component.makeSubmolecule(mol_without_h, filter, 0, 0);
 
       SubgraphHash hh(component);
 
@@ -135,6 +135,7 @@ void MangoExact::loadTarget (Scanner &scanner)
    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
            ignore_closing_bond_direction_mismatch;
+   loader.skip_3d_chirality = true;
    loader.loadMolecule(_target);
    Molecule::checkForConsistency(_target);
    _initTarget(_target, false);

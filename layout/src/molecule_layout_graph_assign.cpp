@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -14,7 +14,6 @@
 
 #include "layout/molecule_layout_graph.h"
 #include "layout/attachment_layout.h"
-#include "graph/graph_decomposer.h"
 #include "graph/biconnected_decomposer.h"
 #include "graph/cycle_enumerator.h"
 #include "graph/embedding_enumerator.h"
@@ -150,10 +149,8 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
          _n_fixed = fixed_filter.count(*this);
       else
       {  // fixed subgraph is not connected - choose its greatest component
-         GraphDecomposer fixed_decom(fixed_graph);
-
-         int n = fixed_decom.decompose();
-         const Array<int> &decomposition = fixed_decom.getDecomposition();
+         int n = fixed_graph.countComponents();
+         const Array<int> &decomposition = fixed_graph.getDecomposition();
 
          fixed_count.clear_resize(n);
          fixed_count.zerofill();
@@ -488,6 +485,17 @@ int MoleculeLayoutGraph::_pattern_embedding (Graph &subgraph, Graph &supergraph,
    return 0;
 }
 
+bool MoleculeLayoutGraph::_vertex_cb (Graph &graph, int v_idx, void *context)
+{
+   CycleContext &cycle_context = *(CycleContext *)context;
+
+   if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber * 10000)
+      throw Error("number of iterations exceeded %d ", cycle_context.maxIterationNumber * 10000);
+   
+   cycle_context.iterationNumber++;
+   return true;
+}
+
 void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph)
 {
    int i;
@@ -505,7 +513,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       if (fixed_component)
       {
          _layout_vertices[idx1].pos = supergraph.getPos(getVertexExtIdx(idx1));
-         _layout_vertices[idx2].pos = supergraph.getPos(getVertexExtIdx(idx2));;
+         _layout_vertices[idx2].pos = supergraph.getPos(getVertexExtIdx(idx2));
       } else
       {
          _layout_vertices[idx1].pos.set(0.f, 0.f);
@@ -599,8 +607,6 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       }
    }
 
-   CycleEnumerator ce(*this);
-
    //TODO: repair exception with vec2f
 
    QS_DEF(CycleContext, cycle_context);
@@ -610,14 +616,28 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
    cycles.clear();
    cycle_context.maxIterationNumber = max_iterations;
    cycle_context.iterationNumber = 0;
+   cycle_context.uncovered_edges = edgeCount();
+   cycle_context.covered_edges.clear_resize(edgeEnd());
+   cycle_context.covered_edges.zerofill();
 
-   ce.context = &cycle_context;
-   ce.cb_handle_cycle = _cycle_cb;
-
-   ce.process();
-
-   if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber)
-      throw Error("number of cycles exceeded %d ", cycle_context.iterationNumber);
+   int min_length = 0;
+   int max_length = 12;
+   
+   while (cycle_context.uncovered_edges > 0) 
+   {
+      CycleEnumerator ce(*this);
+      
+      ce.context = &cycle_context;
+      ce.cb_check_vertex = _vertex_cb;
+      ce.cb_handle_cycle = _cycle_cb;
+      ce.min_length = min_length;
+      ce.max_length = max_length;
+      
+      ce.process();
+      
+      min_length = max_length + 1;
+      max_length += 2;
+   }
 
    sorted_cycles.clear();
    for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
@@ -869,7 +889,7 @@ void MoleculeLayoutGraph::_buildOutline (void)
          i_angle = v.tiltAngle2();
       } else if (_outline->size() > 0)
          break;
-
+      
       _outline->push(pos_i);
 
       max_angle = 0.f;
@@ -898,6 +918,8 @@ void MoleculeLayoutGraph::_buildOutline (void)
       int int_edge = -1;
       Vec2f cur_v1 = pos_i;
       Vec2f cur_v2 = getPos(i);
+      int prev_edge = -1;
+      int cur_edge = vert.neiEdge(next_nei);
 
       while (min_dist < 10000.f)
       {
@@ -912,16 +934,20 @@ void MoleculeLayoutGraph::_buildOutline (void)
             if (Vec2f::intersection(cur_v1, cur_v2, cur_v3, cur_v4, v))
                if ((dist = Vec2f::dist(cur_v1, v)) < min_dist)
                {
-                  inter = v;
-                  min_dist = dist;
-                  int_edge = j;
+                  if (dist > EPSILON || j != prev_edge)
+                  {
+                     inter = v;
+                     min_dist = dist;
+                     int_edge = j;
+                  }
                }
          }
 
          if (min_dist < 10000.f)
          {
-            _outline->push(v);
-
+            if (min_dist > EPSILON)
+               _outline->push(v);
+            
             const Edge &edge = getEdge(int_edge);
             const Vec2f &cur_v3 = getPos(edge.beg);
             const Vec2f &cur_v4 = getPos(edge.end);
@@ -954,6 +980,9 @@ void MoleculeLayoutGraph::_buildOutline (void)
                cur_v2 = cur_v4;
                i = edge.end;
             }
+            
+            prev_edge = cur_edge;
+            cur_edge = int_edge;
          }
       }
    }

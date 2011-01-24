@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -76,12 +76,6 @@ public:
    {
       while (size() > 0)
          pop();
-   }
-
-   void clearObjects ()
-   {
-      for (int i = 0; i < _array.size(); i++)
-         _array[i].clear();
    }
 
    void resize (int newSize)

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -47,6 +47,7 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
    loader.ignore_closing_bond_direction_mismatch =
            context.ignore_closing_bond_direction_mismatch;
    loader.highlighting = &highlighting;
+   loader.skip_3d_chirality = true;
    loader.loadMolecule(target);
    profTimerStop(tload);
 
@@ -207,6 +208,7 @@ ORAEXT OCIString * oraMangoCheckMolecule (OCIExtProcContext *ctx,
             loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
             loader.ignore_closing_bond_direction_mismatch =
                     context.ignore_closing_bond_direction_mismatch;
+            loader.skip_3d_chirality = true;
             loader.loadMolecule(mol);
             Molecule::checkForConsistency(mol);
          }
@@ -245,6 +247,7 @@ void _ICM (BingoOracleContext &context, OracleLOB &target_lob, int save_xyz, Arr
    loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
            context.ignore_closing_bond_direction_mismatch;
+   loader.skip_3d_chirality = true;
    loader.loadMolecule(mol);
 
    if ((save_xyz != 0) && !mol.have_xyz)
@@ -349,6 +352,7 @@ ORAEXT OCILobLocator *oraMangoMolfile (OCIExtProcContext *ctx,
       loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
       loader.ignore_closing_bond_direction_mismatch =
               context.ignore_closing_bond_direction_mismatch;
+      loader.skip_3d_chirality = true;
       loader.loadMolecule(mol);
 
       if (!mol.have_xyz)

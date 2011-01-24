@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -15,10 +15,8 @@
 #include "molecule/molecule_inchi.h"
 
 #include "base_cpp/output.h"
-#include "base_cpp/ptr.h"
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
-#include "molecule/molecule_decomposer.h"
 #include "molecule/molecule_inchi_utils.h"
 #include "molecule/molecule_automorphism_search.h"
 
@@ -42,17 +40,16 @@ void MoleculeInChI::outputInChI (Molecule &mol)
       return;
 
    // Decompose molecule into components
-   MoleculeDecomposer decomposer(mol);
-   decomposer.decompose(NULL);
    _components.clear();
-   _components.reserve(decomposer.getComponentsCount());
+   _components.reserve(mol.countComponents());
 
    QS_DEF(Molecule, component);
-   for (int i = 0; i < decomposer.getComponentsCount(); i++)
+   for (int i = 0; i < mol.countComponents(); i++)
    {
       MoleculeInChICompoment &comp = _components.push();
+      Filter filt(mol.getDecomposition().ptr(), Filter::EQ, i);
 
-      decomposer.buildComponentMolecule(i, component);
+      component.makeSubmolecule(mol, filt, 0, 0);
       _normalizeMolecule(component);
 
       comp.construct(component);
@@ -135,7 +132,7 @@ void MoleculeInChI::_printInChI ()
 }
 
 bool MoleculeInChI::_printInChILayer (_PrintLayerFuncBase &print_func, 
-   const char *delim, const char *multiplier, const char *prefix)
+   const char *delim, const char *multiplier, const char *layer_prefix)
 {
    QS_DEF(Array<char>, layer_string);
 
@@ -212,7 +209,7 @@ bool MoleculeInChI::_printInChILayer (_PrintLayerFuncBase &print_func,
 
    if (layer_string.size() != 0 && layer_string[0] != 0)
    {
-      _output.printf(prefix);
+      _output.printf(layer_prefix);
       _output.writeString(layer_string.ptr());
       return true;
    }

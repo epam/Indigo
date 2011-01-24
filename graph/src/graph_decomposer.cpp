@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,7 +19,6 @@
 using namespace indigo;
 
 GraphDecomposer::GraphDecomposer (const Graph &graph) :
-need_component_size(false),
 _graph(graph),
 TL_CP_GET(_component_ids),
 TL_CP_GET(_component_vertices_count),
@@ -47,10 +46,9 @@ int GraphDecomposer::decompose (const Filter *filter, const Filter *edge_filter)
    _component_ids.fffill();
    queue.clear_resize(_graph.vertexEnd());
    
-   int component_idx = 2;
+   n_comp = 0;
    int vertex_idx;
 
-   // BFS
    while (1)
    {
       for (vertex_idx = _graph.vertexBegin(); vertex_idx != _graph.vertexEnd();
@@ -66,15 +64,19 @@ int GraphDecomposer::decompose (const Filter *filter, const Filter *edge_filter)
       if (vertex_idx == _graph.vertexEnd())
          break;
 
-      _component_ids[vertex_idx] = 1;
-      queue[0] = vertex_idx;
-
+      // BFS
       int top = 1, bottom = 0;
+      
+      queue[0] = vertex_idx;
       while (top != bottom)
       {
          const Vertex &vertex = _graph.getVertex(queue[bottom]);
 
-         _component_ids[queue[bottom]] = component_idx;
+         _component_vertices_count.expandFill(n_comp + 1, 0);
+         _component_edges_count.expandFill(n_comp + 1, 0);
+
+         _component_ids[queue[bottom]] = n_comp;
+         _component_vertices_count[n_comp]++;
 
          for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
          {
@@ -88,31 +90,17 @@ int GraphDecomposer::decompose (const Filter *filter, const Filter *edge_filter)
             if (_component_ids[other] == -1)
             {
                queue[top++] = other;
-               _component_ids[other] = 1;
+               _component_ids[other] = -2;
             }
+
+            if (_component_ids[other] == -2)
+               _component_edges_count[n_comp]++;
          }
          bottom++;
       }
 
-      component_idx++;
+      n_comp++;
    }
-
-   for (vertex_idx = _graph.vertexBegin(); vertex_idx != _graph.vertexEnd();
-        vertex_idx = _graph.vertexNext(vertex_idx))
-   {
-      if (filter != 0 && !filter->valid(vertex_idx))
-      {
-         _component_ids[vertex_idx] = -1;
-         continue;
-      }
-
-      _component_ids[vertex_idx] -= 2;
-   }
-
-   n_comp = component_idx - 2;
-
-   if (need_component_size)
-      _collectComponentsSizes(filter, edge_filter);
 
    return n_comp;
 }
@@ -134,57 +122,10 @@ int GraphDecomposer::getComponentsCount () const
 
 int GraphDecomposer::getComponentVerticesCount (int component) const
 {
-   if (component < 0)
-      throw Error("Invalid component index passed");
    return _component_vertices_count[component];
 }
 
 int GraphDecomposer::getComponentEdgesCount (int component) const
 {
-   if (component < 0)
-      throw Error("Invalid component index passed");
    return _component_edges_count[component];
 }
-
-void GraphDecomposer::_collectComponentsSizes (const Filter *filter, const Filter *edge_filter)
-{
-   // Vertices
-   _component_vertices_count.resize(n_comp);
-   _component_vertices_count.zerofill();
-
-   for (int vertex_idx = _graph.vertexBegin(); 
-            vertex_idx != _graph.vertexEnd();
-            vertex_idx = _graph.vertexNext(vertex_idx))
-   {
-      if (filter != 0 && !filter->valid(vertex_idx))
-         continue;
-
-      int comp = _component_ids[vertex_idx];
-      _component_vertices_count[comp]++;
-   }
-
-   // Edges
-   _component_edges_count.resize(n_comp);
-   _component_edges_count.zerofill();
-
-   for (int edge_idx = _graph.edgeBegin(); 
-            edge_idx != _graph.edgeEnd();
-            edge_idx = _graph.edgeNext(edge_idx))
-   {
-      const Edge &edge = _graph.getEdge(edge_idx);
-      if (filter != 0)
-      {
-         if (!filter->valid(edge.beg) || !filter->valid(edge.end))
-            continue;
-      }
-      if (edge_filter != 0 && !edge_filter->valid(edge_idx))
-         continue;
-
-      int comp = _component_ids[edge.beg]; // must be same as with edge.end
-      if (comp != _component_ids[edge.end])
-         throw Error("Internal error");
-
-      _component_edges_count[comp]++;
-   }
-}
-

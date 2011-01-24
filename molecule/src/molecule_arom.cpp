@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -62,7 +62,11 @@ bool AromatizerBase::_checkDoubleBonds (const int *cycle, int cycle_len)
          int type = _basemol.getBondOrder(e_idx);
          if (type == BOND_DOUBLE && !isBondAromatic(e_idx)) {
             if (nei_idx != v_left_idx && nei_idx != v_right_idx)
-               return false;
+            {
+               // Double bond going outside 
+               if (!_acceptOutgoingDoubleBond(v_center_idx, e_idx))
+                  return false;
+            }
             else if (nei_idx == v_left_idx || nei_idx == v_right_idx)
                internal_double_bond_count++;
          }
@@ -254,8 +258,7 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
       return -1;
 
    const Vertex &vertex = _basemol.getVertex(v_idx);
-   int lonepairs = 0;
-   
+  
    if (_basemol.isPseudoAtom(v_idx))
       return -1;
 
@@ -264,24 +267,69 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
 
    if (!Element::canBeAromatic(_basemol.getAtomNumber(v_idx)))
       return -1;
-   
+
+   int non_arom_conn = 0, arom_bonds = 0;
    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
    {
       int type = _basemol.getBondOrder(vertex.neiEdge(i));
       if (type == BOND_DOUBLE)
          return 1;
+      if (type == BOND_TRIPLE)
+         return -1;
       if (type == BOND_AROMATIC)
-         // Atom is already aromatic and in general number of hydrogens 
-         // cannot be deduced. Just ignore such atom.
-         return -1; 
+         arom_bonds++;
+      else
+         non_arom_conn++;
    }
 
+   Molecule &mol = (Molecule &)_basemol;
+   int conn = mol.getAtomConnectivity(v_idx);
+   // Atom is already aromatic and in general number of hydrogens 
+   // cannot be deduced. But if atom can have one single or onle 
+   // double bond while being aromatic then pi label can be calculated
+   if (arom_bonds != 0)
+   {
+      int single_bonds_conn = non_arom_conn + arom_bonds;
+      int h_with_single = mol.calcImplicitHForConnectivity(v_idx, single_bonds_conn);
+
+      bool can_have_single_bonds = false;
+      if (h_with_single >= 0 && _getPiLabelByConn(v_idx, single_bonds_conn) >= 0)
+      {
+         can_have_single_bonds = true;
+         conn = single_bonds_conn;
+      }
+
+      bool can_have_one_double_bond = 
+         (mol.calcImplicitHForConnectivity(v_idx, single_bonds_conn + 1) >= 0);
+
+      bool can_have_more_double_bonds = false;
+      for (int i = 2; i < arom_bonds; i++)
+      {
+         int h_with_double = mol.calcImplicitHForConnectivity(v_idx, single_bonds_conn + i);
+         if (h_with_double >= 0)
+            can_have_more_double_bonds = true;
+      }
+
+      if (!can_have_single_bonds && can_have_one_double_bond && !can_have_more_double_bonds)
+         return 1; // This atom must have double bond
+      if (can_have_single_bonds && !can_have_one_double_bond && !can_have_more_double_bonds)
+         ; // This atom must have only single bonds as aromatic ones
+      else
+         return -1; // This case is ambiguous. Treat as nonaromatic.
+   }
+
+   return _getPiLabelByConn(v_idx, conn);
+}
+
+int MoleculeAromatizer::_getPiLabelByConn (int v_idx, int conn)
+{
+   Molecule &mol = (Molecule &)_basemol;
    int radical = _basemol.getAtomRadical(v_idx);
    if (radical > 0)
       return 1;
 
-   Molecule &mol = (Molecule &)_basemol;
-   if (mol.getVacantPiOrbitals(v_idx, &lonepairs) > 0)
+   int lonepairs = 0;
+   if (mol.getVacantPiOrbitals(v_idx, conn, &lonepairs) > 0)
       return 0;
 
    if (lonepairs > 0)
@@ -315,16 +363,36 @@ bool MoleculeAromatizer::_isCycleAromatic (const int *cycle, int cycle_len)
    return true;
 }
 
-void MoleculeAromatizer::aromatizeBonds (Molecule &mol)
+bool MoleculeAromatizer::_acceptOutgoingDoubleBond (int atom, int bond)
+{
+   /*
+   // Bonds in rings are not accepted
+   if (_basemol.getBondTopology(bond) != TOPOLOGY_CHAIN)
+      return false;
+   */
+
+   Molecule &mol = _basemol.asMolecule();
+   if (mol.isNitrogentV5(atom))
+      return true;
+
+   return false;
+}
+
+bool MoleculeAromatizer::aromatizeBonds (Molecule &mol)
 {
    MoleculeAromatizer aromatizer(mol);
 
    aromatizer.precalculatePiLabels();
    aromatizer.aromatize();
 
+   bool aromatic_bond_found = false;
    for (int e_idx = mol.edgeBegin(); e_idx < mol.edgeEnd(); e_idx = mol.edgeNext(e_idx))
       if (aromatizer.isBondAromatic(e_idx))
+      {
          mol.setBondOrder(e_idx, BOND_AROMATIC, true);
+         aromatic_bond_found = true;
+      }
+   return aromatic_bond_found;
 }
 
 //
@@ -552,17 +620,18 @@ void QueryMoleculeAromatizer::setMode (int mode)
    _mode = mode;
 }
 
-void QueryMoleculeAromatizer::aromatizeBonds (QueryMolecule &mol)
+bool QueryMoleculeAromatizer::aromatizeBonds (QueryMolecule &mol)
 {
-   _aromatizeBonds(mol, -1);
+   return _aromatizeBonds(mol, -1);
 }
 
-void QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additional_atom)
+bool QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additional_atom)
 {
+   bool aromatized = false;
    // Mark edges that can be aromatic in some matching
-   _aromatizeBondsFuzzy(mol);
+   aromatized |= _aromatizeBondsFuzzy(mol);
    // Aromatize all aromatic cycles
-   _aromatizeBondsExact(mol);
+   aromatized |= _aromatizeBondsExact(mol);
 
    MoleculeRGroups &rgroups = mol.rgroups;
    int n_rgroups = rgroups.getRGroupCount();
@@ -613,29 +682,28 @@ void QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additiona
          {
             QueryMolecule &fragment = *rgroup.fragments[j];
 
-            _aromatizeRGroupFragment(fragment, rgroups_attached_single[i]);
+            aromatized |= _aromatizeRGroupFragment(fragment, rgroups_attached_single[i]);
          }
       }
    }
+   return aromatized;
 }
 
-void QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment, 
+bool QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment, 
                                                         bool add_single_bonds)
 {
    // Add additional atom to attachment points
    int additional_atom = fragment.addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 1));
 
-   MoleculeRGroupFragment &rgroupFragment = fragment.getRGroupFragment();
-
    // Connect it with attachment points
-   int maxOrder = rgroupFragment.attachmentPointCount();
-   for (int i = 0; i < maxOrder; i++) 
+   int maxOrder = fragment.attachmentPointCount();
+   for (int i = 1; i <= maxOrder; i++)
    {
       int pointIndex = 0;
       int point;
       while (true)
       {
-         point = rgroupFragment.getAttachmentPoint(i, pointIndex);
+         point = fragment.getAttachmentPoint(i, pointIndex);
          if (point == -1)
             break;
 
@@ -654,18 +722,20 @@ void QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment,
       }
    }
 
-   _aromatizeBonds(fragment, additional_atom);
+   bool aromatized = _aromatizeBonds(fragment, additional_atom);
 
    QS_DEF(Array<int>, indices);
    indices.clear();
    indices.push(additional_atom);
 
    fragment.removeAtoms(indices);
+   return aromatized;
 }
 
 // Some cycles with query features can be aromatized
-void QueryMoleculeAromatizer::_aromatizeBondsExact (QueryMolecule &qmol)
+bool QueryMoleculeAromatizer::_aromatizeBondsExact (QueryMolecule &qmol)
 {
+   bool aromatized = false;
    QueryMoleculeAromatizer aromatizer(qmol);
 
    aromatizer.setMode(QueryMoleculeAromatizer::EXACT);
@@ -682,11 +752,15 @@ void QueryMoleculeAromatizer::_aromatizeBondsExact (QueryMolecule &qmol)
             new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC));
 
          qmol.resetBond(e_idx, QueryMolecule::Bond::und(bond.release(), arom_bond.release()));
+
+         aromatized = true;
       }
+   return aromatized;
 }
 
-void QueryMoleculeAromatizer::_aromatizeBondsFuzzy (QueryMolecule &mol)
+bool QueryMoleculeAromatizer::_aromatizeBondsFuzzy (QueryMolecule &mol)
 {
+   bool aromatized = false;
    QueryMoleculeAromatizer aromatizer(mol);
 
    aromatizer.setMode(QueryMoleculeAromatizer::FUZZY);
@@ -699,16 +773,20 @@ void QueryMoleculeAromatizer::_aromatizeBondsFuzzy (QueryMolecule &mol)
       bool aromatic_constraint = 
          mol.getBond(e_idx).possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC);
       if (aromatic_constraint || aromatizer.isBondAromatic(e_idx))
+      {
          mol.aromaticity.setCanBeAromatic(e_idx, true);
+         aromatized = true;
+      }
    }
+   return aromatized;
 }
 
 void MoleculeAromatizer::findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds)
 {
-   Ptr<BaseMolecule> clone;
+   AutoPtr<BaseMolecule> clone;
    QS_DEF(Array<int>, mapping);
 
-   clone.set(mol.neu());
+   clone.reset(mol.neu());
    mapping.clear();
 
    if (atoms != 0)

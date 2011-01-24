@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -17,7 +17,7 @@
 #include "indigo-renderer.h"
 #include "indigo_jni_base.h"
 
-#define JNINAME(name) JNICALL Java_com_gga_indigo_IndigoRenderer_##name
+#define JNINAME(name) JNICALL Java_com_ggasoftware_indigo_IndigoRenderer_##name
 
 JNI_FUNC_jint_jint_jint(indigoRender)
 JNI_FUNC_jint_jint_jstring(indigoRenderToFile)
@@ -36,7 +36,7 @@ JNIEXPORT jint JNINAME(indigoRenderGrid) (JNIEnv *env, jobject obj,
       nrefatoms = (*env)->GetArrayLength(env, jrefAtoms);
       refatoms = (*env)->GetIntArrayElements(env, jrefAtoms, 0);
 
-      if (nrefatoms != indigoSize(objects))
+      if (nrefatoms != indigoCount(objects))
          indigoThrowJNIException(env,
         "indigoRenderGrid(): refAtoms size does not match the number of objects");
    }
@@ -62,7 +62,7 @@ JNIEXPORT jint JNINAME(indigoRenderGridToFile) (JNIEnv *env, jobject obj,
    {
       nrefatoms = (*env)->GetArrayLength(env, jrefAtoms);
       refatoms = (*env)->GetIntArrayElements(env, jrefAtoms, 0);
-      if (nrefatoms != indigoSize(objects))
+      if (nrefatoms != indigoCount(objects))
          indigoThrowJNIException(env,
         "indigoRenderGridToFile(): refAtoms size does not match the number of objects");
    }

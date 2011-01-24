@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -31,6 +31,7 @@ public:
    ~StringPool ();
 
    int  add (const char *str);
+   int  add (Array<char> &str);
    int  add (int size);
    void remove (int idx);
    int  size () const;

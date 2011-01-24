@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -54,6 +54,7 @@ public:
    virtual const char * getName ();
 
    static IndigoQueryMolecule * cloneFrom (IndigoObject & obj);
+   static void parseAtomConstraint(const char* type, const char* value, AutoPtr<QueryMolecule::Atom>&);
 
    const char * debugInfo ();
 
@@ -90,8 +91,9 @@ public:
 
    static bool is (IndigoObject &obj);
    static IndigoAtom & cast (IndigoObject &obj);
+   virtual void remove ();
 
-   BaseMolecule *mol;
+   BaseMolecule &mol;
    int idx;
 
    virtual int getIndex ();
@@ -121,6 +123,7 @@ public:
 
    virtual QueryMolecule & getQueryMolecule ();
    virtual BaseMolecule & getBaseMolecule ();
+   virtual GraphHighlighting * getMoleculeHighlighting ();
    virtual int getIndex ();
 
    IndigoRGroup rgroup;
@@ -135,8 +138,9 @@ public:
 
    static bool is (IndigoObject &obj);
    static IndigoBond & cast (IndigoObject &obj);
+   virtual void remove ();
 
-   BaseMolecule *mol;
+   BaseMolecule &mol;
    int idx;
 
    virtual int getIndex ();
@@ -154,7 +158,7 @@ public:
 class IndigoAtomNeighborsIter : public IndigoObject
 {
 public:
-   IndigoAtomNeighborsIter (BaseMolecule *molecule, int atom_idx);
+   IndigoAtomNeighborsIter (BaseMolecule &molecule, int atom_idx);
 
    virtual ~IndigoAtomNeighborsIter ();
 
@@ -165,7 +169,7 @@ protected:
 
    int _atom_idx;
    int _nei_idx;
-   BaseMolecule *_mol;
+   BaseMolecule &_mol;
 };
 
 class IndigoRGroupsIter : public IndigoObject
@@ -228,7 +232,7 @@ protected:
 class IndigoBondsIter : public IndigoObject
 {
 public:
-   IndigoBondsIter (BaseMolecule *molecule);
+   IndigoBondsIter (BaseMolecule &molecule);
 
    virtual ~IndigoBondsIter ();
 
@@ -238,7 +242,7 @@ public:
 protected:
 
    int _idx;
-   BaseMolecule *_mol;
+   BaseMolecule &_mol;
 };
 
 class IndigoDataSGroup : public IndigoObject
@@ -269,6 +273,127 @@ protected:
    int _idx;
    BaseMolecule &_mol;
 };
+
+class IndigoSuperatom : public IndigoObject
+{
+public:
+   IndigoSuperatom (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoSuperatom ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   static IndigoSuperatom & cast (IndigoObject &obj);
+   BaseMolecule::Superatom & get();
+
+   BaseMolecule &mol;
+   int idx;
+};
+
+class IndigoSuperatomsIter : public IndigoObject
+{
+public:
+   IndigoSuperatomsIter (BaseMolecule &molecule);
+   virtual ~IndigoSuperatomsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+protected:
+   int _idx;
+   BaseMolecule &_mol;
+};
+
+class IndigoSGroupAtomsIter : public IndigoObject
+{
+public:
+   IndigoSGroupAtomsIter (BaseMolecule &mol, BaseMolecule::SGroup &sgroup);
+   virtual ~IndigoSGroupAtomsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   BaseMolecule &_mol;
+   BaseMolecule::SGroup &_sgroup;
+   int _idx;
+};
+
+class IndigoSGroupBondsIter : public IndigoObject
+{
+public:
+   IndigoSGroupBondsIter (BaseMolecule &mol, BaseMolecule::SGroup &sgroup);
+   virtual ~IndigoSGroupBondsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   BaseMolecule &_mol;
+   BaseMolecule::SGroup &_sgroup;
+   int _idx;
+};
+
+class IndigoMoleculeComponent : public IndigoObject
+{
+public:
+   IndigoMoleculeComponent (BaseMolecule &mol_, int index_);
+   virtual ~IndigoMoleculeComponent ();
+
+   virtual int getIndex ();
+   virtual IndigoObject * clone ();
+
+   int index;
+   BaseMolecule &mol;
+};
+
+class IndigoComponentsIter : public IndigoObject
+{
+public:
+   IndigoComponentsIter (BaseMolecule &mol_);
+   virtual ~IndigoComponentsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+   BaseMolecule &mol;
+protected:
+   int _idx;
+};
+
+class IndigoComponentAtomsIter : public IndigoObject
+{
+public:
+   IndigoComponentAtomsIter (BaseMolecule &mol, int cidx);
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+
+   int _next ();
+
+   BaseMolecule &_mol;
+   int _cidx;
+   int _idx;
+};
+
+class IndigoComponentBondsIter : public IndigoObject
+{
+public:
+   IndigoComponentBondsIter (BaseMolecule &mol, int cidx);
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+
+   int _next ();
+
+   BaseMolecule &_mol;
+   int _cidx;
+   int _idx;
+};
+
 
 #ifdef _WIN32
 #pragma warning(pop)

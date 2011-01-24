@@ -1,0 +1,67 @@
+## -*- Makefile -*-
+##
+## User: dpavlov
+## Time: Dec 22, 2010 10:17:41 PM
+## Makefile created by Sun Studio.
+##
+## This file is generated automatically.
+##
+
+
+#### Compiler and tool definitions shared by all build targets #####
+CC = cc
+BASICOPTS = -xO3 -s
+CFLAGS = $(BASICOPTS) -xCC
+
+
+# Define the target directories.
+TARGETDIR_indigo-deco=sparc32
+
+
+all: $(TARGETDIR_indigo-deco)/indigo-deco
+
+## Target: indigo-deco
+CPPFLAGS_indigo-deco = \
+	-I../../api \
+	-I../../common
+OBJS_indigo-deco =  \
+	$(TARGETDIR_indigo-deco)/main.o \
+	$(TARGETDIR_indigo-deco)/os_dir_posix.o
+SYSLIBS_indigo-deco = -lm -lpthread -lz -lCrun -lrt
+USERLIBS_indigo-deco = ../../api/sparc32static/libindigo.a ../../layout/sparc32/liblayout.a ../../reaction/sparc32/libreaction.a ../../molecule/sparc32/libmolecule.a ../../graph/sparc32/libgraph.a $(SYSLIBS_indigo-deco) 
+DEPLIBS_indigo-deco = ../../api/sparc32static/libindigo.a  ../../layout/sparc32/liblayout.a  ../../reaction/sparc32/libreaction.a  ../../molecule/sparc32/libmolecule.a  ../../graph/sparc32/libgraph.a   
+LDLIBS_indigo-deco = $(USERLIBS_indigo-deco)
+
+
+# Link or archive
+$(TARGETDIR_indigo-deco)/indigo-deco: $(TARGETDIR_indigo-deco) $(OBJS_indigo-deco) $(DEPLIBS_indigo-deco)
+	$(LINK.c) $(CFLAGS_indigo-deco) $(CPPFLAGS_indigo-deco) -o $@ $(OBJS_indigo-deco) $(LDLIBS_indigo-deco)
+
+
+# Compile source files into .o files
+$(TARGETDIR_indigo-deco)/main.o: $(TARGETDIR_indigo-deco) main.c
+	$(COMPILE.c) $(CFLAGS_indigo-deco) $(CPPFLAGS_indigo-deco) -o $@ main.c
+
+$(TARGETDIR_indigo-deco)/os_dir_posix.o: $(TARGETDIR_indigo-deco) ../../common/base_c/os_dir_posix.c
+	$(COMPILE.c) $(CFLAGS_indigo-deco) $(CPPFLAGS_indigo-deco) -o $@ ../../common/base_c/os_dir_posix.c
+
+
+
+#### Clean target deletes all generated files ####
+clean:
+	rm -f \
+		$(TARGETDIR_indigo-deco)/indigo-deco \
+		$(TARGETDIR_indigo-deco)/main.o \
+		$(TARGETDIR_indigo-deco)/os_dir_posix.o
+	rm -f -r $(TARGETDIR_indigo-deco)
+
+
+# Create the target directory (if needed)
+$(TARGETDIR_indigo-deco):
+	mkdir -p $(TARGETDIR_indigo-deco)
+
+
+# Enable dependency checking
+.KEEP_STATE:
+.KEEP_STATE_FILE:.make.state.Sun-sparc-Solaris
+

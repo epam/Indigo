@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -20,7 +20,6 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule_stereocenters.h"
-#include "molecule/molecule_decomposer.h"
 #include "graph/dfs_walk.h"
 #include "molecule/elements.h"
 #include "graph/graph_highlighting.h"
@@ -49,6 +48,7 @@ TL_CP_GET(_written_bonds)
 
 SmilesSaver::~SmilesSaver ()
 {
+   _atoms.clear(); // to avoid data race when it is reused in another thread
 }
 
 void SmilesSaver::saveMolecule (Molecule &mol)
@@ -147,6 +147,15 @@ void SmilesSaver::_saveMolecule ()
    
    walk.ignored_vertices = ignored_vertices.ptr();
    walk.vertex_ranks = vertex_ranks;
+
+   for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
+   {
+      if (_bmol->isRSite(i))
+         // We break the DFS walk when going through R-sites. For details, see
+         // http://blueobelisk.shapado.com/questions/how-r-group-atoms-should-be-represented-in-smiles
+         walk.mustBeRootVertex(i);
+   }
+
    walk.walk();
 
    const Array<DfsWalk::SeqElem> &v_seq = walk.getSequence();
@@ -158,16 +167,11 @@ void SmilesSaver::_saveMolecule ()
       int e_idx = v_seq[i].parent_edge;
       int v_prev_idx = v_seq[i].parent_vertex;
 
+      _Atom &atom = _atoms[v_idx];
+
       if (e_idx >= 0)
       {
-         _Atom &atom = _atoms[v_idx];
-
-         int opening_cycles = walk.numOpeningCycles(e_idx);
-
-         for (j = 0; j < opening_cycles; j++)
-            _atoms[v_prev_idx].neighbors.add(-1);
-
-         if (walk.edgeClosingCycle(e_idx))
+         if (walk.isClosure(e_idx))
          {
             int k;
             for (k = atom.neighbors.begin(); k != atom.neighbors.end(); k =
@@ -188,6 +192,14 @@ void SmilesSaver::_saveMolecule ()
             atom.parent = v_prev_idx;
          }
          _atoms[v_prev_idx].neighbors.add(v_idx);
+      }
+
+      if (e_idx < 0 || !walk.isClosure(e_idx))
+      {
+         int openings = walk.numOpenings(v_idx);
+
+         for (j = 0; j < openings; j++)
+            atom.neighbors.add(-1);
       }
    }
 
@@ -268,7 +280,7 @@ void SmilesSaver::_saveMolecule ()
       int v_idx = v_seq[i].idx;
       int e_idx = v_seq[i].parent_edge;
 
-      if (e_idx == -1 || !walk.edgeClosingCycle(e_idx))
+      if (e_idx == -1 || !walk.isClosure(e_idx))
          _written_atoms.push(v_idx);
 
       if (e_idx != -1)
@@ -337,9 +349,11 @@ void SmilesSaver::_saveMolecule ()
    // cycle_numbers[i] == n means that the number is used by vertex n
    QS_DEF(Array<int>, cycle_numbers);
 
+   int rsites_closures_starting_num = 91;
+
    cycle_numbers.clear();
    cycle_numbers.push(0); // never used
-
+   
    bool first_component = true;
    
    for (i = 0; i < v_seq.size(); i++)
@@ -355,21 +369,6 @@ void SmilesSaver::_saveMolecule ()
             if (_atoms[v_prev_idx].branch_cnt > 0 && _atoms[v_prev_idx].paren_written)
                _output.writeChar(')');
 
-         int opening_cycles = walk.numOpeningCycles(e_idx);
-         
-         for (j = 0; j < opening_cycles; j++)
-         {
-            for (k = 1; k < cycle_numbers.size(); k++)
-               if (cycle_numbers[k] == -1)
-                  break;
-            if (k == cycle_numbers.size())
-               cycle_numbers.push(v_prev_idx);
-            else
-               cycle_numbers[k] = v_prev_idx;
-
-            _writeCycleNumber(k);
-         }
-
          if (v_prev_idx >= 0)
          {
             int branches = walk.numBranches(v_prev_idx);
@@ -377,7 +376,7 @@ void SmilesSaver::_saveMolecule ()
             if (branches > 1)
                if (_atoms[v_prev_idx].branch_cnt < branches - 1)
                {
-                  if (walk.edgeClosingCycle(e_idx))
+                  if (walk.isClosure(e_idx))
                      _atoms[v_prev_idx].paren_written = false;
                   else
                   {
@@ -420,7 +419,7 @@ void SmilesSaver::_saveMolecule ()
          else
             bond_written = false;
 
-         if (walk.edgeClosingCycle(e_idx))
+         if (walk.isClosure(e_idx))
          {
             for (j = 1; j < cycle_numbers.size(); j++)
                if (cycle_numbers[j] == v_idx)
@@ -449,6 +448,33 @@ void SmilesSaver::_saveMolecule ()
                        _atoms[v_idx].lowercase, _atoms[v_idx].chirality);
          else
             _writeSmartsAtom(v_idx, &_qmol->getAtom(v_idx), _atoms[v_idx].chirality, 0, false);
+
+         QS_DEF(Array<int>, closing);
+
+         walk.getNeighborsClosing(v_idx, closing);
+
+         for (j = 0; j < closing.size(); j++)
+         {
+            if (_bmol->isRSite(closing[j]))
+            {
+               cycle_numbers.expandFill(rsites_closures_starting_num + 1, -1);
+               for (k = rsites_closures_starting_num; k < cycle_numbers.size(); k++)
+                  if (cycle_numbers[k] == -1)
+                     break;
+            }
+            else
+            {
+               for (k = 1; k < cycle_numbers.size(); k++)
+                  if (cycle_numbers[k] == -1)
+                     break;
+            }
+            if (k == cycle_numbers.size())
+               cycle_numbers.push(v_idx);
+            else
+               cycle_numbers[k] = v_idx;
+
+            _writeCycleNumber(k);
+         }
       }
    }
 
@@ -484,43 +510,20 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    int hydro = -1;
    int aam = 0;
 
-   /* DPX: write query atoms and rgroup atoms
-   if (mol.haveQueryAtoms())
-   {
-      query_atom = &mol.getQueryAtom(idx);
-
-      if (query_atom->type == QUERY_ATOM_RGROUP)
-      {
-         if (mol.getRGroups()->isRGroupAtom(idx))
-         {
-            const Array<int> &rg = mol.getRGroups()->getSiteRGroups(idx);
-
-            if (rg.size() != 1)
-               throw Error("rgroup count %d", rg.size());
-            
-            _output.printf("[&%d]", rg[0] + 1);
-         }
-         else
-            _output.printf("[&%d]", 1);
-
-         return;
-      }
-
-      if (query_atom->type == QUERY_ATOM_A)
-      {
-         _output.printf("[*]");
-         return;
-      }
-   } */
-
    if (_bmol->isRSite(idx))
-      throw Error("can not save R-Sites");
+   {
+      if (_bmol->getRSiteBits(idx) == 0)
+         _output.printf("[*]");
+      else
+         _output.printf("[*:%d]",  _bmol->getSingleAllowedRGroup(idx));
+      return;
+   }
 
    int atom_number = _bmol->getAtomNumber(idx);
 
    if (_bmol->isPseudoAtom(idx)) // pseudo-atom
    {
-      _output.printf("*");
+      _output.printf("[*]");
       return;
    }
 
@@ -1136,7 +1139,8 @@ void SmilesSaver::_writePseudoAtoms ()
    
    for (i = 0; i < _written_atoms.size(); i++)
    {
-      if (mol.isPseudoAtom(_written_atoms[i]))
+      if (mol.isPseudoAtom(_written_atoms[i]) ||
+          (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0))
          break;
    }
 
@@ -1160,6 +1164,9 @@ void SmilesSaver::_writePseudoAtoms ()
 
       if (mol.isPseudoAtom(_written_atoms[i]))
          writePseudoAtom(mol.getPseudoAtom(_written_atoms[i]), _output);
+      else if (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0)
+         // ChemAxon's Extended SMILES notation for R-sites
+         _output.printf("_R%d", mol.getSingleAllowedRGroup(_written_atoms[i]));
    }
 
    _output.writeChar('$');
@@ -1172,7 +1179,7 @@ void SmilesSaver::writePseudoAtom (const char *label, Output &out)
 
    do
    {
-      if (isspace(*label))
+      if (*label == '\n' || *label == '\r' || *label == '\t')
          throw Error("character 0x%x is not allowed inside pseudo-atom", *label);
       if (*label == '$' || *label == ';')
          throw Error("'%c' not allowed inside pseudo-atom", *label);

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -299,13 +299,8 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
       Filter sub_filter_fr(visited_atoms.ptr(), Filter::EQ, rg_idx + SHIFT_IDX);
       fragment.makeSubmolecule(qmol_set, sub_filter_fr, 0, &rg_mapping);
 
-      if (!fragment.isRGroupFragment())
-         fragment.createRGroupFragment();
-
-      MoleculeRGroupFragment& rfragment = fragment.getRGroupFragment();
-
       for (int att_idx = 0; att_idx < attachment_index[rg_idx].size(); ++att_idx) {
-         rfragment.addAttachmentPoint(att_idx, rg_mapping.at(attachment_index[rg_idx][att_idx]));
+         fragment.addAttachmentPoint(att_idx + 1, rg_mapping.at(attachment_index[rg_idx][att_idx]));
       }
 
    }

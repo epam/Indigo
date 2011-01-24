@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -146,6 +146,8 @@ protected:
    struct CycleContext 
    {
       ObjPool<Cycle> cycles;
+      Array<int> covered_edges;
+      int uncovered_edges;
       int iterationNumber;
       int maxIterationNumber;
    };
@@ -154,6 +156,8 @@ protected:
    {
       const MoleculeLayoutGraph *graph;
       RedBlackSet<int> *edges;
+      int iterationNumber;
+      int maxIterationNumber;
    };
 
    // patterns
@@ -163,7 +167,7 @@ protected:
    static bool _match_pattern_bond (Graph &subgraph, Graph &supergraph, int self_idx, int other_idx, void *userdata);
    static int  _pattern_embedding (Graph &subgraph, Graph &supergraph, int *core_sub, int *core_super, void *userdata);
 
-   static bool path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
+   static bool _path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
    // for whole graph
    void _assignAbsoluteCoordinates (float bond_length);
@@ -198,7 +202,7 @@ protected:
 
    // border functions
    void _getBorder (Cycle &border) const;
-   void _splitBorder (int v1, int v2, Array<int> &part1, Array<int> &part2) const;
+   void _splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const;
    bool _isPointOutside (const Vec2f &p) const;
    bool _isPointOutsideCycle   (const Cycle &cycle, const Vec2f &p) const;
    bool _isPointOutsideCycleEx (const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const;
@@ -215,8 +219,10 @@ protected:
    static float _dichotomy2  (float a0, float b0, int L, float s);
    static void _calculatePos (float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v);
 
+   static bool _vertex_cb (Graph &graph, int v_idx, void *context);
    static bool _border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _cycle_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
+   static bool _edge_check (Graph &graph, int e_idx, void *context);
 
    // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
    static void _makeComponentsTree (BiconnectedDecomposer &decon,

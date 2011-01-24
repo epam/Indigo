@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -125,7 +125,7 @@ public:
       // It shows what value should be returned if condition is disabled.
       // When 'not' operation is applied then such flag is inverted. So 
       // points (1) is satisfied and point (2) generally satisfied too (not always).
-      MATCH_DISABLED_AS_TRUE = 0x1000, 
+      MATCH_DISABLED_AS_TRUE = 0x1000
    };
 
    static bool matchQueryAtom (QueryMolecule::Atom *query, BaseMolecule &target,

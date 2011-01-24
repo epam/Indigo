@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -35,12 +35,11 @@ public:
    ~RdfLoader ();
 
    bool isEOF ();
-   /*
-    * Read next record
-    */
    void readNext ();
-
+   void readAt (int index);
    int tell ();
+   int currentNumber ();
+   int count ();
 
    /*
     * Data buffer with reaction or molecule for current record
@@ -56,6 +55,8 @@ public:
     */
    bool isMolecule() const { return _isMolecule;}
 
+   DEF_ERROR("RDF loader");
+
 protected:
 
    bool _readIdentifiers(bool);
@@ -70,7 +71,10 @@ protected:
    bool _ownScanner;
    Scanner *_scanner;
    bool _isMolecule;
-   
+
+   TL_CP_DECL(Array<int>, _offsets);
+   int _current_number;
+   int _max_offset;
 };
 
 }

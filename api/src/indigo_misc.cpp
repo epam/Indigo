@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -26,6 +26,18 @@
 #include "molecule/molfile_saver.h"
 #include "reaction/rxnfile_saver.h"
 #include "indigo_molecule.h"
+#include "molecule/sdf_loader.h"
+#include "molecule/rdf_loader.h"
+#include "indigo_array.h"
+#include "molecule/icm_saver.h"
+#include "molecule/icm_loader.h"
+#include "reaction/icr_saver.h"
+#include "reaction/icr_loader.h"
+#include "indigo_reaction.h"
+#include "indigo_mapping.h"
+#include "indigo_match.h"
+
+#include <time.h>
 
 #define CHECKRGB(r, g, b) \
 if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
@@ -37,13 +49,16 @@ CEXPORT int indigoAromatize (int object)
    {
       IndigoObject &obj = self.getObject(object);
 
+      bool ret;
       if (obj.isBaseMolecule())
-         obj.getBaseMolecule().aromatize();
+         ret = obj.getBaseMolecule().aromatize();
       else if (obj.isBaseReaction())
-         obj.getBaseReaction().aromatize();
+         ret = obj.getBaseReaction().aromatize();
       else
          throw IndigoError("Only molecules and reactions can be aromatized");
-      return 1;
+      if (ret)
+         return 1;
+      return 0;
    }
    INDIGO_END(-1)
 }
@@ -120,7 +135,12 @@ CEXPORT const char * indigoCheckBadValence (int handle)
             int i;
 
             for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+            {
+               if (mol.isPseudoAtom(i) || mol.isRSite(i))
+                  continue;
                mol.getAtomValence(i);
+               mol.getImplicitH(i);
+            }
          }
          catch (Exception &e)
          {
@@ -133,7 +153,7 @@ CEXPORT const char * indigoCheckBadValence (int handle)
          BaseReaction &brxn = obj.getBaseReaction();
 
          if (brxn.isQueryReaction())
-            throw IndigoError("indigoCheckBadValence(): query molecules not allowed");
+            throw IndigoError("indigoCheckBadValence(): query reactions not allowed");
 
          Reaction &rxn = brxn.asReaction();
 
@@ -146,7 +166,12 @@ CEXPORT const char * indigoCheckBadValence (int handle)
                Molecule &mol = rxn.getMolecule(j);
                
                for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+               {
+                  if (mol.isPseudoAtom(i) || mol.isRSite(i))
+                     continue;
                   mol.getAtomValence(i);
+                  mol.getImplicitH(i);
+               }
             }
          }
          catch (Exception &e)
@@ -156,7 +181,7 @@ CEXPORT const char * indigoCheckBadValence (int handle)
          }
       }
       else
-         throw IndigoError("object %s is meither a molecule nor a reaction", obj.debugInfo());
+         throw IndigoError("object %s is neither a molecule nor a reaction", obj.debugInfo());
       
       return "";
    }
@@ -469,6 +494,233 @@ CEXPORT int indigoRemove (int item)
 
       obj.remove();
       return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSmilesAppend (int output, int item)
+{
+   const char *smiles = indigoSmiles(item);
+
+   if (smiles == 0)
+      return -1;
+
+   INDIGO_BEGIN
+   {
+      Output &out = IndigoOutput::get(self.getObject(output));
+
+      out.writeStringCR(smiles);
+      out.flush();
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoRdfHeader (int output)
+{
+   INDIGO_BEGIN
+   {
+      Output &out = IndigoOutput::get(self.getObject(output));
+
+      time_t tm = time(NULL);
+      const struct tm *lt = localtime(&tm);
+
+      out.printfCR("$RDFILE 1");
+      out.printfCR("$DATM    %02d/%02d/%02d %02d:%02d",
+              lt->tm_mon + 1, lt->tm_mday, lt->tm_year % 100, lt->tm_hour, lt->tm_min);
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoRdfAppend (int output, int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+      Output &out = IndigoOutput::get(self.getObject(output));
+
+      if (obj.isBaseMolecule())
+      {
+         out.writeStringCR("$MFMT");
+         MolfileSaver saver(out);
+         saver.mode = self.molfile_saving_mode;
+         saver.no_chiral = self.molfile_saving_no_chiral;
+         saver.saveBaseMolecule(obj.getBaseMolecule());
+      }
+      else if (obj.isBaseReaction())
+      {
+         out.writeStringCR("$RFMT");
+         RxnfileSaver saver(out);
+         saver.molfile_saving_mode = self.molfile_saving_mode;
+         saver.saveBaseReaction(obj.getBaseReaction());
+      }
+      else
+         throw IndigoError("%s can not be saved to RDF", obj.debugInfo());
+
+      RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
+      
+      if (props != 0)
+      {
+         int i;
+
+         for (i = props->begin(); i != props->end(); i = props->next(i))
+            out.printf("$DTYPE %s\n$DATUM %s\n", props->key(i), props->value(i).ptr());
+      }
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoAt (int item, int index)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+      if (obj.type == IndigoObject::SDF_LOADER)
+      {
+         IndigoObject * newobj = ((IndigoSdfLoader &)obj).at(index);
+         if (newobj == 0)
+            return 0;
+         return self.addObject(newobj);
+      }
+      if (obj.type == IndigoObject::RDF_LOADER)
+      {
+         IndigoObject * newobj = ((IndigoRdfLoader &)obj).at(index);
+         if (newobj == 0)
+            return 0;
+         return self.addObject(newobj);
+      }
+      else if (obj.type == IndigoObject::MULTILINE_SMILES_LOADER)
+      {
+         IndigoObject * newobj = ((IndigoMultilineSmilesLoader &)obj).at(index);
+         if (newobj == 0)
+            return 0;
+         return self.addObject(newobj);
+      }
+      else if (IndigoArray::is(obj))
+      {
+         IndigoArray &arr = IndigoArray::cast(obj);
+
+         return self.addObject(new IndigoArrayElement(arr, index));
+      }
+      else
+         throw IndigoError("indigoAt(): not accepting %s", obj.debugInfo());
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoCount (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoArray::is(obj))
+         return IndigoArray::cast(obj).objects.size();
+
+      if (obj.type == IndigoObject::SDF_LOADER)
+         return ((IndigoSdfLoader &)obj).sdf_loader->count();
+
+      if (obj.type == IndigoObject::RDF_LOADER)
+         return ((IndigoRdfLoader &)obj).rdf_loader->count();
+
+      if (obj.type == IndigoObject::MULTILINE_SMILES_LOADER)
+         return ((IndigoMultilineSmilesLoader &)obj).count();
+
+      throw IndigoError("indigoCount(): can not handle %s", obj.debugInfo());
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoSerialize (int item, char **buf, int *size)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+      ArrayOutput out(self.tmp_string);
+
+      if (obj.isBaseMolecule())
+      {
+         Molecule &mol = obj.getMolecule();
+
+         IcmSaver saver(out);
+         saver.saveMolecule(mol);
+      }
+      else if (obj.isBaseReaction())
+      {
+         Reaction &rxn = obj.getReaction();
+         IcrSaver saver(out);
+         saver.saveReaction(rxn);
+      }
+
+      *buf = self.tmp_string.ptr();
+      *size = self.tmp_string.size();
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoUnserialize (char *buf, int size)
+{
+   INDIGO_BEGIN
+   {
+      if (size > 3 && memcmp(buf, "ICM", 3) == 0)
+      {
+         BufferScanner scanner(buf, size);
+         IcmLoader loader(scanner);
+         AutoPtr<IndigoMolecule> im(new IndigoMolecule());
+         loader.loadMolecule(im->mol);
+         im->highlighting.init(im->mol);
+         return self.addObject(im.release());
+      }
+      else if (size > 3 && memcmp(buf, "ICR", 3) == 0)
+      {
+         BufferScanner scanner(buf, size);
+         IcrLoader loader(scanner);
+         AutoPtr<IndigoReaction> ir(new IndigoReaction());
+         loader.loadReaction(ir->rxn);
+         ir->highlighting.init(ir->rxn);
+         return self.addObject(ir.release());
+      }
+      else
+         throw IndigoError("indigoUnserialize(): format not recognized");
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoMapAtom (int handle, int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+
+      if (obj.type == IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
+      {
+         IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+         IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
+         match.query.getAtom(ia.idx); // will throw an exception if the atom index is invalid
+         int idx = match.query_atom_mapping[ia.idx];
+         if (idx < 0)
+            return 0;
+
+         return self.addObject(new IndigoAtom(match.target, idx));
+      }
+      if (obj.type == IndigoObject::MAPPING)
+      {
+         IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+         IndigoMapping &mapping = (IndigoMapping &)obj;
+
+         int mapped = mapping.mapping[ia.idx];
+         if (mapped < 0)
+            return 0;
+         return self.addObject(new IndigoAtom(mapping.to, mapped));
+      }
+
+      throw IndigoError("indigoMapAtom(): not applicable to %s", obj.debugInfo());
    }
    INDIGO_END(-1)
 }

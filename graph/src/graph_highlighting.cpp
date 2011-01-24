@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -21,6 +21,8 @@ using namespace indigo;
 GraphHighlighting::GraphHighlighting ()
 {
    _graph = 0;
+   _n_vertices = 0;
+   _n_edges = 0;
 }
 
 void GraphHighlighting::init (const Graph &graph)
@@ -141,14 +143,14 @@ void GraphHighlighting::onEdge (int idx)
 
 bool GraphHighlighting::hasVertex (int idx) const
 {
-   if (_v_flags.size() < 1)
+   if (_v_flags.size() < idx + 1)
       return false;
    return _v_flags[idx] != 0;
 }
 
 bool GraphHighlighting::hasEdge (int idx) const
 {
-   if (_e_flags.size() < 1)
+   if (_e_flags.size() < idx + 1)
       return false;
    return _e_flags[idx] != 0;
 }

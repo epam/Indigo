@@ -555,14 +555,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\indigo_decomposition.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\indigo_decomposition.h"
-			>
-		</File>
-		<File
 			RelativePath=".\src\indigo_deconvolution.cpp"
 			>
 		</File>

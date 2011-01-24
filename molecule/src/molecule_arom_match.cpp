@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -26,7 +26,7 @@ AromaticityMatcher::AromaticityMatcher (QueryMolecule &query, BaseMolecule &base
    _query(query), _base(base),
    TL_CP_GET(_matching_edges_state)
 {
-   _submolecule.set(base.neu());
+   _submolecule.reset(base.neu());
    _matching_edges_state.clear();
    
    validateQuery();

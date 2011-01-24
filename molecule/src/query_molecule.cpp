@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -692,29 +692,6 @@ void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> 
       }
    }
 
-   // RGroup fragments
-   if (!(skip_flags & SKIP_RGROUP_FRAGMENTS))
-   {
-      if (mol.isRGroupFragment())
-      {
-         MoleculeRGroupFragment &other_fragment = mol.getRGroupFragment();
-
-         if (!isRGroupFragment())
-            createRGroupFragment();
-
-         MoleculeRGroupFragment &fragment = getRGroupFragment();
-
-         for (i = 0; i < other_fragment.attachmentPointCount(); i++)
-         {
-            int att_idx;
-            int j;
-
-            for (j = 0; (att_idx = other_fragment.getAttachmentPoint(i, j)) != -1; j++)
-               fragment.addAttachmentPoint(i, mapping[att_idx]);
-         }
-      }
-   }
-
    // RGroup
    if (!(skip_flags & SKIP_RGROUPS))
    {
@@ -755,24 +732,24 @@ void QueryMolecule::_removeAtoms (const Array<int> &indices, const int *mapping)
 {
    spatial_constraints.removeAtoms(mapping);
 
-   if (isRGroupFragment())
+   if (attachmentPointCount() > 0)
    {
       int i;
       
       for (i = 0; i < indices.size(); i++)
-         _rgroup_fragment->removeAttachmentPoint(indices[i]);
+         this->removeAttachmentPoint(indices[i]);
 
       bool empty = true;
 
-      for (i = 0; i < _rgroup_fragment->attachmentPointCount(); i++)
-         if (_rgroup_fragment->getAttachmentPoint(i, 0) != -1)
+      for (i = 0; i < this->attachmentPointCount(); i++)
+         if (this->getAttachmentPoint(i, 0) != -1)
          {
             empty = false;
             break;
          }
 
       if (empty)
-         _rgroup_fragment.reset(0);
+         _attachment_index.clear();
    }
 
    for (int i = 0; i < indices.size(); i++)
@@ -815,7 +792,7 @@ bool QueryMolecule::Node::sureValue (int what_type, int &value_out)
          // "(C || O) && (C || N)", but we do not claim to have perfect
          // logic here, and we do not need one.
          
-         int  child_value;
+         int  child_value = -1;
          bool child_value_valid = false;
 
          for (i = 0; i < children.size(); i++)
@@ -845,7 +822,7 @@ bool QueryMolecule::Node::sureValue (int what_type, int &value_out)
       }
       case OP_OR:
       {
-         int child_value;
+         int child_value = -1;
 
          for (i = 0; i < children.size(); i++)
          {
@@ -880,7 +857,7 @@ bool QueryMolecule::Node::sureValueInv (int what_type, int &value_out)
    {
       case OP_OR:
       {
-         int  child_value;
+         int  child_value = -1;
          bool child_value_valid = false;
 
          for (i = 0; i < children.size(); i++)
@@ -910,7 +887,7 @@ bool QueryMolecule::Node::sureValueInv (int what_type, int &value_out)
       }
       case OP_AND:
       {
-         int child_value;
+         int child_value = -1;
 
          for (i = 0; i < children.size(); i++)
          {
@@ -1339,21 +1316,6 @@ void QueryMolecule::resetBond (int idx, QueryMolecule::Bond *bond)
    _min_h.clear();
 }
 
-bool QueryMolecule::isRGroupFragment ()
-{
-   return _rgroup_fragment.get() != 0;
-}
-
-void QueryMolecule::createRGroupFragment ()
-{
-   _rgroup_fragment.create();
-}
-
-MoleculeRGroupFragment & QueryMolecule::getRGroupFragment ()
-{
-   return _rgroup_fragment.ref();
-}
-
 QueryMolecule::Atom * QueryMolecule::Atom::clone ()
 {
    AutoPtr<Atom> res(new Atom());
@@ -1464,7 +1426,6 @@ void QueryMolecule::clear ()
    _atoms.clear();
    _bonds.clear();
    rgroups.clear();
-   _rgroup_fragment.reset(0);
    spatial_constraints.clear();
    fixed_atoms.clear();
    _bond_stereo_care.clear();
@@ -1499,12 +1460,12 @@ void QueryMolecule::setBondStereoCare (int idx, bool stereo_care)
    _bond_stereo_care[idx] = stereo_care;
 }
 
-void QueryMolecule::aromatize ()
+bool QueryMolecule::aromatize ()
 {
-   QueryMoleculeAromatizer::aromatizeBonds(*this);
+   return QueryMoleculeAromatizer::aromatizeBonds(*this);
 }
 
-void QueryMolecule::dearomatize ()
+bool QueryMolecule::dearomatize ()
 {
    throw Error("Dearomatization not implemented");
 }

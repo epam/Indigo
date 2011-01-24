@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -103,26 +103,6 @@ CEXPORT int indigoHighlightedTarget (int match)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoMapAtom (int match, int query_atom)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(match);
-      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
-         throw IndigoError("indigoMapAtom(): match must be given, not %s", obj.debugInfo());
-      IndigoAtom &ia = IndigoAtom::cast(self.getObject(query_atom));
-
-      IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
-      match.query.getAtom(ia.idx); // will throw an exception if the atom index is invalid
-      int idx = match.query_atom_mapping[ia.idx];
-      if (idx < 0)
-         return 0;
-
-      return self.addObject(new IndigoAtom(match.target, idx));
-   }
-   INDIGO_END(-1)
-}
-
 CEXPORT int indigoMapBond (int match, int query_bond)
 {
    INDIGO_BEGIN
@@ -151,14 +131,14 @@ CEXPORT int indigoMapBond (int match, int query_bond)
    INDIGO_END(-1)
 }
 
-IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecule &target,
-                                                                          QueryMolecule &query,
-                                                                          Molecule &original_target) :
+IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecule &target_,
+                                                                          QueryMolecule &query_,
+                                                                          Molecule &original_target_) :
         IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER),
-        matcher(target),
-        target(target),
-        original_target(original_target),
-        query(query)
+        matcher(target_),
+        target(target_),
+        original_target(original_target_),
+        query(query_)
 {
    matcher.setQuery(query);
    matcher.fmcache = &fmcache;

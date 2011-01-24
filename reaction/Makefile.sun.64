@@ -8,4 +8,3 @@ CCADMIN = CCadmin -clean
 TARGETDIR_libreaction.a=sparc64
 
 include Makefile.sun.common
-

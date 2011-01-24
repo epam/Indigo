@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -114,6 +114,12 @@ void MoleculeStereocenters::buildFrom3dCoordinates ( void )
          v1.copy(nei_coords[0]);
          v2.copy(nei_coords[1]);
          v3.copy(nei_coords[2]);
+
+         // Check if substituents with center atom are on the same plane
+         int plane_sign_v_pos = _onPlane(v1, v2, v3, v_pos);
+         if (plane_sign_v_pos == 0)
+            continue;
+
          v1.sub(v_pos);
          v2.sub(v_pos);
          v3.sub(v_pos);
@@ -197,6 +203,7 @@ bool MoleculeStereocenters::_isPossibleStereocenter (int atom_idx,
       {ELEM_Si, 0, 4, 0, 4},
       {ELEM_N,  1, 3, 0, 4},
       {ELEM_N,  1, 4, 0, 4},
+      {ELEM_N,  0, 4, 1, 4},
       {ELEM_N,  0, 3, 0, 3},
       {ELEM_S,  0, 4, 2, 4},
       {ELEM_S,  1, 3, 0, 3},
@@ -560,9 +567,9 @@ int MoleculeStereocenters::_xyzzy (const Vec3f &v1, const Vec3f &v2, const Vec3f
    float sine2 = cross.z;
    float cosine2 = Vec3f::dot(v1 ,u);
 
-   if (fabsf(sine1) < eps)
+   if ((float)fabs(sine1) < eps)
    {
-      if (fabsf(sine2) < eps)
+      if ((float)fabs(sine2) < eps)
          throw Error("degenerate case -- bonds overlap");
 
       return (sine2 > 0) ? 4 : 8;
@@ -593,7 +600,7 @@ int MoleculeStereocenters::_sign (const Vec3f &v1, const Vec3f &v2, const Vec3f 
 int MoleculeStereocenters::_onPlane (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3, const Vec3f &u)
 {
    Vec3f v1u, v2u, v3u, p;
-   float eps = 0.01f;
+   float eps = 0.1f;
 
    v1u.diff(v1, u);
    v1u.normalize();
@@ -1230,10 +1237,10 @@ void MoleculeStereocenters::add (int atom_idx, int type, int group, bool inverse
 
 void MoleculeStereocenters::add (int atom_idx, int type, int group, const int pyramid[4])
 {
-   if (atom_idx == -1)
+   if (atom_idx < 0)
       throw Error("stereocenter index is invalid");
    if (pyramid[0] == -1 || pyramid[1] == -1 || pyramid[2] == -1)
-      throw Error("stereocenter pyramid must have at least 3 atoms");
+      throw Error("stereocenter (%d) pyramid must have at least 3 atoms", atom_idx);
 
    _Atom center;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -21,7 +21,7 @@
 #include "indigo.h"
 #include "indigo_jni_base.h"
 
-#define JNINAME(name) JNICALL Java_com_gga_indigo_Indigo_##name
+#define JNINAME(name) JNICALL Java_com_ggasoftware_indigo_Indigo_##name
 
 JNIEXPORT jstring JNINAME(version) (JNIEnv *env, jobject obj)
 {
@@ -38,7 +38,19 @@ JNIEXPORT void JNINAME(releaseSessionId) (JNIEnv *env, jclass cls, jlong id)
    indigoReleaseSessionId(id);
 }
 
-JNI_FUNC_jint_jint(indigoFree)
+JNIEXPORT jint JNINAME(indigoFree) (JNIEnv *env, jobject obj, jint handle)
+{
+   // do not set error handler because
+   // (i) indigoFree never reports an error
+   // (ii) setting the handler implies setting the context (JNIEnv *),
+   //      which can cause a fatal error ("Using JNIEnv in the wrong thread")
+   //      if the main thread is throwing and exception at the same time.
+   //      Actually, the fatal error is raised only with -Xcheck:jni option;
+   //      otherwise, the JVM just crashes.
+   indigoJniSetSession_NoErrorHandler(env, obj);
+   return indigoFree(handle);
+}
+
 JNI_FUNC_jint_jint(indigoClone)
 JNI_FUNC_jint(indigoCountReferences)
 
@@ -55,7 +67,10 @@ JNI_FUNC_jint_jbuf(indigoLoadBuffer)
 
 JNI_FUNC_jint_jstring(indigoWriteFile)
 JNI_FUNC_jint(indigoWriteBuffer)
+JNI_FUNC_jint_jint(indigoClose)
 
+JNI_FUNC_jint(indigoCreateMolecule)
+JNI_FUNC_jint(indigoCreateQueryMolecule)
 JNI_FUNC_jint_jint(indigoLoadMolecule)
 JNI_FUNC_jint_jstring(indigoLoadMoleculeFromString)
 JNI_FUNC_jint_jstring(indigoLoadMoleculeFromFile)
@@ -142,11 +157,48 @@ JNIEXPORT jfloatArray JNINAME(indigoXYZ) (JNIEnv *env, jobject obj, jint atom)
    return jarr;
 }
 
+JNI_FUNC_jint_jint(indigoCountSuperatoms)
+JNI_FUNC_jint_jint(indigoCountDataSGroups)
+JNI_FUNC_jint_jint(indigoIterateDataSGroups)
+JNI_FUNC_jstring_jint(indigoDescription)
+
+JNIEXPORT jint JNINAME(indigoAddDataSGroup) (JNIEnv *env, jobject obj, jint mol,
+        jintArray jatoms, jintArray jbonds, jstring jdescription, jstring jdata)
+{
+   jsize natoms, nbonds;
+   jint *atoms, *bonds;
+   const char *description, *data;
+   int ret;
+
+   indigoJniSetSession(env, obj);
+   natoms = (*env)->GetArrayLength(env, jatoms);
+   nbonds = (*env)->GetArrayLength(env, jbonds);
+   atoms = (*env)->GetIntArrayElements(env, jatoms, 0);
+   bonds = (*env)->GetIntArrayElements(env, jbonds, 0);
+   description = (*env)->GetStringUTFChars(env, jdescription, NULL);
+   data = (*env)->GetStringUTFChars(env, jdata, NULL);
+   ret = indigoAddDataSGroup(mol, natoms, atoms, nbonds, bonds, description, data);
+   (*env)->ReleaseStringUTFChars(env, jdescription, description);
+   (*env)->ReleaseStringUTFChars(env, jdata, data);
+   (*env)->ReleaseIntArrayElements(env, jatoms, atoms, 0);
+   (*env)->ReleaseIntArrayElements(env, jbonds, bonds, 0);
+   return ret;
+}
+
+JNI_FUNC_jint_jint_jfloat_jfloat_jstring(indigoSetDataSGroupXY);
+
 JNI_FUNC_jint_jint(indigoResetCharge)
 JNI_FUNC_jint_jint(indigoResetExplicitValence)
 JNI_FUNC_jint_jint(indigoResetRadical)
 JNI_FUNC_jint_jint(indigoResetIsotope)
 
+JNI_FUNC_jint_jint_jint(indigoSetAttachmentPoint)
+
+JNI_FUNC_jint_jint_jstring(indigoRemoveConstraints)
+JNI_FUNC_jint_jint_jstring_jstring(indigoAddConstraint)
+JNI_FUNC_jint_jint_jstring_jstring(indigoAddConstraintNot)
+
+JNI_FUNC_jint_jint(indigoResetStereo)
 JNI_FUNC_jint_jint(indigoInvertStereo)
 
 JNI_FUNC_jint_jint(indigoCountAtoms)
@@ -157,15 +209,34 @@ JNI_FUNC_jint_jint(indigoCountRSites)
 JNI_FUNC_jint_jint(indigoIterateBonds)
 JNI_FUNC_jint_jint(indigoBondOrder)
 JNI_FUNC_jint_jint(indigoBondStereo)
+JNI_FUNC_jint_jint(indigoTopology)
 
 JNI_FUNC_jint_jint(indigoIterateNeighbors)
 JNI_FUNC_jint_jint(indigoBond)
 JNI_FUNC_jint_jint_jint(indigoGetAtom)
 JNI_FUNC_jint_jint_jint(indigoGetBond)
+JNI_FUNC_jint_jint(indigoSource)
+JNI_FUNC_jint_jint(indigoDestination)
 
 JNI_FUNC_jint_jint(indigoClearCisTrans)
 JNI_FUNC_jint_jint(indigoClearStereocenters)
 JNI_FUNC_jint_jint(indigoCountStereocenters)
+
+JNI_FUNC_jint_jint(indigoResetSymmetricCisTrans)
+
+JNI_FUNC_jint_jint_jstring(indigoAddAtom)
+JNI_FUNC_jint_jint_jint(indigoSetCharge)
+JNI_FUNC_jint_jint_jint(indigoSetIsotope)
+JNI_FUNC_jint_jint_jint_jint(indigoAddBond)
+JNI_FUNC_jint_jint_jint(indigoSetOrder)
+JNI_FUNC_jint_jint_jint(indigoMerge)
+
+JNI_FUNC_jint_jint(indigoCountComponents)
+JNI_FUNC_jint_jint(indigoComponentIndex)
+JNI_FUNC_jint_jint(indigoIterateComponents)
+JNI_FUNC_jint_jint_jint(indigoComponent)
+
+JNI_FUNC_jint_jint(indigoCountHeavyAtoms)
 
 JNI_FUNC_jint_jint(indigoGrossFormula)
 JNI_FUNC_jfloat_jint(indigoMolecularWeight)
@@ -175,22 +246,25 @@ JNI_FUNC_jfloat_jint(indigoMonoisotopicMass)
 JNI_FUNC_jstring_jint(indigoCanonicalSmiles)
 JNI_FUNC_jstring_jint(indigoLayeredCode)
 
-JNI_FUNC_jint_jint(indigoCountComponents)
 JNI_FUNC_jint_jint(indigoHasZCoord)
+JNI_FUNC_jint_jint(indigoIsChiral)
 
-JNIEXPORT jint JNINAME(indigoCreateSubmolecule) (JNIEnv *env, jobject obj, jint mol, jintArray jvertices)
-{
-   jsize nvertices;
-   jint *vertices;
-   int ret;
-
-   indigoJniSetSession(env, obj);
-   nvertices = (*env)->GetArrayLength(env, jvertices);
-   vertices = (*env)->GetIntArrayElements(env, jvertices, 0);
-   ret = indigoCreateSubmolecule(mol, nvertices, vertices);
-   (*env)->ReleaseIntArrayElements(env, jvertices, vertices, 0);
-   return ret;
+#define JNI_FUNC_jint_jint_jintarr(name) \
+JNIEXPORT jint JNINAME(name) (JNIEnv *env, jobject obj, jint param1, jintArray param2) \
+{ \
+   jsize n; \
+   jint *arr; \
+   int ret; \
+\
+   indigoJniSetSession(env, obj); \
+   n = (*env)->GetArrayLength(env, param2); \
+   arr = (*env)->GetIntArrayElements(env, param2, 0); \
+   ret = name(param1, n, arr); \
+   (*env)->ReleaseIntArrayElements(env, param2, arr, 0); \
+   return ret; \
 }
+
+JNI_FUNC_jint_jint_jintarr(indigoCreateSubmolecule)
 
 JNIEXPORT jint JNINAME(indigoCreateEdgeSubmolecule) (JNIEnv *env, jobject obj, jint mol,
         jintArray jvertices, jintArray jedges)
@@ -209,6 +283,8 @@ JNIEXPORT jint JNINAME(indigoCreateEdgeSubmolecule) (JNIEnv *env, jobject obj, j
    (*env)->ReleaseIntArrayElements(env, jedges, edges, 0);
    return ret;
 }
+
+JNI_FUNC_jint_jint_jintarr(indigoRemoveAtoms)
 
 JNIEXPORT jfloat JNINAME(indigoAlignAtoms) (JNIEnv *env, jobject obj,
         jint molecule, jintArray jatom_ids, jfloatArray jdesired_xyz)
@@ -290,11 +366,13 @@ JNI_FUNC_jint_jint(indigoTell)
 
 JNI_FUNC_jint_jint_jint(indigoSdfAppend)
 JNI_FUNC_jint_jint_jint(indigoSmilesAppend)
+JNI_FUNC_jint_jint(indigoRdfHeader)
+JNI_FUNC_jint_jint_jint(indigoRdfAppend)
 
 JNI_FUNC_jint(indigoCreateArray)
 JNI_FUNC_jint_jint_jint(indigoArrayAdd)
-JNI_FUNC_jint_jint_jint(indigoArrayAt)
-JNI_FUNC_jint_jint(indigoSize)
+JNI_FUNC_jint_jint_jint(indigoAt)
+JNI_FUNC_jint_jint(indigoCount)
 JNI_FUNC_jint_jint(indigoClear)
 JNI_FUNC_jint_jint(indigoIterateArray)
 
@@ -318,6 +396,7 @@ JNI_FUNC_jint_jint(indigoDecomposedMoleculeWithRGroups)
 JNI_FUNC_jint_jint(indigoNext)
 JNI_FUNC_jint_jint(indigoHasNext)
 JNI_FUNC_jint_jint(indigoIndex)
+JNI_FUNC_jint_jint(indigoRemove)
 
 JNI_FUNC_jstring_jint(indigoToString);
 

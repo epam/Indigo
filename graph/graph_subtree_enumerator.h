@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -61,8 +61,8 @@ protected:
    TL_CP_DECL(Array<int>, _e_mapping); // from _graph to _subtree
    TL_CP_DECL(Array<int>, _inv_e_mapping); // from _subtree to _graph
 
-   TL_CP_DECL(ObjArray<List<VertexEdge> >, _dfs_front);
    TL_CP_DECL(Pool<List<VertexEdge>::Elem>, _pool);
+   TL_CP_DECL(ObjArray<List<VertexEdge> >, _dfs_front);
 
    void _updateDfsFront (int v_idx);
 

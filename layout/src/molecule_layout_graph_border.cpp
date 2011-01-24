@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -333,7 +333,7 @@ void MoleculeLayoutGraph::_getBorder (Cycle &border) const
 }
 
 // Split border in two parts by two vertices
-void MoleculeLayoutGraph::_splitBorder (int v1, int v2, Array<int> &part1, Array<int> &part2) const
+void MoleculeLayoutGraph::_splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const
 {
    Cycle border;
 
@@ -349,17 +349,32 @@ void MoleculeLayoutGraph::_splitBorder (int v1, int v2, Array<int> &part1, Array
    if (idx1 > idx2)
       __swap(idx1, idx2, i);
 
-   part1.clear();
-   part2.clear();
+   part1v.clear();
+   part1e.clear();
+   part2v.clear();
+   part2e.clear();
 
    for (i = idx1; i < idx2 + 1; i++)
-      part1.push(border.getVertex(i));
+   {
+      part1v.push(border.getVertex(i));
+      part1e.push(border.getEdge(i));
+   }
+   
+   part1e.pop(); // edge count is less
 
    for (i = idx2; i < border.vertexCount(); i++)
-      part2.push(border.getVertex(i));
+   {
+      part2v.push(border.getVertex(i));
+      part2e.push(border.getEdge(i));
+   }
 
    for (i = 0; i < idx1 + 1; i++)
-      part2.push(border.getVertex(i));
+   {
+      part2v.push(border.getVertex(i));
+      part2e.push(border.getEdge(i));
+   }
+
+   part2e.pop(); // edge count is less
 }
 
 // Cycle enumerator callback

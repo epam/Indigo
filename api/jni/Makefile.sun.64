@@ -1,0 +1,10 @@
+CC = cc
+BASICOPTS = -xO3 -s -misalign -xarch=generic64 -xcode=abs64
+CFLAGS = $(BASICOPTS) -xCC
+
+TARGETDIR_libindigo-jni.so=sparc64
+
+USERLIBS_libindigo-jni.so = ../sparc64static/libindigo.a ../../layout/sparc64/liblayout.a ../../reaction/sparc64/libreaction.a ../../molecule/sparc64/libmolecule.a ../../graph/sparc64/libgraph.a 
+DEPLIBS_libindigo-jni.so = ../sparc64static/libindigo.a  ../../layout/sparc64/liblayout.a  ../../reaction/sparc64/libreaction.a  ../../molecule/sparc64/libmolecule.a  ../../graph/sparc64/libgraph.a  
+
+include Makefile.sun.common

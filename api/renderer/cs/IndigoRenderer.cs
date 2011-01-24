@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace com.gga.indigo
+namespace com.ggasoftware.indigo
 {
    public unsafe class IndigoRenderer
    {
@@ -80,7 +80,7 @@ namespace com.gga.indigo
          IndigoObject bufh = _indigo.writeBuffer();
 
          if (refatoms != null)
-            if (refatoms.Length != items.size())
+            if (refatoms.Length != items.count())
                throw new IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects");
 
          indigoRenderGrid(items.self, refatoms, ncolumns, bufh.self);
@@ -90,7 +90,7 @@ namespace com.gga.indigo
       public void renderGridToFile (IndigoObject items, int[] refatoms, int ncolumns, string filename)
       {
          if (refatoms != null)
-            if (refatoms.Length != items.size())
+            if (refatoms.Length != items.count())
                throw new IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects");
 
          indigoRenderGridToFile(items.self, refatoms, ncolumns, filename);

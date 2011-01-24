@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -22,14 +22,23 @@ DfsWalk::DfsWalk (const Graph &graph) :
 _graph(graph),
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
-TL_CP_GET(_v_seq)
+TL_CP_GET(_v_seq),
+TL_CP_GET(_root_vertices),
+TL_CP_GET(_closures)
 {
    ignored_vertices = 0;
    vertex_ranks = 0;
+   _root_vertices.resize(graph.vertexEnd());
+   _root_vertices.zerofill();
 }
 
 DfsWalk::~DfsWalk ()
 {
+}
+
+void DfsWalk::mustBeRootVertex (int v_idx)
+{
+   _root_vertices[v_idx] = 1;
 }
 
 void DfsWalk::walk ()
@@ -41,6 +50,7 @@ void DfsWalk::walk ()
    _edges.clear_resize(_graph.edgeEnd());
    _vertices.zerofill();
    _edges.zerofill();
+   _closures.clear();
 
    v_stack.clear();
 
@@ -94,10 +104,15 @@ void DfsWalk::walk ()
       
       for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
       {
+         int nei_v = vertex.neiVertex(i);
+
+         if (_root_vertices[nei_v] == 1 && _vertices[nei_v].dfs_state == 0)
+            continue;
+
          VertexEdge &ve = nei.push();
 
          ve.e = vertex.neiEdge(i);
-         ve.v = vertex.neiVertex(i);
+         ve.v = nei_v;
       }
 
       if (vertex_ranks != 0)
@@ -117,20 +132,11 @@ void DfsWalk::walk ()
          if (_vertices[nei_idx].dfs_state == 2)
          {
             _edges[edge_idx].closing_cycle = 1;
+            Edge &e = _closures.push();
+            e.beg = v_idx;
+            e.end = nei_idx;
 
-            j = v_idx;
-
-            while (j != -1)
-            {
-               if (_vertices[j].parent_vertex == nei_idx)
-                  break;
-               j = _vertices[j].parent_vertex;
-            }
-
-            if (j == -1)
-               throw Error("cycle unwind error");
-
-            _edges[_vertices[j].parent_edge].opening_cycles++;
+            _vertices[nei_idx].openings++;
             _vertices[v_idx].branches++;
 
             SeqElem &seq_elem = _v_seq.push();
@@ -171,7 +177,7 @@ const Array<DfsWalk::SeqElem> & DfsWalk::getSequence () const
    return _v_seq;
 }
 
-bool DfsWalk::edgeClosingCycle (int e_idx) const
+bool DfsWalk::isClosure (int e_idx) const
 {
    return _edges[e_idx].closing_cycle != 0;
 }
@@ -181,9 +187,9 @@ int DfsWalk::numBranches (int v_idx) const
    return _vertices[v_idx].branches;
 }
 
-int DfsWalk::numOpeningCycles (int e_idx) const
+int DfsWalk::numOpenings (int v_idx) const
 {
-   return _edges[e_idx].opening_cycles;
+   return _vertices[v_idx].openings;
 }
 
 void DfsWalk::calcMapping (Array<int> &mapping) const
@@ -205,4 +211,16 @@ int DfsWalk::_cmp (VertexEdge &ve1, VertexEdge &ve2, void *context)
    int *ranks = (int *)context;
 
    return ranks[ve2.v] - ranks[ve1.v];
+}
+
+void DfsWalk::getNeighborsClosing (int v_idx, Array<int> &res)
+{
+   int i;
+
+   res.clear();
+   for (i = 0; i < _closures.size(); i++)
+   {
+      if (_closures[i].end == v_idx)
+         res.push(_closures[i].beg);
+   }
 }

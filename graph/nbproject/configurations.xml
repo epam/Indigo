@@ -32,7 +32,6 @@
       <itemPath>../common/base_cpp/pool.h</itemPath>
       <itemPath>../common/base_cpp/profiling.cpp</itemPath>
       <itemPath>../common/base_cpp/profiling.h</itemPath>
-      <itemPath>../common/base_cpp/ptr.h</itemPath>
       <itemPath>../common/base_cpp/ptr_array.h</itemPath>
       <itemPath>../common/base_cpp/red_black.h</itemPath>
       <itemPath>../common/base_cpp/reusable_obj_array.h</itemPath>

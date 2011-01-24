@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -57,6 +57,8 @@ enum
    SKIP_CIS_TRANS = 0x01,
    SKIP_STEREOCENTERS = 0x02,
    SKIP_XYZ = 0x04,
+   SKIP_RGROUP_FRAGMENTS = 0x08,
+   SKIP_ATTACHMENT_POINTS = 0x16
 };
 
 class Molecule;
@@ -68,8 +70,8 @@ public:
    class DLLEXPORT SGroup
    {
    public:
-      Array<int> atoms; // SAL in Molfile format
-      Array<int> bonds; // SBL in Molfile format
+      Array<int> atoms; // represented with SAL in Molfile format
+      Array<int> bonds; // represented with SBL in Molfile format
       virtual ~SGroup ();
    };
 
@@ -140,6 +142,11 @@ public:
    int  getRSiteAttachmentPointByOrder (int idx, int order) const;
    void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
 
+   void addAttachmentPoint (int order, int index);
+   int  getAttachmentPoint (int order, int index) const;
+   void removeAttachmentPoint (int index);
+   int  attachmentPointCount () const;
+
    virtual bool isSaturatedAtom    (int idx) = 0;
 
    virtual int  getBondOrder      (int idx) = 0; // > 0 -- BOND_***, -1 -- not sure
@@ -173,8 +180,10 @@ public:
    // true if bond stereoconfiguration is important
    virtual bool bondStereoCare (int idx) = 0;
 
-   virtual void aromatize () = 0;
-   virtual void dearomatize () = 0;
+   // Returns true if some bonds were changed
+   virtual bool aromatize () = 0;
+   // Returns true if all bonds were dearomatized
+   virtual bool dearomatize () = 0;
 
    Vec3f & getAtomXyz (int idx);
    void setAtomXyz (int idx, float x, float y, float z);
@@ -185,8 +194,8 @@ public:
    bool have_xyz;
    bool chiral; // read-only; can be true only when loaded from Molfile
 
-   ObjArray<DataSGroup> data_sgroups;
-   ObjArray<Superatom>  superatoms;
+   ObjPool<DataSGroup> data_sgroups;
+   ObjPool<Superatom>  superatoms;
 
    Array<char> name;
 
@@ -225,7 +234,7 @@ public:
 protected:
 
    virtual void _mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
-           const Array<int> *edges, const Array<int> &mapping, int skip_flags);
+           const Array<int> *edges, const Array<int> &mapping, int skip_flags) = 0;
 
    virtual void _postMergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
            const Array<int> *edges, const Array<int> &mapping, int skip_flags);
@@ -242,6 +251,9 @@ protected:
 
    Array<Vec3f> _xyz;
    ObjArray< Array<int> > _rsite_attachment_points;
+   bool _rGroupFragment;
+
+   ObjArray< Array<int> > _attachment_index;
 };
 
 }

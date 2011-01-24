@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -146,7 +146,11 @@ public:
    int vertexSmallestRingSize (int idx);
    bool vertexInRing(int idx);
 
-   int getComponentNumber (int v_idx);
+   int vertexComponent (int v_idx);
+   int countComponents ();
+   int countComponentVertices (int comp_idx);
+   int countComponentEdges (int comp_idx);
+   const Array<int> & getDecomposition ();
 
 protected:
    void _mergeWithSubgraph (const Graph &other, const Array<int> &vertices, const Array<int> *edges, Array<int> *mapping);
@@ -163,7 +167,10 @@ protected:
    bool        _sssr_valid;
 
    Array<int> _component_numbers;
+   Array<int> _component_vcount;
+   Array<int> _component_ecount;
    int        _components_valid;
+   int        _components_count;
 
    void _calculateTopology ();
    void _calculateSSSR ();

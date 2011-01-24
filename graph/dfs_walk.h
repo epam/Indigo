@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -40,16 +40,20 @@ public:
    
    const Array<SeqElem> & getSequence () const;
 
-   bool edgeClosingCycle (int e_idx) const;
-   int  numBranches      (int v_idx) const;
-   int  numOpeningCycles (int e_idx) const;
+   bool isClosure   (int e_idx) const;
+   int  numBranches (int v_idx) const;
+   int  numOpenings (int v_idx) const;
    
    // mapping[i] = index of appearance of graph's i-th vertex in the vertex sequence
    void calcMapping (Array<int> &mapping) const;
    
    int *ignored_vertices;
    int *vertex_ranks;
-   
+
+   void mustBeRootVertex (int v_idx);
+
+   void getNeighborsClosing (int v_idx, Array<int> &res);
+
    DEF_ERROR("DFS walk");
 protected:
    struct _VertexDesc
@@ -60,13 +64,11 @@ protected:
       int parent_vertex; // parent vertex in DFS tree
       int parent_edge;   // edge to parent vertex
       int branches;      // how many DFS branches go out from this vertex
+      int openings;      // how many cycles are starting in this vertex
    };
 
    struct _EdgeDesc
    {
-      int opening_cycles; // how many cycles are
-                          // (i) starting with this edge
-                          // and (ii) ending in this edge's first vertex
       int closing_cycle;  // 1 if this edge closes a cycle
    };
 
@@ -78,8 +80,8 @@ protected:
    TL_CP_DECL(Array<_EdgeDesc>,      _edges);
    
    TL_CP_DECL(Array<SeqElem>, _v_seq);
-
-   
+   TL_CP_DECL(Array<int>, _root_vertices);
+   TL_CP_DECL(Array<Edge>, _closures);
 };
 }
 

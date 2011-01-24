@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -99,4 +99,3 @@ _SIDManager::_SIDManager (void) : _lastNewSID(0)
    if (osTlsAlloc(&_tlsIdx) == 0)
       throw Error("can't allocate thread local storage cell");
 }    
-

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -92,6 +92,8 @@ public:
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
+   IndigoObject * at (int index);
+
    int tell ();
 
    GraphHighlighting highlighting;
@@ -99,7 +101,6 @@ public:
 
 protected:
    Scanner  *_own_scanner;
-   int       _counter;
 };
 
 class IndigoRdfLoader : public IndigoObject
@@ -112,11 +113,12 @@ public:
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
+   IndigoObject * at (int index);
+
    int tell ();
 
    RdfLoader *rdf_loader;
 protected:
-   int       _counter;
    Scanner  *_own_scanner;
 };
 
@@ -166,11 +168,19 @@ public:
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
+   IndigoObject * at (int index);
+   int count ();
+
 protected:
    Scanner    *_scanner;
    Array<char> _str;
    bool      _own_scanner;
-   int       _counter;
+
+   void _advance ();
+
+   TL_CP_DECL(Array<int>, _offsets);
+   int _current_number;
+   int _max_offset;
 };
 
 

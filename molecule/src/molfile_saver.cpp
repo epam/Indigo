@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -107,7 +107,10 @@ void MolfileSaver::_saveMolecule (BaseMolecule &mol, bool query)
    }
 
    if (_v2000)
+   {
       _writeRGroupIndices2000(_output, mol);
+      _writeAttachmentValues2000(_output, mol);
+   }
    
    if (rg2000)
    {
@@ -385,24 +388,22 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          }
       }
 
-      if (qmol != 0 && qmol->isRGroupFragment())
+      if (mol.attachmentPointCount() > 0)
       {
-         MoleculeRGroupFragment &fragment = qmol->getRGroupFragment();
-
          int val = 0;
 
-         for (int idx = 0; idx < fragment.attachmentPointCount(); idx++)
+         for (int idx = 1; idx <= mol.attachmentPointCount(); idx++)
          {
             int j;
 
-            for (j = 0; fragment.getAttachmentPoint(idx, j) != -1; j++)
-               if (fragment.getAttachmentPoint(idx, j) == i)
+            for (j = 0; mol.getAttachmentPoint(idx, j) != -1; j++)
+               if (mol.getAttachmentPoint(idx, j) == i)
                {
-                  val |= 1 << idx;
+                  val |= 1 << (idx - 1);
                   break;
                }
 
-            if (fragment.getAttachmentPoint(idx, j) != -1)
+            if (mol.getAttachmentPoint(idx, j) != -1)
                break;
          }
 
@@ -621,6 +622,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    charges.clear();
    isotopes.clear();
    pseudoatoms.clear();
+   atom_lists.clear();
 
    int iw = 1;
 
@@ -770,6 +772,10 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          case MoleculeStereocenters::BOND_UP: stereo = 1; break;
          case MoleculeStereocenters::BOND_DOWN: stereo = 6; break;
          case MoleculeStereocenters::BOND_EITHER: stereo = 4; break;
+         case 0:
+            if (mol.cis_trans.isIgnored(i))
+               stereo = 3;
+            break;
       }
 
       if(reactionBondReactingCenter != 0 && reactionBondReactingCenter->at(i) != 0)
@@ -861,6 +867,15 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    }
 
    int n_sgroups = mol.data_sgroups.size() + mol.superatoms.size();
+
+   QS_DEF(Array<int>, sgroup_ids);
+
+   sgroup_ids.clear();
+   for (i = mol.superatoms.begin(); i != mol.superatoms.end(); i = mol.superatoms.next(i))
+      sgroup_ids.push(i);
+   for (i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
+      sgroup_ids.push(i);
+
    if (n_sgroups > 0)
    {
       int j;
@@ -882,9 +897,9 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       {
          BaseMolecule::SGroup *sgroup;
          if (i < mol.superatoms.size())
-            sgroup = &mol.superatoms[i];
+            sgroup = &mol.superatoms[sgroup_ids[i]];
          else
-            sgroup = &mol.data_sgroups[i - mol.superatoms.size()];
+            sgroup = &mol.data_sgroups[sgroup_ids[i]];
 
          for (j = 0; j < sgroup->atoms.size(); j += 8)
          {
@@ -905,7 +920,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
 
          if (i < mol.superatoms.size())
          {
-            BaseMolecule::Superatom &superatom = mol.superatoms[i];
+            BaseMolecule::Superatom &superatom = mol.superatoms[sgroup_ids[i]];
 
             if (superatom.subscript.size() > 1)
                output.printf("M  SMT %3d %s\n", i + 1, superatom.subscript.ptr());
@@ -918,7 +933,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          }
          else
          {
-            BaseMolecule::DataSGroup &datasgroup = mol.data_sgroups[i - mol.superatoms.size()];
+            BaseMolecule::DataSGroup &datasgroup = mol.data_sgroups[sgroup_ids[i]];
             int k = 30;
 
             output.printf("M  SDT %3d ", i + 1);
@@ -1010,32 +1025,27 @@ void MolfileSaver::_writeRGroupIndices2000 (Output &output, BaseMolecule &mol)
    }
 }
 
-void MolfileSaver::_writeAttachmentValues2000 (Output &output, QueryMolecule &fragment)
+void MolfileSaver::_writeAttachmentValues2000 (Output &output, BaseMolecule &fragment)
 {
-   if (!fragment.isRGroupFragment())
-      return;
-
-   MoleculeRGroupFragment &rg_fragment = fragment.getRGroupFragment();
-
-   if (rg_fragment.attachmentPointCount() == 0)
+   if (fragment.attachmentPointCount() == 0)
       return;
 
    RedBlackMap<int, int> orders;
    int i;
 
-   for (i = 0; i < rg_fragment.attachmentPointCount(); i++)
+   for (i = 1; i <= fragment.attachmentPointCount(); i++)
    {
       int j = 0;
       int idx;
 
-      while ((idx = rg_fragment.getAttachmentPoint(i, j++)) != -1)
+      while ((idx = fragment.getAttachmentPoint(i, j++)) != -1)
       {
          int *val;
 
-         if ((val = orders.at2(idx + 1)) == 0)
-            orders.insert(idx + 1, 1 << i);            
+         if ((val = orders.at2(_atom_mapping[idx])) == 0)
+            orders.insert(_atom_mapping[idx], 1 << (i - 1));
          else
-            *val |= 1 << i;
+            *val |= 1 << (i - 1);
       }
 
    }

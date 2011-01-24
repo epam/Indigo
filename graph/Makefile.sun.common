@@ -2,15 +2,41 @@ all: $(TARGETDIR_libgraph.a)/libgraph.a
 
 ## Target: libgraph.a
 CPPFLAGS_libgraph.a = \
-	-I.. \
-	-I../common
+	-I../common \
+	-I..
 OBJS_libgraph.a =  \
+	$(TARGETDIR_libgraph.a)/nano_posix.o \
+	$(TARGETDIR_libgraph.a)/os_sync_posix.o \
+	$(TARGETDIR_libgraph.a)/os_thread_posix.o \
+	$(TARGETDIR_libgraph.a)/os_tls_posix.o \
+	$(TARGETDIR_libgraph.a)/crc32.o \
+	$(TARGETDIR_libgraph.a)/d_bitset.o \
+	$(TARGETDIR_libgraph.a)/exception.o \
+	$(TARGETDIR_libgraph.a)/io_base.o \
+	$(TARGETDIR_libgraph.a)/os_sync_wrapper.o \
+	$(TARGETDIR_libgraph.a)/os_thread_wrapper.o \
+	$(TARGETDIR_libgraph.a)/output.o \
+	$(TARGETDIR_libgraph.a)/profiling.o \
+	$(TARGETDIR_libgraph.a)/smart_output.o \
+	$(TARGETDIR_libgraph.a)/string_pool.o \
+	$(TARGETDIR_libgraph.a)/tlscont.o \
+	$(TARGETDIR_libgraph.a)/best_fit.o \
+	$(TARGETDIR_libgraph.a)/line3f.o \
+	$(TARGETDIR_libgraph.a)/lseg3f.o \
+	$(TARGETDIR_libgraph.a)/matr3x3d.o \
+	$(TARGETDIR_libgraph.a)/plane3f.o \
+	$(TARGETDIR_libgraph.a)/transform3f.o \
+	$(TARGETDIR_libgraph.a)/vec2f.o \
+	$(TARGETDIR_libgraph.a)/vec3f.o \
 	$(TARGETDIR_libgraph.a)/automorphism_search.o \
+	$(TARGETDIR_libgraph.a)/aux_path_finder.o \
 	$(TARGETDIR_libgraph.a)/biconnected_decomposer.o \
+	$(TARGETDIR_libgraph.a)/cycle_basis.o \
 	$(TARGETDIR_libgraph.a)/cycle_enumerator.o \
 	$(TARGETDIR_libgraph.a)/dfs_walk.o \
 	$(TARGETDIR_libgraph.a)/edge_rotation_matcher.o \
 	$(TARGETDIR_libgraph.a)/embedding_enumerator.o \
+	$(TARGETDIR_libgraph.a)/embeddings_storage.o \
 	$(TARGETDIR_libgraph.a)/filter.o \
 	$(TARGETDIR_libgraph.a)/graph.o \
 	$(TARGETDIR_libgraph.a)/graph_affine_matcher.o \
@@ -24,19 +50,12 @@ OBJS_libgraph.a =  \
 	$(TARGETDIR_libgraph.a)/morgan_code.o \
 	$(TARGETDIR_libgraph.a)/path_enumerator.o \
 	$(TARGETDIR_libgraph.a)/scaffold_detection.o \
+	$(TARGETDIR_libgraph.a)/shortest_path_finder.o \
+	$(TARGETDIR_libgraph.a)/simple_cycle_basis.o \
 	$(TARGETDIR_libgraph.a)/skew_symmetric_flow_finder.o \
 	$(TARGETDIR_libgraph.a)/skew_symmetric_network.o \
 	$(TARGETDIR_libgraph.a)/spanning_tree.o \
-	$(TARGETDIR_libgraph.a)/subgraph_hash.o \
-	$(TARGETDIR_libgraph.a)/d_bitset.o \
-	$(TARGETDIR_libgraph.a)/exception.o \
-	$(TARGETDIR_libgraph.a)/os_sync_wrapper.o \
-	$(TARGETDIR_libgraph.a)/os_thread_wrapper.o \
-	$(TARGETDIR_libgraph.a)/smart_output.o \
-	$(TARGETDIR_libgraph.a)/tlscont.o \
-	$(TARGETDIR_libgraph.a)/os_sync_posix.o \
-	$(TARGETDIR_libgraph.a)/os_thread_posix.o \
-	$(TARGETDIR_libgraph.a)/os_tls_posix.o
+	$(TARGETDIR_libgraph.a)/subgraph_hash.o
 
 
 # Link or archive
@@ -46,11 +65,86 @@ $(TARGETDIR_libgraph.a)/libgraph.a: $(TARGETDIR_libgraph.a) $(OBJS_libgraph.a)
 
 
 # Compile source files into .o files
+$(TARGETDIR_libgraph.a)/nano_posix.o: $(TARGETDIR_libgraph.a) ../common/base_c/nano_posix.c
+	$(COMPILE.c) $(CFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_c/nano_posix.c
+
+$(TARGETDIR_libgraph.a)/os_sync_posix.o: $(TARGETDIR_libgraph.a) ../common/base_c/os_sync_posix.c
+	$(COMPILE.c) $(CFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_c/os_sync_posix.c
+
+$(TARGETDIR_libgraph.a)/os_thread_posix.o: $(TARGETDIR_libgraph.a) ../common/base_c/os_thread_posix.c
+	$(COMPILE.c) $(CFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_c/os_thread_posix.c
+
+$(TARGETDIR_libgraph.a)/os_tls_posix.o: $(TARGETDIR_libgraph.a) ../common/base_c/os_tls_posix.c
+	$(COMPILE.c) $(CFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_c/os_tls_posix.c
+
+$(TARGETDIR_libgraph.a)/crc32.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/crc32.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/crc32.cpp
+
+$(TARGETDIR_libgraph.a)/d_bitset.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/d_bitset.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/d_bitset.cpp
+
+$(TARGETDIR_libgraph.a)/exception.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/exception.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/exception.cpp
+
+$(TARGETDIR_libgraph.a)/io_base.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/io_base.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/io_base.cpp
+
+$(TARGETDIR_libgraph.a)/os_sync_wrapper.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/os_sync_wrapper.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/os_sync_wrapper.cpp
+
+$(TARGETDIR_libgraph.a)/os_thread_wrapper.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/os_thread_wrapper.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/os_thread_wrapper.cpp
+
+$(TARGETDIR_libgraph.a)/output.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/output.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/output.cpp
+
+$(TARGETDIR_libgraph.a)/profiling.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/profiling.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/profiling.cpp
+
+$(TARGETDIR_libgraph.a)/smart_output.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/smart_output.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/smart_output.cpp
+
+$(TARGETDIR_libgraph.a)/string_pool.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/string_pool.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/string_pool.cpp
+
+$(TARGETDIR_libgraph.a)/tlscont.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/tlscont.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/tlscont.cpp
+
+$(TARGETDIR_libgraph.a)/best_fit.o: $(TARGETDIR_libgraph.a) ../common/math/best_fit.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/math/best_fit.cpp
+
+$(TARGETDIR_libgraph.a)/line3f.o: $(TARGETDIR_libgraph.a) ../common/math/line3f.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/math/line3f.cpp
+
+$(TARGETDIR_libgraph.a)/lseg3f.o: $(TARGETDIR_libgraph.a) ../common/math/lseg3f.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/math/lseg3f.cpp
+
+$(TARGETDIR_libgraph.a)/matr3x3d.o: $(TARGETDIR_libgraph.a) ../common/math/matr3x3d.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/math/matr3x3d.cpp
+
+$(TARGETDIR_libgraph.a)/plane3f.o: $(TARGETDIR_libgraph.a) ../common/math/plane3f.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/math/plane3f.cpp
+
+$(TARGETDIR_libgraph.a)/transform3f.o: $(TARGETDIR_libgraph.a) ../common/math/transform3f.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/math/transform3f.cpp
+
+$(TARGETDIR_libgraph.a)/vec2f.o: $(TARGETDIR_libgraph.a) ../common/math/vec2f.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/math/vec2f.cpp
+
+$(TARGETDIR_libgraph.a)/vec3f.o: $(TARGETDIR_libgraph.a) ../common/math/vec3f.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/math/vec3f.cpp
+
 $(TARGETDIR_libgraph.a)/automorphism_search.o: $(TARGETDIR_libgraph.a) src/automorphism_search.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/automorphism_search.cpp
 
+$(TARGETDIR_libgraph.a)/aux_path_finder.o: $(TARGETDIR_libgraph.a) src/aux_path_finder.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/aux_path_finder.cpp
+
 $(TARGETDIR_libgraph.a)/biconnected_decomposer.o: $(TARGETDIR_libgraph.a) src/biconnected_decomposer.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/biconnected_decomposer.cpp
+
+$(TARGETDIR_libgraph.a)/cycle_basis.o: $(TARGETDIR_libgraph.a) src/cycle_basis.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/cycle_basis.cpp
 
 $(TARGETDIR_libgraph.a)/cycle_enumerator.o: $(TARGETDIR_libgraph.a) src/cycle_enumerator.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/cycle_enumerator.cpp
@@ -63,6 +157,9 @@ $(TARGETDIR_libgraph.a)/edge_rotation_matcher.o: $(TARGETDIR_libgraph.a) src/edg
 
 $(TARGETDIR_libgraph.a)/embedding_enumerator.o: $(TARGETDIR_libgraph.a) src/embedding_enumerator.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/embedding_enumerator.cpp
+
+$(TARGETDIR_libgraph.a)/embeddings_storage.o: $(TARGETDIR_libgraph.a) src/embeddings_storage.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/embeddings_storage.cpp
 
 $(TARGETDIR_libgraph.a)/filter.o: $(TARGETDIR_libgraph.a) src/filter.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/filter.cpp
@@ -103,6 +200,12 @@ $(TARGETDIR_libgraph.a)/path_enumerator.o: $(TARGETDIR_libgraph.a) src/path_enum
 $(TARGETDIR_libgraph.a)/scaffold_detection.o: $(TARGETDIR_libgraph.a) src/scaffold_detection.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/scaffold_detection.cpp
 
+$(TARGETDIR_libgraph.a)/shortest_path_finder.o: $(TARGETDIR_libgraph.a) src/shortest_path_finder.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/shortest_path_finder.cpp
+
+$(TARGETDIR_libgraph.a)/simple_cycle_basis.o: $(TARGETDIR_libgraph.a) src/simple_cycle_basis.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/simple_cycle_basis.cpp
+
 $(TARGETDIR_libgraph.a)/skew_symmetric_flow_finder.o: $(TARGETDIR_libgraph.a) src/skew_symmetric_flow_finder.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/skew_symmetric_flow_finder.cpp
 
@@ -115,45 +218,44 @@ $(TARGETDIR_libgraph.a)/spanning_tree.o: $(TARGETDIR_libgraph.a) src/spanning_tr
 $(TARGETDIR_libgraph.a)/subgraph_hash.o: $(TARGETDIR_libgraph.a) src/subgraph_hash.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/subgraph_hash.cpp
 
-$(TARGETDIR_libgraph.a)/d_bitset.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/d_bitset.cpp
-	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/d_bitset.cpp
-
-$(TARGETDIR_libgraph.a)/exception.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/exception.cpp
-	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/exception.cpp
-
-$(TARGETDIR_libgraph.a)/os_sync_wrapper.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/os_sync_wrapper.cpp
-	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/os_sync_wrapper.cpp
-
-$(TARGETDIR_libgraph.a)/os_thread_wrapper.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/os_thread_wrapper.cpp
-	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/os_thread_wrapper.cpp
-
-$(TARGETDIR_libgraph.a)/smart_output.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/smart_output.cpp
-	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/smart_output.cpp
-
-$(TARGETDIR_libgraph.a)/tlscont.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/tlscont.cpp
-	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/tlscont.cpp
-
-$(TARGETDIR_libgraph.a)/os_sync_posix.o: $(TARGETDIR_libgraph.a) ../common/base_c/os_sync_posix.c
-	$(COMPILE.c) $(CFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_c/os_sync_posix.c
-
-$(TARGETDIR_libgraph.a)/os_thread_posix.o: $(TARGETDIR_libgraph.a) ../common/base_c/os_thread_posix.c
-	$(COMPILE.c) $(CFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_c/os_thread_posix.c
-
-$(TARGETDIR_libgraph.a)/os_tls_posix.o: $(TARGETDIR_libgraph.a) ../common/base_c/os_tls_posix.c
-	$(COMPILE.c) $(CFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_c/os_tls_posix.c
-
 
 
 #### Clean target deletes all generated files ####
 clean:
 	rm -f \
 		$(TARGETDIR_libgraph.a)/libgraph.a \
+		$(TARGETDIR_libgraph.a)/nano_posix.o \
+		$(TARGETDIR_libgraph.a)/os_sync_posix.o \
+		$(TARGETDIR_libgraph.a)/os_thread_posix.o \
+		$(TARGETDIR_libgraph.a)/os_tls_posix.o \
+		$(TARGETDIR_libgraph.a)/crc32.o \
+		$(TARGETDIR_libgraph.a)/d_bitset.o \
+		$(TARGETDIR_libgraph.a)/exception.o \
+		$(TARGETDIR_libgraph.a)/io_base.o \
+		$(TARGETDIR_libgraph.a)/os_sync_wrapper.o \
+		$(TARGETDIR_libgraph.a)/os_thread_wrapper.o \
+		$(TARGETDIR_libgraph.a)/output.o \
+		$(TARGETDIR_libgraph.a)/profiling.o \
+		$(TARGETDIR_libgraph.a)/smart_output.o \
+		$(TARGETDIR_libgraph.a)/string_pool.o \
+		$(TARGETDIR_libgraph.a)/tlscont.o \
+		$(TARGETDIR_libgraph.a)/best_fit.o \
+		$(TARGETDIR_libgraph.a)/line3f.o \
+		$(TARGETDIR_libgraph.a)/lseg3f.o \
+		$(TARGETDIR_libgraph.a)/matr3x3d.o \
+		$(TARGETDIR_libgraph.a)/plane3f.o \
+		$(TARGETDIR_libgraph.a)/transform3f.o \
+		$(TARGETDIR_libgraph.a)/vec2f.o \
+		$(TARGETDIR_libgraph.a)/vec3f.o \
 		$(TARGETDIR_libgraph.a)/automorphism_search.o \
+		$(TARGETDIR_libgraph.a)/aux_path_finder.o \
 		$(TARGETDIR_libgraph.a)/biconnected_decomposer.o \
+		$(TARGETDIR_libgraph.a)/cycle_basis.o \
 		$(TARGETDIR_libgraph.a)/cycle_enumerator.o \
 		$(TARGETDIR_libgraph.a)/dfs_walk.o \
 		$(TARGETDIR_libgraph.a)/edge_rotation_matcher.o \
 		$(TARGETDIR_libgraph.a)/embedding_enumerator.o \
+		$(TARGETDIR_libgraph.a)/embeddings_storage.o \
 		$(TARGETDIR_libgraph.a)/filter.o \
 		$(TARGETDIR_libgraph.a)/graph.o \
 		$(TARGETDIR_libgraph.a)/graph_affine_matcher.o \
@@ -167,19 +269,12 @@ clean:
 		$(TARGETDIR_libgraph.a)/morgan_code.o \
 		$(TARGETDIR_libgraph.a)/path_enumerator.o \
 		$(TARGETDIR_libgraph.a)/scaffold_detection.o \
+		$(TARGETDIR_libgraph.a)/shortest_path_finder.o \
+		$(TARGETDIR_libgraph.a)/simple_cycle_basis.o \
 		$(TARGETDIR_libgraph.a)/skew_symmetric_flow_finder.o \
 		$(TARGETDIR_libgraph.a)/skew_symmetric_network.o \
 		$(TARGETDIR_libgraph.a)/spanning_tree.o \
-		$(TARGETDIR_libgraph.a)/subgraph_hash.o \
-		$(TARGETDIR_libgraph.a)/d_bitset.o \
-		$(TARGETDIR_libgraph.a)/exception.o \
-		$(TARGETDIR_libgraph.a)/os_sync_wrapper.o \
-		$(TARGETDIR_libgraph.a)/os_thread_wrapper.o \
-		$(TARGETDIR_libgraph.a)/smart_output.o \
-		$(TARGETDIR_libgraph.a)/tlscont.o \
-		$(TARGETDIR_libgraph.a)/os_sync_posix.o \
-		$(TARGETDIR_libgraph.a)/os_thread_posix.o \
-		$(TARGETDIR_libgraph.a)/os_tls_posix.o
+		$(TARGETDIR_libgraph.a)/subgraph_hash.o
 	$(CCADMIN)
 	rm -f -r $(TARGETDIR_libgraph.a)
 

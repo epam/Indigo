@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -24,7 +24,7 @@ DLLEXPORT Indigo & indigoGetInstance ()
 
 CEXPORT const char * indigoVersion ()
 {
-   return "1.0-beta3a";
+   return "1.0-beta6";
 }
 
 Indigo::Indigo ()
@@ -38,6 +38,7 @@ Indigo::Indigo ()
    skip_3d_chirality = false;
    deconvolution_aromatization = true;
    molfile_saving_mode = 0;
+   molfile_saving_no_chiral = false;
    filename_encoding = ENCODING_ASCII;
    fp_params.any_qwords = 15;
    fp_params.sim_qwords = 8;
@@ -46,6 +47,8 @@ Indigo::Indigo ()
 
    embedding_edges_uniqueness = false;
    max_embeddings = 1000;
+
+   layout_max_iterations = 0;
 }
 
 void Indigo::removeAllObjects ()
@@ -87,8 +90,7 @@ CEXPORT const char * indigoGetLastError (void)
    return self.error_message.ptr();
 }
 
-CEXPORT void indigoSetErrorHandler (void (*handler)
-                 (const char *message, void *context), void *context)
+CEXPORT void indigoSetErrorHandler (INDIGO_ERROR_HANDLER handler, void *context)
 {
    Indigo &self = indigoGetInstance();
    self.error_handler = handler;
@@ -97,12 +99,15 @@ CEXPORT void indigoSetErrorHandler (void (*handler)
 
 CEXPORT int indigoFree (int handle)
 {
-   INDIGO_BEGIN
+   try
    {
+      Indigo &self = indigoGetInstance();
       self.removeObject(handle);
-      return 1;
    }
-   INDIGO_END(-1);
+   catch (Exception &)
+   {
+   }
+   return 1;
 }
 
 CEXPORT int indigoCountReferences (void)
@@ -135,7 +140,7 @@ void Indigo::removeObject (int id)
    OsLocker lock(_objects_lock);
 
    if (_objects.at2(id) == 0)
-     return;
+      return;
 
    delete _objects.at(id);
    _objects.remove(id);
@@ -192,7 +197,7 @@ CEXPORT void indigoDbgBreakpoint (void)
    {
       int ret = MessageBox(NULL, "Wait for a debugger?", 
          "Debugging (indigoDbgBreakpoint)", MB_OKCANCEL);
-      if (ret == MB_OK)
+      if (ret == IDOK)
       {
          while (!IsDebuggerPresent())
             Sleep(100);

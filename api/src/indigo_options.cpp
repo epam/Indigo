@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -110,6 +110,12 @@ static void indigoSetMaxEmbeddings (int value)
    self.max_embeddings = value;
 }
 
+static void indigoSetLayoutMaxIterations (int value)
+{
+   Indigo &self = indigoGetInstance();
+   self.layout_max_iterations = value;
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -129,6 +135,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 
    mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness);
    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings);
+
+   mgr.setOptionHandlerInt("layout-max-iterations", indigoSetLayoutMaxIterations);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

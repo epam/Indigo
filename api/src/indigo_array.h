@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -31,6 +31,7 @@ public:
 
    virtual IndigoObject * clone ();
 
+   static bool is (IndigoObject &obj);
    static IndigoArray & cast (IndigoObject &obj);
 
    PtrArray<IndigoObject> objects;

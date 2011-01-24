@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,7 +18,7 @@
 #include "graph/spanning_tree.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_scaffold_detection.h"
-#include "molecule/molecule_decomposer.h"
+#include "graph/graph_decomposer.h"
 #include "molecule/elements.h"
 
 using namespace indigo;
@@ -791,7 +791,7 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
              mol.getAtomIsotope(vertex.neiVertex(j)) == 0)
             _hcount[i]++;
 
-         if (ignored_vertices != 0 && ignored_vertices[vertex.neiVertex(j)] == 0)
+         if (ignored_vertices == 0 || ignored_vertices[vertex.neiVertex(j)] == 0)
             _degree[i]++;
       }
    }
@@ -1081,7 +1081,7 @@ void MoleculeAutomorphismSearch::_markComplicatedStereocentersAsValid (Molecule 
          single_bond_bridge_mark[i] = 0;
 
    Filter edge_filter(single_bond_bridge_mark.ptr(), Filter::NEQ, 1);
-   MoleculeDecomposer decomposer(mol);
+   GraphDecomposer decomposer(mol);
    decomposer.decompose(0, &edge_filter);
 
    const Array<int> &decomposition = decomposer.getDecomposition();

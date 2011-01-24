@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -72,7 +72,7 @@ protected:
    void _writeCtabHeader2000 (Output &output, BaseMolecule &mol);
    void _writeCtab2000 (Output &output, BaseMolecule &mol, bool query);
    void _writeRGroupIndices2000 (Output &output, BaseMolecule &mol);
-   void _writeAttachmentValues2000 (Output &output, QueryMolecule &fragment);
+   void _writeAttachmentValues2000 (Output &output, BaseMolecule &fragment);
    static bool _checkAttPointOrder (BaseMolecule &mol, int rsite);
 
    Output &_output;

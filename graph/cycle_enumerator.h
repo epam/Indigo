@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -29,6 +29,7 @@ public:
    explicit CycleEnumerator (Graph &graph);
            ~CycleEnumerator ();
 
+   int   min_length;
    int   max_length;
    void *context;
 
@@ -40,7 +41,7 @@ public:
    bool process ();
 
 protected:
-   bool _pathFinder (const SpanningTree &spt, Array<int> &vertices, Array<int> &edges, Array<int> &flags);
+   bool _pathFinder (const SpanningTree &spt, int ext_v1, int ext_v2, int ext_e);
    Graph &_graph;
 private:
    CycleEnumerator (const CycleEnumerator &); // no implicit copy

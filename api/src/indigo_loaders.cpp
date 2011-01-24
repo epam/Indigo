@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -29,7 +29,6 @@ IndigoSdfLoader::IndigoSdfLoader (Scanner &scanner) :
 IndigoObject(SDF_LOADER)
 {
    _own_scanner = 0;
-   _counter = 0;
    sdf_loader = 0;
    sdf_loader = new SdfLoader(scanner);
 }
@@ -38,7 +37,6 @@ IndigoSdfLoader::IndigoSdfLoader (const char *filename) :
 IndigoObject(SDF_LOADER)
 {
    _own_scanner = 0;
-   _counter = 0;
    sdf_loader = 0;
 
    _own_scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);
@@ -216,14 +214,21 @@ IndigoObject * IndigoSdfLoader::next ()
    if (sdf_loader->isEOF())
       return 0;
 
-   int counter = _counter;
+   int counter = sdf_loader->currentNumber();
    int offset = sdf_loader->tell();
 
    sdf_loader->readNext();
-   _counter++;
 
    return new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties,
                                 counter, offset);
+}
+
+IndigoObject * IndigoSdfLoader::at (int index)
+{
+   sdf_loader->readAt(index);
+
+   return new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties,
+                                index, 0);
 }
 
 bool IndigoSdfLoader::hasNext ()
@@ -239,7 +244,6 @@ int IndigoSdfLoader::tell ()
 IndigoRdfLoader::IndigoRdfLoader (Scanner &scanner) :
 IndigoObject(RDF_LOADER)
 {
-   _counter = 0;
    _own_scanner = 0;
    rdf_loader = 0;
 
@@ -249,7 +253,6 @@ IndigoObject(RDF_LOADER)
 IndigoRdfLoader::IndigoRdfLoader (const char *filename) :
 IndigoObject(RDF_LOADER)
 {
-   _counter = 0;
    _own_scanner = 0;
    rdf_loader = 0;
    
@@ -269,11 +272,10 @@ IndigoObject * IndigoRdfLoader::next ()
    if (rdf_loader->isEOF())
       return 0;
 
-   int counter = _counter;
+   int counter = rdf_loader->currentNumber();
    int offset = rdf_loader->tell();
 
    rdf_loader->readNext();
-   _counter++;
 
    if (rdf_loader->isMolecule())
       return new IndigoRdfMolecule(rdf_loader->data, rdf_loader->properties,
@@ -282,6 +284,18 @@ IndigoObject * IndigoRdfLoader::next ()
       return new IndigoRdfReaction(rdf_loader->data, rdf_loader->properties,
                                    counter, offset);
 }
+
+IndigoObject * IndigoRdfLoader::at (int index)
+{
+   rdf_loader->readAt(index);
+
+   if (rdf_loader->isMolecule())
+      return new IndigoRdfMolecule(rdf_loader->data, rdf_loader->properties, index, 0);
+   else
+      return new IndigoRdfReaction(rdf_loader->data, rdf_loader->properties, index, 0);
+
+}
+
 
 int IndigoRdfLoader::tell ()
 {
@@ -380,20 +394,28 @@ IndigoObject * IndigoSmilesReaction::clone ()
 }
 
 IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (Scanner &scanner) :
-IndigoObject(MULTILINE_SMILES_LOADER)
+IndigoObject(MULTILINE_SMILES_LOADER),
+TL_CP_GET(_offsets)
 {
-   _counter = 0;
    _own_scanner = false;
    _scanner = &scanner;
+
+   _current_number = 0;
+   _max_offset = 0;
+   _offsets.clear();
 }
 
 IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (const char *filename) :
-IndigoObject(MULTILINE_SMILES_LOADER)
+IndigoObject(MULTILINE_SMILES_LOADER),
+TL_CP_GET(_offsets)
 {
-   _counter = 0;
    _scanner = 0;
    _scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);
    _own_scanner = true;
+
+   _current_number = 0;
+   _max_offset = 0;
+   _offsets.clear();
 }
 
 
@@ -403,17 +425,25 @@ IndigoMultilineSmilesLoader::~IndigoMultilineSmilesLoader ()
       delete _scanner;
 }
 
+void IndigoMultilineSmilesLoader::_advance ()
+{
+   _offsets.expand(_current_number + 1);
+   _offsets[_current_number++] = _scanner->tell();
+   _scanner->readString(_str, false);
+
+   if (_scanner->tell() > _max_offset)
+      _max_offset = _scanner->tell();
+}
+
 IndigoObject * IndigoMultilineSmilesLoader::next ()
 {
    if (_scanner->isEOF())
       return 0;
 
-   int counter = _counter;
    int offset = _scanner->tell();
+   int counter = _current_number;
 
-   _scanner->readString(_str, false);
-
-   _counter++;
+   _advance();
 
    if (_str.find('>') == -1)
       return new IndigoSmilesMolecule(_str, counter, offset);
@@ -431,6 +461,45 @@ int IndigoMultilineSmilesLoader::tell ()
    return _scanner->tell();
 }
 
+int IndigoMultilineSmilesLoader::count ()
+{
+   int offset = _scanner->tell();
+   int cn = _current_number;
+
+   if (offset != _max_offset)
+   {
+      _scanner->seek(_max_offset, SEEK_SET);
+      _current_number = _offsets.size();
+   }
+
+   while (!_scanner->isEOF())
+      _advance();
+
+   int res = _current_number;
+
+   if (res != cn)
+   {
+      _scanner->seek(offset, SEEK_SET);
+      _current_number = cn;
+   }
+
+   return res;
+}
+
+IndigoObject * IndigoMultilineSmilesLoader::at (int index)
+{
+   if (index < _offsets.size())
+   {
+      _scanner->seek(_offsets[index], SEEK_SET);
+      _current_number = index;
+      return next();
+   }
+   _scanner->seek(_max_offset, SEEK_SET);
+   _current_number = _offsets.size();
+   while (index > _offsets.size())
+      _advance();
+   return next();
+}
 
 CEXPORT int indigoIterateSDF (int reader)
 {

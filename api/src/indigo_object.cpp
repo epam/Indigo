@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -137,8 +137,7 @@ bool IndigoObject::isBaseMolecule ()
 {
    if (type == MOLECULE || type == QUERY_MOLECULE ||
        type == REACTION_MOLECULE || type == SCAFFOLD || 
-       type == RGROUP_FRAGMENT || type == RDF_MOLECULE || type == SMILES_MOLECULE ||
-       type == MOLECULE_COMPONENT)
+       type == RGROUP_FRAGMENT || type == RDF_MOLECULE || type == SMILES_MOLECULE)
       return true;
    
    return false;

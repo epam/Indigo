@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -12,17 +12,17 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __os_tlscont_h__
-#define __os_tlscont_h__
+#ifndef __tlscont_h__
+#define __tlscont_h__
 
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
 #include "base_cpp/pool.h"
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/red_black.h"
-#include "base_cpp/ptr.h"
 #include "base_cpp/ptr_array.h"
 #include "base_c/os_tls.h"
+#include "base_cpp/auto_ptr.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -47,7 +47,7 @@ public:
    // assigned automatically (not by manual TL_SET_SESSION_ID call)
    void releaseSessionId (qword id);
 
-   DEF_ERROR("TLS error");
+   DEF_ERROR("TLS");
 
 private:
    _SIDManager (void);
@@ -82,14 +82,14 @@ public:
    T& getLocalCopy (const qword id)
    {
       OsLocker locker(_lock.ref());
-      Ptr<T>& ptr = _map.findOrInsert(id);
+      AutoPtr<T>& ptr = _map.findOrInsert(id);
       if (ptr.get() == NULL)
-         ptr.set(new T());
-      return *ptr;
+         ptr.reset(new T());
+      return ptr.ref();
    }
 
 private:
-   typedef RedBlackObjMap<qword, Ptr<T> > _Map;
+   typedef RedBlackObjMap<qword, AutoPtr<T> > _Map;
 
    _Map           _map;
    ThreadSafeStaticObj<OsLock> _lock;
@@ -159,8 +159,8 @@ public:
    {
       if (_var_pool == 0)
          return;
-      // Check if pool destructor wasn't called
-      // This may happen at program exit
+      // Check if the _var_pool destructor have not been called already
+      // (this can happen on program exit)
       if (_var_pool->isValid())
          _var_pool->release(_idx);
    }
@@ -205,4 +205,4 @@ private:
 #pragma warning(pop)
 #endif
 
-#endif // __os_tlscont_h__
+#endif // __tlscont_h__

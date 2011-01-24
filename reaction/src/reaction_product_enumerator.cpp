@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -24,7 +24,6 @@
 #include "graph/embedding_enumerator.h"
 #include "graph/spanning_tree.h"
 #include "molecule/molecule.h"
-#include "molecule/molecule_decomposer.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "graph/dfs_walk.h"
 
@@ -171,7 +170,6 @@ void ReactionProductEnumerator::_buildTubesGrid_old( void )
 void ReactionProductEnumerator::_buildTubesGrid( void )
 {
    QS_DEF(ObjArray< Array<int> >, digits);
-   digits.clearObjects();
    digits.clear();
 
    int digit_idx = 0;

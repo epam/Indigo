@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -14,7 +14,6 @@
 
 #include "graph/max_common_subgraph.h"
 #include "base_cpp/array.h"
-#include "graph/graph_decomposer.h"
 #include "time.h"
 
 using namespace indigo;
@@ -1137,10 +1136,9 @@ void MaxCommonSubgraph::AdjMatricesStore::getSolutions(ObjArray< Array<int> >& v
 
    _createConnectedGraph(graph, map_gr);
 
-   GraphDecomposer decomposer(graph);
-   int ncomp = decomposer.decompose();
-   const Array<int> &decomposition = decomposer.getDecomposition();
-
+   int ncomp = graph.countComponents();
+   const Array<int> &decomposition = graph.getDecomposition();
+   
    //check for maximum
    v_maps.clear();
    if(ncomp == 0)

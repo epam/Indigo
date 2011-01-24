@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -531,10 +531,9 @@ void MoleculeRenderInternal::_checkSettings ()
 void MoleculeRenderInternal::_initRGroups()
 {
    QUERY_MOL_BEGIN(_mol);
-      if (qmol.isRGroupFragment()) {
-         MoleculeRGroupFragment& rfragment = qmol.getRGroupFragment();
-         for (int i = 0; i < rfragment.attachmentPointCount(); ++i)
-            for (int j = 0, k; (k = rfragment.getAttachmentPoint(i, j)) >= 0; ++j)
+      if (qmol.attachmentPointCount() > 0) {
+         for (int i = 0; i < qmol.attachmentPointCount(); ++i)
+            for (int j = 0, k; (k = qmol.getAttachmentPoint(i, j)) >= 0; ++j)
                _ad(k).isRGroupAttachmentPoint = true;
       }
    QUERY_MOL_END;
@@ -2059,7 +2058,11 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       }
 
       // radical
-      int radical = bm.getAtomRadical(aid);
+      int radical = 0;
+      
+      if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
+         radical = bm.getAtomRadical(aid);
+      
       if (radical > 0)
       {
          const TextItem& label = _data.textitems[tilabel];
@@ -2211,9 +2214,8 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
    QUERY_MOL_BEGIN(_mol);
    if (ad.isRGroupAttachmentPoint) {
       rGroupAttachmentIndices.clear();
-      MoleculeRGroupFragment& rfragment = qmol.getRGroupFragment();
-      for (int i = 0; i < rfragment.attachmentPointCount(); ++i)
-         for (int j = 0, k; (k = rfragment.getAttachmentPoint(i, j)) >= 0; ++j)
+      for (int i = 0; i < qmol.attachmentPointCount(); ++i)
+         for (int j = 0, k; (k = qmol.getAttachmentPoint(i, j)) >= 0; ++j)
             if (k == aid)
                rGroupAttachmentIndices.push(i);
 

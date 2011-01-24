@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -25,7 +25,9 @@ plus_interval_factor(4),
 arrow_interval_factor(6),
 preserve_molecule_layout(false),
 _r(r)
-{}
+{
+   max_iterations = 0;
+}
 
 void ReactionLayout::make ()
 {
@@ -35,6 +37,7 @@ void ReactionLayout::make ()
       for (int i = _r.begin(); i < _r.end(); i = _r.next(i))
       {
          MoleculeLayout molLayout(_r.getBaseMolecule(i));
+         molLayout.max_iterations = max_iterations;
          molLayout.bond_length = bond_length;
          molLayout.make();
       }

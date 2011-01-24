@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -39,13 +39,12 @@ public:
    DEF_ERROR("SMILES loader");
 
    SmilesLoader (Scanner &scanner);
+   ~SmilesLoader ();
 
    void loadMolecule      (Molecule &mol);
    void loadQueryMolecule (QueryMolecule &mol);
 
    void loadSMARTS (QueryMolecule &mol);
-
-   void checkQueryAtoms ();
 
    Array<int> * reaction_atom_mapping;
 
@@ -64,7 +63,6 @@ protected:
 
    enum
    {
-      _STAR_ATOM = 1,
       _ANY_BOND = -2
    };
 
@@ -89,7 +87,7 @@ protected:
       int aam;
       bool brackets;
 
-      int query_type;
+      bool star_atom;
    };
 
    struct _BondDesc
@@ -107,10 +105,12 @@ protected:
       {
          beg = -1;
          pending_bond = -1;
+         pending_bond_str = -1;
       }
 
       int beg;
       int pending_bond;
+      int pending_bond_str; // index in pending_bonds_pool;
    };
 
    Scanner &_scanner;
@@ -137,7 +137,7 @@ protected:
                    _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
 
    void _readBond (Array<char> &bond_str, _BondDesc &bond,
-                   AutoPtr<QueryMolecule::Bond> &qbond, bool smarts_mode);
+                   AutoPtr<QueryMolecule::Bond> &qbond);
 
 private:
    SmilesLoader (const SmilesLoader &); // no implicit copy

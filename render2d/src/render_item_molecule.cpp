@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -27,7 +27,8 @@ RenderItemMolecule::RenderItemMolecule (RenderItemFactory& factory) :
    RenderItemContainer(factory),
    mol(NULL),
    highlighting(NULL),
-   refAtom(-1)
+   refAtom(-1),
+   _core(-1)
 {
 }
 
@@ -117,7 +118,8 @@ void RenderItemMolecule::estimateSize ()
          size.y += vSpace;
       size.y += line.size.y;
    }
-   refAtomPos.copy(_factory.getItemFragment(_core).refAtomPos);
+   if (_core >= 0)
+      refAtomPos.copy(_factory.getItemFragment(_core).refAtomPos);
 }
 
 void RenderItemMolecule::render ()

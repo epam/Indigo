@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -48,6 +48,7 @@ public:
 
    void setParity (int bond_idx, int parity);
    int  getParity (int bond_idx) const;
+   bool isIgnored (int bond_idx) const;
 
    void registerBond (int idx);
 
@@ -84,6 +85,7 @@ protected:
    struct _Bond
    {
       int parity; // CIS ot TRANS
+      int ignored; // explicitly ignored cis-trans configuration on this bond
       int substituents[4];
    };
 

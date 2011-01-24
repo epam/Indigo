@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -552,10 +552,10 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph &subgraph, Graph &supergraph
             continue;
 
          if (query.components[i] == query.components[sub_idx] &&
-             target.getComponentNumber(core_sub[i]) != target.getComponentNumber(super_idx))
+             target.vertexComponent(core_sub[i]) != target.vertexComponent(super_idx))
             return false;
          if (query.components[i] != query.components[sub_idx] &&
-             target.getComponentNumber(core_sub[i]) == target.getComponentNumber(super_idx))
+             target.vertexComponent(core_sub[i]) == target.vertexComponent(super_idx))
             return false;
       }
    }
@@ -819,23 +819,21 @@ int MoleculeSubstructureMatcher::_embedding_markush (int *core_sub, int *core_su
       {
          QueryMolecule &fragment = *rgroup.fragments[fr_idx];
 
-         if (fragment.getRGroupFragment().attachmentPointCount() > 2)
+         if (fragment.attachmentPointCount() > 2)
             throw Error("more than two attachment points");
 
-         if (site_degree != fragment.getRGroupFragment().attachmentPointCount())
+         if (site_degree != fragment.attachmentPointCount())
             throw Error("number of attachment points must be equal to R-group site degree");
-
-         MoleculeRGroupFragment &att_fragment = fragment.getRGroupFragment();
 
          int att_idx1;
          int att_idx2;
          int i, j;
 
-         for (i = 0; (att_idx1 = att_fragment.getAttachmentPoint(0, i)) != -1; i++)
+         for (i = 0; (att_idx1 = fragment.getAttachmentPoint(0, i)) != -1; i++)
          {
             if (two_att_points)
             {
-               for (j = 0; (att_idx2 = att_fragment.getAttachmentPoint(1, j)) != -1; j++)
+               for (j = 0; (att_idx2 = fragment.getAttachmentPoint(1, j)) != -1; j++)
                   if (!_attachRGroupAndContinue(core_sub, core_super,
                           &fragment, true, att_idx1, att_idx2, old_site_rgroups[rg_idx]))
                      return 0;

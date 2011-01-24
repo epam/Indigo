@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -22,8 +22,8 @@ TL_CP_GET(_subtree),
 TL_CP_GET(_v_mapping),
 TL_CP_GET(_e_mapping),
 TL_CP_GET(_inv_e_mapping),
-TL_CP_GET(_dfs_front),
-TL_CP_GET(_pool)
+TL_CP_GET(_pool),
+TL_CP_GET(_dfs_front)
 {
    min_vertices = 1;
    max_vertices = graph.vertexCount();
@@ -36,17 +36,15 @@ TL_CP_GET(_pool)
 
 GraphSubtreeEnumerator::~GraphSubtreeEnumerator ()
 {
-   _dfs_front.clearObjects();
+   _dfs_front.clear(); // to avoid data race
 }
 
 void GraphSubtreeEnumerator::process ()
 {
    int i;
 
-   if (_dfs_front.size() < 1)
-      _dfs_front.push(_pool);
-   for (int i = 0; i < _dfs_front.size(); i++)
-      _dfs_front[i].clearAndResetPool(_pool);
+   _dfs_front.clear();
+   _dfs_front.push(_pool);
 
    _subtree.clear();
    _v_mapping.clear_resize(_graph.vertexEnd());

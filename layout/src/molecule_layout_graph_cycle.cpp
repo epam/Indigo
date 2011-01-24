@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -152,17 +152,20 @@ bool MoleculeLayoutGraph::_cycle_cb (Graph &graph, const Array<int> &vertices, c
 {
    CycleContext &cycle_context = *(CycleContext *)context;
 
-   if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber)
-      return false;
-
-   ++cycle_context.iterationNumber;
-
    ObjPool<Cycle>& cycles = cycle_context.cycles;
 
    int cycle_idx = cycles.add(vertices, edges);
    Cycle &new_cycle = cycles[cycle_idx];
-
+   
    new_cycle.canonize();
+   
+   // Mark covered edges in graph
+   for (int i = 0; i < edges.size(); i++)
+      if (cycle_context.covered_edges[edges[i]] == 0)
+      {
+         cycle_context.covered_edges[edges[i]] = 1;
+         cycle_context.uncovered_edges--;
+      }
 
    for (int i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
    {

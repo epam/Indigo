@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -73,7 +73,7 @@ protected:
       ANY = 0, AROMATIC, NONAROMATIC
    };
    TL_CP_DECL(Array<int>, _matching_edges_state);
-   Ptr<BaseMolecule> _submolecule;
+   AutoPtr<BaseMolecule> _submolecule;
 };
 
 }

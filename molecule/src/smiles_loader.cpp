@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -22,6 +22,7 @@
 #include "molecule/molecule_stereocenters.h"
 #include "graph/graph_highlighting.h"
 #include "molecule/elements.h"
+#include "graph/cycle_basis.h"
 
 using namespace indigo;
 
@@ -43,6 +44,12 @@ TL_CP_GET(_bonds)
    _inside_smarts_component = false;
 }
 
+SmilesLoader::~SmilesLoader ()
+{
+    // clear pool-dependent data in this thread to avoid data races
+   _atoms.clear();
+}
+
 void SmilesLoader::loadMolecule (Molecule &mol)
 {
    mol.clear();
@@ -60,17 +67,6 @@ void SmilesLoader::loadQueryMolecule (QueryMolecule &mol)
    _qmol = &mol;
    _loadMolecule();
 }
-
-
-void SmilesLoader::checkQueryAtoms ()
-{
-   for (int i = 0; i < _atoms.size(); i++)
-   {
-      if (_atoms[i].query_type != 0 && !_bmol->isPseudoAtom(i))
-         throw Error("'*' atoms accepted only within queries (unless they are pseudo-atoms)");
-   }
-}
-
 
 void SmilesLoader::_calcStereocenters ()
 {
@@ -304,18 +300,31 @@ void SmilesLoader::_readOtherStuff ()
                throw Error("only %d atoms found in pseudo-atoms $...$ block", i + 1);
             if (c == ';' && i == _bmol->vertexCount() - 1)
                throw Error("extra ';' in pseudo-atoms $...$ block");
+
             if (label.size() > 0)
             {
                label.push(0);
+               int rnum;
 
-               if (_mol != 0)
-                  _mol->setPseudoAtom(i, label.ptr());
+               if (label.size() > 3 && label[0] == '_' && label[1] == 'R' &&
+                   sscanf(label.ptr() + 2, "%d", &rnum) == 1)
+               {
+                  if (_qmol != 0)
+                     _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+                  // ChemAxon's Extended SMILES notation for R-sites
+                  _bmol->allowRGroupOnRSite(i, rnum);
+               }
                else
                {
-                  QueryMolecule::Atom *atom = _qmol->releaseAtom(i);
-                  atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
-                  _qmol->resetAtom(i, QueryMolecule::Atom::und(atom,
-                       new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                  if (_mol != 0)
+                     _mol->setPseudoAtom(i, label.ptr());
+                  else
+                  {
+                     QueryMolecule::Atom *atom = _qmol->releaseAtom(i);
+                     atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
+                     _qmol->resetAtom(i, QueryMolecule::Atom::und(atom,
+                          new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                  }
                }
             }
          }
@@ -365,12 +374,14 @@ void SmilesLoader::loadSMARTS (QueryMolecule &mol)
 
 void SmilesLoader::_loadMolecule ()
 {
+   QS_DEF(StringPool, pending_bonds_pool);
    QS_DEF(Array<_CycleDesc>, cycles);
    QS_DEF(Array<int>, atom_stack);
 
    _atoms.clear();
    _bonds.clear();
    cycles.clear();
+   pending_bonds_pool.clear();
    atom_stack.clear();
    if (highlighting != 0)
       highlighting->clear();
@@ -436,16 +447,19 @@ void SmilesLoader::_loadMolecule ()
                bond = &_bonds[cycles[number].pending_bond];
                bond->end = atom_stack.top();
                added_bond = true;
-               _atoms[bond->end].neighbors.add(cycles[number].beg);
+               _atoms[bond->end].neighbors.add(bond->beg);
+               _atoms[bond->beg].closure(number, bond->end);
 
                cycles[number].clear();
                
                if (_qmol != 0)
                {
-                  if (bond->type == -1)
-                     throw Error("unsure pending bond type");
-                  _qmol->addBond(bond->beg, bond->end,
-                          new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, bond->type));
+                  QS_DEF(Array<char>, bond_str);
+                  AutoPtr<QueryMolecule::Bond> qbond;
+
+                  bond_str.readString(pending_bonds_pool.at(cycles[number].pending_bond_str), false);
+                  _readBond(bond_str, *bond, qbond);
+                  _qmol->addBond(bond->beg, bond->end, qbond.release());
                }
                break;
             }
@@ -474,8 +488,9 @@ void SmilesLoader::_loadMolecule ()
          else
          {
             if (atom_stack.size() < 1)
-               throw Error("probably mispaced '.'");
-            atom_stack.pop();
+               ; // we allow misplaced dots because we are so kind
+            else
+               atom_stack.pop();
          }
          first_atom = true;
          continue;
@@ -561,7 +576,18 @@ void SmilesLoader::_loadMolecule ()
             //    is detected after the scanning cycle (see below)
          }
          else
-            _readBond(bond_str, *bond, qbond, smarts_mode);
+            _readBond(bond_str, *bond, qbond);
+
+         // The bond "directions" are already saved in _BondDesc::dir,
+         // so we can safely discard them. We are doing that to succeed
+         // the later check 'pending bond vs. closing bond'.
+         {
+            int i;
+            
+            for (i = 0; i < bond_str.size(); i++)
+               if (bond_str[i] == '/' || bond_str[i] == '\\')
+                  bond_str[i] = '-';
+         }
 
          if (bond_str.size() > 0)
          {
@@ -594,26 +620,7 @@ void SmilesLoader::_loadMolecule ()
                {
                   _BondDesc &pending_bond = _bonds[cycles[number].pending_bond];
 
-                  if (_qmol != 0)
-                  {
-                     int type;
-                     
-                     if (!qbond->sureValue(QueryMolecule::BOND_ORDER, type))
-                        throw Error("unsure pending bond type");
-
-                     if (pending_bond.type != type)
-                        throw Error("conflicting pending bond types");
-
-                     _qmol->addBond(pending_bond.beg, bond->beg, qbond.release());
-                  }
-                  else
-                  {
-                     if (bond->type != pending_bond.type)
-                        throw Error("cycle %d: closing bond (%d) does not match pending bond (%d)",
-                           number, bond->type, pending_bond.type);
-                  }
-
-                  // transfer data from closing bond to pending bond
+                  // transfer direction from closing bond to pending bond
                   if (bond->dir > 0)
                   {
                      if (bond->dir == pending_bond.dir)
@@ -626,8 +633,27 @@ void SmilesLoader::_loadMolecule ()
                         pending_bond.dir = 3 - bond->dir;
                   }
 
+                  // apart from the direction, check that the closing bond matches the pending bond
+                  const char *str = pending_bonds_pool.at(cycles[number].pending_bond_str);
+
+                  if (bond_str.size() > 0)
+                  {
+                     if ((int)strlen(str) != bond_str.size() || memcmp(str, bond_str.ptr(), strlen(str)) != 0)
+                        throw Error("cycle %d: closing bond description %.*s does not match pending bond description %s",
+                             number, bond_str.size(), bond_str.ptr(), str);
+                  }
+                  else
+                  {
+                     bond_str.readString(str, false);
+                     _readBond(bond_str, *bond, qbond);
+                  }
+
+                  if (_qmol != 0)
+                     _qmol->addBond(pending_bond.beg, bond->beg, qbond.release());
+
                   pending_bond.end = bond->beg;
                   _atoms[pending_bond.end].neighbors.add(pending_bond.beg);
+                  _atoms[pending_bond.beg].closure(number, pending_bond.end);
 
                   // forget the closing bond
                   _bonds.pop();
@@ -637,23 +663,13 @@ void SmilesLoader::_loadMolecule ()
                // opening some pending cycle bond, like the first '1' in C=1C=CC=CC=1
                else
                {
-                  //if (_qmol != 0)
-                  //   throw Error("bond cycle indices are not allowed within query molecules");
-
                   while (cycles.size() <= number)
                      cycles.push().clear();
                   cycles[number].pending_bond = _bonds.size() - 1;
+                  cycles[number].pending_bond_str = pending_bonds_pool.add(bond_str);
                   cycles[number].beg = -1; // have it already in the bond
                   _atoms[bond->beg].pending(number);
 
-                  if (_qmol != 0)
-                  {
-                     int order;
-                     if (qbond->sureValue(QueryMolecule::BOND_ORDER, order))
-                        _bonds.top().type = order;
-                     else
-                        _bonds.top().type = -1;
-                  }
                   continue;
                }
             }
@@ -751,6 +767,8 @@ void SmilesLoader::_loadMolecule ()
    {
       for (i = 0; i < _atoms.size(); i++)
       {
+         if (_atoms[i].label == 0)
+            throw Error("atom without a label");
          int idx = _mol->addAtom(_atoms[i].label);
 
          _mol->setAtomCharge(idx, _atoms[i].charge);
@@ -770,28 +788,64 @@ void SmilesLoader::_loadMolecule ()
 
    if (!smarts_mode)
    {
-      for (i = 0; i < _bonds.size(); i++)
+      CycleBasis basis;
+      basis.create(*_bmol);
+
+      // mark all 'empty' bonds in "aromatic" rings as aromatic
+      for (i = 0; i < basis.getCyclesCount(); i++)
       {
-         int beg = _bonds[i].beg;
-         int end = _bonds[i].end;
+         const Array<int> &cycle = basis.getCycle(i);
+         int j;
+         bool needs_modification = false;
 
-         if (_bonds[i].type == -1)
+         for (j = 0; j < cycle.size(); j++)
          {
-            int order;
+            int idx = cycle[j];
+            const Edge &edge = _bmol->getEdge(idx);
+            if (!_atoms[edge.beg].aromatic || !_atoms[edge.end].aromatic)
+               break;
+            if (_bonds[idx].type == BOND_SINGLE || _bonds[idx].type == BOND_DOUBLE || _bonds[idx].type == BOND_TRIPLE)
+               break;
+            if (_qmol != 0 && !_qmol->possibleBondOrder(idx, BOND_AROMATIC))
+               break;
+            if (_bonds[idx].type == -1)
+               needs_modification = true;
+         }
 
-            if (_atoms[beg].aromatic && _atoms[end].aromatic &&
-                _bmol->getBondTopology(i) == TOPOLOGY_RING)
-               order = BOND_AROMATIC;
-            else
-               order = BOND_SINGLE;
+         if (j != cycle.size())
+            continue;
 
-            if (_mol != 0)
-               _mol->setBondOrder_Silent(i, order);
-            if (_qmol != 0)
-               _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(i),
-                       new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order)));
+         if (needs_modification)
+         {
+            for (j = 0; j < cycle.size(); j++)
+            {
+               int idx = cycle[j];
+               if (_bonds[idx].type == -1)
+               {
+                  _bonds[idx].type = BOND_AROMATIC;
+                  if (_mol != 0)
+                     _mol->setBondOrder_Silent(idx, BOND_AROMATIC);
+                  if (_qmol != 0)
+                     _qmol->resetBond(idx, QueryMolecule::Bond::und(_qmol->releaseBond(idx),
+                             new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
+               }
+            }
          }
       }
+
+      // mark the rest 'empty' bonds as single
+      for (i = 0; i < _bonds.size(); i++)
+      {
+         if (_bonds[i].type == -1)
+         {
+            if (_mol != 0)
+               _mol->setBondOrder_Silent(i, BOND_SINGLE);
+            if (_qmol != 0)
+               _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(i),
+                       new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE)));
+         }
+      }
+
    }
 
    if (_mol != 0)
@@ -832,7 +886,7 @@ void SmilesLoader::_loadMolecule ()
       // Forbid matching SMARTS atoms to hydrogens
       for (i = 0; i < _atoms.size(); i++)
       {
-         // not needed if it is a sure atom or a list without hydrogen
+         // not needed if it is a sure atom or a list without a hydrogen
          if (_qmol->getAtomNumber(i) == -1 && _qmol->possibleAtomNumber(i, ELEM_H))
          {
             // not desired if it is a list with hydrogen
@@ -851,6 +905,15 @@ void SmilesLoader::_loadMolecule ()
       }
    }
 
+   if (!inside_rsmiles)
+      for (i = 0; i < _atoms.size(); i++)
+         if (_atoms[i].star_atom && _atoms[i].aam != 0)
+         {
+            if (_qmol != 0)
+               _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+            _bmol->allowRGroupOnRSite(i, _atoms[i].aam);
+         }
+
    _calcStereocenters();
    _calcCisTrans();
 
@@ -865,8 +928,18 @@ void SmilesLoader::_loadMolecule ()
       _readOtherStuff();
    }
 
-   if (!inside_rsmiles && _mol != 0)
-      checkQueryAtoms();
+   // Update attachment orders for rsites
+   for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
+   {
+      if (!_bmol->isRSite(i))
+         continue;
+
+      const Vertex &vertex = _bmol->getVertex(i);
+
+      int j, k = 0;
+      for (j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
+         _bmol->setRSiteAttachmentOrder(i, vertex.neiVertex(j), k++);
+   }
 
    if (!inside_rsmiles)
    {
@@ -885,7 +958,7 @@ void SmilesLoader::_loadMolecule ()
 }
 
 void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
-                              AutoPtr<QueryMolecule::Bond> &qbond, bool smarts_mode)
+                              AutoPtr<QueryMolecule::Bond> &qbond)
 {
    if (bond_str.find(';') != -1)
    {
@@ -902,7 +975,7 @@ void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
          if (i == bond_str.size() || bond_str[i] == ';')
          {
             subqbond.reset(new QueryMolecule::Bond);
-            _readBond(substring, bond, subqbond, smarts_mode);
+            _readBond(substring, bond, subqbond);
             qbond.reset(QueryMolecule::Bond::und(qbond.release(), subqbond.release()));
             substring.clear();
          }
@@ -926,7 +999,7 @@ void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
          if (i == bond_str.size() || bond_str[i] == ',')
          {
             subqbond.reset(new QueryMolecule::Bond);
-            _readBond(substring, bond, subqbond, smarts_mode);
+            _readBond(substring, bond, subqbond);
             if (qbond->type == 0)
                qbond.reset(subqbond.release());
             else
@@ -953,7 +1026,7 @@ void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
          if (i == bond_str.size() || bond_str[i] == '&')
          {
             subqbond.reset(new QueryMolecule::Bond);
-            _readBond(substring, bond, subqbond, smarts_mode);
+            _readBond(substring, bond, subqbond);
             qbond.reset(QueryMolecule::Bond::und(qbond.release(), subqbond.release()));
             substring.clear();
          }
@@ -1178,6 +1251,7 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
 
    BufferScanner scanner(atom_str);
 
+   bool element_assigned = false;
    bool neg = false;
    while (!scanner.isEOF())
    {
@@ -1364,8 +1438,9 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       }
       else if (next == '*')
       {
+         atom.star_atom = true;
          if (qatom.get() == 0)
-            atom.query_type = _STAR_ATOM;
+            atom.label = ELEM_RSITE;
          else
             subatom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom
                (QueryMolecule::ATOM_NUMBER, ELEM_H)));
@@ -1531,10 +1606,13 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
 
       if (element > 0)
       {
+         if (element_assigned)
+            throw Error("two element labels for one atom");
          if (qatom.get() != 0)
             subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, element));
          else
             atom.label = element;
+         element_assigned = true;
       }
 
       if (aromatic != 0)
@@ -1567,12 +1645,6 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       if (!isotope_set)
          first_in_brackets = false;
    }
-
-   //if (qatom.get() == 0)
-   //{
-   //   if (atom.label < 1)
-   //      throw Error("no atom label in the atom designator");
-   //}
 }
 
 SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :
@@ -1586,8 +1658,8 @@ SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :
    aromatic = 0;
    aam = 0;
    brackets = false;
+   star_atom = false;
 
-   query_type = 0;
    parent = -1;
 }
 

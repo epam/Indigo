@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -32,6 +32,7 @@ public:
    float plus_interval_factor;
    float arrow_interval_factor;
    bool preserve_molecule_layout;
+   int  max_iterations;
 
 private:
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, int id);

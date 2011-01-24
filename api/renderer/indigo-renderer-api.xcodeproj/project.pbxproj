@@ -36,7 +36,6 @@
 		81BBA9B6127B430A004CD27A /* render2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = render2d.xcodeproj; path = ../../render2d/render2d.xcodeproj; sourceTree = SOURCE_ROOT; };
 		81BBA9C0127B4338004CD27A /* libindigo-renderer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libindigo-renderer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81BBA9C9127B435A004CD27A /* libindigo-renderer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libindigo-renderer.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
-		81BBA9D0127B43CA004CD27A /* / */ = {isa = PBXFileReference; lastKnownFileType = folder; path = /; sourceTree = "<absolute>"; };
 		81BBA9F0127B43EA004CD27A /* libcairo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcairo.dylib; path = /opt/local/lib/libcairo.dylib; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -67,7 +66,6 @@
 				81BBA9B4127B42CC004CD27A /* indigo_render2d.cpp */,
 				81BBA9B5127B42CC004CD27A /* indigo_renderer_internal.h */,
 				81BBA9C1127B4338004CD27A /* Products */,
-				81BBA9D0127B43CA004CD27A /* / */,
 				81BBA9F0127B43EA004CD27A /* libcairo.dylib */,
 			);
 			sourceTree = "<group>";
@@ -248,14 +246,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
 				PREBINDING = NO;
 				PRODUCT_NAME = "indigo-renderer";
 			};
@@ -270,6 +269,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
@@ -282,8 +282,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
 				COPY_PHASE_STRIP = NO;
 				EXECUTABLE_PREFIX = lib;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -295,7 +294,7 @@
 					"$(inherited)",
 					/opt/local/lib,
 				);
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
 				OTHER_LDFLAGS = (
 					"-undefined",
 					suppress,

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -35,8 +35,6 @@ public:
    GraphDecomposer (const Graph &graph);
    ~GraphDecomposer ();
 
-   bool need_component_size;
-
    // returns the amount of connected components
    int decompose (const Filter *filter = NULL, const Filter *edge_filter = NULL);
 
@@ -45,7 +43,6 @@ public:
    int getComponent       (int vertex) const;
    int getComponentsCount ()           const;
 
-   // Set need_component_size flag to true if you need this functionality
    int getComponentVerticesCount (int component) const;
    int getComponentEdgesCount    (int component) const;
 
@@ -57,8 +54,6 @@ protected:
    TL_CP_DECL(Array<int>, _component_ids);
    TL_CP_DECL(Array<int>, _component_vertices_count);
    TL_CP_DECL(Array<int>, _component_edges_count);
-
-   void _collectComponentsSizes (const Filter *filter, const Filter *edge_filter);
 private:
    GraphDecomposer (const GraphDecomposer &);
 };

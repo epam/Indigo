@@ -5,14 +5,22 @@ CPPFLAGS_libreaction.a = \
 	-I.. \
 	-I../common
 OBJS_libreaction.a =  \
+	$(TARGETDIR_libreaction.a)/base_reaction.o \
+	$(TARGETDIR_libreaction.a)/base_reaction_substructure_matcher.o \
 	$(TARGETDIR_libreaction.a)/crf_loader.o \
 	$(TARGETDIR_libreaction.a)/crf_saver.o \
 	$(TARGETDIR_libreaction.a)/icr_loader.o \
 	$(TARGETDIR_libreaction.a)/icr_saver.o \
+	$(TARGETDIR_libreaction.a)/query_reaction.o \
 	$(TARGETDIR_libreaction.a)/reaction.o \
 	$(TARGETDIR_libreaction.a)/reaction_auto_loader.o \
 	$(TARGETDIR_libreaction.a)/reaction_automapper.o \
+	$(TARGETDIR_libreaction.a)/reaction_enumerator_state.o \
+	$(TARGETDIR_libreaction.a)/reaction_exact_matcher.o \
 	$(TARGETDIR_libreaction.a)/reaction_fingerprint.o \
+	$(TARGETDIR_libreaction.a)/reaction_highlighting.o \
+	$(TARGETDIR_libreaction.a)/reaction_neighborhood_counters.o \
+	$(TARGETDIR_libreaction.a)/reaction_product_enumerator.o \
 	$(TARGETDIR_libreaction.a)/reaction_substructure_matcher.o \
 	$(TARGETDIR_libreaction.a)/rsmiles_loader.o \
 	$(TARGETDIR_libreaction.a)/rsmiles_saver.o \
@@ -27,6 +35,12 @@ $(TARGETDIR_libreaction.a)/libreaction.a: $(TARGETDIR_libreaction.a) $(OBJS_libr
 
 
 # Compile source files into .o files
+$(TARGETDIR_libreaction.a)/base_reaction.o: $(TARGETDIR_libreaction.a) src/base_reaction.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/base_reaction.cpp
+
+$(TARGETDIR_libreaction.a)/base_reaction_substructure_matcher.o: $(TARGETDIR_libreaction.a) src/base_reaction_substructure_matcher.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/base_reaction_substructure_matcher.cpp
+
 $(TARGETDIR_libreaction.a)/crf_loader.o: $(TARGETDIR_libreaction.a) src/crf_loader.cpp
 	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/crf_loader.cpp
 
@@ -39,6 +53,9 @@ $(TARGETDIR_libreaction.a)/icr_loader.o: $(TARGETDIR_libreaction.a) src/icr_load
 $(TARGETDIR_libreaction.a)/icr_saver.o: $(TARGETDIR_libreaction.a) src/icr_saver.cpp
 	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/icr_saver.cpp
 
+$(TARGETDIR_libreaction.a)/query_reaction.o: $(TARGETDIR_libreaction.a) src/query_reaction.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/query_reaction.cpp
+
 $(TARGETDIR_libreaction.a)/reaction.o: $(TARGETDIR_libreaction.a) src/reaction.cpp
 	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction.cpp
 
@@ -48,8 +65,23 @@ $(TARGETDIR_libreaction.a)/reaction_auto_loader.o: $(TARGETDIR_libreaction.a) sr
 $(TARGETDIR_libreaction.a)/reaction_automapper.o: $(TARGETDIR_libreaction.a) src/reaction_automapper.cpp
 	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_automapper.cpp
 
+$(TARGETDIR_libreaction.a)/reaction_enumerator_state.o: $(TARGETDIR_libreaction.a) src/reaction_enumerator_state.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_enumerator_state.cpp
+
+$(TARGETDIR_libreaction.a)/reaction_exact_matcher.o: $(TARGETDIR_libreaction.a) src/reaction_exact_matcher.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_exact_matcher.cpp
+
 $(TARGETDIR_libreaction.a)/reaction_fingerprint.o: $(TARGETDIR_libreaction.a) src/reaction_fingerprint.cpp
 	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_fingerprint.cpp
+
+$(TARGETDIR_libreaction.a)/reaction_highlighting.o: $(TARGETDIR_libreaction.a) src/reaction_highlighting.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_highlighting.cpp
+
+$(TARGETDIR_libreaction.a)/reaction_neighborhood_counters.o: $(TARGETDIR_libreaction.a) src/reaction_neighborhood_counters.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_neighborhood_counters.cpp
+
+$(TARGETDIR_libreaction.a)/reaction_product_enumerator.o: $(TARGETDIR_libreaction.a) src/reaction_product_enumerator.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_product_enumerator.cpp
 
 $(TARGETDIR_libreaction.a)/reaction_substructure_matcher.o: $(TARGETDIR_libreaction.a) src/reaction_substructure_matcher.cpp
 	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_substructure_matcher.cpp
@@ -72,14 +104,22 @@ $(TARGETDIR_libreaction.a)/rxnfile_saver.o: $(TARGETDIR_libreaction.a) src/rxnfi
 clean:
 	rm -f \
 		$(TARGETDIR_libreaction.a)/libreaction.a \
+		$(TARGETDIR_libreaction.a)/base_reaction.o \
+		$(TARGETDIR_libreaction.a)/base_reaction_substructure_matcher.o \
 		$(TARGETDIR_libreaction.a)/crf_loader.o \
 		$(TARGETDIR_libreaction.a)/crf_saver.o \
 		$(TARGETDIR_libreaction.a)/icr_loader.o \
 		$(TARGETDIR_libreaction.a)/icr_saver.o \
+		$(TARGETDIR_libreaction.a)/query_reaction.o \
 		$(TARGETDIR_libreaction.a)/reaction.o \
 		$(TARGETDIR_libreaction.a)/reaction_auto_loader.o \
 		$(TARGETDIR_libreaction.a)/reaction_automapper.o \
+		$(TARGETDIR_libreaction.a)/reaction_enumerator_state.o \
+		$(TARGETDIR_libreaction.a)/reaction_exact_matcher.o \
 		$(TARGETDIR_libreaction.a)/reaction_fingerprint.o \
+		$(TARGETDIR_libreaction.a)/reaction_highlighting.o \
+		$(TARGETDIR_libreaction.a)/reaction_neighborhood_counters.o \
+		$(TARGETDIR_libreaction.a)/reaction_product_enumerator.o \
 		$(TARGETDIR_libreaction.a)/reaction_substructure_matcher.o \
 		$(TARGETDIR_libreaction.a)/rsmiles_loader.o \
 		$(TARGETDIR_libreaction.a)/rsmiles_saver.o \

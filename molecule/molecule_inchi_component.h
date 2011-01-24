@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -42,7 +42,7 @@ struct MoleculeInChICompoment
    void clear() {}
 
 private:
-   void _getCanonicalMolecule (Molecule &mol, Molecule &cano_mol);
+   void _getCanonicalMolecule (Molecule &source_mol, Molecule &cano_mol);
 
    static int  _cmpVertex         (Graph &graph, int v1, int v2, const void *context);
    static int  _cmpVertexStereo   (Molecule &graph, int v1, int v2, const void *context);

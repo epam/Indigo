@@ -8,7 +8,7 @@
     <ProjectGuid>{D7D9B92E-80BE-449C-8D98-C2ABA620B59C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>com.gga.indigo</RootNamespace>
+    <RootNamespace>com.ggasoftware.indigo</RootNamespace>
     <AssemblyName>indigo-renderer-cs</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

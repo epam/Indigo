@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -301,8 +301,8 @@ void MoleculePiSystemsMatcher::_extractPiSystem (int pi_system_index)
    pi_system.initialized = true;
 
    Molecule &ps = pi_system.pi_system;
-   _decomposer->buildComponentMolecule(pi_system_index, ps, 
-      &pi_system.mapping, &pi_system.inv_mapping);
+   Filter filt(_decomposer->getDecomposition().ptr(), Filter::EQ, pi_system_index);
+   ps.makeSubmolecule(_target, filt, &pi_system.mapping, &pi_system.inv_mapping);
 
    // Replace bonds outside pi-system to implicit hydrogens
    QS_DEF(Array<int>, conn);
@@ -613,7 +613,7 @@ bool MoleculePiSystemsMatcher::_fixBonds (QueryMolecule &query, const int *mappi
       if (can_be_single && can_be_double && can_be_triple)
          continue;
 
-      bool ret;
+      bool ret = false; // initializing to avoid compiler warning
       if (can_be_single && can_be_double)
          // Here can_be_triple = false because of previous check
          ret = pi_system.localizer->fixBondSingleDouble(pi_sys_edge);

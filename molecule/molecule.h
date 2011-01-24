@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -84,10 +84,11 @@ public:
 
    virtual bool bondStereoCare (int idx);
 
-   virtual void aromatize ();
-   virtual void dearomatize ();
+   virtual bool aromatize ();
+   virtual bool dearomatize ();
 
    int getImplicitH (int idx);
+   int calcImplicitHForConnectivity (int idx, int conn);
 
    int getAtomConnectivity (int idx);
    int getAtomConnectivity_noImplH (int idx);
@@ -125,6 +126,8 @@ public:
 
    bool isAromatized ();
 
+   // Check 
+   bool isNitrogentV5 (int atom_index);
 protected:
    struct _Atom
    {
@@ -167,6 +170,8 @@ protected:
 
 private:
    Molecule (const Molecule &); // no implicit copy
+
+   int _getImplicitHForConnectivity (int idx, int conn, bool use_cache, bool to_throw);
 };
 
 }

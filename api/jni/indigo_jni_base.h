@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -55,6 +55,13 @@ JNIEXPORT jint JNINAME(name) (JNIEnv *env, jobject obj, jint p1, jint p2) \
 {                                                                         \
    indigoJniSetSession(env, obj);                                                  \
    return name(p1, p2);                                                   \
+}
+
+#define JNI_FUNC_jint_jint_jint_jint(name)                                     \
+JNIEXPORT jint JNINAME(name) (JNIEnv *env, jobject obj, jint p1, jint p2, jint p3) \
+{                                                                         \
+   indigoJniSetSession(env, obj);                                         \
+   return name(p1, p2, p3);                                               \
 }
 
 #define JNI_FUNC_jint_jstring(name)                                       \
@@ -219,6 +226,19 @@ JNIEXPORT jstring JNINAME(name) (JNIEnv *env, jobject obj, jint p1, jstring j_p2
    ret = name(p1, p2);                                                         \
    (*env)->ReleaseStringUTFChars(env, j_p2, p2);                               \
    return (*env)->NewStringUTF(env, ret);                                      \
+}
+
+#define JNI_FUNC_jint_jint_jfloat_jfloat_jstring(name)                         \
+JNIEXPORT jint JNINAME(name) (JNIEnv *env, jobject obj, jint p0, jfloat p1, jfloat p2, jstring j_p3) \
+{                                                                              \
+   const char *p3;                                                             \
+   int ret;                                                                    \
+                                                                               \
+   indigoJniSetSession(env, obj);                                              \
+   p3 = (*env)->GetStringUTFChars(env, j_p3, NULL);                            \
+   ret = name(p0, p1, p2, p3);                                                 \
+   (*env)->ReleaseStringUTFChars(env, j_p3, p3);                               \
+   return ret;                                                                 \
 }
 
 #endif

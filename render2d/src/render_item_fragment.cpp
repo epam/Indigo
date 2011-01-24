@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -33,7 +33,7 @@ RenderItemFragment::RenderItemFragment (RenderItemFactory& factory) :
    inversionArray(NULL),
    exactChangeArray(NULL),
    refAtom(-1),
-   _scaleFactor(1.0)
+   _scaleFactor(1.0f)
 {
 }
 

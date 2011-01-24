@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -50,6 +50,8 @@ void BaseMolecule::clear ()
    cis_trans.clear();
    _xyz.clear();
    _rsite_attachment_points.clear();
+   data_sgroups.clear();
+   superatoms.clear();
    Graph::clear();
 }
 
@@ -96,6 +98,22 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
    }
    else
       _xyz.zerofill();
+
+   if (!(skip_flags & SKIP_ATTACHMENT_POINTS))
+   {
+      if (mol.attachmentPointCount() > 0)
+      {
+         for (i = 1; i <= mol.attachmentPointCount(); i++)
+         {
+            int att_idx;
+            int j;
+
+            for (j = 0; (att_idx = mol.getAttachmentPoint(i, j)) != -1; j++)
+               if (mapping_out->at(att_idx) != -1)
+                  this->addAttachmentPoint(i, mapping_out->at(att_idx));
+         }
+      }
+   }
 
    // subclass stuff (Molecule or QueryMolecule)
    _mergeWithSubmolecule(mol, vertices, edges, *mapping_out, skip_flags);
@@ -291,14 +309,8 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
    for (i = 0; i < indices.size(); i++)
       mapping[indices[i]] = -1;
 
-   // subclass (Molecule or QueryMolecule) removes its data
-   _removeAtoms(indices, mapping.ptr());
-
-   stereocenters.removeAtoms(indices);
-   cis_trans.buildOnSubmolecule(*this, *this, mapping.ptr());
-
    // sgroups
-   for (j = data_sgroups.size() - 1; j >= 0; j--)
+   for (j = data_sgroups.begin(); j != data_sgroups.end(); j = data_sgroups.next(j))
    {
       _removeAtomsFromSGroup(data_sgroups[j], mapping);
       if (data_sgroups[j].atoms.size() < 1)
@@ -310,6 +322,12 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
       if (superatoms[j].atoms.size() < 1)
          superatoms.remove(j);
    }
+
+   stereocenters.removeAtoms(indices);
+   cis_trans.buildOnSubmolecule(*this, *this, mapping.ptr());
+
+   // subclass (Molecule or QueryMolecule) removes its data
+   _removeAtoms(indices, mapping.ptr());
 
    // Remove vertices from graph
    for (i = 0; i < indices.size(); i++)
@@ -385,11 +403,6 @@ int BaseMolecule::getVacantPiOrbitals (int group, int charge, int radical,
    return vacant;
 }
 
-
-void BaseMolecule::_mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
-           const Array<int> *edges, const Array<int> &mapping, int skip_flags)
-{
-}
 
 void BaseMolecule::_postMergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
         const Array<int> *edges, const Array<int> &mapping, int skip_flags)
@@ -520,6 +533,45 @@ void BaseMolecule::setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int 
    _rsite_attachment_points.expand(atom_idx + 1);
    _rsite_attachment_points[atom_idx].expandFill(order + 1, -1);
    _rsite_attachment_points[atom_idx][order] = att_atom_idx;
+
+}
+
+int BaseMolecule::attachmentPointCount () const
+{
+   return _attachment_index.size();
+}
+
+void BaseMolecule::addAttachmentPoint (int order, int index)
+{
+   if (order < 1)
+      throw Error("attachment point order %d no allowed (should start from 1)", order);
+
+   if (_attachment_index.size() < order)
+      _attachment_index.resize(order);
+
+   _attachment_index[order - 1].push(index);
+}
+
+void BaseMolecule::removeAttachmentPoint (int index)
+{
+   int i, j;
+
+   for (i = 0; i < _attachment_index.size(); i++)
+      if ((j = _attachment_index[i].find(index)) != -1)
+      {
+         if (j == _attachment_index[i].size() - 1)
+            _attachment_index[i].pop();
+         else
+            _attachment_index[i][j] = _attachment_index[i].pop();
+      }
+}
+
+int BaseMolecule::getAttachmentPoint (int order, int index) const
+{
+   if (order < 1)
+      throw Error("attachment point order %d no allowed (should start from 1)", order);
+
+   return index < _attachment_index[order - 1].size() ? _attachment_index[order - 1][index] : -1;
 }
 
 BaseMolecule::SGroup::~SGroup ()
@@ -544,12 +596,12 @@ void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
    int i;
 
    for (i = sgroup.atoms.size() - 1; i >= 0; i--)
-      if (mapping[i] == -1)
+      if (mapping[sgroup.atoms[i]] == -1)
          sgroup.atoms.remove(i);
 
    for (i = sgroup.bonds.size() - 1; i >= 0; i--)
    {
-      const Edge &edge = getEdge(i);
+      const Edge &edge = getEdge(sgroup.bonds[i]);
       if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
          sgroup.bonds.remove(i);
    }

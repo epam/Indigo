@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -42,15 +42,6 @@ public:
       clear();
       if (_own_pool)
          delete _pool;
-   }
-
-   void clearAndResetPool (Pool<Elem> &pool)
-   {
-      clear();
-      if (_own_pool)
-         delete _pool;
-      _own_pool = false;
-      _pool = &pool;
    }
 
    int add ()

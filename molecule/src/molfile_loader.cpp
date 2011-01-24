@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -165,9 +165,9 @@ void MolfileLoader::_readCtabHeader ()
 
       version[5] = 0;
 
-      if (strcmp(version, "V2000") == 0)
+      if (strcasecmp(version, "V2000") == 0)
          _v2000 = true;
-      else if (strcmp(version, "V3000") == 0)
+      else if (strcasecmp(version, "V3000") == 0)
          _v2000 = false;
       else
          throw Error("bad molfile version : %s", version);
@@ -891,11 +891,6 @@ void MolfileLoader::_readCtab2000 ()
             if (_qmol == 0)
                throw Error("rgroups attachment points are allowed only for queries");
 
-            if (!_qmol->isRGroupFragment())
-               _qmol->createRGroupFragment();
-
-            MoleculeRGroupFragment &frag = _qmol->getRGroupFragment();
-
             int list_length = _scanner.readIntFix(3);
 
             while (list_length-- > 0)
@@ -910,7 +905,7 @@ void MolfileLoader::_readCtab2000 ()
 
                for (int att_idx = 0; (1 << att_idx) <= att_type; att_idx++)
                   if (att_type & (1 << att_idx))
-                     frag.addAttachmentPoint(att_idx, atom_idx);
+                     _qmol->addAttachmentPoint(att_idx, atom_idx);
             }
 
             _scanner.skipString();
@@ -931,14 +926,14 @@ void MolfileLoader::_readCtab2000 ()
                if (strncmp(type, "SUP", 3) == 0)
                {
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_SUP;
-                  _bmol->superatoms.push();
-                  _sgroup_mapping[sgroup_idx] = _bmol->superatoms.size() - 1;
+                  int idx = _bmol->superatoms.add();
+                  _sgroup_mapping[sgroup_idx] = idx;
                }
                else if (strncmp(type, "DAT", 3) == 0)
                {
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_DAT;
-                  _bmol->data_sgroups.push();
-                  _sgroup_mapping[sgroup_idx] = _bmol->data_sgroups.size() - 1;
+                  int idx = _bmol->data_sgroups.add();
+                  _sgroup_mapping[sgroup_idx] = idx;
                }
                else
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_OTHER;
@@ -2000,9 +1995,6 @@ void MolfileLoader::_readCtab3000 ()
             if (_qmol == 0)
                throw Error("rgroup attachment points are allowed only for queries");
 
-            if (!_qmol->isRGroupFragment())
-               _qmol->createRGroupFragment();
-
             int att_type = strscan.readInt1();
 
             if (att_type == -1)
@@ -2010,7 +2002,7 @@ void MolfileLoader::_readCtab3000 ()
 
             for (int att_idx = 0; (1 << att_idx) <= att_type; att_idx++)
                if (att_type & (1 << att_idx))
-                  _qmol->getRGroupFragment().addAttachmentPoint(att_idx, i);
+                  _qmol->addAttachmentPoint(att_idx, i);
          }
          else if (strcmp(prop, "ATTCHORD") == 0)
          {

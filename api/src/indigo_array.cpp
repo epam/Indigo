@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -15,6 +15,7 @@
 #include "api/indigo.h"
 #include "indigo_array.h"
 #include "base_cpp/auto_ptr.h"
+#include "indigo_loaders.h"
 
 IndigoArray::IndigoArray () : IndigoObject(ARRAY)
 {
@@ -22,6 +23,15 @@ IndigoArray::IndigoArray () : IndigoObject(ARRAY)
 
 IndigoArray::~IndigoArray ()
 {
+}
+
+bool IndigoArray::is (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::ARRAY)
+      return true;
+   if (obj.type == IndigoObject::ARRAY_ELEMENT)
+      return is(((IndigoArrayElement &)obj).get());
+   return false;
 }
 
 IndigoArray & IndigoArray::cast (IndigoObject &obj)
@@ -157,17 +167,6 @@ CEXPORT int indigoArrayAdd (int arr, int handle)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoSize (int arr)
-{
-   INDIGO_BEGIN
-   {
-      IndigoArray &array = IndigoArray::cast(self.getObject(arr));
-
-      return array.objects.size();
-   }
-   INDIGO_END(-1);
-}
-
 CEXPORT int indigoClear (int arr)
 {
    INDIGO_BEGIN
@@ -176,19 +175,6 @@ CEXPORT int indigoClear (int arr)
 
       array.objects.clear();
       return 1;
-   }
-   INDIGO_END(-1);
-}
-
-CEXPORT int indigoArrayAt (int arr, int index)
-{
-   INDIGO_BEGIN
-   {
-      IndigoArray &array = IndigoArray::cast(self.getObject(arr));
-
-      AutoPtr<IndigoArrayElement> res(new IndigoArrayElement(array, index));
-
-      return self.addObject(res.release());
    }
    INDIGO_END(-1);
 }

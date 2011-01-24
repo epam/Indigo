@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -107,7 +107,7 @@ void RenderSingle::draw ()
       } else {
          _drawObj();
          _rc.translate(0, (float)commentOffset);
-        _drawComment();
+         _drawComment();
       }
    }
    _rc.resetTransform();

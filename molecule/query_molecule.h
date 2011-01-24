@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -33,9 +33,8 @@ enum
 {
    SKIP_3D_CONSTRAINTS = 0x0100,
    SKIP_FIXED_ATOMS = 0x0200,
-   SKIP_RGROUP_FRAGMENTS = 0x0400,
-   SKIP_RGROUPS = 0x0800,
-   SKIP_AROMATICITY = 0x1000,
+   SKIP_RGROUPS = 0x0400,
+   SKIP_AROMATICITY = 0x0800
 };
 
 class Output;
@@ -275,8 +274,8 @@ public:
    virtual bool bondStereoCare (int idx);
    void setBondStereoCare (int idx, bool stereo_care);
 
-   virtual void aromatize ();
-   virtual void dearomatize ();
+   virtual bool aromatize ();
+   virtual bool dearomatize ();
 
    int addAtom (Atom *atom);
    Atom & getAtom (int idx);
@@ -293,10 +292,6 @@ public:
    Molecule3dConstraints spatial_constraints;
    Array<int> fixed_atoms;
    
-   bool isRGroupFragment ();
-   void createRGroupFragment ();
-   MoleculeRGroupFragment & getRGroupFragment ();
-
    QueryMoleculeAromaticity aromaticity;
 
    Array<char> fragment_smarts;
@@ -333,7 +328,6 @@ protected:
    PtrArray<Atom> _atoms;
    PtrArray<Bond> _bonds;
 
-   AutoPtr<MoleculeRGroupFragment> _rgroup_fragment;
 };
 
 }

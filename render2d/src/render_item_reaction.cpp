@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -110,19 +110,31 @@ void RenderItemReaction::estimateSize ()
    RenderItemContainer::estimateSize();
    size.set(0,0);
    origin.set(0,0);
-   RenderItemBase& reactants = _factory.getItem(_reactantLine);
-   RenderItemBase& products = _factory.getItem(_productLine);
-   RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
-   size.x = reactants.size.x + products.size.x + 2 * hSpace;
-   size.y = __max(__max(reactants.size.y, products.size.y), arrow.size.y);
 
-   float arrowWidth = arrow.size.x;
-   if (_catalystLine >= 0) {
-      RenderItemBase& catalysts = _factory.getItem(_catalystLine);
-      arrowWidth = __max(arrowWidth, catalysts.size.x);
-      size.y = __max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
+   size.x = 0;
+   size.y = 0;
+
+   if (_reactantLine >= 0) {
+      RenderItemBase& reactants =  _factory.getItem(_reactantLine);
+      size.x += reactants.size.x;
+      size.y = __max(size.y, reactants.size.y);
    }
-   size.x += arrowWidth;
+   if (_productLine >= 0) {
+      RenderItemBase& products =  _factory.getItem(_productLine);
+      size.x += products.size.x;
+      size.y = __max(size.y, products.size.y);
+   }
+   if (_arrow >= 0) {
+      RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
+      float arrowWidth = arrow.size.x;
+      size.y = __max(size.y, arrow.size.y);
+      if (_catalystLine >= 0) {
+         RenderItemBase& catalysts = _factory.getItem(_catalystLine);
+         arrowWidth = __max(arrowWidth, catalysts.size.x);
+         size.y = __max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
+      }
+      size.x += arrowWidth + 2 * hSpace;
+   }
 }
 
 void RenderItemReaction::render ()
@@ -130,47 +142,54 @@ void RenderItemReaction::render ()
    _rc.translate(-origin.x, -origin.y);
    _rc.storeTransform();
    {
-      RenderItemBase& reactants = _factory.getItem(_reactantLine);
-      RenderItemBase& products = _factory.getItem(_productLine);
-      RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
-      _rc.storeTransform();
-      {
-         _rc.translate(0, 0.5f * (size.y - reactants.size.y));
-         reactants.render();
-      }
-      _rc.restoreTransform();
-      _rc.removeStoredTransform();
-      _rc.translate(reactants.size.x + hSpace, 0);
-
-      float arrowWidth = arrow.size.x;
-      if (_catalystLine >= 0) {
-         RenderItemBase& catalysts = _factory.getItem(_catalystLine);
-         arrowWidth = __max(arrowWidth, catalysts.size.x);
+      if (_reactantLine >= 0) {
+         RenderItemBase& reactants = _factory.getItem(_reactantLine);
          _rc.storeTransform();
          {
-            _rc.translate(0.5f * (arrowWidth - catalysts.size.x), 0.5f * (size.y - arrow.size.y) - catalysts.size.y - catalystOffset);
-            catalysts.render();
+            _rc.translate(0, 0.5f * (size.y - reactants.size.y));
+            reactants.render();
+         }
+         _rc.restoreTransform();
+         _rc.removeStoredTransform();
+         _rc.translate(reactants.size.x, 0);
+      }
+      if (_arrow >= 0) {
+         RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
+         float arrowWidth = arrow.size.x;
+         _rc.translate(hSpace, 0);
+         if (_catalystLine >= 0) {
+            RenderItemBase& catalysts = _factory.getItem(_catalystLine);
+            arrowWidth = __max(arrowWidth, catalysts.size.x);
+            _rc.storeTransform();
+            {
+               _rc.translate(0.5f * (arrowWidth - catalysts.size.x), 0.5f * (size.y - arrow.size.y) - catalysts.size.y - catalystOffset);
+               catalysts.render();
+            }
+            _rc.restoreTransform();
+            _rc.removeStoredTransform();
+         }
+         _rc.storeTransform();
+         {
+            _rc.translate(0, 0.5f * (size.y - arrow.size.y));
+            arrow.arrowLength = arrowWidth;
+            arrow.render();
+         }
+         _rc.restoreTransform();
+         _rc.removeStoredTransform();
+         _rc.translate(arrowWidth + hSpace, 0);
+      }
+
+      if (_productLine >= 0) {
+         RenderItemBase& products = _factory.getItem(_productLine);
+
+         _rc.storeTransform();
+         {
+            _rc.translate(0, 0.5f * (size.y - products.size.y));
+            products.render();
          }
          _rc.restoreTransform();
          _rc.removeStoredTransform();
       }
-      _rc.storeTransform();
-      _rc.translate(0, 0.5f * (size.y - arrow.size.y));
-      {
-         arrow.arrowLength = arrowWidth;
-         arrow.render();
-      }
-      _rc.restoreTransform();
-      _rc.removeStoredTransform();
-      _rc.translate(arrowWidth + hSpace, 0);
-
-      _rc.storeTransform();
-      _rc.translate(0, 0.5f * (size.y - products.size.y));
-      {
-         products.render();
-      }
-      _rc.restoreTransform();
-      _rc.removeStoredTransform();
    }
    _rc.restoreTransform();
    _rc.removeStoredTransform();

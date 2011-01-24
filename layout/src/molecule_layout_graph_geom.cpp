@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -280,7 +280,7 @@ bool MoleculeLayoutGraph::_drawRegularCurveEx (const Array<int> &chain, int v1, 
 bool MoleculeLayoutGraph::_isVertexOnEdge (int vert_idx, int edge_beg, int edge_end) const
 {
    float a1, a0, b1, b0;
-   float t, eps = 0.1f;
+   float t, eps = 0.05f;
    const Vec2f &pos  = getPos(vert_idx);
    const Vec2f &pos1 = getPos(edge_beg);
    const Vec2f &pos2 = getPos(edge_end);

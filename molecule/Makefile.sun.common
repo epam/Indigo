@@ -5,6 +5,17 @@ CPPFLAGS_libmolecule.a = \
 	-I.. \
 	-I../common
 OBJS_libmolecule.a =  \
+	$(TARGETDIR_libmolecule.a)/bitarray.o \
+	$(TARGETDIR_libmolecule.a)/bitinworker.o \
+	$(TARGETDIR_libmolecule.a)/bitoutworker.o \
+	$(TARGETDIR_libmolecule.a)/gray_codes.o \
+	$(TARGETDIR_libmolecule.a)/scanner.o \
+	$(TARGETDIR_libmolecule.a)/gzip_output.o \
+	$(TARGETDIR_libmolecule.a)/gzip_scanner.o \
+	$(TARGETDIR_libmolecule.a)/lzw_decoder.o \
+	$(TARGETDIR_libmolecule.a)/lzw_dictionary.o \
+	$(TARGETDIR_libmolecule.a)/lzw_encoder.o \
+	$(TARGETDIR_libmolecule.a)/base_molecule.o \
 	$(TARGETDIR_libmolecule.a)/canonical_smiles_saver.o \
 	$(TARGETDIR_libmolecule.a)/cmf_loader.o \
 	$(TARGETDIR_libmolecule.a)/cmf_saver.o \
@@ -17,23 +28,26 @@ OBJS_libmolecule.a =  \
 	$(TARGETDIR_libmolecule.a)/molecule_3d_constraints.o \
 	$(TARGETDIR_libmolecule.a)/molecule_arom.o \
 	$(TARGETDIR_libmolecule.a)/molecule_arom_match.o \
-	$(TARGETDIR_libmolecule.a)/molecule_aromatic_cycles_extractor.o \
-	$(TARGETDIR_libmolecule.a)/molecule_atom.o \
 	$(TARGETDIR_libmolecule.a)/molecule_auto_loader.o \
 	$(TARGETDIR_libmolecule.a)/molecule_automorphism_search.o \
+	$(TARGETDIR_libmolecule.a)/molecule_chain_fingerprints.o \
 	$(TARGETDIR_libmolecule.a)/molecule_cis_trans.o \
+	$(TARGETDIR_libmolecule.a)/molecule_cml_saver.o \
 	$(TARGETDIR_libmolecule.a)/molecule_dearom.o \
-	$(TARGETDIR_libmolecule.a)/molecule_decomposer.o \
 	$(TARGETDIR_libmolecule.a)/molecule_electrons_localizer.o \
 	$(TARGETDIR_libmolecule.a)/molecule_exact_matcher.o \
+	$(TARGETDIR_libmolecule.a)/molecule_exact_substructure_matcher.o \
 	$(TARGETDIR_libmolecule.a)/molecule_fingerprint.o \
+	$(TARGETDIR_libmolecule.a)/molecule_inchi.o \
+	$(TARGETDIR_libmolecule.a)/molecule_inchi_component.o \
+	$(TARGETDIR_libmolecule.a)/molecule_inchi_layers.o \
+	$(TARGETDIR_libmolecule.a)/molecule_inchi_utils.o \
 	$(TARGETDIR_libmolecule.a)/molecule_mass.o \
 	$(TARGETDIR_libmolecule.a)/molecule_neighbourhood_counters.o \
 	$(TARGETDIR_libmolecule.a)/molecule_pi_systems_matcher.o \
 	$(TARGETDIR_libmolecule.a)/molecule_rgroups.o \
 	$(TARGETDIR_libmolecule.a)/molecule_scaffold_detection.o \
 	$(TARGETDIR_libmolecule.a)/molecule_stereocenters.o \
-	$(TARGETDIR_libmolecule.a)/molecule_substructure.o \
 	$(TARGETDIR_libmolecule.a)/molecule_substructure_matcher.o \
 	$(TARGETDIR_libmolecule.a)/molecule_tautomer_chain.o \
 	$(TARGETDIR_libmolecule.a)/molecule_tautomer_match.o \
@@ -43,30 +57,10 @@ OBJS_libmolecule.a =  \
 	$(TARGETDIR_libmolecule.a)/molfile_loader.o \
 	$(TARGETDIR_libmolecule.a)/molfile_saver.o \
 	$(TARGETDIR_libmolecule.a)/query_molecule.o \
+	$(TARGETDIR_libmolecule.a)/rdf_loader.o \
 	$(TARGETDIR_libmolecule.a)/sdf_loader.o \
 	$(TARGETDIR_libmolecule.a)/smiles_loader.o \
-	$(TARGETDIR_libmolecule.a)/smiles_saver.o \
-	$(TARGETDIR_libmolecule.a)/bitarray.o \
-	$(TARGETDIR_libmolecule.a)/bitinworker.o \
-	$(TARGETDIR_libmolecule.a)/bitoutworker.o \
-	$(TARGETDIR_libmolecule.a)/crc32.o \
-	$(TARGETDIR_libmolecule.a)/gray_codes.o \
-	$(TARGETDIR_libmolecule.a)/gzip_scanner.o \
-	$(TARGETDIR_libmolecule.a)/gzip_output.o \
-	$(TARGETDIR_libmolecule.a)/output.o \
-	$(TARGETDIR_libmolecule.a)/scanner.o \
-	$(TARGETDIR_libmolecule.a)/string_pool.o \
-	$(TARGETDIR_libmolecule.a)/lzw_decoder.o \
-	$(TARGETDIR_libmolecule.a)/lzw_dictionary.o \
-	$(TARGETDIR_libmolecule.a)/lzw_encoder.o \
-	$(TARGETDIR_libmolecule.a)/best_fit.o \
-	$(TARGETDIR_libmolecule.a)/line3f.o \
-	$(TARGETDIR_libmolecule.a)/lseg3f.o \
-	$(TARGETDIR_libmolecule.a)/matr3x3d.o \
-	$(TARGETDIR_libmolecule.a)/plane3f.o \
-	$(TARGETDIR_libmolecule.a)/transform3f.o \
-	$(TARGETDIR_libmolecule.a)/vec2f.o \
-	$(TARGETDIR_libmolecule.a)/vec3f.o
+	$(TARGETDIR_libmolecule.a)/smiles_saver.o
 
 
 # Link or archive
@@ -76,6 +70,39 @@ $(TARGETDIR_libmolecule.a)/libmolecule.a: $(TARGETDIR_libmolecule.a) $(OBJS_libm
 
 
 # Compile source files into .o files
+$(TARGETDIR_libmolecule.a)/bitarray.o: $(TARGETDIR_libmolecule.a) ../common/base_c/bitarray.c
+	$(COMPILE.c) $(CFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_c/bitarray.c
+
+$(TARGETDIR_libmolecule.a)/bitinworker.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/bitinworker.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/bitinworker.cpp
+
+$(TARGETDIR_libmolecule.a)/bitoutworker.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/bitoutworker.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/bitoutworker.cpp
+
+$(TARGETDIR_libmolecule.a)/gray_codes.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/gray_codes.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/gray_codes.cpp
+
+$(TARGETDIR_libmolecule.a)/scanner.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/scanner.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/scanner.cpp
+
+$(TARGETDIR_libmolecule.a)/gzip_output.o: $(TARGETDIR_libmolecule.a) ../common/gzip/gzip_output.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/gzip/gzip_output.cpp
+
+$(TARGETDIR_libmolecule.a)/gzip_scanner.o: $(TARGETDIR_libmolecule.a) ../common/gzip/gzip_scanner.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/gzip/gzip_scanner.cpp
+
+$(TARGETDIR_libmolecule.a)/lzw_decoder.o: $(TARGETDIR_libmolecule.a) ../common/lzw/lzw_decoder.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/lzw/lzw_decoder.cpp
+
+$(TARGETDIR_libmolecule.a)/lzw_dictionary.o: $(TARGETDIR_libmolecule.a) ../common/lzw/lzw_dictionary.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/lzw/lzw_dictionary.cpp
+
+$(TARGETDIR_libmolecule.a)/lzw_encoder.o: $(TARGETDIR_libmolecule.a) ../common/lzw/lzw_encoder.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/lzw/lzw_encoder.cpp
+
+$(TARGETDIR_libmolecule.a)/base_molecule.o: $(TARGETDIR_libmolecule.a) src/base_molecule.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/base_molecule.cpp
+
 $(TARGETDIR_libmolecule.a)/canonical_smiles_saver.o: $(TARGETDIR_libmolecule.a) src/canonical_smiles_saver.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/canonical_smiles_saver.cpp
 
@@ -112,26 +139,23 @@ $(TARGETDIR_libmolecule.a)/molecule_arom.o: $(TARGETDIR_libmolecule.a) src/molec
 $(TARGETDIR_libmolecule.a)/molecule_arom_match.o: $(TARGETDIR_libmolecule.a) src/molecule_arom_match.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_arom_match.cpp
 
-$(TARGETDIR_libmolecule.a)/molecule_aromatic_cycles_extractor.o: $(TARGETDIR_libmolecule.a) src/molecule_aromatic_cycles_extractor.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_aromatic_cycles_extractor.cpp
-
-$(TARGETDIR_libmolecule.a)/molecule_atom.o: $(TARGETDIR_libmolecule.a) src/molecule_atom.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_atom.cpp
-
 $(TARGETDIR_libmolecule.a)/molecule_auto_loader.o: $(TARGETDIR_libmolecule.a) src/molecule_auto_loader.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_auto_loader.cpp
 
 $(TARGETDIR_libmolecule.a)/molecule_automorphism_search.o: $(TARGETDIR_libmolecule.a) src/molecule_automorphism_search.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_automorphism_search.cpp
 
+$(TARGETDIR_libmolecule.a)/molecule_chain_fingerprints.o: $(TARGETDIR_libmolecule.a) src/molecule_chain_fingerprints.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_chain_fingerprints.cpp
+
 $(TARGETDIR_libmolecule.a)/molecule_cis_trans.o: $(TARGETDIR_libmolecule.a) src/molecule_cis_trans.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_cis_trans.cpp
 
+$(TARGETDIR_libmolecule.a)/molecule_cml_saver.o: $(TARGETDIR_libmolecule.a) src/molecule_cml_saver.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_cml_saver.cpp
+
 $(TARGETDIR_libmolecule.a)/molecule_dearom.o: $(TARGETDIR_libmolecule.a) src/molecule_dearom.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_dearom.cpp
-
-$(TARGETDIR_libmolecule.a)/molecule_decomposer.o: $(TARGETDIR_libmolecule.a) src/molecule_decomposer.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_decomposer.cpp
 
 $(TARGETDIR_libmolecule.a)/molecule_electrons_localizer.o: $(TARGETDIR_libmolecule.a) src/molecule_electrons_localizer.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_electrons_localizer.cpp
@@ -139,8 +163,23 @@ $(TARGETDIR_libmolecule.a)/molecule_electrons_localizer.o: $(TARGETDIR_libmolecu
 $(TARGETDIR_libmolecule.a)/molecule_exact_matcher.o: $(TARGETDIR_libmolecule.a) src/molecule_exact_matcher.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_exact_matcher.cpp
 
+$(TARGETDIR_libmolecule.a)/molecule_exact_substructure_matcher.o: $(TARGETDIR_libmolecule.a) src/molecule_exact_substructure_matcher.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_exact_substructure_matcher.cpp
+
 $(TARGETDIR_libmolecule.a)/molecule_fingerprint.o: $(TARGETDIR_libmolecule.a) src/molecule_fingerprint.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_fingerprint.cpp
+
+$(TARGETDIR_libmolecule.a)/molecule_inchi.o: $(TARGETDIR_libmolecule.a) src/molecule_inchi.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_inchi.cpp
+
+$(TARGETDIR_libmolecule.a)/molecule_inchi_component.o: $(TARGETDIR_libmolecule.a) src/molecule_inchi_component.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_inchi_component.cpp
+
+$(TARGETDIR_libmolecule.a)/molecule_inchi_layers.o: $(TARGETDIR_libmolecule.a) src/molecule_inchi_layers.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_inchi_layers.cpp
+
+$(TARGETDIR_libmolecule.a)/molecule_inchi_utils.o: $(TARGETDIR_libmolecule.a) src/molecule_inchi_utils.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_inchi_utils.cpp
 
 $(TARGETDIR_libmolecule.a)/molecule_mass.o: $(TARGETDIR_libmolecule.a) src/molecule_mass.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_mass.cpp
@@ -159,9 +198,6 @@ $(TARGETDIR_libmolecule.a)/molecule_scaffold_detection.o: $(TARGETDIR_libmolecul
 
 $(TARGETDIR_libmolecule.a)/molecule_stereocenters.o: $(TARGETDIR_libmolecule.a) src/molecule_stereocenters.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_stereocenters.cpp
-
-$(TARGETDIR_libmolecule.a)/molecule_substructure.o: $(TARGETDIR_libmolecule.a) src/molecule_substructure.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_substructure.cpp
 
 $(TARGETDIR_libmolecule.a)/molecule_substructure_matcher.o: $(TARGETDIR_libmolecule.a) src/molecule_substructure_matcher.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_substructure_matcher.cpp
@@ -190,6 +226,9 @@ $(TARGETDIR_libmolecule.a)/molfile_saver.o: $(TARGETDIR_libmolecule.a) src/molfi
 $(TARGETDIR_libmolecule.a)/query_molecule.o: $(TARGETDIR_libmolecule.a) src/query_molecule.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/query_molecule.cpp
 
+$(TARGETDIR_libmolecule.a)/rdf_loader.o: $(TARGETDIR_libmolecule.a) src/rdf_loader.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/rdf_loader.cpp
+
 $(TARGETDIR_libmolecule.a)/sdf_loader.o: $(TARGETDIR_libmolecule.a) src/sdf_loader.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/sdf_loader.cpp
 
@@ -199,75 +238,23 @@ $(TARGETDIR_libmolecule.a)/smiles_loader.o: $(TARGETDIR_libmolecule.a) src/smile
 $(TARGETDIR_libmolecule.a)/smiles_saver.o: $(TARGETDIR_libmolecule.a) src/smiles_saver.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/smiles_saver.cpp
 
-$(TARGETDIR_libmolecule.a)/bitarray.o: $(TARGETDIR_libmolecule.a) ../common/base_c/bitarray.c
-	$(COMPILE.c) $(CFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_c/bitarray.c
-
-$(TARGETDIR_libmolecule.a)/bitinworker.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/bitinworker.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/bitinworker.cpp
-
-$(TARGETDIR_libmolecule.a)/bitoutworker.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/bitoutworker.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/bitoutworker.cpp
-
-$(TARGETDIR_libmolecule.a)/crc32.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/crc32.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/crc32.cpp
-
-$(TARGETDIR_libmolecule.a)/gray_codes.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/gray_codes.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/gray_codes.cpp
-
-$(TARGETDIR_libmolecule.a)/gzip_scanner.o: $(TARGETDIR_libmolecule.a) ../common/gzip/gzip_scanner.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/gzip/gzip_scanner.cpp
-
-$(TARGETDIR_libmolecule.a)/gzip_output.o: $(TARGETDIR_libmolecule.a) ../common/gzip/gzip_output.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/gzip/gzip_output.cpp
-
-$(TARGETDIR_libmolecule.a)/output.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/output.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/output.cpp
-
-$(TARGETDIR_libmolecule.a)/scanner.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/scanner.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/scanner.cpp
-
-$(TARGETDIR_libmolecule.a)/string_pool.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/string_pool.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/string_pool.cpp
-
-$(TARGETDIR_libmolecule.a)/lzw_decoder.o: $(TARGETDIR_libmolecule.a) ../common/lzw/lzw_decoder.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/lzw/lzw_decoder.cpp
-
-$(TARGETDIR_libmolecule.a)/lzw_dictionary.o: $(TARGETDIR_libmolecule.a) ../common/lzw/lzw_dictionary.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/lzw/lzw_dictionary.cpp
-
-$(TARGETDIR_libmolecule.a)/lzw_encoder.o: $(TARGETDIR_libmolecule.a) ../common/lzw/lzw_encoder.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/lzw/lzw_encoder.cpp
-
-$(TARGETDIR_libmolecule.a)/best_fit.o: $(TARGETDIR_libmolecule.a) ../common/math/best_fit.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/math/best_fit.cpp
-
-$(TARGETDIR_libmolecule.a)/line3f.o: $(TARGETDIR_libmolecule.a) ../common/math/line3f.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/math/line3f.cpp
-
-$(TARGETDIR_libmolecule.a)/lseg3f.o: $(TARGETDIR_libmolecule.a) ../common/math/lseg3f.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/math/lseg3f.cpp
-
-$(TARGETDIR_libmolecule.a)/matr3x3d.o: $(TARGETDIR_libmolecule.a) ../common/math/matr3x3d.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/math/matr3x3d.cpp
-
-$(TARGETDIR_libmolecule.a)/plane3f.o: $(TARGETDIR_libmolecule.a) ../common/math/plane3f.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/math/plane3f.cpp
-
-$(TARGETDIR_libmolecule.a)/transform3f.o: $(TARGETDIR_libmolecule.a) ../common/math/transform3f.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/math/transform3f.cpp
-
-$(TARGETDIR_libmolecule.a)/vec2f.o: $(TARGETDIR_libmolecule.a) ../common/math/vec2f.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/math/vec2f.cpp
-
-$(TARGETDIR_libmolecule.a)/vec3f.o: $(TARGETDIR_libmolecule.a) ../common/math/vec3f.cpp
-	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/math/vec3f.cpp
-
 
 
 #### Clean target deletes all generated files ####
 clean:
 	rm -f \
 		$(TARGETDIR_libmolecule.a)/libmolecule.a \
+		$(TARGETDIR_libmolecule.a)/bitarray.o \
+		$(TARGETDIR_libmolecule.a)/bitinworker.o \
+		$(TARGETDIR_libmolecule.a)/bitoutworker.o \
+		$(TARGETDIR_libmolecule.a)/gray_codes.o \
+		$(TARGETDIR_libmolecule.a)/scanner.o \
+		$(TARGETDIR_libmolecule.a)/gzip_output.o \
+		$(TARGETDIR_libmolecule.a)/gzip_scanner.o \
+		$(TARGETDIR_libmolecule.a)/lzw_decoder.o \
+		$(TARGETDIR_libmolecule.a)/lzw_dictionary.o \
+		$(TARGETDIR_libmolecule.a)/lzw_encoder.o \
+		$(TARGETDIR_libmolecule.a)/base_molecule.o \
 		$(TARGETDIR_libmolecule.a)/canonical_smiles_saver.o \
 		$(TARGETDIR_libmolecule.a)/cmf_loader.o \
 		$(TARGETDIR_libmolecule.a)/cmf_saver.o \
@@ -280,23 +267,26 @@ clean:
 		$(TARGETDIR_libmolecule.a)/molecule_3d_constraints.o \
 		$(TARGETDIR_libmolecule.a)/molecule_arom.o \
 		$(TARGETDIR_libmolecule.a)/molecule_arom_match.o \
-		$(TARGETDIR_libmolecule.a)/molecule_aromatic_cycles_extractor.o \
-		$(TARGETDIR_libmolecule.a)/molecule_atom.o \
 		$(TARGETDIR_libmolecule.a)/molecule_auto_loader.o \
 		$(TARGETDIR_libmolecule.a)/molecule_automorphism_search.o \
+		$(TARGETDIR_libmolecule.a)/molecule_chain_fingerprints.o \
 		$(TARGETDIR_libmolecule.a)/molecule_cis_trans.o \
+		$(TARGETDIR_libmolecule.a)/molecule_cml_saver.o \
 		$(TARGETDIR_libmolecule.a)/molecule_dearom.o \
-		$(TARGETDIR_libmolecule.a)/molecule_decomposer.o \
 		$(TARGETDIR_libmolecule.a)/molecule_electrons_localizer.o \
 		$(TARGETDIR_libmolecule.a)/molecule_exact_matcher.o \
+		$(TARGETDIR_libmolecule.a)/molecule_exact_substructure_matcher.o \
 		$(TARGETDIR_libmolecule.a)/molecule_fingerprint.o \
+		$(TARGETDIR_libmolecule.a)/molecule_inchi.o \
+		$(TARGETDIR_libmolecule.a)/molecule_inchi_component.o \
+		$(TARGETDIR_libmolecule.a)/molecule_inchi_layers.o \
+		$(TARGETDIR_libmolecule.a)/molecule_inchi_utils.o \
 		$(TARGETDIR_libmolecule.a)/molecule_mass.o \
 		$(TARGETDIR_libmolecule.a)/molecule_neighbourhood_counters.o \
 		$(TARGETDIR_libmolecule.a)/molecule_pi_systems_matcher.o \
 		$(TARGETDIR_libmolecule.a)/molecule_rgroups.o \
 		$(TARGETDIR_libmolecule.a)/molecule_scaffold_detection.o \
 		$(TARGETDIR_libmolecule.a)/molecule_stereocenters.o \
-		$(TARGETDIR_libmolecule.a)/molecule_substructure.o \
 		$(TARGETDIR_libmolecule.a)/molecule_substructure_matcher.o \
 		$(TARGETDIR_libmolecule.a)/molecule_tautomer_chain.o \
 		$(TARGETDIR_libmolecule.a)/molecule_tautomer_match.o \
@@ -306,30 +296,10 @@ clean:
 		$(TARGETDIR_libmolecule.a)/molfile_loader.o \
 		$(TARGETDIR_libmolecule.a)/molfile_saver.o \
 		$(TARGETDIR_libmolecule.a)/query_molecule.o \
+		$(TARGETDIR_libmolecule.a)/rdf_loader.o \
 		$(TARGETDIR_libmolecule.a)/sdf_loader.o \
 		$(TARGETDIR_libmolecule.a)/smiles_loader.o \
-		$(TARGETDIR_libmolecule.a)/smiles_saver.o \
-		$(TARGETDIR_libmolecule.a)/bitarray.o \
-		$(TARGETDIR_libmolecule.a)/bitinworker.o \
-		$(TARGETDIR_libmolecule.a)/bitoutworker.o \
-		$(TARGETDIR_libmolecule.a)/crc32.o \
-		$(TARGETDIR_libmolecule.a)/gray_codes.o \
-		$(TARGETDIR_libmolecule.a)/gzip_scanner.o \
-		$(TARGETDIR_libmolecule.a)/gzip_output.o \
-		$(TARGETDIR_libmolecule.a)/output.o \
-		$(TARGETDIR_libmolecule.a)/scanner.o \
-		$(TARGETDIR_libmolecule.a)/string_pool.o \
-		$(TARGETDIR_libmolecule.a)/lzw_decoder.o \
-		$(TARGETDIR_libmolecule.a)/lzw_dictionary.o \
-		$(TARGETDIR_libmolecule.a)/lzw_encoder.o \
-		$(TARGETDIR_libmolecule.a)/best_fit.o \
-		$(TARGETDIR_libmolecule.a)/line3f.o \
-		$(TARGETDIR_libmolecule.a)/lseg3f.o \
-		$(TARGETDIR_libmolecule.a)/matr3x3d.o \
-		$(TARGETDIR_libmolecule.a)/plane3f.o \
-		$(TARGETDIR_libmolecule.a)/transform3f.o \
-		$(TARGETDIR_libmolecule.a)/vec2f.o \
-		$(TARGETDIR_libmolecule.a)/vec3f.o
+		$(TARGETDIR_libmolecule.a)/smiles_saver.o
 	$(CCADMIN)
 	rm -f -r $(TARGETDIR_libmolecule.a)
 

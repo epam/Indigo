@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,7 +17,6 @@
 #include "graph/spanning_tree.h"
 #include "graph/graph_affine_matcher.h"
 #include "math/algebra.h"
-#include "graph/graph_decomposer.h"
 
 using namespace indigo;
 

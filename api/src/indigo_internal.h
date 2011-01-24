@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010 GGA Software Services LLC
+ * Copyright (C) 2010-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -93,12 +93,18 @@ public:
       BONDS_ITER,
       ATOM_NEIGHBOR,
       ATOM_NEIGHBORS_ITER,
+      SUPERATOM,
+      SUPERATOMS_ITER,
       DATA_SGROUP,
       DATA_SGROUPS_ITER,
+      SGROUP_ATOMS_ITER,
+      SGROUP_BONDS_ITER,
       DECOMPOSITION,
-      COMPONENTS_ITERATOR,
-      COMPONENT_ATOMS_ITERATOR,
-      MOLECULE_COMPONENT
+      COMPONENT,
+      COMPONENTS_ITER,
+      COMPONENT_ATOMS_ITER,
+      COMPONENT_BONDS_ITER,
+      MAPPING
    };
 
    int type;
@@ -138,6 +144,8 @@ public:
 
 protected:
    Array<char> _dbg_info; // allocated by debugInfo() on demand
+private:
+   IndigoObject (const IndigoObject &);
 };
 
 class IndigoGross : public IndigoObject
@@ -213,6 +221,8 @@ public:
 
    bool embedding_edges_uniqueness;
    int max_embeddings;
+
+   int layout_max_iterations; // default is zero -- no limit
 
 protected:
 

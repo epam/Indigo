@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -38,14 +38,18 @@ void PathEnumerator::process ()
 {
    QS_DEF(Array<int>, vertices);
    QS_DEF(Array<int>, edges);
+   QS_DEF(Array<int>, flags);
    QS_DEF(Array<int>, visited_vertices);
    int cur_start_idx = 0;
    
    vertices.clear();
    edges.clear();
-
+   flags.clear_resize(_graph.vertexEnd());
+   flags.zerofill();
    vertices.push(_begin);
+   flags[_begin] = 1;
    visited_vertices.clear_resize(_graph.getVertex(_begin).neiEnd());
+   visited_vertices.zerofill();
 
    // DFS all paths from given vertex
    while (vertices.size() > 0)
@@ -63,6 +67,8 @@ void PathEnumerator::process ()
             int u = v_vertex.neiVertex(i);
             int e = v_vertex.neiEdge(i);
             
+            if (flags[u])
+               continue;
             if (cb_check_vertex != 0 && !cb_check_vertex(_graph, u, context))
                continue;
             if (cb_check_edge != 0 && !cb_check_edge(_graph, e, context))
@@ -83,6 +89,7 @@ void PathEnumerator::process ()
             else
             {
                visited_vertices[cur_start_idx + i] = 1;
+               flags[u] = 1;
                cur_start_idx += v_vertex.neiEnd();
 
                const Vertex &u_vertex = _graph.getVertex(u);
@@ -99,7 +106,7 @@ void PathEnumerator::process ()
       {
          if (edges.size() > 0)
             edges.pop();
-         vertices.pop();
+         flags[vertices.pop()] = 0;
          cur_start_idx -= v_vertex.neiEnd();
       }
    }

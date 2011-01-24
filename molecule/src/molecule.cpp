@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -367,8 +367,21 @@ int Molecule::matchAtomsCmp (Graph &g1, Graph &g2,
    if (!m1.isPseudoAtom(idx1) && m2.isPseudoAtom(idx2))
       return -1;
 
+   if (m1.isRSite(idx1) && !m2.isRSite(idx2))
+      return 1;
+
+   if (!m1.isRSite(idx1) && m2.isRSite(idx2))
+      return -1;
+
    bool pseudo = false;
 
+   if (m1.isRSite(idx1) && m2.isRSite(idx2))
+   {
+      int res = m2.getRSiteBits(idx2) - m1.getRSiteBits(idx1);
+      if (res != 0)
+         return res;
+      pseudo = true;
+   }
    if (m1.isPseudoAtom(idx1) && m2.isPseudoAtom(idx2))
    {
       int res = strcmp(m1.getPseudoAtom(idx1), m2.getPseudoAtom(idx2));
@@ -522,18 +535,31 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt )
 
 int Molecule::getImplicitH (int idx)
 {
+   int conn = getAtomConnectivity_noImplH(idx);
+   return _getImplicitHForConnectivity(idx, conn, true, true);
+}
+
+int Molecule::calcImplicitHForConnectivity (int idx, int conn)
+{
+   return _getImplicitHForConnectivity(idx, conn, false, false);
+}
+ 
+int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache, bool to_throw)
+{
    if (_atoms[idx].number == ELEM_PSEUDO)
       throw Error("getImplicitH() does not work on pseudo-atoms");
 
    if (_atoms[idx].number == ELEM_RSITE)
       throw Error("getImplicitH() does not work on R-sites");
 
-   if (_implicit_h.size() > idx && _implicit_h[idx] >= 0)
-      return _implicit_h[idx];
+   if (use_cache)
+   {
+      if (_implicit_h.size() > idx && _implicit_h[idx] >= 0)
+         return _implicit_h[idx];
+   }
 
    const _Atom &atom = _atoms[idx];
 
-   int conn = getAtomConnectivity_noImplH(idx);
    int radical = 0;
 
    if (_radicals.size() > idx && _radicals[idx] >= 0)
@@ -551,23 +577,57 @@ int Molecule::getImplicitH (int idx)
       // and charge when calculating implicit hydgogens.
       implicit_h = _valence[idx] - Element::calcValenceMinusHyd(atom.number, 0, 0, conn);
 
-      if (implicit_h < 0)
+      if (implicit_h < 0 && to_throw)
          throw Error("valence %d specified on %s, charge %d, radical %d, but %d bonds are drawn",
                     _valence[idx], Element::toString(atom.number), atom.charge, radical, conn);
    }
    else
    {
       int valence;
-      Element::calcValence(atom.number, atom.charge, radical,
-                           conn, valence, implicit_h, true);
-      _valence.expandFill(idx + 1, -1);
-      _valence[idx] = valence;
+
+      // special case of 5-connected nitrogen like "CN(=O)=O".
+      // It should really be C[N+](O-)=O, but we let people live in happy ignorance.
+      if (isNitrogentV5(idx))
+      {
+         valence = 4;
+         implicit_h = 0;
+      }
+      else
+         Element::calcValence(atom.number, atom.charge, radical,
+                              conn, valence, implicit_h, to_throw);
+      if (use_cache)
+      {
+         _valence.expandFill(idx + 1, -1);
+         _valence[idx] = valence;
+      }
    }
 
-   _implicit_h.expandFill(idx + 1, -1);
-   _implicit_h[idx] = implicit_h;
+   if (use_cache)
+   {
+      _implicit_h.expandFill(idx + 1, -1);
+      _implicit_h[idx] = implicit_h;
+   }
 
    return implicit_h;
+}
+
+
+bool Molecule::isNitrogentV5 (int idx)
+{
+   if (getAtomNumber(idx) != ELEM_N)
+      return false;
+
+   if (getAtomCharge(idx) != 0)
+      return false;
+
+   int radical = 0;
+
+   if (_radicals.size() > idx && _radicals[idx] >= 0)
+      radical = _radicals[idx];
+
+   int conn = getAtomConnectivity_noImplH(idx);
+   int radical_elections = Element::radicalElectrons(radical);
+   return (radical_elections == 0 && conn == 5) || (radical_elections == 1 && conn == 4);
 }
 
 int Molecule::getAtomNumber (int idx)
@@ -669,7 +729,13 @@ int Molecule::getAtomRadical (int idx)
    int impl_h = getImplicitH(idx);
    int normal_val, normal_hyd;
 
-   Element::calcValence(atom.number, atom.charge, 0, conn, normal_val, normal_hyd, true);
+   if (isNitrogentV5(idx))
+   {
+      normal_val = 4;
+      normal_hyd = 0;
+   }
+   else
+      Element::calcValence(atom.number, atom.charge, 0, conn, normal_val, normal_hyd, true);
 
    if (impl_h != normal_hyd)
    {
@@ -903,15 +969,16 @@ bool Molecule::bondStereoCare (int idx)
    return cis_trans.getParity(idx) != 0;
 }
 
-void Molecule::aromatize ()
+bool Molecule::aromatize ()
 {
-   MoleculeAromatizer::aromatizeBonds(*this);
+   bool arom_found = MoleculeAromatizer::aromatizeBonds(*this);
    _aromatized = true;
+   return arom_found;
 }
 
-void Molecule::dearomatize ()
+bool Molecule::dearomatize ()
 {
-   MoleculeDearomatizer::dearomatizeMolecule(*this);
+   return MoleculeDearomatizer::dearomatizeMolecule(*this);
 }
 
 int Molecule::getAtomMaxH (int idx)

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2010 GGA Software Services LLC
+ * Copyright (C) 2009-2011 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -614,13 +614,56 @@ void Graph::_calculateComponents ()
    for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
       _component_numbers[i] = decomposer.getComponent(i);
 
+   _components_count = decomposer.getComponentsCount();
+
+   _component_vcount.clear_resize(_components_count);
+   _component_ecount.clear_resize(_components_count);
+
+   for (i = 0; i < _components_count; i++)
+   {
+      _component_vcount[i] = decomposer.getComponentVerticesCount(i);
+      _component_ecount[i] = decomposer.getComponentEdgesCount(i);
+   }
+
    _components_valid = true;
 }
 
-int Graph::getComponentNumber (int v_idx)
+int Graph::vertexComponent (int v_idx)
 {
    if (!_components_valid)
       _calculateComponents();
 
    return _component_numbers[v_idx];
+}
+
+int Graph::countComponents ()
+{
+   if (!_components_valid)
+      _calculateComponents();
+
+   return _components_count;
+}
+
+int Graph::countComponentEdges (int comp_idx)
+{
+   if (!_components_valid)
+      _calculateComponents();
+
+   return _component_ecount[comp_idx];
+}
+
+int Graph::countComponentVertices (int comp_idx)
+{
+   if (!_components_valid)
+      _calculateComponents();
+
+   return _component_vcount[comp_idx];
+}
+
+const Array<int> & Graph::getDecomposition ()
+{
+   if (!_components_valid)
+      _calculateComponents();
+
+   return _component_numbers;
 }
