@@ -379,6 +379,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\src\indigo_mapping.cpp"
+			>
+		</File>
+		<File
 			RelativePath="..\src\indigo_match.cpp"
 			>
 		</File>
