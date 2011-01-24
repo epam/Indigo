@@ -322,7 +322,7 @@ class Indigo:
     self.IndigoObject.setCharge = self._member_void_int(self._lib.indigoSetCharge)
     self.IndigoObject.setIsotope = self._member_void_int(self._lib.indigoSetIsotope)
     self.IndigoObject.addBond = self._member_obj_obj_int(self._lib.indigoAddBond)
-    self.IndigoObject.setOrder = self._member_void_int(self._lib.indigoSetOrder)
+    self.IndigoObject.setBondOrder = self._member_void_int(self._lib.indigoSetBondOrder)
     self.IndigoObject.merge = self._member_obj_obj(self._lib.indigoMerge)
 
     self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)

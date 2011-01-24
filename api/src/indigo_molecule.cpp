@@ -2355,7 +2355,7 @@ CEXPORT int indigoAddBond (int source, int destination, int order)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetOrder (int bond, int order)
+CEXPORT int indigoSetBondOrder (int bond, int order)
 {
    INDIGO_BEGIN
    {

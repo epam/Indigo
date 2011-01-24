@@ -241,7 +241,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       return new IndigoObject(dispatcher, dispatcher.indigoAddBond(self, atom.self, order));
    }
-   public void setOrder (int order) { dispatcher.indigoSetOrder(self, order); };
+   public void setBondOrder (int order) { dispatcher.indigoSetBondOrder(self, order); };
 
    public IndigoObject merge (IndigoObject other) { return new IndigoObject(dispatcher, dispatcher.indigoMerge(self, other.self)); }
 

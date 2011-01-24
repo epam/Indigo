@@ -15,7 +15,6 @@
 package com.ggasoftware.indigo;
 
 import java.io.*;
-import java.lang.*;
 import java.util.*;
 
 public class Indigo
@@ -499,7 +498,7 @@ public class Indigo
    public native int indigoSetCharge (int atom, int charge);
    public native int indigoSetIsotope (int atom, int isotope);
    public native int indigoAddBond (int source, int destination, int order);
-   public native int indigoSetOrder (int bond, int order);
+   public native int indigoSetBondOrder (int bond, int order);
    public native int indigoMerge (int where, int what);
 
    public native int indigoCountComponents (int molecule);

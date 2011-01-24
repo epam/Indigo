@@ -38,6 +38,8 @@ JNIEXPORT void JNINAME(releaseSessionId) (JNIEnv *env, jclass cls, jlong id)
    indigoReleaseSessionId(id);
 }
 
+CEXPORT void indigoJniSetSession_NoErrorHandler (JNIEnv *env, jobject obj);
+
 JNIEXPORT jint JNINAME(indigoFree) (JNIEnv *env, jobject obj, jint handle)
 {
    // do not set error handler because
@@ -228,7 +230,7 @@ JNI_FUNC_jint_jint_jstring(indigoAddAtom)
 JNI_FUNC_jint_jint_jint(indigoSetCharge)
 JNI_FUNC_jint_jint_jint(indigoSetIsotope)
 JNI_FUNC_jint_jint_jint_jint(indigoAddBond)
-JNI_FUNC_jint_jint_jint(indigoSetOrder)
+JNI_FUNC_jint_jint_jint(indigoSetBondOrder)
 JNI_FUNC_jint_jint_jint(indigoMerge)
 
 JNI_FUNC_jint_jint(indigoCountComponents)

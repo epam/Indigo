@@ -357,7 +357,7 @@ CEXPORT int indigoSetIsotope (int atom, int isotope);
 // (1/2/3/4 = single/double/triple/aromatic). Returns the added bond.
 CEXPORT int indigoAddBond (int source, int destination, int order);
 
-CEXPORT int indigoSetOrder (int bond, int order);
+CEXPORT int indigoSetBondOrder (int bond, int order);
 
 CEXPORT int indigoMerge (int where, int what);
 
