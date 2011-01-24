@@ -724,3 +724,27 @@ CEXPORT int indigoMapAtom (int handle, int atom)
    }
    INDIGO_END(-1)
 }
+
+
+CEXPORT int indigoClear (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoArray::is(obj))
+      {
+         IndigoArray &array = IndigoArray::cast(obj);
+
+         array.objects.clear();
+      }
+      else if (obj.isBaseMolecule())
+         obj.getBaseMolecule().clear();
+      else if (obj.isBaseReaction())
+         obj.getBaseReaction().clear();
+      else
+         throw IndigoError("indigoClear(): do not know how to clear %s", obj.debugInfo());
+      return 1;
+   }
+   INDIGO_END(-1);
+}

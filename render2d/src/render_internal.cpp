@@ -700,20 +700,23 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
          break;
    }
 
-   if (singleAndGroup)
-      return;
-
-   if (allAbs && _opt.useOldStereoNotation && !none)
+   if (_opt.useOldStereoNotation)
    {
-      
-      TextItem& tiChiral = _data.textitems[_pushTextItem(RenderItem::RIT_CHIRAL, CWC_BASE, false)];
-      bprintf(tiChiral.text, "Chiral");
-      tiChiral.fontsize = FONT_SIZE_LABEL;
-      _cw.setTextItemSize(tiChiral);
-      tiChiral.bbp.set((_max.x - _min.x) * _scale - tiChiral.bbsz.x, -tiChiral.bbsz.y * 2);
-      _cw.setSingleSource(CWC_BASE);
-      _cw.drawTextItemText(tiChiral);
-      return;
+      if (singleAndGroup)
+         return;
+
+      if (allAbs && !none)
+      {
+
+         TextItem& tiChiral = _data.textitems[_pushTextItem(RenderItem::RIT_CHIRAL, CWC_BASE, false)];
+         bprintf(tiChiral.text, "Chiral");
+         tiChiral.fontsize = FONT_SIZE_LABEL;
+         _cw.setTextItemSize(tiChiral);
+         tiChiral.bbp.set((_max.x - _min.x) * _scale - tiChiral.bbsz.x, -tiChiral.bbsz.y * 2);
+         _cw.setSingleSource(CWC_BASE);
+         _cw.drawTextItemText(tiChiral);
+         return;
+      }
    }
 
    _lopt.stereoMode = STEREOGROUPS_SHOW;

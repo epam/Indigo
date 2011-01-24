@@ -167,18 +167,6 @@ CEXPORT int indigoArrayAdd (int arr, int handle)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoClear (int arr)
-{
-   INDIGO_BEGIN
-   {
-      IndigoArray &array = IndigoArray::cast(self.getObject(arr));
-
-      array.objects.clear();
-      return 1;
-   }
-   INDIGO_END(-1);
-}
-
 CEXPORT int indigoIterateArray (int arr)
 {
    INDIGO_BEGIN
