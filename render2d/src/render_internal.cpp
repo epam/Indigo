@@ -532,7 +532,7 @@ void MoleculeRenderInternal::_initRGroups()
 {
    QUERY_MOL_BEGIN(_mol);
       if (qmol.attachmentPointCount() > 0) {
-         for (int i = 0; i < qmol.attachmentPointCount(); ++i)
+         for (int i = 1; i <= qmol.attachmentPointCount(); ++i)
             for (int j = 0, k; (k = qmol.getAttachmentPoint(i, j)) >= 0; ++j)
                _ad(k).isRGroupAttachmentPoint = true;
       }
@@ -700,20 +700,23 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
          break;
    }
 
-   if (singleAndGroup)
-      return;
-
-   if (allAbs && _opt.useOldStereoNotation && !none)
+   if (_opt.useOldStereoNotation)
    {
-      
-      TextItem& tiChiral = _data.textitems[_pushTextItem(RenderItem::RIT_CHIRAL, CWC_BASE, false)];
-      bprintf(tiChiral.text, "Chiral");
-      tiChiral.fontsize = FONT_SIZE_LABEL;
-      _cw.setTextItemSize(tiChiral);
-      tiChiral.bbp.set((_max.x - _min.x) * _scale - tiChiral.bbsz.x, -tiChiral.bbsz.y * 2);
-      _cw.setSingleSource(CWC_BASE);
-      _cw.drawTextItemText(tiChiral);
-      return;
+      if (singleAndGroup)
+         return;
+
+      if (allAbs && !none)
+      {
+
+         TextItem& tiChiral = _data.textitems[_pushTextItem(RenderItem::RIT_CHIRAL, CWC_BASE, false)];
+         bprintf(tiChiral.text, "Chiral");
+         tiChiral.fontsize = FONT_SIZE_LABEL;
+         _cw.setTextItemSize(tiChiral);
+         tiChiral.bbp.set((_max.x - _min.x) * _scale - tiChiral.bbsz.x, -tiChiral.bbsz.y * 2);
+         _cw.setSingleSource(CWC_BASE);
+         _cw.drawTextItemText(tiChiral);
+         return;
+      }
    }
 
    _lopt.stereoMode = STEREOGROUPS_SHOW;
@@ -2214,7 +2217,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
    QUERY_MOL_BEGIN(_mol);
    if (ad.isRGroupAttachmentPoint) {
       rGroupAttachmentIndices.clear();
-      for (int i = 0; i < qmol.attachmentPointCount(); ++i)
+      for (int i = 1; i <= qmol.attachmentPointCount(); ++i)
          for (int j = 0, k; (k = qmol.getAttachmentPoint(i, j)) >= 0; ++j)
             if (k == aid)
                rGroupAttachmentIndices.push(i);

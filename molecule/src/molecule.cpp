@@ -933,6 +933,9 @@ int Molecule::addBond (int beg, int end, int order)
    _aromaticity.clear();
    _aromatized = false;
 
+   _validateVertexConnectivity(beg, false);
+   _validateVertexConnectivity(end, false);
+
    return idx;
 }
 

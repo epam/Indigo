@@ -905,7 +905,7 @@ void MolfileLoader::_readCtab2000 ()
 
                for (int att_idx = 0; (1 << att_idx) <= att_type; att_idx++)
                   if (att_type & (1 << att_idx))
-                     _qmol->addAttachmentPoint(att_idx, atom_idx);
+                     _qmol->addAttachmentPoint(att_idx + 1, atom_idx);
             }
 
             _scanner.skipString();
@@ -2002,7 +2002,7 @@ void MolfileLoader::_readCtab3000 ()
 
             for (int att_idx = 0; (1 << att_idx) <= att_type; att_idx++)
                if (att_type & (1 << att_idx))
-                  _qmol->addAttachmentPoint(att_idx, i);
+                  _qmol->addAttachmentPoint(att_idx + 1, i);
          }
          else if (strcmp(prop, "ATTCHORD") == 0)
          {

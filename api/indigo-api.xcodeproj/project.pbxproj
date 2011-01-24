@@ -77,6 +77,10 @@
 		819EB1B4125F79A700CE1D88 /* option_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1B2125F79A700CE1D88 /* option_manager.cpp */; };
 		819EB1B6125F79B600CE1D88 /* option_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 819EB1B5125F79B600CE1D88 /* option_manager.h */; };
 		819EB1B7125F79B600CE1D88 /* option_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 819EB1B5125F79B600CE1D88 /* option_manager.h */; };
+		A7B23F1312EDB790004AA25C /* indigo_mapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7B23F1112EDB790004AA25C /* indigo_mapping.cpp */; };
+		A7B23F1412EDB790004AA25C /* indigo_mapping.h in Headers */ = {isa = PBXBuildFile; fileRef = A7B23F1212EDB790004AA25C /* indigo_mapping.h */; };
+		A7B23F1512EDB790004AA25C /* indigo_mapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7B23F1112EDB790004AA25C /* indigo_mapping.cpp */; };
+		A7B23F1612EDB790004AA25C /* indigo_mapping.h in Headers */ = {isa = PBXBuildFile; fileRef = A7B23F1212EDB790004AA25C /* indigo_mapping.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -180,6 +184,8 @@
 		819EB1AF125F799D00CE1D88 /* indigo_scaffold.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_scaffold.cpp; path = src/indigo_scaffold.cpp; sourceTree = "<group>"; };
 		819EB1B2125F79A700CE1D88 /* option_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = option_manager.cpp; path = src/option_manager.cpp; sourceTree = "<group>"; };
 		819EB1B5125F79B600CE1D88 /* option_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = option_manager.h; path = src/option_manager.h; sourceTree = "<group>"; };
+		A7B23F1112EDB790004AA25C /* indigo_mapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = indigo_mapping.cpp; path = src/indigo_mapping.cpp; sourceTree = "<group>"; };
+		A7B23F1212EDB790004AA25C /* indigo_mapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_mapping.h; path = src/indigo_mapping.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,6 +229,8 @@
 		817B69A111F88B3C00BC3D88 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A7B23F1112EDB790004AA25C /* indigo_mapping.cpp */,
+				A7B23F1212EDB790004AA25C /* indigo_mapping.h */,
 				81995AF812AD82D90039AC00 /* indigo_loaders.h */,
 				811437A712AD6AF500547F1F /* indigo_array.h */,
 				811437A812AD6AF500547F1F /* indigo_deconvolution.h */,
@@ -320,6 +328,7 @@
 				811437C012AD6AF500547F1F /* indigo_scaffold.h in Headers */,
 				811437C212AD6AF500547F1F /* indigo_stereo.h in Headers */,
 				81995AF912AD82D90039AC00 /* indigo_loaders.h in Headers */,
+				A7B23F1412EDB790004AA25C /* indigo_mapping.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,6 +348,7 @@
 				811437CE12AD6AF500547F1F /* indigo_scaffold.h in Headers */,
 				811437D012AD6AF500547F1F /* indigo_stereo.h in Headers */,
 				81995AFA12AD82D90039AC00 /* indigo_loaders.h in Headers */,
+				A7B23F1612EDB790004AA25C /* indigo_mapping.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -483,6 +493,7 @@
 				811437BB12AD6AF500547F1F /* indigo_options.cpp in Sources */,
 				811437BD12AD6AF500547F1F /* indigo_properties.cpp in Sources */,
 				811437C112AD6AF500547F1F /* indigo_stereo.cpp in Sources */,
+				A7B23F1312EDB790004AA25C /* indigo_mapping.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -510,6 +521,7 @@
 				811437C912AD6AF500547F1F /* indigo_options.cpp in Sources */,
 				811437CB12AD6AF500547F1F /* indigo_properties.cpp in Sources */,
 				811437CF12AD6AF500547F1F /* indigo_stereo.cpp in Sources */,
+				A7B23F1512EDB790004AA25C /* indigo_mapping.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

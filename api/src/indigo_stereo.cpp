@@ -106,6 +106,7 @@ CEXPORT int indigoResetStereo (int item)
          IndigoBond &ib = IndigoBond::cast(self.getObject(item));
 
          ib.mol.stereocenters.setBondDirection(ib.idx, 0);
+         ib.mol.cis_trans.setParity(ib.idx, 0);
       }
       else
          throw IndigoError("indigoResetStereo(): %s given", obj.debugInfo());

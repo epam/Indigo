@@ -383,6 +383,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\src\indigo_mapping.h"
+			>
+		</File>
+		<File
 			RelativePath="..\src\indigo_match.cpp"
 			>
 		</File>
