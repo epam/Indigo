@@ -747,6 +747,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\edge_subgraph_enumerator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\edge_subgraph_enumerator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\embedding_enumerator.cpp"
 				>
 			</File>
