@@ -853,6 +853,7 @@ void MoleculeLayoutGraph::_buildOutline (void)
    int i, j;
    int first_idx = vertexBegin();
    float min_y = getPos(first_idx).y;
+   const float EPS = 0.0001;
 
    for (i = vertexNext(first_idx); i < vertexEnd(); i = vertexNext(i))
    {
@@ -934,7 +935,7 @@ void MoleculeLayoutGraph::_buildOutline (void)
             if (Vec2f::intersection(cur_v1, cur_v2, cur_v3, cur_v4, v))
                if ((dist = Vec2f::dist(cur_v1, v)) < min_dist)
                {
-                  if (dist > EPSILON || j != prev_edge)
+                  if (dist > EPS || j != prev_edge)
                   {
                      inter = v;
                      min_dist = dist;
