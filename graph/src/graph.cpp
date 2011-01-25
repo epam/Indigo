@@ -46,12 +46,19 @@ Graph::Graph ()
 {
    _vertices = new ObjPool<Vertex>();
    _neighbors_pool = new Pool<List<VertexEdge>::Elem>();
+   _sssr_pool = 0;
 }
 
 Graph::~Graph ()
 {
    delete _vertices;
    delete _neighbors_pool;
+   if (_sssr_pool != 0)
+   {
+      _sssr_vertices.clear();
+      _sssr_edges.clear();
+      delete _sssr_pool;
+   }
 }
 
 int Graph::addVertex ()
@@ -569,22 +576,40 @@ void Graph::_calculateSSSR ()
    _v_smallest_ring_size.fffill();
    _v_sssr_count.zerofill();
 
+   if (_sssr_pool == 0)
+      _sssr_pool = new Pool<List<int>::Elem>();
+
+   _sssr_vertices.clear();
+   _sssr_edges.clear();
+
    for (i = 0; i < basis.getCyclesCount(); i++)
    {
       const Array<int> &cycle = basis.getCycle(i);
-      QS_DEF(Array<int>, vertices);
 
-      vertices.clear();
+      List<int> &vertices = _sssr_vertices.push(*_sssr_pool);
+      List<int> &edges = _sssr_edges.push(*_sssr_pool);
+
+      int prev_beg = -1;
+      int prev_end = -1;
+
       for (j = 0; j < cycle.size(); j++)
       {
          const Edge &edge = getEdge(cycle[j]);
 
-         if (vertices.find(edge.beg) == -1)
-            vertices.push(edge.beg);
-         if (vertices.find(edge.end) == -1)
-            vertices.push(edge.end);
+         edges.add(cycle[j]);
+         
+         if (j != cycle.size() - 1)
+         {
+            if (edge.beg != prev_beg && edge.beg != prev_end)
+               vertices.add(edge.beg);
+            if (edge.end != prev_beg && edge.end != prev_end)
+               vertices.add(edge.end);
+         }
+         prev_beg = edge.beg;
+         prev_end = edge.end;
       }
-      for (j = 0; j < vertices.size(); j++)
+
+      for (j = vertices.begin(); j != vertices.end(); j = vertices.next(j))
       {
          int idx = vertices[j];
 
@@ -666,4 +691,25 @@ const Array<int> & Graph::getDecomposition ()
       _calculateComponents();
 
    return _component_numbers;
+}
+
+List<int> & Graph::sssrEdges (int idx)
+{
+   if (!_sssr_valid)
+      _calculateSSSR();
+   return _sssr_edges[idx];
+}
+
+List<int> & Graph::sssrVertices (int idx)
+{
+   if (!_sssr_valid)
+      _calculateSSSR();
+   return _sssr_vertices[idx];
+}
+
+int Graph::sssrCount ()
+{
+   if (!_sssr_valid)
+      _calculateSSSR();
+   return _sssr_vertices.size();
 }

@@ -394,6 +394,66 @@ protected:
    int _idx;
 };
 
+class IndigoSubmolecule : public IndigoObject
+{
+public:
+   IndigoSubmolecule (BaseMolecule &mol_, Array<int> &vertices_, Array<int> &edges_);
+   IndigoSubmolecule (BaseMolecule &mol_, List<int> &vertices_, List<int> &edges_);
+   virtual ~IndigoSubmolecule ();
+
+   virtual int getIndex ();
+   virtual IndigoObject * clone ();
+
+   int idx; // not really a submolecule property, but included for convenience
+            // of iterators that return submolecules
+
+   Array<int> vertices;
+   Array<int> edges;
+   BaseMolecule &mol;
+protected:
+};
+
+class IndigoSubmoleculeAtomsIter : public IndigoObject
+{
+public:
+   IndigoSubmoleculeAtomsIter (IndigoSubmolecule &submol);
+   virtual ~IndigoSubmoleculeAtomsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   IndigoSubmolecule &_submol;
+   int _idx;
+};
+
+class IndigoSubmoleculeBondsIter : public IndigoObject
+{
+public:
+   IndigoSubmoleculeBondsIter (IndigoSubmolecule &submol);
+   virtual ~IndigoSubmoleculeBondsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   IndigoSubmolecule &_submol;
+   int _idx;
+};
+
+class IndigoSSSRIter : public IndigoObject
+{
+public:
+   IndigoSSSRIter (BaseMolecule &mol);
+   ~IndigoSSSRIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+   
+protected:
+   BaseMolecule &_mol;
+   int _idx;
+};
 
 #ifdef _WIN32
 #pragma warning(pop)

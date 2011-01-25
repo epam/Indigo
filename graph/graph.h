@@ -18,6 +18,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/list.h"
 #include "base_cpp/obj_pool.h"
+#include "base_cpp/obj_array.h"
 #include "graph/filter.h"
 
 #ifdef _WIN32
@@ -146,6 +147,10 @@ public:
    int vertexSmallestRingSize (int idx);
    bool vertexInRing(int idx);
 
+   List<int> & sssrEdges (int idx);
+   List<int> & sssrVertices (int idx);
+   int sssrCount ();
+
    int vertexComponent (int v_idx);
    int countComponents ();
    int countComponentVertices (int comp_idx);
@@ -164,7 +169,10 @@ protected:
 
    Array<int> _v_smallest_ring_size;
    Array<int> _v_sssr_count;
-   bool        _sssr_valid;
+   Pool<List<int>::Elem> *_sssr_pool;
+   ObjArray< List<int> > _sssr_vertices;
+   ObjArray< List<int> > _sssr_edges;
+   bool       _sssr_valid;
 
    Array<int> _component_numbers;
    Array<int> _component_vcount;

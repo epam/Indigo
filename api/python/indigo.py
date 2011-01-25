@@ -328,6 +328,8 @@ class Indigo:
     self.IndigoObject.componentIndex = self._member_int(self._lib.indigoComponentIndex)
     self.IndigoObject.component = self._member_obj_int(self._lib.indigoComponent)
     self.IndigoObject.iterateComponents = self._member_obj(self._lib.indigoIterateComponents)
+    self.IndigoObject.countSSSR = self._member_int(self._lib.indigoCountSSSR)
+    self.IndigoObject.iterateSSSR = self._member_obj(self._lib.indigoIterateSSSR)
 
     self.IndigoObject.countHeavyAtoms = self._member_int(self._lib.indigoCountHeavyAtoms)
     self.IndigoObject.molecularWeight = self._member_float(self._lib.indigoMolecularWeight)

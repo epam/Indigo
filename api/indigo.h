@@ -372,6 +372,11 @@ CEXPORT int indigoIterateComponents (int molecule);
 // and also the indigoClone() call, which returns a [query] molecule.
 CEXPORT int indigoComponent (int molecule, int index);
 
+/* Smallest Set of Smallest Rings */
+
+CEXPORT int indigoCountSSSR (int molecule);
+CEXPORT int indigoIterateSSSR (int molecule);
+
 /* Calculation on molecules */
 
 CEXPORT int   indigoCountHeavyAtoms (int molecule);

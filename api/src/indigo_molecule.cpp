@@ -671,6 +671,11 @@ CEXPORT int indigoIterateAtoms (int molecule)
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return self.addObject(new IndigoComponentAtomsIter(mc.mol, mc.index));
       }
+      if (obj.type == IndigoObject::SUBMOLECULE)
+      {
+         IndigoSubmolecule &sm = (IndigoSubmolecule &)obj;
+         return self.addObject(new IndigoSubmoleculeAtomsIter(sm));
+      }
       if (obj.type == IndigoObject::DATA_SGROUP)
       {
          IndigoDataSGroup &dsg = IndigoDataSGroup::cast(obj);
@@ -698,6 +703,11 @@ CEXPORT int indigoIterateBonds (int molecule)
       {
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return self.addObject(new IndigoComponentBondsIter(mc.mol, mc.index));
+      }
+      if (obj.type == IndigoObject::SUBMOLECULE)
+      {
+         IndigoSubmolecule &sm = (IndigoSubmolecule &)obj;
+         return self.addObject(new IndigoSubmoleculeBondsIter(sm));
       }
       if (obj.type == IndigoObject::DATA_SGROUP)
       {
@@ -731,6 +741,11 @@ CEXPORT int indigoCountAtoms (int molecule)
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return mc.mol.countComponentVertices(mc.index);
       }
+      if (obj.type == IndigoObject::SUBMOLECULE)
+      {
+         IndigoSubmolecule &sm = (IndigoSubmolecule &)obj;
+         return sm.vertices.size();
+      }
       if (obj.type == IndigoObject::DATA_SGROUP)
       {
          IndigoDataSGroup &dsg = IndigoDataSGroup::cast(obj);
@@ -759,6 +774,11 @@ CEXPORT int indigoCountBonds (int molecule)
       {
          IndigoMoleculeComponent &mc = (IndigoMoleculeComponent &)obj;
          return mc.mol.countComponentEdges(mc.index);
+      }
+      if (obj.type == IndigoObject::SUBMOLECULE)
+      {
+         IndigoSubmolecule &sm = (IndigoSubmolecule &)obj;
+         return sm.edges.size();
       }
       if (obj.type == IndigoObject::DATA_SGROUP)
       {
@@ -2306,4 +2326,167 @@ CEXPORT int indigoSetBondOrder (int bond, int order)
       return 1;
    }
    INDIGO_END(-1)
+}
+
+IndigoSubmolecule::IndigoSubmolecule (BaseMolecule &mol_, Array<int> &vertices_, Array<int> &edges_) :
+IndigoObject(SUBMOLECULE),
+mol(mol_)
+{
+   vertices.copy(vertices_);
+   edges.copy(edges_);
+   idx = -1;
+}
+
+IndigoSubmolecule::IndigoSubmolecule (BaseMolecule &mol_, List<int> &vertices_, List<int> &edges_) :
+IndigoObject(SUBMOLECULE),
+mol(mol_)
+{
+   int i;
+   
+   vertices.clear();
+   edges.clear();
+   
+   for (i = vertices_.begin(); i != vertices_.end(); i = vertices_.next(i))
+      vertices.push(vertices_[i]);
+
+   for (i = edges_.begin(); i != edges_.end(); i = edges_.next(i))
+      edges.push(edges_[i]);
+   
+   idx = -1;
+}
+
+IndigoSubmolecule::~IndigoSubmolecule ()
+{
+}
+
+int IndigoSubmolecule::getIndex ()
+{
+   if (idx == -1)
+      throw IndigoError("index not set");
+
+   return idx;
+}
+
+IndigoObject * IndigoSubmolecule::clone ()
+{
+   AutoPtr<IndigoObject> res;
+   BaseMolecule *newmol;
+
+   if (mol.isQueryMolecule())
+   {
+      res.reset(new IndigoQueryMolecule());
+      newmol = &(((IndigoQueryMolecule *)res.get())->qmol);
+   }
+   else
+   {
+      res.reset(new IndigoMolecule());
+      newmol = &(((IndigoMolecule *)res.get())->mol);
+   }
+
+   newmol->makeEdgeSubmolecule(mol, vertices, edges, 0, 0);
+   return res.release();
+}
+
+IndigoSubmoleculeAtomsIter::IndigoSubmoleculeAtomsIter (IndigoSubmolecule &submol) :
+IndigoObject(SUBMOLECULE_ATOMS_ITER),
+_submol(submol)
+{
+   _idx = -1;
+}
+
+IndigoSubmoleculeAtomsIter::~IndigoSubmoleculeAtomsIter ()
+{
+}
+
+bool IndigoSubmoleculeAtomsIter::hasNext ()
+{
+   return _idx + 1 < _submol.vertices.size();
+}
+
+IndigoObject * IndigoSubmoleculeAtomsIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   _idx++;
+
+   return new IndigoAtom(_submol.mol, _submol.vertices[_idx]);
+}
+
+IndigoSubmoleculeBondsIter::IndigoSubmoleculeBondsIter (IndigoSubmolecule &submol) :
+IndigoObject(SUBMOLECULE_BONDS_ITER),
+_submol(submol)
+{
+   _idx = -1;
+}
+
+IndigoSubmoleculeBondsIter::~IndigoSubmoleculeBondsIter ()
+{
+}
+
+bool IndigoSubmoleculeBondsIter::hasNext ()
+{
+   return _idx + 1 < _submol.edges.size();
+}
+
+IndigoObject * IndigoSubmoleculeBondsIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   _idx++;
+
+   return new IndigoBond(_submol.mol, _submol.edges[_idx]);
+}
+
+CEXPORT int indigoCountSSSR (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return mol.sssrCount();
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoIterateSSSR (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return self.addObject(new IndigoSSSRIter(mol));
+   }
+   INDIGO_END(-1)
+}
+
+IndigoSSSRIter::IndigoSSSRIter (BaseMolecule &mol) :
+IndigoObject(SSSR_ITER),
+_mol(mol)
+{
+   _idx = -1;
+}
+
+IndigoSSSRIter::~IndigoSSSRIter ()
+{
+}
+
+bool IndigoSSSRIter::hasNext ()
+{
+   return _idx + 1 < _mol.sssrCount();
+}
+
+IndigoObject * IndigoSSSRIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   _idx++;
+   List<int> &vertices = _mol.sssrVertices(_idx);
+   List<int> &edges = _mol.sssrEdges(_idx);
+
+   AutoPtr<IndigoSubmolecule> res(new IndigoSubmolecule(_mol, vertices, edges));
+   res->idx = _idx;
+   return res.release();
 }

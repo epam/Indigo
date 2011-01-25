@@ -104,7 +104,11 @@ public:
       COMPONENTS_ITER,
       COMPONENT_ATOMS_ITER,
       COMPONENT_BONDS_ITER,
-      MAPPING
+      SUBMOLECULE,
+      SUBMOLECULE_ATOMS_ITER,
+      SUBMOLECULE_BONDS_ITER,
+      MAPPING,
+      SSSR_ITER
    };
 
    int type;
