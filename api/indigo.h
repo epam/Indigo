@@ -377,6 +377,10 @@ CEXPORT int indigoComponent (int molecule, int index);
 CEXPORT int indigoCountSSSR (int molecule);
 CEXPORT int indigoIterateSSSR (int molecule);
 
+CEXPORT int indigoIterateSubtrees (int molecule, int min_atoms, int max_atoms);
+CEXPORT int indigoIterateRings (int molecule, int min_atoms, int max_atoms);
+CEXPORT int indigoIterateEdgeSubmolecules (int molecule, int min_bonds, int max_bonds);
+
 /* Calculation on molecules */
 
 CEXPORT int   indigoCountHeavyAtoms (int molecule);

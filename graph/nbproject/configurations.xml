@@ -71,6 +71,8 @@
       <itemPath>dfs_walk.h</itemPath>
       <itemPath>src/edge_rotation_matcher.cpp</itemPath>
       <itemPath>edge_rotation_matcher.h</itemPath>
+      <itemPath>src/edge_subgraph_enumerator.cpp</itemPath>
+      <itemPath>edge_subgraph_enumerator.h</itemPath>
       <itemPath>src/embedding_enumerator.cpp</itemPath>
       <itemPath>embedding_enumerator.h</itemPath>
       <itemPath>src/embeddings_storage.cpp</itemPath>

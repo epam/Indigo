@@ -330,6 +330,9 @@ class Indigo:
     self.IndigoObject.iterateComponents = self._member_obj(self._lib.indigoIterateComponents)
     self.IndigoObject.countSSSR = self._member_int(self._lib.indigoCountSSSR)
     self.IndigoObject.iterateSSSR = self._member_obj(self._lib.indigoIterateSSSR)
+    self.IndigoObject.iterateRings = self._member_obj_int_int(self._lib.indigoIterateRings)
+    self.IndigoObject.iterateSubtrees = self._member_obj_int_int(self._lib.indigoIterateSubtrees)
+    self.IndigoObject.iterateEdgeSubmolecules = self._member_obj_int_int(self._lib.indigoIterateEdgeSubmolecules)
 
     self.IndigoObject.countHeavyAtoms = self._member_int(self._lib.indigoCountHeavyAtoms)
     self.IndigoObject.molecularWeight = self._member_float(self._lib.indigoMolecularWeight)
@@ -623,6 +626,18 @@ class Indigo:
     def newfunc (self, param):
       dispatcher._setSID()
       newobj = dispatcher._checkResult(func(self.id, param))
+      if newobj == 0:
+        return None
+      return dispatcher.IndigoObject(dispatcher, newobj)
+    return self._make_wrapper_func(newfunc, func)
+
+  def _member_obj_int_int (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int]
+    dispatcher = self
+    def newfunc (self, param, param2):
+      dispatcher._setSID()
+      newobj = dispatcher._checkResult(func(self.id, param, param2))
       if newobj == 0:
         return None
       return dispatcher.IndigoObject(dispatcher, newobj)

@@ -2082,6 +2082,10 @@ _mol(mol)
    _cidx = cidx;
 }
 
+IndigoComponentAtomsIter::~IndigoComponentAtomsIter ()
+{
+}
+
 bool IndigoComponentAtomsIter::hasNext ()
 {
    return _next() != _mol.vertexEnd();
@@ -2121,6 +2125,10 @@ _mol(mol)
               cidx, _mol.countComponents() - 1);
    _idx = -1;
    _cidx = cidx;
+}
+
+IndigoComponentBondsIter::~IndigoComponentBondsIter ()
+{
 }
 
 bool IndigoComponentBondsIter::hasNext ()
@@ -2489,4 +2497,167 @@ IndigoObject * IndigoSSSRIter::next ()
    AutoPtr<IndigoSubmolecule> res(new IndigoSubmolecule(_mol, vertices, edges));
    res->idx = _idx;
    return res.release();
+}
+
+IndigoSubtreesIter::IndigoSubtreesIter (BaseMolecule &mol, int min_vertices, int max_vertices) :
+IndigoObject(SUBTREES_ITER),
+_mol(mol),
+_enumerator(mol)
+{
+   _enumerator.min_vertices = min_vertices;
+   _enumerator.max_vertices = max_vertices;
+   _enumerator.context = this;
+   _enumerator.callback = _handleTree;
+   _enumerator.process();
+   _idx = -1;
+}
+
+IndigoSubtreesIter::~IndigoSubtreesIter ()
+{
+}
+
+void IndigoSubtreesIter::_handleTree (Graph &graph, const int *v_mapping, const int *e_mapping, void *context)
+{
+   IndigoSubtreesIter *self = (IndigoSubtreesIter *)context;
+
+   Array<int> &vertices = self->_vertices.push();
+   Array<int> &edges = self->_edges.push();
+
+   Graph::filterVertices(graph, v_mapping, FILTER_NEQ, -1, vertices);
+   Graph::filterEdges(graph, e_mapping, FILTER_NEQ, -1, edges);
+}
+
+bool IndigoSubtreesIter::hasNext ()
+{
+   return _idx + 1 < _vertices.size();
+}
+
+IndigoObject * IndigoSubtreesIter::next ()
+{
+   if (!hasNext())
+      return 0;
+   
+   _idx++;
+   AutoPtr<IndigoSubmolecule> res(new IndigoSubmolecule(_mol, _vertices[_idx], _edges[_idx]));
+   res->idx = _idx;
+   return res.release();
+}
+
+CEXPORT int indigoIterateSubtrees (int molecule, int min_atoms, int max_atoms)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return self.addObject(new IndigoSubtreesIter(mol, min_atoms, max_atoms));
+   }
+   INDIGO_END(-1)
+}
+
+IndigoRingsIter::IndigoRingsIter (BaseMolecule &mol, int min_vertices, int max_vertices) :
+IndigoObject(RINGS_ITER),
+_mol(mol),
+_enumerator(mol)
+{
+   _enumerator.min_length = min_vertices;
+   _enumerator.max_length = max_vertices;
+   _enumerator.context = this;
+   _enumerator.cb_handle_cycle = _handleCycle;
+   _enumerator.process();
+   _idx = -1;
+}
+
+IndigoRingsIter::~IndigoRingsIter ()
+{
+}
+
+bool IndigoRingsIter::_handleCycle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
+{
+   IndigoRingsIter *self = (IndigoRingsIter *)context;
+
+   self->_vertices.push().copy(vertices);
+   self->_edges.push().copy(edges);
+   return true;
+}
+
+bool IndigoRingsIter::hasNext ()
+{
+   return _idx + 1 < _vertices.size();
+}
+
+IndigoObject * IndigoRingsIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   _idx++;
+   AutoPtr<IndigoSubmolecule> res(new IndigoSubmolecule(_mol, _vertices[_idx], _edges[_idx]));
+   res->idx = _idx;
+   return res.release();
+}
+
+CEXPORT int indigoIterateRings (int molecule, int min_atoms, int max_atoms)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return self.addObject(new IndigoRingsIter(mol, min_atoms, max_atoms));
+   }
+   INDIGO_END(-1)
+}
+
+IndigoEdgeSubmoleculeIter::IndigoEdgeSubmoleculeIter (BaseMolecule &mol, int min_edges, int max_edges) :
+IndigoObject(EDGE_SUBMOLECULE_ITER),
+_mol(mol),
+_enumerator(mol)
+{
+   _enumerator.min_edges = min_edges;
+   _enumerator.max_edges = max_edges;
+   _enumerator.userdata = this;
+   _enumerator.cb_subgraph = _handleSubgraph;
+   _enumerator.process();
+   _idx = -1;
+}
+
+IndigoEdgeSubmoleculeIter::~IndigoEdgeSubmoleculeIter ()
+{
+}
+
+void IndigoEdgeSubmoleculeIter::_handleSubgraph (Graph &graph, const int *v_mapping, const int *e_mapping, void *context)
+{
+   IndigoEdgeSubmoleculeIter *self = (IndigoEdgeSubmoleculeIter *)context;
+
+   Array<int> &vertices = self->_vertices.push();
+   Array<int> &edges = self->_edges.push();
+
+   Graph::filterVertices(graph, v_mapping, FILTER_NEQ, -1, vertices);
+   Graph::filterEdges(graph, e_mapping, FILTER_NEQ, -1, edges);
+}
+
+bool IndigoEdgeSubmoleculeIter::hasNext ()
+{
+   return _idx + 1 < _vertices.size();
+}
+
+IndigoObject * IndigoEdgeSubmoleculeIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   _idx++;
+   AutoPtr<IndigoSubmolecule> res(new IndigoSubmolecule(_mol, _vertices[_idx], _edges[_idx]));
+   res->idx = _idx;
+   return res.release();
+}
+
+CEXPORT int indigoIterateEdgeSubmolecules (int molecule, int min_bonds, int max_bonds)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return self.addObject(new IndigoEdgeSubmoleculeIter(mol, min_bonds, max_bonds));
+   }
+   INDIGO_END(-1)
 }

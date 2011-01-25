@@ -108,7 +108,10 @@ public:
       SUBMOLECULE_ATOMS_ITER,
       SUBMOLECULE_BONDS_ITER,
       MAPPING,
-      SSSR_ITER
+      SSSR_ITER,
+      SUBTREES_ITER,
+      RINGS_ITER,
+      EDGE_SUBMOLECULE_ITER
    };
 
    int type;

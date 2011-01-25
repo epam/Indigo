@@ -82,6 +82,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/graph_constrained_bmatching_finder.o \
 	${OBJECTDIR}/_ext/1705077469/best_fit.o \
 	${OBJECTDIR}/src/graph_decomposer.o \
+	${OBJECTDIR}/src/edge_subgraph_enumerator.o \
 	${OBJECTDIR}/src/max_common_subgraph.o \
 	${OBJECTDIR}/_ext/380065930/crc32.o
 
@@ -356,6 +357,11 @@ ${OBJECTDIR}/src/graph_decomposer.o: src/graph_decomposer.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/graph_decomposer.o src/graph_decomposer.cpp
+
+${OBJECTDIR}/src/edge_subgraph_enumerator.o: src/edge_subgraph_enumerator.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/edge_subgraph_enumerator.o src/edge_subgraph_enumerator.cpp
 
 ${OBJECTDIR}/src/max_common_subgraph.o: src/max_common_subgraph.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
