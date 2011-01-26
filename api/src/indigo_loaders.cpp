@@ -342,6 +342,8 @@ GraphHighlighting * IndigoSmilesMolecule::getMoleculeHighlighting ()
 
 const char * IndigoSmilesMolecule::getName ()
 {
+   if (getMolecule().name.ptr() == 0)
+      return "";
    return getMolecule().name.ptr();
 }
 
@@ -385,6 +387,8 @@ ReactionHighlighting * IndigoSmilesReaction::getReactionHighlighting ()
 
 const char * IndigoSmilesReaction::getName ()
 {
+   if (getReaction().name.ptr() == 0)
+      return "";
    return getReaction().name.ptr();
 }
 

@@ -21,79 +21,40 @@ using namespace indigo;
 GraphEmbeddingsStorage::GraphEmbeddingsStorage ()
 {
    unique_by_edges = false;
+   check_uniquencess = true;
+   save_edges = false;
+   save_mapping = false;
 }
- 
-bool GraphEmbeddingsStorage::addEmbedding (const Array<int> &vertices, const Array<int> &edges)
+    
+void GraphEmbeddingsStorage::_prepareForCompare (int id)
 {
-   dword hash = _calcSetHash(vertices);
-   if (unique_by_edges)
-      hash ^= _calcSetHash(edges);
+   _EmbeddingData &data = _embedding_data[id];
+   if (data.sorted)
+      return;
 
-   QS_DEF(Array<int>, sorted_vertices);
-   sorted_vertices.copy(vertices);
-   sorted_vertices.qsort(_cmp_int, 0);
-
-   QS_DEF(Array<int>, sorted_edges);
-   if (unique_by_edges)
-   {
-      sorted_edges.copy(edges);
-      sorted_edges.qsort(_cmp_int, 0);
-   }
-   else
-      sorted_edges.clear();
-
-   // Try to find element with the same hash
-   int *id = _map_hash_to_id.at2(hash);
-   int append_to = -1;
-   if (id != 0)
-   {
-      // Compare elements in the list
-      int cur = *id;
-      while (true)
-      {
-         if (_compareEmbedding(cur, sorted_vertices, sorted_edges))
-            return false; // Such embedding already exists
-         if (_embedding_data[cur].next == -1)
-            break;
-         cur = _embedding_data[cur].next;
-      }
-      append_to = cur;
-   }
-
-   // Add new item to the storage
-   _EmbeddingData &data = _embedding_data.push();
-   data.vertex_begin = _all_vertices.size();
-   data.vertex_count = vertices.size();
-   _all_vertices.concat(sorted_vertices);
-
-   data.edge_begin = _all_edges.size();
-   data.edge_count = edges.size();
-   _all_edges.concat(sorted_edges);
-   
-   data.next = -1;
-   if (append_to != -1)
-      // Append embedding to the list of embeddings with the same hashes
-      _embedding_data[append_to].next = _embedding_data.size() - 1;
-   else
-      // Insert embedding into map
-      _map_hash_to_id.insert(hash, _embedding_data.size() - 1);
-
-
-   return true;
+   _all_edges.qsort(data.edge_begin, data.edge_begin + data.edge_count - 1, IntCmpFunctor());
+   _all_vertices.qsort(data.vertex_begin, data.vertex_begin + data.vertex_count - 1, IntCmpFunctor());
+   data.sorted = true;
 }
 
 bool GraphEmbeddingsStorage::addEmbedding (const Graph &super, const Graph &sub, int *core_sub)
 {
-   QS_DEF(Array<int>, vertices);
-   QS_DEF(Array<int>, edges);
+   // Add new item to the storage
+   // If it isn't unque then remove it
+   _EmbeddingData &data = _embedding_data.push();
+   int added_index = _embedding_data.size() - 1;
+   data.vertex_begin = _all_vertices.size();
+   data.edge_begin = _all_edges.size();
+   data.sub_mapping_begin = _all_mappings.size();
 
-   vertices.clear();
+   if (save_mapping)
+      _all_mappings.concat(core_sub, sub.vertexEnd());
+
    for (int i = sub.vertexBegin(); i != sub.vertexEnd(); i = sub.vertexNext(i))
       if (core_sub[i] >= 0)
-         vertices.push(core_sub[i]);
+         _all_vertices.push(core_sub[i]);
 
-   edges.clear();
-   if (unique_by_edges)
+   if (unique_by_edges || save_edges)
    {
       for (int i = sub.edgeBegin(); i != sub.edgeEnd(); i = sub.edgeNext(i))
       {
@@ -106,16 +67,87 @@ bool GraphEmbeddingsStorage::addEmbedding (const Graph &super, const Graph &sub,
          if (edge_index == -1)
             throw Error("Edge should be mapped");
 
-         edges.push(edge_index);
+         _all_edges.push(edge_index);
       }
    }
 
-   return addEmbedding(vertices, edges);
+   data.vertex_count = _all_vertices.size() - data.vertex_begin;
+   data.edge_count = _all_edges.size() - data.edge_begin;
+   data.sub_mapping_count = _all_mappings.size() - data.sub_mapping_begin;
+
+   dword hash = _calcSetHash(_all_vertices, data.vertex_begin, data.vertex_count);
+
+   if (unique_by_edges)
+      hash ^= _calcSetHash(_all_edges, data.edge_begin, data.edge_count);
+
+   data.sorted = false;
+
+   // Try to find element with the same hash
+   int *id = _map_hash_to_id.at2(hash);
+   int append_to = -1;
+   if (id != 0)
+   {
+      // Compare elements in the list
+      int cur = *id;
+      while (true)
+      {
+         if (check_uniquencess && _compareEmbedding(cur, added_index))
+         {
+            // Such embedding already exists
+            // Remove added element
+            _all_vertices.resize(data.vertex_begin);
+            _all_edges.resize(data.edge_begin);
+            _all_mappings.resize(data.sub_mapping_begin);
+            _embedding_data.pop();
+            return false; 
+         }
+         if (_embedding_data[cur].next == -1)
+            break;
+         cur = _embedding_data[cur].next;
+      }
+      append_to = cur;
+   }
+  
+   data.next = -1;
+   if (append_to != -1)
+      // Append embedding to the list of embeddings with the same hashes
+      _embedding_data[append_to].next = added_index;
+   else
+      // Insert embedding into map
+      _map_hash_to_id.insert(hash, added_index);
+
+   return true;
 }
 
 bool GraphEmbeddingsStorage::isEmpty () const
 {
    return _all_vertices.size() == 0;
+}
+
+int GraphEmbeddingsStorage::count () const
+{
+   return _embedding_data.size();
+}
+
+const int* GraphEmbeddingsStorage::getVertices (int emb_idx, int &count) const
+{
+   const _EmbeddingData &data = _embedding_data[emb_idx];
+   count = data.vertex_count;
+   return _all_vertices.ptr() + data.vertex_begin;
+}
+
+const int* GraphEmbeddingsStorage::getEdges (int emb_idx, int &count) const
+{
+   const _EmbeddingData &data = _embedding_data[emb_idx];
+   count = data.edge_count;
+   return _all_edges.ptr() + data.edge_begin;
+}
+
+const int* GraphEmbeddingsStorage::getMappingSub (int emb_idx, int &count) const
+{
+   const _EmbeddingData &data = _embedding_data[emb_idx];
+   count = data.sub_mapping_count;
+   return _all_mappings.ptr() + data.sub_mapping_begin;
 }
 
 void GraphEmbeddingsStorage::clear()
@@ -126,38 +158,39 @@ void GraphEmbeddingsStorage::clear()
    _map_hash_to_id.clear();
 }
 
-dword GraphEmbeddingsStorage::_calcSetHash (const Array<int> &set)
+dword GraphEmbeddingsStorage::_calcSetHash (const Array<int> &set, int offset, int size)
 {
    dword hash = 0;
-   for (int i = 0; i < set.size(); i++)
-      hash ^= set[i] * 0x8088405 + 1;
+   const int* data = set.ptr() + offset;
+   for (int i = 0; i < size; i++)
+      hash ^= data[i] * 0x8088405 + 1;
    return hash;
 }
 
-bool GraphEmbeddingsStorage::_compareEmbedding (int id, 
-         const Array<int> &vertices, const Array<int> &edges)
+bool GraphEmbeddingsStorage::_compareEmbedding (int id, int id2)
 {
+   _prepareForCompare(id);
+   _prepareForCompare(id2);
+
    _EmbeddingData &data = _embedding_data[id];
+   _EmbeddingData &data2 = _embedding_data[id2];
 
    // Compare vertices
-   if (data.vertex_count != vertices.size())
+   if (data.vertex_count != data2.vertex_count)
       return false;
    for (int i = 0; i < data.vertex_count; i++)
-      if (_all_vertices[i + data.vertex_begin] != vertices[i])
+      if (_all_vertices[i + data.vertex_begin] != _all_vertices[i + data2.vertex_begin])
          return false;
 
    // Compare edges
-   if (data.edge_count != edges.size())
-      return false;
-   for (int i = 0; i < data.edge_count; i++)
-      if (_all_edges[i + data.edge_begin] != edges[i])
+   if (unique_by_edges)
+   {
+      if (data.edge_count != data2.edge_count)
          return false;
+      for (int i = 0; i < data.edge_count; i++)
+         if (_all_edges[i + data.edge_begin] != _all_edges[i + data2.edge_begin])
+            return false;
+   }
 
    return true;
 }
-
-int GraphEmbeddingsStorage::_cmp_int (int v1, int v2, void *)
-{
-   return v1 - v2;
-}
-

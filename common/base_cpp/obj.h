@@ -75,6 +75,12 @@ public:
       return *_ptr();
    }
 
+   template<typename A> T & recreate (A &a)
+   {
+      free();
+      return create(a);
+   }
+
    template<typename A> T & create (const A &a)
    {
       if (_initialized)

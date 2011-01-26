@@ -359,6 +359,7 @@ class Indigo:
     self.IndigoObject.setProperty = self._member_void_string_string(self._lib.indigoSetProperty)
     self.IndigoObject.removeProperty = self._member_void_string(self._lib.indigoRemoveProperty)
     self.IndigoObject.iterateProperties = self._member_obj(self._lib.indigoIterateProperties)
+    self.IndigoObject.clearProperties = self._member_obj(self._lib.indigoClearProperties)
 
     self.IndigoObject.checkBadValence = self._member_string(self._lib.indigoCheckBadValence)
     self.IndigoObject.checkAmbiguousH = self._member_string(self._lib.indigoCheckAmbiguousH)

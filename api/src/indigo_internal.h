@@ -226,7 +226,7 @@ public:
 
    Encoding filename_encoding;
 
-   bool embedding_edges_uniqueness;
+   bool embedding_edges_uniqueness, find_unique_embeddings;
    int max_embeddings;
 
    int layout_max_iterations; // default is zero -- no limit

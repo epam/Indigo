@@ -104,6 +104,12 @@ static void indigoSetEmbeddingUniqueness (const char *mode)
       throw IndigoError("unknown value: %s", mode);
 }
 
+static void indigoSetFindUniqueEmbeddings (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.find_unique_embeddings = (enabled != 0);
+}
+
 static void indigoSetMaxEmbeddings (int value)
 {
    Indigo &self = indigoGetInstance();
@@ -134,6 +140,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("fp-tau-qwords", indigoSetFPTauQwords);
 
    mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness);
+   mgr.setOptionHandlerBool("find-unique-embeddings", indigoSetFindUniqueEmbeddings);
    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings);
 
    mgr.setOptionHandlerInt("layout-max-iterations", indigoSetLayoutMaxIterations);
