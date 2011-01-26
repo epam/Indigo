@@ -17,6 +17,8 @@
 
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
+#include "molecule/molecule_pi_systems_matcher.h"
+#include "molecule/molecule_arom_match.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/embeddings_storage.h"
 #include "base_cpp/auto_ptr.h"
@@ -197,9 +199,7 @@ protected:
       *_query_nei_counters, *_target_nei_counters;
 
    Obj<EmbeddingEnumerator> _ee;
-   AromaticityMatcher  *_am;
-   MoleculePiSystemsMatcher *_pi_systems_matcher;
-
+   
    AutoPtr<MarkushContext> _markush;
 
    // Because storage can be big it is not stored into TL_CP_***
@@ -208,6 +208,8 @@ protected:
    Obj<GraphEmbeddingsStorage> _embeddings_storage;
 
    Obj<Molecule3dConstraintsChecker> _3d_constraints_checker;
+   Obj<AromaticityMatcher> _am;
+   Obj<MoleculePiSystemsMatcher> _pi_systems_matcher;
 
    bool _h_unfold; // implicit target hydrogens unfolded
 

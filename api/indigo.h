@@ -439,6 +439,9 @@ CEXPORT int indigoRemoveProperty (int item, const char *prop);
 // obtained via indigoGetProperty() call to the object
 CEXPORT int indigoIterateProperties (int handle);
 
+// Clears all properties of the molecule
+CEXPORT int indigoClearProperties (int handle);
+
 // Accepts a molecule or reaction (but not query molecule or query reaction).
 // Returns a string describing the first encountered mistake with valence.
 // Returns an empty string if the input molecule/reaction is fine.

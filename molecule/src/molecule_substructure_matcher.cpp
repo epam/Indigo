@@ -23,11 +23,9 @@
 #include "graph/edge_rotation_matcher.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule.h"
-#include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_neighbourhood_counters.h"
-#include "molecule/molecule_pi_systems_matcher.h"
 #include "molecule/elements.h"
 #include "graph/graph.h"
 #include "molecule/query_molecule.h"
@@ -67,8 +65,6 @@ TL_CP_GET(_used_target_h)
    use_pi_systems_matcher = false;
    highlighting = 0;
    _query = 0;
-   _am = 0;
-   _pi_systems_matcher = 0;
    match_3d = 0;
    rms_threshold = 0;
 
@@ -276,23 +272,15 @@ bool MoleculeSubstructureMatcher::find ()
    
    _used_target_h.zerofill();
 
-   Obj<AromaticityMatcher> am;
    if (use_aromaticity_matcher && AromaticityMatcher::isNecessary(*_query))
-   {
-      am.create(*_query, _target);
-      _am = am.get();
-   }
+      _am.create(*_query, _target);
    else
-      _am = 0;
+      _am.free();
 
-   Obj<MoleculePiSystemsMatcher> pi_systems_matcher;
    if (use_pi_systems_matcher && !_target.isQueryMolecule())
-   {
-      pi_systems_matcher.create(_target.asMolecule());
-      _pi_systems_matcher = pi_systems_matcher.get();
-   }
+      _pi_systems_matcher.create(_target.asMolecule());
    else
-      _pi_systems_matcher = 0;
+      _pi_systems_matcher.free();
 
    _3d_constraints_checker.recreate(_query->spatial_constraints);
    _createEmbeddingsStorage();
@@ -533,7 +521,7 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph &subgraph, Graph &supergraph
    dword match_atoms_flags = 0xFFFFFFFF;
    // If target atom belongs to a pi-system then its charge
    // should be checked after embedding
-   if (self->_pi_systems_matcher)
+   if (self->_pi_systems_matcher.get())
    {
       if (self->_pi_systems_matcher->isAtomInPiSystem(super_idx))
          match_atoms_flags &= ~(MATCH_ATOM_CHARGE | MATCH_ATOM_VALENCE);
@@ -581,7 +569,7 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph &subgraph, Graph &supergraph
 
    if (self->_query_nei_counters != 0 && self->_target_nei_counters != 0)
    {
-      bool use_bond_types = (self->_pi_systems_matcher == 0);
+      bool use_bond_types = (self->_pi_systems_matcher.get() == 0);
       bool ret = self->_query_nei_counters->testSubstructure(
          *self->_target_nei_counters, sub_idx, super_idx, use_bond_types);
       if (!ret)
@@ -623,7 +611,7 @@ bool MoleculeSubstructureMatcher::_matchBonds (Graph &subgraph, Graph &supergrap
    dword flags = 0xFFFFFFFF;
    // If target bond belongs to a pi-system then it
    // should be checked after embedding
-   if (self->_pi_systems_matcher)
+   if (self->_pi_systems_matcher.get())
    {
       if (self->_pi_systems_matcher->isBondInPiSystem(super_idx))
          flags &= ~MATCH_BOND_TYPE;
@@ -633,7 +621,7 @@ bool MoleculeSubstructureMatcher::_matchBonds (Graph &subgraph, Graph &supergrap
    BaseMolecule &target  = (BaseMolecule &)supergraph;
    QueryMolecule::Bond &sub_bond = query.getBond(sub_idx);
 
-   if (!matchQueryBond(&sub_bond, target, sub_idx, super_idx, self->_am, flags))
+   if (!matchQueryBond(&sub_bond, target, sub_idx, super_idx, self->_am.get(), flags))
       return false;
 
    return true;
@@ -651,7 +639,7 @@ void MoleculeSubstructureMatcher::_removeAtom (Graph &subgraph, int sub_idx, voi
 {
    MoleculeSubstructureMatcher *self = (MoleculeSubstructureMatcher *)userdata;
    
-   removeAtom(subgraph, sub_idx, self->_am);
+   removeAtom(subgraph, sub_idx, self->_am.get());
 }
 
 void MoleculeSubstructureMatcher::addBond (Graph &subgraph, Graph &supergraph,
@@ -669,7 +657,7 @@ void MoleculeSubstructureMatcher::_addBond (Graph &subgraph, Graph &supergraph,
 {
    MoleculeSubstructureMatcher *self = (MoleculeSubstructureMatcher *)userdata;
 
-   addBond(subgraph, supergraph, sub_idx, super_idx, self->_am);
+   addBond(subgraph, supergraph, sub_idx, super_idx, self->_am.get());
 }
 
 int MoleculeSubstructureMatcher::_embedding (Graph &subgraph, Graph &supergraph,
@@ -698,14 +686,14 @@ int MoleculeSubstructureMatcher::_embedding_common (int *core_sub, int *core_sup
       return 1;
 
    // Check possible aromatic configuration
-   if (_am != 0)
+   if (_am.get() != 0)
    {
       if (!_am->match(core_sub, core_super))
          return 1;
    }
 
    // Check possible pi-systems configurations
-   if (_pi_systems_matcher != 0)
+   if (_pi_systems_matcher.get() != 0)
    {
      if (!_pi_systems_matcher->checkEmbedding(query, core_sub))
          return 1;
@@ -1034,7 +1022,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue (int *core1, int *cor
          }
       }
 
-      if (_am != 0)
+      if (_am.get() != 0)
          _am->validateQuery();
    }
 
@@ -1114,7 +1102,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue (int *core1, int *cor
       while (n_sites-- > 0)
          context.sites.pop();
 
-      if (_am != 0)
+      if (_am.get() != 0)
          _am->validateQuery();
    }
 

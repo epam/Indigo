@@ -50,7 +50,7 @@ public:
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
-   int countMatches (int max_embeddings);
+   int countMatches ();
 
    const char * debugInfo ();
 
@@ -59,6 +59,7 @@ public:
    GraphHighlighting highlighting;
    Molecule &target, &original_target;
    QueryMolecule &query;
+   int max_embeddings;
 
    Array<int> mapping;
 
@@ -76,7 +77,8 @@ public:
    virtual ~IndigoMoleculeSubstructureMatcher ();
 
    IndigoMoleculeSubstructureMatchIter* iterateQueryMatches (QueryMolecule &query,
-      bool embedding_edges_uniqueness, bool find_unique_embeddings, bool for_iteration);
+      bool embedding_edges_uniqueness, bool find_unique_embeddings, 
+      bool for_iteration, int max_embeddings);
 
    const char * debugInfo ();
 
