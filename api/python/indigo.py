@@ -348,7 +348,7 @@ class Indigo:
     self.IndigoObject.layout = self._member_void(self._lib.indigoLayout)    
 
     self.IndigoObject.smiles = self._member_string(self._lib.indigoSmiles)
-    self.IndigoObject.name = self._member_string(self._lib.indigoName)
+    self.IndigoObject.name = self._member_string_nocheck(self._lib.indigoName)
     self.IndigoObject.setName = self._member_void_string(self._lib.indigoSetName)
     self.IndigoObject.hasProperty = self._member_bool_string(self._lib.indigoHasProperty)
     self.IndigoObject.getProperty = self._member_string_string(self._lib.indigoGetProperty)
@@ -491,6 +491,15 @@ class Indigo:
     def newfunc (self):
       dispatcher._setSID()
       return dispatcher._checkResultString(func(self.id))
+    return self._make_wrapper_func(newfunc, func)
+
+  def _member_string_nocheck (self, func): 
+    func.restype = c_char_p
+    func.argtypes = [c_int]
+    dispatcher = self
+    def newfunc (self):
+      dispatcher._setSID()
+      return func(self.id)
     return self._make_wrapper_func(newfunc, func)
 
   def _member_bool (self, func):
