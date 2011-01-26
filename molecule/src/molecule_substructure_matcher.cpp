@@ -75,6 +75,8 @@ TL_CP_GET(_used_target_h)
    find_all_embeddings = false;
    find_unique_embeddings = false;
    find_unique_by_edges = false;
+   save_for_iteration = false;
+
    cb_embedding = 0;
    cb_embedding_context = 0;
 
@@ -228,7 +230,7 @@ void MoleculeSubstructureMatcher::setQuery (QueryMolecule &query)
          _ee->ignoreSubgraphVertex(i);
    }
 
-
+   _embeddings_storage.free();
 }
 
 QueryMolecule & MoleculeSubstructureMatcher::getQuery ()
@@ -292,8 +294,8 @@ bool MoleculeSubstructureMatcher::find ()
    else
       _pi_systems_matcher = 0;
 
-   if (_embeddings_storage.get() != 0)
-      _embeddings_storage->clear();
+   _3d_constraints_checker.recreate(_query->spatial_constraints);
+   _createEmbeddingsStorage();
 
    int result = _ee->process();
 
@@ -308,6 +310,15 @@ bool MoleculeSubstructureMatcher::find ()
         return false;
       return !_embeddings_storage->isEmpty();
    }
+}
+
+void MoleculeSubstructureMatcher::_createEmbeddingsStorage ()
+{
+   _embeddings_storage.create();
+   _embeddings_storage->unique_by_edges = find_unique_by_edges;
+   _embeddings_storage->save_edges = save_for_iteration;
+   _embeddings_storage->save_mapping = save_for_iteration;
+   _embeddings_storage->check_uniquencess = find_unique_embeddings;
 }
 
 void MoleculeSubstructureMatcher::_removeUnfoldedHydrogens ()
@@ -683,12 +694,8 @@ int MoleculeSubstructureMatcher::_embedding_common (int *core_sub, int *core_sup
    if (!MoleculeCisTrans::checkSub(query, _target, core_sub))
       return 1;
 
-   {
-      Molecule3dConstraintsChecker checker(query.spatial_constraints);
-
-      if (!checker.check(_target, core_sub))
-         return 1;
-   }
+   if (!_3d_constraints_checker->check(_target, core_sub))
+      return 1;
 
    // Check possible aromatic configuration
    if (_am != 0)
@@ -754,14 +761,8 @@ int MoleculeSubstructureMatcher::_embedding_common (int *core_sub, int *core_sup
       if (!_checkRGroupConditions())
          return 1;
 
-   if (find_unique_embeddings)
+   if (find_unique_embeddings || save_for_iteration)
    {
-      if (_embeddings_storage.get() == 0)
-      {
-         _embeddings_storage.create();
-         _embeddings_storage->unique_by_edges = find_unique_by_edges;
-      }
-
       if (!_embeddings_storage->addEmbedding(_target, query, core_sub))
          // This match has already been handled
          return 1;
@@ -803,6 +804,12 @@ int MoleculeSubstructureMatcher::_embedding_markush (int *core_sub, int *core_su
       throw Error("unsupported number of attachment points (%d)", site_degree);
    }
 
+   // Save number of embeddings to check if new embedding appeared
+   int embeddings_count = _embeddings_storage->count();
+   bool find_all_embeddings_saved = find_all_embeddings;
+   if (save_for_iteration)
+      find_all_embeddings = true;
+
    // For all possible rgroups at current site
    // do not do this:
    // const Array<int> &rg_list = g1.getRGroups()->getSiteRGroups(old_site_idx);
@@ -811,9 +818,12 @@ int MoleculeSubstructureMatcher::_embedding_markush (int *core_sub, int *core_su
 
    g1.getAllowedRGroups(old_site_idx, old_site_rgroups);
 
+   bool all_have_rest_h = true;
+
    for (int rg_idx = 0; rg_idx < old_site_rgroups.size(); rg_idx++)
    {
       RGroup &rgroup = g1.rgroups.getRGroup(old_site_rgroups[rg_idx]);
+      all_have_rest_h &= (rgroup.rest_h > 0);
       // For all rgroup fragments
       for (int fr_idx = 0; fr_idx < rgroup.fragments.size(); fr_idx++)
       {
@@ -835,24 +845,29 @@ int MoleculeSubstructureMatcher::_embedding_markush (int *core_sub, int *core_su
             {
                for (j = 0; (att_idx2 = fragment.getAttachmentPoint(2, j)) != -1; j++)
                   if (!_attachRGroupAndContinue(core_sub, core_super,
-                          &fragment, true, att_idx1, att_idx2, old_site_rgroups[rg_idx]))
+                          &fragment, true, att_idx1, att_idx2, old_site_rgroups[rg_idx], false))
                      return 0;
             } else if (!_attachRGroupAndContinue(core_sub, core_super,
-                    &fragment, false, att_idx1, -1, old_site_rgroups[rg_idx]))
+                    &fragment, false, att_idx1, -1, old_site_rgroups[rg_idx], false))
                return 0;
          }
       }
    }
 
-   if (!two_att_points && !_attachRGroupAndContinue(core_sub, core_super, 0, false, -1, -1, -1))
+   if (!two_att_points && !_attachRGroupAndContinue(core_sub, core_super, 0, false, -1, -1, -1, all_have_rest_h))
       return 0;
+
+   find_all_embeddings = find_all_embeddings_saved;
+   if (!find_all_embeddings && save_for_iteration)
+      // If there was found an embedding then return false (stop searching)
+      return _embeddings_storage->count() == embeddings_count;
 
    return 1;
 }
 
 bool MoleculeSubstructureMatcher::_attachRGroupAndContinue (int *core1, int *core2,
                                                QueryMolecule *fragment, bool two_attachment_points,
-                                               int att_idx1, int att_idx2, int rgroup_idx)
+                                               int att_idx1, int att_idx2, int rgroup_idx, bool rest_h)
 {
    MarkushContext &context = *_markush.get();
    QS_DEF(Array<int>, fr_mapping);
@@ -944,10 +959,12 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue (int *core1, int *cor
       
       int target_idx = core1[src_att_idx1];
 
-      if (_target.getAtomTotalH(target_idx) - _used_target_h[target_idx] <= 0)
-         return true;
-      
-      _used_target_h[target_idx]++;
+      if (rest_h)
+      {
+         if (_target.getAtomTotalH(target_idx) - _used_target_h[target_idx] <= 0)
+            return true;
+         _used_target_h[target_idx]++;
+      }
 
       // Remove edge to site
       rg_qbond1.reset(context.query.releaseBond(cur_site_vertex.neiEdge(nei_idx1)));
@@ -1053,6 +1070,8 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue (int *core1, int *cor
    context.depth++;
 
    // Continue in new state
+
+   // Call embedding enumerator recursively
    if (ok && !ee.process())
       return false;
 
@@ -1074,7 +1093,8 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue (int *core1, int *cor
       context.query.addBond(src_att_idx1, cur_site, rg_qbond1.release());
 
       // Restore used hydrogen
-      _used_target_h[core1[src_att_idx1]]--;
+      if (rest_h)
+         _used_target_h[core1[src_att_idx1]]--;
       
       // Restore stereocenter
       if (stereo_was_saved)
@@ -1124,7 +1144,6 @@ bool MoleculeSubstructureMatcher::_checkRGroupConditions ()
    for (i = 0; i < context.sites.size(); i++)
       if (context.sites[i] >= 0)
          occurrences[context.sites[i]]++;
-
 
    for (int i = 1; i <= n_rgroups; i++)
    {
@@ -1280,6 +1299,11 @@ void MoleculeSubstructureMatcher::getAtomPos (Graph &graph, int vertex_idx, Vec3
 bool MoleculeSubstructureMatcher::_isSingleBond (Graph &graph, int edge_idx)
 {
    return ((BaseMolecule &)graph).getBondOrder(edge_idx) == BOND_SINGLE;
+}
+
+const GraphEmbeddingsStorage& MoleculeSubstructureMatcher::getEmbeddingsStorage () const
+{
+   return _embeddings_storage.ref();
 }
 
 bool MoleculeSubstructureMatcher::needCoords (int match_3d, QueryMolecule &query)

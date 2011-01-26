@@ -803,6 +803,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\graph_fast_access.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\graph_fast_access.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\graph_highlighting.cpp"
 				>
 			</File>

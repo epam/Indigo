@@ -306,18 +306,37 @@ public:
       __swap(_length, other._length, tmp_int);
    }
 
-   template <typename T1, typename T2>
-   void qsort (int (*cmp)(T1, T2, void*), void *context)
+   // CMP_FUNCTOR has two arguments and returns sign of comparation
+   template <typename CmpFunctor>
+   void insertionSort (int start, int end, CmpFunctor cmp)
    {
-      qsort(0, _length - 1, cmp, context);
+      int i, j;
+      char tmp[sizeof(T)]; // can't use T directly because it may have destructor
+
+      for (i = start + 1; i <= end; i++) 
+      {
+         j = i;
+         while (j > start && cmp(_array[j - 1], _array[j]) > 0)
+         {
+            T *a1 = _array + j - 1;
+            T *a2 = a1 + 1;
+            memcpy(&tmp, a1, sizeof(T));
+            memcpy(a1, a2, sizeof(T));
+            memcpy(a2, &tmp, sizeof(T));
+            j--;
+         }
+      }
    }
 
-   template <typename T1, typename T2>
-   void qsort (int start, int end, int (*cmp)(T1, T2, void*), void *context)
+   // CMP_FUNCTOR has two arguments and returns sign of comparation
+   template <typename CmpFunctor>
+   void qsort (int start, int end, CmpFunctor cmp)
    {
       // Sort elements from start to end
       if (start >= end)
          return;
+      if (end - start < 10)
+         insertionSort(start, end, cmp);
 
       struct
       {
@@ -344,10 +363,10 @@ public:
 
          while (1)
          {
-            while (lo < high && lo != pivot && cmp(*lo, *pivot, context) < 0)
+            while (lo < high && lo != pivot && cmp(*lo, *pivot) < 0)
                lo++;
 
-            while (hi > low && (hi == pivot || cmp(*hi, *pivot, context) >= 0))
+            while (hi > low && (hi == pivot || cmp(*hi, *pivot) >= 0))
                hi--;
 
             if (lo < hi)
@@ -399,6 +418,18 @@ public:
       }
    }
 
+   template <typename T1, typename T2>
+   void qsort (int start, int end, int (*cmp)(T1, T2, void*), void *context)
+   {
+      this->qsort(start, end, _CmpFunctorCaller<T1, T2>(cmp, context));
+   }
+
+   template <typename T1, typename T2>
+   void qsort (int (*cmp)(T1, T2, void*), void *context)
+   {
+      this->qsort(0, _length - 1, cmp, context);
+   }
+   
    // Array<char>-specific
 
    void appendString (const char *str, bool keep_zero)
@@ -458,6 +489,22 @@ protected:
 
 private:
    Array (const Array &); // no implicit copy
+
+   template <typename T1, typename T2>
+   class _CmpFunctorCaller
+   {
+   public:
+      _CmpFunctorCaller (int (*cmp)(T1, T2, void*), void *context) :
+         _context(context), _cmp(cmp) {}
+
+      int operator () (T1 arg1, T2 arg2) const
+      {
+         return _cmp(arg1, arg2, _context);
+      }
+   private:
+      void *_context;
+      int (*_cmp)(T1, T2, void*);
+   };
 };
 
 }

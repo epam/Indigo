@@ -64,6 +64,7 @@ public:
 
 private:
    bool _initialized, _found, _need_find;
+   int _embedding_index;
 };
 
 // Matcher class for matching queries on a specified target molecule
@@ -75,7 +76,7 @@ public:
    virtual ~IndigoMoleculeSubstructureMatcher ();
 
    IndigoMoleculeSubstructureMatchIter* iterateQueryMatches (QueryMolecule &query,
-      bool embedding_edges_uniqueness);
+      bool embedding_edges_uniqueness, bool find_unique_embeddings, bool for_iteration);
 
    const char * debugInfo ();
 

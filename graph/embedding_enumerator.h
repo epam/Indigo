@@ -24,6 +24,7 @@
 #include "base_cpp/list.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/obj_array.h"
+#include "graph/graph_fast_access.h"
 
 namespace indigo {
 
@@ -106,10 +107,31 @@ protected:
    TL_CP_DECL(Array<int>, _core_1);
    TL_CP_DECL(Array<int>, _core_2);
 
+   TL_CP_DECL(Array<int>, _term2);
+   TL_CP_DECL(Array<int>, _unterm2);
+
    TL_CP_DECL(Pool<RedBlackSet<int>::Node>, _s_pool);
-   TL_CP_DECL(Pool<List<int>::Elem>,        _l_pool);
+
+   TL_CP_DECL(GraphFastAccess, _g1_fast);
+   TL_CP_DECL(GraphFastAccess, _g2_fast);
 
    void _terminatePreviousMatch ();
+
+   //
+   // Query nodes sequence calculation 
+   //
+
+   struct _QuertMatchState
+   {
+      _QuertMatchState (int atom_index, int parent_index, int t1_len) : 
+         atom_index(atom_index), parent_index(parent_index), t1_len(t1_len) {}
+      int atom_index, parent_index, t1_len;
+   };
+   TL_CP_DECL(Array<_QuertMatchState>, _query_match_state);
+
+   void _fixNode1 (int node1, int node2);
+   int  _getNextNode1 ();
+   int _t1_len_pre;
 
    enum
    {
@@ -132,6 +154,8 @@ protected:
       void addPair  (int node1, int node2);
       void restore ();
 
+      void initForFirstSearch (int t1_len);
+
       int  _current_node1, _current_node2;
 
    protected:
@@ -140,21 +164,26 @@ protected:
 
       bool _use_equivalence;
       RedBlackSet<int>  _mapped_orbit_ids; 
-      List<int>         _term1;
-      List<int>         _term2;
-      List<int>         _unterm2;
+      int _term2_begin;
+      int _unterm2_begin;
 
       int  _core_len;
       int  _t1_len, _t2_len;
       int  _selected_node1, _selected_node2;
       int  _node1_prev_value, _node2_prev_value;
 
+      int  _current_node1_idx, _current_node2_idx;
       int  _current_node2_parent;
       int  _current_node2_nei_index;
 
       bool _checkNode1  (int node1);
       bool _checkNode2  (int node2, int for_node1);
       bool _checkPair (int node1, int node2);
+
+      void _initState ();
+
+      void _addPairNode2  (int node1, int node2);
+      void _fixPair  (int node1, int node2);
    };
 
    TL_CP_DECL(ObjArray<_Enumerator>, _enumerators);
