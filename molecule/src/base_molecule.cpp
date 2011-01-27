@@ -316,11 +316,24 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
       if (data_sgroups[j].atoms.size() < 1)
          data_sgroups.remove(j);
    }
-   for (j = superatoms.size() - 1; j >= 0; j--)
+   for (j = superatoms.begin(); j != superatoms.end(); j = superatoms.next(j))
    {
       _removeAtomsFromSGroup(superatoms[j], mapping);
       if (superatoms[j].atoms.size() < 1)
          superatoms.remove(j);
+   }
+   for (j = repeating_units.begin(); j != repeating_units.end(); j = repeating_units.next(j))
+   {
+      _removeAtomsFromSGroup(repeating_units[j], mapping);
+      if (repeating_units[j].atoms.size() < 1)
+         repeating_units.remove(j);
+   }
+   for (j = multiple_groups.begin(); j != multiple_groups.end(); j = multiple_groups.next(j))
+   {
+      _removeAtomsFromSGroup(multiple_groups[j], mapping);
+      _removeAtomsFromMultipleGroup(multiple_groups[j], mapping);
+      if (multiple_groups[j].atoms.size() < 1)
+         multiple_groups.remove(j);
    }
 
    stereocenters.removeAtoms(indices);
@@ -586,9 +599,35 @@ BaseMolecule::DataSGroup::DataSGroup ()
    dasp_pos = 1;
 }
 
+BaseMolecule::DataSGroup::~DataSGroup ()
+{
+}
+
 BaseMolecule::Superatom::Superatom ()
 {
    bond_idx = -1;
+}
+
+BaseMolecule::Superatom::~Superatom ()
+{
+}
+
+BaseMolecule::RepeatingUnit::RepeatingUnit ()
+{
+   connectivity = 0;
+}
+
+BaseMolecule::RepeatingUnit::~RepeatingUnit ()
+{
+}
+
+BaseMolecule::MultipleGroup::MultipleGroup ()
+{
+   multiplier = 1;
+}
+
+BaseMolecule::MultipleGroup::~MultipleGroup ()
+{
 }
 
 void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
@@ -605,4 +644,13 @@ void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
       if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
          sgroup.bonds.remove(i);
    }
+}
+
+void BaseMolecule::_removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> &mapping)
+{
+   int i;
+   
+   for (i = mg.parent_atoms.size() - 1; i >= 0; i--)
+      if (mapping[mg.parent_atoms[i]] == -1)
+         mg.parent_atoms.remove(i);
 }

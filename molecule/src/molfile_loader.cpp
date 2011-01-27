@@ -935,6 +935,18 @@ void MolfileLoader::_readCtab2000 ()
                   int idx = _bmol->data_sgroups.add();
                   _sgroup_mapping[sgroup_idx] = idx;
                }
+               else if (strncmp(type, "SRU", 3) == 0)
+               {
+                  _sgroup_types[sgroup_idx] = _SGROUP_TYPE_SRU;
+                  int idx = _bmol->repeating_units.add();
+                  _sgroup_mapping[sgroup_idx] = idx;
+               }
+               else if (strncmp(type, "MUL", 3) == 0)
+               {
+                  _sgroup_types[sgroup_idx] = _SGROUP_TYPE_MUL;
+                  int idx = _bmol->multiple_groups.add();
+                  _sgroup_mapping[sgroup_idx] = idx;
+               }
                else
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_OTHER;
             }
@@ -949,10 +961,16 @@ void MolfileLoader::_readCtab2000 ()
             {
                int n = _scanner.readIntFix(3);
                BaseMolecule::SGroup *sgroup;
-               if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_DAT)
-                  sgroup = &_bmol->data_sgroups[_sgroup_mapping[sgroup_idx]];
-               else
-                  sgroup = &_bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+
+               switch (_sgroup_types[sgroup_idx])
+               {
+                  case _SGROUP_TYPE_DAT: sgroup = &_bmol->data_sgroups[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_SRU: sgroup = &_bmol->repeating_units[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_SUP: sgroup = &_bmol->superatoms[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_MUL: sgroup = &_bmol->multiple_groups[_sgroup_mapping[sgroup_idx]]; break;
+                  default: throw Error("internal: bad sgroup type");
+               }
+               
                while (n-- > 0)
                {
                   _scanner.skip(1);
@@ -1039,6 +1057,13 @@ void MolfileLoader::_readCtab2000 ()
                BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
                _scanner.readLine(sup.subscript, true);
             }
+            else if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_MUL)
+            {
+               _scanner.skip(1);
+               BaseMolecule::MultipleGroup &mg = _bmol->multiple_groups[_sgroup_mapping[sgroup_idx]];
+               mg.multiplier = _scanner.readInt();
+               _scanner.skipLine();
+            }
             else
                _scanner.skipLine();
          }
@@ -1059,6 +1084,75 @@ void MolfileLoader::_readCtab2000 ()
                k = 1;
             }
             _scanner.skipLine();
+         }
+         else if (strncmp(chars, "SDI", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+            Vec2f *brackets = 0;
+            
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SRU)
+               brackets = _bmol->repeating_units[_sgroup_mapping[sgroup_idx]].brackets.push();
+            else if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_MUL)
+               brackets = _bmol->multiple_groups[_sgroup_mapping[sgroup_idx]].brackets.push();
+
+            if (brackets != 0)
+            {
+               int n = _scanner.readIntFix(3);
+               if (n == 4) // should always be 4
+               {
+                  _scanner.skipSpace();
+                  brackets[0].x = _scanner.readFloat();
+                  _scanner.skipSpace();
+                  brackets[0].y = _scanner.readFloat();
+                  _scanner.skipSpace();
+                  brackets[1].x = _scanner.readFloat();
+                  _scanner.skipSpace();
+                  brackets[1].y = _scanner.readFloat();
+               }
+            }
+            _scanner.skipLine();
+         }
+         else if (strncmp(chars, "SPA", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_MUL)
+            {
+               BaseMolecule::MultipleGroup &mg = _bmol->multiple_groups[_sgroup_mapping[sgroup_idx]];
+               int n = _scanner.readIntFix(3);
+               while (n-- > 0)
+               {
+                  _scanner.skip(1);
+                  mg.parent_atoms.push(_scanner.readIntFix(3) - 1);
+               }
+            }
+            _scanner.skipString();
+         }
+         else if (strncmp(chars, "SCN", 3) == 0)
+         {
+            int n = _scanner.readIntFix(3);
+
+            while (n-- > 0)
+            {
+               _scanner.skip(1);
+               int sgroup_idx = _scanner.readIntFix(3) - 1;
+
+               if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SRU)
+               {
+                  BaseMolecule::RepeatingUnit &ru = _bmol->repeating_units[_sgroup_mapping[sgroup_idx]];
+                  _scanner.skipSpace();
+                  QS_DEF(Array<char>, id);
+                  _scanner.readWord(id, 0);
+                  if (strncmp(id.ptr(), "HH", 2) == 0)
+                     ru.connectivity = BaseMolecule::RepeatingUnit::HEAD_TO_HEAD;
+                  else if (strncmp(id.ptr(), "HT", 2) == 0)
+                     ru.connectivity = BaseMolecule::RepeatingUnit::HEAD_TO_TAIL;
+                  else if (strncmp(id.ptr(), "EU", 2) == 0)
+                     ru.connectivity = BaseMolecule::RepeatingUnit::EITHER;
+               }
+            }
          }
          else
             _scanner.skipLine();
@@ -1085,7 +1179,6 @@ void MolfileLoader::_readCtab2000 ()
       }
       else
          _scanner.skipString();
-      //  throw Error("unsupported molfile header: %s", chars);
    }
 
    if (_qmol == 0)

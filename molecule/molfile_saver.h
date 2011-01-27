@@ -81,6 +81,14 @@ protected:
    TL_CP_DECL(Array<int>, _atom_mapping);
    TL_CP_DECL(Array<int>, _bond_mapping);
 
+   enum
+   {
+      _SGROUP_TYPE_SUP = 1,
+      _SGROUP_TYPE_DAT,
+      _SGROUP_TYPE_SRU,
+      _SGROUP_TYPE_MUL
+   };
+
 private:
    MolfileSaver (const MolfileSaver &); // no implicit copy
 };

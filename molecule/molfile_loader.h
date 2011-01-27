@@ -94,8 +94,10 @@ protected:
    enum
    {
       _SGROUP_TYPE_SUP = 1,
-      _SGROUP_TYPE_DAT = 2,
-      _SGROUP_TYPE_OTHER = 3 // one of unsupported types
+      _SGROUP_TYPE_DAT,
+      _SGROUP_TYPE_SRU,
+      _SGROUP_TYPE_MUL,
+      _SGROUP_TYPE_OTHER // one of unsupported types
    };
 
 

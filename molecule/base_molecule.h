@@ -79,6 +79,7 @@ public:
    {
    public:
       DataSGroup ();
+      virtual ~DataSGroup ();
 
       Array<char> description; // SDT in Molfile format
       Array<char> data;        // SCD/SED in Molfile format
@@ -93,9 +94,39 @@ public:
    {
    public:
       Superatom ();
+      virtual ~Superatom ();
+
       Array<char> subscript; // SMT in Molfile format
       int   bond_idx;        // bond index (-1 if absent); SBV in Molfile format
       Vec2f bond_dir;        // bond direction
+   };
+
+   class DLLEXPORT RepeatingUnit : public SGroup
+   {
+   public:
+      enum
+      {
+         HEAD_TO_HEAD = 1,
+         HEAD_TO_TAIL,
+         EITHER
+      };
+
+      RepeatingUnit ();
+      virtual ~RepeatingUnit ();
+
+      int connectivity;
+      Array<Vec2f[2]> brackets;
+   };
+
+   class DLLEXPORT MultipleGroup : public SGroup
+   {
+   public:
+      MultipleGroup ();
+      virtual ~MultipleGroup ();
+
+      int multiplier;
+      Array<Vec2f[2]> brackets;
+      Array<int> parent_atoms;
    };
 
 
@@ -192,10 +223,12 @@ public:
    MoleculeCisTrans cis_trans;
 
    bool have_xyz;
-   bool chiral; // read-only; can be true only when loaded from Molfile
+   bool chiral; // read-only; can be true only when loaded from a Molfile
 
    ObjPool<DataSGroup> data_sgroups;
    ObjPool<Superatom>  superatoms;
+   ObjPool<RepeatingUnit> repeating_units;
+   ObjPool<MultipleGroup> multiple_groups;
 
    Array<char> name;
 
@@ -248,6 +281,7 @@ protected:
    int _addBaseBond (int beg, int end);
 
    void _removeAtomsFromSGroup (SGroup &sgroup, Array<int> &indices);
+   void _removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> &mapping);
 
    Array<Vec3f> _xyz;
    ObjArray< Array<int> > _rsite_attachment_points;

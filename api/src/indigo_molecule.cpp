@@ -1780,6 +1780,26 @@ CEXPORT int indigoCountDataSGroups (int molecule)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoCountRepeatingUnits (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return mol.repeating_units.size();
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCountMultipleGroups (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return mol.multiple_groups.size();
+   }
+   INDIGO_END(-1)
+}
+
 IndigoDataSGroupsIter::IndigoDataSGroupsIter (BaseMolecule &molecule) :
         IndigoObject(DATA_SGROUPS_ITER),
         _mol(molecule)
