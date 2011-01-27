@@ -462,6 +462,18 @@ int BaseMolecule::_addBaseBond (int beg, int end)
    return idx;
 }
 
+int BaseMolecule::getAtomRadical_NoThrow (int idx)
+{
+   try
+   {
+      return getAtomRadical(idx);
+   }
+   catch (Element::Error &)
+   {
+      return 0;
+   }
+}
+
 int BaseMolecule::possibleAtomTotalH (int idx, int hcount)
 {
    int minh = getAtomMinH(idx);

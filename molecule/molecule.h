@@ -88,6 +88,7 @@ public:
    virtual bool dearomatize ();
 
    int getImplicitH (int idx);
+   int getImplicitH_NoThrow (int idx);
    int calcImplicitHForConnectivity (int idx, int conn);
 
    int getAtomConnectivity (int idx);
