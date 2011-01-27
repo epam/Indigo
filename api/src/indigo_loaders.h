@@ -183,5 +183,54 @@ protected:
    int _max_offset;
 };
 
+namespace indigo
+{
+class MultipleCmlLoader;
+}
+
+class IndigoCmlMolecule : public IndigoObject
+{
+public:
+   IndigoCmlMolecule (Array<char> &data_, int index, int offset);
+   virtual ~IndigoCmlMolecule ();
+
+   virtual Molecule & getMolecule ();
+   virtual BaseMolecule & getBaseMolecule ();
+   GraphHighlighting * getMoleculeHighlighting ();
+   virtual const char * getName ();
+   virtual IndigoObject * clone ();
+
+   virtual int getIndex ();
+   int tell ();
+
+   Array<char> data;
+protected:
+   int _index;
+   int _offset;
+   Molecule _mol;
+   bool _loaded;
+};
+
+
+
+class IndigoMultipleCmlLoader : public IndigoObject
+{
+public:
+   IndigoMultipleCmlLoader (Scanner &scanner);
+   IndigoMultipleCmlLoader (const char *filename);
+   virtual ~IndigoMultipleCmlLoader ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+   IndigoObject * at (int index);
+
+   int tell ();
+
+   MultipleCmlLoader *loader;
+protected:
+   Scanner  *_own_scanner;
+};
+
 
 #endif

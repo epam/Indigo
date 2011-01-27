@@ -41,6 +41,8 @@ public:
    virtual byte readByte ();
    virtual void readAll (Array<char> &arr);
 
+   void read (int length, Array<char> &buf);
+
    // DEPRECATED
    bool  skipString ();
    void readString (Array<char> &out, bool append_zero);

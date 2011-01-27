@@ -273,6 +273,12 @@ bool Scanner::skipLine ()
    return false;
 }
 
+void Scanner::read (int length, Array<char> &buf)
+{
+   buf.resize(length);
+   read(length, buf.ptr());
+}
+
 bool Scanner::skipString ()
 {
    return skipLine();
@@ -379,7 +385,7 @@ short Scanner::readPackedShort ()
 
 void Scanner::readAll (Array<char> &arr)
 {
-   arr.clear_resize(length());
+   arr.clear_resize(length() - tell());
 
    read(arr.size(), arr.ptr());
 }
@@ -509,7 +515,10 @@ void FileScanner::skip (int n)
 
 void FileScanner::seek (int pos, int from)
 {
-   fseek(_file, pos, from);
+   if (from == SEEK_CUR)
+      fseek(_file, pos - _max_cache + _cache_pos, from);
+   else
+      fseek(_file, pos, from);
    _invalidateCache();
 }
 
@@ -669,9 +678,13 @@ bool Scanner::findWord (const char *word)
 
 int Scanner::findWord (ReusableObjArray< Array<char> > &words)
 {
+   if (isEOF())
+      return -1;
+   
    QS_DEF(ReusableObjArray< Array<int> >, prefixes);
    QS_DEF(Array<int>, pos);
    int i;
+   int pos_saved = tell();
    
    prefixes.clear();
    pos.clear();
@@ -700,5 +713,7 @@ int Scanner::findWord (ReusableObjArray< Array<char> > &words)
          }
       }
    }
+
+   seek(pos_saved, SEEK_SET);
    return -1;
 }

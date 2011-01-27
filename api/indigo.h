@@ -492,15 +492,17 @@ CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2);
 // "tversky" without numbers defaults to alpha = beta = 0.5
 CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics);
 
-/* Working with SDF/RDF/SMILES files  */
+/* Working with SDF/RDF/SMILES/CML files  */
 
 CEXPORT int indigoIterateSDF    (int reader);
 CEXPORT int indigoIterateRDF    (int reader);
 CEXPORT int indigoIterateSmiles (int reader);
+CEXPORT int indigoIterateCML    (int reader);
 
 CEXPORT int indigoIterateSDFile     (const char *filename);
 CEXPORT int indigoIterateRDFile     (const char *filename);
 CEXPORT int indigoIterateSmilesFile (const char *filename);
+CEXPORT int indigoIterateCMLFile    (const char *filename);
 
 // Applicable to items returned by SDF/RDF iterators.
 // Returns the content of SDF/RDF item.

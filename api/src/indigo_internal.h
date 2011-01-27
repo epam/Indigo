@@ -111,7 +111,9 @@ public:
       SSSR_ITER,
       SUBTREES_ITER,
       RINGS_ITER,
-      EDGE_SUBMOLECULE_ITER
+      EDGE_SUBMOLECULE_ITER,
+      CML_MOLECULE,
+      MULTIPLE_CML_LOADER
    };
 
    int type;
