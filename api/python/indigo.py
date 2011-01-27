@@ -39,28 +39,29 @@ class Indigo:
   CHAIN = 9
   RING = 10
 
+  _zlib = None
+  _lib = None
+  
   class IndigoObject:
     def __init__ (self, dispatcher, id):
       self.id = id
-      self._lib = dispatcher._lib
-      self._sid = dispatcher._sid
       self.dispatcher = dispatcher
 
     def grossFormula (self):
       self.dispatcher._setSID()
-      gfid = self.dispatcher._checkResult(self._lib.indigoGrossFormula(self.id))
+      gfid = self.dispatcher._checkResult(Indigo._lib.indigoGrossFormula(self.id))
       gf = Indigo.IndigoObject(self.dispatcher, gfid)
-      return self.dispatcher._checkResultString(self._lib.indigoToString(gf.id))
+      return self.dispatcher._checkResultString(Indigo._lib.indigoToString(gf.id))
 
     def toString (self):
       self.dispatcher._setSID()
-      return self.dispatcher._checkResultString(self._lib.indigoToString(self.id))
+      return self.dispatcher._checkResultString(Indigo._lib.indigoToString(self.id))
 
     def toBuffer (self):
       self.dispatcher._setSID()
       c_size = c_int()
       c_buf = POINTER(c_char)()
-      self.dispatcher._checkResult(self._lib.indigoToBuffer(
+      self.dispatcher._checkResult(Indigo._lib.indigoToBuffer(
           self.id, pointer(c_buf), pointer(c_size)))
       res = array('c')
       for i in xrange(c_size.value):
@@ -70,14 +71,14 @@ class Indigo:
     def mdlct (self):
       self.dispatcher._setSID()
       buf = self.dispatcher.writeBuffer()
-      self.dispatcher._checkResult(self._lib.indigoSaveMDLCT(self.id, buf.id))
+      self.dispatcher._checkResult(Indigo._lib.indigoSaveMDLCT(self.id, buf.id))
       return buf.toBuffer()
     
     def xyz (self):
       self.dispatcher._setSID()
-      xyz = self._lib.indigoXYZ(self.id)
+      xyz = Indigo._lib.indigoXYZ(self.id)
       if xyz is None:
-        raise IndigoException(self._lib.indigoGetLastError())
+        raise IndigoException(Indigo._lib.indigoGetLastError())
       return [xyz[0], xyz[1], xyz[2]]
 
     def alignAtoms (self, atom_ids, desired_xyz):
@@ -91,16 +92,16 @@ class Indigo:
       for i in xrange(len(desired_xyz)):
         xyz[i] = desired_xyz[i]
       return self.dispatcher._checkResultFloat(
-        self._lib.indigoAlignAtoms(self.id, len(atoms), atoms, xyz))
+        Indigo._lib.indigoAlignAtoms(self.id, len(atoms), atoms, xyz))
 
     def __enter__ (self):
       return self
     def __exit__ (self, exc_type, exc_value, traceback):
       self.dispatcher._setSID()
-      self._lib.indigoClose(self.id)
+      Indigo._lib.indigoClose(self.id)
     def __del__ (self):
       self.dispatcher._setSID()
-      self._lib.indigoFree(self.id)
+      Indigo._lib.indigoFree(self.id)
         
     def __iter__ (self):
       return self
@@ -112,7 +113,8 @@ class Indigo:
     def next (self):
       return self.__next__()
 
-  def __init__ (self, path = None):
+  @staticmethod
+  def _initStatic (path = None):
     if not path:
       dirname = os.path.dirname(inspect.getfile(inspect.currentframe()))
       if not dirname:
@@ -128,7 +130,7 @@ class Indigo:
         path += "/x64"
       else:
         raise IndigoException("unknown platform " + arch)
-      self._lib = CDLL(path + "/libindigo.so", mode=RTLD_GLOBAL)
+      Indigo._lib = CDLL(path + "/libindigo.so", mode=RTLD_GLOBAL)
     elif os.name == 'nt':
       arch = platform.architecture()[0]
       path += "/Win"
@@ -138,70 +140,71 @@ class Indigo:
         path += "/x64"
       else:
         raise IndigoException("unknown platform " + arch)
-      self._zlib = CDLL(path + "/zlib.dll")
-      self._lib = CDLL(path + "/indigo.dll")
+      Indigo._zlib = CDLL(path + "/zlib.dll")
+      Indigo._lib = CDLL(path + "/indigo.dll")
     elif platform.mac_ver()[0]:
       path += "/Mac/"
       # append "10.5" or "10.6" to the path
       path += '.'.join(platform.mac_ver()[0].split('.')[:2])
-      self._lib = CDLL(path + "/libindigo.dylib", mode=RTLD_GLOBAL)
+      Indigo._lib = CDLL(path + "/libindigo.dylib", mode=RTLD_GLOBAL)
     else:
       raise IndigoException("unsupported OS: " + os.name)
 
-    self.dllpath = path
+    Indigo.dllpath = path
 
-    #self._lib.indigoSetErrorHandler.restype = None
-    #self._lib.indigoSetErrorHandler.argtypes = [ERRFUNC, c_void_p]
+    Indigo._lib.indigoVersion.restype = c_char_p
+    Indigo._lib.indigoVersion.argtypes = None
+    Indigo._lib.indigoAllocSessionId.restype = c_ulonglong
+    Indigo._lib.indigoAllocSessionId.argtypes = None
+    Indigo._lib.indigoSetSessionId.restype = None
+    Indigo._lib.indigoSetSessionId.argtypes = [c_ulonglong]
+    Indigo._lib.indigoReleaseSessionId.restype = None
+    Indigo._lib.indigoReleaseSessionId.argtypes = [c_ulonglong]
+    Indigo._lib.indigoGetLastError.restype = c_char_p
+    Indigo._lib.indigoGetLastError.argtypes = None
+    Indigo._lib.indigoSetErrorMessage.restype = None
+    Indigo._lib.indigoSetErrorMessage.argtypes = [c_char_p]
+    Indigo._lib.indigoFree.restype = c_int
+    Indigo._lib.indigoFree.argtypes = [c_int]
+    Indigo._lib.indigoSetOption.restype = c_int
+    Indigo._lib.indigoSetOption.argtypes = [c_char_p, c_char_p]
+    Indigo._lib.indigoSetOptionInt.restype = c_int
+    Indigo._lib.indigoSetOptionInt.argtypes = [c_char_p, c_int]
+    Indigo._lib.indigoSetOptionBool.restype = c_int
+    Indigo._lib.indigoSetOptionBool.argtypes = [c_char_p, c_int]
+    Indigo._lib.indigoSetOptionFloat.restype = c_int
+    Indigo._lib.indigoSetOptionFloat.argtypes = [c_char_p, c_float]
+    Indigo._lib.indigoSetOptionColor.restype = c_int
+    Indigo._lib.indigoSetOptionColor.argtypes = [c_char_p, c_float, c_float, c_float]
+    Indigo._lib.indigoSetOptionXY.restype = c_int
+    Indigo._lib.indigoSetOptionXY.argtypes = [c_char_p, c_int, c_int]
+    Indigo._lib.indigoWriteFile.restype = c_int
+    Indigo._lib.indigoWriteFile.argtypes = [c_char_p]
+    Indigo._lib.indigoWriteBuffer.restype = c_int
+    Indigo._lib.indigoWriteBuffer.argtypes = None
+    Indigo._lib.indigoSaveMDLCT.restype = c_int
+    Indigo._lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
+    Indigo._lib.indigoXYZ.restype = POINTER(c_float)
+    Indigo._lib.indigoXYZ.argtypes = [c_int]
+    Indigo._lib.indigoAlignAtoms.restype = c_float
+    Indigo._lib.indigoAlignAtoms.argtypes = [c_int, c_int, POINTER(c_int), POINTER(c_float)]
+    Indigo._lib.indigoToString.restype = c_char_p
+    Indigo._lib.indigoToString.argtypes = [c_int]
+    Indigo._lib.indigoToBuffer.restype = c_int
+    Indigo._lib.indigoToBuffer.argtypes = [c_int, POINTER(POINTER(c_char)), POINTER(c_int)]
+    Indigo._lib.indigoSimilarity.restype = c_float
+    Indigo._lib.indigoSimilarity.argtypes = [c_int, c_int, c_char_p]
+    Indigo._lib.indigoExactMatch.restype = c_int
+    Indigo._lib.indigoExactMatch.argtypes = [c_int, c_int]
+    Indigo._lib.indigoDbgBreakpoint.restype = None
+    Indigo._lib.indigoDbgBreakpoint.argtypes = None
     
-    self._lib.indigoVersion.restype = c_char_p
-    self._lib.indigoVersion.argtypes = None
-    self._lib.indigoAllocSessionId.restype = c_ulonglong
-    self._lib.indigoAllocSessionId.argtypes = None
-    self._lib.indigoSetSessionId.restype = None
-    self._lib.indigoSetSessionId.argtypes = [c_ulonglong]
-    self._lib.indigoReleaseSessionId.restype = None
-    self._lib.indigoReleaseSessionId.argtypes = [c_ulonglong]
-    self._lib.indigoGetLastError.restype = c_char_p
-    self._lib.indigoGetLastError.argtypes = None
-    self._lib.indigoSetErrorMessage.restype = None
-    self._lib.indigoSetErrorMessage.argtypes = [c_char_p]
-    self._lib.indigoFree.restype = c_int
-    self._lib.indigoFree.argtypes = [c_int]
-    self._lib.indigoSetOption.restype = c_int
-    self._lib.indigoSetOption.argtypes = [c_char_p, c_char_p]
-    self._lib.indigoSetOptionInt.restype = c_int
-    self._lib.indigoSetOptionInt.argtypes = [c_char_p, c_int]
-    self._lib.indigoSetOptionBool.restype = c_int
-    self._lib.indigoSetOptionBool.argtypes = [c_char_p, c_int]
-    self._lib.indigoSetOptionFloat.restype = c_int
-    self._lib.indigoSetOptionFloat.argtypes = [c_char_p, c_float]
-    self._lib.indigoSetOptionColor.restype = c_int
-    self._lib.indigoSetOptionColor.argtypes = [c_char_p, c_float, c_float, c_float]
-    self._lib.indigoSetOptionXY.restype = c_int
-    self._lib.indigoSetOptionXY.argtypes = [c_char_p, c_int, c_int]
-    self._lib.indigoWriteFile.restype = c_int
-    self._lib.indigoWriteFile.argtypes = [c_char_p]
-    self._lib.indigoWriteBuffer.restype = c_int
-    self._lib.indigoWriteBuffer.argtypes = None
-    self._lib.indigoSaveMDLCT.restype = c_int
-    self._lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
-    self._lib.indigoXYZ.restype = POINTER(c_float)
-    self._lib.indigoXYZ.argtypes = [c_int]
-    self._lib.indigoAlignAtoms.restype = c_float
-    self._lib.indigoAlignAtoms.argtypes = [c_int, c_int, POINTER(c_int), POINTER(c_float)]
-    self._lib.indigoToString.restype = c_char_p
-    self._lib.indigoToString.argtypes = [c_int]
-    self._lib.indigoToBuffer.restype = c_int
-    self._lib.indigoToBuffer.argtypes = [c_int, POINTER(POINTER(c_char)), POINTER(c_int)]
-    self._lib.indigoSimilarity.restype = c_float
-    self._lib.indigoSimilarity.argtypes = [c_int, c_int, c_char_p]
-    self._lib.indigoExactMatch.restype = c_int
-    self._lib.indigoExactMatch.argtypes = [c_int, c_int]
-    self._lib.indigoDbgBreakpoint.restype = None
-    self._lib.indigoDbgBreakpoint.argtypes = None
- 
-    self._sid = self._lib.indigoAllocSessionId()
-    self._lib.indigoSetSessionId(self._sid)
+  def __init__ (self, path = None):
+    if Indigo._lib == None:
+      self._initStatic()
+      
+    self._sid = Indigo._lib.indigoAllocSessionId()
+    self._setSID()
     
     self.countReferences = self._static_int(self._lib.indigoCountReferences)
     self.createMolecule = self._static_obj(self._lib.indigoCreateMolecule)
@@ -232,176 +235,177 @@ class Indigo:
     self.decomposeMolecules = self._static_obj_obj_obj(self._lib.indigoDecomposeMolecules)
     self.reactionProductEnumerate = self._static_obj_obj_obj(self._lib.indigoReactionProductEnumerate)
 
-    self.dbgBreakpoint = self._lib.indigoDbgBreakpoint
+    self.dbgBreakpoint = Indigo._lib.indigoDbgBreakpoint
     
-    self.IndigoObject.close = self._member_void(self._lib.indigoClose)
-    self.IndigoObject.clone = self._member_obj(self._lib.indigoClone)
+    self.IndigoObject.close = Indigo._member_void(Indigo._lib.indigoClose)
+    self.IndigoObject.clone = Indigo._member_obj(Indigo._lib.indigoClone)
 
-    self.IndigoObject.molfile = self._member_string(self._lib.indigoMolfile)
-    self.IndigoObject.saveMolfile = self._member_void_string(self._lib.indigoSaveMolfileToFile)
-    self.IndigoObject.cml = self._member_string(self._lib.indigoCml)
-    self.IndigoObject.saveCml = self._member_void_string(self._lib.indigoSaveCmlToFile)
-    self.IndigoObject.addReactant = self._member_void_obj(self._lib.indigoAddReactant)
-    self.IndigoObject.addProduct  = self._member_void_obj(self._lib.indigoAddProduct)
-    self.IndigoObject.countReactants = self._member_int(self._lib.indigoCountReactants)
-    self.IndigoObject.countProducts = self._member_int(self._lib.indigoCountProducts)
-    self.IndigoObject.countMolecules = self._member_int(self._lib.indigoCountMolecules)
-    self.IndigoObject.iterateReactants = self._member_obj(self._lib.indigoIterateReactants)
-    self.IndigoObject.iterateProducts  = self._member_obj(self._lib.indigoIterateProducts)
-    self.IndigoObject.iterateMolecules  = self._member_obj(self._lib.indigoIterateMolecules)
+    self.IndigoObject.molfile = Indigo._member_string(Indigo._lib.indigoMolfile)
+    self.IndigoObject.saveMolfile = Indigo._member_void_string(Indigo._lib.indigoSaveMolfileToFile)
+    self.IndigoObject.cml = Indigo._member_string(Indigo._lib.indigoCml)
+    self.IndigoObject.saveCml = Indigo._member_void_string(Indigo._lib.indigoSaveCmlToFile)
+    self.IndigoObject.addReactant = Indigo._member_void_obj(Indigo._lib.indigoAddReactant)
+    self.IndigoObject.addProduct  = Indigo._member_void_obj(Indigo._lib.indigoAddProduct)
+    self.IndigoObject.countReactants = Indigo._member_int(Indigo._lib.indigoCountReactants)
+    self.IndigoObject.countProducts = Indigo._member_int(Indigo._lib.indigoCountProducts)
+    self.IndigoObject.countMolecules = Indigo._member_int(Indigo._lib.indigoCountMolecules)
+    self.IndigoObject.iterateReactants = Indigo._member_obj(Indigo._lib.indigoIterateReactants)
+    self.IndigoObject.iterateProducts  = Indigo._member_obj(Indigo._lib.indigoIterateProducts)
+    self.IndigoObject.iterateMolecules  = Indigo._member_obj(Indigo._lib.indigoIterateMolecules)
 
-    self.IndigoObject.rxnfile = self._member_string(self._lib.indigoRxnfile)
-    self.IndigoObject.saveRxnfile = self._member_void_string(self._lib.indigoSaveRxnfileToFile)
-    self.IndigoObject.automap = self._member_void_string(self._lib.indigoAutomap)
+    self.IndigoObject.rxnfile = Indigo._member_string(Indigo._lib.indigoRxnfile)
+    self.IndigoObject.saveRxnfile = Indigo._member_void_string(Indigo._lib.indigoSaveRxnfileToFile)
+    self.IndigoObject.automap = Indigo._member_void_string(Indigo._lib.indigoAutomap)
 
-    self.IndigoObject.iterateAtoms = self._member_obj(self._lib.indigoIterateAtoms)
-    self.IndigoObject.iteratePseudoatoms = self._member_obj(self._lib.indigoIteratePseudoatoms)
-    self.IndigoObject.iterateRSites = self._member_obj(self._lib.indigoIterateRSites)
-    self.IndigoObject.iterateStereocenters = self._member_obj(self._lib.indigoIterateStereocenters)
-    self.IndigoObject.iterateRGroups = self._member_obj(self._lib.indigoIterateRGroups)
-    self.IndigoObject.iterateRGroupFragments = self._member_obj(self._lib.indigoIterateRGroupFragments)
-    self.IndigoObject.countAttachmentPoints = self._member_int(self._lib.indigoCountAttachmentPoints)
-    self.IndigoObject.isPseudoatom = self._member_bool(self._lib.indigoIsPseudoatom)
-    self.IndigoObject.isRSite = self._member_bool(self._lib.indigoIsRSite)
-    self.IndigoObject.stereocenterType = self._member_int(self._lib.indigoStereocenterType)
-    self.IndigoObject.singleAllowedRGroup = self._member_int(self._lib.indigoSingleAllowedRGroup)
-    self.IndigoObject.symbol = self._member_string(self._lib.indigoSymbol)
+    self.IndigoObject.iterateAtoms = Indigo._member_obj(Indigo._lib.indigoIterateAtoms)
+    self.IndigoObject.iteratePseudoatoms = Indigo._member_obj(Indigo._lib.indigoIteratePseudoatoms)
+    self.IndigoObject.iterateRSites = Indigo._member_obj(Indigo._lib.indigoIterateRSites)
+    self.IndigoObject.iterateStereocenters = Indigo._member_obj(Indigo._lib.indigoIterateStereocenters)
+    self.IndigoObject.iterateRGroups = Indigo._member_obj(Indigo._lib.indigoIterateRGroups)
+    self.IndigoObject.iterateRGroupFragments = Indigo._member_obj(Indigo._lib.indigoIterateRGroupFragments)
+    self.IndigoObject.countAttachmentPoints = Indigo._member_int(Indigo._lib.indigoCountAttachmentPoints)
+    self.IndigoObject.isPseudoatom = Indigo._member_bool(Indigo._lib.indigoIsPseudoatom)
+    self.IndigoObject.isRSite = Indigo._member_bool(Indigo._lib.indigoIsRSite)
+    self.IndigoObject.stereocenterType = Indigo._member_int(Indigo._lib.indigoStereocenterType)
+    self.IndigoObject.singleAllowedRGroup = Indigo._member_int(Indigo._lib.indigoSingleAllowedRGroup)
+    self.IndigoObject.symbol = Indigo._member_string(Indigo._lib.indigoSymbol)
 
-    self.IndigoObject.degree = self._member_int(self._lib.indigoDegree)
-    self.IndigoObject.charge = self._member_intptr(self._lib.indigoGetCharge)
-    self.IndigoObject.explicitValence = self._member_intptr(self._lib.indigoGetExplicitValence)
-    self.IndigoObject.radicalElectrons = self._member_intptr(self._lib.indigoGetRadicalElectrons)
-    self.IndigoObject.atomicNumber = self._member_int(self._lib.indigoAtomicNumber)
-    self.IndigoObject.isotope = self._member_int(self._lib.indigoIsotope)
+    self.IndigoObject.degree = Indigo._member_int(Indigo._lib.indigoDegree)
+    self.IndigoObject.charge = Indigo._member_intptr(Indigo._lib.indigoGetCharge)
+    self.IndigoObject.explicitValence = Indigo._member_intptr(Indigo._lib.indigoGetExplicitValence)
+    self.IndigoObject.radicalElectrons = Indigo._member_intptr(Indigo._lib.indigoGetRadicalElectrons)
+    self.IndigoObject.atomicNumber = Indigo._member_int(Indigo._lib.indigoAtomicNumber)
+    self.IndigoObject.isotope = Indigo._member_int(Indigo._lib.indigoIsotope)
 
-    self.IndigoObject.countSuperatoms = self._member_int(self._lib.indigoCountSuperatoms)
-    self.IndigoObject.countDataSGroups = self._member_int(self._lib.indigoCountDataSGroups)
-    self.IndigoObject.iterateSuperatoms = self._member_obj(self._lib.indigoIterateSuperatoms)
-    self.IndigoObject.iterateDataSGroups = self._member_obj(self._lib.indigoIterateDataSGroups)
-    self.IndigoObject.getSuperatom = self._member_obj_int(self._lib.indigoGetSuperatom)
-    self.IndigoObject.getDataSGroup = self._member_obj_int(self._lib.indigoGetDataSGroup)
-    self.IndigoObject.description = self._member_string(self._lib.indigoDescription)
-    self.IndigoObject.remove = self._member_void(self._lib.indigoRemove)
+    self.IndigoObject.countSuperatoms = Indigo._member_int(Indigo._lib.indigoCountSuperatoms)
+    self.IndigoObject.countDataSGroups = Indigo._member_int(Indigo._lib.indigoCountDataSGroups)
+    self.IndigoObject.iterateSuperatoms = Indigo._member_obj(Indigo._lib.indigoIterateSuperatoms)
+    self.IndigoObject.iterateDataSGroups = Indigo._member_obj(Indigo._lib.indigoIterateDataSGroups)
+    self.IndigoObject.getSuperatom = Indigo._member_obj_int(Indigo._lib.indigoGetSuperatom)
+    self.IndigoObject.getDataSGroup = Indigo._member_obj_int(Indigo._lib.indigoGetDataSGroup)
+    self.IndigoObject.description = Indigo._member_string(Indigo._lib.indigoDescription)
+    self.IndigoObject.remove = Indigo._member_void(Indigo._lib.indigoRemove)
 
-    self.IndigoObject.resetCharge = self._member_void(self._lib.indigoResetCharge)
-    self.IndigoObject.resetExplicitValence = self._member_void(self._lib.indigoResetExplicitValence)
-    self.IndigoObject.resetRadical = self._member_void(self._lib.indigoResetRadical)
-    self.IndigoObject.resetIsotope = self._member_void(self._lib.indigoResetIsotope)
-    self.IndigoObject.resetStereo = self._member_void(self._lib.indigoResetStereo)
-    self.IndigoObject.invertStereo = self._member_void(self._lib.indigoInvertStereo)
+    self.IndigoObject.resetCharge = Indigo._member_void(Indigo._lib.indigoResetCharge)
+    self.IndigoObject.resetExplicitValence = Indigo._member_void(Indigo._lib.indigoResetExplicitValence)
+    self.IndigoObject.resetRadical = Indigo._member_void(Indigo._lib.indigoResetRadical)
+    self.IndigoObject.resetIsotope = Indigo._member_void(Indigo._lib.indigoResetIsotope)
+    self.IndigoObject.resetStereo = Indigo._member_void(Indigo._lib.indigoResetStereo)
+    self.IndigoObject.invertStereo = Indigo._member_void(Indigo._lib.indigoInvertStereo)
 
-    self.IndigoObject.setAttachmentPoint = self._member_void_int(self._lib.indigoSetAttachmentPoint)
+    self.IndigoObject.setAttachmentPoint = Indigo._member_void_int(Indigo._lib.indigoSetAttachmentPoint)
 
-    self.IndigoObject.removeConstraints = self._member_void_string(self._lib.indigoRemoveConstraints)
-    self.IndigoObject.addConstraint = self._member_void_string_string(self._lib.indigoAddConstraint)
-    self.IndigoObject.addConstraintNot = self._member_void_string_string(self._lib.indigoAddConstraintNot)
+    self.IndigoObject.removeConstraints = Indigo._member_void_string(Indigo._lib.indigoRemoveConstraints)
+    self.IndigoObject.addConstraint = Indigo._member_void_string_string(Indigo._lib.indigoAddConstraint)
+    self.IndigoObject.addConstraintNot = Indigo._member_void_string_string(Indigo._lib.indigoAddConstraintNot)
 
-    self.IndigoObject.countAtoms = self._member_int(self._lib.indigoCountAtoms)
-    self.IndigoObject.countBonds = self._member_int(self._lib.indigoCountBonds)
-    self.IndigoObject.countPseudoatoms = self._member_int(self._lib.indigoCountPseudoatoms)
-    self.IndigoObject.countRSites = self._member_int(self._lib.indigoCountRSites)
+    self.IndigoObject.countAtoms = Indigo._member_int(Indigo._lib.indigoCountAtoms)
+    self.IndigoObject.countBonds = Indigo._member_int(Indigo._lib.indigoCountBonds)
+    self.IndigoObject.countPseudoatoms = Indigo._member_int(Indigo._lib.indigoCountPseudoatoms)
+    self.IndigoObject.countRSites = Indigo._member_int(Indigo._lib.indigoCountRSites)
 
-    self.IndigoObject.iterateBonds = self._member_obj(self._lib.indigoIterateBonds)
-    self.IndigoObject.bondOrder = self._member_int(self._lib.indigoBondOrder)
-    self.IndigoObject.topology = self._member_int(self._lib.indigoTopology)
-    self.IndigoObject.bondStereo = self._member_int(self._lib.indigoBondStereo)
+    self.IndigoObject.iterateBonds = Indigo._member_obj(Indigo._lib.indigoIterateBonds)
+    self.IndigoObject.bondOrder = Indigo._member_int(Indigo._lib.indigoBondOrder)
+    self.IndigoObject.topology = Indigo._member_int(Indigo._lib.indigoTopology)
+    self.IndigoObject.bondStereo = Indigo._member_int(Indigo._lib.indigoBondStereo)
 
-    self.IndigoObject.iterateNeighbors = self._member_obj(self._lib.indigoIterateNeighbors)
-    self.IndigoObject.bond = self._member_obj(self._lib.indigoBond)
-    self.IndigoObject.getAtom = self._member_obj_int(self._lib.indigoGetAtom)
-    self.IndigoObject.getBond = self._member_obj_int(self._lib.indigoGetBond)
-    self.IndigoObject.source = self._member_obj(self._lib.indigoSource)
-    self.IndigoObject.destination = self._member_obj(self._lib.indigoDestination)
+    self.IndigoObject.iterateNeighbors = Indigo._member_obj(Indigo._lib.indigoIterateNeighbors)
+    self.IndigoObject.bond = Indigo._member_obj(Indigo._lib.indigoBond)
+    self.IndigoObject.getAtom = Indigo._member_obj_int(Indigo._lib.indigoGetAtom)
+    self.IndigoObject.getBond = Indigo._member_obj_int(Indigo._lib.indigoGetBond)
+    self.IndigoObject.source = Indigo._member_obj(Indigo._lib.indigoSource)
+    self.IndigoObject.destination = Indigo._member_obj(Indigo._lib.indigoDestination)
 
-    self.IndigoObject.clearCisTrans = self._member_void(self._lib.indigoClearCisTrans)
-    self.IndigoObject.clearStereocenters = self._member_void(self._lib.indigoClearStereocenters)
-    self.IndigoObject.countStereocenters = self._member_int(self._lib.indigoCountStereocenters)
-    self.IndigoObject.resetSymmetricCisTrans = self._member_int(self._lib.indigoResetSymmetricCisTrans)
-    self.IndigoObject.addAtom = self._member_obj_string(self._lib.indigoAddAtom)
-    self.IndigoObject.setCharge = self._member_void_int(self._lib.indigoSetCharge)
-    self.IndigoObject.setIsotope = self._member_void_int(self._lib.indigoSetIsotope)
-    self.IndigoObject.addBond = self._member_obj_obj_int(self._lib.indigoAddBond)
-    self.IndigoObject.setBondOrder = self._member_void_int(self._lib.indigoSetBondOrder)
-    self.IndigoObject.merge = self._member_obj_obj(self._lib.indigoMerge)
+    self.IndigoObject.clearCisTrans = Indigo._member_void(Indigo._lib.indigoClearCisTrans)
+    self.IndigoObject.clearStereocenters = Indigo._member_void(Indigo._lib.indigoClearStereocenters)
+    self.IndigoObject.countStereocenters = Indigo._member_int(Indigo._lib.indigoCountStereocenters)
+    self.IndigoObject.resetSymmetricCisTrans = Indigo._member_int(Indigo._lib.indigoResetSymmetricCisTrans)
+    self.IndigoObject.addAtom = Indigo._member_obj_string(Indigo._lib.indigoAddAtom)
+    self.IndigoObject.setCharge = Indigo._member_void_int(Indigo._lib.indigoSetCharge)
+    self.IndigoObject.setIsotope = Indigo._member_void_int(Indigo._lib.indigoSetIsotope)
+    self.IndigoObject.addBond = Indigo._member_obj_obj_int(Indigo._lib.indigoAddBond)
+    self.IndigoObject.setBondOrder = Indigo._member_void_int(Indigo._lib.indigoSetBondOrder)
+    self.IndigoObject.merge = Indigo._member_obj_obj(Indigo._lib.indigoMerge)
 
-    self.IndigoObject.countComponents = self._member_int(self._lib.indigoCountComponents)
-    self.IndigoObject.componentIndex = self._member_int(self._lib.indigoComponentIndex)
-    self.IndigoObject.component = self._member_obj_int(self._lib.indigoComponent)
-    self.IndigoObject.iterateComponents = self._member_obj(self._lib.indigoIterateComponents)
-    self.IndigoObject.countSSSR = self._member_int(self._lib.indigoCountSSSR)
-    self.IndigoObject.iterateSSSR = self._member_obj(self._lib.indigoIterateSSSR)
-    self.IndigoObject.iterateRings = self._member_obj_int_int(self._lib.indigoIterateRings)
-    self.IndigoObject.iterateSubtrees = self._member_obj_int_int(self._lib.indigoIterateSubtrees)
-    self.IndigoObject.iterateEdgeSubmolecules = self._member_obj_int_int(self._lib.indigoIterateEdgeSubmolecules)
+    self.IndigoObject.countComponents = Indigo._member_int(Indigo._lib.indigoCountComponents)
+    self.IndigoObject.componentIndex = Indigo._member_int(Indigo._lib.indigoComponentIndex)
+    self.IndigoObject.component = Indigo._member_obj_int(Indigo._lib.indigoComponent)
+    self.IndigoObject.iterateComponents = Indigo._member_obj(Indigo._lib.indigoIterateComponents)
+    self.IndigoObject.countSSSR = Indigo._member_int(Indigo._lib.indigoCountSSSR)
+    self.IndigoObject.iterateSSSR = Indigo._member_obj(Indigo._lib.indigoIterateSSSR)
+    self.IndigoObject.iterateRings = Indigo._member_obj_int_int(Indigo._lib.indigoIterateRings)
+    self.IndigoObject.iterateSubtrees = Indigo._member_obj_int_int(Indigo._lib.indigoIterateSubtrees)
+    self.IndigoObject.iterateEdgeSubmolecules = Indigo._member_obj_int_int(Indigo._lib.indigoIterateEdgeSubmolecules)
 
-    self.IndigoObject.countHeavyAtoms = self._member_int(self._lib.indigoCountHeavyAtoms)
-    self.IndigoObject.molecularWeight = self._member_float(self._lib.indigoMolecularWeight)
-    self.IndigoObject.monoisotopicMass = self._member_float(self._lib.indigoMonoisotopicMass)
-    self.IndigoObject.mostAbundantMass = self._member_float(self._lib.indigoMostAbundantMass)
+    self.IndigoObject.countHeavyAtoms = Indigo._member_int(Indigo._lib.indigoCountHeavyAtoms)
+    self.IndigoObject.molecularWeight = Indigo._member_float(Indigo._lib.indigoMolecularWeight)
+    self.IndigoObject.monoisotopicMass = Indigo._member_float(Indigo._lib.indigoMonoisotopicMass)
+    self.IndigoObject.mostAbundantMass = Indigo._member_float(Indigo._lib.indigoMostAbundantMass)
 
-    self.IndigoObject.canonicalSmiles = self._member_string(self._lib.indigoCanonicalSmiles)
-    self.IndigoObject.layeredCode = self._member_string(self._lib.indigoLayeredCode)
+    self.IndigoObject.canonicalSmiles = Indigo._member_string(Indigo._lib.indigoCanonicalSmiles)
+    self.IndigoObject.layeredCode = Indigo._member_string(Indigo._lib.indigoLayeredCode)
 
-    self.IndigoObject.hasZCoord = self._member_bool(self._lib.indigoHasZCoord)
-    self.IndigoObject.isChiral = self._member_bool(self._lib.indigoIsChiral)
+    self.IndigoObject.hasZCoord = Indigo._member_bool(Indigo._lib.indigoHasZCoord)
+    self.IndigoObject.isChiral = Indigo._member_bool(Indigo._lib.indigoIsChiral)
     
-    self.IndigoObject.aromatize = self._member_bool(self._lib.indigoAromatize)
-    self.IndigoObject.dearomatize = self._member_bool(self._lib.indigoDearomatize)
-    self.IndigoObject.foldHydrogens = self._member_void(self._lib.indigoFoldHydrogens)
-    self.IndigoObject.unfoldHydrogens = self._member_void(self._lib.indigoUnfoldHydrogens)
-    self.IndigoObject.layout = self._member_void(self._lib.indigoLayout)    
+    self.IndigoObject.aromatize = Indigo._member_bool(Indigo._lib.indigoAromatize)
+    self.IndigoObject.dearomatize = Indigo._member_bool(Indigo._lib.indigoDearomatize)
+    self.IndigoObject.foldHydrogens = Indigo._member_void(Indigo._lib.indigoFoldHydrogens)
+    self.IndigoObject.unfoldHydrogens = Indigo._member_void(Indigo._lib.indigoUnfoldHydrogens)
+    self.IndigoObject.layout = Indigo._member_void(Indigo._lib.indigoLayout)    
 
-    self.IndigoObject.smiles = self._member_string(self._lib.indigoSmiles)
-    self.IndigoObject.name = self._member_string(self._lib.indigoName)
-    self.IndigoObject.setName = self._member_void_string(self._lib.indigoSetName)
-    self.IndigoObject.hasProperty = self._member_bool_string(self._lib.indigoHasProperty)
-    self.IndigoObject.getProperty = self._member_string_string(self._lib.indigoGetProperty)
-    self.IndigoObject.setProperty = self._member_void_string_string(self._lib.indigoSetProperty)
-    self.IndigoObject.removeProperty = self._member_void_string(self._lib.indigoRemoveProperty)
-    self.IndigoObject.iterateProperties = self._member_obj(self._lib.indigoIterateProperties)
-    self.IndigoObject.clearProperties = self._member_obj(self._lib.indigoClearProperties)
+    self.IndigoObject.smiles = Indigo._member_string(Indigo._lib.indigoSmiles)
+    self.IndigoObject.name = Indigo._member_string(Indigo._lib.indigoName)
+    self.IndigoObject.setName = Indigo._member_void_string(Indigo._lib.indigoSetName)
+    self.IndigoObject.hasProperty = Indigo._member_bool_string(Indigo._lib.indigoHasProperty)
+    self.IndigoObject.getProperty = Indigo._member_string_string(Indigo._lib.indigoGetProperty)
+    self.IndigoObject.setProperty = Indigo._member_void_string_string(Indigo._lib.indigoSetProperty)
+    self.IndigoObject.removeProperty = Indigo._member_void_string(Indigo._lib.indigoRemoveProperty)
+    self.IndigoObject.iterateProperties = Indigo._member_obj(Indigo._lib.indigoIterateProperties)
+    self.IndigoObject.clearProperties = Indigo._member_obj(Indigo._lib.indigoClearProperties)
 
-    self.IndigoObject.checkBadValence = self._member_string(self._lib.indigoCheckBadValence)
-    self.IndigoObject.checkAmbiguousH = self._member_string(self._lib.indigoCheckAmbiguousH)
-    self.IndigoObject.rawData = self._member_string(self._lib.indigoRawData)
+    self.IndigoObject.checkBadValence = Indigo._member_string(Indigo._lib.indigoCheckBadValence)
+    self.IndigoObject.checkAmbiguousH = Indigo._member_string(Indigo._lib.indigoCheckAmbiguousH)
+    self.IndigoObject.rawData = Indigo._member_string(Indigo._lib.indigoRawData)
 
-    self.IndigoObject.fingerprint = self._member_obj_string(self._lib.indigoFingerprint)
-    self.IndigoObject.countBits = self._member_int(self._lib.indigoCountBits)
-    self.IndigoObject.tell = self._member_int(self._lib.indigoTell)
-    self.IndigoObject.sdfAppend = self._member_void_obj(self._lib.indigoSdfAppend)
-    self.IndigoObject.smilesAppend = self._member_void_obj(self._lib.indigoSmilesAppend)
+    self.IndigoObject.fingerprint = Indigo._member_obj_string(Indigo._lib.indigoFingerprint)
+    self.IndigoObject.countBits = Indigo._member_int(Indigo._lib.indigoCountBits)
+    self.IndigoObject.tell = Indigo._member_int(Indigo._lib.indigoTell)
+    self.IndigoObject.sdfAppend = Indigo._member_void_obj(Indigo._lib.indigoSdfAppend)
+    self.IndigoObject.smilesAppend = Indigo._member_void_obj(Indigo._lib.indigoSmilesAppend)
 
-    self.IndigoObject.iterateArray = self._member_obj(self._lib.indigoIterateArray)
-    self.IndigoObject.count = self._member_int(self._lib.indigoCount)
-    self.IndigoObject.clear = self._member_void(self._lib.indigoClear)
-    self.IndigoObject.arrayAdd = self._member_void_obj(self._lib.indigoArrayAdd)
-    self.IndigoObject.at = self._member_obj_int(self._lib.indigoAt)
+    self.IndigoObject.iterateArray = Indigo._member_obj(Indigo._lib.indigoIterateArray)
+    self.IndigoObject.count = Indigo._member_int(Indigo._lib.indigoCount)
+    self.IndigoObject.clear = Indigo._member_void(Indigo._lib.indigoClear)
+    self.IndigoObject.arrayAdd = Indigo._member_void_obj(Indigo._lib.indigoArrayAdd)
+    self.IndigoObject.at = Indigo._member_obj_int(Indigo._lib.indigoAt)
     
-    self.IndigoObject.match = self._member_obj_obj(self._lib.indigoMatch)
-    self.IndigoObject.countMatches = self._member_int_obj(self._lib.indigoCountMatches)
-    self.IndigoObject.iterateMatches = self._member_obj_obj(self._lib.indigoIterateMatches)
-    self.IndigoObject.highlightedTarget = self._member_obj(self._lib.indigoHighlightedTarget);
-    self.IndigoObject.mapAtom = self._member_obj_obj(self._lib.indigoMapAtom);
-    self.IndigoObject.mapBond = self._member_obj_obj(self._lib.indigoMapBond);	
+    self.IndigoObject.match = Indigo._member_obj_obj(Indigo._lib.indigoMatch)
+    self.IndigoObject.countMatches = Indigo._member_int_obj(Indigo._lib.indigoCountMatches)
+    self.IndigoObject.iterateMatches = Indigo._member_obj_obj(Indigo._lib.indigoIterateMatches)
+    self.IndigoObject.highlightedTarget = Indigo._member_obj(Indigo._lib.indigoHighlightedTarget);
+    self.IndigoObject.mapAtom = Indigo._member_obj_obj(Indigo._lib.indigoMapAtom);
+    self.IndigoObject.mapBond = Indigo._member_obj_obj(Indigo._lib.indigoMapBond);	
 	
-    self.IndigoObject.allScaffolds = self._member_obj(self._lib.indigoAllScaffolds);
-    self.IndigoObject.decomposedMoleculeScaffold = self._member_obj(self._lib.indigoDecomposedMoleculeScaffold)
-    self.IndigoObject.iterateDecomposedMolecules = self._member_obj(self._lib.indigoIterateDecomposedMolecules)
-    self.IndigoObject.iterateDecomposedMolecules = self._member_obj(self._lib.indigoIterateDecomposedMolecules)
-    self.IndigoObject.decomposedMoleculeHighlighted = self._member_obj(self._lib.indigoDecomposedMoleculeHighlighted)
-    self.IndigoObject.decomposedMoleculeWithRGroups = self._member_obj(self._lib.indigoDecomposedMoleculeWithRGroups)
+    self.IndigoObject.allScaffolds = Indigo._member_obj(Indigo._lib.indigoAllScaffolds);
+    self.IndigoObject.decomposedMoleculeScaffold = Indigo._member_obj(Indigo._lib.indigoDecomposedMoleculeScaffold)
+    self.IndigoObject.iterateDecomposedMolecules = Indigo._member_obj(Indigo._lib.indigoIterateDecomposedMolecules)
+    self.IndigoObject.iterateDecomposedMolecules = Indigo._member_obj(Indigo._lib.indigoIterateDecomposedMolecules)
+    self.IndigoObject.decomposedMoleculeHighlighted = Indigo._member_obj(Indigo._lib.indigoDecomposedMoleculeHighlighted)
+    self.IndigoObject.decomposedMoleculeWithRGroups = Indigo._member_obj(Indigo._lib.indigoDecomposedMoleculeWithRGroups)
     
-    self.IndigoObject.index = self._member_int(self._lib.indigoIndex)
+    self.IndigoObject.index = Indigo._member_int(Indigo._lib.indigoIndex)
 
-    self.IndigoObject.createSubmolecule = self._member_obj_iarr(self._lib.indigoCreateSubmolecule)
-    self.IndigoObject.createEdgeSubmolecule = self._member_obj_iarr_iarr(self._lib.indigoCreateEdgeSubmolecule)
-    self.IndigoObject.removeAtoms = self._member_void_iarr(self._lib.indigoRemoveAtoms)
-    self.IndigoObject.addDataSGroup = self._member_obj_iarr_iarr_string_string(self._lib.indigoAddDataSGroup)
-    self.IndigoObject.setDataSGroupXY = self._member_void_float_float_string(self._lib.indigoSetDataSGroupXY)
+    self.IndigoObject.createSubmolecule = Indigo._member_obj_iarr(Indigo._lib.indigoCreateSubmolecule)
+    self.IndigoObject.createEdgeSubmolecule = Indigo._member_obj_iarr_iarr(Indigo._lib.indigoCreateEdgeSubmolecule)
+    self.IndigoObject.removeAtoms = Indigo._member_void_iarr(Indigo._lib.indigoRemoveAtoms)
+    self.IndigoObject.addDataSGroup = Indigo._member_obj_iarr_iarr_string_string(Indigo._lib.indigoAddDataSGroup)
+    self.IndigoObject.setDataSGroupXY = Indigo._member_void_float_float_string(Indigo._lib.indigoSetDataSGroupXY)
 
-    self.IndigoObject._next = self._member_obj(self._lib.indigoNext)
+    self.IndigoObject._next = Indigo._member_obj(Indigo._lib.indigoNext)
     
-  def _make_wrapper_func (self, wrapper, func):
+  @staticmethod
+  def _make_wrapper_func (wrapper, func):
     """Return wrapper function with changed name 
     """    
     name = func.__name__ + "_wrapper"
@@ -421,7 +425,7 @@ class Indigo:
       res = self._checkResult(func())
       if res == 0:
         return None
-      return self.IndigoObject(self, res)
+      return Indigo.IndigoObject(self, res)
     return self._make_wrapper_func(newfunc, func)
 
   def _static_int (self, func):
@@ -448,7 +452,7 @@ class Indigo:
       res = self._checkResult(func(str))
       if res == 0:
         return None
-      return self.IndigoObject(self, res)
+      return Indigo.IndigoObject(self, res)
     return self._make_wrapper_func(newfunc, func)
 
   def _static_obj_obj_string (self, func):
@@ -461,7 +465,7 @@ class Indigo:
       res = func(obj.id, string)
       if res == 0:
         return None
-      return self.IndigoObject(self, self._checkResult(res))
+      return Indigo.IndigoObject(self, self._checkResult(res))
     return self._make_wrapper_func(newfunc, func)
 
   def _static_obj_obj (self, func):
@@ -472,7 +476,7 @@ class Indigo:
       res = func(obj.id)
       if res == 0:
         return None
-      return self.IndigoObject(self, self._checkResult(res))
+      return Indigo.IndigoObject(self, self._checkResult(res))
     return self._make_wrapper_func(newfunc, func)
 		
   def _static_obj_obj_obj (self, func):
@@ -483,241 +487,241 @@ class Indigo:
       res = func(obj1.id, obj2.id)
       if res == 0:
         return None
-      return self.IndigoObject(self, self._checkResult(res))
+      return Indigo.IndigoObject(self, self._checkResult(res))
     return self._make_wrapper_func(newfunc, func)
 
   def _setSID (self):
-    self._lib.indigoSetSessionId(self._sid)
+    Indigo._lib.indigoSetSessionId(self._sid)
 
-  def _member_string (self, func): 
+  @staticmethod
+  def _member_string (func): 
     func.restype = c_char_p
     func.argtypes = [c_int]
-    dispatcher = self
     def newfunc (self):
-      dispatcher._setSID()
-      return dispatcher._checkResultString(func(self.id))
-    return self._make_wrapper_func(newfunc, func)
+      self.dispatcher._setSID()
+      return self.dispatcher._checkResultString(func(self.id))
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_bool (self, func):
+  @staticmethod
+  def _member_bool (func):
     func.restype = c_int
     func.argtypes = [c_int]
-    dispatcher = self
     def newfunc (self):
-      dispatcher._setSID()
-      res = dispatcher._checkResult(func(self.id))
+      self.dispatcher._setSID()
+      res = self.dispatcher._checkResult(func(self.id))
       return res == 1                                                 
-    return self._make_wrapper_func(newfunc, func)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_bool_string (self, func):
+  @staticmethod
+  def _member_bool_string (func):
     func.restype = c_int
     func.argtypes = [c_int, c_char_p]
-    dispatcher = self
     def newfunc (self, str):
-      dispatcher._setSID()
-      res = dispatcher._checkResult(func(self.id, str))
+      self.dispatcher._setSID()
+      res = self.dispatcher._checkResult(func(self.id, str))
       return res == 1                                                 
-    return self._make_wrapper_func(newfunc, func)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_string_string (self, func):
+  @staticmethod
+  def _member_string_string (func):
     func.restype = c_char_p
     func.argtypes = [c_int, c_char_p]
-    dispatcher = self
     def newfunc (self, str):
-      dispatcher._setSID()
-      return dispatcher._checkResultString(func(self.id, str))
-    return self._make_wrapper_func(newfunc, func)
+      self.dispatcher._setSID()
+      return self.dispatcher._checkResultString(func(self.id, str))
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_float (self, func):
+  @staticmethod
+  def _member_float (func):
     func.restype = c_float
     func.argtypes = [c_int]
-    dispatcher = self
     def newfunc (self):
-      dispatcher._setSID()
-      return dispatcher._checkResultFloat(func(self.id))
-    return self._make_wrapper_func(newfunc, func)
+      self.dispatcher._setSID()
+      return self.dispatcher._checkResultFloat(func(self.id))
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_void (self, func):
+  @staticmethod
+  def _member_void (func):
     func.restype = c_int
     func.argtypes = [c_int]
-    dispatcher = self
     def newfunc (self):
-      dispatcher._setSID()
-      dispatcher._checkResult(func(self.id))
+      self.dispatcher._setSID()
+      self.dispatcher._checkResult(func(self.id))
       return
-    return self._make_wrapper_func(newfunc, func)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_void_int (self, func):
+  @staticmethod
+  def _member_void_int (func):
     func.restype = c_int
     func.argtypes = [c_int]
-    dispatcher = self
     def newfunc (self, param):
-      dispatcher._setSID()
-      dispatcher._checkResult(func(self.id, param))
+      self.dispatcher._setSID()
+      self.dispatcher._checkResult(func(self.id, param))
       return
-    return self._make_wrapper_func(newfunc, func)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_void_obj (self, func):
+  @staticmethod
+  def _member_void_obj (func):
     func.restype = c_int
     func.argtypes = [c_int, c_int]
-    dispatcher = self
     def newfunc (self, other):
-      dispatcher._setSID()
-      dispatcher._checkResult(func(self.id, other.id))
+      self.dispatcher._setSID()
+      self.dispatcher._checkResult(func(self.id, other.id))
       return
-    return self._make_wrapper_func(newfunc, func)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_void_string (self, func):
+  @staticmethod
+  def _member_void_string (func):
     func.restype = c_int
     func.argtypes = [c_int, c_char_p]
-    dispatcher = self
     def newfunc (self, str):
-      dispatcher._setSID()
-      dispatcher._checkResult(func(self.id, str))
+      self.dispatcher._setSID()
+      self.dispatcher._checkResult(func(self.id, str))
       return
-    return self._make_wrapper_func(newfunc, func)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_void_string_string (self, func):
+  @staticmethod
+  def _member_void_string_string (func):
     func.restype = c_int
     func.argtypes = [c_int, c_char_p, c_char_p]
-    dispatcher = self
     def newfunc (self, str1, str2):
-      dispatcher._setSID()
-      dispatcher._checkResult(func(self.id, str1, str2))
+      self.dispatcher._setSID()
+      self.dispatcher._checkResult(func(self.id, str1, str2))
       return
-    return self._make_wrapper_func(newfunc, func)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_int (self, func):
+  @staticmethod
+  def _member_int (func):
     func.restype = c_int
     func.argtypes = [c_int]
-    dispatcher = self
     def newfunc (self):
-      dispatcher._setSID()
-      return dispatcher._checkResult(func(self.id))
-    return self._make_wrapper_func(newfunc, func)
+      self.dispatcher._setSID()
+      return self.dispatcher._checkResult(func(self.id))
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_intptr (self, func):
+  @staticmethod
+  def _member_intptr (func):
     func.restype = c_int
     func.argtypes = [c_int, POINTER(c_int)]
-    dispatcher = self
     def newfunc (self):
-      dispatcher._setSID()
+      self.dispatcher._setSID()
       value = c_int()
-      res = dispatcher._checkResult(func(self.id, pointer(value)))
+      res = self.dispatcher._checkResult(func(self.id, pointer(value)))
       if res == 0:
         return None
       return value.value
-    return self._make_wrapper_func(newfunc, func)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_obj (self, func):
+  @staticmethod
+  def _member_obj (func):
     func.restype = c_int
     func.argtypes = [c_int]
-    dispatcher = self
     def newfunc (self):
-      dispatcher._setSID()
-      newobj = dispatcher._checkResult(func(self.id))
+      self.dispatcher._setSID()
+      newobj = self.dispatcher._checkResult(func(self.id))
       if newobj == 0:
         return None
-      return dispatcher.IndigoObject(dispatcher, newobj)
-    return self._make_wrapper_func(newfunc, func)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_obj_int (self, func):
+  @staticmethod
+  def _member_obj_int (func):
     func.restype = c_int
     func.argtypes = [c_int, c_int]
-    dispatcher = self
     def newfunc (self, param):
-      dispatcher._setSID()
-      newobj = dispatcher._checkResult(func(self.id, param))
+      self.dispatcher._setSID()
+      newobj = self.dispatcher._checkResult(func(self.id, param))
       if newobj == 0:
         return None
-      return dispatcher.IndigoObject(dispatcher, newobj)
-    return self._make_wrapper_func(newfunc, func)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_obj_int_int (self, func):
+  @staticmethod
+  def _member_obj_int_int (func):
     func.restype = c_int
     func.argtypes = [c_int, c_int]
-    dispatcher = self
     def newfunc (self, param, param2):
-      dispatcher._setSID()
-      newobj = dispatcher._checkResult(func(self.id, param, param2))
+      self.dispatcher._setSID()
+      newobj = self.dispatcher._checkResult(func(self.id, param, param2))
       if newobj == 0:
         return None
-      return dispatcher.IndigoObject(dispatcher, newobj)
-    return self._make_wrapper_func(newfunc, func)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_int_obj (self, func):
+  @staticmethod
+  def _member_int_obj (func):
     func.restype = c_int
     func.argtypes = [c_int, c_int]
-    dispatcher = self
     def newfunc (self, param):
-      dispatcher._setSID()
-      return dispatcher._checkResult(func(self.id, param.id))
-    return self._make_wrapper_func(newfunc, func)
+      self.dispatcher._setSID()
+      return self.dispatcher._checkResult(func(self.id, param.id))
+    return Indigo._make_wrapper_func(newfunc, func)
 	
-  def _member_obj_obj (self, func):
-    dispatcher = self
+  @staticmethod
+  def _member_obj_obj (func):
     func.restype = c_int
     func.argtypes = [c_int, c_int]
     def newfunc (self, param):
-      dispatcher._setSID()
-      newobj = dispatcher._checkResult(func(self.id, param.id))
+      self.dispatcher._setSID()
+      newobj = self.dispatcher._checkResult(func(self.id, param.id))
       if newobj == 0:
         return None
-      return dispatcher.IndigoObject(dispatcher, newobj)
-    return self._make_wrapper_func(newfunc, func)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_obj_obj_int (self, func):
-    dispatcher = self
+  @staticmethod
+  def _member_obj_obj_int (func):
     func.restype = c_int
     func.argtypes = [c_int, c_int, c_int]
     def newfunc (self, param, param2):
-      dispatcher._setSID()
-      newobj = dispatcher._checkResult(func(self.id, param.id, param2))
+      self.dispatcher._setSID()
+      newobj = self.dispatcher._checkResult(func(self.id, param.id, param2))
       if newobj == 0:
         return None
-      return dispatcher.IndigoObject(dispatcher, newobj)
-    return self._make_wrapper_func(newfunc, func)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_obj_string (self, func):
-    dispatcher = self
+  @staticmethod
+  def _member_obj_string (func):
     func.restype = c_int
     func.argtypes = [c_int, c_char_p]
     def newfunc (self, param):
-      dispatcher._setSID()
-      newobj = dispatcher._checkResult(func(self.id, param))
+      self.dispatcher._setSID()
+      newobj = self.dispatcher._checkResult(func(self.id, param))
       if newobj == 0:
         return None
-      return dispatcher.IndigoObject(dispatcher, newobj)
-    return self._make_wrapper_func(newfunc, func)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_void_iarr (self, func):
-    dispatcher = self
+  @staticmethod
+  def _member_void_iarr (func):
     func.restype = c_int
     func.argtypes = [c_int, c_int, POINTER(c_int)]
     def newfunc (self, intarr):
       arr = (c_int * len(intarr))()
       for i in xrange(len(intarr)):
         arr[i] = intarr[i]
-      dispatcher._setSID()
-      dispatcher._checkResult(func(self.id, len(intarr), arr))
-    return self._make_wrapper_func(newfunc, func)
+      self.dispatcher._setSID()
+      self.dispatcher._checkResult(func(self.id, len(intarr), arr))
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_obj_iarr (self, func):
+  @staticmethod
+  def _member_obj_iarr (func):
     func.restype = c_int
     func.argtypes = [c_int, c_int, POINTER(c_int)]
-    dispatcher = self
     def newfunc (self, intarr):
       arr = (c_int * len(intarr))()
       for i in xrange(len(intarr)):
         arr[i] = intarr[i]
-      dispatcher._setSID()
-      newobj = dispatcher._checkResult(func(self.id, len(intarr), arr))
+      self.dispatcher._setSID()
+      newobj = self.dispatcher._checkResult(func(self.id, len(intarr), arr))
       if newobj == 0:
         return None
-      return dispatcher.IndigoObject(dispatcher, newobj)
-    return self._make_wrapper_func(newfunc, func)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_obj_iarr_iarr (self, func):
-    dispatcher = self
+  @staticmethod
+  def _member_obj_iarr_iarr (func):
     func.restype = c_int
     func.argtypes = [c_int, c_int, POINTER(c_int), c_int, POINTER(c_int)]
     def newfunc (self, intarr1, intarr2):
@@ -727,15 +731,15 @@ class Indigo:
       arr2 = (c_int * len(intarr2))()
       for i in xrange(len(intarr2)):
         arr2[i] = intarr2[i]
-      dispatcher._setSID()
-      newobj = dispatcher._checkResult(func(self.id, len(intarr1), arr1, len(intarr2), arr2))
+      self.dispatcher._setSID()
+      newobj = self.dispatcher._checkResult(func(self.id, len(intarr1), arr1, len(intarr2), arr2))
       if newobj == 0:
         return None
-      return dispatcher.IndigoObject(dispatcher, newobj)
-    return self._make_wrapper_func(newfunc, func)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_obj_iarr_iarr_string_string (self, func):
-    dispatcher = self
+  @staticmethod
+  def _member_obj_iarr_iarr_string_string (func):
     func.restype = c_int
     func.argtypes = [c_int, c_int, POINTER(c_int), c_int, POINTER(c_int), c_char_p, c_char_p]
     def newfunc (self, intarr1, intarr2, str1, str2):
@@ -745,78 +749,78 @@ class Indigo:
       arr2 = (c_int * len(intarr2))()
       for i in xrange(len(intarr2)):
         arr2[i] = intarr2[i]
-      dispatcher._setSID()
-      newobj = dispatcher._checkResult(func(self.id, len(intarr1), arr1, len(intarr2), arr2, str1, str2))
+      self.dispatcher._setSID()
+      newobj = self.dispatcher._checkResult(func(self.id, len(intarr1), arr1, len(intarr2), arr2, str1, str2))
       if newobj == 0:
         return None
-      return dispatcher.IndigoObject(dispatcher, newobj)
-    return self._make_wrapper_func(newfunc, func)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+    return Indigo._make_wrapper_func(newfunc, func)
 
-  def _member_void_float_float_string (self, func):
+  @staticmethod
+  def _member_void_float_float_string (func):
     func.restype = c_int
     func.argtypes = [c_int, c_float, c_float, c_char_p]
-    dispatcher = self
     def newfunc (self, x, y, s):
-      dispatcher._setSID()
-      return dispatcher._checkResult(func(self.id, x, y, s))
-    return self._make_wrapper_func(newfunc, func)
+      self.dispatcher._setSID()
+      return self.dispatcher._checkResult(func(self.id, x, y, s))
+    return Indigo._make_wrapper_func(newfunc, func)
 
   def version (self):
-    return self._lib.indigoVersion()
+    return Indigo._lib.indigoVersion()
 
   def similarity (self, item1, item2, metrics = None):
-    self._lib.indigoSetSessionId(self._sid)
+    self._setSID()
     if metrics is None:
       metrics = ''
-    return self._checkResultFloat(self._lib.indigoSimilarity(item1.id, item2.id, metrics))
+    return self._checkResultFloat(Indigo._lib.indigoSimilarity(item1.id, item2.id, metrics))
 
   def exactMatch (self, item1, item2):
-    self._lib.indigoSetSessionId(self._sid)
-    res = self._checkResult(self._lib.indigoExactMatch(item1.id, item2.id))
+    self._setSID()
+    res = self._checkResult(Indigo._lib.indigoExactMatch(item1.id, item2.id))
     return res == 1
 
   def writeBuffer (self):
-    id = self._checkResult(self._lib.indigoWriteBuffer())
-    return self.IndigoObject(self, id)
+    id = self._checkResult(Indigo._lib.indigoWriteBuffer())
+    return Indigo.IndigoObject(self, id)
 
   def writeFile (self, filename):
-    id = self._checkResult(self._lib.indigoWriteFile(filename))
-    return self.IndigoObject(self, id)
+    id = self._checkResult(Indigo._lib.indigoWriteFile(filename))
+    return Indigo.IndigoObject(self, id)
 
   def setOption (self, option, value1, value2 = None, value3 = None):
     if type(value1).__name__ == 'str' and value2 is None and value3 is None:
-      self._checkResult(self._lib.indigoSetOption(option, value1))
+      self._checkResult(Indigo._lib.indigoSetOption(option, value1))
     elif type(value1).__name__ == 'int' and value2 is None and value3 is None:
-      self._checkResult(self._lib.indigoSetOptionInt(option, value1))
+      self._checkResult(Indigo._lib.indigoSetOptionInt(option, value1))
     elif type(value1).__name__ == 'float' and value2 is None and value3 is None:
-      self._checkResult(self._lib.indigoSetOptionFloat(option, value1))
+      self._checkResult(Indigo._lib.indigoSetOptionFloat(option, value1))
     elif type(value1).__name__ == 'bool' and value2 is None and value3 is None:
-      self._checkResult(self._lib.indigoSetOptionBool(option, 1 if value1 else 0))
+      self._checkResult(Indigo._lib.indigoSetOptionBool(option, 1 if value1 else 0))
     elif type(value1).__name__ == 'int' and value2 and \
          type(value2).__name__ == 'int' and value3 is None:
-      self._checkResult(self._lib.indigoSetOptionXY(option, value1, value2))
+      self._checkResult(Indigo._lib.indigoSetOptionXY(option, value1, value2))
     elif type(value1).__name__ == 'float' and value2 and \
          type(value2).__name__ == 'float' and value3 and \
          type(value3).__name__ == 'float':
-      self._checkResult(self._lib.indigoSetOptionColor(option, value1, value2, value3))
+      self._checkResult(Indigo._lib.indigoSetOptionColor(option, value1, value2, value3))
     else:
       raise IndigoException("bad options")
 
   def _checkResult (self, result):
     if result < 0:
-      raise IndigoException(self._lib.indigoGetLastError())
+      raise IndigoException(Indigo._lib.indigoGetLastError())
     return result
 
   def _checkResultFloat (self, result):
     if result < -0.5:
-      raise IndigoException(self._lib.indigoGetLastError())
+      raise IndigoException(Indigo._lib.indigoGetLastError())
     return result
 
   def _checkResultString (self, result):
     if result is None:
-      raise IndigoException(self._lib.indigoGetLastError())
+      raise IndigoException(Indigo._lib.indigoGetLastError())
     return result
 
   def __del__ (self):
     if hasattr(self, '_lib'):
-      self._lib.indigoReleaseSessionId(self._sid)
+      Indigo._lib.indigoReleaseSessionId(self._sid)
