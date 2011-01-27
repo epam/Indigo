@@ -46,6 +46,7 @@ protected:
    Scanner *_scanner;
    bool     _own_scanner;
    TL_CP_DECL(Array<int>, _offsets);
+   TL_CP_DECL(Array<char>, _preread);
    int _current_number;
    int _max_offset;
 };
