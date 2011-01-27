@@ -344,7 +344,15 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       int valence = mol.getExplicitValence(i);
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
-         radical = mol.getAtomRadical(i);
+      {
+         try
+         {
+            radical = mol.getAtomRadical(i);
+         }
+         catch (Element::Error &)
+         {
+         }
+      }
 
       out.printf(" %f %f %f %d", xyz.x, xyz.y, xyz.z, aam);
 
@@ -609,7 +617,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       qmol = (QueryMolecule *)(&mol);
 
    int i;
-   QS_DEF(Array<int>, radicals);
+   QS_DEF(Array<int[2]>, radicals);
    QS_DEF(Array<int>, charges);
    QS_DEF(Array<int>, isotopes);
    QS_DEF(Array<int>, pseudoatoms);
@@ -641,7 +649,15 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       _atom_mapping[i] = iw;
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
-         atom_radical = mol.getAtomRadical(i);
+      {
+         try
+         {
+            atom_radical = mol.getAtomRadical(i);
+         }
+         catch (Element::Error &)
+         {
+         }
+      }
 
       if (mol.isRSite(i))
       {
@@ -724,7 +740,12 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          radical = atom_radical;
 
       if (radical != 0)
-         radicals.push(i);
+      {
+         int *r = radicals.push();
+         r[0] = i;
+         r[1] = radical;
+      }
+
 
       Vec3f &pos = mol.getAtomXyz(i);
 
@@ -807,7 +828,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       {
          output.printf("M  RAD%3d", __min(radicals.size(), j + 8) - j);
          for (i = j; i < __min(radicals.size(), j + 8); i++)
-            output.printf(" %3d %3d", _atom_mapping[radicals[i]], mol.getAtomRadical(radicals[i]));
+            output.printf(" %3d %3d", _atom_mapping[radicals[i][0]], radicals[i][1]);
          output.writeCR();
          j += 8;
       }
