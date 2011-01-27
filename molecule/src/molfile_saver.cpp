@@ -356,7 +356,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
       out.printf(" %f %f %f %d", xyz.x, xyz.y, xyz.z, aam);
 
-      if (charge != CHARGE_UNKNOWN)
+      if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
          out.printf(" CHG=%d", charge);
       if (radical > 0)
          out.printf(" RAD=%d", radical);
