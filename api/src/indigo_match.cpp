@@ -260,7 +260,6 @@ int IndigoMoleculeSubstructureMatchIter::countMatches ()
    context.max_count = max_embeddings;
 
    matcher.find_all_embeddings = true;
-   matcher.find_unique_embeddings = true;
    matcher.cb_embedding = _matchCountEmbeddingsCallback;
    matcher.cb_embedding_context = &context;
    matcher.highlighting = 0;
