@@ -50,7 +50,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../../api/dist/DebugStatic/GNU-Linux-x86/libindigo.a ../../layout/dist/Debug/GNU-Linux-x86/liblayout.a ../../reaction/dist/Debug/GNU-Linux-x86/libreaction.a ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a -lpthread -lz -lstdc++
+LDLIBSOPTIONS=../../api/dist/DebugStatic/GNU-Linux-x86/libindigo.a ../../layout/dist/Debug/GNU-Linux-x86/liblayout.a ../../reaction/dist/Debug/GNU-Linux-x86/libreaction.a ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a ../../tinyxml/dist/Debug/GNU-Linux-x86/libtinyxml.a -lpthread -lz -lstdc++
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -65,6 +65,8 @@ dist/Debug/GNU-Linux-x86/indigo-cano: ../../reaction/dist/Debug/GNU-Linux-x86/li
 dist/Debug/GNU-Linux-x86/indigo-cano: ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a
 
 dist/Debug/GNU-Linux-x86/indigo-cano: ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a
+
+dist/Debug/GNU-Linux-x86/indigo-cano: ../../tinyxml/dist/Debug/GNU-Linux-x86/libtinyxml.a
 
 dist/Debug/GNU-Linux-x86/indigo-cano: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/GNU-Linux-x86
@@ -82,6 +84,7 @@ ${OBJECTDIR}/main.o: main.c
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Debug
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Debug
 	cd ../../graph && ${MAKE}  -f Makefile CONF=Debug
+	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -95,6 +98,7 @@ ${OBJECTDIR}/main.o: main.c
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Debug clean
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Debug clean
 	cd ../../graph && ${MAKE}  -f Makefile CONF=Debug clean
+	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

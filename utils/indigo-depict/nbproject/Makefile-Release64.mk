@@ -50,7 +50,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../../api/renderer/dist/ReleaseStatic64/GNU-Linux-x86/libindigo-renderer.a ../../api/dist/ReleaseStatic64/GNU-Linux-x86/libindigo.a ../../render2d/dist/Release64/GNU-Linux-x86/librender2d.a ../../layout/dist/Release64/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release64/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release64/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release64/GNU-Linux-x86/libgraph.a -lpthread -lz -lcairo -lstdc++
+LDLIBSOPTIONS=../../api/renderer/dist/ReleaseStatic64/GNU-Linux-x86/libindigo-renderer.a ../../api/dist/ReleaseStatic64/GNU-Linux-x86/libindigo.a ../../render2d/dist/Release64/GNU-Linux-x86/librender2d.a ../../layout/dist/Release64/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release64/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release64/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release64/GNU-Linux-x86/libgraph.a ../../tinyxml/dist/Release64/GNU-Linux-x86/libtinyxml.a -lpthread -lz -lcairo -lstdc++
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -70,6 +70,8 @@ dist/Release64/GNU-Linux-x86/indigo-depict: ../../molecule/dist/Release64/GNU-Li
 
 dist/Release64/GNU-Linux-x86/indigo-depict: ../../graph/dist/Release64/GNU-Linux-x86/libgraph.a
 
+dist/Release64/GNU-Linux-x86/indigo-depict: ../../tinyxml/dist/Release64/GNU-Linux-x86/libtinyxml.a
+
 dist/Release64/GNU-Linux-x86/indigo-depict: ${OBJECTFILES}
 	${MKDIR} -p dist/Release64/GNU-Linux-x86
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indigo-depict ${OBJECTFILES} ${LDLIBSOPTIONS} 
@@ -88,6 +90,7 @@ ${OBJECTDIR}/main.o: main.c
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Release64
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Release64
 	cd ../../graph && ${MAKE}  -f Makefile CONF=Release64
+	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Release64
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -103,6 +106,7 @@ ${OBJECTDIR}/main.o: main.c
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Release64 clean
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Release64 clean
 	cd ../../graph && ${MAKE}  -f Makefile CONF=Release64 clean
+	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Release64 clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

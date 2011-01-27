@@ -13,6 +13,7 @@
                 <make-dep-project>../../layout</make-dep-project>
                 <make-dep-project>../../reaction</make-dep-project>
                 <make-dep-project>../../graph</make-dep-project>
+                <make-dep-project>../../tinyxml</make-dep-project>
                 <make-dep-project>../../api</make-dep-project>
                 <make-dep-project>../../molecule</make-dep-project>
             </make-dep-projects>
