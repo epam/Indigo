@@ -72,6 +72,7 @@ public:
    public:
       Array<int> atoms; // represented with SAL in Molfile format
       Array<int> bonds; // represented with SBL in Molfile format
+      Array<Vec2f[2]> brackets;
       virtual ~SGroup ();
    };
 
@@ -115,7 +116,6 @@ public:
       virtual ~RepeatingUnit ();
 
       int connectivity;
-      Array<Vec2f[2]> brackets;
    };
 
    class DLLEXPORT MultipleGroup : public SGroup
@@ -125,7 +125,6 @@ public:
       virtual ~MultipleGroup ();
 
       int multiplier;
-      Array<Vec2f[2]> brackets;
       Array<int> parent_atoms;
    };
 
@@ -229,6 +228,7 @@ public:
    ObjPool<Superatom>  superatoms;
    ObjPool<RepeatingUnit> repeating_units;
    ObjPool<MultipleGroup> multiple_groups;
+   ObjPool<SGroup> generic_sgroups;
 
    Array<char> name;
 

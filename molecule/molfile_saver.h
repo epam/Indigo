@@ -86,7 +86,8 @@ protected:
       _SGROUP_TYPE_SUP = 1,
       _SGROUP_TYPE_DAT,
       _SGROUP_TYPE_SRU,
-      _SGROUP_TYPE_MUL
+      _SGROUP_TYPE_MUL,
+      _SGROUP_TYPE_GEN
    };
 
 private:

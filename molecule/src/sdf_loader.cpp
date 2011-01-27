@@ -22,7 +22,8 @@ using namespace indigo;
 SdfLoader::SdfLoader (Scanner &scanner) :
 TL_CP_GET(data),
 TL_CP_GET(properties),
-TL_CP_GET(_offsets)
+TL_CP_GET(_offsets),
+TL_CP_GET(_preread)
 {
    data.clear();
    properties.clear();
@@ -47,6 +48,7 @@ TL_CP_GET(_offsets)
    _current_number = 0;
    _max_offset = 0;
    _offsets.clear();
+   _preread.clear();
 }
 
 SdfLoader::~SdfLoader()
@@ -73,6 +75,7 @@ int SdfLoader::count ()
    if (offset != _max_offset)
    {
       _scanner->seek(_max_offset, SEEK_SET);
+      _preread.clear();
       _current_number = _offsets.size();
    }
 
@@ -84,6 +87,7 @@ int SdfLoader::count ()
    if (res != cn)
    {
       _scanner->seek(offset, SEEK_SET);
+      _preread.clear();
       _current_number = cn;
    }
 
@@ -92,12 +96,24 @@ int SdfLoader::count ()
 
 bool SdfLoader::isEOF()
 {
-   return _scanner->isEOF();
+   // read space characters
+   while (!_scanner->isEOF())
+   {
+      if (isspace(_scanner->lookNext()))
+         _preread.push(_scanner->readChar());
+      else
+         return false;
+   }
+
+   // We are at the end of file now, having only space characters read.
+   return true;
 }
 
 void SdfLoader::readNext ()
 {
    ArrayOutput output(data);
+   output.writeArray(_preread);
+   _preread.clear();
    QS_DEF(Array<char>, str);
 
    if (_scanner->isEOF())
@@ -191,12 +207,14 @@ void SdfLoader::readAt (int index)
    if (index < _offsets.size())
    {
       _scanner->seek(_offsets[index], SEEK_SET);
+      _preread.clear();
       _current_number = index;
       readNext();
    }
    else
    {
       _scanner->seek(_max_offset, SEEK_SET);
+      _preread.clear();
       _current_number = _offsets.size();
       do
       {

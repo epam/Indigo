@@ -48,6 +48,7 @@
       <compileType>
         <ccTool>
           <developmentMode>6</developmentMode>
+          <architecture>1</architecture>
           <incDir>
             <pElem>include</pElem>
           </incDir>
@@ -67,6 +68,7 @@
       <compileType>
         <ccTool>
           <developmentMode>6</developmentMode>
+          <architecture>2</architecture>
           <incDir>
             <pElem>include</pElem>
           </incDir>

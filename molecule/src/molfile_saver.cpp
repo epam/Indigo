@@ -344,7 +344,15 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       int valence = mol.getExplicitValence(i);
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
-         radical = mol.getAtomRadical(i);
+      {
+         try
+         {
+            radical = mol.getAtomRadical(i);
+         }
+         catch (Element::Error &)
+         {
+         }
+      }
 
       out.printf(" %f %f %f %d", xyz.x, xyz.y, xyz.z, aam);
 
@@ -609,7 +617,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       qmol = (QueryMolecule *)(&mol);
 
    int i;
-   QS_DEF(Array<int>, radicals);
+   QS_DEF(Array<int[2]>, radicals);
    QS_DEF(Array<int>, charges);
    QS_DEF(Array<int>, isotopes);
    QS_DEF(Array<int>, pseudoatoms);
@@ -641,7 +649,15 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       _atom_mapping[i] = iw;
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
-         atom_radical = mol.getAtomRadical(i);
+      {
+         try
+         {
+            atom_radical = mol.getAtomRadical(i);
+         }
+         catch (Element::Error &)
+         {
+         }
+      }
 
       if (mol.isRSite(i))
       {
@@ -724,7 +740,12 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          radical = atom_radical;
 
       if (radical != 0)
-         radicals.push(i);
+      {
+         int *r = radicals.push();
+         r[0] = i;
+         r[1] = radical;
+      }
+
 
       Vec3f &pos = mol.getAtomXyz(i);
 
@@ -807,7 +828,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       {
          output.printf("M  RAD%3d", __min(radicals.size(), j + 8) - j);
          for (i = j; i < __min(radicals.size(), j + 8); i++)
-            output.printf(" %3d %3d", _atom_mapping[radicals[i]], mol.getAtomRadical(radicals[i]));
+            output.printf(" %3d %3d", _atom_mapping[radicals[i][0]], radicals[i][1]);
          output.writeCR();
          j += 8;
       }
@@ -895,6 +916,11 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       sgroup_ids.push(i);
       sgroup_types.push(_SGROUP_TYPE_MUL);
    }
+   for (i = mol.generic_sgroups.begin(); i != mol.generic_sgroups.end(); i = mol.generic_sgroups.next(i))
+   {
+      sgroup_ids.push(i);
+      sgroup_types.push(_SGROUP_TYPE_GEN);
+   }
 
    if (sgroup_ids.size() > 0)
    {
@@ -911,6 +937,8 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
                case _SGROUP_TYPE_DAT: type = "DAT"; break;
                case _SGROUP_TYPE_MUL: type = "MUL"; break;
                case _SGROUP_TYPE_SRU: type = "SRU"; break;
+               case _SGROUP_TYPE_SUP: type = "SUP"; break;
+               case _SGROUP_TYPE_GEN: type = "GEN"; break;
                default: throw Error("internal: bad sgroup type");
             }
 
@@ -955,6 +983,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             case _SGROUP_TYPE_MUL: sgroup = &mol.multiple_groups[sgroup_ids[i]]; break;
             case _SGROUP_TYPE_SRU: sgroup = &mol.repeating_units[sgroup_ids[i]]; break;
             case _SGROUP_TYPE_SUP: sgroup = &mol.superatoms[sgroup_ids[i]]; break;
+            case _SGROUP_TYPE_GEN: sgroup = &mol.generic_sgroups[sgroup_ids[i]]; break;
             default: throw Error("internal: bad sgroup type");
          }
 
@@ -1024,18 +1053,6 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             output.printf("M  SED %3d %.*s", i + 1, k, ptr);
             output.writeCR();
          }
-         else if (sgroup_types[i] == _SGROUP_TYPE_SRU)
-         {
-            BaseMolecule::RepeatingUnit &ru = mol.repeating_units[sgroup_ids[i]];
-
-            for (j = 0; j < ru.brackets.size(); j++)
-            {
-               output.printf("M  SDI %3d  4 %9.4f %9.4f %9.4f %9.4f\n", i + 1,
-                       ru.brackets[j][0].x, ru.brackets[j][0].y,
-                       ru.brackets[j][1].x, ru.brackets[j][1].y);
-            }
-
-         }
          else if (sgroup_types[i] == _SGROUP_TYPE_MUL)
          {
             BaseMolecule::MultipleGroup &mg = mol.multiple_groups[sgroup_ids[i]];
@@ -1049,15 +1066,15 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
                output.writeCR();
             }
 
-            for (j = 0; j < mg.brackets.size(); j++)
-            {
-               output.printf("M  SDI %3d  4 %9.4f %9.4f %9.4f %9.4f\n", i + 1,
-                       mg.brackets[j][0].x, mg.brackets[j][0].y,
-                       mg.brackets[j][1].x, mg.brackets[j][1].y);
-            }
-
             output.printf("M  SMT %3d %d\n", i + 1, mg.multiplier);
          }
+         for (j = 0; j < sgroup->brackets.size(); j++)
+         {
+            output.printf("M  SDI %3d  4 %9.4f %9.4f %9.4f %9.4f\n", i + 1,
+                    sgroup->brackets[j][0].x, sgroup->brackets[j][0].y,
+                    sgroup->brackets[j][1].x, sgroup->brackets[j][1].y);
+         }
+
       }
    }
 

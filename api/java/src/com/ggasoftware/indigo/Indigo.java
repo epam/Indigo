@@ -450,9 +450,19 @@ public class Indigo
    public native int indigoAtomicNumber (int atom);
    public native int indigoIsotope (int atom);
    public native float[] indigoXYZ (int atom);
+
    public native int indigoCountSuperatoms (int molecule);
    public native int indigoCountDataSGroups (int molecule);
+   public native int indigoCountRepeatingUnits (int molecule);
+   public native int indigoCountMultipleGroups (int molecule);
+   public native int indigoCountGenericSGroups (int molecule);
+
+   public native int indigoIterateSuperatoms (int molecule);
    public native int indigoIterateDataSGroups (int molecule);
+   public native int indigoIterateRepeatingUnits (int molecule);
+   public native int indigoIterateMultipleGroups (int molecule);
+   public native int indigoIterateGenericSGroups (int molecule);
+
    public native String indigoDescription (int data_sgroup);
    public native int indigoAddDataSGroup (int molecule, int[] atoms, int[] bonds, String description, String data);
    public native int indigoSetDataSGroupXY (int sgroup, float x, float y, String options);

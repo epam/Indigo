@@ -91,6 +91,18 @@
                             OP="dist/Debug/GNU-Linux-x86/libgraph.a">
               </makeArtifact>
             </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../tinyxml"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../tinyxml"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libtinyxml.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
             <linkerOptionItem>-lstdc++</linkerOptionItem>
@@ -185,9 +197,21 @@
                             OP="dist/Release32/GNU-Linux-x86/libgraph.a">
               </makeArtifact>
             </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../tinyxml"
+                            CT="3"
+                            CN="Release32"
+                            AC="false"
+                            BL="true"
+                            WD="../../tinyxml"
+                            BC="${MAKE}  -f Makefile CONF=Release32"
+                            CC="${MAKE}  -f Makefile CONF=Release32 clean"
+                            OP="dist/Release32/GNU-Linux-x86/libtinyxml.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerOptionItem>-lstdc++</linkerOptionItem>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
             <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
-            <linkerOptionItem>-lstdc++</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -277,6 +301,18 @@
                             BC="${MAKE}  -f Makefile CONF=Release64"
                             CC="${MAKE}  -f Makefile CONF=Release64 clean"
                             OP="dist/Release64/GNU-Linux-x86/libgraph.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../tinyxml"
+                            CT="3"
+                            CN="Release64"
+                            AC="false"
+                            BL="true"
+                            WD="../../tinyxml"
+                            BC="${MAKE}  -f Makefile CONF=Release64"
+                            CC="${MAKE}  -f Makefile CONF=Release64 clean"
+                            OP="dist/Release64/GNU-Linux-x86/libtinyxml.a">
               </makeArtifact>
             </linkerLibProjectItem>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
