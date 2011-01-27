@@ -947,19 +947,25 @@ void MolfileLoader::_readCtab2000 ()
                   int idx = _bmol->multiple_groups.add();
                   _sgroup_mapping[sgroup_idx] = idx;
                }
+               else if (strncmp(type, "GEN", 3) == 0)
+               {
+                  _sgroup_types[sgroup_idx] = _SGROUP_TYPE_GEN;
+                  int idx = _bmol->generic_sgroups.add();
+                  _sgroup_mapping[sgroup_idx] = idx;
+               }
                else
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_OTHER;
             }
             _scanner.skipString();
          }
-         else if (strncmp(chars, "SAL", 3) == 0 || strncmp(chars, "SBL", 3) == 0)
+         else if (strncmp(chars, "SAL", 3) == 0 || strncmp(chars, "SBL", 3) == 0 ||
+                  strncmp(chars, "SDI", 3) == 0)
          {
             _scanner.skip(1);
             int sgroup_idx = _scanner.readIntFix(3) - 1;
 
             if (_sgroup_mapping[sgroup_idx] >= 0)
             {
-               int n = _scanner.readIntFix(3);
                BaseMolecule::SGroup *sgroup;
 
                switch (_sgroup_types[sgroup_idx])
@@ -968,15 +974,34 @@ void MolfileLoader::_readCtab2000 ()
                   case _SGROUP_TYPE_SRU: sgroup = &_bmol->repeating_units[_sgroup_mapping[sgroup_idx]]; break;
                   case _SGROUP_TYPE_SUP: sgroup = &_bmol->superatoms[_sgroup_mapping[sgroup_idx]]; break;
                   case _SGROUP_TYPE_MUL: sgroup = &_bmol->multiple_groups[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_GEN: sgroup = &_bmol->generic_sgroups[_sgroup_mapping[sgroup_idx]]; break;
                   default: throw Error("internal: bad sgroup type");
                }
                
-               while (n-- > 0)
+               int n = _scanner.readIntFix(3);
+               
+               if (strncmp(chars, "SDI", 3) == 0)
+               {
+                  if (n == 4) // should always be 4
+                  {
+                     Vec2f *brackets = sgroup->brackets.push();
+
+                     _scanner.skipSpace();
+                     brackets[0].x = _scanner.readFloat();
+                     _scanner.skipSpace();
+                     brackets[0].y = _scanner.readFloat();
+                     _scanner.skipSpace();
+                     brackets[1].x = _scanner.readFloat();
+                     _scanner.skipSpace();
+                     brackets[1].y = _scanner.readFloat();
+                  }
+               }
+               else while (n-- > 0)
                {
                   _scanner.skip(1);
                   if (strncmp(chars, "SAL", 3) == 0)
                      sgroup->atoms.push(_scanner.readIntFix(3) - 1);
-                  else
+                  else // SBL
                      sgroup->bonds.push(_scanner.readIntFix(3) - 1);
                }
             }
@@ -1082,34 +1107,6 @@ void MolfileLoader::_readCtab2000 ()
                sup.bond_dir.y = _scanner.readFloat();
                int k;
                k = 1;
-            }
-            _scanner.skipLine();
-         }
-         else if (strncmp(chars, "SDI", 3) == 0)
-         {
-            _scanner.skip(1);
-            int sgroup_idx = _scanner.readIntFix(3) - 1;
-            Vec2f *brackets = 0;
-            
-            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SRU)
-               brackets = _bmol->repeating_units[_sgroup_mapping[sgroup_idx]].brackets.push();
-            else if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_MUL)
-               brackets = _bmol->multiple_groups[_sgroup_mapping[sgroup_idx]].brackets.push();
-
-            if (brackets != 0)
-            {
-               int n = _scanner.readIntFix(3);
-               if (n == 4) // should always be 4
-               {
-                  _scanner.skipSpace();
-                  brackets[0].x = _scanner.readFloat();
-                  _scanner.skipSpace();
-                  brackets[0].y = _scanner.readFloat();
-                  _scanner.skipSpace();
-                  brackets[1].x = _scanner.readFloat();
-                  _scanner.skipSpace();
-                  brackets[1].y = _scanner.readFloat();
-               }
             }
             _scanner.skipLine();
          }

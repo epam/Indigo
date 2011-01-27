@@ -306,6 +306,93 @@ protected:
    BaseMolecule &_mol;
 };
 
+class IndigoRepeatingUnit : public IndigoObject
+{
+public:
+   IndigoRepeatingUnit (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoRepeatingUnit ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   static IndigoRepeatingUnit & cast (IndigoObject &obj);
+   BaseMolecule::RepeatingUnit & get();
+
+   BaseMolecule &mol;
+   int idx;
+};
+
+class IndigoRepeatingUnitsIter : public IndigoObject
+{
+public:
+   IndigoRepeatingUnitsIter (BaseMolecule &molecule);
+   virtual ~IndigoRepeatingUnitsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+protected:
+   int _idx;
+   BaseMolecule &_mol;
+};
+
+class IndigoMultipleGroup : public IndigoObject
+{
+public:
+   IndigoMultipleGroup (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoMultipleGroup ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   static IndigoMultipleGroup & cast (IndigoObject &obj);
+   BaseMolecule::MultipleGroup & get();
+
+   BaseMolecule &mol;
+   int idx;
+};
+
+class IndigoMultipleGroupsIter : public IndigoObject
+{
+public:
+   IndigoMultipleGroupsIter (BaseMolecule &molecule);
+   virtual ~IndigoMultipleGroupsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+protected:
+   int _idx;
+   BaseMolecule &_mol;
+};
+
+class IndigoGenericSGroup : public IndigoObject
+{
+public:
+   IndigoGenericSGroup (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoGenericSGroup ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   static IndigoGenericSGroup & cast (IndigoObject &obj);
+   BaseMolecule::SGroup & get();
+
+   BaseMolecule &mol;
+   int idx;
+};
+
+class IndigoGenericSGroupsIter : public IndigoObject
+{
+public:
+   IndigoGenericSGroupsIter (BaseMolecule &molecule);
+   virtual ~IndigoGenericSGroupsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+protected:
+   int _idx;
+   BaseMolecule &_mol;
+};
+
 class IndigoSGroupAtomsIter : public IndigoObject
 {
 public:
