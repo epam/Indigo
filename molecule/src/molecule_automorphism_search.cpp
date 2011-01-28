@@ -779,6 +779,25 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
       else
          _hcount[i] = mol.getImplicitH(i);
 
+      if (_hcount[i] < 0)
+      {
+         if (mol.getAtomAromaticity(i) == ATOM_AROMATIC)
+         {
+            if (mol.getAtomNumber(i) == ELEM_C && mol.getAtomCharge(i) == 0)
+            {
+               if (mol.getVertex(i).degree() == 3)
+                  _hcount[i] = 0;
+               else if (mol.getVertex(i).degree() == 2)
+                  _hcount[i] = 1;
+            }
+            else if (mol.getAtomNumber(i) == ELEM_O && mol.getAtomCharge(i) == 0)
+               _hcount[i] = 0;
+         }
+      }
+
+      if (_hcount[i] < 0)
+         throw Error("unsure hydrogen count on atom #%d", i);
+      
       const Vertex &vertex = mol.getVertex(i);
 
       _degree[i] = 0;
