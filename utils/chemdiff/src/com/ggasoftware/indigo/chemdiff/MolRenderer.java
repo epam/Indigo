@@ -85,18 +85,17 @@ public class MolRenderer extends JPanel
      indigo.setOption("render-image-size", size_str);
      byte[] bytes = null;
 
+     Boolean valid = false;
      try
      {
         indigo_obj.canonicalSmiles();
-        bytes = indigo_renderer.renderToBuffer(indigo_obj);
+        valid = true;
      }
      catch ( Exception ex )
      {
-        //System.out.print("exception: " + ex.getMessage());
-        image = null;
-        mol_image.image = null;
-        return this;
      }
+     
+     bytes = indigo_renderer.renderToBuffer(indigo_obj);
 
      ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
      try {
@@ -106,6 +105,13 @@ public class MolRenderer extends JPanel
         ex.printStackTrace();
      }
 
+     if (!valid)
+     {
+        // Mark molecule somehow
+        Graphics2D gc = image.createGraphics();
+        gc.setColor(Color.red);
+        gc.drawString("No canonical SMILES", 10, 10);
+     }
      mol_image.image = image;
 
      return this;

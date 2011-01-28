@@ -45,7 +45,6 @@ public class MolViewTable extends JPanel {
       indigo = cur_indigo;
       indigo_renderer = cur_indigo_renderer;
 
-      // What the F***?
       sdf_loader = new SdfLoader(indigo, main_frame, table_idx, "sdf");
 
       molecules = new ArrayList<IndigoObject>();
@@ -224,6 +223,8 @@ public class MolViewTable extends JPanel {
             if (m == null) {
                continue;
             }
+            if (!m.hasCoord())
+               m.layout();
             String[] orig_id_strs = (String[]) table.getValueAt(i, 0);
             for (int j = 0; j < orig_id_strs.length; j++)
                m.setProperty(String.format("original_id%d", j + 1), orig_id_strs[j]);
