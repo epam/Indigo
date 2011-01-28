@@ -550,8 +550,9 @@ bool MoleculeLayoutGraph::_attachCycleWithIntersections (const Cycle &cycle, flo
       length = 0.2f + dist / (k + 1);
 
    bool attached = false;
+   float max_length = length * 4; // to avoid infinite values
 
-   while (!attached)
+   while (!attached && length < max_length)
    {
       attached = true;
 
@@ -586,7 +587,7 @@ bool MoleculeLayoutGraph::_attachCycleWithIntersections (const Cycle &cycle, flo
 
       if (sn < s - 0.001)
          _drawRegularCurve(chain_ext, c_beg, c_end, length, true, ELEMENT_NOT_PLANAR);
-
+      
       // Try to change edge length to avoid bad layout
       for (i = 1; i < chain_ext.size() - 1; i++)
       {
