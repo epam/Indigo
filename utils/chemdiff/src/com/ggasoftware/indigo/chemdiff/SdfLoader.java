@@ -30,11 +30,11 @@ public class SdfLoader {
    private ArrayList<IndigoObject> molecules;
    private SdfLoadRunnable runnable;
    private Thread thread;
-   private boolean is_sdf;
+   private String _ext;
    private MainFrame main_frame;
    private int table_idx;
 
-   public SdfLoader(Indigo cur_indigo, MainFrame new_main_frame, int cur_table_idx, boolean is_sdf_flag) {
+   public SdfLoader(Indigo cur_indigo, MainFrame new_main_frame, int cur_table_idx, String ext) {
       main_frame = new_main_frame;
       table_idx = cur_table_idx;
 
@@ -42,7 +42,7 @@ public class SdfLoader {
       molecules = new ArrayList<IndigoObject>();
       runnable = new SdfLoadRunnable();
       thread = new Thread(null, runnable, "sdf_loader #" + table_idx, 10000000);
-      is_sdf = is_sdf_flag;
+      _ext = ext;
    }
 
    public void setFile(File cur_file) {
@@ -65,10 +65,15 @@ public class SdfLoader {
 
             IndigoObject iterator_object;
 
-            if (is_sdf) {
+            if (_ext == "sdf") {
                iterator_object = indigo.iterateSDFile(file.getPath());
-            } else {
+            } else if (_ext == "smi") {
                iterator_object = indigo.iterateSmilesFile(file.getPath());
+            } else if (_ext == "cml") {
+               //iterator_object = indigo.iterateCML(file.getPath());
+               throw new Exception("CML isn't supported yet");
+            } else {
+               throw new Exception("Unsupported file extension");
             }
 
             for (IndigoObject iterr : iterator_object) {

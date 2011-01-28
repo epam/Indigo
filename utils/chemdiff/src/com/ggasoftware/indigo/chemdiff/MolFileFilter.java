@@ -50,4 +50,9 @@ public class MolFileFilter extends FileFilter
 
       return descr_string + " files";
    }
+
+   public String getDefaultExtension()
+   {
+      return extensions.get(0);
+   }
 }
