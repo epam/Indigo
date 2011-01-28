@@ -78,8 +78,7 @@ bool MoleculeCisTrans::_pureH (BaseMolecule &mol, int idx)
    return mol.getAtomNumber(idx) == ELEM_H && mol.possibleAtomIsotope(idx, 0);
 }
 
-
-bool MoleculeCisTrans::_sortSubstituents (BaseMolecule &mol, int *substituents)
+bool MoleculeCisTrans::sortSubstituents (BaseMolecule &mol, int *substituents)
 {
    bool h0 = _pureH(mol, substituents[0]);
    bool h1 = substituents[1] < 0 || _pureH(mol, substituents[1]);
@@ -203,14 +202,15 @@ bool MoleculeCisTrans::isGeomStereoBond (BaseMolecule &mol, int bond_idx,
    return true;
 }
 
-void MoleculeCisTrans::restoreSubstituents (BaseMolecule &mol, int bond_idx)
+void MoleculeCisTrans::restoreSubstituents (int bond_idx)
 {
+   BaseMolecule &mol = _getMolecule();
    int *substituents = _bonds[bond_idx].substituents;
 
    if (!isGeomStereoBond(mol, bond_idx, substituents, false))
       throw Error("can't restore substituents");
 
-   if (!_sortSubstituents(mol, substituents))
+   if (!sortSubstituents(mol, substituents))
       throw Error("can't sort restored substituents");
 }
 
@@ -232,16 +232,9 @@ void MoleculeCisTrans::registerBond (int idx)
    _bonds[idx].parity = 0;
 }
 
-void MoleculeCisTrans::clear (BaseMolecule &mol)
+void MoleculeCisTrans::build (int *exclude_bonds)
 {
-   clear();
-   _bonds.clear_resize(mol.edgeEnd());
-   for (int i = 0; i < _bonds.size(); i++)
-      _bonds[i].parity = 0;
-}
-
-void MoleculeCisTrans::build (BaseMolecule &mol, int *exclude_bonds)
-{
+   BaseMolecule &mol = _getMolecule();
    int i;
 
    clear();
@@ -265,7 +258,7 @@ void MoleculeCisTrans::build (BaseMolecule &mol, int *exclude_bonds)
       if (!isGeomStereoBond(mol, i, substituents, true))
          continue;
 
-      if (!_sortSubstituents(mol, substituents))
+      if (!sortSubstituents(mol, substituents))
          continue;
 
       int sign = _sameside(mol, beg, end, substituents[0], substituents[2]);
@@ -303,7 +296,7 @@ void MoleculeCisTrans::buildFromSmiles (int *dirs)
       if (!isGeomStereoBond(mol, i, _bonds[i].substituents, false))
          continue;
 
-      if (!_sortSubstituents(mol, _bonds[i].substituents))
+      if (!sortSubstituents(mol, _bonds[i].substituents))
          continue;
 
       int substituents[4];
@@ -427,14 +420,15 @@ bool MoleculeCisTrans::isIgnored (int bond_idx) const
 void MoleculeCisTrans::ignore (int bond_idx)
 {
    while (bond_idx >= _bonds.size())
-      _bonds.push().parity = 0;
+      _bonds.push().clear();
+   _bonds[bond_idx].parity = 0;
    _bonds[bond_idx].ignored = 1;
 }
 
 void MoleculeCisTrans::setParity (int bond_idx, int parity)
 {
    while (_bonds.size() <= bond_idx)
-      _bonds.push().parity = 0;
+      _bonds.push().clear();
    _bonds[bond_idx].parity = parity;
 }
 
@@ -543,8 +537,9 @@ bool MoleculeCisTrans::checkSub (BaseMolecule &query, BaseMolecule &target, cons
    return true;
 }
 
-void MoleculeCisTrans::buildOnSubmolecule (BaseMolecule &super, BaseMolecule &sub, int *mapping)
+void MoleculeCisTrans::buildOnSubmolecule (BaseMolecule &super, int *mapping)
 {
+   BaseMolecule &sub = _getMolecule();
    if (!super.cis_trans.exists())
       return;
 
@@ -611,7 +606,7 @@ void MoleculeCisTrans::buildOnSubmolecule (BaseMolecule &super, BaseMolecule &su
             bond.parity = CIS;
       }
 
-      if (!_sortSubstituents(sub, bond.substituents))
+      if (!sortSubstituents(sub, bond.substituents))
          throw Error("buildOnSubmolecule() internal error");
    }
 }
@@ -652,8 +647,9 @@ int MoleculeCisTrans::applyMapping (int idx, const int *mapping) const
    return applyMapping(getParity(idx), getSubstituents(idx), mapping);
 }
 
-void MoleculeCisTrans::flipBond (BaseMolecule &mol, int atom_parent, int atom_from, int atom_to)
+void MoleculeCisTrans::flipBond (int atom_parent, int atom_from, int atom_to)
 {
+   BaseMolecule &mol = _getMolecule();
    int parent_edge_index = mol.findEdgeIndex(atom_parent, atom_from);
    if (parent_edge_index == -1 || getParity(parent_edge_index) != 0)
       // Such call wasn't expected and wasn't implemented

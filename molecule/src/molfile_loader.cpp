@@ -1662,7 +1662,7 @@ void MolfileLoader::_postLoad ()
    _bmol->stereocenters.buildFromBonds(_stereocenter_types.ptr(),
       _stereocenter_groups.ptr(), _bond_directions.ptr(), ignore_stereocenter_errors);
 
-   _bmol->cis_trans.build(*_bmol, _ignore_cistrans.ptr());
+   _bmol->cis_trans.build(_ignore_cistrans.ptr());
 
    if (_qmol != 0)
    {

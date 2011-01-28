@@ -64,6 +64,8 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
    if (title != 0)
       mol.name.readString(title, true);
 
+   // Atoms
+
    elem = hroot.FirstChild("atomArray").FirstChild().Element();
    for (; elem; elem = elem->NextSiblingElement())
    {
@@ -157,6 +159,8 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
       atom_stereo_types.push(0);
    }
 
+   // Bonds
+   bool have_cistrans_notation = false;
    elem = hroot.FirstChild("bondArray").FirstChild().Element();
 
    for (; elem; elem = elem->NextSiblingElement())
@@ -205,6 +209,8 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
                dir = MoleculeStereocenters::BOND_UP;
             if (text[0] == 'H' && text[1] == 0)
                dir = MoleculeStereocenters::BOND_DOWN;
+            if ((text[0] == 'C' || text[0] == 'T') && text[1] == 0)
+               have_cistrans_notation = true;
          }
       }
 
@@ -213,6 +219,8 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
          atom_stereo_types[beg] = MoleculeStereocenters::ATOM_ABS;
    }
    mol.stereocenters.buildFromBonds(atom_stereo_types.ptr(), 0, bond_orientations.ptr(), ignore_stereochemistry_errors);
+   
+   // Tetrahedral stereocenters
 
    elem = hroot.FirstChild("atomArray").FirstChild().Element();
    for (; elem; elem = elem->NextSiblingElement())
@@ -230,6 +238,7 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
          continue;
 
       const char *ap_text = ap_elem->GetText();
+
 
       if (ap_text == 0)
          continue;
@@ -263,4 +272,97 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
          mol.stereocenters.add(idx, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
       }
    }
+
+   // Cis-trans stuff
+   if (have_cistrans_notation)
+   {
+      elem = hroot.FirstChild("bondArray").FirstChild().Element();
+
+      int bond_idx = -1;
+
+      for (; elem; elem = elem->NextSiblingElement())
+      {
+         if (strncmp(elem->Value(), "bond", 4) != 0)
+            continue;
+         bond_idx++;
+         TiXmlElement *bs_elem = elem->FirstChildElement("bondStereo");
+
+         if (bs_elem == 0)
+            continue;
+
+         const char *text = bs_elem->GetText();
+
+         if (text == 0)
+            continue;
+
+         int parity;
+
+         if (text[0] == 'C' && text[1] == 0)
+            parity = MoleculeCisTrans::CIS;
+         else if (text[0] == 'T' && text[1] == 0)
+            parity = MoleculeCisTrans::TRANS;
+         else
+            continue;
+
+         const char *atom_refs = bs_elem->Attribute("atomRefs4");
+
+         if (atom_refs == 0)
+            continue;
+
+         int substituents[4];
+
+         if (!MoleculeCisTrans::isGeomStereoBond(mol, bond_idx, substituents, false))
+            throw Error("cis-trans notation on a non cis-trans bond #%d", bond_idx);
+
+         if (!MoleculeCisTrans::sortSubstituents(mol, substituents))
+            throw Error("cis-trans notation on a non cis-trans bond #%d", bond_idx);
+
+         BufferScanner strscan(atom_refs);
+         QS_DEF(Array<char>, id);
+         int refs[4];
+         int k;
+
+         for (k = 0; k < 4; k++)
+         {
+            strscan.skipSpace();
+            strscan.readWord(id, 0);
+            refs[k] = atoms.at(id.ptr());
+         }
+
+         const Edge &edge = mol.getEdge(bond_idx);
+
+         if (refs[1] == edge.beg && refs[2] == edge.end)
+            ;
+         else if (refs[1] == edge.end && refs[2] == edge.beg)
+         {
+            __swap(refs[0], refs[3], k);
+            __swap(refs[1], refs[2], k);
+         }
+         else
+            throw Error("atomRefs4 in bondStereo do not match the bond ends");
+
+         bool invert = false;
+
+         if (refs[0] == substituents[0])
+            ;
+         else if (refs[0] == substituents[1])
+            invert = !invert;
+         else
+            throw Error("atomRefs4 in bondStereo do not match the substituents");
+
+         if (refs[3] == substituents[2])
+            ;
+         else if (refs[3] == substituents[3])
+            invert = !invert;
+         else
+            throw Error("atomRefs4 in bondStereo do not match the substituents");
+
+         if (invert)
+            parity = 3 - parity;
+
+         mol.cis_trans.add(bond_idx, substituents, parity);
+      }
+   }
+   else if (BaseMolecule::hasCoord(mol))
+      mol.cis_trans.build(0);
 }

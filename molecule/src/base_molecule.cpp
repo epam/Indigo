@@ -140,9 +140,9 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
       stereocenters.clear();
 
    if (!(skip_flags & SKIP_CIS_TRANS))
-      cis_trans.buildOnSubmolecule(mol, *this, mapping_out->ptr());
+      cis_trans.buildOnSubmolecule(mol, mapping_out->ptr());
    else
-      cis_trans.clear(*this);
+      cis_trans.clear();
 
    // subclass stuff (Molecule or QueryMolecule)
    _postMergeWithSubmolecule(mol, vertices, edges, *mapping_out, skip_flags);
@@ -241,7 +241,7 @@ int BaseMolecule::mergeAtoms (int atom1, int atom2)
 void BaseMolecule::flipBond (int atom_parent, int atom_from, int atom_to)
 {
    stereocenters.flipBond(atom_parent, atom_from, atom_to);
-   cis_trans.flipBond(*this, atom_parent, atom_from, atom_to);
+   cis_trans.flipBond(atom_parent, atom_from, atom_to);
 
    // subclass (Molecule or QueryMolecule) adds the new bond
    _flipBond(atom_parent, atom_from, atom_to);
@@ -352,7 +352,7 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
    }
 
    stereocenters.removeAtoms(indices);
-   cis_trans.buildOnSubmolecule(*this, *this, mapping.ptr());
+   cis_trans.buildOnSubmolecule(*this, mapping.ptr());
 
    // subclass (Molecule or QueryMolecule) removes its data
    _removeAtoms(indices, mapping.ptr());

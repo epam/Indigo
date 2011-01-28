@@ -38,8 +38,7 @@ public:
    };
 
    void clear ();
-   void clear (BaseMolecule &mol);
-   void build (BaseMolecule &mol, int *exclude_bonds);
+   void build (int *exclude_bonds);
    void buildFromSmiles (int *dirs);
 
    bool exists () const;
@@ -53,7 +52,7 @@ public:
 
    void registerBond (int idx);
 
-   void flipBond (BaseMolecule &mol, int atom_parent, int atom_from, int atom_to);
+   void flipBond (int atom_parent, int atom_from, int atom_to);
 
    const int * getSubstituents (int bond_idx) const;
    void getSubstituents_All (int bond_idx, int subst[4]);
@@ -68,9 +67,11 @@ public:
 
    static bool checkSub (BaseMolecule &query, BaseMolecule &target, const int *mapping);
 
-   void buildOnSubmolecule (BaseMolecule &super, BaseMolecule &sub, int *mapping);
+   void buildOnSubmolecule (BaseMolecule &super, int *mapping);
 
-   void restoreSubstituents (BaseMolecule &mol, int bond_idx);
+   static bool sortSubstituents (BaseMolecule &mol, int *substituents);
+
+   void restoreSubstituents (int bond_idx);
 
    static bool isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *edge_filter = NULL);
 
@@ -85,6 +86,12 @@ protected:
    
    struct _Bond
    {
+      void clear ()
+      {
+         parity = 0;
+         ignored = 0;
+      }
+
       int parity; // CIS ot TRANS
       int ignored; // explicitly ignored cis-trans configuration on this bond
       int substituents[4];
@@ -94,7 +101,6 @@ protected:
 
    static bool _pureH (BaseMolecule &mol, int idx);
    static int _sameside (BaseMolecule &mol, int i_beg, int i_end, int i_nei_beg, int i_nei_end);
-   bool _sortSubstituents (BaseMolecule &mol, int *substituents);
 };
 
 }

@@ -203,6 +203,9 @@ static int _markEitherCisTrans (Molecule &mol)
       if (!MoleculeCisTrans::isGeomStereoBond(mol, i, substituents, false))
          continue;
 
+      if (mol.getEdgeTopology(i) == TOPOLOGY_RING)
+         continue;
+
       if (substituents[1] >= 0 && orbits[substituents[0]] == orbits[substituents[1]])
          continue;
       if (substituents[3] >= 0 && orbits[substituents[2]] == orbits[substituents[3]])

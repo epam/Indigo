@@ -115,7 +115,7 @@ void ReactionProductEnumerator::buildProducts( void )
          _product_aam_array[mapping[j]] = _reaction.getAAM(i, j);
    }
 
-   all_products.cis_trans.build(all_products, NULL);
+   all_products.cis_trans.build(NULL);
 
    _smiles_array.clear();
    _product_count = 0;

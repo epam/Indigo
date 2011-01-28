@@ -240,7 +240,7 @@ int ReactionEnumeratorState::buildProduct( void )
       QS_DEF(Molecule, ee_monomer);
       ee_monomer.clear();
       ee_monomer.clone(_reaction_monomers._monomers[i], NULL, NULL);
-      ee_monomer.cis_trans.build(ee_monomer, NULL);
+      ee_monomer.cis_trans.build(NULL);
 
       rpe_state._start_ee(ee_monomer);
    }
@@ -475,7 +475,7 @@ void ReactionEnumeratorState::_start_ee( Molecule &monomer )
    QS_DEF(QueryMolecule, ee_reactant);
    ee_reactant.clear();
    ee_reactant.clone(_reaction.getQueryMolecule(_reactant_idx), NULL, NULL);
-   ee_reactant.cis_trans.build(ee_reactant, NULL);
+   ee_reactant.cis_trans.build(NULL);
 
    ee_reactant.aromatize();
 
@@ -510,7 +510,7 @@ void ReactionEnumeratorState::_start_ee( Molecule &monomer )
    ee_monomer.clone(monomer, NULL, NULL);
 
    ee_monomer.aromatize();
-   ee_monomer.cis_trans.build(ee_monomer, NULL);
+   ee_monomer.cis_trans.build(NULL);
 
    QS_DEF(Obj<AromaticityMatcher>, am);
    am.free();
@@ -991,7 +991,7 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
    }
 
    mol_product.stereocenters.buildOnSubmolecule(product.stereocenters, mapping_out.ptr());
-   mol_product.cis_trans.buildOnSubmolecule(product, mol_product, mapping_out.ptr());
+   mol_product.cis_trans.buildOnSubmolecule(product, mapping_out.ptr());
 }
 
 void ReactionEnumeratorState::_checkConstraints( QueryMolecule &reactant, Array<int> &rp_mapping)

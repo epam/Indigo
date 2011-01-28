@@ -508,7 +508,7 @@ void CmfLoader::loadMolecule (Molecule &mol)
          if (_bonds[i].cis_trans != 0)
          {
             mol.cis_trans.setParity(i, _bonds[i].cis_trans);
-            mol.cis_trans.restoreSubstituents(mol, i);
+            mol.cis_trans.restoreSubstituents(i);
          }
       }
    }
