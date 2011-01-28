@@ -70,8 +70,7 @@ public class SdfLoader {
             } else if (_ext == "smi") {
                iterator_object = indigo.iterateSmilesFile(file.getPath());
             } else if (_ext == "cml") {
-               //iterator_object = indigo.iterateCML(file.getPath());
-               throw new Exception("CML isn't supported yet");
+               iterator_object = indigo.iterateCMLFile(file.getPath());
             } else {
                throw new Exception("Unsupported file extension");
             }

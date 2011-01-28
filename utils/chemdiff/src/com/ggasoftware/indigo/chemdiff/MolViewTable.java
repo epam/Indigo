@@ -216,6 +216,9 @@ public class MolViewTable extends JPanel {
             out_file_path += "." + cur_filter.getDefaultExtension();
 
          output_file = indigo.writeFile(out_file_path);
+         if (cur_filter.getDefaultExtension() == "cml")
+            output_file.cmlHeader();
+         
          for (int i = 0; i < molecules.size(); i++) {
             IndigoObject m = molecules.get(i);
             if (m == null) {
@@ -230,17 +233,18 @@ public class MolViewTable extends JPanel {
             else if (cur_filter.getDefaultExtension() == "smi")
                output_file.smilesAppend(m);
             else if (cur_filter.getDefaultExtension() == "cml")
-               //output_file.cmlAppend(m);
-               throw new Exception("CML isn't supported yet");
+               output_file.cmlAppend(m);
             else
                throw new Exception("Unknown extension");
          }
 
+         if (cur_filter.getDefaultExtension() == "cml")
+            output_file.cmlFooter();
+
          return choosed_file.getPath();
       } catch (Exception ex) {
-         JOptionPane msg_box = new JOptionPane();
-         msg_box.showMessageDialog((JFrame) (getTopLevelAncestor()), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-
+         JOptionPane.showMessageDialog((JFrame) (getTopLevelAncestor()), 
+                 ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
          return null;
       } finally {
          if (output_file != null)
