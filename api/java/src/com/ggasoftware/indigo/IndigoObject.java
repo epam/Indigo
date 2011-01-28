@@ -268,6 +268,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public float monoisotopicMass () { return dispatcher.indigoMonoisotopicMass(self); }
    public String canonicalSmiles () { return dispatcher.indigoCanonicalSmiles(self); }
    public String layeredCode () { return dispatcher.indigoLayeredCode(self); }
+   public boolean hasCoord () { return dispatcher.indigoHasCoord(self) == 1; }
    public boolean hasZCoord () { return dispatcher.indigoHasZCoord(self) == 1; }
    public boolean isChiral () { return dispatcher.indigoIsChiral(self) == 1; }
 

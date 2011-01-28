@@ -128,7 +128,7 @@ public:
    bool isAromatized ();
 
    // Check 
-   bool isNitrogentV5 (int atom_index);
+   bool isNitrogenV5 (int atom_index);
 protected:
    struct _Atom
    {

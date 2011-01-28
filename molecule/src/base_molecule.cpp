@@ -55,6 +55,21 @@ void BaseMolecule::clear ()
    Graph::clear();
 }
 
+bool BaseMolecule::hasCoord (BaseMolecule &mol)
+{
+   int i;
+
+   for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      Vec3f &xyz = mol.getAtomXyz(i);
+      if (fabs(xyz.x) > 0.001 || fabs(xyz.y) > 0.001 || fabs(xyz.z) > 0.001)
+         return true;
+   }
+
+   return false;
+}
+
+
 bool BaseMolecule::hasZCoord (BaseMolecule &mol)
 {
    int i;

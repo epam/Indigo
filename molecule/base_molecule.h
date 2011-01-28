@@ -234,6 +234,7 @@ public:
 
    Array<char> name;
 
+   static bool hasCoord (BaseMolecule &mol);
    static bool hasZCoord (BaseMolecule &mol);
 
    void mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 

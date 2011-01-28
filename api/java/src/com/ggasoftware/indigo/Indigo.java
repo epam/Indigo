@@ -525,6 +525,7 @@ public class Indigo
    public native String indigoCanonicalSmiles (int handle);
    public native String indigoLayeredCode (int handle);
 
+   public native int indigoHasCoord (int molecule);
    public native int indigoHasZCoord (int molecule);
    public native int indigoIsChiral (int molecule);
 

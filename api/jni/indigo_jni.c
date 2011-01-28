@@ -257,6 +257,7 @@ JNI_FUNC_jfloat_jint(indigoMonoisotopicMass)
 JNI_FUNC_jstring_jint(indigoCanonicalSmiles)
 JNI_FUNC_jstring_jint(indigoLayeredCode)
 
+JNI_FUNC_jint_jint(indigoHasCoord)
 JNI_FUNC_jint_jint(indigoHasZCoord)
 JNI_FUNC_jint_jint(indigoIsChiral)
 
