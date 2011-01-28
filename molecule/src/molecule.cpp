@@ -750,6 +750,9 @@ int Molecule::getAtomRadical (int idx)
    int impl_h = getImplicitH(idx);
    int normal_val, normal_hyd;
 
+   if (conn == -1)
+      return 0;
+
    if (isNitrogenV5(idx))
    {
       normal_val = 4;
@@ -758,33 +761,35 @@ int Molecule::getAtomRadical (int idx)
    else
       Element::calcValence(atom.number, atom.charge, 0, conn, normal_val, normal_hyd, true);
 
-   if (impl_h != normal_hyd)
+   if (impl_h == normal_hyd)
    {
-      // first try a singlet radical
-      if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET,
-                               conn, normal_val, normal_hyd, false) &&
-                               impl_h == normal_hyd)
-      {
-         _radicals.expandFill(idx + 1, -1);
-         _radicals[idx] = RADICAL_SINGLET;
-      }
-      else
-      {
-         // try a douplet radical
-         if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET,
-                                  conn, normal_val, normal_hyd, false) &&
-                                  impl_h == normal_hyd)
-         {
-            _radicals.expandFill(idx + 1, -1);
-            _radicals[idx] = RADICAL_DOUPLET;
-         }
-      }
+      _radicals.expandFill(idx + 1, -1);
+      _radicals[idx] = 0;
+      return 0;
    }
 
-   if (_radicals.size() > idx && _radicals[idx] >= 0)
-      return _radicals[idx];
-
-   return 0;
+   // first try a singlet radical
+   if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET,
+                            conn, normal_val, normal_hyd, false) &&
+                            impl_h == normal_hyd)
+   {
+      _radicals.expandFill(idx + 1, -1);
+      _radicals[idx] = RADICAL_SINGLET;
+      return RADICAL_SINGLET;
+   }
+   // then try a douplet radical
+   if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET,
+                               conn, normal_val, normal_hyd, false) &&
+                               impl_h == normal_hyd)
+   {
+      _radicals.expandFill(idx + 1, -1);
+      _radicals[idx] = RADICAL_DOUPLET;
+      return RADICAL_DOUPLET;
+   }
+   // give up; probably this molecule was obtained from an incorrect SMILES string like [N+]
+   // (while the correct one is [N+H4])
+   throw Element::Error("no radical can make %s (charge %d, connectivity %d) have %d hydrogens",
+              Element::toString(atom.number), atom.charge, conn, impl_h);
 }
 
 void Molecule::saveBondOrders (Molecule &mol, Array<int> &orders)
