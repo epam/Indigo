@@ -184,6 +184,36 @@ static int _resetSymmetricCisTrans (Molecule &mol)
    return sum;
 }
 
+static int _markEitherCisTrans (Molecule &mol)
+{
+   MoleculeAutomorphismSearch am;
+   int i, sum = 0;
+   QS_DEF(Array<int>, orbits);
+
+   am.process(mol);
+   am.getOrbits(orbits);
+
+   for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   {
+      int substituents[4];
+
+      if (mol.cis_trans.getParity(i) != 0)
+         continue;
+
+      if (!MoleculeCisTrans::isGeomStereoBond(mol, i, substituents, false))
+         continue;
+
+      if (substituents[1] >= 0 && orbits[substituents[0]] == orbits[substituents[1]])
+         continue;
+      if (substituents[3] >= 0 && orbits[substituents[2]] == orbits[substituents[3]])
+         continue;
+
+      mol.cis_trans.ignore(i);
+      sum++;
+   }
+   return sum;
+}
+
 CEXPORT int indigoResetSymmetricCisTrans (int handle)
 {
    INDIGO_BEGIN
@@ -199,6 +229,28 @@ CEXPORT int indigoResetSymmetricCisTrans (int handle)
 
          for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
             sum += _resetSymmetricCisTrans(rxn.getMolecule(i));
+         return sum;
+      }
+      throw IndigoError("only molecules and reactions have cis-trans");
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoMarkEitherCisTrans (int handle)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+
+      if (obj.isBaseMolecule())
+         return _markEitherCisTrans(obj.getMolecule());
+      else if (obj.isBaseReaction())
+      {
+         Reaction &rxn = obj.getReaction();
+         int i, sum = 0;
+
+         for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            sum += _markEitherCisTrans(rxn.getMolecule(i));
          return sum;
       }
       throw IndigoError("only molecules and reactions have cis-trans");

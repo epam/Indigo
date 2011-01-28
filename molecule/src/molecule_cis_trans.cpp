@@ -424,6 +424,13 @@ bool MoleculeCisTrans::isIgnored (int bond_idx) const
    return _bonds[bond_idx].ignored == 1;
 }
 
+void MoleculeCisTrans::ignore (int bond_idx)
+{
+   while (bond_idx >= _bonds.size())
+      _bonds.push().parity = 0;
+   _bonds[bond_idx].ignored = 1;
+}
+
 void MoleculeCisTrans::setParity (int bond_idx, int parity)
 {
    while (_bonds.size() <= bond_idx)

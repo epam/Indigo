@@ -49,6 +49,7 @@ public:
    void setParity (int bond_idx, int parity);
    int  getParity (int bond_idx) const;
    bool isIgnored (int bond_idx) const;
+   void ignore (int bond_idx);
 
    void registerBond (int idx);
 
