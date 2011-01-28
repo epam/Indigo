@@ -199,6 +199,7 @@ public:
    GraphHighlighting * getMoleculeHighlighting ();
    virtual const char * getName ();
    virtual IndigoObject * clone ();
+   virtual RedBlackStringObjMap< Array<char> > * getProperties();
 
    virtual int getIndex ();
    int tell ();
