@@ -63,6 +63,21 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenuHelp">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Help"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuHelpAbout">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="About"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuHelpAboutActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>
@@ -141,8 +156,8 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="in_panel2" pref="536" max="32767" attributes="1"/>
-                          <Component id="in_panel1" alignment="1" pref="536" max="32767" attributes="1"/>
+                          <Component id="in_panel2" pref="533" max="32767" attributes="1"/>
+                          <Component id="in_panel1" alignment="1" pref="533" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="action_panel" min="-2" max="-2" attributes="0"/>
@@ -178,7 +193,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="load_progress_bar1" min="-2" pref="20" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="in_table_panel1" pref="464" max="32767" attributes="0"/>
+                          <Component id="in_table_panel1" pref="461" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -199,7 +214,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="464" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="461" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -258,7 +273,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="load_progress_bar2" min="-2" pref="19" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="in_table_panel2" pref="465" max="32767" attributes="0"/>
+                          <Component id="in_table_panel2" pref="462" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -279,7 +294,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="465" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="462" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -403,7 +418,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="out_tabel_label1" min="-2" pref="22" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="out_table_panel1" pref="500" max="32767" attributes="0"/>
+                          <Component id="out_table_panel1" pref="497" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="save_panel1" min="-2" max="-2" attributes="1"/>
                       </Group>
@@ -442,7 +457,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="498" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="495" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -497,7 +512,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="out_tabel_label2" min="-2" pref="22" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="out_table_panel2" pref="501" max="32767" attributes="0"/>
+                          <Component id="out_table_panel2" pref="498" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                           <Component id="save_panel2" min="-2" max="-2" attributes="1"/>
                       </Group>
@@ -536,7 +551,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="499" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="496" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -591,7 +606,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="out_tabel_label3" min="-2" pref="22" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="out_table_panel3" pref="500" max="32767" attributes="0"/>
+                          <Component id="out_table_panel3" pref="497" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="save_panel3" min="-2" max="-2" attributes="1"/>
                       </Group>
@@ -630,7 +645,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="498" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="495" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>

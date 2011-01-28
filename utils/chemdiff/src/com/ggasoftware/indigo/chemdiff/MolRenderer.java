@@ -63,9 +63,12 @@ public class MolRenderer extends JPanel
 
      if (mol_image.object == null)
      {
-        image = null;
-        mol_image.image = null;
-        return this;
+        mol_image.image = new BufferedImage(cell_w, cell_h, BufferedImage.TYPE_INT_RGB);
+        Graphics2D gc = mol_image.image.createGraphics();
+        gc.setColor(Color.white);
+        gc.fillRect(0, 0, cell_w, cell_h);
+        gc.setColor(Color.black);
+        gc.drawString("Cannot render", 10, (int)(cell_h/2));
      }
 
      if (mol_image.image != null)

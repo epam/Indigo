@@ -216,7 +216,7 @@ public class MolComparer
          Collections.sort(uniq_mols1);
          Collections.sort(uniq_mols2);
 
-         main_frame.getMainProgressBar().setString("Comparing structures");
+         main_frame.getMainProgressBar().setString("Comparing structures...");
          main_frame.getMainProgressBar().setMaximum(1000);
          main_frame.getMainProgressBar().setValue(0);
 
@@ -251,6 +251,7 @@ public class MolComparer
 
          main_frame.getMainProgressBar().setValue(1000);
 
+         main_frame.getMainProgressBar().setString("");
          return;
       }
 
