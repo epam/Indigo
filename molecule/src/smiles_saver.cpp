@@ -568,6 +568,7 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
       if (hydro == -1)
       {
          hydro = _hcount[idx];
+
          if (hydro < 0 && !ignore_invalid_hcount)
             throw Error("unsure hydrogen count on atom #%d", idx);
       }

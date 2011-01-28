@@ -183,8 +183,12 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
          throw Error("bond without an order");
 
       int order_val;
-      if (sscanf(order, "%d", &order_val) != 1)
-         throw Error("error parsing order");
+      {
+         if (order[0] == 'A' && order[1] == 0)
+            order_val = BOND_AROMATIC;
+         else if (sscanf(order, "%d", &order_val) != 1)
+            throw Error("error parsing order");
+      }
 
       mol.addBond(beg, end, order_val);
 

@@ -21,6 +21,7 @@ using namespace indigo;
 
 MoleculeCmlSaver::MoleculeCmlSaver (Output &output) : _output(output)
 {
+   skip_cml_tag = false;
 }
 
 void MoleculeCmlSaver::saveMolecule (Molecule &mol)
@@ -29,8 +30,11 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
 
    _mol = &mol;
 
-   _output.printf("<?xml version=\"1.0\" ?>\n");
-   _output.printf("<cml>\n");
+   if (!skip_cml_tag)
+   {
+      _output.printf("<?xml version=\"1.0\" ?>\n");
+      _output.printf("<cml>\n");
+   }
 
    if (_mol->name.ptr() != 0)
    {
@@ -78,7 +82,7 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
 
          if (_mol->getExplicitValence(i) >= 0 ||
              (_mol->getAtomAromaticity(i) == ATOM_AROMATIC &&
-                 atom_number != ELEM_C && atom_number != ELEM_O))
+                 ((atom_number != ELEM_C && atom_number != ELEM_O) || _mol->getAtomCharge(i) != 0)))
          {
             int hcount;
 
@@ -164,5 +168,6 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
       _output.printf("  </bondArray>\n");
    }
    _output.printf("</molecule>\n");
-   _output.printf("</cml>\n");
+   if (!skip_cml_tag)
+      _output.printf("</cml>\n");
 }

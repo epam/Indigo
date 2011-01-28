@@ -539,7 +539,7 @@ int Molecule::getImplicitH (int idx)
    return _getImplicitHForConnectivity(idx, conn, true, true);
 }
 
-int Molecule::getImplicitH_NoThrow (int idx)
+int Molecule::getImplicitH_NoThrow (int idx, int fallback)
 {
    try
    {
@@ -547,7 +547,7 @@ int Molecule::getImplicitH_NoThrow (int idx)
    }
    catch (Element::Error &)
    {
-      return 0;
+      return fallback;
    }
 }
 

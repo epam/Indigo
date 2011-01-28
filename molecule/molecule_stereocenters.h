@@ -122,6 +122,8 @@ public:
                                   const MoleculeStereocenters &target,
                                   int query_atom, const int *mapping, int *mapping_out, bool reset_h_isotopes);
 
+   bool isPossibleStereocenter (int atom_idx, bool *possible_implicit_h = 0, bool *possible_lone_pair = 0);
+
 protected:
 
    struct _Atom
@@ -160,7 +162,6 @@ protected:
    static int _xyzzy (const Vec3f &v1, const Vec3f &v2, const Vec3f &u);
    static int _onPlane (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3, const Vec3f &v4);
 
-   bool _isPossibleStereocenter (int atom_idx, bool *possible_implicit_h = 0, bool *possible_lone_pair = 0);
    void _buildOneCenter (int atom_idx, int group, int type, const int *bond_orientations);
 
    void _getGroups (int type, Array<int> &numbers);
