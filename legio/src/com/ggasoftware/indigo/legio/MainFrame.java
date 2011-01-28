@@ -55,7 +55,6 @@ public class MainFrame extends javax.swing.JFrame
       
       indigo.setOption("filename-encoding", "UTF-8");
       indigo.setOption("render-margins", "5,2");
-      indigo.setOption("molfile-saving-mode", "3000");
 
       initComponents();
       save_products_button = new JButton();
