@@ -634,6 +634,11 @@ GraphHighlighting * IndigoCmlMolecule::getMoleculeHighlighting ()
    return 0;
 }
 
+RedBlackStringObjMap< Array<char> > * IndigoCmlMolecule::getProperties()
+{
+   return 0;
+}
+
 const char * IndigoCmlMolecule::getName ()
 {
    return getMolecule().name.ptr();
