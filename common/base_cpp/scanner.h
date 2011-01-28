@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include "base_cpp/array.h"
 #include "base_cpp/io_base.h"
+#include "base_cpp/obj_array.h"
+#include "base_cpp/reusable_obj_array.h"
 
 namespace indigo {
 
@@ -38,6 +40,8 @@ public:
 
    virtual byte readByte ();
    virtual void readAll (Array<char> &arr);
+
+   void read (int length, Array<char> &buf);
 
    // DEPRECATED
    bool  skipString ();
@@ -68,7 +72,13 @@ public:
    // when delimiters = 0, any isspace() character is considered delimiter
    void readWord (Array<char> &word, const char *delimiters);
 
+   bool findWord (const char *word);
+   int findWord (ReusableObjArray< Array<char> > &words);
+
    static bool isSingleLine (Scanner &scanner);
+
+protected:
+   void _prefixFunction (Array<char> &str, Array<int> &prefix);
 };
 
 class DLLEXPORT FileScanner : public Scanner

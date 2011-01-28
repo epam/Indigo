@@ -539,6 +539,19 @@ int Molecule::getImplicitH (int idx)
    return _getImplicitHForConnectivity(idx, conn, true, true);
 }
 
+int Molecule::getImplicitH_NoThrow (int idx)
+{
+   try
+   {
+      return getImplicitH(idx);
+   }
+   catch (Element::Error &)
+   {
+      return 0;
+   }
+}
+
+
 int Molecule::calcImplicitHForConnectivity (int idx, int conn)
 {
    return _getImplicitHForConnectivity(idx, conn, false, false);
@@ -587,7 +600,7 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache, b
 
       // special case of 5-connected nitrogen like "CN(=O)=O".
       // It should really be C[N+](O-)=O, but we let people live in happy ignorance.
-      if (isNitrogentV5(idx))
+      if (isNitrogenV5(idx))
       {
          valence = 4;
          implicit_h = 0;
@@ -612,7 +625,7 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache, b
 }
 
 
-bool Molecule::isNitrogentV5 (int idx)
+bool Molecule::isNitrogenV5 (int idx)
 {
    if (getAtomNumber(idx) != ELEM_N)
       return false;
@@ -649,6 +662,14 @@ int Molecule::getAtomValence (int idx)
 {
    if (_valence.size() > idx && _valence[idx] >= 0)
       return _valence[idx];
+
+
+   if (isNitrogenV5(idx))
+   {
+      _valence.expandFill(idx + 1, -1);
+      _valence[idx] = 4;
+      return 4;
+   }
 
    const _Atom &atom = _atoms[idx];
 
@@ -729,7 +750,7 @@ int Molecule::getAtomRadical (int idx)
    int impl_h = getImplicitH(idx);
    int normal_val, normal_hyd;
 
-   if (isNitrogentV5(idx))
+   if (isNitrogenV5(idx))
    {
       normal_val = 4;
       normal_hyd = 0;

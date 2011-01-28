@@ -46,6 +46,7 @@ Indigo::Indigo ()
    fp_params.ord_qwords = 25;
 
    embedding_edges_uniqueness = false;
+   find_unique_embeddings = true;
    max_embeddings = 1000;
 
    layout_max_iterations = 0;

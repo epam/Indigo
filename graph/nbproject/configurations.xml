@@ -71,6 +71,8 @@
       <itemPath>dfs_walk.h</itemPath>
       <itemPath>src/edge_rotation_matcher.cpp</itemPath>
       <itemPath>edge_rotation_matcher.h</itemPath>
+      <itemPath>src/edge_subgraph_enumerator.cpp</itemPath>
+      <itemPath>edge_subgraph_enumerator.h</itemPath>
       <itemPath>src/embedding_enumerator.cpp</itemPath>
       <itemPath>embedding_enumerator.h</itemPath>
       <itemPath>src/embeddings_storage.cpp</itemPath>
@@ -85,6 +87,8 @@
       <itemPath>graph_constrained_bmatching_finder.h</itemPath>
       <itemPath>src/graph_decomposer.cpp</itemPath>
       <itemPath>graph_decomposer.h</itemPath>
+      <itemPath>src/graph_fast_access.cpp</itemPath>
+      <itemPath>graph_fast_access.h</itemPath>
       <itemPath>src/graph_highlighting.cpp</itemPath>
       <itemPath>graph_highlighting.h</itemPath>
       <itemPath>src/graph_perfect_matching.cpp</itemPath>

@@ -97,6 +97,12 @@ public:
       SUPERATOMS_ITER,
       DATA_SGROUP,
       DATA_SGROUPS_ITER,
+      REPEATING_UNIT,
+      REPEATING_UNITS_ITER,
+      MULTIPLE_GROUP,
+      MULTIPLE_GROUPS_ITER,
+      GENERIC_SGROUP,
+      GENERIC_SGROUPS_ITER,
       SGROUP_ATOMS_ITER,
       SGROUP_BONDS_ITER,
       DECOMPOSITION,
@@ -104,7 +110,16 @@ public:
       COMPONENTS_ITER,
       COMPONENT_ATOMS_ITER,
       COMPONENT_BONDS_ITER,
-      MAPPING
+      SUBMOLECULE,
+      SUBMOLECULE_ATOMS_ITER,
+      SUBMOLECULE_BONDS_ITER,
+      MAPPING,
+      SSSR_ITER,
+      SUBTREES_ITER,
+      RINGS_ITER,
+      EDGE_SUBMOLECULE_ITER,
+      CML_MOLECULE,
+      MULTIPLE_CML_LOADER
    };
 
    int type;
@@ -219,7 +234,7 @@ public:
 
    Encoding filename_encoding;
 
-   bool embedding_edges_uniqueness;
+   bool embedding_edges_uniqueness, find_unique_embeddings;
    int max_embeddings;
 
    int layout_max_iterations; // default is zero -- no limit

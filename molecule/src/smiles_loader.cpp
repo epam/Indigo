@@ -450,17 +450,18 @@ void SmilesLoader::_loadMolecule ()
                _atoms[bond->end].neighbors.add(bond->beg);
                _atoms[bond->beg].closure(number, bond->end);
 
-               cycles[number].clear();
-               
                if (_qmol != 0)
                {
                   QS_DEF(Array<char>, bond_str);
-                  AutoPtr<QueryMolecule::Bond> qbond;
+                  AutoPtr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond());
 
                   bond_str.readString(pending_bonds_pool.at(cycles[number].pending_bond_str), false);
                   _readBond(bond_str, *bond, qbond);
                   _qmol->addBond(bond->beg, bond->end, qbond.release());
                }
+               
+               cycles[number].clear();
+
                break;
             }
             // opening new cycle, like the first '1' in c1ccccc1

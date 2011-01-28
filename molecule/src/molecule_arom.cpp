@@ -372,7 +372,7 @@ bool MoleculeAromatizer::_acceptOutgoingDoubleBond (int atom, int bond)
    */
 
    Molecule &mol = _basemol.asMolecule();
-   if (mol.isNitrogentV5(atom))
+   if (mol.isNitrogenV5(atom))
       return true;
 
    return false;

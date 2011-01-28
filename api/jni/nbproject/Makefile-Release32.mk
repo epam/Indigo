@@ -51,7 +51,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../dist/ReleaseStatic32/GNU-Linux-x86/libindigo.a ../../layout/dist/Release32/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release32/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a -lm -lz -lpthread -lstdc++ -ldl
+LDLIBSOPTIONS=../dist/ReleaseStatic32/GNU-Linux-x86/libindigo.a ../../layout/dist/Release32/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release32/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a ../../tinyxml/dist/Release32/GNU-Linux-x86/libtinyxml.a -lm -lz -lpthread -lstdc++ -ldl
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -66,6 +66,8 @@ dist/Release32/GNU-Linux-x86/libindigo-jni.so: ../../reaction/dist/Release32/GNU
 dist/Release32/GNU-Linux-x86/libindigo-jni.so: ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a
 
 dist/Release32/GNU-Linux-x86/libindigo-jni.so: ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a
+
+dist/Release32/GNU-Linux-x86/libindigo-jni.so: ../../tinyxml/dist/Release32/GNU-Linux-x86/libtinyxml.a
 
 dist/Release32/GNU-Linux-x86/libindigo-jni.so: ${OBJECTFILES}
 	${MKDIR} -p dist/Release32/GNU-Linux-x86
@@ -88,6 +90,7 @@ ${OBJECTDIR}/indigo_jni.o: indigo_jni.c
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Release32
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Release32
 	cd ../../graph && ${MAKE}  -f Makefile CONF=Release32
+	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Release32
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -101,6 +104,7 @@ ${OBJECTDIR}/indigo_jni.o: indigo_jni.c
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Release32 clean
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Release32 clean
 	cd ../../graph && ${MAKE}  -f Makefile CONF=Release32 clean
+	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Release32 clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

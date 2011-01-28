@@ -64,6 +64,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/1705077469/vec3f.o \
 	${OBJECTDIR}/src/graph.o \
 	${OBJECTDIR}/src/graph_subchain_enumerator.o \
+	${OBJECTDIR}/src/graph_fast_access.o \
 	${OBJECTDIR}/src/skew_symmetric_network.o \
 	${OBJECTDIR}/_ext/1881957642/os_thread_posix.o \
 	${OBJECTDIR}/_ext/380065930/profiling.o \
@@ -82,6 +83,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/graph_constrained_bmatching_finder.o \
 	${OBJECTDIR}/_ext/1705077469/best_fit.o \
 	${OBJECTDIR}/src/graph_decomposer.o \
+	${OBJECTDIR}/src/edge_subgraph_enumerator.o \
 	${OBJECTDIR}/src/max_common_subgraph.o \
 	${OBJECTDIR}/_ext/380065930/crc32.o
 
@@ -267,6 +269,11 @@ ${OBJECTDIR}/src/graph_subchain_enumerator.o: src/graph_subchain_enumerator.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/graph_subchain_enumerator.o src/graph_subchain_enumerator.cpp
 
+${OBJECTDIR}/src/graph_fast_access.o: src/graph_fast_access.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/graph_fast_access.o src/graph_fast_access.cpp
+
 ${OBJECTDIR}/src/skew_symmetric_network.o: src/skew_symmetric_network.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -356,6 +363,11 @@ ${OBJECTDIR}/src/graph_decomposer.o: src/graph_decomposer.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/graph_decomposer.o src/graph_decomposer.cpp
+
+${OBJECTDIR}/src/edge_subgraph_enumerator.o: src/edge_subgraph_enumerator.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/edge_subgraph_enumerator.o src/edge_subgraph_enumerator.cpp
 
 ${OBJECTDIR}/src/max_common_subgraph.o: src/max_common_subgraph.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

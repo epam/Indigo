@@ -97,9 +97,19 @@ static void indigoSetEmbeddingUniqueness (const char *mode)
 {
    Indigo &self = indigoGetInstance();
    if (strcasecmp(mode, "atoms") == 0)
+   {
       self.embedding_edges_uniqueness = false;
+      self.find_unique_embeddings = true;
+   }
    else if (strcasecmp(mode, "bonds") == 0)
+   {
       self.embedding_edges_uniqueness = true;
+      self.find_unique_embeddings = true;
+   }
+   else if (strcasecmp(mode, "none") == 0)
+   {
+      self.find_unique_embeddings = false;
+   }
    else
       throw IndigoError("unknown value: %s", mode);
 }

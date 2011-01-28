@@ -16,10 +16,12 @@
 #include <string.h>
 #include <stdarg.h>
 #include <ctype.h>
+#include <fcntl.h>
 
 #include "base_c/defs.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
+#include "reusable_obj_array.h"
 
 using namespace indigo;
 
@@ -271,6 +273,12 @@ bool Scanner::skipLine ()
    return false;
 }
 
+void Scanner::read (int length, Array<char> &buf)
+{
+   buf.resize(length);
+   read(length, buf.ptr());
+}
+
 bool Scanner::skipString ()
 {
    return skipLine();
@@ -377,7 +385,7 @@ short Scanner::readPackedShort ()
 
 void Scanner::readAll (Array<char> &arr)
 {
-   arr.clear_resize(length());
+   arr.clear_resize(length() - tell());
 
    read(arr.size(), arr.ptr());
 }
@@ -507,7 +515,10 @@ void FileScanner::skip (int n)
 
 void FileScanner::seek (int pos, int from)
 {
-   fseek(_file, pos, from);
+   if (from == SEEK_CUR)
+      fseek(_file, pos - _max_cache + _cache_pos, from);
+   else
+      fseek(_file, pos, from);
    _invalidateCache();
 }
 
@@ -635,4 +646,74 @@ byte BufferScanner::readByte ()
       throw Error("readByte(): end of buffer");
 
    return _buffer[_offset++];
+}
+
+void Scanner::_prefixFunction (Array<char> &str, Array<int> &prefix)
+{
+   prefix.clear();
+   prefix.push(0);
+
+   int i, k = 0;
+
+   for (i = 1; i < str.size(); i++)
+   {
+      while ((k > 0) && (str[k] != str[i]))
+         k = prefix[k - 1];
+      if (str[k] == str[i])
+         k++;
+      prefix.push(k);
+   }
+}
+
+bool Scanner::findWord (const char *word)
+{
+   QS_DEF(ReusableObjArray< Array<char> >, strs);
+
+   strs.clear();
+   Array<char> &str = strs.push();
+
+   str.readString(word, false);
+   return findWord(strs) == 0;
+}
+
+int Scanner::findWord (ReusableObjArray< Array<char> > &words)
+{
+   if (isEOF())
+      return -1;
+   
+   QS_DEF(ReusableObjArray< Array<int> >, prefixes);
+   QS_DEF(Array<int>, pos);
+   int i;
+   int pos_saved = tell();
+   
+   prefixes.clear();
+   pos.clear();
+   
+   for (i = 0; i < words.size(); i++)
+   {
+      _prefixFunction(words[i], prefixes.push());
+      pos.push(0);
+   }
+
+   while (!isEOF())
+   {
+      int c = readChar();
+
+      for (i = 0; i < words.size(); i++)
+      {
+         while (pos[i] > 0 && words[i][pos[i]] != c)
+            pos[i] = prefixes[i][pos[i] - 1];
+         if (words[i][pos[i]] == c)
+            pos[i]++;
+
+         if (pos[i] == words[i].size())
+         {
+            seek(-words[i].size(), SEEK_CUR);
+            return i;
+         }
+      }
+   }
+
+   seek(pos_saved, SEEK_SET);
+   return -1;
 }

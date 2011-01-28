@@ -160,8 +160,17 @@ JNIEXPORT jfloatArray JNINAME(indigoXYZ) (JNIEnv *env, jobject obj, jint atom)
 }
 
 JNI_FUNC_jint_jint(indigoCountSuperatoms)
+JNI_FUNC_jint_jint(indigoCountGenericSGroups)
 JNI_FUNC_jint_jint(indigoCountDataSGroups)
+JNI_FUNC_jint_jint(indigoCountRepeatingUnits)
+JNI_FUNC_jint_jint(indigoCountMultipleGroups)
+
+JNI_FUNC_jint_jint(indigoIterateSuperatoms)
+JNI_FUNC_jint_jint(indigoIterateGenericSGroups)
 JNI_FUNC_jint_jint(indigoIterateDataSGroups)
+JNI_FUNC_jint_jint(indigoIterateRepeatingUnits)
+JNI_FUNC_jint_jint(indigoIterateMultipleGroups)
+
 JNI_FUNC_jstring_jint(indigoDescription)
 
 JNIEXPORT jint JNINAME(indigoAddDataSGroup) (JNIEnv *env, jobject obj, jint mol,
@@ -248,6 +257,7 @@ JNI_FUNC_jfloat_jint(indigoMonoisotopicMass)
 JNI_FUNC_jstring_jint(indigoCanonicalSmiles)
 JNI_FUNC_jstring_jint(indigoLayeredCode)
 
+JNI_FUNC_jint_jint(indigoHasCoord)
 JNI_FUNC_jint_jint(indigoHasZCoord)
 JNI_FUNC_jint_jint(indigoIsChiral)
 

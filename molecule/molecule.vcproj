@@ -58,7 +58,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="..;../common;../zlib-src/include"
+				AdditionalIncludeDirectories="..;../common;../zlib-src/include;../tinyxml/include"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -140,7 +140,7 @@
 				AdditionalOptions="/MP"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;../common;../zlib-src/include"
+				AdditionalIncludeDirectories="..;../common;../zlib-src/include;../tinyxml/include"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -221,7 +221,7 @@
 				AdditionalOptions="/MP"
 				Optimization="0"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;../common;../zlib-src/include"
+				AdditionalIncludeDirectories="..;../common;../zlib-src/include;../tinyxml/include"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
@@ -298,7 +298,7 @@
 				AdditionalOptions="/MP"
 				Optimization="0"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;../common;../zlib-src/include"
+				AdditionalIncludeDirectories="..;../common;../zlib-src/include;../tinyxml/include"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
@@ -375,7 +375,7 @@
 				AdditionalOptions="/MP"
 				Optimization="0"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;../common;../zlib-src/include"
+				AdditionalIncludeDirectories="..;../common;../zlib-src/include;../tinyxml/include"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0"
 				RuntimeLibrary="3"
 				StructMemberAlignment="0"
@@ -452,7 +452,7 @@
 				AdditionalOptions="/MP"
 				Optimization="0"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;../common;../zlib-src/include"
+				AdditionalIncludeDirectories="..;../common;../zlib-src/include;../tinyxml/include"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0"
 				RuntimeLibrary="3"
 				StructMemberAlignment="0"
@@ -533,7 +533,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="..;../common;../zlib-src/include"
+				AdditionalIncludeDirectories="..;../common;../zlib-src/include;../tinyxml/include"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -615,7 +615,7 @@
 				AdditionalOptions="/MP"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;../common;../zlib-src/include"
+				AdditionalIncludeDirectories="..;../common;../zlib-src/include;../tinyxml/include"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -812,6 +812,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\molecule_cml_loader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\molecule_cml_loader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\molecule_cml_saver.cpp"
 				>
 			</File>
@@ -953,6 +961,14 @@
 			</File>
 			<File
 				RelativePath=".\molfile_saver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\multiple_cml_loader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\multiple_cml_loader.h"
 				>
 			</File>
 			<File

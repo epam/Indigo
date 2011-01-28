@@ -88,6 +88,7 @@ public:
    virtual bool dearomatize ();
 
    int getImplicitH (int idx);
+   int getImplicitH_NoThrow (int idx);
    int calcImplicitHForConnectivity (int idx, int conn);
 
    int getAtomConnectivity (int idx);
@@ -127,7 +128,7 @@ public:
    bool isAromatized ();
 
    // Check 
-   bool isNitrogentV5 (int atom_index);
+   bool isNitrogenV5 (int atom_index);
 protected:
    struct _Atom
    {

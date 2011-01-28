@@ -55,6 +55,21 @@ void BaseMolecule::clear ()
    Graph::clear();
 }
 
+bool BaseMolecule::hasCoord (BaseMolecule &mol)
+{
+   int i;
+
+   for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      Vec3f &xyz = mol.getAtomXyz(i);
+      if (fabs(xyz.x) > 0.001 || fabs(xyz.y) > 0.001 || fabs(xyz.z) > 0.001)
+         return true;
+   }
+
+   return false;
+}
+
+
 bool BaseMolecule::hasZCoord (BaseMolecule &mol)
 {
    int i;
@@ -316,11 +331,24 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
       if (data_sgroups[j].atoms.size() < 1)
          data_sgroups.remove(j);
    }
-   for (j = superatoms.size() - 1; j >= 0; j--)
+   for (j = superatoms.begin(); j != superatoms.end(); j = superatoms.next(j))
    {
       _removeAtomsFromSGroup(superatoms[j], mapping);
       if (superatoms[j].atoms.size() < 1)
          superatoms.remove(j);
+   }
+   for (j = repeating_units.begin(); j != repeating_units.end(); j = repeating_units.next(j))
+   {
+      _removeAtomsFromSGroup(repeating_units[j], mapping);
+      if (repeating_units[j].atoms.size() < 1)
+         repeating_units.remove(j);
+   }
+   for (j = multiple_groups.begin(); j != multiple_groups.end(); j = multiple_groups.next(j))
+   {
+      _removeAtomsFromSGroup(multiple_groups[j], mapping);
+      _removeAtomsFromMultipleGroup(multiple_groups[j], mapping);
+      if (multiple_groups[j].atoms.size() < 1)
+         multiple_groups.remove(j);
    }
 
    stereocenters.removeAtoms(indices);
@@ -447,6 +475,18 @@ int BaseMolecule::_addBaseBond (int beg, int end)
 
    cis_trans.registerBond(idx);
    return idx;
+}
+
+int BaseMolecule::getAtomRadical_NoThrow (int idx)
+{
+   try
+   {
+      return getAtomRadical(idx);
+   }
+   catch (Element::Error &)
+   {
+      return 0;
+   }
 }
 
 int BaseMolecule::possibleAtomTotalH (int idx, int hcount)
@@ -586,9 +626,35 @@ BaseMolecule::DataSGroup::DataSGroup ()
    dasp_pos = 1;
 }
 
+BaseMolecule::DataSGroup::~DataSGroup ()
+{
+}
+
 BaseMolecule::Superatom::Superatom ()
 {
    bond_idx = -1;
+}
+
+BaseMolecule::Superatom::~Superatom ()
+{
+}
+
+BaseMolecule::RepeatingUnit::RepeatingUnit ()
+{
+   connectivity = 0;
+}
+
+BaseMolecule::RepeatingUnit::~RepeatingUnit ()
+{
+}
+
+BaseMolecule::MultipleGroup::MultipleGroup ()
+{
+   multiplier = 1;
+}
+
+BaseMolecule::MultipleGroup::~MultipleGroup ()
+{
 }
 
 void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
@@ -605,4 +671,13 @@ void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
       if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
          sgroup.bonds.remove(i);
    }
+}
+
+void BaseMolecule::_removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> &mapping)
+{
+   int i;
+   
+   for (i = mg.parent_atoms.size() - 1; i >= 0; i--)
+      if (mapping[mg.parent_atoms[i]] == -1)
+         mg.parent_atoms.remove(i);
 }

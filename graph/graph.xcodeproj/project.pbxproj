@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8114383B12AD6C7800547F1F /* io_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8114383912AD6C7800547F1F /* io_base.cpp */; };
-		8114383C12AD6C7800547F1F /* io_base.h in Headers */ = {isa = PBXBuildFile; fileRef = 8114383A12AD6C7800547F1F /* io_base.h */; };
 		A713FA6E11F1840A00372A08 /* aux_path_finder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A713FA6B11F1840A00372A08 /* aux_path_finder.cpp */; };
 		A713FA6F11F1840A00372A08 /* cycle_basis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A713FA6C11F1840A00372A08 /* cycle_basis.cpp */; };
 		A713FA7011F1840A00372A08 /* simple_cycle_basis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A713FA6D11F1840A00372A08 /* simple_cycle_basis.cpp */; };
@@ -18,6 +17,7 @@
 		A73E2A8010EB877E00969EE1 /* subgraph_hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A73E2A7F10EB877E00969EE1 /* subgraph_hash.cpp */; };
 		A778DF251250AE1B0098784F /* embeddings_storage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A778DF241250AE1B0098784F /* embeddings_storage.cpp */; };
 		A7AFC88811B4143800FE3D7F /* shortest_path_finder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7AFC88711B4143800FE3D7F /* shortest_path_finder.cpp */; };
+		A7CCDC1A12F028120010FC22 /* edge_subgraph_enumerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7CCDC1912F028120010FC22 /* edge_subgraph_enumerator.cpp */; };
 		A7EDA40510624C6A006CBFAF /* graph_constrained_bmatching_finder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3CF10624B20006CBFAF /* graph_constrained_bmatching_finder.cpp */; };
 		A7EDA40610624C6A006CBFAF /* graph_decomposer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3D010624B20006CBFAF /* graph_decomposer.cpp */; };
 		A7EDA40710624C6A006CBFAF /* biconnected_decomposer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3C810624B20006CBFAF /* biconnected_decomposer.cpp */; };
@@ -69,6 +69,8 @@
 		A778DF241250AE1B0098784F /* embeddings_storage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = embeddings_storage.cpp; path = src/embeddings_storage.cpp; sourceTree = "<group>"; };
 		A7AFC88611B4142D00FE3D7F /* shortest_path_finder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shortest_path_finder.h; sourceTree = "<group>"; };
 		A7AFC88711B4143800FE3D7F /* shortest_path_finder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shortest_path_finder.cpp; path = src/shortest_path_finder.cpp; sourceTree = "<group>"; };
+		A7CCDC1812F028060010FC22 /* edge_subgraph_enumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = edge_subgraph_enumerator.h; sourceTree = "<group>"; };
+		A7CCDC1912F028120010FC22 /* edge_subgraph_enumerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = edge_subgraph_enumerator.cpp; path = src/edge_subgraph_enumerator.cpp; sourceTree = "<group>"; };
 		A7EDA3B210624B0A006CBFAF /* array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = array.h; path = ../common/base_cpp/array.h; sourceTree = SOURCE_ROOT; };
 		A7EDA3B310624B0A006CBFAF /* d_bitset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = d_bitset.cpp; path = ../common/base_cpp/d_bitset.cpp; sourceTree = SOURCE_ROOT; };
 		A7EDA3B410624B0A006CBFAF /* d_bitset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_bitset.h; path = ../common/base_cpp/d_bitset.h; sourceTree = SOURCE_ROOT; };
@@ -196,6 +198,8 @@
 		A7EDA3AE10624A9B006CBFAF /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A7CCDC1912F028120010FC22 /* edge_subgraph_enumerator.cpp */,
+				A7CCDC1812F028060010FC22 /* edge_subgraph_enumerator.h */,
 				A778DF241250AE1B0098784F /* embeddings_storage.cpp */,
 				A778DF231250AE0D0098784F /* embeddings_storage.h */,
 				A713FA6B11F1840A00372A08 /* aux_path_finder.cpp */,
@@ -272,7 +276,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8114383C12AD6C7800547F1F /* io_base.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,6 +366,7 @@
 				A713FA7011F1840A00372A08 /* simple_cycle_basis.cpp in Sources */,
 				A778DF251250AE1B0098784F /* embeddings_storage.cpp in Sources */,
 				8114383B12AD6C7800547F1F /* io_base.cpp in Sources */,
+				A7CCDC1A12F028120010FC22 /* edge_subgraph_enumerator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

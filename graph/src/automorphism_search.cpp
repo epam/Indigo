@@ -17,6 +17,7 @@
 using namespace indigo;
 
 AutomorphismSearch::AutomorphismSearch () :
+TL_CP_GET(_call_stack),
 TL_CP_GET(_lab),
 TL_CP_GET(_ptn),
 TL_CP_GET(_graph),
@@ -269,29 +270,183 @@ void AutomorphismSearch::process (Graph &graph)
    _needshortprune = false;
    _orbits_num = _n;
 
-   int i, numcells = 0;
-
-   _ptn[_n - 1] = 0;
-
-   for (i = 0; i < _n; i++)
-      if (_ptn[i] != 0)
-         _ptn[i] = INFINITY;
-      else
-         numcells++;
-
-   _active.zerofill();
-
-   for (i = 0; i < _n; i++)
    {
-      _active[i] = 1;
-      while (_ptn[i])
-         i++;
+      int i, numcells = 0;
+
+      _ptn[_n - 1] = 0;
+
+      for (i = 0; i < _n; i++)
+         if (_ptn[i] != 0)
+            _ptn[i] = INFINITY;
+         else
+            numcells++;
+
+      _active.zerofill();
+
+      for (i = 0; i < _n; i++)
+      {
+         _active[i] = 1;
+         while (_ptn[i])
+            i++;
+      }
+
+      for (i = 0; i < _n; ++i)
+         _orbits[i] = i;
+
+      _Call &call = _call_stack.push();
+      call.level = 1;
+      call.numcells = numcells;
+      call.place = _INITIAL;
    }
 
-   for (i = 0; i < _n; ++i)
-      _orbits[i] = i;
+   int retval = -1;
 
-   _firstNode(1, numcells);
+   while (_call_stack.size() > 0)
+   {
+      _Call call = _call_stack.top();
+
+      if (call.place == _INITIAL)
+      {
+         retval = _firstNode(call.level, call.numcells);
+         if (retval >= 0)
+            _call_stack.pop();
+      }
+      else if (call.place == _FIRST_LOOP)
+      {
+         int tv = -1;
+         if (retval != -1)
+         {
+            // handle the value returned from _FIRST_TO_FIRST or _FIRST_TO_OTHER
+            tv = _tcells[call.level][call.k];
+
+            if (tv == call.tv1)
+               _gca_first = call.level;
+
+            _fixedpts[tv] = 0;
+
+            if (retval < call.level)
+            {
+               _call_stack.pop();
+               continue; // break the _FIRST_LOOP and keep the retval;
+            }
+
+            if (_needshortprune)
+            {
+               _needshortprune = false;
+               call.k = _shortPrune(_tcells[call.level], _mcr.top(), call.k);
+            }
+            _recover(call.level);
+            // advance the _FIRST_LOOP counter
+            call.k++;
+         }
+
+         for (; call.k < _tcells[call.level].size(); call.k++)
+         {
+            tv = _tcells[call.level][call.k];
+
+            if (_orbits[tv] == tv) // not equivalent to the previous child?
+               break;
+         }
+
+         if (call.k == _tcells[call.level].size())
+         {
+            // return from _FIRST_LOOP
+            retval = call.level - 1;
+            _call_stack.pop();
+            continue;
+         }
+
+         _call_stack.top() = call;
+
+         _breakout(call.level + 1, call.tc, tv);
+         _cosetindex = tv;
+         _fixedpts[tv] = 1;
+
+         _Call &newcall = _call_stack.push();
+         newcall.level = call.level + 1;
+         newcall.numcells = call.numcells + 1;
+         if (tv == call.tv1)
+            newcall.place = _FIRST_TO_FIRST;
+         else
+            newcall.place = _FIRST_TO_OTHER;
+         
+         // discard the old return value
+         retval = -1;
+      }
+      else if (call.place == _FIRST_TO_FIRST)
+      {
+         retval = _firstNode(call.level, call.numcells);
+
+         if (retval >= 0)
+             // _FIRST_LOOP did not happen; pass the return value to the caller
+            _call_stack.pop();
+      }
+      else if (call.place == _FIRST_TO_OTHER || call.place == _OTHER_TO_OTHER)
+      {
+         retval = _otherNode(call.level, call.numcells);
+
+         if (retval >= 0)
+             // _OTHER_LOOP did not happen; pass the return value to the caller
+            _call_stack.pop();
+      }
+      else if (call.place == _OTHER_LOOP)
+      {
+         int tv;
+
+         if (retval != -1)
+         {
+            // handle the value returned from _OTHER_TO_OTHER
+            tv = _tcells[call.level][call.k];
+
+            _fixedpts[tv] = 0;
+
+            if (retval < call.level)
+            {
+               _call_stack.pop();
+               continue; // break the _OTHER_LOOP and keep the retval;
+            }
+
+            // use stored automorphism data to prune target cell
+            if (_needshortprune)
+            {
+                _needshortprune = false;
+               call.k = _shortPrune(_tcells[call.level], _mcr.top(), call.k);
+            }
+
+            if (tv == call.tv1)
+               call.k = _longPrune(_tcells[call.level], _fixedpts, call.k);
+
+            _recover(call.level);
+            // advance the _OTHER_LOOP counter
+            call.k++;
+         }
+
+         if (call.k == _tcells[call.level].size())
+         {
+            // return from _OTHER_LOOP
+            retval = call.level - 1;
+            _call_stack.pop();
+            continue;
+         }
+
+         _call_stack.top() = call;
+         
+         tv = _tcells[call.level][call.k];
+
+         _breakout(call.level + 1, call.tc, tv);
+         _fixedpts[tv] = 1;
+
+         _Call &newcall = _call_stack.push();
+         newcall.level = call.level + 1;
+         newcall.numcells = call.numcells + 1;
+         newcall.place = _OTHER_TO_OTHER;
+
+         // discard the old return value
+         retval = -1;
+      }
+      else
+         throw Error("internal: bad command %d", call.place);
+   }
 }
 
 int AutomorphismSearch::_firstNode (int level, int numcells)
@@ -318,44 +473,19 @@ int AutomorphismSearch::_firstNode (int level, int numcells)
    // locate new target cell
    int tc = _targetcell(level, _tcells[level]);
    int tv1 = _tcells[level][0];
-   int k;
 
+   _call_stack.pop();
+   
    // use the elements of the target cell to produce the children
-   for (k = 0; k < _tcells[level].size(); k++)
-   {
-      int tv = _tcells[level][k];
+   _Call &call = _call_stack.push();
+   call.level = level;
+   call.k = 0;
+   call.tc = tc;
+   call.tv1 = tv1;
+   call.numcells = numcells;
+   call.place = _FIRST_LOOP;
 
-      if (_orbits[tv] == tv) // not equivalent to previous child
-      {
-         int rtnlevel;
-
-         _breakout(level + 1, tc, tv);
-         _cosetindex = tv;
-         _fixedpts[tv] = 1;
-
-         if (tv == tv1)
-         {
-            rtnlevel = _firstNode(level + 1, numcells + 1);
-            _gca_first = level;
-         }
-         else
-            rtnlevel = _otherNode(level + 1, numcells + 1);
-         
-         _fixedpts[tv] = 0;
-
-         if (rtnlevel < level)
-            return rtnlevel;
-
-         if (_needshortprune)
-         {
-            _needshortprune = false;
-            k = _shortPrune(_tcells[level], _mcr.top(), k);
-         }
-         _recover(level);
-      }
-   }
-
-   return level - 1;
+   return -1;
 }
 
 int AutomorphismSearch::_otherNode (int level, int numcells)
@@ -379,37 +509,18 @@ int AutomorphismSearch::_otherNode (int level, int numcells)
 
    int tv1 = _tcells[level][0];
 
-   int k;
-
+   _call_stack.pop();
+   
    // use the elements of the target cell to produce the children
-   for (k = 0; k < _tcells[level].size(); k++)
-   {
-      int tv = _tcells[level][k];
+   _Call &call = _call_stack.push();
+   call.level = level;
+   call.k = 0;
+   call.tc = tc;
+   call.tv1 = tv1;
+   call.numcells = numcells;
+   call.place = _OTHER_LOOP;
 
-      _breakout(level + 1, tc, tv);
-      _fixedpts[tv] = 1;
-
-      rtnlevel = _otherNode(level + 1, numcells + 1);
-
-      _fixedpts[tv] = 0;
-
-      if (rtnlevel < level)
-         return rtnlevel;
-
-      // use stored automorphism data to prune target cell
-      if (_needshortprune)
-      {
-          _needshortprune = false;
-         k = _shortPrune(_tcells[level], _mcr.top(), k);
-      }
-
-      if (tv == tv1)
-         k = _longPrune(_tcells[level], _fixedpts, k);
-
-      _recover(level);
-   }
-
-   return level - 1;
+   return -1;
 }
 
 void AutomorphismSearch::_recover (int level)
@@ -426,7 +537,7 @@ void AutomorphismSearch::_recover (int level)
          _gca_canon = level;
 
       if (level < _gca_first)
-         throw Error("??");
+         throw Error("internal error?");
    }
 }
 
@@ -1036,4 +1147,3 @@ void AutomorphismSearch::_handleAutomorphism (const Array<int> &perm)
       cb_automorphism(perm2.ptr(), context_automorphism);
    }
 }
-

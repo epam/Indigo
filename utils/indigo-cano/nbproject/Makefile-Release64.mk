@@ -50,7 +50,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../../api/dist/ReleaseStatic64/GNU-Linux-x86/libindigo.a ../../layout/dist/Release64/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release64/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release64/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release64/GNU-Linux-x86/libgraph.a -lpthread -lz -lstdc++
+LDLIBSOPTIONS=../../api/dist/ReleaseStatic64/GNU-Linux-x86/libindigo.a ../../layout/dist/Release64/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release64/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release64/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release64/GNU-Linux-x86/libgraph.a ../../tinyxml/dist/Release64/GNU-Linux-x86/libtinyxml.a -lpthread -lz -lstdc++
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -65,6 +65,8 @@ dist/Release64/GNU-Linux-x86/indigo-cano: ../../reaction/dist/Release64/GNU-Linu
 dist/Release64/GNU-Linux-x86/indigo-cano: ../../molecule/dist/Release64/GNU-Linux-x86/libmolecule.a
 
 dist/Release64/GNU-Linux-x86/indigo-cano: ../../graph/dist/Release64/GNU-Linux-x86/libgraph.a
+
+dist/Release64/GNU-Linux-x86/indigo-cano: ../../tinyxml/dist/Release64/GNU-Linux-x86/libtinyxml.a
 
 dist/Release64/GNU-Linux-x86/indigo-cano: ${OBJECTFILES}
 	${MKDIR} -p dist/Release64/GNU-Linux-x86
@@ -82,6 +84,7 @@ ${OBJECTDIR}/main.o: main.c
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Release64
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Release64
 	cd ../../graph && ${MAKE}  -f Makefile CONF=Release64
+	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Release64
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -95,6 +98,7 @@ ${OBJECTDIR}/main.o: main.c
 	cd ../../reaction && ${MAKE}  -f Makefile CONF=Release64 clean
 	cd ../../molecule && ${MAKE}  -f Makefile CONF=Release64 clean
 	cd ../../graph && ${MAKE}  -f Makefile CONF=Release64 clean
+	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Release64 clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

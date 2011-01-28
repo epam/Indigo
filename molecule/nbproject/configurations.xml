@@ -66,6 +66,8 @@
       <itemPath>molecule_chain_fingerprints.h</itemPath>
       <itemPath>src/molecule_cis_trans.cpp</itemPath>
       <itemPath>molecule_cis_trans.h</itemPath>
+      <itemPath>src/molecule_cml_loader.cpp</itemPath>
+      <itemPath>molecule_cml_loader.h</itemPath>
       <itemPath>src/molecule_cml_saver.cpp</itemPath>
       <itemPath>molecule_cml_saver.h</itemPath>
       <itemPath>src/molecule_dearom.cpp</itemPath>
@@ -112,6 +114,8 @@
       <itemPath>molfile_loader.h</itemPath>
       <itemPath>src/molfile_saver.cpp</itemPath>
       <itemPath>molfile_saver.h</itemPath>
+      <itemPath>src/multiple_cml_loader.cpp</itemPath>
+      <itemPath>multiple_cml_loader.h</itemPath>
       <itemPath>src/query_molecule.cpp</itemPath>
       <itemPath>query_molecule.h</itemPath>
       <itemPath>src/rdf_loader.cpp</itemPath>
@@ -150,6 +154,7 @@
           <incDir>
             <pElem>..</pElem>
             <pElem>../common</pElem>
+            <pElem>../tinyxml/include</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
           <warningLevel>2</warningLevel>
@@ -183,6 +188,7 @@
           <incDir>
             <pElem>..</pElem>
             <pElem>../common</pElem>
+            <pElem>../tinyxml/include</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
           <warningLevel>2</warningLevel>
@@ -219,6 +225,7 @@
           <incDir>
             <pElem>..</pElem>
             <pElem>../common</pElem>
+            <pElem>../tinyxml/include</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
           <warningLevel>2</warningLevel>
@@ -255,6 +262,7 @@
           <incDir>
             <pElem>..</pElem>
             <pElem>../common</pElem>
+            <pElem>../tinyxml/include</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
           <warningLevel>2</warningLevel>
@@ -291,6 +299,7 @@
           <incDir>
             <pElem>..</pElem>
             <pElem>../common</pElem>
+            <pElem>../tinyxml/include</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
           <warningLevel>2</warningLevel>

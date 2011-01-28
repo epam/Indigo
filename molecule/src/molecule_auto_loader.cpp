@@ -21,6 +21,7 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "gzip/gzip_scanner.h"
+#include "molecule/molecule_cml_loader.h"
 
 using namespace indigo;
 
@@ -223,10 +224,21 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          loader.loadQueryMolecule((QueryMolecule &)mol);
       else
          loader.loadMolecule((Molecule &)mol);
+      return;
+   }
+
+   // check for CML format
+   if (_scanner->findWord("<molecule"))
+   {
+      MoleculeCmlLoader loader(*_scanner);
+      loader.ignore_stereochemistry_errors = ignore_stereocenter_errors;
+      if (query)
+         throw Error("CML queries not supported yet");
+      loader.loadMolecule(mol.asMolecule());
+      return;
    }
 
    // default is Molfile format
-   else
    {
       MolfileLoader loader(*_scanner);
       loader.ignore_stereocenter_errors = ignore_stereocenter_errors;

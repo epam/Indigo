@@ -51,18 +51,23 @@ void MoleculeStereocenters::buildFromBonds (const int *atom_types, const int *at
       if (atom_types[atom_idx] == 0)
          continue;
 
+      int group = 0;
+
+      if (atom_groups != 0)
+         group = atom_groups[atom_idx];
+
       if (ignore_errors)
       {
          try
          {
-            _buildOneCenter(atom_idx, atom_groups[atom_idx], atom_types[atom_idx], bond_orientations);
+            _buildOneCenter(atom_idx, group, atom_types[atom_idx], bond_orientations);
          }
          catch (Error &)
          {
          }
       }
       else
-         _buildOneCenter(atom_idx, atom_groups[atom_idx], atom_types[atom_idx], bond_orientations);
+         _buildOneCenter(atom_idx, group, atom_types[atom_idx], bond_orientations);
    }
 }
 

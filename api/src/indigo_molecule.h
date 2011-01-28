@@ -24,6 +24,9 @@
 #include "graph/graph_highlighting.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule.h"
+#include "graph/graph_subtree_enumerator.h"
+#include "graph/cycle_enumerator.h"
+#include "graph/edge_subgraph_enumerator.h"
 
 class DLLEXPORT IndigoBaseMolecule : public IndigoObject
 {
@@ -303,6 +306,93 @@ protected:
    BaseMolecule &_mol;
 };
 
+class IndigoRepeatingUnit : public IndigoObject
+{
+public:
+   IndigoRepeatingUnit (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoRepeatingUnit ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   static IndigoRepeatingUnit & cast (IndigoObject &obj);
+   BaseMolecule::RepeatingUnit & get();
+
+   BaseMolecule &mol;
+   int idx;
+};
+
+class IndigoRepeatingUnitsIter : public IndigoObject
+{
+public:
+   IndigoRepeatingUnitsIter (BaseMolecule &molecule);
+   virtual ~IndigoRepeatingUnitsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+protected:
+   int _idx;
+   BaseMolecule &_mol;
+};
+
+class IndigoMultipleGroup : public IndigoObject
+{
+public:
+   IndigoMultipleGroup (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoMultipleGroup ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   static IndigoMultipleGroup & cast (IndigoObject &obj);
+   BaseMolecule::MultipleGroup & get();
+
+   BaseMolecule &mol;
+   int idx;
+};
+
+class IndigoMultipleGroupsIter : public IndigoObject
+{
+public:
+   IndigoMultipleGroupsIter (BaseMolecule &molecule);
+   virtual ~IndigoMultipleGroupsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+protected:
+   int _idx;
+   BaseMolecule &_mol;
+};
+
+class IndigoGenericSGroup : public IndigoObject
+{
+public:
+   IndigoGenericSGroup (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoGenericSGroup ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   static IndigoGenericSGroup & cast (IndigoObject &obj);
+   BaseMolecule::SGroup & get();
+
+   BaseMolecule &mol;
+   int idx;
+};
+
+class IndigoGenericSGroupsIter : public IndigoObject
+{
+public:
+   IndigoGenericSGroupsIter (BaseMolecule &molecule);
+   virtual ~IndigoGenericSGroupsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+protected:
+   int _idx;
+   BaseMolecule &_mol;
+};
+
 class IndigoSGroupAtomsIter : public IndigoObject
 {
 public:
@@ -364,6 +454,7 @@ class IndigoComponentAtomsIter : public IndigoObject
 {
 public:
    IndigoComponentAtomsIter (BaseMolecule &mol, int cidx);
+   virtual ~IndigoComponentAtomsIter ();
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
@@ -381,6 +472,7 @@ class IndigoComponentBondsIter : public IndigoObject
 {
 public:
    IndigoComponentBondsIter (BaseMolecule &mol, int cidx);
+   virtual ~IndigoComponentBondsIter ();
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
@@ -394,6 +486,123 @@ protected:
    int _idx;
 };
 
+class IndigoSubmolecule : public IndigoObject
+{
+public:
+   IndigoSubmolecule (BaseMolecule &mol_, Array<int> &vertices_, Array<int> &edges_);
+   IndigoSubmolecule (BaseMolecule &mol_, List<int> &vertices_, List<int> &edges_);
+   virtual ~IndigoSubmolecule ();
+
+   virtual int getIndex ();
+   virtual IndigoObject * clone ();
+
+   int idx; // not really a submolecule property, but included for convenience
+            // of iterators that return submolecules
+
+   Array<int> vertices;
+   Array<int> edges;
+   BaseMolecule &mol;
+protected:
+};
+
+class IndigoSubmoleculeAtomsIter : public IndigoObject
+{
+public:
+   IndigoSubmoleculeAtomsIter (IndigoSubmolecule &submol);
+   virtual ~IndigoSubmoleculeAtomsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   IndigoSubmolecule &_submol;
+   int _idx;
+};
+
+class IndigoSubmoleculeBondsIter : public IndigoObject
+{
+public:
+   IndigoSubmoleculeBondsIter (IndigoSubmolecule &submol);
+   virtual ~IndigoSubmoleculeBondsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   IndigoSubmolecule &_submol;
+   int _idx;
+};
+
+class IndigoSSSRIter : public IndigoObject
+{
+public:
+   IndigoSSSRIter (BaseMolecule &mol);
+   virtual ~IndigoSSSRIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+   
+protected:
+   BaseMolecule &_mol;
+   int _idx;
+};
+
+class IndigoSubtreesIter : public IndigoObject
+{
+public:
+   IndigoSubtreesIter (BaseMolecule &mol, int min_vertices, int max_vertices);
+   virtual ~IndigoSubtreesIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   static void _handleTree (Graph &graph, const int *v_mapping, const int *e_mapping, void *context);
+
+   BaseMolecule &_mol;
+   GraphSubtreeEnumerator _enumerator;
+   int _idx;
+   ObjArray< Array<int> > _vertices;
+   ObjArray< Array<int> > _edges;
+};
+
+class IndigoRingsIter : public IndigoObject
+{
+public:
+   IndigoRingsIter (BaseMolecule &mol, int min_vertices, int max_vertices);
+   virtual ~IndigoRingsIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   static bool _handleCycle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
+   
+   BaseMolecule &_mol;
+   CycleEnumerator _enumerator;
+   int _idx;
+   ObjArray< Array<int> > _vertices;
+   ObjArray< Array<int> > _edges;
+};
+
+class IndigoEdgeSubmoleculeIter : public IndigoObject
+{
+public:
+   IndigoEdgeSubmoleculeIter (BaseMolecule &mol, int min_edges, int max_edges);
+   virtual ~IndigoEdgeSubmoleculeIter ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   static void _handleSubgraph (Graph &graph, const int *v_mapping, const int *e_mapping, void *context);
+
+   BaseMolecule &_mol;
+   EdgeSubgraphEnumerator _enumerator;
+   int _idx;
+   ObjArray< Array<int> > _vertices;
+   ObjArray< Array<int> > _edges;
+};
 
 #ifdef _WIN32
 #pragma warning(pop)

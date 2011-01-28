@@ -77,6 +77,29 @@ public:
    DEF_ERROR("automorphism search");
 
 protected:
+
+   enum
+   {
+      _INITIAL = 1,
+      _FIRST_LOOP,
+      _OTHER_LOOP,
+      _FIRST_TO_FIRST,
+      _FIRST_TO_OTHER,
+      _OTHER_TO_OTHER
+   };
+
+   struct _Call
+   {
+      int level;
+      int numcells;
+      int k;
+      int tc;
+      int tv1;
+      int place; // _INITIAL, _FIRST_TO_FIRST, etc.
+   };
+
+   TL_CP_DECL(Array<_Call>, _call_stack);
+
    TL_CP_DECL(Array<int>, _lab);
    TL_CP_DECL(Array<int>, _ptn);
    TL_CP_DECL(Graph,      _graph);

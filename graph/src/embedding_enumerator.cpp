@@ -23,8 +23,12 @@ using namespace indigo;
 EmbeddingEnumerator::EmbeddingEnumerator (Graph &supergraph) :
 TL_CP_GET(_core_1),
 TL_CP_GET(_core_2),
+TL_CP_GET(_term2),
+TL_CP_GET(_unterm2),
 TL_CP_GET(_s_pool),
-TL_CP_GET(_l_pool),
+TL_CP_GET(_g1_fast),
+TL_CP_GET(_g2_fast),
+TL_CP_GET(_query_match_state),
 TL_CP_GET(_enumerators)
 {
    _g2 = &supergraph;
@@ -54,6 +58,7 @@ void EmbeddingEnumerator::validate ()
 {
    _core_2.clear_resize(_g2->vertexEnd());
    _core_2.fffill(); // fill with UNMAPPED
+   _g2_fast.setGraph(*_g2);
 }
 
 void EmbeddingEnumerator::setSubgraph (Graph &subgraph)
@@ -64,10 +69,12 @@ void EmbeddingEnumerator::setSubgraph (Graph &subgraph)
    _g1 = &subgraph;
 
    _core_1.clear_resize(_g1->vertexEnd());
-
    _core_1.fffill(); // fill with UNMAPPED
+   _t1_len_pre = 0;
 
    _terminatePreviousMatch();
+
+   _g1_fast.setGraph(*_g1);
 }
 
 void EmbeddingEnumerator::ignoreSubgraphVertex (int idx)
@@ -90,7 +97,11 @@ void EmbeddingEnumerator::_terminatePreviousMatch ()
          _core_2[i] = IGNORE;
       else if (_core_2[i] == TERM_OUT)
          _core_2[i] = UNMAPPED;
+
+   _term2.clear();
+   _unterm2.clear();
    _enumerators[0].reset();
+   _query_match_state.clear();
 }
 
 void EmbeddingEnumerator::setEquivalenceHandler (GraphVertexEquivalence *equivalence_handler)
@@ -134,6 +145,79 @@ void EmbeddingEnumerator::processStart ()
    // Restore enumerators stack
    while (_enumerators.size() > 1)
       _enumerators.pop();
+
+   //
+   // Save query indices ordered by preserving connectivity by walk 
+   // according to vertex numbers
+   //
+   QS_DEF(Array<int>, core1_pre);
+   core1_pre.copy(_core_1);
+   int t1_len_saved = _t1_len_pre;
+
+   _query_match_state.clear();
+   const int FIX_MARK = _g2->vertexEnd();
+
+   int node1;
+   while ((node1 = _getNextNode1()) != -1)
+   {
+      // Find node parent
+      const Vertex &v = _g1->getVertex(node1);
+
+      int parent = -1;
+      for (int j = v.neiBegin(); j != v.neiEnd(); j = v.neiNext(j))
+      {
+         int nei_vertex = v.neiVertex(j);
+         if (_core_1[nei_vertex] >= 0)
+         {
+            parent = nei_vertex;
+            break;
+         }
+      }
+
+      _query_match_state.push(_QuertMatchState(node1, parent, _t1_len_pre));
+
+      _fixNode1(node1, FIX_MARK);
+   }
+   // Push last element to indicate the end of query atoms queue
+   _query_match_state.push(_QuertMatchState(-1, -1, -1));
+
+   // Restore core_1
+   _core_1.copy(core1_pre);
+   _t1_len_pre = t1_len_saved;
+   _enumerators[0].initForFirstSearch(_t1_len_pre);
+}
+
+void EmbeddingEnumerator::_fixNode1 (int node1, int node2)
+{
+   if (_core_1[node1] == TERM_OUT)
+      _t1_len_pre--;
+
+   _core_1[node1] = node2;
+
+   const Vertex &v1 = _g1->getVertex(node1);
+   for (int i = v1.neiBegin(); i != v1.neiEnd(); i = v1.neiNext(i))
+   {
+      int other1 = v1.neiVertex(i);
+
+      if (_core_1[other1] == UNMAPPED)
+      {
+         _core_1[other1] = TERM_OUT;
+         _t1_len_pre++;
+      }
+   }
+}
+
+int EmbeddingEnumerator::_getNextNode1 ()
+{
+   for (int i = _g1->vertexBegin(); i != _g1->vertexEnd(); i = _g1->vertexNext(i))
+   {
+      int val = _core_1[i];
+      if (val == TERM_OUT)
+         return i;
+      if (_t1_len_pre == 0 && val == UNMAPPED)
+         return i;
+   }
+   return -1;
 }
 
 bool EmbeddingEnumerator::processNext ()
@@ -179,10 +263,7 @@ bool EmbeddingEnumerator::processNext ()
 
 EmbeddingEnumerator::_Enumerator::_Enumerator (EmbeddingEnumerator &context) :
 _context(context),
-_mapped_orbit_ids(context._s_pool),
-_term1(context._l_pool),
-_term2(context._l_pool),
-_unterm2(context._l_pool)
+_mapped_orbit_ids(context._s_pool)
 {
    _t1_len    = 0;
    _t2_len    = 0;
@@ -193,18 +274,13 @@ _unterm2(context._l_pool)
 
    _use_equivalence = false;
 
-   _current_node1 = -1;
-   _current_node2 = -1;
-   _current_node2_parent = -1;
-   _current_node2_nei_index = -1;
+   _initState();
+   _current_node1_idx = 0;
 }
 
 EmbeddingEnumerator::_Enumerator::_Enumerator (const EmbeddingEnumerator::_Enumerator &other) :
 _context(other._context),
-_mapped_orbit_ids(other._context._s_pool),
-_term1(other._context._l_pool),
-_term2(other._context._l_pool),
-_unterm2(other._context._l_pool)
+_mapped_orbit_ids(other._context._s_pool)
 {
    _core_len  = other._core_len;
    _t1_len    = other._t1_len;
@@ -215,16 +291,43 @@ _unterm2(other._context._l_pool)
    else
       _use_equivalence = false;
 
-   _current_node1 = -1;
+   _initState();
+   _current_node1_idx = other._current_node1_idx;
+}
+
+void EmbeddingEnumerator::_Enumerator::_initState ()
+{
    _current_node2 = -1;
+   _current_node2_idx = -1;
    _current_node2_parent = -1;
    _current_node2_nei_index = -1;
+
+   _term2_begin = _context._term2.size();
+   _unterm2_begin = _context._unterm2.size();
+}
+
+void EmbeddingEnumerator::_Enumerator::_fixPair  (int node1, int node2)
+{
+   _context._fixNode1(node1, node2);
+   _t1_len = _context._t1_len_pre;
+   _addPairNode2(node1, node2);
 }
 
 void EmbeddingEnumerator::_Enumerator::addPair (int node1, int node2)
 {
-   if (_context._core_1[node1] == TERM_OUT)
-      _t1_len--;
+   // Check if such node is added as expected
+   if (_context._query_match_state[_current_node1_idx].atom_index != node1)
+      throw Error("internal error: query atom %d is unexpected in addPair", node1);
+   _current_node1_idx++;
+   const _QuertMatchState &s = _context._query_match_state[_current_node1_idx];
+   _current_node1 = s.atom_index;
+   _t1_len = s.t1_len;
+
+   _addPairNode2(node1, node2);
+}
+
+void EmbeddingEnumerator::_Enumerator::_addPairNode2 (int node1, int node2)
+{
    if (_context._core_2[node2] == TERM_OUT)
       _t2_len--;
 
@@ -239,47 +342,40 @@ void EmbeddingEnumerator::_Enumerator::addPair (int node1, int node2)
 
    _core_len++;
 
-   const Vertex &v1 = _context._g1->getVertex(node1);
-   const Vertex &v2 = _context._g2->getVertex(node2);
-
    int i;
 
-   for (i = v1.neiBegin(); i != v1.neiEnd(); i = v1.neiNext(i))
-   {
-      int other1 = v1.neiVertex(i);
-
-      if (_context._core_1[other1] == UNMAPPED)
-      {
-         _context._core_1[other1] = TERM_OUT;
-         _t1_len++;
-         _term1.add(other1);
-      }
-   }
-
    if (_t1_len > 0)
-      for (i = v2.neiBegin(); i != v2.neiEnd(); i = v2.neiNext(i))
+   {
+      int node2_nei_count;
+      int *node2_nei_v = _context._g2_fast.getVertexNeiVertices(node2, node2_nei_count);
+      for (i = 0; i < node2_nei_count; i++)
       {
-         int other2 = v2.neiVertex(i);
+         int other2 = node2_nei_v[i];
 
          if (_context._core_2[other2] == UNMAPPED)
          {
             _context._core_2[other2] = TERM_OUT;
             _t2_len++;
-            _term2.add(other2);
+            _context._term2.push(other2);
          }
       }
+   }
    else
    {
       // A connected component of subgraph has been mapped.
       // Need to reset TERM_OUT flags on supergraph.
-      Graph *g2 = _context._g2;
-
-      for (i = g2->vertexBegin(); i != g2->vertexEnd(); i = g2->vertexNext(i))
-         if (_context._core_2[i] == TERM_OUT)
+      // Vertices only from _term2 array can have TERM_OUT marks
+      int *t2_ptr = _context._term2.ptr();
+      int t2_size = _context._term2.size();
+      for (i = 0; i < t2_size; i++)
+      {
+         int v = t2_ptr[i];
+         if (_context._core_2[v] == TERM_OUT)
          {
-            _context._core_2[i] = UNMAPPED;
-            _unterm2.add(i);
+            _context._core_2[v] = UNMAPPED;
+            _context._unterm2.push(v);
          }
+      }
 
       _t2_len = 0;
    }
@@ -287,19 +383,6 @@ void EmbeddingEnumerator::_Enumerator::addPair (int node1, int node2)
 
    if (_use_equivalence)
       _context._equivalence_handler->fixVertex(node2);
-}
-
-bool EmbeddingEnumerator::_Enumerator::_checkNode1 (int node1)
-{
-   int val = _context._core_1[node1];
-
-   if (val == TERM_OUT)
-      return true;
-
-   if (_t1_len == 0 && val == UNMAPPED)
-      return true;
-
-   return false;
 }
 
 bool EmbeddingEnumerator::_Enumerator::_checkNode2 (int node2, int for_node1)
@@ -340,17 +423,20 @@ bool EmbeddingEnumerator::_Enumerator::_checkPair (int node1, int node2)
 
    int j;
    bool needRemove = false;
-   const Vertex &v1 = _context._g1->getVertex(node1);
 
-   for (j = v1.neiBegin(); j != v1.neiEnd(); j = v1.neiNext(j))
+   int node1_nei_count;
+   int *node1_nei_v = _context._g1_fast.getVertexNeiVertices(node1, node1_nei_count);
+   int *node1_nei_e = _context._g1_fast.getVertexNeiEdges(node1, node1_nei_count);
+
+   for (j = 0; j < node1_nei_count; j++)
    {
-      int other1 = v1.neiVertex(j);
+      int other1 = node1_nei_v[j];
       int other2 = _context._core_1[other1];
 
       if (other2 >= 0)
       {
-         int edge1 = v1.neiEdge(j);
-         int edge2 = _context._g2->findEdgeIndex(node2, other2);
+         int edge1 = node1_nei_e[j];
+         int edge2 = _context._g2_fast.findEdgeIndex(node2, other2);
 
          if (edge2 == -1)
             break;
@@ -365,7 +451,7 @@ bool EmbeddingEnumerator::_Enumerator::_checkPair (int node1, int node2)
       }
    }
 
-   if (j != v1.neiEnd())
+   if (j != node1_nei_count)
    {
       if (needRemove && _context.cb_vertex_remove != 0)
          _context.cb_vertex_remove(*_context._g1, node1, _context.userdata);
@@ -399,16 +485,20 @@ bool EmbeddingEnumerator::_Enumerator::_checkPair (int node1, int node2)
 
 void EmbeddingEnumerator::_Enumerator::restore ()
 {
-   int i;
+   int i, size;
+   int *data;
 
-   for (i = _term1.begin(); i != _term1.end(); i = _term1.next(i))
-      _context._core_1[_term1.at(i)] = UNMAPPED;
+   size = _context._term2.size();
+   data = _context._term2.ptr();
+   for (i = _term2_begin; i < size; i++)
+      _context._core_2[data[i]] = UNMAPPED;
+   _context._term2.resize(_term2_begin);
 
-   for (i = _term2.begin(); i != _term2.end(); i = _term2.next(i))
-      _context._core_2[_term2.at(i)] = UNMAPPED;
-
-   for (i = _unterm2.begin(); i != _unterm2.end(); i = _unterm2.next(i))
-      _context._core_2[_term2.at(i)] = TERM_OUT;
+   size = _context._unterm2.size();
+   data = _context._unterm2.ptr();
+   for (i = _unterm2_begin; i < size; i++)
+      _context._core_2[data[i]] = TERM_OUT;
+   _context._unterm2.resize(_unterm2_begin);
 
    if (_selected_node1 >= 0)
    {
@@ -424,24 +514,19 @@ void EmbeddingEnumerator::_Enumerator::restore ()
 
 }
 
+void EmbeddingEnumerator::_Enumerator::initForFirstSearch (int t1_len)
+{
+   _t1_len = t1_len;
+   _current_node1_idx = 0;
+   _current_node1 = _context._query_match_state[_current_node1_idx].atom_index;
+}
+
 int EmbeddingEnumerator::_Enumerator::nextPair ()
 {
-   Graph *g1 = _context._g1;
-   Graph *g2 = _context._g2;
-
    if (_current_node1 == -1)
    {
-      for (_current_node1 = g1->vertexBegin();
-           _current_node1 != g1->vertexEnd();
-           _current_node1 = g1->vertexNext(_current_node1))
-         if (_checkNode1(_current_node1))
-            break;
-   }
-
-   if (_current_node1 == g1->vertexEnd())
-   {
       // all nodes of subgraph are mapped
-      if (_context.cb_embedding == 0 || _context.cb_embedding(*g1, *g2,
+      if (_context.cb_embedding == 0 || _context.cb_embedding(*_context._g1, *_context._g2,
           _context._core_1.ptr(), _context._core_2.ptr(), _context.userdata) == 0)
          return _RETURN0;
       else
@@ -454,14 +539,15 @@ int EmbeddingEnumerator::_Enumerator::nextPair ()
 
    if (_t2_len == 0)
    {
-      if (_current_node2 == -1)
-         _current_node2 = g2->vertexBegin();
-      else
-         _current_node2 = g2->vertexNext(_current_node2);
+      int v2_count;
+      int *g2_vertices = _context._g2_fast.prepareVertices(v2_count);
 
-      for (; _current_node2 != g2->vertexEnd();
-             _current_node2 = g2->vertexNext(_current_node2))
+      // If _current_node2_idx == -1 then _current_node2_idx will be 0
+      _current_node2_idx++;
+
+      for (; _current_node2_idx < v2_count; _current_node2_idx++)
       {
+         _current_node2 = g2_vertices[_current_node2_idx];
          if (!_checkNode2(_current_node2, _current_node1))
             continue;
 
@@ -471,7 +557,7 @@ int EmbeddingEnumerator::_Enumerator::nextPair ()
          break;
       }
 
-      if (_current_node2 == g2->vertexEnd())
+      if (_current_node2_idx == v2_count)
          return _NOWAY;
    }
    else
@@ -480,34 +566,23 @@ int EmbeddingEnumerator::_Enumerator::nextPair ()
       // and take coresponding vertex in target
       if (_current_node2_parent == -1)
       {
-         const Vertex &v = _context._g1->getVertex(_current_node1);
+         int node1_parent = _context._query_match_state[_current_node1_idx].parent_index;
+         if (node1_parent == -1)
+            throw Error("internal error: node1_parent == -1");
 
-         int j;
-         for (j = v.neiBegin(); j != v.neiEnd(); j = v.neiNext(j))
-         {
-            int nei_vertex = v.neiVertex(j);
-            if (_context._core_1[nei_vertex] >= 0)
-            {
-               _current_node2_parent = _context._core_1[nei_vertex];
-               break;
-            }
-         }
-
-         if (j == v.neiEnd())
-            return _NOWAY;
+         _current_node2_parent = _context._core_1[node1_parent];
+         if (_current_node2_parent < 0)
+            throw Error("_current_node2_parent < 0");
       }
 
-      const Vertex &v = _context._g2->getVertex(_current_node2_parent);
+      int nei_count;
+      int *node2_parent_nei_v = 
+         _context._g2_fast.getVertexNeiVertices(_current_node2_parent, nei_count);
 
-      if (_current_node2_nei_index == -1)
-         _current_node2_nei_index = v.neiBegin();
-      else
-         _current_node2_nei_index = v.neiNext(_current_node2_nei_index);
-
-      for (; _current_node2_nei_index != v.neiEnd();
-             _current_node2_nei_index = v.neiNext(_current_node2_nei_index))
+      _current_node2_nei_index++;
+      for (; _current_node2_nei_index != nei_count; _current_node2_nei_index++)
       {
-         _current_node2 = v.neiVertex(_current_node2_nei_index);
+         _current_node2 = node2_parent_nei_v[_current_node2_nei_index];
 
          if (!_checkNode2(_current_node2, _current_node1))
             continue;
@@ -517,7 +592,7 @@ int EmbeddingEnumerator::_Enumerator::nextPair ()
 
          break;
       }
-      if (_current_node2_nei_index == v.neiEnd())
+      if (_current_node2_nei_index == nei_count)
          return _NOWAY;
    }
 
@@ -535,7 +610,7 @@ bool EmbeddingEnumerator::_Enumerator::fix (int node1, int node2, bool safe)
    if (safe && !_checkPair(node1, node2))
       return false;
 
-   addPair(node1, node2);
+   _fixPair(node1, node2);
 
    return true;
 }
@@ -548,8 +623,9 @@ void EmbeddingEnumerator::_Enumerator::setUseEquivalence (bool use)
 void EmbeddingEnumerator::_Enumerator::reset ()
 {
    _mapped_orbit_ids.clear();
-   _current_node1 = -1;
-   _current_node2 = -1;
+
+   _current_node1_idx = 0;
+   _initState();
 }
 
 const int * EmbeddingEnumerator::getSubgraphMapping ()

@@ -29,7 +29,7 @@ CEXPORT int indigoHasProperty (int handle, const char *prop)
    INDIGO_END(-1)
 }
 
-const char * indigoGetProperty (int handle, const char *prop)
+CEXPORT const char * indigoGetProperty (int handle, const char *prop)
 {
    INDIGO_BEGIN
    {
@@ -46,7 +46,7 @@ const char * indigoGetProperty (int handle, const char *prop)
    INDIGO_END(0)
 }
 
-int indigoSetProperty (int handle, const char *prop, const char *value)
+CEXPORT int indigoSetProperty (int handle, const char *prop, const char *value)
 {
    INDIGO_BEGIN
    {
@@ -65,7 +65,7 @@ int indigoSetProperty (int handle, const char *prop, const char *value)
    INDIGO_END(-1)
 }
 
-int indigoRemoveProperty (int handle, const char *prop)
+CEXPORT int indigoRemoveProperty (int handle, const char *prop)
 {
    INDIGO_BEGIN
    {
@@ -140,7 +140,7 @@ IndigoObject * IndigoPropertiesIter::next ()
    return new IndigoProperty(_props, _idx);
 }
 
-int indigoIterateProperties (int handle)
+CEXPORT int indigoIterateProperties (int handle)
 {
    INDIGO_BEGIN
    {
@@ -151,6 +151,21 @@ int indigoIterateProperties (int handle)
          throw IndigoError("%s does not have properties", obj.debugInfo());
 
       return self.addObject(new IndigoPropertiesIter(*props));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoClearProperties (int handle)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+      RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
+
+      if (props == 0)
+         throw IndigoError("%s does not have properties", obj.debugInfo());
+      props->clear();
+      return 0;
    }
    INDIGO_END(-1)
 }

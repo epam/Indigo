@@ -17,6 +17,8 @@
 
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
+#include "molecule/molecule_pi_systems_matcher.h"
+#include "molecule/molecule_arom_match.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/embeddings_storage.h"
 #include "base_cpp/auto_ptr.h"
@@ -82,13 +84,21 @@ public:
    const int * getQueryMapping ();
    const int * getTargetMapping ();
 
-   // for finding all embeddings
-   bool find_all_embeddings; // false by default
-   bool find_unique_embeddings; // true if to find only unique embeddings. false by default
-   bool find_unique_by_edges; // true if to find edges-unique embeddings. false by default
+   // Finding all embeddings and iterating them.
+   // Substructure matcher can be used in 3 ways:
+   // 1. Find first embedding
+   // 2. Save all embeddings.
+   // 3. Iterate over all embeddings.
+   bool 
+      find_all_embeddings,     // false by default
+      find_unique_embeddings, // true if to find only unique embeddings. false by default
+      find_unique_by_edges,   // true if to find edges-unique embeddings. false by default
+      save_for_iteration;     // true if to save embeddings to the embeddings storage. false by default
    // Embedding callback. Returns true to continue enumeration.
    bool (*cb_embedding) (Graph &sub, Graph &super, const int *core1, const int *core2, void *context);
    void  *cb_embedding_context;
+
+   const GraphEmbeddingsStorage& getEmbeddingsStorage () const;
 
    static bool needCoords (int match_3d, QueryMolecule &query);
 
@@ -178,7 +188,7 @@ protected:
    bool _checkRGroupConditions ();
    bool _attachRGroupAndContinue (int *core1, int *core2,
       QueryMolecule *fragment, bool two_attachment_points,
-      int att_idx1, int att_idx2, int rgroup_idx);
+      int att_idx1, int att_idx2, int rgroup_idx, bool rest_h);
 
    void _removeUnfoldedHydrogens ();
 
@@ -189,15 +199,17 @@ protected:
       *_query_nei_counters, *_target_nei_counters;
 
    Obj<EmbeddingEnumerator> _ee;
-   AromaticityMatcher  *_am;
-   MoleculePiSystemsMatcher *_pi_systems_matcher;
-
+   
    AutoPtr<MarkushContext> _markush;
 
    // Because storage can be big it is not stored into TL_CP_***
    // It can be stored as TL_CP_*** if memory allocations will 
    // be critical
    Obj<GraphEmbeddingsStorage> _embeddings_storage;
+
+   Obj<Molecule3dConstraintsChecker> _3d_constraints_checker;
+   Obj<AromaticityMatcher> _am;
+   Obj<MoleculePiSystemsMatcher> _pi_systems_matcher;
 
    bool _h_unfold; // implicit target hydrogens unfolded
 
@@ -210,6 +222,8 @@ protected:
    static int _compare_frequency_asc (BaseMolecule &mol, int i1, int i2);
    static int _compare_in_loop (BaseMolecule &mol, int i1, int i2);
    static int _compare (int &i1, int &i2, void *context);
+
+   void _createEmbeddingsStorage ();
 };
 
 }

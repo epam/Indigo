@@ -472,6 +472,11 @@ CEXPORT const char * indigoRawData (int handler)
 
          self.tmp_string.copy(data.getRawData());
       }
+      else if (obj.type == IndigoObject::CML_MOLECULE)
+      {
+         IndigoCmlMolecule &cml = (IndigoCmlMolecule &)obj;
+         self.tmp_string.copy(cml.data);
+      }
       else if (obj.type == IndigoObject::PROPERTY)
          self.tmp_string.copy(((IndigoProperty &)obj).getValue());
       else if (obj.type == IndigoObject::DATA_SGROUP)

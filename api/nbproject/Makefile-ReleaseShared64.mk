@@ -70,7 +70,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../layout/dist/Release64/GNU-Linux-x86/liblayout.a ../reaction/dist/Release64/GNU-Linux-x86/libreaction.a ../molecule/dist/Release64/GNU-Linux-x86/libmolecule.a ../graph/dist/Release64/GNU-Linux-x86/libgraph.a -lz -lpthread
+LDLIBSOPTIONS=../layout/dist/Release64/GNU-Linux-x86/liblayout.a ../reaction/dist/Release64/GNU-Linux-x86/libreaction.a ../molecule/dist/Release64/GNU-Linux-x86/libmolecule.a ../graph/dist/Release64/GNU-Linux-x86/libgraph.a ../tinyxml/dist/Release64/GNU-Linux-x86/libtinyxml.a -lz -lpthread
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -83,6 +83,8 @@ dist/ReleaseShared64/GNU-Linux-x86/libindigo.so: ../reaction/dist/Release64/GNU-
 dist/ReleaseShared64/GNU-Linux-x86/libindigo.so: ../molecule/dist/Release64/GNU-Linux-x86/libmolecule.a
 
 dist/ReleaseShared64/GNU-Linux-x86/libindigo.so: ../graph/dist/Release64/GNU-Linux-x86/libgraph.a
+
+dist/ReleaseShared64/GNU-Linux-x86/libindigo.so: ../tinyxml/dist/Release64/GNU-Linux-x86/libtinyxml.a
 
 dist/ReleaseShared64/GNU-Linux-x86/libindigo.so: ${OBJECTFILES}
 	${MKDIR} -p dist/ReleaseShared64/GNU-Linux-x86
@@ -199,6 +201,7 @@ ${OBJECTDIR}/src/indigo_deconvolution.o: src/indigo_deconvolution.cpp
 	cd ../reaction && ${MAKE}  -f Makefile CONF=Release64
 	cd ../molecule && ${MAKE}  -f Makefile CONF=Release64
 	cd ../graph && ${MAKE}  -f Makefile CONF=Release64
+	cd ../tinyxml && ${MAKE}  -f Makefile CONF=Release64
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -211,6 +214,7 @@ ${OBJECTDIR}/src/indigo_deconvolution.o: src/indigo_deconvolution.cpp
 	cd ../reaction && ${MAKE}  -f Makefile CONF=Release64 clean
 	cd ../molecule && ${MAKE}  -f Makefile CONF=Release64 clean
 	cd ../graph && ${MAKE}  -f Makefile CONF=Release64 clean
+	cd ../tinyxml && ${MAKE}  -f Makefile CONF=Release64 clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

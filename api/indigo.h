@@ -282,8 +282,14 @@ CEXPORT float * indigoXYZ (int atom);
 
 CEXPORT int indigoCountSuperatoms (int molecule);
 CEXPORT int indigoCountDataSGroups (int molecule);
+CEXPORT int indigoCountRepeatingUnits (int molecule);
+CEXPORT int indigoCountMultipleGroups (int molecule);
+CEXPORT int indigoCountGenericSGroups (int molecule);
 CEXPORT int indigoIterateDataSGroups (int molecule);
 CEXPORT int indigoIterateSuperatoms (int molecule);
+CEXPORT int indigoIterateGenericSGroups (int molecule);
+CEXPORT int indigoIterateRepeatingUnits (int molecule);
+CEXPORT int indigoIterateMultipleGroups (int molecule);
 CEXPORT int indigoGetSuperatom (int molecule, int index);
 CEXPORT int indigoGetDataSGroup (int molecule, int index);
 CEXPORT const char * indigoDescription (int data_sgroup);
@@ -372,6 +378,15 @@ CEXPORT int indigoIterateComponents (int molecule);
 // and also the indigoClone() call, which returns a [query] molecule.
 CEXPORT int indigoComponent (int molecule, int index);
 
+/* Smallest Set of Smallest Rings */
+
+CEXPORT int indigoCountSSSR (int molecule);
+CEXPORT int indigoIterateSSSR (int molecule);
+
+CEXPORT int indigoIterateSubtrees (int molecule, int min_atoms, int max_atoms);
+CEXPORT int indigoIterateRings (int molecule, int min_atoms, int max_atoms);
+CEXPORT int indigoIterateEdgeSubmolecules (int molecule, int min_bonds, int max_bonds);
+
 /* Calculation on molecules */
 
 CEXPORT int   indigoCountHeavyAtoms (int molecule);
@@ -439,6 +454,9 @@ CEXPORT int indigoRemoveProperty (int item, const char *prop);
 // obtained via indigoGetProperty() call to the object
 CEXPORT int indigoIterateProperties (int handle);
 
+// Clears all properties of the molecule
+CEXPORT int indigoClearProperties (int handle);
+
 // Accepts a molecule or reaction (but not query molecule or query reaction).
 // Returns a string describing the first encountered mistake with valence.
 // Returns an empty string if the input molecule/reaction is fine.
@@ -480,15 +498,17 @@ CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2);
 // "tversky" without numbers defaults to alpha = beta = 0.5
 CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics);
 
-/* Working with SDF/RDF/SMILES files  */
+/* Working with SDF/RDF/SMILES/CML files  */
 
 CEXPORT int indigoIterateSDF    (int reader);
 CEXPORT int indigoIterateRDF    (int reader);
 CEXPORT int indigoIterateSmiles (int reader);
+CEXPORT int indigoIterateCML    (int reader);
 
 CEXPORT int indigoIterateSDFile     (const char *filename);
 CEXPORT int indigoIterateRDFile     (const char *filename);
 CEXPORT int indigoIterateSmilesFile (const char *filename);
+CEXPORT int indigoIterateCMLFile    (const char *filename);
 
 // Applicable to items returned by SDF/RDF iterators.
 // Returns the content of SDF/RDF item.

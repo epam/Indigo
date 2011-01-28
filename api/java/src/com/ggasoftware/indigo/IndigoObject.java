@@ -268,6 +268,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public float monoisotopicMass () { return dispatcher.indigoMonoisotopicMass(self); }
    public String canonicalSmiles () { return dispatcher.indigoCanonicalSmiles(self); }
    public String layeredCode () { return dispatcher.indigoLayeredCode(self); }
+   public boolean hasCoord () { return dispatcher.indigoHasCoord(self) == 1; }
    public boolean hasZCoord () { return dispatcher.indigoHasZCoord(self) == 1; }
    public boolean isChiral () { return dispatcher.indigoIsChiral(self) == 1; }
 
@@ -275,7 +276,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public int countSuperatoms () { return dispatcher.indigoCountSuperatoms(self); }
    public int countDataSGgroups () { return dispatcher.indigoCountDataSGroups(self); }
+   public int countRepeatingUnits () { return dispatcher.indigoCountRepeatingUnits(self); }
+   public int countMultipleGroups () { return dispatcher.indigoCountMultipleGroups(self); }
+   public int countGenericSGroups () { return dispatcher.indigoCountGenericSGroups(self); }
+
+   public IndigoObject iterateSuperatoms () { return new IndigoObject(dispatcher, dispatcher.indigoIterateSuperatoms(self)); }
    public IndigoObject iterateDataSGroups () { return new IndigoObject(dispatcher, dispatcher.indigoIterateDataSGroups(self)); }
+   public IndigoObject iterateRepeatingUnits () { return new IndigoObject(dispatcher, dispatcher.indigoIterateRepeatingUnits(self)); }
+   public IndigoObject iterateMultipleGroups () { return new IndigoObject(dispatcher, dispatcher.indigoIterateMultipleGroups(self)); }
+   public IndigoObject iterateGenericSGroups () { return new IndigoObject(dispatcher, dispatcher.indigoIterateGenericSGroups(self)); }
+
    public String description () { return dispatcher.indigoDescription(self); }
    public IndigoObject addDataSGroup (int[] atoms, int[] bonds, String description, String data)
    { return new IndigoObject (dispatcher, dispatcher.indigoAddDataSGroup(self, atoms, bonds, description, data)); }
