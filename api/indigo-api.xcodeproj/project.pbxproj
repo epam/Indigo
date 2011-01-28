@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		810BD6D612F2D78D004D1772 /* libtinyxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 810BD6D312F2D755004D1772 /* libtinyxml.a */; };
 		811437B512AD6AF500547F1F /* indigo_array.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437A712AD6AF500547F1F /* indigo_array.h */; };
 		811437B612AD6AF500547F1F /* indigo_deconvolution.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437A812AD6AF500547F1F /* indigo_deconvolution.h */; };
 		811437B712AD6AF500547F1F /* indigo_fingerprints.h in Headers */ = {isa = PBXBuildFile; fileRef = 811437A912AD6AF500547F1F /* indigo_fingerprints.h */; };
@@ -84,6 +85,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		810BD6D212F2D755004D1772 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 810BD6CE12F2D755004D1772 /* tinyxml.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772 /* libtinyxml.a */;
+			remoteInfo = tinyxml;
+		};
+		810BD6D412F2D76A004D1772 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 810BD6CE12F2D755004D1772 /* tinyxml.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772 /* tinyxml */;
+			remoteInfo = tinyxml;
+		};
 		817B69DA11F88ED200BC3D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 817B69D611F88ED200BC3D88 /* graph.xcodeproj */;
@@ -143,6 +158,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		810BD6CE12F2D755004D1772 /* tinyxml.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tinyxml.xcodeproj; path = ../tinyxml/tinyxml.xcodeproj; sourceTree = SOURCE_ROOT; };
 		811437A712AD6AF500547F1F /* indigo_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_array.h; path = src/indigo_array.h; sourceTree = "<group>"; };
 		811437A812AD6AF500547F1F /* indigo_deconvolution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_deconvolution.h; path = src/indigo_deconvolution.h; sourceTree = "<group>"; };
 		811437A912AD6AF500547F1F /* indigo_fingerprints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = indigo_fingerprints.h; path = src/indigo_fingerprints.h; sourceTree = "<group>"; };
@@ -200,6 +216,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				810BD6D612F2D78D004D1772 /* libtinyxml.a in Frameworks */,
 				817B6A1611F8901900BC3D88 /* libgraph.a in Frameworks */,
 				817B6A1511F8901400BC3D88 /* libmolecule.a in Frameworks */,
 				817B6A1411F8901000BC3D88 /* libreaction.a in Frameworks */,
@@ -212,9 +229,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		810BD6CF12F2D755004D1772 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				810BD6D312F2D755004D1772 /* libtinyxml.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		817B699411F88B1F00BC3D88 = {
 			isa = PBXGroup;
 			children = (
+				810BD6CE12F2D755004D1772 /* tinyxml.xcodeproj */,
 				817B69E811F88F0D00BC3D88 /* layout.xcodeproj */,
 				817B69E211F88EFD00BC3D88 /* reaction.xcodeproj */,
 				817B69DC11F88EE800BC3D88 /* molecule.xcodeproj */,
@@ -387,6 +413,7 @@
 				817B69FF11F88FB700BC3D88 /* PBXTargetDependency */,
 				817B6A0111F88FBA00BC3D88 /* PBXTargetDependency */,
 				817B6A0511F88FC200BC3D88 /* PBXTargetDependency */,
+				810BD6D512F2D76A004D1772 /* PBXTargetDependency */,
 			);
 			name = "indigo-shared";
 			productName = indigo;
@@ -428,6 +455,10 @@
 					ProductGroup = 817B69E311F88EFD00BC3D88 /* Products */;
 					ProjectRef = 817B69E211F88EFD00BC3D88 /* reaction.xcodeproj */;
 				},
+				{
+					ProductGroup = 810BD6CF12F2D755004D1772 /* Products */;
+					ProjectRef = 810BD6CE12F2D755004D1772 /* tinyxml.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -438,6 +469,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		810BD6D312F2D755004D1772 /* libtinyxml.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libtinyxml.a;
+			remoteRef = 810BD6D212F2D755004D1772 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		817B69DB11F88ED200BC3D88 /* libgraph.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -528,6 +566,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		810BD6D512F2D76A004D1772 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = tinyxml;
+			targetProxy = 810BD6D412F2D76A004D1772 /* PBXContainerItemProxy */;
+		};
 		817B69FD11F88FB300BC3D88 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = graph;

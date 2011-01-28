@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		810BD71F12F2DA5F004D1772 /* graph_fast_access.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 810BD71E12F2DA5F004D1772 /* graph_fast_access.cpp */; };
 		8114383B12AD6C7800547F1F /* io_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8114383912AD6C7800547F1F /* io_base.cpp */; };
 		A713FA6E11F1840A00372A08 /* aux_path_finder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A713FA6B11F1840A00372A08 /* aux_path_finder.cpp */; };
 		A713FA6F11F1840A00372A08 /* cycle_basis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A713FA6C11F1840A00372A08 /* cycle_basis.cpp */; };
@@ -48,6 +49,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		810BD71D12F2DA51004D1772 /* graph_fast_access.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph_fast_access.h; sourceTree = "<group>"; };
+		810BD71E12F2DA5F004D1772 /* graph_fast_access.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = graph_fast_access.cpp; path = src/graph_fast_access.cpp; sourceTree = "<group>"; };
 		8114383912AD6C7800547F1F /* io_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = io_base.cpp; path = ../common/base_cpp/io_base.cpp; sourceTree = SOURCE_ROOT; };
 		8114383A12AD6C7800547F1F /* io_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = io_base.h; path = ../common/base_cpp/io_base.h; sourceTree = SOURCE_ROOT; };
 		A713FA6811F183F900372A08 /* aux_path_finder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aux_path_finder.h; sourceTree = "<group>"; };
@@ -198,6 +201,8 @@
 		A7EDA3AE10624A9B006CBFAF /* src */ = {
 			isa = PBXGroup;
 			children = (
+				810BD71E12F2DA5F004D1772 /* graph_fast_access.cpp */,
+				810BD71D12F2DA51004D1772 /* graph_fast_access.h */,
 				A7CCDC1912F028120010FC22 /* edge_subgraph_enumerator.cpp */,
 				A7CCDC1812F028060010FC22 /* edge_subgraph_enumerator.h */,
 				A778DF241250AE1B0098784F /* embeddings_storage.cpp */,
@@ -367,6 +372,7 @@
 				A778DF251250AE1B0098784F /* embeddings_storage.cpp in Sources */,
 				8114383B12AD6C7800547F1F /* io_base.cpp in Sources */,
 				A7CCDC1A12F028120010FC22 /* edge_subgraph_enumerator.cpp in Sources */,
+				810BD71F12F2DA5F004D1772 /* graph_fast_access.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

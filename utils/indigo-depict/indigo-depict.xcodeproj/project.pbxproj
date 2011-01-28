@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		810BD76812F2DB37004D1772 /* libtinyxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 810BD76612F2DB2D004D1772 /* libtinyxml.a */; };
 		819EB231125F84BC00CE1D88 /* libgraph.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 819EB209125F843F00CE1D88 /* libgraph.a */; };
 		819EB232125F84C000CE1D88 /* libmolecule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 819EB20C125F843F00CE1D88 /* libmolecule.a */; };
 		819EB233125F84C500CE1D88 /* libreaction.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 819EB20F125F843F00CE1D88 /* libreaction.a */; };
@@ -21,6 +22,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		810BD76512F2DB2D004D1772 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 810BD76112F2DB2D004D1772 /* tinyxml.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772 /* libtinyxml.a */;
+			remoteInfo = tinyxml;
+		};
+		810BD76912F2DB4E004D1772 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 810BD76112F2DB2D004D1772 /* tinyxml.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772 /* tinyxml */;
+			remoteInfo = tinyxml;
+		};
 		819EB208125F843F00CE1D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 819EB1F5125F843F00CE1D88 /* graph.xcodeproj */;
@@ -116,26 +131,27 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 81FA4B3512B26C220027DBC4 /* indigo-renderer-api.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 81BBA9C0127B4338004CD27A /* libindigo-renderer.a */;
+			remoteGlobalIDString = 81BBA9C0127B4338004CD27A;
 			remoteInfo = "indigo-renderer-static";
 		};
 		81FA4B4012B26C220027DBC4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 81FA4B3512B26C220027DBC4 /* indigo-renderer-api.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 81BBA9C9127B435A004CD27A /* libindigo-renderer.dylib */;
+			remoteGlobalIDString = 81BBA9C9127B435A004CD27A;
 			remoteInfo = "indigo-renderer-shared";
 		};
 		81FA4B4212B26C500027DBC4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 81FA4B3512B26C220027DBC4 /* indigo-renderer-api.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 81BBA9BF127B4338004CD27A /* indigo-renderer-static */;
+			remoteGlobalIDString = 81BBA9BF127B4338004CD27A;
 			remoteInfo = "indigo-renderer-static";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		810BD76112F2DB2D004D1772 /* tinyxml.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tinyxml.xcodeproj; path = ../../tinyxml/tinyxml.xcodeproj; sourceTree = SOURCE_ROOT; };
 		819EB1E1125F83FC00CE1D88 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		819EB1F5125F843F00CE1D88 /* graph.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = graph.xcodeproj; path = ../../graph/graph.xcodeproj; sourceTree = SOURCE_ROOT; };
 		819EB1F8125F843F00CE1D88 /* molecule.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = molecule.xcodeproj; path = ../../molecule/molecule.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -155,6 +171,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				810BD76812F2DB37004D1772 /* libtinyxml.a in Frameworks */,
 				81FA4B4412B26C800027DBC4 /* libindigo-renderer.a in Frameworks */,
 				819EB236125F84DF00CE1D88 /* libindigo.a in Frameworks */,
 				819EB235125F84D800CE1D88 /* librender2d.a in Frameworks */,
@@ -171,9 +188,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		810BD76212F2DB2D004D1772 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				810BD76612F2DB2D004D1772 /* libtinyxml.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		819EB1D7125F83F000CE1D88 = {
 			isa = PBXGroup;
 			children = (
+				810BD76112F2DB2D004D1772 /* tinyxml.xcodeproj */,
 				81FA4B3512B26C220027DBC4 /* indigo-renderer-api.xcodeproj */,
 				819EB1F5125F843F00CE1D88 /* graph.xcodeproj */,
 				819EB1F8125F843F00CE1D88 /* molecule.xcodeproj */,
@@ -275,6 +301,7 @@
 				819EB22E125F846B00CE1D88 /* PBXTargetDependency */,
 				81FA4B4312B26C500027DBC4 /* PBXTargetDependency */,
 				819EB230125F846D00CE1D88 /* PBXTargetDependency */,
+				810BD76A12F2DB4E004D1772 /* PBXTargetDependency */,
 			);
 			name = "indigo-depict";
 			productName = "indigo-depict";
@@ -328,6 +355,10 @@
 					ProductGroup = 819EB202125F843F00CE1D88 /* Products */;
 					ProjectRef = 819EB201125F843F00CE1D88 /* render2d.xcodeproj */;
 				},
+				{
+					ProductGroup = 810BD76212F2DB2D004D1772 /* Products */;
+					ProjectRef = 810BD76112F2DB2D004D1772 /* tinyxml.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -337,6 +368,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		810BD76612F2DB2D004D1772 /* libtinyxml.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libtinyxml.a;
+			remoteRef = 810BD76512F2DB2D004D1772 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		819EB209125F843F00CE1D88 /* libgraph.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -414,6 +452,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		810BD76A12F2DB4E004D1772 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = tinyxml;
+			targetProxy = 810BD76912F2DB4E004D1772 /* PBXContainerItemProxy */;
+		};
 		819EB226125F845E00CE1D88 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = molecule;
@@ -456,6 +499,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};
