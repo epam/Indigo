@@ -759,7 +759,7 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
          if (parity != 0)
          {
             int substituents[4];
-            _molecule->cis_trans.getSubstituents_All(*_molecule, _molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx], substituents);
+            _molecule->cis_trans.getSubstituents_All(_molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx], substituents);
            
             int to_draw_substituent = -1;
 

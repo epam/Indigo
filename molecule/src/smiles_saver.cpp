@@ -859,7 +859,7 @@ bool SmilesSaver::_updateSideBonds (int bond_idx)
    const Edge &edge = mol.getEdge(bond_idx);
    int subst[4];
 
-   mol.cis_trans.getSubstituents_All(mol, bond_idx, subst);
+   mol.cis_trans.getSubstituents_All(bond_idx, subst);
    int parity = mol.cis_trans.getParity(bond_idx);
 
    int sidebonds[4] = {-1, -1, -1, -1};

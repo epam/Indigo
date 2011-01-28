@@ -55,7 +55,7 @@ public:
    void flipBond (BaseMolecule &mol, int atom_parent, int atom_from, int atom_to);
 
    const int * getSubstituents (int bond_idx) const;
-   void getSubstituents_All (BaseMolecule &mol, int bond_idx, int subst[4]) const;
+   void getSubstituents_All (int bond_idx, int subst[4]);
 
    void add (int bond_idx, int substituents[4], int parity);
 
