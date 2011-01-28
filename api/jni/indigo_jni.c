@@ -368,10 +368,12 @@ JNIEXPORT jfloat JNINAME(indigoSimilarity) (JNIEnv *env, jobject obj,
 JNI_FUNC_jint_jint(indigoIterateSDF)
 JNI_FUNC_jint_jint(indigoIterateRDF)
 JNI_FUNC_jint_jint(indigoIterateSmiles)
+JNI_FUNC_jint_jint(indigoIterateCML)
 
 JNI_FUNC_jint_jstring(indigoIterateSDFile)
 JNI_FUNC_jint_jstring(indigoIterateRDFile)
 JNI_FUNC_jint_jstring(indigoIterateSmilesFile)
+JNI_FUNC_jint_jstring(indigoIterateCMLFile)
 
 JNI_FUNC_jstring_jint(indigoRawData)
 JNI_FUNC_jint_jint(indigoTell)
@@ -380,6 +382,9 @@ JNI_FUNC_jint_jint_jint(indigoSdfAppend)
 JNI_FUNC_jint_jint_jint(indigoSmilesAppend)
 JNI_FUNC_jint_jint(indigoRdfHeader)
 JNI_FUNC_jint_jint_jint(indigoRdfAppend)
+JNI_FUNC_jint_jint(indigoCmlHeader)
+JNI_FUNC_jint_jint_jint(indigoCmlAppend)
+JNI_FUNC_jint_jint(indigoCmlFooter)
 
 JNI_FUNC_jint(indigoCreateArray)
 JNI_FUNC_jint_jint_jint(indigoArrayAdd)

@@ -344,20 +344,23 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       int valence = mol.getExplicitValence(i);
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
-      {
-         try
-         {
-            radical = mol.getAtomRadical(i);
-         }
-         catch (Element::Error &)
-         {
-         }
-      }
+         radical = mol.getAtomRadical_NoThrow(i);
 
       out.printf(" %f %f %f %d", xyz.x, xyz.y, xyz.z, aam);
 
       if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
          out.printf(" CHG=%d", charge);
+      if (!mol.isQueryMolecule())
+      {
+         if (mol.getAtomAromaticity(i) == ATOM_AROMATIC &&
+                 ((atom_number != ELEM_C && atom_number != ELEM_O) || charge != 0))
+         {
+            int hcount = mol.asMolecule().getImplicitH_NoThrow(i, -1);
+
+            if (hcount >= 0)
+               out.printf(" HCOUNT=%d", hcount + 1);
+         }
+      }
       if (radical > 0)
          out.printf(" RAD=%d", radical);
       if (isotope > 0)
@@ -649,15 +652,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       _atom_mapping[i] = iw;
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
-      {
-         try
-         {
-            atom_radical = mol.getAtomRadical(i);
-         }
-         catch (Element::Error &)
-         {
-         }
-      }
+         atom_radical = mol.getAtomRadical_NoThrow(i);
 
       if (mol.isRSite(i))
       {
@@ -746,7 +741,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          r[1] = radical;
       }
 
-
+      if (!mol.isQueryMolecule())
+      {
+         if (mol.getAtomAromaticity(i) == ATOM_AROMATIC &&
+                 ((atom_number != ELEM_C && atom_number != ELEM_O) || atom_charge != 0))
+            hydrogens_count = mol.asMolecule().getImplicitH_NoThrow(i, -1) + 1;
+      }
+      
       Vec3f &pos = mol.getAtomXyz(i);
 
       output.printfCR("%10.4f%10.4f%10.4f %c%c%c%2d"

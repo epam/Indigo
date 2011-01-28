@@ -36,6 +36,7 @@
 #include "indigo_reaction.h"
 #include "indigo_mapping.h"
 #include "indigo_match.h"
+#include "molecule/molecule_cml_saver.h"
 
 #include <time.h>
 
@@ -572,6 +573,52 @@ CEXPORT int indigoRdfAppend (int output, int item)
          for (i = props->begin(); i != props->end(); i = props->next(i))
             out.printf("$DTYPE %s\n$DATUM %s\n", props->key(i), props->value(i).ptr());
       }
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCmlHeader (int output)
+{
+   INDIGO_BEGIN
+   {
+      Output &out = IndigoOutput::get(self.getObject(output));
+
+      out.printf("<?xml version=\"1.0\" ?>\n");
+      out.printf("<cml>\n");
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCmlFooter (int output)
+{
+   INDIGO_BEGIN
+   {
+      Output &out = IndigoOutput::get(self.getObject(output));
+
+      out.printf("</cml>\n");
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCmlAppend (int output, int item)
+{
+   INDIGO_BEGIN
+   {
+      Output &out = IndigoOutput::get(self.getObject(output));
+      IndigoObject &obj = self.getObject(item);
+
+      if (obj.isBaseMolecule())
+      {
+         MoleculeCmlSaver saver(out);
+         saver.skip_cml_tag = true;
+         saver.saveMolecule(obj.getMolecule());
+      }
+      else
+         throw IndigoError("%s can not be saved to CML", obj.debugInfo());
 
       return 1;
    }

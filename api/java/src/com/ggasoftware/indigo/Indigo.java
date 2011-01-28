@@ -199,20 +199,10 @@ public class Indigo
       return new IndigoObject(this, indigoCreateArray());
    }
 
-   public IndigoObject iterateSDFile (String filename)
-   {
-      return new IndigoObject(this, indigoIterateSDFile(filename));
-   }
-
-   public IndigoObject iterateRDFile (String filename)
-   {
-      return new IndigoObject(this, indigoIterateRDFile(filename));
-   }
-
-   public IndigoObject iterateSmilesFile (String filename)
-   {
-      return new IndigoObject(this, indigoIterateSmilesFile(filename));
-   }
+   public IndigoObject iterateSDFile (String filename) { return new IndigoObject(this, indigoIterateSDFile(filename)); }
+   public IndigoObject iterateRDFile (String filename) { return new IndigoObject(this, indigoIterateRDFile(filename)); }
+   public IndigoObject iterateSmilesFile (String filename) { return new IndigoObject(this, indigoIterateSmilesFile(filename)); }
+   public IndigoObject iterateCMLFile (String filename) { return new IndigoObject(this, indigoIterateCMLFile(filename)); }
 
    public IndigoObject substructureMatcher (IndigoObject target, String mode)
    {
@@ -566,10 +556,12 @@ public class Indigo
    public native int indigoIterateSDF (int reader);
    public native int indigoIterateRDF (int reader);
    public native int indigoIterateSmiles (int reader);
+   public native int indigoIterateCML (int reader);
 
    public native int indigoIterateSDFile (String filename);
    public native int indigoIterateRDFile (String filename);
    public native int indigoIterateSmilesFile (String filename);
+   public native int indigoIterateCMLFile (String filename);
    
    public native String indigoRawData (int handle);
    public native int indigoTell (int handle);
@@ -578,6 +570,9 @@ public class Indigo
    public native int indigoSmilesAppend (int output, int item);
    public native int indigoRdfHeader (int output);
    public native int indigoRdfAppend (int output, int item);
+   public native int indigoCmlHeader (int output);
+   public native int indigoCmlAppend (int output, int item);
+   public native int indigoCmlFooter (int output);
 
    public native int indigoCreateArray ();
    public native int indigoArrayAdd (int arr, int obj);

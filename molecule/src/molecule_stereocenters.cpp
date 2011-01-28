@@ -91,7 +91,7 @@ void MoleculeStereocenters::buildFrom3dCoordinates ( void )
    {
       Vec3f &v_pos = bmol.getAtomXyz(i);
 
-      if (!_isPossibleStereocenter(i))
+      if (!isPossibleStereocenter(i))
          continue;
 
       int pyramid[4];
@@ -165,7 +165,7 @@ void MoleculeStereocenters::buildFrom3dCoordinates ( void )
    }
 }
 
-bool MoleculeStereocenters::_isPossibleStereocenter (int atom_idx, 
+bool MoleculeStereocenters::isPossibleStereocenter (int atom_idx,
          bool *possible_implicit_h, bool *possible_lone_pair )
 {
    BaseMolecule &mol = _getMolecule();
@@ -180,13 +180,6 @@ bool MoleculeStereocenters::_isPossibleStereocenter (int atom_idx,
    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
    {
       int e_idx = vertex.neiEdge(i);
-      int v_idx = vertex.neiVertex(i);
-
-      Vec3f edge_vec;
-      edge_vec.diff(mol.getAtomXyz(v_idx), mol.getAtomXyz(atom_idx));
-
-      if (!edge_vec.normalize())
-         return false;
 
       if (mol.getBondOrder(e_idx) == BOND_TRIPLE)
          return false;
@@ -325,7 +318,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int group, int type, 
    bool possible_lone_pair = false;
    int i;
 
-   possible = _isPossibleStereocenter(atom_idx, &possible_implicit_h, &possible_lone_pair);
+   possible = isPossibleStereocenter(atom_idx, &possible_implicit_h, &possible_lone_pair);
 
    if (!possible)
    {

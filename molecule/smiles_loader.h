@@ -59,6 +59,8 @@ public:
    //  for details)
    bool ignore_closing_bond_direction_mismatch;
 
+   bool ignore_stereochemistry_errors;
+
 protected:
 
    enum
