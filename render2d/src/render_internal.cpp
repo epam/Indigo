@@ -1968,7 +1968,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          int implicit_h = 0;
 
          if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
-            implicit_h = bm.asMolecule().getImplicitH_NoThrow(aid);
+            implicit_h = bm.asMolecule().getImplicitH_NoThrow(aid, 0);
          
          if (implicit_h > 0 && showImplHydrogens)
          {

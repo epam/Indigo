@@ -372,15 +372,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.indigoSmilesAppend(self, item.self);
    }
 
-   public void rdfHeader ()
-   {
-      dispatcher.indigoRdfHeader(self);
-   }
+   public void rdfHeader () { dispatcher.indigoRdfHeader(self); }
+   public void rdfAppend (IndigoObject item) { dispatcher.indigoRdfAppend(self, item.self); }
 
-   public void rdfAppend (IndigoObject item)
-   {
-      dispatcher.indigoRdfAppend(self, item.self);
-   }
+   public void cmlHeader () { dispatcher.indigoCmlHeader(self); }
+   public void cmlAppend (IndigoObject item) { dispatcher.indigoCmlAppend(self, item.self); }
+   public void cmlFooter () { dispatcher.indigoCmlFooter(self); }
 
    public IndigoObject iterateArray ()
    {

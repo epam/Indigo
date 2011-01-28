@@ -308,11 +308,6 @@ void MolfileLoader::_readCtab2000 ()
          _hcount[k] = rest.readIntFix(3);
          stereo_care = rest.readIntFix(3);
 
-         if (_hcount[k] > 0)
-         {
-            if (_qmol == 0)
-               throw Error("only a query can have nonzero atom hydrogens count");
-         }
          if (stereo_care > 0 && _qmol == 0)
             throw Error("only a query can have stereo care box");
 
@@ -1601,6 +1596,15 @@ void MolfileLoader::_postLoad ()
       }
    }
 
+   if (_mol != 0)
+   {
+      int k;
+      for (k = 0; k < _atoms_num; k++)
+         if (_hcount[k] > 0)
+            _mol->setImplicitH(k, _hcount[k] - 1);
+
+   }
+
    if (_qmol != 0)
    {
       for (i = _qmol->edgeBegin(); i < _qmol->edgeEnd(); i = _qmol->edgeNext(i))
@@ -2003,9 +2007,6 @@ void MolfileLoader::_readCtab3000 ()
          }
          else if (strcmp(prop, "HCOUNT") == 0)
          {
-            if (_qmol == 0)
-               throw Error("atom hydrogens count is allowed only for queries");
-
             int hcount = strscan.readInt1();
             
             if (hcount == -1)

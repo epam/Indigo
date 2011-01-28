@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.ggasoftware.indigo.chemdiff;
 
 import com.ggasoftware.indigo.*;
@@ -22,105 +21,104 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.Toolkit;
 import java.io.*;
 
-public class MolClicker extends MouseAdapter
-{
-    private int doubleClickDelay = 300;
-    private Timer timer;
-    private Indigo indigo;
-    private IndigoRenderer indigo_renderer;
+public class MolClicker extends MouseAdapter {
 
-    public MolClicker( Indigo cur_indigo, IndigoRenderer cur_indigo_renderer )
-    {
-       indigo = cur_indigo;
-       indigo_renderer = cur_indigo_renderer;
+   private int doubleClickDelay = 300;
+   private Timer timer;
+   private Indigo indigo;
+   private IndigoRenderer indigo_renderer;
 
-       ActionListener actionListener = new ActionListener()
-       {
-           @Override
-           public void actionPerformed( ActionEvent e )
-           {
-              timer.stop();
-           }
-       };
+   public MolClicker(Indigo cur_indigo, IndigoRenderer cur_indigo_renderer) {
+      indigo = cur_indigo;
+      indigo_renderer = cur_indigo_renderer;
 
-       timer = new Timer(doubleClickDelay, actionListener);
-       timer.setRepeats(false);
-    }
-
-    @Override
-    public void mouseClicked( MouseEvent e )
-    {
-        ActionEvent ev = new ActionEvent( e.getSource(), e.getID(), e.paramString() );
-        if (timer.isRunning())
+      ActionListener actionListener = new ActionListener()
         {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
             timer.stop();
-            fireSingleClick(ev);
-            fireDoubleClick(ev);
-        } else
-        {
-            timer.start();
-            fireSingleClick(ev);
-        }
-    }
+         }
+      };
 
-    protected void fireSingleClick( ActionEvent e )
-    {
-    }
+      timer = new Timer(doubleClickDelay, actionListener);
+      timer.setRepeats(false);
+   }
 
-    protected void fireDoubleClick( ActionEvent e )
-    {
-       JTable table = (JTable)e.getSource();
+   @Override
+   public void mouseClicked(MouseEvent e) {
+      ActionEvent ev = new ActionEvent(e.getSource(), e.getID(), e.paramString());
+      if (timer.isRunning()) {
+         timer.stop();
+         fireSingleClick(ev);
+         fireDoubleClick(ev);
+      } else {
+         timer.start();
+         fireSingleClick(ev);
+      }
+   }
 
-       int col = table.getSelectedColumn();
-       int row = table.getSelectedRow();
+   protected void fireSingleClick(ActionEvent e) {
+   }
 
-       if (col == 0)
-          return;
+   protected void fireDoubleClick(ActionEvent e) {
+      JTable table = (JTable) e.getSource();
 
-       MolCell mc = (MolCell)table.getValueAt(row, col);
+      int col = table.getSelectedColumn();
+      int row = table.getSelectedRow();
 
-       if (mc.object == null)
-          return;
+      if (col == 0) {
+         return;
+      }
 
-       JFrame cell_frame = new JFrame();
-       cell_frame.setSize(new Dimension(510, 540));
+      MolCell mc = (MolCell) table.getValueAt(row, col);
 
-       MolViewPanel mol_view = new MolViewPanel(indigo, indigo_renderer);
-       mol_view.setImageSize(500, 500);
+      if (mc.object == null) {
+         return;
+      }
 
-       IndigoObject molecule = mc.object.clone();
+      JFrame cell_frame = new JFrame();
+      cell_frame.setSize(new Dimension(510, 540));
 
-       try
-       {
-          indigo.indigoLayout(molecule.self);
-       }
-       catch( Exception ex )
-       {
-       }
+      MolViewPanel mol_view = new MolViewPanel(indigo, indigo_renderer);
+      mol_view.setImageSize(500, 500);
 
-       mol_view.setMol(molecule);
+      IndigoObject molecule = mc.object.clone();
 
-       String mol_name = molecule.name();
+      try {
+         indigo.indigoLayout(molecule.self);
+      } catch (Exception ex) {
+      }
 
-       try
-       {
-          mol_name = molecule.canonicalSmiles();
-       }
-       catch( Exception ex )
-       {
-          mol_name = null;
-       }
+      mol_view.setMol(molecule);
 
-       cell_frame.setTitle(mol_name);
+      String mol_name = molecule.name();
 
-       GroupLayout gl1 = new GroupLayout(cell_frame);
+      try {
+         mol_name = molecule.canonicalSmiles();
+      } catch (Exception ex) {
+         mol_name = null;
+      }
 
-       gl1.setAutoCreateGaps(true);
-       gl1.setHorizontalGroup(gl1.createParallelGroup(GroupLayout.Alignment.LEADING).
-                addComponent(mol_view, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-       gl1.setVerticalGroup(gl1.createSequentialGroup().
-                addComponent(mol_view, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+      cell_frame.setTitle(mol_name);
 
-       cell_frame.setVisible(true);
-    }
+      GroupLayout gl1 = new GroupLayout(cell_frame);
+
+      gl1.setAutoCreateGaps(true);
+      gl1.setHorizontalGroup(gl1.createParallelGroup(GroupLayout.Alignment.LEADING).
+              addComponent(mol_view, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+      gl1.setVerticalGroup(gl1.createSequentialGroup().
+              addComponent(mol_view, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+
+      // Set window position in the middle
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      Dimension windowSize = cell_frame.getSize();
+
+      int windowX = Math.max(0, (screenSize.width - windowSize.width) / 2);
+      int windowY = Math.max(0, (screenSize.height - windowSize.height) / 2);
+
+      cell_frame.setLocation(windowX, windowY);
+
+      cell_frame.setVisible(true);
+   }
 }

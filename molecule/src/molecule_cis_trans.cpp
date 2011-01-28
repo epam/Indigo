@@ -436,9 +436,10 @@ const int * MoleculeCisTrans::getSubstituents (int bond_idx) const
    return _bonds[bond_idx].substituents;
 }
 
-void MoleculeCisTrans::getSubstituents_All (BaseMolecule &mol, int bond_idx, int subst[4]) const
+void MoleculeCisTrans::getSubstituents_All (int bond_idx, int subst[4])
 {
    int i;
+   BaseMolecule &mol = _getMolecule();
 
    memcpy(subst, _bonds[bond_idx].substituents, 4 * sizeof(int));
 

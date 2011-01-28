@@ -120,18 +120,14 @@ void SmilesSaver::_saveMolecule ()
 
       if (ignore_hydrogens)
       {
-         if (_hcount[i] < 0)
-         {
-            if (!ignore_invalid_hcount)
-               throw Error("unexpected: _hcount < 0 on atom #%d", i);
-         }
-         else for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
-         {
-            int idx = vertex.neiVertex(j);
-            if (_bmol->getAtomNumber(idx) == ELEM_H && _bmol->getAtomIsotope(idx) == 0)
-               if (ignored_vertices[idx])
-                  _hcount[i]++;
-         }
+         if (_hcount[i] >= 0)
+            for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+            {
+               int idx = vertex.neiVertex(j);
+               if (_bmol->getAtomNumber(idx) == ELEM_H && _bmol->getAtomIsotope(idx) == 0)
+                  if (ignored_vertices[idx])
+                     _hcount[i]++;
+            }
       }
 
       if (_bmol->getAtomAromaticity(i) == ATOM_AROMATIC)
@@ -552,7 +548,11 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    // number of bonds).
    if (_bmol->getAtomRadical(idx) != 0 ||
        (aromatic && atom_number != ELEM_C && atom_number != ELEM_O))
+   {
       hydro = _hcount[idx];
+      if (hydro < 0 && !ignore_invalid_hcount)
+         throw Error("unsure hydrogen count on atom #%d", idx);
+   }
 
    int charge = _bmol->getAtomCharge(idx);
    int isotope = _bmol->getAtomIsotope(idx);
@@ -566,7 +566,12 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    if (need_brackets)
    {
       if (hydro == -1)
+      {
          hydro = _hcount[idx];
+
+         if (hydro < 0 && !ignore_invalid_hcount)
+            throw Error("unsure hydrogen count on atom #%d", idx);
+      }
       _output.writeChar('[');
    }
 
@@ -859,7 +864,7 @@ bool SmilesSaver::_updateSideBonds (int bond_idx)
    const Edge &edge = mol.getEdge(bond_idx);
    int subst[4];
 
-   mol.cis_trans.getSubstituents_All(mol, bond_idx, subst);
+   mol.cis_trans.getSubstituents_All(bond_idx, subst);
    int parity = mol.cis_trans.getParity(bond_idx);
 
    int sidebonds[4] = {-1, -1, -1, -1};

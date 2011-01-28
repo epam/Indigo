@@ -185,6 +185,8 @@ public class MainFrame extends javax.swing.JFrame
       aromatizer_check = new javax.swing.JCheckBoxMenuItem();
       stereocenters_check = new javax.swing.JCheckBoxMenuItem();
       cistrans_check = new javax.swing.JCheckBoxMenuItem();
+      jMenuHelp = new javax.swing.JMenu();
+      jMenuHelpAbout = new javax.swing.JMenuItem();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -206,7 +208,7 @@ public class MainFrame extends javax.swing.JFrame
       );
       in_table_panel1Layout.setVerticalGroup(
          in_table_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 464, Short.MAX_VALUE)
+         .addGap(0, 461, Short.MAX_VALUE)
       );
 
       load_first.setText("Load the first file");
@@ -235,7 +237,7 @@ public class MainFrame extends javax.swing.JFrame
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(load_progress_bar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(in_table_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
+            .addComponent(in_table_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
       );
 
       in_panel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -251,7 +253,7 @@ public class MainFrame extends javax.swing.JFrame
       );
       in_table_panel2Layout.setVerticalGroup(
          in_table_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 465, Short.MAX_VALUE)
+         .addGap(0, 462, Short.MAX_VALUE)
       );
 
       load_second.setText("Load the second file");
@@ -281,7 +283,7 @@ public class MainFrame extends javax.swing.JFrame
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(load_progress_bar2, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(in_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE))
+            .addComponent(in_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 462, Short.MAX_VALUE))
       );
 
       compare_button.setText("Compare");
@@ -320,8 +322,8 @@ public class MainFrame extends javax.swing.JFrame
          in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(in_tabLayout.createSequentialGroup()
             .addGroup(in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addComponent(in_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
-               .addComponent(in_panel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE))
+               .addComponent(in_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 533, Short.MAX_VALUE)
+               .addComponent(in_panel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 533, Short.MAX_VALUE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(action_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
@@ -349,7 +351,7 @@ public class MainFrame extends javax.swing.JFrame
       );
       out_table_panel1Layout.setVerticalGroup(
          out_table_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 498, Short.MAX_VALUE)
+         .addGap(0, 495, Short.MAX_VALUE)
       );
 
       save_button1.setText("Save");
@@ -376,7 +378,7 @@ public class MainFrame extends javax.swing.JFrame
          .addGroup(out_panel1Layout.createSequentialGroup()
             .addComponent(out_tabel_label1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(out_table_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+            .addComponent(out_table_panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(save_panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
@@ -401,7 +403,7 @@ public class MainFrame extends javax.swing.JFrame
       );
       out_table_panel2Layout.setVerticalGroup(
          out_table_panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 499, Short.MAX_VALUE)
+         .addGap(0, 496, Short.MAX_VALUE)
       );
 
       save_button2.setText("Save");
@@ -428,7 +430,7 @@ public class MainFrame extends javax.swing.JFrame
          .addGroup(out_panel2Layout.createSequentialGroup()
             .addComponent(out_tabel_label2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(out_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
+            .addComponent(out_table_panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
             .addGap(5, 5, 5)
             .addComponent(save_panel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
@@ -453,7 +455,7 @@ public class MainFrame extends javax.swing.JFrame
       );
       out_table_panel3Layout.setVerticalGroup(
          out_table_panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 498, Short.MAX_VALUE)
+         .addGap(0, 495, Short.MAX_VALUE)
       );
 
       save_button3.setText("Save");
@@ -480,7 +482,7 @@ public class MainFrame extends javax.swing.JFrame
          .addGroup(out_panel3Layout.createSequentialGroup()
             .addComponent(out_tabel_label3, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(out_table_panel3, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+            .addComponent(out_table_panel3, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(save_panel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
@@ -536,6 +538,18 @@ public class MainFrame extends javax.swing.JFrame
       jMenuOptions.add(cistrans_check);
 
       jMainMenuBar.add(jMenuOptions);
+
+      jMenuHelp.setText("Help");
+
+      jMenuHelpAbout.setText("About");
+      jMenuHelpAbout.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuHelpAboutActionPerformed(evt);
+         }
+      });
+      jMenuHelp.add(jMenuHelpAbout);
+
+      jMainMenuBar.add(jMenuHelp);
 
       setJMenuBar(jMainMenuBar);
 
@@ -599,6 +613,13 @@ public class MainFrame extends javax.swing.JFrame
     private void jMenuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuExitActionPerformed
        dispose();
     }//GEN-LAST:event_jMenuExitActionPerformed
+
+    private void jMenuHelpAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuHelpAboutActionPerformed
+       JOptionPane msg_box = new JOptionPane();
+       String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC", 
+               indigo.version());
+       msg_box.showMessageDialog(this, msg, "About", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_jMenuHelpAboutActionPerformed
 
     /**
     * @param args the command line arguments
@@ -689,12 +710,14 @@ public class MainFrame extends javax.swing.JFrame
    private javax.swing.JMenuBar jMainMenuBar;
    private javax.swing.JMenuItem jMenuExit;
    private javax.swing.JMenu jMenuFile;
+   private javax.swing.JMenu jMenuHelp;
+   private javax.swing.JMenuItem jMenuHelpAbout;
    private javax.swing.JMenuItem jMenuLoadLeft;
    private javax.swing.JMenuItem jMenuLoadRight;
    private javax.swing.JMenu jMenuOptions;
    private javax.swing.JPanel jPanel1;
    private javax.swing.JPanel jPanel2;
-   private javax.swing.JSeparator jSeparator1;
+   private javax.swing.JPopupMenu.Separator jSeparator1;
    private javax.swing.JTabbedPane jTabbedPane1;
    private javax.swing.JButton load_first;
    private javax.swing.JProgressBar load_progress_bar1;

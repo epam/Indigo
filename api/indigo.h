@@ -524,8 +524,14 @@ CEXPORT int indigoSdfAppend (int output, int item);
 // Saves the molecule to a multiline SMILES output stream
 CEXPORT int indigoSmilesAppend (int output, int item);
 
+// Similarly for RDF files, except that the header should be written first
 CEXPORT int indigoRdfHeader (int output);
 CEXPORT int indigoRdfAppend (int output, int item);
+
+// Similarly for CML files, except that they have both header and footer
+CEXPORT int indigoCmlHeader (int output);
+CEXPORT int indigoCmlAppend (int output, int item);
+CEXPORT int indigoCmlFooter (int output);
 
 /* Arrays */
 

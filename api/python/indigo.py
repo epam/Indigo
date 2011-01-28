@@ -228,6 +228,7 @@ class Indigo:
     self.iterateSDFile = self._static_obj_string(self._lib.indigoIterateSDFile)
     self.iterateRDFile = self._static_obj_string(self._lib.indigoIterateRDFile)
     self.iterateSmilesFile = self._static_obj_string(self._lib.indigoIterateSmilesFile)
+    self.iterateCMLFile = self._static_obj_string(self._lib.indigoIterateCMLFile)
 
     self.substructureMatcher = self._static_obj_obj_string(self._lib.indigoSubstructureMatcher)
 
@@ -373,6 +374,11 @@ class Indigo:
     self.IndigoObject.tell = Indigo._member_int(Indigo._lib.indigoTell)
     self.IndigoObject.sdfAppend = Indigo._member_void_obj(Indigo._lib.indigoSdfAppend)
     self.IndigoObject.smilesAppend = Indigo._member_void_obj(Indigo._lib.indigoSmilesAppend)
+    self.IndigoObject.rdfHeader = Indigo._member_void(Indigo._lib.indigoRdfHeader)
+    self.IndigoObject.rdfAppend = Indigo._member_void_obj(Indigo._lib.indigoRdfAppend)
+    self.IndigoObject.cmlHeader = Indigo._member_void(Indigo._lib.indigoCmlHeader)
+    self.IndigoObject.cmlAppend = Indigo._member_void_obj(Indigo._lib.indigoCmlAppend)
+    self.IndigoObject.cmlFooter = Indigo._member_void(Indigo._lib.indigoCmlFooter)
 
     self.IndigoObject.iterateArray = Indigo._member_obj(Indigo._lib.indigoIterateArray)
     self.IndigoObject.count = Indigo._member_int(Indigo._lib.indigoCount)
@@ -403,6 +409,7 @@ class Indigo:
     self.IndigoObject.setDataSGroupXY = Indigo._member_void_float_float_string(Indigo._lib.indigoSetDataSGroupXY)
 
     self.IndigoObject._next = Indigo._member_obj(Indigo._lib.indigoNext)
+    self.IndigoObject.hasNext = Indigo._member_bool(Indigo._lib.indigoHasNext)
     
   @staticmethod
   def _make_wrapper_func (wrapper, func):

@@ -26,6 +26,7 @@ public:
    explicit MoleculeCmlSaver (Output &output);
 
    void saveMolecule (Molecule &mol);
+   bool skip_cml_tag; // skips <?xml> and <cml> tags
 
    DEF_ERROR("CML saver");
 

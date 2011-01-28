@@ -35,6 +35,7 @@ TL_CP_GET(_bonds)
    highlighting = 0;
    inside_rsmiles = false;
    ignore_closing_bond_direction_mismatch = false;
+   ignore_stereochemistry_errors = false;
    _mol = 0;
    _qmol = 0;
    _bmol = 0;
@@ -101,14 +102,25 @@ void SmilesLoader::_calcStereocenters ()
             int nei = _atoms[i].neighbors.at(j);
 
             if (counter >= 4)
-               throw Error("too many bonds for chiral atom %d", i);
+            {
+               if (!ignore_stereochemistry_errors)
+                  throw Error("too many bonds for chiral atom %d", i);
+               break;
+            }
 
             if (nei != _atoms[i].parent)
                pyramid[counter++] = nei;
          }
 
+         if (j != _atoms[i].neighbors.end())
+            continue;
+
          if (counter < 3)
-            throw Error("only %d bonds for chiral atom %d", counter, i);
+         {
+            if (!ignore_stereochemistry_errors)
+               throw Error("only %d bonds for chiral atom %d", counter, i);
+            continue;
+         }
 
          if (counter == 4)
          {
@@ -127,7 +139,11 @@ void SmilesLoader::_calcStereocenters ()
          if (h_index >= 0)
          {
             if (counter != 4)
-               throw Error("implicit hydrogen not allowed with %d neighbor atoms", counter - 1);
+            {
+               if (!ignore_stereochemistry_errors)
+                  throw Error("implicit hydrogen not allowed with %d neighbor atoms", counter - 1);
+               continue;
+            }
             
             bool parity = true;
 
@@ -143,6 +159,13 @@ void SmilesLoader::_calcStereocenters ()
 
          if (_atoms[i].chirality == 2)
             __swap(pyramid[0], pyramid[1], j);
+
+         if (!stereocenters.isPossibleStereocenter(i))
+         {
+            if (!ignore_stereochemistry_errors)
+               throw Error("chirality not possible on atom #%d", i);
+            continue;
+         }
 
          stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
       }
