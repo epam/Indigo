@@ -467,51 +467,80 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int group, int type, 
       if (edge_ids[0].rank > edge_ids[1].rank)
          __swap(edge_ids[0], edge_ids[1], tmp);
 
-      int n_up = 0, n_down = 0;
-      bool invert = false;
-      bool not_invert = false;
-
+      bool degenerate = true;
+      int dirs[3] = {0, 0, 0};
+      int main_nei = -1; // will be assigned if all three neighors belong to the same half-plane
+      
       for (nei_idx = 0; nei_idx < 3; nei_idx++)
       {
-         int stereo = _getBondStereo(atom_idx, edge_ids[nei_idx].nei_idx);
-
-         if (stereo == BOND_UP)
-            n_up++;
-         else if (stereo == BOND_DOWN)
-            n_down++;
-
-         int xyzzy = _xyzzy(edge_ids[nei_idx].vec, edge_ids[(nei_idx + 1) % 3].vec,
-                            edge_ids[(nei_idx + 2) % 3].vec);
+         int xyzzy = _xyzzy(edge_ids[(nei_idx + 1) % 3].vec, edge_ids[(nei_idx + 2) % 3].vec,
+                            edge_ids[nei_idx].vec);
 
          if (xyzzy == 1)
-            invert = true;
+            main_nei = nei_idx;
          if (xyzzy == 2)
-            not_invert = true;
-      }
+            degenerate = false;
 
-      if (!invert && !not_invert)
-         throw Error("degenerate case for 3 bonds near stereoatom");
-
-      if (n_down > 0 && n_up > 0)
-         throw Error("one bond up, one bond down -- indefinite case");
-      else if (n_down == 0 && n_up == 0)
-         throw Error("no up-down bonds attached to stereocenter");
-
-      if (!possible_lone_pair)
-      {
-         if (n_up == 3)
-            throw Error("all 3 bonds up near stereoatom");
-         if (n_down == 3)
-            throw Error("all 3 bonds down near stereoatom");
+         dirs[nei_idx] = _getBondStereo(atom_idx, edge_ids[nei_idx].nei_idx);
       }
 
       int dir = 1;
 
-      if (n_down > 0)
-         dir = -1;
-
-      if (invert)
-         dir = -dir;
+      if (main_nei != -1)
+      {
+         if (dirs[main_nei] != 0)
+         {
+            if (dirs[(main_nei + 1) % 3] == dirs[main_nei] ||
+                dirs[(main_nei + 2) % 3] == dirs[main_nei])
+               throw Error("directions of neighbor stereo bonds match");
+            if (dirs[main_nei] == BOND_UP)
+               dir = -1;
+         }
+         else
+         {
+            int d1 = dirs[(main_nei + 1) % 3];
+            int d2 = dirs[(main_nei + 2) % 3];
+            
+            if (d1 == 0)
+               d1 = d2;
+            else if (d2 != 0 && d1 != d2)
+               throw Error("directions of opposite stereo bonds do not match");
+               
+            if (d1 == 0)
+               throw Error("no up-down bonds attached to stereocenter");
+            
+            if (d1 == BOND_DOWN)
+               dir = -1;
+         }
+      }
+      else if (!degenerate)
+      {
+         int n_up = 0, n_down = 0;
+         for (nei_idx = 0; nei_idx < 3; nei_idx++)
+         {
+            if (dirs[nei_idx] == BOND_UP)
+               n_up++;
+            else if (dirs[nei_idx] == BOND_DOWN)
+               n_down++;
+         }
+         
+         if (n_down > 0 && n_up > 0)
+            throw Error("one bond up, one bond down -- indefinite case");
+         if (n_down == 0 && n_up == 0)
+            throw Error("no up-down bonds attached to stereocenter");
+         
+         if (!possible_lone_pair)
+         {
+            if (n_up == 3)
+               throw Error("all 3 bonds up near stereoatom");
+            if (n_down == 3)
+               throw Error("all 3 bonds down near stereoatom");
+         } 
+         if (n_down > 0)
+            dir = -1;
+      }
+      else
+         throw Error("degenerate case for 3 bonds near stereoatom");
 
       int sign = _sign(edge_ids[0].vec, edge_ids[1].vec, edge_ids[2].vec);
 
@@ -1579,12 +1608,31 @@ void MoleculeStereocenters::_markBonds_One (int atom_idx)
       Vec3f dirs[4];
 
       for (j = 0; j < size; j++)
+      {
          dirs[j] = mol.getAtomXyz(pyramid[j]);
+         dirs[j].sub(mol.getAtomXyz(atom_idx));
+         if (!dirs[j].normalize())
+            throw Error("zero bond length");
+      }
 
       int sign = _sign(dirs[0], dirs[1], dirs[2]);
 
       if (size == 3)
-         _bond_directions[edge_idx] = (sign == 1) ? BOND_DOWN : BOND_UP;
+      {
+         // Check if all the three bonds belong to the same half-plane.
+         // This is equal to that one of the bonds lies in the smaller
+         // angle formed by the other two.
+         if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1 ||
+             _xyzzy(dirs[2], dirs[1], dirs[0]) == 1 ||
+             _xyzzy(dirs[0], dirs[2], dirs[1]) == 1)
+         {
+            if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1)
+               mult = -1;
+            _bond_directions[edge_idx] = (sign * mult == 1) ? BOND_DOWN : BOND_UP;
+         }
+         else
+            _bond_directions[edge_idx] = (sign == 1) ? BOND_DOWN : BOND_UP;
+      }
       else
          _bond_directions[edge_idx] = (sign * mult == 1) ? BOND_UP : BOND_DOWN;
    }
