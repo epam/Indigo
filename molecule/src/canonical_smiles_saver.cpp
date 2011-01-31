@@ -58,6 +58,7 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
 
    of.detect_invalid_cistrans_bonds = find_invalid_stereo;
    of.detect_invalid_stereocenters = find_invalid_stereo;
+   of.find_canonical_ordering = true;
    of.ignored_vertices = ignored.ptr();
    of.process(mol);
    of.getCanonicalNumbering(order);

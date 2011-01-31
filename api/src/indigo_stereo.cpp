@@ -77,12 +77,31 @@ CEXPORT int indigoInvertStereo (int item)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &ia = IndigoAtom::cast(self.getObject(item));
+      IndigoObject &obj = self.getObject(item);
+      if (IndigoAtom::is(obj))
+      {
+         IndigoAtom &ia = IndigoAtom::cast(self.getObject(item));
 
-      int k, *pyramid = ia.mol.stereocenters.getPyramid(ia.idx);
-      if (pyramid == 0)
-         throw IndigoError("indigoInvertStereo: not a stereoatom");
-      __swap(pyramid[0], pyramid[1], k);
+         int k, *pyramid = ia.mol.stereocenters.getPyramid(ia.idx);
+         if (pyramid == 0)
+            throw IndigoError("indigoInvertStereo: not a stereoatom");
+         __swap(pyramid[0], pyramid[1], k);
+      }
+      else if (IndigoBond::is(obj))
+      {
+         IndigoBond &ib = IndigoBond::cast(self.getObject(item));
+
+         int parity = ib.mol.cis_trans.getParity(ib.idx);
+         if (parity == 0)
+            throw IndigoError("indigoInvertStereo: not a stereobond");
+
+         if (parity == MoleculeCisTrans::CIS)
+            ib.mol.cis_trans.setParity(ib.idx, MoleculeCisTrans::TRANS);
+         else
+            ib.mol.cis_trans.setParity(ib.idx, MoleculeCisTrans::CIS);
+      }
+      else
+         throw IndigoError("indigoResetStereo(): %s given", obj.debugInfo());
       return 1;
    }
    INDIGO_END(-1)
@@ -190,9 +209,6 @@ static int _markEitherCisTrans (Molecule &mol)
    int i, sum = 0;
    QS_DEF(Array<int>, orbits);
 
-   am.process(mol);
-   am.getOrbits(orbits);
-
    for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {
       int substituents[4];
@@ -206,14 +222,18 @@ static int _markEitherCisTrans (Molecule &mol)
       if (mol.getEdgeTopology(i) == TOPOLOGY_RING)
          continue;
 
-      if (substituents[1] >= 0 && orbits[substituents[0]] == orbits[substituents[1]])
-         continue;
-      if (substituents[3] >= 0 && orbits[substituents[2]] == orbits[substituents[3]])
-         continue;
+      am.possible_cis_trans_to_check.push(i);
+   }
 
-      mol.cis_trans.ignore(i);
+   am.process(mol);
+
+   for (i = 0; i < am.possible_cis_trans_to_check.size(); i++)
+   {
+      int bond = am.possible_cis_trans_to_check[i];
+      mol.cis_trans.ignore(bond);
       sum++;
    }
+
    return sum;
 }
 

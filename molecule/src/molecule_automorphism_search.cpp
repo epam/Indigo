@@ -25,6 +25,7 @@ using namespace indigo;
 
 MoleculeAutomorphismSearch::MoleculeAutomorphismSearch () :
    TL_CP_GET(_approximation_orbits),
+   TL_CP_GET(_approximation_orbits_saved),
    TL_CP_GET(_hcount),
    TL_CP_GET(_cistrans_stereo_bond_parity),
    TL_CP_GET(_degree),
@@ -41,7 +42,7 @@ MoleculeAutomorphismSearch::MoleculeAutomorphismSearch () :
 
    detect_invalid_stereocenters = false;
    detect_invalid_cistrans_bonds = false;
-   find_canonical_ordering = true;
+   find_canonical_ordering = false;
    _fixed_atom = -1;
 }
 
@@ -174,12 +175,79 @@ void MoleculeAutomorphismSearch::process (Molecule &mol)
    _target_bond = -1;
    _fixed_atom = -1;
 
+   // Find possible cis-trans bonds
+   _findAllPossibleCisTrans(mol);
+
    if (find_canonical_ordering)
    {
       profTimerStart(t0, "mol_auto.final_search");
       AutomorphismSearch::process(mol);
       profTimerStop(t0);
    }
+}
+
+void MoleculeAutomorphismSearch::_findAllPossibleCisTrans (Molecule &mol)
+{
+   int s = 0;
+   while (s != possible_cis_trans_to_check.size())
+   {
+      s = possible_cis_trans_to_check.size();
+      _findAllPossibleCisTransOneStep(mol);
+   }
+}
+
+void MoleculeAutomorphismSearch::_findAllPossibleCisTransOneStep (Molecule &mol)
+{
+   _approximation_orbits_saved.copy(_approximation_orbits);
+
+   // Uniquify such bonds and mark them temorary as cis-trans
+   int mark = mol.vertexEnd();
+   for (int i = 0; i < possible_cis_trans_to_check.size(); i++)
+   {
+      int bond = possible_cis_trans_to_check[i];
+
+      int subst[4];
+      if (!MoleculeCisTrans::isGeomStereoBond(mol, bond, subst, false))
+      {
+         possible_cis_trans_to_check.remove(i);
+         i--;
+         continue;
+      }
+
+      if (mol.cis_trans.getParity(bond))
+         throw Error("Possible cis-trans check allowed only for non cis-trans bonds");
+
+      mol.cis_trans.add(bond, subst, MoleculeCisTrans::CIS); // Parity doesn't matter
+
+      int validity = _validCisTransBond(bond, _approximation_orbits);
+      _cistrans_bond_state[bond] = validity;
+
+      // Uniqufy this bond
+      const Edge &e = mol.getEdge(bond);
+      _approximation_orbits[e.beg] = mark++;
+   }
+
+   _findInvalidStereoCisTrans(mol);
+
+   for (int i = 0; i < possible_cis_trans_to_check.size(); i++)
+   {
+      int bond = possible_cis_trans_to_check[i];
+
+      int state = _cistrans_bond_state[bond];
+
+      // Restore state
+      _cistrans_bond_state[bond] = _NO_STEREO;
+      mol.cis_trans.setParity(bond, 0);
+
+      if (state == _INVALID)
+      {
+         possible_cis_trans_to_check.remove(i);
+         i--;
+      }
+   }
+
+   // Restore orbits
+   _approximation_orbits.copy(_approximation_orbits_saved);
 }
 
 bool MoleculeAutomorphismSearch::_hasStereo (Molecule &mol)
@@ -1045,12 +1113,24 @@ bool MoleculeAutomorphismSearch::_findInvalidStereo (Molecule &mol)
       invalid_found = true;
    }
 
+   _target_stereocenter = -1;
+
    //
    // Step 2: find valid and invalid cis-trans bonds
    //
+   invalid_found |= _findInvalidStereoCisTrans(mol);
+   return invalid_found;
+}
 
+bool MoleculeAutomorphismSearch::_findInvalidStereoCisTrans (Molecule &mol)
+{
+   _treat_undef_as = _VALID;
+
+   QS_DEF(Array<int>, invalid_stereo);
    invalid_stereo.clear();
-   _target_stereocenter = -1;
+
+   bool invalid_found = false;
+
    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {
       if (_cistrans_bond_state[i] != _UNDEF || mol.cis_trans.getParity(i) == 0)
@@ -1058,14 +1138,8 @@ bool MoleculeAutomorphismSearch::_findInvalidStereo (Molecule &mol)
 
       _cistrans_bond_state[i] = _INVALID;
 
-      _target_bond = i;
-      _target_bond_parity_inv = false;
-      _fixed_atom = mol.getEdge(i).beg;
-
-      AutomorphismSearch::process(mol);
-
-      if (_target_bond_parity_inv)
-         // Stereocenter is invalid
+      if (_checkCisTransInvalid(mol, i))
+         // Stereobond is invalid
          invalid_stereo.push(i);
 
       _cistrans_bond_state[i] = _UNDEF;
@@ -1080,6 +1154,21 @@ bool MoleculeAutomorphismSearch::_findInvalidStereo (Molecule &mol)
    }
 
    return invalid_found;
+}
+
+bool MoleculeAutomorphismSearch::_checkCisTransInvalid (Molecule &mol, int bond_idx)
+{
+   _target_bond = bond_idx;
+   _target_bond_parity_inv = false;
+   _fixed_atom = mol.getEdge(bond_idx).beg;
+
+   AutomorphismSearch::process(mol);
+
+   _target_bond = -1;
+   _fixed_atom = -1;
+
+   // If _target_bond_parity_inv is true then stereobond is invalid
+   return _target_bond_parity_inv;
 }
 
 void MoleculeAutomorphismSearch::_markComplicatedStereocentersAsValid (Molecule &mol)

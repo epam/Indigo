@@ -39,6 +39,11 @@ public:
    bool invalidCisTransBond (int idx);
    bool invalidStereocenter (int idx);
 
+   // Bonds indices that will be checked for possible cis-trans property.
+   // After calling "process" method all bonds, that cannot be cis-trans
+   // will be removed from this array.
+   Array<int> possible_cis_trans_to_check;
+
    DEF_ERROR("Molecule automorphism search");
 protected:
    static int  _vertex_cmp  (Graph &graph, int v1, int v2, const void *context);
@@ -72,6 +77,7 @@ protected:
    int _getStereo (int state) const;
 
    bool _findInvalidStereo (Molecule &mol);
+   bool _findInvalidStereoCisTrans (Molecule &mol);
    void _markValidOrInvalidStereo (bool find_valid, Array<int> &approximation_orbits, bool *found);
    void _findCisTransStereoBondParirties (Molecule &mol);
 
@@ -79,7 +85,12 @@ protected:
 
    void _markComplicatedStereocentersAsValid (Molecule &mol);
 
+   bool _checkCisTransInvalid (Molecule &mol, int bond_idx);
+   void _findAllPossibleCisTrans (Molecule &mol);
+   void _findAllPossibleCisTransOneStep (Molecule &mol);
+
    TL_CP_DECL(Array<int>, _approximation_orbits);
+   TL_CP_DECL(Array<int>, _approximation_orbits_saved);
    TL_CP_DECL(Array<int>, _hcount);
    TL_CP_DECL(Array<int>, _cistrans_stereo_bond_parity);
    TL_CP_DECL(Array<int>, _degree);
