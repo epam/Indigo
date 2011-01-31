@@ -853,7 +853,7 @@ void MoleculeLayoutGraph::_buildOutline (void)
    int i, j;
    int first_idx = vertexBegin();
    float min_y = getPos(first_idx).y;
-   const float EPS = 0.0001;
+   const float EPS = 0.0001f;
 
    for (i = vertexNext(first_idx); i < vertexEnd(); i = vertexNext(i))
    {
