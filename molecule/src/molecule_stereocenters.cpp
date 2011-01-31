@@ -1644,6 +1644,7 @@ void MoleculeStereocenters::markBonds ()
 {
    int i;
 
+   _bond_directions.clear();
    for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
       _markBonds_One(_stereocenters.key(i));
 }
