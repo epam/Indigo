@@ -16,7 +16,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <ctype.h>
-#include <fcntl.h>
 
 #include "base_c/defs.h"
 #include "base_cpp/scanner.h"

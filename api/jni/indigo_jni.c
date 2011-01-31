@@ -247,6 +247,12 @@ JNI_FUNC_jint_jint(indigoComponentIndex)
 JNI_FUNC_jint_jint(indigoIterateComponents)
 JNI_FUNC_jint_jint_jint(indigoComponent)
 
+JNI_FUNC_jint_jint(indigoCountSSSR)
+JNI_FUNC_jint_jint(indigoIterateSSSR)
+JNI_FUNC_jint_jint_jint_jint(indigoIterateSubtrees)
+JNI_FUNC_jint_jint_jint_jint(indigoIterateRings)
+JNI_FUNC_jint_jint_jint_jint(indigoIterateEdgeSubmolecules)
+
 JNI_FUNC_jint_jint(indigoCountHeavyAtoms)
 
 JNI_FUNC_jint_jint(indigoGrossFormula)

@@ -250,6 +250,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject iterateComponents () {return new IndigoObject(dispatcher, dispatcher.indigoIterateComponents(self));}
    public IndigoObject component (int index) { return new IndigoObject(dispatcher, dispatcher.indigoComponent(self, index)); }
 
+   public int countSSSR () { return dispatcher.indigoCountSSSR(self); }
+   public IndigoObject iterateSSSR () { return new IndigoObject(dispatcher, dispatcher.indigoIterateSSSR(self));}
+   public IndigoObject iterateSubtrees (int min_vertices, int max_vertices)
+   { return new IndigoObject(dispatcher, dispatcher.indigoIterateSubtrees(self, min_vertices, max_vertices));}
+   public IndigoObject iterateRings (int min_vertices, int max_vertices)
+   { return new IndigoObject(dispatcher, dispatcher.indigoIterateRings(self, min_vertices, max_vertices));}
+   public IndigoObject iterateEdgeSubmolecules (int min_edges, int max_edges)
+   { return new IndigoObject(dispatcher, dispatcher.indigoIterateEdgeSubmolecules(self, min_edges, max_edges));}
+
    public int countHeavyAtoms ()
    {
       return dispatcher.indigoCountHeavyAtoms(self);
