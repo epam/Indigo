@@ -224,6 +224,7 @@ public:
    MoleculeFingerprintParameters fp_params;
    
    bool ignore_stereochemistry_errors;
+   bool ignore_noncritical_query_features;
    bool treat_x_as_pseudoatom;
    bool skip_3d_chirality;
 

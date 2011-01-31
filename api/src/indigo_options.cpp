@@ -21,6 +21,13 @@ static void indigoIgnoreStereochemistryErrors (int enabled)
    self.ignore_stereochemistry_errors = (enabled != 0);
 }
 
+static void indigoIgnoreNoncricicalQueryFeatures (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.ignore_noncritical_query_features = (enabled != 0);
+}
+
+
 static void indigoTreatXAsPseudoatom (int enabled)
 {
    Indigo &self = indigoGetInstance();
@@ -132,6 +139,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    OsLocker locker(mgr.lock);
 
    mgr.setOptionHandlerBool("ignore-stereochemistry-errors", indigoIgnoreStereochemistryErrors);
+   mgr.setOptionHandlerBool("ignore-noncritical-query-features", indigoIgnoreNoncricicalQueryFeatures);
    mgr.setOptionHandlerBool("treat-x-as-pseudoatom", indigoTreatXAsPseudoatom);
    mgr.setOptionHandlerBool("skip-3d-chirality", indigoSkip3dChirality);
    mgr.setOptionHandlerBool("deconvolution-aromatization", indigoDeconvolutionAromatization);

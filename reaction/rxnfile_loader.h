@@ -38,6 +38,7 @@ public:
 
    bool treat_x_as_pseudoatom;
    bool ignore_stereocenter_errors;
+   bool ignore_noncritical_query_features;
    
    DEF_ERROR("RXN loader");
 protected:

@@ -25,7 +25,8 @@ using namespace indigo;
 RxnfileLoader::RxnfileLoader (Scanner& scanner): _scanner(scanner){
    highlighting = 0;
    _v3000 = false;
-   ignore_stereocenter_errors = false;;
+   ignore_stereocenter_errors = false;
+   ignore_noncritical_query_features = false;
 }
 
 RxnfileLoader::~RxnfileLoader(){
@@ -55,6 +56,8 @@ void RxnfileLoader::_loadReaction(){
    MolfileLoader molfileLoader(_scanner);
 
    molfileLoader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+   molfileLoader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+   molfileLoader.ignore_noncritical_query_features = ignore_noncritical_query_features;
    _readRxnHeader();
 
    _readReactantsHeader();

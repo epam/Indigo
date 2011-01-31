@@ -48,6 +48,7 @@ TL_CP_GET(_sgroup_mapping)
    ignore_stereocenter_errors = false;
    treat_x_as_pseudoatom = false;
    skip_3d_chirality = false;
+   ignore_noncritical_query_features = false;
 }
 
 void MolfileLoader::loadMolecule (Molecule &mol)
@@ -198,9 +199,6 @@ int MolfileLoader::_getElement (const char *buf)
       buf2[i] = (i == 0) ? toupper(buf[i]) : tolower(buf[i]);
    }
 
-   if (*buf == 0)
-      throw Error("empty atom");
-   
    return Element::fromString2(buf2);
 }
 
@@ -309,7 +307,8 @@ void MolfileLoader::_readCtab2000 ()
          stereo_care = rest.readIntFix(3);
 
          if (stereo_care > 0 && _qmol == 0)
-            throw Error("only a query can have stereo care box");
+            if (!ignore_noncritical_query_features)
+               throw Error("only a query can have stereo care box");
 
          valence = rest.readIntFix(3);
          rest.skip(9); // skip "HO designator" and 2 unused fields
@@ -458,7 +457,8 @@ void MolfileLoader::_readCtab2000 ()
          topology = rest.readIntFix(3);
 
          if (topology != 0 && _qmol == 0)
-            throw Error("bond topology is allowed only for queries");
+            if (!ignore_noncritical_query_features)
+               throw Error("bond topology is allowed only for queries");
 
          int rcenter = rest.readIntFix(3);
 
@@ -751,78 +751,93 @@ void MolfileLoader::_readCtab2000 ()
          else if (strncmp(chars, "RBC", 3) == 0)
          {
             if (_qmol == 0)
-               throw Error("ring bond count is allowed only for queries");
-
-            int n = _scanner.readIntFix(3);
-
-            while (n-- > 0)
             {
-               _scanner.skip(1);
-               int atom_idx = _scanner.readIntFix(3) - 1;
-               _scanner.skip(1);
-               int rbcount = _scanner.readIntFix(3);
+               if (!ignore_noncritical_query_features)
+                  throw Error("ring bond count is allowed only for queries");
+            }
+            else
+            {
+               int n = _scanner.readIntFix(3);
 
-               if (rbcount == -1) // no ring bonds
-                  _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                     new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
-               else if (rbcount == -2) // as drawn
+               while (n-- > 0)
                {
-                  int k, rbonds = 0;
-                  const Vertex &vertex = _qmol->getVertex(atom_idx);
+                  _scanner.skip(1);
+                  int atom_idx = _scanner.readIntFix(3) - 1;
+                  _scanner.skip(1);
+                  int rbcount = _scanner.readIntFix(3);
 
-                  for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
-                     if (_qmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
-                        rbonds++;
+                  if (rbcount == -1) // no ring bonds
+                     _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
+                        new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
+                  else if (rbcount == -2) // as drawn
+                  {
+                     int k, rbonds = 0;
+                     const Vertex &vertex = _qmol->getVertex(atom_idx);
 
-                  _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                     new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbonds)));
+                     for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+                        if (_qmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
+                           rbonds++;
+
+                     _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
+                        new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbonds)));
+                  }
+                  else if (rbcount > 1)
+                     _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
+                        new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbcount, (rbcount < 4 ? rbcount : 100))));
+                  else
+                     throw Error("ring bond count = %d makes no sense", rbcount);
                }
-               else if (rbcount > 1)
-                  _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                     new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbcount, (rbcount < 4 ? rbcount : 100))));
-               else
-                  throw Error("ring bond count = %d makes no sense", rbcount);
             }
             _scanner.skipString();
          }
          else if (strncmp(chars, "UNS", 3) == 0)
          {
             if (_qmol == 0)
-               throw Error("unaturated atoms are allowed only for queries");
-
-            int n = _scanner.readIntFix(3);
-
-            while (n-- > 0)
             {
-               _scanner.skip(1);
-               int atom_idx = _scanner.readIntFix(3) - 1;
-               _scanner.skip(1);
-               int unsaturation = _scanner.readIntFix(3);
+               if (!ignore_noncritical_query_features)
+                  throw Error("unaturated atoms are allowed only for queries");
+            }
+            else
+            {
+               int n = _scanner.readIntFix(3);
 
-               if (unsaturation)
-                  _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                     new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
+               while (n-- > 0)
+               {
+                  _scanner.skip(1);
+                  int atom_idx = _scanner.readIntFix(3) - 1;
+                  _scanner.skip(1);
+                  int unsaturation = _scanner.readIntFix(3);
+
+                  if (unsaturation)
+                     _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
+                        new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
+               }
             }
             _scanner.skipString();
          }
          else if (strncmp(chars, "$3D", 3) == 0)
          {
             if (_qmol == 0)
-               throw Error("3D features are allowed only for queries");
-
-            if (n_3d_features == -1)
             {
-               n_3d_features = _scanner.readIntFix(3);
-               _scanner.skipString();
+               if (!ignore_noncritical_query_features)
+                  throw Error("3D features are allowed only for queries");
             }
             else
             {
-               n_3d_features--;
+               if (n_3d_features == -1)
+               {
+                  n_3d_features = _scanner.readIntFix(3);
+                  _scanner.skipString();
+               }
+               else
+               {
+                  n_3d_features--;
 
-               if (n_3d_features < 0)
-                  throw Error("3D feature unexpected");
+                  if (n_3d_features < 0)
+                     throw Error("3D feature unexpected");
 
-               _read3dFeature2000();
+                  _read3dFeature2000();
+               }
             }
          }
          else if (strncmp(chars, "AAL", 3) == 0)
