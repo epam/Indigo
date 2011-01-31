@@ -285,6 +285,9 @@ protected:
 
    void _removeAtomsFromSGroup (SGroup &sgroup, Array<int> &indices);
    void _removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> &mapping);
+   void _mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
+        Array<int> &mapping, Array<int> &edge_mapping);
+
 
    Array<Vec3f> _xyz;
    ObjArray< Array<int> > _rsite_attachment_points;

@@ -1010,7 +1010,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             BaseMolecule::Superatom &superatom = mol.superatoms[sgroup_ids[i]];
 
             if (superatom.subscript.size() > 1)
-               output.printf("M  SMT %3d %s\n", i + 1, superatom.subscript.ptr());
+               output.printf("M  SMT %3d %s", i + 1, superatom.subscript.ptr());
             if (superatom.bond_idx >= 0)
             {
                output.printf("M  SBV %3d %3d %9.4f %9.4f", i + 1,
