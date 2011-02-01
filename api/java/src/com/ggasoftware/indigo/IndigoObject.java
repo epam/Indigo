@@ -233,6 +233,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void clearStereocenters () { dispatcher.indigoClearStereocenters(self); }
    public int countStereocenters () { return dispatcher.indigoCountStereocenters(self); }
    public int resetSymmetricCisTrans () { return dispatcher.indigoResetSymmetricCisTrans(self); }
+   public int markEitherCisTrans () { return dispatcher.indigoMarkEitherCisTrans(self); }
 
    public IndigoObject addAtom (String symbol) { return new IndigoObject(dispatcher, dispatcher.indigoAddAtom(self, symbol)); }
    public void setCharge (int charge) { dispatcher.indigoSetCharge(self, charge); }

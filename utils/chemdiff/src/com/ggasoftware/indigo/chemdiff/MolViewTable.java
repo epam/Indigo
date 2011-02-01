@@ -225,7 +225,7 @@ public class MolViewTable extends JPanel {
             }
             if (!m.hasCoord())
                m.layout();
-            //m.markEitherCisTrans();
+            m.markEitherCisTrans();
             String[] orig_id_strs = (String[]) table.getValueAt(i, 0);
             for (int j = 0; j < orig_id_strs.length; j++)
                m.setProperty(String.format("original_id%d", j + 1), orig_id_strs[j]);

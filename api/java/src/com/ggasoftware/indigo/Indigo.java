@@ -493,6 +493,7 @@ public class Indigo
    public native int indigoCountStereocenters (int molecule);
 
    public native int indigoResetSymmetricCisTrans (int handle);
+   public native int indigoMarkEitherCisTrans (int handle);
 
    public native int indigoAddAtom (int molecule, String symbol);
    public native int indigoSetCharge (int atom, int charge);
