@@ -468,6 +468,48 @@ namespace com.ggasoftware.indigo
          return Indigo.indigoResetSymmetricCisTrans(self);
       }
 
+      public int markEitherCisTrans ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoMarkEitherCisTrans(self);
+      }
+
+      public IndigoObject addAtom (string symbol)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoAddAtom(self, symbol));
+      }
+
+      public void setCharge (int charge)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoSetCharge(self, charge);
+      }
+
+      public void setIsotope (int isotope)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoSetIsotope(self, isotope);
+      }
+
+      public IndigoObject addBond (IndigoObject dest, int order)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoAddBond(self, dest.self, order));
+      }
+
+      public void setBondOrder (int order)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoSetBondOrder(self, order);
+      }
+
+      public IndigoObject merge (IndigoObject what)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoMerge(self, what.self));
+      }
+
       public int countComponents ()
       {
          dispatcher.setSessionID();
@@ -490,6 +532,36 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, Indigo.indigoComponent(self, index));
+      }
+
+      public int countSSSR ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoCountSSSR(self);
+      }
+
+      public IndigoObject iterateSSSR ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoIterateSSSR(self));
+      }
+
+      public IndigoObject iterateSubtrees (int min_vertices, int max_vertices)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoIterateSubtrees(self, min_vertices, max_vertices));
+      }
+
+      public IndigoObject iterateRings (int min_vertices, int max_vertices)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoIterateRings(self, min_vertices, max_vertices));
+      }
+
+      public IndigoObject iterateEdgeSubmolecules (int min_edges, int max_edges)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoIterateEdgeSubmolecules(self, min_edges, max_edges));
       }
 
       public int countHeavyAtoms ()
@@ -535,6 +607,12 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          return new String(Indigo.indigoLayeredCode(self));
+      }
+
+      public bool hasCoord ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoHasCoord(self) == 1;
       }
 
       public bool hasZCoord ()
@@ -723,6 +801,24 @@ namespace com.ggasoftware.indigo
          Indigo.indigoRdfAppend(self, item.self);
       }
 
+      public void cmlHeader ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoCmlHeader(self);
+      }
+
+      public void cmlAppend (IndigoObject item)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoCmlAppend(self, item.self);
+      }
+
+      public void cmlFooter ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoCmlFooter(self);
+      }
+
       public void arrayAdd (IndigoObject item)
       {
          dispatcher.setSessionID();
@@ -841,6 +937,12 @@ namespace com.ggasoftware.indigo
          if (next == 0)
             return null;
          return new IndigoObject(dispatcher, next);
+      }
+
+      public bool hasNext ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoHasNext(self) == 1;
       }
 
       public int index ()

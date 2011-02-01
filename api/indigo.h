@@ -366,7 +366,7 @@ CEXPORT int indigoAddBond (int source, int destination, int order);
 
 CEXPORT int indigoSetBondOrder (int bond, int order);
 
-CEXPORT int indigoMerge (int where, int what);
+CEXPORT int indigoMerge (int where_to, int what);
 
 /* Connected components of molecules */
 
