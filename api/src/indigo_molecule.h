@@ -100,6 +100,8 @@ public:
    int idx;
 
    virtual int getIndex ();
+
+   const char * debugInfo ();
 };
 
 class DLLEXPORT IndigoRGroup : public IndigoObject
@@ -147,6 +149,7 @@ public:
    int idx;
 
    virtual int getIndex ();
+   const char * debugInfo ();
 };
 
 class IndigoAtomNeighbor : public IndigoAtom

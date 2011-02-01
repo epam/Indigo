@@ -101,7 +101,7 @@ CEXPORT int indigoInvertStereo (int item)
             ib.mol.cis_trans.setParity(ib.idx, MoleculeCisTrans::CIS);
       }
       else
-         throw IndigoError("indigoResetStereo(): %s given", obj.debugInfo());
+         throw IndigoError("indigoInvertStereo(): %s given", obj.debugInfo());
       return 1;
    }
    INDIGO_END(-1)

@@ -185,6 +185,11 @@ int IndigoAtom::getIndex ()
    return idx;
 }
 
+const char * IndigoAtom::debugInfo ()
+{
+   return "<atom>";
+}
+
 bool IndigoAtom::is (IndigoObject &obj)
 {
    if (obj.type == IndigoObject::ATOM || obj.type == IndigoObject::ATOM_NEIGHBOR)
@@ -289,6 +294,11 @@ IndigoBond::~IndigoBond ()
 int IndigoBond::getIndex ()
 {
    return idx;
+}
+
+const char * IndigoBond::debugInfo ()
+{
+   return "<bond>";
 }
 
 bool IndigoBond::is (IndigoObject &obj)
