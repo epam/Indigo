@@ -3,6 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-depict", "indigo-depict.vcproj", "{F9AB0C5A-9B44-4FD3-A017-D1CFDDCDA611}"
 	ProjectSection(ProjectDependencies) = postProject
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2} = {BB3E941D-B8F0-4660-94CC-592F7C7856A2}
 		{94BD191F-2952-4A8C-A33E-36367CDDC202} = {94BD191F-2952-4A8C-A33E-36367CDDC202}
 		{D69C5B23-48C2-400B-9BCD-B8276756B673} = {D69C5B23-48C2-400B-9BCD-B8276756B673}
 		{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5} = {C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}
@@ -39,6 +40,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cairo", "..\..\cairo-src\cairo\cairo.vcproj", "{7BC981E0-0A8C-4216-A8FC-1B78A474AD15}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pixman", "..\..\cairo-src\pixman\pixman.vcproj", "{60150EEF-EE29-4334-B2A5-DD585D7EDCAE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\tinyxml\tinyxml.vcproj", "{BB3E941D-B8F0-4660-94CC-592F7C7856A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -144,6 +147,14 @@ Global
 		{60150EEF-EE29-4334-B2A5-DD585D7EDCAE}.Release|Win32.Build.0 = ReleaseMT|Win32
 		{60150EEF-EE29-4334-B2A5-DD585D7EDCAE}.Release|x64.ActiveCfg = ReleaseMT|x64
 		{60150EEF-EE29-4334-B2A5-DD585D7EDCAE}.Release|x64.Build.0 = ReleaseMT|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|Win32.ActiveCfg = ReleaseMT|Win32
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|Win32.Build.0 = ReleaseMT|Win32
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|x64.ActiveCfg = ReleaseMT|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|x64.Build.0 = ReleaseMT|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|Win32.ActiveCfg = ReleaseMT|Win32
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|Win32.Build.0 = ReleaseMT|Win32
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|x64.ActiveCfg = ReleaseMT|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|x64.Build.0 = ReleaseMT|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
