@@ -24,13 +24,14 @@
 void usage (void)
 {
    fprintf(stderr,
-           "Usage: indigo-depict infile.{mol,rxn,smi} outfile.{png,svg,pdf} [parameters]\n"
-           "       indigo-depict infile.{sdf,rdf,smi} outfile_%%s.{png,svg,pdf} [parameters]\n"
-           "       indigo-depict infile.{sdf,rdf}.gz outfile_%%s.{png,svg,pdf} [parameters]\n"
-           "       indigo-depict infile.smi outfile.{mol,rxn} [parameters]\n"
-           "       indigo-depict infile.smi outfile.{sdf} [parameters]\n"
-           "       indigo-depict - SMILES outfile.{png,svg,pdf} [parameters]\n"
-           "       indigo-depict - SMILES outfile.{mol,rxn} [parameters]\n"
+           "Usage:\n"
+           "  indigo-depict infile.{mol,rxn,cml,smi} outfile.{png,svg,pdf} [parameters]\n"
+           "  indigo-depict infile.{sdf,rdf,cml,smi} outfile_%%s.{png,svg,pdf} [parameters]\n"
+           "  indigo-depict infile.{sdf,rdf}.gz outfile_%%s.{png,svg,pdf} [parameters]\n"
+           "  indigo-depict infile.smi outfile.{mol,rxn,cml} [parameters]\n"
+           "  indigo-depict infile.smi outfile.{sdf,rdf,cml} [parameters]\n"
+           "  indigo-depict - SMILES outfile.{png,svg,pdf} [parameters]\n"
+           "  indigo-depict - SMILES outfile.{mol,rxn,cml} [parameters]\n"
            "\nParameters:\n"
            "-w <number>\n"
            "   Picture width in pixels\n"
@@ -168,13 +169,34 @@ int _isReaction (const char *smiles)
    return strchr(smiles, '>') != NULL;
 }
 
+int _isMultipleCML (const char *filename)
+{
+   int iter = indigoIterateCMLFile(filename);
+
+   if (indigoHasNext(iter))
+   {
+      int item = indigoNext(iter);
+      if (indigoHasNext(iter))
+      {
+         indigoFree(item);
+         indigoFree(iter);
+         return 1;
+      }
+      indigoFree(item);
+   }
+
+   indigoFree(iter);
+   return 0;
+}
+
 enum
 {
    MODE_SINGLE_MOLECULE,
    MODE_SINGLE_REACTION,
    MODE_MULTILINE_SMILES,
    MODE_SDF,
-   MODE_RDF
+   MODE_RDF,
+   MODE_MULTIPLE_CML
 };
 
 enum
@@ -189,6 +211,7 @@ enum
    OEXT_RXN,
    OEXT_SDF,
    OEXT_RDF,
+   OEXT_CML,
    OEXT_OTHER
 };
 
@@ -200,11 +223,12 @@ void onError (const char *message, void *context)
 
 enum AROMATIZATION {NONE = 0, AROM, DEAROM};
 
-void _prepare (int obj, int arom) {
+int _prepare (int obj, int arom) {
    if (arom == AROM)
-      indigoAromatize(obj);
-   else if (arom == DEAROM)
-      indigoDearomatize(obj);
+      return indigoAromatize(obj);
+   if (arom == DEAROM)
+      return indigoDearomatize(obj);
+   return 0;
 }
 
 void renderToFile (int obj, const char* outfile) {
@@ -226,7 +250,6 @@ typedef struct tagParams {
    const char *file_to_load;
    int hydro_set, query_set;
    int aromatization;
-   int batch_save;
    int out_ext;
    const char *comment;
    const char *comment_field;
@@ -283,6 +306,13 @@ int parseParams (Params* p, int argc, char *argv[]) {
             else
                p->mode = MODE_SINGLE_MOLECULE;
          }
+      }
+      else if (strcasecmp(p->infile_ext, "cml") == 0)
+      {
+         if (_isMultipleCML(argv[1]))
+            p->mode = MODE_MULTIPLE_CML;
+         else
+            p->mode = MODE_SINGLE_MOLECULE;
       }
       else if (strcasecmp(p->infile_ext, "sdf") == 0 || strcasecmp(p->infile_ext, "sdf.gz") == 0)
          p->mode = MODE_SDF;
@@ -721,7 +751,6 @@ int main (int argc, char *argv[])
    p.hydro_set = 
       p.query_set = 0;
    p.aromatization = NONE;
-   p.batch_save = 0;
    p.comment_field = NULL;
    p.comment = NULL;
    p.comment_name = 0;
@@ -744,7 +773,9 @@ int main (int argc, char *argv[])
    else if (strcmp(p.outfile_ext, "rxn") == 0)
       p.out_ext = OEXT_RXN;
    else if (strcmp(p.outfile_ext, "rdf") == 0)
-      ERROR("saving RDF files not supported\n");
+      p.out_ext = OEXT_RDF;
+   else if (strcmp(p.outfile_ext, "cml") == 0)
+      p.out_ext = OEXT_CML;
 
    // guess whether to layout or render by extension
    p.action = ACTION_LAYOUT;
@@ -752,8 +783,6 @@ int main (int argc, char *argv[])
       indigoSetOption("render-output-format", p.outfile_ext);
       p.action = ACTION_RENDER;
    }
-
-   p.batch_save = (p.out_ext == OEXT_SDF);
 
    // read in the input
    reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
@@ -764,13 +793,16 @@ int main (int argc, char *argv[])
          ERROR("on single input, setting '-id' is not allowed\n");
 
       if (p.out_ext == OEXT_RXN)
-         ERROR("reaction output specified for molecule input\n"); 
+         ERROR("reaction output specified for molecule input\n");
 
       obj = (p.query_set) ? indigoLoadQueryMolecule(reader) : indigoLoadMolecule(reader);
       _prepare(obj, p.aromatization);
       if (p.action == ACTION_LAYOUT) {
          indigoLayout(obj);
-         indigoSaveMolfileToFile(obj, p.outfile);
+         if (p.out_ext == OEXT_MOL)
+            indigoSaveMolfileToFile(obj, p.outfile);
+         else
+            indigoSaveCmlToFile(obj, p.outfile);
       } else {
          _setComment(obj, &p);
          renderToFile(obj, p.outfile);
@@ -781,6 +813,9 @@ int main (int argc, char *argv[])
 
       if (p.out_ext == OEXT_MOL)
          ERROR("molecule output specified for reaction input\n"); 
+
+      if (p.out_ext == OEXT_CML)
+         ERROR("reaction CML saving not supported\n");
 
       obj = p.query_set ? indigoLoadQueryReaction(reader) : indigoLoadReaction(reader);
       _prepare(obj, p.aromatization);
@@ -793,11 +828,14 @@ int main (int argc, char *argv[])
       }
    } else  {
       int item;
+      int have_percent_s = (strstr(p.outfile, "%s") != NULL);
 
       if (p.mode == MODE_MULTILINE_SMILES)
          obj = indigoIterateSmiles(reader);
       else if (p.mode == MODE_SDF)
          obj = indigoIterateSDF(reader);
+      else if (p.mode == MODE_MULTIPLE_CML)
+         obj = indigoIterateCML(reader);
       else if (p.mode == MODE_RDF)
          obj = indigoIterateRDF(reader);
       else {
@@ -805,55 +843,100 @@ int main (int argc, char *argv[])
          return -1;
       }
 
-      if (!p.batch_save && strstr(p.outfile, "%s") == NULL)
+      if ((p.out_ext == OEXT_MOL || p.out_ext == OEXT_RXN || p.out_ext == OEXT_OTHER) && !have_percent_s)
          ERROR("on multiple output, output file name must have '%%s'\n");
 
-      if (p.batch_save)
+      if (p.out_ext == OEXT_SDF || p.out_ext == OEXT_RDF ||
+         (p.out_ext == OEXT_CML && !have_percent_s))
+      {
          writer = indigoWriteFile(p.outfile);
+         if (p.out_ext == OEXT_RDF)
+            indigoRdfHeader(writer);
+         if (p.out_ext == OEXT_CML)
+            indigoCmlHeader(writer);
+      }
 
       i = -1;
-      while ((item = indigoNext(obj))) {
-         ++i;
-         _prepare(item, p.aromatization);
-         if (p.action == ACTION_LAYOUT)
-            indigoLayout(item);
 
-         if (p.batch_save) {
-            printf("saving item #%d...\n", i);
-            indigoSdfAppend(item, writer);
-         } else {
+      while ((item = indigoNext(obj))) {
+         int rc;
+         ++i;
+
+         if (writer > 0)
+            printf("saving item #%d... ", i);
+         else
+         {
             if (p.id) {
                if (!indigoHasProperty(item, p.id))  {
                   fprintf(stderr, "item #%d does not have %s, skipping\n", i, p.id);
                   continue;
                }
                id = indigoGetProperty(item, p.id);
-               
+
                snprintf(outfilename, sizeof(outfilename), p.outfile, id);
             } else {
                snprintf(number, sizeof(number), "%d", i);
                snprintf(outfilename, sizeof(outfilename), p.outfile, number);
             }
-            printf("saving %s...\n", outfilename);
-            writer = indigoWriteFile(outfilename);
+            printf("saving %s... ", outfilename);
+         }
 
+         indigoSetErrorHandler(0, 0);
+
+         if (_prepare(item, p.aromatization) < 0)
+         {
+            printf("%s\n", indigoGetLastError());
+            indigoSetErrorHandler(onError, 0);
+            continue;
+         }
+
+         if (p.action == ACTION_LAYOUT)
+         {
+            if (indigoLayout(item) < 0)
+            {
+               printf("%s\n", indigoGetLastError());
+               indigoSetErrorHandler(onError, 0);
+               continue;
+            }
+         }
+
+         if (writer > 0) {
+            if (p.out_ext == OEXT_SDF)
+               rc = indigoSdfAppend(writer, item);
+            else if (p.out_ext == OEXT_RDF)
+               rc = indigoRdfAppend(writer, item);
+            else
+               rc = indigoCmlAppend(writer, item);
+         } else {
             if (p.action == ACTION_LAYOUT) {
                if (p.out_ext == OEXT_MOL)
-                  indigoSaveMolfile(item, writer);
+                  rc = indigoSaveMolfileToFile(item, outfilename);
                else if (p.out_ext == OEXT_RXN)
-                  indigoSaveRxnfile(item, writer);
+                  rc = indigoSaveRxnfileToFile(item, outfilename);
                else
                   ERROR("extension unexpected");
             } else {
                _setComment(item, &p);
-               indigoRender(item, writer);
+               rc = indigoRenderToFile(item, outfilename);
             }
-            indigoFree(writer);
          }
+
+         if (rc < 0)
+         {
+            printf("%s\n", indigoGetLastError());
+            indigoSetErrorHandler(onError, 0);
+            continue;
+         }
+
          indigoFree(item);
+         indigoSetErrorHandler(onError, 0);
+         printf("\n");
       }
 
-      if (p.batch_save) {
+      if (writer > 0)
+      {
+         if (p.out_ext == OEXT_CML)
+            indigoCmlFooter(writer);
          indigoFree(writer);
       }
    }

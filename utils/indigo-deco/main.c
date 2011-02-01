@@ -76,6 +76,17 @@ void _handleInputFile (const char *path, int structures)
       }
       indigoFree(iter);
    }
+   else if ((strlen(path) > 4 && strcmp(path + strlen(path) - 4, ".cml") == 0))
+   {
+      int item, iter = indigoIterateCMLFile(path);
+
+      while ((item = indigoNext(iter)))
+      {
+         indigoArrayAdd(structures, item);
+         indigoFree(item);
+      }
+      indigoFree(iter);
+   }
    else
    {
       int item = indigoLoadMoleculeFromFile(path);
@@ -91,7 +102,7 @@ void _printHelpMessage ()
    printf(
    "Usage:\n  indigo-deco files [options]\n"
    "Perfoms molecule scaffold detection and R-group deconvolution\n"
-   "Accepted formats are: Molfile, SDFile, RDFile, SMILES\n"
+   "Accepted formats are: Molfile, SDFile, RDFile, SMILES, CML\n"
    "Options:\n"
    "-h          print this help message\n"
    "-a          calculate approximate scaffold (default is exact)\n"

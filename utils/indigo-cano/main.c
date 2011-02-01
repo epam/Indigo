@@ -35,7 +35,7 @@ void usage ()
 {
    printf(
       "Usage:\n"
-      "  indigo-cano filename.{mol,smi,sdf,sdf.gz,rdf,rdf.gz} [parameters]\n"
+      "  indigo-cano filename.{mol,smi,cml,sdf,sdf.gz,rdf,rdf.gz} [parameters]\n"
       "  indigo-cano - SMILES [parameters]\n"
       "Parameters:\n"
       "  -smiles          Output canonical SMILES (default)\n"
@@ -52,21 +52,35 @@ void usage ()
       );
 }
 
-void processMolecule (int mol, int smiles, int no_arom, int no_cistrans, int no_tetra)
+int processMolecule (int mol, int smiles, int no_arom, int no_cistrans, int no_tetra)
 {
    if (no_cistrans)
-      indigoClearCisTrans(mol);
+      if (indigoClearCisTrans(mol) < 0)
+         return -1;
 
    if (no_tetra)
-      indigoClearStereocenters(mol);
+      if (!indigoClearStereocenters(mol))
+         return -1;
 
    if (smiles && !no_arom)
-      indigoAromatize(mol);
+      if (indigoAromatize(mol) < 0)
+         return -1;
 
    if (smiles)
-      printf("%s\n", indigoCanonicalSmiles(mol));
+   {
+      const char *res = indigoCanonicalSmiles(mol);
+      if (res == 0)
+         return -1;
+      printf("%s\n", res);
+   }
    else
-      printf("%s\n", indigoLayeredCode(mol));
+   {
+      const char *res = indigoLayeredCode(mol);
+      if (res == 0)
+         return -1;
+      printf("%s\n", res);
+   }
+   return 1;
 }
 
 int main (int argc, char *argv[])
@@ -139,7 +153,7 @@ int main (int argc, char *argv[])
    if (strlen(filename) > 4 && filename[strlen(filename) - 4] == '.')
       ext = filename + strlen(filename) - 3;
    else if (strlen(filename) > 7 && filename[strlen(filename) - 7] == '.')
-      ext = filename + strlen(filename) - 7;
+      ext = filename + strlen(filename) - 6;
    else
    {
       fprintf(stderr, "input file format not recognized\n");
@@ -153,13 +167,16 @@ int main (int argc, char *argv[])
       indigoFree(mol);
       return 0;
    }
-   else if (strcmp(ext, "sdf") == 0 || strcmp(ext, "sdf.gz") == 0 ||
+   else if (strcmp(ext, "cml") == 0 ||
+            strcmp(ext, "sdf") == 0 || strcmp(ext, "sdf.gz") == 0 ||
             strcmp(ext, "rdf") == 0 || strcmp(ext, "rdf.gz") == 0 ||
             strcmp(ext, "smi") == 0 || strcmp(ext, "smi.gz") == 0)
    {
       int item, iter;
 
-      if (strstr(ext, "sdf") != NULL)
+      if ((strstr(ext, "cml") != NULL))
+         iter = indigoIterateCMLFile(filename);
+      else if (strstr(ext, "sdf") != NULL)
          iter = indigoIterateSDFile(filename);
       else if (strstr(ext, "rdf") != NULL)
          iter = indigoIterateRDFile(filename);
@@ -168,7 +185,10 @@ int main (int argc, char *argv[])
 
       while ((item = indigoNext(iter)))
       {
-         processMolecule(item, smiles, no_arom, no_cistrans, no_tetra);
+         indigoSetErrorHandler(0, 0);
+         if (processMolecule(item, smiles, no_arom, no_cistrans, no_tetra) == -1)
+            printf("%s\n", indigoGetLastError());
+         indigoSetErrorHandler(onError, 0);
          indigoFree(item);
       }
       indigoFree(iter);
