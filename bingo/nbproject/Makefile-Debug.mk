@@ -97,7 +97,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../layout/dist/Debug/GNU-Linux-x86/liblayout.a ../reaction/dist/Debug/GNU-Linux-x86/libreaction.a ../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a ../graph/dist/Debug/GNU-Linux-x86/libgraph.a -lz
+LDLIBSOPTIONS=../layout/dist/Debug/GNU-Linux-x86/liblayout.a ../reaction/dist/Debug/GNU-Linux-x86/libreaction.a ../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a ../graph/dist/Debug/GNU-Linux-x86/libgraph.a ../tinyxml/dist/Debug/GNU-Linux-x86/libtinyxml.a -lz
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -110,6 +110,8 @@ dist/Debug/GNU-Linux-x86/libbingo.so: ../reaction/dist/Debug/GNU-Linux-x86/libre
 dist/Debug/GNU-Linux-x86/libbingo.so: ../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a
 
 dist/Debug/GNU-Linux-x86/libbingo.so: ../graph/dist/Debug/GNU-Linux-x86/libgraph.a
+
+dist/Debug/GNU-Linux-x86/libbingo.so: ../tinyxml/dist/Debug/GNU-Linux-x86/libtinyxml.a
 
 dist/Debug/GNU-Linux-x86/libbingo.so: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/GNU-Linux-x86
@@ -361,6 +363,7 @@ ${OBJECTDIR}/_ext/1881957642/nano_posix.o: ../common/base_c/nano_posix.c
 	cd ../reaction && ${MAKE}  -f Makefile CONF=Debug
 	cd ../molecule && ${MAKE}  -f Makefile CONF=Debug
 	cd ../graph && ${MAKE}  -f Makefile CONF=Debug
+	cd ../tinyxml && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -373,6 +376,7 @@ ${OBJECTDIR}/_ext/1881957642/nano_posix.o: ../common/base_c/nano_posix.c
 	cd ../reaction && ${MAKE}  -f Makefile CONF=Debug clean
 	cd ../molecule && ${MAKE}  -f Makefile CONF=Debug clean
 	cd ../graph && ${MAKE}  -f Makefile CONF=Debug clean
+	cd ../tinyxml && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

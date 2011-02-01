@@ -97,7 +97,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../layout/dist/Release32/GNU-Linux-x86/liblayout.a ../reaction/dist/Release32/GNU-Linux-x86/libreaction.a ../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a ../graph/dist/Release32/GNU-Linux-x86/libgraph.a -lz
+LDLIBSOPTIONS=../layout/dist/Release32/GNU-Linux-x86/liblayout.a ../reaction/dist/Release32/GNU-Linux-x86/libreaction.a ../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a ../graph/dist/Release32/GNU-Linux-x86/libgraph.a ../tinyxml/dist/Release32/GNU-Linux-x86/libtinyxml.a -lz
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -110,6 +110,8 @@ dist/Release32/GNU-Linux-x86/libbingo.so: ../reaction/dist/Release32/GNU-Linux-x
 dist/Release32/GNU-Linux-x86/libbingo.so: ../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a
 
 dist/Release32/GNU-Linux-x86/libbingo.so: ../graph/dist/Release32/GNU-Linux-x86/libgraph.a
+
+dist/Release32/GNU-Linux-x86/libbingo.so: ../tinyxml/dist/Release32/GNU-Linux-x86/libtinyxml.a
 
 dist/Release32/GNU-Linux-x86/libbingo.so: ${OBJECTFILES}
 	${MKDIR} -p dist/Release32/GNU-Linux-x86
@@ -361,6 +363,7 @@ ${OBJECTDIR}/_ext/1881957642/nano_posix.o: ../common/base_c/nano_posix.c
 	cd ../reaction && ${MAKE}  -f Makefile CONF=Release32
 	cd ../molecule && ${MAKE}  -f Makefile CONF=Release32
 	cd ../graph && ${MAKE}  -f Makefile CONF=Release32
+	cd ../tinyxml && ${MAKE}  -f Makefile CONF=Release32
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -373,6 +376,7 @@ ${OBJECTDIR}/_ext/1881957642/nano_posix.o: ../common/base_c/nano_posix.c
 	cd ../reaction && ${MAKE}  -f Makefile CONF=Release32 clean
 	cd ../molecule && ${MAKE}  -f Makefile CONF=Release32 clean
 	cd ../graph && ${MAKE}  -f Makefile CONF=Release32 clean
+	cd ../tinyxml && ${MAKE}  -f Makefile CONF=Release32 clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl
