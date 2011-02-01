@@ -35,6 +35,7 @@ OBJS_libgraph.a =  \
 	$(TARGETDIR_libgraph.a)/cycle_enumerator.o \
 	$(TARGETDIR_libgraph.a)/dfs_walk.o \
 	$(TARGETDIR_libgraph.a)/edge_rotation_matcher.o \
+	$(TARGETDIR_libgraph.a)/edge_subgraph_enumerator.o \
 	$(TARGETDIR_libgraph.a)/embedding_enumerator.o \
 	$(TARGETDIR_libgraph.a)/embeddings_storage.o \
 	$(TARGETDIR_libgraph.a)/filter.o \
@@ -42,6 +43,7 @@ OBJS_libgraph.a =  \
 	$(TARGETDIR_libgraph.a)/graph_affine_matcher.o \
 	$(TARGETDIR_libgraph.a)/graph_constrained_bmatching_finder.o \
 	$(TARGETDIR_libgraph.a)/graph_decomposer.o \
+	$(TARGETDIR_libgraph.a)/graph_fast_access.o \
 	$(TARGETDIR_libgraph.a)/graph_highlighting.o \
 	$(TARGETDIR_libgraph.a)/graph_perfect_matching.o \
 	$(TARGETDIR_libgraph.a)/graph_subchain_enumerator.o \
@@ -155,6 +157,9 @@ $(TARGETDIR_libgraph.a)/dfs_walk.o: $(TARGETDIR_libgraph.a) src/dfs_walk.cpp
 $(TARGETDIR_libgraph.a)/edge_rotation_matcher.o: $(TARGETDIR_libgraph.a) src/edge_rotation_matcher.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/edge_rotation_matcher.cpp
 
+$(TARGETDIR_libgraph.a)/edge_subgraph_enumerator.o: $(TARGETDIR_libgraph.a) src/edge_subgraph_enumerator.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/edge_subgraph_enumerator.cpp
+
 $(TARGETDIR_libgraph.a)/embedding_enumerator.o: $(TARGETDIR_libgraph.a) src/embedding_enumerator.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/embedding_enumerator.cpp
 
@@ -175,6 +180,9 @@ $(TARGETDIR_libgraph.a)/graph_constrained_bmatching_finder.o: $(TARGETDIR_libgra
 
 $(TARGETDIR_libgraph.a)/graph_decomposer.o: $(TARGETDIR_libgraph.a) src/graph_decomposer.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/graph_decomposer.cpp
+
+$(TARGETDIR_libgraph.a)/graph_fast_access.o: $(TARGETDIR_libgraph.a) src/graph_fast_access.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/graph_fast_access.cpp
 
 $(TARGETDIR_libgraph.a)/graph_highlighting.o: $(TARGETDIR_libgraph.a) src/graph_highlighting.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/graph_highlighting.cpp
@@ -261,6 +269,7 @@ clean:
 		$(TARGETDIR_libgraph.a)/graph_affine_matcher.o \
 		$(TARGETDIR_libgraph.a)/graph_constrained_bmatching_finder.o \
 		$(TARGETDIR_libgraph.a)/graph_decomposer.o \
+		$(TARGETDIR_libgraph.a)/graph_fast_access.o \
 		$(TARGETDIR_libgraph.a)/graph_highlighting.o \
 		$(TARGETDIR_libgraph.a)/graph_perfect_matching.o \
 		$(TARGETDIR_libgraph.a)/graph_subchain_enumerator.o \

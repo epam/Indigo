@@ -16,6 +16,7 @@ OBJS_libindigo.a =  \
 	$(TARGETDIR_libindigo.a)/indigo_layout.o \
 	$(TARGETDIR_libindigo.a)/indigo_loaders.o \
 	$(TARGETDIR_libindigo.a)/indigo_macros.o \
+	$(TARGETDIR_libindigo.a)/indigo_mapping.o \
 	$(TARGETDIR_libindigo.a)/indigo_match.o \
 	$(TARGETDIR_libindigo.a)/indigo_misc.o \
 	$(TARGETDIR_libindigo.a)/indigo_molecule.o \
@@ -62,6 +63,9 @@ $(TARGETDIR_libindigo.a)/indigo_loaders.o: $(TARGETDIR_libindigo.a) src/indigo_l
 
 $(TARGETDIR_libindigo.a)/indigo_macros.o: $(TARGETDIR_libindigo.a) src/indigo_macros.c
 	$(COMPILE.c) $(CFLAGS_libindigo.a) $(CPPFLAGS_libindigo.a) -o $@ src/indigo_macros.c
+
+$(TARGETDIR_libindigo.a)/indigo_mapping.o: $(TARGETDIR_libindigo.a) src/indigo_mapping.cpp
+	$(COMPILE.cc) $(CCFLAGS_libindigo.a) $(CPPFLAGS_libindigo.a) -o $@ src/indigo_mapping.cpp
 
 $(TARGETDIR_libindigo.a)/indigo_match.o: $(TARGETDIR_libindigo.a) src/indigo_match.cpp
 	$(COMPILE.cc) $(CCFLAGS_libindigo.a) $(CPPFLAGS_libindigo.a) -o $@ src/indigo_match.cpp
@@ -116,6 +120,7 @@ OBJS_libindigo.so =  \
 	$(TARGETDIR_libindigo.so)/indigo_layout.o \
 	$(TARGETDIR_libindigo.so)/indigo_loaders.o \
 	$(TARGETDIR_libindigo.so)/indigo_macros.o \
+	$(TARGETDIR_libindigo.so)/indigo_mapping.o \
 	$(TARGETDIR_libindigo.so)/indigo_match.o \
 	$(TARGETDIR_libindigo.so)/indigo_misc.o \
 	$(TARGETDIR_libindigo.so)/indigo_molecule.o \
@@ -163,6 +168,9 @@ $(TARGETDIR_libindigo.so)/indigo_loaders.o: $(TARGETDIR_libindigo.so) src/indigo
 
 $(TARGETDIR_libindigo.so)/indigo_macros.o: $(TARGETDIR_libindigo.so) src/indigo_macros.c
 	$(COMPILE.c) $(CFLAGS_libindigo.so) $(CPPFLAGS_libindigo.so) -o $@ src/indigo_macros.c
+
+$(TARGETDIR_libindigo.so)/indigo_mapping.o: $(TARGETDIR_libindigo.so) src/indigo_mapping.cpp
+	$(COMPILE.cc) $(CCFLAGS_libindigo.so) $(CPPFLAGS_libindigo.so) -o $@ src/indigo_mapping.cpp
 
 $(TARGETDIR_libindigo.so)/indigo_match.o: $(TARGETDIR_libindigo.so) src/indigo_match.cpp
 	$(COMPILE.cc) $(CCFLAGS_libindigo.so) $(CPPFLAGS_libindigo.so) -o $@ src/indigo_match.cpp
@@ -212,6 +220,7 @@ clean:
 		$(TARGETDIR_libindigo.a)/indigo_layout.o \
 		$(TARGETDIR_libindigo.a)/indigo_loaders.o \
 		$(TARGETDIR_libindigo.a)/indigo_macros.o \
+		$(TARGETDIR_libindigo.a)/indigo_mapping.o \
 		$(TARGETDIR_libindigo.a)/indigo_match.o \
 		$(TARGETDIR_libindigo.a)/indigo_misc.o \
 		$(TARGETDIR_libindigo.a)/indigo_molecule.o \

@@ -7,6 +7,9 @@ if [ -z $version ]; then
   exit;
 fi
 
+cd ../tinyxml
+make -f Makefile.sun.32
+make -f Makefile.sun.64
 cd ../graph
 make -f Makefile.sun.32
 make -f Makefile.sun.64

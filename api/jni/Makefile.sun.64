@@ -4,7 +4,7 @@ CFLAGS = $(BASICOPTS) -xCC
 
 TARGETDIR_libindigo-jni.so=sparc64
 
-USERLIBS_libindigo-jni.so = ../sparc64static/libindigo.a ../../layout/sparc64/liblayout.a ../../reaction/sparc64/libreaction.a ../../molecule/sparc64/libmolecule.a ../../graph/sparc64/libgraph.a 
-DEPLIBS_libindigo-jni.so = ../sparc64static/libindigo.a  ../../layout/sparc64/liblayout.a  ../../reaction/sparc64/libreaction.a  ../../molecule/sparc64/libmolecule.a  ../../graph/sparc64/libgraph.a  
+USERLIBS_libindigo-jni.so = ../sparc64static/libindigo.a ../../layout/sparc64/liblayout.a ../../reaction/sparc64/libreaction.a ../../molecule/sparc64/libmolecule.a ../../graph/sparc64/libgraph.a ../../tinyxml/sparc64/libtinyxml.a
+DEPLIBS_libindigo-jni.so = ../sparc64static/libindigo.a  ../../layout/sparc64/liblayout.a  ../../reaction/sparc64/libreaction.a  ../../molecule/sparc64/libmolecule.a  ../../graph/sparc64/libgraph.a  ../../tinyxml/sparc64/libtinyxml.a
 
 include Makefile.sun.common

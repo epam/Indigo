@@ -1,12 +1,12 @@
 CC = cc
 CCC = CC
 CXX = CC
-BASICOPTS = -xO3 -s -misalign
+BASICOPTS = -xO3 -s -misalign -xarch=generic64 -xcode=abs64
 CFLAGS = $(BASICOPTS) -xCC
 CCFLAGS = $(BASICOPTS)
 CXXFLAGS = $(BASICOPTS)
 CCADMIN = CCadmin -clean
 
-TARGETDIR_libmolecule.a=sparc32
+TARGETDIR_libtinyxml.a=sparc64
 
 include Makefile.sun.common

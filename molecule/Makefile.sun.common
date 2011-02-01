@@ -3,7 +3,8 @@ all: $(TARGETDIR_libmolecule.a)/libmolecule.a
 ## Target: libmolecule.a
 CPPFLAGS_libmolecule.a = \
 	-I.. \
-	-I../common
+	-I../common \
+	-I../tinyxml/include
 OBJS_libmolecule.a =  \
 	$(TARGETDIR_libmolecule.a)/bitarray.o \
 	$(TARGETDIR_libmolecule.a)/bitinworker.o \
@@ -32,6 +33,7 @@ OBJS_libmolecule.a =  \
 	$(TARGETDIR_libmolecule.a)/molecule_automorphism_search.o \
 	$(TARGETDIR_libmolecule.a)/molecule_chain_fingerprints.o \
 	$(TARGETDIR_libmolecule.a)/molecule_cis_trans.o \
+	$(TARGETDIR_libmolecule.a)/molecule_cml_loader.o \
 	$(TARGETDIR_libmolecule.a)/molecule_cml_saver.o \
 	$(TARGETDIR_libmolecule.a)/molecule_dearom.o \
 	$(TARGETDIR_libmolecule.a)/molecule_electrons_localizer.o \
@@ -56,6 +58,7 @@ OBJS_libmolecule.a =  \
 	$(TARGETDIR_libmolecule.a)/molecule_tautomer_utils.o \
 	$(TARGETDIR_libmolecule.a)/molfile_loader.o \
 	$(TARGETDIR_libmolecule.a)/molfile_saver.o \
+	$(TARGETDIR_libmolecule.a)/multiple_cml_loader.o \
 	$(TARGETDIR_libmolecule.a)/query_molecule.o \
 	$(TARGETDIR_libmolecule.a)/rdf_loader.o \
 	$(TARGETDIR_libmolecule.a)/sdf_loader.o \
@@ -151,6 +154,9 @@ $(TARGETDIR_libmolecule.a)/molecule_chain_fingerprints.o: $(TARGETDIR_libmolecul
 $(TARGETDIR_libmolecule.a)/molecule_cis_trans.o: $(TARGETDIR_libmolecule.a) src/molecule_cis_trans.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_cis_trans.cpp
 
+$(TARGETDIR_libmolecule.a)/molecule_cml_loader.o: $(TARGETDIR_libmolecule.a) src/molecule_cml_loader.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_cml_loader.cpp
+
 $(TARGETDIR_libmolecule.a)/molecule_cml_saver.o: $(TARGETDIR_libmolecule.a) src/molecule_cml_saver.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_cml_saver.cpp
 
@@ -223,6 +229,9 @@ $(TARGETDIR_libmolecule.a)/molfile_loader.o: $(TARGETDIR_libmolecule.a) src/molf
 $(TARGETDIR_libmolecule.a)/molfile_saver.o: $(TARGETDIR_libmolecule.a) src/molfile_saver.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molfile_saver.cpp
 
+$(TARGETDIR_libmolecule.a)/multiple_cml_loader.o: $(TARGETDIR_libmolecule.a) src/multiple_cml_loader.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/multiple_cml_loader.cpp
+
 $(TARGETDIR_libmolecule.a)/query_molecule.o: $(TARGETDIR_libmolecule.a) src/query_molecule.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/query_molecule.cpp
 
@@ -271,6 +280,7 @@ clean:
 		$(TARGETDIR_libmolecule.a)/molecule_automorphism_search.o \
 		$(TARGETDIR_libmolecule.a)/molecule_chain_fingerprints.o \
 		$(TARGETDIR_libmolecule.a)/molecule_cis_trans.o \
+		$(TARGETDIR_libmolecule.a)/molecule_cml_loader.o \
 		$(TARGETDIR_libmolecule.a)/molecule_cml_saver.o \
 		$(TARGETDIR_libmolecule.a)/molecule_dearom.o \
 		$(TARGETDIR_libmolecule.a)/molecule_electrons_localizer.o \
@@ -295,6 +305,7 @@ clean:
 		$(TARGETDIR_libmolecule.a)/molecule_tautomer_utils.o \
 		$(TARGETDIR_libmolecule.a)/molfile_loader.o \
 		$(TARGETDIR_libmolecule.a)/molfile_saver.o \
+		$(TARGETDIR_libmolecule.a)/multiple_cml_loader.o \
 		$(TARGETDIR_libmolecule.a)/query_molecule.o \
 		$(TARGETDIR_libmolecule.a)/rdf_loader.o \
 		$(TARGETDIR_libmolecule.a)/sdf_loader.o \

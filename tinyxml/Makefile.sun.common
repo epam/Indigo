@@ -1,0 +1,55 @@
+
+all: $(TARGETDIR_libtinyxml.a)/libtinyxml.a
+
+## Target: tinyxml.a
+CPPFLAGS_libtinyxml.a = \
+	-Iinclude
+OBJS_libtinyxml.a =  \
+	$(TARGETDIR_libtinyxml.a)/tinystr.o \
+	$(TARGETDIR_libtinyxml.a)/tinyxml.o \
+	$(TARGETDIR_libtinyxml.a)/tinyxmlerror.o \
+	$(TARGETDIR_libtinyxml.a)/tinyxmlparser.o
+
+
+# Link or archive
+ARCPP = $(CCC) -xar -o $@ 
+$(TARGETDIR_libtinyxml.a)/libtinyxml.a: $(TARGETDIR_libtinyxml.a) $(OBJS_libtinyxml.a)
+	$(ARCPP) $(OBJS_libtinyxml.a)
+
+
+# Compile source files into .o files
+$(TARGETDIR_libtinyxml.a)/tinystr.o: $(TARGETDIR_libtinyxml.a) src/tinystr.cpp
+	$(COMPILE.cc) $(CCFLAGS_libtinyxml.a) $(CPPFLAGS_libtinyxml.a) -o $@ src/tinystr.cpp
+
+$(TARGETDIR_libtinyxml.a)/tinyxml.o: $(TARGETDIR_libtinyxml.a) src/tinyxml.cpp
+	$(COMPILE.cc) $(CCFLAGS_libtinyxml.a) $(CPPFLAGS_libtinyxml.a) -o $@ src/tinyxml.cpp
+
+$(TARGETDIR_libtinyxml.a)/tinyxmlerror.o: $(TARGETDIR_libtinyxml.a) src/tinyxmlerror.cpp
+	$(COMPILE.cc) $(CCFLAGS_libtinyxml.a) $(CPPFLAGS_libtinyxml.a) -o $@ src/tinyxmlerror.cpp
+
+$(TARGETDIR_libtinyxml.a)/tinyxmlparser.o: $(TARGETDIR_libtinyxml.a) src/tinyxmlparser.cpp
+	$(COMPILE.cc) $(CCFLAGS_libtinyxml.a) $(CPPFLAGS_libtinyxml.a) -o $@ src/tinyxmlparser.cpp
+
+
+
+#### Clean target deletes all generated files ####
+clean:
+	rm -f \
+		$(TARGETDIR_libtinyxml.a)/tinyxml.a \
+		$(TARGETDIR_libtinyxml.a)/tinystr.o \
+		$(TARGETDIR_libtinyxml.a)/tinyxml.o \
+		$(TARGETDIR_libtinyxml.a)/tinyxmlerror.o \
+		$(TARGETDIR_libtinyxml.a)/tinyxmlparser.o
+	$(CCADMIN)
+	rm -f -r $(TARGETDIR_libtinyxml.a)
+
+
+# Create the target directory (if needed)
+$(TARGETDIR_libtinyxml.a):
+	mkdir -p $(TARGETDIR_libtinyxml.a)
+
+
+# Enable dependency checking
+.KEEP_STATE:
+.KEEP_STATE_FILE:.make.state.Sun-sparc-Solaris
+
