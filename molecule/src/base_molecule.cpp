@@ -539,7 +539,7 @@ int BaseMolecule::_addBaseBond (int beg, int end)
    return idx;
 }
 
-int BaseMolecule::getAtomRadical_NoThrow (int idx)
+int BaseMolecule::getAtomRadical_NoThrow (int idx, int fallback)
 {
    try
    {
@@ -547,7 +547,7 @@ int BaseMolecule::getAtomRadical_NoThrow (int idx)
    }
    catch (Element::Error &)
    {
-      return 0;
+      return fallback;
    }
 }
 

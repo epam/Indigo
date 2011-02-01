@@ -833,7 +833,7 @@ void MoleculeRenderInternal::_initAtomData ()
 
       int charge = bm.getAtomCharge(i);
       int isotope = bm.getAtomIsotope(i);
-      int radical = 0;
+      int radical = -1;
       int valence = bm.getExplicitValence(i);
       bool query = bm.isQueryMolecule();
       bool plainCarbon =
@@ -845,7 +845,7 @@ void MoleculeRenderInternal::_initAtomData ()
          !_hasQueryModifiers(i);
 
       if (!bm.isRSite(i) && !bm.isPseudoAtom(i))
-         radical = bm.getAtomRadical_NoThrow(i);
+         radical = bm.getAtomRadical_NoThrow(i, -1);
 
 
       ad.showLabel = true;
@@ -2065,10 +2065,10 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       }
 
       // radical
-      int radical = 0;
+      int radical = -1;
       
       if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
-         radical = bm.getAtomRadical_NoThrow(aid);
+         radical = bm.getAtomRadical_NoThrow(aid, -1);
       
       if (radical > 0)
       {

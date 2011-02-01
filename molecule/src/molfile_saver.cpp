@@ -344,7 +344,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       int valence = mol.getExplicitValence(i);
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
-         radical = mol.getAtomRadical_NoThrow(i);
+         radical = mol.getAtomRadical_NoThrow(i, 0);
 
       out.printf(" %f %f %f %d", xyz.x, xyz.y, xyz.z, aam);
 
@@ -652,7 +652,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       _atom_mapping[i] = iw;
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
-         atom_radical = mol.getAtomRadical_NoThrow(i);
+         atom_radical = mol.getAtomRadical_NoThrow(i, 0);
 
       if (mol.isRSite(i))
       {
