@@ -28,8 +28,8 @@ OBJS_indigo-deco =  \
 	$(TARGETDIR_indigo-deco)/main.o \
 	$(TARGETDIR_indigo-deco)/os_dir_posix.o
 SYSLIBS_indigo-deco = -lm -lpthread -lz -lCrun -lrt
-USERLIBS_indigo-deco = ../../api/sparc32static/libindigo.a ../../layout/sparc32/liblayout.a ../../reaction/sparc32/libreaction.a ../../molecule/sparc32/libmolecule.a ../../graph/sparc32/libgraph.a $(SYSLIBS_indigo-deco) 
-DEPLIBS_indigo-deco = ../../api/sparc32static/libindigo.a  ../../layout/sparc32/liblayout.a  ../../reaction/sparc32/libreaction.a  ../../molecule/sparc32/libmolecule.a  ../../graph/sparc32/libgraph.a   
+USERLIBS_indigo-deco = ../../api/sparc32static/libindigo.a ../../layout/sparc32/liblayout.a ../../reaction/sparc32/libreaction.a ../../molecule/sparc32/libmolecule.a ../../graph/sparc32/libgraph.a  ../../tinyxml/sparc32/libtinyxml.a $(SYSLIBS_indigo-deco) 
+DEPLIBS_indigo-deco = ../../api/sparc32static/libindigo.a  ../../layout/sparc32/liblayout.a  ../../reaction/sparc32/libreaction.a  ../../molecule/sparc32/libmolecule.a  ../../graph/sparc32/libgraph.a  ../../tinyxml/sparc32/libtinyxml.a    
 LDLIBS_indigo-deco = $(USERLIBS_indigo-deco)
 
 
