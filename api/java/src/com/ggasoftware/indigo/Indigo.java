@@ -506,6 +506,12 @@ public class Indigo
    public native int indigoIterateComponents (int molecule);
    public native int indigoComponent (int molecule, int index);
 
+   public native int indigoCountSSSR (int molecule);
+   public native int indigoIterateSSSR (int molecule);
+   public native int indigoIterateSubtrees (int molecule, int min_atoms, int max_atoms);
+   public native int indigoIterateRings (int molecule, int min_atoms, int max_atoms);
+   public native int indigoIterateEdgeSubmolecules (int molecule, int min_bonds, int max_bonds);
+
    public native int indigoCountHeavyAtoms (int molecule);
    public native int indigoGrossFormula (int molecule);
    public native float indigoMolecularWeight (int molecule);

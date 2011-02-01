@@ -284,6 +284,7 @@ CEXPORT int indigoLoadReaction (int source)
 
       loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+      loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
 
       AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
 

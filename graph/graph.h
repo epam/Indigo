@@ -158,7 +158,8 @@ public:
    const Array<int> & getDecomposition ();
 
 protected:
-   void _mergeWithSubgraph (const Graph &other, const Array<int> &vertices, const Array<int> *edges, Array<int> *mapping);
+   void _mergeWithSubgraph (const Graph &other, const Array<int> &vertices, const Array<int> *edges,
+           Array<int> *mapping, Array<int> *edge_mapping);
 
    Pool<List<VertexEdge>::Elem> *_neighbors_pool;
    ObjPool<Vertex>  *_vertices;

@@ -347,6 +347,7 @@ class Indigo:
     self.IndigoObject.canonicalSmiles = Indigo._member_string(Indigo._lib.indigoCanonicalSmiles)
     self.IndigoObject.layeredCode = Indigo._member_string(Indigo._lib.indigoLayeredCode)
 
+    self.IndigoObject.hasCoord = Indigo._member_bool(Indigo._lib.indigoHasCoord)
     self.IndigoObject.hasZCoord = Indigo._member_bool(Indigo._lib.indigoHasZCoord)
     self.IndigoObject.isChiral = Indigo._member_bool(Indigo._lib.indigoIsChiral)
     

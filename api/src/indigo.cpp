@@ -34,6 +34,7 @@ Indigo::Indigo ()
    _next_id = 1001;
 
    ignore_stereochemistry_errors = false;
+   ignore_noncritical_query_features = false;
    treat_x_as_pseudoatom = false;
    skip_3d_chirality = false;
    deconvolution_aromatization = true;

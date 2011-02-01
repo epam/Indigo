@@ -30,6 +30,7 @@ void ReactionAutoLoader::_init ()
    treat_x_as_pseudoatom = false;
    ignore_closing_bond_direction_mismatch = false;
    ignore_stereocenter_errors = false;
+   ignore_noncritical_query_features = false;
 }
 
 ReactionAutoLoader::ReactionAutoLoader (Scanner &scanner)
@@ -90,6 +91,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
 
          loader2.highlighting = highlighting;
          loader2.ignore_stereocenter_errors = ignore_stereocenter_errors;
+         loader2.ignore_noncritical_query_features = ignore_noncritical_query_features;
          loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          if (query)
             loader2.loadQueryReaction((QueryReaction &)reaction);
@@ -109,6 +111,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          loader.highlighting = highlighting;
          loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+         loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
          if (query)
             loader.loadQueryReaction((QueryReaction &)reaction);
          else
@@ -159,6 +162,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
       loader.highlighting = highlighting;
       loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
       loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+      loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
       if (query)
          loader.loadQueryReaction((QueryReaction &)reaction);
       else
