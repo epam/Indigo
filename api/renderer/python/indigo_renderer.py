@@ -53,7 +53,7 @@ class IndigoRenderer:
     self.indigo._setSID()
     arr = None
     if refatoms:
-      if len(refatoms) != objects.size():
+      if len(refatoms) != objects.count():
         raise IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects")
       arr = (c_int * len(refatoms))()
       for i in xrange(len(refatoms)):
@@ -65,7 +65,7 @@ class IndigoRenderer:
     self.indigo._setSID()
     arr = None
     if refatoms:
-      if len(refatoms) != objects.size():
+      if len(refatoms) != objects.count():
         raise IndigoException("renderGridToBuffer(): refatoms[] size must be equal to the number of objects")
       arr = (c_int * len(refatoms))()
       for i in xrange(len(refatoms)):

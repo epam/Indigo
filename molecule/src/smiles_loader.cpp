@@ -902,7 +902,8 @@ void SmilesLoader::_loadMolecule ()
                //   2) try to de-aromatize the molecule to know the implicit hydrogens (too complicated)
                _mol->setImplicitH(idx, 0);
          }
-         _mol->getAtomRadical(idx);
+         if (!_mol->isRSite(idx) && !_mol->isPseudoAtom(idx))
+            _mol->getAtomRadical(idx);
       }
    }
 

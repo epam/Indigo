@@ -836,17 +836,17 @@ void MoleculeRenderInternal::_initAtomData ()
       int radical = -1;
       int valence = bm.getExplicitValence(i);
       bool query = bm.isQueryMolecule();
-      bool plainCarbon =
-         ad.label == ELEM_C && 
-         charge == (query ? CHARGE_UNKNOWN : 0) &&
-         isotope == (query ? -1 : 0) &&
-         radical == (query ? -1 : 0) &&
-         valence == -1 &&
-         !_hasQueryModifiers(i);
 
       if (!bm.isRSite(i) && !bm.isPseudoAtom(i))
          radical = bm.getAtomRadical_NoThrow(i, -1);
 
+      bool plainCarbon =
+         ad.label == ELEM_C &&
+         charge == (query ? CHARGE_UNKNOWN : 0) &&
+         isotope == (query ? -1 : 0) &&
+         radical <= 0 &&
+         valence == -1 &&
+         !_hasQueryModifiers(i);
 
       ad.showLabel = true;
       if (_data.labelMode == LABEL_MODE_FORCESHOW)
