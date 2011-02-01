@@ -394,6 +394,7 @@
 		A7EDA3A710624A88006CBFAF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = YES;
 				HEADER_SEARCH_PATHS = (
 					..,

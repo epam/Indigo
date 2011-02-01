@@ -21,14 +21,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 810BD70012F2D922004D1772 /* tinyxml.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772 /* libtinyxml.a */;
+			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772;
 			remoteInfo = tinyxml;
 		};
 		810BD70A12F2D943004D1772 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 810BD70012F2D922004D1772 /* tinyxml.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772 /* tinyxml */;
+			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772;
 			remoteInfo = tinyxml;
 		};
 		819EB179125F77AF00CE1D88 /* PBXContainerItemProxy */ = {
@@ -459,7 +459,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "indigo-cano";
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				SDKROOT = "";
 				ZERO_LINK = NO;
 			};
 			name = Release;

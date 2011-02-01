@@ -38,7 +38,7 @@ for osxver in '10.5' '10.6'; do
    mkdir -p $libdistr
    mkdir -p $jnidistr/lib/Mac/$osxver
    mkdir -p $pythondistr/lib/Mac/$osxver
-   rm -rf build
+   rm -rf build ../graph/build ../molecule/build ../reaction/build ../layout/build ../render2d/build ../tinyxml/build
    xcodebuild -sdk macosx$osxver -configuration Release -alltargets
    cd renderer
    rm -r build

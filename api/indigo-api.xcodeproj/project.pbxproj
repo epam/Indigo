@@ -89,14 +89,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 810BD6CE12F2D755004D1772 /* tinyxml.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772 /* libtinyxml.a */;
+			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772;
 			remoteInfo = tinyxml;
 		};
 		810BD6D412F2D76A004D1772 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 810BD6CE12F2D755004D1772 /* tinyxml.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772 /* tinyxml */;
+			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772;
 			remoteInfo = tinyxml;
 		};
 		817B69DA11F88ED200BC3D88 /* PBXContainerItemProxy */ = {
@@ -240,11 +240,11 @@
 		817B699411F88B1F00BC3D88 = {
 			isa = PBXGroup;
 			children = (
-				810BD6CE12F2D755004D1772 /* tinyxml.xcodeproj */,
 				817B69E811F88F0D00BC3D88 /* layout.xcodeproj */,
 				817B69E211F88EFD00BC3D88 /* reaction.xcodeproj */,
 				817B69DC11F88EE800BC3D88 /* molecule.xcodeproj */,
 				817B69D611F88ED200BC3D88 /* graph.xcodeproj */,
+				810BD6CE12F2D755004D1772 /* tinyxml.xcodeproj */,
 				817B69A111F88B3C00BC3D88 /* src */,
 				817B69B511F88BDC00BC3D88 /* Products */,
 				817B6A1911F891F200BC3D88 /* libz.dylib */,
