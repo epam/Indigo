@@ -31,7 +31,9 @@ make -f Makefile.sun.32
 make -f Makefile.sun.64
 cd ../java
 ./compile.sh
-cd ..
+cd ../renderer/java
+./compile.sh
+cd ../..
 
 ./indigo-libs-release-sun.sh indigo-libs-$1-sun32 32
 ./indigo-libs-release-sun.sh indigo-libs-$1-sun64 64
