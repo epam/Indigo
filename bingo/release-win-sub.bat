@@ -1,4 +1,4 @@
-rmdir \S \Q %1
+rmdir /S /Q %1
 
 mkdir %1\bin
 mkdir %1\sql\bingo
