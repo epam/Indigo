@@ -819,10 +819,10 @@ namespace com.ggasoftware.indigo
          Indigo.indigoCmlFooter(self);
       }
 
-      public void arrayAdd (IndigoObject item)
+      public int arrayAdd (IndigoObject item)
       {
          dispatcher.setSessionID();
-         Indigo.indigoArrayAdd(self, item.self);
+         return Indigo.indigoArrayAdd(self, item.self);
       }
 
       public IndigoObject at (int index)
