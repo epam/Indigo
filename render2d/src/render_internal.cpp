@@ -167,7 +167,7 @@ void RenderOptions::clear()
    showNeighborArcs = false;
    showValences = true;
    atomColoring = false;
-   useOldStereoNotation = false;
+   stereoMode = STEREO_STYLE_NEW;
    showReactingCenterUnchanged = false; 
    centerDoubleBondWhenStereoAdjacent = false;
    showCycles = false;
@@ -680,6 +680,8 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
    const MoleculeStereocenters& sc = _mol->stereocenters;
 
    _lopt.stereoMode = STEREOGROUPS_HIDE;
+   if (_opt.stereoMode == STEREO_STYLE_NONE)
+      return;
    bool allAbs = true, singleAndGroup = true, none = true;
    int andGid = -1;
    for (int i = sc.begin(); i < sc.end(); i = sc.next(i))
@@ -700,7 +702,7 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
          break;
    }
 
-   if (_opt.useOldStereoNotation)
+   if (_opt.stereoMode == STEREO_STYLE_OLD)
    {
       if (singleAndGroup)
          return;
