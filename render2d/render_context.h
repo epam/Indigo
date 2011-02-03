@@ -55,6 +55,7 @@ public:
    void drawItemBackground (const RenderItem& item);
    void drawTextItemText (const TextItem& ti);
    void drawTextItemText (const TextItem& ti, const Vec3f& color, bool bold);
+   void drawAttachmentPoint (RenderItemAttachmentPoint& ri);
    void drawLine (const Vec2f& v0, const Vec2f& v1);
    void fillQuad (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3);
    void drawQuad (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3);

@@ -83,6 +83,8 @@ void AtomDesc::clear ()
    showLabel = showHydro = true;
    tibegin = gibegin = -1;
    ticount = gicount = 0;
+   attachmentPointBegin = -1;
+   attachmentPointCount = 0;
    stereoGroupType = 
       stereoGroupNumber = -1;
    isRGroupAttachmentPoint = false;
@@ -192,12 +194,13 @@ void RenderSettings::init (float sf)
    fzz[FONT_SIZE_ATTR] = bondLineWidth * 8;
    fzz[FONT_SIZE_RGROUP_LOGIC] = bondLineWidth * 12;
    fzz[FONT_SIZE_RGROUP_LOGIC_INDEX] = bondLineWidth * 8;
-   fzz[FONT_SIZE_INDICES] = bondLineWidth * 6;   
+   fzz[FONT_SIZE_INDICES] = bondLineWidth * 6;
+   fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = bondLineWidth * 2;
 
    upperIndexShift = -0.4f;
    lowerIndexShift = 0.4f;
    boundExtent = 1.3f * bondLineWidth;
-   labelInternalOffset = bondLineWidth;         
+   labelInternalOffset = bondLineWidth;
    stereoGroupLabelOffset = 2 * bondLineWidth;
    radicalRightOffset = bondLineWidth / 2;
    radicalRightVertShift = -0.2f;

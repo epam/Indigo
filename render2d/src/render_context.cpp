@@ -664,6 +664,58 @@ void RenderContext::setGraphItemSizeSign (GraphItem& gi, GraphItem::TYPE type)
    gi.relpos.set(0, 0);
 }
 
+void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
+{
+   setSingleSource(ri.color);
+   if (ri.highlighted && opt.highlightColorEnable)
+      setSingleSource(opt.highlightColor);
+   setLineWidth(_settings.bondLineWidth);
+   moveTo(ri.p0);
+   lineTo(ri.p1);
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+
+   Vec2f n;
+   n.copy(ri.dir);
+   n.rotateL(1, 0);
+   Vec2f p, q, r;
+   int waveCnt = 10;
+   float waveLength = 0.5f;
+   float waveWidth = waveLength / waveCnt;
+   float slopeFactor = 0.2f;
+   p.lineCombin(ri.p1, n, -0.5f * waveLength);
+   moveTo(p);
+   float step = waveLength / waveCnt;
+   for (int i = 0; i < waveCnt; ++i) {
+      int turn = ((i & 1) ? 1 : -1);
+      q.lineCombin(p, ri.dir, waveWidth * turn);
+      q.addScaled(n, waveWidth * slopeFactor);
+      p.addScaled(n, step);
+      r.lineCombin(p, ri.dir, waveWidth * turn);
+      r.addScaled(n, -waveWidth * slopeFactor);
+      cairo_curve_to(_cr, q.x, q.y, r.x, r.y, p.x, p.y);
+   }
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+
+   QS_DEF(TextItem, ti);
+   ti.clear();
+   bprintf(ti.text, "%d", ri.number);
+   ti.fontsize = FONT_SIZE_ATTACHMENT_POINT_INDEX;
+   setTextItemSize(ti, ri.p1);
+   float sz = ti.bbsz.length();
+   ti.bbp.addScaled(n, -(sz/2 + 5 * _settings.bondLineWidth));
+   ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + 5 * _settings.bondLineWidth));
+   fontsSetFont(_cr, FONT_SIZE_ATTR, false);
+   Vec3f color;
+   getColor(color.x, color.y, color.z, CWC_BASE);
+   fontsDrawText(ti, color, false);
+}
+
 void RenderContext::drawGraphItem (GraphItem& gi)
 {
    setSingleSource(gi.color);
