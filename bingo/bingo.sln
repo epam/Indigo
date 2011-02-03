@@ -2,6 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bingo-core", "bingo-core.vcproj", "{CEC4E9E4-0396-4316-B640-D8582F0054C0}"
 	ProjectSection(ProjectDependencies) = postProject
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2} = {BB3E941D-B8F0-4660-94CC-592F7C7856A2}
 		{D69C5B23-48C2-400B-9BCD-B8276756B673} = {D69C5B23-48C2-400B-9BCD-B8276756B673}
 		{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5} = {C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}
 		{1CF32085-9687-4DBD-BCA2-D7378E2A9490} = {1CF32085-9687-4DBD-BCA2-D7378E2A9490}
@@ -44,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlserver_script_generator"
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\zlib-src\zlib.vcproj", "{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\tinyxml\tinyxml.vcproj", "{BB3E941D-B8F0-4660-94CC-592F7C7856A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -203,6 +206,20 @@ Global
 		{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}.Release|Win32.Build.0 = ReleaseMT|Win32
 		{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}.Release|x64.ActiveCfg = ReleaseMT|x64
 		{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}.Release|x64.Build.0 = ReleaseMT|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|Any CPU.ActiveCfg = ReleaseMD|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|Mixed Platforms.ActiveCfg = ReleaseMD|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|Mixed Platforms.Build.0 = ReleaseMD|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|Win32.ActiveCfg = ReleaseMT|Win32
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|Win32.Build.0 = ReleaseMT|Win32
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|x64.ActiveCfg = ReleaseMT|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Debug|x64.Build.0 = ReleaseMT|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|Any CPU.ActiveCfg = ReleaseMD|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|Mixed Platforms.ActiveCfg = ReleaseMD|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|Mixed Platforms.Build.0 = ReleaseMD|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|Win32.ActiveCfg = ReleaseMT|Win32
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|Win32.Build.0 = ReleaseMT|Win32
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|x64.ActiveCfg = ReleaseMT|x64
+		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.Release|x64.Build.0 = ReleaseMT|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
