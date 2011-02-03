@@ -195,7 +195,7 @@ void RenderSettings::init (float sf)
    fzz[FONT_SIZE_RGROUP_LOGIC] = bondLineWidth * 12;
    fzz[FONT_SIZE_RGROUP_LOGIC_INDEX] = bondLineWidth * 8;
    fzz[FONT_SIZE_INDICES] = bondLineWidth * 6;
-   fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = bondLineWidth * 2;
+   fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = bondLineWidth * 6;
 
    upperIndexShift = -0.4f;
    lowerIndexShift = 0.4f;

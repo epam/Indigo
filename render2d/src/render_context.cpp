@@ -708,12 +708,9 @@ void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
    ti.fontsize = FONT_SIZE_ATTACHMENT_POINT_INDEX;
    setTextItemSize(ti, ri.p1);
    float sz = ti.bbsz.length();
-   ti.bbp.addScaled(n, -(sz/2 + 5 * _settings.bondLineWidth));
-   ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + 5 * _settings.bondLineWidth));
-   fontsSetFont(_cr, FONT_SIZE_ATTR, false);
-   Vec3f color;
-   getColor(color.x, color.y, color.z, CWC_BASE);
-   fontsDrawText(ti, color, false);
+   ti.bbp.addScaled(n, -(sz/2 + _settings.bondLineWidth));
+   ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + _settings.bondLineWidth));
+   drawTextItemText(ti);
 }
 
 void RenderContext::drawGraphItem (GraphItem& gi)

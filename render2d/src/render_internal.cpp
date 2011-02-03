@@ -1189,7 +1189,7 @@ void MoleculeRenderInternal::_findCenteredCase ()
 float MoleculeRenderInternal::_getBondOffset (int aid, const Vec2f& pos, const Vec2f& dir, const float bondWidth)
 {
    if (!_ad(aid).showLabel)
-      return 0;
+      return -1;
 
    const Vertex& vertex = _mol->getVertex(aid);
    float maxOffset = 0, offset = 0;
@@ -1205,7 +1205,7 @@ float MoleculeRenderInternal::_getBondOffset (int aid, const Vec2f& pos, const V
       if (_clipRayBox(offset, pos, dir, item.bbp, item.bbsz, bondWidth))
          maxOffset = __max(maxOffset, offset);
    }
-   return maxOffset;
+   return maxOffset + _settings.bondLineWidth * 2;
 }
 
 void MoleculeRenderInternal::_calculateBondOffset ()
@@ -1217,7 +1217,7 @@ void MoleculeRenderInternal::_calculateBondOffset ()
       for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
       {
          BondEnd& be1 = _getBondEnd(i, j);
-         be1.offset = _getBondOffset(i, be1.p, be1.dir, be1.width);
+         be1.offset = __max(be1.offset, _getBondOffset(i, be1.p, be1.dir, be1.width));
       }
    }
 
@@ -2298,7 +2298,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       ad.attachmentPointCount = rGroupAttachmentIndices.size();
       for (int j = 0; j < rGroupAttachmentIndices.size(); ++j) {
          RenderItemAttachmentPoint& attachmentPoint = _data.attachmentPoints.push();
-         float offset = __min(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.bondLineWidth) + _settings.bondLineWidth * 2, 0.4f);
+         float offset = __min(__max(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.bondLineWidth),0), 0.4f);
          attachmentPoint.dir.copy(attachmentDirection[j]);
          attachmentPoint.p0.lineCombin(ad.pos, attachmentDirection[j], offset);
          attachmentPoint.p1.lineCombin(ad.pos, attachmentDirection[j], 0.8f);
