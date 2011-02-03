@@ -849,7 +849,7 @@ void MoleculeRenderInternal::_initAtomData ()
          !_hasQueryModifiers(i);
 
       ad.showLabel = true;
-      if (_data.labelMode == LABEL_MODE_FORCESHOW)
+      if (_data.labelMode == LABEL_MODE_FORCESHOW || vertex.degree() == 0)
          ;
       else if (_data.labelMode == LABEL_MODE_FORCEHIDE)
          ad.showLabel = false;
