@@ -465,7 +465,7 @@ void Molecule::_removeAtoms (const Array<int> &indices, const int *mapping)
          if (mapping[nei] < 0) // the neighbor is marked for removal too
             continue;
 
-         if (_implicit_h.size() > nei)
+         if (_implicit_h.size() > nei && _implicit_h[nei] >= 0)
          {
             if (order == BOND_SINGLE)
                _implicit_h[nei]++;
@@ -477,7 +477,7 @@ void Molecule::_removeAtoms (const Array<int> &indices, const int *mapping)
                _implicit_h[nei] = -1;
          }
 
-         if (_connectivity.size() > nei)
+         if (_connectivity.size() > nei && _connectivity[nei] >= 0)
          {
             if (order == BOND_SINGLE)
                _connectivity[nei]--;
@@ -1117,6 +1117,8 @@ void Molecule::checkForConsistency (Molecule &mol)
       // check if molecule was drawn with inconsistent aromatic bonds (or query bonds)
       if (mol.getImplicitH(i) == -1)
          throw Error("can not calculate implicit hydrogens on atom %d", i);
+
+      mol.getAtomRadical(i);
    }
 }
 

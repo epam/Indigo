@@ -865,6 +865,8 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
 
       if (_hcount[i] < 0)
          throw Error("unsure hydrogen count on atom #%d", i);
+
+      mol.getAtomRadical(i); // will throw on SMILES like [N+]
       
       const Vertex &vertex = mol.getVertex(i);
 

@@ -103,6 +103,8 @@ void GraphHighlighting::onVertex (int idx)
 
 void GraphHighlighting::removeEdge (int idx)
 {
+   if (_e_flags.size() < idx)
+      return;
    if (_e_flags[idx] == 0)
       return;
    _e_flags[idx] = 0;
@@ -111,6 +113,8 @@ void GraphHighlighting::removeEdge (int idx)
 
 void GraphHighlighting::removeVertex (int idx)
 {
+   if (_v_flags.size() < idx)
+      return;
    if (_v_flags[idx] == 0)
       return;
 

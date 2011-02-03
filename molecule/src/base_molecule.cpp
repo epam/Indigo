@@ -422,7 +422,6 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
    // Remove vertices from graph
    for (i = 0; i < indices.size(); i++)
       removeVertex(indices[i]);
-
 }
 
 void BaseMolecule::removeAtom (int idx)
