@@ -786,6 +786,16 @@ int Molecule::getAtomRadical (int idx)
       _radicals[idx] = RADICAL_DOUPLET;
       return RADICAL_DOUPLET;
    }
+
+   // check for extra valence (like in [PH5])
+   if (Element::calcValence(atom.number, atom.charge, 0, conn + impl_h,
+           normal_val, normal_hyd, false) && normal_hyd == 0)
+   {
+      _radicals.expandFill(idx + 1, -1);
+      _radicals[idx] = 0;
+      return 0;
+   }
+
    // give up; probably this molecule was obtained from an incorrect SMILES string like [N+]
    // (while the correct one is [N+H4])
    throw Element::Error("no radical can make %s (charge %d, connectivity %d) have %d hydrogens",

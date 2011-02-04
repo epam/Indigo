@@ -89,6 +89,7 @@ protected:
    
    Output &_output;
 
+   bool _shouldWriteHCount (int idx, bool aromatic) const;
    void _writeCycleNumber (int n) const;
    void _writeAtom (int idx, bool aromatic, bool lowercase, int chirality) const;
    void _writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chirality, int depth, bool has_or_parent) const;
