@@ -117,6 +117,12 @@ public class MolViewTable extends JPanel {
             sdf_loader.interrupt();
          }
 
+         // Set option for ignoring stereocenter errors
+         if (main_frame.getStereocentersCheckState())
+            indigo.setOption("ignore-stereochemistry-errors", "1");
+         else
+            indigo.setOption("ignore-stereochemistry-errors", "0");
+         
          String file_name = choosed_file.getPath().toLowerCase();
          if (file_name.endsWith(".smi")) {
             sdf_loader = new SdfLoader(indigo, main_frame, table_idx, "smi");
