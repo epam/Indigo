@@ -233,6 +233,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void clearStereocenters () { dispatcher.indigoClearStereocenters(self); }
    public int countStereocenters () { return dispatcher.indigoCountStereocenters(self); }
    public int resetSymmetricCisTrans () { return dispatcher.indigoResetSymmetricCisTrans(self); }
+   public int markEitherCisTrans () { return dispatcher.indigoMarkEitherCisTrans(self); }
 
    public IndigoObject addAtom (String symbol) { return new IndigoObject(dispatcher, dispatcher.indigoAddAtom(self, symbol)); }
    public void setCharge (int charge) { dispatcher.indigoSetCharge(self, charge); }
@@ -403,9 +404,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.indigoClear(self);
    }
 
-   public IndigoObject arrayAdd (IndigoObject other)
+   public int arrayAdd (IndigoObject other)
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoArrayAdd(self, other.self));
+      return dispatcher.indigoArrayAdd(self, other.self);
    }
 
    public IndigoObject at (int idx)
@@ -500,7 +501,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
       if (next == 0)
          throw new NoSuchElementException("iterator has ended");
-      
+
       return new IndigoObject(dispatcher, next);
    }
 

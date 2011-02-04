@@ -114,7 +114,7 @@ void SmilesSaver::_saveMolecule ()
       _hcount[i] = 0;
       
       if (_mol != 0 && !_mol->isPseudoAtom(i) && !_mol->isRSite(i))
-         _hcount[i] = _mol->getImplicitH(i);
+         _hcount[i] = _mol->getImplicitH_NoThrow(i, -1);
 
       const Vertex &vertex = _bmol->getVertex(i);
 
@@ -546,7 +546,7 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    // (ii) atom is aromatic (does not apply to C and O, for which we can
    // always tell the number of hydrogens by the charge, radical, and the
    // number of bonds).
-   if (_bmol->getAtomRadical(idx) != 0 ||
+   if (_bmol->getAtomRadical_NoThrow(idx, 0) != 0 ||
        (aromatic && atom_number != ELEM_C && atom_number != ELEM_O))
    {
       hydro = _hcount[idx];
@@ -682,7 +682,7 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
          else if (chirality == 2)
             _output.printf("@@");
 
-         if (chirality > 0 || _bmol->getAtomRadical(idx) != 0)
+         if (chirality > 0 || _bmol->getAtomRadical_NoThrow(idx, 0) != 0)
          {
             int hydro = _bmol->getAtomTotalH(idx);
 
@@ -1106,7 +1106,7 @@ void SmilesSaver::_writeRadicals ()
       if (marked[i] || mol.isRSite(_written_atoms[i]) || mol.isPseudoAtom(_written_atoms[i]))
          continue;
 
-      int radical = mol.getAtomRadical(_written_atoms[i]);
+      int radical = mol.getAtomRadical_NoThrow(_written_atoms[i], 0);
 
       if (radical <= 0)
          continue;
@@ -1129,7 +1129,7 @@ void SmilesSaver::_writeRadicals ()
       _output.printf("%d", i);
       
       for (j = i + 1; j < _written_atoms.size(); j++)
-         if (mol.getAtomRadical(_written_atoms[j]) == radical)
+         if (mol.getAtomRadical_NoThrow(_written_atoms[j], 0) == radical)
          {
             marked[j] = 1;
             _output.printf(",%d", j);

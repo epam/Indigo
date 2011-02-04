@@ -16,7 +16,7 @@ cd ../../api/
 
 for osxver in '10.5' '10.6'; do
   cd jni
-  rm -rf build
+  rm -rf build ../../graph.build ../../molecule/build ../../layout/build ../../reaction/build ../../tinyxml/build ../../render2d/build ../../api/build ../../api/renderer/build
   xcodebuild -sdk macosx$osxver -configuration Release -alltargets
   cp build/Release/libindigo-jni.dylib ../../utils/chemdiff/$name/lib/Mac/$osxver
   cd ../renderer/jni

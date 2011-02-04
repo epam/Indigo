@@ -132,6 +132,7 @@
 		810BD6AA12F2D596004D1772 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = YES;
 				HEADER_SEARCH_PATHS = include;
 			};

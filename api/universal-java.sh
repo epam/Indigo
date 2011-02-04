@@ -18,7 +18,6 @@ mv indigo-java-api-$1-sun indigo-java-api-$1-universal
 cp -r indigo-java-api-$1-osx/lib/* indigo-java-api-$1-universal/lib
 cp -r indigo-java-api-$1-windows/lib/* indigo-java-api-$1-universal/lib
 cp -r indigo-java-api-$1-linux/lib/* indigo-java-api-$1-universal/lib
-cp -r indigo-java-api-$1-linux/indigo-renderer-java.jar indigo-java-api-$1-universal
 zip -r -9 indigo-java-api-$1-universal.zip indigo-java-api-$1-universal
 rm indigo-java-api-$1-windows.zip
 rm indigo-java-api-$1-linux.zip

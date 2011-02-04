@@ -26,8 +26,8 @@ CPPFLAGS_indigo-cano = \
 OBJS_indigo-cano =  \
 	$(TARGETDIR_indigo-cano)/main.o
 SYSLIBS_indigo-cano = -lm -lpthread -lz -lCrun -lrt
-USERLIBS_indigo-cano = ../../api/sparc32static/libindigo.a ../../layout/sparc32/liblayout.a ../../reaction/sparc32/libreaction.a ../../molecule/sparc32/libmolecule.a ../../graph/sparc32/libgraph.a $(SYSLIBS_indigo-cano) 
-DEPLIBS_indigo-cano = ../../api/sparc32static/libindigo.a  ../../layout/sparc32/liblayout.a  ../../reaction/sparc32/libreaction.a  ../../molecule/sparc32/libmolecule.a  ../../graph/sparc32/libgraph.a   
+USERLIBS_indigo-cano = ../../api/sparc32static/libindigo.a ../../layout/sparc32/liblayout.a ../../reaction/sparc32/libreaction.a ../../molecule/sparc32/libmolecule.a ../../graph/sparc32/libgraph.a ../../tinyxml/sparc32/libtinyxml.a $(SYSLIBS_indigo-cano) 
+DEPLIBS_indigo-cano = ../../api/sparc32static/libindigo.a  ../../layout/sparc32/liblayout.a  ../../reaction/sparc32/libreaction.a  ../../molecule/sparc32/libmolecule.a  ../../graph/sparc32/libgraph.a  ../../tinyxml/sparc32/libtinyxml.a  
 LDLIBS_indigo-cano = $(USERLIBS_indigo-cano)
 
 

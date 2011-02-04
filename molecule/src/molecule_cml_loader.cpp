@@ -37,9 +37,11 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
    QS_DEF(RedBlackStringMap<int>, atoms);
    QS_DEF(Array<int>, bond_orientations);
    QS_DEF(Array<int>, atom_stereo_types);
+   QS_DEF(Array<int>, total_h_count);
    atoms.clear();
    bond_orientations.clear();
    atom_stereo_types.clear();
+   total_h_count.clear();
 
    TiXmlDocument xml;
 
@@ -87,6 +89,8 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
 
       int idx = mol.addAtom(label);
 
+      total_h_count.expandFill(idx + 1, -1);
+
       atoms.insert(id, idx);
 
       const char *isotope = elem->Attribute("isotope");
@@ -129,7 +133,9 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
          int val;
          if (sscanf(hcount, "%d", &val) != 1)
             throw Error("error parsing hydrogen count");
-         mol.setImplicitH(idx, val);
+         if (val < 0)
+            throw Error("negative hydrogen count");
+         total_h_count[idx] = val;
       }
 
       const char *x2 = elem->Attribute("x2");
@@ -190,6 +196,12 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
       {
          if (order[0] == 'A' && order[1] == 0)
             order_val = BOND_AROMATIC;
+         else if (order[0] == 'S' && order[1] == 0)
+            order_val = BOND_SINGLE;
+         else if (order[0] == 'D' && order[1] == 0)
+            order_val = BOND_DOUBLE;
+         else if (order[0] == 'T' && order[1] == 0)
+            order_val = BOND_TRIPLE;
          else if (sscanf(order, "%d", &order_val) != 1)
             throw Error("error parsing order");
       }
@@ -218,10 +230,30 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
       if (dir != 0)
          atom_stereo_types[beg] = MoleculeStereocenters::ATOM_ABS;
    }
-   mol.stereocenters.buildFromBonds(atom_stereo_types.ptr(), 0, bond_orientations.ptr(), ignore_stereochemistry_errors);
-   
-   // Tetrahedral stereocenters
 
+   // Implicit H counts
+   int i, j;
+
+   for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      int h = total_h_count[i];
+
+      if (h < 0)
+         continue;
+
+      const Vertex &vertex = mol.getVertex(i);
+
+      for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+         if (mol.getAtomNumber(vertex.neiVertex(j)) == ELEM_H)
+            h--;
+
+      if (h < 0)
+         throw Error("hydrogenCount on atom %d is less than the number of explicit hydrogens");
+
+      mol.setImplicitH(i, h);
+   }
+
+   // Tetrahedral stereocenters
    elem = hroot.FirstChild("atomArray").FirstChild().Element();
    for (; elem; elem = elem->NextSiblingElement())
    {
@@ -238,7 +270,6 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
          continue;
 
       const char *ap_text = ap_elem->GetText();
-
 
       if (ap_text == 0)
          continue;
@@ -272,6 +303,9 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
          mol.stereocenters.add(idx, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
       }
    }
+
+   if (mol.stereocenters.size() == 0 && BaseMolecule::hasCoord(mol))
+      mol.stereocenters.buildFromBonds(atom_stereo_types.ptr(), 0, bond_orientations.ptr(), ignore_stereochemistry_errors);
 
    // Cis-trans stuff
    if (have_cistrans_notation)

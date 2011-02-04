@@ -185,10 +185,16 @@ void indigoRenderSetHighlightColor (float r, float g, float b)
    rp.rOpt.highlightColor.set(r, g, b);
 }
 
-void indigoRenderSetStereoOldStyle (int enabled)
+void indigoRenderSetStereoStyle (const char* mode)
 {
+   TL_DECL_GET(StringIntMap, stereoStyleMap);
+   if (stereoStyleMap.size() == 0) {
+      stereoStyleMap.insert("new", STEREO_STYLE_NEW);
+      stereoStyleMap.insert("old", STEREO_STYLE_OLD);
+      stereoStyleMap.insert("none", STEREO_STYLE_NONE);
+   }
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.useOldStereoNotation = enabled != 0;
+   rp.rOpt.stereoMode = (STEREO_STYLE)stereoStyleMap.at(mode);
 }
 
 void indigoRenderSetLabelMode (const char* mode)
@@ -480,6 +486,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode);
    mgr.setOptionHandlerString("render-comment", indigoRenderSetComment);
    mgr.setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition);
+   mgr.setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle);
 
    mgr.setOptionHandlerBool("render-coloring", indigoRenderSetColoring);
    mgr.setOptionHandlerBool("render-valences-visible", indigoRenderSetValencesVisible);
@@ -487,7 +494,6 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("render-bond-ids-visible", indigoRenderSetBondIdsVisible);
    mgr.setOptionHandlerBool("render-highlight-thickness-enabled", indigoRenderSetHighlightThicknessEnabled);
    mgr.setOptionHandlerBool("render-highlight-color-enabled", indigoRenderSetHighlightColorEnabled);
-   mgr.setOptionHandlerBool("render-stereo-old-style", indigoRenderSetStereoOldStyle);
    mgr.setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", indigoRenderSetCenterDoubleBondWhenStereoAdjacent);
 
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);

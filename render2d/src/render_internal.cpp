@@ -167,7 +167,7 @@ void RenderOptions::clear()
    showNeighborArcs = false;
    showValences = true;
    atomColoring = false;
-   useOldStereoNotation = false;
+   stereoMode = STEREO_STYLE_NEW;
    showReactingCenterUnchanged = false; 
    centerDoubleBondWhenStereoAdjacent = false;
    showCycles = false;
@@ -680,6 +680,8 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
    const MoleculeStereocenters& sc = _mol->stereocenters;
 
    _lopt.stereoMode = STEREOGROUPS_HIDE;
+   if (_opt.stereoMode == STEREO_STYLE_NONE)
+      return;
    bool allAbs = true, singleAndGroup = true, none = true;
    int andGid = -1;
    for (int i = sc.begin(); i < sc.end(); i = sc.next(i))
@@ -700,7 +702,7 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
          break;
    }
 
-   if (_opt.useOldStereoNotation)
+   if (_opt.stereoMode == STEREO_STYLE_OLD)
    {
       if (singleAndGroup)
          return;
@@ -836,20 +838,20 @@ void MoleculeRenderInternal::_initAtomData ()
       int radical = -1;
       int valence = bm.getExplicitValence(i);
       bool query = bm.isQueryMolecule();
-      bool plainCarbon =
-         ad.label == ELEM_C && 
-         charge == (query ? CHARGE_UNKNOWN : 0) &&
-         isotope == (query ? -1 : 0) &&
-         radical == (query ? -1 : 0) &&
-         valence == -1 &&
-         !_hasQueryModifiers(i);
 
       if (!bm.isRSite(i) && !bm.isPseudoAtom(i))
          radical = bm.getAtomRadical_NoThrow(i, -1);
 
+      bool plainCarbon =
+         ad.label == ELEM_C &&
+         charge == (query ? CHARGE_UNKNOWN : 0) &&
+         isotope == (query ? -1 : 0) &&
+         radical <= 0 &&
+         valence == -1 &&
+         !_hasQueryModifiers(i);
 
       ad.showLabel = true;
-      if (_data.labelMode == LABEL_MODE_FORCESHOW)
+      if (_data.labelMode == LABEL_MODE_FORCESHOW || vertex.degree() == 0)
          ;
       else if (_data.labelMode == LABEL_MODE_FORCEHIDE)
          ad.showLabel = false;
@@ -1186,37 +1188,42 @@ void MoleculeRenderInternal::_findCenteredCase ()
    }
 }
 
+float MoleculeRenderInternal::_getBondOffset (int aid, const Vec2f& pos, const Vec2f& dir, const float bondWidth)
+{
+   if (!_ad(aid).showLabel)
+      return -1;
+
+   const Vertex& vertex = _mol->getVertex(aid);
+   float maxOffset = 0, offset = 0;
+   for (int k = 0; k < _ad(aid).ticount; ++k)
+   {
+      TextItem& item = _data.textitems[_ad(aid).tibegin + k];
+      if (_clipRayBox(offset, pos, dir, item.bbp, item.bbsz, bondWidth))
+         maxOffset = __max(maxOffset, offset);
+   }
+   for (int k = 0; k < _ad(aid).gicount; ++k)
+   {
+      GraphItem& item = _data.graphitems[_ad(aid).gibegin + k];
+      if (_clipRayBox(offset, pos, dir, item.bbp, item.bbsz, bondWidth))
+         maxOffset = __max(maxOffset, offset);
+   }
+   return maxOffset + _settings.bondLineWidth * 2;
+}
+
 void MoleculeRenderInternal::_calculateBondOffset ()
 {
    // calculate offset for bonds
-   float offset;
    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
    {
       const Vertex& vertex = _mol->getVertex(i);
       for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
       {
-         if (!_ad(i).showLabel)
-            continue;
          BondEnd& be1 = _getBondEnd(i, j);
-
-         for (int k = 0; k < _ad(i).ticount; ++k)
-         {
-            TextItem& item = _data.textitems[_ad(i).tibegin + k];
-            if (_clipRayBox(offset, be1.p, be1.dir, item.bbp, 
-                  item.bbsz, be1.width))
-               be1.offset = __max(be1.offset, offset);
-         }
-         for (int k = 0; k < _ad(i).gicount; ++k)
-         {
-            GraphItem& item = _data.graphitems[_ad(i).gibegin + k];
-            if (_clipRayBox(offset, be1.p, be1.dir, item.bbp, 
-                  item.bbsz, be1.width))
-               be1.offset = __max(be1.offset, offset);
-         }
+         be1.offset = __max(be1.offset, _getBondOffset(i, be1.p, be1.dir, be1.width));
       }
    }
 
-   for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))   
+   for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
    {
       const BondDescr& bd = _bd(i);
       BondEnd& be1 = _be(bd.be1);
@@ -1376,6 +1383,8 @@ void MoleculeRenderInternal::_drawAtom (const AtomDesc& desc)
    _cw.setSingleSource(desc.color);
    for (int i = 0; i < desc.ticount; ++i)
       _cw.drawTextItemText(_data.textitems[i + desc.tibegin]);
+   for (int i = 0; i < desc.attachmentPointCount; ++i)
+      _cw.drawAttachmentPoint(_data.attachmentPoints[desc.attachmentPointBegin + i]);
    for (int i = 0; i < desc.gicount; ++i)
       _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
 }
@@ -2217,55 +2226,88 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
    }
 
    // prepare R-group attachment point labels
+   QS_DEF(Array<float>, angles);
+   QS_DEF(Array<int>, split);
    QS_DEF(Array<int>, rGroupAttachmentIndices);
    QUERY_MOL_BEGIN(_mol);
    if (ad.isRGroupAttachmentPoint) {
+      // collect the angles between adjacent bonds
+      const Vertex& v = bm.getVertex(aid);
+      angles.clear();
+      split.clear();
+      if (v.degree() != 0) {
+         for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i))
+         {
+            float a = _getBondEnd(aid, i).lang;
+            angles.push(a);
+            split.push(1);
+         }
+      }
+      // collect attachment point indices
       rGroupAttachmentIndices.clear();
       for (int i = 1; i <= qmol.attachmentPointCount(); ++i)
          for (int j = 0, k; (k = qmol.getAttachmentPoint(i, j)) >= 0; ++j)
             if (k == aid)
                rGroupAttachmentIndices.push(i);
-
-      int tiAttachmentPoint = _pushTextItem(ad, 
-         RenderItem::RIT_ATTACHMENTPOINT, CWC_BASE, false);
-      TextItem& itemAttachmentPoint = _data.textitems[tiAttachmentPoint];
-      itemAttachmentPoint.fontsize = FONT_SIZE_LABEL;
-      ArrayOutput output(itemAttachmentPoint.text);
-      for (int i = 0; i < rGroupAttachmentIndices.size(); ++i)
-      {
-         if (i != 0)
-            output.printf(" ");
-         output.printf("*");
-         for (int j = 0; j < rGroupAttachmentIndices[i]; ++j)
-            output.printf("'");
+      if (v.degree() != 0) {
+         for (int j = 0; j < rGroupAttachmentIndices.size(); ++j) {
+            int i0 = -1;
+            for (int i = 0; i < angles.size(); ++i)
+               if (i0 < 0 || angles[i] / (split[i] + 1) > angles[i0] / (split[i0] + 1))
+                  i0 = i;
+            split[i0]++;
+         }
       }
-      output.writeChar(0);
-      _cw.setTextItemSize(itemAttachmentPoint);
-
-      const Vertex& v = bm.getVertex(aid);
-      Vec2f d;
+      // arrange the directions of the attachment points
+      QS_DEF(Array<Vec2f>, attachmentDirection);
+      attachmentDirection.clear();
       if (v.degree() == 0) {
-         d.set(0, -1);
-      } else {
-         int di = -1;
-         float angle = -1;
-         for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i))
-         {
-            float a = _getBondEnd(aid, i).lang;
-            if (a > angle)
-            {
-               angle = a;
-               di = i;
+         // if no adjacent bonds present
+         if (rGroupAttachmentIndices.size() == 1)
+            attachmentDirection.push().set(0, -1);
+         else if (rGroupAttachmentIndices.size() == 2) {
+            attachmentDirection.push().set(cos((float)M_PI / 6), -sin((float)M_PI / 6));
+            attachmentDirection.push().set(cos(5 * (float)M_PI / 6), -sin(5 * (float)M_PI / 6));
+         } else {
+            for (int j = 0; j < rGroupAttachmentIndices.size(); ++j) {
+               float a = j * 2 * (float)M_PI / rGroupAttachmentIndices.size();
+               attachmentDirection.push().set(cos(a), sin(a));
             }
          }
-         BondEnd& be = _getBondEnd(aid, di);
-         d.copy(be.dir);
-         d.rotateL(be.lang/2);
+      } else {
+         // split the angles
+         for (int i = 0; i < split.size(); ++i) {
+            angles[i] /= split[i];
+         }
+         for (int j = 0; j < rGroupAttachmentIndices.size(); ++j) {
+            int i0 = -1, n = v.neiBegin();
+            for (int i = 0; i < split.size(); ++i, n = v.neiNext(n)) {
+               if (split[i] > 1) {
+                  i0 = i;
+                  break;
+               }
+            }
+            if (i0 < 0)
+               throw Error("Error while arranging attachment points");
+            Vec2f d;
+            d.copy(_getBondEnd(aid, n).dir);
+            d.rotateL(angles[i0] * (--split[i0]));
+            attachmentDirection.push(d);
+         }
       }
-      d.scale(0.3f);
-      d.add(ad.pos);
-      d.addScaled(itemAttachmentPoint.bbsz, -0.5);
-      itemAttachmentPoint.bbp.copy(d);
+      // create the attachment point items
+      ad.attachmentPointBegin = _data.attachmentPoints.size();
+      ad.attachmentPointCount = rGroupAttachmentIndices.size();
+      for (int j = 0; j < rGroupAttachmentIndices.size(); ++j) {
+         RenderItemAttachmentPoint& attachmentPoint = _data.attachmentPoints.push();
+         float offset = __min(__max(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.bondLineWidth),0), 0.4f);
+         attachmentPoint.dir.copy(attachmentDirection[j]);
+         attachmentPoint.p0.lineCombin(ad.pos, attachmentDirection[j], offset);
+         attachmentPoint.p1.lineCombin(ad.pos, attachmentDirection[j], 0.8f);
+         attachmentPoint.color = CWC_BASE;
+         attachmentPoint.highlighted = false;
+         attachmentPoint.number = rGroupAttachmentIndices[j];
+      }
    }
    QUERY_MOL_END;
 

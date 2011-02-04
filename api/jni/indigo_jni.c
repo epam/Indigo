@@ -234,6 +234,7 @@ JNI_FUNC_jint_jint(indigoClearStereocenters)
 JNI_FUNC_jint_jint(indigoCountStereocenters)
 
 JNI_FUNC_jint_jint(indigoResetSymmetricCisTrans)
+JNI_FUNC_jint_jint(indigoMarkEitherCisTrans)
 
 JNI_FUNC_jint_jint_jstring(indigoAddAtom)
 JNI_FUNC_jint_jint_jint(indigoSetCharge)

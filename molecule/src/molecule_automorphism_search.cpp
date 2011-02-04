@@ -706,6 +706,8 @@ int MoleculeAutomorphismSearch::_validCisTransBond (int idx, const Array<int> &o
    // But if substituents are in the same orbit and have degree 1 then such 
    // cis-trans bond is invalid.
    // To detect invalid stereocenters automorphism group structure shold be investigated.
+   // NOTE: C\C=C1/C\C(C1)=C1\C/C(C1)=C\C
+   // Double bond in the middle isn't cis-trans but current algorithm cannot detect this.
    if (subst[1] != -1)
       if (orbits[subst[0]] == orbits[subst[1]])
       {
@@ -865,6 +867,8 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
 
       if (_hcount[i] < 0)
          throw Error("unsure hydrogen count on atom #%d", i);
+
+      mol.getAtomRadical(i); // will throw on SMILES like [N+]
       
       const Vertex &vertex = mol.getVertex(i);
 

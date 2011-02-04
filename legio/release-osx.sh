@@ -15,6 +15,7 @@ mkdir -p $name/lib/Mac/10.6
 cd ../api/
 
 for osxver in '10.5' '10.6'; do
+  rm -rf ../graph.build ../molecule/build ../layout/build ../reaction/build ../tinyxml/build ../render2d/build ../api/build ../api/renderer/build
   cd jni
   rm -rf build
   xcodebuild -sdk macosx$osxver -configuration Release -alltargets
