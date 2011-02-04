@@ -1136,3 +1136,58 @@ bool Molecule::isAromatized ()
 {
    return _aromatized;
 }
+
+// Moved this method here to supply both Smiles and CML savers
+bool Molecule::shouldWriteHCount (Molecule &mol, int idx)
+{
+   bool aromatic = (mol.getAtomAromaticity(idx) == ATOM_AROMATIC);
+
+   int atom_number = mol.getAtomNumber(idx);
+
+   // Should we write the H count for an aromatic atom or not?
+   // In a better world, we would have been checking that the hydrogens
+   // 'make difference' by de-aromatizing the molecule and comparing
+   // the hydrogen counts in the de-aromatized atoms with the atoms we
+   // are writing now.
+   // In the real world, de-aromatization is complicated and takes time,
+   // so we write hydrogen counts on all aromatic atoms, except
+   // C and O, for which we can always tell the number of hydrogens by
+   // the charge, radical, and the number of bonds.
+   if (aromatic && atom_number != ELEM_C && atom_number != ELEM_O)
+      return true;
+
+   // We should write the H count if it is less than the normal (lowest valence)
+   // count, like in atoms with radicals.
+   if (mol.getAtomRadical_NoThrow(idx, -1) > 0)
+      return true;
+
+   // We also should write the H count if it exceeds the normal (lowest valence)
+   // count, like in [PH5]
+   int charge = mol.getAtomCharge(idx);
+   int normal_val, normal_hyd;
+
+   int impl_h = mol.getImplicitH_NoThrow(idx, -1);
+   if (mol.isNitrogenV5(idx))
+   {
+      normal_val = 4;
+      normal_hyd = 0;
+   }
+   else
+   {
+      if (impl_h < 0)
+         return false;
+
+      int conn = mol.getAtomConnectivity_noImplH(idx);
+
+      if (conn < 0)
+         return false; // this is an aromatic atom -- dealed with that before
+
+      if (!Element::calcValence(atom_number, charge, 0, conn, normal_val, normal_hyd, false))
+         return true;
+   }
+
+   if (impl_h != normal_hyd)
+      return true;
+
+   return false;
+}

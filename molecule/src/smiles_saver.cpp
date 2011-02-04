@@ -499,61 +499,6 @@ void SmilesSaver::_writeCycleNumber (int n) const
       throw Error("bad cycle number: %d", n);
 }
 
-bool SmilesSaver::_shouldWriteHCount (int idx, bool aromatic) const
-{
-   if (_mol == 0)
-      return false;
-   
-   int atom_number = _mol->getAtomNumber(idx);
-
-   // Should we write the H count for an aromatic atom or not?
-   // In a better world, we would have been checking that the hydrogens
-   // 'make difference' by de-aromatizing the molecule and comparing
-   // the hydrogen counts in the de-aromatized atoms with the atoms we
-   // are writing now.
-   // In the real world, de-aromatization is complicated and takes time,
-   // so we write hydrogen counts on all aromatic atoms, except
-   // C and O, for which we can always tell the number of hydrogens by
-   // the charge, radical, and the number of bonds.
-   if (aromatic && atom_number != ELEM_C && atom_number != ELEM_O)
-      return true;
-
-   // We should write the H count if it is less than the normal (lowest valence)
-   // count, like in atoms with radicals.
-   if (_mol->getAtomRadical_NoThrow(idx, -1) > 0)
-      return true;
-
-   // We also should write the H count if it exceeds the normal (lowest valence)
-   // count, like in [PH5]
-   int charge = _mol->getAtomCharge(idx);
-   int normal_val, normal_hyd;
-
-   int impl_h = _mol->getImplicitH_NoThrow(idx, -1);
-   if (_mol->isNitrogenV5(idx))
-   {
-      normal_val = 4;
-      normal_hyd = 0;
-   }
-   else
-   {
-      if (impl_h < 0)
-         return false;
-
-      int conn = _mol->getAtomConnectivity_noImplH(idx);
-
-      if (conn < 0)
-         return false; // this is an aromatic atom -- dealed with that before
-
-      if (!Element::calcValence(atom_number, charge, 0, conn, normal_val, normal_hyd, false))
-         return true;
-   }
-
-   if (impl_h != normal_hyd)
-      return true;
-
-   return false;
-}
-
 void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chirality) const
 {
    int i;
@@ -591,7 +536,7 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
        atom_number != ELEM_B && atom_number != ELEM_I)
       need_brackets = true;
 
-   if (_shouldWriteHCount(idx, aromatic))
+   if (_mol != 0 && Molecule::shouldWriteHCount(*_mol, idx))
    {
       hydro = _hcount[idx];
       if (hydro < 0 && !ignore_invalid_hcount)
