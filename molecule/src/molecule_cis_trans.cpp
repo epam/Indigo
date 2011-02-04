@@ -228,8 +228,7 @@ bool MoleculeCisTrans::exists () const
 void MoleculeCisTrans::registerBond (int idx)
 {
    while (_bonds.size() <= idx)
-      _bonds.push().parity = 0;
-   _bonds[idx].parity = 0;
+      _bonds.push().clear();
 }
 
 void MoleculeCisTrans::build (int *exclude_bonds)
