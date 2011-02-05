@@ -19,6 +19,8 @@
 #include "oracle/bingo_oracle_context.h"
 
 TL_DEF(MangoFetchContext, PtrArray<MangoFetchContext>, _instances);
+OsLock MangoFetchContext::_instances_lock;
+
 
 MangoFetchContext::MangoFetchContext (int id_, MangoOracleContext &context,
                                       const Array<char> &query_id) :
@@ -41,6 +43,7 @@ _context(context)
 
 MangoFetchContext & MangoFetchContext::get (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<MangoFetchContext>, _instances);
 
    for (int i = 0; i < _instances.size(); i++)
@@ -53,6 +56,7 @@ MangoFetchContext & MangoFetchContext::get (int id)
 MangoFetchContext & MangoFetchContext::create (MangoOracleContext &context,
                                                const Array<char> &query_id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<MangoFetchContext>, _instances);
 
    int id = 1;
@@ -89,6 +93,7 @@ MangoFetchContext & MangoFetchContext::create (MangoOracleContext &context,
 MangoFetchContext * MangoFetchContext::findFresh (int context_id,
                                                   const Array<char> &query_id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<MangoFetchContext>, _instances);
 
    int i;
@@ -114,6 +119,7 @@ MangoFetchContext * MangoFetchContext::findFresh (int context_id,
 
 void MangoFetchContext::remove (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<MangoFetchContext>, _instances);
    int i;
 
@@ -125,4 +131,15 @@ void MangoFetchContext::remove (int id)
       throw Error("remove(): context #%d not found", id);
 
    _instances.remove(i);
+}
+
+void MangoFetchContext::removeByContextID (int id)
+{
+   OsLocker locker(_instances_lock);
+   TL_GET(PtrArray<MangoFetchContext>, _instances);
+   int i;
+
+   for (i = _instances.size() - 1; i >= 0; i--)
+      if (_instances[i]->context_id == id)
+         _instances.remove(i);
 }

@@ -54,6 +54,7 @@ protected:
    static RingoContext * _get (int id, BingoContext &context);
 
    TL_DECL(PtrArray<RingoContext>, _instances);
+   static OsLock _instances_lock;
 
    BingoContext &_context;
 };

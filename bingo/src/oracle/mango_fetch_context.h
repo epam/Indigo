@@ -50,6 +50,7 @@ public:
    static MangoFetchContext & get (int id);
    static MangoFetchContext * findFresh (int context_id, const Array<char> &query_id);
    static void remove (int id);
+   static void removeByContextID (int id);
 
    inline MangoOracleContext & context () {return _context;}
 
@@ -60,6 +61,7 @@ protected:
    MangoOracleContext & _context;
 
    TL_DECL(PtrArray<MangoFetchContext>, _instances);
+   static OsLock _instances_lock;
 };
 
 

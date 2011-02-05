@@ -46,8 +46,6 @@ BingoOracleContext::~BingoOracleContext ()
 
 BingoOracleContext & BingoOracleContext::get (OracleEnv &env, int id, bool lock, bool *config_reloaded)
 {
-   TL_GET(PtrArray<BingoContext>, _instances);
-
    BingoOracleContext *already = (BingoOracleContext *)_get(id);
 
    if (config_reloaded != 0)
@@ -75,6 +73,9 @@ BingoOracleContext & BingoOracleContext::get (OracleEnv &env, int id, bool lock,
    if (config_reloaded != 0)
       *config_reloaded = true;
    
+   OsLocker locker(_instances_lock);
+   TL_GET(PtrArray<BingoContext>, _instances);
+
    _instances.add(res.release());
 
    return *(BingoOracleContext *)_instances.top();

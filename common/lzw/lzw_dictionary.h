@@ -66,7 +66,7 @@ public:
 
    int getSize( void ) const;
 
-   bool isInitialized( void );
+   bool isInitialized( void ) const;
 
    void save( Output &_output );
 

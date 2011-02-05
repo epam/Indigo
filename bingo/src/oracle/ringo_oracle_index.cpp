@@ -28,6 +28,7 @@
 #include "oracle/rowid_saver.h"
 #include "molecule/elements.h"
 #include "base_cpp/auto_ptr.h"
+#include "oracle/ringo_fetch_context.h"
 
 bool _ringoRegisterReaction (OracleEnv &env, const char *rowid,
                              const Array<char> &reaction_buf,
@@ -213,6 +214,7 @@ ORAEXT void oraRingoCreateIndex (OCIExtProcContext *ctx,
       context.context().saveCmfDict(env);
       context.context().saveRidDict(env);
       OracleStatement::executeSingle(env, "COMMIT");
+      RingoFetchContext::removeByContextID(context_id);
       RingoContext::remove(context_id);
       BingoContext::remove(context_id);
    }
@@ -232,6 +234,7 @@ ORAEXT void oraRingoDropIndex (OCIExtProcContext *ctx, int context_id)
       context.context().storage.drop(env);
       context.fingerprints.drop(env);
 
+      RingoFetchContext::removeByContextID(context_id);
       RingoContext::remove(context_id);
       BingoContext::remove(context_id);
 

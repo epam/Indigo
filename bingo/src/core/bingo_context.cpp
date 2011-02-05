@@ -21,6 +21,8 @@ const char * bingo_version_string = "1.5.1pre";
 
 TL_DEF(BingoContext, PtrArray<BingoContext>, _instances);
 
+OsLock BingoContext::_instances_lock;
+
 BingoContext::BingoContext (int id_)
 {
    id = id_;
@@ -49,6 +51,7 @@ BingoContext::~BingoContext ()
 
 void BingoContext::remove (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<BingoContext>, _instances);
    int i;
 
@@ -65,6 +68,7 @@ void BingoContext::remove (int id)
 
 BingoContext * BingoContext::_get (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<BingoContext>, _instances);
 
    for (int i = 0; i < _instances.size(); i++)
@@ -76,6 +80,7 @@ BingoContext * BingoContext::_get (int id)
 
 BingoContext * BingoContext::existing (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<BingoContext>, _instances);
 
    for (int i = 0; i < _instances.size(); i++)
@@ -87,6 +92,7 @@ BingoContext * BingoContext::existing (int id)
 
 BingoContext * BingoContext::get (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<BingoContext>, _instances);
 
    for (int i = 0; i < _instances.size(); i++)
