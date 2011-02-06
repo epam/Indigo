@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -134,7 +134,7 @@ static bool ElementHygrodenOnLeft[] =
 static bool _isBondWide (const BondDescr& bd)
 {
    return bd.type == BOND_DOUBLE || bd.type == BOND_TRIPLE ||
-      bd.queryType == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC || 
+      bd.queryType == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC ||
       bd.queryType == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC ||
       bd.queryType == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE;
 }
@@ -168,7 +168,7 @@ void RenderOptions::clear()
    showValences = true;
    atomColoring = false;
    stereoMode = STEREO_STYLE_OLD;
-   showReactingCenterUnchanged = false; 
+   showReactingCenterUnchanged = false;
    centerDoubleBondWhenStereoAdjacent = false;
    showCycles = false;
 }
@@ -204,7 +204,7 @@ void MoleculeRenderInternal::setScaleFactor (const float scaleFactor, const Vec2
    _max.copy(max);
 }
 
-void MoleculeRenderInternal::setReactionComponentProperties (const Array<int>* aam, 
+void MoleculeRenderInternal::setReactionComponentProperties (const Array<int>* aam,
                                                              const Array<int>* reactingCenters,
                                                              const Array<int>* inversions)
 {
@@ -242,12 +242,14 @@ void MoleculeRenderInternal::render ()
    _findRings();
 
    _determineDoubleBondShift();
-                 
+
    _determineStereoGroupsMode();
 
    _initAtomData();
 
    _initRGroups();
+
+   _initDataSGroups();
 
    _findCenteredCase();
 
@@ -269,6 +271,8 @@ void MoleculeRenderInternal::render ()
 
    _renderRings();
 
+   _renderSGroups();
+
    _renderBondIds();
 
    _renderAtomIds();
@@ -276,32 +280,32 @@ void MoleculeRenderInternal::render ()
 
 BondEnd& MoleculeRenderInternal::_be (int beid)
 {
-   return _data.bondends[beid]; 
+   return _data.bondends[beid];
 }
 
 const BondEnd& MoleculeRenderInternal::_be (int beid) const
 {
-   return _data.bondends[beid]; 
+   return _data.bondends[beid];
 }
 
 BondDescr& MoleculeRenderInternal::_bd (int bid)
 {
-   return _data.bonds[bid]; 
+   return _data.bonds[bid];
 }
 
 const BondDescr& MoleculeRenderInternal::_bd (int bid) const
 {
-   return _data.bonds[bid]; 
+   return _data.bonds[bid];
 }
 
 AtomDesc& MoleculeRenderInternal::_ad (int aid)
 {
-   return _data.atoms[aid]; 
+   return _data.atoms[aid];
 }
 
 const AtomDesc& MoleculeRenderInternal::_ad (int aid) const
 {
-   return _data.atoms[aid]; 
+   return _data.atoms[aid];
 }
 
 int MoleculeRenderInternal::_getOpposite (int beid) const
@@ -322,7 +326,7 @@ void MoleculeRenderInternal::_determineDoubleBondShift()
    for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
    {
       BondDescr& bd = _bd(i);
-      const BondEnd& be1 = _be(bd.be1); 
+      const BondEnd& be1 = _be(bd.be1);
       const BondEnd& be2 = _be(bd.be2);
 
       if (bd.inRing)
@@ -348,7 +352,7 @@ void MoleculeRenderInternal::_determineDoubleBondShift()
          // angles adjacent to the bond
          float al1 = be1.lang, ar1 = ber1.lang,
             al2 = bel2.lang, ar2 = be2.lang;
-         int neiBalance = 
+         int neiBalance =
             (al1 < M_PI ? 1 : 0) +
             (al2 < M_PI ? 1 : 0) +
             (ar1 < M_PI ? -1 : 0) +
@@ -360,7 +364,7 @@ void MoleculeRenderInternal::_determineDoubleBondShift()
          else
          {
             // compare the number of wide (double, triple, etc.) bonds on both sides
-            int wideNeiBalance = 
+            int wideNeiBalance =
                (al1 < M_PI && _isBondWide(_bd(bel1.bid)) ? 1 : 0) +
                (al2 < M_PI && _isBondWide(_bd(bel2.bid)) ? 1 : 0) +
                (ar1 < M_PI && _isBondWide(_bd(ber1.bid)) ? -1 : 0) +
@@ -369,10 +373,10 @@ void MoleculeRenderInternal::_determineDoubleBondShift()
                bd.lineOnTheRight = false;
             else if (wideNeiBalance < 0)
                bd.lineOnTheRight = true;
-            else 
+            else
             {
                // compare the number of wide (double, triple, etc.) bonds on both sides
-               int stereoBalance = 
+               int stereoBalance =
                   (al1 < M_PI && _bd(bel1.bid).stereodir != 0 ? 1 : 0) +
                   (al2 < M_PI && _bd(bel2.bid).stereodir != 0 ? 1 : 0) +
                   (ar1 < M_PI && _bd(ber1.bid).stereodir != 0 ? -1 : 0) +
@@ -539,6 +543,28 @@ void MoleculeRenderInternal::_initRGroups()
    QUERY_MOL_END;
 }
 
+void MoleculeRenderInternal::_initDataSGroups()
+{
+   BaseMolecule& bm = *_mol;
+   for (int i = 0; i < bm.data_sgroups.size(); ++i) {
+      SGroup& sg = _data.sgroups.push();
+      const BaseMolecule::DataSGroup& group = bm.data_sgroups[i];
+      int tii = _pushTextItem(sg, RenderItem::RIT_SGROUP);
+      TextItem& ti = _data.textitems[tii];
+      ti.text.copy(group.data);
+      ti.text.push(0);
+      ti.fontsize = FONT_SIZE_DATA_SGROUP;
+      _cw.setTextItemSize(ti);
+      //printf("%d:%s, %f, %f\n", i, ti.text.ptr(), group.display_pos.x, group.display_pos.y);
+      if (group.relative) {
+         _objDistTransform(ti.bbp, group.display_pos);
+         ti.bbp.add(_ad(group.atoms[0]).pos);
+      } else {
+         _objCoordTransform(ti.bbp, group.display_pos);
+      }
+   }
+}
+
 void MoleculeRenderInternal::_findRings()
 {
    for (int i = 0; i < _data.bondends.size(); ++i)
@@ -550,10 +576,10 @@ void MoleculeRenderInternal::_findRings()
       _data.rings.push();
       Ring& ring = _data.rings[rid];
       ring.bondEnds.push(i);
-   
+
       int j = be.next;
       for (int c = 0; j != i; j = _be(j).next, ++c)
-      {             
+      {
          if (c > _data.bondends.size() || j < 0)
             break;
          ring.bondEnds.push(j);
@@ -564,12 +590,12 @@ void MoleculeRenderInternal::_findRings()
          continue;
       }
 
-      // for the inner loops, sum of the angles should be (n-2)*pi, 
+      // for the inner loops, sum of the angles should be (n-2)*pi,
       // for the outer ones (n+2)*pi
       float angleSum = 0;
       for (int j = 0; j < ring.bondEnds.size(); ++j)
          angleSum += _be(ring.bondEnds[j]).lang;
-      bool inner = (angleSum < ring.bondEnds.size() * M_PI); 
+      bool inner = (angleSum < ring.bondEnds.size() * M_PI);
 
       if (!inner)
       {
@@ -653,7 +679,7 @@ void MoleculeRenderInternal::_findRings()
       BondEnd& be1 = _be(bd.be1);
       BondEnd& be2 = _be(bd.be2);
       bd.inRing = (be1.lRing >= 0 || be2.lRing >= 0);
-      bd.aromRing = ((be1.lRing >= 0) ? _data.rings[be1.lRing].aromatic : false) || 
+      bd.aromRing = ((be1.lRing >= 0) ? _data.rings[be1.lRing].aromatic : false) ||
          ((be2.lRing >= 0) ? _data.rings[be2.lRing].aromatic : false);
    }
 }
@@ -664,14 +690,23 @@ void MoleculeRenderInternal::_prepareLabels()
       _prepareLabelText(i);
 }
 
+void MoleculeRenderInternal::_objCoordTransform(Vec2f& p, const Vec2f& v) const
+{
+   p.set((v.x - _min.x) * _scale, (_max.y - v.y) * _scale);
+}
+
+void MoleculeRenderInternal::_objDistTransform(Vec2f& p, const Vec2f& v) const
+{
+   p.set(v.x * _scale, -v.y * _scale);
+}
+
 void MoleculeRenderInternal::_initCoordinates()
 {
    Vec2f v;
    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
    {
       Vec2f::projectZ(v, _mol->getAtomXyz(i));
-      Vec2f& p = _ad(i).pos;
-      p.set((v.x - _min.x) * _scale, (_max.y - v.y) * _scale);
+      _objCoordTransform(_ad(i).pos, v);
    }
 }
 
@@ -855,8 +890,8 @@ void MoleculeRenderInternal::_initAtomData ()
          ;
       else if (_data.labelMode == LABEL_MODE_FORCEHIDE)
          ad.showLabel = false;
-      else if (plainCarbon && 
-         (_data.labelMode == LABEL_MODE_HIDETERMINAL || vertex.degree() > 1) && 
+      else if (plainCarbon &&
+         (_data.labelMode == LABEL_MODE_HIDETERMINAL || vertex.degree() > 1) &&
          !_isSingleHighlighted(i))
       {
          if (vertex.degree() == 2)
@@ -902,7 +937,7 @@ void MoleculeRenderInternal::_findAnglesOverPi ()
             int rbeidx = _getBondEndIdx(i, j);
             BondEnd& rbe = _be(rbeidx);
             BondEnd& lbe = _be(rbe.lnei);
-            if (_bd(rbe.bid).type == BOND_DOUBLE && 
+            if (_bd(rbe.bid).type == BOND_DOUBLE &&
                _bd(lbe.bid).type == BOND_DOUBLE && rbe.lang < M_PI)
             {
                rightmost = rbeidx;
@@ -933,8 +968,8 @@ void MoleculeRenderInternal::_findAnglesOverPi ()
       if (dot > 0 || 1 + dot < 1e-4)
          continue;
       float ahs = sqrt((1 + dot)/(1 - dot));
-      lmbe.offset = rmbe.offset = -ahs *  
-         __min(_bd(lmbe.bid).thickness, _bd(rmbe.bid).thickness) / 2; 
+      lmbe.offset = rmbe.offset = -ahs *
+         __min(_bd(lmbe.bid).thickness, _bd(rmbe.bid).thickness) / 2;
    }
 }
 
@@ -999,7 +1034,6 @@ void MoleculeRenderInternal::_renderBondIds ()
 
 void MoleculeRenderInternal::_renderAtomIds ()
 {
-   // show atom ids
    if (_opt.showAtomIds)
    {
       for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
@@ -1018,25 +1052,22 @@ void MoleculeRenderInternal::_renderAtomIds ()
    }
 }
 
-
 void MoleculeRenderInternal::_renderLabels ()
 {
-   // draw data.atoms
    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
       _drawAtom(_ad(i));
 }
 
 void MoleculeRenderInternal::_renderRings ()
 {
-   // draw data.rings
    for (int i = 0; i < _data.rings.size(); ++i)
    {
       const Ring& ring = _data.rings[i];
       if (ring.aromatic)
-      {  
+      {
          float r = 0.75f * ring.radius;
          for (int k = 0; k < ring.bondEnds.size(); ++k)
-         {             
+         {
             BondEnd& be = _be(ring.bondEnds[k]);
             if (_edgeIsHighlighted(be.bid))
                _cw.setHighlight();
@@ -1053,17 +1084,25 @@ void MoleculeRenderInternal::_renderRings ()
    }
 }
 
-
 void MoleculeRenderInternal::_renderBonds ()
 {
-   // draw bonds
    for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
       _drawBond(i);
 }
 
+void MoleculeRenderInternal::_renderSGroups ()
+{
+   for (int i = 0; i < _data.sgroups.size(); ++i) {
+      const SGroup& sg = _data.sgroups[i];
+      for (int j = 0; j < sg.ticount; ++j)
+         _cw.drawTextItemText(_data.textitems[j + sg.tibegin]);
+      for (int j = 0; j < sg.gicount; ++j)
+         _cw.drawGraphItem(_data.graphitems[j + sg.gibegin]);
+   }
+}
+
 void MoleculeRenderInternal::_applyBondOffset ()
 {
-   // apply offset to data.bondends
    for (int i = 0; i < _data.bondends.size(); ++i)
    {
       BondEnd& be = _be(i);
@@ -1172,7 +1211,7 @@ void MoleculeRenderInternal::_findCenteredCase ()
          const BondDescr& bdr = _bd(_be(be.rnei).bid);
 
          if (((bdl.type == BOND_SINGLE && (bdl.stereodir == 0 || _opt.centerDoubleBondWhenStereoAdjacent))
-            && (bdr.type == BOND_SINGLE && (bdr.stereodir == 0 || _opt.centerDoubleBondWhenStereoAdjacent))) 
+            && (bdr.type == BOND_SINGLE && (bdr.stereodir == 0 || _opt.centerDoubleBondWhenStereoAdjacent)))
             || (bdr.type == BOND_SINGLE && bdl.type == BOND_SINGLE && bdl.stereodir != 0 && bdr.stereodir != 0))
          {
             be.centered = true;
@@ -1182,7 +1221,7 @@ void MoleculeRenderInternal::_findCenteredCase ()
    }
 
    for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
-   {  
+   {
       BondDescr& bd = _bd(i);
       bd.centered = _be(bd.be1).centered && _be(bd.be2).centered;
    }
@@ -1228,7 +1267,7 @@ void MoleculeRenderInternal::_calculateBondOffset ()
       const BondDescr& bd = _bd(i);
       BondEnd& be1 = _be(bd.be1);
       BondEnd& be2 = _be(bd.be2);
-     
+
       // if the offsets may result in too short bond,
       float offsum = be1.offset + be2.offset;
       if (offsum > 1e-3f && bd.length < offsum + _settings.minBondLength)
@@ -1770,15 +1809,15 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
 
    TextItem fake;
    fake.fontsize = FONT_SIZE_LABEL;
-   fake.text.push('C'); 
+   fake.text.push('C');
    fake.text.push((char)0);
    _cw.setTextItemSize(fake, ad.pos);
-   float xpos = fake.bbp.x, 
-      width = fake.bbsz.x, 
-      offset = _settings.bondLineWidth/2, 
-      space = _settings.bondLineWidth, 
+   float xpos = fake.bbp.x,
+      width = fake.bbsz.x,
+      offset = _settings.bondLineWidth/2,
+      space = _settings.bondLineWidth,
       totalwdt = 0,
-      upshift = -0.4f, 
+      upshift = -0.4f,
       downshift = 0.4f;
    ad.ypos = fake.bbp.y;
    ad.height = fake.bbsz.y;
@@ -1789,7 +1828,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
       tis.push(id);
       TextItem& item = _data.textitems[id];
       item.fontsize = FONT_SIZE_ATTR;
-      item.text.copy(str, len); 
+      item.text.copy(str, len);
       item.text.push((char)0);
       _cw.setTextItemSize(item);
       item.bbp.set(xpos, ad.ypos);
@@ -1853,7 +1892,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
                   tis.push(id);
                   TextItem& item = _data.textitems[id];
                   item.fontsize = (script == MAIN) ? FONT_SIZE_LABEL : FONT_SIZE_ATTR;
-                  item.text.copy(str + i0, i1 - i0); 
+                  item.text.copy(str + i0, i1 - i0);
                   item.text.push((char)0);
                   _cw.setTextItemSize(item);
 
@@ -1901,7 +1940,6 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
    ad.rightMargin = ad.leftMargin = ad.ypos = ad.height = 0;
    int isotope = bm.getAtomIsotope(aid);
 
-
    if (ad.type == AtomDesc::TYPE_PSEUDO) {
       _preparePseudoAtom(aid, CWC_BASE, highlighted);
    } else if (ad.showLabel) {
@@ -1934,7 +1972,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       }
 
       // isotope
-      if (isotope > 0 && (ad.label != ELEM_H || 
+      if (isotope > 0 && (ad.label != ELEM_H ||
          isotope > 3 || isotope < 2)) {
          tiIsotope = _pushTextItem(ad, RenderItem::RIT_ISOTOPE, color, highlighted);
 
@@ -1944,7 +1982,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          _cw.setTextItemSize(itemIsotope);
 
          ad.leftMargin -= _settings.labelInternalOffset + itemIsotope.bbsz.x;
-         itemIsotope.bbp.set(ad.leftMargin, ad.ypos + 
+         itemIsotope.bbp.set(ad.leftMargin, ad.ypos +
             _settings.upperIndexShift * ad.height);
          _expandBoundRect(ad, itemIsotope);
       }
@@ -1978,7 +2016,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
 
          if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
             implicit_h = bm.asMolecule().getImplicitH_NoThrow(aid, 0);
-         
+
          if (implicit_h > 0 && showImplHydrogens)
          {
             ad.showHydro = true;
@@ -1996,7 +2034,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
 
             if (implicit_h > 1)
             {
-               tiHydroIndex = _pushTextItem(ad, RenderItem::RIT_HYDROINDEX, 
+               tiHydroIndex = _pushTextItem(ad, RenderItem::RIT_HYDROINDEX,
                   color, highlighted);
 
                TextItem& itemHydroIndex = _data.textitems[tiHydroIndex];
@@ -2075,10 +2113,10 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
 
       // radical
       int radical = -1;
-      
+
       if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
          radical = bm.getAtomRadical_NoThrow(aid, -1);
-      
+
       if (radical > 0)
       {
          const TextItem& label = _data.textitems[tilabel];
@@ -2120,7 +2158,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
                dist = _settings.radicalTopDistDot;
             }
             else //if (radical == RADICAL_TRIPLET)
-            {                                                   
+            {
                _cw.setGraphItemSizeCap(itemRadical1);
                _cw.setGraphItemSizeCap(itemRadical2);
                dist = _settings.radicalTopDistCap;
@@ -2176,19 +2214,19 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
                vMin = y;
          }
          if (vMax > -vMin)
-            itemStereoGroup.bbp.set(ad.pos.x - itemStereoGroup.bbsz.x / 2, 
-            ad.pos.y + ad.boundBoxMin.y - itemStereoGroup.bbsz.y - 
+            itemStereoGroup.bbp.set(ad.pos.x - itemStereoGroup.bbsz.x / 2,
+            ad.pos.y + ad.boundBoxMin.y - itemStereoGroup.bbsz.y -
             _settings.stereoGroupLabelOffset);
          else
-            itemStereoGroup.bbp.set(ad.pos.x - itemStereoGroup.bbsz.x / 2, 
-            ad.pos.y + ad.boundBoxMax.y + 
+            itemStereoGroup.bbp.set(ad.pos.x - itemStereoGroup.bbsz.x / 2,
+            ad.pos.y + ad.boundBoxMax.y +
             _settings.stereoGroupLabelOffset);
       }
       else
       {
          // label hidden - position stereo group label independently
          Vec2f p;
-         bondEndRightToStereoGroupLabel = _findClosestBox(p, aid, 
+         bondEndRightToStereoGroupLabel = _findClosestBox(p, aid,
             itemStereoGroup.bbsz, _settings.bondLineWidth);
 
          p.addScaled(itemStereoGroup.bbsz, -0.5);
@@ -2210,13 +2248,13 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       if (ad.showLabel)
       {
          ad.leftMargin -= itemAAM.bbsz.x + _settings.labelInternalOffset;
-         itemAAM.bbp.set(ad.leftMargin, ad.ypos + 
+         itemAAM.bbp.set(ad.leftMargin, ad.ypos +
             _settings.lowerIndexShift * ad.height);
       }
       else
       {
          Vec2f p;
-         _findClosestBox(p, aid, itemAAM.bbsz, _settings.bondLineWidth, 
+         _findClosestBox(p, aid, itemAAM.bbsz, _settings.bondLineWidth,
             bondEndRightToStereoGroupLabel);
 
          p.addScaled(itemAAM.bbsz, -0.5);
@@ -2346,6 +2384,15 @@ int MoleculeRenderInternal::_pushTextItem (AtomDesc& ad, RenderItem::TYPE ritype
    return res;
 }
 
+int MoleculeRenderInternal::_pushTextItem (SGroup& sg, RenderItem::TYPE ritype, int color)
+{
+   int res = _pushTextItem(ritype, color, false);
+   if (sg.tibegin < 0)
+      sg.tibegin = res;
+   sg.ticount++;
+   return res;
+}
+
 int MoleculeRenderInternal::_pushGraphItem (RenderItem::TYPE ritype, int color, bool highlighted)
 {
    _data.graphitems.push();
@@ -2419,10 +2466,10 @@ void MoleculeRenderInternal::_drawBond (int b)
       }
    }
 
-   _cw.resetHighlightThickness();     
+   _cw.resetHighlightThickness();
 
    if (_data.reactingCenters.size() > 0 && _data.reactingCenters[b] != RC_UNMARKED)
-   {                          
+   {
       int rc = _data.reactingCenters[b];
       if (rc == RC_NOT_CENTER)
          _drawReactingCenter(bd, RC_NOT_CENTER);
@@ -2439,7 +2486,7 @@ void MoleculeRenderInternal::_drawBond (int b)
       }
    }
 
-   _cw.resetHighlight();     
+   _cw.resetHighlight();
 
    if (bd.topology > 0)
       _drawTopology(bd);
@@ -2456,7 +2503,7 @@ void MoleculeRenderInternal::_drawTopology (BondDescr& bd)
       bprintf(ti.text, "rng");
    else if (bd.topology == TOPOLOGY_CHAIN)
       bprintf(ti.text, "chn");
-   else 
+   else
       throw Error("Unknown topology value");
 
    _cw.setTextItemSize(ti);
@@ -2527,7 +2574,7 @@ void MoleculeRenderInternal::_drawReactingCenter (BondDescr& bd, int rc)
       p[7].addScaled(bd.norm, -acrossInt);
       numLines = 4;
       break;
-   case RC_UNCHANGED:  // o   
+   case RC_UNCHANGED:  // o
       _cw.fillCircle(bd.center, radius);
       break;
    case RC_MADE_OR_BROKEN:
@@ -2550,7 +2597,7 @@ void MoleculeRenderInternal::_drawReactingCenter (BondDescr& bd, int rc)
       break;
    case RC_TOTAL:
       break;
-   }  
+   }
    for (int i = 0; i < numLines; ++i)
       _cw.drawLine(p[2 * i], p[2 * i + 1]);
    if (rc == RC_UNCHANGED)
@@ -2562,7 +2609,7 @@ void MoleculeRenderInternal::_drawReactingCenter (BondDescr& bd, int rc)
    {
       bd.extN = __max(bd.extN, acrossSz);
       bd.extP = __max(bd.extP, acrossSz);
-   }                                     
+   }
 }
 
 void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
@@ -2655,8 +2702,8 @@ float MoleculeRenderInternal::_ctghalf (float cs)
 float MoleculeRenderInternal::_doubleBondShiftValue (const BondEnd& be, bool right, bool centered)
 {
    const BondDescr& bd = _bd(_be(right ? be.rnei : be.lnei).bid);
-   float 
-      si = right ? be.rsin : be.lsin, 
+   float
+      si = right ? be.rsin : be.lsin,
       co = right ? be.rcos : be.lcos;
    if (centered && bd.type == BOND_SINGLE && bd.end == be.aid && bd.stereodir != 0)
    {
@@ -2707,7 +2754,7 @@ void MoleculeRenderInternal::_prepareDoubleBondCoords (Vec2f* coord, BondDescr& 
    {
       bd.extP = _settings.bondSpace * 2 + _settings.bondLineWidth / 2;
       bd.extN = _settings.bondLineWidth / 2;
-     
+
       if (!bd.lineOnTheRight)
       {
          float t;
@@ -2767,20 +2814,20 @@ void MoleculeRenderInternal::_drawStereoCareBox (BondDescr& bd, const BondEnd& b
       _cw.drawQuad(p0, p1, p2, p3);
 
    }
-}                            
+}
 
 void MoleculeRenderInternal::_bondDouble (BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
-{                  
+{
    Vec2f coord[4];
    _prepareDoubleBondCoords(coord, bd, be1, be2, true);
    _cw.drawLine(coord[0], coord[1]);
    _cw.drawLine(coord[2], coord[3]);
-   
+
    _drawStereoCareBox(bd, be1, be2);
 }
 
 void MoleculeRenderInternal::_bondSingleOrAromatic (BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
-{                  
+{
    Vec2f coord[4];
    _prepareDoubleBondCoords(coord, bd, be1, be2, true);
    _cw.drawLine(coord[0], coord[1]);
@@ -2792,7 +2839,7 @@ void MoleculeRenderInternal::_bondSingleOrAromatic (BondDescr& bd, const BondEnd
 }
 
 void MoleculeRenderInternal::_bondDoubleOrAromatic (BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
-{                  
+{
    Vec2f coord[4];
    _prepareDoubleBondCoords(coord, bd, be1, be2, true);
    _cw.setDash(_settings.bondDashDoubleOrAromatic);
@@ -2821,8 +2868,8 @@ void MoleculeRenderInternal::_bondSingleOrDouble (BondDescr& bd, const BondEnd& 
    Vec2f r0, r1, p0, p1, q0, q1;
    float step = len / numSegments;
    ns.scale(0.5f);
-   for (int i = 0; i < numSegments; ++i)   
-   {                    
+   for (int i = 0; i < numSegments; ++i)
+   {
       r0.lineCombin(be1.p, ds, i * step);
       r1.lineCombin(be1.p, ds, (i + 1) * step);
       if (i & 1) {
@@ -2840,7 +2887,7 @@ void MoleculeRenderInternal::_bondSingleOrDouble (BondDescr& bd, const BondEnd& 
 void MoleculeRenderInternal::_bondAromatic (BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
 {
 
-   if (bd.aromRing)      
+   if (bd.aromRing)
    {
       // bond is in a ring, draw only a single line
       _cw.drawLine(be1.p, be2.p);

@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -25,25 +25,25 @@ using namespace indigo;
 
 namespace indigo
 {
-// cos(a) to cos(a/2) 
+// cos(a) to cos(a/2)
 double cos2c (const double cs)
 {
    return sqrt((1 + cs)/2);
 }
 
-// cos(a) to sin(a/2) 
+// cos(a) to sin(a/2)
 double sin2c (const double cs)
 {
    return sqrt((1 - cs)/2);
 }
 
-// cos(a) to tg(a/2) 
+// cos(a) to tg(a/2)
 double tg2c (const double cs)
 {
    return sqrt((1 - cs) / (1 + cs));
 }
 
-// cos(a) to ctg(a/2) 
+// cos(a) to ctg(a/2)
 double ctg2c (const double cs)
 {
    return sqrt((1 + cs) / (1 - cs));
@@ -54,7 +54,7 @@ RenderItem::RenderItem()
 {
    clear();
 }
-void RenderItem::clear() 
+void RenderItem::clear()
 {
    ritype = RIT_NULL;
    bbp.set(0, 0);
@@ -64,18 +64,18 @@ void RenderItem::clear()
    highlighted = false;
 }
 
-void TextItem::clear() { 
+void TextItem::clear() {
    RenderItem::clear();
-   text.clear(); 
+   text.clear();
 }
 
 void GraphItem::clear() {
    RenderItem::clear();
 }
-          
-AtomDesc::AtomDesc() 
-{ 
-   clear(); 
+
+AtomDesc::AtomDesc()
+{
+   clear();
 }
 
 void AtomDesc::clear ()
@@ -85,7 +85,7 @@ void AtomDesc::clear ()
    ticount = gicount = 0;
    attachmentPointBegin = -1;
    attachmentPointCount = 0;
-   stereoGroupType = 
+   stereoGroupType =
       stereoGroupNumber = -1;
    isRGroupAttachmentPoint = false;
    pseudoAtomStringVerbose = false;
@@ -93,13 +93,24 @@ void AtomDesc::clear ()
    color = CWC_BASE;
 }
 
-BondEnd::BondEnd () 
+SGroup::SGroup()
+{
+   clear();
+}
+
+void SGroup::clear ()
+{
+   tibegin = gibegin = -1;
+   ticount = gicount = 0;
+}
+
+BondEnd::BondEnd ()
 {
    clear();
 }
 
 void BondEnd::clear ()
-{    
+{
    lRing = next = -1;
    centered = false;
    prolong = false;
@@ -113,13 +124,13 @@ void BondEnd::clear ()
 }
 
 BondDescr::BondDescr ()
-{           
+{
    clear();
 }
 
 void BondDescr::clear ()
-{              
-   type = -1; 
+{
+   type = -1;
    queryType = -1;
    inRing = false;
    aromRing = false;
@@ -127,7 +138,7 @@ void BondDescr::clear ()
    thickness = 0.0f;
    stereodir = 0;
    centered = false;
-   extP = extN = 0;  
+   extP = extN = 0;
    bahs = eahs = 0;
    tiTopology = -1;
    topology = 0;
@@ -142,9 +153,9 @@ int BondDescr::getBondEnd (int aid) const
    throw Error("atom given is not adjacent to the bond");
 }
 
-Ring::Ring () 
-{ 
-   clear(); 
+Ring::Ring ()
+{
+   clear();
 }
 
 void Ring::clear ()
@@ -174,14 +185,15 @@ void MoleculeRenderData::clear ()
    reactingCenters.clear();
    inversions.clear();
    exactChanges.clear();
+   sgroups.clear();
 }
 
 RenderSettings::RenderSettings () :
-TL_CP_GET(bondDashAromatic), 
-TL_CP_GET(bondDashAny), 
-TL_CP_GET(bondDashSingleOrAromatic), 
+TL_CP_GET(bondDashAromatic),
+TL_CP_GET(bondDashAny),
+TL_CP_GET(bondDashSingleOrAromatic),
 TL_CP_GET(bondDashDoubleOrAromatic)
-{  
+{
    init(1.0f);
 }
 
@@ -196,6 +208,7 @@ void RenderSettings::init (float sf)
    fzz[FONT_SIZE_RGROUP_LOGIC_INDEX] = bondLineWidth * 8;
    fzz[FONT_SIZE_INDICES] = bondLineWidth * 6;
    fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = bondLineWidth * 6;
+   fzz[FONT_SIZE_DATA_SGROUP] = bondLineWidth * 8;
 
    upperIndexShift = -0.4f;
    lowerIndexShift = 0.4f;
@@ -224,7 +237,7 @@ void RenderSettings::init (float sf)
    graphItemPlusEdge = (graphItemDigitWidth - graphItemSignLineWidth) / 2;
 
    const int dashDot[] = {5,2,1,2};
-   const int dash[] = {3,2}; 
+   const int dash[] = {3,2};
 
    bondDashSingleOrAromatic.clear();
    bondDashDoubleOrAromatic.clear();
@@ -242,7 +255,7 @@ void RenderSettings::init (float sf)
       bondDashAny.push(val);
       bondDashAromatic.push(val);
    }
-   
+
    layoutMarginHorizontal = 0.4f;
    layoutMarginVertical = 0.6f;
    plusSize = 0.5;

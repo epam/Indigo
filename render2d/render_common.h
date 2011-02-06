@@ -40,7 +40,7 @@ enum LABEL_MODE {LABEL_MODE_NORMAL, LABEL_MODE_FORCESHOW, LABEL_MODE_HIDETERMINA
 enum STEREO_STYLE {STEREO_STYLE_EXT, STEREO_STYLE_OLD, STEREO_STYLE_NONE};
 enum IMPLICIT_HYDROGEN_MODE {IHM_NONE, IHM_TERMINAL, IHM_HETERO, IHM_TERMINAL_HETERO, IHM_ALL};
 enum {CWC_BASE = -2, CWC_WHITE=0, CWC_BLACK, CWC_RED, CWC_GREEN, CWC_BLUE, CWC_DARKGREEN, CWC_COUNT};
-enum FONT_SIZE {FONT_SIZE_LABEL=0, FONT_SIZE_ATTR, FONT_SIZE_RGROUP_LOGIC, FONT_SIZE_RGROUP_LOGIC_INDEX, FONT_SIZE_INDICES, FONT_SIZE_ATTACHMENT_POINT_INDEX, FONT_SIZE_COMMENT, FONT_SIZE_TITLE, FONT_SIZE_COUNT/*must be the last*/};
+enum FONT_SIZE {FONT_SIZE_LABEL=0, FONT_SIZE_ATTR, FONT_SIZE_RGROUP_LOGIC, FONT_SIZE_RGROUP_LOGIC_INDEX, FONT_SIZE_INDICES, FONT_SIZE_ATTACHMENT_POINT_INDEX, FONT_SIZE_COMMENT, FONT_SIZE_TITLE, FONT_SIZE_DATA_SGROUP, FONT_SIZE_COUNT/*must be the last*/};
 enum COMMENT_POS {COMMENT_POS_TOP, COMMENT_POS_BOTTOM};
 
 // cos(a) to cos(a/2) 
@@ -69,7 +69,8 @@ struct RenderItem {
       RIT_CHIRAL,
       RIT_ATTACHMENTPOINT,
       RIT_ATOMID,
-      RIT_TOPOLOGY
+      RIT_TOPOLOGY,
+      RIT_SGROUP
    };
 
    RenderItem();
@@ -130,6 +131,17 @@ struct AtomDesc {
    float leftMargin, rightMargin, ypos, height;
 private:
    AtomDesc(const AtomDesc& ad);
+};
+
+struct SGroup {
+   SGroup();
+   void clear ();
+
+   int tibegin, ticount;
+   int gibegin, gicount;
+
+private:
+   SGroup(const SGroup& sg);
 };
 
 struct BondEnd {
@@ -213,6 +225,7 @@ struct MoleculeRenderData {
    MoleculeRenderData ();
    void clear ();
 
+   ObjArray<SGroup> sgroups;
    ObjArray<AtomDesc> atoms;
    Array<BondDescr> bonds;
    ObjArray<Ring> rings;

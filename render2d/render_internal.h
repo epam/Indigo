@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -22,7 +22,7 @@ namespace indigo {
 class RenderContext;
 
 class MoleculeRenderInternal {
-public:          
+public:
    MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw);
    void setMolecule (BaseMolecule* mol);
    void setScaleFactor (const float scaleFactor, const Vec2f& min, const Vec2f& max);
@@ -33,7 +33,7 @@ public:
 
    void setHighlighting (const GraphHighlighting* highlighting);
 
-   DEF_ERROR("molecule render internal");                                                       
+   DEF_ERROR("molecule render internal");
 private:
    enum STEREOGROUPS_MODE {STEREOGROUPS_SHOW, STEREOGROUPS_HIDE};
    struct LocalOptions {
@@ -51,6 +51,8 @@ private:
    bool _clipRaySegment (float& offset, const Vec2f& p, const Vec2f& d, const Vec2f& n0, const Vec2f& a, const Vec2f& b, const float w);
    bool _clipRayBox (float& offset, const Vec2f& p, const Vec2f& d, const Vec2f& rp, const Vec2f& sz, const float w);
    void _findMinMax();
+   void _objCoordTransform(Vec2f& p, const Vec2f& v) const;
+   void _objDistTransform(Vec2f& p, const Vec2f& v) const;
    void _initCoordinates();
    void _determineDoubleBondShift();
    void _determineStereoGroupsMode();
@@ -62,13 +64,15 @@ private:
    bool _vertexIsHighlighted (int aid);
    bool _edgeIsHighlighted (int bid);
    bool _hasQueryModifiers (int aid);
-   void _initAtomData();   
+   void _initAtomData();
    void _initRGroups();
+   void _initDataSGroups();
    void _findAnglesOverPi();
    void _renderBondIds();
    void _renderAtomIds();
    void _renderLabels();
    void _renderRings();
+   void _renderSGroups ();
    void _setHighlightOpt();
    void _resetHighlightOpt();
    void _renderBonds();
@@ -85,7 +89,7 @@ private:
    int _getBondEndIdx (int aid, int nei);
    int _getOpposite (int beid) const;
    void _drawAtom (const AtomDesc& desc);
-   void _writeQueryAtomToString (Output& output, int aid);   
+   void _writeQueryAtomToString (Output& output, int aid);
    bool _writeDelimiter (bool needDelimiter, Output &output);
    void _writeQueryModifier (Output& output, int aid);
    int _findClosestCircle (Vec2f& p, int aid, float radius, int skip = -1);
@@ -95,8 +99,10 @@ private:
    void _prepareAAM ();
    int _pushTextItem (RenderItem::TYPE type, int color, bool highlighted);
    int _pushTextItem (AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);
+   int _pushTextItem (SGroup& sg, RenderItem::TYPE ritype, int color = CWC_BASE);
    int _pushGraphItem (RenderItem::TYPE type, int color, bool highlighted);
    int _pushGraphItem (AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);
+   int _pushGraphItem (SGroup& ad, RenderItem::TYPE type, int color = CWC_BASE);
    const char* _valenceText (const int valence);
    float _ctghalf (float cs);
    void _drawBond (int b);
@@ -113,7 +119,7 @@ private:
    void _bondAromatic (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
    void _bondTriple (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
    void _bondAny (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
-           
+
    // local
    void* _hdc;
    BaseMolecule* _mol;
