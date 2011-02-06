@@ -249,11 +249,11 @@ void MoleculeRenderInternal::render ()
 
    _initRGroups();
 
-   _initDataSGroups();
-
    _findCenteredCase();
 
    _prepareLabels();
+
+   _initDataSGroups();
 
    _extendRenderItems();
 
@@ -555,8 +555,12 @@ void MoleculeRenderInternal::_initDataSGroups()
       ti.text.push(0);
       ti.fontsize = FONT_SIZE_DATA_SGROUP;
       _cw.setTextItemSize(ti);
-      //printf("%d:%s, %f, %f\n", i, ti.text.ptr(), group.display_pos.x, group.display_pos.y);
-      if (group.relative) {
+      const AtomDesc& ad = _ad(group.atoms[0]);
+      if (group.attached) {
+         ti.bbp.copy(_ad(group.atoms[0]).pos);
+         ti.bbp.x += ad.boundBoxMax.x + _settings.bondLineWidth * 2;
+         ti.bbp.y -= ti.bbsz.y/2;
+      } else if (group.relative) {
          _objDistTransform(ti.bbp, group.display_pos);
          ti.bbp.add(_ad(group.atoms[0]).pos);
       } else {
