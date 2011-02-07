@@ -341,7 +341,11 @@
   <ItemGroup>
     <ProjectReference Include="..\cairo-src\cairo\cairo.vcxproj">
       <Project>{7bc981e0-0a8c-4216-a8fc-1b78a474ad15}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <Private>true</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\cairo-src\pixman\pixman.vcxproj">
       <Project>{60150eef-ee29-4334-b2a5-dd585d7edcae}</Project>

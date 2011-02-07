@@ -326,7 +326,6 @@
     <ClInclude Include="..\common\base_c\os_tls.h" />
     <ClInclude Include="..\common\base_cpp\pool.h" />
     <ClInclude Include="..\common\base_cpp\profiling.h" />
-    <ClInclude Include="..\common\base_cpp\ptr.h" />
     <ClInclude Include="..\common\base_cpp\queue.h" />
     <ClInclude Include="..\common\base_cpp\red_black.h" />
     <ClInclude Include="..\common\base_cpp\smart_output.h" />

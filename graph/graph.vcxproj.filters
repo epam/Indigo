@@ -63,9 +63,6 @@
     <ClInclude Include="..\common\base_cpp\profiling.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\base_cpp\ptr.h">
-      <Filter>base</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\base_cpp\queue.h">
       <Filter>base</Filter>
     </ClInclude>

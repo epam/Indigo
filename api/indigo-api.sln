@@ -18,6 +18,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "render2d", "..\render2d\render2d.vcxproj", "{8E1DE958-1A54-4739-8F12-746D9F6D04C3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-api-renderer", "renderer\indigo-api-renderer.vcxproj", "{94BD191F-2952-4A8C-A33E-36367CDDC202}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7BC981E0-0A8C-4216-A8FC-1B78A474AD15} = {7BC981E0-0A8C-4216-A8FC-1B78A474AD15}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\zlib-src\zlib.vcxproj", "{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}"
 EndProject
