@@ -167,7 +167,7 @@ void RenderOptions::clear()
    showNeighborArcs = false;
    showValences = true;
    atomColoring = false;
-   stereoMode = STEREO_STYLE_NEW;
+   stereoMode = STEREO_STYLE_OLD;
    showReactingCenterUnchanged = false; 
    centerDoubleBondWhenStereoAdjacent = false;
    showCycles = false;

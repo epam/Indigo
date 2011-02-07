@@ -189,7 +189,7 @@ void indigoRenderSetStereoStyle (const char* mode)
 {
    TL_DECL_GET(StringIntMap, stereoStyleMap);
    if (stereoStyleMap.size() == 0) {
-      stereoStyleMap.insert("new", STEREO_STYLE_NEW);
+      stereoStyleMap.insert("ext", STEREO_STYLE_EXT);
       stereoStyleMap.insert("old", STEREO_STYLE_OLD);
       stereoStyleMap.insert("none", STEREO_STYLE_NONE);
    }

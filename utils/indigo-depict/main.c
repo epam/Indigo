@@ -49,7 +49,7 @@ void usage (void)
            "   Set atom label display mode (default is normal)\n"
            "-[de]arom\n"
            "   Force [de]aromatization\n"
-           "-stereo <old|ext>\n"
+           "-stereo <old|ext|none>\n"
            "   Stereogroups display mode (default is 'old')\n"
            "-cdbwsa\n"
            "   Center double bonds which have an adjacent stereo bond (disabled by default)\n"
@@ -334,7 +334,6 @@ int parseParams (Params* p, int argc, char *argv[]) {
 
    indigoSetOptionBool("render-coloring", 1);
    indigoSetOptionBool("render-highlight-color-enabled", 1);
-   indigoSetOptionBool("render-stereo-old-style", 1);
 
    for (; i < argc; i++)
    {
@@ -541,15 +540,7 @@ int parseParams (Params* p, int argc, char *argv[]) {
             return -1;
          }
 
-         if (strcasecmp(argv[i], "old") == 0)
-            indigoSetOptionBool("render-stereo-old-style", 1);
-         else if (strcasecmp(argv[i], "ext") == 0)
-            indigoSetOptionBool("render-stereo-old-style", 0);
-         else
-         {
-            fprintf(stderr, "expecting 'old' or 'ext' after -stereo\n");
-            return -1;
-         }
+         indigoSetOption("render-stereo-style", argv[i]);
       }
       else if (strcmp(argv[i], "-cdbwsa") == 0)
       {
