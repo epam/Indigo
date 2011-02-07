@@ -97,7 +97,7 @@ void RingoSubstructure::_validateQueryData ()
    builder.skip_sim = true;
    builder.process();
    
-   _query_fp.copy(builder.get(), _context.fp_parameters.fingerprintSizeExtOrd() * 2);
+   _query_fp.copy(builder.get(), _context.fp_parameters.fingerprintSizeExtOrdSim() * 2);
    
    _query_data_valid = true;
 }
