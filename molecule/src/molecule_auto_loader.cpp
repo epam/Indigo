@@ -215,6 +215,27 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       }
    }
 
+   // check for CML format
+   {
+      int pos = _scanner->tell();
+      _scanner->skipSpace();
+
+      if (_scanner->lookNext() == '<')
+      {
+         if (_scanner->findWord("<molecule"))
+         {
+            MoleculeCmlLoader loader(*_scanner);
+            loader.ignore_stereochemistry_errors = ignore_stereocenter_errors;
+            if (query)
+               throw Error("CML queries not supported");
+            loader.loadMolecule(mol.asMolecule());
+            return;
+         }
+      }
+
+      _scanner->seek(pos, SEEK_SET);
+   }
+
    // check for SMILES format
    if (Scanner::isSingleLine(*_scanner))
    {
@@ -228,17 +249,6 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          loader.loadQueryMolecule((QueryMolecule &)mol);
       else
          loader.loadMolecule((Molecule &)mol);
-      return;
-   }
-
-   // check for CML format
-   if (_scanner->findWord("<molecule"))
-   {
-      MoleculeCmlLoader loader(*_scanner);
-      loader.ignore_stereochemistry_errors = ignore_stereocenter_errors;
-      if (query)
-         throw Error("CML queries not supported yet");
-      loader.loadMolecule(mol.asMolecule());
       return;
    }
 

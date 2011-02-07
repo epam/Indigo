@@ -35,6 +35,7 @@
 #include "oracle/bingo_profiling.h"
 #include "molecule/elements.h"
 #include "base_cpp/auto_ptr.h"
+#include "oracle/mango_fetch_context.h"
 
 bool mangoPrepareMolecule (OracleEnv &env, const char *rowid,
                             const Array<char> &molfile_buf,
@@ -295,6 +296,7 @@ ORAEXT void oraMangoCreateIndex (OCIExtProcContext *ctx,
       context.shadow_table.createIndices(env);
       env.dbgPrintfTS("done\n");
       OracleStatement::executeSingle(env, "COMMIT");
+      MangoFetchContext::removeByContextID(context_id);
       MangoContext::remove(context_id);
       BingoContext::remove(context_id);
 
@@ -317,6 +319,7 @@ ORAEXT void oraMangoDropIndex (OCIExtProcContext *ctx, int context_id)
       context.context().storage.drop(env);
       context.fingerprints.drop(env);
 
+      MangoFetchContext::removeByContextID(context_id);
       MangoContext::remove(context_id);
       BingoContext::remove(context_id);
 

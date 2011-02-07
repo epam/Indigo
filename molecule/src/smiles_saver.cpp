@@ -536,18 +536,7 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
        atom_number != ELEM_B && atom_number != ELEM_I)
       need_brackets = true;
 
-   // Now we decide to write or not to write the hydrogen count to SMILES.
-   // In a better world, we would have been checking that the hydrogens
-   // 'make difference' by de-aromatizing the molecule and comparing
-   // the hydrogen counts in the de-aromatized atoms with the atoms we
-   // are writing now.
-   // In the real world, de-aromatization is complicated and takes time,
-   // so we write hydrogen counts if (i) there is a radical on the atom or
-   // (ii) atom is aromatic (does not apply to C and O, for which we can
-   // always tell the number of hydrogens by the charge, radical, and the
-   // number of bonds).
-   if (_bmol->getAtomRadical_NoThrow(idx, 0) != 0 ||
-       (aromatic && atom_number != ELEM_C && atom_number != ELEM_O))
+   if (_mol != 0 && Molecule::shouldWriteHCount(*_mol, idx))
    {
       hydro = _hcount[idx];
       if (hydro < 0 && !ignore_invalid_hcount)

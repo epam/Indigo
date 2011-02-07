@@ -18,6 +18,7 @@
 #include "oracle/bingo_oracle_context.h"
 
 TL_DEF(RingoFetchContext, PtrArray<RingoFetchContext>, _instances);
+OsLock RingoFetchContext::_instances_lock;
 
 RingoFetchContext::RingoFetchContext (int id_, RingoOracleContext &context,
                                       const Array<char> &query_id) :
@@ -36,6 +37,7 @@ _context(context)
 
 RingoFetchContext & RingoFetchContext::get (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<RingoFetchContext>, _instances);
 
    for (int i = 0; i < _instances.size(); i++)
@@ -48,6 +50,7 @@ RingoFetchContext & RingoFetchContext::get (int id)
 RingoFetchContext & RingoFetchContext::create (RingoOracleContext &context,
                                                const Array<char> &query_id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<RingoFetchContext>, _instances);
 
    int id = 1;
@@ -71,6 +74,7 @@ RingoFetchContext & RingoFetchContext::create (RingoOracleContext &context,
 RingoFetchContext * RingoFetchContext::findFresh (int context_id,
                                                   const Array<char> &query_id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<RingoFetchContext>, _instances);
 
    int i;
@@ -96,6 +100,7 @@ RingoFetchContext * RingoFetchContext::findFresh (int context_id,
 
 void RingoFetchContext::remove (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<RingoFetchContext>, _instances);
    int i;
 
@@ -107,4 +112,15 @@ void RingoFetchContext::remove (int id)
       throw Error("remove(): context #%d not found", id);
 
    _instances.remove(i);
+}
+
+void RingoFetchContext::removeByContextID (int id)
+{
+   OsLocker locker(_instances_lock);
+   TL_GET(PtrArray<RingoFetchContext>, _instances);
+   int i;
+
+   for (i = _instances.size() - 1; i >= 0; i--)
+      if (_instances[i]->context_id == id)
+         _instances.remove(i);
 }

@@ -39,8 +39,6 @@ BingoOracleContext & MangoOracleContext::context ()
 
 MangoOracleContext & MangoOracleContext::get (OracleEnv &env, int id, bool lock)
 {
-   TL_GET(PtrArray<MangoContext>, _instances);
-
    bool config_reloaded;
 
    BingoOracleContext &context = BingoOracleContext::get(env, id, lock, &config_reloaded);
@@ -86,6 +84,9 @@ MangoOracleContext & MangoOracleContext::get (OracleEnv &env, int id, bool lock)
 
    if (already == 0)
    {
+      OsLocker locker(_instances_lock);
+      TL_GET(PtrArray<MangoContext>, _instances);
+
       _instances.add(res.release());
       return *(MangoOracleContext *)_instances.top();
    }

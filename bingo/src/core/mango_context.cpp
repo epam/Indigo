@@ -17,6 +17,8 @@
 
 TL_DEF(MangoContext, PtrArray<MangoContext>, _instances);
 
+OsLock MangoContext::_instances_lock;
+
 MangoContext::MangoContext (BingoContext &context) :
 substructure(context),
 similarity(context),
@@ -33,6 +35,7 @@ MangoContext::~MangoContext ()
 
 MangoContext * MangoContext::_get (int id, BingoContext &context)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<MangoContext>, _instances);
 
    for (int i = 0; i < _instances.size(); i++)
@@ -44,6 +47,7 @@ MangoContext * MangoContext::_get (int id, BingoContext &context)
 
 MangoContext * MangoContext::existing (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<MangoContext>, _instances);
 
    for (int i = 0; i < _instances.size(); i++)
@@ -55,6 +59,7 @@ MangoContext * MangoContext::existing (int id)
 
 MangoContext * MangoContext::get (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<MangoContext>, _instances);
 
    for (int i = 0; i < _instances.size(); i++)
@@ -68,6 +73,7 @@ MangoContext * MangoContext::get (int id)
 
 void MangoContext::remove (int id)
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<MangoContext>, _instances);
    int i;
 
@@ -84,6 +90,7 @@ void MangoContext::remove (int id)
 
 int MangoContext::begin ()
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<MangoContext>, _instances);
 
    if (_instances.size() < 1)
@@ -100,6 +107,7 @@ int MangoContext::begin ()
 
 int MangoContext::end ()
 {
+   OsLocker locker(_instances_lock);
    TL_GET(PtrArray<MangoContext>, _instances);
 
    if (_instances.size() < 1)
@@ -116,9 +124,10 @@ int MangoContext::end ()
 
 int MangoContext::next (int k)
 {
-   TL_GET(PtrArray<MangoContext>, _instances);
-
    int i, next_id = end();
+
+   OsLocker locker(_instances_lock);
+   TL_GET(PtrArray<MangoContext>, _instances);
 
    for (i = 0; i < _instances.size(); i++)
       if (_instances[i]->_context.id > k && _instances[i]->_context.id < next_id)

@@ -49,6 +49,7 @@ public:
    static RingoFetchContext * findFresh (int context_id, const Array<char> &query_id);
 
    static void remove (int id);
+   static void removeByContextID (int id);
 
    inline RingoOracleContext & context () {return _context;}
 
@@ -59,6 +60,7 @@ protected:
    RingoOracleContext & _context;
 
    TL_DECL(PtrArray<RingoFetchContext>, _instances);
+   static OsLock _instances_lock;
 };
 
 

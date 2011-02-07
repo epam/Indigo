@@ -165,12 +165,18 @@ int LzwDict::getAlphabetSize( void )
 /* Get indexed prefix function */
 int LzwDict::getPrefix( const int Code ) const
 {
+   if (!isInitialized())
+      throw Error("getPrefix(): not initialized");
+   
    return _storage[Code - _alphabetSize - 1].Prefix;
 } 
 
 /* Get indexed appended char function */
 byte LzwDict::getChar( const int Code ) const
 {
+   if (!isInitialized())
+      throw Error("getChar(): not initialized");
+
    return _storage[Code - _alphabetSize - 1].AppendChar;
 } 
 
@@ -180,7 +186,7 @@ int LzwDict::getSize( void ) const
    return _storage.size();
 } 
 
-bool LzwDict::isInitialized( void )
+bool LzwDict::isInitialized( void ) const
 {
    return _alphabetSize != -1 ? true : false;
 }
