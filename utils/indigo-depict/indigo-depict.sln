@@ -1,47 +1,31 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-depict", "indigo-depict.vcproj", "{F9AB0C5A-9B44-4FD3-A017-D1CFDDCDA611}"
-	ProjectSection(ProjectDependencies) = postProject
-		{BB3E941D-B8F0-4660-94CC-592F7C7856A2} = {BB3E941D-B8F0-4660-94CC-592F7C7856A2}
-		{94BD191F-2952-4A8C-A33E-36367CDDC202} = {94BD191F-2952-4A8C-A33E-36367CDDC202}
-		{D69C5B23-48C2-400B-9BCD-B8276756B673} = {D69C5B23-48C2-400B-9BCD-B8276756B673}
-		{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5} = {C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}
-		{8E1DE958-1A54-4739-8F12-746D9F6D04C3} = {8E1DE958-1A54-4739-8F12-746D9F6D04C3}
-		{1CF32085-9687-4DBD-BCA2-D7378E2A9490} = {1CF32085-9687-4DBD-BCA2-D7378E2A9490}
-		{D59DE699-6E12-4546-A200-56EAC6A2DF04} = {D59DE699-6E12-4546-A200-56EAC6A2DF04}
-		{D4AAEEA4-9271-455C-A1D1-66C9D4E74338} = {D4AAEEA4-9271-455C-A1D1-66C9D4E74338}
-		{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236} = {ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}
-		{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF} = {4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-depict", "indigo-depict.vcxproj", "{F9AB0C5A-9B44-4FD3-A017-D1CFDDCDA611}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-api", "..\..\api\indigo-api.vcproj", "{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-api", "..\..\api\indigo-api.vcxproj", "{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "render2d", "..\..\render2d\render2d.vcproj", "{8E1DE958-1A54-4739-8F12-746D9F6D04C3}"
-	ProjectSection(ProjectDependencies) = postProject
-		{7BC981E0-0A8C-4216-A8FC-1B78A474AD15} = {7BC981E0-0A8C-4216-A8FC-1B78A474AD15}
-		{60150EEF-EE29-4334-B2A5-DD585D7EDCAE} = {60150EEF-EE29-4334-B2A5-DD585D7EDCAE}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "render2d", "..\..\render2d\render2d.vcxproj", "{8E1DE958-1A54-4739-8F12-746D9F6D04C3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "layout", "..\..\layout\layout.vcproj", "{1CF32085-9687-4DBD-BCA2-D7378E2A9490}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "layout", "..\..\layout\layout.vcxproj", "{1CF32085-9687-4DBD-BCA2-D7378E2A9490}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reaction", "..\..\reaction\reaction.vcproj", "{D4AAEEA4-9271-455C-A1D1-66C9D4E74338}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reaction", "..\..\reaction\reaction.vcxproj", "{D4AAEEA4-9271-455C-A1D1-66C9D4E74338}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "molecule", "..\..\molecule\molecule.vcproj", "{D69C5B23-48C2-400B-9BCD-B8276756B673}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "molecule", "..\..\molecule\molecule.vcxproj", "{D69C5B23-48C2-400B-9BCD-B8276756B673}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graph", "..\..\graph\graph.vcproj", "{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graph", "..\..\graph\graph.vcxproj", "{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\..\zlib-src\zlib.vcproj", "{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\..\zlib-src\zlib.vcxproj", "{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-api-renderer", "..\..\api\renderer\indigo-api-renderer.vcproj", "{94BD191F-2952-4A8C-A33E-36367CDDC202}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-api-renderer", "..\..\api\renderer\indigo-api-renderer.vcxproj", "{94BD191F-2952-4A8C-A33E-36367CDDC202}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "..\..\libpng-src\libpng.vcproj", "{D59DE699-6E12-4546-A200-56EAC6A2DF04}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "..\..\libpng-src\libpng.vcxproj", "{D59DE699-6E12-4546-A200-56EAC6A2DF04}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cairo", "..\..\cairo-src\cairo\cairo.vcproj", "{7BC981E0-0A8C-4216-A8FC-1B78A474AD15}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cairo", "..\..\cairo-src\cairo\cairo.vcxproj", "{7BC981E0-0A8C-4216-A8FC-1B78A474AD15}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pixman", "..\..\cairo-src\pixman\pixman.vcproj", "{60150EEF-EE29-4334-B2A5-DD585D7EDCAE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pixman", "..\..\cairo-src\pixman\pixman.vcxproj", "{60150EEF-EE29-4334-B2A5-DD585D7EDCAE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\tinyxml\tinyxml.vcproj", "{BB3E941D-B8F0-4660-94CC-592F7C7856A2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\tinyxml\tinyxml.vcxproj", "{BB3E941D-B8F0-4660-94CC-592F7C7856A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
