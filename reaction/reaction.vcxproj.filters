@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{fd4bd391-fd4d-4fb0-b2db-ff31af38b55f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\base_reaction.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base_reaction_substructure_matcher.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\crf_loader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\crf_saver.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\icr_loader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\icr_saver.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\query_reaction.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaction.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaction_auto_loader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaction_automapper.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaction_enumerator_state.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaction_exact_matcher.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaction_fingerprint.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaction_highlighting.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaction_neighborhood_counters.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaction_product_enumerator.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reaction_substructure_matcher.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rsmiles_loader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rsmiles_saver.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rxnfile_loader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rxnfile_saver.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="base_reaction.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="base_reaction_substructure_matcher.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="crf_loader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="crf_saver.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="icr_loader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="icr_saver.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="query_reaction.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction_auto_loader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction_automapper.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction_enumerator_state.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction_exact_matcher.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction_fingerprint.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction_highlighting.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction_neighborhood_counters.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction_product_enumerator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction_substructure_matcher.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="rsmiles_loader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="rsmiles_saver.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="rxnfile_loader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="rxnfile_saver.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

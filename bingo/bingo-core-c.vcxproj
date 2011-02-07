@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{01317732-1C45-4145-940B-E75235FEEE3F}</ProjectGuid>
+    <ProjectGuid>{07BDF51E-D24A-46F2-BF09-4F71E7E8092A}</ProjectGuid>
     <RootNamespace>bingocorec</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -59,14 +59,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -179,6 +179,24 @@
     <ClInclude Include="src\core-c\bingo_core_c.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\graph\graph.vcxproj">
+      <Project>{c6c11f43-43cd-4e5a-9fc5-b113a8b6f4f5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\layout\layout.vcxproj">
+      <Project>{1cf32085-9687-4dbd-bca2-d7378e2a9490}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\molecule\molecule.vcxproj">
+      <Project>{d69c5b23-48c2-400b-9bcd-b8276756b673}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\reaction\reaction.vcxproj">
+      <Project>{d4aaeea4-9271-455c-a1d1-66c9d4e74338}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\tinyxml\tinyxml.vcxproj">
+      <Project>{bb3e941d-b8f0-4660-94cc-592f7c7856a2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\zlib-src\zlib.vcxproj">
+      <Project>{4e6fd6f0-3507-4b4f-b447-0d3e970e9acf}</Project>
+    </ProjectReference>
     <ProjectReference Include="bingo-core.vcxproj">
       <Project>{cec4e9e4-0396-4316-b640-d8582f0054c0}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

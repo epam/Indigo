@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{cfd92aa5-d16a-4bcb-90be-823912efe4dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{27b28177-8a02-4acc-b18b-fab6ad42c2ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\base">
+      <UniqueIdentifier>{de006ead-6938-4069-850d-326df9ea379b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\oracle">
+      <UniqueIdentifier>{2304bf6d-f87d-4629-adda-1ea7c422bfb4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\oracle\bingo_fetch_engine.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\bingo_fingerprints.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\bingo_oracle.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\bingo_oracle_context.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\bingo_oracle_parallel.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\bingo_profiling.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\bingo_storage.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\mango_fast_index.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\mango_fetch_context.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\mango_oracle.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\mango_oracle_index_parallel.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\mango_shadow_fetch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\mango_shadow_table.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\ringo_fast_index.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\ringo_fetch_context.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\ringo_oracle.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\ringo_shadow_fetch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\ringo_shadow_table.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\rowid_loader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\rowid_saver.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\oracle\rowid_symbol_codes.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\base_cpp\chunk_storage.h">
+      <Filter>common\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\base_cpp\shmem.h">
+      <Filter>common\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\oracle\ora_logger.h">
+      <Filter>common\oracle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\oracle\ora_wrap.h">
+      <Filter>common\oracle</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\oracle\bingo_fingerprints.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\bingo_oracle.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\bingo_oracle_config.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\bingo_oracle_context.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\bingo_oracle_parallel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\bingo_oracle_util.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\bingo_profiling.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\bingo_storage.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\dll_main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\mango_fast_index.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\mango_fetch_context.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\mango_operators.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\mango_oracle.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\mango_oracle_fetch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\mango_oracle_index.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\mango_oracle_index_parallel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\mango_oracle_util.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\mango_shadow_fetch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\mango_shadow_table.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\ringo_fast_index.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\ringo_fetch_context.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\ringo_operators.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\ringo_oracle.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\ringo_oracle_fetch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\ringo_oracle_index.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\ringo_oracle_util.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\ringo_shadow_fetch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\ringo_shadow_table.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\rowid_loader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\oracle\rowid_saver.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\base_cpp\chunk_storage.cpp">
+      <Filter>common\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\base_cpp\shmem_win32.cpp">
+      <Filter>common\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\oracle\ora_error.cpp">
+      <Filter>common\oracle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\oracle\ora_logger.cpp">
+      <Filter>common\oracle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\oracle\ora_wrap.cpp">
+      <Filter>common\oracle</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
