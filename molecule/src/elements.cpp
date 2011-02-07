@@ -438,6 +438,22 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
                valence = 2;
                hyd = 2 - rad - conn - abs(charge);
             }
+            else if (elem != ELEM_Po && conn + rad + abs(charge) <= 4)
+            // See examples in PubChem
+            // [S] : CID 16684216
+            // [Se]: CID 5242252
+            {
+               valence = 4;
+               hyd = 4 - rad - conn - abs(charge);
+            }
+            else if (elem != ELEM_Po && conn + rad + abs(charge) <= 6)
+            // See examples in PubChem
+            // [S] : CID 46937044
+            // [Se]: CID 59786
+            {
+               valence = 6;
+               hyd = 6 - rad - conn - abs(charge);
+            }
          }
       }
       else if (elem == ELEM_Te)
@@ -488,11 +504,9 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
                valence = 1;
                hyd = 1 - rad - conn;
             }
-            else if (conn <= 3)
-            {
-               valence = 3;
-               hyd = 3 - rad - conn;
-            }
+            // else if (conn <= 3)
+            // While the halogens can have valence 3, they can not have
+            // hydrogens in that case.
          }
       }
    }
