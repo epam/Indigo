@@ -1,38 +1,24 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bingo-core", "bingo-core.vcproj", "{CEC4E9E4-0396-4316-B640-D8582F0054C0}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bingo-core", "bingo-core.vcxproj", "{CEC4E9E4-0396-4316-B640-D8582F0054C0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bingo-oracle", "bingo-oracle.vcxproj", "{9C3A0984-C769-41EC-B0C4-44149E62726E}"
 	ProjectSection(ProjectDependencies) = postProject
-		{BB3E941D-B8F0-4660-94CC-592F7C7856A2} = {BB3E941D-B8F0-4660-94CC-592F7C7856A2}
 		{D69C5B23-48C2-400B-9BCD-B8276756B673} = {D69C5B23-48C2-400B-9BCD-B8276756B673}
 		{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5} = {C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}
 		{1CF32085-9687-4DBD-BCA2-D7378E2A9490} = {1CF32085-9687-4DBD-BCA2-D7378E2A9490}
 		{D4AAEEA4-9271-455C-A1D1-66C9D4E74338} = {D4AAEEA4-9271-455C-A1D1-66C9D4E74338}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bingo-oracle", "bingo-oracle.vcproj", "{9C3A0984-C769-41EC-B0C4-44149E62726E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CEC4E9E4-0396-4316-B640-D8582F0054C0} = {CEC4E9E4-0396-4316-B640-D8582F0054C0}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graph", "..\graph\graph.vcxproj", "{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graph", "..\graph\graph.vcproj", "{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "molecule", "..\molecule\molecule.vcxproj", "{D69C5B23-48C2-400B-9BCD-B8276756B673}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "molecule", "..\molecule\molecule.vcproj", "{D69C5B23-48C2-400B-9BCD-B8276756B673}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5} = {C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}
-		{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF} = {4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reaction", "..\reaction\reaction.vcxproj", "{D4AAEEA4-9271-455C-A1D1-66C9D4E74338}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reaction", "..\reaction\reaction.vcproj", "{D4AAEEA4-9271-455C-A1D1-66C9D4E74338}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D69C5B23-48C2-400B-9BCD-B8276756B673} = {D69C5B23-48C2-400B-9BCD-B8276756B673}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "layout", "..\layout\layout.vcxproj", "{1CF32085-9687-4DBD-BCA2-D7378E2A9490}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "layout", "..\layout\layout.vcproj", "{1CF32085-9687-4DBD-BCA2-D7378E2A9490}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bingo-core-c", "bingo-core-c.vcproj", "{01317732-1C45-4145-940B-E75235FEEE3F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CEC4E9E4-0396-4316-B640-D8582F0054C0} = {CEC4E9E4-0396-4316-B640-D8582F0054C0}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bingo-core-c", "bingo-core-c.vcxproj", "{01317732-1C45-4145-940B-E75235FEEE3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bingo-sqlserver", "sqlserver\bingo-sqlserver.csproj", "{ED96DA19-3326-4DFB-9CB1-189895A367E5}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -44,9 +30,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlserver_script_generator"
 		{ED96DA19-3326-4DFB-9CB1-189895A367E5} = {ED96DA19-3326-4DFB-9CB1-189895A367E5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\zlib-src\zlib.vcproj", "{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\zlib-src\zlib.vcxproj", "{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\tinyxml\tinyxml.vcproj", "{BB3E941D-B8F0-4660-94CC-592F7C7856A2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\tinyxml\tinyxml.vcxproj", "{BB3E941D-B8F0-4660-94CC-592F7C7856A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
