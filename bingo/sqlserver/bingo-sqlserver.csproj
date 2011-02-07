@@ -108,11 +108,10 @@
     <PostBuildEvent>del $(ProjectDir)sql\assembly\$(TargetName).*
 copy $(TargetDir)$(TargetName).* $(ProjectDir)sql\assembly\
 </PostBuildEvent>
-    <PreBuildEvent>md $(ProjectDir)\sql\assembly\lib32
-md $(ProjectDir)\sql\assembly\lib64
-
-copy /Y $(SolutionDir)Win32\$(ConfigurationName)\bingo-core-c*.dll $(ProjectDir)\sql\assembly\lib32\
-copy /Y $(SolutionDir)x64\$(ConfigurationName)\bingo-core-c*.dll $(ProjectDir)\sql\assembly\lib64\
+    <PreBuildEvent>if not EXIST "$(ProjectDir)\sql\assembly\lib32" (md $(ProjectDir)\sql\assembly\lib32)
+if not EXIST "$(ProjectDir)\sql\assembly\lib64" (md $(ProjectDir)\sql\assembly\lib64)
+if EXIST "$(SolutionDir)Win32\$(ConfigurationName)\bingo-core-c.dll" (copy /Y $(SolutionDir)Win32\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)\sql\assembly\lib32\)
+if EXIST "$(SolutionDir)x64\$(ConfigurationName)\bingo-core-c.dll" (copy /Y $(SolutionDir)x64\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)\sql\assembly\lib64\)
 </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>

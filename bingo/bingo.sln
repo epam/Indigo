@@ -19,6 +19,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "layout", "..\layout\layout.vcxproj", "{1CF32085-9687-4DBD-BCA2-D7378E2A9490}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bingo-sqlserver", "sqlserver\bingo-sqlserver.csproj", "{ED96DA19-3326-4DFB-9CB1-189895A367E5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{07BDF51E-D24A-46F2-BF09-4F71E7E8092A} = {07BDF51E-D24A-46F2-BF09-4F71E7E8092A}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlserver_script_generator", "sqlserver\sqlserver_script_generator\sqlserver_script_generator.csproj", "{BBB579CB-8C95-4A28-8950-348CF56104AB}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -210,7 +213,8 @@ Global
 		{07BDF51E-D24A-46F2-BF09-4F71E7E8092A}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{07BDF51E-D24A-46F2-BF09-4F71E7E8092A}.Release|Win32.ActiveCfg = Release|Win32
 		{07BDF51E-D24A-46F2-BF09-4F71E7E8092A}.Release|Win32.Build.0 = Release|Win32
-		{07BDF51E-D24A-46F2-BF09-4F71E7E8092A}.Release|x64.ActiveCfg = Release|Win32
+		{07BDF51E-D24A-46F2-BF09-4F71E7E8092A}.Release|x64.ActiveCfg = Release|x64
+		{07BDF51E-D24A-46F2-BF09-4F71E7E8092A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
