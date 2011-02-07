@@ -158,6 +158,15 @@
     <ClCompile Include="indigo_renderer_jni.c" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\cairo-src\cairo\cairo.vcxproj">
+      <Project>{7bc981e0-0a8c-4216-a8fc-1b78a474ad15}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\cairo-src\pixman\pixman.vcxproj">
+      <Project>{60150eef-ee29-4334-b2a5-dd585d7edcae}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\libpng-src\libpng.vcxproj">
+      <Project>{d59de699-6e12-4546-a200-56eac6a2df04}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\render2d\render2d.vcxproj">
       <Project>{8e1de958-1a54-4739-8f12-746d9f6d04c3}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
