@@ -313,6 +313,11 @@
   <ItemGroup>
     <None Include="src\layout_patterns.inc" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\reaction\reaction.vcxproj">
+      <Project>{d4aaeea4-9271-455c-a1d1-66c9d4e74338}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

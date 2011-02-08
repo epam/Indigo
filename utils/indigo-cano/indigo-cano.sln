@@ -1,32 +1,21 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-cano", "indigo-cano.vcproj", "{15AEBCE1-585F-4E5E-A186-3D725EABDA88}"
-	ProjectSection(ProjectDependencies) = postProject
-		{BB3E941D-B8F0-4660-94CC-592F7C7856A2} = {BB3E941D-B8F0-4660-94CC-592F7C7856A2}
-		{D69C5B23-48C2-400B-9BCD-B8276756B673} = {D69C5B23-48C2-400B-9BCD-B8276756B673}
-		{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5} = {C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}
-		{1CF32085-9687-4DBD-BCA2-D7378E2A9490} = {1CF32085-9687-4DBD-BCA2-D7378E2A9490}
-		{D4AAEEA4-9271-455C-A1D1-66C9D4E74338} = {D4AAEEA4-9271-455C-A1D1-66C9D4E74338}
-		{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236} = {ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-cano", "indigo-cano.vcxproj", "{15AEBCE1-585F-4E5E-A186-3D725EABDA88}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-api", "..\..\api\indigo-api.vcproj", "{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-api", "..\..\api\indigo-api.vcxproj", "{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "layout", "..\..\layout\layout.vcproj", "{1CF32085-9687-4DBD-BCA2-D7378E2A9490}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "layout", "..\..\layout\layout.vcxproj", "{1CF32085-9687-4DBD-BCA2-D7378E2A9490}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reaction", "..\..\reaction\reaction.vcproj", "{D4AAEEA4-9271-455C-A1D1-66C9D4E74338}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reaction", "..\..\reaction\reaction.vcxproj", "{D4AAEEA4-9271-455C-A1D1-66C9D4E74338}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "molecule", "..\..\molecule\molecule.vcproj", "{D69C5B23-48C2-400B-9BCD-B8276756B673}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF} = {4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "molecule", "..\..\molecule\molecule.vcxproj", "{D69C5B23-48C2-400B-9BCD-B8276756B673}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graph", "..\..\graph\graph.vcproj", "{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graph", "..\..\graph\graph.vcxproj", "{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\..\zlib-src\zlib.vcproj", "{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\..\zlib-src\zlib.vcxproj", "{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\tinyxml\tinyxml.vcproj", "{BB3E941D-B8F0-4660-94CC-592F7C7856A2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\tinyxml\tinyxml.vcxproj", "{BB3E941D-B8F0-4660-94CC-592F7C7856A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
