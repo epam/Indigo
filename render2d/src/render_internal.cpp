@@ -888,7 +888,8 @@ void MoleculeRenderInternal::_initAtomData ()
 
       if (!bm.isRSite(i) && !bm.isPseudoAtom(i)) {
          radical = bm.getAtomRadical_NoThrow(i, -1);
-         ad.implicit_h = bm.asMolecule().getImplicitH_NoThrow(i, 0);
+         if (!bm.isQueryMolecule())
+            ad.implicit_h = bm.asMolecule().getImplicitH_NoThrow(i, 0);
       }
 
       bool plainCarbon =
