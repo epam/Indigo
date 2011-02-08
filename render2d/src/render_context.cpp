@@ -704,13 +704,15 @@ void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
 
    QS_DEF(TextItem, ti);
    ti.clear();
-   bprintf(ti.text, "%d", ri.number);
-   ti.fontsize = FONT_SIZE_ATTACHMENT_POINT_INDEX;
-   setTextItemSize(ti, ri.p1);
-   float sz = ti.bbsz.length();
-   ti.bbp.addScaled(n, -(sz/2 + _settings.bondLineWidth));
-   ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + _settings.bondLineWidth));
-   drawTextItemText(ti);
+   if (ri.number > 0) {
+      bprintf(ti.text, "%d", ri.number);
+      ti.fontsize = FONT_SIZE_ATTACHMENT_POINT_INDEX;
+      setTextItemSize(ti, ri.p1);
+      float sz = ti.bbsz.length();
+      ti.bbp.addScaled(n, -(sz/2 + _settings.bondLineWidth));
+      ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + _settings.bondLineWidth));
+      drawTextItemText(ti);
+   }
 }
 
 void RenderContext::drawGraphItem (GraphItem& gi)

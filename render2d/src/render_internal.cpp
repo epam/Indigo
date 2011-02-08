@@ -2325,6 +2325,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       }
       // collect attachment point indices
       rGroupAttachmentIndices.clear();
+      bool multipleAttachmentPoints = qmol.attachmentPointCount() > 1;
       for (int i = 1; i <= qmol.attachmentPointCount(); ++i)
          for (int j = 0, k; (k = qmol.getAttachmentPoint(i, j)) >= 0; ++j)
             if (k == aid)
@@ -2386,7 +2387,9 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          attachmentPoint.p1.lineCombin(ad.pos, attachmentDirection[j], 0.8f);
          attachmentPoint.color = CWC_BASE;
          attachmentPoint.highlighted = false;
-         attachmentPoint.number = rGroupAttachmentIndices[j];
+         if (multipleAttachmentPoints) {
+            attachmentPoint.number = rGroupAttachmentIndices[j];
+         }
       }
    }
    QUERY_MOL_END;

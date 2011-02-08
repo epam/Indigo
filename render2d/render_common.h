@@ -86,6 +86,7 @@ struct RenderItem {
 };
 
 struct TextItem : public RenderItem {
+   TextItem() { clear(); }
    void clear();
    Array<char> text;
    FONT_SIZE fontsize;
@@ -93,11 +94,14 @@ struct TextItem : public RenderItem {
 
 struct GraphItem : public RenderItem {
    enum TYPE {DOT, CAP, PLUS, MINUS};
+   GraphItem() { clear(); }
    void clear();
    TYPE type;
 };
 
 struct RenderItemAttachmentPoint : public RenderItem {
+   RenderItemAttachmentPoint() { clear(); }
+   void clear();
    int number;
    Vec2f p0, p1, dir;
 };

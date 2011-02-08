@@ -73,6 +73,11 @@ void GraphItem::clear() {
    RenderItem::clear();
 }
 
+void RenderItemAttachmentPoint::clear() {
+   RenderItem::clear();
+   number = -1;
+}
+
 AtomDesc::AtomDesc()
 {
    clear();
