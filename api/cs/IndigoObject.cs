@@ -10,11 +10,19 @@ namespace com.ggasoftware.indigo
    {
       public int self;
       private Indigo dispatcher;
+      private IndigoObject parent; // to prevent GC killing the parent object
 
       public IndigoObject (Indigo dispatcher, int id)
       {
          this.dispatcher = dispatcher;
          this.self = id;
+      }
+
+      public IndigoObject (Indigo dispatcher, IndigoObject parent, int id)
+      {
+         this.dispatcher = dispatcher;
+         this.self = id;
+         this.parent = parent;
       }
 
       ~IndigoObject ()
@@ -128,19 +136,19 @@ namespace com.ggasoftware.indigo
       public System.Collections.IEnumerable iterateReactants ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateReactants(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateReactants(self));
       }
 
       public System.Collections.IEnumerable iterateProducts ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateProducts(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateProducts(self));
       }
 
       public System.Collections.IEnumerable iterateMolecules ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateMolecules(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateMolecules(self));
       }
 
       public String rxnfile ()
@@ -168,37 +176,37 @@ namespace com.ggasoftware.indigo
       public System.Collections.IEnumerable iterateAtoms ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateAtoms(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateAtoms(self));
       }
 
       public System.Collections.IEnumerable iteratePseudoatoms ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIteratePseudoatoms(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIteratePseudoatoms(self));
       }
 
       public System.Collections.IEnumerable iterateRSites ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateRSites(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateRSites(self));
       }
 
       public System.Collections.IEnumerable iterateStereocenters ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateStereocenters(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateStereocenters(self));
       }
 
       public System.Collections.IEnumerable iterateRGroups ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateRGroups(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateRGroups(self));
       }
 
       public System.Collections.IEnumerable iterateRGroupFragments ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateRGroupFragments(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateRGroupFragments(self));
       }
 
       public int countAttachmentPoints ()
@@ -387,7 +395,7 @@ namespace com.ggasoftware.indigo
       public System.Collections.IEnumerable iterateBonds ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateBonds(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateBonds(self));
       }
 
       public int bondOrder ()
@@ -411,7 +419,7 @@ namespace com.ggasoftware.indigo
       public System.Collections.IEnumerable iterateNeighbors ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateNeighbors(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateNeighbors(self));
       }
 
       public IndigoObject bond ()
@@ -423,13 +431,13 @@ namespace com.ggasoftware.indigo
       public IndigoObject getAtom (int idx)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoGetAtom(self, idx));
+         return new IndigoObject(dispatcher, this, Indigo.indigoGetAtom(self, idx));
       }
 
       public IndigoObject getBond (int idx)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoGetBond(self, idx));
+         return new IndigoObject(dispatcher, this, Indigo.indigoGetBond(self, idx));
       }
 
       public IndigoObject source ()
@@ -477,7 +485,7 @@ namespace com.ggasoftware.indigo
       public IndigoObject addAtom (string symbol)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoAddAtom(self, symbol));
+         return new IndigoObject(dispatcher, this, Indigo.indigoAddAtom(self, symbol));
       }
 
       public void setCharge (int charge)
@@ -495,7 +503,7 @@ namespace com.ggasoftware.indigo
       public IndigoObject addBond (IndigoObject dest, int order)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoAddBond(self, dest.self, order));
+         return new IndigoObject(dispatcher, this, Indigo.indigoAddBond(self, dest.self, order));
       }
 
       public void setBondOrder (int order)
@@ -507,7 +515,7 @@ namespace com.ggasoftware.indigo
       public IndigoObject merge (IndigoObject what)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoMerge(self, what.self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoMerge(self, what.self));
       }
 
       public int countComponents ()
@@ -525,13 +533,13 @@ namespace com.ggasoftware.indigo
       public IndigoObject iterateComponents ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateComponents(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateComponents(self));
       }
 
       public IndigoObject component (int index)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoComponent(self, index));
+         return new IndigoObject(dispatcher, this, Indigo.indigoComponent(self, index));
       }
 
       public int countSSSR ()
@@ -543,25 +551,25 @@ namespace com.ggasoftware.indigo
       public IndigoObject iterateSSSR ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateSSSR(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateSSSR(self));
       }
 
       public IndigoObject iterateSubtrees (int min_vertices, int max_vertices)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateSubtrees(self, min_vertices, max_vertices));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateSubtrees(self, min_vertices, max_vertices));
       }
 
       public IndigoObject iterateRings (int min_vertices, int max_vertices)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateRings(self, min_vertices, max_vertices));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateRings(self, min_vertices, max_vertices));
       }
 
       public IndigoObject iterateEdgeSubmolecules (int min_edges, int max_edges)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateEdgeSubmolecules(self, min_edges, max_edges));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateEdgeSubmolecules(self, min_edges, max_edges));
       }
 
       public int countHeavyAtoms ()
@@ -729,7 +737,7 @@ namespace com.ggasoftware.indigo
       public System.Collections.IEnumerable iterateProperties ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateProperties(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateProperties(self));
       }
 
       public string checkBadValence ()
@@ -828,7 +836,7 @@ namespace com.ggasoftware.indigo
       public IndigoObject at (int index)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoAt(self, index));
+         return new IndigoObject(dispatcher, this, Indigo.indigoAt(self, index));
       }
 
       public int count ()
@@ -846,7 +854,7 @@ namespace com.ggasoftware.indigo
       public System.Collections.IEnumerable iterateArray ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateArray(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateArray(self));
       }
 
       public IndigoObject match (IndigoObject query)
@@ -855,7 +863,7 @@ namespace com.ggasoftware.indigo
          int res = Indigo.indigoMatch(self, query.self);
          if (res == 0)
             return null;
-         return new IndigoObject(dispatcher, res);
+         return new IndigoObject(dispatcher, this, res);
       }
 
       public int countMatches (IndigoObject query)
@@ -867,7 +875,7 @@ namespace com.ggasoftware.indigo
       public System.Collections.IEnumerable iterateMatches (IndigoObject query)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateMatches(self, query.self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateMatches(self, query.self));
       }
 
       public IndigoObject highlightedTarget ()
@@ -903,7 +911,7 @@ namespace com.ggasoftware.indigo
       public System.Collections.IEnumerable iterateDecomposedMolecules ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoIterateDecomposedMolecules(self));
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateDecomposedMolecules(self));
       }
 
       public IndigoObject decomposedMoleculeHighlighted ()
@@ -926,7 +934,7 @@ namespace com.ggasoftware.indigo
             int next = Indigo.indigoNext(self);
             if (next == 0)
                break;
-            yield return new IndigoObject(dispatcher, next);
+            yield return new IndigoObject(dispatcher, this, next);
          }
       }
 
@@ -936,7 +944,7 @@ namespace com.ggasoftware.indigo
          int next = Indigo.indigoNext(self);
          if (next == 0)
             return null;
-         return new IndigoObject(dispatcher, next);
+         return new IndigoObject(dispatcher, this, next);
       }
 
       public bool hasNext ()

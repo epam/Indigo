@@ -322,7 +322,7 @@ namespace com.ggasoftware.indigo
       public IndigoObject substructureMatcher (IndigoObject target, string mode)
       {
          setSessionID();
-         return new IndigoObject(this, indigoSubstructureMatcher(target.self, mode));
+         return new IndigoObject(this, target, indigoSubstructureMatcher(target.self, mode));
       }
 
       public IndigoObject substructureMatcher (IndigoObject target)
