@@ -91,6 +91,8 @@ void AtomDesc::clear ()
    pseudoAtomStringVerbose = false;
    fixed = false;
    color = CWC_BASE;
+   implicit_h = 0;
+   hydroPos = HYDRO_POS_RIGHT;
 }
 
 SGroup::SGroup()

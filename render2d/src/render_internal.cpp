@@ -860,17 +860,25 @@ void MoleculeRenderInternal::_initAtomData ()
 
       Vec2f h(1, 0);
       bool hasBondOnRight = false, hasBondOnLeft = false;
+      float upperSin = 0, lowerSin = 0, rightSin = 0, leftSin = 0;
       for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
       {
          Vec2f d(_ad(vertex.neiVertex(j)).pos);
          d.sub(ad.pos);
          d.normalize();
-         float dot = Vec2f::dot(d, h);
-         if (dot > 0.7)
-            hasBondOnRight = true;
-         else if (dot < -0.7)
-            hasBondOnLeft = true;
+         if (d.x > 0)
+            rightSin = __max(rightSin, d.x);
+         else
+            leftSin = __max(leftSin, -d.x);
+         if (d.y > 0)
+            lowerSin = __max(lowerSin, d.y);
+         else
+            upperSin = __max(upperSin, -d.y);
       }
+      if (rightSin > 0.7)
+         hasBondOnRight = true;
+      if (leftSin > 0.7)
+         hasBondOnLeft = true;
 
       int charge = bm.getAtomCharge(i);
       int isotope = bm.getAtomIsotope(i);
@@ -878,8 +886,10 @@ void MoleculeRenderInternal::_initAtomData ()
       int valence = bm.getExplicitValence(i);
       bool query = bm.isQueryMolecule();
 
-      if (!bm.isRSite(i) && !bm.isPseudoAtom(i))
+      if (!bm.isRSite(i) && !bm.isPseudoAtom(i)) {
          radical = bm.getAtomRadical_NoThrow(i, -1);
+         ad.implicit_h = bm.asMolecule().getImplicitH_NoThrow(i, 0);
+      }
 
       bool plainCarbon =
          ad.label == ELEM_C &&
@@ -911,7 +921,28 @@ void MoleculeRenderInternal::_initAtomData ()
          }
          ad.showLabel = false;
       }
-      ad.shiftLeft = (hasBondOnRight && !hasBondOnLeft) || (ad.label > 0 && ElementHygrodenOnLeft[ad.label] && !(hasBondOnLeft && !hasBondOnRight));
+      if ((hasBondOnRight && !hasBondOnLeft) || (ad.label > 0 && ElementHygrodenOnLeft[ad.label] && !(hasBondOnLeft && !hasBondOnRight))) {
+         ad.hydroPos = HYDRO_POS_LEFT;
+      } else if (hasBondOnRight && hasBondOnLeft) {
+         if (upperSin < lowerSin) {
+            if ((charge == (query ? CHARGE_UNKNOWN : 0) && radical <= 0) || ad.implicit_h < 2) {
+               ad.hydroPos = HYDRO_POS_UP;
+            } else {
+               if (__max(rightSin, leftSin) < lowerSin)
+                  if (rightSin < leftSin)
+                     ad.hydroPos = HYDRO_POS_RIGHT;
+                  else
+                     ad.hydroPos = HYDRO_POS_LEFT;
+               else
+                  if (rightSin < lowerSin)
+                     ad.hydroPos = HYDRO_POS_RIGHT;
+                  else
+                     ad.hydroPos = HYDRO_POS_DOWN;
+            }
+         }else{
+            ad.hydroPos = HYDRO_POS_DOWN;
+         }
+      }
    }
 }
 
@@ -1918,7 +1949,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
       }
    }
    ad.rightMargin += totalwdt;
-   if (ad.shiftLeft) {
+   if (ad.hydroPos == HYDRO_POS_LEFT) {
       float dx = totalwdt - width;
       for (int i = 0; i < tis.size(); ++i)
          _data.textitems[tis[i]].bbp.x -= dx;
@@ -2026,14 +2057,15 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
             ad.showHydro = true;
 
             tihydro = _pushTextItem(ad, RenderItem::RIT_HYDROGEN, color, highlighted);
-            float hydrogenGroupWidth = 0;
+            Vec2f hydrogenGroupSz;
             {
 
                TextItem& itemHydrogen = _data.textitems[tihydro];
                itemHydrogen.fontsize = FONT_SIZE_LABEL;
                bprintf(itemHydrogen.text, "H");
-               _cw.setTextItemSize(itemHydrogen);
-               hydrogenGroupWidth = itemHydrogen.bbsz.x + _settings.labelInternalOffset;
+               _cw.setTextItemSize(itemHydrogen, ad.pos);
+               hydrogenGroupSz.x = itemHydrogen.bbsz.x + _settings.labelInternalOffset;
+               hydrogenGroupSz.y = itemHydrogen.bbsz.y;
             }
 
             if (implicit_h > 1)
@@ -2042,24 +2074,29 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
                   color, highlighted);
 
                TextItem& itemHydroIndex = _data.textitems[tiHydroIndex];
+               TextItem& itemHydrogen = _data.textitems[tihydro];
                itemHydroIndex.fontsize = FONT_SIZE_ATTR;
                bprintf(itemHydroIndex.text, "%i", implicit_h);
-               _cw.setTextItemSize(itemHydroIndex);
-               hydrogenGroupWidth += itemHydroIndex.bbsz.x + _settings.labelInternalOffset;
+               _cw.setTextItemSize(itemHydroIndex, ad.pos);
+               hydrogenGroupSz.x += itemHydroIndex.bbsz.x + _settings.labelInternalOffset;
+               hydrogenGroupSz.y = __max(hydrogenGroupSz.y, _settings.lowerIndexShift * itemHydrogen.bbsz.y + itemHydroIndex.bbsz.y);
             }
 
             // take new reference, old one may be corrupted after adding 'tiHydroIndex'
             TextItem& itemHydrogen = _data.textitems[tihydro];
-            if (ad.shiftLeft)
-            {
-               ad.leftMargin -= hydrogenGroupWidth;
+            if (ad.hydroPos == HYDRO_POS_LEFT) {
+               ad.leftMargin -= hydrogenGroupSz.x;
                itemHydrogen.bbp.set(ad.leftMargin, ad.ypos);
-            }
-            else
-            {
+            } else if (ad.hydroPos == HYDRO_POS_RIGHT) {
                ad.rightMargin += _settings.labelInternalOffset;
                itemHydrogen.bbp.set(ad.rightMargin, ad.ypos);
-               ad.rightMargin += hydrogenGroupWidth;
+               ad.rightMargin += hydrogenGroupSz.x;
+            } else if (ad.hydroPos == HYDRO_POS_UP) {
+               itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMin.y - hydrogenGroupSz.y - _settings.bondLineWidth;
+            } else if (ad.hydroPos == HYDRO_POS_DOWN) {
+               itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMax.y + _settings.bondLineWidth;
+            } else {
+               throw Error("hydrogen position value invalid");
             }
             _expandBoundRect(ad, itemHydrogen);
             if (tiHydroIndex > 0)
@@ -2132,7 +2169,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
             GraphItem& itemRadical = _data.graphitems[giRadical];
             _cw.setGraphItemSizeDot(itemRadical);
 
-            if (!(ad.showHydro && !ad.shiftLeft) && giChargeSign < 0 && tiValence < 0)
+            if (!(ad.showHydro && ad.hydroPos == HYDRO_POS_RIGHT) && giChargeSign < 0 && tiValence < 0)
             {
                ltc.x += label.bbsz.x + _settings.radicalRightOffset;
                ltc.y += _settings.radicalRightVertShift * ad.height;
