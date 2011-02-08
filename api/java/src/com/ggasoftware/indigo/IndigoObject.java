@@ -19,11 +19,19 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 {
    public int self;
    private Indigo dispatcher;
+   private IndigoObject parent; // should keep the parent so that GC will not remove it
 
    public IndigoObject (Indigo dispatcher, int id)
    {
       this.dispatcher = dispatcher;
       this.self = id;
+   }
+
+   public IndigoObject (Indigo dispatcher, IndigoObject parent, int id)
+   {
+      this.dispatcher = dispatcher;
+      this.self = id;
+      this.parent = parent;
    }
 
    @Override
@@ -94,17 +102,17 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public IndigoObject iterateReactants ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateReactants(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateReactants(self));
    }
 
    public IndigoObject iterateProducts ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateProducts(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateProducts(self));
    }
 
    public IndigoObject iterateMolecules ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateMolecules(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateMolecules(self));
    }
 
    public String rxnfile ()
@@ -126,32 +134,32 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public IndigoObject iterateAtoms ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateAtoms(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateAtoms(self));
    }
 
    public IndigoObject iteratePseudoatoms ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIteratePseudoatoms(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIteratePseudoatoms(self));
    }
 
    public IndigoObject iterateRSites ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateRSites(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateRSites(self));
    }
 
    public IndigoObject iterateStereocenters ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateStereocenters(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateStereocenters(self));
    }
 
    public IndigoObject iterateRGroups ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateRGroups(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateRGroups(self));
    }
 
    public IndigoObject iterateRGroupFragments ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateRGroupFragments(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateRGroupFragments(self));
    }
 
    public int countAttachmentPoints ()
@@ -212,20 +220,20 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public int  countPseudoatoms () { return dispatcher.indigoCountPseudoatoms(self); }
    public int  countRSites () { return dispatcher.indigoCountRSites(self); }
 
-   public IndigoObject iterateBonds () { return new IndigoObject(dispatcher, dispatcher.indigoIterateBonds(self)); }
+   public IndigoObject iterateBonds () { return new IndigoObject(dispatcher, this, dispatcher.indigoIterateBonds(self)); }
    public int bondOrder () { return dispatcher.indigoBondOrder(self); }
    public int bondStereo () { return dispatcher.indigoBondStereo(self); }
    public int topology () { return dispatcher.indigoTopology(self); }
 
    public IndigoObject iterateNeighbors ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateNeighbors(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateNeighbors(self));
    }
 
-   public IndigoObject bond () {return new IndigoObject(dispatcher, dispatcher.indigoBond(self)); }
+   public IndigoObject bond () {return new IndigoObject(dispatcher, this, dispatcher.indigoBond(self)); }
 
-   public IndigoObject getAtom (int idx) { return new IndigoObject(dispatcher, dispatcher.indigoGetAtom(self, idx)); }
-   public IndigoObject getBond (int idx) { return new IndigoObject(dispatcher, dispatcher.indigoGetBond(self, idx)); }
+   public IndigoObject getAtom (int idx) { return new IndigoObject(dispatcher, this, dispatcher.indigoGetAtom(self, idx)); }
+   public IndigoObject getBond (int idx) { return new IndigoObject(dispatcher, this, dispatcher.indigoGetBond(self, idx)); }
    public IndigoObject source () { return new IndigoObject(dispatcher, dispatcher.indigoSource(self)); }
    public IndigoObject destination () { return new IndigoObject(dispatcher, dispatcher.indigoDestination(self)); }
 
@@ -235,30 +243,30 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public int resetSymmetricCisTrans () { return dispatcher.indigoResetSymmetricCisTrans(self); }
    public int markEitherCisTrans () { return dispatcher.indigoMarkEitherCisTrans(self); }
 
-   public IndigoObject addAtom (String symbol) { return new IndigoObject(dispatcher, dispatcher.indigoAddAtom(self, symbol)); }
+   public IndigoObject addAtom (String symbol) { return new IndigoObject(dispatcher, this, dispatcher.indigoAddAtom(self, symbol)); }
    public void setCharge (int charge) { dispatcher.indigoSetCharge(self, charge); }
    public void setIsotope (int isotope) { dispatcher.indigoSetIsotope(self, isotope); }
    public IndigoObject addBond (IndigoObject atom, int order)
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoAddBond(self, atom.self, order));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoAddBond(self, atom.self, order));
    }
    public void setBondOrder (int order) { dispatcher.indigoSetBondOrder(self, order); };
 
-   public IndigoObject merge (IndigoObject other) { return new IndigoObject(dispatcher, dispatcher.indigoMerge(self, other.self)); }
+   public IndigoObject merge (IndigoObject other) { return new IndigoObject(dispatcher, this, dispatcher.indigoMerge(self, other.self)); }
 
    public int countComponents () { return dispatcher.indigoCountComponents(self); }
    public int componentIndex () { return dispatcher.indigoComponentIndex(self); }
-   public IndigoObject iterateComponents () {return new IndigoObject(dispatcher, dispatcher.indigoIterateComponents(self));}
-   public IndigoObject component (int index) { return new IndigoObject(dispatcher, dispatcher.indigoComponent(self, index)); }
+   public IndigoObject iterateComponents () {return new IndigoObject(dispatcher, this, dispatcher.indigoIterateComponents(self));}
+   public IndigoObject component (int index) { return new IndigoObject(dispatcher, this, dispatcher.indigoComponent(self, index)); }
 
    public int countSSSR () { return dispatcher.indigoCountSSSR(self); }
-   public IndigoObject iterateSSSR () { return new IndigoObject(dispatcher, dispatcher.indigoIterateSSSR(self));}
+   public IndigoObject iterateSSSR () { return new IndigoObject(dispatcher, this, dispatcher.indigoIterateSSSR(self));}
    public IndigoObject iterateSubtrees (int min_vertices, int max_vertices)
-   { return new IndigoObject(dispatcher, dispatcher.indigoIterateSubtrees(self, min_vertices, max_vertices));}
+   { return new IndigoObject(dispatcher, this, dispatcher.indigoIterateSubtrees(self, min_vertices, max_vertices));}
    public IndigoObject iterateRings (int min_vertices, int max_vertices)
-   { return new IndigoObject(dispatcher, dispatcher.indigoIterateRings(self, min_vertices, max_vertices));}
+   { return new IndigoObject(dispatcher, this, dispatcher.indigoIterateRings(self, min_vertices, max_vertices));}
    public IndigoObject iterateEdgeSubmolecules (int min_edges, int max_edges)
-   { return new IndigoObject(dispatcher, dispatcher.indigoIterateEdgeSubmolecules(self, min_edges, max_edges));}
+   { return new IndigoObject(dispatcher, this, dispatcher.indigoIterateEdgeSubmolecules(self, min_edges, max_edges));}
 
    public int countHeavyAtoms ()
    {
@@ -290,15 +298,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public int countMultipleGroups () { return dispatcher.indigoCountMultipleGroups(self); }
    public int countGenericSGroups () { return dispatcher.indigoCountGenericSGroups(self); }
 
-   public IndigoObject iterateSuperatoms () { return new IndigoObject(dispatcher, dispatcher.indigoIterateSuperatoms(self)); }
-   public IndigoObject iterateDataSGroups () { return new IndigoObject(dispatcher, dispatcher.indigoIterateDataSGroups(self)); }
-   public IndigoObject iterateRepeatingUnits () { return new IndigoObject(dispatcher, dispatcher.indigoIterateRepeatingUnits(self)); }
-   public IndigoObject iterateMultipleGroups () { return new IndigoObject(dispatcher, dispatcher.indigoIterateMultipleGroups(self)); }
-   public IndigoObject iterateGenericSGroups () { return new IndigoObject(dispatcher, dispatcher.indigoIterateGenericSGroups(self)); }
+   public IndigoObject iterateSuperatoms () { return new IndigoObject(dispatcher, this, dispatcher.indigoIterateSuperatoms(self)); }
+   public IndigoObject iterateDataSGroups () { return new IndigoObject(dispatcher, this, dispatcher.indigoIterateDataSGroups(self)); }
+   public IndigoObject iterateRepeatingUnits () { return new IndigoObject(dispatcher, this, dispatcher.indigoIterateRepeatingUnits(self)); }
+   public IndigoObject iterateMultipleGroups () { return new IndigoObject(dispatcher, this, dispatcher.indigoIterateMultipleGroups(self)); }
+   public IndigoObject iterateGenericSGroups () { return new IndigoObject(dispatcher, this, dispatcher.indigoIterateGenericSGroups(self)); }
 
    public String description () { return dispatcher.indigoDescription(self); }
    public IndigoObject addDataSGroup (int[] atoms, int[] bonds, String description, String data)
-   { return new IndigoObject (dispatcher, dispatcher.indigoAddDataSGroup(self, atoms, bonds, description, data)); }
+   { return new IndigoObject (dispatcher, this, dispatcher.indigoAddDataSGroup(self, atoms, bonds, description, data)); }
    public void setDataSGroupXY (float x, float y, String options) { dispatcher.indigoSetDataSGroupXY(self, x, y, options); }
 
    public IndigoObject createSubmolecule (int[] vertices)
@@ -334,7 +342,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public IndigoObject iterateProperties ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateProperties(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateProperties(self));
    }
 
    public String checkBadValence ()
@@ -391,7 +399,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public IndigoObject iterateArray ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateArray(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateArray(self));
    }
 
    public int count ()
@@ -411,7 +419,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public IndigoObject at (int idx)
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoAt(self, idx));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoAt(self, idx));
    }
 
    public IndigoObject match (IndigoObject query)
@@ -421,7 +429,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       if (res == 0)
          return null;
       
-      return new IndigoObject(dispatcher, res);
+      return new IndigoObject(dispatcher, this, res);
    }
 
    public int countMatches (IndigoObject query)
@@ -431,7 +439,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    
    public IndigoObject iterateMatches (IndigoObject query)
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateMatches(self, query.self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateMatches(self, query.self));
    }
 
    public IndigoObject highlightedTarget ()
@@ -467,7 +475,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public IndigoObject iterateDecomposedMolecules ()
    {
-      return new IndigoObject(dispatcher, dispatcher.indigoIterateDecomposedMolecules(self));
+      return new IndigoObject(dispatcher, this, dispatcher.indigoIterateDecomposedMolecules(self));
    }
 
    public IndigoObject decomposedMoleculeHighlighted ()
@@ -502,7 +510,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       if (next == 0)
          throw new NoSuchElementException("iterator has ended");
 
-      return new IndigoObject(dispatcher, next);
+      return new IndigoObject(dispatcher, this, next);
    }
 
    public boolean hasNext ()

@@ -43,10 +43,11 @@ class Indigo:
   _lib = None
   
   class IndigoObject:
-    def __init__ (self, dispatcher, id):
+    def __init__ (self, dispatcher, id, parent = None):
       self.id = id
       self.dispatcher = dispatcher
-
+      self.parent = parent
+    
     def grossFormula (self):
       self.dispatcher._setSID()
       gfid = self.dispatcher._checkResult(Indigo._lib.indigoGrossFormula(self.id))
@@ -622,6 +623,15 @@ class Indigo:
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
+  def _member_int_obj (func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int]
+    def newfunc (self, param):
+      self.dispatcher._setSID()
+      return self.dispatcher._checkResult(func(self.id, param.id))
+    return Indigo._make_wrapper_func(newfunc, func)
+	
+  @staticmethod
   def _member_obj (func):
     func.restype = c_int
     func.argtypes = [c_int]
@@ -630,7 +640,7 @@ class Indigo:
       newobj = self.dispatcher._checkResult(func(self.id))
       if newobj == 0:
         return None
-      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
@@ -642,7 +652,7 @@ class Indigo:
       newobj = self.dispatcher._checkResult(func(self.id, param))
       if newobj == 0:
         return None
-      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
@@ -654,18 +664,9 @@ class Indigo:
       newobj = self.dispatcher._checkResult(func(self.id, param, param2))
       if newobj == 0:
         return None
-      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
-  @staticmethod
-  def _member_int_obj (func):
-    func.restype = c_int
-    func.argtypes = [c_int, c_int]
-    def newfunc (self, param):
-      self.dispatcher._setSID()
-      return self.dispatcher._checkResult(func(self.id, param.id))
-    return Indigo._make_wrapper_func(newfunc, func)
-	
   @staticmethod
   def _member_obj_obj (func):
     func.restype = c_int
@@ -675,7 +676,7 @@ class Indigo:
       newobj = self.dispatcher._checkResult(func(self.id, param.id))
       if newobj == 0:
         return None
-      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
@@ -687,7 +688,7 @@ class Indigo:
       newobj = self.dispatcher._checkResult(func(self.id, param.id, param2))
       if newobj == 0:
         return None
-      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
@@ -699,19 +700,7 @@ class Indigo:
       newobj = self.dispatcher._checkResult(func(self.id, param))
       if newobj == 0:
         return None
-      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
-    return Indigo._make_wrapper_func(newfunc, func)
-
-  @staticmethod
-  def _member_void_iarr (func):
-    func.restype = c_int
-    func.argtypes = [c_int, c_int, POINTER(c_int)]
-    def newfunc (self, intarr):
-      arr = (c_int * len(intarr))()
-      for i in xrange(len(intarr)):
-        arr[i] = intarr[i]
-      self.dispatcher._setSID()
-      self.dispatcher._checkResult(func(self.id, len(intarr), arr))
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
@@ -726,7 +715,7 @@ class Indigo:
       newobj = self.dispatcher._checkResult(func(self.id, len(intarr), arr))
       if newobj == 0:
         return None
-      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
@@ -744,7 +733,7 @@ class Indigo:
       newobj = self.dispatcher._checkResult(func(self.id, len(intarr1), arr1, len(intarr2), arr2))
       if newobj == 0:
         return None
-      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
@@ -762,7 +751,19 @@ class Indigo:
       newobj = self.dispatcher._checkResult(func(self.id, len(intarr1), arr1, len(intarr2), arr2, str1, str2))
       if newobj == 0:
         return None
-      return self.dispatcher.IndigoObject(self.dispatcher, newobj)
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
+    return Indigo._make_wrapper_func(newfunc, func)
+
+  @staticmethod
+  def _member_void_iarr (func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int, POINTER(c_int)]
+    def newfunc (self, intarr):
+      arr = (c_int * len(intarr))()
+      for i in xrange(len(intarr)):
+        arr[i] = intarr[i]
+      self.dispatcher._setSID()
+      self.dispatcher._checkResult(func(self.id, len(intarr), arr))
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod

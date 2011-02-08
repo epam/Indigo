@@ -206,7 +206,7 @@ public class Indigo
 
    public IndigoObject substructureMatcher (IndigoObject target, String mode)
    {
-      return new IndigoObject(this, indigoSubstructureMatcher(target.self, mode));
+      return new IndigoObject(this, target, indigoSubstructureMatcher(target.self, mode));
    }
 
    public IndigoObject substructureMatcher (IndigoObject target)
