@@ -902,6 +902,29 @@ void SmilesLoader::_loadMolecule ()
                //   2) try to de-aromatize the molecule to know the implicit hydrogens (too complicated)
                _mol->setImplicitH(idx, 0);
          }
+
+         // Here comes the special case of "F[Cl]F" and such.
+         // The SMILES specification says: Elements in the "organic subset"
+         // B, C, N, O, P, S, F, Cl, Br, and I may be written without brackets
+         // if the number of attached hydrogens conforms to the lowest normal
+         // valence consistent with explicit bonds.
+         // That means, brackets around the clorine means that is does not
+         // necessary have its lowest normal valence (1). If the chlorine is 2-
+         // or 4-connected, we add radical to give it "higher normal" valence
+         // (3 and 5, respectively). Contrary, "FClF" is just a mistake
+         // (no brackets, hence valence 1, but two connections), and nothing
+         // is done in that case.
+         if (_atoms[i].brackets && Element::isHalogen(_atoms[i].label))
+         {
+            int conn = _mol->getAtomConnectivity(i);
+            if (conn == 2 || conn == 4)
+               _mol->setAtomRadical(i, RADICAL_DOUPLET);
+            
+            // We do not need to add the radical to any other kinds of atoms
+            // because they can have hydrogens on their higher valences,
+            // and the getAtomRadical() method will calculate the radical
+            // automatically from that.
+         }
       }
    }
 
