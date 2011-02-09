@@ -2007,6 +2007,31 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          ad.height = label.bbsz.y;
       }
 
+      if (bm.isRSite(aid) && bm.getVertex(aid).degree() > 1)
+      {
+         // show indices for attachment bonds
+         const Vertex& v = bm.getVertex(aid);
+         for (int k = v.neiBegin(), j = 0; k < v.neiEnd(); k = v.neiNext(k), ++j) {
+            int apIdx = bm.getRSiteAttachmentPointByOrder(aid, j);
+            int i = v.findNeiVertex(apIdx);
+            BondEnd& be = _getBondEnd(aid, i);
+            int tii = _pushTextItem(ad, RenderItem::RIT_ATTACHMENTPOINT, CWC_BASE, false);
+            TextItem& ti = _data.textitems[tii];
+            bprintf(ti.text, "(%d)", j+1);
+            ti.fontsize = FONT_SIZE_RSITE_ATTACHMENT_INDEX;
+            _cw.setTextItemSize(ti, ad.pos);
+            TextItem& label = _data.textitems[tilabel];
+            // this is just an upper bound, it won't be used
+            float shift = ti.bbsz.length() + label.bbsz.length();
+            // one of the next conditions should be satisfied
+            if (fabs(be.dir.x) > 1e-3)
+               shift = __min(shift, (ti.bbsz.x + label.bbsz.x) / 2 / fabs(be.dir.x));
+            if (fabs(be.dir.y) > 1e-3)
+               shift = __min(shift, (ti.bbsz.y + label.bbsz.y) / 2 / fabs(be.dir.y));
+            ti.bbp.addScaled(be.dir, shift);
+         }
+      }
+
       // isotope
       if (isotope > 0 && (ad.label != ELEM_H ||
          isotope > 3 || isotope < 2)) {
