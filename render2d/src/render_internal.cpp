@@ -998,14 +998,16 @@ void MoleculeRenderInternal::_findAnglesOverPi ()
       }
       if (leftmost < 0)
          continue;
-      BondEnd& rmbe = _be(rightmost);
-      BondEnd& lmbe = _be(leftmost);
-      float dot = Vec2f::dot(rmbe.dir, lmbe.dir);
-      if (dot > 0 || 1 + dot < 1e-4)
-         continue;
-      float ahs = sqrt((1 + dot)/(1 - dot));
-      lmbe.offset = rmbe.offset = -ahs *
-         __min(_bd(lmbe.bid).thickness, _bd(rmbe.bid).thickness) / 2;
+      if (!_ad(i).showLabel) {
+         BondEnd& rmbe = _be(rightmost);
+         BondEnd& lmbe = _be(leftmost);
+         float dot = Vec2f::dot(rmbe.dir, lmbe.dir);
+         if (dot > 0 || 1 + dot < 1e-4)
+            continue;
+         float ahs = sqrt((1 + dot)/(1 - dot));
+         lmbe.offset = rmbe.offset = -ahs *
+            __min(_bd(lmbe.bid).thickness, _bd(rmbe.bid).thickness) / 2;
+      }
    }
 }
 
