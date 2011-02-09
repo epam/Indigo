@@ -192,7 +192,8 @@ void MoleculeRenderInternal::setMolecule (BaseMolecule* mol)
    for (i = mol->vertexBegin(); i != mol->vertexEnd(); i = mol->vertexNext(i))
       _ad(i).clear();
 
-   _data.bonds.clear_resize(_mol->edgeEnd());
+   _data.bonds.clear();
+   _data.bonds.resize(_mol->edgeEnd());
    for (i = mol->edgeBegin(); i != mol->edgeEnd(); i = mol->edgeNext(i))
       _bd(i).clear();
 }

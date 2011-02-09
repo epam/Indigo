@@ -242,13 +242,13 @@ struct MoleculeRenderData {
 
    ObjArray<SGroup> sgroups;
    ObjArray<AtomDesc> atoms;
-   Array<BondDescr> bonds;
+   ObjArray<BondDescr> bonds;
    ObjArray<Ring> rings;
-   Array<BondEnd> bondends;
+   ObjArray<BondEnd> bondends;
    ObjArray<TextItem> textitems;
-   Array<GraphItem> graphitems;
-   Array<RenderItemAttachmentPoint> attachmentPoints;
-   Array<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
+   ObjArray<GraphItem> graphitems;
+   ObjArray<RenderItemAttachmentPoint> attachmentPoints;
+   ObjArray<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
    Array<int> aam;
    Array<int> reactingCenters;
    Array<int> inversions;
