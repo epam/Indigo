@@ -62,6 +62,7 @@ void RenderItem::clear()
    relpos.set(0, 0);
    color = CWC_BASE;
    highlighted = false;
+   noBondOffset = false;
 }
 
 void TextItem::clear() {
@@ -78,6 +79,12 @@ void RenderItemAttachmentPoint::clear() {
    number = -1;
 }
 
+void RenderItemRSiteAttachmentIndex::clear() {
+   RenderItem::clear();
+   number = -1;
+   radius = 0;
+}
+
 AtomDesc::AtomDesc()
 {
    clear();
@@ -90,6 +97,8 @@ void AtomDesc::clear ()
    ticount = gicount = 0;
    attachmentPointBegin = -1;
    attachmentPointCount = 0;
+   rSiteAttachmentIndexBegin = -1;
+   rSiteAttachmentIndexCount = 0;
    stereoGroupType =
       stereoGroupNumber = -1;
    isRGroupAttachmentPoint = false;

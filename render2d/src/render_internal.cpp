@@ -1273,12 +1273,16 @@ float MoleculeRenderInternal::_getBondOffset (int aid, const Vec2f& pos, const V
    for (int k = 0; k < _ad(aid).ticount; ++k)
    {
       TextItem& item = _data.textitems[_ad(aid).tibegin + k];
+      if (item.noBondOffset)
+         continue;
       if (_clipRayBox(offset, pos, dir, item.bbp, item.bbsz, bondWidth))
          maxOffset = __max(maxOffset, offset);
    }
    for (int k = 0; k < _ad(aid).gicount; ++k)
    {
       GraphItem& item = _data.graphitems[_ad(aid).gibegin + k];
+      if (item.noBondOffset)
+         continue;
       if (_clipRayBox(offset, pos, dir, item.bbp, item.bbsz, bondWidth))
          maxOffset = __max(maxOffset, offset);
    }
@@ -1460,6 +1464,8 @@ void MoleculeRenderInternal::_drawAtom (const AtomDesc& desc)
       _cw.drawTextItemText(_data.textitems[i + desc.tibegin]);
    for (int i = 0; i < desc.attachmentPointCount; ++i)
       _cw.drawAttachmentPoint(_data.attachmentPoints[desc.attachmentPointBegin + i]);
+   for (int i = 0; i < desc.rSiteAttachmentIndexCount; ++i)
+      _cw.drawRSiteAttachmentIndex(_data.rSiteAttachmentIndices[desc.rSiteAttachmentIndexBegin + i]);
    for (int i = 0; i < desc.gicount; ++i)
       _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
 }
@@ -2011,24 +2017,38 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       {
          // show indices for attachment bonds
          const Vertex& v = bm.getVertex(aid);
+         ad.rSiteAttachmentIndexBegin = _data.rSiteAttachmentIndices.size();
+         ad.rSiteAttachmentIndexCount = v.degree();
          for (int k = v.neiBegin(), j = 0; k < v.neiEnd(); k = v.neiNext(k), ++j) {
             int apIdx = bm.getRSiteAttachmentPointByOrder(aid, j);
             int i = v.findNeiVertex(apIdx);
             BondEnd& be = _getBondEnd(aid, i);
             int tii = _pushTextItem(ad, RenderItem::RIT_ATTACHMENTPOINT, CWC_BASE, false);
             TextItem& ti = _data.textitems[tii];
-            bprintf(ti.text, "(%d)", j+1);
+            RenderItemRSiteAttachmentIndex& item = _data.rSiteAttachmentIndices.push();
+            item.number = j + 1;
+            item.radius = 0.7f * _settings.fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX];
+            item.bbsz.set(2 * item.radius, 2 * item.radius);
+            item.bbp = ad.pos;
+            item.color = CWC_BASE;
+            item.highlighted = false;
+            item.noBondOffset = true;
+            bprintf(ti.text, "%d", item.number);
             ti.fontsize = FONT_SIZE_RSITE_ATTACHMENT_INDEX;
+            ti.noBondOffset = true;
             _cw.setTextItemSize(ti, ad.pos);
             TextItem& label = _data.textitems[tilabel];
             // this is just an upper bound, it won't be used
-            float shift = ti.bbsz.length() + label.bbsz.length();
+            float shift = item.bbsz.length() + label.bbsz.length();
             // one of the next conditions should be satisfied
             if (fabs(be.dir.x) > 1e-3)
-               shift = __min(shift, (ti.bbsz.x + label.bbsz.x) / 2 / fabs(be.dir.x));
+               shift = __min(shift, (item.bbsz.x + label.bbsz.x) / 2 / fabs(be.dir.x));
             if (fabs(be.dir.y) > 1e-3)
-               shift = __min(shift, (ti.bbsz.y + label.bbsz.y) / 2 / fabs(be.dir.y));
+               shift = __min(shift, (item.bbsz.y + label.bbsz.y) / 2 / fabs(be.dir.y));
+            shift += _settings.bondLineWidth;
+            item.bbp.addScaled(be.dir, shift);
             ti.bbp.addScaled(be.dir, shift);
+            be.offset = shift + item.radius;
          }
       }
 

@@ -589,12 +589,14 @@ void RenderContext::drawTriangleStripes (const Vec2f& v0, const Vec2f& v1, const
 
 void RenderContext::drawCircle (const Vec2f& center, const float r)
 {
+   cairo_new_path(_cr);
    cairo_arc(_cr, center.x, center.y, r, 0, 2 * PI);
    cairoCheckStatus();
    checkPathNonEmpty();
    bbIncludePath(true);
    cairo_stroke(_cr);
    cairoCheckStatus();
+   cairo_new_path(_cr);
 }
 
 void RenderContext::fillCircle (const Vec2f& center, const float r)
@@ -713,6 +715,13 @@ void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
       ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + _settings.bondLineWidth));
       drawTextItemText(ti);
    }
+}
+
+void RenderContext::drawRSiteAttachmentIndex (RenderItemRSiteAttachmentIndex& ri)
+{
+   setSingleSource(ri.color);
+   setLineWidth(_settings.bondLineWidth/2);
+   drawCircle(ri.bbp, ri.radius);
 }
 
 void RenderContext::drawGraphItem (GraphItem& gi)

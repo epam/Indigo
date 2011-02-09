@@ -83,6 +83,7 @@ struct RenderItem {
    Vec2f relpos;
    int color;
    bool highlighted;
+   bool noBondOffset;
 };
 
 struct TextItem : public RenderItem {
@@ -106,6 +107,13 @@ struct RenderItemAttachmentPoint : public RenderItem {
    Vec2f p0, p1, dir;
 };
 
+struct RenderItemRSiteAttachmentIndex : public RenderItem {
+   RenderItemRSiteAttachmentIndex() { clear(); }
+   void clear();
+   int number;
+   float radius;
+};
+
 struct AtomDesc {
    enum TYPE {TYPE_REGULAR, TYPE_PSEUDO, TYPE_QUERY};
    AtomDesc();
@@ -114,6 +122,7 @@ struct AtomDesc {
    int tibegin, ticount;
    int gibegin, gicount;
    int attachmentPointBegin, attachmentPointCount;
+   int rSiteAttachmentIndexBegin, rSiteAttachmentIndexCount;
 
    int type;
    bool showLabel;
@@ -239,6 +248,7 @@ struct MoleculeRenderData {
    ObjArray<TextItem> textitems;
    Array<GraphItem> graphitems;
    Array<RenderItemAttachmentPoint> attachmentPoints;
+   Array<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
    Array<int> aam;
    Array<int> reactingCenters;
    Array<int> inversions;
