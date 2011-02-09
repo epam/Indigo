@@ -62,7 +62,7 @@ void RenderItemMolecule::init ()
          _factory.getItemHLine(lineIfThen).init();
          _factory.getItemHLine(lineIfThen).items.push(_ifThen);
          _factory.getItemAuxiliary(_ifThen).init();
-         items.push(_ifThen);
+         items.push(lineIfThen);
       }
       for (int i = 1; i <= rGroups.getRGroupCount(); ++i)
       {
