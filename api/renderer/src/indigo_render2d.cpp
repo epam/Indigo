@@ -135,7 +135,9 @@ void indigoRenderSetImplicitHydrogenMode (const char* mode)
       implHydroMap.insert("none", IHM_NONE);
       implHydroMap.insert("terminal", IHM_TERMINAL);
       implHydroMap.insert("hetero", IHM_HETERO);
+      implHydroMap.insert("methane-hetero", IHM_METHANE_HETERO);
       implHydroMap.insert("terminalhetero", IHM_TERMINAL_HETERO);
+      implHydroMap.insert("terminal-hetero", IHM_TERMINAL_HETERO);
       implHydroMap.insert("all", IHM_ALL);
    }
    RenderParams& rp = indigoRendererGetInstance().renderParams;

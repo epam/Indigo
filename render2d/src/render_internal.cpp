@@ -524,6 +524,7 @@ void MoleculeRenderInternal::_checkSettings ()
       if (_opt.labelMode == LABEL_MODE_HIDETERMINAL)
          _data.labelMode = LABEL_MODE_NORMAL;
    case IHM_HETERO:
+   case IHM_METHANE_HETERO:
       if (_opt.labelMode == LABEL_MODE_FORCEHIDE)
          _data.labelMode = LABEL_MODE_NORMAL;
       break;
@@ -2072,8 +2073,10 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       }
 
       // implicit hydrogens preparation
-      bool isTerminal = bm.getVertex(aid).degree() <= 1;
+      int deg = bm.getVertex(aid).degree();
+      bool isTerminal = deg <= 1;
       bool isHetero = ad.label != ELEM_C;
+      bool isMethane = !isHetero && deg == 0;
       bool showImplHydrogens = false;
       switch (_opt.implHMode)
       {
@@ -2084,6 +2087,9 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          break;
       case IHM_HETERO:
          showImplHydrogens = isHetero;
+         break;
+      case IHM_METHANE_HETERO:
+         showImplHydrogens = isHetero || isMethane;
          break;
       case IHM_TERMINAL_HETERO:
          showImplHydrogens = isHetero || isTerminal;
