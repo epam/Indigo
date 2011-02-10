@@ -885,8 +885,13 @@ void MoleculeRenderInternal::_initAtomData ()
       int charge = bm.getAtomCharge(i);
       int isotope = bm.getAtomIsotope(i);
       int radical = -1;
-      int valence = bm.getExplicitValence(i);
+      int valence;
       bool query = bm.isQueryMolecule();
+
+      if (!bm.isQueryMolecule())
+         valence = bm.asMolecule().getExplicitOrUnusualValence(i);
+      else
+         valence = bm.getExplicitValence(i);
 
       if (!bm.isRSite(i) && !bm.isPseudoAtom(i)) {
          radical = bm.getAtomRadical_NoThrow(i, -1);
@@ -2192,7 +2197,13 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       }
 
       // valence
-      int valence = bm.getExplicitValence(aid);
+      int valence;
+
+      if (bm.isQueryMolecule())
+         valence = bm.getExplicitValence(aid);
+      else
+         valence = bm.asMolecule().getExplicitOrUnusualValence(aid);
+      
       if (_opt.showValences && valence >= 0) {
          tiValence = _pushTextItem(ad, RenderItem::RIT_VALENCE, color, highlighted);
 
@@ -2513,10 +2524,10 @@ int MoleculeRenderInternal::_pushGraphItem (AtomDesc& ad, RenderItem::TYPE rityp
 
 const char* MoleculeRenderInternal::_valenceText (const int valence)
 {
-   const char* vt[] = {"(I)", "(II)", "(III)", "(IV)", "(V)", "(VI)", "(VII)", "(VIII)", "(IX)", "(X)", "(XI)", "(XII)", "(XIII)"};
-   if (valence < 1 || valence - 1 >= NELEM(vt))
+   const char* vt[] = {"(0)", "(I)", "(II)", "(III)", "(IV)", "(V)", "(VI)", "(VII)", "(VIII)", "(IX)", "(X)", "(XI)", "(XII)", "(XIII)"};
+   if (valence < 0 || valence >= NELEM(vt))
       throw Error("valence value %i out of range", valence);
-   return vt[valence-1];
+   return vt[valence];
 }
 
 void MoleculeRenderInternal::_drawBond (int b)

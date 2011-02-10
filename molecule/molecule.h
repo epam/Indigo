@@ -67,6 +67,7 @@ public:
    virtual int getBondTopology   (int idx);
    virtual int getAtomAromaticity (int idx);
    virtual int getExplicitValence (int idx);
+   virtual int getExplicitOrUnusualValence (int idx);
    virtual int getAtomValence (int idx);
    virtual int getAtomSubstCount (int idx);
    virtual int getAtomRingBondsCount (int idx);
@@ -136,6 +137,7 @@ protected:
    {
       int  number;
       bool explicit_valence;
+      bool unusual_valence;
       bool explicit_impl_h;
       int  isotope;
       int  charge;

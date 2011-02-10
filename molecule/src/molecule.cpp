@@ -673,6 +673,7 @@ int Molecule::getAtomValence (int idx)
 
    const _Atom &atom = _atoms[idx];
 
+   /*
    {
       int val = Element::calcValenceByCharge(atom.number, atom.charge);
 
@@ -682,7 +683,7 @@ int Molecule::getAtomValence (int idx)
          _valence[idx] = val;
          return val;
       }
-   }
+   }*/
 
    int impl_h = getImplicitH(idx);
    int radical = 0;
@@ -736,6 +737,7 @@ int Molecule::getAtomValence (int idx)
 
       _valence.expandFill(idx + 1, -1);
       _valence[idx] = val;
+      _atoms[idx].unusual_valence = true;
       return val;
    }
 }
@@ -787,7 +789,14 @@ int Molecule::getAtomRadical (int idx)
       return RADICAL_DOUPLET;
    }
 
-   // check for extra valence (like in [PH5])
+   // Give up: we have a nonstandard valence like [PH5], or elemental carbon [C]
+
+   _radicals.expandFill(idx + 1, -1);
+   _radicals[idx] = 0;
+   return 0;
+
+   /*
+   // check for extra valence (like in )
    if (Element::calcValence(atom.number, atom.charge, 0, conn + impl_h,
            normal_val, normal_hyd, false) && normal_hyd == 0)
    {
@@ -800,6 +809,7 @@ int Molecule::getAtomRadical (int idx)
    // (while the correct one is [N+H4])
    throw Element::Error("no radical can make %s (charge %d, connectivity %d) have %d hydrogens",
               Element::toString(atom.number), atom.charge, conn, impl_h);
+    * */
 }
 
 void Molecule::saveBondOrders (Molecule &mol, Array<int> &orders)
@@ -865,6 +875,14 @@ int Molecule::getBondTopology (int idx)
 int Molecule::getExplicitValence (int idx)
 {
    if (_atoms[idx].explicit_valence)
+      return _valence[idx];
+   return -1;
+}
+
+int Molecule::getExplicitOrUnusualValence (int idx)
+{
+   getAtomValence(idx);
+   if (_atoms[idx].explicit_valence || _atoms[idx].unusual_valence)
       return _valence[idx];
    return -1;
 }

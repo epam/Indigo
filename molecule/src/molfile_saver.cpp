@@ -343,6 +343,9 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       int radical = 0;
       int valence = mol.getExplicitValence(i);
 
+      if (!mol.isQueryMolecule())
+         valence = mol.asMolecule().getExplicitOrUnusualValence(i);
+
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
          radical = mol.getAtomRadical_NoThrow(i, 0);
 
@@ -720,7 +723,10 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          ecflag = reactionAtomExactChange->at(i);
 
       int explicit_valence = mol.getExplicitValence(i);
-      
+
+      if (!mol.isQueryMolecule())
+         explicit_valence = mol.asMolecule().getExplicitOrUnusualValence(i);
+
       if (explicit_valence > 0 && explicit_valence < 14)
          valence = explicit_valence;
 
