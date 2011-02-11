@@ -326,7 +326,7 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
    else if (!mol.isRSite(idx) && !mol.isPseudoAtom(idx))
    {
       // valence that can not be trivially restored by atom number and charge?
-      if (Element::calcValenceByCharge(number, charge) == -1)
+      if (radical == 0 && Element::calcValenceByCharge(number, charge) == -1)
       {
          int conn = mol.calcAtomConnectivity_noImplH(idx);
          int normal_val = -1, normal_h = -1;

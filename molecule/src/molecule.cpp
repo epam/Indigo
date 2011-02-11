@@ -673,24 +673,24 @@ int Molecule::getAtomValence (int idx)
 
    const _Atom &atom = _atoms[idx];
 
-   /*
-   {
-      int val = Element::calcValenceByCharge(atom.number, atom.charge);
-
-      if (val > 0)
-      {
-         _valence.expandFill(idx + 1, -1);
-         _valence[idx] = val;
-         return val;
-      }
-   }*/
-
    int impl_h = getImplicitH(idx);
    int radical = 0;
    int conn = getAtomConnectivity_noImplH(idx);
 
+   int val = Element::calcValenceByCharge(atom.number, atom.charge);
+
+   if (val > 0)
+   {
+      _valence.expandFill(idx + 1, -1);
+      _valence[idx] = val;
+      return val;
+   }
+   
    if (conn < 0)
+   {
+
       return -1;
+   }
 
    if (_radicals.size() > idx && _radicals[idx] >= 0)
       radical = _radicals[idx];
