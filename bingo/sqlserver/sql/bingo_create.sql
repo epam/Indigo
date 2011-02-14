@@ -62,8 +62,8 @@ create index CONFIG_N on [$(bingo)].CONFIG_BIN(n);
 go
 
 -- Create context
-create table [$(bingo)].CONTEXT (obj_id int, full_table_name varchar(100), id_column varchar(100), data_column varchar(100), type varchar(100));
-create index CONTEXT_ID on [$(bingo)].CONTEXT(obj_id); 
+create table [$(bingo)].CONTEXT (obj_id int, database_id int, full_table_name varchar(100), id_column varchar(100), data_column varchar(100), type varchar(100));
+create index CONTEXT_ID on [$(bingo)].CONTEXT(obj_id);
 go
 
 create table [$(bingo)].TAUTOMER_RULES (id int, begg varchar(100), endd varchar(100));

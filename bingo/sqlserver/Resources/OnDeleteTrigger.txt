@@ -11,8 +11,8 @@ AS
 
 	while @@fetch_status = 0
 	begin
-		exec {3}._OnDeleteRecordTrigger '{4}', @ID
-		
+		exec {3}._OnDeleteRecordTrigger '{1}', @ID
+
 		fetch next from Cur into @ID
 	end
   close Cur

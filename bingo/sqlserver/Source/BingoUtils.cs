@@ -33,8 +33,7 @@ namespace indigo
          }
          catch (Exception ex)
          {
-            BingoLog.logMessage("Excetion in : ");
-            BingoLog.logMessage("Exception in ExecNonQueryNoThrow: {0} in {1}:\n{2}", 
+            BingoLog.logMessage("Exception in ExecNonQueryNoThrow: {0} in {1}:\n{2}",
                ex.Message, ex.Source, ex.StackTrace);
          }
       }
@@ -83,6 +82,27 @@ namespace indigo
                return ret;
             }
          }
+      }
+
+      public static int GetTableObjectID (SqlConnection conn, string table_name)
+      {
+         int? id = ExecIntQuery(conn, "SELECT OBJECT_ID('{0}', 'U')", table_name);
+         if (id == null)
+            throw new Exception("Cannot get ID for table " + table_name);
+         return id.Value;
+      }
+
+      public static int GetDatabaseID (SqlConnection conn, string database_name)
+      {
+         int? id = ExecIntQuery(conn, "select DB_ID('{0}')", database_name);
+         if (id == null)
+            throw new Exception("Cannot get ID for database " + database_name);
+         return id.Value;
+      }
+
+      public static string GetConnectionSchema (SqlConnection conn)
+      {
+         return ExecStringQuery(conn, "SELECT SCHEMA_NAME()");
       }
 
       [SqlFunction]

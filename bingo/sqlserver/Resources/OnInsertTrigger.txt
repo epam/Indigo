@@ -12,8 +12,8 @@ AS
 
 	while @@fetch_status = 0
 	begin
-		exec {4}._OnInsertRecordTrigger '{5}', @ID, @data
-		
+		exec {4}._OnInsertRecordTrigger '{1}', @ID, @data
+
 		fetch next from Cur into @ID, @data
 	end
   close Cur

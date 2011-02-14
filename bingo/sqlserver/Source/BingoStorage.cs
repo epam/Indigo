@@ -89,9 +89,9 @@ namespace indigo
             BingoTimer timer = new BingoTimer("storage.validate_block");
 
             BingoLog.logMessage("Loading storage block {0} for table {1}...",
-               block_index, _index_data.id.FullTableName());
+               block_index, _index_data.id.InformationName());
 
-            string text = "SELECT [data], [first_index], [offsets], [lengths], [count]  from " + 
+            string text = "SELECT [data], [first_index], [offsets], [lengths], [count]  from " +
                _index_data.storageTable + " where id = " + block_index;
             using (SqlCommand command = new SqlCommand(text, conn))
             {

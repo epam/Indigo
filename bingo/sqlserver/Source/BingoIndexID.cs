@@ -9,45 +9,32 @@ namespace indigo
 {
    public class BingoIndexID
    {
-      public string database;
-      public string schema;
-      public string table;
-      public int    object_id;
+      public int object_id;
+      public int database_id;
 
-      public BingoIndexID (string full_table_name, int object_id)
-      {
-         parseTableName(full_table_name);
-         this.object_id = object_id;
-      }
+      private string name; // Name for logging
 
       // Detect database, schema, and table; some from table_name, some from SQL connection
       public BingoIndexID (SqlConnection connection, string table_name)
       {
-         using (SqlCommand cmd = new SqlCommand("SELECT OBJECT_ID('"  + table_name + "')", connection))
-         {
-            cmd.CommandTimeout = 3600;
-            object res = cmd.ExecuteScalar();
+         object_id = BingoSqlUtils.GetTableObjectID(connection, table_name);
 
-            if (res == null || res == System.DBNull.Value)
-               throw new Exception("can not get OBJECT_ID('" + table_name + "')");
-
-            object_id = Convert.ToInt32(res);
-         }
-
-         parseTableName(table_name);
+         string database = null, schema = null, table = null;
+         parseTableName(table_name, ref database, ref schema, ref table);
 
          if (database == null)
             database = connection.Database;
+         database_id = BingoSqlUtils.GetDatabaseID(connection, database);
 
-         if (schema == null)
-            schema = GetConnectionSchema(connection);
-
-         schema = schema.ToUpper();
-         database = database.ToUpper();
-         table = table.ToUpper();
+         name = table_name;
       }
 
-      private void parseTableName (string table_name)
+      public bool Equals (BingoIndexID other)
+      {
+         return object_id == other.object_id && database_id == other.database_id;
+      }
+
+      private void parseTableName (string table_name, ref string database, ref string schema, ref string table)
       {
          Match match = Regex.Match(table_name, @"((\[(.*)\])|(.*))\.((\[(.*)\])|(.*))\.((\[(.*)\])|(.*))");
 
@@ -79,30 +66,30 @@ namespace indigo
          }
       }
 
-      public bool Equals (BingoIndexID other)
-      {
-        if (!this.database.Equals(other.database))
-            return false;
-        if (!this.schema.Equals(other.schema))
-            return false;
-        if (!this.table.Equals(other.table))
-            return false;
 
-        return true;
+      public string SchemaName (SqlConnection connection)
+      {
+         return BingoSqlUtils.ExecStringQuery(connection,
+            @"SELECT QUOTENAME(OBJECT_SCHEMA_NAME({0}, {1}))", object_id, database_id);
       }
 
-      private string GetConnectionSchema (SqlConnection connection)
+      public string DatabaseName (SqlConnection connection)
       {
-         using (SqlCommand cmd = new SqlCommand("SELECT SCHEMA_NAME()", connection))
-         {
-            object result = cmd.ExecuteScalar();
-            return Convert.ToString(result);
-         }
+         return BingoSqlUtils.ExecStringQuery(connection,
+            @"SELECT QUOTENAME(DB_NAME({0}))", database_id);
       }
 
-      public string FullTableName ()
+      public string FullTableName (SqlConnection connection)
       {
-         return "[" + database + "].[" + schema + "].[" + table + "]";
+         return BingoSqlUtils.ExecStringQuery(connection,
+            @"SELECT QUOTENAME(DB_NAME({0})) + N'.' +
+                     QUOTENAME(OBJECT_SCHEMA_NAME({1}, {0})) + N'.' +
+                     QUOTENAME(OBJECT_NAME({1}, {0}))", database_id, object_id);
+      }
+
+      public string InformationName ()
+      {
+         return String.Format("{0} (db_id={1}, obj_id={2})", name, database_id, object_id);
       }
    }
 }

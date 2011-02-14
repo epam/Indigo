@@ -70,10 +70,10 @@ namespace indigo
       }
 
       public abstract IndexType getIndexType ();
-   
+
       private static string _contextTable (string bingo_schema)
       {
-         return "[" + bingo_schema + "].context";
+         return "[" + bingo_schema + "].CONTEXT";
       }
 
       public class BingoIndexDataRefs
@@ -93,8 +93,8 @@ namespace indigo
             BingoIndexID id = new BingoIndexID(conn, table);
 
             string command_text =
-               String.Format("SELECT obj_id FROM {0} WHERE obj_id = '{1}'",
-               _contextTable(bingo_schema), id.object_id);
+               String.Format("SELECT obj_id FROM {0} WHERE obj_id = {1} and database_id = {2}",
+               _contextTable(bingo_schema), id.object_id, id.database_id);
             using (SqlCommand cmd = new SqlCommand(command_text, conn))
             {
                object res = cmd.ExecuteScalar();
@@ -111,8 +111,9 @@ namespace indigo
                data = new MangoIndexData(id, id_column, data_column, bingo_schema);
 
             BingoSqlUtils.ExecNonQuery(conn,
-               "INSERT INTO {0} VALUES({1}, '{2}', '{3}', '{4}', '{5}')",
-               _contextTable(bingo_schema), id.object_id, id.FullTableName(), id_column, data_column,
+               "INSERT INTO {0} VALUES({1}, {2}, '{3}', '{4}', '{5}', '{6}')",
+               _contextTable(bingo_schema), id.object_id, id.database_id, id.FullTableName(conn),
+               id_column, data_column,
                reaction ? "reaction" : "molecule");
 
             data.CreateTables(conn);
@@ -144,12 +145,10 @@ namespace indigo
          for (int i = index_data_list.Count - 1; i >= 0; i--)
          {
             BingoIndexDataRefs refs = (BingoIndexDataRefs)index_data_list[i];
-            if (refs.index_data.id.object_id == id.object_id &&
-                refs.index_data.bingo_schema.Equals(bingo_schema))
+            if (refs.index_data.id.Equals(id))
             {
                index_data_list.RemoveAt(i);
-               BingoLog.logMessage("Session for table {0} released",
-                  refs.index_data.id.FullTableName());
+               BingoLog.logMessage("Session for table {0} released", refs.index_data.id.FullTableName(conn));
             }
          }
       }
@@ -162,8 +161,7 @@ namespace indigo
 
             foreach (BingoIndexDataRefs index_data_refs in index_data_list)
             {
-               if (index_data_refs.index_data.id.object_id == id.object_id &&
-                   index_data_refs.index_data.bingo_schema.Equals(bingo_schema))
+               if (index_data_refs.index_data.id.Equals(id))
                {
                   if (!index_data_refs.session_ids.Contains(spid))
                   {
@@ -280,8 +278,7 @@ namespace indigo
                if (refs.session_ids.Count < 1 && !refs.index_data.keep_cache)
                {
                   index_data_list.RemoveAt(i);
-                  BingoLog.logMessage("Session for table {0} released",
-                     refs.index_data.id.FullTableName());
+                  BingoLog.logMessage("Session for table {0} released", refs.index_data.id.InformationName());
                }
             }
          }
@@ -318,27 +315,48 @@ namespace indigo
 
       public void CreateTriggers (SqlConnection conn)
       {
-         string insert_trigger = String.Format(resource.OnInsertTrigger,
-            getTriggerName("Insert"), id.FullTableName(),
-            id_column, data_column, bingo_schema, id.FullTableName());
-         BingoSqlUtils.ExecNonQuery(conn, "{0}", insert_trigger);
+         string cur_db_name = null;
+         try
+         {
+            cur_db_name = BingoSqlUtils.ExecStringQuery(conn, "SELECT DB_NAME()");
+            BingoSqlUtils.ExecNonQueryNoThrow(conn, "USE {0}", id.DatabaseName(conn));
 
-         string delete_trigger = String.Format(resource.OnDeleteTrigger,
-            getTriggerName("Delete"), id.FullTableName(),
-            id_column, bingo_schema, id.FullTableName());
-         BingoSqlUtils.ExecNonQuery(conn, "{0}", delete_trigger);
+            string full_name = id.FullTableName(conn);
+            string insert_trigger = String.Format(resource.OnInsertTrigger,
+               GetTriggerName("Insert", conn), full_name, id_column, data_column, bingo_schema);
+            BingoSqlUtils.ExecNonQuery(conn, "{0}", insert_trigger);
 
-         string update_trigger = String.Format(resource.OnUpdateTrigger,
-            getTriggerName("Update"), id.FullTableName(),
-            id_column, data_column, bingo_schema, id.FullTableName());
-         BingoSqlUtils.ExecNonQuery(conn, "{0}", update_trigger);
+            string delete_trigger = String.Format(resource.OnDeleteTrigger,
+               GetTriggerName("Delete", conn), full_name, id_column, bingo_schema);
+            BingoSqlUtils.ExecNonQuery(conn, "{0}", delete_trigger);
+
+            string update_trigger = String.Format(resource.OnUpdateTrigger,
+               GetTriggerName("Update", conn), full_name, id_column, data_column, bingo_schema);
+            BingoSqlUtils.ExecNonQuery(conn, "{0}", update_trigger);
+         }
+         finally
+         {
+            if (cur_db_name != null)
+               BingoSqlUtils.ExecNonQueryNoThrow(conn, "USE {0}", cur_db_name);
+         }
       }
 
       public void DropTriggers (SqlConnection conn)
       {
-         BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", getTriggerName("Insert"));
-         BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", getTriggerName("Delete"));
-         BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", getTriggerName("Update"));
+         string cur_db_name = null;
+         try
+         {
+            cur_db_name = BingoSqlUtils.ExecStringQuery(conn, "SELECT DB_NAME()");
+            BingoSqlUtils.ExecNonQueryNoThrow(conn, "USE {0}", id.DatabaseName(conn));
+            BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", GetTriggerName("Insert", conn));
+            BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", GetTriggerName("Delete", conn));
+            BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", GetTriggerName("Update", conn));
+         }
+         finally
+         {
+            if (cur_db_name != null)
+               BingoSqlUtils.ExecNonQueryNoThrow(conn, "USE {0}", cur_db_name);
+         }
       }
 
       public virtual void deleteRecordById (int id, SqlConnection conn)
@@ -359,10 +377,10 @@ namespace indigo
       {
       }
 
-      private string getTriggerName (string operation)
+      private string GetTriggerName (string operation, SqlConnection conn)
       {
-         return String.Format("[{0}].[{1}_{2}]",
-            id.schema, id.table, operation);
+         return String.Format("{0}.[{1}_{2}]",
+            id.SchemaName(conn), id.object_id, operation);
       }
 
       public string fingerprintsTable
