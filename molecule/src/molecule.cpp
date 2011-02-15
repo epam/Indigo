@@ -273,6 +273,11 @@ void Molecule::resetImplicitH (int idx)
    _validateVertexConnectivity(idx, false);
 }
 
+bool Molecule::isImplicitHSet (int idx)
+{
+   return _atoms[idx].explicit_impl_h;
+}
+
 void Molecule::setPseudoAtom (int idx, const char *text)
 {
    _atoms[idx].number = ELEM_PSEUDO;
@@ -676,18 +681,17 @@ int Molecule::getAtomValence (int idx)
    int impl_h = getImplicitH(idx);
    int radical = 0;
    int conn = getAtomConnectivity_noImplH(idx);
-
-   int val = Element::calcValenceByCharge(atom.number, atom.charge);
-
-   if (val > 0)
-   {
-      _valence.expandFill(idx + 1, -1);
-      _valence[idx] = val;
-      return val;
-   }
-   
+  
    if (conn < 0)
    {
+      int val = Element::calcValenceByCharge(atom.number, atom.charge);
+
+      if (val > 0)
+      {
+         _valence.expandFill(idx + 1, -1);
+         _valence[idx] = val;
+         return val;
+      }
 
       return -1;
    }
