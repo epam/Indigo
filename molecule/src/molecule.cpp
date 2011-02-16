@@ -678,7 +678,7 @@ int Molecule::getAtomValence (int idx)
 
    const _Atom &atom = _atoms[idx];
 
-   int impl_h = getImplicitH(idx);
+   int impl_h = getImplicitH_NoThrow(idx, 0);
    int radical = 0;
    int conn = getAtomConnectivity_noImplH(idx);
   
@@ -701,7 +701,16 @@ int Molecule::getAtomValence (int idx)
 
    int normal_val, normal_hyd;
 
-   Element::calcValence(atom.number, atom.charge, radical, conn, normal_val, normal_hyd, true);
+   try
+   {
+      Element::calcValence(atom.number, atom.charge, radical, conn, normal_val, normal_hyd, true);
+   }
+   catch (Element::Error &)
+   {
+      _valence.expandFill(idx + 1, -1);
+      _valence[idx] = conn;
+      return conn;
+   }
 
    if (impl_h != normal_hyd && radical == 0)
    {
