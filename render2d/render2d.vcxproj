@@ -365,7 +365,11 @@
     </ProjectReference>
     <ProjectReference Include="..\molecule\molecule.vcxproj">
       <Project>{d69c5b23-48c2-400b-9bcd-b8276756b673}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <Private>true</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\reaction\reaction.vcxproj">
       <Project>{d4aaeea4-9271-455c-a1d1-66c9d4e74338}</Project>

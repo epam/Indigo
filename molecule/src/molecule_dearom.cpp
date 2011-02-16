@@ -541,6 +541,7 @@ DearomatizationsGroups::DearomatizationsGroups (BaseMolecule &molecule) :
    _molecule(molecule),
    TL_CP_GET(_vertexAromaticGroupIndex),
    TL_CP_GET(_vertexIsAcceptDoubleEdge),
+   TL_CP_GET(_vertexIsAcceptSingleEdge),
    TL_CP_GET(_vertexProcessed),
    TL_CP_GET(_groupVertices),
    TL_CP_GET(_groupEdges),
@@ -600,7 +601,7 @@ void DearomatizationsGroups::getGroupData (int group, int flags,
 
          int vac = _molecule.getVacantPiOrbitals(group, charge, radical, max_conn, &lonepairs);
 
-         if (_vertexIsAcceptDoubleEdge[v_idx] && (vac > 0 || lonepairs > 0)) 
+         if (_vertexIsAcceptDoubleEdge[v_idx] && _vertexIsAcceptSingleEdge[v_idx] && (vac > 0 || lonepairs > 0)) 
             data->heteroAtoms.push(v_idx);
       }
    }
@@ -667,6 +668,7 @@ int DearomatizationsGroups::detectAromaticGroups (const int *atom_external_conn)
 {
    _vertexAromaticGroupIndex.resize(_molecule.vertexEnd());
    _vertexIsAcceptDoubleEdge.resize(_molecule.vertexEnd());
+   _vertexIsAcceptSingleEdge.resize(_molecule.vertexEnd());
    memset(_vertexAromaticGroupIndex.ptr(), -1, _vertexAromaticGroupIndex.size() * sizeof(int));
 
    int currentAromaticGroup = 0;
@@ -755,6 +757,19 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
       _detectAromaticGroups(vn_idx, atom_external_conn);
    }
 
+   bool impl_h_fixed = false;
+   if (!_molecule.isQueryMolecule())
+   {
+      Molecule &m = _molecule.asMolecule();
+      // Check if number of hydrogens are fixed
+      if (m.isImplicitHSet(v_idx))
+      {
+         int impl_h = m.getImplicitH(v_idx);
+         non_aromatic_conn += impl_h;
+         impl_h_fixed = true;
+      }
+   }
+
    int label = _molecule.getAtomNumber(v_idx);
    int charge = _molecule.getAtomCharge(v_idx);
    int radical = _molecule.getAtomRadical(v_idx);
@@ -766,8 +781,15 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
    if (atom_aromatic_connectivity < 0)
       throw Error("internal error: atom_aromatic_connectivity < 0");
 
+   _vertexIsAcceptSingleEdge[v_idx] = true;
    if (atom_aromatic_connectivity > 0)
+   {
       _vertexIsAcceptDoubleEdge[v_idx] = true;
+      // If number of implicit hydrogens are fixed and double bond is possible then 
+      // double bond must exist
+      if (impl_h_fixed)
+         _vertexIsAcceptSingleEdge[v_idx] = false;
+   }
    else
       _vertexIsAcceptDoubleEdge[v_idx] = false;
 }

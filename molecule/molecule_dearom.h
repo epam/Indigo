@@ -134,6 +134,7 @@ protected:
    // Additional data stored here to prevent reallocatoins
    TL_CP_DECL(Array<int>,  _vertexAromaticGroupIndex);
    TL_CP_DECL(Array<bool>, _vertexIsAcceptDoubleEdge);
+   TL_CP_DECL(Array<bool>, _vertexIsAcceptSingleEdge);
    TL_CP_DECL(Array<int>,  _vertexProcessed);
 
    TL_CP_DECL(Array<int>, _groupVertices);
