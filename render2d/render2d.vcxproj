@@ -354,6 +354,10 @@
     <ProjectReference Include="..\graph\graph.vcxproj">
       <Project>{c6c11f43-43cd-4e5a-9fc5-b113a8b6f4f5}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>true</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\layout\layout.vcxproj">
       <Project>{1cf32085-9687-4dbd-bca2-d7378e2a9490}</Project>
@@ -368,7 +372,7 @@
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
       <Private>true</Private>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\reaction\reaction.vcxproj">
