@@ -50,6 +50,7 @@ public:
    void resetExplicitValence (int idx);
    void setImplicitH       (int idx, int impl_h); // in fact, this is 'explicit implicit H'
    void resetImplicitH     (int idx);
+   bool isImplicitHSet     (int idx);
 
    // Set bond order method.
    // If keep_connectivity is false then connectivity to bond ends 

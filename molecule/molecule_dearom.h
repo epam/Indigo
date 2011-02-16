@@ -117,13 +117,15 @@ public:
    // Construct bondsInvMapping, vertices and heteroAtomsInvMapping
    void getGroupDataFromStorage (DearomatizationsStorage &storage, int group, GROUP_DATA *data);
 
-   int  detectAromaticGroups (void);
+   int  detectAromaticGroups (const int *atom_external_conn);
    void constructGroups      (DearomatizationsStorage &storage, bool needHeteroAtoms);
 
    bool* getAcceptDoubleBonds (void);
    bool  isAcceptDoubleBond   (int atom);
+
+   DEF_ERROR("Dearomatization groups");
 protected:
-   void _detectAromaticGroups (int v_idx);
+   void _detectAromaticGroups (int v_idx, const int *atom_external_conn);
 
 protected:
    BaseMolecule &_molecule;
@@ -151,7 +153,7 @@ public:
       PARAMS_SAVE_JUST_HETERATOMS       // Store just heteroatoms configuration
    }; 
 public:
-   explicit Dearomatizer (BaseMolecule &molecule);
+   explicit Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn);
    virtual ~Dearomatizer ();
 
    void  enumerateDearomatizations  (DearomatizationsStorage &dearomatizations);
@@ -208,7 +210,8 @@ class DearomatizationMatcher
 public:
    DEF_ERROR("Dearomatization matcher");
 
-   DearomatizationMatcher (DearomatizationsStorage &dearomatizations, BaseMolecule &molecule);
+   DearomatizationMatcher (DearomatizationsStorage &dearomatizations, BaseMolecule &molecule,
+      const int *atom_external_conn);
 
    bool isAbleToFixBond (int edge_idx, int type);
    bool fixBond         (int edge_idx, int type);
