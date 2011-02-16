@@ -775,7 +775,7 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
    int radical = _molecule.getAtomRadical(v_idx);
 
    int max_connectivity = Element::getMaximumConnectivity(label, 
-      charge, radical, true);
+      charge, radical, false);
 
    int atom_aromatic_connectivity = max_connectivity - non_aromatic_conn;
    if (atom_aromatic_connectivity < 0)
