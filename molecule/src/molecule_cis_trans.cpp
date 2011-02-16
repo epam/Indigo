@@ -539,6 +539,8 @@ bool MoleculeCisTrans::checkSub (BaseMolecule &query, BaseMolecule &target, cons
 void MoleculeCisTrans::buildOnSubmolecule (BaseMolecule &super, int *mapping)
 {
    BaseMolecule &sub = _getMolecule();
+   _bonds.zerofill();
+
    if (!super.cis_trans.exists())
       return;
 
