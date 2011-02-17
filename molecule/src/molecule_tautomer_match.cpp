@@ -55,10 +55,10 @@ TL_CP_GET(n2)
    else
       max_chains = 0;
 
-   dearomatizer.create(g2.asMolecule());
+   dearomatizer.create(g2.asMolecule(), (int *)0);
    dearomatizer->enumerateDearomatizations(dearomatizations);
 
-   dearomatizationMatcher.create(dearomatizations, g2.asMolecule());
+   dearomatizationMatcher.create(dearomatizations, g2.asMolecule(), (int *)0);
 }
 
 TautomerSearchContext::~TautomerSearchContext ()

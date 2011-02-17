@@ -151,7 +151,6 @@
     <ClCompile Include="src\pngrtran.c" />
     <ClCompile Include="src\pngrutil.c" />
     <ClCompile Include="src\pngset.c" />
-    <ClCompile Include="src\pngtest.c" />
     <ClCompile Include="src\pngtrans.c" />
     <ClCompile Include="src\pngwio.c" />
     <ClCompile Include="src\pngwrite.c" />

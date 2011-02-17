@@ -101,6 +101,16 @@ public:
       return *_ptr();
    }
 
+   template<typename A, typename B> T & create (A &a, B *b)
+   {
+      if (_initialized)
+         throw Error("create(): already have object");
+
+      new (_storage) T(a, b);
+      _initialized = true;
+      return *_ptr();
+   }
+
    template<typename A, typename B, typename C> T & create (A &a, B &b, C *c)
    {
       if (_initialized)

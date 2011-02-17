@@ -318,6 +318,28 @@
     <ClInclude Include="src\indigo_stereo.h" />
     <ClInclude Include="src\option_manager.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\graph\graph.vcxproj">
+      <Project>{c6c11f43-43cd-4e5a-9fc5-b113a8b6f4f5}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\layout\layout.vcxproj">
+      <Project>{1cf32085-9687-4dbd-bca2-d7378e2a9490}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\molecule\molecule.vcxproj">
+      <Project>{d69c5b23-48c2-400b-9bcd-b8276756b673}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\reaction\reaction.vcxproj">
+      <Project>{d4aaeea4-9271-455c-a1d1-66c9d4e74338}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\render2d\render2d.vcxproj">
+      <Project>{8e1de958-1a54-4739-8f12-746d9f6d04c3}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

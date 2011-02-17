@@ -273,6 +273,11 @@ void Molecule::resetImplicitH (int idx)
    _validateVertexConnectivity(idx, false);
 }
 
+bool Molecule::isImplicitHSet (int idx)
+{
+   return _atoms[idx].explicit_impl_h;
+}
+
 void Molecule::setPseudoAtom (int idx, const char *text)
 {
    _atoms[idx].number = ELEM_PSEUDO;
@@ -673,21 +678,20 @@ int Molecule::getAtomValence (int idx)
 
    const _Atom &atom = _atoms[idx];
 
-   int impl_h = getImplicitH(idx);
+   int impl_h = getImplicitH_NoThrow(idx, 0);
    int radical = 0;
    int conn = getAtomConnectivity_noImplH(idx);
-
-   int val = Element::calcValenceByCharge(atom.number, atom.charge);
-
-   if (val > 0)
-   {
-      _valence.expandFill(idx + 1, -1);
-      _valence[idx] = val;
-      return val;
-   }
-   
+  
    if (conn < 0)
    {
+      int val = Element::calcValenceByCharge(atom.number, atom.charge);
+
+      if (val > 0)
+      {
+         _valence.expandFill(idx + 1, -1);
+         _valence[idx] = val;
+         return val;
+      }
 
       return -1;
    }
@@ -697,7 +701,16 @@ int Molecule::getAtomValence (int idx)
 
    int normal_val, normal_hyd;
 
-   Element::calcValence(atom.number, atom.charge, radical, conn, normal_val, normal_hyd, true);
+   try
+   {
+      Element::calcValence(atom.number, atom.charge, radical, conn, normal_val, normal_hyd, true);
+   }
+   catch (Element::Error &)
+   {
+      _valence.expandFill(idx + 1, -1);
+      _valence[idx] = conn;
+      return conn;
+   }
 
    if (impl_h != normal_hyd && radical == 0)
    {
@@ -749,12 +762,12 @@ int Molecule::getAtomRadical (int idx)
 
    const _Atom &atom = _atoms[idx];
    int conn = getAtomConnectivity_noImplH(idx);
-   int impl_h = getImplicitH(idx);
-   int normal_val, normal_hyd;
 
    if (conn == -1)
       return 0;
 
+   int normal_val, normal_hyd;
+   
    if (isNitrogenV5(idx))
    {
       normal_val = 4;
@@ -762,6 +775,8 @@ int Molecule::getAtomRadical (int idx)
    }
    else
       Element::calcValence(atom.number, atom.charge, 0, conn, normal_val, normal_hyd, true);
+   
+   int impl_h = getImplicitH(idx);
 
    if (impl_h == normal_hyd)
    {
