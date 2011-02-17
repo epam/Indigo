@@ -85,6 +85,7 @@ public:
    virtual GraphHighlighting * getMoleculeHighlighting ();
    virtual int getIndex ();
    virtual IndigoObject * clone ();
+   virtual RedBlackStringObjMap< Array<char> > * getProperties ();
 
    BaseReaction &rxn;
    ReactionHighlighting *hl;

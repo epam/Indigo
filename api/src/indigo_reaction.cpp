@@ -137,6 +137,11 @@ IndigoObject * IndigoReactionMolecule::clone ()
       return IndigoMolecule::cloneFrom(*this); 
 }
 
+RedBlackStringObjMap< Array<char> > * IndigoReactionMolecule::getProperties ()
+{
+   return 0;
+}
+
 IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, ReactionHighlighting *hl, int subtype) :
 IndigoObject(REACTION_ITER),
 _rxn(rxn)
