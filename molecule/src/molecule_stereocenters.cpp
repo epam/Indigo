@@ -1176,8 +1176,7 @@ void MoleculeStereocenters::buildOnSubmolecule (const MoleculeStereocenters &sup
    int i, j;
    const BaseMolecule &mol = _getMolecule();
 
-   _bond_directions.clear_resize(mol.edgeEnd());
-   _bond_directions.zerofill();
+   _bond_directions.expandFill(mol.edgeEnd(), 0);
 
    const BaseMolecule &supermol = super._getMolecule();
 

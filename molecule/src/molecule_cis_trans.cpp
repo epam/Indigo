@@ -229,6 +229,7 @@ void MoleculeCisTrans::registerBond (int idx)
 {
    while (_bonds.size() <= idx)
       _bonds.push().clear();
+   _bonds[idx].clear();
 }
 
 void MoleculeCisTrans::build (int *exclude_bonds)
@@ -539,7 +540,6 @@ bool MoleculeCisTrans::checkSub (BaseMolecule &query, BaseMolecule &target, cons
 void MoleculeCisTrans::buildOnSubmolecule (BaseMolecule &super, int *mapping)
 {
    BaseMolecule &sub = _getMolecule();
-   _bonds.zerofill();
 
    if (!super.cis_trans.exists())
       return;
