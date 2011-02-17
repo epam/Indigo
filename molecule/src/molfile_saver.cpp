@@ -467,6 +467,10 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          case MoleculeStereocenters::BOND_UP:     out.printf(" CFG=1"); break;
          case MoleculeStereocenters::BOND_EITHER: out.printf(" CFG=2"); break;
          case MoleculeStereocenters::BOND_DOWN:   out.printf(" CFG=3"); break;
+         case 0:
+            if (mol.cis_trans.isIgnored(i))
+               out.printf(" CFG=2");
+            break;
       }
 
       int reacting_center = 0;
