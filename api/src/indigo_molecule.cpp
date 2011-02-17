@@ -439,8 +439,7 @@ CEXPORT int indigoSaveMolfile (int molecule, int output)
       Output &out = IndigoOutput::get(self.getObject(output));
 
       MolfileSaver saver(out);
-      saver.mode = self.molfile_saving_mode;
-      saver.no_chiral = self.molfile_saving_no_chiral;
+      self.initMolfileSaver(saver);
       saver.highlighting = obj.getMoleculeHighlighting();
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());
@@ -476,8 +475,7 @@ CEXPORT int indigoSdfAppend (int output, int molecule)
       Output &out = IndigoOutput::get(self.getObject(output));
 
       MolfileSaver saver(out);
-      saver.mode = self.molfile_saving_mode;
-      saver.no_chiral = self.molfile_saving_no_chiral;
+      self.initMolfileSaver(saver);
       saver.highlighting = self.getObject(molecule).getMoleculeHighlighting();
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());

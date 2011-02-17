@@ -35,6 +35,7 @@ TL_CP_GET(_bond_mapping)
 {
    mode = MODE_AUTO;
    no_chiral = false;
+   skip_date = false;
 }
 
 void MolfileSaver::saveBaseMolecule (BaseMolecule &mol)
@@ -79,10 +80,16 @@ void MolfileSaver::_saveMolecule (BaseMolecule &mol, bool query)
 
    if (rg2000)
    {
-      time_t tm = time(NULL);
-      const struct tm *lt = localtime(&tm);
+      struct tm lt;
+      if (skip_date)
+         memset(&lt, 0, sizeof(lt));
+      else
+      {
+         time_t tm = time(NULL);
+         lt = *localtime(&tm);
+      }
       _output.printfCR("$MDL  REV  1 %02d%02d%02d%02d%02d",
-         lt->tm_mon + 1, lt->tm_mday, lt->tm_year % 100, lt->tm_hour, lt->tm_min);
+         lt.tm_mon + 1, lt.tm_mday, lt.tm_year % 100, lt.tm_hour, lt.tm_min);
       _output.writeStringCR("$MOL");
       _output.writeStringCR("$HDR");
    }
@@ -186,8 +193,14 @@ void MolfileSaver::saveQueryCtab3000 (QueryMolecule &mol)
 
 void MolfileSaver::_writeHeader (BaseMolecule &mol, Output &output, bool zcoord)
 {
-   time_t tm = time(NULL);
-   const struct tm *lt = localtime(&tm);
+   struct tm lt;
+   if (skip_date)
+      memset(&lt, 0, sizeof(lt));
+   else
+   {
+      time_t tm = time(NULL);
+      lt = *localtime(&tm);
+   }
 
    const char *dim;
 
@@ -200,8 +213,8 @@ void MolfileSaver::_writeHeader (BaseMolecule &mol, Output &output, bool zcoord)
       output.printfCR("%s", mol.name.ptr());
    else
       output.writeCR();
-   output.printfCR("  -INDIGO-%02d%02d%02d%02d%02d%s", lt->tm_mon + 1, lt->tm_mday,
-      lt->tm_year % 100, lt->tm_hour, lt->tm_min, dim);
+   output.printfCR("  -INDIGO-%02d%02d%02d%02d%02d%s", lt.tm_mon + 1, lt.tm_mday,
+      lt.tm_year % 100, lt.tm_hour, lt.tm_min, dim);
    output.writeCR();
 }
 

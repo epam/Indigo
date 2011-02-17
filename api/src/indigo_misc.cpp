@@ -311,7 +311,7 @@ CEXPORT int indigoSaveMDLCT (int item, int output)
          BaseMolecule &mol = obj.getBaseMolecule();
 
          MolfileSaver saver(out);
-         saver.mode = self.molfile_saving_mode;
+         self.initMolfileSaver(saver);
          saver.highlighting = obj.getMoleculeHighlighting();
          if (mol.isQueryMolecule())
             saver.saveQueryMolecule(mol.asQueryMolecule());
@@ -322,8 +322,7 @@ CEXPORT int indigoSaveMDLCT (int item, int output)
       {
          BaseReaction &rxn = obj.getBaseReaction();
          RxnfileSaver saver(out);
-
-         saver.molfile_saving_mode = self.molfile_saving_mode;
+         self.initRxnfileSaver(saver);
          saver.highlighting = obj.getReactionHighlighting();
          if (rxn.isQueryReaction())
             saver.saveQueryReaction(rxn.asQueryReaction());
@@ -528,12 +527,17 @@ CEXPORT int indigoRdfHeader (int output)
    {
       Output &out = IndigoOutput::get(self.getObject(output));
 
-      time_t tm = time(NULL);
-      const struct tm *lt = localtime(&tm);
-
       out.printfCR("$RDFILE 1");
+      struct tm lt;
+      if (self.molfile_saving_skip_date)
+         memset(&lt, 0, sizeof(lt));
+      else
+      {
+         time_t tm = time(NULL);
+         lt = *localtime(&tm);
+      }
       out.printfCR("$DATM    %02d/%02d/%02d %02d:%02d",
-              lt->tm_mon + 1, lt->tm_mday, lt->tm_year % 100, lt->tm_hour, lt->tm_min);
+               lt.tm_mon + 1, lt.tm_mday, lt.tm_year % 100, lt.tm_hour, lt.tm_min);
       return 1;
    }
    INDIGO_END(-1)
@@ -550,15 +554,14 @@ CEXPORT int indigoRdfAppend (int output, int item)
       {
          out.writeStringCR("$MFMT");
          MolfileSaver saver(out);
-         saver.mode = self.molfile_saving_mode;
-         saver.no_chiral = self.molfile_saving_no_chiral;
+         self.initMolfileSaver(saver);
          saver.saveBaseMolecule(obj.getBaseMolecule());
       }
       else if (obj.isBaseReaction())
       {
          out.writeStringCR("$RFMT");
          RxnfileSaver saver(out);
-         saver.molfile_saving_mode = self.molfile_saving_mode;
+         self.initRxnfileSaver(saver);
          saver.saveBaseReaction(obj.getBaseReaction());
       }
       else

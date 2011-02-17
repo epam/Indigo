@@ -14,6 +14,8 @@
 
 #include "indigo_internal.h"
 #include "molecule/molecule_fingerprint.h"
+#include "reaction/rxnfile_saver.h"
+#include "molecule/molfile_saver.h"
 
 _SessionLocalContainer<Indigo> indigo_self;
 
@@ -51,6 +53,8 @@ Indigo::Indigo ()
    max_embeddings = 1000;
 
    layout_max_iterations = 0;
+
+   molfile_saving_skip_date = false;
 }
 
 void Indigo::removeAllObjects ()
@@ -63,6 +67,20 @@ void Indigo::removeAllObjects ()
 
    _objects.clear();
 }
+
+void Indigo::initMolfileSaver (MolfileSaver &saver)
+{
+   saver.mode = molfile_saving_mode;
+   saver.skip_date = molfile_saving_skip_date;
+   saver.no_chiral = molfile_saving_no_chiral;
+}
+
+void Indigo::initRxnfileSaver (RxnfileSaver &saver)
+{
+   saver.molfile_saving_mode = molfile_saving_mode;
+   saver.skip_date = molfile_saving_skip_date;
+}
+
 
 Indigo::~Indigo ()
 {

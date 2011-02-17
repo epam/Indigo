@@ -41,6 +41,8 @@ namespace indigo
    class Scanner;
    class SdfLoader;
    class RdfLoader;
+   class MolfileSaver;
+   class RxnfileSaver;
 }
 
 extern DLLEXPORT OptionManager & indigoGetOptionManager ();
@@ -232,6 +234,7 @@ public:
 
    int  molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
    bool molfile_saving_no_chiral;
+   bool molfile_saving_skip_date;
 
    Encoding filename_encoding;
 
@@ -239,6 +242,9 @@ public:
    int max_embeddings;
 
    int layout_max_iterations; // default is zero -- no limit
+
+   void initMolfileSaver (MolfileSaver &saver);
+   void initRxnfileSaver (RxnfileSaver &saver);
 
 protected:
 
