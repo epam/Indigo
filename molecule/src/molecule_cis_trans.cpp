@@ -562,7 +562,8 @@ void MoleculeCisTrans::buildOnSubmolecule (BaseMolecule &super, int *mapping)
          continue;
 
       _Bond &bond = _bonds[sub_edge_idx];
-
+      bond.ignored = super.cis_trans.isIgnored(i);
+      
       if (parity == 0)
       {
          bond.parity = 0;
