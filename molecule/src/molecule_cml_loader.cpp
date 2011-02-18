@@ -206,7 +206,7 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
             throw Error("error parsing order");
       }
 
-      mol.addBond(beg, end, order_val);
+      mol.addBond_Silent(beg, end, order_val);
 
       int dir = 0;
 

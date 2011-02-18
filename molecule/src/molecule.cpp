@@ -169,12 +169,23 @@ void Molecule::_validateVertexConnectivity (int idx, bool validate)
    {
       if (_connectivity.size() > idx)
          _connectivity[idx] = -1;
-      if (_implicit_h.size() > idx && !_atoms[idx].explicit_impl_h)
+      if (_implicit_h.size() > idx)
+      {
+         _atoms[idx].explicit_impl_h = false;
          _implicit_h[idx] = -1;
+      }
       if (_total_h.size() > idx)
          _total_h[idx] = -1;
-      if (_valence.size() > idx && !_atoms[idx].explicit_valence)
+      if (_valence.size() > idx)
+      {
+         _atoms[idx].explicit_valence = false;
          _valence[idx] = -1;
+      }
+      if (_radicals.size() > idx)
+      {
+         _radicals[idx] = -1;
+      }
+
    }
 }
 
@@ -215,8 +226,6 @@ void Molecule::setBondOrder_Silent (int idx, int order)
 void Molecule::setAtomCharge (int idx, int charge)
 {
    _atoms[idx].charge = charge;
-
-   _validateVertexConnectivity(idx, false);
 }
 
 void Molecule::setAtomIsotope (int idx, int isotope)
@@ -228,8 +237,6 @@ void Molecule::setAtomRadical (int idx, int radical)
 {
    _radicals.expandFill(idx + 1, -1);
    _radicals[idx] = radical;
-
-   _validateVertexConnectivity(idx, false);
 }
 
 void Molecule::setExplicitValence (int idx, int valence)
@@ -237,8 +244,6 @@ void Molecule::setExplicitValence (int idx, int valence)
    _valence.expandFill(idx + 1, -1);
    _valence[idx] = valence;
    _atoms[idx].explicit_valence = true;
-
-   // _validateVertexConnectivity(idx, false);
 }
 
 void Molecule::resetExplicitValence (int idx)
@@ -246,16 +251,12 @@ void Molecule::resetExplicitValence (int idx)
    if (_valence.size() > idx)
       _valence[idx] = -1;
    _atoms[idx].explicit_valence = false;
-
-   // _validateVertexConnectivity(idx, false);
 }
 
 void Molecule::setValence (int idx, int valence)
 {
    _valence.expandFill(idx + 1, -1);
    _valence[idx] = valence;
-
-   //_validateVertexConnectivity(idx, false);
 }
 
 void Molecule::setImplicitH (int idx, int impl_h)
@@ -263,14 +264,6 @@ void Molecule::setImplicitH (int idx, int impl_h)
    _implicit_h.expandFill(idx + 1, -1);
    _implicit_h[idx] = impl_h;
    _atoms[idx].explicit_impl_h = true;
-
-   _validateVertexConnectivity(idx, false);
-}
-
-void Molecule::resetImplicitH (int idx)
-{
-   _atoms[idx].explicit_impl_h = false;
-   _validateVertexConnectivity(idx, false);
 }
 
 bool Molecule::isImplicitHSet (int idx)
@@ -541,7 +534,7 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt )
 int Molecule::getImplicitH (int idx)
 {
    int conn = getAtomConnectivity_noImplH(idx);
-   return _getImplicitHForConnectivity(idx, conn, true, true);
+   return _getImplicitHForConnectivity(idx, conn, true);
 }
 
 int Molecule::getImplicitH_NoThrow (int idx, int fallback)
@@ -556,13 +549,19 @@ int Molecule::getImplicitH_NoThrow (int idx, int fallback)
    }
 }
 
-
 int Molecule::calcImplicitHForConnectivity (int idx, int conn)
 {
-   return _getImplicitHForConnectivity(idx, conn, false, false);
+   try
+   {
+      return _getImplicitHForConnectivity(idx, conn, false);
+   }
+   catch (Element::Error &)
+   {
+      return -1;
+   }
 }
  
-int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache, bool to_throw)
+int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
 {
    if (_atoms[idx].number == ELEM_PSEUDO)
       throw Error("getImplicitH() does not work on pseudo-atoms");
@@ -582,53 +581,92 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache, b
 
    if (_radicals.size() > idx && _radicals[idx] >= 0)
       radical = _radicals[idx];
-   
+
+   int impl_h = -1;
+
    if (conn < 0)
-      return -1;
-
-   int implicit_h;
-
-   if (atom.explicit_valence)
    {
-      // Explicit valence means that the molecule was converted from Molfile.
-      // Conventions are that if we have explicit valence, we discard radical
-      // and charge when calculating implicit hydgogens.
-      implicit_h = _valence[idx] - Element::calcValenceMinusHyd(atom.number, 0, 0, conn);
-
-      if (implicit_h < 0 && to_throw)
-         throw Error("valence %d specified on %s, charge %d, radical %d, but %d bonds are drawn",
-                    _valence[idx], Element::toString(atom.number), atom.charge, radical, conn);
+      if (getAtomAromaticity(idx) == ATOM_AROMATIC)
+      {
+         if (atom.number == ELEM_C && atom.charge == 0)
+         {
+            if (getVertex(idx).degree() == 3)
+               impl_h = 0;
+            else if (getVertex(idx).degree() == 2)
+               impl_h = 1;
+         }
+         else if (atom.number == ELEM_O && atom.charge == 0)
+            impl_h = 0;
+      }
+      else
+         throw Error("internal: unsure connectivity on an aliphatic atom");
+      if (impl_h < 0)
+         throw Element::Error("can not calculate implicit hydrogens on aromatic %s, charge %d, degree %d",
+                 Element::toString(atom.number), atom.charge, getVertex(idx).degree());
    }
    else
    {
-      int valence;
-
-      // special case of 5-connected nitrogen like "CN(=O)=O".
-      // It should really be C[N+](O-)=O, but we let people live in happy ignorance.
-      if (isNitrogenV5(idx))
+      if (atom.explicit_valence)
       {
-         valence = 4;
-         implicit_h = 0;
+         // Explicit valence means that the molecule was converted from Molfile.
+         // Conventions are that if we have explicit valence, we discard radical
+         // and charge when calculating implicit hydgogens.
+         impl_h = _valence[idx] - Element::calcValenceMinusHyd(atom.number, 0, 0, conn);
+
+         if (impl_h < 0)
+            throw Error("explicit valence %d specified on %s, but %d bonds are drawn",
+                       _valence[idx], Element::toString(atom.number), conn);
+      }
+      else if (isNitrogenV5(idx))
+      {
+         // special case of 5-connected nitrogen like "CN(=O)=O".
+         // It should really be C[N+](O-)=O, but we let people live in happy ignorance.
+         impl_h = 0;
       }
       else
-         Element::calcValence(atom.number, atom.charge, radical,
-                              conn, valence, implicit_h, to_throw);
-      if (use_cache)
       {
-         _valence.expandFill(idx + 1, -1);
-         _valence[idx] = valence;
+         int radical = -1;
+
+         if (_radicals.size() > idx)
+            radical = _radicals[idx];
+
+         int valence;
+
+         if (radical == -1)
+         {
+            // no information about implicit H, not sure about radical either --
+            // this can happen exclusively in CML.
+            if (Element::calcValence(atom.number, atom.charge, 0, conn, valence, impl_h, false))
+               radical = 0;
+            else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, impl_h, false))
+               radical = RADICAL_SINGLET;
+            else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET, conn, valence, impl_h, false))
+               radical = RADICAL_DOUPLET;
+            else
+               throw Element::Error("can not calculate valence on %s, charge %d, connectivity %d",
+                       Element::toString(atom.number), atom.charge, conn);
+            if (use_cache)
+            {
+               _radicals.expandFill(idx + 1, -1);
+               _radicals[idx] = radical;
+            }
+         }
+         else
+            // no information about implicit H, but sure about radical --
+            // this is a commmon situtation for Molfiles or non-bracketed SMILES atoms.
+            // Will throw an error on 5-valent carbon and such.
+            Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
       }
    }
 
    if (use_cache)
    {
       _implicit_h.expandFill(idx + 1, -1);
-      _implicit_h[idx] = implicit_h;
+      _implicit_h[idx] = impl_h;
    }
 
-   return implicit_h;
+   return impl_h;
 }
-
 
 bool Molecule::isNitrogenV5 (int idx)
 {
@@ -668,7 +706,6 @@ int Molecule::getAtomValence (int idx)
    if (_valence.size() > idx && _valence[idx] >= 0)
       return _valence[idx];
 
-
    if (isNitrogenV5(idx))
    {
       _valence.expandFill(idx + 1, -1);
@@ -678,8 +715,6 @@ int Molecule::getAtomValence (int idx)
 
    const _Atom &atom = _atoms[idx];
 
-   int impl_h = getImplicitH_NoThrow(idx, 0);
-   int radical = 0;
    int conn = getAtomConnectivity_noImplH(idx);
   
    if (conn < 0)
@@ -693,66 +728,115 @@ int Molecule::getAtomValence (int idx)
          return val;
       }
 
-      return -1;
+      throw Element::Error("can not calculate valence of aromatic %s, charge %d",
+              Element::toString(atom.number), atom.charge);
    }
+
+   int radical = -1;
+   int impl_h = -1;
+   int valence;
+   bool unusual_valence = false;
 
    if (_radicals.size() > idx && _radicals[idx] >= 0)
       radical = _radicals[idx];
 
-   int normal_val, normal_hyd;
-
-   try
+   if (_implicit_h.size() > idx && _implicit_h[idx] >= 0)
    {
-      Element::calcValence(atom.number, atom.charge, radical, conn, normal_val, normal_hyd, true);
-   }
-   catch (Element::Error &)
-   {
-      _valence.expandFill(idx + 1, -1);
-      _valence[idx] = conn;
-      return conn;
-   }
+      impl_h = _implicit_h[idx];
+      int normal_impl_h;
 
-   if (impl_h != normal_hyd && radical == 0)
-   {
-      // try to put additional radicals
-
-      // first try a singlet radical
-      if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET,
-                               conn, normal_val, normal_hyd, false) &&
-                               impl_h == normal_hyd)
+      if (radical == -1)
       {
+         // have implicit H count, but no information about radical. Frequently occurs in SMILES
+         // expressions like [CH2] or [C]
+         if (Element::calcValence(atom.number, atom.charge, 0, conn, valence, normal_impl_h, false) &&
+                 normal_impl_h == impl_h)
+            radical = 0; // [SiH4]
+         else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, normal_impl_h, false) &&
+                 normal_impl_h == impl_h)
+            radical = RADICAL_SINGLET; // [CH2]
+         else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET, conn, valence, normal_impl_h, false) &&
+                 normal_impl_h == impl_h)
+            radical = RADICAL_DOUPLET; // [CH3]
+         else if (Element::calcValence(atom.number, atom.charge, 0, conn + impl_h, valence, normal_impl_h, false) &&
+                 normal_impl_h == 0)
+         {
+            radical = 0; // [PH5]
+            valence = conn + impl_h;
+            unusual_valence = true;
+         }
+         else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn + impl_h, valence, normal_impl_h, false) &&
+                 normal_impl_h == 0)
+         {
+            radical = RADICAL_SINGLET;
+            valence = conn + impl_h;
+            unusual_valence = true;
+         }
+         else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET, conn + impl_h, valence, normal_impl_h, false) &&
+                 normal_impl_h == 0)
+         {
+            radical = RADICAL_DOUPLET; // [PH4]
+            valence = conn + impl_h;
+            unusual_valence = true;
+         }
+         else // [C], [CH]
+         {
+            radical = 0;
+            valence = conn + impl_h;
+            unusual_valence = true;
+         }
          _radicals.expandFill(idx + 1, -1);
-         _radicals[idx] = RADICAL_SINGLET;
+         _radicals[idx] = radical;
       }
       else
       {
-         // try a douplet radical
-         if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET,
-                                  conn, normal_val, normal_hyd, false) &&
-                                  impl_h == normal_hyd)
+         // have both implicit H count and radicals -- can happen in CML or in extended SMILES
+         if (Element::calcValence(atom.number, atom.charge, radical, conn, valence, normal_impl_h, false) &&
+                 normal_impl_h == impl_h)
+            ;
+         else
          {
-            _radicals.expandFill(idx + 1, -1);
-            _radicals[idx] = RADICAL_DOUPLET;
+            // rare case
+            valence = conn;
+            unusual_valence = true;
          }
-      }
-   }
 
-   if (impl_h == normal_hyd)
-   {
-      _valence.expandFill(idx + 1, -1);
-      _valence[idx] = normal_val;
-      return normal_val;
+      }
    }
    else
    {
-      // radicals have not helped, calculate 'explicit' valence
-      int val = Element::calcValenceMinusHyd(atom.number, atom.charge, radical, conn) + impl_h;
+      if (radical == -1)
+      {
+         // no information about implicit H, not sure about radical either --
+         // this can happen exclusively in CML.
+         if (Element::calcValence(atom.number, atom.charge, 0, conn, valence, impl_h, false))
+            radical = 0;
+         else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, impl_h, false))
+            radical = RADICAL_SINGLET;
+         else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET, conn, valence, impl_h, false))
+            radical = RADICAL_DOUPLET;
+         else
+            throw Element::Error("can not calculate valence on %s, charge %d, connectivity %d",
+                    Element::toString(atom.number), atom.charge, conn);
+         _radicals.expandFill(idx + 1, -1);
+         _radicals[idx] = radical;
+      }
+      else
+         // no information about implicit H, but sure about radical --
+         // this is a commmon situtation for Molfiles or non-bracketed SMILES atoms.
+         // Will throw an error on 5-valent carbon and such.
+         Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
 
-      _valence.expandFill(idx + 1, -1);
-      _valence[idx] = val;
-      _atoms[idx].unusual_valence = true;
-      return val;
+      _implicit_h.expandFill(idx + 1, -1);
+      _implicit_h[idx] = impl_h;
    }
+
+   _valence.expandFill(idx + 1, -1);
+   _valence[idx] = valence;
+   if (unusual_valence)
+      _atoms[idx].explicit_valence = true;
+
+   return valence;
 }
 
 int Molecule::getAtomRadical (int idx)
@@ -760,71 +844,18 @@ int Molecule::getAtomRadical (int idx)
    if (_radicals.size() > idx && _radicals[idx] >= 0)
       return _radicals[idx];
 
-   const _Atom &atom = _atoms[idx];
-   int conn = getAtomConnectivity_noImplH(idx);
+   getAtomValence(idx);
 
-   if (conn == -1)
-      return 0;
+   if (_radicals.size() > idx && _radicals[idx] >= 0)
+      return _radicals[idx];
 
-   int normal_val, normal_hyd;
-   
-   if (isNitrogenV5(idx))
-   {
-      normal_val = 4;
-      normal_hyd = 0;
-   }
-   else
-      Element::calcValence(atom.number, atom.charge, 0, conn, normal_val, normal_hyd, true);
-   
-   int impl_h = getImplicitH(idx);
-
-   if (impl_h == normal_hyd)
-   {
-      _radicals.expandFill(idx + 1, -1);
-      _radicals[idx] = 0;
-      return 0;
-   }
-
-   // first try a singlet radical
-   if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET,
-                            conn, normal_val, normal_hyd, false) &&
-                            impl_h == normal_hyd)
-   {
-      _radicals.expandFill(idx + 1, -1);
-      _radicals[idx] = RADICAL_SINGLET;
-      return RADICAL_SINGLET;
-   }
-   // then try a douplet radical
-   if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET,
-                               conn, normal_val, normal_hyd, false) &&
-                               impl_h == normal_hyd)
-   {
-      _radicals.expandFill(idx + 1, -1);
-      _radicals[idx] = RADICAL_DOUPLET;
-      return RADICAL_DOUPLET;
-   }
-
-   // Give up: we have a nonstandard valence like [PH5], or elemental carbon [C]
+   // getAtomValence() did not help: now we know that
+   // this is either an aromatic atom or 5-valence nitrogen;
+   // in any case, radical is zero.
 
    _radicals.expandFill(idx + 1, -1);
    _radicals[idx] = 0;
    return 0;
-
-   /*
-   // check for extra valence (like in )
-   if (Element::calcValence(atom.number, atom.charge, 0, conn + impl_h,
-           normal_val, normal_hyd, false) && normal_hyd == 0)
-   {
-      _radicals.expandFill(idx + 1, -1);
-      _radicals[idx] = 0;
-      return 0;
-   }
-
-   // give up; probably this molecule was obtained from an incorrect SMILES string like [N+]
-   // (while the correct one is [N+H4])
-   throw Element::Error("no radical can make %s (charge %d, connectivity %d) have %d hydrogens",
-              Element::toString(atom.number), atom.charge, conn, impl_h);
-    * */
 }
 
 void Molecule::saveBondOrders (Molecule &mol, Array<int> &orders)
@@ -891,14 +922,20 @@ int Molecule::getExplicitValence (int idx)
 {
    if (_atoms[idx].explicit_valence)
       return _valence[idx];
-   return -1;
-}
 
-int Molecule::getExplicitOrUnusualValence (int idx)
-{
-   getAtomValence(idx);
-   if (_atoms[idx].explicit_valence || _atoms[idx].unusual_valence)
+   // try to calculate explicit valence from hydrogens, as in elemental carbon [C]
+   try
+   {
+      getAtomValence(idx);
+   }
+   catch (Element::Error &)
+   {
+      return -1;
+   }
+   
+   if (_atoms[idx].explicit_valence)
       return _valence[idx];
+
    return -1;
 }
 
@@ -1004,6 +1041,19 @@ int Molecule::addBond (int beg, int end, int order)
 
    _validateVertexConnectivity(beg, false);
    _validateVertexConnectivity(end, false);
+
+   return idx;
+}
+
+int Molecule::addBond_Silent (int beg, int end, int order)
+{
+   int idx = _addBaseBond(beg, end);
+
+   _bond_orders.expand(idx + 1);
+   _bond_orders[idx] = order;
+
+   _aromaticity.clear();
+   _aromatized = false;
 
    return idx;
 }
@@ -1176,6 +1226,12 @@ bool Molecule::shouldWriteHCount (Molecule &mol, int idx)
    bool aromatic = (mol.getAtomAromaticity(idx) == ATOM_AROMATIC);
 
    int atom_number = mol.getAtomNumber(idx);
+   int charge = mol.getAtomCharge(idx);
+
+   // We should write the H count if it is less than the normal (lowest valence)
+   // count, like in atoms with radicals.
+   if (mol.getAtomRadical_NoThrow(idx, -1) > 0)
+      return true;
 
    // Should we write the H count for an aromatic atom or not?
    // In a better world, we would have been checking that the hydrogens
@@ -1184,19 +1240,18 @@ bool Molecule::shouldWriteHCount (Molecule &mol, int idx)
    // are writing now.
    // In the real world, de-aromatization is complicated and takes time,
    // so we write hydrogen counts on all aromatic atoms, except
-   // C and O, for which we can always tell the number of hydrogens by
-   // the charge, radical, and the number of bonds.
-   if (aromatic && atom_number != ELEM_C && atom_number != ELEM_O)
-      return true;
-
-   // We should write the H count if it is less than the normal (lowest valence)
-   // count, like in atoms with radicals.
-   if (mol.getAtomRadical_NoThrow(idx, -1) > 0)
-      return true;
+   // uncharged C and O with no radicals, for which we can always tell
+   // the number of hydrogens by the number of bonds.
+   if (aromatic)
+   {
+      if (atom_number != ELEM_C && atom_number != ELEM_O)
+         return true;
+      if (charge != 0)
+         return true;
+   }
 
    // We also should write the H count if it exceeds the normal (lowest valence)
    // count, like in [PH5]
-   int charge = mol.getAtomCharge(idx);
    int normal_val, normal_hyd;
 
    int impl_h = mol.getImplicitH_NoThrow(idx, -1);

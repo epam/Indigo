@@ -888,10 +888,7 @@ void MoleculeRenderInternal::_initAtomData ()
       int valence;
       bool query = bm.isQueryMolecule();
 
-      if (!bm.isQueryMolecule())
-         valence = bm.asMolecule().getExplicitOrUnusualValence(i);
-      else
-         valence = bm.getExplicitValence(i);
+      valence = bm.getExplicitValence(i);
 
       if (!bm.isRSite(i) && !bm.isPseudoAtom(i)) {
          radical = bm.getAtomRadical_NoThrow(i, -1);
@@ -2197,12 +2194,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       }
 
       // valence
-      int valence;
-
-      if (bm.isQueryMolecule())
-         valence = bm.getExplicitValence(aid);
-      else
-         valence = bm.asMolecule().getExplicitOrUnusualValence(aid);
+      int valence = bm.getExplicitValence(aid);
       
       if (_opt.showValences && valence >= 0) {
          tiValence = _pushTextItem(ad, RenderItem::RIT_VALENCE, color, highlighted);

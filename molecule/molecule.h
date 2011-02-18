@@ -41,6 +41,7 @@ public:
    void setPseudoAtom (int idx, const char *text);
 
    int addBond (int beg, int end, int order);
+   int addBond_Silent (int beg, int end, int order);
 
    void setAtomCharge (int idx, int charge);
    void setAtomIsotope (int idx, int isotope);
@@ -48,9 +49,9 @@ public:
    void setValence (int idx, int valence);
    void setExplicitValence (int idx, int valence);
    void resetExplicitValence (int idx);
-   void setImplicitH       (int idx, int impl_h); // in fact, this is 'explicit implicit H'
-   void resetImplicitH     (int idx);
-   bool isImplicitHSet     (int idx);
+
+   void setImplicitH    (int idx, int impl_h);
+   bool isImplicitHSet  (int idx);
 
    // Set bond order method.
    // If keep_connectivity is false then connectivity to bond ends 
@@ -68,7 +69,6 @@ public:
    virtual int getBondTopology   (int idx);
    virtual int getAtomAromaticity (int idx);
    virtual int getExplicitValence (int idx);
-   virtual int getExplicitOrUnusualValence (int idx);
    virtual int getAtomValence (int idx);
    virtual int getAtomSubstCount (int idx);
    virtual int getAtomRingBondsCount (int idx);
@@ -138,7 +138,6 @@ protected:
    {
       int  number;
       bool explicit_valence;
-      bool unusual_valence;
       bool explicit_impl_h;
       int  isotope;
       int  charge;
@@ -177,7 +176,7 @@ protected:
 private:
    Molecule (const Molecule &); // no implicit copy
 
-   int _getImplicitHForConnectivity (int idx, int conn, bool use_cache, bool to_throw);
+   int _getImplicitHForConnectivity (int idx, int conn, bool use_cache);
 };
 
 }
