@@ -388,7 +388,11 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       case QueryMolecule::ATOM_VALENCE:
       {
          if (flags & MATCH_ATOM_VALENCE)
+         {
+            if (target.isPseudoAtom(super_idx) || target.isRSite(super_idx))
+               return false;
             return query->valueWithinRange(target.getAtomValence(super_idx));
+         }
          return (flags & MATCH_DISABLED_AS_TRUE) != 0;
       }
       case QueryMolecule::ATOM_CONNECTIVITY:
