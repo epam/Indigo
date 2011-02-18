@@ -698,6 +698,12 @@ int Molecule::getAtomIsotope (int idx)
 
 int Molecule::getAtomValence (int idx)
 {
+   if (_atoms[idx].number == ELEM_PSEUDO)
+      throw Error("getAtomValence() does not work on pseudo-atoms");
+
+   if (_atoms[idx].number == ELEM_RSITE)
+      throw Error("getAtomValence() does not work on R-sites");
+
    if (_valence.size() > idx && _valence[idx] >= 0)
       return _valence[idx];
 
@@ -836,6 +842,12 @@ int Molecule::getAtomValence (int idx)
 
 int Molecule::getAtomRadical (int idx)
 {
+   if (_atoms[idx].number == ELEM_PSEUDO)
+      throw Error("getAtomValence() does not work on pseudo-atoms");
+
+   if (_atoms[idx].number == ELEM_RSITE)
+      throw Error("getAtomValence() does not work on R-sites");
+   
    if (_radicals.size() > idx && _radicals[idx] >= 0)
       return _radicals[idx];
 
@@ -917,6 +929,9 @@ int Molecule::getExplicitValence (int idx)
 {
    if (_atoms[idx].explicit_valence)
       return _valence[idx];
+
+   if (_atoms[idx].number == ELEM_PSEUDO || _atoms[idx].number == ELEM_RSITE)
+      return 0;
 
    // try to calculate explicit valence from hydrogens, as in elemental carbon [C]
    try
