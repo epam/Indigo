@@ -126,11 +126,16 @@ bool AromaticityMatcher::match (int *core_sub, int *core_super)
    // Check if detailed checking is necessary 
    bool needCheck = false;
    for (int i = _query.edgeBegin(); i != _query.edgeEnd(); i = _query.edgeNext(i))
+   {
+      if (!_query.getBond(i).hasConstraint(QueryMolecule::BOND_ORDER))
+         continue;
+
       if (_matching_edges_state[i] == AROMATIC && _query.getBondOrder(i) != BOND_AROMATIC)
       {
          needCheck = true;
          break;
       }
+   }
 
    if (!needCheck)
       return true;
@@ -249,7 +254,7 @@ bool AromaticityMatcher::match (int *core_sub, int *core_super)
             qmol.resetBond(e_idx, QueryMolecule::Bond::und(bond.release(), arom_bond.release()));
          }
          else
-            _submolecule->asMolecule().setBondOrder(e_idx, BOND_SINGLE, true);
+            _submolecule->asMolecule().setBondOrder(e_idx, BOND_SINGLE, false);
          
          is_edge_in_aromatic_cycle[e_idx] = AROMATIC_BOND_NOT_IN_AROMATIC_CYCLE;
       }

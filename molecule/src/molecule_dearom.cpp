@@ -762,7 +762,7 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
    {
       Molecule &m = _molecule.asMolecule();
       // Check if number of hydrogens are fixed
-      if (m.isImplicitHSet(v_idx))
+      if (m.isImplicitHSet(v_idx) && atom_external_conn == 0)
       {
          int impl_h = m.getImplicitH(v_idx);
          non_aromatic_conn += impl_h;
