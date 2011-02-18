@@ -406,11 +406,6 @@ int Molecule::matchAtomsCmp (Graph &g1, Graph &g2,
    if (m1.getAtomCharge(idx1) < m2.getAtomCharge(idx2))
       return -1;
 
-   if (!pseudo && m1.getAtomValence(idx1) > m2.getAtomValence(idx2))
-      return 1;
-   if (!pseudo && m1.getAtomValence(idx1) < m2.getAtomValence(idx2))
-      return -1;
-
    if (!pseudo && m1.getAtomRadical(idx1) > m2.getAtomRadical(idx2))
       return 1;
    if (!pseudo && m1.getAtomRadical(idx1) < m2.getAtomRadical(idx2))
