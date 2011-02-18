@@ -273,13 +273,10 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
       {
          if (charge == -1)
          {
-            if (rad + conn <= 4)
-            {
-               valence = 4;
-               hyd = 4 - rad - conn;
-            }
+            valence = 4;
+            hyd = 4 - rad - conn;
          }
-         else if (rad + conn + abs(charge) <= 3)
+         else
          {
             valence = 3;
             hyd = 3 - rad - conn - abs(charge);
@@ -287,40 +284,58 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
       }
       else if (elem == ELEM_Tl)
       {
-         if (conn == 0 && rad == 0)
+         if (charge == -1)
          {
-            if (rad + abs(charge) <= 1)
+            if (rad + conn <= 2)
+            {
+               valence = 2;
+               hyd = 2 - rad - conn;
+            }
+            else
+            {
+               valence = 4;
+               hyd = 4 - rad - conn;
+            }
+         }
+         else if (charge == -2)
+         {
+            if (rad + conn <= 3)
+            {
+               valence = 3;
+               hyd = 3 - rad - conn;
+            }
+            else
+            {
+               valence = 5;
+               hyd = 5 - rad - conn;
+            }
+         }
+         else
+         {
+            if (rad + conn + abs(charge) <= 1)
             {
                valence = 1;
-               hyd = 1 - rad - abs(charge);
+               hyd = 1 - rad - conn - abs(charge);
             }
             else
             {
                valence = 3;
-               hyd = 3 - abs(charge);
+               hyd = 3 - rad - conn - abs(charge);
             }
          }
       }      
    }
    else if (groupno == 4)
    {
-      if (elem == ELEM_C)
+      if (elem == ELEM_C || elem == ELEM_Si || elem == ELEM_Ge)
       {
          valence = 4;
          hyd = 4 - rad - conn - abs(charge);
       }
-      else if (elem == ELEM_Si || elem == ELEM_Sn || elem == ELEM_Ge)
+      else if (elem == ELEM_Sn || elem == ELEM_Pb)
       {
-         if (conn + rad + abs(charge) <= 4)
+         if (conn + rad + abs(charge) <= 2)
          {
-            valence = 4;
-            hyd = 4 - rad - conn - abs(charge);
-         }
-      }
-      else if (elem == ELEM_Pb)
-      {
-         if (rad + conn + abs(charge) <= 2)
-         {     
             valence = 2;
             hyd = 2 - rad - conn - abs(charge);
          }
@@ -333,7 +348,7 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
    }
    else if (groupno == 5)
    {
-      if (elem == ELEM_N)
+      if (elem == ELEM_N || elem == ELEM_P)
       {
          if (charge == 1)
          {
@@ -347,60 +362,49 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
          }
          else
          {
+            if (elem == ELEM_N || rad + conn + abs(charge) <= 3)
+            {
+               valence = 3;
+               hyd = 3 - rad - conn - abs(charge);
+            }
+            else // ELEM_P && rad + conn + abs(charge) > 3
+            {
+               valence = 5;
+               hyd = 5 - rad - conn - abs(charge);
+            }
+         }
+      }
+      else if (elem == ELEM_Bi || elem == ELEM_Sb || elem == ELEM_As)
+      {
+         if (charge == 1)
+         {
+            if (rad + conn <= 2 && elem != ELEM_As)
+            {
+               valence = 2;
+               hyd = 2 - rad - conn;
+            }
+            else
+            {
+               valence = 4;
+               hyd = 4 - rad - conn;
+            }
+         }
+         else if (charge == 2)
+         {
             valence = 3;
-            hyd = 3 - rad - conn - abs(charge);
+            hyd = 3 - rad - conn;
          }
-      }
-      else if (elem == ELEM_P || elem == ELEM_Sb || elem == ELEM_Bi)
-      {
-         if (conn < 4)
+         else
          {
-            if (charge == 1)
-            {
-               valence = 4;
-               hyd = 4 - rad - conn;
-            }
-            else if (charge == 2)
-            {
-               valence = 3;
-               hyd = 3 - rad - conn;
-            }
-            else if (rad + conn + abs(charge) <= 3)
+            if (rad + conn <= 3)
             {
                valence = 3;
                hyd = 3 - rad - conn - abs(charge);
             }
-         }
-         else
-         {
-            if (charge == 0 && conn + rad <= 5)
+            else
             {
                valence = 5;
-               hyd = 5 - rad - conn;
-            }
-         }
-      }
-      else if (elem == ELEM_As)
-      {
-         if (conn < 4)
-         {
-            if (charge == 1)
-            {
-               valence = 4;
-               hyd = 4 - rad - conn;
-            }
-            else if (rad + conn + abs(charge) <= 3)
-            {
-               valence = 3;
-               hyd = 3 - rad - conn - abs(charge);
-            }
-         }
-         else
-         {
-            if (charge == 0 && conn + rad <= 5)
-            {
-               valence = 5;
-               hyd = 5 - rad - conn;
+               hyd = 5 - rad - conn - abs(charge);
             }
          }
       }
@@ -420,8 +424,7 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
             hyd = 2 - rad - conn - abs(charge);
          }
       }
-      else if (elem == ELEM_S  || elem == ELEM_Se ||
-               elem == ELEM_Po)
+      else if (elem == ELEM_S || elem == ELEM_Se || elem == ELEM_Po)
       {
          if (charge == 1)
          {
@@ -429,6 +432,11 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
             {
                valence = 3;
                hyd = 3 - rad - conn;
+            }
+            else
+            {
+               valence = 5;
+               hyd = 5 - rad - conn;
             }
          }
          else
@@ -438,18 +446,20 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
                valence = 2;
                hyd = 2 - rad - conn - abs(charge);
             }
-            else if (elem != ELEM_Po && conn + rad + abs(charge) <= 4)
+            else if (conn + rad + abs(charge) <= 4)
             // See examples in PubChem
             // [S] : CID 16684216
             // [Se]: CID 5242252
+            // [Po]: no example, just following ISIS/Draw logic here
             {
                valence = 4;
                hyd = 4 - rad - conn - abs(charge);
             }
-            else if (elem != ELEM_Po && conn + rad + abs(charge) <= 6)
+            else
             // See examples in PubChem
             // [S] : CID 46937044
             // [Se]: CID 59786
+            // [Po]: no example, just following ISIS/Draw logic here
             {
                valence = 6;
                hyd = 6 - rad - conn - abs(charge);
@@ -458,7 +468,7 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
       }
       else if (elem == ELEM_Te)
       {
-         if (charge <= 0)
+         if (charge == -1)
          {
             if (conn <= 2)
             {
@@ -466,13 +476,25 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
                hyd = 2 - rad - conn - abs(charge);
             }
          }
-         else
+         else if (charge == 0 || charge == 2)
          {
-            if (conn <= 4)
+            if (conn <= 2)
+            {
+               valence = 2;
+               hyd = 2 - rad - conn - abs(charge);
+            }
+            else if (conn <= 4)
             {
                valence = 4;
                hyd = 4 - rad - conn - abs(charge);
             }
+            else if (charge == 0 && conn <= 6)
+            {
+               valence = 6;
+               hyd = 6 - rad - conn - abs(charge);
+            }
+            else
+               hyd = -1;
          }
       }
    }
@@ -480,11 +502,8 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
    {
       if (elem == ELEM_F)
       {
-         if (rad + conn + abs(charge) <= 1)
-         {
-            valence = 1;
-            hyd = 1 - rad - conn - abs(charge);
-         }
+         valence = 1;
+         hyd = 1 - rad - conn - abs(charge);
       }
       else if (elem == ELEM_Cl || elem == ELEM_Br ||
                elem == ELEM_I  || elem == ELEM_At)
@@ -496,6 +515,8 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
                valence = 2;
                hyd = 2 - rad - conn;
             }
+            else if (conn == 3 || conn == 5 || conn >= 7)
+               hyd = -1;
          }
          else if (charge == 0)
          {
@@ -504,9 +525,20 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
                valence = 1;
                hyd = 1 - rad - conn;
             }
-            // else if (conn <= 3)
             // While the halogens can have valence 3, they can not have
             // hydrogens in that case.
+            else if (conn == 2 || conn == 4 || conn == 6)
+            {
+               if (rad == 1)
+               {
+                  valence = conn;
+                  hyd = 0;
+               }
+               else
+                  hyd = -1; // will throw an error in the end
+            }
+            else if (conn > 7)
+               hyd = -1; // will throw an error in the end
          }
       }
    }
@@ -538,30 +570,19 @@ int Element::calcValenceMinusHyd (int elem, int charge, int radical, int conn)
    }
    else if (groupno == 5)
    {
-      if (elem == ELEM_N)
+      if (elem == ELEM_N || elem == ELEM_P)
       {
          if (charge == 1)
             return rad + conn;
          if (charge == 2)
             return rad + conn;
       }
-      else if (elem == ELEM_P || elem == ELEM_Sb || elem == ELEM_Bi)
+      else if (elem == ELEM_Sb || elem == ELEM_Bi || elem == ELEM_As)
       {
-         if (conn < 4)
-         {
-            if (charge == 1)
-               return rad + conn;
-            if (charge == 2)
-               return rad + conn;
-         }
-      }
-      else if (elem == ELEM_As)
-      {
-         if (conn < 4)
-         {
-            if (charge == 1)
-               return rad + conn;
-         }
+         if (charge == 1)
+            return rad + conn;
+         else if (charge == 2)
+            return rad + conn;
       }
    }
    else if (groupno == 6)
@@ -571,8 +592,7 @@ int Element::calcValenceMinusHyd (int elem, int charge, int radical, int conn)
          if (charge >= 1)
             return rad + conn;
       }
-      else if (elem == ELEM_S  || elem == ELEM_Se ||
-               elem == ELEM_Po)
+      else if (elem == ELEM_S  || elem == ELEM_Se || elem == ELEM_Po)
       {
          if (charge == 1)
             return rad + conn;

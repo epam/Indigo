@@ -356,9 +356,6 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       int radical = 0;
       int valence = mol.getExplicitValence(i);
 
-      if (!mol.isQueryMolecule())
-         valence = mol.asMolecule().getExplicitOrUnusualValence(i);
-
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
          radical = mol.getAtomRadical_NoThrow(i, 0);
 
@@ -383,6 +380,8 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          out.printf(" MASS=%d", isotope);
       if (valence > 0)
          out.printf(" VAL=%d", valence);
+      if (valence == 0)
+         out.printf(" VAL=-1");
       if (irflag > 0)
          out.printf(" INVRET=%d", irflag);
       if (ecflag > 0)
@@ -739,13 +738,15 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       if (reactionAtomExactChange != 0)
          ecflag = reactionAtomExactChange->at(i);
 
-      int explicit_valence = mol.getExplicitValence(i);
+      int explicit_valence = -1;
 
-      if (!mol.isQueryMolecule())
-         explicit_valence = mol.asMolecule().getExplicitOrUnusualValence(i);
+      if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
+         explicit_valence = mol.getExplicitValence(i);
 
-      if (explicit_valence > 0 && explicit_valence < 14)
+      if (explicit_valence > 0 && explicit_valence <= 14)
          valence = explicit_valence;
+      if (explicit_valence == 0)
+         valence = 15;
 
       if (atom_charge != CHARGE_UNKNOWN &&
           atom_charge >= -15 && atom_charge <= 15)

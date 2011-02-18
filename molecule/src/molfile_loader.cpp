@@ -475,7 +475,7 @@ void MolfileLoader::_readCtab2000 ()
       {
          if (order == BOND_SINGLE || order == BOND_DOUBLE ||
              order == BOND_TRIPLE || order == BOND_AROMATIC)
-            idx = _mol->addBond(beg - 1, end - 1, order);
+            idx = _mol->addBond_Silent(beg - 1, end - 1, order);
          else if (order == _BOND_SINGLE_OR_DOUBLE)
             throw Error("'single or double' bonds are allowed only for queries");
          else if (order == _BOND_SINGLE_OR_AROMATIC)
@@ -2011,8 +2011,13 @@ void MolfileLoader::_readCtab3000 ()
          {
             int valence = strscan.readInt1();
 
+            if (valence == -1)
+               valence = 0;
+
             if (_mol != 0)
+            {
                _mol->setExplicitValence(i, valence);
+            }
             else
             {
                _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
@@ -2182,7 +2187,7 @@ void MolfileLoader::_readCtab3000 ()
          {
             if (order == BOND_SINGLE || order == BOND_DOUBLE ||
                 order == BOND_TRIPLE || order == BOND_AROMATIC)
-               _mol->addBond(beg, end, order);
+               _mol->addBond_Silent(beg, end, order);
             else if (order == _BOND_SINGLE_OR_DOUBLE)
                throw Error("'single or double' bonds are allowed only for queries");
             else if (order == _BOND_SINGLE_OR_AROMATIC)
