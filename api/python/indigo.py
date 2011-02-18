@@ -834,3 +834,15 @@ class Indigo:
   def __del__ (self):
     if hasattr(self, '_lib'):
       Indigo._lib.indigoReleaseSessionId(self._sid)
+      
+  def convertToArray (self, iteratable):
+    if isinstance(iteratable, Indigo.IndigoObject):
+      return iteratable
+    try:
+      some_object_iterator = iter(iteratable)
+      res = self.createArray()
+      for obj in some_object_iterator:
+         res.arrayAdd(self.convertToArray(obj))
+      return res
+    except TypeError, te:
+      raise IndigoException("Cannot convert object %s to an array" % (iteratable))

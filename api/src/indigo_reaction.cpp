@@ -137,6 +137,11 @@ IndigoObject * IndigoReactionMolecule::clone ()
       return IndigoMolecule::cloneFrom(*this); 
 }
 
+RedBlackStringObjMap< Array<char> > * IndigoReactionMolecule::getProperties ()
+{
+   return 0;
+}
+
 IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, ReactionHighlighting *hl, int subtype) :
 IndigoObject(REACTION_ITER),
 _rxn(rxn)
@@ -333,6 +338,7 @@ CEXPORT int indigoSaveRxnfile (int reaction, int output)
       Output &out = IndigoOutput::get(self.getObject(output));
       
       RxnfileSaver saver(out);
+      self.initRxnfileSaver(saver);
       if (rxn.isQueryReaction())
          saver.saveQueryReaction(rxn.asQueryReaction());
       else

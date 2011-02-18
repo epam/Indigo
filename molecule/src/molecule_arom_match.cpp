@@ -157,7 +157,10 @@ bool AromaticityMatcher::match (int *core_sub, int *core_super)
    }
 
    QS_DEF(Array<int>, edges);
+   QS_DEF(Array<int>, base_edges_mask);
    edges.clear();
+   base_edges_mask.clear_resize(_base.edgeEnd());
+   base_edges_mask.zerofill();
    for (int e_idx = _query.edgeBegin(); 
             e_idx < _query.edgeEnd(); 
             e_idx = _query.edgeNext(e_idx))
@@ -171,24 +174,34 @@ bool AromaticityMatcher::match (int *core_sub, int *core_super)
          throw Error("(AromaticityMatcher::match) target edge wasn't found");
 
       edges.push(target_idx);
+      base_edges_mask[target_idx] = 1;
    }
 
    QS_DEF(Array<int>, inv_mapping);
    _submolecule->makeEdgeSubmolecule(_base, mapping, edges, &inv_mapping, SKIP_ALL);
 
-   if (!_submolecule->isQueryMolecule())
+   QS_DEF(Array<int>, external_conn);
+   external_conn.resize(_submolecule->vertexEnd());
+   external_conn.zerofill();
+   // Calculate external connectivity
+   for (int i = 0; i < mapping.size(); i++)
    {
-      // Set copy hydrogens information from the base molecule because 
-      // hydrogens might be unfolded
-      for (int i = 0; i < mapping.size(); i++)
+      int base_idx = mapping[i];
+      const Vertex &v = _base.getVertex(base_idx);
+      int cur_external_conn = 0;
+      for (int ni = v.neiBegin(); ni != v.neiEnd(); ni = v.neiNext(ni))
       {
-         _submolecule->asMolecule().setImplicitH(i, 0);
+         int ni_edge = v.neiEdge(ni);
+         if (!base_edges_mask[ni_edge])
+         {
+            int bond_order_diff = _base.getBondOrder(ni_edge);
+            if (bond_order_diff == BOND_AROMATIC)
+               bond_order_diff = 1;
 
-         int hdest = _submolecule->asMolecule().getAtomTotalH(i);
-         int hsrc = _base.getAtomTotalH(mapping[i]);
-
-         _submolecule->asMolecule().setImplicitH(i, (hsrc - hdest));
+            cur_external_conn += bond_order_diff;
+         }
       }
+      external_conn[i] = cur_external_conn;
    }
 
    // 1b. Find bonds in aromatic rings in query and skip aromatic 
@@ -305,9 +318,10 @@ bool AromaticityMatcher::match (int *core_sub, int *core_super)
       // Find dearomatization
       if (dearomatizer.get() == NULL)
       {
-         dearomatizer.create(_submolecule.ref());
+         dearomatizer.create(_submolecule.ref(), external_conn.ptr());
          dearomatizer->enumerateDearomatizations(dearomatizations);
-         dearomatizationMatcher.create(dearomatizations, _submolecule.ref());
+         dearomatizationMatcher.create(dearomatizations, 
+            _submolecule.ref(), external_conn.ptr());
       }
 
       // Fix bond

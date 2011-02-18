@@ -48,6 +48,7 @@ public:
 
    int mode; // one of MODE_***, MODE_AUTO by default
    bool no_chiral; // skip the 'chiral' flag, not regarding of the actual stereochemistry
+   bool skip_date; // If true then zero date is written
 
    const GraphHighlighting *highlighting;
 

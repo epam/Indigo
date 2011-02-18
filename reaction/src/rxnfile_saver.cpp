@@ -28,6 +28,7 @@ RxnfileSaver::RxnfileSaver(Output &output) :
    _output(output)
 {
    molfile_saving_mode = MolfileSaver::MODE_AUTO;
+   skip_date = false;
 }
 
 RxnfileSaver::~RxnfileSaver(){
@@ -122,15 +123,21 @@ void RxnfileSaver::_writeRxnHeader(BaseReaction &reaction, int reactantSize, int
    else
       _output.writeStringCR("$RXN V3000");
 
-   time_t tm = time(NULL);
-   const struct tm *lt = localtime(&tm);
+   struct tm lt;
+   if (skip_date)
+      memset(&lt, 0, sizeof(lt));
+   else
+   {
+      time_t tm = time(NULL);
+      lt = *localtime(&tm);
+   }
 
    if (reaction.name.ptr() != 0)
       _output.printfCR("%s", reaction.name.ptr());
    else
       _output.writeCR();
-   _output.printfCR("  -BINGO- %02d%02d%02d%02d%02d", lt->tm_mon + 1, lt->tm_mday,
-      lt->tm_year % 100, lt->tm_hour, lt->tm_min);
+   _output.printfCR("  -BINGO- %02d%02d%02d%02d%02d", lt.tm_mon + 1, lt.tm_mday,
+      lt.tm_year % 100, lt.tm_hour, lt.tm_min);
    _output.writeCR();
 
    if (_v2000)

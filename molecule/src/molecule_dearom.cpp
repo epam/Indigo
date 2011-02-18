@@ -26,7 +26,7 @@ using namespace indigo;
 
 static int _dearomatizationParams = Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION;
 
-Dearomatizer::Dearomatizer (BaseMolecule &molecule) :
+Dearomatizer::Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn) :
    _graphMatching(molecule), _molecule(molecule), _aromaticGroups(molecule),
    TL_CP_GET(_aromaticGroupData),
    //TL_CP_GET(_edgesFixed),
@@ -37,7 +37,7 @@ Dearomatizer::Dearomatizer (BaseMolecule &molecule) :
    _verticesFixed.resize(_molecule.vertexEnd());
    _verticesFixed.zeroFill();
 
-   _connectivityGroups = _aromaticGroups.detectAromaticGroups();
+   _connectivityGroups = _aromaticGroups.detectAromaticGroups(atom_external_conn);
 
    _initVertices();
    _initEdges();
@@ -541,6 +541,7 @@ DearomatizationsGroups::DearomatizationsGroups (BaseMolecule &molecule) :
    _molecule(molecule),
    TL_CP_GET(_vertexAromaticGroupIndex),
    TL_CP_GET(_vertexIsAcceptDoubleEdge),
+   TL_CP_GET(_vertexIsAcceptSingleEdge),
    TL_CP_GET(_vertexProcessed),
    TL_CP_GET(_groupVertices),
    TL_CP_GET(_groupEdges),
@@ -600,7 +601,7 @@ void DearomatizationsGroups::getGroupData (int group, int flags,
 
          int vac = _molecule.getVacantPiOrbitals(group, charge, radical, max_conn, &lonepairs);
 
-         if (_vertexIsAcceptDoubleEdge[v_idx] && (vac > 0 || lonepairs > 0)) 
+         if (_vertexIsAcceptDoubleEdge[v_idx] && _vertexIsAcceptSingleEdge[v_idx] && (vac > 0 || lonepairs > 0)) 
             data->heteroAtoms.push(v_idx);
       }
    }
@@ -663,10 +664,11 @@ void DearomatizationsGroups::getGroupDataFromStorage (DearomatizationsStorage &s
    }
 }
 
-int DearomatizationsGroups::detectAromaticGroups (void)
+int DearomatizationsGroups::detectAromaticGroups (const int *atom_external_conn)
 {
    _vertexAromaticGroupIndex.resize(_molecule.vertexEnd());
    _vertexIsAcceptDoubleEdge.resize(_molecule.vertexEnd());
+   _vertexIsAcceptSingleEdge.resize(_molecule.vertexEnd());
    memset(_vertexAromaticGroupIndex.ptr(), -1, _vertexAromaticGroupIndex.size() * sizeof(int));
 
    int currentAromaticGroup = 0;
@@ -698,7 +700,7 @@ int DearomatizationsGroups::detectAromaticGroups (void)
          continue;
 
       _vertexAromaticGroupIndex[v_idx] = currentAromaticGroup++;
-      _detectAromaticGroups(v_idx);
+      _detectAromaticGroups(v_idx, atom_external_conn);
    }
 
    _aromaticGroups = currentAromaticGroup;
@@ -724,9 +726,12 @@ void DearomatizationsGroups::constructGroups (DearomatizationsStorage &storage,
    }
 }
 
-void DearomatizationsGroups::_detectAromaticGroups (int v_idx)
+void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_external_conn)
 {
-   int nonAromaticConn = 0;
+   int non_aromatic_conn = 0;
+   if (atom_external_conn != 0)
+      non_aromatic_conn = atom_external_conn[v_idx];
+
    const Vertex &vertex = _molecule.getVertex(v_idx);
    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i)) 
    {
@@ -739,17 +744,30 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx)
          continue;
       if (bond_order != BOND_AROMATIC) 
       {
-         nonAromaticConn += bond_order;
+         non_aromatic_conn += bond_order;
          continue;
       }
-      nonAromaticConn++;
+      non_aromatic_conn++;
 
       int vn_idx = vertex.neiVertex(i);
       if (_vertexAromaticGroupIndex[vn_idx] != -1)
          continue;
 
       _vertexAromaticGroupIndex[vn_idx] = _vertexAromaticGroupIndex[v_idx];
-      _detectAromaticGroups(vn_idx);
+      _detectAromaticGroups(vn_idx, atom_external_conn);
+   }
+
+   bool impl_h_fixed = false;
+   if (!_molecule.isQueryMolecule())
+   {
+      Molecule &m = _molecule.asMolecule();
+      // Check if number of hydrogens are fixed
+      if (m.isImplicitHSet(v_idx))
+      {
+         int impl_h = m.getImplicitH(v_idx);
+         non_aromatic_conn += impl_h;
+         impl_h_fixed = true;
+      }
    }
 
    int label = _molecule.getAtomNumber(v_idx);
@@ -757,11 +775,21 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx)
    int radical = _molecule.getAtomRadical(v_idx);
 
    int max_connectivity = Element::getMaximumConnectivity(label, 
-      charge, radical, true);
+      charge, radical, false);
 
-   int atomAromaticConnectivity = max_connectivity - nonAromaticConn;
-   if (atomAromaticConnectivity > 0)
+   int atom_aromatic_connectivity = max_connectivity - non_aromatic_conn;
+   if (atom_aromatic_connectivity < 0)
+      throw Error("internal error: atom_aromatic_connectivity < 0");
+
+   _vertexIsAcceptSingleEdge[v_idx] = true;
+   if (atom_aromatic_connectivity > 0)
+   {
       _vertexIsAcceptDoubleEdge[v_idx] = true;
+      // If number of implicit hydrogens are fixed and double bond is possible then 
+      // double bond must exist
+      if (impl_h_fixed)
+         _vertexIsAcceptSingleEdge[v_idx] = false;
+   }
    else
       _vertexIsAcceptDoubleEdge[v_idx] = false;
 }
@@ -781,7 +809,9 @@ bool DearomatizationsGroups::isAcceptDoubleBond (int atom)
 //
 
 DearomatizationMatcher::DearomatizationMatcher (DearomatizationsStorage &dearomatizations, 
-   BaseMolecule &molecule) : _molecule(molecule), _dearomatizations(dearomatizations),
+   BaseMolecule &molecule, const int *atom_external_conn) 
+   : 
+   _molecule(molecule), _dearomatizations(dearomatizations),
    _graphMatchingFixedEdges(molecule), _aromaticGroups(molecule),
    TL_CP_GET(_matchedEdges),
    TL_CP_GET(_matchedEdgesState),
@@ -795,6 +825,7 @@ DearomatizationMatcher::DearomatizationMatcher (DearomatizationsStorage &dearoma
    TL_CP_GET(_aromaticGroupsData)
 {
    _needPrepare = true;
+   _aromaticGroups.detectAromaticGroups(atom_external_conn);
 }
 
 
@@ -974,7 +1005,6 @@ void DearomatizationMatcher::_prepare (void)
    if (!_needPrepare)
       return;
 
-   _aromaticGroups.detectAromaticGroups();
    if (_dearomatizations.getDearomatizationParams() == Dearomatizer::PARAMS_SAVE_JUST_HETERATOMS) 
    {
       _dearomatizations.clearBondsState();
@@ -1247,7 +1277,7 @@ void MoleculeDearomatizer::dearomatizeGroup (int group, int dearomatization_inde
 bool MoleculeDearomatizer::dearomatizeMolecule (Molecule &mol)
 {
    DearomatizationsStorage dst;
-   Dearomatizer dearomatizer(mol);
+   Dearomatizer dearomatizer(mol, 0);
    dearomatizer.setDearomatizationParams(Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION);
    dearomatizer.enumerateDearomatizations(dst);
    MoleculeDearomatizer mol_dearom(mol, dst);
