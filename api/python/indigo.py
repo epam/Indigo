@@ -233,9 +233,9 @@ class Indigo:
 
     self.substructureMatcher = self._static_obj_obj_string(self._lib.indigoSubstructureMatcher)
 
-    self.extractCommonScaffold = self._static_obj_obj_string(self._lib.indigoExtractCommonScaffold)
-    self.decomposeMolecules = self._static_obj_obj_obj(self._lib.indigoDecomposeMolecules)
-    self.reactionProductEnumerate = self._static_obj_obj_obj(self._lib.indigoReactionProductEnumerate)
+    self.extractCommonScaffold = self._static_obj_array_string(self._lib.indigoExtractCommonScaffold)
+    self.decomposeMolecules = self._static_obj_obj_array(self._lib.indigoDecomposeMolecules)
+    self.reactionProductEnumerate = self._static_obj_obj_array(self._lib.indigoReactionProductEnumerate)
 
     self.dbgBreakpoint = Indigo._lib.indigoDbgBreakpoint
     
@@ -478,6 +478,20 @@ class Indigo:
       return Indigo.IndigoObject(self, self._checkResult(res))
     return self._make_wrapper_func(newfunc, func)
 
+  def _static_obj_array_string (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_char_p]
+    def newfunc (obj_or_list, string = None):
+      self._setSID()
+      if string is None:
+        string = ''
+      obj_indigo_array = self.convertToArray(obj_or_list)
+      res = func(obj_indigo_array.id, string)
+      if res == 0:
+        return None
+      return Indigo.IndigoObject(self, self._checkResult(res))
+    return self._make_wrapper_func(newfunc, func)
+
   def _static_obj_obj (self, func):
     func.restype = c_int
     func.argtypes = [c_int]
@@ -495,6 +509,18 @@ class Indigo:
     def newfunc (obj1, obj2):
       self._setSID()
       res = func(obj1.id, obj2.id)
+      if res == 0:
+        return None
+      return Indigo.IndigoObject(self, self._checkResult(res))
+    return self._make_wrapper_func(newfunc, func)
+
+  def _static_obj_obj_array (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int]
+    def newfunc (obj1, array_obj2):
+      self._setSID()
+      indigo_array_obj2 = self.convertToArray(array_obj2)
+      res = func(obj1.id, indigo_array_obj2.id)
       if res == 0:
         return None
       return Indigo.IndigoObject(self, self._checkResult(res))
