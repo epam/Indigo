@@ -437,7 +437,7 @@ void SmilesLoader::_loadMolecule ()
             while (cycles.size() <= number)
                cycles.push().clear();
 
-            // closing some previous numbered atom, like the last '1' in c1ccccc1
+            // closing some previously numbered atom, like the last '1' in c1ccccc1
             if (cycles[number].beg >= 0)
             {
                bond = &_bonds.push();
@@ -806,7 +806,7 @@ void SmilesLoader::_loadMolecule ()
 
          if (end == -1)
             throw Error("probably pending bond %d not closed", i);
-         _mol->addBond(beg, end, _bonds[i].type);
+         _mol->addBond_Silent(beg, end, _bonds[i].type);
       }
    }
 

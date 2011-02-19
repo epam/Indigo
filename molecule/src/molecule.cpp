@@ -586,9 +586,9 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
          if (atom.number == ELEM_C && atom.charge == 0)
          {
             if (getVertex(idx).degree() == 3)
-               impl_h = 0;
+               impl_h = -Element::radicalElectrons(radical);
             else if (getVertex(idx).degree() == 2)
-               impl_h = 1;
+               impl_h = 1 - Element::radicalElectrons(radical);
          }
          else if (atom.number == ELEM_O && atom.charge == 0)
             impl_h = 0;
@@ -596,8 +596,8 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
       else
          throw Error("internal: unsure connectivity on an aliphatic atom");
       if (impl_h < 0)
-         throw Element::Error("can not calculate implicit hydrogens on aromatic %s, charge %d, degree %d",
-                 Element::toString(atom.number), atom.charge, getVertex(idx).degree());
+         throw Element::Error("can not calculate implicit hydrogens on aromatic %s, charge %d, degree %d, %d radical electrons",
+                 Element::toString(atom.number), atom.charge, getVertex(idx).degree(), Element::radicalElectrons(radical));
    }
    else
    {
@@ -1273,7 +1273,7 @@ bool Molecule::shouldWriteHCount (Molecule &mol, int idx)
    else
    {
       if (impl_h < 0)
-         return false;
+         return false; // can not write an undefined H count
 
       int conn = mol.getAtomConnectivity_noImplH(idx);
 

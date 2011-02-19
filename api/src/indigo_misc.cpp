@@ -701,6 +701,7 @@ CEXPORT int indigoSerialize (int item, char **buf, int *size)
          Molecule &mol = obj.getMolecule();
 
          IcmSaver saver(out);
+         saver.save_xyz = mol.have_xyz;
          saver.saveMolecule(mol);
       }
       else if (obj.isBaseReaction())

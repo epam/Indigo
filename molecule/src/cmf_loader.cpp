@@ -183,16 +183,16 @@ bool CmfLoader::_readAtom (int &code, _AtomDesc &atom)
          return false;
    }
 
-   if (code >= CMF_IMPLICIT_H && code < CMF_IMPLICIT_H + CMF_MAX_IMPLICIT_H)
+   if (code >= CMF_IMPLICIT_H && code <= CMF_IMPLICIT_H + CMF_MAX_IMPLICIT_H)
    {
-      atom.hydrogens = code - CMF_IMPLICIT_H + 1;
+      atom.hydrogens = code - CMF_IMPLICIT_H;
       if (!_getNextCode(code))
          return false;
    }
 
-   if (code >= CMF_VALENCE && code < CMF_VALENCE + CMF_MAX_VALENCE)
+   if (code >= CMF_VALENCE && code <= CMF_VALENCE + CMF_MAX_VALENCE)
    {
-      atom.valence = code - CMF_VALENCE + 1;
+      atom.valence = code - CMF_VALENCE;
       if (!_getNextCode(code))
          return false;
    }
@@ -431,6 +431,8 @@ void CmfLoader::loadMolecule (Molecule &mol)
          bond->end = _atoms.size() - 1;
 
       memset(&atom, 0, sizeof(_AtomDesc));
+      atom.hydrogens = -1;
+      atom.valence = -1;
 
       if (code > 0 && (code < ELEM_MAX || code == CMF_PSEUDOATOM || code == CMF_RSITE))
       {
@@ -464,7 +466,7 @@ void CmfLoader::loadMolecule (Molecule &mol)
 
       mol.setAtomCharge(i, _atoms[i].charge);
       mol.setAtomIsotope(i, _atoms[i].isotope);
-      if (!mol.isPseudoAtom(i) && !mol.isRSite(i))
+      if (_atoms[i].hydrogens >= 0)
          mol.setImplicitH(i, _atoms[i].hydrogens);
       mol.setAtomRadical(i, _atoms[i].radical);
    }
@@ -475,7 +477,7 @@ void CmfLoader::loadMolecule (Molecule &mol)
       int beg = _bonds[i].beg;
       int end = _bonds[i].end;
 
-      int idx = mol.addBond(beg, end, type);
+      int idx = mol.addBond_Silent(beg, end, type);
       
       if (_bonds[i].in_ring)
          mol.setEdgeTopology(idx, TOPOLOGY_RING);
@@ -517,7 +519,7 @@ void CmfLoader::loadMolecule (Molecule &mol)
    {
       for (i = 0; i < _atoms.size(); i++)
       {
-         if (_atoms[i].valence != 0)
+         if (_atoms[i].valence >= 0)
             mol.setValence(i, _atoms[i].valence);
       }
    }

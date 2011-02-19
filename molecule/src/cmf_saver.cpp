@@ -307,42 +307,27 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
 
    int impl_h = 0;
 
-   if (!mol.isPseudoAtom(idx) && !mol.isRSite(idx))
+   if (!mol.isPseudoAtom(idx) && !mol.isRSite(idx) && Molecule::shouldWriteHCount(mol, idx))
+   {
       impl_h = mol.getImplicitH(idx);
 
-   if (impl_h != 0)
-   {
       if (impl_h < 0 || impl_h > CMF_MAX_IMPLICIT_H)
-         throw Error("implicit hydrogens count %d out of range", impl_h);
+         throw Error("implicit hydrogen count %d out of range", impl_h);
 
-      _encode(CMF_IMPLICIT_H + impl_h - 1);
+      _encode(CMF_IMPLICIT_H + impl_h);
    }
 
-   int valence = -1;
-   
-   // explicit valence?
-   if (mol.getExplicitValence(idx) > 0)
-      valence = mol.getExplicitValence(idx);
-   else if (!mol.isRSite(idx) && !mol.isPseudoAtom(idx))
+   if (!mol.isRSite(idx) && !mol.isPseudoAtom(idx))
    {
-      // valence that can not be trivially restored by atom number and charge?
-      if (radical == 0 && Element::calcValenceByCharge(number, charge) == -1)
+      if (mol.getAtomAromaticity(idx) == ATOM_AROMATIC && (charge != 0 || number != ELEM_C || number != ELEM_O))
       {
-         int conn = mol.calcAtomConnectivity_noImplH(idx);
-         int normal_val = -1, normal_h = -1;
-
-         if (conn != -1)
-            Element::calcValence(number, charge, radical, conn, normal_val, normal_h, true);
-
-         // valence that can not be restored from bonds?
-         if (mol.getAtomValence(idx) != normal_val)
-            valence = mol.getAtomValence(idx);
+         int valence = mol.getAtomValence(idx);
+         if (valence < 0 || valence > CMF_MAX_VALENCE)
+            throw Error("valence %d is out of range", valence);
+         _encode(CMF_VALENCE + valence);
       }
    }
 
-   if (valence > 0 && valence <= CMF_MAX_VALENCE)
-      _encode(CMF_VALENCE + valence - 1);
-   
    if (atom_flags != 0)
    {
       int i, flags = atom_flags[idx];

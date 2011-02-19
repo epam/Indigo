@@ -80,7 +80,7 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          if (_mol->getAtomRadical_NoThrow(i, 0) != 0)
             _output.printf(" spinMultiplicity=\"%d\"", _mol->getAtomRadical(i));
 
-         if (_mol->getExplicitValence(i) >= 0 || Molecule::shouldWriteHCount(*_mol, i))
+         if (Molecule::shouldWriteHCount(*_mol, i))
          {
             int hcount;
 

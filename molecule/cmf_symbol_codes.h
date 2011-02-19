@@ -12,15 +12,16 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __cmf_symbol_codes_h__
-#define __cmf_symbol_codes_h__
+#ifndef __cmf_symbol_codes__
+#define __cmf_symbol_codes__
 
 #include "molecule/elements.h"
 
 namespace indigo {
 
 /* Compressed molecule symbols constants */
-enum {
+enum
+{
    /* Available values */
    CMF_NUM_OF_CYCLES = 16,
    CMF_NUM_OF_AAM = 16,
@@ -76,7 +77,7 @@ enum {
     * codes begin -5..-1,1..8 */
    CMF_CHARGES = CMF_CYCLES_PLUS + 1,
 
-   /* Bond like '.' in SMILES   *
+   /* Separator like '.' in SMILES   *
     * (zero charge is not used) */
    CMF_SEPARATOR = CMF_CHARGES - CMF_MIN_CHARGE,
 
@@ -111,35 +112,31 @@ enum {
    /* 220 - valence (1..5) */
    CMF_VALENCE = CMF_STEREO_ABS_1 + 1,
    
-   /* 226 - implicit hydrogen count (1..5) */
-   CMF_IMPLICIT_H = CMF_VALENCE + CMF_MAX_VALENCE,
+   /* 227 - implicit hydrogen count (1..5) */
+   CMF_IMPLICIT_H = CMF_VALENCE + CMF_MAX_VALENCE + 1,
    
-   /* 236 - singlet radical */
-   CMF_RADICAL_SINGLET = CMF_IMPLICIT_H + CMF_MAX_IMPLICIT_H,
+   /* 238 - singlet radical */
+   CMF_RADICAL_SINGLET = CMF_IMPLICIT_H + CMF_MAX_IMPLICIT_H + 1,
    
-   /* 237 - douplet radical */
+   /* 239 - douplet radical */
    CMF_RADICAL_DOUPLET = CMF_RADICAL_SINGLET + 1,
    
-   /* 238 - triplet radical  */
+   /* 240 - triplet radical  */
    CMF_RADICAL_TRIPLET = CMF_RADICAL_DOUPLET + 1,
 
-   /* 239 - bond flags */
+   /* 241 - bond flags */
    CMF_BOND_FLAGS = CMF_RADICAL_TRIPLET + 1,
 
-   /* 242 - atom flags */
+   /* 244 - atom flags */
    CMF_ATOM_FLAGS = CMF_BOND_FLAGS + CMF_NUM_OF_BOND_FLAGS,
 
-   /* 244 - terminator */
+   /* 246 - terminator */
    CMF_TERMINATOR = CMF_ATOM_FLAGS + CMF_NUM_OF_ATOM_FLAGS,
 
-   /* Alphabet size = 245 */
+   /* Alphabet size = 247 */
    CMF_ALPHABET_SIZE = CMF_TERMINATOR + 1
 };
 
-/***********************************/
-
 }
 
-#endif /* __cmf_symbol_codes_h__ */
-
-/* END OF 'CMF_SYMBOL_CODES.H' FILE */
+#endif
