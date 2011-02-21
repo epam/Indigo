@@ -141,6 +141,11 @@ bool MoleculeCisTrans::isGeomStereoBond (BaseMolecule &mol, int bond_idx,
        !mol.possibleAtomNumber(end_idx, ELEM_Ge))
       return false;
 
+   // Double bonds with R-sites are excluded because cis-trans configuration 
+   // cannot be determined when R-site is substituted with R-group
+   if (mol.isRSite(beg_idx) || mol.isRSite(end_idx))
+      return false;
+
    // the atoms should have 1 or 2 single bonds
    // (apart from the double bond under consideration)
    const Vertex &beg = mol.getVertex(beg_idx);
