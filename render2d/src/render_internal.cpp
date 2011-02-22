@@ -926,26 +926,31 @@ void MoleculeRenderInternal::_initAtomData ()
          }
          ad.showLabel = false;
       }
-      if ((hasBondOnRight && !hasBondOnLeft) || (ad.label > 0 && ElementHygrodenOnLeft[ad.label] && !(hasBondOnLeft && !hasBondOnRight))) {
-         ad.hydroPos = HYDRO_POS_LEFT;
-      } else if (hasBondOnRight && hasBondOnLeft) {
-         if (upperSin < lowerSin) {
-            if ((charge == (query ? CHARGE_UNKNOWN : 0) && radical <= 0) || ad.implicit_h < 2) {
+      ad.hydroPos = HYDRO_POS_RIGHT;
+      if (vertex.degree() == 0) {
+         if (ad.label > 0 && ElementHygrodenOnLeft[ad.label])
+            ad.hydroPos = HYDRO_POS_LEFT;
+         else
+            ad.hydroPos = HYDRO_POS_RIGHT;
+      } else {
+         double sMin = 1.1;
+         if (__min(leftSin, rightSin) > 0.6f) {
+            if (upperSin < sMin + 1e-3) {
+               sMin = upperSin;
                ad.hydroPos = HYDRO_POS_UP;
-            } else {
-               if (__max(rightSin, leftSin) < lowerSin)
-                  if (rightSin < leftSin)
-                     ad.hydroPos = HYDRO_POS_RIGHT;
-                  else
-                     ad.hydroPos = HYDRO_POS_LEFT;
-               else
-                  if (rightSin < lowerSin)
-                     ad.hydroPos = HYDRO_POS_RIGHT;
-                  else
-                     ad.hydroPos = HYDRO_POS_DOWN;
             }
-         }else{
-            ad.hydroPos = HYDRO_POS_DOWN;
+            if (lowerSin < sMin + 1e-3) {
+               sMin = lowerSin;
+               ad.hydroPos = HYDRO_POS_DOWN;
+            }
+         }
+         if (leftSin < sMin + 1e-3) {
+            sMin = leftSin;
+            ad.hydroPos = HYDRO_POS_LEFT;
+         }
+         if (rightSin < sMin + 1e-3) {
+            sMin = rightSin;
+            ad.hydroPos = HYDRO_POS_RIGHT;
          }
       }
    }
