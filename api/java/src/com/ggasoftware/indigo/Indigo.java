@@ -17,6 +17,9 @@ package com.ggasoftware.indigo;
 import java.io.*;
 import java.util.*;
 
+import com.sun.jna.*;
+import com.sun.jna.ptr.*;
+
 public class Indigo
 {
    public static final int ABS = 1;
@@ -30,183 +33,282 @@ public class Indigo
    public static final int CHAIN = 9;
    public static final int RING = 10;
 
-   public native String version ();
+   // JNA does not allow throwing exception from callbacks, thus we can not
+   // use the error handler and we have to check the error codes. Below are
+   // three functions to ease checking them.
+
+   static public int checkResult (int result)
+   {
+      if (result < 0)
+         throw new IndigoException(_lib.indigoGetLastError());
+      return result;
+   }
+
+   static public float checkResultFloat (float result)
+   {
+      if (result < 0)
+         throw new IndigoException(_lib.indigoGetLastError());
+      return result;
+   }
+
+   static public String checkResultString (Pointer result)
+   {
+      if (result == Pointer.NULL)
+         throw new IndigoException(_lib.indigoGetLastError());
+
+      return result.getString(0);
+   }
+
+   static public Pointer checkResultPointer (Pointer result)
+   {
+      if (result == Pointer.NULL)
+         throw new IndigoException(_lib.indigoGetLastError());
+
+      return result;
+   }
+
+   public String version ()
+   {
+      return _lib.indigoVersion();
+   }
 
    public int countReferences ()
    {
-      return indigoCountReferences();
+      return _lib.indigoCountReferences();
+   }
+
+   public void setSessionID ()
+   {
+      _lib.indigoSetSessionId(_sid);
    }
 
    public void setOption (String option, String value)
    {
-      indigoSetOption(option, value);
+      setSessionID();
+      _lib.indigoSetOption(option, value);
    }
 
    public void setOption (String option, int value)
    {
-      indigoSetOptionInt(option, value);
+      setSessionID();
+      _lib.indigoSetOptionInt(option, value);
    }
 
    public void setOption (String option, int x, int y)
    {
-      indigoSetOptionXY(option, x, y);
+      setSessionID();
+      _lib.indigoSetOptionXY(option, x, y);
    }
 
    public void setOption (String option, float r, float g, float b)
    {
-      indigoSetOptionColor(option, r, g, b);
+      setSessionID();
+      _lib.indigoSetOptionColor(option, r, g, b);
    }
 
    public void setOption (String option, boolean value)
    {
-      indigoSetOptionBool(option, value ? 1 : 0);
+      setSessionID();
+      _lib.indigoSetOptionBool(option, value ? 1 : 0);
    }
 
    public void setOption (String option, float value)
    {
-      indigoSetOptionFloat(option, value);
+      setSessionID();
+      _lib.indigoSetOptionFloat(option, value);
    }
 
    public void setOption (String option, double value)
    {
-      indigoSetOptionFloat(option, (float)value);
+      setSessionID();
+      _lib.indigoSetOptionFloat(option, (float)value);
    }
 
    public IndigoObject writeFile (String filename)
    {
-      return new IndigoObject(this, indigoWriteFile(filename));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoWriteFile(filename));
    }
 
    public IndigoObject writeBuffer ()
    {
-      return new IndigoObject(this, indigoWriteBuffer());
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoWriteBuffer());
    }
 
    public IndigoObject createMolecule ()
    {
-      return new IndigoObject(this, indigoCreateMolecule());
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoCreateMolecule());
    }
 
    public IndigoObject createQueryMolecule ()
    {
-      return new IndigoObject(this, indigoCreateQueryMolecule());
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoCreateQueryMolecule());
    }
 
    public IndigoObject loadMolecule (String str)
    {
-      return new IndigoObject(this, indigoLoadMoleculeFromString(str));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadMoleculeFromString(str));
    }
 
    public IndigoObject loadMolecule (byte[] buf)
    {
-      return new IndigoObject(this, indigoLoadMoleculeFromBuffer(buf));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadMoleculeFromBuffer(buf, buf.length));
    }
 
    public IndigoObject loadMoleculeFromFile (String path)
    {
-      return new IndigoObject(this, indigoLoadMoleculeFromFile(path));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadMoleculeFromFile(path));
    }
 
    public IndigoObject loadQueryMolecule (String str)
    {
-      return new IndigoObject(this, indigoLoadQueryMoleculeFromString(str));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadQueryMoleculeFromString(str));
    }
 
    public IndigoObject loadQueryMolecule (byte[] buf)
    {
-      return new IndigoObject(this, indigoLoadQueryMoleculeFromBuffer(buf));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadQueryMoleculeFromBuffer(buf, buf.length));
    }
 
    public IndigoObject loadQueryMoleculeFromFile (String path)
    {
-      return new IndigoObject(this, indigoLoadQueryMoleculeFromFile(path));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadQueryMoleculeFromFile(path));
    }
 
    public IndigoObject loadSmarts (String str)
    {
-      return new IndigoObject(this, indigoLoadSmartsFromString(str));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadSmartsFromString(str));
    }
 
    public IndigoObject loadSmarts (byte[] buf)
    {
-      return new IndigoObject(this, indigoLoadSmartsFromBuffer(buf));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadSmartsFromBuffer(buf, buf.length));
    }
 
    public IndigoObject loadSmartsFromFile (String path)
    {
-      return new IndigoObject(this, indigoLoadSmartsFromFile(path));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadSmartsFromFile(path));
    }
 
    public IndigoObject loadReaction (String str)
    {
-      return new IndigoObject(this, indigoLoadReactionFromString(str));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadReactionFromString(str));
    }
 
    public IndigoObject loadReaction (byte[] buf)
    {
-      return new IndigoObject(this, indigoLoadReactionFromBuffer(buf));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadReactionFromBuffer(buf, buf.length));
    }
 
    public IndigoObject loadReactionFromFile (String path)
    {
-      return new IndigoObject(this, indigoLoadReactionFromFile(path));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadReactionFromFile(path));
    }
 
    public IndigoObject loadQueryReaction (String str)
    {
-      return new IndigoObject(this, indigoLoadQueryReactionFromString(str));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadQueryReactionFromString(str));
    }
 
    public IndigoObject loadQueryReaction (byte[] buf)
    {
-      return new IndigoObject(this, indigoLoadQueryReactionFromBuffer(buf));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadQueryReactionFromBuffer(buf, buf.length));
    }
 
    public IndigoObject loadQueryReactionFromFile (String path)
    {
-      return new IndigoObject(this, indigoLoadQueryReactionFromFile(path));
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoLoadQueryReactionFromFile(path));
    }
 
    public IndigoObject createReaction ()
    {
-      return new IndigoObject(this, indigoCreateReaction());
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoCreateReaction());
    }
 
    public IndigoObject createQueryReaction ()
    {
-      return new IndigoObject(this, indigoCreateQueryReaction());
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoCreateQueryReaction());
    }
 
    public boolean exactMatch (IndigoObject obj1, IndigoObject obj2)
    {
-      return indigoExactMatch(obj1.self, obj2.self) == 1;
+      setSessionID();
+      return _lib.indigoExactMatch(obj1.self, obj2.self) == 1;
+   }
+
+   public float similarity (IndigoObject obj1, IndigoObject obj2)
+   {
+      return similarity(obj1, obj2, "");
    }
 
    public float similarity (IndigoObject obj1, IndigoObject obj2, String metrics)
    {
       if (metrics == null)
          metrics = "";
-      return indigoSimilarity(obj1.self, obj2.self, metrics);
+      setSessionID();
+      return _lib.indigoSimilarity(obj1.self, obj2.self, metrics);
    }
 
    public int commonBits (IndigoObject fingerprint1, IndigoObject fingerprint2)
    {
-      return indigoCommonBits(fingerprint1.self, fingerprint2.self);
+      setSessionID();
+      return _lib.indigoCommonBits(fingerprint1.self, fingerprint2.self);
    }
 
    public IndigoObject createArray ()
    {
-      return new IndigoObject(this, indigoCreateArray());
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoCreateArray());
    }
 
-   public IndigoObject iterateSDFile (String filename) { return new IndigoObject(this, indigoIterateSDFile(filename)); }
-   public IndigoObject iterateRDFile (String filename) { return new IndigoObject(this, indigoIterateRDFile(filename)); }
-   public IndigoObject iterateSmilesFile (String filename) { return new IndigoObject(this, indigoIterateSmilesFile(filename)); }
-   public IndigoObject iterateCMLFile (String filename) { return new IndigoObject(this, indigoIterateCMLFile(filename)); }
+   public IndigoObject iterateSDFile (String filename)
+   {
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoIterateSDFile(filename));
+   }
+
+   public IndigoObject iterateRDFile (String filename)
+   {
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoIterateRDFile(filename));
+   }
+
+   public IndigoObject iterateSmilesFile (String filename)
+   {
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoIterateSmilesFile(filename));
+   }
+
+   public IndigoObject iterateCMLFile (String filename)
+   {
+      setSessionID();
+      return new IndigoObject(this, _lib.indigoIterateCMLFile(filename));
+   }
 
    public IndigoObject substructureMatcher (IndigoObject target, String mode)
    {
-      return new IndigoObject(this, target, indigoSubstructureMatcher(target.self, mode));
+      setSessionID();
+      return new IndigoObject(this, target, _lib.indigoSubstructureMatcher(target.self, mode));
    }
 
    public IndigoObject substructureMatcher (IndigoObject target)
@@ -216,7 +318,8 @@ public class Indigo
 
    public IndigoObject extractCommonScaffold (IndigoObject structures, String options)
    {
-      int res = indigoExtractCommonScaffold(structures.self, options);
+      setSessionID();
+      int res = _lib.indigoExtractCommonScaffold(structures.self, options);
 
       if (res == 0)
          return null;
@@ -226,7 +329,8 @@ public class Indigo
 
    public IndigoObject decomposeMolecules (IndigoObject scaffold, IndigoObject structures)
    {
-      int res = indigoDecomposeMolecules(scaffold.self, structures.self);
+      setSessionID();
+      int res = _lib.indigoDecomposeMolecules(scaffold.self, structures.self);
 
       if (res == 0)
          return null;
@@ -236,7 +340,8 @@ public class Indigo
 
    public IndigoObject reactionProductEnumerate (IndigoObject reaction, IndigoObject monomers)
    {
-      int res = indigoReactionProductEnumerate(reaction.self, monomers.self);
+      setSessionID();
+      int res = _lib.indigoReactionProductEnumerate(reaction.self, monomers.self);
 
       if (res == 0)
          return null;
@@ -246,6 +351,7 @@ public class Indigo
 
    private String _full_dll_path = null;
 
+   /*
    private static boolean checkIfLoaded ()
    {
       try
@@ -273,23 +379,21 @@ public class Indigo
          LIBRARIES = ClassLoader.class.getDeclaredField("loadedLibraryNames");
          LIBRARIES.setAccessible(true);
       } catch (NoSuchFieldException e) { }
-   }
+   }*/
 
    private synchronized static void loadIndigo (String path)
    {
-      if (checkIfLoaded())
+      if (_lib != null)
          return;
 
-      if (_os == OS_LINUX)
-         System.load(path + File.separator + "libindigo-jni.so");
-      else if (_os == OS_SOLARIS)
-         System.load(path + File.separator + "libindigo-jni.so");
+      if (_os == OS_LINUX || _os == OS_SOLARIS)
+         _lib = (IndigoLib)Native.loadLibrary(path + File.separator + "libindigo.so", IndigoLib.class);
       else if (_os == OS_MACOS)
-         System.load(path + File.separator + "libindigo-jni.dylib");
+         _lib = (IndigoLib)Native.loadLibrary(path + File.separator + "libindigo.dylib", IndigoLib.class);
       else // _os == OS_WINDOWS
       {
          System.load(path + File.separator + "zlib.dll");
-         System.load(path + File.separator + "indigo-jni.dll");
+         _lib = (IndigoLib)Native.loadLibrary(path + File.separator + "indigo.dll", IndigoLib.class);
       }
    }
 
@@ -307,10 +411,8 @@ public class Indigo
       }
 
       loadIndigo(_full_dll_path);
-      if (_os == OS_LINUX)
-         indigoRtldGlobal(_full_dll_path + File.separator + "libindigo-jni.so");
 
-      _sid = allocSessionId();
+      _sid = _lib.indigoAllocSessionId();
    }
 
    public Indigo ()
@@ -332,289 +434,16 @@ public class Indigo
    @Override
    protected void finalize () throws Throwable
    {
-      releaseSessionId(_sid);
+      _lib.indigoReleaseSessionId(_sid);
+      super.finalize();
    }
 
+   /*
    public static final int RTLD_LAZY = 0x00001;
    public static final int RTLD_NOW = 0x00002;
    public static final int RTLD_NOLOAD = 0x00004;
    public static final int RTLD_GLOBAL = 0x00100;
-
-   
-   private static native long allocSessionId ();
-   private static native void releaseSessionId (long id);
-
-   public native final int indigoRtldGlobal (String path);
-   public native int indigoFree (int handle);
-   public native int indigoClone (int handle);
-   public native int indigoCountReferences ();
-
-   public native int indigoSetOption (String option, String value);
-   public native int indigoSetOptionInt (String option, int value);
-   public native int indigoSetOptionBool (String option, int value);
-   public native int indigoSetOptionFloat (String option, float value);
-   public native int indigoSetOptionXY (String option, int x, int y);
-   public native int indigoSetOptionColor (String option, float r, float g, float b);
-
-   public native int indigoReadFile   (String filename);
-   public native int indigoLoadString (String str);
-   public native int indigoLoadBuffer (byte[] buf);
-
-   public native int indigoWriteFile   (String filename);
-   public native int indigoWriteBuffer ();
-   public native int indigoClose       (int item);
-
-   public native int indigoCreateMolecule ();
-   public native int indigoCreateQueryMolecule ();
-   public native int indigoLoadMolecule (int source);
-   public native int indigoLoadMoleculeFromFile   (String filename);
-   public native int indigoLoadMoleculeFromString (String source);
-   public native int indigoLoadMoleculeFromBuffer (byte[] buf);
-
-   public native int indigoLoadQueryMolecule (int source);
-   public native int indigoLoadQueryMoleculeFromString (String source);
-   public native int indigoLoadQueryMoleculeFromFile   (String filename);
-   public native int indigoLoadQueryMoleculeFromBuffer (byte[] buf);
-   
-   public native int indigoLoadSmarts (int source);
-   public native int indigoLoadSmartsFromString (String source);
-   public native int indigoLoadSmartsFromFile   (String filename);
-   public native int indigoLoadSmartsFromBuffer (byte[] buf);
-
-   public native int indigoSaveMolfile (int molecule, int output);
-   public native int indigoSaveMolfileToFile (int molecule, String filename);
-   public native String indigoMolfile (int molecule);
-   
-   public native int indigoSaveCml (int molecule, int output);
-   public native int indigoSaveCmlToFile (int molecule, String filename);
-   public native String indigoCml (int molecule);
-
-   public native int indigoSaveMDLCT (int molecule, int output);
-
-   public native int indigoLoadReaction (int source);
-   public native int indigoLoadReactionFromString (String source);
-   public native int indigoLoadReactionFromFile   (String filename);
-   public native int indigoLoadReactionFromBuffer (byte[] buf);
-
-   public native int indigoLoadQueryReaction (int source);
-   public native int indigoLoadQueryReactionFromString (String source);
-   public native int indigoLoadQueryReactionFromFile   (String filename);
-   public native int indigoLoadQueryReactionFromBuffer (byte[] buf);
-
-   public native int indigoCreateReaction ();
-   public native int indigoCreateQueryReaction ();
-   
-   public native int indigoAddReactant (int reaction, int molecule);
-   public native int indigoAddProduct  (int reaction, int molecule);
-   
-   public native int indigoCountReactants (int handle);
-   public native int indigoCountProducts  (int handle);
-   public native int indigoCountMolecules (int handle);
-   
-   public native int indigoIterateReactants (int handle);
-   public native int indigoIterateProducts  (int handle);
-   public native int indigoIterateMolecules (int handle);
-
-   public native int indigoSaveRxnfile (int molecule, int output);
-   public native int indigoSaveRxnfileToFile (int molecule, String filename);
-   public native String indigoRxnfile (int molecule);
-   public native int indigoAutomap (int reaction, String mode);
-
-   public native int indigoIterateAtoms (int molecule);
-   public native int indigoIteratePseudoatoms (int molecule);
-   public native int indigoIterateRSites (int molecule);
-   public native int indigoIterateStereocenters (int molecule);
-   public native int indigoIterateRGroups (int molecule);
-   public native int indigoIterateRGroupFragments (int rgroup);
-   public native int indigoCountAttachmentPoints (int rgroup);
-   public native int indigoIsPseudoatom (int atom);
-   public native int indigoIsRSite (int atom);
-   public native int indigoStereocenterType (int atom);
-   public native int indigoSingleAllowedRGroup (int atom);
-   public native String indigoSymbol (int atom);
-
-   public native int indigoDegree (int atom);
-   public native Integer indigoGetCharge (int atom);
-   public native Integer indigoGetExplicitValence (int atom);
-   public native Integer indigoGetRadicalElectrons (int atom);
-   public native int indigoAtomicNumber (int atom);
-   public native int indigoIsotope (int atom);
-   public native float[] indigoXYZ (int atom);
-
-   public native int indigoCountSuperatoms (int molecule);
-   public native int indigoCountDataSGroups (int molecule);
-   public native int indigoCountRepeatingUnits (int molecule);
-   public native int indigoCountMultipleGroups (int molecule);
-   public native int indigoCountGenericSGroups (int molecule);
-
-   public native int indigoIterateSuperatoms (int molecule);
-   public native int indigoIterateDataSGroups (int molecule);
-   public native int indigoIterateRepeatingUnits (int molecule);
-   public native int indigoIterateMultipleGroups (int molecule);
-   public native int indigoIterateGenericSGroups (int molecule);
-
-   public native String indigoDescription (int data_sgroup);
-   public native int indigoAddDataSGroup (int molecule, int[] atoms, int[] bonds, String description, String data);
-   public native int indigoSetDataSGroupXY (int sgroup, float x, float y, String options);
-
-   public native int indigoResetCharge (int atom);
-   public native int indigoResetExplicitValence (int atom);
-   public native int indigoResetRadical (int atom);
-   public native int indigoResetIsotope (int atom);
-
-   public native int indigoSetAttachmentPoint (int atom, int order);
-
-   public native int indigoRemoveConstraints (int item, String type);
-   public native int indigoAddConstraint     (int item, String type, String value);
-   public native int indigoAddConstraintNot  (int item, String type, String value);
-
-   public native int indigoResetStereo (int item);
-   public native int indigoInvertStereo (int item);
-
-   public native int indigoCountAtoms (int molecule);
-   public native int indigoCountBonds (int molecule);
-   public native int indigoCountPseudoatoms (int molecule);
-   public native int indigoCountRSites (int molecule);
-
-   public native int indigoIterateBonds (int molecule);
-   public native int indigoBondOrder (int bond);
-   public native int indigoBondStereo (int bond);
-   public native int indigoTopology (int bond);
-
-   public native int indigoIterateNeighbors (int atom);
-   public native int indigoBond (int nei);
-   public native int indigoGetAtom (int molecule, int idx);
-   public native int indigoGetBond (int molecule, int idx);
-   public native int indigoSource (int bond);
-   public native int indigoDestination (int bond);
-
-   public native int indigoClearCisTrans (int molecule);
-   public native int indigoClearStereocenters (int molecule);
-   public native int indigoCountStereocenters (int molecule);
-
-   public native int indigoResetSymmetricCisTrans (int handle);
-   public native int indigoMarkEitherCisTrans (int handle);
-
-   public native int indigoAddAtom (int molecule, String symbol);
-   public native int indigoSetCharge (int atom, int charge);
-   public native int indigoSetIsotope (int atom, int isotope);
-   public native int indigoAddBond (int source, int destination, int order);
-   public native int indigoSetBondOrder (int bond, int order);
-   public native int indigoMerge (int where, int what);
-
-   public native int indigoCountComponents (int molecule);
-   public native int indigoComponentIndex (int atom);
-   public native int indigoIterateComponents (int molecule);
-   public native int indigoComponent (int molecule, int index);
-
-   public native int indigoCountSSSR (int molecule);
-   public native int indigoIterateSSSR (int molecule);
-   public native int indigoIterateSubtrees (int molecule, int min_atoms, int max_atoms);
-   public native int indigoIterateRings (int molecule, int min_atoms, int max_atoms);
-   public native int indigoIterateEdgeSubmolecules (int molecule, int min_bonds, int max_bonds);
-
-   public native int indigoCountHeavyAtoms (int molecule);
-   public native int indigoGrossFormula (int molecule);
-   public native float indigoMolecularWeight (int molecule);
-   public native float indigoMostAbundantMass (int molecule);
-   public native float indigoMonoisotopicMass (int molecule);
-
-   public native String indigoCanonicalSmiles (int handle);
-   public native String indigoLayeredCode (int handle);
-
-   public native int indigoHasCoord (int molecule);
-   public native int indigoHasZCoord (int molecule);
-   public native int indigoIsChiral (int molecule);
-
-   public native int indigoCreateSubmolecule (int molecule, int[] vertices);
-   public native int indigoCreateEdgeSubmolecule (int molecule, int[] vertices, int[] edges);
-   public native int indigoRemoveAtoms (int molecule, int[] vertices);
-
-   public native float indigoAlignAtoms (int molecule, int[] atom_ids, float[] desired_xyz);
-
-   public native float indigoSimilarity (int molecule1, int molecule2, String metrics);
-   
-   public native int indigoAromatize (int item);
-   public native int indigoDearomatize (int item);
-   public native int indigoFoldHydrogens (int item);
-   public native int indigoUnfoldHydrogens (int item);
-   public native int indigoLayout (int item);
-
-   public native String indigoSmiles (int item);
-   
-   public native int indigoExactMatch (int item1, int item2);
-
-   public native String indigoName (int handle);
-   public native int indigoSetName (int handle, String name);
-
-   public native int indigoHasProperty (int handle, String prop);
-   public native String indigoGetProperty (int handle, String prop);
-   public native int indigoSetProperty (int handle, String prop, String value);
-   public native int indigoRemoveProperty (int handle, String prop);
-   public native int indigoIterateProperties (int handle);
-
-   public native String indigoCheckBadValence (int handle);
-   public native String indigoCheckAmbiguousH (int handle);
-
-   public native int indigoFingerprint (int item, String type);
-   public native int indigoCountBits (int fingerprint);
-   public native int indigoCommonBits (int fingerprint1, int fingerprint2);
-
-   public native int indigoIterateSDF (int reader);
-   public native int indigoIterateRDF (int reader);
-   public native int indigoIterateSmiles (int reader);
-   public native int indigoIterateCML (int reader);
-
-   public native int indigoIterateSDFile (String filename);
-   public native int indigoIterateRDFile (String filename);
-   public native int indigoIterateSmilesFile (String filename);
-   public native int indigoIterateCMLFile (String filename);
-   
-   public native String indigoRawData (int handle);
-   public native int indigoTell (int handle);
-
-   public native int indigoSdfAppend (int output, int item);
-   public native int indigoSmilesAppend (int output, int item);
-   public native int indigoRdfHeader (int output);
-   public native int indigoRdfAppend (int output, int item);
-   public native int indigoCmlHeader (int output);
-   public native int indigoCmlAppend (int output, int item);
-   public native int indigoCmlFooter (int output);
-
-   public native int indigoCreateArray ();
-   public native int indigoArrayAdd (int arr, int obj);
-   public native int indigoAt (int arr, int index);
-   public native int indigoCount (int arr);
-   public native int indigoClear (int arr);
-   public native int indigoIterateArray (int arr);
-
-   public native int indigoSubstructureMatcher (int target, String mode);
-   public native int indigoMatch (int matcher, int query);
-   public native int indigoCountMatches (int matcher, int query);
-   public native int indigoIterateMatches (int matcher, int query);
-   public native int indigoHighlightedTarget (int match);
-   public native int indigoMapAtom (int match, int query_atom);
-   public native int indigoMapBond (int match, int query_bond);
-
-   public native int indigoExtractCommonScaffold (int structures, String options);
-   public native int indigoAllScaffolds (int extracted);
-
-   public native int indigoDecomposeMolecules (int scaffold, int structures);
-   public native int indigoDecomposedMoleculeScaffold (int decomp);
-   public native int indigoIterateDecomposedMolecules (int decomp);
-   public native int indigoDecomposedMoleculeHighlighted (int decomp);
-   public native int indigoDecomposedMoleculeWithRGroups (int decomp);
-
-   public native int indigoNext (int iter);
-   public native int indigoHasNext (int iter);
-   public native int indigoIndex (int item);
-   public native int indigoRemove (int item);
-   
-   public native String indigoToString (int handle);
-   public native byte[] indigoToBuffer (int handle);
-
-   public native int indigoReactionProductEnumerate (int reaction, int monomers);
-
+*/
    private long _sid;
 
    ////////////////////////////////////////////////////////////////
@@ -627,6 +456,12 @@ public class Indigo
 
    private static int _os = 0;
    private static String _dllpath = "";
+   private static IndigoLib _lib = null;
+
+   public static IndigoLib getLibrary ()
+   {
+      return _lib;
+   }
 
    public static int getOs ()
    {

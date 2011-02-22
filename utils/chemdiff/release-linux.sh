@@ -7,19 +7,19 @@ if [ -z $version ]; then
   exit;
 fi
 
-cd ../../api/jni
-make CONF=Release32
-make CONF=Release64
-cd ../java
+cd ../../api
+make CONF=ReleaseShared32
+make CONF=ReleaseShared64
+cd java
 ./compile.sh
-cd ../renderer/jni
-make CONF=Release32
-make CONF=Release64
-cd ../java
+cd ../renderer
+make CONF=ReleaseShared32
+make CONF=ReleaseShared64
+cd java
 ./compile.sh
 cd ../../../utils/chemdiff/src
 
-javac -cp ../../../api/java/dist/indigo-java.jar:../../../api/renderer/java/dist/indigo-renderer-java.jar com/ggasoftware/indigo/chemdiff/*.java
+javac -cp ../../../common/jna/jna.jar:../../../api/java/dist/indigo-java.jar:../../../api/renderer/java/dist/indigo-renderer-java.jar com/ggasoftware/indigo/chemdiff/*.java
 jar cvfm ../chemdiff.jar ../manifest.mf com/ggasoftware/indigo/chemdiff/*.class
 cd ..
 
@@ -31,13 +31,15 @@ mkdir -p $name/lib/Linux/x64
 
 cp LICENSE.GPL $name/
 cp chemdiff.jar $name/
+cp ../../common/jna/jna.jar $name/lib/
 cp ../../api/java/dist/indigo-java.jar $name/lib/
 cp ../../api/renderer/java/dist/indigo-renderer-java.jar $name/lib/
-cp ../../api/jni/dist/Release32/GNU-Linux-x86/libindigo-jni.so $name/lib/Linux/x86
-cp ../../api/jni/dist/Release64/GNU-Linux-x86/libindigo-jni.so $name/lib/Linux/x64
-cp ../../api/renderer/jni/dist/Release32/GNU-Linux-x86/libindigo-renderer-jni.so $name/lib/Linux/x86
-cp ../../api/renderer/jni/dist/Release64/GNU-Linux-x86/libindigo-renderer-jni.so $name/lib/Linux/x64
+cp ../../api/dist/ReleaseShared32/GNU-Linux-x86/libindigo.so $name/lib/Linux/x86
+cp ../../api/dist/ReleaseShared64/GNU-Linux-x86/libindigo.so $name/lib/Linux/x64
+cp ../../api/renderer/dist/ReleaseShared32/GNU-Linux-x86/libindigo-renderer.so $name/lib/Linux/x86
+cp ../../api/renderer/dist/ReleaseShared64/GNU-Linux-x86/libindigo-renderer.so $name/lib/Linux/x64
 cp chemdiff.sh $name/chemdiff
 cp -r tests $name/
 
 zip -r -9 $name.zip $name
+

@@ -85,10 +85,7 @@ public class MolClicker extends MouseAdapter {
 
       IndigoObject molecule = mc.object.clone();
 
-      try {
-         indigo.indigoLayout(molecule.self);
-      } catch (Exception ex) {
-      }
+      molecule.layout();
 
       mol_view.setMol(molecule);
 
