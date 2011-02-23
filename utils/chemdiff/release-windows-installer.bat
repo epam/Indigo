@@ -1,4 +1,4 @@
-rem @echo off
+@echo off
 if "%1" == "" goto NOVER
 mkdir lib\Win\x86
 mkdir lib\Win\x64

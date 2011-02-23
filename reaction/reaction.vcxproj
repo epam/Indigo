@@ -471,7 +471,11 @@
   <ItemGroup>
     <ProjectReference Include="..\molecule\molecule.vcxproj">
       <Project>{d69c5b23-48c2-400b-9bcd-b8276756b673}</Project>
+      <Private>false</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

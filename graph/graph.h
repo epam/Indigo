@@ -49,7 +49,7 @@ struct VertexEdge
    int e;
 };
 
-class Vertex
+class DLLEXPORT Vertex
 {
 public:
    Vertex (Pool<List<VertexEdge>::Elem> &pool) : neighbors(pool) {}

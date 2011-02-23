@@ -114,7 +114,7 @@ DLLEXPORT OsLock & osStaticObjConstructionLock ();
 // This object should be declared as ONLY static object because
 // _was_created variable should be zero by default.
 template <typename T>
-class DLLEXPORT ThreadSafeStaticObj
+class ThreadSafeStaticObj
 {
 public:
    ~ThreadSafeStaticObj()
