@@ -15,15 +15,13 @@ mkdir -p $name/lib/Mac/10.6
 cd ../../api/
 
 for osxver in '10.5' '10.6'; do
-  cd jni
-  rm -rf build ../../graph.build ../../molecule/build ../../layout/build ../../reaction/build ../../tinyxml/build ../../render2d/build ../../api/build ../../api/renderer/build
+  rm -rf build ../graph.build ../molecule/build ../layout/build ../reaction/build ../tinyxml/build ../render2d/build renderer/build
   xcodebuild -sdk macosx$osxver -configuration Release -alltargets
-  cp build/Release/libindigo-jni.dylib ../../utils/chemdiff/$name/lib/Mac/$osxver
-  cd ../renderer/jni
-  rm -rf build
+  cp build/Release/libindigo.dylib ../utils/chemdiff/$name/lib/Mac/$osxver
+  cd renderer
   xcodebuild -sdk macosx$osxver -configuration Release -alltargets 
-  cp build/Release/libindigo-renderer-jni.dylib ../../../utils/chemdiff/$name/lib/Mac/$osxver
-  cd ../../
+  cp build/Release/libindigo-renderer.dylib ../../utils/chemdiff/$name/lib/Mac/$osxver
+  cd ..
 done
 
 cd java
@@ -38,6 +36,7 @@ cd ..
 
 cp LICENSE.GPL $name/
 cp chemdiff.jar $name/
+cp ../../common/jna/jna.jar $name/lib/
 cp ../../api/java/dist/indigo-java.jar $name/lib/
 cp ../../api/renderer/java/dist/indigo-renderer-java.jar $name/lib/
 cp chemdiff.sh $name/chemdiff

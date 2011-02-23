@@ -15,16 +15,14 @@ mkdir -p $name/lib/Mac/10.6
 cd ../api/
 
 for osxver in '10.5' '10.6'; do
-  rm -rf ../graph.build ../molecule/build ../layout/build ../reaction/build ../tinyxml/build ../render2d/build ../api/build ../api/renderer/build
-  cd jni
-  rm -rf build
+  rm -rf build ../graph/build ../molecule/build ../layout/build ../reaction/build ../tinyxml/build ../render2d/build ../api/build ../api/renderer/build
   xcodebuild -sdk macosx$osxver -configuration Release -alltargets
-  cp build/Release/libindigo-jni.dylib ../../legio/$name/lib/Mac/$osxver
-  cd ../renderer/jni
+  cp build/Release/libindigo.dylib ../legio/$name/lib/Mac/$osxver
+  cd renderer
   rm -rf build
   xcodebuild -sdk macosx$osxver -configuration Release -alltargets 
-  cp build/Release/libindigo-renderer-jni.dylib ../../../legio/$name/lib/Mac/$osxver
-  cd ../../
+  cp build/Release/libindigo-renderer.dylib ../../legio/$name/lib/Mac/$osxver
+  cd ..
 done
 
 cd java
@@ -42,6 +40,7 @@ cd ..
 
 cp LICENSE.GPL $name/
 cp legio.jar $name/
+cp ../common/jna/jna.jar $name/lib/
 cp ../api/java/dist/indigo-java.jar $name/lib/
 cp ../api/renderer/java/dist/indigo-renderer-java.jar $name/lib/
 cp legio.sh $name/legio
