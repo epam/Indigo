@@ -1,5 +1,5 @@
-mkdir lib\Win\x86
-mkdir lib\Win\x64
+md lib\Win\x86
+md lib\Win\x64
 
 cd ..\..\api
 
@@ -9,14 +9,14 @@ goto L2
 :L1
 call "%ProgramFiles%\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
 :L2
-devenv indigo-api.sln /build "ReleaseJNI|x64"
-devenv indigo-api.sln /build "ReleaseJNI|Win32"
+devenv indigo-api.sln /build "ReleaseDLL|x64"
+devenv indigo-api.sln /build "ReleaseDLL|Win32"
 
 cd ..\utils\chemdiff
-copy ..\..\api\jni\Win32\Release\indigo-jni.dll lib\Win\x86\
-copy ..\..\api\renderer\jni\Win32\Release\indigo-renderer-jni.dll lib\Win\x86\
+copy ..\..\api\dll\Win32\Release\indigo.dll lib\Win\x86\
+copy ..\..\api\renderer\dll\Win32\Release\indigo-renderer.dll lib\Win\x86\
 copy ..\..\zlib-src\Win32\ReleaseDll\zlib.dll lib\Win\x86\
 
-copy ..\..\api\jni\x64\Release\indigo-jni.dll lib\Win\x64\
-copy ..\..\api\renderer\jni\x64\Release\indigo-renderer-jni.dll lib\Win\x64\
+copy ..\..\api\dll\x64\Release\indigo.dll lib\Win\x64\
+copy ..\..\api\renderer\dll\x64\Release\indigo-renderer.dll lib\Win\x64\
 copy ..\..\zlib-src\x64\ReleaseDll\zlib.dll lib\Win\x64\

@@ -8,8 +8,6 @@ devenv indigo-api.sln /build "Release|x64"
 devenv indigo-api.sln /build "Release|Win32"
 devenv indigo-api.sln /build "ReleaseDLL|x64"
 devenv indigo-api.sln /build "ReleaseDLL|Win32"
-devenv indigo-api.sln /build "ReleaseJNI|x64"
-devenv indigo-api.sln /build "ReleaseJNI|Win32"
 cd java
 call compile.bat
 cd ..\renderer\java

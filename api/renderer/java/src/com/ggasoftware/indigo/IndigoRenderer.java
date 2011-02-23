@@ -26,16 +26,19 @@ public class IndigoRenderer
 
    public void render (IndigoObject obj, IndigoObject output)
    {
+      _indigo.setSessionID();
       Indigo.checkResult(_lib.indigoRender(obj.self, output.self));
    }
 
    public void renderToFile (IndigoObject obj, String filename)
    {
+      _indigo.setSessionID();
       Indigo.checkResult(_lib.indigoRenderToFile(obj.self, filename));
    }
 
    public byte[] renderToBuffer (IndigoObject obj)
    {
+      _indigo.setSessionID();
       IndigoObject buf = _indigo.writeBuffer();
       Indigo.checkResult(_lib.indigoRender(obj.self, buf.self));
 
@@ -44,13 +47,15 @@ public class IndigoRenderer
 
    public void renderGridToFile (IndigoObject objects, int[] refAtoms, int ncolumns, String filename)
    {
+      _indigo.setSessionID();
       if (refAtoms != null && objects.count() != refAtoms.length)
-            throw new IndigoException("refAtoms size does not match the number of objects");
+         throw new IndigoException("refAtoms size does not match the number of objects");
       Indigo.checkResult(_lib.indigoRenderGridToFile(objects.self, refAtoms, ncolumns, filename));
    }
 
    public byte[] renderGridToBuffer (IndigoObject objects, int[] refAtoms, int ncolumns)
    {
+      _indigo.setSessionID();
       if (objects.count() != refAtoms.length)
          throw new IndigoException("refAtoms size does not match the number of objects");
       IndigoObject buf = _indigo.writeBuffer();
