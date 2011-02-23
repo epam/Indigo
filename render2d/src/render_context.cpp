@@ -86,7 +86,7 @@ cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile (bool& isL
    return s;
 }
 
-void RenderContext::storeAndDestroyMetafile ()
+void RenderContext::storeAndDestroyMetafile (bool discard)
 {
    cairo_surface_show_page(_surface);
    cairoCheckStatus();
@@ -95,12 +95,13 @@ void RenderContext::storeAndDestroyMetafile ()
    cairoCheckStatus();
    _surface = NULL;
    HENHMETAFILE hemf = CloseEnhMetaFile((HDC)_meta_hdc);
-
-   int size = GetEnhMetaFileBits(hemf, 0, NULL);
-   Array<char> buf;
-   buf.resize(size);
-   GetEnhMetaFileBits(hemf, size, (BYTE*)(buf.ptr()));
-   opt.output->writeArray(buf);
+   if (!discard) {
+      int size = GetEnhMetaFileBits(hemf, 0, NULL);
+      Array<char> buf;
+      buf.resize(size);
+      GetEnhMetaFileBits(hemf, size, (BYTE*)(buf.ptr()));
+      opt.output->writeArray(buf);
+   }
    DeleteEnhMetaFile(hemf);
 }
 
@@ -317,27 +318,7 @@ void RenderContext::initContext (int width, int height)
       fillBackground();
 }
 
-void RenderContext::resetContext ()
-{
-   if (_cr != NULL)
-   {
-      cairo_destroy (_cr);
-      _cr = NULL;
-   }
-
-   if (_surface != NULL)
-   {
-      cairo_surface_destroy (_surface);
-      _surface = NULL;
-   }
-
-   bbmin.x = bbmin.y = 1;
-   bbmax.x = bbmax.y = -1;
-
-   fontsDispose();
-}
-
-void RenderContext::closeContext ()
+void RenderContext::closeContext (bool discard)
 {
    if (_cr != NULL)
    {
@@ -350,7 +331,8 @@ void RenderContext::closeContext ()
    case MODE_NONE:
       throw Error("mode not set");
    case MODE_PNG:
-      cairo_surface_write_to_png_stream(_surface, writer, opt.output);
+	   if (!discard)
+		   cairo_surface_write_to_png_stream(_surface, writer, opt.output);
       break;
    case MODE_PDF:
    case MODE_SVG:
@@ -359,7 +341,7 @@ void RenderContext::closeContext ()
       break;
    case MODE_EMF:
 #ifdef _WIN32
-      storeAndDestroyMetafile();
+      storeAndDestroyMetafile(discard);
 #endif
       break;
    default:
@@ -371,6 +353,9 @@ void RenderContext::closeContext ()
       cairo_surface_destroy (_surface);
       _surface = NULL;
    }
+
+   bbmin.x = bbmin.y = 1;
+   bbmax.x = bbmax.y = -1;
 
    fontsDispose();
 }

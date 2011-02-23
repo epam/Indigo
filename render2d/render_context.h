@@ -43,8 +43,7 @@ public:
    void fillBackground();
    void initNullContext ();
    void initContext (int width, int height);   
-   void resetContext ();
-   void closeContext ();
+   void closeContext (bool discard);
    void translate (float dx, float dy);
    void scale (float s);
    void storeTransform ();
@@ -105,7 +104,7 @@ public:
    cairo_surface_t* createWin32Surface ();
    cairo_surface_t* createWin32PrintingSurfaceForHDC ();
    cairo_surface_t* createWin32PrintingSurfaceForMetafile (bool& isLarge);
-   void storeAndDestroyMetafile ();
+   void storeAndDestroyMetafile (bool discard);
 #endif
 
    void fontsClear();

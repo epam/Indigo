@@ -217,5 +217,5 @@ void RenderParamInterface::render (RenderParams& params)
       render.refAtoms.copy(params.refAtoms);
       render.draw();
    }
-   rc.closeContext();
+   rc.closeContext(false);
 }

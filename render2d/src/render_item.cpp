@@ -32,7 +32,7 @@ void RenderItemBase::renderIdle ()
    render();
    _rc.bbGetMin(bbmin);
    _rc.bbGetMax(bbmax);
-   _rc.resetContext();
+   _rc.closeContext(true);
    size.diff(bbmax, bbmin);
    origin.copy(bbmin);
 }
