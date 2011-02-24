@@ -12,8 +12,8 @@ rm -rf ./$name
 mkdir $name
 
 cp LICENSE.GPL $name/
-cp java/dist/indigo-java.jar $name/
-cp renderer/java/dist/indigo-renderer-java.jar $name/
+cp java/dist/indigo.jar $name/
+cp renderer/java/dist/indigo-renderer.jar $name/
 cp ../common/jna/jna.jar $name/
 
 zip -r -9 $name.zip $name
