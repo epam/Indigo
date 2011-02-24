@@ -63,18 +63,18 @@ public class IndigoRenderer
       return buf.toBuffer();
    }
 
-   private static String getPathToBinary (String path, String prefix, String suffix)
+   private static String getPathToBinary (String path, String filename)
    {
       String dllpath = Indigo.getPlatformDependentPath();
 
       if (path == null)
       {
-         String res = Indigo.extractFromJar(IndigoRenderer.class, "/com/ggasoftware/indigo/" + dllpath, prefix, suffix);
+         String res = Indigo.extractFromJar(IndigoRenderer.class, "/com/ggasoftware/indigo/" + dllpath, filename);
          if (res != null)
             return res;
          path = "lib";
       }
-      path = path + File.separator + dllpath + File.separator + prefix + suffix;
+      path = path + File.separator + dllpath + File.separator + filename;
       try
       {
          return (new File(path)).getCanonicalPath();
@@ -92,11 +92,11 @@ public class IndigoRenderer
       int os = Indigo.getOs();
 
       if (os == Indigo.OS_LINUX || os == Indigo.OS_SOLARIS)
-         _lib = (IndigoRendererLib)Native.loadLibrary(getPathToBinary(path, "libindigo-renderer", ".so"), IndigoRendererLib.class);
+         _lib = (IndigoRendererLib)Native.loadLibrary(getPathToBinary(path, "libindigo-renderer.so"), IndigoRendererLib.class);
       else if (os == Indigo.OS_MACOS)
-         _lib = (IndigoRendererLib)Native.loadLibrary(getPathToBinary(path, "libindigo-renderer", ".dylib"), IndigoRendererLib.class);
+         _lib = (IndigoRendererLib)Native.loadLibrary(getPathToBinary(path, "libindigo-renderer.dylib"), IndigoRendererLib.class);
       else // os == OS_WINDOWS
-         _lib = (IndigoRendererLib)Native.loadLibrary(getPathToBinary(path, "indigo-renderer", ".dll"), IndigoRendererLib.class);
+         _lib = (IndigoRendererLib)Native.loadLibrary(getPathToBinary(path, "indigo-renderer.dll"), IndigoRendererLib.class);
    }
 
    Indigo _indigo;

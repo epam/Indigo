@@ -347,17 +347,26 @@ public class Indigo
       return new IndigoObject(this, res);
    }
 
-   public static String extractFromJar (Class cls, String path, String prefix, String suffix)
+   public static String extractFromJar (Class cls, String path, String filename)
    {
       try
       {
-         InputStream stream = cls.getResourceAsStream(path + "/" + prefix + suffix);
+         InputStream stream = cls.getResourceAsStream(path + "/" + filename);
 
          if (stream == null)
             return null;
 
-         File tmpfile = File.createTempFile(prefix, suffix);
-         FileOutputStream outstream = new FileOutputStream(tmpfile);
+         File tmpfile = File.createTempFile("indigo", null);
+         File tmpdir = new File(tmpfile.getAbsolutePath() + ".d"); 
+
+         if (!tmpdir.mkdir())
+            return null;
+
+         tmpfile.delete();
+         
+         File dllfile = new File(tmpdir.getAbsolutePath() + File.separator + filename);
+          		
+         FileOutputStream outstream = new FileOutputStream(dllfile);
          byte buf[]= new byte[4096];
          int len;
 
@@ -367,8 +376,9 @@ public class Indigo
          outstream.close();
          stream.close();
 
-         tmpfile.deleteOnExit();
-         return tmpfile.getCanonicalPath();
+         dllfile.deleteOnExit();
+         tmpdir.deleteOnExit();
+         return dllfile.getCanonicalPath();
       }
       catch (IOException e)
       {
@@ -376,16 +386,16 @@ public class Indigo
       }
    }
 
-   private static String getPathToBinary (String path, String prefix, String suffix)
+   private static String getPathToBinary (String path, String filename)
    {
       if (path == null)
       {
-         String res = extractFromJar(Indigo.class, "/com/ggasoftware/indigo/" + _dllpath, prefix, suffix);
+         String res = extractFromJar(Indigo.class, "/com/ggasoftware/indigo/" + _dllpath, filename);
          if (res != null)
             return res;
          path = "lib";
       }
-      path = path + File.separator + _dllpath + File.separator + prefix + suffix;
+      path = path + File.separator + _dllpath + File.separator + filename;
       try
       {
          return (new File(path)).getCanonicalPath();
@@ -402,13 +412,13 @@ public class Indigo
          return;
 
       if (_os == OS_LINUX || _os == OS_SOLARIS)
-         _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "libindigo", ".so"), IndigoLib.class);
+         _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "libindigo.so"), IndigoLib.class);
       else if (_os == OS_MACOS)
-         _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "libindigo", ".dylib"), IndigoLib.class);
+         _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "libindigo.dylib"), IndigoLib.class);
       else // _os == OS_WINDOWS
       {
-         System.load(getPathToBinary(path, "zlib", "dll"));
-         _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "indigo", ".dll"), IndigoLib.class);
+         System.load(getPathToBinary(path, "zlib.dll"));
+         _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "indigo.dll"), IndigoLib.class);
       }
    }
 
@@ -500,7 +510,7 @@ public class Indigo
          default:
             throw new Error("OS not set");
       }
-      path += File.separator;
+      path += "/";
 
       if (_os == OS_MACOS)
       {
