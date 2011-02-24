@@ -77,11 +77,6 @@ bool CmfLoader::_getNextCode (int &code)
 
 bool CmfLoader::_readAtom (int &code, _AtomDesc &atom)
 {
-   memset(&atom, 0, sizeof(atom));
-
-   atom.pseudo_atom_idx = -1;
-   atom.rsite = false;
-   
    if (code > 0 && code < ELEM_MAX)
       atom.label = code;
    else if (code == CMF_PSEUDOATOM)
@@ -433,6 +428,8 @@ void CmfLoader::loadMolecule (Molecule &mol)
       memset(&atom, 0, sizeof(_AtomDesc));
       atom.hydrogens = -1;
       atom.valence = -1;
+      atom.pseudo_atom_idx = -1;
+      atom.rsite = false;
 
       if (code > 0 && (code < ELEM_MAX || code == CMF_PSEUDOATOM || code == CMF_RSITE))
       {
