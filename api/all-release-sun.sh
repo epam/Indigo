@@ -26,10 +26,7 @@ cd ../api
 make -f Makefile.sun.32
 make -f Makefile.sun.64
 
-cd jni
-make -f Makefile.sun.32
-make -f Makefile.sun.64
-cd ../java
+cd java
 ./compile.sh
 cd ../renderer/java
 ./compile.sh

@@ -10,7 +10,7 @@ CCADMIN = CCadmin -clean
 TARGETDIR_libindigo.a=sparc64static
 TARGETDIR_libindigo.so=sparc64shared
 
-USERLIBS_libindigo.so = ../graph/sparc64/libgraph.a ../molecule/sparc64/libmolecule.a ../reaction/sparc64/libreaction.a ../layout/sparc64/liblayout.a ../tinyxml/sparc64/libtinyxml.a
-DEPLIBS_libindigo.so = ../graph/sparc64/libgraph.a  ../molecule/sparc64/libmolecule.a  ../reaction/sparc64/libreaction.a  ../layout/sparc64/liblayout.a  ../tinyxml/sparc64/libtinyxml.a
+USERLIBS_libindigo.so =  ../layout/sparc64/liblayout.a ../reaction/sparc64/libreaction.a ../molecule/sparc64/libmolecule.a ../graph/sparc64/libgraph.a ../tinyxml/sparc64/libtinyxml.a -lrt -lz
+DEPLIBS_libindigo.so  =  ../layout/sparc64/liblayout.a ../reaction/sparc64/libreaction.a ../molecule/sparc64/libmolecule.a ../graph/sparc64/libgraph.a ../tinyxml/sparc64/libtinyxml.a
 
 include Makefile.sun.common
