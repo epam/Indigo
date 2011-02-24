@@ -15,10 +15,8 @@
 package com.ggasoftware.indigo;
 
 import java.io.*;
-import java.util.*;
 
 import com.sun.jna.*;
-import com.sun.jna.ptr.*;
 
 public class Indigo
 {
@@ -349,37 +347,54 @@ public class Indigo
       return new IndigoObject(this, res);
    }
 
-   private String _full_dll_path = null;
-
-   /*
-   private static boolean checkIfLoaded ()
+   public static String extractFromJar (Class cls, String path, String prefix, String suffix)
    {
       try
       {
-         Vector libraries = (Vector)LIBRARIES.get(ClassLoader.getSystemClassLoader());
+         InputStream stream = cls.getResourceAsStream(path + "/" + prefix + suffix);
 
-         Enumeration e = libraries.elements();
-         while (e.hasMoreElements())
-         {
-            if (((String)e.nextElement()).indexOf("indigo") != -1)
-               return true;
-         }
+         if (stream == null)
+            return null;
+
+         File tmpfile = File.createTempFile(prefix, suffix);
+         FileOutputStream outstream = new FileOutputStream(tmpfile);
+         byte buf[]= new byte[4096];
+         int len;
+
+         while ((len = stream.read(buf)) > 0)
+            outstream.write(buf, 0, len);
+         
+         outstream.close();
+         stream.close();
+
+         tmpfile.deleteOnExit();
+         return tmpfile.getCanonicalPath();
       }
-      catch (Exception e)
+      catch (IOException e)
       {
+         return null;
       }
-      return false;
    }
 
-   private static java.lang.reflect.Field LIBRARIES = null;
-   static
+   private static String getPathToBinary (String path, String prefix, String suffix)
    {
+      if (path == null)
+      {
+         String res = extractFromJar(Indigo.class, "/com/ggasoftware/indigo/" + _dllpath, prefix, suffix);
+         if (res != null)
+            return res;
+         path = "lib";
+      }
+      path = path + File.separator + _dllpath + File.separator + prefix + suffix;
       try
       {
-         LIBRARIES = ClassLoader.class.getDeclaredField("loadedLibraryNames");
-         LIBRARIES.setAccessible(true);
-      } catch (NoSuchFieldException e) { }
-   }*/
+         return (new File(path)).getCanonicalPath();
+      }
+      catch (IOException e)
+      {
+         return path;
+      }
+   }
 
    private synchronized static void loadIndigo (String path)
    {
@@ -387,42 +402,37 @@ public class Indigo
          return;
 
       if (_os == OS_LINUX || _os == OS_SOLARIS)
-         _lib = (IndigoLib)Native.loadLibrary(path + File.separator + "libindigo.so", IndigoLib.class);
+         _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "libindigo", ".so"), IndigoLib.class);
       else if (_os == OS_MACOS)
-         _lib = (IndigoLib)Native.loadLibrary(path + File.separator + "libindigo.dylib", IndigoLib.class);
+         _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "libindigo", ".dylib"), IndigoLib.class);
       else // _os == OS_WINDOWS
       {
-         System.load(path + File.separator + "zlib.dll");
-         _lib = (IndigoLib)Native.loadLibrary(path + File.separator + "indigo.dll", IndigoLib.class);
+         System.load(getPathToBinary(path, "zlib", "dll"));
+         _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "indigo", ".dll"), IndigoLib.class);
       }
    }
 
    public Indigo (String path)
    {
-      path = path + File.separator + _dllpath;
-
-      _full_dll_path = path;
-      try
-      {
-         _full_dll_path = (new File(path)).getCanonicalPath();
-      }
-      catch (Exception e)
-      {
-      }
-
-      loadIndigo(_full_dll_path);
+      _path = path;
+      loadIndigo(path);
 
       _sid = _lib.indigoAllocSessionId();
    }
 
    public Indigo ()
    {
-      this("lib");
+      this(null);
    }
 
-   public String getFullDllPath ()
+   public String getUserSpecifiedPath ()
    {
-      return _full_dll_path;
+      return _path;
+   }
+
+   static public String getPlatformDependentPath ()
+   {
+      return _dllpath;
    }
 
    public long getSid ()
@@ -438,17 +448,9 @@ public class Indigo
       super.finalize();
    }
 
-   /*
-   public static final int RTLD_LAZY = 0x00001;
-   public static final int RTLD_NOW = 0x00002;
-   public static final int RTLD_NOLOAD = 0x00004;
-   public static final int RTLD_GLOBAL = 0x00100;
-*/
+   private String _path;
    private long _sid;
 
-   ////////////////////////////////////////////////////////////////
-   // INITIALIZATION
-   ////////////////////////////////////////////////////////////////
    public static final int OS_WINDOWS = 1;
    public static final int OS_MACOS = 2;
    public static final int OS_LINUX = 3;

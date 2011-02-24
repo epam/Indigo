@@ -20,7 +20,7 @@ public class IndigoRenderer
 {
    public IndigoRenderer (Indigo indigo)
    {
-      loadLibrary(indigo);
+      loadLibrary(indigo.getUserSpecifiedPath());
       _indigo = indigo;
    }
 
@@ -63,23 +63,42 @@ public class IndigoRenderer
       return buf.toBuffer();
    }
 
-   private synchronized static void loadLibrary (Indigo indigo)
+   private static String getPathToBinary (String path, String prefix, String suffix)
+   {
+      String dllpath = Indigo.getPlatformDependentPath();
+
+      if (path == null)
+      {
+         String res = Indigo.extractFromJar(IndigoRenderer.class, "/com/ggasoftware/indigo/" + dllpath, prefix, suffix);
+         if (res != null)
+            return res;
+         path = "lib";
+      }
+      path = path + File.separator + dllpath + File.separator + prefix + suffix;
+      try
+      {
+         return (new File(path)).getCanonicalPath();
+      }
+      catch (IOException e)
+      {
+         return path;
+      }
+   }
+   private synchronized static void loadLibrary (String path)
    {
       if (_lib != null)
          return;
 
-      String path = indigo.getFullDllPath();
       int os = Indigo.getOs();
 
       if (os == Indigo.OS_LINUX || os == Indigo.OS_SOLARIS)
-         _lib = (IndigoRendererLib)Native.loadLibrary(path + File.separator + "libindigo-renderer.so", IndigoRendererLib.class);
+         _lib = (IndigoRendererLib)Native.loadLibrary(getPathToBinary(path, "libindigo-renderer", ".so"), IndigoRendererLib.class);
       else if (os == Indigo.OS_MACOS)
-         _lib = (IndigoRendererLib)Native.loadLibrary(path + File.separator + "libindigo-renderer.dylib", IndigoRendererLib.class);
+         _lib = (IndigoRendererLib)Native.loadLibrary(getPathToBinary(path, "libindigo-renderer", ".dylib"), IndigoRendererLib.class);
       else // os == OS_WINDOWS
-         _lib = (IndigoRendererLib)Native.loadLibrary(path + File.separator + "indigo-renderer.dll", IndigoRendererLib.class);
+         _lib = (IndigoRendererLib)Native.loadLibrary(getPathToBinary(path, "indigo-renderer", ".dll"), IndigoRendererLib.class);
    }
 
    Indigo _indigo;
    static IndigoRendererLib _lib;
-
 }
