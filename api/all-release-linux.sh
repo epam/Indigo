@@ -14,6 +14,7 @@ make CONF=ReleaseShared64
 
 cd java
 ./compile.sh
+./pack-libs-linux.sh
 
 cd ../renderer
 make CONF=ReleaseStatic32
@@ -23,6 +24,7 @@ make CONF=ReleaseShared64
 
 cd java
 ./compile.sh
+./pack-libs-linux.sh
 cd ../..
 
 ./indigo-libs-release-linux.sh indigo-libs-$1-linux32 32

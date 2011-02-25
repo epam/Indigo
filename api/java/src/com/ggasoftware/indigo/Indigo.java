@@ -357,14 +357,14 @@ public class Indigo
             return null;
 
          File tmpfile = File.createTempFile("indigo", null);
-         File tmpdir = new File(tmpfile.getAbsolutePath() + ".d"); 
+         final File tmpdir = new File(tmpfile.getAbsolutePath() + ".d");
 
          if (!tmpdir.mkdir())
             return null;
 
          tmpfile.delete();
          
-         File dllfile = new File(tmpdir.getAbsolutePath() + File.separator + filename);
+         final File dllfile = new File(tmpdir.getAbsolutePath() + File.separator + filename);
           		
          FileOutputStream outstream = new FileOutputStream(dllfile);
          byte buf[]= new byte[4096];
@@ -376,8 +376,15 @@ public class Indigo
          outstream.close();
          stream.close();
 
-         dllfile.deleteOnExit();
-         tmpdir.deleteOnExit();
+         Runtime.getRuntime().addShutdownHook(new  Thread () {
+            @Override
+            public void run ()
+            {
+               dllfile.delete();
+               tmpdir.delete();
+            }
+         });
+         
          return dllfile.getCanonicalPath();
       }
       catch (IOException e)
