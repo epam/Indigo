@@ -361,11 +361,9 @@ namespace indigo
 
       public virtual void deleteRecordById (int id, SqlConnection conn)
       {
-         int? storage_id =
-            BingoSqlUtils.ExecIntQuery(conn, "SELECT storage_id from {0} where id={1}",
-               shadowTable, id);
+         int? storage_id = getStorageIdById(conn, id);
          if (!storage_id.HasValue)
-            // Such molecule wasn't added to the molecule 
+            // Such molecule wasn't added to the molecule
             // index because it might be invalid
             return;
          storage.deleteRecord(storage_id.Value, conn);
@@ -417,5 +415,10 @@ namespace indigo
          BingoConfig.setInt(conn, bingo_schema, "KEEP_CACHE", id.object_id, keep ? 1 : 0);
       }
 
+      public int? getStorageIdById (SqlConnection conn, int id)
+      {
+         return BingoSqlUtils.ExecIntQuery(conn, "SELECT storage_id from {0} where id={1}",
+               shadowTable, id);
+      }
    }
 }

@@ -25,10 +25,26 @@ namespace indigo
          }
 
          public int part = -1;
+         public int minimum_index = int.MaxValue, maximum_index = int.MinValue;
          public List<int> indices = new List<int>();
          public int[] counters;
          public List<byte[]> bits = null; // If not null then bits are in memory
          public bool pending = false;
+
+         public void validateMinMax ()
+         {
+            minimum_index = int.MaxValue;
+            maximum_index = int.MinValue;
+            foreach (int v in indices)
+               validateMinMax(v);
+         }
+         public void validateMinMax (int value)
+         {
+            if (minimum_index > value)
+               minimum_index = value;
+            if (maximum_index > value)
+               maximum_index = value;
+         }
       };
       List<Block> _all_blocks = new List<Block>();
 
@@ -111,6 +127,7 @@ namespace indigo
                         int[] data = new int[used];
                         Buffer.BlockCopy(mapping, 0, data, 0, mapping.Length);
                         new_block.indices.AddRange(data);
+                        new_block.validateMinMax();
 
                         // Copy counters
                         Buffer.BlockCopy(counters, 0, new_block.counters, 0, counters.Length);
@@ -153,6 +170,7 @@ namespace indigo
                   Buffer.BlockCopy(mapping, 0, data, 0, mapping.Length);
                   block.indices = new List<int>();
                   block.indices.AddRange(data);
+                  block.validateMinMax();
                }
             }
          }
@@ -240,6 +258,7 @@ namespace indigo
 
             int index = last.indices.Count;
             last.indices.Add(id);
+            last.validateMinMax(id);
 
             for (int i = 0; i < _fp_bytes; i++)
             {
@@ -380,30 +399,35 @@ namespace indigo
          return false;
       }
 
-      public IEnumerable<int> screenSub (SqlConnection conn, byte[] fp)
+      public IEnumerable<int> screenSub (SqlConnection conn, byte[] fp, int? next_after_storate_id)
       {
-         return _screen(conn, fp, new screenInBlockDelegate(_screenInBlockSub));
+         screenInBlockDelegate screenBlockSub =
+            new screenInBlockDelegate(
+               (List<int> fp_ones, Block block, byte[] chunk, byte[] chunk2, SqlConnection conn2) =>
+                  _screenInBlockSub(fp_ones, block, chunk, chunk2, conn2, next_after_storate_id));
+         return _screen(conn, fp, next_after_storate_id, screenBlockSub);
       }
 
       // Get bounds on the number of bits
-      public delegate void getBoundsDelegate (IList<int> storage_id, 
+      public delegate void getBoundsDelegate (IList<int> storage_id,
          ref int[] min_common_ones, ref int[] max_common_ones, SqlConnection conn);
 
-      public IEnumerable<int> screenSim (SqlConnection conn, byte[] fp, getBoundsDelegate boundsDelegate)
+      public IEnumerable<int> screenSim (SqlConnection conn, byte[] fp,
+         int? next_after_storate_id, getBoundsDelegate boundsDelegate)
       {
-         screenInBlockDelegate screenBlockDel = 
+         screenInBlockDelegate screenBlockSim =
             new screenInBlockDelegate(
                (List<int> fp_ones, Block block, byte[] chunk, byte[] chunk2, SqlConnection conn2) =>
-                  _screenInBlockSim(fp_ones, block, chunk, chunk2, conn2, boundsDelegate));
+                  _screenInBlockSim(fp_ones, block, chunk, chunk2, conn2, boundsDelegate, next_after_storate_id));
 
-         return _screen(conn, fp, screenBlockDel);
+         return _screen(conn, fp, next_after_storate_id, screenBlockSim);
       }
 
       // Delegate for screening in block
       private delegate List<int> screenInBlockDelegate (List<int> fp_ones, Block block,
          byte[] chunk, byte[] chunk2, SqlConnection conn);
 
-      private IEnumerable<int> _screen (SqlConnection conn, byte[] fp, 
+      private IEnumerable<int> _screen (SqlConnection conn, byte[] fp, int? next_after_storate_id,
          screenInBlockDelegate screenInBlockFunc)
       {
          // Find ones
@@ -448,8 +472,16 @@ namespace indigo
       }
 
       private List<int> _screenInBlockSub (List<int> fp_ones, Block block,
-         byte[] chunk, byte[] chunk2, SqlConnection conn)
+         byte[] chunk, byte[] chunk2, SqlConnection conn, int? next_after_storate_id)
       {
+         List<int> results = new List<int>();
+         if (next_after_storate_id.HasValue && block.maximum_index < next_after_storate_id.Value)
+            return results;
+
+         int min_storate_id_bound = -1;
+         if (next_after_storate_id.HasValue)
+            min_storate_id_bound = next_after_storate_id.Value;
+
          // Sort ones
          fp_ones.Sort(
             (i1, i2) => block.counters[i1].CompareTo(block.counters[i2]));
@@ -469,7 +501,6 @@ namespace indigo
             fp_ones_used.Add(fp_ones[i]);
          }
 
-         List<int> results = new List<int>();
          int iteration = 0;
          foreach (BitChunk bit_chunk in bitChunksReaderGrouped(conn, block,
             fp_ones_used, _fp_sub_bits_used))
@@ -505,7 +536,12 @@ namespace indigo
                continue;
             for (int j = 0; j < 8; j++)
                if ((b & (1 << j)) != 0)
-                  results.Add(block.indices[8 * i + j]);
+               {
+                  int id = block.indices[8 * i + j];
+                  if (id <= min_storate_id_bound)
+                     continue;
+                  results.Add(id);
+               }
          }
 
          timer.end();
@@ -514,8 +550,17 @@ namespace indigo
       }
 
       private List<int> _screenInBlockSim (List<int> fp_ones, Block block,
-         byte[] chunk, byte[] chunk2, SqlConnection conn, getBoundsDelegate boundsDelegate)
+         byte[] chunk, byte[] chunk2, SqlConnection conn, getBoundsDelegate boundsDelegate,
+         int? next_after_storate_id)
       {
+         List<int> passed_screening = new List<int>();
+         if (next_after_storate_id.HasValue && block.maximum_index < next_after_storate_id.Value)
+            return passed_screening;
+
+         int min_storate_id_bound = -1;
+         if (next_after_storate_id.HasValue)
+            min_storate_id_bound = next_after_storate_id.Value;
+
          BingoTimer timer = new BingoTimer("fingerprints.screening_sim");
 
          int[] max_common_ones = new int[block.indices.Count];
@@ -529,7 +574,6 @@ namespace indigo
 
          timer2.end();
 
-         List<int> passed_screening = new List<int>();
          List<int> passed_screening_tmp = new List<int>();
 
          BingoCore.bingoProfIncCounter("fingerprints.bits_total", fp_ones.Count);
@@ -538,6 +582,8 @@ namespace indigo
          {
             for (int i = 0; i < block.indices.Count; i++)
             {
+               if (block.indices[i] <= min_storate_id_bound)
+                  continue;
                if (min_common_ones[i] == 0)
                   passed_screening.Add(i);
             }
@@ -570,6 +616,8 @@ namespace indigo
             {
                for (int i = 0; i < block.indices.Count; i++)
                {
+                  if (block.indices[i] <= min_storate_id_bound)
+                     continue;
                   int min_possible_ones = one_counters[i];
                   int max_possible_ones = one_counters[i] + fp_ones.Count;
 

@@ -15,6 +15,8 @@ namespace indigo
       RingoIndexData _index_data;
       bool highlighting;
 
+      public int? nextAfterStorageId { get; set; }
+
       public RingoFastIndexFetch (RingoIndexData index_data)
       {
          _index_data = index_data;
@@ -40,9 +42,9 @@ namespace indigo
 
          IEnumerable<int> screened;
          if (!_index_data.fingerprints.ableToScreen(fp))
-            screened = _index_data.storage.enumerateStorageIds();
+            screened = _index_data.storage.enumerateStorageIds(nextAfterStorageId);
          else
-            screened = _index_data.fingerprints.screenSub(conn, fp);
+            screened = _index_data.fingerprints.screenSub(conn, fp, nextAfterStorageId);
 
          int cache_index = 0;
          foreach (int storage_id in screened)

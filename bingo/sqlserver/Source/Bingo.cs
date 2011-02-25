@@ -624,35 +624,43 @@ namespace indigo
          value = new SqlSingle(data.value);
       }
 
-      private static int ExtractMaxFromOptions (ref string options)
+      private static Dictionary<string, string> ParseOptions (ref string options)
       {
-         int max_count = -1;
-         StringBuilder builder = new StringBuilder();
+         string specific_options = null;
+         Dictionary<string, string> result = new Dictionary<string,string>();
+
+         string[] allowed_parameters = { "TOP", "NEXT", "START" };
+
          foreach (string part in options.Split(';'))
          {
             string part_trimmed = part.TrimStart();
-            if (part_trimmed.StartsWith("TOP ", StringComparison.OrdinalIgnoreCase))
+
+            bool found = false;
+            foreach (string p in allowed_parameters)
+               if (part_trimmed.StartsWith(p, StringComparison.OrdinalIgnoreCase))
+               {
+                  if (result.ContainsKey(p))
+                     throw new Exception(String.Format("Only one specification of '{0}' option is allowed", p));
+                  result.Add(p, part_trimmed.Substring(p.Length).Trim());
+                  found = true;
+                  break;
+               }
+            if (!found)
             {
-               if (max_count != -1)
-                  throw new Exception("Only one TOP option is allowed");
-               max_count = Convert.ToInt32(part_trimmed.Substring(4));
-               if (max_count < 0)
-                  throw new Exception("Limit cannot be negative");
-            }
-            else
-            {
-               if (builder.Length != 0)
-                  builder.Append(' ');
-               builder.Append(part);
+               if (specific_options != null)
+                  throw new Exception(String.Format("Search-specific option was specified twice: '{0}' and '{1}'",
+                     specific_options, part_trimmed));
+
+               specific_options = part_trimmed;
             }
          }
 
-         options = builder.ToString();
-         return max_count;
+         options = specific_options;
+         return result;
       }
 
       private static IEnumerable _MakeSearch (SqlString query, SqlString table,
-                 SqlString options, SqlString bingo_schema, string search_type, 
+                 SqlString options,    SqlString bingo_schema, string search_type,
                   bool highlighting, params object[] ext_options)
       {
          BingoLog.logMessage("{0} query started for {1} table", search_type, table.Value);
@@ -677,13 +685,26 @@ namespace indigo
                   throw new Exception("Index was changed. FlushOperations must be called before search");
 
                string options_str = options.Value;
-               int max_count = ExtractMaxFromOptions(ref options_str);
-               if (max_count == 0)
-                  return;
+
+               Dictionary<string, string> common_options = ParseOptions(ref options_str);
+
+               int max_count = -1;
+               if (common_options.ContainsKey("TOP"))
+               {
+                  max_count = Convert.ToInt32(common_options["TOP"]);
+                  if (max_count < 0)
+                     throw new Exception("Limit for 'TOP' option cannot be negative");
+               }
+
+               int? next_from = null;
+               if (common_options.ContainsKey("NEXT"))
+                  next_from = Convert.ToInt32(common_options["NEXT"]);
+               if (common_options.ContainsKey("START"))
+                  next_from = -1;
 
                IEnumerable<FetchedData> fetched;
-               fetched = _Fetch(query, search_type, highlighting, ext_options, 
-                  conn, index_data, options_str);
+               fetched = _Fetch(query, search_type, highlighting, ext_options,
+                  conn, index_data, options_str, next_from);
 
                foreach (FetchedData id in fetched)
                {
@@ -699,21 +720,33 @@ namespace indigo
          return res_list;
       }
 
-      private static IEnumerable<FetchedData> _Fetch (SqlString query, string search_type, 
-         bool highlighting, object[] ext_options, SqlConnection conn, 
-         BingoIndexData index_data, string options_str)
+      private static IEnumerable<FetchedData> _Fetch (SqlString query, string search_type,
+         bool highlighting, object[] ext_options, SqlConnection conn,
+         BingoIndexData index_data, string options_str, int? id_next_from)
       {
+         int? storage_id_next_from = null;
+         if (id_next_from.HasValue)
+         {
+            // -1 means start of the iterations
+            if (id_next_from.Value != -1)
+               storage_id_next_from = index_data.getStorageIdById(conn, id_next_from.Value);
+            else
+               storage_id_next_from = -1;
+         }
+
          IEnumerable<FetchedData> fetched;
          if (search_type == "SUB" || search_type == "SMARTS")
          {
             MangoFastIndexFetch fetch_sub = new MangoFastIndexFetch((MangoIndexData)index_data);
             fetch_sub.prepareSub(query.Value, options_str, highlighting, search_type == "SMARTS");
+            fetch_sub.nextAfterStorageId = storage_id_next_from;
             fetched = fetch_sub.fetch(conn);
          }
          else if (search_type == "EXACT")
          {
             MangoShadowFetch fetch_exact = new MangoShadowFetch((MangoIndexData)index_data);
             fetch_exact.prepareExact(query.Value, options_str);
+            fetch_exact.nextAfterStorageId = storage_id_next_from;
             fetched = fetch_exact.fetch(conn);
          }
          else if (search_type == "SIM")
@@ -723,6 +756,7 @@ namespace indigo
             float max = (float)ext_options[1];
 
             fetch_sim.prepareSimilarity(query.Value, options_str, min, max);
+            fetch_sim.nextAfterStorageId = storage_id_next_from;
             fetched = fetch_sim.fetch(conn);
          }
          else if (search_type == "MASS")
@@ -732,18 +766,21 @@ namespace indigo
             float? max = (float?)ext_options[1];
 
             fetch_mass.prepareMass(min, max);
+            fetch_mass.nextAfterStorageId = storage_id_next_from;
             fetched = fetch_mass.fetch(conn);
          }
          else if (search_type == "GROSS")
          {
             MangoShadowFetch fetch_gross = new MangoShadowFetch((MangoIndexData)index_data);
             fetch_gross.prepareGross(query.Value);
+            fetch_gross.nextAfterStorageId = storage_id_next_from;
             fetched = fetch_gross.fetch(conn);
          }
          else if (search_type == "RSUB")
          {
             RingoFastIndexFetch fetch_sub = new RingoFastIndexFetch((RingoIndexData)index_data);
             fetch_sub.prepareSub(query.Value, options_str, highlighting);
+            fetch_sub.nextAfterStorageId = storage_id_next_from;
             fetched = fetch_sub.fetch(conn);
          }
          else

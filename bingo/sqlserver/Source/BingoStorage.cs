@@ -39,9 +39,12 @@ namespace indigo
          _index_data = index_data;
       }
 
-      public IEnumerable<int> enumerateStorageIds()
+      public IEnumerable<int> enumerateStorageIds(int? next_after_storate_id)
       {
-         for (int i = 0; i < total_items; i++)
+         int i = 0;
+         if (next_after_storate_id.HasValue)
+            i = next_after_storate_id.Value + 1;
+         for (; i < total_items; i++)
             yield return i;
       }
 

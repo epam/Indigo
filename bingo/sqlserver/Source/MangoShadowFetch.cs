@@ -21,6 +21,8 @@ namespace indigo
       string table_copies, where_clause;
       bool need_xyz = false;
 
+      public int? nextAfterStorageId { get; set; }
+
       public MangoShadowFetch (MangoIndexData index_data)
       {
          _index_data = index_data;
@@ -35,7 +37,7 @@ namespace indigo
          where_clause = "";
          if (options.Contains("TAU"))
          {
-            where_clause = String.Format(" WHERE gross = '{0}' OR gross LIKE '{0} H%%'",
+            where_clause = String.Format("gross = '{0}' OR gross LIKE '{0} H%%'",
                BingoCore.mangoTauGetQueryGross());
          }
          else
@@ -43,6 +45,7 @@ namespace indigo
             need_xyz = (BingoCore.mangoNeedCoords() != 0);
             _prepareExactQueryStrings(ref table_copies, ref where_clause);
          }
+
          search_type = SearchType.EXACT;
       }
 
@@ -52,7 +55,7 @@ namespace indigo
          int res = BingoCore.mangoSetupMatch("GROSS", query, "");
          if (res < 0)
             throw new Exception(BingoCore.bingoGetError());
-         where_clause = "where " + BingoCore.mangoGrossGetConditions();
+         where_clause = BingoCore.mangoGrossGetConditions();
       }
 
       public void prepareMass (float? min, float? max)
@@ -61,13 +64,11 @@ namespace indigo
 
          StringBuilder where_text = new StringBuilder();
          if (min.HasValue)
-            where_text.AppendFormat(CultureInfo.InvariantCulture, 
-                " WHERE mass >= {0} ", min.Value);
+            where_text.AppendFormat(CultureInfo.InvariantCulture,
+                "mass >= {0} ", min.Value);
          if (max.HasValue)
          {
-            if (where_text.Length == 0)
-               where_text.Append(" WHERE ");
-            else
+            if (where_text.Length > 0)
                where_text.Append(" AND ");
 
             where_text.AppendFormat(CultureInfo.InvariantCulture,
@@ -94,8 +95,31 @@ namespace indigo
             command_text.Append(", mass");
          command_text.AppendFormat(" FROM {0} sh", _index_data.shadowTable);
          command_text.Append(table_copies);
-         command_text.Append(" ");
-         command_text.Append(where_clause);
+
+
+         StringBuilder final_where_clause = new StringBuilder();
+         if (where_clause.Length > 0)
+         {
+            final_where_clause.Append(" ( ");
+            final_where_clause.Append(where_clause);
+            final_where_clause.Append(" ) ");
+         }
+         if (nextAfterStorageId != null)
+         {
+            if (final_where_clause.Length > 0)
+               final_where_clause.Append(" and ");
+            final_where_clause.Append(" (");
+            final_where_clause.AppendFormat(" storage_id > {0} ", nextAfterStorageId.Value);
+            final_where_clause.Append(" )");
+         }
+         if (final_where_clause.Length > 0)
+         {
+            command_text.Append(" WHERE ");
+            command_text.Append(final_where_clause.ToString());
+         }
+
+         if (nextAfterStorageId.HasValue)
+            command_text.Append(" ORDER BY storage_id");
 
          using (SqlCommand cmd = new SqlCommand(command_text.ToString(), conn))
          {
@@ -157,7 +181,6 @@ namespace indigo
          bool where_was_added = false;
          if (hash_elements_count > 0)
          {
-            where_clause.Append(" WHERE "); 
             where_was_added = true;
             // molecule ids must be same
             where_clause.Append("sh.id = t0.id and ");
@@ -187,9 +210,7 @@ namespace indigo
          }
          if (!BingoCore.mangoExactNeedComponentMatching())
          {
-            if (!where_was_added)
-               where_clause.Append(" WHERE "); 
-            else
+            if (where_was_added)
                where_clause.Append("and ");
 
             // There must be no other components in target

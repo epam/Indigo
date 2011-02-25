@@ -24,6 +24,8 @@ namespace indigo
          _index_data = index_data;
       }
 
+      public int? nextAfterStorageId { get; set; }
+
       public void prepareSub (string query, string options, bool highlighting, bool smarts)
       {
          int res = BingoCore.mangoSetupMatch(smarts ? "SMARTS" : "SUB", query, options);
@@ -90,13 +92,13 @@ namespace indigo
          if (search_type == SearchType.SUB)
          {
             if (!_index_data.fingerprints.ableToScreen(fp))
-               screened = _index_data.storage.enumerateStorageIds();
+               screened = _index_data.storage.enumerateStorageIds(nextAfterStorageId);
             else
-               screened = _index_data.fingerprints.screenSub(conn, fp);
+               screened = _index_data.fingerprints.screenSub(conn, fp, nextAfterStorageId);
          }
          else
          {
-            screened = _index_data.fingerprints.screenSim(conn, fp,
+            screened = _index_data.fingerprints.screenSim(conn, fp, nextAfterStorageId,
                new BingoFingerprints.getBoundsDelegate(simGetMinMaxBounds));
          }
 
