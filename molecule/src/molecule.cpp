@@ -665,6 +665,12 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
 
 bool Molecule::isNitrogenV5 (int idx)
 {
+   int conn = getAtomConnectivity_noImplH(idx);
+   return isNitrogenV5ForConnectivity(idx, conn);
+}
+
+bool Molecule::isNitrogenV5ForConnectivity (int idx, int conn)
+{
    if (getAtomNumber(idx) != ELEM_N)
       return false;
 
@@ -676,7 +682,6 @@ bool Molecule::isNitrogenV5 (int idx)
    if (_radicals.size() > idx && _radicals[idx] >= 0)
       radical = _radicals[idx];
 
-   int conn = getAtomConnectivity_noImplH(idx);
    int radical_elections = Element::radicalElectrons(radical);
    return (radical_elections == 0 && conn == 5) || (radical_elections == 1 && conn == 4);
 }

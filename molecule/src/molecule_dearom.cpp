@@ -774,8 +774,27 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
    int charge = _molecule.getAtomCharge(v_idx);
    int radical = _molecule.getAtomRadical(v_idx);
 
-   int max_connectivity = Element::getMaximumConnectivity(label, 
-      charge, radical, false);
+   int max_connectivity = -1;
+   if (!_molecule.isQueryMolecule())
+   {
+      Molecule &m = _molecule.asMolecule();
+      if (atom_external_conn == 0)
+      {
+         if (m.isNitrogenV5(v_idx))
+            max_connectivity = 5;
+      }
+      else
+      {
+         if (m.isNitrogenV5ForConnectivity(v_idx, non_aromatic_conn))
+            max_connectivity = non_aromatic_conn;
+         if (m.isNitrogenV5ForConnectivity(v_idx, non_aromatic_conn + 1))
+            max_connectivity = non_aromatic_conn + 1;
+      }
+   }
+   
+   if (max_connectivity == -1)   
+      max_connectivity = Element::getMaximumConnectivity(label, 
+         charge, radical, false);
 
    int atom_aromatic_connectivity = max_connectivity - non_aromatic_conn;
    if (atom_aromatic_connectivity < 0)

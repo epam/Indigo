@@ -134,6 +134,7 @@ protected:
    virtual bool _checkVertex         (int v_idx);
    virtual bool _isCycleAromatic     (const int *cycle, int cycle_len);
    virtual void _handleAromaticCycle (const int *cycle, int cycle_len);
+   virtual bool _acceptOutgoingDoubleBond (int atom, int bond);
 
    static bool _aromatizeBondsExact (QueryMolecule &mol);
    static bool _aromatizeBondsFuzzy (QueryMolecule &mol);
