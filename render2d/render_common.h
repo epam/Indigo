@@ -253,7 +253,6 @@ struct MoleculeRenderData {
    Array<int> reactingCenters;
    Array<int> inversions;
    Array<int> exactChanges;
-   LABEL_MODE labelMode;
 private:
    MoleculeRenderData (const MoleculeRenderData& data);
 };

@@ -156,7 +156,7 @@ void RenderOptions::clear()
    commentFontFactor = 20;
    titleFontFactor = 20;
    labelMode = LABEL_MODE_NORMAL;
-   implHMode = IHM_TERMINAL_HETERO;
+   implHMode = IHM_ALL;
    commentColor.set(0,0,0);
    mode = MODE_NONE;
    hdc = 0;
@@ -230,8 +230,6 @@ void MoleculeRenderInternal::setHighlighting (const GraphHighlighting* highlight
 
 void MoleculeRenderInternal::render ()
 {
-   _checkSettings();
-
    _initCoordinates();
 
    _initBondData();
@@ -509,28 +507,6 @@ const char* MoleculeRenderInternal::_getStereoGroupText (int type)
       return "any";
    default:
       throw Error("Unknown stereocenter type");
-   }
-}
-
-void MoleculeRenderInternal::_checkSettings ()
-{
-   _data.labelMode = _opt.labelMode;
-   switch (_opt.implHMode)
-   {
-   case IHM_NONE:
-      break;
-   case IHM_TERMINAL:
-   case IHM_TERMINAL_HETERO:
-      if (_opt.labelMode == LABEL_MODE_HIDETERMINAL)
-         _data.labelMode = LABEL_MODE_NORMAL;
-   case IHM_HETERO:
-   case IHM_METHANE_HETERO:
-      if (_opt.labelMode == LABEL_MODE_FORCEHIDE)
-         _data.labelMode = LABEL_MODE_NORMAL;
-      break;
-   case IHM_ALL:
-      _data.labelMode = LABEL_MODE_FORCESHOW;
-      break;
    }
 }
 
@@ -905,12 +881,12 @@ void MoleculeRenderInternal::_initAtomData ()
          !_hasQueryModifiers(i);
 
       ad.showLabel = true;
-      if (_data.labelMode == LABEL_MODE_FORCESHOW || vertex.degree() == 0)
+      if (_opt.labelMode == LABEL_MODE_FORCESHOW || vertex.degree() == 0)
          ;
-      else if (_data.labelMode == LABEL_MODE_FORCEHIDE)
+      else if (_opt.labelMode == LABEL_MODE_FORCEHIDE)
          ad.showLabel = false;
       else if (plainCarbon &&
-         (_data.labelMode == LABEL_MODE_HIDETERMINAL || vertex.degree() > 1) &&
+         (_opt.labelMode == LABEL_MODE_HIDETERMINAL || vertex.degree() > 1) &&
          !_isSingleHighlighted(i))
       {
          if (vertex.degree() == 2)
