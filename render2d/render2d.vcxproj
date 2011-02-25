@@ -341,8 +341,8 @@
   <ItemGroup>
     <ProjectReference Include="..\cairo-src\cairo\cairo.vcxproj">
       <Project>{7bc981e0-0a8c-4216-a8fc-1b78a474ad15}</Project>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>false</Private>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -350,7 +350,7 @@
     <ProjectReference Include="..\cairo-src\pixman\pixman.vcxproj">
       <Project>{60150eef-ee29-4334-b2a5-dd585d7edcae}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <Private>true</Private>
+      <Private>false</Private>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -366,7 +366,7 @@
     <ProjectReference Include="..\libpng-src\libpng.vcxproj">
       <Project>{d59de699-6e12-4546-a200-56eac6a2df04}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <Private>true</Private>
+      <Private>false</Private>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
