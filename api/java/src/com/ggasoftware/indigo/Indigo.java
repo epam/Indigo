@@ -17,6 +17,8 @@ package com.ggasoftware.indigo;
 import java.io.*;
 
 import com.sun.jna.*;
+import java.lang.reflect.*;
+import java.util.*;
 
 public class Indigo
 {
@@ -346,9 +348,10 @@ public class Indigo
 
       return new IndigoObject(this, res);
    }
-
+   
    public static String extractFromJar (Class cls, String path, String filename)
    {
+      String present_dllfile = null;
       try
       {
          InputStream stream = cls.getResourceAsStream(path + "/" + filename);
@@ -356,16 +359,33 @@ public class Indigo
          if (stream == null)
             return null;
 
-         File tmpfile = File.createTempFile("indigo", null);
-         final File tmpdir = new File(tmpfile.getAbsolutePath() + ".d");
+         String tmpdir_path;
+		 
+         if (_os == OS_WINDOWS)
+         {
+            // Do not create a unique temporary directory in Windows, because we will not be
+            // able to delete it aftwewards
+            tmpdir_path = System.getProperty("java.io.tmpdir") + File.separator + "indigo_dlls";
+         }
+	      else
+         {
+            File tmpfile = File.createTempFile("indigo", null);
+            tmpdir_path = tmpfile.getAbsolutePath() + ".d";
+            tmpfile.delete();
+         }
 
-         if (!tmpdir.mkdir())
+         final File tmpdir = new File(tmpdir_path);
+         if (!tmpdir.exists() && !tmpdir.mkdir())
             return null;
 
-         tmpfile.delete();
-         
          final File dllfile = new File(tmpdir.getAbsolutePath() + File.separator + filename);
-          		
+
+         if (dllfile.exists())
+            // If the file is already there, assume that it may be correct
+            // and take it if we fail to rewrite it (this can happen if it
+            // is being used by another process)
+            present_dllfile = dllfile.getCanonicalPath();
+            
          FileOutputStream outstream = new FileOutputStream(dllfile);
          byte buf[]= new byte[4096];
          int len;
@@ -380,16 +400,17 @@ public class Indigo
             @Override
             public void run ()
             {
+               // this does not work on Windows
                dllfile.delete();
                tmpdir.delete();
             }
-         });
+         });		 
          
          return dllfile.getCanonicalPath();
       }
       catch (IOException e)
       {
-         return null;
+         return present_dllfile;
       }
    }
 
@@ -426,7 +447,50 @@ public class Indigo
       {
          System.load(getPathToBinary(path, "zlib.dll"));
          _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "indigo.dll"), IndigoLib.class);
+		 //final NativeLibrary nl = NativeLibrary.getInstance(_indigo_path);
+		 //nl.dispose();
       }
+	  /*
+	  Runtime.getRuntime().addShutdownHook(new Thread()
+	  {
+	     @Override
+	     public void run ()
+		 {
+		   try {
+		    _lib = null;
+		   System.out.println("searching " + _indigo_path);
+		   ClassLoader cl = Indigo.class.getClassLoader();
+		   Field f = ClassLoader.class.getDeclaredField("nativeLibraries");
+		   f.setAccessible(true);
+		   List libs = (List)f.get(cl);
+		   for (Iterator i = libs.iterator();i.hasNext();)
+		   {
+			  Object lib = i.next();
+			  f = lib.getClass().getDeclaredField("name");
+			  f.setAccessible(true);
+			  String name = (String)f.get(lib);
+			  System.out.println(name);
+			  if (name.equals(_indigo_path))
+			  {
+				 System.out.println("finalizing " + _indigo_path);
+				 Method m = lib.getClass().getDeclaredMethod("finalize", new Class[0]);
+				 m.setAccessible(true);
+				 m.invoke(lib, new Object[0]);
+				 (new File(_indigo_path)).delete();
+			   }
+			}
+			  System.gc();
+			  if (!(new File(_indigo_path)).delete())
+			     System.out.println("failed to delete " + _indigo_path);
+			}
+			catch (Exception e)
+			{
+			   e.printStackTrace();
+			}
+		 
+			//nl.dispose();
+		 }
+	  });*/
    }
 
    public Indigo (String path)
