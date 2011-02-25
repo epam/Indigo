@@ -60,7 +60,8 @@ bool AromatizerBase::_checkDoubleBonds (const int *cycle, int cycle_len)
 
          int e_idx = vertex.neiEdge(i);
          int type = _basemol.getBondOrder(e_idx);
-         if (type == BOND_DOUBLE && !isBondAromatic(e_idx)) {
+         if (type == BOND_DOUBLE && !isBondAromatic(e_idx))
+         {
             if (nei_idx != v_left_idx && nei_idx != v_right_idx)
             {
                // Double bond going outside 
@@ -524,7 +525,10 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
    }
 
    if (exact_double_bonds > 1)
-      return PiValue(-1, -1);
+   {
+      if (!query.possibleNitrogenV5(v_idx))
+         return PiValue(-1, -1);
+   }
 
    if (has_query_bond)
    {
@@ -532,13 +536,13 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
          return PiValue(-1, -1);
       else
       {
-         if (exact_double_bonds == 1)
+         if (exact_double_bonds > 0)
             return PiValue(1, 1);
          return PiValue(0, 2); // TODO: check different cases 
       }
    }
 
-   // For aromaticity treat atoms without constratins as having default constraint.
+   // For aromaticity treat atoms without constrains as having default constraint.
    // For example if charge not specified then treat as charge is zero
    int number = query.getAtomNumber(v_idx);
 
@@ -571,7 +575,7 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
    if (radical > 0)
       return PiValue(1, 1);
 
-   if (exact_double_bonds == 1)
+   if (exact_double_bonds >= 1)
       return PiValue(1, 1);
 
    int valence, implicit_h;
@@ -613,6 +617,15 @@ void QueryMoleculeAromatizer::_handleAromaticCycle (const int *cycle, int cycle_
    memcpy(def.cycle, cycle, cycle_len * sizeof(int));
 
    AromatizerBase::_handleAromaticCycle(cycle, cycle_len);
+}
+
+bool QueryMoleculeAromatizer::_acceptOutgoingDoubleBond (int atom, int bond)
+{
+   if (_mode == EXACT)
+      return false;
+
+   QueryMolecule &qmol = _basemol.asQueryMolecule();
+   return qmol.possibleNitrogenV5(atom);
 }
 
 void QueryMoleculeAromatizer::setMode (int mode)

@@ -259,6 +259,8 @@ public:
    virtual void getBondDescription  (int idx, Array<char> &description);
    virtual bool possibleBondOrder   (int idx, int order);
 
+   bool possibleNitrogenV5 (int idx);
+
    enum QUERY_ATOM {QUERY_ATOM_A, QUERY_ATOM_X, QUERY_ATOM_Q, QUERY_ATOM_LIST, QUERY_ATOM_NOTLIST};
    enum QUERY_BOND {QUERY_BOND_DOUBLE_OR_AROMATIC = 0, QUERY_BOND_SINGLE_OR_AROMATIC, QUERY_BOND_SINGLE_OR_DOUBLE, QUERY_BOND_ANY};
    static bool isKnownAttr (QueryMolecule::Atom& qa);

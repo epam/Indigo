@@ -133,6 +133,8 @@ public:
 
    // Check 
    bool isNitrogenV5 (int atom_index);
+   bool isNitrogenV5ForConnectivity (int atom_index, int conn);
+   
 protected:
    struct _Atom
    {

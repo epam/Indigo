@@ -337,6 +337,22 @@ bool QueryMolecule::possibleBondOrder (int idx, int order)
    return _bonds[idx]->possibleValue(BOND_ORDER, order);
 }
 
+bool QueryMolecule::possibleNitrogenV5 (int idx)
+{
+   if (!possibleAtomNumber(idx, ELEM_N))
+      return false;
+
+   if (!possibleAtomCharge(idx, 0))
+      return false;
+
+   // Other conditions also can be checked as in Molecule::isNitrogenV5 but
+   // two the meaning of this function can be different: check if nitrogen 
+   // can valence 5 in the embedding or check if nitrogen can have valence 5
+   // in the original query molecule as self-contained molecule
+
+   return true;
+}
+
 bool QueryMolecule::isPseudoAtom (int idx)
 {
    // This is dirty hack; however, it is legal here, as pseudo atoms
