@@ -54,6 +54,7 @@ namespace com.ggasoftware.indigo
          string subprefix = (IntPtr.Size == 8) ? "Win/x64/" : "Win/x86/";
 
          dllpath = prefix + "\\" + subprefix;
+         LoadLibrary(dllpath + "msvcr100.dll");
          LoadLibrary(dllpath + "zlib.dll");
          LoadLibrary(dllpath + "indigo.dll");
 

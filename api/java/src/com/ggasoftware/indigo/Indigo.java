@@ -382,7 +382,7 @@ public class Indigo
 
          if (dllfile.exists())
             // If the file is already there, assume that it may be correct
-            // and take it if we fail to rewrite it (this can happen if it
+            // and take it as is if we fail to rewrite it (this can happen if it
             // is being used by another process)
             present_dllfile = dllfile.getCanonicalPath();
             
@@ -445,6 +445,7 @@ public class Indigo
          _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "libindigo.dylib"), IndigoLib.class);
       else // _os == OS_WINDOWS
       {
+         System.load(getPathToBinary(path, "msvcr100.dll"));
          System.load(getPathToBinary(path, "zlib.dll"));
          _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "indigo.dll"), IndigoLib.class);
 		 //final NativeLibrary nl = NativeLibrary.getInstance(_indigo_path);

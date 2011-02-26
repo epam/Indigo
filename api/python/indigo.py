@@ -40,6 +40,7 @@ class Indigo:
   RING = 10
 
   _zlib = None
+  _crt = None
   _lib = None
   
   class IndigoObject:
@@ -141,6 +142,7 @@ class Indigo:
         path += "/x64"
       else:
         raise IndigoException("unknown platform " + arch)
+      Indigo._crt = CDLL(path + "/msvcr100.dll")
       Indigo._zlib = CDLL(path + "/zlib.dll")
       Indigo._lib = CDLL(path + "/indigo.dll")
     elif platform.mac_ver()[0]:
