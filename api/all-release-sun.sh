@@ -28,7 +28,7 @@ make -f Makefile.sun.64
 
 cd java
 ./compile.sh
-./pack-libs-sun.sh
+./pack-libs-osx.sh
 cd ../renderer/java
 ./compile.sh
 cd ../..

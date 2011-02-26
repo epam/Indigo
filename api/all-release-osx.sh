@@ -25,10 +25,6 @@ cd ../renderer/java
 ./compile.sh
 cd ../..
 
-cp LICENSE.GPL $javadistr/
-cp java/dist/indigo-java.jar $javadistr
-cp renderer/java/dist/indigo-renderer-java.jar $javadistr
-
 cp LICENSE.GPL $pythondistr/
 cp python/indigo.py $pythondistr/
 cp renderer/python/indigo_renderer.py $pythondistr/
@@ -56,12 +52,25 @@ for osxver in '10.5' '10.6'; do
    cp ../reaction/build/Release/libreaction.a $libdistr 
    cp ../layout/build/Release/liblayout.a $libdistr 
    cp ../render2d/build/Release/librender2d.a $libdistr 
-   cp build/Release/libindigo.dylib $javadistr/lib/Mac/$osxver
+   mkdir -p java/com/ggasoftware/indigo/Mac/$osxver
+   cp build/Release/libindigo.dylib java/com/ggasoftware/indigo/Mac/$osxver/
    cp build/Release/libindigo.dylib $pythondistr/lib/Mac/$osxver
-   cp renderer/build/Release/libindigo-renderer.dylib $javadistr/lib/Mac/$osxver
+   mkdir -p renderer/java/com/ggasoftware/indigo/Mac/$osxver
+   cp renderer/build/Release/libindigo-renderer.dylib renderer/java/com/ggasoftware/indigo/Mac/$osxver/
    cp renderer/build/Release/libindigo-renderer.dylib $pythondistr/lib/Mac/$osxver
    zip -r -9 $libdistr.zip $libdistr
 done
+
+cd java
+./pack-libs-osx.sh
+cd ../renderer/java
+./pack-libs-osx.sh
+cd ../..
+
+cp LICENSE.GPL $javadistr/
+cp java/dist/indigo.jar $javadistr
+cp renderer/java/dist/indigo-renderer.jar $javadistr
+cp ../common/jna/jna.jar $javadistr
 
 zip -r -9 $javadistr.zip $javadistr
 zip -r -9 $pythondistr.zip $pythondistr
