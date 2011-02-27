@@ -729,7 +729,11 @@ namespace indigo
          {
             // -1 means start of the iterations
             if (id_next_from.Value != -1)
+            {
                storage_id_next_from = index_data.getStorageIdById(conn, id_next_from.Value);
+               if (!storage_id_next_from.HasValue)
+                  throw new Exception(String.Format("Cannot find record with id={0}", id_next_from));
+            }
             else
                storage_id_next_from = -1;
          }
