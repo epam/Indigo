@@ -36,7 +36,6 @@
 		A7EDA41410624C6A006CBFAF /* graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3D510624B20006CBFAF /* graph.cpp */; };
 		A7EDA41510624C6A006CBFAF /* spanning_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3DD10624B20006CBFAF /* spanning_tree.cpp */; };
 		A7EDA41610624C6A006CBFAF /* embedding_enumerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3CC10624B20006CBFAF /* embedding_enumerator.cpp */; };
-		A7EDA41710624C6A006CBFAF /* graph_highlighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3D110624B20006CBFAF /* graph_highlighting.cpp */; };
 		A7EDA41810624C6A006CBFAF /* graph_perfect_matching.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3D210624B20006CBFAF /* graph_perfect_matching.cpp */; };
 		A7EDA41910624C6A006CBFAF /* edge_rotation_matcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3CB10624B20006CBFAF /* edge_rotation_matcher.cpp */; };
 		A7EDA41A10624C6A006CBFAF /* cycle_enumerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA3C910624B20006CBFAF /* cycle_enumerator.cpp */; };
@@ -104,7 +103,6 @@
 		A7EDA3CE10624B20006CBFAF /* graph_affine_matcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = graph_affine_matcher.cpp; path = src/graph_affine_matcher.cpp; sourceTree = "<group>"; };
 		A7EDA3CF10624B20006CBFAF /* graph_constrained_bmatching_finder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = graph_constrained_bmatching_finder.cpp; path = src/graph_constrained_bmatching_finder.cpp; sourceTree = "<group>"; };
 		A7EDA3D010624B20006CBFAF /* graph_decomposer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = graph_decomposer.cpp; path = src/graph_decomposer.cpp; sourceTree = "<group>"; };
-		A7EDA3D110624B20006CBFAF /* graph_highlighting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = graph_highlighting.cpp; path = src/graph_highlighting.cpp; sourceTree = "<group>"; };
 		A7EDA3D210624B20006CBFAF /* graph_perfect_matching.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = graph_perfect_matching.cpp; path = src/graph_perfect_matching.cpp; sourceTree = "<group>"; };
 		A7EDA3D310624B20006CBFAF /* graph_subchain_enumerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = graph_subchain_enumerator.cpp; path = src/graph_subchain_enumerator.cpp; sourceTree = "<group>"; };
 		A7EDA3D410624B20006CBFAF /* graph_subtree_enumerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = graph_subtree_enumerator.cpp; path = src/graph_subtree_enumerator.cpp; sourceTree = "<group>"; };
@@ -126,7 +124,6 @@
 		A7EDA3E610624B3B006CBFAF /* graph_affine_matcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph_affine_matcher.h; sourceTree = "<group>"; };
 		A7EDA3E710624B3B006CBFAF /* graph_constrained_bmatching_finder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph_constrained_bmatching_finder.h; sourceTree = "<group>"; };
 		A7EDA3E810624B3B006CBFAF /* graph_decomposer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph_decomposer.h; sourceTree = "<group>"; };
-		A7EDA3E910624B3B006CBFAF /* graph_highlighting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph_highlighting.h; sourceTree = "<group>"; };
 		A7EDA3EA10624B3B006CBFAF /* graph_perfect_matching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph_perfect_matching.h; sourceTree = "<group>"; };
 		A7EDA3EB10624B3B006CBFAF /* graph_subchain_enumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph_subchain_enumerator.h; sourceTree = "<group>"; };
 		A7EDA3EC10624B3B006CBFAF /* graph_subtree_enumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph_subtree_enumerator.h; sourceTree = "<group>"; };
@@ -227,7 +224,6 @@
 				A7EDA3E610624B3B006CBFAF /* graph_affine_matcher.h */,
 				A7EDA3E710624B3B006CBFAF /* graph_constrained_bmatching_finder.h */,
 				A7EDA3E810624B3B006CBFAF /* graph_decomposer.h */,
-				A7EDA3E910624B3B006CBFAF /* graph_highlighting.h */,
 				A7EDA3EA10624B3B006CBFAF /* graph_perfect_matching.h */,
 				A7EDA3EB10624B3B006CBFAF /* graph_subchain_enumerator.h */,
 				A7EDA3EC10624B3B006CBFAF /* graph_subtree_enumerator.h */,
@@ -250,7 +246,6 @@
 				A7EDA3CE10624B20006CBFAF /* graph_affine_matcher.cpp */,
 				A7EDA3CF10624B20006CBFAF /* graph_constrained_bmatching_finder.cpp */,
 				A7EDA3D010624B20006CBFAF /* graph_decomposer.cpp */,
-				A7EDA3D110624B20006CBFAF /* graph_highlighting.cpp */,
 				A7EDA3D210624B20006CBFAF /* graph_perfect_matching.cpp */,
 				A7EDA3D310624B20006CBFAF /* graph_subchain_enumerator.cpp */,
 				A7EDA3D410624B20006CBFAF /* graph_subtree_enumerator.cpp */,
@@ -356,7 +351,6 @@
 				A7EDA41410624C6A006CBFAF /* graph.cpp in Sources */,
 				A7EDA41510624C6A006CBFAF /* spanning_tree.cpp in Sources */,
 				A7EDA41610624C6A006CBFAF /* embedding_enumerator.cpp in Sources */,
-				A7EDA41710624C6A006CBFAF /* graph_highlighting.cpp in Sources */,
 				A7EDA41810624C6A006CBFAF /* graph_perfect_matching.cpp in Sources */,
 				A7EDA41910624C6A006CBFAF /* edge_rotation_matcher.cpp in Sources */,
 				A7EDA41A10624C6A006CBFAF /* cycle_enumerator.cpp in Sources */,

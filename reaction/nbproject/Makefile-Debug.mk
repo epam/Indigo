@@ -51,7 +51,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/reaction_fingerprint.o \
 	${OBJECTDIR}/src/reaction_product_enumerator.o \
 	${OBJECTDIR}/src/reaction_substructure_matcher.o \
-	${OBJECTDIR}/src/reaction_highlighting.o \
 	${OBJECTDIR}/src/crf_saver.o \
 	${OBJECTDIR}/src/base_reaction_substructure_matcher.o
 
@@ -171,11 +170,6 @@ ${OBJECTDIR}/src/reaction_substructure_matcher.o: src/reaction_substructure_matc
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_substructure_matcher.o src/reaction_substructure_matcher.cpp
-
-${OBJECTDIR}/src/reaction_highlighting.o: src/reaction_highlighting.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_highlighting.o src/reaction_highlighting.cpp
 
 ${OBJECTDIR}/src/crf_saver.o: src/crf_saver.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

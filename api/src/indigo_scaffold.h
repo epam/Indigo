@@ -28,7 +28,6 @@ public:
 
    virtual Molecule & getMolecule();
    virtual BaseMolecule & getBaseMolecule ();
-   virtual GraphHighlighting * getMoleculeHighlighting ();
 
    Molecule           max_scaffold;
    ObjArray<Molecule> all_scaffolds;

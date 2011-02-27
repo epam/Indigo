@@ -63,11 +63,6 @@ QueryMolecule & IndigoObject::getQueryMolecule ()
    throw IndigoError("%s is not a query molecule", debugInfo());
 }
 
-GraphHighlighting * IndigoObject::getMoleculeHighlighting ()
-{
-   throw IndigoError("%s does not have a molecule highlighting", debugInfo());
-}
-
 RedBlackStringObjMap< Array<char> > * IndigoObject::getProperties ()
 {
    throw IndigoError("%s can not have properties", debugInfo());
@@ -101,11 +96,6 @@ BaseReaction & IndigoObject::getBaseReaction ()
 QueryReaction & IndigoObject::getQueryReaction ()
 {
    throw IndigoError("%s is not a query reaction", debugInfo());
-}
-
-ReactionHighlighting * IndigoObject::getReactionHighlighting ()
-{
-   throw IndigoError("%s does not have a reaction highlighting", debugInfo());
 }
 
 IndigoObject * IndigoObject::next ()

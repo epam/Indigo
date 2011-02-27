@@ -19,7 +19,6 @@ namespace indigo {
 
 class Graph;
 class Molecule;
-class GraphHighlighting;
 
 class MoleculeTautomerUtils
 {

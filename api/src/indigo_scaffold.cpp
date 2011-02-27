@@ -90,11 +90,6 @@ BaseMolecule & IndigoScaffold::getBaseMolecule ()
    return max_scaffold;
 }
 
-GraphHighlighting * IndigoScaffold::getMoleculeHighlighting ()
-{
-   return 0;
-}
-
 CEXPORT int indigoAllScaffolds (int extracted)
 {
    INDIGO_BEGIN

@@ -32,7 +32,6 @@
 namespace indigo {
 
 class Molecule;
-class GraphHighlighting;
 class AromaticityMatcher;
 struct Vec3f;
 class GraphVertexEquivalence;

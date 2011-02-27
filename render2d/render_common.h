@@ -33,7 +33,6 @@ class BaseMolecule;
 class Reaction;
 class QueryMolecule;
 class QueryReaction;
-class GraphHighlighting;
 
 enum DINGO_MODE {MODE_NONE, MODE_PDF, MODE_PNG, MODE_SVG, MODE_EMF, MODE_HDC, MODE_PRN};
 enum LABEL_MODE {LABEL_MODE_NORMAL, LABEL_MODE_FORCESHOW, LABEL_MODE_HIDETERMINAL, LABEL_MODE_FORCEHIDE};

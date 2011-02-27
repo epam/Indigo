@@ -47,11 +47,9 @@ public:
 
    virtual BaseMolecule & getBaseMolecule ();
    virtual Molecule & getMolecule ();
-   virtual GraphHighlighting * getMoleculeHighlighting();
 
    virtual BaseReaction & getBaseReaction ();
    virtual Reaction & getReaction ();
-   virtual ReactionHighlighting * getReactionHighlighting();
 
    virtual IndigoObject * clone ();
 

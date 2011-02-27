@@ -44,7 +44,6 @@ OBJS_libgraph.a =  \
 	$(TARGETDIR_libgraph.a)/graph_constrained_bmatching_finder.o \
 	$(TARGETDIR_libgraph.a)/graph_decomposer.o \
 	$(TARGETDIR_libgraph.a)/graph_fast_access.o \
-	$(TARGETDIR_libgraph.a)/graph_highlighting.o \
 	$(TARGETDIR_libgraph.a)/graph_perfect_matching.o \
 	$(TARGETDIR_libgraph.a)/graph_subchain_enumerator.o \
 	$(TARGETDIR_libgraph.a)/graph_subtree_enumerator.o \
@@ -184,9 +183,6 @@ $(TARGETDIR_libgraph.a)/graph_decomposer.o: $(TARGETDIR_libgraph.a) src/graph_de
 $(TARGETDIR_libgraph.a)/graph_fast_access.o: $(TARGETDIR_libgraph.a) src/graph_fast_access.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/graph_fast_access.cpp
 
-$(TARGETDIR_libgraph.a)/graph_highlighting.o: $(TARGETDIR_libgraph.a) src/graph_highlighting.cpp
-	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/graph_highlighting.cpp
-
 $(TARGETDIR_libgraph.a)/graph_perfect_matching.o: $(TARGETDIR_libgraph.a) src/graph_perfect_matching.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ src/graph_perfect_matching.cpp
 
@@ -270,7 +266,6 @@ clean:
 		$(TARGETDIR_libgraph.a)/graph_constrained_bmatching_finder.o \
 		$(TARGETDIR_libgraph.a)/graph_decomposer.o \
 		$(TARGETDIR_libgraph.a)/graph_fast_access.o \
-		$(TARGETDIR_libgraph.a)/graph_highlighting.o \
 		$(TARGETDIR_libgraph.a)/graph_perfect_matching.o \
 		$(TARGETDIR_libgraph.a)/graph_subchain_enumerator.o \
 		$(TARGETDIR_libgraph.a)/graph_subtree_enumerator.o \

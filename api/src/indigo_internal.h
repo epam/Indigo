@@ -32,11 +32,9 @@ using namespace indigo;
 
 namespace indigo
 {
-   class GraphHighlighting;
    class BaseReaction;
    class QueryReaction;
    class Reaction;
-   class ReactionHighlighting;
    class Output;
    class Scanner;
    class SdfLoader;
@@ -133,12 +131,10 @@ public:
    virtual BaseMolecule & getBaseMolecule ();
    virtual QueryMolecule & getQueryMolecule ();
    virtual Molecule & getMolecule ();
-   virtual GraphHighlighting * getMoleculeHighlighting();
 
    virtual BaseReaction & getBaseReaction ();
    virtual QueryReaction & getQueryReaction ();
    virtual Reaction & getReaction ();
-   virtual ReactionHighlighting * getReactionHighlighting();
 
    virtual RedBlackStringObjMap< Array<char> > * getProperties();
    

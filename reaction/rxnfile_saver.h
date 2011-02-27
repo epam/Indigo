@@ -24,7 +24,6 @@ class Reaction;
 class BaseReaction;
 class QueryReaction;
 class MolfileSaver;
-class ReactionHighlighting;
 
 class RxnfileSaver
 {
@@ -37,7 +36,6 @@ public:
    void saveReaction(Reaction& reaction);
    void saveQueryReaction(QueryReaction& reaction);
 
-   ReactionHighlighting *highlighting;
    int molfile_saving_mode; // MolfileSaver::MODE_***, default zero
    bool skip_date;
 
