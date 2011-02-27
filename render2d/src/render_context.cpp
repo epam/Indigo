@@ -194,28 +194,6 @@ cairo_status_t RenderContext::writer (void *closure, const unsigned char *data, 
    return CAIRO_STATUS_SUCCESS;
 }
 
-void RenderContext::initMetaSurface() {
-   _meta_surface = cairo_pdf_surface_create_for_stream(NULL, NULL, 1, 1);
-   cairoCheckStatus();
-   _meta_cr = cairo_create(_meta_surface);
-   cairoCheckStatus();
-   cairo_scale(_meta_cr, _defaultScale, _defaultScale);
-   cairo_select_font_face(_meta_cr, "Arial", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-   cairoCheckStatus();
-}
-
-void RenderContext::destroyMetaSurface() {
-   if (_meta_cr != NULL)
-      cairo_destroy(_meta_cr);
-   if (_meta_surface != NULL)
-      cairo_surface_destroy(_meta_surface);
-}
-
-void RenderContext::getTextSize(Vec2f& sz, Vec2f& r, FONT_SIZE fontSize, const char* text) {
-   fontsSetFont(_meta_cr, fontSize, false);
-   fontsGetTextExtents(_meta_cr, text, fontSize, sz.x, sz.y, r.x, r.y);
-}
-
 void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int width, int height)
 {
    switch (opt.mode)

@@ -95,10 +95,6 @@ public:
    int getWidth() const {return _width;}
    int getHeight() const {return _height;}
 
-   void initMetaSurface();
-   void destroyMetaSurface();
-   void getTextSize(Vec2f& sz, Vec2f& r, FONT_SIZE fontSize, const char* text);
-
    void cairoCheckStatus () const;
 #ifdef _WIN32
    cairo_surface_t* createWin32Surface ();
@@ -183,9 +179,6 @@ private:
    cairo_matrix_t fontScale, fontCtm;
    cairo_font_options_t *fontOptions;    
    cairo_scaled_font_t *_scaled_fonts[FONT_SIZE_COUNT * 2];
-
-   cairo_t* _meta_cr;
-   cairo_surface_t* _meta_surface;
 
    bool metafileFontsToCurves;
    cairo_t* _cr;

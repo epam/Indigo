@@ -68,7 +68,6 @@ void RenderSingle::draw ()
 {     
    width = _cnvOpt.width;
    height = _cnvOpt.height;
-   _rc.initMetaSurface();
    _rc.fontsClear();
 
    _factory.getItem(obj).init();
@@ -112,7 +111,6 @@ void RenderSingle::draw ()
    }
    _rc.resetTransform();
    _rc.removeStoredTransform();
-   _rc.destroyMetaSurface();
 }
 
 float RenderSingle::_getScale ()
