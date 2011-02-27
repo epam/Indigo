@@ -20,14 +20,12 @@
 #include "reaction/query_reaction.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
-#include "reaction/reaction_highlighting.h"
 #include "molecule/elements.h"
 
 using namespace indigo;
 
 RSmilesLoader::RSmilesLoader (Scanner &scanner) : _scanner(scanner)
 {
-   highlighting = 0;
    ignore_closing_bond_direction_mismatch = false;
 }
 
@@ -436,9 +434,6 @@ void RSmilesLoader::_loadReaction ()
    QS_DEF(Array<int>, hl_atoms_frag);
    QS_DEF(Array<int>, hl_bonds_frag);
 
-   if (highlighting != 0)
-      highlighting->init(*_brxn);
-
    if (_rxn != 0)
       mol.reset(new Molecule());
    else
@@ -514,16 +509,13 @@ void RSmilesLoader::_loadReaction ()
 
          _brxn->getAAMArray(idx).copy(aam);
 
-         if (have_highlighting && highlighting != 0)
+         if (have_highlighting)
          {
-            highlighting->nondestructiveInit(*_brxn);
-            highlighting->getGraphHighlighting(idx).init(_brxn->getBaseMolecule(idx));
-
             Filter vfilter(hl_atoms_frag.ptr(), Filter::NEQ, 0);
             Filter efilter(hl_bonds_frag.ptr(), Filter::NEQ, 0);
 
-            highlighting->getGraphHighlighting(idx).onVertices(vfilter);
-            highlighting->getGraphHighlighting(idx).onEdges(efilter);
+            _brxn->getBaseMolecule(idx).highlightAtoms(vfilter);
+            _brxn->getBaseMolecule(idx).highlightBonds(efilter);
          }
       }
    }

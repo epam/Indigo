@@ -15,7 +15,6 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_tautomer_utils.h"
 #include "molecule/elements.h"
-#include "graph/graph_highlighting.h"
 
 using namespace indigo;
 
@@ -61,16 +60,14 @@ void MoleculeTautomerUtils::countHReplacements (BaseMolecule &g, Array<int> &h_r
 }
 
 // If core_2 != 0 highlights g1 too
-void MoleculeTautomerUtils::highlightChains (BaseMolecule &g1, BaseMolecule &g2, const Array<int> &chains_2, const int *core_2, GraphHighlighting &highlighting)
+void MoleculeTautomerUtils::highlightChains (BaseMolecule &g1, BaseMolecule &g2, const Array<int> &chains_2, const int *core_2)
 {
    int i;
-
-   highlighting.init(g2);
 
    for (i = g2.vertexBegin(); i < g2.vertexEnd(); i = g2.vertexNext(i))
    {
       if (chains_2[i] > 0 || (core_2 != 0 && core_2[i] >= 0))
-         highlighting.onVertex(i);
+         g2.highlightAtom(i);
    }
 
    for (i = g2.edgeBegin(); i < g2.edgeEnd(); i = g2.edgeNext(i))
@@ -82,11 +79,11 @@ void MoleculeTautomerUtils::highlightChains (BaseMolecule &g1, BaseMolecule &g2,
          continue;
 
       if (chains_2[edge.beg] > 0 && chains_2[edge.end] > 0 && abs(chains_2[edge.beg] - chains_2[edge.end]) == 1)
-         highlighting.onEdge(i);
+         g2.highlightBond(i);
       else if (core_2 != 0 && core_2[edge.beg] >= 0 && core_2[edge.end] >= 0)
       {
          if (g1.findEdgeIndex(core_2[edge.beg], core_2[edge.end]) != -1)
-            highlighting.onEdge(i);
+            g2.highlightBond(i);
       }
    }
 }

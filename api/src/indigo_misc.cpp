@@ -270,7 +270,6 @@ CEXPORT const char * indigoSmiles (int item)
          BaseMolecule &mol = obj.getBaseMolecule();
          
          SmilesSaver saver(output);
-         saver.highlighting = obj.getMoleculeHighlighting();
          
          if (mol.isQueryMolecule())
             saver.saveQueryMolecule(mol.asQueryMolecule());
@@ -282,7 +281,6 @@ CEXPORT const char * indigoSmiles (int item)
          BaseReaction &rxn = obj.getBaseReaction();
          
          RSmilesSaver saver(output);
-         saver.highlighting = obj.getReactionHighlighting();
          
          if (rxn.isQueryReaction())
             saver.saveQueryReaction(rxn.asQueryReaction());
@@ -312,7 +310,6 @@ CEXPORT int indigoSaveMDLCT (int item, int output)
 
          MolfileSaver saver(out);
          self.initMolfileSaver(saver);
-         saver.highlighting = obj.getMoleculeHighlighting();
          if (mol.isQueryMolecule())
             saver.saveQueryMolecule(mol.asQueryMolecule());
          else
@@ -323,7 +320,6 @@ CEXPORT int indigoSaveMDLCT (int item, int output)
          BaseReaction &rxn = obj.getBaseReaction();
          RxnfileSaver saver(out);
          self.initRxnfileSaver(saver);
-         saver.highlighting = obj.getReactionHighlighting();
          if (rxn.isQueryReaction())
             saver.saveQueryReaction(rxn.asQueryReaction());
          else
@@ -358,10 +354,6 @@ CEXPORT int indigoUnfoldHydrogens (int item)
       {
          QS_DEF(Array<int>, markers);
          obj.getMolecule().unfoldHydrogens(&markers, -1);
-
-         GraphHighlighting *hl = obj.getMoleculeHighlighting();
-         if (hl != 0)
-            hl->nondestructiveUpdate();
       }
       else if (obj.isBaseReaction())
       {
@@ -370,13 +362,6 @@ CEXPORT int indigoUnfoldHydrogens (int item)
 
          for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
             rxn.getMolecule(i).unfoldHydrogens(0, -1);
-
-         ReactionHighlighting *hl = obj.getReactionHighlighting();
-         if (hl != 0)
-         {
-            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-               hl->getGraphHighlighting(i).nondestructiveUpdate();
-         }
       }
       else
          throw IndigoError("indigoUnfoldHydrogens(): %s given", obj.debugInfo());
@@ -386,7 +371,7 @@ CEXPORT int indigoUnfoldHydrogens (int item)
    INDIGO_END(-1)
 }
 
-static void _removeHydrogens (Molecule &mol, GraphHighlighting *hl)
+static void _removeHydrogens (Molecule &mol)
 {
    QS_DEF(Array<int>, to_remove);
    int i;
@@ -400,10 +385,6 @@ static void _removeHydrogens (Molecule &mol, GraphHighlighting *hl)
 
    if (to_remove.size() > 0)
       mol.removeAtoms(to_remove);
-
-   if (hl != 0)
-      for (i = 0; i < to_remove.size(); i++)
-         hl->removeVertex(to_remove[i]);
 }
 
 CEXPORT int indigoFoldHydrogens (int item)
@@ -413,15 +394,14 @@ CEXPORT int indigoFoldHydrogens (int item)
       IndigoObject &obj = self.getObject(item);
 
       if (obj.isBaseMolecule())
-         _removeHydrogens(obj.getMolecule(), obj.getMoleculeHighlighting());
+         _removeHydrogens(obj.getMolecule());
       else if (obj.isBaseReaction())
       {
          int i;
          Reaction &rxn = obj.getReaction();
-         ReactionHighlighting *hl = obj.getReactionHighlighting();
 
          for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-            _removeHydrogens(rxn.getMolecule(i), hl == 0 ? 0 : &hl->getGraphHighlighting(i));
+            _removeHydrogens(rxn.getMolecule(i));
       }
       else
          throw IndigoError("indigoFoldHydrogens(): %s given", obj.debugInfo());
@@ -728,7 +708,6 @@ CEXPORT int indigoUnserialize (char *buf, int size)
          IcmLoader loader(scanner);
          AutoPtr<IndigoMolecule> im(new IndigoMolecule());
          loader.loadMolecule(im->mol);
-         im->highlighting.init(im->mol);
          return self.addObject(im.release());
       }
       else if (size > 3 && memcmp(buf, "ICR", 3) == 0)
@@ -737,7 +716,6 @@ CEXPORT int indigoUnserialize (char *buf, int size)
          IcrLoader loader(scanner);
          AutoPtr<IndigoReaction> ir(new IndigoReaction());
          loader.loadReaction(ir->rxn);
-         ir->highlighting.init(ir->rxn);
          return self.addObject(ir.release());
       }
       else

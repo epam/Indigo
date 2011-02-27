@@ -14,12 +14,10 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
-#include "graph/graph_highlighting.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
-#include "reaction/reaction_highlighting.h"
 #include "layout/metalayout.h"
 #include "layout/reaction_layout.h"
 #include "layout/molecule_layout.h"
@@ -55,9 +53,7 @@ RenderParams::~RenderParams ()
 void RenderParams::clearArrays ()
 {
    mols.clear();
-   molhls.clear();
    rxns.clear();
-   rxnhls.clear();
    titles.clear();
    refAtoms.clear();
 }
@@ -67,9 +63,7 @@ void RenderParams::clear ()
    relativeThickness = 1.0f;
    rmode = RENDER_NONE;
    mol.reset(NULL);
-   molhl.clear();
    rxn.reset(NULL);
-   rhl.clear();
    rOpt.clear();
    cnvOpt.clear();
    clearArrays();
@@ -150,14 +144,12 @@ void RenderParamInterface::render (RenderParams& params)
          BaseMolecule& bm = params.mol.ref();
          _prepareMolecule(params, bm);
          factory.getItemMolecule(obj).mol = &bm;
-         factory.getItemMolecule(obj).highlighting = &params.molhl;
       } else {
          for (int i = 0; i < params.mols.size(); ++i) {
             int mol = factory.addItemMolecule();
             BaseMolecule& bm = *params.mols[i];
             _prepareMolecule(params, bm);
             factory.getItemMolecule(mol).mol = &bm;
-            factory.getItemMolecule(mol).highlighting = &params.molhls[i];
             objs.push(mol);
 
             if (params.titles.size() > 0) {
@@ -175,14 +167,12 @@ void RenderParamInterface::render (RenderParams& params)
          BaseReaction& rxn = params.rxn.ref();
          _prepareReaction(params, rxn);
          factory.getItemReaction(obj).rxn = &rxn;
-         factory.getItemReaction(obj).highlighting = &params.rhl;
       } else {
          for (int i = 0; i < params.rxns.size(); ++i) {
             int rxn = factory.addItemReaction();
             BaseReaction& br = *params.rxns[i];
             _prepareReaction(params, br);
             factory.getItemReaction(rxn).rxn = &br;
-            factory.getItemReaction(rxn).highlighting = &params.rxnhls[i];
             objs.push(rxn);
 
             if (params.titles.size() > 0) {

@@ -17,7 +17,6 @@
 #include "reaction/rxnfile_loader.h"
 #include "reaction/icr_loader.h"
 #include "gzip/gzip_scanner.h"
-#include "reaction/reaction_highlighting.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
 #include "molecule/molecule_auto_loader.h"
@@ -26,7 +25,6 @@ using namespace indigo;
 
 void ReactionAutoLoader::_init ()
 {
-   highlighting = 0;
    treat_x_as_pseudoatom = false;
    ignore_closing_bond_direction_mismatch = false;
    ignore_stereocenter_errors = false;
@@ -89,7 +87,6 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          gzscanner.readAll(buf);
          ReactionAutoLoader loader2(buf);
 
-         loader2.highlighting = highlighting;
          loader2.ignore_stereocenter_errors = ignore_stereocenter_errors;
          loader2.ignore_noncritical_query_features = ignore_noncritical_query_features;
          loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
@@ -108,7 +105,6 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
       {
          BufferScanner scanner2(buf);
          RxnfileLoader loader(scanner2);
-         loader.highlighting = highlighting;
          loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
          loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
@@ -135,8 +131,6 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
 
          IcrLoader loader(*_scanner);
          loader.loadReaction((Reaction &)reaction);
-         if (highlighting != 0)
-            highlighting->init(reaction);
          return;
       }
    }
@@ -148,7 +142,6 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
 
       loader.ignore_closing_bond_direction_mismatch =
              ignore_closing_bond_direction_mismatch;
-      loader.highlighting = highlighting;
       if (query)
          loader.loadQueryReaction((QueryReaction &)reaction);
       else
@@ -159,7 +152,6 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
    else
    {
       RxnfileLoader loader(*_scanner);
-      loader.highlighting = highlighting;
       loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
       loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
       loader.ignore_noncritical_query_features = ignore_noncritical_query_features;

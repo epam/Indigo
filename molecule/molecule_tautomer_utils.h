@@ -28,7 +28,7 @@ public:
    static void countHReplacements (BaseMolecule &g, Array<int> &h_rep_count);
 
    static void highlightChains (BaseMolecule &g1, BaseMolecule &g2,
-      const Array<int> &chains_2, const int *core_2, GraphHighlighting &highlighting);
+      const Array<int> &chains_2, const int *core_2);
 
 private:
 

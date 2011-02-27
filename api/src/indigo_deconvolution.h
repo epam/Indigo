@@ -16,7 +16,6 @@
 #define __indigo_deconvolution__
 
 #include "indigo_internal.h"
-#include "graph/graph_highlighting.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule.h"
 
@@ -37,7 +36,6 @@ public:
 
       Molecule & mol_in;
       Molecule   mol_out;
-      GraphHighlighting highlight;
       QueryMolecule rgroup_mol;
       RedBlackStringObjMap< Array<char> > properties;
    private:

@@ -66,13 +66,13 @@ public:
 
    FragmentMatchCache *fmcache;
 
+   bool highlight;
+
    bool disable_unfolding_implicit_h;
    bool restore_unfolded_h;
 
    int   match_3d;       // 0 or AFFINE or CONFORMATION
    float rms_threshold;  // for AFFINE and CONFORMATION
-
-   GraphHighlighting *highlighting;
 
    void ignoreQueryAtom (int idx);
    void ignoreTargetAtom (int idx);

@@ -15,7 +15,6 @@
 #include "reaction/rsmiles_saver.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
-#include "reaction/reaction_highlighting.h"
 
 #include "molecule/smiles_saver.h"
 #include "base_cpp/output.h"
@@ -29,7 +28,6 @@ TL_CP_GET(_written_atoms),
 TL_CP_GET(_written_bonds),
 TL_CP_GET(_ncomp)
 {
-   highlighting = 0;
 }
 
 void RSmilesSaver::saveReaction (Reaction &reaction)
@@ -398,17 +396,13 @@ void RSmilesSaver::_writePseudoAtoms ()
 
 void RSmilesSaver::_writeHighlighting ()
 {
-   if (highlighting == 0)
-      return;
-
    int i;
 
    bool ha = false;
 
    for (i = 0; i < _written_atoms.size(); i++)
    {
-      if (highlighting->getGraphHighlighting(_written_atoms[i].mol).
-              hasVertex(_written_atoms[i].idx))
+      if (_brxn->getBaseMolecule(_written_atoms[i].mol).isAtomHighlighted(_written_atoms[i].idx))
       {
          if (ha)
             _output.writeChar(',');
@@ -433,8 +427,7 @@ void RSmilesSaver::_writeHighlighting ()
 
    for (i = 0; i < _written_bonds.size(); i++)
    {
-      if (highlighting->getGraphHighlighting(_written_bonds[i].mol).
-              hasEdge(_written_bonds[i].idx))
+      if (_brxn->getBaseMolecule(_written_bonds[i].mol).isBondHighlighted(_written_bonds[i].idx))
       {
          if (hb)
             _output.writeChar(',');

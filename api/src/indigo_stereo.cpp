@@ -207,7 +207,6 @@ static int _markEitherCisTrans (Molecule &mol)
 {
    MoleculeAutomorphismSearch am;
    int i, sum = 0;
-   QS_DEF(Array<int>, orbits);
 
    for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {

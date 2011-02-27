@@ -16,7 +16,6 @@
 #include "math/algebra.h"
 #include "molecule/base_molecule.h"
 #include "base_cpp/array.h"
-#include "graph/graph_highlighting.h"
 #include "graph/graph_decomposer.h"
 #include "graph/filter.h"
 #include "graph/graph_affine_matcher.h"
@@ -63,11 +62,11 @@ TL_CP_GET(_used_target_h)
    vertex_equivalence_handler = NULL;
    use_aromaticity_matcher = true;
    use_pi_systems_matcher = false;
-   highlighting = 0;
    _query = 0;
    match_3d = 0;
    rms_threshold = 0;
 
+   highlight = false;
    find_all_embeddings = false;
    find_unique_embeddings = false;
    find_unique_by_edges = false;
@@ -262,9 +261,6 @@ bool MoleculeSubstructureMatcher::find ()
      _ee->validate();
    }
 
-   if (highlighting != 0)
-      highlighting->init(_target);
-
    if (_canUseEquivalenceHeuristic(*_query))
       _ee->setEquivalenceHandler(vertex_equivalence_handler);
    else
@@ -313,16 +309,11 @@ void MoleculeSubstructureMatcher::_removeUnfoldedHydrogens ()
 {
    QS_DEF(Array<int>, atoms_to_remove);
    atoms_to_remove.clear();
+   
    for (int i = 0; i < _unfolded_target_h.size(); i++)
-   {
       if (_unfolded_target_h[i])
-      {
-         // Remove from highlighting
-         if (highlighting != 0)
-            highlighting->removeVertex(i);
          atoms_to_remove.push(i);
-      }
-   }
+   
    if (atoms_to_remove.size() > 0)
       _target.removeAtoms(atoms_to_remove);
 }
@@ -331,9 +322,6 @@ bool MoleculeSubstructureMatcher::findNext ()
 {
    if (_h_unfold)
      _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
-
-   if (highlighting != 0)
-      highlighting->init(_target);
 
    bool found = _ee->processNext();
 
@@ -760,8 +748,8 @@ int MoleculeSubstructureMatcher::_embedding_common (int *core_sub, int *core_sup
          return 1;
    }
 
-   if (highlighting != 0)
-      highlighting->onSubgraph(query, core_sub);
+   if (highlight)
+      _target.highlightSubmolecule(query, core_sub, true);
 
    if (cb_embedding != 0)
       if (!cb_embedding(query, _target, core_sub, core_super, cb_embedding_context))

@@ -17,14 +17,13 @@
 #include "base_cpp/output.h"
 #include "molecule/molecule.h"
 #include "molecule/molfile_saver.h"
-#include "graph/graph_highlighting.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
 
 using namespace indigo;
 
-MolfileSaver::MolfileSaver (Output &output) : highlighting(0),
+MolfileSaver::MolfileSaver (Output &output) :
 reactionAtomMapping(0),
 reactionAtomInversion(0),
 reactionAtomExactChange(0),
@@ -70,7 +69,7 @@ void MolfileSaver::_saveMolecule (BaseMolecule &mol, bool query)
       // if v2000 is not enough
       _v2000 = true;
 
-      if (highlighting != 0 && highlighting->numVertices() + highlighting->numVertices() > 0)
+      if (mol.hasHighlighting())
          _v2000 = false;
       if (!mol.stereocenters.haveAllAbsAny() && !mol.stereocenters.haveAllAndAny())
          _v2000 = false;
@@ -500,7 +499,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
    MoleculeStereocenters &stereocenters = mol.stereocenters;
 
-   if (stereocenters.begin() != stereocenters.end() || highlighting != 0)
+   if (stereocenters.begin() != stereocenters.end() || mol.hasHighlighting())
    {
       output.writeStringCR("M  V30 BEGIN COLLECTION");
 
@@ -546,31 +545,27 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          _writeMultiString(output, buf.ptr(), buf.size());
       }
 
-      if (highlighting != 0)
+      if (mol.hasHighlighting())
       {
-         if (highlighting->numEdges() > 0)
+         if (mol.countHighlightedBonds() > 0)
          {
-            const Array<int> &h_bonds = highlighting->getEdges();
             ArrayOutput out(buf);
-            out.writeString("MDLV30/HILITE BONDS=(");
-
-            out.printf("%d", highlighting->numEdges());
+            
+            out.printf("MDLV30/HILITE BONDS=(%d", mol.countHighlightedBonds());
+            
             for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-               if (h_bonds[i])
+               if (mol.isBondHighlighted(i))
                   out.printf(" %d", _bond_mapping[i]);
             out.writeChar(')');
 
             _writeMultiString(output, buf.ptr(), buf.size());
          }
-         if (highlighting->numVertices() > 0)
+         if (mol.countHighlightedAtoms() > 0)
          {
-            const Array<int> &h_atoms = highlighting->getVertices();
             ArrayOutput out(buf);
-            out.writeString("MDLV30/HILITE ATOMS=(");
-
-            out.printf("%d", highlighting->numVertices());
+            out.printf("MDLV30/HILITE ATOMS=(%d", mol.countHighlightedAtoms());
             for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-               if (h_atoms[i])
+               if (mol.isAtomHighlighted(i))
                   out.printf(" %d", _atom_mapping[i]);
             out.writeChar(')');
 

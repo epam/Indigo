@@ -18,13 +18,11 @@
 #include "reaction/query_reaction.h"
 #include "reaction/rxnfile_saver.h"
 #include "base_cpp/output.h"
-#include "reaction/reaction_highlighting.h"
 #include "molecule/molfile_saver.h"
 
 using namespace indigo;
 
 RxnfileSaver::RxnfileSaver(Output &output) : 
-   highlighting(0),
    _output(output)
 {
    molfile_saving_mode = MolfileSaver::MODE_AUTO;
@@ -71,8 +69,7 @@ void RxnfileSaver::_saveReaction(){
 
       for (i = _brxn->begin(); i != _brxn->end(); i = _brxn->next(i))
       {
-         if (highlighting != 0 && highlighting->getGraphHighlighting(i).numEdges() + 
-             highlighting->getGraphHighlighting(i).numVertices() > 0)
+         if (_brxn->getBaseMolecule(i).hasHighlighting())
          {
             _v2000 = false;
             break;
@@ -96,8 +93,6 @@ void RxnfileSaver::_saveReaction(){
    for (i = _brxn->reactantBegin(); i < _brxn->reactantEnd(); i = _brxn->reactantNext(i) )
    {
       _writeMolHeader();
-      if(highlighting != 0)
-         molfileSaver.highlighting = &highlighting->getGraphHighlighting(i);
       _writeMol(molfileSaver, i);
    }
 
@@ -107,8 +102,6 @@ void RxnfileSaver::_saveReaction(){
    for (int i = _brxn->productBegin(); i < _brxn->productEnd(); i = _brxn->productNext(i))
    {
       _writeMolHeader();
-      if(highlighting != 0)
-         molfileSaver.highlighting = &highlighting->getGraphHighlighting(i);
       _writeMol(molfileSaver, i);
    }
 

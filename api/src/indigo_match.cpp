@@ -82,20 +82,18 @@ CEXPORT int indigoHighlightedTarget (int match)
       QS_DEF(Array<int>, mapping);
       mol->mol.clone(match.target, &mapping, 0);
 
-      mol->highlighting.init(mol->mol);
+      int i;
 
-      for (int i = mol->mol.vertexBegin(); i != mol->mol.vertexEnd(); i = mol->mol.vertexNext(i))
+      for (i = 0; i < match.hl_atoms.size(); i++)
+         mol->mol.highlightAtom(mapping[match.hl_atoms[i]]);
+
+      for (i = 0; i < match.hl_bonds.size(); i++)
       {
-         if (match.highlighting.hasVertex(mapping[i]))
-            mol->highlighting.onVertex(i);
-      }
+         const Edge &edge = match.target.getEdge(match.hl_bonds[i]);
+         int beg = mapping[edge.beg];
+         int end = mapping[edge.end];
 
-      for (int i = mol->mol.edgeBegin(); i != mol->mol.edgeEnd(); i = mol->mol.edgeNext(i))
-      {
-         const Edge &edge = mol->mol.getEdge(i);
-
-         if (match.highlighting.hasEdge(match.target.findEdgeIndex(mapping[edge.beg], mapping[edge.end])))
-            mol->highlighting.onEdge(i);
+         mol->mol.highlightBond(mol->mol.findEdgeIndex(beg, end));
       }
 
       return self.addObject(mol.release());
@@ -142,9 +140,7 @@ IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecu
 {
    matcher.setQuery(query);
    matcher.fmcache = &fmcache;
-   matcher.highlighting = &highlighting;
-
-   highlighting.init(target);
+   matcher.highlight = true;
 
    _initialized = false;
    _found = false;
@@ -172,8 +168,6 @@ IndigoObject * IndigoMoleculeSubstructureMatchIter::next ()
    // Expand mapping to fit possible implicit hydrogens
    mapping.expandFill(target.vertexEnd(), -1);
 
-   mptr->highlighting.init(original_target);
-
    if (!matcher.getEmbeddingsStorage().isEmpty())
    {
       const GraphEmbeddingsStorage& storage = matcher.getEmbeddingsStorage();
@@ -182,19 +176,38 @@ IndigoObject * IndigoMoleculeSubstructureMatchIter::next ()
       mptr->query_atom_mapping.copy(query_mapping, query.vertexEnd());
 
       // Initialize highlighting
-      int e_count, v_count;
-      const int *edges = storage.getEdges(_embedding_index, e_count);
+      int i, e_count, v_count;
       const int *vertices = storage.getVertices(_embedding_index, v_count);
+      const int *edges = storage.getEdges(_embedding_index, e_count);
 
-      highlighting.init(target);
-      for (int i = 0; i < v_count; i++)
-         highlighting.onVertex(vertices[i]);
-      for (int i = 0; i < e_count; i++)
-         highlighting.onEdge(edges[i]);
+      for (i = 0; i < v_count; i++)
+         mptr->hl_atoms.push(mapping[vertices[i]]);
+      for (i = 0; i < e_count; i++)
+      {
+         const Edge &edge = target.getEdge(edges[i]);
+         int beg = mapping[edge.beg];
+         int end = mapping[edge.end];
+         mptr->hl_bonds.push(original_target.findEdgeIndex(beg, end));
+      }
    }
    else
    {
+      int i;
+      
       mptr->query_atom_mapping.copy(matcher.getQueryMapping(), query.vertexEnd());
+      for (i = target.vertexBegin(); i != target.vertexEnd(); i = target.vertexNext(i))
+         if (target.isAtomHighlighted(i))
+            mptr->hl_atoms.push(mapping[i]);
+      for (i = target.edgeBegin(); i != target.edgeEnd(); i = target.edgeNext(i))
+      {
+         if (target.isBondHighlighted(i))
+         {
+            const Edge &edge = target.getEdge(i);
+            int beg = mapping[edge.beg];
+            int end = mapping[edge.end];
+            mptr->hl_bonds.push(original_target.findEdgeIndex(beg, end));
+         }
+      }
    }
 
    for (int v = query.vertexBegin(); v != query.vertexEnd(); v = query.vertexNext(v))
@@ -203,8 +216,6 @@ IndigoObject * IndigoMoleculeSubstructureMatchIter::next ()
       if (mapped >= 0)
          mptr->query_atom_mapping[v] = mapping[mapped];
    }
-   mptr->highlighting.copy(highlighting, &mapping);
-
    _need_find = true;
    return mptr.release();
 }
@@ -262,7 +273,6 @@ int IndigoMoleculeSubstructureMatchIter::countMatches ()
    matcher.find_all_embeddings = true;
    matcher.cb_embedding = _matchCountEmbeddingsCallback;
    matcher.cb_embedding_context = &context;
-   matcher.highlighting = 0;
    matcher.find();
    return context.embeddings_count;
 }

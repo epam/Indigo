@@ -113,7 +113,6 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
       {
          QS_DEF(IndigoReaction, indigo_rxn);
          indigo_rxn.rxn.clone(out_reactions[i], NULL, NULL);
-         indigo_rxn.highlighting.init(out_reactions[i]);
 
          indigoArrayAdd(out_array, self.addObject(indigo_rxn.clone()));
       }

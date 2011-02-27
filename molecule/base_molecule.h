@@ -264,6 +264,20 @@ public:
    void removeBonds (const Array<int> &indices);
    void removeBond  (int idx);
 
+   void unhighlightAll ();
+   void highlightAtom (int idx);
+   void highlightBond (int idx);
+   void highlightAtoms (const Filter &filter);
+   void highlightBonds (const Filter &filter);
+   void unhighlightAtom (int idx);
+   void unhighlightBond (int idx);
+   int countHighlightedAtoms ();
+   int countHighlightedBonds ();
+   bool hasHighlighting ();
+   bool isAtomHighlighted (int idx);
+   bool isBondHighlighted (int idx);
+   void highlightSubmolecule (BaseMolecule &sub, const int *mapping, bool entire);
+
    static int getVacantPiOrbitals (int group, int charge, int radical, int conn, int *lonepairs_out);
 
    DEF_ERROR("molecule");
@@ -289,6 +303,8 @@ protected:
         Array<int> &mapping, Array<int> &edge_mapping);
 
 
+   Array<int> _hl_atoms;
+   Array<int> _hl_bonds;
    Array<Vec3f> _xyz;
    ObjArray< Array<int> > _rsite_attachment_points;
    bool _rGroupFragment;

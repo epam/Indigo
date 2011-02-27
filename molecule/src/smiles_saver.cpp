@@ -22,7 +22,6 @@
 #include "molecule/molecule_stereocenters.h"
 #include "graph/dfs_walk.h"
 #include "molecule/elements.h"
-#include "graph/graph_highlighting.h"
 #include "molecule/molecule_arom_match.h"
 
 using namespace indigo;
@@ -40,7 +39,6 @@ TL_CP_GET(_written_bonds)
    ignore_hydrogens = false;
    canonize_chiralities = false;
    write_extra_info = true;
-   highlighting = 0;
    _mol = 0;
    smarts_mode = false;
    ignore_invalid_hcount = false;
@@ -1184,7 +1182,7 @@ void SmilesSaver::writePseudoAtom (const char *label, Output &out)
 
 void SmilesSaver::_writeHighlighting ()
 {
-   if (highlighting == 0)
+   if (!_bmol->hasHighlighting())
       return;
 
    int i;
@@ -1193,7 +1191,7 @@ void SmilesSaver::_writeHighlighting ()
 
    for (i = 0; i < _written_atoms.size(); i++)
    {
-      if (highlighting->hasVertex(_written_atoms[i]))
+      if (_bmol->isAtomHighlighted(_written_atoms[i]))
       {
          if (ha)
             _output.writeChar(',');
@@ -1218,7 +1216,7 @@ void SmilesSaver::_writeHighlighting ()
 
    for (i = 0; i < _written_bonds.size(); i++)
    {
-      if (highlighting->hasEdge(_written_bonds[i]))
+      if (_bmol->isBondHighlighted(_written_bonds[i]))
       {
          if (hb)
             _output.writeChar(',');

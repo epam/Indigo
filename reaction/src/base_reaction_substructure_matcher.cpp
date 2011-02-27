@@ -14,7 +14,6 @@
 
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
-#include "reaction/reaction_highlighting.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_substructure_matcher.h"
@@ -35,7 +34,7 @@ TL_CP_GET(_molecule_core_2),
 TL_CP_GET(_amm_core_first_side)
 {
    use_aromaticity_matcher = true;
-   highlighting = 0;
+   highlight = false;
 
    match_atoms = 0;
    match_bonds = 0;
@@ -72,9 +71,6 @@ bool BaseReactionSubstructureMatcher::find ()
 
    if (prepare != 0 && !prepare(*_query, _target))
       return false;
-
-   if (highlighting != 0)
-      highlighting->init(_target);
 
    if (_query->reactantsCount() > _target.reactantsCount() || _query->productsCount() > _target.productsCount())
       return false;
@@ -199,15 +195,14 @@ int BaseReactionSubstructureMatcher::_checkAAM () const
 
 void BaseReactionSubstructureMatcher::_highlight ()
 {
-   if (highlighting == 0)
+   if (!highlight)
       return;
 
    int i;
 
    for (i = 0; i < _matchers.size() - 1; i++)
-      highlighting->getGraphHighlighting(
-      _matchers[i]._current_molecule_2).onSubgraph(_query->getBaseMolecule(
-      _matchers[i]._current_molecule_1), _matchers[i]._current_core_1.ptr());
+      _target.getBaseMolecule(_matchers[i]._current_molecule_2).highlightSubmolecule(
+         _query->getBaseMolecule(_matchers[i]._current_molecule_1), _matchers[i]._current_core_1.ptr(), true);
 }
 
 BaseReactionSubstructureMatcher::_Matcher::_Matcher (BaseReactionSubstructureMatcher &context) :

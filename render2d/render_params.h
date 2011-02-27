@@ -17,8 +17,6 @@
 
 #include "base_cpp/auto_ptr.h"
 #include "render_common.h"
-#include "graph/graph_highlighting.h"
-#include "reaction/reaction_highlighting.h"
 
 namespace indigo {
 
@@ -41,14 +39,10 @@ public:
    RENDER_MODE rmode;
 
    AutoPtr<BaseMolecule> mol;
-   GraphHighlighting molhl;
    AutoPtr<BaseReaction> rxn;
-   ReactionHighlighting rhl;
    
    PtrArray<BaseMolecule> mols;
-   ObjArray<GraphHighlighting> molhls;
    PtrArray<BaseReaction> rxns;
-   ObjArray<ReactionHighlighting> rxnhls;
    
    ObjArray<Array <char> > titles;
    Array<int> refAtoms;

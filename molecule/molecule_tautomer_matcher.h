@@ -22,7 +22,6 @@
 namespace indigo {
 
 class Molecule;
-class GraphHighlighting;
 class AromaticityMatcher;
 
 class MoleculeTautomerMatcher
@@ -30,7 +29,7 @@ class MoleculeTautomerMatcher
 public:
    DEF_ERROR("molecule tautomer matcher");
 
-   GraphHighlighting *highlighting;
+   bool highlight;
 
    MoleculeTautomerMatcher (Molecule &target, bool substructure);
 

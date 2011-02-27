@@ -133,7 +133,7 @@ bool RingoSubstructure::matchBinary (Scanner &scanner)
 
    ReactionSubstructureMatcher rsm(_target_reaction);
    rsm.setQuery(_query_reaction);
-   rsm.highlighting = &_target_highlighting;
+   rsm.highlight = true;
    rsm.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
 
    return rsm.find();
@@ -168,7 +168,7 @@ bool RingoSubstructure::matchLoadedTarget ()
 {
    ReactionSubstructureMatcher rsm(_target_reaction);
 
-   rsm.highlighting = &_target_highlighting;
+   rsm.highlight = true;
 
    rsm.setQuery(_query_reaction);
    rsm.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
@@ -193,7 +193,6 @@ void RingoSubstructure::getHighlightedTarget (Array<char> &buf)
    if (preserve_bonds_on_highlighting)
       Reaction::loadBondOrders(_target_reaction, _target_bond_types);
 
-   saver.highlighting = &_target_highlighting;
    saver.saveReaction(_target_reaction);
 }
 

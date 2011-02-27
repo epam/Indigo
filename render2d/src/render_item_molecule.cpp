@@ -26,7 +26,6 @@ using namespace indigo;
 RenderItemMolecule::RenderItemMolecule (RenderItemFactory& factory) : 
    RenderItemContainer(factory),
    mol(NULL),
-   highlighting(NULL),
    refAtom(-1),
    _core(-1)
 {
@@ -42,7 +41,6 @@ void RenderItemMolecule::init ()
 
    _core = _factory.addItemFragment();
    _factory.getItemFragment(_core).mol = mol;
-   _factory.getItemFragment(_core).highlighting = highlighting;
    _factory.getItemFragment(_core).refAtom = refAtom;
    _factory.getItemFragment(_core).init();
    

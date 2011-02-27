@@ -15,7 +15,6 @@
 #ifndef __render_item_reaction_h__
 #define __render_item_reaction_h__
 
-#include "reaction/reaction_highlighting.h"
 #include "render_item_fragment.h"
 #include "render_item_aux.h"
 #include "render_item_hline.h"
@@ -34,7 +33,6 @@ public:
    virtual void render ();
 
    BaseReaction* rxn;
-   ReactionHighlighting* highlighting;
    float hSpace, catalystOffset;
 private:
    int _addFragment (int id);

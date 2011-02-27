@@ -18,7 +18,6 @@
 #include "indigo_internal.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
-#include "reaction/reaction_highlighting.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -32,10 +31,8 @@ public:
 
    virtual ~IndigoBaseReaction ();
 
-   virtual ReactionHighlighting * getReactionHighlighting ();
    virtual RedBlackStringObjMap< Array<char> > * getProperties ();
 
-   ReactionHighlighting highlighting;
    RedBlackStringObjMap< Array<char> > properties;
 };
 
@@ -76,19 +73,17 @@ public:
 class IndigoReactionMolecule : public IndigoObject
 {
 public:
-   IndigoReactionMolecule (BaseReaction &reaction, ReactionHighlighting *highlighting, int index);
+   IndigoReactionMolecule (BaseReaction &reaction, int index);
    virtual ~IndigoReactionMolecule ();
 
    virtual BaseMolecule & getBaseMolecule ();
    virtual QueryMolecule & getQueryMolecule ();
    virtual Molecule & getMolecule ();
-   virtual GraphHighlighting * getMoleculeHighlighting ();
    virtual int getIndex ();
    virtual IndigoObject * clone ();
    virtual RedBlackStringObjMap< Array<char> > * getProperties ();
 
    BaseReaction &rxn;
-   ReactionHighlighting *hl;
    int idx;
 };
 
@@ -102,7 +97,7 @@ public:
       MOLECULES
    };
 
-   IndigoReactionIter (BaseReaction &rxn, ReactionHighlighting *hl, int subtype);
+   IndigoReactionIter (BaseReaction &rxn, int subtype);
    virtual ~IndigoReactionIter ();
 
    virtual IndigoObject * next ();
@@ -116,7 +111,6 @@ protected:
 
    int _subtype;
    BaseReaction &_rxn;
-   ReactionHighlighting *_hl;
    int _idx;
 };
 

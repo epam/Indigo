@@ -40,7 +40,6 @@ public:
    virtual int getAtomCount ();
 
    BaseMolecule* mol;
-   GraphHighlighting* highlighting;
    Array<int>* aam;
    Array<int>* reactingCenters;
    Array<int>* inversionArray;

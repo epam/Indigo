@@ -16,7 +16,6 @@
 #define __indigo_match__
 
 #include "indigo_internal.h"
-#include "graph/graph_highlighting.h"
 #include "molecule/molecule_substructure_matcher.h"
 
 #ifdef _WIN32
@@ -33,8 +32,9 @@ public:
 
    const char * debugInfo ();
 
-   GraphHighlighting highlighting;
    Array<int> query_atom_mapping;
+   Array<int> hl_atoms;
+   Array<int> hl_bonds;
    Molecule &target;
    QueryMolecule &query;
 };
@@ -56,7 +56,6 @@ public:
 
    MoleculeSubstructureMatcher matcher;
    MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
-   GraphHighlighting highlighting;
    Molecule &target, &original_target;
    QueryMolecule &query;
    int max_embeddings;

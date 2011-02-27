@@ -14,7 +14,6 @@
 
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
-#include "reaction/reaction_highlighting.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_substructure_matcher.h"

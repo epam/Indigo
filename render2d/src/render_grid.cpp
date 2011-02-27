@@ -16,7 +16,6 @@
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/output.h"
-#include "graph/graph_highlighting.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "layout/metalayout.h"
 #include "molecule/molecule.h"

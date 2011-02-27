@@ -43,7 +43,7 @@ _query(0)
    _target_decomposer.create(*_supermol);
    _target_decomposer->decompose();
 
-   highlighting = 0;
+   highlight = false;
 }
 
 void MoleculeTautomerMatcher::setRulesList (const PtrArray<TautomerRule> *rules_list)
@@ -83,9 +83,6 @@ int MoleculeTautomerMatcher::countNonHydrogens (BaseMolecule &molecule)
 
 bool MoleculeTautomerMatcher::find ()
 {
-   if (highlighting != 0)
-      highlighting->init(_target_src);
-
    if (!_substructure)
    {
       int nh_count1 = countNonHydrogens(*_query.get());
@@ -119,24 +116,17 @@ bool MoleculeTautomerMatcher::find ()
    if (matcher.findMatch())
       found = false;
 
-   // TODO: use source target and add core returning!!!
-   if (found && highlighting != 0)
+   if (found && highlight)
    {
-      GraphHighlighting highlighting_tmp;
-      GraphHighlighting *highlighting_p = highlighting;
-      
-      if (_substructure)
-         highlighting_p = &highlighting_tmp;
-
-      highlighting_p->init(*_supermol);
+      _target_src.unhighlightAll();
 
       if (_substructure)
-         MoleculeTautomerUtils::highlightChains(*_query.get(), *_supermol, _context->chains_2, _context->core_2.ptr(), *highlighting_p);
+         MoleculeTautomerUtils::highlightChains(*_query.get(), *_supermol, _context->chains_2, _context->core_2.ptr());
       else
-         MoleculeTautomerUtils::highlightChains(*_query.get(), *_supermol, _context->chains_2, 0, *highlighting_p);
+         MoleculeTautomerUtils::highlightChains(*_query.get(), *_supermol, _context->chains_2, 0);
 
       if (_substructure)
-         highlighting->copy(highlighting_tmp, &_target->getInvMapping());
+         _target_src.highlightSubmolecule(*_supermol, _target->getInvMapping().ptr(), true);
    }
 
    return found;

@@ -46,10 +46,10 @@ public:
 protected:
    void renderIdle ();
 
+   RenderItemFactory& _factory;
+   RenderContext& _rc;
    const RenderSettings& _settings;
    const RenderOptions& _opt;
-   RenderContext& _rc;
-   RenderItemFactory& _factory;
 };
 
 }

@@ -33,7 +33,6 @@ public:
    virtual void render ();
 
    BaseMolecule* mol;
-   GraphHighlighting* highlighting;
    int refAtom;
    Vec2f refAtomPos;
 private:

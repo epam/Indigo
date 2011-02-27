@@ -16,7 +16,6 @@
 #include "indigo_array.h"
 #include "indigo_molecule.h"
 #include "molecule/query_molecule.h"
-#include "graph/graph_highlighting.h"
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/tlscont.h"
@@ -61,11 +60,8 @@ void IndigoDeconvolution::_makeRGroup(Item& elem) {
    
    Molecule& mol_in = elem.mol_in;
    QueryMolecule& rgroup_out = elem.rgroup_mol;
-   GraphHighlighting& graph_high = elem.highlight;
    Molecule& mol_out = elem.mol_out;
    
-   graph_high.init(mol_in);
-
    if (mol_in.vertexCount() == 0)
       return;
 
@@ -100,7 +96,7 @@ void IndigoDeconvolution::_makeRGroup(Item& elem) {
 
 //   emb_context.renumber(map, inv_map);
 
-   graph_high.onSubgraph(_scaffold, emb_context.lastMapping.ptr());
+   mol_out.highlightSubmolecule(_scaffold, emb_context.lastMapping.ptr(), true);
 
    _createRgroups(mol_out, rgroup_out, emb_context);
 
@@ -563,10 +559,7 @@ CEXPORT int indigoDecomposedMoleculeHighlighted (int decomp) {
       AutoPtr<IndigoMolecule> mol;
       mol.create();
 
-      QS_DEF(Array<int>, map);
-      mol->mol.clone(elem.item.mol_out, &map, 0);
-      mol->highlighting.init(mol->mol);
-      mol->highlighting.copy(elem.item.highlight, &map);
+      mol->mol.clone(elem.item.mol_out, 0, 0);
       mol->copyProperties(elem.item.properties);
 
       return self.addObject(mol.release());

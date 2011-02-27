@@ -15,7 +15,6 @@
 #include "base_cpp/output.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
-#include "graph/graph_highlighting.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
 #include "render_context.h"
@@ -174,7 +173,7 @@ void RenderOptions::clear()
 }
 
 MoleculeRenderInternal::MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw) :
-_mol(NULL), _cw(cw), _highlighting(NULL), _settings(settings), _opt(opt), TL_CP_GET(_data)
+_mol(NULL), _cw(cw), _settings(settings), _opt(opt), TL_CP_GET(_data)
 {
    _data.clear();
 }
@@ -221,11 +220,6 @@ void MoleculeRenderInternal::setQueryReactionComponentProperties (const Array<in
 {
    if (exactChanges != NULL)
       _data.exactChanges.copy(*exactChanges);
-}
-
-void MoleculeRenderInternal::setHighlighting (const GraphHighlighting* highlighting)
-{
-  _highlighting = highlighting;
 }
 
 void MoleculeRenderInternal::render ()
@@ -764,12 +758,12 @@ bool MoleculeRenderInternal::_isSingleHighlighted (int aid)
 
 bool MoleculeRenderInternal::_vertexIsHighlighted (int aid)
 {
-   return _highlighting != NULL && _highlighting->numVertices() > 0 && _highlighting->hasVertex(aid);
+   return _mol->isAtomHighlighted(aid);
 }
 
 bool MoleculeRenderInternal::_edgeIsHighlighted (int bid)
 {
-   return _highlighting != NULL && _highlighting->numEdges() > 0 && _highlighting->hasEdge(bid);
+   return _mol->isBondHighlighted(bid);
 }
 
 bool MoleculeRenderInternal::_hasQueryModifiers (int aid)
@@ -1255,7 +1249,6 @@ float MoleculeRenderInternal::_getBondOffset (int aid, const Vec2f& pos, const V
    if (!_ad(aid).showLabel)
       return -1;
 
-   const Vertex& vertex = _mol->getVertex(aid);
    float maxOffset = 0, offset = 0;
    for (int k = 0; k < _ad(aid).ticount; ++k)
    {

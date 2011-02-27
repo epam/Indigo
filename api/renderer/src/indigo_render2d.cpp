@@ -18,7 +18,6 @@
 #include "indigo_renderer_internal.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
-#include "graph/graph_highlighting.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
@@ -296,11 +295,6 @@ CEXPORT int indigoRender (int object, int output)
          else
             rp.mol.reset(new Molecule());
          rp.mol->clone(self.getObject(object).getBaseMolecule(), &mapping, 0);
-         GraphHighlighting* hl = self.getObject(object).getMoleculeHighlighting();
-         if (hl != 0 && hl->numVertices() > 0) {
-            rp.molhl.init(*rp.mol.get());
-            rp.molhl.copy(*hl, &mapping);
-         }
          rp.rmode = RENDER_MOL;
       }
       else if (obj.isBaseReaction())
@@ -311,11 +305,6 @@ CEXPORT int indigoRender (int object, int output)
             rp.rxn.reset(new Reaction());
          ObjArray< Array<int> > mapping;
          rp.rxn->clone(self.getObject(object).getBaseReaction(), &mapping, 0);
-         ReactionHighlighting *hl = self.getObject(object).getReactionHighlighting();
-         if (hl != 0 && hl->getCount() > 0) {
-            rp.rhl.init(*rp.rxn.get());
-            rp.rhl.copy(*hl, mapping);
-         }
          rp.rmode = RENDER_RXN;
       } else {
          throw IndigoError("The object provided should be a molecule, a reaction or an array of such");
@@ -352,18 +341,12 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
                rp.mols.add(new QueryMolecule());
             else
                rp.mols.add(new Molecule());
-            GraphHighlighting& molhl = rp.molhls.push();
             Array<char>& title = rp.titles.push();
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
 
             QS_DEF(Array<int>, mapping);
             rp.mols.top()->clone(objs[i]->getBaseMolecule(), &mapping, 0);
-            GraphHighlighting* hl = objs[i]->getMoleculeHighlighting();
-            if (hl != 0 && hl->numVertices() > 0) {
-               molhl.init(*rp.mols.top());
-               molhl.copy(*hl, &mapping);
-            }
             rp.rmode = RENDER_MOL;
          }
       }
@@ -374,18 +357,12 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
                rp.rxns.add(new QueryReaction());
             else
                rp.rxns.add(new Reaction());
-            ReactionHighlighting& rxnhl = rp.rxnhls.push();
             Array<char>& title = rp.titles.push();
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
             
             QS_DEF(ObjArray< Array<int> >, mapping);
             rp.rxns.top()->clone(objs[i]->getBaseReaction(), &mapping, 0);
-            ReactionHighlighting *hl = objs[i]->getReactionHighlighting();
-            if (hl != 0) {
-               rxnhl.init(*rp.rxns.top());
-               rxnhl.copy(*hl, mapping);
-            }
             rp.rmode = RENDER_RXN;
          }
       } else {

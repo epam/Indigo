@@ -171,7 +171,7 @@ bool MangoSubstructure::matchLoadedTarget ()
 
    matcher.match_3d = match_3d;
    matcher.rms_threshold = rms_threshold;
-   matcher.highlighting = &_target_highlighting;
+   matcher.highlight = true;
    matcher.use_pi_systems_matcher = _use_pi_systems_matcher;
    matcher.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
    matcher.fmcache = &_fmcache;
@@ -203,7 +203,6 @@ void MangoSubstructure::getHighlightedTarget (Array<char> &molfile_buf)
    if (preserve_bonds_on_highlighting)
       Molecule::loadBondOrders(_target, _target_bond_types);
 
-   saver.highlighting = &_target_highlighting;
    saver.saveMolecule(_target);
 }
 
@@ -215,7 +214,6 @@ void MangoSubstructure::getHighlightedTarget_Smiles (Array<char> &smiles_buf)
    if (preserve_bonds_on_highlighting)
       Molecule::loadBondOrders(_target, _target_bond_types);
 
-   saver.highlighting = &_target_highlighting;
    saver.saveMolecule(_target);
 }
 

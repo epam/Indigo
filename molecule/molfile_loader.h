@@ -25,7 +25,6 @@ class Scanner;
 class BaseMolecule;
 class Molecule;
 class QueryMolecule;
-class GraphHighlighting;
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -51,9 +50,6 @@ public:
    Array<int> * reaction_atom_inversion;
    Array<int> * reaction_atom_exact_change;
    Array<int> * reaction_bond_reacting_center;
-
-   // optional highlighting
-   GraphHighlighting * highlighting;
 
    bool ignore_stereocenter_errors;
    bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
