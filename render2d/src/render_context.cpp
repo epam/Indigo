@@ -196,7 +196,10 @@ cairo_status_t RenderContext::writer (void *closure, const unsigned char *data, 
 
 void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int width, int height)
 {
-   switch (opt.mode)
+   int mode = opt.mode;
+   if (writer == NULL && (mode == MODE_HDC || mode == MODE_PRN))
+      mode = MODE_PDF;
+   switch (mode)
    {
    case MODE_NONE:
       throw Error("mode not set");
@@ -237,7 +240,7 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int
 #endif
       break;
    default:
-      throw Error("unknown mode: %d", opt.mode);
+      throw Error("unknown mode: %d", mode);
    }
 }
 
@@ -285,7 +288,7 @@ void RenderContext::initContext (int width, int height)
 {
    _width = width;
    _height = height;
-   if (opt.output == NULL)
+   if (opt.mode != DINGO_MODE::MODE_HDC && opt.mode != DINGO_MODE::MODE_PRN && opt.output == NULL)
       throw Error("output not set");
    if (_surface != NULL || _cr != NULL)
       throw Error("context is already open (or invalid)");
