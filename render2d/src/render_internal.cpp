@@ -448,7 +448,7 @@ bool MoleculeRenderInternal::_clipRayBox (float& offset, const Vec2f& p, const V
    Vec2f n(-d.y, d.x);
    Vec2f a, b;
    bool f = false;
-   float t = 0, tt;
+   float t = 0, tt = 0;
 
    a.set(rp.x, rp.y);
    b.set(rp.x + sz.x, rp.y);
