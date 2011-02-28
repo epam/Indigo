@@ -43,10 +43,10 @@ void usage (void)
            "   Horizontal and vertical margins, in pixels. No margins by default\n"
            "-thickness <number>\n"
            "   Set relative thickness factor. Default is 1.0\n"
-           "-hydro <none|terminal|hetero|terminalhetero|all>\n"
-           "   Set implicit hydrogen display mode (default is terminalhetero)\n"
            "-label <normal|forceshow|hideterminal|forcehide>\n"
            "   Set atom label display mode (default is normal)\n"
+           "-hydro <on|off>\n"
+           "   Show implicit hydrogens (default is on)\n"
            "-[de]arom\n"
            "   Force [de]aromatization\n"
            "-stereo <old|ext|none>\n"
@@ -512,7 +512,7 @@ int parseParams (Params* p, int argc, char *argv[]) {
             fprintf(stderr, "expecting an identifier after -hydro\n");
             return -1;
          }
-         indigoSetOption("render-implicit-hydrogen-mode", argv[i]);
+         indigoSetOption("render-implicit-hydrogen-visible", argv[i]);
          p->hydro_set = 1;
       }
       else if (strcmp(argv[i], "-label") == 0)
