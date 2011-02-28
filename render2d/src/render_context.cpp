@@ -288,7 +288,7 @@ void RenderContext::initContext (int width, int height)
 {
    _width = width;
    _height = height;
-   if (opt.mode != DINGO_MODE::MODE_HDC && opt.mode != DINGO_MODE::MODE_PRN && opt.output == NULL)
+   if (opt.mode != MODE_HDC && opt.mode != MODE_PRN && opt.output == NULL)
       throw Error("output not set");
    if (_surface != NULL || _cr != NULL)
       throw Error("context is already open (or invalid)");
