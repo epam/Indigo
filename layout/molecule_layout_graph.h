@@ -105,8 +105,13 @@ public:
    void copyLayoutTo (MoleculeLayoutGraph &other, const Array<int> &mapping) const;
 
    void layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing);
+   
+   const BaseMolecule *getMolecule (const int **molecule_edge_mapping) { *molecule_edge_mapping = _molecule_edge_mapping; return _molecule; }
 
    int max_iterations;
+   
+   void flipped () { _flipped = true; }
+   bool isFlipped () const { return _flipped; }
 
 #ifdef M_LAYOUT_DEBUG
    void saveDebug ();
@@ -242,6 +247,8 @@ protected:
 
    BaseMolecule *_molecule;
    const int *_molecule_edge_mapping;
+   
+   bool _flipped; // component was flipped after attaching
 
    TL_DECL(ObjArray<PatternLayout>, _patterns);
 };

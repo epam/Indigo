@@ -59,7 +59,10 @@ _graph(graph)
       _src_vertex_map[i] = cur_bc.findVertexByExtIdx(_src_vertex);
       _bc_angles[i] = cur_bc.calculateAngle(_src_vertex_map[i], v1, v2);
       sum += _bc_angles[i];
-      _vertices_l[i] = v1;
+      if (cur_bc.isFlipped())
+         _vertices_l[i] = v2;
+      else
+         _vertices_l[i] = v1;
    }
 
    _alpha = (2 * PI - sum) / _attached_bc.size();
@@ -298,5 +301,96 @@ void LayoutChooser::_makeLayout ()
          }
 
       cur_angle += _layout._bc_angles[comp_idx];
+   }
+   
+   // respect cis/trans
+   const int *molecule_edge_mapping = 0;
+   const BaseMolecule *molecule = _layout._graph.getMolecule(&molecule_edge_mapping);
+   const MoleculeLayoutGraph &drawn_comp = _layout._bc_components[_layout._attached_bc[1]];
+   MoleculeLayoutGraph &attach_comp = (MoleculeLayoutGraph &)_layout._bc_components[_layout._attached_bc[0]];
+   
+   if (_n_components == 1 && molecule != 0 && drawn_comp.isSingleEdge())
+   {
+      int drawn_idx = drawn_comp.edgeBegin();
+      int drawn_ext_idx = drawn_comp.getEdgeExtIdx(drawn_idx);
+      int parity = molecule->cis_trans.getParity(molecule_edge_mapping[drawn_ext_idx]);
+      
+      if (parity != 0)
+      {
+         int substituents[4];
+         ((BaseMolecule *)molecule)->cis_trans.getSubstituents_All(molecule_edge_mapping[drawn_ext_idx], substituents);
+         
+         int drawn_substituent = -1;
+         int drawn_substituent_idx = -1;
+         int to_draw_substituent = -1;
+         int to_draw_substituent_idx = -1;
+         int drawn_end_idx = -1;
+         const Vertex &vert = attach_comp.getVertex(_layout._src_vertex_map[0]);
+         
+         to_draw_substituent_idx = attach_comp.getVertexExtIdx(vert.neiVertex(vert.neiBegin()));
+         
+         drawn_end_idx = drawn_comp.getVertexExtIdx(drawn_comp.vertexBegin());
+         
+         if (drawn_end_idx == _layout._src_vertex)
+            drawn_end_idx = drawn_comp.getVertexExtIdx(drawn_comp.vertexNext(drawn_comp.vertexBegin()));
+         
+         const Vertex &drawn_end = _layout._graph.getVertex(drawn_end_idx);
+         drawn_substituent_idx = drawn_end.neiVertex(drawn_end.neiBegin());
+         
+         for (i = 0; i < 4; i++)
+         {
+            if (substituents[i] == _layout._graph.getVertexExtIdx(drawn_substituent_idx))
+               drawn_substituent = i;
+            else if (substituents[i] == _layout._graph.getVertexExtIdx(to_draw_substituent_idx))
+               to_draw_substituent = i;
+         }
+         
+         bool same_side = false;
+         
+         if ((parity == MoleculeCisTrans::CIS) == (abs(to_draw_substituent - drawn_substituent) == 2))
+            same_side = true;
+         
+         int to_draw_layout_idx = _layout._new_vertices.find(to_draw_substituent_idx);
+         
+         int side_sign = MoleculeCisTrans::sameside(Vec3f(_layout._graph.getPos(drawn_end_idx)), 
+                                                    Vec3f(_layout._graph.getPos(_layout._src_vertex)),
+                                                    Vec3f(_layout._graph.getPos(drawn_substituent_idx)),
+                                                    Vec3f(_layout._layout[to_draw_layout_idx]));
+         
+         bool flip = false;
+         
+         if (same_side)
+         {
+            if (side_sign == -1)
+               flip = true;
+         } else if (side_sign == 1)
+            flip = true;
+
+         // flip around double bond
+         if (flip)
+         {
+            const Vec2f &v1 = _layout._graph.getPos(drawn_end_idx);
+            const Vec2f &v2 = _layout._graph.getPos(_layout._src_vertex);
+            Vec2f d;
+            
+            d.diff(v2, v1);
+            
+            float r = d.lengthSqr();
+            
+            //if (r < 0.000000001f)
+            //   throw Error("too small edge");
+            
+            for (i = 0; i < _layout._layout.size(); i++)
+            {
+               const Vec2f &vi = _layout._layout[i];
+               
+               float t = ((vi.x - v1.x) * d.x + (vi.y - v1.y) * d.y) / r;
+               _layout._layout[i].set(2 * d.x * t + 2 * v1.x - vi.x, 2 * d.y * t + 2 * v1.y - vi.y);
+            }
+            
+            // There's only one possible layout and the component is being flipped
+            attach_comp.flipped();
+         }
+      }
    }
 }
