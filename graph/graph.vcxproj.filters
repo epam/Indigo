@@ -123,9 +123,6 @@
     <ClInclude Include="graph_fast_access.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="graph_highlighting.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="graph_perfect_matching.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -249,9 +246,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\graph_fast_access.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graph_highlighting.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\graph_perfect_matching.cpp">

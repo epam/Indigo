@@ -346,7 +346,6 @@
     <ClInclude Include="graph_constrained_bmatching_finder.h" />
     <ClInclude Include="graph_decomposer.h" />
     <ClInclude Include="graph_fast_access.h" />
-    <ClInclude Include="graph_highlighting.h" />
     <ClInclude Include="graph_perfect_matching.h" />
     <ClInclude Include="graph_subchain_enumerator.h" />
     <ClInclude Include="graph_subtree_enumerator.h" />
@@ -390,7 +389,6 @@
     <ClCompile Include="src\graph_constrained_bmatching_finder.cpp" />
     <ClCompile Include="src\graph_decomposer.cpp" />
     <ClCompile Include="src\graph_fast_access.cpp" />
-    <ClCompile Include="src\graph_highlighting.cpp" />
     <ClCompile Include="src\graph_perfect_matching.cpp" />
     <ClCompile Include="src\graph_subchain_enumerator.cpp" />
     <ClCompile Include="src\graph_subtree_enumerator.cpp" />
