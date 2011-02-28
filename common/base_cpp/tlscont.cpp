@@ -26,6 +26,9 @@ _SIDManager& _SIDManager::getInst (void)
 
 _SIDManager::~_SIDManager (void)
 {
+   qword *pId;
+   osTlsGetValue((void**)&pId, _tlsIdx);
+   delete pId;
    osTlsFree(_tlsIdx);
 }
 
