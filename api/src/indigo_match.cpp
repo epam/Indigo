@@ -283,6 +283,16 @@ const char * IndigoMoleculeSubstructureMatcher::debugInfo ()
    return "<molecule substructure matcher>";
 }
 
+void IndigoMoleculeSubstructureMatcher::ignoreAtom (int atom_index)
+{
+   _ignored_atoms.push(atom_index);
+}
+
+void IndigoMoleculeSubstructureMatcher::unignoreAllAtoms ()
+{
+   _ignored_atoms.clear();
+}
+
 IndigoMoleculeSubstructureMatchIter*
    IndigoMoleculeSubstructureMatcher::iterateQueryMatches (QueryMolecule &query,
       bool embedding_edges_uniqueness, bool find_unique_embeddings, bool for_iteration, 
@@ -312,6 +322,9 @@ IndigoMoleculeSubstructureMatchIter*
    iter->matcher.find_unique_by_edges = embedding_edges_uniqueness;
    iter->matcher.save_for_iteration = for_iteration;
 
+   for (int i = 0; i < _ignored_atoms.size(); i++)
+      iter->matcher.ignoreTargetAtom(_ignored_atoms[i]);
+
    iter->matcher.restore_unfolded_h = false;
    iter->mapping.copy(*mapping);
    iter->max_embeddings = max_embeddings;
@@ -333,17 +346,45 @@ CEXPORT int indigoSubstructureMatcher (int target, const char *mode)
    INDIGO_END(-1)
 }
 
-static IndigoMoleculeSubstructureMatchIter* getMatchIterator (int target_matcher, 
-      int query, Indigo &self, bool for_iteration, int max_embeddings)
+static IndigoMoleculeSubstructureMatcher& getMatcher (int target_matcher, Indigo &self)
 {
    IndigoObject &obj = self.getObject(target_matcher);
    if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCHER)
       throw IndigoError("%s is not a matcher object", obj.debugInfo());
 
-   IndigoMoleculeSubstructureMatcher &matcher = (IndigoMoleculeSubstructureMatcher &)obj;
+   return (IndigoMoleculeSubstructureMatcher &)obj;
+}
+
+static IndigoMoleculeSubstructureMatchIter* getMatchIterator (int target_matcher, 
+      int query, Indigo &self, bool for_iteration, int max_embeddings)
+{
+   IndigoMoleculeSubstructureMatcher &matcher = getMatcher(target_matcher, self);
+
    QueryMolecule &querymol = self.getObject(query).getQueryMolecule();
    return matcher.iterateQueryMatches(querymol, self.embedding_edges_uniqueness, 
       self.find_unique_embeddings, for_iteration, max_embeddings);
+}
+
+CEXPORT int indigoIgnoreAtom (int target_matcher, int atom_index)
+{
+   INDIGO_BEGIN
+   {
+      IndigoMoleculeSubstructureMatcher &matcher = getMatcher(target_matcher, self);
+      matcher.ignoreAtom(atom_index);
+      return 0;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoUnignoreAllAtoms (int target_matcher)
+{
+   INDIGO_BEGIN
+   {
+      IndigoMoleculeSubstructureMatcher &matcher = getMatcher(target_matcher, self);
+      matcher.unignoreAllAtoms();
+      return 0;
+   }
+   INDIGO_END(-1)
 }
 
 CEXPORT int indigoMatch (int target_matcher, int query)

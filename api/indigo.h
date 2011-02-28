@@ -550,6 +550,12 @@ CEXPORT int indigoIterateArray (int arr);
 // 'mode' is reserved for future use; currently its value is ignored
 CEXPORT int indigoSubstructureMatcher (int target, const char *mode);
 
+// Ignore target atom in the substructure matcher
+CEXPORT int indigoIgnoreAtom (int matcher, int atom_index);
+
+// Clear list of ignored target atoms in the substructure matcher
+CEXPORT int indigoUnignoreAllAtoms (int matcher);
+
 // Returns a new 'match' object on success, zero on fail
 //    matcher is an matcher object returned by indigoSubstructureMatcher
 CEXPORT int indigoMatch (int matcher, int query);

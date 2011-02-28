@@ -80,13 +80,16 @@ public:
       bool embedding_edges_uniqueness, bool find_unique_embeddings, 
       bool for_iteration, int max_embeddings);
 
+   void ignoreAtom (int atom_index);
+   void unignoreAllAtoms ();
+
    const char * debugInfo ();
 
    Molecule &target;
 
 private:
    Molecule _target_arom_h_unfolded, _target_arom;
-   Array<int> _mapping_arom_h_unfolded, _mapping_arom;
+   Array<int> _mapping_arom_h_unfolded, _mapping_arom, _ignored_atoms;
 };
 
 #ifdef _WIN32
