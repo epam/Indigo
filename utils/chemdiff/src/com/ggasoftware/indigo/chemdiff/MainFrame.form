@@ -61,6 +61,14 @@
                 <Property name="text" type="java.lang.String" value="Ignore cis-trans bonds"/>
               </Properties>
             </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="save_same_check">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="save same molecules"/>
+                <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+                  <Color id="Default Cursor"/>
+                </Property>
+              </Properties>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenuHelp">
@@ -321,16 +329,6 @@
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="load_secondActionPerformed"/>
                       </Events>
-                    </Component>
-                    <Component class="javax.swing.Box$Filler" name="filler1">
-                      <Properties>
-                        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                          <Dimension value="[32767, 32767]"/>
-                        </Property>
-                      </Properties>
-                      <AuxValues>
-                        <AuxValue name="classDetails" type="java.lang.String" value="Box.Filler.Glue"/>
-                      </AuxValues>
                     </Component>
                   </SubComponents>
                 </Container>

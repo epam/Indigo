@@ -1,4 +1,4 @@
-package com.ggasoftware.indigo.chemdiff;
+package com.ggasoftware.indigo.gui;
 
 import com.ggasoftware.indigo.*;
 import java.awt.Color;
@@ -7,7 +7,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.swing.JOptionPane;
@@ -27,7 +26,6 @@ public class MolViewPanel extends JPanel
 
    MolViewPanel( Indigo cur_indigo, IndigoRenderer cur_indigo_renderer )
    {
-      //indigo = new Indigo();
       indigo = cur_indigo;
       indigo_renderer = cur_indigo_renderer;
       indigo.setOption("render-output-format", "png");

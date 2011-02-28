@@ -15,6 +15,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        MainFrame.setNativeLookAndFeel();
         MainFrame mf = new MainFrame();
         mf.setLocationRelativeTo(null);
         mf.setVisible(true);

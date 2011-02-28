@@ -1,20 +1,24 @@
 package com.ggasoftware.indigo.chemdiff;
 
+import com.ggasoftware.indigo.gui.LoadFinishEvent;
+import com.ggasoftware.indigo.gui.ProgressEvent;
 import com.ggasoftware.indigo.*;
-import java.awt.Dimension;
+import com.ggasoftware.indigo.gui.MolData;
+import com.ggasoftware.indigo.gui.MolEvent;
+import com.ggasoftware.indigo.gui.MolEventListener;
+import com.ggasoftware.indigo.gui.MolSaver;
+import com.sun.java.swing.plaf.windows.WindowsBorders.ProgressBarBorder;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.EventObject;
+import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 
 /*
@@ -41,8 +45,16 @@ public class MainFrame extends javax.swing.JFrame
    MolViewTable out_table3;
    CurDir cur_dir;
    MolComparer mol_comparer;
-   Indigo indigo;
-   IndigoRenderer indigo_renderer;
+   MolSaver mol_saver1;
+   MolSaver mol_saver2;
+
+   public static void setNativeLookAndFeel() {
+      try {
+         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      } catch (Exception e) {
+         System.out.println("Error setting native LAF: " + e);
+      }
+   }
 
    public static String getPathToJarfileDir(Class classToUse) {
       String url = classToUse.getResource("/" + classToUse.getName().replaceAll("\\.", "/") + ".class").toString();
@@ -63,6 +75,13 @@ public class MainFrame extends javax.swing.JFrame
    /** Creates new form MainFrame */
    public MainFrame()
    {
+      Indigo indigo1;
+      IndigoRenderer indigo_renderer1;
+
+      Indigo indigo2;
+      IndigoRenderer indigo_renderer2;
+
+
       try {
       //   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       }
@@ -70,23 +89,37 @@ public class MainFrame extends javax.swing.JFrame
       
       String path = getPathToJarfileDir(MainFrame.class);
       if (path == null)
-         indigo = new Indigo();
+      {
+         indigo1 = new Indigo();
+         indigo2 = new Indigo();
+      }
       else
-         indigo = new Indigo(path + File.separator + "lib");
-      indigo_renderer = new IndigoRenderer(indigo);
-      //indigo.setOption("ignore-stereochemistry-errors", true);
-      indigo.setOption("render-margins", "5,2");
-      initComponents();
-      
-      mol_comparer = new MolComparer(this);
+      {
+         indigo1 = new Indigo(path + File.separator + "lib");
+         indigo2 = new Indigo(path + File.separator + "lib");
+      }
 
-      in_table1 = new MolViewTable(indigo, indigo_renderer, this, 0, 300, 150, false);
-      in_table2 = new MolViewTable(indigo, indigo_renderer, this, 1, 300, 150, false);
-      out_table1 = new MolViewTable(indigo, indigo_renderer, this, -1, 200, 150, false);
-      out_table2 = new MolViewTable(indigo, indigo_renderer, this, -1, 200, 150, false);
-      out_table3 = new MolViewTable(indigo, indigo_renderer, this, -1, 200, 150, false);
+      indigo_renderer1 = new IndigoRenderer(indigo1);
+      indigo_renderer2 = new IndigoRenderer(indigo2);
+
+      //indigo.setOption("ignore-stereochemistry-errors", true);
+      indigo1.setOption("render-margins", "5,2");
+      indigo2.setOption("render-margins", "5,2");
+
+      initComponents();
+
       cur_dir = new CurDir();
 
+      mol_comparer = new MolComparer(true);
+
+      mol_saver1 = new MolSaver(indigo1, cur_dir);
+      mol_saver2 = new MolSaver(indigo2, cur_dir);
+      in_table1 = new MolViewTable(indigo1, indigo_renderer1, mol_saver1, 0, 300, 150, false);
+      in_table2 = new MolViewTable(indigo2, indigo_renderer2, mol_saver2, 1, 300, 150, false);
+      out_table1 = new MolViewTable(indigo1, indigo_renderer1, mol_saver1, -1, 200, 150, false);
+      out_table2 = new MolViewTable(indigo1, indigo_renderer1, mol_saver1, -1, 200, 150, false);
+      out_table3 = new MolViewTable(indigo2, indigo_renderer2, mol_saver2, -1, 200, 150, false);
+      
       GroupLayout in_gl1 = new GroupLayout(in_table_panel1);
       in_table_panel1.setLayout(in_gl1);
 
@@ -155,7 +188,6 @@ public class MainFrame extends javax.swing.JFrame
       load_progress_bar2 = new javax.swing.JProgressBar();
       jPanel2 = new javax.swing.JPanel();
       load_second = new javax.swing.JButton();
-      filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
       action_panel = new javax.swing.JPanel();
       compare_button = new javax.swing.JButton();
       main_progress_bar = new javax.swing.JProgressBar();
@@ -185,6 +217,7 @@ public class MainFrame extends javax.swing.JFrame
       aromatizer_check = new javax.swing.JCheckBoxMenuItem();
       stereocenters_check = new javax.swing.JCheckBoxMenuItem();
       cistrans_check = new javax.swing.JCheckBoxMenuItem();
+      save_same_check = new javax.swing.JCheckBoxMenuItem();
       jMenuHelp = new javax.swing.JMenu();
       jMenuHelpAbout = new javax.swing.JMenuItem();
 
@@ -266,7 +299,6 @@ public class MainFrame extends javax.swing.JFrame
          }
       });
       jPanel2.add(load_second);
-      jPanel2.add(filler1);
 
       javax.swing.GroupLayout in_panel2Layout = new javax.swing.GroupLayout(in_panel2);
       in_panel2.setLayout(in_panel2Layout);
@@ -537,6 +569,10 @@ public class MainFrame extends javax.swing.JFrame
       cistrans_check.setText("Ignore cis-trans bonds");
       jMenuOptions.add(cistrans_check);
 
+      save_same_check.setText("save same molecules");
+      save_same_check.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+      jMenuOptions.add(save_same_check);
+
       jMainMenuBar.add(jMenuOptions);
 
       jMenuHelp.setText("Help");
@@ -567,22 +603,56 @@ public class MainFrame extends javax.swing.JFrame
       pack();
    }// </editor-fold>//GEN-END:initComponents
 
-    private void load_firstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_firstActionPerformed
-       String path = in_table1.openSdf(cur_dir);
+    private void loadButtonPressed(int table_idx)
+    {
+       MolViewTable in_table = getInputTable(table_idx);
+       JProgressBar load_progress_bar = getLoadProgressBar(table_idx);
+
+       in_table.setVisible(false);
+       in_table.setEnabled(false);
+       compare_button.setEnabled(false);
+
+       JFileChooser file_chooser = new JFileChooser();
+       MolFileFilter mon_ff = new MolFileFilter();
+       mon_ff.addExtension("sdf");
+       mon_ff.addExtension("sd");
+       mon_ff.addExtension("smi");
+       mon_ff.addExtension("cml");
+       file_chooser.setFileFilter(mon_ff);
+       file_chooser.setCurrentDirectory(new File(cur_dir.dir_path));
+       int ret_val = file_chooser.showOpenDialog(this);
+       File choosed_file = file_chooser.getSelectedFile();
+
+       if ((choosed_file == null) || (ret_val != JFileChooser.APPROVE_OPTION))
+          return;
+
+       cur_dir.dir_path = choosed_file.getParent();
+
+       if (in_table.getSdfLoader() != null)
+          in_table.getSdfLoader().interrupt();
+
+       load_progress_bar.setMinimum(0);
+       load_progress_bar.setMaximum((int) choosed_file.length());
+
+
+       String path = in_table.openSdf(choosed_file, new SdfLoadEventListener(),
+                                  new ProgressEventListener(),
+                                  getAromatizeCheckState(),
+                                  getCisTransCheckState(),
+                                  getStereocentersCheckState());
        if (path != null)
        {
-          load_progress_bar1.setString(path);
-          load_progress_bar1.setStringPainted(true);
+          load_progress_bar.setString(path);
+          load_progress_bar.setStringPainted(true);
        }
+    }
+
+    private void load_firstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_firstActionPerformed
+       loadButtonPressed(0);
     }//GEN-LAST:event_load_firstActionPerformed
 
     private void load_secondActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_secondActionPerformed
-       String path = in_table2.openSdf(cur_dir);
-       if (path != null)
-       {
-          load_progress_bar2.setString(path);
-          load_progress_bar2.setStringPainted(true);
-       }
+       loadButtonPressed(1);
     }//GEN-LAST:event_load_secondActionPerformed
 
     private void save_button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_button1ActionPerformed
@@ -591,14 +661,26 @@ public class MainFrame extends javax.swing.JFrame
 
     private void compare_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compare_buttonActionPerformed
        try {
-          mol_comparer = new MolComparer(this);
-          mol_comparer.setMols(in_table1.molecules, 0);
-          mol_comparer.setMols(in_table2.molecules, 1);
+          getCompareButton().setEnabled(false);
+
+          mol_comparer = new MolComparer(getSaveSameCheckState());
+          mol_comparer.setMols(in_table1.getMolecules(), 0);
+          mol_comparer.setMols(in_table2.getMolecules(), 1);
+
+          mol_comparer.finish_event.addListener(new CompareFinishEventListener());
+          mol_comparer.progress_event.addListener(new ProgressEventListener());
+
+          getMainProgressBar().setString("Comparing structures...");
+          getMainProgressBar().setMinimum(0);
+          getMainProgressBar().setMaximum(1000);
+          getMainProgressBar().setValue(0);
+          getMainProgressBar().setStringPainted(true);
+
 
           mol_comparer.compare();
        } catch (Exception ex) {
           JOptionPane msg_box = new JOptionPane();
-          msg_box.showMessageDialog((JFrame) (out_tab.getTopLevelAncestor()), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          msg_box.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
        }
     }//GEN-LAST:event_compare_buttonActionPerformed
 
@@ -617,7 +699,7 @@ public class MainFrame extends javax.swing.JFrame
     private void jMenuHelpAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuHelpAboutActionPerformed
        JOptionPane msg_box = new JOptionPane();
        String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC", 
-               indigo.version());
+               (new Indigo()).version());
        msg_box.showMessageDialog(this, msg, "About", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuHelpAboutActionPerformed
 
@@ -696,12 +778,112 @@ public class MainFrame extends javax.swing.JFrame
        return cistrans_check.getState();
     }
 
+    public boolean getSaveSameCheckState()
+    {
+       return  save_same_check.getState();
+    }
+
+    public class SdfLoadEventListener extends MolEventListener
+    {
+       public void handleEvent(EventObject o)
+       {
+          LoadFinishEvent mol_event = (LoadFinishEvent)o.getSource();
+          int table_idx = mol_event.table_idx;
+          int another_table_idx = (table_idx + 1) % 2;
+
+          MolViewTable in_table = getInputTable(table_idx);
+          MolViewTable another_in_table = getInputTable(another_table_idx);
+
+          in_table.setMols(in_table.getSdfLoader().mol_datas);
+          getLoadButton(table_idx).setEnabled(true);
+
+         if (another_in_table.getSdfLoader() != null &&
+             !another_in_table.getSdfLoader().isActive())
+            getCompareButton().setEnabled(true);
+
+         in_table.setVisible(true);
+       }
+    }
+
+    public class ProgressEventListener extends MolEventListener
+    {
+       public void handleEvent(EventObject o)
+       {
+          ProgressEvent mol_event = (ProgressEvent)o.getSource();
+          int table_idx = mol_event.table_idx;
+          JProgressBar progress_bar;
+
+          if (table_idx != -1)
+             progress_bar = getLoadProgressBar(table_idx);
+          else
+             progress_bar = getMainProgressBar();
+
+          progress_bar.setValue(mol_event.progress);
+       }
+    }
+
+
+    public class CompareFinishEventListener extends MolEventListener
+    {
+       public void handleEvent(EventObject o)
+       {
+          ArrayList<MolData> conc_array = new ArrayList<MolData>();
+          ArrayList< ArrayList<Integer> > conc_indexes1 = new ArrayList< ArrayList<Integer> >();
+          ArrayList< ArrayList<Integer> > conc_indexes2 = new ArrayList< ArrayList<Integer> >();
+          for (int i = 0; i < mol_comparer.conc_mols.size(); i++)
+          {
+             ArrayList<Integer> conc_indexes1_i = new ArrayList<Integer>();
+             ArrayList<Integer> conc_indexes2_i = new ArrayList<Integer>();
+             conc_array.add(mol_comparer.conc_mols.get(i));
+             conc_indexes1_i.addAll(mol_comparer.conc_mols.get(i).primary_indices);
+             conc_indexes2_i.addAll(mol_comparer.conc_mols.get(i).secondary_indices);
+             conc_indexes1.add(conc_indexes1_i);
+             conc_indexes2.add(conc_indexes2_i);
+          }
+
+          ArrayList<MolData> uniq_array1 = new ArrayList<MolData>();
+          ArrayList< ArrayList<Integer> > uniq_indexes1 = new ArrayList< ArrayList<Integer> >();
+          for (int i = 0; i < mol_comparer.uniq_mols1.size(); i++)
+          {
+             ArrayList<Integer> uniq_indexes1_i = new ArrayList<Integer>();
+             uniq_array1.add(mol_comparer.uniq_mols1.get(i));
+             uniq_indexes1_i.addAll(mol_comparer.uniq_mols1.get(i).primary_indices);
+             uniq_indexes1.add(uniq_indexes1_i);
+          }
+
+          ArrayList<MolData> uniq_array2 = new ArrayList<MolData>();
+          ArrayList< ArrayList<Integer> > uniq_indexes2 = new ArrayList< ArrayList<Integer>>();
+          for (int i = 0; i < mol_comparer.uniq_mols2.size(); i++)
+          {
+             ArrayList<Integer> uniq_indexes2_i = new ArrayList<Integer>();
+             uniq_array2.add(mol_comparer.uniq_mols2.get(i));
+             uniq_indexes2_i.addAll(mol_comparer.uniq_mols2.get(i).primary_indices);
+             uniq_indexes2.add(uniq_indexes2_i);
+          }
+
+          getOutputTable(0).setMols(conc_array, conc_indexes1, conc_indexes2);
+          getOutputTable(1).setMols(uniq_array1, uniq_indexes1, null);
+          getOutputTable(2).setMols(uniq_array2, uniq_indexes2, null);
+          getTabPanel().setSelectedIndex(1);
+          getCompareButton().setEnabled(true);
+       }
+    }
+/*
+    public Indigo getIndigo()
+    {
+       return indigo;
+    }
+
+    public IndigoRenderer getIndigoRenderer()
+    {
+       return indigo_renderer;
+    }*/
+
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JPanel action_panel;
    private javax.swing.JCheckBoxMenuItem aromatizer_check;
    private javax.swing.JCheckBoxMenuItem cistrans_check;
    private javax.swing.JButton compare_button;
-   private javax.swing.Box.Filler filler1;
    private javax.swing.JPanel in_panel1;
    private javax.swing.JPanel in_panel2;
    private javax.swing.JPanel in_tab;
@@ -740,6 +922,7 @@ public class MainFrame extends javax.swing.JFrame
    private javax.swing.JPanel save_panel1;
    private javax.swing.JPanel save_panel2;
    private javax.swing.JPanel save_panel3;
+   private javax.swing.JCheckBoxMenuItem save_same_check;
    private javax.swing.JCheckBoxMenuItem stereocenters_check;
    // End of variables declaration//GEN-END:variables
 }

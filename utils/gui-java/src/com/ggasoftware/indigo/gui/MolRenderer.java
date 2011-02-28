@@ -1,5 +1,4 @@
-
-package com.ggasoftware.indigo.chemdiff;
+package com.ggasoftware.indigo.gui;
 
 import java.awt.*;
 import java.util.logging.Level;
@@ -23,14 +22,13 @@ public class MolRenderer extends JPanel
   private BufferedImage image;
   private ImageIO image_io;
   private boolean is_reactions_mode;
-  private MolViewTable mol_table;
+  private MolTable mol_table;
 
   int cell_w;
   int cell_h;
 
   public MolRenderer( Indigo cur_indigo, IndigoRenderer cur_indigo_renderer,
-                      MolViewTable cur_mol_table,
-                      int new_cell_w, int new_cell_h, boolean is_reactions )
+                      MolTable cur_mol_table, int new_cell_w, int new_cell_h, boolean is_reactions )
   {
      mol_table = cur_mol_table;
      indigo = cur_indigo;
@@ -51,17 +49,13 @@ public class MolRenderer extends JPanel
      }
   }
 
-   @SuppressWarnings("static-access")
   public Component getTableCellRendererComponent(
               JTable table, Object value, boolean isSelected,
               boolean hasFocus, int row, int column)
   {
-     if (mol_table.getSdfLoader().isActive())
-        return this;
-
      MolCell mol_image = (MolCell)value;
 
-     if (mol_image.object == null)
+     if (mol_image.mol_iterator == null)
      {
         mol_image.image = new BufferedImage(cell_w, cell_h, BufferedImage.TYPE_INT_RGB);
         Graphics2D gc = mol_image.image.createGraphics();
@@ -77,7 +71,9 @@ public class MolRenderer extends JPanel
         return this;
      }
 
-     indigo_obj = mol_image.object.clone();
+     IndigoObject iterator = mol_image.mol_iterator;
+
+     indigo_obj = iterator.at(mol_image.index).clone();
 
      //indigo.setOption("render-comment", indigo_obj.name());
 
@@ -94,7 +90,7 @@ public class MolRenderer extends JPanel
      catch ( Exception ex )
      {
      }
-     
+
      bytes = indigo_renderer.renderToBuffer(indigo_obj);
 
      ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);

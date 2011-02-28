@@ -1,8 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package com.ggasoftware.indigo.chemdiff;
+package com.ggasoftware.indigo.gui;
 
 import com.ggasoftware.indigo.*;
 import java.awt.Dimension;
@@ -10,16 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.*;
-
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.Toolkit;
-import java.io.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableColumnModel;
 
 public class MolClicker extends MouseAdapter {
 
@@ -27,11 +16,17 @@ public class MolClicker extends MouseAdapter {
    private Timer timer;
    private Indigo indigo;
    private IndigoRenderer indigo_renderer;
+   private MolData mol;
+   MolSaver mol_saver;
 
-   public MolClicker(Indigo cur_indigo, IndigoRenderer cur_indigo_renderer) {
+   public MolClicker(Indigo cur_indigo, IndigoRenderer cur_indigo_renderer, MolSaver mol_saver) {
       indigo = cur_indigo;
       indigo_renderer = cur_indigo_renderer;
+      this.mol_saver = mol_saver;
+      mol = null;
 
+      indigo.setOption("render-comment-font-size", "14");
+      
       ActionListener actionListener = new ActionListener()
         {
 
@@ -72,18 +67,35 @@ public class MolClicker extends MouseAdapter {
       }
 
       MolCell mc = (MolCell) table.getValueAt(row, col);
+      mol = (MolData)mc;
 
-      if (mc.object == null) {
+      if (mc.mol_iterator == null)
+      {
          return;
       }
 
       JFrame cell_frame = new JFrame();
       cell_frame.setSize(new Dimension(510, 540));
+      JMenuBar cell_menu_bar = new JMenuBar();
+      JMenu menu_file = new JMenu("File");
+      JMenuItem menu_save_item = new JMenuItem("Save");
+
+      //menu_save_item.setText("Save");
+      menu_save_item.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            saveCellActionPerformed(evt);
+         }
+      });
+
+      menu_file.add(menu_save_item);
+      cell_menu_bar.add(menu_file);
+      cell_frame.setJMenuBar(cell_menu_bar);
+
 
       MolViewPanel mol_view = new MolViewPanel(indigo, indigo_renderer);
       mol_view.setImageSize(500, 500);
 
-      IndigoObject molecule = mc.object.clone();
+      IndigoObject molecule = mc.getMolecule().clone();
 
       molecule.layout();
 
@@ -91,10 +103,13 @@ public class MolClicker extends MouseAdapter {
 
       String mol_name = molecule.name();
 
-      try {
-         mol_name = molecule.canonicalSmiles();
-      } catch (Exception ex) {
-         mol_name = null;
+      if (mol_name == null || mol_name.length() == 0)
+      {
+         try {
+            mol_name = molecule.canonicalSmiles();
+         } catch (Exception ex) {
+            mol_name = null;
+         }
       }
 
       cell_frame.setTitle(mol_name);
@@ -117,5 +132,10 @@ public class MolClicker extends MouseAdapter {
       cell_frame.setLocation(windowX, windowY);
 
       cell_frame.setVisible(true);
+   }
+
+   private void saveCellActionPerformed( ActionEvent evt )
+   {
+      mol_saver.saveMol(mol);
    }
 }
