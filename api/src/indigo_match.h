@@ -90,6 +90,7 @@ public:
 private:
    Molecule _target_arom_h_unfolded, _target_arom;
    Array<int> _mapping_arom_h_unfolded, _mapping_arom, _ignored_atoms;
+   bool _arom_h_unfolded_prepared, _arom_prepared, _aromatized;
 };
 
 #ifdef _WIN32

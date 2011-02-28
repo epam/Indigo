@@ -272,6 +272,9 @@ IndigoMoleculeSubstructureMatcher::IndigoMoleculeSubstructureMatcher (Molecule &
    IndigoObject(MOLECULE_SUBSTRUCTURE_MATCHER),
    target(target)
 {
+   _arom_h_unfolded_prepared = false;
+   _arom_prepared = false;
+   _aromatized = false;
 }
 
 IndigoMoleculeSubstructureMatcher::~IndigoMoleculeSubstructureMatcher ()
@@ -300,20 +303,27 @@ IndigoMoleculeSubstructureMatchIter*
 {
    Molecule *target_prepared;
    Array<int> *mapping;
+   bool *prepared;
    if (MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens(query))
    {
-      _target_arom_h_unfolded.clone(target, &_mapping_arom_h_unfolded, 0);
+      if (!_arom_h_unfolded_prepared)
+         _target_arom_h_unfolded.clone(target, &_mapping_arom_h_unfolded, 0);
+
       target_prepared = &_target_arom_h_unfolded;
       mapping = &_mapping_arom_h_unfolded;
+      prepared = &_arom_h_unfolded_prepared;
    }
    else
    {
-      _target_arom.clone(target, &_mapping_arom, 0);
+      if (!_arom_prepared)
+         _target_arom.clone(target, &_mapping_arom, 0);
       target_prepared = &_target_arom;
       mapping = &_mapping_arom;
+      prepared = &_arom_prepared;
    }
-   if (!target.isAromatized() && !target_prepared->isAromatized())
+   if (!target.isAromatized() && !*prepared)
       target_prepared->aromatize();
+   *prepared = true;
 
    AutoPtr<IndigoMoleculeSubstructureMatchIter>
       iter(new IndigoMoleculeSubstructureMatchIter(*target_prepared, query, target));
