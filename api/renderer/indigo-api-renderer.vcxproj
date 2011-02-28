@@ -282,6 +282,14 @@
     <ClCompile Include="src\indigo_render2d.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\render2d\render2d.vcxproj">
+      <Project>{8e1de958-1a54-4739-8f12-746d9f6d04c3}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
     <ProjectReference Include="..\indigo-api.vcxproj">
       <Project>{eccdcbc8-48db-4ca6-a2b4-8b74e3358236}</Project>
       <Private>false</Private>

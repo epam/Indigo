@@ -33,7 +33,6 @@ class Output;
 class BaseMolecule;
 class QueryMolecule;
 class Molecule;
-class GraphHighlighting;
 
 class DLLEXPORT SmilesSaver
 {
@@ -48,8 +47,6 @@ public:
 
    int *vertex_ranks;
    const int *atom_atom_mapping;
-
-   GraphHighlighting *highlighting;
 
    bool ignore_hydrogens;
    bool canonize_chiralities;

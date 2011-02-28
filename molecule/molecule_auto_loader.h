@@ -16,7 +16,6 @@
 #define __molecule_auto_loader__
 
 #include "base_cpp/array.h"
-#include "graph/graph_highlighting.h"
 
 namespace indigo {
 
@@ -36,8 +35,6 @@ public:
 
    void loadMolecule (Molecule &mol);
    void loadQueryMolecule (QueryMolecule &qmol);
-
-   GraphHighlighting *highlighting;
 
    bool ignore_stereocenter_errors;
    bool ignore_closing_bond_direction_mismatch;

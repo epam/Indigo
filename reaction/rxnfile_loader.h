@@ -23,7 +23,6 @@ class Scanner;
 class BaseReaction;
 class Reaction;
 class QueryReaction;
-class ReactionHighlighting;
 class MolfileLoader;
 
 class DLLEXPORT RxnfileLoader {
@@ -34,7 +33,6 @@ public:
    void loadReaction (Reaction& reaction);
    void loadQueryReaction (QueryReaction& reaction);
 
-   ReactionHighlighting *highlighting;
 
    bool treat_x_as_pseudoatom;
    bool ignore_stereocenter_errors;

@@ -29,11 +29,6 @@ IndigoBaseReaction::~IndigoBaseReaction ()
 {
 }
 
-ReactionHighlighting * IndigoBaseReaction::getReactionHighlighting ()
-{
-   return &highlighting;
-}
-
 RedBlackStringObjMap< Array<char> > * IndigoBaseReaction::getProperties ()
 {
    return &properties;
@@ -89,12 +84,11 @@ const char * IndigoQueryReaction::getName ()
    return rxn.name.ptr();
 }
 
-IndigoReactionMolecule::IndigoReactionMolecule (BaseReaction &reaction, ReactionHighlighting *highlighting, int index) :
+IndigoReactionMolecule::IndigoReactionMolecule (BaseReaction &reaction, int index) :
 IndigoObject(REACTION_MOLECULE),
 rxn(reaction),
 idx(index)
 {
-   hl = highlighting;
 }
 
 IndigoReactionMolecule::~IndigoReactionMolecule ()
@@ -116,14 +110,6 @@ QueryMolecule & IndigoReactionMolecule::getQueryMolecule ()
    return rxn.getBaseMolecule(idx).asQueryMolecule();
 }
 
-GraphHighlighting * IndigoReactionMolecule::getMoleculeHighlighting ()
-{
-   if (hl == 0)
-      return 0;
-   hl->nondestructiveInit(rxn);
-   return &hl->getGraphHighlighting(idx);
-}
-
 int IndigoReactionMolecule::getIndex ()
 {
    return idx;
@@ -142,13 +128,12 @@ RedBlackStringObjMap< Array<char> > * IndigoReactionMolecule::getProperties ()
    return 0;
 }
 
-IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, ReactionHighlighting *hl, int subtype) :
+IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, int subtype) :
 IndigoObject(REACTION_ITER),
 _rxn(rxn)
 {
    _subtype = subtype;
    _idx = -1;
-   _hl = hl;
 }
 
 IndigoReactionIter::~IndigoReactionIter ()
@@ -197,7 +182,7 @@ IndigoObject * IndigoReactionIter::next ()
    if (_idx == _end())
       return 0;
 
-   return new IndigoReactionMolecule(_rxn, _hl, _idx);
+   return new IndigoReactionMolecule(_rxn, _idx);
 }
 
 bool IndigoReactionIter::hasNext ()
@@ -216,15 +201,6 @@ IndigoReaction * IndigoReaction::cloneFrom (IndigoObject & obj)
    AutoPtr<IndigoReaction> rxnptr;
    rxnptr.reset(new IndigoReaction());
    rxnptr->rxn.clone(rxn, 0, &mappings);
-   rxnptr->highlighting.init(rxnptr->rxn);
-
-   ReactionHighlighting *hl = obj.getReactionHighlighting();
-   if (hl != 0)
-   {
-      int i;
-      for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-         rxnptr->highlighting.getGraphHighlighting(i).copy(hl->getGraphHighlighting(i), &mappings[i]);
-   }
 
    RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
    if (props != 0)
@@ -240,15 +216,6 @@ IndigoQueryReaction * IndigoQueryReaction::cloneFrom (IndigoObject & obj)
    AutoPtr<IndigoQueryReaction> rxnptr;
    rxnptr.reset(new IndigoQueryReaction());
    rxnptr->rxn.clone(rxn, 0, &mappings);
-   rxnptr->highlighting.init(rxnptr->rxn);
-
-   ReactionHighlighting *hl = obj.getReactionHighlighting();
-   if (hl != 0)
-   {
-      int i;
-      for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-         rxnptr->highlighting.getGraphHighlighting(i).copy(hl->getGraphHighlighting(i), &mappings[i]);
-   }
 
    RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
    if (props != 0)
@@ -271,9 +238,8 @@ int _indigoIterateReaction (int reaction, int subtype)
    INDIGO_BEGIN
    {
       BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      ReactionHighlighting *hl = self.getObject(reaction).getReactionHighlighting();
 
-      return self.addObject(new IndigoReactionIter(rxn, hl, subtype));
+      return self.addObject(new IndigoReactionIter(rxn, subtype));
    }
    INDIGO_END(-1)
 }
@@ -292,13 +258,7 @@ CEXPORT int indigoLoadReaction (int source)
       loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
 
       AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
-
-      Reaction &rxn = rxnptr->rxn;
-      loader.highlighting = &rxnptr->highlighting;
-
-      loader.loadReaction(rxn);
-      if (rxnptr->highlighting.getCount() == 0)
-         rxnptr->highlighting.init(rxnptr->rxn);
+      loader.loadReaction(rxnptr->rxn);
       return self.addObject(rxnptr.release());
    }
    INDIGO_END(-1)
@@ -317,14 +277,7 @@ CEXPORT int indigoLoadQueryReaction (int source)
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
 
       AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
-
-      QueryReaction &rxn = rxnptr->rxn;
-      loader.highlighting = &rxnptr->highlighting;
-
-      loader.loadQueryReaction(rxn);
-      if (rxnptr->highlighting.getCount() == 0)
-         rxnptr->highlighting.init(rxnptr->rxn);
-
+      loader.loadQueryReaction(rxnptr->rxn);
       return self.addObject(rxnptr.release());
    }
    INDIGO_END(-1)
@@ -386,9 +339,6 @@ CEXPORT int indigoAddReactant (int reaction, int molecule)
       BaseReaction &rxn = robj.getBaseReaction();
 
       rxn.addReactantCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
-      ReactionHighlighting *hl = robj.getReactionHighlighting();
-      if (hl != 0)
-         hl->nondestructiveInit(rxn);
       return 1;
    }
    INDIGO_END(-1);
@@ -402,9 +352,6 @@ CEXPORT int indigoAddProduct (int reaction, int molecule)
       BaseReaction &rxn = robj.getBaseReaction();
 
       rxn.addProductCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
-      ReactionHighlighting *hl = robj.getReactionHighlighting();
-      if (hl != 0)
-         hl->nondestructiveInit(rxn);
       return 1;
    }
    INDIGO_END(-1);

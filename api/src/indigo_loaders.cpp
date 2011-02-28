@@ -117,7 +117,6 @@ Molecule & IndigoRdfMolecule::getMolecule ()
       loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
       loader.skip_3d_chirality = self.skip_3d_chirality;
-      loader.highlighting = &_highlighting;
       loader.loadMolecule(_mol);
       _loaded = true;
    }
@@ -130,10 +129,6 @@ BaseMolecule & IndigoRdfMolecule::getBaseMolecule ()
    return getMolecule();
 }
 
-GraphHighlighting * IndigoRdfMolecule::getMoleculeHighlighting ()
-{
-   return &_highlighting;
-}
 
 const char * IndigoRdfMolecule::getName ()
 {
@@ -172,7 +167,6 @@ Reaction & IndigoRdfReaction::getReaction ()
 
       loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-      loader.highlighting = &_highlighting;
       loader.loadReaction(_rxn);
       _loaded = true;
    }
@@ -183,11 +177,6 @@ Reaction & IndigoRdfReaction::getReaction ()
 BaseReaction & IndigoRdfReaction::getBaseReaction ()
 {
    return getReaction();
-}
-
-ReactionHighlighting * IndigoRdfReaction::getReactionHighlighting ()
-{
-   return &_highlighting;
 }
 
 const char * IndigoRdfReaction::getName ()
@@ -325,7 +314,6 @@ Molecule & IndigoSmilesMolecule::getMolecule ()
       BufferScanner scanner(_data);
       SmilesLoader loader(scanner);
 
-      loader.highlighting = &_highlighting;
       loader.loadMolecule(_mol);
       _loaded = true;
    }
@@ -335,11 +323,6 @@ Molecule & IndigoSmilesMolecule::getMolecule ()
 BaseMolecule & IndigoSmilesMolecule::getBaseMolecule ()
 {
    return getMolecule();
-}
-
-GraphHighlighting * IndigoSmilesMolecule::getMoleculeHighlighting ()
-{
-   return &_highlighting;
 }
 
 const char * IndigoSmilesMolecule::getName ()
@@ -370,7 +353,6 @@ Reaction & IndigoSmilesReaction::getReaction ()
       BufferScanner scanner(_data);
       RSmilesLoader loader(scanner);
 
-      loader.highlighting = &_highlighting;
       loader.loadReaction(_rxn);
       _loaded = true;
    }
@@ -380,11 +362,6 @@ Reaction & IndigoSmilesReaction::getReaction ()
 BaseReaction & IndigoSmilesReaction::getBaseReaction ()
 {
    return getReaction();
-}
-
-ReactionHighlighting * IndigoSmilesReaction::getReactionHighlighting ()
-{
-   return &_highlighting;
 }
 
 const char * IndigoSmilesReaction::getName ()
@@ -627,11 +604,6 @@ Molecule & IndigoCmlMolecule::getMolecule ()
 BaseMolecule & IndigoCmlMolecule::getBaseMolecule ()
 {
    return getMolecule();
-}
-
-GraphHighlighting * IndigoCmlMolecule::getMoleculeHighlighting ()
-{
-   return 0;
 }
 
 RedBlackStringObjMap< Array<char> > * IndigoCmlMolecule::getProperties()

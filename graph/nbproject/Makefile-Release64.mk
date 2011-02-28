@@ -43,7 +43,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/morgan_code.o \
 	${OBJECTDIR}/src/path_enumerator.o \
 	${OBJECTDIR}/src/automorphism_search.o \
-	${OBJECTDIR}/src/graph_highlighting.o \
 	${OBJECTDIR}/_ext/1705077469/line3f.o \
 	${OBJECTDIR}/_ext/1881957642/os_tls_posix.o \
 	${OBJECTDIR}/src/filter.o \
@@ -163,11 +162,6 @@ ${OBJECTDIR}/src/automorphism_search.o: src/automorphism_search.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/automorphism_search.o src/automorphism_search.cpp
-
-${OBJECTDIR}/src/graph_highlighting.o: src/graph_highlighting.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I../common -I.. -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/graph_highlighting.o src/graph_highlighting.cpp
 
 ${OBJECTDIR}/_ext/1705077469/line3f.o: ../common/math/line3f.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1705077469

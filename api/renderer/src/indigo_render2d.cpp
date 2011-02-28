@@ -18,7 +18,6 @@
 #include "indigo_renderer_internal.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
-#include "graph/graph_highlighting.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
@@ -128,20 +127,10 @@ void indigoRenderSetBaseColor (float r, float g, float b)
    rp.rOpt.baseColor.set((float)r, (float)g, (float)b);
 }
 
-void indigoRenderSetImplicitHydrogenMode (const char* mode)
+void indigoRenderSetImplicitHydrogenVisible (int enabled)
 {
-   TL_DECL_GET(StringIntMap, implHydroMap);
-   if (implHydroMap.size() == 0) {
-      implHydroMap.insert("none", IHM_NONE);
-      implHydroMap.insert("terminal", IHM_TERMINAL);
-      implHydroMap.insert("hetero", IHM_HETERO);
-      implHydroMap.insert("methane-hetero", IHM_METHANE_HETERO);
-      implHydroMap.insert("terminalhetero", IHM_TERMINAL_HETERO);
-      implHydroMap.insert("terminal-hetero", IHM_TERMINAL_HETERO);
-      implHydroMap.insert("all", IHM_ALL);
-   }
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.implHMode = (IMPLICIT_HYDROGEN_MODE)implHydroMap.at(mode);
+   rp.rOpt.implHVisible = enabled != 0;
 }
 
 void indigoRenderSetColoring (int enabled)
@@ -296,11 +285,6 @@ CEXPORT int indigoRender (int object, int output)
          else
             rp.mol.reset(new Molecule());
          rp.mol->clone(self.getObject(object).getBaseMolecule(), &mapping, 0);
-         GraphHighlighting* hl = self.getObject(object).getMoleculeHighlighting();
-         if (hl != 0 && hl->numVertices() > 0) {
-            rp.molhl.init(*rp.mol.get());
-            rp.molhl.copy(*hl, &mapping);
-         }
          rp.rmode = RENDER_MOL;
       }
       else if (obj.isBaseReaction())
@@ -311,11 +295,6 @@ CEXPORT int indigoRender (int object, int output)
             rp.rxn.reset(new Reaction());
          ObjArray< Array<int> > mapping;
          rp.rxn->clone(self.getObject(object).getBaseReaction(), &mapping, 0);
-         ReactionHighlighting *hl = self.getObject(object).getReactionHighlighting();
-         if (hl != 0 && hl->getCount() > 0) {
-            rp.rhl.init(*rp.rxn.get());
-            rp.rhl.copy(*hl, mapping);
-         }
          rp.rmode = RENDER_RXN;
       } else {
          throw IndigoError("The object provided should be a molecule, a reaction or an array of such");
@@ -352,18 +331,12 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
                rp.mols.add(new QueryMolecule());
             else
                rp.mols.add(new Molecule());
-            GraphHighlighting& molhl = rp.molhls.push();
             Array<char>& title = rp.titles.push();
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
 
             QS_DEF(Array<int>, mapping);
             rp.mols.top()->clone(objs[i]->getBaseMolecule(), &mapping, 0);
-            GraphHighlighting* hl = objs[i]->getMoleculeHighlighting();
-            if (hl != 0 && hl->numVertices() > 0) {
-               molhl.init(*rp.mols.top());
-               molhl.copy(*hl, &mapping);
-            }
             rp.rmode = RENDER_MOL;
          }
       }
@@ -374,18 +347,12 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
                rp.rxns.add(new QueryReaction());
             else
                rp.rxns.add(new Reaction());
-            ReactionHighlighting& rxnhl = rp.rxnhls.push();
             Array<char>& title = rp.titles.push();
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
             
             QS_DEF(ObjArray< Array<int> >, mapping);
             rp.rxns.top()->clone(objs[i]->getBaseReaction(), &mapping, 0);
-            ReactionHighlighting *hl = objs[i]->getReactionHighlighting();
-            if (hl != 0) {
-               rxnhl.init(*rp.rxns.top());
-               rxnhl.copy(*hl, mapping);
-            }
             rp.rmode = RENDER_RXN;
          }
       } else {
@@ -484,7 +451,6 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("render-comment-offset", indigoRenderSetCommentOffset);
 
    mgr.setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat);
-   mgr.setOptionHandlerString("render-implicit-hydrogen-mode", indigoRenderSetImplicitHydrogenMode);
    mgr.setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode);
    mgr.setOptionHandlerString("render-comment", indigoRenderSetComment);
    mgr.setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition);
@@ -497,6 +463,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("render-highlight-thickness-enabled", indigoRenderSetHighlightThicknessEnabled);
    mgr.setOptionHandlerBool("render-highlight-color-enabled", indigoRenderSetHighlightColorEnabled);
    mgr.setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", indigoRenderSetCenterDoubleBondWhenStereoAdjacent);
+   mgr.setOptionHandlerBool("render-implicit-hydrogen-visible", indigoRenderSetImplicitHydrogenVisible);
 
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);

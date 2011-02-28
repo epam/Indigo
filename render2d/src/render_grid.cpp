@@ -16,7 +16,6 @@
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/output.h"
-#include "graph/graph_highlighting.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "layout/metalayout.h"
 #include "molecule/molecule.h"
@@ -56,7 +55,6 @@ void RenderGrid::draw ()
 {     
    _width = _cnvOpt.width;
    _height = _cnvOpt.height;
-   _rc.initMetaSurface();
    _rc.fontsClear();
        
    bool enableRefAtoms = refAtoms.size() > 0 && _factory.isItemMolecule(objs[0]);
@@ -180,11 +178,10 @@ void RenderGrid::draw ()
    }
    _rc.restoreTransform();
    _rc.removeStoredTransform();
-   if (_cnvOpt.commentPos == COMMENT_POS_BOTTOM) {                                           
+   if (_cnvOpt.commentPos == COMMENT_POS_BOTTOM) {
       _rc.translate(0, _height - commentOffset - commentSize.y - 2*outerMargin.y);
       _drawComment();
    }
-   _rc.destroyMetaSurface();
 }
 
 float RenderGrid::_getScale ()

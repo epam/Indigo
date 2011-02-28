@@ -436,7 +436,6 @@
     <ClCompile Include="src\reaction_enumerator_state.cpp" />
     <ClCompile Include="src\reaction_exact_matcher.cpp" />
     <ClCompile Include="src\reaction_fingerprint.cpp" />
-    <ClCompile Include="src\reaction_highlighting.cpp" />
     <ClCompile Include="src\reaction_neighborhood_counters.cpp" />
     <ClCompile Include="src\reaction_product_enumerator.cpp" />
     <ClCompile Include="src\reaction_substructure_matcher.cpp" />
@@ -459,7 +458,6 @@
     <ClInclude Include="reaction_enumerator_state.h" />
     <ClInclude Include="reaction_exact_matcher.h" />
     <ClInclude Include="reaction_fingerprint.h" />
-    <ClInclude Include="reaction_highlighting.h" />
     <ClInclude Include="reaction_neighborhood_counters.h" />
     <ClInclude Include="reaction_product_enumerator.h" />
     <ClInclude Include="reaction_substructure_matcher.h" />

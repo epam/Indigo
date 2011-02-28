@@ -26,7 +26,6 @@ class Output;
 class BaseReaction;
 class QueryReaction;
 class Reaction;
-class ReactionHighlighting;
 
 class RSmilesSaver
 {
@@ -37,8 +36,6 @@ public:
 
    void saveReaction (Reaction &reaction);
    void saveQueryReaction (QueryReaction &reaction);
-
-   ReactionHighlighting *highlighting;
 
 protected:
    BaseReaction  *_brxn;

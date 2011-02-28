@@ -27,7 +27,6 @@ using namespace indigo;
 
 void MoleculeAutoLoader::_init ()
 {
-   highlighting = 0;
    ignore_stereocenter_errors = false;
    treat_x_as_pseudoatom = false;
    ignore_closing_bond_direction_mismatch = false;
@@ -145,9 +144,6 @@ bool MoleculeAutoLoader::tryMDLCT (Scanner &scanner, Array<char> &outbuf)
 
 void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 {
-   if (highlighting != 0)
-      highlighting->clear();
-
    // check for GZip format
    if (!query && _scanner->length() >= 2)
    {
@@ -165,7 +161,6 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          gzscanner.readAll(buf);
          MoleculeAutoLoader loader2(buf);
 
-         loader2.highlighting = highlighting;
          loader2.ignore_stereocenter_errors = ignore_stereocenter_errors;
          loader2.ignore_noncritical_query_features = ignore_noncritical_query_features;
          loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
@@ -186,7 +181,6 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
          loader.skip_3d_chirality = skip_3d_chirality;
          loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-         loader.highlighting = highlighting;
 
          if (query)
             loader.loadQueryMolecule((QueryMolecule &)mol);
@@ -244,7 +238,6 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       loader.ignore_closing_bond_direction_mismatch =
              ignore_closing_bond_direction_mismatch;
       loader.ignore_stereochemistry_errors = ignore_stereocenter_errors;
-      loader.highlighting = highlighting;
       if (query)
          loader.loadQueryMolecule((QueryMolecule &)mol);
       else
@@ -259,7 +252,6 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
       loader.skip_3d_chirality = skip_3d_chirality;
       loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-      loader.highlighting = highlighting;
 
       if (query)
          loader.loadQueryMolecule((QueryMolecule &)mol);

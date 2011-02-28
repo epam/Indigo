@@ -34,10 +34,8 @@ static OCIString * _ringoRSMILES (OracleEnv &env, const Array<char> &target_buf,
                                   BingoOracleContext &context)
 {
    QS_DEF(Reaction, target);
-   QS_DEF(ReactionHighlighting, highlighting);
 
    ReactionAutoLoader loader(target_buf);
-   loader.highlighting = &highlighting;
    loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
            context.ignore_closing_bond_direction_mismatch;
@@ -49,7 +47,6 @@ static OCIString * _ringoRSMILES (OracleEnv &env, const Array<char> &target_buf,
 
    RSmilesSaver saver(out);
 
-   saver.highlighting = &highlighting;
    saver.saveReaction(target);
 
    OCIString *result = 0;

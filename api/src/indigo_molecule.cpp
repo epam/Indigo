@@ -25,7 +25,6 @@
 #include "molecule/smiles_saver.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/molecule_cml_saver.h"
-#include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_inchi.h"
 #include "base_c/bitarray.h"
 #include "molecule/molecule_fingerprint.h"
@@ -48,16 +47,10 @@ void IndigoGross::toString (Array<char> &str)
 
 IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
 {
-   highlighting.clear();
 }
 
 IndigoBaseMolecule::~IndigoBaseMolecule ()
 {
-}
-
-GraphHighlighting * IndigoBaseMolecule::getMoleculeHighlighting ()
-{
-   return &highlighting;
 }
 
 RedBlackStringObjMap< Array<char> > * IndigoBaseMolecule::getProperties ()
@@ -101,11 +94,6 @@ IndigoMolecule * IndigoMolecule::cloneFrom (IndigoObject & obj)
    QS_DEF(Array<int>, mapping);
 
    molptr->mol.clone(obj.getMolecule(), 0, &mapping);
-   molptr->highlighting.init(molptr->mol);
-   
-   GraphHighlighting *hl = obj.getMoleculeHighlighting();
-   if (hl != 0)
-      molptr->highlighting.copy(*hl, &mapping);
 
    RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
    if (props != 0)
@@ -133,11 +121,6 @@ IndigoQueryMolecule * IndigoQueryMolecule::cloneFrom( IndigoObject & obj )
    QS_DEF(Array<int>, mapping);
 
    molptr->qmol.clone(obj.getQueryMolecule(), 0, &mapping);
-   molptr->highlighting.init(molptr->qmol);
-
-   GraphHighlighting *hl = obj.getMoleculeHighlighting();
-   if (hl != 0)
-      molptr->highlighting.copy(*hl, &mapping);
 
    RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
    if (props != 0)
@@ -383,7 +366,6 @@ CEXPORT int indigoLoadMolecule (int source)
       AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
 
       Molecule &mol = molptr->mol;
-      loader.highlighting = &molptr->highlighting;
 
       loader.loadMolecule(mol);
 
@@ -405,7 +387,6 @@ CEXPORT int indigoLoadQueryMolecule (int source)
       AutoPtr<IndigoQueryMolecule> molptr(new IndigoQueryMolecule());
 
       QueryMolecule &qmol = molptr->qmol;
-      loader.highlighting = &molptr->highlighting;
 
       loader.loadQueryMolecule(qmol);
       return self.addObject(molptr.release());
@@ -440,7 +421,6 @@ CEXPORT int indigoSaveMolfile (int molecule, int output)
 
       MolfileSaver saver(out);
       self.initMolfileSaver(saver);
-      saver.highlighting = obj.getMoleculeHighlighting();
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());
       else
@@ -476,7 +456,6 @@ CEXPORT int indigoSdfAppend (int output, int molecule)
 
       MolfileSaver saver(out);
       self.initMolfileSaver(saver);
-      saver.highlighting = self.getObject(molecule).getMoleculeHighlighting();
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());
       else
@@ -1089,10 +1068,6 @@ BaseMolecule & IndigoRGroupFragment::getBaseMolecule ()
    return getQueryMolecule();
 }
 
-GraphHighlighting * IndigoRGroupFragment::getMoleculeHighlighting ()
-{
-   return 0;
-}
 
 IndigoRGroupFragmentsIter::IndigoRGroupFragmentsIter (IndigoRGroup& rgp) :
 IndigoObject(RGROUP_FRAGMENTS_ITER)
@@ -2536,7 +2511,6 @@ CEXPORT int indigoCreateMolecule ()
    INDIGO_BEGIN
    {
       AutoPtr<IndigoMolecule> obj(new IndigoMolecule());
-      obj->highlighting.init(obj->mol);
       return self.addObject(obj.release());
    }
    INDIGO_END(-1)

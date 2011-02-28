@@ -16,7 +16,6 @@
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/output.h"
-#include "graph/graph_highlighting.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "layout/metalayout.h"
 #include "molecule/molecule.h"
@@ -68,7 +67,6 @@ void RenderSingle::draw ()
 {     
    width = _cnvOpt.width;
    height = _cnvOpt.height;
-   _rc.initMetaSurface();
    _rc.fontsClear();
 
    _factory.getItem(obj).init();
@@ -112,7 +110,6 @@ void RenderSingle::draw ()
    }
    _rc.resetTransform();
    _rc.removeStoredTransform();
-   _rc.destroyMetaSurface();
 }
 
 float RenderSingle::_getScale ()

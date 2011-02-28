@@ -20,7 +20,6 @@
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction_neighborhood_counters.h"
-#include "reaction/reaction_highlighting.h"
 
 using namespace indigo;
 
@@ -72,7 +71,6 @@ protected:
    ReactionAtomNeighbourhoodCounters _nei_target_counters;
    ReactionAtomNeighbourhoodCounters _nei_query_counters;
 
-   ReactionHighlighting _target_highlighting;
    ObjArray< Array<int> > _target_bond_types;
 
    Array<byte> _query_fp;

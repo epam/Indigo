@@ -20,7 +20,6 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule_stereocenters.h"
-#include "graph/graph_highlighting.h"
 #include "molecule/elements.h"
 #include "graph/cycle_basis.h"
 
@@ -32,7 +31,6 @@ TL_CP_GET(_atoms),
 TL_CP_GET(_bonds)
 {
    reaction_atom_mapping = 0;
-   highlighting = 0;
    inside_rsmiles = false;
    ignore_closing_bond_direction_mismatch = false;
    ignore_stereochemistry_errors = false;
@@ -370,13 +368,10 @@ void SmilesLoader::_readOtherStuff ()
          {
             int idx = _scanner.readUnsigned();
 
-            if (highlighting != 0)
-            {
-               if (a)
-                  highlighting->onVertex(idx);
-               else
-                  highlighting->onEdge(idx);
-            }
+            if (a)
+               _bmol->highlightAtom(idx);
+            else
+               _bmol->highlightBond(idx);
 
             if (_scanner.lookNext() == ',')
                _scanner.skip(1);
@@ -406,8 +401,6 @@ void SmilesLoader::_loadMolecule ()
    cycles.clear();
    pending_bonds_pool.clear();
    atom_stack.clear();
-   if (highlighting != 0)
-      highlighting->clear();
 
    bool first_atom = true;
 
@@ -950,9 +943,6 @@ void SmilesLoader::_loadMolecule ()
 
    _calcStereocenters();
    _calcCisTrans();
-
-   if (highlighting != 0)
-      highlighting->init(*_bmol);
 
    _scanner.skipSpace();
 

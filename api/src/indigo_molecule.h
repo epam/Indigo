@@ -21,7 +21,6 @@
 #endif
 
 #include "indigo_internal.h"
-#include "graph/graph_highlighting.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule.h"
 #include "graph/graph_subtree_enumerator.h"
@@ -35,12 +34,9 @@ public:
 
    virtual ~IndigoBaseMolecule ();
 
-   virtual GraphHighlighting * getMoleculeHighlighting ();
    virtual RedBlackStringObjMap< Array<char> > * getProperties ();
 
    const char * debugInfo ();
-
-   GraphHighlighting highlighting;
 
    RedBlackStringObjMap< Array<char> > properties;
 };
@@ -128,7 +124,6 @@ public:
 
    virtual QueryMolecule & getQueryMolecule ();
    virtual BaseMolecule & getBaseMolecule ();
-   virtual GraphHighlighting * getMoleculeHighlighting ();
    virtual int getIndex ();
 
    IndigoRGroup rgroup;

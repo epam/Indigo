@@ -81,11 +81,6 @@ Molecule & IndigoArrayElement::getMolecule ()
    return array->objects[idx]->getMolecule();
 }
 
-GraphHighlighting * IndigoArrayElement::getMoleculeHighlighting ()
-{
-   return array->objects[idx]->getMoleculeHighlighting();
-}
-
 BaseReaction & IndigoArrayElement::getBaseReaction ()
 {
    return array->objects[idx]->getBaseReaction();
@@ -94,11 +89,6 @@ BaseReaction & IndigoArrayElement::getBaseReaction ()
 Reaction & IndigoArrayElement::getReaction ()
 {
    return array->objects[idx]->getReaction();
-}
-
-ReactionHighlighting * IndigoArrayElement::getReactionHighlighting ()
-{
-   return array->objects[idx]->getReactionHighlighting();
 }
 
 IndigoObject * IndigoArrayElement::clone ()

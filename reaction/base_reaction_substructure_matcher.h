@@ -24,7 +24,6 @@
 namespace indigo {
 
 class Reaction;
-class ReactionHighlighting;
 class ReactionAtomNeighbourhoodCounters;
 class BaseReaction;
 class Graph;
@@ -46,9 +45,8 @@ public:
    void setNeiCounters (const ReactionAtomNeighbourhoodCounters *query_counters,
       const ReactionAtomNeighbourhoodCounters *target_counters);
 
+   bool highlight;
    bool use_aromaticity_matcher;
-
-   ReactionHighlighting *highlighting;
 
    bool find ();
 

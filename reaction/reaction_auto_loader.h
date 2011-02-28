@@ -23,7 +23,6 @@ class Scanner;
 class BaseReaction;
 class Reaction;
 class QueryReaction;
-class ReactionHighlighting;
 
 class DLLEXPORT ReactionAutoLoader
 {
@@ -36,8 +35,6 @@ public:
 
    void loadReaction (Reaction &reaction);
    void loadQueryReaction (QueryReaction &reaction);
-
-   ReactionHighlighting *highlighting;
 
    bool treat_x_as_pseudoatom;
    bool ignore_closing_bond_direction_mismatch;

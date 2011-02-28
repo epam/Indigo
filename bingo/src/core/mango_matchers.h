@@ -87,8 +87,6 @@ protected:
    // cmf loader for delayed xyz loading
    Obj<CmfLoader> cmf_loader;
 
-   GraphHighlighting _target_highlighting;
-   
    bool _query_has_stereocare_bonds;
    bool _query_has_stereocenters;
    bool _query_has_explicit_valence;
@@ -281,7 +279,6 @@ protected:
 
    AutoPtr<BaseMolecule> _query;
    Molecule          _target;
-   GraphHighlighting _target_highlighting;
    Array<char>       _query_gross_str;
    Array<byte>       _query_fp; 
    bool              _query_data_valid;

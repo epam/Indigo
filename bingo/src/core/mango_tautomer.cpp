@@ -163,8 +163,7 @@ bool MangoTautomer::matchLoadedTarget ()
    matcher.setRulesList(&_context.tautomer_rules);
    matcher.setRules(_params.conditions, _params.force_hydrogens, _params.ring_chain);
    matcher.setQuery(_query.ref());
-
-   matcher.highlighting = &_target_highlighting;
+   matcher.highlight = true;
 
    return matcher.find();
 }
@@ -184,7 +183,6 @@ void MangoTautomer::getHighlightedTarget (Array<char> &molfile_buf)
    if (preserve_bonds_on_highlighting)
       Molecule::loadBondOrders(_target, _target_bond_types);
 
-   saver.highlighting = &_target_highlighting;
    saver.saveMolecule(_target);
 }
 

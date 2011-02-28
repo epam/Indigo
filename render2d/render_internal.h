@@ -31,8 +31,6 @@ public:
    void setReactionComponentProperties (const Array<int>* aam, const Array<int>* reactingCenters, const Array<int>* inversions);
    void setQueryReactionComponentProperties (const Array<int>* exactChanges);
 
-   void setHighlighting (const GraphHighlighting* highlighting);
-
    DEF_ERROR("molecule render internal");
 private:
    enum STEREOGROUPS_MODE {STEREOGROUPS_SHOW, STEREOGROUPS_HIDE};
@@ -126,10 +124,9 @@ private:
    RenderContext& _cw;
    float _scale;
    Vec2f _min, _max;
-   const RenderOptions& _opt;
    LocalOptions _lopt;
-   const GraphHighlighting* _highlighting;
    const RenderSettings& _settings;
+   const RenderOptions& _opt;
    TL_CP_DECL(MoleculeRenderData, _data);
 };
 

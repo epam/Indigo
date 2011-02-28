@@ -15,7 +15,6 @@
 
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
-#include "reaction/reaction_highlighting.h"
 #include "reaction/rxnfile_loader.h"
 #include "molecule/molfile_loader.h"
 #include "base_cpp/scanner.h"
@@ -23,7 +22,6 @@
 using namespace indigo;
 
 RxnfileLoader::RxnfileLoader (Scanner& scanner): _scanner(scanner){
-   highlighting = 0;
    _v3000 = false;
    ignore_stereocenter_errors = false;
    ignore_noncritical_query_features = false;
@@ -50,9 +48,6 @@ void RxnfileLoader::loadQueryReaction(QueryReaction& rxn){
 void RxnfileLoader::_loadReaction(){
    _brxn->clear();
 
-   if (highlighting != 0)
-      highlighting->clear();
-
    MolfileLoader molfileLoader(_scanner);
 
    molfileLoader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
@@ -63,8 +58,6 @@ void RxnfileLoader::_loadReaction(){
    _readReactantsHeader();
    for (int i = 0; i < _n_reactants; i++) {
       int index = _brxn->addReactant();
-      if (highlighting != 0)
-         highlighting->nondestructiveInit(*_brxn);
 
       _readMolHeader();
       _readMol(molfileLoader, index);
@@ -75,8 +68,6 @@ void RxnfileLoader::_loadReaction(){
    for (int i = 0; i < _n_products; i++) {
       int index = _brxn->addProduct();
 
-      if (highlighting != 0)
-         highlighting->nondestructiveInit(*_brxn);
       _readMolHeader();
       _readMol(molfileLoader, index);
    }
@@ -189,9 +180,6 @@ void RxnfileLoader::_readMol (MolfileLoader &loader, int index) {
    if (_qrxn != 0)
       loader.reaction_atom_exact_change = &_qrxn->getExactChangeArray(index);
 
-   if (highlighting != 0)
-      loader.highlighting = &highlighting->getGraphHighlighting(index);
-   
    if (_qrxn != 0)
    {
       if (_v3000)

@@ -14,6 +14,7 @@
 
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
+#include "molecule/molecule_arom_match.h"
 
 using namespace indigo;
 
@@ -53,6 +54,8 @@ void BaseMolecule::clear ()
    data_sgroups.clear();
    superatoms.clear();
    Graph::clear();
+   _hl_atoms.clear();
+   _hl_bonds.clear();
 }
 
 bool BaseMolecule::hasCoord (BaseMolecule &mol)
@@ -191,6 +194,9 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
 
       _mergeSGroupWithSubmolecule(gg, supergg, mol, *mapping_out, edge_mapping);
    }
+
+   // highlighting
+   highlightSubmolecule(mol, mapping_out->ptr(), false);
 
    // subclass stuff (Molecule or QueryMolecule)
    _mergeWithSubmolecule(mol, vertices, edges, *mapping_out, skip_flags);
@@ -413,8 +419,18 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
          multiple_groups.remove(j);
    }
 
+   // stereo
    stereocenters.removeAtoms(indices);
    cis_trans.buildOnSubmolecule(*this, mapping.ptr());
+
+   // highlighting
+   for (i = 0; i < indices.size(); i++)
+   {
+      const Vertex &vertex = getVertex(indices[i]);
+      unhighlightAtom(indices[i]);
+      for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+         unhighlightBond(vertex.neiEdge(j));
+   }
 
    // subclass (Molecule or QueryMolecule) removes its data
    _removeAtoms(indices, mapping.ptr());
@@ -449,7 +465,10 @@ void BaseMolecule::removeBonds (const Array<int> &indices)
    stereocenters.removeBonds(indices);
 
    for (int i = 0; i < indices.size(); i++)
+   {
+      unhighlightBond(indices[i]);
       removeEdge(indices[i]);
+   }
 }
 
 void BaseMolecule::removeBond (int idx)
@@ -766,5 +785,123 @@ void BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
          throw Error("internal: edge is not mapped");
 
       sgroup.bonds.push(edge_mapping[super.bonds[i]]);
+   }
+}
+
+void BaseMolecule::unhighlightAll ()
+{
+   _hl_atoms.clear();
+   _hl_bonds.clear();
+}
+
+void BaseMolecule::highlightAtom (int idx)
+{
+   _hl_atoms.expandFill(idx + 1, 0);
+   _hl_atoms[idx] = 1;
+}
+
+void BaseMolecule::highlightBond (int idx)
+{
+   _hl_bonds.expandFill(idx + 1, 0);
+   _hl_bonds[idx] = 1;
+}
+
+void BaseMolecule::highlightAtoms (const Filter &filter)
+{
+   int i;
+
+   for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+      if (filter.valid(i))
+         highlightAtom(i);
+}
+
+void BaseMolecule::highlightBonds (const Filter &filter)
+{
+   int i;
+   
+   for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
+      if (filter.valid(i))
+         highlightBond(i);
+}
+
+void BaseMolecule::unhighlightAtom (int idx)
+{
+   if (_hl_atoms.size() > idx)
+      _hl_atoms[idx] = 0;
+}
+
+void BaseMolecule::unhighlightBond (int idx)
+{
+   if (_hl_bonds.size() > idx)
+      _hl_bonds[idx] = 0;
+}
+
+int BaseMolecule::countHighlightedAtoms ()
+{
+   int i, res = 0;
+
+   for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+   {
+      if (i >= _hl_atoms.size())
+         break;
+      res += _hl_atoms[i];
+   }
+
+   return res;
+}
+
+int BaseMolecule::countHighlightedBonds ()
+{
+   int i, res = 0;
+
+   for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
+   {
+      if (i >= _hl_bonds.size())
+         break;
+      res += _hl_bonds[i];
+   }
+
+   return res;
+}
+
+bool BaseMolecule::hasHighlighting ()
+{
+   return countHighlightedAtoms() > 0 || countHighlightedBonds() > 0;
+}
+
+bool BaseMolecule::isAtomHighlighted (int idx)
+{
+   return _hl_atoms.size() > idx && _hl_atoms[idx] == 1;
+}
+
+bool BaseMolecule::isBondHighlighted (int idx)
+{
+   return _hl_bonds.size() > idx && _hl_bonds[idx] == 1;
+}
+
+void BaseMolecule::highlightSubmolecule (BaseMolecule &subgraph, const int *mapping, bool entire)
+{
+   int i;
+   
+   for (i = subgraph.vertexBegin(); i != subgraph.vertexEnd(); i = subgraph.vertexNext(i))
+      if (mapping[i] >= 0 && (entire || subgraph.isAtomHighlighted(i)))
+         highlightAtom(mapping[i]);
+
+   for (i = subgraph.edgeBegin(); i != subgraph.edgeEnd(); i = subgraph.edgeNext(i))
+   {
+      if (!entire && !subgraph.isBondHighlighted(i))
+         continue;
+
+      const Edge &edge = subgraph.getEdge(i);
+
+      int beg = mapping[edge.beg];
+      int end = mapping[edge.end];
+
+      if (beg >= 0 && end >= 0)
+      {
+         int edge_idx = findEdgeIndex(beg, end);
+         if (edge_idx >= 0)
+            highlightBond(edge_idx);
+      }
    }
 }

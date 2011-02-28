@@ -89,8 +89,6 @@
       <itemPath>graph_decomposer.h</itemPath>
       <itemPath>src/graph_fast_access.cpp</itemPath>
       <itemPath>graph_fast_access.h</itemPath>
-      <itemPath>src/graph_highlighting.cpp</itemPath>
-      <itemPath>graph_highlighting.h</itemPath>
       <itemPath>src/graph_perfect_matching.cpp</itemPath>
       <itemPath>graph_perfect_matching.h</itemPath>
       <itemPath>src/graph_subchain_enumerator.cpp</itemPath>

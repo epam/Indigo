@@ -31,7 +31,6 @@ class Scanner;
 class BaseMolecule;
 class Molecule;
 class QueryMolecule;
-class GraphHighlighting;
 
 class DLLEXPORT SmilesLoader
 {
@@ -47,8 +46,6 @@ public:
    void loadSMARTS (QueryMolecule &mol);
 
    Array<int> * reaction_atom_mapping;
-
-   GraphHighlighting * highlighting;
 
    bool inside_rsmiles;
 

@@ -38,7 +38,6 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
                                  BingoOracleContext &context, bool canonical)
 {
    QS_DEF(Molecule, target);
-   QS_DEF(GraphHighlighting, highlighting);
 
    profTimerStart(tload, "smiles.load_molecule");
    MoleculeAutoLoader loader(target_buf);
@@ -46,7 +45,6 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
    loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
            context.ignore_closing_bond_direction_mismatch;
-   loader.highlighting = &highlighting;
    loader.skip_3d_chirality = true;
    loader.loadMolecule(target);
    profTimerStop(tload);
@@ -72,7 +70,6 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
 
       SmilesSaver saver(out);
 
-      saver.highlighting = &highlighting;
       saver.saveMolecule(target);
    }
    

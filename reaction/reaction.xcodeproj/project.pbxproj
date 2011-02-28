@@ -11,7 +11,6 @@
 		A778DF121250ADE00098784F /* reaction_exact_matcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A778DF101250ADE00098784F /* reaction_exact_matcher.cpp */; };
 		A795EFE211B51B7D005A9036 /* base_reaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A795EFDF11B51B7D005A9036 /* base_reaction.cpp */; };
 		A795EFE311B51B7D005A9036 /* query_reaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A795EFE011B51B7D005A9036 /* query_reaction.cpp */; };
-		A795EFE411B51B7D005A9036 /* reaction_highlighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A795EFE111B51B7D005A9036 /* reaction_highlighting.cpp */; };
 		A7A3DB39117F6FB800DA2893 /* reaction_enumerator_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7A3DB37117F6FB800DA2893 /* reaction_enumerator_state.cpp */; };
 		A7A3DB3A117F6FB800DA2893 /* reaction_product_enumerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7A3DB38117F6FB800DA2893 /* reaction_product_enumerator.cpp */; };
 		A7E9C70E11C91F0C0011961B /* reaction_neighborhood_counters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7E9C70D11C91F0C0011961B /* reaction_neighborhood_counters.cpp */; };
@@ -37,10 +36,8 @@
 		A778DF101250ADE00098784F /* reaction_exact_matcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reaction_exact_matcher.cpp; path = src/reaction_exact_matcher.cpp; sourceTree = "<group>"; };
 		A795EFDB11B51B6C005A9036 /* base_reaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base_reaction.h; sourceTree = "<group>"; };
 		A795EFDC11B51B6C005A9036 /* query_reaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = query_reaction.h; sourceTree = "<group>"; };
-		A795EFDD11B51B6C005A9036 /* reaction_highlighting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reaction_highlighting.h; sourceTree = "<group>"; };
 		A795EFDF11B51B7D005A9036 /* base_reaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = base_reaction.cpp; path = src/base_reaction.cpp; sourceTree = "<group>"; };
 		A795EFE011B51B7D005A9036 /* query_reaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = query_reaction.cpp; path = src/query_reaction.cpp; sourceTree = "<group>"; };
-		A795EFE111B51B7D005A9036 /* reaction_highlighting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reaction_highlighting.cpp; path = src/reaction_highlighting.cpp; sourceTree = "<group>"; };
 		A7A3DB37117F6FB800DA2893 /* reaction_enumerator_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reaction_enumerator_state.cpp; path = src/reaction_enumerator_state.cpp; sourceTree = "<group>"; };
 		A7A3DB38117F6FB800DA2893 /* reaction_product_enumerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reaction_product_enumerator.cpp; path = src/reaction_product_enumerator.cpp; sourceTree = "<group>"; };
 		A7A3DB3B117F6FD100DA2893 /* reaction_enumerator_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reaction_enumerator_state.h; sourceTree = "<group>"; };
@@ -106,10 +103,8 @@
 				A7E9C70C11C91F010011961B /* reaction_neighborhood_counters.h */,
 				A795EFDF11B51B7D005A9036 /* base_reaction.cpp */,
 				A795EFE011B51B7D005A9036 /* query_reaction.cpp */,
-				A795EFE111B51B7D005A9036 /* reaction_highlighting.cpp */,
 				A795EFDB11B51B6C005A9036 /* base_reaction.h */,
 				A795EFDC11B51B6C005A9036 /* query_reaction.h */,
-				A795EFDD11B51B6C005A9036 /* reaction_highlighting.h */,
 				A7A3DB3B117F6FD100DA2893 /* reaction_enumerator_state.h */,
 				A7A3DB3C117F6FD100DA2893 /* reaction_product_enumerator.h */,
 				A7A3DB37117F6FB800DA2893 /* reaction_enumerator_state.cpp */,
@@ -229,7 +224,6 @@
 				A7A3DB3A117F6FB800DA2893 /* reaction_product_enumerator.cpp in Sources */,
 				A795EFE211B51B7D005A9036 /* base_reaction.cpp in Sources */,
 				A795EFE311B51B7D005A9036 /* query_reaction.cpp in Sources */,
-				A795EFE411B51B7D005A9036 /* reaction_highlighting.cpp in Sources */,
 				A7E9C70E11C91F0C0011961B /* reaction_neighborhood_counters.cpp in Sources */,
 				A778DF111250ADE00098784F /* base_reaction_substructure_matcher.cpp in Sources */,
 				A778DF121250ADE00098784F /* reaction_exact_matcher.cpp in Sources */,

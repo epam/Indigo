@@ -18,9 +18,7 @@
 #include "indigo_internal.h"
 
 #include "molecule/molecule.h"
-#include "graph/graph_highlighting.h"
 #include "reaction/reaction.h"
-#include "reaction/reaction_highlighting.h"
 
 class IndigoRdfData : public IndigoObject
 {
@@ -54,13 +52,11 @@ public:
 
    virtual Molecule & getMolecule ();
    virtual BaseMolecule & getBaseMolecule ();
-   GraphHighlighting * getMoleculeHighlighting ();
    virtual const char * getName ();
    virtual IndigoObject * clone ();
 
 protected:
    Molecule _mol;
-   GraphHighlighting _highlighting;
 };
 
 class IndigoRdfReaction : public IndigoRdfData
@@ -72,13 +68,11 @@ public:
 
    virtual Reaction & getReaction ();
    virtual BaseReaction & getBaseReaction ();
-   ReactionHighlighting * getReactionHighlighting ();
    virtual const char * getName ();
    virtual IndigoObject * clone ();
 
 protected:
    Reaction _rxn;
-   ReactionHighlighting _highlighting;
 };
 
 
@@ -96,7 +90,6 @@ public:
 
    int tell ();
 
-   GraphHighlighting highlighting;
    SdfLoader *sdf_loader;
 
 protected:
@@ -130,13 +123,11 @@ public:
 
    virtual Molecule & getMolecule ();
    virtual BaseMolecule & getBaseMolecule ();
-   GraphHighlighting * getMoleculeHighlighting ();
    virtual const char * getName ();
    virtual IndigoObject * clone ();
 
 protected:
    Molecule _mol;
-   GraphHighlighting _highlighting;
 };
 
 class IndigoSmilesReaction : public IndigoRdfData
@@ -147,13 +138,11 @@ public:
 
    virtual Reaction & getReaction ();
    virtual BaseReaction & getBaseReaction ();
-   ReactionHighlighting * getReactionHighlighting ();
    virtual const char * getName ();
    virtual IndigoObject * clone ();
 
 protected:
    Reaction _rxn;
-   ReactionHighlighting _highlighting;
 };
 
 class IndigoMultilineSmilesLoader : public IndigoObject
@@ -196,7 +185,6 @@ public:
 
    virtual Molecule & getMolecule ();
    virtual BaseMolecule & getBaseMolecule ();
-   GraphHighlighting * getMoleculeHighlighting ();
    virtual const char * getName ();
    virtual IndigoObject * clone ();
    virtual RedBlackStringObjMap< Array<char> > * getProperties();

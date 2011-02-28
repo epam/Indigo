@@ -19,8 +19,9 @@
 
 using namespace indigo;
 
-RenderItemBase::RenderItemBase (RenderItemFactory& factory) : _factory(factory), 
-   _rc(factory.rc), _settings(factory.rc._settings), _opt(factory.rc.opt), referenceY(0)
+RenderItemBase::RenderItemBase (RenderItemFactory& factory) : referenceY(0),
+        _factory(factory),
+        _rc(factory.rc), _settings(factory.rc._settings), _opt(factory.rc.opt)
 {
 }
 

@@ -27,7 +27,6 @@ using namespace indigo;
 RenderItemFragment::RenderItemFragment (RenderItemFactory& factory) : 
    RenderItemBase(factory),
    mol(NULL),
-   highlighting(NULL),
    aam(NULL),
    reactingCenters(NULL),
    inversionArray(NULL),
@@ -75,8 +74,6 @@ void RenderItemFragment::render ()
    _rc.translate(-origin.x, -origin.y);
    MoleculeRenderInternal rnd(_opt, _settings, _rc);
    rnd.setMolecule(mol);
-   if (highlighting != NULL)
-      rnd.setHighlighting(highlighting);
    rnd.setScaleFactor(_scaleFactor, _min, _max);
    rnd.setReactionComponentProperties(aam, reactingCenters, inversionArray);
    rnd.setQueryReactionComponentProperties(exactChangeArray);

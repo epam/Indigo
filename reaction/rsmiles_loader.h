@@ -20,7 +20,6 @@
 namespace indigo {
 
 class Scanner;
-class ReactionHighlighting;
 class BaseReaction;
 class Reaction;
 class QueryReaction;
@@ -38,8 +37,6 @@ public:
    // see comment in SmilesLoader
    bool ignore_closing_bond_direction_mismatch;
    
-   ReactionHighlighting *highlighting;
-
 protected:
    struct _Atom
    {

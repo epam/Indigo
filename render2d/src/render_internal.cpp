@@ -15,7 +15,6 @@
 #include "base_cpp/output.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
-#include "graph/graph_highlighting.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
 #include "render_context.h"
@@ -156,7 +155,7 @@ void RenderOptions::clear()
    commentFontFactor = 20;
    titleFontFactor = 20;
    labelMode = LABEL_MODE_NORMAL;
-   implHMode = IHM_ALL;
+   implHVisible = true;
    commentColor.set(0,0,0);
    mode = MODE_NONE;
    hdc = 0;
@@ -174,7 +173,7 @@ void RenderOptions::clear()
 }
 
 MoleculeRenderInternal::MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw) :
-_mol(NULL), _cw(cw), _highlighting(NULL), _settings(settings), _opt(opt), TL_CP_GET(_data)
+_mol(NULL), _cw(cw), _settings(settings), _opt(opt), TL_CP_GET(_data)
 {
    _data.clear();
 }
@@ -221,11 +220,6 @@ void MoleculeRenderInternal::setQueryReactionComponentProperties (const Array<in
 {
    if (exactChanges != NULL)
       _data.exactChanges.copy(*exactChanges);
-}
-
-void MoleculeRenderInternal::setHighlighting (const GraphHighlighting* highlighting)
-{
-  _highlighting = highlighting;
 }
 
 void MoleculeRenderInternal::render ()
@@ -764,12 +758,12 @@ bool MoleculeRenderInternal::_isSingleHighlighted (int aid)
 
 bool MoleculeRenderInternal::_vertexIsHighlighted (int aid)
 {
-   return _highlighting != NULL && _highlighting->numVertices() > 0 && _highlighting->hasVertex(aid);
+   return _mol->isAtomHighlighted(aid);
 }
 
 bool MoleculeRenderInternal::_edgeIsHighlighted (int bid)
 {
-   return _highlighting != NULL && _highlighting->numEdges() > 0 && _highlighting->hasEdge(bid);
+   return _mol->isBondHighlighted(bid);
 }
 
 bool MoleculeRenderInternal::_hasQueryModifiers (int aid)
@@ -1255,7 +1249,6 @@ float MoleculeRenderInternal::_getBondOffset (int aid, const Vec2f& pos, const V
    if (!_ad(aid).showLabel)
       return -1;
 
-   const Vertex& vertex = _mol->getVertex(aid);
    float maxOffset = 0, offset = 0;
    for (int k = 0; k < _ad(aid).ticount; ++k)
    {
@@ -2055,33 +2048,6 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          _expandBoundRect(ad, itemIsotope);
       }
 
-      // implicit hydrogens preparation
-      int deg = bm.getVertex(aid).degree();
-      bool isTerminal = deg <= 1;
-      bool isHetero = ad.label != ELEM_C;
-      bool isMethane = !isHetero && deg == 0;
-      bool showImplHydrogens = false;
-      switch (_opt.implHMode)
-      {
-      case IHM_NONE:
-         break;
-      case IHM_TERMINAL:
-         showImplHydrogens = isTerminal;
-         break;
-      case IHM_HETERO:
-         showImplHydrogens = isHetero;
-         break;
-      case IHM_METHANE_HETERO:
-         showImplHydrogens = isHetero || isMethane;
-         break;
-      case IHM_TERMINAL_HETERO:
-         showImplHydrogens = isHetero || isTerminal;
-         break;
-      case IHM_ALL:
-         showImplHydrogens = true;
-         break;
-      }
-
       // hydrogen drawing
       ad.showHydro = false;
       if (!bm.isQueryMolecule()) {
@@ -2090,7 +2056,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
             implicit_h = bm.asMolecule().getImplicitH_NoThrow(aid, 0);
 
-         if (implicit_h > 0 && showImplHydrogens)
+         if (implicit_h > 0 && _opt.implHVisible)
          {
             ad.showHydro = true;
 

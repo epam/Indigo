@@ -18,7 +18,6 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/obj.h"
-#include "graph/graph_highlighting.h"
 #include "graph/graph_decomposer.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_dearom.h"

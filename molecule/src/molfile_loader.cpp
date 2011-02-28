@@ -21,7 +21,6 @@
 #include "molecule/query_molecule.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_3d_constraints.h"
-#include "graph/graph_highlighting.h"
 #include "molecule/elements.h"
 
 using namespace indigo;
@@ -43,7 +42,6 @@ TL_CP_GET(_sgroup_mapping)
    reaction_atom_inversion = 0;
    reaction_atom_exact_change = 0;
    reaction_bond_reacting_center = 0;
-   highlighting = 0;
    _rgfile = false;
    ignore_stereocenter_errors = false;
    treat_x_as_pseudoatom = false;
@@ -524,9 +522,6 @@ void MolfileLoader::_readCtab2000 ()
          _qmol->addBond(beg - 1, end - 1, bond.release());
       }
    }
-
-   if (highlighting != 0)
-      highlighting->init(*_bmol);
 
    // Special MDL rule of notation without chiral flag
    //if (n_stereocenters > 1 && chiral)
@@ -2295,9 +2290,6 @@ void MolfileLoader::_readCtab3000 ()
       _scanner.readString(str, true);
    }
 
-   if (highlighting != 0)
-      highlighting->init(*_bmol);
-
    if (strncmp(str.ptr(), "M  V30 BEGIN COLLECTION", 23) == 0)
    {
       while (1)
@@ -2325,30 +2317,27 @@ void MolfileLoader::_readCtab3000 ()
             stereo_type = MoleculeStereocenters::ATOM_ABS;
          else if (strcmp(coll, "MDLV30/HILITE") == 0)
          {
-            if (highlighting != 0)
+            QS_DEF(Array<char>, what);
+
+            strscan.skipSpace();
+            strscan.readWord(what, " =");
+
+            if (strcmp(what.ptr(), "ATOMS") == 0)
             {
-               QS_DEF(Array<char>, what);
-
-               strscan.skipSpace();
-               strscan.readWord(what, " =");
-
-               if (strcmp(what.ptr(), "ATOMS") == 0)
-               {
-                  strscan.skip(2); // =(
-                  n = strscan.readInt1();
-                  while (n -- > 0)
-                     highlighting->onVertex(strscan.readInt1() - 1);
-               }
-               else if (strcmp(what.ptr(), "BONDS") == 0)
-               {
-                  strscan.skip(2); // =(
-                  n = strscan.readInt1();
-                  while (n -- > 0)
-                     highlighting->onEdge(strscan.readInt1() - 1);
-               }
-               else
-                  throw Error("unknown hightlighted object: %s", what.ptr());
+               strscan.skip(2); // =(
+               n = strscan.readInt1();
+               while (n -- > 0)
+                  _bmol->highlightAtom(strscan.readInt1() - 1);
             }
+            else if (strcmp(what.ptr(), "BONDS") == 0)
+            {
+               strscan.skip(2); // =(
+               n = strscan.readInt1();
+               while (n -- > 0)
+                  _bmol->highlightBond(strscan.readInt1() - 1);
+            }
+            else
+               throw Error("unknown hightlighted object: %s", what.ptr());
             
             continue;
          }
@@ -2523,7 +2512,4 @@ void MolfileLoader::_init ()
       reaction_atom_exact_change->clear_resize(_atoms_num);
    if (reaction_bond_reacting_center != 0)
       reaction_bond_reacting_center->clear_resize(_bonds_num);
-
-   if (highlighting != 0)
-      highlighting->clear();
 }

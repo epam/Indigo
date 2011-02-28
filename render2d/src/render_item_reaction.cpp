@@ -26,7 +26,6 @@ using namespace indigo;
 RenderItemReaction::RenderItemReaction (RenderItemFactory& factory) : 
    RenderItemContainer(factory),
    rxn(NULL),
-   highlighting(NULL),
    hSpace(_settings.layoutMarginHorizontal),
    catalystOffset(_settings.layoutMarginVertical / 2),
    _reactantLine(-1),
@@ -92,9 +91,6 @@ int RenderItemReaction::_addFragment (int i)
 {
    int mol = _factory.addItemFragment();
    _factory.getItemFragment(mol).mol = &rxn->getBaseMolecule(i);
-   if (highlighting != NULL && i < highlighting->getCount()) {
-      _factory.getItemFragment(mol).highlighting = &highlighting->getGraphHighlighting(i);
-   }
    _factory.getItemFragment(mol).aam = &rxn->getAAMArray(i);
    _factory.getItemFragment(mol).reactingCenters = &rxn->getReactingCenterArray(i);
    _factory.getItemFragment(mol).inversionArray = &rxn->getInversionArray(i);
