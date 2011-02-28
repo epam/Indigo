@@ -551,7 +551,7 @@ CEXPORT int indigoIterateArray (int arr);
 CEXPORT int indigoSubstructureMatcher (int target, const char *mode);
 
 // Ignore target atom in the substructure matcher
-CEXPORT int indigoIgnoreAtom (int matcher, int atom_index);
+CEXPORT int indigoIgnoreAtom (int matcher, int atom_object);
 
 // Clear list of ignored target atoms in the substructure matcher
 CEXPORT int indigoUnignoreAllAtoms (int matcher);

@@ -323,7 +323,7 @@ IndigoMoleculeSubstructureMatchIter*
    iter->matcher.save_for_iteration = for_iteration;
 
    for (int i = 0; i < _ignored_atoms.size(); i++)
-      iter->matcher.ignoreTargetAtom(_ignored_atoms[i]);
+      iter->matcher.ignoreTargetAtom(mapping->at(_ignored_atoms[i]));
 
    iter->matcher.restore_unfolded_h = false;
    iter->mapping.copy(*mapping);
@@ -365,12 +365,14 @@ static IndigoMoleculeSubstructureMatchIter* getMatchIterator (int target_matcher
       self.find_unique_embeddings, for_iteration, max_embeddings);
 }
 
-CEXPORT int indigoIgnoreAtom (int target_matcher, int atom_index)
+CEXPORT int indigoIgnoreAtom (int target_matcher, int atom_object)
 {
    INDIGO_BEGIN
    {
       IndigoMoleculeSubstructureMatcher &matcher = getMatcher(target_matcher, self);
-      matcher.ignoreAtom(atom_index);
+
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom_object));
+      matcher.ignoreAtom(ia.idx);
       return 0;
    }
    INDIGO_END(-1)
