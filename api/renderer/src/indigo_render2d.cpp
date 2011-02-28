@@ -463,7 +463,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("render-highlight-thickness-enabled", indigoRenderSetHighlightThicknessEnabled);
    mgr.setOptionHandlerBool("render-highlight-color-enabled", indigoRenderSetHighlightColorEnabled);
    mgr.setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", indigoRenderSetCenterDoubleBondWhenStereoAdjacent);
-   mgr.setOptionHandlerBool("render-implicit-hydrogen-visible", indigoRenderSetImplicitHydrogenVisible);
+   mgr.setOptionHandlerBool("render-implicit-hydrogens-visible", indigoRenderSetImplicitHydrogenVisible);
 
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);
