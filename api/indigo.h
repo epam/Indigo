@@ -276,6 +276,14 @@ CEXPORT int indigoAtomicNumber (int atom);
 // Returns zero on unspecified or ambiguous isotope
 CEXPORT int indigoIsotope (int atom);
 
+// Applicable to atoms and query atoms. Can fail (return zero) on query atoms
+// where the number of hydrogens is not definitely known. Otherwise, returns one
+// and writes *hydro.
+CEXPORT int indigoCountHydrogens (int atom, int *hydro);
+
+// Applicable to non-query molecules and atoms.
+CEXPORT int indigoCountImplicitHydrogens (int item);
+
 // On success, returns always the same pointer to a 3-element array;
 // you should not free() it, but rather memcpy() it if you want to keep it.
 CEXPORT float * indigoXYZ (int atom);

@@ -270,6 +270,21 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(_lib.indigoIsotope(self));
    }
 
+   public Integer countHydrogens ()
+   {
+      IntByReference res = new IntByReference();
+      dispatcher.setSessionID();
+      if (Indigo.checkResult(_lib.indigoCountHydrogens(self, res)) == 1)
+         return res.getValue();
+      return null;
+   }
+
+   public int countImplicitHydrogens ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(_lib.indigoCountImplicitHydrogens(self));
+   }
+
    public void resetCharge ()
    {
       dispatcher.setSessionID();
