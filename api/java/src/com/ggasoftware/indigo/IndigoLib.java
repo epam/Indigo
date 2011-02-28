@@ -293,6 +293,8 @@ public interface IndigoLib extends Library
    int indigoIterateArray (int arr);
 
    int indigoSubstructureMatcher (int target, String mode);
+   int indigoIgnoreAtom (int matcher, int atom);
+   int indigoUnignoreAllAtoms (int matcher);
    int indigoMatch (int matcher, int query);
    int indigoCountMatches (int matcher, int query);
    int indigoIterateMatches (int matcher, int query);

@@ -15,10 +15,7 @@
 package com.ggasoftware.indigo;
 
 import java.io.*;
-
 import com.sun.jna.*;
-import java.lang.reflect.*;
-import java.util.*;
 
 public class Indigo
 {
@@ -396,7 +393,7 @@ public class Indigo
          outstream.close();
          stream.close();
 
-         Runtime.getRuntime().addShutdownHook(new  Thread () {
+         Runtime.getRuntime().addShutdownHook(new Thread () {
             @Override
             public void run ()
             {
@@ -448,50 +445,7 @@ public class Indigo
          System.load(getPathToBinary(path, "msvcr100.dll"));
          System.load(getPathToBinary(path, "zlib.dll"));
          _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "indigo.dll"), IndigoLib.class);
-		 //final NativeLibrary nl = NativeLibrary.getInstance(_indigo_path);
-		 //nl.dispose();
       }
-	  /*
-	  Runtime.getRuntime().addShutdownHook(new Thread()
-	  {
-	     @Override
-	     public void run ()
-		 {
-		   try {
-		    _lib = null;
-		   System.out.println("searching " + _indigo_path);
-		   ClassLoader cl = Indigo.class.getClassLoader();
-		   Field f = ClassLoader.class.getDeclaredField("nativeLibraries");
-		   f.setAccessible(true);
-		   List libs = (List)f.get(cl);
-		   for (Iterator i = libs.iterator();i.hasNext();)
-		   {
-			  Object lib = i.next();
-			  f = lib.getClass().getDeclaredField("name");
-			  f.setAccessible(true);
-			  String name = (String)f.get(lib);
-			  System.out.println(name);
-			  if (name.equals(_indigo_path))
-			  {
-				 System.out.println("finalizing " + _indigo_path);
-				 Method m = lib.getClass().getDeclaredMethod("finalize", new Class[0]);
-				 m.setAccessible(true);
-				 m.invoke(lib, new Object[0]);
-				 (new File(_indigo_path)).delete();
-			   }
-			}
-			  System.gc();
-			  if (!(new File(_indigo_path)).delete())
-			     System.out.println("failed to delete " + _indigo_path);
-			}
-			catch (Exception e)
-			{
-			   e.printStackTrace();
-			}
-		 
-			//nl.dispose();
-		 }
-	  });*/
    }
 
    public Indigo (String path)
@@ -524,6 +478,7 @@ public class Indigo
 
 
    @Override
+   @SuppressWarnings("FinalizeDeclaration")
    protected void finalize () throws Throwable
    {
       _lib.indigoReleaseSessionId(_sid);

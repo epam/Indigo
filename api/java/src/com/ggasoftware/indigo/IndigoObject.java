@@ -916,6 +916,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, this, Indigo.checkResult(_lib.indigoAt(self, idx)));
    }
 
+   public void ignoreAtom (IndigoObject atom)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(_lib.indigoIgnoreAtom(self, atom.self));
+   }
+
+   public void unignoreAllAtoms ()
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(_lib.indigoUnignoreAllAtoms(self));
+   }
+
    public IndigoObject match (IndigoObject query)
    {
       dispatcher.setSessionID();
