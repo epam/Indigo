@@ -337,6 +337,9 @@ void LayoutChooser::_makeLayout ()
          const Vertex &drawn_end = _layout._graph.getVertex(drawn_end_idx);
          drawn_substituent_idx = drawn_end.neiVertex(drawn_end.neiBegin());
          
+         if (drawn_substituent_idx == _layout._src_vertex)
+            drawn_substituent_idx = drawn_end.neiVertex(drawn_end.neiNext(drawn_end.neiBegin()));
+         
          for (i = 0; i < 4; i++)
          {
             if (substituents[i] == _layout._graph.getVertexExtIdx(drawn_substituent_idx))
