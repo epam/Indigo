@@ -297,6 +297,22 @@ namespace com.ggasoftware.indigo
          return Indigo.indigoIsotope(self);
       }
 
+      public int? countHydrogens ()
+      {
+         int h;
+         dispatcher.setSessionID();
+
+         if (Indigo.indigoCountHydrogens(self, &h) == 1)
+            return h;
+         return null;
+      }
+
+      public int countImplicitHydrogens ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoCountImplicitHydrogens(self);
+      }
+
       public float[] xyz ()
       {
          dispatcher.setSessionID();
@@ -855,6 +871,18 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, this, Indigo.indigoIterateArray(self));
+      }
+
+      public void ignoreAtom (IndigoObject atom)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoIgnoreAtom(self, atom.self);
+      }
+
+      public void unignoreAllAtoms ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoUnignoreAllAtoms(self);
       }
 
       public IndigoObject match (IndigoObject query)
