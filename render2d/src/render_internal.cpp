@@ -155,7 +155,7 @@ void RenderOptions::clear()
    commentFontFactor = 20;
    titleFontFactor = 20;
    labelMode = LABEL_MODE_NORMAL;
-   implHMode = IHM_ALL;
+   implHVisible = true;
    commentColor.set(0,0,0);
    mode = MODE_NONE;
    hdc = 0;
@@ -2048,33 +2048,6 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          _expandBoundRect(ad, itemIsotope);
       }
 
-      // implicit hydrogens preparation
-      int deg = bm.getVertex(aid).degree();
-      bool isTerminal = deg <= 1;
-      bool isHetero = ad.label != ELEM_C;
-      bool isMethane = !isHetero && deg == 0;
-      bool showImplHydrogens = false;
-      switch (_opt.implHMode)
-      {
-      case IHM_NONE:
-         break;
-      case IHM_TERMINAL:
-         showImplHydrogens = isTerminal;
-         break;
-      case IHM_HETERO:
-         showImplHydrogens = isHetero;
-         break;
-      case IHM_METHANE_HETERO:
-         showImplHydrogens = isHetero || isMethane;
-         break;
-      case IHM_TERMINAL_HETERO:
-         showImplHydrogens = isHetero || isTerminal;
-         break;
-      case IHM_ALL:
-         showImplHydrogens = true;
-         break;
-      }
-
       // hydrogen drawing
       ad.showHydro = false;
       if (!bm.isQueryMolecule()) {
@@ -2083,7 +2056,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
             implicit_h = bm.asMolecule().getImplicitH_NoThrow(aid, 0);
 
-         if (implicit_h > 0 && showImplHydrogens)
+         if (implicit_h > 0 && _opt.implHVisible)
          {
             ad.showHydro = true;
 

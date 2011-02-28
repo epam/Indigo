@@ -127,20 +127,10 @@ void indigoRenderSetBaseColor (float r, float g, float b)
    rp.rOpt.baseColor.set((float)r, (float)g, (float)b);
 }
 
-void indigoRenderSetImplicitHydrogenMode (const char* mode)
+void indigoRenderSetImplicitHydrogenVisible (int enabled)
 {
-   TL_DECL_GET(StringIntMap, implHydroMap);
-   if (implHydroMap.size() == 0) {
-      implHydroMap.insert("none", IHM_NONE);
-      implHydroMap.insert("terminal", IHM_TERMINAL);
-      implHydroMap.insert("hetero", IHM_HETERO);
-      implHydroMap.insert("methane-hetero", IHM_METHANE_HETERO);
-      implHydroMap.insert("terminalhetero", IHM_TERMINAL_HETERO);
-      implHydroMap.insert("terminal-hetero", IHM_TERMINAL_HETERO);
-      implHydroMap.insert("all", IHM_ALL);
-   }
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.implHMode = (IMPLICIT_HYDROGEN_MODE)implHydroMap.at(mode);
+   rp.rOpt.implHVisible = enabled != 0;
 }
 
 void indigoRenderSetColoring (int enabled)
@@ -461,7 +451,6 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("render-comment-offset", indigoRenderSetCommentOffset);
 
    mgr.setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat);
-   mgr.setOptionHandlerString("render-implicit-hydrogen-mode", indigoRenderSetImplicitHydrogenMode);
    mgr.setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode);
    mgr.setOptionHandlerString("render-comment", indigoRenderSetComment);
    mgr.setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition);
@@ -474,6 +463,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("render-highlight-thickness-enabled", indigoRenderSetHighlightThicknessEnabled);
    mgr.setOptionHandlerBool("render-highlight-color-enabled", indigoRenderSetHighlightColorEnabled);
    mgr.setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", indigoRenderSetCenterDoubleBondWhenStereoAdjacent);
+   mgr.setOptionHandlerBool("render-implicit-hydrogen-visible", indigoRenderSetImplicitHydrogenVisible);
 
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);
