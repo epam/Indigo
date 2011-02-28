@@ -392,6 +392,8 @@ class Indigo:
     self.IndigoObject.at = Indigo._member_obj_int(Indigo._lib.indigoAt)
     
     self.IndigoObject.match = Indigo._member_obj_obj(Indigo._lib.indigoMatch)
+    self.IndigoObject.ignoreAtom = Indigo._member_void_int(Indigo._lib.indigoIgnoreAtom)
+    self.IndigoObject.unignoreAllAtoms = Indigo._member_void(Indigo._lib.indigoUnignoreAllAtoms)
     self.IndigoObject.countMatches = Indigo._member_int_obj(Indigo._lib.indigoCountMatches)
     self.IndigoObject.iterateMatches = Indigo._member_obj_obj(Indigo._lib.indigoIterateMatches)
     self.IndigoObject.highlightedTarget = Indigo._member_obj(Indigo._lib.indigoHighlightedTarget);
