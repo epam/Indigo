@@ -192,10 +192,10 @@ void indigoRenderSetLabelMode (const char* mode)
 {
    TL_DECL_GET(StringIntMap, labelMap);
    if (labelMap.size() == 0) {
-      labelMap.insert("normal", LABEL_MODE_NORMAL);
-      labelMap.insert("forceshow", LABEL_MODE_FORCESHOW);
-      labelMap.insert("hideterminal", LABEL_MODE_HIDETERMINAL);
-      labelMap.insert("forcehide", LABEL_MODE_FORCEHIDE);
+      labelMap.insert("none", LABEL_MODE_NONE);
+      labelMap.insert("hetero", LABEL_MODE_HETERO);
+      labelMap.insert("terminal-hetero", LABEL_MODE_TERMINAL_HETERO);
+      labelMap.insert("all", LABEL_MODE_ALL);
    }
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.rOpt.labelMode = (LABEL_MODE)labelMap.at(mode);
@@ -463,7 +463,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("render-highlight-thickness-enabled", indigoRenderSetHighlightThicknessEnabled);
    mgr.setOptionHandlerBool("render-highlight-color-enabled", indigoRenderSetHighlightColorEnabled);
    mgr.setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", indigoRenderSetCenterDoubleBondWhenStereoAdjacent);
-   mgr.setOptionHandlerBool("render-implicit-hydrogen-visible", indigoRenderSetImplicitHydrogenVisible);
+   mgr.setOptionHandlerBool("render-implicit-hydrogens-visible", indigoRenderSetImplicitHydrogenVisible);
 
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);

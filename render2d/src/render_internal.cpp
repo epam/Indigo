@@ -154,7 +154,7 @@ void RenderOptions::clear()
    aamColor.set(0, 0, 0);
    commentFontFactor = 20;
    titleFontFactor = 20;
-   labelMode = LABEL_MODE_NORMAL;
+   labelMode = LABEL_MODE_TERMINAL_HETERO;
    implHVisible = true;
    commentColor.set(0,0,0);
    mode = MODE_NONE;
@@ -448,7 +448,7 @@ bool MoleculeRenderInternal::_clipRayBox (float& offset, const Vec2f& p, const V
    Vec2f n(-d.y, d.x);
    Vec2f a, b;
    bool f = false;
-   float t = 0, tt;
+   float t = 0, tt = 0;
 
    a.set(rp.x, rp.y);
    b.set(rp.x + sz.x, rp.y);
@@ -875,12 +875,12 @@ void MoleculeRenderInternal::_initAtomData ()
          !_hasQueryModifiers(i);
 
       ad.showLabel = true;
-      if (_opt.labelMode == LABEL_MODE_FORCESHOW || vertex.degree() == 0)
+      if (_opt.labelMode == LABEL_MODE_ALL || vertex.degree() == 0)
          ;
-      else if (_opt.labelMode == LABEL_MODE_FORCEHIDE)
+      else if (_opt.labelMode == LABEL_MODE_NONE)
          ad.showLabel = false;
       else if (plainCarbon &&
-         (_opt.labelMode == LABEL_MODE_HIDETERMINAL || vertex.degree() > 1) &&
+         (_opt.labelMode == LABEL_MODE_HETERO || vertex.degree() > 1) &&
          !_isSingleHighlighted(i))
       {
          if (vertex.degree() == 2)
