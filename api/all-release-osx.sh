@@ -32,7 +32,7 @@ cp renderer/python/indigo_renderer.py $pythondistr/
 for osxver in '10.5' '10.6'; do
    libdistr=indigo-libs-$version-osx$osxver
    mkdir -p $libdistr
-   mkdir -p $javadistr/lib/Mac/$osxver
+   mkdir -p $javadistr
    mkdir -p $pythondistr/lib/Mac/$osxver
    rm -rf build ../graph/build ../molecule/build ../reaction/build ../layout/build ../render2d/build ../tinyxml/build
    xcodebuild -sdk macosx$osxver -configuration Release -alltargets

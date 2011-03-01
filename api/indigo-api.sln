@@ -21,6 +21,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "indigo-cs", "cs\indigo-cs.csproj", "{9813B608-3372-4D46-B432-1533CBF54C62}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "render2d", "..\render2d\render2d.vcxproj", "{8E1DE958-1A54-4739-8F12-746D9F6D04C3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1CF32085-9687-4DBD-BCA2-D7378E2A9490} = {1CF32085-9687-4DBD-BCA2-D7378E2A9490}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-api-renderer", "renderer\indigo-api-renderer.vcxproj", "{94BD191F-2952-4A8C-A33E-36367CDDC202}"
 EndProject
@@ -70,7 +73,7 @@ Global
 		{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}.DebugDLL|Any CPU.ActiveCfg = Debug|Win32
 		{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}.DebugDLL|Mixed Platforms.ActiveCfg = Debug|x64
 		{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}.DebugDLL|Mixed Platforms.Build.0 = Debug|x64
-		{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}.DebugDLL|Win32.ActiveCfg = DebugMD|x64
+		{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}.DebugDLL|Win32.ActiveCfg = DebugMD|Win32
 		{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}.DebugDLL|x64.ActiveCfg = DebugMD|x64
 		{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}.Release|Any CPU.ActiveCfg = Release|Win32
 		{ECCDCBC8-48DB-4CA6-A2B4-8B74E3358236}.Release|Mixed Platforms.ActiveCfg = Release|x64

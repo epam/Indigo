@@ -188,7 +188,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\dll\indigo-api-dll.vcxproj">
       <Project>{5eb98311-2234-4063-8818-44ff7cdcd887}</Project>
-      <Private>true</Private>
+      <Private>false</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>

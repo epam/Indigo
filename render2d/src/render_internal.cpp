@@ -415,22 +415,22 @@ bool MoleculeRenderInternal::_clipRaySegment (float& offset, const Vec2f& p, con
    float t = 0;
    bool f = false;
    bool inv = Vec2f::dot(ab, d) < 0;
-   if (ta < tl && tl < tb)
+   if (ta < tl + 1e-8 && tl < tb + 1e-8)
    {
       t = f ? __minmax(inv, t, tl) : tl;
       f = true;
    }
-   if (ta < tr && tr < tb)
+   if (ta < tr + 1e-8 && tr < tb + 1e-8)
    {
       t = f ? __minmax(inv, t, tr) : tr;
       f = true;
    }
-   if (tl < ta && ta < tr)
+   if (tl < ta + 1e-8 && ta < tr + 1e-8)
    {
       t = f ? __minmax(inv, t, ta) : ta;
       f = true;
    }
-   if (tl < tb && tb < tr)
+   if (tl < tb + 1e-8 && tb < tr + 1e-8)
    {
       t = f ? __minmax(inv, t, tb) : tb;
       f = true;

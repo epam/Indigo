@@ -15,9 +15,36 @@ unzip indigo-java-api-$1-linux.zip
 unzip indigo-java-api-$1-osx.zip
 unzip indigo-java-api-$1-sun.zip
 mv indigo-java-api-$1-sun indigo-java-api-$1-universal
-cp -r indigo-java-api-$1-osx/lib/* indigo-java-api-$1-universal/lib
-cp -r indigo-java-api-$1-windows/lib/* indigo-java-api-$1-universal/lib
-cp -r indigo-java-api-$1-linux/lib/* indigo-java-api-$1-universal/lib
+cd indigo-java-api-$1-universal
+jar xf ../indigo-java-api-$1-windows/indigo.jar \
+    com/ggasoftware/indigo/Win/x86/indigo.dll \
+    com/ggasoftware/indigo/Win/x86/msvcr100.dll \
+    com/ggasoftware/indigo/Win/x86/zlib.dll \
+    com/ggasoftware/indigo/Win/x64/indigo.dll \
+    com/ggasoftware/indigo/Win/x64/msvcr100.dll \
+    com/ggasoftware/indigo/Win/x64/zlib.dll
+jar xf ../indigo-java-api-$1-linux/indigo.jar \
+    com/ggasoftware/indigo/Linux/x86/libindigo.so \
+    com/ggasoftware/indigo/Linux/x64/libindigo.so
+jar xf ../indigo-java-api-$1-osx/indigo.jar \
+    com/ggasoftware/indigo/Mac/10.5/libindigo.dylib \
+    com/ggasoftware/indigo/Mac/10.6/libindigo.dylib
+jar uf indigo.jar com
+rm -r com
+jar xf ../indigo-java-api-$1-windows/indigo-renderer.jar \
+    com/ggasoftware/indigo/Win/x86/indigo-renderer.dll \
+    com/ggasoftware/indigo/Win/x64/indigo-renderer.dll
+jar xf ../indigo-java-api-$1-linux/indigo-renderer.jar \
+    com/ggasoftware/indigo/Linux/x86/libindigo-renderer.so \
+    com/ggasoftware/indigo/Linux/x64/libindigo-renderer.so
+jar xf ../indigo-java-api-$1-osx/indigo-renderer.jar \
+    com/ggasoftware/indigo/Mac/10.5/libindigo-renderer.dylib \
+    com/ggasoftware/indigo/Mac/10.6/libindigo-renderer.dylib
+jar uf indigo-renderer.jar com
+rm -r com
+
+cd ..    
+rm -f indigo-java-api-$1-universal.zip
 zip -r -9 indigo-java-api-$1-universal.zip indigo-java-api-$1-universal
 rm indigo-java-api-$1-windows.zip
 rm indigo-java-api-$1-linux.zip

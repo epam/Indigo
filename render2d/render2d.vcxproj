@@ -355,14 +355,6 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
-    <ProjectReference Include="..\layout\layout.vcxproj">
-      <Project>{1cf32085-9687-4dbd-bca2-d7378e2a9490}</Project>
-      <Private>false</Private>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
     <ProjectReference Include="..\libpng-src\libpng.vcxproj">
       <Project>{d59de699-6e12-4546-a200-56eac6a2df04}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
