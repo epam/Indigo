@@ -395,6 +395,7 @@ class Indigo:
     
     self.IndigoObject.match = Indigo._member_obj_obj(Indigo._lib.indigoMatch)
     self.IndigoObject.ignoreAtom = Indigo._member_void_obj(Indigo._lib.indigoIgnoreAtom)
+    self.IndigoObject.unignoreAtom = Indigo._member_void_obj(Indigo._lib.indigoUnignoreAtom)
     self.IndigoObject.unignoreAllAtoms = Indigo._member_void(Indigo._lib.indigoUnignoreAllAtoms)
     self.IndigoObject.countMatches = Indigo._member_int_obj(Indigo._lib.indigoCountMatches)
     self.IndigoObject.iterateMatches = Indigo._member_obj_obj(Indigo._lib.indigoIterateMatches)

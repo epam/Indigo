@@ -301,6 +301,14 @@ void IndigoMoleculeSubstructureMatcher::ignoreAtom (int atom_index)
    _ignored_atoms.push(atom_index);
 }
 
+void IndigoMoleculeSubstructureMatcher::unignoreAtom (int atom_index)
+{
+   int pos = _ignored_atoms.find(atom_index);
+   if (pos == -1)
+      throw IndigoError("Atom with index %d wasn't ignored", atom_index);
+   _ignored_atoms.remove(pos);
+}
+
 void IndigoMoleculeSubstructureMatcher::unignoreAllAtoms ()
 {
    _ignored_atoms.clear();
@@ -386,6 +394,20 @@ static IndigoMoleculeSubstructureMatchIter* getMatchIterator (int target_matcher
 }
 
 CEXPORT int indigoIgnoreAtom (int target_matcher, int atom_object)
+{
+   INDIGO_BEGIN
+   {
+      IndigoMoleculeSubstructureMatcher &matcher = getMatcher(target_matcher, self);
+
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom_object));
+      matcher.ignoreAtom(ia.idx);
+      return 0;
+   }
+   INDIGO_END(-1)
+}
+
+// Ignore target atom in the substructure matcher
+CEXPORT int indigoUnignoreAtom (int target_matcher, int atom_object)
 {
    INDIGO_BEGIN
    {

@@ -80,6 +80,7 @@ public:
       bool for_iteration, int max_embeddings);
 
    void ignoreAtom (int atom_index);
+   void unignoreAtom (int atom_index);
    void unignoreAllAtoms ();
 
    const char * debugInfo ();
