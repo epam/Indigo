@@ -441,26 +441,26 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
          }
          else if (charge == -1)
          {
-            if (conn + rad + abs(charge) <= 1)
+            if (conn + rad <= 1)
             {
                valence = 1;
-               hyd = 1 - rad - conn - abs(charge);
+               hyd = 1 - rad - conn;
             }
-            else if (conn + rad + abs(charge) <= 3)
+            else if (conn + rad <= 3)
             {
                valence = 3;
-               hyd = 3 - rad - conn - abs(charge);
+               hyd = 3 - rad - conn;
             }
             // no real examples for the other two cases, just following ISIS/Draw logic
-            else if (conn + rad + abs(charge) <= 5)
+            else if (conn + rad <= 5)
             {
                valence = 5;
-               hyd = 5 - rad - conn - abs(charge);
+               hyd = 5 - rad - conn;
             }
             else
             {
                valence = 7;
-               hyd = 7 - rad - conn - abs(charge);
+               hyd = 7 - rad - conn;
             }
          }
          else
