@@ -313,6 +313,84 @@ namespace com.ggasoftware.indigo
          return Indigo.indigoCountImplicitHydrogens(self);
       }
 
+      public int countSuperatoms ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoCountSuperatoms(self);
+      }
+
+      public int countDataSGroups ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoCountDataSGroups(self);
+      }
+
+      public int countGenericSGroups ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoCountGenericSGroups(self);
+      }
+
+      public int countRepeatingUnits ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoCountRepeatingUnits(self);
+      }
+
+      public int countMultipleGroups ()
+      {
+         dispatcher.setSessionID();
+         return Indigo.indigoCountMultipleGroups(self);
+      }
+
+      public IndigoObject iterateSuperatoms ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateSuperatoms(self));
+      }
+
+      public IndigoObject iterateDataSGroups ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateDataSGroups(self));
+      }
+
+      public IndigoObject iterateGenericSGroups ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateGenericSGroups(self));
+      }
+
+      public IndigoObject iterateRepeatingUnits ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateRepeatingUnits(self));
+      }
+
+      public IndigoObject iterateMultipleGroups ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, Indigo.indigoIterateMultipleGroups(self));
+      }
+
+      public string description ()
+      {
+         dispatcher.setSessionID();
+         return new String(Indigo.indigoDescription(self));
+      }
+
+      public IndigoObject addDataSGroup (int[] atoms, int[] bonds, String description, String data)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, Indigo.indigoAddDataSGroup(self, atoms.Length, atoms, bonds.Length, bonds, description, data));
+      }
+
+      public void setDataSGroupXY (float x, float y, String options)
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoSetDataSGroupXY(self, x, y, options);
+      }
+
       public float[] xyz ()
       {
          dispatcher.setSessionID();
@@ -546,6 +624,12 @@ namespace com.ggasoftware.indigo
          return Indigo.indigoComponentIndex(self);
       }
 
+      public void remove ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoRemove(self);
+      }
+
       public IndigoObject iterateComponents ()
       {
          dispatcher.setSessionID();
@@ -754,6 +838,12 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, this, Indigo.indigoIterateProperties(self));
+      }
+
+      public void clearProperties ()
+      {
+         dispatcher.setSessionID();
+         Indigo.indigoClearProperties(self);
       }
 
       public string checkBadValence ()

@@ -542,6 +542,35 @@ namespace com.ggasoftware.indigo
       public static extern int indigoCountImplicitHydrogens (int item);
 
       [DllImport("indigo.dll")]
+      public static extern int indigoCountSuperatoms (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoCountDataSGroups (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoCountGenericSGroups (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoCountRepeatingUnits (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoCountMultipleGroups (int item);
+
+      [DllImport("indigo.dll")]
+      public static extern int indigoIterateSuperatoms (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoIterateDataSGroups (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoIterateGenericSGroups (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoIterateRepeatingUnits (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoIterateMultipleGroups (int item);
+      
+      [DllImport("indigo.dll")]
+      public static extern sbyte* indigoDescription (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoAddDataSGroup (int molecule, int natoms, int[] atoms, int nbonds, int[] bonds, string description, string data);
+      [DllImport("indigo.dll")]
+      public static extern int indigoSetDataSGroupXY (int sgroup, float x, float y, string options);
+
+      [DllImport("indigo.dll")]
       public static extern float* indigoXYZ (int atom);
       [DllImport("indigo.dll")]
       public static extern int indigoResetCharge (int atom);
@@ -693,6 +722,8 @@ namespace com.ggasoftware.indigo
       [DllImport("indigo.dll")]
       public static extern int indigoIterateProperties (int handle);
       [DllImport("indigo.dll")]
+      public static extern int indigoClearProperties (int handle);
+      [DllImport("indigo.dll")]
       public static extern sbyte * indigoCheckBadValence (int handle);
       [DllImport("indigo.dll")]
       public static extern sbyte * indigoCheckAmbiguousH (int handle);
@@ -801,6 +832,8 @@ namespace com.ggasoftware.indigo
       public static extern int indigoHasNext (int iter);
       [DllImport("indigo.dll")]
       public static extern int indigoIndex (int item);
+      [DllImport("indigo.dll")]
+      public static extern int indigoRemove (int item);
 
       [DllImport("indigo.dll")]
       public static extern sbyte * indigoToString (int handle);
