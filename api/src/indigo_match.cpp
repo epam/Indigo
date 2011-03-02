@@ -414,7 +414,7 @@ CEXPORT int indigoUnignoreAtom (int target_matcher, int atom_object)
       IndigoMoleculeSubstructureMatcher &matcher = getMatcher(target_matcher, self);
 
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom_object));
-      matcher.ignoreAtom(ia.idx);
+      matcher.unignoreAtom(ia.idx);
       return 0;
    }
    INDIGO_END(-1)
