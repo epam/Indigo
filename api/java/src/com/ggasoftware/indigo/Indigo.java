@@ -430,7 +430,7 @@ public class Indigo
                   e.printStackTrace();
                }
             }
-            new File(fullpath)).delete();
+            new File(fullpath).delete();
             new File(directories.get(idx)).delete();
          }
       }
