@@ -20,11 +20,6 @@ namespace com.ggasoftware.indigo
       public const int CHAIN = 9;
       public const int RING = 10;
 
-      [DllImport("kernel32")]
-      public static extern IntPtr LoadLibrary(string lpFileName);
-
-      private long _sid = -1;
-
       public long getSID ()
       {
          return _sid;
@@ -35,73 +30,14 @@ namespace com.ggasoftware.indigo
          return new String(indigoVersion());
       }
 
-      private static void _handleError (sbyte* message, Indigo self)
+      public Indigo (string lib_path)
       {
-         throw new IndigoException(new String(message));
-      }
-
-      private String dllpath;
-
-      public String getDllPath ()
-      {
-         return dllpath;
-      }
-
-      private ErrorHandler _errh;
-
-      private void init (string prefix)
-      {
-         string subprefix = (IntPtr.Size == 8) ? "Win/x64/" : "Win/x86/";
-
-         dllpath = prefix + "\\" + subprefix;
-         LoadLibrary(dllpath + "msvcr100.dll");
-         LoadLibrary(dllpath + "zlib.dll");
-         LoadLibrary(dllpath + "indigo.dll");
-
-         _sid = indigoAllocSessionId();
-         indigoSetSessionId(_sid);
-         _errh = new ErrorHandler(_handleError);
-         indigoSetErrorHandler(_errh, this);
-      }
-
-      public Indigo (string prefix)
-      {
-         init(prefix);
+         init(lib_path);
       }
 
       public Indigo ()
+         : this(null)
       {
-         init("./lib");
-      }
-
-      ~Indigo ()
-      {
-         Dispose();
-      }
-
-      public void Dispose()
-      {
-         if (_sid >= 0)
-         {
-            indigoReleaseSessionId(_sid);
-            _sid = -1;
-         }
-      }
-
-      public void setSessionID ()
-      {
-         indigoSetSessionId(_sid);
-      }
-
-      private void onError()
-      {
-         throw new IndigoException(new String(indigoGetLastError()));
-      }
-
-      public void free (int id)
-      {
-         setSessionID();
-         indigoFree(id);
       }
 
       public int countReferences ()
@@ -331,21 +267,6 @@ namespace com.ggasoftware.indigo
          return substructureMatcher(target, "");
       }
 
-      public int countSubstructureMatches (IndigoObject query, IndigoObject target)
-      {
-         setSessionID();
-         return indigoCountSubstructureMatches(query.self, target.self);
-      }
-
-      public IndigoObject iterateSubstructureMatches (IndigoObject query, IndigoObject target)
-      {
-         setSessionID();
-         int res = indigoIterateSubstructureMatches(query.self, target.self);
-         if (res == 0)
-            return null;
-         return new IndigoObject(this, res);
-      }
-
       public IndigoObject extractCommonScaffold (IndigoObject structures, string options)
       {
          setSessionID();
@@ -366,6 +287,72 @@ namespace com.ggasoftware.indigo
          setSessionID();
          return new IndigoObject(this, indigoReactionProductEnumerate(reaction.self, monomers.self));
       }
+
+      public void free (int id)
+      {
+         setSessionID();
+         indigoFree(id);
+      }
+
+      public String getDllPath ()
+      {
+         return _dllpath;
+      }
+
+      private static void _handleError (sbyte* message, Indigo self)
+      {
+         throw new IndigoException(new String(message));
+      }
+
+      private void init (string lib_path)
+      {
+         IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
+         
+         dll_loader.loadLibrary(lib_path, "msvcr100.dll", 1, "com.ggasoftware.indigo.Properties.Resources");
+         dll_loader.loadLibrary(lib_path, "zlib.dll", 1, "com.ggasoftware.indigo.Properties.Resources");
+         // indigo.dll should be unloaded twice because of DllImport
+         dll_loader.loadLibrary(lib_path, "indigo.dll", 2, "com.ggasoftware.indigo.Properties.Resources");
+
+         // Save instance id to check if session was allocated for this instance
+         _dll_loader_id = IndigoDllLoader.InstanceId;
+
+         _dllpath = lib_path;
+
+         _sid = indigoAllocSessionId();
+         indigoSetSessionId(_sid);
+         _errh = new ErrorHandler(_handleError);
+         indigoSetErrorHandler(_errh, this);
+      }
+
+      ~Indigo ()
+      {
+         Dispose();
+      }
+
+      public void Dispose ()
+      {
+         if (_sid >= 0)
+         {
+            if (IndigoDllLoader.InstanceId == _dll_loader_id)
+               indigoReleaseSessionId(_sid);
+            _sid = -1;
+         }
+      }
+
+      public void setSessionID ()
+      {
+         indigoSetSessionId(_sid);
+      }
+
+      private void onError ()
+      {
+         throw new IndigoException(new String(indigoGetLastError()));
+      }
+
+      private ErrorHandler _errh;
+      private long _sid = -1;
+      private String _dllpath;
+      private int _dll_loader_id;
 
       [DllImport("indigo.dll")]
       public static extern sbyte * indigoVersion ();
@@ -772,10 +759,6 @@ namespace com.ggasoftware.indigo
       public static extern int indigoMapAtom (int match, int query_atom);
       [DllImport("indigo.dll")]
       public static extern int indigoMapBond(int match, int query_bond);
-      [DllImport("indigo.dll")]
-      public static extern int indigoCountSubstructureMatches (int query, int target);
-      [DllImport("indigo.dll")]
-      public static extern int indigoIterateSubstructureMatches (int query, int target);
 
       [DllImport("indigo.dll")]
       public static extern int indigoExtractCommonScaffold (int structures, string options);

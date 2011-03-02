@@ -11,12 +11,14 @@ namespace com.ggasoftware.indigo
    public unsafe class IndigoRenderer
    {
       private Indigo _indigo;
+      static private IndigoDllLoader dll_loader =
+         new IndigoDllLoader("com.ggasoftware.indigo.Properties.Resources", typeof(IndigoRenderer).Assembly);
 
       public IndigoRenderer (Indigo indigo)
       {
          String dllpath = indigo.getDllPath();
+         dll_loader.loadLibrary(dllpath, "indigo-renderer.dll", 2);
 
-         Indigo.LoadLibrary(dllpath + "indigo-renderer.dll");
          _indigo = indigo;
       }
 
