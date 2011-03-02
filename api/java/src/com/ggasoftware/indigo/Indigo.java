@@ -16,6 +16,8 @@ package com.ggasoftware.indigo;
 
 import java.io.*;
 import com.sun.jna.*;
+import java.lang.reflect.*;
+import java.util.*;
 
 public class Indigo
 {
@@ -346,43 +348,124 @@ public class Indigo
       return new IndigoObject(this, res);
    }
    
-   public static String extractFromJar (Class cls, String path, String filename)
+   public static class LibraryRemover
    {
-      String present_dllfile = null;
-      try
+      ArrayList<String> files = new ArrayList<String>();
+      ArrayList<String> directories = new ArrayList<String>();
+      
+      public LibraryRemover ()
       {
-         InputStream stream = cls.getResourceAsStream(path + "/" + filename);
-
-         if (stream == null)
-            return null;
-
-         String tmpdir_path;
-		 
+         final LibraryRemover self = this;
+         
+         Runtime.getRuntime().addShutdownHook(new Thread () {
+            @Override
+            public void run ()
+            {
+               self.removeLibraries();
+            }
+            });
+      }
+      
+      public synchronized void addLibrary (String directory, String fullpath)
+      {
+         files.add(fullpath);
+         directories.add(directory);
+         
          if (_os == OS_WINDOWS)
          {
-            // Do not create a unique temporary directory in Windows, because we will not be
-            // able to delete it aftwewards
-            tmpdir_path = System.getProperty("java.io.tmpdir") + File.separator + "indigo_dlls";
+            // The caller can load our DLL file with System.load() OR with
+            // Native.loadLibrary(). To get the mess below working in the second
+            // case, we call System.load() by ourselves. This makes the library
+            // listed in the hidden ClassLoader.nativeLibraries field.
+            System.load(fullpath);
          }
-	      else
+      }
+      
+      public synchronized void removeLibraries ()
+      {
+         for (int idx = files.size() - 1; idx >= 0; idx--)
          {
-            File tmpfile = File.createTempFile("indigo", null);
-            tmpdir_path = tmpfile.getAbsolutePath() + ".d";
-            tmpfile.delete();
-         }
-
-         final File tmpdir = new File(tmpdir_path);
-         if (!tmpdir.exists() && !tmpdir.mkdir())
-            return null;
-
-         final File dllfile = new File(tmpdir.getAbsolutePath() + File.separator + filename);
-
-         if (dllfile.exists())
-            // If the file is already there, assume that it may be correct
-            // and take it as is if we fail to rewrite it (this can happen if it
-            // is being used by another process)
-            present_dllfile = dllfile.getCanonicalPath();
+            String fullpath = files.get(idx);
             
+            if (_os == OS_WINDOWS)
+            {
+               // In Windows, we can not remove the DLL file until we unload
+               // it from the process. Nobody cares that the DLL files are
+               // usually read into memory and the process does not need them
+               // on the disk.
+               try
+               {
+                  System.out.println("searching " + fullpath);
+                  ClassLoader cl = Indigo.class.getClassLoader();
+                  Field f = ClassLoader.class.getDeclaredField("nativeLibraries");
+                  f.setAccessible(true);
+                  List libs = (List)f.get(cl);
+                  for (Iterator i = libs.iterator(); i.hasNext();)
+                  {
+                     Object lib = i.next();
+                     f = lib.getClass().getDeclaredField("name");
+                     f.setAccessible(true);
+                     String name = (String)f.get(lib);
+                     System.out.println(name);
+                     if (name.equals(fullpath))
+                     {
+                        System.out.println("finalizing " + fullpath);
+                        Method m = lib.getClass().getDeclaredMethod("finalize", new Class[0]);
+                        m.setAccessible(true);
+                        // Here comes the trick: we call the finalizer twice,
+                        // first time to undo our own System.load() above, and
+                        // the second time to undo
+                        // Native.loadLibrary/System.load() done by the caller.
+                        // Each finalize() call decrements the "reference
+                        // counter" of the process for the DLL file. After the
+                        // counter is zero, the deletion of the file becomes 
+                        // possible.
+                        m.invoke(lib, new Object[0]);
+                        m.invoke(lib, new Object[0]);
+                     }
+                  }
+               }
+               catch (Exception e)
+               {
+                  e.printStackTrace();
+               }
+            }
+            new File(fullpath)).delete();
+            new File(directories.get(idx)).delete();
+         }
+      }
+   }
+   
+   static LibraryRemover _library_remover = new Indigo.LibraryRemover();
+   
+   public static String extractFromJar (Class cls, String path, String filename)
+   {
+      InputStream stream = cls.getResourceAsStream(path + "/" + filename);
+
+      if (stream == null)
+         return null;
+
+      String tmpdir_path;
+    
+      try
+      {
+         File tmpfile = File.createTempFile("indigo", null);
+         tmpdir_path = tmpfile.getAbsolutePath() + ".d";
+         tmpfile.delete();
+      }
+      catch (IOException e)
+      {
+         return null;
+      }
+
+      final File tmpdir = new File(tmpdir_path);
+      if (!tmpdir.mkdir())
+         return null;
+
+      final File dllfile = new File(tmpdir.getAbsolutePath() + File.separator + filename);
+
+      try
+      {
          FileOutputStream outstream = new FileOutputStream(dllfile);
          byte buf[]= new byte[4096];
          int len;
@@ -392,23 +475,29 @@ public class Indigo
          
          outstream.close();
          stream.close();
-
-         Runtime.getRuntime().addShutdownHook(new Thread () {
-            @Override
-            public void run ()
-            {
-               // this does not work on Windows
-               dllfile.delete();
-               tmpdir.delete();
-            }
-         });		 
-         
-         return dllfile.getCanonicalPath();
       }
       catch (IOException e)
       {
-         return present_dllfile;
+         return null;
       }
+
+      String p;
+      
+      try
+      {
+         p = dllfile.getCanonicalPath();
+      }
+      catch (IOException e)
+      {
+         return null;
+      }
+      
+      final String fullpath = p;
+      
+      // To remove the temporary file and the directory on program's exit.
+      _library_remover.addLibrary(tmpdir_path, fullpath);
+      
+      return fullpath;
    }
 
    private static String getPathToBinary (String path, String filename)
