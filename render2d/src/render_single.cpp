@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -64,7 +64,7 @@ void RenderSingle::_drawComment ()
 }
 
 void RenderSingle::draw ()
-{     
+{
    width = _cnvOpt.width;
    height = _cnvOpt.height;
    _rc.fontsClear();
@@ -86,7 +86,7 @@ void RenderSingle::draw ()
    }
    outerMargin.x = (float)(minMarg + _cnvOpt.marginX);
    outerMargin.y = (float)(minMarg + _cnvOpt.marginY);
-   
+
    scale = _getScale();
    _rc.initContext(width, height);
    objArea.set((float)width, (float)height);
@@ -125,9 +125,10 @@ float RenderSingle::_getScale ()
       width = defaultWidth;
       height = defaultWidth;
    }
-   if (maxPageSize > 0 && __max(width, height) >= maxPageSize) {      
+   if (maxPageSize > 0 && __max(width, height) > maxPageSize) {
       width = __min(width, maxPageSize);
       height = __min(height, maxPageSize);
+      imageSizeSet = true;
    }
    if (imageSizeSet && (defaultWidth > width || defaultHeight > height || !_bondLengthSet)) {
       float absX = 2 * outerMargin.x;
@@ -135,8 +136,8 @@ float RenderSingle::_getScale ()
       float x = width - absX,
          y = height - absY;
       if (x < commentSize.x + 1 || y < 1)
-         throw Error("Image too small, the layout requires at least %dx%d", 
-            (int)(absX + commentSize.x + 2), 
+         throw Error("Image too small, the layout requires at least %dx%d",
+            (int)(absX + commentSize.x + 2),
             (int)(absY + 2));
       if (x * objSize.y < y * objSize.x)
          s = x / objSize.x;

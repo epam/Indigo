@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -29,7 +29,7 @@
 
 using namespace indigo;
 
-RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet) : 
+RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet) :
    Render(rc, factory, cnvOpt, bondLength, bondLengthSet), nColumns(cnvOpt.gridColumnNumber), comment(-1)
 {}
 
@@ -52,11 +52,11 @@ void RenderGrid::_drawComment ()
 }
 
 void RenderGrid::draw ()
-{     
+{
    _width = _cnvOpt.width;
    _height = _cnvOpt.height;
    _rc.fontsClear();
-       
+
    bool enableRefAtoms = refAtoms.size() > 0 && _factory.isItemMolecule(objs[0]);
    if (enableRefAtoms && refAtoms.size() != objs.size())
       throw Error("Number of reference atoms should be same as the number of objects");
@@ -124,7 +124,7 @@ void RenderGrid::draw ()
 
    outerMargin.x = (float)(minMarg + _cnvOpt.marginX);
    outerMargin.y = (float)(minMarg + _cnvOpt.marginY);
-   
+
    scale = _getScale();
    _rc.initContext(_width, _height);
    cellsz.set(__max(maxsz.x * scale, maxTitleSize.x),
@@ -188,31 +188,38 @@ float RenderGrid::_getScale ()
 {
    int maxPageSize = _rc.getMaxPageSize();
    float s;
-   if (_width <= 0 || _height <= 0)
+   bool imageSizeSet = _width > 0 && _height > 0;
+   s = _bondLength;
+
+   int defaultWidth = (int)ceil(__max(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), commentSize.x) + outerMargin.x * 2);
+   int defaultHeight = (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset);
+
+   if (!imageSizeSet)
    {
-      s = _bondLength;
-
-      _width = (int)ceil(__max(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), commentSize.x) + outerMargin.x * 2);
-      _height = (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset);
-
-      if (maxPageSize < 0 || __max(_width, _height) < maxPageSize)
-         return s;
+      _width = defaultWidth;
+      _height = defaultHeight;
+   }
+   if (maxPageSize > 0 && __max(_width, _height) > maxPageSize)
+   {
       _width = __min(_width, maxPageSize);
       _height = __min(_height, maxPageSize);
+      imageSizeSet = true;
    }
 
-   float absX = _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2;
-   float absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset;
-   float x = _width - absX,
-      y = _height - absY;
-   if (x < maxTitleSize.x * nRows + 1 || _width < commentSize.x + outerMargin.x * 2 + 1 || y < 1)
-      throw Error("Image too small, the layout requires at least %dx%d", 
-         (int)__max(absX + maxTitleSize.x * nRows + 2,commentSize.x + outerMargin.x * 2 + 2), 
-         (int)(absY + 2));
-   Vec2f totalScaleableSize(maxsz.x * nColumns, maxsz.y * nRows);
-   if (x * totalScaleableSize.y < y * totalScaleableSize.x)
-      s = x / totalScaleableSize.x;
-   else
-      s = y / totalScaleableSize.y;
+   if (imageSizeSet) {
+      float absX = _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2;
+      float absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset;
+      float x = _width - absX,
+         y = _height - absY;
+      if (x < maxTitleSize.x * nRows + 1 || _width < commentSize.x + outerMargin.x * 2 + 1 || y < 1)
+         throw Error("Image too small, the layout requires at least %dx%d",
+            (int)__max(absX + maxTitleSize.x * nRows + 2,commentSize.x + outerMargin.x * 2 + 2),
+            (int)(absY + 2));
+      Vec2f totalScaleableSize(maxsz.x * nColumns, maxsz.y * nRows);
+      if (x * totalScaleableSize.y < y * totalScaleableSize.x)
+         s = x / totalScaleableSize.x;
+      else
+         s = y / totalScaleableSize.y;
+   }
    return s;
 }
