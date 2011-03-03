@@ -132,7 +132,10 @@ void RenderParamInterface::render (RenderParams& params)
       throw Error("No object to render specified");
 
    RenderContext rc(params.rOpt, params.relativeThickness);
-   rc.setDefaultScale(params.cnvOpt.bondLength);
+
+   bool bondLengthSet = params.cnvOpt.bondLength > 0;
+   float bondLength = bondLengthSet ? params.cnvOpt.bondLength : 100;
+   rc.setDefaultScale(bondLength);
    
    RenderItemFactory factory(rc); 
    int obj = -1;
@@ -195,12 +198,12 @@ void RenderParamInterface::render (RenderParams& params)
    }
 
    if (obj >= 0) {
-      RenderSingle render(rc, factory, params.cnvOpt);
+      RenderSingle render(rc, factory, params.cnvOpt, bondLength, bondLengthSet);
       render.obj = obj;
       render.comment = comment;
       render.draw();
    } else {
-      RenderGrid render(rc, factory, params.cnvOpt);
+      RenderGrid render(rc, factory, params.cnvOpt, bondLength, bondLengthSet);
       render.objs.copy(objs);
       render.comment = comment;
       render.titles.copy(titles);

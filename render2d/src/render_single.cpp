@@ -29,7 +29,7 @@
 
 using namespace indigo;
 
-RenderSingle::RenderSingle (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt) : Render(rc, factory, cnvOpt)
+RenderSingle::RenderSingle (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet) : Render(rc, factory, cnvOpt, bondLength, bondLengthSet)
 {}
 
 RenderSingle::~RenderSingle()
@@ -118,7 +118,7 @@ float RenderSingle::_getScale ()
    float s;
    if (width <= 0 || height <= 0)
    {
-      s = _cnvOpt.bondLength;
+      s = _bondLength;
 
       width = (int)ceil(__max(objSize.x * s, commentSize.x) + outerMargin.x * 2);
       height = (int)ceil(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2);

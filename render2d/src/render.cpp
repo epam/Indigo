@@ -29,10 +29,11 @@
 
 using namespace indigo;
 
-Render::Render (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt) :
+Render::Render (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet) :
    minMarg(2),
    _rc(rc), _settings(rc.getRenderSettings()), _cnvOpt(cnvOpt), _opt(rc.opt), 
-   _factory(factory)
+   _factory(factory),
+   _bondLength(bondLength), _bondLengthSet(bondLengthSet)
 {}
 
 Render::~Render()

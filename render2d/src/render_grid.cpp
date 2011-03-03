@@ -29,8 +29,8 @@
 
 using namespace indigo;
 
-RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt) : 
-   Render(rc, factory, cnvOpt), nColumns(cnvOpt.gridColumnNumber), comment(-1)
+RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet) : 
+   Render(rc, factory, cnvOpt, bondLength, bondLengthSet), nColumns(cnvOpt.gridColumnNumber), comment(-1)
 {}
 
 RenderGrid::~RenderGrid()
@@ -190,7 +190,7 @@ float RenderGrid::_getScale ()
    float s;
    if (_width <= 0 || _height <= 0)
    {
-      s = _cnvOpt.bondLength;
+      s = _bondLength;
 
       _width = (int)ceil(__max(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), commentSize.x) + outerMargin.x * 2);
       _height = (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset);

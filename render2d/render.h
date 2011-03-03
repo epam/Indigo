@@ -21,7 +21,7 @@ namespace indigo {
 
 class Render {
 public:
-   Render (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt);
+   Render (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet);
    virtual ~Render() = 0;
 
    DEF_ERROR("Render");
@@ -35,6 +35,8 @@ protected:
    const CanvasOptions& _cnvOpt;
    const RenderOptions& _opt;
    RenderItemFactory& _factory;
+   int _bondLength;
+   bool _bondLengthSet;
 };
 
 }

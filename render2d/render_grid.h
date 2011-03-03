@@ -21,7 +21,7 @@ namespace indigo {
 
 class RenderGrid : Render {
 public:
-   RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt);
+   RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet);
    virtual ~RenderGrid();
    void draw ();
 
