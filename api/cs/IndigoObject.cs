@@ -373,6 +373,18 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(dispatcher, this, Indigo.indigoIterateMultipleGroups(self));
       }
 
+      public IndigoObject getDataSGroup (int index)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, Indigo.indigoGetDataSGroup(self, index));
+      }
+
+      public IndigoObject getSuperatom (int index)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, Indigo.indigoGetSuperatom(self, index));
+      }
+
       public string description ()
       {
          dispatcher.setSessionID();
@@ -808,6 +820,19 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          Indigo.indigoSetName(self, name);
+      }
+
+      public byte[] serialize ()
+      {
+         dispatcher.setSessionID();
+         byte* buf;
+         int bufsize;
+         Indigo.indigoSerialize(self, &buf, &bufsize);
+
+         byte[] res = new byte[bufsize];
+         for (int i = 0; i < bufsize; ++i)
+            res[i] = buf[i];
+         return res;
       }
 
       public bool hasProperty (string name)

@@ -276,6 +276,11 @@ namespace com.ggasoftware.indigo
          return indigoExactMatch(obj1.self, obj2.self) == 1;
       }
 
+      public IndigoObject unserialize (byte[] buf)
+      {
+         return new IndigoObject(this, indigoUnserialize(buf, buf.Length));
+      }
+
       public IndigoObject createArray ()
       {
          setSessionID();
@@ -562,7 +567,12 @@ namespace com.ggasoftware.indigo
       public static extern int indigoIterateRepeatingUnits (int item);
       [DllImport("indigo.dll")]
       public static extern int indigoIterateMultipleGroups (int item);
-      
+
+      [DllImport("indigo.dll")]
+      public static extern int indigoGetDataSGroup (int mol, int idx);
+      [DllImport("indigo.dll")]
+      public static extern int indigoGetSuperatom (int mol, int idx);
+
       [DllImport("indigo.dll")]
       public static extern sbyte* indigoDescription (int item);
       [DllImport("indigo.dll")]
@@ -711,6 +721,10 @@ namespace com.ggasoftware.indigo
       public static extern sbyte* indigoName (int item);
       [DllImport("indigo.dll")]
       public static extern int indigoSetName (int item, string name);
+      [DllImport("indigo.dll")]
+      public static extern int indigoSerialize (int handle, byte** buf, int* size);
+      [DllImport("indigo.dll")]
+      public static extern int indigoUnserialize (byte[] buf, int size);
       [DllImport("indigo.dll")]
       public static extern int indigoHasProperty (int handle, string field);
       [DllImport("indigo.dll")]
