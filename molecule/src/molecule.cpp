@@ -936,7 +936,7 @@ int Molecule::getExplicitValence (int idx)
       return _valence[idx];
 
    if (_atoms[idx].number == ELEM_PSEUDO || _atoms[idx].number == ELEM_RSITE)
-      return 0;
+      return -1;
 
    // try to calculate explicit valence from hydrogens, as in elemental carbon [C]
    try
