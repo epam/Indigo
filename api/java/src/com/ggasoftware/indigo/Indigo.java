@@ -274,6 +274,12 @@ public class Indigo
       return checkResult(_lib.indigoCommonBits(fingerprint1.self, fingerprint2.self));
    }
 
+   public IndigoObject unserialize (byte[] data)
+   {
+      setSessionID();
+      return new IndigoObject(this, checkResult(_lib.indigoUnserialize(data, data.length)));
+   }
+   
    public IndigoObject createArray ()
    {
       setSessionID();
@@ -395,7 +401,6 @@ public class Indigo
                // on the disk.
                try
                {
-                  System.out.println("searching " + fullpath);
                   ClassLoader cl = Indigo.class.getClassLoader();
                   Field f = ClassLoader.class.getDeclaredField("nativeLibraries");
                   f.setAccessible(true);
@@ -406,10 +411,8 @@ public class Indigo
                      f = lib.getClass().getDeclaredField("name");
                      f.setAccessible(true);
                      String name = (String)f.get(lib);
-                     System.out.println(name);
                      if (name.equals(fullpath))
                      {
-                        System.out.println("finalizing " + fullpath);
                         Method m = lib.getClass().getDeclaredMethod("finalize", new Class[0]);
                         m.setAccessible(true);
                         // Here comes the trick: we call the finalizer twice,
@@ -430,8 +433,8 @@ public class Indigo
                   e.printStackTrace();
                }
             }
-            new File(fullpath).delete();
-            new File(directories.get(idx)).delete();
+            (new File(fullpath)).delete();
+            (new File(directories.get(idx))).delete();
          }
       }
    }
