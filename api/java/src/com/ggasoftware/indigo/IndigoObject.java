@@ -773,6 +773,17 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(_lib.indigoSetName(self, name));
    }
 
+   public byte[] serialize ()
+   {
+      PointerByReference ptr = new PointerByReference();
+      IntByReference size = new IntByReference();
+
+      dispatcher.setSessionID();
+      Indigo.checkResult(_lib.indigoSerialize(self, ptr, size));
+      Pointer p = ptr.getValue();
+      return p.getByteArray(0, size.getValue());
+   }
+   
    public boolean hasProperty(String prop)
    {
       dispatcher.setSessionID();

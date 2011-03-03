@@ -274,6 +274,12 @@ public class Indigo
       return checkResult(_lib.indigoCommonBits(fingerprint1.self, fingerprint2.self));
    }
 
+   public IndigoObject unserialize (byte[] data)
+   {
+      setSessionID();
+      return new IndigoObject(this, checkResult(_lib.indigoUnserialize(data, data.length)));
+   }
+   
    public IndigoObject createArray ()
    {
       setSessionID();
