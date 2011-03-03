@@ -116,30 +116,32 @@ float RenderSingle::_getScale ()
 {
    int maxPageSize = _rc.getMaxPageSize();
    float s;
-   if (width <= 0 || height <= 0)
-   {
-      s = _bondLength;
+   bool imageSizeSet = width > 0 && height > 0;
+   s = _bondLength;
+   int defaultWidth = (int)ceil(__max(objSize.x * s, commentSize.x) + outerMargin.x * 2);
+   int defaultHeight = (int)ceil(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2);
 
-      width = (int)ceil(__max(objSize.x * s, commentSize.x) + outerMargin.x * 2);
-      height = (int)ceil(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2);
-
-      if (maxPageSize < 0 || __max(width, height) < maxPageSize)
-         return s;
+   if (!imageSizeSet) {
+      width = defaultWidth;
+      height = defaultWidth;
+   }
+   if (maxPageSize > 0 && __max(width, height) >= maxPageSize) {      
       width = __min(width, maxPageSize);
       height = __min(height, maxPageSize);
    }
-
-   float absX = 2 * outerMargin.x;
-   float absY = commentSize.y + 2 * outerMargin.y + commentOffset;
-   float x = width - absX,
-      y = height - absY;
-   if (x < commentSize.x + 1 || y < 1)
-      throw Error("Image too small, the layout requires at least %dx%d", 
-         (int)(absX + commentSize.x + 2), 
-         (int)(absY + 2));
-   if (x * objSize.y < y * objSize.x)
-      s = x / objSize.x;
-   else
-      s = y / objSize.y;
+   if (imageSizeSet && (defaultWidth > width || defaultHeight > height || !_bondLengthSet)) {
+      float absX = 2 * outerMargin.x;
+      float absY = commentSize.y + 2 * outerMargin.y + commentOffset;
+      float x = width - absX,
+         y = height - absY;
+      if (x < commentSize.x + 1 || y < 1)
+         throw Error("Image too small, the layout requires at least %dx%d", 
+            (int)(absX + commentSize.x + 2), 
+            (int)(absY + 2));
+      if (x * objSize.y < y * objSize.x)
+         s = x / objSize.x;
+      else
+         s = y / objSize.y;
+   }
    return s;
 }
