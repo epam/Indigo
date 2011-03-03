@@ -30,7 +30,7 @@ public class MolComparer
    ArrayList<CompMol> uniq_mols2;
    MolComparerThread thread;
    CompareFinishEvent finish_event;
-   ProgressEvent progress_event;
+   IndigoEventSource<ProgressEvent> progress_event = new IndigoEventSource<ProgressEvent>(this);
 
    public class CompMol extends MolData implements Comparable<CompMol>
    {
@@ -112,7 +112,6 @@ public class MolComparer
          uniq_mols1 = new ArrayList<CompMol>();
 
          finish_event = new CompareFinishEvent();
-         progress_event = new ProgressEvent(-1, 0);
 
          thread = new MolComparerThread();
       } catch (Exception ex) {
@@ -191,16 +190,16 @@ public class MolComparer
             double part1 = (double)(init_mols1_count - uniq_mols1.size() - pos1) / init_mols1_count;
             double part2 = (double)(init_mols2_count - uniq_mols2.size() - pos2) / init_mols2_count;
 
+            int progress_level;
             if (part1 > part2)
-               progress_event.progress = (int)(part1 * 1000);
+               progress_level = (int)(part2 * 1000);
             else
-               progress_event.progress = (int)(part1 * 1000);
-
-            progress_event.alertListeners();
+               progress_level = (int)(part1 * 1000);
+            
+            progress_event.fireEvent(new ProgressEvent(-1, progress_level));
          }
 
-         progress_event.progress = 1000;
-         progress_event.alertListeners();
+         progress_event.fireEvent(new ProgressEvent(-1, 1000));
 
          return;
       }

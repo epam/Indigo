@@ -3,6 +3,7 @@ package com.ggasoftware.indigo.chemdiff;
 import com.ggasoftware.indigo.gui.LoadFinishEvent;
 import com.ggasoftware.indigo.gui.ProgressEvent;
 import com.ggasoftware.indigo.*;
+import com.ggasoftware.indigo.gui.IndigoEventListener;
 import com.ggasoftware.indigo.gui.MolData;
 import com.ggasoftware.indigo.gui.MolEvent;
 import com.ggasoftware.indigo.gui.MolEventListener;
@@ -635,8 +636,8 @@ public class MainFrame extends javax.swing.JFrame
        load_progress_bar.setMaximum((int) choosed_file.length());
 
 
+       in_table.progress_event.addListener(new ProgressEventListener());
        String path = in_table.openSdf(choosed_file, new SdfLoadEventListener(),
-                                  new ProgressEventListener(),
                                   getAromatizeCheckState(),
                                   getCisTransCheckState(),
                                   getStereocentersCheckState());
@@ -805,11 +806,10 @@ public class MainFrame extends javax.swing.JFrame
        }
     }
 
-    public class ProgressEventListener extends MolEventListener
+    public class ProgressEventListener implements IndigoEventListener<ProgressEvent>
     {
-       public void handleEvent(EventObject o)
+       public void handleEvent(Object source, ProgressEvent mol_event)
        {
-          ProgressEvent mol_event = (ProgressEvent)o.getSource();
           int table_idx = mol_event.table_idx;
           JProgressBar progress_bar;
 
@@ -821,7 +821,6 @@ public class MainFrame extends javax.swing.JFrame
           progress_bar.setValue(mol_event.progress);
        }
     }
-
 
     public class CompareFinishEventListener extends MolEventListener
     {

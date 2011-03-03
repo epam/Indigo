@@ -1,10 +1,13 @@
 package com.ggasoftware.indigo.chemdiff;
 
 import com.ggasoftware.indigo.*;
+import com.ggasoftware.indigo.gui.IndigoEventListener;
+import com.ggasoftware.indigo.gui.IndigoEventSource;
 import com.ggasoftware.indigo.gui.MolEvent;
 import com.ggasoftware.indigo.gui.MolEventListener;
 import com.ggasoftware.indigo.gui.MolSaver;
 import com.ggasoftware.indigo.gui.MolTable;
+import com.ggasoftware.indigo.gui.ProgressEvent;
 import java.io.File;
 import java.util.EventListener;
 import java.util.EventObject;
@@ -18,6 +21,9 @@ public class MolViewTable extends MolTable
    public boolean cistrans_flag;
    public boolean stereocenters_ignore_flag;
 
+   public IndigoEventSource<ProgressEvent> progress_event = 
+           new IndigoEventSource<ProgressEvent>(this);
+   
    /* Default constructor */
    public MolViewTable(Indigo cur_indigo, IndigoRenderer cur_indigo_renderer, MolSaver cur_mol_saver,
               int cur_table_idx,
@@ -36,14 +42,18 @@ public class MolViewTable extends MolTable
    }
 
    public String openSdf(File choosed_file, EventListener finish_event_listener, 
-                     EventListener progress_event_listener, boolean arom_flag,
-                     boolean cistrans_flag, boolean stereocenters_ignore_flag)
+           boolean arom_flag, boolean cistrans_flag, boolean stereocenters_ignore_flag)
    {
       try {
          sdf_loader = new SdfLoader(indigo, table_idx, null);
 
          sdf_loader.finish_event.addListener((MolEventListener)finish_event_listener);
-         sdf_loader.progress_event.addListener((MolEventListener)progress_event_listener);
+         
+         sdf_loader.progress_event.addListener(new IndigoEventListener<ProgressEvent>() {
+            public void handleEvent(Object source, ProgressEvent event) {
+               progress_event.fireEvent(event);
+            }
+         });
 
          this.arom_flag = arom_flag;
          this.cistrans_flag = cistrans_flag;

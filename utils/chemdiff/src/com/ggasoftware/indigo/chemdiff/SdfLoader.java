@@ -29,7 +29,8 @@ public class SdfLoader{
    private String _ext;
    public int table_idx;
    public LoadFinishEvent finish_event;
-   public ProgressEvent progress_event;
+   public IndigoEventSource<ProgressEvent> progress_event = 
+           new IndigoEventSource<ProgressEvent>(this);
    private SdfLoadRunnable runnable;
    public boolean arom_flag;
    public boolean cistrans_ignore_flag;
@@ -43,7 +44,6 @@ public class SdfLoader{
       indigo = cur_indigo;
       runnable = new SdfLoadRunnable();
       finish_event = new LoadFinishEvent(table_idx);
-      progress_event = new ProgressEvent(table_idx, 0);
       mol_datas = new ArrayList<MolData>();
       thread = new Thread(null, runnable, "sdf_loader #" + table_idx, 10000000);
       _ext = ext;
@@ -111,8 +111,7 @@ public class SdfLoader{
                                 "unknown #" + invalid_count++ + " in table #" + table_idx));
                }
 
-               progress_event.progress = file_pos;
-               progress_event.alertListeners();
+               progress_event.fireEvent(new ProgressEvent(table_idx, file_pos));
             }
          } catch (Exception ex) {
             JOptionPane msg_box = new JOptionPane();
