@@ -350,6 +350,7 @@ public:
    float titleFontFactor;
    Vec3f commentColor;
    LABEL_MODE labelMode;
+   bool highlightedLabelsVisible;
    bool implHVisible;
    DINGO_MODE mode;
    Output* output;

@@ -133,6 +133,12 @@ void indigoRenderSetImplicitHydrogenVisible (int enabled)
    rp.rOpt.implHVisible = enabled != 0;
 }
 
+void indigoRenderSetHighlightedLabelsVisible (int enabled)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.highlightedLabelsVisible = enabled != 0;
+}
+
 void indigoRenderSetColoring (int enabled)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -464,6 +470,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("render-highlight-color-enabled", indigoRenderSetHighlightColorEnabled);
    mgr.setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", indigoRenderSetCenterDoubleBondWhenStereoAdjacent);
    mgr.setOptionHandlerBool("render-implicit-hydrogens-visible", indigoRenderSetImplicitHydrogenVisible);
+   mgr.setOptionHandlerBool("render-highlighted-labels-visible", indigoRenderSetHighlightedLabelsVisible);
 
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);

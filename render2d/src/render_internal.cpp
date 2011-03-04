@@ -155,6 +155,7 @@ void RenderOptions::clear()
    commentFontFactor = 20;
    titleFontFactor = 20;
    labelMode = LABEL_MODE_TERMINAL_HETERO;
+   highlightedLabelsVisible = false;
    implHVisible = true;
    commentColor.set(0,0,0);
    mode = MODE_NONE;
@@ -750,6 +751,8 @@ bool MoleculeRenderInternal::_isSingleHighlighted (int aid)
    const Vertex& vertex = _mol->getVertex(aid);
    if (!_vertexIsHighlighted(aid))
       return false;
+   if (_opt.highlightedLabelsVisible)
+      return true;
    for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
       if (_edgeIsHighlighted(vertex.neiEdge(j)))
          return false;
