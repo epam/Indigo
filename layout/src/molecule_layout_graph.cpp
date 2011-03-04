@@ -326,12 +326,12 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
 
          if (col == 0 && row > 0)
          {
-            y_start += max_height + bond_length;
+            y_start += max_height + 2 * bond_length;
             max_height = 0.f;
          }
 
          if (col > 0)
-            dx = x_start - x_min + bond_length;
+            dx = x_start - x_min + 2 * bond_length;
          else
             dx = -x_min;
 
