@@ -5,9 +5,9 @@
 
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.gui.ProgressEvent;
+import com.ggasoftware.indigo.controls.ProgressEvent;
 import com.ggasoftware.indigo.Indigo;
-import com.ggasoftware.indigo.gui.*;
+import com.ggasoftware.indigo.controls.*;
 import com.ggasoftware.indigo.IndigoObject;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class MolComparer
    ArrayList<CompMol> uniq_mols1;
    ArrayList<CompMol> uniq_mols2;
    MolComparerThread thread;
-   CompareFinishEvent finish_event;
+   IndigoEventSource<Object> finish_event = new IndigoEventSource<Object>(null);
    IndigoEventSource<ProgressEvent> progress_event = new IndigoEventSource<ProgressEvent>(this);
 
    public class CompMol extends MolData implements Comparable<CompMol>
@@ -111,7 +111,7 @@ public class MolComparer
          uniq_mols2 = new ArrayList<CompMol>();
          uniq_mols1 = new ArrayList<CompMol>();
 
-         finish_event = new CompareFinishEvent();
+         finish_event = new IndigoEventSource<Object>(null);
 
          thread = new MolComparerThread();
       } catch (Exception ex) {
@@ -213,7 +213,7 @@ public class MolComparer
          Collections.sort(uniq_mols1, new IndexComparator());
          Collections.sort(uniq_mols2, new IndexComparator());
 
-         finish_event.alertListeners();
+         finish_event.fireEvent(null);
       }
    }
 

@@ -4,11 +4,10 @@
  */
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.gui.LoadFinishEvent;
-import com.ggasoftware.indigo.gui.ProgressEvent;
+import com.ggasoftware.indigo.controls.ProgressEvent;
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoObject;
-import com.ggasoftware.indigo.gui.*;
+import com.ggasoftware.indigo.controls.*;
 import java.awt.Window;
 import java.io.File;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class SdfLoader{
    private Thread thread;
    private String _ext;
    public int table_idx;
-   public LoadFinishEvent finish_event;
+   public IndigoEventSource<Integer> finish_event;
    public IndigoEventSource<ProgressEvent> progress_event = 
            new IndigoEventSource<ProgressEvent>(this);
    private SdfLoadRunnable runnable;
@@ -38,14 +37,14 @@ public class SdfLoader{
 
    public boolean test_flag;
 
-   public SdfLoader(Indigo cur_indigo, int cur_table_idx, String ext) {
-      table_idx = cur_table_idx;
-
+   public SdfLoader(Indigo cur_indigo, int cur_table_idx, String ext)
+   {
       indigo = cur_indigo;
+      table_idx = cur_table_idx;
       runnable = new SdfLoadRunnable();
-      finish_event = new LoadFinishEvent(table_idx);
+      finish_event = new IndigoEventSource<Integer>(this);
       mol_datas = new ArrayList<MolData>();
-      thread = new Thread(null, runnable, "sdf_loader #" + table_idx, 10000000);
+      thread = new Thread(null, runnable, "sdf_loader #", 10000000);
       _ext = ext;
 
       test_flag = false;
@@ -57,6 +56,8 @@ public class SdfLoader{
    public void setFile(File cur_file) {
       file = cur_file;
    }
+
+
 
    class SdfLoadRunnable implements Runnable {
 
@@ -78,37 +79,40 @@ public class SdfLoader{
             int invalid_count = 0;
             for (IndigoObject iterr : iterator_object)
             {
-               if (thread.isInterrupted())
-                  return;
+               synchronized (iterr)
+               {
+                  if (thread.isInterrupted())
+                     return;
 
-               file_pos = iterator_object.tell();
-               try {
-                  IndigoObject mol = iterr.clone();
-                  if (arom_flag)
-                     mol.aromatize();
-                  if (cistrans_ignore_flag)
-                     mol.clearCisTrans();
-                  if (stereocenters_ignore_flag)
-                     mol.clearStereocenters();
-
-                  String csmiles;
+                  file_pos = iterator_object.tell();
                   try
                   {
-                     csmiles = mol.canonicalSmiles();
+                     IndigoObject mol = iterr.clone();
+                     if (arom_flag)
+                        mol.aromatize();
+                     if (cistrans_ignore_flag)
+                        mol.clearCisTrans();
+                     if (stereocenters_ignore_flag)
+                        mol.clearStereocenters();
+
+                     String csmiles;
+                     try
+                     {
+                        csmiles = mol.canonicalSmiles();
+                     }
+                     catch (Exception ex)
+                     {
+                        csmiles = "unknown #" + invalid_count++ + " in table #" + table_idx;
+                     }
+
+                     mol_datas.add(new MolData(iterator_object, mol_datas.size(), csmiles));
+
+                     if ((mol_datas.size() % 10000) == 0)
+                        System.gc();
+                  } catch (Exception ex) {
+                     mol_datas.add(new MolData(null, mol_datas.size(),
+                                   "unknown #" + invalid_count++ + " in table #" + table_idx));
                   }
-                  catch (Exception ex)
-                  {
-                     csmiles = "unknown #" + invalid_count++ + " in table #" + table_idx;
-                  }
-
-                  mol_datas.add(new MolData(iterator_object, mol_datas.size(), csmiles));
-
-                  if ((mol_datas.size() % 10000) == 0)
-                     System.gc();
-
-               } catch (Exception ex) {
-                  mol_datas.add(new MolData(null, mol_datas.size(),
-                                "unknown #" + invalid_count++ + " in table #" + table_idx));
                }
 
                progress_event.fireEvent(new ProgressEvent(table_idx, file_pos));
@@ -122,7 +126,7 @@ public class SdfLoader{
                     "Error loading file", JOptionPane.ERROR_MESSAGE);
          }
 
-         finish_event.alertListeners();
+         finish_event.fireEvent(table_idx);
       }
    }
 

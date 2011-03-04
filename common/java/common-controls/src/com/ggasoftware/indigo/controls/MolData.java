@@ -1,7 +1,8 @@
-package com.ggasoftware.indigo.gui;
+package com.ggasoftware.indigo.controls;
 import com.ggasoftware.indigo.IndigoObject;
+import java.awt.image.renderable.RenderableImage;
 
-public class MolData
+public class MolData implements RenderableObject
 {
    public int index;
    public String csmiles;
@@ -31,7 +32,7 @@ public class MolData
          csmiles = null;
    }
 
-   public IndigoObject getMolecule()
+   public IndigoObject getObject()
    {
       return mol_iterator.at(index).clone();
    }

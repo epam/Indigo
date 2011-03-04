@@ -1,4 +1,4 @@
-package com.ggasoftware.indigo.gui;
+package com.ggasoftware.indigo.controls;
 
 import com.ggasoftware.indigo.*;
 import java.awt.Dimension;
@@ -95,7 +95,7 @@ public class MolClicker extends MouseAdapter {
       MolViewPanel mol_view = new MolViewPanel(indigo, indigo_renderer);
       mol_view.setImageSize(500, 500);
 
-      IndigoObject molecule = mc.getMolecule().clone();
+      IndigoObject molecule = mc.getObject().clone();
 
       molecule.layout();
 

@@ -1,13 +1,13 @@
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.gui.LoadFinishEvent;
-import com.ggasoftware.indigo.gui.ProgressEvent;
+import com.ggasoftware.indigo.controls.ProgressEvent;
 import com.ggasoftware.indigo.*;
-import com.ggasoftware.indigo.gui.IndigoEventListener;
-import com.ggasoftware.indigo.gui.MolData;
-import com.ggasoftware.indigo.gui.MolEvent;
-import com.ggasoftware.indigo.gui.MolEventListener;
-import com.ggasoftware.indigo.gui.MolSaver;
+import com.ggasoftware.indigo.controls.IndigoEventListener;
+import com.ggasoftware.indigo.controls.GlobalParams;
+import com.ggasoftware.indigo.controls.IndigoEventSource;
+import com.ggasoftware.indigo.controls.MolData;
+import com.ggasoftware.indigo.controls.MolFileFilter;
+import com.ggasoftware.indigo.controls.MolSaver;
 import com.sun.java.swing.plaf.windows.WindowsBorders.ProgressBarBorder;
 import java.io.File;
 import javax.swing.GroupLayout;
@@ -44,7 +44,6 @@ public class MainFrame extends javax.swing.JFrame
    MolViewTable out_table1;
    MolViewTable out_table2;
    MolViewTable out_table3;
-   CurDir cur_dir;
    MolComparer mol_comparer;
    MolSaver mol_saver1;
    MolSaver mol_saver2;
@@ -109,17 +108,20 @@ public class MainFrame extends javax.swing.JFrame
 
       initComponents();
 
-      cur_dir = new CurDir();
-
       mol_comparer = new MolComparer(true);
 
-      mol_saver1 = new MolSaver(indigo1, cur_dir);
-      mol_saver2 = new MolSaver(indigo2, cur_dir);
-      in_table1 = new MolViewTable(indigo1, indigo_renderer1, mol_saver1, 0, 300, 150, false);
-      in_table2 = new MolViewTable(indigo2, indigo_renderer2, mol_saver2, 1, 300, 150, false);
-      out_table1 = new MolViewTable(indigo1, indigo_renderer1, mol_saver1, -1, 200, 150, false);
-      out_table2 = new MolViewTable(indigo1, indigo_renderer1, mol_saver1, -1, 200, 150, false);
-      out_table3 = new MolViewTable(indigo2, indigo_renderer2, mol_saver2, -1, 200, 150, false);
+      mol_saver1 = new MolSaver(indigo1);
+      mol_saver2 = new MolSaver(indigo2);
+      in_table1 = new MolViewTable(indigo1, indigo_renderer1, mol_saver1, 
+                                   0, 300, 150, false);
+      in_table2 = new MolViewTable(indigo2, indigo_renderer2, mol_saver2, 
+                                   1, 300, 150, false);
+      out_table1 = new MolViewTable(indigo1, indigo_renderer1, mol_saver1, 
+                                    -1, 200, 150, false);
+      out_table2 = new MolViewTable(indigo1, indigo_renderer1, mol_saver1, 
+                                    -1, 200, 150, false);
+      out_table3 = new MolViewTable(indigo2, indigo_renderer2, mol_saver2, 
+                                    -1, 200, 150, false);
       
       GroupLayout in_gl1 = new GroupLayout(in_table_panel1);
       in_table_panel1.setLayout(in_gl1);
@@ -620,14 +622,14 @@ public class MainFrame extends javax.swing.JFrame
        mon_ff.addExtension("smi");
        mon_ff.addExtension("cml");
        file_chooser.setFileFilter(mon_ff);
-       file_chooser.setCurrentDirectory(new File(cur_dir.dir_path));
+       file_chooser.setCurrentDirectory(new File(GlobalParams.getInstance().dir_path));
        int ret_val = file_chooser.showOpenDialog(this);
        File choosed_file = file_chooser.getSelectedFile();
 
        if ((choosed_file == null) || (ret_val != JFileChooser.APPROVE_OPTION))
           return;
 
-       cur_dir.dir_path = choosed_file.getParent();
+       GlobalParams.getInstance().dir_path = choosed_file.getParent();
 
        if (in_table.getSdfLoader() != null)
           in_table.getSdfLoader().interrupt();
@@ -637,10 +639,11 @@ public class MainFrame extends javax.swing.JFrame
 
 
        in_table.progress_event.addListener(new ProgressEventListener());
-       String path = in_table.openSdf(choosed_file, new SdfLoadEventListener(),
-                                  getAromatizeCheckState(),
-                                  getCisTransCheckState(),
-                                  getStereocentersCheckState());
+       String path = in_table.openSdf(choosed_file, new LoadFinishEventListener(),
+                                      getAromatizeCheckState(),
+                                      getCisTransCheckState(),
+                                      getStereocentersCheckState());
+
        if (path != null)
        {
           load_progress_bar.setString(path);
@@ -657,7 +660,7 @@ public class MainFrame extends javax.swing.JFrame
     }//GEN-LAST:event_load_secondActionPerformed
 
     private void save_button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_button1ActionPerformed
-       out_table1.saveSdf(cur_dir);
+       out_table1.saveSdf();
     }//GEN-LAST:event_save_button1ActionPerformed
 
     private void compare_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compare_buttonActionPerformed
@@ -686,11 +689,11 @@ public class MainFrame extends javax.swing.JFrame
     }//GEN-LAST:event_compare_buttonActionPerformed
 
     private void save_button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_button2ActionPerformed
-       out_table2.saveSdf(cur_dir);
+       out_table2.saveSdf();
     }//GEN-LAST:event_save_button2ActionPerformed
 
     private void save_button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_button3ActionPerformed
-       out_table3.saveSdf(cur_dir);
+       out_table3.saveSdf();
     }//GEN-LAST:event_save_button3ActionPerformed
 
     private void jMenuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuExitActionPerformed
@@ -784,12 +787,11 @@ public class MainFrame extends javax.swing.JFrame
        return  save_same_check.getState();
     }
 
-    public class SdfLoadEventListener extends MolEventListener
+    public class LoadFinishEventListener implements IndigoEventListener<Integer>
     {
-       public void handleEvent(EventObject o)
+       public void handleEvent(Object o, Integer data)
        {
-          LoadFinishEvent mol_event = (LoadFinishEvent)o.getSource();
-          int table_idx = mol_event.table_idx;
+          int table_idx = data;
           int another_table_idx = (table_idx + 1) % 2;
 
           MolViewTable in_table = getInputTable(table_idx);
@@ -822,9 +824,9 @@ public class MainFrame extends javax.swing.JFrame
        }
     }
 
-    public class CompareFinishEventListener extends MolEventListener
+    public class CompareFinishEventListener implements IndigoEventListener<Object>
     {
-       public void handleEvent(EventObject o)
+       public void handleEvent(Object source, Object event)
        {
           ArrayList<MolData> conc_array = new ArrayList<MolData>();
           ArrayList< ArrayList<Integer> > conc_indexes1 = new ArrayList< ArrayList<Integer> >();

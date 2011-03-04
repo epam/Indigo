@@ -1,10 +1,7 @@
-package com.ggasoftware.indigo.gui;
+package com.ggasoftware.indigo.controls;
 
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoObject;
-import com.ggasoftware.indigo.chemdiff.CurDir;
-import com.ggasoftware.indigo.chemdiff.MolFileFilter;
-import java.awt.Window;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
@@ -13,15 +10,13 @@ import javax.swing.JOptionPane;
 
 public class MolSaver {
    Indigo indigo;
-   CurDir cur_dir;
 
-   public MolSaver( Indigo indigo, CurDir cur_dir )
+   public MolSaver( Indigo indigo )
    {
       this.indigo = indigo;
-      this.cur_dir = cur_dir;
    }
 
-   public String saveMols(CurDir cur_dir, ArrayList<MolData> mol_datas) {
+   public String saveMols(ArrayList<MolData> mol_datas) {
       IndigoObject output_file = null;
       try {
          JFileChooser file_chooser = new JFileChooser();
@@ -42,14 +37,14 @@ public class MolSaver {
          file_chooser.addChoosableFileFilter(cml_ff);
          file_chooser.setFileFilter(sdf_ff);
 
-         file_chooser.setCurrentDirectory(new File(cur_dir.dir_path));
+         file_chooser.setCurrentDirectory(new File(GlobalParams.getInstance().dir_path));
          int ret_val = file_chooser.showSaveDialog(JFrame.getOwnerlessWindows()[0]);
          File choosed_file = file_chooser.getSelectedFile();
 
          if ((choosed_file == null) || (ret_val != JFileChooser.APPROVE_OPTION)) {
             return null;
          }
-         cur_dir.dir_path = choosed_file.getParent();
+         GlobalParams.getInstance().dir_path = choosed_file.getParent();
 
          String out_file_path = choosed_file.getPath();
          MolFileFilter cur_filter = (MolFileFilter)file_chooser.getFileFilter();
@@ -108,7 +103,7 @@ public class MolSaver {
          file_chooser.setAcceptAllFileFilterUsed(false);
          file_chooser.addChoosableFileFilter(mol_ff);
 
-         file_chooser.setCurrentDirectory(new File(cur_dir.dir_path));
+         file_chooser.setCurrentDirectory(new File(GlobalParams.getInstance().dir_path));
          int ret_val = file_chooser.showSaveDialog(JFrame.getOwnerlessWindows()[0]);
          File choosed_file = file_chooser.getSelectedFile();
 
@@ -116,7 +111,7 @@ public class MolSaver {
             return null;
          }
 
-         cur_dir.dir_path = choosed_file.getParent();
+         GlobalParams.getInstance().dir_path = choosed_file.getParent();
 
          String out_file_path = choosed_file.getPath();
          MolFileFilter cur_filter = (MolFileFilter)file_chooser.getFileFilter();

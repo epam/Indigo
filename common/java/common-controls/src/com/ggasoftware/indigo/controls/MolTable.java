@@ -1,8 +1,11 @@
-package com.ggasoftware.indigo.gui;
+package com.ggasoftware.indigo.controls;
 
 import com.ggasoftware.indigo.*;
+import java.awt.Image;
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import javax.swing.table.*;
 
 public class MolTable extends JPanel
@@ -18,6 +21,8 @@ public class MolTable extends JPanel
    public ArrayList<MolData> mol_datas;
    public IndigoObject mol_iterator;
    public MolSaver mol_saver;
+
+   public Queue images;
    
    /* Default constructor */
    public MolTable()
@@ -43,6 +48,8 @@ public class MolTable extends JPanel
       this.mol_saver = mol_saver;
 
       mol_datas = new ArrayList<MolData>();
+      images = new LinkedList<Image>();
+
       MolTableModel mtm = new MolTableModel();
       table = new JTable(mtm);
       TableColumnModel tcm = table.getColumnModel();

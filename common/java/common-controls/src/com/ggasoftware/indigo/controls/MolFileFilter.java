@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package com.ggasoftware.indigo.chemdiff;
+package com.ggasoftware.indigo.controls;
 
 import java.io.File;
 import java.util.ArrayList;

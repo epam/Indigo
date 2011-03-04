@@ -1,4 +1,4 @@
-package com.ggasoftware.indigo.gui;
+package com.ggasoftware.indigo.controls;
 
 import java.awt.*;
 import java.util.logging.Level;

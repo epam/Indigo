@@ -1,4 +1,4 @@
-package com.ggasoftware.indigo.gui;
+package com.ggasoftware.indigo.controls;
 
 public class ProgressEvent
 {
