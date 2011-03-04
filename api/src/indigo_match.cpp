@@ -181,13 +181,16 @@ IndigoObject * IndigoMoleculeSubstructureMatchIter::next ()
       const int *edges = storage.getEdges(_embedding_index, e_count);
 
       for (i = 0; i < v_count; i++)
-         mptr->hl_atoms.push(mapping[vertices[i]]);
+         if (mapping[vertices[i]] >= 0)
+            mptr->hl_atoms.push(mapping[vertices[i]]);
+      
       for (i = 0; i < e_count; i++)
       {
          const Edge &edge = target.getEdge(edges[i]);
          int beg = mapping[edge.beg];
          int end = mapping[edge.end];
-         mptr->hl_bonds.push(original_target.findEdgeIndex(beg, end));
+         if (beg >= 0 && end >= 0)
+            mptr->hl_bonds.push(original_target.findEdgeIndex(beg, end));
       }
    }
    else
@@ -196,7 +199,7 @@ IndigoObject * IndigoMoleculeSubstructureMatchIter::next ()
       
       mptr->query_atom_mapping.copy(matcher.getQueryMapping(), query.vertexEnd());
       for (i = target.vertexBegin(); i != target.vertexEnd(); i = target.vertexNext(i))
-         if (target.isAtomHighlighted(i))
+         if (target.isAtomHighlighted(i) && mapping[i] >= 0)
             mptr->hl_atoms.push(mapping[i]);
       for (i = target.edgeBegin(); i != target.edgeEnd(); i = target.edgeNext(i))
       {
@@ -205,7 +208,8 @@ IndigoObject * IndigoMoleculeSubstructureMatchIter::next ()
             const Edge &edge = target.getEdge(i);
             int beg = mapping[edge.beg];
             int end = mapping[edge.end];
-            mptr->hl_bonds.push(original_target.findEdgeIndex(beg, end));
+            if (beg >= 0 && end >= 0)
+               mptr->hl_bonds.push(original_target.findEdgeIndex(beg, end));
          }
       }
    }
