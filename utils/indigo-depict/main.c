@@ -38,7 +38,7 @@ void usage (void)
            "-h <number>\n"
            "   Picture height in pixels\n"
            "-bond <number>\n"
-           "   Average bond length in pixels (conflicts with -w and -h)\n"
+           "   Average bond length in pixels\n"
            "-margins <number> <number>\n"
            "   Horizontal and vertical margins, in pixels. No margins by default\n"
            "-thickness <number>\n"
@@ -673,25 +673,18 @@ int parseParams (Params* p, int argc, char *argv[]) {
       }
    }
 
-   if (p->width <= 0 && p->height <= 0)
-   {
-      if (p->bond > 0)
-         indigoSetOptionFloat("render-bond-length", (float)p->bond);
-   }
-   else if (p->width <= 0 || p->height <= 0)
+   if (p->bond > 0)
+      indigoSetOptionFloat("render-bond-length", (float)p->bond);
+   
+   if ((p->width > 0 && p->height <= 0) ||
+       (p->width <= 0 && p->height > 0))
    {
       fprintf(stderr, "-w and -h should be specified both or neither\n");
       return -1;
    }
-   else
-   {
-      if (p->bond > 0)
-      {
-         fprintf(stderr, "-bond conflicts with -w and -h\n");
-         return -1;
-      }
+
+   if (p->width > 0 && p->height > 0)
       indigoSetOptionXY("render-image-size", p->width, p->height);
-   }
 
    if (p->hydro_set && p->query_set)
    {
