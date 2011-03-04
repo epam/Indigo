@@ -1955,6 +1955,7 @@ void MolfileLoader::_readCtab3000 ()
       int hcount = 0;
       int irflag = 0;
       int ecflag = 0;
+      int radical = 0;
 
       while (!strscan.isEOF())
       {
@@ -1980,11 +1981,9 @@ void MolfileLoader::_readCtab3000 ()
          }
          else if (strcmp(prop, "RAD") == 0)
          {
-            int radical = strscan.readInt1();
+            radical = strscan.readInt1();
 
-            if (_mol != 0)
-               _mol->setAtomRadical(i, radical);
-            else
+            if (_qmol != 0)
             {
                _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
                      new QueryMolecule::Atom(QueryMolecule::ATOM_RADICAL, radical)));
@@ -2141,6 +2140,9 @@ void MolfileLoader::_readCtab3000 ()
                   new QueryMolecule::Atom(QueryMolecule::ATOM_ISOTOPE, isotope)));
       }
 
+      if (_mol != 0)
+         _mol->setAtomRadical(i, radical);
+
       if (reaction_atom_inversion != 0)
          reaction_atom_inversion->at(i) = irflag;
 
@@ -2289,6 +2291,20 @@ void MolfileLoader::_readCtab3000 ()
 
       _scanner.readString(str, true);
    }
+
+   // Some "either" bonds may mean "either cis-trans", not "either stereocenter".
+   // The following loop dodes the correction.
+
+   for (i = 0; i < _bonds_num; i++)
+      if (_bond_directions[i] == MoleculeStereocenters::BOND_EITHER)
+      {
+         if (MoleculeCisTrans::isGeomStereoBond(*_bmol, i, 0, true))
+         {
+            _bond_directions[i] = 0;
+            _ignore_cistrans[i] = 1;
+            _stereocenter_types[_bmol->getEdge(i).beg] = 0;
+         }
+      }
 
    if (strncmp(str.ptr(), "M  V30 BEGIN COLLECTION", 23) == 0)
    {

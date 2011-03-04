@@ -369,8 +369,10 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          {
             int hcount = mol.asMolecule().getImplicitH_NoThrow(i, -1);
 
-            if (hcount >= 0)
-               out.printf(" HCOUNT=%d", hcount + 1);
+            if (hcount > 0)
+               out.printf(" HCOUNT=%d", hcount);
+            else if (hcount == 0)
+               out.printf(" HCOUNT=-1");
          }
       }
       if (radical > 0)
