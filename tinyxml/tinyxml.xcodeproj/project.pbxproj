@@ -129,14 +129,16 @@
 			};
 			name = Debug;
 		};
-		810BD6AA12F2D596004D1772 /* Release */ = {
+		810BD6AA12F2D596004D1772 /* Release10.5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				HEADER_SEARCH_PATHS = include;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
-			name = Release;
+			name = Release10.5;
 		};
 		810BD6BF12F2D5FF004D1772 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -156,7 +158,7 @@
 			};
 			name = Debug;
 		};
-		810BD6C012F2D5FF004D1772 /* Release */ = {
+		810BD6C012F2D5FF004D1772 /* Release10.5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -172,7 +174,36 @@
 				PRODUCT_NAME = tinyxml;
 				ZERO_LINK = NO;
 			};
-			name = Release;
+			name = Release10.5;
+		};
+		81EB278D1322954E00D7BB3B /* Release10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				HEADER_SEARCH_PATHS = include;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+			};
+			name = Release10.6;
+		};
+		81EB278E1322954E00D7BB3B /* Release10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = tinyxml;
+				ZERO_LINK = NO;
+			};
+			name = Release10.6;
 		};
 /* End XCBuildConfiguration section */
 
@@ -181,19 +212,21 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				810BD6A912F2D596004D1772 /* Debug */,
-				810BD6AA12F2D596004D1772 /* Release */,
+				810BD6AA12F2D596004D1772 /* Release10.5 */,
+				81EB278D1322954E00D7BB3B /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		810BD6C112F2D600004D1772 /* Build configuration list for PBXNativeTarget "tinyxml" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				810BD6BF12F2D5FF004D1772 /* Debug */,
-				810BD6C012F2D5FF004D1772 /* Release */,
+				810BD6C012F2D5FF004D1772 /* Release10.5 */,
+				81EB278E1322954E00D7BB3B /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

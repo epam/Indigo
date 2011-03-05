@@ -15,34 +15,29 @@ mkdir -p $name/lib/Mac/10.6
 cd ../api/
 
 for osxver in '10.5' '10.6'; do
-  rm -rf build ../graph/build ../molecule/build ../layout/build ../reaction/build ../tinyxml/build ../render2d/build ../api/build ../api/renderer/build
-  xcodebuild -sdk macosx$osxver -configuration Release -alltargets
-  cp build/Release/libindigo.dylib ../legio/$name/lib/Mac/$osxver
+  xcodebuild -sdk macosx$osxver -configuration Release$osxver -alltargets
   cd renderer
-  rm -rf build
-  xcodebuild -sdk macosx$osxver -configuration Release -alltargets 
-  cp build/Release/libindigo-renderer.dylib ../../legio/$name/lib/Mac/$osxver
+  xcodebuild -sdk macosx$osxver -configuration Release$osxver -alltargets 
   cd ..
 done
 
 cd java
-chmod +x compile.sh
 ./compile.sh
+./pack-libs-osx.sh
 cd ../renderer/java
-chmod +x compile.sh
 ./compile.sh
+./pack-libs-osx.sh
 cd ../../../legio/src
 
-javac -cp ../../api/java/dist/indigo-java.jar:../../api/renderer/java/dist/indigo-renderer-java.jar com/ggasoftware/indigo/legio/*.java
+javac -cp ../../api/java/dist/indigo.jar:../../api/renderer/java/dist/indigo-renderer.jar com/ggasoftware/indigo/legio/*.java
 jar cvfm ../legio.jar ../manifest.mf com/ggasoftware/indigo/legio/*.class
 cd ..
-
 
 cp LICENSE.GPL $name/
 cp legio.jar $name/
 cp ../common/jna/jna.jar $name/lib/
-cp ../api/java/dist/indigo-java.jar $name/lib/
-cp ../api/renderer/java/dist/indigo-renderer-java.jar $name/lib/
+cp ../api/java/dist/indigo.jar $name/lib/
+cp ../api/renderer/java/dist/indigo-renderer.jar $name/lib/
 cp legio.sh $name/legio
 cp -r tests $name/
 

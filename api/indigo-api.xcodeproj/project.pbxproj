@@ -597,26 +597,27 @@
 		817B699711F88B1F00BC3D88 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};
-		817B699811F88B1F00BC3D88 /* Release */ = {
+		817B699811F88B1F00BC3D88 /* Release10.5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = YES;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
-			name = Release;
+			name = Release10.5;
 		};
 		817B69BE11F88C0E00BC3D88 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -629,13 +630,13 @@
 					..,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
+				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				PRODUCT_NAME = indigo;
 			};
 			name = Debug;
 		};
-		817B69BF11F88C0E00BC3D88 /* Release */ = {
+		817B69BF11F88C0E00BC3D88 /* Release10.5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -656,13 +657,13 @@
 				PRODUCT_NAME = indigo;
 				ZERO_LINK = NO;
 			};
-			name = Release;
+			name = Release10.5;
 		};
 		817B69F911F88F3C00BC3D88 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
 				EXECUTABLE_PREFIX = lib;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -680,14 +681,14 @@
 					"$(inherited)",
 					/opt/local/lib,
 				);
-				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-flat_namespace";
 				PREBINDING = NO;
 				PRODUCT_NAME = indigo;
 			};
 			name = Debug;
 		};
-		817B69FA11F88F3C00BC3D88 /* Release */ = {
+		817B69FA11F88F3C00BC3D88 /* Release10.5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -713,9 +714,74 @@
 				OTHER_LDFLAGS = "-flat_namespace";
 				PREBINDING = NO;
 				PRODUCT_NAME = indigo;
+				STRIP_INSTALLED_PRODUCT = NO;
 				ZERO_LINK = NO;
 			};
-			name = Release;
+			name = Release10.5;
+		};
+		81EB27791322947900D7BB3B /* Release10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+			};
+			name = Release10.6;
+		};
+		81EB277A1322947900D7BB3B /* Release10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					.,
+					..,
+					../common,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = indigo;
+				ZERO_LINK = NO;
+			};
+			name = Release10.6;
+		};
+		81EB277B1322947900D7BB3B /* Release10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					.,
+					..,
+					../common,
+				);
+				INSTALL_PATH = "";
+				LD_DYLIB_INSTALL_NAME = /usr/local/lib/libindigo.dylib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-flat_namespace";
+				PREBINDING = NO;
+				PRODUCT_NAME = indigo;
+				STRIP_INSTALLED_PRODUCT = NO;
+				ZERO_LINK = NO;
+			};
+			name = Release10.6;
 		};
 /* End XCBuildConfiguration section */
 
@@ -724,28 +790,31 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				817B699711F88B1F00BC3D88 /* Debug */,
-				817B699811F88B1F00BC3D88 /* Release */,
+				817B699811F88B1F00BC3D88 /* Release10.5 */,
+				81EB27791322947900D7BB3B /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		817B69C011F88C3400BC3D88 /* Build configuration list for PBXNativeTarget "indigo-static" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				817B69BE11F88C0E00BC3D88 /* Debug */,
-				817B69BF11F88C0E00BC3D88 /* Release */,
+				817B69BF11F88C0E00BC3D88 /* Release10.5 */,
+				81EB277A1322947900D7BB3B /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		817B69FB11F88F6900BC3D88 /* Build configuration list for PBXNativeTarget "indigo-shared" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				817B69F911F88F3C00BC3D88 /* Debug */,
-				817B69FA11F88F3C00BC3D88 /* Release */,
+				817B69FA11F88F3C00BC3D88 /* Release10.5 */,
+				81EB277B1322947900D7BB3B /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

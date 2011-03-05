@@ -373,58 +373,22 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		A7EDA3A610624A88006CBFAF /* Debug */ = {
+		81EB27451322910B00D7BB3B /* Release10.6 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				HEADER_SEARCH_PATHS = (
-					..,
-					../common,
-				);
-				SKIP_INSTALL = YES;
-			};
-			name = Debug;
-		};
-		A7EDA3A710624A88006CBFAF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				HEADER_SEARCH_PATHS = (
 					..,
 					../common,
 				);
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				SKIP_INSTALL = YES;
 			};
-			name = Release;
+			name = Release10.6;
 		};
-		A7EDA3FE10624B53006CBFAF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = 4.2;
-				HEADER_SEARCH_PATHS = (
-					..,
-					../common,
-				);
-				INSTALL_PATH = /usr/local/lib;
-				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
-				PREBINDING = NO;
-				PRODUCT_NAME = graph;
-				SDKROOT = "";
-				SKIP_INSTALL = YES;
-			};
-			name = Debug;
-		};
-		A7EDA3FF10624B53006CBFAF /* Release */ = {
+		81EB27461322910B00D7BB3B /* Release10.6 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -446,7 +410,85 @@
 				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
-			name = Release;
+			name = Release10.6;
+		};
+		A7EDA3A610624A88006CBFAF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../common,
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		A7EDA3A710624A88006CBFAF /* Release10.5 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../common,
+				);
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				SKIP_INSTALL = YES;
+			};
+			name = Release10.5;
+		};
+		A7EDA3FE10624B53006CBFAF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../common,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				PRODUCT_NAME = graph;
+				SDKROOT = "";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		A7EDA3FF10624B53006CBFAF /* Release10.5 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../common,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				PRODUCT_NAME = graph;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
+			};
+			name = Release10.5;
 		};
 /* End XCBuildConfiguration section */
 
@@ -455,19 +497,21 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A7EDA3A610624A88006CBFAF /* Debug */,
-				A7EDA3A710624A88006CBFAF /* Release */,
+				A7EDA3A710624A88006CBFAF /* Release10.5 */,
+				81EB27451322910B00D7BB3B /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		A7EDA40010624B54006CBFAF /* Build configuration list for PBXNativeTarget "graph" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A7EDA3FE10624B53006CBFAF /* Debug */,
-				A7EDA3FF10624B53006CBFAF /* Release */,
+				A7EDA3FF10624B53006CBFAF /* Release10.5 */,
+				81EB27461322910B00D7BB3B /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

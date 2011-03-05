@@ -22,14 +22,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 810BD73912F2DADB004D1772 /* tinyxml.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772 /* libtinyxml.a */;
+			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772;
 			remoteInfo = tinyxml;
 		};
 		810BD74012F2DAF7004D1772 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 810BD73912F2DADB004D1772 /* tinyxml.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772 /* tinyxml */;
+			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772;
 			remoteInfo = tinyxml;
 		};
 		819EB2C5125F8D2E00CE1D88 /* PBXContainerItemProxy */ = {
@@ -392,21 +392,25 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};
-		819EB288125F8C5D00CE1D88 /* Release */ = {
+		819EB288125F8C5D00CE1D88 /* Release10.5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = YES;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
-			name = Release;
+			name = Release10.5;
 		};
 		819EB295125F8C9300CE1D88 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -422,7 +426,7 @@
 					"$(inherited)",
 					/opt/local/lib,
 				);
-				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-lz",
 					"-lstdc++",
@@ -432,7 +436,7 @@
 			};
 			name = Debug;
 		};
-		819EB296125F8C9300CE1D88 /* Release */ = {
+		819EB296125F8C9300CE1D88 /* Release10.5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -460,7 +464,47 @@
 				PRODUCT_NAME = "indigo-deco";
 				ZERO_LINK = NO;
 			};
-			name = Release;
+			name = Release10.5;
+		};
+		81EB27EC13229E5000D7BB3B /* Release10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+			};
+			name = Release10.6;
+		};
+		81EB27ED13229E5000D7BB3B /* Release10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					../..,
+					../../common,
+					../../api,
+				);
+				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-lz",
+					"-lstdc++",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "indigo-deco";
+				ZERO_LINK = NO;
+			};
+			name = Release10.6;
 		};
 /* End XCBuildConfiguration section */
 
@@ -469,19 +513,21 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				819EB287125F8C5D00CE1D88 /* Debug */,
-				819EB288125F8C5D00CE1D88 /* Release */,
+				819EB288125F8C5D00CE1D88 /* Release10.5 */,
+				81EB27EC13229E5000D7BB3B /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		819EB297125F8C9400CE1D88 /* Build configuration list for PBXNativeTarget "indigo-deco" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				819EB295125F8C9300CE1D88 /* Debug */,
-				819EB296125F8C9300CE1D88 /* Release */,
+				819EB296125F8C9300CE1D88 /* Release10.5 */,
+				81EB27ED13229E5000D7BB3B /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
