@@ -1195,8 +1195,12 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
    int ncomp = _sub->countComponents();
    const Array<int> &decomposition = _sub->getDecomposition();
 
-   int max_index = MaxCommonSubgraph::AdjMatricesStore::getMaximumComponentIndex(decomposition, ncomp);
+   int j, max_index = 0;
 
+   for (j = 1; j < ncomp; j++)
+      if (_sub->countComponentVertices(j) > _sub->countComponentVertices(max_index))
+         max_index = j;
+   
    if(out_map != 0){
       if(!_invert){
          out_map->clear_resize(_sub->vertexEnd());

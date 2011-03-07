@@ -1097,25 +1097,6 @@ void MaxCommonSubgraph::AdjMatricesStore::_createConnectedGraph(Graph& graph, Ar
          }
       }
    }
-
-}
-int MaxCommonSubgraph::AdjMatricesStore::getMaximumComponentIndex(const Array<int>& component_array, int n_comp) {
-   QS_DEF(Array<int>, filter);
-   int max_index = -1, max_sum = 0;
-
-   filter.resize(n_comp);
-   filter.zerofill();
-
-   for(int i = 0; i < component_array.size(); i++){
-      if(component_array[i] >= 0) {
-         ++filter[component_array[i]];
-         if(filter[component_array[i]] >= max_sum) {
-            max_sum = filter[component_array[i]];
-            max_index = component_array[i];
-         }
-      }
-   }
-   return max_index;
 }
 
 void MaxCommonSubgraph::AdjMatricesStore::getSolutions(ObjArray< Array<int> >& v_maps) {

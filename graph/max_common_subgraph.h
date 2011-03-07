@@ -330,8 +330,6 @@ public:
       
       void getSolutions(ObjArray< Array<int> >& v_maps);
 
-      static int getMaximumComponentIndex(const Array<int>& component_array, int n_comp);
-
       //returns correspondence parameters between each vertex and vertex in other graph with the same label
       int getFLSize(int i) { return _mLabel1[i]->size(); }
       int getFLV(int i, int j) { return _mLabel1[i]->at(j); }
