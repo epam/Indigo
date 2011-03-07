@@ -376,6 +376,14 @@ CEXPORT int indigoSetBondOrder (int bond, int order);
 
 CEXPORT int indigoMerge (int where_to, int what);
 
+/* Highlighting */
+
+// Access atoms and bonds
+CEXPORT int indigoHighlight (int item);
+
+// Access atoms, bonds, molecules, and reactions
+CEXPORT int indigoUnhighlight (int item);
+
 /* Connected components of molecules */
 
 CEXPORT int indigoCountComponents (int molecule);
@@ -587,15 +595,15 @@ CEXPORT int indigoHighlightedTarget (int match);
 // atom doesn't match particular atom in the target (R-group or explicit 
 // hydrogen) then return value is zero.
 //   You can use indigoIndex() to obtain the index of the returned atom.
-CEXPORT int indigoMapAtom (int match, int query_atom);
+CEXPORT int indigoMapAtom (int handle, int atom);
 
 // Accepts a bond from the query, not a bond index.
 //   You can use indigoGetBond() to obtain the bond by its index.
-// Returns the corresponding target bond, not a bond index. If query 
-// bond doesn't match particular bond in the target (R-group or explicit 
+// Returns the corresponding target bond, not a bond index. If query
+// bond doesn't match particular bond in the target (R-group or explicit
 // hydrogen) then return value is zero.
 //   You can use indigoIndex() to obtain the index of the returned bond.
-CEXPORT int indigoMapBond (int match, int query_bond);
+CEXPORT int indigoMapBond (int handle, int bond);
 
 /* Scaffold detection */
 

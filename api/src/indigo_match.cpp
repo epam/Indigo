@@ -101,34 +101,6 @@ CEXPORT int indigoHighlightedTarget (int match)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoMapBond (int match, int query_bond)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(match);
-      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
-         throw IndigoError("indigoMapBond(): match must be given, not %s", obj.debugInfo());
-      IndigoBond &ib = IndigoBond::cast(self.getObject(query_bond));
-
-      IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
-      const Edge &edge = match.query.getEdge(ib.idx);
-
-      int beg_mapped = match.query_atom_mapping[edge.beg];
-      int end_mapped = match.query_atom_mapping[edge.end];
-      if (beg_mapped < 0 || end_mapped < 0)
-         return 0;
-
-      int idx = match.target.findEdgeIndex(match.query_atom_mapping[edge.beg],
-                                           match.query_atom_mapping[edge.end]);
-
-      if (idx == -1)
-         throw IndigoError("indigoMapBond(): internal error, idx == -1");
-
-      return self.addObject(new IndigoBond(match.target, idx));
-   }
-   INDIGO_END(-1)
-}
-
 IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecule &target_,
                                                                           QueryMolecule &query_,
                                                                           Molecule &original_target_) :

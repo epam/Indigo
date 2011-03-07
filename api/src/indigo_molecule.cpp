@@ -2986,3 +2986,4 @@ CEXPORT int indigoCountImplicitHydrogens (int item)
    }
    INDIGO_END(-1)
 }
+

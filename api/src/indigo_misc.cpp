@@ -759,6 +759,58 @@ CEXPORT int indigoMapAtom (int handle, int atom)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoMapBond (int handle, int bond)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+
+      if (obj.type == IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
+      {
+         IndigoBond &ib = IndigoBond::cast(self.getObject(bond));
+
+         IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
+
+         const Edge &edge = match.query.getEdge(ib.idx);
+
+         int beg = match.query_atom_mapping[edge.beg];
+         int end = match.query_atom_mapping[edge.end];
+         
+         if (beg < 0 || end < 0)
+            return 0;
+
+         int idx = match.target.findEdgeIndex(beg, end);
+
+         if (idx < 0)
+            return 0;
+
+         return self.addObject(new IndigoBond(match.target, idx));
+      }
+      if (obj.type == IndigoObject::MAPPING)
+      {
+         IndigoBond &ib = IndigoBond::cast(self.getObject(bond));
+         IndigoMapping &mapping = (IndigoMapping &)obj;
+
+         const Edge &edge = ib.mol.getEdge(ib.idx);
+
+         int beg = mapping.mapping[edge.beg];
+         int end = mapping.mapping[edge.end];
+
+         if (beg < 0 || end < 0)
+            return 0;
+
+         int idx = mapping.to.findEdgeIndex(beg, end);
+
+         if (idx < 0)
+            return 0;
+
+         return self.addObject(new IndigoAtom(mapping.to, idx));
+      }
+
+      throw IndigoError("indigoMapBond(): not applicable to %s", obj.debugInfo());
+   }
+   INDIGO_END(-1)
+}
 
 CEXPORT int indigoClear (int item)
 {
@@ -778,6 +830,70 @@ CEXPORT int indigoClear (int item)
          obj.getBaseReaction().clear();
       else
          throw IndigoError("indigoClear(): do not know how to clear %s", obj.debugInfo());
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoHighlight (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoAtom::is(obj))
+      {
+         IndigoAtom &ia = IndigoAtom::cast(obj);
+
+         ia.mol.highlightAtom(ia.idx);
+      }
+      else if (IndigoBond::is(obj))
+      {
+         IndigoBond &ib = IndigoBond::cast(obj);
+
+         ib.mol.highlightBond(ib.idx);
+      }
+      else
+         throw IndigoError("indigoHighlight(): expected atom or bond, got %s", obj.debugInfo());
+
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoUnhighlight (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoAtom::is(obj))
+      {
+         IndigoAtom &ia = IndigoAtom::cast(obj);
+
+         ia.mol.unhighlightAtom(ia.idx);
+      }
+      else if (IndigoBond::is(obj))
+      {
+         IndigoBond &ib = IndigoBond::cast(obj);
+
+         ib.mol.unhighlightBond(ib.idx);
+      }
+      else if (obj.isBaseMolecule())
+      {
+         obj.getBaseMolecule().unhighlightAll();
+      }
+      else if (obj.isBaseReaction())
+      {
+         BaseReaction &reaction = obj.getBaseReaction();
+         int i;
+
+         for (i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
+            reaction.getBaseMolecule(i).unhighlightAll();
+      }
+      else
+         throw IndigoError("indigoUnhighlight(): expected atom/bond/molecule/reaction, got %s", obj.debugInfo());
+
       return 1;
    }
    INDIGO_END(-1);
