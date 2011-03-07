@@ -217,6 +217,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
 
    Filter sub_filter(visited_atoms.ptr(), Filter::EQ, 1);
    r_molecule.makeSubmolecule(qmol_set, sub_filter, 0, &inv_scaf_map);
+   r_molecule.unhighlightAll();
 
    RedBlackMap<int, int> rgroup_idx_map;
    rgroup_idx_map.clear();
