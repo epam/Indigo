@@ -65,6 +65,7 @@
     <Compile Include="IndigoDllLoader.cs" />
     <Compile Include="IndigoException.cs" />
     <Compile Include="Indigo.cs" />
+    <Compile Include="IndigoLib.cs" />
     <Compile Include="IndigoObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -94,6 +95,14 @@
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>copy $(ProjectDir)..\dll\Win32\$(ConfigurationName)\indigo.dll $(ProjectDir)Resource\Win\x86
+copy $(ProjectDir)..\dll\x64\$(ConfigurationName)\indigo.dll $(ProjectDir)Resource\Win\x64
+copy $(ProjectDir)..\..\zlib-src\Win32\ReleaseDll\zlib.dll $(ProjectDir)Resource\Win\x86
+copy $(ProjectDir)..\..\zlib-src\x64\ReleaseDll\zlib.dll $(ProjectDir)Resource\Win\x64
+copy "$(DevEnvDir)..\..\VC\redist\x86\Microsoft.VC100.CRT\msvcr100.dll" $(ProjectDir)Resource\Win\x86
+copy "$(DevEnvDir)..\..\VC\redist\x64\Microsoft.VC100.CRT\msvcr100.dll" $(ProjectDir)Resource\Win\x64</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

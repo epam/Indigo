@@ -11,11 +11,10 @@ namespace com.ggasoftware.indigo
       public int self;
       private Indigo dispatcher;
       private IndigoObject parent; // to prevent GC killing the parent object
+      private IndigoLib _indigo_lib;
 
-      public IndigoObject (Indigo dispatcher, int id)
+      public IndigoObject (Indigo dispatcher, int id) : this(dispatcher, null, id)
       {
-         this.dispatcher = dispatcher;
-         this.self = id;
       }
 
       public IndigoObject (Indigo dispatcher, IndigoObject parent, int id)
@@ -23,6 +22,7 @@ namespace com.ggasoftware.indigo
          this.dispatcher = dispatcher;
          this.self = id;
          this.parent = parent;
+         _indigo_lib = dispatcher._indigo_lib;
       }
 
       ~IndigoObject ()
@@ -58,111 +58,111 @@ namespace com.ggasoftware.indigo
       public IndigoObject clone ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoClone(self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoClone(self));
       }
 
       public void close ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoClose(self);
+         _indigo_lib.indigoClose(self);
       }
 
       public String molfile ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoMolfile(self));
+         return new String(_indigo_lib.indigoMolfile(self));
       }
 
       public void saveMolfile (String filename)
       {
          dispatcher.setSessionID();
-         int s = Indigo.indigoWriteFile(filename);
-         Indigo.indigoSaveMolfile(self, s);
-         Indigo.indigoFree(s);
+         int s = _indigo_lib.indigoWriteFile(filename);
+         _indigo_lib.indigoSaveMolfile(self, s);
+         _indigo_lib.indigoFree(s);
       }
 
       public String cml ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoCml(self));
+         return new String(_indigo_lib.indigoCml(self));
       }
 
       public void saveCml (String filename)
       {
          dispatcher.setSessionID();
-         int s = Indigo.indigoWriteFile(filename);
-         Indigo.indigoSaveCml(self, s);
-         Indigo.indigoFree(s);
+         int s = _indigo_lib.indigoWriteFile(filename);
+         _indigo_lib.indigoSaveCml(self, s);
+         _indigo_lib.indigoFree(s);
       }
 
       public byte[] mdlct ()
       {
          dispatcher.setSessionID();
          IndigoObject buf = dispatcher.writeBuffer();
-         Indigo.indigoSaveMDLCT(self, buf.self);
+         _indigo_lib.indigoSaveMDLCT(self, buf.self);
          return buf.toBuffer();
       }
 
       public void addReactant (IndigoObject molecule)
       {
          dispatcher.setSessionID();
-         Indigo.indigoAddReactant(self, molecule.self);
+         _indigo_lib.indigoAddReactant(self, molecule.self);
       }
 
       public void addProduct (IndigoObject molecule)
       {
          dispatcher.setSessionID();
-         Indigo.indigoAddProduct(self, molecule.self);
+         _indigo_lib.indigoAddProduct(self, molecule.self);
       }
 
       public int countReactants ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountReactants(self);
+         return _indigo_lib.indigoCountReactants(self);
       }
 
       public int countProducts ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountProducts(self);
+         return _indigo_lib.indigoCountProducts(self);
       }
 
       public int countMolecules ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountMolecules(self);
+         return _indigo_lib.indigoCountMolecules(self);
       }
 
       public System.Collections.IEnumerable iterateReactants ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateReactants(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateReactants(self));
       }
 
       public System.Collections.IEnumerable iterateProducts ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateProducts(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateProducts(self));
       }
 
       public System.Collections.IEnumerable iterateMolecules ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateMolecules(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateMolecules(self));
       }
 
       public String rxnfile ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoRxnfile(self));
+         return new String(_indigo_lib.indigoRxnfile(self));
       }
 
       public void saveRxnfile (String filename)
       {
          dispatcher.setSessionID();
-         int s = Indigo.indigoWriteFile(filename);
-         Indigo.indigoSaveRxnfile(self, s);
-         Indigo.indigoFree(s);
+         int s = _indigo_lib.indigoWriteFile(filename);
+         _indigo_lib.indigoSaveRxnfile(self, s);
+         _indigo_lib.indigoFree(s);
       }
 
       public void automap (String mode)
@@ -170,55 +170,55 @@ namespace com.ggasoftware.indigo
          if (mode == null)
             mode = "";
          dispatcher.setSessionID();
-         Indigo.indigoAutomap(self, mode);
+         _indigo_lib.indigoAutomap(self, mode);
       }
 
       public System.Collections.IEnumerable iterateAtoms ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateAtoms(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateAtoms(self));
       }
 
       public System.Collections.IEnumerable iteratePseudoatoms ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIteratePseudoatoms(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIteratePseudoatoms(self));
       }
 
       public System.Collections.IEnumerable iterateRSites ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateRSites(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateRSites(self));
       }
 
       public System.Collections.IEnumerable iterateStereocenters ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateStereocenters(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateStereocenters(self));
       }
 
       public System.Collections.IEnumerable iterateRGroups ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateRGroups(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateRGroups(self));
       }
 
       public System.Collections.IEnumerable iterateRGroupFragments ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateRGroupFragments(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateRGroupFragments(self));
       }
 
       public int countAttachmentPoints ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountAttachmentPoints(self);
+         return _indigo_lib.indigoCountAttachmentPoints(self);
       }
 
       public bool isPseudoatom ()
       {
          dispatcher.setSessionID();
-         if (Indigo.indigoIsPseudoatom(self) == 1)
+         if (_indigo_lib.indigoIsPseudoatom(self) == 1)
             return true;
          return false;
       }
@@ -226,7 +226,7 @@ namespace com.ggasoftware.indigo
       public bool isRSite ()
       {
          dispatcher.setSessionID();
-         if (Indigo.indigoIsRSite(self) == 1)
+         if (_indigo_lib.indigoIsRSite(self) == 1)
             return true;
          return false;
       }
@@ -234,25 +234,25 @@ namespace com.ggasoftware.indigo
       public int stereocenterType ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoStereocenterType(self);
+         return _indigo_lib.indigoStereocenterType(self);
       }
 
       public int singleAllowedRGroup ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoSingleAllowedRGroup(self);
+         return _indigo_lib.indigoSingleAllowedRGroup(self);
       }
 
       public string symbol ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoSymbol(self));
+         return new String(_indigo_lib.indigoSymbol(self));
       }
 
       public int degree ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoDegree(self);
+         return _indigo_lib.indigoDegree(self);
       }
 
       public int? charge ()
@@ -260,7 +260,7 @@ namespace com.ggasoftware.indigo
          int c;
          dispatcher.setSessionID();
 
-         if (Indigo.indigoGetCharge(self, &c) == 1)
+         if (_indigo_lib.indigoGetCharge(self, &c) == 1)
             return c;
          return null;
       }
@@ -270,7 +270,7 @@ namespace com.ggasoftware.indigo
          int c;
          dispatcher.setSessionID();
 
-         if (Indigo.indigoGetExplicitValence(self, &c) == 1)
+         if (_indigo_lib.indigoGetExplicitValence(self, &c) == 1)
             return c;
          return null;
       }
@@ -280,7 +280,7 @@ namespace com.ggasoftware.indigo
          int c;
          dispatcher.setSessionID();
 
-         if (Indigo.indigoGetRadicalElectrons(self, &c) == 1)
+         if (_indigo_lib.indigoGetRadicalElectrons(self, &c) == 1)
             return c;
          return null;
       }
@@ -288,13 +288,13 @@ namespace com.ggasoftware.indigo
       public int atomicNumber ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoAtomicNumber(self);
+         return _indigo_lib.indigoAtomicNumber(self);
       }
 
       public int isotope ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoIsotope(self);
+         return _indigo_lib.indigoIsotope(self);
       }
 
       public int? countHydrogens ()
@@ -302,7 +302,7 @@ namespace com.ggasoftware.indigo
          int h;
          dispatcher.setSessionID();
 
-         if (Indigo.indigoCountHydrogens(self, &h) == 1)
+         if (_indigo_lib.indigoCountHydrogens(self, &h) == 1)
             return h;
          return null;
       }
@@ -310,13 +310,13 @@ namespace com.ggasoftware.indigo
       public int countImplicitHydrogens ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountImplicitHydrogens(self);
+         return _indigo_lib.indigoCountImplicitHydrogens(self);
       }
 
       public float[] xyz ()
       {
          dispatcher.setSessionID();
-         float *ptr = Indigo.indigoXYZ(self);
+         float *ptr = _indigo_lib.indigoXYZ(self);
          float[] res = new float[3];
          res[0] = ptr[0];
          res[1] = ptr[1];
@@ -327,347 +327,347 @@ namespace com.ggasoftware.indigo
       public void resetCharge ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoResetCharge(self);
+         _indigo_lib.indigoResetCharge(self);
       }
 
       public void resetExplicitValence ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoResetExplicitValence(self);
+         _indigo_lib.indigoResetExplicitValence(self);
       }
 
       public void resetRadical ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoResetRadical(self);
+         _indigo_lib.indigoResetRadical(self);
       }
 
       public void resetIsotope ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoResetIsotope(self);
+         _indigo_lib.indigoResetIsotope(self);
       }
 
       public void setAttachmentPoint (int order)
       {
          dispatcher.setSessionID();
-         Indigo.indigoSetAttachmentPoint(self, order);
+         _indigo_lib.indigoSetAttachmentPoint(self, order);
       }
 
       public void removeConstraints (string type)
       {
          dispatcher.setSessionID();
-         Indigo.indigoRemoveConstraints(self, type);
+         _indigo_lib.indigoRemoveConstraints(self, type);
       }
 
       public void addConstraint (string type, string value)
       {
          dispatcher.setSessionID();
-         Indigo.indigoAddConstraint(self, type, value);
+         _indigo_lib.indigoAddConstraint(self, type, value);
       }
 
       public void addConstraintNot (string type, string value)
       {
          dispatcher.setSessionID();
-         Indigo.indigoAddConstraintNot(self, type, value);
+         _indigo_lib.indigoAddConstraintNot(self, type, value);
       }
 
       public void invertStereo ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoInvertStereo(self);
+         _indigo_lib.indigoInvertStereo(self);
       }
 
       public void resetStereo ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoResetStereo(self);
+         _indigo_lib.indigoResetStereo(self);
       }
 
       public int countAtoms ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountAtoms(self);
+         return _indigo_lib.indigoCountAtoms(self);
       }
 
       public int countBonds ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountBonds(self);
+         return _indigo_lib.indigoCountBonds(self);
       }
 
       public int countPseudoatoms ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountPseudoatoms(self);
+         return _indigo_lib.indigoCountPseudoatoms(self);
       }
 
       public int countRSites ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountRSites(self);
+         return _indigo_lib.indigoCountRSites(self);
       }
 
       public System.Collections.IEnumerable iterateBonds ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateBonds(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateBonds(self));
       }
 
       public int bondOrder ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoBondOrder(self);
+         return _indigo_lib.indigoBondOrder(self);
       }
 
       public int bondStereo ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoBondStereo(self);
+         return _indigo_lib.indigoBondStereo(self);
       }
 
       public int topology ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoTopology(self);
+         return _indigo_lib.indigoTopology(self);
       }
 
       public System.Collections.IEnumerable iterateNeighbors ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateNeighbors(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateNeighbors(self));
       }
 
       public IndigoObject bond ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoBond(self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoBond(self));
       }
 
       public IndigoObject getAtom (int idx)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoGetAtom(self, idx));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoGetAtom(self, idx));
       }
 
       public IndigoObject getBond (int idx)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoGetBond(self, idx));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoGetBond(self, idx));
       }
 
       public IndigoObject source ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoSource(self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoSource(self));
       }
 
       public IndigoObject destination ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoDestination(self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoDestination(self));
       }
 
       public void clearCisTrans ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoClearCisTrans(self);
+         _indigo_lib.indigoClearCisTrans(self);
       }
 
       public void clearStereocenters()
       {
          dispatcher.setSessionID();
-         Indigo.indigoClearStereocenters(self);
+         _indigo_lib.indigoClearStereocenters(self);
       }
 
       public int countStereocenters ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountStereocenters(self);
+         return _indigo_lib.indigoCountStereocenters(self);
       }
 
       public int resetSymmetricCisTrans ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoResetSymmetricCisTrans(self);
+         return _indigo_lib.indigoResetSymmetricCisTrans(self);
       }
 
       public int markEitherCisTrans ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoMarkEitherCisTrans(self);
+         return _indigo_lib.indigoMarkEitherCisTrans(self);
       }
 
       public IndigoObject addAtom (string symbol)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoAddAtom(self, symbol));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoAddAtom(self, symbol));
       }
 
       public void setCharge (int charge)
       {
          dispatcher.setSessionID();
-         Indigo.indigoSetCharge(self, charge);
+         _indigo_lib.indigoSetCharge(self, charge);
       }
 
       public void setIsotope (int isotope)
       {
          dispatcher.setSessionID();
-         Indigo.indigoSetIsotope(self, isotope);
+         _indigo_lib.indigoSetIsotope(self, isotope);
       }
 
       public IndigoObject addBond (IndigoObject dest, int order)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoAddBond(self, dest.self, order));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoAddBond(self, dest.self, order));
       }
 
       public void setBondOrder (int order)
       {
          dispatcher.setSessionID();
-         Indigo.indigoSetBondOrder(self, order);
+         _indigo_lib.indigoSetBondOrder(self, order);
       }
 
       public IndigoObject merge (IndigoObject what)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoMerge(self, what.self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoMerge(self, what.self));
       }
 
       public int countComponents ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountComponents(self);
+         return _indigo_lib.indigoCountComponents(self);
       }
 
       public int componentIndex ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoComponentIndex(self);
+         return _indigo_lib.indigoComponentIndex(self);
       }
 
       public IndigoObject iterateComponents ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateComponents(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateComponents(self));
       }
 
       public IndigoObject component (int index)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoComponent(self, index));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoComponent(self, index));
       }
 
       public int countSSSR ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountSSSR(self);
+         return _indigo_lib.indigoCountSSSR(self);
       }
 
       public IndigoObject iterateSSSR ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateSSSR(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateSSSR(self));
       }
 
       public IndigoObject iterateSubtrees (int min_vertices, int max_vertices)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateSubtrees(self, min_vertices, max_vertices));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateSubtrees(self, min_vertices, max_vertices));
       }
 
       public IndigoObject iterateRings (int min_vertices, int max_vertices)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateRings(self, min_vertices, max_vertices));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateRings(self, min_vertices, max_vertices));
       }
 
       public IndigoObject iterateEdgeSubmolecules (int min_edges, int max_edges)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateEdgeSubmolecules(self, min_edges, max_edges));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateEdgeSubmolecules(self, min_edges, max_edges));
       }
 
       public int countHeavyAtoms ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountHeavyAtoms(self);
+         return _indigo_lib.indigoCountHeavyAtoms(self);
       }
 
       public String grossFormula ()
       {
          dispatcher.setSessionID();
-         int gf = Indigo.indigoGrossFormula(self);
-         String result = new String(Indigo.indigoToString(gf));
-         Indigo.indigoFree(gf);
+         int gf = _indigo_lib.indigoGrossFormula(self);
+         String result = new String(_indigo_lib.indigoToString(gf));
+         _indigo_lib.indigoFree(gf);
          return result;
       }
 
       public float molecularWeight ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoMolecularWeight(self);
+         return _indigo_lib.indigoMolecularWeight(self);
       }
 
       public float mostAbundantMass ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoMostAbundantMass(self);
+         return _indigo_lib.indigoMostAbundantMass(self);
       }
 
       public float monoisotopicMass ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoMonoisotopicMass(self);
+         return _indigo_lib.indigoMonoisotopicMass(self);
       }
 
       public string canonicalSmiles ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoCanonicalSmiles(self));
+         return new String(_indigo_lib.indigoCanonicalSmiles(self));
       }
 
       public string layeredCode ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoLayeredCode(self));
+         return new String(_indigo_lib.indigoLayeredCode(self));
       }
 
       public bool hasCoord ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoHasCoord(self) == 1;
+         return _indigo_lib.indigoHasCoord(self) == 1;
       }
 
       public bool hasZCoord ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoHasZCoord(self) == 1;
+         return _indigo_lib.indigoHasZCoord(self) == 1;
       }
 
       public bool isChiral ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoIsChiral(self) == 1;
+         return _indigo_lib.indigoIsChiral(self) == 1;
       }
 
       public IndigoObject createSubmolecule (int[] vertices)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoCreateSubmolecule(self, vertices.Length, vertices));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoCreateSubmolecule(self, vertices.Length, vertices));
       }
 
       public IndigoObject createEdgeSubmolecule (int[] vertices, int[] edges)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoCreateEdgeSubmolecule(self,
+         return new IndigoObject(dispatcher, _indigo_lib.indigoCreateEdgeSubmolecule(self,
             vertices.Length, vertices, edges.Length, edges));
       }
 
       public void removeAtoms (int[] vertices)
       {
          dispatcher.setSessionID();
-         Indigo.indigoRemoveAtoms(self, vertices.Length, vertices);
+         _indigo_lib.indigoRemoveAtoms(self, vertices.Length, vertices);
       }
 
       public float alignAtoms (int[] atom_ids, float[] desired_xyz)
@@ -675,103 +675,97 @@ namespace com.ggasoftware.indigo
          dispatcher.setSessionID();
          if (atom_ids.Length * 3 != desired_xyz.Length)
             throw new IndigoException("alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]");
-         return Indigo.indigoAlignAtoms(self, atom_ids.Length, atom_ids, desired_xyz);
+         return _indigo_lib.indigoAlignAtoms(self, atom_ids.Length, atom_ids, desired_xyz);
       }
 
       public void aromatize ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoAromatize(self);
+         _indigo_lib.indigoAromatize(self);
       }
 
       public void dearomatize ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoDearomatize(self);
+         _indigo_lib.indigoDearomatize(self);
       }
 
       public void foldHydrogens ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoFoldHydrogens(self);
+         _indigo_lib.indigoFoldHydrogens(self);
       }
 
       public void unfoldHydrogens ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoUnfoldHydrogens(self);
+         _indigo_lib.indigoUnfoldHydrogens(self);
       }
 
       public void layout ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoLayout(self);
+         _indigo_lib.indigoLayout(self);
       }
 
       public string smiles ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoSmiles(self));
+         return new String(_indigo_lib.indigoSmiles(self));
       }
 
       public String name ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoName(self));
+         return new String(_indigo_lib.indigoName(self));
       }
 
       public void setName (string name)
       {
          dispatcher.setSessionID();
-         Indigo.indigoSetName(self, name);
+         _indigo_lib.indigoSetName(self, name);
       }
 
       public bool hasProperty (string name)
       {
          dispatcher.setSessionID();
-         return Indigo.indigoHasProperty(self, name) == 1;
+         return _indigo_lib.indigoHasProperty(self, name) == 1;
       }
 
       public string getProperty (string name)
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoGetProperty(self, name));
+         return new String(_indigo_lib.indigoGetProperty(self, name));
       }
 
       public void setProperty (string name, string value)
       {
          dispatcher.setSessionID();
-         Indigo.indigoSetProperty(self, name, value);
+         _indigo_lib.indigoSetProperty(self, name, value);
       }
 
       public void removeProperty (string name)
       {
          dispatcher.setSessionID();
-         Indigo.indigoRemoveProperty(self, name);
+         _indigo_lib.indigoRemoveProperty(self, name);
       }
 
       public System.Collections.IEnumerable iterateProperties ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateProperties(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateProperties(self));
       }
 
       public string checkBadValence ()
       {
          dispatcher.setSessionID();
-         sbyte *res = Indigo.indigoCheckBadValence(self);
-         if (res == (sbyte *)IntPtr.Zero)
-            return null;
-         return new String(res);
+         return new String(_indigo_lib.indigoCheckBadValence(self));
       }
 
       public string checkAmbiguousH ()
       {
          dispatcher.setSessionID();
-         sbyte* res = Indigo.indigoCheckAmbiguousH(self);
-         if (res == (sbyte*)IntPtr.Zero)
-            return null;
-         return new String(res);
+         return new String(_indigo_lib.indigoCheckAmbiguousH(self));
       }
 
       public IndigoObject fingerprint (string type)
@@ -779,116 +773,116 @@ namespace com.ggasoftware.indigo
          dispatcher.setSessionID();
          if (type == null)
             type = "";
-         return new IndigoObject(dispatcher, Indigo.indigoFingerprint(self, type));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoFingerprint(self, type));
       }
 
       public int countBits ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountBits(self);
+         return _indigo_lib.indigoCountBits(self);
       }
 
       public string rawData ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoRawData(self));
+         return new String(_indigo_lib.indigoRawData(self));
       }
 
       public int tell ()
       {
 
          dispatcher.setSessionID();
-         return Indigo.indigoTell(self);
+         return _indigo_lib.indigoTell(self);
       }
 
       public void sdfAppend (IndigoObject item)
       {
          dispatcher.setSessionID();
-         Indigo.indigoSdfAppend(self, item.self);
+         _indigo_lib.indigoSdfAppend(self, item.self);
       }
 
       public void smilesAppend (IndigoObject item)
       {
          dispatcher.setSessionID();
-         Indigo.indigoSmilesAppend(self, item.self);
+         _indigo_lib.indigoSmilesAppend(self, item.self);
       }
 
       public void rdfHeader ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoRdfHeader(self);
+         _indigo_lib.indigoRdfHeader(self);
       }
 
       public void rdfAppend (IndigoObject item)
       {
          dispatcher.setSessionID();
-         Indigo.indigoRdfAppend(self, item.self);
+         _indigo_lib.indigoRdfAppend(self, item.self);
       }
 
       public void cmlHeader ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoCmlHeader(self);
+         _indigo_lib.indigoCmlHeader(self);
       }
 
       public void cmlAppend (IndigoObject item)
       {
          dispatcher.setSessionID();
-         Indigo.indigoCmlAppend(self, item.self);
+         _indigo_lib.indigoCmlAppend(self, item.self);
       }
 
       public void cmlFooter ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoCmlFooter(self);
+         _indigo_lib.indigoCmlFooter(self);
       }
 
       public int arrayAdd (IndigoObject item)
       {
          dispatcher.setSessionID();
-         return Indigo.indigoArrayAdd(self, item.self);
+         return _indigo_lib.indigoArrayAdd(self, item.self);
       }
 
       public IndigoObject at (int index)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoAt(self, index));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoAt(self, index));
       }
 
       public int count ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCount(self);
+         return _indigo_lib.indigoCount(self);
       }
 
       public void clear ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoClear(self);
+         _indigo_lib.indigoClear(self);
       }
 
       public System.Collections.IEnumerable iterateArray ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateArray(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateArray(self));
       }
 
       public void ignoreAtom (IndigoObject atom)
       {
          dispatcher.setSessionID();
-         Indigo.indigoIgnoreAtom(self, atom.self);
+         _indigo_lib.indigoIgnoreAtom(self, atom.self);
       }
 
       public void unignoreAllAtoms ()
       {
          dispatcher.setSessionID();
-         Indigo.indigoUnignoreAllAtoms(self);
+         _indigo_lib.indigoUnignoreAllAtoms(self);
       }
 
       public IndigoObject match (IndigoObject query)
       {
          dispatcher.setSessionID();
-         int res = Indigo.indigoMatch(self, query.self);
+         int res = _indigo_lib.indigoMatch(self, query.self);
          if (res == 0)
             return null;
          return new IndigoObject(dispatcher, this, res);
@@ -897,61 +891,61 @@ namespace com.ggasoftware.indigo
       public int countMatches (IndigoObject query)
       {
          dispatcher.setSessionID();
-         return Indigo.indigoCountMatches(self, query.self);
+         return _indigo_lib.indigoCountMatches(self, query.self);
       }
 
       public System.Collections.IEnumerable iterateMatches (IndigoObject query)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateMatches(self, query.self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateMatches(self, query.self));
       }
 
       public IndigoObject highlightedTarget ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoHighlightedTarget(self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoHighlightedTarget(self));
       }
 
       public IndigoObject mapAtom (IndigoObject query_atom)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoMapAtom(self, query_atom.self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoMapAtom(self, query_atom.self));
       }
 
       public IndigoObject mapBond (IndigoObject query_bond)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoMapBond(self, query_bond.self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoMapBond(self, query_bond.self));
       }
 
       public IndigoObject allScaffolds ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoAllScaffolds(self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoAllScaffolds(self));
       }
 
       public IndigoObject decomposedMoleculeScaffold ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoDecomposedMoleculeScaffold(self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoDecomposedMoleculeScaffold(self));
       }
 
       public System.Collections.IEnumerable iterateDecomposedMolecules ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, this, Indigo.indigoIterateDecomposedMolecules(self));
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateDecomposedMolecules(self));
       }
 
       public IndigoObject decomposedMoleculeHighlighted ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoDecomposedMoleculeHighlighted(self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoDecomposedMoleculeHighlighted(self));
       }
 
       public IndigoObject decomposedMoleculeWithRGroups ()
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, Indigo.indigoDecomposedMoleculeWithRGroups(self));
+         return new IndigoObject(dispatcher, _indigo_lib.indigoDecomposedMoleculeWithRGroups(self));
       }
 
       public IEnumerator GetEnumerator ()
@@ -959,7 +953,7 @@ namespace com.ggasoftware.indigo
          while (true)
          {
             dispatcher.setSessionID();
-            int next = Indigo.indigoNext(self);
+            int next = _indigo_lib.indigoNext(self);
             if (next == 0)
                break;
             yield return new IndigoObject(dispatcher, this, next);
@@ -969,7 +963,7 @@ namespace com.ggasoftware.indigo
       public IndigoObject next ()
       {
          dispatcher.setSessionID();
-         int next = Indigo.indigoNext(self);
+         int next = _indigo_lib.indigoNext(self);
          if (next == 0)
             return null;
          return new IndigoObject(dispatcher, this, next);
@@ -978,19 +972,19 @@ namespace com.ggasoftware.indigo
       public bool hasNext ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoHasNext(self) == 1;
+         return _indigo_lib.indigoHasNext(self) == 1;
       }
 
       public int index ()
       {
          dispatcher.setSessionID();
-         return Indigo.indigoIndex(self);
+         return _indigo_lib.indigoIndex(self);
       }
 
       public String toString ()
       {
          dispatcher.setSessionID();
-         return new String(Indigo.indigoToString(self));
+         return new String(_indigo_lib.indigoToString(self));
       }
 
       public byte[] toBuffer ()
@@ -998,7 +992,7 @@ namespace com.ggasoftware.indigo
          dispatcher.setSessionID();
          byte* buf;
          int bufsize;
-         Indigo.indigoToBuffer(self, &buf, &bufsize);
+         _indigo_lib.indigoToBuffer(self, &buf, &bufsize);
 
          byte[] res = new byte[bufsize];
          for (int i = 0; i < bufsize; ++i)

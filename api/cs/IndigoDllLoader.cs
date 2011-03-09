@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Resources;
 using System.IO;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace com.ggasoftware.indigo
 {
@@ -41,49 +42,60 @@ namespace com.ggasoftware.indigo
          }
       }
 
-      struct DllInfo
+      class WrappedInterface
       {
-         public string name;
-         public IntPtr handle;
-         public int unload_count;
-         public string file_name;
-         public string lib_path;
+         // Dictionary with delegates for calling unmanaged functions
+         public Dictionary<string, Delegate> delegates = new Dictionary<string,Delegate>();
+         // Interface instance with wrappers for calling unmanaged functions
+         public object instance = null;
       }
 
-      // Mapping from the dll name to the handle
-      List<DllInfo> _loaded_dlls = new List<DllInfo>();
+      class DllData
+      {
+         public IntPtr handle;
+         public string file_name;
+         public string lib_path;
+
+         public Dictionary<Type, WrappedInterface> interfaces = new Dictionary<Type,WrappedInterface>();
+      }
+
+      // Mapping from the DLL name to the handle. 
+      Dictionary<string, DllData> _loaded_dlls = new Dictionary<string, DllData>();
+      // DLL handles in the loading order
+      List<DllData> _dll_handles = new List<DllData>();
       // Path for temporary directory
       String _temporary_dir = null;
-
+      // Local synchronization object
       Object _sync_object = new Object();
 
-      public void loadLibrary (String path, String dll_name, int unload_count, string resource_name)
+      public void loadLibrary (String path, String dll_name, string resource_name)
       {
          lock (_sync_object)
          {
-            foreach (DllInfo info in _loaded_dlls)
-               if (info.name == dll_name)
-               {
-                  // Library has already been loaded
-                  if (info.lib_path != path)
-                     throw new IndigoException(
-                        String.Format("Library {0} has already been loaded by different path {1}",
-                        dll_name, info.lib_path));
-                  return;
-               }
+            DllData data = null;
+            if (_loaded_dlls.TryGetValue(dll_name, out data))
+            { 
+               // Library has already been loaded
+               if (data.lib_path != path)
+                  throw new IndigoException(
+                     String.Format("Library {0} has already been loaded by different path {1}",
+                     dll_name, data.lib_path));
+               return;
+            }
 
             String subprefix = (IntPtr.Size == 8) ? "Win/x64/" : "Win/x86/";
 
-            DllInfo dll_info = new DllInfo();
-            dll_info.name = dll_name;
-            dll_info.lib_path = path;
-            dll_info.file_name = _getPathToBinary(path, subprefix + dll_name,
+            data = new DllData();
+            data.lib_path = path;
+            data.file_name = _getPathToBinary(path, subprefix + dll_name,
                resource_name, Assembly.GetCallingAssembly());
-            dll_info.handle = LoadLibrary(dll_info.file_name);
-            dll_info.unload_count = unload_count;
-            if (dll_info.handle == IntPtr.Zero)
+
+            data.file_name = data.file_name.Replace('/', '\\');
+            data.handle = LoadLibrary(data.file_name);
+            if (data.handle == IntPtr.Zero)
                throw new IndigoException("Cannot load library " + dll_name);
-            _loaded_dlls.Add(dll_info);
+            _loaded_dlls.Add(dll_name, data);
+            _dll_handles.Add(data);
          }
       }
 
@@ -91,6 +103,8 @@ namespace com.ggasoftware.indigo
       static extern IntPtr LoadLibrary(string lpFileName);
       [DllImport("kernel32.dll")]
       static extern int FreeLibrary(IntPtr module);
+      [DllImport("kernel32.dll")]
+      public static extern IntPtr GetProcAddress (IntPtr hModule, string procedureName);
 
       ~IndigoDllLoader ()
       {
@@ -100,27 +114,9 @@ namespace com.ggasoftware.indigo
             _instance_id++;
 
             // Unload all loaded libraries in the reverse order
-            _loaded_dlls.Reverse();
-            foreach (DllInfo dll in _loaded_dlls)
-            {
-               // Libraries that were loaded with DllImport must be unloaded twice
-               for (int i = 0; i < dll.unload_count; i++)
-                  FreeLibrary(dll.handle);
-            }
-            _loaded_dlls.Clear();
-
-            // Remove temporary directory. Exception will be thrown if some dll are still loaded
-            if (_temporary_dir != null)
-            {
-               try
-               {
-                  Directory.Delete(_temporary_dir, true);
-               }
-               catch (IOException)
-               {
-               }
-               _temporary_dir = null;
-            }
+            _dll_handles.Reverse();
+            foreach (DllData dll in _dll_handles)
+               FreeLibrary(dll.handle);
          }
       }
 
@@ -139,7 +135,11 @@ namespace com.ggasoftware.indigo
       String _getTemporaryDirectory ()
       {
          if (_temporary_dir == null)
-            _temporary_dir = Path.Combine(Path.GetTempPath(), "indigo_" + Path.GetRandomFileName());
+         {
+            _temporary_dir = Path.Combine(Path.GetTempPath(), "GGA_indigo");
+            _temporary_dir = Path.Combine(_temporary_dir, 
+               Assembly.GetExecutingAssembly().GetName().Version.ToString());
+         }
          return _temporary_dir;
       }
 
@@ -153,13 +153,172 @@ namespace com.ggasoftware.indigo
             String tmpdir_path = _getTemporaryDirectory();
             FileInfo file = new FileInfo(Path.Combine(tmpdir_path, filename));
             file.Directory.Create();
-            File.WriteAllBytes(file.FullName, (byte[])file_data);
+            // Check if file already exists
+            if (!file.Exists || file.Length == 0)
+               File.WriteAllBytes(file.FullName, (byte[])file_data);
             return file.FullName;
          }
          catch
          {
             return null;
          }
+      }
+
+      // Returns implementation of a given interface for wrapping function the specified DLL
+      public IT getInterface<IT> (string dll_name) where IT : class
+      {
+         lock (_sync_object)
+         {
+            Type itype = typeof(IT);
+            // Check if such interface was already loaded
+            WrappedInterface interf = null;
+            if (!_loaded_dlls[dll_name].interfaces.TryGetValue(itype, out interf))
+            {
+               interf = createInterface<IT>(dll_name);
+               _loaded_dlls[dll_name].interfaces.Add(itype, interf);
+            }
+
+            return (IT)interf.instance;
+         }
+      }
+
+      string getDelegateField (MethodInfo m)
+      {
+         return m.Name + "_ptr";
+      }
+
+      Type createDelegateType (string delegate_type_name, ModuleBuilder mb, Type ret_type, Type[] arg_types)
+      {
+         // Create delegate
+         TypeBuilder delegate_type = mb.DefineType(delegate_type_name,
+            TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed |
+            TypeAttributes.AnsiClass | TypeAttributes.AutoClass,
+            typeof(System.MulticastDelegate));
+
+         ConstructorBuilder constructorBuilder =
+            delegate_type.DefineConstructor(MethodAttributes.RTSpecialName |
+            MethodAttributes.HideBySig | MethodAttributes.Public,
+            CallingConventions.Standard,
+            new Type[] { typeof(object), typeof(System.IntPtr) });
+         constructorBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
+         MethodBuilder methodBuilder = delegate_type.DefineMethod("Invoke",
+            MethodAttributes.Public | MethodAttributes.HideBySig |
+            MethodAttributes.NewSlot | MethodAttributes.Virtual,
+            ret_type, arg_types);
+         methodBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
+
+         return delegate_type.CreateType();
+      }
+
+      private class TypeListComparer : IEqualityComparer< List< Type> > 
+      {
+         public bool Equals (List<Type> x, List<Type> y)
+         {
+            if (x.Count != y.Count)
+               return false;
+            for (int i = 0; i < x.Count; i++)
+               if (x[i] != y[i])
+                  return false;
+            return true;
+         }
+         public int GetHashCode (List<Type> obj)
+         {
+            int hash = 0;
+            foreach (Type t in obj)
+               hash ^= t.GetHashCode();
+            return hash;
+         }
+      }
+
+
+      // Creates implementation of a given interface for wrapping function the specified DLL
+      WrappedInterface createInterface<IT> (string dll_name) where IT : class
+      {
+         WrappedInterface result = new WrappedInterface();
+
+         Type itype = typeof(IT);
+         AppDomain cd = System.Threading.Thread.GetDomain();
+         AssemblyName an = new AssemblyName();
+         an.Name = itype.Name + "_" + dll_name.Replace('.', '_');
+         AssemblyBuilder ab = cd.DefineDynamicAssembly(an, AssemblyBuilderAccess.Run);
+         ModuleBuilder mb = ab.DefineDynamicModule(an.Name, false);
+         TypeBuilder tb = mb.DefineType(an.Name, TypeAttributes.Class |
+            TypeAttributes.Public);
+         tb.AddInterfaceImplementation(itype);
+
+         IntPtr dll_handle = _loaded_dlls[dll_name].handle;
+
+         Dictionary<List<Type>, Type> signature_to_name =
+            new Dictionary<List<Type>, Type>(new TypeListComparer());
+
+         // Set delegate references
+         foreach (MethodInfo m in itype.GetMethods())
+         {
+            ParameterInfo[] parameters = m.GetParameters();
+            Type[] arg_types = new Type[parameters.Length];
+            for (int i = 0; i < parameters.Length; i++)
+               arg_types[i] = parameters[i].ParameterType;
+
+            Type delegate_ret_type = m.ReturnType;
+            if (delegate_ret_type == typeof(String))
+               delegate_ret_type = typeof(sbyte*);
+
+            List<Type> signature = new List<Type>();
+            signature.Add(delegate_ret_type);
+            signature.AddRange(arg_types);
+
+            Type call_delegate = null;
+            if (!signature_to_name.TryGetValue(signature, out call_delegate))
+            {
+               // Check if type was already created
+               string delegate_type_name = String.Format("delegate_{0}", signature_to_name.Count);
+               call_delegate = createDelegateType(delegate_type_name, mb, delegate_ret_type, arg_types);
+               signature_to_name.Add(signature, call_delegate);
+            }
+
+            string delegate_field_name = m.Name + "_ptr";
+            FieldBuilder delegate_field =
+               tb.DefineField(delegate_field_name, typeof(Delegate), FieldAttributes.Private);
+
+            IntPtr proc = GetProcAddress(dll_handle, m.Name);
+            Delegate proc_delegate = Marshal.GetDelegateForFunctionPointer(proc, call_delegate);
+            result.delegates.Add(delegate_field_name, proc_delegate);
+
+            MethodBuilder meth = tb.DefineMethod(m.Name,
+               MethodAttributes.Public | MethodAttributes.Virtual, m.ReturnType, arg_types);
+
+            ILGenerator il = meth.GetILGenerator();
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldfld, delegate_field);
+            for (int i = 1; i < arg_types.Length + 1; i++)
+               il.Emit(OpCodes.Ldarg, i);
+            MethodInfo infoMethod = proc_delegate.GetType().GetMethod("Invoke", arg_types);
+            il.EmitCall(OpCodes.Callvirt, infoMethod, null);
+            // Automatically convert sbyte* to String
+            if (m.ReturnType == typeof(String))
+            {
+               Type str_type = typeof(String);
+               ConstructorInfo ci = str_type.GetConstructor(new Type[] { typeof(sbyte*) });
+               il.Emit(OpCodes.Newobj, ci);
+            }
+            il.Emit(OpCodes.Ret);
+
+            tb.DefineMethodOverride(meth, m);
+         }
+
+         // ab.Save(an.Name + ".dll");
+
+         Type impl_class = tb.CreateType();
+         IT impl = (IT)Activator.CreateInstance(impl_class);
+         // Set references to the delegates
+         foreach (string field_name in result.delegates.Keys)
+         {
+            impl_class.GetField(field_name, BindingFlags.Instance | BindingFlags.NonPublic)
+               .SetValue(impl, result.delegates[field_name]);
+         }
+
+         result.instance = impl;
+         return result;
       }
    }
 }
