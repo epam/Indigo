@@ -63,8 +63,6 @@ namespace com.ggasoftware.indigo
       Dictionary<string, DllData> _loaded_dlls = new Dictionary<string, DllData>();
       // DLL handles in the loading order
       List<DllData> _dll_handles = new List<DllData>();
-      // Path for temporary directory
-      String _temporary_dir = null;
       // Local synchronization object
       Object _sync_object = new Object();
 
@@ -132,15 +130,13 @@ namespace com.ggasoftware.indigo
          return Path.Combine(path, filename);
       }
 
-      String _getTemporaryDirectory ()
+      String _getTemporaryDirectory (Assembly resource_assembly)
       {
-         if (_temporary_dir == null)
-         {
-            _temporary_dir = Path.Combine(Path.GetTempPath(), "GGA_indigo");
-            _temporary_dir = Path.Combine(_temporary_dir, 
-               Assembly.GetExecutingAssembly().GetName().Version.ToString());
-         }
-         return _temporary_dir;
+         String dir;
+         dir = Path.Combine(Path.GetTempPath(), "GGA_indigo");
+         dir = Path.Combine(dir, resource_assembly.GetName().Name);
+         dir = Path.Combine(dir, resource_assembly.GetName().Version.ToString());
+         return dir;
       }
 
       String _extractFromAssembly (String filename, String resource_name, Assembly resource_assembly)
@@ -150,7 +146,7 @@ namespace com.ggasoftware.indigo
             ResourceManager manager = new ResourceManager(resource_name, resource_assembly);
             Object file_data = manager.GetObject(filename);
 
-            String tmpdir_path = _getTemporaryDirectory();
+            String tmpdir_path = _getTemporaryDirectory(resource_assembly);
             FileInfo file = new FileInfo(Path.Combine(tmpdir_path, filename));
             file.Directory.Create();
             // Check if file already exists
