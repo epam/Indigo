@@ -277,6 +277,9 @@ namespace com.ggasoftware.indigo
                tb.DefineField(delegate_field_name, typeof(Delegate), FieldAttributes.Private);
 
             IntPtr proc = GetProcAddress(dll_handle, m.Name);
+            if (proc == IntPtr.Zero)
+               throw new IndigoException(String.Format("Cannot find procedure {0} in the library {1}",
+                  m.Name, dll_name));
             Delegate proc_delegate = Marshal.GetDelegateForFunctionPointer(proc, call_delegate);
             result.delegates.Add(delegate_field_name, proc_delegate);
 
