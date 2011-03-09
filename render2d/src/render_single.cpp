@@ -123,7 +123,7 @@ float RenderSingle::_getScale ()
 
    if (!imageSizeSet) {
       width = defaultWidth;
-      height = defaultWidth;
+      height = defaultHeight;
    }
    if (maxPageSize > 0 && __max(width, height) > maxPageSize) {
       width = __min(width, maxPageSize);
