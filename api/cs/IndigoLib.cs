@@ -236,8 +236,6 @@ namespace com.ggasoftware.indigo
       int indigoHighlightedTarget (int match);
       int indigoMapAtom (int match, int query_atom);
       int indigoMapBond (int match, int query_bond);
-      int indigoCountSubstructureMatches (int query, int target);
-      int indigoIterateSubstructureMatches (int query, int target);
 
       int indigoExtractCommonScaffold (int structures, string options);
       int indigoAllScaffolds (int extracted);
