@@ -1669,6 +1669,36 @@ void MolfileLoader::_postLoad ()
       }
    }
 
+   // Some "either" bonds may mean not "either stereocenter", but
+   // "either cis-trans", or "connected to either cis-trans".
+   // The following loop does the correction.
+   for (i = 0; i < _bonds_num; i++)
+      if (_bond_directions[i] == MoleculeStereocenters::BOND_EITHER)
+      {
+         if (MoleculeCisTrans::isGeomStereoBond(*_bmol, i, 0, true))
+         {
+            _bond_directions[i] = 0;
+            _ignore_cistrans[i] = 1;
+            _stereocenter_types[_bmol->getEdge(i).beg] = 0;
+         }
+         else
+         {
+            int k;
+            const Vertex &v = _bmol->getVertex(_bmol->getEdge(i).beg);
+
+            for (k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+            {
+               if (MoleculeCisTrans::isGeomStereoBond(*_bmol, v.neiEdge(k), 0, true))
+               {
+                  _bond_directions[i] = 0;
+                  _ignore_cistrans[v.neiEdge(k)] = 1;
+                  _stereocenter_types[_bmol->getEdge(i).beg] = 0;
+                  break;
+               }
+            }
+         }
+      }
+
    _bmol->stereocenters.buildFromBonds(_stereocenter_types.ptr(),
       _stereocenter_groups.ptr(), _bond_directions.ptr(), ignore_stereocenter_errors);
 
@@ -2291,20 +2321,6 @@ void MolfileLoader::_readCtab3000 ()
 
       _scanner.readString(str, true);
    }
-
-   // Some "either" bonds may mean "either cis-trans", not "either stereocenter".
-   // The following loop dodes the correction.
-
-   for (i = 0; i < _bonds_num; i++)
-      if (_bond_directions[i] == MoleculeStereocenters::BOND_EITHER)
-      {
-         if (MoleculeCisTrans::isGeomStereoBond(*_bmol, i, 0, true))
-         {
-            _bond_directions[i] = 0;
-            _ignore_cistrans[i] = 1;
-            _stereocenter_types[_bmol->getEdge(i).beg] = 0;
-         }
-      }
 
    if (strncmp(str.ptr(), "M  V30 BEGIN COLLECTION", 23) == 0)
    {
