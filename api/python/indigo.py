@@ -118,7 +118,13 @@ class Indigo:
   @staticmethod
   def _initStatic (path = None):
     if not path:
-      dirname = os.path.dirname(inspect.getfile(inspect.currentframe()))
+      cur_file = None
+      cur_frame = inspect.currentframe()
+      if cur_frame:
+         cur_file = inspect.getfile(cur_frame)
+      else:
+         cur_file = __file__
+      dirname = os.path.dirname(cur_file)
       if not dirname:
         dirname = '.'
       path = dirname + '/lib'

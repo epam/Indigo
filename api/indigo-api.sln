@@ -19,6 +19,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graph", "..\graph\graph.vcxproj", "{C6C11F43-43CD-4E5A-9FC5-B113A8B6F4F5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "indigo-cs", "cs\indigo-cs.csproj", "{9813B608-3372-4D46-B432-1533CBF54C62}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5EB98311-2234-4063-8818-44FF7CDCD887} = {5EB98311-2234-4063-8818-44FF7CDCD887}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "render2d", "..\render2d\render2d.vcxproj", "{8E1DE958-1A54-4739-8F12-746D9F6D04C3}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -30,6 +33,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\zlib-src\zlib.vcxproj", "{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "indigo-renderer-cs", "renderer\cs\indigo-renderer-cs.csproj", "{D7D9B92E-80BE-449C-8D98-C2ABA620B59C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3B8B660B-0070-4B2F-A3D0-AFF20C814B7B} = {3B8B660B-0070-4B2F-A3D0-AFF20C814B7B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "indigo-api-dll", "dll\indigo-api-dll.vcxproj", "{5EB98311-2234-4063-8818-44FF7CDCD887}"
 EndProject
