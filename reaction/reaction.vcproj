@@ -758,14 +758,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\reaction_highlighting.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\reaction_highlighting.h"
-				>
-			</File>
-			<File
 				RelativePath=".\src\reaction_neighborhood_counters.cpp"
 				>
 			</File>

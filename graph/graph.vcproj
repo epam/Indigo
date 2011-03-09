@@ -819,14 +819,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\graph_highlighting.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\graph_highlighting.h"
-				>
-			</File>
-			<File
 				RelativePath=".\src\graph_perfect_matching.cpp"
 				>
 			</File>
