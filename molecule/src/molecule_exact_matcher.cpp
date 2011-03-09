@@ -311,12 +311,15 @@ bool MoleculeExactMatcher::matchAtoms (BaseMolecule& query, BaseMolecule& target
          if (qrad != trad)
             return false;
 
-         int qarom = query.getAtomAromaticity(sub_idx);
-         int tarom = target.getAtomAromaticity(super_idx);
+         if (query.isQueryMolecule())
+         {
+            int qarom = query.getAtomAromaticity(sub_idx);
+            int tarom = target.getAtomAromaticity(super_idx);
 
-         if (qarom != -1 && tarom != -1)
-            if (qarom != tarom)
-               return false;
+            if (qarom != -1 && tarom != -1)
+               if (qarom != tarom)
+                  return false;
+         }
       }
    }
 
