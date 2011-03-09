@@ -78,6 +78,7 @@ public:
    static bool isSingleLine (Scanner &scanner);
 
 protected:
+   bool _readDouble (double &res, int max);
    void _prefixFunction (Array<char> &str, Array<int> &prefix);
 };
 

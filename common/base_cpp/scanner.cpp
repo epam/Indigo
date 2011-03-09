@@ -41,7 +41,7 @@ int Scanner::readIntFix (int digits)
 
    char *end;
    result = strtol(buf, &end, 10);
-   // Check that unread part contains onle spaces
+   // Check that the unread part contains only spaces
    while (end != buf + digits)
    {
       if (!isspace(*end))
@@ -126,55 +126,92 @@ int Scanner::readUnsigned ()
    return result;
 }
 
-float Scanner::readFloat (void)
+bool Scanner::_readDouble (double &res, int max)
 {
-   QS_DEF(Array<char>, buf);
-   float result;
+   res = 0;
 
-   buf.clear();
+   bool plus = false;
+   bool minus = false;
+   bool digit = false;
+   int denom = 1;
+   int cnt = 0;
 
-   while (!isEOF())
+   while (1)
    {
-      int c = lookNext();
-
-      if (!isdigit(c) && c != '-' && c != '+' && c != '.')
+      if (max > 0 && cnt == max)
          break;
-      buf.push(readChar());
+
+      char c = (char)lookNext();
+
+      if (c == -1) // EOF
+         break;
+      if (c == '+')
+      {
+         if (plus || minus || digit || denom > 1)
+            return false;
+         plus = true;
+      }
+      else if (c == '-')
+      {
+         if (plus || minus || digit || denom > 1)
+            return false;
+         minus = true;
+      }
+      else if (isdigit(c))
+      {
+         if (denom > 1)
+         {
+            res += (c - '0') / (double)denom;
+            denom *= 10;
+         }
+         else
+            res = res * 10 + (c - '0');
+         digit = true;
+      }
+      else if (c == '.')
+      {
+         if (denom > 1)
+            return false;
+         denom = 10;
+      }
+      else if (isspace(c))
+      {
+         if (plus || minus || digit || denom > 1)
+            break;
+      }
+      else
+         break;
+      skip(1);
+      cnt++;
    }
 
-   buf.push(0);
-   
-   if (sscanf(buf.ptr(), "%f", &result) < 1)
-      throw Error("readFloat(): error parsing %s", buf.ptr());
+   if (minus)
+      res *= -1;
+   return digit;
+}
 
-   return result;
+float Scanner::readFloat (void)
+{
+   double res;
+
+   if (!_readDouble(res, 0))
+      throw Error("readFloat(): error parsing");
+
+   return (float)res;
 }
 
 bool Scanner::tryReadFloat (float &value)
 {
-   QS_DEF(Array<char>, buf);
-
    int pos = tell();
-
-   buf.clear();
-
-   while (!isEOF())
-   {
-      char c = readChar();
-
-      if (!isdigit(c) && c != '-' && c != '+' && c != '.')
-         break;
-      buf.push(c);
-   }
-
-   buf.push(0);
+   double res;
    
-   if (sscanf(buf.ptr(), "%f", &value) < 1)
+   if (!_readDouble(res, 0))
    {
       seek(pos, SEEK_SET);
       return false;
    }
 
+   value = (float)res;
    return true;
 }
 
@@ -204,29 +241,24 @@ void Scanner::readWord (Array<char> &word, const char *delimiters)
    word.push(0);
 }
 
-
 float Scanner::readFloatFix (int digits)
 {
-   char buf[40];
-   if (digits >= NELEM(buf) - 1)
-      throw Error("readFloatFix(): digits = %d", digits);
+   int pos = tell();
+   double res;
 
-   float result;
+   if (!_readDouble(res, digits))
+      throw Error("readFloatFix(): error parsing");
 
-   read(digits, buf);
-   buf[digits] = 0;
+   int rest = tell() - pos - digits;
 
-   char *end;
-   result = (float)strtod(buf, &end);
-   // Check that unread part contains onle spaces
-   while (end != buf + digits)
+   // Check that the unread part contains only spaces
+   while (rest-- > 0)
    {
-      if (!isspace(*end))
-         throw Error("readIntFix(): invalid number representation: %s", buf);
-      end++;
+      if (!isspace(readChar()))
+         throw Error("readFloatFix(): garbage after the number");
    }
 
-   return result;
+   return (float)res;
 }
 
 char Scanner::readChar ()
