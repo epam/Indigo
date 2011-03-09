@@ -358,7 +358,7 @@ namespace com.ggasoftware.indigo
       private String _dllpath;
       private int _dll_loader_id;
 
-      internal IndigoLib _indigo_lib = null;
+      public IndigoLib _indigo_lib = null;
 
       public delegate void ErrorHandler (sbyte* message, Indigo context);
    }
