@@ -171,6 +171,7 @@ void RenderOptions::clear()
    showReactingCenterUnchanged = false;
    centerDoubleBondWhenStereoAdjacent = false;
    showCycles = false;
+   agentsBelowArrow = false;
 }
 
 MoleculeRenderInternal::MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw) :

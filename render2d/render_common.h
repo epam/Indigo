@@ -365,6 +365,7 @@ public:
    bool showReactingCenterUnchanged;
    bool centerDoubleBondWhenStereoAdjacent;
    bool showCycles; // for diagnostic purposes
+   bool agentsBelowArrow;
 private:
    RenderOptions (const RenderOptions& );
 };

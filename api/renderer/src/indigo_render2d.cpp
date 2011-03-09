@@ -207,6 +207,17 @@ void indigoRenderSetLabelMode (const char* mode)
    rp.rOpt.labelMode = (LABEL_MODE)labelMap.at(mode);
 }
 
+void indigoRenderSetAgentsPlacement (const char* mode)
+{
+   TL_DECL_GET(StringIntMap, agentPlacementMap);
+   if (agentPlacementMap.size() == 0) {
+      agentPlacementMap.insert("above", 0);
+      agentPlacementMap.insert("above-and-below", 1);
+   }
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.agentsBelowArrow = agentPlacementMap.at(mode) != 0;
+}
+
 void indigoRenderSetAAMColor (float r, float g, float b)
 {
    CHECKRGB(r, g, b);
@@ -461,6 +472,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-comment", indigoRenderSetComment);
    mgr.setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition);
    mgr.setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle);
+   mgr.setOptionHandlerString("render-agents-placement", indigoRenderSetAgentsPlacement);
 
    mgr.setOptionHandlerBool("render-coloring", indigoRenderSetColoring);
    mgr.setOptionHandlerBool("render-valences-visible", indigoRenderSetValencesVisible);

@@ -29,9 +29,11 @@ RenderItemReaction::RenderItemReaction (RenderItemFactory& factory) :
    hSpace(_settings.layoutMarginHorizontal),
    catalystOffset(_settings.layoutMarginVertical / 2),
    _reactantLine(-1),
-   _catalystLine(-1),
+   _catalystLineUpper(-1),
+   _catalystLineLower(-1),
    _productLine(-1),
-   _arrow(-1)
+   _arrow(-1),
+   _splitCatalysts(false)
 {
 }
 
@@ -43,6 +45,7 @@ void RenderItemReaction::init ()
    if (rxn->begin() >= rxn->end()) // no reactants or products
       return;
 
+   _splitCatalysts = _opt.agentsBelowArrow;
    _reactantLine = _factory.addItemHLine();
    _factory.getItemHLine(_reactantLine).init();
    items.push(_reactantLine);
@@ -55,11 +58,20 @@ void RenderItemReaction::init ()
 
    if (rxn->catalystCount() > 0)
    {
-      _catalystLine = _factory.addItemHLine();
-      _factory.getItemHLine(_catalystLine).init();
-      items.push(_catalystLine);
-      for (int i = rxn->catalystBegin(); i < rxn->catalystEnd(); i = rxn->catalystNext(i)) {
-         _factory.getItemHLine(_catalystLine).items.push(_addFragment(i));
+      _catalystLineUpper = _factory.addItemHLine();
+      _factory.getItemHLine(_catalystLineUpper).init();
+      items.push(_catalystLineUpper);
+      if (_splitCatalysts) {
+         _catalystLineLower = _factory.addItemHLine();
+         _factory.getItemHLine(_catalystLineLower).init();
+         items.push(_catalystLineLower);
+      }
+      int halfTheNumberOfCatalysts = (rxn->catalystCount() + 1) / 2;
+      for (int i = rxn->catalystBegin(), j = 0; i < rxn->catalystEnd(); i = rxn->catalystNext(i), ++j) {
+         if (!_splitCatalysts || j < halfTheNumberOfCatalysts)
+            _factory.getItemHLine(_catalystLineUpper).items.push(_addFragment(i));
+         else
+            _factory.getItemHLine(_catalystLineLower).items.push(_addFragment(i));
       }
    }
 
@@ -122,14 +134,19 @@ void RenderItemReaction::estimateSize ()
    }
    if (_arrow >= 0) {
       RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
-      float arrowWidth = arrow.size.x;
+      _arrowWidth = arrow.size.x;
       size.y = __max(size.y, arrow.size.y);
-      if (_catalystLine >= 0) {
-         RenderItemBase& catalysts = _factory.getItem(_catalystLine);
-         arrowWidth = __max(arrowWidth, catalysts.size.x);
+      if (_catalystLineUpper >= 0) {
+         RenderItemBase& catalysts = _factory.getItem(_catalystLineUpper);
+         _arrowWidth = __max(_arrowWidth, catalysts.size.x);
          size.y = __max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
       }
-      size.x += arrowWidth + 2 * hSpace;
+      if (_catalystLineLower >= 0) {
+         RenderItemBase& catalysts = _factory.getItem(_catalystLineLower);
+         _arrowWidth = __max(_arrowWidth, catalysts.size.x);
+         size.y = __max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
+      }
+      size.x += _arrowWidth + 2 * hSpace;
    }
 }
 
@@ -151,14 +168,22 @@ void RenderItemReaction::render ()
       }
       if (_arrow >= 0) {
          RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
-         float arrowWidth = arrow.size.x;
          _rc.translate(hSpace, 0);
-         if (_catalystLine >= 0) {
-            RenderItemBase& catalysts = _factory.getItem(_catalystLine);
-            arrowWidth = __max(arrowWidth, catalysts.size.x);
+         if (_catalystLineUpper >= 0) {
+            RenderItemBase& catalysts = _factory.getItem(_catalystLineUpper);
             _rc.storeTransform();
             {
-               _rc.translate(0.5f * (arrowWidth - catalysts.size.x), 0.5f * (size.y - arrow.size.y) - catalysts.size.y - catalystOffset);
+               _rc.translate(0.5f * (_arrowWidth - catalysts.size.x), 0.5f * (size.y - arrow.size.y) - catalysts.size.y - catalystOffset);
+               catalysts.render();
+            }
+            _rc.restoreTransform();
+            _rc.removeStoredTransform();
+         }
+         if (_catalystLineLower >= 0) {
+            RenderItemBase& catalysts = _factory.getItem(_catalystLineLower);
+            _rc.storeTransform();
+            {
+               _rc.translate(0.5f * (_arrowWidth - catalysts.size.x), 0.5f * (size.y + arrow.size.y) /*+ catalysts.size.y*/ + catalystOffset);
                catalysts.render();
             }
             _rc.restoreTransform();
@@ -167,12 +192,12 @@ void RenderItemReaction::render ()
          _rc.storeTransform();
          {
             _rc.translate(0, 0.5f * (size.y - arrow.size.y));
-            arrow.arrowLength = arrowWidth;
+            arrow.arrowLength = _arrowWidth;
             arrow.render();
          }
          _rc.restoreTransform();
          _rc.removeStoredTransform();
-         _rc.translate(arrowWidth + hSpace, 0);
+         _rc.translate(_arrowWidth + hSpace, 0);
       }
 
       if (_productLine >= 0) {
