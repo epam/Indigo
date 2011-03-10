@@ -231,6 +231,9 @@
     <ClCompile Include="..\common\gzip\gzip_scanner.cpp">
       <Filter>common\gzip</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\base_cpp\locale_guard.cpp">
+      <Filter>common\base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_molecule.h">
@@ -403,6 +406,9 @@
     </ClInclude>
     <ClInclude Include="..\common\gzip\gzip_scanner.h">
       <Filter>common\gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\base_cpp\locale_guard.h">
+      <Filter>common\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

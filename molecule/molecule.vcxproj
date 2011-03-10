@@ -429,6 +429,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\base_cpp\locale_guard.cpp" />
     <ClCompile Include="src\base_molecule.cpp" />
     <ClCompile Include="src\canonical_smiles_saver.cpp" />
     <ClCompile Include="src\cmf_loader.cpp" />
@@ -500,6 +501,7 @@
     <ClCompile Include="..\common\gzip\gzip_scanner.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\base_cpp\locale_guard.h" />
     <ClInclude Include="base_molecule.h" />
     <ClInclude Include="canonical_smiles_saver.h" />
     <ClInclude Include="cmf_loader.h" />
