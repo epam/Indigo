@@ -346,6 +346,8 @@ class Indigo:
     self.IndigoObject.addBond = Indigo._member_obj_obj_int(Indigo._lib.indigoAddBond)
     self.IndigoObject.setBondOrder = Indigo._member_void_int(Indigo._lib.indigoSetBondOrder)
     self.IndigoObject.merge = Indigo._member_obj_obj(Indigo._lib.indigoMerge)
+    self.IndigoObject.highlight = Indigo._member_void(Indigo._lib.indigoHighlight)
+    self.IndigoObject.unhighlight = Indigo._member_void(Indigo._lib.indigoUnhighlight)
 
     self.IndigoObject.countComponents = Indigo._member_int(Indigo._lib.indigoCountComponents)
     self.IndigoObject.componentIndex = Indigo._member_int(Indigo._lib.indigoComponentIndex)
