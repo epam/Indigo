@@ -61,12 +61,15 @@ namespace com.ggasoftware.indigo
       int indigoCreateReaction ();
       int indigoCreateQueryReaction ();
       int indigoAddReactant (int reaction, int molecule);
-      int indigoAddProduct (int reaction, int molecule);
-      int indigoCountReactants (int handler);
-      int indigoCountProducts (int handler);
-      int indigoCountMolecules (int handler);
+      int indigoAddProduct  (int reaction, int molecule);
+      int indigoAddCatalyst (int reaction, int molecule);
+      int indigoCountReactants (int reaction);
+      int indigoCountProducts (int reaction);
+      int indigoCountCatalysts (int reaction);
+      int indigoCountMolecules (int reaction);
       int indigoIterateReactants (int reaction);
-      int indigoIterateProducts (int reaction);
+      int indigoIterateProducts  (int reaction);
+      int indigoIterateCatalysts (int reaction);
       int indigoIterateMolecules (int reader);
       int indigoSaveRxnfile (int reaction, int output);
       int indigoSaveRxnfileToFile (int reaction, string filename);
@@ -91,6 +94,7 @@ namespace com.ggasoftware.indigo
       int indigoGetRadicalElectrons (int atom, int* electrons);
       int indigoAtomicNumber (int atom);
       int indigoIsotope (int atom);
+      int indigoValence (int atom);
       int indigoCountHydrogens (int atom, int* hydro);
       int indigoCountImplicitHydrogens (int item);
 
@@ -114,6 +118,7 @@ namespace com.ggasoftware.indigo
       int indigoSetDataSGroupXY (int sgroup, float x, float y, string options);
 
       float* indigoXYZ (int atom);
+      int indigoSetXYZ (int atom, float x, float y, float z);
       int indigoResetCharge (int atom);
       int indigoResetExplicitValence (int atom);
       int indigoResetRadical (int atom);
@@ -150,6 +155,8 @@ namespace com.ggasoftware.indigo
       int indigoAddBond (int source, int destination, int order);
       int indigoSetBondOrder (int bond, int order);
       int indigoMerge (int where_to, int what);
+      int indigoHighlight (int item);
+      int indigoUnhighlight (int item);
 
       int indigoCountComponents (int molecule);
       int indigoComponentIndex (int atom);
@@ -229,6 +236,7 @@ namespace com.ggasoftware.indigo
 
       int indigoSubstructureMatcher (int target, string mode);
       int indigoIgnoreAtom (int matcher, int atom);
+      int indigoUnignoreAtom (int matcher, int atom);
       int indigoUnignoreAllAtoms (int matcher);
       int indigoMatch (int matcher, int query);
       int indigoCountMatches (int matcher, int query);

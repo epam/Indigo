@@ -115,6 +115,12 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoAddProduct(self, molecule.self);
       }
 
+      public void addCatalyst (IndigoObject molecule)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoAddCatalyst(self, molecule.self);
+      }
+
       public int countReactants ()
       {
          dispatcher.setSessionID();
@@ -125,6 +131,12 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          return _indigo_lib.indigoCountProducts(self);
+      }
+
+      public int countCatalysts ()
+      {
+         dispatcher.setSessionID();
+         return _indigo_lib.indigoCountCatalysts(self);
       }
 
       public int countMolecules ()
@@ -143,6 +155,12 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateProducts(self));
+      }
+
+      public System.Collections.IEnumerable iterateCatalysts ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateCatalysts(self));
       }
 
       public System.Collections.IEnumerable iterateMolecules ()
@@ -297,6 +315,12 @@ namespace com.ggasoftware.indigo
          return _indigo_lib.indigoIsotope(self);
       }
 
+      public int valence ()
+      {
+         dispatcher.setSessionID();
+         return _indigo_lib.indigoValence(self);
+      }
+
       public int? countHydrogens ()
       {
          int h;
@@ -412,6 +436,12 @@ namespace com.ggasoftware.indigo
          res[1] = ptr[1];
          res[2] = ptr[2];
          return res;
+      }
+
+      public void setXYZ (float x, float y, float z)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoSetXYZ(self, x, y, z);
       }
 
       public void resetCharge ()
@@ -622,6 +652,18 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, this, _indigo_lib.indigoMerge(self, what.self));
+      }
+
+      public void highlight ()
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoHighlight(self);
+      }
+
+      public void unhighlight ()
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoUnhighlight(self);
       }
 
       public int countComponents ()
@@ -986,6 +1028,12 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          _indigo_lib.indigoIgnoreAtom(self, atom.self);
+      }
+
+      public void unignoreAtom (IndigoObject atom)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoUnignoreAtom(self, atom.self);
       }
 
       public void unignoreAllAtoms ()
