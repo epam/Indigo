@@ -17,22 +17,21 @@
 #include "base_cpp/array.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/query_molecule.h"
+#include "molecule/molecule_substructure_matcher.h"
 
 using namespace indigo;
 
 MoleculeScaffoldDetection::MoleculeScaffoldDetection (ObjArray<Molecule>* mol_set):
 ScaffoldDetection(0),
-flags(MoleculeExactMatcher::CONDITION_ALL &(~MoleculeExactMatcher::CONDITION_STEREO)),
 searchStructures(mol_set),
 basketStructures(0){
-   cbEdgeWeight = MaxCommonSubmolecule::matchBonds;
-   cbVerticesColor = MaxCommonSubmolecule::matchAtoms;
-   userdata = &flags;
+   cbEdgeWeight = matchBonds;
+   cbVerticesColor = matchAtoms;
 }
 
 
-void MoleculeScaffoldDetection::_searchScaffold(Molecule& scaffold, bool approximate) {
-   QS_DEF(ObjArray<Molecule>, temp_set);
+void MoleculeScaffoldDetection::_searchScaffold(QueryMolecule& scaffold, bool approximate) {
+   QS_DEF(ObjArray<QueryMolecule>, temp_set);
    if(basketStructures == 0) {
       basketStructures = &temp_set;
    }
@@ -56,6 +55,92 @@ void MoleculeScaffoldDetection::_searchScaffold(Molecule& scaffold, bool approxi
    
 }
 
+void MoleculeScaffoldDetection::clone(QueryMolecule& mol, Molecule& other) {
+   QS_DEF(Array<int>, v_list);
+   QS_DEF(Array<int>, e_list);
+   v_list.clear();
+   e_list.clear();
+   for (int v_idx = other.vertexBegin(); v_idx != other.vertexEnd(); v_idx = other.vertexNext(v_idx)) {
+      v_list.push(v_idx);
+   }
+   for (int e_idx = other.vertexBegin(); e_idx != other.vertexEnd(); e_idx = other.vertexNext(e_idx)) {
+      e_list.push(e_idx);
+   }
+   makeEdgeSubmolecule(mol, other, v_list, e_list);
+}
+
+void MoleculeScaffoldDetection::makeEdgeSubmolecule(QueryMolecule& mol, Molecule& other, Array<int> &v_list, Array<int> &e_list) {
+   QS_DEF(Array<int>, tmp_mapping);
+   Array<int>* v_mapping = 0;
+   mol.clear();
+   int i;
+
+   if (v_mapping == 0)
+      v_mapping = &tmp_mapping;
+
+   v_mapping->clear_resize(other.vertexEnd());
+
+   for (i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
+      v_mapping->at(i) = -1;
+
+   for (i = 0; i < v_list.size(); i++) {
+      int idx = v_list[i];
+
+      if (v_mapping->at(idx) != -1)
+         throw Error("makeEdgeSubmolecule(): repeated vertex #%d", idx);
+
+      v_mapping->at(idx) = mol.addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, other.getAtomNumber(idx)));
+   }
+
+   for (i = 0; i < e_list.size(); i++) {
+      int edge_idx = e_list[i];
+      const Edge &edge = other.getEdge(edge_idx);
+      int beg = v_mapping->at(edge.beg);
+      int end = v_mapping->at(edge.end);
+
+      mol.addBond(beg, end, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, other.getBondOrder(edge_idx)));
+   }
+}
+
+bool MoleculeScaffoldDetection::matchBonds (Graph &g1, Graph &g2, int i, int j, void*){
+   BaseMolecule &mol1 = (BaseMolecule &)g1;
+   BaseMolecule &mol2 = (BaseMolecule &)g2;
+   QueryMolecule::Bond* q_bond;
+   int sub_idx, super_idx;
+   BaseMolecule* target;
+   if(mol1.isQueryMolecule()) {
+      q_bond = &mol1.asQueryMolecule().getBond(i);
+      sub_idx = i;
+      super_idx = j;
+      target = &mol2;
+   } else {
+      q_bond = &mol2.asQueryMolecule().getBond(j);
+      sub_idx = j;
+      super_idx = i;
+      target = &mol1;
+   }
+   return MoleculeSubstructureMatcher::matchQueryBond(q_bond, *target, sub_idx, super_idx, 0, 0xFFFFFFFF);
+}
+
+bool MoleculeScaffoldDetection::matchAtoms (Graph &g1, Graph &g2, const int *, int i, int j, void* userdata){
+   BaseMolecule &mol1 = (BaseMolecule &)g1;
+   BaseMolecule &mol2 = (BaseMolecule &)g2;
+   QueryMolecule::Atom* q_atom;
+   int  super_idx;
+   BaseMolecule* target;
+   if(mol1.isQueryMolecule()) {
+      q_atom = &mol1.asQueryMolecule().getAtom(i);
+      super_idx = j;
+      target = &mol2;
+   } else {
+      q_atom = &mol2.asQueryMolecule().getAtom(j);
+      super_idx = i;
+      target = &mol1;
+   }
+
+   return MoleculeSubstructureMatcher::matchQueryAtom(q_atom, *target, super_idx, 0, 0xFFFFFFFF);
+}
+
 MoleculeScaffoldDetection::MoleculeBasket::MoleculeBasket():
 cbSortSolutions(0),
 _searchStructures(0),
@@ -66,7 +151,7 @@ MoleculeScaffoldDetection::MoleculeBasket::~MoleculeBasket()
 {
 }
 
-void MoleculeScaffoldDetection::MoleculeBasket::initBasket(ObjArray<Molecule>* mol_set, ObjArray<Molecule>* basket_set, int max_number) {
+void MoleculeScaffoldDetection::MoleculeBasket::initBasket(ObjArray<Molecule>* mol_set, ObjArray<QueryMolecule>* basket_set, int max_number) {
 
    if(mol_set == 0)
       throw Error("Graph set null pointer");
@@ -87,13 +172,13 @@ void MoleculeScaffoldDetection::MoleculeBasket::initBasket(ObjArray<Molecule>* m
    _reverseIterator.resize(max_number);
    _reverseIterator.set();
 
-   _basketStructures->at(0).clone(_searchStructures->at(_orderArray[0]),0,0);
+   clone(_basketStructures->at(0), _searchStructures->at(_orderArray[0]));
    _reverseIterator.set(0, false);
    _directIterator.set(0);
 }
 
 
-Molecule& MoleculeScaffoldDetection::MoleculeBasket::pickOutNextMolecule() {
+QueryMolecule& MoleculeScaffoldDetection::MoleculeBasket::pickOutNextMolecule() {
 
    int empty_index = _reverseIterator.nextSetBit(0);
 
@@ -113,15 +198,15 @@ Molecule& MoleculeScaffoldDetection::MoleculeBasket::pickOutNextMolecule() {
 
 void MoleculeScaffoldDetection::MoleculeBasket::addToNextEmptySpot(Graph& graph, Array<int> &v_list, Array<int> &e_list) {
    Molecule& mol = (Molecule&) graph;
-   Molecule & b_mol = pickOutNextMolecule();
-   b_mol.makeEdgeSubmolecule(mol, v_list, e_list, 0);
+   QueryMolecule & b_mol = pickOutNextMolecule();
+   makeEdgeSubmolecule(b_mol, mol, v_list, e_list);
 }
 
 int MoleculeScaffoldDetection::MoleculeBasket::getMaxGraphIndex() {
 
 
    for(int x = _reverseIterator.nextSetBit(0); x >= 0; x = _reverseIterator.nextSetBit(x+1)) {
-      Molecule& mol_basket = _basketStructures->at(x);
+      QueryMolecule& mol_basket = _basketStructures->at(x);
 
       if(mol_basket.vertexCount() > 0) 
          mol_basket.clear();
@@ -167,7 +252,7 @@ int MoleculeScaffoldDetection::MoleculeBasket::_compareEdgeCount(int &i1,int &i2
    return graph_set.at(i1).edgeCount()-graph_set.at(i2).edgeCount();
 }
 
-int MoleculeScaffoldDetection::MoleculeBasket::_compareRingsCount(Molecule& g1, Molecule& g2, void* ) {
+int MoleculeScaffoldDetection::MoleculeBasket::_compareRingsCount(BaseMolecule& g1, BaseMolecule& g2, void* ) {
    //maximize number of the rings/ v-e+r=2 there v- number of vertices e - number of edges r - number of rings
    int result = (g2.edgeCount() - g2.vertexCount()) - (g1.edgeCount() - g1.vertexCount());
    if(result == 0 || g1.edgeCount() == 0 || g2.edgeCount() == 0)

@@ -16,7 +16,7 @@
 #define __indigo_scaffold__
 
 #include "indigo_internal.h"
-#include "molecule/molecule.h"
+#include "molecule/query_molecule.h"
 
 class IndigoScaffold : public IndigoObject
 {
@@ -26,11 +26,11 @@ public:
 
    void extractScaffold ();
 
-   virtual Molecule & getMolecule();
+   virtual QueryMolecule & getQueryMolecule ();
    virtual BaseMolecule & getBaseMolecule ();
 
-   Molecule           max_scaffold;
-   ObjArray<Molecule> all_scaffolds;
+   QueryMolecule           max_scaffold;
+   ObjArray<QueryMolecule> all_scaffolds;
 };
 
 #endif
