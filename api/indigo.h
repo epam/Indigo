@@ -290,6 +290,8 @@ CEXPORT int indigoCountImplicitHydrogens (int item);
 // you should not free() it, but rather memcpy() it if you want to keep it.
 CEXPORT float * indigoXYZ (int atom);
 
+CEXPORT int indigoSetXYZ (int atom, float x, float y, float z);
+
 CEXPORT int indigoCountSuperatoms (int molecule);
 CEXPORT int indigoCountDataSGroups (int molecule);
 CEXPORT int indigoCountRepeatingUnits (int molecule);

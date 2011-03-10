@@ -1271,6 +1271,20 @@ CEXPORT float * indigoXYZ (int atom)
    INDIGO_END(0)
 }
 
+CEXPORT int indigoSetXYZ (int atom, float x, float y, float z)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      BaseMolecule &mol = ia.mol;
+
+      Vec3f &pos = mol.getAtomXyz(ia.idx);
+      pos.set(x, y, z);
+      return 1;
+   }
+   INDIGO_END(0)
+}
+
 CEXPORT int indigoResetCharge (int atom)
 {
    INDIGO_BEGIN

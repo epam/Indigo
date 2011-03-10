@@ -83,6 +83,10 @@ class Indigo:
         raise IndigoException(Indigo._lib.indigoGetLastError())
       return [xyz[0], xyz[1], xyz[2]]
 
+    def setXYZ (self, x, y, z):
+      self.dispatcher._setSID()
+      self.dispatcher._checkResult(Indigo._lib.indigoSetXYZ(self.id, x, y, z))
+
     def alignAtoms (self, atom_ids, desired_xyz):
       self.dispatcher._setSID()
       if len(atom_ids) * 3 != len(desired_xyz):
@@ -195,6 +199,8 @@ class Indigo:
     Indigo._lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
     Indigo._lib.indigoXYZ.restype = POINTER(c_float)
     Indigo._lib.indigoXYZ.argtypes = [c_int]
+    Indigo._lib.indigoSetXYZ.restype = c_int
+    Indigo._lib.indigoSetXYZ.argtypes = [c_int, c_float, c_float, c_float]
     Indigo._lib.indigoAlignAtoms.restype = c_float
     Indigo._lib.indigoAlignAtoms.argtypes = [c_int, c_int, POINTER(c_int), POINTER(c_float)]
     Indigo._lib.indigoToString.restype = c_char_p
