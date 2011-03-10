@@ -14,6 +14,7 @@
 
 #include "indigo_match.h"
 #include "indigo_molecule.h"
+#include "indigo_reaction.h"
 #include "reaction/reaction_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "reaction/reaction_exact_matcher.h"
@@ -25,7 +26,7 @@ CEXPORT int indigoExactMatch (int handler1, int handler2)
       IndigoObject &obj1 = self.getObject(handler1);
       IndigoObject &obj2 = self.getObject(handler2);
 
-      if (obj1.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj1))
       {
          Molecule &mol1 = obj1.getMolecule();
          Molecule &mol2 = obj2.getMolecule();
@@ -36,7 +37,7 @@ CEXPORT int indigoExactMatch (int handler1, int handler2)
             return 0;
          return 1;
       }
-      else if (obj1.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj1))
       {
          Reaction &rxn1 = obj1.getReaction();
          Reaction &rxn2 = obj2.getReaction();

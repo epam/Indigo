@@ -150,9 +150,6 @@ public:
 
    virtual void remove ();
 
-   bool isBaseMolecule ();
-   bool isBaseReaction ();
-
    void copyProperties (RedBlackStringObjMap< Array<char> > &other);
 
 protected:

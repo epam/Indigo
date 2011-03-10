@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "indigo_molecule.h"
+#include "indigo_reaction.h"
 #include "reaction/reaction.h"
 #include "molecule/molecule_automorphism_search.h"
 
@@ -141,9 +142,9 @@ CEXPORT int indigoClearStereocenters (int object)
    {
       IndigoObject &obj = self.getObject(object);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
          obj.getBaseMolecule().stereocenters.clear();
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          BaseReaction &rxn = obj.getBaseReaction();
          int i;
@@ -164,9 +165,9 @@ CEXPORT int indigoClearCisTrans (int object)
    {
       IndigoObject &obj = self.getObject(object);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
          obj.getBaseMolecule().cis_trans.clear();
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          BaseReaction &rxn = obj.getBaseReaction();
          int i;
@@ -242,9 +243,9 @@ CEXPORT int indigoResetSymmetricCisTrans (int handle)
    {
       IndigoObject &obj = self.getObject(handle);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
          return _resetSymmetricCisTrans(obj.getMolecule());
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          Reaction &rxn = obj.getReaction();
          int i, sum = 0;
@@ -264,9 +265,9 @@ CEXPORT int indigoMarkEitherCisTrans (int handle)
    {
       IndigoObject &obj = self.getObject(handle);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
          return _markEitherCisTrans(obj.getMolecule());
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          Reaction &rxn = obj.getReaction();
          int i, sum = 0;

@@ -19,6 +19,8 @@
 #include "reaction/reaction_fingerprint.h"
 #include "base_cpp/auto_ptr.h"
 #include "reaction/reaction.h"
+#include "indigo_molecule.h"
+#include "indigo_reaction.h"
 
 IndigoFingerprint::IndigoFingerprint () : IndigoObject(FINGERPRINT)
 {
@@ -116,7 +118,7 @@ CEXPORT int indigoFingerprint (int item, const char *type)
    {
       IndigoObject &obj = self.getObject(item);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
       {
          BaseMolecule &mol = obj.getBaseMolecule();
          MoleculeFingerprintBuilder builder(mol, self.fp_params);
@@ -127,7 +129,7 @@ CEXPORT int indigoFingerprint (int item, const char *type)
          fp->bytes.copy(builder.get(), self.fp_params.fingerprintSize());
          return self.addObject(fp.release());
       }
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          BaseReaction &rxn = obj.getBaseReaction();
          ReactionFingerprintBuilder builder(rxn, self.fp_params);
@@ -223,7 +225,7 @@ CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics)
       IndigoObject &obj1 = self.getObject(item1);
       IndigoObject &obj2 = self.getObject(item2);
 
-      if (self.getObject(item1).isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj1))
       {
          Molecule &mol1 = obj1.getMolecule();
          Molecule &mol2 = obj2.getMolecule();
@@ -240,7 +242,7 @@ CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics)
          return _indigoSimilarity2(builder1.getSim(), builder2.getSim(),
                                    self.fp_params.fingerprintSizeSim(), metrics);
       }
-      else if (self.getObject(item1).isBaseReaction())
+      else if (IndigoBaseReaction::is(obj1))
       {
          Reaction &rxn1 = obj1.getReaction();
          Reaction &rxn2 = obj2.getReaction();

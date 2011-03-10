@@ -24,6 +24,8 @@
 #include "reaction/query_reaction.h"
 #include "option_manager.h"
 #include "indigo-renderer.h"
+#include "indigo_molecule.h"
+#include "indigo_reaction.h"
 
 using namespace indigo;
 
@@ -294,7 +296,7 @@ CEXPORT int indigoRender (int object, int output)
       RenderParams& rp = indigoRendererGetInstance().renderParams;
       IndigoObject &obj = self.getObject(object);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
       {
          Array<int> mapping;
          if (obj.getBaseMolecule().isQueryMolecule())
@@ -304,7 +306,7 @@ CEXPORT int indigoRender (int object, int output)
          rp.mol->clone(self.getObject(object).getBaseMolecule(), &mapping, 0);
          rp.rmode = RENDER_MOL;
       }
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          if (obj.getBaseReaction().isQueryReaction())
             rp.rxn.reset(new QueryReaction());
@@ -341,7 +343,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
       rp.clearArrays();
 
       PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
-      if (objs[0]->isBaseMolecule())
+      if (IndigoBaseMolecule::is(*objs[0]))
       {
          for (int i = 0; i < objs.size(); ++i) {
             if (objs[i]->getBaseMolecule().isQueryMolecule())
@@ -357,7 +359,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             rp.rmode = RENDER_MOL;
          }
       }
-      else if (objs[0]->isBaseReaction())
+      else if (IndigoBaseReaction::is(*objs[0]))
       {
          for (int i = 0; i < objs.size(); ++i) {
             if (objs[i]->getBaseReaction().isQueryReaction())

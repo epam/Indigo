@@ -51,9 +51,10 @@ CEXPORT int indigoAromatize (int object)
       IndigoObject &obj = self.getObject(object);
 
       bool ret;
-      if (obj.isBaseMolecule())
+
+      if (IndigoBaseMolecule::is(obj))
          ret = obj.getBaseMolecule().aromatize();
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
          ret = obj.getBaseReaction().aromatize();
       else
          throw IndigoError("Only molecules and reactions can be aromatized");
@@ -70,9 +71,9 @@ CEXPORT int indigoDearomatize (int object)
    {
       IndigoObject &obj = self.getObject(object);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
          obj.getBaseMolecule().dearomatize();
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
          obj.getBaseReaction().dearomatize();
       else
          throw IndigoError("Only molecules and reactions can be dearomatized");
@@ -122,7 +123,7 @@ CEXPORT const char * indigoCheckBadValence (int handle)
    {
       IndigoObject &obj = self.getObject(handle);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
       {
          BaseMolecule &bmol = obj.getBaseMolecule();
 
@@ -149,7 +150,7 @@ CEXPORT const char * indigoCheckBadValence (int handle)
             return self.tmp_string.ptr();
          }
       }
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          BaseReaction &brxn = obj.getBaseReaction();
 
@@ -209,7 +210,7 @@ CEXPORT const char * indigoCheckAmbiguousH (int handle)
    {
       IndigoObject &obj = self.getObject(handle);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
       {
          BaseMolecule &bmol = obj.getBaseMolecule();
 
@@ -228,7 +229,7 @@ CEXPORT const char * indigoCheckAmbiguousH (int handle)
             return self.tmp_string.ptr();
          }
       }
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          BaseReaction &brxn = obj.getBaseReaction();
 
@@ -265,7 +266,8 @@ CEXPORT const char * indigoSmiles (int item)
       IndigoObject &obj = self.getObject(item);
 
       ArrayOutput output(self.tmp_string);
-      if (obj.isBaseMolecule())
+
+      if (IndigoBaseMolecule::is(obj))
       {
          BaseMolecule &mol = obj.getBaseMolecule();
          
@@ -276,7 +278,7 @@ CEXPORT const char * indigoSmiles (int item)
          else
             saver.saveMolecule(mol.asMolecule());
       }
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          BaseReaction &rxn = obj.getBaseReaction();
          
@@ -304,7 +306,8 @@ CEXPORT int indigoSaveMDLCT (int item, int output)
       QS_DEF(Array<char>, buf);
       ArrayOutput out(buf);
 
-      if (obj.isBaseMolecule())
+
+      if (IndigoBaseMolecule::is(obj))
       {
          BaseMolecule &mol = obj.getBaseMolecule();
 
@@ -315,7 +318,7 @@ CEXPORT int indigoSaveMDLCT (int item, int output)
          else
             saver.saveMolecule(mol.asMolecule());
       }
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          BaseReaction &rxn = obj.getBaseReaction();
          RxnfileSaver saver(out);
@@ -350,12 +353,12 @@ CEXPORT int indigoUnfoldHydrogens (int item)
    {
       IndigoObject &obj = self.getObject(item);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
       {
          QS_DEF(Array<int>, markers);
          obj.getMolecule().unfoldHydrogens(&markers, -1);
       }
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          int i;
          Reaction &rxn = obj.getReaction();
@@ -393,9 +396,9 @@ CEXPORT int indigoFoldHydrogens (int item)
    {
       IndigoObject &obj = self.getObject(item);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
          _removeHydrogens(obj.getMolecule());
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          int i;
          Reaction &rxn = obj.getReaction();
@@ -417,9 +420,9 @@ CEXPORT int indigoSetName (int handle, const char *name)
    {
       IndigoObject &obj = self.getObject(handle);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
          obj.getBaseMolecule().name.readString(name, true);
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
          obj.getBaseReaction().name.readString(name, true);
       else
          throw IndigoError("The object provided is neither a molecule, nor a reaction");
@@ -530,14 +533,14 @@ CEXPORT int indigoRdfAppend (int output, int item)
       IndigoObject &obj = self.getObject(item);
       Output &out = IndigoOutput::get(self.getObject(output));
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
       {
          out.writeStringCR("$MFMT");
          MolfileSaver saver(out);
          self.initMolfileSaver(saver);
          saver.saveBaseMolecule(obj.getBaseMolecule());
       }
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          out.writeStringCR("$RFMT");
          RxnfileSaver saver(out);
@@ -594,7 +597,7 @@ CEXPORT int indigoCmlAppend (int output, int item)
       Output &out = IndigoOutput::get(self.getObject(output));
       IndigoObject &obj = self.getObject(item);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
       {
          MoleculeCmlSaver saver(out);
          saver.skip_cml_tag = true;
@@ -676,7 +679,7 @@ CEXPORT int indigoSerialize (int item, char **buf, int *size)
       IndigoObject &obj = self.getObject(item);
       ArrayOutput out(self.tmp_string);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
       {
          Molecule &mol = obj.getMolecule();
 
@@ -684,7 +687,7 @@ CEXPORT int indigoSerialize (int item, char **buf, int *size)
          saver.save_xyz = mol.have_xyz;
          saver.saveMolecule(mol);
       }
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          Reaction &rxn = obj.getReaction();
          IcrSaver saver(out);
@@ -824,9 +827,9 @@ CEXPORT int indigoClear (int item)
 
          array.objects.clear();
       }
-      else if (obj.isBaseMolecule())
+      else if (IndigoBaseMolecule::is(obj))
          obj.getBaseMolecule().clear();
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
          obj.getBaseReaction().clear();
       else
          throw IndigoError("indigoClear(): do not know how to clear %s", obj.debugInfo());
@@ -879,11 +882,11 @@ CEXPORT int indigoUnhighlight (int item)
 
          ib.mol.unhighlightBond(ib.idx);
       }
-      else if (obj.isBaseMolecule())
+      else if (IndigoBaseMolecule::is(obj))
       {
          obj.getBaseMolecule().unhighlightAll();
       }
-      else if (obj.isBaseReaction())
+      else if (IndigoBaseReaction::is(obj))
       {
          BaseReaction &reaction = obj.getBaseReaction();
          int i;

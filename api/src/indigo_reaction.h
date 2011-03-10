@@ -33,6 +33,8 @@ public:
 
    virtual RedBlackStringObjMap< Array<char> > * getProperties ();
 
+   static bool is (IndigoObject &obj);
+
    RedBlackStringObjMap< Array<char> > properties;
 };
 

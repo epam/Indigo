@@ -123,24 +123,6 @@ int IndigoObject::getIndex ()
    throw IndigoError("%s does not have an index", debugInfo());
 }
 
-bool IndigoObject::isBaseMolecule ()
-{
-   if (type == MOLECULE || type == QUERY_MOLECULE ||
-       type == REACTION_MOLECULE || type == SCAFFOLD || 
-       type == RGROUP_FRAGMENT || type == RDF_MOLECULE || type == SMILES_MOLECULE || type == CML_MOLECULE)
-      return true;
-   
-   return false;
-}
-
-bool IndigoObject::isBaseReaction ()
-{
-   if (type == REACTION || type == QUERY_REACTION || type == RDF_REACTION || type == SMILES_REACTION)
-      return true;
-
-   return false;
-}
-
 IndigoObject * IndigoObject::clone ()
 {
    throw IndigoError("%s is not cloneable", debugInfo());

@@ -67,6 +67,21 @@ IndigoMolecule::IndigoMolecule () : IndigoBaseMolecule(MOLECULE)
 {
 }
 
+bool IndigoBaseMolecule::is (IndigoObject &object)
+{
+   int type = object.type;
+
+   if (type == MOLECULE || type == QUERY_MOLECULE ||
+       type == REACTION_MOLECULE || type == SCAFFOLD ||
+       type == RGROUP_FRAGMENT || type == RDF_MOLECULE || type == SMILES_MOLECULE || type == CML_MOLECULE)
+      return true;
+
+   if (type == ARRAY_ELEMENT)
+      return is(((IndigoArrayElement &)object).get());
+
+   return false;
+}
+
 IndigoMolecule::~IndigoMolecule ()
 {
 }
@@ -1022,7 +1037,7 @@ CEXPORT int indigoIterateRGroups (int molecule)
    {
       IndigoObject &obj = self.getObject(molecule);
 
-      if (obj.isBaseMolecule())
+      if (IndigoBaseMolecule::is(obj))
       {
          QueryMolecule &mol = obj.getQueryMolecule();
 
@@ -2981,7 +2996,7 @@ CEXPORT int indigoCountImplicitHydrogens (int item)
 
          return ia.mol.asMolecule().getImplicitH(ia.idx);
       }
-      else if (obj.isBaseMolecule())
+      else if (IndigoBaseMolecule::is(obj))
       {
          Molecule &mol = obj.getMolecule();
          int i, sum = 0;

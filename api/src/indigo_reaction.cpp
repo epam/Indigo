@@ -20,6 +20,7 @@
 #include "base_cpp/output.h"
 #include "reaction/reaction_automapper.h"
 #include "base_cpp/auto_ptr.h"
+#include "indigo_array.h"
 
 IndigoBaseReaction::IndigoBaseReaction (int type_) : IndigoObject(type_)
 {
@@ -28,6 +29,21 @@ IndigoBaseReaction::IndigoBaseReaction (int type_) : IndigoObject(type_)
 IndigoBaseReaction::~IndigoBaseReaction ()
 {
 }
+
+bool IndigoBaseReaction::is (IndigoObject &obj)
+{
+   int type = obj.type;
+
+   if (type == REACTION || type == QUERY_REACTION || type == RDF_REACTION || type == SMILES_REACTION)
+      return true;
+
+   if (type == ARRAY_ELEMENT)
+      return is(((IndigoArrayElement &)obj).get());
+
+   return false;
+}
+
+
 
 RedBlackStringObjMap< Array<char> > * IndigoBaseReaction::getProperties ()
 {
@@ -381,7 +397,7 @@ CEXPORT int indigoCountMolecules (int handle)
    {
       IndigoObject &obj = self.getObject(handle);
 
-      if (obj.isBaseReaction())
+      if (IndigoBaseReaction::is(obj))
          return obj.getBaseReaction().count();
       
       throw IndigoError("can not count molecules of %s", obj.debugInfo());

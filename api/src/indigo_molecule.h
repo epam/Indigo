@@ -38,6 +38,8 @@ public:
 
    const char * debugInfo ();
 
+   static bool is (IndigoObject &object);
+
    RedBlackStringObjMap< Array<char> > properties;
 };
 

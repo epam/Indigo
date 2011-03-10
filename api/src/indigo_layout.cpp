@@ -16,20 +16,22 @@
 #include "layout/reaction_layout.h"
 #include "layout/molecule_layout.h"
 #include "reaction/base_reaction.h"
+#include "indigo_molecule.h"
+#include "indigo_reaction.h"
 
 CEXPORT int indigoLayout (int object)
 {
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(object);
-      if (obj.isBaseMolecule()) {
+      if (IndigoBaseMolecule::is(obj)) {
          BaseMolecule &mol = obj.getBaseMolecule();
          MoleculeLayout ml(mol);
          ml.max_iterations = self.layout_max_iterations;
          ml.bond_length = 1.6f;
          ml.make();
          mol.stereocenters.markBonds();
-      } else if (obj.isBaseReaction()) {
+      } else if (IndigoBaseReaction::is(obj)) {
          BaseReaction &rxn = obj.getBaseReaction();
          ReactionLayout rl(rxn);
          rl.max_iterations = self.layout_max_iterations;
