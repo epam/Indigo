@@ -21,6 +21,7 @@
 #include "reaction/reaction.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include "base_cpp/scanner.h"
 
 IndigoFingerprint::IndigoFingerprint () : IndigoObject(FINGERPRINT)
 {
@@ -183,7 +184,11 @@ float _indigoSimilarity2 (const byte *arr1, const byte *arr2, int size, const ch
 
       if (*params != 0)
       {
-         if (sscanf(params, "%f %f", &alpha, &beta) != 2)
+         BufferScanner scanner(params);
+         if (!scanner.tryReadFloat(alpha))
+            throw IndigoError("unknown metrics: %s", metrics);
+         scanner.skipSpace();
+         if (!scanner.tryReadFloat(beta))
             throw IndigoError("unknown metrics: %s", metrics);
       }
       if (common_ones == 0)

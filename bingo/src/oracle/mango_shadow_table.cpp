@@ -87,9 +87,11 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
 
    _main_table_statement->append(
       // "INSERT /*+ NOLOGGING */ "
-      "INTO %s VALUES('%s', %d, %d, '%s', %s, %s, %f, %d%s)\n",
-      _table_name.ptr(), rowid, blockno, offset, gross, cmf.name, xyz.name, 
-      molecular_mass, fragments_count, counters);
+      "INTO %s VALUES('%s', %d, %d, '%s', %s, %s, %d + %d / 10000, %d%s)\n",
+      _table_name.ptr(), rowid, blockno, offset, gross, cmf.name, xyz.name,
+      // write molecular mass in such a way to avoid locale problems
+      (int)molecular_mass, (int)((molecular_mass - (int)molecular_mass) * 10000),
+           fragments_count, counters);
 
    _main_table_statement_count++;
    

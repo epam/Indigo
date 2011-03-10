@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "option_manager.h"
+#include "base_cpp/scanner.h"
 
 ThreadSafeStaticObj<OptionManager> indigo_option_manager;
 
@@ -127,14 +128,32 @@ int OptionManager::_parseBool (const char *str, int &val)
 
 int OptionManager::_parseFloat (const char *str, float& val)
 {
-   if (sscanf(str, "%f", &val) != 1)
+   BufferScanner scanner(str);
+   if (!scanner.tryReadFloat(val))
       return -1;
    return 1;
 }
 
 int OptionManager::_parseColor (const char *str, float& r, float& g, float& b)
 {
-   if (sscanf(str, "%f,%f,%f", &r, &g, &b) != 3)
+   BufferScanner scanner(str);
+   if (!scanner.tryReadFloat(r))
+      return -1;
+   scanner.skipSpace();
+   if (scanner.isEOF())
+      return -1;
+   if (scanner.readChar() != ',')
+      return -1;
+   scanner.skipSpace();
+   if (!scanner.tryReadFloat(g))
+      return -1;
+   scanner.skipSpace();
+   if (scanner.isEOF())
+      return -1;
+   if (scanner.readChar() != ',')
+      return -1;
+   scanner.skipSpace();
+   if (!scanner.tryReadFloat(b))
       return -1;
    return 1;
 }

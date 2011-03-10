@@ -20,6 +20,7 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
+#include "base_cpp/locale_guard.h"
 
 using namespace indigo;
 
@@ -54,6 +55,8 @@ void MolfileSaver::saveQueryMolecule (QueryMolecule &mol)
 
 void MolfileSaver::_saveMolecule (BaseMolecule &mol, bool query)
 {
+   LocaleGuard locale_guard;
+   
    QueryMolecule *qmol = 0;
 
    if (query)

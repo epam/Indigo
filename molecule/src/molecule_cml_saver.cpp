@@ -16,6 +16,7 @@
 #include "molecule/molecule_cml_saver.h"
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
+#include "base_cpp/locale_guard.h"
 
 using namespace indigo;
 
@@ -26,6 +27,7 @@ MoleculeCmlSaver::MoleculeCmlSaver (Output &output) : _output(output)
 
 void MoleculeCmlSaver::saveMolecule (Molecule &mol)
 {
+   LocaleGuard locale_guard;
    int i;
 
    _mol = &mol;

@@ -51,7 +51,11 @@ MangoSimilarity::Metrics MangoSimilarity::whichMetrics (const char *metrics_str)
       {
          // Try to parse alpha and beta
          const char *params = metrics_str + strlen(TVERSKY);
-         if (sscanf(params, "%f %f", &metrics.tversky_alpha, &metrics.tversky_beta) != 2)
+         BufferScanner scanner(params);
+         if (!scanner.tryReadFloat(metrics.tversky_alpha))
+            throw Error("unknown metrics: %s", metrics_str);
+         scanner.skipSpace();
+         if (!scanner.tryReadFloat(metrics.tversky_beta))
             throw Error("unknown metrics: %s", metrics_str);
       }
       return metrics;

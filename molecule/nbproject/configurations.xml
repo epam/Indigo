@@ -11,6 +11,8 @@
         <itemPath>../common/base_cpp/bitoutworker.h</itemPath>
         <itemPath>../common/base_cpp/gray_codes.cpp</itemPath>
         <itemPath>../common/base_cpp/gray_codes.h</itemPath>
+        <itemPath>../common/base_cpp/locale_guard.cpp</itemPath>
+        <itemPath>../common/base_cpp/locale_guard.h</itemPath>
         <itemPath>../common/base_cpp/scanner.cpp</itemPath>
         <itemPath>../common/base_cpp/scanner.h</itemPath>
       </logicalFolder>

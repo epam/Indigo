@@ -332,15 +332,18 @@ void MangoShadowFetch::prepareMass (OracleEnv &env)
    _fetch_type = _MASS;
    _env.reset(new OracleEnv(env.ctx(), env.logger()));
    _statement.reset(new OracleStatement(_env.ref()));
-   _statement->append("SELECT mol_rowid FROM %s where mass >= %f and mass <= %f",
-      _table_name.ptr(), instance.bottom, instance.top);
+   // write molecular mass in such a way to avoid locale problems
+   _statement->append("SELECT mol_rowid FROM %s where mass >= %d + %d / 10000 and mass <= %d + %d / 10000",
+      _table_name.ptr(), (int)instance.bottom, (int)((instance.bottom - (int)instance.bottom) * 10000),
+                         (int)instance.top, (int)((instance.top - (int)instance.top) * 10000));
 
    _statement->prepare();
    _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
 
    ArrayOutput output(_counting_select);
-   output.printf("SELECT COUNT(*) FROM %s WHERE mass >= %f and mass <= %f",
-      _table_name.ptr(), instance.bottom, instance.top);
+   _statement->append("SELECT COUNT(*) FROM %s where mass >= %d + %d / 10000 and mass <= %d + %d / 10000",
+      _table_name.ptr(), (int)instance.bottom, (int)((instance.bottom - (int)instance.bottom) * 10000),
+                         (int)instance.top, (int)((instance.top - (int)instance.top) * 10000));
 }
 
 void MangoShadowFetch::fetch (OracleEnv &env, int maxrows)

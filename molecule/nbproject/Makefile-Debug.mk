@@ -61,6 +61,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/380065930/bitoutworker.o \
 	${OBJECTDIR}/src/query_molecule.o \
 	${OBJECTDIR}/src/smiles_saver.o \
+	${OBJECTDIR}/_ext/380065930/locale_guard.o \
 	${OBJECTDIR}/src/molecule_rgroups.o \
 	${OBJECTDIR}/src/molecule_automorphism_search.o \
 	${OBJECTDIR}/src/molecule_tautomer_utils.o \
@@ -258,6 +259,11 @@ ${OBJECTDIR}/src/smiles_saver.o: src/smiles_saver.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/smiles_saver.o src/smiles_saver.cpp
+
+${OBJECTDIR}/_ext/380065930/locale_guard.o: ../common/base_cpp/locale_guard.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/380065930
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/380065930/locale_guard.o ../common/base_cpp/locale_guard.cpp
 
 ${OBJECTDIR}/src/molecule_rgroups.o: src/molecule_rgroups.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
