@@ -1923,7 +1923,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
                   if (cnt > 0)
                      totalwdt += offset;
                   float shift = (script == SUB) ? downshift : ((script == SUPER) ? upshift : 0);
-                  item.bbp.set(xpos + totalwdt, ad.ypos + ad.height - item.bbsz.y + shift * ad.height);
+                  item.bbp.set(xpos + totalwdt, ad.ypos + ad.height - item.relpos.y + shift * ad.height);
                   _expandBoundRect(ad, item);
                   totalwdt += item.bbsz.x;
                }
