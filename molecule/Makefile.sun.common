@@ -11,6 +11,7 @@ OBJS_libmolecule.a =  \
 	$(TARGETDIR_libmolecule.a)/bitoutworker.o \
 	$(TARGETDIR_libmolecule.a)/gray_codes.o \
 	$(TARGETDIR_libmolecule.a)/scanner.o \
+	$(TARGETDIR_libmolecule.a)/locale_guard.o \
 	$(TARGETDIR_libmolecule.a)/gzip_output.o \
 	$(TARGETDIR_libmolecule.a)/gzip_scanner.o \
 	$(TARGETDIR_libmolecule.a)/lzw_decoder.o \
@@ -87,6 +88,9 @@ $(TARGETDIR_libmolecule.a)/gray_codes.o: $(TARGETDIR_libmolecule.a) ../common/ba
 
 $(TARGETDIR_libmolecule.a)/scanner.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/scanner.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/scanner.cpp
+
+$(TARGETDIR_libmolecule.a)/locale_guard.o: $(TARGETDIR_libmolecule.a) ../common/base_cpp/locale_guard.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/base_cpp/locale_guard.cpp
 
 $(TARGETDIR_libmolecule.a)/gzip_output.o: $(TARGETDIR_libmolecule.a) ../common/gzip/gzip_output.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ ../common/gzip/gzip_output.cpp
@@ -258,6 +262,7 @@ clean:
 		$(TARGETDIR_libmolecule.a)/bitoutworker.o \
 		$(TARGETDIR_libmolecule.a)/gray_codes.o \
 		$(TARGETDIR_libmolecule.a)/scanner.o \
+		$(TARGETDIR_libmolecule.a)/locale_guard.o \
 		$(TARGETDIR_libmolecule.a)/gzip_output.o \
 		$(TARGETDIR_libmolecule.a)/gzip_scanner.o \
 		$(TARGETDIR_libmolecule.a)/lzw_decoder.o \
