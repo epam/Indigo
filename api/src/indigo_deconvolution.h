@@ -46,17 +46,12 @@ public:
 
    void addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props);
 
-   void makeRGroups (Molecule& scaffold);
+   void makeRGroups (QueryMolecule& scaffold);
 
-   Molecule& getDecomposedScaffold();
+   QueryMolecule& getDecomposedScaffold();
    ObjArray<Item>& getItems ();
 
-   int flags;
-
-   static bool matchBonds (Graph &g1, Graph &g2, int i, int j, void* userdata);
-   static bool matchAtoms (Graph &g1, Graph &g2, const int *core_sub, int i, int j, void* userdata);
-
-   ObjArray<Molecule> scaffolds;
+   ObjArray<QueryMolecule> scaffolds;
 
    int (*cbEmbedding) (const int *sub_vert_map, const int *sub_edge_map, const void* info, void* userdata);
    void *embeddingUserdata;
@@ -65,13 +60,12 @@ public:
 private:
    class EmbContext {
    public:
-       EmbContext(int flag):flags(flag) {}
+       EmbContext(){}
        Array<int> visitedAtoms;
        Array<int> lastMapping;
        Array<int> lastInvMapping;
        ObjArray< Array<int> > attachmentOrder;
        ObjArray< Array<int> > attachmentIndex;
-       int flags;
 
        int getRgroupNumber() const { return attachmentIndex.size()-1;}
 
@@ -88,8 +82,8 @@ private:
 
    bool _aromatic;
 
-   Molecule _scaffold;
-   Molecule _fullScaffold;
+   QueryMolecule _scaffold;
+   QueryMolecule _fullScaffold;
    ObjArray<Item> _deconvolutionItems;
 
    DEF_ERROR("R-Group deconvolution");

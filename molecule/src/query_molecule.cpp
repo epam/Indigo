@@ -722,7 +722,8 @@ void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> 
 
          if (atom_idx == -1)
             continue;
-
+         if (mol._rsite_attachment_points.size() <= vertices[i])
+            continue;
          Array<int> &ap = mol._rsite_attachment_points[vertices[i]];
          int j;
 
