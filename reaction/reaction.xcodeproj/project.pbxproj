@@ -254,6 +254,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					..,
 					../common,
@@ -298,7 +299,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					..,
 					../common,
@@ -323,6 +324,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					..,
 					../common,
