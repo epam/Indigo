@@ -2586,7 +2586,7 @@ CEXPORT int indigoAddAtom (int molecule, const char *symbol)
    {
       Molecule &mol = self.getObject(molecule).getMolecule();
 
-      int elem = Element::fromString(symbol);
+      int elem = Element::fromString2(symbol);
       int idx;
 
       if (elem > 0)

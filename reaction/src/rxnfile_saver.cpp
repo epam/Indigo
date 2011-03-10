@@ -129,7 +129,7 @@ void RxnfileSaver::_writeRxnHeader(BaseReaction &reaction, int reactantSize, int
       _output.printfCR("%s", reaction.name.ptr());
    else
       _output.writeCR();
-   _output.printfCR("  -BINGO- %02d%02d%02d%02d%02d", lt.tm_mon + 1, lt.tm_mday,
+   _output.printfCR(" -INDIGO- %02d%02d%02d%02d%02d", lt.tm_mon + 1, lt.tm_mday,
       lt.tm_year % 100, lt.tm_hour, lt.tm_min);
    _output.writeCR();
 

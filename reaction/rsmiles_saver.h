@@ -56,6 +56,7 @@ protected:
    TL_CP_DECL(Array<_Idx>, _written_bonds);
    TL_CP_DECL(Array<int>, _ncomp);
 
+   void _writeMolecule (int i);
    void _writeFragmentsInfo ();
    void _writeStereogroups ();
    void _writeRadicals ();

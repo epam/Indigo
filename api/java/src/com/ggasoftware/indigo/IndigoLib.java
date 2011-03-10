@@ -91,12 +91,15 @@ public interface IndigoLib extends Library
 
    int indigoAddReactant (int reaction, int molecule);
    int indigoAddProduct  (int reaction, int molecule);
+   int indigoAddCatalyst (int reaction, int molecule);
 
    int indigoCountReactants (int reaction);
    int indigoCountProducts  (int reaction);
+   int indigoCountCatalysts  (int reaction);
    int indigoCountMolecules (int reaction);
    int indigoIterateReactants (int reaction);
    int indigoIterateProducts  (int reaction);
+   int indigoIterateCatalysts (int reaction);
    int indigoIterateMolecules (int reaction);
 
    int indigoSaveRxnfile (int reaction, int output);

@@ -96,6 +96,7 @@ public:
    {
       REACTANTS,
       PRODUCTS,
+      CATALYSTS,
       MOLECULES
    };
 

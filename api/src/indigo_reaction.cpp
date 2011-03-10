@@ -162,6 +162,8 @@ int IndigoReactionIter::_begin ()
       return _rxn.reactantBegin();
    if (_subtype == PRODUCTS)
       return _rxn.productBegin();
+   if (_subtype == CATALYSTS)
+      return _rxn.catalystBegin();
 
    return _rxn.begin();
 }
@@ -172,6 +174,8 @@ int IndigoReactionIter::_end ()
       return _rxn.reactantEnd();
    if (_subtype == PRODUCTS)
       return _rxn.productEnd();
+   if (_subtype == CATALYSTS)
+      return _rxn.catalystEnd();
 
    return _rxn.end();
 }
@@ -182,6 +186,8 @@ int IndigoReactionIter::_next (int i)
       return _rxn.reactantNext(i);
    if (_subtype == PRODUCTS)
       return _rxn.productNext(i);
+   if (_subtype == CATALYSTS)
+      return _rxn.catalystNext(i);
 
    return _rxn.next(i);
 }
@@ -328,6 +334,11 @@ CEXPORT int indigoIterateProducts (int reaction)
    return _indigoIterateReaction(reaction, IndigoReactionIter::PRODUCTS);
 }
 
+CEXPORT int indigoIterateCatalysts (int reaction)
+{
+   return _indigoIterateReaction(reaction, IndigoReactionIter::CATALYSTS);
+}
+
 CEXPORT int indigoIterateMolecules (int reaction)
 {
    return _indigoIterateReaction(reaction, IndigoReactionIter::MOLECULES);
@@ -351,8 +362,7 @@ CEXPORT int indigoAddReactant (int reaction, int molecule)
 {
    INDIGO_BEGIN
    {
-      IndigoObject &robj = self.getObject(reaction);
-      BaseReaction &rxn = robj.getBaseReaction();
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
 
       rxn.addReactantCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
       return 1;
@@ -364,10 +374,21 @@ CEXPORT int indigoAddProduct (int reaction, int molecule)
 {
    INDIGO_BEGIN
    {
-      IndigoObject &robj = self.getObject(reaction);
-      BaseReaction &rxn = robj.getBaseReaction();
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
 
       rxn.addProductCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoAddCatalyst (int reaction, int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+
+      rxn.addCatalystCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
       return 1;
    }
    INDIGO_END(-1);
@@ -387,6 +408,15 @@ CEXPORT int indigoCountProducts (int reaction)
    INDIGO_BEGIN
    {
       return self.getObject(reaction).getBaseReaction().productsCount();
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoCountCatalysts (int reaction)
+{
+   INDIGO_BEGIN
+   {
+      return self.getObject(reaction).getBaseReaction().catalystCount();
    }
    INDIGO_END(-1);
 }

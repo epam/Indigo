@@ -99,6 +99,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(_lib.indigoAddProduct(self, molecule.self));
    }
 
+   public void addCatalyst (IndigoObject molecule)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(_lib.indigoAddCatalyst(self, molecule.self));
+   }
+
    public int countReactants ()
    {
       dispatcher.setSessionID();
@@ -109,6 +115,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(_lib.indigoCountProducts(self));
+   }
+
+   public int countCatalysts ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(_lib.indigoCountCatalysts(self));
    }
 
    public int countMolecules ()
@@ -127,6 +139,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return new IndigoObject(dispatcher, this, Indigo.checkResult(_lib.indigoIterateProducts(self)));
+   }
+
+   public IndigoObject iterateCatalysts ()
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, this, Indigo.checkResult(_lib.indigoIterateCatalysts(self)));
    }
 
    public IndigoObject iterateMolecules ()

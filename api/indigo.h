@@ -200,14 +200,18 @@ CEXPORT int indigoCreateQueryReaction (void);
 
 CEXPORT int indigoAddReactant (int reaction, int molecule);
 CEXPORT int indigoAddProduct  (int reaction, int molecule);
+CEXPORT int indigoAddCatalyst (int reaction, int molecule);
 
 CEXPORT int indigoCountReactants (int reaction);
 CEXPORT int indigoCountProducts  (int reaction);
-// Counts both reactants and products.
+CEXPORT int indigoCountCatalysts (int reaction);
+// Counts reactants, products, and catalysts.
 CEXPORT int indigoCountMolecules (int reaction);
+
 CEXPORT int indigoIterateReactants (int reaction);
 CEXPORT int indigoIterateProducts  (int reaction);
-// Returns an iterator for both reactants and products.
+CEXPORT int indigoIterateCatalysts (int reaction);
+// Returns an iterator for reactants, products, and catalysts.
 CEXPORT int indigoIterateMolecules (int reaction);
 
 CEXPORT int indigoSaveRxnfile (int reaction, int output);

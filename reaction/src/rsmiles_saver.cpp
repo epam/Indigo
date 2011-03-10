@@ -46,9 +46,45 @@ void RSmilesSaver::saveQueryReaction (QueryReaction &reaction)
    _saveReaction();
 }
 
+void RSmilesSaver::_writeMolecule (int i)
+{
+   SmilesSaver saver(_output);
+
+   saver.write_extra_info = false;
+   saver.atom_atom_mapping = _brxn->getAAMArray(i).ptr();
+
+   if (_rxn != 0)
+      saver.saveMolecule(_rxn->getMolecule(i));
+   else
+      saver.saveQueryMolecule(_qrxn->getQueryMolecule(i));
+
+   _ncomp.push(saver.writtenComponents());
+
+   const Array<int> &atoms = saver.writtenAtoms();
+   int j;
+
+   for (j = 0; j < atoms.size(); j++)
+   {
+      _Idx &idx = _written_atoms.push();
+
+      idx.mol = i;
+      idx.idx = atoms[j];
+   }
+
+   const Array<int> &bonds = saver.writtenBonds();
+
+   for (j = 0; j < bonds.size(); j++)
+   {
+      _Idx &idx = _written_bonds.push();
+
+      idx.mol = i;
+      idx.idx = bonds[j];
+   }
+}
+
 void RSmilesSaver::_saveReaction ()
 {
-   int i, j;
+   int i;
 
    _written_atoms.clear();
    _written_bonds.clear();
@@ -64,80 +100,33 @@ void RSmilesSaver::_saveReaction ()
       else
          dot = true;
 
-      SmilesSaver saver(_output);
-
-      saver.write_extra_info = false;
-      saver.atom_atom_mapping = _brxn->getAAMArray(i).ptr();
-
-      if (_rxn != 0)
-         saver.saveMolecule(_rxn->getMolecule(i));
-      else
-         saver.saveQueryMolecule(_qrxn->getQueryMolecule(i));
-
-      _ncomp.push(saver.writtenComponents());
-
-      const Array<int> &atoms = saver.writtenAtoms();
-
-      for (j = 0; j < atoms.size(); j++)
-      {
-         _Idx &idx = _written_atoms.push();
-         
-         idx.mol = _ncomp.size() - 1;
-         idx.idx = atoms[j];
-      }
-
-      const Array<int> &bonds = saver.writtenBonds();
-
-      for (j = 0; j < bonds.size(); j++)
-      {
-         _Idx &idx = _written_bonds.push();
-
-         idx.mol = _ncomp.size() - 1;
-         idx.idx = bonds[j];
-      }
+      _writeMolecule(i);
    }
 
-   _output.writeString(">>");
+   _output.writeString(">");
 
    dot = false;
+   for (i = _brxn->catalystBegin(); i != _brxn->catalystEnd(); i = _brxn->catalystNext(i))
+   {
+      if (dot)
+         _output.writeChar('.');
+      else
+         dot = true;
 
+      _writeMolecule(i);
+   }
+
+   _output.writeString(">");
+
+   dot = false;
    for (i = _brxn->productBegin(); i != _brxn->productEnd(); i = _brxn->productNext(i))
    {
       if (dot)
          _output.writeChar('.');
       else
          dot = true;
-      
-      SmilesSaver saver(_output);
 
-      saver.write_extra_info = false;
-      saver.atom_atom_mapping = _brxn->getAAMArray(i).ptr();
-      if (_rxn != 0)
-         saver.saveMolecule(_rxn->getMolecule(i));
-      else
-         saver.saveQueryMolecule(_qrxn->getQueryMolecule(i));
-
-      _ncomp.push(saver.writtenComponents());
-
-      const Array<int> &atoms = saver.writtenAtoms();
-
-      for (j = 0; j < atoms.size(); j++)
-      {
-         _Idx &idx = _written_atoms.push();
-
-         idx.mol = _ncomp.size() - 1;
-         idx.idx = atoms[j];
-      }
-
-      const Array<int> &bonds = saver.writtenBonds();
-
-      for (j = 0; j < bonds.size(); j++)
-      {
-         _Idx &idx = _written_bonds.push();
-
-         idx.mol = _ncomp.size() - 1;
-         idx.idx = bonds[j];
-      }
+      _writeMolecule(i);
    }
 
    _writeFragmentsInfo();
