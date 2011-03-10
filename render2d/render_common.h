@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -42,26 +42,26 @@ enum FONT_SIZE {FONT_SIZE_LABEL=0, FONT_SIZE_ATTR, FONT_SIZE_RGROUP_LOGIC, FONT_
 enum COMMENT_POS {COMMENT_POS_TOP, COMMENT_POS_BOTTOM};
 enum HYDRO_POS {HYDRO_POS_RIGHT, HYDRO_POS_LEFT, HYDRO_POS_UP, HYDRO_POS_DOWN};
 
-// cos(a) to cos(a/2) 
+// cos(a) to cos(a/2)
 double cos2c (const double cs);
-// cos(a) to sin(a/2) 
+// cos(a) to sin(a/2)
 double sin2c (const double cs);
-// cos(a) to tg(a/2) 
+// cos(a) to tg(a/2)
 double tg2c (const double cs);
-// cos(a) to ctg(a/2) 
-double ctg2c (const double cs); 
+// cos(a) to ctg(a/2)
+double ctg2c (const double cs);
 
 struct RenderItem {
    enum TYPE {
       RIT_NULL = 0,
-      RIT_LABEL, 
-      RIT_PSEUDO, 
-      RIT_HYDROGEN, 
-      RIT_HYDROINDEX, 
+      RIT_LABEL,
+      RIT_PSEUDO,
+      RIT_HYDROGEN,
+      RIT_HYDROINDEX,
       RIT_ISOTOPE,
-      RIT_CHARGESIGN, 
-      RIT_CHARGEVAL, 
-      RIT_RADICAL, 
+      RIT_CHARGESIGN,
+      RIT_CHARGEVAL,
+      RIT_RADICAL,
       RIT_STEREOGROUP,
       RIT_VALENCE,
       RIT_AAM,
@@ -169,7 +169,7 @@ struct BondEnd {
 
    // these are bond end ids in the _data.bondend array, NOT neighbor indices in the molecule!
    int rnei;
-   int lnei; 
+   int lnei;
 
    float rang;
    float lcos;
@@ -188,7 +188,7 @@ private:
    BondEnd (const BondEnd& be);
 };
 
-struct BondDescr : public Edge {  
+struct BondDescr : public Edge {
    BondDescr ();
 
    DEF_ERROR("molrender bond description");
@@ -196,7 +196,7 @@ struct BondDescr : public Edge {
    void clear ();
 
    int getBondEnd (int aid) const;
-         
+
    Vec2f norm, dir, vb, ve, center;
    float thickness;
    float bahs, eahs;
@@ -257,7 +257,7 @@ private:
 
 class RenderSettings {
 public:
-   RenderSettings ();   
+   RenderSettings ();
    void init (float sf);
 
    TL_CP_DECL(Array<double>, bondDashAromatic);
@@ -312,7 +312,7 @@ private:
 struct CanvasOptions {
    CanvasOptions ();
    void clear ();
-   
+
    int width;
    int height;
    int xOffset;
@@ -325,7 +325,7 @@ struct CanvasOptions {
    int commentOffset;
    int titleOffset;
    Array<char> comment;
-   Array<char> titleProp;  
+   Array<char> titleProp;
    COMMENT_POS commentPos;
    float commentAlign;
    float titleAlign;

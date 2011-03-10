@@ -249,7 +249,7 @@ void RenderSettings::init (float sf)
    graphItemCapBase = 0.7f * bondLineWidth;
    graphItemCapWidth = 1.2f * bondLineWidth;
    graphItemDigitWidth = 4.5f * bondLineWidth;
-   graphItemDigitHeight = 5.5f * bondLineWidth;
+   graphItemDigitHeight = 6.5f * bondLineWidth;
    graphItemSignLineWidth = 0.8f * bondLineWidth;
    graphItemPlusEdge = (graphItemDigitWidth - graphItemSignLineWidth) / 2;
 

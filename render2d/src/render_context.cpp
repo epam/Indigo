@@ -68,7 +68,7 @@ cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile (bool& isL
    int hs = GetDeviceCaps(dc, HORZSIZE);
    int vr = GetDeviceCaps(dc, VERTRES);
    int vs = GetDeviceCaps(dc, VERTSIZE);
-   // physical display size in millimeters, divided over the resolution and 
+   // physical display size in millimeters, divided over the resolution and
    //    multiplied by 100, as metafile dimensions are specified in 0.01mm units
    float cfx = hs * 100.0f / hr;
    float cfy = vs * 100.0f / vr; // it may differ for x and y
@@ -166,7 +166,7 @@ void RenderContext::bbIncludePath (bool stroke)
 }
 
 void RenderContext::setDefaultScale (float scale)
-{  
+{
    _defaultScale = scale;
 }
 
@@ -596,7 +596,7 @@ void RenderContext::setFontSize (double fontSize)
 void RenderContext::setTextItemSize (TextItem& ti)
 {
    bool bold = ti.highlighted && opt.highlightThicknessEnable;
-   
+
    fontsSetFont(_cr, ti.fontsize, bold);
    fontsGetTextExtents(_cr, ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
 }
@@ -705,9 +705,9 @@ void RenderContext::drawGraphItem (GraphItem& gi)
       lineToRel(_settings.graphItemCapWidth, _settings.graphItemCapSlope * -_settings.graphItemCapWidth);
       lineToRel(_settings.graphItemCapWidth, _settings.graphItemCapSlope * _settings.graphItemCapWidth);
       lineToRel(-_settings.graphItemCapBase, 0);
-      lineToRel(_settings.graphItemCapBase - _settings.graphItemCapWidth, 
+      lineToRel(_settings.graphItemCapBase - _settings.graphItemCapWidth,
          _settings.graphItemCapSlope * (_settings.graphItemCapBase - _settings.graphItemCapWidth));
-      lineToRel(_settings.graphItemCapBase - _settings.graphItemCapWidth, 
+      lineToRel(_settings.graphItemCapBase - _settings.graphItemCapWidth,
          _settings.graphItemCapSlope * (_settings.graphItemCapWidth - _settings.graphItemCapBase));
       break;
    case GraphItem::DOT:

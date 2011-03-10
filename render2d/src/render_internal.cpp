@@ -1817,7 +1817,7 @@ int MoleculeRenderInternal::_findClosestCircle (Vec2f& p, int aid, float radius,
    return iMin;
 }
 
-enum CHARCAT {DIGIT, LETTER, SUPERSCRIPT, SIGN, WHITESPACE};
+enum CHARCAT {DIGIT = 0, LETTER, SUPERSCRIPT, SIGN, WHITESPACE};
 enum SCRIPT {MAIN, SUB, SUPER};
 
 void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highlighted)
@@ -1843,8 +1843,8 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
       offset = _settings.bondLineWidth/2,
       space = _settings.bondLineWidth,
       totalwdt = 0,
-      upshift = -0.4f,
-      downshift = 0.4f;
+      upshift = -0.6f,
+      downshift = 0.2f;
    ad.ypos = fake.bbp.y;
    ad.height = fake.bbsz.y;
    ad.leftMargin = ad.rightMargin = xpos;
@@ -1865,23 +1865,21 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
          char c = (i == len ? ' ' : str[i]);
          if (isspace(c))
             b = WHITESPACE;
-         else if (isalpha(c) || c == '*' || c == '(' || c == ')' || c == '|' || c == '!' || c == '&' || c == '<' || c == '>' || c == '?')
-            b = LETTER;
          else if (isdigit(c))
             b = DIGIT;
          else if (c == '+' || c == '-')
             b = SIGN;
-         else if (c == '\\' && tolower(str[i+1]) == 's')
+         else if (c == '\\' && i < len - 1 && tolower(str[i+1]) == 's')
             b = SUPERSCRIPT, ++i;
-         else if (c == '\\' && tolower(str[i+1]) == 'n')
+         else if (c == '\\' && i < len - 1 && tolower(str[i+1]) == 'n')
             b = WHITESPACE, ++i;
          else
-            throw Error("Unexpected symbol %c in pseudoatom string %s", c, str);
+            b = LETTER;
+
          bool stop = false;
          i1 = i;
          if (b == SUPERSCRIPT) {
             i1 = i-1;
-            stop = true;
             newscript = SUPER;
             stop = true;
          } else if (b == WHITESPACE && a != WHITESPACE) {
@@ -1891,7 +1889,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
             newscript = MAIN;
             stop = true;
          } else if (b == DIGIT && a != DIGIT && a != SUPERSCRIPT) {
-            newscript = SUB;
+            newscript = ((a == LETTER) ? SUB : MAIN);
             stop = true;
          } else if (b == SIGN) {
             newscript = SUB;
@@ -1908,7 +1906,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
                   _cw.setGraphItemSizeSign(sign, type);
 
                   totalwdt += offset;
-                  sign.bbp.set(xpos + totalwdt, ad.ypos + upshift * ad.height);
+                  sign.bbp.set(xpos + totalwdt, ad.ypos + ad.height - sign.bbsz.y + upshift * ad.height);
                   _expandBoundRect(ad, sign);
                   totalwdt += sign.bbsz.x;
                } else if (a == WHITESPACE) {
@@ -1925,7 +1923,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
                   if (cnt > 0)
                      totalwdt += offset;
                   float shift = (script == SUB) ? downshift : ((script == SUPER) ? upshift : 0);
-                  item.bbp.set(xpos + totalwdt, ad.ypos + shift * ad.height);
+                  item.bbp.set(xpos + totalwdt, ad.ypos + ad.height - item.bbsz.y + shift * ad.height);
                   _expandBoundRect(ad, item);
                   totalwdt += item.bbsz.x;
                }
@@ -2146,7 +2144,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
 
       // valence
       int valence = bm.getExplicitValence(aid);
-      
+
       if (_opt.showValences && valence >= 0) {
          tiValence = _pushTextItem(ad, RenderItem::RIT_VALENCE, color, highlighted);
 
