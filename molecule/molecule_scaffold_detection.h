@@ -32,7 +32,7 @@ class MoleculeScaffoldDetection: public ScaffoldDetection {
       virtual ~MoleculeBasket();
 
       //initializes molecules basket
-      void initBasket(ObjArray<Molecule>* mol_set, ObjArray<Molecule>* basket_set, int max_number);
+      void initBasket(ObjArray<Molecule>* mol_set, ObjArray<QueryMolecule>* basket_set, int max_number);
       //this method adds molecules from set (defines with edges and vertices lists) to basket queue 
       virtual void addToNextEmptySpot(Graph& graph, Array<int> &v_list, Array<int> &e_list);
 
@@ -44,10 +44,10 @@ class MoleculeScaffoldDetection: public ScaffoldDetection {
       //returns ptr of molecule in basket with index
       virtual Graph& getGraph(int index) const;
       //adds new molecule to queue and returns ptr of that
-      Molecule& pickOutNextMolecule();
+      QueryMolecule& pickOutNextMolecule();
 
 
-      int (*cbSortSolutions) (Molecule &mol1, Molecule &mol2, void *userdata);
+      int (*cbSortSolutions) (BaseMolecule &mol1, BaseMolecule &mol2, void *userdata);
 
 
 
@@ -56,37 +56,39 @@ class MoleculeScaffoldDetection: public ScaffoldDetection {
 
    private:
       virtual void _sortGraphsInSet();
-
-      
       
       static int _compareEdgeCount(int &i1,int &i2,void* context);
-      static int _compareRingsCount(Molecule& m1, Molecule& m2, void* context);
+      static int _compareRingsCount(BaseMolecule& m1, BaseMolecule& m2, void* context);
 
       ObjArray<Molecule>* _searchStructures;
-      ObjArray<Molecule>* _basketStructures;
+      ObjArray<QueryMolecule>* _basketStructures;
 
       MoleculeBasket(const MoleculeBasket&); //no implicit copy
    };
 
 private:
-   void _searchScaffold(Molecule& scaffold, bool approximate);
+   void _searchScaffold(QueryMolecule& scaffold, bool approximate);
 
 public:
    MoleculeScaffoldDetection (ObjArray<Molecule>* mol_set);
    
    //two main methods for extracting scaffolds
    //extracting exact scaffold from molecules set
-   void extractExactScaffold (Molecule& scaffold) {_searchScaffold(scaffold, false); }
-   void extractApproximateScaffold(Molecule& scaffold) {_searchScaffold(scaffold, true); }
+   void extractExactScaffold (QueryMolecule& scaffold) {_searchScaffold(scaffold, false); }
+   void extractApproximateScaffold(QueryMolecule& scaffold) {_searchScaffold(scaffold, true); }
    //extracting approximate scaffold from molecule set
 
 
    int (*cbSortSolutions) (Molecule &mol1, Molecule &mol2, const void *userdata);
 
-   int flags;
+   static void clone(QueryMolecule& mol, Molecule& other);
+   static void makeEdgeSubmolecule(QueryMolecule& mol, Molecule& other, Array<int> &v_list, Array<int> &e_list);
 
+   static bool matchBonds (Graph &g1, Graph &g2, int i, int j, void* userdata);
+   static bool matchAtoms (Graph &g1, Graph &g2, const int *core_sub, int i, int j, void* userdata);
+   
    ObjArray<Molecule>* searchStructures;
-   ObjArray<Molecule>* basketStructures;
+   ObjArray<QueryMolecule>* basketStructures;
 
    DEF_ERROR("Molecule Scaffold detection");
 };

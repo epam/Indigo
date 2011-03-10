@@ -48,7 +48,6 @@ CEXPORT int indigoExtractCommonScaffold (int structures, const char* options)
 
       MoleculeScaffoldDetection msd(&mol_set);
 
-      msd.flags = MoleculeExactMatcher::CONDITION_ALL & ~MoleculeExactMatcher::CONDITION_STEREO;
       msd.basketStructures = &scaf->all_scaffolds;
 
       bool approximate = false;
@@ -80,7 +79,7 @@ CEXPORT int indigoExtractCommonScaffold (int structures, const char* options)
    INDIGO_END(-1);
 }
 
-Molecule & IndigoScaffold::getMolecule ()
+QueryMolecule & IndigoScaffold::getQueryMolecule ()
 {
    return max_scaffold;
 }
@@ -107,8 +106,8 @@ CEXPORT int indigoAllScaffolds (int extracted)
 
       for (i = 0; i < scaf.all_scaffolds.size(); i++)
       {
-         AutoPtr<IndigoMolecule> mol(new IndigoMolecule);
-         mol->mol.clone(scaf.all_scaffolds[i], 0, 0);
+         AutoPtr<IndigoQueryMolecule> mol(new IndigoQueryMolecule);
+         mol->qmol.clone(scaf.all_scaffolds[i], 0, 0);
          arr->objects.add(mol.release());
       }
 
