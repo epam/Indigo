@@ -63,7 +63,7 @@ void MoleculeScaffoldDetection::clone(QueryMolecule& mol, Molecule& other) {
    for (int v_idx = other.vertexBegin(); v_idx != other.vertexEnd(); v_idx = other.vertexNext(v_idx)) {
       v_list.push(v_idx);
    }
-   for (int e_idx = other.vertexBegin(); e_idx != other.vertexEnd(); e_idx = other.vertexNext(e_idx)) {
+   for (int e_idx = other.edgeBegin(); e_idx != other.edgeEnd(); e_idx = other.edgeNext(e_idx)) {
       e_list.push(e_idx);
    }
    makeEdgeSubmolecule(mol, other, v_list, e_list);
