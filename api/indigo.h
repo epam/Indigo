@@ -275,6 +275,8 @@ CEXPORT int indigoGetRadicalElectrons (int atom, int *electrons);
 CEXPORT int indigoAtomicNumber (int atom);
 // Returns zero on unspecified or ambiguous isotope
 CEXPORT int indigoIsotope (int atom);
+// Not applicable to query molecules.
+CEXPORT int indigoValence (int atom);
 
 // Applicable to atoms and query atoms. Can fail (return zero) on query atoms
 // where the number of hydrogens is not definitely known. Otherwise, returns one

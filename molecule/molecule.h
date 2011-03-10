@@ -96,6 +96,7 @@ public:
    int getAtomConnectivity (int idx);
    int getAtomConnectivity_noImplH (int idx);
    int calcAtomConnectivity_noImplH (int idx);
+   void calcAromaticAtomConnectivity (int idx, int &n_arom, int &min_conn);
    bool isSaturatedAtom (int idx);
 
    int totalHydrogensCount ();

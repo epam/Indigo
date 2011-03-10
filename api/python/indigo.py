@@ -286,6 +286,7 @@ class Indigo:
     self.IndigoObject.radicalElectrons = Indigo._member_intptr(Indigo._lib.indigoGetRadicalElectrons)
     self.IndigoObject.atomicNumber = Indigo._member_int(Indigo._lib.indigoAtomicNumber)
     self.IndigoObject.isotope = Indigo._member_int(Indigo._lib.indigoIsotope)
+    self.IndigoObject.valence = Indigo._member_int(Indigo._lib.indigoValence)
     self.IndigoObject.countHydrogens = Indigo._member_intptr(Indigo._lib.indigoCountHydrogens)
     self.IndigoObject.countImplicitHydrogens = Indigo._member_int(Indigo._lib.indigoCountImplicitHydrogens)
 

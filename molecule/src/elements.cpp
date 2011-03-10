@@ -236,17 +236,55 @@ const char * Element::toString (int element)
    return _instance._element_parameters[element].name;
 }
 
-int Element::calcValenceByCharge (int elem, int charge)
+int Element::calcValenceOfAromaticAtom (int elem, int charge, int n_arom, int min_conn)
 {
-   if (elem == ELEM_Li || elem == ELEM_Na || elem == ELEM_K ||
-       elem == ELEM_Rb || elem == ELEM_Cs || elem == ELEM_Fr)
-      return 1;
    if (elem == ELEM_C)
       return 4;
    if (elem == ELEM_N)
       return (charge == 1 ? 4 : 3);
    if (elem == ELEM_O)
       return (charge >= 1 ? 3 : 2);
+   if (elem == ELEM_S && charge == 0)
+   {
+      if (n_arom == 2) // two aromatic bonds
+      {
+         if (min_conn == 2) // no external bonds
+            // There are no cases of implicit hydrogens in that condition
+            // (PubChem search [sHD2] gives no hits)
+            return 2;  // ergo, valence is 2
+         if (min_conn == 3) // one single external bond
+            // there can be a radical (see CID 11972190),
+            // or an implicit hydrogen (see CID 20611310)
+            return 4; // either way, the valence is 4
+         if (min_conn == 4) // two single or one double external bond
+            // PubChem has no examples of 6-valent aromatic sulphur
+            // (searching [sv6] gives no hits)
+            return 4; // ergo, valence is 4
+         if (min_conn > 4)
+            // OK, suppose we have an case of 6-valent aromatic sulphur here
+            return 6;
+      }
+      else if (n_arom == 3)
+      {
+         if (min_conn <= 4) // no external bonds or one single external bond
+            // For one external bond, see CID 10091381
+            // For no external bonds, see CID 20756501, although aromaticity
+            // there is questionable. Anyway, no hydrogens are possible.
+            return 4;
+         else
+            // 6-valent aromatic sulphur?
+            return 6;
+      }
+      else if (n_arom == 4)
+      {
+         if (min_conn == 4)
+            // Happened only on CID 10882272 and CID 24829837
+            return 4; // Valence = 4 in both structures
+         else
+            // 6-valent aromatic sulphur?
+            return 6;
+      }
+   }
    return -1;
 }
 

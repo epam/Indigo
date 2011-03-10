@@ -1167,6 +1167,16 @@ CEXPORT int indigoGetCharge (int atom, int *charge)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoValence (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      return ia.mol.asMolecule().getAtomValence(ia.idx);
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int indigoGetExplicitValence (int atom, int *valence)
 {
    INDIGO_BEGIN

@@ -338,6 +338,29 @@ int Molecule::calcAtomConnectivity_noImplH (int idx)
    return conn;
 }
 
+void Molecule::calcAromaticAtomConnectivity (int idx, int &n_arom, int &min_conn)
+{
+   const Vertex &vertex = getVertex(idx);
+   int i;
+
+   n_arom = 0;
+   min_conn = 0;
+
+   for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+   {
+      int order = getBondOrder(vertex.neiEdge(i));
+
+      if (order == BOND_AROMATIC)
+      {
+         min_conn++;
+         n_arom++;
+      }
+      else
+         min_conn += order;
+   }
+}
+
+
 int Molecule::totalHydrogensCount ()
 {
    int i, total_h = 0;
@@ -725,17 +748,21 @@ int Molecule::getAtomValence (int idx)
   
    if (conn < 0)
    {
-      int val = Element::calcValenceByCharge(atom.number, atom.charge);
+      int min_conn, n_arom;
 
-      if (val > 0)
+      calcAromaticAtomConnectivity(idx, n_arom, min_conn);
+
+      int val = Element::calcValenceOfAromaticAtom(atom.number, atom.charge, n_arom, min_conn);
+
+      if (val >= 0)
       {
          _valence.expandFill(idx + 1, -1);
          _valence[idx] = val;
          return val;
       }
 
-      throw Element::Error("can not calculate valence of aromatic %s, charge %d",
-              Element::toString(atom.number), atom.charge);
+      throw Element::Error("can not calculate valence of %s (%d aromatic bonds, min connectivity %d, charge %d)",
+              Element::toString(atom.number), n_arom, min_conn, atom.charge);
    }
 
    int radical = -1;

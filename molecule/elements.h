@@ -163,7 +163,7 @@ public:
    static int radicalOrbitals  (int radical);
 
    static bool calcValence (int elem, int charge, int radical, int conn, int &valence, int &hyd, bool to_throw);
-   static int  calcValenceByCharge (int elem, int charge);
+   static int  calcValenceOfAromaticAtom (int elem, int charge, int n_arom, int min_conn);
    static int  calcValenceMinusHyd (int elem, int charge, int radical, int conn);
 
    // Calculate maximum number of single bonds that 
