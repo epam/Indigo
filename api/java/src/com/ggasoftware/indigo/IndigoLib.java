@@ -127,10 +127,12 @@ public interface IndigoLib extends Library
    int indigoGetRadicalElectrons (int atom, IntByReference electrons);
    int indigoAtomicNumber (int atom);
    int indigoIsotope (int atom);
+   int indigoValence (int atom);
    int indigoCountHydrogens (int atom, IntByReference valence);
    int indigoCountImplicitHydrogens (int item);
 
    Pointer indigoXYZ (int atom);
+   int indigoSetXYZ (int atom, float x, float y, float z);
 
    int indigoCountSuperatoms (int molecule);
    int indigoCountDataSGroups (int molecule);
@@ -198,6 +200,10 @@ public interface IndigoLib extends Library
    int indigoSetBondOrder (int bond, int order);
 
    int indigoMerge (int where_to, int what);
+
+   int indigoHighlight (int atom);
+   int indigoUnhighlight (int item);
+
    int indigoCountComponents (int molecule);
    int indigoComponentIndex (int atom);
    int indigoIterateComponents (int molecule);
@@ -294,6 +300,7 @@ public interface IndigoLib extends Library
 
    int indigoSubstructureMatcher (int target, String mode);
    int indigoIgnoreAtom (int matcher, int atom);
+   int indigoUnignoreAtom (int matcher, int atom);
    int indigoUnignoreAllAtoms (int matcher);
    int indigoMatch (int matcher, int query);
    int indigoCountMatches (int matcher, int query);
