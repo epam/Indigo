@@ -26,6 +26,8 @@ cd java
 cd ../renderer/java
 ./compile.sh
 ./pack-libs-osx.sh
+cd ../../../common/java/common-controls
+./compile.sh
 cd ../../../utils/chemdiff/src
 
 javac -cp ../../../api/java/dist/indigo.jar:../../../api/renderer/java/dist/indigo-renderer.jar:../../../common/java/common-controls/dist/common-controls.jar com/ggasoftware/indigo/chemdiff/*.java
