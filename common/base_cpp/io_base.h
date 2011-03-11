@@ -17,6 +17,10 @@
 
 #include <stdio.h>
 
+#ifdef _WIN32
+#include <locale.h>
+#endif
+
 namespace indigo
 {
    enum Encoding
@@ -26,6 +30,24 @@ namespace indigo
    };
 
    FILE *openFile( Encoding filename_encoding, const char *filename, const char *mode);
+
+#ifdef _WIN32
+   _locale_t getCLocale ();
+
+   class CLocale
+   {
+   public:
+      CLocale ();
+      ~CLocale ();
+
+      _locale_t get ();
+
+      static CLocale instance;
+
+   protected:
+      _locale_t _locale;
+   };
+#endif
 };
 
 #endif

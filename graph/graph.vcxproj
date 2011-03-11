@@ -313,7 +313,11 @@
     <ClInclude Include="..\common\base_cpp\cyclic_array.h" />
     <ClInclude Include="..\common\base_cpp\d_bitset.h" />
     <ClInclude Include="..\common\base_cpp\exception.h" />
+    <ClInclude Include="..\common\base_cpp\io_base.h" />
     <ClInclude Include="..\common\base_cpp\list.h" />
+    <ClInclude Include="..\common\base_cpp\locale_guard.h" />
+    <ClInclude Include="..\common\base_cpp\output.h" />
+    <ClInclude Include="..\common\base_cpp\scanner.h" />
     <ClInclude Include="..\common\base_c\nano.h" />
     <ClInclude Include="..\common\base_cpp\obj.h" />
     <ClInclude Include="..\common\base_cpp\obj_array.h" />
@@ -364,6 +368,10 @@
   <ItemGroup>
     <ClCompile Include="..\common\base_cpp\d_bitset.cpp" />
     <ClCompile Include="..\common\base_cpp\exception.cpp" />
+    <ClCompile Include="..\common\base_cpp\io_base.cpp" />
+    <ClCompile Include="..\common\base_cpp\locale_guard.cpp" />
+    <ClCompile Include="..\common\base_cpp\output.cpp" />
+    <ClCompile Include="..\common\base_cpp\scanner.cpp" />
     <ClCompile Include="..\common\base_c\nano_win.c" />
     <ClCompile Include="..\common\base_c\os_sync_win32.c" />
     <ClCompile Include="..\common\base_cpp\os_sync_wrapper.cpp" />

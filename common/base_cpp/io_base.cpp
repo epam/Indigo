@@ -47,3 +47,28 @@ FILE *indigo::openFile( Encoding filename_encoding, const char *filename, const 
 
    return file;
 }
+
+#ifdef _WIN32
+CLocale CLocale::instance;
+
+_locale_t indigo::getCLocale ()
+{
+   return CLocale::instance.get();
+}
+
+CLocale::CLocale ()
+{
+   _locale = _create_locale(LC_ALL, "C");
+}
+
+CLocale::~CLocale ()
+{
+   _free_locale(_locale);
+}
+
+_locale_t CLocale::get ()
+{
+   return _locale;
+}
+
+#endif

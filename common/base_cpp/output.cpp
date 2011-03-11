@@ -82,7 +82,11 @@ void Output::vprintf (const char *format, va_list args)
    int n;
    while (true)
    {
+#ifdef _WIN32
+      n = _vsnprintf_l(str.ptr(), str.size(), format, getCLocale(), args);
+#else
       n = vsnprintf(str.ptr(), str.size(), format, args);
+#endif
       /* If that worked, return the string. */
       if (n > -1 && n < str.size())
          break;
@@ -167,24 +171,6 @@ FileOutput::FileOutput (const char *filename)
    if (_file == NULL)
       throw Error("can't open file %s", filename);
 }
-
-/*
-
-FileOutput::FileOutput (const char *format, ...)
-{
-   char filename[1024];
-
-   va_list args;
-
-   va_start(args, format);
-   vsnprintf(filename, sizeof(filename), format, args);
-   va_end(args);
-
-   _file = fopen(filename, "wb");
-
-   if (_file == NULL)
-      throw Error("can't open file %s", filename);
-}*/
 
 FileOutput::FileOutput (bool append, const char *format, ...)
 {

@@ -165,6 +165,18 @@
     <ClInclude Include="subgraph_hash.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\common\base_cpp\io_base.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\base_cpp\scanner.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\base_cpp\output.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\base_cpp\locale_guard.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\base_cpp\d_bitset.cpp">
@@ -286,6 +298,18 @@
     </ClCompile>
     <ClCompile Include="src\subgraph_hash.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\base_cpp\io_base.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\base_cpp\output.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\base_cpp\scanner.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\base_cpp\locale_guard.cpp">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

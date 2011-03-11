@@ -180,15 +180,6 @@
     <ClCompile Include="..\common\base_cpp\gray_codes.cpp">
       <Filter>common\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\base_cpp\io_base.cpp">
-      <Filter>common\base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\base_cpp\output.cpp">
-      <Filter>common\base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\base_cpp\scanner.cpp">
-      <Filter>common\base</Filter>
-    </ClCompile>
     <ClCompile Include="..\common\base_cpp\string_pool.cpp">
       <Filter>common\base</Filter>
     </ClCompile>
@@ -230,9 +221,6 @@
     </ClCompile>
     <ClCompile Include="..\common\gzip\gzip_scanner.cpp">
       <Filter>common\gzip</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\base_cpp\locale_guard.cpp">
-      <Filter>common\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -377,15 +365,6 @@
     <ClInclude Include="..\common\base_cpp\gray_codes.h">
       <Filter>common\base</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\base_cpp\io_base.h">
-      <Filter>common\base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\base_cpp\output.h">
-      <Filter>common\base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\base_cpp\scanner.h">
-      <Filter>common\base</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\base_cpp\string_pool.h">
       <Filter>common\base</Filter>
     </ClInclude>
@@ -406,9 +385,6 @@
     </ClInclude>
     <ClInclude Include="..\common\gzip\gzip_scanner.h">
       <Filter>common\gzip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\base_cpp\locale_guard.h">
-      <Filter>common\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
