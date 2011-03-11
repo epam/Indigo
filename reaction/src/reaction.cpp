@@ -39,86 +39,10 @@ Molecule & Reaction::getMolecule (int index)
 
 int Reaction::_addBaseMolecule (int side)
 {
-   int idx = _allMolecules.size();
-   _allMolecules.add(new Molecule());
+   int idx = _allMolecules.add(new Molecule());
    _addedBaseMolecule(idx, side, *_allMolecules[idx]);
    return idx;
 }
-/*
-
-int Reaction::findMoleculeSideIdx(const Molecule* qmol) const
-{
-   int mol_idx = findMoleculeIdx(qmol);
-   int side_idx = 0;
-   int type = _indexes[mol_idx];
-
-   for (int i = begin(); i < mol_idx; i = next(i))
-      if(_indexes[i] == type)
-         side_idx++;
-   return side_idx;
-}
-
-int Reaction::findMoleculeIdx(const Molecule* qmol) const {
-   for(int i = begin(); i < end(); i = next(i)) {
-      if(qmol == &_allMolecules.at(i))
-         return i;
-   }
-   throw Error("cannot find aam number");
-}
-
-int Reaction::findInversionNumber(const Molecule* qmol, int atom_number) const {
-   for(int i = begin(); i < end(); i = next(i)) {
-      if(qmol == &_allMolecules.at(i))
-         return getInversion(i, atom_number);
-   }
-   throw Error("cannot find inversion");
-}
-
-int Reaction::findExactChange(const Molecule* qmol, int atom_number) const {
-   for(int i = begin(); i < end(); i = next(i)) {
-      if(qmol == &_allMolecules.at(i))
-         return getExactChange(i, atom_number);
-   }
-   throw Error("cannot find exact change");
-}
-
-void Reaction::dearomatizeBonds() {
-   for (int i = begin(); i < end(); i = next(i)) {
-      MoleculeDearomatizer::dearomatizeMolecule(_allMolecules[i]);
-   }
-}
-
-void Reaction::aromatizeQueryBonds() {
-   for (int i = begin(); i < end(); i = next(i)) {
-      QueryMoleculeAromatizer::aromatizeBonds(_allMolecules[i]);
-   }
-}
-
-
-bool Reaction::isAllConnected() const {
-   for (int i = begin(); i < end(); i = next(i)) {
-      if (!Graph::isConnected(_allMolecules[i]))
-         return false;
-   }
-   return true;
-}
-
-*/
-
-/*
-
-int Reaction::sideCount (int side) const { 
-   switch (side) {
-   case REACTANT:
-      return reactantsCount();
-   case PRODUCT: 
-      return productsCount();
-   case CATALYST:
-      return catalystCount();
-   default:
-      throw Error("Unknown side identifier");
-   }
-}*/
 
 void Reaction::saveBondOrders (Reaction& reaction, ObjArray< Array<int> > &bond_types) {
 

@@ -84,6 +84,7 @@ public:
    virtual int getIndex ();
    virtual IndigoObject * clone ();
    virtual RedBlackStringObjMap< Array<char> > * getProperties ();
+   virtual void remove ();
 
    BaseReaction &rxn;
    int idx;

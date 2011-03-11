@@ -35,7 +35,7 @@ void BaseReaction::clear()
    _atomAtomMapping.clear();
    _reactingCenters.clear();
    _inversionNumbers.clear();
-   _indexes.clear();
+   _types.clear();
    name.clear();
 }
 
@@ -94,8 +94,8 @@ void BaseReaction::_addedBaseMolecule (int idx, int side, BaseMolecule &mol)
    else // CATALYST
       _catalystCount++;
 
-   _indexes.expand(idx + 1);
-   _indexes[idx] = side;
+   _types.expand(idx + 1);
+   _types[idx] = side;
 
    _atomAtomMapping.expand(idx + 1);
    _atomAtomMapping[idx].clear_resize(mol.vertexEnd());
@@ -151,11 +151,16 @@ bool BaseReaction::haveCoord (BaseReaction &reaction)
    return true;
 }
 
-int BaseReaction::_nextElement (int type, int index) const
+int BaseReaction::_nextElement (int type, int index)
 {
-   for (++index; index < _indexes.size(); ++index)
+   if (index == -1)
+      index = _allMolecules.begin();
+   else
+      index = _allMolecules.next(index);
+
+   for (; index != _allMolecules.end(); index = _allMolecules.next(index))
    {
-      if (_indexes[index] & type)
+      if (_types[index] & type)
          break;
    }
    return index;
@@ -169,9 +174,8 @@ void BaseReaction::clearAAM ()
 
 int BaseReaction::addReactantCopy (BaseMolecule& mol, Array<int>* mapping, Array<int> *inv_mapping)
 {
-   int idx = _allMolecules.size();
+   int idx = _allMolecules.add(mol.neu());
 
-   _allMolecules.add(mol.neu());
    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
    _addedBaseMolecule(idx, REACTANT, *_allMolecules[idx]);
    return idx;
@@ -179,9 +183,8 @@ int BaseReaction::addReactantCopy (BaseMolecule& mol, Array<int>* mapping, Array
 
 int BaseReaction::addProductCopy (BaseMolecule& mol, Array<int>* mapping, Array<int> *inv_mapping)
 {
-   int idx = _allMolecules.size();
+   int idx = _allMolecules.add(mol.neu());
 
-   _allMolecules.add(mol.neu());
    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
    _addedBaseMolecule(idx, PRODUCT, *_allMolecules[idx]);
    return idx;
@@ -189,9 +192,8 @@ int BaseReaction::addProductCopy (BaseMolecule& mol, Array<int>* mapping, Array<
 
 int BaseReaction::addCatalystCopy (BaseMolecule& mol, Array<int>* mapping, Array<int> *inv_mapping)
 {
-   int idx = _allMolecules.size();
-
-   _allMolecules.add(mol.neu());
+   int idx = _allMolecules.add(mol.neu());
+   
    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
    _addedBaseMolecule(idx, CATALYST, *_allMolecules[idx]);
    return idx;
@@ -223,7 +225,7 @@ void BaseReaction::clone (BaseReaction &other, ObjArray< Array<int> >* mappings,
       Array<int> * inv_mapping = 0;
       if(inv_mappings != 0)
          inv_mapping = &inv_mappings->at(i);
-      switch(other._indexes[i]) {
+      switch(other._types[i]) {
          case REACTANT:
             index = addReactantCopy(rmol, &mol_mappings->at(i), inv_mapping);
             break;
@@ -269,4 +271,38 @@ QueryReaction & BaseReaction::asQueryReaction ()
 bool BaseReaction::isQueryReaction ()
 {
    return false;
+}
+
+void BaseReaction::remove (int i)
+{
+   int side = _types[i];
+
+   if (side == REACTANT)
+      _reactantCount--;
+   else if (side == PRODUCT)
+      _productCount--;
+   else // CATALYST
+      _catalystCount--;
+
+   _allMolecules.remove(i);
+}
+
+int BaseReaction::begin ()
+{
+   return _nextElement(REACTANT | PRODUCT | CATALYST, -1);
+}
+
+int BaseReaction::end ()
+{
+   return _allMolecules.end();
+}
+
+int BaseReaction::next (int index)
+{
+   return _nextElement(REACTANT | PRODUCT | CATALYST, index);
+}
+
+int BaseReaction::count ()
+{
+   return _allMolecules.size();
 }

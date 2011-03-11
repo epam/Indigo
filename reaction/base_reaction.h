@@ -22,7 +22,7 @@
 
 #include "molecule/base_molecule.h"
 #include "base_cpp/obj_array.h"
-#include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_pool.h"
 
 namespace indigo {
 
@@ -44,28 +44,31 @@ public:
    // 'neu' means 'new' in German
    virtual BaseReaction * neu () = 0;
 
-   int begin() const                   { return _nextElement(REACTANT | PRODUCT | CATALYST, -1); }
-   int next(int index) const           { return _nextElement(REACTANT | PRODUCT | CATALYST, index); }
-   int end() const                     { return _indexes.size(); }
-   int count() const                   { return end(); }
+   int begin ();
+   int end ();
+   int next (int i);
+   int count ();
 
-   int reactantBegin() const           { return _nextElement(REACTANT, -1); }
-   int reactantNext(int index) const   { return _nextElement(REACTANT, index); }
-   int reactantEnd() const             { return _indexes.size(); }
+   void remove (int i);
 
-   int productBegin() const            { return _nextElement(PRODUCT, -1); }
-   int productNext(int index) const    { return _nextElement(PRODUCT, index); }
-   int productEnd() const              { return _indexes.size(); }
 
-   int catalystBegin() const            { return _nextElement(CATALYST, -1); }
-   int catalystNext(int index) const    { return _nextElement(CATALYST, index); }
-   int catalystEnd() const              { return _indexes.size(); }
+   int reactantBegin()         { return _nextElement(REACTANT, -1); }
+   int reactantNext(int index) { return _nextElement(REACTANT, index); }
+   int reactantEnd()           { return _allMolecules.end(); }
 
-   int sideBegin (int side) const            { return _nextElement(side, -1); }
-   int sideNext (int side, int index) const    { return _nextElement(side, index); }
-   int sideEnd () const              { return _indexes.size(); }
+   int productBegin()          { return _nextElement(PRODUCT, -1); }
+   int productNext(int index)  { return _nextElement(PRODUCT, index); }
+   int productEnd()            { return _allMolecules.end(); }
 
-   int getSideType(int index) const {return _indexes[index]; }
+   int catalystBegin()         { return _nextElement(CATALYST, -1); }
+   int catalystNext(int index) { return _nextElement(CATALYST, index); }
+   int catalystEnd()           { return _allMolecules.end(); }
+
+   int sideBegin (int side)    { return _nextElement(side, -1); }
+   int sideNext (int side, int index) { return _nextElement(side, index); }
+   int sideEnd ()             { return _allMolecules.end(); }
+
+   int getSideType(int index) {return _types[index]; }
 
    int reactantsCount() const { return _reactantCount; }
    int productsCount() const { return _productCount; }
@@ -129,18 +132,18 @@ protected:
    
    virtual void _addedBaseMolecule (int idx, int side, BaseMolecule &mol);
 
-   PtrArray<BaseMolecule> _allMolecules;
+   PtrPool<BaseMolecule>  _allMolecules;
    ObjArray< Array<int> > _atomAtomMapping;
    ObjArray< Array<int> > _reactingCenters;
    ObjArray< Array<int> > _inversionNumbers;
 
-   Array<int> _indexes;
+   Array<int> _types;
 
    int _reactantCount;
    int _productCount;
    int _catalystCount;
 
-   int _nextElement(int type, int index) const;
+   int _nextElement(int type, int index);
 
    virtual void _clone (BaseReaction &other, int index, int i, ObjArray< Array<int> >* mol_mappings);
 

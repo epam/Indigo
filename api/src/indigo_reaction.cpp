@@ -144,6 +144,11 @@ RedBlackStringObjMap< Array<char> > * IndigoReactionMolecule::getProperties ()
    return 0;
 }
 
+void IndigoReactionMolecule::remove ()
+{
+   rxn.remove(idx);
+}
+
 IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, int subtype) :
 IndigoObject(REACTION_ITER),
 _rxn(rxn)

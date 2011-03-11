@@ -61,16 +61,14 @@ void QueryReaction::makeTransposedForSubstructure (QueryReaction &other)
    clear();
 
    for (int i = other.begin(); i < other.end(); i = other.next(i)) {
-      int index = _allMolecules.size();
-
       other._transposeMoleculeForSubstructure(i, transposition);
-      _allMolecules.add(new QueryMolecule());
+      int index = _allMolecules.add(new QueryMolecule());
 
       QueryMolecule &qmol = *(QueryMolecule *)_allMolecules[index];
 
       qmol.makeSubmolecule(other.getQueryMolecule(i), transposition, 0);
 
-      _addedBaseMolecule(index, other._indexes[i], qmol);
+      _addedBaseMolecule(index, other._types[i], qmol);
 
       for (int j = 0; j < transposition.size(); j++) {
          getAAMArray(index).at(j) = other.getAAM(i, transposition[j]);
@@ -169,8 +167,7 @@ int QueryReaction::_compare (int &i1, int &i2, void *c)
 
 int QueryReaction::_addBaseMolecule (int side)
 {
-   int idx = _allMolecules.size();
-   _allMolecules.add(new QueryMolecule());
+   int idx = _allMolecules.add(new QueryMolecule());
    _addedBaseMolecule(idx, side, *_allMolecules[idx]);
    return idx;
 }
