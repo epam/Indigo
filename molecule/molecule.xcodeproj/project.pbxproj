@@ -15,6 +15,7 @@
 		A73F9C4411396FCA0033F344 /* profiling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A73F9C4211396FCA0033F344 /* profiling.cpp */; };
 		A73F9C51113970860033F344 /* smart_output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A73F9C4F113970860033F344 /* smart_output.cpp */; };
 		A73F9C57113970C40033F344 /* nano_posix.c in Sources */ = {isa = PBXBuildFile; fileRef = A73F9C55113970C40033F344 /* nano_posix.c */; };
+		A74BFA96132A3C6700BE44D6 /* locale_guard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A74BFA94132A3C6700BE44D6 /* locale_guard.cpp */; };
 		A76283A711CFCC98003F0F5C /* base_molecule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A76283A511CFCC98003F0F5C /* base_molecule.cpp */; };
 		A76283A811CFCC98003F0F5C /* molecule_chain_fingerprints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A76283A611CFCC98003F0F5C /* molecule_chain_fingerprints.cpp */; };
 		A768C0E710AD94CE00B1EB91 /* molecule_inchi_component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A768C0E310AD94CE00B1EB91 /* molecule_inchi_component.cpp */; };
@@ -98,6 +99,8 @@
 		A73F9C50113970860033F344 /* smart_output.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = smart_output.h; path = ../common/base_cpp/smart_output.h; sourceTree = SOURCE_ROOT; };
 		A73F9C55113970C40033F344 /* nano_posix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nano_posix.c; path = ../common/base_c/nano_posix.c; sourceTree = SOURCE_ROOT; };
 		A73F9C56113970C40033F344 /* nano.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = nano.h; path = ../common/base_c/nano.h; sourceTree = SOURCE_ROOT; };
+		A74BFA94132A3C6700BE44D6 /* locale_guard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = locale_guard.cpp; path = ../common/base_cpp/locale_guard.cpp; sourceTree = "<group>"; };
+		A74BFA95132A3C6700BE44D6 /* locale_guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = locale_guard.h; path = ../common/base_cpp/locale_guard.h; sourceTree = "<group>"; };
 		A76283A211CFCC27003F0F5C /* base_molecule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base_molecule.h; sourceTree = "<group>"; };
 		A76283A311CFCC27003F0F5C /* molecule_chain_fingerprints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_chain_fingerprints.h; sourceTree = "<group>"; };
 		A76283A411CFCC27003F0F5C /* query_molecule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = query_molecule.h; sourceTree = "<group>"; };
@@ -401,6 +404,8 @@
 		A7EDA46410624E4A006CBFAF /* base */ = {
 			isa = PBXGroup;
 			children = (
+				A74BFA94132A3C6700BE44D6 /* locale_guard.cpp */,
+				A74BFA95132A3C6700BE44D6 /* locale_guard.h */,
 				A73F9C55113970C40033F344 /* nano_posix.c */,
 				A73F9C56113970C40033F344 /* nano.h */,
 				A73F9C4F113970860033F344 /* smart_output.cpp */,
@@ -567,6 +572,7 @@
 				A778DEFE1250ADA20098784F /* molecule_exact_substructure_matcher.cpp in Sources */,
 				810BD6E012F2D859004D1772 /* molecule_cml_loader.cpp in Sources */,
 				810BD6E112F2D859004D1772 /* multiple_cml_loader.cpp in Sources */,
+				A74BFA96132A3C6700BE44D6 /* locale_guard.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
