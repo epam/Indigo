@@ -1817,7 +1817,7 @@ int MoleculeRenderInternal::_findClosestCircle (Vec2f& p, int aid, float radius,
    return iMin;
 }
 
-enum CHARCAT {DIGIT = 0, LETTER, SUPERSCRIPT, SIGN, WHITESPACE};
+enum CHARCAT {DIGIT = 0, LETTER, SUPERSCRIPT, SUBSCRIPT, SIGN, WHITESPACE};
 enum SCRIPT {MAIN, SUB, SUPER};
 
 void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highlighted)
@@ -1826,7 +1826,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
    const char* str = ad.pseudo.ptr();
 
    int cnt = 0;
-   CHARCAT a = WHITESPACE, b;
+   CHARCAT a = WHITESPACE, b = WHITESPACE;
    int i0 = 0, i1;
    SCRIPT script = MAIN, newscript = MAIN;
    int len = (int)strlen(str);
@@ -1842,7 +1842,6 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
    float xpos = fake.bbp.x,
       width = fake.bbsz.x,
       offset = _settings.bondLineWidth/2,
-      space = _settings.bondLineWidth,
       totalwdt = 0,
       upshift = -0.6f,
       downshift = 0.2f;
@@ -1863,79 +1862,75 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
       totalwdt += item.bbsz.x;
    } else {
       for (int i = 0; i <= len; ++i) {
+         a = b;
+         i1 = i;
          char c = (i == len ? ' ' : str[i]);
+         bool tag = false;
+         bool stop = false;
          if (isspace(c))
             b = WHITESPACE;
          else if (isdigit(c))
             b = DIGIT;
-         else if (c == '+' || c == '-') {
-            b = SIGN;
-            signType = (c == '+') ? GraphItem::PLUS : GraphItem::MINUS;
-         } else if (c == '\\' && i < len - 1 && tolower(str[i+1]) == 's')
-            b = SUPERSCRIPT, ++i;
-         else if (c == '\\' && i < len - 1 && tolower(str[i+1]) == 'n')
-            b = WHITESPACE, ++i;
+         else if (c == '+' || c == '-')
+            b = SIGN, signType = ((c == '+') ? GraphItem::PLUS : GraphItem::MINUS);
+         else if (c == '\\' && i < len - 1 && str[i+1] == 'S')
+            b = SUPERSCRIPT, ++i, tag = true;
+         else if (c == '\\' && i < len - 1 && str[i+1] == 's')
+            b = SUBSCRIPT, ++i, tag = true;
+         else if (c == '\\' && i < len - 1 && str[i+1] == 'n')
+            b = LETTER, ++i, tag = true;
          else
             b = LETTER;
 
-         bool stop = false;
-         i1 = i;
          if (b == SUPERSCRIPT) {
-            i1 = i-1;
             newscript = SUPER;
-            stop = true;
-         } else if (b == WHITESPACE && a != WHITESPACE) {
+         } else if ((b == WHITESPACE && a != WHITESPACE) || (b == LETTER && a != LETTER)) {
             newscript = MAIN;
-            stop = true;
-         } else if (b == LETTER && a != LETTER) {
-            newscript = MAIN;
-            stop = true;
-         } else if (b == DIGIT && a != DIGIT && a != SUPERSCRIPT) {
-            newscript = ((a == LETTER) ? SUB : MAIN);
-            stop = true;
-         } else if (b == SIGN) {
+         } else if (b == SUBSCRIPT) {
             newscript = SUB;
-            stop = true;
+         } else if (b == DIGIT && a != DIGIT && a != SUPERSCRIPT && a != SUBSCRIPT) {
+            newscript = ((a == LETTER) ? SUB : MAIN);
+         } else if (tag) {
+            newscript = MAIN;
+         } else if (b == SIGN && script == SUPER) {
+            (void)0;
+         } else if (a == SIGN && script == SUPER) {
+            newscript = MAIN;
+         } else {
+            continue;
          }
 
-         if (stop) {
-            if (i1 > i0) {
-               if (a == SIGN) {
-                  int id = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
-                  gis.push(id);
-                  GraphItem& sign = _data.graphitems[id];
-                  _cw.setGraphItemSizeSign(sign, signType);
+         if (i1 > i0) {
+            if (a == SIGN && script == SUPER) {
+               int id = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
+               gis.push(id);
+               GraphItem& sign = _data.graphitems[id];
+               _cw.setGraphItemSizeSign(sign, signType);
 
+               totalwdt += offset;
+               sign.bbp.set(xpos + totalwdt, ad.ypos + ad.height - sign.bbsz.y + upshift * ad.height);
+               _expandBoundRect(ad, sign);
+               totalwdt += sign.bbsz.x;
+            } else {
+               float shift = (script == SUB) ? downshift : ((script == SUPER) ? upshift : 0);
+               int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
+               tis.push(id);
+               TextItem& item = _data.textitems[id];
+               item.fontsize = (script == MAIN) ? FONT_SIZE_LABEL : FONT_SIZE_ATTR;
+               item.text.copy(str + i0, i1 - i0);
+               item.text.push((char)0);
+               _cw.setTextItemSize(item);
+
+               if (cnt > 0)
                   totalwdt += offset;
-                  sign.bbp.set(xpos + totalwdt, ad.ypos + ad.height - sign.bbsz.y + upshift * ad.height);
-                  _expandBoundRect(ad, sign);
-                  totalwdt += sign.bbsz.x;
-               } else if (a == WHITESPACE) {
-                  totalwdt += space;
-               } else {
-                  int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
-                  tis.push(id);
-                  TextItem& item = _data.textitems[id];
-                  item.fontsize = (script == MAIN) ? FONT_SIZE_LABEL : FONT_SIZE_ATTR;
-                  item.text.copy(str + i0, i1 - i0);
-                  item.text.push((char)0);
-                  _cw.setTextItemSize(item);
-
-                  if (cnt > 0)
-                     totalwdt += offset;
-                  float shift = (script == SUB) ? downshift : ((script == SUPER) ? upshift : 0);
-                  item.bbp.set(xpos + totalwdt, ad.ypos + ad.height - item.relpos.y + shift * ad.height);
-                  _expandBoundRect(ad, item);
-                  totalwdt += item.bbsz.x;
-               }
-               cnt++;
+               item.bbp.set(xpos + totalwdt, ad.ypos + ad.height - item.relpos.y + shift * ad.height);
+               _expandBoundRect(ad, item);
+               totalwdt += item.bbsz.x;
             }
-            i0 = i;
-            if (b == SUPERSCRIPT)
-               ++i0;
+            cnt++;
          }
-         a = b;
          script = newscript;
+         i0 = i + (tag ? 1 : 0);
       }
    }
    ad.rightMargin += totalwdt;
