@@ -73,6 +73,17 @@ void RxnfileLoader::_loadReaction(){
    }
    _readProductsFooter();
 
+   if (_n_catalysts > 0)
+   {
+      _readCatalystsHeader();
+      for (int i = 0; i < _n_catalysts; i++) {
+         int index = _brxn->addCatalyst();
+
+         _readMolHeader();
+         _readMol(molfileLoader, index);
+      }
+      _readCatalystsFooter();
+   }
 }
 
 void RxnfileLoader::_readRxnHeader(){
@@ -96,15 +107,27 @@ void RxnfileLoader::_readRxnHeader(){
    {
       _scanner.skip(14); // "M  V30 COUNTS "
       _scanner.readString(header, true);
-      if (sscanf(header.ptr(), "%d %d", &_n_reactants, &_n_products) < 2)
+      int n = sscanf(header.ptr(), "%d %d %d", &_n_reactants, &_n_products, &_n_catalysts);
+      if (n < 2)
          throw Error("error reading counts: %s", header.ptr());
+      if (n == 2)
+         _n_catalysts = 0;
    }
    else
    {
-      _n_reactants = _scanner.readIntFix(3);
-      _n_products = _scanner.readIntFix(3);
+      _scanner.readString(header, false);
+      BufferScanner strscan(header);
 
-      _scanner.skipString();
+      _n_reactants = strscan.readIntFix(3);
+      _n_products = strscan.readIntFix(3);
+      try
+      {
+         _n_catalysts = strscan.readIntFix(3);
+      }
+      catch (Scanner::Error)
+      {
+         _n_catalysts = 0;
+      }
    }
 }
 
@@ -131,6 +154,19 @@ void RxnfileLoader::_readReactantsHeader(){
    _scanner.readString(header, true);
    if (strcmp(header.ptr(), "M  V30 BEGIN REACTANT") != 0){
       throw Error("bad reactants header: %s", header.ptr());
+   }
+}
+
+void RxnfileLoader::_readCatalystsHeader(){
+   if (!_v3000) {
+      return;
+   }
+
+   QS_DEF(Array<char>, header);
+
+   _scanner.readString(header, true);
+   if (strcmp(header.ptr(), "M  V30 BEGIN AGENT") != 0){
+      throw Error("bad catalysts header: %s", header.ptr());
    }
 }
 
@@ -168,6 +204,18 @@ void RxnfileLoader::_readProductsFooter(){
 
    if (strcmp(footer.ptr(), "M  V30 END PRODUCT") != 0)
       throw Error("bad products footer: %s", footer.ptr());
+}
+
+void RxnfileLoader::_readCatalystsFooter(){
+   if (!_v3000) {
+      return;
+   }
+   QS_DEF(Array<char>, footer);
+
+   _scanner.readString(footer, true);
+
+   if (strcmp(footer.ptr(), "M  V30 END AGENT") != 0)
+      throw Error("bad agents footer: %s", footer.ptr());
 }
 
 

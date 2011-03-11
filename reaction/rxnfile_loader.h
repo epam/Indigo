@@ -51,12 +51,15 @@ protected:
    void _readRxnHeader();
    void _readReactantsHeader();
    void _readProductsHeader();
+   void _readCatalystsHeader();
    void _readReactantsFooter();
    void _readProductsFooter();
+   void _readCatalystsFooter();
    void _readMolHeader();
    void _readMol (MolfileLoader &loader, int index);
    int _n_reactants;
    int _n_products;
+   int _n_catalysts;
    bool _v3000;
 };
 

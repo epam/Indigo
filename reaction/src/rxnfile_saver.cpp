@@ -86,7 +86,7 @@ void RxnfileSaver::_saveReaction(){
    MolfileSaver molfileSaver(_output);
    molfileSaver.mode = _v2000 ? MolfileSaver::MODE_2000 : MolfileSaver::MODE_3000;
    
-   _writeRxnHeader(*_brxn, _brxn->reactantsCount(), _brxn->productsCount());
+   _writeRxnHeader(*_brxn);
 
    _writeReactantsHeader();
 
@@ -106,10 +106,24 @@ void RxnfileSaver::_saveReaction(){
    }
 
    _writeProductsFooter();
+
+   if (_brxn->catalystCount() > 0)
+   {
+      _writeCatalystsHeader();
+
+      for (int i = _brxn->catalystBegin(); i < _brxn->catalystEnd(); i = _brxn->catalystNext(i))
+      {
+         _writeMolHeader();
+         _writeMol(molfileSaver, i);
+      }
+
+      _writeCatalystsFooter();
+   }
+
    _writeRxnFooter();
 }
 
-void RxnfileSaver::_writeRxnHeader(BaseReaction &reaction, int reactantSize, int productSize)
+void RxnfileSaver::_writeRxnHeader(BaseReaction &reaction)
 {
    if (_v2000)
       _output.writeStringCR("$RXN");
@@ -134,9 +148,21 @@ void RxnfileSaver::_writeRxnHeader(BaseReaction &reaction, int reactantSize, int
    _output.writeCR();
 
    if (_v2000)
-      _output.printf("%3d%3d\n", reactantSize, productSize);
+   {
+      if (reaction.catalystCount() > 0)
+         _output.printf("%3d%3d%3d\n", reaction.reactantsCount(), reaction.productsCount(),
+                 reaction.catalystCount());
+      else
+         _output.printf("%3d%3d\n", reaction.reactantsCount(), reaction.productsCount());
+   }
    else
-      _output.printf("M  V30 COUNTS %d %d\n", reactantSize, productSize);
+   {
+      if (reaction.catalystCount() > 0)
+         _output.printf("M  V30 COUNTS %d %d %d\n", reaction.reactantsCount(), reaction.productsCount(),
+                 reaction.catalystCount());
+      else
+         _output.printf("M  V30 COUNTS %d %d\n", reaction.reactantsCount(), reaction.productsCount());
+   }
 }
 
 void RxnfileSaver::_writeMolHeader ()
@@ -155,6 +181,12 @@ void RxnfileSaver::_writeProductsHeader ()
 {
    if (!_v2000)
       _output.writeStringCR("M  V30 BEGIN PRODUCT");
+}
+
+void RxnfileSaver::_writeCatalystsHeader ()
+{
+   if (!_v2000)
+      _output.writeStringCR("M  V30 BEGIN AGENT");
 }
 
 void RxnfileSaver::_writeMol (MolfileSaver &saver, int index) {
@@ -192,6 +224,12 @@ void RxnfileSaver::_writeProductsFooter ()
 {
    if (!_v2000)
       _output.writeStringCR("M  V30 END PRODUCT");
+}
+
+void RxnfileSaver::_writeCatalystsFooter ()
+{
+   if (!_v2000)
+      _output.writeStringCR("M  V30 END AGENT");
 }
 
 void RxnfileSaver::_writeRxnFooter ()

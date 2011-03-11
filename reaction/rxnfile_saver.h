@@ -51,11 +51,13 @@ protected:
    Reaction      *_rxn;
 
    Output &_output;
-   void _writeRxnHeader (BaseReaction &reaction, int reactantSize, int productSize);
+   void _writeRxnHeader (BaseReaction &reaction);
    void _writeReactantsHeader ();
    void _writeProductsHeader ();
+   void _writeCatalystsHeader ();
    void _writeReactantsFooter ();
    void _writeProductsFooter ();
+   void _writeCatalystsFooter ();
    void _writeMolHeader ();
    void _writeMol (MolfileSaver &saver, int index);
    void _writeRxnFooter ();
