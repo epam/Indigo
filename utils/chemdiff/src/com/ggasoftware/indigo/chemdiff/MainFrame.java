@@ -88,16 +88,8 @@ public class MainFrame extends javax.swing.JFrame
       catch (Exception e) {}
       
       String path = getPathToJarfileDir(MainFrame.class);
-      if (path == null)
-      {
-         indigo1 = new Indigo();
-         indigo2 = new Indigo();
-      }
-      else
-      {
-         indigo1 = new Indigo(path + File.separator + "lib");
-         indigo2 = new Indigo(path + File.separator + "lib");
-      }
+      indigo1 = new Indigo();
+      indigo2 = new Indigo();
 
       indigo_renderer1 = new IndigoRenderer(indigo1);
       indigo_renderer2 = new IndigoRenderer(indigo2);

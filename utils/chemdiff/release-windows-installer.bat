@@ -14,13 +14,16 @@ cd ..\..\api\java
 call compile.bat
 cd ..\renderer\java
 call compile.bat
+cd ..\..\..\common\java\common-controls
+call compile.bat
 cd ..\..\..\utils\chemdiff
 
 copy ..\..\common\jna\jna.jar lib\
-copy ..\..\api\java\dist\indigo-java.jar lib\
-copy ..\..\api\renderer\java\dist\indigo-renderer-java.jar lib\
+copy ..\..\common\java\common-controls\dist\common-controls.jar lib\
+copy ..\..\api\java\dist\indigo.jar lib\
+copy ..\..\api\renderer\java\dist\indigo-renderer.jar lib\
 cd src
-javac -cp ..\lib\indigo-java.jar;..\lib\indigo-renderer-java.jar com/ggasoftware/indigo/chemdiff/*.java
+javac -cp ..\lib\indigo.jar;..\lib\indigo-renderer.jar;..\lib\common-controls.jar com/ggasoftware/indigo/chemdiff/*.java
 jar cvfm ..\chemdiff.jar ..\manifest.mf com/ggasoftware/indigo/chemdiff/*.class
 cd ..
 
