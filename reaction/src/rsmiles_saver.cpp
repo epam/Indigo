@@ -51,6 +51,8 @@ void RSmilesSaver::_writeMolecule (int i)
    SmilesSaver saver(_output);
 
    saver.write_extra_info = false;
+   saver.separate_rsites = false;
+   saver.rsite_indices_as_aam = false;
    saver.atom_atom_mapping = _brxn->getAAMArray(i).ptr();
 
    if (_rxn != 0)
@@ -350,8 +352,15 @@ void RSmilesSaver::_writePseudoAtoms ()
    int i;
 
    for (i = 0; i < _written_atoms.size(); i++)
-      if (_brxn->getBaseMolecule(_written_atoms[i].mol).isPseudoAtom(_written_atoms[i].idx))
+   {
+      BaseMolecule &mol = _brxn->getBaseMolecule(_written_atoms[i].mol);
+      int idx = _written_atoms[i].idx;
+
+      if (mol.isPseudoAtom(idx))
          break;
+      if (mol.isRSite(idx) && mol.getRSiteBits(idx) > 0)
+         break;
+   }
 
    if (i == _written_atoms.size())
       return;
@@ -377,6 +386,9 @@ void RSmilesSaver::_writePseudoAtoms ()
 
       if (mol.isPseudoAtom(idx.idx))
          SmilesSaver::writePseudoAtom(mol.getPseudoAtom(idx.idx), _output);
+      else if (mol.isRSite(idx.idx) && mol.getRSiteBits(idx.idx) > 0)
+         // ChemAxon's Extended SMILES notation for R-sites
+         _output.printf("_R%d", mol.getSingleAllowedRGroup(idx.idx));
 
    }
 

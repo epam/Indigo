@@ -381,16 +381,32 @@ void RSmilesLoader::_loadReaction ()
 
                   int idx = i;
                   int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
+                  int rnum;
 
-                  if (_rxn != 0)
-                     ((Molecule &)mols[group]->ref()).setPseudoAtom(idx, label.ptr());
+                  if (label.size() > 3 && label[0] == '_' && label[1] == 'R' &&
+                      sscanf(label.ptr() + 2, "%d", &rnum) == 1)
+                  {
+                     // ChemAxon's Extended SMILES notation for R-sites
+                     if (_qrxn != 0)
+                     {
+                        QueryMolecule &qmol = (QueryMolecule &)mols[group]->ref();
+
+                        qmol.resetAtom(idx, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+                     }
+                     mols[group]->ref().allowRGroupOnRSite(idx, rnum);
+                  }
                   else
                   {
-                     QueryMolecule &qmol = (QueryMolecule &)mols[group]->ref();
+                     if (_rxn != 0)
+                        ((Molecule &)mols[group]->ref()).setPseudoAtom(idx, label.ptr());
+                     else
+                     {
+                        QueryMolecule &qmol = (QueryMolecule &)mols[group]->ref();
 
-                     qmol.resetAtom(idx, (QueryMolecule::Atom *)QueryMolecule::Atom::und(qmol.releaseAtom(idx),
-                              new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                        qmol.resetAtom(idx, (QueryMolecule::Atom *)QueryMolecule::Atom::und(qmol.releaseAtom(idx),
+                                 new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
 
+                     }
                   }
                }
             }

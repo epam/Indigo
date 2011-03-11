@@ -51,6 +51,8 @@ public:
    bool ignore_hydrogens;
    bool canonize_chiralities;
    bool write_extra_info;
+   bool separate_rsites;
+   bool rsite_indices_as_aam;
 
    int writtenComponents ();
    const Array<int> & writtenAtoms ();

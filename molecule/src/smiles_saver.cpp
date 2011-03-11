@@ -42,6 +42,8 @@ TL_CP_GET(_written_bonds)
    _mol = 0;
    smarts_mode = false;
    ignore_invalid_hcount = false;
+   separate_rsites = true;
+   rsite_indices_as_aam = true;
 }
 
 SmilesSaver::~SmilesSaver ()
@@ -142,12 +144,15 @@ void SmilesSaver::_saveMolecule ()
    walk.ignored_vertices = ignored_vertices.ptr();
    walk.vertex_ranks = vertex_ranks;
 
-   for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
+   if (separate_rsites)
    {
-      if (_bmol->isRSite(i))
-         // We break the DFS walk when going through R-sites. For details, see
-         // http://blueobelisk.shapado.com/questions/how-r-group-atoms-should-be-represented-in-smiles
-         walk.mustBeRootVertex(i);
+      for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
+      {
+         if (_bmol->isRSite(i))
+            // We break the DFS walk when going through R-sites. For details, see
+            // http://blueobelisk.shapado.com/questions/how-r-group-atoms-should-be-represented-in-smiles
+            walk.mustBeRootVertex(i);
+      }
    }
 
    walk.walk();
@@ -449,7 +454,7 @@ void SmilesSaver::_saveMolecule ()
 
          for (j = 0; j < closing.size(); j++)
          {
-            if (_bmol->isRSite(closing[j]))
+            if (separate_rsites && _bmol->isRSite(closing[j]))
             {
                cycle_numbers.expandFill(rsites_closures_starting_num + 1, -1);
                for (k = rsites_closures_starting_num; k < cycle_numbers.size(); k++)
@@ -506,10 +511,11 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
 
    if (_bmol->isRSite(idx))
    {
-      if (_bmol->getRSiteBits(idx) == 0)
-         _output.printf("[*]");
-      else
+      if (rsite_indices_as_aam && _bmol->getRSiteBits(idx) != 0)
          _output.printf("[*:%d]",  _bmol->getSingleAllowedRGroup(idx));
+      else
+         _output.printf("[*]");
+         
       return;
    }
 
