@@ -58,6 +58,8 @@ void usage (void)
            "-idfield <string>\n"
            "   SDF/RDF field to be put in place of '%%s' in the names of saved files\n"
            "   (default is molecule/reaction number)\n"
+           "-catalysts [above|above-and-below]\n"
+           "   Reaction catalysts placement w.r.t. the arrow (default is above and below\n"
            "-comment <string>\n"
            "   Text comment to be put above the molecule or reaction. No default value\n"
            "-commentoffset <number> \n"
@@ -559,6 +561,16 @@ int parseParams (Params* p, int argc, char *argv[]) {
          }
 
          p->id = argv[i];
+      }
+      else if (strcmp(argv[i], "-catalysts") == 0)
+      {
+         if (++i == argc)
+         {
+            fprintf(stderr, "expecting an identifier after -catalysts\n");
+            return -1;
+         }
+
+         indigoSetOption("render-catalysts-placement", argv[i]);
       }
       else if (strcmp(argv[i], "-comment") == 0)
       {
