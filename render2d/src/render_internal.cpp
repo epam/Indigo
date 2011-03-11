@@ -1817,7 +1817,7 @@ int MoleculeRenderInternal::_findClosestCircle (Vec2f& p, int aid, float radius,
    return iMin;
 }
 
-enum CHARCAT {DIGIT = 0, LETTER, SUPERSCRIPT, SUBSCRIPT, SIGN, WHITESPACE};
+enum CHARCAT {DIGIT = 0, LETTER, TAG_SUPERSCRIPT, TAG_SUBSCRIPT, TAG_NORMAL, SIGN, WHITESPACE};
 enum SCRIPT {MAIN, SUB, SUPER};
 
 void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highlighted)
@@ -1844,7 +1844,8 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
       offset = _settings.bondLineWidth/2,
       totalwdt = 0,
       upshift = -0.6f,
-      downshift = 0.2f;
+      downshift = 0.2f,
+      space = width / 2;
    ad.ypos = fake.bbp.y;
    ad.height = fake.bbsz.y;
    ad.leftMargin = ad.rightMargin = xpos;
@@ -1864,9 +1865,8 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
       for (int i = 0; i <= len; ++i) {
          a = b;
          i1 = i;
-         char c = (i == len ? ' ' : str[i]);
          bool tag = false;
-         bool stop = false;
+         char c = (i == len ? ' ' : str[i]);
          if (isspace(c))
             b = WHITESPACE;
          else if (isdigit(c))
@@ -1874,26 +1874,27 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
          else if (c == '+' || c == '-')
             b = SIGN, signType = ((c == '+') ? GraphItem::PLUS : GraphItem::MINUS);
          else if (c == '\\' && i < len - 1 && str[i+1] == 'S')
-            b = SUPERSCRIPT, ++i, tag = true;
+            b = TAG_SUPERSCRIPT, ++i, tag = true;
          else if (c == '\\' && i < len - 1 && str[i+1] == 's')
-            b = SUBSCRIPT, ++i, tag = true;
+            b = TAG_SUBSCRIPT, ++i, tag = true;
          else if (c == '\\' && i < len - 1 && str[i+1] == 'n')
-            b = LETTER, ++i, tag = true;
+            b = TAG_NORMAL, ++i, tag = true;
          else
             b = LETTER;
 
-         if (b == SUPERSCRIPT) {
+         bool aTag = a == TAG_SUPERSCRIPT || a == TAG_SUBSCRIPT || a == TAG_NORMAL;
+         if (b == TAG_SUPERSCRIPT) {
             newscript = SUPER;
-         } else if ((b == WHITESPACE && a != WHITESPACE) || (b == LETTER && a != LETTER)) {
-            newscript = MAIN;
-         } else if (b == SUBSCRIPT) {
+         } else if (b == TAG_SUBSCRIPT) {
             newscript = SUB;
+         } else if (b == TAG_NORMAL) {
+            newscript = MAIN;
+         } else if ((b == WHITESPACE && a != WHITESPACE) || (b != WHITESPACE && a == WHITESPACE) || (b == LETTER && !aTag)) {
+            newscript = MAIN;
          } else if (b == DIGIT && a == SIGN) {
             newscript = script;
-         } else if (b == DIGIT && a != DIGIT && a != SUPERSCRIPT && a != SUBSCRIPT) {
+         } else if (b == DIGIT && a != DIGIT && !aTag) {
             newscript = ((a == LETTER) ? SUB : MAIN);
-         } else if (tag) {
-            newscript = MAIN;
          } else if (b == SIGN) {
             if (a == LETTER || a == DIGIT)
 		newscript = SUPER;
@@ -1914,6 +1915,8 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
                sign.bbp.set(xpos + totalwdt, ad.ypos + ad.height - sign.bbsz.y + upshift * ad.height);
                _expandBoundRect(ad, sign);
                totalwdt += sign.bbsz.x;
+            } else if (a == WHITESPACE) {
+               totalwdt += space * (i1 - i0);
             } else {
                float shift = (script == SUB) ? downshift : ((script == SUPER) ? upshift : 0);
                int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
