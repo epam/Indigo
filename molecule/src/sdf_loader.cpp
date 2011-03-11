@@ -113,6 +113,7 @@ void SdfLoader::readNext ()
 {
    ArrayOutput output(data);
    output.writeArray(_preread);
+   int n_preread = _preread.size();
    _preread.clear();
    QS_DEF(Array<char>, str);
 
@@ -120,7 +121,7 @@ void SdfLoader::readNext ()
       throw Error("end of stream");
 
    _offsets.expand(_current_number + 1);
-   _offsets[_current_number++] = _scanner->tell();
+   _offsets[_current_number++] = _scanner->tell() - n_preread;
 
    properties.clear();
 
