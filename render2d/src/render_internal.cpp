@@ -1830,6 +1830,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
    int i0 = 0, i1;
    SCRIPT script = MAIN, newscript = MAIN;
    int len = (int)strlen(str);
+   GraphItem::TYPE signType;
    // TODO: replace remembering item ids and shifting each of them with single offset value for an atom
    Array<int> tis, gis;
 
@@ -1867,9 +1868,10 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
             b = WHITESPACE;
          else if (isdigit(c))
             b = DIGIT;
-         else if (c == '+' || c == '-')
+         else if (c == '+' || c == '-') {
             b = SIGN;
-         else if (c == '\\' && i < len - 1 && tolower(str[i+1]) == 's')
+            signType = (c == '+') ? GraphItem::PLUS : GraphItem::MINUS;
+         } else if (c == '\\' && i < len - 1 && tolower(str[i+1]) == 's')
             b = SUPERSCRIPT, ++i;
          else if (c == '\\' && i < len - 1 && tolower(str[i+1]) == 'n')
             b = WHITESPACE, ++i;
@@ -1899,11 +1901,10 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
          if (stop) {
             if (i1 > i0) {
                if (a == SIGN) {
-                  GraphItem::TYPE type = (c == '+') ? GraphItem::PLUS : GraphItem::MINUS;
                   int id = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
                   gis.push(id);
                   GraphItem& sign = _data.graphitems[id];
-                  _cw.setGraphItemSizeSign(sign, type);
+                  _cw.setGraphItemSizeSign(sign, signType);
 
                   totalwdt += offset;
                   sign.bbp.set(xpos + totalwdt, ad.ypos + ad.height - sign.bbsz.y + upshift * ad.height);
