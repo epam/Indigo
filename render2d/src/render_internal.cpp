@@ -1892,8 +1892,9 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
             newscript = ((a == LETTER) ? SUB : MAIN);
          } else if (tag) {
             newscript = MAIN;
-         } else if (b == SIGN && script == SUPER) {
-            (void)0;
+         } else if (b == SIGN) {
+            if (a == LETTER)
+		newscript = SUPER;
          } else if (a == SIGN && script == SUPER) {
             newscript = MAIN;
          } else {
