@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -22,8 +22,8 @@
 #include "render_common.h"
 
 namespace indigo {
-   
-class RenderContext 
+
+class RenderContext
 {
 public:
    DEF_ERROR("render context");
@@ -42,7 +42,7 @@ public:
    void init();
    void fillBackground();
    void initNullContext ();
-   void initContext (int width, int height);   
+   void initContext (int width, int height);
    void closeContext (bool discard);
    void translate (float dx, float dy);
    void scale (float s);
@@ -54,6 +54,7 @@ public:
    void drawItemBackground (const RenderItem& item);
    void drawTextItemText (const TextItem& ti);
    void drawTextItemText (const TextItem& ti, const Vec3f& color, bool bold);
+   void drawBracket (RenderItemBracket& bracket);
    void drawAttachmentPoint (RenderItemAttachmentPoint& ri);
    void drawRSiteAttachmentIndex (RenderItemRSiteAttachmentIndex& ri);
    void drawLine (const Vec2f& v0, const Vec2f& v1);
@@ -89,7 +90,7 @@ public:
    float currentLineWidth () const;
    void setHighlight();
    void resetHighlight();
-   void resetHighlightThickness();   
+   void resetHighlightThickness();
 
    const RenderSettings& getRenderSettings () const {return _settings;}
    int getWidth() const {return _width;}
@@ -177,7 +178,7 @@ private:
 
    cairo_font_face_t *cairoFontFaceRegular, *cairoFontFaceBold;
    cairo_matrix_t fontScale, fontCtm;
-   cairo_font_options_t *fontOptions;    
+   cairo_font_options_t *fontOptions;
    cairo_scaled_font_t *_scaled_fonts[FONT_SIZE_COUNT * 2];
 
    bool metafileFontsToCurves;

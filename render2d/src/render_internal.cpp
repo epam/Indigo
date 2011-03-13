@@ -250,6 +250,8 @@ void MoleculeRenderInternal::render ()
 
    _initDataSGroups();
 
+   _initSruGroups();
+
    _extendRenderItems();
 
    _findAnglesOverPi();
@@ -539,6 +541,77 @@ void MoleculeRenderInternal::_initDataSGroups()
          ti.bbp.add(_ad(group.atoms[0]).pos);
       } else {
          _objCoordTransform(ti.bbp, group.display_pos);
+      }
+   }
+}
+
+void MoleculeRenderInternal::_loadBrackets(SGroup& sg, const Array<Vec2f[2]>& coord)
+{
+   for (int j = 0; j < coord.size(); ++j) {
+      Vec2f a(coord[j][0]), b(coord[j][1]);
+      int bracketId = _data.brackets.size();
+      if (j == 0)
+         sg.bibegin = bracketId, sg.bicount = 1;
+      else
+         sg.bicount++;
+      RenderItemBracket& bracket =_data.brackets.push();
+      bracket.p0.copy(a);
+      bracket.p0.set(a.x - _min.x, _max.y - a.y);
+      bracket.p0.scale(_scale);
+      bracket.p1.copy(b);
+      bracket.p1.set(b.x - _min.x, _max.y - b.y);
+      bracket.p1.scale(_scale);
+      bracket.d.diff(bracket.p1, bracket.p0);
+      bracket.length = bracket.d.length();
+      bracket.d.normalize();
+      bracket.n.copy(bracket.d);
+      bracket.n.rotateL(-1, 0);
+      bracket.width = bracket.length * 0.15f;
+      bracket.q0.lineCombin(bracket.p0, bracket.n, bracket.width);
+      bracket.q1.lineCombin(bracket.p1, bracket.n, bracket.width);
+      bracket.invertUpperLowerIndex = bracket.n.x > 0;
+   }
+}
+
+void MoleculeRenderInternal::_positionIndex(SGroup& sg, int ti, bool lower)
+{
+   RenderItemBracket& bracket = _data.brackets[sg.bibegin + sg.bicount - 1];
+   TextItem& index = _data.textitems[ti];
+   if (bracket.invertUpperLowerIndex)
+      lower = !lower;
+   _cw.setTextItemSize(index, lower ? bracket.p1 : bracket.p0);
+   double xShift = (fabs(index.bbsz.x * bracket.n.x) + fabs(index.bbsz.y * bracket.n.y)) / 2 + _settings.bondLineWidth;
+   double yShift = (fabs(index.bbsz.x * bracket.d.x) + fabs(index.bbsz.y * bracket.d.y)) / 2;
+   index.bbp.addScaled(bracket.n, -xShift);
+   index.bbp.addScaled(bracket.d, lower ? -yShift : yShift);
+}
+
+void MoleculeRenderInternal::_initSruGroups()
+{
+   BaseMolecule& bm = *_mol;
+   for (int i = 0; i < bm.repeating_units.size(); ++i) {
+      const BaseMolecule::RepeatingUnit& group = bm.repeating_units[i];
+      SGroup& sg = _data.sgroups.push();
+      _loadBrackets(sg, group.brackets);
+      int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
+      TextItem& index = _data.textitems[tiIndex];
+      index.fontsize = FONT_SIZE_ATTR;
+      index.text.clear();
+      index.text.push('n');
+      index.text.push(0);
+      _positionIndex(sg, tiIndex, true);
+      if (group.connectivity != BaseMolecule::RepeatingUnit::HEAD_TO_TAIL) {
+         int tiConn = _pushTextItem(sg, RenderItem::RIT_SGROUP);
+         TextItem& conn = _data.textitems[tiConn];
+         conn.fontsize = FONT_SIZE_ATTR;
+         conn.text.clear();
+         if (group.connectivity == BaseMolecule::RepeatingUnit::HEAD_TO_HEAD) {
+            conn.text.appendString("hh", true);
+         } else {
+            conn.text.appendString("eu", true);
+         }
+         conn.text.push(0);
+         _positionIndex(sg, tiConn, false);
       }
    }
 }
@@ -1119,6 +1192,8 @@ void MoleculeRenderInternal::_renderSGroups ()
          _cw.drawTextItemText(_data.textitems[j + sg.tibegin]);
       for (int j = 0; j < sg.gicount; ++j)
          _cw.drawGraphItem(_data.graphitems[j + sg.gibegin]);
+      for (int j = 0; j < sg.bicount; ++j)
+         _cw.drawBracket(_data.brackets[j + sg.bibegin]);
    }
 }
 

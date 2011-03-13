@@ -744,6 +744,23 @@ void RenderContext::drawGraphItem (GraphItem& gi)
    cairoCheckStatus();
 }
 
+void RenderContext::drawBracket (RenderItemBracket& bracket)
+{
+   setSingleSource(bracket.color);
+   setLineWidth(_settings.bondLineWidth);
+
+   Vec2f p;
+   moveTo(bracket.q0);
+   lineTo(bracket.p0);
+   lineTo(bracket.p1);
+   lineTo(bracket.q1);
+
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+}
+
 void RenderContext::fillRect (double x, double y, double w, double h)
 {
    cairo_rectangle(_cr, x, y, w, h);

@@ -98,6 +98,14 @@ struct GraphItem : public RenderItem {
    TYPE type;
 };
 
+struct RenderItemBracket : public RenderItem {
+   RenderItemBracket() { clear(); }
+   void clear();
+   Vec2f p0, p1, q0, q1, d, n;
+   double width, length;
+   bool invertUpperLowerIndex;
+};
+
 struct RenderItemAttachmentPoint : public RenderItem {
    RenderItemAttachmentPoint() { clear(); }
    void clear();
@@ -152,6 +160,7 @@ struct SGroup {
 
    int tibegin, ticount;
    int gibegin, gicount;
+   int bibegin, bicount;
 
 private:
    SGroup(const SGroup& sg);
@@ -247,6 +256,7 @@ struct MoleculeRenderData {
    ObjArray<GraphItem> graphitems;
    ObjArray<RenderItemAttachmentPoint> attachmentPoints;
    ObjArray<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
+   ObjArray<RenderItemBracket> brackets;
    Array<int> aam;
    Array<int> reactingCenters;
    Array<int> inversions;

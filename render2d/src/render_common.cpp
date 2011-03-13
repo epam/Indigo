@@ -79,6 +79,17 @@ void RenderItemAttachmentPoint::clear() {
    number = -1;
 }
 
+void RenderItemBracket::clear() {
+   p0.set(0,0);
+   p1.set(0,0);
+   q0.set(0,0);
+   q1.set(0,0);
+   d.set(0,0);
+   n.set(0,0);
+   length = 0;
+   width = 0;
+}
+
 void RenderItemRSiteAttachmentIndex::clear() {
    RenderItem::clear();
    number = -1;
