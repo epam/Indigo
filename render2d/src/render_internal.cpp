@@ -252,6 +252,10 @@ void MoleculeRenderInternal::render ()
 
    _initSruGroups();
 
+   _initMulGroups();
+
+   _initSupGroups();
+
    _extendRenderItems();
 
    _findAnglesOverPi();
@@ -580,8 +584,8 @@ void MoleculeRenderInternal::_positionIndex(SGroup& sg, int ti, bool lower)
    if (bracket.invertUpperLowerIndex)
       lower = !lower;
    _cw.setTextItemSize(index, lower ? bracket.p1 : bracket.p0);
-   double xShift = (fabs(index.bbsz.x * bracket.n.x) + fabs(index.bbsz.y * bracket.n.y)) / 2 + _settings.bondLineWidth;
-   double yShift = (fabs(index.bbsz.x * bracket.d.x) + fabs(index.bbsz.y * bracket.d.y)) / 2;
+   float xShift = (fabs(index.bbsz.x * bracket.n.x) + fabs(index.bbsz.y * bracket.n.y)) / 2 + _settings.bondLineWidth;
+   float yShift = (fabs(index.bbsz.x * bracket.d.x) + fabs(index.bbsz.y * bracket.d.y)) / 2;
    index.bbp.addScaled(bracket.n, -xShift);
    index.bbp.addScaled(bracket.d, lower ? -yShift : yShift);
 }
@@ -596,24 +600,40 @@ void MoleculeRenderInternal::_initSruGroups()
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
       index.fontsize = FONT_SIZE_ATTR;
-      index.text.clear();
-      index.text.push('n');
-      index.text.push(0);
+      bprintf(index.text, "n");
       _positionIndex(sg, tiIndex, true);
       if (group.connectivity != BaseMolecule::RepeatingUnit::HEAD_TO_TAIL) {
          int tiConn = _pushTextItem(sg, RenderItem::RIT_SGROUP);
          TextItem& conn = _data.textitems[tiConn];
          conn.fontsize = FONT_SIZE_ATTR;
-         conn.text.clear();
          if (group.connectivity == BaseMolecule::RepeatingUnit::HEAD_TO_HEAD) {
-            conn.text.appendString("hh", true);
+            bprintf(conn.text, "hh");
          } else {
-            conn.text.appendString("eu", true);
+            bprintf(conn.text, "eu");
          }
-         conn.text.push(0);
          _positionIndex(sg, tiConn, false);
       }
    }
+}
+
+void MoleculeRenderInternal::_initMulGroups()
+{
+   BaseMolecule& bm = *_mol;
+   for (int i = 0; i < bm.multiple_groups.size(); ++i) {
+      const BaseMolecule::MultipleGroup& group = bm.multiple_groups[i];
+      SGroup& sg = _data.sgroups.push();
+      _loadBrackets(sg, group.brackets);
+      int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
+      TextItem& index = _data.textitems[tiIndex];
+      index.fontsize = FONT_SIZE_ATTR;
+      bprintf(index.text, "%d", group.multiplier);
+      _positionIndex(sg, tiIndex, true);
+   }
+}
+
+void MoleculeRenderInternal::_initSupGroups()
+{
+   // dummy
 }
 
 void MoleculeRenderInternal::_findRings()

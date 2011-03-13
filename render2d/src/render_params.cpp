@@ -134,8 +134,8 @@ void RenderParamInterface::render (RenderParams& params)
    RenderContext rc(params.rOpt, params.relativeThickness);
 
    bool bondLengthSet = params.cnvOpt.bondLength > 0;
-   float bondLength = bondLengthSet ? params.cnvOpt.bondLength : 100;
-   rc.setDefaultScale(bondLength);
+   int bondLength = (int)(bondLengthSet ? params.cnvOpt.bondLength : 100);
+   rc.setDefaultScale((float)bondLength); // TODO: fix bondLength type
    
    RenderItemFactory factory(rc); 
    int obj = -1;

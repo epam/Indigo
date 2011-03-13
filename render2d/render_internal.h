@@ -68,6 +68,8 @@ private:
    void _positionIndex(SGroup& sg, int ti, bool lower);
    void _initDataSGroups();
    void _initSruGroups();
+   void _initMulGroups();
+   void _initSupGroups();
    void _findAnglesOverPi();
    void _renderBondIds();
    void _renderAtomIds();

@@ -102,7 +102,7 @@ struct RenderItemBracket : public RenderItem {
    RenderItemBracket() { clear(); }
    void clear();
    Vec2f p0, p1, q0, q1, d, n;
-   double width, length;
+   float width, length;
    bool invertUpperLowerIndex;
 };
 

@@ -117,7 +117,7 @@ float RenderSingle::_getScale ()
    int maxPageSize = _rc.getMaxPageSize();
    float s;
    bool imageSizeSet = width > 0 && height > 0;
-   s = _bondLength;
+   s = (float)_bondLength;
    int defaultWidth = (int)ceil(__max(objSize.x * s, commentSize.x) + outerMargin.x * 2);
    int defaultHeight = (int)ceil(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2);
 
