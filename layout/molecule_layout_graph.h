@@ -124,8 +124,10 @@ protected:
    struct Cycle
    {
       explicit Cycle();
+      explicit Cycle(const List<int> &edges, const MoleculeLayoutGraph &graph);
       explicit Cycle(const Array<int> &vertices, const Array<int> &edges);
 
+      void copy (const List<int> &edges, const MoleculeLayoutGraph &graph);
       void copy (const Array<int> &vertices, const Array<int> &edges);
 
       int vertexCount () const { return _vertices.size(); }
@@ -146,15 +148,6 @@ protected:
       TL_CP_DECL(Array<int>, _edges);
       int _max_idx;
       long _morgan_code;
-   };
-
-   struct CycleContext 
-   {
-      ObjPool<Cycle> cycles;
-      Array<int> covered_edges;
-      int uncovered_edges;
-      int iterationNumber;
-      int maxIterationNumber;
    };
 
    struct EnumContext
@@ -224,9 +217,7 @@ protected:
    static float _dichotomy2  (float a0, float b0, int L, float s);
    static void _calculatePos (float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v);
 
-   static bool _vertex_cb (Graph &graph, int v_idx, void *context);
    static bool _border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
-   static bool _cycle_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _edge_check (Graph &graph, int e_idx, void *context);
 
    // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)

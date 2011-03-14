@@ -485,17 +485,6 @@ int MoleculeLayoutGraph::_pattern_embedding (Graph &subgraph, Graph &supergraph,
    return 0;
 }
 
-bool MoleculeLayoutGraph::_vertex_cb (Graph &graph, int v_idx, void *context)
-{
-   CycleContext &cycle_context = *(CycleContext *)context;
-
-   if(cycle_context.maxIterationNumber && cycle_context.iterationNumber > cycle_context.maxIterationNumber * 10000)
-      throw Error("number of iterations exceeded %d ", cycle_context.maxIterationNumber * 10000);
-   
-   cycle_context.iterationNumber++;
-   return true;
-}
-
 void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph)
 {
    int i;
@@ -609,34 +598,17 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
 
    //TODO: repair exception with vec2f
 
-   QS_DEF(CycleContext, cycle_context);
+   QS_DEF(ObjPool<Cycle>, cycles);
    QS_DEF(Array<int>, sorted_cycles);
-
-   ObjPool<Cycle>& cycles = cycle_context.cycles;
+    
    cycles.clear();
-   cycle_context.maxIterationNumber = max_iterations;
-   cycle_context.iterationNumber = 0;
-   cycle_context.uncovered_edges = edgeCount();
-   cycle_context.covered_edges.clear_resize(edgeEnd());
-   cycle_context.covered_edges.zerofill();
-
-   int min_length = 0;
-   int max_length = 12;
+   int n_cycles = sssrCount();
    
-   while (cycle_context.uncovered_edges > 0) 
+   for (i = 0; i < n_cycles; i++)
    {
-      CycleEnumerator ce(*this);
+      int cycle_idx = cycles.add(sssrEdges(i), *this);
       
-      ce.context = &cycle_context;
-      ce.cb_check_vertex = _vertex_cb;
-      ce.cb_handle_cycle = _cycle_cb;
-      ce.min_length = min_length;
-      ce.max_length = max_length;
-      
-      ce.process();
-      
-      min_length = max_length + 1;
-      max_length += 2;
+      cycles[cycle_idx].canonize();
    }
 
    sorted_cycles.clear();

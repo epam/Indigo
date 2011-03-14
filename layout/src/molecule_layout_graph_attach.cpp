@@ -541,16 +541,20 @@ bool MoleculeLayoutGraph::_attachCycleWithIntersections (const Cycle &cycle, flo
    if (!_splitCycle(cycle, cycle_vertex_types, false, chain_ext, chain_int, c_beg, c_end))
       return false;
 
+   float max_length = length * 4; // to avoid infinite values
+   
    // Complete regular polygon by chain_ext (on the one side if n_try == 1 and other side if n_try == 2
    // Mark new vertices and edges as not planar
    k = chain_ext.size() - 2;
    float dist = Vec2f::dist(getPos(c_beg), getPos(c_end));
 
    if (dist > (k + 1) * length)
+   {   
       length = 0.2f + dist / (k + 1);
+      max_length = __max(max_length, length * 1.5f);  // update max length if needed
+   }
 
    bool attached = false;
-   float max_length = length * 4; // to avoid infinite values
 
    while (!attached && length < max_length)
    {

@@ -25,6 +25,13 @@ TL_CP_GET(_edges)
    _max_idx = 0;
 }
 
+MoleculeLayoutGraph::Cycle::Cycle (const List<int> &edges, const MoleculeLayoutGraph &graph) :
+TL_CP_GET(_vertices),
+TL_CP_GET(_edges)
+{
+   copy(edges, graph);
+}
+
 MoleculeLayoutGraph::Cycle::Cycle (const Array<int> &vertices, const Array<int> &edges) :
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges)
@@ -32,12 +39,47 @@ TL_CP_GET(_edges)
    copy(vertices, edges);
 }
 
+void MoleculeLayoutGraph::Cycle::copy (const List<int> &edges, const MoleculeLayoutGraph &graph)
+{
+   int i = edges.begin();
+   const Edge &edge1 = graph.getEdge(edges[i]);
+   const Edge &edge2 = graph.getEdge(edges[edges.next(i)]);
+   
+   _vertices.clear();
+   _edges.clear();
+   
+   if (edge1.beg == edge2.beg || edge1.beg == edge2.end)
+      _vertices.push(edge1.end);
+   else
+      _vertices.push(edge1.beg);
+   
+   for ( ; i < edges.end(); i = edges.next(i))
+   {
+      const Edge &edge = graph.getEdge(edges[i]);
+      
+      if (_vertices.top() == edge.beg)
+         _vertices.push(edge.end);
+      else
+         _vertices.push(edge.beg);
+      
+      _edges.push(edges[i]);
+   }
+   
+   _vertices.pop();
+   
+   _max_idx = 0;
+
+   for (int i = 0; i < _vertices.size(); i++)
+      if (_vertices[i] > _max_idx)
+         _max_idx = _vertices[i];
+}
+
 void MoleculeLayoutGraph::Cycle::copy (const Array<int> &vertices, const Array<int> &edges)
 {
    _vertices.copy(vertices);
    _edges.copy(edges);
    _max_idx = 0;
-
+   
    for (int i = 0; i < _vertices.size(); i++)
       if (_vertices[i] > _max_idx)
          _max_idx = _vertices[i];
@@ -144,50 +186,3 @@ int MoleculeLayoutGraph::Cycle::compare_cb (int &idx1, int &idx2, void *context)
 
    return cycles[idx2].morganCode() - cycles[idx1].morganCode();
 }
-
-// Cycle enumerator callback
-// Check if cycle is not enclosed by previous cycles
-// Remove all cycles which it encloses
-bool MoleculeLayoutGraph::_cycle_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
-{
-   CycleContext &cycle_context = *(CycleContext *)context;
-
-   ObjPool<Cycle>& cycles = cycle_context.cycles;
-
-   int cycle_idx = cycles.add(vertices, edges);
-   Cycle &new_cycle = cycles[cycle_idx];
-   
-   new_cycle.canonize();
-   
-   // Mark covered edges in graph
-   for (int i = 0; i < edges.size(); i++)
-      if (cycle_context.covered_edges[edges[i]] == 0)
-      {
-         cycle_context.covered_edges[edges[i]] = 1;
-         cycle_context.uncovered_edges--;
-      }
-
-   for (int i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
-   {
-      if (i == cycle_idx)
-         continue;
-
-      if (new_cycle.contains(cycles[i]))
-      {
-         cycles.remove(cycle_idx);
-         return true;
-      }
-   }
-
-   for (int i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
-   {
-      if (i == cycle_idx)
-         continue;
-
-      if (cycles[i].contains(new_cycle))
-         cycles.remove(i);
-   }
-   return true;
-}
-
-
