@@ -244,8 +244,9 @@ bool BingoFingerprints::screenPart_Init (OracleEnv &env, Screening &screening)
 
       screening.statement.create(env);
       screening.bits_lob.create(env);
-      screening.statement->append("SELECT bits FROM %s WHERE part = %d", _table_name.ptr(), screening.part);
+      screening.statement->append("SELECT bits FROM %s WHERE part = :part", _table_name.ptr());
       screening.statement->prepare();
+	  screening.statement->bindIntByName(":part", &screening.part);
       screening.statement->defineBlobByPos(1, screening.bits_lob.ref());
       screening.statement->execute();
    }
