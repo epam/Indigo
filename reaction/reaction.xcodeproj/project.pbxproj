@@ -264,7 +264,6 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = reaction;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "i386 ppc ppc64 ppc7400 ppc970 x86_64";
 				ZERO_LINK = NO;
 			};
 			name = Release10.6;
@@ -334,7 +333,6 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = reaction;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "i386 ppc ppc64 ppc7400 ppc970 x86_64";
 				ZERO_LINK = NO;
 			};
 			name = Release10.5;
