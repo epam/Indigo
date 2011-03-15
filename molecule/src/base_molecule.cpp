@@ -771,7 +771,7 @@ void BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
 
    for (i = 0; i < super.atoms.size(); i++)
    {
-      if (mapping[super.atoms[i]] > 0)
+      if (mapping[super.atoms[i]] >= 0)
          sgroup.atoms.push(mapping[super.atoms[i]]);
    }
    for (i = 0; i < super.bonds.size(); i++)
