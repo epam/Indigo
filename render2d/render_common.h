@@ -376,6 +376,7 @@ public:
    bool centerDoubleBondWhenStereoAdjacent;
    bool showCycles; // for diagnostic purposes
    bool agentsBelowArrow;
+   bool collapseSuperatoms;
 private:
    RenderOptions (const RenderOptions& );
 };

@@ -549,7 +549,7 @@ void MoleculeRenderInternal::_initDataSGroups()
    }
 }
 
-void MoleculeRenderInternal::_loadBrackets(SGroup& sg, const Array<Vec2f[2]>& coord)
+void MoleculeRenderInternal::_loadBrackets(SGroup& sg, const Array<Vec2f[2]>& coord, bool transformCoordinates)
 {
    for (int j = 0; j < coord.size(); ++j) {
       Vec2f a(coord[j][0]), b(coord[j][1]);
@@ -560,11 +560,13 @@ void MoleculeRenderInternal::_loadBrackets(SGroup& sg, const Array<Vec2f[2]>& co
          sg.bicount++;
       RenderItemBracket& bracket =_data.brackets.push();
       bracket.p0.copy(a);
-      bracket.p0.set(a.x - _min.x, _max.y - a.y);
-      bracket.p0.scale(_scale);
       bracket.p1.copy(b);
-      bracket.p1.set(b.x - _min.x, _max.y - b.y);
-      bracket.p1.scale(_scale);
+      if (transformCoordinates) {
+         bracket.p0.set(a.x - _min.x, _max.y - a.y);
+         bracket.p0.scale(_scale);
+         bracket.p1.set(b.x - _min.x, _max.y - b.y);
+         bracket.p1.scale(_scale);
+      }
       bracket.d.diff(bracket.p1, bracket.p0);
       bracket.length = bracket.d.length();
       bracket.d.normalize();
@@ -596,7 +598,7 @@ void MoleculeRenderInternal::_initSruGroups()
    for (int i = 0; i < bm.repeating_units.size(); ++i) {
       const BaseMolecule::RepeatingUnit& group = bm.repeating_units[i];
       SGroup& sg = _data.sgroups.push();
-      _loadBrackets(sg, group.brackets);
+      _loadBrackets(sg, group.brackets, true);
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
       index.fontsize = FONT_SIZE_ATTR;
@@ -622,7 +624,7 @@ void MoleculeRenderInternal::_initMulGroups()
    for (int i = 0; i < bm.multiple_groups.size(); ++i) {
       const BaseMolecule::MultipleGroup& group = bm.multiple_groups[i];
       SGroup& sg = _data.sgroups.push();
-      _loadBrackets(sg, group.brackets);
+      _loadBrackets(sg, group.brackets, true);
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
       index.fontsize = FONT_SIZE_ATTR;
@@ -633,7 +635,42 @@ void MoleculeRenderInternal::_initMulGroups()
 
 void MoleculeRenderInternal::_initSupGroups()
 {
-   // dummy
+   BaseMolecule& bm = *_mol;
+   for (int i = 0; i < bm.superatoms.size(); ++i) {
+      const BaseMolecule::Superatom& group = bm.superatoms[i];
+      SGroup& sg = _data.sgroups.push();
+
+      Vec2f min, max, a, b;
+      for (int i = 0; i < group.atoms.size(); ++i) {
+         int aid = group.atoms[i];
+         const AtomDesc& ad = _ad(aid);
+         a.sum(ad.pos, ad.boundBoxMin);
+         b.sum(ad.pos, ad.boundBoxMax);
+         if (i == 0) {
+            min.copy(a);
+            max.copy(b);
+         } else {
+            min.min(a);
+            max.max(b);
+         }
+      }
+      float extent = _settings.bondLineWidth * 3;
+      min.sub(Vec2f(extent, extent));
+      max.add(Vec2f(extent, extent));
+      Array<Vec2f[2]> brackets;
+      Vec2f* const & left = brackets.push();
+      left[0].set(min.x, max.y);
+      left[1].set(min.x, min.y);
+      Vec2f* const & right = brackets.push();
+      right[0].set(max.x, min.y);
+      right[1].set(max.x, max.y);
+      _loadBrackets(sg, brackets, false);
+      int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
+      TextItem& index = _data.textitems[tiIndex];
+      index.fontsize = FONT_SIZE_ATTR;
+      bprintf(index.text, "%s", group.subscript.ptr());
+      _positionIndex(sg, tiIndex, true);
+   }
 }
 
 void MoleculeRenderInternal::_findRings()

@@ -64,7 +64,7 @@ private:
    bool _hasQueryModifiers (int aid);
    void _initAtomData();
    void _initRGroups();
-   void _loadBrackets(SGroup& sg, const Array<Vec2f[2]>& coord);
+   void _loadBrackets(SGroup& sg, const Array<Vec2f[2]>& coord, bool transformCoordinates);
    void _positionIndex(SGroup& sg, int ti, bool lower);
    void _initDataSGroups();
    void _initSruGroups();

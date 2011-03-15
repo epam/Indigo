@@ -220,6 +220,17 @@ void indigoRenderSetCatalystsPlacement (const char* mode)
    rp.rOpt.agentsBelowArrow = agentPlacementMap.at(mode) != 0;
 }
 
+void indigoRenderSetSuperatomMode (const char* mode)
+{
+   TL_DECL_GET(StringIntMap, stereoAtomMode);
+   if (stereoAtomMode.size() == 0) {
+      stereoAtomMode.insert("expand", 0);
+      stereoAtomMode.insert("collapse", 1);
+   }
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.collapseSuperatoms = stereoAtomMode.at(mode) != 0;
+}
+
 void indigoRenderSetAAMColor (float r, float g, float b)
 {
    CHECKRGB(r, g, b);
@@ -475,6 +486,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition);
    mgr.setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle);
    mgr.setOptionHandlerString("render-catalysts-placement", indigoRenderSetCatalystsPlacement);
+   mgr.setOptionHandlerString("render-superatom-mode", indigoRenderSetSuperatomMode);
 
    mgr.setOptionHandlerBool("render-coloring", indigoRenderSetColoring);
    mgr.setOptionHandlerBool("render-valences-visible", indigoRenderSetValencesVisible);
