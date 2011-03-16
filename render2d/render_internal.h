@@ -70,6 +70,7 @@ private:
    void _initSruGroups();
    void _initMulGroups();
    void _initSupGroups();
+   void _collapseSuperatoms();
    void _findAnglesOverPi();
    void _renderBondIds();
    void _renderAtomIds();

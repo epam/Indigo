@@ -172,6 +172,7 @@ void RenderOptions::clear()
    centerDoubleBondWhenStereoAdjacent = false;
    showCycles = false;
    agentsBelowArrow = true;
+   collapseSuperatoms = false;
 }
 
 MoleculeRenderInternal::MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw) :
@@ -185,17 +186,21 @@ void MoleculeRenderInternal::setMolecule (BaseMolecule* mol)
    _mol = mol;
    _data.clear();
 
+   if (_opt.collapseSuperatoms && _mol->superatoms.size() > 0) {
+      _collapseSuperatoms();
+   }
+
    int i;
 
    // data
    _data.atoms.clear();
    _data.atoms.resize(_mol->vertexEnd());
-   for (i = mol->vertexBegin(); i != mol->vertexEnd(); i = mol->vertexNext(i))
+   for (i = _mol->vertexBegin(); i != _mol->vertexEnd(); i = _mol->vertexNext(i))
       _ad(i).clear();
 
    _data.bonds.clear();
    _data.bonds.resize(_mol->edgeEnd());
-   for (i = mol->edgeBegin(); i != mol->edgeEnd(); i = mol->edgeNext(i))
+   for (i = _mol->edgeBegin(); i != _mol->edgeEnd(); i = _mol->edgeNext(i))
       _bd(i).clear();
 }
 
@@ -673,6 +678,80 @@ void MoleculeRenderInternal::_initSupGroups()
    }
 }
 
+void MoleculeRenderInternal::_collapseSuperatoms()
+{
+   {
+      BaseMolecule* newMol = NULL;
+      BaseMolecule& bm1 = *_mol;
+      if (bm1.isQueryMolecule())
+         newMol = new QueryMolecule();
+      else
+         newMol = new Molecule();
+      Array<int> mapping;
+      newMol->clone(bm1, &mapping, 0);
+      _mol = newMol;
+   }
+
+   BaseMolecule& bm = *_mol;
+   for (int i = 0; i < bm.superatoms.size(); ++i) {
+      const BaseMolecule::Superatom& group = bm.superatoms[i];
+      Vec3f centre;
+      for (int i = 0; i < group.atoms.size(); ++i) {
+         int aid = group.atoms[i];
+         centre.add(bm.getAtomXyz(aid));
+      }
+      centre.scale(1.0f / group.atoms.size());
+      int said = -1;
+
+      if (bm.isQueryMolecule()) {
+         AutoPtr<QueryMolecule::Atom> atom;
+         atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
+         said = bm.asQueryMolecule().addAtom(atom.release());
+      } else {
+         Molecule& mol = bm.asMolecule();
+         said = mol.addAtom(ELEM_PSEUDO);
+         mol.setPseudoAtom(said, group.subscript.ptr());
+      }
+      QS_DEF(RedBlackSet<int>, groupAtoms);
+      groupAtoms.clear();
+      for (int j = 0; j < group.atoms.size(); ++j) {
+         groupAtoms.insert(group.atoms[j]);
+      }
+      Vec3f pos;
+      int posCnt = 0;
+      while (group.atoms.size() > 0) {
+         int aid = group.atoms[0];
+         const Vertex& v = bm.getVertex(aid);
+         bool posCounted = false;
+         for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j)) {
+            int naid = v.neiVertex(j);
+            if (!groupAtoms.find(naid)) {
+               pos.add(bm.getAtomXyz(aid));
+               posCounted = true;
+               posCnt++;
+               int nbid = v.neiEdge(j);
+               if (bm.findEdgeIndex(naid, said) < 0) {
+                  if (bm.isQueryMolecule()) {
+                     QueryMolecule& qm = bm.asQueryMolecule();
+                     int bid = qm.addBond(said, naid, qm.getBond(nbid).clone());
+                  }else{
+                     Molecule& mol = bm.asMolecule();
+                     int bid = mol.addBond(said, naid, mol.getBondOrder(nbid));
+                     mol.setEdgeTopology(bid, mol.getBondTopology(nbid));
+                  }
+               }
+            }
+         }
+         bm.removeAtom(aid);
+      }
+      if (posCnt == 0)
+         pos.copy(centre);
+      else
+         pos.scale(1.f / posCnt);
+      bm.setAtomXyz(said, pos.x, pos.y, pos.z);
+   }
+}
+
 void MoleculeRenderInternal::_findRings()
 {
    for (int i = 0; i < _data.bondends.size(); ++i)
@@ -781,7 +860,7 @@ void MoleculeRenderInternal::_findRings()
       ring.dblBondCount = dblBondCount;
    }
 
-   for (int i = 0; i < _data.bonds.size(); ++i)
+   for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
    {
       BondDescr& bd = _bd(i);
       BondEnd& be1 = _be(bd.be1);
@@ -1266,7 +1345,7 @@ void MoleculeRenderInternal::_applyBondOffset ()
 void MoleculeRenderInternal::_setBondCenter ()
 {
    // find bond center
-   for (int i = 0; i < _data.bonds.size(); ++i)
+   for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
    {
       BondDescr& bd = _bd(i);
       bd.center.lineCombin2(_be(bd.be1).p, 0.5f, _be(bd.be2).p, 0.5f);
