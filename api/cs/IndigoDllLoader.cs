@@ -203,6 +203,13 @@ namespace com.ggasoftware.indigo
             ret_type, arg_types);
          methodBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
+         // Add [UnmanagedFunctionPointer(CallingConvention.Cdecl)] attribute for the delegate
+         ConstructorInfo func_pointer_constructor =
+            typeof(UnmanagedFunctionPointerAttribute).GetConstructor(new Type[] { typeof(CallingConvention) });
+         CustomAttributeBuilder ca_builder =
+            new CustomAttributeBuilder(func_pointer_constructor, new object[] { CallingConvention.Cdecl });
+         delegate_type.SetCustomAttribute(ca_builder);
+
          return delegate_type.CreateType();
       }
 
