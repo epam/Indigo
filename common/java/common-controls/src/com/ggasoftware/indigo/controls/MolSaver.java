@@ -16,7 +16,7 @@ public class MolSaver {
       this.indigo = indigo;
    }
 
-   public String saveMols(ArrayList<MolData> mol_datas) {
+   public String saveMols(ArrayList<? extends MolData> mol_datas) {
       IndigoObject output_file = null;
       try {
          JFileChooser file_chooser = new JFileChooser();
@@ -93,7 +93,7 @@ public class MolSaver {
       }
    }
 
-   public String saveMol(MolData mol) {
+   public String saveMol(RenderableMolData mol) {
       try {
          JFileChooser file_chooser = new JFileChooser();
 
@@ -118,7 +118,7 @@ public class MolSaver {
          if (!cur_filter.accept(choosed_file))
             out_file_path += "." + cur_filter.getDefaultExtension();
 
-         IndigoObject m = mol.mol_iterator.at(mol.index).clone();
+         IndigoObject m = mol.getObject();
          if (m == null) {
             return null;
          }

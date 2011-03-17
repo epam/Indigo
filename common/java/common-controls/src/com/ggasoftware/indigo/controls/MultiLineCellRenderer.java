@@ -8,7 +8,7 @@ import javax.swing.table.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
-class MultiLineCellRenderer extends JPanel implements TableCellRenderer {
+public class MultiLineCellRenderer extends JPanel implements TableCellRenderer {
 
    public MultiLineCellRenderer(int horizontalAlignment, int verticalAlignment) {
       this.horizontalAlignment = horizontalAlignment;
@@ -167,4 +167,4 @@ class MultiLineCellRenderer extends JPanel implements TableCellRenderer {
    protected Color background;
    protected Font font;
    protected Border border = new EmptyBorder(1, 2, 1, 2);
-}
+} 

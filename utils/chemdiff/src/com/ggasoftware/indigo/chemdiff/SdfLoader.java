@@ -4,7 +4,6 @@
  */
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.controls.ProgressEvent;
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoObject;
 import com.ggasoftware.indigo.controls.*;
@@ -14,10 +13,6 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author achurinov
- */
 public class SdfLoader{
 
    private Indigo indigo;
@@ -26,21 +21,18 @@ public class SdfLoader{
    private IndigoObject iterator_object;
    private Thread thread;
    private String _ext;
-   public int table_idx;
-   public IndigoEventSource<Integer> finish_event;
-   public IndigoEventSource<ProgressEvent> progress_event = 
-           new IndigoEventSource<ProgressEvent>(this);
+
+   public IndigoEventSource<Integer> finish_event =
+           new IndigoEventSource<Integer>(this);
+   public IndigoEventSource<Integer> progress_event =
+           new IndigoEventSource<Integer>(this);
    private SdfLoadRunnable runnable;
-   public boolean arom_flag;
-   public boolean cistrans_ignore_flag;
-   public boolean stereocenters_ignore_flag;
 
    public boolean test_flag;
 
-   public SdfLoader(Indigo cur_indigo, int cur_table_idx, String ext)
+   public SdfLoader(Indigo cur_indigo, String ext)
    {
       indigo = cur_indigo;
-      table_idx = cur_table_idx;
       runnable = new SdfLoadRunnable();
       finish_event = new IndigoEventSource<Integer>(this);
       mol_datas = new ArrayList<MolData>();
@@ -53,14 +45,12 @@ public class SdfLoader{
    public void setExtension(String ext) {
       _ext = new String(ext);
    }
+
    public void setFile(File cur_file) {
       file = cur_file;
    }
 
-
-
    class SdfLoadRunnable implements Runnable {
-
       public void run() {
          mol_datas.clear();
          try {
@@ -76,7 +66,6 @@ public class SdfLoader{
                throw new Exception("Unsupported file extension");
             }
 
-            int invalid_count = 0;
             for (IndigoObject iterr : iterator_object)
             {
                synchronized (iterr)
@@ -85,37 +74,14 @@ public class SdfLoader{
                      return;
 
                   file_pos = iterator_object.tell();
-                  try
-                  {
-                     IndigoObject mol = iterr.clone();
-                     if (arom_flag)
-                        mol.aromatize();
-                     if (cistrans_ignore_flag)
-                        mol.clearCisTrans();
-                     if (stereocenters_ignore_flag)
-                        mol.clearStereocenters();
 
-                     String csmiles;
-                     try
-                     {
-                        csmiles = mol.canonicalSmiles();
-                     }
-                     catch (Exception ex)
-                     {
-                        csmiles = "unknown #" + invalid_count++ + " in table #" + table_idx;
-                     }
+                  mol_datas.add(new MolData(iterator_object, mol_datas.size()));
 
-                     mol_datas.add(new MolData(iterator_object, mol_datas.size(), csmiles));
-
-                     if ((mol_datas.size() % 10000) == 0)
-                        System.gc();
-                  } catch (Exception ex) {
-                     mol_datas.add(new MolData(null, mol_datas.size(),
-                                   "unknown #" + invalid_count++ + " in table #" + table_idx));
-                  }
+                  if ((mol_datas.size() % 10000) == 0)
+                     System.gc();
                }
 
-               progress_event.fireEvent(new ProgressEvent(table_idx, file_pos));
+               progress_event.fireEvent(file_pos);
             }
          } catch (Exception ex) {
             JOptionPane msg_box = new JOptionPane();
@@ -126,17 +92,12 @@ public class SdfLoader{
                     "Error loading file", JOptionPane.ERROR_MESSAGE);
          }
 
-         finish_event.fireEvent(table_idx);
+         finish_event.fireEvent(null);
       }
    }
 
-   public void start(boolean arom_flag, boolean cistrans_ignore_flag,
-                     boolean stereocenters_ignore_flag)
+   public void start()
    {
-      this.arom_flag = arom_flag;
-      this.cistrans_ignore_flag = cistrans_ignore_flag;
-      this.stereocenters_ignore_flag = stereocenters_ignore_flag;
-
       thread.start();
    }
 

@@ -16,21 +16,21 @@ import javax.imageio.ImageIO;
 public class MolRenderer extends JPanel
                      implements TableCellRenderer
 {
+  static int call_count = 0;
+
   private Indigo indigo;
   private IndigoRenderer indigo_renderer;
   private IndigoObject indigo_obj;
   private BufferedImage image;
   private ImageIO image_io;
   private boolean is_reactions_mode;
-  private MolTable mol_table;
 
   int cell_w;
   int cell_h;
 
   public MolRenderer( Indigo cur_indigo, IndigoRenderer cur_indigo_renderer,
-                      MolTable cur_mol_table, int new_cell_w, int new_cell_h, boolean is_reactions )
+                      int new_cell_w, int new_cell_h, boolean is_reactions )
   {
-     mol_table = cur_mol_table;
      indigo = cur_indigo;
      indigo_renderer = cur_indigo_renderer;
      cell_w = new_cell_w;
@@ -53,29 +53,26 @@ public class MolRenderer extends JPanel
               JTable table, Object value, boolean isSelected,
               boolean hasFocus, int row, int column)
   {
-     MolCell mol_image = (MolCell)value;
+     RenderableObject mol_image = (RenderableObject)value;
 
-     if (mol_image.mol_iterator == null)
+     if (mol_image == null)
+        return null;
+
+     try {
+        indigo_obj = mol_image.getObject();
+     } catch (Exception ex)  {
+        indigo_obj = null;
+     }
+
+     if (indigo_obj == null)
      {
-        mol_image.image = new BufferedImage(cell_w, cell_h, BufferedImage.TYPE_INT_RGB);
-        Graphics2D gc = mol_image.image.createGraphics();
+        image = new BufferedImage(cell_w, cell_h, BufferedImage.TYPE_INT_RGB);
+        Graphics2D gc = image.createGraphics();
         gc.setColor(Color.white);
         gc.fillRect(0, 0, cell_w, cell_h);
         gc.setColor(Color.black);
         gc.drawString("Cannot render", 10, (int)(cell_h/2));
      }
-
-     if (mol_image.image != null)
-     {
-        image = mol_image.image;
-        return this;
-     }
-
-     IndigoObject iterator = mol_image.mol_iterator;
-
-     indigo_obj = iterator.at(mol_image.index).clone();
-
-     //indigo.setOption("render-comment", indigo_obj.name());
 
      String size_str = "" + (cell_w) + ',' + (cell_h);
      indigo.setOption("render-image-size", size_str);
@@ -93,6 +90,9 @@ public class MolRenderer extends JPanel
 
      bytes = indigo_renderer.renderToBuffer(indigo_obj);
 
+     System.out.print("Render: " + call_count + "\n");
+     call_count++;
+
      ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
      try {
         image = image_io.read(new MemoryCacheImageInputStream(bytes_is));
@@ -108,7 +108,6 @@ public class MolRenderer extends JPanel
         gc.setColor(Color.red);
         gc.drawString("No canonical SMILES", 10, 10);
      }
-     mol_image.image = image;
 
      return this;
   }

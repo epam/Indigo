@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ListSelectionEvent;
 import java.io.*;
+import java.util.Collection;
+import org.omg.CORBA.INVALID_ACTIVITY;
 
 /**
  *
@@ -30,46 +32,24 @@ public class MolComparer
    ArrayList<CompMol> uniq_mols2;
    MolComparerThread thread;
    IndigoEventSource<Object> finish_event = new IndigoEventSource<Object>(null);
-   IndigoEventSource<ProgressEvent> progress_event = new IndigoEventSource<ProgressEvent>(this);
+   IndigoEventSource<Integer> progress_event = new IndigoEventSource<Integer>(this);
+   private static int invalid_count = 0;
 
-   public class CompMol extends MolData implements Comparable<CompMol>
+   public class CompMol implements Comparable<CompMol>
    {
       ArrayList<Integer> primary_indices;
       ArrayList<Integer> secondary_indices;
+      CanonicalizableObject can_object;
+      String csmiles = null;
       boolean is_uniq;
 
-      public CompMol( MolData mol_data )
+      public CompMol( CanonicalizableObject can_object, int index )
       {
-         if (mol_data != null)
-         {
-            mol_iterator = mol_data.mol_iterator;
-            index = mol_data.index;
-            if (mol_data.csmiles != null)
-               csmiles = new String(mol_data.csmiles);
-            else
-               csmiles = null;
-         }
-
+         this.can_object = can_object;
          primary_indices = new ArrayList<Integer>();
          primary_indices.add(index);
          secondary_indices = new ArrayList<Integer>();
          is_uniq = true;
-      }
-
-      public void copy( CompMol another_mol )
-      {
-         primary_indices.addAll(another_mol.secondary_indices);
-         secondary_indices.addAll(another_mol.secondary_indices);
-
-         mol_iterator = another_mol.mol_iterator;
-         index = another_mol.index;
-         if (another_mol.csmiles != null)
-            csmiles = new String(another_mol.csmiles);
-         else
-            csmiles = null;
-
-
-         is_uniq = another_mol.is_uniq;
       }
 
       public int compareTo( CompMol another_mol )
@@ -86,9 +66,9 @@ public class MolComparer
    {
       public int compare(CompMol mol1, CompMol mol2)
       {
-         if (mol1.index > mol2.index)
+         if (mol1.primary_indices.get(0) > mol2.primary_indices.get(0))
             return 1;
-         else if (mol1.index < mol2.index)
+         else if (mol1.primary_indices.get(0) < mol2.primary_indices.get(0))
             return -1;
          else
             return 0;
@@ -119,18 +99,37 @@ public class MolComparer
       }
    }
 
-   public void setMols( ArrayList<MolData> mol_datas, int idx ) throws Exception
+   public ArrayList< ArrayList<Integer> > getIdxArrays( boolean is_conc, int set_idx )
    {
-      ArrayList<CompMol> uniq_mols;
+       ArrayList< ArrayList<Integer> > indexes_arrays = new ArrayList< ArrayList<Integer> >();
+       ArrayList<CompMol> comp_mol_array = null;
+       boolean is_primary_indexes = true;
+       if (is_conc)
+       {
+          comp_mol_array = conc_mols;
+          is_primary_indexes = (set_idx == 0 ? true : false);
+       }
+       else
+          comp_mol_array = (set_idx == 0 ? uniq_mols1 : uniq_mols2);
 
-      if (idx == 0)
-         uniq_mols = uniq_mols1;
-      else
-         uniq_mols = uniq_mols2;
+       for (CompMol comp_mol : comp_mol_array)
+       {
+          ArrayList<Integer> indexes_array_i = new ArrayList<Integer>();
+          indexes_array_i.addAll(is_primary_indexes ? comp_mol.primary_indices :
+                                                    comp_mol.secondary_indices);
+          indexes_arrays.add(indexes_array_i);
+       }
+       return indexes_arrays;
+   }
+
+   public void setMols(Collection<? extends CanonicalizableObject> can_objects, int idx ) throws Exception
+   {
+      ArrayList<CompMol> uniq_mols = (idx == 0 ? uniq_mols1 : uniq_mols2);
 
       uniq_mols.clear();
-      for (int i = 0; i < mol_datas.size(); i++)
-         uniq_mols.add(new CompMol(mol_datas.get(i)));
+      int i = 0;
+      for (CanonicalizableObject can_obj : can_objects)
+         uniq_mols.add(new CompMol(can_obj, i++));
    }
 
    class MolComparerThread extends Thread
@@ -146,7 +145,7 @@ public class MolComparer
             while (pos + 1 < uniq_mols.size() &&
                    uniq_mols.get(pos + 1).compareTo(uniq_mols.get(pos)) == 0)
             {
-               uniq_mols.get(pos).primary_indices.add(uniq_mols.get(pos + 1).index);
+               uniq_mols.get(pos).primary_indices.add(uniq_mols.get(pos + 1).primary_indices.get(0));
                uniq_mols.remove(pos + 1);
             }
             pos++;
@@ -192,21 +191,45 @@ public class MolComparer
 
             int progress_level;
             if (part1 > part2)
-               progress_level = (int)(part2 * 1000);
+               progress_level = (int)(part2 * 200);
             else
-               progress_level = (int)(part1 * 1000);
+               progress_level = (int)(part1 * 200);
             
-            progress_event.fireEvent(new ProgressEvent(-1, progress_level));
+            progress_event.fireEvent(800 + progress_level);
          }
 
-         progress_event.fireEvent(new ProgressEvent(-1, 1000));
+         progress_event.fireEvent(1000);
 
          return;
+      }
+
+      private void _buildCSmiles( int idx )
+      {
+         ArrayList<CompMol> uniq_mols = (idx == 0 ? uniq_mols1 : uniq_mols2);
+
+         int i = 0;
+         for (CompMol comp_mol : uniq_mols)
+         {
+            progress_event.fireEvent(idx * 400 + (int)(((float)i++ / uniq_mols.size()) * 400));
+            String failed_name = new String() + "invalid molecule #" + invalid_count++;
+            if (comp_mol.can_object != null)
+            {
+               try {
+                  comp_mol.csmiles = comp_mol.can_object.getCanonicalCode();
+               } catch (Exception ex) {
+                  comp_mol.csmiles = failed_name;
+               }
+            }
+            else
+               comp_mol.csmiles = failed_name;
+         }
       }
 
       // This method is called when the thread runs
       public void run()
       {
+         _buildCSmiles(0);
+         _buildCSmiles(1);
          _compare();
 
          Collections.sort(conc_mols, new IndexComparator());

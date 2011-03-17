@@ -1,20 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.ggasoftware.indigo.chemdiff;
 
-/**
- *
- * @author achurinov
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
+      List<Integer> ints = new ArrayList<Integer>();
+      List<? extends Number> nums = ints; // ok
+      Integer q = 10;
+      ints.add(q);
+
+
         MainFrame.setNativeLookAndFeel();
         MainFrame mf = new MainFrame();
         mf.setLocationRelativeTo(null);

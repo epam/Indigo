@@ -16,7 +16,7 @@ public class MolClicker extends MouseAdapter {
    private Timer timer;
    private Indigo indigo;
    private IndigoRenderer indigo_renderer;
-   private MolData mol;
+   private RenderableMolData mol;
    MolSaver mol_saver;
 
    public MolClicker(Indigo cur_indigo, IndigoRenderer cur_indigo_renderer, MolSaver mol_saver) {
@@ -66,10 +66,9 @@ public class MolClicker extends MouseAdapter {
          return;
       }
 
-      MolCell mc = (MolCell) table.getValueAt(row, col);
-      mol = (MolData)mc;
+      mol = (RenderableMolData)table.getValueAt(row, col);
 
-      if (mc.mol_iterator == null)
+      if (mol.mol_iterator == null)
       {
          return;
       }
@@ -95,7 +94,7 @@ public class MolClicker extends MouseAdapter {
       MolViewPanel mol_view = new MolViewPanel(indigo, indigo_renderer);
       mol_view.setImageSize(500, 500);
 
-      IndigoObject molecule = mc.getObject().clone();
+      IndigoObject molecule = mol.getObject().clone();
 
       molecule.layout();
 
