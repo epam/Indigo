@@ -78,11 +78,8 @@ void GraphFastAccess::prepareVertexNeiVerticesAndEdges (int v)
 // Numeration is coherent
 int* GraphFastAccess::getVertexNeiVertices (int v, int &count)
 {
-   if (_vertices_nei.ptr()[v].v_begin == -1)
-      prepareVertexNeiVerticesAndEdges(v);
-
-   count = _vertices_nei.ptr()[v].v_count;
-   return _nei_vertices_data.ptr() + _vertices_nei.ptr()[v].v_begin;
+   int offset = prepareVertexNeiVertices(v, count);
+   return _nei_vertices_data.ptr() + offset;
 }
 
 int* GraphFastAccess::getVertexNeiEdges (int v, int &count)
@@ -103,4 +100,15 @@ int GraphFastAccess::findEdgeIndex (int v1, int v2)
       if (vertices[i] == v2)
          return edges[i];
    return -1;
+}
+
+int GraphFastAccess::prepareVertexNeiVertices (int v, int &count)
+{
+   getVertexNeiEdges(v, count);
+   return _vertices_nei.ptr()[v].v_begin;
+}
+
+int GraphFastAccess::getVertexNeiVertiex (int v_id, int index)
+{
+   return _nei_vertices_data.ptr()[v_id + index];
 }

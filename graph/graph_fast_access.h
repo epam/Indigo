@@ -35,8 +35,16 @@ public:
    void prepareVertexNeiVerticesAndEdges (int v);
    // Returns nei vertices and nei edges for specified vertex
    // Numeration is coherent
+   // Note: pointer might become invalid after preparing calls for 
+   // different vertices. In this case use prepareVertexNeiVertices/getVertexNeiVertiex.
    int* getVertexNeiVertices (int v, int &count);
    int* getVertexNeiEdges (int v, int &count);
+
+   // Returns vertex identifier that can be used in getVertexNeiVertiex
+   int prepareVertexNeiVertices (int v, int &count);
+   // Returns neighbor vertex for the specified 
+   // vertex id (returned by prepareVertexNeiVertices)
+   int getVertexNeiVertiex (int v_id, int index);
 
    int findEdgeIndex (int v1, int v2);
 

@@ -576,13 +576,14 @@ int EmbeddingEnumerator::_Enumerator::nextPair ()
       }
 
       int nei_count;
-      int *node2_parent_nei_v = 
-         _context._g2_fast.getVertexNeiVertices(_current_node2_parent, nei_count);
+      int node2_parent_nei_id = 
+         _context._g2_fast.prepareVertexNeiVertices(_current_node2_parent, nei_count);
 
       _current_node2_nei_index++;
       for (; _current_node2_nei_index != nei_count; _current_node2_nei_index++)
       {
-         _current_node2 = node2_parent_nei_v[_current_node2_nei_index];
+         _current_node2 = 
+            _context._g2_fast.getVertexNeiVertiex(node2_parent_nei_id, _current_node2_nei_index);
 
          if (!_checkNode2(_current_node2, _current_node1))
             continue;
