@@ -22,7 +22,6 @@ public class MolRenderer extends JPanel
   private IndigoRenderer indigo_renderer;
   private IndigoObject indigo_obj;
   private BufferedImage image;
-  private ImageIO image_io;
   private boolean is_reactions_mode;
 
   int cell_w;
@@ -72,10 +71,11 @@ public class MolRenderer extends JPanel
         gc.fillRect(0, 0, cell_w, cell_h);
         gc.setColor(Color.black);
         gc.drawString("Cannot render", 10, (int)(cell_h/2));
+
+        return this;
      }
 
-     String size_str = "" + (cell_w) + ',' + (cell_h);
-     indigo.setOption("render-image-size", size_str);
+     indigo.setOption("render-image-size", cell_w, cell_h);
      byte[] bytes = null;
 
      Boolean valid = false;
@@ -95,7 +95,7 @@ public class MolRenderer extends JPanel
 
      ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
      try {
-        image = image_io.read(new MemoryCacheImageInputStream(bytes_is));
+        image = ImageIO.read(new MemoryCacheImageInputStream(bytes_is));
      } catch (IOException ex) {
         System.err.println(">>>>" + ex.getMessage() );
         ex.printStackTrace();
