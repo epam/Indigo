@@ -31,7 +31,7 @@ void MoleculeLayout::_init ()
    bond_length = 1.f;
    respect_existing_layout = false;
    filter = 0;
-   max_iterations = 0;
+   max_iterations = 20;
    _query = false;
    _layout_graph.makeOnGraph(_molecule);
 
