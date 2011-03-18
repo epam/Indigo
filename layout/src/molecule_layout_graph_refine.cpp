@@ -132,6 +132,7 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
    int v1, v2;
    int v1c = -1, v2c = -1;
    int i, j, n;
+   int n_iterations = 0;
 
    v1 = vertexBegin();
    v2 = vertexNext(v1);
@@ -156,6 +157,10 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
 
    while (improved)
    {
+      if (max_iterations > 0 && n_iterations > max_iterations)
+         break;
+      
+      n_iterations++;
       improved = false;
 
       edges.clear();
@@ -322,6 +327,7 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
             }
          }
 
+         /*
          // Stretching
          // Try to stretch each edge with 1.6 ratio
          if ((n = filter.count(*this)) != 1 && n != vertexCount() - 1)
@@ -337,6 +343,7 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
                best_state.copy(new_state);
             }
          }
+         */
       }
 
       if (improved)
@@ -359,18 +366,13 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
 
       beg_state.calcHeight();
 
-      for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
+      for (float angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
       {
-         float angle;
+         new_state.rotateLayout(beg_state, center, angle);
+         new_state.calcHeight();
 
-         for (angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
-         {
-            new_state.rotateLayout(beg_state, center, angle);
-            new_state.calcHeight();
-
-            if (new_state.height < beg_state.height - EPSILON)
-               beg_state.copy(new_state);
-         }
+         if (new_state.height < beg_state.height - EPSILON)
+            beg_state.copy(new_state);
       }
    }
 
@@ -462,7 +464,7 @@ void MoleculeLayoutGraph::_excludeDandlingIntersections ()
             a = getPos(beg1);
             b = getPos(end1);
 
-            float t = norm1 / norm2;
+            float t = norm2 / norm1;
 
             getPos(end1).lineCombin2(a, 1.f - t, b, t);
             break;
