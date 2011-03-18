@@ -153,16 +153,26 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
    context.edges = &edges;
    context.graph = this;
    context.maxIterationNumber = max_iterations;
-
+   
+   int max_improvements = max_iterations * max_iterations;
+   int n_improvements = 0;
+   
    while (improved)
    {
+      if (max_improvements > 0 && n_improvements > max_improvements)
+         break;
+      
+      n_improvements++;
+      
       improved = false;
 
       edges.clear();
 
       int n_edges = 0;
+      int n_enumerations = 0;
+      bool to_break = false;
 
-      for (v1 = vertexBegin(); v1 < vertexEnd(); v1 = vertexNext(v1))
+      for (v1 = vertexBegin(); v1 < vertexEnd() && !to_break; v1 = vertexNext(v1))
          for (v2 = vertexNext(v1); v2 < vertexEnd(); v2 = vertexNext(v2))
          {
             new_state.calcDistance(v1, v2);
@@ -192,6 +202,15 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
             if (next_pair)
                continue;
 
+            // check iterations limit
+            if (max_iterations > 0 && n_enumerations > max_iterations)
+            {
+               to_break = true;
+               break;
+            }
+            
+            n_enumerations++;
+            
             // Find acyclic edges on the all paths between v1 and v2
             PathEnumerator path_enum(*this, v1, v2);
 
@@ -231,6 +250,11 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
       // Look through found edges
       for (i = edges.begin(); i < edges.end(); i = edges.next(i))
       {
+         if (max_improvements > 0 && n_improvements > max_improvements)
+            break;
+         
+         n_improvements++;
+         
          // Try to flip branch
          const Edge &edge = getEdge(edges.key(i));
 
@@ -263,6 +287,11 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
       // Look through found edges
       for (i = edges.begin(); i < edges.end(); i = edges.next(i))
       {
+         if (max_improvements > 0 && n_improvements > max_improvements)
+            break;
+         
+         n_improvements += 3;
+         
          // Try to rotate one branch by 10 degrees in both directions around both vertices
          const Edge &edge = getEdge(edges.key(i));
 
@@ -359,18 +388,13 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
 
       beg_state.calcHeight();
 
-      for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
+      for (float angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
       {
-         float angle;
+         new_state.rotateLayout(beg_state, center, angle);
+         new_state.calcHeight();
 
-         for (angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
-         {
-            new_state.rotateLayout(beg_state, center, angle);
-            new_state.calcHeight();
-
-            if (new_state.height < beg_state.height - EPSILON)
-               beg_state.copy(new_state);
-         }
+         if (new_state.height < beg_state.height - EPSILON)
+            beg_state.copy(new_state);
       }
    }
 
@@ -462,7 +486,7 @@ void MoleculeLayoutGraph::_excludeDandlingIntersections ()
             a = getPos(beg1);
             b = getPos(end1);
 
-            float t = norm1 / norm2;
+            float t = norm2 / norm1;
 
             getPos(end1).lineCombin2(a, 1.f - t, b, t);
             break;
