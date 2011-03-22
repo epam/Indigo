@@ -43,7 +43,6 @@ go
 -- Create tables for bingo user
 create table [$(bingo)].CONFIG (n int, name varchar(100), value varchar(4000));
 create index CONFIG_N on [$(bingo)].CONFIG(n); 
-insert into [$(bingo)].CONFIG values(0, 'DLL_DIRECTORY', '$(dll_directory)');
 insert into [$(bingo)].CONFIG values(0, 'treat-x-as-pseudoatom', '0');
 insert into [$(bingo)].CONFIG values(0, 'ignore-closing-bond-direction-mismatch', '0');
 go

@@ -25,6 +25,8 @@
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_saver.h"
 
+using namespace indigo::bingo_core;
+
 CEXPORT int ringoIndexEnd ()
 {
    BINGO_BEGIN

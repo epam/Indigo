@@ -147,7 +147,6 @@ goto end
 
 :end
 
-set libdir=
 set dbaname=
 set dbapass=
 set instance=

@@ -26,14 +26,14 @@ namespace indigo
          int cmf_buf_len, xyz_buf_len, fingerprint_buf_len;
          IntPtr gross_str, counter_elements_str, fingerprint_sim_str_ptr;
 
-         int ret = BingoCore.mangoIndexReadPreparedMolecule(out id,
+         int ret = BingoCore.lib.mangoIndexReadPreparedMolecule(out id,
             out cmf_ptr, out cmf_buf_len, out xyz_ptr, out xyz_buf_len,
             out gross_str, out counter_elements_str,
             out fingerprint_ptr, out fingerprint_buf_len,
             out fingerprint_sim_str_ptr, out mass, out sim_fp_bits_count);
 
          if (ret == -2)
-            throw new Exception(BingoCore.bingoGetError());
+            throw new Exception(BingoCore.lib.bingoGetError());
          if (ret == -1)
             return false;
 
@@ -55,12 +55,12 @@ namespace indigo
          hash = new MoleculeHash();
          hash.elements.Clear();
          int hash_count, tmp;
-         BingoCore.mangoGetHash(true, -1, out hash_count, out tmp);
+         BingoCore.lib.mangoGetHash(true, -1, out hash_count, out tmp);
          for (int i = 0; i < hash_count; i++)
          {
             MoleculeHashElement elem = new MoleculeHashElement();
 
-            BingoCore.mangoGetHash(true, i, out elem.count, out elem.hash);
+            BingoCore.lib.mangoGetHash(true, i, out elem.count, out elem.hash);
             hash.elements.Add(elem);
          }
 

@@ -24,6 +24,8 @@
 #include "molecule/molecule_mass.h"
 #include "molecule/gross_formula.h"
 
+using namespace indigo::bingo_core;
+
 CEXPORT int mangoIndexEnd ()
 {
    BINGO_BEGIN

@@ -3,7 +3,6 @@ go
 
 BEGIN TRY
    exec [$(bingo)]._FlushInAllSessions;
-   EXEC $(bingo)._UnloadLibrary
 END TRY
 BEGIN CATCH
 END CATCH;

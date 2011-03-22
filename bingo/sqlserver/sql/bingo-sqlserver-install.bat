@@ -11,7 +11,6 @@
 @rem WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 @echo off
 
-set libdir=C:\bingo\
 set dbaname=
 set dbapass=
 set database=
@@ -29,7 +28,6 @@ shift
 
 :L2
 if "%1" == "" goto L3
-if "%1" == "-libdir" goto got_libdir
 if "%1" == "-dbaname" goto got_dbaname
 if "%1" == "-dbapass" goto got_dbapass
 if "%1" == "-database" goto got_database
@@ -42,11 +40,6 @@ if "%1" == "-help" goto usage
 if "%1" == "-?" goto usage
 if "%1" == "/?" goto usage
 goto badparam
-
-:got_libdir
-  shift
-  set libdir=%1
-  goto L1
   
 :got_dbaname
   shift
@@ -109,7 +102,6 @@ goto end
 
 rem Save existing parameters
 
-echo set libdir=%libdir%> bingo_saved_params.bat
 echo set dbaname=%dbaname%>> bingo_saved_params.bat
 echo set dbapass=%dbapass%>> bingo_saved_params.bat
 echo set database=%database%>> bingo_saved_params.bat
@@ -117,7 +109,6 @@ echo set server=%server%>> bingo_saved_params.bat
 echo set bingoname=%bingoname%>> bingo_saved_params.bat
 echo set bingopass=%bingopass%>> bingo_saved_params.bat
 
-echo Target directory  : %libdir%
 if not "%dbaname%" == "" echo DBA name          : %dbaname%
 if not "%dbapass%" == "" echo DBA password      : %dbapass%
 if not "%server%" == "" echo Server            : %server%
@@ -137,17 +128,9 @@ goto end
 
 :L4
 
-rem Copy files and execute sql stripts
+rem Execute sql stripts
 
-md "%libdir%\lib32\"
-md "%libdir%\lib64\"
-
-copy "%CD%\assembly\lib32\bingo-core-c.dll" "%libdir%\lib32\"
-if not %errorlevel%==0 goto end
-copy "%CD%\assembly\lib64\bingo-core-c.dll" "%libdir%\lib64\"
-if not %errorlevel%==0 goto end
-
-set bingo_sqlcmd_arguments=-vbingo=%bingoname% -vbingo_pass=%bingopass% -b -vdatabase=%database% -vdll_directory="%libdir%" -vbingo_assembly_path="%CD%\assembly\bingo-sqlserver" -e
+set bingo_sqlcmd_arguments=-vbingo=%bingoname% -vbingo_pass=%bingopass% -b -vdatabase=%database% -vbingo_assembly_path="%CD%\assembly\bingo-sqlserver" -e
 
 if not "%dbaname%" == "" set bingo_sqlcmd_arguments=%bingo_sqlcmd_arguments% -U %dbaname% 
 if not "%dbapass%" == "" set bingo_sqlcmd_arguments=%bingo_sqlcmd_arguments% -P %dbapass%
@@ -165,9 +148,6 @@ echo   -server name
 echo     SQL Server name (default is local SQL Server)
 echo   -database database (obligatory)
 echo     Database to install on.
-echo   -libdir path
-echo     Target directory to install bingo-core-c.dll (default C:\bingo)
-echo     If the directory does not exist, it will be created.
 echo   -dbaname name
 echo     Database administrator login (default is current user).
 echo   -dbapass password
@@ -184,7 +164,6 @@ goto end
 
 :end
 
-set libdir=
 set dbaname=
 set dbapass=
 set instance=

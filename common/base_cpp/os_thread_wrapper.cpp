@@ -43,7 +43,8 @@ enum {
    MSG_SYSPEND_SEMAPHORE,
    MSG_OK,
    MSG_CONNECT,
-   MSG_HANDLE_EXCEPTION
+   MSG_HANDLE_EXCEPTION,
+   MSG_TERMINATE,
 };
 
 // Maximum number of results that are kept in queue if

@@ -73,6 +73,8 @@ public:
    void run ();
    void run (int nthreads);
 
+   void terminate ();
+
    void _threadFunc  (void);
 protected:
 

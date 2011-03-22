@@ -12,6 +12,9 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#ifndef __mango_core_c_parallel_h___
+#define __mango_core_c_parallel_h___
+
 #include "bingo_core_c.h"
 #include "bingo_core_c_parallel.h"
 
@@ -50,3 +53,5 @@ protected:
 
 }
 }
+
+#endif // __mango_core_c_parallel_h___

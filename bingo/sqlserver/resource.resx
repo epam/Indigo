@@ -127,4 +127,10 @@
   <data name="OnUpdateTrigger" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\OnUpdateTrigger.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
+  <data name="Win/x86/bingo-core-c.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Win\x86\bingo-core-c.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Win/x64/bingo-core-c.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Win\x64\bingo-core-c.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

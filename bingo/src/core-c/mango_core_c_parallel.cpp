@@ -26,12 +26,12 @@ CEXPORT int mangoIndexProcess (
 {
    BINGO_BEGIN
    {
-      MangoIndexingDispatcher dispatcher(self);
-      dispatcher.context = context;
-      dispatcher.get_next_record_cb = get_next_record_cb;
-      dispatcher.process_result_cb = process_result_cb;
-      dispatcher.process_error_cb = process_error_cb;
-      dispatcher.run();
+      self.mango_indexing_dispatcher.create(self);
+      self.mango_indexing_dispatcher->context = context;
+      self.mango_indexing_dispatcher->get_next_record_cb = get_next_record_cb;
+      self.mango_indexing_dispatcher->process_result_cb = process_result_cb;
+      self.mango_indexing_dispatcher->process_error_cb = process_error_cb;
+      self.mango_indexing_dispatcher->run();
    }
    BINGO_END(0, -1)
 }

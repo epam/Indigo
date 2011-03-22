@@ -12,6 +12,9 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#ifndef __bingo_core_c_parallel_h___
+#define __bingo_core_c_parallel_h___
+
 #include "base_cpp/os_thread_wrapper.h"
 #include "base_cpp/chunk_storage.h"
 
@@ -19,6 +22,8 @@
 
 namespace indigo {
 namespace bingo_core {
+
+class BingoCore;
 
 // This command contains pack of the binary data 
 // (molecules or reactions in the raw format) 
@@ -89,3 +94,5 @@ private:
 
 }
 }
+
+#endif // __bingo_core_c_parallel_h___

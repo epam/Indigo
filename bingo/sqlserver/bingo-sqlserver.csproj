@@ -80,14 +80,16 @@
     </Compile>
     <Compile Include="Source\BingoCommon.cs" />
     <Compile Include="Source\BingoConfig.cs" />
+    <Compile Include="Source\BingoCoreLib.cs" />
     <Compile Include="Source\BingoFingerprints.cs" />
     <Compile Include="Source\BingoIndexData.cs" />
     <Compile Include="Source\BingoIndexID.cs" />
     <Compile Include="Source\BingoSession.cs" />
     <Compile Include="Source\BingoCore.cs" />
-    <Compile Include="Source\BingoDll.cs" />
     <Compile Include="Source\BingoStorage.cs" />
     <Compile Include="Source\BingoUtils.cs" />
+    <Compile Include="..\..\api\cs\IndigoDllLoader.cs" />
+    <Compile Include="..\..\api\cs\IndigoException.cs" />
     <Compile Include="Source\MangoCommon.cs" />
     <Compile Include="Source\MangoFastIndexFetch.cs" />
     <Compile Include="Source\MangoIndex.cs" />
@@ -109,10 +111,8 @@
     <PostBuildEvent>del $(ProjectDir)sql\assembly\$(TargetName).*
 copy $(TargetDir)$(TargetName).* $(ProjectDir)sql\assembly\
 </PostBuildEvent>
-    <PreBuildEvent>if not EXIST "$(ProjectDir)\sql\assembly\lib32" (md $(ProjectDir)\sql\assembly\lib32)
-if not EXIST "$(ProjectDir)\sql\assembly\lib64" (md $(ProjectDir)\sql\assembly\lib64)
-if EXIST "$(SolutionDir)Win32\$(ConfigurationName)\bingo-core-c.dll" (copy /Y $(SolutionDir)Win32\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)\sql\assembly\lib32\)
-if EXIST "$(SolutionDir)x64\$(ConfigurationName)\bingo-core-c.dll" (copy /Y $(SolutionDir)x64\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)\sql\assembly\lib64\)
+    <PreBuildEvent>copy /Y $(SolutionDir)Win32\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)Resources\Win\x86
+copy /Y $(SolutionDir)x64\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)Resources\Win\x64
 </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>

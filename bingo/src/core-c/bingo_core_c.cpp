@@ -16,6 +16,8 @@
 
 #include "base_cpp/profiling.h"
 
+using namespace indigo::bingo_core;
+
 BingoCore::BingoCore ()
 {
    bingo_context = 0;

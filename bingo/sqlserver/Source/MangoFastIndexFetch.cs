@@ -28,21 +28,21 @@ namespace indigo
 
       public void prepareSub (string query, string options, bool highlighting, bool smarts)
       {
-         int res = BingoCore.mangoSetupMatch(smarts ? "SMARTS" : "SUB", query, options);
-         if (res < 0)                      
-            throw new Exception(BingoCore.bingoGetError());
+         int res = BingoCore.lib.mangoSetupMatch(smarts ? "SMARTS" : "SUB", query, options);
+         if (res < 0)
+            throw new Exception(BingoCore.lib.bingoGetError());
          search_type = SearchType.SUB;
 
-         BingoCore.mangoSetHightlightingMode(highlighting ? 1 : 0);
+         BingoCore.lib.mangoSetHightlightingMode(highlighting ? 1 : 0);
          this.highlighting = highlighting;
       }
 
       public void prepareSimilarity (string query, string options, float min, float max)
       {
-         int res = BingoCore.mangoSetupMatch("SIM", query, options);
+         int res = BingoCore.lib.mangoSetupMatch("SIM", query, options);
          if (res < 0)
-            throw new Exception(BingoCore.bingoGetError());
-         BingoCore.mangoSimilaritySetMinMaxBounds(min, max);
+            throw new Exception(BingoCore.lib.bingoGetError());
+         BingoCore.lib.mangoSimilaritySetMinMaxBounds(min, max);
          search_type = SearchType.SIM;
       }
 
@@ -63,7 +63,7 @@ namespace indigo
          BingoTimer timer3 = new BingoTimer("fingerprints.screening_bounds_get");
 
          IntPtr min_common_ones_ptr, max_common_ones_ptr;
-         BingoCore.mangoSimilarityGetBitMinMaxBoundsArray(targets_ones.Length, targets_ones,
+         BingoCore.lib.mangoSimilarityGetBitMinMaxBoundsArray(targets_ones.Length, targets_ones,
             out min_common_ones_ptr, out max_common_ones_ptr);
 
          if (min_common_ones.Length != storage_ids.Count ||
@@ -85,7 +85,7 @@ namespace indigo
          _index_data.fingerprints.init(conn);
          _index_data.storage.validate(conn);
 
-         int need_coords = BingoCore.mangoNeedCoords();
+         int need_coords = BingoCore.lib.mangoNeedCoords();
          byte[] xyz = new byte[0];
 
          IEnumerable<int> screened;
@@ -115,13 +115,13 @@ namespace indigo
             {
                xyz = _index_data.getXyz(storage_id, conn);
             }
-            int ret = BingoCore.mangoMatchTargetBinary(data_with_cmf,
+            int ret = BingoCore.lib.mangoMatchTargetBinary(data_with_cmf,
                data_with_cmf.Length, xyz, xyz.Length);
 
             if (ret == -2)
-               throw new Exception(BingoCore.bingoGetError());
+               throw new Exception(BingoCore.lib.bingoGetError());
             if (ret == -1)
-               throw new Exception(BingoCore.bingoGetWarning());
+               throw new Exception(BingoCore.lib.bingoGetWarning());
 
             if (ret == 1)
             {
@@ -134,13 +134,13 @@ namespace indigo
                   {
                      // Load xyz
                      byte[] xyz_found = _index_data.getXyz(storage_id, conn);
-                     BingoCore.mangoLoadTargetBinaryXyz(xyz_found, xyz_found.Length);
+                     BingoCore.lib.mangoLoadTargetBinaryXyz(xyz_found, xyz_found.Length);
                   }
 
                   mol.subhi = BingoCore.mangoGetHightlightedMolecule();
                }
                if (search_type == SearchType.SIM)
-                  BingoCore.mangoSimilarityGetScore(out mol.value);
+                  BingoCore.lib.mangoSimilarityGetScore(out mol.value);
                yield return mol;
             }
          }

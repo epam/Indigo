@@ -250,14 +250,14 @@ namespace indigo
 
       public BingoTimer (string name)
       {
-         _start = BingoCore.bingoProfNanoClock();
+         _start = BingoCore.lib.bingoProfNanoClock();
          _name = name;
       }
 
       public void end ()
       {
-         UInt64 end = BingoCore.bingoProfNanoClock();
-         BingoCore.bingoProfIncTimer(_name, end - _start);
+         UInt64 end = BingoCore.lib.bingoProfNanoClock();
+         BingoCore.lib.bingoProfIncTimer(_name, end - _start);
       }
    }
 }

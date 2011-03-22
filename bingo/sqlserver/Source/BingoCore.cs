@@ -8,497 +8,257 @@ using System.Collections;
 using System.IO;
 using System.Text;
 using Microsoft.Win32;
+using com.ggasoftware.indigo;
 
 namespace indigo
 {
    public unsafe class BingoCore
    {
-      public static string bingoGetVersion() { return new String(_bingoGetVersion()); }
-      [DllImport("bingo-core-c.dll", EntryPoint = "bingoGetVersion", CharSet = CharSet.Auto)]
-      private static extern sbyte * _bingoGetVersion();
+      public delegate int GetNextRecordHandler (IntPtr context);
+      public delegate void ProcessResultHandler (IntPtr context);
+      public delegate void ProcessErrorHandler (int id, IntPtr context);
 
-      public static string bingoGetError () { return new String(_bingoGetError()); }
-      [DllImport("bingo-core-c.dll", EntryPoint = "bingoGetError", CharSet = CharSet.Auto)]
-      private static extern sbyte * _bingoGetError ();
-
-      public static string bingoGetWarning () { return new String(_bingoGetWarning()); }
-      [DllImport("bingo-core-c.dll", EntryPoint = "bingoGetWarning", CharSet = CharSet.Auto)]
-      private static extern sbyte * _bingoGetWarning ();
-
-      public static void setContext(int id)
+      private static BingoCoreLib _lib = null;
+      public static BingoCoreLib lib
       {
-         if (bingoSetContext(id) == 0)
-            throw new Exception(bingoGetError());
+         get
+         {
+            if (_lib == null)
+            {
+               IndigoDllLoader.Instance.loadLibrary(null, "bingo-core-c.dll", "indigo.resource");
+               _lib = IndigoDllLoader.Instance.getInterface<BingoCoreLib>("bingo-core-c.dll");
+            }
+            return _lib;
+         }
       }
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern int bingoSetContext (int id);
-
-      public static void setConfigInt (string name, int value)
+      public static string bingoGetNameCore (string buffer)
       {
-         if (bingoSetConfigInt(name, value) == 0)
-            throw new Exception(bingoGetError());
+         sbyte* res = lib.bingoGetNameCore(buffer, buffer.Length);
+
+         if ((IntPtr)res == IntPtr.Zero)
+            throw new Exception(lib.bingoGetError());
+
+         return new String(res);
       }
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern int bingoSetConfigInt (
-         [MarshalAs(UnmanagedType.LPStr)] string name, int value);
-
-      public static int getConfigInt (string name)
+      public static string mangoGrossGetConditions ()
       {
-         int value;
-         if (bingoGetConfigInt(name, out value) == 0)
-            throw new Exception(bingoGetError());
-         return value;
-      }
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern int bingoGetConfigInt (
-         [MarshalAs(UnmanagedType.LPStr)] string name, out int value);
-
-      public static void setConfigBin (string name, byte[] value)
-      {
-         if (bingoSetConfigBin(name, value, value.Length) == 0)
-            throw new Exception(bingoGetError());
-      }
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern int bingoSetConfigBin (
-         [MarshalAs(UnmanagedType.LPStr)] string name, 
-         [MarshalAs(UnmanagedType.LPArray)] byte[] value, int len);
-
-      public static byte[] getConfigBin (string name)
-      {
-         IntPtr value_ptr;
-         int value_len;
-
-         if (bingoGetConfigBin(name, out value_ptr, out value_len) == 0)
-            throw new Exception(bingoGetError());
-         byte[] data = new byte[value_len];
-         Marshal.Copy(value_ptr, data, 0, value_len);
-         return data;
-      }
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern int bingoGetConfigBin (
-         [MarshalAs(UnmanagedType.LPStr)] string name, out IntPtr value, out int len);
-
-      public static void clearTautomerRules ()
-      {
-         if (bingoClearTautomerRules() == 0)
-            throw new Exception(bingoGetError());
+         sbyte* res = lib.mangoGrossGetConditions();
+         if ((IntPtr)res == IntPtr.Zero)
+            throw new Exception(lib.bingoGetError());
+         return new String(res);
       }
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern int bingoClearTautomerRules ();
-
-      public static void addTautomerRule (int n, string beg, string end)
+      public static string mangoGross (string target_buf)
       {
-         if (bingoAddTautomerRule(n, beg, end) == 0)
-            throw new Exception(bingoGetError());
+         sbyte* res = lib.mangoGross(target_buf, target_buf.Length);
+
+         if ((IntPtr)res == IntPtr.Zero)
+            throw new Exception(lib.bingoGetError());
+
+         return new String(res);
       }
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern int bingoAddTautomerRule (int n,
-                [MarshalAs(UnmanagedType.LPStr)] string beg,
-                [MarshalAs(UnmanagedType.LPStr)] string end);
-
-      public static void tautomerRulesReady ()
+      public static string checkMolecule (string molecule)
       {
-         if (bingoTautomerRulesReady() == 0)
-            throw new Exception(bingoGetError());
+         sbyte* res = lib.mangoCheckMolecule(molecule);
+
+         if ((IntPtr)res == IntPtr.Zero)
+            return null;
+
+         return new String(res);
       }
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern int bingoTautomerRulesReady();
+      public static string checkReaction (string reaction)
+      {
+         sbyte* res = lib.ringoCheckReaction(reaction);
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int mangoSetupMatch(
-         [MarshalAs(UnmanagedType.LPStr)] string search_type,
-         [MarshalAs(UnmanagedType.LPStr)] string query,
-         [MarshalAs(UnmanagedType.LPStr)] string options);
+         if ((IntPtr)res == IntPtr.Zero)
+            return null;
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int ringoSetupMatch (
-         [MarshalAs(UnmanagedType.LPStr)] string search_type,
-         [MarshalAs(UnmanagedType.LPStr)] string query,
-         [MarshalAs(UnmanagedType.LPStr)] string options);
+         return new String(res);
+      }
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int mangoMatchTarget (
-         [MarshalAs(UnmanagedType.LPStr)] string target,
-         int target_buf_len);
+      public static string ringoAAM (string reaction, string options)
+      {
+         sbyte* res = lib.ringoAAM(reaction, options);
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int mangoMatchTargetBinary (
-         [MarshalAs(UnmanagedType.LPArray)] byte[] target_cmf, int target_cmf_len,
-         [MarshalAs(UnmanagedType.LPArray)] byte[] target_xyz, int target_xyz_len);
+         if ((IntPtr)res == IntPtr.Zero)
+            throw new Exception(lib.bingoGetError());
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int ringoMatchTarget (
-         [MarshalAs(UnmanagedType.LPStr)] string target,
-         int target_buf_len);
+         return new String(res);
+      }
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int ringoMatchTargetBinary (
-         [MarshalAs(UnmanagedType.LPArray)] byte[] target_cmf, int target_cmf_len);
+      public static string ringoGetHightlightedReaction ()
+      {
+         sbyte* res = lib.ringoGetHightlightedReaction();
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int bingoSDFImportOpen( 
-         [MarshalAs(UnmanagedType.LPStr)] string filename );
+         if ((IntPtr)res == IntPtr.Zero)
+            throw new Exception(lib.bingoGetError());
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int bingoSDFImportClose();
+         return new String(res);
+      }
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int bingoSDFImportEOF();
+      public static string mangoGetHightlightedMolecule ()
+      {
+         sbyte* res = lib.mangoGetHightlightedMolecule();
 
-      public static string bingoSDFImportGetNext()
-      { return new String(_bingoSDFImportGetNext()); }
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto, EntryPoint = "bingoSDFImportGetNext")]
-      private static extern sbyte* _bingoSDFImportGetNext();
+         if ((IntPtr)res == IntPtr.Zero)
+            throw new Exception(lib.bingoGetError());
 
-      public static string bingoSDFImportGetParameter(string param_name) 
-      { return new String(_bingoSDFImportGetProperty(param_name)); }
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto, EntryPoint = "bingoSDFImportGetProperty")]
-      private static extern sbyte* _bingoSDFImportGetProperty(
-         [MarshalAs(UnmanagedType.LPStr)] string param_name);
+         return new String(res);
+      }
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int bingoRDFImportOpen (
-         [MarshalAs(UnmanagedType.LPStr)] string filename);
+      public static string mangoTauGetQueryGross () 
+      { 
+         return new String(lib.mangoTauGetQueryGross()); 
+      }
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int bingoRDFImportClose ();
+      public static string mangoGetCountedElementName (int index)
+      { 
+         return new String(lib.mangoGetCountedElementName(index)); 
+      }
+      public static string bingoProfilingGetStatistics (bool for_session)
+      { 
+         return new String(lib.bingoProfilingGetStatistics(for_session));
+      }
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int bingoRDFImportEOF ();
+      public static string ringoRxnfile (string reaction)
+      {
+         sbyte* res = lib.ringoRxnfile(reaction);
 
-      public static string bingoRDFImportGetNext ()
-      { return new String(_bingoRDFImportGetNext()); }
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto, EntryPoint = "bingoRDFImportGetNext")]
-      private static extern sbyte* _bingoRDFImportGetNext ();
+         if ((IntPtr)res == IntPtr.Zero)
+            throw new Exception(lib.bingoGetError());
 
-      public static string bingoRDFImportGetParameter (string param_name)
-      { return new String(_bingoRDFImportGetProperty(param_name)); }
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto, EntryPoint = "bingoRDFImportGetProperty")]
-      private static extern sbyte* _bingoRDFImportGetProperty (
-         [MarshalAs(UnmanagedType.LPStr)] string param_name);
+         return new String(res);
+      }
 
-      [DllImport("bingo-core-c.dll")]
-      public static extern int mangoIndexBegin ();
+      public static string mangoMolfile (string molecule)
+      {
+         sbyte* res = lib.mangoMolfile(molecule);
 
-      [DllImport("bingo-core-c.dll")]
-      public static extern int ringoIndexBegin ();
+         if ((IntPtr)res == IntPtr.Zero)
+            throw new Exception(lib.bingoGetError());
 
-      [DllImport("bingo-core-c.dll")]
-      public static extern int mangoIndexEnd ();
+         return new String(res);
+      }
 
-      [DllImport("bingo-core-c.dll")]
-      public static extern int ringoIndexEnd ();
+      public static string ringoRSMILES (string buffer)
+      {
+         sbyte* res = lib.ringoRSMILES(buffer, buffer.Length);
 
-      [DllImport("bingo-core-c.dll")]
-      public static extern int mangoIndexReadPreparedMolecule (
-         out int id,
-         out IntPtr cmf_buf, out int cmf_buf_len,
-         out IntPtr xyz_buf, out int xyz_buf_len,
-         out IntPtr gross_str,
-         out IntPtr counter_elements_str,
-         out IntPtr fingerprint_buf, out int fingerprint_buf_len,
-         out IntPtr fingerprint_sim_str,
-         out float mass, out int sim_fp_bits_count);
+         if ((IntPtr)res == IntPtr.Zero)
+            throw new Exception(lib.bingoGetError());
 
-      [DllImport("bingo-core-c.dll")]
-      public static extern int ringoIndexPrepareReaction (
-         [MarshalAs(UnmanagedType.LPStr)] string reaction, int reaction_len,
-         out IntPtr crf_buf, out int crf_buf_len,
-         out IntPtr fingerprint_buf, out int fingerprint_buf_len);
+         return new String(res);
+      }
 
-      [DllImport("bingo-core-c.dll")]
-      public static extern int mangoGetHash (
-         [MarshalAs(UnmanagedType.I1)] bool for_index, 
-         int index, out int count, out int hash);
+      public static string mangoSMILES (string buffer, bool canonical)
+      {
+         sbyte* res = lib.mangoSMILES(buffer, buffer.Length, canonical ? 1 : 0);
+
+         if ((IntPtr)res == IntPtr.Zero)
+            throw new Exception(lib.bingoGetError());
+
+         return new String(res);
+      }
 
       public static int mangoGetQueryFingerprint (out byte[] fp)
       {
          IntPtr fp_ptr;
          int fp_len;
 
-         int ret = _mangoGetQueryFingerprint(out fp_ptr, out fp_len);
+         int ret = lib.mangoGetQueryFingerprint(out fp_ptr, out fp_len);
          fp = new byte[fp_len];
          Marshal.Copy(fp_ptr, fp, 0, fp_len);
          return ret;
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "mangoGetQueryFingerprint")]
-      private static extern int _mangoGetQueryFingerprint (out IntPtr query_fp, out int query_fp_len);
 
       public static int ringoGetQueryFingerprint (out byte[] fp)
       {
          IntPtr fp_ptr;
          int fp_len;
 
-         int ret = _ringoGetQueryFingerprint(out fp_ptr, out fp_len);
+         int ret = lib.ringoGetQueryFingerprint(out fp_ptr, out fp_len);
          fp = new byte[fp_len];
          Marshal.Copy(fp_ptr, fp, 0, fp_len);
          return ret;
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "ringoGetQueryFingerprint")]
-      private static extern int _ringoGetQueryFingerprint (out IntPtr query_fp, out int query_fp_len);
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int mangoGetAtomCount (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int mangoGetBondCount (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
-
-      public static string mangoSMILES (string buffer, bool canonical)
-      {
-         sbyte* res = _mangoSMILES(buffer, buffer.Length, canonical ? 1 : 0);
-
-         if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(bingoGetError());
-
-         return new String(res); 
+      public static string bingoRDFImportGetNext ()
+      { 
+         return new String(lib.bingoRDFImportGetNext());
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "mangoSMILES", CharSet = CharSet.Auto)]
-      private static extern sbyte * _mangoSMILES(
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len, int canonical);
 
-      public static string ringoRSMILES (string buffer)
+      public static string bingoRDFImportGetParameter (string param_name)
       {
-         sbyte* res = _ringoRSMILES(buffer, buffer.Length);
-
-         if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(bingoGetError());
-
-         return new String(res);
+         return new String(lib.bingoRDFImportGetProperty(param_name));
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "ringoRSMILES", CharSet = CharSet.Auto)]
-      private static extern sbyte* _ringoRSMILES (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
 
-      public static string mangoMolfile (string molecule)
+      public static string bingoSDFImportGetNext ()
+      { 
+         return new String(lib.bingoSDFImportGetNext());
+      }
+
+      public static string bingoSDFImportGetParameter (string param_name)
       {
-         sbyte* res = _mangoMolfile(molecule);
-
-         if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(bingoGetError());
-
-         return new String(res);
+         return new String(lib.bingoSDFImportGetProperty(param_name));
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "mangoMolfile", CharSet = CharSet.Auto)]
-      private static extern sbyte* _mangoMolfile (
-         [MarshalAs(UnmanagedType.LPStr)] string molecule);
 
-      public static string ringoRxnfile (string reaction)
+      public static void tautomerRulesReady ()
       {
-         sbyte* res = _ringoRxnfile(reaction);
-
-         if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(bingoGetError());
-
-         return new String(res);
+         if (lib.bingoTautomerRulesReady() == 0)
+            throw new Exception(lib.bingoGetError());
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "ringoRxnfile", CharSet = CharSet.Auto)]
-      private static extern sbyte* _ringoRxnfile (
-         [MarshalAs(UnmanagedType.LPStr)] string reaction);
 
-      [DllImport("bingo-core-c.dll")]
-      public static extern void bingoProfilingReset (
-         [MarshalAs(UnmanagedType.I1)] bool reset_whole_session);
-
-      public static string bingoProfilingGetStatistics (bool for_session)
-      { return new String(_bingoProfilingGetStatistics(for_session)); }
-      [DllImport("bingo-core-c.dll", EntryPoint = "bingoProfilingGetStatistics", CharSet = CharSet.Auto)]
-      private static extern sbyte* _bingoProfilingGetStatistics ([MarshalAs(UnmanagedType.I1)] bool for_session);
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern float bingoProfilingGetTime (
-         [MarshalAs(UnmanagedType.LPStr)] string counter_name,
-         [MarshalAs(UnmanagedType.I1)] bool whole_session);
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern long bingoProfilingGetValue (
-         [MarshalAs(UnmanagedType.LPStr)] string counter_name,
-         [MarshalAs(UnmanagedType.I1)] bool whole_session);
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern long bingoProfilingGetCount (
-         [MarshalAs(UnmanagedType.LPStr)] string counter_name,
-         [MarshalAs(UnmanagedType.I1)] bool whole_session);
-
-      public static string mangoGetCountedElementName (int index)
-      { return new String(_mangoGetCountedElementName(index)); }
-      [DllImport("bingo-core-c.dll", EntryPoint = "mangoGetCountedElementName", CharSet = CharSet.Auto)]
-      private static extern sbyte* _mangoGetCountedElementName (int index);
-
-      [DllImport("bingo-core-c.dll")]
-      public static extern int mangoNeedCoords ();
-
-      [DllImport("bingo-core-c.dll")]
-      [return: MarshalAs(UnmanagedType.I1)]  
-      public static extern bool mangoExactNeedComponentMatching ();
-
-      public static string mangoTauGetQueryGross () { return new String(_mangoTauGetQueryGross()); }
-      [DllImport("bingo-core-c.dll", EntryPoint = "mangoTauGetQueryGross", CharSet = CharSet.Auto)]
-      public static extern sbyte* _mangoTauGetQueryGross ();
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int mangoSimilarityGetBitMinMaxBoundsArray (
-         int count,
-         [MarshalAs(UnmanagedType.LPArray)] int[] target_ones,
-         out IntPtr min_bound,
-         out IntPtr max_bound);
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int mangoSimilaritySetMinMaxBounds (
-         float min_bound, float max_bound);
-
-      [DllImport("bingo-core-c.dll")]
-      public static extern int mangoSimilarityGetScore (out Single score);
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int mangoSetHightlightingMode (int enable);
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int mangoLoadTargetBinaryXyz (
-         [MarshalAs(UnmanagedType.LPArray)] byte[] target_xyz, int target_xyz_len);
-
-      public static string mangoGetHightlightedMolecule ()
+      public static void addTautomerRule (int n, string beg, string end)
       {
-         sbyte* res = _mangoGetHightlightedMolecule();
-
-         if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(bingoGetError());
-
-         return new String(res);
+         if (lib.bingoAddTautomerRule(n, beg, end) == 0)
+            throw new Exception(lib.bingoGetError());
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "mangoGetHightlightedMolecule", CharSet = CharSet.Auto)]
-      private static extern sbyte * _mangoGetHightlightedMolecule ();
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int ringoSetHightlightingMode (int enable);
-
-      public static string ringoGetHightlightedReaction ()
+      public static void clearTautomerRules ()
       {
-         sbyte* res = _ringoGetHightlightedReaction();
-
-         if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(bingoGetError());
-
-         return new String(res);
+         if (lib.bingoClearTautomerRules() == 0)
+            throw new Exception(lib.bingoGetError());
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "ringoGetHightlightedReaction", CharSet = CharSet.Auto)]
-      private static extern sbyte* _ringoGetHightlightedReaction ();
 
-      public static string ringoAAM (string reaction, string options)
+      public static byte[] getConfigBin (string name)
       {
-         sbyte* res = _ringoAAM(reaction, options);
+         IntPtr value_ptr;
+         int value_len;
 
-         if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(bingoGetError());
-
-         return new String(res);
+         if (lib.bingoGetConfigBin(name, out value_ptr, out value_len) == 0)
+            throw new Exception(lib.bingoGetError());
+         byte[] data = new byte[value_len];
+         Marshal.Copy(value_ptr, data, 0, value_len);
+         return data;
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "ringoAAM", CharSet = CharSet.Auto)]
-      private static extern sbyte* _ringoAAM (
-         [MarshalAs(UnmanagedType.LPStr)] string reaction,
-         [MarshalAs(UnmanagedType.LPStr)] string options);
 
-      public static string checkReaction (string reaction)
+      public static void setConfigBin (string name, byte[] value)
       {
-         sbyte* res = ringoCheckReaction(reaction);
-
-         if ((IntPtr)res == IntPtr.Zero)
-            return null;
-
-         return new String(res);
+         if (lib.bingoSetConfigBin(name, value, value.Length) == 0)
+            throw new Exception(lib.bingoGetError());
       }
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern sbyte* ringoCheckReaction (
-         [MarshalAs(UnmanagedType.LPStr)] string reaction);
 
-      public static string checkMolecule (string molecule)
+      public static int getConfigInt (string name)
       {
-         sbyte* res = mangoCheckMolecule(molecule);
-
-         if ((IntPtr)res == IntPtr.Zero)
-            return null;
-
-         return new String(res);
+         int value;
+         if (lib.bingoGetConfigInt(name, out value) == 0)
+            throw new Exception(lib.bingoGetError());
+         return value;
       }
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern sbyte* mangoCheckMolecule (
-         [MarshalAs(UnmanagedType.LPStr)] string molecule);
 
-      public static string mangoGross (string target_buf)
+      public static void setConfigInt (string name, int value)
       {
-         sbyte* res = _mangoGross(target_buf, target_buf.Length);
-
-         if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(bingoGetError());
-
-         return new String(res);
+         if (lib.bingoSetConfigInt(name, value) == 0)
+            throw new Exception(lib.bingoGetError());
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "mangoGross", CharSet = CharSet.Auto)]
-      private static extern sbyte* _mangoGross (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern float mangoMass (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len,
-         [MarshalAs(UnmanagedType.LPStr)] string type);
-
-      public static string mangoGrossGetConditions ()
+      public static void setContext (int id)
       {
-         sbyte* res = _mangoGrossGetConditions();
-         if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(bingoGetError());
-         return new String(res);
+         if (lib.bingoSetContext(id) == 0)
+            throw new Exception(lib.bingoGetError());
       }
-      [DllImport("bingo-core-c.dll", EntryPoint = "mangoGrossGetConditions", CharSet = CharSet.Auto)]
-      private static extern sbyte* _mangoGrossGetConditions ();
-
-      /* Profiling */
-      [DllImport("bingo-core-c.dll")]
-      public static extern UInt64 bingoProfNanoClock ();
-
-      [DllImport("bingo-core-c.dll")]
-      public static extern void bingoProfIncTimer (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, UInt64 dt);
-
-      [DllImport("bingo-core-c.dll")]
-      public static extern void bingoProfIncCounter (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int value);
-
-      public static string bingoGetNameCore (string buffer)
-      {
-         sbyte* res = _bingoGetNameCore(buffer, buffer.Length);
-
-         if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(bingoGetError());
-
-         return new String(res); 
-      }
-      [DllImport("bingo-core-c.dll", EntryPoint = "bingoGetNameCore", CharSet = CharSet.Auto)]
-      private static extern sbyte * _bingoGetNameCore(
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
-
-      [DllImport("bingo-core-c.dll")]
-      public static extern int bingoSetIndexRecordData (int id, byte[] data, int data_size);
-
-      public delegate int GetNextRecordHandler (IntPtr context);
-      public delegate void ProcessResultHandler (IntPtr context);
-      public delegate void ProcessErrorHandler (int id, IntPtr context);
-
-      [DllImport("bingo-core-c.dll")]
-      public static extern int mangoIndexProcess (
-         GetNextRecordHandler get_next_record, 
-         ProcessResultHandler process_result,
-         ProcessErrorHandler process_error, IntPtr context);
-
-      /* Test functions */
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int bingoCheckMemoryAllocate (int mem);
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      public static extern int bingoCheckMemoryFree ();
    }
 }

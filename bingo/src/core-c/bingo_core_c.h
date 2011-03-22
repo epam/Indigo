@@ -32,6 +32,11 @@
 #include "molecule/molfile_loader.h"
 #include "molecule/molecule_auto_loader.h"
 
+#include "mango_core_c_parallel.h"
+
+namespace indigo {
+namespace bingo_core {
+
 class BingoCore
 {
 public:
@@ -57,6 +62,8 @@ public:
 
    Obj< Array<char> > index_record_data;
    int index_record_data_id;
+
+   Obj<indigo::bingo_core::MangoIndexingDispatcher> mango_indexing_dispatcher;
 
    enum 
    {
@@ -112,5 +119,7 @@ public:
    catch (Reaction::Error &e) { action;} \
    catch (ReactionAutoLoader::Error &e) { action;} 
 
+}
+}
 
 #endif // __bingo_core_c_h___

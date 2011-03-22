@@ -15,11 +15,11 @@ namespace indigo
          IntPtr crf_ptr, fingerprint_ptr;
          int crf_buf_len, fingerprint_buf_len;
 
-         int ret = BingoCore.ringoIndexPrepareReaction(reaction, reaction.Length,
+         int ret = BingoCore.lib.ringoIndexPrepareReaction(reaction, reaction.Length,
             out crf_ptr, out crf_buf_len, out fingerprint_ptr, out fingerprint_buf_len);
 
          if (ret == -2)
-            throw new Exception(BingoCore.bingoGetError());
+            throw new Exception(BingoCore.lib.bingoGetError());
          if (ret == -1)
             return false;
 
