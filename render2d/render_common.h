@@ -148,6 +148,8 @@ struct AtomDesc {
    int implicit_h;
    Array<int> list;
    Array<char> pseudo;
+   int aam;
+   int inversion;
 
    float leftMargin, rightMargin, ypos, height;
 private:
@@ -224,6 +226,7 @@ struct BondDescr : public Edge {
    float extP, extN;
    int tiTopology;
    int topology;
+   int reactingCenter;
 private:
    BondDescr (const BondDescr& bd);
 };

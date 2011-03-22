@@ -118,6 +118,8 @@ void AtomDesc::clear ()
    color = CWC_BASE;
    implicit_h = 0;
    hydroPos = HYDRO_POS_RIGHT;
+   aam = -1;
+   inversion = STEREO_UNMARKED;
 }
 
 SGroup::SGroup()
@@ -169,6 +171,7 @@ void BondDescr::clear ()
    bahs = eahs = 0;
    tiTopology = -1;
    topology = 0;
+   reactingCenter = RC_UNMARKED;
 }
 
 int BondDescr::getBondEnd (int aid) const

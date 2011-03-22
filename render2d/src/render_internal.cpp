@@ -176,16 +176,19 @@ void RenderOptions::clear()
 }
 
 MoleculeRenderInternal::MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw) :
-_mol(NULL), _cw(cw), _settings(settings), _opt(opt), TL_CP_GET(_data), TL_CP_GET(_mapping)
+_mol(NULL), _cw(cw), _settings(settings), _opt(opt), TL_CP_GET(_data), TL_CP_GET(_atomMapping), TL_CP_GET(_atomMappingInv), TL_CP_GET(_bondMappingInv)
 {
    _data.clear();
+   _atomMapping.clear();
+   _atomMappingInv.clear();
+   _bondMappingInv.clear();
 }
 
 void MoleculeRenderInternal::setMolecule (BaseMolecule* mol)
 {
    _mol = mol;
    _data.clear();
-   _mapping.clear();
+   _atomMapping.clear();
 
    if ((_opt.collapseSuperatoms && _mol->superatoms.size() > 0) || _mol->multiple_groups.size() > 0) {
       _prepareSGroups();
@@ -224,20 +227,18 @@ void MoleculeRenderInternal::setReactionComponentProperties (const Array<int>* a
                                                              const Array<int>* reactingCenters,
                                                              const Array<int>* inversions)
 {
-   int* mapping = _mapping.size() > 0 ? _mapping.ptr() : NULL;
    if (aam != NULL)
-      mapArray(_data.aam, *aam, mapping);
+      _data.aam.copy(*aam);
    if (reactingCenters != NULL)
-      mapArray(_data.reactingCenters, *reactingCenters, mapping);
+      _data.reactingCenters.copy(*reactingCenters);
    if (inversions != NULL)
-      mapArray(_data.inversions, *inversions, mapping);
+      _data.inversions.copy(*inversions);
 }
 
 void MoleculeRenderInternal::setQueryReactionComponentProperties (const Array<int>* exactChanges)
 {
-   int* mapping = _mapping.size() > 0 ? _mapping.ptr() : NULL;
    if (exactChanges != NULL)
-      mapArray(_data.exactChanges, *exactChanges, mapping);
+      _data.exactChanges.copy(*exactChanges);
 }
 
 void MoleculeRenderInternal::render ()
@@ -703,7 +704,11 @@ void MoleculeRenderInternal::_prepareSGroups()
          newMol = new QueryMolecule();
       else
          newMol = new Molecule();
-      newMol->clone(bm1, &_mapping, 0);
+      newMol->clone(bm1, &_atomMapping, &_atomMappingInv);
+      _bondMappingInv.clear_resize(newMol->edgeEnd());
+      _bondMappingInv.fill(-1);
+      for (int i = newMol->edgeBegin(); i < newMol->edgeEnd(); i = newMol->edgeNext(i))
+         _bondMappingInv[i] = BaseMolecule::findMappedEdge(*newMol, *_mol, i, _atomMappingInv.ptr());
       _mol = newMol;
    }
 
@@ -744,16 +749,18 @@ void MoleculeRenderInternal::_prepareSGroups()
                pos.add(bm.getAtomXyz(aid));
                posCounted = true;
                posCnt++;
-               int nbid = v.neiEdge(j);
+               int nbid = v.neiEdge(j), bid = -1;
                if (bm.findEdgeIndex(naid, said) < 0) {
                   if (bm.isQueryMolecule()) {
                      QueryMolecule& qm = bm.asQueryMolecule();
-                     int bid = qm.addBond(said, naid, qm.getBond(nbid).clone());
+                     bid = qm.addBond(said, naid, qm.getBond(nbid).clone());
                   }else{
                      Molecule& mol = bm.asMolecule();
-                     int bid = mol.addBond(said, naid, mol.getBondOrder(nbid));
+                     bid = mol.addBond(said, naid, mol.getBondOrder(nbid));
                      mol.setEdgeTopology(bid, mol.getBondTopology(nbid));
                   }
+                  _bondMappingInv.expandFill(bid + 1, -1);
+                  _bondMappingInv[bid] = _bondMappingInv[nbid];
                }
             }
          }
@@ -789,14 +796,17 @@ void MoleculeRenderInternal::_prepareSGroups()
          if (in1 && !p1 && !in2 || !in1 && !p2 && in2) {
             int beg = in1 ? atomMap.at(edge.beg) : edge.beg;
             int end = in2 ? atomMap.at(edge.end) : edge.end;
+            int bid = -1;
             if (bm.isQueryMolecule()) {
                QueryMolecule& qm = bm.asQueryMolecule();
-               int bid = qm.addBond(beg, end, qm.getBond(j).clone());
-            }else{
+               bid = qm.addBond(beg, end, qm.getBond(j).clone());
+            } else {
                Molecule& mol = bm.asMolecule();
-               int bid = mol.addBond(beg, end, mol.getBondOrder(j));
+               bid = mol.addBond(beg, end, mol.getBondOrder(j));
                mol.setEdgeTopology(bid, mol.getBondTopology(j));
             }
+            _bondMappingInv.expandFill(bid + 1, -1);
+            _bondMappingInv[bid] = _bondMappingInv[j];
          }
       }
 
@@ -1189,6 +1199,13 @@ void MoleculeRenderInternal::_initAtomData ()
             sMin = rightSin;
             ad.hydroPos = HYDRO_POS_RIGHT;
          }
+      }
+      int uaid = _atomMappingInv.size() > i ? _atomMappingInv[i] : i;
+      if (_data.inversions.size() > uaid) {
+         ad.inversion = _data.inversions[uaid];
+      }
+      if (_data.aam.size() > uaid) {
+         ad.aam = _data.aam[uaid];
       }
    }
 }
@@ -1617,6 +1634,9 @@ void MoleculeRenderInternal::_initBondData ()
       d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2;
 
       d.stereodir = _mol->stereocenters.getBondDirection(i);
+      int ubid = _bondMappingInv.size() > i ? _bondMappingInv[i] : i;
+      if (_data.reactingCenters.size() > ubid)
+         d.reactingCenter = _data.reactingCenters[ubid];
    }
 }
 
@@ -2492,7 +2512,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
 
    int bondEndRightToStereoGroupLabel = -1;
    // prepare stereogroup labels
-   if ((ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY) || (_data.inversions.size() > 0 && _data.inversions[aid] != STEREO_UNMARKED)) {
+   if ((ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY) || ad.inversion == STEREO_INVERTS || ad.inversion == STEREO_RETAINS) {
       int tiStereoGroup = _pushTextItem(ad, RenderItem::RIT_STEREOGROUP, CWC_BASE, false);
 
       TextItem& itemStereoGroup = _data.textitems[tiStereoGroup];
@@ -2505,11 +2525,11 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          if (ad.stereoGroupType != MoleculeStereocenters::ATOM_ABS)
             itemOutput.printf("%i", ad.stereoGroupNumber);
       }
-      if (_data.inversions.size() > 0 && _data.inversions[aid] != STEREO_UNMARKED)
+      if (ad.inversion == STEREO_INVERTS || ad.inversion == STEREO_RETAINS)
       {
          if (itemOutput.tell() > 0)
             itemOutput.printf(",");
-         itemOutput.printf("%s", _data.inversions[aid] == STEREO_INVERTS ? "Inv" : "Ret");
+         itemOutput.printf("%s", ad.inversion == STEREO_INVERTS ? "Inv" : "Ret");
       }
       itemOutput.writeChar(0);
 
@@ -2551,13 +2571,12 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
    }
 
    // prepare AAM labels
-   if (_data.aam.size() > 0 && _data.aam[aid] > 0) {
-      //_opt.aamColor
+   if (ad.aam > 0) {
       int tiAAM = _pushTextItem(ad, RenderItem::RIT_AAM, CWC_BASE, false);
 
       TextItem& itemAAM = _data.textitems[tiAAM];
       itemAAM.fontsize = FONT_SIZE_ATTR;
-      bprintf(itemAAM.text, "%i", abs(_data.aam[aid]));
+      bprintf(itemAAM.text, "%i", abs(ad.aam));
       _cw.setTextItemSize(itemAAM);
 
       if (ad.showLabel)
@@ -2786,9 +2805,9 @@ void MoleculeRenderInternal::_drawBond (int b)
 
    _cw.resetHighlightThickness();
 
-   if (_data.reactingCenters.size() > 0 && _data.reactingCenters[b] != RC_UNMARKED)
+   if (bd.reactingCenter != RC_UNMARKED)
    {
-      int rc = _data.reactingCenters[b];
+      int rc = bd.reactingCenter;
       if (rc == RC_NOT_CENTER)
          _drawReactingCenter(bd, RC_NOT_CENTER);
       else
