@@ -766,22 +766,40 @@ void MoleculeRenderInternal::_prepareSGroups()
       bm.setAtomXyz(said, pos.x, pos.y, pos.z);
    }
 
+   typedef RedBlackMap<int,int> Mapping;
    for (int i = 0; i < bm.multiple_groups.size(); ++i) {
       const BaseMolecule::MultipleGroup& group = bm.multiple_groups[i];
-      QS_DEF(RedBlackSet<int>, parentAtoms);
-      parentAtoms.clear();
-      for (int j = 0; j < group.parent_atoms.size(); ++j) {
-         parentAtoms.insert(group.parent_atoms[j]);
-      }
+      QS_DEF(Mapping, atomMap);
+      atomMap.clear();
 
       QS_DEF(Array<int>, toRemove);
       toRemove.clear();
       for (int j = 0; j < group.atoms.size(); ++j) {
-         int aid = group.atoms[j];
-         if (!parentAtoms.find(aid)) {
-            toRemove.push(aid);
+         int k = j % group.parent_atoms.size();
+         atomMap.insert(group.atoms[j], group.atoms[k]);
+         if (k != j)
+            toRemove.push(group.atoms[j]);
+      }
+      for (int j = bm.edgeBegin(); j < bm.edgeEnd(); j = bm.edgeNext(j)) {
+         const Edge& edge = bm.getEdge(j);
+         bool in1 = atomMap.find(edge.beg),
+            in2 = atomMap.find(edge.end),
+            p1 = in1 && atomMap.at(edge.beg) == edge.beg,
+            p2 = in2 && atomMap.at(edge.end) == edge.end;
+         if (in1 && !p1 && !in2 || !in1 && !p2 && in2) {
+            int beg = in1 ? atomMap.at(edge.beg) : edge.beg;
+            int end = in2 ? atomMap.at(edge.end) : edge.end;
+            if (bm.isQueryMolecule()) {
+               QueryMolecule& qm = bm.asQueryMolecule();
+               int bid = qm.addBond(beg, end, qm.getBond(j).clone());
+            }else{
+               Molecule& mol = bm.asMolecule();
+               int bid = mol.addBond(beg, end, mol.getBondOrder(j));
+               mol.setEdgeTopology(bid, mol.getBondTopology(j));
+            }
          }
       }
+
       for (int j = 0; j < toRemove.size(); ++j) {
          bm.removeAtom(toRemove[j]);
       }
