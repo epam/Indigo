@@ -194,7 +194,8 @@ void mangoRegisterTable (OracleEnv &env, MangoOracleContext &context)
    {
       int n = 0;
 
-      MangoIndex index(context.context());
+      QS_DEF(MangoIndex, index);
+      index.init(context.context());
 
       if (statement.executeAllowNoData()) do
       {
@@ -368,7 +369,9 @@ ORAEXT void oraMangoIndexInsert (OCIExtProcContext *ctx, int context_id,
 
       env.dbgPrintf("inserting molecule with rowid %s\n", rowid);
       
-      MangoIndex index(context.context());
+      QS_DEF(MangoIndex, index);
+      index.init(context.context());
+
       BingoFingerprints &fingerprints = context.fingerprints;
       BingoStorage &storage = context.context().storage;
 

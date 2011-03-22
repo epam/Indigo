@@ -1,3 +1,17 @@
+/****************************************************************************
+ * Copyright (C) 2009-2011 GGA Software Services LLC
+ * 
+ * This file is part of Indigo toolkit.
+ * 
+ * This file may be distributed and/or modified under the terms of the
+ * GNU General Public License version 3 as published by the Free Software
+ * Foundation and appearing in the file LICENSE.GPL included in the
+ * packaging of this file.
+ * 
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ ***************************************************************************/
+
 #include "bingo_core_c.h"
 
 #include "base_cpp/profiling.h"
@@ -14,8 +28,9 @@ CEXPORT int mangoIndexEnd ()
 {
    BINGO_BEGIN
    {
-      self.mango_index.free();
-      self.mango_index_bindata.free();
+      self.mango_index = 0;
+      self.index_record_data_id = -1;
+      self.index_record_data.free();
       return 1;
    }
    BINGO_END(-2, -2)
@@ -30,14 +45,13 @@ CEXPORT int mangoIndexBegin ()
 
       mangoIndexEnd();
 
-      self.mango_index.create(*self.bingo_context);
-      self.mango_index_bindata.create();
+      self.index_record_data.create();
       return 1;
    }
    BINGO_END(-2, -2)
 }
 
-CEXPORT int mangoIndexPrepareMolecule (const char *str, int str_len,
+CEXPORT int mangoIndexReadPreparedMolecule (int *id,
                  const char **cmf_buf, int *cmf_buf_len,
                  const char **xyz_buf, int *xyz_buf_len,
                  const char **gross_str, 
@@ -46,37 +60,12 @@ CEXPORT int mangoIndexPrepareMolecule (const char *str, int str_len,
                  const char **fingerprint_sim_str, 
                  float *mass, int *sim_fp_bits_count)
 {
-   profTimerStart(t0, "index.prepare_molecule");
-
    BINGO_BEGIN
    {
-      self.mango_search_type = BingoCore::_UNDEF;
-
-      BufferScanner scanner(str, str_len);
-
-      ArrayOutput output(self.mango_index_bindata.ref());
-
-      TRY_READ_TARGET_MOL
-      {
-         try
-         {
-            self.mango_index->prepare(scanner, output);
-         }
-         catch (CmfSaver::Error &e) 
-         {
-            self.warning.readString(e.message(), true); 
-            return -1;
-         }
-      }
-      CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), true); return -1;);
+      *id = self.index_record_data_id;
 
       const Array<char> &cmf = self.mango_index->getCmf();
       const Array<char> &xyz = self.mango_index->getXyz();
-                                    
-      /*
-      *binmol_buf = self.mango_index_bindata->ptr();
-      *binmol_buf_len = self.mango_index_bindata->size();
-      */
 
       *cmf_buf = cmf.ptr();
       *cmf_buf_len = cmf.size();
@@ -518,14 +507,12 @@ CEXPORT const char * mangoSMILES (const char *target_buf, int target_buf_len, in
       BufferScanner scanner(target_buf, target_buf_len);
 
       QS_DEF(Molecule, target);
-      QS_DEF(GraphHighlighting, highlighting);
 
       MoleculeAutoLoader loader(scanner);
 
       loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
       loader.ignore_closing_bond_direction_mismatch =
          self.bingo_context->ignore_closing_bond_direction_mismatch;
-      loader.highlighting = &highlighting;
       loader.loadMolecule(target);
 
       if (canonical)
@@ -542,7 +529,6 @@ CEXPORT const char * mangoSMILES (const char *target_buf, int target_buf_len, in
       {
          SmilesSaver saver(out);
 
-         saver.highlighting = &highlighting;
          saver.saveMolecule(target);
       }
       out.writeByte(0);
@@ -560,21 +546,18 @@ CEXPORT const char * mangoMolfile (const char *molecule)
       BufferScanner scanner(molecule);
 
       QS_DEF(Molecule, target);
-      QS_DEF(GraphHighlighting, highlighting);
 
       MoleculeAutoLoader loader(scanner);
 
       loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
       loader.ignore_closing_bond_direction_mismatch =
          self.bingo_context->ignore_closing_bond_direction_mismatch;
-      loader.highlighting = &highlighting;
       loader.loadMolecule(target);
 
       ArrayOutput out(self.buffer);
 
       MolfileSaver saver(out);
 
-      saver.highlighting = &highlighting;
       saver.saveMolecule(target);
       out.writeByte(0);
       return self.buffer.ptr();

@@ -70,7 +70,7 @@ extern "C" THREAD_RET THREAD_MOD _threadFuncStatic (void *param)
 
 void OsCommandDispatcher::run ()
 {
-   run(osGetProcessorsCount() + 1);
+   run(3 * osGetProcessorsCount() / 2 + 1);
 }
 
 void OsCommandDispatcher::run (int nthreads)

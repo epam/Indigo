@@ -1,3 +1,17 @@
+/****************************************************************************
+ * Copyright (C) 2009-2011 GGA Software Services LLC
+ * 
+ * This file is part of Indigo toolkit.
+ * 
+ * This file may be distributed and/or modified under the terms of the
+ * GNU General Public License version 3 as published by the Free Software
+ * Foundation and appearing in the file LICENSE.GPL included in the
+ * packaging of this file.
+ * 
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ ***************************************************************************/
+
 #include "bingo_core_c.h"
 
 #include "base_cpp/profiling.h"
@@ -15,8 +29,7 @@ CEXPORT int ringoIndexEnd ()
 {
    BINGO_BEGIN
    {
-      self.ringo_index.free();
-      self.ringo_index_bindata.free();
+      //self.ringo_index_bindata.free();
       return 1;
    }
    BINGO_END(-2, -2)
@@ -31,8 +44,8 @@ CEXPORT int ringoIndexBegin ()
 
       ringoIndexEnd();
 
-      self.ringo_index.create(*self.bingo_context);
-      self.ringo_index_bindata.create();
+      //self.ringo_index.create(*self.bingo_context);
+      //self.ringo_index_bindata.create();
       return 1;
    }
    BINGO_END(-2, -2)
@@ -49,7 +62,7 @@ CEXPORT int ringoIndexPrepareReaction (const char *str, int str_len,
       self.ringo_search_type = BingoCore::_UNDEF;
 
       BufferScanner scanner(str, str_len);
-
+      /*
       ArrayOutput output(self.ringo_index_bindata.ref());
 
       TRY_READ_TARGET_RXN
@@ -73,7 +86,7 @@ CEXPORT int ringoIndexPrepareReaction (const char *str, int str_len,
 
       *fingerprint_buf = (const char *)self.ringo_index->getFingerprint();
       *fingerprint_buf_len = self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2;
-
+      */
       return 1;
    }
    BINGO_END(-2, -2)
@@ -196,23 +209,18 @@ CEXPORT const char * ringoRSMILES (const char *target_buf, int target_buf_len)
       BufferScanner scanner(target_buf, target_buf_len);
 
       QS_DEF(Reaction, target);
-      QS_DEF(ReactionHighlighting, highlighting);
-
-      highlighting.clear();
 
       ReactionAutoLoader loader(scanner);
 
       loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
       loader.ignore_closing_bond_direction_mismatch =
          self.bingo_context->ignore_closing_bond_direction_mismatch;
-      loader.highlighting = &highlighting;
       loader.loadReaction(target);
 
       ArrayOutput out(self.buffer);
 
       RSmilesSaver saver(out);
 
-      saver.highlighting = &highlighting;
       saver.saveReaction(target);
       out.writeByte(0);
       return self.buffer.ptr();
@@ -229,23 +237,18 @@ CEXPORT const char * ringoRxnfile (const char *reaction)
       BufferScanner scanner(reaction);
 
       QS_DEF(Reaction, target);
-      QS_DEF(ReactionHighlighting, highlighting);
-
-      highlighting.clear();
 
       ReactionAutoLoader loader(scanner);
 
       loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
       loader.ignore_closing_bond_direction_mismatch =
          self.bingo_context->ignore_closing_bond_direction_mismatch;
-      loader.highlighting = &highlighting;
       loader.loadReaction(target);
 
       ArrayOutput out(self.buffer);
 
       RxnfileSaver saver(out);
 
-      saver.highlighting = &highlighting;
       saver.saveReaction(target);
       out.writeByte(0);
       return self.buffer.ptr();

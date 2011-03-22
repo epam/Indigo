@@ -295,6 +295,33 @@ void StandardOutput::flush()
    fflush(stdout);
 }
 
+NullOutput::NullOutput ()
+{
+}
+
+NullOutput::~NullOutput ()
+{
+}
+
+void NullOutput::write (const void *data, int size)
+{
+}
+
+void NullOutput::seek  (int offset, int from)
+{
+   throw Error("not implemented");
+}
+
+int NullOutput::tell  ()
+{
+   throw Error("not implemented");
+}
+
+void NullOutput::flush ()
+{
+}
+
+
 namespace indigo
 {
 void bprintf (Array<char>& buf, const char *format, ...)

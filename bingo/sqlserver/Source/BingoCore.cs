@@ -194,8 +194,8 @@ namespace indigo
       public static extern int ringoIndexEnd ();
 
       [DllImport("bingo-core-c.dll")]
-      public static extern int mangoIndexPrepareMolecule (
-         [MarshalAs(UnmanagedType.LPStr)] string molfile, int molfile_len,
+      public static extern int mangoIndexReadPreparedMolecule (
+         out int id,
          out IntPtr cmf_buf, out int cmf_buf_len,
          out IntPtr xyz_buf, out int xyz_buf_len,
          out IntPtr gross_str,
@@ -482,6 +482,18 @@ namespace indigo
       private static extern sbyte * _bingoGetNameCore(
          [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
 
+      [DllImport("bingo-core-c.dll")]
+      public static extern int bingoSetIndexRecordData (int id, byte[] data, int data_size);
+
+      public delegate int GetNextRecordHandler (IntPtr context);
+      public delegate void ProcessResultHandler (IntPtr context);
+      public delegate void ProcessErrorHandler (int id, IntPtr context);
+
+      [DllImport("bingo-core-c.dll")]
+      public static extern int mangoIndexProcess (
+         GetNextRecordHandler get_next_record, 
+         ProcessResultHandler process_result,
+         ProcessErrorHandler process_error, IntPtr context);
 
       /* Test functions */
       [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]

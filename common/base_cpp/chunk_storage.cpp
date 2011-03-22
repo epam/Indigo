@@ -66,3 +66,11 @@ int ChunkStorage::count (void)
 {
    return _offset.size() - 1;
 }
+
+void ChunkStorage::pop ()
+{
+   if (count() == 0)
+      throw Error("Cannot pop element from empty chunk storage");
+   _offset.pop();
+   _arr.resize(_offset[_offset.size() - 1]);
+}

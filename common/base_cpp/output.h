@@ -104,6 +104,20 @@ protected:
    int _count;
 };
 
+class DLLEXPORT NullOutput : public Output
+{
+public:
+   explicit NullOutput ();
+   virtual ~NullOutput ();
+
+   virtual void write (const void *data, int size);
+   virtual void seek  (int offset, int from);
+   virtual int  tell  ();
+   virtual void flush ();
+};
+
+
+
 DLLEXPORT void bprintf (Array<char>& buf, const char *format, ...);
 
 }

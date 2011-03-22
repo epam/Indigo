@@ -20,13 +20,13 @@ namespace indigo
 
       public MoleculeHash hash;
 
-      public bool prepare (string molecule)
+      public bool readPrepared (out int id)
       {
          IntPtr cmf_ptr, xyz_ptr, fingerprint_ptr;
          int cmf_buf_len, xyz_buf_len, fingerprint_buf_len;
          IntPtr gross_str, counter_elements_str, fingerprint_sim_str_ptr;
 
-         int ret = BingoCore.mangoIndexPrepareMolecule(molecule, molecule.Length,
+         int ret = BingoCore.mangoIndexReadPreparedMolecule(out id,
             out cmf_ptr, out cmf_buf_len, out xyz_ptr, out xyz_buf_len,
             out gross_str, out counter_elements_str,
             out fingerprint_ptr, out fingerprint_buf_len,

@@ -1,3 +1,17 @@
+/****************************************************************************
+ * Copyright (C) 2009-2011 GGA Software Services LLC
+ * 
+ * This file is part of Indigo toolkit.
+ * 
+ * This file may be distributed and/or modified under the terms of the
+ * GNU General Public License version 3 as published by the Free Software
+ * Foundation and appearing in the file LICENSE.GPL included in the
+ * packaging of this file.
+ * 
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ ***************************************************************************/
+
 #ifndef __bingo_core_c_h___
 #define __bingo_core_c_h___
 
@@ -14,8 +28,9 @@
 #include "molecule/elements.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/rdf_loader.h"
-
-#include "bingo_core_c.h"
+#include "molecule/cmf_saver.h"
+#include "molecule/molfile_loader.h"
+#include "molecule/molecule_auto_loader.h"
 
 class BingoCore
 {
@@ -37,10 +52,11 @@ public:
    Obj<RdfLoader> rdf_loader;
    Array<char> buffer;
 
-   Obj<MangoIndex> mango_index;
-   Obj<RingoIndex> ringo_index;
-   Obj<Array<char> > mango_index_bindata;
-   Obj<Array<char> > ringo_index_bindata;
+   MangoIndex *mango_index;
+   RingoIndex *ringo_index;
+
+   Obj< Array<char> > index_record_data;
+   int index_record_data_id;
 
    enum 
    {
