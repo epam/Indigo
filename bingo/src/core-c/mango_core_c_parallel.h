@@ -15,7 +15,7 @@
 #ifndef __mango_core_c_parallel_h___
 #define __mango_core_c_parallel_h___
 
-#include "bingo_core_c.h"
+#include "bingo_core_c_internal.h"
 #include "bingo_core_c_parallel.h"
 
 #include "base_cpp/reusable_obj_array.h"

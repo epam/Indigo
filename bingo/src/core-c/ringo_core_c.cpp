@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "bingo_core_c.h"
+#include "bingo_core_c_internal.h"
 
 #include "base_cpp/profiling.h"
 #include "molecule/molfile_loader.h"

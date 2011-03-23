@@ -41,5 +41,8 @@
     <ClInclude Include="..\common\base_cpp\chunk_storage.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="src\core-c\bingo_core_c_internal.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

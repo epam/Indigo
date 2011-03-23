@@ -419,6 +419,8 @@ namespace indigo
                   BingoCore.GetNextRecordHandler get_next_record =
                      (IntPtr context) =>
                      {
+                        if (exception != null)
+                           return 0;
                         try 
                         {
                            while (cursor.read())
@@ -471,6 +473,8 @@ namespace indigo
                   BingoCore.ProcessResultHandler process_result =
                      (IntPtr context) =>
                      {
+                        if (exception != null)
+                           return;
                         try
                         {
                            BingoTimer add_timer = new BingoTimer("index.add_to_index");
@@ -484,12 +488,15 @@ namespace indigo
                         catch (Exception ex)
                         {
                            BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
+                           exception = ex;
                         }
                      };
 
                   BingoCore.ProcessErrorHandler process_error =
                      (int id_with_error, IntPtr context) =>
                      {
+                        if (exception != null)
+                           return;
                         try
                         {
                            string message =
@@ -501,12 +508,16 @@ namespace indigo
                         catch (Exception ex)
                         {
                            BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
+                           exception = ex;
                         }
                      };
 
                   try
                   {
-                     BingoCore.lib.mangoIndexProcess(get_next_record, process_result, process_error, IntPtr.Zero);
+                     if (data.getIndexType() == BingoIndexData.IndexType.Molecule)
+                        BingoCore.lib.mangoIndexProcess(get_next_record, process_result, process_error, IntPtr.Zero);
+                     else
+                        throw new Exception("Not implemented yet");
                   }
                   catch 
                   { 

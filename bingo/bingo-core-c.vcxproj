@@ -181,6 +181,7 @@
   <ItemGroup>
     <ClInclude Include="..\common\base_cpp\chunk_storage.h" />
     <ClInclude Include="src\core-c\bingo_core_c.h" />
+    <ClInclude Include="src\core-c\bingo_core_c_internal.h" />
     <ClInclude Include="src\core-c\bingo_core_c_parallel.h" />
     <ClInclude Include="src\core-c\mango_core_c_parallel.h" />
   </ItemGroup>
