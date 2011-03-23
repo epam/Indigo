@@ -32,7 +32,8 @@ class BingoContext;
 class MangoIndex
 {
 public:
-   MangoIndex (BingoContext &context);
+   MangoIndex ();
+   void init (BingoContext &context);
 
    void prepare (Scanner &molfile, Output &output, 
       OsLock *lock_for_exclusive_access = NULL);
@@ -55,29 +56,27 @@ public:
 
    static const int counted_elements[6];
 
-
+   void clear ();
 protected:
-
-   BingoContext &_context;
+   BingoContext *_context;
 
    // CMF-packed aromatized molecule and coordinates
-   TL_CP_DECL(Array<char>, _cmf);
-   TL_CP_DECL(Array<char>, _xyz);
+   Array<char> _cmf;
+   Array<char> _xyz;
 
    // hash for exact match
-   TL_CP_DECL(MangoExact::Hash, _hash); 
+   MangoExact::Hash _hash; 
 
    // gross formula
-   TL_CP_DECL(Array<int>,  _gross);
-   TL_CP_DECL(Array<char>, _gross_str);
+   Array<int> _gross;
+   Array<char> _gross_str;
 
-   TL_CP_DECL(Array<byte>, _fp);
-
-   TL_CP_DECL(Array<char>, _fp_sim_str);
+   Array<byte> _fp;
+   Array<char> _fp_sim_str;
            
-   // comma-separated list of selected couters 
+   // comma-separated list of selected counters 
    // (for non-exact gross formula search)
-   TL_CP_DECL(Array<char>, _counted_elems_str);
+   Array<char> _counted_elems_str;
 
    // Molecular mass
    float _molecular_mass;

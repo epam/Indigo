@@ -73,6 +73,8 @@ public:
    void run ();
    void run (int nthreads);
 
+   void terminate ();
+
    void _threadFunc  (void);
 protected:
 
@@ -98,6 +100,8 @@ private:
    void _onMsgHandleException (Exception *exception);
 
    void _recvCommandAndResult (OsCommandResult * &result, OsCommand * &command);
+
+   void _mainLoop ();
 
    OsCommand*         _getVacantCommand ();
    OsCommandResult*   _getVacantResult  ();

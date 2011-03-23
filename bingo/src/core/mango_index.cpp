@@ -28,17 +28,13 @@
 
 const int MangoIndex::counted_elements[6] = {ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_H};
 
-MangoIndex::MangoIndex (BingoContext &context) :
-_context(context),
-TL_CP_GET(_cmf),
-TL_CP_GET(_xyz),
-TL_CP_GET(_hash),
-TL_CP_GET(_gross),
-TL_CP_GET(_gross_str),
-TL_CP_GET(_fp),
-TL_CP_GET(_fp_sim_str),
-TL_CP_GET(_counted_elems_str)
+MangoIndex::MangoIndex () : _context(0)
 {
+}
+
+void MangoIndex::init (BingoContext &context)
+{
+   _context = &context;
 }
 
 void MangoIndex::prepare (Scanner &molfile, Output &output, 
@@ -50,9 +46,9 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
 
    MoleculeAutoLoader loader(molfile);
 
-   loader.treat_x_as_pseudoatom = _context.treat_x_as_pseudoatom;
+   loader.treat_x_as_pseudoatom = _context->treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
-           _context.ignore_closing_bond_direction_mismatch;
+           _context->ignore_closing_bond_direction_mismatch;
    loader.skip_3d_chirality = true;
    loader.loadMolecule(mol);
 
@@ -63,17 +59,17 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
 
    MangoExact::calculateHash(mol, _hash);
 
-   MoleculeFingerprintBuilder builder(mol, _context.fp_parameters);
+   MoleculeFingerprintBuilder builder(mol, _context->fp_parameters);
    profTimerStart(tfing, "moleculeIndex.createFingerprint");
    builder.process();
    profTimerStop(tfing);
 
-   _fp.copy(builder.get(), _context.fp_parameters.fingerprintSize());
+   _fp.copy(builder.get(), _context->fp_parameters.fingerprintSize());
    _fp_sim_bits_count = builder.countBits_Sim();
    output.writeBinaryWord((word)_fp_sim_bits_count);
 
    const byte *fp_sim_ptr = builder.getSim();
-   int fp_sim_size = _context.fp_parameters.fingerprintSizeSim();
+   int fp_sim_size = _context->fp_parameters.fingerprintSizeSim();
 
    ArrayOutput fp_sim_output(_fp_sim_str);
 
@@ -84,11 +80,11 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
 
    ArrayOutput output_cmf(_cmf);
    {
-      // CmfSaver modifies _context.cmf_dict and 
+      // CmfSaver modifies _context->cmf_dict and 
       // requires exclusive access for this
       OsLockerNullable locker(lock_for_exclusive_access);
 
-      CmfSaver saver(_context.cmf_dict, output_cmf);
+      CmfSaver saver(_context->cmf_dict, output_cmf);
 
       saver.saveMolecule(mol);
       
@@ -118,7 +114,7 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
 
    // Calculate molecular mass
    MoleculeMass mass_calulator;
-   mass_calulator.relative_atomic_mass_map = &_context.relative_atomic_mass_map;
+   mass_calulator.relative_atomic_mass_map = &_context->relative_atomic_mass_map;
    _molecular_mass = mass_calulator.molecularWeight(mol);
 }
 
@@ -166,4 +162,21 @@ float MangoIndex::getMolecularMass () const
 int MangoIndex::getFpSimilarityBitsCount () const
 {
    return _fp_sim_bits_count;
+}
+
+void MangoIndex::clear ()
+{
+   _cmf.clear();
+   _xyz.clear();
+   _hash.clear(); 
+
+   _gross.clear();
+   _gross_str.clear();
+
+   _fp.clear();
+   _fp_sim_str.clear();
+           
+   _counted_elems_str.clear();
+   _molecular_mass = -1;
+   _fp_sim_bits_count = -1;
 }

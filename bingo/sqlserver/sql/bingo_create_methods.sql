@@ -152,17 +152,6 @@ grant execute on [$(bingo)]._OnInsertRecordTrigger to $(bingo)_operator
 GO
 
 --
--- _UnloadLibrary
---
-CREATE PROCEDURE [$(bingo)]._UnloadLibrary 
-AS
-  EXTERNAL NAME [$(bingo)_assembly].[indigo.BingoDll]._UnloadLibrary
-GO
-ADD SIGNATURE TO [$(bingo)]._UnloadLibrary BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
---
 -- _WriteLog
 --
 CREATE PROCEDURE [$(bingo)]._WriteLog 

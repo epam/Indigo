@@ -125,10 +125,11 @@ void MangoRegisterCommand::execute (OsCommandResult &result)
       {
          if (res.per_molecule_index.size() <= res.valid_molecules)
          {
-            // Push new MangoIndex with parameter
-            res.per_molecule_index.push(_context.context());
+            // Push new MangoIndex
+            res.per_molecule_index.push();
          }
          MangoIndex &index = res.per_molecule_index[res.valid_molecules];
+         index.init(_context.context());
 
          if (mangoPrepareMolecule(_env, rowid, molfile_buf, 
             _context, index, prepared_data, &_lock_for_exclusive_access)) 

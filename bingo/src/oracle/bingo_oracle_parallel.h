@@ -45,7 +45,7 @@ public:
 
 // Dispatcher for creating commands.
 // Subclasses should overload _handleResult for result 
-// handling (if nessesary)
+// handling (if necessary)
 // Each thread has the same Session ID as parent thread.
 class BingoOracleDispatcher : public OsCommandDispatcher
 {
@@ -64,7 +64,7 @@ protected:
    virtual bool _setupCommand    (OsCommand &command);
 
    // This function is call _blobs_per_command times to 
-   // initializer additional data for each molecule
+   // initialize additional data for each molecule
    virtual void _addCurrentRecordToCommand (BingoOracleCommand &cmd);
 
 protected:

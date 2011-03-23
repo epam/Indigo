@@ -18,6 +18,7 @@
 // Storage for chunks of bytes
 
 #include "base_cpp/array.h"
+#include "base_cpp/exception.h"
 
 namespace indigo
 {
@@ -37,6 +38,10 @@ public:
 
    byte* get     (int i);
    int   getSize (int i);
+
+   void pop ();
+
+   DEF_ERROR("chunk storage");
 private:
    Array<byte> _arr;
    Array<int> _offset;

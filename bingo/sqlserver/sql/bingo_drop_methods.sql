@@ -38,9 +38,6 @@ GO
 DROP PROCEDURE [$(bingo)].__OnInsertRecordTrigger 
 GO
 
-DROP PROCEDURE [$(bingo)]._UnloadLibrary 
-GO
-
 DROP PROCEDURE [$(bingo)]._WriteLog 
 GO
 

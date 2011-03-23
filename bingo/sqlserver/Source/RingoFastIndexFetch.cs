@@ -24,10 +24,10 @@ namespace indigo
 
       public void prepareSub (string query, string options, bool highlighting)
       {
-         int res = BingoCore.ringoSetupMatch("RSUB", query, options);
+         int res = BingoCore.lib.ringoSetupMatch("RSUB", query, options);
          if (res < 0)
-            throw new Exception(BingoCore.bingoGetError());
-         BingoCore.ringoSetHightlightingMode(highlighting ? 1 : 0);
+            throw new Exception(BingoCore.lib.bingoGetError());
+         BingoCore.lib.ringoSetHightlightingMode(highlighting ? 1 : 0);
          this.highlighting = highlighting;
       }
 
@@ -51,13 +51,13 @@ namespace indigo
          {
             byte[] data_with_cmf = _index_data.storage.get(storage_id, 4, -1, conn, ref cache_index);
 
-            int ret = BingoCore.ringoMatchTargetBinary(data_with_cmf,
+            int ret = BingoCore.lib.ringoMatchTargetBinary(data_with_cmf,
                data_with_cmf.Length);
 
             if (ret == -2)
-               throw new Exception(BingoCore.bingoGetError());
+               throw new Exception(BingoCore.lib.bingoGetError());
             if (ret == -1)
-               throw new Exception(BingoCore.bingoGetWarning());
+               throw new Exception(BingoCore.lib.bingoGetWarning());
 
             if (ret == 1)
             {

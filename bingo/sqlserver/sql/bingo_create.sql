@@ -10,11 +10,18 @@ if (select is_broker_enabled from sys.databases where name='$(database)') = 0
 ALTER DATABASE $(database) SET ENABLE_BROKER
 go
 
--- Create key for adding unsafe assembly 
-CREATE ASYMMETRIC KEY $(bingo)_assembly_key FROM EXECUTABLE FILE = '$(bingo_assembly_path).dll'
-CREATE LOGIN $(bingo)_assembly_login FROM ASYMMETRIC KEY $(bingo)_assembly_key
-GRANT UNSAFE ASSEMBLY TO $(bingo)_assembly_login
-GO 
+-- Create key for adding unsafe assembly. It might be already created for different installation
+BEGIN TRY
+	CREATE ASYMMETRIC KEY bingo_assembly_key FROM EXECUTABLE FILE = '$(bingo_assembly_path).dll'
+	CREATE LOGIN bingo_assembly_login FROM ASYMMETRIC KEY bingo_assembly_key
+	GRANT UNSAFE ASSEMBLY TO bingo_assembly_login
+END TRY
+BEGIN CATCH
+    SELECT 
+        ERROR_NUMBER() AS ErrorNumber
+        ,ERROR_MESSAGE() AS ErrorMessage;
+END CATCH;
+GO
 
 use $(database)
 go
@@ -43,7 +50,6 @@ go
 -- Create tables for bingo user
 create table [$(bingo)].CONFIG (n int, name varchar(100), value varchar(4000));
 create index CONFIG_N on [$(bingo)].CONFIG(n); 
-insert into [$(bingo)].CONFIG values(0, 'DLL_DIRECTORY', '$(dll_directory)');
 insert into [$(bingo)].CONFIG values(0, 'treat-x-as-pseudoatom', '0');
 insert into [$(bingo)].CONFIG values(0, 'ignore-closing-bond-direction-mismatch', '0');
 go

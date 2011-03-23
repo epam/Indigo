@@ -147,7 +147,9 @@ namespace com.ggasoftware.indigo
             Object file_data = manager.GetObject(filename);
 
             String tmpdir_path = _getTemporaryDirectory(resource_assembly);
-            FileInfo file = new FileInfo(Path.Combine(tmpdir_path, filename));
+            String version = resource_assembly.GetName().Version.ToString();
+            // Make per-version-unique dependent dll name 
+            FileInfo file = new FileInfo(Path.Combine(tmpdir_path, version + "_" + filename));
             file.Directory.Create();
             // Check if file already exists
             if (!file.Exists || file.Length == 0)

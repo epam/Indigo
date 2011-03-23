@@ -491,7 +491,7 @@ namespace indigo
 
          BingoTimer timer = new BingoTimer("fingerprints.screening_sub");
 
-         BingoCore.bingoProfIncCounter("fingerprints.bits_total", fp_ones.Count);
+         BingoCore.lib.bingoProfIncCounter("fingerprints.bits_total", fp_ones.Count);
 
          List<int> fp_ones_used = new List<int>();
          for (int i = 0; i < _fp_sub_bits_used; i++)
@@ -526,7 +526,7 @@ namespace indigo
             if (!has_nonzero)
                break;
          }
-         BingoCore.bingoProfIncCounter("fingerprints.bits_used", iteration);
+         BingoCore.lib.bingoProfIncCounter("fingerprints.bits_used", iteration);
 
          int max_byte_index = (block.indices.Count + 7) / 8;
          for (int i = 0; i < max_byte_index; i++)
@@ -576,7 +576,7 @@ namespace indigo
 
          List<int> passed_screening_tmp = new List<int>();
 
-         BingoCore.bingoProfIncCounter("fingerprints.bits_total", fp_ones.Count);
+         BingoCore.lib.bingoProfIncCounter("fingerprints.bits_total", fp_ones.Count);
 
          if (fp_ones.Count == 0)  
          {
@@ -651,7 +651,7 @@ namespace indigo
                break;
          }
 
-         BingoCore.bingoProfIncCounter("fingerprints.bits_used", iteration);
+         BingoCore.lib.bingoProfIncCounter("fingerprints.bits_used", iteration);
 
          for (int i = 0; i < passed_screening.Count; i++)
             passed_screening[i] = block.indices[passed_screening[i]];

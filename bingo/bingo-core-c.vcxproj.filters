@@ -4,6 +4,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{b1c32576-10c0-413b-a09f-8a5e38d34fdc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{e1a471ee-a9a3-486a-8f01-8afccdb1c927}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core-c\bingo_core_c.cpp">
@@ -15,9 +18,30 @@
     <ClCompile Include="src\core-c\ringo_core_c.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\core-c\bingo_core_c_parallel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core-c\mango_core_c_parallel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\base_cpp\chunk_storage.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core-c\bingo_core_c.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core-c\bingo_core_c_parallel.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core-c\mango_core_c_parallel.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\base_cpp\chunk_storage.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core-c\bingo_core_c_internal.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

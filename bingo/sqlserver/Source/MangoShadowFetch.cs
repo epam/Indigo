@@ -30,9 +30,9 @@ namespace indigo
 
       public void prepareExact (string query, string options)
       {
-         int res = BingoCore.mangoSetupMatch("EXACT", query, options);
+         int res = BingoCore.lib.mangoSetupMatch("EXACT", query, options);
          if (res < 0)
-            throw new Exception(BingoCore.bingoGetError());
+            throw new Exception(BingoCore.lib.bingoGetError());
          table_copies = "";
          where_clause = "";
          if (options.Contains("TAU"))
@@ -42,7 +42,7 @@ namespace indigo
          }
          else
          {
-            need_xyz = (BingoCore.mangoNeedCoords() != 0);
+            need_xyz = (BingoCore.lib.mangoNeedCoords() != 0);
             _prepareExactQueryStrings(ref table_copies, ref where_clause);
          }
 
@@ -52,9 +52,9 @@ namespace indigo
       public void prepareGross (string query)
       {
          search_type = SearchType.GROSS;
-         int res = BingoCore.mangoSetupMatch("GROSS", query, "");
+         int res = BingoCore.lib.mangoSetupMatch("GROSS", query, "");
          if (res < 0)
-            throw new Exception(BingoCore.bingoGetError());
+            throw new Exception(BingoCore.lib.bingoGetError());
          where_clause = BingoCore.mangoGrossGetConditions();
       }
 
@@ -137,12 +137,12 @@ namespace indigo
                      byte[] cmf = (byte[])reader[1];
                      if (need_xyz)
                         xyz = (byte[])reader[2];
-                     res = BingoCore.mangoMatchTargetBinary(cmf, cmf.Length, xyz, xyz.Length);
+                     res = BingoCore.lib.mangoMatchTargetBinary(cmf, cmf.Length, xyz, xyz.Length);
                   }
                   else if (search_type == SearchType.GROSS)
                   {
                      string gross = (string)reader[1];
-                     res = BingoCore.mangoMatchTarget(gross, gross.Length);
+                     res = BingoCore.lib.mangoMatchTarget(gross, gross.Length);
                   }
                   else if (search_type == SearchType.MASS)
                      res = 1;
@@ -150,9 +150,9 @@ namespace indigo
                      throw new Exception("Search type is undefined");
 
                   if (res == -2)
-                     throw new Exception(BingoCore.bingoGetError());
+                     throw new Exception(BingoCore.lib.bingoGetError());
                   if (res == -1)
-                     throw new Exception(BingoCore.bingoGetWarning());
+                     throw new Exception(BingoCore.lib.bingoGetWarning());
 
                   if (res == 1)
                   {
@@ -170,7 +170,7 @@ namespace indigo
       void _prepareExactQueryStrings (ref string table_copies_str, ref string where_clause_str)
       {
          int hash_elements_count, hash, count;
-         BingoCore.mangoGetHash(false, -1, out hash_elements_count, out hash);
+         BingoCore.lib.mangoGetHash(false, -1, out hash_elements_count, out hash);
 
          StringBuilder table_copies = new StringBuilder();
          for (int i = 0; i < hash_elements_count; i++)
@@ -189,13 +189,13 @@ namespace indigo
             // query components must match target components
             for (int i = 0; i < hash_elements_count; i++)
             {
-               BingoCore.mangoGetHash(false, i, out count, out hash);
+               BingoCore.lib.mangoGetHash(false, i, out count, out hash);
                where_clause.AppendFormat("t{0}.hash = {1} and ", i, hash);
             }
 
             // components count mast must target components count
             string rel;
-            if (BingoCore.mangoExactNeedComponentMatching())
+            if (BingoCore.lib.mangoExactNeedComponentMatching())
                rel = ">=";
             else
                rel = "=";
@@ -204,11 +204,11 @@ namespace indigo
             {
                if (i != 0)
                   where_clause.Append("and ");
-               BingoCore.mangoGetHash(false, i, out count, out hash);
+               BingoCore.lib.mangoGetHash(false, i, out count, out hash);
                where_clause.AppendFormat("t{0}.count {1} {2} ", i, rel, count);
             }
          }
-         if (!BingoCore.mangoExactNeedComponentMatching())
+         if (!BingoCore.lib.mangoExactNeedComponentMatching())
          {
             if (where_was_added)
                where_clause.Append("and ");
@@ -217,7 +217,7 @@ namespace indigo
             int query_fragments_count = 0;
             for (int i = 0; i < hash_elements_count; i++)
             {
-               BingoCore.mangoGetHash(false, i, out count, out hash);
+               BingoCore.lib.mangoGetHash(false, i, out count, out hash);
                query_fragments_count += count;
             }
             where_clause.AppendFormat("sh.fragments = {0}", query_fragments_count);
