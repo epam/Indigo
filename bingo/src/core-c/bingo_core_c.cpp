@@ -39,6 +39,8 @@ void BingoCore::reset ()
    bingo_context = 0;
    mango_context = 0;
    ringo_context = 0;
+   error_handler = 0;
+   error_handler_context = 0;
 }
 
 TL_DECL(BingoCore, self);
@@ -90,6 +92,13 @@ CEXPORT void bingoReleaseSessionID (qword session_id)
 CEXPORT void bingoSetSessionID (qword session_id)
 {
    TL_SET_SESSION_ID(session_id);
+}
+
+CEXPORT void bingoSetErrorHandler (BINGO_ERROR_HANDLER handler, void *context)
+{
+   BingoCore &self = BingoCore::getInstance();
+   self.error_handler = handler;
+   self.error_handler_context = context;
 }
 
 CEXPORT int bingoSetContext (int id)

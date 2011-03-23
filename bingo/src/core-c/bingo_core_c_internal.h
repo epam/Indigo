@@ -49,6 +49,9 @@ public:
    Array<char> error;
    Array<char> warning;
 
+   BINGO_ERROR_HANDLER error_handler;
+   void  *error_handler_context;
+
    BingoContext * bingo_context;
    MangoContext * mango_context;
    RingoContext * ringo_context;
@@ -82,7 +85,11 @@ public:
 #define BINGO_BEGIN { BingoCore &self = BingoCore::getInstance(); try { self.error.clear();
 
 #define BINGO_END(success, fail) } catch (Exception &ex) \
-      { self.error.readString(ex.message(), true); return fail; } \
+      { self.error.readString(ex.message(), true); \
+         if (self.error_handler != 0)                       \
+            self.error_handler(ex.message(),                \
+            self.error_handler_context); \
+         return fail; } \
       return success; }
 
 #define TRY_READ_TARGET_MOL \
