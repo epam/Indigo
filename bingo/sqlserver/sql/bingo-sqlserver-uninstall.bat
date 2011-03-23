@@ -17,6 +17,7 @@ set database=
 set bingoname=bingo
 set y=
 set server=
+set fulldelete=0
 
 if exist bingo_saved_params.bat  call bingo_saved_params.bat
 
@@ -33,6 +34,7 @@ if "%1" == "-database" goto got_database
 if "%1" == "-bingoname" goto got_bingoname
 if "%1" == "-server" goto got_server
 if "%1" == "-y" goto got_y
+if "%1" == "-fulldelete" goto got_fulldelete
 
 if "%1" == "-help" goto usage
 if "%1" == "-?" goto usage
@@ -73,6 +75,10 @@ goto badparam
   set y=1
   goto L1
 
+:got_fulldelete
+  set fulldelete=1
+  goto L1
+  
 :badparam
   echo Unknown parameter: %1
   goto end
@@ -102,6 +108,8 @@ if not "%dbapass%" == "" echo DBA password     : %dbapass%
 if not "%server%" == "" echo Server            : %server%
 echo Database          : %database%
 echo Bingo name        : %bingoname%
+if "%fulldelete%" == "1" echo Full delete       : True
+if "%fulldelete%" == "0" echo Full delete       : False
 
 if "%y%"=="1" goto L4
 
@@ -115,7 +123,7 @@ goto end
 
 :L4
 
-set bingo_sqlcmd_arguments= -vbingo=%bingoname% -vdatabase=%database%
+set bingo_sqlcmd_arguments= -vbingo=%bingoname% -vdatabase=%database% -vfulldelete=%fulldelete%
 
 if not "%dbaname%" == "" set bingo_sqlcmd_arguments=%bingo_sqlcmd_arguments% -U %dbaname% 
 if not "%dbapass%" == "" set bingo_sqlcmd_arguments=%bingo_sqlcmd_arguments% -P %dbapass%
@@ -142,6 +150,8 @@ echo   -bingoname name
 echo     Name of cartridge pseudo-user (default "bingo").
 echo   -y
 echo     Do not ask for confirmation.
+echo   -fulldelete
+echo     Delete all Bingo-dependant objects that are used between different Bingo installations.
 goto end
 
 

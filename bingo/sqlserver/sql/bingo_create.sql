@@ -164,9 +164,11 @@ GO
 -- go
 
 CREATE ROUTE $(bingo)_notify_route AUTHORIZATION dbo
-WITH SERVICE_NAME = N'$(bingo)_notify_service', ADDRESS = N'LOCAL';
+WITH SERVICE_NAME = N'$(bingo)_$(database)_notify_service', ADDRESS = N'LOCAL';
 GO
-create event notification $(bingo)_logout_notify on server for
-  AUDIT_LOGOUT to service '$(bingo)_notify_service', 'current database'
+create event notification $(bingo)_$(database)_logout_notify on server for
+  AUDIT_LOGOUT to service '$(bingo)_$(database)_notify_service', 'current database'
+GO
 
 PRINT 'Done.'
+GO

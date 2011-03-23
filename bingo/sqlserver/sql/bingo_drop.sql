@@ -8,7 +8,7 @@ go
 drop procedure [$(bingo)].log_events
 go
 
-drop event notification $(bingo)_logout_notify on server;
+drop event notification $(bingo)_$(database)_logout_notify on server;
 go
 
 drop route $(bingo)_notify_route;
@@ -50,9 +50,12 @@ GO
 DROP ASSEMBLY $(bingo)_assembly;
 GO
 
-DROP LOGIN $(bingo)_assembly_login;
-GO
 
 use master;
-DROP ASYMMETRIC KEY $(bingo)_assembly_key
+
+IF ($(fulldelete) = 1)
+BEGIN
+	DROP LOGIN $(bingo)_assembly_login;
+	DROP ASYMMETRIC KEY bingo_assembly_key;
+END
 GO

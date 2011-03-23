@@ -149,7 +149,13 @@ namespace com.ggasoftware.indigo
             String tmpdir_path = _getTemporaryDirectory(resource_assembly);
             String version = resource_assembly.GetName().Version.ToString();
             // Make per-version-unique dependent dll name 
-            FileInfo file = new FileInfo(Path.Combine(tmpdir_path, version + "_" + filename));
+            String path = Path.Combine(tmpdir_path, filename);
+            String dir = Path.GetDirectoryName(path);
+            String name = Path.GetFileName(path);
+
+            String path_with_unique_name = Path.Combine(dir, version + "_" + name);
+
+            FileInfo file = new FileInfo(path_with_unique_name);
             file.Directory.Create();
             // Check if file already exists
             if (!file.Exists || file.Length == 0)
