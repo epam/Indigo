@@ -95,6 +95,11 @@ void OsCommandDispatcher::run (int nthreads)
    for (int i = 0; i < _left_thread_count; i++)
       osThreadCreate(_threadFuncStatic, this);
 
+   _mainLoop();
+}
+
+void OsCommandDispatcher::_mainLoop ()
+{
    // Main loop
    int msg;
    while (_left_thread_count != 0)
@@ -105,9 +110,7 @@ void OsCommandDispatcher::run (int nthreads)
       if (msg == MSG_NEED_TASK)
          _onMsgNeedTask();
       if (msg == MSG_HANDLE_RESULT)
-      {
          _onMsgHandleResult();
-      }
       if (msg == MSG_HANDLE_EXCEPTION)
          _onMsgHandleException((Exception *)parameter);
    }
@@ -116,6 +119,12 @@ void OsCommandDispatcher::run (int nthreads)
    {
       _exception_to_forward->throwSelf();
    }
+}
+
+void OsCommandDispatcher::terminate ()
+{
+   _need_to_terminate = true;
+   _mainLoop();
 }
 
 OsCommand* OsCommandDispatcher::_getVacantCommand ()
@@ -179,7 +188,8 @@ void OsCommandDispatcher::_handleResultWithCheck (OsCommandResult *result)
    Exception *exception = 0;
    try 
    {
-      _handleResult(*result);
+      if (!_need_to_terminate)
+         _handleResult(*result);
    }
    catch (Exception &e)
    {

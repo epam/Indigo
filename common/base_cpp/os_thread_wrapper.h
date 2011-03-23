@@ -101,6 +101,8 @@ private:
 
    void _recvCommandAndResult (OsCommandResult * &result, OsCommand * &command);
 
+   void _mainLoop ();
+
    OsCommand*         _getVacantCommand ();
    OsCommandResult*   _getVacantResult  ();
 

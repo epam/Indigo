@@ -471,33 +471,51 @@ namespace indigo
                   BingoCore.ProcessResultHandler process_result =
                      (IntPtr context) =>
                      {
-                        BingoTimer add_timer = new BingoTimer("index.add_to_index");
-                        if (data.getIndexType() == BingoIndexData.IndexType.Molecule)
-                           _AddMoleculeToIndex(conn, data);
-                        else
-                           throw new Exception("Reactions are not implemented yet");
+                        try
+                        {
+                           BingoTimer add_timer = new BingoTimer("index.add_to_index");
+                           if (data.getIndexType() == BingoIndexData.IndexType.Molecule)
+                              _AddMoleculeToIndex(conn, data);
+                           else
+                              throw new Exception("Reactions are not implemented yet");
                            //_AddReactionToIndex(conn, data, id, record_data);
-                        add_timer.end();
+                           add_timer.end();
+                        }
+                        catch (Exception ex)
+                        {
+                           BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
+                        }
                      };
 
                   BingoCore.ProcessErrorHandler process_error =
                      (int id_with_error, IntPtr context) =>
                      {
-                        string message =
-                           String.Format("Molecule with ID={0} wasn't added to the index: {1}",
-                              id, BingoCore.lib.bingoGetWarning());
-                        SqlContext.Pipe.Send(message);
-                        BingoLog.logMessage(message);
+                        try
+                        {
+                           string message =
+                              String.Format("Molecule with ID={0} wasn't added to the index: {1}",
+                                 id, BingoCore.lib.bingoGetWarning());
+                           SqlContext.Pipe.Send(message);
+                           BingoLog.logMessage(message);
+                        }
+                        catch (Exception ex)
+                        {
+                           BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
+                        }
                      };
 
                   try
                   {
                      BingoCore.lib.mangoIndexProcess(get_next_record, process_result, process_error, IntPtr.Zero);
                   }
-                  catch
+                  catch 
                   { 
-                     // Terminate parallel indexing because it causes unhandled exception if not termintated
-                     BingoLog.logMessage("Exception!!!");
+                     // Terminate parallel indexing because it causes unhandled exception if not terminated
+                     // Index termination should be here because function pointers must be valid
+                     if (data.getIndexType() == BingoIndexData.IndexType.Molecule)
+                        BingoCore.lib.mangoIndexEnd();
+                     else
+                        BingoCore.lib.ringoIndexEnd();
                      throw;
                   }
 

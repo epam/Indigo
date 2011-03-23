@@ -12,6 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include "bingo_core_c.h"
 #include "mango_core_c_parallel.h"
 
 #include <string.h>
@@ -32,6 +33,7 @@ CEXPORT int mangoIndexProcess (
       self.mango_indexing_dispatcher->process_result_cb = process_result_cb;
       self.mango_indexing_dispatcher->process_error_cb = process_error_cb;
       self.mango_indexing_dispatcher->run();
+      self.mango_indexing_dispatcher.free();
    }
    BINGO_END(0, -1)
 }

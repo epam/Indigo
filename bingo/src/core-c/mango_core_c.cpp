@@ -30,9 +30,16 @@ CEXPORT int mangoIndexEnd ()
 {
    BINGO_BEGIN
    {
+      if (self.mango_indexing_dispatcher.get())
+      {
+         self.mango_indexing_dispatcher->terminate();
+         self.mango_indexing_dispatcher.free();
+      }
+
       self.mango_index = 0;
       self.index_record_data_id = -1;
       self.index_record_data.free();
+
       return 1;
    }
    BINGO_END(-2, -2)

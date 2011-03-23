@@ -63,7 +63,7 @@ public:
    Obj< Array<char> > index_record_data;
    int index_record_data_id;
 
-   Obj<indigo::bingo_core::MangoIndexingDispatcher> mango_indexing_dispatcher;
+   Obj<MangoIndexingDispatcher> mango_indexing_dispatcher;
 
    enum 
    {
