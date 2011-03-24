@@ -36,6 +36,9 @@ CEXPORT int mangoIndexEnd ()
          self.mango_indexing_dispatcher.free();
       }
 
+      if (self.single_mango_index.get())
+         self.single_mango_index.free();
+
       self.mango_index = 0;
       self.index_record_data_id = -1;
       self.index_record_data.free();
@@ -60,6 +63,35 @@ CEXPORT int mangoIndexBegin ()
    BINGO_END(-2, -2)
 }
 
+CEXPORT int mangoIndexProcessSingleRecord ()
+{
+   BINGO_BEGIN
+   {
+      BufferScanner scanner(self.index_record_data.ref());
+
+      NullOutput output;
+
+      TRY_READ_TARGET_MOL
+      {
+         try
+         {
+            if (self.single_mango_index.get() == NULL)
+               self.single_mango_index.create();
+
+            self.mango_index = self.single_mango_index.get();
+            self.mango_index->prepare(scanner, output);
+         }
+         catch (CmfSaver::Error &e) 
+         {
+            self.warning.readString(e.message(), true); 
+            return 0;
+         }
+      }
+      CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), true); return 0;);
+   }
+   BINGO_END(1, 0)
+}
+
 CEXPORT int mangoIndexReadPreparedMolecule (int *id,
                  const char **cmf_buf, int *cmf_buf_len,
                  const char **xyz_buf, int *xyz_buf_len,
@@ -71,7 +103,8 @@ CEXPORT int mangoIndexReadPreparedMolecule (int *id,
 {
    BINGO_BEGIN
    {
-      *id = self.index_record_data_id;
+      if (id)
+         *id = self.index_record_data_id;
 
       const Array<char> &cmf = self.mango_index->getCmf();
       const Array<char> &xyz = self.mango_index->getXyz();

@@ -66,6 +66,7 @@ public:
 
    Obj< Array<char> > index_record_data;
    int index_record_data_id;
+   Obj<MangoIndex> single_mango_index;
 
    Obj<MangoIndexingDispatcher> mango_indexing_dispatcher;
 
