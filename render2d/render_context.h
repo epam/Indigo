@@ -31,7 +31,6 @@ public:
    void checkPathNonEmpty () const;
 
    RenderContext (const RenderOptions& opt, float sf);
-   void setScaleFactor (float sf);
    void setDefaultScale (float scale);
    void setHDC (PVOID hdc);
    int  getMaxPageSize () const;

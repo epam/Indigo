@@ -176,18 +176,22 @@ void RenderOptions::clear()
 }
 
 MoleculeRenderInternal::MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw) :
-_mol(NULL), _cw(cw), _settings(settings), _opt(opt), TL_CP_GET(_data)
+_mol(NULL), _cw(cw), _settings(settings), _opt(opt), TL_CP_GET(_data), TL_CP_GET(_atomMapping), TL_CP_GET(_atomMappingInv), TL_CP_GET(_bondMappingInv)
 {
    _data.clear();
+   _atomMapping.clear();
+   _atomMappingInv.clear();
+   _bondMappingInv.clear();
 }
 
 void MoleculeRenderInternal::setMolecule (BaseMolecule* mol)
 {
    _mol = mol;
    _data.clear();
+   _atomMapping.clear();
 
-   if (_opt.collapseSuperatoms && _mol->superatoms.size() > 0) {
-      _collapseSuperatoms();
+   if ((_opt.collapseSuperatoms && _mol->superatoms.size() > 0) || _mol->multiple_groups.size() > 0) {
+      _prepareSGroups();
    }
 
    int i;
@@ -209,6 +213,14 @@ void MoleculeRenderInternal::setScaleFactor (const float scaleFactor, const Vec2
    _scale = scaleFactor;
    _min.copy(min);
    _max.copy(max);
+}
+
+void mapArray (Array<int>& dst, const Array<int>& src, const int* mapping)
+{
+   for (int i = 0; i < src.size(); ++i) {
+      int j = mapping == NULL ? i : mapping[i];
+      dst[j] = src[i];
+   }
 }
 
 void MoleculeRenderInternal::setReactionComponentProperties (const Array<int>* aam,
@@ -629,13 +641,42 @@ void MoleculeRenderInternal::_initMulGroups()
    for (int i = 0; i < bm.multiple_groups.size(); ++i) {
       const BaseMolecule::MultipleGroup& group = bm.multiple_groups[i];
       SGroup& sg = _data.sgroups.push();
-      _loadBrackets(sg, group.brackets, true);
+      _placeBrackets(sg, group.atoms);
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
       index.fontsize = FONT_SIZE_ATTR;
       bprintf(index.text, "%d", group.multiplier);
       _positionIndex(sg, tiIndex, true);
    }
+}
+
+void MoleculeRenderInternal::_placeBrackets(SGroup& sg, const Array<int>& atoms)
+{
+   QS_DEF(Array<Vec2f[2]>, brackets);
+   Vec2f min, max, a, b;
+   for (int i = 0; i < atoms.size(); ++i) {
+      int aid = atoms[i];
+      const AtomDesc& ad = _ad(aid);
+      a.sum(ad.pos, ad.boundBoxMin);
+      b.sum(ad.pos, ad.boundBoxMax);
+      if (i == 0) {
+         min.copy(a);
+         max.copy(b);
+      } else {
+         min.min(a);
+         max.max(b);
+      }
+   }
+   float extent = _settings.bondLineWidth * 3;
+   min.sub(Vec2f(extent, extent));
+   max.add(Vec2f(extent, extent));
+   Vec2f* const & left = brackets.push();
+   left[0].set(min.x, max.y);
+   left[1].set(min.x, min.y);
+   Vec2f* const & right = brackets.push();
+   right[0].set(max.x, min.y);
+   right[1].set(max.x, max.y);
+   _loadBrackets(sg, brackets, false);
 }
 
 void MoleculeRenderInternal::_initSupGroups()
@@ -645,31 +686,7 @@ void MoleculeRenderInternal::_initSupGroups()
       const BaseMolecule::Superatom& group = bm.superatoms[i];
       SGroup& sg = _data.sgroups.push();
 
-      Vec2f min, max, a, b;
-      for (int i = 0; i < group.atoms.size(); ++i) {
-         int aid = group.atoms[i];
-         const AtomDesc& ad = _ad(aid);
-         a.sum(ad.pos, ad.boundBoxMin);
-         b.sum(ad.pos, ad.boundBoxMax);
-         if (i == 0) {
-            min.copy(a);
-            max.copy(b);
-         } else {
-            min.min(a);
-            max.max(b);
-         }
-      }
-      float extent = _settings.bondLineWidth * 3;
-      min.sub(Vec2f(extent, extent));
-      max.add(Vec2f(extent, extent));
-      Array<Vec2f[2]> brackets;
-      Vec2f* const & left = brackets.push();
-      left[0].set(min.x, max.y);
-      left[1].set(min.x, min.y);
-      Vec2f* const & right = brackets.push();
-      right[0].set(max.x, min.y);
-      right[1].set(max.x, max.y);
-      _loadBrackets(sg, brackets, false);
+      _placeBrackets(sg, group.atoms);
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
       index.fontsize = FONT_SIZE_ATTR;
@@ -678,7 +695,7 @@ void MoleculeRenderInternal::_initSupGroups()
    }
 }
 
-void MoleculeRenderInternal::_collapseSuperatoms()
+void MoleculeRenderInternal::_prepareSGroups()
 {
    {
       BaseMolecule* newMol = NULL;
@@ -687,8 +704,11 @@ void MoleculeRenderInternal::_collapseSuperatoms()
          newMol = new QueryMolecule();
       else
          newMol = new Molecule();
-      Array<int> mapping;
-      newMol->clone(bm1, &mapping, 0);
+      newMol->clone(bm1, &_atomMapping, &_atomMappingInv);
+      _bondMappingInv.clear_resize(newMol->edgeEnd());
+      _bondMappingInv.fill(-1);
+      for (int i = newMol->edgeBegin(); i < newMol->edgeEnd(); i = newMol->edgeNext(i))
+         _bondMappingInv[i] = BaseMolecule::findMappedEdge(*newMol, *_mol, i, _atomMappingInv.ptr());
       _mol = newMol;
    }
 
@@ -729,16 +749,18 @@ void MoleculeRenderInternal::_collapseSuperatoms()
                pos.add(bm.getAtomXyz(aid));
                posCounted = true;
                posCnt++;
-               int nbid = v.neiEdge(j);
+               int nbid = v.neiEdge(j), bid = -1;
                if (bm.findEdgeIndex(naid, said) < 0) {
                   if (bm.isQueryMolecule()) {
                      QueryMolecule& qm = bm.asQueryMolecule();
-                     int bid = qm.addBond(said, naid, qm.getBond(nbid).clone());
+                     bid = qm.addBond(said, naid, qm.getBond(nbid).clone());
                   }else{
                      Molecule& mol = bm.asMolecule();
-                     int bid = mol.addBond(said, naid, mol.getBondOrder(nbid));
+                     bid = mol.addBond(said, naid, mol.getBondOrder(nbid));
                      mol.setEdgeTopology(bid, mol.getBondTopology(nbid));
                   }
+                  _bondMappingInv.expandFill(bid + 1, -1);
+                  _bondMappingInv[bid] = _bondMappingInv[nbid];
                }
             }
          }
@@ -749,6 +771,48 @@ void MoleculeRenderInternal::_collapseSuperatoms()
       else
          pos.scale(1.f / posCnt);
       bm.setAtomXyz(said, pos.x, pos.y, pos.z);
+   }
+
+   typedef RedBlackMap<int,int> Mapping;
+   for (int i = 0; i < bm.multiple_groups.size(); ++i) {
+      const BaseMolecule::MultipleGroup& group = bm.multiple_groups[i];
+      QS_DEF(Mapping, atomMap);
+      atomMap.clear();
+
+      QS_DEF(Array<int>, toRemove);
+      toRemove.clear();
+      for (int j = 0; j < group.atoms.size(); ++j) {
+         int k = j % group.parent_atoms.size();
+         atomMap.insert(group.atoms[j], group.atoms[k]);
+         if (k != j)
+            toRemove.push(group.atoms[j]);
+      }
+      for (int j = bm.edgeBegin(); j < bm.edgeEnd(); j = bm.edgeNext(j)) {
+         const Edge& edge = bm.getEdge(j);
+         bool in1 = atomMap.find(edge.beg),
+            in2 = atomMap.find(edge.end),
+            p1 = in1 && atomMap.at(edge.beg) == edge.beg,
+            p2 = in2 && atomMap.at(edge.end) == edge.end;
+         if (in1 && !p1 && !in2 || !in1 && !p2 && in2) {
+            int beg = in1 ? atomMap.at(edge.beg) : edge.beg;
+            int end = in2 ? atomMap.at(edge.end) : edge.end;
+            int bid = -1;
+            if (bm.isQueryMolecule()) {
+               QueryMolecule& qm = bm.asQueryMolecule();
+               bid = qm.addBond(beg, end, qm.getBond(j).clone());
+            } else {
+               Molecule& mol = bm.asMolecule();
+               bid = mol.addBond(beg, end, mol.getBondOrder(j));
+               mol.setEdgeTopology(bid, mol.getBondTopology(j));
+            }
+            _bondMappingInv.expandFill(bid + 1, -1);
+            _bondMappingInv[bid] = _bondMappingInv[j];
+         }
+      }
+
+      for (int j = 0; j < toRemove.size(); ++j) {
+         bm.removeAtom(toRemove[j]);
+      }
    }
 }
 
@@ -1103,11 +1167,10 @@ void MoleculeRenderInternal::_initAtomData ()
             if (_bd(vertex.neiEdge(k1)).type == _bd(vertex.neiEdge(k2)).type)
             {
                float dot = Vec2f::dot(_getBondEnd(i, k1).dir, _getBondEnd(i, k2).dir);
-               if (dot < -0.97)
-                  continue;
+               if (dot >= -0.97)
+                  ad.showLabel = true;
             }
          }
-         ad.showLabel = false;
       }
       ad.hydroPos = HYDRO_POS_RIGHT;
       if (vertex.degree() == 0) {
@@ -1135,6 +1198,13 @@ void MoleculeRenderInternal::_initAtomData ()
             sMin = rightSin;
             ad.hydroPos = HYDRO_POS_RIGHT;
          }
+      }
+      int uaid = _atomMappingInv.size() > i ? _atomMappingInv[i] : i;
+      if (_data.inversions.size() > uaid) {
+         ad.inversion = _data.inversions[uaid];
+      }
+      if (_data.aam.size() > uaid) {
+         ad.aam = _data.aam[uaid];
       }
    }
 }
@@ -1563,6 +1633,9 @@ void MoleculeRenderInternal::_initBondData ()
       d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2;
 
       d.stereodir = _mol->stereocenters.getBondDirection(i);
+      int ubid = _bondMappingInv.size() > i ? _bondMappingInv[i] : i;
+      if (_data.reactingCenters.size() > ubid)
+         d.reactingCenter = _data.reactingCenters[ubid];
    }
 }
 
@@ -2438,7 +2511,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
 
    int bondEndRightToStereoGroupLabel = -1;
    // prepare stereogroup labels
-   if ((ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY) || (_data.inversions.size() > 0 && _data.inversions[aid] != STEREO_UNMARKED)) {
+   if ((ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY) || ad.inversion == STEREO_INVERTS || ad.inversion == STEREO_RETAINS) {
       int tiStereoGroup = _pushTextItem(ad, RenderItem::RIT_STEREOGROUP, CWC_BASE, false);
 
       TextItem& itemStereoGroup = _data.textitems[tiStereoGroup];
@@ -2451,11 +2524,11 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          if (ad.stereoGroupType != MoleculeStereocenters::ATOM_ABS)
             itemOutput.printf("%i", ad.stereoGroupNumber);
       }
-      if (_data.inversions.size() > 0 && _data.inversions[aid] != STEREO_UNMARKED)
+      if (ad.inversion == STEREO_INVERTS || ad.inversion == STEREO_RETAINS)
       {
          if (itemOutput.tell() > 0)
             itemOutput.printf(",");
-         itemOutput.printf("%s", _data.inversions[aid] == STEREO_INVERTS ? "Inv" : "Ret");
+         itemOutput.printf("%s", ad.inversion == STEREO_INVERTS ? "Inv" : "Ret");
       }
       itemOutput.writeChar(0);
 
@@ -2497,13 +2570,12 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
    }
 
    // prepare AAM labels
-   if (_data.aam.size() > 0 && _data.aam[aid] > 0) {
-      //_opt.aamColor
+   if (ad.aam > 0) {
       int tiAAM = _pushTextItem(ad, RenderItem::RIT_AAM, CWC_BASE, false);
 
       TextItem& itemAAM = _data.textitems[tiAAM];
       itemAAM.fontsize = FONT_SIZE_ATTR;
-      bprintf(itemAAM.text, "%i", abs(_data.aam[aid]));
+      bprintf(itemAAM.text, "%i", abs(ad.aam));
       _cw.setTextItemSize(itemAAM);
 
       if (ad.showLabel)
@@ -2732,9 +2804,9 @@ void MoleculeRenderInternal::_drawBond (int b)
 
    _cw.resetHighlightThickness();
 
-   if (_data.reactingCenters.size() > 0 && _data.reactingCenters[b] != RC_UNMARKED)
+   if (bd.reactingCenter != RC_UNMARKED)
    {
-      int rc = _data.reactingCenters[b];
+      int rc = bd.reactingCenter;
       if (rc == RC_NOT_CENTER)
          _drawReactingCenter(bd, RC_NOT_CENTER);
       else

@@ -65,12 +65,13 @@ private:
    void _initAtomData();
    void _initRGroups();
    void _loadBrackets(SGroup& sg, const Array<Vec2f[2]>& coord, bool transformCoordinates);
+   void _placeBrackets(SGroup& sg, const Array<int>& atoms);
    void _positionIndex(SGroup& sg, int ti, bool lower);
    void _initDataSGroups();
    void _initSruGroups();
    void _initMulGroups();
    void _initSupGroups();
-   void _collapseSuperatoms();
+   void _prepareSGroups();
    void _findAnglesOverPi();
    void _renderBondIds();
    void _renderAtomIds();
@@ -134,6 +135,9 @@ private:
    const RenderSettings& _settings;
    const RenderOptions& _opt;
    TL_CP_DECL(MoleculeRenderData, _data);
+   TL_CP_DECL(Array<int>, _atomMapping);
+   TL_CP_DECL(Array<int>, _atomMappingInv);
+   TL_CP_DECL(Array<int>, _bondMappingInv);
 };
 
 }
