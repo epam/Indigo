@@ -51,7 +51,7 @@ private:
 }
 
 #define DEF_ERROR(error_prefix) \
-   class Error : public Exception                     \
+   class Error : public indigo::Exception             \
    {                                                  \
    public:                                            \
       explicit Error (const char *format, ...) :      \
