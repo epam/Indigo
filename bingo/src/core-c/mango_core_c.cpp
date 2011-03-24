@@ -75,8 +75,11 @@ CEXPORT int mangoIndexProcessSingleRecord ()
       {
          try
          {
-            if (self.single_mango_index.get() == NULL)
+            if (self.single_mango_index.get() == NULL) {
                self.single_mango_index.create();
+               self.single_mango_index->init(*self.bingo_context);
+            }
+
 
             self.mango_index = self.single_mango_index.get();
             self.mango_index->prepare(scanner, output);
