@@ -61,6 +61,7 @@ CEXPORT int bingoSetIndexRecordData (int id, const char *data, int data_size);
 /*
  * Mango core interface
  */
+CEXPORT int mangoIndexProcessSingleRecord ();
 
 CEXPORT int mangoIndexReadPreparedMolecule (int *id,
                  const char **cmf_buf, int *cmf_buf_len,
@@ -70,7 +71,6 @@ CEXPORT int mangoIndexReadPreparedMolecule (int *id,
                  const char **fingerprint_buf, int *fingerprint_buf_len,
                  const char **fingerprint_sim_str, 
                  float *mass, int *sim_fp_bits_count);
-
 
 CEXPORT int mangoIndexEnd ();
 CEXPORT int mangoIndexBegin ();
