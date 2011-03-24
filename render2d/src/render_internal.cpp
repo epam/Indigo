@@ -1167,11 +1167,10 @@ void MoleculeRenderInternal::_initAtomData ()
             if (_bd(vertex.neiEdge(k1)).type == _bd(vertex.neiEdge(k2)).type)
             {
                float dot = Vec2f::dot(_getBondEnd(i, k1).dir, _getBondEnd(i, k2).dir);
-               if (dot < -0.97)
-                  continue;
+               if (dot >= -0.97)
+                  ad.showLabel = true;
             }
          }
-         ad.showLabel = false;
       }
       ad.hydroPos = HYDRO_POS_RIGHT;
       if (vertex.degree() == 0) {
