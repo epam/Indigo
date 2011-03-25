@@ -341,7 +341,11 @@ CEXPORT int indigoCreateReaction (void)
 
 CEXPORT int indigoCreateQueryReaction (void)
 {
-   return indigoCreateReaction();
+   INDIGO_BEGIN
+   {
+      return self.addObject(new IndigoQueryReaction());
+   }
+   INDIGO_END(-1);
 }
 
 CEXPORT int indigoAddReactant (int reaction, int molecule)

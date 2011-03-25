@@ -77,7 +77,7 @@ IndigoSaver* IndigoSaver::create (Output &output, const char *type)
    else if (strcasecmp(type, "rdf") == 0)
       saver =  new IndigoRdfSaver(output);
    else
-      throw IndigoError("unsupported saver type: %s. Supported formats are sdf, smiles, cml, rdf", type);
+      throw IndigoError("unsupported saver type: '%s'. Supported formats are sdf, smiles, cml, rdf", type);
 
    saver->_appendHeader();
    return saver.release();

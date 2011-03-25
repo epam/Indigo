@@ -192,6 +192,8 @@ public:
    virtual int getIndex ();
    int tell ();
 
+   virtual const char * debugInfo ();
+
    Array<char> data;
 protected:
    int _index;
