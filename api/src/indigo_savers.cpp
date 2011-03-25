@@ -70,7 +70,7 @@ IndigoSaver* IndigoSaver::create (Output &output, const char *type)
    AutoPtr<IndigoSaver> saver;
    if (strcasecmp(type, "sdf") == 0)
       saver = new IndigoSdfSaver(output);
-   else if (strcasecmp(type, "smiles") == 0)
+   else if (strcasecmp(type, "smiles") == 0 || strcasecmp(type, "smi") == 0)
       saver = new IndigoSmilesSaver(output);
    else if (strcasecmp(type, "cml") == 0)
       saver =  new IndigoCmlSaver(output);
@@ -136,7 +136,7 @@ CEXPORT int indigoSdfAppend (int output, int molecule)
    {
       IndigoObject &obj = self.getObject(molecule);
       Output &out = IndigoOutput::get(self.getObject(output));
-
+      IndigoSdfSaver::append(out, obj);
       return 1;
    }
    INDIGO_END(-1)
@@ -376,7 +376,7 @@ CEXPORT int indigoRdfAppend (int output, int item)
    {
       IndigoObject &obj = self.getObject(item);
       Output &out = IndigoOutput::get(self.getObject(output));
-
+      IndigoRdfSaver::append(out, obj);
       return 1;
    }
    INDIGO_END(-1)
