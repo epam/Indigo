@@ -245,11 +245,13 @@ class Indigo:
     self.iterateSmilesFile = self._static_obj_string(self._lib.indigoIterateSmilesFile)
     self.iterateCMLFile = self._static_obj_string(self._lib.indigoIterateCMLFile)
 
-    self.substructureMatcher = self._static_obj_obj_string(self._lib.indigoSubstructureMatcher)
+    self.substructureMatcher = self._static_obj_obj_ostring(self._lib.indigoSubstructureMatcher)
 
     self.extractCommonScaffold = self._static_obj_array_string(self._lib.indigoExtractCommonScaffold)
     self.decomposeMolecules = self._static_obj_obj_array(self._lib.indigoDecomposeMolecules)
     self.reactionProductEnumerate = self._static_obj_obj_array(self._lib.indigoReactionProductEnumerate)
+
+    self.createFileSaver = self._static_obj_string_string(self._lib.indigoCreateFileSaver)
 
     self.dbgBreakpoint = Indigo._lib.indigoDbgBreakpoint
     
@@ -404,6 +406,7 @@ class Indigo:
     self.IndigoObject.cmlHeader = Indigo._member_void(Indigo._lib.indigoCmlHeader)
     self.IndigoObject.cmlAppend = Indigo._member_void_obj(Indigo._lib.indigoCmlAppend)
     self.IndigoObject.cmlFooter = Indigo._member_void(Indigo._lib.indigoCmlFooter)
+    self.IndigoObject.append = Indigo._member_void_obj(Indigo._lib.indigoAppend)
 
     self.IndigoObject.iterateArray = Indigo._member_obj(Indigo._lib.indigoIterateArray)
     self.IndigoObject.count = Indigo._member_int(Indigo._lib.indigoCount)
@@ -490,7 +493,7 @@ class Indigo:
       return Indigo.IndigoObject(self, res)
     return self._make_wrapper_func(newfunc, func)
 
-  def _static_obj_obj_string (self, func):
+  def _static_obj_obj_ostring (self, func):
     func.restype = c_int
     func.argtypes = [c_int, c_char_p]
     def newfunc (obj, string = None):
@@ -503,6 +506,34 @@ class Indigo:
       return Indigo.IndigoObject(self, self._checkResult(res))
     return self._make_wrapper_func(newfunc, func)
 
+  def _static_obj_obj_string (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_char_p]
+    def newfunc (obj, string):
+      self._setSID()
+      if string is None:
+         raise IndigoException("Second argument must be specified. Null was passed.")
+      res = func(obj.id, string)
+      if res == 0:
+        return None
+      return Indigo.IndigoObject(self, self._checkResult(res))
+    return self._make_wrapper_func(newfunc, func)
+
+  def _static_obj_string_string (self, func):
+    func.restype = c_int
+    func.argtypes = [c_char_p, c_char_p]
+    def newfunc (string1, string2):
+      self._setSID()
+      if string1 is None:
+         raise IndigoException("Second argument must be specified. Null was passed.")
+      if string2 is None:
+         raise IndigoException("Third argument must be specified. Null was passed.")
+      res = func(string1, string2)
+      if res == 0:
+        return None
+      return Indigo.IndigoObject(self, self._checkResult(res))
+    return self._make_wrapper_func(newfunc, func)
+    
   def _static_obj_array_string (self, func):
     func.restype = c_int
     func.argtypes = [c_int, c_char_p]

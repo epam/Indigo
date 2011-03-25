@@ -631,6 +631,12 @@ int IndigoCmlMolecule::tell ()
    return _offset;
 }
 
+const char * IndigoCmlMolecule::debugInfo ()
+{
+   return "<cml molecule>";
+}
+
+
 IndigoMultipleCmlLoader::IndigoMultipleCmlLoader (Scanner &scanner) :
 IndigoObject(MULTIPLE_CML_LOADER)
 {

@@ -558,6 +558,16 @@ CEXPORT int indigoCmlHeader (int output);
 CEXPORT int indigoCmlAppend (int output, int item);
 CEXPORT int indigoCmlFooter (int output);
 
+// Create saver objects that can be used to save molecules or reactions
+// Supported formats: 'sdf', 'smi' or 'smiles', 'cml', 'rdf'
+// Format argument is case-insensitive
+// Saver should be closed with indigoClose function
+CEXPORT int indigoCreateSaver (int output, const char *format);
+CEXPORT int indigoCreateFileSaver (const char *filename, const char *format);
+
+// Append object to a specified saver stream
+CEXPORT int indigoAppend (int saver, int object);
+
 /* Arrays */
 
 CEXPORT int indigoCreateArray ();

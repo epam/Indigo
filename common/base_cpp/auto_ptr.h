@@ -73,6 +73,12 @@ public:
       }
    }
 
+   AutoPtr<T>& operator= (T *ptr)
+   {
+      reset(ptr);
+      return *this;
+   }
+
    void create ()
    {
       reset(new T());

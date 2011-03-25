@@ -119,7 +119,8 @@ public:
       RINGS_ITER,
       EDGE_SUBMOLECULE_ITER,
       CML_MOLECULE,
-      MULTIPLE_CML_LOADER
+      MULTIPLE_CML_LOADER,
+      SAVER
    };
 
    int type;

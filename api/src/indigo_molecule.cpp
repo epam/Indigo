@@ -16,7 +16,6 @@
 #include "indigo_io.h"
 #include "indigo_array.h"
 #include "molecule/molecule_auto_loader.h"
-#include "molecule/molfile_saver.h"
 #include "base_cpp/output.h"
 #include "molecule/gross_formula.h"
 #include "molecule/molecule_mass.h"
@@ -24,7 +23,6 @@
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_saver.h"
 #include "molecule/canonical_smiles_saver.h"
-#include "molecule/molecule_cml_saver.h"
 #include "molecule/molecule_inchi.h"
 #include "base_c/bitarray.h"
 #include "molecule/molecule_fingerprint.h"
@@ -424,71 +422,6 @@ CEXPORT int indigoLoadSmarts (int source)
       return self.addObject(molptr.release());
    }
    INDIGO_END(-1);
-}
-
-CEXPORT int indigoSaveMolfile (int molecule, int output)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(molecule);
-      BaseMolecule &mol = obj.getBaseMolecule();
-      Output &out = IndigoOutput::get(self.getObject(output));
-
-      MolfileSaver saver(out);
-      self.initMolfileSaver(saver);
-      if (mol.isQueryMolecule())
-         saver.saveQueryMolecule(mol.asQueryMolecule());
-      else
-         saver.saveMolecule(mol.asMolecule());
-      out.flush();
-      return 1;
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoSaveCml (int molecule, int output)
-{
-   INDIGO_BEGIN
-   {
-      Molecule &mol = self.getObject(molecule).getMolecule();
-      Output &out = IndigoOutput::get(self.getObject(output));
-
-      MoleculeCmlSaver saver(out);
-      saver.saveMolecule(mol);
-      out.flush();
-      return 1;
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoSdfAppend (int output, int molecule)
-{
-   INDIGO_BEGIN
-   {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      RedBlackStringObjMap< Array<char> > *props = self.getObject(molecule).getProperties();
-      Output &out = IndigoOutput::get(self.getObject(output));
-
-      MolfileSaver saver(out);
-      self.initMolfileSaver(saver);
-      if (mol.isQueryMolecule())
-         saver.saveQueryMolecule(mol.asQueryMolecule());
-      else
-         saver.saveMolecule(mol.asMolecule());
-
-      if (props != 0)
-      {
-         int i;
-
-         for (i = props->begin(); i != props->end(); i = props->next(i))
-            out.printf(">  <%s>\n%s\n\n", props->key(i), props->value(i).ptr());
-      }
-
-      out.printfCR("$$$$");
-      out.flush();
-      return 1;
-   }
-   INDIGO_END(-1)
 }
 
 CEXPORT int indigoGrossFormula (int molecule)
