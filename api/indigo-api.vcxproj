@@ -297,6 +297,7 @@
     <ClCompile Include="src\indigo_product_enumerator.cpp" />
     <ClCompile Include="src\indigo_properties.cpp" />
     <ClCompile Include="src\indigo_reaction.cpp" />
+    <ClCompile Include="src\indigo_savers.cpp" />
     <ClCompile Include="src\indigo_scaffold.cpp" />
     <ClCompile Include="src\indigo_stereo.cpp" />
     <ClCompile Include="src\option_manager.cpp" />
@@ -314,6 +315,7 @@
     <ClInclude Include="src\indigo_molecule.h" />
     <ClInclude Include="src\indigo_properties.h" />
     <ClInclude Include="src\indigo_reaction.h" />
+    <ClInclude Include="src\indigo_savers.h" />
     <ClInclude Include="src\indigo_scaffold.h" />
     <ClInclude Include="src\indigo_stereo.h" />
     <ClInclude Include="src\option_manager.h" />

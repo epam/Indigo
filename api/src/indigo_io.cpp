@@ -17,6 +17,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/auto_ptr.h"
 #include "molecule/gross_formula.h"
+#include "indigo_savers.h"
 
 IndigoScanner::IndigoScanner (Scanner *scanner) : IndigoObject(SCANNER), ptr(scanner)
 {
@@ -143,12 +144,22 @@ CEXPORT int indigoClose (int output)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(output);
-      if (obj.type != IndigoObject::OUTPUT)
+      if (obj.type == IndigoObject::OUTPUT)
+      {
+         IndigoOutput &out = ((IndigoOutput &)obj);
+         delete out.ptr;
+         out.ptr = 0;
+         return 1;
+      }
+      else if (obj.type == IndigoObject::SAVER)
+      {
+         IndigoSaver &saver = ((IndigoSaver &)obj);
+         saver.close();
+         return 1;
+      }
+      else
          throw IndigoError("indigoClose(): does not accept %s", obj.debugInfo());
-      IndigoOutput &out = ((IndigoOutput &)obj);
-      delete out.ptr;
-      out.ptr = 0;
-      return 1;
+
    }
    INDIGO_END(-1)
 }

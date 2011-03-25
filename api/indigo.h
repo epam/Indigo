@@ -565,6 +565,9 @@ CEXPORT int indigoCmlFooter (int output);
 CEXPORT int indigoCreateSaver (int output, const char *format);
 CEXPORT int indigoCreateFileSaver (const char *filename, const char *format);
 
+// Append object to a specified saver stream
+CEXPORT int indigoAppend (int saver, int object);
+
 /* Arrays */
 
 CEXPORT int indigoCreateArray ();
