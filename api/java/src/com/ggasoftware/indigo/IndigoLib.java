@@ -294,6 +294,10 @@ public interface IndigoLib extends Library
    int indigoCmlAppend (int output, int item);
    int indigoCmlFooter (int output);
 
+   int indigoCreateSaver (int output, String format);
+   int indigoCreateFileSaver (String filename, String format);
+   int indigoAppend (int saver, int object);
+
    int indigoCreateArray ();
    int indigoArrayAdd (int arr, int object);
    int indigoAt (int item, int index);
