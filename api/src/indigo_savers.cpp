@@ -38,7 +38,6 @@ IndigoSaver::IndigoSaver (Output &output) : IndigoObject(IndigoObject::SAVER),
    _output(output)
 {
    _closed = false;
-   _appendHeader();
    _own_output = 0;
 }
 
@@ -68,15 +67,20 @@ void IndigoSaver::close ()
 
 IndigoSaver* IndigoSaver::create (Output &output, const char *type)
 {
+   AutoPtr<IndigoSaver> saver;
    if (strcasecmp(type, "sdf") == 0)
-      return new IndigoSdfSaver(output);
-   if (strcasecmp(type, "smiles") == 0)
-      return new IndigoSmilesSaver(output);
-   if (strcasecmp(type, "cml") == 0)
-      return new IndigoCmlSaver(output);
-   if (strcasecmp(type, "rdf") == 0)
-      return new IndigoRdfSaver(output);
-   throw IndigoError("unsupported saver type: %s. Supported formats are sdf, smiles, cml, rdf", type);
+      saver = new IndigoSdfSaver(output);
+   else if (strcasecmp(type, "smiles") == 0)
+      saver = new IndigoSmilesSaver(output);
+   else if (strcasecmp(type, "cml") == 0)
+      saver =  new IndigoCmlSaver(output);
+   else if (strcasecmp(type, "rdf") == 0)
+      saver =  new IndigoRdfSaver(output);
+   else
+      throw IndigoError("unsupported saver type: %s. Supported formats are sdf, smiles, cml, rdf", type);
+
+   saver->_appendHeader();
+   return saver.release();
 }
 
 void IndigoSaver::append (IndigoObject &object)
@@ -478,6 +482,22 @@ CEXPORT int indigoSaveRxnfile (int reaction, int output)
       else
          saver.saveReaction(rxn.asReaction());
       out.flush();
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoAppend (int saver_id, int object)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
+      IndigoObject &saver_obj = self.getObject(saver_id);
+      if (saver_obj.type != IndigoObject::SAVER)
+         throw IndigoError("indigoAppend() is only applicable to saver objects. %s object was passed as a saver", 
+            saver_obj.debugInfo());
+      IndigoSaver &saver = (IndigoSaver &)saver_obj;
+      saver.append(obj);
       return 1;
    }
    INDIGO_END(-1)
