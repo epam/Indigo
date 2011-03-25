@@ -228,10 +228,8 @@ namespace indigo
       [return: MarshalAs(UnmanagedType.U8)]
       ulong bingoAllocateSessionID ();
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
       void bingoReleaseSessionID ([MarshalAs(UnmanagedType.U8)] ulong id);
 
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
       void bingoSetSessionID ([MarshalAs(UnmanagedType.U8)] ulong id);
    }
 }
