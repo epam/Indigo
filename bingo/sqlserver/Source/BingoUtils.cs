@@ -182,6 +182,13 @@ namespace indigo
    {
       static object sync_obj = new object();
 
+      // Functionality to detect moment when assembly gets unloaded
+      static BingoLog _log_instance = new BingoLog();
+      ~BingoLog ()
+      {
+         logMessage("Log file manager was released");
+      }
+
       [SqlFunction]
       [BingoSqlFunction(access_level = AccessLevelKind.None)]
       public static void _WriteLog (SqlString message)
