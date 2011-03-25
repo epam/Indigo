@@ -27,7 +27,7 @@ namespace indigo
       public void setSession()
       {
          if (_session_valid)
-            bingoSetSessionID(_session_id);
+            BingoCore.lib.bingoSetSessionID(_session_id);
       }
 
       public void acquire(BingoSession session)
@@ -53,7 +53,7 @@ namespace indigo
       {
          if (!_session_valid)
          {
-            _session_id = bingoAllocateSessionID();
+            _session_id = BingoCore.lib.bingoAllocateSessionID();
             _session_valid = true;
             //BingoLog.logMessage("Bingo-core session {0} allocated", _session_id);
          }
@@ -63,20 +63,10 @@ namespace indigo
       {
          if (_session_valid)
          {
-            bingoReleaseSessionID(_session_id);
+            BingoCore.lib.bingoReleaseSessionID(_session_id);
             _session_valid = false;
             //BingoLog.logMessage("Bingo-core session {0} released", _session_id);
          }
       }
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      [return: MarshalAs(UnmanagedType.U8)]
-      private static extern ulong bingoAllocateSessionID();
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern void bingoReleaseSessionID([MarshalAs(UnmanagedType.U8)] ulong id);
-
-      [DllImport("bingo-core-c.dll", CharSet = CharSet.Auto)]
-      private static extern void bingoSetSessionID([MarshalAs(UnmanagedType.U8)] ulong id);
    }
 }
