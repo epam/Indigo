@@ -48,68 +48,72 @@ public class MolRenderer extends JPanel
      }
   }
 
-  public Component getTableCellRendererComponent(
+  public synchronized Component getTableCellRendererComponent(
               JTable table, Object value, boolean isSelected,
               boolean hasFocus, int row, int column)
   {
-     RenderableObject mol_image = (RenderableObject)value;
+     RenderableMolData mol_image = (RenderableMolData)value;
+     synchronized (indigo) {
 
-     if (mol_image == null)
-        return null;
+        if (mol_image == null)
+           return null;
 
-     try {
-        indigo_obj = mol_image.getObject();
-     } catch (Exception ex)  {
-        indigo_obj = null;
-     }
+        try {
+           indigo_obj = mol_image.getObject();
+        } catch (Exception ex)  {
+           indigo_obj = null;
+        }
 
-     if (indigo_obj == null)
-     {
-        image = new BufferedImage(cell_w, cell_h, BufferedImage.TYPE_INT_RGB);
-        Graphics2D gc = image.createGraphics();
-        gc.setColor(Color.white);
-        gc.fillRect(0, 0, cell_w, cell_h);
-        gc.setColor(Color.black);
-        gc.drawString("Cannot render", 10, (int)(cell_h/2));
+        if (indigo_obj == null)
+        {
+           image = new BufferedImage(cell_w, cell_h, BufferedImage.TYPE_INT_RGB);
+           Graphics2D gc = image.createGraphics();
+           gc.setColor(Color.white);
+           gc.fillRect(0, 0, cell_w, cell_h);
+           gc.setColor(Color.black);
+           gc.drawString("Cannot render", 10, (int)(cell_h/2));
+
+           return this;
+        }
+
+        indigo.setOption("render-image-size", cell_w, cell_h);
+        byte[] bytes = null;
+
+        Boolean valid = false;
+        try
+        {
+           //indigo_obj.canonicalSmiles();
+           valid = true;
+        }
+        catch ( Exception ex )
+        {
+        }
+
+        bytes = indigo_renderer.renderToBuffer(indigo_obj.clone());
+
+        System.out.print("Render: " + call_count + "\n");
+        call_count++;
+
+        ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
+        try {
+           synchronized (ImageIO.class) {
+              image = ImageIO.read(new MemoryCacheImageInputStream(bytes_is));
+           }
+        } catch (IOException ex) {
+           System.err.println(">>>>" + ex.getMessage() );
+           ex.printStackTrace();
+        }
+
+        if (!valid)
+        {
+           // Mark molecule somehow
+           Graphics2D gc = image.createGraphics();
+           gc.setColor(Color.red);
+           gc.drawString("No canonical SMILES", 10, 10);
+        }
 
         return this;
      }
-
-     indigo.setOption("render-image-size", cell_w, cell_h);
-     byte[] bytes = null;
-
-     Boolean valid = false;
-     try
-     {
-        indigo_obj.canonicalSmiles();
-        valid = true;
-     }
-     catch ( Exception ex )
-     {
-     }
-
-     bytes = indigo_renderer.renderToBuffer(indigo_obj);
-
-     System.out.print("Render: " + call_count + "\n");
-     call_count++;
-
-     ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
-     try {
-        image = ImageIO.read(new MemoryCacheImageInputStream(bytes_is));
-     } catch (IOException ex) {
-        System.err.println(">>>>" + ex.getMessage() );
-        ex.printStackTrace();
-     }
-
-     if (!valid)
-     {
-        // Mark molecule somehow
-        Graphics2D gc = image.createGraphics();
-        gc.setColor(Color.red);
-        gc.drawString("No canonical SMILES", 10, 10);
-     }
-
-     return this;
   }
 
   public void paintComponent(Graphics g)

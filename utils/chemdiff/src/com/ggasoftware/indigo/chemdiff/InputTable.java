@@ -15,6 +15,7 @@ import com.ggasoftware.indigo.controls.RenderableMolData;
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoObject;
 import com.ggasoftware.indigo.IndigoRenderer;
+import com.ggasoftware.indigo.controls.BeanBase;
 import com.ggasoftware.indigo.controls.GlobalParams;
 import com.ggasoftware.indigo.controls.IndigoEventListener;
 import com.ggasoftware.indigo.controls.IndigoEventSource;
@@ -37,7 +38,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author achurinov
  */
-public class InputTable extends javax.swing.JPanel implements java.io.Serializable, MolTable {
+public class InputTable extends BeanBase implements java.io.Serializable, MolTable {
 
    public Indigo indigo;
    public SdfLoader sdf_loader;
@@ -46,53 +47,33 @@ public class InputTable extends javax.swing.JPanel implements java.io.Serializab
            new IndigoEventSource<Integer>(this);
    public IndigoEventSource<Integer> finish_event =
            new IndigoEventSource<Integer>(this);
+   private CompareOptions _compare_options;
 
-   private CompareOptions compare_options;
-
-    ///////////////////////////////////////////////////////////////
-
-    private String name;
-    private boolean deceased;
-
-    // Конструктор по умолчанию (без аргументов).
-    public InputTable() {
-    }
-
-    public String getName() {
-        return (this.name);
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    // Различные семантики для логического поля (is или get)
-    public boolean isDeceased() {
-        return (this.deceased);
-    }
-    public void setDeceased(boolean deceased) {
-        this.deceased = deceased;
-    }
+   public InputTable() {
+      initComponents();
+   }
 
     /** Creates new form InputTable */
    public void init(Indigo cur_indigo, IndigoRenderer cur_indigo_renderer, 
-                    CompareOptions compare_options, MolSaver mol_saver,
+                    CompareOptions compare_options,
                     int cell_w, int cell_h, boolean is_reactions)
    {
       indigo = cur_indigo;
 
       initComponents();
 
-      this.compare_options = compare_options;
+      this._compare_options = compare_options;
 
       j_table.getColumn("Id").setCellRenderer(new MultiLineCellRenderer(SwingConstants.CENTER,
               SwingConstants.CENTER));
       j_table.getColumn("Molecules").setCellRenderer(new MolRenderer(indigo, cur_indigo_renderer,
               cell_w, cell_h, is_reactions));
 
-      setBorder(javax.swing.BorderFactory.createTitledBorder(name));
+      setBorder(javax.swing.BorderFactory.createTitledBorder(_name));
       
       j_table.getColumn("Molecules").setPreferredWidth(cell_w);
       j_table.getColumn("Id").setPreferredWidth(30);
-      j_table.addMouseListener(new MolClicker(cur_indigo, cur_indigo_renderer, mol_saver));
+      j_table.addMouseListener(new MolClicker(cur_indigo, cur_indigo_renderer));
    }
 
     /** This method is called from within the constructor to
@@ -199,7 +180,7 @@ public class InputTable extends javax.swing.JPanel implements java.io.Serializab
             }
          });
 
-       String path = openSdf(choosed_file);
+       String path = _loadSdf(choosed_file);
 
        if (path != null)
        {
@@ -211,7 +192,7 @@ public class InputTable extends javax.swing.JPanel implements java.io.Serializab
    public void clear() {
       this.mol_datas.clear();
       
-      setBorder(javax.swing.BorderFactory.createTitledBorder(name));
+      setBorder(javax.swing.BorderFactory.createTitledBorder(_name));
 
       DefaultTableModel model = (DefaultTableModel)j_table.getModel();
       while (model.getRowCount() != 0)
@@ -224,19 +205,14 @@ public class InputTable extends javax.swing.JPanel implements java.io.Serializab
       this.mol_datas.clear();
       this.mol_datas.addAll((ArrayList<RenderableMolData>)mol_datas);
 
-      setBorder(javax.swing.BorderFactory.createTitledBorder(name + " - " +
+      setBorder(javax.swing.BorderFactory.createTitledBorder(_name + " - " +
                                               mol_datas.size() + " Molecules"));
 
       MolTableModel model = (MolTableModel)j_table.getModel();
       model.setMols(mol_datas, indexes1, indexes2);
    }
 
-   public SdfLoader getSdfLoader()
-   {
-      return sdf_loader;
-   }
-
-   public String openSdf(File choosed_file)
+   private String _loadSdf(File choosed_file)
    {
       try {
          sdf_loader = new SdfLoader(indigo, null);
@@ -253,7 +229,7 @@ public class InputTable extends javax.swing.JPanel implements java.io.Serializab
             }
          });
 
-         if (compare_options.getStereocentersIgnoreFlag())
+         if (_compare_options.getStereocentersIgnoreFlag())
             indigo.setOption("ignore-stereochemistry-errors", "1");
          else
             indigo.setOption("ignore-stereochemistry-errors", "0");
@@ -282,6 +258,11 @@ public class InputTable extends javax.swing.JPanel implements java.io.Serializab
 
          return null;
       }
+   }
+
+   public SdfLoader getSdfLoader()
+   {
+      return sdf_loader;
    }
 
    public ArrayList<RenderableMolData> getMols() {

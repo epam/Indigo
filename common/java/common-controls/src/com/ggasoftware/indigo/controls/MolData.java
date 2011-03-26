@@ -1,11 +1,10 @@
 package com.ggasoftware.indigo.controls;
 import com.ggasoftware.indigo.IndigoObject;
-import java.awt.image.renderable.RenderableImage;
 
-public class MolData implements CanonicalizableObject
+public class MolData
 {
-   public int index;
-   public IndigoObject mol_iterator;
+   protected int index;
+   protected IndigoObject mol_iterator;
 
    public MolData()
    {
@@ -25,9 +24,19 @@ public class MolData implements CanonicalizableObject
       index = mol_data.index;
    }
 
-   public String getCanonicalCode()
+   public IndigoObject getIterator()
    {
-      IndigoObject mol = mol_iterator.at(index).clone();
-      return mol.canonicalSmiles();
+      return mol_iterator;
+   }
+
+   public int getIndex()
+   {
+      return index;
+   }
+
+   protected synchronized IndigoObject _getIndigoObject() {
+      synchronized (mol_iterator) {
+         return mol_iterator.at(index);
+      }
    }
 }

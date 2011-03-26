@@ -15,28 +15,28 @@ import javax.swing.JOptionPane;
 
 public class SdfLoader{
 
-   private Indigo indigo;
-   private File file;
+   private Indigo _indigo;
+   private File _file;
    public ArrayList<MolData> mol_datas;
-   private IndigoObject iterator_object;
-   private Thread thread;
+   private IndigoObject _iterator_object;
+   private Thread _thread;
    private String _ext;
 
    public IndigoEventSource<Integer> finish_event =
            new IndigoEventSource<Integer>(this);
    public IndigoEventSource<Integer> progress_event =
            new IndigoEventSource<Integer>(this);
-   private SdfLoadRunnable runnable;
+   private SdfLoadRunnable _runnable;
 
    public boolean test_flag;
 
    public SdfLoader(Indigo cur_indigo, String ext)
    {
-      indigo = cur_indigo;
-      runnable = new SdfLoadRunnable();
+      _indigo = cur_indigo;
+      _runnable = new SdfLoadRunnable();
       finish_event = new IndigoEventSource<Integer>(this);
       mol_datas = new ArrayList<MolData>();
-      thread = new Thread(null, runnable, "sdf_loader #", 10000000);
+      _thread = new Thread(null, _runnable, "sdf_loader #", 10000000);
       _ext = ext;
 
       test_flag = false;
@@ -47,7 +47,7 @@ public class SdfLoader{
    }
 
    public void setFile(File cur_file) {
-      file = cur_file;
+      _file = cur_file;
    }
 
    class SdfLoadRunnable implements Runnable {
@@ -57,25 +57,25 @@ public class SdfLoader{
             int file_pos = 0;
 
             if (_ext.equals("sdf")) {
-               iterator_object = indigo.iterateSDFile(file.getPath());
+               _iterator_object = _indigo.iterateSDFile(_file.getPath());
             } else if (_ext.equals("smi")) {
-               iterator_object = indigo.iterateSmilesFile(file.getPath());
+               _iterator_object = _indigo.iterateSmilesFile(_file.getPath());
             } else if (_ext.equals("cml")) {
-               iterator_object = indigo.iterateCMLFile(file.getPath());
+               _iterator_object = _indigo.iterateCMLFile(_file.getPath());
             } else {
                throw new Exception("Unsupported file extension");
             }
 
-            for (IndigoObject iterr : iterator_object)
+            for (IndigoObject iterr : _iterator_object)
             {
                synchronized (iterr)
                {
-                  if (thread.isInterrupted())
+                  if (_thread.isInterrupted())
                      return;
 
-                  file_pos = iterator_object.tell();
+                  file_pos = _iterator_object.tell();
 
-                  mol_datas.add(new MolData(iterator_object, mol_datas.size()));
+                  mol_datas.add(new MolData(_iterator_object, mol_datas.size()));
 
                   if ((mol_datas.size() % 10000) == 0)
                      System.gc();
@@ -86,7 +86,7 @@ public class SdfLoader{
          } catch (Exception ex) {
             JOptionPane msg_box = new JOptionPane();
             String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC",
-                    indigo.version());
+                    _indigo.version());
             Window[] windows = JFrame.getOwnerlessWindows();
             msg_box.showMessageDialog(windows[0], ex.getMessage(),
                     "Error loading file", JOptionPane.ERROR_MESSAGE);
@@ -98,25 +98,25 @@ public class SdfLoader{
 
    public void start()
    {
-      thread.start();
+      _thread.start();
    }
 
    public boolean isActive() {
-      if (thread == null)
+      if (_thread == null)
          return false;
-      return thread.isAlive();
+      return _thread.isAlive();
    }
 
    public boolean isInterrupted() {
-      if (thread == null)
+      if (_thread == null)
          return false;
-      return thread.isInterrupted();
+      return _thread.isInterrupted();
    }
 
    public void interrupt() {
-      if (thread == null)
+      if (_thread == null)
          return;
       test_flag = true;
-      thread.interrupt();
+      _thread.interrupt();
    }
 }

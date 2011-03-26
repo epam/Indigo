@@ -19,11 +19,12 @@ public class MolClicker extends MouseAdapter {
    private RenderableMolData mol;
    MolSaver mol_saver;
 
-   public MolClicker(Indigo cur_indigo, IndigoRenderer cur_indigo_renderer, MolSaver mol_saver) {
+   public MolClicker(Indigo cur_indigo, IndigoRenderer cur_indigo_renderer) {
       indigo = cur_indigo;
       indigo_renderer = cur_indigo_renderer;
       this.mol_saver = mol_saver;
       mol = null;
+      mol_saver = new MolSaver(indigo);
 
       indigo.setOption("render-comment-font-size", "14");
       
@@ -102,7 +103,7 @@ public class MolClicker extends MouseAdapter {
 
       String mol_name = molecule.name();
 
-      if (mol_name == null || mol_name.length() == 0)
+      if (true || mol_name == null || mol_name.length() == 0)
       {
          try {
             mol_name = molecule.canonicalSmiles();

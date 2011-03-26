@@ -1,8 +1,10 @@
 package com.ggasoftware.indigo.chemdiff;
 
-public class Main {
+import com.ggasoftware.indigo.Indigo;
+import com.ggasoftware.indigo.IndigoObject;
 
-    public static void main(String[] args) {
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
         MainFrame.setNativeLookAndFeel();
         MainFrame mf = new MainFrame();
         mf.setLocationRelativeTo(null);

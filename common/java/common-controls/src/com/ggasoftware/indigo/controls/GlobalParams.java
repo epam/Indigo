@@ -10,6 +10,7 @@ import java.io.File;
 public class GlobalParams
 {
    public String dir_path;
+   public boolean is_in = false;
 
    private volatile static GlobalParams _instance;
    

@@ -3,20 +3,23 @@ package com.ggasoftware.indigo.chemdiff;
 import com.ggasoftware.indigo.controls.RenderableMolData;
 import com.ggasoftware.indigo.*;
 import com.ggasoftware.indigo.controls.IndigoEventListener;
-import com.ggasoftware.indigo.controls.MolData;
 import com.ggasoftware.indigo.controls.MolSaver;
 import java.io.File;
 import javax.swing.JOptionPane;
 import java.net.*;
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
 public class MainFrame extends javax.swing.JFrame 
 {
    CompareOptions compare_options;
+   CanonicalCodeGenerator csmiles_generator;
    MolComparer mol_comparer;
    MolSaver mol_saver1;
    MolSaver mol_saver2;
+   Indigo indigo1;
+   Indigo indigo2;
 
    public static void setNativeLookAndFeel() {
       try {
@@ -45,10 +48,7 @@ public class MainFrame extends javax.swing.JFrame
    /** Creates new form MainFrame */
    public MainFrame()
    {
-      Indigo indigo1;
       IndigoRenderer indigo_renderer1;
-
-      Indigo indigo2;
       IndigoRenderer indigo_renderer2;
       
       String path = getPathToJarfileDir(MainFrame.class);
@@ -65,17 +65,17 @@ public class MainFrame extends javax.swing.JFrame
 
       compare_options = new CompareOptions(aromatizer_check.getState(),
                                            cistrans_check.getState(),
-                                           stereocenters_check.getState());
+                                           stereocenters_check.getState(),
+                                           unseparate_charges_check.getState());
+      csmiles_generator = new CanonicalCodeGenerator(indigo1, compare_options);
 
-      mol_comparer = new MolComparer(true);
+      mol_comparer = new MolComparer(csmiles_generator, true);
 
-      mol_saver1 = new MolSaver(indigo1);
-      mol_saver2 = new MolSaver(indigo2);
-      in_table1.init(indigo1, indigo_renderer1, compare_options, mol_saver1, 300, 150, false);
-      in_table2.init(indigo2, indigo_renderer2, compare_options, mol_saver2, 300, 150, false);
-      out_table1.init(indigo1, indigo_renderer1, mol_saver1, 200, 150, false);
-      out_table2.init(indigo1, indigo_renderer1, mol_saver1, 200, 150, false);
-      out_table3.init(indigo2, indigo_renderer2, mol_saver2, 200, 150, false);
+      in_table1.init(indigo1, indigo_renderer1, compare_options, 300, 150, false);
+      in_table2.init(indigo2, indigo_renderer2, compare_options, 300, 150, false);
+      out_table1.init(indigo1, indigo_renderer1, 200, 150, false);
+      out_table2.init(indigo1, indigo_renderer1, 200, 150, false);
+      out_table3.init(indigo2, indigo_renderer2, 200, 150, false);
 
       setTitle("ChemDiff");
    }
@@ -111,6 +111,7 @@ public class MainFrame extends javax.swing.JFrame
       stereocenters_check = new javax.swing.JCheckBoxMenuItem();
       cistrans_check = new javax.swing.JCheckBoxMenuItem();
       save_same_check = new javax.swing.JCheckBoxMenuItem();
+      unseparate_charges_check = new javax.swing.JCheckBoxMenuItem();
       menu_help = new javax.swing.JMenu();
       jMenuHelpAbout = new javax.swing.JMenuItem();
 
@@ -309,9 +310,18 @@ public class MainFrame extends javax.swing.JFrame
       });
       menu_options.add(cistrans_check);
 
-      save_same_check.setText("save same molecules");
+      save_same_check.setText("Save duplicate molecules");
       save_same_check.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
       menu_options.add(save_same_check);
+
+      unseparate_charges_check.setSelected(true);
+      unseparate_charges_check.setText("Unseparate charges");
+      unseparate_charges_check.addChangeListener(new javax.swing.event.ChangeListener() {
+         public void stateChanged(javax.swing.event.ChangeEvent evt) {
+            unseparate_charges_checkStateChanged(evt);
+         }
+      });
+      menu_options.add(unseparate_charges_check);
 
       main_menu_bar.add(menu_options);
 
@@ -357,16 +367,18 @@ public class MainFrame extends javax.swing.JFrame
 
     private void jMenuHelpAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuHelpAboutActionPerformed
        JOptionPane msg_box = new JOptionPane();
-       String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC", 
+       String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC",
                (new Indigo()).version());
-       msg_box.showMessageDialog(this, msg, "About", JOptionPane.INFORMATION_MESSAGE);
+       msg_box.showConfirmDialog(this, msg, "About", JOptionPane.DEFAULT_OPTION,
+               JOptionPane.INFORMATION_MESSAGE, 
+               new ImageIcon("images\\logo_small.png"));
     }//GEN-LAST:event_jMenuHelpAboutActionPerformed
 
     private void compare_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compare_buttonActionPerformed
        try {
           compare_button.setEnabled(false);
 
-          mol_comparer = new MolComparer(save_same_check.getState());
+          mol_comparer = new MolComparer(csmiles_generator, save_same_check.getState());
 
           mol_comparer.progress_event.addListener((new IndigoEventListener<Integer>()
           {
@@ -407,6 +419,10 @@ public class MainFrame extends javax.swing.JFrame
        compare_options.setCisTransIgnoreFlag(cistrans_check.getState());
     }//GEN-LAST:event_cistrans_checkStateChanged
 
+    private void unseparate_charges_checkStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_unseparate_charges_checkStateChanged
+       compare_options.setUnseparateChargesFlag(unseparate_charges_check.getState());
+    }//GEN-LAST:event_unseparate_charges_checkStateChanged
+
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -415,33 +431,49 @@ public class MainFrame extends javax.swing.JFrame
         });
     }
 
-    public class CompareFinishEventListener implements IndigoEventListener<Object>
+    public class CompareFinishEventListener implements IndigoEventListener<Integer>
     {
-       public void handleEvent(Object source, Object event)
+       public void handleEvent(Object source, Integer stage)
        {
-          ArrayList< ArrayList<Integer> > conc_indexes1 = mol_comparer.getIdxArrays(true, 0);
-          ArrayList< ArrayList<Integer> > conc_indexes2 = mol_comparer.getIdxArrays(true, 1);
-          ArrayList< ArrayList<Integer> > uniq_indexes1 = mol_comparer.getIdxArrays(false, 0);
-          ArrayList< ArrayList<Integer> > uniq_indexes2 = mol_comparer.getIdxArrays(false, 1);
+          if (stage == 0)
+          {
+             csmiles_generator.setIndigo(indigo1);
+             main_progress_bar.setString("Canonical smiles calculating for set #1...");
+          }
+          else if (stage == 1)
+          {
+             csmiles_generator.setIndigo(indigo2);
+             main_progress_bar.setString("Canonical smiles calculating for set #2...");
+          }
+          else if (stage == 2)
+          {
+             main_progress_bar.setString("Comparing molecules...");
+          }
+          else if(stage == 3)
+          {
+             ArrayList< ArrayList<Integer> > conc_indexes1 = mol_comparer.getIdxArrays(true, 0);
+             ArrayList< ArrayList<Integer> > conc_indexes2 = mol_comparer.getIdxArrays(true, 1);
+             ArrayList< ArrayList<Integer> > uniq_indexes1 = mol_comparer.getIdxArrays(false, 0);
+             ArrayList< ArrayList<Integer> > uniq_indexes2 = mol_comparer.getIdxArrays(false, 1);
 
-          ArrayList<RenderableMolData> conc_array = new ArrayList<RenderableMolData>();
-          for (ArrayList<Integer> array : conc_indexes1)
-             conc_array.add(in_table1.getMols().get(array.get(0)));
+             ArrayList<RenderableMolData> conc_array = new ArrayList<RenderableMolData>();
+             for (ArrayList<Integer> array : conc_indexes1)
+                conc_array.add(in_table1.getMols().get(array.get(0)));
 
-          ArrayList<RenderableMolData> uniq_array1 = new ArrayList<RenderableMolData>();
-          for (ArrayList<Integer> array : uniq_indexes1)
-             uniq_array1.add(in_table1.getMols().get(array.get(0)));
+             ArrayList<RenderableMolData> uniq_array1 = new ArrayList<RenderableMolData>();
+             for (ArrayList<Integer> array : uniq_indexes1)
+                uniq_array1.add(in_table1.getMols().get(array.get(0)));
 
-          ArrayList<RenderableMolData> uniq_array2 = new ArrayList<RenderableMolData>();
-          for (ArrayList<Integer> array : uniq_indexes2)
-             uniq_array2.add(in_table2.getMols().get(array.get(0)));
+             ArrayList<RenderableMolData> uniq_array2 = new ArrayList<RenderableMolData>();
+             for (ArrayList<Integer> array : uniq_indexes2)
+                uniq_array2.add(in_table2.getMols().get(array.get(0)));
 
-          out_table1.setMols(conc_array, conc_indexes1, conc_indexes2);
-          out_table2.setMols(uniq_array1, uniq_indexes1, null);
-          out_table3.setMols(uniq_array2, uniq_indexes2, null);
-          tabbed_panel.setSelectedIndex(1);
-          compare_button.setEnabled(true);
-          compare_options.fix();
+             out_table1.setMols(conc_array, conc_indexes1, conc_indexes2);
+             out_table2.setMols(uniq_array1, uniq_indexes1, null);
+             out_table3.setMols(uniq_array2, uniq_indexes2, null);
+             tabbed_panel.setSelectedIndex(1);
+             compare_button.setEnabled(true);
+          }
        }
     }
 
@@ -470,5 +502,6 @@ public class MainFrame extends javax.swing.JFrame
    private javax.swing.JCheckBoxMenuItem save_same_check;
    private javax.swing.JCheckBoxMenuItem stereocenters_check;
    private javax.swing.JTabbedPane tabbed_panel;
+   private javax.swing.JCheckBoxMenuItem unseparate_charges_check;
    // End of variables declaration//GEN-END:variables
 }

@@ -12,11 +12,11 @@ import javax.swing.table.DefaultTableModel;
 
 public class MolTableModel extends DefaultTableModel
 {
-   private int idx_column_count;
+   private int _idx_column_count;
 
    public MolTableModel(int idx_column_count)
    {
-      this.idx_column_count = idx_column_count;
+      this._idx_column_count = idx_column_count;
       Object[][] objects = new Object[][] {};
       String[] identifiers = (idx_column_count == 1 ? new String[] {"Id", "Molecules"} :
                                                       new String[] {"Id1", "Id2", "Molecules"});
@@ -25,10 +25,10 @@ public class MolTableModel extends DefaultTableModel
 
    public String getIdColumnName(int idx_col)
    {
-      if (idx_col >= idx_column_count)
+      if (idx_col >= _idx_column_count)
          return null;
 
-      if (idx_column_count == 1)
+      if (_idx_column_count == 1)
          return "Id";
       else
          return "Id" + (idx_col + 1);
@@ -49,7 +49,7 @@ public class MolTableModel extends DefaultTableModel
       {
          ArrayList<Object> objects = new ArrayList<Object>();
 
-         for (int j = 0; j < idx_column_count; j++)
+         for (int j = 0; j < _idx_column_count; j++)
          {
             ArrayList< ArrayList<Integer> > indexes = (j == 0 ? indexes1 : indexes2);
             String[] idx_strings = (indexes != null ? CommonUtils.makeIdxString(indexes.get(i)) :

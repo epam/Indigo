@@ -5,20 +5,18 @@
 
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.controls.ProgressEvent;
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.controls.*;
-import com.ggasoftware.indigo.IndigoObject;
-import java.util.Arrays;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.Integer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.event.ListSelectionEvent;
-import java.io.*;
 import java.util.Collection;
-import org.omg.CORBA.INVALID_ACTIVITY;
 
 /**
  *
@@ -31,21 +29,23 @@ public class MolComparer
    ArrayList<CompMol> uniq_mols1;
    ArrayList<CompMol> uniq_mols2;
    MolComparerThread thread;
-   IndigoEventSource<Object> finish_event = new IndigoEventSource<Object>(null);
+   IndigoEventSource<Integer> finish_event = new IndigoEventSource<Integer>(null);
    IndigoEventSource<Integer> progress_event = new IndigoEventSource<Integer>(this);
-   private static int invalid_count = 0;
+   CanonicalCodeGenerator csmiles_generator;
+   private static int _invalid_count = 0;
+   FileWriter out_file[] = new FileWriter[2];
 
    public class CompMol implements Comparable<CompMol>
    {
       ArrayList<Integer> primary_indices;
       ArrayList<Integer> secondary_indices;
-      CanonicalizableObject can_object;
+      MolData mol_data;
       String csmiles = null;
       boolean is_uniq;
 
-      public CompMol( CanonicalizableObject can_object, int index )
+      public CompMol( MolData mol_data, int index )
       {
-         this.can_object = can_object;
+         this.mol_data = mol_data;
          primary_indices = new ArrayList<Integer>();
          primary_indices.add(index);
          secondary_indices = new ArrayList<Integer>();
@@ -75,23 +75,20 @@ public class MolComparer
       }
    }
 
-   public MolComparer( boolean is_save_same )
+   public MolComparer( CanonicalCodeGenerator csmiles_generator, boolean is_save_same )
    {
       try
       {
+         out_file[0] = new FileWriter("log1.txt");
+         out_file[1] = new FileWriter("log2.txt");
+
          this.is_save_same = is_save_same;
-         String path = MainFrame.getPathToJarfileDir(MainFrame.class);
-/*
-         if (path == null)
-            indigo = new Indigo();
-         else
-            indigo = new Indigo(path + File.separator + "lib");
-*/
+         this.csmiles_generator = csmiles_generator;
          conc_mols = new ArrayList<CompMol>();
          uniq_mols2 = new ArrayList<CompMol>();
          uniq_mols1 = new ArrayList<CompMol>();
 
-         finish_event = new IndigoEventSource<Object>(null);
+         finish_event = new IndigoEventSource<Integer>(null);
 
          thread = new MolComparerThread();
       } catch (Exception ex) {
@@ -122,14 +119,14 @@ public class MolComparer
        return indexes_arrays;
    }
 
-   public void setMols(Collection<? extends CanonicalizableObject> can_objects, int idx ) throws Exception
+   public void setMols(ArrayList<? extends MolData> mol_datas, int idx ) throws Exception
    {
       ArrayList<CompMol> uniq_mols = (idx == 0 ? uniq_mols1 : uniq_mols2);
 
       uniq_mols.clear();
       int i = 0;
-      for (CanonicalizableObject can_obj : can_objects)
-         uniq_mols.add(new CompMol(can_obj, i++));
+      for (MolData mol_data : mol_datas)
+         uniq_mols.add(new CompMol(mol_data, i++));
    }
 
    class MolComparerThread extends Thread
@@ -191,11 +188,11 @@ public class MolComparer
 
             int progress_level;
             if (part1 > part2)
-               progress_level = (int)(part2 * 200);
+               progress_level = (int)(part2 * 1000);
             else
-               progress_level = (int)(part1 * 200);
+               progress_level = (int)(part1 * 1000);
             
-            progress_event.fireEvent(800 + progress_level);
+            progress_event.fireEvent(progress_level);
          }
 
          progress_event.fireEvent(1000);
@@ -203,40 +200,66 @@ public class MolComparer
          return;
       }
 
-      private void _buildCSmiles( int idx )
+      private void _writeDebugInfo( int idx, int i, String smiles )
+      {
+         try {
+            out_file[idx].append("" + i + ": " + smiles + "\n");
+         } catch (IOException ex) {
+            Logger.getLogger(MolComparer.class.getName()).log(Level.SEVERE, null, ex);
+         } 
+      }
+
+      private synchronized void _buildCSmiles( int idx )
       {
          ArrayList<CompMol> uniq_mols = (idx == 0 ? uniq_mols1 : uniq_mols2);
 
          int i = 0;
          for (CompMol comp_mol : uniq_mols)
          {
-            progress_event.fireEvent(idx * 400 + (int)(((float)i++ / uniq_mols.size()) * 400));
-            String failed_name = new String() + "invalid molecule #" + invalid_count++;
-            if (comp_mol.can_object != null)
+            progress_event.fireEvent((int)(((float)i++ / uniq_mols.size()) * 1000));
+            String failed_name = new String() + "invalid molecule #" + _invalid_count++;
+            if (comp_mol.mol_data != null)
             {
                try {
-                  comp_mol.csmiles = comp_mol.can_object.getCanonicalCode();
+                  comp_mol.csmiles = csmiles_generator.generate(comp_mol.mol_data);
                } catch (Exception ex) {
                   comp_mol.csmiles = failed_name;
                }
             }
             else
                comp_mol.csmiles = failed_name;
+            
+            _writeDebugInfo(idx, i, comp_mol.csmiles);
+
+            if ((i % 10000) == 0)
+               System.gc();
          }
       }
 
       // This method is called when the thread runs
       public void run()
       {
+         finish_event.fireEvent(0);
          _buildCSmiles(0);
+         finish_event.fireEvent(1);
          _buildCSmiles(1);
+         finish_event.fireEvent(2);
+
          _compare();
 
          Collections.sort(conc_mols, new IndexComparator());
          Collections.sort(uniq_mols1, new IndexComparator());
          Collections.sort(uniq_mols2, new IndexComparator());
 
-         finish_event.fireEvent(null);
+         finish_event.fireEvent(3);
+
+         try {
+            out_file[0].close();
+            out_file[1].close();
+         } catch (IOException ex) {
+            Logger.getLogger(MolComparer.class.getName()).log(Level.SEVERE, null, ex);
+         }
+
       }
    }
 

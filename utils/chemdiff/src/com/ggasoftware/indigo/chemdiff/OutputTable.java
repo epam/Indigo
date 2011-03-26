@@ -14,11 +14,13 @@ package com.ggasoftware.indigo.chemdiff;
 import com.ggasoftware.indigo.controls.RenderableMolData;
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoRenderer;
+import com.ggasoftware.indigo.controls.BeanBase;
 import com.ggasoftware.indigo.controls.MolClicker;
 import com.ggasoftware.indigo.controls.MolData;
 import com.ggasoftware.indigo.controls.MolRenderer;
 import com.ggasoftware.indigo.controls.MolSaver;
 import com.ggasoftware.indigo.controls.MultiLineCellRenderer;
+import com.ggasoftware.indigo.controls.RenderableObject;
 import java.util.ArrayList;
 import java.io.File;
 import javax.swing.SwingConstants;
@@ -29,53 +31,31 @@ import javax.swing.table.TableColumn;
  *
  * @author achurinov
  */
-public class OutputTable extends javax.swing.JPanel implements java.io.Serializable, MolTable {
+public class OutputTable extends BeanBase implements java.io.Serializable, MolTable {
    
    public ArrayList<RenderableMolData> mol_datas = new ArrayList<RenderableMolData>();
-   public MolSaver mol_saver;
+   private MolSaver _mol_saver;
 
-    ///////////////////////////////////////////////////////////////
-
-    private String name;
-    private boolean deceased;
-
-    // Конструктор по умолчанию (без аргументов).
-    public OutputTable() {
-    }
-
-    public String getName() {
-        return (this.name);
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    // Различные семантики для логического поля (is или get)
-    public boolean isDeceased() {
-        return (this.deceased);
-    }
-    public void setDeceased(boolean deceased) {
-        this.deceased = deceased;
-    }
-    ////////////////////////////////////////////////////////////
-
+   public OutputTable() {
+      initComponents();
+   }
 
     /** Creates new form OutputTable */
-    public void init(Indigo indigo, IndigoRenderer indigo_renderer,
-               MolSaver mol_saver, int cell_w, int cell_h,
-               boolean is_reactions)
+   public void init(Indigo indigo, IndigoRenderer indigo_renderer,
+               int cell_w, int cell_h, boolean is_reactions)
    {
-      this.mol_saver = mol_saver;
-
       initComponents();
 
+      _mol_saver = new MolSaver(indigo);
+
       int idx_column_count = 1; 
-      if (name.compareTo("Coincident Molecules") == 0)
+      if (_name.compareTo("Coincident Molecules") == 0)
       {
          idx_column_count = 2;
          j_table.setModel(new MolTableModel(2));
       }
 
-      setBorder(javax.swing.BorderFactory.createTitledBorder(name));
+      setBorder(javax.swing.BorderFactory.createTitledBorder(_name));
 
       MolTableModel model = (MolTableModel)j_table.getModel();
 
@@ -85,13 +65,13 @@ public class OutputTable extends javax.swing.JPanel implements java.io.Serializa
       j_table.getColumn("Molecules").setCellRenderer(new MolRenderer(indigo, indigo_renderer,
               cell_w, cell_h, is_reactions));
 
-      setBorder(javax.swing.BorderFactory.createTitledBorder(name));
+      setBorder(javax.swing.BorderFactory.createTitledBorder(_name));
 
       j_table.getColumn("Molecules").setPreferredWidth(cell_w);
       for (int i = 0; i < idx_column_count; i++)
          j_table.getColumn(model.getIdColumnName(i)).setPreferredWidth(30);
-      j_table.addMouseListener(new MolClicker(indigo, indigo_renderer, mol_saver));
-  }
+      j_table.addMouseListener(new MolClicker(indigo, indigo_renderer));
+   }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -142,13 +122,13 @@ public class OutputTable extends javax.swing.JPanel implements java.io.Serializa
    }// </editor-fold>//GEN-END:initComponents
 
     private void save_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_buttonActionPerformed
-       mol_saver.saveMols(mol_datas);
+       _mol_saver.saveMols(mol_datas);
 }//GEN-LAST:event_save_buttonActionPerformed
 
    public void clear() {
       this.mol_datas.clear();
       
-      setBorder(javax.swing.BorderFactory.createTitledBorder(name));
+      setBorder(javax.swing.BorderFactory.createTitledBorder(_name));
 
       DefaultTableModel model = (DefaultTableModel)j_table.getModel();
       while (model.getRowCount() != 0)
@@ -161,7 +141,7 @@ public class OutputTable extends javax.swing.JPanel implements java.io.Serializa
       this.mol_datas.clear();
       this.mol_datas.addAll((ArrayList<RenderableMolData>)mol_datas);
 
-      setBorder(javax.swing.BorderFactory.createTitledBorder(name + " - " +
+      setBorder(javax.swing.BorderFactory.createTitledBorder(_name + " - " +
                                               mol_datas.size()));
 
       MolTableModel model = (MolTableModel)j_table.getModel();

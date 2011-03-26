@@ -6,8 +6,6 @@
 package com.ggasoftware.indigo.controls;
 
 import com.ggasoftware.indigo.IndigoObject;
-import com.ggasoftware.indigo.controls.MolData;
-import com.ggasoftware.indigo.controls.RenderableObject;
 
 public class RenderableMolData extends MolData implements RenderableObject {
    public RenderableMolData( MolData mol_data )
@@ -26,6 +24,6 @@ public class RenderableMolData extends MolData implements RenderableObject {
 
    public IndigoObject getObject()
    {
-      return mol_iterator.at(index).clone();
+      return _getIndigoObject().clone();
    }
 }

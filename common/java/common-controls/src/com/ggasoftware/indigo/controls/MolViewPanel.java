@@ -24,7 +24,7 @@ public class MolViewPanel extends JPanel
    int image_w;
    int image_h;
 
-   MolViewPanel( Indigo cur_indigo, IndigoRenderer cur_indigo_renderer )
+   public MolViewPanel( Indigo cur_indigo, IndigoRenderer cur_indigo_renderer )
    {
       indigo = cur_indigo;
       indigo_renderer = cur_indigo_renderer;
@@ -73,6 +73,22 @@ public class MolViewPanel extends JPanel
       }
 
       mol = mol_object.clone();
+
+      renderImage();
+   }
+
+   public void setMol( String filename )
+   {
+      if (filename == null)
+      {
+         image = null;
+         return;
+      }
+
+      if (filename.endsWith("rxn"))
+         mol = indigo.loadReactionFromFile(filename).clone();
+      else
+         mol = indigo.loadMoleculeFromFile(filename).clone();
 
       renderImage();
    }
