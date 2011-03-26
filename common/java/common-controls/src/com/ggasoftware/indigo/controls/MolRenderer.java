@@ -52,7 +52,7 @@ public class MolRenderer extends JPanel
               JTable table, Object value, boolean isSelected,
               boolean hasFocus, int row, int column)
   {
-     RenderableMolData mol_image = (RenderableMolData)value;
+     RenderableObject mol_image = (RenderableObject)value;
      synchronized (indigo) {
 
         if (mol_image == null)
