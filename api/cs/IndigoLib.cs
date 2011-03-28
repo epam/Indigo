@@ -52,7 +52,7 @@ namespace com.ggasoftware.indigo
       sbyte* indigoCml (int molecule);
       int indigoSaveMDLCT (int item, int output);
 
-      int indigoCreateSaver (int output, string filename);
+      int indigoCreateSaver (int output, string format);
       int indigoCreateFileSaver (string filename, string format);
       int indigoAppend (int saver, int obj);
 
