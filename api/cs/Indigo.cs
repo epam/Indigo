@@ -295,6 +295,18 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(this, _indigo_lib.indigoReactionProductEnumerate(reaction.self, monomers.self));
       }
 
+      public IndigoObject createSaver (IndigoObject output, string filename)
+      {
+         setSessionID();
+         return new IndigoObject(this, output, _indigo_lib.indigoCreateSaver(output.self, filename));
+      }
+
+      public IndigoObject createFileSaver (string filename, string format)
+      {
+         setSessionID();
+         return new IndigoObject(this, _indigo_lib.indigoCreateFileSaver(filename, format));
+      }
+
       public void free (int id)
       {
          setSessionID();

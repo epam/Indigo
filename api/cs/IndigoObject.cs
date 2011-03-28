@@ -1162,5 +1162,11 @@ namespace com.ggasoftware.indigo
             res[i] = buf[i];
          return res;
       }
+
+      public void append (IndigoObject obj)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoAppend(self, obj.self);
+      }
    }
 }
