@@ -1123,4 +1123,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Pointer p = ptr.getValue();
       return p.getByteArray(0, size.getValue());
    }
+   
+   public void append (IndigoObject obj)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(_lib.indigoAppend(self, obj.self));
+   }
+   
 }
