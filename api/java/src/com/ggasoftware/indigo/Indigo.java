@@ -354,6 +354,19 @@ public class Indigo
       return new IndigoObject(this, res);
    }
    
+   public IndigoObject createSaver (IndigoObject output, String format)
+   {
+      setSessionID();
+      return new IndigoObject(this, output, checkResult(_lib.indigoCreateSaver(output.self, format)));
+   }
+
+   public IndigoObject createFileSaver (String filename, String format)
+   {
+      setSessionID();
+      return new IndigoObject(this, checkResult(_lib.indigoCreateFileSaver(filename, format)));
+   }
+
+   
    public static class LibraryRemover
    {
       ArrayList<String> files = new ArrayList<String>();
