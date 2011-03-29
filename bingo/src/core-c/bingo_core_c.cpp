@@ -118,12 +118,12 @@ CEXPORT int bingoSetConfigInt (const char *name, int value)
    {
       if (self.bingo_context == 0)
          throw BingoError("context not set");
-      if (strcasecmp(name, "treat-x-as-pseudoatom") == 0)
+      if (strcasecmp(name, "treat-x-as-pseudoatom") == 0 || strcasecmp(name, "treat_x_as_pseudoatom") == 0)
       {
          self.bingo_context->treat_x_as_pseudoatom = (value != 0);
          self.bingo_context->treat_x_pseudo_ready = true;
       }
-      else if (strcasecmp(name, "ignore-closing-bond-direction-mismatch") == 0)
+      else if (strcasecmp(name, "ignore-closing-bond-direction-mismatch") == 0 || strcasecmp(name, "ignore_closing_bond_direction_mismatch") == 0)
       {
          self.bingo_context->ignore_closing_bond_direction_mismatch = (value != 0);
          self.bingo_context->ignore_cbdm_ready = true;
@@ -164,11 +164,11 @@ CEXPORT int bingoGetConfigInt (const char *name, int *value)
       if (self.bingo_context == 0)
          throw BingoError("context not set");
 
-      if (strcasecmp(name, "treat-x-as-pseudoatom") == 0)
+      if (strcasecmp(name, "treat-x-as-pseudoatom") == 0 || strcasecmp(name, "treat_x_as_pseudoatom") == 0)
          *value = (int)self.bingo_context->treat_x_as_pseudoatom;
-      else if (strcasecmp(name, "fp-size-bytes") == 0)
+      else if (strcasecmp(name, "fp-size-bytes") == 0 || strcasecmp(name, "fp_size_bytes") == 0)
          *value = self.bingo_context->fp_parameters.fingerprintSize();
-      else if (strcasecmp(name, "reaction-fp-size-bytes") == 0)
+      else if (strcasecmp(name, "reaction-fp-size-bytes") == 0 || strcasecmp(name, "reaction_fp_size_bytes") == 0)
          *value = self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2;
       else if (strcasecmp(name, "SUB_SCREENING_MAX_BITS") == 0)
          *value = self.sub_screening_max_bits;
@@ -187,7 +187,7 @@ CEXPORT int bingoGetConfigBin (const char *name, const char **value, int *len)
       if (self.bingo_context == 0)
          throw BingoError("context not set");
 
-      if (strcasecmp(name, "cmf-dict") == 0)
+      if (strcasecmp(name, "cmf-dict") == 0 || strcasecmp(name, "cmf_dict") == 0)
       {
          ArrayOutput output(self.buffer);
          self.bingo_context->cmf_dict.save(output);
@@ -207,7 +207,7 @@ CEXPORT int bingoSetConfigBin (const char *name, const char *value, int len)
       if (self.bingo_context == 0)
          throw BingoError("context not set");
 
-      if (strcasecmp(name, "cmf-dict") == 0)
+      if (strcasecmp(name, "cmf-dict") == 0 || strcasecmp(name, "cmf_dict") == 0)
       {
          BufferScanner scanner(value, len);
          self.bingo_context->cmf_dict.load(scanner);
