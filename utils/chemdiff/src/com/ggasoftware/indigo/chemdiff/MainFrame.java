@@ -1,6 +1,5 @@
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.controls.RenderableMolData;
 import com.ggasoftware.indigo.*;
 import com.ggasoftware.indigo.controls.IndigoEventListener;
 import com.ggasoftware.indigo.controls.MolSaver;
@@ -102,10 +101,10 @@ public class MainFrame extends javax.swing.JFrame
       out_table3 = new com.ggasoftware.indigo.chemdiff.OutputTable();
       main_menu_bar = new javax.swing.JMenuBar();
       menu_file = new javax.swing.JMenu();
-      jMenuLoadLeft = new javax.swing.JMenuItem();
-      jMenuLoadRight = new javax.swing.JMenuItem();
-      jSeparator1 = new javax.swing.JPopupMenu.Separator();
-      jMenuExit = new javax.swing.JMenuItem();
+      load_left_mi = new javax.swing.JMenuItem();
+      load_right_mi = new javax.swing.JMenuItem();
+      file_menu_separator = new javax.swing.JPopupMenu.Separator();
+      exit_mi = new javax.swing.JMenuItem();
       menu_options = new javax.swing.JMenu();
       aromatizer_check = new javax.swing.JCheckBoxMenuItem();
       stereocenters_check = new javax.swing.JCheckBoxMenuItem();
@@ -113,7 +112,7 @@ public class MainFrame extends javax.swing.JFrame
       save_same_check = new javax.swing.JCheckBoxMenuItem();
       unseparate_charges_check = new javax.swing.JCheckBoxMenuItem();
       menu_help = new javax.swing.JMenu();
-      jMenuHelpAbout = new javax.swing.JMenuItem();
+      about_mi = new javax.swing.JMenuItem();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -256,30 +255,30 @@ public class MainFrame extends javax.swing.JFrame
          }
       });
 
-      jMenuLoadLeft.setText("Load first");
-      jMenuLoadLeft.addActionListener(new java.awt.event.ActionListener() {
+      load_left_mi.setText("Load first");
+      load_left_mi.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             load_firstActionPerformed(evt);
          }
       });
-      menu_file.add(jMenuLoadLeft);
+      menu_file.add(load_left_mi);
 
-      jMenuLoadRight.setText("Load second");
-      jMenuLoadRight.addActionListener(new java.awt.event.ActionListener() {
+      load_right_mi.setText("Load second");
+      load_right_mi.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             load_secondActionPerformed(evt);
          }
       });
-      menu_file.add(jMenuLoadRight);
-      menu_file.add(jSeparator1);
+      menu_file.add(load_right_mi);
+      menu_file.add(file_menu_separator);
 
-      jMenuExit.setText("Exit");
-      jMenuExit.addActionListener(new java.awt.event.ActionListener() {
+      exit_mi.setText("Exit");
+      exit_mi.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jMenuExitActionPerformed(evt);
+            exit_miActionPerformed(evt);
          }
       });
-      menu_file.add(jMenuExit);
+      menu_file.add(exit_mi);
 
       main_menu_bar.add(menu_file);
 
@@ -327,13 +326,13 @@ public class MainFrame extends javax.swing.JFrame
 
       menu_help.setText("Help");
 
-      jMenuHelpAbout.setText("About");
-      jMenuHelpAbout.addActionListener(new java.awt.event.ActionListener() {
+      about_mi.setText("About");
+      about_mi.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jMenuHelpAboutActionPerformed(evt);
+            about_miActionPerformed(evt);
          }
       });
-      menu_help.add(jMenuHelpAbout);
+      menu_help.add(about_mi);
 
       main_menu_bar.add(menu_help);
 
@@ -361,18 +360,18 @@ public class MainFrame extends javax.swing.JFrame
 
     }//GEN-LAST:event_load_secondActionPerformed
 
-    private void jMenuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuExitActionPerformed
+    private void exit_miActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exit_miActionPerformed
        dispose();
-    }//GEN-LAST:event_jMenuExitActionPerformed
+    }//GEN-LAST:event_exit_miActionPerformed
 
-    private void jMenuHelpAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuHelpAboutActionPerformed
+    private void about_miActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_about_miActionPerformed
        JOptionPane msg_box = new JOptionPane();
        String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC",
                (new Indigo()).version());
        msg_box.showConfirmDialog(this, msg, "About", JOptionPane.DEFAULT_OPTION,
                JOptionPane.INFORMATION_MESSAGE, 
                new ImageIcon("images\\logo_small.png"));
-    }//GEN-LAST:event_jMenuHelpAboutActionPerformed
+    }//GEN-LAST:event_about_miActionPerformed
 
     private void compare_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compare_buttonActionPerformed
        try {
@@ -478,18 +477,18 @@ public class MainFrame extends javax.swing.JFrame
     }
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
+   private javax.swing.JMenuItem about_mi;
    private javax.swing.JPanel action_panel;
    private javax.swing.JCheckBoxMenuItem aromatizer_check;
    private javax.swing.JCheckBoxMenuItem cistrans_check;
    private javax.swing.JButton compare_button;
+   private javax.swing.JMenuItem exit_mi;
+   private javax.swing.JPopupMenu.Separator file_menu_separator;
    private javax.swing.JPanel in_tab;
    private com.ggasoftware.indigo.chemdiff.InputTable in_table1;
    private com.ggasoftware.indigo.chemdiff.InputTable in_table2;
-   private javax.swing.JMenuItem jMenuExit;
-   private javax.swing.JMenuItem jMenuHelpAbout;
-   private javax.swing.JMenuItem jMenuLoadLeft;
-   private javax.swing.JMenuItem jMenuLoadRight;
-   private javax.swing.JPopupMenu.Separator jSeparator1;
+   private javax.swing.JMenuItem load_left_mi;
+   private javax.swing.JMenuItem load_right_mi;
    private javax.swing.JMenuBar main_menu_bar;
    private javax.swing.JProgressBar main_progress_bar;
    private javax.swing.JMenu menu_file;

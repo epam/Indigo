@@ -16,7 +16,7 @@ public class MolClicker extends MouseAdapter {
    private Timer timer;
    private Indigo indigo;
    private IndigoRenderer indigo_renderer;
-   private RenderableMolData mol;
+   private RenderableObject mol;
    MolSaver mol_saver;
 
    public MolClicker(Indigo cur_indigo, IndigoRenderer cur_indigo_renderer) {
@@ -67,13 +67,11 @@ public class MolClicker extends MouseAdapter {
          return;
       }
 
-      mol = (RenderableMolData)table.getValueAt(row, col);
+      mol = (RenderableObject)table.getValueAt(row, col);
 
-      if (mol.mol_iterator == null)
-      {
+      if (mol.getObject() == null)
          return;
-      }
-
+      
       JFrame cell_frame = new JFrame();
       cell_frame.setSize(new Dimension(510, 540));
       JMenuBar cell_menu_bar = new JMenuBar();

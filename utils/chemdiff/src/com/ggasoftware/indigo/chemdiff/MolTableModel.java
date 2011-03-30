@@ -5,8 +5,6 @@
 
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.controls.RenderableMolData;
-import com.ggasoftware.indigo.controls.MolData;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
@@ -38,7 +36,7 @@ public class MolTableModel extends DefaultTableModel
       return false;
    }
 
-   public void setMols(ArrayList<? extends MolData> mol_datas,
+   public void setMols(ArrayList<RenderableMolData> mol_datas,
               ArrayList< ArrayList<Integer> > indexes1,
               ArrayList< ArrayList<Integer> > indexes2) {
       while (getRowCount() != 0)

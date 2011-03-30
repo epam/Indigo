@@ -5,11 +5,10 @@
 
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.controls.MolData;
 import java.util.ArrayList;
 
 public interface MolTable {
-   public abstract void setMols(ArrayList<? extends MolData> mol_datas,
+   public abstract void setMols(ArrayList<RenderableMolData> mol_datas,
               ArrayList< ArrayList<Integer> > indexes1,
               ArrayList< ArrayList<Integer> > indexes2);
 

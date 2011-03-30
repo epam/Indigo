@@ -1,142 +1,206 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * MonomerPanel.java
+ *
+ * Created on Mar 25, 2011, 8:48:41 PM
+ */
+
 package com.ggasoftware.indigo.legio;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.*;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
+import com.ggasoftware.indigo.Indigo;
+import com.ggasoftware.indigo.IndigoObject;
+import com.ggasoftware.indigo.IndigoRenderer;
+import com.ggasoftware.indigo.controls.BeanBase;
+import com.ggasoftware.indigo.controls.FileOpener;
+import com.ggasoftware.indigo.controls.IndigoEventSource;
+import com.ggasoftware.indigo.controls.LoadUtils;
+import com.ggasoftware.indigo.controls.MolClicker;
+import com.ggasoftware.indigo.controls.MolRenderer;
+import com.ggasoftware.indigo.controls.MolSaver;
+import com.ggasoftware.indigo.controls.MultiLineCellRenderer;
 import java.util.ArrayList;
-import com.ggasoftware.indigo.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 
-public class MonomerPanel
-{
-    JPanel main_panel;
-    JButton add_button;
-    JButton clear_button;
-    LegioData legio;
-    int reactant_idx;
-    MolViewTable mol_table;
-    Component parent;
-    Frame frame;
-    CurDir cur_dir;
-    ArrayList<String> mon_paths;
-    JTextField mon_path_label;
-    Indigo indigo;
-    IndigoRenderer indigo_renderer;
+/**
+ *
+ * @author achurinov
+ */
+public class MonomerPanel extends BeanBase {
+   private Indigo _indigo;
+   private IndigoRenderer _indigo_renderer;
+   private LegioData _legio;
+   private FileOpener _fopener = new FileOpener();
+   public IndigoEventSource<String> add_event =
+        new IndigoEventSource<String>(this);
+   public IndigoEventSource<Integer> clear_event =
+        new IndigoEventSource<Integer>(this);
 
-    public MonomerPanel( Indigo cur_indigo, IndigoRenderer cur_indigo_renderer,
-             Frame cur_frame, Component parent_panel, LegioData new_legio,
-             int new_reactant_idx, CurDir new_cur_dir )
+
+   public MonomerPanel() {
+       initComponents();
+   }
+
+    public MonomerPanel( Indigo indigo, IndigoRenderer indigo_renderer,
+             LegioData new_legio, int new_reactant_idx )
     {
-        indigo = cur_indigo;
-        indigo_renderer = cur_indigo_renderer;
-        main_panel = new JPanel();
-        add_button = new JButton("Add");
-        clear_button = new JButton("Clear");
-        mol_table = new MolViewTable(indigo, indigo_renderer, 350, 200, false);
-        mon_path_label = new JTextField();
-        mon_paths = new ArrayList<String>();
-        cur_dir = new_cur_dir;
+       this._indigo = indigo;
+       this._indigo_renderer = indigo_renderer;
+       this._legio = new_legio;
 
-        mon_path_label.setEditable(false);
+       initComponents();
 
-        frame = cur_frame;
-        legio = new_legio;
-        reactant_idx = new_reactant_idx;
-        parent = parent_panel;
+       _fopener.addExtension("cml", "smi", "sdf", "sd", "mol");
 
-        add_button.addActionListener(new AddMonomerEventListener());
-        clear_button.addActionListener(new ClearMonomerEventListener());
+       MolTableModel model = (MolTableModel)monomers_table.getModel();
 
-        main_panel.setPreferredSize(new Dimension(350, parent_panel.getSize().height - 50));
+       monomers_table.getColumn("Id").setCellRenderer(new MultiLineCellRenderer(SwingConstants.CENTER,
+                                   SwingConstants.CENTER));
+       monomers_table.getColumn(model.getColumnName(1)).setCellRenderer(new MolRenderer(indigo, _indigo_renderer,
+               getPreferredSize().width - 50, 160, false));
 
-        GroupLayout gl_mp = new GroupLayout(main_panel);
-        main_panel.setLayout(gl_mp);
+       setName("Monomers group #" + new_reactant_idx);
+       setBorder(javax.swing.BorderFactory.createTitledBorder(_name));
 
-        gl_mp.setAutoCreateGaps(true);
-        gl_mp.setHorizontalGroup(gl_mp.createParallelGroup(GroupLayout.Alignment.CENTER).
-                addGroup(gl_mp.createSequentialGroup().
-                   addComponent(add_button, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, 26).
-                   addComponent(clear_button, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, 26)).
-                 addComponent(mon_path_label, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).
-                 addComponent(mol_table, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-        gl_mp.setVerticalGroup(gl_mp.createSequentialGroup().
-                addGroup(gl_mp.createParallelGroup(GroupLayout.Alignment.CENTER).
-                   addComponent(add_button, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, 26).
-                   addComponent(clear_button, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, 26)).
-                addComponent(mon_path_label, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, 20).
-                addComponent(mol_table, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-        
-        main_panel.setBorder(javax.swing.BorderFactory.createEtchedBorder(new java.awt.Color(200, 200, 200),
-                                                                     new java.awt.Color(150, 150, 150)));
+       monomers_table.getColumn(model.getColumnName(1)).setPreferredWidth(getPreferredSize().width - 30);
+       monomers_table.getColumn("Id").setPreferredWidth(30);
+       monomers_table.addMouseListener(new MolClicker(_indigo, _indigo_renderer));
     }
 
-    class AddMonomerEventListener  implements ActionListener
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+   private void initComponents() {
+
+      button_panel = new javax.swing.JPanel();
+      add_button = new javax.swing.JButton();
+      clear_button = new javax.swing.JButton();
+      scroll_panel = new javax.swing.JScrollPane();
+      monomers_table = new javax.swing.JTable();
+
+      setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder("Monomers")));
+
+      add_button.setText("Add");
+      add_button.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            add_buttonActionPerformed(evt);
+         }
+      });
+
+      clear_button.setText("Clear");
+      clear_button.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            clear_buttonActionPerformed(evt);
+         }
+      });
+
+      javax.swing.GroupLayout button_panelLayout = new javax.swing.GroupLayout(button_panel);
+      button_panel.setLayout(button_panelLayout);
+      button_panelLayout.setHorizontalGroup(
+         button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(button_panelLayout.createSequentialGroup()
+            .addGap(144, 144, 144)
+            .addComponent(add_button)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(clear_button)
+            .addContainerGap(161, Short.MAX_VALUE))
+      );
+      button_panelLayout.setVerticalGroup(
+         button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(add_button)
+            .addComponent(clear_button))
+      );
+
+      monomers_table.setModel(new MolTableModel(false));
+      monomers_table.setRowHeight(160);
+      scroll_panel.setViewportView(monomers_table);
+
+      javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+      this.setLayout(layout);
+      layout.setHorizontalGroup(
+         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addComponent(button_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+         .addComponent(scroll_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
+      );
+      layout.setVerticalGroup(
+         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(layout.createSequentialGroup()
+            .addComponent(button_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(scroll_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE))
+      );
+   }// </editor-fold>//GEN-END:initComponents
+
+    private ArrayList<IndigoObject> _loadMonomers() throws Exception
     {
-      @SuppressWarnings("static-access")
-        public void actionPerformed(ActionEvent load_event)
-        {
-            JFileChooser file_chooser = new JFileChooser();
-            MolFileFilter mon_ff = new MolFileFilter();
-            mon_ff.addExtension("sdf");
-            mon_ff.addExtension("sd");
-            mon_ff.addExtension("mol");
-            file_chooser.setFileFilter(mon_ff);
-            file_chooser.setCurrentDirectory(new File(cur_dir.dir_path));
-            int ret_val = file_chooser.showOpenDialog(main_panel);
-            File choosed_file = file_chooser.getSelectedFile();
+       ArrayList<IndigoObject> monomers_portion = new ArrayList<IndigoObject>();
+       
+       if (_fopener.openFile() == null)
+          return monomers_portion;
 
-            if ((choosed_file == null) || (ret_val != JFileChooser.APPROVE_OPTION))
-               return;
+       IndigoObject iterator = LoadUtils.getIterator(_indigo, _fopener.getFilePath());
+       int index;
+       for (IndigoObject monomer : iterator)
+          monomers_portion.add(monomer.clone());
 
-            cur_dir.dir_path = choosed_file.getParent();
-
-            mon_paths.add(choosed_file.getAbsolutePath());
-
-            if (mon_paths.size() == 1)
-            {
-               String path = "" + mon_paths.get(0);
-               /*
-               if (mon_paths.get(0).length() > 70)
-               {
-                  path += mon_paths.get(0).substring(0, 30);
-                  path += "  ...  ";
-                  path += mon_paths.get(0).substring(mon_paths.get(0).length() - 30,
-                                                     mon_paths.get(0).length());
-               }
-               else
-                  path += mon_paths.get(0);*/
-
-               mon_path_label.setText(path);
-            }
-            else if (mon_paths.size() > 1)
-               mon_path_label.setText("several files");
-
-            legio.addMonomerFromFile(reactant_idx, mon_paths.get(mon_paths.size() - 1));
-
-            IndigoObject obj = new IndigoObject(indigo, legio.monomers_table.at(0).at(0).self);
-            ArrayList<IndigoObject> mols = new ArrayList<IndigoObject>();
-            for (int i = 0; i < legio.getMonomersCount(reactant_idx); i++)
-            {
-               IndigoObject mol = legio.getMonomer(reactant_idx, i);
-
-               mols.add(mol);
-
-            }
-
-            mol_table.setMols(mols);
-        }
+       return monomers_portion;
     }
 
-    class ClearMonomerEventListener  implements ActionListener
+    private void add_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_add_buttonActionPerformed
+
+      try {
+         addMols(_loadMonomers());
+      } catch (Exception ex) {
+         JOptionPane.showMessageDialog(JFrame.getOwnerlessWindows()[0],
+             ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      }
+    }//GEN-LAST:event_add_buttonActionPerformed
+
+    private void clear_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clear_buttonActionPerformed
+       clear();
+    }//GEN-LAST:event_clear_buttonActionPerformed
+
+    public void addMols( ArrayList<IndigoObject> mols )
     {
-       public void actionPerformed(ActionEvent load_event)
-       {
-           legio.clearReactantMonomers(reactant_idx);
-           mol_table.clear();
-           mon_paths.clear();
-           mon_path_label.setText("");
-       }
+        MolTableModel model = (MolTableModel)monomers_table.getModel();
+        model.addMols(mols);
+        setBorder(javax.swing.BorderFactory.createTitledBorder(_name + " - " +
+                      model.getMolsCount() + " Molecules"));
+
+        add_event.fireEvent(_fopener.getFilePath());
     }
+
+    public void setMols( ArrayList<IndigoObject> mols )
+    {
+        MolTableModel model = (MolTableModel)monomers_table.getModel();
+        model.setMols(mols);
+    }
+
+    public void clear()
+    {
+        MolTableModel model = (MolTableModel)monomers_table.getModel();
+        model.clear();
+        clear_event.fireEvent(0);
+    }
+
+   // Variables declaration - do not modify//GEN-BEGIN:variables
+   private javax.swing.JButton add_button;
+   private javax.swing.JPanel button_panel;
+   private javax.swing.JButton clear_button;
+   private javax.swing.JTable monomers_table;
+   private javax.swing.JScrollPane scroll_panel;
+   // End of variables declaration//GEN-END:variables
 }

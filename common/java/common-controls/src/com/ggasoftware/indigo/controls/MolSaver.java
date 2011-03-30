@@ -2,7 +2,6 @@ package com.ggasoftware.indigo.controls;
 
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoObject;
-import com.ggasoftware.indigo.controls.RenderableMolData;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
@@ -10,90 +9,48 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class MolSaver {
-   Indigo indigo;
+   private Indigo _indigo;
+   private FileOpener _fopener = new FileOpener();
 
    public MolSaver( Indigo indigo )
    {
-      this.indigo = indigo;
+      this._indigo = indigo;
    }
 
-   public String saveMols(ArrayList<? extends MolData> mol_datas) {
+   public void addExtension( String... extensions )
+   {
+      _fopener.addExtension(extensions);
+   }
+
+   public String saveMols(ArrayList<? extends RenderableObject> mol_datas) {
       IndigoObject output_file = null;
       try {
-         JFileChooser file_chooser = new JFileChooser();
-
-         MolFileFilter sdf_ff = new MolFileFilter();
-         sdf_ff.addExtension("sdf");
-         sdf_ff.addExtension("sd");
-
-         MolFileFilter mol_ff = new MolFileFilter();
-         if (mol_datas.size() == 1)
-            mol_ff.addExtension("mol");
-
-         MolFileFilter smi_ff = new MolFileFilter();
-         smi_ff.addExtension("smi");
-
-         MolFileFilter cml_ff = new MolFileFilter();
-         cml_ff.addExtension("cml");
-
-         file_chooser.setAcceptAllFileFilterUsed(false);
-         file_chooser.addChoosableFileFilter(sdf_ff);
-         file_chooser.addChoosableFileFilter(mol_ff);
-         file_chooser.addChoosableFileFilter(smi_ff);
-         file_chooser.addChoosableFileFilter(cml_ff);
-         if (mol_datas.size() == 1)
-            file_chooser.setFileFilter(mol_ff);
-         else
-            file_chooser.setFileFilter(sdf_ff);
-
-         file_chooser.setCurrentDirectory(new File(GlobalParams.getInstance().dir_path));
-         int ret_val = file_chooser.showSaveDialog(JFrame.getOwnerlessWindows()[0]);
-         File choosed_file = file_chooser.getSelectedFile();
-
-         if ((choosed_file == null) || (ret_val != JFileChooser.APPROVE_OPTION)) {
+         String out_file_path = _fopener.openFile();
+         if (out_file_path == null)
             return null;
-         }
-         GlobalParams.getInstance().dir_path = choosed_file.getParent();
+         MolFileFilter cur_filter = _fopener.getFileFilter();
+         String choosed_extension = cur_filter.getDefaultExtension();
+         if (!cur_filter.accept(_fopener.getFile()))
+            out_file_path += "." + choosed_extension;
 
-         String out_file_path = choosed_file.getPath();
-         MolFileFilter cur_filter = (MolFileFilter)file_chooser.getFileFilter();
-         if (!cur_filter.accept(choosed_file))
-            out_file_path += "." + cur_filter.getDefaultExtension();
+         output_file = _indigo.writeFile(out_file_path);
 
-         output_file = indigo.writeFile(out_file_path);
-         if (cur_filter.getDefaultExtension().compareTo("cml") == 0)
-            output_file.cmlHeader();
+         IndigoObject file_saver = _indigo.createSaver(output_file, choosed_extension);
 
-         for (MolData mol : mol_datas) {
-            RenderableMolData rend_mol = new RenderableMolData(mol);
-            IndigoObject m = rend_mol.getObject();
+         for (RenderableObject mol : mol_datas) {
+            IndigoObject m = mol.getObject();
             if (m == null) {
                continue;
             }
             if (!m.hasCoord())
                m.layout();
             m.markEitherCisTrans();
-            /*
-            String[] orig_id_strs = (String[]) table.getValueAt(i, 0);
-            for (int j = 0; j < orig_id_strs.length; j++)
-               m.setProperty(String.format("original_id%d", j + 1), orig_id_strs[j]);
-            */
-            if (cur_filter.getDefaultExtension().compareTo("mol") == 0)
-               output_file.sdfAppend(m);
-            else if (cur_filter.getDefaultExtension().compareTo("sdf") == 0)
-               output_file.sdfAppend(m);
-            else if (cur_filter.getDefaultExtension().compareTo("smi") == 0)
-               output_file.smilesAppend(m);
-            else if (cur_filter.getDefaultExtension().compareTo("cml") == 0)
-               output_file.cmlAppend(m);
-            else
-               throw new Exception("Unknown extension");
+
+
+            file_saver.append(m);
          }
 
-         if (cur_filter.getDefaultExtension().compareTo("cml") == 0)
-            output_file.cmlFooter();
-
-         return choosed_file.getPath();
+         return _fopener.getFilePath();
       } catch (Exception ex) {
          JOptionPane.showMessageDialog(JFrame.getOwnerlessWindows()[0],
                  ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -104,8 +61,8 @@ public class MolSaver {
       }
    }
 
-   public String saveMol(MolData mol) {
-      ArrayList<MolData> mols = new ArrayList<MolData>();
+   public String saveMol(RenderableObject mol) {
+      ArrayList<RenderableObject> mols = new ArrayList<RenderableObject>();
       mols.add(mol);
 
       return saveMols(mols);

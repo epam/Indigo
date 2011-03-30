@@ -39,11 +39,11 @@ public class MolComparer
    {
       ArrayList<Integer> primary_indices;
       ArrayList<Integer> secondary_indices;
-      MolData mol_data;
+      RenderableMolData mol_data;
       String csmiles = null;
       boolean is_uniq;
 
-      public CompMol( MolData mol_data, int index )
+      public CompMol( RenderableMolData mol_data, int index )
       {
          this.mol_data = mol_data;
          primary_indices = new ArrayList<Integer>();
@@ -119,13 +119,13 @@ public class MolComparer
        return indexes_arrays;
    }
 
-   public void setMols(ArrayList<? extends MolData> mol_datas, int idx ) throws Exception
+   public void setMols(ArrayList<RenderableMolData> mol_datas, int idx ) throws Exception
    {
       ArrayList<CompMol> uniq_mols = (idx == 0 ? uniq_mols1 : uniq_mols2);
 
       uniq_mols.clear();
       int i = 0;
-      for (MolData mol_data : mol_datas)
+      for (RenderableMolData mol_data : mol_datas)
          uniq_mols.add(new CompMol(mol_data, i++));
    }
 

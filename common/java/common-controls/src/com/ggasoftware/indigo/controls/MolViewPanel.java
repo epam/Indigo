@@ -86,7 +86,7 @@ public class MolViewPanel extends JPanel
       }
 
       if (filename.endsWith("rxn"))
-         mol = indigo.loadReactionFromFile(filename).clone();
+         mol = indigo.loadQueryReactionFromFile(filename).clone();
       else
          mol = indigo.loadMoleculeFromFile(filename).clone();
 

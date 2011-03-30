@@ -11,24 +11,17 @@
 
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.controls.RenderableMolData;
 import com.ggasoftware.indigo.Indigo;
-import com.ggasoftware.indigo.IndigoObject;
 import com.ggasoftware.indigo.IndigoRenderer;
 import com.ggasoftware.indigo.controls.BeanBase;
-import com.ggasoftware.indigo.controls.GlobalParams;
+import com.ggasoftware.indigo.controls.FileOpener;
 import com.ggasoftware.indigo.controls.IndigoEventListener;
 import com.ggasoftware.indigo.controls.IndigoEventSource;
 import com.ggasoftware.indigo.controls.MolClicker;
-import com.ggasoftware.indigo.controls.MolData;
-import com.ggasoftware.indigo.controls.MolFileFilter;
 import com.ggasoftware.indigo.controls.MolRenderer;
-import com.ggasoftware.indigo.controls.MolSaver;
 import com.ggasoftware.indigo.controls.MultiLineCellRenderer;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
@@ -144,27 +137,18 @@ public class InputTable extends BeanBase implements java.io.Serializable, MolTab
     private void load_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_buttonActionPerformed
        load_progress_bar.setEnabled(false);
 
-       JFileChooser file_chooser = new JFileChooser();
-       MolFileFilter mon_ff = new MolFileFilter();
-       mon_ff.addExtension("sdf");
-       mon_ff.addExtension("sd");
-       mon_ff.addExtension("smi");
-       mon_ff.addExtension("cml");
-       file_chooser.setFileFilter(mon_ff);
-       file_chooser.setCurrentDirectory(new File(GlobalParams.getInstance().dir_path));
-       int ret_val = file_chooser.showOpenDialog(this);
-       File choosed_file = file_chooser.getSelectedFile();
+       FileOpener fopener = new FileOpener();
 
-       if ((choosed_file == null) || (ret_val != JFileChooser.APPROVE_OPTION))
-          return;
-
-       GlobalParams.getInstance().dir_path = choosed_file.getParent();
+       fopener.addExtension("sdf", "sd", "smi", "cml");
 
        if (sdf_loader != null)
           sdf_loader.interrupt();
 
+       if (fopener.openFile() == null)
+          return;
+
        load_progress_bar.setMinimum(0);
-       load_progress_bar.setMaximum((int) choosed_file.length());
+       load_progress_bar.setMaximum((int)fopener.getFile().length());
 
 
        progress_event.addListener(new IndigoEventListener<Integer>() {
@@ -180,7 +164,7 @@ public class InputTable extends BeanBase implements java.io.Serializable, MolTab
             }
          });
 
-       String path = _loadSdf(choosed_file);
+       String path = _loadSdf(fopener.getFile());
 
        if (path != null)
        {
@@ -199,11 +183,11 @@ public class InputTable extends BeanBase implements java.io.Serializable, MolTab
          model.removeRow(0);
    }
 
-   public void setMols(ArrayList<? extends MolData> mol_datas,
+   public void setMols(ArrayList<RenderableMolData> mol_datas,
               ArrayList< ArrayList<Integer> > indexes1,
               ArrayList< ArrayList<Integer> > indexes2) {
       this.mol_datas.clear();
-      this.mol_datas.addAll((ArrayList<RenderableMolData>)mol_datas);
+      this.mol_datas.addAll(mol_datas);
 
       setBorder(javax.swing.BorderFactory.createTitledBorder(_name + " - " +
                                               mol_datas.size() + " Molecules"));

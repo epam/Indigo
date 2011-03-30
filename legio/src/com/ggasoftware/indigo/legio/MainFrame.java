@@ -7,6 +7,12 @@ import java.util.ArrayList;
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoObject;
 import com.ggasoftware.indigo.IndigoRenderer;
+import com.ggasoftware.indigo.controls.GlobalParams;
+import com.ggasoftware.indigo.controls.IndigoEventListener;
+import com.ggasoftware.indigo.controls.MolFileFilter;
+import com.ggasoftware.indigo.controls.MolRenderer;
+import com.ggasoftware.indigo.controls.MolViewPanel;
+import com.ggasoftware.indigo.controls.MultiLineCellRenderer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.*;
@@ -14,15 +20,21 @@ import java.net.*;
 public class MainFrame extends javax.swing.JFrame
 {
    ArrayList<MonomerPanel> mon_panels;
-   MolViewTable products_table;
    MolViewPanel rct_view;
-   JButton save_products_button;
-   JButton save_reactions_button;
    int reactants_count;
    LegioData legio;
-   CurDir cur_dir;
    Indigo indigo;
    IndigoRenderer indigo_renderer;
+
+   static int mon_panel_idx;
+
+   public static void setNativeLookAndFeel() {
+      try {
+         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      } catch (Exception e) {
+         System.out.println("Error setting native LAF: " + e);
+      }
+   }
 
    public static String getPathToJarfileDir(Class classToUse) {
       String url = classToUse.getResource("/" + classToUse.getName().replaceAll("\\.", "/") + ".class").toString();
@@ -51,45 +63,23 @@ public class MainFrame extends javax.swing.JFrame
       mon_panels = new ArrayList<MonomerPanel>();
       rct_view = new MolViewPanel(indigo, indigo_renderer);
       legio = new LegioData(indigo);
-      cur_dir = new CurDir();
       
       indigo.setOption("filename-encoding", "UTF-8");
       indigo.setOption("render-margins", "5,2");
 
       initComponents();
-      save_products_button = new JButton();
-      save_products_button.setText("Save products");
-      save_products_button.setEnabled(false);
-      save_products_button.addActionListener(new SaveProductsEventListener());
-      save_reactions_button = new JButton();
-      save_reactions_button.setText("Save reactions");
-      save_reactions_button.setEnabled(false);
-      save_reactions_button.addActionListener(new SaveReactionsEventListener());
-      products_table = new MolViewTable(indigo, indigo_renderer, out_tab.getSize().width - 30, 300, true);
-      jLabel1.setEnabled(false);
-      jTextField1.setEnabled(false);
-      jLabel2.setEnabled(false);
-      jTextField2.setEnabled(false);
+      
+      products_panel.init(indigo, indigo_renderer, legio);
+
+      max_products_label.setEnabled(false);
+      max_products_text_field.setEnabled(false);
+      max_steps_label.setEnabled(false);
+      max_steps_text_field.setEnabled(false);
       react_button.setEnabled(false);
       is_multistep_reactions_check.setEnabled(false);
       is_one_tube_check.setEnabled(false);
       is_self_react_check.setEnabled(false);
       reaction_path_label.setEditable(false);
-
-      GroupLayout gl = new GroupLayout(out_tab);
-      out_tab.setLayout(gl);
-
-      gl.setAutoCreateGaps(true);
-      gl.setHorizontalGroup(gl.createParallelGroup().
-              addComponent(products_table, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).
-              addGroup(gl.createSequentialGroup().
-              addComponent(save_products_button, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, 150).
-              addComponent(save_reactions_button, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, 150)));
-      gl.setVerticalGroup(gl.createSequentialGroup().
-              addComponent(products_table, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).
-              addGroup(gl.createParallelGroup().
-              addComponent(save_products_button, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, 26).
-              addComponent(save_reactions_button, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, 26)));
 
       setTitle("Legio");
    }
@@ -101,33 +91,36 @@ public class MainFrame extends javax.swing.JFrame
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
    private void initComponents() {
 
-      jTabbedPane1 = new javax.swing.JTabbedPane();
+      tabbed_panel = new javax.swing.JTabbedPane();
       in_tab = new javax.swing.JPanel();
-      jSplitPane1 = new javax.swing.JSplitPane();
+      split_panel = new javax.swing.JSplitPane();
       rct_part = new javax.swing.JPanel();
       reaction_label = new javax.swing.JLabel();
       reaction_button = new javax.swing.JButton();
       rct_panel = new javax.swing.JPanel();
       reaction_path_label = new javax.swing.JTextField();
       mons_part = new javax.swing.JPanel();
-      mons_label = new javax.swing.JLabel();
-      mons_scroll_panel = new javax.swing.JScrollPane();
-      mons_container = new javax.swing.JPanel();
-      jPanel1 = new javax.swing.JPanel();
+      enumeration_panel = new javax.swing.JPanel();
       is_multistep_reactions_check = new java.awt.Checkbox();
       react_button = new javax.swing.JButton();
-      jTextField1 = new javax.swing.JTextField();
-      jLabel1 = new javax.swing.JLabel();
-      jLabel2 = new javax.swing.JLabel();
-      jTextField2 = new javax.swing.JTextField();
+      max_products_text_field = new javax.swing.JTextField();
+      max_products_label = new javax.swing.JLabel();
+      max_steps_label = new javax.swing.JLabel();
+      max_steps_text_field = new javax.swing.JTextField();
       is_one_tube_check = new java.awt.Checkbox();
       is_self_react_check = new java.awt.Checkbox();
       out_tab = new javax.swing.JPanel();
+      products_panel = new com.ggasoftware.indigo.legio.ProductsPanel();
+      menu_bar = new javax.swing.JMenuBar();
+      file_menu = new javax.swing.JMenu();
+      exit_menu_item = new javax.swing.JMenuItem();
+      help_menu = new javax.swing.JMenu();
+      about_menu_item = new javax.swing.JMenuItem();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-      jSplitPane1.setDividerLocation(300);
-      jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+      split_panel.setDividerLocation(300);
+      split_panel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
       rct_part.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -146,7 +139,7 @@ public class MainFrame extends javax.swing.JFrame
       rct_panel.setLayout(rct_panelLayout);
       rct_panelLayout.setHorizontalGroup(
          rct_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 914, Short.MAX_VALUE)
+         .addGap(0, 922, Short.MAX_VALUE)
       );
       rct_panelLayout.setVerticalGroup(
          rct_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -164,7 +157,7 @@ public class MainFrame extends javax.swing.JFrame
             .addComponent(reaction_button)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(reaction_path_label, javax.swing.GroupLayout.PREFERRED_SIZE, 773, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addContainerGap(18, Short.MAX_VALUE))
          .addComponent(rct_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
       );
       rct_partLayout.setVerticalGroup(
@@ -179,35 +172,23 @@ public class MainFrame extends javax.swing.JFrame
             .addComponent(rct_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       );
 
-      jSplitPane1.setTopComponent(rct_part);
-
-      mons_label.setText("Monomers:");
-
-      mons_container.setLayout(new javax.swing.BoxLayout(mons_container, javax.swing.BoxLayout.LINE_AXIS));
-      mons_scroll_panel.setViewportView(mons_container);
+      split_panel.setTopComponent(rct_part);
 
       javax.swing.GroupLayout mons_partLayout = new javax.swing.GroupLayout(mons_part);
       mons_part.setLayout(mons_partLayout);
       mons_partLayout.setHorizontalGroup(
          mons_partLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(mons_scroll_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 924, Short.MAX_VALUE)
-         .addGroup(mons_partLayout.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(mons_label)
-            .addContainerGap(861, Short.MAX_VALUE))
+         .addGap(0, 932, Short.MAX_VALUE)
       );
       mons_partLayout.setVerticalGroup(
          mons_partLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(mons_partLayout.createSequentialGroup()
-            .addComponent(mons_label)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(mons_scroll_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE))
+         .addGap(0, 291, Short.MAX_VALUE)
       );
 
-      jSplitPane1.setRightComponent(mons_part);
+      split_panel.setRightComponent(mons_part);
 
-      jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      jPanel1.setPreferredSize(new java.awt.Dimension(777, 50));
+      enumeration_panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+      enumeration_panel.setPreferredSize(new java.awt.Dimension(777, 50));
 
       is_multistep_reactions_check.setLabel("multistep reactions");
       is_multistep_reactions_check.addItemListener(new java.awt.event.ItemListener() {
@@ -223,18 +204,18 @@ public class MainFrame extends javax.swing.JFrame
          }
       });
 
-      jTextField1.setText("1000");
-      jTextField1.addActionListener(new java.awt.event.ActionListener() {
+      max_products_text_field.setText("1000");
+      max_products_text_field.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jTextField1ActionPerformed(evt);
+            max_products_text_fieldActionPerformed(evt);
          }
       });
 
-      jLabel1.setText("Maximum products:");
+      max_products_label.setText("Maximum products:");
 
-      jLabel2.setText("Maximum number of steps:");
+      max_steps_label.setText("Maximum number of steps:");
 
-      jTextField2.setText("3");
+      max_steps_text_field.setText("3");
 
       is_one_tube_check.setLabel("one tube");
       is_one_tube_check.addItemListener(new java.awt.event.ItemListener() {
@@ -250,20 +231,20 @@ public class MainFrame extends javax.swing.JFrame
          }
       });
 
-      javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-      jPanel1.setLayout(jPanel1Layout);
-      jPanel1Layout.setHorizontalGroup(
-         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(jPanel1Layout.createSequentialGroup()
+      javax.swing.GroupLayout enumeration_panelLayout = new javax.swing.GroupLayout(enumeration_panel);
+      enumeration_panel.setLayout(enumeration_panelLayout);
+      enumeration_panelLayout.setHorizontalGroup(
+         enumeration_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(enumeration_panelLayout.createSequentialGroup()
             .addContainerGap()
-            .addComponent(jLabel2)
+            .addComponent(max_steps_label)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(max_steps_text_field, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(jLabel1)
+            .addComponent(max_products_label)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+            .addComponent(max_products_text_field, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
             .addComponent(is_multistep_reactions_check, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(is_one_tube_check, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -272,16 +253,16 @@ public class MainFrame extends javax.swing.JFrame
             .addGap(21, 21, 21)
             .addComponent(react_button, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
-      jPanel1Layout.setVerticalGroup(
-         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(jPanel1Layout.createSequentialGroup()
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      enumeration_panelLayout.setVerticalGroup(
+         enumeration_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(enumeration_panelLayout.createSequentialGroup()
+            .addGroup(enumeration_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addComponent(react_button, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                  .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE))
+               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, enumeration_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                  .addComponent(max_steps_text_field, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(max_steps_label, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(max_products_label, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(max_products_text_field, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE))
                .addComponent(is_self_react_check, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
                .addComponent(is_one_tube_check, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
                .addComponent(is_multistep_reactions_check, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE))
@@ -292,18 +273,18 @@ public class MainFrame extends javax.swing.JFrame
       in_tab.setLayout(in_tabLayout);
       in_tabLayout.setHorizontalGroup(
          in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 926, Short.MAX_VALUE)
-         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 926, Short.MAX_VALUE)
+         .addComponent(split_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 934, Short.MAX_VALUE)
+         .addComponent(enumeration_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 934, Short.MAX_VALUE)
       );
       in_tabLayout.setVerticalGroup(
          in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, in_tabLayout.createSequentialGroup()
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 618, Short.MAX_VALUE)
+            .addComponent(split_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 597, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(enumeration_panel, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
 
-      jTabbedPane1.addTab("Reaction", in_tab);
+      tabbed_panel.addTab("Reaction", in_tab);
 
       out_tab.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -311,24 +292,50 @@ public class MainFrame extends javax.swing.JFrame
       out_tab.setLayout(out_tabLayout);
       out_tabLayout.setHorizontalGroup(
          out_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 916, Short.MAX_VALUE)
+         .addComponent(products_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 924, Short.MAX_VALUE)
       );
       out_tabLayout.setVerticalGroup(
          out_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 656, Short.MAX_VALUE)
+         .addComponent(products_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 635, Short.MAX_VALUE)
       );
 
-      jTabbedPane1.addTab("Products", out_tab);
+      tabbed_panel.addTab("Products", out_tab);
+
+      file_menu.setText("File");
+
+      exit_menu_item.setText("Exit");
+      exit_menu_item.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            exit_menu_itemActionPerformed(evt);
+         }
+      });
+      file_menu.add(exit_menu_item);
+
+      menu_bar.add(file_menu);
+
+      help_menu.setText("Help");
+
+      about_menu_item.setText("About");
+      about_menu_item.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            about_menu_itemActionPerformed(evt);
+         }
+      });
+      help_menu.add(about_menu_item);
+
+      menu_bar.add(help_menu);
+
+      setJMenuBar(menu_bar);
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 931, Short.MAX_VALUE)
+         .addComponent(tabbed_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 939, Short.MAX_VALUE)
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 694, Short.MAX_VALUE)
+         .addComponent(tabbed_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 673, Short.MAX_VALUE)
       );
 
       pack();
@@ -339,7 +346,7 @@ public class MainFrame extends javax.swing.JFrame
        MolFileFilter rxn_ff = new MolFileFilter();
        rxn_ff.addExtension("rxn");
        file_chooser.setFileFilter(rxn_ff);
-       file_chooser.setCurrentDirectory(new File(cur_dir.dir_path));
+       file_chooser.setCurrentDirectory(new File(GlobalParams.getInstance().dir_path));
        int ret_val = file_chooser.showOpenDialog(rct_part);
        File choosed_file = file_chooser.getSelectedFile();
 
@@ -348,7 +355,7 @@ public class MainFrame extends javax.swing.JFrame
        if ((choosed_file == null) || (ret_val != JFileChooser.APPROVE_OPTION)) {
           return;
        }
-       cur_dir.dir_path = choosed_file.getParent();
+       GlobalParams.getInstance().dir_path = choosed_file.getParent();
 
        String file_path = choosed_file.getAbsolutePath();
        reaction_path_label.setText(file_path);
@@ -378,7 +385,7 @@ public class MainFrame extends javax.swing.JFrame
        if (old_reactants_count <= reactants_count) {
           min_count = old_reactants_count;
           for (int i = old_reactants_count; i < reactants_count; i++) {
-             mon_panels.add(new MonomerPanel(indigo, indigo_renderer, this, mons_scroll_panel, legio, i, cur_dir));
+             mon_panels.add(new MonomerPanel(indigo, indigo_renderer, legio, i));
           }
        } else {
           min_count = reactants_count;
@@ -395,45 +402,56 @@ public class MainFrame extends javax.swing.JFrame
                    legio.addMonomerFromFile(i, mon_panels.get(i).mon_paths.get(j));
        */
 
-       mons_container.removeAll();
+       mons_part.removeAll();
 
        /* Setting layout */
-       GroupLayout gl_mc = new GroupLayout(mons_container);
-       mons_container.setLayout(gl_mc);
+       GroupLayout gl_mc = new GroupLayout(mons_part);
+       mons_part.setLayout(gl_mc);
 
        gl_mc.setAutoCreateGaps(true);
 
        Group h_group = gl_mc.createSequentialGroup();
-       for (int i = 0; i < reactants_count; i++)
+       Group v_group = gl_mc.createParallelGroup(GroupLayout.Alignment.LEADING);
+       for (mon_panel_idx = 0; mon_panel_idx < reactants_count; mon_panel_idx++)
        {
-          h_group.addComponent(mon_panels.get(i).main_panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+          h_group.addComponent(mon_panels.get(mon_panel_idx), GroupLayout.DEFAULT_SIZE,
+                               GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+          v_group.addComponent(mon_panels.get(mon_panel_idx), GroupLayout.DEFAULT_SIZE,
+                               GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+
+          mon_panels.get(mon_panel_idx).add_event.addListener(new IndigoEventListener<String>() {
+             int idx = mon_panel_idx;
+             public void handleEvent(Object source, String filename) {
+                legio.addMonomerFromFile(idx, filename);
+             }
+          });
+
+          mon_panels.get(mon_panel_idx).clear_event.addListener(new IndigoEventListener<Integer>() {
+             int idx = mon_panel_idx;
+             public void handleEvent(Object source, Integer num) {
+                legio.clearReactantMonomers(idx);
+             }
+          });
        }
 
        gl_mc.setHorizontalGroup(h_group);
-
-       Group v_group = gl_mc.createParallelGroup(GroupLayout.Alignment.LEADING);
-       for (int i = 0; i < reactants_count; i++) {
-          v_group.addComponent(mon_panels.get(i).main_panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
-       }
        gl_mc.setVerticalGroup(v_group);
-
-       products_table.clear();
-       mons_container.updateUI();
-       save_products_button.setEnabled(false);
-       save_reactions_button.setEnabled(false);
+       
+       products_panel.clear();
+       mons_part.updateUI();
        react_button.setEnabled(true);
        is_multistep_reactions_check.setEnabled(true);
        is_one_tube_check.setEnabled(true);
        is_self_react_check.setEnabled(true);
-       jLabel1.setEnabled(true);
-       jTextField1.setEnabled(true);
+       max_products_label.setEnabled(true);
+       max_products_text_field.setEnabled(true);
     }//GEN-LAST:event_reaction_buttonActionPerformed
 
     private void react_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_react_buttonActionPerformed
        try {
-          int max_depth = Integer.parseInt(jTextField2.getText());
+          int max_depth = Integer.parseInt(max_steps_text_field.getText());
           indigo.setOption("rpe-max-depth", max_depth);
-          int max_pr_count = Integer.parseInt(jTextField1.getText());
+          int max_pr_count = Integer.parseInt(max_products_text_field.getText());
           indigo.setOption("rpe-max-products-count", max_pr_count);
           indigo.setOption("rpe-multistep-reactions", is_multistep_reactions_check.getState());
           if (is_one_tube_check.getState())
@@ -457,10 +475,8 @@ public class MainFrame extends javax.swing.JFrame
              mol_cnt++;
           }
 
-          products_table.setMols(mol_objects);
-          save_products_button.setEnabled(true);
-          save_reactions_button.setEnabled(true);
-          jTabbedPane1.setSelectedIndex(1);
+          products_panel.setMols(mol_objects);
+          tabbed_panel.setSelectedIndex(1);
        } catch (Exception ex) {
           JOptionPane msg_box = new JOptionPane();
           msg_box.showMessageDialog((JFrame) (out_tab.getTopLevelAncestor()), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -468,8 +484,8 @@ public class MainFrame extends javax.swing.JFrame
     }//GEN-LAST:event_react_buttonActionPerformed
 
     private void is_multistep_reactions_checkItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_is_multistep_reactions_checkItemStateChanged
-       jLabel2.setEnabled(is_multistep_reactions_check.getState());
-       jTextField2.setEnabled(is_multistep_reactions_check.getState());
+       max_steps_label.setEnabled(is_multistep_reactions_check.getState());
+       max_steps_text_field.setEnabled(is_multistep_reactions_check.getState());
     }//GEN-LAST:event_is_multistep_reactions_checkItemStateChanged
 
     private void is_one_tube_checkItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_is_one_tube_checkItemStateChanged
@@ -480,9 +496,22 @@ public class MainFrame extends javax.swing.JFrame
        // TODO add your handling code here:
     }//GEN-LAST:event_is_self_react_checkItemStateChanged
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void max_products_text_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_max_products_text_fieldActionPerformed
        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_max_products_text_fieldActionPerformed
+
+    private void exit_menu_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exit_menu_itemActionPerformed
+       dispose();
+    }//GEN-LAST:event_exit_menu_itemActionPerformed
+
+    private void about_menu_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_about_menu_itemActionPerformed
+       JOptionPane msg_box = new JOptionPane();
+       String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC",
+               (new Indigo()).version());
+       msg_box.showConfirmDialog(this, msg, "About", JOptionPane.DEFAULT_OPTION,
+               JOptionPane.INFORMATION_MESSAGE,
+               new ImageIcon("images\\logo_small.png"));
+    }//GEN-LAST:event_about_menu_itemActionPerformed
 
    class SaveProductsEventListener implements ActionListener
    {
@@ -494,7 +523,7 @@ public class MainFrame extends javax.swing.JFrame
             sdf_ff.addExtension("sd");
             file_chooser.setFileFilter(sdf_ff);
             file_chooser.setApproveButtonText("Save");
-            file_chooser.setCurrentDirectory(new File(cur_dir.dir_path));
+            file_chooser.setCurrentDirectory(new File(GlobalParams.getInstance().dir_path));
             int ret_val = file_chooser.showSaveDialog(out_tab);
             File out_file = file_chooser.getSelectedFile();
 
@@ -502,7 +531,7 @@ public class MainFrame extends javax.swing.JFrame
                return;
             }
 
-            cur_dir.dir_path = out_file.getParent();
+            GlobalParams.getInstance().dir_path = out_file.getParent();
 
             String out_file_path = out_file.getPath();
 
@@ -538,14 +567,14 @@ public class MainFrame extends javax.swing.JFrame
             sdf_ff.addExtension("rdf");
             file_chooser.setFileFilter(sdf_ff);
             file_chooser.setApproveButtonText("Save");
-            file_chooser.setCurrentDirectory(new File(cur_dir.dir_path));
+            file_chooser.setCurrentDirectory(new File(GlobalParams.getInstance().dir_path));
             int ret_val = file_chooser.showSaveDialog(out_tab);
             File out_file = file_chooser.getSelectedFile();
 
             if ((out_file == null) || (ret_val != JFileChooser.APPROVE_OPTION)) {
                return;
             }
-            cur_dir.dir_path = out_file.getParent();
+            GlobalParams.getInstance().dir_path = out_file.getParent();
 
             String out_file_path = out_file.getPath();
 
@@ -572,27 +601,30 @@ public class MainFrame extends javax.swing.JFrame
       }
    }
    // Variables declaration - do not modify//GEN-BEGIN:variables
+   private javax.swing.JMenuItem about_menu_item;
+   private javax.swing.JPanel enumeration_panel;
+   private javax.swing.JMenuItem exit_menu_item;
+   private javax.swing.JMenu file_menu;
+   private javax.swing.JMenu help_menu;
    private javax.swing.JPanel in_tab;
    private java.awt.Checkbox is_multistep_reactions_check;
    private java.awt.Checkbox is_one_tube_check;
    private java.awt.Checkbox is_self_react_check;
-   private javax.swing.JLabel jLabel1;
-   private javax.swing.JLabel jLabel2;
-   private javax.swing.JPanel jPanel1;
-   private javax.swing.JSplitPane jSplitPane1;
-   private javax.swing.JTabbedPane jTabbedPane1;
-   private javax.swing.JTextField jTextField1;
-   private javax.swing.JTextField jTextField2;
-   private javax.swing.JPanel mons_container;
-   private javax.swing.JLabel mons_label;
+   private javax.swing.JLabel max_products_label;
+   private javax.swing.JTextField max_products_text_field;
+   private javax.swing.JLabel max_steps_label;
+   private javax.swing.JTextField max_steps_text_field;
+   private javax.swing.JMenuBar menu_bar;
    private javax.swing.JPanel mons_part;
-   private javax.swing.JScrollPane mons_scroll_panel;
    private javax.swing.JPanel out_tab;
+   private com.ggasoftware.indigo.legio.ProductsPanel products_panel;
    private javax.swing.JPanel rct_panel;
    private javax.swing.JPanel rct_part;
    private javax.swing.JButton react_button;
    private javax.swing.JButton reaction_button;
    private javax.swing.JLabel reaction_label;
    private javax.swing.JTextField reaction_path_label;
+   private javax.swing.JSplitPane split_panel;
+   private javax.swing.JTabbedPane tabbed_panel;
    // End of variables declaration//GEN-END:variables
 }

@@ -11,12 +11,10 @@
 
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.controls.RenderableMolData;
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoRenderer;
 import com.ggasoftware.indigo.controls.BeanBase;
 import com.ggasoftware.indigo.controls.MolClicker;
-import com.ggasoftware.indigo.controls.MolData;
 import com.ggasoftware.indigo.controls.MolRenderer;
 import com.ggasoftware.indigo.controls.MolSaver;
 import com.ggasoftware.indigo.controls.MultiLineCellRenderer;
@@ -47,6 +45,9 @@ public class OutputTable extends BeanBase implements java.io.Serializable, MolTa
       initComponents();
 
       _mol_saver = new MolSaver(indigo);
+      _mol_saver.addExtension("cml");
+      _mol_saver.addExtension("smi");
+      _mol_saver.addExtension("sdf", "sd");
 
       int idx_column_count = 1; 
       if (_name.compareTo("Coincident Molecules") == 0)
@@ -135,11 +136,11 @@ public class OutputTable extends BeanBase implements java.io.Serializable, MolTa
          model.removeRow(0);
    }
 
-   public void setMols(ArrayList<? extends MolData> mol_datas,
+   public void setMols(ArrayList<RenderableMolData> mol_datas,
               ArrayList< ArrayList<Integer> > indexes1,
               ArrayList< ArrayList<Integer> > indexes2) {
       this.mol_datas.clear();
-      this.mol_datas.addAll((ArrayList<RenderableMolData>)mol_datas);
+      this.mol_datas.addAll(mol_datas);
 
       setBorder(javax.swing.BorderFactory.createTitledBorder(_name + " - " +
                                               mol_datas.size()));

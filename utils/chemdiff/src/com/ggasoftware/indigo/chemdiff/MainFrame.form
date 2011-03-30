@@ -12,7 +12,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="load_secondActionPerformed"/>
           </Events>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuLoadLeft">
+            <MenuItem class="javax.swing.JMenuItem" name="load_left_mi">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Load first"/>
               </Properties>
@@ -20,7 +20,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="load_firstActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuLoadRight">
+            <MenuItem class="javax.swing.JMenuItem" name="load_right_mi">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Load second"/>
               </Properties>
@@ -28,14 +28,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="load_secondActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator1">
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="file_menu_separator">
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuExit">
+            <MenuItem class="javax.swing.JMenuItem" name="exit_mi">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Exit"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuExitActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exit_miActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -94,12 +94,12 @@
             <Property name="text" type="java.lang.String" value="Help"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuHelpAbout">
+            <MenuItem class="javax.swing.JMenuItem" name="about_mi">
               <Properties>
                 <Property name="text" type="java.lang.String" value="About"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuHelpAboutActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="about_miActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

@@ -17,7 +17,7 @@ public class SdfLoader{
 
    private Indigo _indigo;
    private File _file;
-   public ArrayList<MolData> mol_datas;
+   public ArrayList<RenderableMolData> mol_datas;
    private IndigoObject _iterator_object;
    private Thread _thread;
    private String _ext;
@@ -28,18 +28,14 @@ public class SdfLoader{
            new IndigoEventSource<Integer>(this);
    private SdfLoadRunnable _runnable;
 
-   public boolean test_flag;
-
    public SdfLoader(Indigo cur_indigo, String ext)
    {
       _indigo = cur_indigo;
       _runnable = new SdfLoadRunnable();
       finish_event = new IndigoEventSource<Integer>(this);
-      mol_datas = new ArrayList<MolData>();
+      mol_datas = new ArrayList<RenderableMolData>();
       _thread = new Thread(null, _runnable, "sdf_loader #", 10000000);
       _ext = ext;
-
-      test_flag = false;
    }
 
    public void setExtension(String ext) {
@@ -56,15 +52,7 @@ public class SdfLoader{
          try {
             int file_pos = 0;
 
-            if (_ext.equals("sdf")) {
-               _iterator_object = _indigo.iterateSDFile(_file.getPath());
-            } else if (_ext.equals("smi")) {
-               _iterator_object = _indigo.iterateSmilesFile(_file.getPath());
-            } else if (_ext.equals("cml")) {
-               _iterator_object = _indigo.iterateCMLFile(_file.getPath());
-            } else {
-               throw new Exception("Unsupported file extension");
-            }
+            _iterator_object = LoadUtils.getIterator(_indigo, _file.getPath());
 
             for (IndigoObject iterr : _iterator_object)
             {
@@ -75,7 +63,7 @@ public class SdfLoader{
 
                   file_pos = _iterator_object.tell();
 
-                  mol_datas.add(new MolData(_iterator_object, mol_datas.size()));
+                  mol_datas.add(new RenderableMolData(_iterator_object, mol_datas.size()));
 
                   if ((mol_datas.size() % 10000) == 0)
                      System.gc();
@@ -116,7 +104,6 @@ public class SdfLoader{
    public void interrupt() {
       if (_thread == null)
          return;
-      test_flag = true;
       _thread.interrupt();
    }
 }
