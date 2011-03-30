@@ -95,8 +95,9 @@ GO
 -- _OnDeleteRecordTrigger
 --
 CREATE PROCEDURE [$(bingo)].__OnDeleteRecordTrigger 
-    @full_table_name nvarchar(max),
-    @id int,
+    @table_id int,
+    @database_id int,
+    @tmp_cursor_name nvarchar(max),
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._OnDeleteRecordTrigger
@@ -106,11 +107,12 @@ ADD SIGNATURE TO [$(bingo)].__OnDeleteRecordTrigger BY CERTIFICATE $(bingo)_cert
 GO
 
 CREATE PROCEDURE [$(bingo)]._OnDeleteRecordTrigger 
-    @full_table_name nvarchar(max),
-    @id int
+    @table_id int,
+    @database_id int,
+    @tmp_cursor_name nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)].__OnDeleteRecordTrigger @full_table_name, @id, '$(bingo)'
+  EXEC [$(bingo)].__OnDeleteRecordTrigger @table_id, @database_id, @tmp_cursor_name, '$(bingo)'
 END
 GO
 ADD SIGNATURE TO [$(bingo)]._OnDeleteRecordTrigger BY CERTIFICATE $(bingo)_certificate
@@ -124,9 +126,9 @@ GO
 -- _OnInsertRecordTrigger
 --
 CREATE PROCEDURE [$(bingo)].__OnInsertRecordTrigger 
-    @full_table_name nvarchar(max),
-    @id int,
-    @data nvarchar(max),
+    @table_id int,
+    @database_id int,
+    @tmp_cursor_name nvarchar(max),
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._OnInsertRecordTrigger
@@ -136,12 +138,12 @@ ADD SIGNATURE TO [$(bingo)].__OnInsertRecordTrigger BY CERTIFICATE $(bingo)_cert
 GO
 
 CREATE PROCEDURE [$(bingo)]._OnInsertRecordTrigger 
-    @full_table_name nvarchar(max),
-    @id int,
-    @data nvarchar(max)
+    @table_id int,
+    @database_id int,
+    @tmp_cursor_name nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)].__OnInsertRecordTrigger @full_table_name, @id, @data, '$(bingo)'
+  EXEC [$(bingo)].__OnInsertRecordTrigger @table_id, @database_id, @tmp_cursor_name, '$(bingo)'
 END
 GO
 ADD SIGNATURE TO [$(bingo)]._OnInsertRecordTrigger BY CERTIFICATE $(bingo)_certificate

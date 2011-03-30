@@ -291,7 +291,7 @@ namespace indigo
 
       public string componentsTable
       {
-         get { return "[" + bingo_schema + "].components_" + id.object_id; }
+         get { return "[" + bingo_schema + "].components_" + id.table_id; }
       }
    }
 }

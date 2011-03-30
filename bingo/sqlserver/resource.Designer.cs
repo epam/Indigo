@@ -95,21 +95,20 @@ namespace indigo {
         ///AS
         ///	declare @ID int;
         ///	declare @data nvarchar(max);
+        ///	declare @count int;
         ///	declare Cur cursor LOCAL for select {2}, {3} from inserted;
         ///
-        ///	open Cur
+        ///	/* Suppress huge amount of messages &quot;(1 row(s) affected)&quot; */
+        ///	SET NOCOUNT ON
         ///
-        ///	fetch next from Cur into @ID, @data
-        ///
-        ///	while @@fetch_status = 0
-        ///	begin
-        ///		exec {4}._OnInsertRecordTrigger &apos;{1}&apos;, @ID, @data
-        ///
-        ///		fetch next from Cur into @ID, @data
-        ///	end
-        ///  close Cur
-        ///  deallocate Cur
-        ///.
+        ///	/* Check if temporary table exists. It might happen 
+        ///	 * if an exception was thrown during previous insertion
+        ///	 */
+        ///	IF OBJECT_ID(&apos;tempdb..#tmp_inserted&apos;) IS NOT NULL
+        ///	BEGIN
+        ///		drop table #tmp_inserted
+        ///	END
+        ///	CREATE TABLE #tmp_inserted (id int [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OnInsertTrigger {
             get {
@@ -149,6 +148,20 @@ namespace indigo {
         internal static string OnUpdateTrigger {
             get {
                 return ResourceManager.GetString("OnUpdateTrigger", resourceCulture);
+            }
+        }
+        
+        internal static byte[] Win_x64_bingo_core_c_dll {
+            get {
+                object obj = ResourceManager.GetObject("Win/x64/bingo-core-c.dll", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] Win_x86_bingo_core_c_dll {
+            get {
+                object obj = ResourceManager.GetObject("Win/x86/bingo-core-c.dll", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }

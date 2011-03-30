@@ -32,6 +32,9 @@ go
 drop table [$(bingo)].TAUTOMER_RULES
 go
 
+drop table [$(bingo)].REGISTERED_DATABASES
+go
+
 DROP ROLE $(bingo)_operator;
 GO
 

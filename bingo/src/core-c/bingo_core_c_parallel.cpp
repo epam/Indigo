@@ -23,9 +23,6 @@ CEXPORT int bingoSetIndexRecordData (int id, const char *data, int data_size)
 {
    BINGO_BEGIN
    {
-      if (id < 0)
-         throw BingoError("Negative id isn't allowed: id = %d", id);
-
       self.index_record_data->copy(data, data_size);
       self.index_record_data_id = id;
    }

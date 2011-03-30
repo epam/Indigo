@@ -72,6 +72,10 @@ create table [$(bingo)].CONTEXT (obj_id int, database_id int, full_table_name va
 create index CONTEXT_ID on [$(bingo)].CONTEXT(obj_id);
 go
 
+-- Create table with registered databases (with trigger for automatically delete index)
+create table [$(bingo)].REGISTERED_DATABASES (database_id int, keep bit);
+go
+
 create table [$(bingo)].TAUTOMER_RULES (id int, begg varchar(100), endd varchar(100));
 insert into [$(bingo)].TAUTOMER_RULES values (1, 'N,O,P,S,As,Se,Sb,Te', 'N,O,P,S,As,Se,Sb,Te');
 insert into [$(bingo)].TAUTOMER_RULES values (2, '0C', 'N,O,P,S');

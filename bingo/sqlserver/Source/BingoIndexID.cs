@@ -9,7 +9,7 @@ namespace indigo
 {
    public class BingoIndexID
    {
-      public int object_id;
+      public int table_id;
       public int database_id;
 
       private string name; // Name for logging
@@ -17,7 +17,7 @@ namespace indigo
       // Detect database, schema, and table; some from table_name, some from SQL connection
       public BingoIndexID (SqlConnection connection, string table_name)
       {
-         object_id = BingoSqlUtils.GetTableObjectID(connection, table_name);
+         table_id = BingoSqlUtils.GetTableObjectID(connection, table_name);
 
          string database = null, schema = null, table = null;
          parseTableName(table_name, ref database, ref schema, ref table);
@@ -29,9 +29,16 @@ namespace indigo
          name = table_name;
       }
 
+      public BingoIndexID (int table_id, int database_id)
+      {
+         this.table_id = table_id;
+         this.database_id = database_id;
+         name = String.Format("object_id = {0}, database_id = {1}", table_id, database_id);
+      }
+
       public bool Equals (BingoIndexID other)
       {
-         return object_id == other.object_id && database_id == other.database_id;
+         return table_id == other.table_id && database_id == other.database_id;
       }
 
       private void parseTableName (string table_name, ref string database, ref string schema, ref string table)
@@ -70,7 +77,7 @@ namespace indigo
       public string SchemaName (SqlConnection connection)
       {
          return BingoSqlUtils.ExecStringQuery(connection,
-            @"SELECT QUOTENAME(OBJECT_SCHEMA_NAME({0}, {1}))", object_id, database_id);
+            @"SELECT QUOTENAME(OBJECT_SCHEMA_NAME({0}, {1}))", table_id, database_id);
       }
 
       public string DatabaseName (SqlConnection connection)
@@ -84,12 +91,12 @@ namespace indigo
          return BingoSqlUtils.ExecStringQuery(connection,
             @"SELECT QUOTENAME(DB_NAME({0})) + N'.' +
                      QUOTENAME(OBJECT_SCHEMA_NAME({1}, {0})) + N'.' +
-                     QUOTENAME(OBJECT_NAME({1}, {0}))", database_id, object_id);
+                     QUOTENAME(OBJECT_NAME({1}, {0}))", database_id, table_id);
       }
 
       public string InformationName ()
       {
-         return String.Format("{0} (db_id={1}, obj_id={2})", name, database_id, object_id);
+         return String.Format("{0} (db_id={1}, obj_id={2})", name, database_id, table_id);
       }
    }
 }

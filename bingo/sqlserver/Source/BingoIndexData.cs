@@ -42,7 +42,7 @@ namespace indigo
 
          using (SqlCommand cmd = new SqlCommand(String.Format(
             "SELECT id_column, data_column, type FROM {0} WHERE obj_id = '{1}'",
-            _contextTable(bingo_schema), id.object_id), conn))
+            _contextTable(bingo_schema), id.table_id), conn))
          {
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
@@ -64,7 +64,7 @@ namespace indigo
          }
 
          data.keep_cache =
-            (BingoConfig.getInt(conn, bingo_schema, "KEEP_CACHE", id.object_id) != 0);
+            (BingoConfig.getInt(conn, bingo_schema, "KEEP_CACHE", id.table_id) != 0);
 
          return data;
       }
@@ -94,13 +94,13 @@ namespace indigo
 
             string command_text =
                String.Format("SELECT obj_id FROM {0} WHERE obj_id = {1} and database_id = {2}",
-               _contextTable(bingo_schema), id.object_id, id.database_id);
+               _contextTable(bingo_schema), id.table_id, id.database_id);
             using (SqlCommand cmd = new SqlCommand(command_text, conn))
             {
                object res = cmd.ExecuteScalar();
 
                if (res != null)
-                  _DropIndexData(conn, bingo_schema, table);
+                  _DropIndexData(conn, bingo_schema, id);
             }
 
             BingoIndexData data;
@@ -112,35 +112,42 @@ namespace indigo
 
             BingoSqlUtils.ExecNonQuery(conn,
                "INSERT INTO {0} VALUES({1}, {2}, '{3}', '{4}', '{5}', '{6}')",
-               _contextTable(bingo_schema), id.object_id, id.database_id, id.FullTableName(conn),
+               _contextTable(bingo_schema), id.table_id, id.database_id, id.FullTableName(conn),
                id_column, data_column,
                reaction ? "reaction" : "molecule");
 
             data.CreateTables(conn);
             data.CreateTriggers(conn);
             _AddIndexDataToList(spid, data);
+
+            BingoLog.logMessage("Bingo index for table {0} has been initialized", id.FullTableName(conn));
+
             return data;
          }
       }
 
       public static void DropIndexData (SqlConnection conn, string bingo_schema, string table)
       {
+         BingoIndexID id = new BingoIndexID(conn, table);
+         DropIndexData(conn, bingo_schema, id);
+      }
+
+      public static void DropIndexData (SqlConnection conn, string bingo_schema, BingoIndexID id)
+      {
          lock (index_data_list_lock)
          {
-            _DropIndexData(conn, bingo_schema, table);
+            _DropIndexData(conn, bingo_schema, id);
          }
       }
 
-      private static void _DropIndexData (SqlConnection conn, string bingo_schema, string table)
+      private static void _DropIndexData (SqlConnection conn, string bingo_schema, BingoIndexID id)
       {
-         BingoIndexID id = new BingoIndexID(conn, table);
-
          BingoIndexData data = _extractIndexData(conn, bingo_schema, id);
          data.DropTables(conn);
          data.DropTriggers(conn);
 
          BingoSqlUtils.ExecNonQueryNoThrow(conn, "DELETE FROM {0} WHERE obj_id = '{1}'",
-            _contextTable(bingo_schema), id.object_id);
+            _contextTable(bingo_schema), id.table_id);
 
          for (int i = index_data_list.Count - 1; i >= 0; i--)
          {
@@ -148,17 +155,30 @@ namespace indigo
             if (refs.index_data.id.Equals(id))
             {
                index_data_list.RemoveAt(i);
-               BingoLog.logMessage("Session for table {0} released", refs.index_data.id.FullTableName(conn));
+               BingoLog.logMessage("Session for table {0} released", id.FullTableName(conn));
             }
          }
+         BingoLog.logMessage("Bingo index for table {0} has been dropped", id.FullTableName(conn));
       }
 
-      public static BingoIndexData GetIndexData (SqlConnection conn, string bingo_schema, string table, int spid)
+      public static BingoIndexData GetIndexData (SqlConnection conn, string bingo_schema, 
+         int table_id, int database_id, int spid)
+      {
+         BingoIndexID id = new BingoIndexID(table_id, database_id);
+         return GetIndexDataById(conn, bingo_schema, id, spid);
+      }
+
+      public static BingoIndexData GetIndexData (SqlConnection conn, string bingo_schema, 
+         string table, int spid)
+      {
+         BingoIndexID id = new BingoIndexID(conn, table);
+         return GetIndexDataById(conn, bingo_schema, id, spid);
+      }
+      private static BingoIndexData GetIndexDataById (SqlConnection conn, string bingo_schema, 
+         BingoIndexID id, int spid)
       {
          lock (index_data_list_lock)
          {
-            BingoIndexID id = new BingoIndexID(conn, table);
-
             foreach (BingoIndexDataRefs index_data_refs in index_data_list)
             {
                if (index_data_refs.index_data.id.Equals(id))
@@ -166,7 +186,7 @@ namespace indigo
                   if (!index_data_refs.session_ids.Contains(spid))
                   {
                      BingoLog.logMessage("Existing BingoIndexData added for spid={0} table={1}",
-                        spid, table);
+                        spid, id.FullTableName(conn));
                      index_data_refs.session_ids.Add(spid);
                   }
                   return index_data_refs.index_data;
@@ -174,10 +194,9 @@ namespace indigo
             }
 
             BingoLog.logMessage("Extracting new BingoIndexData for spid={0} table={1}",
-               spid, table);
+               spid, id.FullTableName(conn));
 
             BingoIndexData data = _extractIndexData(conn, bingo_schema, id);
-
             _AddIndexDataToList(spid, data);
 
             return data;
@@ -322,16 +341,19 @@ namespace indigo
             BingoSqlUtils.ExecNonQueryNoThrow(conn, "USE {0}", id.DatabaseName(conn));
 
             string full_name = id.FullTableName(conn);
-            string insert_trigger = String.Format(resource.OnInsertTrigger,
-               GetTriggerName("Insert", conn), full_name, id_column, data_column, bingo_schema);
+            object[] trigger_params = new object[] { null, 
+               full_name, id_column, data_column, bingo_schema, id.table_id, id.database_id };
+
+            trigger_params[0] = GetTriggerName("Insert", conn);
+            string insert_trigger = String.Format(resource.OnInsertTrigger, trigger_params);
             BingoSqlUtils.ExecNonQuery(conn, "{0}", insert_trigger);
 
-            string delete_trigger = String.Format(resource.OnDeleteTrigger,
-               GetTriggerName("Delete", conn), full_name, id_column, bingo_schema);
+            trigger_params[0] = GetTriggerName("Delete", conn);
+            string delete_trigger = String.Format(resource.OnDeleteTrigger, trigger_params);
             BingoSqlUtils.ExecNonQuery(conn, "{0}", delete_trigger);
 
-            string update_trigger = String.Format(resource.OnUpdateTrigger,
-               GetTriggerName("Update", conn), full_name, id_column, data_column, bingo_schema);
+            trigger_params[0] = GetTriggerName("Update", conn);
+            string update_trigger = String.Format(resource.OnUpdateTrigger, trigger_params);
             BingoSqlUtils.ExecNonQuery(conn, "{0}", update_trigger);
          }
          finally
@@ -378,27 +400,27 @@ namespace indigo
       private string GetTriggerName (string operation, SqlConnection conn)
       {
          return String.Format("{0}.[{1}_{2}]",
-            id.SchemaName(conn), id.object_id, operation);
+            id.SchemaName(conn), id.table_id, operation);
       }
 
       public string fingerprintsTable
       {
-         get { return "[" + bingo_schema + "].fingerprints_" + id.object_id; }
+         get { return "[" + bingo_schema + "].fingerprints_" + id.table_id; }
       }
 
       public string fingerprintBitsTable
       {
-         get { return "[" + bingo_schema + "].fingerprint_bits_" + id.object_id; }
+         get { return "[" + bingo_schema + "].fingerprint_bits_" + id.table_id; }
       }
 
       public string storageTable
       {
-         get { return "[" + bingo_schema + "].storage_" + id.object_id; }
+         get { return "[" + bingo_schema + "].storage_" + id.table_id; }
       }
 
       public string shadowTable
       {
-         get { return "[" + bingo_schema + "].shadow_" + id.object_id; }
+         get { return "[" + bingo_schema + "].shadow_" + id.table_id; }
       }
 
       public void syncContextParameters (SqlConnection conn, string bingo_schema)
@@ -406,13 +428,13 @@ namespace indigo
          fingerprints.syncContextParameters(getIndexType() == IndexType.Reaction);
 
          keep_cache =
-            (BingoConfig.getInt(conn, bingo_schema, "KEEP_CACHE", id.object_id) != 0);
+            (BingoConfig.getInt(conn, bingo_schema, "KEEP_CACHE", id.table_id) != 0);
       }
 
       public void setKeepCache (SqlConnection conn, string bingo_schema, bool keep)
       {
          keep_cache = keep;
-         BingoConfig.setInt(conn, bingo_schema, "KEEP_CACHE", id.object_id, keep ? 1 : 0);
+         BingoConfig.setInt(conn, bingo_schema, "KEEP_CACHE", id.table_id, keep ? 1 : 0);
       }
 
       public int? getStorageIdById (SqlConnection conn, int id)
