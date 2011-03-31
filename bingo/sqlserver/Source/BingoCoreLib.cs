@@ -83,13 +83,9 @@ namespace indigo
       sbyte* bingoRDFImportGetProperty (
          [MarshalAs(UnmanagedType.LPStr)] string param_name);
 
-      int mangoIndexBegin ();
-
-      int ringoIndexBegin ();
-
-      int mangoIndexEnd ();
-
-      int ringoIndexEnd ();
+      int bingoIndexBegin ();
+      int bingoIndexEnd ();
+      int bingoIndexMarkTermintate ();
 
       int mangoIndexReadPreparedMolecule (
          out int id,

@@ -32,7 +32,7 @@ CEXPORT int mangoIndexProcess (
       self.mango_indexing_dispatcher->get_next_record_cb = get_next_record_cb;
       self.mango_indexing_dispatcher->process_result_cb = process_result_cb;
       self.mango_indexing_dispatcher->process_error_cb = process_error_cb;
-      self.mango_indexing_dispatcher->run();
+      self.mango_indexing_dispatcher->run(self.bingo_context->nthreads);
       self.mango_indexing_dispatcher.free();
    }
    BINGO_END(0, -1)
@@ -93,7 +93,7 @@ void MangoIndexingCommandResult::clear ()
 // MangoIndexingDispatcher
 //
 MangoIndexingDispatcher::MangoIndexingDispatcher (BingoCore &core) : 
-   IndexingDispatcher(core, HANDLING_ORDER_ANY, true, 50)
+   IndexingDispatcher(core, HANDLING_ORDER_ANY, true, 30)
 {
 }
 

@@ -27,32 +27,6 @@
 
 using namespace indigo::bingo_core;
 
-CEXPORT int ringoIndexEnd ()
-{
-   BINGO_BEGIN
-   {
-      //self.ringo_index_bindata.free();
-      return 1;
-   }
-   BINGO_END(-2, -2)
-}
-
-CEXPORT int ringoIndexBegin ()
-{
-   BINGO_BEGIN
-   {
-      if (!self.bingo_context->fp_parameters_ready)
-         throw BingoError("fingerprint parameters not set");
-
-      ringoIndexEnd();
-
-      //self.ringo_index.create(*self.bingo_context);
-      //self.ringo_index_bindata.create();
-      return 1;
-   }
-   BINGO_END(-2, -2)
-}
-
 CEXPORT int ringoIndexPrepareReaction (const char *str, int str_len,
                  const char **crf_buf, int *crf_buf_len,
                  const char **fingerprint_buf, int *fingerprint_buf_len)

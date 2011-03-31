@@ -17,6 +17,12 @@ GO
 DROP PROCEDURE [$(bingo)].__DropAllIndices 
 GO
 
+DROP PROCEDURE [$(bingo)]._DropIndexByID 
+GO
+
+DROP PROCEDURE [$(bingo)].__DropIndexByID 
+GO
+
 DROP PROCEDURE [$(bingo)]._FlushInAllSessions 
 GO
 

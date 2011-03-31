@@ -65,21 +65,13 @@ namespace indigo {
         ///	ON {1}
         ///	FOR DELETE
         ///AS
-        ///	declare @ID int;
-        ///	declare Cur cursor LOCAL for select {2} from deleted;
+        ///	-- Create global cursor for deleted records
+        ///	-- Simultaneous inserts from different sessions are not supported
+        ///	declare [bingotmpcur_del_{5}_{6}] cursor GLOBAL FORWARD_ONLY READ_ONLY for select {2} from deleted
+        ///	open [bingotmpcur_del_{5}_{6}]
         ///
-        ///	open Cur
-        ///
-        ///	fetch next from Cur into @ID
-        ///
-        ///	while @@fetch_status = 0
-        ///	begin
-        ///		exec {3}._OnDeleteRecordTrigger &apos;{1}&apos;, @ID
-        ///
-        ///		fetch next from Cur into @ID
-        ///	end
-        ///  close Cur
-        ///  deallocate Cur
+        ///	-- Cursor will be deallocated in the _OnInsertRecordTrigger automatically
+        ///	exec {4}._OnDeleteRecordTrigger {5}, {6}, &apos;[bingotmpcur_del_{5}_{6}]&apos;
         ///.
         /// </summary>
         internal static string OnDeleteTrigger {
@@ -93,22 +85,14 @@ namespace indigo {
         ///	ON {1}
         ///	FOR INSERT
         ///AS
-        ///	declare @ID int;
-        ///	declare @data nvarchar(max);
-        ///	declare @count int;
-        ///	declare Cur cursor LOCAL for select {2}, {3} from inserted;
+        ///	-- Create global cursor for inserted records
+        ///	-- Simultaneous inserts from different sessions are not supported
+        ///	declare [bingotmpcur_{5}_{6}] cursor GLOBAL FORWARD_ONLY READ_ONLY for select {2}, {3} from inserted
+        ///	open [bingotmpcur_{5}_{6}]
         ///
-        ///	/* Suppress huge amount of messages &quot;(1 row(s) affected)&quot; */
-        ///	SET NOCOUNT ON
-        ///
-        ///	/* Check if temporary table exists. It might happen 
-        ///	 * if an exception was thrown during previous insertion
-        ///	 */
-        ///	IF OBJECT_ID(&apos;tempdb..#tmp_inserted&apos;) IS NOT NULL
-        ///	BEGIN
-        ///		drop table #tmp_inserted
-        ///	END
-        ///	CREATE TABLE #tmp_inserted (id int [rest of string was truncated]&quot;;.
+        ///	-- Cursor will be deallocated in the _OnInsertRecordTrigger automatically
+        ///	exec {4}._OnInsertRecordTrigger {5}, {6}, &apos;[bingotmpcur_{5}_{6}]&apos;
+        ///.
         /// </summary>
         internal static string OnInsertTrigger {
             get {
@@ -121,13 +105,9 @@ namespace indigo {
         ///	ON {1}
         ///	FOR UPDATE
         ///AS
-        ///	declare @ID int;
-        ///	declare @data nvarchar(max);
-        ///	declare Cur cursor LOCAL for select {2}, {3} from inserted;
-        ///
         ///	IF UPDATE({2}) 
         ///	BEGIN 
-        ///		RAISERROR (&apos;{2} column cannot be changes after Bingo index created.&apos;, 16, 1);
+        ///		RAISERROR (&apos;{2} column cannot be changed after Bingo index has been created.&apos;, 16, 1);
         ///		ROLLBACK TRANSACTION
         ///	END
         ///	
@@ -136,14 +116,11 @@ namespace indigo {
         ///		RETURN 
         ///	END
         ///	
-        ///	open Cur
+        ///	-- At first delete records and then insert them
         ///
-        ///	fetch next from Cur into @ID, @data
-        ///
-        ///	while @@fetch_status = 0
-        ///	begin
-        ///		exec {4}._OnDeleteRecordTrigger &apos;{1}&apos;, @ID
-        ///		exec {4}._OnInsertRecordTrig [rest of string was truncated]&quot;;.
+        ///	-- Create global cursor for deleted records
+        ///	-- Simultaneous inserts from different sessions are not supported
+        ///	declare [bingotmpcur_upd_{5}_{6}] cursor GLOBAL FORWARD_ONLY READ_ONLY for select {2} from inserte [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OnUpdateTrigger {
             get {

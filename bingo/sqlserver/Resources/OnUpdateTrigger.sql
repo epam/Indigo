@@ -23,10 +23,10 @@ AS
 	-- Cursor will be deallocated in the _OnInsertRecordTrigger automatically
 	exec {4}._OnDeleteRecordTrigger {5}, {6}, '[bingotmpcur_upd_{5}_{6}]'
 
-	declare [bingotmpcur_upd_{5}_{6}] cursor GLOBAL FORWARD_ONLY READ_ONLY for select {2}, {3} from inserted
-	open [bingotmpcur_upd_{5}_{6}]
+	declare [bingotmpcur_upd2_{5}_{6}] cursor GLOBAL FORWARD_ONLY READ_ONLY for select {2}, {3} from inserted
+	open [bingotmpcur_upd2_{5}_{6}]
 
 	-- Cursor will be deallocated in the _OnInsertRecordTrigger automatically
-	exec {4}._OnInsertRecordTrigger {5}, {6}, '[bingotmpcur_upd_{5}_{6}]'
+	exec {4}._OnInsertRecordTrigger {5}, {6}, '[bingotmpcur_upd2_{5}_{6}]'
 
 

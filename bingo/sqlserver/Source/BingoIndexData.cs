@@ -36,7 +36,8 @@ namespace indigo
          storage = new BingoStorage(this);
       }
 
-      private static BingoIndexData _extractIndexData (SqlConnection conn, string bingo_schema, BingoIndexID id)
+      private static BingoIndexData _extractIndexData (SqlConnection conn, string bingo_schema, 
+         BingoIndexID id, bool throw_if_not_exists)
       {
          BingoIndexData data = null;
 
@@ -46,7 +47,13 @@ namespace indigo
          {
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
-               reader.Read();
+               if (!reader.Read())
+               {
+                  if (throw_if_not_exists)
+                     throw new Exception("Cannot find Bingo index for table with id=" + id.table_id);
+                  else
+                     return null;
+               }
 
                string id_column = Convert.ToString(reader[0]);
                string data_column = Convert.ToString(reader[1]);
@@ -91,17 +98,7 @@ namespace indigo
          lock (index_data_list_lock)
          {
             BingoIndexID id = new BingoIndexID(conn, table);
-
-            string command_text =
-               String.Format("SELECT obj_id FROM {0} WHERE obj_id = {1} and database_id = {2}",
-               _contextTable(bingo_schema), id.table_id, id.database_id);
-            using (SqlCommand cmd = new SqlCommand(command_text, conn))
-            {
-               object res = cmd.ExecuteScalar();
-
-               if (res != null)
-                  _DropIndexData(conn, bingo_schema, id);
-            }
+            _DropIndexData(conn, bingo_schema, id, false);
 
             BingoIndexData data;
 
@@ -117,7 +114,6 @@ namespace indigo
                reaction ? "reaction" : "molecule");
 
             data.CreateTables(conn);
-            data.CreateTriggers(conn);
             _AddIndexDataToList(spid, data);
 
             BingoLog.logMessage("Bingo index for table {0} has been initialized", id.FullTableName(conn));
@@ -126,25 +122,29 @@ namespace indigo
          }
       }
 
-      public static void DropIndexData (SqlConnection conn, string bingo_schema, string table)
+      public static void DropIndexData (SqlConnection conn, string bingo_schema, string table, bool throw_if_not_exists)
       {
          BingoIndexID id = new BingoIndexID(conn, table);
-         DropIndexData(conn, bingo_schema, id);
+         DropIndexData(conn, bingo_schema, id, throw_if_not_exists);
       }
 
-      public static void DropIndexData (SqlConnection conn, string bingo_schema, BingoIndexID id)
+      public static void DropIndexData (SqlConnection conn, string bingo_schema, BingoIndexID id, bool throw_if_not_exists)
       {
          lock (index_data_list_lock)
          {
-            _DropIndexData(conn, bingo_schema, id);
+            _DropIndexData(conn, bingo_schema, id, throw_if_not_exists);
          }
       }
 
-      private static void _DropIndexData (SqlConnection conn, string bingo_schema, BingoIndexID id)
+      private static void _DropIndexData (SqlConnection conn, string bingo_schema, 
+         BingoIndexID id, bool throw_if_not_exists)
       {
-         BingoIndexData data = _extractIndexData(conn, bingo_schema, id);
-         data.DropTables(conn);
-         data.DropTriggers(conn);
+         BingoIndexData data = _extractIndexData(conn, bingo_schema, id, throw_if_not_exists);
+         if (data != null)
+         {
+            data.DropTables(conn);
+            data.DropTriggers(conn);
+         }
 
          BingoSqlUtils.ExecNonQueryNoThrow(conn, "DELETE FROM {0} WHERE obj_id = '{1}'",
             _contextTable(bingo_schema), id.table_id);
@@ -155,10 +155,11 @@ namespace indigo
             if (refs.index_data.id.Equals(id))
             {
                index_data_list.RemoveAt(i);
-               BingoLog.logMessage("Session for table {0} released", id.FullTableName(conn));
+               BingoLog.logMessage("Sessions for table {0} have been released", id.InformationName(conn));
             }
          }
-         BingoLog.logMessage("Bingo index for table {0} has been dropped", id.FullTableName(conn));
+         if (data != null)
+            BingoLog.logMessage("Bingo index for table {0} has been dropped", id.InformationName(conn));
       }
 
       public static BingoIndexData GetIndexData (SqlConnection conn, string bingo_schema, 
@@ -196,7 +197,7 @@ namespace indigo
             BingoLog.logMessage("Extracting new BingoIndexData for spid={0} table={1}",
                spid, id.FullTableName(conn));
 
-            BingoIndexData data = _extractIndexData(conn, bingo_schema, id);
+            BingoIndexData data = _extractIndexData(conn, bingo_schema, id, true);
             _AddIndexDataToList(spid, data);
 
             return data;
@@ -247,7 +248,7 @@ namespace indigo
                if (ret != null)
                   continue;
             }
-            DropIndexData(conn, bingo_schema, table.table_name);
+            DropIndexData(conn, bingo_schema, table.table_name, false);
          }
       }
 
@@ -297,7 +298,8 @@ namespace indigo
                if (refs.session_ids.Count < 1 && !refs.index_data.keep_cache)
                {
                   index_data_list.RemoveAt(i);
-                  BingoLog.logMessage("Session for table {0} released", refs.index_data.id.InformationName());
+                  BingoLog.logMessage("Session for table {0} has been released", 
+                     refs.index_data.id.InformationName());
                }
             }
          }

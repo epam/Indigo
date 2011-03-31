@@ -98,5 +98,9 @@ namespace indigo
       {
          return String.Format("{0} (db_id={1}, obj_id={2})", name, database_id, table_id);
       }
+      public string InformationName (SqlConnection connection)
+      {
+         return String.Format("{0} (db_id={1}, obj_id={2})", FullTableName(connection), database_id, table_id);
+      }
    }
 }

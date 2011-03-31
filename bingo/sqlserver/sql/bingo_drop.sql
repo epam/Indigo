@@ -8,7 +8,7 @@ go
 drop procedure [$(bingo)].log_events
 go
 
-drop event notification $(bingo)_$(database)_logout_notify on server;
+drop event notification $(bingo)_logout_notify on server;
 go
 
 drop route $(bingo)_notify_route;
@@ -30,9 +30,6 @@ drop table [$(bingo)].CONTEXT;
 go
 
 drop table [$(bingo)].TAUTOMER_RULES
-go
-
-drop table [$(bingo)].REGISTERED_DATABASES
 go
 
 DROP ROLE $(bingo)_operator;

@@ -59,6 +59,35 @@ ADD SIGNATURE TO [$(bingo)]._DropAllIndices BY CERTIFICATE $(bingo)_certificate
 GO
 
 --
+-- _DropIndexByID
+--
+CREATE PROCEDURE [$(bingo)].__DropIndexByID 
+    @table_id int,
+    @database_id int,
+    @bingo_schema nvarchar(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._DropIndexByID
+GO
+ADD SIGNATURE TO [$(bingo)].__DropIndexByID BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE PROCEDURE [$(bingo)]._DropIndexByID 
+    @table_id int,
+    @database_id int
+AS
+BEGIN
+  EXEC [$(bingo)].__DropIndexByID @table_id, @database_id, '$(bingo)'
+END
+GO
+ADD SIGNATURE TO [$(bingo)]._DropIndexByID BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+grant execute on [$(bingo)]._DropIndexByID to $(bingo)_operator
+GO
+
+--
 -- _FlushInAllSessions
 --
 CREATE PROCEDURE [$(bingo)].__FlushInAllSessions 

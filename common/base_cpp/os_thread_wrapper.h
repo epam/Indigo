@@ -74,9 +74,12 @@ public:
    void run (int nthreads);
 
    void terminate ();
+   void markToTerminate ();
 
    void _threadFunc  (void);
 protected:
+
+   void _run (int nthreads);
 
    //  For overloading
    virtual OsCommand*         _allocateCommand () = 0;
