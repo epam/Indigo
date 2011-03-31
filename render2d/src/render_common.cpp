@@ -115,6 +115,7 @@ void AtomDesc::clear ()
    isRGroupAttachmentPoint = false;
    pseudoAtomStringVerbose = false;
    fixed = false;
+   exactChange = false;
    color = CWC_BASE;
    implicit_h = 0;
    hydroPos = HYDRO_POS_RIGHT;

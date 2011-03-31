@@ -136,6 +136,7 @@ struct AtomDesc {
    HYDRO_POS hydroPos;
    bool isRGroupAttachmentPoint;
    bool fixed;
+   bool exactChange;
    bool pseudoAtomStringVerbose;
    Vec2f pos;
    Vec2f boundBoxMin;

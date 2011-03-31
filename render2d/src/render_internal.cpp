@@ -1054,7 +1054,7 @@ bool MoleculeRenderInternal::_hasQueryModifiers (int aid)
       qa.hasConstraint(QueryMolecule::ATOM_TOTAL_H);
    QUERY_MOL_END;
    return hasConstraints ||
-      _ad(aid).fixed;
+      _ad(aid).fixed || _ad(aid).exactChange;
 }
 
 void MoleculeRenderInternal::_initAtomData ()
@@ -1063,6 +1063,9 @@ void MoleculeRenderInternal::_initAtomData ()
    for (int i = 0; i < qmol.fixed_atoms.size(); ++i)
       _ad(i).fixed = true;
    QUERY_MOL_END;
+   for (int i = 0; i < _data.exactChanges.size(); ++i)
+      if (_data.exactChanges[i])
+         _ad(i).exactChange = true;
 
    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
    {
@@ -1160,6 +1163,7 @@ void MoleculeRenderInternal::_initAtomData ()
          (_opt.labelMode == LABEL_MODE_HETERO || vertex.degree() > 1) &&
          !_isSingleHighlighted(i))
       {
+         ad.showLabel = false;
          if (vertex.degree() == 2)
          {
             int k1 = vertex.neiBegin();
@@ -1167,7 +1171,7 @@ void MoleculeRenderInternal::_initAtomData ()
             if (_bd(vertex.neiEdge(k1)).type == _bd(vertex.neiEdge(k2)).type)
             {
                float dot = Vec2f::dot(_getBondEnd(i, k1).dir, _getBondEnd(i, k2).dir);
-               if (dot >= -0.97)
+               if (dot < -0.97)
                   ad.showLabel = true;
             }
          }
@@ -1848,6 +1852,11 @@ void MoleculeRenderInternal::_writeQueryModifier (Output& output, int aid)
 
       if (needDelimiter)
          output.printf(")");
+
+      
+      if (_ad(aid).exactChange) {
+         output.printf(".ext.");
+      }
    }
    QUERY_MOL_END;
 }
@@ -2181,7 +2190,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
             newscript = ((a == LETTER) ? SUB : MAIN);
          } else if (b == SIGN) {
             if (a == LETTER || a == DIGIT)
-		newscript = SUPER;
+               newscript = SUPER;
          } else if (a == SIGN && script == SUPER) {
             newscript = MAIN;
          } else {
