@@ -23,10 +23,11 @@ public class FileOpener
       _file_chooser.addChoosableFileFilter(mon_ff);
    }
 
-   public String openFile()
+   public String openFile( String approve_button_text )
    {
       _file_chooser.setCurrentDirectory(new File(GlobalParams.getInstance().dir_path));
-      int ret_val = _file_chooser.showOpenDialog(JFrame.getOwnerlessWindows()[0]);
+      _file_chooser.setApproveButtonText(approve_button_text);
+      int ret_val = _file_chooser.showDialog(_file_chooser, approve_button_text);
       _file = _file_chooser.getSelectedFile();
 
       if ((_file == null) || (ret_val != JFileChooser.APPROVE_OPTION))

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoObject;
 import com.ggasoftware.indigo.IndigoRenderer;
+import com.ggasoftware.indigo.controls.CommonUtils;
 import com.ggasoftware.indigo.controls.GlobalParams;
 import com.ggasoftware.indigo.controls.IndigoEventListener;
 import com.ggasoftware.indigo.controls.MolFileFilter;
@@ -20,7 +21,6 @@ import java.net.*;
 public class MainFrame extends javax.swing.JFrame
 {
    ArrayList<MonomerPanel> mon_panels;
-   MolViewPanel rct_view;
    int reactants_count;
    LegioData legio;
    Indigo indigo;
@@ -61,14 +61,15 @@ public class MainFrame extends javax.swing.JFrame
          indigo = new Indigo(path + File.separator + "lib");
       indigo_renderer = new IndigoRenderer(indigo);
       mon_panels = new ArrayList<MonomerPanel>();
-      rct_view = new MolViewPanel(indigo, indigo_renderer);
       legio = new LegioData(indigo);
       
       indigo.setOption("filename-encoding", "UTF-8");
       indigo.setOption("render-margins", "5,2");
 
       initComponents();
-      
+
+      rct_view.init(indigo, indigo_renderer);
+
       products_panel.init(indigo, indigo_renderer, legio);
 
       max_products_label.setEnabled(false);
@@ -97,8 +98,8 @@ public class MainFrame extends javax.swing.JFrame
       rct_part = new javax.swing.JPanel();
       reaction_label = new javax.swing.JLabel();
       reaction_button = new javax.swing.JButton();
-      rct_panel = new javax.swing.JPanel();
       reaction_path_label = new javax.swing.JTextField();
+      rct_view = new com.ggasoftware.indigo.controls.MolViewPanel();
       mons_part = new javax.swing.JPanel();
       enumeration_panel = new javax.swing.JPanel();
       is_multistep_reactions_check = new java.awt.Checkbox();
@@ -133,16 +134,14 @@ public class MainFrame extends javax.swing.JFrame
          }
       });
 
-      rct_panel.setBackground(new java.awt.Color(255, 255, 255));
-
-      javax.swing.GroupLayout rct_panelLayout = new javax.swing.GroupLayout(rct_panel);
-      rct_panel.setLayout(rct_panelLayout);
-      rct_panelLayout.setHorizontalGroup(
-         rct_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 922, Short.MAX_VALUE)
+      javax.swing.GroupLayout rct_viewLayout = new javax.swing.GroupLayout(rct_view);
+      rct_view.setLayout(rct_viewLayout);
+      rct_viewLayout.setHorizontalGroup(
+         rct_viewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGap(0, 930, Short.MAX_VALUE)
       );
-      rct_panelLayout.setVerticalGroup(
-         rct_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      rct_viewLayout.setVerticalGroup(
+         rct_viewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGap(0, 260, Short.MAX_VALUE)
       );
 
@@ -156,20 +155,19 @@ public class MainFrame extends javax.swing.JFrame
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(reaction_button)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(reaction_path_label, javax.swing.GroupLayout.PREFERRED_SIZE, 773, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(18, Short.MAX_VALUE))
-         .addComponent(rct_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(reaction_path_label, javax.swing.GroupLayout.DEFAULT_SIZE, 777, Short.MAX_VALUE)
+            .addContainerGap(22, Short.MAX_VALUE))
+         .addComponent(rct_view, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
       );
       rct_partLayout.setVerticalGroup(
          rct_partLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(rct_partLayout.createSequentialGroup()
-            .addGroup(rct_partLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-               .addComponent(reaction_path_label, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addGroup(rct_partLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                  .addComponent(reaction_label)
-                  .addComponent(reaction_button, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(rct_partLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(reaction_label)
+               .addComponent(reaction_button, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+               .addComponent(reaction_path_label, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(rct_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(rct_view, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       );
 
       split_panel.setTopComponent(rct_part);
@@ -178,11 +176,11 @@ public class MainFrame extends javax.swing.JFrame
       mons_part.setLayout(mons_partLayout);
       mons_partLayout.setHorizontalGroup(
          mons_partLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 932, Short.MAX_VALUE)
+         .addGap(0, 940, Short.MAX_VALUE)
       );
       mons_partLayout.setVerticalGroup(
          mons_partLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 291, Short.MAX_VALUE)
+         .addGap(0, 297, Short.MAX_VALUE)
       );
 
       split_panel.setRightComponent(mons_part);
@@ -238,34 +236,34 @@ public class MainFrame extends javax.swing.JFrame
          .addGroup(enumeration_panelLayout.createSequentialGroup()
             .addContainerGap()
             .addComponent(max_steps_label)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(max_steps_text_field, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(max_steps_text_field, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(max_products_label)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(max_products_text_field, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+            .addGap(21, 21, 21)
             .addComponent(is_multistep_reactions_check, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(is_one_tube_check, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(is_self_react_check, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(21, 21, 21)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
             .addComponent(react_button, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
       enumeration_panelLayout.setVerticalGroup(
          enumeration_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(enumeration_panelLayout.createSequentialGroup()
             .addGroup(enumeration_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addComponent(react_button, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, enumeration_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                  .addComponent(max_steps_text_field, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(max_steps_label, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(max_products_label, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(max_products_text_field, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE))
-               .addComponent(is_self_react_check, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-               .addComponent(is_one_tube_check, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-               .addComponent(is_multistep_reactions_check, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE))
+               .addComponent(react_button, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+               .addGroup(enumeration_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                  .addComponent(max_steps_label, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                  .addComponent(max_steps_text_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(max_products_label, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                  .addComponent(max_products_text_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+               .addComponent(is_self_react_check, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+               .addComponent(is_one_tube_check, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+               .addComponent(is_multistep_reactions_check, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))
             .addContainerGap())
       );
 
@@ -273,15 +271,17 @@ public class MainFrame extends javax.swing.JFrame
       in_tab.setLayout(in_tabLayout);
       in_tabLayout.setHorizontalGroup(
          in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(split_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 934, Short.MAX_VALUE)
-         .addComponent(enumeration_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 934, Short.MAX_VALUE)
+         .addComponent(split_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 942, Short.MAX_VALUE)
+         .addGroup(in_tabLayout.createSequentialGroup()
+            .addComponent(enumeration_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 932, Short.MAX_VALUE)
+            .addGap(10, 10, 10))
       );
       in_tabLayout.setVerticalGroup(
          in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, in_tabLayout.createSequentialGroup()
-            .addComponent(split_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 597, Short.MAX_VALUE)
+            .addComponent(split_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(enumeration_panel, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(enumeration_panel, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
 
       tabbed_panel.addTab("Reaction", in_tab);
@@ -296,7 +296,7 @@ public class MainFrame extends javax.swing.JFrame
       );
       out_tabLayout.setVerticalGroup(
          out_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(products_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 635, Short.MAX_VALUE)
+         .addComponent(products_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
       );
 
       tabbed_panel.addTab("Products", out_tab);
@@ -335,7 +335,7 @@ public class MainFrame extends javax.swing.JFrame
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(tabbed_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 673, Short.MAX_VALUE)
+         .addComponent(tabbed_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
       );
 
       pack();
@@ -367,17 +367,7 @@ public class MainFrame extends javax.swing.JFrame
           msg_box.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
        }
 
-       rct_view.setImageSize(rct_panel.getSize().width, rct_panel.getSize().height);
        rct_view.setMol(file_path);
-
-       GroupLayout gl = new GroupLayout(rct_panel);
-       rct_panel.setLayout(gl);
-
-       gl.setAutoCreateGaps(true);
-       gl.setHorizontalGroup(gl.createSequentialGroup().
-               addComponent(rct_view, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-       gl.setVerticalGroup(gl.createSequentialGroup().
-               addComponent(rct_view, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
 
        int old_reactants_count = reactants_count;
        reactants_count = legio.getReactantsCount();
@@ -505,12 +495,7 @@ public class MainFrame extends javax.swing.JFrame
     }//GEN-LAST:event_exit_menu_itemActionPerformed
 
     private void about_menu_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_about_menu_itemActionPerformed
-       JOptionPane msg_box = new JOptionPane();
-       String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC",
-               (new Indigo()).version());
-       msg_box.showConfirmDialog(this, msg, "About", JOptionPane.DEFAULT_OPTION,
-               JOptionPane.INFORMATION_MESSAGE,
-               new ImageIcon("images\\logo_small.png"));
+       CommonUtils.showAboutDialog(this);
     }//GEN-LAST:event_about_menu_itemActionPerformed
 
    class SaveProductsEventListener implements ActionListener
@@ -618,8 +603,8 @@ public class MainFrame extends javax.swing.JFrame
    private javax.swing.JPanel mons_part;
    private javax.swing.JPanel out_tab;
    private com.ggasoftware.indigo.legio.ProductsPanel products_panel;
-   private javax.swing.JPanel rct_panel;
    private javax.swing.JPanel rct_part;
+   private com.ggasoftware.indigo.controls.MolViewPanel rct_view;
    private javax.swing.JButton react_button;
    private javax.swing.JButton reaction_button;
    private javax.swing.JLabel reaction_label;

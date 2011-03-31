@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author achurinov
  */
-public class CommonUtils {
+public class Utils {
    public static synchronized String[] makeIdxString(ArrayList<Integer> indexes) {
       String[] idx_strings = new String[indexes.size()];
 

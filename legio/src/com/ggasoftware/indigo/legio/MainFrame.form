@@ -64,7 +64,7 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="tabbed_panel" alignment="0" pref="673" max="32767" attributes="0"/>
+          <Component id="tabbed_panel" alignment="0" pref="676" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -85,16 +85,19 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="split_panel" alignment="0" pref="934" max="32767" attributes="0"/>
-                  <Component id="enumeration_panel" alignment="0" pref="934" max="32767" attributes="0"/>
+                  <Component id="split_panel" alignment="0" pref="942" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="enumeration_panel" pref="932" max="32767" attributes="0"/>
+                      <EmptySpace min="10" pref="10" max="10" attributes="0"/>
+                  </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="split_panel" pref="597" max="32767" attributes="0"/>
+                      <Component id="split_panel" pref="603" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="enumeration_panel" min="-2" pref="53" max="-2" attributes="0"/>
+                      <Component id="enumeration_panel" min="-2" pref="39" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -131,24 +134,22 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="reaction_button" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="reaction_path_label" min="-2" pref="773" max="-2" attributes="0"/>
-                              <EmptySpace pref="18" max="32767" attributes="0"/>
+                              <Component id="reaction_path_label" pref="777" max="32767" attributes="0"/>
+                              <EmptySpace pref="22" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="rct_panel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="rct_view" alignment="0" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="reaction_path_label" min="-2" pref="23" max="-2" attributes="1"/>
-                                  <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                                      <Component id="reaction_label" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="reaction_button" alignment="3" max="32767" attributes="1"/>
-                                  </Group>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="reaction_label" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="reaction_button" alignment="3" max="32767" attributes="1"/>
+                                  <Component id="reaction_path_label" alignment="3" pref="23" max="32767" attributes="1"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="rct_panel" max="32767" attributes="0"/>
+                              <Component id="rct_view" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -167,17 +168,14 @@
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reaction_buttonActionPerformed"/>
                       </Events>
                     </Component>
-                    <Container class="javax.swing.JPanel" name="rct_panel">
-                      <Properties>
-                        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-                        </Property>
-                      </Properties>
+                    <Component class="javax.swing.JTextField" name="reaction_path_label">
+                    </Component>
+                    <Container class="com.ggasoftware.indigo.controls.MolViewPanel" name="rct_view">
 
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <EmptySpace min="0" pref="922" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="930" max="32767" attributes="0"/>
                           </Group>
                         </DimensionLayout>
                         <DimensionLayout dim="1">
@@ -187,8 +185,6 @@
                         </DimensionLayout>
                       </Layout>
                     </Container>
-                    <Component class="javax.swing.JTextField" name="reaction_path_label">
-                    </Component>
                   </SubComponents>
                 </Container>
                 <Container class="javax.swing.JPanel" name="mons_part">
@@ -201,12 +197,12 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="932" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="940" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="291" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="297" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -229,21 +225,21 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="max_steps_label" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="max_steps_text_field" min="-2" pref="69" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="max_steps_text_field" min="-2" pref="51" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="max_products_label" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="max_products_text_field" min="-2" pref="69" max="-2" attributes="0"/>
-                          <EmptySpace pref="67" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
                           <Component id="is_multistep_reactions_check" min="-2" pref="123" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="is_one_tube_check" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="is_self_react_check" min="-2" pref="93" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                          <EmptySpace pref="95" max="32767" attributes="0"/>
                           <Component id="react_button" min="-2" pref="132" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -252,16 +248,16 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="react_button" alignment="0" pref="32" max="32767" attributes="1"/>
-                              <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                                  <Component id="max_steps_text_field" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
-                                  <Component id="max_steps_label" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
-                                  <Component id="max_products_label" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
-                                  <Component id="max_products_text_field" alignment="3" pref="32" max="32767" attributes="0"/>
+                              <Component id="react_button" alignment="0" pref="30" max="32767" attributes="1"/>
+                              <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                                  <Component id="max_steps_label" alignment="3" pref="30" max="32767" attributes="1"/>
+                                  <Component id="max_steps_text_field" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="max_products_label" alignment="3" pref="23" max="32767" attributes="1"/>
+                                  <Component id="max_products_text_field" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="is_self_react_check" alignment="0" pref="32" max="32767" attributes="1"/>
-                              <Component id="is_one_tube_check" alignment="0" pref="32" max="32767" attributes="1"/>
-                              <Component id="is_multistep_reactions_check" alignment="0" pref="32" max="32767" attributes="1"/>
+                              <Component id="is_self_react_check" alignment="0" pref="30" max="32767" attributes="1"/>
+                              <Component id="is_one_tube_check" alignment="0" pref="30" max="32767" attributes="1"/>
+                              <Component id="is_multistep_reactions_check" alignment="0" pref="30" max="32767" attributes="1"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -352,7 +348,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="products_panel" alignment="0" pref="635" max="32767" attributes="0"/>
+                  <Component id="products_panel" alignment="0" pref="638" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>

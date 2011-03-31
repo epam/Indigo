@@ -25,7 +25,7 @@ public class MolSaver {
    public String saveMols(ArrayList<? extends RenderableObject> mol_datas) {
       IndigoObject output_file = null;
       try {
-         String out_file_path = _fopener.openFile();
+         String out_file_path = _fopener.openFile("Save");
          if (out_file_path == null)
             return null;
          MolFileFilter cur_filter = _fopener.getFileFilter();
@@ -34,6 +34,18 @@ public class MolSaver {
             out_file_path += "." + choosed_extension;
 
          output_file = _indigo.writeFile(out_file_path);
+
+         if (choosed_extension.compareTo("mol") == 0)
+         {
+            mol_datas.get(0).getObject().saveMolfile(out_file_path);
+            return out_file_path;
+         }
+
+         if (choosed_extension.compareTo("rxn") == 0)
+         {
+            mol_datas.get(0).getObject().saveRxnfile(out_file_path);
+            return out_file_path;
+         }
 
          IndigoObject file_saver = _indigo.createSaver(output_file, choosed_extension);
 
@@ -46,9 +58,12 @@ public class MolSaver {
                m.layout();
             m.markEitherCisTrans();
 
-
             file_saver.append(m);
          }
+
+         if (choosed_extension.compareTo("cml") == 0)
+            output_file.cmlFooter();
+
 
          return _fopener.getFilePath();
       } catch (Exception ex) {

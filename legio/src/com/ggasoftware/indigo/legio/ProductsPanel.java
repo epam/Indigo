@@ -58,7 +58,7 @@ public class ProductsPanel extends BeanBase {
 
        products_table.getColumn(model.getColumnName(1)).setPreferredWidth(getSize().width - 30);
        products_table.getColumn("Id").setPreferredWidth(30);
-       products_table.addMouseListener(new MolClicker(_indigo, _indigo_renderer));
+       products_table.addMouseListener(new MolClicker(_indigo, _indigo_renderer, products_table, true));
     }
 
     /** This method is called from within the constructor to

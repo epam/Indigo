@@ -13,6 +13,6 @@ public class RenderableIndigoObject implements RenderableObject {
    }
 
    public IndigoObject getObject() {
-      return _object;
+      return _object.clone();
    }
 }

@@ -50,7 +50,7 @@ public class MolTableModel extends DefaultTableModel
          for (int j = 0; j < _idx_column_count; j++)
          {
             ArrayList< ArrayList<Integer> > indexes = (j == 0 ? indexes1 : indexes2);
-            String[] idx_strings = (indexes != null ? CommonUtils.makeIdxString(indexes.get(i)) :
+            String[] idx_strings = (indexes != null ? Utils.makeIdxString(indexes.get(i)) :
                                                new String[] {"" + i});
             objects.add(idx_strings);
          }

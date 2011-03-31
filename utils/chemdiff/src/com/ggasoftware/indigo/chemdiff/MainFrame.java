@@ -1,6 +1,7 @@
 package com.ggasoftware.indigo.chemdiff;
 
 import com.ggasoftware.indigo.*;
+import com.ggasoftware.indigo.controls.CommonUtils;
 import com.ggasoftware.indigo.controls.IndigoEventListener;
 import com.ggasoftware.indigo.controls.MolSaver;
 import java.io.File;
@@ -365,12 +366,7 @@ public class MainFrame extends javax.swing.JFrame
     }//GEN-LAST:event_exit_miActionPerformed
 
     private void about_miActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_about_miActionPerformed
-       JOptionPane msg_box = new JOptionPane();
-       String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC",
-               (new Indigo()).version());
-       msg_box.showConfirmDialog(this, msg, "About", JOptionPane.DEFAULT_OPTION,
-               JOptionPane.INFORMATION_MESSAGE, 
-               new ImageIcon("images\\logo_small.png"));
+       CommonUtils.showAboutDialog(this);
     }//GEN-LAST:event_about_miActionPerformed
 
     private void compare_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compare_buttonActionPerformed

@@ -10,10 +10,9 @@ import java.io.ByteArrayInputStream;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 
-public class MolViewPanel extends JPanel
+public class MolViewPanel extends BeanBase
 {
    private BufferedImage image;
    private ImageIO image_io;
@@ -24,7 +23,11 @@ public class MolViewPanel extends JPanel
    int image_w;
    int image_h;
 
-   public MolViewPanel( Indigo cur_indigo, IndigoRenderer cur_indigo_renderer )
+   public MolViewPanel()
+   {
+   }
+
+   public void init( Indigo cur_indigo, IndigoRenderer cur_indigo_renderer )
    {
       indigo = cur_indigo;
       indigo_renderer = cur_indigo_renderer;
@@ -33,14 +36,14 @@ public class MolViewPanel extends JPanel
       indigo.setOption("render-background-color", "1,1,1");
       indigo.setOption("render-coloring", "1");
       setBackground(new java.awt.Color(255, 255, 255));
+      setImageSize(getWidth(), getHeight());
    }
 
    public void renderImage()
    {
       try
       {
-         String size_str = "" + image_w + ',' + image_h;
-         indigo.setOption("render-image-size", size_str);
+         indigo.setOption("render-image-size", image_w, image_h);
          byte[] bytes;
 
          try
@@ -57,6 +60,8 @@ public class MolViewPanel extends JPanel
          bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
 
          image = image_io.read(new MemoryCacheImageInputStream(bytes_is));
+
+         updateUI();
       } catch (Exception ex)
       {
          JOptionPane msg_box = new JOptionPane();
@@ -113,6 +118,7 @@ public class MolViewPanel extends JPanel
       }
    }
 
+   @Override
    public void paintComponent(Graphics g)
    {
       g.setColor(Color.white);

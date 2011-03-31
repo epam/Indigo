@@ -17,7 +17,7 @@ import com.ggasoftware.indigo.IndigoRenderer;
 import com.ggasoftware.indigo.controls.BeanBase;
 import com.ggasoftware.indigo.controls.FileOpener;
 import com.ggasoftware.indigo.controls.IndigoEventSource;
-import com.ggasoftware.indigo.controls.LoadUtils;
+import com.ggasoftware.indigo.controls.CommonUtils;
 import com.ggasoftware.indigo.controls.MolClicker;
 import com.ggasoftware.indigo.controls.MolRenderer;
 import com.ggasoftware.indigo.controls.MolSaver;
@@ -67,12 +67,12 @@ public class MonomerPanel extends BeanBase {
        monomers_table.getColumn(model.getColumnName(1)).setCellRenderer(new MolRenderer(indigo, _indigo_renderer,
                getPreferredSize().width - 50, 160, false));
 
-       setName("Monomers group #" + new_reactant_idx);
+       setName("Monomers group #" + (new_reactant_idx + 1));
        setBorder(javax.swing.BorderFactory.createTitledBorder(_name));
 
        monomers_table.getColumn(model.getColumnName(1)).setPreferredWidth(getPreferredSize().width - 30);
        monomers_table.getColumn("Id").setPreferredWidth(30);
-       monomers_table.addMouseListener(new MolClicker(_indigo, _indigo_renderer));
+       monomers_table.addMouseListener(new MolClicker(_indigo, _indigo_renderer, monomers_table, false));
     }
 
     /** This method is called from within the constructor to
@@ -148,10 +148,10 @@ public class MonomerPanel extends BeanBase {
     {
        ArrayList<IndigoObject> monomers_portion = new ArrayList<IndigoObject>();
        
-       if (_fopener.openFile() == null)
-          return monomers_portion;
+       if (_fopener.openFile("Open") == null)
+          return null;
 
-       IndigoObject iterator = LoadUtils.getIterator(_indigo, _fopener.getFilePath());
+       IndigoObject iterator = CommonUtils.getIterator(_indigo, _fopener.getFilePath());
        int index;
        for (IndigoObject monomer : iterator)
           monomers_portion.add(monomer.clone());
@@ -162,7 +162,9 @@ public class MonomerPanel extends BeanBase {
     private void add_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_add_buttonActionPerformed
 
       try {
-         addMols(_loadMonomers());
+         ArrayList<IndigoObject> monomers = _loadMonomers();
+         if (monomers != null)
+            addMols(monomers);
       } catch (Exception ex) {
          JOptionPane.showMessageDialog(JFrame.getOwnerlessWindows()[0],
              ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -193,6 +195,7 @@ public class MonomerPanel extends BeanBase {
     {
         MolTableModel model = (MolTableModel)monomers_table.getModel();
         model.clear();
+        setBorder(javax.swing.BorderFactory.createTitledBorder(_name));
         clear_event.fireEvent(0);
     }
 

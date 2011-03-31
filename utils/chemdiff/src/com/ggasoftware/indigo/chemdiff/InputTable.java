@@ -66,7 +66,7 @@ public class InputTable extends BeanBase implements java.io.Serializable, MolTab
       
       j_table.getColumn("Molecules").setPreferredWidth(cell_w);
       j_table.getColumn("Id").setPreferredWidth(30);
-      j_table.addMouseListener(new MolClicker(cur_indigo, cur_indigo_renderer));
+      j_table.addMouseListener(new MolClicker(cur_indigo, cur_indigo_renderer, j_table, false));
    }
 
     /** This method is called from within the constructor to
@@ -144,7 +144,7 @@ public class InputTable extends BeanBase implements java.io.Serializable, MolTab
        if (sdf_loader != null)
           sdf_loader.interrupt();
 
-       if (fopener.openFile() == null)
+       if (fopener.openFile("Open") == null)
           return;
 
        load_progress_bar.setMinimum(0);

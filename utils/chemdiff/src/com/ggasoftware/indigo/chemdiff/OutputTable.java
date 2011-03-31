@@ -71,7 +71,7 @@ public class OutputTable extends BeanBase implements java.io.Serializable, MolTa
       j_table.getColumn("Molecules").setPreferredWidth(cell_w);
       for (int i = 0; i < idx_column_count; i++)
          j_table.getColumn(model.getIdColumnName(i)).setPreferredWidth(30);
-      j_table.addMouseListener(new MolClicker(indigo, indigo_renderer));
+      j_table.addMouseListener(new MolClicker(indigo, indigo_renderer, j_table, false));
    }
 
     /** This method is called from within the constructor to

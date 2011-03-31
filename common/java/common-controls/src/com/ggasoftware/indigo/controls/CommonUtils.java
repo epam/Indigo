@@ -7,8 +7,8 @@ package com.ggasoftware.indigo.controls;
 
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoObject;
-import java.io.File;
-import java.util.ArrayList;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
  *
  * @author achurinov
  */
-public class LoadUtils
+public class CommonUtils
 {
    public static IndigoObject getIterator( Indigo indigo, String path) throws Exception
    {
@@ -37,5 +37,14 @@ public class LoadUtils
       }
 
       return iterator;
+   }
+   
+   public static void showAboutDialog( JFrame parent )
+   {
+       String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC",
+               (new Indigo()).version());
+       JOptionPane.showConfirmDialog(parent, msg, "About", JOptionPane.DEFAULT_OPTION,
+               JOptionPane.INFORMATION_MESSAGE,
+               new ImageIcon("images\\logo_small.png"));
    }
 }

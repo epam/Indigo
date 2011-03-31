@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import com.ggasoftware.indigo.controls.CommonUtils;
 
 public class SdfLoader{
 
@@ -52,7 +53,7 @@ public class SdfLoader{
          try {
             int file_pos = 0;
 
-            _iterator_object = LoadUtils.getIterator(_indigo, _file.getPath());
+            _iterator_object = CommonUtils.getIterator(_indigo, _file.getPath());
 
             for (IndigoObject iterr : _iterator_object)
             {
