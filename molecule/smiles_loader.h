@@ -87,6 +87,10 @@ protected:
       bool brackets;
 
       bool star_atom;
+
+      bool starts_polymer;
+      bool ends_polymer;
+      int  repetitions;
    };
 
    struct _BondDesc
@@ -134,6 +138,8 @@ protected:
 
    void _readAtom (Array<char> &atom_str, bool first_in_brackets,
                    _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
+
+   void _parseCurly (_AtomDesc &atom, Array<char> &curly);
 
    void _readBond (Array<char> &bond_str, _BondDesc &bond,
                    AutoPtr<QueryMolecule::Bond> &qbond);

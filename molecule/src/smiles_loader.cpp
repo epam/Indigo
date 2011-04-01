@@ -770,6 +770,27 @@ void SmilesLoader::_loadMolecule ()
          _qmol->components.expandFill(_atoms.size(), 0);
          _qmol->components[_atoms.size() - 1] = _current_compno;
       }
+
+      next = _scanner.lookNext();
+      if (next == '{')
+      {
+         QS_DEF(Array<char>, curly);
+         curly.clear();
+         while (1)
+         {
+            _scanner.skip(1);
+            int next = _scanner.lookNext();
+            if (next == -1)
+               throw Error("unclosed curly brace");
+            if (next == '}')
+            {
+               _scanner.skip(1);
+               break;
+            }
+            curly.push((char)next);
+         }
+         _parseCurly(atom, curly);
+      }
    }
 
    int i;
@@ -1671,6 +1692,27 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
    }
 }
 
+void SmilesLoader::_parseCurly (_AtomDesc &atom, Array<char> &curly)
+{
+   if (curly.size() == 1 && curly[0] == '-')
+      atom.starts_polymer = true;
+   else if (curly.size() >= 2 && curly[0] == '+')
+   {
+      if (curly[1] == 'r')
+         throw Error("ring repeating units not supported");
+      if (curly[1] == 'n')
+      {
+         atom.ends_polymer = true;
+         BufferScanner scanner(curly.ptr() + 2, curly.size() - 2);
+         if (scanner.lookNext() == '=')
+         {
+            scanner.skip(1);
+            atom.repetitions = scanner.readInt();
+         }
+      }
+   }
+}
+
 SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :
                neighbors(neipool)
 {
@@ -1683,6 +1725,9 @@ SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :
    aam = 0;
    brackets = false;
    star_atom = false;
+   starts_polymer = false;
+   ends_polymer = false;
+   repetitions = 0;
 
    parent = -1;
 }
