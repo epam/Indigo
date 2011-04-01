@@ -32,6 +32,8 @@
       <itemPath>src/indigo_properties.h</itemPath>
       <itemPath>src/indigo_reaction.cpp</itemPath>
       <itemPath>src/indigo_reaction.h</itemPath>
+      <itemPath>src/indigo_savers.cpp</itemPath>
+      <itemPath>src/indigo_savers.h</itemPath>
       <itemPath>src/indigo_scaffold.cpp</itemPath>
       <itemPath>src/indigo_scaffold.h</itemPath>
       <itemPath>src/indigo_stereo.cpp</itemPath>

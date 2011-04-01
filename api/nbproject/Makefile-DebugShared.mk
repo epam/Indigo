@@ -53,6 +53,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/indigo_misc.o \
 	${OBJECTDIR}/src/indigo_layout.o \
 	${OBJECTDIR}/src/indigo_stereo.o \
+	${OBJECTDIR}/src/indigo_savers.o \
 	${OBJECTDIR}/src/indigo_deconvolution.o
 
 
@@ -189,6 +190,11 @@ ${OBJECTDIR}/src/indigo_stereo.o: src/indigo_stereo.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_stereo.o src/indigo_stereo.cpp
+
+${OBJECTDIR}/src/indigo_savers.o: src/indigo_savers.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I. -Isrc -I.. -I../common -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/indigo_savers.o src/indigo_savers.cpp
 
 ${OBJECTDIR}/src/indigo_deconvolution.o: src/indigo_deconvolution.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
