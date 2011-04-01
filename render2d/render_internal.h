@@ -55,6 +55,7 @@ private:
    void _determineDoubleBondShift();
    void _determineStereoGroupsMode();
    static const char* _getStereoGroupText (int type);
+   bool _ringHasSelfIntersections(const Ring& ring);
    void _findRings();
    void _prepareLabels();
    void _rotateHalfCenteredBonds();

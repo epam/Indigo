@@ -816,6 +816,26 @@ void MoleculeRenderInternal::_prepareSGroups()
    }
 }
 
+bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring) {
+   for (int j = 0; j < ring.bondEnds.size(); ++j) {
+      for (int k = j + 2; k < __min(ring.bondEnds.size(), ring.bondEnds.size() + j - 1); ++k)
+      {
+         const BondEnd& be1 = _be(ring.bondEnds[j]);
+         const BondEnd& be2 = _be(ring.bondEnds[k]);
+         const BondDescr& b1 = _bd(be1.bid);
+         const BondDescr& b2 = _bd(be2.bid);
+         const Vec2f& a00 = _ad(b1.beg).pos;
+         const Vec2f& a01 = _ad(b1.end).pos;
+         const Vec2f& a10 = _ad(b2.beg).pos;
+         const Vec2f& a11 = _ad(b2.end).pos;
+         Vec2f p;
+         if (Vec2f::intersection(a00, a01, a10, a11, p))
+            return true;
+      }
+   }
+   return false;
+}
+
 void MoleculeRenderInternal::_findRings()
 {
    for (int i = 0; i < _data.bondends.size(); ++i)
@@ -837,7 +857,13 @@ void MoleculeRenderInternal::_findRings()
       }
       if (i != j)
       {
-         ring.bondEnds.pop();
+         _data.rings.pop();
+         continue;
+      }
+
+      bool selfIntersection = _ringHasSelfIntersections(ring);
+      if (selfIntersection) {
+         _data.rings.pop();
          continue;
       }
 
