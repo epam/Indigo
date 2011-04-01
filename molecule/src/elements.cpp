@@ -398,6 +398,28 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
             valence = 3;
             hyd = 3 - rad - conn;
          }
+         else if (charge == -1 && elem == ELEM_P)
+         {
+            if (rad + conn <= 2) // phosphanide
+            {
+               valence = 2;
+               hyd = 2 - rad - conn;
+            }
+            else if (rad + conn == 3) // no known examples with a hydrogen
+               hyd = -1;
+            else if (rad + conn == 4)
+            {
+               valence = 4;
+               hyd = 0;
+            }
+            else if (rad + conn <= 6)
+            {
+               // w/ hydrogen: CID 3084356, CID 2784547
+               // w/o hydrogen: hexachlorophosphate
+               valence = 6;
+               hyd = 6 - rad - conn;
+            }
+         }
          else
          {
             if (elem == ELEM_N || rad + conn + abs(charge) <= 3)
