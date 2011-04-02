@@ -62,9 +62,16 @@ protected:
 
    enum
    {
-      _ANY_BOND = -2
+      _ANY_BOND = -2,
    };
 
+
+   enum
+   {
+      _POLYMER_START = 1,
+      _POLYMER_END = 2
+   };
+   
    class DLLEXPORT _AtomDesc
    {
    public:
@@ -90,7 +97,7 @@ protected:
 
       bool starts_polymer;
       bool ends_polymer;
-      int  repetitions;
+      int  polymer_index;
    };
 
    struct _BondDesc
@@ -139,7 +146,7 @@ protected:
    void _readAtom (Array<char> &atom_str, bool first_in_brackets,
                    _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
 
-   void _parseCurly (_AtomDesc &atom, Array<char> &curly);
+   int _parseCurly (Array<char> &curly, int &repetitions);
 
    void _readBond (Array<char> &bond_str, _BondDesc &bond,
                    AutoPtr<QueryMolecule::Bond> &qbond);

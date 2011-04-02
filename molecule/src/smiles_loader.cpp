@@ -22,6 +22,7 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/elements.h"
 #include "graph/cycle_basis.h"
+#include "base_cpp/auto_ptr.h"
 
 using namespace indigo;
 
@@ -403,6 +404,8 @@ void SmilesLoader::_loadMolecule ()
    atom_stack.clear();
 
    bool first_atom = true;
+   QS_DEF(Array<int>, polymer_repetitions);
+   bool inside_polymer = false;
 
    while (!_scanner.isEOF())
    {
@@ -529,6 +532,12 @@ void SmilesLoader::_loadMolecule ()
             if (atom_stack.size() < 1)
                throw Error("probably misplaced '('");
             atom_stack.push(atom_stack.top());
+            if (_atoms[atom_stack.top()].ends_polymer)
+            {
+               if (inside_polymer)
+                  throw Error("internal: inside_polymer unexpected");
+               inside_polymer = true;
+            }
          }
 
          _balance++;
@@ -544,10 +553,15 @@ void SmilesLoader::_loadMolecule ()
 
          _balance--;
 
-         //if (smarts_mode && _balance == 0)
-         //   ;
-         //else
-            atom_stack.pop();
+         atom_stack.pop();
+
+         if (atom_stack.size() > 0 && _atoms[atom_stack.top()].ends_polymer)
+         {
+            if (!inside_polymer)
+               throw Error("internal: !inside_polymer unexpected");
+            inside_polymer = false;
+         }
+
          continue;
       }
 
@@ -771,8 +785,7 @@ void SmilesLoader::_loadMolecule ()
          _qmol->components[_atoms.size() - 1] = _current_compno;
       }
 
-      next = _scanner.lookNext();
-      if (next == '{')
+      while (_scanner.lookNext() == '{')
       {
          QS_DEF(Array<char>, curly);
          curly.clear();
@@ -789,8 +802,28 @@ void SmilesLoader::_loadMolecule ()
             }
             curly.push((char)next);
          }
-         _parseCurly(atom, curly);
+         int repetitions;
+         int poly = _parseCurly(curly, repetitions);
+         if (poly == _POLYMER_START)
+         {
+            if (inside_polymer)
+               throw Error("nested polymers not allowed");
+            inside_polymer = true;
+            atom.starts_polymer = true;
+            polymer_repetitions.push(0); // can change it later
+         }
+         else if (poly == _POLYMER_END)
+         {
+            if (!inside_polymer)
+               throw Error("misplaced polymer ending");
+            inside_polymer = false;
+            polymer_repetitions.top() = repetitions;
+            atom.polymer_index = polymer_repetitions.size() - 1; 
+            atom.ends_polymer = true;
+         }
       }
+      if (inside_polymer)
+         atom.polymer_index = polymer_repetitions.size() - 1;
    }
 
    int i;
@@ -1000,6 +1033,165 @@ void SmilesLoader::_loadMolecule ()
       for (i = 0; i < _atoms.size(); i++)
          reaction_atom_mapping->at(i) = _atoms[i].aam;
    }
+
+   // handle the polymers (part of the CurlySMILES specification)
+   if (inside_polymer)
+      throw Error("polymer not closed");
+
+   for (i = 0; i < polymer_repetitions.size() ; i++)
+   {
+      int j, start = -1, end = -1;
+      int start_bond = -1, end_bond = -1;
+      BaseMolecule::SGroup *sgroup;
+
+      // no repetitions counter => polymer
+      if (polymer_repetitions[i] == 0)
+      {
+         BaseMolecule::RepeatingUnit &ru = _bmol->repeating_units[_bmol->repeating_units.add()];
+         ru.connectivity = BaseMolecule::RepeatingUnit::HEAD_TO_TAIL;
+         sgroup = &ru;
+      }
+      // repetitions counter present => multiple group
+      else
+      {
+         BaseMolecule::MultipleGroup &mg = _bmol->multiple_groups[_bmol->multiple_groups.add()];
+         mg.multiplier = polymer_repetitions[i];
+         sgroup = &mg;
+      }
+      for (j = 0; j < _atoms.size(); j++)
+      {
+         if (_atoms[j].polymer_index != i)
+            continue;
+         sgroup->atoms.push(j);
+         if (polymer_repetitions[i] > 0)
+            sgroup->parent_atoms.push(j);
+         if (_atoms[j].starts_polymer)
+            start = j;
+         if (_atoms[j].ends_polymer)
+            end = j;
+      }
+      if (start == -1)
+         throw Error("internal: polymer start not found");
+      if (end == -1)
+         throw Error("internal: polymer end not found");
+      for (j = 0; j < _bonds.size(); j++)
+      {
+         const Edge &edge = _bmol->getEdge(j);
+         
+         if (_atoms[edge.beg].polymer_index != i &&
+             _atoms[edge.end].polymer_index != i)
+            continue;
+         if (_atoms[edge.beg].polymer_index == i &&
+             _atoms[edge.end].polymer_index == i)
+            sgroup->bonds.push(j);
+         else
+         {
+            // bond going out of the sgroup
+            if (edge.beg == start || edge.end == start)
+               start_bond = j;
+            else if (edge.beg == end || edge.end == end)
+               end_bond = j;
+            else
+               throw Error("internal: unknown bond going from sgroup");
+         }
+      }
+
+      if (end_bond == -1 && start_bond != -1)
+      {
+         // swap them to make things below easier
+         __swap(start, end, j);
+         __swap(start_bond, end_bond, j);
+      }
+
+      Vec2f *p = sgroup->brackets.push();
+      p[0].set(0, 0);
+      p[1].set(0, 0);
+      p = sgroup->brackets.push();
+      p[0].set(0, 0);
+      p[1].set(0, 0);
+
+      if (polymer_repetitions[i] > 1)
+      {
+         QS_DEF(Array<int>, mapping);
+         AutoPtr<BaseMolecule> rep(_bmol->neu());
+
+         rep->makeSubmolecule(*_bmol, sgroup->atoms, &mapping, 0);
+         rep->repeating_units.clear();
+         rep->multiple_groups.clear();
+         int rep_start = mapping[start];
+         int rep_end = mapping[end];
+
+         // already have one instance of the sgroup; add repetitions if they exist
+         for (j = 0; j < polymer_repetitions[i] - 1; j++)
+         {
+            _bmol->mergeWithMolecule(rep.ref(), &mapping, 0);
+
+            int k;
+
+            for (k = rep->vertexBegin(); k != rep->vertexEnd(); k = rep->vertexNext(k))
+               sgroup->atoms.push(mapping[k]);
+            for (k = rep->edgeBegin(); k != rep->edgeEnd(); k = rep->edgeNext(k))
+            {
+               const Edge &edge = rep->getEdge(k);
+               sgroup->bonds.push(_bmol->findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
+            }
+
+            if (rep_end >= 0 && end_bond >= 0)
+            {
+               // make new connections from the end of the old fragment
+               // to the beginning of the new one, and from the end of the
+               // new fragment outwards from the sgroup
+               int external = _bmol->getEdge(end_bond).findOtherEnd(end);
+               _bmol->removeBond(end_bond);
+               if (_mol != 0)
+               {
+                  _mol->addBond(end, mapping[rep_start], BOND_SINGLE);
+                  end_bond = _mol->addBond(mapping[rep_end], external, BOND_SINGLE);
+               }
+               else
+               {
+                  _qmol->addBond(end, mapping[rep_start], new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+                  end_bond = _qmol->addBond(mapping[rep_end], external, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+               }
+               end = mapping[rep_end];
+            }
+         }
+      }
+      else if (polymer_repetitions[i] == 0)
+      {
+         // if the start atom of the polymer does not have an incoming bond...
+         if (start_bond == -1)
+         {
+            if (_mol != 0)
+            {  // ... add one, with a "star" on the other end.
+               int star = _mol->addAtom(ELEM_PSEUDO);
+               _mol->setPseudoAtom(star, "*");
+               _mol->addBond(start, star, BOND_SINGLE);
+            }
+            else
+            {  // if it is a query molecule, add a bond with "any" atom instead
+               int any = _qmol->addAtom(new QueryMolecule::Atom());
+               _qmol->addBond(start, any, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+            }
+         }
+         // do the same with the end atom
+         if (end_bond == -1)
+         {
+            if (_mol != 0)
+            {
+               int star = _mol->addAtom(ELEM_PSEUDO);
+               _mol->setPseudoAtom(star, "*");
+               _mol->addBond(end, star, BOND_SINGLE);
+            }
+            else
+            {
+               int any = _qmol->addAtom(new QueryMolecule::Atom());
+               _qmol->addBond(end, any, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+            }
+         }
+      }
+   }
+
 }
 
 void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
@@ -1692,25 +1884,28 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
    }
 }
 
-void SmilesLoader::_parseCurly (_AtomDesc &atom, Array<char> &curly)
+int SmilesLoader::_parseCurly (Array<char> &curly, int &repetitions)
 {
    if (curly.size() == 1 && curly[0] == '-')
-      atom.starts_polymer = true;
-   else if (curly.size() >= 2 && curly[0] == '+')
+      return _POLYMER_START;
+
+   if (curly.size() >= 2 && curly[0] == '+')
    {
       if (curly[1] == 'r')
          throw Error("ring repeating units not supported");
       if (curly[1] == 'n')
       {
-         atom.ends_polymer = true;
+         repetitions = 0;
          BufferScanner scanner(curly.ptr() + 2, curly.size() - 2);
          if (scanner.lookNext() == '=')
          {
             scanner.skip(1);
-            atom.repetitions = scanner.readInt();
+            repetitions = scanner.readInt();
          }
+         return _POLYMER_END;
       }
    }
+   return 0;
 }
 
 SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :
@@ -1725,9 +1920,9 @@ SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :
    aam = 0;
    brackets = false;
    star_atom = false;
-   starts_polymer = false;
    ends_polymer = false;
-   repetitions = 0;
+   starts_polymer = false;
+   polymer_index = -1;
 
    parent = -1;
 }

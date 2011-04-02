@@ -991,11 +991,11 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             output.printf(" %3d ", inv_mapping_ru[i] + 1);
 
             if (ru.connectivity == BaseMolecule::RepeatingUnit::HEAD_TO_HEAD)
-               output.printf("HH  ");
+               output.printf("HH ");
             else if (ru.connectivity == BaseMolecule::RepeatingUnit::HEAD_TO_TAIL)
-               output.printf("HT  ");
+               output.printf("HT ");
             else
-               output.printf("EU  ");
+               output.printf("EU ");
          }
          output.writeCR();
       }
@@ -1028,6 +1028,15 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             output.printf("M  SBL %3d%3d", i + 1, __min(sgroup->bonds.size(), j + 8) - j);
             for (k = j; k < __min(sgroup->bonds.size(), j + 8); k++)
                output.printf(" %3d", _bond_mapping[sgroup->bonds[k]]);
+            output.writeCR();
+         }
+
+         for (j = 0; j < sgroup->parent_atoms.size(); j += 8)
+         {
+            int k;
+            output.printf("M  SPA %3d%3d", i + 1, __min(sgroup->parent_atoms.size(), j + 8) - j);
+            for (k = j; k < __min(sgroup->parent_atoms.size(), j + 8); k++)
+               output.printf(" %3d", _atom_mapping[sgroup->parent_atoms[k]]);
             output.writeCR();
          }
 
@@ -1083,15 +1092,6 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          else if (sgroup_types[i] == _SGROUP_TYPE_MUL)
          {
             BaseMolecule::MultipleGroup &mg = mol.multiple_groups[sgroup_ids[i]];
-
-            for (j = 0; j < mg.parent_atoms.size(); j += 8)
-            {
-               int k;
-               output.printf("M  SPA %3d%3d", i + 1, __min(mg.parent_atoms.size(), j + 8) - j);
-               for (k = j; k < __min(mg.parent_atoms.size(), j + 8); k++)
-                  output.printf(" %3d", _atom_mapping[mg.parent_atoms[k]]);
-               output.writeCR();
-            }
 
             output.printf("M  SMT %3d %d\n", i + 1, mg.multiplier);
          }
