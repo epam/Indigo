@@ -816,7 +816,147 @@ void MoleculeRenderInternal::_prepareSGroups()
    }
 }
 
-bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring) {
+int dblcmp (double a, double b, void* context) {
+   return a > b ? 1 : (a < b ? -1 : 0);
+}
+
+struct Segment {
+   int id;
+   Vec2f p0, p1;
+   int beg, end;
+   int pos;
+};
+
+struct Event {
+   int id;
+   Vec2f p;
+   bool begin;
+};
+
+int evcmp (const Event& a, const Event& b, void* context) {
+   if (a.p.x > b.p.x)
+      return 1;
+   if (a.p.x < b.p.x)
+      return -1;
+   if (a.p.y > b.p.y)
+      return 1;
+   if (a.p.y < b.p.y)
+      return -1;
+   if (a.begin && !b.begin)
+      return 1;
+   if (!a.begin && b.begin)
+      return -1;
+   return 0;
+}
+
+float getFreeAngle (const ObjArray<Vec2f>& pp) {
+   QS_DEF(Array<float>, angle);
+   angle.clear();
+   int len = pp.size();
+   for (int j = 0; j < len; ++j) {
+      Vec2f d;
+      d.diff(pp[(j + 1) % len], pp[j]);
+      angle.push(atan2f(d.y, d.x));
+   }
+   angle.qsort(dblcmp, NULL);
+   int j0 = -1;
+   float maxAngle = -1;
+   for (int j = 0; j < angle.size(); ++j) {
+      float a = angle[(j + 1) % len] - angle[j];
+      if (a > maxAngle) {
+         maxAngle = a;
+         j0 = j;
+      }
+   }
+   return angle[j0] + maxAngle / 2;
+}
+
+int loopDist (int i, int j, int len) {
+   if (i > j) {
+      int t;
+      __swap(i, j, t);
+   }
+   int d1 = j - i;
+   int d2 = i + len - j;
+   return __min(d1, d2);
+}
+
+class SegmentList : protected RedBlackSet<int> {
+public:
+   SegmentList (ObjArray<Segment>& ss) : segments(ss) {
+      xPos = 0;
+   }
+
+   // returns true if no intersection was detected upon this insertion
+   bool insertSegment (double pos, int seg) {
+      xPos = pos;
+      if (find(seg))
+         return false;
+      int curId = insert(seg);
+      int nextId = next(curId);
+      int prevId = nextPost(curId);
+      Segment& segmentCurrent = segments[seg];
+      segmentCurrent.pos = curId;
+      if (nextId < end()) {
+         int nextSeg = key(nextId);
+         if (loopDist(seg, nextSeg, segments.size()) > 1) {
+            const Segment& segmentNext = segments[nextSeg];
+            bool intersectNext = Vec2f::segmentsIntersect(segmentCurrent.p0, segmentCurrent.p1, segmentNext.p0, segmentNext.p1);
+            if (intersectNext)
+               return false;
+         }
+      }
+      if (prevId < end()) {
+         int prevSeg = key(prevId);
+         if (loopDist(seg, prevSeg, segments.size()) > 1) {
+            const Segment& segmentPrev = segments[prevSeg];
+            bool intersectPrev = Vec2f::segmentsIntersect(segmentCurrent.p0, segmentCurrent.p1, segmentPrev.p0, segmentPrev.p1);
+            if (intersectPrev)
+               return false;
+         }
+      }
+      return true;
+   }
+
+   void removeSegment (int segmentId) {
+      _removeNode(segments[segmentId].pos);
+   }
+
+   double xPos;
+
+protected:
+   virtual int _compare (int key, const Node &node) const
+   {
+      const Segment& a = segments[key];
+      const Segment& b = segments[node.key];
+      double ya = a.p0.y + (xPos - a.p0.x) * (a.p1.y - a.p0.y) / (a.p1.x - a.p0.x);
+      double yb = b.p0.y + (xPos - b.p0.x) * (b.p1.y - b.p0.y) / (b.p1.x - b.p0.x);
+      return ya > yb ? 1 : (ya < yb ? -1 : 0);
+   }
+
+private:
+   ObjArray<Segment>& segments;
+
+   SegmentList (const SegmentList& other);
+};
+
+float getMinDotProduct (const ObjArray<Vec2f>& pp, float tilt) {
+   double minDot = 1.0;
+   for (int j = 0; j < pp.size(); ++j) {
+      Vec2f a, b, d;
+      a.copy(pp[j]);
+      b.copy(pp[(j + 1) % pp.size()]);
+      a.rotate(tilt);
+      b.rotate(tilt);
+      d.diff(b, a);
+      double dot = fabs(d.x / d.length());
+      if (dot < minDot)
+         minDot = dot;
+   }
+   return minDot;
+}
+
+bool MoleculeRenderInternal::_ringHasSelfIntersectionsSimple(const Ring& ring) {
    for (int j = 0; j < ring.bondEnds.size(); ++j) {
       for (int k = j + 2; k < __min(ring.bondEnds.size(), ring.bondEnds.size() + j - 1); ++k)
       {
@@ -828,11 +968,66 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring) {
          const Vec2f& a01 = _ad(b1.end).pos;
          const Vec2f& a10 = _ad(b2.beg).pos;
          const Vec2f& a11 = _ad(b2.end).pos;
-         Vec2f p;
-         if (Vec2f::intersection(a00, a01, a10, a11, p))
+         if (Vec2f::segmentsIntersect(a00, a01, a10, a11))
             return true;
       }
    }
+   return false;
+}
+
+bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring) {
+   QS_DEF(ObjArray<Vec2f>, pp);
+   pp.clear();
+   int len = ring.bondEnds.size();
+   for (int j = 0; j < len; ++j) {
+      pp.push().copy(_ad(_be(ring.bondEnds[j]).aid).pos);
+   }
+
+   float tilt = getFreeAngle(pp) + (float)(M_PI / 2);
+   float minDot = getMinDotProduct(pp, tilt);
+
+   QS_DEF(ObjArray<Event>, events);
+   events.clear();
+   events.reserve(2 * len);
+   QS_DEF(ObjArray<Segment>, segments);
+   segments.clear();
+   segments.reserve(len);
+   for (int j = 0; j < len; ++j) {
+      Vec2f p1, p2;
+      p1.copy(pp[j]);
+      p2.copy(pp[(j + 1) % len]);
+      p1.rotate(tilt);
+      p2.rotate(tilt);
+      bool revOrder = p1.x > p2.x;
+      Segment& segment = segments.push();
+      segment.id = j;
+      segment.p0.copy(revOrder ? p2 : p1);
+      segment.p1.copy(revOrder ? p1 : p2);
+      Event& ev1 = events.push();
+      ev1.id = j;
+      ev1.begin = true;
+      ev1.p.copy(segment.p0);
+      Event& ev2 = events.push();
+      ev2.id = j;
+      ev2.begin = false;
+      ev2.p.copy(segment.p1);
+   }
+
+   // order the events
+   events.qsort(evcmp, NULL);
+
+   // sweep line pass
+   SegmentList sl(segments);
+   for (int i = 0; i < events.size(); ++i) {
+      Event& ev = events[i];
+      if (ev.begin) {
+         if (!sl.insertSegment(ev.p.x + 1e-4, ev.id))
+            return true; // intersection detected
+      } else {
+         sl.removeSegment(ev.id);
+      }
+   }
+
    return false;
 }
 
@@ -1879,7 +2074,7 @@ void MoleculeRenderInternal::_writeQueryModifier (Output& output, int aid)
       if (needDelimiter)
          output.printf(")");
 
-      
+
       if (_ad(aid).exactChange) {
          output.printf(".ext.");
       }
