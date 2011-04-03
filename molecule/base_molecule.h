@@ -72,7 +72,6 @@ public:
    public:
       Array<int> atoms; // represented with SAL in Molfile format
       Array<int> bonds; // represented with SBL in Molfile format
-      Array<int> parent_atoms;
       Array<Vec2f[2]> brackets;
       virtual ~SGroup ();
    };
@@ -125,6 +124,7 @@ public:
       MultipleGroup ();
       virtual ~MultipleGroup ();
 
+      Array<int> parent_atoms;
       int multiplier;
    };
 

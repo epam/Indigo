@@ -1062,7 +1062,7 @@ void SmilesLoader::_loadMolecule ()
             continue;
          sgroup->atoms.push(j);
          if (polymer_repetitions[i] > 0)
-            sgroup->parent_atoms.push(j);
+            ((BaseMolecule::MultipleGroup *)sgroup)->parent_atoms.push(j);
          if (_atoms[j].starts_polymer)
             start = j;
          if (_atoms[j].ends_polymer)

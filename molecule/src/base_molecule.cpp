@@ -180,6 +180,9 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
       MultipleGroup &mg = multiple_groups.at(multiple_groups.add());
       _mergeSGroupWithSubmolecule(mg, supermg, mol, *mapping_out, edge_mapping);
       mg.multiplier = supermg.multiplier;
+      for (int j = 0; j != supermg.parent_atoms.size(); j++)
+         if (mapping_out->at(supermg.parent_atoms[j]) >= 0)
+            mg.parent_atoms.push(mapping_out->at(supermg.parent_atoms[j]));
    }
 
    // generic sgroups
@@ -782,10 +785,6 @@ void BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
 
       sgroup.bonds.push(edge_mapping[super.bonds[i]]);
    }
-   for (i = 0; i != super.parent_atoms.size(); i++)
-      if (mapping[super.parent_atoms[i]] >= 0)
-         sgroup.parent_atoms.push(mapping[super.parent_atoms[i]]);
-
 }
 
 void BaseMolecule::unhighlightAll ()
