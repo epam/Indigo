@@ -941,7 +941,7 @@ private:
 };
 
 float getMinDotProduct (const ObjArray<Vec2f>& pp, float tilt) {
-   double minDot = 1.0;
+   float minDot = 1.0;
    for (int j = 0; j < pp.size(); ++j) {
       Vec2f a, b, d;
       a.copy(pp[j]);
@@ -949,7 +949,7 @@ float getMinDotProduct (const ObjArray<Vec2f>& pp, float tilt) {
       a.rotate(tilt);
       b.rotate(tilt);
       d.diff(b, a);
-      double dot = fabs(d.x / d.length());
+      float dot = fabs(d.x / d.length());
       if (dot < minDot)
          minDot = dot;
    }
@@ -1033,31 +1033,48 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring) {
 
 void MoleculeRenderInternal::_findRings()
 {
+   QS_DEF(RedBlackSet<int>, mask);
    for (int i = 0; i < _data.bondends.size(); ++i)
    {
       BondEnd& be = _be(i);
-      if (be.lRing >= 0)
+      if (be.lRing != -1)
          continue;
+      mask.clear();
       int rid = _data.rings.size();
       _data.rings.push();
       Ring& ring = _data.rings[rid];
       ring.bondEnds.push(i);
 
       int j = be.next;
+      mask.insert(be.aid);
       for (int c = 0; j != i; j = _be(j).next, ++c)
       {
-         if (c > _data.bondends.size() || j < 0)
+         if (c > _data.bondends.size() || j < 0 || _be(j).lRing != -1)
             break;
+         int aid = _be(j).aid;
+         if (mask.find(aid)) {
+            while(ring.bondEnds.size() > 0 && _be(ring.bondEnds.top()).aid != aid) {
+               _be(ring.bondEnds.top()).lRing = -2;
+               ring.bondEnds.pop();
+            }
+            ring.bondEnds.pop();
+         } else {
+            mask.insert(aid);
+         }
          ring.bondEnds.push(j);
       }
-      if (i != j)
+      if (i != j || ring.bondEnds.size() < 3)
       {
+         for (int j = 0; j < ring.bondEnds.size(); ++j)
+            _be(ring.bondEnds[j]).lRing = -2;
          _data.rings.pop();
          continue;
       }
 
       bool selfIntersection = _ringHasSelfIntersections(ring);
       if (selfIntersection) {
+         for (int j = 0; j < ring.bondEnds.size(); ++j)
+            _be(ring.bondEnds[j]).lRing = -2;
          _data.rings.pop();
          continue;
       }
@@ -1065,12 +1082,21 @@ void MoleculeRenderInternal::_findRings()
       // for the inner loops, sum of the angles should be (n-2)*pi,
       // for the outer ones (n+2)*pi
       float angleSum = 0;
-      for (int j = 0; j < ring.bondEnds.size(); ++j)
-         angleSum += _be(ring.bondEnds[j]).lang;
+      for (int j = 0; j < ring.bondEnds.size(); ++j) {
+         int j1 = (j + 1) % ring.bondEnds.size();
+         const Vec2f& da = _be(ring.bondEnds[j]).dir;
+         const Vec2f& db = _be(ring.bondEnds[j1]).dir;
+         float angle = (float)M_PI - atan2(-Vec2f::cross(da, db), Vec2f::dot(da, db));
+         angleSum += angle;
+      }
+
+      // sum of all angles for inner loop is (n - 2) Pi and (n + 2) Pi for the outer one
       bool inner = (angleSum < ring.bondEnds.size() * M_PI);
 
       if (!inner)
       {
+         for (int j = 0; j < ring.bondEnds.size(); ++j)
+            _be(ring.bondEnds[j]).lRing = -2;
          _data.rings.pop();
          continue;
       }
@@ -1404,22 +1430,22 @@ void MoleculeRenderInternal::_initAtomData ()
          else
             ad.hydroPos = HYDRO_POS_RIGHT;
       } else {
-         double sMin = 1.1;
+         float sMin = 1.1f;
          if (__min(leftSin, rightSin) > 0.6f) {
-            if (upperSin < sMin + 1e-3) {
+            if (upperSin < sMin + 1e-3f) {
                sMin = upperSin;
                ad.hydroPos = HYDRO_POS_UP;
             }
-            if (lowerSin < sMin + 1e-3) {
+            if (lowerSin < sMin + 1e-3f) {
                sMin = lowerSin;
                ad.hydroPos = HYDRO_POS_DOWN;
             }
          }
-         if (leftSin < sMin + 1e-3) {
+         if (leftSin < sMin + 1e-3f) {
             sMin = leftSin;
             ad.hydroPos = HYDRO_POS_LEFT;
          }
-         if (rightSin < sMin + 1e-3) {
+         if (rightSin < sMin + 1e-3f) {
             sMin = rightSin;
             ad.hydroPos = HYDRO_POS_RIGHT;
          }
@@ -2312,8 +2338,8 @@ int MoleculeRenderInternal::_findClosestCircle (Vec2f& p, int aid, float radius,
       q.copy(rightDir);
       q.rotate(ang/2);
 
-      double dst = radius / sin2c(Vec2f::dot(rightDir, leftDir));
-      q.scale((float)dst);
+      float dst = radius / (float)sin2c(Vec2f::dot(rightDir, leftDir));
+      q.scale(dst);
       q.add(origin);
 
       if (iMin < 0 || q.lengthSqr() < p.lengthSqr())
