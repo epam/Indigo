@@ -189,7 +189,7 @@ float RenderGrid::_getScale ()
    int maxPageSize = _rc.getMaxPageSize();
    float s;
    bool imageSizeSet = _width > 0 && _height > 0;
-   s = _bondLength;
+   s = (float)_bondLength;
 
    int defaultWidth = (int)ceil(__max(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), commentSize.x) + outerMargin.x * 2);
    int defaultHeight = (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset);
