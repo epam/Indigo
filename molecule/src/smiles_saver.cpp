@@ -32,7 +32,8 @@ TL_CP_GET(_atoms),
 TL_CP_GET(_hcount),
 TL_CP_GET(_dbonds),
 TL_CP_GET(_written_atoms),
-TL_CP_GET(_written_bonds)
+TL_CP_GET(_written_bonds),
+TL_CP_GET(_polymer_indices)
 {
    vertex_ranks = 0;
    atom_atom_mapping = 0;
@@ -72,6 +73,8 @@ void SmilesSaver::_saveMolecule ()
    QS_DEF(Array<int>, ignored_vertices);
    int i, j, k;
 
+   _checkSRU();
+   
    _touched_cistransbonds = 0;
    _markCisTrans();
 
@@ -143,6 +146,8 @@ void SmilesSaver::_saveMolecule ()
    
    walk.ignored_vertices = ignored_vertices.ptr();
    walk.vertex_ranks = vertex_ranks;
+   if (_bmol->repeating_units.size() > 0)
+      walk.vertex_classes = _polymer_indices.ptr();
 
    if (separate_rsites)
    {
@@ -200,6 +205,15 @@ void SmilesSaver::_saveMolecule ()
          for (j = 0; j < openings; j++)
             atom.neighbors.add(-1);
       }
+
+      // also, detect polymer borders
+      if (_polymer_indices[v_idx] >= 0 &&
+         (v_prev_idx == -1 || _polymer_indices[v_prev_idx] != _polymer_indices[v_idx]))
+         atom.starts_polymer = true;
+
+      if (v_prev_idx >= 0 && _polymer_indices[v_prev_idx] >= 0 &&
+         _polymer_indices[v_prev_idx] != _polymer_indices[v_idx])
+         _atoms[v_prev_idx].ends_polymer = true;
    }
 
    // detect chiral configurations
@@ -474,6 +488,11 @@ void SmilesSaver::_saveMolecule ()
 
             _writeCycleNumber(k);
          }
+
+         if (_atoms[v_idx].starts_polymer)
+            _output.writeString("{-}");
+         if (_atoms[v_idx].ends_polymer)
+            _output.writeString("{+n}");
       }
    }
 
@@ -1268,10 +1287,56 @@ SmilesSaver::_Atom::_Atom (Pool<List<int>::Elem> &neipool) :
    chirality = 0;
    branch_cnt = 0;
    paren_written = false;
+   starts_polymer = false;
+   ends_polymer = false;
    
    parent = -1;
 }
 
 SmilesSaver::_Atom::~_Atom ()
 {
+}
+
+void SmilesSaver::_checkSRU ()
+{
+   _polymer_indices.clear_resize(_bmol->vertexEnd());
+   _polymer_indices.fffill();
+
+   int i, j, k;
+
+   // check overlapping (particularly nested) blocks
+   for (i = _bmol->repeating_units.begin(); i != _bmol->repeating_units.end();
+        i = _bmol->repeating_units.next(i))
+   {
+      Array<int> &atoms = _bmol->repeating_units[i].atoms;
+
+      for (j = 0; j < atoms.size(); j++)
+      {
+         if (_polymer_indices[atoms[j]] >= 0)
+            throw Error("overlapping (nested?) repeating units can not be saved");
+         _polymer_indices[atoms[j]] = i;
+
+         // check also disconnected blocks (possible to handle, but unsupported at the moment)
+         if (_bmol->vertexComponent(atoms[j]) != _bmol->vertexComponent(atoms[0]))
+            throw Error("disconnected repeating units not supported");
+      }
+   }
+
+   // check that each block has exactly two outgoing bonds
+   for (i = _bmol->repeating_units.begin(); i != _bmol->repeating_units.end();
+        i = _bmol->repeating_units.next(i))
+   {
+      Array<int> &atoms = _bmol->repeating_units[i].atoms;
+      int cnt = 0;
+
+      for (j = 0; j < atoms.size(); j++)
+      {
+         const Vertex &vertex = _bmol->getVertex(atoms[j]);
+         for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+            if (_polymer_indices[vertex.neiVertex(k)] != i)
+               cnt++;
+      }
+      if (cnt != 2)
+         throw Error("repeating units must have exactly two outgoing bonds, has %d", cnt);
+   }
 }

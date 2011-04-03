@@ -49,6 +49,8 @@ public:
    
    int *ignored_vertices;
    int *vertex_ranks;
+   int *vertex_classes; // -1 = unclassified, >=0 = class number
+                        // walking from internal vertex of a class is prohibited
 
    void mustBeRootVertex (int v_idx);
 
@@ -72,7 +74,9 @@ protected:
       int closing_cycle;  // 1 if this edge closes a cycle
    };
 
-   static int _cmp (VertexEdge &ve1, VertexEdge &ve2, void *context);
+   static int _cmp_ranks (VertexEdge &ve1, VertexEdge &ve2, void *context);
+   static int _cmp_classes (VertexEdge &ve1, VertexEdge &ve2, void *context);
+   int _current_class;
 
    const Graph &_graph;
    
@@ -82,6 +86,7 @@ protected:
    TL_CP_DECL(Array<SeqElem>, _v_seq);
    TL_CP_DECL(Array<int>, _root_vertices);
    TL_CP_DECL(Array<Edge>, _closures);
+   TL_CP_DECL(Array<int>,  _class_dist_from_exit);
 };
 }
 

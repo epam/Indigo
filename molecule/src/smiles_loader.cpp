@@ -532,12 +532,6 @@ void SmilesLoader::_loadMolecule ()
             if (atom_stack.size() < 1)
                throw Error("probably misplaced '('");
             atom_stack.push(atom_stack.top());
-            if (_atoms[atom_stack.top()].ends_polymer)
-            {
-               if (inside_polymer)
-                  throw Error("internal: inside_polymer unexpected");
-               inside_polymer = true;
-            }
          }
 
          _balance++;
@@ -554,13 +548,6 @@ void SmilesLoader::_loadMolecule ()
          _balance--;
 
          atom_stack.pop();
-
-         if (atom_stack.size() > 0 && _atoms[atom_stack.top()].ends_polymer)
-         {
-            if (!inside_polymer)
-               throw Error("internal: !inside_polymer unexpected");
-            inside_polymer = false;
-         }
 
          continue;
       }
@@ -714,11 +701,6 @@ void SmilesLoader::_loadMolecule ()
       if (_qmol != 0)
          qatom.reset(new QueryMolecule::Atom());
 
-      if (!first_atom)
-         atom_stack.pop();
-      atom_stack.push(_atoms.size() - 1);
-      first_atom = false;
-
       if (bond != 0)
          bond->end = _atoms.size() - 1;
 
@@ -777,6 +759,17 @@ void SmilesLoader::_loadMolecule ()
          _atoms[bond->beg].neighbors.add(bond->end);
          _atoms[bond->end].neighbors.add(bond->beg);
          _atoms[bond->end].parent = bond->beg;
+         // when going from a polymer atom, make the new atom belong
+         // to the same polymer
+         if (_atoms[bond->beg].polymer_index >= 0)
+         {
+            // ... unless it goes from the polymer end
+            // and is not in braces
+            if (!_atoms[bond->beg].ends_polymer ||
+                (atom_stack.size() >= 2 &&
+                atom_stack.top() == atom_stack[atom_stack.size() - 2]))
+               _atoms[bond->end].polymer_index = _atoms[bond->beg].polymer_index;
+         }
       }
 
       if (_inside_smarts_component)
@@ -784,6 +777,11 @@ void SmilesLoader::_loadMolecule ()
          _qmol->components.expandFill(_atoms.size(), 0);
          _qmol->components[_atoms.size() - 1] = _current_compno;
       }
+
+      if (!first_atom)
+         atom_stack.pop();
+      atom_stack.push(_atoms.size() - 1);
+      first_atom = false;
 
       while (_scanner.lookNext() == '{')
       {

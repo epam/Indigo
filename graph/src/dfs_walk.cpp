@@ -24,10 +24,12 @@ TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
 TL_CP_GET(_v_seq),
 TL_CP_GET(_root_vertices),
-TL_CP_GET(_closures)
+TL_CP_GET(_closures),
+TL_CP_GET(_class_dist_from_exit)
 {
    ignored_vertices = 0;
    vertex_ranks = 0;
+   vertex_classes = 0;
    _root_vertices.resize(graph.vertexEnd());
    _root_vertices.zerofill();
 }
@@ -46,6 +48,9 @@ void DfsWalk::walk ()
    QS_DEF(Array<int>, v_stack);
    int i, j;
 
+   if (vertex_ranks != 0 && vertex_classes != 0)
+      throw Error("you can not specify both vertex_ranks and vertex_classes");
+
    _vertices.clear_resize(_graph.vertexEnd());
    _edges.clear_resize(_graph.edgeEnd());
    _vertices.zerofill();
@@ -53,9 +58,8 @@ void DfsWalk::walk ()
    _closures.clear();
 
    v_stack.clear();
-
    _v_seq.clear();
-
+   
    while (1)
    {
       if (v_stack.size() < 1)
@@ -66,16 +70,17 @@ void DfsWalk::walk ()
          {
             if (ignored_vertices != 0 && ignored_vertices[i] != 0)
                continue;
-            if (_vertices[i].dfs_state == 0)
+            if (_vertices[i].dfs_state != 0)
+               continue;
+            if (vertex_classes != 0 && vertex_classes[i] >= 0)
+               continue;
+            if (vertex_ranks == 0)
             {
-               if (vertex_ranks == 0)
-               {
-                  selected = i;
-                  break;
-               }
-               if (selected == -1 || vertex_ranks[i] < vertex_ranks[selected])
-                  selected = i;
+               selected = i;
+               break;
             }
+            if (selected == -1 || vertex_ranks[i] < vertex_ranks[selected])
+               selected = i;
          }
          if (selected == -1)
             break;
@@ -116,7 +121,14 @@ void DfsWalk::walk ()
       }
 
       if (vertex_ranks != 0)
-         nei.qsort(_cmp, vertex_ranks);
+         nei.qsort(_cmp_ranks, vertex_ranks);
+
+      if (vertex_classes != 0 && vertex_classes[v_idx] >= 0)
+      {
+         // prefer not to leave the class if possible
+         _current_class = vertex_classes[v_idx];
+         nei.qsort(_cmp_classes, this);
+      }
 
       for (i = 0; i < nei.size(); i++)
       {
@@ -206,11 +218,22 @@ void DfsWalk::calcMapping (Array<int> &mapping) const
    }
 }
 
-int DfsWalk::_cmp (VertexEdge &ve1, VertexEdge &ve2, void *context)
+int DfsWalk::_cmp_ranks (VertexEdge &ve1, VertexEdge &ve2, void *context)
 {
    int *ranks = (int *)context;
 
    return ranks[ve2.v] - ranks[ve1.v];
+}
+
+int DfsWalk::_cmp_classes (VertexEdge &ve1, VertexEdge &ve2, void *context)
+{
+   DfsWalk *self = (DfsWalk *)context;
+
+   if (self->vertex_classes[ve1.v] == self->_current_class)
+      return 1;
+   if (self->vertex_classes[ve2.v] == self->_current_class)
+      return -1;
+   return 0;
 }
 
 void DfsWalk::getNeighborsClosing (int v_idx, Array<int> &res)

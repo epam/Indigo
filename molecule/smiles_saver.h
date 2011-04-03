@@ -84,6 +84,8 @@ protected:
       int  chirality;  // 0 means no chirality, 1 means CCW pyramid, 2 means CW pyramid
       int  branch_cnt; // runs from 0 to (branches - 1)
       bool paren_written;
+      bool starts_polymer;
+      bool ends_polymer;
    };
    
    Output &_output;
@@ -100,6 +102,8 @@ protected:
    void _writePseudoAtoms ();
    void _writeHighlighting ();
 
+   void _checkSRU ();
+
    struct _DBond // directed bond (near cis-trans bond)
    {
       int ctbond_beg; // cis-trans bond attached to the begin (-1 if there isn't any)
@@ -113,6 +117,7 @@ protected:
    TL_CP_DECL(Array<_DBond>, _dbonds);
    TL_CP_DECL(Array<int>, _written_atoms);
    TL_CP_DECL(Array<int>, _written_bonds);
+   TL_CP_DECL(Array<int>, _polymer_indices);
 
    int _written_components;
    int _touched_cistransbonds;
