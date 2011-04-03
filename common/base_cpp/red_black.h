@@ -577,14 +577,14 @@ public:
       return idx != -1 && sign == 0;
    }
 
-   void insert (Key key)
+   int insert (Key key)
    {
       int sign, idx = this->_findClosest(key, sign);
 
       if (idx != -1 && sign == 0)
          throw typename Parent::Error("key already presents");
 
-      _insert(key, idx, sign);
+      return _insert(key, idx, sign);
    }
 
    bool find_or_insert (Key key)
@@ -628,7 +628,7 @@ protected:
       return key > node.key ? 1 : (key < node.key ? -1 : 0);
    }
 
-   void _insert (Key key, int parent, int sign)
+   int _insert (Key key, int parent, int sign)
    {
       int node_idx = this->_nodes->add();
       Node &node = this->_nodes->at(node_idx);
@@ -636,6 +636,8 @@ protected:
       node.key = key;
 
       this->_insertNode(node_idx, parent, sign);
+
+      return node_idx;
    }
 
 private:
