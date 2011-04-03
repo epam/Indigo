@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -34,7 +34,7 @@
 #endif
 
 namespace indigo {
-   
+
 const float EPSILON = 0.000001f;
 
 const float PI = 3.14159265358979323846f;
@@ -48,7 +48,7 @@ struct Vec3f;
 struct DLLEXPORT Vec2f
 {
    DEF_ERROR("Vec2f");
-   
+
    Vec2f () : x(0), y(0) {}
    Vec2f (const Vec2f &a) : x(a.x), y(a.y) {}
    Vec2f (float xx, float yy) : x(xx), y(yy) {}
@@ -170,13 +170,15 @@ struct DLLEXPORT Vec2f
    void rotateL (float angle);
    void rotateL (float si, float co);
    void rotateAroundSegmentEnd (const Vec2f &a, const Vec2f &b, float angle);
-   
+
    static float distSqr (const Vec2f &a, const Vec2f &b);
    static float dist    (const Vec2f &a, const Vec2f &b);
    static float dot     (const Vec2f &a, const Vec2f &b);
    static float cross   (const Vec2f &a, const Vec2f &b);
    static void projectZ (Vec2f& v2, const Vec3f& v3);
    static bool intersection (const Vec2f &v1_1, const Vec2f &v1_2, const Vec2f &v2_1, const Vec2f &v2_2, Vec2f &p);
+   static float triangleArea (const Vec2f &a, const Vec2f &b, const Vec2f &c);
+   static bool segmentsIntersect (const Vec2f &a0, const Vec2f &a1, const Vec2f &b0, const Vec2f &b1);
 };
 
 struct DLLEXPORT Vec3f
@@ -207,7 +209,7 @@ struct DLLEXPORT Vec3f
       y = 0;
       z = 0;
    }
-                                             
+
    inline void negate () {x = -x; y = -y; z = -z;}
 
    inline void negation (const Vec3f &v)
@@ -324,7 +326,7 @@ struct DLLEXPORT Vec3f
    void pointTransformation     (const Vec3f &v, const Transform3f &matr);
    void vectorTransformation    (const Vec3f &v, const Transform3f &matr);
    void invVectorTransformation (const Vec3f &v, const Transform3f &matr);
-   
+
    // returns value in range 0..pi
    static bool  angle   (const Vec3f &a, const Vec3f &b, float &res);
    static float dot     (const Vec3f &a, const Vec3f &b);
@@ -337,7 +339,7 @@ const Vec3f VZero3f (0.f, 0.f, 0.f);
 struct Transform3f
 {
    DEF_ERROR("transform3f");
-   
+
    float elements[16];
 
    void rotation (float x, float y, float z, float angle);
@@ -392,7 +394,7 @@ struct Matr3x3d
    void transpose ();
    void getTransposed (Matr3x3d &matr_out) const;
    void identity ();
-   
+
    void matrixMatrixMultiply (const Matr3x3d &m, Matr3x3d &matrix_out) const;
    void matrixVectorMultiply (const Vec3f &a, Vec3f &b) const;
 
@@ -421,13 +423,13 @@ struct Line3f
 {
    Vec3f org;
    Vec3f dir;
-   
+
    explicit Line3f ();
 
    void copy (Line3f &other);
 
    float distFromPoint (const Vec3f &point) const;
-   
+
    bool bestFit (int npoints, const Vec3f points[], float *sqsum_out);
 };
 

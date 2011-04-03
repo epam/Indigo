@@ -180,3 +180,20 @@ bool Vec2f::intersection (const Vec2f &v1_1, const Vec2f &v1_2, const Vec2f &v2_
 
    return true;
 }
+
+float Vec2f::triangleArea (const Vec2f &a, const Vec2f &b, const Vec2f &c) {
+   return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+}
+
+bool Vec2f::segmentsIntersect (const Vec2f &a0, const Vec2f &a1, const Vec2f &b0, const Vec2f &b1) {
+   Vec2f ca, cb;
+   float la = Vec2f::distSqr(a0, a1) / 4, lb = Vec2f::distSqr(b0, b1) / 4;
+   ca.lineCombin2(a0, 0.5, a1, 0.5);
+   cb.lineCombin2(b0, 0.5, b1, 0.5);
+   // preliminary check to exclude the case of non-overlapping segments on the same line
+   if (Vec2f::distSqr(ca, b0) > la && Vec2f::distSqr(ca, b1) > la && Vec2f::distSqr(cb, a0) > lb && Vec2f::distSqr(cb, a1) > lb)
+      return false;
+   // regular check
+   return triangleArea(a0, a1, b0) * triangleArea(a0, a1, b1) < EPSILON
+      && triangleArea(b0, b1, a0) * triangleArea(b0, b1, a1) < EPSILON;
+}
