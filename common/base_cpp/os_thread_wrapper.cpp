@@ -306,12 +306,8 @@ void OsCommandDispatcher::_handleException (Exception *exception)
    }
 }
 
-#include <Windows.h>
-
 void OsCommandDispatcher::_threadFunc (void)
 {
-   OutputDebugStringA("Thread created\n");
-
    qword initial_SID = TL_GET_SESSION_ID();
 
    if (_same_session_IDs)
@@ -394,8 +390,6 @@ void OsCommandDispatcher::_threadFunc (void)
    _cleanupThread();
 
    TL_RELEASE_SESSION_ID(initial_SID);
-
-   OutputDebugStringA("Thread exited\n");
 }
 
 void OsCommandDispatcher::_recvCommandAndResult (OsCommandResult *&result, OsCommand *&command)
