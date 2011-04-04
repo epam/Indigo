@@ -460,6 +460,9 @@ void FileScanner::_init (Encoding filename_encoding, const char *filename)
    _file = 0;
    _file_len = 0;
 
+   if (filename == 0)
+      throw Error("null filename");
+
    _file = openFile(filename_encoding, filename, "rb");
 
    if (_file == NULL)
@@ -598,6 +601,8 @@ BufferScanner::BufferScanner (const byte *buffer, int buffer_size)
 
 BufferScanner::BufferScanner (const char *str)
 {
+   if (str == 0)
+      throw Error("null input");
    _init(str, (int)strlen(str));
 }
 
