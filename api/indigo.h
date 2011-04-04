@@ -282,10 +282,10 @@ CEXPORT int indigoIsotope (int atom);
 // Not applicable to query molecules.
 CEXPORT int indigoValence (int atom);
 
-// Applicable to atoms and query atoms. Can fail (return zero) on query atoms
-// where the number of hydrogens is not definitely known. Otherwise, returns one
-// and writes *hydro.
-CEXPORT int indigoCountHydrogens (int atom, int *hydro);
+// Applicable to atoms, query atoms, and molecules. Can fail
+// (return zero) on query atoms where the number of hydrogens
+// is not definitely known. Otherwise, returns one and writes *hydro.
+CEXPORT int indigoCountHydrogens (int item, int *hydro);
 
 // Applicable to non-query molecules and atoms.
 CEXPORT int indigoCountImplicitHydrogens (int item);
