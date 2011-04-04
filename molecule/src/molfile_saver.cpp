@@ -637,7 +637,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             out.printf(" PATOMS=(%d", mol.multiple_groups[i].parent_atoms.size());
             int j;
             for (j = 0; j < mol.multiple_groups[i].parent_atoms.size(); j++)
-               out.printf(" %d", mol.multiple_groups[i].parent_atoms[j]);
+               out.printf(" %d", _atom_mapping[mol.multiple_groups[i].parent_atoms[j]]);
             out.printf(")");
          }
          out.printf(" MULT=%d", mol.multiple_groups[i].multiplier);
