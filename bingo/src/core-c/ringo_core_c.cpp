@@ -24,10 +24,40 @@
 #include "reaction/rxnfile_loader.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_saver.h"
+#include "reaction/crf_saver.h"
 
 using namespace indigo::bingo_core;
 
-CEXPORT int ringoIndexPrepareReaction (const char *str, int str_len,
+CEXPORT int ringoIndexProcessSingleRecord ()
+{
+   BINGO_BEGIN
+   {
+      BufferScanner scanner(self.index_record_data.ref());
+
+      NullOutput output;
+
+      TRY_READ_TARGET_RXN
+      {
+         try
+         {
+            if (self.single_ringo_index.get() == NULL)
+            {
+               self.single_ringo_index.create();
+               self.single_ringo_index->init(*self.bingo_context);
+            }
+
+            self.ringo_index = self.single_ringo_index.get();
+            self.ringo_index->prepare(scanner, output, NULL);
+         }
+         catch (CmfSaver::Error &e) { self.warning.readString(e.message(), true); return -1; }
+         catch (CrfSaver::Error &e) { self.warning.readString(e.message(), true); return -1; }
+      }
+      CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), true); return -1;);
+   }
+   BINGO_END(1, 0)
+}
+
+CEXPORT int ringoIndexReadPreparedReaction (int *id,
                  const char **crf_buf, int *crf_buf_len,
                  const char **fingerprint_buf, int *fingerprint_buf_len)
 {
@@ -35,25 +65,8 @@ CEXPORT int ringoIndexPrepareReaction (const char *str, int str_len,
 
    BINGO_BEGIN
    {
-      self.ringo_search_type = BingoCore::_UNDEF;
-
-      BufferScanner scanner(str, str_len);
-      /*
-      ArrayOutput output(self.ringo_index_bindata.ref());
-
-      TRY_READ_TARGET_RXN
-      {
-         try
-         {
-            self.ringo_index->prepare(scanner, output);
-         }
-         catch (CmfSaver::Error &e) 
-         {
-            self.warning.readString(e.message(), true); 
-            return -1;
-         }
-      }
-      CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), true); return -1;);
+      if (id)
+         *id = self.index_record_data_id;
 
       const Array<char> &crf = self.ringo_index->getCrf();
                                     
@@ -62,7 +75,7 @@ CEXPORT int ringoIndexPrepareReaction (const char *str, int str_len,
 
       *fingerprint_buf = (const char *)self.ringo_index->getFingerprint();
       *fingerprint_buf_len = self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2;
-      */
+
       return 1;
    }
    BINGO_END(-2, -2)

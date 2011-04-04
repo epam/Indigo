@@ -30,10 +30,7 @@ namespace indigo
             cmd.CommandType = CommandType.Text;
             cmd.CommandTimeout = 3600;
 
-            BingoLog.logMessage("{0} using connection {1}", cmd.CommandText, connection.ConnectionString);
-
             object result = cmd.ExecuteScalar();
-            BingoLog.logMessage("  Done");
             if (result == null)
                throw new Exception("Key " + name + " isn't present in the configuration table");
             return result;

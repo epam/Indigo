@@ -8,12 +8,12 @@ namespace indigo.SqlAttributes
    public class BingoSqlFunctionAttribute : Attribute
    {
       public AccessLevelKind access_level { get; set; }
-      public bool substitute_schema { get; set; }
+      public bool substitute_bingo { get; set; }
 
       public BingoSqlFunctionAttribute ()
       {
          access_level = AccessLevelKind.Operator;
-         substitute_schema = true;
+         substitute_bingo = true;
       }
    }
 

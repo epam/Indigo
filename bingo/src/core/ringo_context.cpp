@@ -20,7 +20,6 @@ TL_DEF(RingoContext, PtrArray<RingoContext>, _instances);
 OsLock RingoContext::_instances_lock;
 
 RingoContext::RingoContext (BingoContext &context) :
-index(context),
 substructure(context),
 _context(context)
 {

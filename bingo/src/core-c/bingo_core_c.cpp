@@ -498,8 +498,8 @@ CEXPORT int bingoIndexMarkTermintate ()
 {
    BINGO_BEGIN
    {
-      if (self.mango_indexing_dispatcher.get())
-         self.mango_indexing_dispatcher->markToTerminate();
+      if (self.parallel_indexing_dispatcher.get())
+         self.parallel_indexing_dispatcher->markToTerminate();
       return 1;
    }
    BINGO_END(-2, -2)
@@ -509,16 +509,19 @@ CEXPORT int bingoIndexEnd ()
 {
    BINGO_BEGIN
    {
-      if (self.mango_indexing_dispatcher.get())
+      if (self.parallel_indexing_dispatcher.get())
       {
-         self.mango_indexing_dispatcher->terminate();
-         self.mango_indexing_dispatcher.free();
+         self.parallel_indexing_dispatcher->terminate();
+         self.parallel_indexing_dispatcher.reset(0);
       }
 
       if (self.single_mango_index.get())
          self.single_mango_index.free();
+      if (self.single_ringo_index.get())
+         self.single_ringo_index.free();
 
       self.mango_index = 0;
+      self.ringo_index = 0;
       self.index_record_data_id = -1;
       self.index_record_data.free();
 

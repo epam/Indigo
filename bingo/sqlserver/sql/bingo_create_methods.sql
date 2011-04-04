@@ -126,7 +126,7 @@ GO
 CREATE PROCEDURE [$(bingo)].__OnDeleteRecordTrigger 
     @table_id int,
     @database_id int,
-    @tmp_cursor_name nvarchar(max),
+    @tmp_table_name nvarchar(max),
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._OnDeleteRecordTrigger
@@ -138,10 +138,10 @@ GO
 CREATE PROCEDURE [$(bingo)]._OnDeleteRecordTrigger 
     @table_id int,
     @database_id int,
-    @tmp_cursor_name nvarchar(max)
+    @tmp_table_name nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)].__OnDeleteRecordTrigger @table_id, @database_id, @tmp_cursor_name, '$(bingo)'
+  EXEC [$(bingo)].__OnDeleteRecordTrigger @table_id, @database_id, @tmp_table_name, '$(bingo)'
 END
 GO
 ADD SIGNATURE TO [$(bingo)]._OnDeleteRecordTrigger BY CERTIFICATE $(bingo)_certificate
@@ -157,7 +157,7 @@ GO
 CREATE PROCEDURE [$(bingo)].__OnInsertRecordTrigger 
     @table_id int,
     @database_id int,
-    @tmp_cursor_name nvarchar(max),
+    @tmp_table_name nvarchar(max),
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._OnInsertRecordTrigger
@@ -169,10 +169,10 @@ GO
 CREATE PROCEDURE [$(bingo)]._OnInsertRecordTrigger 
     @table_id int,
     @database_id int,
-    @tmp_cursor_name nvarchar(max)
+    @tmp_table_name nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)].__OnInsertRecordTrigger @table_id, @database_id, @tmp_cursor_name, '$(bingo)'
+  EXEC [$(bingo)].__OnInsertRecordTrigger @table_id, @database_id, @tmp_table_name, '$(bingo)'
 END
 GO
 ADD SIGNATURE TO [$(bingo)]._OnInsertRecordTrigger BY CERTIFICATE $(bingo)_certificate
@@ -335,7 +335,8 @@ CREATE PROCEDURE [$(bingo)]._CreateMoleculeIndex
     @table nvarchar(max),
     @id_column nvarchar(max),
     @data_column nvarchar(max),
-    @bingo_schema nvarchar(max)
+    @bingo_schema nvarchar(max),
+    @bingo_db nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CreateMoleculeIndex
 GO
@@ -349,7 +350,7 @@ CREATE PROCEDURE [$(bingo)].CreateMoleculeIndex
     @data_column nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._CreateMoleculeIndex @table, @id_column, @data_column, '$(bingo)'
+  EXEC [$(bingo)]._CreateMoleculeIndex @table, @id_column, @data_column, '$(bingo)', '$(database)'
 END
 GO
 ADD SIGNATURE TO [$(bingo)].CreateMoleculeIndex BY CERTIFICATE $(bingo)_certificate
@@ -366,7 +367,8 @@ CREATE PROCEDURE [$(bingo)]._CreateReactionIndex
     @table nvarchar(max),
     @id_column nvarchar(max),
     @data_column nvarchar(max),
-    @bingo_schema nvarchar(max)
+    @bingo_schema nvarchar(max),
+    @bingo_db nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CreateReactionIndex
 GO
@@ -380,7 +382,7 @@ CREATE PROCEDURE [$(bingo)].CreateReactionIndex
     @data_column nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._CreateReactionIndex @table, @id_column, @data_column, '$(bingo)'
+  EXEC [$(bingo)]._CreateReactionIndex @table, @id_column, @data_column, '$(bingo)', '$(database)'
 END
 GO
 ADD SIGNATURE TO [$(bingo)].CreateReactionIndex BY CERTIFICATE $(bingo)_certificate

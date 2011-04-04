@@ -27,6 +27,9 @@
     <ClCompile Include="..\common\base_cpp\chunk_storage.cpp">
       <Filter>base</Filter>
     </ClCompile>
+    <ClCompile Include="src\core-c\ringo_core_c_parallel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core-c\bingo_core_c.h">
@@ -42,6 +45,9 @@
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="src\core-c\bingo_core_c_internal.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core-c\ringo_core_c_parallel.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

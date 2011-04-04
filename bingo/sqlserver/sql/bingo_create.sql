@@ -65,7 +65,7 @@ insert into [$(bingo)].CONFIG values(0, 'SIM_SCREENING_PASS_MARK', '128');
 go
 
 create table [$(bingo)].CONFIG_BIN (n int, name varchar(100), value varbinary(max));
-create index CONFIG_N on [$(bingo)].CONFIG_BIN(n); 
+create index CONFIG_BIN_N on [$(bingo)].CONFIG_BIN(n); 
 go
 
 -- Create context

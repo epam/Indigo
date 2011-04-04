@@ -22,6 +22,16 @@ namespace indigo
          }
       }
 
+      public static SqlDataReader ExecReader (SqlConnection conn, string command, params object[] args)
+      {
+         string query = String.Format(command, args);
+         using (SqlCommand cmd = new SqlCommand(query, conn))
+         {
+            cmd.CommandTimeout = 3600 * 10;
+            return cmd.ExecuteReader();
+         }
+      }
+
       public static void ExecNonQueryNoThrow (SqlConnection conn, string command, params object[] args)
       {
          try
@@ -135,21 +145,16 @@ namespace indigo
       bool closed = false;
       List<object> row;
 
-      public BingoSqlCursor (SqlConnection conn, string cursor_name_or_null, 
+      public BingoSqlCursor (SqlConnection conn, 
          string select_command, params object[] args)
       {
          this.connection = conn;
 
-         if (cursor_name_or_null != null)
-            cursor_name = cursor_name_or_null;
-         else
-         {
-            cursor_name = string.Format("[{0}]", Guid.NewGuid().ToString());
-            string select_command_formatted = String.Format(select_command, args);
-            BingoSqlUtils.ExecNonQuery(conn,
-               "DECLARE {0} CURSOR GLOBAL FORWARD_ONLY READ_ONLY FOR {1}; OPEN {0};",
-               cursor_name, select_command_formatted);
-         }
+         cursor_name = string.Format("[{0}]", Guid.NewGuid().ToString());
+         string select_command_formatted = String.Format(select_command, args);
+         BingoSqlUtils.ExecNonQuery(conn,
+            "DECLARE {0} CURSOR GLOBAL FORWARD_ONLY READ_ONLY FOR {1}; OPEN {0};",
+            cursor_name, select_command_formatted);
       }
 
       public bool read ()

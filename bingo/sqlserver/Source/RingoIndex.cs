@@ -10,12 +10,12 @@ namespace indigo
 
       public byte[] fingerprint;
 
-      public bool prepare (string reaction)
+      public bool readPrepared (out int id)
       {
          IntPtr crf_ptr, fingerprint_ptr;
          int crf_buf_len, fingerprint_buf_len;
 
-         int ret = BingoCore.lib.ringoIndexPrepareReaction(reaction, reaction.Length,
+         int ret = BingoCore.lib.ringoIndexReadPreparedReaction(out id, 
             out crf_ptr, out crf_buf_len, out fingerprint_ptr, out fingerprint_buf_len);
 
          if (ret == -2)

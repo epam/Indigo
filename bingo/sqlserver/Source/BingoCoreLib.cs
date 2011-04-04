@@ -83,9 +83,18 @@ namespace indigo
       sbyte* bingoRDFImportGetProperty (
          [MarshalAs(UnmanagedType.LPStr)] string param_name);
 
+      /* Indexing */
       int bingoIndexBegin ();
       int bingoIndexEnd ();
       int bingoIndexMarkTermintate ();
+
+      int bingoSetIndexRecordData (int id, byte[] data, int data_size);
+
+      int bingoIndexProcess (
+         [MarshalAs(UnmanagedType.I1)] bool is_reaction,
+         BingoCore.GetNextRecordHandler get_next_record,
+         BingoCore.ProcessResultHandler process_result,
+         BingoCore.ProcessErrorHandler process_error, IntPtr context);
 
       int mangoIndexReadPreparedMolecule (
          out int id,
@@ -97,14 +106,15 @@ namespace indigo
          out IntPtr fingerprint_sim_str,
          out float mass, out int sim_fp_bits_count);
 
-      int ringoIndexPrepareReaction (
-         [MarshalAs(UnmanagedType.LPStr)] string reaction, int reaction_len,
+      int ringoIndexReadPreparedReaction (
+         out int id,
          out IntPtr crf_buf, out int crf_buf_len,
          out IntPtr fingerprint_buf, out int fingerprint_buf_len);
 
       int mangoGetHash (
          [MarshalAs(UnmanagedType.I1)] bool for_index,
          int index, out int count, out int hash);
+
 
       int mangoGetQueryFingerprint (out IntPtr query_fp, out int query_fp_len);
 
@@ -206,15 +216,6 @@ namespace indigo
 
       sbyte* bingoGetNameCore (
          [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
-
-      /* Parallel indexing */
-
-      int bingoSetIndexRecordData (int id, byte[] data, int data_size);
-
-      int mangoIndexProcess (
-         BingoCore.GetNextRecordHandler get_next_record,
-         BingoCore.ProcessResultHandler process_result,
-         BingoCore.ProcessErrorHandler process_error, IntPtr context);
 
       /* Test functions */
       int bingoCheckMemoryAllocate (int mem);

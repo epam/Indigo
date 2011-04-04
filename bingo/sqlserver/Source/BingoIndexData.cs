@@ -334,7 +334,7 @@ namespace indigo
       {
       }
 
-      public void CreateTriggers (SqlConnection conn)
+      public void CreateTriggers (SqlConnection conn, string bingo_db)
       {
          string cur_db_name = null;
          try
@@ -342,9 +342,11 @@ namespace indigo
             cur_db_name = BingoSqlUtils.ExecStringQuery(conn, "SELECT DB_NAME()");
             BingoSqlUtils.ExecNonQueryNoThrow(conn, "USE {0}", id.DatabaseName(conn));
 
+            string bingo_db_schema = bingo_db + "." + bingo_schema;
+
             string full_name = id.FullTableName(conn);
             object[] trigger_params = new object[] { null, 
-               full_name, id_column, data_column, bingo_schema, id.table_id, id.database_id };
+               full_name, id_column, data_column, bingo_db_schema, id.table_id, id.database_id };
 
             trigger_params[0] = GetTriggerName("Insert", conn);
             string insert_trigger = String.Format(resource.OnInsertTrigger, trigger_params);

@@ -400,9 +400,10 @@ namespace indigo
 
 
       private static void CreateIndex (SqlString table, SqlString id_column, 
-         SqlString data_column, SqlString bingo_schema, bool reaction)
+         SqlString data_column, SqlString bingo_schema, SqlString bingo_db, bool reaction)
       {
-         bingoOperationDelegate opWithIndex = getInsertRecordsDelegate(table.Value, null, true);
+         bingoOperationDelegate opWithIndex = 
+            getInsertRecordsDelegate(table.Value, true, bingo_db.Value);
 
          bingoGetIndexDataDelegate createDataDelegate =
             (ctx_conn, conn, schema) => BingoIndexData.CreateIndexData(getSPID(ctx_conn),
@@ -422,27 +423,25 @@ namespace indigo
       //    Only table or existing_cursor_name must be non null
       //
       private static bingoOperationDelegate getInsertRecordsDelegate (string table, 
-         string existing_cursor_name, bool flush_and_create_index)
+         bool flush_and_create_index, string bingo_db)
       {
          UTF8Encoding encoding = new UTF8Encoding();
-         if ((table == null) == (existing_cursor_name == null))
-            throw new Exception("Internal error: table or existing_cursor_name must be specified");
 
          bingoOperationDelegate opWithIndex =
             (ctx_conn, conn, data) =>
             {
                // Process each molecule
-               // If existing_cursor_name isn't null then is will be used
                // If ThreadAbortException occurs then Thread.ResetAbort() is 
                // called and indexing is terminated 
-               using (BingoSqlCursor cursor = new BingoSqlCursor(ctx_conn, existing_cursor_name, 
+               using (BingoSqlCursor cursor = new BingoSqlCursor(ctx_conn, 
                   "SELECT {0}, {1} FROM {2}", data.id_column, data.data_column, table))
                {
-                  int counter = 0, id = -1;
                   Exception exception = null;
                   BingoCore.GetNextRecordHandler get_next_record =
                      (IntPtr context) =>
                      {
+                        int counter = 0;
+                        int? id = null;
                         if (exception != null)
                            return 0;
                         try
@@ -479,7 +478,7 @@ namespace indigo
                               else
                                  record_data = encoding.GetBytes((string)cursor[1]);
 
-                              BingoCore.lib.bingoSetIndexRecordData(id, record_data, record_data.Length);
+                              BingoCore.lib.bingoSetIndexRecordData(id.Value, record_data, record_data.Length);
 
                               return 1;
                            }
@@ -488,8 +487,14 @@ namespace indigo
                         }
                         catch (Exception ex)
                         {
-                           BingoLog.logMessage("Failed on id = {0}", id);
-                           Thread.ResetAbort();
+                           if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
+                              Thread.ResetAbort();
+
+                           if (id.HasValue)
+                              BingoLog.logMessage("Failed on id = {0}", id);
+                           else
+                              BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
+
                            BingoCore.lib.bingoIndexMarkTermintate();
                            exception = ex;
                            return 0;
@@ -507,15 +512,15 @@ namespace indigo
                            if (data.getIndexType() == BingoIndexData.IndexType.Molecule)
                               _AddMoleculeToIndex(conn, data);
                            else
-                              throw new Exception("Reactions are not implemented yet");
-                              //_AddReactionToIndex(conn, data, id, record_data);
+                              _AddReactionToIndex(conn, data);
                            add_timer.end();
                         }
                         catch (Exception ex)
                         {
                            BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
                            BingoCore.lib.bingoIndexMarkTermintate();
-                           Thread.ResetAbort();
+                           if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
+                              Thread.ResetAbort();
                            exception = ex;
                         }
                      };
@@ -528,8 +533,8 @@ namespace indigo
                         try
                         {
                            string message =
-                              String.Format("Molecule with ID={0} wasn't added to the index: {1}",
-                                 id, BingoCore.lib.bingoGetWarning());
+                              String.Format("Record with ID={0} wasn't added to the index: {1}",
+                                 id_with_error, BingoCore.lib.bingoGetWarning());
                            SqlContext.Pipe.Send(message);
                            BingoLog.logMessage(message);
                         }
@@ -537,17 +542,17 @@ namespace indigo
                         {
                            BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
                            BingoCore.lib.bingoIndexMarkTermintate();
-                           Thread.ResetAbort();
+                           if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
+                              Thread.ResetAbort();
                            exception = ex;
                         }
                      };
 
                   try
                   {
-                     if (data.getIndexType() == BingoIndexData.IndexType.Molecule)
-                        BingoCore.lib.mangoIndexProcess(get_next_record, process_result, process_error, IntPtr.Zero);
-                     else
-                        throw new Exception("Not implemented yet");
+                     BingoCore.lib.bingoIndexProcess(
+                        data.getIndexType() == BingoIndexData.IndexType.Reaction,
+                        get_next_record, process_result, process_error, IntPtr.Zero);
                   }
                   catch (Exception ex)
                   {
@@ -573,7 +578,7 @@ namespace indigo
                   data.fingerprints.createIndices(conn);
                   fp_indices_timer.end();
 
-                  data.CreateTriggers(conn);
+                  data.CreateTriggers(conn, bingo_db);
                }
             };
          return opWithIndex;
@@ -582,10 +587,10 @@ namespace indigo
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunction]
-      public static void CreateMoleculeIndex (SqlString table, SqlString id_column, 
-         SqlString data_column, SqlString bingo_schema)
+      public static void CreateMoleculeIndex (SqlString table, SqlString id_column,
+         SqlString data_column, SqlString bingo_schema, SqlString bingo_db)
       {
-         CreateIndex(table, id_column, data_column, bingo_schema, false);
+         CreateIndex(table, id_column, data_column, bingo_schema, bingo_db, false);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
@@ -612,10 +617,10 @@ namespace indigo
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunction]
-      public static void CreateReactionIndex (SqlString table, SqlString id_column, 
-         SqlString data_column, SqlString bingo_schema)
+      public static void CreateReactionIndex (SqlString table, SqlString id_column,
+         SqlString data_column, SqlString bingo_schema, SqlString bingo_db)
       {
-         CreateIndex(table, id_column, data_column, bingo_schema, true);
+         CreateIndex(table, id_column, data_column, bingo_schema, bingo_db, true);
       }
 
       private static bool _AddMoleculeToIndex (SqlConnection conn, BingoIndexData bingo_data)
@@ -649,13 +654,13 @@ namespace indigo
          return true;
       }
 
-      private static bool _AddReactionToIndex (SqlConnection conn, BingoIndexData bingo_data, 
-         int id, string reaction)
+      private static bool _AddReactionToIndex (SqlConnection conn, BingoIndexData bingo_data)
       {
          RingoIndexData data = (RingoIndexData)bingo_data;
 
+         int id;
          RingoIndex index = new RingoIndex();
-         if (!index.prepare(reaction))
+         if (!index.readPrepared(out id))
          {
             string message =
                String.Format("Reaction with ID={0} wasn't added to the index: {1}",
@@ -1506,13 +1511,13 @@ namespace indigo
         SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunction]
       public static void _OnInsertRecordTrigger (SqlInt32 table_id, SqlInt32 database_id,
-         SqlString tmp_cursor_name, SqlString bingo_schema)
+         SqlString tmp_table_name, SqlString bingo_schema)
       {
          bingoGetIndexDataDelegate getDataDelegate =
             (ctx_conn, conn, schema) => BingoIndexData.GetIndexData(conn, bingo_schema.Value,
                table_id.Value, database_id.Value, getSPID(ctx_conn));
 
-         bingoOperationDelegate insertOp = getInsertRecordsDelegate(null, tmp_cursor_name.Value, false);
+         bingoOperationDelegate insertOp = getInsertRecordsDelegate(tmp_table_name.Value, false, null);
 
          _ExecuteBingoOperationChangeIndex(bingo_schema, insertOp,
             getDataDelegate, BingoOp.LOAD_CMF | BingoOp.NON_CONTEXT_CONN | BingoOp.LOCK_INDEX);
@@ -1522,7 +1527,7 @@ namespace indigo
         SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunction]
       public static void _OnDeleteRecordTrigger (SqlInt32 table_id, SqlInt32 database_id,
-         SqlString tmp_cursor_name, SqlString bingo_schema)
+         SqlString tmp_table_name, SqlString bingo_schema)
       {
          bingoGetIndexDataDelegate getDataDelegate =
             (ctx_conn, conn, schema) => BingoIndexData.GetIndexData(conn, bingo_schema.Value,
@@ -1532,7 +1537,8 @@ namespace indigo
             (ctx_conn, conn, index_data) =>
             {
                index_data.prepareForDeleteRecord(conn);
-               using (BingoSqlCursor cursor = new BingoSqlCursor(ctx_conn, tmp_cursor_name.Value, ""))
+               using (BingoSqlCursor cursor = new BingoSqlCursor(ctx_conn,
+                  "SELECT {0} FROM {1}", index_data.id_column, tmp_table_name.Value))
                {
                   while (cursor.read())
                   {
@@ -1543,7 +1549,7 @@ namespace indigo
             };
 
          _ExecuteBingoOperationChangeIndex(bingo_schema, deleteOp,
-            getDataDelegate, BingoOp.LOAD_CMF | BingoOp.LOCK_INDEX);
+            getDataDelegate, BingoOp.LOAD_CMF | BingoOp.LOCK_INDEX | BingoOp.NON_CONTEXT_CONN);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,

@@ -180,7 +180,19 @@ bool MangoSubstructure::matchLoadedTarget ()
 
    matcher.setQuery(_query);
 
-   return matcher.find();
+   profTimerStart(temb, "match.embedding");
+   bool res = matcher.find();
+   profTimerStop(temb);
+
+   if (res)
+   {
+      profIncTimer("match.embedding_found", profTimerGetTime(temb));
+   }
+   else
+   {
+      profIncTimer("match.embedding_not_found", profTimerGetTime(temb));
+   }
+   return res;
 }
 
 void MangoSubstructure::loadBinaryTargetXyz (Scanner &xyz_scanner)
@@ -332,32 +344,7 @@ bool MangoSubstructure::matchBinary (Scanner &scanner, Scanner *xyz_scanner)
    _initTarget(true);
    profTimerStop(tinit);
 
-   MoleculeSubstructureMatcher matcher(_target);
-
-   matcher.match_3d = match_3d;
-   matcher.rms_threshold = rms_threshold;
-   matcher.setQuery(_query);
-   matcher.use_pi_systems_matcher = _use_pi_systems_matcher;
-   matcher.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
-   //matcher.highlighting = &_target_highlighting;
-   matcher.fmcache = &_fmcache;
-
-   _fmcache.clear();
-
-   profTimerStart(temb, "match.embedding");
-   bool res = matcher.find();
-   profTimerStop(temb);
-
-   if (res)
-   {
-      profIncTimer("match.embedding_found", profTimerGetTime(temb));
-   }
-   else
-   {
-      profIncTimer("match.embedding_not_found", profTimerGetTime(temb));
-   }
-   
-   return res;
+   return matchLoadedTarget();
 }
 
 bool MangoSubstructure::parse (const char *params)

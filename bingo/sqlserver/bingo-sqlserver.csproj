@@ -143,12 +143,12 @@ copy /Y $(SolutionDir)x64\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)Res
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\OnInsertTrigger.sql" />
+    <EmbeddedResource Include="Resources\OnInsertTrigger.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\OnDeleteTrigger.sql" />
+    <EmbeddedResource Include="Resources\OnDeleteTrigger.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\OnUpdateTrigger.sql" />
+    <EmbeddedResource Include="Resources\OnUpdateTrigger.sql" />
   </ItemGroup>
 </Project>

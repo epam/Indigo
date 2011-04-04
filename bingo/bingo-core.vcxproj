@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="src\core\bingo_context.h" />
     <ClInclude Include="src\core\bingo_error.h" />
+    <ClInclude Include="src\core\bingo_index.h" />
     <ClInclude Include="src\core\mango_context.h" />
     <ClInclude Include="src\core\mango_index.h" />
     <ClInclude Include="src\core\mango_matchers.h" />

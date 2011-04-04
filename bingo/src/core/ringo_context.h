@@ -29,11 +29,8 @@ namespace ingido
 class RingoContext
 {
 public:
-
    explicit RingoContext (BingoContext &context);
    virtual ~RingoContext ();
-
-   RingoIndex        index;
 
    RingoSubstructure substructure;
 

@@ -15,7 +15,12 @@
 #include "bingo_core_c_internal.h"
 #include "bingo_core_c_parallel.h"
 
+#include "mango_core_c_parallel.h"
+#include "ringo_core_c_parallel.h"
+
 #include "base_cpp/profiling.h"
+#include "molecule/cmf_saver.h"
+#include "reaction/crf_saver.h"
 
 using namespace indigo::bingo_core;
 
@@ -29,6 +34,32 @@ CEXPORT int bingoSetIndexRecordData (int id, const char *data, int data_size)
    BINGO_END(0, -1)
 }
 
+// Method for index molecules
+CEXPORT int bingoIndexProcess (bool is_reaction, 
+   int (*get_next_record_cb) (void *context), 
+   void (*process_result_cb) (void *context),
+   void (*process_error_cb) (int id, void *context), void *context )
+{
+   BINGO_BEGIN
+   {
+      if (is_reaction)
+         self.parallel_indexing_dispatcher.reset(new RingoIndexingDispatcher(self));
+      else
+         self.parallel_indexing_dispatcher.reset(new MangoIndexingDispatcher(self));
+
+      self.parallel_indexing_dispatcher->context = context;
+      self.parallel_indexing_dispatcher->get_next_record_cb = get_next_record_cb;
+      self.parallel_indexing_dispatcher->process_result_cb = process_result_cb;
+      self.parallel_indexing_dispatcher->process_error_cb = process_error_cb;
+      self.parallel_indexing_dispatcher->run(self.bingo_context->nthreads);
+      self.parallel_indexing_dispatcher.reset(0);
+   }
+   BINGO_END(0, -1)
+}
+
+//
+// IndexingDispatcher
+//
 IndexingDispatcher::IndexingDispatcher (BingoCore &core, int method,  
       bool set_parent_SID_for_threads, int records_per_command) : 
    _core(core), OsCommandDispatcher(method, set_parent_SID_for_threads)
@@ -39,6 +70,11 @@ IndexingDispatcher::IndexingDispatcher (BingoCore &core, int method,
    process_error_cb = 0;
    get_next_record_cb = 0;
    process_result_cb = 0;
+}
+
+OsCommand* IndexingDispatcher::_allocateCommand ()
+{
+   return new IndexingCommand();
 }
 
 bool IndexingDispatcher::_setupCommand (OsCommand &cmd)
@@ -84,12 +120,51 @@ void IndexingDispatcher::_handleResult (OsCommandResult &res)
    }
 }
 
+//
+// IndexingCommand
+//
 void IndexingCommand::clear ()
 {
    records.clear();
    ids.clear();
 }
 
+void IndexingCommand::execute (OsCommandResult &result_)
+{
+   IndexingCommandResult &result = (IndexingCommandResult &)result_;
+   for (int i = 0; i < ids.size(); i++)
+   {
+      BufferScanner scanner(records.get(i), records.getSize(i));
+      NullOutput output;
+
+      bool exception_found = false;
+      TRY_READ_TARGET_RXN
+      {
+         TRY_READ_TARGET_MOL
+         {
+            try
+            {
+               BingoIndex &index = result.getIndex(result.ids.size());
+               index.init(*core->bingo_context);
+               index.prepare(scanner, output, lock_for_exclusive_access);
+            }
+            catch (CmfSaver::Error &e) { exception_found = true; result.error_messages.add(e.message()); }
+            catch (CrfSaver::Error &e) { exception_found = true; result.error_messages.add(e.message()); }
+         }
+         CATCH_READ_TARGET_MOL(result.error_messages.add(e.message()); exception_found = true;);
+      }
+      CATCH_READ_TARGET_RXN(result.error_messages.add(e.message()); exception_found = true;);
+
+      if (exception_found)
+         result.error_ids.push(ids[i]);
+      else
+         result.ids.push(ids[i]);
+   }
+}
+
+//
+// IndexingCommandResult
+//
 void IndexingCommandResult::clear ()
 {
    ids.clear();
