@@ -18,11 +18,11 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/base_molecule.h"
 
 namespace indigo {
 
 class Scanner;
-class BaseMolecule;
 class Molecule;
 class QueryMolecule;
 
@@ -121,7 +121,9 @@ protected:
    void _readRGroupOccurrenceRanges (const char *str, Array<int> &ranges);
    void _readRGroups2000 ();
    void _readCtab3000 ();
+   void _readSGroup3000 (const char *str);
    void _readRGroups3000 ();
+   void _readSGroupDisplay (Scanner &scanner, BaseMolecule::DataSGroup &dsg);
    void _preparePseudoAtomLabel (Array<char> &pseudo);
    void _readMultiString (Array<char> &str);
    void _init ();
