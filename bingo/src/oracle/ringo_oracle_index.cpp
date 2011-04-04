@@ -56,7 +56,7 @@ bool _ringoRegisterReaction (OracleEnv &env, const char *rowid,
 
       try
       {
-         index.prepare(scanner, output);
+         index.prepare(scanner, output, NULL);
       }
       catch (CmfSaver::Error &e) { env.dbgPrintf(bad_reaction_warning_rowid, rowid, e.message()); return false;}
       catch (CrfSaver::Error &e) { env.dbgPrintf(bad_reaction_warning_rowid, rowid, e.message()); return false;}
@@ -137,7 +137,8 @@ void ringoRegisterTable (OracleEnv &env, RingoOracleContext &context)
    {
       int n = 0;
 
-      RingoIndex index(context.context());
+      QS_DEF(RingoIndex, index);
+      index.init(context.context());
 
       if (statement.executeAllowNoData()) do
       {
@@ -278,7 +279,8 @@ ORAEXT void oraRingoIndexInsert (OCIExtProcContext *ctx, int context_id,
 
       env.dbgPrintf("inserting reaction with rowid %s\n", rowid);
       
-      RingoIndex index(context.context());
+      QS_DEF(RingoIndex, index);
+      index.init(context.context());
       BingoFingerprints &fingerprints = context.fingerprints;
       BingoStorage &storage = context.context().storage;
       

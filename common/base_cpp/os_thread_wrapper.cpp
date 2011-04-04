@@ -71,10 +71,19 @@ extern "C" THREAD_RET THREAD_MOD _threadFuncStatic (void *param)
 
 void OsCommandDispatcher::run ()
 {
-   run(3 * osGetProcessorsCount() / 2 + 1);
+   _run(3 * osGetProcessorsCount() / 2 + 1);
 }
 
 void OsCommandDispatcher::run (int nthreads)
+{
+   if (nthreads < 0)
+      // Use automatic thread count selection
+      run();
+   else
+      _run(nthreads);
+}
+
+void OsCommandDispatcher::_run (int nthreads)
 {
    _last_command_index = 0;
    _expected_command_index = 0;
@@ -121,9 +130,14 @@ void OsCommandDispatcher::_mainLoop ()
    }
 }
 
-void OsCommandDispatcher::terminate ()
+void OsCommandDispatcher::markToTerminate ()
 {
    _need_to_terminate = true;
+}
+
+void OsCommandDispatcher::terminate ()
+{
+   markToTerminate();
    _mainLoop();
 }
 
@@ -292,8 +306,12 @@ void OsCommandDispatcher::_handleException (Exception *exception)
    }
 }
 
+#include <Windows.h>
+
 void OsCommandDispatcher::_threadFunc (void)
 {
+   OutputDebugStringA("Thread created\n");
+
    qword initial_SID = TL_GET_SESSION_ID();
 
    if (_same_session_IDs)
@@ -376,6 +394,8 @@ void OsCommandDispatcher::_threadFunc (void)
    _cleanupThread();
 
    TL_RELEASE_SESSION_ID(initial_SID);
+
+   OutputDebugStringA("Thread exited\n");
 }
 
 void OsCommandDispatcher::_recvCommandAndResult (OsCommandResult *&result, OsCommand *&command)

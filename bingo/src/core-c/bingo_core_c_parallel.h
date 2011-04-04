@@ -24,13 +24,14 @@ namespace indigo {
 namespace bingo_core {
 
 class BingoCore;
+class IndexingCommandResult;
 
 // This command contains pack of the binary data 
 // (molecules or reactions in the raw format) 
 class IndexingCommand : public OsCommand
 {
 public:
-   virtual void execute (OsCommandResult &result) = 0;
+   virtual void execute (OsCommandResult &result);
    virtual void clear ();
 
    // Molecules or reactions
@@ -46,6 +47,8 @@ class IndexingCommandResult : public OsCommandResult
 {
 public:
    virtual void clear ();
+
+   virtual BingoIndex& getIndex (int index) = 0;
 
    // Array of processed indices
    Array<int> ids;
@@ -83,6 +86,7 @@ protected:
    BingoCore &_core;
 
 private:
+   virtual OsCommand* _allocateCommand ();
 
    virtual bool _setupCommand (OsCommand &command);
    virtual void _handleResult (OsCommandResult &result);

@@ -58,6 +58,14 @@ CEXPORT void bingoProfIncCounter (const char *name, int dv);
 CEXPORT const char * bingoGetNameCore (const char *target_buf, int target_buf_len);
 CEXPORT int bingoSetIndexRecordData (int id, const char *data, int data_size);
 
+CEXPORT int bingoIndexEnd ();
+CEXPORT int bingoIndexBegin ();
+CEXPORT int bingoIndexMarkTermintate ();
+CEXPORT int bingoIndexProcess (bool is_reaction, 
+   int (*get_next_record_cb) (void *context), 
+   void (*process_result_cb) (void *context),
+   void (*process_error_cb) (int id, void *context), void *context );
+
 /*
  * Mango core interface
  */
@@ -72,8 +80,6 @@ CEXPORT int mangoIndexReadPreparedMolecule (int *id,
                  const char **fingerprint_sim_str, 
                  float *mass, int *sim_fp_bits_count);
 
-CEXPORT int mangoIndexEnd ();
-CEXPORT int mangoIndexBegin ();
 CEXPORT int mangoGetHash (byte for_index, int index, int *count, dword *hash);
 CEXPORT int mangoGetAtomCount (const char *target_buf, int target_buf_len);
 CEXPORT int mangoGetBondCount (const char *target_buf, int target_buf_len);
@@ -121,11 +127,12 @@ CEXPORT int mangoIndexProcess (
  * Ringo core interface
  */
 
-CEXPORT int ringoIndexEnd ();
-CEXPORT int ringoIndexBegin ();
-CEXPORT int ringoIndexPrepareReaction (const char *str, int str_len,
+CEXPORT int ringoIndexProcessSingleRecord ();
+
+CEXPORT int ringoIndexReadPreparedReaction (int *id, 
                  const char **crf_buf, int *crf_buf_len,
                  const char **fingerprint_buf, int *fingerprint_buf_len);
+
 CEXPORT int ringoSetupMatch (const char *search_type, const char *query, const char *options);
 // Return value:
 //   1 if the query is a substructure of the taret

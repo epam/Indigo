@@ -22,6 +22,16 @@ namespace indigo
          }
       }
 
+      public static SqlDataReader ExecReader (SqlConnection conn, string command, params object[] args)
+      {
+         string query = String.Format(command, args);
+         using (SqlCommand cmd = new SqlCommand(query, conn))
+         {
+            cmd.CommandTimeout = 3600 * 10;
+            return cmd.ExecuteReader();
+         }
+      }
+
       public static void ExecNonQueryNoThrow (SqlConnection conn, string command, params object[] args)
       {
          try
@@ -130,20 +140,21 @@ namespace indigo
 
    public class BingoSqlCursor : IDisposable
    {
-      string select_command;
       SqlConnection connection;
-      string cursor_name = string.Format("[{0}]", Guid.NewGuid().ToString());
+      string cursor_name;
       bool closed = false;
       List<object> row;
 
-      public BingoSqlCursor (SqlConnection conn, string selectCommand, params object[] args)
+      public BingoSqlCursor (SqlConnection conn, 
+         string select_command, params object[] args)
       {
-         this.select_command = String.Format(selectCommand, args);
          this.connection = conn;
 
-         BingoSqlUtils.ExecNonQuery(conn, 
-            "DECLARE {0} CURSOR FORWARD_ONLY READ_ONLY FOR {1}; OPEN {0};",
-            cursor_name, this.select_command);
+         cursor_name = string.Format("[{0}]", Guid.NewGuid().ToString());
+         string select_command_formatted = String.Format(select_command, args);
+         BingoSqlUtils.ExecNonQuery(conn,
+            "DECLARE {0} CURSOR GLOBAL FORWARD_ONLY READ_ONLY FOR {1}; OPEN {0};",
+            cursor_name, select_command_formatted);
       }
 
       public bool read ()
@@ -186,7 +197,7 @@ namespace indigo
       static BingoLog _log_instance = new BingoLog();
       ~BingoLog ()
       {
-         logMessage("Log file manager was released");
+         logMessage("Log has been released");
       }
 
       [SqlFunction]

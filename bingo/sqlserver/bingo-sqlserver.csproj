@@ -122,16 +122,8 @@ copy /Y $(SolutionDir)x64\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)Res
     <EmbeddedResource Include="resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>resource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\OnInsertTrigger.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\OnDeleteTrigger.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\OnUpdateTrigger.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -149,5 +141,14 @@ copy /Y $(SolutionDir)x64\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)Res
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\OnInsertTrigger.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\OnDeleteTrigger.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\OnUpdateTrigger.sql" />
   </ItemGroup>
 </Project>

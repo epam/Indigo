@@ -128,6 +128,10 @@ CEXPORT int bingoSetConfigInt (const char *name, int value)
          self.bingo_context->ignore_closing_bond_direction_mismatch = (value != 0);
          self.bingo_context->ignore_cbdm_ready = true;
       }
+      else if (strcasecmp(name, "nthreads") == 0)
+      {
+         self.bingo_context->nthreads = value;
+      }
       else
       {
          bool set = true;
@@ -488,4 +492,55 @@ CEXPORT const char * bingoGetNameCore (const char *target_buf, int target_buf_le
       return self.buffer.ptr();
    }
    BINGO_END(0, 0)
+}
+
+CEXPORT int bingoIndexMarkTermintate ()
+{
+   BINGO_BEGIN
+   {
+      if (self.parallel_indexing_dispatcher.get())
+         self.parallel_indexing_dispatcher->markToTerminate();
+      return 1;
+   }
+   BINGO_END(-2, -2)
+}
+
+CEXPORT int bingoIndexEnd ()
+{
+   BINGO_BEGIN
+   {
+      if (self.parallel_indexing_dispatcher.get())
+      {
+         self.parallel_indexing_dispatcher->terminate();
+         self.parallel_indexing_dispatcher.reset(0);
+      }
+
+      if (self.single_mango_index.get())
+         self.single_mango_index.free();
+      if (self.single_ringo_index.get())
+         self.single_ringo_index.free();
+
+      self.mango_index = 0;
+      self.ringo_index = 0;
+      self.index_record_data_id = -1;
+      self.index_record_data.free();
+
+      return 1;
+   }
+   BINGO_END(-2, -2)
+}
+
+CEXPORT int bingoIndexBegin ()
+{
+   BINGO_BEGIN
+   {
+      if (!self.bingo_context->fp_parameters_ready)
+         throw BingoError("fingerprint parameters not set");
+
+      bingoIndexEnd();
+
+      self.index_record_data.create();
+      return 1;
+   }
+   BINGO_END(-2, -2)
 }

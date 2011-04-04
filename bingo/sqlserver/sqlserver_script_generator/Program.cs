@@ -62,13 +62,13 @@ namespace indigo
 
       static void PrintParametersAndReturn(StreamWriter stream, MethodInfo m, bool is_proxy)
       {
-         // Write aruments and return value
+         // Write arguments and return value
          bool if_first = true;
          if (m.ReturnType != typeof(void))
             stream.Write("  (\n");
          foreach (ParameterInfo p in m.GetParameters())
          {
-            if (is_proxy && p.Name == "bingo_schema")
+            if (is_proxy && (p.Name == "bingo_schema" || p.Name == "bingo_db"))
                continue;
 
             if (!if_first)
@@ -143,8 +143,10 @@ namespace indigo
                stream.Write(", ");
             else
                if_first = false;
-            if (attr.substitute_schema && p.Name == "bingo_schema")
+            if (attr.substitute_bingo && p.Name == "bingo_schema")
                stream.Write("'$(bingo)'");
+            else if (attr.substitute_bingo && p.Name == "bingo_db")
+               stream.Write("'$(database)'");
             else
                stream.Write("@{0}", p.Name);
          }
@@ -176,8 +178,11 @@ namespace indigo
             create_file.Write("--\n-- {0}\n--\n", m.Name);
 
             bool need_proxy_function = false;
-            if (attr.substitute_schema)
+            if (attr.substitute_bingo)
+            {
                need_proxy_function |= (m.GetParameters().Count(p => p.Name == "bingo_schema") > 0);
+               need_proxy_function |= (m.GetParameters().Count(p => p.Name == "bingo_db") > 0);
+            }
             PrintFunctionName(create_file, m, need_proxy_function);
             PrintParametersAndReturn(create_file, m, false);
 
@@ -230,8 +235,11 @@ namespace indigo
             BingoSqlFunctionAttribute attr = (BingoSqlFunctionAttribute)(attributes[0]);
 
             bool need_proxy_function = false;
-            if (attr.substitute_schema)
+            if (attr.substitute_bingo)
+            {
                need_proxy_function |= (m.GetParameters().Count(p => p.Name == "bingo_schema") > 0);
+               need_proxy_function |= (m.GetParameters().Count(p => p.Name == "bingo_db") > 0);
+            }
 
             PrintDrop(drop_file, m, false);
             if (need_proxy_function)

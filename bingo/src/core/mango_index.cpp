@@ -15,6 +15,7 @@
 #include "core/mango_index.h"
 #include "molecule/elements.h"
 #include "base_cpp/scanner.h"
+#include "base_cpp/os_sync_wrapper.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_auto_loader.h"
 #include "core/bingo_error.h"
@@ -27,15 +28,6 @@
 #include "molecule/molecule_arom.h"
 
 const int MangoIndex::counted_elements[6] = {ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_H};
-
-MangoIndex::MangoIndex () : _context(0)
-{
-}
-
-void MangoIndex::init (BingoContext &context)
-{
-   _context = &context;
-}
 
 void MangoIndex::prepare (Scanner &molfile, Output &output, 
                           OsLock *lock_for_exclusive_access)

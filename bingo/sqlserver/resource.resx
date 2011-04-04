@@ -117,20 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="OnDeleteTrigger" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\OnDeleteTrigger.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
-  </data>
-  <data name="OnInsertTrigger" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\OnInsertTrigger.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
-  </data>
-  <data name="OnUpdateTrigger" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\OnUpdateTrigger.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
-  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Win/x86/bingo-core-c.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Win\x86\bingo-core-c.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Win/x64/bingo-core-c.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Win\x64\bingo-core-c.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="OnDeleteTrigger" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\OnDeleteTrigger.sql;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  </data>
+  <data name="OnInsertTrigger" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\OnInsertTrigger.sql;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  </data>
+  <data name="OnUpdateTrigger" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\OnUpdateTrigger.sql;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
 </root>

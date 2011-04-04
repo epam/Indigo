@@ -13,30 +13,25 @@
  ***************************************************************************/
 
 #include "core/ringo_index.h"
+
+#include "base_cpp/output.h"
+#include "base_cpp/os_sync_wrapper.h"
 #include "core/mango_index.h"
 #include "core/bingo_context.h"
 #include "reaction/reaction_fingerprint.h"
 #include "reaction/reaction_automapper.h"
 #include "reaction/crf_saver.h"
 #include "reaction/reaction_auto_loader.h"
-#include "base_cpp/output.h"
 #include "reaction/reaction.h"
 
-RingoIndex::RingoIndex (BingoContext &context) :
-_context(context),
-TL_CP_GET(_fp),
-TL_CP_GET(_crf)
-{
-}
-
-void RingoIndex::prepare (Scanner &rxnfile, Output &output)
+void RingoIndex::prepare (Scanner &rxnfile, Output &output, OsLock *lock_for_exclusive_access)
 {
    QS_DEF(Reaction, reaction);
       
    ReactionAutoLoader rrd(rxnfile);
-   rrd.treat_x_as_pseudoatom = _context.treat_x_as_pseudoatom;
+   rrd.treat_x_as_pseudoatom = _context->treat_x_as_pseudoatom;
    rrd.ignore_closing_bond_direction_mismatch =
-           _context.ignore_closing_bond_direction_mismatch;
+           _context->ignore_closing_bond_direction_mismatch;
    rrd.loadReaction(reaction);
 
    Reaction::checkForConsistency(reaction);
@@ -46,16 +41,19 @@ void RingoIndex::prepare (Scanner &rxnfile, Output &output)
 
    reaction.aromatize();
 
-   ReactionFingerprintBuilder builder(reaction, _context.fp_parameters);
+   ReactionFingerprintBuilder builder(reaction, _context->fp_parameters);
 
    builder.process();
-   _fp.copy(builder.get(), _context.fp_parameters.fingerprintSizeExtOrdSim() * 2);
+   _fp.copy(builder.get(), _context->fp_parameters.fingerprintSizeExtOrdSim() * 2);
 
    ArrayOutput output_crf(_crf);
-
-   CrfSaver saver(_context.cmf_dict, output_crf);
-
-   saver.saveReaction(reaction);
+   {
+      // CrfSaver modifies _context->cmf_dict and 
+      // requires exclusive access for this
+      OsLockerNullable locker(lock_for_exclusive_access);
+      CrfSaver saver(_context->cmf_dict, output_crf);
+      saver.saveReaction(reaction);
+   }
 
    output.writeArray(_crf);
 }
@@ -68,4 +66,10 @@ const byte * RingoIndex::getFingerprint ()
 const Array<char> & RingoIndex::getCrf ()
 {
    return _crf;
+}
+
+void RingoIndex::clear ()
+{
+   _fp.clear();
+   _crf.clear();
 }

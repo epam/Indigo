@@ -77,5 +77,8 @@
     <ClInclude Include="..\common\base_c\nano.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\bingo_index.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -16,6 +16,7 @@
 #define __bingo_core_c_internal_h___
 
 #include "base_c/defs.h"
+#include "base_cpp/auto_ptr.h"
 #include "core/bingo_context.h"
 #include "core/mango_context.h"
 #include "core/ringo_context.h"
@@ -25,15 +26,20 @@
 
 #include "base_cpp/scanner.h"
 #include "molecule/smiles_loader.h"
+#include "molecule/smiles_loader.h"
 #include "molecule/elements.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/rdf_loader.h"
 #include "molecule/cmf_saver.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molecule_auto_loader.h"
+#include "reaction/rsmiles_loader.h"
+#include "reaction/reaction.h"
+#include "reaction/rxnfile_loader.h"
+#include "reaction/reaction_auto_loader.h"
 
 #include "bingo_core_c.h"
-#include "mango_core_c_parallel.h"
+#include "bingo_core_c_parallel.h"
 
 namespace indigo {
 namespace bingo_core {
@@ -66,9 +72,11 @@ public:
 
    Obj< Array<char> > index_record_data;
    int index_record_data_id;
-   Obj<MangoIndex> single_mango_index;
 
-   Obj<MangoIndexingDispatcher> mango_indexing_dispatcher;
+   Obj<MangoIndex> single_mango_index;
+   Obj<RingoIndex> single_ringo_index;
+
+   AutoPtr<IndexingDispatcher> parallel_indexing_dispatcher;
 
    enum 
    {

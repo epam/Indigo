@@ -26,43 +26,6 @@
 
 using namespace indigo::bingo_core;
 
-CEXPORT int mangoIndexEnd ()
-{
-   BINGO_BEGIN
-   {
-      if (self.mango_indexing_dispatcher.get())
-      {
-         self.mango_indexing_dispatcher->terminate();
-         self.mango_indexing_dispatcher.free();
-      }
-
-      if (self.single_mango_index.get())
-         self.single_mango_index.free();
-
-      self.mango_index = 0;
-      self.index_record_data_id = -1;
-      self.index_record_data.free();
-
-      return 1;
-   }
-   BINGO_END(-2, -2)
-}
-
-CEXPORT int mangoIndexBegin ()
-{
-   BINGO_BEGIN
-   {
-      if (!self.bingo_context->fp_parameters_ready)
-         throw BingoError("fingerprint parameters not set");
-
-      mangoIndexEnd();
-
-      self.index_record_data.create();
-      return 1;
-   }
-   BINGO_END(-2, -2)
-}
-
 CEXPORT int mangoIndexProcessSingleRecord ()
 {
    BINGO_BEGIN
@@ -75,20 +38,16 @@ CEXPORT int mangoIndexProcessSingleRecord ()
       {
          try
          {
-            if (self.single_mango_index.get() == NULL) {
+            if (self.single_mango_index.get() == NULL)
+            {
                self.single_mango_index.create();
                self.single_mango_index->init(*self.bingo_context);
             }
 
-
             self.mango_index = self.single_mango_index.get();
-            self.mango_index->prepare(scanner, output);
+            self.mango_index->prepare(scanner, output, NULL);
          }
-         catch (CmfSaver::Error &e) 
-         {
-            self.warning.readString(e.message(), true); 
-            return 0;
-         }
+         catch (CmfSaver::Error &e) { self.warning.readString(e.message(), true); return 0; }
       }
       CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), true); return 0;);
    }

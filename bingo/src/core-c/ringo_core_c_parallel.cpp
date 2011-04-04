@@ -13,7 +13,7 @@
  ***************************************************************************/
 
 #include "bingo_core_c_internal.h"
-#include "mango_core_c_parallel.h"
+#include "ringo_core_c_parallel.h"
 
 #include <string.h>
 
@@ -22,35 +22,34 @@ using namespace indigo::bingo_core;
 //
 // MangoIndexingCommandResult
 //
-void MangoIndexingCommandResult::clear ()
+void RingoIndexingCommandResult::clear ()
 {
    IndexingCommandResult::clear();
-
-   per_molecule_index.clear();
+   per_reaction_index.clear();
 }
 
-BingoIndex& MangoIndexingCommandResult::getIndex (int index)
+BingoIndex& RingoIndexingCommandResult::getIndex (int index)
 {
-   per_molecule_index.resize(index + 1);
-   return per_molecule_index[index];
+   per_reaction_index.resize(index + 1);
+   return per_reaction_index[index];
 }
 
 //
 // MangoIndexingDispatcher
 //
-MangoIndexingDispatcher::MangoIndexingDispatcher (BingoCore &core) : 
+RingoIndexingDispatcher::RingoIndexingDispatcher (BingoCore &core) : 
    IndexingDispatcher(core, HANDLING_ORDER_ANY, true, 30)
 {
 }
 
-void MangoIndexingDispatcher::_exposeCurrentResult (int index, IndexingCommandResult &res)
+void RingoIndexingDispatcher::_exposeCurrentResult (int index, IndexingCommandResult &res)
 {
-   MangoIndexingCommandResult &result = (MangoIndexingCommandResult &)res;
-   _core.mango_index = &result.per_molecule_index[index];
+   RingoIndexingCommandResult &result = (RingoIndexingCommandResult &)res;
+   _core.ringo_index = &result.per_reaction_index[index];
    _core.index_record_data_id = result.ids[index];
 }
 
-OsCommandResult* MangoIndexingDispatcher::_allocateResult  ()
+OsCommandResult* RingoIndexingDispatcher::_allocateResult  ()
 {
-   return new MangoIndexingCommandResult();
+   return new RingoIndexingCommandResult();
 }

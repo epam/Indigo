@@ -52,6 +52,7 @@ create table [$(bingo)].CONFIG (n int, name varchar(100), value varchar(4000));
 create index CONFIG_N on [$(bingo)].CONFIG(n); 
 insert into [$(bingo)].CONFIG values(0, 'treat-x-as-pseudoatom', '0');
 insert into [$(bingo)].CONFIG values(0, 'ignore-closing-bond-direction-mismatch', '0');
+insert into [$(bingo)].CONFIG values(0, 'nthreads', '-1');
 go
 
 insert into [$(bingo)].CONFIG values(0, 'FP_ORD_SIZE', '25');
@@ -64,7 +65,7 @@ insert into [$(bingo)].CONFIG values(0, 'SIM_SCREENING_PASS_MARK', '128');
 go
 
 create table [$(bingo)].CONFIG_BIN (n int, name varchar(100), value varbinary(max));
-create index CONFIG_N on [$(bingo)].CONFIG_BIN(n); 
+create index CONFIG_BIN_N on [$(bingo)].CONFIG_BIN(n); 
 go
 
 -- Create context
@@ -72,6 +73,7 @@ create table [$(bingo)].CONTEXT (obj_id int, database_id int, full_table_name va
 create index CONTEXT_ID on [$(bingo)].CONTEXT(obj_id);
 go
 
+-- Create table with tautomer rules
 create table [$(bingo)].TAUTOMER_RULES (id int, begg varchar(100), endd varchar(100));
 insert into [$(bingo)].TAUTOMER_RULES values (1, 'N,O,P,S,As,Se,Sb,Te', 'N,O,P,S,As,Se,Sb,Te');
 insert into [$(bingo)].TAUTOMER_RULES values (2, '0C', 'N,O,P,S');
@@ -111,42 +113,61 @@ AS
 SET NOCOUNT ON;
 DECLARE     @message_body XML,
             @message_type_name NVARCHAR(256),
-            @dialog UNIQUEIDENTIFIER,
-			@spid nvarchar(max) ;
+            @dialog UNIQUEIDENTIFIER
 
 --  This procedure continues to process messages in the queue until the queue is empty.
 WHILE (1 = 1)
 BEGIN
-    BEGIN TRANSACTION ;
+	BEGIN TRANSACTION ;
 
-    -- Receive the next available message
-    WAITFOR (
-        RECEIVE TOP(1) -- just handle one message at a time
-            @message_type_name=message_type_name,  --the type of message received
-            @message_body=message_body,      -- the message contents
-            @dialog = conversation_handle    -- the identifier of the dialog this message was received on
-            FROM [$(bingo)].notify_queue
-    ), TIMEOUT 1000; -- if the queue is empty for one seconds, give up and go away
+	-- Receive the next available message
+	WAITFOR (
+		RECEIVE TOP(1) -- just handle one message at a time
+			@message_type_name=message_type_name,  --the type of message received
+			@message_body=message_body,      -- the message contents
+			@dialog = conversation_handle    -- the identifier of the dialog this message was received on
+			FROM [$(bingo)].notify_queue
+	), TIMEOUT 1000; -- if the queue is empty for one seconds, give up and go away
 
-   -- If RECEIVE did not return a message, roll back the transaction
-   -- and break out of the while loop, exiting the procedure.
-    IF (@@ROWCOUNT = 0)
-        BEGIN
-            ROLLBACK TRANSACTION ;
-            BREAK ;
-        END ;
+	-- If RECEIVE did not return a message, roll back the transaction
+	-- and break out of the while loop, exiting the procedure.
+	IF (@@ROWCOUNT = 0)
+		BEGIN
+			ROLLBACK TRANSACTION ;
+			BREAK ;
+		END ;
 
-   -- Check to see if the message is an end dialog message.
-    IF (@message_type_name = 'http://schemas.microsoft.com/SQL/ServiceBroker/EndDialog')
-    BEGIN
-        END CONVERSATION @dialog ;
-    END ;
-    ELSE
-    BEGIN
-      SET @spid = CAST(@message_body.query('/EVENT_INSTANCE/SPID/text()') AS nvarchar(100));
-      EXECUTE [$(bingo)].OnSessionClose @spid;
-    END ;
-    COMMIT TRANSACTION ;
+	-- Check to see if the message is an end dialog message.
+	IF (@message_type_name = 'http://schemas.microsoft.com/SQL/ServiceBroker/EndDialog')
+	BEGIN
+		END CONVERSATION @dialog ;
+	END ;
+	ELSE
+	BEGIN
+		DECLARE	@event_type NVARCHAR(max);
+		SET @event_type = CAST(@message_body.query('/EVENT_INSTANCE/EventType/text()') AS nvarchar(max));
+		
+		-- Release session 
+		IF (@event_type = 'AUDIT_LOGOUT')
+		BEGIN
+			DECLARE	@spid nvarchar(max);
+			SET @spid = @message_body.value('(/EVENT_INSTANCE/SPID)[1]', 'int')
+			EXECUTE [$(bingo)].OnSessionClose @spid;
+			EXECUTE [$(bingo)]._DropIndexByID
+		END
+		
+		-- Delete Bingo index if table has been deleted
+		IF (@event_type = 'OBJECT_DELETED')
+		BEGIN
+			DECLARE	@obj_id int, @database_id int;
+			
+			SET @obj_id = @message_body.value('(/EVENT_INSTANCE/ObjectID)[1]', 'int')
+			SET @database_id = @message_body.value('(/EVENT_INSTANCE/DatabaseID)[1]', 'int')
+			
+			EXECUTE [$(bingo)]._DropIndexByID @obj_id, @database_id
+		END
+	END ;
+	COMMIT TRANSACTION ;
 END ;
 GO
 
@@ -164,10 +185,10 @@ GO
 -- go
 
 CREATE ROUTE $(bingo)_notify_route AUTHORIZATION dbo
-WITH SERVICE_NAME = N'$(bingo)_$(database)_notify_service', ADDRESS = N'LOCAL';
+WITH SERVICE_NAME = N'$(bingo)_notify_service', ADDRESS = N'LOCAL';
 GO
-create event notification $(bingo)_$(database)_logout_notify on server for
-  AUDIT_LOGOUT to service '$(bingo)_$(database)_notify_service', 'current database'
+create event notification $(bingo)_logout_notify on server for
+  AUDIT_LOGOUT, OBJECT_DELETED to service '$(bingo)_notify_service', 'current database'
 GO
 
 PRINT 'Done.'

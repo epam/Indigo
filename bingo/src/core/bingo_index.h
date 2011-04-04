@@ -12,31 +12,37 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __ringo_index__
-#define __ringo_index__
+#ifndef __bingo_index__
+#define __bingo_index__
 
 #include "base_cpp/array.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
 
-#include "core/bingo_index.h"
+#include "core/bingo_error.h"
 
 using namespace indigo;
 
 class BingoContext;
 
-class RingoIndex : public BingoIndex
+namespace indigo
+{
+   class OsLock;
+}
+
+class BingoIndex
 {
 public:
-   virtual void prepare (Scanner &rxnfile, Output &fi_output, OsLock *lock_for_exclusive_access);
-   
-   const byte * getFingerprint ();
-   const Array<char> & getCrf ();
+   BingoIndex ()  { _context = 0; }
+   virtual ~BingoIndex () {}
+   void init (BingoContext &context)    { _context = &context; };
 
-   void clear ();
+   virtual void prepare (Scanner &scanner, Output &output, OsLock *lock_for_exclusive_access) = 0;
+
+protected:
+   BingoContext *_context;
 
 private:
-   Array<byte> _fp;
-   Array<char> _crf;
+   BingoIndex (const BingoIndex &); // no implicit copy
 };
 #endif

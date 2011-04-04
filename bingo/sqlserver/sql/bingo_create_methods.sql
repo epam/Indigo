@@ -59,6 +59,35 @@ ADD SIGNATURE TO [$(bingo)]._DropAllIndices BY CERTIFICATE $(bingo)_certificate
 GO
 
 --
+-- _DropIndexByID
+--
+CREATE PROCEDURE [$(bingo)].__DropIndexByID 
+    @table_id int,
+    @database_id int,
+    @bingo_schema nvarchar(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._DropIndexByID
+GO
+ADD SIGNATURE TO [$(bingo)].__DropIndexByID BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE PROCEDURE [$(bingo)]._DropIndexByID 
+    @table_id int,
+    @database_id int
+AS
+BEGIN
+  EXEC [$(bingo)].__DropIndexByID @table_id, @database_id, '$(bingo)'
+END
+GO
+ADD SIGNATURE TO [$(bingo)]._DropIndexByID BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+grant execute on [$(bingo)]._DropIndexByID to $(bingo)_operator
+GO
+
+--
 -- _FlushInAllSessions
 --
 CREATE PROCEDURE [$(bingo)].__FlushInAllSessions 
@@ -95,8 +124,9 @@ GO
 -- _OnDeleteRecordTrigger
 --
 CREATE PROCEDURE [$(bingo)].__OnDeleteRecordTrigger 
-    @full_table_name nvarchar(max),
-    @id int,
+    @table_id int,
+    @database_id int,
+    @tmp_table_name nvarchar(max),
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._OnDeleteRecordTrigger
@@ -106,11 +136,12 @@ ADD SIGNATURE TO [$(bingo)].__OnDeleteRecordTrigger BY CERTIFICATE $(bingo)_cert
 GO
 
 CREATE PROCEDURE [$(bingo)]._OnDeleteRecordTrigger 
-    @full_table_name nvarchar(max),
-    @id int
+    @table_id int,
+    @database_id int,
+    @tmp_table_name nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)].__OnDeleteRecordTrigger @full_table_name, @id, '$(bingo)'
+  EXEC [$(bingo)].__OnDeleteRecordTrigger @table_id, @database_id, @tmp_table_name, '$(bingo)'
 END
 GO
 ADD SIGNATURE TO [$(bingo)]._OnDeleteRecordTrigger BY CERTIFICATE $(bingo)_certificate
@@ -124,9 +155,9 @@ GO
 -- _OnInsertRecordTrigger
 --
 CREATE PROCEDURE [$(bingo)].__OnInsertRecordTrigger 
-    @full_table_name nvarchar(max),
-    @id int,
-    @data nvarchar(max),
+    @table_id int,
+    @database_id int,
+    @tmp_table_name nvarchar(max),
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._OnInsertRecordTrigger
@@ -136,12 +167,12 @@ ADD SIGNATURE TO [$(bingo)].__OnInsertRecordTrigger BY CERTIFICATE $(bingo)_cert
 GO
 
 CREATE PROCEDURE [$(bingo)]._OnInsertRecordTrigger 
-    @full_table_name nvarchar(max),
-    @id int,
-    @data nvarchar(max)
+    @table_id int,
+    @database_id int,
+    @tmp_table_name nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)].__OnInsertRecordTrigger @full_table_name, @id, @data, '$(bingo)'
+  EXEC [$(bingo)].__OnInsertRecordTrigger @table_id, @database_id, @tmp_table_name, '$(bingo)'
 END
 GO
 ADD SIGNATURE TO [$(bingo)]._OnInsertRecordTrigger BY CERTIFICATE $(bingo)_certificate
@@ -304,7 +335,8 @@ CREATE PROCEDURE [$(bingo)]._CreateMoleculeIndex
     @table nvarchar(max),
     @id_column nvarchar(max),
     @data_column nvarchar(max),
-    @bingo_schema nvarchar(max)
+    @bingo_schema nvarchar(max),
+    @bingo_db nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CreateMoleculeIndex
 GO
@@ -318,7 +350,7 @@ CREATE PROCEDURE [$(bingo)].CreateMoleculeIndex
     @data_column nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._CreateMoleculeIndex @table, @id_column, @data_column, '$(bingo)'
+  EXEC [$(bingo)]._CreateMoleculeIndex @table, @id_column, @data_column, '$(bingo)', '$(database)'
 END
 GO
 ADD SIGNATURE TO [$(bingo)].CreateMoleculeIndex BY CERTIFICATE $(bingo)_certificate
@@ -335,7 +367,8 @@ CREATE PROCEDURE [$(bingo)]._CreateReactionIndex
     @table nvarchar(max),
     @id_column nvarchar(max),
     @data_column nvarchar(max),
-    @bingo_schema nvarchar(max)
+    @bingo_schema nvarchar(max),
+    @bingo_db nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CreateReactionIndex
 GO
@@ -349,7 +382,7 @@ CREATE PROCEDURE [$(bingo)].CreateReactionIndex
     @data_column nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._CreateReactionIndex @table, @id_column, @data_column, '$(bingo)'
+  EXEC [$(bingo)]._CreateReactionIndex @table, @id_column, @data_column, '$(bingo)', '$(database)'
 END
 GO
 ADD SIGNATURE TO [$(bingo)].CreateReactionIndex BY CERTIFICATE $(bingo)_certificate

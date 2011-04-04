@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __mango_core_c_parallel_h___
-#define __mango_core_c_parallel_h___
+#ifndef __ringo_core_c_parallel_h___
+#define __ringo_core_c_parallel_h___
 
 #include "bingo_core_c_internal.h"
 #include "bingo_core_c_parallel.h"
@@ -23,19 +23,19 @@
 namespace indigo {
 namespace bingo_core {
 
-class MangoIndexingCommandResult : public IndexingCommandResult
+class RingoIndexingCommandResult : public IndexingCommandResult
 {
 public:
    virtual void clear ();
    virtual BingoIndex& getIndex (int index);
 
-   ReusableObjArray<MangoIndex> per_molecule_index;
+   ReusableObjArray<RingoIndex> per_reaction_index;
 };
 
-class MangoIndexingDispatcher : public IndexingDispatcher
+class RingoIndexingDispatcher : public IndexingDispatcher
 {
 public:
-   MangoIndexingDispatcher (BingoCore &core);
+   RingoIndexingDispatcher (BingoCore &core);
 
 protected:
    virtual void _exposeCurrentResult (int index, IndexingCommandResult &result);

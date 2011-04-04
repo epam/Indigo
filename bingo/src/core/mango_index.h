@@ -16,9 +16,9 @@
 #define __mango_index__
 
 #include "base_cpp/array.h"
-#include "base_cpp/tlscont.h"
 #include "base_cpp/output.h"
 #include "core/mango_matchers.h"
+#include "core/bingo_index.h"
 
 using namespace indigo;
 
@@ -29,14 +29,10 @@ namespace indigo
 
 class BingoContext;
 
-class MangoIndex
+class MangoIndex : public BingoIndex
 {
 public:
-   MangoIndex ();
-   void init (BingoContext &context);
-
-   void prepare (Scanner &molfile, Output &output, 
-      OsLock *lock_for_exclusive_access = NULL);
+   void prepare (Scanner &molfile, Output &output, OsLock *lock_for_exclusive_access);
 
    const Array<char> & getCmf () const;
    const Array<char> & getXyz () const;
@@ -57,9 +53,8 @@ public:
    static const int counted_elements[6];
 
    void clear ();
-protected:
-   BingoContext *_context;
 
+private:
    // CMF-packed aromatized molecule and coordinates
    Array<char> _cmf;
    Array<char> _xyz;

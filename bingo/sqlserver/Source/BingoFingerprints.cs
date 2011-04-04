@@ -42,7 +42,7 @@ namespace indigo
          {
             if (minimum_index > value)
                minimum_index = value;
-            if (maximum_index > value)
+            if (maximum_index < value)
                maximum_index = value;
          }
       };
