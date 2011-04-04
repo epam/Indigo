@@ -90,7 +90,7 @@ void RxnfileLoader::_readRxnHeader(){
 
    QS_DEF(Array<char>, header);
 
-   _scanner.readString(header, true);
+   _scanner.readLine(header, true);
 
    if (strcmp(header.ptr(), "$RXN") == 0)
       _v3000 = false;
@@ -99,14 +99,14 @@ void RxnfileLoader::_readRxnHeader(){
    else
       throw Error("bad header %s", header.ptr());
 
-   _scanner.readString(_brxn->name, true);
-   _scanner.skipString();
-   _scanner.skipString();
+   _scanner.readLine(_brxn->name, true);
+   _scanner.skipLine();
+   _scanner.skipLine();
 
    if (_v3000)
    {
       _scanner.skip(14); // "M  V30 COUNTS "
-      _scanner.readString(header, true);
+      _scanner.readLine(header, true);
       int n = sscanf(header.ptr(), "%d %d %d", &_n_reactants, &_n_products, &_n_catalysts);
       if (n < 2)
          throw Error("error reading counts: %s", header.ptr());
@@ -115,7 +115,7 @@ void RxnfileLoader::_readRxnHeader(){
    }
    else
    {
-      _scanner.readString(header, false);
+      _scanner.readLine(header, false);
       BufferScanner strscan(header);
 
       _n_reactants = strscan.readIntFix(3);
@@ -138,7 +138,7 @@ void RxnfileLoader::_readProductsHeader(){
 
    QS_DEF(Array<char>, header);
 
-   _scanner.readString(header, true);
+   _scanner.readLine(header, true);
    if (strcmp(header.ptr(), "M  V30 BEGIN PRODUCT") != 0){
       throw Error("bad products header: %s", header.ptr());
    }
@@ -151,7 +151,7 @@ void RxnfileLoader::_readReactantsHeader(){
 
    QS_DEF(Array<char>, header);
 
-   _scanner.readString(header, true);
+   _scanner.readLine(header, true);
    if (strcmp(header.ptr(), "M  V30 BEGIN REACTANT") != 0){
       throw Error("bad reactants header: %s", header.ptr());
    }
@@ -164,7 +164,7 @@ void RxnfileLoader::_readCatalystsHeader(){
 
    QS_DEF(Array<char>, header);
 
-   _scanner.readString(header, true);
+   _scanner.readLine(header, true);
    if (strcmp(header.ptr(), "M  V30 BEGIN AGENT") != 0){
       throw Error("bad catalysts header: %s", header.ptr());
    }
@@ -177,7 +177,7 @@ void RxnfileLoader::_readMolHeader(){
    }
    QS_DEF(Array<char>, header);
 
-   _scanner.readString(header, true);
+   _scanner.readLine(header, true);
    if (strcmp(header.ptr(), "$MOL") != 0)
       throw Error("bad molecule header: %s", header.ptr());
 }
@@ -188,7 +188,7 @@ void RxnfileLoader::_readReactantsFooter(){
    }
    QS_DEF(Array<char>, footer);
 
-   _scanner.readString(footer, true);
+   _scanner.readLine(footer, true);
 
    if (strcmp(footer.ptr(), "M  V30 END REACTANT") != 0)
       throw Error("bad reactants footer: %s", footer.ptr());
@@ -200,7 +200,7 @@ void RxnfileLoader::_readProductsFooter(){
    }
    QS_DEF(Array<char>, footer);
 
-   _scanner.readString(footer, true);
+   _scanner.readLine(footer, true);
 
    if (strcmp(footer.ptr(), "M  V30 END PRODUCT") != 0)
       throw Error("bad products footer: %s", footer.ptr());
@@ -212,7 +212,7 @@ void RxnfileLoader::_readCatalystsFooter(){
    }
    QS_DEF(Array<char>, footer);
 
-   _scanner.readString(footer, true);
+   _scanner.readLine(footer, true);
 
    if (strcmp(footer.ptr(), "M  V30 END AGENT") != 0)
       throw Error("bad agents footer: %s", footer.ptr());

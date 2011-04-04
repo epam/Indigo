@@ -180,11 +180,11 @@ void SdfLoader::readNext ()
 
          int idx = properties.findOrInsert(word.ptr());
 
-         _scanner->readString(properties.value(idx), true);
+         _scanner->readLine(properties.value(idx), true);
 
          do
          {
-            _scanner->readString(str, true);
+            _scanner->readLine(str, true);
             if (str.size() > 1)
             {
                properties.value(idx).push('\n');
@@ -196,7 +196,7 @@ void SdfLoader::readNext ()
       if (_scanner->isEOF())
          break;
 
-      _scanner->readString(str, true);
+      _scanner->readLine(str, true);
    }
 
    if (_scanner->tell() > _max_offset)

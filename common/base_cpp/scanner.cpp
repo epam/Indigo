@@ -310,11 +310,6 @@ void Scanner::read (int length, Array<char> &buf)
    read(length, buf.ptr());
 }
 
-bool Scanner::skipString ()
-{
-   return skipLine();
-}
-
 void Scanner::skipSpace ()
 {
    while (isspace(lookNext()))
@@ -344,12 +339,6 @@ void Scanner::appendLine (Array<char> &out, bool append_zero)
 
    if (append_zero)
       out.push(0);
-}
-
-void Scanner::readString (Array<char> &out, bool append_zero)
-{
-   out.clear();
-   appendLine(out, append_zero);
 }
 
 void Scanner::readLine (Array<char> &out, bool append_zero)
@@ -425,7 +414,7 @@ bool Scanner::isSingleLine (Scanner &scanner)
 {
    int pos = scanner.tell();
 
-   scanner.skipString();
+   scanner.skipLine();
 
    bool res = scanner.isEOF();
 

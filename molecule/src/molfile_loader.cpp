@@ -124,21 +124,21 @@ void MolfileLoader::_readHeader ()
 {
    if (_scanner.lookNext() == '$')
    {
-      _rgfile = true;        // It's RGfile
-      _scanner.skipString(); // Skip $MDL REV  1   Date/Time
-      _scanner.skipString(); // Skip $MOL
-      _scanner.skipString(); // Skip $HDR
+      _rgfile = true;      // It's RGfile
+      _scanner.skipLine(); // Skip $MDL REV  1   Date/Time
+      _scanner.skipLine(); // Skip $MOL
+      _scanner.skipLine(); // Skip $HDR
    }
 
    // Skip header
-   _scanner.readString(_bmol->name, true);
-   _scanner.skipString();
-   _scanner.skipString();
+   _scanner.readLine(_bmol->name, true);
+   _scanner.skipLine();
+   _scanner.skipLine();
 
    if (_rgfile)
    {
-      _scanner.skipString(); // Skip $END HDR
-      _scanner.skipString(); // Skip $CTAB
+      _scanner.skipLine(); // Skip $END HDR
+      _scanner.skipLine(); // Skip $CTAB
    }
 }
 
@@ -146,7 +146,7 @@ void MolfileLoader::_readCtabHeader ()
 {
    QS_DEF(Array<char>, str);
 
-   _scanner.readString(str, false);
+   _scanner.readLine(str, false);
 
    BufferScanner strscan(str);
 
@@ -162,7 +162,7 @@ void MolfileLoader::_readCtabHeader ()
       chiral_int = strscan.readIntFix(3);
       strscan.skip(19);
       strscan.read(5, version);
-      strscan.skipString();
+      strscan.skipLine();
 
       version[5] = 0;
 
@@ -298,7 +298,7 @@ void MolfileLoader::_readCtab2000 ()
 
       try
       {
-         _scanner.readString(str, false);
+         _scanner.readLine(str, false);
 
          BufferScanner rest(str);
 
@@ -448,7 +448,7 @@ void MolfileLoader::_readCtab2000 ()
 
       try
       {
-         _scanner.readString(str, false);
+         _scanner.readLine(str, false);
 
          BufferScanner rest(str);
 
@@ -542,8 +542,8 @@ void MolfileLoader::_readCtab2000 ()
 
       if (c == 'G')
       {
-         _scanner.skipString();
-         _scanner.skipString();
+         _scanner.skipLine();
+         _scanner.skipLine();
          continue;
       }
       if (c == 'M')
@@ -555,7 +555,7 @@ void MolfileLoader::_readCtab2000 ()
 
          if (strncmp(chars, "END", 3) == 0)
          {
-            _scanner.skipString();
+            _scanner.skipLine();
             break;
          }
          // atom list
@@ -577,7 +577,7 @@ void MolfileLoader::_readCtab2000 ()
 
             AutoPtr<QueryMolecule::Atom> atomlist;
 
-            _scanner.readString(str, false);
+            _scanner.readLine(str, false);
             BufferScanner rest(str);
 
             for (i = 0; i < list_size; i++)
@@ -666,7 +666,7 @@ void MolfileLoader::_readCtab2000 ()
                      new QueryMolecule::Atom(QueryMolecule::ATOM_CHARGE, charge)));
                }
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "RAD", 3) == 0)
          {
@@ -689,7 +689,7 @@ void MolfileLoader::_readCtab2000 ()
                }
 
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          // atom isotope
          else if (strncmp(chars, "ISO", 3) == 0)
@@ -712,7 +712,7 @@ void MolfileLoader::_readCtab2000 ()
                      new QueryMolecule::Atom(QueryMolecule::ATOM_ISOTOPE, isotope)));
                }
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "SUB", 3) == 0)
          {
@@ -743,7 +743,7 @@ void MolfileLoader::_readCtab2000 ()
                else
                   throw Error("invalid SUB value: %d", sub_count);
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "RBC", 3) == 0)
          {
@@ -785,7 +785,7 @@ void MolfileLoader::_readCtab2000 ()
                      throw Error("ring bond count = %d makes no sense", rbcount);
                }
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "UNS", 3) == 0)
          {
@@ -810,7 +810,7 @@ void MolfileLoader::_readCtab2000 ()
                         new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
                }
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "$3D", 3) == 0)
          {
@@ -824,7 +824,7 @@ void MolfileLoader::_readCtab2000 ()
                if (n_3d_features == -1)
                {
                   n_3d_features = _scanner.readIntFix(3);
-                  _scanner.skipString();
+                  _scanner.skipLine();
                }
                else
                {
@@ -852,7 +852,7 @@ void MolfileLoader::_readCtab2000 ()
 
                _bmol->setRSiteAttachmentOrder(site_idx, atom_idx, att_type - 1);
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "RGP", 3) == 0)
          {
@@ -865,7 +865,7 @@ void MolfileLoader::_readCtab2000 ()
                _scanner.skip(1);
                _bmol->allowRGroupOnRSite(atom_idx, _scanner.readIntFix(3));
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "LOG", 3) == 0)
          {
@@ -890,7 +890,7 @@ void MolfileLoader::_readCtab2000 ()
             rgroup.if_then = if_then;
             rgroup.rest_h = rest_h;
 
-            _scanner.readString(occurrence_str, true);
+            _scanner.readLine(occurrence_str, true);
             _readRGroupOccurrenceRanges(occurrence_str.ptr(), rgroup.occurrence);
          }
          else if (strncmp(chars, "APO", 3) == 0)
@@ -915,7 +915,7 @@ void MolfileLoader::_readCtab2000 ()
                      _qmol->addAttachmentPoint(att_idx + 1, atom_idx);
             }
 
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "STY", 3) == 0)
          {
@@ -963,7 +963,7 @@ void MolfileLoader::_readCtab2000 ()
                else
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_OTHER;
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "SAL", 3) == 0 || strncmp(chars, "SBL", 3) == 0 ||
                   strncmp(chars, "SDI", 3) == 0)
@@ -1012,7 +1012,7 @@ void MolfileLoader::_readCtab2000 ()
                      sgroup->bonds.push(_scanner.readIntFix(3) - 1);
                }
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "SDT", 3) == 0)
          {
@@ -1120,7 +1120,7 @@ void MolfileLoader::_readCtab2000 ()
                   mg.parent_atoms.push(_scanner.readIntFix(3) - 1);
                }
             }
-            _scanner.skipString();
+            _scanner.skipLine();
          }
          else if (strncmp(chars, "SCN", 3) == 0)
          {
@@ -1157,8 +1157,8 @@ void MolfileLoader::_readCtab2000 ()
          int atom_idx = _scanner.readIntFix(3);
 
          atom_idx--;
-         _scanner.skipString();
-         _scanner.readString(pseudo, true);
+         _scanner.skipLine();
+         _scanner.readLine(pseudo, true);
          _preparePseudoAtomLabel(pseudo);
 
          if (_mol != 0)
@@ -1170,7 +1170,7 @@ void MolfileLoader::_readCtab2000 ()
          _atom_types[atom_idx] = _ATOM_PSEUDO;
       }
       else
-         _scanner.skipString();
+         _scanner.skipLine();
    }
 
    if (_qmol == 0)
@@ -1198,7 +1198,7 @@ void MolfileLoader::_read3dFeature2000 ()
    // read 3D feature ID (see MDL ctfile documentation)
    int feature_id = _scanner.readIntFix(3);
 
-   _scanner.skipString();
+   _scanner.skipLine();
 
    Molecule3dConstraints *constraints = &_qmol->spatial_constraints;
 
@@ -1217,7 +1217,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->beg_id = _scanner.readIntFix(3) - 1;
          constr->end_id = _scanner.readIntFix(3) - 1;
          constr->distance = _scanner.readFloatFix(10);
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1232,7 +1232,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->beg_id = _scanner.readIntFix(3) - 1;
          constr->end_id = _scanner.readIntFix(3) - 1;
          constr->percentage = _scanner.readFloatFix(10);
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1247,7 +1247,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->org_id = _scanner.readIntFix(3) - 1;
          constr->norm_id = _scanner.readIntFix(3) - 1;
          constr->distance = _scanner.readFloatFix(10);
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1265,13 +1265,13 @@ void MolfileLoader::_read3dFeature2000 ()
             throw Error("invalid points amount in M $3D-4 feature");
 
          constr->max_deviation = _scanner.readFloatFix(10);
-         _scanner.skipString();
+         _scanner.skipLine();
          _scanner.skip(6);
 
          while (amount-- > 0)
             constr->point_ids.push(_scanner.readIntFix(3) - 1);
 
-         _scanner.skipString();
+         _scanner.skipLine();
          constraints->add(constr.release());
          break;
       }
@@ -1289,13 +1289,13 @@ void MolfileLoader::_read3dFeature2000 ()
             throw Error("invalid points amount in M $3D-5 feature");
 
          constr->max_deviation = _scanner.readFloatFix(10);
-         _scanner.skipString();
+         _scanner.skipLine();
          _scanner.skip(6);
 
          while (amount-- > 0)
             constr->point_ids.push(_scanner.readIntFix(3) - 1);
 
-         _scanner.skipString();
+         _scanner.skipLine();
          constraints->add(constr.release());
          break;
       }
@@ -1308,7 +1308,7 @@ void MolfileLoader::_read3dFeature2000 ()
          _scanner.skip(6);
          constr->point_id = _scanner.readIntFix(3) - 1;
          constr->line_id = _scanner.readIntFix(3) - 1;
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1325,13 +1325,13 @@ void MolfileLoader::_read3dFeature2000 ()
          if (amount < 1)
             throw Error("invalid amount of points for centroid: %d", amount);
 
-         _scanner.skipString();
+         _scanner.skipLine();
          _scanner.skip(6);
 
          while (amount-- > 0)
             constr->point_ids.push(_scanner.readIntFix(3) - 1);
 
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1345,7 +1345,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->point_id = _scanner.readIntFix(3) - 1;
          constr->plane_id = _scanner.readIntFix(3) - 1;
 
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1360,7 +1360,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->end_id = _scanner.readIntFix(3) - 1;
          constr->bottom = _scanner.readFloatFix(10);
          constr->top    = _scanner.readFloatFix(10);
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1376,7 +1376,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->line_id = _scanner.readIntFix(3) - 1;
          constr->bottom = _scanner.readFloatFix(10);
          constr->top = _scanner.readFloatFix(10);
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1391,7 +1391,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->plane_id = _scanner.readIntFix(3) - 1;
          constr->bottom = _scanner.readFloatFix(10);
          constr->top = _scanner.readFloatFix(10);
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1407,7 +1407,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->point3_id = _scanner.readIntFix(3) - 1;
          constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
          constr->top    = (float)(_scanner.readFloatFix(10) * M_PI / 180);
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1422,7 +1422,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->line2_id = _scanner.readIntFix(3) - 1;
          constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
          constr->top    = (float)(_scanner.readFloatFix(10) * M_PI / 180);
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1437,7 +1437,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->plane2_id = _scanner.readIntFix(3) - 1;
          constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
          constr->top    = (float)(_scanner.readFloatFix(10) * M_PI / 180);
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1454,7 +1454,7 @@ void MolfileLoader::_read3dFeature2000 ()
          constr->point4_id = _scanner.readIntFix(3) - 1;
          constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
          constr->top    = (float)(_scanner.readFloatFix(10) * M_PI / 180);
-         _scanner.skipString();
+         _scanner.skipLine();
 
          constraints->add(constr.release());
          break;
@@ -1475,14 +1475,14 @@ void MolfileLoader::_read3dFeature2000 ()
 
          if (allowed_atoms_amount > 0)
          {
-            _scanner.skipString();
+            _scanner.skipLine();
             _scanner.skip(6);
 
             while (allowed_atoms_amount-- > 0)
                constr->allowed_atoms.push(_scanner.readIntFix(3) - 1);
          }
 
-         _scanner.skipString();
+         _scanner.skipLine();
          constraints->add(constr.release());
          break;
       }
@@ -1490,13 +1490,13 @@ void MolfileLoader::_read3dFeature2000 ()
       {
          _scanner.skip(6);
          int amount = _scanner.readIntFix(3);
-         _scanner.skipString();
+         _scanner.skipLine();
          _scanner.skip(6);
 
          while (amount-- > 0)
             _qmol->fixed_atoms.push(_scanner.readIntFix(3) - 1);
 
-         _scanner.skipString();
+         _scanner.skipLine();
          break;
       }
       default:
@@ -1720,13 +1720,13 @@ void MolfileLoader::_readRGroups2000 ()
 
       if (strncmp(chars, "$RGP", 4) == 0)
       {
-         _scanner.skipString();
+         _scanner.skipLine();
          _scanner.skipSpace();
 
          int rgroup_idx = _scanner.readInt();
          RGroup &rgroup = rgroups->getRGroup(rgroup_idx);
 
-         _scanner.skipString();
+         _scanner.skipLine();
          while (!_scanner.isEOF())
          {
             char rgp_chars[6];
@@ -1735,7 +1735,7 @@ void MolfileLoader::_readRGroups2000 ()
 
             if (strncmp(rgp_chars, "$CTAB", 5) == 0)
             {
-               _scanner.skipString();
+               _scanner.skipLine();
                AutoPtr<QueryMolecule> fragment(new QueryMolecule());
 
                MolfileLoader loader(_scanner);
@@ -1756,23 +1756,23 @@ void MolfileLoader::_readRGroups2000 ()
                rgp_chars[3] = 0;
                _scanner.readCharsFix(3, rgp_chars);
 
-               _scanner.skipString();
+               _scanner.skipLine();
                if (strncmp(rgp_chars, "RGP", 3) == 0)
                   break;
             }
             else
-               _scanner.skipString();
+               _scanner.skipLine();
          }
       }
       else if (strncmp(chars, "$END", 4) == 0)
       {
          chars[4] = 0;
          _scanner.readCharsFix(4, chars);
-         _scanner.skipString();
+         _scanner.skipLine();
          if (strncmp(chars, " MOL", 4) == 0)
             break;
       } else
-         _scanner.skipString();
+         _scanner.skipLine();
    }
 }
 
@@ -1780,7 +1780,7 @@ void MolfileLoader::_readCtab3000 ()
 {
    QS_DEF(Array<char>, str);
 
-   _scanner.readString(str, true);
+   _scanner.readLine(str, true);
    if (strncmp(str.ptr(), "M  V30 BEGIN CTAB", 17) != 0)
       throw Error("error reading CTAB block header");
 
@@ -1791,7 +1791,7 @@ void MolfileLoader::_readCtab3000 ()
 
    int i, nsgroups, n3d, chiral_int;
 
-   _scanner.readString(str, true);
+   _scanner.readLine(str, true);
    if (sscanf(str.ptr(), "%d %d %d %d %d",
               &_atoms_num, &_bonds_num, &nsgroups, &n3d, &chiral_int) < 5)
       throw Error("error parsing COUNTS line");
@@ -1800,7 +1800,7 @@ void MolfileLoader::_readCtab3000 ()
 
    _init();
 
-   _scanner.readString(str, true);
+   _scanner.readLine(str, true);
    if (strncmp(str.ptr(), "M  V30 BEGIN ATOM", 14) != 0)
       throw Error("Error reading ATOM block header");
 
@@ -2175,11 +2175,11 @@ void MolfileLoader::_readCtab3000 ()
       _bmol->setAtomXyz(i, x, y, z);
    }
 
-   _scanner.readString(str, true);
+   _scanner.readLine(str, true);
    if (strncmp(str.ptr(), "M  V30 END ATOM", 15) != 0)
       throw Error("Error reading ATOM block footer");
 
-   _scanner.readString(str, true);
+   _scanner.readLine(str, true);
    if (strncmp(str.ptr(), "M  V30 BEGIN BOND", 17) != 0)
    {  
       if (_bonds_num > 0)
@@ -2305,11 +2305,11 @@ void MolfileLoader::_readCtab3000 ()
             reaction_bond_reacting_center->at(i) = reacting_center;
       }
 
-      _scanner.readString(str, true);
+      _scanner.readLine(str, true);
       if (strncmp(str.ptr(), "M  V30 END BOND", 15) != 0)
          throw Error("Error reading BOND block footer");
 
-      _scanner.readString(str, true);
+      _scanner.readLine(str, true);
    }
 
    if (strncmp(str.ptr(), "M  V30 BEGIN COLLECTION", 23) == 0)
@@ -2382,7 +2382,7 @@ void MolfileLoader::_readCtab3000 ()
             _stereocenter_groups[atom_idx] = stereo_group;
          }
       }
-      _scanner.readString(str, true);
+      _scanner.readLine(str, true);
    }
    else if (strncmp(str.ptr(), "M  V30 BEGIN SGROUP", 19) == 0)
    {
@@ -2396,7 +2396,7 @@ void MolfileLoader::_readCtab3000 ()
             continue;
          _readSGroup3000(str.ptr());
       }
-      _scanner.readString(str, true);
+      _scanner.readLine(str, true);
    }
 
    if (strncmp(str.ptr(), "M  V30 END CTAB", 15) != 0)
@@ -2432,7 +2432,7 @@ void MolfileLoader::_readMultiString (Array<char> &str)
       if (strncmp(tmp.ptr(), "M  V30 ", 7) != 0)
          throw Error("error reading multi-string in CTAB v3000");
 
-      _scanner.readString(tmp, true);
+      _scanner.readLine(tmp, true);
 
       if (tmp[tmp.size() - 2] == '-')
       {
@@ -2454,7 +2454,7 @@ void MolfileLoader::_readRGroups3000 ()
 
    while (!_scanner.isEOF())
    {
-      _scanner.readString(str, true);
+      _scanner.readLine(str, true);
 
       if (strncmp(str.ptr(), "M  V30 BEGIN RGROUP", 19) == 0)
       {
@@ -2482,7 +2482,7 @@ void MolfileLoader::_readRGroups3000 ()
          {
             QS_DEF(Array<char>, occ);
 
-            strscan.readString(occ, true);
+            strscan.readLine(occ, true);
             _readRGroupOccurrenceRanges(occ.ptr(), rgroup.occurrence);
          }
 
@@ -2490,7 +2490,7 @@ void MolfileLoader::_readRGroups3000 ()
          {
             int pos = _scanner.tell();
 
-            _scanner.readString(str, true);
+            _scanner.readLine(str, true);
             if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
             {
                _scanner.seek(pos, SEEK_SET);
