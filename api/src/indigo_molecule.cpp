@@ -2914,18 +2914,39 @@ CEXPORT int indigoIterateEdgeSubmolecules (int molecule, int min_bonds, int max_
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoCountHydrogens (int atom, int *hydro)
+CEXPORT int indigoCountHydrogens (int item, int *hydro)
 {
    INDIGO_BEGIN
    {
-      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      if (hydro == 0)
+         throw IndigoError("indigoCountHydrogens(): null pointer");
 
-      int res = ia.mol.getAtomTotalH(ia.idx);
+      IndigoObject &obj = self.getObject(item);
 
-      if (res == -1)
-         return 0;
+      if (IndigoAtom::is(obj))
+      {
+         IndigoAtom &ia = IndigoAtom::cast(obj);
 
-      *hydro = res;
+         int res = ia.mol.getAtomTotalH(ia.idx);
+
+         if (res == -1)
+            return 0;
+
+         *hydro = res;
+      }
+      else if (IndigoBaseMolecule::is(obj))
+      {
+         Molecule &mol = obj.getMolecule();
+         *hydro = 0;
+
+         for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+         {
+            if (mol.getAtomNumber(i) == ELEM_H)
+               (*hydro)++;
+            else
+               (*hydro) += mol.getImplicitH(i);
+         }
+      }
       return 1;
    }
    INDIGO_END(-1)
