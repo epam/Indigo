@@ -267,7 +267,7 @@ protected:
 #define INDIGO_END_CHECKMSG(success, fail) } \
       catch (Exception &ex)         \
       {                             \
-         self.error_message.readString(ex.message(), true); \
+         self.error_message.readLine(ex.message(), true); \
          if (self.error_handler != 0)                       \
             self.error_handler(ex.message(),                \
                                self.error_handler_context); \

@@ -61,7 +61,7 @@ protected:
 
    bool _readIdentifiers(bool);
    inline Scanner& _getScanner() const;
-   static bool _readString(Scanner&, Array<char>&);
+   static bool _readLine(Scanner&, Array<char>&);
 
    inline bool _startsWith(const char* str) const {
       return ((size_t)_innerBuffer.size() >= strlen(str) && strncmp(_innerBuffer.ptr(), str, strlen(str))==0);

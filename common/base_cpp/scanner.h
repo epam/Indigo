@@ -43,10 +43,6 @@ public:
 
    void read (int length, Array<char> &buf);
 
-   // DEPRECATED
-   bool  skipString ();
-   void readString (Array<char> &out, bool append_zero);
-
    void readLine (Array<char> &out, bool append_zero);
    void appendLine (Array<char> &out, bool append_zero);
    bool skipLine ();

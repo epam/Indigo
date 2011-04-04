@@ -371,7 +371,7 @@ void _importSMILES (OracleEnv &env, const char *table, const char *smiles_col,
    while (!scanner->isEOF())
    {
       id.clear();
-      scanner->readString(str, false);
+      scanner->readLine(str, false);
       BufferScanner strscan(str);
 
       strscan.skipSpace();
@@ -387,7 +387,7 @@ void _importSMILES (OracleEnv &env, const char *table, const char *smiles_col,
       }
 
       if (!strscan.isEOF() && id_col != 0)
-         strscan.readString(id, true);
+         strscan.readLine(id, true);
 
       OracleStatement statement(env);
 

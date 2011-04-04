@@ -1021,7 +1021,7 @@ void SmilesLoader::_loadMolecule ()
    {
      _scanner.skipSpace();
      if (!_scanner.isEOF())
-        _scanner.readString(_bmol->name, true);
+        _scanner.readLine(_bmol->name, true);
    }
 
    if (reaction_atom_mapping != 0)

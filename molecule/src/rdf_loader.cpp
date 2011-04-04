@@ -139,7 +139,7 @@ void RdfLoader::readNext() {
          output.printf("%s\n", _innerBuffer.ptr());
       }
 
-   } while(_readString(_getScanner(), _innerBuffer));
+   } while(_readLine(_getScanner(), _innerBuffer));
 
    /*
     * Current value for property reading
@@ -165,7 +165,7 @@ void RdfLoader::readNext() {
          /*
           * If no key presented then skip value reading
           */
-         if(!_readString(scanner, property_name)) {
+         if(!_readLine(scanner, property_name)) {
             current_datum = 0;
          } else {
             int idx = properties.findOrInsert(property_name.ptr());
@@ -186,7 +186,7 @@ void RdfLoader::readNext() {
           */
          scanner.skip(6); scanner.skipSpace();
 
-         _readString(scanner, *current_datum);
+         _readLine(scanner, *current_datum);
          
          continue;
       }
@@ -199,7 +199,7 @@ void RdfLoader::readNext() {
          current_datum->appendString(_innerBuffer.ptr(), true);
       }
       
-   } while(_readString(_getScanner(), _innerBuffer));
+   } while(_readLine(_getScanner(), _innerBuffer));
 
    if (_scanner->tell() > _max_offset)
       _max_offset = _scanner->tell();
@@ -255,11 +255,11 @@ bool RdfLoader::_readIdentifiers(bool from_begin) {
    return result;
 }
 
-bool RdfLoader::_readString(Scanner& scanner, Array<char>& buffer) {
+bool RdfLoader::_readLine(Scanner& scanner, Array<char>& buffer) {
    buffer.clear();
    if(scanner.isEOF())
       return false;
-   scanner.readString(buffer, true);
+   scanner.readLine(buffer, true);
    return true;
 }
 

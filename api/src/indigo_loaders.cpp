@@ -138,7 +138,7 @@ const char * IndigoRdfMolecule::getName ()
    Indigo &self = indigoGetInstance();
 
    BufferScanner scanner(_data);
-   scanner.readString(self.tmp_string, true);
+   scanner.readLine(self.tmp_string, true);
    return self.tmp_string.ptr();
 }
 
@@ -187,7 +187,7 @@ const char * IndigoRdfReaction::getName ()
    Indigo &self = indigoGetInstance();
 
    BufferScanner scanner(_data);
-   scanner.readString(self.tmp_string, true);
+   scanner.readLine(self.tmp_string, true);
    return self.tmp_string.ptr();
 }
 
@@ -412,7 +412,7 @@ void IndigoMultilineSmilesLoader::_advance ()
 {
    _offsets.expand(_current_number + 1);
    _offsets[_current_number++] = _scanner->tell();
-   _scanner->readString(_str, false);
+   _scanner->readLine(_str, false);
 
    if (_scanner->tell() > _max_offset)
       _max_offset = _scanner->tell();

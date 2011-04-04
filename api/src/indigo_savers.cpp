@@ -457,7 +457,7 @@ CEXPORT int indigoSaveMDLCT (int item, int output)
 
       while (!scanner.isEOF())
       {
-         scanner.readString(line, false);
+         scanner.readLine(line, false);
          if (line.size() > 255)
             throw IndigoError("indigoSaveMDLCT: line too big (%d)", line.size());
          out2.writeChar(line.size());

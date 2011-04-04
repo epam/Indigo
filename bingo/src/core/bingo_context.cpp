@@ -149,7 +149,7 @@ void bingoGetName (Scanner &scanner, Array<char> &result)
 
    if (single_line)
    {
-      scanner.readString(str, true);
+      scanner.readLine(str, true);
       int idx = str.find('|');
       int idx2 = 0;
 
@@ -170,12 +170,12 @@ void bingoGetName (Scanner &scanner, Array<char> &result)
       }
       scan2.skipSpace();
       if (!scan2.isEOF())
-         scan2.readString(result, false);
+         scan2.readLine(result, false);
    }
    else
    {
-      scanner.readString(result, false);
+      scanner.readLine(result, false);
       if (result.size() >= 4 && strncmp(result.ptr(), "$RXN", 4) == 0)
-         scanner.readString(result, false);
+         scanner.readLine(result, false);
    }
 }
