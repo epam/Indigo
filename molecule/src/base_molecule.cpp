@@ -904,3 +904,9 @@ void BaseMolecule::highlightSubmolecule (BaseMolecule &subgraph, const int *mapp
       }
    }
 }
+
+int BaseMolecule::countSGroups ()
+{
+   return generic_sgroups.size() + data_sgroups.size() + multiple_groups.size() +
+          repeating_units.size() + superatoms.size();
+}

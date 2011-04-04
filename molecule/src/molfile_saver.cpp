@@ -274,7 +274,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       qmol = (QueryMolecule *)(&mol);
 
    output.writeStringCR("M  V30 BEGIN CTAB");
-   output.printfCR("M  V30 COUNTS %d %d 0 0 0", mol.vertexCount(), mol.edgeCount());
+   output.printfCR("M  V30 COUNTS %d %d %d 0 0", mol.vertexCount(), mol.edgeCount(), mol.countSGroups());
    output.writeStringCR("M  V30 BEGIN ATOM");
 
    int i;
@@ -582,6 +582,70 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       output.writeStringCR("M  V30 END COLLECTION");
    }
 
+   if (mol.countSGroups() > 0)
+   {
+      int idx = 1;
+
+      output.writeStringCR("M  V30 BEGIN SGROUP");
+      for (i = mol.generic_sgroups.begin(); i != mol.generic_sgroups.end(); i = mol.generic_sgroups.next(i))
+      {
+         ArrayOutput out(buf);
+         _writeGenericSGroup3000(mol.generic_sgroups[i], idx++, "GEN", out);
+         _writeMultiString(output, buf.ptr(), buf.size());
+      }
+      for (i = mol.superatoms.begin(); i != mol.superatoms.end(); i = mol.superatoms.next(i))
+      {
+         ArrayOutput out(buf);
+         _writeGenericSGroup3000(mol.superatoms[i], idx++, "SUP", out);
+         if (mol.superatoms[i].bond_idx >= 0)
+            out.printf(" XBONDS=(1 %d)", _bond_mapping[mol.superatoms[i].bond_idx]);
+         out.printf(" LABEL=%s ESTATE=E", mol.superatoms[i].subscript.ptr());
+         _writeMultiString(output, buf.ptr(), buf.size());
+      }
+      for (i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
+      {
+         ArrayOutput out(buf);
+         _writeGenericSGroup3000(mol.data_sgroups[i], idx++, "DAT", out);
+         const char *desc = mol.data_sgroups[i].description.ptr();
+         if (desc != 0 && strlen(desc) > 0)
+            out.printf(" FIELDNAME=%s", desc);
+         out.printf(" FIELDDISP=\"");
+         _writeDataSGroupDisplay(mol.data_sgroups[i], out);
+         out.printf("\"");
+         if (mol.data_sgroups[i].data.size() > 0)
+            out.printf(" FIELDDATA=%.*s", mol.data_sgroups[i].data.size(), mol.data_sgroups[i].data.ptr());
+         _writeMultiString(output, buf.ptr(), buf.size());
+      }
+      for (i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))
+      {
+         ArrayOutput out(buf);
+         _writeGenericSGroup3000(mol.repeating_units[i], idx++, "SRU", out);
+         if (mol.repeating_units[i].connectivity == BaseMolecule::RepeatingUnit::HEAD_TO_HEAD)
+            out.printf(" CONNECT=HH");
+         else if (mol.repeating_units[i].connectivity == BaseMolecule::RepeatingUnit::HEAD_TO_TAIL)
+            out.printf(" CONNECT=HT");
+         else
+            out.printf(" CONNECT=EU");
+         _writeMultiString(output, buf.ptr(), buf.size());
+      }
+      for (i = mol.multiple_groups.begin(); i != mol.multiple_groups.end(); i = mol.multiple_groups.next(i))
+      {
+         ArrayOutput out(buf);
+         _writeGenericSGroup3000(mol.multiple_groups[i], idx++, "MUL", out);
+         if (mol.multiple_groups[i].parent_atoms.size() > 0)
+         {
+            out.printf(" PATOMS=(%d", mol.multiple_groups[i].parent_atoms.size());
+            int j;
+            for (j = 0; j < mol.multiple_groups[i].parent_atoms.size(); j++)
+               out.printf(" %d", mol.multiple_groups[i].parent_atoms[j]);
+            out.printf(")");
+         }
+         out.printf(" MULT=%d", mol.multiple_groups[i].multiplier);
+         _writeMultiString(output, buf.ptr(), buf.size());
+      }
+      output.writeStringCR("M  V30 END SGROUP");
+   }
+
    output.writeStringCR("M  V30 END CTAB");
 
    if (qmol != 0)
@@ -590,6 +654,34 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       for (i = 1; i <= n_rgroups; i++)
          if (qmol->rgroups.getRGroup(i).fragments.size() > 0)
             _writeRGroup(output, *qmol, i);
+   }
+}
+
+void MolfileSaver::_writeGenericSGroup3000 (BaseMolecule::SGroup &sgroup, int idx, const char *type, Output &output)
+{
+   int i;
+
+   output.printf("%d %s %d", idx, type, idx);
+
+   if (sgroup.atoms.size() > 0)
+   {
+      output.printf(" ATOMS=(%d", sgroup.atoms.size());
+      for (i = 0; i < sgroup.atoms.size(); i++)
+         output.printf(" %d", _atom_mapping[sgroup.atoms[i]]);
+      output.printf(")");
+   }
+   if (sgroup.bonds.size() > 0)
+   {
+      output.printf(" BONDS=(%d", sgroup.bonds.size());
+      for (i = 0; i < sgroup.bonds.size(); i++)
+         output.printf(" %d", _bond_mapping[sgroup.bonds[i]]);
+      output.printf(")");
+   }
+   for (i = 0; i < sgroup.brackets.size(); i++)
+   {
+      Vec2f *brackets = sgroup.brackets[i];
+      output.printf(" BRKXYZ=(9 %f %f %f %f %f %f %f %f %f)",
+         brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
    }
 }
 
@@ -1060,12 +1152,8 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             output.writeChar('F');
             output.writeCR();
 
-            output.printf("M  SDD %3d %10.4f%10.4f    %c%c%c   ALL  1       %1d  ",
-                i + 1, datasgroup.display_pos.x, datasgroup.display_pos.y,
-                datasgroup.attached ? 'A' : 'D',
-                datasgroup.relative ? 'R' : 'A',
-                datasgroup.display_units ? 'U' : ' ',
-                datasgroup.dasp_pos);
+            output.printf("M  SDD %3d ", i + 1);
+            _writeDataSGroupDisplay(datasgroup, output);
             output.writeCR();
 
             k = datasgroup.data.size();
@@ -1211,4 +1299,14 @@ bool MolfileSaver::_checkAttPointOrder (BaseMolecule &mol, int rsite)
    }
 
    return true;
+}
+
+void MolfileSaver::_writeDataSGroupDisplay (BaseMolecule::DataSGroup &datasgroup, Output &out)
+{
+   out.printf("%10.4f%10.4f    %c%c%c   ALL  1       %1d  ",
+                datasgroup.display_pos.x, datasgroup.display_pos.y,
+                datasgroup.attached ? 'A' : 'D',
+                datasgroup.relative ? 'R' : 'A',
+                datasgroup.display_units ? 'U' : ' ',
+                datasgroup.dasp_pos);
 }

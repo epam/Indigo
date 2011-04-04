@@ -2576,6 +2576,19 @@ void MolfileLoader::_readSGroup3000 (const char *str)
          }
          scanner.skip(1); // )
       }
+      else if (strcmp(entity.ptr(), "XBONDS") == 0)
+      {
+         scanner.skip(1); // (
+         n = scanner.readInt1();
+         while (n-- > 0)
+         {
+            int idx = scanner.readInt() - 1;
+            if (sup != 0)
+               sup->bond_idx = idx;
+            scanner.skipSpace();
+         }
+         scanner.skip(1); // )
+      }
       else if (strcmp(entity.ptr(), "PATOMS") == 0)
       {
          scanner.skip(1); // (

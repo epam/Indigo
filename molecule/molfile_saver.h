@@ -71,6 +71,8 @@ protected:
    void _writeCtab2000 (Output &output, BaseMolecule &mol, bool query);
    void _writeRGroupIndices2000 (Output &output, BaseMolecule &mol);
    void _writeAttachmentValues2000 (Output &output, BaseMolecule &fragment);
+   void _writeGenericSGroup3000 (BaseMolecule::SGroup &sgroup, int idx, const char *type, Output &output);
+   void _writeDataSGroupDisplay (BaseMolecule::DataSGroup &datasgroup, Output &out);
    static bool _checkAttPointOrder (BaseMolecule &mol, int rsite);
 
    Output &_output;

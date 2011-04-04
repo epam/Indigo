@@ -164,6 +164,7 @@ public:
    virtual const char * getPseudoAtom (int idx) = 0;
 
    int countRSites ();
+   int countSGroups ();
 
    virtual bool isRSite (int atom_idx) = 0;
    virtual int  getRSiteBits (int atom_idx) = 0;
