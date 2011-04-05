@@ -615,7 +615,10 @@ void MoleculeRenderInternal::_initSruGroups()
    for (int i = bm.repeating_units.begin(); i < bm.repeating_units.end(); i = bm.repeating_units.next(i)) {
       const BaseMolecule::RepeatingUnit& group = bm.repeating_units[i];
       SGroup& sg = _data.sgroups.push();
-      _loadBrackets(sg, group.brackets, true);
+      if (group.brackets.size() == 0 || Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) < EPSILON)
+         _placeBrackets(sg, group.atoms);
+      else
+         _loadBrackets(sg, group.brackets, true);
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
       index.fontsize = FONT_SIZE_ATTR;

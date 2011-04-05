@@ -224,6 +224,7 @@ public:
 
    Vec3f & getAtomXyz (int idx);
    void setAtomXyz (int idx, float x, float y, float z);
+   void setAtomXyz (int idx, const Vec3f& v);
 
    MoleculeStereocenters stereocenters;
    MoleculeCisTrans cis_trans;

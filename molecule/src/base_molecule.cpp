@@ -563,6 +563,11 @@ void BaseMolecule::setAtomXyz (int idx, float x, float y, float z)
    _xyz[idx].set(x, y, z);
 }
 
+void BaseMolecule::setAtomXyz (int idx, const Vec3f& v)
+{
+   _xyz[idx].copy(v);
+}
+
 int BaseMolecule::_addBaseAtom ()
 {
    int idx = addVertex();

@@ -120,11 +120,9 @@ void RenderParamInterface::_prepareMolecule (RenderParams& params, BaseMolecule&
 {
    if (needsLayout(bm))
    {
-      BaseMolecule::MultipleGroup::collapse(bm);
       MoleculeLayout ml(bm);
       ml.make();
       bm.stereocenters.markBonds();
-      BaseMolecule::MultipleGroup::expand(bm);
    }
 }
 

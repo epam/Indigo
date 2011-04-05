@@ -33,11 +33,31 @@ void MoleculeLayout::_init ()
    filter = 0;
    max_iterations = 20;
    _query = false;
-   _layout_graph.makeOnGraph(_molecule);
+   _atomMapping.clear();
+   if (_molecule.isQueryMolecule())
+      _molCollapsed.reset(new QueryMolecule());
+   else
+      _molCollapsed.reset(new Molecule());
+   _molCollapsed->clone(_molecule, &_atomMapping, NULL);
+   QS_DEF(BaseMolecule::Mapping, atomMapCollapse);
+   QS_DEF(BaseMolecule::Mapping, bondMapInv);
+   for (int i = _molCollapsed->multiple_groups.begin(); i < _molCollapsed->multiple_groups.end(); i = _molCollapsed->multiple_groups.next(i)) {
+      // collapse multiple group
+      atomMapCollapse.clear();
+      bondMapInv.clear();
+      BaseMolecule::MultipleGroup::collapse(_molCollapsed.ref(), i, atomMapCollapse, bondMapInv);
+
+      // modify the atom mapping
+      for (int j = 0; j < _atomMapping.size(); ++j)
+         if (atomMapCollapse.find(_atomMapping[j]))
+            _atomMapping[j] = atomMapCollapse.at(_atomMapping[j]);
+   }
+
+   _layout_graph.makeOnGraph(_molCollapsed.ref());
 
    for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
    {
-      const Vec3f &pos = _molecule.getAtomXyz(_layout_graph.getVertexExtIdx(i));
+      const Vec3f &pos = _molCollapsed.ref().getAtomXyz(_layout_graph.getVertexExtIdx(i));
 
       _layout_graph.getPos(i).set(pos.x, pos.y);
    }
@@ -59,15 +79,19 @@ void MoleculeLayout::_make ()
 
       Filter new_filter(fixed_vertices.ptr(), Filter::NEQ, 1);
 
-      _layout_graph.layout(_molecule, bond_length, &new_filter, respect_existing_layout);
+      _layout_graph.layout(_molCollapsed.ref(), bond_length, &new_filter, respect_existing_layout);
    } else
-      _layout_graph.layout(_molecule, bond_length, 0, respect_existing_layout);
+      _layout_graph.layout(_molCollapsed.ref(), bond_length, 0, respect_existing_layout);
 
 
    for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
    {
       const LayoutVertex &vert = _layout_graph.getLayoutVertex(i);
-      _molecule.setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+      _molCollapsed.ref().setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+   }
+   for (int j = 0; j < _atomMapping.size(); ++j) {
+      int i = _atomMapping[j];
+      _molecule.setAtomXyz(j, _molCollapsed.ref().getAtomXyz(i));
    }
 
    _molecule.have_xyz = true;
