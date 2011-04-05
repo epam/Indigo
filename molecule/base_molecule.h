@@ -300,7 +300,7 @@ protected:
 
    void _removeAtomsFromSGroup (SGroup &sgroup, Array<int> &indices);
    void _removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> &mapping);
-   void _mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
+   bool _mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
         Array<int> &mapping, Array<int> &edge_mapping);
 
 
