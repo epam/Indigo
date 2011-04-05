@@ -138,60 +138,82 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
    for (i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
    {
       DataSGroup &supersg = mol.data_sgroups[i];
-      DataSGroup &sg = data_sgroups[data_sgroups.add()];
-      _mergeSGroupWithSubmolecule(sg, supersg, mol, *mapping_out, edge_mapping);
-      sg.attached = supersg.attached;
-      sg.display_pos = supersg.display_pos;
-      sg.data.copy(supersg.data);
-      sg.dasp_pos = supersg.dasp_pos;
-      sg.relative = supersg.relative;
-      sg.display_units = supersg.display_units;
-      sg.description.copy(supersg.description);
+      int idx = data_sgroups.add();
+      DataSGroup &sg = data_sgroups[idx];
+      if (_mergeSGroupWithSubmolecule(sg, supersg, mol, *mapping_out, edge_mapping))
+      {
+         sg.attached = supersg.attached;
+         sg.display_pos = supersg.display_pos;
+         sg.data.copy(supersg.data);
+         sg.dasp_pos = supersg.dasp_pos;
+         sg.relative = supersg.relative;
+         sg.display_units = supersg.display_units;
+         sg.description.copy(supersg.description);
+      }
+      else
+         data_sgroups.remove(idx);
    }
 
    // superatoms
    for (i = mol.superatoms.begin(); i != mol.superatoms.end(); i = mol.superatoms.next(i))
    {
       Superatom &supersa = mol.superatoms[i];
-      Superatom &sa = superatoms.at(superatoms.add());
+      int idx = superatoms.add();
+      Superatom &sa = superatoms[idx];
 
-      _mergeSGroupWithSubmolecule(sa, supersa, mol, *mapping_out, edge_mapping);
-      sa.bond_dir = supersa.bond_dir;
-      if (supersa.bond_idx >= 0)
-         sa.bond_idx = edge_mapping[supersa.bond_idx];
+      if (_mergeSGroupWithSubmolecule(sa, supersa, mol, *mapping_out, edge_mapping))
+      {
+         sa.bond_dir = supersa.bond_dir;
+         if (supersa.bond_idx >= 0)
+            sa.bond_idx = edge_mapping[supersa.bond_idx];
+         else
+            sa.bond_idx = -1;
+         sa.subscript.copy(supersa.subscript);
+      }
       else
-         sa.bond_idx = -1;
-      sa.subscript.copy(supersa.subscript);
+         superatoms.remove(idx);
    }
 
    // repeating units
    for (i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))
    {
       RepeatingUnit &superru = mol.repeating_units[i];
-      RepeatingUnit &ru = repeating_units.at(repeating_units.add());
-      _mergeSGroupWithSubmolecule(ru, superru, mol, *mapping_out, edge_mapping);
-      ru.connectivity = superru.connectivity;
+      int idx = repeating_units.add();
+      RepeatingUnit &ru = repeating_units[idx];
+      if (_mergeSGroupWithSubmolecule(ru, superru, mol, *mapping_out, edge_mapping))
+         ru.connectivity = superru.connectivity;
+      else
+         repeating_units.remove(idx);
    }
 
    // multiple groups
    for (i = mol.multiple_groups.begin(); i != mol.multiple_groups.end(); i = mol.multiple_groups.next(i))
    {
       MultipleGroup &supermg = mol.multiple_groups[i];
-      MultipleGroup &mg = multiple_groups.at(multiple_groups.add());
-      _mergeSGroupWithSubmolecule(mg, supermg, mol, *mapping_out, edge_mapping);
-      mg.multiplier = supermg.multiplier;
-      for (int j = 0; j != supermg.parent_atoms.size(); j++)
-         if (mapping_out->at(supermg.parent_atoms[j]) >= 0)
-            mg.parent_atoms.push(mapping_out->at(supermg.parent_atoms[j]));
+      int idx = multiple_groups.add();
+      MultipleGroup &mg = multiple_groups[idx];
+      if (_mergeSGroupWithSubmolecule(mg, supermg, mol, *mapping_out, edge_mapping))
+      {
+         mg.multiplier = supermg.multiplier;
+         for (int j = 0; j != supermg.parent_atoms.size(); j++)
+            if (mapping_out->at(supermg.parent_atoms[j]) >= 0)
+               mg.parent_atoms.push(mapping_out->at(supermg.parent_atoms[j]));
+      }
+      else
+         multiple_groups.remove(idx);
    }
 
    // generic sgroups
    for (i = mol.generic_sgroups.begin(); i != mol.generic_sgroups.end(); i = mol.generic_sgroups.next(i))
    {
       SGroup &supergg = mol.generic_sgroups[i];
-      SGroup &gg = generic_sgroups.at(generic_sgroups.add());
+      int idx = generic_sgroups.add();
+      SGroup &gg = generic_sgroups[idx];
 
-      _mergeSGroupWithSubmolecule(gg, supergg, mol, *mapping_out, edge_mapping);
+      if (_mergeSGroupWithSubmolecule(gg, supergg, mol, *mapping_out, edge_mapping))
+         ;
+      else
+         generic_sgroups.remove(idx);
    }
 
    // highlighting
@@ -761,17 +783,21 @@ void BaseMolecule::_removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> 
          mg.parent_atoms.remove(i);
 }
 
-void BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
+bool BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
         Array<int> &mapping, Array<int> &edge_mapping)
 {
    int i;
+   bool merged;
 
    sgroup.brackets.copy(super.brackets);
 
    for (i = 0; i < super.atoms.size(); i++)
    {
       if (mapping[super.atoms[i]] >= 0)
+      {
          sgroup.atoms.push(mapping[super.atoms[i]]);
+         merged = true;
+      }
    }
    for (i = 0; i < super.bonds.size(); i++)
    {
@@ -784,7 +810,10 @@ void BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
          throw Error("internal: edge is not mapped");
 
       sgroup.bonds.push(edge_mapping[super.bonds[i]]);
+      merged = true;
    }
+   
+   return merged;
 }
 
 void BaseMolecule::unhighlightAll ()
