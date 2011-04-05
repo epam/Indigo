@@ -400,10 +400,10 @@ namespace indigo
 
 
       private static void CreateIndex (SqlString table, SqlString id_column, 
-         SqlString data_column, SqlString bingo_schema, SqlString bingo_db, bool reaction)
+         SqlString data_column, SqlString bingo_schema, bool reaction)
       {
          bingoOperationDelegate opWithIndex = 
-            getInsertRecordsDelegate(table.Value, true, bingo_db.Value);
+            getInsertRecordsDelegate(table.Value, true);
 
          bingoGetIndexDataDelegate createDataDelegate =
             (ctx_conn, conn, schema) => BingoIndexData.CreateIndexData(getSPID(ctx_conn),
@@ -423,7 +423,7 @@ namespace indigo
       //    Only table or existing_cursor_name must be non null
       //
       private static bingoOperationDelegate getInsertRecordsDelegate (string table, 
-         bool flush_and_create_index, string bingo_db)
+         bool flush_and_create_index)
       {
          UTF8Encoding encoding = new UTF8Encoding();
 
@@ -578,7 +578,7 @@ namespace indigo
                   data.fingerprints.createIndices(conn);
                   fp_indices_timer.end();
 
-                  data.CreateTriggers(conn, bingo_db);
+                  data.CreateTriggers(conn);
                }
             };
          return opWithIndex;
@@ -588,9 +588,9 @@ namespace indigo
         SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunction]
       public static void CreateMoleculeIndex (SqlString table, SqlString id_column,
-         SqlString data_column, SqlString bingo_schema, SqlString bingo_db)
+         SqlString data_column, SqlString bingo_schema)
       {
-         CreateIndex(table, id_column, data_column, bingo_schema, bingo_db, false);
+         CreateIndex(table, id_column, data_column, bingo_schema, false);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
@@ -615,9 +615,9 @@ namespace indigo
         SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunction]
       public static void CreateReactionIndex (SqlString table, SqlString id_column,
-         SqlString data_column, SqlString bingo_schema, SqlString bingo_db)
+         SqlString data_column, SqlString bingo_schema)
       {
-         CreateIndex(table, id_column, data_column, bingo_schema, bingo_db, true);
+         CreateIndex(table, id_column, data_column, bingo_schema, true);
       }
 
       private static bool _AddMoleculeToIndex (SqlConnection conn, BingoIndexData bingo_data)
@@ -1549,7 +1549,7 @@ namespace indigo
             (ctx_conn, conn, schema) => BingoIndexData.GetIndexData(conn, bingo_schema.Value,
                table_id.Value, database_id.Value, getSPID(ctx_conn));
 
-         bingoOperationDelegate insertOp = getInsertRecordsDelegate(tmp_table_name.Value, false, null);
+         bingoOperationDelegate insertOp = getInsertRecordsDelegate(tmp_table_name.Value, false);
 
          _ExecuteBingoOperationChangeIndex(bingo_schema, insertOp,
             getDataDelegate, BingoOp.LOAD_CMF | BingoOp.NON_CONTEXT_CONN | BingoOp.LOCK_INDEX);

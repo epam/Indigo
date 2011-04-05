@@ -451,8 +451,7 @@ CREATE PROCEDURE [$(bingo)].z_CreateMoleculeIndex
     @table nvarchar(max),
     @id_column nvarchar(max),
     @data_column nvarchar(max),
-    @bingo_schema nvarchar(max),
-    @bingo_db nvarchar(max)
+    @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CreateMoleculeIndex
 GO
@@ -466,7 +465,7 @@ CREATE PROCEDURE [$(bingo)].CreateMoleculeIndex
     @data_column nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)].z_CreateMoleculeIndex @table, @id_column, @data_column, '$(bingo)', '$(database)'
+  EXEC [$(bingo)].z_CreateMoleculeIndex @table, @id_column, @data_column, '$(bingo)'
 END
 GO
 grant execute on [$(bingo)].CreateMoleculeIndex to $(bingo)_operator
@@ -479,8 +478,7 @@ CREATE PROCEDURE [$(bingo)].z_CreateReactionIndex
     @table nvarchar(max),
     @id_column nvarchar(max),
     @data_column nvarchar(max),
-    @bingo_schema nvarchar(max),
-    @bingo_db nvarchar(max)
+    @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CreateReactionIndex
 GO
@@ -494,7 +492,7 @@ CREATE PROCEDURE [$(bingo)].CreateReactionIndex
     @data_column nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)].z_CreateReactionIndex @table, @id_column, @data_column, '$(bingo)', '$(database)'
+  EXEC [$(bingo)].z_CreateReactionIndex @table, @id_column, @data_column, '$(bingo)'
 END
 GO
 grant execute on [$(bingo)].CreateReactionIndex to $(bingo)_operator
