@@ -1335,6 +1335,8 @@ void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
             throw Error("'@' ring bond is allowed only for queries");
          topology = TOPOLOGY_RING;
       }
+      else
+         throw Error("Character #%d is unexpected during bond parsing", next);
 
       AutoPtr<QueryMolecule::Bond> subqbond;
 
