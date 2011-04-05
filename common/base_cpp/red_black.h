@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -61,7 +61,7 @@ public:
 
       if (_own_nodes)
          delete _nodes;
-   }                    
+   }
 
    virtual void clear ()
    {
@@ -170,7 +170,7 @@ public:
 
       if (parent_right == node || parent_right == -1)
          return parent;
-   
+
       node = parent_right;
       parent = node;
 
@@ -261,7 +261,7 @@ protected:
 
             if (grandparent.right >= 0)
                uncle_color = _nodes->at(grandparent.right).color;
-            
+
             if (uncle_color == RED)
             {
                parent.color = BLACK;
@@ -474,7 +474,7 @@ protected:
                x = xparent;
                xparent = _nodes->at(x).parent;
             }
-            else 
+            else
             {
                if (wnode.right == -1 || _nodes->at(wnode.right).color == BLACK)
                {
@@ -582,7 +582,7 @@ public:
       int sign, idx = this->_findClosest(key, sign);
 
       if (idx != -1 && sign == 0)
-         throw typename Parent::Error("key already presents");
+         throw typename Parent::Error("insert(): key already present");
 
       return _insert(key, idx, sign);
    }
@@ -673,7 +673,7 @@ public:
       if (idx != -1 && sign == 0)
          return this->_nodes->at(idx).value;
 
-      throw typename Parent::Error("key not found");
+      throw typename Parent::Error("at(): key not found");
    }
 
    Value * at2 (Key key) const
@@ -693,7 +693,7 @@ public:
       int idx = this->_findClosest(key, sign);
 
       if (idx != -1 && sign == 0)
-         throw typename Parent::Error("key already presents");
+         throw typename Parent::Error("insert(): key already present");
 
       _insert(key, value, idx, sign);
    }
@@ -779,7 +779,7 @@ public:
       int idx = this->_findClosest(key, sign);
 
       if (idx != -1 && sign == 0)
-         throw typename Parent::Error("key %s already presents", key);
+         throw typename Parent::Error("insert(): key %s already present", key);
 
       _insert(key, value, idx, sign);
    }
@@ -792,9 +792,9 @@ public:
       if (idx != -1 && sign == 0)
          return this->_nodes->at(idx).value;
 
-      throw typename Parent::Error("key %s not found", key);
+      throw typename Parent::Error("at(): key %s not found", key);
    }
-   
+
    Value & at (const char *key)
    {
       int sign;
@@ -803,7 +803,7 @@ public:
       if (idx != -1 && sign == 0)
          return this->_nodes->at(idx).value;
 
-      throw typename Parent::Error("key %s not found", key);
+      throw typename Parent::Error("at(): key %s not found", key);
    }
 
    Value * at2 (const char *key)
@@ -877,7 +877,7 @@ public:
       if (idx != -1 && sign == 0)
          return this->_nodes->at(idx).value;
 
-      throw typename Parent::Error("key not found");
+      throw typename Parent::Error("at(): key not found");
    }
 
    Value * at2 (Key key) const
@@ -897,7 +897,7 @@ public:
       int idx = this->_findClosest(key, sign);
 
       if (idx != -1 && sign == 0)
-         throw typename Parent::Error("key already presents");
+         throw typename Parent::Error("insert(): key already present");
 
       return _insertObj(key, idx, sign);
    }
@@ -909,7 +909,7 @@ public:
       int idx = this->_findClosest(key, sign);
 
       if (idx != -1 && sign == 0)
-         throw typename Parent::Error("key already presents");
+         throw typename Parent::Error("insert(): key already present");
 
       return _insertObj(key, idx, sign, a);
    }
@@ -968,7 +968,7 @@ public:
 
       for (i = this->begin(); i != this->end(); i = this->next(i))
          this->value(i).~Value();
-      
+
       Parent::clear();
    }
 
@@ -998,14 +998,14 @@ protected:
       Value* value = _insert(key, parent, sign);
       new (value) Value();
       return *value;
-   }             
+   }
 
    template <typename A>
    Value& _insertObj (Key key, int parent, int sign, A& a) {
       Value* value = _insert(key, parent, sign);
       new (value) Value(a);
       return *value;
-   }             
+   }
 
 private:
    RedBlackObjMap(const RedBlackObjMap &); // no implicit copy
@@ -1032,14 +1032,14 @@ public:
    {
       this->clear();
    }
-                       
+
    virtual void clear ()
    {
       for (int i = this->begin(); i != this->end(); i = this->next(i))
          this->value(i).~Value();
       GrandParent::clear();
       _pool.clear();
-   }               
+   }
 
    Value & at (const char* key) const
    {
@@ -1074,7 +1074,7 @@ public:
       int idx = this->_findClosest(key, sign);
 
       if (idx != -1 && sign == 0)
-         throw typename Parent::Error("insert(): key %s already presents", key);
+         throw typename Parent::Error("insert(): key %s already present", key);
 
       return _insertObj(key, idx, sign);
    }
@@ -1086,7 +1086,7 @@ public:
       int idx = this->_findClosest(key, sign);
 
       if (idx != -1 && sign == 0)
-         throw typename Parent::Error("insert(): key %s already presents", key);
+         throw typename Parent::Error("insert(): key %s already present", key);
 
       return _insertObj(key, idx, sign, a);
    }
@@ -1159,26 +1159,26 @@ protected:
       this->_insertNode(node_idx, parent, sign);
 
       return node_idx;
-   }         
+   }
 
    int _insertObj (const char *key, int parent, int sign)
    {
       int idx = _insert(key, parent, sign);
       Value *value = &this->value(idx);
-      
+
       new (value) Value();
       return idx;
-   }             
+   }
 
    template <typename A>
    int _insertObj (const char *key, int parent, int sign, A &a)
    {
       int idx = _insert(key, parent, sign);
       Value *value = &this->value(idx);
-      
+
       new (value) Value(a);
       return idx;
-   }             
+   }
 
    StringPool _pool;
 private:
