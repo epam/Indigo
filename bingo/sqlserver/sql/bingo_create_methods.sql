@@ -313,6 +313,38 @@ grant execute on [$(bingo)].CheckMoleculeB to $(bingo)_reader
 GO
 
 --
+-- CheckMoleculeTable
+--
+CREATE FUNCTION [$(bingo)].z_CheckMoleculeTable 
+  (
+    @table nvarchar(max),
+    @id_column nvarchar(max),
+    @data_column nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS TABLE (id int, msg nvarchar(max))
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CheckMoleculeTable
+GO
+ADD SIGNATURE TO [$(bingo)].z_CheckMoleculeTable BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].CheckMoleculeTable 
+  (
+    @table nvarchar(max),
+    @id_column nvarchar(max),
+    @data_column nvarchar(max)
+  )
+  RETURNS TABLE
+AS
+  RETURN (SELECT * FROM [$(bingo)].z_CheckMoleculeTable (@table, @id_column, @data_column, '$(bingo)'))
+
+GO
+grant select on [$(bingo)].CheckMoleculeTable to $(bingo)_reader
+GO
+
+--
 -- CheckReaction
 --
 CREATE FUNCTION [$(bingo)].z_CheckReaction 
@@ -591,6 +623,34 @@ grant execute on [$(bingo)].ExactB to $(bingo)_reader
 GO
 
 --
+-- ExportSDF
+--
+CREATE PROCEDURE [$(bingo)].z_ExportSDF 
+    @table_name nvarchar(max),
+    @mol_column_name nvarchar(max),
+    @file_name nvarchar(max),
+    @additional_parameters nvarchar(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].ExportSDF
+GO
+ADD SIGNATURE TO [$(bingo)].z_ExportSDF BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE PROCEDURE [$(bingo)].ExportSDF 
+    @table_name nvarchar(max),
+    @mol_column_name nvarchar(max),
+    @file_name nvarchar(max),
+    @additional_parameters nvarchar(max)
+AS
+BEGIN
+  EXEC [$(bingo)].z_ExportSDF @table_name, @mol_column_name, @file_name, @additional_parameters
+END
+GO
+grant execute on [$(bingo)].ExportSDF to $(bingo)_operator
+GO
+
+--
 -- FlushOperations
 --
 CREATE PROCEDURE [$(bingo)].z_FlushOperations 
@@ -819,7 +879,7 @@ BEGIN
   EXEC [$(bingo)].z_ImportRDF @table_name, @react_column_name, @file_name, @additional_parameters, '$(bingo)'
 END
 GO
-grant execute on [$(bingo)].ImportRDF to $(bingo)_reader
+grant execute on [$(bingo)].ImportRDF to $(bingo)_operator
 GO
 
 --
@@ -848,7 +908,7 @@ BEGIN
   EXEC [$(bingo)].z_ImportSDF @table_name, @mol_column_name, @file_name, @additional_parameters, '$(bingo)'
 END
 GO
-grant execute on [$(bingo)].ImportSDF to $(bingo)_reader
+grant execute on [$(bingo)].ImportSDF to $(bingo)_operator
 GO
 
 --
@@ -877,7 +937,7 @@ BEGIN
   EXEC [$(bingo)].z_ImportSMILES @table_name, @mol_column_name, @file_name, @id_column_name, '$(bingo)'
 END
 GO
-grant execute on [$(bingo)].ImportSMILES to $(bingo)_reader
+grant execute on [$(bingo)].ImportSMILES to $(bingo)_operator
 GO
 
 --

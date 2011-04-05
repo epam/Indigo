@@ -64,7 +64,7 @@ namespace indigo
                int id = _index_data.storage.getInt(storage_id, 0, conn, ref cache_index);
                FetchedData data = new FetchedData(id);
                if (highlighting)
-                  data.subhi = BingoCore.ringoGetHightlightedReaction();
+                  data.str = BingoCore.ringoGetHightlightedReaction();
                yield return data;
             }
          }

@@ -403,7 +403,7 @@ namespace indigo
          SqlString data_column, SqlString bingo_schema, bool reaction)
       {
          bingoOperationDelegate opWithIndex = 
-            getInsertRecordsDelegate(table.Value, true);
+            getInsertRecordsDelegate(table.Value, true, true, true, null);
 
          bingoGetIndexDataDelegate createDataDelegate =
             (ctx_conn, conn, schema) => BingoIndexData.CreateIndexData(getSPID(ctx_conn),
@@ -423,7 +423,7 @@ namespace indigo
       //    Only table or existing_cursor_name must be non null
       //
       private static bingoOperationDelegate getInsertRecordsDelegate (string table, 
-         bool flush_and_create_index)
+         bool insert_records, bool flush_and_create_index, bool create_cursor, ArrayList error_list)
       {
          UTF8Encoding encoding = new UTF8Encoding();
 
@@ -433,26 +433,28 @@ namespace indigo
                // Process each molecule
                // If ThreadAbortException occurs then Thread.ResetAbort() is 
                // called and indexing is terminated 
-               using (BingoSqlCursor cursor = new BingoSqlCursor(ctx_conn, 
+               using (BingoSqlCursor cursor = new BingoSqlCursor(ctx_conn, create_cursor,
                   "SELECT {0}, {1} FROM {2}", data.id_column, data.data_column, table))
                {
                   Exception exception = null;
+                  int counter = 0;
+
                   BingoCore.GetNextRecordHandler get_next_record =
                      (IntPtr context) =>
                      {
-                        int counter = 0;
                         int? id = null;
-                        if (exception != null)
-                           return 0;
                         try
                         {
+                           if (exception != null)
+                              return 0;
                            while (cursor.read())
                            {
                               if (cursor[0] == DBNull.Value)
                               {
                                  string message =
                                     String.Format("Record with id=null was skipped.");
-                                 SqlContext.Pipe.Send(message);
+                                 if (SqlContext.Pipe != null)
+                                    SqlContext.Pipe.Send(message);
                                  BingoLog.logMessage(message);
                                  continue;
                               }
@@ -461,14 +463,17 @@ namespace indigo
                               {
                                  string message =
                                     String.Format("Record with id={0} has null data. Skipped.", id);
-                                 SqlContext.Pipe.Send(message);
+                                 if (SqlContext.Pipe != null)
+                                    SqlContext.Pipe.Send(message);
                                  BingoLog.logMessage(message);
+                                 if (error_list != null)
+                                    error_list.Add(new FetchedData(id.Value) { str = "null data" });
                                  continue;
                               }
                               counter++;
-                              if (counter % 1000 == 0)
+                              if (counter % 10000 == 0)
                               {
-                                 BingoLog.logMessage("Preparing record #{0} with id = {1}",
+                                 BingoLog.logMessage("Processing record #{0} with id = {1}",
                                     counter, id);
                               }
 
@@ -504,16 +509,19 @@ namespace indigo
                   BingoCore.ProcessResultHandler process_result =
                      (IntPtr context) =>
                      {
-                        if (exception != null)
-                           return;
                         try
                         {
-                           BingoTimer add_timer = new BingoTimer("index.add_to_index");
-                           if (data.getIndexType() == BingoIndexData.IndexType.Molecule)
-                              _AddMoleculeToIndex(conn, data);
-                           else
-                              _AddReactionToIndex(conn, data);
-                           add_timer.end();
+                           if (exception != null)
+                              return;
+                           if (insert_records)
+                           {
+                              BingoTimer add_timer = new BingoTimer("index.add_to_index");
+                              if (data.getIndexType() == BingoIndexData.IndexType.Molecule)
+                                 _AddMoleculeToIndex(conn, data);
+                              else
+                                 _AddReactionToIndex(conn, data);
+                              add_timer.end();
+                           }
                         }
                         catch (Exception ex)
                         {
@@ -528,15 +536,20 @@ namespace indigo
                   BingoCore.ProcessErrorHandler process_error =
                      (int id_with_error, IntPtr context) =>
                      {
-                        if (exception != null)
-                           return;
                         try
                         {
+                           if (exception != null)
+                              return;
                            string message =
                               String.Format("Record with ID={0} wasn't added to the index: {1}",
                                  id_with_error, BingoCore.lib.bingoGetWarning());
-                           SqlContext.Pipe.Send(message);
+                           if (SqlContext.Pipe != null)
+                              SqlContext.Pipe.Send(message);
                            BingoLog.logMessage(message);
+
+                           if (error_list != null)
+                              error_list.Add(new FetchedData(id_with_error) 
+                                 { str = BingoCore.lib.bingoGetWarning() });
                         }
                         catch (Exception ex)
                         {
@@ -716,7 +729,7 @@ namespace indigo
       {
          FetchedData data = (FetchedData)obj;
          id = new SqlInt32(data.id);
-         str = new SqlString(data.subhi);
+         str = new SqlString(data.str);
       }
       public static void FillRowIntFloat (Object obj, out SqlInt32 id, out SqlSingle value)
       {
@@ -1129,7 +1142,7 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
+      [BingoSqlFunction]
       public static void ImportSDF(SqlString table_name, SqlString mol_column_name,
          SqlString file_name, SqlString additional_parameters, SqlString bingo_schema)
       {
@@ -1172,7 +1185,7 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
+      [BingoSqlFunction]
       public static void ImportRDF (SqlString table_name, SqlString react_column_name,
          SqlString file_name, SqlString additional_parameters, SqlString bingo_schema)
       {
@@ -1215,7 +1228,7 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
+      [BingoSqlFunction]
       public static void ImportSMILES (SqlString table_name, SqlString mol_column_name,
          SqlString file_name, SqlString id_column_name, SqlString bingo_schema)
       {
@@ -1262,6 +1275,44 @@ namespace indigo
 
             _ImportData(table_name.Value, mol_column_name.Value,
                additional_parameters, populateRowFunc);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunction]
+      public static void ExportSDF (SqlString table_name, SqlString mol_column_name,
+         SqlString file_name, SqlString additional_parameters)
+      {
+         FileInfo exported_file_info = new FileInfo(file_name.Value);
+         using (StreamWriter exported_file = exported_file_info.CreateText())
+         {
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+
+               string parameters_str = additional_parameters.Value;
+               if (parameters_str.Length > 0)
+                  parameters_str = ", " + parameters_str;
+
+               SqlDataReader reader =
+                  BingoSqlUtils.ExecReader(conn, "select {0}{1} from {2}", 
+                  mol_column_name, parameters_str, table_name);
+               using (reader)
+               {
+                  while (reader.Read())
+                  {
+                     exported_file.WriteLine(reader[0]);
+                     for (int i = 1; i < reader.FieldCount; i++)
+                     {
+                        exported_file.WriteLine(">  <{0}>", reader.GetName(i));
+                        exported_file.WriteLine("{0}", reader[i]);
+                     }
+
+                     exported_file.WriteLine("$$$$");
+                  }
+               }
+            }
          }
       }
 
@@ -1549,7 +1600,7 @@ namespace indigo
             (ctx_conn, conn, schema) => BingoIndexData.GetIndexData(conn, bingo_schema.Value,
                table_id.Value, database_id.Value, getSPID(ctx_conn));
 
-         bingoOperationDelegate insertOp = getInsertRecordsDelegate(tmp_table_name.Value, false);
+         bingoOperationDelegate insertOp = getInsertRecordsDelegate(tmp_table_name.Value, true, false, true, null);
 
          _ExecuteBingoOperationChangeIndex(bingo_schema, insertOp,
             getDataDelegate, BingoOp.LOAD_CMF | BingoOp.NON_CONTEXT_CONN | BingoOp.LOCK_INDEX);
@@ -1569,7 +1620,7 @@ namespace indigo
             (ctx_conn, conn, index_data) =>
             {
                index_data.prepareForDeleteRecord(conn);
-               using (BingoSqlCursor cursor = new BingoSqlCursor(ctx_conn,
+               using (BingoSqlCursor cursor = new BingoSqlCursor(ctx_conn, true,
                   "SELECT {0} FROM {1}", index_data.id_column, tmp_table_name.Value))
                {
                   while (cursor.read())
@@ -1583,6 +1634,44 @@ namespace indigo
          _ExecuteBingoOperationChangeIndex(bingo_schema, deleteOp,
             getDataDelegate, BingoOp.LOAD_CMF | BingoOp.LOCK_INDEX | BingoOp.NON_CONTEXT_CONN);
       }
+
+      [SqlFunction(FillRowMethodName = "FillRowIntString",
+         DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read,
+         TableDefinition = "id int, msg nvarchar(max)")]
+      [BingoSqlFunctionForReader]
+      public static IEnumerable CheckMoleculeTable (SqlString table, SqlString id_column,
+                 SqlString data_column, SqlString bingo_schema)
+      {
+         BingoLog.logMessage("Checking molecule table {0}", table.Value);
+         using (BingoSession session = new BingoSession())
+         {
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0,
+                  ContextFlags.IGNORE_CBDM | ContextFlags.NTHREADS | 
+                  ContextFlags.X_PSEUDO | ContextFlags.FINGERPRINTS);
+
+               BingoIndexID id = new BingoIndexID(conn, table.Value);
+               BingoIndexData dummy_data =
+                  new MangoIndexData(id, id_column.Value, data_column.Value, bingo_schema.Value);
+
+               ArrayList errors = new ArrayList();
+
+               bingoOperationDelegate check_insert_op = 
+                  getInsertRecordsDelegate(table.Value, false, false, false, errors);
+               if (BingoCore.lib.bingoIndexBegin() != 1)
+                  throw new Exception(BingoCore.lib.bingoGetError());
+               BingoCore.lib.bingoIndexSetSkipFP(true);
+               check_insert_op(conn, conn, dummy_data);
+               BingoCore.lib.bingoIndexEnd();
+
+               return errors;
+            }
+         }
+      }
+
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]

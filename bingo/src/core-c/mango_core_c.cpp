@@ -43,6 +43,7 @@ CEXPORT int mangoIndexProcessSingleRecord ()
             {
                self.single_mango_index.create();
                self.single_mango_index->init(*self.bingo_context);
+               self.single_mango_index->skip_calculate_fp = self.skip_calculate_fp;
             }
 
             self.mango_index = self.single_mango_index.get();
@@ -758,6 +759,7 @@ CEXPORT const char * mangoCheckMolecule (const char *molecule, int molecule_len)
          loader.ignore_closing_bond_direction_mismatch =
             self.bingo_context->ignore_closing_bond_direction_mismatch;
          loader.loadMolecule(mol);
+         Molecule::checkForConsistency(mol);
       }                               
       CATCH_READ_TARGET_MOL(
          self.buffer.readString(e.message(), true);

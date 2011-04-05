@@ -7,8 +7,8 @@ namespace indigo
          this.id = id;
       }
 
-      public int id;
-      public string subhi;
+      public int id { get; set; }
+      public string str { get; set; }
       public float value;
    }
 }

@@ -111,6 +111,8 @@ namespace indigo
          out IntPtr crf_buf, out int crf_buf_len,
          out IntPtr fingerprint_buf, out int fingerprint_buf_len);
 
+      int bingoIndexSetSkipFP ([MarshalAs(UnmanagedType.I1)] bool skip);
+
       int mangoGetHash (
          [MarshalAs(UnmanagedType.I1)] bool for_index,
          int index, out int count, out int hash);

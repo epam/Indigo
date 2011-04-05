@@ -33,11 +33,13 @@ namespace indigo
 class BingoIndex
 {
 public:
-   BingoIndex ()  { _context = 0; }
+   BingoIndex ()  { _context = 0; skip_calculate_fp = false; }
    virtual ~BingoIndex () {}
    void init (BingoContext &context)    { _context = &context; };
 
    virtual void prepare (Scanner &scanner, Output &output, OsLock *lock_for_exclusive_access) = 0;
+
+   bool skip_calculate_fp;
 
 protected:
    BingoContext *_context;
