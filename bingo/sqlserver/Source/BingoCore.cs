@@ -54,7 +54,7 @@ namespace indigo
          sbyte* res = lib.mangoGross(target_buf, target_buf.Length);
 
          if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(lib.bingoGetError());
+            return null;
 
          return new String(res);
       }
@@ -128,7 +128,7 @@ namespace indigo
          sbyte* res = lib.ringoRxnfile(reaction, reaction.Length);
 
          if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(lib.bingoGetError());
+            return null;
 
          return new String(res);
       }
@@ -138,9 +138,31 @@ namespace indigo
          sbyte* res = lib.mangoMolfile(molecule, molecule.Length);
 
          if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(lib.bingoGetError());
+            return null;
 
          return new String(res);
+      }
+
+      public static byte[] mangoICM (byte[] molecule, bool save_xyz)
+      {
+         int out_len;
+         IntPtr icm_ptr = lib.mangoICM(molecule, molecule.Length, save_xyz, out out_len);
+         if ((IntPtr)icm_ptr == IntPtr.Zero)
+            return null;
+         byte[] icm = new byte[out_len];
+         Marshal.Copy(icm_ptr, icm, 0, out_len);
+         return icm;
+      }
+
+      public static byte[] ringoICR (byte[] reaction, bool save_xyz)
+      {
+         int out_len;
+         IntPtr icr_ptr = lib.ringoICR(reaction, reaction.Length, save_xyz, out out_len);
+         if ((IntPtr)icr_ptr == IntPtr.Zero)
+            return null;
+         byte[] icr = new byte[out_len];
+         Marshal.Copy(icr_ptr, icr, 0, out_len);
+         return icr;
       }
 
       public static string ringoRSMILES (byte[] buffer)
@@ -148,7 +170,7 @@ namespace indigo
          sbyte* res = lib.ringoRSMILES(buffer, buffer.Length);
 
          if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(lib.bingoGetError());
+            return null;
 
          return new String(res);
       }
@@ -158,7 +180,7 @@ namespace indigo
          sbyte* res = lib.mangoSMILES(buffer, buffer.Length, canonical ? 1 : 0);
 
          if ((IntPtr)res == IntPtr.Zero)
-            throw new Exception(lib.bingoGetError());
+            return null;
 
          return new String(res);
       }

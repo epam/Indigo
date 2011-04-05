@@ -355,6 +355,96 @@ grant execute on [$(bingo)].CheckReactionB to $(bingo)_reader
 GO
 
 --
+-- CompactMolecule
+--
+CREATE FUNCTION [$(bingo)].z_CompactMolecule 
+  (
+    @molecule varbinary(max),
+    @save_xyz bit,
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CompactMolecule
+GO
+ADD SIGNATURE TO [$(bingo)].z_CompactMolecule BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].CompactMolecule 
+  (
+    @molecule varchar(max),
+    @save_xyz bit
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CompactMolecule (cast(@molecule as VARBINARY(max)), @save_xyz, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CompactMolecule to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].CompactMoleculeB 
+  (
+    @molecule varbinary(max),
+    @save_xyz bit
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CompactMolecule (@molecule, @save_xyz, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CompactMoleculeB to $(bingo)_reader
+GO
+
+--
+-- CompactReaction
+--
+CREATE FUNCTION [$(bingo)].z_CompactReaction 
+  (
+    @reaction varbinary(max),
+    @save_xyz bit,
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CompactReaction
+GO
+ADD SIGNATURE TO [$(bingo)].z_CompactReaction BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].CompactReaction 
+  (
+    @reaction varchar(max),
+    @save_xyz bit
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CompactReaction (cast(@reaction as VARBINARY(max)), @save_xyz, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CompactReaction to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].CompactReactionB 
+  (
+    @reaction varbinary(max),
+    @save_xyz bit
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CompactReaction (@reaction, @save_xyz, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CompactReactionB to $(bingo)_reader
+GO
+
+--
 -- CreateMoleculeIndex
 --
 CREATE PROCEDURE [$(bingo)].z_CreateMoleculeIndex 

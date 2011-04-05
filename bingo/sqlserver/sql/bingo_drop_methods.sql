@@ -89,6 +89,24 @@ GO
 DROP FUNCTION [$(bingo)].z_CheckReaction 
 GO
 
+DROP FUNCTION [$(bingo)].CompactMolecule 
+GO
+
+DROP FUNCTION [$(bingo)].CompactMoleculeB 
+GO
+
+DROP FUNCTION [$(bingo)].z_CompactMolecule 
+GO
+
+DROP FUNCTION [$(bingo)].CompactReaction 
+GO
+
+DROP FUNCTION [$(bingo)].CompactReactionB 
+GO
+
+DROP FUNCTION [$(bingo)].z_CompactReaction 
+GO
+
 DROP PROCEDURE [$(bingo)].CreateMoleculeIndex 
 GO
 

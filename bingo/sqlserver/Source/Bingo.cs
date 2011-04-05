@@ -598,8 +598,6 @@ namespace indigo
       [BingoSqlFunction]
       public static void SetKeepCache (SqlString table, SqlBoolean value, SqlString bingo_schema)
       {
-         BingoLog.logMessage("SetKeepCache for {0} table", table.Value);
-
          bingoGetIndexDataDelegate getDataDelegate =
             (ctx_conn, conn, schema) =>
                BingoIndexData.GetIndexData(conn, bingo_schema.Value, table.Value, getSPID(ctx_conn));
@@ -609,7 +607,6 @@ namespace indigo
             {
                index_data.setKeepCache(conn, bingo_schema.Value, value.Value);
             };
-
 
          _ExecuteBingoOperation(bingo_schema, setOperation, getDataDelegate, 0);
       }
@@ -1441,7 +1438,6 @@ namespace indigo
          }
       }
 
-
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunctionForReader(str_bin = "molecule")]
@@ -1457,6 +1453,42 @@ namespace indigo
             }
 
             return BingoCore.mangoSMILES(molecule.Value, true);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlBinary CompactMolecule (SqlBinary molecule, SqlBoolean save_xyz, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            ContextFlags flags = ContextFlags.X_PSEUDO | ContextFlags.IGNORE_CBDM;
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0, flags);
+            }
+
+            return BingoCore.mangoICM(molecule.Value, save_xyz.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "reaction")]
+      public static SqlBinary CompactReaction (SqlBinary reaction, SqlBoolean save_xyz, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            ContextFlags flags = ContextFlags.X_PSEUDO | ContextFlags.IGNORE_CBDM;
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0, flags);
+            }
+
+            return BingoCore.ringoICR(reaction.Value, save_xyz.Value);
          }
       }
 

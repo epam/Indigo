@@ -135,6 +135,14 @@ namespace indigo
       sbyte* mangoMolfile (
          [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len);
 
+      IntPtr mangoICM (
+         [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len,
+         [MarshalAs(UnmanagedType.I1)] bool save_xyz, out int out_len);
+
+      IntPtr ringoICR (
+         [MarshalAs(UnmanagedType.LPArray)] byte[] reaction, int reaction_len,
+         [MarshalAs(UnmanagedType.I1)] bool save_xyz, out int out_len);
+
       sbyte* ringoRxnfile (
          [MarshalAs(UnmanagedType.LPArray)] byte[] reaction, int reaction_len);
 

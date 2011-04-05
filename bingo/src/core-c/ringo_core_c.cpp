@@ -25,6 +25,7 @@
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_saver.h"
 #include "reaction/crf_saver.h"
+#include "reaction/icr_saver.h"
 
 using namespace indigo::bingo_core;
 
@@ -346,4 +347,36 @@ CEXPORT const char* ringoGetHightlightedReaction ()
       return self.buffer.ptr();
    }
    BINGO_END(0, 0);
+}
+
+CEXPORT const char* ringoICR (const char* reaction, int reaction_len, bool save_xyz, int *out_len)
+{
+   BINGO_BEGIN
+   {
+      _ringoCheckPseudoAndCBDM(self);
+
+      BufferScanner scanner(reaction, reaction_len);
+
+      QS_DEF(Reaction, target);
+
+      ReactionAutoLoader loader(scanner);
+
+      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
+      loader.ignore_closing_bond_direction_mismatch =
+         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      loader.loadReaction(target);
+
+      ArrayOutput out(self.buffer);
+
+      if ((save_xyz != 0) && !Reaction::haveCoord(target))
+         throw BingoError("reaction has no XYZ");
+
+      IcrSaver saver(out);
+      saver.save_xyz = (save_xyz != 0);
+      saver.saveReaction(target);
+
+      *out_len = self.buffer.size();
+      return self.buffer.ptr();
+   }
+   BINGO_END(0, 0)
 }

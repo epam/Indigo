@@ -437,8 +437,14 @@ namespace indigo
 
       public void setKeepCache (SqlConnection conn, string bingo_schema, bool keep)
       {
-         keep_cache = keep;
-         BingoConfig.setInt(conn, bingo_schema, "KEEP_CACHE", id.table_id, keep ? 1 : 0);
+         if (keep_cache != keep)
+         {
+            keep_cache = keep;
+            BingoConfig.setInt(conn, bingo_schema, "KEEP_CACHE", id.table_id, keep ? 1 : 0);
+
+            BingoLog.logMessage("SetKeepCache has changed for {0} table. New value is {1}", 
+               id.FullTableName(conn), keep);
+         }
       }
 
       public int? getStorageIdById (SqlConnection conn, int id)
