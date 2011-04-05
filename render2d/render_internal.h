@@ -139,7 +139,7 @@ private:
    TL_CP_DECL(MoleculeRenderData, _data);
    TL_CP_DECL(Array<int>, _atomMapping);
    TL_CP_DECL(Array<int>, _atomMappingInv);
-   TL_CP_DECL(Array<int>, _bondMappingInv);
+   TL_CP_DECL(BaseMolecule::Mapping, _bondMappingInv);
 };
 
 }
