@@ -85,7 +85,7 @@ public:
       Array<char> description; // SDT in Molfile format
       Array<char> data;        // SCD/SED in Molfile format
       Vec2f       display_pos; // SDD in Molfile format
-      bool        attached;    // or detached
+      bool        detached;    // or attached
       bool        relative;    // or absolute
       bool        display_units;
       int         dasp_pos;

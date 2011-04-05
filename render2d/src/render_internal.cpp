@@ -553,7 +553,7 @@ void MoleculeRenderInternal::_initDataSGroups()
       ti.fontsize = FONT_SIZE_DATA_SGROUP;
       _cw.setTextItemSize(ti);
       const AtomDesc& ad = _ad(group.atoms[0]);
-      if (group.attached) {
+      if (!group.detached) {
          ti.bbp.copy(_ad(group.atoms[0]).pos);
          ti.bbp.x += ad.boundBoxMax.x + _settings.bondLineWidth * 2;
          ti.bbp.y -= ti.bbsz.y/2;

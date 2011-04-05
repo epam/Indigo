@@ -1305,7 +1305,7 @@ void MolfileSaver::_writeDataSGroupDisplay (BaseMolecule::DataSGroup &datasgroup
 {
    out.printf("%10.4f%10.4f    %c%c%c   ALL  1       %1d  ",
                 datasgroup.display_pos.x, datasgroup.display_pos.y,
-                datasgroup.attached ? 'A' : 'D',
+                datasgroup.detached ? 'D' : 'A',
                 datasgroup.relative ? 'R' : 'A',
                 datasgroup.display_units ? 'U' : ' ',
                 datasgroup.dasp_pos);

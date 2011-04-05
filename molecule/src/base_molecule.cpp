@@ -142,7 +142,7 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
       DataSGroup &sg = data_sgroups[idx];
       if (_mergeSGroupWithSubmolecule(sg, supersg, mol, *mapping_out, edge_mapping))
       {
-         sg.attached = supersg.attached;
+         sg.detached = supersg.detached;
          sg.display_pos = supersg.display_pos;
          sg.data.copy(supersg.data);
          sg.dasp_pos = supersg.dasp_pos;
@@ -721,7 +721,7 @@ BaseMolecule::SGroup::~SGroup ()
 
 BaseMolecule::DataSGroup::DataSGroup ()
 {
-   attached = false;
+   detached = false;
    relative = false;
    display_units = false;
    dasp_pos = 1;

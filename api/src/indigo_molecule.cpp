@@ -2248,6 +2248,18 @@ CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *opt
 
       dsg.display_pos.x = x;
       dsg.display_pos.y = y;
+      dsg.detached = true;
+
+      if (options != 0 && options[0] != 0)
+      {
+         if (strcasecmp(options, "absolute") == 0)
+            dsg.relative = false;
+         else if (strcasecmp(options, "relative") == 0)
+            dsg.relative = true;
+         else
+            throw IndigoError("indigoSetDataSGroupXY(): invalid options string");
+      }
+
       return 1;
    }
    INDIGO_END(-1)
