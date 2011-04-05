@@ -787,7 +787,7 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
         Array<int> &mapping, Array<int> &edge_mapping)
 {
    int i;
-   bool merged;
+   bool merged = false;
 
    sgroup.brackets.copy(super.brackets);
 
