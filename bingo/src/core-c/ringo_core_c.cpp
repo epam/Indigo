@@ -45,6 +45,7 @@ CEXPORT int ringoIndexProcessSingleRecord ()
             {
                self.single_ringo_index.create();
                self.single_ringo_index->init(*self.bingo_context);
+               self.single_ringo_index->skip_calculate_fp = self.skip_calculate_fp;
             }
 
             self.ringo_index = self.single_ringo_index.get();
@@ -283,6 +284,7 @@ CEXPORT const char * ringoCheckReaction (const char *reaction, int reaction_len)
          loader.ignore_closing_bond_direction_mismatch =
             self.bingo_context->ignore_closing_bond_direction_mismatch;
          loader.loadReaction(rxn);
+         Reaction::checkForConsistency(rxn);
       }
       CATCH_READ_TARGET_RXN(
          self.buffer.readString(e.message(), true);

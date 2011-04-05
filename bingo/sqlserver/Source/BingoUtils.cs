@@ -144,35 +144,56 @@ namespace indigo
       string cursor_name;
       bool closed = false;
       List<object> row;
+      SqlDataReader reader;
 
-      public BingoSqlCursor (SqlConnection conn, 
+      public BingoSqlCursor (SqlConnection conn, bool create_cursor, 
          string select_command, params object[] args)
       {
          this.connection = conn;
-
-         cursor_name = string.Format("[{0}]", Guid.NewGuid().ToString());
-         string select_command_formatted = String.Format(select_command, args);
-         BingoSqlUtils.ExecNonQuery(conn,
-            "DECLARE {0} CURSOR GLOBAL FORWARD_ONLY READ_ONLY FOR {1}; OPEN {0};",
-            cursor_name, select_command_formatted);
+         if (create_cursor)
+         {
+            cursor_name = string.Format("[{0}]", Guid.NewGuid().ToString());
+            string select_command_formatted = String.Format(select_command, args);
+            BingoSqlUtils.ExecNonQuery(conn,
+               "DECLARE {0} CURSOR GLOBAL FORWARD_ONLY READ_ONLY FOR {1}; OPEN {0};",
+               cursor_name, select_command_formatted);
+         }
+         else
+            reader = BingoSqlUtils.ExecReader(conn, select_command, args);
       }
 
       public bool read ()
       {
-         row = BingoSqlUtils.ExecQuery(connection, "FETCH NEXT FROM {0};", cursor_name);
-         return row != null;
+         if (reader == null)
+         {
+            row = BingoSqlUtils.ExecQuery(connection, "FETCH NEXT FROM {0};", cursor_name);
+            return row != null;
+         }
+         else
+         {
+            return reader.Read();
+         }
       }
 
       public object this[int index]
       {
-         get { return row[index]; }
+         get
+         {
+            if (reader == null)
+               return row[index]; // Return data from cursor
+            else
+               return reader[index]; // Return data from select
+         }
       }
 
       public void close ()
       {
          if (!closed)
          {
-            BingoSqlUtils.ExecNonQuery(connection, "CLOSE {0}; DEALLOCATE {0};", cursor_name);
+            if (reader != null)
+               reader.Dispose();
+            else
+               BingoSqlUtils.ExecNonQuery(connection, "CLOSE {0}; DEALLOCATE {0};", cursor_name);
             closed = true;
          }
       }

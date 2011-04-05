@@ -80,6 +80,12 @@ GO
 DROP FUNCTION [$(bingo)].z_CheckMolecule 
 GO
 
+DROP FUNCTION [$(bingo)].CheckMoleculeTable 
+GO
+
+DROP FUNCTION [$(bingo)].z_CheckMoleculeTable 
+GO
+
 DROP FUNCTION [$(bingo)].CheckReaction 
 GO
 
@@ -138,6 +144,12 @@ DROP FUNCTION [$(bingo)].ExactB
 GO
 
 DROP FUNCTION [$(bingo)].z_Exact 
+GO
+
+DROP PROCEDURE [$(bingo)].ExportSDF 
+GO
+
+DROP PROCEDURE [$(bingo)].z_ExportSDF 
 GO
 
 DROP PROCEDURE [$(bingo)].FlushOperations 

@@ -41,6 +41,7 @@ void BingoCore::reset ()
    ringo_context = 0;
    error_handler = 0;
    error_handler_context = 0;
+   skip_calculate_fp = false;
 }
 
 TL_DECL(BingoCore, self);
@@ -540,6 +541,16 @@ CEXPORT int bingoIndexBegin ()
       bingoIndexEnd();
 
       self.index_record_data.create();
+      return 1;
+   }
+   BINGO_END(-2, -2)
+}
+
+CEXPORT int bingoIndexSetSkipFP (bool skip)
+{
+   BINGO_BEGIN
+   {
+      self.skip_calculate_fp = skip;
       return 1;
    }
    BINGO_END(-2, -2)
