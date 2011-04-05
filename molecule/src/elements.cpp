@@ -365,14 +365,29 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
    }
    else if (groupno == 4)
    {
-      if (elem == ELEM_C || elem == ELEM_Si || elem == ELEM_Ge)
+      if (elem == ELEM_C)
       {
          valence = 4;
          hyd = 4 - rad - conn - abs(charge);
       }
-      else if (elem == ELEM_Sn || elem == ELEM_Pb)
+      else if (elem == ELEM_Si || elem == ELEM_Ge || elem == ELEM_Sn || elem == ELEM_Pb)
       {
-         if (conn + rad + abs(charge) <= 2)
+         if (charge == -2 && conn == 6 && rad == 0)
+         {
+            // Zinc fluorosilicate, hexafluorogermanium
+            valence = 6;
+            hyd = 0;
+         }
+         else if (charge == -1 && conn + rad == 5)
+         {
+            // with radical:    [Ge-]: CID 18503269
+            // without radical: [Si-]: CID 358631
+            //                  [Ge-]: CID 19891516
+            valence = 5;
+            hyd = 0;
+         }
+         // following ISIS/Draw logic
+         else if ((elem == ELEM_Sn || elem == ELEM_Pb) && conn + rad + abs(charge) <= 2)
          {
             valence = 2;
             hyd = 2 - rad - conn - abs(charge);
@@ -436,7 +451,12 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
       }
       else if (elem == ELEM_Bi || elem == ELEM_Sb || elem == ELEM_As)
       {
-         if (charge == 1)
+         if (charge == -1 && rad + conn == 6)
+         {
+            valence = 6;
+            hyd = 0;
+         }
+         else if (charge == 1)
          {
             if (rad + conn <= 2 && elem != ELEM_As)
             {
