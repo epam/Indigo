@@ -9,11 +9,14 @@ namespace indigo.SqlAttributes
    {
       public AccessLevelKind access_level { get; set; }
       public bool substitute_bingo { get; set; }
+      /* Parameter name that should converted to binary */
+      public string str_bin { get; set; }
 
       public BingoSqlFunctionAttribute ()
       {
          access_level = AccessLevelKind.Operator;
          substitute_bingo = true;
+         str_bin = null;
       }
    }
 

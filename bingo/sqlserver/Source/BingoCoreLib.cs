@@ -45,7 +45,7 @@ namespace indigo
          [MarshalAs(UnmanagedType.LPStr)] string options);
 
       int mangoMatchTarget (
-         [MarshalAs(UnmanagedType.LPStr)] string target,
+         [MarshalAs(UnmanagedType.LPArray)] byte[] target,
          int target_buf_len);
 
       int mangoMatchTargetBinary (
@@ -53,7 +53,7 @@ namespace indigo
          [MarshalAs(UnmanagedType.LPArray)] byte[] target_xyz, int target_xyz_len);
 
       int ringoMatchTarget (
-         [MarshalAs(UnmanagedType.LPStr)] string target,
+         [MarshalAs(UnmanagedType.LPArray)] byte[] target,
          int target_buf_len);
 
       int ringoMatchTargetBinary (
@@ -121,22 +121,22 @@ namespace indigo
       int ringoGetQueryFingerprint (out IntPtr query_fp, out int query_fp_len);
 
       int mangoGetAtomCount (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
+         [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len);
 
       int mangoGetBondCount (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
+         [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len);
 
       sbyte* mangoSMILES (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len, int canonical);
+         [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len, int canonical);
 
       sbyte* ringoRSMILES (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
+         [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len);
 
       sbyte* mangoMolfile (
-         [MarshalAs(UnmanagedType.LPStr)] string molecule);
+         [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len);
 
       sbyte* ringoRxnfile (
-         [MarshalAs(UnmanagedType.LPStr)] string reaction);
+         [MarshalAs(UnmanagedType.LPArray)] byte[] reaction, int reaction_len);
 
       sbyte* mangoGetCountedElementName (int index);
 
@@ -170,20 +170,20 @@ namespace indigo
       sbyte* ringoGetHightlightedReaction ();
 
       sbyte* ringoAAM (
-         [MarshalAs(UnmanagedType.LPStr)] string reaction,
+         [MarshalAs(UnmanagedType.LPArray)] byte[] reaction, int reaction_len,
          [MarshalAs(UnmanagedType.LPStr)] string options);
 
       sbyte* ringoCheckReaction (
-         [MarshalAs(UnmanagedType.LPStr)] string reaction);
+         [MarshalAs(UnmanagedType.LPArray)] byte[] reaction, int reaction_len);
 
       sbyte* mangoCheckMolecule (
-         [MarshalAs(UnmanagedType.LPStr)] string molecule);
+         [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len);
 
       sbyte* mangoGross (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
+         [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len);
 
       float mangoMass (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len,
+         [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len,
          [MarshalAs(UnmanagedType.LPStr)] string type);
 
       sbyte* mangoGrossGetConditions ();
@@ -215,7 +215,7 @@ namespace indigo
          [MarshalAs(UnmanagedType.LPStr)] string target_buf, int value);
 
       sbyte* bingoGetNameCore (
-         [MarshalAs(UnmanagedType.LPStr)] string target_buf, int target_buf_len);
+         [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len);
 
       /* Test functions */
       int bingoCheckMemoryAllocate (int mem);

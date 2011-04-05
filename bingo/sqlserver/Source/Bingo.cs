@@ -29,7 +29,7 @@ namespace indigo
 
       private delegate void bingoCallback ();
 
-      private static SqlInt32 _Match (SqlString target, SqlString query, SqlString options,
+      private static SqlInt32 _Match (SqlBinary target, SqlString query, SqlString options,
          SqlString bingo_schema, string search_type,
          bingoCallback prepare_match, bingoCallback process_matched)
       {
@@ -77,29 +77,29 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlInt32 Sub (SqlString target, SqlString query, SqlString options, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlInt32 Sub (SqlBinary target, SqlString query, SqlString options, SqlString bingo_schema)
       {
          return _Match(target, query, options, bingo_schema, "SUB", null, null);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlInt32 SMARTS (SqlString target, SqlString query, SqlString options, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlInt32 SMARTS (SqlBinary target, SqlString query, SqlString options, SqlString bingo_schema)
       {
          return _Match(target, query, options, bingo_schema, "SMARTS", null, null);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlInt32 Exact (SqlString target, SqlString query, SqlString options, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlInt32 Exact (SqlBinary target, SqlString query, SqlString options, SqlString bingo_schema)
       {
          return _Match(target, query, options, bingo_schema, "EXACT", null, null);
       }
 
-      private static string MatchWithHighlighting (SqlString target, SqlString query,
+      private static string MatchWithHighlighting (SqlBinary target, SqlString query,
          SqlString parameters, SqlString bingo_schema, string search_type)
       {
          string highlighting = null;
@@ -122,24 +122,24 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString SubHi (SqlString target, SqlString query, SqlString parameters, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlString SubHi (SqlBinary target, SqlString query, SqlString parameters, SqlString bingo_schema)
       {
          return MatchWithHighlighting(target, query, parameters, bingo_schema, "SUB");
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString SMARTSHi (SqlString target, SqlString query, SqlString parameters, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlString SMARTSHi (SqlBinary target, SqlString query, SqlString parameters, SqlString bingo_schema)
       {
          return MatchWithHighlighting(target, query, parameters, bingo_schema, "SMARTS");
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlSingle Sim (SqlString target, SqlString query, SqlString metrics, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlSingle Sim (SqlBinary target, SqlString query, SqlString metrics, SqlString bingo_schema)
       {
          SqlSingle score = SqlSingle.Null;
          bingoCallback handler =
@@ -154,7 +154,7 @@ namespace indigo
          return score;
       }
 
-      private static SqlInt32 _RMatch (SqlString target, SqlString query, SqlString options,
+      private static SqlInt32 _RMatch (SqlBinary target, SqlString query, SqlString options,
          SqlString bingo_schema, string search_type, bool heed_highlighting, ref string highlighting)
       {
          using (BingoSession sessions = new BingoSession())
@@ -199,8 +199,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlInt32 RSub (SqlString target, SqlString query, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlInt32 RSub (SqlBinary target, SqlString query, SqlString bingo_schema)
       {
          string highlighting = null;
          return _RMatch(target, query, "", bingo_schema, "RSUB", false, ref highlighting);
@@ -208,8 +208,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString RSubHi (SqlString target, SqlString query, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlString RSubHi (SqlBinary target, SqlString query, SqlString bingo_schema)
       {
          string highlighting = null;
          _RMatch(target, query, "", bingo_schema, "RSUB", true, ref highlighting);
@@ -218,8 +218,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString AAM (SqlString reaction, SqlString options, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "reaction")]
+      public static SqlString AAM (SqlBinary reaction, SqlString options, SqlString bingo_schema)
       {
          ContextFlags flags = ContextFlags.X_PSEUDO | ContextFlags.IGNORE_CBDM;
          using (SqlConnection conn = new SqlConnection("context connection=true"))
@@ -232,8 +232,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString CheckReaction (SqlString reaction, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "reaction")]
+      public static SqlString CheckReaction (SqlBinary reaction, SqlString bingo_schema)
       {
          ContextFlags flags = ContextFlags.X_PSEUDO | ContextFlags.IGNORE_CBDM;
          using (SqlConnection conn = new SqlConnection("context connection=true"))
@@ -249,8 +249,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString CheckMolecule (SqlString molecule, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlString CheckMolecule (SqlBinary molecule, SqlString bingo_schema)
       {
          ContextFlags flags = ContextFlags.X_PSEUDO | ContextFlags.IGNORE_CBDM;
          using (SqlConnection conn = new SqlConnection("context connection=true"))
@@ -1371,8 +1371,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString Smiles (SqlString molecule, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlString Smiles (SqlBinary molecule, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {
@@ -1389,8 +1389,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString RSmiles (SqlString molecule, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "reaction")]
+      public static SqlString RSmiles (SqlBinary reaction, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {
@@ -1401,14 +1401,14 @@ namespace indigo
                prepareContext(conn, bingo_schema.Value, 0, flags);
             }
 
-            return BingoCore.ringoRSMILES(molecule.Value);
+            return BingoCore.ringoRSMILES(reaction.Value);
          }
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString Molfile (SqlString molecule, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlString Molfile (SqlBinary molecule, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {
@@ -1425,8 +1425,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString Rxnfile (SqlString reaction, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "reaction")]
+      public static SqlString Rxnfile (SqlBinary reaction, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {
@@ -1444,8 +1444,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString CanSmiles (SqlString molecule, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlString CanSmiles (SqlBinary molecule, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {
@@ -1462,8 +1462,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlSingle Mass (SqlString molecule, SqlString type, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlSingle Mass (SqlBinary molecule, SqlString type, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {
@@ -1480,8 +1480,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString Gross (SqlString molecule, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlString Gross (SqlBinary molecule, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {
@@ -1498,8 +1498,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunctionForReader]
-      public static SqlString Name(SqlString molecule, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlString Name(SqlBinary molecule, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {
@@ -1616,8 +1616,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunction]
-      public static int GetAtomCount (SqlString molecule, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static int GetAtomCount (SqlBinary molecule, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {
@@ -1627,8 +1627,8 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
-      [BingoSqlFunction]
-      public static int GetBondCount (SqlString molecule, SqlString bingo_schema)
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static int GetBondCount (SqlBinary molecule, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {

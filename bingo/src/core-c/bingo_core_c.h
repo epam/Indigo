@@ -108,7 +108,7 @@ CEXPORT int mangoLoadTargetBinaryXyz (const char *target_xyz, int target_xyz_len
 CEXPORT int mangoSetHightlightingMode (int enable);
 CEXPORT const char* mangoGetHightlightedMolecule ();
 CEXPORT const char * mangoSMILES (const char *target_buf, int target_buf_len, int canonical);
-CEXPORT const char * mangoMolfile (const char *molecule);
+CEXPORT const char * mangoMolfile (const char *molecule, int molecule_len);
 CEXPORT int mangoGetQueryFingerprint (const char **query_fp, int *query_fp_len);
 CEXPORT const char* mangoGetCountedElementName (int index);
 CEXPORT int mangoNeedCoords ();
@@ -117,7 +117,7 @@ CEXPORT const char * mangoTauGetQueryGross ();
 CEXPORT float mangoMass (const char *target_buf, int target_buf_len, const char *type);
 CEXPORT const char* mangoGross (const char *target_buf, int target_buf_len);
 CEXPORT const char* mangoGrossGetConditions ();
-CEXPORT const char * mangoCheckMolecule (const char *molecule);
+CEXPORT const char * mangoCheckMolecule (const char *molecule, int molecule_len);
 CEXPORT int mangoIndexProcess (
    int (*get_next_record_cb) (void *context),
    void (*process_result_cb) (void *context),
@@ -147,9 +147,9 @@ CEXPORT int ringoMatchTarget (const char *target, int target_buf_len);
 //  -2 if some other thing is bad ("sound" error)
 CEXPORT int ringoMatchTargetBinary (const char *target_bin, int target_bin_len);
 CEXPORT const char * ringoRSMILES (const char *target_buf, int target_buf_len);
-CEXPORT const char * ringoRxnfile (const char *reaction);
-CEXPORT const char * ringoAAM (const char *reaction, const char *mode);
-CEXPORT const char * ringoCheckReaction (const char *reaction);
+CEXPORT const char * ringoRxnfile (const char *reaction, int reaction_len);
+CEXPORT const char * ringoAAM (const char *reaction, int reaction_len, const char *mode);
+CEXPORT const char * ringoCheckReaction (const char *reaction, int reaction_len);
 CEXPORT int ringoGetQueryFingerprint (const char **query_fp, int *query_fp_len);
 CEXPORT int ringoSetHightlightingMode (int enable);
 CEXPORT const char* ringoGetHightlightedReaction ();

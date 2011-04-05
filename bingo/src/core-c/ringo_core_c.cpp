@@ -217,13 +217,13 @@ CEXPORT const char * ringoRSMILES (const char *target_buf, int target_buf_len)
    BINGO_END(0, 0)
 }
 
-CEXPORT const char * ringoRxnfile (const char *reaction)
+CEXPORT const char * ringoRxnfile (const char *reaction, int reaction_len)
 {
    BINGO_BEGIN
    {
       _ringoCheckPseudoAndCBDM(self);
 
-      BufferScanner scanner(reaction);
+      BufferScanner scanner(reaction, reaction_len);
 
       QS_DEF(Reaction, target);
 
@@ -245,14 +245,16 @@ CEXPORT const char * ringoRxnfile (const char *reaction)
    BINGO_END(0, 0)
 }
 
-CEXPORT const char * ringoAAM (const char *reaction, const char *mode)
+CEXPORT const char * ringoAAM (const char *reaction, int reaction_len, const char *mode)
 {
    BINGO_BEGIN
    {
       _ringoCheckPseudoAndCBDM(self);
 
       self.ringo_context->ringoAAM.parse(mode);
-      self.ringo_context->ringoAAM.loadReaction(reaction);
+
+      BufferScanner reaction_scanner(reaction, reaction_len);
+      self.ringo_context->ringoAAM.loadReaction(reaction_scanner);
       self.ringo_context->ringoAAM.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
       self.ringo_context->ringoAAM.ignore_closing_bond_direction_mismatch =
          self.bingo_context->ignore_closing_bond_direction_mismatch;
@@ -264,7 +266,7 @@ CEXPORT const char * ringoAAM (const char *reaction, const char *mode)
    BINGO_END(0, 0)
 }
 
-CEXPORT const char * ringoCheckReaction (const char *reaction)
+CEXPORT const char * ringoCheckReaction (const char *reaction, int reaction_len)
 {
    BINGO_BEGIN
    {
@@ -274,7 +276,8 @@ CEXPORT const char * ringoCheckReaction (const char *reaction)
 
          QS_DEF(Reaction, rxn);
 
-         ReactionAutoLoader loader(reaction);
+         BufferScanner reaction_scanner(reaction, reaction_len);
+         ReactionAutoLoader loader(reaction_scanner);
          loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
          loader.ignore_closing_bond_direction_mismatch =
             self.bingo_context->ignore_closing_bond_direction_mismatch;

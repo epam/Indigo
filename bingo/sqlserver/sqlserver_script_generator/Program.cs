@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
@@ -28,225 +29,253 @@ namespace indigo
 
       static Dictionary<string, string> types_substitution = new Dictionary<string, string>
          {
+            { "Void", "" },
             { "Int32", "int" },
             { "SqlInt32", "int" },
             { "Int64", "bigint" },
             { "SqlInt64", "bigint" },
             { "SqlBoolean", "bit" },
             { "SqlByte", "tinyint" },
-            { "String", "nvarchar(max)" },
             { "SqlString", "nvarchar(max)" },
-            { "Double", "float" },
             { "SqlBinary", "varbinary(max)" },
             { "SqlDouble", "float" },
             { "SqlSingle", "real" },
             { "Single", "real" },
          };
 
-      static string SqlType(string ctype, MethodInfo m, bool is_proxy)
+      static string SqlType (string ctype, MethodInfo m)
       {
          if (ctype == "IEnumerable")
          {
             object[] attributes = m.GetCustomAttributes(typeof(SqlFunctionAttribute), true);
             SqlFunctionAttribute sql_attr = (SqlFunctionAttribute)(attributes[0]);
-            if (!is_proxy)
-               return String.Format("TABLE ({0})", sql_attr.TableDefinition);
-            else
-               return "TABLE";
+            return String.Format("TABLE ({0})", sql_attr.TableDefinition);
          }
+
          if (types_substitution.ContainsKey(ctype))
             return types_substitution[ctype];
-         System.Console.WriteLine("Please, add type {0} to the type substitution table", ctype);
-         throw new Exception("Type " + ctype + " wasn't found in the substitution table");
+         String msg = String.Format("Please, add type {0} to the type substitution table for {1} method",
+            ctype, m.Name);
+         System.Console.WriteLine(msg);
+         throw new Exception(msg);
       }
 
-      static void PrintParametersAndReturn(StreamWriter stream, MethodInfo m, bool is_proxy)
+      class IndigoSQLFunctionInfo
       {
-         // Write arguments and return value
-         bool if_first = true;
-         if (m.ReturnType != typeof(void))
-            stream.Write("  (\n");
-         foreach (ParameterInfo p in m.GetParameters())
-         {
-            if (is_proxy && (p.Name == "bingo_schema" || p.Name == "bingo_db"))
-               continue;
+         public string ret_type, name;
+         public List<KeyValuePair<string, string>> arguments = new List<KeyValuePair<string,string>>();
+         public AccessLevelKind access_level;
+         public string code;
 
-            if (!if_first)
+         public void writeCode (StreamWriter stream)
+         {
+            stream.Write("CREATE ");
+            if (ret_type != "")
+               stream.Write("FUNCTION ");
+            else
+               stream.Write("PROCEDURE ");
+            stream.Write("{0} \n", name);
+
+            if (ret_type != "")
+               stream.Write("  (\n");
+            bool if_first = true;
+            foreach (KeyValuePair<string, string> p in arguments)
             {
-               stream.Write(",");
+               if (!if_first)
+               {
+                  stream.Write(",");
+                  stream.Write("\n");
+               }
+               stream.Write("    @{0} {1}", p.Key, p.Value);
+               if_first = false;
+            }
+            if (!if_first)
                stream.Write("\n");
-            }
-            else
+            if (ret_type != "")
             {
-               if_first = false;
+               stream.Write("  )\n");
+               stream.Write("  RETURNS {0}\n", ret_type);
             }
-            stream.Write("    @{0} {1}",
-               p.Name, SqlType(p.ParameterType.Name, m, is_proxy));
+            stream.Write("AS\n");
+            stream.Write("{0}\n", code);
+            stream.Write("GO\n");
          }
-         if (!if_first)
-            stream.Write("\n");
-         if (m.ReturnType != typeof(void))
-            stream.Write("  )\n");
 
-         if (m.ReturnType != typeof(void))
-            stream.Write("  RETURNS {0}\n", SqlType(m.ReturnType.Name, m, is_proxy));
-
-         stream.Write("AS\n");
-      }
-
-      static void PrintFunctionName(StreamWriter stream, MethodInfo m, bool is_hidden)
-      {
-         bool is_function = (m.ReturnType != typeof(void));
-         stream.Write("CREATE ");
-         if (is_function)
-            stream.Write("FUNCTION ");
-         else
-            stream.Write("PROCEDURE ");
-
-         stream.Write("[$(bingo)].{0}{1} \n", is_hidden ? "_" : "", m.Name);
-      }
-
-      static void PrintDrop(StreamWriter stream, MethodInfo m, bool proxy)
-      {
-         bool is_function = (m.ReturnType != typeof(void));
-         stream.Write("DROP ");
-         if (is_function)
-            stream.Write("FUNCTION ");
-         else
-            stream.Write("PROCEDURE ");
-
-         stream.Write("[$(bingo)].{0}{1} \n", proxy ? "_" : "", m.Name);
-         stream.Write("GO\n\n");
-      }
-
-      static void PrintProxyFunctionBody(StreamWriter stream, MethodInfo m,
-         BingoSqlFunctionAttribute attr)
-      {
-         if (m.ReturnType.Name != "IEnumerable")
-            stream.Write("BEGIN\n");
-
-         if (m.ReturnType != typeof(void))
-            stream.Write("  RETURN ");
-         else
-            stream.Write("  EXEC ");
-
-         if (m.ReturnType.Name == "IEnumerable")
-            stream.Write("(SELECT * FROM ");
-
-         stream.Write("[$(bingo)]._{0} ", m.Name);
-         if (m.ReturnType != typeof(void))
-            stream.Write("(");
-         bool if_first = true;
-         foreach (ParameterInfo p in m.GetParameters())
+         public void writeSign (StreamWriter stream)
          {
-            if (!if_first)
-               stream.Write(", ");
-            else
-               if_first = false;
-            if (attr.substitute_bingo && p.Name == "bingo_schema")
-               stream.Write("'$(bingo)'");
-            else if (attr.substitute_bingo && p.Name == "bingo_db")
-               stream.Write("'$(database)'");
-            else
-               stream.Write("@{0}", p.Name);
+            stream.Write("ADD SIGNATURE TO {0} BY CERTIFICATE $(bingo)_certificate\n", name);
+            stream.Write("  WITH PASSWORD = '$(bingo_pass)'\n");
+            stream.Write("GO\n\n");
          }
-         if (m.ReturnType != typeof(void))
-            stream.Write(")");
-         if (m.ReturnType.Name == "IEnumerable")
-            stream.Write(")");
 
-         stream.Write("\n");
-         if (m.ReturnType.Name != "IEnumerable")
-            stream.Write("END\n");
-      }
-
-      static void SignFunction(StreamWriter stream, MethodInfo m, bool proxy)
-      {
-         stream.Write("ADD SIGNATURE TO [$(bingo)].{0}{1} BY CERTIFICATE $(bingo)_certificate\n",
-            proxy ? "_" : "", m.Name);
-         stream.Write("  WITH PASSWORD = '$(bingo_pass)'\n");
-         stream.Write("GO\n");
-      }
-
-      private static void AppendCreateMethods(IEnumerable<MethodInfo> methods, StreamWriter create_file)
-      {
-         foreach (MethodInfo m in methods)
+         public void writeDrop (StreamWriter stream)
          {
-            object[] attributes = m.GetCustomAttributes(typeof(BingoSqlFunctionAttribute), true);
-            BingoSqlFunctionAttribute attr = (BingoSqlFunctionAttribute)(attributes[0]);
+            stream.Write("DROP ");
+            if (ret_type != "")
+               stream.Write("FUNCTION ");
+            else
+               stream.Write("PROCEDURE ");
+            stream.Write("{0} \n", name);
+            stream.Write("GO\n\n");
+         }
 
-            create_file.Write("--\n-- {0}\n--\n", m.Name);
-
-            bool need_proxy_function = false;
-            if (attr.substitute_bingo)
-            {
-               need_proxy_function |= (m.GetParameters().Count(p => p.Name == "bingo_schema") > 0);
-               need_proxy_function |= (m.GetParameters().Count(p => p.Name == "bingo_db") > 0);
-            }
-            PrintFunctionName(create_file, m, need_proxy_function);
-            PrintParametersAndReturn(create_file, m, false);
-
-            create_file.Write("  EXTERNAL NAME [$(bingo)_assembly].[{0}].{1}\n",
-               m.ReflectedType.FullName, m.Name);
-
-            create_file.WriteLine("GO");
-            SignFunction(create_file, m, need_proxy_function);
-            create_file.WriteLine("");
-
-            if (need_proxy_function)
-            {
-               // Create proxy function
-               PrintFunctionName(create_file, m, false);
-               PrintParametersAndReturn(create_file, m, true);
-               PrintProxyFunctionBody(create_file, m, attr);
-               create_file.WriteLine("GO");
-
-               if (m.ReturnType.Name != "IEnumerable")
-                  // Inline table functions cannot be signed
-                  SignFunction(create_file, m, false);
-
-               create_file.WriteLine("");
-            }
-
-            // Grant access to the created function
-            if (attr.access_level != AccessLevelKind.None)
+         public void writeGrant (StreamWriter stream)
+         {
+            if (access_level != AccessLevelKind.None)
             {
                string permissions = "execute";
-               if (m.ReturnType.Name == "IEnumerable")
+               if (ret_type.StartsWith("TABLE"))
                   permissions = "select";
-
-               create_file.Write("grant {0} on [$(bingo)].{1} to $(bingo)_", permissions, m.Name);
-
-               if (attr.access_level == AccessLevelKind.Reader)
-                  create_file.Write("reader");
+               string role;
+               if (access_level == AccessLevelKind.Reader)
+                  role = "reader";
                else
-                  create_file.Write("operator");
-
-               create_file.WriteLine("\nGO\n", m.Name);
+                  role = "operator";
+               stream.Write("grant {0} on {1} to $(bingo)_{2}", permissions, name, role);
+               stream.WriteLine("\nGO\n");
             }
+         }
+
+         public void writeCreate (StreamWriter stream, bool wrapper_func)
+         {
+            writeCode(stream);
+            if (!wrapper_func)
+               writeSign(stream);
+            if (wrapper_func)
+               writeGrant(stream);
+         }
+
+      }
+
+      class IndigoSQLFunction
+      {
+         public string comment;
+         public IndigoSQLFunctionInfo main_function = new IndigoSQLFunctionInfo();
+         public List<IndigoSQLFunctionInfo> wrappers = new List<IndigoSQLFunctionInfo>();
+
+         public void writeCreate (StreamWriter stream)
+         {
+            stream.Write("--\n-- {0}\n--\n", comment);
+            main_function.writeCreate(stream, false);
+            foreach (IndigoSQLFunctionInfo m in wrappers)
+               m.writeCreate(stream, true);
+         }
+
+         public void writeDrop (StreamWriter stream)
+         {
+            foreach (IndigoSQLFunctionInfo m in wrappers)
+               m.writeDrop(stream);
+            main_function.writeDrop(stream);
          }
       }
 
-      private static void AppendDropMethods(IEnumerable<MethodInfo> methods, StreamWriter drop_file)
+      static IndigoSQLFunctionInfo CreateWrapper (IndigoSQLFunctionInfo parent, bool binary, MethodInfo m)
       {
+         StringBuilder code_builder = new StringBuilder();
+
+         IndigoSQLFunctionInfo w = new IndigoSQLFunctionInfo();
+         w.name = String.Format("[$(bingo)].{0}{1}", m.Name, binary ? "B" : "");
+         if (parent.ret_type.StartsWith("TABLE"))
+            w.ret_type = "TABLE";
+         else
+         {
+            w.ret_type = parent.ret_type;
+            code_builder.Append("BEGIN\n");
+         }
+         w.access_level = parent.access_level;
+
+         object[] attributes = m.GetCustomAttributes(typeof(BingoSqlFunctionAttribute), true);
+         BingoSqlFunctionAttribute attr = (BingoSqlFunctionAttribute)(attributes[0]);
+
+         if (parent.ret_type != "")
+            code_builder.Append("  RETURN ");
+         else
+            code_builder.Append("  EXEC ");
+
+         if (parent.ret_type.StartsWith("TABLE"))
+            code_builder.Append("(SELECT * FROM ");
+
+         code_builder.AppendFormat("{0} ", parent.name);
+         if (parent.ret_type != "")
+            code_builder.Append("(");
+
+         bool is_first = true;
+         bool str_bin_found = false;
+         foreach (KeyValuePair<string, string> p in parent.arguments)
+         {
+            if (!is_first)
+               code_builder.Append(", ");
+
+            if (attr.substitute_bingo && p.Key == "bingo_schema")
+               code_builder.Append("'$(bingo)'");
+            else if (attr.substitute_bingo && p.Key == "bingo_db")
+               code_builder.Append("'$(database)'");
+            else if (attr.str_bin == p.Key && !binary)
+            {
+               code_builder.AppendFormat("cast(@{0} as VARBINARY(max))", p.Key);
+               w.arguments.Add(new KeyValuePair<string, string>(p.Key, "varchar(max)"));
+               str_bin_found = true;
+            }
+            else
+            {
+               code_builder.AppendFormat("@{0}", p.Key);
+               w.arguments.Add(p);
+            }
+            is_first = false;
+         }
+
+         if (!binary && attr.str_bin != null && !str_bin_found)
+         {
+            String msg = String.Format("Cannot find {0} in {1}", attr.str_bin, m.Name);
+            System.Console.WriteLine(msg);
+            throw new Exception(msg);
+         }
+
+         if (parent.ret_type != "")
+            code_builder.Append(")");
+         if (parent.ret_type.StartsWith("TABLE"))
+            code_builder.Append(")");
+
+         code_builder.Append("\n");
+         if (!parent.ret_type.StartsWith("TABLE"))
+            code_builder.Append("END");
+
+         w.code = code_builder.ToString();
+         return w;
+      }
+
+      static List<IndigoSQLFunction> GenerateFunctions (IEnumerable<MethodInfo> methods)
+      {
+         List<IndigoSQLFunction> functions = new List<IndigoSQLFunction>();
+
          foreach (MethodInfo m in methods)
          {
+            IndigoSQLFunction f = new IndigoSQLFunction();
+            f.comment = m.Name;
+
             object[] attributes = m.GetCustomAttributes(typeof(BingoSqlFunctionAttribute), true);
             BingoSqlFunctionAttribute attr = (BingoSqlFunctionAttribute)(attributes[0]);
 
-            bool need_proxy_function = false;
-            if (attr.substitute_bingo)
-            {
-               need_proxy_function |= (m.GetParameters().Count(p => p.Name == "bingo_schema") > 0);
-               need_proxy_function |= (m.GetParameters().Count(p => p.Name == "bingo_db") > 0);
-            }
+            IndigoSQLFunctionInfo mf = f.main_function;
+            mf.name = String.Format("[$(bingo)].z_{0}", m.Name);
+            mf.ret_type = SqlType(m.ReturnType.Name, m);
+            mf.access_level = attr.access_level;
+            foreach (ParameterInfo p in m.GetParameters())
+               mf.arguments.Add(new KeyValuePair<string,string>(p.Name, SqlType(p.ParameterType.Name, m)));
 
-            PrintDrop(drop_file, m, false);
-            if (need_proxy_function)
-               PrintDrop(drop_file, m, true);
+            mf.code = String.Format("  EXTERNAL NAME [$(bingo)_assembly].[{0}].{1}",
+               m.ReflectedType.FullName, m.Name);
+
+            // Create wrappers
+            f.wrappers.Add(CreateWrapper(mf, false, m)); 
+            if (attr.str_bin != null)
+               f.wrappers.Add(CreateWrapper(mf, true, m)); 
+
+            functions.Add(f);
          }
-      }
 
+         return functions;
+      }
 
       static void Main(string[] args)
       {
@@ -269,8 +298,11 @@ namespace indigo
          create_file.WriteLine("use $(database)\ngo\n");
          drop_file.WriteLine("use $(database)\ngo\n");
 
-         AppendCreateMethods(GetMethodsWithSqlAttributes(a), create_file);
-         AppendDropMethods(GetMethodsWithSqlAttributes(a), drop_file);
+         foreach (IndigoSQLFunction m in GenerateFunctions(GetMethodsWithSqlAttributes(a)))
+         {
+            m.writeCreate(create_file);
+            m.writeDrop(drop_file);
+         }
 
          drop_file.Close();
          create_file.Close();

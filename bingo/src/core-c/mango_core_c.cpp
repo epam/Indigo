@@ -541,13 +541,13 @@ CEXPORT const char * mangoSMILES (const char *target_buf, int target_buf_len, in
    BINGO_END(0, 0)
 }
 
-CEXPORT const char * mangoMolfile (const char *molecule)
+CEXPORT const char * mangoMolfile (const char *molecule, int molecule_len)
 {
    BINGO_BEGIN
    {
       _mangoCheckPseudoAndCBDM(self);
 
-      BufferScanner scanner(molecule);
+      BufferScanner scanner(molecule, molecule_len);
 
       QS_DEF(Molecule, target);
 
@@ -743,7 +743,7 @@ CEXPORT const char* mangoGrossGetConditions ()
    BINGO_END(0, 0)
 }
 
-CEXPORT const char * mangoCheckMolecule (const char *molecule)
+CEXPORT const char * mangoCheckMolecule (const char *molecule, int molecule_len)
 {
    BINGO_BEGIN
    {
@@ -753,7 +753,8 @@ CEXPORT const char * mangoCheckMolecule (const char *molecule)
       {
          QS_DEF(Molecule, mol);
 
-         MoleculeAutoLoader loader(molecule);
+         BufferScanner molecule_scanner(molecule, molecule_len);
+         MoleculeAutoLoader loader(molecule_scanner);
          loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
          loader.ignore_closing_bond_direction_mismatch =
             self.bingo_context->ignore_closing_bond_direction_mismatch;

@@ -121,6 +121,8 @@ namespace indigo
          if (nextAfterStorageId.HasValue)
             command_text.Append(" ORDER BY storage_id");
 
+         UTF8Encoding encoding = new UTF8Encoding();
+
          using (SqlCommand cmd = new SqlCommand(command_text.ToString(), conn))
          {
             cmd.CommandTimeout = 3600;
@@ -141,7 +143,7 @@ namespace indigo
                   }
                   else if (search_type == SearchType.GROSS)
                   {
-                     string gross = (string)reader[1];
+                     byte[] gross = encoding.GetBytes((string)reader[1]);
                      res = BingoCore.lib.mangoMatchTarget(gross, gross.Length);
                   }
                   else if (search_type == SearchType.MASS)

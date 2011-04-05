@@ -32,7 +32,7 @@ namespace indigo
          }
       }
 
-      public static string bingoGetNameCore (string buffer)
+      public static string bingoGetNameCore (byte[] buffer)
       {
          sbyte* res = lib.bingoGetNameCore(buffer, buffer.Length);
 
@@ -49,7 +49,7 @@ namespace indigo
          return new String(res);
       }
 
-      public static string mangoGross (string target_buf)
+      public static string mangoGross (byte[] target_buf)
       {
          sbyte* res = lib.mangoGross(target_buf, target_buf.Length);
 
@@ -59,9 +59,9 @@ namespace indigo
          return new String(res);
       }
 
-      public static string checkMolecule (string molecule)
+      public static string checkMolecule (byte[] molecule)
       {
-         sbyte* res = lib.mangoCheckMolecule(molecule);
+         sbyte* res = lib.mangoCheckMolecule(molecule, molecule.Length);
 
          if ((IntPtr)res == IntPtr.Zero)
             return null;
@@ -69,9 +69,9 @@ namespace indigo
          return new String(res);
       }
 
-      public static string checkReaction (string reaction)
+      public static string checkReaction (byte[] reaction)
       {
-         sbyte* res = lib.ringoCheckReaction(reaction);
+         sbyte* res = lib.ringoCheckReaction(reaction, reaction.Length);
 
          if ((IntPtr)res == IntPtr.Zero)
             return null;
@@ -79,9 +79,9 @@ namespace indigo
          return new String(res);
       }
 
-      public static string ringoAAM (string reaction, string options)
+      public static string ringoAAM (byte[] reaction, string options)
       {
-         sbyte* res = lib.ringoAAM(reaction, options);
+         sbyte* res = lib.ringoAAM(reaction, reaction.Length, options);
 
          if ((IntPtr)res == IntPtr.Zero)
             throw new Exception(lib.bingoGetError());
@@ -123,9 +123,9 @@ namespace indigo
          return new String(lib.bingoProfilingGetStatistics(for_session));
       }
 
-      public static string ringoRxnfile (string reaction)
+      public static string ringoRxnfile (byte[] reaction)
       {
-         sbyte* res = lib.ringoRxnfile(reaction);
+         sbyte* res = lib.ringoRxnfile(reaction, reaction.Length);
 
          if ((IntPtr)res == IntPtr.Zero)
             throw new Exception(lib.bingoGetError());
@@ -133,9 +133,9 @@ namespace indigo
          return new String(res);
       }
 
-      public static string mangoMolfile (string molecule)
+      public static string mangoMolfile (byte[] molecule)
       {
-         sbyte* res = lib.mangoMolfile(molecule);
+         sbyte* res = lib.mangoMolfile(molecule, molecule.Length);
 
          if ((IntPtr)res == IntPtr.Zero)
             throw new Exception(lib.bingoGetError());
@@ -143,7 +143,7 @@ namespace indigo
          return new String(res);
       }
 
-      public static string ringoRSMILES (string buffer)
+      public static string ringoRSMILES (byte[] buffer)
       {
          sbyte* res = lib.ringoRSMILES(buffer, buffer.Length);
 
@@ -153,7 +153,7 @@ namespace indigo
          return new String(res);
       }
 
-      public static string mangoSMILES (string buffer, bool canonical)
+      public static string mangoSMILES (byte[] buffer, bool canonical)
       {
          sbyte* res = lib.mangoSMILES(buffer, buffer.Length, canonical ? 1 : 0);
 
