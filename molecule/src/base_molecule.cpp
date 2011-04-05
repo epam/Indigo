@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "molecule/base_molecule.h"
+#include "molecule/query_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_arom_match.h"
 
@@ -20,7 +21,7 @@ using namespace indigo;
 
 BaseMolecule::BaseMolecule ()
 {
-   
+
 }
 
 BaseMolecule::~BaseMolecule ()
@@ -84,12 +85,13 @@ bool BaseMolecule::hasZCoord (BaseMolecule &mol)
    return false;
 }
 
-void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
+void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
                                          const Array<int> *edges, Array<int> *mapping_out,
                                          int skip_flags)
 {
    QS_DEF(Array<int>, tmp_mapping);
    QS_DEF(Array<int>, edge_mapping);
+
    int i;
 
    if (mapping_out == 0)
@@ -241,10 +243,10 @@ int BaseMolecule::mergeAtoms (int atom1, int atom2)
 {
    const Vertex &v1 = getVertex(atom1);
    const Vertex &v2 = getVertex(atom2);
-   
+
    int is_tetra1 = false, is_cs1 = false, cs_bond1_idx = -1;
    int is_tetra2 = false, is_cs2 = false, cs_bond2_idx = -1;
-   
+
    if (stereocenters.exists(atom1))
       is_tetra1 = true;
    if (stereocenters.exists(atom2))
@@ -266,7 +268,7 @@ int BaseMolecule::mergeAtoms (int atom1, int atom2)
          break;
       }
 
-   if (((is_tetra1 || is_cs1) && (is_tetra2 || is_cs2)) || 
+   if (((is_tetra1 || is_cs1) && (is_tetra2 || is_cs2)) ||
          (!is_tetra1 && !is_cs1 && !is_tetra2 && !is_cs2))
    {
       if (is_tetra1)
@@ -312,7 +314,7 @@ int BaseMolecule::mergeAtoms (int atom1, int atom2)
    {
       if (v1.degree() > 1)
          return -1;
-      
+
       if (is_tetra2 && stereocenters.getPyramid(atom2)[3] != -1)
          return -1;
 
@@ -339,7 +341,7 @@ void BaseMolecule::flipBond (int atom_parent, int atom_from, int atom_to)
    removeEdge(src_bond_idx);
 }
 
-void BaseMolecule::makeSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
+void BaseMolecule::makeSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
                                     Array<int> *mapping_out, int skip_flags)
 {
    clear();
@@ -360,7 +362,7 @@ void BaseMolecule::makeSubmolecule (BaseMolecule &other, const Filter &filter,
    makeSubmolecule(other, *mapping_out, inv_mapping, skip_flags);
 }
 
-void BaseMolecule::makeEdgeSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
+void BaseMolecule::makeEdgeSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
                                         const Array<int> &edges, Array<int> *v_mapping,
                                         int skip_flags)
 {
@@ -368,7 +370,7 @@ void BaseMolecule::makeEdgeSubmolecule (BaseMolecule &mol, const Array<int> &ver
    mergeWithSubmolecule(mol, vertices, &edges, v_mapping, skip_flags);
 }
 
-void BaseMolecule::clone (BaseMolecule &other, Array<int> *mapping, 
+void BaseMolecule::clone (BaseMolecule &other, Array<int> *mapping,
                           Array<int> *inv_mapping, int skip_flags)
 {
    QS_DEF(Array<int>, tmp_mapping);
@@ -403,7 +405,7 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
 {
    QS_DEF(Array<int>, mapping);
    int i, j;
-   
+
    mapping.clear_resize(vertexEnd());
 
    for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
@@ -501,7 +503,7 @@ void BaseMolecule::removeBond (int idx)
    removeBonds(edges);
 }
 
-int BaseMolecule::getVacantPiOrbitals (int group, int charge, int radical, 
+int BaseMolecule::getVacantPiOrbitals (int group, int charge, int radical,
                                        int conn, int *lonepairs_out)
 {
    int orbitals;
@@ -758,6 +760,197 @@ BaseMolecule::MultipleGroup::~MultipleGroup ()
 {
 }
 
+int copyBaseBond (BaseMolecule& bm, int beg, int end, int srcId) {
+   int bid = -1;
+   if (bm.isQueryMolecule()) {
+      QueryMolecule& qm = bm.asQueryMolecule();
+      bid = qm.addBond(beg, end, qm.getBond(srcId).clone());
+   } else {
+      Molecule& mol = bm.asMolecule();
+      bid = mol.addBond(beg, end, mol.getBondOrder(srcId));
+      mol.setEdgeTopology(bid, mol.getBondTopology(srcId));
+   }
+   return bid;
+}
+
+void BaseMolecule::MultipleGroup::collapse (BaseMolecule& bm) {
+   for (int i = bm.multiple_groups.begin(); i < bm.multiple_groups.end(); i = bm.multiple_groups.next(i)) {
+      collapse(bm, i);
+   }
+}
+
+void BaseMolecule::MultipleGroup::collapse (BaseMolecule& bm, int id) {
+   QS_DEF(Mapping, mapAtom);
+   mapAtom.clear();
+   QS_DEF(Mapping, mapBondInv);
+   mapBondInv.clear();
+   collapse(bm, id, mapAtom, mapBondInv);
+}
+
+void BaseMolecule::MultipleGroup::collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv) {
+   const BaseMolecule::MultipleGroup& group = bm.multiple_groups[id];
+
+   if (group.atoms.size() != group.multiplier * group.parent_atoms.size())
+      throw new Error("The group is already collapsed or invalid");
+
+   QS_DEF(Array<int>, toRemove);
+   toRemove.clear();
+   for (int j = 0; j < group.atoms.size(); ++j) {
+      int k = j % group.parent_atoms.size();
+      mapAtom.insert(group.atoms[j], group.atoms[k]);
+      if (k != j)
+         toRemove.push(group.atoms[j]);
+   }
+   for (int j = bm.edgeBegin(); j < bm.edgeEnd(); j = bm.edgeNext(j)) {
+      const Edge& edge = bm.getEdge(j);
+      bool in1 = mapAtom.find(edge.beg),
+         in2 = mapAtom.find(edge.end),
+         p1 = in1 && mapAtom.at(edge.beg) == edge.beg,
+         p2 = in2 && mapAtom.at(edge.end) == edge.end;
+      if (in1 && !p1 && !in2 || !in1 && !p2 && in2) {
+         int beg = in1 ? mapAtom.at(edge.beg) : edge.beg;
+         int end = in2 ? mapAtom.at(edge.end) : edge.end;
+         int bid = copyBaseBond(bm, beg, end, j);
+         mapBondInv.insert(bid, j);
+      }
+   }
+
+   for (int j = 0; j < toRemove.size(); ++j) {
+      int aid = toRemove[j];
+      bm.removeAtom(aid);
+   }
+}
+
+void BaseMolecule::MultipleGroup::expand (BaseMolecule& bm) {
+   for (int i = bm.multiple_groups.begin(); i < bm.multiple_groups.end(); i = bm.multiple_groups.next(i)) {
+      expand(bm, i);
+   }
+}
+
+void BaseMolecule::MultipleGroup::expand (BaseMolecule& bm, int id) {
+   QS_DEF(Mapping, mapAtom);
+   mapAtom.clear();
+   QS_DEF(Mapping, mapBondInv);
+   mapBondInv.clear();
+   expand(bm, id, mapAtom, mapBondInv);
+}
+
+void BaseMolecule::MultipleGroup::expand (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv) {
+   QS_DEF(Array<int>, parentAtoms);
+   parentAtoms.clear();
+   int multiplier = -1;
+   {
+      BaseMolecule::MultipleGroup& group = bm.multiple_groups[id];
+      if (group.atoms.size() != group.parent_atoms.size())
+         throw new Error("The group is already expanded or invalid");
+      parentAtoms.copy(group.parent_atoms);
+      multiplier = group.multiplier;
+   }
+   QS_DEF(Array<bool>, pAtomMask);
+   pAtomMask.clear_resize(bm.vertexEnd());
+   pAtomMask.fill(false);
+   for (int j = 0; j < parentAtoms.size(); ++j)
+      pAtomMask[parentAtoms[j]] = true;
+
+
+   QS_DEF(Array<int>, map);
+   map.clear();
+
+   QS_DEF(Array<int>, xBonds);
+   xBonds.clear();
+   QS_DEF(Array<bool>, xBondOut);
+   xBondOut.clear();
+   QS_DEF(Array<int>, xBondAtoms);
+   xBondAtoms.clear();
+
+   // find cross-bonds and related data
+   for (int j = 0; j < parentAtoms.size(); ++j) {
+      int aid = parentAtoms[j];
+      const Vertex& v = bm.getVertex(aid);
+      for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i)) {
+         int naid = v.neiVertex(i);
+         int bid = v.neiEdge(i);
+         if (!pAtomMask[naid]) {
+            xBonds.push(bid);
+            xBondOut.push(bm.getEdge(bid).beg == aid);
+            xBondAtoms.push(j);
+         }
+      }
+   }
+
+   if (xBonds.size() > 2)
+      throw new Error("Multiple group is expected to have no more than two cross-bonds");
+
+   // clone the group contents
+   BaseMolecule* newMol = NULL;
+   if (bm.isQueryMolecule())
+      newMol = new QueryMolecule();
+   else
+      newMol = new Molecule();
+   newMol->makeSubmolecule(bm, parentAtoms, 0, 0);
+   for (int i = newMol->multiple_groups.begin(); i < newMol->multiple_groups.end(); i = newMol->multiple_groups.next(i)) {
+      if (newMol->multiple_groups[i].atoms.size() >= parentAtoms.size()) {
+         newMol->multiple_groups.remove(i);
+         i = newMol->multiple_groups.begin();
+      }
+   }
+   // TODO: remove outer group clones
+
+   for (int i = 1; i < multiplier; ++i) {
+      bm.mergeWithMolecule(*newMol, &map, NULL);
+      // TODO: update mappings
+      // TODO: include the new atoms into all outer groups
+      BaseMolecule::MultipleGroup& group = bm.multiple_groups[id];
+      for (int j = 0; j < map.size(); ++j) {
+         int aid = map[j];
+         if (aid < 0)
+            continue;
+         group.atoms.push(aid);
+         //const Vec3f& v = newMol->getAtomXyz(j);
+         //bm.setAtomXyz(aid, v.x, v.y + 5 * i, v.z); // DEBUG
+      }
+   }
+
+   // rearrange cross-bonds
+   if (xBonds.size() == 1) {
+      int bid = xBonds[0];
+      const Edge& edge = bm.getEdge(bid);
+      int beg = edge.beg, end = edge.end;
+      BaseMolecule::MultipleGroup& group = bm.multiple_groups[id];
+      for (int i = 1; i < multiplier; ++i) {
+         (xBondOut[0] ? beg : end) = group.atoms[i * parentAtoms.size() + xBondAtoms[0]];
+         int newBid = copyBaseBond(bm, beg, end, bid);
+         mapBondInv.insert(newBid, bid);
+      }
+   } else if (xBonds.size() == 2) {
+      BaseMolecule::MultipleGroup& group = bm.multiple_groups[id];
+      { // reattach the second cross bond
+         int bid = xBonds[1];
+         const Edge& edge = bm.getEdge(bid);
+         int beg = edge.beg, end = edge.end;
+         (xBondOut[1] ? beg : end) = group.atoms[(multiplier-1) * parentAtoms.size() + xBondAtoms[1]];
+         int newBid = copyBaseBond(bm, beg, end, bid);
+         mapBondInv.insert(newBid, bid);
+         bm.removeBond(bid);
+      }
+      { // clone the first cross bond to connect the copies
+         int bid = xBonds[0];
+         const Edge& edge = bm.getEdge(bid);
+         int beg, end;
+         for (int i = 0; i < multiplier-1; ++i) {
+            beg = group.atoms[(i + 1) * parentAtoms.size() + xBondAtoms[0]];
+            end = group.atoms[i * parentAtoms.size() + xBondAtoms[1]];
+            if (!xBondOut[0]) {
+               int t;
+               __swap(beg, end, t);
+            }
+            int newBid = copyBaseBond(bm, beg, end, bid);
+            mapBondInv.insert(newBid, bid);
+         }
+      }
+   }
+}
+
 void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
 {
    int i;
@@ -777,7 +970,7 @@ void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
 void BaseMolecule::_removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> &mapping)
 {
    int i;
-   
+
    for (i = mg.parent_atoms.size() - 1; i >= 0; i--)
       if (mapping[mg.parent_atoms[i]] == -1)
          mg.parent_atoms.remove(i);
@@ -846,7 +1039,7 @@ void BaseMolecule::highlightAtoms (const Filter &filter)
 void BaseMolecule::highlightBonds (const Filter &filter)
 {
    int i;
-   
+
    for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
       if (filter.valid(i))
          highlightBond(i);
@@ -910,7 +1103,7 @@ bool BaseMolecule::isBondHighlighted (int idx)
 void BaseMolecule::highlightSubmolecule (BaseMolecule &subgraph, const int *mapping, bool entire)
 {
    int i;
-   
+
    for (i = subgraph.vertexBegin(); i != subgraph.vertexEnd(); i = subgraph.vertexNext(i))
       if (mapping[i] >= 0 && (entire || subgraph.isAtomHighlighted(i)))
          highlightAtom(mapping[i]);
