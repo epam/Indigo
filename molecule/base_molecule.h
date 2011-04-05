@@ -127,9 +127,6 @@ public:
       static void collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv);
       static void collapse (BaseMolecule& bm, int id);
       static void collapse (BaseMolecule& bm);
-      static void expand (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv);
-      static void expand (BaseMolecule& bm, int id);
-      static void expand (BaseMolecule& bm);
 
       Array<int> parent_atoms;
       int multiplier;
