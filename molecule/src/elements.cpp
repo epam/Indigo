@@ -314,7 +314,12 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
             valence = 4;
             hyd = 4 - rad - conn;
          }
-         else
+         else if (charge == -3 && elem != ELEM_B && rad + conn <= 6)
+         {
+            valence = rad + conn;
+            hyd = 0;
+         }
+         else 
          {
             valence = 3;
             hyd = 3 - rad - conn - abs(charge);
@@ -574,31 +579,58 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
       {
          if (charge == -1)
          {
-            if (conn <= 2)
+            if (rad + conn == 7) // CID 4191414
             {
-               valence = 2;
-               hyd = 2 - rad - conn - abs(charge);
+               valence = 7;
+               hyd = 0;
             }
-         }
-         else if (charge == 0 || charge == 2)
-         {
-            if (conn <= 2)
-            {
-               valence = 2;
-               hyd = 2 - rad - conn - abs(charge);
-            }
-            else if (conn <= 4)
-            {
-               valence = 4;
-               hyd = 4 - rad - conn - abs(charge);
-            }
-            else if (charge == 0 && conn <= 6)
-            {
-               valence = 6;
-               hyd = 6 - rad - conn - abs(charge);
+            else if (rad + conn == 5)
+            {  // no example, but both Marvin and ISIS are OK with this configuration
+               valence = 5;
+               hyd = 0;
             }
             else
-               hyd = -1;
+            {
+               valence = 1;
+               hyd = 1 - rad - conn;
+            }
+         }
+         else if (charge == 1)
+         {
+            valence = 3;
+            hyd = 3 - rad - conn;
+            // no known cases of 5-connected [Te+]
+         }
+         else if (charge == 2)
+         {
+            if (conn + rad == 4)
+            {
+               valence = conn + rad;
+               hyd = 0;
+            }
+            else // ISIS Draw logic
+            {
+               hyd = 2 - conn - rad;
+               valence = 2;
+            }
+         }
+         else if (charge == 0)
+         {
+            if (conn + rad <= 2)
+            {
+               hyd = 2 - conn - rad;
+               valence = 2;
+            }
+            else if (conn + rad <= 4)
+            {
+               hyd = 2 - conn - rad; // with hydrogen: CID 11968228
+               valence = 4;
+            }
+            else
+            {
+               hyd = 6 - conn - rad; // with hydrogen: CID 5231555, CID 6418860
+               valence = 6;
+            }
          }
       }
    }
