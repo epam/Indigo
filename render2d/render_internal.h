@@ -69,6 +69,7 @@ private:
    void _loadBrackets(SGroup& sg, const Array<Vec2f[2]>& coord, bool transformCoordinates);
    void _placeBrackets(SGroup& sg, const Array<int>& atoms);
    void _positionIndex(SGroup& sg, int ti, bool lower);
+   void _loadBracketsAuto(const BaseMolecule::SGroup& group, SGroup& sg);
    void _initDataSGroups();
    void _initSruGroups();
    void _initMulGroups();

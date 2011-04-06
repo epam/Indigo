@@ -596,6 +596,13 @@ void MoleculeRenderInternal::_loadBrackets(SGroup& sg, const Array<Vec2f[2]>& co
    }
 }
 
+void MoleculeRenderInternal::_loadBracketsAuto(const BaseMolecule::SGroup& group, SGroup& sg) {
+   if (group.brackets.size() == 0 || Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) < EPSILON)
+      _placeBrackets(sg, group.atoms);
+   else
+      _loadBrackets(sg, group.brackets, true);
+}
+
 void MoleculeRenderInternal::_positionIndex(SGroup& sg, int ti, bool lower)
 {
    RenderItemBracket& bracket = _data.brackets[sg.bibegin + sg.bicount - 1];
@@ -615,10 +622,7 @@ void MoleculeRenderInternal::_initSruGroups()
    for (int i = bm.repeating_units.begin(); i < bm.repeating_units.end(); i = bm.repeating_units.next(i)) {
       const BaseMolecule::RepeatingUnit& group = bm.repeating_units[i];
       SGroup& sg = _data.sgroups.push();
-      if (group.brackets.size() == 0 || Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) < EPSILON)
-         _placeBrackets(sg, group.atoms);
-      else
-         _loadBrackets(sg, group.brackets, true);
+      _loadBracketsAuto(group, sg);
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
       index.fontsize = FONT_SIZE_ATTR;
@@ -644,7 +648,7 @@ void MoleculeRenderInternal::_initMulGroups()
    for (int i = bm.multiple_groups.begin(); i < bm.multiple_groups.end(); i = bm.multiple_groups.next(i)) {
       const BaseMolecule::MultipleGroup& group = bm.multiple_groups[i];
       SGroup& sg = _data.sgroups.push();
-      _placeBrackets(sg, group.atoms);
+      _loadBracketsAuto(group, sg);
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
       index.fontsize = FONT_SIZE_ATTR;
@@ -656,6 +660,7 @@ void MoleculeRenderInternal::_initMulGroups()
 void MoleculeRenderInternal::_placeBrackets(SGroup& sg, const Array<int>& atoms)
 {
    QS_DEF(Array<Vec2f[2]>, brackets);
+   brackets.clear();
    Vec2f min, max, a, b;
    for (int i = 0; i < atoms.size(); ++i) {
       int aid = atoms[i];
@@ -688,7 +693,6 @@ void MoleculeRenderInternal::_initSupGroups()
    for (int i = bm.superatoms.begin(); i < bm.superatoms.end(); i = bm.superatoms.next(i)) {
       const BaseMolecule::Superatom& group = bm.superatoms[i];
       SGroup& sg = _data.sgroups.push();
-
       _placeBrackets(sg, group.atoms);
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
