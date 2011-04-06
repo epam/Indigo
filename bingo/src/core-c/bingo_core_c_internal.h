@@ -78,6 +78,8 @@ public:
 
    AutoPtr<IndexingDispatcher> parallel_indexing_dispatcher;
 
+   bool skip_calculate_fp;
+
    enum 
    {
       _UNDEF,

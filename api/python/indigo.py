@@ -852,8 +852,10 @@ class Indigo:
   def _member_void_float_float_string (func):
     func.restype = c_int
     func.argtypes = [c_int, c_float, c_float, c_char_p]
-    def newfunc (self, x, y, s):
+    def newfunc (self, x, y, s = None):
       self.dispatcher._setSID()
+      if s is None:
+        s = ''
       return self.dispatcher._checkResult(func(self.id, x, y, s))
     return Indigo._make_wrapper_func(newfunc, func)
 

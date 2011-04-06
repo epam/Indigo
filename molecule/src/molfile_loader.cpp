@@ -2731,8 +2731,10 @@ void MolfileLoader::_readSGroupDisplay (Scanner &scanner, BaseMolecule::DataSGro
    dsg.display_pos.x = scanner.readFloatFix(10);
    dsg.display_pos.y = scanner.readFloatFix(10);
    scanner.skip(4);
-   if (scanner.readChar() == 'A')
-      dsg.attached = true;
+   if (scanner.readChar() == 'A') // means "attached"
+      dsg.detached = false;
+   else
+      dsg.detached = true;
    if (scanner.readChar() == 'R')
       dsg.relative = true;
    if (scanner.readChar() == 'U')

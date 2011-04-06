@@ -145,6 +145,7 @@ void IndexingCommand::execute (OsCommandResult &result_)
             try
             {
                BingoIndex &index = result.getIndex(result.ids.size());
+               index.skip_calculate_fp = core->skip_calculate_fp;
                index.init(*core->bingo_context);
                index.prepare(scanner, output, lock_for_exclusive_access);
             }

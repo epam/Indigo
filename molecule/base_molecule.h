@@ -49,7 +49,7 @@ enum
    BOND_AROMATIC = 4
 };
 
-// Flags that disables copying information in making submolecule, 
+// Flags that disables copying information in making submolecule,
 // merging with molecule and cloning procedures
 enum
 {
@@ -76,6 +76,7 @@ public:
       virtual ~SGroup ();
    };
 
+   typedef RedBlackMap<int,int> Mapping;
    class DLLEXPORT DataSGroup : public SGroup
    {
    public:
@@ -85,7 +86,7 @@ public:
       Array<char> description; // SDT in Molfile format
       Array<char> data;        // SCD/SED in Molfile format
       Vec2f       display_pos; // SDD in Molfile format
-      bool        attached;    // or detached
+      bool        detached;    // or attached
       bool        relative;    // or absolute
       bool        display_units;
       int         dasp_pos;
@@ -123,6 +124,9 @@ public:
    public:
       MultipleGroup ();
       virtual ~MultipleGroup ();
+      static void collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv);
+      static void collapse (BaseMolecule& bm, int id);
+      static void collapse (BaseMolecule& bm);
 
       Array<int> parent_atoms;
       int multiplier;
@@ -220,6 +224,7 @@ public:
 
    Vec3f & getAtomXyz (int idx);
    void setAtomXyz (int idx, float x, float y, float z);
+   void setAtomXyz (int idx, const Vec3f& v);
 
    MoleculeStereocenters stereocenters;
    MoleculeCisTrans cis_trans;
@@ -238,7 +243,7 @@ public:
    static bool hasCoord (BaseMolecule &mol);
    static bool hasZCoord (BaseMolecule &mol);
 
-   void mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
+   void mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
                               const Array<int> *edges, Array<int> *mapping_out,
                               int skip_flags = 0);
 
@@ -246,15 +251,15 @@ public:
 
    void flipBond (int atom_parent, int atom_from, int atom_to);
 
-   void makeSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
+   void makeSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
                          Array<int> *mapping_out, int skip_flags = 0);
    void makeSubmolecule (BaseMolecule &other, const Filter &filter,
                          Array<int> *mapping_out, Array<int> *inv_mapping,
                          int skip_flags = 0);
-   void makeEdgeSubmolecule (BaseMolecule &mol, const Array<int> &vertices, 
+   void makeEdgeSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
                              const Array<int> &edges, Array<int> *v_mapping,
                              int skip_flags = 0);
-   
+
    void clone (BaseMolecule &other, Array<int> *mapping, Array<int> *inv_mapping, int skip_flags = 0);
 
    void mergeWithMolecule (BaseMolecule &other, Array<int> *mapping, int skip_flags = 0);
@@ -300,7 +305,7 @@ protected:
 
    void _removeAtomsFromSGroup (SGroup &sgroup, Array<int> &indices);
    void _removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> &mapping);
-   void _mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
+   bool _mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
         Array<int> &mapping, Array<int> &edge_mapping);
 
 

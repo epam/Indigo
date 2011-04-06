@@ -52,10 +52,14 @@ protected:
    void _init ();
 
    Metalayout _ml;
-   BaseMolecule         &_molecule;
-   MoleculeLayoutGraph  _layout_graph;
-   Array<BaseMolecule*> _map;
+   BaseMolecule          &_molecule;
+   AutoPtr<BaseMolecule> _molCollapsed;
+   BaseMolecule*         _bm;
+   Array<int>            _atomMapping;
+   MoleculeLayoutGraph   _layout_graph;
+   Array<BaseMolecule*>  _map;
    bool _query;
+   bool _hasMulGroups;
 };
 
 }

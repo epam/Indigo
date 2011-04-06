@@ -25,6 +25,7 @@
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_saver.h"
 #include "reaction/crf_saver.h"
+#include "reaction/icr_saver.h"
 
 using namespace indigo::bingo_core;
 
@@ -44,6 +45,7 @@ CEXPORT int ringoIndexProcessSingleRecord ()
             {
                self.single_ringo_index.create();
                self.single_ringo_index->init(*self.bingo_context);
+               self.single_ringo_index->skip_calculate_fp = self.skip_calculate_fp;
             }
 
             self.ringo_index = self.single_ringo_index.get();
@@ -217,13 +219,13 @@ CEXPORT const char * ringoRSMILES (const char *target_buf, int target_buf_len)
    BINGO_END(0, 0)
 }
 
-CEXPORT const char * ringoRxnfile (const char *reaction)
+CEXPORT const char * ringoRxnfile (const char *reaction, int reaction_len)
 {
    BINGO_BEGIN
    {
       _ringoCheckPseudoAndCBDM(self);
 
-      BufferScanner scanner(reaction);
+      BufferScanner scanner(reaction, reaction_len);
 
       QS_DEF(Reaction, target);
 
@@ -245,14 +247,16 @@ CEXPORT const char * ringoRxnfile (const char *reaction)
    BINGO_END(0, 0)
 }
 
-CEXPORT const char * ringoAAM (const char *reaction, const char *mode)
+CEXPORT const char * ringoAAM (const char *reaction, int reaction_len, const char *mode)
 {
    BINGO_BEGIN
    {
       _ringoCheckPseudoAndCBDM(self);
 
       self.ringo_context->ringoAAM.parse(mode);
-      self.ringo_context->ringoAAM.loadReaction(reaction);
+
+      BufferScanner reaction_scanner(reaction, reaction_len);
+      self.ringo_context->ringoAAM.loadReaction(reaction_scanner);
       self.ringo_context->ringoAAM.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
       self.ringo_context->ringoAAM.ignore_closing_bond_direction_mismatch =
          self.bingo_context->ignore_closing_bond_direction_mismatch;
@@ -264,7 +268,7 @@ CEXPORT const char * ringoAAM (const char *reaction, const char *mode)
    BINGO_END(0, 0)
 }
 
-CEXPORT const char * ringoCheckReaction (const char *reaction)
+CEXPORT const char * ringoCheckReaction (const char *reaction, int reaction_len)
 {
    BINGO_BEGIN
    {
@@ -274,11 +278,13 @@ CEXPORT const char * ringoCheckReaction (const char *reaction)
 
          QS_DEF(Reaction, rxn);
 
-         ReactionAutoLoader loader(reaction);
+         BufferScanner reaction_scanner(reaction, reaction_len);
+         ReactionAutoLoader loader(reaction_scanner);
          loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
          loader.ignore_closing_bond_direction_mismatch =
             self.bingo_context->ignore_closing_bond_direction_mismatch;
          loader.loadReaction(rxn);
+         Reaction::checkForConsistency(rxn);
       }
       CATCH_READ_TARGET_RXN(
          self.buffer.readString(e.message(), true);
@@ -343,4 +349,36 @@ CEXPORT const char* ringoGetHightlightedReaction ()
       return self.buffer.ptr();
    }
    BINGO_END(0, 0);
+}
+
+CEXPORT const char* ringoICR (const char* reaction, int reaction_len, bool save_xyz, int *out_len)
+{
+   BINGO_BEGIN
+   {
+      _ringoCheckPseudoAndCBDM(self);
+
+      BufferScanner scanner(reaction, reaction_len);
+
+      QS_DEF(Reaction, target);
+
+      ReactionAutoLoader loader(scanner);
+
+      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
+      loader.ignore_closing_bond_direction_mismatch =
+         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      loader.loadReaction(target);
+
+      ArrayOutput out(self.buffer);
+
+      if ((save_xyz != 0) && !Reaction::haveCoord(target))
+         throw BingoError("reaction has no XYZ");
+
+      IcrSaver saver(out);
+      saver.save_xyz = (save_xyz != 0);
+      saver.saveReaction(target);
+
+      *out_len = self.buffer.size();
+      return self.buffer.ptr();
+   }
+   BINGO_END(0, 0)
 }

@@ -8,7 +8,7 @@ go
 --
 -- _CheckMemoryAllocate
 --
-CREATE PROCEDURE [$(bingo)].__CheckMemoryAllocate 
+CREATE PROCEDURE [$(bingo)].z__CheckMemoryAllocate 
     @dotnet_size_mb int,
     @block_size_mb int,
     @core_size_mb int,
@@ -16,7 +16,7 @@ CREATE PROCEDURE [$(bingo)].__CheckMemoryAllocate
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._CheckMemoryAllocate
 GO
-ADD SIGNATURE TO [$(bingo)].__CheckMemoryAllocate BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z__CheckMemoryAllocate BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -26,49 +26,41 @@ CREATE PROCEDURE [$(bingo)]._CheckMemoryAllocate
     @core_size_mb int
 AS
 BEGIN
-  EXEC [$(bingo)].__CheckMemoryAllocate @dotnet_size_mb, @block_size_mb, @core_size_mb, '$(bingo)'
+  EXEC [$(bingo)].z__CheckMemoryAllocate @dotnet_size_mb, @block_size_mb, @core_size_mb, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)]._CheckMemoryAllocate BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)]._CheckMemoryAllocate to $(bingo)_operator
 GO
 
 --
 -- _DropAllIndices
 --
-CREATE PROCEDURE [$(bingo)].__DropAllIndices 
+CREATE PROCEDURE [$(bingo)].z__DropAllIndices 
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._DropAllIndices
 GO
-ADD SIGNATURE TO [$(bingo)].__DropAllIndices BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z__DropAllIndices BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE PROCEDURE [$(bingo)]._DropAllIndices 
 AS
 BEGIN
-  EXEC [$(bingo)].__DropAllIndices '$(bingo)'
+  EXEC [$(bingo)].z__DropAllIndices '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)]._DropAllIndices BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 --
 -- _DropIndexByID
 --
-CREATE PROCEDURE [$(bingo)].__DropIndexByID 
+CREATE PROCEDURE [$(bingo)].z__DropIndexByID 
     @table_id int,
     @database_id int,
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._DropIndexByID
 GO
-ADD SIGNATURE TO [$(bingo)].__DropIndexByID BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z__DropIndexByID BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -77,53 +69,51 @@ CREATE PROCEDURE [$(bingo)]._DropIndexByID
     @database_id int
 AS
 BEGIN
-  EXEC [$(bingo)].__DropIndexByID @table_id, @database_id, '$(bingo)'
+  EXEC [$(bingo)].z__DropIndexByID @table_id, @database_id, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)]._DropIndexByID BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)]._DropIndexByID to $(bingo)_operator
 GO
 
 --
 -- _FlushInAllSessions
 --
-CREATE PROCEDURE [$(bingo)].__FlushInAllSessions 
+CREATE PROCEDURE [$(bingo)].z__FlushInAllSessions 
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._FlushInAllSessions
 GO
-ADD SIGNATURE TO [$(bingo)].__FlushInAllSessions BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z__FlushInAllSessions BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE PROCEDURE [$(bingo)]._FlushInAllSessions 
 AS
 BEGIN
-  EXEC [$(bingo)].__FlushInAllSessions '$(bingo)'
+  EXEC [$(bingo)].z__FlushInAllSessions '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)]._FlushInAllSessions BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 --
 -- _ForceGC
 --
-CREATE PROCEDURE [$(bingo)]._ForceGC 
+CREATE PROCEDURE [$(bingo)].z__ForceGC 
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.BingoSqlUtils]._ForceGC
 GO
-ADD SIGNATURE TO [$(bingo)]._ForceGC BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z__ForceGC BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
+CREATE PROCEDURE [$(bingo)]._ForceGC 
+AS
+BEGIN
+  EXEC [$(bingo)].z__ForceGC 
+END
+GO
 --
 -- _OnDeleteRecordTrigger
 --
-CREATE PROCEDURE [$(bingo)].__OnDeleteRecordTrigger 
+CREATE PROCEDURE [$(bingo)].z__OnDeleteRecordTrigger 
     @table_id int,
     @database_id int,
     @tmp_table_name nvarchar(max),
@@ -131,7 +121,7 @@ CREATE PROCEDURE [$(bingo)].__OnDeleteRecordTrigger
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._OnDeleteRecordTrigger
 GO
-ADD SIGNATURE TO [$(bingo)].__OnDeleteRecordTrigger BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z__OnDeleteRecordTrigger BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -141,20 +131,16 @@ CREATE PROCEDURE [$(bingo)]._OnDeleteRecordTrigger
     @tmp_table_name nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)].__OnDeleteRecordTrigger @table_id, @database_id, @tmp_table_name, '$(bingo)'
+  EXEC [$(bingo)].z__OnDeleteRecordTrigger @table_id, @database_id, @tmp_table_name, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)]._OnDeleteRecordTrigger BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)]._OnDeleteRecordTrigger to $(bingo)_operator
 GO
 
 --
 -- _OnInsertRecordTrigger
 --
-CREATE PROCEDURE [$(bingo)].__OnInsertRecordTrigger 
+CREATE PROCEDURE [$(bingo)].z__OnInsertRecordTrigger 
     @table_id int,
     @database_id int,
     @tmp_table_name nvarchar(max),
@@ -162,7 +148,7 @@ CREATE PROCEDURE [$(bingo)].__OnInsertRecordTrigger
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo]._OnInsertRecordTrigger
 GO
-ADD SIGNATURE TO [$(bingo)].__OnInsertRecordTrigger BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z__OnInsertRecordTrigger BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -172,34 +158,37 @@ CREATE PROCEDURE [$(bingo)]._OnInsertRecordTrigger
     @tmp_table_name nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)].__OnInsertRecordTrigger @table_id, @database_id, @tmp_table_name, '$(bingo)'
+  EXEC [$(bingo)].z__OnInsertRecordTrigger @table_id, @database_id, @tmp_table_name, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)]._OnInsertRecordTrigger BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)]._OnInsertRecordTrigger to $(bingo)_operator
 GO
 
 --
 -- _WriteLog
 --
-CREATE PROCEDURE [$(bingo)]._WriteLog 
+CREATE PROCEDURE [$(bingo)].z__WriteLog 
     @message nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.BingoLog]._WriteLog
 GO
-ADD SIGNATURE TO [$(bingo)]._WriteLog BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z__WriteLog BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
+CREATE PROCEDURE [$(bingo)]._WriteLog 
+    @message nvarchar(max)
+AS
+BEGIN
+  EXEC [$(bingo)].z__WriteLog @message
+END
+GO
 --
 -- AAM
 --
-CREATE FUNCTION [$(bingo)]._AAM 
+CREATE FUNCTION [$(bingo)].z_AAM 
   (
-    @reaction nvarchar(max),
+    @reaction varbinary(max),
     @options nvarchar(max),
     @bingo_schema nvarchar(max)
   )
@@ -207,140 +196,298 @@ CREATE FUNCTION [$(bingo)]._AAM
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].AAM
 GO
-ADD SIGNATURE TO [$(bingo)]._AAM BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_AAM BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].AAM 
   (
-    @reaction nvarchar(max),
+    @reaction varchar(max),
     @options nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._AAM (@reaction, @options, '$(bingo)')
+  RETURN [$(bingo)].z_AAM (cast(@reaction as VARBINARY(max)), @options, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].AAM BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].AAM to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].AAM to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].AAMB 
+  (
+    @reaction varbinary(max),
+    @options nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_AAM (@reaction, @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].AAMB to $(bingo)_reader
 GO
 
 --
 -- CanSmiles
 --
-CREATE FUNCTION [$(bingo)]._CanSmiles 
+CREATE FUNCTION [$(bingo)].z_CanSmiles 
   (
-    @molecule nvarchar(max),
+    @molecule varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CanSmiles
 GO
-ADD SIGNATURE TO [$(bingo)]._CanSmiles BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_CanSmiles BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].CanSmiles 
   (
-    @molecule nvarchar(max)
+    @molecule varchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._CanSmiles (@molecule, '$(bingo)')
+  RETURN [$(bingo)].z_CanSmiles (cast(@molecule as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].CanSmiles BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].CanSmiles to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].CanSmiles to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].CanSmilesB 
+  (
+    @molecule varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CanSmiles (@molecule, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CanSmilesB to $(bingo)_reader
 GO
 
 --
 -- CheckMolecule
 --
-CREATE FUNCTION [$(bingo)]._CheckMolecule 
+CREATE FUNCTION [$(bingo)].z_CheckMolecule 
   (
-    @molecule nvarchar(max),
+    @molecule varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CheckMolecule
 GO
-ADD SIGNATURE TO [$(bingo)]._CheckMolecule BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_CheckMolecule BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].CheckMolecule 
   (
-    @molecule nvarchar(max)
+    @molecule varchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._CheckMolecule (@molecule, '$(bingo)')
+  RETURN [$(bingo)].z_CheckMolecule (cast(@molecule as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].CheckMolecule BY CERTIFICATE $(bingo)_certificate
+grant execute on [$(bingo)].CheckMolecule to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].CheckMoleculeB 
+  (
+    @molecule varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CheckMolecule (@molecule, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CheckMoleculeB to $(bingo)_reader
+GO
+
+--
+-- CheckMoleculeTable
+--
+CREATE FUNCTION [$(bingo)].z_CheckMoleculeTable 
+  (
+    @table nvarchar(max),
+    @id_column nvarchar(max),
+    @data_column nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS TABLE (id int, msg nvarchar(max))
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CheckMoleculeTable
+GO
+ADD SIGNATURE TO [$(bingo)].z_CheckMoleculeTable BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
-grant execute on [$(bingo)].CheckMolecule to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].CheckMoleculeTable 
+  (
+    @table nvarchar(max),
+    @id_column nvarchar(max),
+    @data_column nvarchar(max)
+  )
+  RETURNS TABLE
+AS
+  RETURN (SELECT * FROM [$(bingo)].z_CheckMoleculeTable (@table, @id_column, @data_column, '$(bingo)'))
+
+GO
+grant select on [$(bingo)].CheckMoleculeTable to $(bingo)_reader
 GO
 
 --
 -- CheckReaction
 --
-CREATE FUNCTION [$(bingo)]._CheckReaction 
+CREATE FUNCTION [$(bingo)].z_CheckReaction 
   (
-    @reaction nvarchar(max),
+    @reaction varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CheckReaction
 GO
-ADD SIGNATURE TO [$(bingo)]._CheckReaction BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_CheckReaction BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].CheckReaction 
   (
-    @reaction nvarchar(max)
+    @reaction varchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._CheckReaction (@reaction, '$(bingo)')
+  RETURN [$(bingo)].z_CheckReaction (cast(@reaction as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].CheckReaction BY CERTIFICATE $(bingo)_certificate
+grant execute on [$(bingo)].CheckReaction to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].CheckReactionB 
+  (
+    @reaction varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CheckReaction (@reaction, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CheckReactionB to $(bingo)_reader
+GO
+
+--
+-- CompactMolecule
+--
+CREATE FUNCTION [$(bingo)].z_CompactMolecule 
+  (
+    @molecule varbinary(max),
+    @save_xyz bit,
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CompactMolecule
+GO
+ADD SIGNATURE TO [$(bingo)].z_CompactMolecule BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
-grant execute on [$(bingo)].CheckReaction to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].CompactMolecule 
+  (
+    @molecule varchar(max),
+    @save_xyz bit
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CompactMolecule (cast(@molecule as VARBINARY(max)), @save_xyz, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CompactMolecule to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].CompactMoleculeB 
+  (
+    @molecule varbinary(max),
+    @save_xyz bit
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CompactMolecule (@molecule, @save_xyz, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CompactMoleculeB to $(bingo)_reader
+GO
+
+--
+-- CompactReaction
+--
+CREATE FUNCTION [$(bingo)].z_CompactReaction 
+  (
+    @reaction varbinary(max),
+    @save_xyz bit,
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CompactReaction
+GO
+ADD SIGNATURE TO [$(bingo)].z_CompactReaction BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].CompactReaction 
+  (
+    @reaction varchar(max),
+    @save_xyz bit
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CompactReaction (cast(@reaction as VARBINARY(max)), @save_xyz, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CompactReaction to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].CompactReactionB 
+  (
+    @reaction varbinary(max),
+    @save_xyz bit
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CompactReaction (@reaction, @save_xyz, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CompactReactionB to $(bingo)_reader
 GO
 
 --
 -- CreateMoleculeIndex
 --
-CREATE PROCEDURE [$(bingo)]._CreateMoleculeIndex 
+CREATE PROCEDURE [$(bingo)].z_CreateMoleculeIndex 
     @table nvarchar(max),
     @id_column nvarchar(max),
     @data_column nvarchar(max),
-    @bingo_schema nvarchar(max),
-    @bingo_db nvarchar(max)
+    @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CreateMoleculeIndex
 GO
-ADD SIGNATURE TO [$(bingo)]._CreateMoleculeIndex BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_CreateMoleculeIndex BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -350,29 +497,24 @@ CREATE PROCEDURE [$(bingo)].CreateMoleculeIndex
     @data_column nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._CreateMoleculeIndex @table, @id_column, @data_column, '$(bingo)', '$(database)'
+  EXEC [$(bingo)].z_CreateMoleculeIndex @table, @id_column, @data_column, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)].CreateMoleculeIndex BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].CreateMoleculeIndex to $(bingo)_operator
 GO
 
 --
 -- CreateReactionIndex
 --
-CREATE PROCEDURE [$(bingo)]._CreateReactionIndex 
+CREATE PROCEDURE [$(bingo)].z_CreateReactionIndex 
     @table nvarchar(max),
     @id_column nvarchar(max),
     @data_column nvarchar(max),
-    @bingo_schema nvarchar(max),
-    @bingo_db nvarchar(max)
+    @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CreateReactionIndex
 GO
-ADD SIGNATURE TO [$(bingo)]._CreateReactionIndex BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_CreateReactionIndex BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -382,26 +524,22 @@ CREATE PROCEDURE [$(bingo)].CreateReactionIndex
     @data_column nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._CreateReactionIndex @table, @id_column, @data_column, '$(bingo)', '$(database)'
+  EXEC [$(bingo)].z_CreateReactionIndex @table, @id_column, @data_column, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)].CreateReactionIndex BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].CreateReactionIndex to $(bingo)_operator
 GO
 
 --
 -- DropIndex
 --
-CREATE PROCEDURE [$(bingo)]._DropIndex 
+CREATE PROCEDURE [$(bingo)].z_DropIndex 
     @table nvarchar(max),
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].DropIndex
 GO
-ADD SIGNATURE TO [$(bingo)]._DropIndex BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_DropIndex BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -409,47 +547,39 @@ CREATE PROCEDURE [$(bingo)].DropIndex
     @table nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._DropIndex @table, '$(bingo)'
+  EXEC [$(bingo)].z_DropIndex @table, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)].DropIndex BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].DropIndex to $(bingo)_operator
 GO
 
 --
 -- DropInvalidIndices
 --
-CREATE PROCEDURE [$(bingo)]._DropInvalidIndices 
+CREATE PROCEDURE [$(bingo)].z_DropInvalidIndices 
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].DropInvalidIndices
 GO
-ADD SIGNATURE TO [$(bingo)]._DropInvalidIndices BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_DropInvalidIndices BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE PROCEDURE [$(bingo)].DropInvalidIndices 
 AS
 BEGIN
-  EXEC [$(bingo)]._DropInvalidIndices '$(bingo)'
+  EXEC [$(bingo)].z_DropInvalidIndices '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)].DropInvalidIndices BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].DropInvalidIndices to $(bingo)_operator
 GO
 
 --
 -- Exact
 --
-CREATE FUNCTION [$(bingo)]._Exact 
+CREATE FUNCTION [$(bingo)].z_Exact 
   (
-    @target nvarchar(max),
+    @target varbinary(max),
     @query nvarchar(max),
     @options nvarchar(max),
     @bingo_schema nvarchar(max)
@@ -458,39 +588,78 @@ CREATE FUNCTION [$(bingo)]._Exact
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].Exact
 GO
-ADD SIGNATURE TO [$(bingo)]._Exact BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_Exact BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].Exact 
   (
-    @target nvarchar(max),
+    @target varchar(max),
     @query nvarchar(max),
     @options nvarchar(max)
   )
   RETURNS int
 AS
 BEGIN
-  RETURN [$(bingo)]._Exact (@target, @query, @options, '$(bingo)')
+  RETURN [$(bingo)].z_Exact (cast(@target as VARBINARY(max)), @query, @options, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].Exact BY CERTIFICATE $(bingo)_certificate
+grant execute on [$(bingo)].Exact to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].ExactB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS int
+AS
+BEGIN
+  RETURN [$(bingo)].z_Exact (@target, @query, @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].ExactB to $(bingo)_reader
+GO
+
+--
+-- ExportSDF
+--
+CREATE PROCEDURE [$(bingo)].z_ExportSDF 
+    @table_name nvarchar(max),
+    @mol_column_name nvarchar(max),
+    @file_name nvarchar(max),
+    @additional_parameters nvarchar(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].ExportSDF
+GO
+ADD SIGNATURE TO [$(bingo)].z_ExportSDF BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
-grant execute on [$(bingo)].Exact to $(bingo)_reader
+CREATE PROCEDURE [$(bingo)].ExportSDF 
+    @table_name nvarchar(max),
+    @mol_column_name nvarchar(max),
+    @file_name nvarchar(max),
+    @additional_parameters nvarchar(max)
+AS
+BEGIN
+  EXEC [$(bingo)].z_ExportSDF @table_name, @mol_column_name, @file_name, @additional_parameters
+END
+GO
+grant execute on [$(bingo)].ExportSDF to $(bingo)_operator
 GO
 
 --
 -- FlushOperations
 --
-CREATE PROCEDURE [$(bingo)]._FlushOperations 
+CREATE PROCEDURE [$(bingo)].z_FlushOperations 
     @table_name nvarchar(max),
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].FlushOperations
 GO
-ADD SIGNATURE TO [$(bingo)]._FlushOperations BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_FlushOperations BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -498,86 +667,100 @@ CREATE PROCEDURE [$(bingo)].FlushOperations
     @table_name nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._FlushOperations @table_name, '$(bingo)'
+  EXEC [$(bingo)].z_FlushOperations @table_name, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)].FlushOperations BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].FlushOperations to $(bingo)_operator
 GO
 
 --
 -- GetAtomCount
 --
-CREATE FUNCTION [$(bingo)]._GetAtomCount 
+CREATE FUNCTION [$(bingo)].z_GetAtomCount 
   (
-    @molecule nvarchar(max),
+    @molecule varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS int
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].GetAtomCount
 GO
-ADD SIGNATURE TO [$(bingo)]._GetAtomCount BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_GetAtomCount BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].GetAtomCount 
   (
-    @molecule nvarchar(max)
+    @molecule varchar(max)
   )
   RETURNS int
 AS
 BEGIN
-  RETURN [$(bingo)]._GetAtomCount (@molecule, '$(bingo)')
+  RETURN [$(bingo)].z_GetAtomCount (cast(@molecule as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].GetAtomCount BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].GetAtomCount to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].GetAtomCount to $(bingo)_operator
+CREATE FUNCTION [$(bingo)].GetAtomCountB 
+  (
+    @molecule varbinary(max)
+  )
+  RETURNS int
+AS
+BEGIN
+  RETURN [$(bingo)].z_GetAtomCount (@molecule, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].GetAtomCountB to $(bingo)_reader
 GO
 
 --
 -- GetBondCount
 --
-CREATE FUNCTION [$(bingo)]._GetBondCount 
+CREATE FUNCTION [$(bingo)].z_GetBondCount 
   (
-    @molecule nvarchar(max),
+    @molecule varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS int
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].GetBondCount
 GO
-ADD SIGNATURE TO [$(bingo)]._GetBondCount BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_GetBondCount BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].GetBondCount 
   (
-    @molecule nvarchar(max)
+    @molecule varchar(max)
   )
   RETURNS int
 AS
 BEGIN
-  RETURN [$(bingo)]._GetBondCount (@molecule, '$(bingo)')
+  RETURN [$(bingo)].z_GetBondCount (cast(@molecule as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].GetBondCount BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].GetBondCount to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].GetBondCount to $(bingo)_operator
+CREATE FUNCTION [$(bingo)].GetBondCountB 
+  (
+    @molecule varbinary(max)
+  )
+  RETURNS int
+AS
+BEGIN
+  RETURN [$(bingo)].z_GetBondCount (@molecule, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].GetBondCountB to $(bingo)_reader
 GO
 
 --
 -- GetStatistics
 --
-CREATE FUNCTION [$(bingo)]._GetStatistics 
+CREATE FUNCTION [$(bingo)].z_GetStatistics 
   (
     @bingo_schema nvarchar(max)
   )
@@ -585,7 +768,7 @@ CREATE FUNCTION [$(bingo)]._GetStatistics
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].GetStatistics
 GO
-ADD SIGNATURE TO [$(bingo)]._GetStatistics BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_GetStatistics BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -595,20 +778,16 @@ CREATE FUNCTION [$(bingo)].GetStatistics
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._GetStatistics ('$(bingo)')
+  RETURN [$(bingo)].z_GetStatistics ('$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].GetStatistics BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].GetStatistics to $(bingo)_operator
 GO
 
 --
 -- GetVersion
 --
-CREATE FUNCTION [$(bingo)]._GetVersion 
+CREATE FUNCTION [$(bingo)].z_GetVersion 
   (
     @bingo_schema nvarchar(max)
   )
@@ -616,7 +795,7 @@ CREATE FUNCTION [$(bingo)]._GetVersion
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].GetVersion
 GO
-ADD SIGNATURE TO [$(bingo)]._GetVersion BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_GetVersion BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -626,53 +805,58 @@ CREATE FUNCTION [$(bingo)].GetVersion
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._GetVersion ('$(bingo)')
+  RETURN [$(bingo)].z_GetVersion ('$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].GetVersion BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].GetVersion to $(bingo)_reader
 GO
 
 --
 -- Gross
 --
-CREATE FUNCTION [$(bingo)]._Gross 
+CREATE FUNCTION [$(bingo)].z_Gross 
   (
-    @molecule nvarchar(max),
+    @molecule varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].Gross
 GO
-ADD SIGNATURE TO [$(bingo)]._Gross BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_Gross BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].Gross 
   (
-    @molecule nvarchar(max)
+    @molecule varchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._Gross (@molecule, '$(bingo)')
+  RETURN [$(bingo)].z_Gross (cast(@molecule as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].Gross BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].Gross to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].Gross to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].GrossB 
+  (
+    @molecule varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_Gross (@molecule, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].GrossB to $(bingo)_reader
 GO
 
 --
 -- ImportRDF
 --
-CREATE PROCEDURE [$(bingo)]._ImportRDF 
+CREATE PROCEDURE [$(bingo)].z_ImportRDF 
     @table_name nvarchar(max),
     @react_column_name nvarchar(max),
     @file_name nvarchar(max),
@@ -681,7 +865,7 @@ CREATE PROCEDURE [$(bingo)]._ImportRDF
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].ImportRDF
 GO
-ADD SIGNATURE TO [$(bingo)]._ImportRDF BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_ImportRDF BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -692,20 +876,16 @@ CREATE PROCEDURE [$(bingo)].ImportRDF
     @additional_parameters nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._ImportRDF @table_name, @react_column_name, @file_name, @additional_parameters, '$(bingo)'
+  EXEC [$(bingo)].z_ImportRDF @table_name, @react_column_name, @file_name, @additional_parameters, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)].ImportRDF BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
-grant execute on [$(bingo)].ImportRDF to $(bingo)_reader
+grant execute on [$(bingo)].ImportRDF to $(bingo)_operator
 GO
 
 --
 -- ImportSDF
 --
-CREATE PROCEDURE [$(bingo)]._ImportSDF 
+CREATE PROCEDURE [$(bingo)].z_ImportSDF 
     @table_name nvarchar(max),
     @mol_column_name nvarchar(max),
     @file_name nvarchar(max),
@@ -714,7 +894,7 @@ CREATE PROCEDURE [$(bingo)]._ImportSDF
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].ImportSDF
 GO
-ADD SIGNATURE TO [$(bingo)]._ImportSDF BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_ImportSDF BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -725,20 +905,16 @@ CREATE PROCEDURE [$(bingo)].ImportSDF
     @additional_parameters nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._ImportSDF @table_name, @mol_column_name, @file_name, @additional_parameters, '$(bingo)'
+  EXEC [$(bingo)].z_ImportSDF @table_name, @mol_column_name, @file_name, @additional_parameters, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)].ImportSDF BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
-grant execute on [$(bingo)].ImportSDF to $(bingo)_reader
+grant execute on [$(bingo)].ImportSDF to $(bingo)_operator
 GO
 
 --
 -- ImportSMILES
 --
-CREATE PROCEDURE [$(bingo)]._ImportSMILES 
+CREATE PROCEDURE [$(bingo)].z_ImportSMILES 
     @table_name nvarchar(max),
     @mol_column_name nvarchar(max),
     @file_name nvarchar(max),
@@ -747,7 +923,7 @@ CREATE PROCEDURE [$(bingo)]._ImportSMILES
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].ImportSMILES
 GO
-ADD SIGNATURE TO [$(bingo)]._ImportSMILES BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_ImportSMILES BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -758,22 +934,18 @@ CREATE PROCEDURE [$(bingo)].ImportSMILES
     @id_column_name nvarchar(max)
 AS
 BEGIN
-  EXEC [$(bingo)]._ImportSMILES @table_name, @mol_column_name, @file_name, @id_column_name, '$(bingo)'
+  EXEC [$(bingo)].z_ImportSMILES @table_name, @mol_column_name, @file_name, @id_column_name, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)].ImportSMILES BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
-grant execute on [$(bingo)].ImportSMILES to $(bingo)_reader
+grant execute on [$(bingo)].ImportSMILES to $(bingo)_operator
 GO
 
 --
 -- Mass
 --
-CREATE FUNCTION [$(bingo)]._Mass 
+CREATE FUNCTION [$(bingo)].z_Mass 
   (
-    @molecule nvarchar(max),
+    @molecule varbinary(max),
     @type nvarchar(max),
     @bingo_schema nvarchar(max)
   )
@@ -781,110 +953,145 @@ CREATE FUNCTION [$(bingo)]._Mass
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].Mass
 GO
-ADD SIGNATURE TO [$(bingo)]._Mass BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_Mass BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].Mass 
   (
-    @molecule nvarchar(max),
+    @molecule varchar(max),
     @type nvarchar(max)
   )
   RETURNS real
 AS
 BEGIN
-  RETURN [$(bingo)]._Mass (@molecule, @type, '$(bingo)')
+  RETURN [$(bingo)].z_Mass (cast(@molecule as VARBINARY(max)), @type, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].Mass BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].Mass to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].Mass to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].MassB 
+  (
+    @molecule varbinary(max),
+    @type nvarchar(max)
+  )
+  RETURNS real
+AS
+BEGIN
+  RETURN [$(bingo)].z_Mass (@molecule, @type, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].MassB to $(bingo)_reader
 GO
 
 --
 -- Molfile
 --
-CREATE FUNCTION [$(bingo)]._Molfile 
+CREATE FUNCTION [$(bingo)].z_Molfile 
   (
-    @molecule nvarchar(max),
+    @molecule varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].Molfile
 GO
-ADD SIGNATURE TO [$(bingo)]._Molfile BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_Molfile BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].Molfile 
   (
-    @molecule nvarchar(max)
+    @molecule varchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._Molfile (@molecule, '$(bingo)')
+  RETURN [$(bingo)].z_Molfile (cast(@molecule as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].Molfile BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].Molfile to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].Molfile to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].MolfileB 
+  (
+    @molecule varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_Molfile (@molecule, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].MolfileB to $(bingo)_reader
 GO
 
 --
 -- Name
 --
-CREATE FUNCTION [$(bingo)]._Name 
+CREATE FUNCTION [$(bingo)].z_Name 
   (
-    @molecule nvarchar(max),
+    @molecule varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].Name
 GO
-ADD SIGNATURE TO [$(bingo)]._Name BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_Name BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].Name 
   (
-    @molecule nvarchar(max)
+    @molecule varchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._Name (@molecule, '$(bingo)')
+  RETURN [$(bingo)].z_Name (cast(@molecule as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].Name BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].Name to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].Name to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].NameB 
+  (
+    @molecule varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_Name (@molecule, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].NameB to $(bingo)_reader
 GO
 
 --
 -- OnSessionClose
 --
-CREATE PROCEDURE [$(bingo)].OnSessionClose 
+CREATE PROCEDURE [$(bingo)].z_OnSessionClose 
     @spid_str nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].OnSessionClose
 GO
-ADD SIGNATURE TO [$(bingo)].OnSessionClose BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_OnSessionClose BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
+CREATE PROCEDURE [$(bingo)].OnSessionClose 
+    @spid_str nvarchar(max)
+AS
+BEGIN
+  EXEC [$(bingo)].z_OnSessionClose @spid_str
+END
+GO
 --
 -- ProfilingGetCount
 --
-CREATE FUNCTION [$(bingo)]._ProfilingGetCount 
+CREATE FUNCTION [$(bingo)].z_ProfilingGetCount 
   (
     @counter_name nvarchar(max),
     @whole_session bit,
@@ -894,7 +1101,7 @@ CREATE FUNCTION [$(bingo)]._ProfilingGetCount
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].ProfilingGetCount
 GO
-ADD SIGNATURE TO [$(bingo)]._ProfilingGetCount BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_ProfilingGetCount BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -906,20 +1113,16 @@ CREATE FUNCTION [$(bingo)].ProfilingGetCount
   RETURNS bigint
 AS
 BEGIN
-  RETURN [$(bingo)]._ProfilingGetCount (@counter_name, @whole_session, '$(bingo)')
+  RETURN [$(bingo)].z_ProfilingGetCount (@counter_name, @whole_session, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].ProfilingGetCount BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].ProfilingGetCount to $(bingo)_operator
 GO
 
 --
 -- ProfilingGetTime
 --
-CREATE FUNCTION [$(bingo)]._ProfilingGetTime 
+CREATE FUNCTION [$(bingo)].z_ProfilingGetTime 
   (
     @counter_name nvarchar(max),
     @whole_session bit,
@@ -929,7 +1132,7 @@ CREATE FUNCTION [$(bingo)]._ProfilingGetTime
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].ProfilingGetTime
 GO
-ADD SIGNATURE TO [$(bingo)]._ProfilingGetTime BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_ProfilingGetTime BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -941,20 +1144,16 @@ CREATE FUNCTION [$(bingo)].ProfilingGetTime
   RETURNS real
 AS
 BEGIN
-  RETURN [$(bingo)]._ProfilingGetTime (@counter_name, @whole_session, '$(bingo)')
+  RETURN [$(bingo)].z_ProfilingGetTime (@counter_name, @whole_session, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].ProfilingGetTime BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].ProfilingGetTime to $(bingo)_operator
 GO
 
 --
 -- ProfilingGetValue
 --
-CREATE FUNCTION [$(bingo)]._ProfilingGetValue 
+CREATE FUNCTION [$(bingo)].z_ProfilingGetValue 
   (
     @counter_name nvarchar(max),
     @whole_session bit,
@@ -964,7 +1163,7 @@ CREATE FUNCTION [$(bingo)]._ProfilingGetValue
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].ProfilingGetValue
 GO
-ADD SIGNATURE TO [$(bingo)]._ProfilingGetValue BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_ProfilingGetValue BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -976,20 +1175,16 @@ CREATE FUNCTION [$(bingo)].ProfilingGetValue
   RETURNS bigint
 AS
 BEGIN
-  RETURN [$(bingo)]._ProfilingGetValue (@counter_name, @whole_session, '$(bingo)')
+  RETURN [$(bingo)].z_ProfilingGetValue (@counter_name, @whole_session, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].ProfilingGetValue BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].ProfilingGetValue to $(bingo)_operator
 GO
 
 --
 -- ReadFileAsBinary
 --
-CREATE FUNCTION [$(bingo)].ReadFileAsBinary 
+CREATE FUNCTION [$(bingo)].z_ReadFileAsBinary 
   (
     @filename nvarchar(max)
   )
@@ -997,17 +1192,27 @@ CREATE FUNCTION [$(bingo)].ReadFileAsBinary
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.BingoSqlUtils].ReadFileAsBinary
 GO
-ADD SIGNATURE TO [$(bingo)].ReadFileAsBinary BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_ReadFileAsBinary BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
+CREATE FUNCTION [$(bingo)].ReadFileAsBinary 
+  (
+    @filename nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_ReadFileAsBinary (@filename)
+END
+GO
 grant execute on [$(bingo)].ReadFileAsBinary to $(bingo)_operator
 GO
 
 --
 -- ReadFileAsText
 --
-CREATE FUNCTION [$(bingo)].ReadFileAsText 
+CREATE FUNCTION [$(bingo)].z_ReadFileAsText 
   (
     @filename nvarchar(max)
   )
@@ -1015,77 +1220,92 @@ CREATE FUNCTION [$(bingo)].ReadFileAsText
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.BingoSqlUtils].ReadFileAsText
 GO
-ADD SIGNATURE TO [$(bingo)].ReadFileAsText BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_ReadFileAsText BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
+CREATE FUNCTION [$(bingo)].ReadFileAsText 
+  (
+    @filename nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_ReadFileAsText (@filename)
+END
+GO
 grant execute on [$(bingo)].ReadFileAsText to $(bingo)_operator
 GO
 
 --
 -- ResetStatistics
 --
-CREATE PROCEDURE [$(bingo)]._ResetStatistics 
+CREATE PROCEDURE [$(bingo)].z_ResetStatistics 
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].ResetStatistics
 GO
-ADD SIGNATURE TO [$(bingo)]._ResetStatistics BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_ResetStatistics BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE PROCEDURE [$(bingo)].ResetStatistics 
 AS
 BEGIN
-  EXEC [$(bingo)]._ResetStatistics '$(bingo)'
+  EXEC [$(bingo)].z_ResetStatistics '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)].ResetStatistics BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].ResetStatistics to $(bingo)_operator
 GO
 
 --
 -- RSmiles
 --
-CREATE FUNCTION [$(bingo)]._RSmiles 
+CREATE FUNCTION [$(bingo)].z_RSmiles 
   (
-    @molecule nvarchar(max),
+    @reaction varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].RSmiles
 GO
-ADD SIGNATURE TO [$(bingo)]._RSmiles BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_RSmiles BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].RSmiles 
   (
-    @molecule nvarchar(max)
+    @reaction varchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._RSmiles (@molecule, '$(bingo)')
+  RETURN [$(bingo)].z_RSmiles (cast(@reaction as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].RSmiles BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].RSmiles to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].RSmiles to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].RSmilesB 
+  (
+    @reaction varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_RSmiles (@reaction, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RSmilesB to $(bingo)_reader
 GO
 
 --
 -- RSub
 --
-CREATE FUNCTION [$(bingo)]._RSub 
+CREATE FUNCTION [$(bingo)].z_RSub 
   (
-    @target nvarchar(max),
+    @target varbinary(max),
     @query nvarchar(max),
     @bingo_schema nvarchar(max)
   )
@@ -1093,34 +1313,44 @@ CREATE FUNCTION [$(bingo)]._RSub
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].RSub
 GO
-ADD SIGNATURE TO [$(bingo)]._RSub BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_RSub BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].RSub 
   (
-    @target nvarchar(max),
+    @target varchar(max),
     @query nvarchar(max)
   )
   RETURNS int
 AS
 BEGIN
-  RETURN [$(bingo)]._RSub (@target, @query, '$(bingo)')
+  RETURN [$(bingo)].z_RSub (cast(@target as VARBINARY(max)), @query, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].RSub BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].RSub to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].RSub to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].RSubB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max)
+  )
+  RETURNS int
+AS
+BEGIN
+  RETURN [$(bingo)].z_RSub (@target, @query, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RSubB to $(bingo)_reader
 GO
 
 --
 -- RSubHi
 --
-CREATE FUNCTION [$(bingo)]._RSubHi 
+CREATE FUNCTION [$(bingo)].z_RSubHi 
   (
-    @target nvarchar(max),
+    @target varbinary(max),
     @query nvarchar(max),
     @bingo_schema nvarchar(max)
   )
@@ -1128,65 +1358,84 @@ CREATE FUNCTION [$(bingo)]._RSubHi
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].RSubHi
 GO
-ADD SIGNATURE TO [$(bingo)]._RSubHi BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_RSubHi BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].RSubHi 
   (
-    @target nvarchar(max),
+    @target varchar(max),
     @query nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._RSubHi (@target, @query, '$(bingo)')
+  RETURN [$(bingo)].z_RSubHi (cast(@target as VARBINARY(max)), @query, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].RSubHi BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].RSubHi to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].RSubHi to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].RSubHiB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_RSubHi (@target, @query, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RSubHiB to $(bingo)_reader
 GO
 
 --
 -- Rxnfile
 --
-CREATE FUNCTION [$(bingo)]._Rxnfile 
+CREATE FUNCTION [$(bingo)].z_Rxnfile 
   (
-    @reaction nvarchar(max),
+    @reaction varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].Rxnfile
 GO
-ADD SIGNATURE TO [$(bingo)]._Rxnfile BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_Rxnfile BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].Rxnfile 
   (
-    @reaction nvarchar(max)
+    @reaction varchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._Rxnfile (@reaction, '$(bingo)')
+  RETURN [$(bingo)].z_Rxnfile (cast(@reaction as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].Rxnfile BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].Rxnfile to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].Rxnfile to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].RxnfileB 
+  (
+    @reaction varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_Rxnfile (@reaction, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RxnfileB to $(bingo)_reader
 GO
 
 --
 -- SearchExact
 --
-CREATE FUNCTION [$(bingo)]._SearchExact 
+CREATE FUNCTION [$(bingo)].z_SearchExact 
   (
     @table nvarchar(max),
     @query nvarchar(max),
@@ -1197,7 +1446,7 @@ CREATE FUNCTION [$(bingo)]._SearchExact
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchExact
 GO
-ADD SIGNATURE TO [$(bingo)]._SearchExact BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SearchExact BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1209,16 +1458,16 @@ CREATE FUNCTION [$(bingo)].SearchExact
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)]._SearchExact (@table, @query, @options, '$(bingo)'))
-GO
+  RETURN (SELECT * FROM [$(bingo)].z_SearchExact (@table, @query, @options, '$(bingo)'))
 
+GO
 grant select on [$(bingo)].SearchExact to $(bingo)_reader
 GO
 
 --
 -- SearchGross
 --
-CREATE FUNCTION [$(bingo)]._SearchGross 
+CREATE FUNCTION [$(bingo)].z_SearchGross 
   (
     @table nvarchar(max),
     @query nvarchar(max),
@@ -1229,7 +1478,7 @@ CREATE FUNCTION [$(bingo)]._SearchGross
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchGross
 GO
-ADD SIGNATURE TO [$(bingo)]._SearchGross BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SearchGross BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1241,16 +1490,16 @@ CREATE FUNCTION [$(bingo)].SearchGross
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)]._SearchGross (@table, @query, @options, '$(bingo)'))
-GO
+  RETURN (SELECT * FROM [$(bingo)].z_SearchGross (@table, @query, @options, '$(bingo)'))
 
+GO
 grant select on [$(bingo)].SearchGross to $(bingo)_reader
 GO
 
 --
 -- SearchMolecularWeight
 --
-CREATE FUNCTION [$(bingo)]._SearchMolecularWeight 
+CREATE FUNCTION [$(bingo)].z_SearchMolecularWeight 
   (
     @table nvarchar(max),
     @min_bound float,
@@ -1262,7 +1511,7 @@ CREATE FUNCTION [$(bingo)]._SearchMolecularWeight
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchMolecularWeight
 GO
-ADD SIGNATURE TO [$(bingo)]._SearchMolecularWeight BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SearchMolecularWeight BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1275,16 +1524,16 @@ CREATE FUNCTION [$(bingo)].SearchMolecularWeight
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)]._SearchMolecularWeight (@table, @min_bound, @max_bound, @options, '$(bingo)'))
-GO
+  RETURN (SELECT * FROM [$(bingo)].z_SearchMolecularWeight (@table, @min_bound, @max_bound, @options, '$(bingo)'))
 
+GO
 grant select on [$(bingo)].SearchMolecularWeight to $(bingo)_reader
 GO
 
 --
 -- SearchRSub
 --
-CREATE FUNCTION [$(bingo)]._SearchRSub 
+CREATE FUNCTION [$(bingo)].z_SearchRSub 
   (
     @table nvarchar(max),
     @query nvarchar(max),
@@ -1295,7 +1544,7 @@ CREATE FUNCTION [$(bingo)]._SearchRSub
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchRSub
 GO
-ADD SIGNATURE TO [$(bingo)]._SearchRSub BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SearchRSub BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1307,16 +1556,16 @@ CREATE FUNCTION [$(bingo)].SearchRSub
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)]._SearchRSub (@table, @query, @options, '$(bingo)'))
-GO
+  RETURN (SELECT * FROM [$(bingo)].z_SearchRSub (@table, @query, @options, '$(bingo)'))
 
+GO
 grant select on [$(bingo)].SearchRSub to $(bingo)_reader
 GO
 
 --
 -- SearchRSubHi
 --
-CREATE FUNCTION [$(bingo)]._SearchRSubHi 
+CREATE FUNCTION [$(bingo)].z_SearchRSubHi 
   (
     @table nvarchar(max),
     @query nvarchar(max),
@@ -1327,7 +1576,7 @@ CREATE FUNCTION [$(bingo)]._SearchRSubHi
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchRSubHi
 GO
-ADD SIGNATURE TO [$(bingo)]._SearchRSubHi BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SearchRSubHi BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1339,16 +1588,16 @@ CREATE FUNCTION [$(bingo)].SearchRSubHi
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)]._SearchRSubHi (@table, @query, @options, '$(bingo)'))
-GO
+  RETURN (SELECT * FROM [$(bingo)].z_SearchRSubHi (@table, @query, @options, '$(bingo)'))
 
+GO
 grant select on [$(bingo)].SearchRSubHi to $(bingo)_reader
 GO
 
 --
 -- SearchSim
 --
-CREATE FUNCTION [$(bingo)]._SearchSim 
+CREATE FUNCTION [$(bingo)].z_SearchSim 
   (
     @table nvarchar(max),
     @query nvarchar(max),
@@ -1361,7 +1610,7 @@ CREATE FUNCTION [$(bingo)]._SearchSim
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchSim
 GO
-ADD SIGNATURE TO [$(bingo)]._SearchSim BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SearchSim BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1375,16 +1624,16 @@ CREATE FUNCTION [$(bingo)].SearchSim
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)]._SearchSim (@table, @query, @metric, '$(bingo)', @min_bound, @max_bound))
-GO
+  RETURN (SELECT * FROM [$(bingo)].z_SearchSim (@table, @query, @metric, '$(bingo)', @min_bound, @max_bound))
 
+GO
 grant select on [$(bingo)].SearchSim to $(bingo)_reader
 GO
 
 --
 -- SearchSMARTS
 --
-CREATE FUNCTION [$(bingo)]._SearchSMARTS 
+CREATE FUNCTION [$(bingo)].z_SearchSMARTS 
   (
     @table nvarchar(max),
     @query nvarchar(max),
@@ -1395,7 +1644,7 @@ CREATE FUNCTION [$(bingo)]._SearchSMARTS
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchSMARTS
 GO
-ADD SIGNATURE TO [$(bingo)]._SearchSMARTS BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SearchSMARTS BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1407,16 +1656,16 @@ CREATE FUNCTION [$(bingo)].SearchSMARTS
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)]._SearchSMARTS (@table, @query, @options, '$(bingo)'))
-GO
+  RETURN (SELECT * FROM [$(bingo)].z_SearchSMARTS (@table, @query, @options, '$(bingo)'))
 
+GO
 grant select on [$(bingo)].SearchSMARTS to $(bingo)_reader
 GO
 
 --
 -- SearchSMARTSHi
 --
-CREATE FUNCTION [$(bingo)]._SearchSMARTSHi 
+CREATE FUNCTION [$(bingo)].z_SearchSMARTSHi 
   (
     @table nvarchar(max),
     @query nvarchar(max),
@@ -1427,7 +1676,7 @@ CREATE FUNCTION [$(bingo)]._SearchSMARTSHi
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchSMARTSHi
 GO
-ADD SIGNATURE TO [$(bingo)]._SearchSMARTSHi BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SearchSMARTSHi BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1439,16 +1688,16 @@ CREATE FUNCTION [$(bingo)].SearchSMARTSHi
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)]._SearchSMARTSHi (@table, @query, @options, '$(bingo)'))
-GO
+  RETURN (SELECT * FROM [$(bingo)].z_SearchSMARTSHi (@table, @query, @options, '$(bingo)'))
 
+GO
 grant select on [$(bingo)].SearchSMARTSHi to $(bingo)_reader
 GO
 
 --
 -- SearchSub
 --
-CREATE FUNCTION [$(bingo)]._SearchSub 
+CREATE FUNCTION [$(bingo)].z_SearchSub 
   (
     @table nvarchar(max),
     @query nvarchar(max),
@@ -1459,7 +1708,7 @@ CREATE FUNCTION [$(bingo)]._SearchSub
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchSub
 GO
-ADD SIGNATURE TO [$(bingo)]._SearchSub BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SearchSub BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1471,16 +1720,16 @@ CREATE FUNCTION [$(bingo)].SearchSub
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)]._SearchSub (@table, @query, @options, '$(bingo)'))
-GO
+  RETURN (SELECT * FROM [$(bingo)].z_SearchSub (@table, @query, @options, '$(bingo)'))
 
+GO
 grant select on [$(bingo)].SearchSub to $(bingo)_reader
 GO
 
 --
 -- SearchSubHi
 --
-CREATE FUNCTION [$(bingo)]._SearchSubHi 
+CREATE FUNCTION [$(bingo)].z_SearchSubHi 
   (
     @table nvarchar(max),
     @query nvarchar(max),
@@ -1491,7 +1740,7 @@ CREATE FUNCTION [$(bingo)]._SearchSubHi
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchSubHi
 GO
-ADD SIGNATURE TO [$(bingo)]._SearchSubHi BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SearchSubHi BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1503,23 +1752,23 @@ CREATE FUNCTION [$(bingo)].SearchSubHi
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)]._SearchSubHi (@table, @query, @options, '$(bingo)'))
-GO
+  RETURN (SELECT * FROM [$(bingo)].z_SearchSubHi (@table, @query, @options, '$(bingo)'))
 
+GO
 grant select on [$(bingo)].SearchSubHi to $(bingo)_reader
 GO
 
 --
 -- SetKeepCache
 --
-CREATE PROCEDURE [$(bingo)]._SetKeepCache 
+CREATE PROCEDURE [$(bingo)].z_SetKeepCache 
     @table nvarchar(max),
     @value bit,
     @bingo_schema nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SetKeepCache
 GO
-ADD SIGNATURE TO [$(bingo)]._SetKeepCache BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SetKeepCache BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
@@ -1528,22 +1777,18 @@ CREATE PROCEDURE [$(bingo)].SetKeepCache
     @value bit
 AS
 BEGIN
-  EXEC [$(bingo)]._SetKeepCache @table, @value, '$(bingo)'
+  EXEC [$(bingo)].z_SetKeepCache @table, @value, '$(bingo)'
 END
 GO
-ADD SIGNATURE TO [$(bingo)].SetKeepCache BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
-GO
-
 grant execute on [$(bingo)].SetKeepCache to $(bingo)_operator
 GO
 
 --
 -- Sim
 --
-CREATE FUNCTION [$(bingo)]._Sim 
+CREATE FUNCTION [$(bingo)].z_Sim 
   (
-    @target nvarchar(max),
+    @target varbinary(max),
     @query nvarchar(max),
     @metrics nvarchar(max),
     @bingo_schema nvarchar(max)
@@ -1552,35 +1797,46 @@ CREATE FUNCTION [$(bingo)]._Sim
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].Sim
 GO
-ADD SIGNATURE TO [$(bingo)]._Sim BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_Sim BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].Sim 
   (
-    @target nvarchar(max),
+    @target varchar(max),
     @query nvarchar(max),
     @metrics nvarchar(max)
   )
   RETURNS real
 AS
 BEGIN
-  RETURN [$(bingo)]._Sim (@target, @query, @metrics, '$(bingo)')
+  RETURN [$(bingo)].z_Sim (cast(@target as VARBINARY(max)), @query, @metrics, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].Sim BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].Sim to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].Sim to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].SimB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max),
+    @metrics nvarchar(max)
+  )
+  RETURNS real
+AS
+BEGIN
+  RETURN [$(bingo)].z_Sim (@target, @query, @metrics, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].SimB to $(bingo)_reader
 GO
 
 --
 -- SMARTS
 --
-CREATE FUNCTION [$(bingo)]._SMARTS 
+CREATE FUNCTION [$(bingo)].z_SMARTS 
   (
-    @target nvarchar(max),
+    @target varbinary(max),
     @query nvarchar(max),
     @options nvarchar(max),
     @bingo_schema nvarchar(max)
@@ -1589,35 +1845,46 @@ CREATE FUNCTION [$(bingo)]._SMARTS
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SMARTS
 GO
-ADD SIGNATURE TO [$(bingo)]._SMARTS BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SMARTS BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].SMARTS 
   (
-    @target nvarchar(max),
+    @target varchar(max),
     @query nvarchar(max),
     @options nvarchar(max)
   )
   RETURNS int
 AS
 BEGIN
-  RETURN [$(bingo)]._SMARTS (@target, @query, @options, '$(bingo)')
+  RETURN [$(bingo)].z_SMARTS (cast(@target as VARBINARY(max)), @query, @options, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].SMARTS BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].SMARTS to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].SMARTS to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].SMARTSB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS int
+AS
+BEGIN
+  RETURN [$(bingo)].z_SMARTS (@target, @query, @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].SMARTSB to $(bingo)_reader
 GO
 
 --
 -- SMARTSHi
 --
-CREATE FUNCTION [$(bingo)]._SMARTSHi 
+CREATE FUNCTION [$(bingo)].z_SMARTSHi 
   (
-    @target nvarchar(max),
+    @target varbinary(max),
     @query nvarchar(max),
     @parameters nvarchar(max),
     @bingo_schema nvarchar(max)
@@ -1626,68 +1893,88 @@ CREATE FUNCTION [$(bingo)]._SMARTSHi
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SMARTSHi
 GO
-ADD SIGNATURE TO [$(bingo)]._SMARTSHi BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SMARTSHi BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].SMARTSHi 
   (
-    @target nvarchar(max),
+    @target varchar(max),
     @query nvarchar(max),
     @parameters nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._SMARTSHi (@target, @query, @parameters, '$(bingo)')
+  RETURN [$(bingo)].z_SMARTSHi (cast(@target as VARBINARY(max)), @query, @parameters, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].SMARTSHi BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].SMARTSHi to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].SMARTSHi to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].SMARTSHiB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max),
+    @parameters nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_SMARTSHi (@target, @query, @parameters, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].SMARTSHiB to $(bingo)_reader
 GO
 
 --
 -- Smiles
 --
-CREATE FUNCTION [$(bingo)]._Smiles 
+CREATE FUNCTION [$(bingo)].z_Smiles 
   (
-    @molecule nvarchar(max),
+    @molecule varbinary(max),
     @bingo_schema nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].Smiles
 GO
-ADD SIGNATURE TO [$(bingo)]._Smiles BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_Smiles BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].Smiles 
   (
-    @molecule nvarchar(max)
+    @molecule varchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._Smiles (@molecule, '$(bingo)')
+  RETURN [$(bingo)].z_Smiles (cast(@molecule as VARBINARY(max)), '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].Smiles BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].Smiles to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].Smiles to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].SmilesB 
+  (
+    @molecule varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_Smiles (@molecule, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].SmilesB to $(bingo)_reader
 GO
 
 --
 -- Sub
 --
-CREATE FUNCTION [$(bingo)]._Sub 
+CREATE FUNCTION [$(bingo)].z_Sub 
   (
-    @target nvarchar(max),
+    @target varbinary(max),
     @query nvarchar(max),
     @options nvarchar(max),
     @bingo_schema nvarchar(max)
@@ -1696,35 +1983,46 @@ CREATE FUNCTION [$(bingo)]._Sub
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].Sub
 GO
-ADD SIGNATURE TO [$(bingo)]._Sub BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_Sub BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].Sub 
   (
-    @target nvarchar(max),
+    @target varchar(max),
     @query nvarchar(max),
     @options nvarchar(max)
   )
   RETURNS int
 AS
 BEGIN
-  RETURN [$(bingo)]._Sub (@target, @query, @options, '$(bingo)')
+  RETURN [$(bingo)].z_Sub (cast(@target as VARBINARY(max)), @query, @options, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].Sub BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].Sub to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].Sub to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].SubB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS int
+AS
+BEGIN
+  RETURN [$(bingo)].z_Sub (@target, @query, @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].SubB to $(bingo)_reader
 GO
 
 --
 -- SubHi
 --
-CREATE FUNCTION [$(bingo)]._SubHi 
+CREATE FUNCTION [$(bingo)].z_SubHi 
   (
-    @target nvarchar(max),
+    @target varbinary(max),
     @query nvarchar(max),
     @parameters nvarchar(max),
     @bingo_schema nvarchar(max)
@@ -1733,26 +2031,37 @@ CREATE FUNCTION [$(bingo)]._SubHi
 AS
   EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SubHi
 GO
-ADD SIGNATURE TO [$(bingo)]._SubHi BY CERTIFICATE $(bingo)_certificate
+ADD SIGNATURE TO [$(bingo)].z_SubHi BY CERTIFICATE $(bingo)_certificate
   WITH PASSWORD = '$(bingo_pass)'
 GO
 
 CREATE FUNCTION [$(bingo)].SubHi 
   (
-    @target nvarchar(max),
+    @target varchar(max),
     @query nvarchar(max),
     @parameters nvarchar(max)
   )
   RETURNS nvarchar(max)
 AS
 BEGIN
-  RETURN [$(bingo)]._SubHi (@target, @query, @parameters, '$(bingo)')
+  RETURN [$(bingo)].z_SubHi (cast(@target as VARBINARY(max)), @query, @parameters, '$(bingo)')
 END
 GO
-ADD SIGNATURE TO [$(bingo)].SubHi BY CERTIFICATE $(bingo)_certificate
-  WITH PASSWORD = '$(bingo_pass)'
+grant execute on [$(bingo)].SubHi to $(bingo)_reader
 GO
 
-grant execute on [$(bingo)].SubHi to $(bingo)_reader
+CREATE FUNCTION [$(bingo)].SubHiB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max),
+    @parameters nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_SubHi (@target, @query, @parameters, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].SubHiB to $(bingo)_reader
 GO
 

@@ -8,7 +8,7 @@ go
 drop procedure [$(bingo)].log_events
 go
 
-drop event notification $(bingo)_logout_notify on server;
+drop event notification $(bingo)_$(database)_logout_notify on server;
 go
 
 drop route $(bingo)_notify_route;

@@ -137,7 +137,7 @@ namespace indigo
                      BingoCore.lib.mangoLoadTargetBinaryXyz(xyz_found, xyz_found.Length);
                   }
 
-                  mol.subhi = BingoCore.mangoGetHightlightedMolecule();
+                  mol.str = BingoCore.mangoGetHightlightedMolecule();
                }
                if (search_type == SearchType.SIM)
                   BingoCore.lib.mangoSimilarityGetScore(out mol.value);

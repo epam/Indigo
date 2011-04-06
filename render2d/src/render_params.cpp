@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -73,7 +73,7 @@ bool RenderParamInterface::needsLayoutSub (BaseMolecule& mol)
 {
    QS_DEF(RedBlackSet<int>, atomsToIgnore);
    atomsToIgnore.clear();
-   for (int i = 0; i < mol.multiple_groups.size(); ++i) {
+   for (int i = mol.multiple_groups.begin(); i < mol.multiple_groups.end(); i = mol.multiple_groups.next(i)) {
       const Array<int>& atoms = mol.multiple_groups[i].atoms;
       const Array<int>& patoms = mol.multiple_groups[i].parent_atoms;
       for (int j = 0; j < atoms.size(); ++j)
@@ -150,8 +150,8 @@ void RenderParamInterface::render (RenderParams& params)
    bool bondLengthSet = params.cnvOpt.bondLength > 0;
    int bondLength = (int)(bondLengthSet ? params.cnvOpt.bondLength : 100);
    rc.setDefaultScale((float)bondLength); // TODO: fix bondLength type
-   
-   RenderItemFactory factory(rc); 
+
+   RenderItemFactory factory(rc);
    int obj = -1;
    Array<int> objs;
    Array<int> titles;

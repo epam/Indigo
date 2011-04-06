@@ -23,6 +23,7 @@
 #include "molecule/molfile_saver.h"
 #include "molecule/molecule_mass.h"
 #include "molecule/gross_formula.h"
+#include "molecule/icm_saver.h"
 
 using namespace indigo::bingo_core;
 
@@ -42,6 +43,7 @@ CEXPORT int mangoIndexProcessSingleRecord ()
             {
                self.single_mango_index.create();
                self.single_mango_index->init(*self.bingo_context);
+               self.single_mango_index->skip_calculate_fp = self.skip_calculate_fp;
             }
 
             self.mango_index = self.single_mango_index.get();
@@ -541,13 +543,13 @@ CEXPORT const char * mangoSMILES (const char *target_buf, int target_buf_len, in
    BINGO_END(0, 0)
 }
 
-CEXPORT const char * mangoMolfile (const char *molecule)
+CEXPORT const char * mangoMolfile (const char *molecule, int molecule_len)
 {
    BINGO_BEGIN
    {
       _mangoCheckPseudoAndCBDM(self);
 
-      BufferScanner scanner(molecule);
+      BufferScanner scanner(molecule, molecule_len);
 
       QS_DEF(Molecule, target);
 
@@ -680,13 +682,11 @@ CEXPORT float mangoMass (const char *target_buf, int target_buf_len, const char 
       loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
       loader.ignore_closing_bond_direction_mismatch =
          self.bingo_context->ignore_closing_bond_direction_mismatch;
+      loader.skip_3d_chirality = true;
       loader.loadMolecule(target);
 
       MoleculeMass mass_calulator;
-      /* MR TODO:
-      mass_calulator.relative_atomic_mass_map = 
-         &bingo_context.relative_atomic_mass_map;
-      */
+      mass_calulator.relative_atomic_mass_map = &self.bingo_context->relative_atomic_mass_map;
 
       if (type == 0 || strlen(type) == 0 || strcasecmp(type, "molecular-weight") == 0)
          return mass_calulator.molecularWeight(target);
@@ -743,7 +743,7 @@ CEXPORT const char* mangoGrossGetConditions ()
    BINGO_END(0, 0)
 }
 
-CEXPORT const char * mangoCheckMolecule (const char *molecule)
+CEXPORT const char * mangoCheckMolecule (const char *molecule, int molecule_len)
 {
    BINGO_BEGIN
    {
@@ -753,11 +753,13 @@ CEXPORT const char * mangoCheckMolecule (const char *molecule)
       {
          QS_DEF(Molecule, mol);
 
-         MoleculeAutoLoader loader(molecule);
+         BufferScanner molecule_scanner(molecule, molecule_len);
+         MoleculeAutoLoader loader(molecule_scanner);
          loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
          loader.ignore_closing_bond_direction_mismatch =
             self.bingo_context->ignore_closing_bond_direction_mismatch;
          loader.loadMolecule(mol);
+         Molecule::checkForConsistency(mol);
       }                               
       CATCH_READ_TARGET_MOL(
          self.buffer.readString(e.message(), true);
@@ -765,3 +767,36 @@ CEXPORT const char * mangoCheckMolecule (const char *molecule)
    }
    BINGO_END(0, 0)
 }
+
+CEXPORT const char* mangoICM (const char* molecule, int molecule_len, bool save_xyz, int *out_len)
+{
+   BINGO_BEGIN
+   {
+      _mangoCheckPseudoAndCBDM(self);
+
+      BufferScanner scanner(molecule, molecule_len);
+
+      QS_DEF(Molecule, target);
+
+      MoleculeAutoLoader loader(scanner);
+
+      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
+      loader.ignore_closing_bond_direction_mismatch =
+         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      loader.loadMolecule(target);
+
+      ArrayOutput out(self.buffer);
+
+      if ((save_xyz != 0) && !target.have_xyz)
+         throw BingoError("molecule has no XYZ");
+
+      IcmSaver saver(out);
+      saver.save_xyz = (save_xyz != 0);
+      saver.saveMolecule(target);
+
+      *out_len = self.buffer.size();
+      return self.buffer.ptr();
+   }
+   BINGO_END(0, 0)
+}
+

@@ -334,7 +334,7 @@ namespace indigo
       {
       }
 
-      public void CreateTriggers (SqlConnection conn, string bingo_db)
+      public void CreateTriggers (SqlConnection conn)
       {
          string cur_db_name = null;
          try
@@ -342,21 +342,21 @@ namespace indigo
             cur_db_name = BingoSqlUtils.ExecStringQuery(conn, "SELECT DB_NAME()");
             BingoSqlUtils.ExecNonQueryNoThrow(conn, "USE {0}", id.DatabaseName(conn));
 
-            string bingo_db_schema = bingo_db + "." + bingo_schema;
+            string bingo_db_schema = cur_db_name + "." + bingo_schema;
 
             string full_name = id.FullTableName(conn);
             object[] trigger_params = new object[] { null, 
                full_name, id_column, data_column, bingo_db_schema, id.table_id, id.database_id };
 
-            trigger_params[0] = GetTriggerName("Insert", conn);
+            trigger_params[0] = GetTriggerName("Insert", conn, cur_db_name);
             string insert_trigger = String.Format(resource.OnInsertTrigger, trigger_params);
             BingoSqlUtils.ExecNonQuery(conn, "{0}", insert_trigger);
 
-            trigger_params[0] = GetTriggerName("Delete", conn);
+            trigger_params[0] = GetTriggerName("Delete", conn, cur_db_name);
             string delete_trigger = String.Format(resource.OnDeleteTrigger, trigger_params);
             BingoSqlUtils.ExecNonQuery(conn, "{0}", delete_trigger);
 
-            trigger_params[0] = GetTriggerName("Update", conn);
+            trigger_params[0] = GetTriggerName("Update", conn, cur_db_name);
             string update_trigger = String.Format(resource.OnUpdateTrigger, trigger_params);
             BingoSqlUtils.ExecNonQuery(conn, "{0}", update_trigger);
          }
@@ -374,9 +374,9 @@ namespace indigo
          {
             cur_db_name = BingoSqlUtils.ExecStringQuery(conn, "SELECT DB_NAME()");
             BingoSqlUtils.ExecNonQueryNoThrow(conn, "USE {0}", id.DatabaseName(conn));
-            BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", GetTriggerName("Insert", conn));
-            BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", GetTriggerName("Delete", conn));
-            BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", GetTriggerName("Update", conn));
+            BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", GetTriggerName("Insert", conn, cur_db_name));
+            BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", GetTriggerName("Delete", conn, cur_db_name));
+            BingoSqlUtils.ExecNonQueryNoThrow(conn, "DROP TRIGGER {0}", GetTriggerName("Update", conn, cur_db_name));
          }
          finally
          {
@@ -401,10 +401,10 @@ namespace indigo
       {
       }
 
-      private string GetTriggerName (string operation, SqlConnection conn)
+      private string GetTriggerName (string operation, SqlConnection conn, string bingo_db)
       {
-         return String.Format("{0}.[{1}_{2}]",
-            id.SchemaName(conn), id.table_id, operation);
+         return String.Format("{0}.[bingo_{1}_{2}_{3}]",
+            id.SchemaName(conn), bingo_db, id.table_id, operation);
       }
 
       public string fingerprintsTable
@@ -437,8 +437,14 @@ namespace indigo
 
       public void setKeepCache (SqlConnection conn, string bingo_schema, bool keep)
       {
-         keep_cache = keep;
-         BingoConfig.setInt(conn, bingo_schema, "KEEP_CACHE", id.table_id, keep ? 1 : 0);
+         if (keep_cache != keep)
+         {
+            keep_cache = keep;
+            BingoConfig.setInt(conn, bingo_schema, "KEEP_CACHE", id.table_id, keep ? 1 : 0);
+
+            BingoLog.logMessage("SetKeepCache has changed for {0} table. New value is {1}", 
+               id.FullTableName(conn), keep);
+         }
       }
 
       public int? getStorageIdById (SqlConnection conn, int id)

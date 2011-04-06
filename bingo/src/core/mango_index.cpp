@@ -51,24 +51,27 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
 
    MangoExact::calculateHash(mol, _hash);
 
-   MoleculeFingerprintBuilder builder(mol, _context->fp_parameters);
-   profTimerStart(tfing, "moleculeIndex.createFingerprint");
-   builder.process();
-   profTimerStop(tfing);
+   if (!skip_calculate_fp)
+   {
+      MoleculeFingerprintBuilder builder(mol, _context->fp_parameters);
+      profTimerStart(tfing, "moleculeIndex.createFingerprint");
+      builder.process();
+      profTimerStop(tfing);
 
-   _fp.copy(builder.get(), _context->fp_parameters.fingerprintSize());
-   _fp_sim_bits_count = builder.countBits_Sim();
-   output.writeBinaryWord((word)_fp_sim_bits_count);
+      _fp.copy(builder.get(), _context->fp_parameters.fingerprintSize());
+      _fp_sim_bits_count = builder.countBits_Sim();
+      output.writeBinaryWord((word)_fp_sim_bits_count);
 
-   const byte *fp_sim_ptr = builder.getSim();
-   int fp_sim_size = _context->fp_parameters.fingerprintSizeSim();
+      const byte *fp_sim_ptr = builder.getSim();
+      int fp_sim_size = _context->fp_parameters.fingerprintSizeSim();
 
-   ArrayOutput fp_sim_output(_fp_sim_str);
+      ArrayOutput fp_sim_output(_fp_sim_str);
 
-   for (int i = 0; i < fp_sim_size; i++)
-      fp_sim_output.printf("%02X", fp_sim_ptr[i]);
+      for (int i = 0; i < fp_sim_size; i++)
+         fp_sim_output.printf("%02X", fp_sim_ptr[i]);
 
-   fp_sim_output.writeChar(0);
+      fp_sim_output.writeChar(0);
+   }
 
    ArrayOutput output_cmf(_cmf);
    {

@@ -17,9 +17,8 @@ BEGIN TRY
 	GRANT UNSAFE ASSEMBLY TO bingo_assembly_login
 END TRY
 BEGIN CATCH
-    SELECT 
-        ERROR_NUMBER() AS ErrorNumber
-        ,ERROR_MESSAGE() AS ErrorMessage;
+	PRINT ERROR_NUMBER();
+	PRINT ERROR_MESSAGE();
 END CATCH;
 GO
 
@@ -187,7 +186,7 @@ GO
 CREATE ROUTE $(bingo)_notify_route AUTHORIZATION dbo
 WITH SERVICE_NAME = N'$(bingo)_notify_service', ADDRESS = N'LOCAL';
 GO
-create event notification $(bingo)_logout_notify on server for
+create event notification $(bingo)_$(database)_logout_notify on server for
   AUDIT_LOGOUT, OBJECT_DELETED to service '$(bingo)_notify_service', 'current database'
 GO
 
