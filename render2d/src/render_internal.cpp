@@ -832,14 +832,14 @@ float getFreeAngle (const ObjArray<Vec2f>& pp) {
    angle.qsort(dblcmp, NULL);
    int j0 = -1;
    float maxAngle = -1;
-   for (int j = 0; j < angle.size(); ++j) {
-      float a = angle[(j + 1) % len] - angle[j];
+   for (int j = 0; j < angle.size() - 1; ++j) {
+      float a = angle[j + 1] - angle[j];
       if (a > maxAngle) {
          maxAngle = a;
          j0 = j;
       }
    }
-   return angle[j0] + maxAngle / 2;
+   return angle[j0] + maxAngle / 4;
 }
 
 int loopDist (int i, int j, int len) {
