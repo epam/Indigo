@@ -100,6 +100,7 @@ public class CellFrame extends javax.swing.JFrame {
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
    private void initComponents() {
 
+      jSplitPane1 = new javax.swing.JSplitPane();
       mol_view_panel = new com.ggasoftware.indigo.controls.MolViewPanel();
       property_scroll_panel = new javax.swing.JScrollPane();
       property_table = new javax.swing.JTable();
@@ -112,16 +113,22 @@ public class CellFrame extends javax.swing.JFrame {
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+      jSplitPane1.setBorder(null);
+      jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+      jSplitPane1.setResizeWeight(0.8);
+
       javax.swing.GroupLayout mol_view_panelLayout = new javax.swing.GroupLayout(mol_view_panel);
       mol_view_panel.setLayout(mol_view_panelLayout);
       mol_view_panelLayout.setHorizontalGroup(
          mol_view_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 330, Short.MAX_VALUE)
+         .addGap(0, 500, Short.MAX_VALUE)
       );
       mol_view_panelLayout.setVerticalGroup(
          mol_view_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 291, Short.MAX_VALUE)
+         .addGap(0, 184, Short.MAX_VALUE)
       );
+
+      jSplitPane1.setTopComponent(mol_view_panel);
 
       property_scroll_panel.setBorder(null);
 
@@ -149,6 +156,8 @@ public class CellFrame extends javax.swing.JFrame {
          }
       });
       property_scroll_panel.setViewportView(property_table);
+
+      jSplitPane1.setBottomComponent(property_scroll_panel);
 
       file_menu.setText("File");
 
@@ -188,15 +197,11 @@ public class CellFrame extends javax.swing.JFrame {
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(mol_view_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-         .addComponent(property_scroll_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+         .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addComponent(mol_view_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(property_scroll_panel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+         .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
       );
 
       pack();
@@ -232,6 +237,7 @@ public class CellFrame extends javax.swing.JFrame {
    private javax.swing.JMenu edit_menu;
    private javax.swing.JMenuItem exit_mi;
    private javax.swing.JMenu file_menu;
+   private javax.swing.JSplitPane jSplitPane1;
    private javax.swing.JMenuItem layout_mi;
    private javax.swing.JMenuBar menu_bar;
    private com.ggasoftware.indigo.controls.MolViewPanel mol_view_panel;

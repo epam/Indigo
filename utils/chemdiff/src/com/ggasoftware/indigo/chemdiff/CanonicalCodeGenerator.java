@@ -8,15 +8,20 @@ public class CanonicalCodeGenerator implements Callback {
 
    private volatile CompareOptions _compare_options;
    private Indigo _indigo;
+   private IndigoObject _charge_patten;
 
    public CanonicalCodeGenerator(Indigo indigo, CompareOptions compare_options)
    {
       this._compare_options = compare_options;
-      this._indigo = indigo;
    }
 
-   static private int _unseparateCharges (IndigoObject mol)
+   private int _unseparateCharges (IndigoObject mol)
    {
+      // At first check if charge configutation exists
+      IndigoObject matcher = _indigo.substructureMatcher(mol);
+      if (matcher.match(_charge_patten) == null)
+         return 0;
+      
       int cnt = 0, old_cnt;
 
       do
@@ -29,7 +34,7 @@ public class CanonicalCodeGenerator implements Callback {
             IndigoObject source = bond.source();
             IndigoObject destination = bond.destination();
 
-            if (source.degree() > 1 && destination.degree() < 1)
+            if (source.degree() > 1 && destination.degree() > 1)
                continue;
 
             int order = bond.bondOrder();
@@ -74,6 +79,7 @@ public class CanonicalCodeGenerator implements Callback {
    public void setIndigo( Indigo indigo )
    {
       this._indigo = indigo;
+      _charge_patten = indigo.loadSmarts("[#6,#7,#8,#15,#16;+]-,=[#6,#7,#8,#15,#16;-]");
    }
 
    public synchronized String generate( Object object )

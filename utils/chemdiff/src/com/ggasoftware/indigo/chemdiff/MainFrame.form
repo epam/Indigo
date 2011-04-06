@@ -72,7 +72,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="save_same_check">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Save duplicate molecules"/>
+                <Property name="text" type="java.lang.String" value="Merge duplicate molecules"/>
                 <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
                   <Color id="Default Cursor"/>
                 </Property>
@@ -94,6 +94,14 @@
             <Property name="text" type="java.lang.String" value="Help"/>
           </Properties>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="online_help">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Online Help"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="online_helpActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="about_mi">
               <Properties>
                 <Property name="text" type="java.lang.String" value="About"/>

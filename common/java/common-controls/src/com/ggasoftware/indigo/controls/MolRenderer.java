@@ -79,31 +79,22 @@ public class MolRenderer extends JPanel
         indigo.setOption("render-image-size", cell_w, cell_h);
         byte[] bytes = null;
 
-        Boolean valid = false;
-        try
-        {
-           //indigo_obj.canonicalSmiles();
-           valid = true;
-        }
-        catch ( Exception ex )
-        {
-        }
-
-        bytes = indigo_renderer.renderToBuffer(indigo_obj.clone());
-
-        System.out.print("Render: " + call_count + "\n");
-        call_count++;
-
-        ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
         try {
-           synchronized (ImageIO.class) {
+           // Trick to avoid parallel rendering (should be fixed)
+           synchronized (MolRenderer.class) {
+              bytes = indigo_renderer.renderToBuffer(indigo_obj.clone());
+
+              //System.out.print("Render: " + call_count + "\n");
+              call_count++;
+
+              ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
               image = ImageIO.read(new MemoryCacheImageInputStream(bytes_is));
            }
         } catch (IOException ex) {
            System.err.println(">>>>" + ex.getMessage() );
            ex.printStackTrace();
         }
-
+        /*
         if (!valid)
         {
            // Mark molecule somehow
@@ -111,6 +102,7 @@ public class MolRenderer extends JPanel
            gc.setColor(Color.red);
            gc.drawString("No canonical SMILES", 10, 10);
         }
+         */
 
         return this;
      }

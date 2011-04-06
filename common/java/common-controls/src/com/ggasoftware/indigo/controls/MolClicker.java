@@ -8,15 +8,12 @@ import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-public class MolClicker extends MouseAdapter {
-
-   private int _doubleClickDelay = 300;
-   private Timer _timer;
+public class MolClicker extends MouseAdapter
+{
    private Indigo _indigo;
    private IndigoRenderer _indigo_renderer;
    private RenderableObject _mol;
    private JPopupMenu _popup_menu;
-   private JTable _table;
    private boolean _is_reaction;
    MolSaver mol_saver;
 
@@ -24,25 +21,12 @@ public class MolClicker extends MouseAdapter {
                      JTable table, boolean is_reaction) {
       _indigo = cur_indigo;
       _indigo_renderer = cur_indigo_renderer;
-      _table = table;
       _is_reaction = is_reaction;
       _mol = null;
       mol_saver = new MolSaver(_indigo);
 
 
       _indigo.setOption("render-comment-font-size", "14");
-      
-      ActionListener actionListener = new ActionListener()
-        {
-
-         @Override
-         public void actionPerformed(ActionEvent e) {
-            _timer.stop();
-         }
-      };
-
-      _timer = new Timer(_doubleClickDelay, actionListener);
-      _timer.setRepeats(false);
 
       _popup_menu = new JPopupMenu();
       JMenuItem show_mi = new JMenuItem("Show in other window");
@@ -61,13 +45,11 @@ public class MolClicker extends MouseAdapter {
          fireSingleRightClick(me);
          return;
       }
-      if (_timer.isRunning()) {
-         _timer.stop();
-         fireSingleLeftClick(me);
-         fireDoubleLeftClick(me);
-      } else {
-         _timer.start();
-         fireSingleLeftClick(me);
+      if (me.getButton() == MouseEvent.BUTTON1)
+      {
+         if (me.getClickCount() == 2)
+            fireDoubleLeftClick(me);
+         return;
       }
    }
 
@@ -94,10 +76,6 @@ public class MolClicker extends MouseAdapter {
          return;
 
       _popup_menu.show(table, me.getX(), me.getY());
-   }
-
-   protected void fireSingleLeftClick(MouseEvent me)
-   {
    }
 
    protected void fireDoubleLeftClick(MouseEvent me) {
