@@ -69,6 +69,143 @@ void MoleculeLayout::_init ()
    }
 }
 
+void _collectCrossBonds (Array<int>& crossBonds, Array<bool>& crossBondOut, BaseMolecule& mol, const Array<int>& atoms)
+{
+   QS_DEF(Array<bool>, atomMask);
+   atomMask.clear_resize(mol.vertexEnd());
+   atomMask.fill(false);
+   for (int i = 0; i < atoms.size(); ++i) {
+      int aid = atoms[i];
+      atomMask[aid] = true;
+   }
+   crossBonds.clear();
+   crossBondOut.clear();
+   for (int i = 0; i < atoms.size(); ++i) {
+      int aid = atoms[i];
+      const Vertex& v = mol.getVertex(aid);
+      for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j)) {
+         int naid = v.neiVertex(j);
+         if (!atomMask[naid]) {
+            int bid = v.neiEdge(j);
+            crossBonds.push(bid);
+            crossBondOut.push(mol.getEdge(bid).beg == aid);
+         }
+      }
+   }
+}
+
+void _placeSGroupBracketsCrossBonds (Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, const Array<int>& crossBonds, const Array<bool>& crossBondOut, float bondLength)
+{
+   brackets.clear();
+   for (int i = 0; i < crossBonds.size(); ++i) {
+      int bid = crossBonds[i];
+      const Edge& edge =  mol.getEdge(bid);
+      int aidIn = edge.beg, aidOut = edge.end;
+      if (!crossBondOut[i]) {
+         int t;
+         __swap(aidIn, aidOut, t);
+      }
+      Vec2f p2dIn, p2dOut, d, n, b1, b2;
+      Vec2f::projectZ(p2dIn, mol.getAtomXyz(aidIn));
+      Vec2f::projectZ(p2dOut, mol.getAtomXyz(aidOut));
+      d.diff(p2dOut, p2dIn);
+      d.normalize();
+      n.copy(d);
+      n.rotate(1, 0);
+      b1.lineCombin2(p2dIn, 0.5, p2dOut, 0.5);
+      b2.copy(b1);
+      float factor = 0.5;
+      b1.addScaled(n, factor * bondLength);
+      b2.addScaled(n, -factor * bondLength);
+      Vec2f* const & bracket = brackets.push();
+      bracket[0].copy(b1);
+      bracket[1].copy(b2);
+   }
+}
+
+void _placeSGroupBracketsCrossBondSingle (Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, int bid, bool out, float bondLength)
+{
+   brackets.clear();
+   const Edge& edge =  mol.getEdge(bid);
+   int aidIn = edge.beg, aidOut = edge.end;
+   if (!out) {
+      int t;
+      __swap(aidIn, aidOut, t);
+   }
+
+   Vec2f p2dIn, p2dOut, d, n, b1, b2;
+   Vec2f::projectZ(p2dIn, mol.getAtomXyz(aidIn));
+   Vec2f::projectZ(p2dOut, mol.getAtomXyz(aidOut));
+   d.diff(p2dOut, p2dIn);
+   d.normalize();
+   n.copy(d);
+   n.rotate(1, 0);
+   Vec2f min, max, a, b;
+
+   for (int i = 0; i < atoms.size(); ++i) {
+      int aid = atoms[i];
+      const Vec3f& pos = mol.getAtomXyz(aid);
+      Vec2f p2d;
+      Vec2f::projectZ(p2d, pos);
+      p2d.sub(p2dIn);
+      p2d.set(Vec2f::dot(p2d, d), Vec2f::dot(p2d, n));
+      if (i == 0) {
+         min.copy(p2d);
+         max.copy(p2d);
+      } else {
+         min.min(p2d);
+         max.max(p2d);
+      }
+   }
+
+   b1.lineCombin(p2dIn, d, max.x + 0.3f * bondLength);
+   b2.copy(b1);
+   float factor = 0.5;
+   b1.addScaled(n, factor * bondLength);
+   b2.addScaled(n, -factor * bondLength);
+   Vec2f* const & bracket1 = brackets.push();
+   bracket1[0].copy(b1);
+   bracket1[1].copy(b2);
+
+   b1.lineCombin(p2dIn, d, min.x - 0.3f * bondLength);
+   b2.copy(b1);
+   b1.addScaled(n, -factor * bondLength);
+   b2.addScaled(n, factor * bondLength);
+   Vec2f* const & bracket2 = brackets.push();
+   bracket2[0].copy(b1);
+   bracket2[1].copy(b2);
+}
+
+void _placeSGroupBracketsHorizontal (Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, float bondLength)
+{
+   brackets.clear();
+   Vec2f min, max, a, b;
+   for (int i = 0; i < atoms.size(); ++i) {
+      int aid = atoms[i];
+      const Vec3f& pos = mol.getAtomXyz(aid);
+      Vec2f p2d;
+      Vec2f::projectZ(p2d, pos);
+      if (i == 0) {
+         min.copy(p2d);
+         max.copy(p2d);
+      } else {
+         min.min(p2d);
+         max.max(p2d);
+      }
+   }
+
+   float extent = 0.5f * bondLength;
+   min.sub(Vec2f(extent, extent));
+   max.add(Vec2f(extent, extent));
+
+   Vec2f* const & left = brackets.push();
+   left[0].set(min.x, min.y);
+   left[1].set(min.x, max.y);
+   Vec2f* const & right = brackets.push();
+   right[0].set(max.x, max.y);
+   right[1].set(max.x, min.y);
+}
+
 void MoleculeLayout::_make ()
 {
    _layout_graph.max_iterations = max_iterations;
@@ -102,6 +239,27 @@ void MoleculeLayout::_make ()
          _molecule.setAtomXyz(j, _molCollapsed.ref().getAtomXyz(i));
       }
       _molCollapsed.reset(NULL);
+   }
+
+   QS_DEF(Array<int>, crossBonds);
+   QS_DEF(Array<bool>, crossBondOut);
+   for (int i = _molecule.multiple_groups.begin(); i < _molecule.multiple_groups.end(); i = _molecule.multiple_groups.next(i)) {
+      BaseMolecule::MultipleGroup& sg = _molecule.multiple_groups[i];
+      _placeSGroupBracketsHorizontal (sg.brackets, _molecule, sg.atoms, bond_length);
+   }
+   for (int i = _molecule.repeating_units.begin(); i < _molecule.repeating_units.end(); i = _molecule.repeating_units.next(i)) {
+      BaseMolecule::RepeatingUnit& sg = _molecule.repeating_units[i];
+
+      crossBonds.clear();
+      crossBondOut.clear();
+      _collectCrossBonds(crossBonds, crossBondOut, _molecule, sg.atoms);
+      if (crossBonds.size() > 1) {
+         _placeSGroupBracketsCrossBonds (sg.brackets, _molecule, sg.atoms, crossBonds, crossBondOut, bond_length);
+      } else if (crossBonds.size() == 1) {
+         _placeSGroupBracketsCrossBondSingle (sg.brackets, _molecule, sg.atoms, crossBonds[0], crossBondOut[0], bond_length);
+      } else {
+         _placeSGroupBracketsHorizontal (sg.brackets, _molecule, sg.atoms, bond_length);
+      }
    }
 
    _molecule.have_xyz = true;
