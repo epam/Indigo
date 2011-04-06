@@ -245,6 +245,13 @@ void indigoRenderSetCommentColor (float r, float g, float b)
    rp.rOpt.commentColor.set(r, g, b);
 }
 
+void indigoRenderSetDataSGroupColor (float r, float g, float b)
+{
+   CHECKRGB(r, g, b);
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.dataGroupColor.set(r, g, b);
+}
+
 void indigoRenderSetCenterDoubleBondWhenStereoAdjacent (int enabled)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -508,6 +515,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerColor("render-highlight-color", indigoRenderSetHighlightColor);
    mgr.setOptionHandlerColor("render-aam-color", indigoRenderSetAAMColor);
    mgr.setOptionHandlerColor("render-comment-color", indigoRenderSetCommentColor);
+   mgr.setOptionHandlerColor("render-data-s-group-color", indigoRenderSetDataSGroupColor);
 
    mgr.setOptionHandlerXY("render-image-size", indigoRenderSetImageSize);
    mgr.setOptionHandlerXY("render-hdc-offset", indigoRenderSetHDCOffset);

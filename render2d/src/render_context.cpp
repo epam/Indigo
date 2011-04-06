@@ -415,6 +415,8 @@ void RenderContext::drawTextItemText (const TextItem& ti)
    Vec3f color;
    if (ti.ritype == RenderItem::RIT_AAM)
       color.copy(opt.aamColor);
+   else if (ti.ritype == RenderItem::RIT_DATASGROUP)
+      color.copy(opt.dataGroupColor);
    else
    {
       getColorVec(color, ti.color);

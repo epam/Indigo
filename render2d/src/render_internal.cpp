@@ -158,6 +158,7 @@ void RenderOptions::clear()
    highlightedLabelsVisible = false;
    implHVisible = true;
    commentColor.set(0,0,0);
+   dataGroupColor.set(0,0,0);
    mode = MODE_NONE;
    hdc = 0;
    output = NULL;
@@ -546,7 +547,7 @@ void MoleculeRenderInternal::_initDataSGroups()
    for (int i = bm.data_sgroups.begin(); i < bm.data_sgroups.end(); i = bm.data_sgroups.next(i)) {
       SGroup& sg = _data.sgroups.push();
       const BaseMolecule::DataSGroup& group = bm.data_sgroups[i];
-      int tii = _pushTextItem(sg, RenderItem::RIT_SGROUP);
+      int tii = _pushTextItem(sg, RenderItem::RIT_DATASGROUP);
       TextItem& ti = _data.textitems[tii];
       ti.text.copy(group.data);
       ti.text.push(0);

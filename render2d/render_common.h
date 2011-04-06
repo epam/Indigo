@@ -69,7 +69,8 @@ struct RenderItem {
       RIT_ATTACHMENTPOINT,
       RIT_ATOMID,
       RIT_TOPOLOGY,
-      RIT_SGROUP
+      RIT_SGROUP,
+      RIT_DATASGROUP
    };
 
    RenderItem();
@@ -363,6 +364,7 @@ public:
    float commentFontFactor;
    float titleFontFactor;
    Vec3f commentColor;
+   Vec3f dataGroupColor;
    LABEL_MODE labelMode;
    bool highlightedLabelsVisible;
    bool implHVisible;
