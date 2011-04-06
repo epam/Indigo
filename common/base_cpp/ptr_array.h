@@ -78,8 +78,9 @@ public:
    int size () const { return _ptrarray.size(); }
 
    void resize (const int newsize)
-   {                             
-      for (int i = newsize; i < size(); i++)
+   {
+      int i, oldsize = _ptrarray.size();
+      for (int i = newsize; i < oldsize; i++)
       {
          if (_ptrarray[i] == 0)
             continue;
@@ -88,6 +89,8 @@ public:
          _ptrarray[i] = 0;         
       }
       _ptrarray.resize(newsize);
+      for (i = oldsize; i < newsize; i++)
+         _ptrarray[i] = 0;
    }
 
    void remove (int idx)
