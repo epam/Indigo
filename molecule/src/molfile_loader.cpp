@@ -1145,6 +1145,7 @@ void MolfileLoader::_readCtab2000 ()
                      ru.connectivity = BaseMolecule::RepeatingUnit::EITHER;
                }
             }
+            _scanner.skipLine();
          }
          else
             _scanner.skipLine();
