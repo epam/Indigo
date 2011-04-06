@@ -209,8 +209,6 @@ class Indigo:
     Indigo._lib.indigoToBuffer.argtypes = [c_int, POINTER(POINTER(c_char)), POINTER(c_int)]
     Indigo._lib.indigoSimilarity.restype = c_float
     Indigo._lib.indigoSimilarity.argtypes = [c_int, c_int, c_char_p]
-    Indigo._lib.indigoExactMatch.restype = c_int
-    Indigo._lib.indigoExactMatch.argtypes = [c_int, c_int]
     Indigo._lib.indigoDbgBreakpoint.restype = None
     Indigo._lib.indigoDbgBreakpoint.argtypes = None
     
@@ -245,8 +243,12 @@ class Indigo:
     self.iterateSmilesFile = self._static_obj_string(self._lib.indigoIterateSmilesFile)
     self.iterateCMLFile = self._static_obj_string(self._lib.indigoIterateCMLFile)
 
-    self.substructureMatcher = self._static_obj_obj_ostring(self._lib.indigoSubstructureMatcher)
-
+    self.substructureMatcher = self._static_obj_obj_string(self._lib.indigoSubstructureMatcher)
+    self.exactMatch = self._static_obj_obj_obj_string(self._lib.indigoExactMatch)
+    self.setTautomerRule = self._static_void_int_string_string(self._lib.indigoSetTautomerRule)
+    self.removeTautomerRule = self._static_void_int(self._lib.indigoRemoveTautomerRule)
+    self.clearTautomerRules = self._static_void(self._lib.indigoClearTautomerRules)
+    
     self.extractCommonScaffold = self._static_obj_array_string(self._lib.indigoExtractCommonScaffold)
     self.decomposeMolecules = self._static_obj_obj_array(self._lib.indigoDecomposeMolecules)
     self.reactionProductEnumerate = self._static_obj_obj_array(self._lib.indigoReactionProductEnumerate)
@@ -466,6 +468,37 @@ class Indigo:
       return Indigo.IndigoObject(self, res)
     return self._make_wrapper_func(newfunc, func)
 
+  def _static_void (self, func):
+    func.restype = c_int
+    func.argtypes = []
+    def newfunc ():
+      self._setSID()
+      self._checkResult(func())
+    return self._make_wrapper_func(newfunc, func)
+
+  def _static_void_int (self, func):
+    func.restype = c_int
+    func.argtypes = []
+    def newfunc (param):
+      self._setSID()
+      self._checkResult(func(param))
+    return self._make_wrapper_func(newfunc, func)
+
+  def _static_void_int_string_string (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_char_p, c_char_p]
+    def newfunc (param, str1 = None, str2 = None):
+      self._setSID()
+      if str1 is None:
+        str1 = ''
+      if str2 is None:
+        str2 = ''
+      res = func(param, str1, str2)
+      if res == 0:
+        return None
+      return Indigo.IndigoObject(self, self._checkResult(res))
+    return self._make_wrapper_func(newfunc, func)
+  
   def _static_int (self, func):
     func.restype = c_int
     func.argtypes = []
@@ -493,7 +526,7 @@ class Indigo:
       return Indigo.IndigoObject(self, res)
     return self._make_wrapper_func(newfunc, func)
 
-  def _static_obj_obj_ostring (self, func):
+  def _static_obj_obj_string (self, func):
     func.restype = c_int
     func.argtypes = [c_int, c_char_p]
     def newfunc (obj, string = None):
@@ -506,14 +539,14 @@ class Indigo:
       return Indigo.IndigoObject(self, self._checkResult(res))
     return self._make_wrapper_func(newfunc, func)
 
-  def _static_obj_obj_string (self, func):
+  def _static_obj_obj_obj_string (self, func):
     func.restype = c_int
-    func.argtypes = [c_int, c_char_p]
-    def newfunc (obj, string):
+    func.argtypes = [c_int, c_int, c_char_p]
+    def newfunc (obj1, obj2, string = None):
       self._setSID()
       if string is None:
-         raise IndigoException("Second argument must be specified. Null was passed.")
-      res = func(obj.id, string)
+        string = ''
+      res = func(obj1.id, obj2.id, string)
       if res == 0:
         return None
       return Indigo.IndigoObject(self, self._checkResult(res))
@@ -525,9 +558,9 @@ class Indigo:
     def newfunc (string1, string2):
       self._setSID()
       if string1 is None:
-         raise IndigoException("Second argument must be specified. Null was passed.")
+        string1 = ''
       if string2 is None:
-         raise IndigoException("Third argument must be specified. Null was passed.")
+        string2 = ''
       res = func(string1, string2)
       if res == 0:
         return None
@@ -868,11 +901,6 @@ class Indigo:
       metrics = ''
     return self._checkResultFloat(Indigo._lib.indigoSimilarity(item1.id, item2.id, metrics))
 
-  def exactMatch (self, item1, item2):
-    self._setSID()
-    res = self._checkResult(Indigo._lib.indigoExactMatch(item1.id, item2.id))
-    return res == 1
-
   def writeBuffer (self):
     id = self._checkResult(Indigo._lib.indigoWriteBuffer())
     return Indigo.IndigoObject(self, id)
@@ -898,7 +926,7 @@ class Indigo:
          type(value3).__name__ == 'float':
       self._checkResult(Indigo._lib.indigoSetOptionColor(option, value1, value2, value3))
     else:
-      raise IndigoException("bad options")
+      raise IndigoException("bad option")
 
   def _checkResult (self, result):
     if result < 0:

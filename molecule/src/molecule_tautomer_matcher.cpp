@@ -132,6 +132,11 @@ bool MoleculeTautomerMatcher::find ()
    return found;
 }
 
+const int * MoleculeTautomerMatcher::getQueryMapping ()
+{
+   return _context->core_1.ptr();
+}
+
 void MoleculeTautomerMatcher::parseConditions (const char *tautomer_text, int &rules, bool &force_hydrogens, bool &ring_chain)
 {
    if (tautomer_text == 0)

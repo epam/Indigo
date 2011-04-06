@@ -18,8 +18,130 @@
 #include "reaction/reaction_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "reaction/reaction_exact_matcher.h"
+#include "molecule/molecule_tautomer_matcher.h"
+#include "base_cpp/scanner.h"
+#include "indigo_mapping.h"
+#include "molecule/elements.h"
 
-CEXPORT int indigoExactMatch (int handler1, int handler2)
+void _indigoGetTauCondition (const char *list_ptr, int &aromaticity, Array<int> &label_list)
+{
+   if (list_ptr == 0 || *list_ptr == 0)
+      throw IndigoError("null or empty tautomer rule description is not allowed");
+
+   if (isdigit(*list_ptr))
+   {
+      if (*list_ptr == '1')
+         aromaticity = 1;
+      else if (*list_ptr == '0')
+         aromaticity = 0;
+      else
+         throw IndigoError("bad tautomer rule format");
+      list_ptr++;
+   } else {
+      aromaticity = -1;
+   }
+
+   label_list.clear();
+
+   QS_DEF(Array<char>, buf);
+   buf.clear();
+
+   while (*list_ptr != 0)
+   {
+      if (isalpha((unsigned)*list_ptr))
+         buf.push(*list_ptr);
+      else if (*list_ptr == ',')
+      {
+         buf.push(0);
+         label_list.push(Element::fromString(buf.ptr()));
+         buf.clear();
+      } else
+         throw IndigoError("bad label list format in the tautomer rule");
+      list_ptr++;
+   }
+
+   buf.push(0);
+   label_list.push(Element::fromString(buf.ptr()));
+}
+
+CEXPORT int indigoSetTautomerRule (int n, const char *beg, const char *end)
+{
+   INDIGO_BEGIN
+   {
+      if (n < 1 || n >= 32)
+         throw IndigoError("tautomer rule index %d is out of range", n);
+
+      self.tautomer_rules.expand(n);
+      
+      if (self.tautomer_rules[n - 1] != 0)
+      {
+         delete self.tautomer_rules[n - 1];
+         self.tautomer_rules[n - 1] = 0;
+      }
+
+      AutoPtr<TautomerRule> rule(new TautomerRule());
+
+      _indigoGetTauCondition(beg, rule->aromaticity1, rule->list1);
+      _indigoGetTauCondition(end, rule->aromaticity2, rule->list2);
+
+      self.tautomer_rules.set(n - 1, rule.release());
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoClearTautomerRules ()
+{
+   INDIGO_BEGIN
+   {
+      self.tautomer_rules.clear();
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoRemoveTautomerRule (int n)
+{
+   INDIGO_BEGIN
+   {
+      self.tautomer_rules.remove(n - 1);
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+struct IndigoTautomerParams
+{
+   int conditions;
+   bool force_hydrogens;
+   bool ring_chain;
+};
+
+static bool _indigoParseTautomerFlags (const char *flags, IndigoTautomerParams &params)
+{
+   if (flags == 0)
+      return false;
+
+   BufferScanner scanner(flags);
+
+   scanner.skipSpace();
+
+   QS_DEF(Array<char>, word);
+
+   if (scanner.isEOF())
+      return false;
+
+   scanner.readWord(word, 0);
+
+   if (strcasecmp(word.ptr(), "TAU") != 0)
+      return false;
+
+   MoleculeTautomerMatcher::parseConditions(flags, params.conditions, params.force_hydrogens, params.ring_chain);
+
+   return true;
+}
+
+CEXPORT int indigoExactMatch (int handler1, int handler2, const char *flags)
 {
    INDIGO_BEGIN
    {
@@ -30,12 +152,32 @@ CEXPORT int indigoExactMatch (int handler1, int handler2)
       {
          Molecule &mol1 = obj1.getMolecule();
          Molecule &mol2 = obj2.getMolecule();
+         IndigoTautomerParams params;
+         AutoPtr<IndigoMapping> mapping(new IndigoMapping(mol1, mol2));
+
+         if (_indigoParseTautomerFlags(flags, params))
+         {
+            MoleculeTautomerMatcher matcher(mol2, false);
+
+            matcher.setRulesList(&self.tautomer_rules);
+            matcher.setRules(params.conditions, params.force_hydrogens, params.ring_chain);
+            matcher.setQuery(mol1);
+
+            if (!matcher.find())
+               return 0;
+
+            mapping->mapping.copy(matcher.getQueryMapping(), mol1.vertexEnd());
+            return self.addObject(mapping.release());
+         }
 
          MoleculeExactMatcher matcher(mol1, mol2);
-         matcher.flags = MoleculeExactMatcher::CONDITION_ALL;
+         MoleculeExactMatcher::parseConditions(flags, matcher.flags, matcher.rms_threshold);
+
          if (!matcher.find())
             return 0;
-         return 1;
+         
+         mapping->mapping.copy(matcher.getQueryMapping(), mol1.vertexEnd());
+         return self.addObject(mapping.release());
       }
       else if (IndigoBaseReaction::is(obj1))
       {

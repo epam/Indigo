@@ -40,6 +40,8 @@ public:
 
    bool find ();
 
+   const int * getQueryMapping ();
+
    static void parseConditions (const char *tautomer_text, int &rules, bool &force_hydrogens, bool &ring_chain);
 
    static int countNonHydrogens (BaseMolecule &molecule);

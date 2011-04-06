@@ -27,6 +27,7 @@
 
 #include "option_manager.h"
 #include "molecule/molecule_fingerprint.h"
+#include "molecule/molecule_tautomer.h"
 
 using namespace indigo;
 
@@ -216,8 +217,8 @@ public:
    float tmp_xyz[3];
 
    ProductEnumeratorParams rpe_params;
-
    MoleculeFingerprintParameters fp_params;
+   PtrArray<TautomerRule> tautomer_rules;
    
    bool ignore_stereochemistry_errors;
    bool ignore_noncritical_query_features;

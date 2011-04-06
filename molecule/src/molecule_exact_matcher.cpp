@@ -95,6 +95,11 @@ bool MoleculeExactMatcher::find ()
    return false;
 }
 
+const int * MoleculeExactMatcher::getQueryMapping ()
+{
+   return _ee.getSubgraphMapping();
+}
+
 void MoleculeExactMatcher::_collectConnectedComponentsInfo ()
 {
    // Target vertices filter initialization
@@ -219,12 +224,19 @@ void MoleculeExactMatcher::parseConditions (const char *params, int &flags, floa
 
    QS_DEF(Array<char>, word);
 
+   scanner.skipSpace();
+   if (scanner.isEOF())
+   {
+      flags = CONDITION_ALL;
+      return;
+   }
+
    while (!scanner.isEOF())
    {
       int i;
 
-      scanner.skipSpace();
       scanner.readWord(word, 0);
+      scanner.skipSpace();
 
       if (word.size() < 2)
          throw Error("internal error on token reading");

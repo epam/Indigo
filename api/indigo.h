@@ -451,8 +451,25 @@ CEXPORT int indigoLayout (int object);
 
 CEXPORT const char * indigoSmiles (int item);
 
-// Returns 1 if there is an exact match
-CEXPORT int indigoExactMatch (int item1, int item2);
+// Returns a "mapping" if there is an exact match, zero otherwise
+// The flags string consists of space-separated flags.
+// The more flags, the more restrictive matching is done.
+// "ELE": Distribution of electrons: bond types, atom charges, radicals, valences
+// "MAS": Atom isotopes
+// "STE": Stereochemistry: chiral centers, stereogroups, and cis-trans bonds
+// "FRA": Connected fragments: disallows match of separate ions in salts
+// "ALL": All of the above
+// By default (with null or empty flags string) all flags are on.
+CEXPORT int indigoExactMatch (int item1, int item2, const char *flags);
+
+// "beg" and "end" refer to the two ends of the tautomeric chain. Allowed
+// elements are separated by commas. '1' at the beginning means an aromatic
+// atom, while '0' means an aliphatic atom.
+CEXPORT int indigoSetTautomerRule (int id, const char *beg, const char *end);
+
+CEXPORT int indigoRemoveTautomerRule (int id);
+
+CEXPORT int indigoClearTautomerRules ();
 
 CEXPORT const char * indigoName (int handle);
 CEXPORT int indigoSetName (int handle, const char *name);

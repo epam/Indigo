@@ -42,6 +42,8 @@ public:
 
    bool find ();
 
+   const int * getQueryMapping ();
+
    static void parseConditions (const char *params, int &flags, float &rms_threshold);
 
    static bool matchAtoms (BaseMolecule& query, BaseMolecule& target, int sub_idx, int super_idx, int flags);
