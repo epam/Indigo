@@ -17,17 +17,28 @@
 
 #include "indigo_internal.h"
 #include "molecule/molecule_substructure_matcher.h"
+#include "molecule/molecule_tautomer_matcher.h"
+
+class IndigoQueryMolecule;
 
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable:4251)
 #endif
 
+struct IndigoTautomerParams
+{
+   int conditions;
+   bool force_hydrogens;
+   bool ring_chain;
+};
+
 // Iterator for all possible matches
 class IndigoMoleculeSubstructureMatchIter : public IndigoObject
 {
 public:
-   IndigoMoleculeSubstructureMatchIter (Molecule &target, QueryMolecule &query, Molecule &original_target);
+   IndigoMoleculeSubstructureMatchIter (Molecule &target, QueryMolecule &query,
+           Molecule &original_target, bool resonance);
 
    virtual ~IndigoMoleculeSubstructureMatchIter ();
 
@@ -40,6 +51,7 @@ public:
 
    MoleculeSubstructureMatcher matcher;
    MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
+
    Molecule &target, &original_target;
    QueryMolecule &query;
    int max_embeddings;
@@ -55,7 +67,15 @@ private:
 class DLLEXPORT IndigoMoleculeSubstructureMatcher : public IndigoObject
 {
 public:
-   IndigoMoleculeSubstructureMatcher (Molecule &target);
+
+   enum
+   {
+      NORMAL = 1,
+      RESONANCE = 2,
+      TAUTOMER = 3
+   };
+
+   IndigoMoleculeSubstructureMatcher (Molecule &target, int mode);
 
    virtual ~IndigoMoleculeSubstructureMatcher ();
 
@@ -63,6 +83,7 @@ public:
       bool embedding_edges_uniqueness, bool find_unique_embeddings, 
       bool for_iteration, int max_embeddings);
 
+   static IndigoMoleculeSubstructureMatcher & cast (IndigoObject &obj);
    void ignoreAtom (int atom_index);
    void unignoreAtom (int atom_index);
    void unignoreAllAtoms ();
@@ -71,7 +92,17 @@ public:
 
    Molecule &target;
 
+   Obj<MoleculeTautomerMatcher> tau_matcher;
+   IndigoTautomerParams tau_params;
+   bool findTautomerMatch (QueryMolecule &query,
+         PtrArray<TautomerRule> &tautomer_rules, Array<int> &mapping_out);
+
+   IndigoMoleculeSubstructureMatchIter * getMatchIterator (Indigo &self, int query,
+                    bool for_iteration, int max_embeddings);
+
+   int mode; // NORMAL, TAUTOMER, or RESONANCE
 private:
+
    Molecule _target_arom_h_unfolded, _target_arom;
    Array<int> _mapping_arom_h_unfolded, _mapping_arom, _ignored_atoms;
    bool _arom_h_unfolded_prepared, _arom_prepared, _aromatized;
