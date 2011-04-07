@@ -222,12 +222,11 @@ bool IndigoReactionIter::hasNext ()
 
 IndigoReaction * IndigoReaction::cloneFrom (IndigoObject & obj)
 {
-   QS_DEF(ObjArray< Array<int> >, mappings);
    Reaction &rxn = obj.getReaction();
 
    AutoPtr<IndigoReaction> rxnptr;
    rxnptr.reset(new IndigoReaction());
-   rxnptr->rxn.clone(rxn, 0, &mappings);
+   rxnptr->rxn.clone(rxn, 0, 0, 0);
 
    RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
    if (props != 0)
@@ -237,12 +236,11 @@ IndigoReaction * IndigoReaction::cloneFrom (IndigoObject & obj)
 
 IndigoQueryReaction * IndigoQueryReaction::cloneFrom (IndigoObject & obj)
 {
-   QS_DEF(ObjArray< Array<int> >, mappings);
    QueryReaction &rxn = obj.getQueryReaction();
 
    AutoPtr<IndigoQueryReaction> rxnptr;
    rxnptr.reset(new IndigoQueryReaction());
-   rxnptr->rxn.clone(rxn, 0, &mappings);
+   rxnptr->rxn.clone(rxn, 0, 0, 0);
 
    RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
    if (props != 0)

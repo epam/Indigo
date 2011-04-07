@@ -30,16 +30,17 @@ void ReactionAutomapper::automap(int mode) {
    AutoPtr<BaseReaction> reaction_copy;
 
    QS_DEF(ObjArray< Array<int> >, mappings);
+   QS_DEF(Array<int>, mol_mapping);
 
    if (mode != AAM_REGEN_DISCARD) 
       _checkAtomMapping(true, false, false);
    
    reaction_copy.reset(_reaction.neu());
-   reaction_copy->clone(_reaction, &mappings, 0);
+   reaction_copy->clone(_reaction, &mol_mapping, &mappings, 0);
    reaction_copy->aromatize();
 
    _createReactionMap(mode, reaction_copy.ref());
-   _setupReactionMap(mode, reaction_copy.ref(), mappings);
+   _setupReactionMap(mode, reaction_copy.ref(), mol_mapping, mappings);
 
    _considerDissociation();
    _considerDimerization();
@@ -276,7 +277,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
 
    BaseReaction &reaction_copy = reaction_copy_ptr.ref();
 
-   reaction_copy.clone(_reaction, 0, &react_invmap);
+   reaction_copy.clone(_reaction, 0, 0, &react_invmap);
    reaction_copy.aromatize();
 
    for (int mol_idx = _reaction.begin(); mol_idx != _reaction.end(); mol_idx = _reaction.next(mol_idx)) {
@@ -439,36 +440,36 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
 
 }
 
-void ReactionAutomapper::_setupReactionMap(int mode, BaseReaction& reaction_copy, ObjArray< Array<int> >& mappings){
+void ReactionAutomapper::_setupReactionMap(int mode, BaseReaction& reaction_copy, Array<int> &mol_mapping, ObjArray< Array<int> >& mappings){
    int i,j,v;
    if(mode == AAM_REGEN_KEEP)
       _usedVertices.zerofill();
    for (i = _reaction.productBegin(); i < _reaction.productEnd(); i = _reaction.productNext(i)){
-      for (j = 0; j < reaction_copy.getAAMArray(i).size(); j++){
-         int old_index = mappings[i][j];
-         v = reaction_copy.getAAM(i, j);
+      int ii = mol_mapping[i];
+      for (j = 0; j < _reaction.getAAMArray(i).size(); j++){
+         v = reaction_copy.getAAM(ii, mappings[i][j]);
          if(mode == AAM_REGEN_DISCARD)
-            _reaction.getAAMArray(i)[old_index] = v;
+            _reaction.getAAMArray(i)[j] = v;
 
          if(mode == AAM_REGEN_ALTER)
-            _reaction.getAAMArray(i)[old_index] = v;
+            _reaction.getAAMArray(i)[j] = v;
 
          if(mode == AAM_REGEN_KEEP && _reaction.getAAM(i, j) == 0){
-            _reaction.getAAMArray(i)[old_index] = v;
+            _reaction.getAAMArray(i)[j] = v;
             _usedVertices[v] = 1;
          }
       }
    }
    for (i = _reaction.reactantBegin(); i < _reaction.reactantEnd(); i = _reaction.reactantNext(i)){
+      int ii = mol_mapping[i];
       for (j = 0; j < _reaction.getAAMArray(i).size(); j++){
-         int old_index = mappings[i][j];
-         v = reaction_copy.getAAM(i, j);
+         v = reaction_copy.getAAM(ii, mappings[i][j]);
          if(mode == AAM_REGEN_DISCARD)
-            _reaction.getAAMArray(i)[old_index] = v*_usedVertices[v];
+            _reaction.getAAMArray(i)[j] = v*_usedVertices[v];
          if(mode == AAM_REGEN_ALTER)
-            _reaction.getAAMArray(i)[old_index] = v*_usedVertices[v];
+            _reaction.getAAMArray(i)[j] = v*_usedVertices[v];
          if(mode == AAM_REGEN_KEEP && _reaction.getAAM(i, j) == 0)
-            _reaction.getAAMArray(i)[old_index] = v*_usedVertices[v];
+            _reaction.getAAMArray(i)[j] = v*_usedVertices[v];
       }
    }
 }
@@ -542,7 +543,7 @@ void ReactionAutomapper::_considerDimerization() {
 
    BaseReaction &reaction_copy = reaction_copy_ptr.ref();
 
-   reaction_copy.clone(_reaction, 0, &inv_mappings);
+   reaction_copy.clone(_reaction, 0, 0, &inv_mappings);
 
    for(int prod = reaction_copy.productBegin(); prod < reaction_copy.productEnd(); prod = reaction_copy.productNext(prod)) {
       BaseMolecule& pmol = reaction_copy.getBaseMolecule(prod);
@@ -1229,5 +1230,3 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
    }
    return result;
 }
-
-

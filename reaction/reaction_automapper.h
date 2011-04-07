@@ -97,7 +97,7 @@ private:
    bool _checkAtomMapping(bool change_rc, bool change_aam, bool change_rc_null);
 
    //arranges all maps to AAM
-   void _setupReactionMap(int mode, BaseReaction& reaction, ObjArray< Array<int> >& mappings);
+   void _setupReactionMap(int mode, BaseReaction& reaction, Array<int> &mol_mapping, ObjArray< Array<int> >& mappings);
    //takes account of possibility for molecule dissociation 
    void _considerDissociation();
 

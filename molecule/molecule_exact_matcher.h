@@ -35,7 +35,7 @@ public:
       CONDITION_STEREO    = 0x0004, // tetrahedral and cis-trans configurations must match
       CONDITION_FRAGMENTS = 0x0008, // query fragments count must be equal to target fragments count
       CONDITION_ALL       = 0x000F, // all but 3D
-      CONDITION_3D        = 0x0100  // atom positions must match up to affine+scale transformation
+      CONDITION_3D        = 0x0010  // atom positions must match up to affine+scale transformation
    };
 
    MoleculeExactMatcher (BaseMolecule &query, BaseMolecule &target);

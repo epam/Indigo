@@ -31,7 +31,6 @@
 #include "reaction/icr_loader.h"
 #include "indigo_reaction.h"
 #include "indigo_mapping.h"
-#include "indigo_match.h"
 #include "indigo_savers.h"
 
 #define CHECKRGB(r, g, b) \
@@ -516,94 +515,6 @@ CEXPORT int indigoUnserialize (char *buf, int size)
       }
       else
          throw IndigoError("indigoUnserialize(): format not recognized");
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoMapAtom (int handle, int atom)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(handle);
-
-      if (obj.type == IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
-      {
-         IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
-
-         IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
-         match.query.getAtom(ia.idx); // will throw an exception if the atom index is invalid
-         int idx = match.query_atom_mapping[ia.idx];
-         if (idx < 0)
-            return 0;
-
-         return self.addObject(new IndigoAtom(match.target, idx));
-      }
-      if (obj.type == IndigoObject::MAPPING)
-      {
-         IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
-
-         IndigoMapping &mapping = (IndigoMapping &)obj;
-
-         int mapped = mapping.mapping[ia.idx];
-         if (mapped < 0)
-            return 0;
-         return self.addObject(new IndigoAtom(mapping.to, mapped));
-      }
-
-      throw IndigoError("indigoMapAtom(): not applicable to %s", obj.debugInfo());
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoMapBond (int handle, int bond)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(handle);
-
-      if (obj.type == IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
-      {
-         IndigoBond &ib = IndigoBond::cast(self.getObject(bond));
-
-         IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
-
-         const Edge &edge = match.query.getEdge(ib.idx);
-
-         int beg = match.query_atom_mapping[edge.beg];
-         int end = match.query_atom_mapping[edge.end];
-         
-         if (beg < 0 || end < 0)
-            return 0;
-
-         int idx = match.target.findEdgeIndex(beg, end);
-
-         if (idx < 0)
-            return 0;
-
-         return self.addObject(new IndigoBond(match.target, idx));
-      }
-      if (obj.type == IndigoObject::MAPPING)
-      {
-         IndigoBond &ib = IndigoBond::cast(self.getObject(bond));
-         IndigoMapping &mapping = (IndigoMapping &)obj;
-
-         const Edge &edge = ib.mol.getEdge(ib.idx);
-
-         int beg = mapping.mapping[edge.beg];
-         int end = mapping.mapping[edge.end];
-
-         if (beg < 0 || end < 0)
-            return 0;
-
-         int idx = mapping.to.findEdgeIndex(beg, end);
-
-         if (idx < 0)
-            return 0;
-
-         return self.addObject(new IndigoAtom(mapping.to, idx));
-      }
-
-      throw IndigoError("indigoMapBond(): not applicable to %s", obj.debugInfo());
    }
    INDIGO_END(-1)
 }

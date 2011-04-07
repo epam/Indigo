@@ -25,6 +25,16 @@ class Reaction;
 class ReactionExactMatcher : public BaseReactionSubstructureMatcher
 {
 public:
+
+   enum
+   {
+      // start from 0x0100 not to conflict with MoleculExactMatcher
+      CONDITION_AAM              = 0x0100, // atom-to-atom mapping values
+      CONDITION_REACTING_CENTERS = 0x0200, // reacting centers
+      CONDITION_ALL              = 0x0300
+   };
+
+
    ReactionExactMatcher (Reaction &query, Reaction &target);
 
    dword flags;
@@ -43,7 +53,7 @@ protected:
                       int sub_mol_idx, int sub_atom_idx, int super_mol_idx, int super_atom_idx,
                       AromaticityMatcher *am, void *context);
 
-   static bool _prepare (BaseReaction &query, Reaction &target);
+   static bool _prepare (BaseReaction &query, Reaction &target, void *context);
 
    static bool _prepare_ee (EmbeddingEnumerator &ee, BaseMolecule &submol, Molecule &supermol, void *context);
 

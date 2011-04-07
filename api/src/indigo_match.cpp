@@ -23,7 +23,7 @@
 #include "indigo_mapping.h"
 #include "molecule/elements.h"
 
-void _indigoGetTauCondition (const char *list_ptr, int &aromaticity, Array<int> &label_list)
+void _indigoParseTauCondition (const char *list_ptr, int &aromaticity, Array<int> &label_list)
 {
    if (list_ptr == 0 || *list_ptr == 0)
       throw IndigoError("null or empty tautomer rule description is not allowed");
@@ -81,8 +81,8 @@ CEXPORT int indigoSetTautomerRule (int n, const char *beg, const char *end)
 
       AutoPtr<TautomerRule> rule(new TautomerRule());
 
-      _indigoGetTauCondition(beg, rule->aromaticity1, rule->list1);
-      _indigoGetTauCondition(end, rule->aromaticity2, rule->list2);
+      _indigoParseTauCondition(beg, rule->aromaticity1, rule->list1);
+      _indigoParseTauCondition(end, rule->aromaticity2, rule->list2);
 
       self.tautomer_rules.set(n - 1, rule.release());
       return 1;
@@ -141,12 +141,129 @@ static bool _indigoParseTautomerFlags (const char *flags, IndigoTautomerParams &
    return true;
 }
 
+int _indigoParseExactFlags (const char *flags, bool reaction, float *rms_threshold)
+{
+   if (flags == 0)
+      throw IndigoError("_indigoParseExactFlags(): zero string pointer");
+
+   if (!reaction && rms_threshold == 0)
+      throw IndigoError("_indigoParseExactFlags(): zero float pointer");
+
+   static struct
+   {
+      const char *token;
+      int type; // 1 -- molecule, 2 -- reaction, 3 -- both
+      int value;
+   } token_list[] =
+   {
+      {"ELE", 3, MoleculeExactMatcher::CONDITION_ELECTRONS},
+      {"MAS", 3, MoleculeExactMatcher::CONDITION_ISOTOPE},
+      {"STE", 3, MoleculeExactMatcher::CONDITION_STEREO},
+      {"FRA", 1, MoleculeExactMatcher::CONDITION_FRAGMENTS},
+      {"AAM", 2, ReactionExactMatcher::CONDITION_AAM},
+      {"RCT", 2, ReactionExactMatcher::CONDITION_REACTING_CENTERS}
+   };
+
+   int i, res = 0, count = 0;
+   bool had_float = false;
+   bool had_none = false;
+   bool had_all = false;
+
+   if (!reaction)
+      *rms_threshold = 0;
+   
+   BufferScanner scanner(flags);
+
+   QS_DEF(Array<char>, word);
+   while (1)
+   {
+      scanner.skipSpace();
+      if (scanner.isEOF())
+         break;
+      if (had_float)
+         throw IndigoError("_indigoParseExactFlags(): no value is allowed after the number");
+      scanner.readWord(word, 0);
+
+      if (strcasecmp(word.ptr(), "NONE") == 0)
+      {
+         if (had_all)
+            throw IndigoError("_indigoParseExactFlags(): NONE conflicts with ALL");
+         had_none = true;
+         count++;
+         continue;
+      }
+      if (strcasecmp(word.ptr(), "ALL") == 0)
+      {
+         if (had_none)
+            throw IndigoError("_indigoParseExactFlags(): ALL conflicts with NONE");
+         had_all = true;
+         res = MoleculeExactMatcher::CONDITION_ALL;
+         if (reaction)
+            res |= ReactionExactMatcher::CONDITION_ALL;
+         count++;
+         continue;
+      }
+      if (strcasecmp(word.ptr(), "TAU") == 0)
+         // should have been handled before
+         throw IndigoError("_indigoParseExactFlags(): no flags are allowed together with TAU");
+
+      for (i = 0; i < NELEM(token_list); i++)
+      {
+         if (strcasecmp(token_list[i].token, word.ptr()) == 0)
+         {
+            if (!reaction && !(token_list[i].type & 1))
+               throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for reaction matching", word.ptr());
+            if (reaction && !(token_list[i].type & 2))
+               throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for molecule matching", word.ptr());
+            if (had_all)
+               throw IndigoError("_indigoParseExactFlags(): only negative flags are allowed together with ALL");
+            res |= token_list[i].value;
+            break;
+         }
+         if (word[0] == '-' && strcasecmp(token_list[i].token, word.ptr() + 1) == 0)
+         {
+            if (!reaction && !(token_list[i].type & 1))
+               throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for reaction matching", word.ptr());
+            if (reaction && !(token_list[i].type & 2))
+               throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for molecule matching", word.ptr());
+            res &= ~token_list[i].value;
+            break;
+         }
+      }
+      if (i == NELEM(token_list))
+      {
+         BufferScanner scanner2(word.ptr());
+
+         if (!reaction && scanner2.tryReadFloat(*rms_threshold))
+         {
+            res |= MoleculeExactMatcher::CONDITION_3D;
+            had_float = true;
+         }
+         else
+            throw IndigoError("_indigoParseExactFlags(): unknown token %s", word.ptr());
+      }
+      else
+         count++;
+   }
+
+   if (had_none && count > 1)
+      throw IndigoError("_indigoParseExactFlags(): no flags are allowed together with NONE");
+   
+   if (count == 0)
+      res = MoleculeExactMatcher::CONDITION_ALL | ReactionExactMatcher::CONDITION_ALL;
+
+   return res;
+}
+
 CEXPORT int indigoExactMatch (int handler1, int handler2, const char *flags)
 {
    INDIGO_BEGIN
    {
       IndigoObject &obj1 = self.getObject(handler1);
       IndigoObject &obj2 = self.getObject(handler2);
+
+      if (flags == 0)
+         flags = "";
 
       if (IndigoBaseMolecule::is(obj1))
       {
@@ -171,7 +288,7 @@ CEXPORT int indigoExactMatch (int handler1, int handler2, const char *flags)
          }
 
          MoleculeExactMatcher matcher(mol1, mol2);
-         MoleculeExactMatcher::parseConditions(flags, matcher.flags, matcher.rms_threshold);
+         matcher.flags = _indigoParseExactFlags(flags, false, &matcher.rms_threshold);
 
          if (!matcher.find())
             return 0;
@@ -179,69 +296,36 @@ CEXPORT int indigoExactMatch (int handler1, int handler2, const char *flags)
          mapping->mapping.copy(matcher.getQueryMapping(), mol1.vertexEnd());
          return self.addObject(mapping.release());
       }
-      else if (IndigoBaseReaction::is(obj1))
+      if (IndigoBaseReaction::is(obj1))
       {
          Reaction &rxn1 = obj1.getReaction();
          Reaction &rxn2 = obj2.getReaction();
+         int i;
 
          ReactionExactMatcher matcher(rxn1, rxn2);
-         matcher.flags = MoleculeExactMatcher::CONDITION_ALL;
+         matcher.flags = _indigoParseExactFlags(flags, true, 0);
+
          if (!matcher.find())
             return 0;
-         return 1;
+
+         AutoPtr<IndigoReactionMapping> mapping(new IndigoReactionMapping(rxn1, rxn2));
+         mapping->mol_mapping.clear_resize(rxn1.end());
+         mapping->mappings.expand(rxn1.end());
+
+         for (i = rxn1.begin(); i != rxn1.end(); i = rxn1.next(i))
+         {
+            if (rxn1.getSideType(i) == BaseReaction::CATALYST)
+               continue;
+            mapping->mol_mapping[i] = matcher.getTargetMoleculeIndex(i);
+            mapping->mappings[i].copy(matcher.getQueryMoleculeMapping(i), rxn1.getBaseMolecule(i).vertexEnd());
+         }
+
+         return self.addObject(mapping.release());
       }
 
       throw IndigoError("indigoExactMatch(): %s is neither a molecule nor a reaction", obj1.debugInfo());
    }
    INDIGO_END(-1);
-}
-
-IndigoMoleculeSubstructureMatch::IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query) :
-   IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH), target(target), query(query)
-{
-}
-
-IndigoMoleculeSubstructureMatch::~IndigoMoleculeSubstructureMatch ()
-{
-}
-
-const char * IndigoMoleculeSubstructureMatch::debugInfo ()
-{
-   return "<molecule substructure match>";
-}
-
-CEXPORT int indigoHighlightedTarget (int match)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(match);
-      if (obj.type != IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH)
-         throw IndigoError("indigoHighlightedTarget(): match must be given, not %s", obj.debugInfo());
-
-      IndigoMoleculeSubstructureMatch &match = (IndigoMoleculeSubstructureMatch &)obj;
-
-      AutoPtr<IndigoMolecule> mol(new IndigoMolecule());
-
-      QS_DEF(Array<int>, mapping);
-      mol->mol.clone(match.target, &mapping, 0);
-
-      int i;
-
-      for (i = 0; i < match.hl_atoms.size(); i++)
-         mol->mol.highlightAtom(mapping[match.hl_atoms[i]]);
-
-      for (i = 0; i < match.hl_bonds.size(); i++)
-      {
-         const Edge &edge = match.target.getEdge(match.hl_bonds[i]);
-         int beg = mapping[edge.beg];
-         int end = mapping[edge.end];
-
-         mol->mol.highlightBond(mol->mol.findEdgeIndex(beg, end));
-      }
-
-      return self.addObject(mol.release());
-   }
-   INDIGO_END(-1)
 }
 
 IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecule &target_,
@@ -277,8 +361,7 @@ IndigoObject * IndigoMoleculeSubstructureMatchIter::next ()
    if (!hasNext())
       return 0;
 
-   AutoPtr<IndigoMoleculeSubstructureMatch> mptr(
-         new IndigoMoleculeSubstructureMatch(original_target, query));
+   AutoPtr<IndigoMapping> mptr(new IndigoMapping(query, original_target));
 
    // Expand mapping to fit possible implicit hydrogens
    mapping.expandFill(target.vertexEnd(), -1);
@@ -288,52 +371,17 @@ IndigoObject * IndigoMoleculeSubstructureMatchIter::next ()
       const GraphEmbeddingsStorage& storage = matcher.getEmbeddingsStorage();
       int count;
       const int *query_mapping = storage.getMappingSub(_embedding_index, count);
-      mptr->query_atom_mapping.copy(query_mapping, query.vertexEnd());
-
-      // Initialize highlighting
-      int i, e_count, v_count;
-      const int *vertices = storage.getVertices(_embedding_index, v_count);
-      const int *edges = storage.getEdges(_embedding_index, e_count);
-
-      for (i = 0; i < v_count; i++)
-         if (mapping[vertices[i]] >= 0)
-            mptr->hl_atoms.push(mapping[vertices[i]]);
-      
-      for (i = 0; i < e_count; i++)
-      {
-         const Edge &edge = target.getEdge(edges[i]);
-         int beg = mapping[edge.beg];
-         int end = mapping[edge.end];
-         if (beg >= 0 && end >= 0)
-            mptr->hl_bonds.push(original_target.findEdgeIndex(beg, end));
-      }
+      mptr->mapping.copy(query_mapping, query.vertexEnd());
    }
    else
-   {
-      int i;
-      
-      mptr->query_atom_mapping.copy(matcher.getQueryMapping(), query.vertexEnd());
-      for (i = target.vertexBegin(); i != target.vertexEnd(); i = target.vertexNext(i))
-         if (target.isAtomHighlighted(i) && mapping[i] >= 0)
-            mptr->hl_atoms.push(mapping[i]);
-      for (i = target.edgeBegin(); i != target.edgeEnd(); i = target.edgeNext(i))
-      {
-         if (target.isBondHighlighted(i))
-         {
-            const Edge &edge = target.getEdge(i);
-            int beg = mapping[edge.beg];
-            int end = mapping[edge.end];
-            if (beg >= 0 && end >= 0)
-               mptr->hl_bonds.push(original_target.findEdgeIndex(beg, end));
-         }
-      }
-   }
+      mptr->mapping.copy(matcher.getQueryMapping(), query.vertexEnd());
 
    for (int v = query.vertexBegin(); v != query.vertexEnd(); v = query.vertexNext(v))
    {
-      int mapped = mptr->query_atom_mapping[v];
+      int mapped = mptr->mapping[v];
+      
       if (mapped >= 0)
-         mptr->query_atom_mapping[v] = mapping[mapped];
+         mptr->mapping[v] = mapping[mapped];
    }
    _need_find = true;
    return mptr.release();

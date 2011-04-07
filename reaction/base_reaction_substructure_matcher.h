@@ -50,6 +50,9 @@ public:
 
    bool find ();
 
+   int getTargetMoleculeIndex (int query_molecule_idx);
+   const int * getQueryMoleculeMapping (int query_mol_idx);
+
    DEF_ERROR("reaction substructure matcher");
 
    bool (*match_atoms) (BaseReaction &query_, Reaction &target,
@@ -64,7 +67,7 @@ public:
    void (*add_bond) (BaseMolecule &submol, Molecule &supermol,
                       int sub_idx, int super_idx, AromaticityMatcher *am);
 
-   bool (*prepare) (BaseReaction &query_, Reaction &target);
+   bool (*prepare) (BaseReaction &query_, Reaction &target, void *context);
 
    bool (*prepare_ee) (EmbeddingEnumerator &ee, BaseMolecule &submol, Molecule &supermol,
                        void *context);
@@ -76,6 +79,7 @@ protected:
    void _initMap (BaseReaction &reaction, RedBlackMap<int, int> &aam_map);
    int  _checkAAM () const;
    void _highlight ();
+   bool _match_stereo;
 
    enum
    {
@@ -98,6 +102,8 @@ protected:
       int  getMode () { return _mode; }
       bool addPair (int mol1_idx, int mol2_idx, const Array<int> &core1, const Array<int> &core2, bool from_first_side);
       void restore ();
+
+      bool match_stereo;
 
       int _current_molecule_1, _current_molecule_2;
 

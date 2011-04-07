@@ -42,6 +42,7 @@ TL_CP_GET(_amm_core_first_side)
    remove_atom = 0;
    add_bond = 0;
    prepare = 0;
+   _match_stereo = true;
 
    _query_nei_counters = 0;
    _target_nei_counters = 0;
@@ -69,7 +70,7 @@ bool BaseReactionSubstructureMatcher::find ()
    if (_query == 0)
       throw Error("no query");
 
-   if (prepare != 0 && !prepare(*_query, _target))
+   if (prepare != 0 && !prepare(*_query, _target, context))
       return false;
 
    if (_query->reactantsCount() > _target.reactantsCount() || _query->productsCount() > _target.productsCount())
@@ -89,6 +90,8 @@ bool BaseReactionSubstructureMatcher::find ()
    _molecule_core_2.fffill();
    _amm_core_first_side.clear();
 
+   _matchers.top().match_stereo = _match_stereo;
+
    while (1)
    {
       int command = _matchers.top().nextPair();
@@ -101,8 +104,6 @@ bool BaseReactionSubstructureMatcher::find ()
          if (_checkAAM())
          {
             _highlight();
-            while (_matchers.size() > 1)
-               _matchers.pop();
             return true;
          }
          command = _NO_WAY;
@@ -193,6 +194,27 @@ int BaseReactionSubstructureMatcher::_checkAAM () const
    return true;
 }
 
+int BaseReactionSubstructureMatcher::getTargetMoleculeIndex (int query_mol_idx)
+{
+   // can be optimized, but as the number of molecules
+   // seldom exceeds 5, the linear search is acceptable
+   for (int i = 0; i < _matchers.size() - 1; i++)
+      if (_matchers[i]._current_molecule_1 == query_mol_idx)
+         return _matchers[i]._current_molecule_2;
+
+   throw Error("getTargetMoleculeIndex(): can not find mapping for query molecule %d", query_mol_idx);
+}
+
+const int * BaseReactionSubstructureMatcher::getQueryMoleculeMapping (int query_mol_idx)
+{
+   for (int i = 0; i < _matchers.size() - 1; i++)
+      if (_matchers[i]._current_molecule_1 == query_mol_idx)
+         return _matchers[i]._current_core_1.ptr();
+
+   throw Error("getQueryMoleculeMapping(): can not find mapping for query molecule %d", query_mol_idx);
+}
+
+
 void BaseReactionSubstructureMatcher::_highlight ()
 {
    if (!highlight)
@@ -217,6 +239,7 @@ TL_CP_GET(_mapped_aams)
    _current_molecule_1 = -1;
    _current_molecule_2 = -1;
    _mapped_aams.clear();
+   match_stereo = true;
 }
 
 BaseReactionSubstructureMatcher::_Matcher::_Matcher (const BaseReactionSubstructureMatcher::_Matcher &other) :
@@ -228,6 +251,7 @@ TL_CP_GET(_mapped_aams)
    _current_molecule_1 = -1;
    _current_molecule_2 = -1;
    _mapped_aams.clear();
+   match_stereo = other.match_stereo;
 }
 
 int BaseReactionSubstructureMatcher::_Matcher::_nextPair ()
@@ -496,11 +520,14 @@ int BaseReactionSubstructureMatcher::_Matcher::_embedding (Graph &subgraph, Grap
    QueryMolecule &query = (QueryMolecule &)subgraph;
    Molecule &target = (Molecule &)supergraph;
 
-   if (!MoleculeStereocenters::checkSub(query.stereocenters, target.stereocenters, core_sub, false))
-      return 1;
+   if (self.match_stereo)
+   {
+      if (!MoleculeStereocenters::checkSub(query.stereocenters, target.stereocenters, core_sub, false))
+         return 1;
 
-   if (!MoleculeCisTrans::checkSub(query, target, core_sub))
-      return 1;
+      if (!MoleculeCisTrans::checkSub(query, target, core_sub))
+         return 1;
+   }
 
    // Check possible aromatic configuration
    if (self._am.get() != 0)

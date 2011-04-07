@@ -199,56 +199,66 @@ int BaseReaction::addCatalystCopy (BaseMolecule& mol, Array<int>* mapping, Array
    return idx;
 }
 
-void BaseReaction::clone (BaseReaction &other, ObjArray< Array<int> >* mappings, ObjArray< Array<int> >* inv_mappings)
+void BaseReaction::clone (BaseReaction &other, Array<int> *mol_mapping, ObjArray< Array<int> >* mappings, ObjArray< Array<int> >* inv_mappings)
 {
    clear();
-   int index = 0;
-
+   
+   int i, index = 0;
    QS_DEF(ObjArray< Array<int> >, tmp_mappings);
-   ObjArray< Array<int> >* mol_mappings = mappings;
 
-   if(mol_mappings == 0) {
-      mol_mappings = &tmp_mappings;
+   if (mol_mapping != 0)
+   {
+      mol_mapping->clear_resize(other.end());
+      mol_mapping->fffill();
    }
-   mol_mappings->clear();
-   if(inv_mappings != 0)
+
+   if(mappings == 0)
+      mappings = &tmp_mappings;
+   mappings->clear();
+   for (i = 0; i < other.end(); ++i)
+      mappings->push();
+
+   if (inv_mappings != 0)
       inv_mappings->clear();
 
-   for(int i = 0; i < other.end(); ++i) {
-      mol_mappings->push();
-      if(inv_mappings != 0)
-         inv_mappings->push();
-   }
-
-   for(int i = other.begin(); i < other.end(); i = other.next(i)) {
+   for(int i = other.begin(); i < other.end(); i = other.next(i))
+   {
       BaseMolecule& rmol = other.getBaseMolecule(i);
-      Array<int> * inv_mapping = 0;
-      if(inv_mappings != 0)
-         inv_mapping = &inv_mappings->at(i);
-      switch(other._types[i]) {
+      QS_DEF(Array<int>, inv_mapping);
+      
+      switch (other._types[i])
+      {
          case REACTANT:
-            index = addReactantCopy(rmol, &mol_mappings->at(i), inv_mapping);
+            index = addReactantCopy(rmol, &mappings->at(i), &inv_mapping);
             break;
          case PRODUCT:
-            index = addProductCopy(rmol, &mol_mappings->at(i), inv_mapping);
+            index = addProductCopy(rmol, &mappings->at(i), &inv_mapping);
             break;
          case CATALYST:
-            index = addCatalystCopy(rmol, &mol_mappings->at(i), inv_mapping);
+            index = addCatalystCopy(rmol, &mappings->at(i), &inv_mapping);
             break;
       }
 
+      if (inv_mappings != 0)
+      {
+         inv_mappings->expand(index + 1);
+         inv_mappings->at(index).copy(inv_mapping);
+      }
+      if (mol_mapping != 0)
+         mol_mapping->at(i) = index;
+      
       BaseMolecule &lmol = getBaseMolecule(index);
       for(int j = lmol.vertexBegin(); j < lmol.vertexEnd(); j = lmol.vertexNext(j)) {
-         getAAMArray(index).at(j) = other.getAAM(i, mol_mappings->at(i)[j]);
-         getInversionArray(index).at(j) = other.getInversion(i, mol_mappings->at(i)[j]);
+         getAAMArray(index).at(j) = other.getAAM(i, mappings->at(i)[j]);
+         getInversionArray(index).at(j) = other.getInversion(i, mappings->at(i)[j]);
       }
       for (int j = lmol.edgeBegin(); j < lmol.edgeEnd(); j = lmol.edgeNext(j)) {
          const Edge &edge = lmol.getEdge(j);
-         int edge_idx = other.getBaseMolecule(i).findEdgeIndex(mol_mappings->at(i)[edge.beg], mol_mappings->at(i)[edge.end]);
+         int edge_idx = other.getBaseMolecule(i).findEdgeIndex(mappings->at(i)[edge.beg], mappings->at(i)[edge.end]);
          getReactingCenterArray(index).at(j) = other.getReactingCenter(i, edge_idx);
       }
       // subclass' stuff
-      _clone(other, index, i, mol_mappings);
+      _clone(other, index, i, mappings);
    }
 
    name.copy(other.name);
@@ -305,4 +315,13 @@ int BaseReaction::next (int index)
 int BaseReaction::count ()
 {
    return _allMolecules.size();
+}
+
+int BaseReaction::findMolecule (BaseMolecule *mol)
+{
+   for (int i = begin(); i != end(); i = next(i))
+      if (&getBaseMolecule(i) == mol)
+         return i;
+
+   return -1;
 }

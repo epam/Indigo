@@ -45,9 +45,12 @@ bool ReactionExactMatcher::_match_atoms (BaseReaction &query_, Reaction &target,
    if (!MoleculeExactMatcher::matchAtoms(submol, supermol, sub_atom_idx, super_atom_idx, self.flags))
       return false;
 
-   if (query.getAAM(sub_mol_idx, sub_atom_idx) == 0 &&
-       target.getAAM(super_mol_idx, super_atom_idx) != 0)
-      return false;
+   if (self.flags & CONDITION_AAM)
+   {
+      if ((query.getAAM(sub_mol_idx, sub_atom_idx) == 0) !=
+          (target.getAAM(super_mol_idx, super_atom_idx) == 0))
+         return false;
+   }
    
    return true;
 }
@@ -64,19 +67,29 @@ bool ReactionExactMatcher::_match_bonds (BaseReaction &query_, Reaction &target,
    if (!MoleculeExactMatcher::matchBonds(submol, supermol, sub_bond_idx, super_bond_idx, self.flags))
       return false;
 
-   int sub_change = query.getReactingCenter(sub_mol_idx, sub_bond_idx);
-   int super_change = target.getReactingCenter(super_mol_idx, super_bond_idx);
+   if (self.flags & CONDITION_REACTING_CENTERS)
+   {
+      int sub_change = query.getReactingCenter(sub_mol_idx, sub_bond_idx);
+      int super_change = target.getReactingCenter(super_mol_idx, super_bond_idx);
 
-   if (sub_change != super_change)
-      return false;
+      if (sub_change != super_change)
+         return false;
+   }
 
    return true;
 }
 
-bool ReactionExactMatcher::_prepare (BaseReaction &query, Reaction &target)
+bool ReactionExactMatcher::_prepare (BaseReaction &query, Reaction &target, void *context)
 {
    if (query.count() != target.count())
       return false;
+
+   ReactionExactMatcher &self = *(ReactionExactMatcher *)context;
+
+   if (self.flags & MoleculeExactMatcher::CONDITION_STEREO)
+      self._match_stereo = true;
+   else
+      self._match_stereo = false;
 
    return true;
 }
@@ -87,7 +100,7 @@ bool ReactionExactMatcher::_prepare_ee (EmbeddingEnumerator &ee,
    int i;
 
    ReactionExactMatcher &self = *(ReactionExactMatcher *)context;
-
+   
    for (i = submol.vertexBegin(); i != submol.vertexEnd(); i = submol.vertexNext(i))
    {
       const Vertex &vertex = submol.getVertex(i);

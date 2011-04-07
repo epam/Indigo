@@ -23,22 +23,6 @@
 #pragma warning(disable:4251)
 #endif
 
-// Query to the target match instance
-class DLLEXPORT IndigoMoleculeSubstructureMatch : public IndigoObject
-{
-public:
-   IndigoMoleculeSubstructureMatch (Molecule &target, QueryMolecule &query);
-   virtual ~IndigoMoleculeSubstructureMatch ();
-
-   const char * debugInfo ();
-
-   Array<int> query_atom_mapping;
-   Array<int> hl_atoms;
-   Array<int> hl_bonds;
-   Molecule &target;
-   QueryMolecule &query;
-};
-
 // Iterator for all possible matches
 class IndigoMoleculeSubstructureMatchIter : public IndigoObject
 {

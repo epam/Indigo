@@ -110,17 +110,13 @@ public:
    int findAamNumber (BaseMolecule *mol, int atom_number);
    int findReactingCenter (BaseMolecule *mol, int bond_number);
 
-   //int findMoleculeSideIdx(const Molecule* qmol) const;
-   //int findMoleculeIdx(const Molecule* qmol) const;
-   //int findInversionNumber(const Molecule* qmol, int atom_number) const;
-   //int findExactChange(const Molecule* qmol, int atom_number) const;
+   int findMolecule (BaseMolecule *mol);
 
-   //bool isAllConnected() const;
    void markStereocenterBonds();
 
    static bool haveCoord (BaseReaction &reaction);
 
-   void clone (BaseReaction& other, ObjArray< Array<int> >* mappings, ObjArray< Array<int> >* inv_mappings);
+   void clone (BaseReaction &other, Array<int> *mol_mapping, ObjArray< Array<int> >* mappings, ObjArray< Array<int> >* inv_mappings);
 
    Array<char> name;
 

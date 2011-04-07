@@ -30,4 +30,17 @@ public:
 protected:
 };
 
+class IndigoReactionMapping : public IndigoObject
+{
+public:
+   IndigoReactionMapping (BaseReaction &from, BaseReaction &to);
+   virtual ~IndigoReactionMapping ();
+
+   BaseReaction &from;
+   BaseReaction &to;
+   
+   Array< int > mol_mapping;
+   ObjArray< Array<int> > mappings;
+};
+
 #endif
