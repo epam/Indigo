@@ -373,6 +373,7 @@ public:
    PVOID hdc;
    bool showBondIds;
    bool showBondEndIds;
+   bool atomBondIdsFromOne;
    bool showNeighborArcs;
    bool showAtomIds;
    bool showValences;

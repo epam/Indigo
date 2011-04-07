@@ -165,6 +165,12 @@ void indigoRenderSetBondIdsVisible (int enabled)
    rp.rOpt.showBondIds = enabled != 0;
 }
 
+void indigoRenderSetAtomBondIdsFromOne (int enabled)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.atomBondIdsFromOne = enabled != 0;
+}
+
 void indigoRenderSetHighlightThicknessEnabled (int enabled)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -499,6 +505,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("render-valences-visible", indigoRenderSetValencesVisible);
    mgr.setOptionHandlerBool("render-atom-ids-visible", indigoRenderSetAtomIdsVisible);
    mgr.setOptionHandlerBool("render-bond-ids-visible", indigoRenderSetBondIdsVisible);
+   mgr.setOptionHandlerBool("render-atom-bond-ids-from-one", indigoRenderSetAtomBondIdsFromOne);
    mgr.setOptionHandlerBool("render-highlight-thickness-enabled", indigoRenderSetHighlightThicknessEnabled);
    mgr.setOptionHandlerBool("render-highlight-color-enabled", indigoRenderSetHighlightColorEnabled);
    mgr.setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", indigoRenderSetCenterDoubleBondWhenStereoAdjacent);
