@@ -22,6 +22,7 @@
 #include "base_cpp/scanner.h"
 #include "indigo_mapping.h"
 #include "molecule/elements.h"
+#include "reaction/reaction_automapper.h"
 
 void _indigoParseTauCondition (const char *list_ptr, int &aromaticity, Array<int> &label_list)
 {
@@ -580,27 +581,44 @@ CEXPORT int indigoSubstructureMatcher (int target, const char *mode_str)
 {
    INDIGO_BEGIN
    {
-      Molecule &mol = self.getObject(target).getMolecule();
-      int mode = IndigoMoleculeSubstructureMatcher::NORMAL;
-      IndigoTautomerParams tau_params;
+      IndigoObject &obj = self.getObject(target);
 
-      if (mode_str != 0 && *mode_str != 0)
+      if (IndigoBaseMolecule::is(obj))
       {
-         if (_indigoParseTautomerFlags(mode_str, tau_params))
-            mode = IndigoMoleculeSubstructureMatcher::TAUTOMER;
-         else if (strcasecmp(mode_str, "RES") == 0)
-            mode = IndigoMoleculeSubstructureMatcher::RESONANCE;
-         else
-            throw IndigoError("indigoSubstructureMatcher(): unsupported mode %s", mode_str);
+         Molecule &mol = obj.getMolecule();
+         int mode = IndigoMoleculeSubstructureMatcher::NORMAL;
+         IndigoTautomerParams tau_params;
+
+         if (mode_str != 0 && *mode_str != 0)
+         {
+            if (_indigoParseTautomerFlags(mode_str, tau_params))
+               mode = IndigoMoleculeSubstructureMatcher::TAUTOMER;
+            else if (strcasecmp(mode_str, "RES") == 0)
+               mode = IndigoMoleculeSubstructureMatcher::RESONANCE;
+            else
+               throw IndigoError("indigoSubstructureMatcher(): unsupported mode %s", mode_str);
+         }
+
+         AutoPtr<IndigoMoleculeSubstructureMatcher> matcher(
+            new IndigoMoleculeSubstructureMatcher(mol, mode));
+
+         if (mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
+            matcher->tau_params = tau_params;
+
+         return self.addObject(matcher.release());
       }
+      if (IndigoBaseReaction::is(obj))
+      {
+         Reaction &rxn = obj.getReaction();
 
-      AutoPtr<IndigoMoleculeSubstructureMatcher> matcher(
-         new IndigoMoleculeSubstructureMatcher(mol, mode));
+         if (mode_str != 0 && *mode_str != 0)
+            throw IndigoError("reaction substructure does not support any options (got %s)", mode_str);
 
-      if (mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
-         matcher->tau_params = tau_params;
-
-      return self.addObject(matcher.release());
+         AutoPtr<IndigoReactionSubstructureMatcher> matcher(new IndigoReactionSubstructureMatcher(rxn));
+         return self.addObject(matcher.release());
+      }
+      throw IndigoError("indigoSubstructureMatcher(): %s is neither a molecule not a reaction",
+                        obj.debugInfo());
    }
    INDIGO_END(-1)
 }
@@ -665,29 +683,64 @@ CEXPORT int indigoMatch (int target_matcher, int query)
 {
    INDIGO_BEGIN
    {
-      IndigoMoleculeSubstructureMatcher &matcher =
-              IndigoMoleculeSubstructureMatcher::cast(self.getObject(target_matcher));
+      IndigoObject &obj = self.getObject(target_matcher);
 
-      if (matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
+      if (obj.type == IndigoObject::MOLECULE_SUBSTRUCTURE_MATCHER)
       {
-         QueryMolecule &qmol = self.getObject(query).getQueryMolecule();
-         AutoPtr<IndigoMapping> mptr(new IndigoMapping(qmol, matcher.target));
-         if (!matcher.findTautomerMatch(qmol, self.tautomer_rules, mptr->mapping))
+         IndigoMoleculeSubstructureMatcher &matcher = IndigoMoleculeSubstructureMatcher::cast(obj);
+
+         if (matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
+         {
+            QueryMolecule &qmol = self.getObject(query).getQueryMolecule();
+            AutoPtr<IndigoMapping> mptr(new IndigoMapping(qmol, matcher.target));
+            if (!matcher.findTautomerMatch(qmol, self.tautomer_rules, mptr->mapping))
+               return 0;
+
+            return self.addObject(mptr.release());
+         }
+         else // NORMAL or RESONANCE
+         {
+            AutoPtr<IndigoMoleculeSubstructureMatchIter>
+               match_iter(matcher.getMatchIterator(self, query, false, 1));
+
+            match_iter->matcher.find_unique_embeddings = false;
+
+            if (!match_iter->hasNext())
+               return 0;
+            return self.addObject(match_iter->next());
+         }
+      }
+      if (obj.type == IndigoObject::REACTION_SUBSTRUCTURE_MATCHER)
+      {
+         IndigoReactionSubstructureMatcher &matcher = IndigoReactionSubstructureMatcher::cast(obj);
+         QueryReaction &qrxn = self.getObject(query).getQueryReaction();
+
+         if (matcher.matcher.get() == 0)
+            matcher.matcher.create(matcher.target);
+
+         matcher.matcher->setQuery(qrxn);
+         if (!matcher.matcher->find())
             return 0;
 
-         return self.addObject(mptr.release());
-      }
-      else // NORMAL or RESONANCE
-      {
-         AutoPtr<IndigoMoleculeSubstructureMatchIter>
-            match_iter(matcher.getMatchIterator(self, query, false, 1));
+         AutoPtr<IndigoReactionMapping> mapping(new IndigoReactionMapping(qrxn, matcher.original_target));
+         mapping->mol_mapping.clear_resize(qrxn.end());
+         mapping->mol_mapping.fffill();
+         mapping->mappings.expand(qrxn.end());
 
-         match_iter->matcher.find_unique_embeddings = false;
+         for (int i = qrxn.begin(); i != qrxn.end(); i = qrxn.next(i))
+         {
+            if (qrxn.getSideType(i) == BaseReaction::CATALYST)
+               continue;
+            mapping->mol_mapping[i] = matcher.matcher->getTargetMoleculeIndex(i);
+            mapping->mappings[i].copy(matcher.matcher->getQueryMoleculeMapping(i),
+                                      qrxn.getBaseMolecule(i).vertexEnd());
+         }
 
-         if (!match_iter->hasNext())
-            return 0;
-         return self.addObject(match_iter->next());
+         return self.addObject(mapping.release());
+
       }
+      throw IndigoError("indigoIterateMatches(): expected a matcher, got %s", obj.debugInfo());
+
    }
    INDIGO_END(-1)
 }
@@ -696,16 +749,23 @@ int indigoCountMatches (int target_matcher, int query)
 {
    INDIGO_BEGIN
    {
-      IndigoMoleculeSubstructureMatcher &matcher =
-              IndigoMoleculeSubstructureMatcher::cast(self.getObject(target_matcher));
+      IndigoObject &obj = self.getObject(target_matcher);
 
-      if (matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
-         throw IndigoError("indigoCountMatches(): not supported in this mode");
+      if (obj.type == IndigoObject::MOLECULE_SUBSTRUCTURE_MATCHER)
+      {
+         IndigoMoleculeSubstructureMatcher &matcher = IndigoMoleculeSubstructureMatcher::cast(obj);
 
-      AutoPtr<IndigoMoleculeSubstructureMatchIter>
-         match_iter(matcher.getMatchIterator(self, query, false, self.max_embeddings));
+         if (matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
+            throw IndigoError("indigoCountMatches(): not supported in this mode");
 
-      return match_iter->countMatches();
+         AutoPtr<IndigoMoleculeSubstructureMatchIter>
+            match_iter(matcher.getMatchIterator(self, query, false, self.max_embeddings));
+
+         return match_iter->countMatches();
+      }
+      if (obj.type == IndigoObject::REACTION_SUBSTRUCTURE_MATCHER)
+         throw IndigoError("indigoCountMatches(): can not work with reactions");
+      throw IndigoError("indigoCountMatches(): expected a matcher, got %s", obj.debugInfo());
    }
    INDIGO_END(-1)
 }
@@ -714,16 +774,51 @@ int indigoIterateMatches (int target_matcher, int query)
 {
    INDIGO_BEGIN
    {
-      IndigoMoleculeSubstructureMatcher &matcher =
-              IndigoMoleculeSubstructureMatcher::cast(self.getObject(target_matcher));
+      IndigoObject &obj = self.getObject(target_matcher);
 
-      if (matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
-         throw IndigoError("indigoIterateMatches(): not supported in this mode");
+      if (obj.type == IndigoObject::MOLECULE_SUBSTRUCTURE_MATCHER)
+      {
+         IndigoMoleculeSubstructureMatcher &matcher = IndigoMoleculeSubstructureMatcher::cast(obj);
 
-      AutoPtr<IndigoMoleculeSubstructureMatchIter>
-         match_iter(matcher.getMatchIterator(self, query, true, self.max_embeddings));
+         if (matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
+            throw IndigoError("indigoIterateMatches(): not supported in this mode");
 
-      return self.addObject(match_iter.release());
+         AutoPtr<IndigoMoleculeSubstructureMatchIter>
+            match_iter(matcher.getMatchIterator(self, query, true, self.max_embeddings));
+
+         return self.addObject(match_iter.release());
+      }
+      if (obj.type == IndigoObject::REACTION_SUBSTRUCTURE_MATCHER)
+         throw IndigoError("indigoIterateMatches(): can not work with reactions");
+      throw IndigoError("indigoIterateMatches(): expected a matcher, got %s", obj.debugInfo());
    }
    INDIGO_END(-1)
+}
+
+const char * IndigoReactionSubstructureMatcher::debugInfo ()
+{
+   return "<reaction substructure matcher>";
+}
+
+IndigoReactionSubstructureMatcher::IndigoReactionSubstructureMatcher (Reaction &target_) :
+   IndigoObject(REACTION_SUBSTRUCTURE_MATCHER),
+   original_target(target_)
+{
+   target.clone(target_, &mol_mapping, &mappings, 0);
+
+   ReactionAutomapper ram(target);
+   ram.correctReactingCenters(true);
+   target.aromatize();
+}
+
+IndigoReactionSubstructureMatcher::~IndigoReactionSubstructureMatcher ()
+{
+}
+
+IndigoReactionSubstructureMatcher & IndigoReactionSubstructureMatcher::cast (IndigoObject &obj)
+{
+   if (obj.type != IndigoObject::REACTION_SUBSTRUCTURE_MATCHER)
+      throw IndigoError("%s is not a reaction matcher object", obj.debugInfo());
+
+   return (IndigoReactionSubstructureMatcher &)obj;
 }

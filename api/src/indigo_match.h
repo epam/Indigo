@@ -18,6 +18,8 @@
 #include "indigo_internal.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_tautomer_matcher.h"
+#include "reaction/reaction_substructure_matcher.h"
+#include "reaction/reaction.h"
 
 class IndigoQueryMolecule;
 
@@ -107,6 +109,26 @@ private:
    Array<int> _mapping_arom_h_unfolded, _mapping_arom, _ignored_atoms;
    bool _arom_h_unfolded_prepared, _arom_prepared, _aromatized;
 };
+
+class DLLEXPORT IndigoReactionSubstructureMatcher : public IndigoObject
+{
+public:
+
+   IndigoReactionSubstructureMatcher (Reaction &target);
+   virtual ~IndigoReactionSubstructureMatcher ();
+
+   static IndigoReactionSubstructureMatcher & cast (IndigoObject &obj);
+
+   const char * debugInfo ();
+
+   Reaction &original_target;
+   Reaction target;
+
+   Obj<ReactionSubstructureMatcher> matcher;
+   ObjArray< Array<int> > mappings;
+   Array<int> mol_mapping;
+};
+
 
 #ifdef _WIN32
 #pragma warning(pop)

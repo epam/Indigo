@@ -116,6 +116,9 @@ CEXPORT int indigoMapBond (int handle, int bond)
          if (mol_idx == -1)
             throw IndigoError("indigoMapBond(): input bond not found in the reaction");
 
+         if (mapping.mol_mapping[mol_idx] < 0)
+            return 0; // can happen with catalysts
+
          BaseMolecule &mol = mapping.to.getBaseMolecule(mapping.mol_mapping[mol_idx]);
          const Edge &edge = ib.mol.getEdge(ib.idx);
 
@@ -192,7 +195,7 @@ CEXPORT int indigoHighlightedTarget (int item)
          for (i = im.from.begin(); i != im.from.end(); i = im.from.next(i))
          {
             if (im.mol_mapping[i] < 0)
-               // can happen for catalysts
+               // can happen with catalysts
                continue;
             _indigoHighlightSubstructure(
                     im.from.getBaseMolecule(i),
