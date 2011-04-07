@@ -623,7 +623,7 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
             }
             else if (conn + rad <= 4)
             {
-               hyd = 2 - conn - rad; // with hydrogen: CID 11968228
+               hyd = 4 - conn - rad; // with hydrogen: CID 11968228
                valence = 4;
             }
             else
