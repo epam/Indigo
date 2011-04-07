@@ -63,6 +63,10 @@ CEXPORT int indigoMapAtom (int handle, int atom)
          if (mol_idx == -1)
             throw IndigoError("indigoMapAtom(): input atom not found in the reaction");
 
+         if (mapping.mol_mapping[mol_idx] < 0)
+            // can happen for catalysts
+            return 0;
+
          BaseMolecule &mol = mapping.to.getBaseMolecule(mapping.mol_mapping[mol_idx]);
          int idx = mapping.mappings[mol_idx][ia.idx];
 
@@ -187,6 +191,9 @@ CEXPORT int indigoHighlightedTarget (int item)
 
          for (i = im.from.begin(); i != im.from.end(); i = im.from.next(i))
          {
+            if (im.mol_mapping[i] < 0)
+               // can happen for catalysts
+               continue;
             _indigoHighlightSubstructure(
                     im.from.getBaseMolecule(i),
                     rxn->rxn.getBaseMolecule(mol_mapping[im.mol_mapping[i]]),

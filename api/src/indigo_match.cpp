@@ -310,6 +310,7 @@ CEXPORT int indigoExactMatch (int handler1, int handler2, const char *flags)
 
          AutoPtr<IndigoReactionMapping> mapping(new IndigoReactionMapping(rxn1, rxn2));
          mapping->mol_mapping.clear_resize(rxn1.end());
+         mapping->mol_mapping.fffill();
          mapping->mappings.expand(rxn1.end());
 
          for (i = rxn1.begin(); i != rxn1.end(); i = rxn1.next(i))
