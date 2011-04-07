@@ -322,12 +322,11 @@ CEXPORT int indigoRender (int object, int output)
 
       if (IndigoBaseMolecule::is(obj))
       {
-         Array<int> mapping;
          if (obj.getBaseMolecule().isQueryMolecule())
             rp.mol.reset(new QueryMolecule());
          else
             rp.mol.reset(new Molecule());
-         rp.mol->clone(self.getObject(object).getBaseMolecule(), &mapping, 0);
+         rp.mol->clone(self.getObject(object).getBaseMolecule(), 0, 0);
          rp.rmode = RENDER_MOL;
       }
       else if (IndigoBaseReaction::is(obj))
@@ -336,8 +335,7 @@ CEXPORT int indigoRender (int object, int output)
             rp.rxn.reset(new QueryReaction());
          else
             rp.rxn.reset(new Reaction());
-         ObjArray< Array<int> > mapping;
-         rp.rxn->clone(self.getObject(object).getBaseReaction(), &mapping, 0);
+         rp.rxn->clone(self.getObject(object).getBaseReaction(), 0, 0, 0);
          rp.rmode = RENDER_RXN;
       } else {
          throw IndigoError("The object provided should be a molecule, a reaction or an array of such");
@@ -378,8 +376,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
 
-            QS_DEF(Array<int>, mapping);
-            rp.mols.top()->clone(objs[i]->getBaseMolecule(), &mapping, 0);
+            rp.mols.top()->clone(objs[i]->getBaseMolecule(), 0, 0, 0);
             rp.rmode = RENDER_MOL;
          }
       }
@@ -394,8 +391,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
             
-            QS_DEF(ObjArray< Array<int> >, mapping);
-            rp.rxns.top()->clone(objs[i]->getBaseReaction(), &mapping, 0);
+            rp.rxns.top()->clone(objs[i]->getBaseReaction(), 0, 0, 0);
             rp.rmode = RENDER_RXN;
          }
       } else {
