@@ -195,6 +195,12 @@ CEXPORT int indigoLoadQueryReactionFromString (const char *string);
 CEXPORT int indigoLoadQueryReactionFromFile   (const char *filename);
 CEXPORT int indigoLoadQueryReactionFromBuffer (const char *buffer, int size);
 
+CEXPORT int indigoLoadReactionSmarts (int source);
+CEXPORT int indigoLoadReactionSmartsFromString (const char *string);
+CEXPORT int indigoLoadReactionSmartsFromFile   (const char *filename);
+CEXPORT int indigoLoadReactionSmartsFromBuffer (const char *buffer, int size);
+
+
 CEXPORT int indigoCreateReaction (void);
 CEXPORT int indigoCreateQueryReaction (void);
 

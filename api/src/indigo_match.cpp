@@ -610,11 +610,18 @@ CEXPORT int indigoSubstructureMatcher (int target, const char *mode_str)
       if (IndigoBaseReaction::is(obj))
       {
          Reaction &rxn = obj.getReaction();
+         bool daylight_aam = false;
 
          if (mode_str != 0 && *mode_str != 0)
-            throw IndigoError("reaction substructure does not support any options (got %s)", mode_str);
+         {
+            if (strcasecmp(mode_str, "DAYLIGHT-AAM") == 0)
+               daylight_aam = true;
+            else
+               throw IndigoError("reaction substructure matcher: unknown mode %s", mode_str);
+         }
 
          AutoPtr<IndigoReactionSubstructureMatcher> matcher(new IndigoReactionSubstructureMatcher(rxn));
+         matcher->daylight_aam = daylight_aam;
          return self.addObject(matcher.release());
       }
       throw IndigoError("indigoSubstructureMatcher(): %s is neither a molecule not a reaction",
@@ -715,9 +722,13 @@ CEXPORT int indigoMatch (int target_matcher, int query)
          IndigoReactionSubstructureMatcher &matcher = IndigoReactionSubstructureMatcher::cast(obj);
          QueryReaction &qrxn = self.getObject(query).getQueryReaction();
 
+         ReactionAutomapper ram(qrxn);
+         ram.correctReactingCenters(true);
+         
          if (matcher.matcher.get() == 0)
             matcher.matcher.create(matcher.target);
 
+         matcher.matcher->use_daylight_aam_mode = matcher.daylight_aam;
          matcher.matcher->setQuery(qrxn);
          if (!matcher.matcher->find())
             return 0;
@@ -806,9 +817,8 @@ IndigoReactionSubstructureMatcher::IndigoReactionSubstructureMatcher (Reaction &
 {
    target.clone(target_, &mol_mapping, &mappings, 0);
 
-   ReactionAutomapper ram(target);
-   ram.correctReactingCenters(true);
    target.aromatize();
+   daylight_aam = false;
 }
 
 IndigoReactionSubstructureMatcher::~IndigoReactionSubstructureMatcher ()

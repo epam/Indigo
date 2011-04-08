@@ -36,6 +36,8 @@ public:
 
    // see comment in SmilesLoader
    bool ignore_closing_bond_direction_mismatch;
+   bool smarts_mode;
+
    
 protected:
    struct _Atom

@@ -232,6 +232,8 @@ class Indigo:
     self.loadReactionFromFile = self._static_obj_string(self._lib.indigoLoadReactionFromFile)
     self.loadQueryReaction = self._static_obj_string(self._lib.indigoLoadQueryReactionFromString)
     self.loadQueryReactionFromFile = self._static_obj_string(self._lib.indigoLoadQueryReactionFromFile)
+    self.loadReactionSmarts = self._static_obj_string(self._lib.indigoLoadReactionSmartsFromString)
+    self.loadReactionSmartsFromFile = self._static_obj_string(self._lib.indigoLoadReactionSmartsFromFile)
     self.createReaction = self._static_obj(self._lib.indigoCreateReaction)
     self.createQueryReaction = self._static_obj(self._lib.indigoCreateQueryReaction)
     self.createArray = self._static_obj(self._lib.indigoCreateArray)

@@ -39,7 +39,6 @@ void BaseReaction::clear()
    name.clear();
 }
 
-
 int BaseReaction::getAAM (int index, int atom)
 {
    return _atomAtomMapping[index][atom];

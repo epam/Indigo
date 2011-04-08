@@ -46,6 +46,7 @@ public:
    void loadSMARTS (QueryMolecule &mol);
 
    Array<int> * reaction_atom_mapping;
+   Array<int> * ignorable_aam;
 
    bool inside_rsmiles;
 
@@ -91,6 +92,7 @@ protected:
       int chirality;
       int aromatic;
       int aam;
+      bool ignorable_aam;
       bool brackets;
 
       bool star_atom;

@@ -32,6 +32,7 @@ TL_CP_GET(_atoms),
 TL_CP_GET(_bonds)
 {
    reaction_atom_mapping = 0;
+   ignorable_aam = 0;
    inside_rsmiles = false;
    ignore_closing_bond_direction_mismatch = false;
    ignore_stereochemistry_errors = false;
@@ -1032,6 +1033,14 @@ void SmilesLoader::_loadMolecule ()
          reaction_atom_mapping->at(i) = _atoms[i].aam;
    }
 
+   if (ignorable_aam != 0)
+   {
+      ignorable_aam->clear_resize(_bmol->vertexCount());
+      ignorable_aam->zerofill();
+      for (i = 0; i < _atoms.size(); i++)
+         ignorable_aam->at(i) = _atoms[i].ignorable_aam ? 1 : 0;
+   }
+
    // handle the polymers (part of the CurlySMILES specification)
    if (inside_polymer)
       throw Error("polymer not closed");
@@ -1516,6 +1525,8 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
 
          if (!smarts_mode)
             throw Error("'$' fragments are allowed only in SMARTS queries");
+         if (inside_rsmiles)
+            throw Error("'$' fragment SMARTS queries are not allowed in reactions");
 
          QS_DEF(Array<char>, subexp);
 
@@ -1836,6 +1847,13 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       else if (next == ':')
       {
          scanner.skip(1);
+         if (scanner.lookNext() == '?')
+         {
+            if (_qmol == 0)
+               throw Error("ignorable AAM numbers are allowed only for queries");
+            atom.ignorable_aam = true;
+            scanner.skip(1);
+         }
          atom.aam = scanner.readUnsigned();
       }
       else
@@ -1918,6 +1936,7 @@ SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :
    chirality = 0;
    aromatic = 0;
    aam = 0;
+   ignorable_aam = false;
    brackets = false;
    star_atom = false;
    ends_polymer = false;

@@ -21,6 +21,7 @@
 #include "reaction/reaction_automapper.h"
 #include "base_cpp/auto_ptr.h"
 #include "indigo_array.h"
+#include "reaction/rsmiles_loader.h"
 
 IndigoBaseReaction::IndigoBaseReaction (int type_) : IndigoObject(type_)
 {
@@ -448,6 +449,24 @@ CEXPORT int indigoAutomap (int reaction, const char *mode)
 
       ram.automap(nmode);
       return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadReactionSmarts (int source)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(source);
+      RSmilesLoader loader(IndigoScanner::get(obj));
+
+      AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+
+      QueryReaction &qrxn = rxnptr->rxn;
+
+      loader.smarts_mode = true;
+      loader.loadQueryReaction(qrxn);
+      return self.addObject(rxnptr.release());
    }
    INDIGO_END(-1);
 }

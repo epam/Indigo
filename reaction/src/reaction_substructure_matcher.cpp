@@ -31,6 +31,7 @@ BaseReactionSubstructureMatcher(target)
    add_bond = _add_bond;
    remove_atom = _remove_atom;
    prepare_ee = _prepare_ee;
+   use_daylight_aam_mode = false;
 }
 
 bool ReactionSubstructureMatcher::_match_atoms (BaseReaction &query_, Reaction &target,
@@ -161,3 +162,77 @@ bool ReactionSubstructureMatcher::_prepare_ee (EmbeddingEnumerator &ee,
 
    return true;
 }
+
+bool ReactionSubstructureMatcher::_checkAAM ()
+{
+  if (!use_daylight_aam_mode)
+     return BaseReactionSubstructureMatcher::_checkAAM();
+
+   QS_DEF(ObjArray< RedBlackSet<int> >, classes_mapping_left);
+   QS_DEF(ObjArray< RedBlackSet<int> >, classes_mapping_right);
+   int i;
+
+   classes_mapping_left.clear();
+   classes_mapping_right.clear();
+
+   // Collect AAM class-to-class mappings separately for
+   // the reactands and products
+   for (i = 0; i < _matchers.size() - 1; i++)
+   {
+      int qmol_idx = _matchers[i]._current_molecule_1;
+      int tmol_idx = _matchers[i]._current_molecule_2;
+      BaseMolecule &qmol = _query->getBaseMolecule(qmol_idx);
+      ObjArray< RedBlackSet<int> > *cm;
+      int j;
+
+      if (_query->getSideType(qmol_idx) == BaseReaction::REACTANT)
+         cm = &classes_mapping_left;
+      else
+         cm = &classes_mapping_right;
+
+      for (j = qmol.vertexBegin(); j != qmol.vertexEnd(); j = qmol.vertexNext(j))
+      {
+         int qaam = _query->getAAM(qmol_idx, j);
+
+         if (qaam == 0)
+            continue;
+
+         if (_query->asQueryReaction().getIgnorableAAM(qmol_idx, j))
+            continue;
+
+         int mapped = _matchers[i]._current_core_1[j];
+         int taam = _target.getAAM(tmol_idx, mapped);
+
+         if (taam == 0)
+            return false;
+
+         cm->expand(qaam + 1);
+         cm->at(qaam).find_or_insert(taam);
+      }
+   }
+
+   // http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html
+   // "The query reactants can be bound to any classes in the target.
+   // These bindings form the set of allowed product bindings.
+   // The product query atoms are then tested against this list.
+   // If all of the product atoms pass, then the path is a match"
+   for (i = 0; i < classes_mapping_right.size(); i++)
+   {
+      if (i >= classes_mapping_left.size())
+         // "When a query class is not found on both sides of the query, it is ignored"
+         break;
+
+      RedBlackSet<int> &right = classes_mapping_right[i];
+      RedBlackSet<int> &left = classes_mapping_left[i];
+
+      for (int j = right.begin(); j != right.end(); j = right.next(j))
+      {
+         int aam_class = right.key(j);
+         if (!left.find(aam_class))
+            return false;
+      }
+   }
+
+   return true;
+}
+ 

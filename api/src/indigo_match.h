@@ -123,6 +123,7 @@ public:
 
    Reaction &original_target;
    Reaction target;
+   bool daylight_aam;
 
    Obj<ReactionSubstructureMatcher> matcher;
    ObjArray< Array<int> > mappings;

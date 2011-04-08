@@ -29,11 +29,14 @@ class ReactionSubstructureMatcher : public BaseReactionSubstructureMatcher
 {
 public:
    ReactionSubstructureMatcher (Reaction &target);
+   bool use_daylight_aam_mode;
 
    DEF_ERROR("reaction substructure matcher");
 
 protected:
 
+   virtual bool _checkAAM ();
+   
    static bool _match_atoms (BaseReaction &query_, Reaction &target,
                       int sub_mol_idx, int sub_atom_idx, int super_mol_idx, int super_atom_idx,
                       void *context);

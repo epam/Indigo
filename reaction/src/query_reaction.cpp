@@ -29,6 +29,8 @@ QueryReaction::~QueryReaction ()
 void QueryReaction::clear ()
 {
    BaseReaction::clear();
+   _exactChanges.clear();
+   _ignorableAAM.clear();
 }
 
 QueryMolecule & QueryReaction::getQueryMolecule (int index)
@@ -52,6 +54,9 @@ void QueryReaction::_addedBaseMolecule (int idx, int side, BaseMolecule &mol)
    _exactChanges.expand(idx + 1);
    _exactChanges[idx].clear_resize(mol.vertexEnd());
    _exactChanges[idx].zerofill();
+   _ignorableAAM.expand(idx + 1);
+   _ignorableAAM[idx].clear_resize(mol.vertexEnd());
+   _ignorableAAM[idx].zerofill();
 }
 
 void QueryReaction::makeTransposedForSubstructure (QueryReaction &other)
@@ -210,4 +215,14 @@ bool QueryReaction::isQueryReaction ()
 BaseReaction * QueryReaction::neu ()
 {
    return new QueryReaction();
+}
+
+Array<int> & QueryReaction::getIgnorableAAMArray (int index)
+{
+   return _ignorableAAM[index];
+}
+
+int QueryReaction::getIgnorableAAM (int index, int atom)
+{
+   return _ignorableAAM[index][atom];
 }

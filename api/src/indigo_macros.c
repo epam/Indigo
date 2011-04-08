@@ -14,201 +14,71 @@
 
 #include "indigo.h"
 
-CEXPORT int indigoLoadMoleculeFromString (const char *string)
-{
-   int source = indigoReadString(string);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadMolecule(source);
-   indigoFree(source);
-   return result;
+#define WRAPPER_LOAD_FROM_STRING(name)            \
+CEXPORT int name##FromString (const char *string) \
+{                                                 \
+   int source = indigoReadString(string);         \
+   int result;                                    \
+                                                  \
+   if (source <= 0)                               \
+      return -1;                                  \
+                                                  \
+   result = name(source);                         \
+   indigoFree(source);                            \
+   return result;                                 \
 }
 
-CEXPORT int indigoLoadMoleculeFromFile (const char *filename)
-{
-   int source = indigoReadFile(filename);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadMolecule(source);
-   indigoFree(source);
-   return result;
+#define WRAPPER_LOAD_FROM_FILE(name)              \
+CEXPORT int name##FromFile(const char *filename)  \
+{                                                 \
+   int source = indigoReadFile(filename);         \
+   int result;                                    \
+                                                  \
+   if (source <= 0)                               \
+      return -1;                                  \
+                                                  \
+   result = name(source);                         \
+   indigoFree(source);                            \
+   return result;                                 \
 }
 
-CEXPORT int indigoLoadMoleculeFromBuffer (const char *buf, int size)
-{
-   int source = indigoReadBuffer(buf, size);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadMolecule(source);
-   indigoFree(source);
-   return result;
+#define WRAPPER_LOAD_FROM_BUFFER(name)            \
+CEXPORT int name##FromBuffer(const char *buf, int size) \
+{                                                 \
+   int source = indigoReadBuffer(buf, size);      \
+   int result;                                    \
+                                                  \
+   if (source <= 0)                               \
+      return -1;                                  \
+                                                  \
+   result = name(source);                         \
+   indigoFree(source);                            \
+   return result;                                 \
 }
 
-CEXPORT int indigoLoadQueryMoleculeFromString (const char *string)
-{
-   int source = indigoReadString(string);
-   int result;
+WRAPPER_LOAD_FROM_STRING(indigoLoadMolecule)
+WRAPPER_LOAD_FROM_FILE(indigoLoadMolecule)
+WRAPPER_LOAD_FROM_BUFFER(indigoLoadMolecule)
 
-   if (source <= 0)
-      return -1;
+WRAPPER_LOAD_FROM_STRING(indigoLoadQueryMolecule)
+WRAPPER_LOAD_FROM_FILE(indigoLoadQueryMolecule)
+WRAPPER_LOAD_FROM_BUFFER(indigoLoadQueryMolecule)
 
-   result = indigoLoadQueryMolecule(source);
-   indigoFree(source);
-   return result;
-}
+WRAPPER_LOAD_FROM_STRING(indigoLoadSmarts)
+WRAPPER_LOAD_FROM_FILE(indigoLoadSmarts)
+WRAPPER_LOAD_FROM_BUFFER(indigoLoadSmarts)
 
-CEXPORT int indigoLoadQueryMoleculeFromFile (const char *filename)
-{
-   int source = indigoReadFile(filename);
-   int result;
+WRAPPER_LOAD_FROM_STRING(indigoLoadReaction)
+WRAPPER_LOAD_FROM_FILE(indigoLoadReaction)
+WRAPPER_LOAD_FROM_BUFFER(indigoLoadReaction)
 
-   if (source <= 0)
-      return -1;
+WRAPPER_LOAD_FROM_STRING(indigoLoadQueryReaction)
+WRAPPER_LOAD_FROM_FILE(indigoLoadQueryReaction)
+WRAPPER_LOAD_FROM_BUFFER(indigoLoadQueryReaction)
 
-   result = indigoLoadQueryMolecule(source);
-   indigoFree(source);
-   return result;
-}
-
-CEXPORT int indigoLoadQueryMoleculeFromBuffer (const char *buf, int size)
-{
-   int source = indigoReadBuffer(buf, size);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadQueryMolecule(source);
-   indigoFree(source);
-   return result;
-}
-
-CEXPORT int indigoLoadSmartsFromString (const char *string)
-{
-   int source = indigoReadString(string);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadSmarts(source);
-   indigoFree(source);
-   return result;
-}
-
-CEXPORT int indigoLoadSmartsFromFile (const char *filename)
-{
-   int source = indigoReadFile(filename);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadSmarts(source);
-   indigoFree(source);
-   return result;
-}
-
-CEXPORT int indigoLoadSmartsFromBuffer (const char *buf, int size)
-{
-   int source = indigoReadBuffer(buf, size);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadSmarts(source);
-   indigoFree(source);
-   return result;
-}
-
-CEXPORT int indigoLoadReactionFromString (const char *string)
-{
-   int source = indigoReadString(string);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadReaction(source);
-   indigoFree(source);
-   return result;
-}
-
-CEXPORT int indigoLoadReactionFromFile (const char *filename)
-{
-   int source = indigoReadFile(filename);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadReaction(source);
-   indigoFree(source);
-   return result;
-}
-
-CEXPORT int indigoLoadReactionFromBuffer (const char *buf, int size)
-{
-   int source = indigoReadBuffer(buf, size);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadReaction(source);
-   indigoFree(source);
-   return result;
-}
-
-CEXPORT int indigoLoadQueryReactionFromString (const char *string)
-{
-   int source = indigoReadString(string);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadQueryReaction(source);
-   indigoFree(source);
-   return result;
-}
-
-CEXPORT int indigoLoadQueryReactionFromFile (const char *filename)
-{
-   int source = indigoReadFile(filename);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadQueryReaction(source);
-   indigoFree(source);
-   return result;
-}
-
-CEXPORT int indigoLoadQueryReactionFromBuffer (const char *buf, int size)
-{
-   int source = indigoReadBuffer(buf, size);
-   int result;
-
-   if (source <= 0)
-      return -1;
-
-   result = indigoLoadQueryReaction(source);
-   indigoFree(source);
-   return result;
-}
-
+WRAPPER_LOAD_FROM_STRING(indigoLoadReactionSmarts)
+WRAPPER_LOAD_FROM_FILE(indigoLoadReactionSmarts)
+WRAPPER_LOAD_FROM_BUFFER(indigoLoadReactionSmarts)
 
 CEXPORT int indigoSaveMolfileToFile (int molecule, const char *filename)
 {

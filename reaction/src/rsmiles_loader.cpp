@@ -27,6 +27,7 @@ using namespace indigo;
 RSmilesLoader::RSmilesLoader (Scanner &scanner) : _scanner(scanner)
 {
    ignore_closing_bond_direction_mismatch = false;
+   smarts_mode = false;
 }
 
 int RSmilesLoader::_selectGroupByPair (int &lead_idx, int& idx, int rcnt, int ccnt, int pcnt) const
@@ -81,8 +82,11 @@ void RSmilesLoader::_loadReaction ()
    QS_DEF(Array<int>, rcnt_aam);
    QS_DEF(Array<int>, ctlt_aam);
    QS_DEF(Array<int>, prod_aam);
+   QS_DEF(Array<int>, rcnt_aam_ignorable);
+   QS_DEF(Array<int>, prod_aam_ignorable);
    QS_DEF(Array<char>, buf);
    Array<int> *aams[] = {&rcnt_aam, &ctlt_aam, &prod_aam};
+   Array<int> *ignorable_aams[] = {&rcnt_aam_ignorable, 0, &prod_aam_ignorable};
 
    // read the reactants
    buf.clear();
@@ -102,6 +106,8 @@ void RSmilesLoader::_loadReaction ()
             ignore_closing_bond_direction_mismatch;
    r_loader.inside_rsmiles = true;
    r_loader.reaction_atom_mapping = &rcnt_aam;
+   r_loader.ignorable_aam = &rcnt_aam_ignorable;
+   r_loader.smarts_mode = smarts_mode;
 
    if (_rxn != 0)
    {
@@ -137,6 +143,7 @@ void RSmilesLoader::_loadReaction ()
             ignore_closing_bond_direction_mismatch;
    c_loader.inside_rsmiles = true;
    c_loader.reaction_atom_mapping = &ctlt_aam;
+   c_loader.smarts_mode = smarts_mode;
 
    if (_rxn != 0)
    {
@@ -172,6 +179,9 @@ void RSmilesLoader::_loadReaction ()
             ignore_closing_bond_direction_mismatch;
    p_loader.inside_rsmiles = true;
    p_loader.reaction_atom_mapping = &prod_aam;
+   p_loader.ignorable_aam = &prod_aam_ignorable;
+   p_loader.smarts_mode = smarts_mode;
+
    if (_rxn != 0)
    {
       prod.reset(new Molecule());
@@ -446,6 +456,7 @@ void RSmilesLoader::_loadReaction ()
    
    AutoPtr<BaseMolecule> mol;
    QS_DEF(Array<int>, aam);
+   QS_DEF(Array<int>, ignorable_aam);
    QS_DEF(Array<int>, mapping);
    QS_DEF(Array<int>, hl_atoms_frag);
    QS_DEF(Array<int>, hl_bonds_frag);
@@ -466,6 +477,7 @@ void RSmilesLoader::_loadReaction ()
 
          mol->clear();
          aam.clear();
+         ignorable_aam.clear();
          hl_atoms_frag.clear();
          hl_bonds_frag.clear();
 
@@ -489,6 +501,8 @@ void RSmilesLoader::_loadReaction ()
                for (k = 0; k < fragment->vertexCount(); k++)
                {
                   aam.push((*aams[v])[mapping[k]]);
+                  if (ignorable_aams[v] != 0)
+                     ignorable_aam.push((*ignorable_aams[v])[mapping[k]]);
                   
                   int idx = mapping[k];
 
@@ -524,6 +538,8 @@ void RSmilesLoader::_loadReaction ()
             idx = _brxn->addProductCopy(mol.ref(), 0, 0);
 
          _brxn->getAAMArray(idx).copy(aam);
+         if (_qrxn != 0)
+            _qrxn->getIgnorableAAMArray(idx).copy(ignorable_aam);
 
          if (have_highlighting)
          {

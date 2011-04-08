@@ -51,6 +51,8 @@ public:
 
    virtual QueryReaction & asQueryReaction ();
    virtual bool isQueryReaction ();
+   Array<int> & getIgnorableAAMArray (int index);
+   int getIgnorableAAM (int index, int atom);
 
 protected:
    void _transposeMoleculeForSubstructure (int index, Array<int> &transposition);
@@ -73,6 +75,7 @@ protected:
    static int _compare(int &i1, int &i2, void *c);
 
    ObjArray< Array<int> > _exactChanges;
+   ObjArray< Array<int> > _ignorableAAM;
 
    virtual void _clone (BaseReaction &other, int index, int i, ObjArray< Array<int> >* mol_mappings);
 

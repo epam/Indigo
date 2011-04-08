@@ -76,8 +76,8 @@ public:
 
 protected:
 
-   void _initMap (BaseReaction &reaction, RedBlackMap<int, int> &aam_map);
-   int  _checkAAM () const;
+   void _initMap (BaseReaction &reaction, int side, RedBlackMap<int, int> &aam_map);
+   virtual bool _checkAAM ();
    void _highlight ();
    bool _match_stereo;
 
@@ -134,11 +134,11 @@ protected:
    Reaction &_target;
 
    TL_CP_DECL(ObjArray<_Matcher>, _matchers);
-   TL_CP_DECL(RedBlackIntMap, _amm_to_second_side_1);
-   TL_CP_DECL(RedBlackIntMap, _amm_to_second_side_2);
+   TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_1);
+   TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_2);
    TL_CP_DECL(Array<int>, _molecule_core_1);
    TL_CP_DECL(Array<int>, _molecule_core_2);
-   TL_CP_DECL(RedBlackIntMap, _amm_core_first_side);
+   TL_CP_DECL(RedBlackIntMap, _aam_core_first_side);
 
    int _first_side;
    int _second_side;
