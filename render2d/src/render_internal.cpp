@@ -1026,7 +1026,7 @@ void MoleculeRenderInternal::_findRings()
             break;
          int aid = _be(j).aid;
          if (mask.find(aid)) {
-            while(ring.bondEnds.size() > 0 && _be(ring.bondEnds.top()).aid != aid) {
+            while(ring.bondEnds.size() > 1 && _be(ring.bondEnds.top()).aid != aid) {
                _be(ring.bondEnds.top()).lRing = -2;
                ring.bondEnds.pop();
             }
