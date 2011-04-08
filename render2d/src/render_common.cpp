@@ -130,8 +130,8 @@ SGroup::SGroup()
 
 void SGroup::clear ()
 {
-   tibegin = gibegin = -1;
-   ticount = gicount = 0;
+   tibegin = gibegin = bibegin = -1;
+   ticount = gicount = bicount = 0;
 }
 
 BondEnd::BondEnd ()
