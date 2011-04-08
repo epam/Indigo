@@ -1858,6 +1858,7 @@ void MoleculeRenderInternal::_initBondData ()
       d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2;
 
       d.stereodir = _mol->stereocenters.getBondDirection(i);
+      d.cistrans = _mol->cis_trans.getParity(i);
       int ubid = _bondMappingInv.size() > i ? _bondMappingInv.at(i) : i;
       if (_data.reactingCenters.size() > ubid)
          d.reactingCenter = _data.reactingCenters[ubid];
@@ -3291,7 +3292,7 @@ void MoleculeRenderInternal::_prepareDoubleBondCoords (Vec2f* coord, BondDescr& 
    Vec2f ns, ds;
    ns.scaled(bd.norm, 2 * _settings.bondSpace);
 
-   if (allowCentered && bd.centered)
+   if ((allowCentered && bd.centered) || bd.cistrans != 0)
    {
       Vec2f p0, p1, q0, q1;
       ns.scale(0.5f);
@@ -3387,8 +3388,13 @@ void MoleculeRenderInternal::_bondDouble (BondDescr& bd, const BondEnd& be1, con
 {
    Vec2f coord[4];
    _prepareDoubleBondCoords(coord, bd, be1, be2, true);
-   _cw.drawLine(coord[0], coord[1]);
-   _cw.drawLine(coord[2], coord[3]);
+   if (bd.cistrans) {
+      _cw.drawLine(coord[0], coord[3]);
+      _cw.drawLine(coord[2], coord[1]);
+   } else {
+      _cw.drawLine(coord[0], coord[1]);
+      _cw.drawLine(coord[2], coord[3]);
+   }
 
    _drawStereoCareBox(bd, be1, be2);
 }

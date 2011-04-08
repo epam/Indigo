@@ -221,6 +221,7 @@ struct BondDescr : public Edge {
    bool lineOnTheRight;
    bool isShort;
    int stereodir;
+   int cistrans;
    int type;
    int queryType;
    float length;

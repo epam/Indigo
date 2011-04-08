@@ -167,6 +167,7 @@ void BondDescr::clear ()
    stereoCare = false;
    thickness = 0.0f;
    stereodir = 0;
+   cistrans = 0;
    centered = false;
    extP = extN = 0;
    bahs = eahs = 0;
