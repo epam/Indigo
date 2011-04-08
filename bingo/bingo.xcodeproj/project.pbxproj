@@ -112,6 +112,20 @@
 			remoteGlobalIDString = A7EDA5C9106251C3006CBFAF;
 			remoteInfo = layout;
 		};
+		A7704197134F53D0006A0283 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7704190134F53CF006A0283 /* tinyxml.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772;
+			remoteInfo = tinyxml;
+		};
+		A7704199134F53F6006A0283 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7704190134F53CF006A0283 /* tinyxml.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772;
+			remoteInfo = tinyxml;
+		};
 		A7EDA6B4106254C6006CBFAF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7EDA6AA106254C6006CBFAF /* layout.xcodeproj */;
@@ -142,6 +156,7 @@
 		A73CF3D310627739000A182B /* reaction.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = reaction.xcodeproj; path = ../reaction/reaction.xcodeproj; sourceTree = SOURCE_ROOT; };
 		A75139EC1069306300E2FF81 /* bingo_profiling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_profiling.cpp; path = src/oracle/bingo_profiling.cpp; sourceTree = "<group>"; };
 		A75139ED1069306300E2FF81 /* bingo_profiling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_profiling.h; path = src/oracle/bingo_profiling.h; sourceTree = "<group>"; };
+		A7704190134F53CF006A0283 /* tinyxml.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tinyxml.xcodeproj; path = ../tinyxml/tinyxml.xcodeproj; sourceTree = "<group>"; };
 		A7EDA5F7106252BA006CBFAF /* chunk_storage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = chunk_storage.cpp; path = ../common/base_cpp/chunk_storage.cpp; sourceTree = SOURCE_ROOT; };
 		A7EDA5F8106252BA006CBFAF /* chunk_storage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = chunk_storage.h; path = ../common/base_cpp/chunk_storage.h; sourceTree = SOURCE_ROOT; };
 		A7EDA5F9106252BA006CBFAF /* shmem_posix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shmem_posix.cpp; path = ../common/base_cpp/shmem_posix.cpp; sourceTree = SOURCE_ROOT; };
@@ -264,9 +279,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A7704191134F53CF006A0283 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A7704198134F53D0006A0283 /* libtinyxml.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		A7EDA5E410625230006CBFAF = {
 			isa = PBXGroup;
 			children = (
+				A7704190134F53CF006A0283 /* tinyxml.xcodeproj */,
 				A73CF3C5106276D6000A182B /* graph.xcodeproj */,
 				A73CF3CD10627707000A182B /* molecule.xcodeproj */,
 				A73CF3D310627739000A182B /* reaction.xcodeproj */,
@@ -446,6 +470,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A770419A134F53F6006A0283 /* PBXTargetDependency */,
 				A73CF3F41062798B000A182B /* PBXTargetDependency */,
 				A73CF3F61062798F000A182B /* PBXTargetDependency */,
 				A73CF3F810627992000A182B /* PBXTargetDependency */,
@@ -491,6 +516,10 @@
 					ProductGroup = A73CF3D410627739000A182B /* Products */;
 					ProjectRef = A73CF3D310627739000A182B /* reaction.xcodeproj */;
 				},
+				{
+					ProductGroup = A7704191134F53CF006A0283 /* Products */;
+					ProjectRef = A7704190134F53CF006A0283 /* tinyxml.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -519,6 +548,13 @@
 			fileType = archive.ar;
 			path = libreaction.a;
 			remoteRef = A73CF3D710627739000A182B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7704198134F53D0006A0283 /* libtinyxml.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libtinyxml.a;
+			remoteRef = A7704197134F53D0006A0283 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A7EDA6B5106254C6006CBFAF /* liblayout.a */ = {
@@ -608,6 +644,11 @@
 			name = layout;
 			targetProxy = A73CF3F910627994000A182B /* PBXContainerItemProxy */;
 		};
+		A770419A134F53F6006A0283 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = tinyxml;
+			targetProxy = A7704199134F53F6006A0283 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -638,7 +679,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					..,
@@ -650,9 +691,11 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../oci/lib64\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../oci/lib64\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../tinyxml/build/Debug\"";
 				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_64)";
 				PREBINDING = NO;
 				PRODUCT_NAME = bingo;
@@ -671,6 +714,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
 					..,
 					../common,
@@ -682,9 +726,11 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../oci/lib64\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../oci/lib64\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../tinyxml/build/Debug\"";
 				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_64)";
 				PREBINDING = NO;
 				PRODUCT_NAME = bingo;
