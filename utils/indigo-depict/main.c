@@ -86,6 +86,8 @@ void usage (void)
            "   Set the default foreground color. Component values must be in range [0..255]\n"
            "-aamcolor <red> <green> <blue>\n"
            "   Set the color of AAM indices. Component values must be in range [0..255]\n"
+           "-dsgcolor <red> <green> <blue>\n"
+           "   Set the color of data SGroups. Component values must be in range [0..255]\n"
            "-commentcolor <red> <green> <blue>\n"
            "   Set the color of the comment. Component values must be in range [0..255]\n"
            "-atomnumbers\n"
@@ -505,6 +507,22 @@ int parseParams (Params* p, int argc, char *argv[]) {
             return -1;
 
          indigoSetOptionColor("render-aam-color", r, g, b);
+         i += 3;
+      }
+      else if (strcmp(argv[i], "-dsgcolor") == 0)
+      {
+         float r, g, b;
+
+         if (i + 3 >= argc)
+         {
+            fprintf(stderr, "expecting 3 numbers after -aamcolor\n");
+            return -1;
+         }
+
+         if (parseColor(argv, i, &r, &g, &b) != 0)
+            return -1;
+
+         indigoSetOptionColor("render-data-sgroup-color", r, g, b);
          i += 3;
       }
       else if (strcmp(argv[i], "-hydro") == 0)

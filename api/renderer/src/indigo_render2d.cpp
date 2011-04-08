@@ -518,7 +518,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerColor("render-highlight-color", indigoRenderSetHighlightColor);
    mgr.setOptionHandlerColor("render-aam-color", indigoRenderSetAAMColor);
    mgr.setOptionHandlerColor("render-comment-color", indigoRenderSetCommentColor);
-   mgr.setOptionHandlerColor("render-data-s-group-color", indigoRenderSetDataSGroupColor);
+   mgr.setOptionHandlerColor("render-data-sgroup-color", indigoRenderSetDataSGroupColor);
 
    mgr.setOptionHandlerXY("render-image-size", indigoRenderSetImageSize);
    mgr.setOptionHandlerXY("render-hdc-offset", indigoRenderSetHDCOffset);
