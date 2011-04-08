@@ -130,11 +130,11 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
    RefinementState new_state(*this);
    QS_DEF(Array<int>, branch);
    int v1, v2;
-   int v1c = -1, v2c = -1;
+   int v1c, v2c;
    int i, j, n;
 
-   v1 = vertexBegin();
-   v2 = vertexNext(v1);
+   v1c = v1 = vertexBegin();
+   v2c = v2 = vertexNext(v1);
 
    // Calculate initial energy
    beg_state.copyFromGraph();
