@@ -1858,7 +1858,7 @@ void MoleculeRenderInternal::_initBondData ()
       d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2;
 
       d.stereodir = _mol->stereocenters.getBondDirection(i);
-      d.cistrans = _mol->cis_trans.getParity(i);
+      d.cistrans = _mol->cis_trans.isIgnored(i);
       int ubid = _bondMappingInv.size() > i ? _bondMappingInv.at(i) : i;
       if (_data.reactingCenters.size() > ubid)
          d.reactingCenter = _data.reactingCenters[ubid];
@@ -3292,7 +3292,7 @@ void MoleculeRenderInternal::_prepareDoubleBondCoords (Vec2f* coord, BondDescr& 
    Vec2f ns, ds;
    ns.scaled(bd.norm, 2 * _settings.bondSpace);
 
-   if ((allowCentered && bd.centered) || bd.cistrans != 0)
+   if ((allowCentered && bd.centered) || bd.cistrans)
    {
       Vec2f p0, p1, q0, q1;
       ns.scale(0.5f);
