@@ -14,6 +14,7 @@
 		A73CF40510627BCD000A182B /* libreaction.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A73CF3D810627739000A182B /* libreaction.a */; };
 		A73CF445106286B6000A182B /* liblayout.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7EDA6B5106254C6006CBFAF /* liblayout.a */; };
 		A75139EE1069306300E2FF81 /* bingo_profiling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A75139EC1069306300E2FF81 /* bingo_profiling.cpp */; };
+		A7B19180134F58350099038A /* libtinyxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7704198134F53D0006A0283 /* libtinyxml.a */; };
 		A7EDA653106253B6006CBFAF /* ringo_aam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA60F106252FF006CBFAF /* ringo_aam.cpp */; };
 		A7EDA654106253B6006CBFAF /* mango_fetch_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA6261062533D006CBFAF /* mango_fetch_context.cpp */; };
 		A7EDA655106253B6006CBFAF /* ora_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA600106252E2006CBFAF /* ora_wrap.cpp */; };
@@ -243,6 +244,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7B19180134F58350099038A /* libtinyxml.a in Frameworks */,
 				A73CF445106286B6000A182B /* liblayout.a in Frameworks */,
 				A73CF40510627BCD000A182B /* libreaction.a in Frameworks */,
 				A73CF40410627BCA000A182B /* libmolecule.a in Frameworks */,
