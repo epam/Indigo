@@ -24,7 +24,8 @@
 using namespace indigo;
 
 ReactionSubstructureMatcher::ReactionSubstructureMatcher (Reaction &target) :
-BaseReactionSubstructureMatcher(target)
+BaseReactionSubstructureMatcher(target),
+TL_CP_GET(_fmcaches)
 {
    match_atoms = _match_atoms;
    match_bonds = _match_bonds;
@@ -33,7 +34,7 @@ BaseReactionSubstructureMatcher(target)
    prepare_ee = _prepare_ee;
    use_daylight_aam_mode = false;
    context = this;
-   fmcache.clear();
+   _fmcaches.clear();
 }
 
 bool ReactionSubstructureMatcher::_match_atoms (BaseReaction &query_, Reaction &target,
@@ -45,8 +46,10 @@ bool ReactionSubstructureMatcher::_match_atoms (BaseReaction &query_, Reaction &
    Molecule &supermol = target.getMolecule(super_mol_idx);
    ReactionSubstructureMatcher &self = *(ReactionSubstructureMatcher *)context;
 
+   self._fmcaches.expand(sub_mol_idx + 1);
+
    if (!MoleculeSubstructureMatcher::matchQueryAtom(&submol.getAtom(sub_atom_idx),
-      supermol, super_atom_idx, &self.fmcache, 0xFFFFFFFFUL))
+      supermol, super_atom_idx, &self._fmcaches[sub_mol_idx], 0xFFFFFFFFUL))
       return false;
 
    if (submol.stereocenters.getType(sub_atom_idx) > supermol.stereocenters.getType(super_atom_idx))
@@ -147,6 +150,14 @@ void ReactionSubstructureMatcher::_add_bond (BaseMolecule &submol, Molecule &sup
                                              int sub_idx, int super_idx, AromaticityMatcher *am)
 {
    MoleculeSubstructureMatcher::addBond(submol, supermol, sub_idx, super_idx, am);
+}
+
+bool ReactionSubstructureMatcher::_prepare (BaseReaction &query_, Reaction &target, void *context)
+{
+   ReactionSubstructureMatcher &self = *(ReactionSubstructureMatcher *)context;
+
+   self._fmcaches.clear();
+   return true;
 }
 
 bool ReactionSubstructureMatcher::_prepare_ee (EmbeddingEnumerator &ee,

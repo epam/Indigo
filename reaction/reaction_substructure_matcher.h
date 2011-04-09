@@ -30,11 +30,12 @@ class ReactionSubstructureMatcher : public BaseReactionSubstructureMatcher
 public:
    ReactionSubstructureMatcher (Reaction &target);
    bool use_daylight_aam_mode;
-   MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
 
    DEF_ERROR("reaction substructure matcher");
 
 protected:
+
+   TL_CP_DECL(ObjArray<MoleculeSubstructureMatcher::FragmentMatchCache>, _fmcaches);
 
    virtual bool _checkAAM ();
    
@@ -51,6 +52,7 @@ protected:
    static void _add_bond (BaseMolecule &submol, Molecule &supermol,
                          int sub_idx, int super_idx, AromaticityMatcher *am);
 
+   static bool _prepare (BaseReaction &query_, Reaction &target, void *context);
    static bool _prepare_ee (EmbeddingEnumerator &ee,
                          BaseMolecule &submol, Molecule &supermol, void *context);
 };
