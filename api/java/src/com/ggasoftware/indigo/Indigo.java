@@ -34,7 +34,7 @@ public class Indigo
 
    // JNA does not allow throwing exception from callbacks, thus we can not
    // use the error handler and we have to check the error codes. Below are
-   // three functions to ease checking them.
+   // four functions to ease checking them.
 
    static public int checkResult (int result)
    {
@@ -73,6 +73,7 @@ public class Indigo
 
    public int countReferences ()
    {
+      setSessionID();
       return checkResult(_lib.indigoCountReferences());
    }
 
@@ -237,6 +238,24 @@ public class Indigo
       return new IndigoObject(this, checkResult(_lib.indigoLoadQueryReactionFromFile(path)));
    }
 
+   public IndigoObject loadReactionSmarts (String str)
+   {
+      setSessionID();
+      return new IndigoObject(this, checkResult(_lib.indigoLoadReactionSmartsFromString(str)));
+   }
+
+   public IndigoObject loadReactionSmarts (byte[] buf)
+   {
+      setSessionID();
+      return new IndigoObject(this, checkResult( _lib.indigoLoadReactionSmartsFromBuffer(buf, buf.length)));
+   }
+
+   public IndigoObject loadReactionSmartsFromFile (String path)
+   {
+      setSessionID();
+      return new IndigoObject(this, checkResult(_lib.indigoLoadReactionSmartsFromFile(path)));
+   }
+
    public IndigoObject createReaction ()
    {
       setSessionID();
@@ -249,10 +268,41 @@ public class Indigo
       return new IndigoObject(this, checkResult(_lib.indigoCreateQueryReaction()));
    }
 
-   public boolean exactMatch (IndigoObject obj1, IndigoObject obj2)
+   public IndigoObject exactMatch (IndigoObject obj1, IndigoObject obj2, String flags)
    {
       setSessionID();
-      return checkResult(_lib.indigoExactMatch(obj1.self, obj2.self)) == 1;
+      if (flags == null)
+         flags = "";
+
+      int match = checkResult(_lib.indigoExactMatch(obj1.self, obj2.self, flags));
+
+      if (match == 0)
+         return null;
+
+      return new IndigoObject(this, new IndigoObject[]{obj1, obj2}, match);
+   }
+
+   public IndigoObject exactMatch (IndigoObject obj1, IndigoObject obj2)
+   {
+      return exactMatch(obj1, obj2, "");
+   }
+
+   public void setTautomerRule (int id, String beg, String end)
+   {
+      setSessionID();
+      checkResult(_lib.indigoSetTautomerRule(id, beg, end));
+   }
+
+   public void removeTautomerRule (int id)
+   {
+      setSessionID();
+      checkResult(_lib.indigoRemoveTautomerRule(id));
+   }
+
+   public void clearTautomerRules ()
+   {
+      setSessionID();
+      checkResult(_lib.indigoClearTautomerRules());
    }
 
    public float similarity (IndigoObject obj1, IndigoObject obj2)

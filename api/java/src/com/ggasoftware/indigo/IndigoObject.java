@@ -21,7 +21,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 {
    public int self;
    private Indigo dispatcher;
-   private IndigoObject parent; // should keep the parent so that GC will not remove it
+   private Object parent; // should keep the parent so that GC will not remove it
    private IndigoLib _lib;
 
    public IndigoObject (Indigo dispatcher, int id)
@@ -31,7 +31,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       _lib = Indigo.getLibrary();
    }
 
-   public IndigoObject (Indigo dispatcher, IndigoObject parent, int id)
+   public IndigoObject (Indigo dispatcher, Object parent, int id)
    {
       this.dispatcher = dispatcher;
       this.self = id;

@@ -86,6 +86,11 @@ public interface IndigoLib extends Library
    int indigoLoadQueryReactionFromFile   (String filename);
    int indigoLoadQueryReactionFromBuffer (byte[] buf, int size);
 
+   int indigoLoadReactionSmarts (int source);
+   int indigoLoadReactionSmartsFromString (String str);
+   int indigoLoadReactionSmartsFromFile   (String filename);
+   int indigoLoadReactionSmartsFromBuffer (byte[] buf, int size);
+
    int indigoCreateReaction ();
    int indigoCreateQueryReaction ();
 
@@ -249,7 +254,11 @@ public interface IndigoLib extends Library
 
    Pointer indigoSmiles (int item);
 
-   int indigoExactMatch (int item1, int item2);
+   int indigoExactMatch (int item1, int item2, String flags);
+
+   int indigoSetTautomerRule (int id, String beg, String end);
+   int indigoRemoveTautomerRule (int id);
+   int indigoClearTautomerRules ();
 
    Pointer indigoName (int handle);
    int indigoSetName (int handle, String name);
