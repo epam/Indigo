@@ -187,6 +187,7 @@ namespace com.ggasoftware.indigo
 
       public IndigoObject loadQueryReaction (byte[] buf)
       {
+         setSessionID();
          return new IndigoObject(this, _indigo_lib.indigoLoadQueryReactionFromBuffer(buf, buf.Length));
       }
 
@@ -194,6 +195,24 @@ namespace com.ggasoftware.indigo
       {
          setSessionID();
          return new IndigoObject(this, _indigo_lib.indigoLoadQueryReactionFromFile(path));
+      }
+
+      public IndigoObject loadReactionSmarts (String str)
+      {
+         setSessionID();
+         return new IndigoObject(this, _indigo_lib.indigoLoadReactionSmartsFromString(str));
+      }
+
+      public IndigoObject loadReactionSmarts (byte[] buf)
+      {
+         setSessionID();
+         return new IndigoObject(this, _indigo_lib.indigoLoadReactionSmartsFromBuffer(buf, buf.Length));
+      }
+
+      public IndigoObject loadReactionSmartsFromFile (String path)
+      {
+         setSessionID();
+         return new IndigoObject(this, _indigo_lib.indigoLoadReactionSmartsFromFile(path));
       }
 
       public IndigoObject createReaction ()
@@ -208,10 +227,41 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(this, _indigo_lib.indigoCreateQueryReaction());
       }
 
-      public bool exactMatch (IndigoObject obj1, IndigoObject obj2)
+      public IndigoObject exactMatch (IndigoObject obj1, IndigoObject obj2, string flags)
       {
          setSessionID();
-         return _indigo_lib.indigoExactMatch(obj1.self, obj2.self) == 1;
+
+         if (flags == null)
+            flags = "";
+
+         int match = _indigo_lib.indigoExactMatch(obj1.self, obj2.self, flags);
+
+         if (match == 0)
+            return null;
+         return new IndigoObject(this, new IndigoObject[] { obj1, obj2 }, match);
+      }
+
+      public IndigoObject exactMatch (IndigoObject obj1, IndigoObject obj2)
+      {
+         return exactMatch(obj1, obj2, "");
+      }
+
+      public void setTautomerRule (int id, string beg, string end)
+      {
+         setSessionID();
+         _indigo_lib.indigoSetTautomerRule(id, beg, end);
+      }
+
+      public void removeTautomerRule (int id)
+      {
+         setSessionID();
+         _indigo_lib.indigoRemoveTautomerRule(id);
+      }
+
+      public void clearTautomerRules ()
+      {
+         setSessionID();
+         _indigo_lib.indigoClearTautomerRules();
       }
 
       public IndigoObject unserialize (byte[] buf)

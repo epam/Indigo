@@ -10,14 +10,14 @@ namespace com.ggasoftware.indigo
    {
       public int self;
       private Indigo dispatcher;
-      private IndigoObject parent; // to prevent GC killing the parent object
+      private object parent; // to prevent GC killing the parent object
       private IndigoLib _indigo_lib;
 
       public IndigoObject (Indigo dispatcher, int id) : this(dispatcher, null, id)
       {
       }
 
-      public IndigoObject (Indigo dispatcher, IndigoObject parent, int id)
+      public IndigoObject (Indigo dispatcher, object parent, int id)
       {
          this.dispatcher = dispatcher;
          this.self = id;
@@ -1072,13 +1072,19 @@ namespace com.ggasoftware.indigo
       public IndigoObject mapAtom (IndigoObject query_atom)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, _indigo_lib.indigoMapAtom(self, query_atom.self));
+         int mapped = _indigo_lib.indigoMapAtom(self, query_atom.self);
+         if (mapped == 0)
+            return null;
+         return new IndigoObject(dispatcher, mapped);
       }
 
       public IndigoObject mapBond (IndigoObject query_bond)
       {
          dispatcher.setSessionID();
-         return new IndigoObject(dispatcher, _indigo_lib.indigoMapBond(self, query_bond.self));
+         int mapped = _indigo_lib.indigoMapBond(self, query_bond.self);
+         if (mapped == 0)
+            return null;
+         return new IndigoObject(dispatcher, mapped);
       }
 
       public IndigoObject allScaffolds ()

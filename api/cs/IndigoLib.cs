@@ -62,6 +62,9 @@ namespace com.ggasoftware.indigo
       int indigoLoadQueryReactionFromString (string str);
       int indigoLoadQueryReactionFromFile (string path);
       int indigoLoadQueryReactionFromBuffer (byte[] buf, int bufsize);
+      int indigoLoadReactionSmartsFromString (string str);
+      int indigoLoadReactionSmartsFromFile (string path);
+      int indigoLoadReactionSmartsFromBuffer (byte[] buf, int bufsize);
       int indigoCreateReaction ();
       int indigoCreateQueryReaction ();
       int indigoAddReactant (int reaction, int molecule);
@@ -194,7 +197,10 @@ namespace com.ggasoftware.indigo
       int indigoUnfoldHydrogens (int item);
       int indigoLayout (int item);
       sbyte* indigoSmiles (int item);
-      int indigoExactMatch (int item1, int item2);
+      int indigoExactMatch (int item1, int item2, string flags);
+      int indigoSetTautomerRule (int id, string beg, string end);
+      int indigoRemoveTautomerRule (int id);
+      int indigoClearTautomerRules ();
       sbyte* indigoName (int item);
       int indigoSetName (int item, string name);
       int indigoSerialize (int handle, byte** buf, int* size);
