@@ -538,7 +538,7 @@ class Indigo:
       res = func(obj.id, string)
       if res == 0:
         return None
-      return Indigo.IndigoObject(self, self._checkResult(res))
+      return Indigo.IndigoObject(self, self._checkResult(res), obj)
     return self._make_wrapper_func(newfunc, func)
 
   def _static_obj_obj_obj_string (self, func):
@@ -551,7 +551,7 @@ class Indigo:
       res = func(obj1.id, obj2.id, string)
       if res == 0:
         return None
-      return Indigo.IndigoObject(self, self._checkResult(res))
+      return Indigo.IndigoObject(self, self._checkResult(res), [obj1, obj2])
     return self._make_wrapper_func(newfunc, func)
 
   def _static_obj_string_string (self, func):
@@ -591,7 +591,7 @@ class Indigo:
       res = func(obj.id)
       if res == 0:
         return None
-      return Indigo.IndigoObject(self, self._checkResult(res))
+      return Indigo.IndigoObject(self, self._checkResult(res), obj)
     return self._make_wrapper_func(newfunc, func)
 		
   def _static_obj_obj_obj (self, func):
@@ -602,7 +602,7 @@ class Indigo:
       res = func(obj1.id, obj2.id)
       if res == 0:
         return None
-      return Indigo.IndigoObject(self, self._checkResult(res))
+      return Indigo.IndigoObject(self, self._checkResult(res), [obj1, obj2])
     return self._make_wrapper_func(newfunc, func)
 
   def _static_obj_obj_array (self, func):
@@ -614,7 +614,7 @@ class Indigo:
       res = func(obj1.id, indigo_array_obj2.id)
       if res == 0:
         return None
-      return Indigo.IndigoObject(self, self._checkResult(res))
+      return Indigo.IndigoObject(self, self._checkResult(res), obj1)
     return self._make_wrapper_func(newfunc, func)
 
   def _setSID (self):
