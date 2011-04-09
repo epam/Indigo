@@ -66,7 +66,7 @@ namespace com.ggasoftware.indigo
       // Local synchronization object
       Object _sync_object = new Object();
 
-      public void loadLibrary (String path, String dll_name, string resource_name)
+      public void loadLibrary (String path, String dll_name, string resource_name, bool make_unique_dll_name)
       {
          lock (_sync_object)
          {
@@ -86,7 +86,7 @@ namespace com.ggasoftware.indigo
             data = new DllData();
             data.lib_path = path;
             data.file_name = _getPathToBinary(path, subprefix + dll_name,
-               resource_name, Assembly.GetCallingAssembly());
+               resource_name, Assembly.GetCallingAssembly(), make_unique_dll_name);
 
             data.file_name = data.file_name.Replace('/', '\\');
             data.handle = LoadLibrary(data.file_name);
@@ -118,11 +118,13 @@ namespace com.ggasoftware.indigo
          }
       }
 
-      string _getPathToBinary (String path, String filename, String resource_name, Assembly resource_assembly)
+      string _getPathToBinary (String path, String filename, String resource_name,
+         Assembly resource_assembly, bool make_unique_dll_name)
       {
          if (path == null)
          {
-            String result = _extractFromAssembly(filename, resource_name, resource_assembly);
+            String result = _extractFromAssembly(filename,
+               resource_name, resource_assembly, make_unique_dll_name);
             if (result != null)
                return result;
             path = "lib";
@@ -139,7 +141,8 @@ namespace com.ggasoftware.indigo
          return dir;
       }
 
-      String _extractFromAssembly (String filename, String resource_name, Assembly resource_assembly)
+      String _extractFromAssembly (String filename, String resource_name, 
+         Assembly resource_assembly, bool make_unique_dll_name)
       {
          try
          {
@@ -153,9 +156,14 @@ namespace com.ggasoftware.indigo
             String dir = Path.GetDirectoryName(path);
             String name = Path.GetFileName(path);
 
-            String path_with_unique_name = Path.Combine(dir, version + "_" + name);
-
-            FileInfo file = new FileInfo(path_with_unique_name);
+            String new_dll_name;
+            if (make_unique_dll_name)
+               new_dll_name = version + "_" + name;
+            else
+               new_dll_name = name;
+            
+            String new_full_path = Path.Combine(dir, new_dll_name);
+            FileInfo file = new FileInfo(new_full_path);
             file.Directory.Create();
             // Check if file already exists
             if (!file.Exists || file.Length == 0)

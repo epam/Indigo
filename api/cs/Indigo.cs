@@ -327,10 +327,9 @@ namespace com.ggasoftware.indigo
       {
          IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
 
-         dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.ggasoftware.indigo.Properties.Resources");
-         dll_loader.loadLibrary(lib_path, "zlib.dll", "com.ggasoftware.indigo.Properties.Resources");
-         // _indigo_lib.indigo.dll should be unloaded twice because of DllImport
-         dll_loader.loadLibrary(lib_path, "indigo.dll", "com.ggasoftware.indigo.Properties.Resources");
+         dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.ggasoftware.indigo.Properties.Resources", false);
+         dll_loader.loadLibrary(lib_path, "zlib.dll", "com.ggasoftware.indigo.Properties.Resources", false);
+         dll_loader.loadLibrary(lib_path, "indigo.dll", "com.ggasoftware.indigo.Properties.Resources", false);
 
          // Save instance id to check if session was allocated for this instance
          _dll_loader_id = IndigoDllLoader.InstanceId;

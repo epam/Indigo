@@ -18,7 +18,8 @@ namespace com.ggasoftware.indigo
          String dllpath = indigo.getDllPath();
 
          IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
-         dll_loader.loadLibrary(dllpath, "indigo-renderer.dll", "com.ggasoftware.indigo.Properties.Resources");
+         dll_loader.loadLibrary(dllpath, "indigo-renderer.dll", 
+            "com.ggasoftware.indigo.Properties.Resources", false);
          _renderer_lib = dll_loader.getInterface<IndigoRendererLib>("indigo-renderer.dll");
 
          _indigo = indigo;
