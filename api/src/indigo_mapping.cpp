@@ -148,8 +148,8 @@ void _indigoHighlightSubstructure (BaseMolecule &query, BaseMolecule &mol, Array
    for (i = query.vertexBegin(); i != query.vertexEnd(); i = query.vertexNext(i))
    {
       int mapped = qmapping[i];
-      if (mapped >= 0)
-         mol.highlightAtom(mapping[i]);
+      if (mapped >= 0 && mapping[mapped] >= 0)
+         mol.highlightAtom(mapping[mapped]);
    }
    for (i = query.edgeBegin(); i != query.edgeEnd(); i = query.edgeNext(i))
    {

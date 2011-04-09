@@ -1525,8 +1525,6 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
 
          if (!smarts_mode)
             throw Error("'$' fragments are allowed only in SMARTS queries");
-         if (inside_rsmiles)
-            throw Error("'$' fragment SMARTS queries are not allowed in reactions");
 
          QS_DEF(Array<char>, subexp);
 

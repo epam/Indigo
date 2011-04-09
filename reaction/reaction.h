@@ -70,6 +70,8 @@ public:
 
    static void checkForConsistency (Reaction &rxn);
 
+   void unfoldHydrogens ();
+
    DEF_ERROR("reaction");
 
 protected:

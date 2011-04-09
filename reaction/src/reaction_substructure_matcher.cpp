@@ -32,6 +32,8 @@ BaseReactionSubstructureMatcher(target)
    remove_atom = _remove_atom;
    prepare_ee = _prepare_ee;
    use_daylight_aam_mode = false;
+   context = this;
+   fmcache.clear();
 }
 
 bool ReactionSubstructureMatcher::_match_atoms (BaseReaction &query_, Reaction &target,
@@ -41,9 +43,10 @@ bool ReactionSubstructureMatcher::_match_atoms (BaseReaction &query_, Reaction &
    QueryReaction &query = query_.asQueryReaction();
    QueryMolecule &submol = query.getQueryMolecule(sub_mol_idx);
    Molecule &supermol = target.getMolecule(super_mol_idx);
+   ReactionSubstructureMatcher &self = *(ReactionSubstructureMatcher *)context;
 
    if (!MoleculeSubstructureMatcher::matchQueryAtom(&submol.getAtom(sub_atom_idx),
-      supermol, super_atom_idx, 0, 0xFFFFFFFFUL))
+      supermol, super_atom_idx, &self.fmcache, 0xFFFFFFFFUL))
       return false;
 
    if (submol.stereocenters.getType(sub_atom_idx) > supermol.stereocenters.getType(super_atom_idx))

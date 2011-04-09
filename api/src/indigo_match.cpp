@@ -721,10 +721,23 @@ CEXPORT int indigoMatch (int target_matcher, int query)
       {
          IndigoReactionSubstructureMatcher &matcher = IndigoReactionSubstructureMatcher::cast(obj);
          QueryReaction &qrxn = self.getObject(query).getQueryReaction();
+         int i, j;
 
          ReactionAutomapper ram(qrxn);
          ram.correctReactingCenters(true);
          
+         for (i = qrxn.begin(); i != qrxn.end(); i = qrxn.next(i))
+            if (MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens(qrxn.getQueryMolecule(i)))
+               break;
+
+         if (i != qrxn.end())
+         {
+            matcher.target.unfoldHydrogens();
+            // expand mappings to include unfolded hydrogens
+            for (i = matcher.target.begin(); i != matcher.target.end(); i = matcher.target.next(i))
+               matcher.mappings[i].expandFill(matcher.target.getBaseMolecule(i).vertexEnd(), -1);
+         }
+
          if (matcher.matcher.get() == 0)
             matcher.matcher.create(matcher.target);
 
@@ -738,13 +751,22 @@ CEXPORT int indigoMatch (int target_matcher, int query)
          mapping->mol_mapping.fffill();
          mapping->mappings.expand(qrxn.end());
 
-         for (int i = qrxn.begin(); i != qrxn.end(); i = qrxn.next(i))
+         for (i = qrxn.begin(); i != qrxn.end(); i = qrxn.next(i))
          {
             if (qrxn.getSideType(i) == BaseReaction::CATALYST)
                continue;
-            mapping->mol_mapping[i] = matcher.matcher->getTargetMoleculeIndex(i);
-            mapping->mappings[i].copy(matcher.matcher->getQueryMoleculeMapping(i),
-                                      qrxn.getBaseMolecule(i).vertexEnd());
+            int tmol_idx = matcher.matcher->getTargetMoleculeIndex(i);
+            mapping->mol_mapping[i] = matcher.mol_mapping[tmol_idx];
+            BaseMolecule &qm = qrxn.getBaseMolecule(i);
+            mapping->mappings[i].clear_resize(qm.vertexEnd());
+            mapping->mappings[i].fffill();
+            for (j = qm.vertexBegin(); j != qm.vertexEnd(); j = qm.vertexNext(j))
+            {
+               int mapped = matcher.matcher->getQueryMoleculeMapping(i)[j];
+
+               if (mapped >= 0) // hydrogens are ignored
+                  mapping->mappings[i][j] = matcher.mappings[tmol_idx][mapped];
+            }
          }
 
          return self.addObject(mapping.release());

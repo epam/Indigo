@@ -30,6 +30,7 @@ class ReactionSubstructureMatcher : public BaseReactionSubstructureMatcher
 public:
    ReactionSubstructureMatcher (Reaction &target);
    bool use_daylight_aam_mode;
+   MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
 
    DEF_ERROR("reaction substructure matcher");
 

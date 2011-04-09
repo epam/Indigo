@@ -150,7 +150,10 @@ void BaseReactionSubstructureMatcher::_initMap (BaseReaction &reaction, int side
       BaseMolecule &i_mol = reaction.getBaseMolecule(i);
 
       for (j = i_mol.vertexBegin(); j < i_mol.vertexEnd(); j = i_mol.vertexNext(j))
-         if ((aam_number = reaction.getAAM(i, j)) != 0)
+      {
+         int aam_number = reaction.getAAM(i, j);
+                    
+         if (aam_number != 0)
          {
             if ((val = aam_map.at2(aam_number)) == 0)
                aam_map.insert(aam_number, i);
@@ -159,6 +162,7 @@ void BaseReactionSubstructureMatcher::_initMap (BaseReaction &reaction, int side
             else
                (*val) = -1;
          }
+      }
    }
 }
 
