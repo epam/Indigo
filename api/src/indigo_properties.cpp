@@ -18,6 +18,9 @@ CEXPORT int indigoHasProperty (int handle, const char *prop)
 {
    INDIGO_BEGIN
    {
+      if (prop == 0 || *prop == 0)
+         throw IndigoError("indigoHasProperty(): null or empty property given");
+
       IndigoObject &obj = self.getObject(handle);
       RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
 
@@ -33,6 +36,9 @@ CEXPORT const char * indigoGetProperty (int handle, const char *prop)
 {
    INDIGO_BEGIN
    {
+      if (prop == 0 || *prop == 0)
+         throw IndigoError("indigoGetProperty(): null or empty property given");
+
       IndigoObject &obj = self.getObject(handle);
       RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
 
@@ -50,6 +56,12 @@ CEXPORT int indigoSetProperty (int handle, const char *prop, const char *value)
 {
    INDIGO_BEGIN
    {
+      if (prop == 0 || *prop == 0)
+         throw IndigoError("indigoSetProperty(): null or empty property given");
+
+      if (value == 0)
+         value = "";
+
       IndigoObject &obj = self.getObject(handle);
       RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
 
@@ -69,6 +81,9 @@ CEXPORT int indigoRemoveProperty (int handle, const char *prop)
 {
    INDIGO_BEGIN
    {
+      if (prop == 0 || *prop == 0)
+         throw IndigoError("indigoRemoveProperty(): null or empty property given");
+
       IndigoObject &obj = self.getObject(handle);
       RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
 

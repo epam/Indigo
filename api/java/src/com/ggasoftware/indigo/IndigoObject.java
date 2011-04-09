@@ -730,6 +730,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject addDataSGroup(int[] atoms, int[] bonds, String description, String data)
    {
       dispatcher.setSessionID();
+      if (description == null)
+         description = "";
+      if (data == null)
+         data = "";
       return new IndigoObject(dispatcher, this, Indigo.checkResult(_lib.indigoAddDataSGroup(self, atoms.length,
               atoms, bonds.length, bonds, description, data)));
    }
@@ -737,6 +741,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void setDataSGroupXY(float x, float y, String options)
    {
       dispatcher.setSessionID();
+
+      if (options == null)
+         options = "";
+      
       Indigo.checkResult(_lib.indigoSetDataSGroupXY(self, x, y, options));
    }
 
