@@ -22,6 +22,10 @@
       <itemPath>reaction_auto_loader.h</itemPath>
       <itemPath>src/reaction_automapper.cpp</itemPath>
       <itemPath>reaction_automapper.h</itemPath>
+      <itemPath>src/reaction_cml_loader.cpp</itemPath>
+      <itemPath>reaction_cml_loader.h</itemPath>
+      <itemPath>src/reaction_cml_saver.cpp</itemPath>
+      <itemPath>reaction_cml_saver.h</itemPath>
       <itemPath>src/reaction_enumerator_state.cpp</itemPath>
       <itemPath>reaction_enumerator_state.h</itemPath>
       <itemPath>src/reaction_exact_matcher.cpp</itemPath>
@@ -67,6 +71,7 @@
           <incDir>
             <pElem>..</pElem>
             <pElem>../common</pElem>
+            <pElem>../tinyxml/include</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
           <warningLevel>2</warningLevel>
@@ -97,6 +102,7 @@
           <incDir>
             <pElem>..</pElem>
             <pElem>../common</pElem>
+            <pElem>../tinyxml/include</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
           <warningLevel>2</warningLevel>
@@ -130,6 +136,7 @@
           <incDir>
             <pElem>..</pElem>
             <pElem>../common</pElem>
+            <pElem>../tinyxml/include</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
           <warningLevel>2</warningLevel>
@@ -163,6 +170,7 @@
           <incDir>
             <pElem>..</pElem>
             <pElem>../common</pElem>
+            <pElem>../tinyxml/include</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
           <warningLevel>2</warningLevel>
@@ -196,6 +204,7 @@
           <incDir>
             <pElem>..</pElem>
             <pElem>../common</pElem>
+            <pElem>../tinyxml/include</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
           <warningLevel>2</warningLevel>

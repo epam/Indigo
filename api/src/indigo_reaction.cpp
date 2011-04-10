@@ -35,7 +35,8 @@ bool IndigoBaseReaction::is (IndigoObject &obj)
 {
    int type = obj.type;
 
-   if (type == REACTION || type == QUERY_REACTION || type == RDF_REACTION || type == SMILES_REACTION)
+   if (type == REACTION || type == QUERY_REACTION ||
+       type == RDF_REACTION || type == SMILES_REACTION || type == CML_REACTION)
       return true;
 
    if (type == ARRAY_ELEMENT)

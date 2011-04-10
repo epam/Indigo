@@ -23,10 +23,10 @@
 #include "base_cpp/auto_ptr.h"
 #include "molecule/molecule_cml_saver.h"
 #include "molecule/molfile_saver.h"
-#include "molecule/molecule_cml_saver.h"
 #include "molecule/smiles_saver.h"
 #include "reaction/rxnfile_saver.h"
 #include "reaction/rsmiles_saver.h"
+#include "reaction/reaction_cml_saver.h"
 
 #include <time.h>
 
@@ -218,6 +218,12 @@ void IndigoCmlSaver::append (Output &out, IndigoObject &obj)
       MoleculeCmlSaver saver(out);
       saver.skip_cml_tag = true;
       saver.saveMolecule(obj.getMolecule());
+   }
+   else if (IndigoBaseReaction::is(obj))
+   {
+      ReactionCmlSaver saver(out);
+      saver.skip_cml_tag = true;
+      saver.saveReaction(obj.getReaction());
    }
    else
       throw IndigoError("%s can not be saved to CML", obj.debugInfo());
@@ -422,17 +428,32 @@ CEXPORT int indigoSaveMolfile (int molecule, int output)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSaveCml (int molecule, int output)
+CEXPORT int indigoSaveCml (int item, int output)
 {
    INDIGO_BEGIN
    {
-      Molecule &mol = self.getObject(molecule).getMolecule();
+      IndigoObject &obj = self.getObject(item);
       Output &out = IndigoOutput::get(self.getObject(output));
 
-      MoleculeCmlSaver saver(out);
-      saver.saveMolecule(mol);
-      out.flush();
-      return 1;
+      if (IndigoBaseMolecule::is(obj))
+      {
+         Molecule &mol = obj.getMolecule();
+         MoleculeCmlSaver saver(out);
+         
+         saver.saveMolecule(mol);
+         out.flush();
+         return 1;
+      }
+      if (IndigoBaseReaction::is(obj))
+      {
+         Reaction &rxn = obj.getReaction();
+         ReactionCmlSaver saver(out);
+
+         saver.saveReaction(rxn);
+         out.flush();
+         return 1;
+      }
+      throw IndigoError("indigoSaveCml(): expected molecule or reaction, got %s", obj.debugInfo());
    }
    INDIGO_END(-1)
 }

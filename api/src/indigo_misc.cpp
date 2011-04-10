@@ -366,16 +366,13 @@ CEXPORT const char * indigoRawData (int handler)
       if (obj.type == IndigoObject::RDF_MOLECULE ||
           obj.type == IndigoObject::RDF_REACTION ||
           obj.type == IndigoObject::SMILES_MOLECULE ||
-          obj.type == IndigoObject::SMILES_REACTION)
+          obj.type == IndigoObject::SMILES_REACTION ||
+          obj.type == IndigoObject::CML_MOLECULE ||
+          obj.type == IndigoObject::CML_REACTION)
       {
          IndigoRdfData &data = (IndigoRdfData &)obj;
 
          self.tmp_string.copy(data.getRawData());
-      }
-      else if (obj.type == IndigoObject::CML_MOLECULE)
-      {
-         IndigoCmlMolecule &cml = (IndigoCmlMolecule &)obj;
-         self.tmp_string.copy(cml.data);
       }
       else if (obj.type == IndigoObject::PROPERTY)
          self.tmp_string.copy(((IndigoProperty &)obj).getValue());

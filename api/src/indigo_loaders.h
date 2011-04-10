@@ -177,7 +177,7 @@ namespace indigo
 class MultipleCmlLoader;
 }
 
-class IndigoCmlMolecule : public IndigoObject
+class IndigoCmlMolecule : public IndigoRdfData
 {
 public:
    IndigoCmlMolecule (Array<char> &data_, int index, int offset);
@@ -187,22 +187,29 @@ public:
    virtual BaseMolecule & getBaseMolecule ();
    virtual const char * getName ();
    virtual IndigoObject * clone ();
-   virtual RedBlackStringObjMap< Array<char> > * getProperties();
-
-   virtual int getIndex ();
-   int tell ();
 
    virtual const char * debugInfo ();
 
-   Array<char> data;
 protected:
-   int _index;
-   int _offset;
    Molecule _mol;
-   bool _loaded;
 };
 
+class IndigoCmlReaction : public IndigoRdfData
+{
+public:
+   IndigoCmlReaction (Array<char> &data_, int index, int offset);
+   virtual ~IndigoCmlReaction ();
 
+   virtual Reaction & getReaction ();
+   virtual BaseReaction & getBaseReaction ();
+   virtual const char * getName ();
+   virtual IndigoObject * clone ();
+
+   virtual const char * debugInfo ();
+
+protected:
+   Reaction _rxn;
+};
 
 class IndigoMultipleCmlLoader : public IndigoObject
 {

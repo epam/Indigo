@@ -52,7 +52,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/reaction_product_enumerator.o \
 	${OBJECTDIR}/src/reaction_substructure_matcher.o \
 	${OBJECTDIR}/src/crf_saver.o \
-	${OBJECTDIR}/src/base_reaction_substructure_matcher.o
+	${OBJECTDIR}/src/base_reaction_substructure_matcher.o \
+	${OBJECTDIR}/src/reaction_cml_saver.o \
+	${OBJECTDIR}/src/reaction_cml_loader.o
 
 
 # C Compiler Flags
@@ -84,102 +86,112 @@ dist/Release64/GNU-Linux-x86/libreaction.a: ${OBJECTFILES}
 ${OBJECTDIR}/src/rxnfile_loader.o: src/rxnfile_loader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/rxnfile_loader.o src/rxnfile_loader.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/rxnfile_loader.o src/rxnfile_loader.cpp
 
 ${OBJECTDIR}/src/reaction_exact_matcher.o: src/reaction_exact_matcher.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_exact_matcher.o src/reaction_exact_matcher.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_exact_matcher.o src/reaction_exact_matcher.cpp
 
 ${OBJECTDIR}/src/base_reaction.o: src/base_reaction.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/base_reaction.o src/base_reaction.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/base_reaction.o src/base_reaction.cpp
 
 ${OBJECTDIR}/src/query_reaction.o: src/query_reaction.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/query_reaction.o src/query_reaction.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/query_reaction.o src/query_reaction.cpp
 
 ${OBJECTDIR}/src/rsmiles_loader.o: src/rsmiles_loader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/rsmiles_loader.o src/rsmiles_loader.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/rsmiles_loader.o src/rsmiles_loader.cpp
 
 ${OBJECTDIR}/src/reaction_enumerator_state.o: src/reaction_enumerator_state.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_enumerator_state.o src/reaction_enumerator_state.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_enumerator_state.o src/reaction_enumerator_state.cpp
 
 ${OBJECTDIR}/src/reaction_auto_loader.o: src/reaction_auto_loader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_auto_loader.o src/reaction_auto_loader.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_auto_loader.o src/reaction_auto_loader.cpp
 
 ${OBJECTDIR}/src/reaction.o: src/reaction.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction.o src/reaction.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction.o src/reaction.cpp
 
 ${OBJECTDIR}/src/reaction_neighborhood_counters.o: src/reaction_neighborhood_counters.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_neighborhood_counters.o src/reaction_neighborhood_counters.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_neighborhood_counters.o src/reaction_neighborhood_counters.cpp
 
 ${OBJECTDIR}/src/rsmiles_saver.o: src/rsmiles_saver.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/rsmiles_saver.o src/rsmiles_saver.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/rsmiles_saver.o src/rsmiles_saver.cpp
 
 ${OBJECTDIR}/src/crf_loader.o: src/crf_loader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/crf_loader.o src/crf_loader.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/crf_loader.o src/crf_loader.cpp
 
 ${OBJECTDIR}/src/reaction_automapper.o: src/reaction_automapper.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_automapper.o src/reaction_automapper.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_automapper.o src/reaction_automapper.cpp
 
 ${OBJECTDIR}/src/icr_loader.o: src/icr_loader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/icr_loader.o src/icr_loader.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/icr_loader.o src/icr_loader.cpp
 
 ${OBJECTDIR}/src/rxnfile_saver.o: src/rxnfile_saver.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/rxnfile_saver.o src/rxnfile_saver.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/rxnfile_saver.o src/rxnfile_saver.cpp
 
 ${OBJECTDIR}/src/icr_saver.o: src/icr_saver.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/icr_saver.o src/icr_saver.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/icr_saver.o src/icr_saver.cpp
 
 ${OBJECTDIR}/src/reaction_fingerprint.o: src/reaction_fingerprint.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_fingerprint.o src/reaction_fingerprint.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_fingerprint.o src/reaction_fingerprint.cpp
 
 ${OBJECTDIR}/src/reaction_product_enumerator.o: src/reaction_product_enumerator.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_product_enumerator.o src/reaction_product_enumerator.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_product_enumerator.o src/reaction_product_enumerator.cpp
 
 ${OBJECTDIR}/src/reaction_substructure_matcher.o: src/reaction_substructure_matcher.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_substructure_matcher.o src/reaction_substructure_matcher.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_substructure_matcher.o src/reaction_substructure_matcher.cpp
 
 ${OBJECTDIR}/src/crf_saver.o: src/crf_saver.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/crf_saver.o src/crf_saver.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/crf_saver.o src/crf_saver.cpp
 
 ${OBJECTDIR}/src/base_reaction_substructure_matcher.o: src/base_reaction_substructure_matcher.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/base_reaction_substructure_matcher.o src/base_reaction_substructure_matcher.cpp
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/base_reaction_substructure_matcher.o src/base_reaction_substructure_matcher.cpp
+
+${OBJECTDIR}/src/reaction_cml_saver.o: src/reaction_cml_saver.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_cml_saver.o src/reaction_cml_saver.cpp
+
+${OBJECTDIR}/src/reaction_cml_loader.o: src/reaction_cml_loader.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_cml_loader.o src/reaction_cml_loader.cpp
 
 # Subprojects
 .build-subprojects:

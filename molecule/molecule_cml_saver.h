@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __cml_saver_h__
-#define __cml_saver_h__
+#ifndef __molecule_cml_saver_h__
+#define __molecule_cml_saver_h__
 
 namespace indigo {
 
@@ -28,7 +28,7 @@ public:
    void saveMolecule (Molecule &mol);
    bool skip_cml_tag; // skips <?xml> and <cml> tags
 
-   DEF_ERROR("CML saver");
+   DEF_ERROR("molecule CML saver");
 
 protected:
    Molecule *_mol;

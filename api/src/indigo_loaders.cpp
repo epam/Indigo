@@ -26,6 +26,7 @@
 #include "molecule/sdf_loader.h"
 #include "molecule/multiple_cml_loader.h"
 #include "molecule/molecule_cml_loader.h"
+#include "reaction/reaction_cml_loader.h"
 
 IndigoSdfLoader::IndigoSdfLoader (Scanner &scanner) :
 IndigoObject(SDF_LOADER)
@@ -538,6 +539,8 @@ CEXPORT int indigoTell (int handle)
          return ((IndigoMultipleCmlLoader &)obj).tell();
       if (obj.type == IndigoObject::CML_MOLECULE)
          return ((IndigoCmlMolecule &)obj).tell();
+      if (obj.type == IndigoObject::CML_REACTION)
+         return ((IndigoCmlReaction &)obj).tell();
 
       throw IndigoError("indigoTell(): not applicable to %s", obj.debugInfo());
    }
@@ -572,13 +575,9 @@ CEXPORT int indigoIterateSmilesFile (const char *filename)
 }
 
 
-IndigoCmlMolecule::IndigoCmlMolecule (Array<char> &data_, int index, int offset) :
-IndigoObject(CML_MOLECULE)
+IndigoCmlMolecule::IndigoCmlMolecule (Array<char> &data, int index, int offset) :
+IndigoRdfData(CML_MOLECULE, data, index, offset)
 {
-   data.copy(data_);
-   _index = index;
-   _offset = offset;
-   _loaded = false;
 }
 
 IndigoCmlMolecule::~IndigoCmlMolecule ()
@@ -591,7 +590,7 @@ Molecule & IndigoCmlMolecule::getMolecule ()
    {
       Indigo &self = indigoGetInstance();
 
-      BufferScanner scanner(data);
+      BufferScanner scanner(_data);
       MoleculeCmlLoader loader(scanner);
       loader.ignore_stereochemistry_errors = self.ignore_stereochemistry_errors;
       loader.loadMolecule(_mol);
@@ -600,15 +599,9 @@ Molecule & IndigoCmlMolecule::getMolecule ()
    return _mol;
 }
 
-
 BaseMolecule & IndigoCmlMolecule::getBaseMolecule ()
 {
    return getMolecule();
-}
-
-RedBlackStringObjMap< Array<char> > * IndigoCmlMolecule::getProperties()
-{
-   return 0;
 }
 
 const char * IndigoCmlMolecule::getName ()
@@ -621,21 +614,54 @@ IndigoObject * IndigoCmlMolecule::clone ()
    return IndigoMolecule::cloneFrom(*this);
 }
 
-int IndigoCmlMolecule::getIndex ()
-{
-   return _index;
-}
-
-int IndigoCmlMolecule::tell ()
-{
-   return _offset;
-}
-
 const char * IndigoCmlMolecule::debugInfo ()
 {
    return "<cml molecule>";
 }
 
+IndigoCmlReaction::IndigoCmlReaction (Array<char> &data, int index, int offset) :
+IndigoRdfData(CML_REACTION, data, index, offset)
+{
+}
+
+IndigoCmlReaction::~IndigoCmlReaction ()
+{
+}
+
+Reaction & IndigoCmlReaction::getReaction ()
+{
+   if (!_loaded)
+   {
+      Indigo &self = indigoGetInstance();
+
+      BufferScanner scanner(_data);
+      ReactionCmlLoader loader(scanner);
+      loader.ignore_stereochemistry_errors = self.ignore_stereochemistry_errors;
+      loader.loadReaction(_rxn);
+      _loaded = true;
+   }
+   return _rxn;
+}
+
+BaseReaction & IndigoCmlReaction::getBaseReaction ()
+{
+   return getReaction();
+}
+
+const char * IndigoCmlReaction::getName ()
+{
+   return getReaction().name.ptr();
+}
+
+IndigoObject * IndigoCmlReaction::clone ()
+{
+   return IndigoReaction::cloneFrom(*this);
+}
+
+const char * IndigoCmlReaction::debugInfo ()
+{
+   return "<cml reaction>";
+}
 
 IndigoMultipleCmlLoader::IndigoMultipleCmlLoader (Scanner &scanner) :
 IndigoObject(MULTIPLE_CML_LOADER)
@@ -679,7 +705,7 @@ IndigoObject * IndigoMultipleCmlLoader::next ()
    loader->readNext();
 
    if (loader->isReaction())
-      throw new IndigoError("CML reactions not supported yet");
+      return new IndigoCmlReaction(loader->data, counter, offset);
    else
       return new IndigoCmlMolecule(loader->data, counter, offset);
 }

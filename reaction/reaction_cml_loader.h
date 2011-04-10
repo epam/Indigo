@@ -12,43 +12,37 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __molecule_cml_loader__
-#define __molecule_cml_loader__
+#ifndef __reaction_cml_loader__
+#define __reaction_cml_loader__
 
 #include "base_cpp/exception.h"
-
-class TiXmlHandle;
 
 namespace indigo
 {
 
 class Scanner;
-class Molecule;
+class Reaction;
 
-class MoleculeCmlLoader
+class ReactionCmlLoader
 {
 public:
 
-   DEF_ERROR("molecule CML loader");
+   DEF_ERROR("reaction CML loader");
 
-   MoleculeCmlLoader (Scanner &scanner);
-   MoleculeCmlLoader (TiXmlHandle &handle);
+   ReactionCmlLoader (Scanner &scanner);
+   ~ReactionCmlLoader ();
 
-   void loadMolecule (Molecule &mol);
+   void loadReaction (Reaction &rxn);
 
    bool ignore_stereochemistry_errors;
 
 protected:
-   Scanner *_scanner;
-   TiXmlHandle *_handle;
-
-   void _loadMolecule (TiXmlHandle &handle, Molecule &mol);
+   Scanner &_scanner;
 
 private:
-   MoleculeCmlLoader (const MoleculeCmlLoader &); // no implicit copy
+   ReactionCmlLoader (const ReactionCmlLoader &); // no implicit copy
 };
 
-
-}
+};
 
 #endif

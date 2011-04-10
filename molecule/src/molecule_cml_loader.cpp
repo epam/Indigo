@@ -21,8 +21,17 @@
 
 using namespace indigo;
 
-MoleculeCmlLoader::MoleculeCmlLoader (Scanner &scanner) : _scanner(scanner)
+MoleculeCmlLoader::MoleculeCmlLoader (Scanner &scanner)
 {
+   _scanner = &scanner;
+   _handle = 0;
+   ignore_stereochemistry_errors = false;
+}
+
+MoleculeCmlLoader::MoleculeCmlLoader (TiXmlHandle &handle)
+{
+   _handle = &handle;
+   _scanner = 0;
    ignore_stereochemistry_errors = false;
 }
 
@@ -30,10 +39,37 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
 {
    mol.clear();
 
-   QS_DEF(Array<char>, buf);
-   _scanner.readAll(buf);
-   buf.push(0);
+   if (_scanner != 0)
+   {
+      QS_DEF(Array<char>, buf);
+      _scanner->readAll(buf);
+      buf.push(0);
+      TiXmlDocument xml;
 
+      xml.Parse(buf.ptr());
+
+      if (xml.Error())
+         throw Error("XML parsing error: %s", xml.ErrorDesc());
+
+      TiXmlHandle hxml(&xml);
+      TiXmlHandle handle = hxml.FirstChild("molecule");
+      TiXmlElement *elem = handle.Element();
+      if (elem == 0)
+      {
+         handle = hxml.FirstChild("cml").FirstChild("molecule");
+         elem = handle.Element();
+      }
+      if (elem == 0)
+         throw Error("no <molecule>?");
+      _loadMolecule(handle, mol);
+   }
+   else
+      _loadMolecule(*_handle, mol);
+
+}
+
+void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
+{
    QS_DEF(RedBlackStringMap<int>, atoms);
    QS_DEF(Array<int>, bond_orientations);
    QS_DEF(Array<int>, atom_stereo_types);
@@ -43,32 +79,16 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
    atom_stereo_types.clear();
    total_h_count.clear();
 
-   TiXmlDocument xml;
-
-   xml.Parse(buf.ptr());
-
-   if (xml.Error())
-      throw Error("XML parsing error: %s", xml.ErrorDesc());
-
-   TiXmlHandle hxml(&xml);
-   TiXmlElement *elem;
-   TiXmlHandle hroot(0);
-
-   elem = hxml.FirstChild("molecule").Element();
-   if (elem == 0)
-      elem = hxml.FirstChild("cml").FirstChild("molecule").Element();
-   if (elem == 0)
-      throw Error("no <molecule>?");
-   hroot = TiXmlHandle(elem);
-
-   const char *title = elem->Attribute("title");
+   const char *title = handle.Element()->Attribute("title");
 
    if (title != 0)
       mol.name.readString(title, true);
 
+   TiXmlElement *elem;
+   
    // Atoms
 
-   elem = hroot.FirstChild("atomArray").FirstChild().Element();
+   elem = handle.FirstChild("atomArray").FirstChild().Element();
    for (; elem; elem = elem->NextSiblingElement())
    {
       if (strncmp(elem->Value(), "atom", 4) != 0)
@@ -167,7 +187,7 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
 
    // Bonds
    bool have_cistrans_notation = false;
-   elem = hroot.FirstChild("bondArray").FirstChild().Element();
+   elem = handle.FirstChild("bondArray").FirstChild().Element();
 
    for (; elem; elem = elem->NextSiblingElement())
    {
@@ -254,7 +274,7 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
    }
 
    // Tetrahedral stereocenters
-   elem = hroot.FirstChild("atomArray").FirstChild().Element();
+   elem = handle.FirstChild("atomArray").FirstChild().Element();
    for (; elem; elem = elem->NextSiblingElement())
    {
       const char *id = elem->Attribute("id");
@@ -310,7 +330,7 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
    // Cis-trans stuff
    if (have_cistrans_notation)
    {
-      elem = hroot.FirstChild("bondArray").FirstChild().Element();
+      elem = handle.FirstChild("bondArray").FirstChild().Element();
 
       int bond_idx = -1;
 

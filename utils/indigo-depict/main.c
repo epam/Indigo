@@ -173,13 +173,18 @@ int _isReaction (const char *smiles)
    return strchr(smiles, '>') != NULL;
 }
 
-int _isMultipleCML (const char *filename)
+int _isMultipleCML (const char *filename, int *reaction)
 {
    int iter = indigoIterateCMLFile(filename);
 
+   *reaction = 0;
+   
    if (indigoHasNext(iter))
    {
       int item = indigoNext(iter);
+      if (strstr(indigoRawData(item), "<reaction") != NULL)
+         *reaction = 1;
+      
       if (indigoHasNext(iter))
       {
          indigoFree(item);
@@ -313,10 +318,16 @@ int parseParams (Params* p, int argc, char *argv[]) {
       }
       else if (strcasecmp(p->infile_ext, "cml") == 0)
       {
-         if (_isMultipleCML(argv[1]))
+         int reaction;
+         if (_isMultipleCML(argv[1], &reaction))
             p->mode = MODE_MULTIPLE_CML;
          else
-            p->mode = MODE_SINGLE_MOLECULE;
+         {
+            if (reaction)
+               p->mode = MODE_SINGLE_REACTION;
+            else
+               p->mode = MODE_SINGLE_MOLECULE;
+         }
       }
       else if (strcasecmp(p->infile_ext, "sdf") == 0 || strcasecmp(p->infile_ext, "sdf.gz") == 0)
          p->mode = MODE_SDF;
@@ -828,14 +839,14 @@ int main (int argc, char *argv[])
       if (p.out_ext == OEXT_MOL)
          ERROR("molecule output specified for reaction input\n"); 
 
-      if (p.out_ext == OEXT_CML)
-         ERROR("reaction CML saving not supported\n");
-
       obj = p.query_set ? indigoLoadQueryReaction(reader) : indigoLoadReaction(reader);
       _prepare(obj, p.aromatization);
       if (p.action == ACTION_LAYOUT) {
          indigoLayout(obj);
-         indigoSaveRxnfileToFile(obj, p.outfile);
+         if (p.out_ext == OEXT_CML)
+            indigoSaveCmlToFile(obj, p.outfile);
+         else
+            indigoSaveRxnfileToFile(obj, p.outfile);
       } else {
          _setComment(obj, &p);
          renderToFile(obj, p.outfile);
