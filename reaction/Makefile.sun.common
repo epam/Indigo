@@ -3,7 +3,8 @@ all: $(TARGETDIR_libreaction.a)/libreaction.a
 ## Target: libreaction.a
 CPPFLAGS_libreaction.a = \
 	-I.. \
-	-I../common
+	-I../common \
+	-I../tinyxml/include
 OBJS_libreaction.a =  \
 	$(TARGETDIR_libreaction.a)/base_reaction.o \
 	$(TARGETDIR_libreaction.a)/base_reaction_substructure_matcher.o \
@@ -15,6 +16,8 @@ OBJS_libreaction.a =  \
 	$(TARGETDIR_libreaction.a)/reaction.o \
 	$(TARGETDIR_libreaction.a)/reaction_auto_loader.o \
 	$(TARGETDIR_libreaction.a)/reaction_automapper.o \
+	$(TARGETDIR_libreaction.a)/reaction_cml_saver.o \
+	$(TARGETDIR_libreaction.a)/reaction_cml_loader.o \
 	$(TARGETDIR_libreaction.a)/reaction_enumerator_state.o \
 	$(TARGETDIR_libreaction.a)/reaction_exact_matcher.o \
 	$(TARGETDIR_libreaction.a)/reaction_fingerprint.o \
@@ -64,6 +67,12 @@ $(TARGETDIR_libreaction.a)/reaction_auto_loader.o: $(TARGETDIR_libreaction.a) sr
 $(TARGETDIR_libreaction.a)/reaction_automapper.o: $(TARGETDIR_libreaction.a) src/reaction_automapper.cpp
 	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_automapper.cpp
 
+$(TARGETDIR_libreaction.a)/reaction_cml_saver.o: $(TARGETDIR_libreaction.a) src/reaction_cml_saver.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_cml_saver.cpp
+
+$(TARGETDIR_libreaction.a)/reaction_cml_loader.o: $(TARGETDIR_libreaction.a) src/reaction_cml_loader.cpp
+	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_cml_loader.cpp
+
 $(TARGETDIR_libreaction.a)/reaction_enumerator_state.o: $(TARGETDIR_libreaction.a) src/reaction_enumerator_state.cpp
 	$(COMPILE.cc) $(CCFLAGS_libreaction.a) $(CPPFLAGS_libreaction.a) -o $@ src/reaction_enumerator_state.cpp
 
@@ -110,6 +119,8 @@ clean:
 		$(TARGETDIR_libreaction.a)/reaction.o \
 		$(TARGETDIR_libreaction.a)/reaction_auto_loader.o \
 		$(TARGETDIR_libreaction.a)/reaction_automapper.o \
+		$(TARGETDIR_libreaction.a)/reaction_cml_saver.o \
+		$(TARGETDIR_libreaction.a)/reaction_cml_loader.o \
 		$(TARGETDIR_libreaction.a)/reaction_enumerator_state.o \
 		$(TARGETDIR_libreaction.a)/reaction_exact_matcher.o \
 		$(TARGETDIR_libreaction.a)/reaction_fingerprint.o \

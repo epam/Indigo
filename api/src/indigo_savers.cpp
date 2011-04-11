@@ -83,7 +83,7 @@ IndigoSaver* IndigoSaver::create (Output &output, const char *type)
    return saver.release();
 }
 
-void IndigoSaver::append (IndigoObject &object)
+void IndigoSaver::appendObject (IndigoObject &object)
 {
    if (_closed)
       throw IndigoError("save %s has already been closed", debugInfo());
@@ -518,7 +518,7 @@ CEXPORT int indigoAppend (int saver_id, int object)
          throw IndigoError("indigoAppend() is only applicable to saver objects. %s object was passed as a saver", 
             saver_obj.debugInfo());
       IndigoSaver &saver = (IndigoSaver &)saver_obj;
-      saver.append(obj);
+      saver.appendObject(obj);
       return 1;
    }
    INDIGO_END(-1)

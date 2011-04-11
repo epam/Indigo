@@ -13,6 +13,7 @@ OBJS_libgraph.a =  \
 	$(TARGETDIR_libgraph.a)/d_bitset.o \
 	$(TARGETDIR_libgraph.a)/exception.o \
 	$(TARGETDIR_libgraph.a)/io_base.o \
+	$(TARGETDIR_libgraph.a)/locale_guard.o \
 	$(TARGETDIR_libgraph.a)/os_sync_wrapper.o \
 	$(TARGETDIR_libgraph.a)/os_thread_wrapper.o \
 	$(TARGETDIR_libgraph.a)/output.o \
@@ -89,6 +90,9 @@ $(TARGETDIR_libgraph.a)/exception.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/
 
 $(TARGETDIR_libgraph.a)/io_base.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/io_base.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/io_base.cpp
+
+$(TARGETDIR_libgraph.a)/locale_guard.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/locale_guard.cpp
+	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/locale_guard.cpp
 
 $(TARGETDIR_libgraph.a)/os_sync_wrapper.o: $(TARGETDIR_libgraph.a) ../common/base_cpp/os_sync_wrapper.cpp
 	$(COMPILE.cc) $(CCFLAGS_libgraph.a) $(CPPFLAGS_libgraph.a) -o $@ ../common/base_cpp/os_sync_wrapper.cpp
@@ -236,6 +240,7 @@ clean:
 		$(TARGETDIR_libgraph.a)/d_bitset.o \
 		$(TARGETDIR_libgraph.a)/exception.o \
 		$(TARGETDIR_libgraph.a)/io_base.o \
+		$(TARGETDIR_libgraph.a)/locale_guard.o \
 		$(TARGETDIR_libgraph.a)/os_sync_wrapper.o \
 		$(TARGETDIR_libgraph.a)/os_thread_wrapper.o \
 		$(TARGETDIR_libgraph.a)/output.o \

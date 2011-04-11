@@ -25,6 +25,7 @@ OBJS_libindigo.a =  \
 	$(TARGETDIR_libindigo.a)/indigo_product_enumerator.o \
 	$(TARGETDIR_libindigo.a)/indigo_properties.o \
 	$(TARGETDIR_libindigo.a)/indigo_reaction.o \
+	$(TARGETDIR_libindigo.a)/indigo_savers.o \
 	$(TARGETDIR_libindigo.a)/indigo_scaffold.o \
 	$(TARGETDIR_libindigo.a)/indigo_stereo.o \
 	$(TARGETDIR_libindigo.a)/option_manager.o
@@ -91,6 +92,9 @@ $(TARGETDIR_libindigo.a)/indigo_properties.o: $(TARGETDIR_libindigo.a) src/indig
 $(TARGETDIR_libindigo.a)/indigo_reaction.o: $(TARGETDIR_libindigo.a) src/indigo_reaction.cpp
 	$(COMPILE.cc) $(CCFLAGS_libindigo.a) $(CPPFLAGS_libindigo.a) -o $@ src/indigo_reaction.cpp
 
+$(TARGETDIR_libindigo.a)/indigo_savers.o: $(TARGETDIR_libindigo.a) src/indigo_savers.cpp
+	$(COMPILE.cc) $(CCFLAGS_libindigo.a) $(CPPFLAGS_libindigo.a) -o $@ src/indigo_savers.cpp
+
 $(TARGETDIR_libindigo.a)/indigo_scaffold.o: $(TARGETDIR_libindigo.a) src/indigo_scaffold.cpp
 	$(COMPILE.cc) $(CCFLAGS_libindigo.a) $(CPPFLAGS_libindigo.a) -o $@ src/indigo_scaffold.cpp
 
@@ -129,6 +133,7 @@ OBJS_libindigo.so =  \
 	$(TARGETDIR_libindigo.so)/indigo_product_enumerator.o \
 	$(TARGETDIR_libindigo.so)/indigo_properties.o \
 	$(TARGETDIR_libindigo.so)/indigo_reaction.o \
+	$(TARGETDIR_libindigo.so)/indigo_savers.o \
 	$(TARGETDIR_libindigo.so)/indigo_scaffold.o \
 	$(TARGETDIR_libindigo.so)/indigo_stereo.o \
 	$(TARGETDIR_libindigo.so)/option_manager.o
@@ -196,6 +201,9 @@ $(TARGETDIR_libindigo.so)/indigo_properties.o: $(TARGETDIR_libindigo.so) src/ind
 $(TARGETDIR_libindigo.so)/indigo_reaction.o: $(TARGETDIR_libindigo.so) src/indigo_reaction.cpp
 	$(COMPILE.cc) $(CCFLAGS_libindigo.so) $(CPPFLAGS_libindigo.so) -o $@ src/indigo_reaction.cpp
 
+$(TARGETDIR_libindigo.so)/indigo_savers.o: $(TARGETDIR_libindigo.so) src/indigo_savers.cpp
+	$(COMPILE.cc) $(CCFLAGS_libindigo.so) $(CPPFLAGS_libindigo.so) -o $@ src/indigo_savers.cpp
+
 $(TARGETDIR_libindigo.so)/indigo_scaffold.o: $(TARGETDIR_libindigo.so) src/indigo_scaffold.cpp
 	$(COMPILE.cc) $(CCFLAGS_libindigo.so) $(CPPFLAGS_libindigo.so) -o $@ src/indigo_scaffold.cpp
 
@@ -229,6 +237,7 @@ clean:
 		$(TARGETDIR_libindigo.a)/indigo_product_enumerator.o \
 		$(TARGETDIR_libindigo.a)/indigo_properties.o \
 		$(TARGETDIR_libindigo.a)/indigo_reaction.o \
+		$(TARGETDIR_libindigo.a)/indigo_savers.o \
 		$(TARGETDIR_libindigo.a)/indigo_scaffold.o \
 		$(TARGETDIR_libindigo.a)/indigo_stereo.o \
 		$(TARGETDIR_libindigo.a)/option_manager.o \
@@ -250,6 +259,7 @@ clean:
 		$(TARGETDIR_libindigo.so)/indigo_product_enumerator.o \
 		$(TARGETDIR_libindigo.so)/indigo_properties.o \
 		$(TARGETDIR_libindigo.so)/indigo_reaction.o \
+		$(TARGETDIR_libindigo.so)/indigo_savers.o \
 		$(TARGETDIR_libindigo.so)/indigo_scaffold.o \
 		$(TARGETDIR_libindigo.so)/indigo_stereo.o \
 		$(TARGETDIR_libindigo.so)/option_manager.o

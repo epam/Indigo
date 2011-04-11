@@ -235,8 +235,9 @@ namespace indigo
       [return: MarshalAs(UnmanagedType.U8)]
       ulong bingoAllocateSessionID ();
 
-      void bingoReleaseSessionID ([MarshalAs(UnmanagedType.U8)] ulong id);
-
-      void bingoSetSessionID ([MarshalAs(UnmanagedType.U8)] ulong id);
+      void  bingoReleaseSessionID ([MarshalAs(UnmanagedType.U8)] ulong id);
+      void  bingoSetSessionID ([MarshalAs(UnmanagedType.U8)] ulong id);
+      [return: MarshalAs(UnmanagedType.U8)]
+      ulong bingoGetSessionID ();
    }
 }

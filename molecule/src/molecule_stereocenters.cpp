@@ -199,6 +199,8 @@ bool MoleculeStereocenters::isPossibleStereocenter (int atom_idx,
       {ELEM_C,  0, 4, 0, 4},
       {ELEM_Si, 0, 3, 0, 4},
       {ELEM_Si, 0, 4, 0, 4},
+      {ELEM_As, 0, 4, 0, 4}, // see PubChem CID 6338551
+      {ELEM_B, -1, 4, 0, 4}, // see PubChem CID 6852133
       {ELEM_N,  1, 3, 0, 4},
       {ELEM_N,  1, 4, 0, 4},
       {ELEM_N,  0, 4, 1, 4},

@@ -25,6 +25,7 @@ CEXPORT const char * bingoGetWarning ();
 CEXPORT qword bingoAllocateSessionID ();
 CEXPORT void bingoReleaseSessionID (qword session_id);
 CEXPORT void bingoSetSessionID (qword session_id);
+CEXPORT qword bingoGetSessionID ();
 typedef void (*BINGO_ERROR_HANDLER)(const char *message, void *context);
 CEXPORT void bingoSetErrorHandler (BINGO_ERROR_HANDLER handler, void *context);
 CEXPORT int bingoSetContext (int id);

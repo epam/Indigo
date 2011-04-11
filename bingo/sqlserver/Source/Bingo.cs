@@ -433,150 +433,158 @@ namespace indigo
                // Process each molecule
                // If ThreadAbortException occurs then Thread.ResetAbort() is 
                // called and indexing is terminated 
-               using (BingoSqlCursor cursor = new BingoSqlCursor(ctx_conn, create_cursor,
-                  "SELECT {0}, {1} FROM {2}", data.id_column, data.data_column, table))
+               String select_command = 
+                  String.Format("SELECT {0}, {1} FROM {2}", data.id_column, data.data_column, table);
+               using (SqlCommand command = new SqlCommand(select_command, ctx_conn))
                {
-                  Exception exception = null;
-                  int counter = 0;
+                  command.CommandTimeout = 3600 * 10;
+                  using (SqlDataReader cursor = command.ExecuteReader())
+                  {
+                     Exception exception = null;
+                     int counter = 0;
 
-                  BingoCore.GetNextRecordHandler get_next_record =
-                     (IntPtr context) =>
-                     {
-                        int? id = null;
-                        try
+                     BingoCore.GetNextRecordHandler get_next_record =
+                        (IntPtr context) =>
                         {
-                           if (exception != null)
+                           int? id = null;
+                           try
+                           {
+                              if (exception != null)
+                                 return 0;
+                              while (cursor.Read())
+                              {
+                                 if (cursor[0] == DBNull.Value)
+                                 {
+                                    string message =
+                                       String.Format("Record with id=null was skipped.");
+                                    if (SqlContext.Pipe != null)
+                                       SqlContext.Pipe.Send(message);
+                                    BingoLog.logMessage(message);
+                                    continue;
+                                 }
+                                 id = Convert.ToInt32(cursor[0]);
+                                 if (cursor[1] == DBNull.Value)
+                                 {
+                                    string message =
+                                       String.Format("Record with id={0} has null data. Skipped.", id);
+                                    if (SqlContext.Pipe != null)
+                                       SqlContext.Pipe.Send(message);
+                                    BingoLog.logMessage(message);
+                                    if (error_list != null)
+                                       error_list.Add(new FetchedData(id.Value) { str = "null data" });
+                                    continue;
+                                 }
+                                 counter++;
+                                 if (counter % 10000 == 0)
+                                 {
+                                    BingoLog.logMessage("Processing record #{0} with id = {1}",
+                                       counter, id);
+                                 }
+
+                                 byte[] record_data;
+                                 if (cursor[1].GetType() == typeof(byte[]))
+                                    record_data = (byte[])cursor[1];
+                                 else
+                                    record_data = encoding.GetBytes((string)cursor[1]);
+
+                                 BingoCore.lib.bingoSetIndexRecordData(id.Value, record_data, record_data.Length);
+
+                                 return 1;
+                              }
+                              // No records more
                               return 0;
-                           while (cursor.read())
-                           {
-                              if (cursor[0] == DBNull.Value)
-                              {
-                                 string message =
-                                    String.Format("Record with id=null was skipped.");
-                                 if (SqlContext.Pipe != null)
-                                    SqlContext.Pipe.Send(message);
-                                 BingoLog.logMessage(message);
-                                 continue;
-                              }
-                              id = Convert.ToInt32(cursor[0]);
-                              if (cursor[1] == DBNull.Value)
-                              {
-                                 string message =
-                                    String.Format("Record with id={0} has null data. Skipped.", id);
-                                 if (SqlContext.Pipe != null)
-                                    SqlContext.Pipe.Send(message);
-                                 BingoLog.logMessage(message);
-                                 if (error_list != null)
-                                    error_list.Add(new FetchedData(id.Value) { str = "null data" });
-                                 continue;
-                              }
-                              counter++;
-                              if (counter % 10000 == 0)
-                              {
-                                 BingoLog.logMessage("Processing record #{0} with id = {1}",
-                                    counter, id);
-                              }
-
-                              byte[] record_data;
-                              if (cursor[1].GetType() == typeof(byte[]))
-                                 record_data = (byte[])cursor[1];
-                              else
-                                 record_data = encoding.GetBytes((string)cursor[1]);
-
-                              BingoCore.lib.bingoSetIndexRecordData(id.Value, record_data, record_data.Length);
-
-                              return 1;
                            }
-                           // No records more
-                           return 0;
-                        }
-                        catch (Exception ex)
-                        {
-                           if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
-                              Thread.ResetAbort();
-
-                           if (id.HasValue)
-                              BingoLog.logMessage("Failed on id = {0}", id);
-                           else
-                              BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
-
-                           BingoCore.lib.bingoIndexMarkTermintate();
-                           exception = ex;
-                           return 0;
-                        }
-                     };
-
-                  BingoCore.ProcessResultHandler process_result =
-                     (IntPtr context) =>
-                     {
-                        try
-                        {
-                           if (exception != null)
-                              return;
-                           if (insert_records)
+                           catch (Exception ex)
                            {
-                              BingoTimer add_timer = new BingoTimer("index.add_to_index");
-                              if (data.getIndexType() == BingoIndexData.IndexType.Molecule)
-                                 _AddMoleculeToIndex(conn, data);
+                              if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
+                                 Thread.ResetAbort();
+
+                              if (id.HasValue)
+                                 BingoLog.logMessage("Failed on id = {0}", id);
                               else
-                                 _AddReactionToIndex(conn, data);
-                              add_timer.end();
+                                 BingoLog.logMessage("Exception {0} in {1}:\n{2}", 
+                                    ex.Message, ex.Source, ex.StackTrace);
+
+                              BingoCore.lib.bingoIndexMarkTermintate();
+                              exception = ex;
+                              return 0;
                            }
-                        }
-                        catch (Exception ex)
-                        {
-                           BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
-                           BingoCore.lib.bingoIndexMarkTermintate();
-                           if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
-                              Thread.ResetAbort();
-                           exception = ex;
-                        }
-                     };
+                        };
 
-                  BingoCore.ProcessErrorHandler process_error =
-                     (int id_with_error, IntPtr context) =>
+                     BingoCore.ProcessResultHandler process_result =
+                        (IntPtr context) =>
+                        {
+                           try
+                           {
+                              if (exception != null)
+                                 return;
+                              if (insert_records)
+                              {
+                                 BingoTimer add_timer = new BingoTimer("index.add_to_index");
+                                 if (data.getIndexType() == BingoIndexData.IndexType.Molecule)
+                                    _AddMoleculeToIndex(conn, data);
+                                 else
+                                    _AddReactionToIndex(conn, data);
+                                 add_timer.end();
+                              }
+                           }
+                           catch (Exception ex)
+                           {
+                              BingoLog.logMessage("Exception {0} in {1}:\n{2}", 
+                                 ex.Message, ex.Source, ex.StackTrace);
+                              BingoCore.lib.bingoIndexMarkTermintate();
+                              if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
+                                 Thread.ResetAbort();
+                              exception = ex;
+                           }
+                        };
+
+                     BingoCore.ProcessErrorHandler process_error =
+                        (int id_with_error, IntPtr context) =>
+                        {
+                           try
+                           {
+                              if (exception != null)
+                                 return;
+                              string message =
+                                 String.Format("Record with ID={0} wasn't added to the index: {1}",
+                                    id_with_error, BingoCore.lib.bingoGetWarning());
+                              if (SqlContext.Pipe != null)
+                                 SqlContext.Pipe.Send(message);
+                              BingoLog.logMessage(message);
+
+                              if (error_list != null)
+                                 error_list.Add(
+                                    new FetchedData(id_with_error) { str = BingoCore.lib.bingoGetWarning() });
+                           }
+                           catch (Exception ex)
+                           {
+                              BingoLog.logMessage("Exception {0} in {1}:\n{2}", 
+                                 ex.Message, ex.Source, ex.StackTrace);
+                              BingoCore.lib.bingoIndexMarkTermintate();
+                              if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
+                                 Thread.ResetAbort();
+                              exception = ex;
+                           }
+                        };
+
+                     try
                      {
-                        try
-                        {
-                           if (exception != null)
-                              return;
-                           string message =
-                              String.Format("Record with ID={0} wasn't added to the index: {1}",
-                                 id_with_error, BingoCore.lib.bingoGetWarning());
-                           if (SqlContext.Pipe != null)
-                              SqlContext.Pipe.Send(message);
-                           BingoLog.logMessage(message);
+                        BingoCore.lib.bingoIndexProcess(
+                           data.getIndexType() == BingoIndexData.IndexType.Reaction,
+                           get_next_record, process_result, process_error, IntPtr.Zero);
+                     }
+                     catch (Exception ex)
+                     {
+                        // Terminate parallel indexing because it causes unhandled exception if not terminated
+                        // Index termination should be here because function pointers must be valid
+                        BingoCore.lib.bingoIndexEnd();
+                        throw ex;
+                     }
 
-                           if (error_list != null)
-                              error_list.Add(new FetchedData(id_with_error) 
-                                 { str = BingoCore.lib.bingoGetWarning() });
-                        }
-                        catch (Exception ex)
-                        {
-                           BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
-                           BingoCore.lib.bingoIndexMarkTermintate();
-                           if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
-                              Thread.ResetAbort();
-                           exception = ex;
-                        }
-                     };
-
-                  try
-                  {
-                     BingoCore.lib.bingoIndexProcess(
-                        data.getIndexType() == BingoIndexData.IndexType.Reaction,
-                        get_next_record, process_result, process_error, IntPtr.Zero);
+                     if (exception != null)
+                        throw exception;
                   }
-                  catch (Exception ex)
-                  {
-                     // Terminate parallel indexing because it causes unhandled exception if not terminated
-                     // Index termination should be here because function pointers must be valid
-                     BingoCore.lib.bingoIndexEnd();
-                     throw ex;
-                  }
-
-                  if (exception != null)
-                     throw exception;
                }
 
                if (flush_and_create_index)
@@ -1034,8 +1042,6 @@ namespace indigo
       private static void _ImportData (string table_name, string data_column_name,
          string additional_parameters, bingoImportPopulateDataRow populateRowFunc)
       {
-         BingoLog.logMessage("Importing into {0}", table_name);
-
          using (SqlConnection ctx_conn = new SqlConnection("context connection=true"))
          {
             ctx_conn.Open();
@@ -1067,8 +1073,10 @@ namespace indigo
                SqlConnection ext_conn = null;
                try
                {
-                  ext_conn = new SqlConnection("server=" + getServername(ctx_conn) +
-                     ";integrated security=true;database=" + ctx_conn.Database);
+                  string conn_string = String.Format(
+                     "server={0};integrated security=true;database={1};enlist=false",
+                     getServername(ctx_conn), ctx_conn.Database);
+                  ext_conn = new SqlConnection(conn_string);
                   ext_conn.Open();
 
                   int imported_count = 0;
@@ -1135,6 +1143,9 @@ namespace indigo
                {
                   if (ext_conn != null)
                      ext_conn.Close();
+                  // Close import
+                  BingoCore.lib.bingoSDFImportClose();
+                  BingoCore.lib.bingoRDFImportClose();
                }
             }
          }
@@ -1146,41 +1157,34 @@ namespace indigo
       public static void ImportSDF(SqlString table_name, SqlString mol_column_name,
          SqlString file_name, SqlString additional_parameters, SqlString bingo_schema)
       {
-         bool reader_opered = false;
+         bool reader_opened = false;
 
          bingoImportPopulateDataRow populateRowFunc =
-               (row, parameters) =>
+            (row, parameters) =>
+            {
+               if (!reader_opened)
                {
-                  if (!reader_opered)
-                  {
-                     if (BingoCore.lib.bingoSDFImportOpen(file_name.Value) != 1)
-                        throw new Exception(BingoCore.lib.bingoGetError());
-                     reader_opered = true;
-                  }
+                  if (BingoCore.lib.bingoSDFImportOpen(file_name.Value) != 1)
+                     throw new Exception(BingoCore.lib.bingoGetError());
+                  reader_opened = true;
+               }
 
-                  if (BingoCore.lib.bingoSDFImportEOF() != 0)
-                     return false;
+               if (BingoCore.lib.bingoSDFImportEOF() != 0)
+                  return false;
 
-                  BingoTimer timer_mol = new BingoTimer("import.read_mol");
-                  row[mol_column_name.Value] = BingoCore.bingoSDFImportGetNext();
-                  timer_mol.end();
+               BingoTimer timer_mol = new BingoTimer("import.read_mol");
+               row[mol_column_name.Value] = BingoCore.bingoSDFImportGetNext();
+               timer_mol.end();
 
-                  foreach (string[] p in parameters)
-                     row[p[1]] = BingoCore.bingoSDFImportGetParameter(p[0]);
+               foreach (string[] p in parameters)
+                  row[p[1]] = BingoCore.bingoSDFImportGetParameter(p[0]);
 
-                  return true;
-               };
+               return true;
+            };
 
-         try
-         {
-            _ImportData(table_name.Value, mol_column_name.Value, 
-               additional_parameters.Value, populateRowFunc);
-         }
-         finally
-         {
-            if (reader_opered)
-               BingoCore.lib.bingoSDFImportClose();
-         }
+         BingoLog.logMessage("Importing into {0} from {1}", table_name, file_name);
+         _ImportData(table_name.Value, mol_column_name.Value, 
+            additional_parameters.Value, populateRowFunc);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
@@ -1189,41 +1193,34 @@ namespace indigo
       public static void ImportRDF (SqlString table_name, SqlString react_column_name,
          SqlString file_name, SqlString additional_parameters, SqlString bingo_schema)
       {
-         bool reader_opered = false;
+         bool reader_opened = false;
 
          bingoImportPopulateDataRow populateRowFunc =
-               (row, parameters) =>
+            (row, parameters) =>
+            {
+               if (!reader_opened)
                {
-                  if (!reader_opered)
-                  {
-                     if (BingoCore.lib.bingoRDFImportOpen(file_name.Value) != 1)
-                        throw new Exception(BingoCore.lib.bingoGetError());
-                     reader_opered = true;
-                  }
+                  if (BingoCore.lib.bingoRDFImportOpen(file_name.Value) != 1)
+                     throw new Exception(BingoCore.lib.bingoGetError());
+                  reader_opened = true;
+               }
 
-                  if (BingoCore.lib.bingoRDFImportEOF() != 0)
-                     return false;
+               if (BingoCore.lib.bingoRDFImportEOF() != 0)
+                  return false;
 
-                  BingoTimer timer_mol = new BingoTimer("import.read_mol");
-                  row[react_column_name.Value] = BingoCore.bingoRDFImportGetNext();
-                  timer_mol.end();
+               BingoTimer timer_mol = new BingoTimer("import.read_mol");
+               row[react_column_name.Value] = BingoCore.bingoRDFImportGetNext();
+               timer_mol.end();
 
-                  foreach (string[] p in parameters)
-                     row[p[1]] = BingoCore.bingoRDFImportGetParameter(p[0]);
+               foreach (string[] p in parameters)
+                  row[p[1]] = BingoCore.bingoRDFImportGetParameter(p[0]);
 
-                  return true;
-               };
+               return true;
+            };
 
-         try
-         {
-            _ImportData(table_name.Value, react_column_name.Value,
-               additional_parameters.Value, populateRowFunc);
-         }
-         finally
-         {
-            if (reader_opered)
-               BingoCore.lib.bingoRDFImportClose();
-         }
+         BingoLog.logMessage("Importing into {0} from {1}", table_name, file_name);
+         _ImportData(table_name.Value, react_column_name.Value,
+            additional_parameters.Value, populateRowFunc);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
@@ -1307,6 +1304,7 @@ namespace indigo
                      {
                         exported_file.WriteLine(">  <{0}>", reader.GetName(i));
                         exported_file.WriteLine("{0}", reader[i]);
+                        exported_file.WriteLine("");
                      }
 
                      exported_file.WriteLine("$$$$");
@@ -1620,13 +1618,18 @@ namespace indigo
             (ctx_conn, conn, index_data) =>
             {
                index_data.prepareForDeleteRecord(conn);
-               using (BingoSqlCursor cursor = new BingoSqlCursor(ctx_conn, true,
-                  "SELECT {0} FROM {1}", index_data.id_column, tmp_table_name.Value))
+               String select_command = 
+                  String.Format("SELECT {0} FROM {1}", index_data.id_column, tmp_table_name.Value);
+               using (SqlCommand command = new SqlCommand(select_command, ctx_conn))
                {
-                  while (cursor.read())
+                  command.CommandTimeout = 3600 * 10;
+                  using (SqlDataReader cursor = command.ExecuteReader())
                   {
-                     int id = Convert.ToInt32(cursor[0]);
-                     index_data.deleteRecordById(id, conn);
+                     while (cursor.Read())
+                     {
+                        int id = Convert.ToInt32(cursor[0]);
+                        index_data.deleteRecordById(id, conn);
+                     }
                   }
                }
             };
