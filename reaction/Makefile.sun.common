@@ -3,7 +3,8 @@ all: $(TARGETDIR_libreaction.a)/libreaction.a
 ## Target: libreaction.a
 CPPFLAGS_libreaction.a = \
 	-I.. \
-	-I../common
+	-I../common \
+	-I../tinyxml/include
 OBJS_libreaction.a =  \
 	$(TARGETDIR_libreaction.a)/base_reaction.o \
 	$(TARGETDIR_libreaction.a)/base_reaction_substructure_matcher.o \
