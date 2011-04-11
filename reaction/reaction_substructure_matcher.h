@@ -17,6 +17,7 @@
 
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule_arom_match.h"
+#include "molecule/molecule_substructure_matcher.h"
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/obj.h"
 #include "reaction/base_reaction_substructure_matcher.h"
