@@ -319,6 +319,16 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
             valence = rad + conn;
             hyd = 0;
          }
+         else if (elem == ELEM_Al && charge == -2)
+         {
+            if (rad + conn == 5)
+            {
+               valence = 5;
+               hyd = 0;
+            }
+            else
+               hyd = -1;
+         }
          else 
          {
             valence = 3;
@@ -352,6 +362,11 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
                valence = 5;
                hyd = 5 - rad - conn;
             }
+         }
+         else if (charge == -3 && rad + conn == 6)
+         {  // ISIS Draw and Marvin allow this
+            valence = 6;
+            hyd = 0;
          }
          else
          {
@@ -391,14 +406,19 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
             valence = 5;
             hyd = 0;
          }
-         // following ISIS/Draw logic
          else if ((elem == ELEM_Sn || elem == ELEM_Pb) && conn + rad + abs(charge) <= 2)
          {
+            // [SnH2]: CID 23962
+            // [PbH2]: CID 23927
             valence = 2;
             hyd = 2 - rad - conn - abs(charge);
          }
          else
          {
+            // 4-valent Pb with H: CID 24003
+            // 4-valent Sn with H: CID 5948
+            // 4-valent Ge with H2: CID 66239
+            // [GeH4]: CID 23984
             valence = 4;
             hyd = 4 - rad - conn - abs(charge);
          }
@@ -479,9 +499,15 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
             valence = 3;
             hyd = 3 - rad - conn;
          }
+         else if (charge == -2 && rad + conn == 5)
+         {
+            // Bi: CID 45158489
+            valence = 5;
+            hyd = 0;
+         }
          else
          {
-            if (rad + conn <= 3)
+            if (rad + conn + abs(charge) <= 3)
             {
                valence = 3;
                hyd = 3 - rad - conn - abs(charge);
