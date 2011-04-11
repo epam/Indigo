@@ -21,6 +21,7 @@ using namespace indigo;
 
 ReactionCmlSaver::ReactionCmlSaver (Output &output) : _output(output)
 {
+   skip_cml_tag = false;
 }
 
 ReactionCmlSaver::~ReactionCmlSaver ()
