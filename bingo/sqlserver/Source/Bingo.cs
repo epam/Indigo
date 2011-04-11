@@ -1304,6 +1304,7 @@ namespace indigo
                      {
                         exported_file.WriteLine(">  <{0}>", reader.GetName(i));
                         exported_file.WriteLine("{0}", reader[i]);
+                        exported_file.WriteLine("");
                      }
 
                      exported_file.WriteLine("$$$$");
