@@ -26,7 +26,7 @@ public:
    void acquireOutput (Output *output);
    void close ();
 
-   virtual void append (IndigoObject &object);
+   void appendObject (IndigoObject &object);
 
    static IndigoSaver* create (Output &output, const char *type);
 
