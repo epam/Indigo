@@ -95,6 +95,11 @@ CEXPORT void bingoSetSessionID (qword session_id)
    TL_SET_SESSION_ID(session_id);
 }
 
+CEXPORT qword bingoGetSessionID ()
+{
+   return TL_GET_SESSION_ID();
+}
+
 CEXPORT void bingoSetErrorHandler (BINGO_ERROR_HANDLER handler, void *context)
 {
    BingoCore &self = BingoCore::getInstance();
