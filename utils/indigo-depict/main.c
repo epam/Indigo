@@ -94,6 +94,8 @@ void usage (void)
            "   Show atom numbers (for debugging purposes only)\n"
            "-bondnumbers\n"
            "   Show bond numbers (for debugging purposes only)\n"
+           "-onebased\n"
+           "   Start atom and bond indices from one (default is from zero)\n"
            "-help\n"
            "   Print this help message\n"
            "\n"
@@ -695,13 +697,11 @@ int parseParams (Params* p, int argc, char *argv[]) {
          indigoSetOption("render-comment-position", argv[i]);
       }
       else if (strcmp(argv[i], "-atomnumbers") == 0)
-      {
          indigoSetOptionBool("render-atom-ids-visible", 1);
-      }
       else if (strcmp(argv[i], "-bondnumbers") == 0)
-      {
          indigoSetOptionBool("render-bond-ids-visible", 1);
-      }
+      else if (strcmp(argv[i], "-onebased") == 0)
+         indigoSetOptionBool("render-atom-bond-ids-from-one", 1);
       else if (strcmp(argv[i], "-help") == 0)
       {
          usage();
