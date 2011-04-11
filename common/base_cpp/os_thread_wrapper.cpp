@@ -44,7 +44,7 @@ enum {
    MSG_OK,
    MSG_CONNECT,
    MSG_HANDLE_EXCEPTION,
-   MSG_TERMINATE,
+   MSG_TERMINATE
 };
 
 // Maximum number of results that are kept in queue if

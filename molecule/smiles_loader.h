@@ -63,7 +63,7 @@ protected:
 
    enum
    {
-      _ANY_BOND = -2,
+      _ANY_BOND = -2
    };
 
 
