@@ -138,7 +138,6 @@ bool BaseReactionSubstructureMatcher::find ()
 // Init data for reaction substructure search
 void BaseReactionSubstructureMatcher::_initMap (BaseReaction &reaction, int side, RedBlackMap<int, int> &aam_map)
 {
-   int aam_number;
    int i, j;
    int *val;
 
