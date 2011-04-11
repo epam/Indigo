@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		A778DF111250ADE00098784F /* base_reaction_substructure_matcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A778DF0F1250ADE00098784F /* base_reaction_substructure_matcher.cpp */; };
 		A778DF121250ADE00098784F /* reaction_exact_matcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A778DF101250ADE00098784F /* reaction_exact_matcher.cpp */; };
+		A77B1A3513535C11008B21BF /* reaction_cml_loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A77B1A3313535C11008B21BF /* reaction_cml_loader.cpp */; };
+		A77B1A3613535C11008B21BF /* reaction_cml_saver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A77B1A3413535C11008B21BF /* reaction_cml_saver.cpp */; };
 		A795EFE211B51B7D005A9036 /* base_reaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A795EFDF11B51B7D005A9036 /* base_reaction.cpp */; };
 		A795EFE311B51B7D005A9036 /* query_reaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A795EFE011B51B7D005A9036 /* query_reaction.cpp */; };
 		A7A3DB39117F6FB800DA2893 /* reaction_enumerator_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7A3DB37117F6FB800DA2893 /* reaction_enumerator_state.cpp */; };
@@ -34,6 +36,10 @@
 		A778DF0E1250ADD30098784F /* reaction_exact_matcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reaction_exact_matcher.h; sourceTree = "<group>"; };
 		A778DF0F1250ADE00098784F /* base_reaction_substructure_matcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = base_reaction_substructure_matcher.cpp; path = src/base_reaction_substructure_matcher.cpp; sourceTree = "<group>"; };
 		A778DF101250ADE00098784F /* reaction_exact_matcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reaction_exact_matcher.cpp; path = src/reaction_exact_matcher.cpp; sourceTree = "<group>"; };
+		A77B1A3013535C00008B21BF /* reaction_cml_loader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = reaction_cml_loader.h; sourceTree = "<group>"; };
+		A77B1A3113535C00008B21BF /* reaction_cml_saver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = reaction_cml_saver.h; sourceTree = "<group>"; };
+		A77B1A3313535C11008B21BF /* reaction_cml_loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reaction_cml_loader.cpp; path = src/reaction_cml_loader.cpp; sourceTree = "<group>"; };
+		A77B1A3413535C11008B21BF /* reaction_cml_saver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reaction_cml_saver.cpp; path = src/reaction_cml_saver.cpp; sourceTree = "<group>"; };
 		A795EFDB11B51B6C005A9036 /* base_reaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base_reaction.h; sourceTree = "<group>"; };
 		A795EFDC11B51B6C005A9036 /* query_reaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = query_reaction.h; sourceTree = "<group>"; };
 		A795EFDF11B51B7D005A9036 /* base_reaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = base_reaction.cpp; path = src/base_reaction.cpp; sourceTree = "<group>"; };
@@ -95,6 +101,10 @@
 		A7EDA53710625029006CBFAF /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A77B1A3313535C11008B21BF /* reaction_cml_loader.cpp */,
+				A77B1A3413535C11008B21BF /* reaction_cml_saver.cpp */,
+				A77B1A3013535C00008B21BF /* reaction_cml_loader.h */,
+				A77B1A3113535C00008B21BF /* reaction_cml_saver.h */,
 				A778DF0F1250ADE00098784F /* base_reaction_substructure_matcher.cpp */,
 				A778DF101250ADE00098784F /* reaction_exact_matcher.cpp */,
 				A778DF0D1250ADD30098784F /* base_reaction_substructure_matcher.h */,
@@ -227,6 +237,8 @@
 				A7E9C70E11C91F0C0011961B /* reaction_neighborhood_counters.cpp in Sources */,
 				A778DF111250ADE00098784F /* base_reaction_substructure_matcher.cpp in Sources */,
 				A778DF121250ADE00098784F /* reaction_exact_matcher.cpp in Sources */,
+				A77B1A3513535C11008B21BF /* reaction_cml_loader.cpp in Sources */,
+				A77B1A3613535C11008B21BF /* reaction_cml_saver.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,6 +271,7 @@
 				HEADER_SEARCH_PATHS = (
 					..,
 					../common,
+					../tinyxml/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = NO;
@@ -303,6 +316,7 @@
 				HEADER_SEARCH_PATHS = (
 					..,
 					../common,
+					../tinyxml/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = YES;
@@ -329,6 +343,7 @@
 				HEADER_SEARCH_PATHS = (
 					..,
 					../common,
+					../tinyxml/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = NO;
