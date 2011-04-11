@@ -539,7 +539,21 @@ bool MoleculeLayoutGraph::_attachCycleWithIntersections (const Cycle &cycle, flo
    int c_beg, c_end;
 
    if (!_splitCycle(cycle, cycle_vertex_types, false, chain_ext, chain_int, c_beg, c_end))
-      return false;
+   {   
+      // TODO: fix this case
+      // Set new types
+      for (i = 0; i < cycle.vertexCount(); i++)
+      {
+         if (_layout_vertices[cycle.getVertex(i)].type == ELEMENT_NOT_DRAWN)
+            _layout_vertices[cycle.getVertex(i)].type = ELEMENT_NOT_PLANAR;
+         
+         if (_layout_edges[cycle.getEdge(i)].type == ELEMENT_NOT_DRAWN)
+            _layout_edges[cycle.getEdge(i)].type = ELEMENT_NOT_PLANAR;
+      }
+
+      return true;
+      //return false;
+   }
 
    float max_length = length * 4; // to avoid infinite values
    
