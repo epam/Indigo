@@ -187,6 +187,7 @@ void SdfLoader::readNext ()
             _scanner->readLine(str, true);
             if (str.size() > 1)
             {
+               properties.value(idx).pop(); // Remove string end marker (0)
                properties.value(idx).push('\n');
                properties.value(idx).appendString(str.ptr(), true);
             }
