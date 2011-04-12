@@ -20,6 +20,7 @@
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
 #include "molecule/molecule_auto_loader.h"
+#include "reaction/reaction_cml_loader.h"
 
 using namespace indigo;
 
@@ -133,6 +134,27 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          loader.loadReaction((Reaction &)reaction);
          return;
       }
+   }
+
+   // check for CML format
+   {
+      int pos = _scanner->tell();
+      _scanner->skipSpace();
+
+      if (_scanner->lookNext() == '<')
+      {
+         if (_scanner->findWord("<reaction"))
+         {
+            ReactionCmlLoader loader(*_scanner);
+            loader.ignore_stereochemistry_errors = ignore_stereocenter_errors;
+            if (query)
+               throw Error("CML queries not supported");
+            loader.loadReaction((Reaction &)reaction);
+            return;
+         }
+      }
+
+      _scanner->seek(pos, SEEK_SET);
    }
 
    // check for SMILES format
