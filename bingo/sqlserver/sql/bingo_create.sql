@@ -152,7 +152,6 @@ BEGIN
 			DECLARE	@spid nvarchar(max);
 			SET @spid = @message_body.value('(/EVENT_INSTANCE/SPID)[1]', 'int')
 			EXECUTE [$(bingo)].OnSessionClose @spid;
-			EXECUTE [$(bingo)]._DropIndexByID
 		END
 		
 		-- Delete Bingo index if table has been deleted
