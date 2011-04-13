@@ -1396,7 +1396,7 @@ void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
    }
 }
 
-void SmilesLoader::_readAtomLogic (Array<char> &atom_str, bool first_in_brackets,
+bool SmilesLoader::_readAtomLogic (Array<char> &atom_str, bool first_in_brackets,
                   _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom)
 {
    QS_DEF(Array<char>, atom_str_copy);
@@ -1448,7 +1448,7 @@ void SmilesLoader::_readAtomLogic (Array<char> &atom_str, bool first_in_brackets
          else
             substring.push(atom_str[i]);
       }
-      return;
+      return false;
    }
 
    if (atom_str_copy.find(',') != -1)
@@ -1477,7 +1477,7 @@ void SmilesLoader::_readAtomLogic (Array<char> &atom_str, bool first_in_brackets
          else
             substring.push(atom_str[i]);
       }
-      return;
+      return false;
    }
 
    if (atom_str_copy.find('&') != -1)
@@ -1503,14 +1503,16 @@ void SmilesLoader::_readAtomLogic (Array<char> &atom_str, bool first_in_brackets
          else
             substring.push(atom_str[i]);
       }
-      return;
+      return false;
    }
+   return true;
 }
 
 void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
                               _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom)
 {
-   _readAtomLogic(atom_str, first_in_brackets, atom, qatom);
+   if (!_readAtomLogic(atom_str, first_in_brackets, atom, qatom))
+      return;
 
    BufferScanner scanner(atom_str);
 

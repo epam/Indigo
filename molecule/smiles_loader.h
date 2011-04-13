@@ -151,7 +151,7 @@ protected:
    void _readAtom (Array<char> &atom_str, bool first_in_brackets,
                    _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
 
-   void _readAtomLogic (Array<char> &atom_str, bool first_in_brackets,
+   bool _readAtomLogic (Array<char> &atom_str, bool first_in_brackets,
                    _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
 
    int _parseCurly (Array<char> &curly, int &repetitions);
