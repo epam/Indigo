@@ -130,6 +130,7 @@ protected:
    TL_CP_DECL(Pool<List<int>::Elem>, _neipool);
    TL_CP_DECL(ObjArray<_AtomDesc>, _atoms);
    TL_CP_DECL(Array<_BondDesc>, _bonds);
+   TL_CP_DECL(Array<int>, _polymer_repetitions);
 
    int  _balance;
    int  _current_compno;
@@ -140,12 +141,17 @@ protected:
    Molecule      *_mol;
 
    void _loadMolecule ();
+   void _parseMolecule ();
+   void _loadParseMolecule ();
 
    void _calcStereocenters ();
    void _calcCisTrans ();
    void _readOtherStuff ();
 
    void _readAtom (Array<char> &atom_str, bool first_in_brackets,
+                   _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
+
+   void _readAtomLogic (Array<char> &atom_str, bool first_in_brackets,
                    _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
 
    int _parseCurly (Array<char> &curly, int &repetitions);

@@ -29,7 +29,8 @@ using namespace indigo;
 SmilesLoader::SmilesLoader (Scanner &scanner) : _scanner(scanner),
 TL_CP_GET(_neipool),
 TL_CP_GET(_atoms),
-TL_CP_GET(_bonds)
+TL_CP_GET(_bonds),
+TL_CP_GET(_polymer_repetitions)
 {
    reaction_atom_mapping = 0;
    ignorable_aam = 0;
@@ -392,20 +393,16 @@ void SmilesLoader::loadSMARTS (QueryMolecule &mol)
    _loadMolecule();
 }
 
-void SmilesLoader::_loadMolecule ()
+void SmilesLoader::_parseMolecule ()
 {
-   QS_DEF(StringPool, pending_bonds_pool);
-   QS_DEF(Array<_CycleDesc>, cycles);
    QS_DEF(Array<int>, atom_stack);
-
-   _atoms.clear();
-   _bonds.clear();
+   QS_DEF(Array<_CycleDesc>, cycles);
+   QS_DEF(StringPool, pending_bonds_pool);
    cycles.clear();
-   pending_bonds_pool.clear();
    atom_stack.clear();
+   pending_bonds_pool.clear();
 
    bool first_atom = true;
-   QS_DEF(Array<int>, polymer_repetitions);
    bool inside_polymer = false;
 
    while (!_scanner.isEOF())
@@ -809,20 +806,20 @@ void SmilesLoader::_loadMolecule ()
                throw Error("nested polymers not allowed");
             inside_polymer = true;
             atom.starts_polymer = true;
-            polymer_repetitions.push(0); // can change it later
+            _polymer_repetitions.push(0); // can change it later
          }
          else if (poly == _POLYMER_END)
          {
             if (!inside_polymer)
                throw Error("misplaced polymer ending");
             inside_polymer = false;
-            polymer_repetitions.top() = repetitions;
-            atom.polymer_index = polymer_repetitions.size() - 1; 
+            _polymer_repetitions.top() = repetitions;
+            atom.polymer_index = _polymer_repetitions.size() - 1; 
             atom.ends_polymer = true;
          }
       }
       if (inside_polymer)
-         atom.polymer_index = polymer_repetitions.size() - 1;
+         atom.polymer_index = _polymer_repetitions.size() - 1;
    }
 
    int i;
@@ -832,6 +829,14 @@ void SmilesLoader::_loadMolecule ()
       if (cycles[i].beg >= 0)
          throw Error("cycle %d not closed", i);
    }
+
+   if (inside_polymer)
+      throw Error("polymer not closed");
+}
+
+void SmilesLoader::_loadParseMolecule ()
+{
+   int i;
 
    if (_mol != 0)
    {
@@ -1042,17 +1047,14 @@ void SmilesLoader::_loadMolecule ()
    }
 
    // handle the polymers (part of the CurlySMILES specification)
-   if (inside_polymer)
-      throw Error("polymer not closed");
-
-   for (i = 0; i < polymer_repetitions.size() ; i++)
+   for (i = 0; i < _polymer_repetitions.size() ; i++)
    {
       int j, start = -1, end = -1;
       int start_bond = -1, end_bond = -1;
       BaseMolecule::SGroup *sgroup;
 
       // no repetitions counter => polymer
-      if (polymer_repetitions[i] == 0)
+      if (_polymer_repetitions[i] == 0)
       {
          BaseMolecule::RepeatingUnit &ru = _bmol->repeating_units[_bmol->repeating_units.add()];
          ru.connectivity = BaseMolecule::RepeatingUnit::HEAD_TO_TAIL;
@@ -1062,7 +1064,7 @@ void SmilesLoader::_loadMolecule ()
       else
       {
          BaseMolecule::MultipleGroup &mg = _bmol->multiple_groups[_bmol->multiple_groups.add()];
-         mg.multiplier = polymer_repetitions[i];
+         mg.multiplier = _polymer_repetitions[i];
          sgroup = &mg;
       }
       for (j = 0; j < _atoms.size(); j++)
@@ -1070,7 +1072,7 @@ void SmilesLoader::_loadMolecule ()
          if (_atoms[j].polymer_index != i)
             continue;
          sgroup->atoms.push(j);
-         if (polymer_repetitions[i] > 0)
+         if (_polymer_repetitions[i] > 0)
             ((BaseMolecule::MultipleGroup *)sgroup)->parent_atoms.push(j);
          if (_atoms[j].starts_polymer)
             start = j;
@@ -1117,7 +1119,7 @@ void SmilesLoader::_loadMolecule ()
       p[0].set(0, 0);
       p[1].set(0, 0);
 
-      if (polymer_repetitions[i] > 1)
+      if (_polymer_repetitions[i] > 1)
       {
          QS_DEF(Array<int>, mapping);
          AutoPtr<BaseMolecule> rep(_bmol->neu());
@@ -1129,7 +1131,7 @@ void SmilesLoader::_loadMolecule ()
          int rep_end = mapping[end];
 
          // already have one instance of the sgroup; add repetitions if they exist
-         for (j = 0; j < polymer_repetitions[i] - 1; j++)
+         for (j = 0; j < _polymer_repetitions[i] - 1; j++)
          {
             _bmol->mergeWithMolecule(rep.ref(), &mapping, 0);
 
@@ -1164,7 +1166,7 @@ void SmilesLoader::_loadMolecule ()
             }
          }
       }
-      else if (polymer_repetitions[i] == 0)
+      else if (_polymer_repetitions[i] == 0)
       {
          // if the start atom of the polymer does not have an incoming bond...
          if (start_bond == -1)
@@ -1198,7 +1200,16 @@ void SmilesLoader::_loadMolecule ()
          }
       }
    }
+}
 
+void SmilesLoader::_loadMolecule ()
+{
+   _atoms.clear();
+   _bonds.clear();
+   _polymer_repetitions.clear();
+
+   _parseMolecule();
+   _loadParseMolecule();
 }
 
 void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
@@ -1385,8 +1396,8 @@ void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
    }
 }
 
-void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
-                              _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom)
+void SmilesLoader::_readAtomLogic (Array<char> &atom_str, bool first_in_brackets,
+                  _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom)
 {
    QS_DEF(Array<char>, atom_str_copy);
    if (atom_str.size() < 1)
@@ -1494,6 +1505,12 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       }
       return;
    }
+}
+
+void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
+                              _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom)
+{
+   _readAtomLogic(atom_str, first_in_brackets, atom, qatom);
 
    BufferScanner scanner(atom_str);
 
