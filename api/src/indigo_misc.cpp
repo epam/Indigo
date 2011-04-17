@@ -461,7 +461,7 @@ CEXPORT int indigoCount (int item)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoSerialize (int item, char **buf, int *size)
+CEXPORT int indigoSerialize (int item, byte **buf, int *size)
 {
    INDIGO_BEGIN
    {
@@ -483,14 +483,14 @@ CEXPORT int indigoSerialize (int item, char **buf, int *size)
          saver.saveReaction(rxn);
       }
 
-      *buf = self.tmp_string.ptr();
+      *buf = (byte *)self.tmp_string.ptr();
       *size = self.tmp_string.size();
       return 1;
    }
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoUnserialize (char *buf, int size)
+CEXPORT int indigoUnserialize (byte *buf, int size)
 {
    INDIGO_BEGIN
    {
