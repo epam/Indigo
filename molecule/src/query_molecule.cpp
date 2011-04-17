@@ -1743,6 +1743,7 @@ bool QueryMolecule::isNotAtom (QueryMolecule::Atom& qa, int elem) {
 }
 
 bool QueryMolecule::collectAtomList (QueryMolecule::Atom& qa, Array<int>& list, bool& notList) {
+   list.clear();
    if (qa.type == QueryMolecule::OP_OR) {
       notList = false;
       for (int i = 0; i < qa.children.size(); ++i) {
