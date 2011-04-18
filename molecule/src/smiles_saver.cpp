@@ -363,6 +363,10 @@ void SmilesSaver::_saveMolecule ()
    QS_DEF(Array<int>, cycle_numbers);
 
    int rsites_closures_starting_num = 91;
+   int rbonds = _countRBonds();
+
+   if (rbonds > 9)
+      rsites_closures_starting_num = 99 - rbonds;
 
    cycle_numbers.clear();
    cycle_numbers.push(0); // never used
@@ -515,8 +519,6 @@ void SmilesSaver::_writeCycleNumber (int n) const
       _output.printf("%d", n);
    else if (n >= 10 && n < 100)
       _output.printf("%%%2d", n);
-   else if (n >= 100 && n < 1000)
-      _output.printf("%%%%%3d", n);
    else 
       throw Error("bad cycle number: %d", n);
 }
@@ -627,25 +629,6 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
 
    if (need_brackets)
       _output.writeChar(']');
-
-   /* DPX: take care of r-sites in SMILES
-   if (_qmol != 0 && _qmol->isRGroupFragment())
-   {
-      for (i = 0; i < 2; i++)
-      {
-         int j;
-
-         for (j = 0; _qmol->getRGroupFragment().getAttachmentPoint(i, j) != -1; j++)
-            if (idx == _qmol->getRGroupFragment().getAttachmentPoint(i, j))
-            {
-               _output.printf("([*])");
-               break;
-            }
-
-         if (_qmol->getRGroupFragment().getAttachmentPoint(i, j) != -1)
-            break;
-      }
-   }*/
 }
 
 void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chirality, int depth, bool has_or_parent) const
@@ -1339,4 +1322,14 @@ void SmilesSaver::_checkSRU ()
       if (cnt != 2)
          throw Error("repeating units must have exactly two outgoing bonds, has %d", cnt);
    }
+}
+
+int SmilesSaver::_countRBonds ()
+{
+   int i, sum = 0;
+
+   for (i = _bmol->vertexBegin(); i != _bmol->vertexEnd(); i = _bmol->vertexNext(i))
+      if (_bmol->isRSite(i))
+         sum += _bmol->getVertex(i).degree();
+   return sum;
 }

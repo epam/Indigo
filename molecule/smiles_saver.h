@@ -102,6 +102,8 @@ protected:
    void _writePseudoAtoms ();
    void _writeHighlighting ();
 
+   int _countRBonds ();
+
    void _checkSRU ();
 
    struct _DBond // directed bond (near cis-trans bond)
