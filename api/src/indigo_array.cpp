@@ -81,6 +81,11 @@ Molecule & IndigoArrayElement::getMolecule ()
    return array->objects[idx]->getMolecule();
 }
 
+QueryMolecule & IndigoArrayElement::getQueryMolecule ()
+{
+   return array->objects[idx]->getQueryMolecule();
+}
+
 BaseReaction & IndigoArrayElement::getBaseReaction ()
 {
    return array->objects[idx]->getBaseReaction();

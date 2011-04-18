@@ -47,6 +47,7 @@ public:
 
    virtual BaseMolecule & getBaseMolecule ();
    virtual Molecule & getMolecule ();
+   virtual QueryMolecule & getQueryMolecule ();
 
    virtual BaseReaction & getBaseReaction ();
    virtual Reaction & getReaction ();

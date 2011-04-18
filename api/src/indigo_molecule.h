@@ -55,7 +55,7 @@ public:
    virtual const char * getName ();
 
    static IndigoQueryMolecule * cloneFrom (IndigoObject & obj);
-   static void parseAtomConstraint(const char* type, const char* value, AutoPtr<QueryMolecule::Atom>&);
+   static void parseAtomConstraint (const char* type, const char* value, AutoPtr<QueryMolecule::Atom>&);
 
    const char * debugInfo ();
 
