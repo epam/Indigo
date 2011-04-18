@@ -105,19 +105,21 @@ void MoleculeScaffoldDetection::makeEdgeSubmolecule(QueryMolecule& mol, Molecule
 bool MoleculeScaffoldDetection::matchBonds (Graph &g1, Graph &g2, int i, int j, void*){
    BaseMolecule &mol1 = (BaseMolecule &)g1;
    BaseMolecule &mol2 = (BaseMolecule &)g2;
-   QueryMolecule::Bond* q_bond;
+   QueryMolecule::Bond* q_bond = 0;
    int sub_idx, super_idx;
-   BaseMolecule* target;
+   BaseMolecule* target = 0;
    if(mol1.isQueryMolecule()) {
       q_bond = &mol1.asQueryMolecule().getBond(i);
       sub_idx = i;
       super_idx = j;
       target = &mol2;
-   } else {
+   } else if(mol2.isQueryMolecule()){
       q_bond = &mol2.asQueryMolecule().getBond(j);
       sub_idx = j;
       super_idx = i;
       target = &mol1;
+   } else {
+      return MoleculeExactMatcher::matchBonds(mol1, mol2, i, j, MoleculeExactMatcher::CONDITION_ELECTRONS);
    }
    return MoleculeSubstructureMatcher::matchQueryBond(q_bond, *target, sub_idx, super_idx, 0, 0xFFFFFFFF);
 }
@@ -125,17 +127,19 @@ bool MoleculeScaffoldDetection::matchBonds (Graph &g1, Graph &g2, int i, int j, 
 bool MoleculeScaffoldDetection::matchAtoms (Graph &g1, Graph &g2, const int *, int i, int j, void* userdata){
    BaseMolecule &mol1 = (BaseMolecule &)g1;
    BaseMolecule &mol2 = (BaseMolecule &)g2;
-   QueryMolecule::Atom* q_atom;
+   QueryMolecule::Atom* q_atom = 0;
    int  super_idx;
-   BaseMolecule* target;
+   BaseMolecule* target = 0;
    if(mol1.isQueryMolecule()) {
       q_atom = &mol1.asQueryMolecule().getAtom(i);
       super_idx = j;
       target = &mol2;
-   } else {
+   } else if(mol2.isQueryMolecule()){
       q_atom = &mol2.asQueryMolecule().getAtom(j);
       super_idx = i;
       target = &mol1;
+   } else {
+      return MoleculeExactMatcher::matchAtoms(mol1, mol2, i, j, 0);
    }
 
    return MoleculeSubstructureMatcher::matchQueryAtom(q_atom, *target, super_idx, 0, 0xFFFFFFFF);
