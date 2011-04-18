@@ -149,7 +149,6 @@ int QueryReaction::_compare (int &i1, int &i2, void *c)
    int labels_by_freq[] = {ELEM_C, ELEM_H, ELEM_O, ELEM_N, ELEM_P, ELEM_F,
       ELEM_S, ELEM_Si, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At};
 
-   // DPX: what if atom number is not exactly known (-1) ?
    int label1 = context.m.getAtomNumber(i1);
    int label2 = context.m.getAtomNumber(i2);
    int idx1, idx2;

@@ -47,7 +47,6 @@ TL_CP_GET(_edge_mapping)
 
    _inside_ctor = true;
 
-   // DPX: TODO: implement a GraphMapping class and stop this headache already
    clone(mol, &_inv_mapping, &_mapping);
 
    _edge_mapping.clear_resize(edgeEnd());

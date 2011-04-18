@@ -280,8 +280,6 @@ int MoleculeAutomorphismSearch::_vertex_cmp (Graph &graph, int v1, int v2, const
    if (self._hcount[v1] > self._hcount[v2])
       return -1;
 
-   // DPX: r-sites logic removed from here
-
    // Stereo should be compared at the end because it is 
    // refinement on the first approximation 
    ret = _compareStereo(mol, v1, v2, context);
