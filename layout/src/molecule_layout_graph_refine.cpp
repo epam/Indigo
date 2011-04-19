@@ -384,8 +384,6 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
             max_code = getLayoutVertex(i).morgan_code;
          }
 
-      const Vertex &vert = getVertex(center);
-
       beg_state.calcHeight();
 
       for (float angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)

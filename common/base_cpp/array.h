@@ -180,7 +180,7 @@ public:
 
    void remove (int idx)
    {
-      if (idx < 0 || idx >= _length)
+      if (idx < 0 || idx - _length >= 0)
          throw Error("remove(): invalid index %d (size=%d)", idx, _length);
 
       if (idx < _length - 1)
