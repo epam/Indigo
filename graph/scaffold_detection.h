@@ -43,6 +43,8 @@ public:
    ObjArray<Graph>* searchStructures;
    ObjArray<Graph>* basketStructures;
 
+   int maxIterations;
+
    DEF_ERROR("Scaffold detection");
 
 public:

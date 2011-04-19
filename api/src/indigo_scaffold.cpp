@@ -51,23 +51,31 @@ CEXPORT int indigoExtractCommonScaffold (int structures, const char* options)
       msd.basketStructures = &scaf->all_scaffolds;
 
       bool approximate = false;
+      int max_iterations = 0;
 
-      if (options != 0)
-      {
+      if (options != 0) {
          BufferScanner scanner(options);
          QS_DEF(Array<char>, word);
 
          scanner.skipSpace();
-         if (!scanner.isEOF())
+         if (!scanner.isEOF()) {
             scanner.readWord(word, 0);
 
-         if (strcasecmp(word.ptr(), "APPROX") == 0)
-            approximate = true;
-         else if (strcasecmp(word.ptr(), "EXACT") == 0)
-            approximate = false;
-         else
-            throw IndigoError("indigoExtractCommonScaffold: unknown option %s\n", word.ptr());
+            if (strcasecmp(word.ptr(), "APPROX") == 0)
+               approximate = true;
+            else if (strcasecmp(word.ptr(), "EXACT") == 0)
+               approximate = false;
+            else
+               throw IndigoError("indigoExtractCommonScaffold: unknown option %s\n", word.ptr());
+
+            scanner.skipSpace();
+            if (!scanner.isEOF()) {
+               max_iterations = scanner.readInt();
+            }
+         }
       }
+      if(max_iterations > 0)
+         msd.maxIterations = max_iterations;
 
       if (approximate)
          msd.extractApproximateScaffold(scaf->max_scaffold);

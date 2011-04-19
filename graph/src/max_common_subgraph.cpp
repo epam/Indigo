@@ -432,6 +432,19 @@ MaxCommonSubgraph::ReGraph::ReGraph():
    _solutionObjList(_pool) {
 }
 
+MaxCommonSubgraph::ReGraph::ReGraph(MaxCommonSubgraph& context):
+cbEmbedding(0),
+   userdata(0),
+   _nbIteration(0),
+   _maxIteration(-1),
+   _firstGraphSize(0),
+   _secondGraphSize(0),
+   _findAllStructure(true),
+   _stop(false),
+   _solutionObjList(_pool) {
+   setMaxIteration(context.parametersForExact.maxIteration);
+}
+
 
 
 void MaxCommonSubgraph::ReGraph::setSizes(int n1, int n2){
@@ -1325,7 +1338,9 @@ int MaxCommonSubgraph::Greedy::_matchedEdges(){
 //Refinement stage: random discrete descent method
 //-------------------------------------------------------------------------------------------------------------------
 MaxCommonSubgraph::RandomDisDec::RandomDisDec(AdjMatricesStore &aj):
-_adjMstore(aj),TL_CP_GET(_errorList),TL_CP_GET(_listErrVertices),_maxIteration(MAX_ITERATION){}
+_adjMstore(aj),TL_CP_GET(_errorList),TL_CP_GET(_listErrVertices),_maxIteration(MAX_ITERATION){
+   setIterationNumber(aj._context.parametersForApproximate.maxIteration);
+}
 
 void MaxCommonSubgraph::RandomDisDec::refinementStage(){
    _n = _adjMstore.getFirstSize();

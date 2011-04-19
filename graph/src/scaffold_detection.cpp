@@ -27,7 +27,8 @@ userdata(0),
 cbEmbedding(0),
 embeddingUserdata(0),
 searchStructures(graph_set),
-basketStructures(0){
+basketStructures(0),
+maxIterations(0) {
 }
 
 void ScaffoldDetection::_searchScaffold(Graph& scaffold, bool approximate) {
@@ -66,6 +67,8 @@ void ScaffoldDetection::_searchExactScaffold(GraphBasket& basket) {
    mcs.conditionEdgeWeight = cbEdgeWeight;
    mcs.conditionVerticesColor = cbVerticesColor;
    mcs.userdata = userdata;
+   if(maxIterations > 0)
+      mcs.parametersForExact.maxIteration = maxIterations;
 
    basket.cbMatchEdges = cbEdgeWeight;
    basket.cbMatchVertices = cbVerticesColor;
@@ -84,10 +87,17 @@ void ScaffoldDetection::_searchExactScaffold(GraphBasket& basket) {
 
          mcs.setGraphs(graph_bask, graph_set);
 
-         MaxCommonSubgraph::ReGraph regraph;
+         MaxCommonSubgraph::ReGraph regraph(mcs);
          MaxCommonSubgraph::ReCreation build_graph(regraph, mcs);
          build_graph.createRegraph();
          regraph.parse(true);
+
+         /*
+          * Throw an exception if max limit was reached
+          */
+         if(regraph.stopped())
+            throw Error("scaffold detection exact searching max iteration limit reached");
+         
          build_graph.getSolutionListsSuper(v_lists, e_lists);
 
 
@@ -131,6 +141,8 @@ void ScaffoldDetection::_searchApproximateScaffold(GraphBasket& basket) {
    mcs.conditionEdgeWeight = cbEdgeWeight;
    mcs.conditionVerticesColor = cbVerticesColor;
    mcs.userdata = userdata;
+   if(maxIterations > 0)
+      mcs.parametersForApproximate.maxIteration = maxIterations;
 
    basket.cbMatchEdges = cbEdgeWeight;
    basket.cbMatchVertices = cbVerticesColor;

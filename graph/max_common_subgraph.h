@@ -154,6 +154,7 @@ public:
    class ReGraph {
    public:
       ReGraph();
+      ReGraph(MaxCommonSubgraph& context);
 
       //clears resolution graph
       void clear();
