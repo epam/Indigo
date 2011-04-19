@@ -126,6 +126,8 @@ int Scanner::readUnsigned ()
    return result;
 }
 
+// This very basic floating-point number parser was written
+// to avoid locale problems on various platforms.
 bool Scanner::_readDouble (double &res, int max)
 {
    res = 0;
@@ -133,6 +135,7 @@ bool Scanner::_readDouble (double &res, int max)
    bool plus = false;
    bool minus = false;
    bool digit = false;
+   bool e = false;
    int denom = 1;
    int cnt = 0;
 
@@ -174,6 +177,12 @@ bool Scanner::_readDouble (double &res, int max)
             return false;
          denom = 10;
       }
+      else if (c == 'E' || c == 'e')
+      {
+         skip(1);
+         e = true;
+         break;
+      }
       else if (isspace(c))
       {
          if (plus || minus || digit || denom > 1)
@@ -187,6 +196,20 @@ bool Scanner::_readDouble (double &res, int max)
 
    if (minus)
       res *= -1;
+
+   if (e)
+   {
+      int exponent = readInt();
+
+      if (exponent > 0)
+      {
+         while (exponent-- > 0)
+            res *= 10;
+      }
+      while (exponent++ < 0)
+         res /= 10;
+   }
+
    return digit;
 }
 
