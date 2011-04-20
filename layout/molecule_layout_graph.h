@@ -197,6 +197,7 @@ protected:
    void _setChainType (const Array<int> &chain, const Array<int> &mapping, int type);
    bool _splitCycle (const Cycle &cycle, const Array<int> &cycle_vertex_types, bool check_boundary,
       Array<int> &chain_ext, Array<int> &chain_int, int &c_beg, int &c_end) const;
+   void _splitCycle2 (const Cycle &cycle, const Array<int> &cycle_vertex_types, ObjArray < Array<int> > &chains_ext) const;
 
    // border functions
    void _getBorder (Cycle &border) const;

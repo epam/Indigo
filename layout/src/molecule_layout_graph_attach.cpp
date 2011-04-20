@@ -111,6 +111,60 @@ bool MoleculeLayoutGraph::_splitCycle (const Cycle &cycle, const Array<int> &cyc
 
    return true;
 }
+
+// Split cycle into separate chains which are not drawn
+void MoleculeLayoutGraph::_splitCycle2 (const Cycle &cycle, const Array<int> &cycle_vertex_types, ObjArray < Array<int> > &chains_ext) const
+{
+   int i, j, k;
+   
+   chains_ext.clear();
+   
+   i = 0;
+   
+   while (cycle_vertex_types[i] == ELEMENT_NOT_DRAWN)
+      i++;
+
+   while (i < cycle.vertexCount())
+   {
+      for (; i < cycle.vertexCount(); i++)
+         if (cycle_vertex_types[i] == ELEMENT_NOT_DRAWN)
+            break;
+      
+      if (i == cycle.vertexCount())
+         break;
+      
+      Array<int> &chain_ext = chains_ext.push();
+
+      chain_ext.push(cycle.getVertex(i - 1));
+
+      for (; i < cycle.vertexCount() && cycle_vertex_types[i] == ELEMENT_NOT_DRAWN; i++)
+          chain_ext.push(cycle.getVertex(i));
+
+      if (i < cycle.vertexCount() || cycle_vertex_types[0] != ELEMENT_NOT_DRAWN)
+         chain_ext.push(cycle.getVertex(i % cycle.vertexCount()));
+   }
+   
+   if (cycle_vertex_types[0] == ELEMENT_NOT_DRAWN)
+   {
+      i = cycle.vertexCount() - 1;
+      
+      Array<int> *chain_ext = 0;
+      
+      if (cycle_vertex_types[i] != ELEMENT_NOT_DRAWN)
+      {
+         chain_ext = &chains_ext.push();
+         chain_ext->push(cycle.getVertex(i));
+         
+      } else
+         chain_ext = &chains_ext.top();
+
+      for (i = 0; cycle_vertex_types[i] == ELEMENT_NOT_DRAWN; i++)
+         chain_ext->push(cycle.getVertex(i));
+      
+      chain_ext->push(cycle.getVertex(i));
+   }
+}
+
 // Attach cycle outside component border. Component must have given number of common edges or any (if 0)
 bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length, int n_common_edges)
 {
@@ -532,107 +586,98 @@ bool MoleculeLayoutGraph::_attachCycleWithIntersections (const Cycle &cycle, flo
    //   chain_ext - not drawn vertices and two boundary
    // If number of common vertices is less than 2 then skip cycle
    if (n_common_v < 2)
-      return false;
+      throw new Error("attaching cycle with only one vertex drawn"); //return false;
 
-   QS_DEF(Array<int>, chain_ext);
-   QS_DEF(Array<int>, chain_int);
-   int c_beg, c_end;
+   QS_DEF(ObjArray< Array<int> >, chains_ext);
 
-   if (!_splitCycle(cycle, cycle_vertex_types, false, chain_ext, chain_int, c_beg, c_end))
-   {   
-      // TODO: fix this case
-      // Set new types
-      for (i = 0; i < cycle.vertexCount(); i++)
-      {
-         if (_layout_vertices[cycle.getVertex(i)].type == ELEMENT_NOT_DRAWN)
-            _layout_vertices[cycle.getVertex(i)].type = ELEMENT_NOT_PLANAR;
-         
-         if (_layout_edges[cycle.getEdge(i)].type == ELEMENT_NOT_DRAWN)
-            _layout_edges[cycle.getEdge(i)].type = ELEMENT_NOT_PLANAR;
-      }
-
-      return true;
-      //return false;
-   }
-
-   float max_length = length * 4; // to avoid infinite values
+   // Split cycle into separate external (not drawn) chains
+   _splitCycle2(cycle, cycle_vertex_types, chains_ext);
    
-   // Complete regular polygon by chain_ext (on the one side if n_try == 1 and other side if n_try == 2
-   // Mark new vertices and edges as not planar
-   k = chain_ext.size() - 2;
-   float dist = Vec2f::dist(getPos(c_beg), getPos(c_end));
-
-   if (dist > (k + 1) * length)
-   {   
-      length = 0.2f + dist / (k + 1);
-      max_length = __max(max_length, length * 1.5f);  // update max length if needed
-   }
-
-   bool attached = false;
-
-   while (!attached && length < max_length)
+   // Attach each chain separately
+   for (int chain_idx = 0; chain_idx < chains_ext.size(); chain_idx++)
    {
-      attached = true;
+      Array<int> &chain_ext = chains_ext[chain_idx];
+      int c_beg = chain_ext[0], c_end = chain_ext[chain_ext.size() - 1];
 
-      while (!_drawRegularCurve(chain_ext, c_beg, c_end, length, true, ELEMENT_NOT_PLANAR))
-         length *= 1.2f;
-
-      // Choose position with minimal energy
-      Vec2f &pos1 = getPos(chain_ext[1]);
-      float s = 0;
-
-      for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-         if (_layout_vertices[i].type == ELEMENT_INTERNAL || _layout_vertices[i].type == ELEMENT_BOUNDARY)  
-         {
-            Vec2f &pos = getPos(i);
-            s += Vec2f::distSqr(pos, pos1);
-         }
-
-      _drawRegularCurve(chain_ext, c_beg, c_end, length, false, ELEMENT_NOT_PLANAR);
+      float max_length = length * 4; // to avoid infinite values
       
-      float sn = 0;
+      // Complete regular polygon by chain_ext (on the one side if n_try == 1 and other side if n_try == 2
+      // Mark new vertices and edges as not planar
+      k = chain_ext.size() - 2;
+      float dist = Vec2f::dist(getPos(c_beg), getPos(c_end));
 
-      for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-      {
-         int type = _layout_vertices[i].type;
-
-         if (type == ELEMENT_INTERNAL || type == ELEMENT_BOUNDARY)  
-         {
-            Vec2f &pos = getPos(i);
-            sn += Vec2f::distSqr(pos, pos1);
-         }
+      if (dist > (k + 1) * length)
+      {   
+         length = 0.2f + dist / (k + 1);
+         max_length = __max(max_length, length * 1.5f);  // update max length if needed
       }
 
-      if (sn < s - 0.001)
-         _drawRegularCurve(chain_ext, c_beg, c_end, length, true, ELEMENT_NOT_PLANAR);
-      
-      // Try to change edge length to avoid bad layout
-      for (i = 1; i < chain_ext.size() - 1; i++)
+      bool attached = false;
+
+      while (!attached && length < max_length)
       {
-         if (_isVertexOnSomeEdge(chain_ext[i]))
-         {
+         attached = true;
+
+         while (!_drawRegularCurve(chain_ext, c_beg, c_end, length, true, ELEMENT_NOT_PLANAR))
             length *= 1.2f;
-            attached = false;
-            break;
-         }
-      }
 
-      if (!attached)
-         continue;
+         // Choose position with minimal energy
+         Vec2f &pos1 = getPos(chain_ext[1]);
+         float s = 0;
 
-      for (j = 0; j < chain_ext.size() - 1 && attached; j++)
-      {
+         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+            if (_layout_vertices[i].type == ELEMENT_INTERNAL || _layout_vertices[i].type == ELEMENT_BOUNDARY)  
+            {
+               Vec2f &pos = getPos(i);
+               s += Vec2f::distSqr(pos, pos1);
+            }
+
+         _drawRegularCurve(chain_ext, c_beg, c_end, length, false, ELEMENT_NOT_PLANAR);
+         
+         float sn = 0;
+
          for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
          {
             int type = _layout_vertices[i].type;
 
-            if (i != chain_ext[j] && i != chain_ext[j + 1] && (type == ELEMENT_INTERNAL || type == ELEMENT_BOUNDARY))
+            if (type == ELEMENT_INTERNAL || type == ELEMENT_BOUNDARY)  
             {
-               if (_isVertexOnEdge(i, chain_ext[j], chain_ext[j + 1]))
+               Vec2f &pos = getPos(i);
+               sn += Vec2f::distSqr(pos, pos1);
+            }
+         }
+
+         if (sn < s - 0.001)
+            _drawRegularCurve(chain_ext, c_beg, c_end, length, true, ELEMENT_NOT_PLANAR);
+         
+         // Try to change edge length to avoid bad layout
+         for (i = 1; i < chain_ext.size() - 1; i++)
+         {
+            if (_isVertexOnSomeEdge(chain_ext[i]))
+            {
+               length *= 1.2f;
+               attached = false;
+               break;
+            }
+         }
+
+         if (!attached)
+            continue;
+
+         for (j = 0; j < chain_ext.size() - 1 && attached; j++)
+         {
+            for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+            {
+               int type = _layout_vertices[i].type;
+
+               if (i != chain_ext[j] && i != chain_ext[j + 1] && (type == ELEMENT_INTERNAL || type == ELEMENT_BOUNDARY))
                {
-                  length *= 1.2f;
-                  attached = false;
-                  break;
+                  if (_isVertexOnEdge(i, chain_ext[j], chain_ext[j + 1]))
+                  {
+                     length *= 1.2f;
+                     attached = false;
+                     break;
+                  }
                }
             }
          }
