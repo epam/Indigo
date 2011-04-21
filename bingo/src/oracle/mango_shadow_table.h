@@ -19,6 +19,7 @@
 #include "oracle/ora_wrap.h"
 #include "oracle/bingo_fetch_engine.h"
 #include "core/mango_matchers.h"
+#include "base_cpp/queue.h"
 
 using namespace indigo;
 
@@ -53,12 +54,11 @@ public:
    
    const char * getName ();
    const char * getComponentsName ();
-   const char * getSimFPName ();
 
    DEF_ERROR("shadow table");
 
 protected:
-   Array<char> _table_name, _components_table_name, _fp_table_name;
+   Array<char> _table_name, _components_table_name;
 
 private:
    MangoShadowTable (MangoShadowTable &); // no implicit copy
@@ -69,16 +69,55 @@ private:
    Obj<OracleStatement> _components_table_statement;
    int _components_table_statement_count;
 
-   struct PendingLOB
+   class _PendingValue
    {
-      PendingLOB (OracleEnv &env) : lob(env) { name[0] = 0; }
+   public:
+      _PendingValue (const char *basename, int number);
+
+      char name[20];
+
+   private:
+      _PendingValue (const _PendingValue &);
+   };
+
+   class _PendingLOB : public _PendingValue
+   {
+   public:
+      _PendingLOB (OracleEnv &env, const char *basename, int number);
 
       OracleLOB lob;
-      char name[20];
    };
+
+   class _PendingInt : public _PendingValue
+   {
+   public:
+      _PendingInt (int val, const char *basename, int number);
+
+      int value;
+   };
+
+   class _PendingFloat : public _PendingValue
+   {
+   public:
+      _PendingFloat (float val, const char *basename, int number);
+
+      float value;
+   };
+
+   class _PendingString : public _PendingValue
+   {
+   public:
+      _PendingString (const char *val, const char *basename, int number);
+
+      Array<char> value;
+   };
+
    Obj<OracleStatement> _main_table_statement;
    int _main_table_statement_count;
-   PtrArray<PendingLOB> _pending_lobs;
+   ObjArray<_PendingLOB> _pending_lobs;
+   ObjArray<_PendingInt> _pending_ints;
+   ObjArray<_PendingFloat> _pending_floats;
+   ObjArray<_PendingString> _pending_strings;
 };
 
 #endif

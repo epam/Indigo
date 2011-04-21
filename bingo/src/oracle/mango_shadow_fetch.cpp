@@ -89,7 +89,22 @@ float MangoShadowFetch::calcSelectivity (OracleEnv &env, int total_count)
    if (_counting_select.size() > 1)
    {
       _counting_select.push(0);
-      if (!OracleStatement::executeSingleInt(nrows_select_total, env, _counting_select.ptr()))
+      OracleStatement statement(env);
+
+      statement.append("%s", _counting_select.ptr());
+      statement.prepare();
+      statement.defineIntByPos(1, &nrows_select_total);
+      if (_fetch_type == _MASS)
+      {
+         statement.bindFloatByName(":mass_min", &_context.mass.bottom);
+         statement.bindFloatByName(":mass_max", &_context.mass.top);
+      }
+      else if (_fetch_type == _TAUTOMER)
+      {
+         const char *gross = _context.tautomer.getQueryGross();
+         statement.bindStringByName(":gross", gross, strlen(gross) + 1);
+      }
+      if (!statement.executeAllowNoData())
          throw Error("selectivity: cannot count rows");
    }
    else
@@ -157,8 +172,6 @@ void MangoShadowFetch::prepareNonTautomerSubstructure (OracleEnv &env)
 
 void MangoShadowFetch::prepareTautomer (OracleEnv &env, int right_part)
 {
-   MangoTautomer & instance = _context.tautomer;
-
    if (right_part == 1)
       env.dbgPrintf("preparing shadow table for tautomer match\n");
    else 
@@ -174,8 +187,7 @@ void MangoShadowFetch::prepareTautomer (OracleEnv &env, int right_part)
    _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.ptr());
 
    if (right_part == 1)
-      _statement->append(" WHERE gross = '%s' OR gross LIKE '%s H%%'",
-      instance.getQueryGross(), instance.getQueryGross());
+      _statement->append(" WHERE gross = :gross OR gross LIKE :grossh");
 
    _statement->prepare();
    _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
@@ -185,8 +197,7 @@ void MangoShadowFetch::prepareTautomer (OracleEnv &env, int right_part)
    {
       ArrayOutput output(_counting_select);
       
-      output.printf("SELECT COUNT(*) FROM %s WHERE gross = '%s'",
-              _table_name.ptr(), instance.getQueryGross());
+      output.printf("SELECT COUNT(*) FROM %s WHERE gross = :gross", _table_name.ptr());
    }
    else
       _counting_select.clear();
@@ -325,20 +336,13 @@ void MangoShadowFetch::prepareGross (OracleEnv &env, int right_part)
 
 void MangoShadowFetch::prepareMass (OracleEnv &env)
 {
-   MangoMass &instance = _context.mass;
-
    env.dbgPrintf("preparing shadow table for molecular mass match\n");
 
    QS_DEF(Array<char>, where);
 
    {
       ArrayOutput where_out(where);
-      // write molecular mass in such a way to avoid locale problems
-      where_out.printf("mass >= %d + %d / 10000",
-              (int)instance.bottom, (int)((instance.bottom - (int)instance.bottom) * 10000));
-      if (instance.top < 1e9)
-         where_out.printf(" AND mass <= %d + %d / 10000",
-                 (int)instance.top, (int)((instance.top - (int)instance.top) * 10000));
+      where_out.printf("");
       where_out.writeChar(0);
    }
 
@@ -346,14 +350,15 @@ void MangoShadowFetch::prepareMass (OracleEnv &env)
    _env.reset(new OracleEnv(env.ctx(), env.logger()));
    _statement.reset(new OracleStatement(_env.ref()));
 
-   _statement->append("SELECT mol_rowid FROM %s WHERE %s",
-                      _table_name.ptr(), where.ptr());
+   _statement->append("SELECT mol_rowid FROM %s WHERE mass >= :mass_min AND mass <= :mass_max",
+                      _table_name.ptr());
 
    _statement->prepare();
    _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
 
    ArrayOutput output(_counting_select);
-   output.printf("SELECT COUNT(*) FROM %s WHERE", _table_name.ptr(), where.ptr());
+   output.printf("SELECT COUNT(*) FROM %s WHERE WHERE mass >= :mass_min AND mass <= :mass_max",
+           _table_name.ptr());
 }
 
 void MangoShadowFetch::fetch (OracleEnv &env, int maxrows)
@@ -372,6 +377,21 @@ void MangoShadowFetch::fetch (OracleEnv &env, int maxrows)
    {
       bool fetch_res;
 
+      if (_fetch_type == _MASS)
+      {
+         _statement->bindFloatByName(":mass_min", &_context.mass.bottom);
+         _statement->bindFloatByName(":mass_max", &_context.mass.top);
+      }
+      else if (_fetch_type == _TAUTOMER && _right_part == 1)
+      {
+         const char *gross = _context.tautomer.getQueryGross();
+         _statement->bindStringByName(":gross", gross, strlen(gross) + 1);
+         QS_DEF(Array<char>, grossh);
+         grossh.readString(gross, false);
+         grossh.appendString(" H%", true);
+         _statement->bindStringByName(":grossh", grossh.ptr(), grossh.size());
+      }
+      
       if (!_executed)
       {
          fetch_res = _statement->executeAllowNoData();

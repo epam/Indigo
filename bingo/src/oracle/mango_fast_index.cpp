@@ -303,56 +303,8 @@ void MangoFastIndex::_fetchSimilarity (OracleEnv &env, int max_matches)
       else if (_screening.passed.size() > 0)
       {
          profTimerStart(tfine, "sim.fetch.fine");
-         /*
-         OracleStatement statement(env);
-         OraRowidText rid;
-         char fp_sim_str[1024];
-         QS_DEF(Array<byte>, fp);
-
-         fp.clear_resize(_context.context().context().fp_parameters.fingerprintSizeSim());
-         statement.append("SELECT mol_rowid, fingerprint FROM %s WHERE mol_rowid IN (",
-                           _context.context().shadow_table.getSimFPName());
-         for (i = _screening.passed.begin(); i != _screening.passed.end();
-              i = _screening.passed.next(i))
-         {
-            storage.get(fingerprints.getStorageIndex_NoMap(_screening, _screening.passed.at(i)), stored);
-            _decompressRowid(stored, rid);
-            if (i != _screening.passed.begin())
-               statement.append(",");
-            statement.append("\'%s\'", rid.ptr());
-         }
-         statement.append(")");
-         statement.prepare();
-         statement.defineStringByPos(1, rid.ptr(), sizeof(rid));
-         statement.defineStringByPos(2, fp_sim_str, sizeof(fp_sim_str));
-         statement.execute();
-         do
-         {
-            profTimerStart(tfinematch, "sim.fetch.fine.fpmatch");
-            for (int j = 0; j < fp.size(); j++)
-            {
-               int b;
-               sscanf(fp_sim_str + j * 2, "%02X", &b);
-               fp[j] = b;
-            }
-            int target_ones = bitGetOnesCount(fp.ptr(), fp.size());
-            int common_ones = bitCommonOnes(fp.ptr(), _context.similarity.getQueryFingerprint() +
-                _context.context().context().fp_parameters.fingerprintOffsetSim(), fp.size());
-           
-            if (_context.similarity.match(target_ones, common_ones))
-            {
-               matched.add(rid);
-               _matched++;
-            }
-            profTimerStop(tfinematch);
-         } while (statement.fetch());
-         _unmatched = _screening.block->used - _matched;
-         */
-
          for (i = _screening.passed.begin(); i != _screening.passed.end(); i = _screening.passed.next(i))
-         {
             _match(env, fingerprints.getStorageIndex_NoMap(_screening, _screening.passed[i]));
-         }
          profTimerStop(tfine);
       }
       env.dbgPrintf("done\n");

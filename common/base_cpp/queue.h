@@ -49,15 +49,17 @@ public:
       return _start == _end;
    }
 
-   void push (const T& elem)
+   T & push (const T& elem)
    {
       int idx = (_end + 1) % _array.size();
       if (idx == _start)
          throw Error("queue is full");
+      int end = _end;
       _array[_end] = elem;
       _end = idx;
+      return _array[end];
    }
-
+   
    T& pop (void)
    {
       if (isEmpty())

@@ -94,6 +94,7 @@ public:
    void defineRawByPos    (int pos, OracleRaw &raw);
    void defineStringByPos (int pos, char *string, int max_len);
    void bindIntByName    (const char *name, int *value);
+   void bindFloatByName  (const char *name, float *value);
    void bindBlobByName   (const char *name, OracleLOB &lob);
    void bindClobByName   (const char *name, OracleLOB &lob);
    void bindRawByName    (const char *name, OracleRaw &raw);
@@ -116,6 +117,7 @@ public:
    const char* getString () const {return _query;}
 
    static void executeSingle (OracleEnv &env, const char *format, ...);
+   static void executeSingle_BindString (OracleEnv &env, const char *bind, const char *value, const char *format, ...);
    static bool executeSingleInt (int &result, OracleEnv &env, const char *format, ...);
    static bool executeSingleFloat (float &result, OracleEnv &env, const char *format, ...);
    static bool executeSingleString (Array<char> &result, OracleEnv &env, const char *format, ...);

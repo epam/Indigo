@@ -31,10 +31,6 @@ MangoShadowTable::MangoShadowTable (int context_id)
    output2.printf("HASHES_%d", context_id);
    output2.writeChar(0);
 
-   ArrayOutput output3(_fp_table_name);
-   output3.printf("SIMFP_%d", context_id);
-   output3.writeChar(0);
-
    _main_table_statement_count = 0;
    _components_table_statement_count = 0;
 }
@@ -62,8 +58,14 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
       _main_table_statement_count = 0;
       _main_table_statement->append("INSERT ALL /*+ NOLOGGING */\n");
    }
-   PendingLOB &cmf = _pending_lobs.add(new PendingLOB(env));
-   PendingLOB &xyz = _pending_lobs.add(new PendingLOB(env));
+   
+   _PendingLOB &cmf = _pending_lobs.push(env, "cmf", _main_table_statement_count);
+   _PendingLOB &xyz = _pending_lobs.push(env, len_xyz == 0 ? 0 : "xyz", _main_table_statement_count);
+   _PendingInt &p_blockno = _pending_ints.push(blockno, "blockno", _main_table_statement_count);
+   _PendingInt &p_offset = _pending_ints.push(offset, "offset", _main_table_statement_count);
+   _PendingFloat &p_mass = _pending_floats.push(molecular_mass, "mass", _main_table_statement_count);
+   _PendingString &p_rowid = _pending_strings.push(rowid, "rowid", _main_table_statement_count);
+   _PendingString &p_gross = _pending_strings.push(gross, "gross", _main_table_statement_count);
 
    cmf.lob.createTemporaryBLOB();
    cmf.lob.write(0, data_cmf, len_cmf);
@@ -78,20 +80,11 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
    for (int i = 0; i < hash.size(); i++)
       fragments_count += hash[i].count;
 
-   if (len_xyz == 0)
-      strncpy(xyz.name, "NULL", NELEM(xyz.name));
-   else
-      snprintf(xyz.name, NELEM(xyz.name), ":xyz_%d", _main_table_statement_count);
-
-   snprintf(cmf.name, NELEM(cmf.name), ":cmf_%d", _main_table_statement_count);
-
    _main_table_statement->append(
       // "INSERT /*+ NOLOGGING */ "
-      "INTO %s VALUES('%s', %d, %d, '%s', %s, %s, %d + %d / 10000, %d%s)\n",
-      _table_name.ptr(), rowid, blockno, offset, gross, cmf.name, xyz.name,
-      // write molecular mass in such a way to avoid locale problems
-      (int)molecular_mass, (int)((molecular_mass - (int)molecular_mass) * 10000),
-           fragments_count, counters);
+      "INTO %s VALUES(%s, %s, %s, %s, %s, %s, %s, %d%s)\n",
+      _table_name.ptr(), p_rowid.name, p_blockno.name, p_offset.name, p_gross.name,
+           cmf.name, xyz.name, p_mass.name, fragments_count, counters);
 
    _main_table_statement_count++;
    
@@ -115,13 +108,6 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
          rowid, hash[i].hash, hash[i].count);
       _components_table_statement_count++;
    }
-
-   /*
-   profTimerStart(tsim, "moleculeIndex.register_shadow_fpsim");
-   OracleStatement::executeSingle(env, "INSERT INTO %s VALUES('%s', '%s')",
-                                  _fp_table_name.ptr(), rowid, fp_sim);
-   profTimerStop(tsim);
-   */
 }
 
 void MangoShadowTable::flush (OracleEnv &env)
@@ -138,19 +124,39 @@ void MangoShadowTable::_flushMain (OracleEnv &env)
       if (_main_table_statement_count != 0)
       {
          _main_table_statement->append("SELECT * FROM dual");
+         int i;
 
          profTimerStart(tmain, "moleculeIndex.register_shadow_main");
          _main_table_statement->prepare();
-         for (int i = 0; i < _pending_lobs.size(); i++)
+         for (i = 0; i < _pending_lobs.size(); i++)
          {
-            PendingLOB *plob = _pending_lobs[i];
-            if (strlen(plob->name) > 0 && strcmp(plob->name, "NULL") != 0)
-               _main_table_statement->bindBlobByName(plob->name, plob->lob);
+            _PendingLOB &plob = _pending_lobs[i];
+            if (strcmp(plob.name, "NULL") != 0)
+               _main_table_statement->bindBlobByName(plob.name, plob.lob);
          }
+         for (i = 0; i < _pending_ints.size(); i++)
+         {
+            _PendingInt &pint = _pending_ints[i];
+            _main_table_statement->bindIntByName(pint.name, &pint.value);
+         }
+         for (i = 0; i < _pending_floats.size(); i++)
+         {
+            _PendingFloat &pfloat = _pending_floats[i];
+            _main_table_statement->bindFloatByName(pfloat.name, &pfloat.value);
+         }
+         for (i = 0; i < _pending_strings.size(); i++)
+         {
+            _PendingString &pstring = _pending_strings[i];
+            _main_table_statement->bindStringByName(pstring.name, pstring.value.ptr(), pstring.value.size());
+         }
+
          _main_table_statement->execute();
          profTimerStop(tmain);
 
          _pending_lobs.clear();
+         _pending_ints.clear();
+         _pending_floats.clear();
+         _pending_strings.clear();
       }
       _main_table_statement.free();
       _main_table_statement_count = 0;
@@ -197,7 +203,7 @@ void MangoShadowTable::create (OracleEnv &env)
 
    s1.append("CREATE TABLE %s "
       "(mol_rowid VARCHAR2(18), blockno NUMBER, offset NUMBER, "
-      " gross VARCHAR2(500), cmf BLOB, xyz BLOB, MASS number, fragments number ", mi);
+      " gross VARCHAR2(500), cmf BLOB, xyz BLOB, MASS number, fragments NUMBER", mi);
 
    for (i = 0; i < (int)NELEM(MangoIndex::counted_elements); i++)
       s1.append(", cnt_%s INTEGER", Element::toString(MangoIndex::counted_elements[i]));
@@ -212,11 +218,6 @@ void MangoShadowTable::create (OracleEnv &env)
    const char *cmi = _components_table_name.ptr();
    OracleStatement::executeSingle(env, "CREATE TABLE %s "
       " (mol_rowid VARCHAR2(18), hash VARCHAR2(8), count INT) NOLOGGING", cmi);
-
-   // Create table for similarity fingerprints
-   OracleStatement::executeSingle(env, "CREATE TABLE %s "
-      " (mol_rowid VARCHAR2(18), fingerprint VARCHAR2(128)) NOLOGGING",
-           _fp_table_name.ptr());
 
 }
 
@@ -247,24 +248,18 @@ void MangoShadowTable::createIndices (OracleEnv &env)
    OracleStatement::executeSingle(env, "CREATE INDEX %s_rid ON %s(mol_rowid) NOLOGGING", cmi, cmi);
    OracleStatement::executeSingle(env, "CREATE INDEX %s_hash ON %s(hash) NOLOGGING", cmi, cmi);
    OracleStatement::executeSingle(env, "CREATE INDEX %s_count ON %s(count) NOLOGGING", cmi, cmi);
-
-   const char *fp = _fp_table_name.ptr();
-
-   OracleStatement::executeSingle(env, "CREATE INDEX %s_rid ON %s(mol_rowid) NOLOGGING", fp, fp);
 }
 
 void MangoShadowTable::drop (OracleEnv &env)
 {
-   OracleStatement::executeSingle(env, "BEGIN DropTable('%s'); "
-      "DropTable('%s'); DropTable('%s'); END;",
-           _table_name.ptr(), _components_table_name.ptr(), _fp_table_name.ptr());
+   OracleStatement::executeSingle(env, "BEGIN DropTable('%s'); DropTable('%s'); END;",
+           _table_name.ptr(), _components_table_name.ptr());
 }
 
 void MangoShadowTable::truncate (OracleEnv &env)
 {
    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _table_name.ptr());
    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _components_table_name.ptr());
-   OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _fp_table_name.ptr());
 }
 
 void MangoShadowTable::analyze (OracleEnv &env)
@@ -294,19 +289,13 @@ const char * MangoShadowTable::getComponentsName ()
    return _components_table_name.ptr();
 }
 
-const char * MangoShadowTable::getSimFPName ()
-{
-   return _fp_table_name.ptr();
-}
-
 bool MangoShadowTable::getMoleculeLocation (OracleEnv &env, const char *rowid, int &blockno, int &offset)
 {
    OracleStatement statement(env);
 
-   statement.append("SELECT blockno, offset FROM %s WHERE mol_rowid = '%s'",
-                    _table_name.ptr(), rowid);
-
+   statement.append("SELECT blockno, offset FROM %s WHERE mol_rowid = :rid", _table_name.ptr());
    statement.prepare();
+   statement.bindStringByName(":rid", rowid, strlen(rowid) + 1);
    statement.defineIntByPos(1, &blockno);
    statement.defineIntByPos(2, &offset);
 
@@ -315,10 +304,40 @@ bool MangoShadowTable::getMoleculeLocation (OracleEnv &env, const char *rowid, i
 
 void MangoShadowTable::deleteMolecule (OracleEnv &env, const char *rowid)
 {
-   OracleStatement::executeSingle(env, "DELETE FROM %s WHERE mol_rowid = '%s'",
-                                   _table_name.ptr(), rowid);
-   OracleStatement::executeSingle(env, "DELETE FROM %s WHERE mol_rowid = '%s'",
-                                   _components_table_name.ptr(), rowid);
-   OracleStatement::executeSingle(env, "DELETE FROM %s WHERE mol_rowid = '%s'",
-                                   _fp_table_name.ptr(), rowid);
+   OracleStatement::executeSingle_BindString(env, ":rid", rowid,
+           "DELETE FROM %s WHERE mol_rowid = :rid", _table_name.ptr());
+   OracleStatement::executeSingle_BindString(env, ":rid", rowid,
+           "DELETE FROM %s WHERE mol_rowid = :rid", _components_table_name.ptr());
+}
+
+MangoShadowTable::_PendingValue::_PendingValue (const char *basename, int number)
+{
+   if (basename == 0)
+      strncpy(name, "NULL", sizeof(name));
+   else
+      snprintf(name, NELEM(name), ":%s_%d", basename, number);
+}
+
+MangoShadowTable::_PendingLOB::_PendingLOB (OracleEnv &env, const char *basename, int number) :
+_PendingValue(basename, number),
+lob(env)
+{
+}
+
+MangoShadowTable::_PendingInt::_PendingInt (int val, const char *basename, int number) :
+_PendingValue(basename, number)
+{
+   value = val;
+}
+
+MangoShadowTable::_PendingFloat::_PendingFloat (float val, const char *basename, int number) :
+_PendingValue(basename, number)
+{
+   value = val;
+}
+
+MangoShadowTable::_PendingString::_PendingString (const char *val, const char *basename, int number) :
+_PendingValue(basename, number)
+{
+   value.readString(val, true);
 }

@@ -465,6 +465,14 @@ void OracleStatement::bindIntByName (const char *name, int *value)
       (dvoid *)value, sizeof(int), SQLT_INT, 0, 0, 0, 0, 0, OCI_DEFAULT));
 }
 
+void OracleStatement::bindFloatByName (const char *name, float *value)
+{
+   OCIBind *bndp = (OCIBind *)0;
+
+   _env.callOCI(OCIBindByName(_statement, &bndp, _env.errhp(), (text *)name, -1,
+      (dvoid *)value, sizeof(float), SQLT_FLT, 0, 0, 0, 0, 0, OCI_DEFAULT));
+}
+
 void OracleStatement::bindClobByName (const char *name, OracleLOB &lob)
 {
    OCIBind *bndp = (OCIBind *)0;
@@ -522,6 +530,19 @@ void OracleStatement::executeSingle (OracleEnv &env, const char *format, ...)
    va_start(args, format);
    statement.append_v(format, args);
    statement.prepare();
+   statement.execute();
+   va_end(args);
+}
+
+void OracleStatement::executeSingle_BindString (OracleEnv &env, const char *bind, const char *value, const char *format, ...)
+{
+   OracleStatement statement(env);
+   va_list args;
+
+   va_start(args, format);
+   statement.append_v(format, args);
+   statement.prepare();
+   statement.bindStringByName(bind, value, strlen(value) + 1);
    statement.execute();
    va_end(args);
 }

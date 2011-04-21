@@ -96,10 +96,9 @@ bool RingoShadowTable::getReactionLocation (OracleEnv &env, const char *rowid, i
 {
    OracleStatement statement(env);
 
-   statement.append("SELECT blockno, offset FROM %s WHERE rid = '%s'",
-                    _table_name.ptr(), rowid);
-
+   statement.append("SELECT blockno, offset FROM %s WHERE rid = :rid", _table_name.ptr());
    statement.prepare();
+   statement.bindStringByName(":rid", rowid, strlen(rowid) + 1);
    statement.defineIntByPos(1, &blockno);
    statement.defineIntByPos(2, &offset);
 
@@ -108,7 +107,6 @@ bool RingoShadowTable::getReactionLocation (OracleEnv &env, const char *rowid, i
 
 void RingoShadowTable::deleteReaction (OracleEnv &env, const char *rowid)
 {
-   OracleStatement::executeSingle(env, "DELETE FROM %s WHERE rid = '%s'",
-                                   _table_name.ptr(), rowid);
+   OracleStatement::executeSingle_BindString(env, ":rid", rowid,
+           "DELETE FROM %s WHERE rid = :rid", _table_name.ptr());
 }
-

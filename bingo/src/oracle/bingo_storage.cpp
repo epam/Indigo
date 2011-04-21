@@ -250,8 +250,9 @@ OracleLOB * BingoStorage::_getLob (OracleEnv &env, int no)
    OracleStatement statement(env);
    AutoPtr<OracleLOB> lob(new OracleLOB(env));
 
-   statement.append("SELECT bindata FROM %s where ID = %d FOR UPDATE", _table_name.ptr(), no);
+   statement.append("SELECT bindata FROM %s where ID = :id FOR UPDATE", _table_name.ptr());
    statement.prepare();
+   statement.bindIntByName(":id", &no);
    statement.defineBlobByPos(1, lob.ref());
    statement.execute();
 
@@ -403,10 +404,9 @@ void BingoStorage::markRemoved (OracleEnv &env, int blockno, int offset)
    OracleStatement statement(env);
    OracleLOB lob(env);
 
-   statement.append("SELECT bindata FROM %s WHERE id = %d FOR UPDATE",
-                    _table_name.ptr(), blockno);
-
+   statement.append("SELECT bindata FROM %s WHERE id = :id FOR UPDATE", _table_name.ptr());
    statement.prepare();
+   statement.bindIntByName(":id", &blockno);
    statement.defineBlobByPos(1, lob);
    statement.execute();
    

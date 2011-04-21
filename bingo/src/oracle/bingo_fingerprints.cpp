@@ -145,9 +145,10 @@ bool BingoFingerprints::_flush_Update (OracleEnv &env)
       lob_bit_starts(env),
       lob_bit_ends(env);
 
-   statement.append("SELECT counters, mapping, bit_starts, bit_ends, bits from %s WHERE part = %d FOR UPDATE",
-                    _table_name.ptr(), _part_adding);
+   statement.append("SELECT counters, mapping, bit_starts, bit_ends, bits from %s WHERE part = :part FOR UPDATE",
+                    _table_name.ptr());
    statement.prepare();
+   statement.bindIntByName(":part", &_part_adding);
    statement.defineBlobByPos(1, lob_counters);
    statement.defineBlobByPos(2, lob_mapping);
    statement.defineBlobByPos(3, lob_bit_starts);
@@ -434,9 +435,10 @@ bool BingoFingerprints::countOnes_Init (OracleEnv &env, Screening &screening)
 
       screening.statement.create(env);
       screening.bits_lob.create(env);
-      screening.statement->append("SELECT bits FROM %s WHERE part = %d",
-                        _table_name.ptr(), screening.part);
+      screening.statement->append("SELECT bits FROM %s WHERE part = :part",
+                        _table_name.ptr());
       screening.statement->prepare();
+      screening.statement->bindIntByName(":part", &screening.part);
       screening.statement->defineBlobByPos(1, screening.bits_lob.ref());
       screening.statement->execute();
 
