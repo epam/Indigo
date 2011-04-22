@@ -330,7 +330,9 @@ int Molecule::calcAtomConnectivity_noImplH (int idx)
 
       if (order == BOND_AROMATIC)
          return -1;
-      // not checking order == -1 because it is not QueryMolecule
+
+      if (order == -1) // can happen on TautomerSuperStructure
+         continue;
 
       conn += order;
    }
