@@ -128,7 +128,7 @@ int TautomerSuperStructure::getBondTopology (int idx)
 bool TautomerSuperStructure::possibleBondOrder (int idx, int order)
 {
    if (!_inside_ctor &&_isBondAttachedArray[idx])
-      return order == BOND_SINGLE;
+      return order == 0 || order == BOND_SINGLE;
 
    return Molecule::possibleBondOrder(idx, order);
 }
