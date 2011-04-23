@@ -53,6 +53,33 @@ create or replace operator RSubHi binding (NUMBER) return CLOB ANCILLARY TO
    RSub (BLOB, VARCHAR2),
    RSub (BLOB, VARCHAR2, VARCHAR2) using RingoPackage.RSubHi;
 
+create or replace operator RExact binding
+  (VARCHAR2,  CLOB) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (VARCHAR2,  CLOB, VARCHAR2) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (VARCHAR2,  VARCHAR2) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (VARCHAR2,  VARCHAR2, VARCHAR2) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (CLOB,  CLOB) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (CLOB,  CLOB, VARCHAR2) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (CLOB,  VARCHAR2) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (CLOB,  VARCHAR2, VARCHAR2) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (BLOB,  CLOB) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (BLOB,  CLOB, VARCHAR2) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (BLOB,  VARCHAR2) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact,
+  (BLOB,  VARCHAR2, VARCHAR2) return NUMBER with index context, scan context RingoIndex
+                                          using RingoPackage.RExact;
+
+
 create or replace operator AAM binding  
   (VARCHAR2, VARCHAR2) return CLOB using RingoPackage.AAM,
   (CLOB, VARCHAR2) return CLOB using RingoPackage.AAM,
@@ -70,6 +97,7 @@ create or replace operator RSMILES binding
 
 grant execute on RSub to public;
 grant execute on RSubHi to public;
+grant execute on RExact to public;
 grant execute on AAM to public;
 grant execute on RSMILES to public;
 grant execute on Rxnfile to public;
@@ -86,7 +114,19 @@ create or replace indextype ReactionIndex for
    RSub(BLOB, CLOB),
    RSub(BLOB, CLOB, VARCHAR2),
    RSub(BLOB, VARCHAR2),
-   RSub(BLOB, VARCHAR2, VARCHAR2)
+   RSub(BLOB, VARCHAR2, VARCHAR2),
+   RExact(VARCHAR2, CLOB),
+   RExact(VARCHAR2, CLOB, VARCHAR2),
+   RExact(VARCHAR2, VARCHAR2),
+   RExact(VARCHAR2, VARCHAR2, VARCHAR2),
+   RExact(CLOB, CLOB),
+   RExact(CLOB, CLOB, VARCHAR2),
+   RExact(CLOB, VARCHAR2),
+   RExact(CLOB, VARCHAR2, VARCHAR2),
+   RExact(BLOB, CLOB),
+   RExact(BLOB, CLOB, VARCHAR2),
+   RExact(BLOB, VARCHAR2),
+   RExact(BLOB, VARCHAR2, VARCHAR2)
    using RingoIndex;
 
 associate statistics with packages RingoPackage using RingoStat;

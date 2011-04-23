@@ -20,6 +20,7 @@
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/obj.h"
 #include "graph/embedding_enumerator.h"
+#include "molecule/molecule_arom_match.h"
 
 namespace indigo {
 
@@ -29,7 +30,6 @@ class BaseReaction;
 class Graph;
 class BaseMolecule;
 class Molecule;
-class AromaticityMatcher;
 
 typedef RedBlackMap<int, int> RedBlackIntMap;
 

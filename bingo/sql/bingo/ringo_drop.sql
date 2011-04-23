@@ -12,6 +12,7 @@
 
 drop indextype ReactionIndex force;
 drop operator RSub force;
+drop operator RExact force;
 drop package RingoPackage;
 drop type RingoIndex force;
 drop type RingoStat force;

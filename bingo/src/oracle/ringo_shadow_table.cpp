@@ -37,11 +37,12 @@ void RingoShadowTable::addReaction (OracleEnv &env, RingoIndex &index, const cha
 
    OracleStatement statement(env);
 
-   statement.append("INSERT INTO %s VALUES('%s', %d, %d, :crf)",
+   statement.append("INSERT INTO %s VALUES('%s', :rowid, :blockno, :crf)",
       _table_name.ptr(), rowid, blockno, offset);
 
    statement.prepare();
    statement.bindBlobByName(":crf", crf);
+   statement.bindStringByName(":rowid", rowid, strlen(rowid) + 1);
 
    statement.execute();
 }

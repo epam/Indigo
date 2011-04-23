@@ -8,6 +8,11 @@ if [ -z $name ]; then
   exit;
 fi
 
+if [ -z $libname ]; then
+  echo "specify library name";
+  exit;
+fi
+
 rm -rf ./$name
 
 mkdir -p $name/bin

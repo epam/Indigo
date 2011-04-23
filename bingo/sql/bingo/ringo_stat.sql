@@ -112,7 +112,7 @@ create or replace type body RingoStat is
       context_id binary_integer;
    begin
       context_id := BingoPackage.getContextID(col);
-      
+
       sys.ODCIColInfoDump(col);
       sys.ODCIStatsOptionsDump(options);
 

@@ -61,6 +61,24 @@ create or replace function RSubHi_blob (context_id in binary_integer,
                           params, params indicator short,
                           return indicator short, return OCILobLocator);
 /
+create or replace function RExact_clob (context_id in binary_integer,
+  target in CLOB, query in CLOB, params in VARCHAR2) return NUMBER
+  AS language C name "oraRingoExact" library bingolib
+  with context parameters(context, context_id, 
+                          target, target indicator short,
+                          query,  query  indicator short, 
+                          params, params indicator short,
+                          return indicator short, return OCINumber);
+/
+create or replace function RExact_blob (context_id in binary_integer,
+  target in BLOB, query in CLOB, params in VARCHAR2) return NUMBER
+  AS language C name "oraRingoExact" library bingolib
+  with context parameters(context, context_id, 
+                          target, target indicator short,
+                          query,  query  indicator short, 
+                          params, params indicator short,
+                          return indicator short, return OCINumber);
+/
 create or replace procedure ringoCreateIndex (context_id in binary_integer, params in varchar2)
   AS language C name "oraRingoCreateIndex" library bingolib
   with context parameters(context, context_id, params, params indicator short);

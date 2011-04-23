@@ -64,6 +64,31 @@ CREATE OR REPLACE PACKAGE RingoPackage IS
    function RSubHi (target in BLOB, query in CLOB, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
                   scanctx in out RingoIndex, scanflg IN NUMBER) return CLOB;
 
+   function RExact (target in VARCHAR2, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in VARCHAR2, query in VARCHAR2, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in VARCHAR2, query in CLOB, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in VARCHAR2, query in CLOB, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in CLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in CLOB, query in VARCHAR2, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in CLOB, query in CLOB, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in CLOB, query in CLOB, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in BLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in BLOB, query in VARCHAR2, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in BLOB, query in CLOB, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RExact (target in BLOB, query in CLOB, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+
    function AAM (target in VARCHAR2, params in VARCHAR2) return CLOB;
    function AAM (target in CLOB, params in VARCHAR2) return CLOB;
    function AAM (target in BLOB, params in VARCHAR2) return CLOB;
@@ -216,6 +241,76 @@ CREATE OR REPLACE PACKAGE BODY RingoPackage IS
       end if;
       return RSubHi_blob(context_id, target, query, params);
    end RSubHi;
+
+   function RExact (target in VARCHAR2, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+            scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+   begin
+      return RExact(to_clob(target), to_clob(query), null, indexctx, scanctx, scanflg);
+   end RExact;
+   function RExact (target in VARCHAR2, query in VARCHAR2, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+            scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+   begin
+      return RExact(to_clob(target), to_clob(query), params, indexctx, scanctx, scanflg);
+   end RExact;
+   function RExact (target in VARCHAR2, query in CLOB, indexctx IN sys.ODCIIndexCtx,
+            scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+   begin
+      return RExact(to_clob(target), query, null, indexctx, scanctx, scanflg);
+   end RExact;
+   function RExact (target in VARCHAR2, query in CLOB, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+            scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+   begin
+      return RExact(to_clob(target), query, params, indexctx, scanctx, scanflg);
+   end RExact;
+   function RExact (target in CLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+            scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+   begin
+      return RExact(target, to_clob(query), null, indexctx, scanctx, scanflg);
+   end RExact;
+   function RExact (target in CLOB, query in VARCHAR2, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+            scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+   begin
+      return RExact(target, to_clob(query), params, indexctx, scanctx, scanflg);
+   end RExact;
+   function RExact (target in CLOB, query in CLOB, indexctx IN sys.ODCIIndexCtx,
+            scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+   begin
+      return RExact(target, query, null, indexctx, scanctx, scanflg);
+   end RExact;
+   function RExact (target in CLOB, query in CLOB, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+      context_id binary_integer := 0;
+   begin
+      if indexctx.IndexInfo is not null then
+         context_id := BingoPackage.getContextID(indexctx.IndexInfo);
+      end if;
+      return RExact_clob(context_id, target, query, params);
+   end RExact;
+   function RExact (target in BLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+   begin
+      return RExact(target, to_clob(query), null, indexctx, scanctx, scanflg);
+   end RExact;
+   function RExact (target in BLOB, query in VARCHAR2, params in VARCHAR2,
+            indexctx IN sys.ODCIIndexCtx, scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+   begin
+      return RExact(target, to_clob(query), params, indexctx, scanctx, scanflg);
+   end RExact;
+   function RExact (target in BLOB, query in CLOB, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+   begin
+      return RExact(target, query, null, indexctx, scanctx, scanflg);
+   end RExact;
+   function RExact (target in BLOB, query in CLOB, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+            scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+      context_id binary_integer := 0;
+   begin
+      if indexctx.IndexInfo is not null then
+         context_id := BingoPackage.getContextID(indexctx.IndexInfo);
+      end if;
+      return RExact_blob(context_id, target, query, params);
+   end RExact;
+
 
    function AAM (target in VARCHAR2, params in VARCHAR2) return CLOB IS
    begin

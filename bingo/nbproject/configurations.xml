@@ -36,6 +36,7 @@
         <itemPath>src/core/ringo_aam.cpp</itemPath>
         <itemPath>src/core/ringo_context.cpp</itemPath>
         <itemPath>src/core/ringo_context.h</itemPath>
+        <itemPath>src/core/ringo_exact.cpp</itemPath>
         <itemPath>src/core/ringo_index.cpp</itemPath>
         <itemPath>src/core/ringo_index.h</itemPath>
         <itemPath>src/core/ringo_matchers.h</itemPath>

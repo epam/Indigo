@@ -106,4 +106,47 @@ protected:
    Reaction _reaction;
 };
 
+class RingoExact
+{
+public:
+   RingoExact (BingoContext &context);
+
+   void loadQuery (const Array<char> &buf);
+   void loadQuery (Scanner &scanner);
+   void loadQuery (const char *buf);
+
+   dword getQueryHash () const;
+
+   void loadTarget (const Array<char> &molfile_buf);
+   void loadTarget (Scanner &scanner);
+   void loadTarget (const char *target);
+
+   bool matchLoadedTarget ();
+
+   bool matchBinary (Scanner &scanner);
+   bool matchBinary (const Array<char> &target_buf);
+
+   void setParameters (const char *conditions);
+   bool parse (const char *params);
+
+   static dword calculateHash (Reaction &rxn);
+
+   bool treat_x_as_pseudoatom;
+   bool ignore_closing_bond_direction_mismatch;
+
+   DEF_ERROR("Ringo exact");
+protected:
+   BingoContext &_context;
+
+   Reaction  _query;
+   Reaction  _target;
+   dword     _query_hash;
+   int       _flags;
+
+   void _initQuery  (Reaction &query);
+   static void _initTarget (Reaction &target, bool from_database);
+   static int _vertex_code (Graph &graph, int vertex_idx, void *context);
+   static int _edge_code (Graph &graph, int edge_idx, void *context);
+};
+
 #endif

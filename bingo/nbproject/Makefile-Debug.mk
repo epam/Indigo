@@ -65,6 +65,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/core/ringo_context.o \
 	${OBJECTDIR}/src/oracle/mango_fast_index.o \
 	${OBJECTDIR}/src/oracle/mango_oracle_index.o \
+	${OBJECTDIR}/src/core/ringo_exact.o \
 	${OBJECTDIR}/src/oracle/ringo_oracle_index.o \
 	${OBJECTDIR}/src/oracle/rowid_loader.o \
 	${OBJECTDIR}/_ext/380065930/shmem_posix.o \
@@ -276,6 +277,11 @@ ${OBJECTDIR}/src/oracle/mango_oracle_index.o: src/oracle/mango_oracle_index.cpp
 	${MKDIR} -p ${OBJECTDIR}/src/oracle
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I.. -I../common -Isrc -I../oci/include -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/oracle/mango_oracle_index.o src/oracle/mango_oracle_index.cpp
+
+${OBJECTDIR}/src/core/ringo_exact.o: src/core/ringo_exact.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/core
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I.. -I../common -Isrc -I../oci/include -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/core/ringo_exact.o src/core/ringo_exact.cpp
 
 ${OBJECTDIR}/src/oracle/ringo_oracle_index.o: src/oracle/ringo_oracle_index.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/oracle
