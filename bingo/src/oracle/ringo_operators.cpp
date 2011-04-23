@@ -188,3 +188,66 @@ ORAEXT OCILobLocator * oraRingoAAM (OCIExtProcContext *ctx,
 
    return 0;
 }
+
+static OCINumber * _ringoExact (OracleEnv &env, RingoOracleContext &context,
+                                const Array<char> &query_buf,
+                                const Array<char> &target_buf, const char *params)
+{
+   context.exact.setParameters(params);
+   context.exact.loadQuery(query_buf);
+
+   TRY_READ_TARGET_RXN
+   {
+      context.exact.loadTarget(target_buf);
+   }
+   CATCH_READ_TARGET_RXN(return 0)
+
+   int result = context.exact.matchLoadedTarget() ? 1 : 0;
+
+   return OracleExtproc::createInt(env, result);
+}
+
+ORAEXT OCINumber * oraRingoExact (OCIExtProcContext *ctx, int context_id,
+    OCILobLocator *target_loc, short target_ind,
+    OCILobLocator *query_loc,  short query_ind,
+    const char    *params,     short params_ind,
+    short *return_ind)
+{
+   OCINumber *result = NULL;
+
+   ORABLOCK_BEGIN
+   {
+      *return_ind = OCI_IND_NULL;
+
+      OracleEnv env(ctx, logger);
+
+      if (query_ind  != OCI_IND_NOTNULL)
+         throw BingoError("Null query given");
+      if (target_ind != OCI_IND_NOTNULL)
+         throw BingoError("Null target given");
+      if (params_ind != OCI_IND_NOTNULL)
+         params = 0;
+
+      RingoOracleContext &context = RingoOracleContext::get(env, context_id, false);
+
+      QS_DEF(Array<char>, query_buf);
+      QS_DEF(Array<char>, target_buf);
+
+      OracleLOB target_lob(env, target_loc);
+      OracleLOB query_lob(env, query_loc);
+
+      target_lob.readAll(target_buf, false);
+      query_lob.readAll(query_buf, false);
+
+      result = _ringoExact(env, context, query_buf, target_buf, params);
+
+      if (result == 0)
+         // This is needed for Oracle 9. Returning NULL drops the extproc.
+         result = OracleExtproc::createInt(env, 0);
+      else
+         *return_ind = OCI_IND_NOTNULL;
+   }
+   ORABLOCK_END
+
+   return result;
+}

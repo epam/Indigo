@@ -33,7 +33,7 @@ public:
    virtual ~RingoContext ();
 
    RingoSubstructure substructure;
-
+   RingoExact exact;
    RingoAAM ringoAAM;
 
    DEF_ERROR("ringo context");

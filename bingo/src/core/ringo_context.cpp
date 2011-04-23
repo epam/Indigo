@@ -21,6 +21,7 @@ OsLock RingoContext::_instances_lock;
 
 RingoContext::RingoContext (BingoContext &context) :
 substructure(context),
+exact(context),
 _context(context)
 {
 }
