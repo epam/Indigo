@@ -57,7 +57,7 @@ void BingoStorage::create (OracleEnv &env)
 {
    const char *tn = _table_name.ptr();
    OracleStatement::executeSingle(env, "CREATE TABLE %s(id number, bindata BLOB) "
-      "NOLOGGING lob(bindata) store as (NOCACHE NOLOGGING PCTVERSION 0)", tn);
+      "NOLOGGING lob(bindata) store as (CACHE READS NOLOGGING PCTVERSION 0)", tn);
    OracleStatement::executeSingle(env, "CREATE INDEX %s_id ON %s(id)", tn, tn);
    OracleStatement::executeSingle(env, "INSERT /*+ NOLOGGING */ INTO %s VALUES(0, EMPTY_BLOB())", tn);
 }

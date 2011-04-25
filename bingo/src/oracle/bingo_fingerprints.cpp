@@ -59,8 +59,12 @@ void BingoFingerprints::create (OracleEnv &env)
 
    OracleStatement::executeSingle(env,
       "CREATE TABLE %s(part number, used number, counters BLOB, mapping BLOB, "
-                      "bit_starts BLOB, bit_ends BLOB, bits BLOB) "
-      "PCTFREE 0 NOLOGGING lob(bits) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0)", tn);
+              "bit_starts BLOB, bit_ends BLOB, bits BLOB) PCTFREE 0 NOLOGGING "
+      "lob(bits) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
+      "lob(counters) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
+      "lob(bit_starts) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
+      "lob(bit_ends) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
+      "lob(mapping) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) ", tn);
    OracleStatement::executeSingle(env, "CREATE INDEX %s_part ON %s(part)", tn, tn);
 }
 
