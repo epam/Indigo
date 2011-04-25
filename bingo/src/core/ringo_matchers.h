@@ -52,6 +52,10 @@ public:
    void loadQuery (const char *str);
    void loadQuery (Scanner &scanner);
 
+   void loadSMARTS (const Array<char> &buf);
+   void loadSMARTS (const char *str);
+   void loadSMARTS (Scanner &scanner);
+
    bool preserve_bonds_on_highlighting;
    bool treat_x_as_pseudoatom;
    bool ignore_closing_bond_direction_mismatch;
@@ -79,6 +83,7 @@ protected:
    void _validateQueryData ();
 
    void _initQuery  (QueryReaction &query_in, QueryReaction &query_out);
+   void _initSmartsQuery  (QueryReaction &query_in, QueryReaction &query_out);
    void _initTarget (bool from_database);
 
 };

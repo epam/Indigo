@@ -148,6 +148,100 @@ ORAEXT OCILobLocator * oraRingoSubHi (OCIExtProcContext *ctx, int context_id,
    return 0;
 }
 
+ORAEXT OCINumber * oraRingoRSmarts (OCIExtProcContext *ctx, int context_id,
+    OCILobLocator *target_loc, short target_ind,
+    const char *query,  short query_ind,
+    short *return_ind)
+{
+   OCINumber *result = NULL;
+
+   ORABLOCK_BEGIN
+   {
+      *return_ind = OCI_IND_NULL;
+
+      OracleEnv env(ctx, logger);
+
+      if (query_ind  != OCI_IND_NOTNULL)
+         throw BingoError("Null query given");
+      if (target_ind != OCI_IND_NOTNULL)
+         throw BingoError("Null target given");
+
+      RingoOracleContext &context = RingoOracleContext::get(env, context_id, false);
+
+      QS_DEF(Array<char>, query_buf);
+      QS_DEF(Array<char>, target_buf);
+
+      OracleLOB target_lob(env, target_loc);
+
+      target_lob.readAll(target_buf, false);
+      query_buf.readString(query, false);
+
+      context.substructure.loadSMARTS(query_buf);
+
+      TRY_READ_TARGET_RXN
+      {
+         context.substructure.loadTarget(target_buf);
+      }
+      CATCH_READ_TARGET_RXN(return OracleExtproc::createInt(env, 0))
+
+      int match = context.substructure.matchLoadedTarget() ? 1 : 0;
+
+      result = OracleExtproc::createInt(env, match);
+      *return_ind = OCI_IND_NOTNULL;
+   }
+   ORABLOCK_END
+
+   return result;
+}
+
+ORAEXT OCILobLocator * oraRingoRSmartsHi (OCIExtProcContext *ctx, int context_id,
+    OCILobLocator *target_loc, short target_ind,
+    const char *query,  short query_ind,
+    short *return_ind)
+{
+   ORABLOCK_BEGIN
+   {
+      OracleEnv env(ctx, logger);
+
+      *return_ind = OCI_IND_NULL;
+
+      if (query_ind  != OCI_IND_NOTNULL)
+         throw BingoError("Null query given");
+      if (target_ind != OCI_IND_NOTNULL)
+         throw BingoError("Null target given");
+
+      RingoOracleContext &context = RingoOracleContext::get(env, context_id, false);
+
+      QS_DEF(Array<char>, query_buf);
+      QS_DEF(Array<char>, target_buf);
+
+      OracleLOB target_lob(env, target_loc);
+
+      target_lob.readAll(target_buf, false);
+      query_buf.readString(query, false);
+
+      context.substructure.preserve_bonds_on_highlighting = true;
+      context.substructure.loadSMARTS(query_buf);
+      context.substructure.loadTarget(target_buf);
+
+      if (!context.substructure.matchLoadedTarget())
+         throw BingoError("SubHi: match not found");
+
+      context.substructure.getHighlightedTarget(target_buf);
+
+      OracleLOB lob(env);
+
+      lob.createTemporaryCLOB();
+      lob.write(0, target_buf); 
+      lob.doNotDelete();
+      *return_ind= OCI_IND_NOTNULL;
+      return lob.get();
+   }
+   ORABLOCK_END
+
+   return 0;
+}
+
 ORAEXT OCILobLocator * oraRingoAAM (OCIExtProcContext *ctx,
                    OCILobLocator *target_loc, short target_ind,
                    const char    *params,     short params_ind,

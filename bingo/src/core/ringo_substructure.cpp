@@ -26,6 +26,7 @@
 #include "base_cpp/output.h"
 #include "reaction/reaction_auto_loader.h"
 #include "layout/reaction_layout.h"
+#include "reaction/rsmiles_loader.h"
 
 RingoSubstructure::RingoSubstructure (BingoContext &context) :
 _context(context)
@@ -74,6 +75,32 @@ void RingoSubstructure::loadQuery (Scanner &scanner)
    _query_data_valid = false;
 }
 
+void RingoSubstructure::loadSMARTS (Scanner &scanner)
+{
+   RSmilesLoader loader(scanner);
+   QS_DEF(QueryReaction, source);
+
+   loader.smarts_mode = true;
+   loader.loadQueryReaction(source);
+
+   _initSmartsQuery(source, _query_reaction);
+   _query_data_valid = false;
+}
+
+void RingoSubstructure::loadSMARTS (const Array<char> &buf)
+{
+   BufferScanner scanner(buf);
+
+   loadSMARTS(scanner);
+}
+
+void RingoSubstructure::loadSMARTS (const char *str)
+{
+   BufferScanner scanner(str);
+
+   loadSMARTS(scanner);
+}
+
 void RingoSubstructure::_initQuery (QueryReaction &query_in, QueryReaction &query_out)
 {
    query_out.makeTransposedForSubstructure(query_in);
@@ -82,6 +109,16 @@ void RingoSubstructure::_initQuery (QueryReaction &query_in, QueryReaction &quer
    ram.correctReactingCenters(true);
 
    query_out.aromatize();
+
+   _nei_query_counters.calculate(query_out);
+} 
+
+void RingoSubstructure::_initSmartsQuery (QueryReaction &query_in, QueryReaction &query_out)
+{
+   query_out.makeTransposedForSubstructure(query_in);
+
+   ReactionAutomapper ram(query_out);
+   ram.correctReactingCenters(true);
 
    _nei_query_counters.calculate(query_out);
 } 

@@ -64,6 +64,19 @@ CREATE OR REPLACE PACKAGE RingoPackage IS
    function RSubHi (target in BLOB, query in CLOB, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
                   scanctx in out RingoIndex, scanflg IN NUMBER) return CLOB;
 
+   function RSmarts (target in VARCHAR2, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RSmarts (target in CLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RSmarts (target in BLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
+   function RSmartsHi (target in VARCHAR2, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                  scanctx in out RingoIndex, scanflg IN NUMBER) return CLOB;
+   function RSmartsHi (target in CLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                  scanctx in out RingoIndex, scanflg IN NUMBER) return CLOB;
+   function RSmartsHi (target in BLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                  scanctx in out RingoIndex, scanflg IN NUMBER) return CLOB;
+
    function RExact (target in VARCHAR2, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
                  scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER;
    function RExact (target in VARCHAR2, query in VARCHAR2, params in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
@@ -241,6 +254,59 @@ CREATE OR REPLACE PACKAGE BODY RingoPackage IS
       end if;
       return RSubHi_blob(context_id, target, query, params);
    end RSubHi;
+
+   function RSmarts (target in VARCHAR2, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+      context_id binary_integer := 0;
+   begin
+      return RSmarts(to_clob(target), query, indexctx, scanctx, scanflg);
+   end RSmarts;
+   function RSmarts (target in CLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+      context_id binary_integer := 0;
+   begin
+      if indexctx.IndexInfo is not null then
+         context_id := BingoPackage.getContextID(indexctx.IndexInfo);
+      end if;
+      return RSmarts_clob(context_id, target, query);
+   end RSmarts;
+   function RSmarts (target in BLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                 scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
+      context_id binary_integer := 0;
+   begin
+      if indexctx.IndexInfo is not null then
+         context_id := BingoPackage.getContextID(indexctx.IndexInfo);
+      end if;
+      return RSmarts_blob(context_id, target, query);
+   end RSmarts;
+
+   function RSmartsHi (target in VARCHAR2, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                  scanctx in out RingoIndex, scanflg IN NUMBER) return CLOB IS
+      context_id binary_integer := 0;
+   begin
+      if indexctx.IndexInfo is not null then
+         context_id := BingoPackage.getContextID(indexctx.IndexInfo);
+      end if;
+      return RSmartsHi_clob(context_id, to_clob(target), query);
+   end RSmartsHi;
+   function RSmartsHi (target in CLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                  scanctx in out RingoIndex, scanflg IN NUMBER) return CLOB IS
+      context_id binary_integer := 0;
+   begin
+      if indexctx.IndexInfo is not null then
+         context_id := BingoPackage.getContextID(indexctx.IndexInfo);
+      end if;
+      return RSmartsHi_clob(context_id, target, query);
+   end RSmartsHi;
+   function RSmartsHi (target in BLOB, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
+                  scanctx in out RingoIndex, scanflg IN NUMBER) return CLOB IS
+      context_id binary_integer := 0;
+   begin
+      if indexctx.IndexInfo is not null then
+         context_id := BingoPackage.getContextID(indexctx.IndexInfo);
+      end if;
+      return RSmartsHi_blob(context_id, target, query);
+   end RSmartsHi;
 
    function RExact (target in VARCHAR2, query in VARCHAR2, indexctx IN sys.ODCIIndexCtx,
             scanctx in out RingoIndex, scanflg IN NUMBER) return NUMBER IS
