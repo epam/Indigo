@@ -39,6 +39,7 @@ public:
    BingoFetchEngine *fetch_engine;
 
    RingoSubstructure substructure;
+   RingoExact        exact;
 
    int         id;
    int         context_id;

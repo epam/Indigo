@@ -34,6 +34,7 @@ _context(context)
    preserve_bonds_on_highlighting = false;
    treat_x_as_pseudoatom = false;
    ignore_closing_bond_direction_mismatch = false;
+   _smarts = false;
 }
 
 RingoSubstructure::~RingoSubstructure ()
@@ -85,6 +86,7 @@ void RingoSubstructure::loadSMARTS (Scanner &scanner)
 
    _initSmartsQuery(source, _query_reaction);
    _query_data_valid = false;
+   _smarts = true;
 }
 
 void RingoSubstructure::loadSMARTS (const Array<char> &buf)
@@ -171,7 +173,9 @@ bool RingoSubstructure::matchBinary (Scanner &scanner)
    ReactionSubstructureMatcher rsm(_target_reaction);
    rsm.setQuery(_query_reaction);
    rsm.highlight = true;
-   rsm.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
+   if (_smarts)
+      rsm.use_daylight_aam_mode = true;
+   //rsm.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
 
    return rsm.find();
 }
@@ -208,7 +212,9 @@ bool RingoSubstructure::matchLoadedTarget ()
    rsm.highlight = true;
 
    rsm.setQuery(_query_reaction);
-   rsm.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
+   //rsm.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
+   if (_smarts)
+      rsm.use_daylight_aam_mode = true;
 
    return rsm.find();
 }

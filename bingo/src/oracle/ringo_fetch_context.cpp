@@ -23,6 +23,7 @@ OsLock RingoFetchContext::_instances_lock;
 RingoFetchContext::RingoFetchContext (int id_, RingoOracleContext &context,
                                       const Array<char> &query_id) :
 substructure(context.context()),
+exact(context.context()),
 _context(context)
 {
    id = id_;

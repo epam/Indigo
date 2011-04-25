@@ -22,6 +22,7 @@
 #include "reaction/crf_loader.h"
 #include "core/bingo_context.h"
 #include "base_cpp/crc32.h"
+#include "base_cpp/output.h"
 
 RingoExact::RingoExact (BingoContext &context) :
 _context(context)
@@ -85,9 +86,17 @@ void RingoExact::loadQuery (const char *buf)
    loadQuery(scanner);
 }
 
-dword RingoExact::getQueryHash () const
+dword RingoExact::getQueryHash ()
 {
    return _query_hash;
+}
+
+const char * RingoExact::getQueryHashStr ()
+{
+   ArrayOutput out(_query_hash_str);
+   out.printf("%02X", getQueryHash());
+   _query_hash_str.push(0);
+   return _query_hash_str.ptr();
 }
 
 void RingoExact::setParameters (const char *flags)

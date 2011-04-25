@@ -23,6 +23,7 @@
 #include "reaction/crf_saver.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction.h"
+#include "core/ringo_matchers.h"
 
 void RingoIndex::prepare (Scanner &rxnfile, Output &output, OsLock *lock_for_exclusive_access)
 {
@@ -40,6 +41,13 @@ void RingoIndex::prepare (Scanner &rxnfile, Output &output, OsLock *lock_for_exc
    ram.correctReactingCenters(true);
 
    reaction.aromatize();
+
+   _hash = RingoExact::calculateHash(reaction);
+   {
+      ArrayOutput out(_hash_str);
+      out.printf("%02X", _hash);
+      _hash_str.push(0);
+   }
 
    if (!skip_calculate_fp)
    {
@@ -69,6 +77,16 @@ const byte * RingoIndex::getFingerprint ()
 const Array<char> & RingoIndex::getCrf ()
 {
    return _crf;
+}
+
+dword RingoIndex::getHash ()
+{
+   return _hash;
+}
+
+const char * RingoIndex::getHashStr ()
+{
+   return _hash_str.ptr();
 }
 
 void RingoIndex::clear ()

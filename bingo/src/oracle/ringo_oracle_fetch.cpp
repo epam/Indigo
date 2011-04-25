@@ -49,6 +49,33 @@ static void _ringoIndexStart (OracleEnv &env, RingoFetchContext &context,
          context.fetch_engine = &shadow_fetch;
       }
    }
+   else if (strcasecmp(oper, "RSMARTS") == 0)
+   {
+      context.substructure.loadSMARTS(query_buf);
+
+      int right = bingoGetExactRightPart(env, p_strt, p_stop, 64);
+
+      if (right == 1)
+      {
+         fast_index.prepareSubstructure(env);
+         context.fetch_engine = &fast_index;
+      }
+      else // right == 0
+      {
+         shadow_fetch.prepareNonSubstructure(env);
+         context.fetch_engine = &shadow_fetch;
+      }
+   }
+   else if (strcasecmp(oper, "REXACT") == 0)
+   {
+      context.exact.setParameters(params);
+      context.exact.loadQuery(query_buf);
+
+      int right = bingoGetExactRightPart(env, p_strt, p_stop, 64);
+
+      shadow_fetch.prepareExact(env, right);
+      context.fetch_engine = &shadow_fetch;
+   }
    else
       throw BingoError("unknown operator: %s", oper);
 }

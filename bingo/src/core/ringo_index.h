@@ -32,11 +32,15 @@ public:
    
    const byte * getFingerprint ();
    const Array<char> & getCrf ();
+   dword getHash ();
+   const char * getHashStr ();
 
    void clear ();
 
 private:
    Array<byte> _fp;
    Array<char> _crf;
+   dword       _hash;
+   Array<char> _hash_str;
 };
 #endif

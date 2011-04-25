@@ -37,12 +37,14 @@ public:
    int countOracleBlocks (OracleEnv &env);
 
    void prepareNonSubstructure (OracleEnv &env);
+   void prepareExact (OracleEnv &env, int right_part);
 
    DEF_ERROR("ringo shadow fetch");
 protected:
    enum
    {
-      _NON_SUBSTRUCTURE = 1
+      _NON_SUBSTRUCTURE = 1,
+      _EXACT = 2
    };
 
    RingoFetchContext       &_context;
@@ -54,11 +56,11 @@ protected:
    bool                     _end;
    AutoPtr<OracleEnv>       _env;
    AutoPtr<OracleStatement> _statement;
-   AutoPtr<OracleLOB>       _lob_cmf;
+   AutoPtr<OracleLOB>       _lob_crf;
    bool                     _executed;
    int                      _fetch_type;
    OraRowidText             _rowid;
-
+   int                      _right_part;
 };
 
 #endif

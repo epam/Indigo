@@ -37,12 +37,15 @@ void RingoShadowTable::addReaction (OracleEnv &env, RingoIndex &index, const cha
 
    OracleStatement statement(env);
 
-   statement.append("INSERT INTO %s VALUES('%s', :rowid, :blockno, :crf)",
-      _table_name.ptr(), rowid, blockno, offset);
+   statement.append("INSERT INTO %s VALUES(:rxnrowid, :blockno, :offset, :crf, :rxnhash)",
+      _table_name.ptr());
 
    statement.prepare();
+   statement.bindStringByName(":rxnrowid", rowid, strlen(rowid) + 1);
+   statement.bindIntByName(":blockno", &blockno);
+   statement.bindIntByName(":offset", &offset);
    statement.bindBlobByName(":crf", crf);
-   statement.bindStringByName(":rowid", rowid, strlen(rowid) + 1);
+   statement.bindStringByName(":rxnhash", index.getHashStr(), strlen(index.getHashStr()) + 1);
 
    statement.execute();
 }
@@ -53,7 +56,7 @@ void RingoShadowTable::create (OracleEnv &env)
    const char *tn = _table_name.ptr();
 
    statement.append("CREATE TABLE %s "
-      "(rid VARCHAR2(100), blockno NUMBER, offset NUMBER, crf BLOB) NOLOGGING", tn);
+      "(rid VARCHAR2(18), blockno NUMBER, offset NUMBER, crf BLOB, hash VARCHAR2(8)) NOLOGGING", tn);
 
    statement.prepare();
    statement.execute();

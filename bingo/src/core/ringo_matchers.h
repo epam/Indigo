@@ -79,6 +79,7 @@ protected:
 
    Array<byte> _query_fp;
    bool        _query_data_valid;
+   bool        _smarts;
 
    void _validateQueryData ();
 
@@ -120,7 +121,8 @@ public:
    void loadQuery (Scanner &scanner);
    void loadQuery (const char *buf);
 
-   dword getQueryHash () const;
+   dword getQueryHash ();
+   const char * getQueryHashStr ();
 
    void loadTarget (const Array<char> &molfile_buf);
    void loadTarget (Scanner &scanner);
@@ -132,7 +134,6 @@ public:
    bool matchBinary (const Array<char> &target_buf);
 
    void setParameters (const char *conditions);
-   bool parse (const char *params);
 
    static dword calculateHash (Reaction &rxn);
 
@@ -147,6 +148,7 @@ protected:
    Reaction  _target;
    dword     _query_hash;
    int       _flags;
+   Array<char> _query_hash_str;
 
    void _initQuery  (Reaction &query);
    static void _initTarget (Reaction &target, bool from_database);

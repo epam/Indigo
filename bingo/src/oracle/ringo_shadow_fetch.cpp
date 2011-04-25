@@ -81,7 +81,18 @@ float RingoShadowFetch::calcSelectivity (OracleEnv &env, int total_count)
    if (_counting_select.size() > 0)
    {
       _counting_select.push(0);
-      if (!OracleStatement::executeSingleInt(nrows_select_total, env, _counting_select.ptr()))
+      OracleStatement statement(env);
+
+      statement.append("%s", _counting_select.ptr());
+      statement.prepare();
+      statement.defineIntByPos(1, &nrows_select_total);
+      if (_fetch_type == _EXACT && _right_part == 1)
+      {
+         const char *hash = _context.exact.getQueryHashStr();
+         statement.bindStringByName(":hash", hash, strlen(hash) + 1);
+      }
+
+      if (!statement.executeAllowNoData())
          throw Error("selectivity: cannot count rows");
    }
    else
@@ -107,13 +118,49 @@ void RingoShadowFetch::prepareNonSubstructure (OracleEnv &env)
    _env.reset(new OracleEnv(env.ctx(), env.logger()));
    _statement.reset(new OracleStatement(_env.ref()));
 
-   _lob_cmf.reset(new OracleLOB(_env.ref()));
+   _lob_crf.reset(new OracleLOB(_env.ref()));
    _statement->append("SELECT rid, crf FROM %s", _table_name.ptr());
    _statement->prepare();
    _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
-   _statement->defineBlobByPos(2, _lob_cmf.ref());
+   _statement->defineBlobByPos(2, _lob_crf.ref());
 
    _counting_select.clear();
+}
+
+void RingoShadowFetch::prepareExact (OracleEnv &env, int right_part)
+{
+   RingoExact & instance = _context.exact;
+
+   if (right_part == 1)
+      env.dbgPrintf("preparing shadow table for exact\n");
+   else
+      env.dbgPrintf("preparing shadow table for non-exact\n");
+
+   _fetch_type = _EXACT;
+   _right_part = right_part;
+
+   _env.reset(new OracleEnv(env.ctx(), env.logger()));
+   _statement.reset(new OracleStatement(_env.ref()));
+   _lob_crf.reset(new OracleLOB(_env.ref()));
+
+   _statement->append("SELECT sh.rid, sh.crf FROM %s sh", _table_name.ptr());
+
+   if (right_part == 1)
+      _statement->append(" WHERE hash = :hash");
+
+   _statement->prepare();
+   _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
+   _statement->defineBlobByPos(2, _lob_crf.ref());
+   if (_right_part == 1)
+   {
+      const char *hash_str = instance.getQueryHashStr();
+      _statement->bindStringByName(":hash", hash_str, strlen(hash_str) + 1);
+   }
+
+   ArrayOutput output_cnt(_counting_select);
+   output_cnt.printf("SELECT COUNT(*) FROM %s sh", _table_name.ptr());
+   if (right_part == 1)
+      output_cnt.printf(" WHERE hash = :hash");
 }
 
 void RingoShadowFetch::fetch (OracleEnv &env, int maxrows)
@@ -153,10 +200,19 @@ void RingoShadowFetch::fetch (OracleEnv &env, int maxrows)
          RingoSubstructure &instance = _context.substructure;
          QS_DEF(Array<char>, crf);
 
-         _lob_cmf->readAll(crf, false);
+         _lob_crf->readAll(crf, false);
          
          if (!instance.matchBinary(crf))
             have_match = true;
+      }
+      else if (_fetch_type == _EXACT)
+      {
+         RingoExact &instance = _context.exact;
+         QS_DEF(Array<char>, crf);
+
+         _lob_crf->readAll(crf, false);
+
+         have_match = (instance.matchBinary(crf) == (_right_part == 1));
       }
       else
          throw Error("unexpected fetch type %d", _fetch_type);
