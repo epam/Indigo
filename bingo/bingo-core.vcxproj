@@ -148,6 +148,7 @@
     <ClCompile Include="src\core\mango_tautomer.cpp" />
     <ClCompile Include="src\core\ringo_aam.cpp" />
     <ClCompile Include="src\core\ringo_context.cpp" />
+    <ClCompile Include="src\core\ringo_exact.cpp" />
     <ClCompile Include="src\core\ringo_index.cpp" />
     <ClCompile Include="src\core\ringo_substructure.cpp" />
     <ClCompile Include="..\common\base_c\nano_win.c" />

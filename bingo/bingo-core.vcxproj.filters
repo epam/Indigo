@@ -48,6 +48,9 @@
     <ClCompile Include="..\common\base_c\nano_win.c">
       <Filter>base</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\ringo_exact.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\bingo_context.h">
