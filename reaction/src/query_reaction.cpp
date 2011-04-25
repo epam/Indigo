@@ -225,3 +225,9 @@ int QueryReaction::getIgnorableAAM (int index, int atom)
 {
    return _ignorableAAM[index][atom];
 }
+
+void QueryReaction::optimize ()
+{
+   for (int i = begin(); i < end(); i = next(i)) 
+      _allMolecules[i]->asQueryMolecule().optimize();
+}

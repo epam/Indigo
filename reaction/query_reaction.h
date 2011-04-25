@@ -54,6 +54,8 @@ public:
    Array<int> & getIgnorableAAMArray (int index);
    int getIgnorableAAM (int index, int atom);
 
+   void optimize ();
+
 protected:
    void _transposeMoleculeForSubstructure (int index, Array<int> &transposition);
 

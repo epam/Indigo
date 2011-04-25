@@ -12,9 +12,9 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "base_c/defs.h"
-
 #include "molecule/molecule.h"
+
+#include "base_c/defs.h"
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_arom.h"

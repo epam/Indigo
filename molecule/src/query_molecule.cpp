@@ -1151,6 +1151,23 @@ bool QueryMolecule::Node::sureValueBelongsInv (int what_type, const int *arr, in
    }
 }
 
+void QueryMolecule::Node::optimize ()
+{
+   switch (type)
+   {
+   case OP_AND:
+   case OP_OR:
+   case OP_NOT:
+      for (int i = 0; i < children.size(); i++)
+         children[i]->optimize();
+      break;
+   case OP_NONE:
+      return;
+   default:
+      _optimize();
+   }
+}
+
 bool QueryMolecule::Atom::_sureValue (int what_type, int& value_out)
 {
    if (type == what_type && value_max == value_min)
@@ -1160,10 +1177,9 @@ bool QueryMolecule::Atom::_sureValue (int what_type, int& value_out)
    }
 
    // common case for fragment 'atoms' in SMARTS queries
-   if (what_type == ATOM_NUMBER && type == ATOM_FRAGMENT &&
-       fragment->vertexCount() > 0)
+   if (type == ATOM_FRAGMENT && fragment->vertexCount() > 0)
    {
-      if (fragment->getAtom(fragment->vertexBegin()).sureValue(ATOM_NUMBER, value_out))
+      if (fragment->getAtom(fragment->vertexBegin()).sureValue(what_type, value_out))
          return true;
    }
 
@@ -1190,11 +1206,10 @@ bool QueryMolecule::Atom::_possibleValue (int what_type, int what_value)
    if (type == what_type)
       return what_value >= value_min && what_value <= value_max;
    
-   if (what_type == ATOM_NUMBER && type == ATOM_FRAGMENT &&
-       fragment->vertexCount() > 0)
+   if (type == ATOM_FRAGMENT && fragment->vertexCount() > 0)
    {
       if (!fragment->getAtom(fragment->vertexBegin()).
-           possibleValue(ATOM_NUMBER, what_value))
+           possibleValue(what_type, what_value))
          return false;
    }
    
@@ -1210,7 +1225,23 @@ bool QueryMolecule::Atom::_possibleValuePair (int what_type1, int what_value1,
    if (type == what_type2)
       return what_value2 >= value_min && what_value2 <= value_max;
 
+   if (type == ATOM_FRAGMENT && fragment->vertexCount() > 0)
+   {
+      if (!fragment->getAtom(fragment->vertexBegin()).
+            possibleValuePair(what_type1, what_value1, what_type2, what_value2))
+         return false;
+   }
    return true;
+}
+
+void QueryMolecule::Atom::_optimize ()
+{
+   // Check if fragment has one atom
+   if (type == ATOM_FRAGMENT && fragment->vertexCount() == 1)
+   {
+      AutoPtr<QueryMolecule> saved_fragment(fragment.release());
+      copy(saved_fragment->getAtom(saved_fragment->vertexBegin()));
+   }
 }
 
 bool QueryMolecule::Bond::_sureValue (int what_type, int& value_out)
@@ -1333,25 +1364,30 @@ void QueryMolecule::resetBond (int idx, QueryMolecule::Bond *bond)
    _min_h.clear();
 }
 
+void QueryMolecule::Atom::copy (Atom &other)
+{
+   type = other.type;
+   value_max = other.value_max;
+   value_min = other.value_min;
+
+   fragment.reset(0);
+   if (other.fragment.get() != 0)
+   {
+      fragment.reset(new QueryMolecule());
+      fragment->clone(other.fragment.ref(), 0, 0);
+      fragment->fragment_smarts.copy(other.fragment->fragment_smarts);
+   }
+   alias.copy(other.alias);
+
+   children.clear();
+   for (int i = 0; i < other.children.size(); i++)
+      children.add(((Atom *)other.children[i])->clone());
+}
+
 QueryMolecule::Atom * QueryMolecule::Atom::clone ()
 {
    AutoPtr<Atom> res(new Atom());
-   int i;
-
-   res->type = type;
-   res->value_max = value_max;
-   res->value_min = value_min;
-   if (fragment.get() != 0)
-   {
-      res->fragment.reset(new QueryMolecule());
-      res->fragment->clone(fragment.ref(), 0, 0);
-      res->fragment->fragment_smarts.copy(fragment->fragment_smarts);
-   }
-   res->alias.copy(alias);
-
-   for (i = 0; i < children.size(); i++)
-      res->children.add(((Atom *)children[i])->clone());
-
+   res->copy(*this);
    return res.release();
 }
 
@@ -1379,9 +1415,7 @@ bool QueryMolecule::Node::hasConstraint (int what_type)
 
    if (type == OP_AND || type == OP_OR || type == OP_NOT)
    {
-      int i;
-
-      for (i = 0; i < children.size(); i++)
+      for (int i = 0; i < children.size(); i++)
          if (children[i]->hasConstraint(what_type))
             return true;
    }
@@ -1865,4 +1899,10 @@ int QueryMolecule::getQueryBondType (QueryMolecule::Bond& qb) {
    if (isOrBond(qb, BOND_DOUBLE, BOND_AROMATIC))
          return QUERY_BOND_DOUBLE_OR_AROMATIC;
    return -1;
+}
+
+void QueryMolecule::optimize ()
+{
+   for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+      getAtom(i).optimize();
 }

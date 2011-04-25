@@ -109,6 +109,8 @@ public:
       bool sureValueBelongs    (int what_type, const int *arr, int count);
       bool sureValueBelongsInv (int what_type, const int *arr, int count);
 
+      // Optimize query for faster substructure search
+      void optimize ();
    protected:
       // "neu" means "new" in German. This should have been a static
       // method, but static methods can not be virtual, and so it is not static.
@@ -124,6 +126,8 @@ public:
       
       virtual bool _sureValue        (int what_type, int &value_out) = 0;
       virtual bool _sureValueBelongs (int what_type, const int *arr, int count) = 0;
+
+      virtual void _optimize () {};
    };
 
    class DLLEXPORT Atom : public Node
@@ -139,6 +143,7 @@ public:
       virtual ~Atom ();
 
       Atom * clone ();
+      void copy (Atom &other);
 
       Atom * child (int idx);
 
@@ -178,6 +183,8 @@ public:
       virtual bool _sureValue        (int what_type, int &value_out);
       virtual bool _sureValueBelongs (int what_type, const int *arr, int count);
       
+      virtual void _optimize ();
+
       DEF_ERROR("query atom");
    };
 
@@ -288,6 +295,8 @@ public:
    Bond * releaseBond (int idx);
    void   resetBond (int idx, Bond *bond);
    int addBond (int beg, int end, Bond *bond);
+
+   void optimize ();
 
    MoleculeRGroups rgroups;
 

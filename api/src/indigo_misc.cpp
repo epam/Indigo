@@ -602,3 +602,25 @@ CEXPORT int indigoUnhighlight (int item)
    }
    INDIGO_END(-1);
 }
+
+CEXPORT int indigoOptimizeQueryMolecule (int query, const char *options)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(query);
+      obj.getQueryMolecule().optimize();
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoOptimizeQueryReaction (int query, const char *options)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(query);
+      obj.getQueryReaction().optimize();
+      return 1;
+   }
+   INDIGO_END(-1);
+}

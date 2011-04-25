@@ -433,7 +433,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
          if (smarts != 0 && strlen(smarts) > 0)
          {
             fmcache->expand(super_idx + 1);
-            fmcache->at(super_idx ).insert(smarts, result ? 1 : 0);
+            fmcache->at(super_idx).insert(smarts, result ? 1 : 0);
          }
 
          return result;
