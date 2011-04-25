@@ -277,6 +277,16 @@ create or replace function Molfile_blob (m in BLOB) return CLOB
   with context parameters (context, m, m indicator short,
                            return indicator short, return OCILobLocator);
 /
+create or replace function CML_clob (m in CLOB) return CLOB
+  AS language C name "oraMangoCML" library bingolib  
+  with context parameters (context, m, m indicator short,
+                           return indicator short, return OCILobLocator);
+/
+create or replace function CML_blob (m in BLOB) return CLOB
+  AS language C name "oraMangoCML" library bingolib  
+  with context parameters (context, m, m indicator short,
+                           return indicator short, return OCILobLocator);
+/
 create or replace function SMILES_clob (m in CLOB) return VARCHAR2
   AS language C name "oraMangoSMILES" library bingolib  
   with context parameters (context, m, m indicator short,

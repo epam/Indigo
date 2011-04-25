@@ -114,6 +114,11 @@ create or replace operator Molfile binding
    (CLOB) return CLOB using MangoPackage.Molfile,
    (BLOB) return CLOB using MangoPackage.Molfile;
 
+create or replace operator CML binding
+   (VARCHAR2) return CLOB using MangoPackage.CML,
+   (CLOB) return CLOB using MangoPackage.CML,
+   (BLOB) return CLOB using MangoPackage.CML;
+
 create or replace operator SMILES binding
    (VARCHAR2) return VARCHAR2 using MangoPackage.SMILES,
    (CLOB) return VARCHAR2 using MangoPackage.SMILES,
@@ -164,6 +169,7 @@ grant execute on Sim to public;
 grant execute on Gross to public;
 grant execute on Mass to public;
 grant execute on Molfile to public;
+grant execute on CML to public;
 grant execute on SMILES to public;
 grant execute on CANSMILES to public;
 grant execute on SubHi to public;

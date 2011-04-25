@@ -110,6 +110,10 @@ CREATE OR REPLACE PACKAGE RingoPackage IS
    function Rxnfile (target in CLOB) return CLOB;
    function Rxnfile (target in BLOB) return CLOB;
 
+   function RCML (target in VARCHAR2) return CLOB;
+   function RCML (target in CLOB) return CLOB;
+   function RCML (target in BLOB) return CLOB;
+
    function RSMILES (target in VARCHAR2) return VARCHAR2;
    function RSMILES (target in CLOB) return VARCHAR2;
    function RSMILES (target in BLOB) return VARCHAR2;
@@ -403,6 +407,19 @@ CREATE OR REPLACE PACKAGE BODY RingoPackage IS
    begin
       return Rxnfile_blob(target);
    end Rxnfile;
+
+   function RCML (target in VARCHAR2) return CLOB is
+   begin
+      return RCML_clob(to_clob(target));
+   end RCML;
+   function RCML (target in CLOB) return CLOB is
+   begin
+      return RCML_clob(target);
+   end RCML;
+   function RCML (target in BLOB) return CLOB is
+   begin
+      return RCML_blob(target);
+   end RCML;
 
    function RSMILES (target in VARCHAR2) return VARCHAR2 is
    begin

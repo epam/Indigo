@@ -167,6 +167,9 @@ CREATE OR REPLACE PACKAGE MangoPackage IS
    function Molfile (target in VARCHAR2) return CLOB;
    function Molfile (target in CLOB) return CLOB;
    function Molfile (target in BLOB) return CLOB;
+   function CML (target in VARCHAR2) return CLOB;
+   function CML (target in CLOB) return CLOB;
+   function CML (target in BLOB) return CLOB;
    function SMILES (target in VARCHAR2) return VARCHAR2;
    function SMILES (target in CLOB) return VARCHAR2;
    function SMILES (target in BLOB) return VARCHAR2;
@@ -660,6 +663,19 @@ CREATE OR REPLACE PACKAGE BODY MangoPackage IS
    begin
       return Molfile_blob(target);
    end Molfile;
+
+   function CML (target in VARCHAR2) return CLOB is
+   begin
+      return CML_clob(to_clob(target));
+   end CML;
+   function CML (target in CLOB) return CLOB is
+   begin
+      return CML_clob(target);
+   end CML;
+   function CML (target in BLOB) return CLOB is
+   begin
+      return CML_blob(target);
+   end CML;
 
    function SMILES (target in VARCHAR2) return VARCHAR2 is
    begin

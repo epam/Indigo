@@ -104,6 +104,11 @@ create or replace operator Rxnfile binding
    (CLOB) return CLOB using RingoPackage.Rxnfile,
    (BLOB) return CLOB using RingoPackage.Rxnfile;
 
+create or replace operator RCML binding
+   (VARCHAR2) return CLOB using RingoPackage.RCML,
+   (CLOB) return CLOB using RingoPackage.RCML,
+   (BLOB) return CLOB using RingoPackage.RCML;
+
 create or replace operator RSMILES binding  
   (VARCHAR2) return VARCHAR2 using RingoPackage.RSMILES,
   (CLOB) return VARCHAR2 using RingoPackage.RSMILES,
@@ -117,6 +122,7 @@ grant execute on RSmartsHi to public;
 grant execute on AAM to public;
 grant execute on RSMILES to public;
 grant execute on Rxnfile to public;
+grant execute on RCML to public;
 
 create or replace indextype ReactionIndex for
    RSub(VARCHAR2, CLOB),

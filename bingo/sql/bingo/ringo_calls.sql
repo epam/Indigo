@@ -199,6 +199,16 @@ create or replace function Rxnfile_blob (r in BLOB) return CLOB
   with context parameters (context, r, r indicator short,
                            return indicator short, return OCILobLocator);
 /
+create or replace function RCML_clob (m in CLOB) return CLOB
+  AS language C name "oraRingoCML" library bingolib  
+  with context parameters (context, m, m indicator short,
+                           return indicator short, return OCILobLocator);
+/
+create or replace function RCML_blob (m in BLOB) return CLOB
+  AS language C name "oraRingoCML" library bingolib  
+  with context parameters (context, m, m indicator short,
+                           return indicator short, return OCILobLocator);
+/
 create or replace function RSMILES_clob (r in CLOB) return VARCHAR2
   AS language C name "oraRingoRSMILES" library bingolib  
   with context parameters (context, r, r indicator short,

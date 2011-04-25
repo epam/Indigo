@@ -24,6 +24,7 @@
 #include "molecule/smiles_loader.h"
 #include "molecule/icm_loader.h"
 #include "molecule/icm_saver.h"
+#include "molecule/molecule_cml_saver.h"
 #include "molecule/molfile_saver.h"
 #include "layout/molecule_layout.h"
 
@@ -362,6 +363,64 @@ ORAEXT OCILobLocator *oraMangoMolfile (OCIExtProcContext *ctx,
 
       ArrayOutput output(icm);
       MolfileSaver saver(output);
+
+      saver.saveMolecule(mol);
+
+      OracleLOB lob(env);
+
+      lob.createTemporaryCLOB();
+      lob.write(0, icm);
+      *return_indicator = OCI_IND_NOTNULL;
+      lob.doNotDelete();
+      result = lob.get();
+   }
+   ORABLOCK_END
+
+   return result;
+}
+
+ORAEXT OCILobLocator *oraMangoCML (OCIExtProcContext *ctx,
+                                   OCILobLocator *target_locator, short target_indicator,
+                                   short *return_indicator)
+{
+   OCILobLocator *result = 0;
+
+   ORABLOCK_BEGIN
+   {
+      *return_indicator = OCI_IND_NULL;
+
+      OracleEnv env(ctx, logger);
+
+      if (target_indicator == OCI_IND_NULL)
+         throw BingoError("null molecule given");
+
+      BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
+      OracleLOB target_lob(env, target_locator);
+
+      QS_DEF(Array<char>, target);
+      QS_DEF(Array<char>, icm);
+      QS_DEF(Molecule, mol);
+
+      target_lob.readAll(target, false);
+
+      MoleculeAutoLoader loader(target);
+
+      loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
+      loader.ignore_closing_bond_direction_mismatch =
+              context.ignore_closing_bond_direction_mismatch;
+      loader.skip_3d_chirality = true;
+      loader.loadMolecule(mol);
+
+      if (!mol.have_xyz)
+      {
+         MoleculeLayout layout(mol);
+
+         layout.make();
+         mol.stereocenters.markBonds();
+      }
+
+      ArrayOutput output(icm);
+      MoleculeCmlSaver saver(output);
 
       saver.saveMolecule(mol);
 

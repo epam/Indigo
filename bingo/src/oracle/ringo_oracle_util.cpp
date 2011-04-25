@@ -22,6 +22,7 @@
 #include "reaction/rsmiles_saver.h"
 #include "reaction/icr_saver.h"
 #include "reaction/rxnfile_saver.h"
+#include "reaction/reaction_cml_saver.h"
 #include "reaction/reaction_auto_loader.h"
 #include "ringo_oracle.h"
 #include "molecule/molfile_loader.h"
@@ -271,6 +272,63 @@ ORAEXT OCILobLocator *oraRingoRxnfile (OCIExtProcContext *ctx,
 
       ArrayOutput output(icm);
       RxnfileSaver saver(output);
+
+      saver.saveReaction(reaction);
+
+      OracleLOB lob(env);
+
+      lob.createTemporaryCLOB();
+      lob.write(0, icm);
+      *return_indicator = OCI_IND_NOTNULL;
+      lob.doNotDelete();
+      result = lob.get();
+   }
+   ORABLOCK_END
+
+   return result;
+}
+
+ORAEXT OCILobLocator *oraRingoCML (OCIExtProcContext *ctx,
+                                   OCILobLocator *target_locator, short target_indicator,
+                                   short *return_indicator)
+{
+   OCILobLocator *result = 0;
+
+   ORABLOCK_BEGIN
+   {
+      *return_indicator = OCI_IND_NULL;
+
+      OracleEnv env(ctx, logger);
+      BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
+
+      if (target_indicator == OCI_IND_NULL)
+         throw BingoError("null molecule given");
+
+      OracleLOB target_lob(env, target_locator);
+
+      QS_DEF(Array<char>, target);
+      QS_DEF(Array<char>, icm);
+      QS_DEF(Reaction, reaction);
+
+      target_lob.readAll(target, false);
+
+      ReactionAutoLoader loader(target);
+
+      loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
+      loader.ignore_closing_bond_direction_mismatch =
+                 context.ignore_closing_bond_direction_mismatch;
+      loader.loadReaction(reaction);
+
+      if (!Reaction::haveCoord(reaction))
+      {
+         ReactionLayout layout(reaction);
+
+         layout.make();
+         reaction.markStereocenterBonds();
+      }
+
+      ArrayOutput output(icm);
+      ReactionCmlSaver saver(output);
 
       saver.saveReaction(reaction);
 
