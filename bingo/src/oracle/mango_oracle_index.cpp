@@ -161,12 +161,25 @@ void mangoRegisterTable (OracleEnv &env, MangoOracleContext &context)
    context.context().longOpInit(env, total_count, "Building molecule index",
       source_table.ptr(), "molecules");
 
-   if (blob || clob)
-      statement.append("SELECT %s, RowidToChar(rowid) FROM %s ",
-                       source_column.ptr(), source_table.ptr());
+   if (clob)
+      statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
+                       "THEN to_clob(' ') ELSE %s END, RowidToChar(rowid) FROM %s",
+                       source_column.ptr(), source_column.ptr(), source_column.ptr(), 
+                       source_table.ptr());
+   else if (blob)
+      statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
+                       "THEN to_blob(cast('20' as raw(1))) ELSE %s END, "
+                       "RowidToChar(rowid) FROM %s",
+                       source_column.ptr(), source_column.ptr(), source_column.ptr(), 
+                       source_table.ptr());
    else
-      statement.append("SELECT COALESCE(%s, ' '), RowidToChar(rowid) FROM %s ",
-                       source_column.ptr(), source_table.ptr());
+      statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
+                       "THEN ' ' ELSE %s END, RowidToChar(rowid) FROM %s",
+                       source_column.ptr(), source_column.ptr(), source_column.ptr(), 
+                       source_table.ptr());
+      
+   //   statement.append("SELECT COALESCE(%s, ' '), RowidToChar(rowid) FROM %s ",
+   //                    source_column.ptr(), source_table.ptr());
                      //"ORDER BY dbms_rowid.rowid_block_number(rowid), dbms_rowid.rowid_row_number(rowid)",
 
    statement.prepare();

@@ -103,10 +103,22 @@ void ringoRegisterTable (OracleEnv &env, RingoOracleContext &context)
    context.context().longOpInit(env, total_count, "Building reaction index",
       source_table.ptr(), "reactions");
 
-   if (blob || clob)
-      statement.append("SELECT %s, RowidToChar(rowid) FROM %s ", source_column.ptr(), source_table.ptr());
+   if (clob)
+      statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
+                       "THEN to_clob(' ') ELSE %s END, RowidToChar(rowid) FROM %s",
+                       source_column.ptr(), source_column.ptr(), source_column.ptr(), 
+                       source_table.ptr());
+   else if (blob)
+      statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
+                       "THEN to_blob(cast('20' as raw(1))) ELSE %s END, "
+                       "RowidToChar(rowid) FROM %s",
+                       source_column.ptr(), source_column.ptr(), source_column.ptr(), 
+                       source_table.ptr());
    else
-      statement.append("SELECT COALESCE(%s, ' '), RowidToChar(rowid) FROM %s ", source_column.ptr(), source_table.ptr());
+      statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
+                       "THEN ' ' ELSE %s END, RowidToChar(rowid) FROM %s",
+                       source_column.ptr(), source_column.ptr(), source_column.ptr(), 
+                       source_table.ptr());
 
    statement.prepare();
 
