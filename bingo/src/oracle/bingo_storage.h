@@ -100,11 +100,17 @@ protected:
    _State * _getState  (bool allow_first);
    void     _insertLOB (OracleEnv &env, int no);
    OracleLOB * _getLob (OracleEnv &env, int no);
+   void  _finishTopLob (OracleEnv &env);
+   void  _finishIndexLob (OracleEnv &env);
 
    Array<char> _shmem_id;
    Array<char> _table_name;
    
    Array<_Addr> _index;
+   Array<char>  _top_lob_pending_data;
+   Array<char>  _index_lob_pending_data;
+   int          _top_lob_pending_mark;
+   int          _index_lob_pending_mark;
 };
 
 #endif
