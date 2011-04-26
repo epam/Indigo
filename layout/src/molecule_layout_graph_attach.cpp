@@ -586,7 +586,7 @@ bool MoleculeLayoutGraph::_attachCycleWithIntersections (const Cycle &cycle, flo
    //   chain_ext - not drawn vertices and two boundary
    // If number of common vertices is less than 2 then skip cycle
    if (n_common_v < 2)
-      throw new Error("attaching cycle with only one vertex drawn"); //return false;
+      throw Error("attaching cycle with only one vertex drawn"); //return false;
 
    QS_DEF(ObjArray< Array<int> >, chains_ext);
 

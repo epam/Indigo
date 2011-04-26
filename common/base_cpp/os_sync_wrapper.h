@@ -45,7 +45,7 @@ public:
       if (_lock != NULL)
          _lock->Lock();
       else if (!lock_can_be_null)
-         throw new Exception("Passed lock object pointer is NULL");
+         throw Exception("Passed lock object pointer is NULL");
    }
 
    OsLockerT (T &lock) : _lock(&lock)

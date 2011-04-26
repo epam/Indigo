@@ -796,7 +796,7 @@ void BaseMolecule::MultipleGroup::collapse (BaseMolecule& bm, int id, Mapping& m
    const BaseMolecule::MultipleGroup& group = bm.multiple_groups[id];
 
    if (group.atoms.size() != group.multiplier * group.parent_atoms.size())
-      throw new Error("The group is already collapsed or invalid");
+      throw Error("The group is already collapsed or invalid");
 
    QS_DEF(Array<int>, toRemove);
    toRemove.clear();
