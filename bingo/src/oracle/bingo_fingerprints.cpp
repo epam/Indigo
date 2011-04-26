@@ -90,7 +90,8 @@ void BingoFingerprints::addFingerprint (OracleEnv &env, const byte *fp)
       if (bitGetBit(fp, i))
       {
          bitSetBit(ptr, _pending_block.used, 1);
-         _pending_block.counters[i]++;
+         if (_pending_block.counters[i] < 65535)
+            _pending_block.counters[i]++;
          _pending_block.bit_ends[i] = _pending_block.used;
       }
       ptr += 8 * _chunk_qwords;
@@ -294,10 +295,10 @@ bool BingoFingerprints::screenPart_Next (OracleEnv &env, Screening &screening)
    {
       profTimerStart(tread, "fingerprints.read");
 
-      int bit_start_read = screening.block->bit_starts[query_bit];
-      int bit_end_read = screening.block->bit_ends[query_bit];
+      word bit_start_read = screening.block->bit_starts[query_bit];
+      word bit_end_read = screening.block->bit_ends[query_bit];
 
-      if (bit_end_read < 0)
+      if (bit_start_read > bit_end_read)
       {
          // This bit wasn't used in fingerprints in current block
          screening.query_bit_idx++;
@@ -714,7 +715,7 @@ void BingoFingerprints::_optimizePendingBlock ()
    counters_order.qsort(_cmp_optimize_counters, this);
 
    // Find better mapping 
-   QS_DEF(Array<int>, post_mapping);
+   QS_DEF(Array<word>, post_mapping);
    post_mapping.clear_resize(_pending_block.used);
    for (int i = 0; i < _pending_block.used; i++)
       post_mapping[i] = i;
@@ -760,7 +761,7 @@ void BingoFingerprints::_optimizePendingBlock ()
 
    // Find bit start and end positions
    _pending_block.bit_starts.fffill();
-   _pending_block.bit_ends.fffill();
+   _pending_block.bit_ends.zerofill();
    for (int i = 0; i < _fp_bytes * 8; i++)
    {
       int offset = i * _chunk_qwords * 8;
@@ -768,16 +769,15 @@ void BingoFingerprints::_optimizePendingBlock ()
 
       for (int j = 0; j < _pending_block.used; j++)
       {
-         //int mapped_bit = _pending_block.mapping[j];
          int mapped_bit = post_mapping[j];
          if (bitGetBit(fp_row, mapped_bit))
          {
-            int &start_index = _pending_block.bit_starts[i];
-            if (start_index == -1 || start_index > j)
+            word &start_index = _pending_block.bit_starts[i];
+            if (start_index > j)
                start_index = j;
 
-            int &end_index = _pending_block.bit_ends[i];
-            if (end_index == -1 || end_index < j)
+            word &end_index = _pending_block.bit_ends[i];
+            if (end_index < j)
                end_index = j;
          }
       }

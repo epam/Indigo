@@ -35,15 +35,16 @@ public:
    struct Block
    {
       Block () : used(0) {}
-      // Number of molecules in this block
-      // All block (except maybe last) are full
+
+      // Number of molecules in this block (max. 65536)
+      // All blocks (except maybe the last one) are full
       int used;
 
-      Array<int> counters;
+      Array<word> counters;
       // Mapping between original molecules order and sorted
-      Array<int> mapping;
+      Array<word> mapping;
       // Low and high bounds for data in transposed fingerprint row
-      Array<int> bit_starts, bit_ends;
+      Array<word> bit_starts, bit_ends;
    };
    
    class Screening
