@@ -278,6 +278,9 @@ class Indigo:
     self.IndigoObject.iterateCatalysts  = Indigo._member_obj(Indigo._lib.indigoIterateCatalysts)
     self.IndigoObject.iterateMolecules  = Indigo._member_obj(Indigo._lib.indigoIterateMolecules)
 
+    self.IndigoObject.optimizeQueryMolecule = Indigo._member_void_string(Indigo._lib.indigoOptimizeQueryMolecule)
+    self.IndigoObject.optimizeQueryReaction = Indigo._member_void_string(Indigo._lib.indigoOptimizeQueryReaction)
+    
     self.IndigoObject.rxnfile = Indigo._member_string(Indigo._lib.indigoRxnfile)
     self.IndigoObject.saveRxnfile = Indigo._member_void_string(Indigo._lib.indigoSaveRxnfileToFile)
     self.IndigoObject.automap = Indigo._member_void_string(Indigo._lib.indigoAutomap)
@@ -701,7 +704,9 @@ class Indigo:
   def _member_void_string (func):
     func.restype = c_int
     func.argtypes = [c_int, c_char_p]
-    def newfunc (self, str):
+    def newfunc (self, str = None):
+      if str is None:
+         str = ""
       self.dispatcher._setSID()
       self.dispatcher._checkResult(func(self.id, str))
       return
