@@ -10,9 +10,8 @@
 -- This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 -- WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-@@ringo_drop.sql
-@@mango_drop.sql
-drop table context;
-drop library bingolib;
-commit
-/
+alter package AlterPackage compile;
+alter procedure renameColumn compile;
+alter procedure renameTable compile;
+alter type MangoIndex compile body;
+alter type RingoIndex compile body;

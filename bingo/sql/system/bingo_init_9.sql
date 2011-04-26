@@ -42,22 +42,15 @@ create user &USER_NAME
 ;
 
 grant connect to &USER_NAME;
-grant create any type to &USER_NAME;
-grant create any table to &USER_NAME;
-grant create any library to &USER_NAME;
-grant alter any library to &USER_NAME;
-grant create any operator to &USER_NAME;
-grant create any procedure to &USER_NAME;
-grant alter any procedure to &USER_NAME;
-grant create any indextype to &USER_NAME;
-grant execute any type to &USER_NAME;
-grant execute any library to &USER_NAME;
-grant execute any operator to &USER_NAME;
-grant execute any procedure to &USER_NAME;
-grant execute any indextype to &USER_NAME;
+grant create type to &USER_NAME;
+grant create table to &USER_NAME;
+grant create library to &USER_NAME;
+grant create operator to &USER_NAME;
+grant create procedure to &USER_NAME;
+grant create sequence to &USER_NAME;
+grant create indextype to &USER_NAME;
 grant unlimited tablespace to &USER_NAME;
 grant create trigger to &USER_NAME;
-grant create any trigger to &USER_NAME;
 grant administer database trigger to &USER_NAME;
 
 spool off;

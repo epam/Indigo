@@ -112,10 +112,6 @@ create or replace type body MangoStat is
       context_id binary_integer;
    begin
       context_id := BingoPackage.getContextID(col);
-
-      sys.ODCIColInfoDump(col);
-      sys.ODCIStatsOptionsDump(options);
-
       mangoCollectStatistics(context_id);
       return ODCIConst.Success;
    end;
@@ -216,7 +212,6 @@ create or replace type body MangoStat is
    
    static function Selectivity (pred sys.ODCIPredInfo, sel out NUMBER, args sys.ODCIArgDescList,
                strt NUMBER, stop NUMBER, query CLOB, params VARCHAR2, env sys.ODCIEnv) return NUMBER is
-      colname VARCHAR2(30);
       context_id binary_integer;
       flags binary_integer;
    begin
@@ -225,8 +220,7 @@ create or replace type body MangoStat is
          return ODCIConst.Error;
       end if;
       
-      colname := rtrim(ltrim(args(3).colName, '"'), '"');
-      context_id := BingoPackage.getContextID(args(3).tableSchema, args(3).tableName, colname);
+      context_id := BingoPackage.getContextID(args(3).tableSchema, args(3).tableName, args(3).colName);
 
       flags := 0;
 
@@ -353,7 +347,6 @@ create or replace type body MangoStat is
    static function ODCIStatsIndexCost(ia sys.ODCIIndexInfo, sel NUMBER, cost out sys.ODCICost,
                 qi sys.ODCIQueryInfo, pred sys.ODCIPredInfo, args sys.ODCIArgDescList,
                 strt NUMBER, stop NUMBER, query CLOB, params VARCHAR2, env sys.ODCIEnv) return NUMBER is
-      colname VARCHAR2(30);
       flags binary_integer;
       context_id binary_integer;
       iocost binary_integer;
@@ -363,9 +356,8 @@ create or replace type body MangoStat is
          LogPrint('ODCIStatsIndexCost: args(3) type mismatch, returning error');
          return ODCIConst.Error;
       end if;
-    
-      colname := rtrim(ltrim(args(3).colName, '"'), '"');
-      context_id := BingoPackage.getContextID(args(3).tableSchema, args(3).tableName, colname);
+        
+      context_id := BingoPackage.getContextID(args(3).tableSchema, args(3).tableName, args(3).colName);
       
       flags := 0;
 

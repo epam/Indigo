@@ -43,10 +43,6 @@ public:
 
    static BingoOracleContext & get (OracleEnv &env, int id, bool lock, bool *config_reloaded);
 
-   void getSourceTable  (OracleEnv &env, Array<char> &table_name);
-   void getSourceColumn (OracleEnv &env, Array<char> &column_name);
-   void getTargetDatatype (OracleEnv &env, Array<char> &datatype);
-
    bool configGetInt    (OracleEnv &env, const char *name, int &value);
    void configSetInt    (OracleEnv &env, const char *name, int value);
    bool configGetFloat  (OracleEnv &env, const char *name, float &value);

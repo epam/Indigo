@@ -112,10 +112,6 @@ create or replace type body RingoStat is
       context_id binary_integer;
    begin
       context_id := BingoPackage.getContextID(col);
-
-      sys.ODCIColInfoDump(col);
-      sys.ODCIStatsOptionsDump(options);
-
       ringoCollectStatistics(context_id);
       return ODCIConst.Success;
    end;
@@ -216,7 +212,6 @@ create or replace type body RingoStat is
 
    static function Selectivity (pred sys.ODCIPredInfo, sel out NUMBER, args sys.ODCIArgDescList,
                strt NUMBER, stop NUMBER, query CLOB, params VARCHAR2, env sys.ODCIEnv) return NUMBER is
-      colname VARCHAR2(30);
       context_id binary_integer;
    begin
       if  (args(3).ArgType != ODCIConst.ArgCol) THEN
@@ -224,8 +219,7 @@ create or replace type body RingoStat is
          return ODCIConst.Error;
       end if;
       
-      colname := rtrim(ltrim(args(3).colName, '"'), '"');
-      context_id := BingoPackage.getContextID(args(3).tableSchema, args(3).tableName, colname);
+      context_id := BingoPackage.getContextID(args(3).tableSchema, args(3).tableName, args(3).colName);
       
       if bitand(pred.Flags, ODCIConst.PredExactMatch) != 0 then
          sel := ringoIndexSelectivity(context_id, pred.MethodName, query, strt, strt, params);
@@ -344,7 +338,6 @@ create or replace type body RingoStat is
    static function ODCIStatsIndexCost(ia sys.ODCIIndexInfo, sel NUMBER, cost out sys.ODCICost,
                 qi sys.ODCIQueryInfo, pred sys.ODCIPredInfo, args sys.ODCIArgDescList,
                 strt NUMBER, stop NUMBER, query CLOB, params VARCHAR2, env sys.ODCIEnv) return NUMBER is
-      colname VARCHAR2(30);
       context_id binary_integer;
       iocost binary_integer;
       cpucost binary_integer;
@@ -354,8 +347,7 @@ create or replace type body RingoStat is
          return ODCIConst.Error;
       end if;
     
-      colname := rtrim(ltrim(args(3).colName, '"'), '"');
-      context_id := BingoPackage.getContextID(args(3).tableSchema, args(3).tableName, colname);
+      context_id := BingoPackage.getContextID(args(3).tableSchema, args(3).tableName, args(3).colName);
       
       ringoIndexCost(context_id, sel / 100.0, pred.ObjectName, query, strt, stop, params, iocost, cpucost);
       cost := sys.ODCICost(NULL, NULL, NULL, NULL);

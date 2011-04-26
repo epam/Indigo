@@ -78,47 +78,43 @@ bool _ringoRegisterReaction (OracleEnv &env, const char *rowid,
 }
 
 
-void ringoRegisterTable (OracleEnv &env, RingoOracleContext &context)
+void ringoRegisterTable (OracleEnv &env, RingoOracleContext &context,
+                         const char *source_table, const char *source_column,
+                         const char *target_datatype)
 {
-   QS_DEF(Array<char>, source_table);
-   QS_DEF(Array<char>, source_column);
-   QS_DEF(Array<char>, target_datatype);
    QS_DEF(Array<char>, reaction_buf);
    OracleStatement statement(env);
    AutoPtr<OracleLOB> reaction_lob;
    OraRowidText rowid;
    char varchar2_text[4001];
 
-   context.context().getSourceTable(env, source_table);
-   context.context().getSourceColumn(env, source_column);
-   context.context().getTargetDatatype(env, target_datatype);
-
-   bool blob = (strcmp(target_datatype.ptr(), "BLOB") == 0);
-   bool clob = (strcmp(target_datatype.ptr(), "CLOB") == 0);
+      // Oracle's BLOB and CLOB types always come uppercase
+   bool blob = (strcmp(target_datatype, "BLOB") == 0);
+   bool clob = (strcmp(target_datatype, "CLOB") == 0);
    
    int total_count = 0;
 
-   OracleStatement::executeSingleInt(total_count, env, "SELECT COUNT(*) FROM %s", source_table.ptr());
+   OracleStatement::executeSingleInt(total_count, env, "SELECT COUNT(*) FROM %s", source_table);
 
    context.context().longOpInit(env, total_count, "Building reaction index",
-      source_table.ptr(), "reactions");
+      source_table, "reactions");
 
    if (clob)
       statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
                        "THEN to_clob(' ') ELSE %s END, RowidToChar(rowid) FROM %s",
-                       source_column.ptr(), source_column.ptr(), source_column.ptr(), 
-                       source_table.ptr());
+                       source_column, source_column, source_column, 
+                       source_table);
    else if (blob)
       statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
                        "THEN to_blob(cast('20' as raw(1))) ELSE %s END, "
                        "RowidToChar(rowid) FROM %s",
-                       source_column.ptr(), source_column.ptr(), source_column.ptr(), 
-                       source_table.ptr());
+                       source_column, source_column, source_column, 
+                       source_table);
    else
       statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
                        "THEN ' ' ELSE %s END, RowidToChar(rowid) FROM %s",
-                       source_column.ptr(), source_column.ptr(), source_column.ptr(), 
-                       source_table.ptr());
+                       source_column, source_column, source_column, 
+                       source_table);
 
    statement.prepare();
 
@@ -192,7 +188,10 @@ void ringoRegisterTable (OracleEnv &env, RingoOracleContext &context)
 
 ORAEXT void oraRingoCreateIndex (OCIExtProcContext *ctx,
                                  int context_id,
-                                 const char *params, short params_ind)
+                                 const char *params, short params_ind,
+                                 const char *full_table_name, short full_table_name_ind,
+                                 const char *column_name, short column_name_ind,
+                                 const char *column_data_type, short column_data_type_ind)
 {
    ORABLOCK_BEGIN
    {
@@ -221,7 +220,7 @@ ORAEXT void oraRingoCreateIndex (OCIExtProcContext *ctx,
       storage.create(env);
       storage.validateForInsert(env);
       
-      ringoRegisterTable(env, context);
+      ringoRegisterTable(env, context, full_table_name, column_name, column_data_type);
 
       storage.finish(env);
       context.context().saveCmfDict(env);

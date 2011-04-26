@@ -147,27 +147,6 @@ void BingoOracleContext::saveRidDict (OracleEnv &env)
    configSetBlob(env, "RIDDICT", riddict);
 }
 
-void BingoOracleContext::getTargetDatatype (OracleEnv &env, Array<char> &datatype)
-{
-   if (!OracleStatement::executeSingleString(datatype, env, "SELECT data_type FROM context c, all_tab_columns atc "
-      "WHERE atc.owner || '.' || atc.table_name = c.full_table_name AND atc.column_name = c.column_name AND c.id = %d", id))
-      throw Error("cannot get target datatype for context #%d", id);
-}
-
-void BingoOracleContext::getSourceTable (OracleEnv &env, Array<char> &table_name)
-{
-   if (!OracleStatement::executeSingleString(table_name, env, "SELECT full_table_name "
-      " FROM context where id = %d", id))
-      throw Error("cannot get source table for context #%d", id);
-}
-
-void BingoOracleContext::getSourceColumn (OracleEnv &env, Array<char> &table_name)
-{
-   if (!OracleStatement::executeSingleString(table_name, env, "SELECT column_name "
-      " FROM context where id = %d", id))
-      throw Error("cannot get source column for context #%d", id);
-}
-
 bool BingoOracleContext::configGetInt (OracleEnv &env, const char *name, int &value)
 {
    if (!OracleStatement::executeSingleInt(value, env, "SELECT value FROM "

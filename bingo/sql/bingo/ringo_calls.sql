@@ -61,6 +61,17 @@ create or replace function RSubHi_blob (context_id in binary_integer,
                           params, params indicator short,
                           return indicator short, return OCILobLocator);
 /
+create or replace procedure ringoCreateIndex(context_id in binary_integer, params in varchar2, 
+                                             full_table_name in varchar2,
+                                             column_name in varchar2, 
+                                             column_data_type in varchar2) 
+  AS language C name "oraRingoCreateIndex" library bingolib
+  with context parameters(context, context_id, 
+                          params,           params           indicator short, 
+                          full_table_name,  full_table_name  indicator short, 
+                          column_name,      column_name      indicator short,
+                          column_data_type, column_data_type indicator short);
+/
 create or replace function RSmarts_clob (context_id in binary_integer,
   target in CLOB, query in VARCHAR2) return NUMBER
   AS language C name "oraRingoRSmarts" library bingolib
@@ -111,11 +122,7 @@ create or replace function RExact_blob (context_id in binary_integer,
                           params, params indicator short,
                           return indicator short, return OCINumber);
 /
-create or replace procedure ringoCreateIndex (context_id in binary_integer, params in varchar2)
-  AS language C name "oraRingoCreateIndex" library bingolib
-  with context parameters(context, context_id, params, params indicator short);
-/
-create or replace procedure ringoDropIndex (context_id in binary_integer)
+create or replace procedure ringoDropIndex (context_id in binary_integer)  
   AS language C name "oraRingoDropIndex" library bingolib
   with context parameters(context, context_id);
 /

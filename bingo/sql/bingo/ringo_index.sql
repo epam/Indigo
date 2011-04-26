@@ -18,6 +18,7 @@ create or replace type RingoIndex as object
    fetch_id number,
    static function ODCIGetInterfaces (ifclist OUT sys.ODCIObjectList) return NUMBER, 
    static function ODCIIndexCreate   (ia sys.ODCIIndexInfo, parms VARCHAR2, env sys.ODCIEnv) return NUMBER,
+   static function ODCIIndexAlter (ia sys.ODCIIndexInfo, parms VARCHAR2, alter_option VARCHAR2, env sys.ODCIEnv) return NUMBER,
    static function ODCIIndexDrop     (ia sys.ODCIIndexInfo, env sys.ODCIEnv) return NUMBER,
    static function ODCIIndexTruncate (ia sys.ODCIIndexInfo, env sys.ODCIEnv) return NUMBER,
 
@@ -55,9 +56,16 @@ static function ODCIGetInterfaces(ifclist OUT sys.ODCIObjectList) return NUMBER 
 		
    static function ODCIIndexCreate (ia sys.ODCIIndexInfo, parms VARCHAR2, env sys.ODCIEnv) return NUMBER is
       context_id binary_integer;
+      col        sys.ODCIColInfo := ia.IndexCols(1);
    begin
       context_id := BingoPackage.getContextID(ia);
-      ringoCreateIndex(context_id, parms);
+      ringoCreateIndex(context_id, parms, '"'||col.TableSchema||'"."'||col.TableName||'"', col.ColName, col.ColTypeName);
+      return ODCICONST.Success;
+   end;
+   
+   static function ODCIIndexAlter (ia sys.ODCIIndexInfo, parms VARCHAR2, alter_option VARCHAR2, env sys.ODCIEnv) return NUMBER is
+   begin
+      AlterPackage.AlterIndex(ia, parms, alter_option, AlterPackage.ringoIndexType);
       return ODCICONST.Success;
    end;
    

@@ -179,9 +179,16 @@ create or replace function Mass_blob (context_id in binary_integer,
                           return indicator short, return OCINumber);
 /
 
-create or replace procedure mangoCreateIndex (context_id in binary_integer, params in varchar2)
+create or replace procedure mangoCreateIndex(context_id in binary_integer, params in varchar2, 
+                                             full_table_name in varchar2, 
+                                             column_name in varchar2, 
+                                             column_data_type in varchar2) 
   AS language C name "oraMangoCreateIndex" library bingolib
-  with context parameters(context, context_id, params, params indicator short);
+  with context parameters(context, context_id, 
+                          params, params indicator short, 
+                          full_table_name, full_table_name indicator short, 
+                          column_name, column_name indicator short,
+                          column_data_type, column_data_type indicator short);
 /
 create or replace procedure mangoDropIndex (context_id in binary_integer)
   AS language C name "oraMangoDropIndex" library bingolib
@@ -277,15 +284,15 @@ create or replace function Molfile_blob (m in BLOB) return CLOB
   with context parameters (context, m, m indicator short,
                            return indicator short, return OCILobLocator);
 /
-create or replace function CML_clob (m in CLOB) return CLOB
-  AS language C name "oraMangoCML" library bingolib  
-  with context parameters (context, m, m indicator short,
+create or replace function CML_clob (m in CLOB) return CLOB  AS language C name "oraMangoCML" library bingolib    
+  with context parameters (context, m, m indicator short, 
                            return indicator short, return OCILobLocator);
 /
 create or replace function CML_blob (m in BLOB) return CLOB
-  AS language C name "oraMangoCML" library bingolib  
+  AS language C name "oraMangoCML" library bingolib
   with context parameters (context, m, m indicator short,
-                           return indicator short, return OCILobLocator);
+                           return indicator short,
+                           return OCILobLocator);
 /
 create or replace function SMILES_clob (m in CLOB) return VARCHAR2
   AS language C name "oraMangoSMILES" library bingolib  

@@ -12,9 +12,11 @@
 
 @@bingo_lib.sql
 @@bingo_calls.sql
-@@bingo_package.sql
 @@bingo_context.sql
+@@bingo_package.sql
+@@alter_routines.sql
 @@mango_make.sql
 @@ringo_make.sql
+@@compile_pcks.sql
 commit;
 exit;
