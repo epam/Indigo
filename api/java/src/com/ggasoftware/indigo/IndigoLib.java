@@ -111,6 +111,9 @@ public interface IndigoLib extends Library
    int indigoSaveRxnfileToFile (int reaction, String filename);
    Pointer indigoRxnfile (int reaction);
 
+   int indigoOptimizeQueryMolecule (int query, String options);
+   int indigoOptimizeQueryReaction (int query, String options);
+
    int indigoAutomap (int reaction, String mode);
 
    int indigoIterateAtoms (int molecule);

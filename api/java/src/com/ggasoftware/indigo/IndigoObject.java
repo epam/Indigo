@@ -1138,4 +1138,29 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(_lib.indigoAppend(self, obj.self));
    }
    
+   public void optimizeQueryMolecule ()
+   {
+      optimizeQueryMolecule(null);
+   }
+
+   public void optimizeQueryMolecule (String options)
+   {
+      dispatcher.setSessionID();
+      if (options == null)
+         options = "";
+      _lib.indigoOptimizeQueryMolecule(self, options);
+   }
+
+   public void optimizeQueryReaction ()
+   {
+      optimizeQueryReaction(null);
+   }
+
+   public void optimizeQueryReaction (String options)
+   {
+      dispatcher.setSessionID();
+      if (options == null)
+         options = "";
+      _lib.indigoOptimizeQueryReaction(self, options);
+   }
 }
