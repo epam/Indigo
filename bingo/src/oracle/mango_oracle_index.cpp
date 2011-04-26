@@ -163,7 +163,7 @@ void mangoRegisterTable (OracleEnv &env, MangoOracleContext &context,
                        source_column, source_column, source_column, source_table);
    else if (blob)
       statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
-                       "THEN to_blob(cast('20' as raw(1))) ELSE %s END, "
+                       "THEN to_blob('20') ELSE %s END, "
                        "RowidToChar(rowid) FROM %s",
                        source_column, source_column, source_column, source_table);
    else
