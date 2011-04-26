@@ -9,11 +9,11 @@ copy %2 %1\bin\
 copy sql\dbcheck.sql %1\sql\
 copy sql\bingo-install.bat %1\sql\
 copy sql\bingo\alter_routines.sql %1\sql\bingo\
+copy sql\bingo\alter_routines2.sql %1\sql\bingo\
 copy sql\bingo\bingo_calls.sql %1\sql\bingo\
 copy sql\bingo\bingo_package.sql %1\sql\bingo\
 copy sql\bingo\bingo_context.sql %1\sql\bingo\
 copy sql\bingo\bingo_config.sql %1\sql\bingo\
-copy sql\bingo\compile_pcks.sql %1\sql\bingo\
 copy sql\bingo\makebingo.sql %1\sql\bingo\
 copy sql\bingo\dropbingo.sql %1\sql\bingo\
 copy sql\bingo\mango_calls.sql %1\sql\bingo\

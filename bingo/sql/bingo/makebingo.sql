@@ -17,6 +17,6 @@
 @@alter_routines.sql
 @@mango_make.sql
 @@ringo_make.sql
-@@compile_pcks.sql
+@@alter_routines2.sql
 commit;
 exit;

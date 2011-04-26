@@ -24,11 +24,11 @@ cp $libname $name/bin/
 cp sql/dbcheck.sql $name/sql/
 cp sql/bingo-install.sh  $name/sql/
 cp sql/bingo/alter_routines.sql $name/sql/bingo/
+cp sql/bingo/alter_routines2.sql $name/sql/bingo/
 cp sql/bingo/bingo_calls.sql $name/sql/bingo/
 cp sql/bingo/bingo_package.sql $name/sql/bingo/
 cp sql/bingo/bingo_context.sql $name/sql/bingo/
 cp sql/bingo/bingo_config.sql $name/sql/bingo/
-cp sql/bingo/compile_pcks.sql $name/sql/bingo/
 cp sql/bingo/makebingo.sql $name/sql/bingo/
 cp sql/bingo/dropbingo.sql $name/sql/bingo/
 cp sql/bingo/mango_calls.sql $name/sql/bingo/

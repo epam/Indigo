@@ -58,7 +58,7 @@ static function ODCIGetInterfaces(ifclist OUT sys.ODCIObjectList) return NUMBER 
       context_id binary_integer;
       col        sys.ODCIColInfo := ia.IndexCols(1);
    begin
-      context_id := BingoPackage.getContextID(ia);
+      context_id := BingoPackage.createContextID(ia);
       ringoCreateIndex(context_id, parms, '"'||col.TableSchema||'"."'||col.TableName||'"', col.ColName, col.ColTypeName);
       return ODCICONST.Success;
    end;
@@ -74,6 +74,7 @@ static function ODCIGetInterfaces(ifclist OUT sys.ODCIObjectList) return NUMBER 
    begin
       context_id := BingoPackage.getContextID(ia);
       ringoDropIndex(context_id);
+      BingoPackage.deleteContextID(context_id);
       return ODCICONST.Success;
    end;
 
