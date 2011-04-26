@@ -94,7 +94,7 @@ protected:
 
    int           _age_loaded;
 
-   PtrArray<SharedMemory>  _shmem_array;
+   PtrArray<SharedMemory> _shmem_array;
    
    void   * _getShared (SharedMemory * &sh_mem, char *name, int shared_size, bool allow_first);
    _State * _getState  (bool allow_first);

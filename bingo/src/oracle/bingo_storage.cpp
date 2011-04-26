@@ -205,16 +205,6 @@ void BingoStorage::validate (OracleEnv &env)
       output.printf("%s_%d_%d", _shmem_id.ptr(), id, state->age);
       output.writeByte(0);
 
-      if (id == 0)
-      {
-         if ((length % sizeof(_Addr)) != 0)
-            throw Error("unexpected LOB size %d is not a multiple of %d", length, sizeof(_Addr));
-         _index.resize(length / sizeof(_Addr));
-         if (length > 0)
-            lob.read(0, (char *)_index.ptr(), length);
-         continue;
-      }
-
       if (length < 1)
          throw Error("cannot validate block #%d: length=%d", id, length);
 
@@ -239,6 +229,14 @@ void BingoStorage::validate (OracleEnv &env)
 
       if (state->state != _STATE_READY)
          lob.read(0, (char *)ptr, length);
+
+      if (id == 0)
+      {
+         if ((length % sizeof(_Addr)) != 0)
+            throw Error("LOB size %d (expected a multiple of %d)", length, sizeof(_Addr));
+         if (length > 0)
+            _index.copy((_Addr *)_shmem_array[0]->ptr(), length / sizeof(_Addr));
+      }
 
       _Block &block = _blocks.push();
 
@@ -325,7 +323,6 @@ void BingoStorage::add (OracleEnv &env, const Array<char> &data, int &blockno, i
    blockno = _blocks.size() - 1;
    offset = top.size;
 
-   //_top_lob->write(top.size, data.ptr(), data.size());
    _top_lob_pending_data.concat(data);
 
    _Addr addr;
@@ -335,7 +332,6 @@ void BingoStorage::add (OracleEnv &env, const Array<char> &data, int &blockno, i
    addr.offset = top.size;
    top.size += data.size();
 
-   //_index_lob->write(_n_added * sizeof(_Addr), (char *)&addr, sizeof(_Addr));
    _index_lob_pending_data.concat((char *)&addr, sizeof(_Addr));
 
    _n_added++;
@@ -355,7 +351,7 @@ void BingoStorage::get (int n, Array<char> &out)
 {
    const _Addr &addr = _index[n];
    
-   const char *ptr = (const char *)_shmem_array[addr.blockno]->ptr();
+   const char *ptr = (const char *)_shmem_array[addr.blockno + 1]->ptr();
    
    out.copy(ptr + addr.offset, addr.length);
 }
