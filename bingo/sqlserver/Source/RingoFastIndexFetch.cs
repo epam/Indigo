@@ -49,6 +49,9 @@ namespace indigo
          int cache_index = 0;
          foreach (int storage_id in screened)
          {
+            if (_index_data.storage.isDeleted(storage_id, conn, ref cache_index))
+               continue;
+
             byte[] data_with_cmf = _index_data.storage.get(storage_id, 4, -1, conn, ref cache_index);
 
             int ret = BingoCore.lib.ringoMatchTargetBinary(data_with_cmf,
