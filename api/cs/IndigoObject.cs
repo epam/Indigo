@@ -1174,5 +1174,31 @@ namespace com.ggasoftware.indigo
          dispatcher.setSessionID();
          _indigo_lib.indigoAppend(self, obj.self);
       }
+
+      public void optimizeQueryMolecule ()
+      {
+         optimizeQueryMolecule(null);
+      }
+
+      public void optimizeQueryMolecule (string options)
+      {
+         dispatcher.setSessionID();
+         if (options == null)
+            options = "";
+         _indigo_lib.indigoOptimizeQueryMolecule(self, options);
+      }
+
+      public void optimizeQueryReaction ()
+      {
+         optimizeQueryReaction(null);
+      }
+
+      public void optimizeQueryReaction (string options)
+      {
+         dispatcher.setSessionID();
+         if (options == null)
+            options = "";
+         _indigo_lib.indigoOptimizeQueryReaction(self, options);
+      }
    }
 }
