@@ -65,10 +65,10 @@ CREATE OR REPLACE PACKAGE BODY AlterPackage IS
      case index_type 
        when mangoIndexType then
          mangoDropIndex(context_id);
-         mangoCreateIndex(context_id, params, full_table_name, col.ColName, col.ColTypeName);
+         mangoCreateIndex(context_id, parms, full_table_name, col.ColName, col.ColTypeName);
        when ringoIndexType then
          ringoDropIndex(context_id);
-         ringoCreateIndex(context_id, params, full_table_name, col.ColName, col.ColTypeName);
+         ringoCreateIndex(context_id, parms, full_table_name, col.ColName, col.ColTypeName);
        else
          raise_application_error(-20356, 'Index type is not supported');
      end case;       
@@ -85,9 +85,9 @@ CREATE OR REPLACE PACKAGE BODY AlterPackage IS
          rebuildIndex(ia, parms, index_type);
 $if dbms_db_version.version >= 11 $then
        when ODCIConst.AlterIndexRenameCol then
-         renameColumn(ia, param);
+         renameColumn(ia, parms);
        when ODCIConst.AlterIndexRenameTab then
-         renameTable(ia, param);
+         renameTable(ia, parms);
 $end
        else
          raise_application_error(-20356, 'Alter option is not supported');
