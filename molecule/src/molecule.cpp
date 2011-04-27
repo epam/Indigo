@@ -301,9 +301,6 @@ int Molecule::getAtomConnectivity (int idx)
 
    int impl_h = getImplicitH(idx);
 
-   if (impl_h < 0)
-      return -1;
-
    return impl_h + conn;
 }
 
@@ -686,6 +683,9 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
       _implicit_h.expandFill(idx + 1, -1);
       _implicit_h[idx] = impl_h;
    }
+
+   if (impl_h < 0)
+      throw Error("_getImplicitHForConnectivity(): internal");
 
    return impl_h;
 }
@@ -1166,9 +1166,6 @@ int Molecule::getAtomTotalH (int idx)
 
    int i, h = getImplicitH(idx);
 
-   if (h == -1)
-      throw Error("can not calculate implicit hydrogens on atom #%d", idx);
-
    const Vertex &vertex = getVertex(idx);
 
    for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
@@ -1253,11 +1250,10 @@ void Molecule::checkForConsistency (Molecule &mol)
       if (mol.getAtomNumber(i) == ELEM_H && vertex.degree() > 1)
          throw Error("%d-connected hydrogen atom", vertex.degree());
 
-      // check if molecule was drawn with inconsistent aromatic bonds (or query bonds)
-      if (mol.getImplicitH(i) == -1)
-         throw Error("can not calculate implicit hydrogens on atom %d", i);
-
-      mol.getAtomRadical(i);
+      // check that we are sure about implicit H counter and valence
+      mol.getImplicitH(i);
+      mol.getAtomValence(i);
+      // (if the radical is not set, it is calculated from the valence anyway)
    }
 }
 
