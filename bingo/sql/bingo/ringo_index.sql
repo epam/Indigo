@@ -77,7 +77,6 @@ static function ODCIGetInterfaces(ifclist OUT sys.ODCIObjectList) return NUMBER 
          ringoDropIndex(context_id);
          BingoPackage.deleteContextID(context_id);
       end if;
-      BingoPackage.deleteContextID(context_id);
       return ODCICONST.Success;
    end;
 
