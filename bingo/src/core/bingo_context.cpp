@@ -17,7 +17,7 @@
 #include "core/bingo_error.h"
 #include "molecule/elements.h"
 
-const char * bingo_version_string = "1.6pre";
+const char * bingo_version_string = "1.6-beta";
 
 TL_DEF(BingoContext, PtrArray<BingoContext>, _instances);
 
