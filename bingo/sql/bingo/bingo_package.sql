@@ -40,6 +40,9 @@ CREATE OR REPLACE PACKAGE BODY BingoPackage IS
         and table_name  = i_table_name
         and column_name = l_column_name;
       return l_context_id;
+   exception
+      when no_data_found then
+         return null;
    end;
    function createContextID(ia sys.ODCIIndexInfo) return NUMBER IS
       l_schema_name varchar2(30) := ia.IndexCols(1).TableSchema;

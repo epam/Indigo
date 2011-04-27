@@ -73,7 +73,10 @@ static function ODCIGetInterfaces(ifclist OUT sys.ODCIObjectList) return NUMBER 
       context_id binary_integer;
    begin
       context_id := BingoPackage.getContextID(ia);
-      ringoDropIndex(context_id);
+      if context_id is not null then
+         ringoDropIndex(context_id);
+         BingoPackage.deleteContextID(context_id);
+      end if;
       BingoPackage.deleteContextID(context_id);
       return ODCICONST.Success;
    end;
