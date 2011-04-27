@@ -42,6 +42,12 @@ void BingoCore::reset ()
    error_handler = 0;
    error_handler_context = 0;
    skip_calculate_fp = false;
+
+   // Clear warning and error message
+   warning.clear();
+   warning.push(0);
+   error.clear();
+   error.push(0);
 }
 
 TL_DECL(BingoCore, self);
