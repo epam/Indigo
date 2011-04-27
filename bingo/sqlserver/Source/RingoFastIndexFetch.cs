@@ -22,9 +22,9 @@ namespace indigo
          _index_data = index_data;
       }
 
-      public void prepareSub (string query, string options, bool highlighting)
+      public void prepareSub (string query, string options, bool highlighting, bool smarts)
       {
-         int res = BingoCore.lib.ringoSetupMatch("RSUB", query, options);
+         int res = BingoCore.lib.ringoSetupMatch(smarts ? "RSMARTS" : "RSUB", query, options);
          if (res < 0)
             throw new Exception(BingoCore.lib.bingoGetError());
          BingoCore.lib.ringoSetHightlightingMode(highlighting ? 1 : 0);

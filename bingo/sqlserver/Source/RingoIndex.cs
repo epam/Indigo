@@ -10,6 +10,8 @@ namespace indigo
 
       public byte[] fingerprint;
 
+      public int hash;
+
       public bool readPrepared (out int id)
       {
          IntPtr crf_ptr, fingerprint_ptr;
@@ -17,6 +19,8 @@ namespace indigo
 
          int ret = BingoCore.lib.ringoIndexReadPreparedReaction(out id, 
             out crf_ptr, out crf_buf_len, out fingerprint_ptr, out fingerprint_buf_len);
+
+         BingoCore.lib.ringoGetHash(true, out hash);
 
          if (ret == -2)
             throw new Exception(BingoCore.lib.bingoGetError());

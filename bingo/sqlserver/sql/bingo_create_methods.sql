@@ -1259,6 +1259,144 @@ grant execute on [$(bingo)].ResetStatistics to $(bingo)_operator
 GO
 
 --
+-- RExact
+--
+CREATE FUNCTION [$(bingo)].z_RExact 
+  (
+    @target varbinary(max),
+    @query nvarchar(max),
+    @options nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS int
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].RExact
+GO
+ADD SIGNATURE TO [$(bingo)].z_RExact BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].RExact 
+  (
+    @target varchar(max),
+    @query nvarchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS int
+AS
+BEGIN
+  RETURN [$(bingo)].z_RExact (cast(@target as VARBINARY(max)), @query, @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RExact to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].RExactB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS int
+AS
+BEGIN
+  RETURN [$(bingo)].z_RExact (@target, @query, @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RExactB to $(bingo)_reader
+GO
+
+--
+-- RSMARTS
+--
+CREATE FUNCTION [$(bingo)].z_RSMARTS 
+  (
+    @target varbinary(max),
+    @query nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS int
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].RSMARTS
+GO
+ADD SIGNATURE TO [$(bingo)].z_RSMARTS BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].RSMARTS 
+  (
+    @target varchar(max),
+    @query nvarchar(max)
+  )
+  RETURNS int
+AS
+BEGIN
+  RETURN [$(bingo)].z_RSMARTS (cast(@target as VARBINARY(max)), @query, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RSMARTS to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].RSMARTSB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max)
+  )
+  RETURNS int
+AS
+BEGIN
+  RETURN [$(bingo)].z_RSMARTS (@target, @query, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RSMARTSB to $(bingo)_reader
+GO
+
+--
+-- RSMARTSHi
+--
+CREATE FUNCTION [$(bingo)].z_RSMARTSHi 
+  (
+    @target varbinary(max),
+    @query nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].RSMARTSHi
+GO
+ADD SIGNATURE TO [$(bingo)].z_RSMARTSHi BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].RSMARTSHi 
+  (
+    @target varchar(max),
+    @query nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_RSMARTSHi (cast(@target as VARBINARY(max)), @query, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RSMARTSHi to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].RSMARTSHiB 
+  (
+    @target varbinary(max),
+    @query nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_RSMARTSHi (@target, @query, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RSMARTSHiB to $(bingo)_reader
+GO
+
+--
 -- RSmiles
 --
 CREATE FUNCTION [$(bingo)].z_RSmiles 
@@ -1528,6 +1666,102 @@ AS
 
 GO
 grant select on [$(bingo)].SearchMolecularWeight to $(bingo)_reader
+GO
+
+--
+-- SearchRExact
+--
+CREATE FUNCTION [$(bingo)].z_SearchRExact 
+  (
+    @table nvarchar(max),
+    @query nvarchar(max),
+    @options nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS TABLE (id int)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchRExact
+GO
+ADD SIGNATURE TO [$(bingo)].z_SearchRExact BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].SearchRExact 
+  (
+    @table nvarchar(max),
+    @query nvarchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS TABLE
+AS
+  RETURN (SELECT * FROM [$(bingo)].z_SearchRExact (@table, @query, @options, '$(bingo)'))
+
+GO
+grant select on [$(bingo)].SearchRExact to $(bingo)_reader
+GO
+
+--
+-- SearchRSMARTS
+--
+CREATE FUNCTION [$(bingo)].z_SearchRSMARTS 
+  (
+    @table nvarchar(max),
+    @query nvarchar(max),
+    @options nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS TABLE (id int)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchRSMARTS
+GO
+ADD SIGNATURE TO [$(bingo)].z_SearchRSMARTS BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].SearchRSMARTS 
+  (
+    @table nvarchar(max),
+    @query nvarchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS TABLE
+AS
+  RETURN (SELECT * FROM [$(bingo)].z_SearchRSMARTS (@table, @query, @options, '$(bingo)'))
+
+GO
+grant select on [$(bingo)].SearchRSMARTS to $(bingo)_reader
+GO
+
+--
+-- SearchRSMARTSHi
+--
+CREATE FUNCTION [$(bingo)].z_SearchRSMARTSHi 
+  (
+    @table nvarchar(max),
+    @query nvarchar(max),
+    @options nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS TABLE (id int, highlighting nvarchar(max))
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].SearchRSMARTSHi
+GO
+ADD SIGNATURE TO [$(bingo)].z_SearchRSMARTSHi BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].SearchRSMARTSHi 
+  (
+    @table nvarchar(max),
+    @query nvarchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS TABLE
+AS
+  RETURN (SELECT * FROM [$(bingo)].z_SearchRSMARTSHi (@table, @query, @options, '$(bingo)'))
+
+GO
+grant select on [$(bingo)].SearchRSMARTSHi to $(bingo)_reader
 GO
 
 --

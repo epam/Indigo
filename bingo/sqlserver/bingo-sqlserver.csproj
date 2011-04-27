@@ -98,6 +98,7 @@
     <Compile Include="Source\RingoFastIndexFetch.cs" />
     <Compile Include="Source\RingoIndex.cs" />
     <Compile Include="Source\RingoIndexData.cs" />
+    <Compile Include="Source\RingoShadowFetch.cs" />
     <Compile Include="Source\SqlAttributes.cs" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

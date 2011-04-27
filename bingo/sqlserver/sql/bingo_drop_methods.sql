@@ -284,6 +284,33 @@ GO
 DROP PROCEDURE [$(bingo)].z_ResetStatistics 
 GO
 
+DROP FUNCTION [$(bingo)].RExact 
+GO
+
+DROP FUNCTION [$(bingo)].RExactB 
+GO
+
+DROP FUNCTION [$(bingo)].z_RExact 
+GO
+
+DROP FUNCTION [$(bingo)].RSMARTS 
+GO
+
+DROP FUNCTION [$(bingo)].RSMARTSB 
+GO
+
+DROP FUNCTION [$(bingo)].z_RSMARTS 
+GO
+
+DROP FUNCTION [$(bingo)].RSMARTSHi 
+GO
+
+DROP FUNCTION [$(bingo)].RSMARTSHiB 
+GO
+
+DROP FUNCTION [$(bingo)].z_RSMARTSHi 
+GO
+
 DROP FUNCTION [$(bingo)].RSmiles 
 GO
 
@@ -336,6 +363,24 @@ DROP FUNCTION [$(bingo)].SearchMolecularWeight
 GO
 
 DROP FUNCTION [$(bingo)].z_SearchMolecularWeight 
+GO
+
+DROP FUNCTION [$(bingo)].SearchRExact 
+GO
+
+DROP FUNCTION [$(bingo)].z_SearchRExact 
+GO
+
+DROP FUNCTION [$(bingo)].SearchRSMARTS 
+GO
+
+DROP FUNCTION [$(bingo)].z_SearchRSMARTS 
+GO
+
+DROP FUNCTION [$(bingo)].SearchRSMARTSHi 
+GO
+
+DROP FUNCTION [$(bingo)].z_SearchRSMARTSHi 
 GO
 
 DROP FUNCTION [$(bingo)].SearchRSub 

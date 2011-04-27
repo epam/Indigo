@@ -94,7 +94,7 @@ CEXPORT int mangoIndexReadPreparedMolecule (int *id,
    BINGO_END(-2, -2)
 }
 
-CEXPORT int mangoGetHash (byte for_index, int index, int *count, dword *hash)
+CEXPORT int mangoGetHash (bool for_index, int index, int *count, dword *hash)
 {
    BINGO_BEGIN
    {

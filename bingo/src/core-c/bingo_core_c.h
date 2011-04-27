@@ -81,7 +81,7 @@ CEXPORT int mangoIndexReadPreparedMolecule (int *id,
                  const char **fingerprint_sim_str, 
                  float *mass, int *sim_fp_bits_count);
 
-CEXPORT int mangoGetHash (byte for_index, int index, int *count, dword *hash);
+CEXPORT int mangoGetHash (bool for_index, int index, int *count, dword *hash);
 CEXPORT int mangoGetAtomCount (const char *target_buf, int target_buf_len);
 CEXPORT int mangoGetBondCount (const char *target_buf, int target_buf_len);
 CEXPORT int mangoSetupMatch (const char *search_type, const char *query, const char *options);
@@ -155,5 +155,6 @@ CEXPORT const char * ringoCheckReaction (const char *reaction, int reaction_len)
 CEXPORT int ringoGetQueryFingerprint (const char **query_fp, int *query_fp_len);
 CEXPORT int ringoSetHightlightingMode (int enable);
 CEXPORT const char* ringoGetHightlightedReaction ();
+CEXPORT int ringoGetHash (bool for_index, dword *hash);
 
 #endif // __bingo_core_c_h___

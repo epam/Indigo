@@ -117,7 +117,6 @@ namespace indigo
          [MarshalAs(UnmanagedType.I1)] bool for_index,
          int index, out int count, out int hash);
 
-
       int mangoGetQueryFingerprint (out IntPtr query_fp, out int query_fp_len);
 
       int ringoGetQueryFingerprint (out IntPtr query_fp, out int query_fp_len);
@@ -197,6 +196,8 @@ namespace indigo
          [MarshalAs(UnmanagedType.LPStr)] string type);
 
       sbyte* mangoGrossGetConditions ();
+
+      int ringoGetHash ([MarshalAs(UnmanagedType.I1)] bool for_index, out int hash);
 
       /* Profiling */
       void bingoProfilingReset (

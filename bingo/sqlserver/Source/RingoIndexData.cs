@@ -29,7 +29,7 @@ namespace indigo
 
          // Create shadow table
          cmd.AppendFormat(@"CREATE TABLE {0}
-            (id int not null, storage_id int not null, crf varbinary(max))", shadowTable);
+            (id int not null, storage_id int not null, crf varbinary(max), hash int not null)", shadowTable);
 
          BingoSqlUtils.ExecNonQuery(conn, cmd.ToString());
       }
@@ -40,6 +40,8 @@ namespace indigo
             "ALTER TABLE {0} ADD PRIMARY KEY (storage_id)", shadowTable);
          BingoSqlUtils.ExecNonQuery(conn,
             "CREATE UNIQUE INDEX id ON {0}(id)", shadowTable);
+         BingoSqlUtils.ExecNonQuery(conn,
+            "CREATE INDEX hash ON {0}(hash)", shadowTable);
       }
 
       public override void DropTables (SqlConnection conn)
@@ -64,6 +66,7 @@ namespace indigo
             shadow_row["id"] = id;
             shadow_row["storage_id"] = storage_id;
             shadow_row["crf"] = index.crf;
+            shadow_row["hash"] = index.hash;
 
             shadow_datatable.Rows.Add(shadow_row);
          }
@@ -77,6 +80,7 @@ namespace indigo
          sc.Add(new DataColumn("id", Type.GetType("System.Int32")));
          sc.Add(new DataColumn("storage_id", Type.GetType("System.Int32")));
          sc.Add(new DataColumn("crf", Type.GetType("System.Array")));
+         sc.Add(new DataColumn("hash", Type.GetType("System.Int32")));
       }
 
       public override bool needFlush()
@@ -148,8 +152,8 @@ namespace indigo
 
                cmd_text.AppendFormat("INSERT INTO {0} VALUES ", shadowTable);
 
-               cmd_text.AppendFormat("({0}, {1}, @crf)",
-                  row["id"], row["storage_id"]);
+               cmd_text.AppendFormat("({0}, {1}, @crf, {2})",
+                  row["id"], row["storage_id"], row["hash"]);
 
                cmd.Parameters.AddWithValue("@crf", new SqlBinary((byte[])row["crf"]));
 

@@ -105,16 +105,27 @@ CEXPORT int ringoSetupMatch (const char *search_type, const char *query, const c
 
       TRY_READ_TARGET_RXN
       {
-         if (strcasecmp(search_type, "RSUB") == 0)
+         if (strcasecmp(search_type, "RSUB") == 0 || strcasecmp(search_type, "RSMARTS") == 0)
          {
             RingoSubstructure &substructure = self.ringo_context->substructure;
 
             if (substructure.parse(options))
             {
-               substructure.loadQuery(query);
+               if (strcasecmp(search_type, "RSUB") == 0)
+                  substructure.loadQuery(query);
+               else
+                  substructure.loadSMARTS(query);
                self.ringo_search_type = BingoCore::_SUBSTRUCTRE;
                return 1;
             }
+         }
+         else if (strcasecmp(search_type, "REXACT") == 0)
+         {
+            RingoExact &exact = self.ringo_context->exact;
+            exact.setParameters(options);
+            exact.loadQuery(query);
+            self.ringo_search_type = BingoCore::_EXACT;
+            return 1;
          }
          else
          {
@@ -150,6 +161,12 @@ CEXPORT int ringoMatchTarget (const char *target, int target_buf_len)
             substructure.loadTarget(scanner);
             return substructure.matchLoadedTarget() ? 1 : 0;
          }
+         else if (self.ringo_search_type == BingoCore::_EXACT)
+         {
+            RingoExact &exact = self.ringo_context->exact;
+            exact.loadTarget(scanner);
+            return exact.matchLoadedTarget() ? 1 : 0;
+         }
          else
             throw BingoError("Invalid search type");
       }
@@ -180,6 +197,11 @@ CEXPORT int ringoMatchTargetBinary (const char *target_bin, int target_bin_len)
          {
             RingoSubstructure &substructure = self.ringo_context->substructure;
             return substructure.matchBinary(scanner) ? 1 : 0;
+         }
+         else if (self.ringo_search_type == BingoCore::_EXACT)
+         {
+            RingoExact &exact = self.ringo_context->exact;
+            return exact.matchBinary(scanner) ? 1 : 0;
          }
          else
             throw BingoError("Invalid search type");
@@ -381,4 +403,26 @@ CEXPORT const char* ringoICR (const char* reaction, int reaction_len, bool save_
       return self.buffer.ptr();
    }
    BINGO_END(0, 0)
+}
+
+CEXPORT int ringoGetHash (bool for_index, dword *hash)
+{
+   BINGO_BEGIN
+   {
+      if (for_index)
+      {
+         *hash = self.ringo_index->getHash();
+         return 1;
+      }
+      else
+      {
+         if (self.ringo_search_type != BingoCore::_EXACT)
+            throw BingoError("Hash is valid only for exact search type");
+
+         RingoExact &exact = self.ringo_context->exact;
+         *hash = exact.getQueryHash();
+         return 1;
+      }
+   }
+   BINGO_END(-2, -2)
 }

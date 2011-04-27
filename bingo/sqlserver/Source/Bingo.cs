@@ -49,10 +49,8 @@ namespace indigo
             }
 
             int res = BingoCore.lib.mangoSetupMatch(search_type, query.Value, options.Value);
-            if (res == -2)
+            if (res < 0)
                throw new Exception(BingoCore.lib.bingoGetError());
-            if (res == -1)
-               return SqlInt32.Null;
 
             if (prepare_match != null)
                prepare_match();
@@ -171,10 +169,8 @@ namespace indigo
             }
 
             int res = BingoCore.lib.ringoSetupMatch(search_type, query.Value, options.Value);
-            if (res == -2)
+            if (res < 0)
                throw new Exception(BingoCore.lib.bingoGetError());
-            if (res == -1)
-               return SqlInt32.Null;
 
             if (heed_highlighting)
                BingoCore.lib.ringoSetHightlightingMode(1);
@@ -214,6 +210,34 @@ namespace indigo
          string highlighting = null;
          _RMatch(target, query, "", bingo_schema, "RSUB", true, ref highlighting);
          return highlighting;
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlInt32 RSMARTS (SqlBinary target, SqlString query, SqlString bingo_schema)
+      {
+         string highlighting = null;
+         return _RMatch(target, query, "", bingo_schema, "RSMARTS", false, ref highlighting);
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlString RSMARTSHi (SqlBinary target, SqlString query, SqlString bingo_schema)
+      {
+         string highlighting = null;
+         _RMatch(target, query, "", bingo_schema, "RSMARTS", true, ref highlighting);
+         return highlighting;
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+        SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "target")]
+      public static SqlInt32 RExact (SqlBinary target, SqlString query, SqlString options, SqlString bingo_schema)
+      {
+         string highlighting = null;
+         return _RMatch(target, query, options, bingo_schema, "REXACT", false, ref highlighting);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
@@ -902,12 +926,19 @@ namespace indigo
             fetch_gross.nextAfterStorageId = storage_id_next_from;
             fetched = fetch_gross.fetch(conn);
          }
-         else if (search_type == "RSUB")
+         else if (search_type == "RSUB" || search_type == "RSMARTS")
          {
             RingoFastIndexFetch fetch_sub = new RingoFastIndexFetch((RingoIndexData)index_data);
-            fetch_sub.prepareSub(query.Value, options_str, highlighting);
+            fetch_sub.prepareSub(query.Value, options_str, highlighting, search_type == "RSMARTS");
             fetch_sub.nextAfterStorageId = storage_id_next_from;
             fetched = fetch_sub.fetch(conn);
+         }
+         else if (search_type == "REXACT")
+         {
+            RingoShadowFetch fetch_exact = new RingoShadowFetch((RingoIndexData)index_data);
+            fetch_exact.prepareExact(query.Value, options_str);
+            fetch_exact.nextAfterStorageId = storage_id_next_from;
+            fetched = fetch_exact.fetch(conn);
          }
          else
             throw new Exception("Unknown search type: " + search_type);
@@ -985,11 +1016,45 @@ namespace indigo
          SystemDataAccess = SystemDataAccessKind.Read,
          TableDefinition = "id int")]
       [BingoSqlFunctionForReader]
+      public static IEnumerable SearchRSMARTS (SqlString table, SqlString query,
+                 SqlString options, SqlString bingo_schema)
+      {
+         return _MakeSearch(query, table, options, bingo_schema, "RSMARTS", false);
+      }
+
+      [SqlFunction(FillRowMethodName = "FillRowIntString",
+         DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read,
+         TableDefinition = "id int, highlighting nvarchar(max)")]
+      [BingoSqlFunctionForReader]
+      public static IEnumerable SearchRSMARTSHi (SqlString table, SqlString query,
+                 SqlString options, SqlString bingo_schema)
+      {
+         return _MakeSearch(query, table, options, bingo_schema, "RSMARTS", true);
+      }
+
+      [SqlFunction(FillRowMethodName = "FillRowInt",
+         DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read,
+         TableDefinition = "id int")]
+      [BingoSqlFunctionForReader]
       public static IEnumerable SearchExact (SqlString table, SqlString query,
                  SqlString options, SqlString bingo_schema)
       {
          return _MakeSearch(query, table, options, bingo_schema, "EXACT", false);
       }
+
+      [SqlFunction(FillRowMethodName = "FillRowInt",
+         DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read,
+         TableDefinition = "id int")]
+      [BingoSqlFunctionForReader]
+      public static IEnumerable SearchRExact (SqlString table, SqlString query,
+                 SqlString options, SqlString bingo_schema)
+      {
+         return _MakeSearch(query, table, options, bingo_schema, "REXACT", false);
+      }
+
 
       [SqlFunction(FillRowMethodName = "FillRowInt",
          DataAccess = DataAccessKind.Read,
