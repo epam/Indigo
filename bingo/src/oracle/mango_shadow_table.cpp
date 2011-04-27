@@ -56,7 +56,7 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
    {
       _main_table_statement.create(env);
       _main_table_statement_count = 0;
-      _main_table_statement->append("INSERT ALL /*+ NOLOGGING */\n");
+      _main_table_statement->append("INSERT /*+ NOLOGGING */ INTO %s\n", _table_name.ptr());
    }
    
    _PendingLOB &cmf = _pending_lobs.push(env, "cmf", _main_table_statement_count);
@@ -80,14 +80,15 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
    for (int i = 0; i < hash.size(); i++)
       fragments_count += hash[i].count;
 
+   if (_main_table_statement_count > 0)
+      _main_table_statement->append("UNION ALL ");
    _main_table_statement->append(
-      // "INSERT /*+ NOLOGGING */ "
-      "INTO %s VALUES(%s, %s, %s, %s, %s, %s, %s, %d%s)\n",
-      _table_name.ptr(), p_rowid.name, p_blockno.name, p_offset.name, p_gross.name,
+      "SELECT %s, %s, %s, %s, %s, %s, %s, %d%s FROM DUAL\n",
+      p_rowid.name, p_blockno.name, p_offset.name, p_gross.name,
            cmf.name, xyz.name, p_mass.name, fragments_count, counters);
 
    _main_table_statement_count++;
-   
+
    // Insert into components shadow table
    if (_components_table_statement_count > 20)
       _flushComponents(env);
@@ -95,17 +96,26 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
    if (_components_table_statement.get() == 0)
    {
       _components_table_statement.create(env);
-      _components_table_statement->append("INSERT ALL /*+ NOLOGGING */\n");
+      _components_table_statement->append("INSERT /*+ NOLOGGING */ INTO %s\n", _components_table_name.ptr());
       _components_table_statement_count = 0;
    }
 
+   QS_DEF(Array<char>, hash_hex);
+
    for (int i = 0; i < hash.size(); i++)
    {
-      _components_table_statement->append(
-      // OracleStatement::executeSingle(env, */
-      //   "INSERT /*+ NOLOGGING */  "
-         "INTO %s VALUES('%s', '%08X', %d)\n", _components_table_name.ptr(),
-         rowid, hash[i].hash, hash[i].count);
+      ArrayOutput out(hash_hex);
+      out.printf("%08X", hash[i].hash);
+      hash_hex.push(0);
+      const char *hash_hex_ptr = hash_hex.ptr();
+
+      if (_components_table_statement_count > 0)
+         _components_table_statement->append("UNION ALL ");
+
+      _PendingString &rid_p = _pending_strings_comp.push(rowid, "rid", _components_table_statement_count);
+      _PendingString &hash_p = _pending_strings_comp.push(hash_hex_ptr, "hash", _components_table_statement_count);
+      _PendingInt &count_p = _pending_ints_comp.push(hash[i].count, "count", _components_table_statement_count);
+      _components_table_statement->append("SELECT %s, %s, %s FROM DUAL\n", rid_p.name, hash_p.name, count_p.name);
       _components_table_statement_count++;
    }
 }
@@ -123,7 +133,6 @@ void MangoShadowTable::_flushMain (OracleEnv &env)
    {
       if (_main_table_statement_count != 0)
       {
-         _main_table_statement->append("SELECT * FROM dual");
          int i;
 
          profTimerStart(tmain, "moleculeIndex.register_shadow_main");
@@ -165,16 +174,28 @@ void MangoShadowTable::_flushMain (OracleEnv &env)
 
 void MangoShadowTable::_flushComponents (OracleEnv &env)
 {
+   int i;
+   
    // Flusing components table
    if (_components_table_statement.get() != 0)
    {
       if (_components_table_statement_count != 0)
       {
-         _components_table_statement->append("SELECT * FROM dual");
-
          profTimerStart(tcomp, "moleculeIndex.register_shadow_comp");
          _components_table_statement->prepare();
+         for (i = 0; i < _pending_ints_comp.size(); i++)
+         {
+            _PendingInt &pint = _pending_ints_comp[i];
+            _components_table_statement->bindIntByName(pint.name, &pint.value);
+         }
+         for (i = 0; i < _pending_strings_comp.size(); i++)
+         {
+            _PendingString &pstring = _pending_strings_comp[i];
+            _components_table_statement->bindStringByName(pstring.name, pstring.value.ptr(), pstring.value.size());
+         }
          _components_table_statement->execute();
+         _pending_ints_comp.clear();
+         _pending_strings_comp.clear();
          profTimerStop(tcomp);
       }
       _components_table_statement.free();  

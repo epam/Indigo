@@ -118,6 +118,8 @@ private:
    ObjArray<_PendingInt> _pending_ints;
    ObjArray<_PendingFloat> _pending_floats;
    ObjArray<_PendingString> _pending_strings;
+   ObjArray<_PendingString> _pending_strings_comp;
+   ObjArray<_PendingInt>    _pending_ints_comp;
 };
 
 #endif
