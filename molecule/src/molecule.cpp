@@ -88,7 +88,7 @@ void Molecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vert
             _connectivity[newidx] = mol._connectivity[vertices[i]];
       }
 
-      if (mol._atoms[vertices[i]].explicit_valence && mol._valence.size() > vertices[i])
+      if (mol._valence.size() > vertices[i])
       {
          _valence.expandFill(newidx + 1, -1);
          if (nei_mapped)
