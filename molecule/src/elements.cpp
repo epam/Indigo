@@ -285,6 +285,61 @@ int Element::calcValenceOfAromaticAtom (int elem, int charge, int n_arom, int mi
             return 6;
       }
    }
+   else if (elem == ELEM_S && charge == 1)
+   {
+      if (n_arom == 2)
+      {
+         if (min_conn == 2) // common case: "=[S+]-" in an aromatic ring
+            return 3;
+         if (min_conn <= 4) // CID 9922592
+            return 5;
+      }
+   }
+   else if (elem == ELEM_P && charge == 0)
+   {
+      if (n_arom == 2) // two aromatic bonds
+      {
+         if (min_conn == 2) // no external bonds
+            // implicit hydrogen (CID 164575) or radical (CID 10568539) is present
+            return 3; // in any case, the valence is 3
+         if (min_conn == 3) // one single external bond
+            return 3;
+         if (min_conn == 4) // two single on one double external bond
+            // two single: CID 140786, CID 341499
+            // one double: CID 17776485, CID 20207916
+            return 5; // valence is 5 in any case
+      }
+      if (n_arom == 3) // three aromatic bonds
+      {
+         if (min_conn == 3) // no external bonds
+            return 3; // CID 15973306; no known examples with valence 5
+         if (min_conn == 5) // two single or one double external bond
+            return 5; // the only known example is CID 10887416
+      }
+      if (n_arom == 4) // four aromatic bonds?
+      {
+         if (min_conn == 4) // no external bonds
+            return 5; // the only known example is CID 10887416,
+                      // yet the aromaticity of the smaller ring is questionable
+      }
+   }
+   else if (elem == ELEM_P && charge == 1)
+   {
+      if (n_arom == 2) // two aromatic bonds
+      {
+         if (min_conn == 3) // one single external bond
+            return 4; // common case: "=[P+]([*])-" in an aromatic ring
+      }
+   }
+   else if (elem == ELEM_P && charge == -1)
+   {
+      if (n_arom == 2) // two aromatic bonds
+      {
+         if (min_conn == 2) // no external bonds
+            return 2; // CID 10932222
+      }
+   }
+   
    return -1;
 }
 
