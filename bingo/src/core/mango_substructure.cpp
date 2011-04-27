@@ -134,7 +134,6 @@ void MangoSubstructure::_validateQueryExtraData ()
 
    _query_has_stereocenters = _query.stereocenters.size() > 0;
    _query_has_stereocare_bonds = _query.cis_trans.count() > 0;
-   //_query_has_explicit_valence = Molecule::hasExplicitValences(_query);
    _query_extra_valid = true;
 }
 
@@ -331,8 +330,6 @@ bool MangoSubstructure::matchBinary (Scanner &scanner, Scanner *xyz_scanner)
       cmf_loader->skip_cistrans = true;
    if (!_query_has_stereocenters)
       cmf_loader->skip_stereocenters = true;
-   if (!_query_has_explicit_valence)
-      cmf_loader->skip_valence = true;
 
    cmf_loader->loadMolecule(_target);
    if (xyz_scanner != 0)

@@ -89,7 +89,6 @@ protected:
 
    bool _query_has_stereocare_bonds;
    bool _query_has_stereocenters;
-   bool _query_has_explicit_valence;
    bool _query_fp_valid;
    bool _query_extra_valid;
 
