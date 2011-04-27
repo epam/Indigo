@@ -112,8 +112,8 @@ void BingoFingerprints::flush (OracleEnv &env)
    _optimizePendingBlock();
    env.dbgPrintf("ok\n");
 
-   if (!_flush_Update(env))
-      _flush_Insert(env);
+   if (!_flush_Update(env, true))
+      _flush_Insert_OLD(env);
 
    _initBlock(_pending_block, true);
    _part_adding++;
@@ -140,7 +140,7 @@ void BingoFingerprints::_initBlock (Block &block, bool is_pending_block)
    block.mapping.clear();
 }
 
-bool BingoFingerprints::_flush_Update (OracleEnv &env)
+bool BingoFingerprints::_flush_Update (OracleEnv &env, bool update_counter)
 {
    OracleStatement statement(env);
    OracleLOB 
@@ -171,15 +171,36 @@ bool BingoFingerprints::_flush_Update (OracleEnv &env)
    lob_bit_starts.write(0, (char *)block.bit_starts.ptr(), block.bit_starts.sizeInBytes());
    lob_bit_ends.write(0, (char *)block.bit_ends.ptr(), block.bit_ends.sizeInBytes());
 
-   OracleStatement::executeSingle(env, "UPDATE %s SET used = %d WHERE part = %d",
-                                  _table_name.ptr(), _pending_block.used, _part_adding);
+   if (update_counter)
+   {
+      OracleStatement statement1(env);
+      statement1.append("UPDATE %s SET used = :used WHERE part = :part", _table_name.ptr());
+      statement1.prepare();
+      statement1.bindIntByName(":used", &_pending_block.used);
+      statement1.bindIntByName(":part", &_part_adding);
+      statement1.execute();
+   }
    return true;
 }
 
-void BingoFingerprints::_flush_Insert(OracleEnv &env)
+void BingoFingerprints::_flush_Insert (OracleEnv &env)
 {
    OracleStatement statement(env);
-   OracleLOB 
+   statement.append("INSERT /*+ NOLOGGING */ INTO %s VALUES(:part, :used, "
+      "empty_blob(), empty_blob(), empty_blob(), empty_blob(), empty_blob())", _table_name.ptr());
+
+   statement.prepare();
+   statement.bindIntByName(":part", &_part_adding);
+   statement.bindIntByName(":used", &_pending_block.used);
+   statement.execute();
+
+   _flush_Update(env, false);
+}
+
+void BingoFingerprints::_flush_Insert_OLD (OracleEnv &env)
+{
+   OracleStatement statement(env);
+   OracleLOB
       lob_counters(env),
       lob_bits(env),
       lob_mapping(env),
@@ -192,18 +213,19 @@ void BingoFingerprints::_flush_Insert(OracleEnv &env)
    lob_bit_starts.createTemporaryBLOB();
    lob_bit_ends.createTemporaryBLOB();
 
-   lob_bits.write(0, (char *)_pending_bits.ptr(), _pending_bits.size() * 8);
-
    Block &block = _pending_block;
+   lob_bits.write(0, (char *)_pending_bits.ptr(), _pending_bits.size() * 8);
    lob_counters.write(0, (char *)block.counters.ptr(), block.counters.sizeInBytes());
    lob_mapping.write(0, (char *)block.mapping.ptr(), block.mapping.sizeInBytes());
    lob_bit_starts.write(0, (char *)block.bit_starts.ptr(), block.bit_starts.sizeInBytes());
    lob_bit_ends.write(0, (char *)block.bit_ends.ptr(), block.bit_ends.sizeInBytes());
-
-   statement.append("INSERT /*+ NOLOGGING */ INTO %s VALUES(%d, %d, :counters, :mapping, :bit_starts, :bit_ends, :bits)",
-      _table_name.ptr(), _part_adding, _pending_block.used);
+   
+   statement.append("INSERT /*+ NOLOGGING */ INTO %s VALUES(:part, :used, :counters, "
+                    ":mapping, :bit_starts, :bit_ends, :bits)", _table_name.ptr());
 
    statement.prepare();
+   statement.bindIntByName(":used", &_pending_block.used);
+   statement.bindIntByName(":part", &_part_adding);
    statement.bindBlobByName(":counters", lob_counters);
    statement.bindBlobByName(":mapping", lob_mapping);
    statement.bindBlobByName(":bit_starts", lob_bit_starts);

@@ -134,8 +134,9 @@ protected:
 
    void _optimizePendingBlock ();
    void _initBlock (Block &block, bool is_pending_block);
-   bool _flush_Update  (OracleEnv &env);
+   bool _flush_Update  (OracleEnv &env, bool update_counter);
    void _flush_Insert  (OracleEnv &env);
+   void _flush_Insert_OLD (OracleEnv &env);
 
    static int _cmp_optimize_counters (int a, int b, void *context);
 
