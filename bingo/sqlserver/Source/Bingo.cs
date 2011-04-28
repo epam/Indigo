@@ -341,7 +341,7 @@ namespace indigo
                   if (index_data.locked)
                   {
                      BingoLog.logMessage("Attempt to get locked index for the table {0}", table_name);
-                     throw new Exception("MoleculeIndex for the table '" + table_name + "' is locked");
+                     throw new Exception("Chemical index for the table '" + table_name + "' is locked");
                   }
                   if ((op_flags & BingoOp.LOCK_INDEX) != 0)
                      index_data.locked = true;
@@ -1711,23 +1711,43 @@ namespace indigo
       public static IEnumerable CheckMoleculeTable (SqlString table, SqlString id_column,
                  SqlString data_column, SqlString bingo_schema)
       {
-         BingoLog.logMessage("Checking molecule table {0}", table.Value);
+         return CheckChemicalTable(table, id_column, data_column, bingo_schema, false);
+      }
+
+      [SqlFunction(FillRowMethodName = "FillRowIntString",
+         DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read,
+         TableDefinition = "id int, msg nvarchar(max)")]
+      [BingoSqlFunctionForReader]
+      public static IEnumerable CheckReactionTable (SqlString table, SqlString id_column,
+                 SqlString data_column, SqlString bingo_schema)
+      {
+         return CheckChemicalTable(table, id_column, data_column, bingo_schema, true);
+      }
+
+      private static IEnumerable CheckChemicalTable (SqlString table, SqlString id_column,
+                 SqlString data_column, SqlString bingo_schema, bool is_reaction)
+      {
+         BingoLog.logMessage("Checking chemical table {0}", table.Value);
          using (BingoSession session = new BingoSession())
          {
             using (SqlConnection conn = new SqlConnection("context connection=true"))
             {
                conn.Open();
                prepareContext(conn, bingo_schema.Value, 0,
-                  ContextFlags.IGNORE_CBDM | ContextFlags.NTHREADS | 
+                  ContextFlags.IGNORE_CBDM | ContextFlags.NTHREADS |
                   ContextFlags.X_PSEUDO | ContextFlags.FINGERPRINTS);
 
                BingoIndexID id = new BingoIndexID(conn, table.Value);
-               BingoIndexData dummy_data =
-                  new MangoIndexData(id, id_column.Value, data_column.Value, bingo_schema.Value);
+               BingoIndexData dummy_data;
+               if (is_reaction)
+                  dummy_data = new RingoIndexData(id, id_column.Value, data_column.Value, bingo_schema.Value);
+               else
+                  dummy_data = new MangoIndexData(id, id_column.Value, data_column.Value, bingo_schema.Value);
 
                ArrayList errors = new ArrayList();
 
-               bingoOperationDelegate check_insert_op = 
+               bingoOperationDelegate check_insert_op =
                   getInsertRecordsDelegate(table.Value, false, false, false, errors);
                if (BingoCore.lib.bingoIndexBegin() != 1)
                   throw new Exception(BingoCore.lib.bingoGetError());
@@ -1739,7 +1759,6 @@ namespace indigo
             }
          }
       }
-
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
@@ -1758,6 +1777,12 @@ namespace indigo
                {
                   BingoIndexData index_data = BingoIndexData.GetIndexData(conn,
                      bingo_schema.Value, table_name.Value, getSPID(conn));
+                  if (index_data.locked)
+                  {
+                     string msg = String.Format("Chemical index for the table '{0}' is locked.", table_name);
+                     BingoLog.logMessage(msg);
+                     throw new Exception(msg);
+                  }
 
                   index_data.flush(ext_conn);
                }

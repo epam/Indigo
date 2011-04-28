@@ -387,6 +387,38 @@ grant execute on [$(bingo)].CheckReactionB to $(bingo)_reader
 GO
 
 --
+-- CheckReactionTable
+--
+CREATE FUNCTION [$(bingo)].z_CheckReactionTable 
+  (
+    @table nvarchar(max),
+    @id_column nvarchar(max),
+    @data_column nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS TABLE (id int, msg nvarchar(max))
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CheckReactionTable
+GO
+ADD SIGNATURE TO [$(bingo)].z_CheckReactionTable BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].CheckReactionTable 
+  (
+    @table nvarchar(max),
+    @id_column nvarchar(max),
+    @data_column nvarchar(max)
+  )
+  RETURNS TABLE
+AS
+  RETURN (SELECT * FROM [$(bingo)].z_CheckReactionTable (@table, @id_column, @data_column, '$(bingo)'))
+
+GO
+grant select on [$(bingo)].CheckReactionTable to $(bingo)_reader
+GO
+
+--
 -- CompactMolecule
 --
 CREATE FUNCTION [$(bingo)].z_CompactMolecule 

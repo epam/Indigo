@@ -95,6 +95,12 @@ GO
 DROP FUNCTION [$(bingo)].z_CheckReaction 
 GO
 
+DROP FUNCTION [$(bingo)].CheckReactionTable 
+GO
+
+DROP FUNCTION [$(bingo)].z_CheckReactionTable 
+GO
+
 DROP FUNCTION [$(bingo)].CompactMolecule 
 GO
 

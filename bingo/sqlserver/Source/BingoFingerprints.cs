@@ -91,49 +91,47 @@ namespace indigo
 
       public void init (SqlConnection conn)
       {
-         // Read blocks
-         int? max_part = BingoSqlUtils.ExecIntQuery(conn,
-            "SELECT MAX(part) from {0}", _index_data.fingerprintsTable);
-         if (max_part != null && _all_blocks.Count != max_part.Value)
+         // Check if blocks have already been loaded
+         if (_all_blocks.Count != 0)
+            return;
+
+         lock (_sync_object)
          {
-            lock (_sync_object)
+            // Check again
+            if (_all_blocks.Count != 0)
+               return;
+
+            int? max_part = BingoSqlUtils.ExecIntQuery(conn,
+               "SELECT MAX(part) from {0}", _index_data.fingerprintsTable);
+            if (!max_part.HasValue)
+               return;
+
+            using (SqlCommand command =
+               new SqlCommand("SELECT [part], [used], [counters], [mapping] from " +
+                  _index_data.fingerprintsTable + " ORDER BY [part]", conn))
             {
-               // Check again
-               max_part = BingoSqlUtils.ExecIntQuery(conn,
-                  "SELECT MAX(part) from {0}", _index_data.fingerprintsTable);
-               if (_all_blocks.Count == max_part.Value)
-                  return;
-
-               if (_all_blocks.Count != 0)
-                  throw new Exception("Internal error: blocks were read partially");
-
-               using (SqlCommand command =
-                  new SqlCommand("SELECT [part], [used], [counters], [mapping] from " +
-                     _index_data.fingerprintsTable + " ORDER BY [part]", conn))
+               command.CommandTimeout = 3600;
+               using (SqlDataReader reader = command.ExecuteReader())
                {
-                  command.CommandTimeout = 3600;
-                  using (SqlDataReader reader = command.ExecuteReader())
+                  while (reader.Read())
                   {
-                     while (reader.Read())
-                     {
-                        Block new_block = new Block(false, _fp_bytes);
-                        new_block.part = Convert.ToInt32(reader[0]);
-                        int used = Convert.ToInt32(reader[1]);
+                     Block new_block = new Block(false, _fp_bytes);
+                     new_block.part = Convert.ToInt32(reader[0]);
+                     int used = Convert.ToInt32(reader[1]);
 
-                        byte[] counters = (byte[])reader[2];
-                        byte[] mapping = (byte[])reader[3];
+                     byte[] counters = (byte[])reader[2];
+                     byte[] mapping = (byte[])reader[3];
 
-                        // Copy mapping
-                        int[] data = new int[used];
-                        Buffer.BlockCopy(mapping, 0, data, 0, mapping.Length);
-                        new_block.indices.AddRange(data);
-                        new_block.validateMinMax();
+                     // Copy mapping
+                     int[] data = new int[used];
+                     Buffer.BlockCopy(mapping, 0, data, 0, mapping.Length);
+                     new_block.indices.AddRange(data);
+                     new_block.validateMinMax();
 
-                        // Copy counters
-                        Buffer.BlockCopy(counters, 0, new_block.counters, 0, counters.Length);
+                     // Copy counters
+                     Buffer.BlockCopy(counters, 0, new_block.counters, 0, counters.Length);
 
-                        _all_blocks.Add(new_block);
-                     }
+                     _all_blocks.Add(new_block);
                   }
                }
             }
