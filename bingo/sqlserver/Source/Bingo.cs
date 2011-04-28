@@ -1166,9 +1166,7 @@ namespace indigo
                                  ext_conn.BeginTransaction())
                         {
                            using (SqlBulkCopy bulkCopy = new SqlBulkCopy(ext_conn, 
-                                                               SqlBulkCopyOptions.TableLock | 
-                                                               SqlBulkCopyOptions.FireTriggers, 
-                                                               transaction))
+                              SqlBulkCopyOptions.FireTriggers, transaction))
                            {
                               bulkCopy.DestinationTableName = table_name;
                               bulkCopy.ColumnMappings.Add(data_column_name, data_column_name);
