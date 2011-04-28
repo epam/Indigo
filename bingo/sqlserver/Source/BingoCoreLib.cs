@@ -136,6 +136,9 @@ namespace indigo
       sbyte* mangoMolfile (
          [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len);
 
+      sbyte* mangoCML (
+         [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len);
+
       IntPtr mangoICM (
          [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len,
          [MarshalAs(UnmanagedType.I1)] bool save_xyz, out int out_len);
@@ -145,6 +148,9 @@ namespace indigo
          [MarshalAs(UnmanagedType.I1)] bool save_xyz, out int out_len);
 
       sbyte* ringoRxnfile (
+         [MarshalAs(UnmanagedType.LPArray)] byte[] reaction, int reaction_len);
+
+      sbyte* ringoRCML (
          [MarshalAs(UnmanagedType.LPArray)] byte[] reaction, int reaction_len);
 
       sbyte* mangoGetCountedElementName (int index);
@@ -191,9 +197,9 @@ namespace indigo
       sbyte* mangoGross (
          [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len);
 
-      float mangoMass (
+      int mangoMass (
          [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len,
-         [MarshalAs(UnmanagedType.LPStr)] string type);
+         [MarshalAs(UnmanagedType.LPStr)] string type, out float mass);
 
       sbyte* mangoGrossGetConditions ();
 

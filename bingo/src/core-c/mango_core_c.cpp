@@ -24,6 +24,7 @@
 #include "molecule/molecule_mass.h"
 #include "molecule/gross_formula.h"
 #include "molecule/icm_saver.h"
+#include "molecule/molecule_cml_saver.h"
 
 using namespace indigo::bingo_core;
 
@@ -571,6 +572,34 @@ CEXPORT const char * mangoMolfile (const char *molecule, int molecule_len)
    BINGO_END(0, 0)
 }
 
+CEXPORT const char * mangoCML (const char *molecule, int molecule_len)
+{
+   BINGO_BEGIN
+   {
+      // TODO: remove copy/paste in mangoCML, mangoMolfile and etc. 
+      _mangoCheckPseudoAndCBDM(self);
+
+      BufferScanner scanner(molecule, molecule_len);
+
+      QS_DEF(Molecule, target);
+
+      MoleculeAutoLoader loader(scanner);
+
+      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
+      loader.ignore_closing_bond_direction_mismatch =
+         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      loader.loadMolecule(target);
+
+      ArrayOutput out(self.buffer);
+
+      MoleculeCmlSaver saver(out);
+      saver.saveMolecule(target);
+      out.writeByte(0);
+      return self.buffer.ptr();
+   }
+   BINGO_END(0, 0)
+}
+
 CEXPORT int mangoGetQueryFingerprint (const char **query_fp, int *query_fp_len)
 {
    profTimerStart(t0, "match.query_fingerprint");
@@ -667,7 +696,7 @@ CEXPORT const char * mangoTauGetQueryGross ()
    BINGO_END(0, 0)
 }
 
-CEXPORT float mangoMass (const char *target_buf, int target_buf_len, const char *type)
+CEXPORT int mangoMass (const char *target_buf, int target_buf_len, const char *type, float *out)
 {
    BINGO_BEGIN
    {
@@ -689,15 +718,16 @@ CEXPORT float mangoMass (const char *target_buf, int target_buf_len, const char 
       mass_calulator.relative_atomic_mass_map = &self.bingo_context->relative_atomic_mass_map;
 
       if (type == 0 || strlen(type) == 0 || strcasecmp(type, "molecular-weight") == 0)
-         return mass_calulator.molecularWeight(target);
+         *out = mass_calulator.molecularWeight(target);
       else if (strcasecmp(type, "most-abundant-mass") == 0)
-         return mass_calulator.mostAbundantMass(target);
+         *out = mass_calulator.mostAbundantMass(target);
       else if (strcasecmp(type, "monoisotopic-mass") == 0)
-         return mass_calulator.monoisotopicMass(target);
+         *out = mass_calulator.monoisotopicMass(target);
       else
          throw BingoError("unknown mass specifier: %s", type);
+      return 1;
    }
-   BINGO_END(0, 0)
+   BINGO_END(-1, -1)
 }
 
 

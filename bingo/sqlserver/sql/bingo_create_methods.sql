@@ -419,6 +419,48 @@ grant select on [$(bingo)].CheckReactionTable to $(bingo)_reader
 GO
 
 --
+-- CML
+--
+CREATE FUNCTION [$(bingo)].z_CML 
+  (
+    @molecule varbinary(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].CML
+GO
+ADD SIGNATURE TO [$(bingo)].z_CML BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].CML 
+  (
+    @molecule varchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CML (cast(@molecule as VARBINARY(max)), '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CML to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].CMLB 
+  (
+    @molecule varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_CML (@molecule, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].CMLB to $(bingo)_reader
+GO
+
+--
 -- CompactMolecule
 --
 CREATE FUNCTION [$(bingo)].z_CompactMolecule 
@@ -1211,6 +1253,48 @@ BEGIN
 END
 GO
 grant execute on [$(bingo)].ProfilingGetValue to $(bingo)_operator
+GO
+
+--
+-- RCML
+--
+CREATE FUNCTION [$(bingo)].z_RCML 
+  (
+    @reaction varbinary(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].RCML
+GO
+ADD SIGNATURE TO [$(bingo)].z_RCML BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].RCML 
+  (
+    @reaction varchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_RCML (cast(@reaction as VARBINARY(max)), '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RCML to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].RCMLB 
+  (
+    @reaction varbinary(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_RCML (@reaction, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RCMLB to $(bingo)_reader
 GO
 
 --

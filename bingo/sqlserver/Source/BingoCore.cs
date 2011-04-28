@@ -133,9 +133,29 @@ namespace indigo
          return new String(res);
       }
 
+      public static string ringoRCML (byte[] reaction)
+      {
+         sbyte* res = lib.ringoRCML(reaction, reaction.Length);
+
+         if ((IntPtr)res == IntPtr.Zero)
+            return null;
+
+         return new String(res);
+      }
+
       public static string mangoMolfile (byte[] molecule)
       {
          sbyte* res = lib.mangoMolfile(molecule, molecule.Length);
+
+         if ((IntPtr)res == IntPtr.Zero)
+            return null;
+
+         return new String(res);
+      }
+
+      public static string mangoCML (byte[] molecule)
+      {
+         sbyte* res = lib.mangoCML(molecule, molecule.Length);
 
          if ((IntPtr)res == IntPtr.Zero)
             return null;

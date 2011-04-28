@@ -101,6 +101,15 @@ GO
 DROP FUNCTION [$(bingo)].z_CheckReactionTable 
 GO
 
+DROP FUNCTION [$(bingo)].CML 
+GO
+
+DROP FUNCTION [$(bingo)].CMLB 
+GO
+
+DROP FUNCTION [$(bingo)].z_CML 
+GO
+
 DROP FUNCTION [$(bingo)].CompactMolecule 
 GO
 
@@ -270,6 +279,15 @@ DROP FUNCTION [$(bingo)].ProfilingGetValue
 GO
 
 DROP FUNCTION [$(bingo)].z_ProfilingGetValue 
+GO
+
+DROP FUNCTION [$(bingo)].RCML 
+GO
+
+DROP FUNCTION [$(bingo)].RCMLB 
+GO
+
+DROP FUNCTION [$(bingo)].z_RCML 
 GO
 
 DROP FUNCTION [$(bingo)].ReadFileAsBinary 

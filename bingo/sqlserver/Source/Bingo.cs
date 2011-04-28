@@ -1534,6 +1534,42 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlString CML (SqlBinary molecule, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            ContextFlags flags = ContextFlags.X_PSEUDO | ContextFlags.IGNORE_CBDM;
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0, flags);
+            }
+
+            return BingoCore.mangoCML(molecule.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "reaction")]
+      public static SqlString RCML (SqlBinary reaction, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            ContextFlags flags = ContextFlags.X_PSEUDO | ContextFlags.IGNORE_CBDM;
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0, flags);
+            }
+
+            return BingoCore.ringoRCML(reaction.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunctionForReader(str_bin = "reaction")]
       public static SqlString Rxnfile (SqlBinary reaction, SqlString bingo_schema)
       {
@@ -1618,7 +1654,11 @@ namespace indigo
                prepareContext(conn, bingo_schema.Value, 0, flags);
             }
 
-            return BingoCore.lib.mangoMass(molecule.Value, molecule.Value.Length, type.Value);
+            float mass;
+            int ret = BingoCore.lib.mangoMass(molecule.Value, molecule.Value.Length, type.Value, out mass);
+            if (ret != 1)
+               return SqlSingle.Null;
+            return mass;
          }
       }
 

@@ -26,6 +26,7 @@
 #include "reaction/rxnfile_saver.h"
 #include "reaction/crf_saver.h"
 #include "reaction/icr_saver.h"
+#include "reaction/reaction_cml_saver.h"
 
 using namespace indigo::bingo_core;
 
@@ -261,6 +262,35 @@ CEXPORT const char * ringoRxnfile (const char *reaction, int reaction_len)
       ArrayOutput out(self.buffer);
 
       RxnfileSaver saver(out);
+
+      saver.saveReaction(target);
+      out.writeByte(0);
+      return self.buffer.ptr();
+   }
+   BINGO_END(0, 0)
+}
+
+CEXPORT const char * ringoRCML (const char *reaction, int reaction_len)
+{
+   BINGO_BEGIN
+   {
+      // TODO: remove copy/paste in ringoRCML, ringoRxnfile and etc. 
+      _ringoCheckPseudoAndCBDM(self);
+
+      BufferScanner scanner(reaction, reaction_len);
+
+      QS_DEF(Reaction, target);
+
+      ReactionAutoLoader loader(scanner);
+
+      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
+      loader.ignore_closing_bond_direction_mismatch =
+         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      loader.loadReaction(target);
+
+      ArrayOutput out(self.buffer);
+
+      ReactionCmlSaver saver(out);
 
       saver.saveReaction(target);
       out.writeByte(0);
