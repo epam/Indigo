@@ -27,6 +27,9 @@
 using namespace indigo;
 
 SmilesLoader::SmilesLoader (Scanner &scanner) : _scanner(scanner),
+TL_CP_GET(_atom_stack),
+TL_CP_GET(_cycles),
+TL_CP_GET(_pending_bonds_pool),
 TL_CP_GET(_neipool),
 TL_CP_GET(_atoms),
 TL_CP_GET(_bonds),
@@ -395,12 +398,9 @@ void SmilesLoader::loadSMARTS (QueryMolecule &mol)
 
 void SmilesLoader::_parseMolecule ()
 {
-   QS_DEF(Array<int>, atom_stack);
-   QS_DEF(Array<_CycleDesc>, cycles);
-   QS_DEF(StringPool, pending_bonds_pool);
-   cycles.clear();
-   atom_stack.clear();
-   pending_bonds_pool.clear();
+   _cycles.clear();
+   _atom_stack.clear();
+   _pending_bonds_pool.clear();
 
    bool first_atom = true;
    bool inside_polymer = false;
@@ -428,19 +428,19 @@ void SmilesLoader::_parseMolecule ()
             else
                number = next - '0';
 
-            while (cycles.size() <= number)
-               cycles.push().clear();
+            while (_cycles.size() <= number)
+               _cycles.push().clear();
 
             // closing some previously numbered atom, like the last '1' in c1ccccc1
-            if (cycles[number].beg >= 0)
+            if (_cycles[number].beg >= 0)
             {
                bond = &_bonds.push();
                bond->dir = 0;
                bond->topology = 0;
-               bond->beg = atom_stack.top();
-               bond->end = cycles[number].beg;
+               bond->beg = _atom_stack.top();
+               bond->end = _cycles[number].beg;
                bond->type = -1; // will later become single or aromatic bond
-               cycles[number].clear();
+               _cycles[number].clear();
                added_bond = true;
 
                if (_qmol != 0)
@@ -459,10 +459,10 @@ void SmilesLoader::_parseMolecule ()
                break;
             }
             // closing some previous pending bond, like the last '1' in C-1=CC=CC=C1'
-            else if (cycles[number].pending_bond >= 0)
+            else if (_cycles[number].pending_bond >= 0)
             {
-               bond = &_bonds[cycles[number].pending_bond];
-               bond->end = atom_stack.top();
+               bond = &_bonds[_cycles[number].pending_bond];
+               bond->end = _atom_stack.top();
                added_bond = true;
                _atoms[bond->end].neighbors.add(bond->beg);
                _atoms[bond->beg].closure(number, bond->end);
@@ -472,21 +472,21 @@ void SmilesLoader::_parseMolecule ()
                   QS_DEF(Array<char>, bond_str);
                   AutoPtr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond());
 
-                  bond_str.readString(pending_bonds_pool.at(cycles[number].pending_bond_str), false);
+                  bond_str.readString(_pending_bonds_pool.at(_cycles[number].pending_bond_str), false);
                   _readBond(bond_str, *bond, qbond);
                   _qmol->addBond(bond->beg, bond->end, qbond.release());
                }
                
-               cycles[number].clear();
+               _cycles[number].clear();
 
                break;
             }
             // opening new cycle, like the first '1' in c1ccccc1
             else
             {
-               cycles[number].beg = atom_stack.top();
-               cycles[number].pending_bond = -1;
-               _atoms[cycles[number].beg].pending(number);
+               _cycles[number].beg = _atom_stack.top();
+               _cycles[number].pending_bond = -1;
+               _atoms[_cycles[number].beg].pending(number);
             }
             next = _scanner.lookNext();
          }
@@ -501,14 +501,14 @@ void SmilesLoader::_parseMolecule ()
          if (smarts_mode && _balance == 0)
          {
             _inside_smarts_component = false;
-            atom_stack.clear(); // needed to detect errors like "C.(C)(C)"
+            _atom_stack.clear(); // needed to detect errors like "C.(C)(C)"
          }
          else
          {
-            if (atom_stack.size() < 1)
+            if (_atom_stack.size() < 1)
                ; // we allow misplaced dots because we are so kind
             else
-               atom_stack.pop();
+               _atom_stack.pop();
          }
          first_atom = true;
          continue;
@@ -527,9 +527,9 @@ void SmilesLoader::_parseMolecule ()
          }
          else
          {
-            if (atom_stack.size() < 1)
+            if (_atom_stack.size() < 1)
                throw Error("probably misplaced '('");
-            atom_stack.push(atom_stack.top());
+            _atom_stack.push(_atom_stack.top());
          }
 
          _balance++;
@@ -545,7 +545,7 @@ void SmilesLoader::_parseMolecule ()
 
          _balance--;
 
-         atom_stack.pop();
+         _atom_stack.pop();
 
          continue;
       }
@@ -553,7 +553,7 @@ void SmilesLoader::_parseMolecule ()
       if (!first_atom)
       {
          bond = &_bonds.push();
-         bond->beg = atom_stack.top();
+         bond->beg = _atom_stack.top();
          bond->end = -1;
          bond->type = -1;
          bond->dir = 0;
@@ -618,9 +618,9 @@ void SmilesLoader::_parseMolecule ()
                   number = next - '0';
 
                // closing some previous numbered atom, like the last '1' in C1C=CC=CC=1
-               if (number >= 0 && number < cycles.size() && cycles[number].beg >= 0)
+               if (number >= 0 && number < _cycles.size() && _cycles[number].beg >= 0)
                {
-                  bond->end = cycles[number].beg;
+                  bond->end = _cycles[number].beg;
 
                   if (_qmol != 0)
                      _qmol->addBond(bond->beg, bond->end, qbond.release());
@@ -628,13 +628,13 @@ void SmilesLoader::_parseMolecule ()
                   _atoms[bond->end].closure(number, bond->beg);
                   _atoms[bond->beg].neighbors.add(bond->end);
 
-                  cycles[number].clear();
+                  _cycles[number].clear();
                   continue;
                }
                // closing some previous pending cycle bond, like the last '1' in C=1C=CC=CC=1
-               else if (number >= 0 && number < cycles.size() && cycles[number].pending_bond >= 0)
+               else if (number >= 0 && number < _cycles.size() && _cycles[number].pending_bond >= 0)
                {
-                  _BondDesc &pending_bond = _bonds[cycles[number].pending_bond];
+                  _BondDesc &pending_bond = _bonds[_cycles[number].pending_bond];
 
                   // transfer direction from closing bond to pending bond
                   if (bond->dir > 0)
@@ -650,7 +650,7 @@ void SmilesLoader::_parseMolecule ()
                   }
 
                   // apart from the direction, check that the closing bond matches the pending bond
-                  const char *str = pending_bonds_pool.at(cycles[number].pending_bond_str);
+                  const char *str = _pending_bonds_pool.at(_cycles[number].pending_bond_str);
 
                   if (bond_str.size() > 0)
                   {
@@ -673,17 +673,17 @@ void SmilesLoader::_parseMolecule ()
 
                   // forget the closing bond
                   _bonds.pop();
-                  cycles[number].clear();
+                  _cycles[number].clear();
                   continue;
                }
                // opening some pending cycle bond, like the first '1' in C=1C=CC=CC=1
                else
                {
-                  while (cycles.size() <= number)
-                     cycles.push().clear();
-                  cycles[number].pending_bond = _bonds.size() - 1;
-                  cycles[number].pending_bond_str = pending_bonds_pool.add(bond_str);
-                  cycles[number].beg = -1; // have it already in the bond
+                  while (_cycles.size() <= number)
+                     _cycles.push().clear();
+                  _cycles[number].pending_bond = _bonds.size() - 1;
+                  _cycles[number].pending_bond_str = _pending_bonds_pool.add(bond_str);
+                  _cycles[number].beg = -1; // have it already in the bond
                   _atoms[bond->beg].pending(number);
 
                   continue;
@@ -764,8 +764,8 @@ void SmilesLoader::_parseMolecule ()
             // ... unless it goes from the polymer end
             // and is not in braces
             if (!_atoms[bond->beg].ends_polymer ||
-                (atom_stack.size() >= 2 &&
-                atom_stack.top() == atom_stack[atom_stack.size() - 2]))
+                (_atom_stack.size() >= 2 &&
+                _atom_stack.top() == _atom_stack[_atom_stack.size() - 2]))
                _atoms[bond->end].polymer_index = _atoms[bond->beg].polymer_index;
          }
       }
@@ -777,56 +777,21 @@ void SmilesLoader::_parseMolecule ()
       }
 
       if (!first_atom)
-         atom_stack.pop();
-      atom_stack.push(_atoms.size() - 1);
+         _atom_stack.pop();
+      _atom_stack.push(_atoms.size() - 1);
       first_atom = false;
 
       while (_scanner.lookNext() == '{')
-      {
-         QS_DEF(Array<char>, curly);
-         curly.clear();
-         while (1)
-         {
-            _scanner.skip(1);
-            int next = _scanner.lookNext();
-            if (next == -1)
-               throw Error("unclosed curly brace");
-            if (next == '}')
-            {
-               _scanner.skip(1);
-               break;
-            }
-            curly.push((char)next);
-         }
-         int repetitions;
-         int poly = _parseCurly(curly, repetitions);
-         if (poly == _POLYMER_START)
-         {
-            if (inside_polymer)
-               throw Error("nested polymers not allowed");
-            inside_polymer = true;
-            atom.starts_polymer = true;
-            _polymer_repetitions.push(0); // can change it later
-         }
-         else if (poly == _POLYMER_END)
-         {
-            if (!inside_polymer)
-               throw Error("misplaced polymer ending");
-            inside_polymer = false;
-            _polymer_repetitions.top() = repetitions;
-            atom.polymer_index = _polymer_repetitions.size() - 1; 
-            atom.ends_polymer = true;
-         }
-      }
+         _handleCurlyBrace(atom, inside_polymer);
       if (inside_polymer)
          atom.polymer_index = _polymer_repetitions.size() - 1;
    }
 
    int i;
 
-   for (i = 0; i < cycles.size(); i++)
+   for (i = 0; i < _cycles.size(); i++)
    {
-      if (cycles[i].beg >= 0)
+      if (_cycles[i].beg >= 0)
          throw Error("cycle %d not closed", i);
    }
 
@@ -834,7 +799,45 @@ void SmilesLoader::_parseMolecule ()
       throw Error("polymer not closed");
 }
 
-void SmilesLoader::_loadParseMolecule ()
+void SmilesLoader::_handleCurlyBrace (_AtomDesc &atom, bool &inside_polymer)
+{
+   QS_DEF(Array<char>, curly);
+   curly.clear();
+   while (1)
+   {
+      _scanner.skip(1);
+      int next = _scanner.lookNext();
+      if (next == -1)
+         throw Error("unclosed curly brace");
+      if (next == '}')
+      {
+         _scanner.skip(1);
+         break;
+      }
+      curly.push((char)next);
+   }
+   int repetitions;
+   int poly = _parseCurly(curly, repetitions);
+   if (poly == _POLYMER_START)
+   {
+      if (inside_polymer)
+         throw Error("nested polymers not allowed");
+      inside_polymer = true;
+      atom.starts_polymer = true;
+      _polymer_repetitions.push(0); // can change it later
+   }
+   else if (poly == _POLYMER_END)
+   {
+      if (!inside_polymer)
+         throw Error("misplaced polymer ending");
+      inside_polymer = false;
+      _polymer_repetitions.top() = repetitions;
+      atom.polymer_index = _polymer_repetitions.size() - 1;
+      atom.ends_polymer = true;
+   }
+}
+
+void SmilesLoader::_loadParsedMolecule ()
 {
    int i;
 
@@ -862,133 +865,14 @@ void SmilesLoader::_loadParseMolecule ()
    }
 
    if (!smarts_mode)
-   {
-      CycleBasis basis;
-      basis.create(*_bmol);
-
-      // mark all 'empty' bonds in "aromatic" rings as aromatic
-      for (i = 0; i < basis.getCyclesCount(); i++)
-      {
-         const Array<int> &cycle = basis.getCycle(i);
-         int j;
-         bool needs_modification = false;
-
-         for (j = 0; j < cycle.size(); j++)
-         {
-            int idx = cycle[j];
-            const Edge &edge = _bmol->getEdge(idx);
-            if (!_atoms[edge.beg].aromatic || !_atoms[edge.end].aromatic)
-               break;
-            if (_bonds[idx].type == BOND_SINGLE || _bonds[idx].type == BOND_DOUBLE || _bonds[idx].type == BOND_TRIPLE)
-               break;
-            if (_qmol != 0 && !_qmol->possibleBondOrder(idx, BOND_AROMATIC))
-               break;
-            if (_bonds[idx].type == -1)
-               needs_modification = true;
-         }
-
-         if (j != cycle.size())
-            continue;
-
-         if (needs_modification)
-         {
-            for (j = 0; j < cycle.size(); j++)
-            {
-               int idx = cycle[j];
-               if (_bonds[idx].type == -1)
-               {
-                  _bonds[idx].type = BOND_AROMATIC;
-                  if (_mol != 0)
-                     _mol->setBondOrder_Silent(idx, BOND_AROMATIC);
-                  if (_qmol != 0)
-                     _qmol->resetBond(idx, QueryMolecule::Bond::und(_qmol->releaseBond(idx),
-                             new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-               }
-            }
-         }
-      }
-
-      // mark the rest 'empty' bonds as single
-      for (i = 0; i < _bonds.size(); i++)
-      {
-         if (_bonds[i].type == -1)
-         {
-            if (_mol != 0)
-               _mol->setBondOrder_Silent(i, BOND_SINGLE);
-            if (_qmol != 0)
-               _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(i),
-                       new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE)));
-         }
-      }
-
-   }
+      _markAromaticBonds();
 
    if (_mol != 0)
-   {
-      for (i = 0; i < _atoms.size(); i++)
-      {
-         int idx = i;
-
-         // The SMILES specification says: Elements in the "organic subset"
-         // B, C, N, O, P, S, F, Cl, Br, and I may be written without brackets
-         // if the number of attached hydrogens conforms to the lowest normal
-         // valence consistent with explicit bonds. We assume that there are
-         // no radicals in that case.
-         if (!_atoms[i].brackets)
-            // We set zero radicals explicitly to properly detect errors like FClF
-            // (while F[Cl]F is correct)
-            _mol->setAtomRadical(idx, 0);
-
-         if (_atoms[i].hydrogens >= 0)
-            _mol->setImplicitH(idx, _atoms[i].hydrogens);
-         else if (_atoms[i].brackets) // no hydrogens in brackets?
-            _mol->setImplicitH(idx, 0); // no implicit hydrogens on atom then
-         else if (_atoms[i].aromatic)
-         {
-            if (_atoms[i].label == ELEM_C)
-            {
-               // here we are basing on the fact that
-               // aromatic uncharged carbon always has a double bond
-               if (_mol->getVertex(i).degree() < 3)
-                  // 2-connected aromatic carbon must have 1 single bond and 1 double bond,
-                  // so we have one implicit hydrogen left
-                  _mol->setImplicitH(idx, 1);
-               else
-                  _mol->setImplicitH(idx, 0);
-            }
-            else
-               // it is probably not fair to set it to zero at
-               // this point, but other choices seem to be worse:
-               //   1) raise an exception (too ugly)
-               //   2) try to de-aromatize the molecule to know the implicit hydrogens (too complicated)
-               _mol->setImplicitH(idx, 0);
-         }
-      }
-   }
+      _setRadicalsAndHCounts();
 
    if (smarts_mode)
-   {
       // Forbid matching SMARTS atoms to hydrogens
-      for (i = 0; i < _atoms.size(); i++)
-      {
-         // not needed if it is a sure atom or a list without a hydrogen
-         if (_qmol->getAtomNumber(i) == -1 && _qmol->possibleAtomNumber(i, ELEM_H))
-         {
-            // not desired if it is a list with hydrogen
-            if (!_qmol->getAtom(i).hasConstraintWithValue(QueryMolecule::ATOM_NUMBER, ELEM_H))
-            {
-               AutoPtr<QueryMolecule::Atom> newatom;
-               AutoPtr<QueryMolecule::Atom> oldatom(_qmol->releaseAtom(i));
-
-               newatom.reset(QueryMolecule::Atom::und(
-                     QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
-                       oldatom.release()));
-
-               _qmol->resetAtom(i, newatom.release());
-            }
-         }
-      }
-   }
+      _forbidHydrogens();
 
    if (!inside_rsmiles)
       for (i = 0; i < _atoms.size(); i++)
@@ -1048,159 +932,299 @@ void SmilesLoader::_loadParseMolecule ()
 
    // handle the polymers (part of the CurlySMILES specification)
    for (i = 0; i < _polymer_repetitions.size() ; i++)
+      _handlePolymerRepetition(i);
+}
+
+void SmilesLoader::_markAromaticBonds ()
+{
+   CycleBasis basis;
+   int i;
+
+   basis.create(*_bmol);
+   
+   // mark all 'empty' bonds in "aromatic" rings as aromatic
+   for (i = 0; i < basis.getCyclesCount(); i++)
    {
-      int j, start = -1, end = -1;
-      int start_bond = -1, end_bond = -1;
-      BaseMolecule::SGroup *sgroup;
+      const Array<int> &cycle = basis.getCycle(i);
+      int j;
+      bool needs_modification = false;
 
-      // no repetitions counter => polymer
-      if (_polymer_repetitions[i] == 0)
+      for (j = 0; j < cycle.size(); j++)
       {
-         BaseMolecule::RepeatingUnit &ru = _bmol->repeating_units[_bmol->repeating_units.add()];
-         ru.connectivity = BaseMolecule::RepeatingUnit::HEAD_TO_TAIL;
-         sgroup = &ru;
+         int idx = cycle[j];
+         const Edge &edge = _bmol->getEdge(idx);
+         if (!_atoms[edge.beg].aromatic || !_atoms[edge.end].aromatic)
+            break;
+         if (_bonds[idx].type == BOND_SINGLE || _bonds[idx].type == BOND_DOUBLE || _bonds[idx].type == BOND_TRIPLE)
+            break;
+         if (_qmol != 0 && !_qmol->possibleBondOrder(idx, BOND_AROMATIC))
+            break;
+         if (_bonds[idx].type == -1)
+            needs_modification = true;
       }
-      // repetitions counter present => multiple group
-      else
+
+      if (j != cycle.size())
+         continue;
+
+      if (needs_modification)
       {
-         BaseMolecule::MultipleGroup &mg = _bmol->multiple_groups[_bmol->multiple_groups.add()];
-         mg.multiplier = _polymer_repetitions[i];
-         sgroup = &mg;
-      }
-      for (j = 0; j < _atoms.size(); j++)
-      {
-         if (_atoms[j].polymer_index != i)
-            continue;
-         sgroup->atoms.push(j);
-         if (_polymer_repetitions[i] > 0)
-            ((BaseMolecule::MultipleGroup *)sgroup)->parent_atoms.push(j);
-         if (_atoms[j].starts_polymer)
-            start = j;
-         if (_atoms[j].ends_polymer)
-            end = j;
-      }
-      if (start == -1)
-         throw Error("internal: polymer start not found");
-      if (end == -1)
-         throw Error("internal: polymer end not found");
-      for (j = 0; j < _bonds.size(); j++)
-      {
-         const Edge &edge = _bmol->getEdge(j);
-         
-         if (_atoms[edge.beg].polymer_index != i &&
-             _atoms[edge.end].polymer_index != i)
-            continue;
-         if (_atoms[edge.beg].polymer_index == i &&
-             _atoms[edge.end].polymer_index == i)
-            sgroup->bonds.push(j);
-         else
+         for (j = 0; j < cycle.size(); j++)
          {
-            // bond going out of the sgroup
-            if (edge.beg == start || edge.end == start)
-               start_bond = j;
-            else if (edge.beg == end || edge.end == end)
-               end_bond = j;
-            else
-               throw Error("internal: unknown bond going from sgroup");
-         }
-      }
-
-      if (end_bond == -1 && start_bond != -1)
-      {
-         // swap them to make things below easier
-         __swap(start, end, j);
-         __swap(start_bond, end_bond, j);
-      }
-
-      Vec2f *p = sgroup->brackets.push();
-      p[0].set(0, 0);
-      p[1].set(0, 0);
-      p = sgroup->brackets.push();
-      p[0].set(0, 0);
-      p[1].set(0, 0);
-
-      if (_polymer_repetitions[i] > 1)
-      {
-         QS_DEF(Array<int>, mapping);
-         AutoPtr<BaseMolecule> rep(_bmol->neu());
-
-         rep->makeSubmolecule(*_bmol, sgroup->atoms, &mapping, 0);
-         rep->repeating_units.clear();
-         rep->multiple_groups.clear();
-         int rep_start = mapping[start];
-         int rep_end = mapping[end];
-
-         // already have one instance of the sgroup; add repetitions if they exist
-         for (j = 0; j < _polymer_repetitions[i] - 1; j++)
-         {
-            _bmol->mergeWithMolecule(rep.ref(), &mapping, 0);
-
-            int k;
-
-            for (k = rep->vertexBegin(); k != rep->vertexEnd(); k = rep->vertexNext(k))
-               sgroup->atoms.push(mapping[k]);
-            for (k = rep->edgeBegin(); k != rep->edgeEnd(); k = rep->edgeNext(k))
+            int idx = cycle[j];
+            if (_bonds[idx].type == -1)
             {
-               const Edge &edge = rep->getEdge(k);
-               sgroup->bonds.push(_bmol->findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
-            }
-
-            if (rep_end >= 0 && end_bond >= 0)
-            {
-               // make new connections from the end of the old fragment
-               // to the beginning of the new one, and from the end of the
-               // new fragment outwards from the sgroup
-               int external = _bmol->getEdge(end_bond).findOtherEnd(end);
-               _bmol->removeBond(end_bond);
+               _bonds[idx].type = BOND_AROMATIC;
                if (_mol != 0)
-               {
-                  _mol->addBond(end, mapping[rep_start], BOND_SINGLE);
-                  end_bond = _mol->addBond(mapping[rep_end], external, BOND_SINGLE);
-               }
-               else
-               {
-                  _qmol->addBond(end, mapping[rep_start], new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
-                  end_bond = _qmol->addBond(mapping[rep_end], external, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
-               }
-               end = mapping[rep_end];
-            }
-         }
-      }
-      else if (_polymer_repetitions[i] == 0)
-      {
-         // if the start atom of the polymer does not have an incoming bond...
-         if (start_bond == -1)
-         {
-            if (_mol != 0)
-            {  // ... add one, with a "star" on the other end.
-               int star = _mol->addAtom(ELEM_PSEUDO);
-               _mol->setPseudoAtom(star, "*");
-               _mol->addBond(start, star, BOND_SINGLE);
-            }
-            else
-            {  // if it is a query molecule, add a bond with "any" atom instead
-               int any = _qmol->addAtom(new QueryMolecule::Atom());
-               _qmol->addBond(start, any, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
-            }
-         }
-         // do the same with the end atom
-         if (end_bond == -1)
-         {
-            if (_mol != 0)
-            {
-               int star = _mol->addAtom(ELEM_PSEUDO);
-               _mol->setPseudoAtom(star, "*");
-               _mol->addBond(end, star, BOND_SINGLE);
-            }
-            else
-            {
-               int any = _qmol->addAtom(new QueryMolecule::Atom());
-               _qmol->addBond(end, any, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+                  _mol->setBondOrder_Silent(idx, BOND_AROMATIC);
+               if (_qmol != 0)
+                  _qmol->resetBond(idx, QueryMolecule::Bond::und(_qmol->releaseBond(idx),
+                          new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
             }
          }
       }
    }
+
+   // mark the rest 'empty' bonds as single
+   for (i = 0; i < _bonds.size(); i++)
+   {
+      if (_bonds[i].type == -1)
+      {
+         if (_mol != 0)
+            _mol->setBondOrder_Silent(i, BOND_SINGLE);
+         if (_qmol != 0)
+            _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(i),
+                    new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE)));
+      }
+   }
+
 }
+
+
+void SmilesLoader::_setRadicalsAndHCounts ()
+{
+   int i;
+   
+   for (i = 0; i < _atoms.size(); i++)
+   {
+      int idx = i;
+
+      // The SMILES specification says: Elements in the "organic subset"
+      // B, C, N, O, P, S, F, Cl, Br, and I may be written without brackets
+      // if the number of attached hydrogens conforms to the lowest normal
+      // valence consistent with explicit bonds. We assume that there are
+      // no radicals in that case.
+      if (!_atoms[i].brackets)
+         // We set zero radicals explicitly to properly detect errors like FClF
+         // (while F[Cl]F is correct)
+         _mol->setAtomRadical(idx, 0);
+
+      if (_atoms[i].hydrogens >= 0)
+         _mol->setImplicitH(idx, _atoms[i].hydrogens);
+      else if (_atoms[i].brackets) // no hydrogens in brackets?
+         _mol->setImplicitH(idx, 0); // no implicit hydrogens on atom then
+      else if (_atoms[i].aromatic)
+      {
+         if (_atoms[i].label == ELEM_C)
+         {
+            // here we are basing on the fact that
+            // aromatic uncharged carbon always has a double bond
+            if (_mol->getVertex(i).degree() < 3)
+               // 2-connected aromatic carbon must have 1 single bond and 1 double bond,
+               // so we have one implicit hydrogen left
+               _mol->setImplicitH(idx, 1);
+            else
+               _mol->setImplicitH(idx, 0);
+         }
+         else
+            // it is probably not fair to set it to zero at
+            // this point, but other choices seem to be worse:
+            //   1) raise an exception (too ugly)
+            //   2) try to de-aromatize the molecule to know the implicit hydrogens (too complicated)
+            _mol->setImplicitH(idx, 0);
+      }
+   }
+}
+
+
+void SmilesLoader::_forbidHydrogens ()
+{
+   int i;
+   
+   for (i = 0; i < _atoms.size(); i++)
+   {
+      // not needed if it is a sure atom or a list without a hydrogen
+      if (_qmol->getAtomNumber(i) == -1 && _qmol->possibleAtomNumber(i, ELEM_H))
+      {
+         // not desired if it is a list with hydrogen
+         if (!_qmol->getAtom(i).hasConstraintWithValue(QueryMolecule::ATOM_NUMBER, ELEM_H))
+         {
+            AutoPtr<QueryMolecule::Atom> newatom;
+            AutoPtr<QueryMolecule::Atom> oldatom(_qmol->releaseAtom(i));
+
+            newatom.reset(QueryMolecule::Atom::und(
+                  QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
+                    oldatom.release()));
+
+            _qmol->resetAtom(i, newatom.release());
+         }
+      }
+   }
+}
+
+void SmilesLoader::_handlePolymerRepetition (int i)
+{
+   int j, start = -1, end = -1;
+   int start_bond = -1, end_bond = -1;
+   BaseMolecule::SGroup *sgroup;
+
+   // no repetitions counter => polymer
+   if (_polymer_repetitions[i] == 0)
+   {
+      BaseMolecule::RepeatingUnit &ru = _bmol->repeating_units[_bmol->repeating_units.add()];
+      ru.connectivity = BaseMolecule::RepeatingUnit::HEAD_TO_TAIL;
+      sgroup = &ru;
+   }
+   // repetitions counter present => multiple group
+   else
+   {
+      BaseMolecule::MultipleGroup &mg = _bmol->multiple_groups[_bmol->multiple_groups.add()];
+      mg.multiplier = _polymer_repetitions[i];
+      sgroup = &mg;
+   }
+   for (j = 0; j < _atoms.size(); j++)
+   {
+      if (_atoms[j].polymer_index != i)
+         continue;
+      sgroup->atoms.push(j);
+      if (_polymer_repetitions[i] > 0)
+         ((BaseMolecule::MultipleGroup *)sgroup)->parent_atoms.push(j);
+      if (_atoms[j].starts_polymer)
+         start = j;
+      if (_atoms[j].ends_polymer)
+         end = j;
+   }
+   if (start == -1)
+      throw Error("internal: polymer start not found");
+   if (end == -1)
+      throw Error("internal: polymer end not found");
+   for (j = 0; j < _bonds.size(); j++)
+   {
+      const Edge &edge = _bmol->getEdge(j);
+
+      if (_atoms[edge.beg].polymer_index != i &&
+          _atoms[edge.end].polymer_index != i)
+         continue;
+      if (_atoms[edge.beg].polymer_index == i &&
+          _atoms[edge.end].polymer_index == i)
+         sgroup->bonds.push(j);
+      else
+      {
+         // bond going out of the sgroup
+         if (edge.beg == start || edge.end == start)
+            start_bond = j;
+         else if (edge.beg == end || edge.end == end)
+            end_bond = j;
+         else
+            throw Error("internal: unknown bond going from sgroup");
+      }
+   }
+
+   if (end_bond == -1 && start_bond != -1)
+   {
+      // swap them to make things below easier
+      __swap(start, end, j);
+      __swap(start_bond, end_bond, j);
+   }
+
+   Vec2f *p = sgroup->brackets.push();
+   p[0].set(0, 0);
+   p[1].set(0, 0);
+   p = sgroup->brackets.push();
+   p[0].set(0, 0);
+   p[1].set(0, 0);
+
+   if (_polymer_repetitions[i] > 1)
+   {
+      QS_DEF(Array<int>, mapping);
+      AutoPtr<BaseMolecule> rep(_bmol->neu());
+
+      rep->makeSubmolecule(*_bmol, sgroup->atoms, &mapping, 0);
+      rep->repeating_units.clear();
+      rep->multiple_groups.clear();
+      int rep_start = mapping[start];
+      int rep_end = mapping[end];
+
+      // already have one instance of the sgroup; add repetitions if they exist
+      for (j = 0; j < _polymer_repetitions[i] - 1; j++)
+      {
+         _bmol->mergeWithMolecule(rep.ref(), &mapping, 0);
+
+         int k;
+
+         for (k = rep->vertexBegin(); k != rep->vertexEnd(); k = rep->vertexNext(k))
+            sgroup->atoms.push(mapping[k]);
+         for (k = rep->edgeBegin(); k != rep->edgeEnd(); k = rep->edgeNext(k))
+         {
+            const Edge &edge = rep->getEdge(k);
+            sgroup->bonds.push(_bmol->findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
+         }
+
+         if (rep_end >= 0 && end_bond >= 0)
+         {
+            // make new connections from the end of the old fragment
+            // to the beginning of the new one, and from the end of the
+            // new fragment outwards from the sgroup
+            int external = _bmol->getEdge(end_bond).findOtherEnd(end);
+            _bmol->removeBond(end_bond);
+            if (_mol != 0)
+            {
+               _mol->addBond(end, mapping[rep_start], BOND_SINGLE);
+               end_bond = _mol->addBond(mapping[rep_end], external, BOND_SINGLE);
+            }
+            else
+            {
+               _qmol->addBond(end, mapping[rep_start], new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+               end_bond = _qmol->addBond(mapping[rep_end], external, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+            }
+            end = mapping[rep_end];
+         }
+      }
+   }
+   else if (_polymer_repetitions[i] == 0)
+   {
+      // if the start atom of the polymer does not have an incoming bond...
+      if (start_bond == -1)
+      {
+         if (_mol != 0)
+         {  // ... add one, with a "star" on the other end.
+            int star = _mol->addAtom(ELEM_PSEUDO);
+            _mol->setPseudoAtom(star, "*");
+            _mol->addBond(start, star, BOND_SINGLE);
+         }
+         else
+         {  // if it is a query molecule, add a bond with "any" atom instead
+            int any = _qmol->addAtom(new QueryMolecule::Atom());
+            _qmol->addBond(start, any, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+         }
+      }
+      // do the same with the end atom
+      if (end_bond == -1)
+      {
+         if (_mol != 0)
+         {
+            int star = _mol->addAtom(ELEM_PSEUDO);
+            _mol->setPseudoAtom(star, "*");
+            _mol->addBond(end, star, BOND_SINGLE);
+         }
+         else
+         {
+            int any = _qmol->addAtom(new QueryMolecule::Atom());
+            _qmol->addBond(end, any, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+         }
+      }
+   }
+}
+
 
 void SmilesLoader::_loadMolecule ()
 {
@@ -1209,7 +1233,7 @@ void SmilesLoader::_loadMolecule ()
    _polymer_repetitions.clear();
 
    _parseMolecule();
-   _loadParseMolecule();
+   _loadParsedMolecule();
 }
 
 void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
@@ -1290,7 +1314,12 @@ void SmilesLoader::_readBond (Array<char> &bond_str, _BondDesc &bond,
       }
       return;
    }
+   _readBondSub(bond_str, bond, qbond);
+}
 
+void SmilesLoader::_readBondSub (Array<char> &bond_str, _BondDesc &bond,
+                                 AutoPtr<QueryMolecule::Bond> &qbond)
+{
    BufferScanner scanner(bond_str);
 
    bool neg = false;
@@ -1565,10 +1594,10 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
          }
 
          BufferScanner subscanner(subexp);
-         SmilesLoader subloader(subscanner);
+         AutoPtr<SmilesLoader> subloader(new SmilesLoader(subscanner));
          AutoPtr<QueryMolecule> fragment(new QueryMolecule());
 
-         subloader.loadSMARTS(fragment.ref());
+         subloader->loadSMARTS(fragment.ref());
          fragment->fragment_smarts.copy(subexp);
          fragment->fragment_smarts.push(0);
 

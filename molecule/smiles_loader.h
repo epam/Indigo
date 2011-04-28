@@ -127,6 +127,9 @@ protected:
 
    Scanner &_scanner;
 
+   TL_CP_DECL(Array<int>, _atom_stack);
+   TL_CP_DECL(Array<_CycleDesc>, _cycles);
+   TL_CP_DECL(StringPool, _pending_bonds_pool);
    TL_CP_DECL(Pool<List<int>::Elem>, _neipool);
    TL_CP_DECL(ObjArray<_AtomDesc>, _atoms);
    TL_CP_DECL(Array<_BondDesc>, _bonds);
@@ -142,11 +145,16 @@ protected:
 
    void _loadMolecule ();
    void _parseMolecule ();
-   void _loadParseMolecule ();
+   void _loadParsedMolecule ();
 
    void _calcStereocenters ();
    void _calcCisTrans ();
    void _readOtherStuff ();
+   void _markAromaticBonds ();
+   void _setRadicalsAndHCounts ();
+   void _forbidHydrogens ();
+   void _handleCurlyBrace (_AtomDesc &atom, bool &inside_polymer);
+   void _handlePolymerRepetition (int i);
 
    void _readAtom (Array<char> &atom_str, bool first_in_brackets,
                    _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
@@ -158,6 +166,8 @@ protected:
 
    void _readBond (Array<char> &bond_str, _BondDesc &bond,
                    AutoPtr<QueryMolecule::Bond> &qbond);
+   void _readBondSub (Array<char> &bond_str, _BondDesc &bond,
+                      AutoPtr<QueryMolecule::Bond> &qbond);
 
 private:
    SmilesLoader (const SmilesLoader &); // no implicit copy
