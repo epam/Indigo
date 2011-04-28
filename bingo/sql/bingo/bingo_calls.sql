@@ -223,9 +223,15 @@ end FlushInserts;
 grant execute on FlushInserts to public;
 /
 create or replace trigger LogoffTrigger BEFORE LOGOFF ON DATABASE
+declare
+   pragma autonomous_transaction;
 begin
    RingoFlushInserts(0);
    MangoFlushInserts(0);
+   commit;
+exception
+   when others then
+     null;
 end;
 /
 create or replace function GetVersion return VARCHAR2
