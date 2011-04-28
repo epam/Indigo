@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		814E9A9D13699AB900469875 /* bingo_index.h in Headers */ = {isa = PBXBuildFile; fileRef = 814E9A9B13699AB900469875 /* bingo_index.h */; };
+		814E9A9E13699AB900469875 /* ringo_exact.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 814E9A9C13699AB900469875 /* ringo_exact.cpp */; };
 		A70B43E3112B4FD600AE35BA /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A70B43E2112B4FD600AE35BA /* libz.dylib */; };
 		A73CF3CC106276ED000A182B /* liborasdk.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A73CF3CB106276ED000A182B /* liborasdk.dylib */; };
 		A73CF40310627BC8000A182B /* libgraph.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A73CF3CA106276D6000A182B /* libgraph.a */; };
@@ -149,6 +151,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		814E9A9B13699AB900469875 /* bingo_index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_index.h; path = src/core/bingo_index.h; sourceTree = "<group>"; };
+		814E9A9C13699AB900469875 /* ringo_exact.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ringo_exact.cpp; path = src/core/ringo_exact.cpp; sourceTree = "<group>"; };
 		A70B43E2112B4FD600AE35BA /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = /usr/lib/libz.dylib; sourceTree = "<absolute>"; };
 		A713FA5E11F1835B00372A08 /* bingo_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_error.h; path = src/core/bingo_error.h; sourceTree = "<group>"; };
 		A73CF3C5106276D6000A182B /* graph.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = graph.xcodeproj; path = ../graph/graph.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -349,6 +353,8 @@
 		A7EDA5F51062526F006CBFAF /* core */ = {
 			isa = PBXGroup;
 			children = (
+				814E9A9B13699AB900469875 /* bingo_index.h */,
+				814E9A9C13699AB900469875 /* ringo_exact.cpp */,
 				A713FA5E11F1835B00372A08 /* bingo_error.h */,
 				A7EDA602106252FF006CBFAF /* bingo_context.cpp */,
 				A7EDA603106252FF006CBFAF /* bingo_context.h */,
@@ -454,6 +460,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				814E9A9D13699AB900469875 /* bingo_index.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -620,6 +627,7 @@
 				A7EDA67F106253B6006CBFAF /* mango_operators.cpp in Sources */,
 				A7EDA680106253B6006CBFAF /* mango_context.cpp in Sources */,
 				A75139EE1069306300E2FF81 /* bingo_profiling.cpp in Sources */,
+				814E9A9E13699AB900469875 /* ringo_exact.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -654,6 +662,50 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		814E9A9F1369A41800469875 /* Release10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release10.6;
+		};
+		814E9AA01369A41800469875 /* Release10.6 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_LOCATION = NO;
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					..,
+					../common,
+					../oci/include,
+					src,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../oci/lib64\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../oci/lib64\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../tinyxml/build/Debug\"";
+				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_64)";
+				PREBINDING = NO;
+				PRODUCT_NAME = bingo;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				SKIP_INSTALL = NO;
+				ZERO_LINK = NO;
+			};
+			name = Release10.6;
+		};
 		A7EDA5E710625230006CBFAF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -661,12 +713,12 @@
 			};
 			name = Debug;
 		};
-		A7EDA5E810625230006CBFAF /* Release */ = {
+		A7EDA5E810625230006CBFAF /* Release10.5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 			};
-			name = Release;
+			name = Release10.5;
 		};
 		A7EDA64D10625378006CBFAF /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -681,7 +733,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					..,
@@ -705,7 +757,7 @@
 			};
 			name = Debug;
 		};
-		A7EDA64E10625378006CBFAF /* Release */ = {
+		A7EDA64E10625378006CBFAF /* Release10.5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -716,7 +768,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					..,
 					../common,
@@ -736,10 +788,11 @@
 				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_64)";
 				PREBINDING = NO;
 				PRODUCT_NAME = bingo;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				SKIP_INSTALL = NO;
 				ZERO_LINK = NO;
 			};
-			name = Release;
+			name = Release10.5;
 		};
 /* End XCBuildConfiguration section */
 
@@ -748,19 +801,21 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A7EDA5E710625230006CBFAF /* Debug */,
-				A7EDA5E810625230006CBFAF /* Release */,
+				A7EDA5E810625230006CBFAF /* Release10.5 */,
+				814E9A9F1369A41800469875 /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Release10.5;
 		};
 		A7EDA64F10625378006CBFAF /* Build configuration list for PBXNativeTarget "bingo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A7EDA64D10625378006CBFAF /* Debug */,
-				A7EDA64E10625378006CBFAF /* Release */,
+				A7EDA64E10625378006CBFAF /* Release10.5 */,
+				814E9AA01369A41800469875 /* Release10.6 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Release10.5;
 		};
 /* End XCConfigurationList section */
 	};

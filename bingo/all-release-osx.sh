@@ -8,9 +8,8 @@ if [ -z $version ]; then
 fi
 
 for osxver in '10.5' '10.6'; do
-   rm -rf build
-   xcodebuild -sdk macosx$osxver -configuration Release
+   xcodebuild -configuration Release$osxver
    ./bingo-release.sh bingo-oracle-$version-osx-$osxver-x86_64 \
-       build/Release/libbingo.dylib
+       build/Release$osxver/libbingo.dylib
    rm -rf bingo-oracle-$version-osx-$osxver-x86_64
 done
