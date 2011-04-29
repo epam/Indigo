@@ -52,6 +52,7 @@ grant create indextype to &USER_NAME;
 grant unlimited tablespace to &USER_NAME;
 grant create trigger to &USER_NAME;
 grant administer database trigger to &USER_NAME;
+grant select any table to &USER_NAME;
 
 spool off;
 
