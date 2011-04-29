@@ -234,7 +234,10 @@ void SmilesLoader::_readOtherStuff ()
          {
             int idx = _scanner.readUnsigned();
 
-            stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
+            if (stereocenters.exists(idx))
+               stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
+            else if (!ignore_stereochemistry_errors)
+               throw Error("atom %d is not a stereocenter", idx);
 
             if (_scanner.lookNext() == ',')
                _scanner.skip(1);
@@ -251,7 +254,10 @@ void SmilesLoader::_readOtherStuff ()
          {
             int idx = _scanner.readUnsigned();
 
-            stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
+            if (stereocenters.exists(idx))
+               stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
+            else if (!ignore_stereochemistry_errors)
+               throw Error("atom %d is not a stereocenter", idx);
 
             if (_scanner.lookNext() == ',')
                _scanner.skip(1);
@@ -268,7 +274,10 @@ void SmilesLoader::_readOtherStuff ()
          {
             int idx = _scanner.readUnsigned();
 
-            stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
+            if (stereocenters.exists(idx))
+               stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
+            else if (!ignore_stereochemistry_errors)
+               throw Error("atom %d is not a stereocenter", idx);
 
             if (_scanner.lookNext() == ',')
                _scanner.skip(1);
