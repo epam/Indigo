@@ -41,7 +41,6 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
    loader.treat_x_as_pseudoatom = _context->treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
            _context->ignore_closing_bond_direction_mismatch;
-   loader.skip_3d_chirality = true;
    loader.loadMolecule(mol);
 
    Molecule::checkForConsistency(mol);

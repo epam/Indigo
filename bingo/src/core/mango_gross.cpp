@@ -139,7 +139,6 @@ bool MangoGross::checkMolecule (Scanner &scanner)
 
    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
-   loader.skip_3d_chirality = true;
    loader.loadMolecule(target);
 
    GrossFormula::collect(target, target_gross);

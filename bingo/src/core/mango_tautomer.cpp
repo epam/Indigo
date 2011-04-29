@@ -42,8 +42,7 @@ void MangoTautomer::loadQuery (Scanner &scanner)
    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
           ignore_closing_bond_direction_mismatch;
-   loader.skip_3d_chirality = true;
-
+   
    if (_params.substructure)
    {
       _query.reset(new QueryMolecule());
@@ -143,7 +142,6 @@ void MangoTautomer::loadTarget (Scanner &scanner)
    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
           ignore_closing_bond_direction_mismatch;
-   loader.skip_3d_chirality = true;
    loader.loadMolecule(_target);
 
    _initTarget(false);

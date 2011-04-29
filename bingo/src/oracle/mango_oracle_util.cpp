@@ -46,7 +46,6 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
    loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
            context.ignore_closing_bond_direction_mismatch;
-   loader.skip_3d_chirality = true;
    loader.loadMolecule(target);
    profTimerStop(tload);
 
@@ -206,7 +205,6 @@ ORAEXT OCIString * oraMangoCheckMolecule (OCIExtProcContext *ctx,
             loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
             loader.ignore_closing_bond_direction_mismatch =
                     context.ignore_closing_bond_direction_mismatch;
-            loader.skip_3d_chirality = true;
             loader.loadMolecule(mol);
             Molecule::checkForConsistency(mol);
          }
@@ -245,7 +243,6 @@ void _ICM (BingoOracleContext &context, OracleLOB &target_lob, int save_xyz, Arr
    loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
            context.ignore_closing_bond_direction_mismatch;
-   loader.skip_3d_chirality = true;
    loader.loadMolecule(mol);
 
    if ((save_xyz != 0) && !mol.have_xyz)
@@ -350,7 +347,6 @@ ORAEXT OCILobLocator *oraMangoMolfile (OCIExtProcContext *ctx,
       loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
       loader.ignore_closing_bond_direction_mismatch =
               context.ignore_closing_bond_direction_mismatch;
-      loader.skip_3d_chirality = true;
       loader.loadMolecule(mol);
 
       if (!mol.have_xyz)
@@ -408,7 +404,6 @@ ORAEXT OCILobLocator *oraMangoCML (OCIExtProcContext *ctx,
       loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
       loader.ignore_closing_bond_direction_mismatch =
               context.ignore_closing_bond_direction_mismatch;
-      loader.skip_3d_chirality = true;
       loader.loadMolecule(mol);
 
       if (!mol.have_xyz)
