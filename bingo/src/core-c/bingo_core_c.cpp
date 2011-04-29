@@ -285,6 +285,7 @@ CEXPORT int bingoSDFImportOpen (const char *file_name)
 {
    BINGO_BEGIN
    {
+      bingoSDFImportClose();
       self.file_scanner.create(file_name);
       self.sdf_loader.create(self.file_scanner.ref());
       return 1;
@@ -335,6 +336,7 @@ CEXPORT int bingoRDFImportOpen (const char *file_name)
 {
    BINGO_BEGIN
    {
+      bingoRDFImportClose();
       self.file_scanner.create(file_name);
       self.rdf_loader.create(self.file_scanner.ref());
       return 1;
@@ -517,26 +519,30 @@ CEXPORT int bingoIndexMarkTermintate ()
    BINGO_END(-2, -2)
 }
 
+static void _bingoIndexEnd (BingoCore &self)
+{
+   if (self.parallel_indexing_dispatcher.get())
+   {
+      self.parallel_indexing_dispatcher->terminate();
+      self.parallel_indexing_dispatcher.reset(0);
+   }
+
+   if (self.single_mango_index.get())
+      self.single_mango_index.free();
+   if (self.single_ringo_index.get())
+      self.single_ringo_index.free();
+
+   self.mango_index = 0;
+   self.ringo_index = 0;
+   self.index_record_data_id = -1;
+   self.index_record_data.free();
+}
+
 CEXPORT int bingoIndexEnd ()
 {
    BINGO_BEGIN
    {
-      if (self.parallel_indexing_dispatcher.get())
-      {
-         self.parallel_indexing_dispatcher->terminate();
-         self.parallel_indexing_dispatcher.reset(0);
-      }
-
-      if (self.single_mango_index.get())
-         self.single_mango_index.free();
-      if (self.single_ringo_index.get())
-         self.single_ringo_index.free();
-
-      self.mango_index = 0;
-      self.ringo_index = 0;
-      self.index_record_data_id = -1;
-      self.index_record_data.free();
-
+      _bingoIndexEnd(self);
       return 1;
    }
    BINGO_END(-2, -2)
@@ -549,7 +555,7 @@ CEXPORT int bingoIndexBegin ()
       if (!self.bingo_context->fp_parameters_ready)
          throw BingoError("fingerprint parameters not set");
 
-      bingoIndexEnd();
+      _bingoIndexEnd(self);
 
       self.index_record_data.create();
       return 1;

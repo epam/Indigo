@@ -126,7 +126,9 @@ void OsCommandDispatcher::_mainLoop ()
 
    if (_exception_to_forward != NULL)
    {
-      _exception_to_forward->throwSelf();
+      Exception *cur = _exception_to_forward;
+      _exception_to_forward = NULL;
+      cur->throwSelf();
    }
 }
 
@@ -292,7 +294,7 @@ void OsCommandDispatcher::_handleException (Exception *exception)
    if (!_need_to_terminate)
    {
       _need_to_terminate = true;
-      // Store exception to corrent memory deallocation in the next time...
+      // Store exception to correct memory deallocation in the next time...
       TL_DECL(AutoPtr<Exception>, exception_ptr);
       TL_GET(AutoPtr<Exception>, exception_ptr);
 

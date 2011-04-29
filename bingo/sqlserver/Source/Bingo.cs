@@ -594,9 +594,15 @@ namespace indigo
 
                      try
                      {
-                        BingoCore.lib.bingoIndexProcess(
+                        int ret = BingoCore.lib.bingoIndexProcess(
                            data.getIndexType() == BingoIndexData.IndexType.Reaction,
                            get_next_record, process_result, process_error, IntPtr.Zero);
+                        if (ret == -1)
+                        {
+                           string msg = BingoCore.lib.bingoGetError();
+                           BingoLog.logMessage("Internal exception: {0}", BingoCore.lib.bingoGetError());
+                           throw new Exception(msg);
+                        }
                      }
                      catch (Exception ex)
                      {

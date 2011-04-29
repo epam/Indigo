@@ -793,7 +793,17 @@ CEXPORT const char * mangoCheckMolecule (const char *molecule, int molecule_len)
       }                               
       CATCH_READ_TARGET_MOL(
          self.buffer.readString(e.message(), true);
-         return self.buffer.ptr());
+         return self.buffer.ptr())
+      catch (Exception &e)
+      {
+         e.appendMessage(" INTERNAL ERROR");
+         self.buffer.readString(e.message(), true);
+         return self.buffer.ptr();
+      }
+      catch (...)
+      {
+         return "INTERNAL UNKNOWN ERROR";
+      }
    }
    BINGO_END(0, 0)
 }

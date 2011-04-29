@@ -137,29 +137,38 @@ void IndexingCommand::execute (OsCommandResult &result_)
       BufferScanner scanner(records.get(i), records.getSize(i));
       NullOutput output;
 
-      bool exception_found = false;
-      TRY_READ_TARGET_RXN
+      try 
       {
-         TRY_READ_TARGET_MOL
+         bool exception_found = false;
+         TRY_READ_TARGET_RXN
          {
-            try
+            TRY_READ_TARGET_MOL
             {
-               BingoIndex &index = result.getIndex(result.ids.size());
-               index.skip_calculate_fp = core->skip_calculate_fp;
-               index.init(*core->bingo_context);
-               index.prepare(scanner, output, lock_for_exclusive_access);
+               try
+               {
+                  BingoIndex &index = result.getIndex(result.ids.size());
+                  index.skip_calculate_fp = core->skip_calculate_fp;
+                  index.init(*core->bingo_context);
+                  index.prepare(scanner, output, lock_for_exclusive_access);
+               }
+               catch (CmfSaver::Error &e) { exception_found = true; result.error_messages.add(e.message()); }
+               catch (CrfSaver::Error &e) { exception_found = true; result.error_messages.add(e.message()); }
             }
-            catch (CmfSaver::Error &e) { exception_found = true; result.error_messages.add(e.message()); }
-            catch (CrfSaver::Error &e) { exception_found = true; result.error_messages.add(e.message()); }
+            CATCH_READ_TARGET_MOL(result.error_messages.add(e.message()); exception_found = true;);
          }
-         CATCH_READ_TARGET_MOL(result.error_messages.add(e.message()); exception_found = true;);
-      }
-      CATCH_READ_TARGET_RXN(result.error_messages.add(e.message()); exception_found = true;);
+         CATCH_READ_TARGET_RXN(result.error_messages.add(e.message()); exception_found = true;);
 
-      if (exception_found)
-         result.error_ids.push(ids[i]);
-      else
-         result.ids.push(ids[i]);
+         if (exception_found)
+            result.error_ids.push(ids[i]);
+         else
+            result.ids.push(ids[i]);
+      }
+      catch (Exception &e)
+      {
+         // Check unhandled exceptions
+         e.appendMessage(" INTERNAL ERROR ON id=%d", ids[i]);
+         e.throwSelf();
+      }
    }
 }
 

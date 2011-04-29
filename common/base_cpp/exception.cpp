@@ -54,6 +54,19 @@ int Exception::code ()
    return _code;
 }
 
+void Exception::appendMessage (const char *format, ...)
+{
+   va_list args;
+
+   va_start(args, format);
+   
+   char added_message[1024];
+   vsnprintf(added_message, sizeof(added_message), format, args);
+   strncat(_message, added_message, sizeof(_message));
+   
+   va_end(args);
+}
+
 void Exception::_init (const char *format, va_list args)
 {
    vsnprintf(_message, sizeof(_message), format, args);

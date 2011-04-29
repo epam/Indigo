@@ -30,6 +30,7 @@ public:
 
    int code ();
    const char * message ();
+   void appendMessage (const char *format, ...);
 
    virtual Exception * clone      ();
    virtual void        throwSelf  ();

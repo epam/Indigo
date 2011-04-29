@@ -340,7 +340,17 @@ CEXPORT const char * ringoCheckReaction (const char *reaction, int reaction_len)
       }
       CATCH_READ_TARGET_RXN(
          self.buffer.readString(e.message(), true);
-         return self.buffer.ptr());
+         return self.buffer.ptr())
+      catch (Exception &e)
+      {
+         e.appendMessage(" INTERNAL ERROR");
+         self.buffer.readString(e.message(), true);
+         return self.buffer.ptr();
+      }
+      catch (...)
+      {
+         return "INTERNAL UNKNOWN ERROR";
+      }
    }
    BINGO_END(0, 0)
 }
