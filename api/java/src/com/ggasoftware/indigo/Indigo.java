@@ -36,32 +36,32 @@ public class Indigo
    // use the error handler and we have to check the error codes. Below are
    // four functions to ease checking them.
 
-   static public int checkResult (int result)
+   static public int checkResult (Object obj, int result)
    {
       if (result < 0)
-         throw new IndigoException(_lib.indigoGetLastError());
+         throw new IndigoException(obj, _lib.indigoGetLastError());
       return result;
    }
 
-   static public float checkResultFloat (float result)
+   static public float checkResultFloat (Object obj, float result)
    {
       if (result < 0)
-         throw new IndigoException(_lib.indigoGetLastError());
+         throw new IndigoException(obj, _lib.indigoGetLastError());
       return result;
    }
 
-   static public String checkResultString (Pointer result)
+   static public String checkResultString (Object obj, Pointer result)
    {
       if (result == Pointer.NULL)
-         throw new IndigoException(_lib.indigoGetLastError());
+         throw new IndigoException(obj, _lib.indigoGetLastError());
 
       return result.getString(0);
    }
 
-   static public Pointer checkResultPointer (Pointer result)
+   static public Pointer checkResultPointer (Object obj, Pointer result)
    {
       if (result == Pointer.NULL)
-         throw new IndigoException(_lib.indigoGetLastError());
+         throw new IndigoException(obj, _lib.indigoGetLastError());
 
       return result;
    }
@@ -74,7 +74,7 @@ public class Indigo
    public int countReferences ()
    {
       setSessionID();
-      return checkResult(_lib.indigoCountReferences());
+      return checkResult(this, _lib.indigoCountReferences());
    }
 
    public void setSessionID ()
@@ -85,187 +85,187 @@ public class Indigo
    public void setOption (String option, String value)
    {
       setSessionID();
-      checkResult(_lib.indigoSetOption(option, value));
+      checkResult(this, _lib.indigoSetOption(option, value));
    }
 
    public void setOption (String option, int value)
    {
       setSessionID();
-      checkResult(_lib.indigoSetOptionInt(option, value));
+      checkResult(this, _lib.indigoSetOptionInt(option, value));
    }
 
    public void setOption (String option, int x, int y)
    {
       setSessionID();
-      checkResult(_lib.indigoSetOptionXY(option, x, y));
+      checkResult(this, _lib.indigoSetOptionXY(option, x, y));
    }
 
    public void setOption (String option, float r, float g, float b)
    {
       setSessionID();
-      checkResult(_lib.indigoSetOptionColor(option, r, g, b));
+      checkResult(this, _lib.indigoSetOptionColor(option, r, g, b));
    }
 
    public void setOption (String option, boolean value)
    {
       setSessionID();
-      checkResult(_lib.indigoSetOptionBool(option, value ? 1 : 0));
+      checkResult(this, _lib.indigoSetOptionBool(option, value ? 1 : 0));
    }
 
    public void setOption (String option, float value)
    {
       setSessionID();
-      checkResult(_lib.indigoSetOptionFloat(option, value));
+      checkResult(this, _lib.indigoSetOptionFloat(option, value));
    }
 
    public void setOption (String option, double value)
    {
       setSessionID();
-      checkResult(_lib.indigoSetOptionFloat(option, (float)value));
+      checkResult(this, _lib.indigoSetOptionFloat(option, (float)value));
    }
 
    public IndigoObject writeFile (String filename)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoWriteFile(filename)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoWriteFile(filename)));
    }
 
    public IndigoObject writeBuffer ()
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoWriteBuffer()));
+      return new IndigoObject(this, checkResult(this, _lib.indigoWriteBuffer()));
    }
 
    public IndigoObject createMolecule ()
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoCreateMolecule()));
+      return new IndigoObject(this, checkResult(this, _lib.indigoCreateMolecule()));
    }
 
    public IndigoObject createQueryMolecule ()
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoCreateQueryMolecule()));
+      return new IndigoObject(this, checkResult(this, _lib.indigoCreateQueryMolecule()));
    }
 
    public IndigoObject loadMolecule (String str)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadMoleculeFromString(str)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadMoleculeFromString(str)));
    }
 
    public IndigoObject loadMolecule (byte[] buf)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadMoleculeFromBuffer(buf, buf.length)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadMoleculeFromBuffer(buf, buf.length)));
    }
 
    public IndigoObject loadMoleculeFromFile (String path)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadMoleculeFromFile(path)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadMoleculeFromFile(path)));
    }
 
    public IndigoObject loadQueryMolecule (String str)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadQueryMoleculeFromString(str)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadQueryMoleculeFromString(str)));
    }
 
    public IndigoObject loadQueryMolecule (byte[] buf)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadQueryMoleculeFromBuffer(buf, buf.length)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadQueryMoleculeFromBuffer(buf, buf.length)));
    }
 
    public IndigoObject loadQueryMoleculeFromFile (String path)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadQueryMoleculeFromFile(path)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadQueryMoleculeFromFile(path)));
    }
 
    public IndigoObject loadSmarts (String str)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadSmartsFromString(str)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadSmartsFromString(str)));
    }
 
    public IndigoObject loadSmarts (byte[] buf)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadSmartsFromBuffer(buf, buf.length)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadSmartsFromBuffer(buf, buf.length)));
    }
 
    public IndigoObject loadSmartsFromFile (String path)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadSmartsFromFile(path)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadSmartsFromFile(path)));
    }
 
    public IndigoObject loadReaction (String str)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadReactionFromString(str)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadReactionFromString(str)));
    }
 
    public IndigoObject loadReaction (byte[] buf)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadReactionFromBuffer(buf, buf.length)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadReactionFromBuffer(buf, buf.length)));
    }
 
    public IndigoObject loadReactionFromFile (String path)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadReactionFromFile(path)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadReactionFromFile(path)));
    }
 
    public IndigoObject loadQueryReaction (String str)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadQueryReactionFromString(str)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadQueryReactionFromString(str)));
    }
 
    public IndigoObject loadQueryReaction (byte[] buf)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult( _lib.indigoLoadQueryReactionFromBuffer(buf, buf.length)));
+      return new IndigoObject(this, checkResult(this,  _lib.indigoLoadQueryReactionFromBuffer(buf, buf.length)));
    }
 
    public IndigoObject loadQueryReactionFromFile (String path)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadQueryReactionFromFile(path)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadQueryReactionFromFile(path)));
    }
 
    public IndigoObject loadReactionSmarts (String str)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadReactionSmartsFromString(str)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadReactionSmartsFromString(str)));
    }
 
    public IndigoObject loadReactionSmarts (byte[] buf)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult( _lib.indigoLoadReactionSmartsFromBuffer(buf, buf.length)));
+      return new IndigoObject(this, checkResult(this,  _lib.indigoLoadReactionSmartsFromBuffer(buf, buf.length)));
    }
 
    public IndigoObject loadReactionSmartsFromFile (String path)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoLoadReactionSmartsFromFile(path)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoLoadReactionSmartsFromFile(path)));
    }
 
    public IndigoObject createReaction ()
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoCreateReaction()));
+      return new IndigoObject(this, checkResult(this, _lib.indigoCreateReaction()));
    }
 
    public IndigoObject createQueryReaction ()
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoCreateQueryReaction()));
+      return new IndigoObject(this, checkResult(this, _lib.indigoCreateQueryReaction()));
    }
 
    public IndigoObject exactMatch (IndigoObject obj1, IndigoObject obj2, String flags)
@@ -274,7 +274,7 @@ public class Indigo
       if (flags == null)
          flags = "";
 
-      int match = checkResult(_lib.indigoExactMatch(obj1.self, obj2.self, flags));
+      int match = checkResult(this, _lib.indigoExactMatch(obj1.self, obj2.self, flags));
 
       if (match == 0)
          return null;
@@ -290,19 +290,19 @@ public class Indigo
    public void setTautomerRule (int id, String beg, String end)
    {
       setSessionID();
-      checkResult(_lib.indigoSetTautomerRule(id, beg, end));
+      checkResult(this, _lib.indigoSetTautomerRule(id, beg, end));
    }
 
    public void removeTautomerRule (int id)
    {
       setSessionID();
-      checkResult(_lib.indigoRemoveTautomerRule(id));
+      checkResult(this, _lib.indigoRemoveTautomerRule(id));
    }
 
    public void clearTautomerRules ()
    {
       setSessionID();
-      checkResult(_lib.indigoClearTautomerRules());
+      checkResult(this, _lib.indigoClearTautomerRules());
    }
 
    public float similarity (IndigoObject obj1, IndigoObject obj2)
@@ -315,55 +315,55 @@ public class Indigo
       if (metrics == null)
          metrics = "";
       setSessionID();
-      return checkResultFloat(_lib.indigoSimilarity(obj1.self, obj2.self, metrics));
+      return checkResultFloat(this, _lib.indigoSimilarity(obj1.self, obj2.self, metrics));
    }
 
    public int commonBits (IndigoObject fingerprint1, IndigoObject fingerprint2)
    {
       setSessionID();
-      return checkResult(_lib.indigoCommonBits(fingerprint1.self, fingerprint2.self));
+      return checkResult(this, _lib.indigoCommonBits(fingerprint1.self, fingerprint2.self));
    }
 
    public IndigoObject unserialize (byte[] data)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoUnserialize(data, data.length)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoUnserialize(data, data.length)));
    }
    
    public IndigoObject createArray ()
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoCreateArray()));
+      return new IndigoObject(this, checkResult(this, _lib.indigoCreateArray()));
    }
 
    public IndigoObject iterateSDFile (String filename)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoIterateSDFile(filename)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoIterateSDFile(filename)));
    }
 
    public IndigoObject iterateRDFile (String filename)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoIterateRDFile(filename)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoIterateRDFile(filename)));
    }
 
    public IndigoObject iterateSmilesFile (String filename)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoIterateSmilesFile(filename)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoIterateSmilesFile(filename)));
    }
 
    public IndigoObject iterateCMLFile (String filename)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoIterateCMLFile(filename)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoIterateCMLFile(filename)));
    }
 
    public IndigoObject substructureMatcher (IndigoObject target, String mode)
    {
       setSessionID();
-      return new IndigoObject(this, target, checkResult(_lib.indigoSubstructureMatcher(target.self, mode)));
+      return new IndigoObject(this, target, checkResult(this, _lib.indigoSubstructureMatcher(target.self, mode)));
    }
 
    public IndigoObject substructureMatcher (IndigoObject target)
@@ -374,7 +374,7 @@ public class Indigo
    public IndigoObject extractCommonScaffold (IndigoObject structures, String options)
    {
       setSessionID();
-      int res = checkResult(_lib.indigoExtractCommonScaffold(structures.self, options));
+      int res = checkResult(this, _lib.indigoExtractCommonScaffold(structures.self, options));
 
       if (res == 0)
          return null;
@@ -385,7 +385,7 @@ public class Indigo
    public IndigoObject decomposeMolecules (IndigoObject scaffold, IndigoObject structures)
    {
       setSessionID();
-      int res = checkResult(_lib.indigoDecomposeMolecules(scaffold.self, structures.self));
+      int res = checkResult(this, _lib.indigoDecomposeMolecules(scaffold.self, structures.self));
 
       if (res == 0)
          return null;
@@ -396,7 +396,7 @@ public class Indigo
    public IndigoObject reactionProductEnumerate (IndigoObject reaction, IndigoObject monomers)
    {
       setSessionID();
-      int res = checkResult(_lib.indigoReactionProductEnumerate(reaction.self, monomers.self));
+      int res = checkResult(this, _lib.indigoReactionProductEnumerate(reaction.self, monomers.self));
 
       if (res == 0)
          return null;
@@ -407,13 +407,13 @@ public class Indigo
    public IndigoObject createSaver (IndigoObject output, String format)
    {
       setSessionID();
-      return new IndigoObject(this, output, checkResult(_lib.indigoCreateSaver(output.self, format)));
+      return new IndigoObject(this, output, checkResult(this, _lib.indigoCreateSaver(output.self, format)));
    }
 
    public IndigoObject createFileSaver (String filename, String format)
    {
       setSessionID();
-      return new IndigoObject(this, checkResult(_lib.indigoCreateFileSaver(filename, format)));
+      return new IndigoObject(this, checkResult(this, _lib.indigoCreateFileSaver(filename, format)));
    }
 
    
