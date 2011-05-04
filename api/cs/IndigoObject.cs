@@ -1175,30 +1175,17 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoAppend(self, obj.self);
       }
 
-      public void optimizeQueryMolecule ()
+      public void optimize ()
       {
-         optimizeQueryMolecule(null);
+         optimize(null);
       }
 
-      public void optimizeQueryMolecule (string options)
+      public void optimize (string options)
       {
          dispatcher.setSessionID();
          if (options == null)
             options = "";
-         _indigo_lib.indigoOptimizeQueryMolecule(self, options);
-      }
-
-      public void optimizeQueryReaction ()
-      {
-         optimizeQueryReaction(null);
-      }
-
-      public void optimizeQueryReaction (string options)
-      {
-         dispatcher.setSessionID();
-         if (options == null)
-            options = "";
-         _indigo_lib.indigoOptimizeQueryReaction(self, options);
+         _indigo_lib.indigoOptimize(self, options);
       }
    }
 }

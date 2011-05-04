@@ -278,8 +278,7 @@ class Indigo:
     self.IndigoObject.iterateCatalysts  = Indigo._member_obj(Indigo._lib.indigoIterateCatalysts)
     self.IndigoObject.iterateMolecules  = Indigo._member_obj(Indigo._lib.indigoIterateMolecules)
 
-    self.IndigoObject.optimizeQueryMolecule = Indigo._member_void_string(Indigo._lib.indigoOptimizeQueryMolecule)
-    self.IndigoObject.optimizeQueryReaction = Indigo._member_void_string(Indigo._lib.indigoOptimizeQueryReaction)
+    self.IndigoObject.optimize = Indigo._member_void_string(Indigo._lib.indigoOptimize)
     
     self.IndigoObject.rxnfile = Indigo._member_string(Indigo._lib.indigoRxnfile)
     self.IndigoObject.saveRxnfile = Indigo._member_void_string(Indigo._lib.indigoSaveRxnfileToFile)

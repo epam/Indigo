@@ -603,23 +603,18 @@ CEXPORT int indigoUnhighlight (int item)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoOptimizeQueryMolecule (int query, const char *options)
+CEXPORT int indigoOptimize (int query, const char *options)
 {
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(query);
-      obj.getQueryMolecule().optimize();
-      return 1;
-   }
-   INDIGO_END(-1);
-}
 
-CEXPORT int indigoOptimizeQueryReaction (int query, const char *options)
-{
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(query);
-      obj.getQueryReaction().optimize();
+      if (IndigoBaseMolecule::is(obj))
+         obj.getQueryMolecule().optimize();
+      else if (IndigoBaseReaction::is(obj))
+         obj.getQueryReaction().optimize();
+      else
+         throw IndigoError("indigoOptimize: expected molecule or reaction, got %s", obj.debugInfo());
       return 1;
    }
    INDIGO_END(-1);

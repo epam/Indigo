@@ -226,8 +226,8 @@ CEXPORT int indigoSaveRxnfileToFile (int reaction, const char *filename);
 CEXPORT const char * indigoRxnfile (int reaction);
 
 // Method for query optimizations for faster substructure search
-CEXPORT int indigoOptimizeQueryMolecule (int query, const char *options);
-CEXPORT int indigoOptimizeQueryReaction (int query, const char *options);
+// (works for both query molecules and query reactions)
+CEXPORT int indigoOptimize (int query, const char *options);
 
 // Automatic reaction atom-to-atom mapping
 // mode is one of the following:

@@ -83,8 +83,7 @@ namespace com.ggasoftware.indigo
       sbyte* indigoRxnfile (int reaction);
       int indigoAutomap (int reaction, string filename);
 
-      int indigoOptimizeQueryMolecule (int query, string options);
-      int indigoOptimizeQueryReaction (int query, string options);
+      int indigoOptimize (int query, string options);
 
       int indigoIterateAtoms (int molecule);
       int indigoIteratePseudoatoms (int molecule);
