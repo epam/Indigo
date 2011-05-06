@@ -28,6 +28,7 @@
 #include "molecule/molecule_arom.h"
 #include "molecule/molfile_saver.h"
 #include "molecule/elements.h"
+#include "molecule/molecule_substructure_matcher.h"
 
 IndigoDeconvolution::IndigoDeconvolution(bool aromatize):
 IndigoObject(IndigoObject::DECONVOLUTION),
@@ -76,14 +77,27 @@ void IndigoDeconvolution::_makeRGroup(Item& elem) {
    if(_aromatic) 
       MoleculeAromatizer::aromatizeBonds(mol_out);
 
+   AutoPtr<AromaticityMatcher> am;
+
+   if (_aromatic && AromaticityMatcher::isNecessary(_scaffold))
+   {
+      am.reset(new AromaticityMatcher(_scaffold, mol_out));
+      emb_context.am = am.get();
+   }
+   else
+      emb_context.am = 0;
+
+
    EmbeddingEnumerator emb_enum(mol_out);
    /*
     * Set options
     */
    emb_enum.setSubgraph(_scaffold);
    emb_enum.cb_embedding = _rGroupsEmbedding;
-   emb_enum.cb_match_edge = MoleculeScaffoldDetection::matchBonds;
+   emb_enum.cb_match_edge = _matchBonds;
    emb_enum.cb_match_vertex = MoleculeScaffoldDetection::matchAtoms;
+   emb_enum.cb_vertex_remove = _removeAtom;
+   emb_enum.cb_edge_add = _addBond;
    emb_enum.userdata = &emb_context;
    /*
     * Find subgraph
@@ -578,4 +592,34 @@ CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp) {
       return self.addObject(qmol_ptr.release());
    }
    INDIGO_END(-1)
+}
+
+bool IndigoDeconvolution::_matchBonds (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void* userdata){
+   EmbContext& emb_context = *(EmbContext*)userdata;
+
+   QueryMolecule &query = (QueryMolecule &)subgraph;
+   BaseMolecule &target  = (BaseMolecule &)supergraph;
+   QueryMolecule::Bond &sub_bond = query.getBond(sub_idx);
+
+   if (!MoleculeSubstructureMatcher::matchQueryBond(&sub_bond, target, sub_idx, super_idx, emb_context.am, 0xFFFFFFFF))
+      return false;
+
+   return true;
+}
+
+void IndigoDeconvolution::_removeAtom (Graph &subgraph, int sub_idx, void *userdata){
+   EmbContext& emb_context = *(EmbContext*)userdata;
+
+   if (emb_context.am != 0)
+      emb_context.am->unfixNeighbourQueryBond(sub_idx);
+}
+
+void IndigoDeconvolution::_addBond (Graph &subgraph, Graph &supergraph,
+                                    int sub_idx, int super_idx, void *userdata)
+{
+   EmbContext& emb_context = *(EmbContext*)userdata;
+   BaseMolecule &target = (BaseMolecule &)supergraph;
+   
+   if (emb_context.am != 0)
+      emb_context.am->fixQueryBond(sub_idx, target.getBondOrder(super_idx) == BOND_AROMATIC);
 }

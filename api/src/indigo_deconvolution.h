@@ -18,6 +18,7 @@
 #include "indigo_internal.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_arom_match.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -70,6 +71,8 @@ private:
        int getRgroupNumber() const { return attachmentIndex.size()-1;}
 
        void renumber(Array<int>& map, Array<int>& inv_map);
+
+       AromaticityMatcher *am;
    private:
        EmbContext(const EmbContext&); //no implicit copy
    };
@@ -79,6 +82,11 @@ private:
    int _findOrAddFullRGroup(Array<int>& att_order, Array<int>& att_idx, QueryMolecule& qmol, Array<int>& map);
 
    static int _rGroupsEmbedding(Graph &g1, Graph &g2, int *core1, int *core2, void *userdata);
+
+   static bool _matchBonds (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void* userdata);
+   static void _addBond (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
+   static void _removeAtom (Graph &subgraph, int sub_idx, void *userdata);
+
 
    bool _aromatic;
 
