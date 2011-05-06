@@ -55,7 +55,7 @@ public class Indigo
       if (result == Pointer.NULL)
          throw new IndigoException(obj, _lib.indigoGetLastError());
 
-      return result.getString(0);
+      return result.getString(0, false);
    }
 
    static public Pointer checkResultPointer (Object obj, Pointer result)
