@@ -40,7 +40,8 @@ public:
    const MangoExact::Hash & getHash () const;
 
    const char * getGrossString () const;
-   const char * getCountedElementsString() const;
+   const char * getCountedElementsString () const;
+   const Array<int> & getCountedElements () const;
 
    const byte * getFingerprint () const;
 
@@ -72,6 +73,7 @@ private:
    // comma-separated list of selected counters 
    // (for non-exact gross formula search)
    Array<char> _counted_elems_str;
+   Array<int>  _counted_elem_counters;
 
    // Molecular mass
    float _molecular_mass;

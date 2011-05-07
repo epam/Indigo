@@ -47,7 +47,7 @@ public:
                      const char *data_cmf, int len_cmf,
                      const char *data_xyz, int len_xyz,
                      const MangoExact::Hash &hash, const char *gross, 
-                     const char *counters, float molecular_mass, const char *fp_ord);
+                     const Array<int> &counters, float molecular_mass, const char *fp_ord);
    void flush (OracleEnv &env);
 
    void analyze (OracleEnv &env);
@@ -112,11 +112,20 @@ private:
       Array<char> value;
    };
 
+   class _PendingRaw : public _PendingValue
+   {
+   public:
+      _PendingRaw (OracleEnv &env, const char *basename, int number);
+
+      OracleRaw raw;
+   };
+
    Obj<OracleStatement> _main_table_statement;
    int _main_table_statement_count;
    ObjArray<_PendingLOB> _pending_lobs;
    ObjArray<_PendingInt> _pending_ints;
-   ObjArray<_PendingFloat> _pending_floats;
+   ObjArray<_PendingFloat>  _pending_floats;
+   ObjArray<_PendingRaw>    _pending_raws;
    ObjArray<_PendingString> _pending_strings;
    ObjArray<_PendingString> _pending_strings_comp;
    ObjArray<_PendingInt>    _pending_ints_comp;

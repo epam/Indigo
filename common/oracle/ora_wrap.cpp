@@ -385,7 +385,7 @@ void OracleStatement::defineRawByPos (int pos, OracleRaw &raw)
 {
    OCIDefine *defnp = (OCIDefine *) 0;
 
-   _env.callOCI(OCIDefineByPos(_statement, &defnp, _env.errhp(), pos, raw.get(), (sword)sizeof(OCIRaw *), SQLT_LVB, 0, 0, 0, OCI_DEFAULT));
+   _env.callOCI(OCIDefineByPos(_statement, &defnp, _env.errhp(), pos, raw.get(), (sword)sizeof(OCIRaw *), SQLT_BIN, 0, 0, 0, OCI_DEFAULT));
 }
 
 void OracleStatement::defineBlobByPos (int pos, OracleLOB &lob)
@@ -494,7 +494,7 @@ void OracleStatement::bindRawByName (const char *name, OracleRaw &raw)
    OCIBind *bndp = (OCIBind *)0;
 
    _env.callOCI(OCIBindByName(_statement, &bndp, _env.errhp(), (text *)name, -1,
-      (dvoid *)raw.get(), 0, SQLT_LVB, 0, 0, 0, 0, 0, OCI_DEFAULT));
+      (dvoid *)raw.get(), raw.getSize() + sizeof(int), SQLT_LVB, 0, 0, 0, 0, 0, OCI_DEFAULT));
 }
 
 void OracleStatement::bindStringByName (const char *name, const char *string, int max_len)
@@ -673,15 +673,17 @@ OracleRowID::~OracleRowID ()
 OracleRaw::OracleRaw (OracleEnv &env) : _env(env)
 {
    _raw = 0;
+   _size = 0;
 }
 
 OracleRaw::~OracleRaw ()
 {
 }
 
-void OracleRaw::assignBytes (char *buffer, int length)
+void OracleRaw::assignBytes (const char *buffer, int length)
 {
    _env.callOCI(OCIRawAssignBytes(_env.envhp(), _env.errhp(), (ub1 *)buffer, (ub4)length, &_raw));
+   _size = length;
 }
 
 char *OracleRaw::getDataPtr ()
@@ -692,6 +694,20 @@ char *OracleRaw::getDataPtr ()
 void OracleRaw::resize (int new_size)
 {
    _env.callOCI(OCIRawResize(_env.envhp(), _env.errhp(), (ub2)new_size, &_raw));
+   _size = new_size;
+}
+
+int OracleRaw::getAllocSize ()
+{
+   int size;
+
+   _env.callOCI(OCIRawAllocSize(_env.envhp(), _env.errhp(), _raw, (ub4 *)(&size)));
+   return size;
+}
+
+int OracleRaw::getSize ()
+{
+   return _size;
 }
 
 OraRowidText::OraRowidText ()

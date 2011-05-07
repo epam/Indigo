@@ -199,10 +199,14 @@ public:
 
    char *getDataPtr ();
 
-   void assignBytes (char *buffer, int length);
+   int getAllocSize ();
+   int getSize ();
+
+   void assignBytes (const char *buffer, int length);
    void resize (int new_size);
 protected:
    OracleEnv &_env;
+   int _size;
 
    OCIRaw *_raw;
 };

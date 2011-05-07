@@ -45,7 +45,7 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
                                     const char *data_xyz, int len_xyz,
                                     const MangoExact::Hash &hash,
                                     const char *gross,
-                                    const char *counters,
+                                    const Array<int> &counters,
                                     float molecular_mass,
                                     const char *fp_sim)
 {
@@ -76,16 +76,27 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
       xyz.lob.write(0, data_xyz, len_xyz);
    }
 
-   int fragments_count = 0;
-   for (int i = 0; i < hash.size(); i++)
+   int i, fragments_count = 0;
+   for (i = 0; i < hash.size(); i++)
       fragments_count += hash[i].count;
 
+   _PendingInt &p_fragcount = _pending_ints.push(fragments_count, "fragcount", _main_table_statement_count);
+   
    if (_main_table_statement_count > 0)
       _main_table_statement->append("UNION ALL ");
    _main_table_statement->append(
-      "SELECT %s, %s, %s, %s, %s, %s, %s, %d%s FROM DUAL\n",
+      "SELECT %s, %s, %s, %s, %s, %s, %s, %s",
       p_rowid.name, p_blockno.name, p_offset.name, p_gross.name,
-           cmf.name, xyz.name, p_mass.name, fragments_count, counters);
+           cmf.name, xyz.name, p_mass.name, p_fragcount.name);
+   for (i = 0; i < counters.size(); i++)
+   {
+      char name[10] = {0};
+      snprintf(name, sizeof(name), "counter%d", i);
+      _PendingInt &p_counter = _pending_ints.push(counters[i], name, _main_table_statement_count);
+      _main_table_statement->append(", %s", p_counter.name);
+   }
+
+    _main_table_statement->append(" FROM DUAL\n");
 
    _main_table_statement_count++;
 
@@ -211,7 +222,7 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const MangoIndex &index,
                index.getCmf().ptr(), index.getCmf().size(),
                index.getXyz().ptr(), index.getXyz().size(),
                index.getHash(), index.getGrossString(), 
-               index.getCountedElementsString(),
+               index.getCountedElements(),
                index.getMolecularMass(),
                index.getFingerprint_Sim_Str());
 }

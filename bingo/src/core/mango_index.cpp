@@ -98,11 +98,15 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
    GrossFormula::toString(gross, _gross_str);
 
    _counted_elems_str.clear();
+   _counted_elem_counters.clear();
 
    ArrayOutput ce_output(_counted_elems_str);
 
    for (int i = 0; i < (int)NELEM(counted_elements); i++)
+   {
+      _counted_elem_counters.push(gross[counted_elements[i]]);
       ce_output.printf(", %d", gross[counted_elements[i]]);
+   }
 
    ce_output.writeByte(0);
 
@@ -123,9 +127,14 @@ const char * MangoIndex::getGrossString () const
    return _gross_str.ptr();
 }
 
-const char * MangoIndex::getCountedElementsString() const
+const char * MangoIndex::getCountedElementsString () const
 {
    return (const char *)_counted_elems_str.ptr();
+}
+
+const Array<int> & MangoIndex::getCountedElements () const
+{
+   return _counted_elem_counters;
 }
 
 const Array<char> & MangoIndex::getCmf () const
