@@ -244,6 +244,9 @@ create or replace function CompactReaction (m in CLOB, save_xyz in binary_intege
                   return BLOB IS
   lob BLOB;
 BEGIN
+  IF m is NULL THEN
+    return NULL;
+  END IF;
   dbms_lob.createtemporary(lob, TRUE, dbms_lob.call);
   CompactReaction2(m, lob, save_xyz);
   return lob;

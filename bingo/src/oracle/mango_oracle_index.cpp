@@ -152,27 +152,15 @@ void mangoRegisterTable (OracleEnv &env, MangoOracleContext &context,
 
    int total_count = 0;
 
-   OracleStatement::executeSingleInt(total_count, env, "SELECT COUNT(*) FROM %s", source_table);
+   OracleStatement::executeSingleInt(total_count, env,
+           "SELECT COUNT(*) FROM %s WHERE %s IS NOT NULL AND LENGTH(%s) > 0",
+           source_table, source_column, source_column);
 
    context.context().longOpInit(env, total_count, "Building molecule index",
       source_table, "molecules");
 
-   if (clob)
-      statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
-                       "THEN to_clob(' ') ELSE %s END, RowidToChar(rowid) FROM %s",
-                       source_column, source_column, source_column, source_table);
-   else if (blob)
-      statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
-                       "THEN to_blob('20') ELSE %s END, "
-                       "RowidToChar(rowid) FROM %s",
-                       source_column, source_column, source_column, source_table);
-   else
-      statement.append("SELECT CASE WHEN %s IS null OR LENGTH(%s) = 0 "
-                       "THEN ' ' ELSE %s END, RowidToChar(rowid) FROM %s",
-                       source_column, source_column, source_column, source_table);
-      
-   //   statement.append("SELECT COALESCE(%s, ' '), RowidToChar(rowid) FROM %s ",
-   //                    source_column.ptr(), source_table.ptr());
+   statement.append("SELECT %s, RowidToChar(rowid) FROM %s WHERE %s IS NOT NULL AND LENGTH(%s) > 0",
+                    source_column, source_table, source_column, source_column);
                      //"ORDER BY dbms_rowid.rowid_block_number(rowid), dbms_rowid.rowid_row_number(rowid)",
 
    statement.prepare();
@@ -380,6 +368,10 @@ ORAEXT void oraMangoIndexInsert (OCIExtProcContext *ctx, int context_id,
 
       if (rowid_ind != OCI_IND_NOTNULL)
          throw BingoError("null rowid given");
+
+      if (target_ind != OCI_IND_NOTNULL)
+         // somebody added a NULL value into the table; ignore it
+         return;
 
       MangoOracleContext &context = MangoOracleContext::get(env, context_id, true);
 

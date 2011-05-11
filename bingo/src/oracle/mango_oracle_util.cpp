@@ -72,6 +72,11 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
 
       saver.saveMolecule(target);
    }
+
+   if (smiles.size() == 0)
+      // Oracle would treat empty string as NULL value.
+      // To give it non-NULL, we give it a space (which is correct SMILES)
+      smiles.push(' ');
    
    OCIString *result = 0;
    env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text *)smiles.ptr(),
@@ -94,20 +99,20 @@ ORAEXT OCIString * oraMangoSMILES (OCIExtProcContext *ctx,
 
       *return_indicator = OCI_IND_NULL;
 
-      if (target_indicator != OCI_IND_NOTNULL)
-         throw BingoError("null molecule given");
+      if (target_indicator == OCI_IND_NOTNULL)
+      {
+         BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
 
-      BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
+         OracleLOB target_lob(env, target_locator);
+
+         QS_DEF(Array<char>, buf);
+
+         target_lob.readAll(buf, false);
+
+         result = _mangoSMILES(env, buf, context, false);
+      }
       
-      OracleLOB target_lob(env, target_locator);
-
-      QS_DEF(Array<char>, buf);
-
-      target_lob.readAll(buf, false);
-
-      result = _mangoSMILES(env, buf, context, false);
-      
-      if (result == 0) // empty SMILES?
+      if (result == 0)
       {
          // This is needed for Oracle 9. Returning NULL drops the extproc.
          OCIStringAssignText(env.envhp(), env.errhp(), (text *)"nil", 3, &result);
@@ -137,22 +142,22 @@ ORAEXT OCIString *oraMangoCanonicalSMILES (OCIExtProcContext *ctx,
 
       *return_indicator = OCI_IND_NULL;
 
-      if (target_indicator != OCI_IND_NOTNULL)
-         throw BingoError("null molecule given");
+      if (target_indicator == OCI_IND_NOTNULL)
+      {
+         BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
 
-      BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
-      
-      OracleLOB target_lob(env, target_locator);
+         OracleLOB target_lob(env, target_locator);
 
-      QS_DEF(Array<char>, buf);
+         QS_DEF(Array<char>, buf);
 
-      profTimerStart(treadlob, "smiles.read_lob");
-      target_lob.readAll(buf, false);
-      profTimerStop(treadlob);
+         profTimerStart(treadlob, "smiles.read_lob");
+         target_lob.readAll(buf, false);
+         profTimerStop(treadlob);
 
-      result = _mangoSMILES(env, buf, context, true);
+         result = _mangoSMILES(env, buf, context, true);
+      }
 
-      if (result == 0) // empty SMILES?
+      if (result == 0)
       {
          // This is needed for Oracle 9. Returning NULL drops the extproc.
          OCIStringAssignText(env.envhp(), env.errhp(), (text *)"nil", 3, &result);
@@ -267,23 +272,23 @@ ORAEXT OCILobLocator *oraMangoICM (OCIExtProcContext *ctx,
 
       OracleEnv env(ctx, logger);
 
-      if (target_indicator == OCI_IND_NULL)
-         throw BingoError("null molecule given");
+      if (target_indicator == OCI_IND_NOTNULL)
+      {
+         OracleLOB target_lob(env, target_locator);
+         BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
 
-      OracleLOB target_lob(env, target_locator);
-      BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
+         QS_DEF(Array<char>, icm);
 
-      QS_DEF(Array<char>, icm);
+         _ICM(context, target_lob, save_xyz, icm);
 
-      _ICM(context, target_lob, save_xyz, icm);
-      
-      OracleLOB lob(env);
-      
-      lob.createTemporaryBLOB();
-      lob.write(0, icm);
-      *return_indicator = OCI_IND_NOTNULL;
-      lob.doNotDelete();
-      result = lob.get();
+         OracleLOB lob(env);
+
+         lob.createTemporaryBLOB();
+         lob.write(0, icm);
+         lob.doNotDelete();
+         result = lob.get();
+         *return_indicator = OCI_IND_NOTNULL;
+      }
    }
    ORABLOCK_END
 
@@ -330,45 +335,45 @@ ORAEXT OCILobLocator *oraMangoMolfile (OCIExtProcContext *ctx,
 
       OracleEnv env(ctx, logger);
 
-      if (target_indicator == OCI_IND_NULL)
-         throw BingoError("null molecule given");
-
-      BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
-      OracleLOB target_lob(env, target_locator);
-
-      QS_DEF(Array<char>, target);
-      QS_DEF(Array<char>, icm);
-      QS_DEF(Molecule, mol);
-
-      target_lob.readAll(target, false);
-
-      MoleculeAutoLoader loader(target);
-
-      loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-              context.ignore_closing_bond_direction_mismatch;
-      loader.loadMolecule(mol);
-
-      if (!mol.have_xyz)
+      if (target_indicator == OCI_IND_NOTNULL)
       {
-         MoleculeLayout layout(mol);
+         BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
+         OracleLOB target_lob(env, target_locator);
 
-         layout.make();
-         mol.stereocenters.markBonds();
+         QS_DEF(Array<char>, target);
+         QS_DEF(Array<char>, icm);
+         QS_DEF(Molecule, mol);
+
+         target_lob.readAll(target, false);
+
+         MoleculeAutoLoader loader(target);
+
+         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
+         loader.ignore_closing_bond_direction_mismatch =
+                 context.ignore_closing_bond_direction_mismatch;
+         loader.loadMolecule(mol);
+
+         if (!mol.have_xyz)
+         {
+            MoleculeLayout layout(mol);
+
+            layout.make();
+            mol.stereocenters.markBonds();
+         }
+
+         ArrayOutput output(icm);
+         MolfileSaver saver(output);
+
+         saver.saveMolecule(mol);
+
+         OracleLOB lob(env);
+
+         lob.createTemporaryCLOB();
+         lob.write(0, icm);
+         lob.doNotDelete();
+         result = lob.get();
+         *return_indicator = OCI_IND_NOTNULL;
       }
-
-      ArrayOutput output(icm);
-      MolfileSaver saver(output);
-
-      saver.saveMolecule(mol);
-
-      OracleLOB lob(env);
-
-      lob.createTemporaryCLOB();
-      lob.write(0, icm);
-      *return_indicator = OCI_IND_NOTNULL;
-      lob.doNotDelete();
-      result = lob.get();
    }
    ORABLOCK_END
 
@@ -387,45 +392,45 @@ ORAEXT OCILobLocator *oraMangoCML (OCIExtProcContext *ctx,
 
       OracleEnv env(ctx, logger);
 
-      if (target_indicator == OCI_IND_NULL)
-         throw BingoError("null molecule given");
-
-      BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
-      OracleLOB target_lob(env, target_locator);
-
-      QS_DEF(Array<char>, target);
-      QS_DEF(Array<char>, icm);
-      QS_DEF(Molecule, mol);
-
-      target_lob.readAll(target, false);
-
-      MoleculeAutoLoader loader(target);
-
-      loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-              context.ignore_closing_bond_direction_mismatch;
-      loader.loadMolecule(mol);
-
-      if (!mol.have_xyz)
+      if (target_indicator == OCI_IND_NOTNULL)
       {
-         MoleculeLayout layout(mol);
+         BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
+         OracleLOB target_lob(env, target_locator);
 
-         layout.make();
-         mol.stereocenters.markBonds();
+         QS_DEF(Array<char>, target);
+         QS_DEF(Array<char>, icm);
+         QS_DEF(Molecule, mol);
+
+         target_lob.readAll(target, false);
+
+         MoleculeAutoLoader loader(target);
+
+         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
+         loader.ignore_closing_bond_direction_mismatch =
+                 context.ignore_closing_bond_direction_mismatch;
+         loader.loadMolecule(mol);
+
+         if (!mol.have_xyz)
+         {
+            MoleculeLayout layout(mol);
+
+            layout.make();
+            mol.stereocenters.markBonds();
+         }
+
+         ArrayOutput output(icm);
+         MoleculeCmlSaver saver(output);
+
+         saver.saveMolecule(mol);
+
+         OracleLOB lob(env);
+
+         lob.createTemporaryCLOB();
+         lob.write(0, icm);
+         lob.doNotDelete();
+         result = lob.get();
+         *return_indicator = OCI_IND_NOTNULL;
       }
-
-      ArrayOutput output(icm);
-      MoleculeCmlSaver saver(output);
-
-      saver.saveMolecule(mol);
-
-      OracleLOB lob(env);
-
-      lob.createTemporaryCLOB();
-      lob.write(0, icm);
-      *return_indicator = OCI_IND_NOTNULL;
-      lob.doNotDelete();
-      result = lob.get();
    }
    ORABLOCK_END
 

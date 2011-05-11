@@ -332,6 +332,9 @@ create or replace function CompactMolecule (m in CLOB, save_xyz in binary_intege
                   return BLOB IS
   lob BLOB;
 BEGIN
+  IF m is null THEN
+    return NULL;
+  END IF;
   dbms_lob.createtemporary(lob, TRUE, dbms_lob.call);
   CompactMolecule2(m, lob, save_xyz);
   return lob;

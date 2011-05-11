@@ -147,23 +147,24 @@ static OCINumber * _mangoCommon (OCIExtProcContext *ctx, int context_id,
 
       if (query_ind  != OCI_IND_NOTNULL)
          throw BingoError("Null query given");
-      if (target_ind != OCI_IND_NOTNULL)
-         throw BingoError("Null target given");
       if (params_ind != OCI_IND_NOTNULL)
          params = 0;
+      
+      if (target_ind == OCI_IND_NOTNULL)
+      {
+         MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
 
-      MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
+         QS_DEF(Array<char>, query_buf);
+         QS_DEF(Array<char>, target_buf);
 
-      QS_DEF(Array<char>, query_buf);
-      QS_DEF(Array<char>, target_buf);
+         OracleLOB target_lob(env, target_loc);
+         OracleLOB query_lob(env, query_loc);
 
-      OracleLOB target_lob(env, target_loc);
-      OracleLOB query_lob(env, query_loc);
+         target_lob.readAll(target_buf, false);
+         query_lob.readAll(query_buf, false);
 
-      target_lob.readAll(target_buf, false);
-      query_lob.readAll(query_buf, false);
-
-      result = callback(env, context, query_buf, target_buf, params);
+         result = callback(env, context, query_buf, target_buf, params);
+      }
 
       if (result == 0)
          // This is needed for Oracle 9. Returning NULL drops the extproc.
@@ -202,34 +203,38 @@ ORAEXT OCINumber * oraMangoSmarts (OCIExtProcContext *ctx, int context_id,
 
       if (query_ind  != OCI_IND_NOTNULL)
          throw BingoError("Null query given");
-      if (target_ind != OCI_IND_NOTNULL)
-         throw BingoError("Null target given");
-
-      MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
-
-      QS_DEF(Array<char>, query_buf);
-      QS_DEF(Array<char>, target_buf);
-
-      OracleLOB target_lob(env, target_loc);
-
-      target_lob.readAll(target_buf, false);
-      query_buf.readString(query, false);
-
-      context.substructure.loadSMARTS(query_buf);
-
-      TRY_READ_TARGET_MOL
+      
+      if (target_ind == OCI_IND_NOTNULL)
       {
-         context.substructure.loadTarget(target_buf);
+         MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
+
+         QS_DEF(Array<char>, query_buf);
+         QS_DEF(Array<char>, target_buf);
+
+         OracleLOB target_lob(env, target_loc);
+
+         target_lob.readAll(target_buf, false);
+         query_buf.readString(query, false);
+
+         context.substructure.loadSMARTS(query_buf);
+
+         TRY_READ_TARGET_MOL
+         {
+            context.substructure.loadTarget(target_buf);
+         }
+         CATCH_READ_TARGET_MOL(return OracleExtproc::createInt(env, 0))
+
+         int match = context.substructure.matchLoadedTarget() ? 1 : 0;
+
+         result = OracleExtproc::createInt(env, match);
+         *return_ind = OCI_IND_NOTNULL;
       }
-      CATCH_READ_TARGET_MOL(return OracleExtproc::createInt(env, 0))
-
-      int match = context.substructure.matchLoadedTarget() ? 1 : 0;
-
-      result = OracleExtproc::createInt(env, match);
-      *return_ind = OCI_IND_NOTNULL;
+      else
+         // This is needed for Oracle 9. Returning NULL drops the extproc.
+         result = OracleExtproc::createInt(env, 0);
    }
    ORABLOCK_END
-
+   
    return result;
 }
 
@@ -270,52 +275,53 @@ ORAEXT OCILobLocator * oraMangoSubHi (OCIExtProcContext *ctx, int context_id,
 
       if (query_ind  != OCI_IND_NOTNULL)
          throw BingoError("Null query given");
-      if (target_ind != OCI_IND_NOTNULL)
-         throw BingoError("Null target given");
       if (params_ind != OCI_IND_NOTNULL)
          params = 0;
 
-      MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
-
-      QS_DEF(Array<char>, query_buf);
-      QS_DEF(Array<char>, target_buf);
-
-      OracleLOB target_lob(env, target_loc);
-      OracleLOB query_lob(env, query_loc);
-
-      target_lob.readAll(target_buf, false);
-      query_lob.readAll(query_buf, false);
-
-      if (context.substructure.parse(params))
+      if (target_ind == OCI_IND_NOTNULL)
       {
-         context.substructure.preserve_bonds_on_highlighting = true;
-         context.substructure.loadQuery(query_buf);
-         context.substructure.loadTarget(target_buf);
-         if (!context.substructure.matchLoadedTarget())
-            throw BingoError("SubHi: match not found");
+         MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
 
-         context.substructure.getHighlightedTarget(target_buf);
+         QS_DEF(Array<char>, query_buf);
+         QS_DEF(Array<char>, target_buf);
+
+         OracleLOB target_lob(env, target_loc);
+         OracleLOB query_lob(env, query_loc);
+
+         target_lob.readAll(target_buf, false);
+         query_lob.readAll(query_buf, false);
+
+         if (context.substructure.parse(params))
+         {
+            context.substructure.preserve_bonds_on_highlighting = true;
+            context.substructure.loadQuery(query_buf);
+            context.substructure.loadTarget(target_buf);
+            if (!context.substructure.matchLoadedTarget())
+               throw BingoError("SubHi: match not found");
+
+            context.substructure.getHighlightedTarget(target_buf);
+         }
+         else if (context.tautomer.parseSub(params))
+         {
+            context.tautomer.preserve_bonds_on_highlighting = true;
+            context.tautomer.loadQuery(query_buf);
+            context.tautomer.loadTarget(target_buf);
+            if (!context.tautomer.matchLoadedTarget())
+               throw BingoError("SubHi: match not found");
+
+            context.tautomer.getHighlightedTarget(target_buf);
+         }
+         else
+            throw BingoError("SubHi: can't parse params '%s'", params);
+
+         OracleLOB lob(env);
+
+         lob.createTemporaryCLOB();
+         lob.write(0, target_buf);
+         lob.doNotDelete();
+         *return_ind = OCI_IND_NOTNULL;
+         return lob.get();
       }
-      else if (context.tautomer.parseSub(params))
-      {
-         context.tautomer.preserve_bonds_on_highlighting = true;
-         context.tautomer.loadQuery(query_buf);
-         context.tautomer.loadTarget(target_buf);
-         if (!context.tautomer.matchLoadedTarget())
-            throw BingoError("SubHi: match not found");
-
-         context.tautomer.getHighlightedTarget(target_buf);
-      }
-      else
-         throw BingoError("SubHi: can't parse params '%s'", params);
-
-      OracleLOB lob(env);
-
-      lob.createTemporaryCLOB();
-      lob.write(0, target_buf); 
-      lob.doNotDelete();
-      *return_ind = OCI_IND_NOTNULL;
-      return lob.get();
    }
    ORABLOCK_END
 
@@ -335,34 +341,34 @@ ORAEXT OCILobLocator * oraMangoSmartsHi (OCIExtProcContext *ctx, int context_id,
 
       if (query_ind  != OCI_IND_NOTNULL)
          throw BingoError("Null query given");
-      if (target_ind != OCI_IND_NOTNULL)
-         throw BingoError("Null target given");
+      if (target_ind == OCI_IND_NOTNULL)
+      {
+         MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
 
-      MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
+         QS_DEF(Array<char>, query_buf);
+         QS_DEF(Array<char>, target_buf);
 
-      QS_DEF(Array<char>, query_buf);
-      QS_DEF(Array<char>, target_buf);
+         OracleLOB target_lob(env, target_loc);
 
-      OracleLOB target_lob(env, target_loc);
+         target_lob.readAll(target_buf, false);
+         query_buf.readString(query, false);
 
-      target_lob.readAll(target_buf, false);
-      query_buf.readString(query, false);
+         context.substructure.preserve_bonds_on_highlighting = true;
+         context.substructure.loadSMARTS(query_buf);
+         context.substructure.loadTarget(target_buf);
+         if (!context.substructure.matchLoadedTarget())
+            throw BingoError("SmartsHi: match not found");
 
-      context.substructure.preserve_bonds_on_highlighting = true;
-      context.substructure.loadSMARTS(query_buf);
-      context.substructure.loadTarget(target_buf);
-      if (!context.substructure.matchLoadedTarget())
-         throw BingoError("SmartsHi: match not found");
+         context.substructure.getHighlightedTarget(target_buf);
 
-      context.substructure.getHighlightedTarget(target_buf);
-      
-      OracleLOB lob(env);
+         OracleLOB lob(env);
 
-      lob.createTemporaryCLOB();
-      lob.write(0, target_buf); 
-      lob.doNotDelete();
-      *return_ind = OCI_IND_NOTNULL;
-      return lob.get();
+         lob.createTemporaryCLOB();
+         lob.write(0, target_buf);
+         lob.doNotDelete();
+         *return_ind = OCI_IND_NOTNULL;
+         return lob.get();
+      }
    }
    ORABLOCK_END
 
@@ -383,42 +389,42 @@ ORAEXT OCILobLocator * oraMangoExactHi (OCIExtProcContext *ctx, int context_id,
 
       if (query_ind  != OCI_IND_NOTNULL)
          throw BingoError("Null query given");
-      if (target_ind != OCI_IND_NOTNULL)
-         throw BingoError("Null target given");
       if (params_ind != OCI_IND_NOTNULL)
          params = 0;
-
-      MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
-
-      QS_DEF(Array<char>, query_buf);
-      QS_DEF(Array<char>, target_buf);
-
-      OracleLOB target_lob(env, target_loc);
-      OracleLOB query_lob(env, query_loc);
-
-      target_lob.readAll(target_buf, false);
-      query_lob.readAll(query_buf, false);
-
-      if (context.tautomer.parseExact(params))
+      if (target_ind == OCI_IND_NOTNULL)
       {
-         context.tautomer.preserve_bonds_on_highlighting = true;
-         context.tautomer.loadQuery(query_buf);
-         context.tautomer.loadTarget(target_buf);
-         if (!context.tautomer.matchLoadedTarget())
-            throw BingoError("ExactHi: match not found");
+         MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
 
-         context.tautomer.getHighlightedTarget(target_buf);
+         QS_DEF(Array<char>, query_buf);
+         QS_DEF(Array<char>, target_buf);
+
+         OracleLOB target_lob(env, target_loc);
+         OracleLOB query_lob(env, query_loc);
+
+         target_lob.readAll(target_buf, false);
+         query_lob.readAll(query_buf, false);
+
+         if (context.tautomer.parseExact(params))
+         {
+            context.tautomer.preserve_bonds_on_highlighting = true;
+            context.tautomer.loadQuery(query_buf);
+            context.tautomer.loadTarget(target_buf);
+            if (!context.tautomer.matchLoadedTarget())
+               throw BingoError("ExactHi: match not found");
+
+            context.tautomer.getHighlightedTarget(target_buf);
+         }
+         else
+            throw BingoError("ExactHi: can't parse params '%s'", params);
+
+         OracleLOB lob(env);
+
+         lob.createTemporaryCLOB();
+         lob.write(0, target_buf);
+         lob.doNotDelete();
+         *return_ind = OCI_IND_NOTNULL;
+         return lob.get();
       }
-      else
-         throw BingoError("ExactHi: can't parse params '%s'", params);
-
-      OracleLOB lob(env);
-
-      lob.createTemporaryCLOB();
-      lob.write(0, target_buf); 
-      lob.doNotDelete();
-      *return_ind = OCI_IND_NOTNULL;
-      return lob.get();
    }
    ORABLOCK_END
 
@@ -483,22 +489,25 @@ ORAEXT OCIString * oraMangoGrossCalc (OCIExtProcContext *ctx,
 
    ORABLOCK_BEGIN
    {
-      OracleEnv env(ctx, logger);
-
-      if (target_ind != OCI_IND_NOTNULL)
-         throw BingoError("Null target given");
-
       *return_ind = OCI_IND_NULL;
 
-      MangoOracleContext &context = MangoOracleContext::get(env, 0, false);
+      OracleEnv env(ctx, logger);
 
-      QS_DEF(Array<char>, target_buf);
-      OracleLOB target_lob(env, target_loc);
+      if (target_ind == OCI_IND_NOTNULL)
+      {
+         MangoOracleContext &context = MangoOracleContext::get(env, 0, false);
 
-      target_lob.readAll(target_buf, false);
+         QS_DEF(Array<char>, target_buf);
+         OracleLOB target_lob(env, target_loc);
 
-      result = _mangoGrossCalc(env, context, target_buf);
-      *return_ind = OCI_IND_NOTNULL;
+         target_lob.readAll(target_buf, false);
+
+         result = _mangoGrossCalc(env, context, target_buf);
+         *return_ind = OCI_IND_NOTNULL;
+      }
+      else
+         // This is needed for Oracle 9. Returning NULL drops the extproc.
+         OCIStringAssignText(env.envhp(), env.errhp(), (text *)"nil", 3, &result);
    }
    ORABLOCK_END
 
@@ -514,24 +523,25 @@ ORAEXT OCINumber * oraMangoGross (OCIExtProcContext *ctx, int context_id,
 
    ORABLOCK_BEGIN
    {
-      OracleEnv env(ctx, logger);
-
       *return_ind = OCI_IND_NULL;
 
-      if (target_ind != OCI_IND_NOTNULL)
-         throw BingoError("Null target given");
+      OracleEnv env(ctx, logger);
+
       if (query_ind != OCI_IND_NOTNULL)
          throw BingoError("Null query given");
 
-      MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
-      
-      QS_DEF(Array<char>, target_buf);
+      if (target_ind == OCI_IND_NOTNULL)
+      {
+         MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
 
-      OracleLOB target_lob(env, target_loc);
+         QS_DEF(Array<char>, target_buf);
 
-      target_lob.readAll(target_buf, false);
+         OracleLOB target_lob(env, target_loc);
 
-      result = _mangoGross(env, context, target_buf, query);
+         target_lob.readAll(target_buf, false);
+
+         result = _mangoGross(env, context, target_buf, query);
+      }
 
       if (result == 0)
          // This is needed for Oracle 9. Returning NULL drops the extproc.
@@ -587,25 +597,25 @@ ORAEXT OCINumber * oraMangoMolecularMass (OCIExtProcContext *ctx, int context_id
 
    ORABLOCK_BEGIN
    {
-      OracleEnv env(ctx, logger);
-
       *return_ind = OCI_IND_NULL;
 
-      if (target_ind != OCI_IND_NOTNULL)
-         throw BingoError("Null target given");
+      OracleEnv env(ctx, logger);
 
       if (type_ind != OCI_IND_NOTNULL)
          type = 0;
 
-      MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
+      if (target_ind == OCI_IND_NOTNULL)
+      {
+         MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
 
-      QS_DEF(Array<char>, target_buf);
+         QS_DEF(Array<char>, target_buf);
 
-      OracleLOB target_lob(env, target_loc);
+         OracleLOB target_lob(env, target_loc);
 
-      target_lob.readAll(target_buf, false);
+         target_lob.readAll(target_buf, false);
 
-      result = _mangoMass(env, context, target_buf, type);
+         result = _mangoMass(env, context, target_buf, type);
+      }
 
       if (result == 0)
          // This is needed for Oracle 9. Returning NULL drops the extproc.

@@ -72,17 +72,22 @@ ORAEXT OCIString *oraRingoRSMILES (OCIExtProcContext *ctx,
 
       *return_indicator = OCI_IND_NULL;
 
-      if (target_indicator != OCI_IND_NOTNULL)
-         throw BingoError("Null reaction given");
+      if (target_indicator == OCI_IND_NOTNULL)
+      {
+         OracleLOB target_lob(env, target_locator);
 
-      OracleLOB target_lob(env, target_locator);
+         QS_DEF(Array<char>, buf);
 
-      QS_DEF(Array<char>, buf);
+         target_lob.readAll(buf, false);
 
-      target_lob.readAll(buf, false);
-
-      result = _ringoRSMILES(env, buf, context);
-      *return_indicator = OCI_IND_NOTNULL;
+         result = _ringoRSMILES(env, buf, context);
+      }
+      
+      if (result == 0)
+         // This is needed for Oracle 9. Returning NULL drops the extproc.
+         OCIStringAssignText(env.envhp(), env.errhp(), (text *)"nil", 3, &result);
+      else
+         *return_indicator = OCI_IND_NOTNULL;
    }
    ORABLOCK_END
 
@@ -181,21 +186,21 @@ ORAEXT OCILobLocator *oraRingoICR (OCIExtProcContext *ctx,
       OracleEnv env(ctx, logger);
       BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
 
-      if (target_indicator == OCI_IND_NULL)
-         throw BingoError("null molecule given");
+      if (target_indicator == OCI_IND_NOTNULL)
+      {
+         OracleLOB target_lob(env, target_locator);
+         QS_DEF(Array<char>, icr);
 
-      OracleLOB target_lob(env, target_locator);
-      QS_DEF(Array<char>, icr);
+         _ICR(target_lob, save_xyz, icr, context);
 
-      _ICR(target_lob, save_xyz, icr, context);
+         OracleLOB lob(env);
 
-      OracleLOB lob(env);
-
-      lob.createTemporaryBLOB();
-      lob.write(0, icr);
-      *return_indicator = OCI_IND_NOTNULL;
-      lob.doNotDelete();
-      result = lob.get();
+         lob.createTemporaryBLOB();
+         lob.write(0, icr);
+         lob.doNotDelete();
+         result = lob.get();
+         *return_indicator = OCI_IND_NOTNULL;
+      }
    }
    ORABLOCK_END
 
@@ -213,7 +218,7 @@ ORAEXT void oraRingoICR2 (OCIExtProcContext *ctx,
       BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
 
       if (target_indicator == OCI_IND_NULL)
-         throw BingoError("null molecule given");
+         throw BingoError("null reaction given");
       if (result_indicator == OCI_IND_NULL)
          throw BingoError("null LOB given");
 
@@ -244,44 +249,44 @@ ORAEXT OCILobLocator *oraRingoRxnfile (OCIExtProcContext *ctx,
       OracleEnv env(ctx, logger);
       BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
 
-      if (target_indicator == OCI_IND_NULL)
-         throw BingoError("null molecule given");
-
-      OracleLOB target_lob(env, target_locator);
-
-      QS_DEF(Array<char>, target);
-      QS_DEF(Array<char>, icm);
-      QS_DEF(Reaction, reaction);
-
-      target_lob.readAll(target, false);
-
-      ReactionAutoLoader loader(target);
-
-      loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-                 context.ignore_closing_bond_direction_mismatch;
-      loader.loadReaction(reaction);
-
-      if (!Reaction::haveCoord(reaction))
+      if (target_indicator == OCI_IND_NOTNULL)
       {
-         ReactionLayout layout(reaction);
+         OracleLOB target_lob(env, target_locator);
 
-         layout.make();
-         reaction.markStereocenterBonds();
+         QS_DEF(Array<char>, target);
+         QS_DEF(Array<char>, icm);
+         QS_DEF(Reaction, reaction);
+
+         target_lob.readAll(target, false);
+
+         ReactionAutoLoader loader(target);
+
+         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
+         loader.ignore_closing_bond_direction_mismatch =
+                    context.ignore_closing_bond_direction_mismatch;
+         loader.loadReaction(reaction);
+
+         if (!Reaction::haveCoord(reaction))
+         {
+            ReactionLayout layout(reaction);
+
+            layout.make();
+            reaction.markStereocenterBonds();
+         }
+
+         ArrayOutput output(icm);
+         RxnfileSaver saver(output);
+
+         saver.saveReaction(reaction);
+
+         OracleLOB lob(env);
+
+         lob.createTemporaryCLOB();
+         lob.write(0, icm);
+         lob.doNotDelete();
+         result = lob.get();
+         *return_indicator = OCI_IND_NOTNULL;
       }
-
-      ArrayOutput output(icm);
-      RxnfileSaver saver(output);
-
-      saver.saveReaction(reaction);
-
-      OracleLOB lob(env);
-
-      lob.createTemporaryCLOB();
-      lob.write(0, icm);
-      *return_indicator = OCI_IND_NOTNULL;
-      lob.doNotDelete();
-      result = lob.get();
    }
    ORABLOCK_END
 
@@ -301,44 +306,44 @@ ORAEXT OCILobLocator *oraRingoCML (OCIExtProcContext *ctx,
       OracleEnv env(ctx, logger);
       BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
 
-      if (target_indicator == OCI_IND_NULL)
-         throw BingoError("null molecule given");
-
-      OracleLOB target_lob(env, target_locator);
-
-      QS_DEF(Array<char>, target);
-      QS_DEF(Array<char>, icm);
-      QS_DEF(Reaction, reaction);
-
-      target_lob.readAll(target, false);
-
-      ReactionAutoLoader loader(target);
-
-      loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-                 context.ignore_closing_bond_direction_mismatch;
-      loader.loadReaction(reaction);
-
-      if (!Reaction::haveCoord(reaction))
+      if (target_indicator == OCI_IND_NOTNULL)
       {
-         ReactionLayout layout(reaction);
+         OracleLOB target_lob(env, target_locator);
 
-         layout.make();
-         reaction.markStereocenterBonds();
+         QS_DEF(Array<char>, target);
+         QS_DEF(Array<char>, icm);
+         QS_DEF(Reaction, reaction);
+
+         target_lob.readAll(target, false);
+
+         ReactionAutoLoader loader(target);
+
+         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
+         loader.ignore_closing_bond_direction_mismatch =
+                    context.ignore_closing_bond_direction_mismatch;
+         loader.loadReaction(reaction);
+
+         if (!Reaction::haveCoord(reaction))
+         {
+            ReactionLayout layout(reaction);
+
+            layout.make();
+            reaction.markStereocenterBonds();
+         }
+
+         ArrayOutput output(icm);
+         ReactionCmlSaver saver(output);
+
+         saver.saveReaction(reaction);
+
+         OracleLOB lob(env);
+
+         lob.createTemporaryCLOB();
+         lob.write(0, icm);
+         lob.doNotDelete();
+         result = lob.get();
+         *return_indicator = OCI_IND_NOTNULL;
       }
-
-      ArrayOutput output(icm);
-      ReactionCmlSaver saver(output);
-
-      saver.saveReaction(reaction);
-
-      OracleLOB lob(env);
-
-      lob.createTemporaryCLOB();
-      lob.write(0, icm);
-      *return_indicator = OCI_IND_NOTNULL;
-      lob.doNotDelete();
-      result = lob.get();
    }
    ORABLOCK_END
 
