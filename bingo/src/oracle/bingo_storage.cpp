@@ -206,7 +206,14 @@ void BingoStorage::validate (OracleEnv &env)
       output.writeByte(0);
 
       if (length < 1)
+      {
+         if (id == 0)
+         {
+            _index.clear();
+            break;
+         }
          throw Error("cannot validate block #%d: length=%d", id, length);
+      }
 
       _shmem_array.add(new SharedMemory(block_name.ptr(), length, state->state == _STATE_READY));
 

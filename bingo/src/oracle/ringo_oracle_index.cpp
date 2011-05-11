@@ -268,6 +268,7 @@ ORAEXT void oraRingoTruncateIndex (OCIExtProcContext *ctx, int context_id)
       context.shadow_table.truncate(env);
       context.context().storage.truncate(env);
       context.fingerprints.truncate(env);
+      RingoFetchContext::removeByContextID(context_id);
 
       RingoContext::remove(context_id);
       BingoContext::remove(context_id);
