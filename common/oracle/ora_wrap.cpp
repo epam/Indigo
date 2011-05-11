@@ -385,7 +385,7 @@ void OracleStatement::defineRawByPos (int pos, OracleRaw &raw)
 {
    OCIDefine *defnp = (OCIDefine *) 0;
 
-   _env.callOCI(OCIDefineByPos(_statement, &defnp, _env.errhp(), pos, raw.get(), (sword)sizeof(OCIRaw *), SQLT_BIN, 0, 0, 0, OCI_DEFAULT));
+   _env.callOCI(OCIDefineByPos(_statement, &defnp, _env.errhp(), pos, raw.get(), (sword)sizeof(OCIRaw *), SQLT_LVB, 0, 0, 0, OCI_DEFAULT));
 }
 
 void OracleStatement::defineBlobByPos (int pos, OracleLOB &lob)
