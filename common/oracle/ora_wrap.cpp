@@ -310,6 +310,40 @@ OracleEnv::~OracleEnv ()
 {
 }
 
+int OracleEnv::ociMajorVersion ()
+{
+#ifdef OCI_MAJOR_VERSION
+   return OCI_MAJOR_VERSION;
+#else
+#if OCI_HTYPE_LAST>=29
+   return 10; // Oracle 10g2
+#elif OCI_HTYPE_LAST>=27
+   return 9; // Oracle 9i2
+#else
+   return 8;
+#endif
+#endif
+}
+
+int OracleEnv::serverMajorVersion ()
+{
+   try
+   {
+      OracleStatement statement(*this);
+      int version;
+
+      statement.append("BEGIN :version := dbms_db_version.version; END;");
+      statement.prepare();
+      statement.bindIntByName(":version", &version);
+      statement.execute();
+      return version;
+   }
+   catch (OracleError &)
+   {
+      return 0;
+   }
+}
+
 void OracleEnv::callOCI (int rc)
 {
    if (rc == OCI_SUCCESS || rc == OCI_SUCCESS_WITH_INFO)
@@ -419,6 +453,13 @@ void OracleStatement::execute ()
    _env.callOCI(rc);
 }
 
+void OracleStatement::executeMultiple (int iter)
+{
+   sword rc = OCIStmtExecute(_env.svchp(), _statement, _env.errhp(), iter, 0, NULL, NULL, OCI_DEFAULT);
+
+   _env.callOCI(rc);
+}
+
 bool OracleStatement::executeAllowNoData ()
 {
    sword rc = OCIStmtExecute(_env.svchp(), _statement, _env.errhp(), 1, 0, NULL, NULL, OCI_DEFAULT);
@@ -478,7 +519,8 @@ void OracleStatement::bindClobByName (const char *name, OracleLOB &lob)
    OCIBind *bndp = (OCIBind *)0;
 
    _env.callOCI(OCIBindByName(_statement, &bndp, _env.errhp(), (text *)name, -1,
-      (dvoid *)lob.getRef(), 0, SQLT_CLOB, 0, 0, 0, 0, 0, OCI_DEFAULT));
+                              (dvoid *)lob.getRef(), sizeof(OCILobLocator *),
+                              SQLT_CLOB, 0, 0, 0, 0, 0, OCI_DEFAULT));
 }
 
 void OracleStatement::bindBlobByName (const char *name, OracleLOB &lob)
@@ -486,7 +528,17 @@ void OracleStatement::bindBlobByName (const char *name, OracleLOB &lob)
    OCIBind *bndp = (OCIBind *)0;
 
    _env.callOCI(OCIBindByName(_statement, &bndp, _env.errhp(), (text *)name, -1,
-      (dvoid *)lob.getRef(), 0, SQLT_BLOB, 0, 0, 0, 0, 0, OCI_DEFAULT));
+                              (dvoid *)lob.getRef(), sizeof(OCILobLocator *),
+                              SQLT_BLOB, 0, 0, 0, 0, 0, OCI_DEFAULT));
+}
+
+void OracleStatement::bindBlobPtrByName (const char *name, OCILobLocator **lob, short *indicators)
+{
+   OCIBind *bndp = (OCIBind *)0;
+
+   _env.callOCI(OCIBindByName(_statement, &bndp, _env.errhp(), (text *)name, -1,
+                              lob, sizeof(OCILobLocator *), SQLT_BLOB,
+                              indicators, 0, 0, 0, 0, OCI_DEFAULT));
 }
 
 void OracleStatement::bindRawByName (const char *name, OracleRaw &raw)
@@ -495,6 +547,14 @@ void OracleStatement::bindRawByName (const char *name, OracleRaw &raw)
 
    _env.callOCI(OCIBindByName(_statement, &bndp, _env.errhp(), (text *)name, -1,
       (dvoid *)raw.get(), raw.getSize() + sizeof(int), SQLT_LVB, 0, 0, 0, 0, 0, OCI_DEFAULT));
+}
+
+void OracleStatement::bindRawPtrByName (const char *name, OCIRaw *raw, int size, short *indicators)
+{
+   OCIBind *bndp = (OCIBind *)0;
+
+   _env.callOCI(OCIBindByName(_statement, &bndp, _env.errhp(), (text *)name, -1,
+      (dvoid *)raw, size + sizeof(int), SQLT_LVB, indicators, 0, 0, 0, 0, OCI_DEFAULT));
 }
 
 void OracleStatement::bindStringByName (const char *name, const char *string, int max_len)

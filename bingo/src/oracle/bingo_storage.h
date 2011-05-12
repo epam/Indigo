@@ -86,8 +86,6 @@ protected:
       int   offset;
    };
    
-   OracleLOB    *_top_lob;
-   OracleLOB    *_index_lob;
    SharedMemory *_shmem_state;
    Array<_Block> _blocks;
    int           _n_added;

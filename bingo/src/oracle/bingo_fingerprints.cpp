@@ -186,7 +186,7 @@ bool BingoFingerprints::_flush_Update (OracleEnv &env, bool update_counter)
 void BingoFingerprints::_flush_Insert (OracleEnv &env)
 {
    OracleStatement statement(env);
-   statement.append("INSERT /*+ NOLOGGING */ INTO %s VALUES(:part, :used, "
+   statement.append("INSERT INTO %s VALUES(:part, :used, "
       "empty_blob(), empty_blob(), empty_blob(), empty_blob(), empty_blob())", _table_name.ptr());
 
    statement.prepare();
@@ -220,7 +220,7 @@ void BingoFingerprints::_flush_Insert_OLD (OracleEnv &env)
    lob_bit_starts.write(0, (char *)block.bit_starts.ptr(), block.bit_starts.sizeInBytes());
    lob_bit_ends.write(0, (char *)block.bit_ends.ptr(), block.bit_ends.sizeInBytes());
    
-   statement.append("INSERT /*+ NOLOGGING */ INTO %s VALUES(:part, :used, :counters, "
+   statement.append("INSERT INTO %s VALUES(:part, :used, :counters, "
                     ":mapping, :bit_starts, :bit_ends, :bits)", _table_name.ptr());
 
    statement.prepare();

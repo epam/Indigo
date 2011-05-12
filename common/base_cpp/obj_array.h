@@ -72,6 +72,15 @@ public:
       return _array.top();
    }
 
+   template <typename A, typename B> T & push (A &a, B *b)
+   {
+      void *addr = &_array.push();
+
+      new (addr) T(a, b);
+
+      return _array.top();
+   }
+
    template <typename A, typename B, typename C> T & push (A &a, B *b, C c)
    {
       void *addr = &_array.push();

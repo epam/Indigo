@@ -18,12 +18,11 @@
 #include "base_cpp/output.h"
 #include "base_cpp/shmem.h"
 #include "base_cpp/auto_ptr.h"
+#include "oracle/ora_logger.h"
 
 BingoStorage::BingoStorage (OracleEnv &env, int context_id)
 {
    _shmem_state = 0;
-   _top_lob = 0;
-   _index_lob = 0;
    _age_loaded = -1;
    _top_lob_pending_mark = 0;
    _index_lob_pending_mark = 0;
@@ -50,9 +49,6 @@ BingoStorage::BingoStorage (OracleEnv &env, int context_id)
 BingoStorage::~BingoStorage ()
 {
    delete _shmem_state;
-      
-   delete _top_lob;
-   delete _index_lob;
 }
 
 void BingoStorage::create (OracleEnv &env)
@@ -61,7 +57,7 @@ void BingoStorage::create (OracleEnv &env)
    OracleStatement::executeSingle(env, "CREATE TABLE %s(id number, bindata BLOB) "
       "NOLOGGING lob(bindata) store as (CACHE READS NOLOGGING PCTVERSION 0)", tn);
    OracleStatement::executeSingle(env, "CREATE INDEX %s_id ON %s(id)", tn, tn);
-   OracleStatement::executeSingle(env, "INSERT /*+ NOLOGGING */ INTO %s VALUES(0, EMPTY_BLOB())", tn);
+   OracleStatement::executeSingle(env, "INSERT INTO %s VALUES(0, EMPTY_BLOB())", tn);
 }
 
 void BingoStorage::drop (OracleEnv &env)
@@ -77,7 +73,7 @@ void BingoStorage::truncate (OracleEnv &env)
    const char *tn = _table_name.ptr();
 
    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", tn);
-   OracleStatement::executeSingle(env, "INSERT /*+ NOLOGGING */ INTO %s VALUES(0, EMPTY_BLOB())", tn);
+   OracleStatement::executeSingle(env, "INSERT INTO %s VALUES(0, EMPTY_BLOB())", tn);
    delete _shmem_state;
    _shmem_state = 0;
    _age_loaded = -1;
@@ -121,11 +117,8 @@ void BingoStorage::validateForInsert (OracleEnv &env)
       throw Error("missing index LOB");
 
    if (_blocks.size() > 0)
-   {
-      _top_lob = _getLob(env, _blocks.size());
       _top_lob_pending_mark = _blocks.top().size;
-   }
-   _index_lob = _getLob(env, 0);
+   
    _index_lob_pending_mark = _n_added * sizeof(_Addr);
 }
 
@@ -275,28 +268,23 @@ OracleLOB * BingoStorage::_getLob (OracleEnv &env, int no)
 
 void BingoStorage::_finishTopLob (OracleEnv &env)
 {
-   if (_top_lob != 0)
-   {
-      env.dbgPrintf("flushing storage LOB\n");
-      _top_lob->write(_top_lob_pending_mark, _top_lob_pending_data);
-      _top_lob_pending_mark += _top_lob_pending_data.size();
-      _top_lob_pending_data.clear();
-      delete _top_lob;
-      _top_lob = 0;
-   }
+   OracleLOB *top_lob = _getLob(env, _blocks.size());
+   env.dbgPrintf("flushing storage LOB\n");
+   top_lob->write(_top_lob_pending_mark, _top_lob_pending_data);
+   _top_lob_pending_mark += _top_lob_pending_data.size();
+   _top_lob_pending_data.clear();
+   delete top_lob;
+   top_lob = 0;
 }
 
 void BingoStorage::_finishIndexLob (OracleEnv &env)
 {
-   if (_index_lob != 0)
-   {
-      env.dbgPrintf("flushing index LOB\n");
-      _index_lob->write(_index_lob_pending_mark, _index_lob_pending_data);
-      _index_lob_pending_mark += _index_lob_pending_data.size();
-      _index_lob_pending_data.clear();
-      delete _index_lob;
-      _index_lob = 0;
-   }
+   env.dbgPrintf("flushing index LOB\n");
+   OracleLOB *index_lob = _getLob(env, 0);
+   index_lob->write(_index_lob_pending_mark, _index_lob_pending_data);
+   _index_lob_pending_mark += _index_lob_pending_data.size();
+   _index_lob_pending_data.clear();
+   delete index_lob;
 }
 
 void BingoStorage::_insertLOB (OracleEnv &env, int no)
@@ -305,7 +293,7 @@ void BingoStorage::_insertLOB (OracleEnv &env, int no)
 
    OracleStatement statement(env);
 
-   statement.append("INSERT /*+ NOLOGGING */ INTO %s VALUES(%d, EMPTY_BLOB())", _table_name.ptr(), no);
+   statement.append("INSERT INTO %s VALUES(%d, EMPTY_BLOB())", _table_name.ptr(), no);
    statement.prepare();
    statement.execute();
 
@@ -316,7 +304,6 @@ void BingoStorage::_insertLOB (OracleEnv &env, int no)
       block.size = 0;
    }
 
-   _top_lob = _getLob(env, _blocks.size());
    _top_lob_pending_mark = 0;
 }
 
@@ -391,19 +378,8 @@ void * BingoStorage::_getShared (SharedMemory * &sh_mem, char *name, int shared_
 
 void BingoStorage::flush (OracleEnv &env)
 {
-   bool had_top_lob = (_top_lob != 0);
-   bool had_index_lob = (_index_lob != 0);
-   
-   // must delete LOB-s before commit
    finish(env);
-
    OracleStatement::executeSingle(env, "COMMIT");
-   
-   // get the LOB-s back
-   if (had_top_lob)
-      _top_lob = _getLob(env, _blocks.size());
-   if (had_index_lob)
-      _index_lob = _getLob(env, 0);
 }
 
 void BingoStorage::finish (OracleEnv &env)

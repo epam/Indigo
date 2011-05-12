@@ -69,6 +69,10 @@ public:
    void dbgPrintf (const char *format, ...);
    void dbgPrintfTS (const char *format, ...);
 
+   static int ociMajorVersion ();
+   
+   int serverMajorVersion ();
+
 private:
    OCIEnv    *_envhp;
    OCISvcCtx *_svchp;
@@ -96,11 +100,14 @@ public:
    void bindIntByName    (const char *name, int *value);
    void bindFloatByName  (const char *name, float *value);
    void bindBlobByName   (const char *name, OracleLOB &lob);
+   void bindBlobPtrByName (const char *name, OCILobLocator **lob, short *indicators);
    void bindClobByName   (const char *name, OracleLOB &lob);
    void bindRawByName    (const char *name, OracleRaw &raw);
+   void bindRawPtrByName (const char *name, OCIRaw *raw, int maxsize, short *indicators);
    void bindStringByName (const char *name, const char *string, int max_len);
 
    void execute ();
+   void executeMultiple (int iter);
    bool executeAllowNoData ();
 
    bool gotNull (int pos);

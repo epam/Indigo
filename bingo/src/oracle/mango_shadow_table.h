@@ -60,75 +60,31 @@ public:
 protected:
    Array<char> _table_name, _components_table_name;
 
-private:
-   MangoShadowTable (MangoShadowTable &); // no implicit copy
-
    void _flushMain (OracleEnv &env);
    void _flushComponents (OracleEnv &env);
 
+   Obj<OracleStatement> _main_table_statement;
    Obj<OracleStatement> _components_table_statement;
+   
+   int _main_table_statement_count;
    int _components_table_statement_count;
 
-   class _PendingValue
-   {
-   public:
-      _PendingValue (const char *basename, int number);
+   Array<char[19]>        _pending_rid;
+   Array<int>             _pending_blockno;
+   Array<int>             _pending_offset;
+   Array<char[512]>       _pending_gross;
+   ObjArray<OracleRaw>    _pending_cmf;
+   ObjArray<OracleRaw>    _pending_xyz;
+   Array<float>           _pending_mass;
+   Array<int>             _pending_fragcount;
+   ObjArray< Array<int> > _pending_counters;
 
-      char name[20];
-
-   private:
-      _PendingValue (const _PendingValue &);
-   };
-
-   class _PendingLOB : public _PendingValue
-   {
-   public:
-      _PendingLOB (OracleEnv &env, const char *basename, int number);
-
-      OracleLOB lob;
-   };
-
-   class _PendingInt : public _PendingValue
-   {
-   public:
-      _PendingInt (int val, const char *basename, int number);
-
-      int value;
-   };
-
-   class _PendingFloat : public _PendingValue
-   {
-   public:
-      _PendingFloat (float val, const char *basename, int number);
-
-      float value;
-   };
-
-   class _PendingString : public _PendingValue
-   {
-   public:
-      _PendingString (const char *val, const char *basename, int number);
-
-      Array<char> value;
-   };
-
-   class _PendingRaw : public _PendingValue
-   {
-   public:
-      _PendingRaw (OracleEnv &env, const char *basename, int number);
-
-      OracleRaw raw;
-   };
-
-   Obj<OracleStatement> _main_table_statement;
-   int _main_table_statement_count;
-   ObjArray<_PendingLOB> _pending_lobs;
-   ObjArray<_PendingInt> _pending_ints;
-   ObjArray<_PendingFloat>  _pending_floats;
-   ObjArray<_PendingRaw>    _pending_raws;
-   ObjArray<_PendingString> _pending_strings;
-   ObjArray<_PendingString> _pending_strings_comp;
-   ObjArray<_PendingInt>    _pending_ints_comp;
+   Array<char[19]>        _pending_comp_rid;
+   Array<char[9]>         _pending_comp_hash;
+   Array<int>             _pending_comp_count;
+   
+private:
+   MangoShadowTable (MangoShadowTable &); // no implicit copy
 };
 
 #endif

@@ -49,84 +49,75 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
                                     float molecular_mass,
                                     const char *fp_sim)
 {
-   if (_main_table_statement_count > 5)
+   if (_main_table_statement_count >= 4096)
       _flushMain(env);
+
+   int i;
 
    if (_main_table_statement.get() == 0)
    {
       _main_table_statement.create(env);
       _main_table_statement_count = 0;
-      _main_table_statement->append("INSERT /*+ NOLOGGING */ INTO %s\n", _table_name.ptr());
+      _main_table_statement->append("INSERT /*+ APPEND_VALUES */ INTO %s VALUES ("
+              ":rid, :blockno, :offset, :gross, :cmf, :xyz, :mass, :fragcount",
+              _table_name.ptr());
+      
+      for (i = 0; i < counters.size(); i++)
+      {
+         char name[10] = {0};
+         snprintf(name, sizeof(name), ":counter%d", i);
+         _main_table_statement->append(", %s", name);
+      }
+      _main_table_statement->append(")");
    }
-   
-   _PendingLOB &cmf = _pending_lobs.push(env, "cmf", _main_table_statement_count);
-   _PendingLOB &xyz = _pending_lobs.push(env, len_xyz == 0 ? 0 : "xyz", _main_table_statement_count);
-   _PendingInt &p_blockno = _pending_ints.push(blockno, "blockno", _main_table_statement_count);
-   _PendingInt &p_offset = _pending_ints.push(offset, "offset", _main_table_statement_count);
-   _PendingFloat &p_mass = _pending_floats.push(molecular_mass, "mass", _main_table_statement_count);
-   _PendingString &p_rowid = _pending_strings.push(rowid, "rowid", _main_table_statement_count);
-   _PendingString &p_gross = _pending_strings.push(gross, "gross", _main_table_statement_count);
 
-   cmf.lob.createTemporaryBLOB();
-   cmf.lob.write(0, data_cmf, len_cmf);
+   _pending_rid.push();
+   strncpy(_pending_rid.top(), rowid, 19);
+   _pending_blockno.push(blockno);
+   _pending_offset.push(offset);
+   _pending_gross.push();
+   strncpy(_pending_gross.top(), gross, 512);
+   _pending_mass.push(molecular_mass);
 
+   _pending_cmf.push(env);
+   _pending_cmf.top().assignBytes(data_cmf, len_cmf);
+
+   _pending_xyz.push(env);
    if (len_xyz > 0)
-   {
-      xyz.lob.createTemporaryBLOB();
-      xyz.lob.write(0, data_xyz, len_xyz);
-   }
+      _pending_xyz.top().assignBytes(data_xyz, len_xyz);
 
-   int i, fragments_count = 0;
+   int fragments_count = 0;
    for (i = 0; i < hash.size(); i++)
       fragments_count += hash[i].count;
 
-   _PendingInt &p_fragcount = _pending_ints.push(fragments_count, "fragcount", _main_table_statement_count);
-   
-   if (_main_table_statement_count > 0)
-      _main_table_statement->append("UNION ALL ");
-   _main_table_statement->append(
-      "SELECT %s, %s, %s, %s, %s, %s, %s, %s",
-      p_rowid.name, p_blockno.name, p_offset.name, p_gross.name,
-           cmf.name, xyz.name, p_mass.name, p_fragcount.name);
+   _pending_fragcount.push(fragments_count);
+
+   if (_pending_counters.size() != counters.size())
+      _pending_counters.resize(counters.size());
+
    for (i = 0; i < counters.size(); i++)
-   {
-      char name[10] = {0};
-      snprintf(name, sizeof(name), "counter%d", i);
-      _PendingInt &p_counter = _pending_ints.push(counters[i], name, _main_table_statement_count);
-      _main_table_statement->append(", %s", p_counter.name);
-   }
-
-    _main_table_statement->append(" FROM DUAL\n");
-
+      _pending_counters[i].push(counters[i]);
    _main_table_statement_count++;
 
    // Insert into components shadow table
-   if (_components_table_statement_count > 20)
+   if (_components_table_statement_count >= 8192)
       _flushComponents(env);
 
    if (_components_table_statement.get() == 0)
    {
       _components_table_statement.create(env);
-      _components_table_statement->append("INSERT /*+ NOLOGGING */ INTO %s\n", _components_table_name.ptr());
+      _components_table_statement->append(
+         "INSERT /*+ APPEND_VALUES */ INTO %s VALUES (:rid, :hash, :count)", _components_table_name.ptr());
       _components_table_statement_count = 0;
    }
 
-   QS_DEF(Array<char>, hash_hex);
-
    for (int i = 0; i < hash.size(); i++)
    {
-      ArrayOutput out(hash_hex);
-      out.printf("%08X", hash[i].hash);
-      hash_hex.push(0);
-      const char *hash_hex_ptr = hash_hex.ptr();
-
-      if (_components_table_statement_count > 0)
-         _components_table_statement->append("UNION ALL ");
-
-      _PendingString &rid_p = _pending_strings_comp.push(rowid, "rid", _components_table_statement_count);
-      _PendingString &hash_p = _pending_strings_comp.push(hash_hex_ptr, "hash", _components_table_statement_count);
-      _PendingInt &count_p = _pending_ints_comp.push(hash[i].count, "count", _components_table_statement_count);
-      _components_table_statement->append("SELECT %s, %s, %s FROM DUAL\n", rid_p.name, hash_p.name, count_p.name);
+      _pending_comp_hash.push();
+      snprintf(_pending_comp_hash.top(), 9, "%08X", hash[i].hash);
+      _pending_comp_rid.push();
+      strncpy(_pending_comp_rid.top(), rowid, 19);
+      _pending_comp_count.push(hash[i].count);
       _components_table_statement_count++;
    }
 }
@@ -148,45 +139,95 @@ void MangoShadowTable::_flushMain (OracleEnv &env)
 
          profTimerStart(tmain, "moleculeIndex.register_shadow_main");
          _main_table_statement->prepare();
-         for (i = 0; i < _pending_lobs.size(); i++)
+
+         _main_table_statement->bindStringByName(":rid", _pending_rid[0], 19);
+         _main_table_statement->bindIntByName(":blockno", _pending_blockno.ptr());
+         _main_table_statement->bindIntByName(":offset", _pending_offset.ptr());
+         _main_table_statement->bindStringByName(":gross", _pending_gross[0], 512);
+
+         QS_DEF(Array<char>, cmf);
+         QS_DEF(Array<char>, xyz);
+         QS_DEF(Array<short>, xyz_ind);
+         int maxallocsize_cmf = 0;
+         int maxallocsize_xyz = 0;
+
+         cmf.clear();
+         for (i = 0; i < _pending_cmf.size(); i++)
          {
-            _PendingLOB &plob = _pending_lobs[i];
-            if (strcmp(plob.name, "NULL") != 0)
-               _main_table_statement->bindBlobByName(plob.name, plob.lob);
-         }
-         for (i = 0; i < _pending_ints.size(); i++)
-         {
-            _PendingInt &pint = _pending_ints[i];
-            _main_table_statement->bindIntByName(pint.name, &pint.value);
-         }
-         for (i = 0; i < _pending_floats.size(); i++)
-         {
-            _PendingFloat &pfloat = _pending_floats[i];
-            _main_table_statement->bindFloatByName(pfloat.name, &pfloat.value);
-         }
-         for (i = 0; i < _pending_strings.size(); i++)
-         {
-            _PendingString &pstring = _pending_strings[i];
-            _main_table_statement->bindStringByName(pstring.name, pstring.value.ptr(), pstring.value.size());
+            int allocsize = _pending_cmf[i].getAllocSize();
+
+            if (allocsize > maxallocsize_cmf)
+               maxallocsize_cmf = allocsize;
          }
 
-         _main_table_statement->execute();
+         cmf.clear_resize((maxallocsize_cmf + 4) * _pending_cmf.size());
+         cmf.zerofill();
+         for (i = 0; i < _pending_cmf.size(); i++)
+            memcpy(cmf.ptr() + i * (maxallocsize_cmf + 4), _pending_cmf[i].get(), 
+                   _pending_cmf[i].getAllocSize() + 4);
+         
+         xyz.clear();
+         xyz_ind.clear();
+         for (i = 0; i < _pending_xyz.size(); i++)
+         {
+            if (_pending_xyz[i].get() == 0)
+               continue;
+
+            int allocsize = _pending_xyz[i].getAllocSize();
+
+            if (allocsize > maxallocsize_xyz)
+               maxallocsize_xyz = allocsize;
+         }
+
+         xyz.clear_resize((maxallocsize_xyz + 4) * _pending_xyz.size());
+         xyz.zerofill();
+         for (i = 0; i < _pending_xyz.size(); i++)
+         {
+            if (_pending_xyz[i].get() != 0)
+            {
+               memcpy(xyz.ptr() + i * (maxallocsize_xyz + 4), _pending_xyz[i].get(), 
+                      _pending_xyz[i].getAllocSize() + 4);
+               xyz_ind.push(0); // OCI_IND_NOTNULL
+            }
+            else
+               xyz_ind.push(-1); // OCI_IND_NULL
+         }
+
+         _main_table_statement->bindRawPtrByName(":cmf", (OCIRaw *)cmf.ptr(),
+                                                 maxallocsize_cmf, 0);
+         _main_table_statement->bindRawPtrByName(":xyz", (OCIRaw *)xyz.ptr(),
+                                                 maxallocsize_xyz, xyz_ind.ptr());
+         _main_table_statement->bindFloatByName(":mass", _pending_mass.ptr());
+         _main_table_statement->bindIntByName(":fragcount", _pending_fragcount.ptr());
+         for (i = 0; i < _pending_counters.size(); i++)
+         {
+            char name[10] = {0};
+            snprintf(name, sizeof(name), ":counter%d", i);
+            _main_table_statement->bindIntByName(name, _pending_counters[i].ptr());
+         }
+
+         _main_table_statement->executeMultiple(_main_table_statement_count);
+         OracleStatement::executeSingle(env, "COMMIT");
          profTimerStop(tmain);
 
-         _pending_lobs.clear();
-         _pending_ints.clear();
-         _pending_floats.clear();
-         _pending_strings.clear();
+         _main_table_statement.free();
+         _pending_rid.clear();
+         _pending_blockno.clear();
+         _pending_offset.clear();
+         _pending_gross.clear();
+         _pending_cmf.clear();
+         _pending_xyz.clear();
+         _pending_mass.clear();
+         _pending_fragcount.clear();
+         for (i = 0; i < _pending_counters.size(); i++)
+            _pending_counters[i].clear();
       }
-      _main_table_statement.free();
       _main_table_statement_count = 0;
    }
 }
 
 void MangoShadowTable::_flushComponents (OracleEnv &env)
 {
-   int i;
-   
    // Flusing components table
    if (_components_table_statement.get() != 0)
    {
@@ -194,19 +235,14 @@ void MangoShadowTable::_flushComponents (OracleEnv &env)
       {
          profTimerStart(tcomp, "moleculeIndex.register_shadow_comp");
          _components_table_statement->prepare();
-         for (i = 0; i < _pending_ints_comp.size(); i++)
-         {
-            _PendingInt &pint = _pending_ints_comp[i];
-            _components_table_statement->bindIntByName(pint.name, &pint.value);
-         }
-         for (i = 0; i < _pending_strings_comp.size(); i++)
-         {
-            _PendingString &pstring = _pending_strings_comp[i];
-            _components_table_statement->bindStringByName(pstring.name, pstring.value.ptr(), pstring.value.size());
-         }
-         _components_table_statement->execute();
-         _pending_ints_comp.clear();
-         _pending_strings_comp.clear();
+         _components_table_statement->bindIntByName(":count", _pending_comp_count.ptr());
+         _components_table_statement->bindStringByName(":rid", _pending_comp_rid[0], 19);
+         _components_table_statement->bindStringByName(":hash", _pending_comp_hash[0], 9);
+         _components_table_statement->executeMultiple(_components_table_statement_count);
+         OracleStatement::executeSingle(env, "COMMIT");
+         _pending_comp_count.clear();
+         _pending_comp_rid.clear();
+         _pending_comp_hash.clear();
          profTimerStop(tcomp);
       }
       _components_table_statement.free();  
@@ -340,36 +376,4 @@ void MangoShadowTable::deleteMolecule (OracleEnv &env, const char *rowid)
            "DELETE FROM %s WHERE mol_rowid = :rid", _table_name.ptr());
    OracleStatement::executeSingle_BindString(env, ":rid", rowid,
            "DELETE FROM %s WHERE mol_rowid = :rid", _components_table_name.ptr());
-}
-
-MangoShadowTable::_PendingValue::_PendingValue (const char *basename, int number)
-{
-   if (basename == 0)
-      strncpy(name, "NULL", sizeof(name));
-   else
-      snprintf(name, NELEM(name), ":%s_%d", basename, number);
-}
-
-MangoShadowTable::_PendingLOB::_PendingLOB (OracleEnv &env, const char *basename, int number) :
-_PendingValue(basename, number),
-lob(env)
-{
-}
-
-MangoShadowTable::_PendingInt::_PendingInt (int val, const char *basename, int number) :
-_PendingValue(basename, number)
-{
-   value = val;
-}
-
-MangoShadowTable::_PendingFloat::_PendingFloat (float val, const char *basename, int number) :
-_PendingValue(basename, number)
-{
-   value = val;
-}
-
-MangoShadowTable::_PendingString::_PendingString (const char *val, const char *basename, int number) :
-_PendingValue(basename, number)
-{
-   value.readString(val, true);
 }
