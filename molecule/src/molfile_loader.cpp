@@ -895,9 +895,6 @@ void MolfileLoader::_readCtab2000 ()
          }
          else if (strncmp(chars, "APO", 3) == 0)
          {
-            if (_qmol == 0)
-               throw Error("rgroups attachment points are allowed only for queries");
-
             int list_length = _scanner.readIntFix(3);
 
             while (list_length-- > 0)
@@ -912,7 +909,7 @@ void MolfileLoader::_readCtab2000 ()
 
                for (int att_idx = 0; (1 << att_idx) <= att_type; att_idx++)
                   if (att_type & (1 << att_idx))
-                     _qmol->addAttachmentPoint(att_idx + 1, atom_idx);
+                     _bmol->addAttachmentPoint(att_idx + 1, atom_idx);
             }
 
             _scanner.skipLine();
@@ -2118,9 +2115,6 @@ void MolfileLoader::_readCtab3000 ()
          }
          else if (strcmp(prop, "ATTCHPT") == 0)
          {
-            if (_qmol == 0)
-               throw Error("rgroup attachment points are allowed only for queries");
-
             int att_type = strscan.readInt1();
 
             if (att_type == -1)
@@ -2128,7 +2122,7 @@ void MolfileLoader::_readCtab3000 ()
 
             for (int att_idx = 0; (1 << att_idx) <= att_type; att_idx++)
                if (att_type & (1 << att_idx))
-                  _qmol->addAttachmentPoint(att_idx + 1, i);
+                  _bmol->addAttachmentPoint(att_idx + 1, i);
          }
          else if (strcmp(prop, "ATTCHORD") == 0)
          {
