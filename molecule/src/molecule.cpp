@@ -334,6 +334,17 @@ int Molecule::calcAtomConnectivity_noImplH (int idx)
       conn += order;
    }
 
+   for (i = 1; i <= attachmentPointCount(); i++)
+   {
+      int j = 0, aidx;
+
+      for (j = 0; (aidx = getAttachmentPoint(i, j)) != -1; j++)
+      {
+         if (aidx == idx)
+            conn++;
+      }
+   }
+   
    return conn;
 }
 
