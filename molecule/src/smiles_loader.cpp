@@ -1983,9 +1983,9 @@ int SmilesLoader::_parseCurly (Array<char> &curly, int &repetitions)
       {
          repetitions = 0;
          BufferScanner scanner(curly.ptr() + 2, curly.size() - 2);
-         if (scanner.lookNext() == '=')
+         if (scanner.lookNext() == 'n')
          {
-            scanner.skip(1);
+            scanner.skip(2);
             repetitions = scanner.readInt();
          }
          return _POLYMER_END;
