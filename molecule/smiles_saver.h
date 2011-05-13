@@ -105,6 +105,7 @@ protected:
    int _countRBonds ();
 
    void _checkSRU ();
+   void _checkRGroupsAndAttachmentPoints ();
 
    struct _DBond // directed bond (near cis-trans bond)
    {
@@ -120,6 +121,8 @@ protected:
    TL_CP_DECL(Array<int>, _written_atoms);
    TL_CP_DECL(Array<int>, _written_bonds);
    TL_CP_DECL(Array<int>, _polymer_indices);
+   TL_CP_DECL(Array<int>, _attachment_indices);
+   TL_CP_DECL(Array<int>, _attachment_cycle_numbers);
 
    int _written_components;
    int _touched_cistransbonds;

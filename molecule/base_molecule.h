@@ -185,6 +185,8 @@ public:
    void removeAttachmentPoint (int index);
    int  attachmentPointCount () const;
 
+   void getAttachmentIndicesForAtom (int atom_idx, Array<int> &res);
+
    virtual bool isSaturatedAtom    (int idx) = 0;
 
    virtual int  getBondOrder      (int idx) = 0; // > 0 -- BOND_***, -1 -- not sure

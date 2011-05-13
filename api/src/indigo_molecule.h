@@ -201,7 +201,7 @@ public:
    virtual bool hasNext ();
 
 protected:
-   QueryMolecule *_mol;
+   BaseMolecule *_mol;
    int _rgroup_idx;
    int _frag_idx;
 };

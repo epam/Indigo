@@ -53,6 +53,7 @@ void BaseMolecule::clear ()
    rgroups.clear();
    _xyz.clear();
    _rsite_attachment_points.clear();
+   _attachment_index.clear();
    data_sgroups.clear();
    superatoms.clear();
    repeating_units.clear();
@@ -1075,4 +1076,20 @@ int BaseMolecule::countSGroups ()
 {
    return generic_sgroups.size() + data_sgroups.size() + multiple_groups.size() +
           repeating_units.size() + superatoms.size();
+}
+
+void BaseMolecule::getAttachmentIndicesForAtom (int atom_idx, Array<int> &res)
+{
+   res.clear();
+
+   for (int i = 1; i <= attachmentPointCount(); i++)
+   {
+      int idx = 0, aidx;
+
+      for (idx = 0; (aidx = getAttachmentPoint(i, idx)) != -1; idx++)
+      {
+         if (aidx == atom_idx)
+            res.push(i);
+      }
+   }
 }

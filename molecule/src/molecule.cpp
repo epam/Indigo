@@ -393,6 +393,21 @@ int Molecule::matchAtomsCmp (Graph &g1, Graph &g2,
    if (!m1.isRSite(idx1) && m2.isRSite(idx2))
       return -1;
 
+   QS_DEF(Array<int>, ai1);
+   QS_DEF(Array<int>, ai2);
+
+   m1.getAttachmentIndicesForAtom(idx1, ai1);
+   m2.getAttachmentIndicesForAtom(idx2, ai2);
+
+   if (ai1.size() !=  ai2.size())
+      return ai1.size() - ai2.size();
+
+   int i;
+
+   for (i = 0; i != ai1.size(); i++)
+      if (ai1[i] != ai2[i])
+         return ai1[i] - ai2[i];
+
    bool pseudo = false;
 
    if (m1.isRSite(idx1) && m2.isRSite(idx2))

@@ -1025,7 +1025,7 @@ BaseMolecule & IndigoRGroupFragment::getBaseMolecule ()
 IndigoRGroupFragmentsIter::IndigoRGroupFragmentsIter (IndigoRGroup& rgp) :
 IndigoObject(RGROUP_FRAGMENTS_ITER)
 {
-   _mol = &rgp.mol->asQueryMolecule();
+   _mol = rgp.mol;
    _rgroup_idx = rgp.idx;
    _frag_idx = -1;
 }
