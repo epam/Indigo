@@ -41,7 +41,7 @@ void RGroup::copy (RGroup &other)
    occurrence.copy(other.occurrence);
    for (int i = 0; i < other.fragments.size(); i++)
    {
-      AutoPtr<QueryMolecule> new_fragment(new QueryMolecule());
+      AutoPtr<BaseMolecule> new_fragment(other.fragments[i]->neu());
 
       new_fragment->clone(*other.fragments[i], 0, 0);
       fragments.add(new_fragment.release());

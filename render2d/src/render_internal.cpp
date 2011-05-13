@@ -533,13 +533,11 @@ const char* MoleculeRenderInternal::_getStereoGroupText (int type)
 
 void MoleculeRenderInternal::_initRGroups()
 {
-   QUERY_MOL_BEGIN(_mol);
-      if (qmol.attachmentPointCount() > 0) {
-         for (int i = 1; i <= qmol.attachmentPointCount(); ++i)
-            for (int j = 0, k; (k = qmol.getAttachmentPoint(i, j)) >= 0; ++j)
-               _ad(k).isRGroupAttachmentPoint = true;
-      }
-   QUERY_MOL_END;
+   if (_mol->attachmentPointCount() > 0) {
+      for (int i = 1; i <= _mol->attachmentPointCount(); ++i)
+         for (int j = 0, k; (k = _mol->getAttachmentPoint(i, j)) >= 0; ++j)
+            _ad(k).isRGroupAttachmentPoint = true;
+   }
 }
 
 void MoleculeRenderInternal::_initDataSGroups()
@@ -957,7 +955,6 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring) {
    }
 
    float tilt = getFreeAngle(pp) + (float)(M_PI / 2);
-   float minDot = getMinDotProduct(pp, tilt);
 
    QS_DEF(ObjArray<Event>, events);
    events.clear();
@@ -2831,7 +2828,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
    QS_DEF(Array<float>, angles);
    QS_DEF(Array<int>, split);
    QS_DEF(Array<int>, rGroupAttachmentIndices);
-   QUERY_MOL_BEGIN(_mol);
+   
    if (ad.isRGroupAttachmentPoint) {
       // collect the angles between adjacent bonds
       const Vertex& v = bm.getVertex(aid);
@@ -2847,9 +2844,9 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       }
       // collect attachment point indices
       rGroupAttachmentIndices.clear();
-      bool multipleAttachmentPoints = qmol.attachmentPointCount() > 1;
-      for (int i = 1; i <= qmol.attachmentPointCount(); ++i)
-         for (int j = 0, k; (k = qmol.getAttachmentPoint(i, j)) >= 0; ++j)
+      bool multipleAttachmentPoints = _mol->attachmentPointCount() > 1;
+      for (int i = 1; i <= _mol->attachmentPointCount(); ++i)
+         for (int j = 0, k; (k = _mol->getAttachmentPoint(i, j)) >= 0; ++j)
             if (k == aid)
                rGroupAttachmentIndices.push(i);
       if (v.degree() != 0) {
@@ -2914,7 +2911,6 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          }
       }
    }
-   QUERY_MOL_END;
 
    // prepare atom id's
    if (_opt.showAtomIds)

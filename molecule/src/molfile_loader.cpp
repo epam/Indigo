@@ -79,9 +79,6 @@ void MolfileLoader::_loadMolecule ()
 {
    _readHeader();
 
-   if (_rgfile && _qmol == 0)
-      throw Error("RGfiles are allowed only for queries");
-
    _readCtabHeader();
 
    if (_v2000)
@@ -94,9 +91,7 @@ void MolfileLoader::_loadMolecule ()
    else
    {
       _readCtab3000();
-      
-      if (_qmol != 0)
-         _readRGroups3000();
+      _readRGroups3000();
    }
 
    _postLoad();
@@ -869,9 +864,6 @@ void MolfileLoader::_readCtab2000 ()
          }
          else if (strncmp(chars, "LOG", 3) == 0)
          {
-            if (_qmol == 0)
-               throw Error("rgroups logic is allowed only for queries");
-
             // skip something
             _scanner.skip(3);
 
@@ -885,7 +877,7 @@ void MolfileLoader::_readCtab2000 ()
 
             QS_DEF(Array<char>, occurrence_str);
 
-            RGroup &rgroup = _qmol->rgroups.getRGroup(rgroup_idx);
+            RGroup &rgroup = _bmol->rgroups.getRGroup(rgroup_idx);
 
             rgroup.if_then = if_then;
             rgroup.rest_h = rest_h;
@@ -1692,21 +1684,18 @@ void MolfileLoader::_postLoad ()
 
    _bmol->cis_trans.build(_ignore_cistrans.ptr());
 
-   if (_qmol != 0)
-   {
-      int n_rgroups = _qmol->rgroups.getRGroupCount();
-      for (i = 1; i <= n_rgroups; i++)
-         if (_qmol->rgroups.getRGroup(i).occurrence.size() == 0 &&
-             _qmol->rgroups.getRGroup(i).fragments.size() > 0)
-            _qmol->rgroups.getRGroup(i).occurrence.push((1 << 16) | 0xFFFF);
-   }
+   int n_rgroups = _bmol->rgroups.getRGroupCount();
+   for (i = 1; i <= n_rgroups; i++)
+      if (_bmol->rgroups.getRGroup(i).occurrence.size() == 0 &&
+          _bmol->rgroups.getRGroup(i).fragments.size() > 0)
+         _bmol->rgroups.getRGroup(i).occurrence.push((1 << 16) | 0xFFFF);
 
    _bmol->have_xyz = true;
 }
 
 void MolfileLoader::_readRGroups2000 ()
 {
-   MoleculeRGroups *rgroups = &_qmol->rgroups;
+   MoleculeRGroups *rgroups = &_bmol->rgroups;
    
    // read groups
    while (!_scanner.isEOF())
@@ -1734,13 +1723,21 @@ void MolfileLoader::_readRGroups2000 ()
             if (strncmp(rgp_chars, "$CTAB", 5) == 0)
             {
                _scanner.skipLine();
-               AutoPtr<QueryMolecule> fragment(new QueryMolecule());
+               AutoPtr<BaseMolecule> fragment(_bmol->neu());
 
                MolfileLoader loader(_scanner);
 
                loader._bmol = fragment.get();
-               loader._qmol = fragment.get();
-               loader._mol = 0;
+               if (_bmol->isQueryMolecule())
+               {
+                  loader._qmol = &loader._bmol->asQueryMolecule();
+                  loader._mol = 0;
+               }
+               else
+               {
+                  loader._mol = &loader._bmol->asMolecule();
+                  loader._qmol = 0;
+               }
                loader._readCtabHeader();
                loader._readCtab2000();
                if (loader._rgfile)
@@ -2126,9 +2123,6 @@ void MolfileLoader::_readCtab3000 ()
          }
          else if (strcmp(prop, "ATTCHORD") == 0)
          {
-            if (_qmol == 0)
-               throw Error("rgroup attachment orders are allowed only for queries");
-
             int n_items, nei_idx, att_type;
 
             strscan.skip(1); // skip '('
@@ -2137,7 +2131,7 @@ void MolfileLoader::_readCtab3000 ()
             {
                nei_idx = strscan.readInt1();
                att_type = strscan.readInt1();
-               _qmol->setRSiteAttachmentOrder(i, nei_idx - 1, att_type - 1);
+               _bmol->setRSiteAttachmentOrder(i, nei_idx - 1, att_type - 1);
             }
          }
          else
@@ -2445,7 +2439,7 @@ void MolfileLoader::_readRGroups3000 ()
 {
    QS_DEF(Array<char>, str);
 
-   MoleculeRGroups *rgroups = &_qmol->rgroups;
+   MoleculeRGroups *rgroups = &_bmol->rgroups;
 
    while (!_scanner.isEOF())
    {
@@ -2489,12 +2483,20 @@ void MolfileLoader::_readRGroups3000 ()
             if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
             {
                _scanner.seek(pos, SEEK_SET);
-               AutoPtr<QueryMolecule> fragment(new QueryMolecule());
+               AutoPtr<BaseMolecule> fragment(_bmol->neu());
 
                MolfileLoader loader(_scanner);
-               loader._qmol = fragment.get();
                loader._bmol = fragment.get();
-               loader._mol = 0;
+               if (_bmol->isQueryMolecule())
+               {
+                  loader._qmol = &fragment.get()->asQueryMolecule();
+                  loader._mol = 0;
+               }
+               else
+               {
+                  loader._qmol = 0;
+                  loader._mol = &fragment.get()->asMolecule();
+               }
                loader._readCtab3000();
                loader._postLoad();
                rgroup.fragments.add(fragment.release());

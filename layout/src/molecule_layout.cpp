@@ -355,7 +355,7 @@ void MoleculeLayout::make ()
 {
    _make();
    
-   if (_query && _molecule.asQueryMolecule().rgroups.getRGroupCount() > 0)
+   if (_molecule.rgroups.getRGroupCount() > 0)
    {
       MoleculeRGroups &rgs = ((QueryMolecule &)_molecule).rgroups;
       _ml.clear();
@@ -367,7 +367,7 @@ void MoleculeLayout::make ()
          Metalayout::LayoutLine& line = _ml.newLine();
          for (int j = 0; j < rg.fragments.size(); ++j)
          {
-            QueryMolecule& mol = *rg.fragments[j];
+            BaseMolecule& mol = *rg.fragments[j];
             MoleculeLayout layout(mol);
             layout.max_iterations = max_iterations;
             layout.make();

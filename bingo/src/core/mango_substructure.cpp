@@ -256,7 +256,7 @@ void MangoSubstructure::_correctQueryStereo (QueryMolecule &query)
       {
          for (int j = 0; j < rgroup.fragments.size(); j++)
          {
-            QueryMolecule &fragment = *rgroup.fragments[j];
+            QueryMolecule &fragment = rgroup.fragments[j]->asQueryMolecule();
             _correctQueryStereo(fragment);
          }
       }

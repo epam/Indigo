@@ -707,31 +707,6 @@ void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> 
             fixed_atoms.push(idx);
       }
    }
-
-   // RGroup
-   if (!(skip_flags & SKIP_RGROUPS))
-   {
-      rgroups.copyRGroupsFromMolecule(mol.rgroups);
-
-      for (i = 0; i < vertices.size(); i++)
-      {
-         if (!mol.isRSite(vertices[i]))
-            continue;
-
-         int atom_idx = mapping[vertices[i]];
-
-         if (atom_idx == -1)
-            continue;
-         if (mol._rsite_attachment_points.size() <= vertices[i])
-            continue;
-         Array<int> &ap = mol._rsite_attachment_points[vertices[i]];
-         int j;
-
-         for (j = 0; j < ap.size(); j++)
-            if (mapping[ap[j]] >= 0)
-               setRSiteAttachmentOrder(atom_idx, mapping[ap[j]], j);
-      }
-   }
 }
 
 void QueryMolecule::_postMergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vertices,
@@ -1476,7 +1451,6 @@ void QueryMolecule::clear ()
 
    _atoms.clear();
    _bonds.clear();
-   rgroups.clear();
    spatial_constraints.clear();
    fixed_atoms.clear();
    _bond_stereo_care.clear();

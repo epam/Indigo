@@ -50,6 +50,7 @@ void BaseMolecule::clear ()
    name.clear();
    stereocenters.clear();
    cis_trans.clear();
+   rgroups.clear();
    _xyz.clear();
    _rsite_attachment_points.clear();
    data_sgroups.clear();
@@ -122,6 +123,31 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
    }
    else
       _xyz.zerofill();
+
+   // RGroups
+   if (!(skip_flags & SKIP_RGROUPS))
+   {
+      rgroups.copyRGroupsFromMolecule(mol.rgroups);
+
+      for (i = 0; i < vertices.size(); i++)
+      {
+         if (!mol.isRSite(vertices[i]))
+            continue;
+
+         int atom_idx = mapping_out->at(vertices[i]);
+
+         if (atom_idx == -1)
+            continue;
+         if (mol._rsite_attachment_points.size() <= vertices[i])
+            continue;
+         Array<int> &ap = mol._rsite_attachment_points[vertices[i]];
+         int j;
+
+         for (j = 0; j < ap.size(); j++)
+            if (mapping_out->at(ap[j]) >= 0)
+               setRSiteAttachmentOrder(atom_idx, mapping_out->at(ap[j]), j);
+      }
+   }
 
    if (!(skip_flags & SKIP_ATTACHMENT_POINTS))
    {

@@ -103,15 +103,13 @@ bool RenderParamInterface::needsLayout (BaseMolecule& mol)
 {
    if (needsLayoutSub(mol))
       return true;
-   if (mol.isQueryMolecule()) {
-      QueryMolecule& qmol = mol.asQueryMolecule();
-      MoleculeRGroups& rGroups = qmol.rgroups;
-      for (int i = 1; i <= rGroups.getRGroupCount(); ++i) {
-         RGroup& rg = rGroups.getRGroup(i);
-         for (int j = 0; j < rg.fragmentsCount(); ++j)
-            if (needsLayoutSub(*rg.fragments[j]))
-               return true;
-      }
+
+   MoleculeRGroups& rGroups = mol.rgroups;
+   for (int i = 1; i <= rGroups.getRGroupCount(); ++i) {
+      RGroup& rg = rGroups.getRGroup(i);
+      for (int j = 0; j < rg.fragmentsCount(); ++j)
+         if (needsLayoutSub(*rg.fragments[j]))
+            return true;
    }
    return false;
 }

@@ -21,6 +21,7 @@
 #include "math/algebra.h"
 #include "molecule/molecule_cis_trans.h"
 #include "base_cpp/obj_array.h"
+#include "molecule/molecule_rgroups.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -238,6 +239,8 @@ public:
    ObjPool<MultipleGroup> multiple_groups;
    ObjPool<SGroup> generic_sgroups;
 
+   MoleculeRGroups rgroups;
+   
    Array<char> name;
 
    static bool hasCoord (BaseMolecule &mol);

@@ -49,9 +49,9 @@ void RenderItemMolecule::init ()
    _factory.getItemHLine(lineCore).items.push(_core);
    items.push(lineCore);
 
-   QUERY_MOL_BEGIN(mol);
+   
    {
-      MoleculeRGroups& rGroups = qmol.rgroups;
+      MoleculeRGroups& rGroups = mol->rgroups;
       if (_getRIfThenCount() > 0) {
          int _ifThen = _factory.addItemAuxiliary();
          _factory.getItemAuxiliary(_ifThen).type = RenderItemAuxiliary::AUX_RGROUP_IFTHEN;
@@ -84,22 +84,16 @@ void RenderItemMolecule::init ()
          }
       }
    }
-   QUERY_MOL_END;
 }
 
 int RenderItemMolecule::_getRIfThenCount ()
 {
-   QUERY_MOL_BEGIN(mol);
-   {
-      MoleculeRGroups& rgs = qmol.rgroups;
-      int cnt = 0;
-      for (int i = 1; i <= rgs.getRGroupCount(); ++i)
-         if (rgs.getRGroup(i).if_then > 0)
-            ++cnt;
-      return cnt;
-   }
-   QUERY_MOL_END;
-   throw Error("internal: _getRIfThenCount()");
+   MoleculeRGroups& rgs = mol->rgroups;
+   int cnt = 0;
+   for (int i = 1; i <= rgs.getRGroupCount(); ++i)
+      if (rgs.getRGroup(i).if_then > 0)
+         ++cnt;
+   return cnt;
 }
 
 void RenderItemMolecule::estimateSize ()

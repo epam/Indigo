@@ -80,7 +80,7 @@ void MolfileSaver::_saveMolecule (BaseMolecule &mol, bool query)
          _v2000 = false;
    }
 
-   bool rg2000 = (_v2000 && qmol != 0 && qmol->rgroups.getRGroupCount() > 0);
+   bool rg2000 = (_v2000 && mol.rgroups.getRGroupCount() > 0);
 
    if (rg2000)
    {
@@ -127,7 +127,7 @@ void MolfileSaver::_saveMolecule (BaseMolecule &mol, bool query)
    {
       int i, j;
 
-      MoleculeRGroups &rgroups = qmol->rgroups;
+      MoleculeRGroups &rgroups = mol.rgroups;
       int n_rgroups = rgroups.getRGroupCount();
 
       for (i = 1; i <= n_rgroups; i++)
@@ -166,11 +166,11 @@ void MolfileSaver::_saveMolecule (BaseMolecule &mol, bool query)
 
          for (j = 0; j < rgroup.fragments.size(); j++)
          {
-            QueryMolecule *fragment = rgroup.fragments[j];
+            BaseMolecule *fragment = rgroup.fragments[j];
 
             _output.writeStringCR("$CTAB");
             _writeCtabHeader2000(_output, *fragment);
-            _writeCtab2000(_output, *fragment, true);
+            _writeCtab2000(_output, *fragment, query);
             _writeRGroupIndices2000(_output, *fragment);
             _writeAttachmentValues2000(_output, *fragment);
 
@@ -648,13 +648,10 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
    output.writeStringCR("M  V30 END CTAB");
 
-   if (qmol != 0)
-   {
-      int n_rgroups = qmol->rgroups.getRGroupCount();
-      for (i = 1; i <= n_rgroups; i++)
-         if (qmol->rgroups.getRGroup(i).fragments.size() > 0)
-            _writeRGroup(output, *qmol, i);
-   }
+   int n_rgroups = mol.rgroups.getRGroupCount();
+   for (i = 1; i <= n_rgroups; i++)
+      if (mol.rgroups.getRGroup(i).fragments.size() > 0)
+         _writeRGroup(output, mol, i);
 }
 
 void MolfileSaver::_writeGenericSGroup3000 (BaseMolecule::SGroup &sgroup, int idx, const char *type, Output &output)
@@ -705,11 +702,11 @@ void MolfileSaver::_writeOccurrenceRanges (Output &out, const Array<int> &occurr
    }
 }
 
-void MolfileSaver::_writeRGroup (Output &output, QueryMolecule &query, int rg_idx)
+void MolfileSaver::_writeRGroup (Output &output, BaseMolecule &mol, int rg_idx)
 {
    QS_DEF(Array<char>, buf);
    ArrayOutput out(buf);
-   RGroup &rgroup = query.rgroups.getRGroup(rg_idx);
+   RGroup &rgroup = mol.rgroups.getRGroup(rg_idx);
 
    output.printfCR("M  V30 BEGIN RGROUP %d", rg_idx);
 
@@ -720,7 +717,7 @@ void MolfileSaver::_writeRGroup (Output &output, QueryMolecule &query, int rg_id
    _writeMultiString(output, buf.ptr(), buf.size());
 
    for (int i = 0; i < rgroup.fragmentsCount(); i++)
-      _writeCtab(output, *rgroup.fragments[i], true);
+      _writeCtab(output, *rgroup.fragments[i], mol.isQueryMolecule());
 
    output.writeStringCR("M  V30 END RGROUP");
 }

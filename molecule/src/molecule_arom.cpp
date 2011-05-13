@@ -693,7 +693,7 @@ bool QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additiona
       {
          for (int j = 0; j < rgroup.fragments.size(); j++)
          {
-            QueryMolecule &fragment = *rgroup.fragments[j];
+            QueryMolecule &fragment = rgroup.fragments[j]->asQueryMolecule();
 
             aromatized |= _aromatizeRGroupFragment(fragment, rgroups_attached_single[i]);
          }

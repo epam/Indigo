@@ -112,7 +112,7 @@ public:
 
    static IndigoRGroup & cast (IndigoObject &obj);
 
-   QueryMolecule *mol;
+   BaseMolecule *mol;
    int idx;
 };
 
@@ -120,11 +120,12 @@ class DLLEXPORT IndigoRGroupFragment : public IndigoObject
 {
 public:
    IndigoRGroupFragment (IndigoRGroup &rgp, int idx);
-   IndigoRGroupFragment (QueryMolecule *mol, int rgroup_idx, int fragment_idx);
+   IndigoRGroupFragment (BaseMolecule *mol, int rgroup_idx, int fragment_idx);
 
    virtual ~IndigoRGroupFragment ();
 
    virtual QueryMolecule & getQueryMolecule ();
+   virtual Molecule & getMolecule ();
    virtual BaseMolecule & getBaseMolecule ();
    virtual int getIndex ();
 
@@ -178,7 +179,7 @@ protected:
 class IndigoRGroupsIter : public IndigoObject
 {
 public:
-   IndigoRGroupsIter (QueryMolecule *mol);
+   IndigoRGroupsIter (BaseMolecule *mol);
 
    virtual ~IndigoRGroupsIter ();
 
@@ -186,7 +187,7 @@ public:
    virtual bool hasNext ();
 
 protected:
-   QueryMolecule *_mol;
+   BaseMolecule *_mol;
    int _idx;
 };
 

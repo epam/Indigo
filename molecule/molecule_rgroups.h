@@ -26,7 +26,7 @@
 
 namespace indigo {
 
-class QueryMolecule;
+class BaseMolecule;
 
 struct RGroup
 {
@@ -39,7 +39,7 @@ struct RGroup
    inline int fragmentsCount () const {return fragments.size();}
    bool occurrenceSatisfied (int value) const;
 
-   PtrArray<QueryMolecule> fragments;
+   PtrArray<BaseMolecule> fragments;
    int if_then;
    int rest_h;
    Array<int> occurrence;

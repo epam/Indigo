@@ -162,7 +162,7 @@ bool MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens (QueryMolecule &qu
    int n_rgroups = rgroups.getRGroupCount();
    for (i = 1; i <= n_rgroups; i++)
       for (j = 0; j < rgroups.getRGroup(i).fragments.size(); j++)
-         if (shouldUnfoldTargetHydrogens(*rgroups.getRGroup(i).fragments[j]))
+         if (shouldUnfoldTargetHydrogens(rgroups.getRGroup(i).fragments[j]->asQueryMolecule()))
             return true;
 
    return false;
@@ -807,7 +807,7 @@ int MoleculeSubstructureMatcher::_embedding_markush (int *core_sub, int *core_su
       // For all rgroup fragments
       for (int fr_idx = 0; fr_idx < rgroup.fragments.size(); fr_idx++)
       {
-         QueryMolecule &fragment = *rgroup.fragments[fr_idx];
+         QueryMolecule &fragment = rgroup.fragments[fr_idx]->asQueryMolecule();
 
          if (fragment.attachmentPointCount() > 2)
             throw Error("more than two attachment points");

@@ -954,7 +954,7 @@ IndigoRGroup & IndigoRGroup::cast (IndigoObject &obj)
    throw IndigoError("%s is not an rgroup", obj.debugInfo());
 }
 
-IndigoRGroupsIter::IndigoRGroupsIter (QueryMolecule *mol) : IndigoObject(RGROUPS_ITER)
+IndigoRGroupsIter::IndigoRGroupsIter (BaseMolecule *mol) : IndigoObject(RGROUPS_ITER)
 {
    _mol = mol;
    _idx = 0;
@@ -972,7 +972,7 @@ CEXPORT int indigoIterateRGroups (int molecule)
 
       if (IndigoBaseMolecule::is(obj))
       {
-         QueryMolecule &mol = obj.getQueryMolecule();
+         BaseMolecule &mol = obj.getBaseMolecule();
 
          return self.addObject(new IndigoRGroupsIter(&mol));
       }
@@ -989,7 +989,7 @@ IndigoRGroupFragment::IndigoRGroupFragment (IndigoRGroup &rgp, int idx) : Indigo
    frag_idx = idx;
 }
 
-IndigoRGroupFragment::IndigoRGroupFragment (QueryMolecule *mol, int rgroup_idx, int fragment_idx) :
+IndigoRGroupFragment::IndigoRGroupFragment (BaseMolecule *mol, int rgroup_idx, int fragment_idx) :
 IndigoObject(RGROUP_FRAGMENT)
 {
    rgroup.mol = mol;
@@ -1008,12 +1008,17 @@ int IndigoRGroupFragment::getIndex ()
 
 QueryMolecule & IndigoRGroupFragment::getQueryMolecule ()
 {
-   return *rgroup.mol->asQueryMolecule().rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
+   return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx]->asQueryMolecule();
+}
+
+Molecule & IndigoRGroupFragment::getMolecule ()
+{
+   return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx]->asMolecule();
 }
 
 BaseMolecule & IndigoRGroupFragment::getBaseMolecule ()
 {
-   return getQueryMolecule();
+   return *rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
 }
 
 

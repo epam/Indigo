@@ -18,7 +18,6 @@
 #include "molecule/base_molecule.h"
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/ptr_array.h"
-#include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_arom.h"
 
@@ -297,8 +296,6 @@ public:
    int addBond (int beg, int end, Bond *bond);
 
    void optimize ();
-
-   MoleculeRGroups rgroups;
 
    Molecule3dConstraints spatial_constraints;
    Array<int> fixed_atoms;

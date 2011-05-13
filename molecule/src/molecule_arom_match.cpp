@@ -57,7 +57,7 @@ bool AromaticityMatcher::isNecessary (QueryMolecule &query)
       {
          for (int j = 0; j < rgroup.fragments.size(); j++)
          {
-            QueryMolecule &fragment = *rgroup.fragments[j];
+            QueryMolecule &fragment = rgroup.fragments[j]->asQueryMolecule();
             if ( AromaticityMatcher::isNecessary(fragment))
                return true;
          }
