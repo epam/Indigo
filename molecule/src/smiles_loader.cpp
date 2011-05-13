@@ -319,7 +319,7 @@ void SmilesLoader::_readOtherStuff ()
       {
          QS_DEF(Array<char>, label);
 
-         for (int i = 0; i < _bmol->vertexCount(); i++)
+         for (int i = _bmol->vertexBegin(); i != _bmol->vertexEnd(); i = _bmol->vertexNext(i))
          {
             label.clear();
 
@@ -332,9 +332,9 @@ void SmilesLoader::_readOtherStuff ()
                   break;
                label.push(c);
             }
-            if (c == '$' && i != _bmol->vertexCount() - 1)
+            if (c == '$' && i != _bmol->vertexEnd() - 1)
                throw Error("only %d atoms found in pseudo-atoms $...$ block", i + 1);
-            if (c == ';' && i == _bmol->vertexCount() - 1)
+            if (c == ';' && i == _bmol->vertexEnd() - 1)
                throw Error("extra ';' in pseudo-atoms $...$ block");
 
             if (label.size() > 0)
@@ -342,13 +342,26 @@ void SmilesLoader::_readOtherStuff ()
                label.push(0);
                int rnum;
 
-               if (label.size() > 3 && label[0] == '_' && label[1] == 'R' &&
+               if (label.size() > 3 && strncmp(label.ptr(), "_R", 2) == 0 &&
                    sscanf(label.ptr() + 2, "%d", &rnum) == 1)
                {
+                  // ChemAxon's Extended SMILES notation for R-sites
                   if (_qmol != 0)
                      _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
-                  // ChemAxon's Extended SMILES notation for R-sites
                   _bmol->allowRGroupOnRSite(i, rnum);
+               }
+               else if (label.size() > 4 && strncmp(label.ptr(), "_AP", 3) == 0 &&
+                        sscanf(label.ptr() + 3, "%d", &rnum) == 1)
+               {
+                  // That is ChemAxon's Extended SMILES notation for attachment
+                  // points. We delete this fake atom, placing attachment point
+                  // markers on its neighbors.
+                  int k;
+                  const Vertex &v = _bmol->getVertex(i);
+
+                  for (k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+                     _bmol->addAttachmentPoint(rnum, v.neiVertex(k));
+                  _bmol->removeAtom(i);
                }
                else
                {
