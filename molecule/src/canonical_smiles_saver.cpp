@@ -45,7 +45,6 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
       throw Error("can not canonicalize a polymer");
 
    mol.clone(mol_, 0, 0);
-   mol.unhighlightAll();
 
    ignored.clear_resize(mol.vertexEnd());
    ignored.zerofill();

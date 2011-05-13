@@ -404,6 +404,12 @@ int Molecule::matchAtomsCmp (Graph &g1, Graph &g2,
    if (!m1.isRSite(idx1) && m2.isRSite(idx2))
       return -1;
 
+   if (m1.isAtomHighlighted(idx1) && !m2.isAtomHighlighted(idx2))
+      return 1;
+
+   if (!m1.isAtomHighlighted(idx1) && m2.isAtomHighlighted(idx2))
+      return -1;
+
    QS_DEF(Array<int>, ai1);
    QS_DEF(Array<int>, ai2);
 
