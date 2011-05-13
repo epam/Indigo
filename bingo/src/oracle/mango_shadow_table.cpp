@@ -179,6 +179,9 @@ void MangoShadowTable::_flushMain (OracleEnv &env)
                maxallocsize_xyz = allocsize;
          }
 
+         if (maxallocsize_xyz == 0)
+            maxallocsize_xyz = 8; // or we get ORA-01459
+
          xyz.clear_resize((maxallocsize_xyz + 4) * _pending_xyz.size());
          xyz.zerofill();
          for (i = 0; i < _pending_xyz.size(); i++)
