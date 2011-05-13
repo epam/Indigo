@@ -33,6 +33,8 @@ MangoShadowTable::MangoShadowTable (int context_id)
 
    _main_table_statement_count = 0;
    _components_table_statement_count = 0;
+   _commit_main = false;
+   _commit_comp = false;
 }
 
 MangoShadowTable::~MangoShadowTable ()
@@ -47,7 +49,8 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
                                     const char *gross,
                                     const Array<int> &counters,
                                     float molecular_mass,
-                                    const char *fp_sim)
+                                    const char *fp_sim,
+                                    bool append)
 {
    if (_main_table_statement_count >= 4096)
       _flushMain(env);
@@ -58,10 +61,14 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
    {
       _main_table_statement.create(env);
       _main_table_statement_count = 0;
-      _main_table_statement->append("INSERT /*+ APPEND_VALUES */ INTO %s VALUES ("
+      _main_table_statement->append("INSERT %s INTO %s VALUES ("
               ":rid, :blockno, :offset, :gross, :cmf, :xyz, :mass, :fragcount",
+              append ? "/*+ APPEND_VALUES */" : "",
               _table_name.ptr());
-      
+
+      if (append)
+         _commit_main = true;
+
       for (i = 0; i < counters.size(); i++)
       {
          char name[10] = {0};
@@ -107,8 +114,12 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
    {
       _components_table_statement.create(env);
       _components_table_statement->append(
-         "INSERT /*+ APPEND_VALUES */ INTO %s VALUES (:rid, :hash, :count)", _components_table_name.ptr());
+         "INSERT %s INTO %s VALUES (:rid, :hash, :count)",
+              append ? "/*+ APPEND_VALUES */" : "",
+              _components_table_name.ptr());
       _components_table_statement_count = 0;
+      if (append)
+         _commit_comp = true;
    }
 
    for (int i = 0; i < hash.size(); i++)
@@ -210,7 +221,11 @@ void MangoShadowTable::_flushMain (OracleEnv &env)
          }
 
          _main_table_statement->executeMultiple(_main_table_statement_count);
-         OracleStatement::executeSingle(env, "COMMIT");
+         if (_commit_main)
+         {
+            OracleStatement::executeSingle(env, "COMMIT");
+            _commit_main = false;
+         }
          profTimerStop(tmain);
 
          _main_table_statement.free();
@@ -242,7 +257,11 @@ void MangoShadowTable::_flushComponents (OracleEnv &env)
          _components_table_statement->bindStringByName(":rid", _pending_comp_rid[0], 19);
          _components_table_statement->bindStringByName(":hash", _pending_comp_hash[0], 9);
          _components_table_statement->executeMultiple(_components_table_statement_count);
-         OracleStatement::executeSingle(env, "COMMIT");
+         if (_commit_comp)
+         {
+            OracleStatement::executeSingle(env, "COMMIT");
+            _commit_comp = false;
+         }
          _pending_comp_count.clear();
          _pending_comp_rid.clear();
          _pending_comp_hash.clear();
@@ -255,7 +274,7 @@ void MangoShadowTable::_flushComponents (OracleEnv &env)
 
 
 void MangoShadowTable::addMolecule (OracleEnv &env, const MangoIndex &index, 
-                                    const char *rowid, int blockno, int offset)
+                                    const char *rowid, int blockno, int offset, bool append)
 {
    addMolecule(env, rowid, blockno, offset,
                index.getCmf().ptr(), index.getCmf().size(),
@@ -263,7 +282,8 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const MangoIndex &index,
                index.getHash(), index.getGrossString(), 
                index.getCountedElements(),
                index.getMolecularMass(),
-               index.getFingerprint_Sim_Str());
+               index.getFingerprint_Sim_Str(),
+               append);
 }
 
 void MangoShadowTable::create (OracleEnv &env)

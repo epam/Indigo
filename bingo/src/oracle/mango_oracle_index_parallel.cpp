@@ -58,7 +58,7 @@ void MangoRegisterDispatcher::_handleResult (OsCommandResult &result)
          res.per_molecule_data.getSize(i));
 
       mangoRegisterMolecule(_env, rowid, _context, 
-         res.per_molecule_index[i], fingerprints, prepared_data);
+         res.per_molecule_index[i], fingerprints, prepared_data, true);
 
       _molecules_saved++;
 

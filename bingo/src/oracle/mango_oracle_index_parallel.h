@@ -74,6 +74,7 @@ void mangoRegisterMolecule (OracleEnv &env, const char *rowid,
                              MangoOracleContext &context,
                              const MangoIndex &index,
                              BingoFingerprints &fingerprints,
-                             const Array<char> &prepared_data);
+                             const Array<char> &prepared_data,
+                             bool append);
 
 #endif // __mango_oracle_index_parallel_h__

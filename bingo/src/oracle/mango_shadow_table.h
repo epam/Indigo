@@ -39,7 +39,7 @@ public:
    void create (OracleEnv &env);
    void createIndices (OracleEnv &env);
    void addMolecule (OracleEnv &env, const MangoIndex &index, 
-                     const char *rowid, int blockno, int offset);
+                     const char *rowid, int blockno, int offset, bool append);
    bool getMoleculeLocation (OracleEnv &env, const char *rowid, 
                              int &blockno, int &offset);
    void deleteMolecule (OracleEnv &env, const char *rowid);
@@ -47,7 +47,8 @@ public:
                      const char *data_cmf, int len_cmf,
                      const char *data_xyz, int len_xyz,
                      const MangoExact::Hash &hash, const char *gross, 
-                     const Array<int> &counters, float molecular_mass, const char *fp_ord);
+                     const Array<int> &counters, float molecular_mass, const char *fp_ord,
+                     bool append);
    void flush (OracleEnv &env);
 
    void analyze (OracleEnv &env);
@@ -82,7 +83,10 @@ protected:
    Array<char[19]>        _pending_comp_rid;
    Array<char[9]>         _pending_comp_hash;
    Array<int>             _pending_comp_count;
-   
+
+   bool _commit_main;
+   bool _commit_comp;
+
 private:
    MangoShadowTable (MangoShadowTable &); // no implicit copy
 };

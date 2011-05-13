@@ -94,7 +94,8 @@ void mangoRegisterMolecule (OracleEnv &env, const char *rowid,
                              MangoOracleContext &context,
                              const MangoIndex &index,
                              BingoFingerprints &fingerprints,
-                             const Array<char> &prepared_data)
+                             const Array<char> &prepared_data,
+                             bool append)
 {
    profTimerStart(tall, "moleculeIndex.register");
 
@@ -109,7 +110,7 @@ void mangoRegisterMolecule (OracleEnv &env, const char *rowid,
    profTimerStop(tfing);
 
    profTimerStart(tshad, "moleculeIndex.register_shadow");
-   context.shadow_table.addMolecule(env, index, rowid, blockno + 1, offset);
+   context.shadow_table.addMolecule(env, index, rowid, blockno + 1, offset, append);
    profTimerStop(tshad);
 }
 
@@ -117,7 +118,7 @@ bool mangoPrepareAndRegisterMolecule (OracleEnv &env, const char *rowid,
                              const Array<char> &molfile_buf,
                              MangoOracleContext &context,
                              MangoIndex &index,
-                             BingoFingerprints &fingerprints)
+                             BingoFingerprints &fingerprints, bool append)
 {
    QS_DEF(Array<char>, prepared_data);
    
@@ -125,7 +126,7 @@ bool mangoPrepareAndRegisterMolecule (OracleEnv &env, const char *rowid,
       index, prepared_data, NULL))
    {
       mangoRegisterMolecule(env, rowid, context, 
-         index, fingerprints, prepared_data);
+         index, fingerprints, prepared_data, append);
 
       return true;
    }
@@ -203,7 +204,7 @@ void mangoRegisterTable (OracleEnv &env, MangoOracleContext &context,
          try
          {
             mangoPrepareAndRegisterMolecule(env, rowid.ptr(),
-                  molfile_buf, context, index, fingerprints);
+                  molfile_buf, context, index, fingerprints, true);
          }
          catch (Exception &ex)
          {
@@ -395,7 +396,7 @@ ORAEXT void oraMangoIndexInsert (OCIExtProcContext *ctx, int context_id,
       target_lob.readAll(target_buf, false);
 
       mangoPrepareAndRegisterMolecule(env, rowid, target_buf, 
-         context, index, fingerprints);
+         context, index, fingerprints, false);
 
       storage.finish(env);
       context.shadow_table.flush(env);
