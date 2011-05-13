@@ -184,6 +184,11 @@ protected:
    void _calculateTopology ();
    void _calculateSSSR ();
    void _calculateComponents ();
+
+   // This is a bad hack for those who are too lazy to handle the mappings.
+   // NEVER USE IT.
+   void _cloneGraph_KeepIndices (const Graph &other);
+
 private:
    Graph (const Graph &); // no implicit copy
 };

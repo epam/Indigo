@@ -413,7 +413,6 @@ void Graph::_mergeWithSubgraph (const Graph &other, const Array<int> &vertices, 
          if (edge_mapping != 0)
             edge_mapping->at(i) = idx;
       }
-
    }
 }
 
@@ -728,3 +727,76 @@ int Graph::sssrCount ()
       _calculateSSSR();
    return _sssr_vertices.size();
 }
+
+void Graph::_cloneGraph_KeepIndices (const Graph &other)
+{
+   if (vertexCount() > 0 || edgeCount() > 0)
+      throw Error("can not _clone_KeepIndices into a non-empty graph");
+
+   int i, j, i_prev;
+   int max_vertex_idx = -1;
+   int max_edge_idx = -1;
+
+   for (i = other.vertexBegin(); i != other.vertexEnd(); i = other.vertexNext(i))
+      if (max_vertex_idx < i)
+         max_vertex_idx = i;
+
+   for (i = other.edgeBegin(); i != other.edgeEnd(); i = other.edgeNext(i))
+      if (max_edge_idx < i)
+         max_edge_idx = i;
+
+   for (i = 0; i <= max_vertex_idx; i++)
+      if (addVertex() != i)
+         throw Error("_clone_KeepIndices: unexpected vertex index");
+
+   i_prev = -1;
+
+   for (i = other.vertexBegin(); i != other.vertexEnd(); i = other.vertexNext(i))
+   {
+      for (j = i_prev + 1; j < i; j++)
+         removeVertex(j);
+      i_prev = i;
+   }
+
+   if (vertexCount() != other.vertexCount())
+      throw Error("_clone_KeepIndices: internal");
+
+   for (i = 0; i <= max_edge_idx; i++)
+      if (_edges.add() != i)
+         throw Error("_clone_KeepIndices: unexpected edge index");
+
+   i_prev = -1;
+
+   for (i = other.edgeBegin(); i != other.edgeEnd(); i = other.edgeNext(i))
+   {
+      for (j = i_prev + 1; j < i; j++)
+         _edges.remove(j);
+
+      _edges[i].beg = other._edges[i].beg;
+      _edges[i].end = other._edges[i].end;
+
+      Vertex &vbeg = _vertices->at(_edges[i].beg);
+      Vertex &vend = _vertices->at(_edges[i].end);
+
+      int ve1_idx = vbeg.neighbors.add();
+      int ve2_idx = vend.neighbors.add();
+
+      VertexEdge &ve1 = vbeg.neighbors[ve1_idx];
+      VertexEdge &ve2 = vend.neighbors[ve2_idx];
+
+      ve1.v = _edges[i].end;
+      ve2.v = _edges[i].beg;
+      ve1.e = i;
+      ve2.e = i;
+
+      i_prev = i;
+   }
+
+   if (edgeCount() != other.edgeCount())
+      throw Error("_clone_KeepIndices: internal");
+
+   _topology_valid = false;
+   _sssr_valid = false;
+   _components_valid = false;
+}
+

@@ -265,6 +265,10 @@ public:
 
    void clone (BaseMolecule &other, Array<int> *mapping, Array<int> *inv_mapping, int skip_flags = 0);
 
+   // This is a bad hack for those who are too lazy to handle the mappings.
+   // NEVER USE IT.
+   void clone_KeepIndices (BaseMolecule &other, int skip_flags = 0);
+
    void mergeWithMolecule (BaseMolecule &other, Array<int> *mapping, int skip_flags = 0);
 
    void removeAtoms (const Array<int> &indices);
@@ -292,6 +296,10 @@ public:
    DEF_ERROR("molecule");
 protected:
 
+   void _mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int> &vertices,
+                                   const Array<int> *edges, Array<int> &mapping,
+                                   Array<int> &edge_mapping, int skip_flags);
+   
    virtual void _mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
            const Array<int> *edges, const Array<int> &mapping, int skip_flags) = 0;
 

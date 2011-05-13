@@ -89,21 +89,12 @@ bool BaseMolecule::hasZCoord (BaseMolecule &mol)
    return false;
 }
 
-void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
-                                         const Array<int> *edges, Array<int> *mapping_out,
-                                         int skip_flags)
+void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int> &vertices,
+                                              const Array<int> *edges, Array<int> &mapping,
+                                              Array<int> &edge_mapping, int skip_flags)
 {
-   QS_DEF(Array<int>, tmp_mapping);
-   QS_DEF(Array<int>, edge_mapping);
-
    int i;
-
-   if (mapping_out == 0)
-      mapping_out = &tmp_mapping;
-
-   // vertices and edges
-   _mergeWithSubgraph(mol, vertices, edges, mapping_out, &edge_mapping);
-
+   
    // XYZ
    _xyz.resize(vertexEnd());
    if (!(skip_flags & SKIP_XYZ))
@@ -115,10 +106,10 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
 
       for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
       {
-         if (mapping_out->at(i) < 0)
+         if (mapping[i] < 0)
             continue;
 
-         _xyz[mapping_out->at(i)] = mol.getAtomXyz(i);
+         _xyz[mapping[i]] = mol.getAtomXyz(i);
       }
    }
    else
@@ -134,7 +125,7 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
          if (!mol.isRSite(vertices[i]))
             continue;
 
-         int atom_idx = mapping_out->at(vertices[i]);
+         int atom_idx = mapping[vertices[i]];
 
          if (atom_idx == -1)
             continue;
@@ -144,8 +135,8 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
          int j;
 
          for (j = 0; j < ap.size(); j++)
-            if (mapping_out->at(ap[j]) >= 0)
-               setRSiteAttachmentOrder(atom_idx, mapping_out->at(ap[j]), j);
+            if (mapping[ap[j]] >= 0)
+               setRSiteAttachmentOrder(atom_idx, mapping[ap[j]], j);
       }
    }
 
@@ -159,8 +150,8 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
             int j;
 
             for (j = 0; (att_idx = mol.getAttachmentPoint(i, j)) != -1; j++)
-               if (mapping_out->at(att_idx) != -1)
-                  this->addAttachmentPoint(i, mapping_out->at(att_idx));
+               if (mapping[att_idx] != -1)
+                  this->addAttachmentPoint(i, mapping[att_idx]);
          }
       }
    }
@@ -171,7 +162,7 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
       DataSGroup &supersg = mol.data_sgroups[i];
       int idx = data_sgroups.add();
       DataSGroup &sg = data_sgroups[idx];
-      if (_mergeSGroupWithSubmolecule(sg, supersg, mol, *mapping_out, edge_mapping))
+      if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
       {
          sg.detached = supersg.detached;
          sg.display_pos = supersg.display_pos;
@@ -192,7 +183,7 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
       int idx = superatoms.add();
       Superatom &sa = superatoms[idx];
 
-      if (_mergeSGroupWithSubmolecule(sa, supersa, mol, *mapping_out, edge_mapping))
+      if (_mergeSGroupWithSubmolecule(sa, supersa, mol, mapping, edge_mapping))
       {
          sa.bond_dir = supersa.bond_dir;
          if (supersa.bond_idx >= 0)
@@ -211,7 +202,7 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
       RepeatingUnit &superru = mol.repeating_units[i];
       int idx = repeating_units.add();
       RepeatingUnit &ru = repeating_units[idx];
-      if (_mergeSGroupWithSubmolecule(ru, superru, mol, *mapping_out, edge_mapping))
+      if (_mergeSGroupWithSubmolecule(ru, superru, mol, mapping, edge_mapping))
          ru.connectivity = superru.connectivity;
       else
          repeating_units.remove(idx);
@@ -223,12 +214,12 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
       MultipleGroup &supermg = mol.multiple_groups[i];
       int idx = multiple_groups.add();
       MultipleGroup &mg = multiple_groups[idx];
-      if (_mergeSGroupWithSubmolecule(mg, supermg, mol, *mapping_out, edge_mapping))
+      if (_mergeSGroupWithSubmolecule(mg, supermg, mol, mapping, edge_mapping))
       {
          mg.multiplier = supermg.multiplier;
          for (int j = 0; j != supermg.parent_atoms.size(); j++)
-            if (mapping_out->at(supermg.parent_atoms[j]) >= 0)
-               mg.parent_atoms.push(mapping_out->at(supermg.parent_atoms[j]));
+            if (mapping[supermg.parent_atoms[j]] >= 0)
+               mg.parent_atoms.push(mapping[supermg.parent_atoms[j]]);
       }
       else
          multiple_groups.remove(idx);
@@ -241,31 +232,49 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
       int idx = generic_sgroups.add();
       SGroup &gg = generic_sgroups[idx];
 
-      if (_mergeSGroupWithSubmolecule(gg, supergg, mol, *mapping_out, edge_mapping))
+      if (_mergeSGroupWithSubmolecule(gg, supergg, mol, mapping, edge_mapping))
          ;
       else
          generic_sgroups.remove(idx);
    }
 
    // highlighting
-   highlightSubmolecule(mol, mapping_out->ptr(), false);
+   highlightSubmolecule(mol, mapping.ptr(), false);
 
    // subclass stuff (Molecule or QueryMolecule)
-   _mergeWithSubmolecule(mol, vertices, edges, *mapping_out, skip_flags);
+   _mergeWithSubmolecule(mol, vertices, edges, mapping, skip_flags);
 
    // stereo
    if (!(skip_flags & SKIP_STEREOCENTERS))
-      stereocenters.buildOnSubmolecule(mol.stereocenters, mapping_out->ptr());
+      stereocenters.buildOnSubmolecule(mol.stereocenters, mapping.ptr());
    else
       stereocenters.clear();
 
    if (!(skip_flags & SKIP_CIS_TRANS))
-      cis_trans.buildOnSubmolecule(mol, mapping_out->ptr());
+      cis_trans.buildOnSubmolecule(mol, mapping.ptr());
    else
       cis_trans.clear();
 
    // subclass stuff (Molecule or QueryMolecule)
-   _postMergeWithSubmolecule(mol, vertices, edges, *mapping_out, skip_flags);
+   _postMergeWithSubmolecule(mol, vertices, edges, mapping, skip_flags);
+}
+
+
+void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
+                                         const Array<int> *edges, Array<int> *mapping_out,
+                                         int skip_flags)
+{
+   QS_DEF(Array<int>, tmp_mapping);
+   QS_DEF(Array<int>, edge_mapping);
+
+   if (mapping_out == 0)
+      mapping_out = &tmp_mapping;
+
+   // vertices and edges
+   _mergeWithSubgraph(mol, vertices, edges, mapping_out, &edge_mapping);
+   
+   // all the chemical stuff
+   _mergeWithSubmolecule_Sub(mol, vertices, edges, *mapping_out, edge_mapping, skip_flags);
 }
 
 int BaseMolecule::mergeAtoms (int atom1, int atom2)
@@ -413,6 +422,37 @@ void BaseMolecule::clone (BaseMolecule &other, Array<int> *mapping,
       mapping->push(i);
 
    makeSubmolecule(other, *mapping, inv_mapping, skip_flags);
+
+   name.copy(other.name);
+}
+
+void BaseMolecule::clone_KeepIndices (BaseMolecule &other, int skip_flags)
+{
+   QS_DEF(Array<int>, mapping);
+   QS_DEF(Array<int>, edge_mapping);
+   QS_DEF(Array<int>, vertices);
+   int i;
+
+   mapping.clear_resize(other.vertexEnd());
+   mapping.fffill();
+
+   vertices.clear();
+
+   for (i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
+   {
+      vertices.push(i);
+      mapping[i] = i;
+   }
+
+   edge_mapping.clear_resize(other.edgeEnd());
+   edge_mapping.fffill();
+
+   for (i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
+      edge_mapping[i] = i;
+
+   _cloneGraph_KeepIndices(other);
+
+   _mergeWithSubmolecule_Sub(other, vertices, 0, mapping, edge_mapping, skip_flags);
 
    name.copy(other.name);
 }
