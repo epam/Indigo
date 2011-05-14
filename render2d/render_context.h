@@ -58,10 +58,10 @@ public:
    void drawRSiteAttachmentIndex (RenderItemRSiteAttachmentIndex& ri);
    void drawLine (const Vec2f& v0, const Vec2f& v1);
    void fillQuad (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3);
+   void fillQuadStripes (const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, int cnt);
+   void fillPentagon (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4);
    void drawQuad (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3);
-   void drawTriangle (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2);
    void drawTriangleZigzag (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, int cnt);
-   void drawTriangleStripes (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, int cnt);
    void drawCircle (const Vec2f& center, const float r);
    void fillCircle (const Vec2f& center, const float r);
    void drawArc (const Vec2f& center, const float r, const float a0, const float a1);

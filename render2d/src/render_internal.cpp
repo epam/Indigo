@@ -3191,6 +3191,9 @@ void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, con
    float lw = _cw.currentLineWidth();
 
    int stripeCnt = (int)((len) / lw / 2);
+   Vec2f r0(be1.p), l0(be1.p);
+   l0.addScaled(bd.norm, -lw/2);
+   r0.addScaled(bd.norm, lw/2);
 
    if (bd.stereodir == 0)
    {
@@ -3201,7 +3204,7 @@ void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, con
    {
       if (_ad(be2.aid).showLabel == false && !bd.isShort)
       {
-         float tgb = w / len;
+         float tgb = (w - lw) / len;
          float csb = sqrt(1 / (1 + tgb * tgb));
          float snb = tgb * csb;
          float tga, ttl=0.0, ttr=0.0;
@@ -3235,15 +3238,15 @@ void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, con
             l.rotateL(snb, csb);
             l.add(be1.p);
          }
-         _cw.fillQuad(be1.p, r, be2.p, l);
+         _cw.fillPentagon(r0, r, be2.p, l, l0);
       }
       else
       {
-         _cw.drawTriangle(be1.p, r, l);
+         _cw.fillQuad(r0, r, l, l0);
       }
    }
    else if (bd.stereodir == MoleculeStereocenters::BOND_DOWN)
-      _cw.drawTriangleStripes(be1.p, r, l, stripeCnt);
+      _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
    else if (bd.stereodir == MoleculeStereocenters::BOND_EITHER)
       _cw.drawTriangleZigzag(be1.p, r, l, stripeCnt);
    else

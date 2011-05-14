@@ -454,17 +454,6 @@ void RenderContext::drawPoly (const Array<Vec2f>& v)
    cairoCheckStatus();
 }
 
-void RenderContext::drawTriangle (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2)
-{
-   moveTo(v0);
-   lineTo(v1);
-   lineTo(v2);
-   checkPathNonEmpty();
-   bbIncludePath(false);
-   cairo_fill(_cr);
-   cairoCheckStatus();
-}
-
 void RenderContext::checkPathNonEmpty () const
 {
 #ifdef DEBUG
@@ -483,6 +472,41 @@ void RenderContext::fillQuad (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2,
    lineTo(v1);
    lineTo(v2);
    lineTo(v3);
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::fillQuadStripes (const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, int cnt)
+{
+   Vec2f r(v0r), dr;
+   Vec2f l(v0l), dl;
+   dr.diff(v1r, v0r); dr.scale(1.0f/cnt);
+   dl.diff(v1l, v0l); dl.scale(1.0f/cnt);
+
+   if (cnt < 3)
+      cnt = 3;
+   for (int i = 0; i < cnt; ++i)
+   {
+      r.add(dr);
+      l.add(dl);
+      moveTo(r);
+      lineTo(l);
+   }
+   checkPathNonEmpty();
+   bbIncludePath(true);
+   cairo_stroke(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::fillPentagon (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4)
+{
+   moveTo(v0);
+   lineTo(v1);
+   lineTo(v2);
+   lineTo(v3);
+   lineTo(v4);
    checkPathNonEmpty();
    bbIncludePath(false);
    cairo_fill(_cr);
@@ -530,28 +554,6 @@ void RenderContext::drawTriangleZigzag (const Vec2f& v0, const Vec2f& v1, const 
    cairo_stroke(_cr);
    cairoCheckStatus();
    cairo_set_line_join(_cr, CAIRO_LINE_JOIN_BEVEL);
-   cairoCheckStatus();
-}
-
-void RenderContext::drawTriangleStripes (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, int cnt)
-{
-   Vec2f r(v0), dr;
-   Vec2f l(v0), dl;
-   dr.diff(v1, v0); dr.scale(1.0f/cnt);
-   dl.diff(v2, v0); dl.scale(1.0f/cnt);
-
-   if (cnt < 3)
-      cnt = 3;
-   for (int i = 0; i < cnt; ++i)
-   {
-      r.add(dr);
-      l.add(dl);
-      moveTo(r);
-      lineTo(l);
-   }
-   checkPathNonEmpty();
-   bbIncludePath(true);
-   cairo_stroke(_cr);
    cairoCheckStatus();
 }
 
