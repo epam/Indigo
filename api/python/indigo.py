@@ -59,17 +59,6 @@ class Indigo:
       self.dispatcher._setSID()
       return self.dispatcher._checkResultString(Indigo._lib.indigoToString(self.id))
 
-    def toBuffer (self):
-      self.dispatcher._setSID()
-      c_size = c_int()
-      c_buf = POINTER(c_char)()
-      self.dispatcher._checkResult(Indigo._lib.indigoToBuffer(
-          self.id, pointer(c_buf), pointer(c_size)))
-      res = array('c')
-      for i in xrange(c_size.value):
-        res.append(c_buf[i])
-      return res
-
     def mdlct (self):
       self.dispatcher._setSID()
       buf = self.dispatcher.writeBuffer()
@@ -197,6 +186,8 @@ class Indigo:
     Indigo._lib.indigoWriteBuffer.argtypes = None
     Indigo._lib.indigoSaveMDLCT.restype = c_int
     Indigo._lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
+    Indigo._lib.indigoUnserialize.restype = c_int
+    Indigo._lib.indigoUnserialize.argtypes = [POINTER(c_char), c_int]
     Indigo._lib.indigoXYZ.restype = POINTER(c_float)
     Indigo._lib.indigoXYZ.argtypes = [c_int]
     Indigo._lib.indigoSetXYZ.restype = c_int
@@ -205,8 +196,6 @@ class Indigo:
     Indigo._lib.indigoAlignAtoms.argtypes = [c_int, c_int, POINTER(c_int), POINTER(c_float)]
     Indigo._lib.indigoToString.restype = c_char_p
     Indigo._lib.indigoToString.argtypes = [c_int]
-    Indigo._lib.indigoToBuffer.restype = c_int
-    Indigo._lib.indigoToBuffer.argtypes = [c_int, POINTER(POINTER(c_char)), POINTER(c_int)]
     Indigo._lib.indigoSimilarity.restype = c_float
     Indigo._lib.indigoSimilarity.argtypes = [c_int, c_int, c_char_p]
     Indigo._lib.indigoDbgBreakpoint.restype = None
@@ -374,6 +363,9 @@ class Indigo:
     self.IndigoObject.molecularWeight = Indigo._member_float(Indigo._lib.indigoMolecularWeight)
     self.IndigoObject.monoisotopicMass = Indigo._member_float(Indigo._lib.indigoMonoisotopicMass)
     self.IndigoObject.mostAbundantMass = Indigo._member_float(Indigo._lib.indigoMostAbundantMass)
+
+    self.IndigoObject.serialize = Indigo._member_buf(Indigo._lib.indigoSerialize)
+    self.IndigoObject.toBuffer = Indigo._member_buf(Indigo._lib.indigoToBuffer)
 
     self.IndigoObject.canonicalSmiles = Indigo._member_string(Indigo._lib.indigoCanonicalSmiles)
     self.IndigoObject.layeredCode = Indigo._member_string(Indigo._lib.indigoLayeredCode)
@@ -630,6 +622,22 @@ class Indigo:
       self.dispatcher._setSID()
       return self.dispatcher._checkResultString(func(self.id))
     return Indigo._make_wrapper_func(newfunc, func)
+
+  @staticmethod
+  def _member_buf (func):
+    func.restype = c_int
+    func.argtypes = [c_int, POINTER(POINTER(c_char)), POINTER(c_int)]
+    def newfunc (self):
+      self.dispatcher._setSID()
+      c_size = c_int()
+      c_buf = POINTER(c_char)()
+      self.dispatcher._checkResult(func(self.id, pointer(c_buf), pointer(c_size)))
+      res = array('c')
+      for i in xrange(c_size.value):
+        res.append(c_buf[i])
+      return res
+    return Indigo._make_wrapper_func(newfunc, func)
+
 
   @staticmethod
   def _member_bool (func):
@@ -908,12 +916,22 @@ class Indigo:
     return self._checkResultFloat(Indigo._lib.indigoSimilarity(item1.id, item2.id, metrics))
 
   def writeBuffer (self):
+    self._setSID()
     id = self._checkResult(Indigo._lib.indigoWriteBuffer())
     return Indigo.IndigoObject(self, id)
 
   def writeFile (self, filename):
+    self._setSID()
     id = self._checkResult(Indigo._lib.indigoWriteFile(filename))
     return Indigo.IndigoObject(self, id)
+
+  def unserialize (self, arr):
+    self._setSID()
+    values = (c_char * len(arr))()
+    for i in xrange(len(arr)):
+      values[i] = arr[i]
+    res = Indigo._lib.indigoUnserialize(values, len(arr))
+    return Indigo.IndigoObject(self, self._checkResult(res))
 
   def setOption (self, option, value1, value2 = None, value3 = None):
     if type(value1).__name__ == 'str' and value2 is None and value3 is None:
