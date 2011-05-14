@@ -46,6 +46,7 @@
       <itemPath>src/elements_isotopes.inc</itemPath>
       <itemPath>src/gross_formula.cpp</itemPath>
       <itemPath>gross_formula.h</itemPath>
+      <itemPath>icm_common.h</itemPath>
       <itemPath>src/icm_loader.cpp</itemPath>
       <itemPath>icm_loader.h</itemPath>
       <itemPath>src/icm_saver.cpp</itemPath>

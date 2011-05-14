@@ -40,16 +40,16 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/380065930/gray_codes.o \
 	${OBJECTDIR}/src/molecule_substructure_matcher.o \
 	${OBJECTDIR}/src/elements.o \
-	${OBJECTDIR}/src/molecule_mass.o \
 	${OBJECTDIR}/src/molecule_3d_constraints.o \
-	${OBJECTDIR}/src/molecule_scaffold_detection.o \
 	${OBJECTDIR}/src/molecule_tautomer_matcher.o \
 	${OBJECTDIR}/src/gross_formula.o \
-	${OBJECTDIR}/src/smiles_loader.o \
 	${OBJECTDIR}/src/canonical_smiles_saver.o \
 	${OBJECTDIR}/src/max_common_submolecule.o \
-	${OBJECTDIR}/src/molecule_inchi_component.o \
 	${OBJECTDIR}/src/molecule_auto_loader.o \
+	${OBJECTDIR}/src/molecule_mass.o \
+	${OBJECTDIR}/src/molecule_scaffold_detection.o \
+	${OBJECTDIR}/src/smiles_loader.o \
+	${OBJECTDIR}/src/molecule_inchi_component.o \
 	${OBJECTDIR}/src/base_molecule.o \
 	${OBJECTDIR}/src/molecule_pi_systems_matcher.o \
 	${OBJECTDIR}/src/molfile_loader.o \
@@ -155,20 +155,10 @@ ${OBJECTDIR}/src/elements.o: src/elements.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/elements.o src/elements.cpp
 
-${OBJECTDIR}/src/molecule_mass.o: src/molecule_mass.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_mass.o src/molecule_mass.cpp
-
 ${OBJECTDIR}/src/molecule_3d_constraints.o: src/molecule_3d_constraints.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_3d_constraints.o src/molecule_3d_constraints.cpp
-
-${OBJECTDIR}/src/molecule_scaffold_detection.o: src/molecule_scaffold_detection.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_scaffold_detection.o src/molecule_scaffold_detection.cpp
 
 ${OBJECTDIR}/src/molecule_tautomer_matcher.o: src/molecule_tautomer_matcher.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -180,11 +170,6 @@ ${OBJECTDIR}/src/gross_formula.o: src/gross_formula.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/gross_formula.o src/gross_formula.cpp
 
-${OBJECTDIR}/src/smiles_loader.o: src/smiles_loader.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/smiles_loader.o src/smiles_loader.cpp
-
 ${OBJECTDIR}/src/canonical_smiles_saver.o: src/canonical_smiles_saver.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -195,15 +180,30 @@ ${OBJECTDIR}/src/max_common_submolecule.o: src/max_common_submolecule.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/max_common_submolecule.o src/max_common_submolecule.cpp
 
-${OBJECTDIR}/src/molecule_inchi_component.o: src/molecule_inchi_component.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_inchi_component.o src/molecule_inchi_component.cpp
-
 ${OBJECTDIR}/src/molecule_auto_loader.o: src/molecule_auto_loader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_auto_loader.o src/molecule_auto_loader.cpp
+
+${OBJECTDIR}/src/molecule_mass.o: src/molecule_mass.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_mass.o src/molecule_mass.cpp
+
+${OBJECTDIR}/src/molecule_scaffold_detection.o: src/molecule_scaffold_detection.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_scaffold_detection.o src/molecule_scaffold_detection.cpp
+
+${OBJECTDIR}/src/smiles_loader.o: src/smiles_loader.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/smiles_loader.o src/smiles_loader.cpp
+
+${OBJECTDIR}/src/molecule_inchi_component.o: src/molecule_inchi_component.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O3 -Wall -s -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_inchi_component.o src/molecule_inchi_component.cpp
 
 ${OBJECTDIR}/src/base_molecule.o: src/base_molecule.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

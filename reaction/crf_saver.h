@@ -37,7 +37,8 @@ public:
 
    Output *xyz_output;
 
-   bool skip_implicit_h;
+   bool save_bond_dirs;
+   bool save_highlighting;
 
    DEF_ERROR("CRF saver");
 

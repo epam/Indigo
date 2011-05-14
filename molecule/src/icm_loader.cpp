@@ -16,6 +16,7 @@
 #include "base_cpp/scanner.h"
 #include "molecule/cmf_loader.h"
 #include "molecule/molecule.h"
+#include "molecule/icm_common.h"
 
 using namespace indigo;
 
@@ -31,7 +32,10 @@ void IcmLoader::loadMolecule (Molecule &mol)
    if (strncmp(id, "ICM", 3) != 0)
       throw Error("expected 'ICM', got %.*s", 3, id);
 
-   bool have_xyz = (_scanner.readChar() == 1);
+   char bits = _scanner.readChar();
+
+   bool have_xyz = ((bits & ICM_XYZ) != 0);
+   bool have_bond_dirs = ((bits & ICM_BOND_DIRS) != 0);
 
    CmfLoader loader(_scanner);
 
@@ -40,6 +44,7 @@ void IcmLoader::loadMolecule (Molecule &mol)
    if (have_xyz)
    {
       loader.loadXyz(_scanner);
-      mol.stereocenters.markBonds();
+      if (!have_bond_dirs)
+         mol.stereocenters.markBonds();
    }
 }

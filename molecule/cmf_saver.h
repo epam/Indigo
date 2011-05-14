@@ -44,7 +44,8 @@ public:
    int *atom_flags;
    int *bond_flags;
 
-   bool skip_implicit_h;
+   bool save_bond_dirs;
+   bool save_highlighting;
 
    DEF_ERROR("CMF saver");
 

@@ -28,13 +28,15 @@ CrfSaver::CrfSaver (LzwDict &dict, Output &output) : _output(output)
    
    _encoder.create(dict, output);
    xyz_output = 0;
-   skip_implicit_h = false;
+   save_bond_dirs = false;
+   save_highlighting = false;
 }
 
 CrfSaver::CrfSaver (Output &output) : _output(output)
 {
    xyz_output = 0;
-   skip_implicit_h = false;
+   save_bond_dirs = false;
+   save_highlighting = false;
 }
 
 void CrfSaver::saveReaction (Reaction &reaction)
@@ -110,7 +112,8 @@ void CrfSaver::_writeMolecule (Molecule &molecule)
       saver->bond_flags = bond_flags.ptr();
    }
 
-   saver->skip_implicit_h = skip_implicit_h;
+   saver->save_bond_dirs = save_bond_dirs;
+   saver->save_highlighting = save_highlighting;
    saver->saveMolecule(molecule);
 
    if (_aam != 0)

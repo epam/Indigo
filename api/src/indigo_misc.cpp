@@ -474,12 +474,17 @@ CEXPORT int indigoSerialize (int item, byte **buf, int *size)
 
          IcmSaver saver(out);
          saver.save_xyz = mol.have_xyz;
+         saver.save_bond_dirs = true;
+         saver.save_highlighting = true;
          saver.saveMolecule(mol);
       }
       else if (IndigoBaseReaction::is(obj))
       {
          Reaction &rxn = obj.getReaction();
          IcrSaver saver(out);
+         saver.save_xyz = true;
+         saver.save_bond_dirs = true;
+         saver.save_highlighting = true;
          saver.saveReaction(rxn);
       }
 

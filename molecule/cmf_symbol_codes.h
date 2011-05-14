@@ -130,10 +130,23 @@ enum
    /* 244 - atom flags */
    CMF_ATOM_FLAGS = CMF_BOND_FLAGS + CMF_NUM_OF_BOND_FLAGS,
 
-   /* 246 - terminator */
-   CMF_TERMINATOR = CMF_ATOM_FLAGS + CMF_NUM_OF_ATOM_FLAGS,
+   /* 246-248 - bond directions (up/down/either) */
+   CMF_BOND_UP = CMF_ATOM_FLAGS + CMF_NUM_OF_ATOM_FLAGS,
 
-   /* Alphabet size = 247 */
+   CMF_BOND_DOWN = CMF_BOND_UP + 1,
+
+   CMF_BOND_EITHER = CMF_BOND_DOWN + 1,
+
+   /* 249 - "swap bond ends" flag */
+   CMF_BOND_SWAP_ENDS = CMF_BOND_EITHER + 1,
+
+   /* 250 - highlighting */
+   CMF_HIGHLIGHTED = CMF_BOND_SWAP_ENDS + 1,
+
+   /* 251 - terminator */
+   CMF_TERMINATOR = CMF_HIGHLIGHTED + 1,
+
+   /* Alphabet size = 252 */
    CMF_ALPHABET_SIZE = CMF_TERMINATOR + 1
 };
 

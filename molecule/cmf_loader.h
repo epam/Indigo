@@ -70,6 +70,8 @@ protected:
       
       bool rsite;
       int  rsite_bits;
+
+      bool highlighted;
    };
 
    struct _BondDesc
@@ -79,8 +81,12 @@ protected:
       int  type;
       int  cis_trans;
       bool in_ring;
+      int  direction;
+      bool swap;
 
       int  flags;
+
+      bool highlighted;
    };
 
    void _init ();

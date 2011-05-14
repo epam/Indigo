@@ -31,6 +31,8 @@ public:
    void saveReaction (Reaction &reaction);
 
    bool save_xyz;
+   bool save_bond_dirs;
+   bool save_highlighting;
 
    DEF_ERROR("ICR saver");
 

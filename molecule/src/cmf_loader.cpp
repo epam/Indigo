@@ -198,6 +198,13 @@ bool CmfLoader::_readAtom (int &code, _AtomDesc &atom)
       if (!_getNextCode(code))
          return false;
    }
+
+   if (code == CMF_HIGHLIGHTED)
+   {
+      atom.highlighted = true;
+      if (!_getNextCode(code))
+         return false;
+   }
    
    return true;
 }
@@ -206,6 +213,9 @@ void CmfLoader::_readBond (int &code, _BondDesc &bond)
 {
    bond.cis_trans = 0;
    bond.flags = 0;
+   bond.swap = false;
+   bond.direction = 0;
+   bond.highlighted = false;
    
    if (code == CMF_BOND_SINGLE_CHAIN)
    {
@@ -276,6 +286,16 @@ void CmfLoader::_readBond (int &code, _BondDesc &bond)
    
       if (code >= CMF_BOND_FLAGS && code < CMF_BOND_FLAGS + CMF_NUM_OF_BOND_FLAGS)
          bond.flags |= (1 << (code - CMF_BOND_FLAGS));
+      else if (code == CMF_BOND_UP)
+         bond.direction = MoleculeStereocenters::BOND_UP;
+      else if (code == CMF_BOND_DOWN)
+         bond.direction = MoleculeStereocenters::BOND_DOWN;
+      else if (code == CMF_BOND_EITHER)
+         bond.direction = MoleculeStereocenters::BOND_EITHER;
+      else if (code == CMF_BOND_SWAP_ENDS)
+         bond.swap = true;
+      else if (code == CMF_HIGHLIGHTED)
+         bond.highlighted = true;
       else
          break;
    }
@@ -466,6 +486,9 @@ void CmfLoader::loadMolecule (Molecule &mol)
       if (_atoms[i].hydrogens >= 0)
          mol.setImplicitH(i, _atoms[i].hydrogens);
       mol.setAtomRadical(i, _atoms[i].radical);
+
+      if (_atoms[i].highlighted)
+         mol.highlightAtom(i);
    }
 
    for (i = 0; i < _bonds.size(); i++)
@@ -473,6 +496,10 @@ void CmfLoader::loadMolecule (Molecule &mol)
       int type = _bonds[i].type;
       int beg = _bonds[i].beg;
       int end = _bonds[i].end;
+      int tmp;
+
+      if (_bonds[i].swap)
+         __swap(beg, end, tmp);
 
       int idx = mol.addBond_Silent(beg, end, type);
       
@@ -480,6 +507,12 @@ void CmfLoader::loadMolecule (Molecule &mol)
          mol.setEdgeTopology(idx, TOPOLOGY_RING);
       else
          mol.setEdgeTopology(idx, TOPOLOGY_CHAIN);
+
+      if (_bonds[i].direction != 0)
+         mol.stereocenters.setBondDirection(idx, _bonds[i].direction);
+
+      if (_bonds[i].highlighted)
+         mol.highlightBond(idx);
    }
 
    mol.validateEdgeTopologies();

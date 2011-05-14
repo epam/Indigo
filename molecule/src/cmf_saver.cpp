@@ -59,7 +59,8 @@ void CmfSaver::_init ()
    _encoder = 0;
    _output = 0;
    _mol = 0;
-   skip_implicit_h = false;
+   save_bond_dirs = false;
+   save_highlighting = false;
 }
 
 void CmfSaver::saveMolecule (Molecule &mol)
@@ -131,7 +132,33 @@ void CmfSaver::saveMolecule (Molecule &mol)
             throw Error("unexpected branch");
 
          _encodeBond(mol, e_idx, mapping.ptr());
-         
+
+         if (save_bond_dirs)
+         {
+            int dir = mol.stereocenters.getBondDirection(e_idx);
+
+            if (dir != 0)
+            {
+               if (dir == MoleculeStereocenters::BOND_UP)
+                  dir = CMF_BOND_UP;
+               else if (dir == MoleculeStereocenters::BOND_DOWN)
+                  dir = CMF_BOND_DOWN;
+               else
+                  dir = CMF_BOND_EITHER;
+
+               const Edge &edge = mol.getEdge(e_idx);
+
+               if (edge.beg == v_prev_idx && edge.end == v_idx)
+                  ;
+               else if (edge.beg == v_idx && edge.end == v_prev_idx)
+                  _encode(CMF_BOND_SWAP_ENDS);
+               else
+                  throw Error("internal");
+
+               _encode(dir);
+            }
+         }
+
          if (walk.isClosure(e_idx))
          {
             for (j = 0; j < cycle_numbers.size(); j++)
@@ -250,8 +277,17 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
    }
 
    int radical = 0;
+
    if (!mol.isPseudoAtom(idx) && !mol.isRSite(idx))
-      radical = mol.getAtomRadical(idx);
+   {
+      try
+      {
+         radical = mol.getAtomRadical(idx);
+      }
+      catch (Element::Error)
+      {
+      }
+   }
 
    if (radical > 0)
    {
@@ -309,22 +345,34 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
 
    if (!mol.isPseudoAtom(idx) && !mol.isRSite(idx) && Molecule::shouldWriteHCount(mol, idx))
    {
-      impl_h = mol.getImplicitH(idx);
+      try
+      {
+         impl_h = mol.getImplicitH(idx);
 
-      if (impl_h < 0 || impl_h > CMF_MAX_IMPLICIT_H)
-         throw Error("implicit hydrogen count %d out of range", impl_h);
+         if (impl_h < 0 || impl_h > CMF_MAX_IMPLICIT_H)
+            throw Error("implicit hydrogen count %d out of range", impl_h);
 
-      _encode(CMF_IMPLICIT_H + impl_h);
+         _encode(CMF_IMPLICIT_H + impl_h);
+      }
+      catch (Element::Error)
+      {
+      }
    }
 
    if (!mol.isRSite(idx) && !mol.isPseudoAtom(idx))
    {
       if (mol.getAtomAromaticity(idx) == ATOM_AROMATIC && (charge != 0 || (number != ELEM_C && number != ELEM_O)))
       {
-         int valence = mol.getAtomValence(idx);
-         if (valence < 0 || valence > CMF_MAX_VALENCE)
-            throw Error("valence %d is out of range", valence);
-         _encode(CMF_VALENCE + valence);
+         try
+         {
+            int valence = mol.getAtomValence(idx);
+            if (valence < 0 || valence > CMF_MAX_VALENCE)
+               throw Error("valence %d is out of range", valence);
+            _encode(CMF_VALENCE + valence);
+         }
+         catch (Element::Error)
+         {
+         }
       }
    }
 
@@ -336,6 +384,10 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
          if (flags & (1 << i))
             _encode(CMF_ATOM_FLAGS + i);
    }
+
+   if (save_highlighting)
+      if (mol.isAtomHighlighted(idx))
+         _encode(CMF_HIGHLIGHTED);
 }
 
 void CmfSaver::_encodeBond (Molecule &mol, int idx, const int *mapping)
@@ -400,6 +452,10 @@ void CmfSaver::_encodeBond (Molecule &mol, int idx, const int *mapping)
          if (flags & (1 << i))
             _encode(CMF_BOND_FLAGS + i);
    }
+
+   if (save_highlighting)
+      if (mol.isBondHighlighted(idx))
+         _encode(CMF_HIGHLIGHTED);
 }
 
 void CmfSaver::_encodeCycleNumer (int n)

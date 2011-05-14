@@ -15,27 +15,37 @@
 #include "base_cpp/output.h"
 #include "reaction/icr_saver.h"
 #include "reaction/crf_saver.h"
+#include "molecule/icm_common.h"
 
 using namespace indigo;
 
 IcrSaver::IcrSaver (Output &output) : _output(output)
 {
+   save_xyz = false;
+   save_bond_dirs = false;
+   save_highlighting = false;
 }
 
 void IcrSaver::saveReaction (Reaction &reaction)
 {
    _output.writeString("ICR");
 
+   int features = 0;
+
    if (save_xyz)
-      _output.writeChar(1);
-   else
-      _output.writeChar(0);
+      features |= ICM_XYZ;
+
+   if (save_bond_dirs)
+      features |= ICM_BOND_DIRS;
+
+   _output.writeChar(features);
 
    CrfSaver saver(_output);
 
    if (save_xyz)
       saver.xyz_output = &_output;
 
-   saver.skip_implicit_h = true;
+   saver.save_bond_dirs = save_bond_dirs;
+   saver.save_highlighting = save_highlighting;
    saver.saveReaction(reaction);
 }

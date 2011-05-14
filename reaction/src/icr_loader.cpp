@@ -16,6 +16,7 @@
 #include "base_cpp/scanner.h"
 #include "reaction/crf_loader.h"
 #include "reaction/reaction.h"
+#include "molecule/icm_common.h"
 
 using namespace indigo;
 
@@ -31,7 +32,10 @@ void IcrLoader::loadReaction (Reaction &reaction)
    if (strncmp(id, "ICR", 3) != 0)
       throw Error("expected 'ICR', got %.*s", 3, id);
 
-   bool have_xyz = (_scanner.readChar() == 1);
+   char bits = _scanner.readChar();
+
+   bool have_xyz = ((bits & ICM_XYZ) != 0);
+   bool have_bond_dirs = ((bits & ICM_BOND_DIRS) != 0);
 
    CrfLoader loader(_scanner);
 
@@ -41,5 +45,6 @@ void IcrLoader::loadReaction (Reaction &reaction)
    loader.loadReaction(reaction);
 
    if (have_xyz)
-      reaction.markStereocenterBonds();
+      if (!have_bond_dirs)
+         reaction.markStereocenterBonds();
 }
