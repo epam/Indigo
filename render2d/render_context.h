@@ -106,6 +106,7 @@ public:
    void fontsClear();
    void fontsInit();
    void fontsDispose();
+   double fontGetSize(FONT_SIZE size);
    void fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold);
    void fontsGetTextExtents(cairo_t* cr, const char* text, int size, float& dx, float& dy, float& rx, float& ry);
    void fontsDrawText(const TextItem& ti, const Vec3f& color, bool bold);

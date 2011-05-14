@@ -241,6 +241,8 @@ void RenderSettings::init (float sf)
    fzz[FONT_SIZE_INDICES] = bondLineWidth * 6;
    fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = bondLineWidth * 6;
    fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX] = bondLineWidth * 6;
+   fzz[FONT_SIZE_COMMENT] = 0; // not used, value taken from RenderOptions.commentFontFactor
+   fzz[FONT_SIZE_TITLE] = 0; // not used, value taken from RenderOptions.titleFontFactor
    fzz[FONT_SIZE_DATA_SGROUP] = bondLineWidth * 8;
 
    upperIndexShift = -0.4f;

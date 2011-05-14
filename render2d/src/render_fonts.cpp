@@ -73,16 +73,20 @@ void RenderContext::fontsDispose()
    fontsClear();
 }
 
+double RenderContext::fontGetSize(FONT_SIZE size)
+{
+   if (size == FONT_SIZE_COMMENT)
+      return opt.commentFontFactor;
+   if (size == FONT_SIZE_TITLE)
+      return opt.titleFontFactor;
+   return _settings.fzz[size];
+}
+
 void RenderContext::fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold)
 {
    cairo_select_font_face(cr, "Arial", CAIRO_FONT_SLANT_NORMAL, bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
    cairoCheckStatus();
-   if (size == FONT_SIZE_COMMENT)
-      cairo_set_font_size(cr, opt.commentFontFactor);
-   else if (size == FONT_SIZE_TITLE)
-      cairo_set_font_size(cr, opt.titleFontFactor);
-   else
-      cairo_set_font_size(cr, _settings.fzz[size]);
+   cairo_set_font_size(cr, fontGetSize(size));
    cairoCheckStatus();
 }
 
@@ -107,7 +111,7 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool b
    cairo_matrix_t m;
    cairo_get_matrix(_cr, &m);
    float scale = (float)m.xx;
-   double v = scale * _settings.fzz[ti.fontsize];
+   double v = scale * fontGetSize(ti.fontsize);
    if (opt.mode != MODE_PDF && opt.mode != MODE_SVG && v < 1.5) {
       cairo_rectangle(_cr, ti.bbp.x + ti.bbsz.x / 4, ti.bbp.y + ti.bbsz.y / 4, ti.bbsz.x/2, ti.bbsz.y/2);
       bbIncludePath(false);
