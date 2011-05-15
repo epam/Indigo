@@ -934,6 +934,7 @@ class Indigo:
     return Indigo.IndigoObject(self, self._checkResult(res))
 
   def setOption (self, option, value1, value2 = None, value3 = None):
+    self._setSID()
     if type(value1).__name__ == 'str' and value2 is None and value3 is None:
       self._checkResult(Indigo._lib.indigoSetOption(option, value1))
     elif type(value1).__name__ == 'int' and value2 is None and value3 is None:
