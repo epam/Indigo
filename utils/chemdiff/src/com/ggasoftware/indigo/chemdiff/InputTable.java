@@ -1,72 +1,157 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * InputTable.java
- *
- * Created on Mar 5, 2011, 9:43:15 PM
- */
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.Indigo;
-import com.ggasoftware.indigo.IndigoRenderer;
-import com.ggasoftware.indigo.controls.BeanBase;
-import com.ggasoftware.indigo.controls.FileOpener;
-import com.ggasoftware.indigo.controls.IndigoEventListener;
-import com.ggasoftware.indigo.controls.IndigoEventSource;
-import com.ggasoftware.indigo.controls.MolClicker;
-import com.ggasoftware.indigo.controls.MolRenderer;
-import com.ggasoftware.indigo.controls.MultiLineCellRenderer;
+import com.ggasoftware.indigo.IndigoObject;
+import com.ggasoftware.indigo.controls.*;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-import javax.swing.JFrame;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 
-/**
- *
- * @author achurinov
- */
-public class InputTable extends BeanBase implements java.io.Serializable, MolTable {
-
-   public Indigo indigo;
-   public SdfLoader sdf_loader;
-   public ArrayList<RenderableMolData> mol_datas = new ArrayList<RenderableMolData>();
-   public IndigoEventSource<Integer> progress_event =
-           new IndigoEventSource<Integer>(this);
-   public IndigoEventSource<Integer> finish_event =
-           new IndigoEventSource<Integer>(this);
-   private CompareOptions _compare_options;
-
-   public InputTable() {
-      initComponents();
-   }
+public class InputTable extends TitledBorderPanel
+{
+   private ArrayList<MoleculeItem> _molecules = new ArrayList<MoleculeItem>();
 
    /** Creates new form InputTable */
-   public void init(Indigo cur_indigo, IndigoRenderer cur_indigo_renderer,
-           CompareOptions compare_options,
-           int cell_w, int cell_h, boolean is_reactions) {
-      indigo = cur_indigo;
-
+   public InputTable ()
+   {
       initComponents();
-
-      this._compare_options = compare_options;
-
-      j_table.getColumn("Id").setCellRenderer(new MultiLineCellRenderer(SwingConstants.CENTER,
-              SwingConstants.CENTER));
-      j_table.getColumn("Molecules").setCellRenderer(new MolRenderer(indigo, cur_indigo_renderer,
-              cell_w, cell_h, is_reactions));
-
-      setBorder(javax.swing.BorderFactory.createTitledBorder(_name));
-
-      j_table.getColumn("Molecules").setPreferredWidth(cell_w);
-      j_table.getColumn("Id").setPreferredWidth(30);
-      j_table.addMouseListener(new MolClicker(cur_indigo, cur_indigo_renderer, j_table, false));
    }
 
+   public ArrayList<MoleculeItem> getMolecules ()
+   {
+      return _molecules;
+   }
+   
+   public void openLoadingDialog ()
+   {
+      FileOpener fopener = new FileOpener();
+      fopener.addExtension("sdf", "sd", "smi", "cml", "rdf", "mol");
+
+      if (fopener.openFile("Open") == null)
+         return;
+
+      loadFile(fopener.getFile());
+   }
+   
+   public void loadFile (final File f)
+   {
+      final ArrayList<MoleculeItem> new_molecules = new ArrayList<MoleculeItem>();
+      //molecules_table.clear();
+      
+      Frame parent = (Frame)getTopLevelAncestor();
+      
+      final ProgressStatusDialog dlg = new ProgressStatusDialog(parent, true);
+      dlg.setTitle("Loading...");
+      
+      final IndigoObjectsFileLoader loader = new IndigoObjectsFileLoader(Global.indigo, f);
+      dlg.executeSwingWorker(loader);
+     
+      try
+      {
+         List<IndigoObjectWrapper> objects = loader.get();
+         int added = 0;
+         for (IndigoObjectWrapper obj : objects)
+         {
+            String id = String.format("Mol #%d", added);
+            new_molecules.add(new MoleculeItem(obj, id));
+            added++;
+         }
+
+         // Select ID field for the loaded molecules
+         final SelectIDColumnDialog select_id_dlg = 
+                 new SelectIDColumnDialog(parent, new_molecules, true, true);
+         select_id_dlg.setVisible(true);
+         
+         if (select_id_dlg.isCanceled())
+            return;
+         
+         // Update molecules properties
+         SwingWorker<Void, Void> update_properties_worker = new SwingWorker<Void, Void>()
+         {
+            @Override
+            protected Void doInBackground () throws Exception
+            {
+               int processed = 0;
+               int errors_count = 0;
+               for (MoleculeItem obj : new_molecules)
+               {
+                  boolean set_serial_on_error = false;
+                  try 
+                  {
+                     // TODO: Remove bug!
+                     // 1. load valence_test
+                     // 2. load test
+                     // 3. Error!
+                     obj.setId(select_id_dlg.getMoleculeID(obj, processed));
+                  }
+                  catch (IndigoCheckedException ex)
+                  {
+                     set_serial_on_error = true;
+                  }
+                  
+                  if (set_serial_on_error)
+                  {
+                     // Set serial number
+                     obj.setId(select_id_dlg.getSerialNumber(processed));
+                     errors_count++;
+                  }
+                  processed++;
+                  setProgress(100 * processed / new_molecules.size());
+               }
+               dlg.setStepName("Adding molecules to the table");
+               molecules_with_id_table.setObjects(new_molecules);
+
+               StringBuilder subtitle = new StringBuilder();
+               subtitle.append(String.format(": %d molecule%s", new_molecules.size(),
+                       new_molecules.size() > 1 ? "s" : ""));
+               if (errors_count != 0)
+                  subtitle.append(String.format(" (with %d not valid)", errors_count));
+               setSubtitle(subtitle.toString());
+               
+               _molecules = new_molecules;
+               
+               String file_name = f.getAbsolutePath();
+               file_name_field.setText(file_name);
+               file_name_field.setCaretPosition(file_name.length());
+               return null;
+            }
+         };
+         dlg.setTitle("Reading molecule properties...");
+         dlg.executeSwingWorker(update_properties_worker);
+      }
+      catch (InterruptedException ex)
+      {
+         System.err.println(">>>>" + ex.getMessage());
+         ex.printStackTrace();
+      }
+      catch (ExecutionException ex)
+      {
+         System.err.println(">>>>" + ex.getMessage());
+         ex.printStackTrace();
+         //Logger.getLogger(TestFrame.class.getName()).log(Level.SEVERE, null, ex);
+      }
+   }
+
+   public void setRowHeight (int height)
+   {
+      molecules_with_id_table.setRowHeight(height);
+   }
+
+   public int getRowHeight ()
+   {
+      return molecules_with_id_table.getRowHeight();
+   }
+   
    /** This method is called from within the constructor to
     * initialize the form.
     * WARNING: Do NOT modify this code. The content of this method is
@@ -77,189 +162,112 @@ public class InputTable extends BeanBase implements java.io.Serializable, MolTab
    private void initComponents() {
 
       load_button_panel = new javax.swing.JPanel();
-      load_progress_bar = new javax.swing.JProgressBar();
       load_button = new javax.swing.JButton();
-      scroll_panel = new javax.swing.JScrollPane();
-      j_table = new javax.swing.JTable();
+      file_name_field = new javax.swing.JTextField();
+      molecules_with_id_table = new com.ggasoftware.indigo.chemdiff.MoleculeTableWithIdPanel();
 
-      setBorder(javax.swing.BorderFactory.createTitledBorder("First File"));
-
-      load_button.setText("Load file");
-      load_button.setMaximumSize(null);
-      load_button.setMinimumSize(null);
-      load_button.setPreferredSize(null);
+      load_button.setText("Load molecules");
       load_button.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             load_buttonActionPerformed(evt);
          }
       });
 
+      file_name_field.setEditable(false);
+
       javax.swing.GroupLayout load_button_panelLayout = new javax.swing.GroupLayout(load_button_panel);
       load_button_panel.setLayout(load_button_panelLayout);
       load_button_panelLayout.setHorizontalGroup(
          load_button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, load_button_panelLayout.createSequentialGroup()
-            .addComponent(load_progress_bar, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+            .addComponent(file_name_field, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(load_button, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(load_button, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
       load_button_panelLayout.setVerticalGroup(
          load_button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(load_button, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-         .addComponent(load_progress_bar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+         .addGroup(load_button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(load_button, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(file_name_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
 
-      j_table.setModel(new MolTableModel(1));
-      j_table.setFocusTraversalPolicyProvider(true);
-      j_table.setRowHeight(160);
-      scroll_panel.setViewportView(j_table);
+      molecules_with_id_table.setIdColumnCount(1);
+      molecules_with_id_table.addTableCellMouseListener(new com.ggasoftware.indigo.controls.TableCellMouseListener() {
+         public void cellMouseDoubleClick(com.ggasoftware.indigo.controls.TableCellMouseEvent evt) {
+            molecules_with_id_tableCellMouseDoubleClick(evt);
+         }
+         public void cellShowPopupMenu(com.ggasoftware.indigo.controls.TableCellMouseEvent evt) {
+            molecules_with_id_tableCellShowPopupMenu(evt);
+         }
+      });
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
       this.setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGap(0, 330, Short.MAX_VALUE)
          .addComponent(load_button_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-         .addComponent(scroll_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
+         .addComponent(molecules_with_id_table, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGap(0, 391, Short.MAX_VALUE)
          .addGroup(layout.createSequentialGroup()
             .addComponent(load_button_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(scroll_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE))
+            .addComponent(molecules_with_id_table, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE))
       );
-
-      getAccessibleContext().setAccessibleName("First file");
    }// </editor-fold>//GEN-END:initComponents
 
-   public void openLoadingDialog() {
-      load_progress_bar.setEnabled(false);
-
-      FileOpener fopener = new FileOpener();
-
-      fopener.addExtension("sdf", "sd", "smi", "cml");
-
-      if (sdf_loader != null) {
-         sdf_loader.interrupt();
-      }
-
-      if (fopener.openFile("Open") == null) {
-         return;
-      }
-
-      load_progress_bar.setMinimum(0);
-      load_progress_bar.setMaximum((int) fopener.getFile().length());
-
-
-      progress_event.addListener(new IndigoEventListener<Integer>()  {
-         public void handleEvent(Object source, Integer progress) {
-            load_progress_bar.setValue(progress);
-         }
-      });
-
-      finish_event.addListener(new IndigoEventListener<Integer>()  {
-         public void handleEvent(Object source, Integer event) {
-            setMols(sdf_loader.mol_datas, null, null);
-            load_button.setEnabled(true);
-         }
-      });
-
-      String path = _loadMolecules(fopener.getFile());
-
-      if (path != null) {
-         load_progress_bar.setString(path);
-         load_progress_bar.setStringPainted(true);
-      }
-
-   }
-    private void load_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_buttonActionPerformed
-       openLoadingDialog();
+   private void load_buttonActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_load_buttonActionPerformed
+   {//GEN-HEADEREND:event_load_buttonActionPerformed
+      openLoadingDialog ();
 }//GEN-LAST:event_load_buttonActionPerformed
 
-   public void clear() {
-      this.mol_datas.clear();
-
-      setBorder(javax.swing.BorderFactory.createTitledBorder(_name));
-
-      DefaultTableModel model = (DefaultTableModel) j_table.getModel();
-      while (model.getRowCount() != 0) {
-         model.removeRow(0);
+   private void molecules_with_id_tableCellMouseDoubleClick (com.ggasoftware.indigo.controls.TableCellMouseEvent evt)//GEN-FIRST:event_molecules_with_id_tableCellMouseDoubleClick
+   {//GEN-HEADEREND:event_molecules_with_id_tableCellMouseDoubleClick
+      MoleculeItem item = _molecules.get(evt.row);
+      
+      Frame parent = (Frame)getTopLevelAncestor();
+      
+      IndigoObject obj = item.getRenderableObject();
+      if (obj == null)
+      {
+         String message = String.format("Exception:\n%s", item.getErrorMessageToRender());
+         MessageBox.show(parent, message, 
+                 "Error during loading this molecule", MessageBox.ICON_ERROR);
+         return;
       }
-   }
+      
+      SingleIndigoObjectWindow details = new SingleIndigoObjectWindow(parent, 
+              obj, item.getIndigoRenderer(), false);
+      details.setInformationMessage(item.getErrorMessageToRender());
+      details.setTitle(item.getId());
+      details.setVisible(true);
+   }//GEN-LAST:event_molecules_with_id_tableCellMouseDoubleClick
 
-   public void setMols(ArrayList<RenderableMolData> mol_datas,
-           ArrayList< ArrayList<Integer>> indexes1,
-           ArrayList< ArrayList<Integer>> indexes2) {
-      this.mol_datas.clear();
-      this.mol_datas.addAll(mol_datas);
-
-      setBorder(javax.swing.BorderFactory.createTitledBorder(_name + " - "
-              + mol_datas.size() + " Molecules"));
-
-      MolTableModel model = (MolTableModel) j_table.getModel();
-      model.setMols(mol_datas, indexes1, indexes2);
-   }
-
-   private String _loadMolecules(File choosed_file) {
-      try {
-         sdf_loader = new SdfLoader(indigo, null);
-
-         sdf_loader.finish_event.addListener(new IndigoEventListener<Integer>()  {
-            public void handleEvent(Object source, Integer event) {
-               finish_event.fireEvent(event);
-            }
-         });
-
-         sdf_loader.progress_event.addListener(new IndigoEventListener<Integer>()  {
-            public void handleEvent(Object source, Integer progress) {
-               progress_event.fireEvent(progress);
-            }
-         });
-
-         if (_compare_options.getStereocentersIgnoreFlag()) {
-            indigo.setOption("ignore-stereochemistry-errors", "1");
-         } else {
-            indigo.setOption("ignore-stereochemistry-errors", "0");
+   private void molecules_with_id_tableCellShowPopupMenu (com.ggasoftware.indigo.controls.TableCellMouseEvent evt)//GEN-FIRST:event_molecules_with_id_tableCellShowPopupMenu
+   {//GEN-HEADEREND:event_molecules_with_id_tableCellShowPopupMenu
+      final TableCellMouseEvent evt_final = evt;
+      
+      JPopupMenu _popup_menu = new JPopupMenu();
+      JMenuItem show_mi = new JMenuItem("Open in a new window");
+      show_mi.addActionListener(new ActionListener()
+      {
+         public void actionPerformed (ActionEvent e)
+         {
+            molecules_with_id_tableCellMouseDoubleClick(evt_final);
          }
+      });
+      _popup_menu.add(show_mi);
+      
+      _popup_menu.show((Component)evt.mouse_event.getSource(), evt.mouse_event.getX(), evt.mouse_event.getY());
+   }//GEN-LAST:event_molecules_with_id_tableCellShowPopupMenu
 
-         String file_name = choosed_file.getPath().toLowerCase();
-         if (file_name.endsWith(".smi")) {
-            sdf_loader.setExtension("smi");
-         } else if (file_name.endsWith(".sdf") || file_name.endsWith(".sd")) {
-            sdf_loader.setExtension("sdf");
-         } else if (file_name.endsWith(".cml")) {
-            sdf_loader.setExtension("cml");
-         } else {
-            throw new Exception("Unsupported file extension");
-         }
-
-         sdf_loader.setFile(choosed_file);
-         sdf_loader.start();
-
-         return choosed_file.getPath();
-      } catch (Exception ex) {
-         JOptionPane msg_box = new JOptionPane();
-         msg_box.showMessageDialog((JFrame) (j_table.getTopLevelAncestor()), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-
-         System.err.println(">>>>" + ex.getMessage());
-         ex.printStackTrace();
-
-         return null;
-      }
-   }
-
-   public SdfLoader getSdfLoader() {
-      return sdf_loader;
-   }
-
-   public ArrayList<RenderableMolData> getMols() {
-      return mol_datas;
-   }
    // Variables declaration - do not modify//GEN-BEGIN:variables
-   private javax.swing.JTable j_table;
+   private javax.swing.JTextField file_name_field;
    private javax.swing.JButton load_button;
    private javax.swing.JPanel load_button_panel;
-   private javax.swing.JProgressBar load_progress_bar;
-   private javax.swing.JScrollPane scroll_panel;
+   private com.ggasoftware.indigo.chemdiff.MoleculeTableWithIdPanel molecules_with_id_table;
    // End of variables declaration//GEN-END:variables
 }

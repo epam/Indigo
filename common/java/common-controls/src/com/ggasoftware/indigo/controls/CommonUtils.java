@@ -2,11 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.ggasoftware.indigo.controls;
 
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoObject;
+import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -18,33 +18,33 @@ import javax.swing.JOptionPane;
  */
 public class CommonUtils
 {
-   public static IndigoObject getIterator( Indigo indigo, String path) throws Exception
+   public static IndigoObject getIterator (Indigo indigo, String path)
    {
       IndigoObject iterator;
 
-      String ext="";
-      int point_idx = path.lastIndexOf(".");
-      ext = path.substring(point_idx + 1, path.length());
-
-      if (ext.equals("sdf") || ext.equals("sd") || ext.equals("mol")) {
+      if (path.endsWith(".sdf") || path.endsWith(".sd") || path.endsWith(".mol"))
          iterator = indigo.iterateSDFile(path);
-      } else if (ext.equals("smi")) {
+      else if (path.endsWith(".rdf"))
+         iterator = indigo.iterateRDFile(path);
+      else if (path.endsWith(".smi"))
          iterator = indigo.iterateSmilesFile(path);
-      } else if (ext.equals("cml")) {
+      else if (path.endsWith(".cml"))
          iterator = indigo.iterateCMLFile(path);
-      } else {
-         throw new Exception("Unsupported file extension");
-      }
+      else
+         throw new RuntimeException("Unsupported file extension");
 
       return iterator;
    }
-   
-   public static void showAboutDialog( JFrame parent )
+
+   public static void showAboutDialog (JFrame parent, String product, String url)
    {
-       String msg = String.format("ChemDiff\nVersion %s\nCopyright (C) 2010-2011 GGA Software Services LLC",
-               (new Indigo()).version());
-       JOptionPane.showConfirmDialog(parent, msg, "About", JOptionPane.DEFAULT_OPTION,
-               JOptionPane.INFORMATION_MESSAGE,
-               new ImageIcon("images\\logo_small.png"));
+      StringBuilder sb = new StringBuilder();
+      sb.append(String.format("<b>%s</b><br>", product));
+      sb.append(String.format("Indigo version: %s<br>", (new Indigo()).version()));
+      sb.append("(C) 2010-2011 GGA Software Services LLC<br>");
+      sb.append(String.format("<a href=\"%s\">%s</a>", url, url));
+      
+      URL icon_url = CommonUtils.class.getResource("images/gga-logo.png");
+      MessageBox.showHtml(parent, sb.toString(), "About", new ImageIcon(icon_url));
    }
 }

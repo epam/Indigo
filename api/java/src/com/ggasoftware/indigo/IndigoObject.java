@@ -39,6 +39,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       _lib = Indigo.getLibrary();
    }
 
+   public Indigo getIndigo ()
+   {
+      return dispatcher;
+   }
+   
    @Override
    @SuppressWarnings("FinalizeDeclaration")
    protected void finalize () throws Throwable
@@ -863,6 +868,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoIterateProperties(self)));
+   }
+
+   public void clearProperties ()
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoClearProperties(self));
    }
 
    public String checkBadValence ()

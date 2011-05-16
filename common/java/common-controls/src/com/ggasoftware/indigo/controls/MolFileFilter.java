@@ -26,7 +26,7 @@ public class MolFileFilter extends FileFilter
       String name = file.getName().toLowerCase();
 
       for (int i = 0; i < extensions.size(); i++)
-         if (name.endsWith(extensions.get(i)))
+         if (name.endsWith("." + extensions.get(i)))
             return true;
 
       return false;

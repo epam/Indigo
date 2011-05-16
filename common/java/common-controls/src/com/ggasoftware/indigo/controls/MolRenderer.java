@@ -1,116 +1,117 @@
 package com.ggasoftware.indigo.controls;
 
 import java.awt.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 import java.io.*;
 import com.ggasoftware.indigo.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
+import java.net.URL;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 public class MolRenderer extends JPanel
-                     implements TableCellRenderer
+        implements TableCellRenderer
 {
-  static int call_count = 0;
+   static int call_count = 0;
+   private BufferedImage image;
+   private ImageIcon _exclamation_img;
+   Color bg_color;
 
-  private Indigo indigo;
-  private IndigoRenderer indigo_renderer;
-  private IndigoObject indigo_obj;
-  private BufferedImage image;
-  private boolean is_reactions_mode;
+   public MolRenderer()
+   {
+      URL url = this.getClass().getResource("images/exclamation.png");
+      _exclamation_img = new ImageIcon(url);
+   }
 
-  int cell_w;
-  int cell_h;
+   public Component getTableCellRendererComponent(
+           JTable table, Object value, boolean isSelected,
+           boolean hasFocus, int row, int column)
+   {
+      if (value == null)
+         return null;
+      
+      RenderableObject mol_image = (RenderableObject) value;
 
-  public MolRenderer( Indigo cur_indigo, IndigoRenderer cur_indigo_renderer,
-                      int new_cell_w, int new_cell_h, boolean is_reactions )
-  {
-     indigo = cur_indigo;
-     indigo_renderer = cur_indigo_renderer;
-     cell_w = new_cell_w;
-     cell_h = new_cell_h;
-     indigo.setOption("render-output-format", "png");
-     indigo.setOption("render-background-color", "1,1,1");
-     indigo.setOption("render-coloring", "1");
-     indigo.setOption("render-comment-font-size", "14");
-     is_reactions_mode = is_reactions;
-  }
+      Indigo indigo = mol_image.getIndigo();
+      IndigoRenderer indigo_renderer = mol_image.getIndigoRenderer();
 
-  public class ImageObs implements ImageObserver
-  {
-     public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
-        return true;
-     }
-  }
+      // To avoid parallel rendering (maybe will be fixed)
+      synchronized (indigo)
+      {
+         indigo.setOption("render-output-format", "png");
 
-  public synchronized Component getTableCellRendererComponent(
-              JTable table, Object value, boolean isSelected,
-              boolean hasFocus, int row, int column)
-  {
-     RenderableObject mol_image = (RenderableObject)value;
-     synchronized (indigo) {
+         if (mol_image == null)
+            return null;
 
-        if (mol_image == null)
-           return null;
+         IndigoObject indigo_obj = mol_image.getRenderableObject();
 
-        try {
-           indigo_obj = mol_image.getObject();
-        } catch (Exception ex)  {
-           indigo_obj = null;
-        }
+         int cell_h = table.getRowHeight(row);
+         int cell_w = table.getColumnModel().getColumn(column).getWidth();
 
-        if (indigo_obj == null)
-        {
-           image = new BufferedImage(cell_w, cell_h, BufferedImage.TYPE_INT_RGB);
-           Graphics2D gc = image.createGraphics();
-           gc.setColor(Color.white);
-           gc.fillRect(0, 0, cell_w, cell_h);
-           gc.setColor(Color.black);
-           gc.drawString("Cannot render", 10, (int)(cell_h/2));
+         if (isSelected)
+            bg_color = table.getSelectionBackground();
+         else
+            bg_color = table.getBackground();
+         
+         float[] c = bg_color.getComponents(null);
+         indigo.setOption("render-background-color", c[0], c[1], c[2]);
+         
+         if (indigo_obj == null)
+         {
+            image = new BufferedImage(cell_w, cell_h, BufferedImage.TYPE_INT_RGB);
+            Graphics2D gc = image.createGraphics();
+            gc.setColor(bg_color);
+            gc.fillRect(0, 0, cell_w, cell_h);
+            gc.setColor(Color.black);
+            gc.drawString("Cannot render", 40, (int) (cell_h / 2));
+            gc.drawImage(_exclamation_img.getImage(), 5, 10, null);
+            return this;
+         }
+        
+         indigo.setOption("render-image-size", cell_w, cell_h);
+         byte[] bytes = null;
 
-           return this;
-        }
+         try
+         {
+            bytes = indigo_renderer.renderToBuffer(indigo_obj);
 
-        indigo.setOption("render-image-size", cell_w, cell_h);
-        byte[] bytes = null;
+            //System.out.print("Render: " + call_count + "\n");
+            call_count++;
 
-        try {
-           // Trick to avoid parallel rendering (should be fixed)
-           synchronized (MolRenderer.class) {
-              bytes = indigo_renderer.renderToBuffer(indigo_obj.clone());
+            ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
+            image = ImageIO.read(new MemoryCacheImageInputStream(bytes_is));
+         }
+         catch (IOException ex)
+         {
+            System.err.println(">>>>" + ex.getMessage());
+            ex.printStackTrace();
+         }
+         if (mol_image.getErrorMessageToRender() != null)
+         {
+            // Mark molecule somehow
+            Graphics2D gc = image.createGraphics();
+            gc.drawImage(_exclamation_img.getImage(), 5, 10, null);
+         }
 
-              //System.out.print("Render: " + call_count + "\n");
-              call_count++;
+         if (hasFocus)
+            setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
+         else
+            setBorder(new EmptyBorder(1, 2, 1, 2));
+            
+         return this;
+      }
+   }
 
-              ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
-              image = ImageIO.read(new MemoryCacheImageInputStream(bytes_is));
-           }
-        } catch (IOException ex) {
-           System.err.println(">>>>" + ex.getMessage() );
-           ex.printStackTrace();
-        }
-        /*
-        if (!valid)
-        {
-           // Mark molecule somehow
-           Graphics2D gc = image.createGraphics();
-           gc.setColor(Color.red);
-           gc.drawString("No canonical SMILES", 10, 10);
-        }
-         */
-
-        return this;
-     }
-  }
-
-  public void paintComponent(Graphics g)
-  {
-     if (image != null)
-        g.drawImage(image, 0, 0, new ImageObs());
-  }
+   @Override
+   public void paintComponent(Graphics g)
+   {
+      setBackground(bg_color);
+      if (image != null)
+         g.drawImage(image, 0, 0, this);
+   }
 }

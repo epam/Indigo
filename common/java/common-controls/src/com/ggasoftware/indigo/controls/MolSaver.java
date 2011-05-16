@@ -1,6 +1,7 @@
 package com.ggasoftware.indigo.controls;
 
 import com.ggasoftware.indigo.Indigo;
+import com.ggasoftware.indigo.IndigoException;
 import com.ggasoftware.indigo.IndigoObject;
 import java.io.File;
 import java.util.ArrayList;
@@ -8,23 +9,34 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-public class MolSaver {
+public class MolSaver
+{
    private Indigo _indigo;
    private FileOpener _fopener = new FileOpener();
+   private ArrayList<RenderableObject> _failed_to_save = null;
 
-   public MolSaver( Indigo indigo )
+   public MolSaver (Indigo indigo)
    {
       this._indigo = indigo;
    }
 
-   public void addExtension( String... extensions )
+   public void addExtension (String... extensions)
    {
       _fopener.addExtension(extensions);
    }
+   
+   public ArrayList<RenderableObject> getInvalidObjects ()
+   {
+      return _failed_to_save;
+   }
 
-   public String saveMols(ArrayList<? extends RenderableObject> mol_datas) {
+   public String saveMols (ArrayList<? extends RenderableObject> mol_datas)
+   {
+      _failed_to_save = new ArrayList<RenderableObject>();
+      
       IndigoObject output_file = null;
-      try {
+      try
+      {
          String out_file_path = _fopener.openFile("Save");
          if (out_file_path == null)
             return null;
@@ -33,50 +45,72 @@ public class MolSaver {
          if (!cur_filter.accept(_fopener.getFile()))
             out_file_path += "." + choosed_extension;
 
-         output_file = _indigo.writeFile(out_file_path);
-
          if (choosed_extension.compareTo("mol") == 0)
          {
-            mol_datas.get(0).getObject().saveMolfile(out_file_path);
+            if (mol_datas.isEmpty() && mol_datas.size() > 1)
+               throw new IndigoCheckedException("Can save only single molecules into MOL format");
+            mol_datas.get(0).getRenderableObject().saveMolfile(out_file_path);
             return out_file_path;
          }
 
          if (choosed_extension.compareTo("rxn") == 0)
          {
-            mol_datas.get(0).getObject().saveRxnfile(out_file_path);
+            if (mol_datas.isEmpty() && mol_datas.size() > 1)
+               throw new IndigoCheckedException("Can save only single molecules into RXN format");
+            mol_datas.get(0).getRenderableObject().saveRxnfile(out_file_path);
             return out_file_path;
          }
 
-         IndigoObject file_saver = _indigo.createSaver(output_file, choosed_extension);
+         IndigoObject file_saver = null;
+         try
+         {
+            file_saver = _indigo.createFileSaver(out_file_path, choosed_extension);
 
-         for (RenderableObject mol : mol_datas) {
-            IndigoObject m = mol.getObject();
-            if (m == null) {
-               continue;
+            for (RenderableObject mol : mol_datas)
+            {
+               try 
+               {
+                  IndigoObject m = mol.getRenderableObject();
+                  if (m == null)
+                  {
+                     _failed_to_save.add(mol);
+                     continue;
+                  }
+                  if (!m.hasCoord())
+                     m.layout();
+                  m.markEitherCisTrans();
+
+                  file_saver.append(m);
+               }
+               catch (IndigoException ex)
+               {
+                  _failed_to_save.add(mol);
+               }
             }
-            if (!m.hasCoord())
-               m.layout();
-            m.markEitherCisTrans();
-
-            file_saver.append(m);
+         }
+         finally
+         {
+            if (file_saver != null)
+               file_saver.close();
          }
 
-         if (choosed_extension.compareTo("cml") == 0)
-            output_file.cmlFooter();
-
-
          return _fopener.getFilePath();
-      } catch (Exception ex) {
+      }
+      catch (Exception ex)
+      {
          JOptionPane.showMessageDialog(JFrame.getOwnerlessWindows()[0],
                  ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
          return null;
-      } finally {
+      }
+      finally
+      {
          if (output_file != null)
             output_file.close();
       }
    }
 
-   public String saveMol(RenderableObject mol) {
+   public String saveMol (RenderableObject mol)
+   {
       ArrayList<RenderableObject> mols = new ArrayList<RenderableObject>();
       mols.add(mol);
 

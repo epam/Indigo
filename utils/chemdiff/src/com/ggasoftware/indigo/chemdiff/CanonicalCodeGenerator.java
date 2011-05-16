@@ -1,29 +1,40 @@
 package com.ggasoftware.indigo.chemdiff;
 
 import com.ggasoftware.indigo.Indigo;
+import com.ggasoftware.indigo.IndigoException;
 import com.ggasoftware.indigo.IndigoObject;
-import com.sun.jna.Callback;
+import com.ggasoftware.indigo.controls.IndigoCheckedException;
 
-public class CanonicalCodeGenerator implements Callback {
-
+public class CanonicalCodeGenerator
+{
    private volatile CompareOptions _compare_options;
-   private Indigo _indigo;
-   private IndigoObject _charge_patten;
+   private Indigo _cached_indigo;
+   private IndigoObject _cached_charge_pattern;
 
-   public CanonicalCodeGenerator(Indigo indigo, CompareOptions compare_options)
+   public CanonicalCodeGenerator (CompareOptions compare_options)
    {
       this._compare_options = compare_options;
+   }
+   
+   private IndigoObject getChargePattern (IndigoObject mol)
+   {
+      if (mol.getIndigo() != _cached_indigo)
+      {
+         _cached_indigo = mol.getIndigo();
+         _cached_charge_pattern = _cached_indigo.loadSmarts(
+                 "[#6,#7,#8,#15,#16;+]-,=[#6,#7,#8,#15,#16;-]");
+      }
+      return _cached_charge_pattern;
    }
 
    private int _unseparateCharges (IndigoObject mol)
    {
       // At first check if charge configutation exists
-      IndigoObject matcher = _indigo.substructureMatcher(mol);
-      if (matcher.match(_charge_patten) == null)
+      IndigoObject matcher = mol.getIndigo().substructureMatcher(mol);
+      if (matcher.match(getChargePattern(mol)) == null)
          return 0;
-      
-      int cnt = 0, old_cnt;
 
+      int cnt = 0, old_cnt;
       do
       {
          old_cnt = cnt;
@@ -35,12 +46,16 @@ public class CanonicalCodeGenerator implements Callback {
             IndigoObject destination = bond.destination();
 
             if (source.degree() > 1 && destination.degree() > 1)
+            {
                continue;
+            }
 
             int order = bond.bondOrder();
 
             if (order != 1 && order != 2)
+            {
                continue;
+            }
 
             int elem_beg = source.atomicNumber();
             int elem_end = destination.atomicNumber();
@@ -76,33 +91,44 @@ public class CanonicalCodeGenerator implements Callback {
       return cnt;
    }
 
-   public void setIndigo( Indigo indigo )
+   public IndigoObject createPreparedObject (MoleculeItem object) throws IndigoCheckedException
    {
-      this._indigo = indigo;
-      _charge_patten = indigo.loadSmarts("[#6,#7,#8,#15,#16;+]-,=[#6,#7,#8,#15,#16;-]");
-   }
+      Indigo indigo = object.getIndigo();
+      synchronized (indigo)
+      {
+         indigo.setOption("ignore-stereochemistry-errors",
+                 _compare_options.getStereocentersIgnoreFlag());
 
-   public synchronized String generate( Object object )
-   {
-      RenderableMolData mol_data = (RenderableMolData)object;
-      IndigoObject mol_iterator = mol_data.getIterator();
-      int index = mol_data.getIndex();
-
-      synchronized (_indigo) {
-         IndigoObject mol = mol_iterator.at(index);
-
-         if (_compare_options.getUnseparateChargesFlag())
-            _unseparateCharges(mol);
-         if (_compare_options.getAromFlag())
-            mol.aromatize();
-         if (_compare_options.getCisTransIgnoreFlag())
-            mol.clearCisTrans();
-         if (_compare_options.getStereocentersIgnoreFlag())
-            mol.clearStereocenters();
+         IndigoObject copy_to_modify = object.getObjectCopy();
          
-         String smiles = mol.canonicalSmiles();
-
-         return smiles;
+         try 
+         {
+            if (_compare_options.getUnseparateChargesFlag())
+               _unseparateCharges(copy_to_modify);
+            if (_compare_options.getAromFlag())
+               copy_to_modify.aromatize();
+            if (_compare_options.getCisTransIgnoreFlag())
+               copy_to_modify.clearCisTrans();
+            if (_compare_options.getStereocentersIgnoreFlag())
+               copy_to_modify.clearStereocenters();
+            return copy_to_modify;
+         }
+         catch (IndigoException ex)
+         {
+            throw new IndigoCheckedException(ex.getMessage(), ex);
+         }
+      }
+   }
+   
+   public String generate (MoleculeItem object) throws IndigoCheckedException
+   {
+      try
+      {
+         return createPreparedObject(object).canonicalSmiles();
+      }
+      catch (IndigoException ex)
+      {
+         throw new IndigoCheckedException(ex.getMessage(), ex);
       }
    }
 }

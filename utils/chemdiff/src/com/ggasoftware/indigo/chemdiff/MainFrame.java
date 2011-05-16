@@ -1,85 +1,58 @@
 package com.ggasoftware.indigo.chemdiff;
 
-import com.ggasoftware.indigo.*;
 import com.ggasoftware.indigo.controls.CommonUtils;
-import com.ggasoftware.indigo.controls.IndigoEventListener;
+import com.ggasoftware.indigo.controls.IndigoCheckedException;
 import com.ggasoftware.indigo.controls.MolSaver;
-import java.io.File;
+import com.ggasoftware.indigo.controls.ProgressStatusDialog;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import java.net.*;
 import java.util.ArrayList;
-import javax.swing.ImageIcon;
-import javax.swing.UIManager;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
 
-public class MainFrame extends javax.swing.JFrame {
-
+public class MainFrame extends javax.swing.JFrame
+{
+   public static final int LARGE_HEIGHT = 250;
+   private static final int COMPACT_HEIGHT = 70;
+   private static final int MEDIUM_HEIGHT = 160;
    CompareOptions compare_options;
    CanonicalCodeGenerator csmiles_generator;
-   MolComparer mol_comparer;
    MolSaver mol_saver1;
    MolSaver mol_saver2;
-   Indigo indigo1;
-   Indigo indigo2;
-
-   public static void setNativeLookAndFeel() {
-      try {
-         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      } catch (Exception e) {
-         System.out.println("Error setting native LAF: " + e);
-      }
-   }
-
-   public static String getPathToJarfileDir(Class classToUse) {
-      String url = classToUse.getResource("/" + classToUse.getName().replaceAll("\\.", "/") + ".class").toString();
-      url = url.substring(4).replaceFirst("/[^/]+\\.jar!.*$", "/");
-      try {
-         File dir = new File(new URL(url).toURI());
-         url = dir.getAbsolutePath();
-      } catch (MalformedURLException mue) {
-         System.err.println(mue.getMessage());
-         url = null;
-      } catch (URISyntaxException ue) {
-         System.err.println(ue.getMessage());
-         url = null;
-      }
-      return url;
-   }
 
    /** Creates new form MainFrame */
-   public MainFrame() {
-      IndigoRenderer indigo_renderer1;
-      IndigoRenderer indigo_renderer2;
-
-      String path = getPathToJarfileDir(MainFrame.class);
-      indigo1 = new Indigo();
-      indigo2 = new Indigo();
-
-      indigo_renderer1 = new IndigoRenderer(indigo1);
-      indigo_renderer2 = new IndigoRenderer(indigo2);
-
-      indigo1.setOption("render-margins", "5,2");
-      indigo2.setOption("render-margins", "5,2");
-
+   public MainFrame ()
+   {
       initComponents();
 
+      Global.indigo.setOption("render-margins", "5,2");
+      Global.indigo.setOption("treat-x-as-pseudoatom", "true");
+      Global.indigo.setOption("ignore-noncritical-query-features", "true");
+      Global.indigo.setOption("render-coloring", true);
+      Global.indigo.setOption("render-comment-font-size", "14");
+      Global.indigo.setOption("render-bond-length", "70");
+
+      allocateCompareOptions();
+
+      setTitle("ChemDiff");
+
+      setRowHeight(MEDIUM_HEIGHT);
+   }
+
+   private void allocateCompareOptions ()
+   {
       compare_options = new CompareOptions(aromatizer_check.getState(),
               cistrans_check.getState(),
               stereocenters_check.getState(),
               unseparate_charges_check.getState());
-      csmiles_generator = new CanonicalCodeGenerator(indigo1, compare_options);
-
-      mol_comparer = new MolComparer(csmiles_generator, true);
-
-      in_table1.init(indigo1, indigo_renderer1, compare_options, 300, 150, false);
-      in_table2.init(indigo2, indigo_renderer2, compare_options, 300, 150, false);
-      out_table1.init(indigo1, indigo_renderer1, 200, 150, false);
-      out_table2.init(indigo1, indigo_renderer1, 200, 150, false);
-      out_table3.init(indigo2, indigo_renderer2, 200, 150, false);
-
-      setTitle("ChemDiff");
+      csmiles_generator = new CanonicalCodeGenerator(compare_options);
    }
 
    /** This method is called from within the constructor to
@@ -95,25 +68,29 @@ public class MainFrame extends javax.swing.JFrame {
       in_tab = new javax.swing.JPanel();
       action_panel = new javax.swing.JPanel();
       compare_button = new javax.swing.JButton();
-      main_progress_bar = new javax.swing.JProgressBar();
-      in_table2 = new com.ggasoftware.indigo.chemdiff.InputTable();
-      in_table1 = new com.ggasoftware.indigo.chemdiff.InputTable();
+      inputTables = new javax.swing.JPanel();
+      in_table_1 = new com.ggasoftware.indigo.chemdiff.InputTable();
+      in_table_2 = new com.ggasoftware.indigo.chemdiff.InputTable();
       out_tab = new javax.swing.JPanel();
+      out_table_common = new com.ggasoftware.indigo.chemdiff.OutputTable();
       out_table1 = new com.ggasoftware.indigo.chemdiff.OutputTable();
       out_table2 = new com.ggasoftware.indigo.chemdiff.OutputTable();
-      out_table3 = new com.ggasoftware.indigo.chemdiff.OutputTable();
       main_menu_bar = new javax.swing.JMenuBar();
       menu_file = new javax.swing.JMenu();
-      load_left_mi = new javax.swing.JMenuItem();
-      load_right_mi = new javax.swing.JMenuItem();
-      file_menu_separator = new javax.swing.JPopupMenu.Separator();
       exit_mi = new javax.swing.JMenuItem();
+      menu_view = new javax.swing.JMenu();
+      jMenu1 = new javax.swing.JMenu();
+      menu_view_compact = new javax.swing.JCheckBoxMenuItem();
+      menu_view_medium = new javax.swing.JCheckBoxMenuItem();
+      menu_view_large = new javax.swing.JCheckBoxMenuItem();
       menu_options = new javax.swing.JMenu();
       aromatizer_check = new javax.swing.JCheckBoxMenuItem();
       stereocenters_check = new javax.swing.JCheckBoxMenuItem();
       cistrans_check = new javax.swing.JCheckBoxMenuItem();
-      save_same_check = new javax.swing.JCheckBoxMenuItem();
+      merge_duplicates_check = new javax.swing.JCheckBoxMenuItem();
       unseparate_charges_check = new javax.swing.JCheckBoxMenuItem();
+      sort_by_groups_size_check = new javax.swing.JCheckBoxMenuItem();
+      show_invalid_on_top_check = new javax.swing.JCheckBoxMenuItem();
       menu_help = new javax.swing.JMenu();
       online_help = new javax.swing.JMenuItem();
       about_mi = new javax.swing.JMenuItem();
@@ -137,62 +114,33 @@ public class MainFrame extends javax.swing.JFrame {
       action_panelLayout.setHorizontalGroup(
          action_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, action_panelLayout.createSequentialGroup()
-            .addComponent(main_progress_bar, javax.swing.GroupLayout.DEFAULT_SIZE, 809, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addContainerGap(679, Short.MAX_VALUE)
             .addComponent(compare_button, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
       action_panelLayout.setVerticalGroup(
          action_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(main_progress_bar, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
          .addComponent(compare_button, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
       );
 
-      in_table2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-      in_table2.setName("Second File"); // NOI18N
-      in_table2.setPreferredSize(new java.awt.Dimension(420, 533));
+      inputTables.setLayout(new java.awt.GridLayout(1, 0, 8, 0));
 
-      javax.swing.GroupLayout in_table2Layout = new javax.swing.GroupLayout(in_table2);
-      in_table2.setLayout(in_table2Layout);
-      in_table2Layout.setHorizontalGroup(
-         in_table2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 457, Short.MAX_VALUE)
-      );
-      in_table2Layout.setVerticalGroup(
-         in_table2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 531, Short.MAX_VALUE)
-      );
+      in_table_1.setTitle("First file");
+      inputTables.add(in_table_1);
 
-      in_table1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-      in_table1.setName("First File"); // NOI18N
-      in_table1.setPreferredSize(new java.awt.Dimension(420, 533));
-
-      javax.swing.GroupLayout in_table1Layout = new javax.swing.GroupLayout(in_table1);
-      in_table1.setLayout(in_table1Layout);
-      in_table1Layout.setHorizontalGroup(
-         in_table1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 447, Short.MAX_VALUE)
-      );
-      in_table1Layout.setVerticalGroup(
-         in_table1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 531, Short.MAX_VALUE)
-      );
+      in_table_2.setTitle("Second file");
+      inputTables.add(in_table_2);
 
       javax.swing.GroupLayout in_tabLayout = new javax.swing.GroupLayout(in_tab);
       in_tab.setLayout(in_tabLayout);
       in_tabLayout.setHorizontalGroup(
          in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addComponent(action_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, in_tabLayout.createSequentialGroup()
-            .addComponent(in_table1, javax.swing.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(in_table2, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE))
+         .addComponent(inputTables, javax.swing.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE)
       );
       in_tabLayout.setVerticalGroup(
          in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, in_tabLayout.createSequentialGroup()
-            .addGroup(in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-               .addComponent(in_table1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-               .addComponent(in_table2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(inputTables, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(action_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
@@ -200,55 +148,20 @@ public class MainFrame extends javax.swing.JFrame {
       tabbed_panel.addTab("input", in_tab);
 
       out_tab.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      out_tab.setLayout(new java.awt.GridLayout(1, 0, 3, 3));
+      out_tab.setLayout(new javax.swing.BoxLayout(out_tab, javax.swing.BoxLayout.LINE_AXIS));
 
-      out_table1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-      out_table1.setName("Coincident Molecules"); // NOI18N
+      out_table_common.setTitle("Common");
+      out_tab.add(out_table_common);
 
-      javax.swing.GroupLayout out_table1Layout = new javax.swing.GroupLayout(out_table1);
-      out_table1.setLayout(out_table1Layout);
-      out_table1Layout.setHorizontalGroup(
-         out_table1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 300, Short.MAX_VALUE)
-      );
-      out_table1Layout.setVerticalGroup(
-         out_table1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 569, Short.MAX_VALUE)
-      );
-
+      out_table1.setIdColumnCount(1);
+      out_table1.setPreferredSize(new java.awt.Dimension(259, 451));
+      out_table1.setTitle("Unique in 1st");
       out_tab.add(out_table1);
 
-      out_table2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-      out_table2.setName("Unique Molecules From the First File"); // NOI18N
-
-      javax.swing.GroupLayout out_table2Layout = new javax.swing.GroupLayout(out_table2);
-      out_table2.setLayout(out_table2Layout);
-      out_table2Layout.setHorizontalGroup(
-         out_table2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 300, Short.MAX_VALUE)
-      );
-      out_table2Layout.setVerticalGroup(
-         out_table2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 569, Short.MAX_VALUE)
-      );
-
+      out_table2.setIdColumnCount(1);
+      out_table2.setPreferredSize(new java.awt.Dimension(259, 451));
+      out_table2.setTitle("Unique in 2nd");
       out_tab.add(out_table2);
-
-      out_table3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-      out_table3.setName("Unique Molecules From the Second File"); // NOI18N
-
-      javax.swing.GroupLayout out_table3Layout = new javax.swing.GroupLayout(out_table3);
-      out_table3.setLayout(out_table3Layout);
-      out_table3Layout.setHorizontalGroup(
-         out_table3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 300, Short.MAX_VALUE)
-      );
-      out_table3Layout.setVerticalGroup(
-         out_table3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 569, Short.MAX_VALUE)
-      );
-
-      out_tab.add(out_table3);
 
       tabbed_panel.addTab("output", out_tab);
 
@@ -259,23 +172,6 @@ public class MainFrame extends javax.swing.JFrame {
          }
       });
 
-      load_left_mi.setText("Load first");
-      load_left_mi.addActionListener(new java.awt.event.ActionListener() {
-         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            load_firstActionPerformed(evt);
-         }
-      });
-      menu_file.add(load_left_mi);
-
-      load_right_mi.setText("Load second");
-      load_right_mi.addActionListener(new java.awt.event.ActionListener() {
-         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            load_secondActionPerformed(evt);
-         }
-      });
-      menu_file.add(load_right_mi);
-      menu_file.add(file_menu_separator);
-
       exit_mi.setText("Exit");
       exit_mi.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -285,6 +181,39 @@ public class MainFrame extends javax.swing.JFrame {
       menu_file.add(exit_mi);
 
       main_menu_bar.add(menu_file);
+
+      menu_view.setText("View");
+
+      jMenu1.setText("Layout size");
+
+      menu_view_compact.setText("Compact");
+      menu_view_compact.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            onLayoutSizeChanged(evt);
+         }
+      });
+      jMenu1.add(menu_view_compact);
+
+      menu_view_medium.setSelected(true);
+      menu_view_medium.setText("Medium");
+      menu_view_medium.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            onLayoutSizeChanged(evt);
+         }
+      });
+      jMenu1.add(menu_view_medium);
+
+      menu_view_large.setText("Large");
+      menu_view_large.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            onLayoutSizeChanged(evt);
+         }
+      });
+      jMenu1.add(menu_view_large);
+
+      menu_view.add(jMenu1);
+
+      main_menu_bar.add(menu_view);
 
       menu_options.setText("Options");
 
@@ -313,9 +242,10 @@ public class MainFrame extends javax.swing.JFrame {
       });
       menu_options.add(cistrans_check);
 
-      save_same_check.setText("Merge duplicate molecules");
-      save_same_check.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-      menu_options.add(save_same_check);
+      merge_duplicates_check.setSelected(true);
+      merge_duplicates_check.setText("Merge duplicate molecules");
+      merge_duplicates_check.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+      menu_options.add(merge_duplicates_check);
 
       unseparate_charges_check.setSelected(true);
       unseparate_charges_check.setText("Unseparate charges");
@@ -325,6 +255,14 @@ public class MainFrame extends javax.swing.JFrame {
          }
       });
       menu_options.add(unseparate_charges_check);
+
+      sort_by_groups_size_check.setSelected(true);
+      sort_by_groups_size_check.setText("Sort by group size");
+      menu_options.add(sort_by_groups_size_check);
+
+      show_invalid_on_top_check.setSelected(true);
+      show_invalid_on_top_check.setText("Show invalid molecules on top");
+      menu_options.add(show_invalid_on_top_check);
 
       main_menu_bar.add(menu_options);
 
@@ -354,22 +292,18 @@ public class MainFrame extends javax.swing.JFrame {
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(tabbed_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 929, Short.MAX_VALUE)
+         .addComponent(tabbed_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 793, Short.MAX_VALUE)
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(tabbed_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE)
+         .addComponent(tabbed_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
       );
 
       pack();
    }// </editor-fold>//GEN-END:initComponents
 
-    private void load_firstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_firstActionPerformed
-       in_table1.openLoadingDialog();
-    }//GEN-LAST:event_load_firstActionPerformed
-
     private void load_secondActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_secondActionPerformed
-       in_table2.openLoadingDialog();
+       in_table_2.openLoadingDialog();
     }//GEN-LAST:event_load_secondActionPerformed
 
     private void exit_miActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exit_miActionPerformed
@@ -377,40 +311,198 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exit_miActionPerformed
 
     private void about_miActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_about_miActionPerformed
-       CommonUtils.showAboutDialog(this);
+       CommonUtils.showAboutDialog(this, "ChemDiff", "http://ggasoftware.com/opensource/indigo/chemdiff");
     }//GEN-LAST:event_about_miActionPerformed
 
     private void compare_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compare_buttonActionPerformed
-       try {
-          compare_button.setEnabled(false);
 
-          mol_comparer = new MolComparer(csmiles_generator, save_same_check.getState());
+       final ProgressStatusDialog dlg = new ProgressStatusDialog(this, true);
 
-          mol_comparer.progress_event.addListener((new IndigoEventListener<Integer>()
-           {
+       // Update molecules properties
+       SwingWorker<Void, Void> compare_molecules = new SwingWorker<Void, Void>()
+       {
+          private int max_steps = 3;
+          private int cur_step = 0;
+          private int mols_error_count = 0;
 
-             public void handleEvent(Object source, Integer progress) {
-                main_progress_bar.setValue(progress);
+          private void setStepProgress (int progress)
+          {
+             setProgress((100 * cur_step + progress) / max_steps);
+          }
+
+          private HashMap<String, MultipleMoleculeItem> getCanonicalMap (ArrayList<MoleculeItem> mols)
+          {
+             HashMap<String, MultipleMoleculeItem> map = new HashMap<String, MultipleMoleculeItem>();
+             HashMap<String, Integer> same_canonical_size = new HashMap<String, Integer>();
+
+             boolean merge = merge_duplicates_check.getState();
+
+             int processed = 0;
+             for (MoleculeItem m : mols)
+             {
+                setStepProgress(100 * processed / mols.size());
+                processed++;
+                String can_smiles, src_can_smiles;
+                String error_msg = null;
+                try
+                {
+                   src_can_smiles = csmiles_generator.generate(m);
+                }
+                catch (IndigoCheckedException ex)
+                {
+                   error_msg = ex.getMessage();
+                   // Generate unique error message and save it as a smiles
+                   src_can_smiles = String.format("Error #%d: %s", mols_error_count, error_msg);
+                   mols_error_count++;
+                }
+                can_smiles = src_can_smiles;
+                // Check if this smiles already presents in the map
+                if (map.containsKey(can_smiles))
+                {
+                   Integer count = same_canonical_size.get(can_smiles);
+                   count++;
+
+                   if (merge)
+                   {
+                      // Add this molecules to the existing group
+                      map.get(can_smiles).getGroup(0).add(m);
+                      continue;
+                   }
+                   else
+                   {
+                      // Add serial number to the canonical smiles
+                      can_smiles = can_smiles + " $" + count.toString();
+                   }
+                }
+
+                MultipleMoleculeItem mul_item = new MultipleMoleculeItem(m, csmiles_generator);
+                mul_item.setErrorMessageToRender(error_msg);
+                mul_item.setCanonicalCode(src_can_smiles);
+                map.put(can_smiles, mul_item);
+                same_canonical_size.put(can_smiles, 1);
              }
-          }));
+             return map;
+          }
 
-          main_progress_bar.setMinimum(0);
-          main_progress_bar.setMaximum(1000);
-          main_progress_bar.setValue(0);
-          main_progress_bar.setStringPainted(true);
+          @Override
+          protected Void doInBackground () throws Exception
+          {
+             ArrayList<MoleculeItem> set1 = in_table_1.getMolecules();
+             ArrayList<MoleculeItem> set2 = in_table_2.getMolecules();
 
-          mol_comparer.setMols(in_table1.getMols(), 0);
-          mol_comparer.setMols(in_table2.getMols(), 1);
+             // Create canonical code mappings
+             cur_step = 0;
+             dlg.setStepName("Preparing the first set");
+             HashMap<String, MultipleMoleculeItem> map1 = getCanonicalMap(set1);
 
+             cur_step = 1;
+             dlg.setStepName("Preparing the second set");
+             HashMap<String, MultipleMoleculeItem> map2 = getCanonicalMap(set2);
 
-          mol_comparer.finish_event.addListener(new CompareFinishEventListener());
+             setProgress(10);
+             // Intersect and find difference
+             Set<String> keys1 = map1.keySet();
+             Set<String> keys2 = map2.keySet();
 
-          main_progress_bar.setString("Comparing structures...");
+             Set<String> unique1_keys = new HashSet<String>(keys1);
+             unique1_keys.removeAll(keys2);
 
-          mol_comparer.compare();
-       } catch (Exception ex) {
-          JOptionPane msg_box = new JOptionPane();
-          msg_box.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+             Set<String> unique2_keys = new HashSet<String>(keys2);
+             unique2_keys.removeAll(keys1);
+
+             Set<String> common_keys = new HashSet<String>(keys1);
+             common_keys.removeAll(unique1_keys);
+
+             setProgress(100);
+
+             ArrayList<MultipleMoleculeItem> common_mols = new ArrayList<MultipleMoleculeItem>();
+             ArrayList<MultipleMoleculeItem> unique1_mols = new ArrayList<MultipleMoleculeItem>();
+             ArrayList<MultipleMoleculeItem> unique2_mols = new ArrayList<MultipleMoleculeItem>();
+
+             // Create list with common molecules
+             for (String common_key : common_keys)
+             {
+                MultipleMoleculeItem common_mol = new MultipleMoleculeItem(2, csmiles_generator);
+                // Add molecules from the first group
+                common_mol.getGroup(0).addAll(map1.get(common_key).getGroup(0));
+                // Add molecules from the second group
+                common_mol.getGroup(1).addAll(map2.get(common_key).getGroup(0));
+                common_mol.setCanonicalCode(map1.get(common_key).getCanonicalCode());
+                common_mols.add(common_mol);
+             }
+
+             // Create lists with unique molecules
+             for (String key1 : unique1_keys)
+                unique1_mols.add(map1.get(key1));
+             for (String key2 : unique2_keys)
+                unique2_mols.add(map2.get(key2));
+
+             final boolean sort_by_size = sort_by_groups_size_check.getState();
+             final boolean show_invalid_on_top = show_invalid_on_top_check.getState();
+             
+             Comparator<MultipleMoleculeItem> comparator = new Comparator<MultipleMoleculeItem>()
+             {
+                public int compare (MultipleMoleculeItem o1, MultipleMoleculeItem o2)
+                {
+                   if (show_invalid_on_top)
+                   {
+                      Boolean b1 = (o1.getErrorMessageToRender() != null);
+                      Boolean b2 = (o2.getErrorMessageToRender() != null);
+                      if (b1 != b2)
+                         return b2.compareTo(b1);
+                   }
+                   if (sort_by_size)
+                   {
+                      int s1 = o1.getGroup(0).size();
+                      if (o1.getGroupCount() > 1)
+                         s1 += o1.getGroup(1).size();
+                      int s2 = o2.getGroup(0).size();
+                      if (o2.getGroupCount() > 1)
+                         s2 += o2.getGroup(1).size();
+                      if (s1 != s2)
+                         return s2 - s1;
+                   }
+                   // Compare by the first index
+                   return o1.getId(0).compareTo(o2.getId(0));
+                }
+             };
+             
+             Collections.sort(unique1_mols, comparator);
+             Collections.sort(unique2_mols, comparator);
+             Collections.sort(common_mols, comparator);
+
+             cur_step = 2;
+             dlg.setStepName("Comparing the molecules");
+             setStepProgress(25);
+             out_table1.setMolecules(unique1_mols);
+             setStepProgress(50);
+             out_table2.setMolecules(unique2_mols);
+             setStepProgress(75);
+             out_table_common.setMolecules(common_mols);
+             setStepProgress(100);
+
+             tabbed_panel.setSelectedIndex(1);
+             allocateCompareOptions();
+             return null;
+          }
+       };
+
+       dlg.setTitle("Comparing the molecules...");
+       dlg.executeSwingWorker(compare_molecules);
+       try
+       {
+          // Check if work wasn't aborted
+          compare_molecules.get();
+       }
+       catch (InterruptedException ex)
+       {
+          Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+          ex.printStackTrace();
+       }
+       catch (ExecutionException ex)
+       {
+          Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+          ex.printStackTrace();
        }
 }//GEN-LAST:event_compare_buttonActionPerformed
 
@@ -431,67 +523,52 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_unseparate_charges_checkStateChanged
 
     private void online_helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_online_helpActionPerformed
-      try {
-         java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-         java.net.URI uri = new java.net.URI("http://ggasoftware.com/opensource/indigo/chemdiff");
-         desktop.browse(uri);
-      } catch (URISyntaxException ex) {
-         Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-      } catch (IOException ex) {
-         Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-      }
+       try
+       {
+          java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+          java.net.URI uri = new java.net.URI("http://ggasoftware.com/opensource/indigo/chemdiff");
+          desktop.browse(uri);
+       }
+       catch (URISyntaxException ex)
+       {
+          Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+       }
+       catch (IOException ex)
+       {
+          Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+       }
 
     }//GEN-LAST:event_online_helpActionPerformed
 
-   public static void main(String args[]) {
-      java.awt.EventQueue.invokeLater(new Runnable()  {
+    private void onLayoutSizeChanged(java.awt.event.ActionEvent evt)//GEN-FIRST:event_onLayoutSizeChanged
+    {//GEN-HEADEREND:event_onLayoutSizeChanged
+       menu_view_compact.setState(false);
+       menu_view_medium.setState(false);
+       menu_view_large.setState(false);
+       if (evt.getSource() == menu_view_compact)
+       {
+          setRowHeight(COMPACT_HEIGHT);
+          menu_view_compact.setState(true);
+       }
+       else if (evt.getSource() == menu_view_medium)
+       {
+          setRowHeight(MEDIUM_HEIGHT);
+          menu_view_medium.setState(true);
+       }
+       else
+       {
+          setRowHeight(LARGE_HEIGHT);
+          menu_view_large.setState(true);
+       }
+    }//GEN-LAST:event_onLayoutSizeChanged
 
-         public void run() {
-            new MainFrame().setVisible(true);
-         }
-      });
-   }
-
-   public class CompareFinishEventListener implements IndigoEventListener<Integer> {
-
-      public void handleEvent(Object source, Integer stage) {
-         if (stage == 0) {
-            csmiles_generator.setIndigo(indigo1);
-            main_progress_bar.setString("Canonical smiles calculating for set #1...");
-         } else if (stage == 1) {
-            csmiles_generator.setIndigo(indigo2);
-            main_progress_bar.setString("Canonical smiles calculating for set #2...");
-         } else if (stage == 2) {
-            main_progress_bar.setString("Comparing molecules...");
-         } else if (stage == 3) {
-            ArrayList< ArrayList<Integer>> conc_indexes1 = mol_comparer.getIdxArrays(true, 0);
-            ArrayList< ArrayList<Integer>> conc_indexes2 = mol_comparer.getIdxArrays(true, 1);
-            ArrayList< ArrayList<Integer>> uniq_indexes1 = mol_comparer.getIdxArrays(false, 0);
-            ArrayList< ArrayList<Integer>> uniq_indexes2 = mol_comparer.getIdxArrays(false, 1);
-
-            ArrayList<RenderableMolData> conc_array = new ArrayList<RenderableMolData>();
-            for (ArrayList<Integer> array : conc_indexes1) {
-               conc_array.add(in_table1.getMols().get(array.get(0)));
-            }
-
-            ArrayList<RenderableMolData> uniq_array1 = new ArrayList<RenderableMolData>();
-            for (ArrayList<Integer> array : uniq_indexes1) {
-               uniq_array1.add(in_table1.getMols().get(array.get(0)));
-            }
-
-            ArrayList<RenderableMolData> uniq_array2 = new ArrayList<RenderableMolData>();
-            for (ArrayList<Integer> array : uniq_indexes2) {
-               uniq_array2.add(in_table2.getMols().get(array.get(0)));
-            }
-
-            out_table1.setMols(conc_array, conc_indexes1, conc_indexes2);
-            out_table2.setMols(uniq_array1, uniq_indexes1, null);
-            out_table3.setMols(uniq_array2, uniq_indexes2, null);
-            tabbed_panel.setSelectedIndex(1);
-            compare_button.setEnabled(true);
-            main_progress_bar.setString("Comparing molecules...Done");
-         }
-      }
+   private void setRowHeight (int height)
+   {
+      in_table_1.setRowHeight(height);
+      in_table_2.setRowHeight(height);
+      out_table_common.setRowHeight(height);
+      out_table1.setRowHeight(height);
+      out_table2.setRowHeight(height);
    }
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JMenuItem about_mi;
@@ -500,23 +577,27 @@ public class MainFrame extends javax.swing.JFrame {
    private javax.swing.JCheckBoxMenuItem cistrans_check;
    private javax.swing.JButton compare_button;
    private javax.swing.JMenuItem exit_mi;
-   private javax.swing.JPopupMenu.Separator file_menu_separator;
    private javax.swing.JPanel in_tab;
-   private com.ggasoftware.indigo.chemdiff.InputTable in_table1;
-   private com.ggasoftware.indigo.chemdiff.InputTable in_table2;
-   private javax.swing.JMenuItem load_left_mi;
-   private javax.swing.JMenuItem load_right_mi;
+   private com.ggasoftware.indigo.chemdiff.InputTable in_table_1;
+   private com.ggasoftware.indigo.chemdiff.InputTable in_table_2;
+   private javax.swing.JPanel inputTables;
+   private javax.swing.JMenu jMenu1;
    private javax.swing.JMenuBar main_menu_bar;
-   private javax.swing.JProgressBar main_progress_bar;
    private javax.swing.JMenu menu_file;
    private javax.swing.JMenu menu_help;
    private javax.swing.JMenu menu_options;
+   private javax.swing.JMenu menu_view;
+   private javax.swing.JCheckBoxMenuItem menu_view_compact;
+   private javax.swing.JCheckBoxMenuItem menu_view_large;
+   private javax.swing.JCheckBoxMenuItem menu_view_medium;
+   private javax.swing.JCheckBoxMenuItem merge_duplicates_check;
    private javax.swing.JMenuItem online_help;
    private javax.swing.JPanel out_tab;
    private com.ggasoftware.indigo.chemdiff.OutputTable out_table1;
    private com.ggasoftware.indigo.chemdiff.OutputTable out_table2;
-   private com.ggasoftware.indigo.chemdiff.OutputTable out_table3;
-   private javax.swing.JCheckBoxMenuItem save_same_check;
+   private com.ggasoftware.indigo.chemdiff.OutputTable out_table_common;
+   private javax.swing.JCheckBoxMenuItem show_invalid_on_top_check;
+   private javax.swing.JCheckBoxMenuItem sort_by_groups_size_check;
    private javax.swing.JCheckBoxMenuItem stereocenters_check;
    private javax.swing.JTabbedPane tabbed_panel;
    private javax.swing.JCheckBoxMenuItem unseparate_charges_check;

@@ -9,8 +9,8 @@ import java.io.File;
 
 public class GlobalParams
 {
+   // TODO: save config and options
    public String dir_path;
-   public boolean is_in = false;
 
    private volatile static GlobalParams _instance;
    
