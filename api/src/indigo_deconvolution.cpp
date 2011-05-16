@@ -324,7 +324,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
        */
       int rg_idx = rgroup_idx_map.at(r);
 //      QueryMolecule & fragment = r_group.fragments.add(new QueryMolecule()).asQueryMolecule();
-      Molecule & fragment = r_group.fragments.add(new Molecule()).asMolecule();
+      Molecule & fragment = r_group.fragments.at(r_group.fragments.add(new Molecule()))->asMolecule();
 
       Filter sub_filter_fr(visited_atoms.ptr(), Filter::EQ, rg_idx + SHIFT_IDX);
       fragment.makeSubmolecule(mol_set, sub_filter_fr, 0, &rg_mapping);

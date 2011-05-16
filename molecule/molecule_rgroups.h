@@ -17,7 +17,7 @@
 
 #include "base_cpp/red_black.h"
 #include "base_cpp/obj_array.h"
-#include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_pool.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -36,10 +36,9 @@ struct RGroup
 
    void copy (RGroup &other);
 
-   inline int fragmentsCount () const {return fragments.size();}
-   bool occurrenceSatisfied (int value) const;
+   bool occurrenceSatisfied (int value);
 
-   PtrArray<BaseMolecule> fragments;
+   PtrPool<BaseMolecule> fragments;
    int if_then;
    int rest_h;
    Array<int> occurrence;

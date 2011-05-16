@@ -129,6 +129,8 @@ public:
    virtual BaseMolecule & getBaseMolecule ();
    virtual int getIndex ();
 
+   virtual void remove ();
+
    IndigoRGroup rgroup;
    int frag_idx;
 };

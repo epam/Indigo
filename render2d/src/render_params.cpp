@@ -106,9 +106,9 @@ bool RenderParamInterface::needsLayout (BaseMolecule& mol)
 
    MoleculeRGroups& rGroups = mol.rgroups;
    for (int i = 1; i <= rGroups.getRGroupCount(); ++i) {
-      RGroup& rg = rGroups.getRGroup(i);
-      for (int j = 0; j < rg.fragmentsCount(); ++j)
-         if (needsLayoutSub(*rg.fragments[j]))
+      PtrPool<BaseMolecule> &frags = rGroups.getRGroup(i).fragments;
+      for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
+         if (needsLayoutSub(*frags[j]))
             return true;
    }
    return false;

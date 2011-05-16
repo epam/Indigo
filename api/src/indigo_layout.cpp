@@ -37,7 +37,8 @@ CEXPORT int indigoLayout (int object)
          {
             RGroup &rgp = mol.rgroups.getRGroup(i);
 
-            for (int j = 0; j < rgp.fragments.size(); j++)
+            for (int j = rgp.fragments.begin(); j != rgp.fragments.end();
+                     j = rgp.fragments.next(j))
             {
                MoleculeLayout fragml(*rgp.fragments[j]);
 

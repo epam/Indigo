@@ -76,9 +76,12 @@ void RenderItemMolecule::init ()
          _factory.getItemHLine(lineRFrag).items.push(label);
          _factory.getItemAuxiliary(label).init();
 
-         for (int j = 0; j < rg.fragmentsCount(); ++j) {
+         PtrPool<BaseMolecule> &frags = rg.fragments;
+
+         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
+         {
             int id = _factory.addItemFragment();
-            _factory.getItemFragment(id).mol = rg.fragments[j];
+            _factory.getItemFragment(id).mol = frags[j];
             _factory.getItemFragment(id).init();
             _factory.getItemHLine(lineRFrag).items.push(id);
          }

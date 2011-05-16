@@ -688,15 +688,13 @@ bool QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additiona
    rgroups_attached_single.expandFill(n_rgroups + 1, true);
    for (int i = 1; i <= n_rgroups; i++)
    {
-      RGroup &rgroup = rgroups.getRGroup(i);
-      if (rgroup.fragments.size() > 0)
-      {
-         for (int j = 0; j < rgroup.fragments.size(); j++)
-         {
-            QueryMolecule &fragment = rgroup.fragments[j]->asQueryMolecule();
+      PtrPool<BaseMolecule> &frags = rgroups.getRGroup(i).fragments;
 
-            aromatized |= _aromatizeRGroupFragment(fragment, rgroups_attached_single[i]);
-         }
+      for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
+      {
+         QueryMolecule &fragment = frags[j]->asQueryMolecule();
+
+         aromatized |= _aromatizeRGroupFragment(fragment, rgroups_attached_single[i]);
       }
    }
    return aromatized;

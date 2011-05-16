@@ -365,9 +365,12 @@ void MoleculeLayout::make ()
       {
          RGroup& rg = rgs.getRGroup(i);
          Metalayout::LayoutLine& line = _ml.newLine();
-         for (int j = 0; j < rg.fragments.size(); ++j)
+
+         PtrPool<BaseMolecule> &frags = rg.fragments;
+
+         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
          {
-            BaseMolecule& mol = *rg.fragments[j];
+            BaseMolecule& mol = *frags[j];
             MoleculeLayout layout(mol);
             layout.max_iterations = max_iterations;
             layout.make();

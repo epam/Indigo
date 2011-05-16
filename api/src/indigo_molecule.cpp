@@ -1006,6 +1006,11 @@ int IndigoRGroupFragment::getIndex ()
    return frag_idx;
 }
 
+void IndigoRGroupFragment::remove ()
+{
+   rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments.remove(frag_idx);
+}
+
 QueryMolecule & IndigoRGroupFragment::getQueryMolecule ()
 {
    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx]->asQueryMolecule();
@@ -1036,7 +1041,11 @@ IndigoRGroupFragmentsIter::~IndigoRGroupFragmentsIter ()
 
 bool IndigoRGroupFragmentsIter::hasNext ()
 {
-   return _mol->rgroups.getRGroup(_rgroup_idx).fragmentsCount() > _frag_idx + 1;
+   PtrPool<BaseMolecule> &frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
+
+   if (_frag_idx == -1)
+      return frags.begin() != frags.end();
+   return frags.next(_frag_idx) != frags.end();
 }
 
 IndigoObject * IndigoRGroupFragmentsIter::next ()
@@ -1044,7 +1053,12 @@ IndigoObject * IndigoRGroupFragmentsIter::next ()
    if (!hasNext())
       return 0;
 
-   _frag_idx++;
+   PtrPool<BaseMolecule> &frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
+
+   if (_frag_idx == -1)
+      _frag_idx = frags.begin();
+   else
+      _frag_idx = frags.next(_frag_idx);
 
    AutoPtr<IndigoRGroupFragment> rgroup(new IndigoRGroupFragment(_mol, _rgroup_idx, _frag_idx));
 

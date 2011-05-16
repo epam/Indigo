@@ -161,9 +161,12 @@ bool MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens (QueryMolecule &qu
 
    int n_rgroups = rgroups.getRGroupCount();
    for (i = 1; i <= n_rgroups; i++)
-      for (j = 0; j < rgroups.getRGroup(i).fragments.size(); j++)
-         if (shouldUnfoldTargetHydrogens(rgroups.getRGroup(i).fragments[j]->asQueryMolecule()))
+   {
+      PtrPool<BaseMolecule> &frags = rgroups.getRGroup(i).fragments;
+      for (j = frags.begin(); j != frags.end(); j = frags.next(j))
+         if (shouldUnfoldTargetHydrogens(frags[j]->asQueryMolecule()))
             return true;
+   }
 
    return false;
 }
@@ -803,11 +806,13 @@ int MoleculeSubstructureMatcher::_embedding_markush (int *core_sub, int *core_su
    for (int rg_idx = 0; rg_idx < old_site_rgroups.size(); rg_idx++)
    {
       RGroup &rgroup = g1.rgroups.getRGroup(old_site_rgroups[rg_idx]);
+      PtrPool<BaseMolecule> &frags = rgroup.fragments;
+
       all_have_rest_h &= (rgroup.rest_h > 0);
       // For all rgroup fragments
-      for (int fr_idx = 0; fr_idx < rgroup.fragments.size(); fr_idx++)
+      for (int fr_idx = frags.begin(); fr_idx != frags.end(); fr_idx = frags.next(fr_idx))
       {
-         QueryMolecule &fragment = rgroup.fragments[fr_idx]->asQueryMolecule();
+         QueryMolecule &fragment = frags[fr_idx]->asQueryMolecule();
 
          if (fragment.attachmentPointCount() > 2)
             throw Error("more than two attachment points");
@@ -1127,7 +1132,7 @@ bool MoleculeSubstructureMatcher::_checkRGroupConditions ()
 
    for (int i = 1; i <= n_rgroups; i++)
    {
-      const RGroup & rgroup = rgroups.getRGroup(i);
+      RGroup & rgroup = rgroups.getRGroup(i);
 
       if (rgroup.fragments.size() == 0)
       {

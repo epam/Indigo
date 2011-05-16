@@ -39,16 +39,19 @@ void RGroup::copy (RGroup &other)
    if_then = other.if_then;
    rest_h = other.rest_h;
    occurrence.copy(other.occurrence);
-   for (int i = 0; i < other.fragments.size(); i++)
+   fragments.clear();
+   
+   PtrPool<BaseMolecule> &frags = other.fragments;
+   for (int i = frags.begin(); i != frags.end(); i = frags.next(i))
    {
-      AutoPtr<BaseMolecule> new_fragment(other.fragments[i]->neu());
+      AutoPtr<BaseMolecule> new_fragment(frags[i]->neu());
 
-      new_fragment->clone(*other.fragments[i], 0, 0);
+      new_fragment->clone(*frags[i], 0, 0);
       fragments.add(new_fragment.release());
    }
 }
 
-bool RGroup::occurrenceSatisfied (int value) const
+bool RGroup::occurrenceSatisfied (int value)
 {
    for (int i = 0; i < occurrence.size(); i++)
       if (value >= (occurrence[i] >> 16) && value <= (occurrence[i] & 0xFFFF))

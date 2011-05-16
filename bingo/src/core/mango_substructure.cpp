@@ -27,6 +27,7 @@
 #include "core/mango_index.h"
 
 #include "base_cpp/profiling.h"
+#include "base_cpp/ptr_pool.h"
 
 MangoSubstructure::MangoSubstructure (BingoContext &context) :
 _context(context)
@@ -251,14 +252,11 @@ void MangoSubstructure::_correctQueryStereo (QueryMolecule &query)
    int n_rgroups = rgroups.getRGroupCount();
    for (int i = 1; i <= n_rgroups; i++)
    {
-      RGroup &rgroup = rgroups.getRGroup(i);
-      if (rgroup.fragments.size() > 0)
+      PtrPool<BaseMolecule> &frags = rgroups.getRGroup(i).fragments;
+      for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
       {
-         for (int j = 0; j < rgroup.fragments.size(); j++)
-         {
-            QueryMolecule &fragment = rgroup.fragments[j]->asQueryMolecule();
-            _correctQueryStereo(fragment);
-         }
+         QueryMolecule &fragment = frags[j]->asQueryMolecule();
+         _correctQueryStereo(fragment);
       }
    }
 
