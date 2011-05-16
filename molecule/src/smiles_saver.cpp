@@ -1393,7 +1393,7 @@ int SmilesSaver::_countRBonds ()
 void SmilesSaver::_checkRGroupsAndAttachmentPoints ()
 {
    _attachment_indices.clear_resize(_bmol->vertexEnd());
-   _attachment_indices.fffill();
+   _attachment_indices.zerofill();
    
    _attachment_cycle_numbers.clear_resize(_bmol->vertexEnd());
    _attachment_cycle_numbers.fffill();
@@ -1406,9 +1406,7 @@ void SmilesSaver::_checkRGroupsAndAttachmentPoints ()
 
       for (idx = 0; (atom_idx = _bmol->getAttachmentPoint(i, idx)) != -1; idx++)
       {
-         if (_attachment_indices[atom_idx] > 0)
-            throw Error("can not handle multiple attachment points assigned to the same atom #%d", atom_idx);
-         _attachment_indices[atom_idx] = i;
+         _attachment_indices[atom_idx] |= (1 << (i - 1));
          have_ap = true;
       }
    }
