@@ -463,6 +463,8 @@ public class MainFrame extends javax.swing.JFrame
                          return s2 - s1;
                    }
                    // Compare by the first index
+                   // TODO: sort by length first (like numbers)
+                   // now the list: #1, #10, #2, ...
                    return o1.getId(0).compareTo(o2.getId(0));
                 }
              };
