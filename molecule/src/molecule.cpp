@@ -637,16 +637,30 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
    {
       if (getAtomAromaticity(idx) == ATOM_AROMATIC)
       {
+         int degree = getVertex(idx).degree();
+         int i;
+         
+         for (i = 1; i <= attachmentPointCount(); i++)
+         {
+            int j = 0, aidx;
+
+            for (j = 0; (aidx = getAttachmentPoint(i, j)) != -1; j++)
+            {
+               if (aidx == idx)
+                  degree++;
+            }
+         }
+
          if (atom.number == ELEM_C && atom.charge == 0)
          {
-            if (getVertex(idx).degree() == 3)
+            if (degree == 3)
                impl_h = -Element::radicalElectrons(radical);
-            else if (getVertex(idx).degree() == 2)
+            else if (degree == 2)
                impl_h = 1 - Element::radicalElectrons(radical);
          }
          else if (atom.number == ELEM_O && atom.charge == 0)
             impl_h = 0;
-         else if (atom.number == ELEM_N && atom.charge == 0 && getVertex(idx).degree() == 3)
+         else if (atom.number == ELEM_N && atom.charge == 0 && degree == 3)
             impl_h = 0;
       }
       else
