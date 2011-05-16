@@ -40,8 +40,10 @@ _aromatic(aromatize)
 
 void IndigoDeconvolution::makeRGroups (QueryMolecule& scaffold) {
 
-   _scaffold.clone(scaffold, 0, 0);
-   _fullScaffold.clone(scaffold, 0, 0);
+//   _scaffold.clone(scaffold, 0, 0);
+//   _fullScaffold.clone(scaffold, 0, 0);
+   _scaffold.clone_KeepIndices(scaffold, 0);
+   _fullScaffold.clone_KeepIndices(scaffold, 0);
 
    if(_aromatic) {
       QueryMoleculeAromatizer::aromatizeBonds(_scaffold);
@@ -59,8 +61,9 @@ void IndigoDeconvolution::makeRGroups (QueryMolecule& scaffold) {
 void IndigoDeconvolution::_makeRGroup(Item& elem) {
    
    Molecule& mol_in = elem.mol_in;
-   QueryMolecule& rgroup_out = elem.rgroup_mol;
+   Molecule& rgroup_out = elem.rgroup_mol;
    Molecule& mol_out = elem.mol_out;
+   Molecule& mol_scaffold = elem.mol_scaffold;
    
    if (mol_in.vertexCount() == 0)
       return;
@@ -69,7 +72,9 @@ void IndigoDeconvolution::_makeRGroup(Item& elem) {
 //   QS_DEF(Array<int>, inv_map);
    
 //   mol_out.clone(mol_in, &map, &inv_map, 0);
-   mol_out.clone(mol_in, 0, 0, 0);
+//   mol_out.clone(mol_in, 0, 0, 0);
+   mol_out.clone_KeepIndices(mol_in, 0);
+//   mol_out.stereocenters.clear();
 
    EmbContext emb_context;
    emb_context.lastMapping.clear();
@@ -107,11 +112,13 @@ void IndigoDeconvolution::_makeRGroup(Item& elem) {
    if(emb_context.lastMapping.size() == 0)
       throw Error("no embeddings obtained");
 
-//   emb_context.renumber(map, inv_map);
-
    mol_out.highlightSubmolecule(_scaffold, emb_context.lastMapping.ptr(), true);
 
    _createRgroups(mol_out, rgroup_out, emb_context);
+
+   Filter sub_filter(emb_context.visitedAtoms.ptr(), Filter::EQ, 1);
+   mol_scaffold.makeSubmolecule(mol_out, sub_filter, 0, 0);
+   mol_scaffold.unhighlightAll();
 
 }
 
@@ -200,7 +207,7 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
    return result;
 }
 
-void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_molecule, EmbContext& emb_context) {
+void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule, EmbContext& emb_context) {
 
    QS_DEF(Array<int>, inv_scaf_map);
    QS_DEF(Array<int>, rg_mapping);
@@ -216,20 +223,25 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
     * TODO solve molecule->query convertion
     * Save and load molecule from buffer
     */
-   QS_DEF(Array<char>, buffer);
-   QS_DEF(QueryMolecule, qmol_set);
+//   QS_DEF(Array<char>, buffer);
+//   QS_DEF(QueryMolecule, qmol_set);
+//
+//   ArrayOutput arr_buffer(buffer);
+//   MolfileSaver mol_saver(arr_buffer);
+//   mol_set.stereocenters.clear();
+//   mol_saver.saveMolecule(mol_set);
+//
+//   BufferScanner buf_scanner(buffer);
+//   MolfileLoader mol_loader(buf_scanner);
+//   mol_loader.loadQueryMolecule(qmol_set);
 
-   ArrayOutput arr_buffer(buffer);
-   MolfileSaver mol_saver(arr_buffer);
-   mol_set.stereocenters.clear();
-   mol_saver.saveMolecule(mol_set);
+//   Filter sub_filter(visited_atoms.ptr(), Filter::EQ, 1);
+//   r_molecule.makeSubmolecule(qmol_set, sub_filter, 0, &inv_scaf_map);
+//   r_molecule.unhighlightAll();
 
-   BufferScanner buf_scanner(buffer);
-   MolfileLoader mol_loader(buf_scanner);
-   mol_loader.loadQueryMolecule(qmol_set);
-
+//   mol_set.stereocenters.clear();
    Filter sub_filter(visited_atoms.ptr(), Filter::EQ, 1);
-   r_molecule.makeSubmolecule(qmol_set, sub_filter, 0, &inv_scaf_map);
+   r_molecule.makeSubmolecule(mol_set, sub_filter, 0, &inv_scaf_map);
    r_molecule.unhighlightAll();
 
    RedBlackMap<int, int> rgroup_idx_map;
@@ -242,7 +254,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
       /*
        * Find if rgroup already exists
        */
-      int new_rg_idx = _findOrAddFullRGroup(att_ord, att_idx, qmol_set, emb_context.lastInvMapping);
+      int new_rg_idx = _findOrAddFullRGroup(att_ord, att_idx, mol_set, emb_context.lastInvMapping);
 
       /*
        * TODO: check for duplicates
@@ -256,9 +268,9 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
       /*
        * Add new atom r-site
        */
-      AutoPtr<QueryMolecule::Atom> r_atom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
-      int new_atom_idx = r_molecule.addAtom(r_atom.release());
-      Vec3f& atom_xyz = qmol_set.getAtomXyz(att_idx[0]);
+//      AutoPtr<QueryMolecule::Atom> r_atom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+      int new_atom_idx = r_molecule.addAtom(ELEM_RSITE);
+      Vec3f& atom_xyz = mol_set.getAtomXyz(att_idx[0]);
       /*
        * Copy coordinates
        */
@@ -276,18 +288,19 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
          int att_order = att_ord[point_att];
 
          if(r_molecule.findEdgeIndex(new_atom_idx, inv_scaf_map[att_order]) == -1) {
-            int edge_idx = qmol_set.findEdgeIndex(att_order, att_idx[point_att]);
+            int edge_idx = mol_set.findEdgeIndex(att_order, att_idx[point_att]);
             if(edge_idx == -1)
                throw Error("inner error while converting molecule to query");
-            AutoPtr<QueryMolecule::Bond> r_bond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER,
-                    qmol_set.getBondOrder(edge_idx)));
-            r_molecule.addBond(new_atom_idx, inv_scaf_map[att_order], r_bond.release());
+//            AutoPtr<QueryMolecule::Bond> r_bond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER,
+//                    qmol_set.getBondOrder(edge_idx)));
+//            r_molecule.addBond(new_atom_idx, inv_scaf_map[att_order], r_bond.release());
+            r_molecule.addBond(new_atom_idx, inv_scaf_map[att_order], mol_set.getBondOrder(edge_idx));
          }
 
          r_molecule.setRSiteAttachmentOrder(new_atom_idx, inv_scaf_map[att_order], point_att);
       }
    }
-   r_molecule.stereocenters.clear();
+//   r_molecule.stereocenters.clear();
 
    /*
     * Add all Rgroups
@@ -304,10 +317,12 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, QueryMolecule& r_mol
        * Get internal rg_idx
        */
       int rg_idx = rgroup_idx_map.at(r);
-      QueryMolecule & fragment = r_group.fragments.add(new QueryMolecule()).asQueryMolecule();
+//      QueryMolecule & fragment = r_group.fragments.add(new QueryMolecule()).asQueryMolecule();
+      Molecule & fragment = r_group.fragments.add(new Molecule()).asMolecule();
 
       Filter sub_filter_fr(visited_atoms.ptr(), Filter::EQ, rg_idx + SHIFT_IDX);
-      fragment.makeSubmolecule(qmol_set, sub_filter_fr, 0, &rg_mapping);
+      fragment.makeSubmolecule(mol_set, sub_filter_fr, 0, &rg_mapping);
+//      fragment.stereocenters.clear();
 
       for (int att_idx = 0; att_idx < attachment_index[rg_idx].size(); ++att_idx) {
          fragment.addAttachmentPoint(att_idx + 1, rg_mapping.at(attachment_index[rg_idx][att_idx]));
@@ -406,7 +421,7 @@ void IndigoDeconvolution::EmbContext::renumber(Array<int>& map, Array<int>& inv_
  * Find if rgroup already exists
  * Returns rgroup index
  */
-int IndigoDeconvolution::_findOrAddFullRGroup(Array<int>& att_order, Array<int>& att_idx, QueryMolecule& qmol, Array<int>& map) {
+int IndigoDeconvolution::_findOrAddFullRGroup(Array<int>& att_order, Array<int>& att_idx, Molecule& qmol, Array<int>& map) {
    /*
     * Search for existing rsites
     */
@@ -525,14 +540,22 @@ CEXPORT int indigoDecomposedMoleculeScaffold (int decomp) {
    {
       IndigoObject& obj = self.getObject(decomp);
 
-      AutoPtr<IndigoQueryMolecule> mol_ptr(new IndigoQueryMolecule());
+      AutoPtr<IndigoObject> mol_ptr(new IndigoQueryMolecule());
 
-      if (obj.type != IndigoObject::DECONVOLUTION)
+      if (obj.type == IndigoObject::DECONVOLUTION) {
+         IndigoDeconvolution& deco = (IndigoDeconvolution &) obj;
+         mol_ptr.reset(new IndigoQueryMolecule());
+         IndigoQueryMolecule& qmol = (IndigoQueryMolecule&) mol_ptr.ref();
+         qmol.qmol.clone(deco.getDecomposedScaffold(), 0, 0);
+      } else if (obj.type == IndigoObject::DECONVOLUTION_ELEM) {
+         IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
+         mol_ptr.reset(new IndigoMolecule());
+         IndigoMolecule& mol = (IndigoMolecule&) mol_ptr.ref();
+
+         mol.mol.clone(elem.item.mol_scaffold, 0, 0);
+      } else {
          throw IndigoError("indigoDecomposedMoleculeScaffold(): not applicable to %s", obj.debugInfo());
-
-      IndigoDeconvolution& deco = (IndigoDeconvolution &)obj;
-
-      mol_ptr->qmol.clone(deco.getDecomposedScaffold(), 0, 0);
+      }
 
       return self.addObject(mol_ptr.release());
    }
@@ -552,7 +575,7 @@ CEXPORT int indigoDecomposedMoleculeHighlighted (int decomp) {
       AutoPtr<IndigoMolecule> mol;
       mol.create();
 
-      mol->mol.clone(elem.item.mol_out, 0, 0);
+      mol->mol.clone_KeepIndices(elem.item.mol_out, 0);
       mol->copyProperties(elem.item.properties);
 
       return self.addObject(mol.release());
@@ -570,7 +593,7 @@ CEXPORT int indigoDecomposedMoleculeSubstituents (int decomp) {
 
       IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
 
-      QueryMolecule* qmol = &elem.item.rgroup_mol;
+      Molecule* qmol = &elem.item.rgroup_mol;
       return self.addObject(new IndigoRGroupsIter(qmol));
    }
    INDIGO_END(-1)
@@ -586,9 +609,27 @@ CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp) {
 
       IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
 
-      AutoPtr<IndigoQueryMolecule> qmol_ptr(new IndigoQueryMolecule());
-      qmol_ptr->qmol.clone(elem.item.rgroup_mol, 0, 0);
+//      AutoPtr<IndigoQueryMolecule> qmol_ptr(new IndigoQueryMolecule());
+      AutoPtr<IndigoMolecule> qmol_ptr(new IndigoMolecule());
+//      qmol_ptr->mol.clone_KeepIndices(elem.item.rgroup_mol, 0);
+      qmol_ptr->mol.clone(elem.item.rgroup_mol,0, 0);
       qmol_ptr->copyProperties(elem.item.properties);
+//      qmol_ptr->mol.stereocenters.clear();
+//      qmol_ptr->mol.stereocenters.clear();
+
+//      Molecule& r_molecule = qmol_ptr->mol;
+//      MoleculeRGroups & mol_rgroups = r_molecule.rgroups;
+//
+//      for (int i = r_molecule.vertexBegin(); i != r_molecule.vertexEnd(); i = r_molecule.vertexNext(i)) {
+//         if (!r_molecule.isRSite(i))
+//            continue;
+//
+//         int r = r_molecule.getSingleAllowedRGroup(i);
+//         RGroup & r_group = mol_rgroups.getRGroup(r);
+//         Molecule & fragment = r_group.fragments.add(new Molecule()).asMolecule();
+//         fragment.stereocenters.clear();
+//      }
+
       return self.addObject(qmol_ptr.release());
    }
    INDIGO_END(-1)

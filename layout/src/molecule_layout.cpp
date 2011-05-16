@@ -361,7 +361,7 @@ void MoleculeLayout::make ()
       _ml.clear();
       _map.clear();
       _pushMol(_ml.newLine(), _molecule);
-      for (int i = 0; i < rgs.getRGroupCount(); ++i)
+      for (int i = 1; i <= rgs.getRGroupCount(); ++i)
       {
          RGroup& rg = rgs.getRGroup(i);
          Metalayout::LayoutLine& line = _ml.newLine();

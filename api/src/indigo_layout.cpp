@@ -24,6 +24,8 @@ CEXPORT int indigoLayout (int object)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(object);
+      int i;
+
       if (IndigoBaseMolecule::is(obj)) {
          BaseMolecule &mol = obj.getBaseMolecule();
          MoleculeLayout ml(mol);
@@ -31,6 +33,20 @@ CEXPORT int indigoLayout (int object)
          ml.bond_length = 1.6f;
          ml.make();
          mol.stereocenters.markBonds();
+         for (i = 1; i <= mol.rgroups.getRGroupCount(); i++)
+         {
+            RGroup &rgp = mol.rgroups.getRGroup(i);
+
+            for (int j = 0; j < rgp.fragments.size(); j++)
+            {
+               MoleculeLayout fragml(*rgp.fragments[j]);
+
+               fragml.max_iterations = self.layout_max_iterations;
+               fragml.bond_length = 1.6f;
+               fragml.make();
+               rgp.fragments[j]->stereocenters.markBonds();
+            }
+         }
       } else if (IndigoBaseReaction::is(obj)) {
          BaseReaction &rxn = obj.getBaseReaction();
          ReactionLayout rl(rxn);

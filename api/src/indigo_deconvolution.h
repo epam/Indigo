@@ -37,7 +37,8 @@ public:
 
       Molecule & mol_in;
       Molecule   mol_out;
-      QueryMolecule rgroup_mol;
+      Molecule rgroup_mol;
+      Molecule mol_scaffold;
       RedBlackStringObjMap< Array<char> > properties;
    private:
       Item(const Item&);
@@ -77,9 +78,9 @@ private:
        EmbContext(const EmbContext&); //no implicit copy
    };
    void _makeRGroup (Item& elem);
-   void _createRgroups(Molecule& molecule_set, QueryMolecule& r_molecule, EmbContext& emb_context);
+   void _createRgroups(Molecule& molecule_set, Molecule& r_molecule, EmbContext& emb_context);
    void _parseOptions(const char* options);
-   int _findOrAddFullRGroup(Array<int>& att_order, Array<int>& att_idx, QueryMolecule& qmol, Array<int>& map);
+   int _findOrAddFullRGroup(Array<int>& att_order, Array<int>& att_idx, Molecule& qmol, Array<int>& map);
 
    static int _rGroupsEmbedding(Graph &g1, Graph &g2, int *core1, int *core2, void *userdata);
 
