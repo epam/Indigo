@@ -126,6 +126,7 @@ void IndigoDeconvolution::_makeRGroup(Item& elem) {
 int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *map, int *inv_map, void *userdata) {
 
    QS_DEF(Array<int>, queue);
+   QS_DEF(Array<int>, queue_markers);
    int result = 0;
    int n_rgroups = 0;
 
@@ -138,7 +139,6 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
 
    ObjArray< Array<int> >& attachment_order = emb_context.attachmentOrder;
    ObjArray< Array<int> >& attachment_index = emb_context.attachmentIndex;
-
 
    visited_atoms.clear_resize(graph2.vertexEnd());
    visited_atoms.zerofill();
@@ -166,7 +166,10 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
          int top = 1, bottom = 0;
 
          queue.clear();
+         queue_markers.clear_resize(graph2.vertexEnd());
+         queue_markers.zerofill();
          queue.push(cc_start_idx);
+         queue_markers[cc_start_idx] = 1;
 
          while (top != bottom) {
 
@@ -179,12 +182,15 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
                if (visited_atoms[nei_idx] > 1)
                   continue;
 
+               if (queue_markers[nei_idx] != 0)
+                  continue;
+
                if (inv_map[nei_idx] >= 0) {
                   attachment_index[n_rgroups].push(cur_idx);
                   attachment_order[n_rgroups].push(nei_idx);
-
                } else {
                   queue.push(nei_idx);
+                  queue_markers[nei_idx] = 1;
                   ++top;
                }
             }
