@@ -21,7 +21,10 @@
 using namespace indigo;
 
 CmfLoader::CmfLoader (LzwDict &dict, Scanner &scanner) :
-TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels)
+TL_CP_GET(_atoms),
+TL_CP_GET(_bonds),
+TL_CP_GET(_pseudo_labels),
+TL_CP_GET(_attachments)
 {
    _init();
    _decoder_obj.create(dict, scanner);
@@ -30,14 +33,14 @@ TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels)
 }
 
 CmfLoader::CmfLoader (Scanner &scanner) :
-TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels)
+TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments)
 {
    _init();
    _scanner = &scanner;
 }
 
 CmfLoader::CmfLoader (LzwDecoder &decoder) :
-TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels)
+TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments)
 {
    _init();
    _decoder = &decoder;
@@ -75,7 +78,7 @@ bool CmfLoader::_getNextCode (int &code)
    throw Error("no _decoder, no _scanner");
 }
 
-bool CmfLoader::_readAtom (int &code, _AtomDesc &atom)
+bool CmfLoader::_readAtom (int &code, _AtomDesc &atom, int atom_idx)
 {
    if (code > 0 && code < ELEM_MAX)
       atom.label = code;
@@ -191,7 +194,22 @@ bool CmfLoader::_readAtom (int &code, _AtomDesc &atom)
       if (!_getNextCode(code))
          return false;
    }
-   
+
+   while (code == CMF_ATTACHPT)
+   {
+      int aidx;
+
+      if (!_getNextCode(aidx))
+         throw Error("expected attachment index");
+
+      _AttachmentDesc &att = _attachments.push();
+      att.atom = atom_idx;
+      att.index = aidx;
+      
+      if (!_getNextCode(code))
+         return false;
+   }
+
    while (code >= CMF_ATOM_FLAGS && code < CMF_ATOM_FLAGS + CMF_NUM_OF_ATOM_FLAGS)
    {
       atom.flags |= (1 << (code - CMF_ATOM_FLAGS));
@@ -335,6 +353,7 @@ void CmfLoader::loadMolecule (Molecule &mol)
    _atoms.clear();
    _bonds.clear();
    _pseudo_labels.clear();
+   _attachments.clear();
    cycle_numbers.clear();
    atom_stack.clear();
 
@@ -453,7 +472,7 @@ void CmfLoader::loadMolecule (Molecule &mol)
 
       if (code > 0 && (code < ELEM_MAX || code == CMF_PSEUDOATOM || code == CMF_RSITE))
       {
-         if (!_readAtom(code, atom))
+         if (!_readAtom(code, atom, _atoms.size() - 1))
             break;
          continue;
       }
@@ -514,6 +533,9 @@ void CmfLoader::loadMolecule (Molecule &mol)
       if (_bonds[i].highlighted)
          mol.highlightBond(idx);
    }
+
+   for (i = 0; i < _attachments.size(); i++)
+      mol.addAttachmentPoint(_attachments[i].index, _attachments[i].atom);
 
    mol.validateEdgeTopologies();
 

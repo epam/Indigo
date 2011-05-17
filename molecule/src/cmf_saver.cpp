@@ -212,7 +212,7 @@ void CmfSaver::saveMolecule (Molecule &mol)
 void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
 {
    int number = 0;
-   
+
    if (mol.isPseudoAtom(idx))
    {
       const char *str = mol.getPseudoAtom(idx);
@@ -374,6 +374,20 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
          {
          }
       }
+   }
+
+   int i;
+
+   for (i = 1; i <= mol.attachmentPointCount(); i++)
+   {
+      int j, aidx;
+
+      for (j = 0; (aidx = mol.getAttachmentPoint(i, j)) != -1; j++)
+         if (aidx == idx)
+         {
+            _encode(CMF_ATTACHPT);
+            _encode(i);
+         }
    }
 
    if (atom_flags != 0)

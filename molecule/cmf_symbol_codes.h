@@ -42,11 +42,13 @@ enum
 
    /* 105 - pseudo-atom prefix */
    CMF_PSEUDOATOM = ELEM_MAX,
+
+   /* 106 - R-Site */
    CMF_RSITE = CMF_PSEUDOATOM + 1,
 
-   /* 106 - where              *
+   /* 107 - where              *
     * bond codes begin         */
-   CMF_BONDS = CMF_PSEUDOATOM + 1,
+   CMF_BONDS = CMF_RSITE + 1,
    
    CMF_BOND_SINGLE_CHAIN       = CMF_BONDS,
    CMF_BOND_SINGLE_RING        = CMF_BONDS + 1,
@@ -60,20 +62,20 @@ enum
    CMF_BOND_TRIPLE_RING        = CMF_BONDS + 9,
    CMF_BOND_AROMATIC           = CMF_BONDS + 10,
 
-   /* 117 - '(' */
+   /* 118 - '(' */
    CMF_OPEN_BRACKET = CMF_BONDS + 11,
 
-   /* 118 - ')' */
+   /* 119 - ')' */
    CMF_CLOSE_BRACKET = CMF_OPEN_BRACKET + 1,
 
-   /* 119 - where cycle         *
+   /* 120 - where cycle         *
     * codes begin: 0..15        */
    CMF_CYCLES = CMF_CLOSE_BRACKET + 1,
 
-   /* 135 - adds 16 to the subsequent cycle number */
+   /* 136 - adds 16 to the subsequent cycle number */
    CMF_CYCLES_PLUS = CMF_CYCLES + CMF_NUM_OF_CYCLES,
 
-   /* 136 - where charge      *
+   /* 137 - where charge      *
     * codes begin -5..-1,1..8 */
    CMF_CHARGES = CMF_CYCLES_PLUS + 1,
 
@@ -81,72 +83,75 @@ enum
     * (zero charge is not used) */
    CMF_SEPARATOR = CMF_CHARGES - CMF_MIN_CHARGE,
 
-   /* 150 - where isotopes        *
+   /* 151 - where isotopes        *
     * codes begin -30..-1,0,1..20 */
    CMF_ISOTOPES = CMF_CHARGES + CMF_NUM_OF_CHARGES,
 
-   /* 201 - where stereocenter codes begin */
+   /* 202 - where stereocenter codes begin */
    CMF_STEREO = CMF_ISOTOPES + CMF_NUM_OF_ISOTOPES,
    
-   /* 202 - 'any' stereocenter */
+   /* 203 - 'any' stereocenter */
    CMF_STEREO_ANY = CMF_STEREO,
    
-   /* 202 - 'and' stereo-group (1..4) */
+   /* 203 - 'and' stereo-group (1..4) */
    CMF_STEREO_AND_0 = CMF_STEREO + 1,
    
-   /* 206 - 'and' stereo-group (1..4) */
+   /* 204 - 'and' stereo-group (1..4) */
    CMF_STEREO_OR_0  = CMF_STEREO_AND_0 + CMF_MAX_STEREOGROUPS,
    
-   /* 210 - 'abs' stereocenter */
+   /* 211 - 'abs' stereocenter */
    CMF_STEREO_ABS_0 = CMF_STEREO_OR_0 + CMF_MAX_STEREOGROUPS,
    
-   /* 211 - 'and' stereo-group (1..4) */
+   /* 212 - 'and' stereo-group (1..4) */
    CMF_STEREO_AND_1 = CMF_STEREO_ABS_0 + 1,
    
-   /* 215 - 'and' stereo-group (1..4) */
+   /* 216 - 'and' stereo-group (1..4) */
    CMF_STEREO_OR_1  = CMF_STEREO_AND_1 + CMF_MAX_STEREOGROUPS,
    
-   /* 219 - 'abs' stereocenter */
+   /* 220 - 'abs' stereocenter */
    CMF_STEREO_ABS_1 = CMF_STEREO_OR_1 + CMF_MAX_STEREOGROUPS,
    
-   /* 220 - valence (1..5) */
+   /* 221 - valence (1..5) */
    CMF_VALENCE = CMF_STEREO_ABS_1 + 1,
    
-   /* 227 - implicit hydrogen count (1..5) */
+   /* 228 - implicit hydrogen count (1..5) */
    CMF_IMPLICIT_H = CMF_VALENCE + CMF_MAX_VALENCE + 1,
    
-   /* 238 - singlet radical */
+   /* 239 - singlet radical */
    CMF_RADICAL_SINGLET = CMF_IMPLICIT_H + CMF_MAX_IMPLICIT_H + 1,
    
-   /* 239 - douplet radical */
+   /* 240 - douplet radical */
    CMF_RADICAL_DOUPLET = CMF_RADICAL_SINGLET + 1,
    
-   /* 240 - triplet radical  */
+   /* 241 - triplet radical  */
    CMF_RADICAL_TRIPLET = CMF_RADICAL_DOUPLET + 1,
 
-   /* 241 - bond flags */
+   /* 242 - bond flags */
    CMF_BOND_FLAGS = CMF_RADICAL_TRIPLET + 1,
 
-   /* 244 - atom flags */
+   /* 245 - atom flags */
    CMF_ATOM_FLAGS = CMF_BOND_FLAGS + CMF_NUM_OF_BOND_FLAGS,
 
-   /* 246-248 - bond directions (up/down/either) */
+   /* 247-249 - bond directions (up/down/either) */
    CMF_BOND_UP = CMF_ATOM_FLAGS + CMF_NUM_OF_ATOM_FLAGS,
 
    CMF_BOND_DOWN = CMF_BOND_UP + 1,
 
    CMF_BOND_EITHER = CMF_BOND_DOWN + 1,
 
-   /* 249 - "swap bond ends" flag */
+   /* 250 - "swap bond ends" flag */
    CMF_BOND_SWAP_ENDS = CMF_BOND_EITHER + 1,
 
-   /* 250 - highlighting */
+   /* 251 - highlighting */
    CMF_HIGHLIGHTED = CMF_BOND_SWAP_ENDS + 1,
 
-   /* 251 - terminator */
-   CMF_TERMINATOR = CMF_HIGHLIGHTED + 1,
+   /* 252 - attachment point */
+   CMF_ATTACHPT = CMF_HIGHLIGHTED + 1,
 
-   /* Alphabet size = 252 */
+   /* 253 - terminator */
+   CMF_TERMINATOR = CMF_ATTACHPT + 1,
+
+   /* Alphabet size = 254 */
    CMF_ALPHABET_SIZE = CMF_TERMINATOR + 1
 };
 

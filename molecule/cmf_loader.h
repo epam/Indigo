@@ -89,12 +89,18 @@ protected:
       bool highlighted;
    };
 
+   struct _AttachmentDesc
+   {
+      int atom;
+      int index;
+   };
+
    void _init ();
    
    bool _getNextCode (int &code);
 
    void _readBond (int &code, _BondDesc &bond);
-   bool _readAtom (int &code, _AtomDesc &atom);
+   bool _readAtom (int &code, _AtomDesc &atom, int atom_idx);
    bool _readCycleNumber (int &code, int &n);
 
    Scanner *_scanner;
@@ -105,6 +111,7 @@ protected:
    TL_CP_DECL(Array<_AtomDesc>, _atoms);
    TL_CP_DECL(Array<_BondDesc>, _bonds);
    TL_CP_DECL(StringPool,       _pseudo_labels);
+   TL_CP_DECL(Array<_AttachmentDesc>, _attachments);
    Molecule *_mol;
 
 private:
