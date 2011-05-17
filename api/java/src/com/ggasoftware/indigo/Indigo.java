@@ -382,6 +382,11 @@ public class Indigo
       return new IndigoObject(this, res);
    }
 
+   public IndigoObject extractCommonScaffold (AbstractCollection<IndigoObject> structures, String options)
+   {
+      return extractCommonScaffold(toIndigoArray(structures), options);
+   }
+
    public IndigoObject decomposeMolecules (IndigoObject scaffold, IndigoObject structures)
    {
       setSessionID();
@@ -393,6 +398,11 @@ public class Indigo
       return new IndigoObject(this, res);
    }
 
+   public IndigoObject decomposeMolecules (IndigoObject scaffold, AbstractCollection<IndigoObject> structures)
+   {
+      return decomposeMolecules(scaffold, toIndigoArray(structures));
+   }
+   
    public IndigoObject reactionProductEnumerate (IndigoObject reaction, IndigoObject monomers)
    {
       setSessionID();
@@ -416,6 +426,44 @@ public class Indigo
       return new IndigoObject(this, checkResult(this, _lib.indigoCreateFileSaver(filename, format)));
    }
 
+   public IndigoObject toIndigoArray (AbstractCollection<IndigoObject> coll)
+   {
+      setSessionID();
+
+      IndigoObject arr = createArray();
+      for (IndigoObject obj : coll)
+         arr.arrayAdd(obj);
+
+      return arr;
+   }
+
+   public static int[] toIntArray (AbstractCollection<Integer> collection)
+   {
+      if (collection == null)
+         return new int[0];
+
+      int[] res = new int[collection.size()];
+      int i = 0;
+
+      for (Integer x : collection)
+         res[i++] = x.intValue();
+
+      return res;
+   }
+
+   public static float[] toFloatArray (AbstractCollection<Float> collection)
+   {
+      if (collection == null)
+         return new float[0];
+
+      float[] res = new float[collection.size()];
+      int i = 0;
+
+      for (Float x : collection)
+         res[i++] = x.floatValue();
+
+      return res;
+   }
    
    public static class LibraryRemover
    {
@@ -450,6 +498,7 @@ public class Indigo
          }
       }
       
+      @SuppressWarnings("CallToThreadDumpStack")
       public synchronized void removeLibraries ()
       {
          for (int idx = files.size() - 1; idx >= 0; idx--)

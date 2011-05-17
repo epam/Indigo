@@ -169,6 +169,7 @@ public interface IndigoLib extends Library
    int indigoResetIsotope (int atom);
 
    int indigoSetAttachmentPoint (int atom, int order);
+   int indigoClearAttachmentPoints (int item);
 
    int indigoRemoveConstraints  (int item, String type);
    int indigoAddConstraint    (int item, String type, String value);

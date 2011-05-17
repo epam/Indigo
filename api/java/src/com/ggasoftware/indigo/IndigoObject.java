@@ -344,6 +344,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoSetAttachmentPoint(self, order));
    }
+
+   public void clearAttachmentPoints ()
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoClearAttachmentPoints(self));
+   }
+
    public void removeConstraints (String type)
    {
       dispatcher.setSessionID();
@@ -732,7 +739,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResultString(this, _lib.indigoDescription(self));
    }
 
-   public IndigoObject addDataSGroup(int[] atoms, int[] bonds, String description, String data)
+   public IndigoObject addDataSGroup (int[] atoms, int[] bonds, String description, String data)
    {
       dispatcher.setSessionID();
       if (description == null)
@@ -741,6 +748,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
          data = "";
       return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoAddDataSGroup(self, atoms.length,
               atoms, bonds.length, bonds, description, data)));
+   }
+
+   public IndigoObject addDataSGroup (AbstractCollection<Integer> atoms,
+            AbstractCollection<Integer> bonds, String description, String data)
+   {
+      return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
    }
 
    public void setDataSGroupXY(float x, float y, String options)
@@ -760,11 +773,21 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
               Indigo.checkResult(this, _lib.indigoCreateSubmolecule(self, vertices.length, vertices)));
    }
 
+   public IndigoObject createSubmolecule (AbstractCollection<Integer> vertices)
+   {
+      return createSubmolecule(Indigo.toIntArray(vertices));
+   }
+
    public IndigoObject createEdgeSubmolecule (int[] vertices, int[] edges)
    {
       return new IndigoObject(dispatcher,
               Indigo.checkResult(this, _lib.indigoCreateEdgeSubmolecule(self, vertices.length,
               vertices, edges.length, edges)));
+   }
+
+   public IndigoObject createEdgeSubmolecule (AbstractCollection<Integer> vertices, AbstractCollection<Integer> edges)
+   {
+      return createEdgeSubmolecule(Indigo.toIntArray(vertices), Indigo.toIntArray(edges));
    }
 
    public void removeAtoms (int[] vertices)
@@ -773,6 +796,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoRemoveAtoms(self, vertices.length, vertices));
    }
 
+   public void removeAtoms (AbstractCollection<Integer> vertices)
+   {
+      removeAtoms(Indigo.toIntArray(vertices));
+   }
+   
    public float alignAtoms (int[] atom_ids, float[] desired_xyz)
    {
       if (atom_ids.length * 3 != desired_xyz.length)
@@ -781,13 +809,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResultFloat(this, _lib.indigoAlignAtoms(self, atom_ids.length, atom_ids, desired_xyz));
    }
 
-   public void aromatize()
+   public float alignAtoms (AbstractCollection<Integer> atom_ids, AbstractCollection<Float> desired_xyz)
+   {
+      return alignAtoms(Indigo.toIntArray(atom_ids), Indigo.toFloatArray(desired_xyz));
+   }
+
+   public void aromatize ()
    {
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoAromatize(self));
    }
 
-   public void dearomatize()
+   public void dearomatize ()
    {
       dispatcher.setSessionID();
      Indigo.checkResult(this, _lib.indigoDearomatize(self));
@@ -1126,6 +1159,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoIndex(self));
    }
 
+   @Override
    public String toString ()
    {
       dispatcher.setSessionID();
