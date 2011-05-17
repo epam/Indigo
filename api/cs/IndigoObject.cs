@@ -474,6 +474,12 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoSetAttachmentPoint(self, order);
       }
 
+      public void clearAttachmentPoints ()
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoClearAttachmentPoints(self);
+      }
+
       public void removeConstraints (string type)
       {
          dispatcher.setSessionID();

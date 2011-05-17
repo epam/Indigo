@@ -1332,6 +1332,7 @@ CEXPORT int indigoClearAttachmentPoints (int item)
    {
       BaseMolecule &mol = self.getObject(item).getBaseMolecule();
       mol.removeAttachmentPoints();
+      return 1;
    }
    INDIGO_END(-1);
 }

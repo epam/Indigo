@@ -133,6 +133,7 @@ namespace com.ggasoftware.indigo
       int indigoResetRadical (int atom);
       int indigoResetIsotope (int atom);
       int indigoSetAttachmentPoint (int atom, int order);
+      int indigoClearAttachmentPoints (int item);
       int indigoRemoveConstraints (int item, string type);
       int indigoAddConstraint (int item, string type, string value);
       int indigoAddConstraintNot (int item, string type, string value);
