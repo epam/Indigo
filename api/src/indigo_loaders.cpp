@@ -310,11 +310,13 @@ IndigoSmilesMolecule::~IndigoSmilesMolecule ()
 
 Molecule & IndigoSmilesMolecule::getMolecule ()
 {
+   Indigo &self = indigoGetInstance();
    if (!_loaded)
    {
       BufferScanner scanner(_data);
       SmilesLoader loader(scanner);
 
+      loader.ignore_stereochemistry_errors = self.ignore_stereochemistry_errors;
       loader.loadMolecule(_mol);
       _loaded = true;
    }
