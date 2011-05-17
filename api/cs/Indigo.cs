@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Drawing;
 using System.Diagnostics;
+using System.Collections;
 
 namespace com.ggasoftware.indigo
 {
@@ -333,10 +334,59 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(this, res);
       }
 
+      public IndigoObject toIndigoArray (IEnumerable collection)
+      {
+         setSessionID();
+
+         IndigoObject arr = createArray();
+         foreach (IndigoObject obj in collection)
+            arr.arrayAdd(obj);
+
+         return arr;
+      }
+
+      public static int[] toIntArray (ICollection collection)
+      {
+         if (collection == null)
+            return new int[0];
+
+         int[] res = new int[collection.Count];
+         int i = 0;
+
+         foreach (object x in collection)
+            res[i++] = Convert.ToInt32(x);
+
+         return res;
+      }
+
+      public static float[] toFloatArray (ICollection collection)
+      {
+         if (collection == null)
+            return new float[0];
+
+         float[] res = new float[collection.Count];
+         int i = 0;
+
+         foreach (object x in collection)
+            res[i++] = Convert.ToSingle(x);
+
+         return res;
+      }
+
+      public IndigoObject extractCommonScaffold (IEnumerable structures, string options)
+      {
+         return extractCommonScaffold(toIndigoArray(structures), options);
+      }
+
       public IndigoObject decomposeMolecules (IndigoObject scaffold, IndigoObject structures)
       {
          setSessionID();
          return new IndigoObject(this, _indigo_lib.indigoDecomposeMolecules(scaffold.self, structures.self));
+      }
+
+      public IndigoObject decomposeMolecules (IndigoObject scaffold, IEnumerable structures)
+      {
+         return decomposeMolecules(scaffold, toIndigoArray(structures));
       }
 
       public IndigoObject reactionProductEnumerate (IndigoObject reaction, IndigoObject monomers)

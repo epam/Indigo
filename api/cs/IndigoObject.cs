@@ -421,6 +421,11 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(dispatcher, _indigo_lib.indigoAddDataSGroup(self, atoms.Length, atoms, bonds.Length, bonds, description, data));
       }
 
+      public IndigoObject addDataSGroup (ICollection atoms, ICollection bonds, String description, String data)
+      {
+         return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
+      }
+
       public void setDataSGroupXY (float x, float y, String options)
       {
          dispatcher.setSessionID();
@@ -801,11 +806,21 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(dispatcher, _indigo_lib.indigoCreateSubmolecule(self, vertices.Length, vertices));
       }
 
+      public IndigoObject createSubmolecule (ICollection vertices)
+      {
+         return createSubmolecule(Indigo.toIntArray(vertices));
+      }
+
       public IndigoObject createEdgeSubmolecule (int[] vertices, int[] edges)
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, _indigo_lib.indigoCreateEdgeSubmolecule(self,
             vertices.Length, vertices, edges.Length, edges));
+      }
+
+      public IndigoObject createEdgeSubmolecule (ICollection vertices, ICollection edges)
+      {
+         return createEdgeSubmolecule(vertices, edges);
       }
 
       public void removeAtoms (int[] vertices)
@@ -814,12 +829,22 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoRemoveAtoms(self, vertices.Length, vertices);
       }
 
+      public void removeAtoms (ICollection vertices)
+      {
+         removeAtoms(Indigo.toIntArray(vertices));
+      }
+
       public float alignAtoms (int[] atom_ids, float[] desired_xyz)
       {
          dispatcher.setSessionID();
          if (atom_ids.Length * 3 != desired_xyz.Length)
             throw new IndigoException("alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]");
          return _indigo_lib.indigoAlignAtoms(self, atom_ids.Length, atom_ids, desired_xyz);
+      }
+
+      public float alignAtoms (ICollection atom_ids, ICollection desired_xyz)
+      {
+         return alignAtoms(Indigo.toIntArray(atom_ids), Indigo.toFloatArray(desired_xyz));
       }
 
       public void aromatize ()
