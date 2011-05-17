@@ -124,6 +124,8 @@ protected:
    TL_CP_DECL(Array<int>, _attachment_indices);
    TL_CP_DECL(Array<int>, _attachment_cycle_numbers);
 
+   int _n_attachment_points;
+
    int _written_components;
    int _touched_cistransbonds;
    bool _comma;

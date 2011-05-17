@@ -47,6 +47,7 @@ TL_CP_GET(_attachment_cycle_numbers)
    ignore_invalid_hcount = false;
    separate_rsites = true;
    rsite_indices_as_aam = true;
+   _n_attachment_points = 0;
 }
 
 SmilesSaver::~SmilesSaver ()
@@ -366,7 +367,7 @@ void SmilesSaver::_saveMolecule ()
    QS_DEF(Array<int>, cycle_numbers);
 
    int rsites_closures_starting_num = 91;
-   int rbonds = _countRBonds();
+   int rbonds = _countRBonds() + _n_attachment_points;
 
    if (rbonds > 9)
       rsites_closures_starting_num = 99 - rbonds;
@@ -473,19 +474,27 @@ void SmilesSaver::_saveMolecule ()
 
          walk.getNeighborsClosing(v_idx, closing);
 
-         if (_attachment_indices[v_idx] > 0)
-            // Here is the problem: if we have an attachment point, the resulting
-            // SMILES is supposed to contain an extra atom not present in the given
-            // molecule. For example, chlorine with an attachment point will
-            // become Cl%91.[*:1]%91 |;_AP1| (two atoms).
-            // We can not modify the given molecule, but we want the closure to
-            // be here. To achieve that, we add a link to an imagimary atom with
-            // incredibly big number.
-            closing.push(10000 + _attachment_indices[v_idx]);
+         for (int ap = 1; ap <= _bmol->attachmentPointCount(); ap++)
+         {
+            int idx = 0, atom_idx;
+
+            for (idx = 0; (atom_idx = _bmol->getAttachmentPoint(ap, idx)) != -1; idx++)
+               if (atom_idx == v_idx)
+               {
+                  // Here is the problem: if we have an attachment point, the resulting
+                  // SMILES is supposed to contain an extra atom not present in the given
+                  // molecule. For example, chlorine with an attachment point will
+                  // become Cl%91.[*:1]%91 |;_AP1| (two atoms).
+                  // We can not modify the given molecule, but we want the closure to
+                  // be here. To achieve that, we add a link to an imagimary atom with
+                  // incredibly big number.
+                  closing.push(10000 + ap);
+               }
+         }
 
          for (j = 0; j < closing.size(); j++)
          {
-            bool ap = (j == closing.size() - 1 && _attachment_indices[v_idx] > 0);
+            bool ap = (closing[j] >= 10000);
             bool rsite = !ap && (separate_rsites && _bmol->isRSite(closing[j]));
 
             if (ap || rsite)
@@ -504,10 +513,9 @@ void SmilesSaver::_saveMolecule ()
 
             if (ap)
             {
-               _attachment_cycle_numbers.expandFill(v_idx + 1, -1);
-               _attachment_cycle_numbers[v_idx] = k;
+               _attachment_indices.push(closing[j] - 10000);
+               _attachment_cycle_numbers.push(k);
             }
-
 
             if (k == cycle_numbers.size())
                cycle_numbers.push(v_idx);
@@ -532,16 +540,10 @@ void SmilesSaver::_saveMolecule ()
       // not present in the original molecule, to the end, and connect
       // them with the "cycle" closure to the real atoms that are the
       // attachment points.
-      for (i = 0; i < _written_atoms.size(); i++)
+      for (i = 0; i < _attachment_indices.size(); i++)
       {
-         int ap_idx = _attachment_indices[_written_atoms[i]];
-
-         if (ap_idx > 0)
-         {
-            int cycle_number = _attachment_cycle_numbers[_written_atoms[i]];
-            _output.printf(".[*:%d]", ap_idx);
-            _writeCycleNumber(cycle_number);
-         }
+         _output.printf(".[*:%d]", _attachment_indices[i]);
+         _writeCycleNumber(_attachment_cycle_numbers[i]);
       }
 
       _comma = false;
@@ -1178,17 +1180,19 @@ void SmilesSaver::_writePseudoAtoms ()
 {
    BaseMolecule &mol = *_bmol;
    int i;
-   
-   for (i = 0; i < _written_atoms.size(); i++)
-   {
-      if (mol.isPseudoAtom(_written_atoms[i]) ||
-          (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0) ||
-              _attachment_indices[_written_atoms[i]] > 0)
-         break;
-   }
 
-   if (i == _written_atoms.size())
-      return;
+   if (_attachment_indices.size() == 0)
+   {
+      for (i = 0; i < _written_atoms.size(); i++)
+      {
+         if (mol.isPseudoAtom(_written_atoms[i]) ||
+             (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0))
+            break;
+      }
+
+      if (i == _written_atoms.size())
+         return;
+   }
 
    if (_comma)
       _output.writeChar(',');
@@ -1200,10 +1204,6 @@ void SmilesSaver::_writePseudoAtoms ()
 
    _output.writeChar('$');
 
-   QS_DEF(Array<int>, attachment_points_to_append);
-
-   attachment_points_to_append.clear();
-
    for (i = 0; i < _written_atoms.size(); i++)
    {
       if (i > 0)
@@ -1214,16 +1214,11 @@ void SmilesSaver::_writePseudoAtoms ()
       else if (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0)
          // ChemAxon's Extended SMILES notation for R-sites
          _output.printf("_R%d", mol.getSingleAllowedRGroup(_written_atoms[i]));
-      
-      int ap_idx = _attachment_indices[_written_atoms[i]];
-      
-      if (ap_idx > 0)
-         attachment_points_to_append.push(ap_idx);
    }
 
-   for (i = 0; i < attachment_points_to_append.size(); i++)
+   for (i = 0; i < _attachment_indices.size(); i++)
       // ChemAxon's Extended SMILES notation for attachment points
-      _output.printf(";_AP%d", attachment_points_to_append[i]);
+      _output.printf(";_AP%d", _attachment_indices[i]);
 
    _output.writeChar('$');
 }
@@ -1392,26 +1387,16 @@ int SmilesSaver::_countRBonds ()
 
 void SmilesSaver::_checkRGroupsAndAttachmentPoints ()
 {
-   _attachment_indices.clear_resize(_bmol->vertexEnd());
-   _attachment_indices.zerofill();
+   _attachment_indices.clear();
+   _attachment_cycle_numbers.clear();
+
+   _n_attachment_points = 0;
    
-   _attachment_cycle_numbers.clear_resize(_bmol->vertexEnd());
-   _attachment_cycle_numbers.fffill();
-
-   bool have_ap = false;
-
    for (int i = 1; i <= _bmol->attachmentPointCount(); i++)
-   {
-      int idx = 0, atom_idx;
+      for (int idx = 0; _bmol->getAttachmentPoint(i, idx) != -1; idx++)
+         _n_attachment_points++;
 
-      for (idx = 0; (atom_idx = _bmol->getAttachmentPoint(i, idx)) != -1; idx++)
-      {
-         _attachment_indices[atom_idx] |= (1 << (i - 1));
-         have_ap = true;
-      }
-   }
-
-   if (have_ap && !write_extra_info)
+   if (_n_attachment_points && !write_extra_info)
       throw Error("can not write attachment points without permission to write "
             "the Extended SMILES block (probably because you are saving reaction SMILES)");
 }

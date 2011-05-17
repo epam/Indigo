@@ -360,16 +360,7 @@ void SmilesLoader::_readOtherStuff ()
                   const Vertex &v = _bmol->getVertex(i);
 
                   for (k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
-                  {
-                     int apidx = 1;
-                     while (rnum > 0)
-                     {
-                        if (rnum & 1)
-                           _bmol->addAttachmentPoint(apidx, v.neiVertex(k));
-                        apidx++;
-                        rnum >>= 1;
-                     }
-                  }
+                     _bmol->addAttachmentPoint(rnum, v.neiVertex(k));
                   _bmol->removeAtom(i);
                }
                else
