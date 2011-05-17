@@ -770,7 +770,12 @@ void BaseMolecule::addAttachmentPoint (int order, int index)
    _attachment_index[order - 1].push(index);
 }
 
-void BaseMolecule::removeAttachmentPoint (int index)
+void BaseMolecule::removeAttachmentPoints ()
+{
+   _attachment_index.clear();
+}
+
+void BaseMolecule::removeAttachmentPointsFromAtom (int index)
 {
    int i, j;
 

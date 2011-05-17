@@ -332,6 +332,7 @@ CEXPORT int indigoResetRadical (int atom);
 CEXPORT int indigoResetIsotope (int atom);
 
 CEXPORT int indigoSetAttachmentPoint (int atom, int order);
+CEXPORT int indigoClearAttachmentPoints (int item);
 
 CEXPORT int indigoRemoveConstraints   (int item, const char *type);
 CEXPORT int indigoAddConstraint    (int item, const char *type, const char *value);

@@ -182,8 +182,9 @@ public:
 
    void addAttachmentPoint (int order, int index);
    int  getAttachmentPoint (int order, int index) const;
-   void removeAttachmentPoint (int index);
+   void removeAttachmentPointsFromAtom (int index);
    int  attachmentPointCount () const;
+   void removeAttachmentPoints ();
 
    void getAttachmentIndicesForAtom (int atom_idx, Array<int> &res);
 

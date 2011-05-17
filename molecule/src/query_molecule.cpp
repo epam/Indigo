@@ -729,7 +729,7 @@ void QueryMolecule::_removeAtoms (const Array<int> &indices, const int *mapping)
       int i;
       
       for (i = 0; i < indices.size(); i++)
-         this->removeAttachmentPoint(indices[i]);
+         this->removeAttachmentPointsFromAtom(indices[i]);
 
       bool empty = true;
 

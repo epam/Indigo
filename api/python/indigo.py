@@ -313,6 +313,7 @@ class Indigo:
     self.IndigoObject.invertStereo = Indigo._member_void(Indigo._lib.indigoInvertStereo)
 
     self.IndigoObject.setAttachmentPoint = Indigo._member_void_int(Indigo._lib.indigoSetAttachmentPoint)
+    self.IndigoObject.clearAttachmentPoints = Indigo._member_void(Indigo._lib.indigoClearAttachmentPoints)
 
     self.IndigoObject.removeConstraints = Indigo._member_void_string(Indigo._lib.indigoRemoveConstraints)
     self.IndigoObject.addConstraint = Indigo._member_void_string_string(Indigo._lib.indigoAddConstraint)

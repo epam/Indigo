@@ -1326,6 +1326,16 @@ CEXPORT int indigoSetAttachmentPoint (int atom, int order)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoClearAttachmentPoints (int item)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(item).getBaseMolecule();
+      mol.removeAttachmentPoints();
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int indigoRemoveConstraints (int item, const char *str_type)
 {
    INDIGO_BEGIN
