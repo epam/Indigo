@@ -130,6 +130,7 @@ public:
    virtual int getIndex ();
 
    virtual void remove ();
+   virtual IndigoObject * clone ();
 
    IndigoRGroup rgroup;
    int frag_idx;

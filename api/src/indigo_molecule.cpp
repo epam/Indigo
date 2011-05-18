@@ -1026,6 +1026,26 @@ BaseMolecule & IndigoRGroupFragment::getBaseMolecule ()
    return *rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
 }
 
+IndigoObject * IndigoRGroupFragment::clone ()
+{
+   BaseMolecule *mol = rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
+
+   AutoPtr<IndigoBaseMolecule> molptr;
+
+   if (mol->isQueryMolecule())
+   {
+      molptr.reset(new IndigoQueryMolecule());
+      molptr->getQueryMolecule().clone(*mol, 0, 0);
+   }
+   else
+   {
+      molptr.reset(new IndigoMolecule());
+      molptr->getMolecule().clone(*mol, 0, 0);
+   }
+
+   return molptr.release();
+}
+
 
 IndigoRGroupFragmentsIter::IndigoRGroupFragmentsIter (IndigoRGroup& rgp) :
 IndigoObject(RGROUP_FRAGMENTS_ITER)
