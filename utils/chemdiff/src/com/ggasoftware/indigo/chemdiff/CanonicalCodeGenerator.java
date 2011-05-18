@@ -120,6 +120,27 @@ public class CanonicalCodeGenerator
       }
    }
    
+   public IndigoObject createPreparedObject (IndigoObject object) throws IndigoCheckedException
+   {
+      try 
+      {
+         IndigoObject copy_to_modify = object.clone();
+         if (_compare_options.getUnseparateChargesFlag())
+            _unseparateCharges(copy_to_modify);
+         if (_compare_options.getAromFlag())
+            copy_to_modify.aromatize();
+         if (_compare_options.getCisTransIgnoreFlag())
+            copy_to_modify.clearCisTrans();
+         if (_compare_options.getStereocentersIgnoreFlag())
+            copy_to_modify.clearStereocenters();
+         return copy_to_modify;
+      }
+      catch (IndigoException ex)
+      {
+         throw new IndigoCheckedException(ex.getMessage(), ex);
+      }
+   }
+   
    public String generate (MoleculeItem object) throws IndigoCheckedException
    {
       try

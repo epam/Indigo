@@ -48,6 +48,13 @@ public class MultipleMoleculeWindow extends javax.swing.JFrame
       output_table1.setRowHeight(height);
       output_table2.setRowHeight(height);
    }
+   
+   public void setCanonicalCodeGenerator (CanonicalCodeGenerator canonical_generator)
+   {
+      output_table1.setCanonicalCodeGenerator(canonical_generator);
+      output_table2.setCanonicalCodeGenerator(canonical_generator);
+   }
+   
 
    /** This method is called from within the constructor to
     * initialize the form.

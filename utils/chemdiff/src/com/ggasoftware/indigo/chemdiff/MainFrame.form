@@ -103,16 +103,16 @@
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="unseparate_charges_check">
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="Unseparate charges"/>
+                <Property name="text" type="java.lang.String" value="Dipole to covalent bond"/>
               </Properties>
               <Events>
                 <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="unseparate_charges_checkStateChanged"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="sort_by_groups_size_check">
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="show_duplicates_on_top_check">
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="Sort by group size"/>
+                <Property name="text" type="java.lang.String" value="Show duplicates on top"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="show_invalid_on_top_check">

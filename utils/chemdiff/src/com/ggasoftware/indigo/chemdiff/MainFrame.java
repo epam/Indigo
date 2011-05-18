@@ -53,6 +53,8 @@ public class MainFrame extends javax.swing.JFrame
               stereocenters_check.getState(),
               unseparate_charges_check.getState());
       csmiles_generator = new CanonicalCodeGenerator(compare_options);
+      out_table1.setCanonicalCodeGenerator(csmiles_generator);
+      out_table2.setCanonicalCodeGenerator(csmiles_generator);
    }
 
    /** This method is called from within the constructor to
@@ -89,7 +91,7 @@ public class MainFrame extends javax.swing.JFrame
       cistrans_check = new javax.swing.JCheckBoxMenuItem();
       merge_duplicates_check = new javax.swing.JCheckBoxMenuItem();
       unseparate_charges_check = new javax.swing.JCheckBoxMenuItem();
-      sort_by_groups_size_check = new javax.swing.JCheckBoxMenuItem();
+      show_duplicates_on_top_check = new javax.swing.JCheckBoxMenuItem();
       show_invalid_on_top_check = new javax.swing.JCheckBoxMenuItem();
       menu_help = new javax.swing.JMenu();
       online_help = new javax.swing.JMenuItem();
@@ -140,7 +142,7 @@ public class MainFrame extends javax.swing.JFrame
       in_tabLayout.setVerticalGroup(
          in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, in_tabLayout.createSequentialGroup()
-            .addComponent(inputTables, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
+            .addComponent(inputTables, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(action_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
@@ -248,7 +250,7 @@ public class MainFrame extends javax.swing.JFrame
       menu_options.add(merge_duplicates_check);
 
       unseparate_charges_check.setSelected(true);
-      unseparate_charges_check.setText("Unseparate charges");
+      unseparate_charges_check.setText("Dipole to covalent bond");
       unseparate_charges_check.addChangeListener(new javax.swing.event.ChangeListener() {
          public void stateChanged(javax.swing.event.ChangeEvent evt) {
             unseparate_charges_checkStateChanged(evt);
@@ -256,9 +258,9 @@ public class MainFrame extends javax.swing.JFrame
       });
       menu_options.add(unseparate_charges_check);
 
-      sort_by_groups_size_check.setSelected(true);
-      sort_by_groups_size_check.setText("Sort by group size");
-      menu_options.add(sort_by_groups_size_check);
+      show_duplicates_on_top_check.setSelected(true);
+      show_duplicates_on_top_check.setText("Show duplicates on top");
+      menu_options.add(show_duplicates_on_top_check);
 
       show_invalid_on_top_check.setSelected(true);
       show_invalid_on_top_check.setText("Show invalid molecules on top");
@@ -437,7 +439,7 @@ public class MainFrame extends javax.swing.JFrame
              for (String key2 : unique2_keys)
                 unique2_mols.add(map2.get(key2));
 
-             final boolean sort_by_size = sort_by_groups_size_check.getState();
+             final boolean sort_by_size = show_duplicates_on_top_check.getState();
              final boolean show_invalid_on_top = show_invalid_on_top_check.getState();
              
              Comparator<MultipleMoleculeItem> comparator = new Comparator<MultipleMoleculeItem>()
@@ -462,10 +464,11 @@ public class MainFrame extends javax.swing.JFrame
                       if (s1 != s2)
                          return s2 - s1;
                    }
-                   // Compare by the first index
-                   // TODO: sort by length first (like numbers)
-                   // now the list: #1, #10, #2, ...
-                   return o1.getId(0).compareTo(o2.getId(0));
+                   String id1 = o1.getId(0), id2 = o2.getId(0);
+                   Integer len1 = id1.length(), len2 = id2.length();
+                   if (len1 != len2)
+                      return len1.compareTo(len2);
+                   return id1.compareTo(id2);
                 }
              };
              
@@ -598,8 +601,8 @@ public class MainFrame extends javax.swing.JFrame
    private com.ggasoftware.indigo.chemdiff.OutputTable out_table1;
    private com.ggasoftware.indigo.chemdiff.OutputTable out_table2;
    private com.ggasoftware.indigo.chemdiff.OutputTable out_table_common;
+   private javax.swing.JCheckBoxMenuItem show_duplicates_on_top_check;
    private javax.swing.JCheckBoxMenuItem show_invalid_on_top_check;
-   private javax.swing.JCheckBoxMenuItem sort_by_groups_size_check;
    private javax.swing.JCheckBoxMenuItem stereocenters_check;
    private javax.swing.JTabbedPane tabbed_panel;
    private javax.swing.JCheckBoxMenuItem unseparate_charges_check;

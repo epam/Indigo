@@ -49,7 +49,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="help_info" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="molecule_with_properties" pref="338" max="32767" attributes="0"/>
+              <Component id="molecule_with_properties" pref="324" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="done_button" alignment="3" min="-2" max="-2" attributes="0"/>

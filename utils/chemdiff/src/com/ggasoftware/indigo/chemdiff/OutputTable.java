@@ -10,6 +10,7 @@
  */
 package com.ggasoftware.indigo.chemdiff;
 
+import com.ggasoftware.indigo.IndigoException;
 import com.ggasoftware.indigo.IndigoObject;
 import com.ggasoftware.indigo.controls.*;
 import java.awt.Component;
@@ -30,7 +31,7 @@ public class OutputTable extends TitledBorderPanel
 {
    private ArrayList<? extends RenderableObjectWithId> _molecules;
    private String _common_canonical_code;
-   
+   private CanonicalCodeGenerator _canonical_generator;
 
    public OutputTable ()
    {
@@ -52,6 +53,11 @@ public class OutputTable extends TitledBorderPanel
       _common_canonical_code = code;
    }
 
+   public void setCanonicalCodeGenerator (CanonicalCodeGenerator canonical_generator)
+   {
+      _canonical_generator = canonical_generator;
+   }
+   
    /** This method is called from within the constructor to
     * initialize the form.
     * WARNING: Do NOT modify this code. The content of this method is
@@ -137,13 +143,62 @@ public class OutputTable extends TitledBorderPanel
     private void molecules_tableCellMouseDoubleClick (com.ggasoftware.indigo.controls.TableCellMouseEvent evt)//GEN-FIRST:event_molecules_tableCellMouseDoubleClick
     {//GEN-HEADEREND:event_molecules_tableCellMouseDoubleClick
       RenderableObjectWithId item = _molecules.get(evt.row);
-      
+      showMolecule(item);
+    }
+
+   private void showSingleMolecule (RenderableObjectWithId item, 
+           boolean normalized, String canonical_code)
+   {
       Frame parent = (Frame)getTopLevelAncestor();
+      IndigoObject obj = item.getRenderableObject();
+      if (obj == null)
+      {
+         String message = String.format("Exception:\n%s", item.getErrorMessageToRender());
+         MessageBox.show(parent, message, 
+                 "Error during loading this molecule", MessageBox.ICON_ERROR);
+         return;
+      }
+      if (normalized)
+      {
+         try
+         {
+            obj = _canonical_generator.createPreparedObject(obj);
+         }
+         catch (IndigoCheckedException ex)
+         {
+            MessageBox.show(parent, ex.getMessage(), 
+                    "Error during normalizing this molecule", MessageBox.ICON_ERROR);
+            return;
+         }
+         try
+         {
+            obj.markEitherCisTrans();
+         }
+         catch (IndigoException ex)
+         {
+         }
+      }
+      // Show details window for single molecule
+      SingleIndigoObjectWindow details = new SingleIndigoObjectWindow(parent, 
+              obj, item.getIndigoRenderer(), false);
+      if (item.getErrorMessageToRender() != null)
+         details.setInformationMessage(item.getErrorMessageToRender());
+      else
+         details.setInformationMessage(canonical_code);
+      String title = item.getId(0);
+      if (normalized)
+         title += " (normalized)";
+      details.setTitle(title);
+      details.setVisible(true);
       
+   }
+   
+   private void showMolecule (RenderableObjectWithId item)
+   {
+      Frame parent = (Frame)getTopLevelAncestor();
       MoleculeItem single = null;
       MultipleMoleculeItem mul_item = null;
       String canonical_code;
-      
       if (item instanceof MoleculeItem)
       {
          single = (MoleculeItem)item;
@@ -156,33 +211,15 @@ public class OutputTable extends TitledBorderPanel
             single = mul_item.getGroup(0).get(0);
          canonical_code = mul_item.getCanonicalCode();
       }
-      
       if (single != null)
-      {
-         IndigoObject obj = item.getRenderableObject();
-         if (obj == null)
-         {
-            String message = String.format("Exception:\n%s", item.getErrorMessageToRender());
-            MessageBox.show(parent, message, 
-                    "Error during loading this molecule", MessageBox.ICON_ERROR);
-            return;
-         }
-         // Show details window for single molecule
-         SingleIndigoObjectWindow details = new SingleIndigoObjectWindow(parent, 
-                 obj, item.getIndigoRenderer(), false);
-         if (item.getErrorMessageToRender() != null)
-            details.setInformationMessage(item.getErrorMessageToRender());
-         else
-            details.setInformationMessage(canonical_code);
-         details.setTitle(item.getId());
-         details.setVisible(true);
-      }
+         showSingleMolecule(item, false, canonical_code);
       else
       {
          // Show window with multiple molecules
          MultipleMoleculeWindow details = new MultipleMoleculeWindow(parent, mul_item);
          details.setCommonCanonicalCode(canonical_code);
          details.setRowHeight(getRowHeight());
+         details.setCanonicalCodeGenerator(_canonical_generator);
          details.setVisible(true);
       }
     }//GEN-LAST:event_molecules_tableCellMouseDoubleClick
@@ -201,6 +238,21 @@ public class OutputTable extends TitledBorderPanel
          }
       });
       _popup_menu.add(show_mi);
+      JMenuItem show_normalized_mi = new JMenuItem("Show normalized molecule");
+      show_normalized_mi.addActionListener(new ActionListener()
+      {
+         public void actionPerformed (ActionEvent e)
+         {
+            RenderableObjectWithId item = _molecules.get(evt_final.row);
+            String canonical_code;
+            if (item instanceof MoleculeItem)
+               canonical_code = _common_canonical_code;
+            else
+               canonical_code = ((MultipleMoleculeItem)item).getCanonicalCode();
+            showSingleMolecule(item, true, canonical_code);
+         }
+      });
+      _popup_menu.add(show_normalized_mi);
       
       _popup_menu.show((Component)evt.mouse_event.getSource(), evt.mouse_event.getX(), evt.mouse_event.getY());
     }//GEN-LAST:event_molecules_tableCellShowPopupMenu

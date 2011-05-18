@@ -70,32 +70,33 @@ public class MolRenderer extends JPanel
             gc.setColor(Color.black);
             gc.drawString("Cannot render", 40, (int) (cell_h / 2));
             gc.drawImage(_exclamation_img.getImage(), 5, 10, null);
-            return this;
          }
-        
-         indigo.setOption("render-image-size", cell_w, cell_h);
-         byte[] bytes = null;
-
-         try
+         else
          {
-            bytes = indigo_renderer.renderToBuffer(indigo_obj);
+            indigo.setOption("render-image-size", cell_w, cell_h);
+            byte[] bytes = null;
 
-            //System.out.print("Render: " + call_count + "\n");
-            call_count++;
+            try
+            {
+               bytes = indigo_renderer.renderToBuffer(indigo_obj);
 
-            ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
-            image = ImageIO.read(new MemoryCacheImageInputStream(bytes_is));
-         }
-         catch (IOException ex)
-         {
-            System.err.println(">>>>" + ex.getMessage());
-            ex.printStackTrace();
-         }
-         if (mol_image.getErrorMessageToRender() != null)
-         {
-            // Mark molecule somehow
-            Graphics2D gc = image.createGraphics();
-            gc.drawImage(_exclamation_img.getImage(), 5, 10, null);
+               //System.out.print("Render: " + call_count + "\n");
+               call_count++;
+
+               ByteArrayInputStream bytes_is = new ByteArrayInputStream(bytes, 0, bytes.length);
+               image = ImageIO.read(new MemoryCacheImageInputStream(bytes_is));
+            }
+            catch (IOException ex)
+            {
+               System.err.println(">>>>" + ex.getMessage());
+               ex.printStackTrace();
+            }
+            if (mol_image.getErrorMessageToRender() != null)
+            {
+               // Mark molecule somehow
+               Graphics2D gc = image.createGraphics();
+               gc.drawImage(_exclamation_img.getImage(), 5, 10, null);
+            }
          }
 
          if (hasFocus)
