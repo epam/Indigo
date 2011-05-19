@@ -203,7 +203,7 @@ class Indigo:
     
   def __init__ (self, path = None):
     if Indigo._lib == None:
-      self._initStatic()
+      self._initStatic(path)
       
     self._sid = Indigo._lib.indigoAllocSessionId()
     self._setSID()
