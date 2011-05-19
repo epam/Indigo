@@ -18,7 +18,6 @@ set instance=
 set bingoname=bingo
 set bingopass=bingo
 set y=
-set nine=
 
 goto L2
 
@@ -34,7 +33,6 @@ if "%1" == "-instance" goto got_instance
 if "%1" == "-bingoname" goto got_bingoname
 if "%1" == "-bingopass" goto got_bingopass
 if "%1" == "-y" goto got_y
-if "%1" == "-9" goto got_nine
 
 if "%1" == "-help" goto usage
 if "%1" == "-?" goto usage
@@ -75,10 +73,6 @@ goto badparam
   set y=1
   goto L1
   
-:got_nine
-  set nine=1
-  goto L1
-
 :badparam
   echo Unknown parameter: %1
   goto end
@@ -88,8 +82,6 @@ goto badparam
 echo Target directory  : %libdir%
 echo DBA name          : %dbaname%
 if not "%dbapass%" == "" echo DBA password      : %DBApass%
-if "%nine%"=="1" echo Oracle version    : 9
-if "%nine%"==""  echo Oracle version    : 10 or 11
 if "%instance%"=="" echo Oracle instance   : [default]
 if not "%instance%"=="" echo Oracle instance   : %instance%
 echo Bingo name        : %BINGOname%
@@ -117,17 +109,14 @@ md %libdir%
 copy ..\bin\bingo-oracle.dll %libdir% /y
 if not %errorlevel%==0 goto end
 
-if "%nine%"=="" set initsql=bingo_init.sql
-if "%nine%"=="1" set initsql=bingo_init_9.sql
-
 if not "%instance%"=="" set instance=@%instance%
 
 cd system
 if "%dbapass%"=="" goto emptypass
-sqlplus %dbaname%/%dbapass%%instance% @%initsql% %bingoname% %bingopass%
+sqlplus %dbaname%/%dbapass%%instance% @bingo_init.sql %bingoname% %bingopass%
 goto L5
 :emptypass
-sqlplus %dbaname%%instance% @%initsql% %bingoname% %bingopass%
+sqlplus %dbaname%%instance% @bingo_init.sql %bingoname% %bingopass%
 
 :L5
 cd ..\bingo
@@ -159,9 +148,6 @@ echo   -bingoname name
 echo     Name of cartridge pseudo-user (default "bingo").
 echo   -bingopass password
 echo     Password of the pseudo-user (default "bingo").
-echo   -9
-echo     Must be specified when installing on Oracle 9.
-echo     Oracle 10 or 11 is assumed by default.
 echo   -y
 echo     Do not ask for confirmation.
 goto end

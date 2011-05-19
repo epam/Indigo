@@ -46,6 +46,5 @@ cp sql/bingo/ringo_make.sql $name/sql/bingo/
 cp sql/bingo/ringo_package.sql $name/sql/bingo/
 cp sql/bingo/ringo_stat.sql $name/sql/bingo/
 cp sql/system/bingo_init.sql $name/sql/system/
-cp sql/system/bingo_init_9.sql $name/sql/system/
 
 zip -r -9 $name.zip $name

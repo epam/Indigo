@@ -31,6 +31,5 @@ copy sql\bingo\ringo_make.sql %1\sql\bingo\
 copy sql\bingo\ringo_package.sql %1\sql\bingo\
 copy sql\bingo\ringo_stat.sql %1\sql\bingo\
 copy sql\system\bingo_init.sql %1\sql\system\
-copy sql\system\bingo_init_9.sql %1\sql\system\
 
 zip -r -9 %1.zip %1

@@ -16,7 +16,10 @@ Define USER_PASS = &2
 Set Verify Off
 spool bingo_init;
 
-CREATE BIGFILE TABLESPACE &USER_NAME
+column TBS_TYPE new_value TBS_TYPE
+select case when version like '9.%' then null else 'BIGFILE' end TBS_TYPE from v$instance;
+
+CREATE &TBS_TYPE TABLESPACE &USER_NAME
     NOLOGGING 
     DATAFILE '&USER_NAME..ora' SIZE 5M 
     REUSE AUTOEXTEND 

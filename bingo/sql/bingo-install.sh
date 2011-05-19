@@ -17,7 +17,6 @@ dbapass=
 instance=
 bingoname="bingo"
 bingopass="bingo"
-nine=
 y=
 
 usage ()
@@ -41,9 +40,6 @@ echo '  -bingoname name'
 echo '    Name of cartridge pseudo-user (default "bingo").'
 echo '  -bingopass password'
 echo '    Password of the pseudo-user (default "bingo").'
-echo '  -9'
-echo '    Must be specified when installing on Oracle 9.'
-echo '    Oracle 10 or 11 is assumed by default.'
 echo '  -y'
 echo '    Do not ask for confirmation.'
 }
@@ -83,9 +79,6 @@ while [ "$#" != 0 ]; do
         shift
         bingopass=$1
         ;;
-     -9)
-        nine=1
-        ;;
      -y)
         y=1
         ;;
@@ -101,11 +94,6 @@ echo "Target directory  : $libdir";
 echo "DBA name          : $dbaname";
 if [ ! "$dbapass" = "" ]; then
   echo "DBA password      : $dbapass";
-fi
-if [ "$nine" = "1" ]; then
-  echo "Oracle version    : 9";
-else
-  echo "Oracle version    : 10 or 11";
 fi
 if [ ! "$instance" = "" ]; then
   echo "Oracle instance   : $instance";
@@ -143,17 +131,12 @@ if [ $? != 0 ]; then
   exit
 fi
 
-if [ "$nine" = "1" ]; then
-  initsql=bingo_init_9.sql
-else
-  initsql=bingo_init.sql
-fi
 
 cd system
 if [ "$dbapass" = "" ]; then
-  sqlplus $dbaname$instance @$initsql $bingoname $bingopass
+  sqlplus $dbaname$instance @bingo_init.sql $bingoname $bingopass
 else
-  sqlplus $dbaname/$dbapass$instance @$initsql $bingoname $bingopass
+  sqlplus $dbaname/$dbapass$instance @bingo_init.sql $bingoname $bingopass
 fi
 
 cd ../bingo
