@@ -55,16 +55,21 @@ void BingoFingerprints::init (BingoContext &context, int fp_bytes, int fp_priori
 
 void BingoFingerprints::create (OracleEnv &env)
 {
-   const void *tn = _table_name.ptr();
+   const char *tn = _table_name.ptr();
+   const char *securefile = "";
+
+   if (env.serverMajorVersion() >= 11)
+      securefile = "securefile";
 
    OracleStatement::executeSingle(env,
       "CREATE TABLE %s(part number, used number, counters BLOB, mapping BLOB, "
               "bit_starts BLOB, bit_ends BLOB, bits BLOB) PCTFREE 0 NOLOGGING "
-      "lob(bits) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
-      "lob(counters) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
-      "lob(bit_starts) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
-      "lob(bit_ends) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
-      "lob(mapping) store as (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) ", tn);
+      "lob(bits) store as %s (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
+      "lob(counters) store as %s (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
+      "lob(bit_starts) store as %s (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
+      "lob(bit_ends) store as %s (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) "
+      "lob(mapping) store as %s (DISABLE STORAGE IN ROW CACHE READS NOLOGGING PCTVERSION 0) ", tn,
+           securefile, securefile, securefile, securefile, securefile);
    OracleStatement::executeSingle(env, "CREATE INDEX %s_part ON %s(part)", tn, tn);
 }
 
@@ -113,7 +118,7 @@ void BingoFingerprints::flush (OracleEnv &env)
    env.dbgPrintf("ok\n");
 
    if (!_flush_Update(env, true))
-      _flush_Insert_OLD(env);
+      _flush_Insert(env);
 
    _initBlock(_pending_block, true);
    _part_adding++;
