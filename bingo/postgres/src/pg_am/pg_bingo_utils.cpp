@@ -18,7 +18,7 @@ CEXPORT {
 #include "storage/bufmgr.h"
 #include "catalog/pg_type.h"
 #include "parser/parse_func.h"
-#include "funcapi.h"
+//#include "funcapi.h"
 }
 
 CEXPORT {

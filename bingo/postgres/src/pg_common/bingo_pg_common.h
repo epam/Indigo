@@ -46,11 +46,11 @@ public:
 //   static char* getTextData(PG_OBJECT text_datum, int& size);
 
    static void setDefaultOptions();
-   static dword getFunctionOid(const char* name, indigo::Array<dword>& types);
-   static dword getFunctionOid1(const char* name, dword type1);
+//   static dword getFunctionOid(const char* name, indigo::Array<dword>& types);
+//   static dword getFunctionOid1(const char* name, dword type1);
    
-   static dword callFunction(dword oid, indigo::Array<dword>& args);
-   static dword callFunction1(dword oid, dword arg1);
+//   static dword callFunction(dword oid, indigo::Array<dword>& args);
+//   static dword callFunction1(dword oid, dword arg1);
 
    
 

@@ -115,22 +115,22 @@
           <incDir>
             <pElem>../..</pElem>
             <pElem>../../common</pElem>
-            <pElem>/opt/postgres9_debug/include/server</pElem>
             <pElem>src/pg_common</pElem>
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
+            <pElem>include</pElem>
           </incDir>
         </cTool>
         <ccTool>
           <incDir>
             <pElem>../..</pElem>
             <pElem>../../common</pElem>
-            <pElem>/opt/postgres9_debug/include/server</pElem>
             <pElem>src/pg_common</pElem>
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
+            <pElem>include</pElem>
           </incDir>
         </ccTool>
         <linkerTool>
@@ -214,11 +214,11 @@
           <incDir>
             <pElem>../..</pElem>
             <pElem>../../common</pElem>
-            <pElem>/opt/postgres9_debug/include/server</pElem>
             <pElem>src/pg_common</pElem>
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
+            <pElem>include</pElem>
           </incDir>
         </cTool>
         <ccTool>
@@ -227,11 +227,11 @@
           <incDir>
             <pElem>../..</pElem>
             <pElem>../../common</pElem>
-            <pElem>/opt/postgres9_debug/include/server</pElem>
             <pElem>src/pg_common</pElem>
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
+            <pElem>include</pElem>
           </incDir>
         </ccTool>
         <fortranCompilerTool>
@@ -321,11 +321,11 @@
           <incDir>
             <pElem>../..</pElem>
             <pElem>../../common</pElem>
-            <pElem>/opt/postgres9_debug/include/server</pElem>
             <pElem>src/pg_common</pElem>
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
+            <pElem>include</pElem>
           </incDir>
         </cTool>
         <ccTool>
@@ -334,11 +334,11 @@
           <incDir>
             <pElem>../..</pElem>
             <pElem>../../common</pElem>
-            <pElem>/opt/postgres9_debug/include/server</pElem>
             <pElem>src/pg_common</pElem>
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
+            <pElem>include</pElem>
           </incDir>
         </ccTool>
         <fortranCompilerTool>

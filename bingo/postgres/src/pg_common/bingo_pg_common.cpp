@@ -21,26 +21,26 @@ CEXPORT {
 #include "access/heapam.h"
 #include "storage/bufmgr.h"
 #include "catalog/pg_type.h"
-#include "parser/parse_func.h"
-#include "funcapi.h"
+//#include "parser/parse_func.h"
+//#include "funcapi.h"
 #include "executor/spi.h"
 }
 
 
-dword BingoPgCommon::getFunctionOid(const char* name, indigo::Array<dword>& types) {
-   indigo::Array<char> fname;
-   fname.readString(name, true);
-   Value* func_name = makeString(fname.ptr());
-
-   List* func_list = list_make1(func_name);
-   Oid func_oid = LookupFuncName(func_list, types.size(), types.ptr(), false);
-
-   if(func_oid == InvalidOid)
-      elog(ERROR, "can not find the function %s", name);
-
-   list_free(func_list);
-   return func_oid;
-}
+//dword BingoPgCommon::getFunctionOid(const char* name, indigo::Array<dword>& types) {
+//   indigo::Array<char> fname;
+//   fname.readString(name, true);
+//   Value* func_name = makeString(fname.ptr());
+//
+//   List* func_list = list_make1(func_name);
+//   Oid func_oid = LookupFuncName(func_list, types.size(), types.ptr(), false);
+//
+//   if(func_oid == InvalidOid)
+//      elog(ERROR, "can not find the function %s", name);
+//
+//   list_free(func_list);
+//   return func_oid;
+//}
 
 using namespace indigo;
 
@@ -93,42 +93,42 @@ void BingoPgCommon::printFPBitset(const char* name, unsigned char* bitset, int s
    elog(INFO, "%s", bits.ptr());
 }
 
-dword BingoPgCommon::getFunctionOid1(const char* name, dword type1) {
-   QS_DEF(indigo::Array<dword>, types);
-   types.clear();
-   types.push(type1);
-   return getFunctionOid(name, types);
-}
+//dword BingoPgCommon::getFunctionOid1(const char* name, dword type1) {
+//   QS_DEF(indigo::Array<dword>, types);
+//   types.clear();
+//   types.push(type1);
+//   return getFunctionOid(name, types);
+//}
+//
+//dword BingoPgCommon::callFunction(dword functionId, indigo::Array<dword>& args) {
+//   FmgrInfo flinfo;
+//   FunctionCallInfoData fcinfo;
+//
+//   int args_len = args.size();
+//
+//   fmgr_info(functionId, &flinfo);
+//   InitFunctionCallInfoData(fcinfo, &flinfo, args_len, NULL, NULL);
+//
+//   for (int arg_idx = 0; arg_idx < args_len; ++arg_idx) {
+//      fcinfo.arg[arg_idx] = args[arg_idx];
+//      fcinfo.argnull[arg_idx] = false;
+//   }
+//
+//   Datum result = FunctionCallInvoke(&fcinfo);
+//
+//   /* Do not Check for */
+////   if (fcinfo.isnull)
+////      elog(ERROR, "function %u returned NULL", flinfo.fn_oid);
+//
+//   return result;
+//}
 
-dword BingoPgCommon::callFunction(dword functionId, indigo::Array<dword>& args) {
-   FmgrInfo flinfo;
-   FunctionCallInfoData fcinfo;
-
-   int args_len = args.size();
-
-   fmgr_info(functionId, &flinfo);
-   InitFunctionCallInfoData(fcinfo, &flinfo, args_len, NULL, NULL);
-
-   for (int arg_idx = 0; arg_idx < args_len; ++arg_idx) {
-      fcinfo.arg[arg_idx] = args[arg_idx];
-      fcinfo.argnull[arg_idx] = false;
-   }
-
-   Datum result = FunctionCallInvoke(&fcinfo);
-
-   /* Do not Check for */
-//   if (fcinfo.isnull)
-//      elog(ERROR, "function %u returned NULL", flinfo.fn_oid);
-
-   return result;
-}
-
-dword BingoPgCommon::callFunction1(dword oid, dword arg1) {
-   QS_DEF(indigo::Array<dword>, args);
-   args.clear();
-   args.push(arg1);
-   return callFunction(oid, args);
-}
+//dword BingoPgCommon::callFunction1(dword oid, dword arg1) {
+//   QS_DEF(indigo::Array<dword>, args);
+//   args.clear();
+//   args.push(arg1);
+//   return callFunction(oid, args);
+//}
 
 
 void BingoPgCommon::setDefaultOptions() {
