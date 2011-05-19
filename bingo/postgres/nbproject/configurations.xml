@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="69">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="f3" displayName="bingo_core" projectFiles="true">
+      <itemPath>../src/core/bingo_context.cpp</itemPath>
+      <itemPath>../src/core/bingo_context.h</itemPath>
+      <itemPath>../src/core/bingo_error.h</itemPath>
+      <itemPath>../src/core/bingo_index.h</itemPath>
+      <itemPath>../../common/base_cpp/chunk_storage.cpp</itemPath>
+      <itemPath>../../common/base_cpp/chunk_storage.h</itemPath>
+      <itemPath>../src/core/mango_context.cpp</itemPath>
+      <itemPath>../src/core/mango_context.h</itemPath>
+      <itemPath>../src/core/mango_exact.cpp</itemPath>
+      <itemPath>../src/core/mango_gross.cpp</itemPath>
+      <itemPath>../src/core/mango_index.cpp</itemPath>
+      <itemPath>../src/core/mango_index.h</itemPath>
+      <itemPath>../src/core/mango_matchers.h</itemPath>
+      <itemPath>../src/core/mango_similarity.cpp</itemPath>
+      <itemPath>../src/core/mango_substructure.cpp</itemPath>
+      <itemPath>../src/core/mango_tautomer.cpp</itemPath>
+      <itemPath>../src/core/ringo_aam.cpp</itemPath>
+      <itemPath>../src/core/ringo_context.cpp</itemPath>
+      <itemPath>../src/core/ringo_context.h</itemPath>
+      <itemPath>../src/core/ringo_exact.cpp</itemPath>
+      <itemPath>../src/core/ringo_index.cpp</itemPath>
+      <itemPath>../src/core/ringo_index.h</itemPath>
+      <itemPath>../src/core/ringo_matchers.h</itemPath>
+      <itemPath>../src/core/ringo_substructure.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="f4" displayName="bingo_core_c" projectFiles="true">
+      <itemPath>../src/core-c/bingo_core_c.cpp</itemPath>
+      <itemPath>../src/core-c/bingo_core_c.h</itemPath>
+      <itemPath>../src/core-c/bingo_core_c_internal.h</itemPath>
+      <itemPath>../src/core-c/bingo_core_c_parallel.cpp</itemPath>
+      <itemPath>../src/core-c/bingo_core_c_parallel.h</itemPath>
+      <itemPath>../src/core-c/mango_core_c.cpp</itemPath>
+      <itemPath>../src/core-c/mango_core_c_parallel.cpp</itemPath>
+      <itemPath>../src/core-c/mango_core_c_parallel.h</itemPath>
+      <itemPath>../src/core-c/ringo_core_c.cpp</itemPath>
+      <itemPath>../src/core-c/ringo_core_c_parallel.cpp</itemPath>
+      <itemPath>../src/core-c/ringo_core_c_parallel.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="f2" displayName="pg_am" projectFiles="true">
+      <itemPath>src/pg_am/pg_bingo_build.cpp</itemPath>
+      <itemPath>src/pg_am/pg_bingo_costestimate.c</itemPath>
+      <itemPath>src/pg_am/pg_bingo_gist.c</itemPath>
+      <itemPath>src/pg_am/pg_bingo_import.cpp</itemPath>
+      <itemPath>src/pg_am/pg_bingo_match.cpp</itemPath>
+      <itemPath>src/pg_am/pg_bingo_options.cpp</itemPath>
+      <itemPath>src/pg_am/pg_bingo_search.cpp</itemPath>
+      <itemPath>src/pg_am/pg_bingo_update.cpp</itemPath>
+      <itemPath>src/pg_am/pg_bingo_utils.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="pg_common"
+                   projectFiles="true"
+                   kind="SOURCE_LOGICAL_FOLDER">
+      <itemPath>src/pg_common/bingo_pg_buffer.cpp</itemPath>
+      <itemPath>src/pg_common/bingo_pg_buffer.h</itemPath>
+      <itemPath>src/pg_common/bingo_pg_buffer_cache.cpp</itemPath>
+      <itemPath>src/pg_common/bingo_pg_buffer_cache.h</itemPath>
+      <itemPath>src/pg_common/bingo_pg_common.cpp</itemPath>
+      <itemPath>src/pg_common/bingo_pg_common.h</itemPath>
+      <itemPath>src/pg_common/bingo_pg_cursor.cpp</itemPath>
+      <itemPath>src/pg_common/bingo_pg_cursor.h</itemPath>
+      <itemPath>src/pg_common/bingo_pg_ext_bitset.cpp</itemPath>
+      <itemPath>src/pg_common/bingo_pg_ext_bitset.h</itemPath>
+      <itemPath>src/pg_common/bingo_pg_section.cpp</itemPath>
+      <itemPath>src/pg_common/bingo_pg_section.h</itemPath>
+      <itemPath>src/pg_common/bingo_pg_text.cpp</itemPath>
+      <itemPath>src/pg_common/bingo_pg_text.h</itemPath>
+      <itemPath>src/pg_common/bingo_postgres.h</itemPath>
+      <itemPath>src/pg_common/pg_bingo_context.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="f1" displayName="pg_core" projectFiles="true">
+      <itemPath>src/pg_core/bingo_pg_build.cpp</itemPath>
+      <itemPath>src/pg_core/bingo_pg_build.h</itemPath>
+      <itemPath>src/pg_core/bingo_pg_build_engine.cpp</itemPath>
+      <itemPath>src/pg_core/bingo_pg_build_engine.h</itemPath>
+      <itemPath>src/pg_core/bingo_pg_config.cpp</itemPath>
+      <itemPath>src/pg_core/bingo_pg_config.h</itemPath>
+      <itemPath>src/pg_core/bingo_pg_index.cpp</itemPath>
+      <itemPath>src/pg_core/bingo_pg_index.h</itemPath>
+      <itemPath>src/pg_core/bingo_pg_search.cpp</itemPath>
+      <itemPath>src/pg_core/bingo_pg_search.h</itemPath>
+      <itemPath>src/pg_core/bingo_pg_search_engine.cpp</itemPath>
+      <itemPath>src/pg_core/bingo_pg_search_engine.h</itemPath>
+      <itemPath>src/pg_core/mango_pg_build_engine.cpp</itemPath>
+      <itemPath>src/pg_core/mango_pg_build_engine.h</itemPath>
+      <itemPath>src/pg_core/mango_pg_search_engine.cpp</itemPath>
+      <itemPath>src/pg_core/mango_pg_search_engine.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <incDir>
+            <pElem>../..</pElem>
+            <pElem>../../common</pElem>
+            <pElem>/opt/postgres9_debug/include/server</pElem>
+            <pElem>src/pg_common</pElem>
+            <pElem>src/pg_core</pElem>
+            <pElem>../src/core-c</pElem>
+            <pElem>../src</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>../..</pElem>
+            <pElem>../../common</pElem>
+            <pElem>/opt/postgres9_debug/include/server</pElem>
+            <pElem>src/pg_common</pElem>
+            <pElem>src/pg_core</pElem>
+            <pElem>../src/core-c</pElem>
+            <pElem>../src</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../layout"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../layout"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/liblayout.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../reaction"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../reaction"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libreaction.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../molecule"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../molecule"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libmolecule.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../graph"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../graph"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libgraph.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../tinyxml"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../tinyxml"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libtinyxml.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="Release32" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+          <architecture>1</architecture>
+          <incDir>
+            <pElem>../..</pElem>
+            <pElem>../../common</pElem>
+            <pElem>/opt/postgres9_debug/include/server</pElem>
+            <pElem>src/pg_common</pElem>
+            <pElem>src/pg_core</pElem>
+            <pElem>../src/core-c</pElem>
+            <pElem>../src</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <architecture>1</architecture>
+          <incDir>
+            <pElem>../..</pElem>
+            <pElem>../../common</pElem>
+            <pElem>/opt/postgres9_debug/include/server</pElem>
+            <pElem>src/pg_common</pElem>
+            <pElem>src/pg_core</pElem>
+            <pElem>../src/core-c</pElem>
+            <pElem>../src</pElem>
+          </incDir>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../layout"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../layout"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/liblayout.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../reaction"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../reaction"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libreaction.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../molecule"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../molecule"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libmolecule.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../graph"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../graph"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libgraph.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../tinyxml"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../tinyxml"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libtinyxml.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="Release64" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+          <architecture>2</architecture>
+          <incDir>
+            <pElem>../..</pElem>
+            <pElem>../../common</pElem>
+            <pElem>/opt/postgres9_debug/include/server</pElem>
+            <pElem>src/pg_common</pElem>
+            <pElem>src/pg_core</pElem>
+            <pElem>../src/core-c</pElem>
+            <pElem>../src</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <architecture>2</architecture>
+          <incDir>
+            <pElem>../..</pElem>
+            <pElem>../../common</pElem>
+            <pElem>/opt/postgres9_debug/include/server</pElem>
+            <pElem>src/pg_common</pElem>
+            <pElem>src/pg_core</pElem>
+            <pElem>../src/core-c</pElem>
+            <pElem>../src</pElem>
+          </incDir>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../layout"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../layout"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/liblayout.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../reaction"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../reaction"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libreaction.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../molecule"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../molecule"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libmolecule.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../graph"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../graph"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libgraph.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../tinyxml"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../tinyxml"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libtinyxml.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>
