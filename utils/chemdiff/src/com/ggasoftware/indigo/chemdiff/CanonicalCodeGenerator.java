@@ -22,7 +22,7 @@ public class CanonicalCodeGenerator
       {
          _cached_indigo = mol.getIndigo();
          _cached_charge_pattern = _cached_indigo.loadSmarts(
-                 "[#6,#7,#8,#15,#16;+]-,=[#6,#7,#8,#15,#16;-]");
+                 "[#6,#15,#16;+,++,+++]-,=[#6,#7,#8;-,--,---]");
       }
       return _cached_charge_pattern;
    }
@@ -30,64 +30,32 @@ public class CanonicalCodeGenerator
    private int _unseparateCharges (IndigoObject mol)
    {
       // At first check if charge configutation exists
-      IndigoObject matcher = mol.getIndigo().substructureMatcher(mol);
-      if (matcher.match(getChargePattern(mol)) == null)
-         return 0;
-
-      int cnt = 0, old_cnt;
+      IndigoObject charge_pattern = getChargePattern(mol);
+      
+      IndigoObject pos_q_atom = charge_pattern.getAtom(0);
+      IndigoObject neg_q_atom = charge_pattern.getAtom(1);
+      IndigoObject q_bond = charge_pattern.getBond(0);
+      
+      int cnt = 0, prev_cnt = 0;
+      IndigoObject match_iter = null;
       do
       {
-         old_cnt = cnt;
-         IndigoObject bonds_iterator = mol.iterateBonds();
-
-         for (IndigoObject bond : bonds_iterator)
+         IndigoObject matcher = mol.getIndigo().substructureMatcher(mol);
+         match_iter = matcher.iterateMatches(charge_pattern);
+         prev_cnt = cnt;
+         for (IndigoObject match: match_iter)
          {
-            IndigoObject source = bond.source();
-            IndigoObject destination = bond.destination();
+            IndigoObject pos_atom = match.mapAtom(pos_q_atom);
+            IndigoObject neg_atom = match.mapAtom(neg_q_atom);
+            IndigoObject bond = match.mapBond(q_bond);
 
-            if (source.degree() > 1 && destination.degree() > 1)
-            {
-               continue;
-            }
-
-            int order = bond.bondOrder();
-
-            if (order != 1 && order != 2)
-            {
-               continue;
-            }
-
-            int elem_beg = source.atomicNumber();
-            int elem_end = destination.atomicNumber();
-
-            // C,N,O,P,S
-            if (elem_beg != 6 && elem_beg != 7 && elem_beg != 8 && elem_beg != 15 && elem_beg != 16)
-               continue;
-            if (elem_end != 6 && elem_end != 7 && elem_end != 8 && elem_end != 15 && elem_end != 16)
-               continue;
-
-            int charge_beg = source.charge();
-            int charge_end = destination.charge();
-
-            if (charge_beg > 0 && charge_end < 0)
-            {
-               source.setCharge(charge_beg - 1);
-               destination.setCharge(charge_end + 1);
-               bond.setBondOrder(order + 1);
-               cnt++;
-               break;
-            }
-            else if (charge_beg < 0 && charge_end > 0)
-            {
-               source.setCharge(charge_beg + 1);
-               destination.setCharge(charge_end - 1);
-               bond.setBondOrder(order + 1);
-               cnt++;
-               break;
-            }
+            pos_atom.setCharge(pos_atom.charge() - 1);
+            neg_atom.setCharge(neg_atom.charge() + 1);
+            bond.setBondOrder(bond.bondOrder() + 1);
+            cnt++;
          }
-      } while (cnt != old_cnt);
-
+      } while (prev_cnt != cnt);
+      
       return cnt;
    }
 
@@ -100,31 +68,14 @@ public class CanonicalCodeGenerator
                  _compare_options.getStereocentersIgnoreFlag());
 
          IndigoObject copy_to_modify = object.getObjectCopy();
-         
-         try 
-         {
-            if (_compare_options.getUnseparateChargesFlag())
-               _unseparateCharges(copy_to_modify);
-            if (_compare_options.getAromFlag())
-               copy_to_modify.aromatize();
-            if (_compare_options.getCisTransIgnoreFlag())
-               copy_to_modify.clearCisTrans();
-            if (_compare_options.getStereocentersIgnoreFlag())
-               copy_to_modify.clearStereocenters();
-            return copy_to_modify;
-         }
-         catch (IndigoException ex)
-         {
-            throw new IndigoCheckedException(ex.getMessage(), ex);
-         }
+         return createClonedPreparedObject(copy_to_modify);
       }
    }
    
-   public IndigoObject createPreparedObject (IndigoObject object) throws IndigoCheckedException
+   private IndigoObject createClonedPreparedObject (IndigoObject copy_to_modify) throws IndigoCheckedException
    {
       try 
       {
-         IndigoObject copy_to_modify = object.clone();
          if (_compare_options.getUnseparateChargesFlag())
             _unseparateCharges(copy_to_modify);
          if (_compare_options.getAromFlag())
@@ -139,6 +90,11 @@ public class CanonicalCodeGenerator
       {
          throw new IndigoCheckedException(ex.getMessage(), ex);
       }
+   }
+   
+   public IndigoObject createPreparedObject (IndigoObject object) throws IndigoCheckedException
+   {
+      return createClonedPreparedObject(object.clone());
    }
    
    public String generate (MoleculeItem object) throws IndigoCheckedException

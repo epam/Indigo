@@ -21,7 +21,7 @@ public class MolRenderer extends JPanel
    private BufferedImage image;
    private ImageIcon _exclamation_img;
    Color bg_color;
-
+   
    public MolRenderer()
    {
       URL url = this.getClass().getResource("images/exclamation.png");
@@ -95,7 +95,11 @@ public class MolRenderer extends JPanel
             {
                // Mark molecule somehow
                Graphics2D gc = image.createGraphics();
+               gc.setColor(Color.red);
                gc.drawImage(_exclamation_img.getImage(), 5, 10, null);
+               gc.drawString(mol_image.getErrorMessageToRender(), 
+                       5 + _exclamation_img.getIconWidth() + 5,
+                       10 + _exclamation_img.getIconHeight() / 2);
             }
          }
 
@@ -103,7 +107,6 @@ public class MolRenderer extends JPanel
             setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
          else
             setBorder(new EmptyBorder(1, 2, 1, 2));
-            
          return this;
       }
    }
