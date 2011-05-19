@@ -55,6 +55,7 @@ public class MainFrame extends javax.swing.JFrame
       csmiles_generator = new CanonicalCodeGenerator(compare_options);
       out_table1.setCanonicalCodeGenerator(csmiles_generator);
       out_table2.setCanonicalCodeGenerator(csmiles_generator);
+      out_table_common.setCanonicalCodeGenerator(csmiles_generator);
    }
 
    /** This method is called from within the constructor to
