@@ -19,6 +19,7 @@
 #include "molecule/query_molecule.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_arom_match.h"
+#include "molecule/molecule_substructure_matcher.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -62,7 +63,7 @@ public:
 private:
    class EmbContext {
    public:
-       EmbContext(){}
+       EmbContext ();
        Array<int> visitedAtoms;
        Array<int> lastMapping;
        Array<int> lastInvMapping;
@@ -74,6 +75,7 @@ private:
        void renumber(Array<int>& map, Array<int>& inv_map);
 
        AromaticityMatcher *am;
+       MoleculeSubstructureMatcher::FragmentMatchCache *fmcache;
    private:
        EmbContext(const EmbContext&); //no implicit copy
    };
@@ -84,6 +86,7 @@ private:
 
    static int _rGroupsEmbedding(Graph &g1, Graph &g2, int *core1, int *core2, void *userdata);
 
+   static bool _matchAtoms (Graph &g1, Graph &g2, const int *, int sub_idx, int super_idx, void* userdata);
    static bool _matchBonds (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void* userdata);
    static void _addBond (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
    static void _removeAtom (Graph &subgraph, int sub_idx, void *userdata);

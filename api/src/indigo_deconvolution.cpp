@@ -94,13 +94,18 @@ void IndigoDeconvolution::_makeRGroup(Item& elem) {
 
 
    EmbeddingEnumerator emb_enum(mol_out);
+   QS_DEF(MoleculeSubstructureMatcher::FragmentMatchCache, fmcache);
+
+   fmcache.clear();
+   emb_context.fmcache = &fmcache;
+
    /*
     * Set options
     */
    emb_enum.setSubgraph(_scaffold);
    emb_enum.cb_embedding = _rGroupsEmbedding;
    emb_enum.cb_match_edge = _matchBonds;
-   emb_enum.cb_match_vertex = MoleculeScaffoldDetection::matchAtoms;
+   emb_enum.cb_match_vertex = _matchAtoms;
    emb_enum.cb_vertex_remove = _removeAtom;
    emb_enum.cb_edge_add = _addBond;
    emb_enum.userdata = &emb_context;
@@ -640,6 +645,20 @@ CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp) {
    }
    INDIGO_END(-1)
 }
+
+IndigoDeconvolution::EmbContext::EmbContext(){
+   am = 0;
+   fmcache = 0;
+}
+
+bool IndigoDeconvolution::_matchAtoms (Graph &g1, Graph &g2, const int *, int sub_idx, int super_idx, void* userdata){
+   QueryMolecule::Atom* q_atom = &((BaseMolecule &)g1).asQueryMolecule().getAtom(sub_idx);
+   BaseMolecule &target = (BaseMolecule &)g2;
+   EmbContext& emb_context = *(EmbContext*)userdata;
+
+   return MoleculeSubstructureMatcher::matchQueryAtom(q_atom, target, super_idx, emb_context.fmcache, 0xFFFFFFFF);
+}
+
 
 bool IndigoDeconvolution::_matchBonds (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void* userdata){
    EmbContext& emb_context = *(EmbContext*)userdata;
