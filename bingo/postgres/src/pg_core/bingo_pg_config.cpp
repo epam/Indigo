@@ -6,37 +6,65 @@
 #include "bingo_core_c.h"
 #include "pg_bingo_context.h"
 #include "bingo_pg_text.h"
+#include "bingo_pg_cursor.h"
 
 CEXPORT {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/relcache.h"
 #include "utils/rel.h"
-#include "catalog/namespace.h"
-#include "access/htup.h"
-#include "access/heapam.h"
-#include "storage/lock.h"
-#include "utils/tqual.h"
+//#include "catalog/namespace.h"
+//#include "access/htup.h"
+//#include "access/heapam.h"
+//#include "storage/lock.h"
+//#include "utils/tqual.h"
 }
 
 using namespace indigo;
 
 void BingoPgConfig::readDefaultConfig() {
    _rawConfig.clear();
+   _tauParameters.clear();
    /*
     * Seek for default config table
     */
-   Oid config_oid = RelnameGetRelid("bingo_config");
-   if(config_oid == InvalidOid)
-      elog(ERROR, "could not find config talble: 'bingo_config'");
-   _readTable(config_oid, false);
-   
-   Oid tau_oid = RelnameGetRelid("bingo_tau_config");
-   if(tau_oid == InvalidOid)
-      elog(ERROR, "could not find tau config talble: 'bingo_tau_config'");
-   _readTable(tau_oid, true);
-   
+   {
+      BingoPgCursor config_table("SELECT cname, cvalue FROM bingo.bingo_config");
+      while (config_table.next()) {
+         Datum name_datum = config_table.getDatum(1);
+         Datum value_datum = config_table.getDatum(2);
+         replaceInsertParameter(name_datum, value_datum);
+      }
+   }
+   {
+      BingoPgCursor config_table("SELECT rule_idx, tau_beg, tau_end FROM bingo.bingo_tau_config");
+      while (config_table.next()) {
+         Datum rule_datum = config_table.getDatum(1);
+         Datum beg_datum = config_table.getDatum(2);
+         Datum end_datum = config_table.getDatum(3);
+         _replaceInsertTauParameter(rule_datum, beg_datum, end_datum);
+      }
+   }
+
+
 }
+//void BingoPgConfig::readDefaultConfig() {
+//   _rawConfig.clear();
+//   /*
+//    * Seek for default config table
+//    */
+//   Oid config_oid = RelnameGetRelid("bingo.bingo_config");
+//   if(config_oid == InvalidOid)
+//      elog(ERROR, "could not find config table: 'bingo.bingo_config'");
+//   _readTable(config_oid, false);
+//
+//   Oid tau_oid = RelnameGetRelid("bingo_tau_config");
+//   if(tau_oid == InvalidOid)
+//      elog(ERROR, "could not find tau config table: 'bingo_tau_config'");
+//
+//   _readTable(tau_oid, true);
+//
+//}
 
 void BingoPgConfig::updateByIndexConfig(PG_OBJECT index_ptr) {
    Relation relation = (Relation) index_ptr;
@@ -125,53 +153,53 @@ void BingoPgConfig::deserialize(void* data, int data_len) {
    BingoPgCommon::DataProcessing::handleRedBlackStringArr(_rawConfig, &data_in, 0);
    BingoPgCommon::DataProcessing::handleRedBlackObject(_tauParameters, &data_in, 0);
 }
-void BingoPgConfig::_readTable(unsigned int id, bool tau) {
-   HeapTuple config_tuple;
-   Relation config_rel = heap_open(id, AccessShareLock);
-   TupleDesc tupdesc = RelationGetDescr(config_rel);
-   int ncolumns = tupdesc->natts;
-
-   if (tau) {
-      if (ncolumns != 3)
-         elog(ERROR, "tau config table should contain 3 columns");
-   } else {
-      if (ncolumns != 2)
-         elog(ERROR, "config table should contain 2 columns");
-   }
-
-   /*
-    * Start iterate through the table
-    */
-   HeapScanDesc scan = heap_beginscan(config_rel, SnapshotNow, 0, NULL);
-
-   while ((config_tuple = heap_getnext(scan, ForwardScanDirection)) != NULL) {
-
-      Datum *values = (Datum *) palloc(ncolumns * sizeof (Datum));
-      bool *nulls = (bool *) palloc(ncolumns * sizeof (bool));
-
-      /*
-       *  Break down the tuple into fields
-       */
-      heap_deform_tuple(config_tuple, tupdesc, values, nulls);
-
-      /*
-       * Read variable name and value
-       */
-      if(tau)
-         _replaceInsertTauParameter(values[0], values[1], values[2]);
-      else
-         replaceInsertParameter(values[0], values[1]);
-
-      pfree(values);
-      pfree(nulls);
-
-   }
-   /*
-    * Close table
-    */
-   heap_endscan(scan);
-   heap_close(config_rel, AccessShareLock);
-}
+//void BingoPgConfig::_readTable(unsigned int id, bool tau) {
+//   HeapTuple config_tuple;
+//   Relation config_rel = heap_open(id, AccessShareLock);
+//   TupleDesc tupdesc = RelationGetDescr(config_rel);
+//   int ncolumns = tupdesc->natts;
+//
+//   if (tau) {
+//      if (ncolumns != 3)
+//         elog(ERROR, "tau config table should contain 3 columns");
+//   } else {
+//      if (ncolumns != 2)
+//         elog(ERROR, "config table should contain 2 columns");
+//   }
+//
+//   /*
+//    * Start iterate through the table
+//    */
+//   HeapScanDesc scan = heap_beginscan(config_rel, SnapshotNow, 0, NULL);
+//
+//   while ((config_tuple = heap_getnext(scan, ForwardScanDirection)) != NULL) {
+//
+//      Datum *values = (Datum *) palloc(ncolumns * sizeof (Datum));
+//      bool *nulls = (bool *) palloc(ncolumns * sizeof (bool));
+//
+//      /*
+//       *  Break down the tuple into fields
+//       */
+//      heap_deform_tuple(config_tuple, tupdesc, values, nulls);
+//
+//      /*
+//       * Read variable name and value
+//       */
+//      if(tau)
+//         _replaceInsertTauParameter(values[0], values[1], values[2]);
+//      else
+//         replaceInsertParameter(values[0], values[1]);
+//
+//      pfree(values);
+//      pfree(nulls);
+//
+//   }
+//   /*
+//    * Close table
+//    */
+//   heap_endscan(scan);
+//   heap_close(config_rel, AccessShareLock);
+//}
 
 int BingoPgConfig::_getNumericValue(int c_idx) {
    BufferScanner scanner(_rawConfig.value(c_idx));

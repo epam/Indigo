@@ -1,3 +1,7 @@
+CREATE SCHEMA bingo;
+
+SET search_path = bingo;
+
 CREATE OR REPLACE FUNCTION bingo_build(internal, internal, internal)
 RETURNS internal
 AS 'MODULE_PATHNAME'
@@ -173,7 +177,7 @@ CREATE TYPE bingo_sub AS (query_mol text, query_options text);
 CREATE OR REPLACE FUNCTION bingo_sub_sql(text, bingo_sub)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo_sub_internal($2.query_mol, $1, $2.query_options);
+	RETURN bingo.bingo_sub_internal($2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
@@ -204,7 +208,7 @@ RETURNS boolean AS $$
    END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE OPERATOR @ (
+CREATE OPERATOR public.@ (
         LEFTARG = text,
         RIGHTARG = bingo_sub,
         PROCEDURE = bingo_sub_sql,
@@ -212,7 +216,7 @@ CREATE OPERATOR @ (
         RESTRICT = contsel,
         JOIN = contjoinsel
 );
-CREATE OPERATOR @ (
+CREATE OPERATOR public.@ (
         LEFTARG = text,
         RIGHTARG = bingo_exact,
         PROCEDURE = bingo_exact_sql,
@@ -220,7 +224,7 @@ CREATE OPERATOR @ (
         RESTRICT = contsel,
         JOIN = contjoinsel
 );
-CREATE OPERATOR @ (
+CREATE OPERATOR public.@ (
         LEFTARG = text,
         RIGHTARG = bingo_smarts,
         PROCEDURE = bingo_smarts_sql,
@@ -229,7 +233,7 @@ CREATE OPERATOR @ (
         JOIN = contjoinsel
 );
 
-CREATE OPERATOR @ (
+CREATE OPERATOR public.@ (
         LEFTARG = text,
         RIGHTARG = bingo_gross,
         PROCEDURE = bingo_gross_sql,
@@ -267,7 +271,7 @@ AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
 
-CREATE OPERATOR < (
+CREATE OPERATOR public.< (
         LEFTARG = text,
         RIGHTARG = bingo_mass,
         PROCEDURE = bingo_mass_less_internal,
@@ -276,7 +280,7 @@ CREATE OPERATOR < (
         JOIN = contjoinsel
 );
 
-CREATE OPERATOR > (
+CREATE OPERATOR public.> (
         LEFTARG = text,
         RIGHTARG = bingo_mass,
         PROCEDURE = bingo_mass_great_internal,
@@ -307,7 +311,7 @@ RETURNS boolean AS $$
    END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE OPERATOR @ (
+CREATE OPERATOR public.@ (
         LEFTARG = text,
         RIGHTARG = bingo_sim,
         PROCEDURE = bingo_sim_sql,
@@ -321,13 +325,13 @@ CREATE OPERATOR @ (
 CREATE OPERATOR CLASS bingo_ops
 FOR TYPE text USING bingo_idx
 AS
-        OPERATOR        1       @ (text, bingo_sub),
-        OPERATOR        2       @ (text, bingo_exact),
-        OPERATOR        3       @ (text, bingo_smarts),
-        OPERATOR        4       @ (text, bingo_gross),
-        OPERATOR        5       < (text, bingo_mass),
-        OPERATOR        6       > (text, bingo_mass),
-        OPERATOR        7       @ (text, bingo_sim),
+        OPERATOR        1       public.@ (text, bingo_sub),
+        OPERATOR        2       public.@ (text, bingo_exact),
+        OPERATOR        3       public.@ (text, bingo_smarts),
+        OPERATOR        4       public.@ (text, bingo_gross),
+        OPERATOR        5       public.< (text, bingo_mass),
+        OPERATOR        6       public.> (text, bingo_mass),
+        OPERATOR        7       public.@ (text, bingo_sim),
         FUNCTION	1	bingo_sub_sql(text, bingo_sub),
         FUNCTION	2	bingo_exact_sql(text, bingo_exact),
         FUNCTION	3	bingo_smarts_sql(text, bingo_smarts),
@@ -357,6 +361,7 @@ insert into bingo_config(cname, cvalue) values ('FP_SIM_SIZE', '8');
 insert into bingo_config(cname, cvalue) values ('SUB_SCREENING_MAX_BITS', '8');
 insert into bingo_config(cname, cvalue) values ('SIM_SCREENING_PASS_MARK', '128');
 
+drop table if exists bingo_tau_config;
 create table bingo_tau_config(rule_idx integer, tau_beg text, tau_end text);
 insert into bingo_tau_config(rule_idx, tau_beg, tau_end) values (1, 'N,O,P,S,As,Se,Sb,Te', 'N,O,P,S,As,Se,Sb,Te');
 insert into bingo_tau_config(rule_idx, tau_beg, tau_end) values (2, '0C', 'N,O,P,S');

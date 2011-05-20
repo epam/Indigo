@@ -58,30 +58,7 @@ bool BingoPgCursor::next() {
 }
 
 void BingoPgCursor::getId(int arg_idx, BingoItemData& data) {
-   if(SPI_processed == 0)
-      elog(ERROR, "can not get not processed tuple");
-
-   if(SPI_tuptable == NULL)
-      elog(ERROR, "can not get null tuple");
-   
-   TupleDesc tupdesc = SPI_tuptable->tupdesc;
-
-   /*
-    * Tuple index is always 0
-    */
-   int tuple_idx = 0;
-
-   HeapTuple tuple = SPI_tuptable->vals[tuple_idx];
-   bool isnull;
-   
-   if (arg_idx > tupdesc->natts)
-      elog(ERROR, "can not get tuple was not in query %d > %d", arg_idx, tupdesc->natts);
-
-   Datum record = SPI_getbinval(tuple, tupdesc, arg_idx, &isnull);
-   
-   if (isnull)
-      elog(ERROR, "can not get null tuple");
-
+   Datum record = getDatum(arg_idx);
    ItemPointer tup = (ItemPointer) DatumGetPointer(record);
    
    int block_num = ItemPointerGetBlockNumber(tup);
@@ -91,6 +68,11 @@ void BingoPgCursor::getId(int arg_idx, BingoItemData& data) {
    ItemPointerSetOffsetNumber(&data, off_num);
 }
 void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
+   Datum record = getDatum(arg_idx);
+   data.init(record);
+}
+
+unsigned int BingoPgCursor::getDatum(int arg_idx) {
    if(SPI_processed == 0)
       elog(ERROR, "can not get not processed tuple");
 
@@ -114,10 +96,8 @@ void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
 
    if (isnull)
       elog(ERROR, "can not get null tuple");
-
-   data.init(record);
-
    
+   return record;
 }
 
 void BingoPgCursor::_init(indigo::Array<char>& query_str) {

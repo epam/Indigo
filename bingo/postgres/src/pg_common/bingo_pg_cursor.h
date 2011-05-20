@@ -17,6 +17,7 @@ public:
    
    void getId(int arg_idx, BingoItemData&);
    void getText(int arg_idx, BingoPgText&);
+   unsigned int getDatum(int arg_idx);
 private:
    BingoPgCursor(const BingoPgCursor&); //no implicit copy
 
