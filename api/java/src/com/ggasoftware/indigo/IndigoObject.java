@@ -20,9 +20,9 @@ import java.util.*;
 public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObject>
 {
    public int self;
-   private Indigo dispatcher;
+   protected Indigo dispatcher;
    private Object parent; // should keep the parent so that GC will not remove it
-   private IndigoLib _lib;
+   protected IndigoLib _lib;
 
    public IndigoObject (Indigo dispatcher, int id)
    {
