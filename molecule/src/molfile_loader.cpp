@@ -22,6 +22,7 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/elements.h"
+#include "molecule/smiles_loader.h"
 
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
@@ -1135,6 +1136,47 @@ void MolfileLoader::_readCtab2000 ()
                }
             }
             _scanner.skipLine();
+         }
+         else if (strncmp(chars, "MRV", 3) == 0)
+         {
+            _scanner.readLine(str, false);
+            BufferScanner rest(str);
+
+            try
+            {
+               rest.skip(1);
+               rest.readCharsFix(3, chars);
+               if (strncmp(chars, "SMA", 3) == 0)
+               {
+                  // Marvin's "SMARTS in Molfile" extension
+                  if (_qmol == 0)
+                  {
+                     if (!ignore_noncritical_query_features)
+                        throw Error("SMARTS notation allowed only for query molecules");
+                  }
+                  else
+                  {
+                     rest.skip(1);
+                     int idx = rest.readIntFix(3) - 1;
+                     rest.skip(1);
+
+                     QS_DEF(QueryMolecule, smartsmol);
+                     SmilesLoader loader(rest);
+
+                     smartsmol.clear();
+                     loader.smarts_mode = true;
+                     loader.loadQueryMolecule(smartsmol);
+
+                     if (smartsmol.vertexCount() != 1)
+                        throw Error("expected 1 atom in SMARTS expression, got %d", smartsmol.vertexCount());
+
+                     _qmol->resetAtom(idx, smartsmol.releaseAtom(smartsmol.vertexBegin()));
+                  }
+               }
+            }
+            catch (Scanner::Error &)
+            {
+            }
          }
          else
             _scanner.skipLine();
