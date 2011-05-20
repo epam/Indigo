@@ -17,7 +17,7 @@ RANLIB=ranlib
 CC=gcc
 CCC=g++
 CXX=g++
-FC=
+FC=gfortran
 AS=as
 
 # Macros
@@ -35,12 +35,12 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/src/pg_common/bingo_pg_buffer_cache.o \
 	${OBJECTDIR}/src/pg_am/pg_bingo_import.o \
-	${OBJECTDIR}/_ext/1019403175/mango_gross.o \
 	${OBJECTDIR}/src/pg_common/bingo_pg_ext_bitset.o \
+	${OBJECTDIR}/_ext/1019403175/mango_gross.o \
 	${OBJECTDIR}/_ext/1019403175/ringo_exact.o \
+	${OBJECTDIR}/src/pg_am/pg_bingo_options.o \
 	${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o \
 	${OBJECTDIR}/_ext/1019403175/ringo_context.o \
-	${OBJECTDIR}/src/pg_am/pg_bingo_options.o \
 	${OBJECTDIR}/_ext/1019403175/mango_exact.o \
 	${OBJECTDIR}/src/pg_am/pg_bingo_search.o \
 	${OBJECTDIR}/src/pg_core/bingo_pg_config.o \
@@ -50,9 +50,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/pg_common/bingo_pg_text.o \
 	${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o \
 	${OBJECTDIR}/_ext/393906193/ringo_core_c.o \
-	${OBJECTDIR}/_ext/393906193/mango_core_c.o \
 	${OBJECTDIR}/src/pg_core/bingo_pg_build_engine.o \
 	${OBJECTDIR}/src/pg_am/pg_bingo_match.o \
+	${OBJECTDIR}/_ext/393906193/mango_core_c.o \
 	${OBJECTDIR}/_ext/1019403175/mango_tautomer.o \
 	${OBJECTDIR}/_ext/1019403175/ringo_index.o \
 	${OBJECTDIR}/src/pg_core/bingo_pg_search.o \
@@ -97,21 +97,21 @@ LDLIBSOPTIONS=../../layout/dist/Debug/GNU-Linux-x86/liblayout.a ../../reaction/d
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Release64.mk dist/Release64/GNU-Linux-x86/libpostgres.so
+	"${MAKE}"  -f nbproject/Makefile-Release64.mk bin/bingo_postgres.so
 
-dist/Release64/GNU-Linux-x86/libpostgres.so: ../../layout/dist/Debug/GNU-Linux-x86/liblayout.a
+bin/bingo_postgres.so: ../../layout/dist/Debug/GNU-Linux-x86/liblayout.a
 
-dist/Release64/GNU-Linux-x86/libpostgres.so: ../../reaction/dist/Debug/GNU-Linux-x86/libreaction.a
+bin/bingo_postgres.so: ../../reaction/dist/Debug/GNU-Linux-x86/libreaction.a
 
-dist/Release64/GNU-Linux-x86/libpostgres.so: ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a
+bin/bingo_postgres.so: ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a
 
-dist/Release64/GNU-Linux-x86/libpostgres.so: ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a
+bin/bingo_postgres.so: ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a
 
-dist/Release64/GNU-Linux-x86/libpostgres.so: ../../tinyxml/dist/Debug/GNU-Linux-x86/libtinyxml.a
+bin/bingo_postgres.so: ../../tinyxml/dist/Debug/GNU-Linux-x86/libtinyxml.a
 
-dist/Release64/GNU-Linux-x86/libpostgres.so: ${OBJECTFILES}
-	${MKDIR} -p dist/Release64/GNU-Linux-x86
-	${LINK.cc} -shared -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libpostgres.so -fPIC ${OBJECTFILES} ${LDLIBSOPTIONS} 
+bin/bingo_postgres.so: ${OBJECTFILES}
+	${MKDIR} -p bin
+	${LINK.cc} -shared -o bin/bingo_postgres.so -fPIC ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_buffer_cache.o: src/pg_common/bingo_pg_buffer_cache.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
@@ -123,20 +123,25 @@ ${OBJECTDIR}/src/pg_am/pg_bingo_import.o: src/pg_am/pg_bingo_import.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_import.o src/pg_am/pg_bingo_import.cpp
 
-${OBJECTDIR}/_ext/1019403175/mango_gross.o: ../src/core/mango_gross.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_gross.o ../src/core/mango_gross.cpp
-
 ${OBJECTDIR}/src/pg_common/bingo_pg_ext_bitset.o: src/pg_common/bingo_pg_ext_bitset.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_ext_bitset.o src/pg_common/bingo_pg_ext_bitset.cpp
 
+${OBJECTDIR}/_ext/1019403175/mango_gross.o: ../src/core/mango_gross.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_gross.o ../src/core/mango_gross.cpp
+
 ${OBJECTDIR}/_ext/1019403175/ringo_exact.o: ../src/core/ringo_exact.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_exact.o ../src/core/ringo_exact.cpp
+
+${OBJECTDIR}/src/pg_am/pg_bingo_options.o: src/pg_am/pg_bingo_options.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/pg_am
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_options.o src/pg_am/pg_bingo_options.cpp
 
 ${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o: ../src/core-c/mango_core_c_parallel.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
@@ -147,11 +152,6 @@ ${OBJECTDIR}/_ext/1019403175/ringo_context.o: ../src/core/ringo_context.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_context.o ../src/core/ringo_context.cpp
-
-${OBJECTDIR}/src/pg_am/pg_bingo_options.o: src/pg_am/pg_bingo_options.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/pg_am
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_options.o src/pg_am/pg_bingo_options.cpp
 
 ${OBJECTDIR}/_ext/1019403175/mango_exact.o: ../src/core/mango_exact.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
@@ -198,11 +198,6 @@ ${OBJECTDIR}/_ext/393906193/ringo_core_c.o: ../src/core-c/ringo_core_c.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/ringo_core_c.o ../src/core-c/ringo_core_c.cpp
 
-${OBJECTDIR}/_ext/393906193/mango_core_c.o: ../src/core-c/mango_core_c.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/mango_core_c.o ../src/core-c/mango_core_c.cpp
-
 ${OBJECTDIR}/src/pg_core/bingo_pg_build_engine.o: src/pg_core/bingo_pg_build_engine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
@@ -212,6 +207,11 @@ ${OBJECTDIR}/src/pg_am/pg_bingo_match.o: src/pg_am/pg_bingo_match.cpp
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_match.o src/pg_am/pg_bingo_match.cpp
+
+${OBJECTDIR}/_ext/393906193/mango_core_c.o: ../src/core-c/mango_core_c.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/mango_core_c.o ../src/core-c/mango_core_c.cpp
 
 ${OBJECTDIR}/_ext/1019403175/mango_tautomer.o: ../src/core/mango_tautomer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
@@ -344,7 +344,7 @@ ${OBJECTDIR}/src/pg_am/pg_bingo_update.o: src/pg_am/pg_bingo_update.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/Release64
-	${RM} dist/Release64/GNU-Linux-x86/libpostgres.so
+	${RM} bin/bingo_postgres.so
 
 # Subprojects
 .clean-subprojects:

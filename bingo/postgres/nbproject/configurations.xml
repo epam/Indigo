@@ -134,6 +134,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
+          <output>bin/bingo_postgres.so</output>
           <linkerLibItems>
             <linkerLibProjectItem>
               <makeArtifact PL="../../layout"
@@ -241,6 +242,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
+          <output>bin/bingo_postgres.so</output>
           <linkerLibItems>
             <linkerLibProjectItem>
               <makeArtifact PL="../../layout"
@@ -348,6 +350,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
+          <output>bin/bingo_postgres.so</output>
           <linkerLibItems>
             <linkerLibProjectItem>
               <makeArtifact PL="../../layout"
