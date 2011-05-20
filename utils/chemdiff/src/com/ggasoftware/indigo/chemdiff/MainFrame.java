@@ -66,14 +66,13 @@ public class MainFrame extends javax.swing.JFrame
    @SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
    private void initComponents() {
+      java.awt.GridBagConstraints gridBagConstraints;
 
       tabbed_panel = new javax.swing.JTabbedPane();
       in_tab = new javax.swing.JPanel();
-      action_panel = new javax.swing.JPanel();
-      compare_button = new javax.swing.JButton();
-      inputTables = new javax.swing.JPanel();
       in_table_1 = new com.ggasoftware.indigo.chemdiff.InputTable();
       in_table_2 = new com.ggasoftware.indigo.chemdiff.InputTable();
+      compare_button = new javax.swing.JButton();
       out_tab = new javax.swing.JPanel();
       out_table_common = new com.ggasoftware.indigo.chemdiff.OutputTable();
       out_table1 = new com.ggasoftware.indigo.chemdiff.OutputTable();
@@ -104,67 +103,67 @@ public class MainFrame extends javax.swing.JFrame
 
       in_tab.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
       in_tab.setPreferredSize(new java.awt.Dimension(660, 760));
+      in_tab.setLayout(new java.awt.GridBagLayout());
+
+      in_table_1.setTitle("First file");
+      gridBagConstraints = new java.awt.GridBagConstraints();
+      gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+      gridBagConstraints.weightx = 1.0;
+      gridBagConstraints.weighty = 1.0;
+      in_tab.add(in_table_1, gridBagConstraints);
+
+      in_table_2.setTitle("Second file");
+      gridBagConstraints = new java.awt.GridBagConstraints();
+      gridBagConstraints.gridx = 1;
+      gridBagConstraints.gridy = 0;
+      gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+      gridBagConstraints.weightx = 1.0;
+      gridBagConstraints.weighty = 1.0;
+      in_tab.add(in_table_2, gridBagConstraints);
 
       compare_button.setText("Compare");
+      compare_button.setMargin(new java.awt.Insets(5, 30, 5, 30));
       compare_button.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             compare_buttonActionPerformed(evt);
          }
       });
-
-      javax.swing.GroupLayout action_panelLayout = new javax.swing.GroupLayout(action_panel);
-      action_panel.setLayout(action_panelLayout);
-      action_panelLayout.setHorizontalGroup(
-         action_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, action_panelLayout.createSequentialGroup()
-            .addContainerGap(679, Short.MAX_VALUE)
-            .addComponent(compare_button, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-      );
-      action_panelLayout.setVerticalGroup(
-         action_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(compare_button, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-      );
-
-      inputTables.setLayout(new java.awt.GridLayout(1, 0, 8, 0));
-
-      in_table_1.setTitle("First file");
-      inputTables.add(in_table_1);
-
-      in_table_2.setTitle("Second file");
-      inputTables.add(in_table_2);
-
-      javax.swing.GroupLayout in_tabLayout = new javax.swing.GroupLayout(in_tab);
-      in_tab.setLayout(in_tabLayout);
-      in_tabLayout.setHorizontalGroup(
-         in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(action_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-         .addComponent(inputTables, javax.swing.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE)
-      );
-      in_tabLayout.setVerticalGroup(
-         in_tabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, in_tabLayout.createSequentialGroup()
-            .addComponent(inputTables, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(action_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-      );
+      gridBagConstraints = new java.awt.GridBagConstraints();
+      gridBagConstraints.gridx = 1;
+      gridBagConstraints.gridy = 1;
+      gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+      in_tab.add(compare_button, gridBagConstraints);
 
       tabbed_panel.addTab("input", in_tab);
 
       out_tab.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      out_tab.setLayout(new javax.swing.BoxLayout(out_tab, javax.swing.BoxLayout.LINE_AXIS));
+      out_tab.setLayout(new java.awt.GridBagLayout());
 
+      out_table_common.setMinimumSize(new java.awt.Dimension(175, 179));
       out_table_common.setTitle("Common");
-      out_tab.add(out_table_common);
+      gridBagConstraints = new java.awt.GridBagConstraints();
+      gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+      gridBagConstraints.weightx = 1.0;
+      gridBagConstraints.weighty = 1.0;
+      out_tab.add(out_table_common, gridBagConstraints);
 
       out_table1.setIdColumnCount(1);
-      out_table1.setPreferredSize(new java.awt.Dimension(259, 451));
+      out_table1.setMinimumSize(new java.awt.Dimension(135, 179));
       out_table1.setTitle("Unique in 1st");
-      out_tab.add(out_table1);
+      gridBagConstraints = new java.awt.GridBagConstraints();
+      gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+      gridBagConstraints.weightx = 1.0;
+      gridBagConstraints.weighty = 1.0;
+      out_tab.add(out_table1, gridBagConstraints);
 
       out_table2.setIdColumnCount(1);
-      out_table2.setPreferredSize(new java.awt.Dimension(259, 451));
+      out_table2.setMinimumSize(new java.awt.Dimension(135, 179));
       out_table2.setTitle("Unique in 2nd");
-      out_tab.add(out_table2);
+      gridBagConstraints = new java.awt.GridBagConstraints();
+      gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+      gridBagConstraints.weightx = 1.0;
+      gridBagConstraints.weighty = 1.0;
+      out_tab.add(out_table2, gridBagConstraints);
 
       tabbed_panel.addTab("output", out_tab);
 
@@ -578,7 +577,6 @@ public class MainFrame extends javax.swing.JFrame
    }
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JMenuItem about_mi;
-   private javax.swing.JPanel action_panel;
    private javax.swing.JCheckBoxMenuItem aromatizer_check;
    private javax.swing.JCheckBoxMenuItem cistrans_check;
    private javax.swing.JButton compare_button;
@@ -586,7 +584,6 @@ public class MainFrame extends javax.swing.JFrame
    private javax.swing.JPanel in_tab;
    private com.ggasoftware.indigo.chemdiff.InputTable in_table_1;
    private com.ggasoftware.indigo.chemdiff.InputTable in_table_2;
-   private javax.swing.JPanel inputTables;
    private javax.swing.JMenu jMenu1;
    private javax.swing.JMenuBar main_menu_bar;
    private javax.swing.JMenu menu_file;

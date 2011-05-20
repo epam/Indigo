@@ -4,6 +4,7 @@ import com.ggasoftware.indigo.controls.MessageBox;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 public class Main
 {
@@ -11,6 +12,13 @@ public class Main
    {
       try
       {
+         /*
+          * Enumerate look and feel and set it for testing
+         LookAndFeelInfo[] installedLookAndFeels = UIManager.getInstalledLookAndFeels();
+         for (LookAndFeelInfo info: installedLookAndFeels)
+            System.out.println(info.getClassName());
+          */
+         //UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       }
       catch (Exception e)

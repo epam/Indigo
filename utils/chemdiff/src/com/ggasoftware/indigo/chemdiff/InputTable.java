@@ -160,8 +160,8 @@ public class InputTable extends TitledBorderPanel
    @SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
    private void initComponents() {
+      java.awt.GridBagConstraints gridBagConstraints;
 
-      load_button_panel = new javax.swing.JPanel();
       load_button = new javax.swing.JButton();
       file_name_field = new javax.swing.JTextField();
       molecules_with_id_table = new com.ggasoftware.indigo.chemdiff.MoleculeTableWithIdPanel();
@@ -174,22 +174,6 @@ public class InputTable extends TitledBorderPanel
       });
 
       file_name_field.setEditable(false);
-
-      javax.swing.GroupLayout load_button_panelLayout = new javax.swing.GroupLayout(load_button_panel);
-      load_button_panel.setLayout(load_button_panelLayout);
-      load_button_panelLayout.setHorizontalGroup(
-         load_button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, load_button_panelLayout.createSequentialGroup()
-            .addComponent(file_name_field, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(load_button, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
-      );
-      load_button_panelLayout.setVerticalGroup(
-         load_button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(load_button_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(load_button, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(file_name_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-      );
 
       molecules_with_id_table.setIdColumnCount(1);
       molecules_with_id_table.addTableCellMouseListener(new com.ggasoftware.indigo.controls.TableCellMouseListener() {
@@ -205,17 +189,20 @@ public class InputTable extends TitledBorderPanel
       this.setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 330, Short.MAX_VALUE)
-         .addComponent(load_button_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-         .addComponent(molecules_with_id_table, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addComponent(file_name_field, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(load_button))
+         .addComponent(molecules_with_id_table, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 391, Short.MAX_VALUE)
          .addGroup(layout.createSequentialGroup()
-            .addComponent(load_button_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(molecules_with_id_table, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(file_name_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(load_button))
+            .addGap(9, 9, 9)
+            .addComponent(molecules_with_id_table, javax.swing.GroupLayout.DEFAULT_SIZE, 367, Short.MAX_VALUE))
       );
    }// </editor-fold>//GEN-END:initComponents
 
@@ -267,7 +254,6 @@ public class InputTable extends TitledBorderPanel
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JTextField file_name_field;
    private javax.swing.JButton load_button;
-   private javax.swing.JPanel load_button_panel;
    private com.ggasoftware.indigo.chemdiff.MoleculeTableWithIdPanel molecules_with_id_table;
    // End of variables declaration//GEN-END:variables
 }

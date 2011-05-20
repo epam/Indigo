@@ -20,6 +20,7 @@ public class MoleculeTableWithIdPanel extends JPanel
       initComponents();
       molecule_cell_handler = new TableCellMouseHandler(2);
       table.addMouseListener(molecule_cell_handler);
+      table.setShowGrid(true);
    }
 
    public void setIdColumnCount (int count)

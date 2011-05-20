@@ -66,21 +66,14 @@ public class OutputTable extends TitledBorderPanel
    @SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
    private void initComponents() {
+      java.awt.GridBagConstraints gridBagConstraints;
 
-      save_panel = new javax.swing.JPanel();
-      save_button = new javax.swing.JButton();
       molecules_table = new com.ggasoftware.indigo.chemdiff.MoleculeTableWithIdPanel();
+      save_button = new javax.swing.JButton();
+      filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+      filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
 
-      save_button.setText("Save");
-      save_button.setMaximumSize(new java.awt.Dimension(120, 26));
-      save_button.setMinimumSize(new java.awt.Dimension(120, 26));
-      save_button.setPreferredSize(new java.awt.Dimension(120, 26));
-      save_button.addActionListener(new java.awt.event.ActionListener() {
-         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            save_buttonActionPerformed(evt);
-         }
-      });
-      save_panel.add(save_button);
+      setLayout(new java.awt.GridBagLayout());
 
       molecules_table.addTableCellMouseListener(new com.ggasoftware.indigo.controls.TableCellMouseListener() {
          public void cellMouseDoubleClick(com.ggasoftware.indigo.controls.TableCellMouseEvent evt) {
@@ -90,55 +83,40 @@ public class OutputTable extends TitledBorderPanel
             molecules_tableCellShowPopupMenu(evt);
          }
       });
+      gridBagConstraints = new java.awt.GridBagConstraints();
+      gridBagConstraints.gridx = 0;
+      gridBagConstraints.gridy = 0;
+      gridBagConstraints.gridwidth = 3;
+      gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+      gridBagConstraints.ipadx = 200;
+      gridBagConstraints.ipady = 100;
+      gridBagConstraints.weightx = 1.0;
+      gridBagConstraints.weighty = 1.0;
+      add(molecules_table, gridBagConstraints);
 
-      javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-      this.setLayout(layout);
-      layout.setHorizontalGroup(
-         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addComponent(save_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
-         .addComponent(molecules_table, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
-      );
-      layout.setVerticalGroup(
-         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addComponent(molecules_table, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(save_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-      );
+      save_button.setText("Save");
+      save_button.setMargin(new java.awt.Insets(2, 30, 2, 30));
+      save_button.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            save_buttonActionPerformed(evt);
+         }
+      });
+      gridBagConstraints = new java.awt.GridBagConstraints();
+      gridBagConstraints.gridx = 1;
+      gridBagConstraints.gridy = 1;
+      gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+      add(save_button, gridBagConstraints);
+      gridBagConstraints = new java.awt.GridBagConstraints();
+      gridBagConstraints.gridx = 0;
+      gridBagConstraints.gridy = 1;
+      gridBagConstraints.weightx = 1.0;
+      add(filler1, gridBagConstraints);
+      gridBagConstraints = new java.awt.GridBagConstraints();
+      gridBagConstraints.gridx = 2;
+      gridBagConstraints.gridy = 1;
+      gridBagConstraints.weightx = 1.0;
+      add(filler2, gridBagConstraints);
    }// </editor-fold>//GEN-END:initComponents
-
-    private void save_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_buttonActionPerformed
-       // TODO: save with progress bar!
-       // TODO: if no properties then add ID
-       
-       if (_molecules.isEmpty())
-       {
-          JOptionPane.showMessageDialog(this, "Set is empty");
-          return;
-       }
-       MolSaver saver = new MolSaver(Global.indigo);
-       saver.addExtension("cml");
-       saver.addExtension("smi");
-       saver.addExtension("sdf", "sd");
-       String s = saver.saveMols(_molecules);
-
-       ArrayList<RenderableObject> invalid = saver.getInvalidObjects();
-       if (!invalid.isEmpty())
-       {
-          StringBuilder error_messages = new StringBuilder();
-          for (RenderableObject abstract_obj : invalid)
-          {
-             RenderableObjectWithId obj = (RenderableObjectWithId)abstract_obj;
-             error_messages.append(String.format("%s: %s\n",
-                     obj.getId(0), obj.getErrorMessageToRender()));
-          }
-
-          Frame parent = (Frame)getTopLevelAncestor();
-          String message = String.format("Cannot save the following molecules:\n%s", 
-                  error_messages.toString());
-          MessageBox.show(parent, message, "Some molecules cannot be saved", MessageBox.ICON_WARNING);
-       }
-}//GEN-LAST:event_save_buttonActionPerformed
 
     private void molecules_tableCellMouseDoubleClick (com.ggasoftware.indigo.controls.TableCellMouseEvent evt)//GEN-FIRST:event_molecules_tableCellMouseDoubleClick
     {//GEN-HEADEREND:event_molecules_tableCellMouseDoubleClick
@@ -257,6 +235,39 @@ public class OutputTable extends TitledBorderPanel
       _popup_menu.show((Component)evt.mouse_event.getSource(), evt.mouse_event.getX(), evt.mouse_event.getY());
     }//GEN-LAST:event_molecules_tableCellShowPopupMenu
 
+    private void save_buttonActionPerformed (java.awt.event.ActionEvent evt)//GEN-FIRST:event_save_buttonActionPerformed
+    {//GEN-HEADEREND:event_save_buttonActionPerformed
+       // TODO: save with progress bar!
+       // TODO: if no properties then add ID
+       if (_molecules.isEmpty())
+       {
+          JOptionPane.showMessageDialog(this, "Set is empty");
+          return;
+       }
+       MolSaver saver = new MolSaver(Global.indigo);
+       saver.addExtension("cml");
+       saver.addExtension("smi");
+       saver.addExtension("sdf", "sd");
+       String s = saver.saveMols(_molecules);
+
+       ArrayList<RenderableObject> invalid = saver.getInvalidObjects();
+       if (!invalid.isEmpty())
+       {
+          StringBuilder error_messages = new StringBuilder();
+          for (RenderableObject abstract_obj : invalid)
+          {
+             RenderableObjectWithId obj = (RenderableObjectWithId)abstract_obj;
+             error_messages.append(String.format("%s: %s\n",
+                     obj.getId(0), obj.getErrorMessageToRender()));
+          }
+
+          Frame parent = (Frame)getTopLevelAncestor();
+          String message = String.format("Cannot save the following molecules:\n%s", 
+                  error_messages.toString());
+          MessageBox.show(parent, message, "Some molecules cannot be saved", MessageBox.ICON_WARNING);
+       }
+    }//GEN-LAST:event_save_buttonActionPerformed
+
    public void clear ()
    {
       molecules_table.clear();
@@ -291,8 +302,9 @@ public class OutputTable extends TitledBorderPanel
    }
    
    // Variables declaration - do not modify//GEN-BEGIN:variables
+   private javax.swing.Box.Filler filler1;
+   private javax.swing.Box.Filler filler2;
    private com.ggasoftware.indigo.chemdiff.MoleculeTableWithIdPanel molecules_table;
    private javax.swing.JButton save_button;
-   private javax.swing.JPanel save_panel;
    // End of variables declaration//GEN-END:variables
 }
