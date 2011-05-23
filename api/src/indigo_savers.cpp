@@ -180,7 +180,15 @@ void IndigoSmilesSaver::append (Output &output, IndigoObject &object)
 {
    QS_DEF(Array<char>, tmp_buffer);
    IndigoSmilesSaver::generateSmiles(object, tmp_buffer);
-   output.writeStringCR(tmp_buffer.ptr());
+   output.writeString(tmp_buffer.ptr());
+
+   Indigo &indigo = indigoGetInstance();
+   if (indigo.smiles_saving_write_name)
+   {
+      output.writeString(" ");
+      output.writeString(object.getName());
+   }
+   output.writeCR();
    output.flush();
 }
 

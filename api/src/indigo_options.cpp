@@ -71,6 +71,12 @@ static void indigoSetMolfileSavingSkipDate (int enabled)
    self.molfile_saving_skip_date = (enabled != 0);
 }
 
+static void indigoSetSmilesSavingWriteName (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.smiles_saving_write_name = (enabled != 0);
+}
+
 static void indigoSetFilenameEncoding (const char *encoding)
 {
    Indigo &self = indigoGetInstance();
@@ -152,6 +158,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode);
    mgr.setOptionHandlerBool("molfile-saving-no-chiral", indigoSetMolfileSavingNoChiral);
    mgr.setOptionHandlerBool("molfile-saving-skip-date", indigoSetMolfileSavingSkipDate);
+   mgr.setOptionHandlerBool("smiles-saving-write-name", indigoSetSmilesSavingWriteName);
    mgr.setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding);
    mgr.setOptionHandlerInt("fp-ord-qwords", indigoSetFPOrdQwords);
    mgr.setOptionHandlerInt("fp-sim-qwords", indigoSetFPSimQwords);

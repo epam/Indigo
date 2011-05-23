@@ -454,6 +454,17 @@ void RSmilesLoader::_loadReaction ()
       }
    }
    
+   // Read name
+   Scanner *scanner_for_name;
+   if (vbar)
+      scanner_for_name = &_scanner;
+   else
+      scanner_for_name = &p_scanner;
+
+   scanner_for_name->skipSpace();
+   if (!scanner_for_name->isEOF())
+      scanner_for_name->readLine(_brxn->name, true);
+
    AutoPtr<BaseMolecule> mol;
    QS_DEF(Array<int>, aam);
    QS_DEF(Array<int>, ignorable_aam);

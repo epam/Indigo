@@ -189,6 +189,11 @@ const char * IndigoRdfReaction::getName ()
 
    BufferScanner scanner(_data);
    scanner.readLine(self.tmp_string, true);
+   if (strcmp(self.tmp_string.ptr(), "$RXN") != 0)
+      throw IndigoError("IndigoRdfReaction::getName(): unexpected first line in the files with reactions."
+         "'%s' has been found but '$RXN' has been expected.");
+   // Read next line with the name
+   scanner.readLine(self.tmp_string, true);
    return self.tmp_string.ptr();
 }
 

@@ -55,6 +55,8 @@ Indigo::Indigo ()
    layout_max_iterations = 0;
 
    molfile_saving_skip_date = false;
+
+   smiles_saving_write_name = false;
 }
 
 void Indigo::removeAllObjects ()

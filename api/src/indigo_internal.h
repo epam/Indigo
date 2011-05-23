@@ -233,6 +233,8 @@ public:
    bool molfile_saving_no_chiral;
    bool molfile_saving_skip_date;
 
+   bool smiles_saving_write_name;
+
    Encoding filename_encoding;
 
    bool embedding_edges_uniqueness, find_unique_embeddings;
