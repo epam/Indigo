@@ -82,7 +82,7 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name) {
    /*
     * Define index type
     */
-   if (strcasecmp(func_name, "bingo_sub_sql") == 0) {
+   if (strcasecmp(func_name, "matchsub") == 0) {
       fp_engine.reset(new MangoPgBuildEngine(bingo_config, rel_name));
    } else if (strcasecmp(func_name, "bingo_rsub_sql") == 0) {
       elog(ERROR, "reaction engine is not implemented yet");

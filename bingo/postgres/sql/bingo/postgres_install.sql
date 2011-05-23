@@ -127,107 +127,107 @@ false,
 );
 
 
-CREATE OR REPLACE FUNCTION bingoImportSDF(text, text)
+CREATE OR REPLACE FUNCTION importSDF(text, text)
 RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT VOLATILE;
 
-CREATE OR REPLACE FUNCTION bingoImportRDF(text, text)
+CREATE OR REPLACE FUNCTION importRDF(text, text)
 RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT VOLATILE;
 
-CREATE OR REPLACE FUNCTION bingoGetIndexStructuresCount(oid)
+CREATE OR REPLACE FUNCTION getIndexStructuresCount(oid)
 RETURNS integer
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION bingoMassType(text, text)
+CREATE OR REPLACE FUNCTION getWeight(text, text)
 RETURNS real
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION bingoMass(text)
+CREATE OR REPLACE FUNCTION getMass(text)
 RETURNS real
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION bingo_sub_internal(text, text, text)
+CREATE OR REPLACE FUNCTION _sub_internal(text, text, text)
 RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION bingo_smarts_internal(text, text, text)
+CREATE OR REPLACE FUNCTION _smarts_internal(text, text, text)
 RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION bingo_exact_internal(text, text, text)
+CREATE OR REPLACE FUNCTION _exact_internal(text, text, text)
 RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION bingo_gross_internal(text, text, text)
+CREATE OR REPLACE FUNCTION _gross_internal(text, text, text)
 RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
-CREATE TYPE bingo_sub AS (query_mol text, query_options text);
+CREATE TYPE sub AS (query_mol text, query_options text);
 
-CREATE OR REPLACE FUNCTION bingo_sub_sql(text, bingo_sub)
+CREATE OR REPLACE FUNCTION matchSub(text, sub)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo.bingo_sub_internal($2.query_mol, $1, $2.query_options);
+	RETURN bingo._sub_internal($2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE TYPE bingo_exact AS (query_mol text, query_options text);
+CREATE TYPE exact AS (query_mol text, query_options text);
 
-CREATE OR REPLACE FUNCTION bingo_exact_sql(text, bingo_exact)
+CREATE OR REPLACE FUNCTION matchExact(text, exact)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo.bingo_exact_internal($2.query_mol, $1, $2.query_options);
+	RETURN bingo._exact_internal($2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE TYPE bingo_smarts AS (query_mol text, query_options text);
+CREATE TYPE smarts AS (query_mol text, query_options text);
 
-CREATE OR REPLACE FUNCTION bingo_smarts_sql(text, bingo_smarts)
+CREATE OR REPLACE FUNCTION matchSmarts(text, smarts)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo.bingo_smarts_internal($2.query_mol, $1, $2.query_options);
+	RETURN bingo._smarts_internal($2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE TYPE bingo_gross AS (sign text, query_mol text);
+CREATE TYPE gross AS (sign text, query_mol text);
 
-CREATE OR REPLACE FUNCTION bingo_gross_sql(text, bingo_gross)
+CREATE OR REPLACE FUNCTION matchGross(text, gross)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo.bingo_gross_internal($2.sign, $2.query_mol, $1);
+	RETURN bingo._gross_internal($2.sign, $2.query_mol, $1);
    END;
 $$ LANGUAGE 'plpgsql';
 
 CREATE OPERATOR public.@ (
         LEFTARG = text,
-        RIGHTARG = bingo_sub,
-        PROCEDURE = bingo_sub_sql,
+        RIGHTARG = sub,
+        PROCEDURE = matchSub,
         COMMUTATOR = '@',
         RESTRICT = contsel,
         JOIN = contjoinsel
 );
 CREATE OPERATOR public.@ (
         LEFTARG = text,
-        RIGHTARG = bingo_exact,
-        PROCEDURE = bingo_exact_sql,
+        RIGHTARG = exact,
+        PROCEDURE = matchExact,
         COMMUTATOR = '@',
         RESTRICT = contsel,
         JOIN = contjoinsel
 );
 CREATE OPERATOR public.@ (
         LEFTARG = text,
-        RIGHTARG = bingo_smarts,
-        PROCEDURE = bingo_smarts_sql,
+        RIGHTARG = smarts,
+        PROCEDURE = matchSmarts,
         COMMUTATOR = '@',
         RESTRICT = contsel,
         JOIN = contjoinsel
@@ -235,37 +235,37 @@ CREATE OPERATOR public.@ (
 
 CREATE OPERATOR public.@ (
         LEFTARG = text,
-        RIGHTARG = bingo_gross,
-        PROCEDURE = bingo_gross_sql,
+        RIGHTARG = gross,
+        PROCEDURE = matchGross,
         COMMUTATOR = '@',
         RESTRICT = contsel,
         JOIN = contjoinsel
 );
 --******************* MASS *******************
-CREATE TYPE bingo_mass; 
+CREATE TYPE mass;
 
-CREATE OR REPLACE FUNCTION bingo_mass_in(cstring)
-    RETURNS bingo_mass
+CREATE OR REPLACE FUNCTION _mass_in(cstring)
+    RETURNS mass
     AS 'MODULE_PATHNAME'
     LANGUAGE C IMMUTABLE STRICT;
 
-CREATE OR REPLACE FUNCTION bingo_mass_out(bingo_mass)
+CREATE OR REPLACE FUNCTION _mass_out(mass)
     RETURNS cstring
     AS 'MODULE_PATHNAME'
     LANGUAGE C IMMUTABLE STRICT;
 
-CREATE TYPE bingo_mass (
+CREATE TYPE mass (
    internallength = variable, 
-   input = bingo_mass_in,
-   output = bingo_mass_out
+   input = _mass_in,
+   output = _mass_out
 );
 
-CREATE OR REPLACE FUNCTION bingo_mass_great_internal(text, bingo_mass)
+CREATE OR REPLACE FUNCTION _match_mass_great(text, mass)
 RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION bingo_mass_less_internal(text, bingo_mass)
+CREATE OR REPLACE FUNCTION _match_mass_less(text, mass)
 RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
@@ -273,8 +273,8 @@ LANGUAGE C STRICT IMMUTABLE;
 
 CREATE OPERATOR public.< (
         LEFTARG = text,
-        RIGHTARG = bingo_mass,
-        PROCEDURE = bingo_mass_less_internal,
+        RIGHTARG = mass,
+        PROCEDURE = _match_mass_less,
         COMMUTATOR = '<',
         RESTRICT = contsel,
         JOIN = contjoinsel
@@ -282,8 +282,8 @@ CREATE OPERATOR public.< (
 
 CREATE OPERATOR public.> (
         LEFTARG = text,
-        RIGHTARG = bingo_mass,
-        PROCEDURE = bingo_mass_great_internal,
+        RIGHTARG = mass,
+        PROCEDURE = _match_mass_great,
         COMMUTATOR = '>',
         RESTRICT = contsel,
         JOIN = contjoinsel
@@ -291,30 +291,30 @@ CREATE OPERATOR public.> (
 
 --******************* SIMILARITY *******************
 
-CREATE OR REPLACE FUNCTION bingoSim(text, text, text)
+CREATE OR REPLACE FUNCTION getSimilarity(text, text, text)
 RETURNS real
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
-CREATE TYPE bingo_sim AS (min_bound real, max_bound real, query_mol text, query_options text);
+CREATE TYPE sim AS (min_bound real, max_bound real, query_mol text, query_options text);
 
-CREATE OR REPLACE FUNCTION bingo_sim_internal(real, real, text, text, text)
+CREATE OR REPLACE FUNCTION _sim_internal(real, real, text, text, text)
 RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION bingo_sim_sql(text, bingo_sim)
+CREATE OR REPLACE FUNCTION matchSim(text, sim)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo.bingo_sim_internal($2.min_bound, $2.max_bound, $2.query_mol, $1, $2.query_options);
+	RETURN bingo._sim_internal($2.min_bound, $2.max_bound, $2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
 CREATE OPERATOR public.@ (
         LEFTARG = text,
-        RIGHTARG = bingo_sim,
-        PROCEDURE = bingo_sim_sql,
+        RIGHTARG = sim,
+        PROCEDURE = matchSim,
         COMMUTATOR = '@',
         RESTRICT = contsel,
         JOIN = contjoinsel
@@ -322,33 +322,27 @@ CREATE OPERATOR public.@ (
 
 
 --**************************** BINGO OPERATOR CLASS *********************
-CREATE OPERATOR CLASS bingo_ops
+CREATE OPERATOR CLASS ops
 FOR TYPE text USING bingo_idx
 AS
-        OPERATOR        1       public.@ (text, bingo_sub),
-        OPERATOR        2       public.@ (text, bingo_exact),
-        OPERATOR        3       public.@ (text, bingo_smarts),
-        OPERATOR        4       public.@ (text, bingo_gross),
-        OPERATOR        5       public.< (text, bingo_mass),
-        OPERATOR        6       public.> (text, bingo_mass),
-        OPERATOR        7       public.@ (text, bingo_sim),
-        FUNCTION	1	bingo_sub_sql(text, bingo_sub),
-        FUNCTION	2	bingo_exact_sql(text, bingo_exact),
-        FUNCTION	3	bingo_smarts_sql(text, bingo_smarts),
-        FUNCTION	4	bingo_gross_sql(text, bingo_gross),
-        FUNCTION	5	bingo_mass_less_internal(text, bingo_mass),
-        FUNCTION	6	bingo_mass_great_internal(text, bingo_mass),
-        FUNCTION	7	bingo_sim_sql(text, bingo_sim);
+        OPERATOR        1       public.@ (text, sub),
+        OPERATOR        2       public.@ (text, exact),
+        OPERATOR        3       public.@ (text, smarts),
+        OPERATOR        4       public.@ (text, gross),
+        OPERATOR        5       public.< (text, mass),
+        OPERATOR        6       public.> (text, mass),
+        OPERATOR        7       public.@ (text, sim),
+        FUNCTION	1	matchSub(text, sub),
+        FUNCTION	2	matchExact(text, exact),
+        FUNCTION	3	matchSmarts(text, smarts),
+        FUNCTION	4	matchGross(text, gross),
+        FUNCTION	5	_match_mass_less(text, mass),
+        FUNCTION	6	_match_mass_great(text, mass),
+        FUNCTION	7	matchSim(text, sim);
 
         
 
 
-
---CREATE OPERATOR CLASS bingo_sim_ops
---FOR TYPE text USING bingo_idx
---AS
---        OPERATOR        1       @ (text, text),
---        FUNCTION	1	bingo_sim_op(text, text);
 
 drop table if exists bingo_config;
 create table bingo_config(cname varchar(255), cvalue varchar(255));

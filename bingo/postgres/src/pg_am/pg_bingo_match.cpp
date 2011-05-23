@@ -21,23 +21,23 @@ CEXPORT {
 }
 
 CEXPORT {
-PG_FUNCTION_INFO_V1(bingo_sub_internal);
-Datum bingo_sub_internal(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(_sub_internal);
+Datum _sub_internal(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingo_smarts_internal);
-Datum bingo_smarts_internal(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(_smarts_internal);
+Datum _smarts_internal(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingo_exact_internal);
-Datum bingo_exact_internal(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(_exact_internal);
+Datum _exact_internal(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingosim);
-Datum bingosim(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(getsimilarity);
+Datum getsimilarity(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingo_gross_internal);
-Datum bingo_gross_internal(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(_gross_internal);
+Datum _gross_internal(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingo_sim_internal);
-Datum bingo_sim_internal(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(_sim_internal);
+Datum _sim_internal(PG_FUNCTION_ARGS);
 
 }
 
@@ -113,7 +113,7 @@ private:
 };
 
 
-Datum bingo_sub_internal(PG_FUNCTION_ARGS) {
+Datum _sub_internal(PG_FUNCTION_ARGS) {
    Datum query_datum = PG_GETARG_DATUM(0);
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
@@ -123,7 +123,7 @@ Datum bingo_sub_internal(PG_FUNCTION_ARGS) {
    PG_RETURN_BOOL(bingo_context.matchInternal(query_datum, target_datum, options_datum));
 }
 
-Datum bingo_smarts_internal(PG_FUNCTION_ARGS) {
+Datum _smarts_internal(PG_FUNCTION_ARGS) {
    Datum query_datum = PG_GETARG_DATUM(0);
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
@@ -133,7 +133,7 @@ Datum bingo_smarts_internal(PG_FUNCTION_ARGS) {
    PG_RETURN_BOOL(bingo_context.matchInternal(query_datum, target_datum, options_datum));
 }
 
-Datum bingo_exact_internal(PG_FUNCTION_ARGS) {
+Datum _exact_internal(PG_FUNCTION_ARGS) {
    Datum query_datum = PG_GETARG_DATUM(0);
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
@@ -143,7 +143,7 @@ Datum bingo_exact_internal(PG_FUNCTION_ARGS) {
    PG_RETURN_BOOL(bingo_context.matchInternal(query_datum, target_datum, options_datum));
 }
 
-Datum bingosim(PG_FUNCTION_ARGS) {
+Datum getsimilarity(PG_FUNCTION_ARGS) {
    Datum query_datum = PG_GETARG_DATUM(0);
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
@@ -160,7 +160,7 @@ Datum bingosim(PG_FUNCTION_ARGS) {
    PG_RETURN_FLOAT4(res);
 }
 
-Datum bingo_gross_internal(PG_FUNCTION_ARGS) {
+Datum _gross_internal(PG_FUNCTION_ARGS) {
    Datum query_sign = PG_GETARG_DATUM(0);
    Datum query_datum = PG_GETARG_DATUM(1);
    Datum target_datum = PG_GETARG_DATUM(2);
@@ -179,7 +179,7 @@ Datum bingo_gross_internal(PG_FUNCTION_ARGS) {
    PG_RETURN_BOOL(bingo_context.matchInternal(query_text.getDatum(), target_datum, 0));
 }
 
-Datum bingo_sim_internal(PG_FUNCTION_ARGS){
+Datum _sim_internal(PG_FUNCTION_ARGS){
    float min_bound = PG_GETARG_FLOAT4(0);
    float max_bound = PG_GETARG_FLOAT4(1);
    Datum query_datum = PG_GETARG_DATUM(2);

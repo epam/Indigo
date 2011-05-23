@@ -38,26 +38,26 @@ Datum bingo_markpos(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(bingo_restrpos);
 Datum bingo_restrpos(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingogetindexstructurescount);
-Datum bingogetindexstructurescount(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(getindexstructurescount);
+Datum getindexstructurescount(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingomasstype);
-Datum bingomasstype(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(getweight);
+Datum getweight(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingomass);
-Datum bingomass(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(getmass);
+Datum getmass(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingo_mass_less_internal);
-Datum bingo_mass_less_internal(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(_match_mass_less);
+Datum _match_mass_less(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingo_mass_great_internal);
-Datum bingo_mass_great_internal(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(_match_mass_great);
+Datum _match_mass_great(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingo_mass_in);
-Datum bingo_mass_in(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(_mass_in);
+Datum _mass_in(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingo_mass_out);
-Datum bingo_mass_out(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(_mass_out);
+Datum _mass_out(PG_FUNCTION_ARGS);
 
 }
 
@@ -74,7 +74,7 @@ static void bingoPgMassErrorHandler(const char *message, void *context) {
    elog(ERROR, "error while bingo calculating mass: %s", message);
 }
 
-Datum bingogetindexstructurescount(PG_FUNCTION_ARGS){
+Datum getindexstructurescount(PG_FUNCTION_ARGS){
    Oid relOid = PG_GETARG_OID(0);
 
    int result = 0;
@@ -96,7 +96,7 @@ Datum bingogetindexstructurescount(PG_FUNCTION_ARGS){
    PG_RETURN_INT32(result);
 }
 
-Datum bingomasstype(PG_FUNCTION_ARGS){
+Datum getweight(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
    Datum options_datum = PG_GETARG_DATUM(1);
 
@@ -125,7 +125,7 @@ Datum bingomasstype(PG_FUNCTION_ARGS){
 
    PG_RETURN_FLOAT4(result);
 }
-Datum bingomass(PG_FUNCTION_ARGS){
+Datum getmass(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
 
    BingoPgText mol_text(mol_datum);
@@ -152,7 +152,7 @@ Datum bingomass(PG_FUNCTION_ARGS){
 
    PG_RETURN_FLOAT4(result);
 }
-Datum bingo_mass_less_internal(PG_FUNCTION_ARGS){
+Datum _match_mass_less(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
    char* mass_datum = PG_GETARG_CSTRING(1);
 
@@ -185,7 +185,7 @@ Datum bingo_mass_less_internal(PG_FUNCTION_ARGS){
 
    PG_RETURN_BOOL(result);
 }
-Datum bingo_mass_great_internal(PG_FUNCTION_ARGS){
+Datum _match_mass_great(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
    char* mass_datum = PG_GETARG_CSTRING(1);
 
@@ -219,7 +219,7 @@ Datum bingo_mass_great_internal(PG_FUNCTION_ARGS){
    PG_RETURN_BOOL(result);
 }
 
-Datum bingo_mass_in(PG_FUNCTION_ARGS) {
+Datum _mass_in(PG_FUNCTION_ARGS) {
    char *str = PG_GETARG_CSTRING(0);
    int size = strlen(str) + 1;
    char* result = (char*)palloc(size);
@@ -227,7 +227,7 @@ Datum bingo_mass_in(PG_FUNCTION_ARGS) {
    PG_RETURN_POINTER(result);
 }
 
-Datum bingo_mass_out(PG_FUNCTION_ARGS) {
+Datum _mass_out(PG_FUNCTION_ARGS) {
    char *str = PG_GETARG_CSTRING(0);
    int size = strlen(str) + 1;
    char* result = (char*)palloc(size);

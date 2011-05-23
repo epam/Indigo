@@ -29,11 +29,11 @@ CEXPORT {
 //PG_FUNCTION_INFO_V1(bingoimportsdf_end);
 //Datum bingoimportsdf_end(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingoimportsdf);
-Datum bingoimportsdf(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(importsdf);
+Datum importsdf(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(bingoimportrdf);
-Datum bingoimportrdf(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(importrdf);
+Datum importrdf(PG_FUNCTION_ARGS);
 
 }
 
@@ -111,7 +111,7 @@ using namespace indigo;
 //   PG_RETURN_VOID();
 //}
 //
-//Datum bingoimportsdf(PG_FUNCTION_ARGS) {
+//Datum importsdf(PG_FUNCTION_ARGS) {
 //   Oid relOid = PG_GETARG_OID(0);
 //   Datum column_datum = PG_GETARG_DATUM(1);
 //   Datum file_datum = PG_GETARG_DATUM(2);
@@ -158,7 +158,7 @@ using namespace indigo;
 //   PG_RETURN_VOID();
 //}
 
-Datum bingoimportsdf(PG_FUNCTION_ARGS) {
+Datum importsdf(PG_FUNCTION_ARGS) {
    Datum table_datum = PG_GETARG_DATUM(0);
    Datum file_name_datum = PG_GETARG_DATUM(1);
 
@@ -207,7 +207,7 @@ Datum bingoimportsdf(PG_FUNCTION_ARGS) {
 
    PG_RETURN_BOOL(true);
 }
-Datum bingoimportrdf(PG_FUNCTION_ARGS) {
+Datum importrdf(PG_FUNCTION_ARGS) {
    Datum table_datum = PG_GETARG_DATUM(0);
    Datum file_name_datum = PG_GETARG_DATUM(1);
 
