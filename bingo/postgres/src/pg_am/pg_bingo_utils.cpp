@@ -18,7 +18,8 @@ CEXPORT {
 #include "storage/bufmgr.h"
 #include "catalog/pg_type.h"
 #include "parser/parse_func.h"
-//#include "funcapi.h"
+#include "catalog/namespace.h"
+#include "utils/lsyscache.h"
 }
 
 CEXPORT {
@@ -108,8 +109,11 @@ Datum bingomasstype(PG_FUNCTION_ARGS){
    bingoSetSessionID(session_id);
    bingoSetContext(0);
    bingoSetErrorHandler(bingoPgMassErrorHandler, 0);
+
+   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
+   
    BingoPgConfig bingo_config;
-   bingo_config.readDefaultConfig();
+   bingo_config.readDefaultConfig(schema_name);
    bingo_config.setUpBingoConfiguration();
 
    int buf_len;
@@ -133,8 +137,10 @@ Datum bingomass(PG_FUNCTION_ARGS){
    bingoSetContext(0);
    bingoSetErrorHandler(bingoPgMassErrorHandler, 0);
 
+   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
+   
    BingoPgConfig bingo_config;
-   bingo_config.readDefaultConfig();
+   bingo_config.readDefaultConfig(schema_name);
    bingo_config.setUpBingoConfiguration();
 
    int buf_len;
@@ -162,8 +168,10 @@ Datum bingo_mass_less_internal(PG_FUNCTION_ARGS){
    bingoSetContext(0);
    bingoSetErrorHandler(bingoPgMassErrorHandler, 0);
 
+   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
+
    BingoPgConfig bingo_config;
-   bingo_config.readDefaultConfig();
+   bingo_config.readDefaultConfig(schema_name);
    bingo_config.setUpBingoConfiguration();
 
    int buf_len;
@@ -193,8 +201,10 @@ Datum bingo_mass_great_internal(PG_FUNCTION_ARGS){
    bingoSetContext(0);
    bingoSetErrorHandler(bingoPgMassErrorHandler, 0);
 
+   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
+
    BingoPgConfig bingo_config;
-   bingo_config.readDefaultConfig();
+   bingo_config.readDefaultConfig(schema_name);
    bingo_config.setUpBingoConfiguration();
 
    int buf_len;

@@ -21,7 +21,7 @@ CEXPORT {
 }
 
 
-BingoPgBuild::BingoPgBuild(PG_OBJECT index_ptr, bool new_index):
+BingoPgBuild::BingoPgBuild(PG_OBJECT index_ptr, const char* schema_name, bool new_index):
 _index(index_ptr),
 _bufferIndex(index_ptr),
 _buildingState(new_index) {
@@ -30,7 +30,7 @@ _buildingState(new_index) {
     */
    if (_buildingState) {
       _bufferIndex.setStrategy(BingoPgIndex::BUILDING_STRATEGY);
-      _prepareBuilding();
+      _prepareBuilding(schema_name);
    } else {
       _bufferIndex.setStrategy(BingoPgIndex::UPDATING_STRATEGY);
       _prepareUpdating();
@@ -56,7 +56,7 @@ BingoPgBuild::~BingoPgBuild() {
  * Inserts a new structure into the index
  * Returns true if insertion was successfull
  */
-void BingoPgBuild::_prepareBuilding() {
+void BingoPgBuild::_prepareBuilding(const char* schema_name) {
    Relation index = (Relation) _index;
    char* rel_name = get_rel_name(index->rd_id);
    char* func_name = get_func_name(*index->rd_support);
@@ -72,7 +72,7 @@ void BingoPgBuild::_prepareBuilding() {
    /*
     * Set up configuration from postgres table
     */
-   bingo_config.readDefaultConfig();
+   bingo_config.readDefaultConfig(schema_name);
    /*
     * Update configuration from pg_class.reloptions
     */

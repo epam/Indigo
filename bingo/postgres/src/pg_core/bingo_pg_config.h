@@ -15,7 +15,7 @@ public:
    BingoPgConfig(){}
    ~BingoPgConfig(){}
 
-   void readDefaultConfig();
+   void readDefaultConfig(const char* schema_name);
    void updateByIndexConfig(PG_OBJECT index);
    void replaceInsertParameter(unsigned int name_datum, unsigned int value_datum);
    void setUpBingoConfiguration();

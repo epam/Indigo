@@ -186,7 +186,7 @@ CREATE TYPE bingo_exact AS (query_mol text, query_options text);
 CREATE OR REPLACE FUNCTION bingo_exact_sql(text, bingo_exact)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo_exact_internal($2.query_mol, $1, $2.query_options);
+	RETURN bingo.bingo_exact_internal($2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
@@ -195,7 +195,7 @@ CREATE TYPE bingo_smarts AS (query_mol text, query_options text);
 CREATE OR REPLACE FUNCTION bingo_smarts_sql(text, bingo_smarts)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo_smarts_internal($2.query_mol, $1, $2.query_options);
+	RETURN bingo.bingo_smarts_internal($2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
@@ -204,7 +204,7 @@ CREATE TYPE bingo_gross AS (sign text, query_mol text);
 CREATE OR REPLACE FUNCTION bingo_gross_sql(text, bingo_gross)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo_gross_internal($2.sign, $2.query_mol, $1);
+	RETURN bingo.bingo_gross_internal($2.sign, $2.query_mol, $1);
    END;
 $$ LANGUAGE 'plpgsql';
 
@@ -307,7 +307,7 @@ LANGUAGE C STRICT IMMUTABLE;
 CREATE OR REPLACE FUNCTION bingo_sim_sql(text, bingo_sim)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo_sim_internal($2.min_bound, $2.max_bound, $2.query_mol, $1, $2.query_options);
+	RETURN bingo.bingo_sim_internal($2.min_bound, $2.max_bound, $2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 

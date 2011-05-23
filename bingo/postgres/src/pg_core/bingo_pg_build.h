@@ -21,7 +21,7 @@ class BingoPgConfig;
  */
 class BingoPgBuild {
 public:
-   BingoPgBuild(PG_OBJECT index, bool new_index);
+   BingoPgBuild(PG_OBJECT index, const char* schema_name, bool new_index);
    ~BingoPgBuild();
 
    /*
@@ -37,7 +37,7 @@ private:
 
    static void _errorHandler(const char* message, void* context);
 
-   void _prepareBuilding();
+   void _prepareBuilding(const char* schema_name);
    void _prepareUpdating();
 
    /*

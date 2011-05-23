@@ -1,6 +1,8 @@
 
 #include "bingo_postgres.h"
 #include "bingo_pg_common.h"
+
+
 #include "pg_bingo_context.h"
 #include "bingo_core_c.h"
 #include "bingo_pg_config.h"
@@ -14,6 +16,8 @@ CEXPORT {
 #include "storage/lock.h"
 #include "access/heapam.h"
 #include "storage/bufmgr.h"
+#include "catalog/namespace.h"
+#include "utils/lsyscache.h"
 }
 
 CEXPORT {
@@ -44,7 +48,7 @@ using namespace indigo;
  */
 class _MangoContextHandler {
 public:
-   _MangoContextHandler(int type) :_type(type) {
+   _MangoContextHandler(int type, unsigned int func_oid) :_type(type) {
       _bingoSession = bingoAllocateSessionID();
       bingoSetSessionID(_bingoSession);
       bingoSetContext(0);
@@ -53,8 +57,10 @@ public:
 
       bingoSetErrorHandler(bingoErrorHandler, _typeStr.ptr());
 
+      const char* schema_name = get_namespace_name(get_func_namespace(func_oid));
+
       BingoPgConfig bingo_config;
-      bingo_config.readDefaultConfig();
+      bingo_config.readDefaultConfig(schema_name);
       bingo_config.setUpBingoConfiguration();
       bingoTautomerRulesReady(0,0,0);
    }
@@ -112,7 +118,7 @@ Datum bingo_sub_internal(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
 
-   _MangoContextHandler bingo_context(BingoPgCommon::MOL_SUB);
+   _MangoContextHandler bingo_context(BingoPgCommon::MOL_SUB, fcinfo->flinfo->fn_oid);
 
    PG_RETURN_BOOL(bingo_context.matchInternal(query_datum, target_datum, options_datum));
 }
@@ -122,7 +128,7 @@ Datum bingo_smarts_internal(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
 
-   _MangoContextHandler bingo_context(BingoPgCommon::MOL_SMARTS);
+   _MangoContextHandler bingo_context(BingoPgCommon::MOL_SMARTS, fcinfo->flinfo->fn_oid);
 
    PG_RETURN_BOOL(bingo_context.matchInternal(query_datum, target_datum, options_datum));
 }
@@ -132,7 +138,7 @@ Datum bingo_exact_internal(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
 
-   _MangoContextHandler bingo_context(BingoPgCommon::MOL_EXACT);
+   _MangoContextHandler bingo_context(BingoPgCommon::MOL_EXACT, fcinfo->flinfo->fn_oid);
 
    PG_RETURN_BOOL(bingo_context.matchInternal(query_datum, target_datum, options_datum));
 }
@@ -142,7 +148,7 @@ Datum bingosim(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
 
-   _MangoContextHandler bingo_context(BingoPgCommon::MOL_SIM);
+   _MangoContextHandler bingo_context(BingoPgCommon::MOL_SIM, fcinfo->flinfo->fn_oid);
 
    float res;
 
@@ -168,7 +174,7 @@ Datum bingo_gross_internal(PG_FUNCTION_ARGS) {
 
    query_text.initFromArray(bingo_query);
    
-   _MangoContextHandler bingo_context(BingoPgCommon::MOL_GROSS);
+   _MangoContextHandler bingo_context(BingoPgCommon::MOL_GROSS, fcinfo->flinfo->fn_oid);
 
    PG_RETURN_BOOL(bingo_context.matchInternal(query_text.getDatum(), target_datum, 0));
 }
@@ -179,8 +185,7 @@ Datum bingo_sim_internal(PG_FUNCTION_ARGS){
    Datum query_datum = PG_GETARG_DATUM(2);
    Datum target_datum = PG_GETARG_DATUM(3);
    Datum options_datum = PG_GETARG_DATUM(4);
-
-   _MangoContextHandler bingo_context(BingoPgCommon::MOL_SIM);
+   _MangoContextHandler bingo_context(BingoPgCommon::MOL_SIM, fcinfo->flinfo->fn_oid);
 
    float mol_sim;
 

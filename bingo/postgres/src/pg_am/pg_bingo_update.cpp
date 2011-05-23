@@ -48,7 +48,7 @@ bingo_insert(PG_FUNCTION_ARGS) {
    if(isnull)
       PG_RETURN_BOOL(false);
 
-   BingoPgBuild build_engine(index, false);
+   BingoPgBuild build_engine(index, 0, false);
 
    /*
     * Molecule structure is a text

@@ -22,14 +22,14 @@ CEXPORT {
 
 using namespace indigo;
 
-void BingoPgConfig::readDefaultConfig() {
+void BingoPgConfig::readDefaultConfig(const char* schema_name) {
    _rawConfig.clear();
    _tauParameters.clear();
    /*
     * Seek for default config table
     */
    {
-      BingoPgCursor config_table("SELECT cname, cvalue FROM bingo.bingo_config");
+      BingoPgCursor config_table("SELECT cname, cvalue FROM %s.bingo_config", schema_name);
       while (config_table.next()) {
          Datum name_datum = config_table.getDatum(1);
          Datum value_datum = config_table.getDatum(2);
@@ -37,7 +37,7 @@ void BingoPgConfig::readDefaultConfig() {
       }
    }
    {
-      BingoPgCursor config_table("SELECT rule_idx, tau_beg, tau_end FROM bingo.bingo_tau_config");
+      BingoPgCursor config_table("SELECT rule_idx, tau_beg, tau_end FROM %s.bingo_tau_config", schema_name);
       while (config_table.next()) {
          Datum rule_datum = config_table.getDatum(1);
          Datum beg_datum = config_table.getDatum(2);

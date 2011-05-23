@@ -13,6 +13,8 @@ CEXPORT {
 #include "nodes/execnodes.h"
 #include "storage/bufmgr.h"
 #include "catalog/index.h"
+#include "catalog/namespace.h"
+#include "utils/lsyscache.h"
 }
 
 
@@ -60,7 +62,9 @@ bingo_build(PG_FUNCTION_ARGS) {
     * Initialize the bingo index metadata page and initial blocks
     */
 
-   BingoPgBuild build_engine(index, true);
+   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
+   
+   BingoPgBuild build_engine(index, schema_name, true);
    
    /* 
     * Do the heap scan
