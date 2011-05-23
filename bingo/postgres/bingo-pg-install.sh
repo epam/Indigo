@@ -85,6 +85,7 @@ fi
 #echo spool off\; >>bingo/bingo_lib.sql 
 
 sed 's,BINGO_SCHEMANAME,'$schema_name',g' <sql/bingo/bingo_schema.sql.in >bingo_install.sql
+sed 's,BINGO_SCHEMANAME,'$schema_name',g' <sql/bingo/bingo_uninstall.quick.sql.in >bingo_uninstall.sql
 sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/bingo_am.sql.in >>bingo_install.sql
 sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/mango_pg.sql.in >>bingo_install.sql
 sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/bingo_config.sql.in >>bingo_install.sql

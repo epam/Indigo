@@ -48,7 +48,7 @@ CREATE TYPE sub AS (query_mol text, query_options text);
 CREATE OR REPLACE FUNCTION matchSub(text, sub)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo._sub_internal($2.query_mol, $1, $2.query_options);
+	RETURN BINGO_SCHEMANAME._sub_internal($2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
@@ -57,7 +57,7 @@ CREATE TYPE exact AS (query_mol text, query_options text);
 CREATE OR REPLACE FUNCTION matchExact(text, exact)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo._exact_internal($2.query_mol, $1, $2.query_options);
+	RETURN BINGO_SCHEMANAME._exact_internal($2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
@@ -66,7 +66,7 @@ CREATE TYPE smarts AS (query_mol text, query_options text);
 CREATE OR REPLACE FUNCTION matchSmarts(text, smarts)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo._smarts_internal($2.query_mol, $1, $2.query_options);
+	RETURN BINGO_SCHEMANAME._smarts_internal($2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
@@ -75,7 +75,7 @@ CREATE TYPE gross AS (sign text, query_mol text);
 CREATE OR REPLACE FUNCTION matchGross(text, gross)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo._gross_internal($2.sign, $2.query_mol, $1);
+	RETURN BINGO_SCHEMANAME._gross_internal($2.sign, $2.query_mol, $1);
    END;
 $$ LANGUAGE 'plpgsql';
 
@@ -178,7 +178,7 @@ LANGUAGE C STRICT IMMUTABLE;
 CREATE OR REPLACE FUNCTION matchSim(text, sim)
 RETURNS boolean AS $$
    BEGIN
-	RETURN bingo._sim_internal($2.min_bound, $2.max_bound, $2.query_mol, $1, $2.query_options);
+	RETURN BINGO_SCHEMANAME._sim_internal($2.min_bound, $2.max_bound, $2.query_mol, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
