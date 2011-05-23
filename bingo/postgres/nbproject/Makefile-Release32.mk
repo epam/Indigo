@@ -93,21 +93,21 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../../layout/dist/Debug/GNU-Linux-x86/liblayout.a ../../reaction/dist/Debug/GNU-Linux-x86/libreaction.a ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a ../../tinyxml/dist/Debug/GNU-Linux-x86/libtinyxml.a -lz -lpthread
+LDLIBSOPTIONS=../../layout/dist/Release32/GNU-Linux-x86/liblayout.a ../../reaction/dist/Release32/GNU-Linux-x86/libreaction.a ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a ../../tinyxml/dist/Release32/GNU-Linux-x86/libtinyxml.a -lz -lpthread
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-Release32.mk bin/bingo_postgres.so
 
-bin/bingo_postgres.so: ../../layout/dist/Debug/GNU-Linux-x86/liblayout.a
+bin/bingo_postgres.so: ../../layout/dist/Release32/GNU-Linux-x86/liblayout.a
 
-bin/bingo_postgres.so: ../../reaction/dist/Debug/GNU-Linux-x86/libreaction.a
+bin/bingo_postgres.so: ../../reaction/dist/Release32/GNU-Linux-x86/libreaction.a
 
-bin/bingo_postgres.so: ../../molecule/dist/Debug/GNU-Linux-x86/libmolecule.a
+bin/bingo_postgres.so: ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a
 
-bin/bingo_postgres.so: ../../graph/dist/Debug/GNU-Linux-x86/libgraph.a
+bin/bingo_postgres.so: ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a
 
-bin/bingo_postgres.so: ../../tinyxml/dist/Debug/GNU-Linux-x86/libtinyxml.a
+bin/bingo_postgres.so: ../../tinyxml/dist/Release32/GNU-Linux-x86/libtinyxml.a
 
 bin/bingo_postgres.so: ${OBJECTFILES}
 	${MKDIR} -p bin
@@ -335,11 +335,11 @@ ${OBJECTDIR}/src/pg_am/pg_bingo_update.o: src/pg_am/pg_bingo_update.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../../layout && ${MAKE}  -f Makefile CONF=Debug
-	cd ../../reaction && ${MAKE}  -f Makefile CONF=Debug
-	cd ../../molecule && ${MAKE}  -f Makefile CONF=Debug
-	cd ../../graph && ${MAKE}  -f Makefile CONF=Debug
-	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Debug
+	cd ../../layout && ${MAKE}  -f Makefile CONF=Release32
+	cd ../../reaction && ${MAKE}  -f Makefile CONF=Release32
+	cd ../../molecule && ${MAKE}  -f Makefile CONF=Release32
+	cd ../../graph && ${MAKE}  -f Makefile CONF=Release32
+	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Release32
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -348,11 +348,11 @@ ${OBJECTDIR}/src/pg_am/pg_bingo_update.o: src/pg_am/pg_bingo_update.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../../layout && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../../reaction && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../../molecule && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../../graph && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Debug clean
+	cd ../../layout && ${MAKE}  -f Makefile CONF=Release32 clean
+	cd ../../reaction && ${MAKE}  -f Makefile CONF=Release32 clean
+	cd ../../molecule && ${MAKE}  -f Makefile CONF=Release32 clean
+	cd ../../graph && ${MAKE}  -f Makefile CONF=Release32 clean
+	cd ../../tinyxml && ${MAKE}  -f Makefile CONF=Release32 clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl
