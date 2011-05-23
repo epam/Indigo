@@ -1,48 +1,3 @@
-CREATE OR REPLACE FUNCTION importSDF(text, text)
-RETURNS boolean
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT VOLATILE;
-
-CREATE OR REPLACE FUNCTION importRDF(text, text)
-RETURNS boolean
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT VOLATILE;
-
-CREATE OR REPLACE FUNCTION getIndexStructuresCount(oid)
-RETURNS integer
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
-
-CREATE OR REPLACE FUNCTION getWeight(text, text)
-RETURNS real
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
-
-CREATE OR REPLACE FUNCTION getMass(text)
-RETURNS real
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
-
-CREATE OR REPLACE FUNCTION _sub_internal(text, text, text)
-RETURNS boolean
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
-
-CREATE OR REPLACE FUNCTION _smarts_internal(text, text, text)
-RETURNS boolean
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
-
-CREATE OR REPLACE FUNCTION _exact_internal(text, text, text)
-RETURNS boolean
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
-
-CREATE OR REPLACE FUNCTION _gross_internal(text, text, text)
-RETURNS boolean
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
-
 CREATE TYPE sub AS (query_mol text, query_options text);
 
 CREATE OR REPLACE FUNCTION matchSub(text, sub)
@@ -113,34 +68,6 @@ CREATE OPERATOR public.@ (
         JOIN = contjoinsel
 );
 --******************* MASS *******************
-CREATE TYPE mass;
-
-CREATE OR REPLACE FUNCTION _mass_in(cstring)
-    RETURNS mass
-    AS 'BINGO_PATHNAME'
-    LANGUAGE C IMMUTABLE STRICT;
-
-CREATE OR REPLACE FUNCTION _mass_out(mass)
-    RETURNS cstring
-    AS 'BINGO_PATHNAME'
-    LANGUAGE C IMMUTABLE STRICT;
-
-CREATE TYPE mass (
-   internallength = variable, 
-   input = _mass_in,
-   output = _mass_out
-);
-
-CREATE OR REPLACE FUNCTION _match_mass_great(text, mass)
-RETURNS boolean
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
-
-CREATE OR REPLACE FUNCTION _match_mass_less(text, mass)
-RETURNS boolean
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
-
 
 CREATE OPERATOR public.< (
         LEFTARG = text,
@@ -162,17 +89,7 @@ CREATE OPERATOR public.> (
 
 --******************* SIMILARITY *******************
 
-CREATE OR REPLACE FUNCTION getSimilarity(text, text, text)
-RETURNS real
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
 
-CREATE TYPE sim AS (min_bound real, max_bound real, query_mol text, query_options text);
-
-CREATE OR REPLACE FUNCTION _sim_internal(real, real, text, text, text)
-RETURNS boolean
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
 
 
 CREATE OR REPLACE FUNCTION matchSim(text, sim)
