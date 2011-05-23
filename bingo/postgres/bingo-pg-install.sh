@@ -11,13 +11,9 @@
 # This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 # WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-libdir=$POSTGRES_HOME/lib
-dbaname="postgres"
-dbapass=
-instance=
-bingoname="bingo"
-bingopass="bingo"
-y=
+libdir=$PWD/bin
+schema_name="bingo"
+libext=".so"
 
 usage ()
 {
@@ -26,25 +22,13 @@ echo 'Parameters:'
 echo '  -?, -help'
 echo '    Print this help message'
 echo '  -libdir path'
-echo '    Target directory to install libbingo'$libext' (defaut $POSTGRES_HOME/lib).'
+echo '    Target directory to install bingo_postgres'$libext' (defaut {CURRENT_DIR}/bin/).'
 echo '    If the directory does not exist, it will be created.'
-echo '  -dbaname name'
-echo '    Database administrator login (default "system").'
-echo '  -dbapass password'
-echo '    Database administrator password (no default).'
-echo '    If the password is not specified, you will have to enter it later.'
-echo '  -instance instance'
-echo '    Database instance (default instance by default).'
-echo '    You can specify full address like "server:5432/instance" as well.'
-echo '  -bingoname name'
-echo '    Name of cartridge pseudo-user (default "bingo").'
-echo '  -bingopass password'
-echo '    Password of the pseudo-user (default "bingo").'
-echo '  -y'
-echo '    Do not ask for confirmation.'
+echo '  -schema name'
+echo '    Postgres schema name (default "bingo").'
 }
 
-libext=".so"
+
 #if [ -f "../bin/libbingo.dylib" ]; then
 #  libext=".dylib"
 #fi
@@ -59,28 +43,9 @@ while [ "$#" != 0 ]; do
         shift
         libdir=$1
         ;;
-	   -dbaname)
+	   -schema)
         shift
-        dbaname=$1
-        ;;
-     -dbapass)
-        shift
-        dbapass=$1
-        ;;
-     -instance)
-        shift
-        instance=$1
-        ;;
-     -bingoname)
-        shift
-        bingoname=$1
-        ;;
-     -bingopass)
-        shift
-        bingopass=$1
-        ;;
-     -y)
-        y=1
+        schema_name=$1
         ;;
      *)
         echo "Unknown parameter: $1";
@@ -91,17 +56,7 @@ while [ "$#" != 0 ]; do
 done
 
 echo "Target directory  : $libdir";
-echo "DBA name          : $dbaname";
-if [ ! "$dbapass" = "" ]; then
-  echo "DBA password      : $dbapass";
-fi
-if [ ! "$instance" = "" ]; then
-  echo "PostgreSQL instance   : $instance";
-else
-  echo "PostgreSQL instance   : <default>";
-fi
-echo "Bingo name        : $bingoname";
-echo "Bingo password    : $bingopass";
+echo "DBA schema name   : $schema_name";
 
 if [ "$y" != "1" ]; then
   echo "Proceed (y/N)?"
@@ -113,13 +68,11 @@ if [ "$y" != "1" ]; then
   fi
 fi
 
-if [ ! "$instance" = "" ]; then
-  instance=@$instance
+if [ "$libdir" != "$PWD/bin" ]; then
+  mkdir -p $libdir
+  cp bin/bingo_postgres$libext $libdir
 fi
 
-mkdir -p $libdir
-
-cp ../bin/bingo_postgres$libext $libdir
 if [ $? != 0 ]; then
   echo 'Cannot copy bingo_postgres'$libext' to '$libdir
   exit
@@ -131,9 +84,12 @@ fi
 #echo / >>bingo/bingo_lib.sql 
 #echo spool off\; >>bingo/bingo_lib.sql 
 
-sed 's,MODULE_PATHNAME,'$libdir'/bingo_postgres,g' <bingo/postgres_install.sql >bingo_postgres.sql
+sed 's,BINGO_SCHEMANAME,'$schema_name',g' <sql/bingo/bingo_schema.sql.in >bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/bingo_am.sql.in >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/mango_pg.sql.in >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/bingo_config.sql.in >>bingo_install.sql
 
-psql9.0 $dbaname -f bingo_postgres.sql
+#psql9.0 $dbaname -f bingo_postgres.sql
 
 #cd system
 #if [ "$dbapass" = "" ]; then

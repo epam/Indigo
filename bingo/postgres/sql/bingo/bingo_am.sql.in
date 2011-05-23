@@ -1,0 +1,123 @@
+CREATE OR REPLACE FUNCTION bingo_build(internal, internal, internal)
+RETURNS internal
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_insert(internal, internal, internal, internal, internal)
+RETURNS boolean
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_beginscan(internal, internal, internal)
+RETURNS internal
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_gettuple(internal, internal)
+RETURNS boolean
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_getbitmap(internal, internal)
+RETURNS int8
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_rescan(internal, internal)
+RETURNS void
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_endscan(internal)
+RETURNS void
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_markpos(internal)
+RETURNS void
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_restrpos(internal)
+RETURNS void
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_bulkdelete(internal, internal, internal, internal)
+RETURNS internal
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_vacuumcleanup(internal, internal)
+RETURNS internal
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_options(_text, bool)
+RETURNS bytea
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE OR REPLACE FUNCTION bingo_costestimate(internal, internal, internal, internal, internal, internal, internal, internal)
+RETURNS void
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+--delete from pg_am where amname='bingo_idx'
+
+INSERT INTO pg_am(
+amname,
+aminsert,
+ambeginscan,
+amgettuple,
+amgetbitmap,
+amrescan,
+amendscan,
+ammarkpos,
+amrestrpos,
+ambuild,
+ambulkdelete,
+amvacuumcleanup,
+amcostestimate,
+amoptions,
+amstrategies,
+amsupport,
+amcanorder,
+amcanbackward,
+amcanunique,
+amcanmulticol,
+amoptionalkey,
+amindexnulls,
+amsearchnulls,
+amstorage,
+amclusterable,
+amkeytype
+)
+VALUES (
+'bingo_idx',
+'bingo_insert(internal, internal, internal, internal, internal)'::regprocedure::oid,
+'bingo_beginscan(internal, internal, internal)'::regprocedure::oid,
+'bingo_gettuple(internal, internal)'::regprocedure::oid,
+'bingo_getbitmap(internal, internal)'::regprocedure::oid,
+'bingo_rescan(internal, internal)'::regprocedure::oid,
+'bingo_endscan(internal)'::regprocedure::oid,
+'bingo_markpos(internal)'::regprocedure::oid,
+'bingo_restrpos(internal)'::regprocedure::oid,
+'bingo_build(internal, internal, internal)'::regprocedure::oid,
+'bingo_bulkdelete(internal, internal, internal, internal)'::regprocedure::oid,
+'bingo_vacuumcleanup(internal, internal)'::regprocedure::oid,
+'bingo_costestimate(internal, internal, internal, internal, internal, internal, internal, internal)'::regprocedure::oid,
+'bingo_options(_text, bool)'::regprocedure::oid,
+7,
+7,
+false,
+true,
+false,
+false,
+false,
+false,
+false,
+false,
+false,
+23
+);
