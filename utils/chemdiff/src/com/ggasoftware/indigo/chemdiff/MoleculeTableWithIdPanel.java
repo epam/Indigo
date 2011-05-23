@@ -80,6 +80,7 @@ public class MoleculeTableWithIdPanel extends JPanel
       }
 
       // Precalculate id columns widths
+      System.out.println("Precalculate id columns widths");
       int widths[] = new int[_id_column_count];
       for (int i = 0; i < _id_column_count; i++)
          widths[i] = getColumnWidth(i, 2);
@@ -104,7 +105,7 @@ public class MoleculeTableWithIdPanel extends JPanel
          TableColumn col = colModel.getColumn(i);
          int width = widths[i];
          col.setMinWidth(10);
-         col.setMaxWidth(2 * width);
+         col.setMaxWidth(10 * width);
       }
    }
 
@@ -124,8 +125,15 @@ public class MoleculeTableWithIdPanel extends JPanel
       width = comp.getPreferredSize().width;
 
       // Get maximum width of column data
-      for (int r = 0; r < table.getRowCount(); r++)
+      int row_count = table.getRowCount();
+      for (int r = 0; r < row_count; r++)
       {
+         // Calculate width for the first 100th, last 100th and some other molecules
+         if (r > 100 && r < row_count - 100 && (r % 100) != 0)
+            continue;
+         if ((r % 10000) == 0)
+            System.out.println(String.format("%d done", r));
+
          renderer = table.getCellRenderer(r, col_index);
          comp = renderer.getTableCellRendererComponent(
                  table, table.getValueAt(r, col_index), false, false, r, col_index);

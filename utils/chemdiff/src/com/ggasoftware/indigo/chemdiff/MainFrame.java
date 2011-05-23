@@ -2,9 +2,12 @@ package com.ggasoftware.indigo.chemdiff;
 
 import com.ggasoftware.indigo.controls.CommonUtils;
 import com.ggasoftware.indigo.controls.IndigoCheckedException;
+import com.ggasoftware.indigo.controls.MessageBox;
 import com.ggasoftware.indigo.controls.MolSaver;
 import com.ggasoftware.indigo.controls.ProgressStatusDialog;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -344,6 +347,16 @@ public class MainFrame extends javax.swing.JFrame
              {
                 setStepProgress(100 * processed / mols.size());
                 processed++;
+                
+                if ((processed % 10000) == 0)
+                {
+                   System.gc();
+                   System.out.println(String.format("Indigo objects count after %d molecules: %d", 
+                           processed, Global.indigo.countReferences()));
+                }
+                if (isCancelled())
+                   return null;
+            
                 String can_smiles, src_can_smiles;
                 String error_msg = null;
                 try
@@ -383,6 +396,7 @@ public class MainFrame extends javax.swing.JFrame
                 map.put(can_smiles, mul_item);
                 same_canonical_size.put(can_smiles, 1);
              }
+             System.out.println(String.format("Indigo objects count: %d", Global.indigo.countReferences()));
              return map;
           }
 
@@ -401,6 +415,9 @@ public class MainFrame extends javax.swing.JFrame
              dlg.setStepName("Preparing the second set");
              HashMap<String, MultipleMoleculeItem> map2 = getCanonicalMap(set2);
 
+             if (isCancelled())
+                return null;
+             
              setProgress(10);
              // Intersect and find difference
              Set<String> keys1 = map1.keySet();
@@ -472,6 +489,9 @@ public class MainFrame extends javax.swing.JFrame
                 }
              };
              
+             if (isCancelled())
+                return null;
+             
              Collections.sort(unique1_mols, comparator);
              Collections.sort(unique2_mols, comparator);
              Collections.sort(common_mols, comparator);
@@ -486,6 +506,9 @@ public class MainFrame extends javax.swing.JFrame
              out_table_common.setMolecules(common_mols);
              setStepProgress(100);
 
+             if (isCancelled())
+                return null;
+             
              tabbed_panel.setSelectedIndex(1);
              allocateCompareOptions();
              return null;
@@ -494,6 +517,7 @@ public class MainFrame extends javax.swing.JFrame
 
        dlg.setTitle("Comparing the molecules...");
        dlg.executeSwingWorker(compare_molecules);
+       boolean cancelled = false;
        try
        {
           // Check if work wasn't aborted
@@ -501,13 +525,23 @@ public class MainFrame extends javax.swing.JFrame
        }
        catch (InterruptedException ex)
        {
-          Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-          ex.printStackTrace();
+          cancelled = true;
        }
        catch (ExecutionException ex)
        {
-          Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-          ex.printStackTrace();
+          StringWriter sw = new StringWriter();
+          ex.printStackTrace(new PrintWriter(sw));
+          String error_as_string = sw.toString();
+
+          MessageBox.show(null, error_as_string, "Error", MessageBox.ICON_ERROR);
+          
+          cancelled = true;
+       }
+       if (cancelled)
+       {
+          out_table1.clear();
+          out_table2.clear();
+          out_table_common.clear();
        }
 }//GEN-LAST:event_compare_buttonActionPerformed
 

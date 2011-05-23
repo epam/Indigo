@@ -110,7 +110,6 @@ public class InputTable extends TitledBorderPanel
                }
                dlg.setStepName("Adding molecules to the table");
                molecules_with_id_table.setObjects(new_molecules);
-
                StringBuilder subtitle = new StringBuilder();
                subtitle.append(String.format(": %d molecule%s", new_molecules.size(),
                        new_molecules.size() > 1 ? "s" : ""));

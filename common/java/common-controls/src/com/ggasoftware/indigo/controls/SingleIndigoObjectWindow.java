@@ -13,6 +13,8 @@ public class SingleIndigoObjectWindow extends javax.swing.JFrame
    private IndigoObject _obj;
    private boolean _is_reaction;
 
+   // TODO: show name as $name$, because molecules loaded from SMILES have only names
+   
    /** Creates new form CellFrame */
    public SingleIndigoObjectWindow (Frame parent, IndigoObject chem_obj, IndigoRenderer indigo_renderer, boolean is_reaction)
    {
