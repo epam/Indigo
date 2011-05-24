@@ -39,9 +39,31 @@ Datum _gross_internal(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(_sim_internal);
 Datum _sim_internal(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(getweight);
+Datum getweight(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(getmass);
+Datum getmass(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(_match_mass_less);
+Datum _match_mass_less(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(_match_mass_great);
+Datum _match_mass_great(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(_mass_in);
+Datum _mass_in(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(_mass_out);
+Datum _mass_out(PG_FUNCTION_ARGS);
+
 }
 
 using namespace indigo;
+
+static void bingoPgMassErrorHandler(const char *message, void *context) {
+   elog(ERROR, "error while bingo calculating mass: %s", message);
+}
 
 /*
  * Helper class for searching setup and perfoming
@@ -56,7 +78,7 @@ public:
       BingoPgCommon::getSearchTypeString(_type, _typeStr);
 
       bingoSetErrorHandler(bingoErrorHandler, _typeStr.ptr());
-
+      
       const char* schema_name = get_namespace_name(get_func_namespace(func_oid));
 
       BingoPgConfig bingo_config;
@@ -201,3 +223,141 @@ Datum _sim_internal(PG_FUNCTION_ARGS){
    PG_RETURN_BOOL(result);
 }
 
+Datum getweight(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   Datum options_datum = PG_GETARG_DATUM(1);
+
+   BingoPgText mol_text(mol_datum);
+   BingoPgText mol_options(options_datum);
+
+   float result = 0;
+
+   qword session_id = bingoAllocateSessionID();
+   bingoSetSessionID(session_id);
+   bingoSetContext(0);
+   bingoSetErrorHandler(bingoPgMassErrorHandler, 0);
+
+   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
+
+   BingoPgConfig bingo_config;
+   bingo_config.readDefaultConfig(schema_name);
+   bingo_config.setUpBingoConfiguration();
+
+   int buf_len;
+   const char* buf = mol_text.getText(buf_len);
+
+   mangoMass(buf, buf_len, mol_options.getString(), &result);
+
+   bingoReleaseSessionID(session_id);
+
+   PG_RETURN_FLOAT4(result);
+}
+Datum getmass(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+
+   BingoPgText mol_text(mol_datum);
+
+   float result = 0;
+
+   qword session_id = bingoAllocateSessionID();
+   bingoSetSessionID(session_id);
+   bingoSetContext(0);
+   bingoSetErrorHandler(bingoPgMassErrorHandler, 0);
+
+   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
+
+   BingoPgConfig bingo_config;
+   bingo_config.readDefaultConfig(schema_name);
+   bingo_config.setUpBingoConfiguration();
+
+   int buf_len;
+   const char* buf = mol_text.getText(buf_len);
+
+   mangoMass(buf, buf_len, 0, &result);
+
+   bingoReleaseSessionID(session_id);
+
+   PG_RETURN_FLOAT4(result);
+}
+Datum _match_mass_less(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   char* mass_datum = PG_GETARG_CSTRING(1);
+
+   BufferScanner scanner(mass_datum);
+   float usr_mass = scanner.readFloat();
+
+   BingoPgText mol_text(mol_datum);
+
+   float mol_mass = 0;
+
+   qword session_id = bingoAllocateSessionID();
+   bingoSetSessionID(session_id);
+   bingoSetContext(0);
+   bingoSetErrorHandler(bingoPgMassErrorHandler, 0);
+
+   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
+
+   BingoPgConfig bingo_config;
+   bingo_config.readDefaultConfig(schema_name);
+   bingo_config.setUpBingoConfiguration();
+
+   int buf_len;
+   const char* buf = mol_text.getText(buf_len);
+
+   mangoMass(buf, buf_len, 0, &mol_mass);
+
+   bingoReleaseSessionID(session_id);
+
+   bool result = mol_mass < usr_mass;
+
+   PG_RETURN_BOOL(result);
+}
+Datum _match_mass_great(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   char* mass_datum = PG_GETARG_CSTRING(1);
+
+   BufferScanner scanner(mass_datum);
+   float usr_mass = scanner.readFloat();
+
+   BingoPgText mol_text(mol_datum);
+
+   float mol_mass = 0;
+
+   qword session_id = bingoAllocateSessionID();
+   bingoSetSessionID(session_id);
+   bingoSetContext(0);
+   bingoSetErrorHandler(bingoPgMassErrorHandler, 0);
+
+   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
+
+   BingoPgConfig bingo_config;
+   bingo_config.readDefaultConfig(schema_name);
+   bingo_config.setUpBingoConfiguration();
+
+   int buf_len;
+   const char* buf = mol_text.getText(buf_len);
+
+   mangoMass(buf, buf_len, 0, &mol_mass);
+
+   bingoReleaseSessionID(session_id);
+
+   bool result = mol_mass > usr_mass;
+
+   PG_RETURN_BOOL(result);
+}
+
+Datum _mass_in(PG_FUNCTION_ARGS) {
+   char *str = PG_GETARG_CSTRING(0);
+   int size = strlen(str) + 1;
+   char* result = (char*)palloc(size);
+   memcpy(result, str, size);
+   PG_RETURN_POINTER(result);
+}
+
+Datum _mass_out(PG_FUNCTION_ARGS) {
+   char *str = PG_GETARG_CSTRING(0);
+   int size = strlen(str) + 1;
+   char* result = (char*)palloc(size);
+   memcpy(result, str, size);
+   PG_RETURN_CSTRING(result);
+}

@@ -121,3 +121,22 @@ false,
 false,
 23
 );
+
+--**************************** BINGO OPERATOR CLASS *********************
+CREATE OPERATOR CLASS ops
+FOR TYPE text USING bingo_idx
+AS
+        OPERATOR        1       public.@ (text, sub),
+        OPERATOR        2       public.@ (text, exact),
+        OPERATOR        3       public.@ (text, smarts),
+        OPERATOR        4       public.@ (text, gross),
+        OPERATOR        5       public.< (text, mass),
+        OPERATOR        6       public.> (text, mass),
+        OPERATOR        7       public.@ (text, sim),
+        FUNCTION	1	matchSub(text, sub),
+        FUNCTION	2	matchExact(text, exact),
+        FUNCTION	3	matchSmarts(text, smarts),
+        FUNCTION	4	matchGross(text, gross),
+        FUNCTION	5	_match_mass_less(text, mass),
+        FUNCTION	6	_match_mass_great(text, mass),
+        FUNCTION	7	matchSim(text, sim);

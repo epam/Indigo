@@ -45,11 +45,12 @@
       <itemPath>src/pg_am/pg_bingo_costestimate.c</itemPath>
       <itemPath>src/pg_am/pg_bingo_gist.c</itemPath>
       <itemPath>src/pg_am/pg_bingo_import.cpp</itemPath>
-      <itemPath>src/pg_am/pg_bingo_match.cpp</itemPath>
       <itemPath>src/pg_am/pg_bingo_options.cpp</itemPath>
       <itemPath>src/pg_am/pg_bingo_search.cpp</itemPath>
       <itemPath>src/pg_am/pg_bingo_update.cpp</itemPath>
       <itemPath>src/pg_am/pg_bingo_utils.cpp</itemPath>
+      <itemPath>src/pg_am/pg_mango_match.cpp</itemPath>
+      <itemPath>src/pg_am/pg_ringo_match.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="pg_common"

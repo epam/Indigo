@@ -48,12 +48,13 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/393906193/ringo_core_c_parallel.o \
 	${OBJECTDIR}/_ext/1149244103/chunk_storage.o \
 	${OBJECTDIR}/src/pg_common/bingo_pg_text.o \
+	${OBJECTDIR}/src/pg_am/pg_mango_match.o \
 	${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o \
 	${OBJECTDIR}/_ext/393906193/ringo_core_c.o \
 	${OBJECTDIR}/src/pg_core/bingo_pg_build_engine.o \
-	${OBJECTDIR}/src/pg_am/pg_bingo_match.o \
 	${OBJECTDIR}/_ext/393906193/mango_core_c.o \
 	${OBJECTDIR}/_ext/1019403175/mango_tautomer.o \
+	${OBJECTDIR}/src/pg_am/pg_ringo_match.o \
 	${OBJECTDIR}/_ext/1019403175/ringo_index.o \
 	${OBJECTDIR}/src/pg_core/bingo_pg_search.o \
 	${OBJECTDIR}/_ext/1019403175/mango_substructure.o \
@@ -188,6 +189,11 @@ ${OBJECTDIR}/src/pg_common/bingo_pg_text.o: src/pg_common/bingo_pg_text.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_text.o src/pg_common/bingo_pg_text.cpp
 
+${OBJECTDIR}/src/pg_am/pg_mango_match.o: src/pg_am/pg_mango_match.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/pg_am
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_mango_match.o src/pg_am/pg_mango_match.cpp
+
 ${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o: src/pg_common/bingo_pg_cursor.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
@@ -203,11 +209,6 @@ ${OBJECTDIR}/src/pg_core/bingo_pg_build_engine.o: src/pg_core/bingo_pg_build_eng
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_build_engine.o src/pg_core/bingo_pg_build_engine.cpp
 
-${OBJECTDIR}/src/pg_am/pg_bingo_match.o: src/pg_am/pg_bingo_match.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/pg_am
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_match.o src/pg_am/pg_bingo_match.cpp
-
 ${OBJECTDIR}/_ext/393906193/mango_core_c.o: ../src/core-c/mango_core_c.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
 	${RM} $@.d
@@ -217,6 +218,11 @@ ${OBJECTDIR}/_ext/1019403175/mango_tautomer.o: ../src/core/mango_tautomer.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_tautomer.o ../src/core/mango_tautomer.cpp
+
+${OBJECTDIR}/src/pg_am/pg_ringo_match.o: src/pg_am/pg_ringo_match.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/pg_am
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_ringo_match.o src/pg_am/pg_ringo_match.cpp
 
 ${OBJECTDIR}/_ext/1019403175/ringo_index.o: ../src/core/ringo_index.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175

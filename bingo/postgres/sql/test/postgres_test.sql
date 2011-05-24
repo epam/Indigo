@@ -1,8 +1,8 @@
-select 'CC' @ ('CC', '')::bingo_sub
-select 'CC' @ ('CC', '')::bingo_smarts
-select 'NC1=CC=CC(=C1)C1=CC=CC=C1' @ ('=', 'C12H11N')::bingo_gross
+select 'CC' @ ('CC', '')::bingo.sub
+select 'CC' @ ('CC', '')::bingo.smarts
+select 'NC1=CC=CC(=C1)C1=CC=CC=C1' @ ('=', 'C12H11N')::bingo.gross
 
-select * from btest where a @ ('CC(=O)', '')::bingo_sub
+select * from btest where a @ ('CC(=O)', '')::bingo.bingo_sub
 select * from btest where a @ ('CCC', '')::bingo_sub
 select * from btest where a @ ('OC1=CC=CC=C1', '')::bingo_sub
 
@@ -33,13 +33,13 @@ truncate table btest
  
 select * from bingo_config
 drop index btest_idx;
-create index btest_idx on btest using bingo_idx (a bingo_ops)
+create index btest_idx on btest using bingo_idx (a bingo.ops)
 drop table btest_idx_shadow
 select * from btest_idx_shadow
 select * from btest_idx_shadow_hash
 create index btest_idx on btest using bingo_idx (a bingo_ops) with ( "treatx-as-pseudoatom=5", FP_SIM_SIZE=4);
 
-explain select * from btest where a @ ('S', '')::bingo_sub
+explain select * from btest where a @ ('S', '')::bingo.bingo_sub
 explain select * from btest where a @ ('CC', '')::bingo_exact
 explain select * from btest where ('CC', '')::molquery @ a
 explain select * from btest where a @ 'CC'
@@ -410,3 +410,14 @@ select bingoGetIndexStructuresCount('bingo_test_index'::regclass::oid)
 
 select 'CCC' < '50'::bingo_mass
 explain select * from btest where a > '100'::bingo_mass and a < '300'::bingo_mass OR a @ ('CCC', '')::bingo_sub
+
+
+CREATE OR REPLACE FUNCTION bingo_test()
+RETURNS void
+AS '$libdir/bingo_postgres'
+LANGUAGE C STRICT IMMUTABLE;
+
+create schema bingo
+drop schema bingo cascade
+delete from pg_am where amname='bingo_idx'
+create table bingo.test(a integer)

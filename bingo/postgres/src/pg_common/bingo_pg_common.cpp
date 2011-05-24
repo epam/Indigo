@@ -62,6 +62,15 @@ void BingoPgCommon::getSearchTypeString(int type, indigo::Array<char>& result) {
       case(MOL_GROSS):
          result.readString("GROSS", true);
          break;
+      case(REACT_SUB):
+         result.readString("RSUB", true);
+         break;
+      case(REACT_EXACT):
+         result.readString("REXACT", true);
+         break;
+      case(REACT_SMARTS):
+         result.readString("RSMARTS", true);
+         break;
       default:
          break;
 
