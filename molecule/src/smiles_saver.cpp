@@ -23,6 +23,7 @@
 #include "graph/dfs_walk.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_arom_match.h"
+#include "graph/cycle_basis.h"
 
 using namespace indigo;
 
@@ -35,7 +36,8 @@ TL_CP_GET(_written_atoms),
 TL_CP_GET(_written_bonds),
 TL_CP_GET(_polymer_indices),
 TL_CP_GET(_attachment_indices),
-TL_CP_GET(_attachment_cycle_numbers)
+TL_CP_GET(_attachment_cycle_numbers),
+TL_CP_GET(_aromatic_bonds)
 {
    vertex_ranks = 0;
    atom_atom_mapping = 0;
@@ -91,6 +93,8 @@ void SmilesSaver::_saveMolecule ()
    _written_atoms.clear();
    _written_bonds.clear();
    _written_components = 0;
+
+   _aromatic_bonds.clear();
 
    if (ignore_hydrogens)
    {
@@ -431,9 +435,7 @@ void SmilesSaver::_saveMolecule ()
             _output.writeChar('=');
          else if (bond_order == BOND_TRIPLE)
             _output.writeChar('#');
-         else if (bond_order == BOND_AROMATIC &&
-                 (!_atoms[edge.beg].lowercase || !_atoms[edge.end].lowercase ||
-                  _bmol->getBondTopology(e_idx) != TOPOLOGY_RING))
+         else if (bond_order == BOND_AROMATIC && _shouldWriteAromaticBond(e_idx))
             _output.writeChar(':');
          else if (bond_order == BOND_SINGLE && _atoms[edge.beg].aromatic && _atoms[edge.end].aromatic)
             _output.writeChar('-');
@@ -556,6 +558,62 @@ void SmilesSaver::_saveMolecule ()
          _output.writeChar('|');
    }
 }
+
+bool SmilesSaver::_shouldWriteAromaticBond (int e_idx)
+{
+   const Edge &edge = _bmol->getEdge(e_idx);
+
+   if (_mol == 0)
+      return true;
+
+   if (!_atoms[edge.beg].lowercase || !_atoms[edge.end].lowercase)
+      return true;
+
+   if (_bmol->getBondTopology(e_idx) != TOPOLOGY_RING)
+      return true;
+
+   // We need to check that the bond belongs to some aromatic ring
+   // with all lowercase atoms. That is done for not to miss aromatic
+   // bonds that belong (oddly enough) to some aliphatic SSSR ring
+   // and do not belong to any aromatic SSSR ring
+   if (_aromatic_bonds.size() == 0)
+   {
+      // enumerate SSSR rings
+      CycleBasis basis;
+      
+      basis.create(*_bmol);
+      _aromatic_bonds.clear_resize(_bmol->edgeEnd());
+      _aromatic_bonds.zerofill();
+      
+      for (int i = 0; i < basis.getCyclesCount(); i++)
+      {
+         const Array<int> &cycle = basis.getCycle(i);
+         int j;
+
+         for (j = 0; j < cycle.size(); j++)
+         {
+            int idx = cycle[j];
+            const Edge &edge = _bmol->getEdge(idx);
+            if (!_atoms[edge.beg].lowercase || !_atoms[edge.end].lowercase)
+               break;
+            if (_mol->getBondOrder(idx) != BOND_AROMATIC)
+               break;
+         }
+
+         if (j == cycle.size()) // all-lowercase aromatic ring
+         {
+            for (j = 0; j < cycle.size(); j++)
+               _aromatic_bonds[cycle[j]] = 1;
+         }
+      }
+   }
+
+   if (_aromatic_bonds[e_idx] != 0)
+      return false;
+
+   return true;
+}
+
 
 void SmilesSaver::_writeCycleNumber (int n) const
 {

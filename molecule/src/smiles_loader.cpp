@@ -964,7 +964,9 @@ void SmilesLoader::_markAromaticBonds ()
 
    basis.create(*_bmol);
    
-   // mark all 'empty' bonds in "aromatic" rings as aromatic
+   // Mark all 'empty' bonds in "aromatic" rings as aromatic.
+   // We use SSSR here because we do not want "empty" bonds to
+   // be aromatic when they are contained in some aliphatic (SSSR) ring.
    for (i = 0; i < basis.getCyclesCount(); i++)
    {
       const Array<int> &cycle = basis.getCycle(i);

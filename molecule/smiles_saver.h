@@ -101,6 +101,7 @@ protected:
    void _writeRadicals ();
    void _writePseudoAtoms ();
    void _writeHighlighting ();
+   bool _shouldWriteAromaticBond (int bond_idx);
 
    int _countRBonds ();
 
@@ -123,6 +124,7 @@ protected:
    TL_CP_DECL(Array<int>, _polymer_indices);
    TL_CP_DECL(Array<int>, _attachment_indices);
    TL_CP_DECL(Array<int>, _attachment_cycle_numbers);
+   TL_CP_DECL(Array<int>, _aromatic_bonds);
 
    int _n_attachment_points;
 
