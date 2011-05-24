@@ -1,27 +1,27 @@
-CREATE TYPE rsub AS (query_mol text, query_options text);
+CREATE TYPE rsub AS (query_reaction text, query_options text);
 
 CREATE OR REPLACE FUNCTION matchSub(text, rsub)
 RETURNS boolean AS $$
    BEGIN
-	RETURN BINGO_SCHEMANAME._rsub_internal($2.query_mol, $1, $2.query_options);
+	RETURN BINGO_SCHEMANAME._rsub_internal($2.query_reaction, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE TYPE rexact AS (query_mol text, query_options text);
+CREATE TYPE rexact AS (query_reaction text, query_options text);
 
 CREATE OR REPLACE FUNCTION matchExact(text, rexact)
 RETURNS boolean AS $$
    BEGIN
-	RETURN BINGO_SCHEMANAME._rexact_internal($2.query_mol, $1, $2.query_options);
+	RETURN BINGO_SCHEMANAME._rexact_internal($2.query_reaction, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE TYPE rsmarts AS (query_mol text, query_options text);
+CREATE TYPE rsmarts AS (query_reaction text, query_options text);
 
 CREATE OR REPLACE FUNCTION matchSmarts(text, rsmarts)
 RETURNS boolean AS $$
    BEGIN
-	RETURN BINGO_SCHEMANAME._rsmarts_internal($2.query_mol, $1, $2.query_options);
+	RETURN BINGO_SCHEMANAME._rsmarts_internal($2.query_reaction, $1, $2.query_options);
    END;
 $$ LANGUAGE 'plpgsql';
 
