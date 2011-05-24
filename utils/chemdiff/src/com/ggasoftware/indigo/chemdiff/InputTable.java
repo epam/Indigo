@@ -112,7 +112,7 @@ public class InputTable extends TitledBorderPanel
                molecules_with_id_table.setObjects(new_molecules);
                StringBuilder subtitle = new StringBuilder();
                subtitle.append(String.format(": %d molecule%s", new_molecules.size(),
-                       new_molecules.size() > 1 ? "s" : ""));
+                       new_molecules.size() != 1 ? "s" : ""));
                if (errors_count != 0)
                   subtitle.append(String.format(" (with %d not valid)", errors_count));
                setSubtitle(subtitle.toString());

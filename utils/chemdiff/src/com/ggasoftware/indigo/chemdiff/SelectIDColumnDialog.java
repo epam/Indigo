@@ -110,7 +110,7 @@ public class SelectIDColumnDialog extends javax.swing.JDialog
          }
       });
 
-      help_info.setText("<html>Choose a properties field that will be used as an identificator. This property will be used as an identifire for the all molecules. </html>");
+      help_info.setText("<html>Choose a property field that will be used as an identifier for all the molecules in this set. </html>");
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
@@ -135,7 +135,7 @@ public class SelectIDColumnDialog extends javax.swing.JDialog
             .addContainerGap()
             .addComponent(help_info, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(molecule_with_properties, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
+            .addComponent(molecule_with_properties, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(done_button)

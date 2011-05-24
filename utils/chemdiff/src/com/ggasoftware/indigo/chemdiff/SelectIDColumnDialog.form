@@ -90,7 +90,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="help_info">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Choose a properties field that will be used as an identificator. This property will be used as an identifire for the all molecules. &lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Choose a property field that will be used as an identifier for all the molecules in this set. &lt;/html&gt;"/>
       </Properties>
     </Component>
   </SubComponents>

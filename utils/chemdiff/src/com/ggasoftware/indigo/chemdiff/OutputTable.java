@@ -285,7 +285,7 @@ public class OutputTable extends TitledBorderPanel
       
       StringBuilder subtitle = new StringBuilder();
       subtitle.append(String.format(": %d molecule%s", molecules.size(),
-              molecules.size() > 1 ? "s" : ""));
+              molecules.size() != 1 ? "s" : ""));
       if (errors_count != 0)
          subtitle.append(String.format(" (with %d not valid)", errors_count));
       setSubtitle(subtitle.toString());

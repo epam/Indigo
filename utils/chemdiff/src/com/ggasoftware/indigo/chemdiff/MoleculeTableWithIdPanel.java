@@ -2,6 +2,7 @@ package com.ggasoftware.indigo.chemdiff;
 
 import com.ggasoftware.indigo.controls.TableCellMouseHandler;
 import com.ggasoftware.indigo.controls.TableCellMouseListener;
+import java.awt.Color;
 import java.awt.Component;
 import java.util.Collection;
 import javax.swing.JPanel;
@@ -21,6 +22,8 @@ public class MoleculeTableWithIdPanel extends JPanel
       molecule_cell_handler = new TableCellMouseHandler(2);
       table.addMouseListener(molecule_cell_handler);
       table.setShowGrid(true);
+      if (table.getGridColor() == table.getBackground())
+         table.setGridColor(Color.gray);
    }
 
    public void setIdColumnCount (int count)
