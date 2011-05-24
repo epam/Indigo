@@ -83,7 +83,9 @@ public:
       /*
        * Set up match parameters
        */
-      mangoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
+      int res = mangoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
+      if (res < 0)
+         elog(WARNING, "Warning while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetWarning());
 
       int target_size;
       const char* target_data = target_text.getText(target_size);
@@ -91,10 +93,10 @@ public:
       if(_type == BingoPgCommon::MOL_GROSS)
          target_data = mangoGross(target_data, target_size);
       
-      int res = mangoMatchTarget(target_data, target_size);
+      res = mangoMatchTarget(target_data, target_size);
 
       if (res < 0)
-         elog(ERROR, "Error while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetWarning());
+         elog(WARNING, "Warning while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetWarning());
 
       return res > 0;
    }
