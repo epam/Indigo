@@ -1,0 +1,7 @@
+#ifndef _RINGO_PG_SEARCH_ENGINE_H__
+#define	_RINGO_PG_SEARCH_ENGINE_H__
+
+
+
+#endif	/* RINGO_PG_SEARCH_ENGINE_H */
+

@@ -71,6 +71,8 @@ public:
 private:
    MangoPgSearchEngine(const MangoPgSearchEngine&); // no implicit copy
 
+   bool _searchNextSim(PG_OBJECT result_ptr);
+
    void _prepareExactQueryStrings(indigo::Array<char>& what_clause, indigo::Array<char>& from_clause, indigo::Array<char>& where_clause);
    void _prepareExactTauStrings(indigo::Array<char>& what_clause, indigo::Array<char>& from_clause, indigo::Array<char>& where_clause);
 

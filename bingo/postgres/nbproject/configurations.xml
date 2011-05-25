@@ -90,6 +90,10 @@
       <itemPath>src/pg_core/mango_pg_build_engine.h</itemPath>
       <itemPath>src/pg_core/mango_pg_search_engine.cpp</itemPath>
       <itemPath>src/pg_core/mango_pg_search_engine.h</itemPath>
+      <itemPath>src/pg_core/ringo_pg_build_engine.cpp</itemPath>
+      <itemPath>src/pg_core/ringo_pg_build_engine.h</itemPath>
+      <itemPath>src/pg_core/ringo_pg_search_engine.cpp</itemPath>
+      <itemPath>src/pg_core/ringo_pg_search_engine.h</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"

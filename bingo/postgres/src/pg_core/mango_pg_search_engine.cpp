@@ -519,3 +519,129 @@ void MangoPgSearchEngine::_getScanQueries(dword arg_datum, float& min_bound, flo
    ReleaseTupleDesc(tupdesc);
 }
 
+bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
+   _setBingoContext();
+
+   BingoPgFpData& query_data = _queryFpData.ref();
+   BingoPgIndex& bingo_index = *_bufferIndexPtr;
+   QS_DEF(Array<int>, bits_count);
+   QS_DEF(Array<int>, common_ones);
+   BingoPgExternalBitset screening_bitset(BINGO_MOLS_PER_SECTION);
+
+   int* min_bounds, * max_bounds;
+   /*
+    * If there are mathces found on the previous steps
+    */
+   if(_fetchFound) {
+       if(_fetchForNext()) {
+          setItemPointer(result_ptr);
+          return true;
+       } else {
+          _fetchFound = false;
+          _currentSection = bingo_index.readNext(_currentSection);
+       }
+   }
+
+   /*
+    * Iterate through the sections
+    */
+   for (; _currentSection < bingo_index.readEnd(); _currentSection = bingo_index.readNext(_currentSection)) {
+      _currentIdx = -1;
+      /*
+       * Get section existing structures
+       */
+      bingo_index.getSectionBitset(_currentSection, _sectionBitset);
+      int possible_str_count = _sectionBitset.bitsNumber();
+      /*
+       * If there is no bits then screen whole the structures
+       */
+      if (query_data.bitEnd() != 0 && possible_str_count > 0) {
+         /*
+          * Read structures bits count
+          */
+         bingo_index.getSectionBitsCount(_currentSection, bits_count);
+         /*
+          * Prepare min max bounds
+          */
+         mangoSimilarityGetBitMinMaxBoundsArray(bits_count.size(), bits_count.ptr(), &min_bounds, &max_bounds);
+
+         /*
+          * Prepare common bits array
+          */
+         common_ones.resize(bits_count.size());
+         common_ones.zerofill();
+         /*
+          * Iterate through the query bits
+          */
+         int iteration_idx = 0;
+         int fp_count = query_data.bitEnd();
+         for (int fp_idx = query_data.bitBegin(); fp_idx != query_data.bitEnd() && possible_str_count > 0; fp_idx = query_data.bitNext(fp_idx)) {
+            int fp_block = query_data.getBit(fp_idx);
+            /*
+             * Copy passed structures on each iteration step
+             */
+            screening_bitset.copy(_sectionBitset);
+
+            /*
+             * Get commons in fingerprint buffer
+             */
+            bingo_index.andWithBitset(_currentSection, fp_block, screening_bitset);
+            int screen_idx = screening_bitset.begin();
+            for (; screen_idx != screening_bitset.end() && possible_str_count > 0; screen_idx = screening_bitset.next(screen_idx)) {
+               /*
+                * Calculate new common ones
+                */
+               int& one_counter = common_ones[screen_idx];
+               ++one_counter;
+               /*
+                * If common ones is out of bounds then it is not passed the screening
+                */
+               if ((one_counter > max_bounds[screen_idx]) || ((one_counter + fp_count - iteration_idx) < min_bounds[screen_idx])) {
+                  _sectionBitset.set(screen_idx, false);
+                  --possible_str_count;
+               }
+            }
+            ++iteration_idx;
+         }
+
+         /*
+          * Screen the last time for all the possible structures
+          */
+         int screen_idx = _sectionBitset.begin();
+         for (; screen_idx != _sectionBitset.end() && possible_str_count > 0; screen_idx = _sectionBitset.next(screen_idx)) {
+            int& one_counter = common_ones[screen_idx];
+            if ((one_counter > max_bounds[screen_idx]) || (one_counter < min_bounds[screen_idx])) {
+               /*
+                * Not passed screening
+                */
+               _sectionBitset.set(screen_idx, false);
+               --possible_str_count;
+            }
+         }
+
+      }
+
+      /*
+       * If bitset is not null then matches are found
+       */
+      if (_sectionBitset.bitsNumber() > 0) {
+         /*
+          * Set first match as an answer
+          */
+         if(_fetchForNext()) {
+            setItemPointer(result_ptr);
+            /*
+             * Set fetch found to return on the next steps
+             */
+            _fetchFound = true;
+            return true;
+         }
+
+      }
+   }
+
+   /*
+    * No matches or section ends
+    */
+   return false;
+}

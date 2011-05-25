@@ -1,8 +1,5 @@
-/* 
- */
-
-#ifndef _MANGO_PG_BUILD_ENGINE_H__
-#define	_MANGO_PG_BUILD_ENGINE_H__
+#ifndef _RINGO_PG_BUILD_ENGINE_H__
+#define	_RINGO_PG_BUILD_ENGINE_H__
 
 #include "base_cpp/array.h"
 #include "base_cpp/auto_ptr.h"
@@ -18,31 +15,31 @@ class BingoPgFpData;
 /*
  * Class for procession molecule fingerprint data
  */
-class MangoPgBuildEngine : public BingoPgBuildEngine {
+class RingoPgBuildEngine : public BingoPgBuildEngine {
 public:
-   MangoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name);
-   virtual ~MangoPgBuildEngine();
+   RingoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name);
+   virtual ~RingoPgBuildEngine();
 
    virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&);
 
-   virtual int getType() const {return BINGO_INDEX_TYPE_MOLECULE;}
+   virtual int getType() const {return BINGO_INDEX_TYPE_REACTION;}
 
    virtual void prepareShadowInfo();
    virtual void insertShadowInfo(BingoPgFpData&);
    virtual void finishShadowProcessing();
 
 private:
-   MangoPgBuildEngine(const MangoPgBuildEngine&); // no implicit copy
+   RingoPgBuildEngine(const RingoPgBuildEngine&); // no implicit copy
 
    static void _errorHandler(const char* message, void* context);
 
-   indigo::Array<char> _relName;
-   indigo::Array<char> _shadowRelName;
-   indigo::Array<char> _shadowHashRelName;
+//   indigo::Array<char> _relName;
+//   indigo::Array<char> _shadowRelName;
+//   indigo::Array<char> _shadowHashRelName;
 
    int _searchType;
 
 };
 
-#endif	/* MANGO_PG_BUILD_ENGINE_H */
+#endif	/* RINGO_PG_BUILD_ENGINE_H */
 

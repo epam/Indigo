@@ -18,6 +18,7 @@ CEXPORT {
 #include "utils/rel.h"
 #include "storage/bufmgr.h"
 #include "utils/lsyscache.h"
+#include "nodes/parsenodes.h"
 }
 
 
@@ -59,7 +60,7 @@ BingoPgBuild::~BingoPgBuild() {
 void BingoPgBuild::_prepareBuilding(const char* schema_name) {
    Relation index = (Relation) _index;
    char* rel_name = get_rel_name(index->rd_id);
-   char* func_name = get_func_name(*index->rd_support);
+   char* func_name = get_func_name(index->rd_support[0]);
 
    BingoPgConfig bingo_config;
    /*
@@ -84,7 +85,7 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name) {
     */
    if (strcasecmp(func_name, "matchsub") == 0) {
       fp_engine.reset(new MangoPgBuildEngine(bingo_config, rel_name));
-   } else if (strcasecmp(func_name, "bingo_rsub_sql") == 0) {
+   } else if (strcasecmp(func_name, "matchrsub") == 0) {
       elog(ERROR, "reaction engine is not implemented yet");
    } else {
       elog(ERROR, "unknown index build function %s", func_name);

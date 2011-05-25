@@ -22,14 +22,14 @@ public:
    virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&){return true;}
 
    virtual int getType() const {return 0;}
-   virtual int getFpSize() {return 0;}
+   int getFpSize();
 
    virtual void prepareShadowInfo(){}
    virtual void insertShadowInfo(BingoPgFpData&){}
    virtual void finishShadowProcessing(){}
 
-   virtual void loadDictionary(BingoPgIndex&){}
-   virtual const char* getDictionary(int& size){size = 0; return 0;}
+   void loadDictionary(BingoPgIndex&);
+   const char* getDictionary(int& size);
 
 private:
    BingoPgBuildEngine(const BingoPgBuildEngine&); //no implicit copy

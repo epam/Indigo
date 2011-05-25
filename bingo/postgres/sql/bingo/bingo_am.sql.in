@@ -122,8 +122,8 @@ false,
 23
 );
 
---**************************** BINGO OPERATOR CLASS *********************
-CREATE OPERATOR CLASS ops
+--**************************** MANGO OPERATOR CLASS *********************
+CREATE OPERATOR CLASS molecule
 FOR TYPE text USING bingo_idx
 AS
         OPERATOR        1       public.@ (text, sub),
@@ -140,3 +140,16 @@ AS
         FUNCTION	5	_match_mass_less(text, mass),
         FUNCTION	6	_match_mass_great(text, mass),
         FUNCTION	7	matchSim(text, sim);
+        
+--**************************** RINGO OPERATOR CLASS *********************
+CREATE OPERATOR CLASS reaction
+FOR TYPE text USING bingo_idx
+AS
+        OPERATOR        1       public.@ (text, rsub),
+        OPERATOR        2       public.@ (text, rexact),
+        OPERATOR        3       public.@ (text, rsmarts),
+        FUNCTION	1	matchRSub(text, rsub),
+        FUNCTION	2	matchRExact(text, rexact),
+        FUNCTION	3	matchRSmarts(text, rsmarts);
+               
+

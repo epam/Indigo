@@ -35,7 +35,7 @@ truncate table btest
  
 select * from bingo_config
 drop index btest_idx;
-create index btest_idx on btest using bingo_idx (a bingo.ops)
+create index btest_idx on btest using bingo_idx (a bingo.molecule)
 drop table btest_idx_shadow
 select * from btest_idx_shadow
 select * from btest_idx_shadow_hash

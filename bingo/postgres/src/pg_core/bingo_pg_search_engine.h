@@ -94,7 +94,6 @@ protected:
 
    bool _searchNextCursor(PG_OBJECT result_ptr);
    bool _searchNextSub(PG_OBJECT result_ptr);
-   bool _searchNextSim(PG_OBJECT result_ptr);
 
    void _setBingoContext();
    bool _fetchForNext();

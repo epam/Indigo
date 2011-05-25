@@ -124,14 +124,6 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    return true;
 }
 
-int MangoPgBuildEngine::getFpSize() {
-   int result;
-
-   bingoGetConfigInt("fp-size-bytes", &result);
-
-   return result * 8;
-}
-
 void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
    MangoPgFpData& data = (MangoPgFpData&)item_data;
 
@@ -215,30 +207,7 @@ void MangoPgBuildEngine::finishShadowProcessing() {
 }
 
 
-void MangoPgBuildEngine::loadDictionary(BingoPgIndex& bingo_index) {
-   /*
-    * Load dictionary
-    */
-   _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
-
-   QS_DEF(Array<char>, dict);
-   bingo_index.readDictionary(dict);
-   bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
-}
-
-const char* MangoPgBuildEngine::getDictionary(int& size) {
-   _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
-
-   const char* dict_buf;
-
-   bingoGetConfigBin("cmf-dict", &dict_buf, &size);
-
-   return dict_buf;
-}
-
 void MangoPgBuildEngine::_errorHandler(const char* message, void*) {
-   elog(ERROR, "Error while searching a molecule: %s", message);
+   elog(ERROR, "Error while building molecule index: %s", message);
 }
 
