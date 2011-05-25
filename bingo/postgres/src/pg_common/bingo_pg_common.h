@@ -29,13 +29,13 @@ public:
       MOL_MASS_LESS = 5,
       MOL_MASS_GREAT = 6,
       MOL_SIM = 7,
-      REACT_SUB = 8,
-      REACT_EXACT = 9,
-      REACT_SMARTS = 10,
+      REACT_SUB = 1,
+      REACT_EXACT = 2,
+      REACT_SMARTS = 3,
       MOL_MASS = 100/*pseudo types*/
    };
 
-   static void getSearchTypeString(int, indigo::Array<char>& result);
+   static void getSearchTypeString(int, indigo::Array<char>& result, bool molecule);
 
 //   static float getBingoSim(char*, int, char*, int);
    

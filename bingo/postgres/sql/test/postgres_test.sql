@@ -8,10 +8,14 @@ select * from btest where a @ ('CC(=O)', '')::bingo.bingo_sub
 select * from btest where a @ ('CCC', '')::bingo_sub
 select * from btest where a @ ('OC1=CC=CC=C1', '')::bingo_sub
 
+
 select * from btest where a @ ('CC(=O)', '')::bingo_exact
 select * from btest where a @ ('CCC', '')::bingo_exact
 select * from btest where a @ ('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C', '')::bingo_exact
 select * from btest where a @ ('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C', 'TAU')::bingo_exact
+
+select * from rtest where a @ ('OC1=CC=CC=C1>>', '')::bingo.rsub
+explain select * from rtest where a @ ('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C>>', '')::bingo.rexact
 
 explain select a, bingoSim(a, 'Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C', '') from btest 
 where a @ (0.9, 1, 'Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C', '')::bingo_sim
@@ -36,6 +40,7 @@ truncate table btest
 select * from bingo_config
 drop index btest_idx;
 create index btest_idx on btest using bingo_idx (a bingo.molecule)
+create index btest_idx on rtest using bingo_idx (a bingo.reaction)
 drop table btest_idx_shadow
 select * from btest_idx_shadow
 select * from btest_idx_shadow_hash
@@ -233,8 +238,41 @@ insert into btest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3');
 insert into btest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C');
 drop table btest
 
+create table rtest(a text);
 
-
+insert into rtest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C>>');
+insert into rtest(a) values('NC(=O)c4ccc3n(Cc2ccc1ccccc1c2)c(=O)c(=O)c3c4>>');
+insert into rtest(a) values('NC(=O)c3ccc2n(Cc1cc(O)cc(O)c1)c(=O)c(=O)c2c3>>');
+insert into rtest(a) values('CNC(=O)c2ccc1n(C)c(=O)c(=O)c1c2>>');
+insert into rtest(a) values('Cn1c(=O)c(=O)c2cc(N(=O)=O)ccc12>>');
+insert into rtest(a) values('Cn1c(=O)c(=O)c2cc(C(S)=N)ccc12>>');
+insert into rtest(a) values('NC(=O)c3ccc2n(Cc1cccc(O)c1)c(=O)c(=O)c2c3>>');
+insert into rtest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3>>');
+insert into rtest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C>>');
+insert into rtest(a) values('NC(=O)c4ccc3n(Cc2ccc1ccccc1c2)c(=O)c(=O)c3c4>>');
+insert into rtest(a) values('NC(=O)c3ccc2n(Cc1cc(O)cc(O)c1)c(=O)c(=O)c2c3>>');
+insert into rtest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C>>');
+insert into rtest(a) values('NC(=O)c4ccc3n(Cc2ccc1ccccc1c2)c(=O)c(=O)c3c4>>');
+insert into rtest(a) values('NC(=O)c3ccc2n(Cc1cc(O)cc(O)c1)c(=O)c(=O)c2c3>>');
+insert into rtest(a) values('CNC(=O)c2ccc1n(C)c(=O)c(=O)c1c2>>');
+insert into rtest(a) values('Cn1c(=O)c(=O)c2cc(N(=O)=O)ccc12>>');
+insert into rtest(a) values('Cn1c(=O)c(=O)c2cc(C(S)=N)ccc12>>');
+insert into rtest(a) values('NC(=O)c3ccc2n(Cc1cccc(O)c1)c(=O)c(=O)c2c3>>');
+insert into rtest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3>>');
+insert into rtest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C>>');
+insert into rtest(a) values('NC(=O)c4ccc3n(Cc2ccc1ccccc1c2)c(=O)c(=O)c3c4>>');
+insert into rtest(a) values('NC(=O)c3ccc2n(Cc1cc(O)cc(O)c1)c(=O)c(=O)c2c3>>');
+insert into rtest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C>>');
+insert into rtest(a) values('NC(=O)c4ccc3n(Cc2ccc1ccccc1c2)c(=O)c(=O)c3c4>>');
+insert into rtest(a) values('NC(=O)c3ccc2n(Cc1cc(O)cc(O)c1)c(=O)c(=O)c2c3>>');
+insert into rtest(a) values('CNC(=O)c2ccc1n(C)c(=O)c(=O)c1c2>>');
+insert into rtest(a) values('Cn1c(=O)c(=O)c2cc(N(=O)=O)ccc12>>');
+insert into rtest(a) values('Cn1c(=O)c(=O)c2cc(C(S)=N)ccc12>>');
+insert into rtest(a) values('NC(=O)c3ccc2n(Cc1cccc(O)c1)c(=O)c(=O)c2c3>>');
+insert into rtest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3>>');
+insert into rtest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C>>');
+insert into rtest(a) values('NC(=O)c4ccc3n(Cc2ccc1ccccc1c2)c(=O)c(=O)c3c4>>');
+insert into rtest(a) values('NC(=O)c3ccc2n(Cc1cc(O)cc(O)c1)c(=O)c(=O)c2c3>>');
 
 select * from pg_class where relname='btest_idx'
 select oid from pg_class where relname='btest_idx'

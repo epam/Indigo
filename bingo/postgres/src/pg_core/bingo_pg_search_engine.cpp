@@ -2,6 +2,7 @@
 
 #include "base_c/bitarray.h"
 #include "base_cpp/tlscont.h"
+#include "base_cpp/array.h"
 #include "bingo_core_c.h"
 
 #include "bingo_pg_text.h"
@@ -15,6 +16,8 @@ CEXPORT {
 #include "storage/bufmgr.h"
 #include "access/itup.h"
 }
+
+using namespace indigo;
 
 void BingoPgFpData::setTidItem(PG_OBJECT item_ptr) {
 
@@ -55,6 +58,24 @@ BingoPgSearchEngine::~BingoPgSearchEngine(){
 
 void BingoPgSearchEngine::setItemPointer(PG_OBJECT result_ptr) {
    _bufferIndexPtr->readTidItem(_currentSection, _currentIdx, result_ptr);
+}
+
+void BingoPgSearchEngine::loadDictionary(BingoPgIndex& bingo_index) {
+   _setBingoContext();
+
+   QS_DEF(Array<char>, dict);
+   bingo_index.readDictionary(dict);
+   bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
+}
+
+const char* BingoPgSearchEngine::getDictionary(int& size) {
+   _setBingoContext();
+
+   const char* dict_buf;
+
+   bingoGetConfigBin("cmf-dict", &dict_buf, &size);
+
+   return dict_buf;
 }
 
 bool BingoPgSearchEngine::matchTarget(BingoItemData& item_data) {

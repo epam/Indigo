@@ -7,7 +7,6 @@
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
 
-#include "mango_pg_build_engine.h"
 #include "bingo_pg_text.h"
 #include "bingo_pg_common.h"
 #include "bingo_pg_config.h"
@@ -64,14 +63,6 @@ _searchType(-1) {
 
 MangoPgSearchEngine::~MangoPgSearchEngine() {
    bingoIndexEnd();
-}
-
-int MangoPgSearchEngine::getFpSize() {
-   int result;
-
-   bingoGetConfigInt("fp-size-bytes", &result);
-
-   return result * 8;
 }
 
 bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
@@ -163,29 +154,6 @@ bool MangoPgSearchEngine::searchNext(PG_OBJECT result_ptr) {
    }
 
    return result;
-}
-
-void MangoPgSearchEngine::loadDictionary(BingoPgIndex& bingo_index) {
-   /*
-    * Load dictionary
-    */
-   _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
-
-   QS_DEF(Array<char>, dict);
-   bingo_index.readDictionary(dict);
-   bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
-}
-
-const char* MangoPgSearchEngine::getDictionary(int& size) {
-   _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
-
-   const char* dict_buf;
-
-   bingoGetConfigBin("cmf-dict", &dict_buf, &size);
-
-   return dict_buf;
 }
 
 void MangoPgSearchEngine::_errorHandler(const char* message, void*) {
@@ -289,7 +257,7 @@ void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    BingoPgText search_options;
    BingoPgFpData& data = _queryFpData.ref();
 
-   BingoPgCommon::getSearchTypeString(_searchType, search_type);
+   BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, search_query, search_options);
 
@@ -319,7 +287,7 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    BingoPgText search_query;
    BingoPgText search_options;
 
-   BingoPgCommon::getSearchTypeString(_searchType, search_type);
+   BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, search_query, search_options);
 
@@ -346,7 +314,7 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {
    BingoPgText search_sigh;
    BingoPgText search_mol;
 
-   BingoPgCommon::getSearchTypeString(_searchType, search_type);
+   BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, search_sigh, search_mol);
 
@@ -411,7 +379,7 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
    float min_bound = 0, max_bound = 1;
    BingoPgFpData& data = _queryFpData.ref();
 
-   BingoPgCommon::getSearchTypeString(_searchType, search_type);
+   BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, min_bound, max_bound, search_query, search_options);
             /*

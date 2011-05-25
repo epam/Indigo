@@ -78,15 +78,14 @@ public:
    virtual bool matchTarget(BingoItemData& item_data);
 
    virtual int getType() const {return 0;}
-   virtual int getFpSize() {return 0;}
 
    virtual void prepareQuerySearch(BingoPgIndex&, PG_OBJECT scan_desc);
    virtual bool searchNext(PG_OBJECT result_ptr) {return false;}
 
    void setItemPointer(PG_OBJECT result_ptr);
 
-   virtual void loadDictionary(BingoPgIndex&){}
-   virtual const char* getDictionary(int& size){size = 0; return 0;}
+   void loadDictionary(BingoPgIndex&);
+   const char* getDictionary(int& size);
 
 private:
    BingoPgSearchEngine(const BingoPgSearchEngine&); //no implicit copy

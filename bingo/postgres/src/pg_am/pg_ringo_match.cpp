@@ -45,7 +45,7 @@ public:
       bingoSetSessionID(_bingoSession);
       bingoSetContext(0);
 
-      BingoPgCommon::getSearchTypeString(_type, _typeStr);
+      BingoPgCommon::getSearchTypeString(_type, _typeStr, false);
 
       bingoSetErrorHandler(bingoErrorHandler, _typeStr.ptr());
 
@@ -65,7 +65,7 @@ public:
    /*
     * Match method
     * Returns true if matching is successfull
-    * Throws an error if query or target can not be loaded
+    * Throws an error if query can not be loaded
     */
    bool matchInternal(Datum query_datum, Datum target_datum, Datum options_datum) {
       BingoPgText query_text(query_datum);
@@ -76,8 +76,8 @@ public:
        * Set up match parameters
        */
       int res = ringoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
-      if (res < 0)
-         elog(WARNING, "Warning while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetWarning());
+      if (res < 0) 
+         elog(ERROR, "Error while bingo%s loading a reaction: %s", _typeStr.ptr(), bingoGetError());
 
       int target_size;
       const char* target_data = target_text.getText(target_size);
@@ -85,7 +85,7 @@ public:
       res = ringoMatchTarget(target_data, target_size);
 
       if (res < 0)
-         elog(WARNING, "Warning while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetWarning());
+         elog(WARNING, "warning while bingo%s loading a reaction: %s", _typeStr.ptr(), bingoGetWarning());
 
       return res > 0;
    }

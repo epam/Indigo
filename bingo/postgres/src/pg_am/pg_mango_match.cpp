@@ -75,7 +75,7 @@ public:
       bingoSetSessionID(_bingoSession);
       bingoSetContext(0);
 
-      BingoPgCommon::getSearchTypeString(_type, _typeStr);
+      BingoPgCommon::getSearchTypeString(_type, _typeStr, true);
 
       bingoSetErrorHandler(bingoErrorHandler, _typeStr.ptr());
       
@@ -95,7 +95,7 @@ public:
    /*
     * Match method
     * Returns true if matching is successfull
-    * Throws an error if query or target can not be loaded
+    * Throws an error if query can not be loaded
     */
    bool matchInternal(Datum query_datum, Datum target_datum, Datum options_datum) {
       BingoPgText query_text(query_datum);
@@ -107,7 +107,7 @@ public:
        */
       int res = mangoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
       if (res < 0)
-         elog(WARNING, "Warning while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetWarning());
+         elog(ERROR, "Error while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetError());
 
       int target_size;
       const char* target_data = target_text.getText(target_size);

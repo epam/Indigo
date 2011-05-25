@@ -10,6 +10,7 @@
 #include "bingo_pg_ext_bitset.h"
 #include "bingo_pg_search_engine.h"
 #include "mango_pg_build_engine.h"
+#include "ringo_pg_build_engine.h"
 
 CEXPORT {
 #include "postgres.h"
@@ -86,7 +87,7 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name) {
    if (strcasecmp(func_name, "matchsub") == 0) {
       fp_engine.reset(new MangoPgBuildEngine(bingo_config, rel_name));
    } else if (strcasecmp(func_name, "matchrsub") == 0) {
-      elog(ERROR, "reaction engine is not implemented yet");
+      fp_engine.reset(new RingoPgBuildEngine(bingo_config, rel_name));
    } else {
       elog(ERROR, "unknown index build function %s", func_name);
    }
@@ -115,7 +116,7 @@ void BingoPgBuild::_prepareUpdating() {
    if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_MOLECULE)
       fp_engine.reset(new MangoPgBuildEngine(bingo_config, rel_name));
    else if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_REACTION)
-      elog(ERROR, "reaction engine is not implemented yet");
+      fp_engine.reset(new RingoPgBuildEngine(bingo_config, rel_name));
    else
       elog(ERROR, "unknown index type %d", _bufferIndex.getIndexType());
 

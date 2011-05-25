@@ -32,7 +32,7 @@ _strategy(READING_STRATEGY) {
    _metaInfo.offset_dictionary = 0;
    _metaInfo.n_sections = 0;
    _metaInfo.n_molecules = 0;
-   _metaInfo.index_type = BINGO_INDEX_TYPE_MOLECULE;
+   _metaInfo.index_type = 0;
    _metaInfo.n_pages = 0;
 }
 

@@ -44,36 +44,43 @@ CEXPORT {
 
 using namespace indigo;
 
-void BingoPgCommon::getSearchTypeString(int type, indigo::Array<char>& result) {
+void BingoPgCommon::getSearchTypeString(int type, indigo::Array<char>& result, bool molecule) {
    result.clear();
-   switch(type) {
-      case(MOL_SUB):
-         result.readString("SUB", true);
-         break;
-      case(MOL_SIM):
-         result.readString("SIM", true);
-         break;
-      case(MOL_SMARTS):
-         result.readString("SMARTS", true);
-         break;
-      case(MOL_EXACT):
-         result.readString("EXACT", true);
-         break;
-      case(MOL_GROSS):
-         result.readString("GROSS", true);
-         break;
-      case(REACT_SUB):
-         result.readString("RSUB", true);
-         break;
-      case(REACT_EXACT):
-         result.readString("REXACT", true);
-         break;
-      case(REACT_SMARTS):
-         result.readString("RSMARTS", true);
-         break;
-      default:
-         break;
+   if (molecule) {
+      switch (type) {
+         case(MOL_SUB):
+            result.readString("SUB", true);
+            break;
+         case(MOL_SIM):
+            result.readString("SIM", true);
+            break;
+         case(MOL_SMARTS):
+            result.readString("SMARTS", true);
+            break;
+         case(MOL_EXACT):
+            result.readString("EXACT", true);
+            break;
+         case(MOL_GROSS):
+            result.readString("GROSS", true);
+            break;
+         default:
+            break;
+      }
+   } else {
+      switch (type) {
+         case(REACT_SUB):
+            result.readString("RSUB", true);
+            break;
+         case(REACT_EXACT):
+            result.readString("REXACT", true);
+            break;
+         case(REACT_SMARTS):
+            result.readString("RSMARTS", true);
+            break;
+         default:
+            break;
 
+      }
    }
 }
 

@@ -59,14 +59,10 @@ public:
    virtual bool matchTarget(int section_idx, int structure_idx);
    virtual bool matchTarget(BingoItemData& item_data) {return BingoPgSearchEngine::matchTarget(item_data);}
 
-   virtual int getFpSize();
    virtual int getType() const {return BINGO_INDEX_TYPE_MOLECULE;}
 
    virtual void prepareQuerySearch(BingoPgIndex&, PG_OBJECT scan_desc);
    virtual bool searchNext(PG_OBJECT result_ptr);
-
-   virtual void loadDictionary(BingoPgIndex&);
-   virtual const char* getDictionary(int& size);
 
 private:
    MangoPgSearchEngine(const MangoPgSearchEngine&); // no implicit copy

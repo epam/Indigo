@@ -9,6 +9,7 @@
 #include "bingo_pg_config.h"
 #include "bingo_pg_ext_bitset.h"
 #include "mango_pg_search_engine.h"
+#include "ringo_pg_search_engine.h"
 
 CEXPORT {
 #include "postgres.h"
@@ -69,12 +70,13 @@ void BingoPgSearch::_initScanSearch() {
    /*
     * Set up search engine
     */
+   _bufferIndex.readMetaInfo();
    int index_type = _bufferIndex.getIndexType();
 
    if (index_type == BINGO_INDEX_TYPE_MOLECULE)
       _fpEngine.reset(new MangoPgSearchEngine(bingo_config, rel_name));
    else if (index_type == BINGO_INDEX_TYPE_REACTION)
-      elog(ERROR, "reaction search is not implemented yet");
+      _fpEngine.reset(new RingoPgSearchEngine(bingo_config, rel_name));
    else
       elog(ERROR, "unknown index type %d", index_type);
 
