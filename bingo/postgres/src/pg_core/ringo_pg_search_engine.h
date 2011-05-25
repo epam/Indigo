@@ -21,7 +21,7 @@ public:
    RingoPgFpData():_hash(0) {}
    virtual ~RingoPgFpData() {}
 
-   void setHash(dword mass) {_hash = mass;}
+   void setHash(dword hash) {_hash = hash;}
    dword getHash() const {return _hash;}
 
 private:
@@ -51,7 +51,6 @@ private:
    RingoPgSearchEngine(const RingoPgSearchEngine&); // no implicit copy
 
    void _prepareExactQueryStrings(indigo::Array<char>& what_clause, indigo::Array<char>& from_clause, indigo::Array<char>& where_clause);
-   void _prepareExactTauStrings(indigo::Array<char>& what_clause, indigo::Array<char>& from_clause, indigo::Array<char>& where_clause);
 
    void _prepareSubSearch(PG_OBJECT scan_desc);
    void _prepareExactSearch(PG_OBJECT scan_desc);
@@ -60,9 +59,8 @@ private:
 
    static void _errorHandler(const char* message, void* context);
 
-//   indigo::Array<char> _relName;
-//   indigo::Array<char> _shadowRelName;
-//   indigo::Array<char> _shadowHashRelName;
+   indigo::Array<char> _relName;
+   indigo::Array<char> _shadowRelName;
 
    int _searchType;
 

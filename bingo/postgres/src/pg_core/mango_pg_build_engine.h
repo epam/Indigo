@@ -25,6 +25,7 @@ public:
 
    virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&);
 
+   virtual int getFpSize();
    virtual int getType() const {return BINGO_INDEX_TYPE_MOLECULE;}
 
    virtual void prepareShadowInfo();

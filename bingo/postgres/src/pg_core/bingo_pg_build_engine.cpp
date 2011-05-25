@@ -23,15 +23,6 @@ void BingoPgBuildEngine::_setBingoContext() {
    bingoSetContext(0);
 }
 
-int BingoPgBuildEngine::getFpSize() {
-   int result;
-   _setBingoContext();
-
-   bingoGetConfigInt("fp-size-bytes", &result);
-
-   return result * 8;
-}
-
 void BingoPgBuildEngine::loadDictionary(BingoPgIndex& bingo_index) {
    _setBingoContext();
 

@@ -88,6 +88,7 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
                  &gross_str, &counter_elements_str, &fp_buf, &fp_len,
                  &fp_sim_str, &mass, &sim_fp_bits_count);
 
+
    /*
     * Set gross formula
     */
@@ -108,10 +109,6 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    }
    data.setFragmentsCount(target_fragments);
 
-//   int icm_len;
-//   const char* icm_data = mangoICM(struct_ptr, struct_size, false, &icm_len);
-//
-//   elog(INFO, "icm = %d cmf = %d", icm_len, cmf_len);
    /*
     * Set common info
     */
@@ -149,6 +146,16 @@ void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
    }
 
 
+}
+
+int MangoPgBuildEngine::getFpSize() {
+   int result;
+   _setBingoContext();
+   bingoSetErrorHandler(_errorHandler, 0);
+
+   bingoGetConfigInt("fp-size-bytes", &result);
+
+   return result * 8;
 }
 
 void MangoPgBuildEngine::prepareShadowInfo() {

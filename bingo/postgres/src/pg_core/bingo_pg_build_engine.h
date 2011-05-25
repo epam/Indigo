@@ -22,7 +22,7 @@ public:
    virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&){return true;}
 
    virtual int getType() const {return 0;}
-   int getFpSize();
+   virtual int getFpSize() {return 0;}
 
    virtual void prepareShadowInfo(){}
    virtual void insertShadowInfo(BingoPgFpData&){}

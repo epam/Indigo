@@ -22,6 +22,7 @@ public:
 
    virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&);
 
+   virtual int getFpSize();
    virtual int getType() const {return BINGO_INDEX_TYPE_REACTION;}
 
    virtual void prepareShadowInfo();
@@ -33,9 +34,8 @@ private:
 
    static void _errorHandler(const char* message, void* context);
 
-//   indigo::Array<char> _relName;
-//   indigo::Array<char> _shadowRelName;
-//   indigo::Array<char> _shadowHashRelName;
+   indigo::Array<char> _relName;
+   indigo::Array<char> _shadowRelName;
 
    int _searchType;
 

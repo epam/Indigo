@@ -33,7 +33,7 @@ select ('CC', '')::molquery @ 'CC'
 drop table btest_idx_shadow
 
 select * from btest
-
+select * from rtest_idx_shadow
 delete from btest where a='CCC'
 truncate table btest
  

@@ -50,6 +50,9 @@ bool BingoPgSearch::next(PG_OBJECT scan_desc_ptr, PG_OBJECT result_ptr) {
       _initScanSearch();
    }
 
+   /*
+    * Search and return next element
+    */
    return _fpEngine->searchNext(result_ptr);
 
 }
@@ -81,62 +84,10 @@ void BingoPgSearch::_initScanSearch() {
       elog(ERROR, "unknown index type %d", index_type);
 
    /*
-    * Define search bingo options
-    */
-//   _defineQueryOptions();
-   /*
     * Process query structure with parameters
     */
    _fpEngine->prepareQuerySearch(_bufferIndex, _indexScanDesc);
 
 }
-
-//void BingoPgSearchEngine::_defineQueryOptions() {
-//   IndexScanDesc index_scan_desc = (IndexScanDesc) _indexScanDesc;
-//
-//   char* func_name = get_func_name(index_scan_desc->keyData->sk_func.fn_oid);
-//   _funcName.readString(func_name, true);
-//
-//   /*
-//    * Get query info
-//    */
-//
-////   ScanKeyData key_data1 = index_scan_desc->keyData[0];
-////   ScanKeyData key_data2 = index_scan_desc->keyData[1];
-//
-//   HeapTupleHeader query_data = DatumGetHeapTupleHeader(index_scan_desc->keyData->sk_argument);
-//   Oid tupType = HeapTupleHeaderGetTypeId(query_data);
-//   int32 tupTypmod = HeapTupleHeaderGetTypMod(query_data);
-//   TupleDesc tupdesc = lookup_rowtype_tupdesc(tupType, tupTypmod);
-//   int ncolumns = tupdesc->natts;
-//
-//
-//   HeapTupleData tuple;
-//   /*
-//    * Build a temporary HeapTuple control structure
-//    */
-//   tuple.t_len = HeapTupleHeaderGetDatumLength(query_data);
-//   ItemPointerSetInvalid(&(tuple.t_self));
-//   tuple.t_tableOid = InvalidOid;
-//   tuple.t_data = query_data;
-//
-//   Datum *values = (Datum *) palloc(ncolumns * sizeof (Datum));
-//   bool *nulls = (bool *) palloc(ncolumns * sizeof (bool));
-//
-//   /*
-//    *  Break down the tuple into fields
-//    */
-//   heap_deform_tuple(&tuple, tupdesc, values, nulls);
-//
-//   /*
-//    * Query tuple consist of query and options
-//    */
-//   _queryText.init(values[0]);
-//   _optionsText.init(values[1]);
-//
-//   pfree(values);
-//   pfree(nulls);
-//   ReleaseTupleDesc(tupdesc);
-//}
 
 
