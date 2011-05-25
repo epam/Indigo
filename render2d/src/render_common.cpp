@@ -121,6 +121,9 @@ void AtomDesc::clear ()
    hydroPos = HYDRO_POS_RIGHT;
    aam = -1;
    inversion = STEREO_UNMARKED;
+   nearbyAtoms.clear();
+   list.clear();
+   pseudo.clear();
 }
 
 SGroup::SGroup()

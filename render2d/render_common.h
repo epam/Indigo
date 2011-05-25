@@ -150,6 +150,7 @@ struct AtomDesc {
    int implicit_h;
    Array<int> list;
    Array<char> pseudo;
+   Array<int> nearbyAtoms;
    int aam;
    int inversion;
 

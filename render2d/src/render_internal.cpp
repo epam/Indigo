@@ -1274,6 +1274,55 @@ bool MoleculeRenderInternal::_hasQueryModifiers (int aid)
       _ad(aid).fixed || _ad(aid).exactChange;
 }
 
+void MoleculeRenderInternal::_findNearbyAtoms ()
+{
+   double maxDistance = 1.5;
+   RedBlackObjMap<int, RedBlackObjMap<int, Array<int> > > buckets;
+
+   for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i)) {
+      const Vec2f& v = _ad(i).pos;
+      int xBucket = (int)(v.x / maxDistance);
+      int yBucket = (int)(v.y / maxDistance);
+      RedBlackObjMap<int, Array<int> >& bucketRow = buckets.findOrInsert(yBucket);
+      Array<int>& bucket = bucketRow.findOrInsert(xBucket);
+      bucket.push(i);
+   }
+
+   for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i)) {
+      const Vec2f& v = _ad(i).pos;
+      int xBucket = (int)(v.x / maxDistance);
+      int yBucket = (int)(v.y / maxDistance);
+      for (int j = 0; j < 3; ++j) {
+         for (int k = 0; k < 3; ++k) {
+            int x = xBucket + j - 1;
+            int y = yBucket + k - 1;
+            if (!buckets.find(y))
+               continue;
+            RedBlackObjMap<int, Array<int> >& bucketRow = buckets.at(y);
+            if (!bucketRow.find(x))
+               continue;
+            const Array<int>& bucket = bucketRow.at(x);
+            for (int r = 0; r < bucket.size(); ++r) {
+               int aid = bucket[r];
+               if (aid == i)
+                  continue;
+               const Vec2f& v1 = _ad(aid).pos;
+               if (Vec2f::dist(v, v1) < maxDistance) {
+                  _ad(i).nearbyAtoms.push(aid);
+               }
+            }
+         }
+      }
+      //const Array<int>& natoms = _ad(i).nearbyAtoms;
+      //printf("%02d:", i);
+      //for (int j = 0; j < natoms.size(); ++j) {
+      //   printf(" %02d", natoms[j]);
+      //}
+      //printf("\n");
+   }
+   //printf("\n");
+}
+
 void MoleculeRenderInternal::_initAtomData ()
 {
    QUERY_MOL_BEGIN(_mol);
@@ -1428,6 +1477,7 @@ void MoleculeRenderInternal::_initAtomData ()
          ad.aam = _data.aam[uaid];
       }
    }
+   _findNearbyAtoms();
 }
 
 void MoleculeRenderInternal::_findAnglesOverPi ()

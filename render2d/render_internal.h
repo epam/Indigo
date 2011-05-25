@@ -64,6 +64,7 @@ private:
    bool _vertexIsHighlighted (int aid);
    bool _edgeIsHighlighted (int bid);
    bool _hasQueryModifiers (int aid);
+   void _findNearbyAtoms();
    void _initAtomData();
    void _initRGroups();
    void _loadBrackets(SGroup& sg, const Array<Vec2f[2]>& coord, bool transformCoordinates);
