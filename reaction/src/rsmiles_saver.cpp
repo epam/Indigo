@@ -28,6 +28,7 @@ TL_CP_GET(_written_atoms),
 TL_CP_GET(_written_bonds),
 TL_CP_GET(_ncomp)
 {
+   smarts_mode = false;
 }
 
 void RSmilesSaver::saveReaction (Reaction &reaction)
@@ -54,6 +55,7 @@ void RSmilesSaver::_writeMolecule (int i)
    saver.separate_rsites = false;
    saver.rsite_indices_as_aam = false;
    saver.atom_atom_mapping = _brxn->getAAMArray(i).ptr();
+   saver.smarts_mode = smarts_mode;
 
    if (_rxn != 0)
       saver.saveMolecule(_rxn->getMolecule(i));

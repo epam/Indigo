@@ -20,6 +20,11 @@
 #include "base_cpp/tlscont.h"
 #include "reaction.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Output;
@@ -27,7 +32,7 @@ class BaseReaction;
 class QueryReaction;
 class Reaction;
 
-class RSmilesSaver
+class DLLEXPORT RSmilesSaver
 {
 public:
    DEF_ERROR("reaction SMILES saver");
@@ -36,6 +41,8 @@ public:
 
    void saveReaction (Reaction &reaction);
    void saveQueryReaction (QueryReaction &reaction);
+
+   bool smarts_mode;
 
 protected:
    BaseReaction  *_brxn;
@@ -70,5 +77,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif
