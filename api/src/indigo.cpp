@@ -26,7 +26,7 @@ DLLEXPORT Indigo & indigoGetInstance ()
 
 CEXPORT const char * indigoVersion ()
 {
-   return "1.0-beta13-fix";
+   return "1.0-beta13-fix2";
 }
 
 Indigo::Indigo ()
