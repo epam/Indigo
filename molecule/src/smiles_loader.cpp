@@ -202,7 +202,11 @@ void SmilesLoader::_calcCisTrans ()
 void SmilesLoader::_readOtherStuff ()
 {
    MoleculeStereocenters &stereocenters = _bmol->stereocenters;
-   
+
+   QS_DEF(Array<int>, to_remove);
+
+   to_remove.clear();
+
    while (1)
    {
       char c = _scanner.readChar();
@@ -210,8 +214,18 @@ void SmilesLoader::_readOtherStuff ()
       if (c == '|')
          break;
 
-      if (c == 'w')
+      if (c == 'w') // 'ANY' stereocenters
       {
+         bool skip = true;
+
+         // TODO: up/down designators -- skipped for now
+         if (_scanner.lookNext() == 'U')
+            _scanner.skip(1);
+         else if (_scanner.lookNext() == 'D')
+            _scanner.skip(1);
+         else
+            skip = false;
+         
          if (_scanner.readChar() != ':')
             throw Error("colon expected after 'w'");
 
@@ -219,13 +233,20 @@ void SmilesLoader::_readOtherStuff ()
          {
             int idx = _scanner.readUnsigned();
 
-            stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+            if (!skip)
+               stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+
+            if (_scanner.lookNext() == '.') // skip the bond index
+            {
+               _scanner.skip(1);
+               _scanner.readUnsigned();
+            }
 
             if (_scanner.lookNext() == ',')
                _scanner.skip(1);
          }
       }
-      else if (c == 'a')
+      else if (c == 'a') // 'ABS' stereocenters
       {
          if (_scanner.readChar() != ':')
             throw Error("colon expected after 'a'");
@@ -243,7 +264,7 @@ void SmilesLoader::_readOtherStuff ()
                _scanner.skip(1);
          }
       }
-      else if (c == 'o')
+      else if (c == 'o') // 'OR' stereocenters
       {
          int groupno = _scanner.readUnsigned();
 
@@ -263,7 +284,7 @@ void SmilesLoader::_readOtherStuff ()
                _scanner.skip(1);
          }
       }
-      else if (c == '&')
+      else if (c == '&') // 'AND' stereocenters
       {
          int groupno = _scanner.readUnsigned();
 
@@ -283,7 +304,7 @@ void SmilesLoader::_readOtherStuff ()
                _scanner.skip(1);
          }
       }
-      else if (c == '^')
+      else if (c == '^') // radicals
       {
          int rad = _scanner.readIntFix(1);
          int radical;
@@ -315,7 +336,7 @@ void SmilesLoader::_readOtherStuff ()
                _scanner.skip(1);
          }
       }
-      else if (c == '$')
+      else if (c == '$') // pseudoatoms
       {
          QS_DEF(Array<char>, label);
 
@@ -354,14 +375,14 @@ void SmilesLoader::_readOtherStuff ()
                         sscanf(label.ptr() + 3, "%d", &rnum) == 1)
                {
                   // That is ChemAxon's Extended SMILES notation for attachment
-                  // points. We delete this fake atom, placing attachment point
+                  // points. We mark the atom for removal and place attachment point
                   // markers on its neighbors.
                   int k;
                   const Vertex &v = _bmol->getVertex(i);
 
                   for (k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
                      _bmol->addAttachmentPoint(rnum, v.neiVertex(k));
-                  _bmol->removeAtom(i);
+                  to_remove.push(i);
                }
                else
                {
@@ -378,7 +399,43 @@ void SmilesLoader::_readOtherStuff ()
             }
          }
       }
-      else if (c == 'h')
+      else if (c == '(') // atom coordinates
+      {
+         for (int i = _bmol->vertexBegin(); i != _bmol->vertexEnd(); i = _bmol->vertexNext(i))
+         {
+            float x, y, z = 0;
+
+            x = _scanner.readFloat();
+            if (_scanner.readChar() != ',')
+               throw Error("expected comma after X coordinate");
+
+            y = _scanner.readFloat();
+            if (_scanner.lookNext() != ';' && _scanner.lookNext() != ')')
+            {
+               if (_scanner.readChar() != ',')
+                  throw Error("expected comma after Y coordinate");
+               if (_scanner.lookNext() == ';')
+                  _scanner.skip(1);
+               else if (_scanner.lookNext() == ')')
+                  ;
+               else
+                  z = _scanner.readFloat();
+            }
+            else
+            {
+               _scanner.skip(1);
+               if (_scanner.readChar() != ';')
+                  throw Error("expected ';' after coordinates");
+            }
+
+            _bmol->setAtomXyz(i, x, y, z);
+
+         }
+         if (_scanner.readChar() != ')')
+            throw Error("expected ')' after coordinates");
+         _bmol->stereocenters.markBonds();
+      }
+      else if (c == 'h') // highlighting (Indigo's own extension)
       {
          c = _scanner.readChar();
 
@@ -406,6 +463,10 @@ void SmilesLoader::_readOtherStuff ()
          }
       }
    }
+
+   if (to_remove.size() > 0)
+      _bmol->removeAtoms(to_remove);
+
 }
 
 void SmilesLoader::loadSMARTS (QueryMolecule &mol)
