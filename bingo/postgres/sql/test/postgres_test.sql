@@ -8,6 +8,19 @@ select * from btest where a @ ('CC(=O)', '')::bingo.bingo_sub
 select * from btest where a @ ('CCC', '')::bingo_sub
 select * from btest where a @ ('OC1=CC=CC=C1', '')::bingo_sub
 
+drop table aatest
+truncate table btest
+select bingo.importSDF('btest(a)', '/home/tarquin/projects/indigo/indigo-git/bingo/tests/postgres/java_tests/test_mango.sdf')
+create table aatest(a text)
+insert into aatest (select * from btest where a @ ('CC1CCCCC1', '')::bingo.smarts)
+explain select * from aatest where not bingo.matchSmarts(a, ('CC1CCCCC1', ''))
+
+create index aatest_idx on aatest using bingo_idx (a bingo.molecule)
+
+
+select count(*) from aatest where bingo.matchSmarts(a, ('CC1CCCCC1', ''))
+select a @ ('CC1CCCCC1', '')::bingo.smarts, bingo.matchSmarts(a, ('CC1CCCCC1', '')) from btest
+
 
 select * from btest where a @ ('CC(=O)', '')::bingo_exact
 select * from btest where a @ ('CCC', '')::bingo_exact

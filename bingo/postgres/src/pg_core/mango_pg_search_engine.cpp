@@ -77,7 +77,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
       if(mangoNeedCoords()) {
          _bufferIndexPtr->readXyzItem(section_idx, structure_idx, xyz_buf);
       }
-      result = mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes()) == 1;
+      result = (mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes()) == 1);
    } else if(_searchType == BingoPgCommon::MOL_GROSS) {
       BingoPgText gross_text;
       _searchCursor->getText(2, gross_text);

@@ -203,7 +203,7 @@ bool BingoPgSearchEngine::_fetchForNext() {
       /*
        * Match the next target
        */
-      if(matchTarget(_currentSection, _currentIdx));
+      if(matchTarget(_currentSection, _currentIdx))
          return true;
    }
 
