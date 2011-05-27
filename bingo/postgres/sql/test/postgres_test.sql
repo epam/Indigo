@@ -307,12 +307,15 @@ select bingoImportsdf1('test_table(a)', '/home/tarquin/projects/indigo/postgres-
 drop FUNCTION bingo_getStructuresCount(oid)
 select bingoGetIndexStructuresCount('btest_idx'::regclass::oid)
 
-
-
+create table acd2d_symyx(a text)
+select count(*) from acd2d_symyx
 insert into test_table(a) values(null)
 truncate table btest
-select bingoImportSDF_sql('btest(a)', '/home/tarquin/projects/bases/acd2d_symyx.sdf')
+select bingo.importSDF('acd2d_symyx(a)', '/home/tarquin/projects/bases/acd2d_symyx.sdf')
 
+grant all on table pg_depend to tarquin
+create index acd2d_idx on acd2d_symyx using bingo_idx (a bingo.molecule)
+select * from pg_depend
 
 select count(a) from btest
         

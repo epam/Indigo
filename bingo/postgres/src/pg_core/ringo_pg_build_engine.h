@@ -13,7 +13,7 @@ class BingoPgConfig;
 class BingoPgFpData;
 
 /*
- * Class for procession molecule fingerprint data
+ * Class for procession reaction fingerprint data
  */
 class RingoPgBuildEngine : public BingoPgBuildEngine {
 public:

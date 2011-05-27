@@ -106,7 +106,7 @@ bool RingoPgSearchEngine::searchNext(PG_OBJECT result_ptr) {
 }
 
 void RingoPgSearchEngine::_errorHandler(const char* message, void*) {
-   elog(ERROR, "Error while searching a molecule: %s", message);
+   elog(ERROR, "Error while searching a reaction: %s", message);
 }
 
 void RingoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_clause_str, indigo::Array<char>& from_clause_str, indigo::Array<char>& where_clause_str) {

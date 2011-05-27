@@ -32,7 +32,7 @@ private:
 };
 
 /*
- * Class for procession molecule fingerprint data
+ * Class for procession reaction fingerprint data
  */
 class RingoPgSearchEngine : public BingoPgSearchEngine {
 public:
