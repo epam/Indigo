@@ -67,7 +67,7 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    /*
     * Process target
     */
-   if(mangoIndexProcessSingleRecord() == 0)
+   if(mangoIndexProcessSingleRecord() <= 0)
       return false;
 
    const char* cmf_buf;

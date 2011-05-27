@@ -314,7 +314,7 @@ truncate table btest
 select bingo.importSDF('acd2d_symyx(a)', '/home/tarquin/projects/bases/acd2d_symyx.sdf')
 
 grant all on table pg_depend to tarquin
-create index acd2d_idx on acd2d_symyx using bingo_idx (a bingo.molecule)
+create index bingo.acd2d_idx on acd2d_symyx using bingo_idx (a bingo.molecule)
 select * from pg_depend
 
 select count(a) from btest
@@ -464,3 +464,8 @@ create schema bingo
 drop schema bingo cascade
 delete from pg_am where amname='bingo_idx'
 create table bingo.test(a integer)
+
+create table ringo_test(a text)
+create index ringo_test_idx on ringo_test using bingo_idx (a bingo.reaction)
+insert into ringo_test(a) values('OCNCCl>>OCNCCl')
+insert into ringo_test(a) values('AAA>>')

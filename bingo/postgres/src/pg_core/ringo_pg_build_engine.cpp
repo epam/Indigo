@@ -65,7 +65,7 @@ bool RingoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    /*
     * Process target
     */
-   if(ringoIndexProcessSingleRecord() == 0)
+   if(ringoIndexProcessSingleRecord() <= 0)
       return false;
 
    const char* crf_buf;
