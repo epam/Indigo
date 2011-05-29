@@ -303,6 +303,9 @@ void RenderSettings::init (float sf)
    arrowHeadSize = plusSize / 2;
    equalityInterval = plusSize / 2;
    rGroupIfThenInterval = bondLineWidth * 4;
+   neighboringLabelTolerance = 1.3f;
+   minSin = 0.6f;
+   neighboringAtomDistanceTreshold = 1.5f;
 }
 
 CanvasOptions::CanvasOptions ()
