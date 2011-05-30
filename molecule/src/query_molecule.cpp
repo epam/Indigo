@@ -1138,9 +1138,8 @@ void QueryMolecule::Node::optimize ()
       break;
    case OP_NONE:
       return;
-   default:
-      _optimize();
    }
+   _optimize();
 }
 
 bool QueryMolecule::Atom::_sureValue (int what_type, int& value_out)
@@ -1877,9 +1876,6 @@ int QueryMolecule::getQueryBondType (QueryMolecule::Bond& qb) {
 
 void QueryMolecule::optimize ()
 {
-   // TODO: make optimize more robust for fingerprint generation
-   // [$([OX2H]),$([OX1-])] -> [O;$([OX2H]),$([OX1-])]
-   // [$([OX2H]),$([NX1-])] -> [O,N;$([OX2H]),$([OX1-])] and etc.
    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
       getAtom(i).optimize();
 }
