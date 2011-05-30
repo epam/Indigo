@@ -284,6 +284,7 @@ void MangoSubstructure::_initSmartsQuery (QueryMolecule &query_in, QueryMolecule
    MoleculeSubstructureMatcher::makeTransposition(query_in, transposition);
    query_out.makeSubmolecule(query_in, transposition, 0);
    _nei_query_counters.calculate(query_out);
+   query_out.optimize();
 }
 
 void MangoSubstructure::_initTarget (bool from_database)
