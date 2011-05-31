@@ -41,6 +41,9 @@ Datum bingo_restrpos(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(getindexstructurescount);
 Datum getindexstructurescount(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(getversion);
+Datum getversion(PG_FUNCTION_ARGS);
+
 }
 
 CEXPORT {
@@ -179,3 +182,6 @@ void
 bingo_desc(StringInfo buf, uint8 xl_info, char *rec) {
 }
 
+Datum getversion(PG_FUNCTION_ARGS) {
+   PG_RETURN_CSTRING(bingoGetVersion());
+}

@@ -327,7 +327,7 @@ truncate table btest
 select bingo.importSDF('acd2d_symyx(a)', '/home/tarquin/projects/bases/acd2d_symyx.sdf')
 
 grant all on table pg_depend to tarquin
-create index bingo.acd2d_idx on acd2d_symyx using bingo_idx (a bingo.molecule)
+create index acd2d_idx on acd2d_symyx using bingo_idx (a bingo.molecule)
 select * from pg_depend
 
 select count(a) from btest
@@ -503,3 +503,6 @@ drop table test64k
 select count(*) from test64k
 create index test64k_idx on test64k using bingo_idx (a bingo.molecule)
 drop index test64k_idx
+drop function bingo.getversion(oid)
+
+select bingo.getversion()
