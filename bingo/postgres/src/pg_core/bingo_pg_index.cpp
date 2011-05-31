@@ -216,7 +216,7 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine) {
        * Write buffers immediately
        */
       int blck_off = _metaInfo.offset_dictionary + _metaInfo.n_blocks_for_dictionary;
-      BingoPgBufferCacheBin buffer_cache(blck_off, _index, false);
+      BingoPgBufferCacheBin buffer_cache(blck_off, _index, true);
       buffer_dict.copy(dict_buf + dict_offset, dict_buf_size);
       buffer_cache.writeBin(buffer_dict);
       
