@@ -482,3 +482,24 @@ create table ringo_test(a text)
 create index ringo_test_idx on ringo_test using bingo_idx (a bingo.reaction)
 insert into ringo_test(a) values('OCNCCl>>OCNCCl')
 insert into ringo_test(a) values('AAA>>')
+
+CREATE OR REPLACE FUNCTION insert_table(text, integer) RETURNS void AS $$
+declare idx integer;
+begin
+ idx := 0;
+ LOOP
+    INSERT INTO test64k(a) values ($1);
+    idx := idx + 1;
+    EXIT WHEN idx > $2;
+    
+ END LOOP;
+end;
+$$ LANGUAGE 'plpgsql' ;
+
+select insert_table('C', 64000)
+
+create table test64k (a text)
+drop table test64k
+select count(*) from test64k
+create index test64k_idx on test64k using bingo_idx (a bingo.molecule)
+drop index test64k_idx

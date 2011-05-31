@@ -216,7 +216,7 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine) {
        * Write buffers immediately
        */
       int blck_off = _metaInfo.offset_dictionary + _metaInfo.n_blocks_for_dictionary;
-      BingoPgBufferCacheBin buffer_cache(blck_off, _index, true);
+      BingoPgBufferCacheBin buffer_cache(blck_off, _index, false);
       buffer_dict.copy(dict_buf + dict_offset, dict_buf_size);
       buffer_cache.writeBin(buffer_dict);
       
@@ -231,10 +231,10 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine) {
  * Initializes and fulfils a new section
  */
 void BingoPgIndex::_initializeNewSection() {
-   int section_offset = _metaInfo.n_pages;
    if(_currentSection.get() != 0) {
       _metaInfo.n_pages += _currentSection->getPagesCount();
    }
+   int section_offset = _metaInfo.n_pages;
    /*
     * Set up section offset mapping
     */

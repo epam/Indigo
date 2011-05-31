@@ -72,8 +72,10 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num) {
     * Bingo forbids noncontiguous access
     */
    if (block_num > nblocks)
-      elog(ERROR, "access to noncontiguous page in bingo index \"%s\"",
+      elog(ERROR, "internal error: access to noncontiguous page in bingo index \"%s\"",
            RelationGetRelationName(rel));
+   if(block_num < nblocks)
+      elog(ERROR, "internal error: access to already pinned block in bingo index");
 
    /*
     * smgr insists we use P_NEW to extend the relation
