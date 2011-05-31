@@ -33,9 +33,9 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/src/pg_am/pg_bingo_import.o \
 	${OBJECTDIR}/src/pg_common/bingo_pg_buffer_cache.o \
 	${OBJECTDIR}/src/pg_core/ringo_pg_build_engine.o \
-	${OBJECTDIR}/src/pg_am/pg_bingo_import.o \
 	${OBJECTDIR}/src/pg_common/bingo_pg_ext_bitset.o \
 	${OBJECTDIR}/_ext/1019403175/mango_gross.o \
 	${OBJECTDIR}/_ext/1019403175/ringo_exact.o \
@@ -60,6 +60,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/pg_core/bingo_pg_search.o \
 	${OBJECTDIR}/_ext/1019403175/mango_substructure.o \
 	${OBJECTDIR}/_ext/1019403175/ringo_substructure.o \
+	${OBJECTDIR}/src/pg_am/pg_mango_utils.o \
 	${OBJECTDIR}/src/pg_common/bingo_pg_buffer.o \
 	${OBJECTDIR}/src/pg_core/mango_pg_search_engine.o \
 	${OBJECTDIR}/_ext/1019403175/ringo_aam.o \
@@ -76,6 +77,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/393906193/bingo_core_c_parallel.o \
 	${OBJECTDIR}/_ext/1019403175/mango_index.o \
 	${OBJECTDIR}/_ext/393906193/bingo_core_c.o \
+	${OBJECTDIR}/src/pg_am/pg_ringo_utils.o \
 	${OBJECTDIR}/src/pg_common/bingo_pg_section.o \
 	${OBJECTDIR}/src/pg_core/mango_pg_build_engine.o \
 	${OBJECTDIR}/src/pg_am/pg_bingo_update.o \
@@ -116,6 +118,11 @@ bin/bingo_postgres.so: ${OBJECTFILES}
 	${MKDIR} -p bin
 	${LINK.cc} -shared -o bin/bingo_postgres.so -fPIC ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
+${OBJECTDIR}/src/pg_am/pg_bingo_import.o: src/pg_am/pg_bingo_import.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/pg_am
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_import.o src/pg_am/pg_bingo_import.cpp
+
 ${OBJECTDIR}/src/pg_common/bingo_pg_buffer_cache.o: src/pg_common/bingo_pg_buffer_cache.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
@@ -125,11 +132,6 @@ ${OBJECTDIR}/src/pg_core/ringo_pg_build_engine.o: src/pg_core/ringo_pg_build_eng
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/ringo_pg_build_engine.o src/pg_core/ringo_pg_build_engine.cpp
-
-${OBJECTDIR}/src/pg_am/pg_bingo_import.o: src/pg_am/pg_bingo_import.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/pg_am
-	${RM} $@.d
-	$(COMPILE.cc) -g -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_import.o src/pg_am/pg_bingo_import.cpp
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_ext_bitset.o: src/pg_common/bingo_pg_ext_bitset.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
@@ -251,6 +253,11 @@ ${OBJECTDIR}/_ext/1019403175/ringo_substructure.o: ../src/core/ringo_substructur
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_substructure.o ../src/core/ringo_substructure.cpp
 
+${OBJECTDIR}/src/pg_am/pg_mango_utils.o: src/pg_am/pg_mango_utils.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/pg_am
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_mango_utils.o src/pg_am/pg_mango_utils.cpp
+
 ${OBJECTDIR}/src/pg_common/bingo_pg_buffer.o: src/pg_common/bingo_pg_buffer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
@@ -330,6 +337,11 @@ ${OBJECTDIR}/_ext/393906193/bingo_core_c.o: ../src/core-c/bingo_core_c.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/bingo_core_c.o ../src/core-c/bingo_core_c.cpp
+
+${OBJECTDIR}/src/pg_am/pg_ringo_utils.o: src/pg_am/pg_ringo_utils.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/pg_am
+	${RM} $@.d
+	$(COMPILE.cc) -g -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_ringo_utils.o src/pg_am/pg_ringo_utils.cpp
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_section.o: src/pg_common/bingo_pg_section.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common

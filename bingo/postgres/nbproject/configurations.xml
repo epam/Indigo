@@ -50,7 +50,9 @@
       <itemPath>src/pg_am/pg_bingo_update.cpp</itemPath>
       <itemPath>src/pg_am/pg_bingo_utils.cpp</itemPath>
       <itemPath>src/pg_am/pg_mango_match.cpp</itemPath>
+      <itemPath>src/pg_am/pg_mango_utils.cpp</itemPath>
       <itemPath>src/pg_am/pg_ringo_match.cpp</itemPath>
+      <itemPath>src/pg_am/pg_ringo_utils.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="pg_common"
@@ -347,6 +349,9 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>USE_FLOAT8_BYVAL</Elem>
+          </preprocessorList>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
