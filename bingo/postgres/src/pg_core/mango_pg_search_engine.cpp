@@ -403,7 +403,7 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
 
 }
 
-void MangoPgSearchEngine::_getScanQueries(dword arg_datum, BingoPgText& str1, BingoPgText& str2) {
+void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1, BingoPgText& str2) {
    /*
     * Get query info
     */
@@ -444,7 +444,7 @@ void MangoPgSearchEngine::_getScanQueries(dword arg_datum, BingoPgText& str1, Bi
    ReleaseTupleDesc(tupdesc);
 }
 
-void MangoPgSearchEngine::_getScanQueries(dword arg_datum, float& min_bound, float& max_bound, BingoPgText& str1, BingoPgText& str2) {
+void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound, float& max_bound, BingoPgText& str1, BingoPgText& str2) {
    /*
     * Get query info
     */

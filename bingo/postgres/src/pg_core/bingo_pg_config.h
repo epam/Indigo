@@ -1,6 +1,7 @@
 #ifndef _BINGO_PG_CONFIG_H__
 #define	_BINGO_PG_CONFIG_H__
 
+#include <stdint.h>
 #include "bingo_postgres.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/exception.h"
@@ -17,7 +18,7 @@ public:
 
    void readDefaultConfig(const char* schema_name);
    void updateByIndexConfig(PG_OBJECT index);
-   void replaceInsertParameter(unsigned int name_datum, unsigned int value_datum);
+   void replaceInsertParameter(uintptr_t  name_datum, uintptr_t  value_datum);
    void setUpBingoConfiguration();
 
    void serialize(indigo::Array<char>& config_data);
@@ -28,10 +29,10 @@ public:
 private:
    BingoPgConfig(const BingoPgConfig&); //no implicit copy
 
-   void _readTable(unsigned int id, bool tau);
+   void _readTable(uintptr_t  id, bool tau);
    int _getNumericValue(int c_idx);
 
-   void _replaceInsertTauParameter(unsigned int rule_datum, unsigned int beg_datum, unsigned int end_datum);
+   void _replaceInsertTauParameter(uintptr_t  rule_datum, uintptr_t  beg_datum, uintptr_t  end_datum);
    void _toString(int value, indigo::Array<char>&);
 
    indigo::RedBlackStringObjMap< indigo::Array<char> > _rawConfig;

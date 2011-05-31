@@ -9,7 +9,7 @@ CEXPORT {
 
 BingoPgText::BingoPgText():_text(0){
 }
-BingoPgText::BingoPgText(unsigned int text_datum):_text(0) {
+BingoPgText::BingoPgText(uintptr_t text_datum):_text(0) {
    init(text_datum);
 }
 
@@ -17,7 +17,7 @@ BingoPgText::~BingoPgText() {
    clear();
 }
 
-void BingoPgText::init(unsigned int text_datum) {
+void BingoPgText::init(uintptr_t text_datum) {
    clear();
    if (text_datum != 0) {
       _text = DatumGetTextPCopy(text_datum);
@@ -61,6 +61,6 @@ const char* BingoPgText::getString() {
    return _cstr.ptr();
 }
 
-dword BingoPgText::getDatum() {
+uintptr_t BingoPgText::getDatum() {
    return PointerGetDatum(_text);
 }

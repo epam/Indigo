@@ -1,24 +1,25 @@
 #ifndef _BINGO_PG_TEXT_H__
 #define	_BINGO_PG_TEXT_H__
 
+#include <stdint.h>
 #include "bingo_postgres.h"
 #include "base_cpp/array.h"
 
 class BingoPgText {
 public:
    BingoPgText();
-   BingoPgText(unsigned int text_datum);
+   BingoPgText(uintptr_t text_datum);
    ~BingoPgText();
 
    void clear();
-   void init(unsigned int text_datum);
+   void init(uintptr_t text_datum);
    void initFromString(const char* str);
    void initFromArray(indigo::Array<char>& str);
 
    const char* getText(int& size);
    const char* getString();
 
-   dword getDatum();
+   uintptr_t getDatum();
 private:
    BingoPgText(const BingoPgText&); //no implicit copy
 

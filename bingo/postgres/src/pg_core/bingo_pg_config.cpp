@@ -112,7 +112,7 @@ void BingoPgConfig::updateByIndexConfig(PG_OBJECT index_ptr) {
 
 }
 
-void BingoPgConfig::replaceInsertParameter(unsigned int name_datum, unsigned int value_datum) {
+void BingoPgConfig::replaceInsertParameter(uintptr_t  name_datum, uintptr_t  value_datum) {
    /*
     * Name and value are strings
     */
@@ -206,7 +206,7 @@ int BingoPgConfig::_getNumericValue(int c_idx) {
    return scanner.readInt();
 }
 
-void BingoPgConfig::_replaceInsertTauParameter(unsigned int rule_datum, unsigned int beg_datum, unsigned int end_datum) {
+void BingoPgConfig::_replaceInsertTauParameter(uintptr_t  rule_datum, uintptr_t  beg_datum, uintptr_t  end_datum) {
    _tauParameters.clear();
    /*
     * tau parameter rule integer = begin string : end string

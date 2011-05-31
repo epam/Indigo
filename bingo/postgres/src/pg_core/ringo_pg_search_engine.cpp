@@ -184,7 +184,7 @@ void RingoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr) {
    _prepareSubSearch(scan_desc_ptr);
 }
 
-void RingoPgSearchEngine::_getScanQueries(dword arg_datum, BingoPgText& str1, BingoPgText& str2) {
+void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1, BingoPgText& str2) {
    /*
     * Get query info
     */

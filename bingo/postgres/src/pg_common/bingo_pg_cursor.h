@@ -1,6 +1,7 @@
 #ifndef _BINGO_PG_CURSOR_H__
 #define	_BINGO_PG_CURSOR_H__
 
+#include <stdint.h>
 #include "base_cpp/array.h"
 #include "bingo_postgres.h"
 
@@ -17,7 +18,7 @@ public:
    
    void getId(int arg_idx, BingoItemData&);
    void getText(int arg_idx, BingoPgText&);
-   unsigned int getDatum(int arg_idx);
+   uintptr_t  getDatum(int arg_idx);
 private:
    BingoPgCursor(const BingoPgCursor&); //no implicit copy
 

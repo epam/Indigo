@@ -72,7 +72,7 @@ void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
    data.init(record);
 }
 
-unsigned int BingoPgCursor::getDatum(int arg_idx) {
+uintptr_t  BingoPgCursor::getDatum(int arg_idx) {
    if(SPI_processed == 0)
       elog(ERROR, "can not get not processed tuple");
 
