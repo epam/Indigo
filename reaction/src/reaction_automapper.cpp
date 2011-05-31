@@ -634,13 +634,20 @@ void ReactionAutomapper::_removeSmallComponents(BaseMolecule& mol) const {
    int ncomp = mol.countComponents();
    const Array<int> &decomposition = mol.getDecomposition();
 
-   for(int i = 0; i < ncomp; ++i) {
-      if(mol.countComponentVertices(i) < _MIN_VERTEX_SUB) {
+   QS_DEF(Array<int>, vertices_to_remove);
+   vertices_to_remove.clear();
+   
+   for(int comp_idx = 0; comp_idx < ncomp; ++comp_idx) {
+      if(mol.countComponentVertices(comp_idx) < _MIN_VERTEX_SUB) {
          for(int j = mol.vertexBegin(); j < mol.vertexEnd(); j = mol.vertexNext(j))
-            if(decomposition[j] == i)
-               mol.removeVertex(j);
+            if(decomposition[j] == comp_idx)
+               vertices_to_remove.push(j);
       }
    }
+   for (int i = 0; i < vertices_to_remove.size(); ++i) {
+      mol.removeVertex(vertices_to_remove[i]);
+   }
+
 }
 
  

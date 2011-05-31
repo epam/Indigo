@@ -168,6 +168,10 @@ void Graph::removeVertex (int idx)
       removeEdge(edges[i]);
 
    _vertices->remove(idx);
+
+   _topology_valid = false;
+   _sssr_valid = false;
+   _components_valid = false;
 }
 
 
