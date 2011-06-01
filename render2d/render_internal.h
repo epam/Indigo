@@ -65,6 +65,10 @@ private:
    bool _edgeIsHighlighted (int bid);
    bool _hasQueryModifiers (int aid);
    void _findNearbyAtoms();
+   void _initHydroPos(int aid);
+   int  _hydroPosFindConflict(int i);
+   bool _hydroPosCorrectGreedy ();
+   void _hydroPosCorrectRepulse ();
    void _initAtomData();
    void _initRGroups();
    void _loadBrackets(SGroup& sg, const Array<Vec2f[2]>& coord, bool transformCoordinates);

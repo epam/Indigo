@@ -124,6 +124,8 @@ void AtomDesc::clear ()
    nearbyAtoms.clear();
    list.clear();
    pseudo.clear();
+   memset(implHPosWeights, 0, sizeof(implHPosWeights));
+   upperSin = lowerSin = rightSin = leftSin = 0;
 }
 
 SGroup::SGroup()
@@ -305,7 +307,8 @@ void RenderSettings::init (float sf)
    rGroupIfThenInterval = bondLineWidth * 4;
    neighboringLabelTolerance = 1.3f;
    minSin = 0.6f;
-   neighboringAtomDistanceTreshold = 1.5f;
+   neighboringAtomDistanceTresholdA = 0.8f;
+   neighboringAtomDistanceTresholdB = 0.5f;
 }
 
 CanvasOptions::CanvasOptions ()

@@ -40,7 +40,7 @@ enum STEREO_STYLE {STEREO_STYLE_EXT, STEREO_STYLE_OLD, STEREO_STYLE_NONE};
 enum {CWC_BASE = -2, CWC_WHITE=0, CWC_BLACK, CWC_RED, CWC_GREEN, CWC_BLUE, CWC_DARKGREEN, CWC_COUNT};
 enum FONT_SIZE {FONT_SIZE_LABEL=0, FONT_SIZE_ATTR, FONT_SIZE_RGROUP_LOGIC, FONT_SIZE_RGROUP_LOGIC_INDEX, FONT_SIZE_INDICES, FONT_SIZE_ATTACHMENT_POINT_INDEX, FONT_SIZE_RSITE_ATTACHMENT_INDEX, FONT_SIZE_COMMENT, FONT_SIZE_TITLE, FONT_SIZE_DATA_SGROUP, FONT_SIZE_COUNT/*must be the last*/};
 enum COMMENT_POS {COMMENT_POS_TOP, COMMENT_POS_BOTTOM};
-enum HYDRO_POS {HYDRO_POS_RIGHT = 0, HYDRO_POS_LEFT, HYDRO_POS_UP, HYDRO_POS_DOWN};
+enum HYDRO_POS {HYDRO_POS_RIGHT = 0, HYDRO_POS_UP, HYDRO_POS_DOWN, HYDRO_POS_LEFT};
 
 // cos(a) to cos(a/2)
 double cos2c (const double cs);
@@ -153,6 +153,8 @@ struct AtomDesc {
    Array<int> nearbyAtoms;
    int aam;
    int inversion;
+   float implHPosWeights[4];
+   float upperSin, lowerSin, rightSin, leftSin;
 
    float leftMargin, rightMargin, ypos, height;
 private:
@@ -323,7 +325,8 @@ public:
    float rGroupIfThenInterval;
    float neighboringLabelTolerance;
    float minSin;
-   float neighboringAtomDistanceTreshold;
+   float neighboringAtomDistanceTresholdA;
+   float neighboringAtomDistanceTresholdB;
 
 private:
    RenderSettings (const RenderSettings& settings);
