@@ -328,6 +328,7 @@ select bingo.importSDF('acd2d_symyx(a)', '/home/tarquin/projects/bases/acd2d_sym
 
 grant all on table pg_depend to tarquin
 create index acd2d_idx on acd2d_symyx using bingo_idx (a bingo.molecule)
+select * from acd2d_symyx where a @ ('','')::bingo.sub;
 select * from pg_depend
 
 select count(a) from btest
