@@ -191,8 +191,6 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine) {
    if(_strategy == READING_STRATEGY)
       elog(ERROR, "can not write dictionary while there is no building stage");
 
-   elog(INFO, "write dictionary");
-
    int dict_size;
    const char* dict_buf = fp_engine.getDictionary(dict_size);
 
