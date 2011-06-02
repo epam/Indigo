@@ -5,7 +5,7 @@
 #include "base_cpp/array.h"
 #include "bingo_postgres.h"
 
-class BingoItemData;
+class ItemPointerData;
 class BingoPgText;
 
 class BingoPgCursor {
@@ -16,7 +16,7 @@ public:
 
    bool next();
    
-   void getId(int arg_idx, BingoItemData&);
+   void getId(int arg_idx, ItemPointerData&);
    void getText(int arg_idx, BingoPgText&);
    uintptr_t  getDatum(int arg_idx);
 private:

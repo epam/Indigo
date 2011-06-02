@@ -22,7 +22,7 @@ using namespace indigo;
 void BingoPgFpData::setTidItem(PG_OBJECT item_ptr) {
 
    ItemPointerData& item_p = *(ItemPointer) item_ptr;
-   _mapData.tid_map = (BingoItemData&)item_p;
+   _mapData.tid_map = (ItemPointerData&)item_p;
 }
 
 void BingoPgFpData::setFingerPrints(const char* fp_buf, int size_bits) {
@@ -78,7 +78,7 @@ const char* BingoPgSearchEngine::getDictionary(int& size) {
    return dict_buf;
 }
 
-bool BingoPgSearchEngine::matchTarget(BingoItemData& item_data) {
+bool BingoPgSearchEngine::matchTarget(ItemPointerData& item_data) {
    return matchTarget(ItemPointerGetBlockNumber(&item_data), ItemPointerGetOffsetNumber(&item_data));
 }
 
@@ -90,7 +90,7 @@ void BingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT)
 }
 
 bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr) {
-   BingoItemData cmf_item;
+   ItemPointerData cmf_item;
    /*
     * Iterate through the cursor
     */

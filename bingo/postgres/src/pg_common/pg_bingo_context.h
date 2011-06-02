@@ -1,6 +1,10 @@
 #ifndef PG_BINGO_CONTEXT_H__
 #define	PG_BINGO_CONTEXT_H__
 
+CEXPORT {
+#include "c.h"
+}
+
 typedef struct BingoMetaPageData {
    int bingo_index_version;
    int n_molecules;
@@ -44,7 +48,7 @@ typedef struct BingoIndexOptions {
 
 
 typedef struct BingoStdRdOptions {
-   int vl_len_; /* varlena header (do not touch directly!) */
+   int32 vl_len_; /* varlena header (do not touch directly!) */
    int fillfactor; /* page fill factor in percent (0..100) */
    BingoAutoVacOpts autovacuum; /* autovacuum-related options */
    BingoIndexOptions index_parameters;
@@ -60,17 +64,6 @@ typedef struct BingoSectionInfoData {
    int last_xyz;
    char has_removed;
 } BingoSectionInfoData;
-
-typedef struct BingoBlockIdData {
-   unsigned short bi_hi;
-   unsigned short bi_lo;
-} BingoBlockIdData;
-
-typedef struct BingoItemData {
-   BingoBlockIdData ip_blkid;
-   unsigned short ip_posid;
-} BingoItemData;
-
 
 #endif	/* BINGO_PG_CONTEXT_H */
 

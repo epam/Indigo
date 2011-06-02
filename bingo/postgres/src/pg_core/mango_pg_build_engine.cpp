@@ -126,7 +126,7 @@ void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
 
    const char* shadow_rel_name = _shadowRelName.ptr();
    const char* shadow_hash_name = _shadowHashRelName.ptr();
-   BingoItemData* tid_ptr = &data.getTidItem();
+   ItemPointerData* tid_ptr = &data.getTidItem();
 
    BingoPgCommon::executeQuery("INSERT INTO %s(b_id,tid_map,mass,fragments,gross,cnt_C,cnt_N,cnt_O,cnt_P,cnt_S,cnt_H) VALUES ("
    "'(%d, %d)'::tid, '(%d, %d)'::tid, %f, %d, %s)",

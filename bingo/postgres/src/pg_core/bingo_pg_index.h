@@ -74,7 +74,7 @@ public:
    /*
     * Read all the data for the index
     */
-   void readTidItem(BingoItemData&, PG_OBJECT result_ptr);
+   void readTidItem(ItemPointerData&, PG_OBJECT result_ptr);
    void readTidItem(int section_idx, int mol_idx, PG_OBJECT result_ptr);
    
    void readCmfItem(int section_idx, int mol_idx, indigo::Array<char>& cmf_buf);
@@ -88,7 +88,7 @@ public:
    
    void removeStructure(int section_idx, int mol_idx);
    bool isStructureRemoved(int section_idx, int mol_idx);
-   bool isStructureRemoved(BingoItemData&);
+   bool isStructureRemoved(ItemPointerData&);
    
    void readDictionary(indigo::Array<char>& _dictionary);
    void writeDictionary(BingoPgBuildEngine&);

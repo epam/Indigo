@@ -496,7 +496,7 @@ begin
 end;
 $$ LANGUAGE 'plpgsql' ;
 
-select insert_table('C', 64000)
+select insert_table('CCC', 129000)
 
 create table test64k (a text)
 drop table test64k
@@ -504,5 +504,6 @@ select count(*) from test64k
 create index test64k_idx on test64k using bingo_idx (a bingo.molecule)
 drop index test64k_idx
 drop function bingo.getversion(oid)
+select * from test64k where a @ ('CC', '')::bingo.sub limit 100
 
 select bingo.getversion()

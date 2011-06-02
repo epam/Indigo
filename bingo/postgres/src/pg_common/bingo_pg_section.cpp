@@ -224,7 +224,7 @@ void BingoPgSection::_setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, 
    /*
     * Set binary info
     */
-   BingoItemData cmf_item;
+   ItemPointerData cmf_item;
    _setBinData(cmf_buf, _sectionInfo.last_cmf, cmf_item);
    /*
     * Set mappings
@@ -237,7 +237,7 @@ void BingoPgSection::_setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, 
    /*
     * Set binary info
     */
-   BingoItemData xyz_item;
+   ItemPointerData xyz_item;
    _setBinData(xyz_buf, _sectionInfo.last_xyz, xyz_item);
    /*
     * Set mappings
@@ -245,7 +245,7 @@ void BingoPgSection::_setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, 
    _buffersMap[map_buf_idx]->setXyzItem(map_idx, xyz_item);
 }
 
-void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, BingoItemData& item_data) {
+void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data) {
    if(buf.size() == 0) {
       ItemPointerSet(&item_data, InvalidBlockNumber, 0);
       return;

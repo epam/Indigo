@@ -57,7 +57,7 @@ public:
    virtual ~MangoPgSearchEngine();
 
    virtual bool matchTarget(int section_idx, int structure_idx);
-   virtual bool matchTarget(BingoItemData& item_data) {return BingoPgSearchEngine::matchTarget(item_data);}
+   virtual bool matchTarget(ItemPointerData& item_data) {return BingoPgSearchEngine::matchTarget(item_data);}
 
    virtual int getType() const {return BINGO_INDEX_TYPE_MOLECULE;}
 

@@ -57,7 +57,7 @@ bool BingoPgCursor::next() {
    return true;
 }
 
-void BingoPgCursor::getId(int arg_idx, BingoItemData& data) {
+void BingoPgCursor::getId(int arg_idx, ItemPointerData& data) {
    Datum record = getDatum(arg_idx);
    ItemPointer tup = (ItemPointer) DatumGetPointer(record);
    

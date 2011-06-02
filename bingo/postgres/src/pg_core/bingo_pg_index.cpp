@@ -368,7 +368,7 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item) {
 
 }
 
-void BingoPgIndex::readTidItem(BingoItemData& cmf_item, PG_OBJECT result_ptr) {
+void BingoPgIndex::readTidItem(ItemPointerData& cmf_item, PG_OBJECT result_ptr) {
    readTidItem(ItemPointerGetBlockNumber(&cmf_item), ItemPointerGetOffsetNumber(&cmf_item), result_ptr);
 }
 
@@ -383,7 +383,7 @@ void BingoPgIndex::readTidItem(int section_idx, int mol_idx, PG_OBJECT result_pt
    /*
     * Prepare result item
     */
-   BingoItemData& result_item = (BingoItemData&) (*(ItemPointer) result_ptr);
+   ItemPointerData& result_item = (ItemPointerData&) (*(ItemPointer) result_ptr);
    BingoPgBufferCacheMap& map_cache = current_section.getMapBufferCache(map_block_idx);
    /*
     * Read tid map
@@ -432,7 +432,7 @@ bool BingoPgIndex::isStructureRemoved(int section_idx, int mol_idx) {
    return current_section.isStructureRemoved(mol_idx);
 }
 
-bool BingoPgIndex::isStructureRemoved(BingoItemData& cmf_item) {
+bool BingoPgIndex::isStructureRemoved(ItemPointerData& cmf_item) {
    return isStructureRemoved(ItemPointerGetBlockNumber(&cmf_item), ItemPointerGetOffsetNumber(&cmf_item));
 }
 
@@ -448,7 +448,7 @@ void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>
    /*
     * Get cmf item
     */
-   BingoItemData cmf_item;
+   ItemPointerData cmf_item;
    map_cache.getCmfItem(map_mol_idx, cmf_item);
    /*
     * Check for correct block num
@@ -477,7 +477,7 @@ void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>
    /*
     * Get xyz item
     */
-   BingoItemData xyz_item;
+   ItemPointerData xyz_item;
    map_cache.getXyzItem(map_mol_idx, xyz_item);
    /*
     * Check for correct block num

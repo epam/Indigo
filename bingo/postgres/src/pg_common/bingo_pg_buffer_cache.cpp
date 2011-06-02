@@ -1,9 +1,7 @@
 #include "bingo_pg_buffer_cache.h"
-
-#include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
-
 #include "bingo_pg_common.h"
+#include "base_cpp/scanner.h"
 
 CEXPORT {
 #include "postgres.h"
@@ -52,7 +50,7 @@ BingoPgBufferCacheMap::~BingoPgBufferCacheMap() {
    }
 }
 
-void BingoPgBufferCacheMap::setTidItem(int map_idx, BingoItemData& tid_item) {
+void BingoPgBufferCacheMap::setTidItem(int map_idx, ItemPointerData& tid_item) {
    _checkMapIdx(map_idx);
    if(_write){
       _cache[map_idx].tid_map = tid_item;
@@ -68,7 +66,7 @@ void BingoPgBufferCacheMap::setTidItem(int map_idx, BingoItemData& tid_item) {
    }
 }
 
-void BingoPgBufferCacheMap::setCmfItem(int map_idx, BingoItemData& cmf_item) {
+void BingoPgBufferCacheMap::setCmfItem(int map_idx, ItemPointerData& cmf_item) {
    _checkMapIdx(map_idx);
    if(_write){
       _cache[map_idx].cmf_map = cmf_item;
@@ -84,7 +82,7 @@ void BingoPgBufferCacheMap::setCmfItem(int map_idx, BingoItemData& cmf_item) {
    }
 }
 
-void BingoPgBufferCacheMap::setXyzItem(int map_idx, BingoItemData& xyz_item) {
+void BingoPgBufferCacheMap::setXyzItem(int map_idx, ItemPointerData& xyz_item) {
    _checkMapIdx(map_idx);
    if(_write){
       _cache[map_idx].xyz_map = xyz_item;
@@ -100,7 +98,7 @@ void BingoPgBufferCacheMap::setXyzItem(int map_idx, BingoItemData& xyz_item) {
    }
 }
 
-void BingoPgBufferCacheMap::getTidItem(int map_idx, BingoItemData& tid_item) {
+void BingoPgBufferCacheMap::getTidItem(int map_idx, ItemPointerData& tid_item) {
    _checkMapIdx(map_idx);
    if(_write)
       tid_item = _cache[map_idx].tid_map;
@@ -116,7 +114,7 @@ void BingoPgBufferCacheMap::getTidItem(int map_idx, BingoItemData& tid_item) {
    }
 }
 
-void BingoPgBufferCacheMap::getCmfItem(int map_idx, BingoItemData& cmf_item) {
+void BingoPgBufferCacheMap::getCmfItem(int map_idx, ItemPointerData& cmf_item) {
    _checkMapIdx(map_idx);
    if(_write)
       cmf_item = _cache[map_idx].cmf_map;
@@ -132,7 +130,7 @@ void BingoPgBufferCacheMap::getCmfItem(int map_idx, BingoItemData& cmf_item) {
    }
 }
 
-void BingoPgBufferCacheMap::getXyzItem(int map_idx, BingoItemData& xyz_item) {
+void BingoPgBufferCacheMap::getXyzItem(int map_idx, ItemPointerData& xyz_item) {
    _checkMapIdx(map_idx);
    if(_write)
       xyz_item = _cache[map_idx].xyz_map;
@@ -378,7 +376,7 @@ void BingoPgBufferCacheBin::_writeCache() {
    /*
     * Store cache data
     */
-   memcpy(buf_data + sizeof (int), _cache.ptr(), _cache.sizeInBytes());
+   memcpy(buf_data + sizeof (int), _cache.ptr(), cache_size);
    _buffer.changeAccess(BINGO_PG_NOLOCK);
 }
 

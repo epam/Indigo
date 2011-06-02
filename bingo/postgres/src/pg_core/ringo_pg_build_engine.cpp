@@ -96,7 +96,7 @@ void RingoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
    RingoPgFpData& data = (RingoPgFpData&) item_data;
 
    const char* shadow_rel_name = _shadowRelName.ptr();
-   BingoItemData* tid_ptr = &data.getTidItem();
+   ItemPointerData* tid_ptr = &data.getTidItem();
 
    BingoPgCommon::executeQuery("INSERT INTO %s(b_id,tid_map,ex_hash) VALUES ("
            "'(%d, %d)'::tid, '(%d, %d)'::tid, %d)",

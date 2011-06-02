@@ -38,9 +38,9 @@ public:
    void setCmf(const char* cmf_buf, int cmf_len);
    void setXyz(const char* xyz_buf, int xyz_len);
 
-   BingoItemData& getTidItem() {return _mapData.tid_map;}
-   BingoItemData& getCmfItem() {return _mapData.cmf_map;}
-   BingoItemData& getXyzItem() {return _mapData.xyz_map;}
+   ItemPointerData& getTidItem() {return _mapData.tid_map;}
+   ItemPointerData& getCmfItem() {return _mapData.cmf_map;}
+   ItemPointerData& getXyzItem() {return _mapData.xyz_map;}
 
    int getSectionIdx() const {return _sectionIdx;}
    int getStructureIdx() const {return _structureIdx;}
@@ -75,7 +75,7 @@ public:
    virtual ~BingoPgSearchEngine();
 
    virtual bool matchTarget(int section_idx, int structure_idx){return false;}
-   virtual bool matchTarget(BingoItemData& item_data);
+   virtual bool matchTarget(ItemPointerData& item_data);
 
    virtual int getType() const {return 0;}
 

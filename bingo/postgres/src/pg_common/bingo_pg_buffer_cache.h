@@ -1,10 +1,14 @@
 #ifndef _BINGO_PG_BUFFER_CASHE__
 #define	_BINGO_PG_BUFFER_CASHE__
 
-#include "pg_bingo_context.h"
 #include "bingo_pg_ext_bitset.h"
 #include "bingo_pg_buffer.h"
 #include "bingo_postgres.h"
+
+CEXPORT {
+   #include "c.h"
+   #include "storage/itemptr.h"
+}
 
 /*
  * Class for data buffers handling
@@ -36,9 +40,9 @@ public:
     * Tid mapping = tid + cmf + xyz
     */
    typedef struct BingoMapData {
-      BingoItemData tid_map;
-      BingoItemData cmf_map;
-      BingoItemData xyz_map;
+      ItemPointerData tid_map;
+      ItemPointerData cmf_map;
+      ItemPointerData xyz_map;
    } BingoMapData;
    
    BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write);
@@ -47,15 +51,15 @@ public:
    /*
     * Setters
     */
-   void setTidItem(int map_idx, BingoItemData& tid_item);
-   void setCmfItem(int map_idx, BingoItemData& cmf_item);
-   void setXyzItem(int map_idx, BingoItemData& xyz_item);
+   void setTidItem(int map_idx, ItemPointerData& tid_item);
+   void setCmfItem(int map_idx, ItemPointerData& cmf_item);
+   void setXyzItem(int map_idx, ItemPointerData& xyz_item);
    /*
     * Getters
     */
-   void getTidItem(int map_idx, BingoItemData& tid_item);
-   void getCmfItem(int map_idx, BingoItemData& cmf_item);
-   void getXyzItem(int map_idx, BingoItemData& xyz_item);
+   void getTidItem(int map_idx, ItemPointerData& tid_item);
+   void getCmfItem(int map_idx, ItemPointerData& cmf_item);
+   void getXyzItem(int map_idx, ItemPointerData& xyz_item);
 
 private:
    BingoPgBufferCacheMap(const BingoPgBufferCacheMap&); //no implicit copy
@@ -95,8 +99,8 @@ public:
     * Max size is rewrite BLCKSZ because there is int for keeping data length (stored in the begining of the buffer)
     */
    enum {
-      MAX_SIZE = 8150,
-      BUFFER_SIZE = 8154
+      MAX_SIZE = 8145,
+      BUFFER_SIZE = 8150
    };
    
    BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write);
