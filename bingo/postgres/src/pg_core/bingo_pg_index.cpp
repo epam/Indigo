@@ -191,6 +191,8 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine) {
    if(_strategy == READING_STRATEGY)
       elog(ERROR, "can not write dictionary while there is no building stage");
 
+   elog(INFO, "write dictionary");
+
    int dict_size;
    const char* dict_buf = fp_engine.getDictionary(dict_size);
 
@@ -216,7 +218,7 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine) {
        * Write buffers immediately
        */
       int blck_off = _metaInfo.offset_dictionary + _metaInfo.n_blocks_for_dictionary;
-      BingoPgBufferCacheBin buffer_cache(blck_off, _index, true);
+      BingoPgBufferCacheBin buffer_cache(blck_off, _index, false);
       buffer_dict.copy(dict_buf + dict_offset, dict_buf_size);
       buffer_cache.writeBin(buffer_dict);
       

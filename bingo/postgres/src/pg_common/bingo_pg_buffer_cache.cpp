@@ -365,6 +365,9 @@ void BingoPgBufferCacheBin::_writeCache() {
    /*
     * Write size and cache itself
     */
+   if(!_buffer.isReady())
+      _buffer.readBuffer(_index, _blockId, BINGO_PG_NOLOCK);
+   
    _buffer.changeAccess(BINGO_PG_WRITE);
    int data_len;
    char* buf_data = (char*)_buffer.getIndexData(data_len);
