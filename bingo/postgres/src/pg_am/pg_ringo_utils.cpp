@@ -18,6 +18,8 @@ PG_FUNCTION_INFO_V1(rxnfile);
 Datum rxnfile(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(rcml);
 Datum rcml(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(checkreaction);
+Datum checkreaction(PG_FUNCTION_ARGS);
 }
 
 static void bingoErrorHandler(const char *message, void *context) {
@@ -77,5 +79,19 @@ Datum rcml(PG_FUNCTION_ARGS) {
    int buf_size;
    const char* react_buf = react_text.getText(buf_size);
    PG_RETURN_CSTRING(ringoRCML(react_buf, buf_size));
+}
+
+Datum checkreaction(PG_FUNCTION_ARGS) {
+   Datum react_datum = PG_GETARG_DATUM(0);
+
+   _setupBingo(fcinfo->flinfo->fn_oid, "Reaction check");
+
+   BingoPgText react_text(react_datum);
+   int buf_size;
+   const char* react_buf = react_text.getText(buf_size);
+   const char* result = ringoCheckReaction(react_buf, buf_size);
+   if(result == 0)
+      PG_RETURN_NULL();
+   PG_RETURN_CSTRING(result);
 }
 

@@ -25,6 +25,9 @@ Datum molfile(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(cml);
 Datum cml(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(checkmolecule);
+Datum checkmolecule(PG_FUNCTION_ARGS);
+
 }
 
 static void bingoErrorHandler(const char *message, void *context) {
@@ -93,6 +96,20 @@ Datum cml(PG_FUNCTION_ARGS) {
    int buf_size;
    const char* mol_buf = mol_text.getText(buf_size);
    PG_RETURN_CSTRING(mangoCML(mol_buf, buf_size));
+}
+
+Datum checkmolecule(PG_FUNCTION_ARGS) {
+   Datum mol_datum = PG_GETARG_DATUM(0);
+
+   _setupBingo(fcinfo->flinfo->fn_oid, "Molecule check");
+
+   BingoPgText mol_text(mol_datum);
+   int buf_size;
+   const char* mol_buf = mol_text.getText(buf_size);
+   const char* result = mangoCheckMolecule(mol_buf, buf_size);
+   if(result == 0)
+      PG_RETURN_NULL();
+   PG_RETURN_CSTRING(result);
 }
 
 
