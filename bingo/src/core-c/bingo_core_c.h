@@ -36,16 +36,33 @@ CEXPORT int bingoSetConfigBin (const char *name, const char *value, int len);
 CEXPORT int bingoClearTautomerRules ();
 CEXPORT int bingoAddTautomerRule (int n, const char *beg, const char *end);
 CEXPORT int bingoTautomerRulesReady (int n, const char *beg, const char *end);
+/*
+ * Returns number of parsed field mappings
+ */
+CEXPORT int bingoImportParseFieldList(const char *fields_str);
+CEXPORT const char* bingoImportGetColumnName(int idx);
+CEXPORT const char* bingoImportGetPropertyName(int idx);
+/*
+ * Get value by parsed field list
+ */
+CEXPORT const char * bingoImportGetPropertyValue (int idx);
+/*
+ * SDF import
+ */
 CEXPORT int bingoSDFImportOpen (const char *file_name);
 CEXPORT int bingoSDFImportClose ();
 CEXPORT int bingoSDFImportEOF ();
 CEXPORT const char * bingoSDFImportGetNext ();
 CEXPORT const char * bingoSDFImportGetProperty (const char *param_name);
+/*
+ * RDF import
+ */
 CEXPORT int bingoRDFImportOpen (const char *file_name);
 CEXPORT int bingoRDFImportClose ();
 CEXPORT int bingoRDFImportEOF ();
 CEXPORT const char * bingoRDFImportGetNext ();
 CEXPORT const char * bingoRDFImportGetProperty (const char *param_name);
+
 CEXPORT void bingoProfilingReset (byte reset_whole_session);
 CEXPORT const char* bingoProfilingGetStatistics (bool for_session);
 CEXPORT float bingoProfilingGetTime (const char *counter_name, byte for_session);

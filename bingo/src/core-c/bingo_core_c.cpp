@@ -280,6 +280,80 @@ CEXPORT int bingoTautomerRulesReady (int n, const char *beg, const char *end)
    BINGO_END(1, 0);
 }
 
+CEXPORT int bingoImportParseFieldList(const char *fields_str) {
+   BINGO_BEGIN
+   {
+      QS_DEF(Array<char>, prop);
+      QS_DEF(Array<char>, column);
+      BufferScanner scanner(fields_str);
+
+      self.import_properties.free();
+      self.import_columns.free();
+      self.import_properties.create();
+      self.import_columns.create();
+      
+      scanner.skipSpace();
+
+      while (!scanner.isEOF()) {
+         scanner.readWord(prop, " ,");
+         scanner.skipSpace();
+         scanner.readWord(column, " ,");
+         scanner.skipSpace();
+
+         self.import_properties.ref().add(prop.ptr());
+         self.import_columns.ref().add(column.ptr());
+
+         if (scanner.isEOF())
+            break;
+
+         if (scanner.readChar() != ',')
+            throw BingoError("importParseFieldList(): comma expected");
+         scanner.skipSpace();
+      }
+      return self.import_properties.ref().size();
+   }
+   BINGO_END(0, -1);
+
+}
+CEXPORT const char* bingoImportGetColumnName(int idx) {
+   BINGO_BEGIN
+   {
+      if (self.import_columns.get() == 0)
+         throw BingoError("bingo import list has not been parsed yet");
+      return self.import_columns.ref().at(idx);
+   }
+   BINGO_END("", "")
+}
+CEXPORT const char* bingoImportGetPropertyName(int idx) {
+   BINGO_BEGIN
+   {
+      if (self.import_properties.get() == 0)
+         throw BingoError("bingo import list has not been parsed yet");
+      return self.import_properties.ref().at(idx);
+   }
+   BINGO_END("", "")
+}
+/*
+ * Get value by parsed field list
+ */
+CEXPORT const char * bingoImportGetPropertyValue (int idx) {
+   BINGO_BEGIN
+   {
+      if (self.import_properties.get() == 0)
+         throw BingoError("bingo import list has not been parsed yet");
+      const char* property_name = self.import_properties.ref().at(idx);
+      if(self.sdf_loader.get()) {
+         return self.sdf_loader->properties[property_name].ptr();
+      } else if(self.rdf_loader.get()) {
+         return self.rdf_loader->properties[property_name].ptr();
+      } else {
+         throw BingoError("bingo import has not been initialized yet");
+      }
+   }
+   BINGO_END("", "")
+}
+
+
 
 CEXPORT int bingoSDFImportOpen (const char *file_name)
 {

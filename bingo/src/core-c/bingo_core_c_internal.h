@@ -62,6 +62,9 @@ public:
    MangoContext * mango_context;
    RingoContext * ringo_context;
 
+   Obj<StringPool> import_properties;
+   Obj<StringPool> import_columns;
+
    Obj<FileScanner> file_scanner;
    Obj<SdfLoader> sdf_loader;
    Obj<RdfLoader> rdf_loader;

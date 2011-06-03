@@ -211,6 +211,11 @@ Datum importrdf(PG_FUNCTION_ARGS) {
    Datum table_datum = PG_GETARG_DATUM(0);
    Datum file_name_datum = PG_GETARG_DATUM(1);
 
+   QS_DEF(Array<char>, query_str);
+   QS_DEF(Array<Datum>, q_values);
+   QS_DEF(Array<Oid>, q_oids);
+   QS_DEF(Array<char>, q_nulls);
+   BingoPgText text_data;
    BingoPgText fname_text(file_name_datum);
    BingoPgText tablename_text(table_datum);
 
@@ -219,23 +224,17 @@ Datum importrdf(PG_FUNCTION_ARGS) {
    bingoSetErrorHandler(bingoPgImportErrorHandler, 0);
 
    bingoRDFImportOpen(fname_text.getString());
-
-   Array<char> query_str;
+   
    ArrayOutput query_out(query_str);
    query_out.printf("INSERT INTO %s VALUES($1)", tablename_text.getString());
    query_out.writeChar(0);
 
-
-   Array<Datum> q_values;
-   Array<Oid> q_oids;
-   Array<char> q_nulls;
-   BingoPgText text_data;
-
+   q_nulls.clear();
+   q_oids.clear();
    q_nulls.push(0);
    q_oids.push(TEXTOID);
+   
    SPI_connect();
-   bingoSetErrorHandler(bingoPgImportWarningHandler, 0);
-
    while(!bingoRDFImportEOF()) {
       const char* data = bingoRDFImportGetNext();
       text_data.initFromString(data);
