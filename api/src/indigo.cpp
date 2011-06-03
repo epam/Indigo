@@ -51,7 +51,7 @@ Indigo::Indigo ()
 
    embedding_edges_uniqueness = false;
    find_unique_embeddings = true;
-   max_embeddings = 1000;
+   max_embeddings = 10000;
 
    layout_max_iterations = 0;
 
