@@ -1,10 +1,10 @@
-select 'CC' @ ('CC', '')::bingo.sub
+﻿select 'CC' @ ('CC', '')::bingo.sub
 select 'CC' @ ('CC', '')::bingo.smarts
 select 'NC1=CC=CC(=C1)C1=CC=CC=C1' @ ('=', 'C12H11N')::bingo.gross
 
 select 'NC1CCCC(C1)C1CCCCC1' @ ('CC1CCCCC1', '')::bingo.smarts
 
-select * from btest where a @ ('CC(=O)', '')::bingo.bingo_sub
+select * from btest where a @ ('CC(=O)', '')::bingo.sub
 select * from btest where a @ ('CCC', '')::bingo_sub
 select * from btest where a @ ('OC1=CC=CC=C1', '')::bingo_sub
 

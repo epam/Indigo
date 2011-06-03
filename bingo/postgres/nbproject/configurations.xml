@@ -40,6 +40,315 @@
       <itemPath>../src/core-c/ringo_core_c_parallel.cpp</itemPath>
       <itemPath>../src/core-c/ringo_core_c_parallel.h</itemPath>
     </logicalFolder>
+    <logicalFolder name="include" displayName="include" projectFiles="true">
+      <logicalFolder name="access"
+                     displayName="access"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/access/attnum.h</itemPath>
+        <itemPath>include/access/clog.h</itemPath>
+        <itemPath>include/access/genam.h</itemPath>
+        <itemPath>include/access/gin.h</itemPath>
+        <itemPath>include/access/gist.h</itemPath>
+        <itemPath>include/access/gist_private.h</itemPath>
+        <itemPath>include/access/gistscan.h</itemPath>
+        <itemPath>include/access/hash.h</itemPath>
+        <itemPath>include/access/heapam.h</itemPath>
+        <itemPath>include/access/hio.h</itemPath>
+        <itemPath>include/access/htup.h</itemPath>
+        <itemPath>include/access/itup.h</itemPath>
+        <itemPath>include/access/multixact.h</itemPath>
+        <itemPath>include/access/nbtree.h</itemPath>
+        <itemPath>include/access/printtup.h</itemPath>
+        <itemPath>include/access/reloptions.h</itemPath>
+        <itemPath>include/access/relscan.h</itemPath>
+        <itemPath>include/access/rewriteheap.h</itemPath>
+        <itemPath>include/access/rmgr.h</itemPath>
+        <itemPath>include/access/sdir.h</itemPath>
+        <itemPath>include/access/skey.h</itemPath>
+        <itemPath>include/access/slru.h</itemPath>
+        <itemPath>include/access/subtrans.h</itemPath>
+        <itemPath>include/access/sysattr.h</itemPath>
+        <itemPath>include/access/transam.h</itemPath>
+        <itemPath>include/access/tupconvert.h</itemPath>
+        <itemPath>include/access/tupdesc.h</itemPath>
+        <itemPath>include/access/tupmacs.h</itemPath>
+        <itemPath>include/access/tuptoaster.h</itemPath>
+        <itemPath>include/access/twophase.h</itemPath>
+        <itemPath>include/access/twophase_rmgr.h</itemPath>
+        <itemPath>include/access/valid.h</itemPath>
+        <itemPath>include/access/visibilitymap.h</itemPath>
+        <itemPath>include/access/xact.h</itemPath>
+        <itemPath>include/access/xlog.h</itemPath>
+        <itemPath>include/access/xlog_internal.h</itemPath>
+        <itemPath>include/access/xlogdefs.h</itemPath>
+        <itemPath>include/access/xlogutils.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="catalog"
+                     displayName="catalog"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/catalog/genbki.h</itemPath>
+        <itemPath>include/catalog/heap.h</itemPath>
+        <itemPath>include/catalog/index.h</itemPath>
+        <itemPath>include/catalog/namespace.h</itemPath>
+        <itemPath>include/catalog/pg_am.h</itemPath>
+        <itemPath>include/catalog/pg_attribute.h</itemPath>
+        <itemPath>include/catalog/pg_class.h</itemPath>
+        <itemPath>include/catalog/pg_index.h</itemPath>
+        <itemPath>include/catalog/pg_operator.h</itemPath>
+        <itemPath>include/catalog/pg_opfamily.h</itemPath>
+        <itemPath>include/catalog/pg_statistic.h</itemPath>
+        <itemPath>include/catalog/pg_tablespace.h</itemPath>
+        <itemPath>include/catalog/pg_type.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="commands"
+                     displayName="commands"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/commands/tablespace.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="executor"
+                     displayName="executor"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/executor/execdebug.h</itemPath>
+        <itemPath>include/executor/execdefs.h</itemPath>
+        <itemPath>include/executor/execdesc.h</itemPath>
+        <itemPath>include/executor/executor.h</itemPath>
+        <itemPath>include/executor/functions.h</itemPath>
+        <itemPath>include/executor/hashjoin.h</itemPath>
+        <itemPath>include/executor/instrument.h</itemPath>
+        <itemPath>include/executor/nodeAgg.h</itemPath>
+        <itemPath>include/executor/nodeAppend.h</itemPath>
+        <itemPath>include/executor/nodeBitmapAnd.h</itemPath>
+        <itemPath>include/executor/nodeBitmapHeapscan.h</itemPath>
+        <itemPath>include/executor/nodeBitmapIndexscan.h</itemPath>
+        <itemPath>include/executor/nodeBitmapOr.h</itemPath>
+        <itemPath>include/executor/nodeCtescan.h</itemPath>
+        <itemPath>include/executor/nodeFunctionscan.h</itemPath>
+        <itemPath>include/executor/nodeGroup.h</itemPath>
+        <itemPath>include/executor/nodeHash.h</itemPath>
+        <itemPath>include/executor/nodeHashjoin.h</itemPath>
+        <itemPath>include/executor/nodeIndexscan.h</itemPath>
+        <itemPath>include/executor/nodeLimit.h</itemPath>
+        <itemPath>include/executor/nodeLockRows.h</itemPath>
+        <itemPath>include/executor/nodeMaterial.h</itemPath>
+        <itemPath>include/executor/nodeMergejoin.h</itemPath>
+        <itemPath>include/executor/nodeModifyTable.h</itemPath>
+        <itemPath>include/executor/nodeNestloop.h</itemPath>
+        <itemPath>include/executor/nodeRecursiveunion.h</itemPath>
+        <itemPath>include/executor/nodeResult.h</itemPath>
+        <itemPath>include/executor/nodeSeqscan.h</itemPath>
+        <itemPath>include/executor/nodeSetOp.h</itemPath>
+        <itemPath>include/executor/nodeSort.h</itemPath>
+        <itemPath>include/executor/nodeSubplan.h</itemPath>
+        <itemPath>include/executor/nodeSubqueryscan.h</itemPath>
+        <itemPath>include/executor/nodeTidscan.h</itemPath>
+        <itemPath>include/executor/nodeUnique.h</itemPath>
+        <itemPath>include/executor/nodeValuesscan.h</itemPath>
+        <itemPath>include/executor/nodeWindowAgg.h</itemPath>
+        <itemPath>include/executor/nodeWorktablescan.h</itemPath>
+        <itemPath>include/executor/spi.h</itemPath>
+        <itemPath>include/executor/spi_priv.h</itemPath>
+        <itemPath>include/executor/tstoreReceiver.h</itemPath>
+        <itemPath>include/executor/tuptable.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="lib"
+                     displayName="lib"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/lib/dllist.h</itemPath>
+        <itemPath>include/lib/stringinfo.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="mb"
+                     displayName="mb"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/mb/pg_wchar.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="nodes"
+                     displayName="nodes"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/nodes/bitmapset.h</itemPath>
+        <itemPath>include/nodes/execnodes.h</itemPath>
+        <itemPath>include/nodes/makefuncs.h</itemPath>
+        <itemPath>include/nodes/memnodes.h</itemPath>
+        <itemPath>include/nodes/nodeFuncs.h</itemPath>
+        <itemPath>include/nodes/nodes.h</itemPath>
+        <itemPath>include/nodes/params.h</itemPath>
+        <itemPath>include/nodes/parsenodes.h</itemPath>
+        <itemPath>include/nodes/pg_list.h</itemPath>
+        <itemPath>include/nodes/plannodes.h</itemPath>
+        <itemPath>include/nodes/primnodes.h</itemPath>
+        <itemPath>include/nodes/print.h</itemPath>
+        <itemPath>include/nodes/readfuncs.h</itemPath>
+        <itemPath>include/nodes/relation.h</itemPath>
+        <itemPath>include/nodes/tidbitmap.h</itemPath>
+        <itemPath>include/nodes/value.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="optimizer"
+                     displayName="optimizer"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/optimizer/clauses.h</itemPath>
+        <itemPath>include/optimizer/cost.h</itemPath>
+        <itemPath>include/optimizer/joininfo.h</itemPath>
+        <itemPath>include/optimizer/pathnode.h</itemPath>
+        <itemPath>include/optimizer/paths.h</itemPath>
+        <itemPath>include/optimizer/placeholder.h</itemPath>
+        <itemPath>include/optimizer/plancat.h</itemPath>
+        <itemPath>include/optimizer/planmain.h</itemPath>
+        <itemPath>include/optimizer/planner.h</itemPath>
+        <itemPath>include/optimizer/predtest.h</itemPath>
+        <itemPath>include/optimizer/prep.h</itemPath>
+        <itemPath>include/optimizer/restrictinfo.h</itemPath>
+        <itemPath>include/optimizer/subselect.h</itemPath>
+        <itemPath>include/optimizer/tlist.h</itemPath>
+        <itemPath>include/optimizer/var.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="parser"
+                     displayName="parser"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/parser/analyze.h</itemPath>
+        <itemPath>include/parser/gram.h</itemPath>
+        <itemPath>include/parser/gramparse.h</itemPath>
+        <itemPath>include/parser/keywords.h</itemPath>
+        <itemPath>include/parser/kwlist.h</itemPath>
+        <itemPath>include/parser/parse_agg.h</itemPath>
+        <itemPath>include/parser/parse_clause.h</itemPath>
+        <itemPath>include/parser/parse_coerce.h</itemPath>
+        <itemPath>include/parser/parse_cte.h</itemPath>
+        <itemPath>include/parser/parse_expr.h</itemPath>
+        <itemPath>include/parser/parse_func.h</itemPath>
+        <itemPath>include/parser/parse_node.h</itemPath>
+        <itemPath>include/parser/parse_oper.h</itemPath>
+        <itemPath>include/parser/parse_param.h</itemPath>
+        <itemPath>include/parser/parse_relation.h</itemPath>
+        <itemPath>include/parser/parse_target.h</itemPath>
+        <itemPath>include/parser/parse_type.h</itemPath>
+        <itemPath>include/parser/parse_utilcmd.h</itemPath>
+        <itemPath>include/parser/parser.h</itemPath>
+        <itemPath>include/parser/parsetree.h</itemPath>
+        <itemPath>include/parser/scanner.h</itemPath>
+        <itemPath>include/parser/scansup.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="rewrite"
+                     displayName="rewrite"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/rewrite/prs2lock.h</itemPath>
+        <itemPath>include/rewrite/rewriteDefine.h</itemPath>
+        <itemPath>include/rewrite/rewriteHandler.h</itemPath>
+        <itemPath>include/rewrite/rewriteManip.h</itemPath>
+        <itemPath>include/rewrite/rewriteRemove.h</itemPath>
+        <itemPath>include/rewrite/rewriteSupport.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="storage"
+                     displayName="storage"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/storage/backendid.h</itemPath>
+        <itemPath>include/storage/block.h</itemPath>
+        <itemPath>include/storage/buf.h</itemPath>
+        <itemPath>include/storage/buf_internals.h</itemPath>
+        <itemPath>include/storage/buffile.h</itemPath>
+        <itemPath>include/storage/bufmgr.h</itemPath>
+        <itemPath>include/storage/bufpage.h</itemPath>
+        <itemPath>include/storage/fd.h</itemPath>
+        <itemPath>include/storage/freespace.h</itemPath>
+        <itemPath>include/storage/fsm_internals.h</itemPath>
+        <itemPath>include/storage/indexfsm.h</itemPath>
+        <itemPath>include/storage/ipc.h</itemPath>
+        <itemPath>include/storage/item.h</itemPath>
+        <itemPath>include/storage/itemid.h</itemPath>
+        <itemPath>include/storage/itemptr.h</itemPath>
+        <itemPath>include/storage/large_object.h</itemPath>
+        <itemPath>include/storage/lmgr.h</itemPath>
+        <itemPath>include/storage/lock.h</itemPath>
+        <itemPath>include/storage/lwlock.h</itemPath>
+        <itemPath>include/storage/off.h</itemPath>
+        <itemPath>include/storage/pg_sema.h</itemPath>
+        <itemPath>include/storage/pg_shmem.h</itemPath>
+        <itemPath>include/storage/pmsignal.h</itemPath>
+        <itemPath>include/storage/pos.h</itemPath>
+        <itemPath>include/storage/proc.h</itemPath>
+        <itemPath>include/storage/procarray.h</itemPath>
+        <itemPath>include/storage/procsignal.h</itemPath>
+        <itemPath>include/storage/relfilenode.h</itemPath>
+        <itemPath>include/storage/s_lock.h</itemPath>
+        <itemPath>include/storage/shmem.h</itemPath>
+        <itemPath>include/storage/sinval.h</itemPath>
+        <itemPath>include/storage/sinvaladt.h</itemPath>
+        <itemPath>include/storage/smgr.h</itemPath>
+        <itemPath>include/storage/spin.h</itemPath>
+        <itemPath>include/storage/standby.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="tcop"
+                     displayName="tcop"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/tcop/dest.h</itemPath>
+        <itemPath>include/tcop/fastpath.h</itemPath>
+        <itemPath>include/tcop/pquery.h</itemPath>
+        <itemPath>include/tcop/tcopdebug.h</itemPath>
+        <itemPath>include/tcop/tcopprot.h</itemPath>
+        <itemPath>include/tcop/utility.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="utils"
+                     displayName="utils"
+                     projectFiles="true"
+                     kind="SOURCE_LOGICAL_FOLDER">
+        <itemPath>include/utils/array.h</itemPath>
+        <itemPath>include/utils/builtins.h</itemPath>
+        <itemPath>include/utils/bytea.h</itemPath>
+        <itemPath>include/utils/catcache.h</itemPath>
+        <itemPath>include/utils/date.h</itemPath>
+        <itemPath>include/utils/datetime.h</itemPath>
+        <itemPath>include/utils/datum.h</itemPath>
+        <itemPath>include/utils/elog.h</itemPath>
+        <itemPath>include/utils/errcodes.h</itemPath>
+        <itemPath>include/utils/fmgroids.h</itemPath>
+        <itemPath>include/utils/guc.h</itemPath>
+        <itemPath>include/utils/hsearch.h</itemPath>
+        <itemPath>include/utils/int8.h</itemPath>
+        <itemPath>include/utils/lsyscache.h</itemPath>
+        <itemPath>include/utils/memutils.h</itemPath>
+        <itemPath>include/utils/nabstime.h</itemPath>
+        <itemPath>include/utils/palloc.h</itemPath>
+        <itemPath>include/utils/pg_crc.h</itemPath>
+        <itemPath>include/utils/pg_locale.h</itemPath>
+        <itemPath>include/utils/plancache.h</itemPath>
+        <itemPath>include/utils/portal.h</itemPath>
+        <itemPath>include/utils/rel.h</itemPath>
+        <itemPath>include/utils/relcache.h</itemPath>
+        <itemPath>include/utils/resowner.h</itemPath>
+        <itemPath>include/utils/selfuncs.h</itemPath>
+        <itemPath>include/utils/snapshot.h</itemPath>
+        <itemPath>include/utils/spccache.h</itemPath>
+        <itemPath>include/utils/syscache.h</itemPath>
+        <itemPath>include/utils/timestamp.h</itemPath>
+        <itemPath>include/utils/tqual.h</itemPath>
+        <itemPath>include/utils/tuplesort.h</itemPath>
+        <itemPath>include/utils/tuplestore.h</itemPath>
+        <itemPath>include/utils/typcache.h</itemPath>
+        <itemPath>include/utils/tzparser.h</itemPath>
+      </logicalFolder>
+      <itemPath>include/c.h</itemPath>
+      <itemPath>include/fmgr.h</itemPath>
+      <itemPath>include/pg_config.h</itemPath>
+      <itemPath>include/pg_config.h.old</itemPath>
+      <itemPath>include/pg_config.h.win32</itemPath>
+      <itemPath>include/pg_config_manual.h</itemPath>
+      <itemPath>include/pg_config_os.h</itemPath>
+      <itemPath>include/pgtime.h</itemPath>
+      <itemPath>include/port.h</itemPath>
+      <itemPath>include/postgres.h</itemPath>
+      <itemPath>include/postgres_ext.h</itemPath>
+      <itemPath>include/windowapi.h</itemPath>
+    </logicalFolder>
     <logicalFolder name="f2" displayName="pg_am" projectFiles="true">
       <itemPath>src/pg_am/pg_bingo_build.cpp</itemPath>
       <itemPath>src/pg_am/pg_bingo_costestimate.c</itemPath>
@@ -109,6 +418,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>include</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="2">
@@ -128,6 +440,9 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>BINGO_PG_NIX32</Elem>
+          </preprocessorList>
         </cTool>
         <ccTool>
           <incDir>
@@ -139,6 +454,9 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>BINGO_PG_NIX32</Elem>
+          </preprocessorList>
         </ccTool>
         <linkerTool>
           <output>bin/bingo_postgres.so</output>
@@ -228,6 +546,9 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>BINGO_PG_NIX32</Elem>
+          </preprocessorList>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
@@ -241,6 +562,9 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>BINGO_PG_NIX32</Elem>
+          </preprocessorList>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -336,6 +660,9 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>BINGO_PG_NIX64</Elem>
+          </preprocessorList>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
@@ -350,7 +677,7 @@
             <pElem>include</pElem>
           </incDir>
           <preprocessorList>
-            <Elem>USE_FLOAT8_BYVAL</Elem>
+            <Elem>BINGO_PG_NIX64</Elem>
           </preprocessorList>
         </ccTool>
         <fortranCompilerTool>

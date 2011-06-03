@@ -49,8 +49,12 @@
  * on some platforms, and we only want our definitions used if stdlib.h doesn't
  * have its own.  The same goes for stddef and stdarg if present.
  */
+#if defined(BINGO_PG_NIX64)
+#include "pg_config.h.nix64"
+#elif defined(BINGO_PG_NIX32)
+#include "pg_config.h.nix32"
+#endif
 
-#include "pg_config.h"
 #include "pg_config_manual.h"	/* must be after pg_config.h */
 #if !defined(WIN32) && !defined(__CYGWIN__)		/* win32 will include further
 												 * down */
