@@ -157,41 +157,74 @@ using namespace indigo;
 //
 //   PG_RETURN_VOID();
 //}
+static int _initializeQuery(Datum table_datum, Datum column_datum, Datum other_columns_datum, Array<char>& query_str) {
+   BingoPgText tablename_text(table_datum);
+   BingoPgText column_text(column_datum);
+   BingoPgText other_columns_text(other_columns_datum);
+   
+   ArrayOutput query_out(query_str);
 
+   query_out.printf("INSERT INTO %s(%s", tablename_text.getString(), column_text.getString());
+
+   int column_count = bingoImportParseFieldList(other_columns_text.getString());
+
+   for (int col_idx = 0; col_idx < column_count; ++col_idx) {
+      query_out.printf(", %s", bingoImportGetColumnName(col_idx));
+   }
+   query_out.printf(") VALUES($1");
+
+   for (int col_idx = 0; col_idx < column_count; ++col_idx) {
+      query_out.printf(", $%d", col_idx + 2);
+   }
+   query_out.printf(")");
+   query_out.writeChar(0);
+   return column_count;
+
+}
 Datum importsdf(PG_FUNCTION_ARGS) {
    Datum table_datum = PG_GETARG_DATUM(0);
-   Datum file_name_datum = PG_GETARG_DATUM(1);
+   Datum column_datum = PG_GETARG_DATUM(1);
+   Datum other_columns_datum = PG_GETARG_DATUM(2);
+   Datum file_name_datum = PG_GETARG_DATUM(3);
 
-   BingoPgText fname_text(file_name_datum);
-   BingoPgText tablename_text(table_datum);
+   QS_DEF(Array<char>, query_str);
+   QS_DEF(Array<Datum>, q_values);
+   QS_DEF(Array<Oid>, q_oids);
+   QS_DEF(Array<char>, q_nulls);
+   QS_DEF(ObjArray<BingoPgText>, q_data);
 
    qword session_id = bingoAllocateSessionID();
    bingoSetSessionID(session_id);
    bingoSetErrorHandler(bingoPgImportErrorHandler, 0);
 
+   BingoPgText fname_text(file_name_datum);
    bingoSDFImportOpen(fname_text.getString());
 
-   Array<char> query_str;
-   ArrayOutput query_out(query_str);
-   query_out.printf("INSERT INTO %s VALUES($1)", tablename_text.getString());
-   query_out.writeChar(0);
+   int column_count = _initializeQuery(table_datum, column_datum, other_columns_datum, query_str);
 
+   q_oids.clear();
+   q_nulls.clear();
 
-   Array<Datum> q_values;
-   Array<Oid> q_oids;
-   Array<char> q_nulls;
-   BingoPgText text_data;
+   for (int col_idx = 0; col_idx < column_count + 1; ++col_idx) {
+      q_oids.push(TEXTOID);
+      q_nulls.push(0);
+   }
 
-   q_nulls.push(0);
-   q_oids.push(TEXTOID);
    SPI_connect();
-   bingoSetErrorHandler(bingoPgImportWarningHandler, 0);
-   
    while(!bingoSDFImportEOF()) {
+      q_data.clear();
       const char* data = bingoSDFImportGetNext();
-      text_data.initFromString(data);
+      q_data.push().initFromString(data);
+
+      for (int col_idx = 0; col_idx < column_count; ++col_idx) {
+         q_data.push().initFromString(bingoImportGetPropertyValue(col_idx));
+      }
+
       q_values.clear();
-      q_values.push(text_data.getDatum());
+      for (int q_idx = 0; q_idx < q_data.size(); ++q_idx) {
+         q_values.push(q_data[q_idx].getDatum());
+      }
+
       SPI_execute_with_args(query_str.ptr(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.ptr(), false, 1);
       /*
        * Return back session id and error handler
@@ -203,43 +236,56 @@ Datum importsdf(PG_FUNCTION_ARGS) {
 
    bingoSDFImportClose();
    bingoReleaseSessionID(session_id);
-   
+
 
    PG_RETURN_BOOL(true);
 }
+
+
 Datum importrdf(PG_FUNCTION_ARGS) {
    Datum table_datum = PG_GETARG_DATUM(0);
-   Datum file_name_datum = PG_GETARG_DATUM(1);
+   Datum column_datum = PG_GETARG_DATUM(1);
+   Datum other_columns_datum = PG_GETARG_DATUM(2);
+   Datum file_name_datum = PG_GETARG_DATUM(3);
 
    QS_DEF(Array<char>, query_str);
    QS_DEF(Array<Datum>, q_values);
    QS_DEF(Array<Oid>, q_oids);
    QS_DEF(Array<char>, q_nulls);
-   BingoPgText text_data;
-   BingoPgText fname_text(file_name_datum);
-   BingoPgText tablename_text(table_datum);
-
+   QS_DEF(ObjArray<BingoPgText>, q_data);
+   
    qword session_id = bingoAllocateSessionID();
    bingoSetSessionID(session_id);
    bingoSetErrorHandler(bingoPgImportErrorHandler, 0);
 
+   BingoPgText fname_text(file_name_datum);
    bingoRDFImportOpen(fname_text.getString());
-   
-   ArrayOutput query_out(query_str);
-   query_out.printf("INSERT INTO %s VALUES($1)", tablename_text.getString());
-   query_out.writeChar(0);
 
-   q_nulls.clear();
+   int column_count = _initializeQuery(table_datum, column_datum, other_columns_datum, query_str);
+
    q_oids.clear();
-   q_nulls.push(0);
-   q_oids.push(TEXTOID);
-   
+   q_nulls.clear();
+
+   for (int col_idx = 0; col_idx < column_count + 1; ++col_idx) {
+      q_oids.push(TEXTOID);
+      q_nulls.push(0);
+   }
+
    SPI_connect();
    while(!bingoRDFImportEOF()) {
+      q_data.clear();
       const char* data = bingoRDFImportGetNext();
-      text_data.initFromString(data);
+      q_data.push().initFromString(data);
+
+      for (int col_idx = 0; col_idx < column_count; ++col_idx) {
+         q_data.push().initFromString(bingoImportGetPropertyValue(col_idx));
+      }
+      
       q_values.clear();
-      q_values.push(text_data.getDatum());
+      for (int q_idx = 0; q_idx < q_data.size(); ++q_idx) {
+         q_values.push(q_data[q_idx].getDatum());
+      }
+      
       SPI_execute_with_args(query_str.ptr(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.ptr(), false, 1);
       /*
        * Return back session id and error handler
