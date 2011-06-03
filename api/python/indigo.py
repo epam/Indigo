@@ -95,8 +95,9 @@ class Indigo:
       self.dispatcher._setSID()
       Indigo._lib.indigoClose(self.id)
     def __del__ (self):
-      self.dispatcher._setSID()
-      Indigo._lib.indigoFree(self.id)
+      if getattr(Indigo, "_lib", None) is not None:
+        self.dispatcher._setSID()
+        Indigo._lib.indigoFree(self.id)
         
     def __iter__ (self):
       return self
