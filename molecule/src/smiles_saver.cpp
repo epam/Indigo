@@ -144,7 +144,7 @@ void SmilesSaver::_saveMolecule ()
       if (_bmol->getAtomAromaticity(i) == ATOM_AROMATIC)
       {
          _atoms[i].aromatic = true;
-         static int allowed_lowercase[] = {ELEM_B, ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S};
+         static int allowed_lowercase[] = {ELEM_B, ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_Se, ELEM_As};
          if (_bmol->atomNumberBelongs(i, allowed_lowercase, NELEM(allowed_lowercase)))
             _atoms[i].lowercase = true;
       }

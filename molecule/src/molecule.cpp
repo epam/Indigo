@@ -880,7 +880,7 @@ int Molecule::getAtomValence (int idx)
          else
          {
             // rare case
-            valence = conn;
+            valence = conn + impl_h;
             unusual_valence = true;
          }
 

@@ -1836,7 +1836,7 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       // We assume that this must be an alphabetic character and also
       // something not from the alphabetic SMARTS 'atomic primitives'
       // (see http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html).
-      else if (isalpha(next) && strchr("hrvxa", next) == NULL)
+      else if (isalpha(next) && strchr("hrvxas", next) == NULL)
       {
          scanner.skip(1);
 
@@ -1865,11 +1865,6 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
             element = ELEM_P;
             aromatic = ATOM_AROMATIC;
          }
-         else if (next == 's')
-         {
-            element = ELEM_S;
-            aromatic = ATOM_AROMATIC;
-         }
          else if (islower(next))
             throw Error("unrecognized lowercase symbol: %c", next);
 
@@ -1883,7 +1878,12 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
                   // [Nr] is formally a nitrogen in a ring (although nobody would
                   // write it that way: [N;r] is much more clear).
                   (element = Element::fromTwoChars2(next, scanner.lookNext())) > 0)
+         {
             scanner.skip(1);
+            if (smarts_mode)
+               if (element == ELEM_As || element == ELEM_Se)
+                  aromatic = ATOM_ALIPHATIC;
+         }
          else
          {
             // It is a single-char uppercase element identifier then
@@ -1927,13 +1927,39 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
          if (qatom.get() != 0)
             subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_CHARGE, atom.charge));
       }
-      else if (next == 'a')
+      else if (next == 'a') // can be [as] or SMARTS aromaticity flag
       {
          scanner.skip(1);
-         if (qatom.get() == 0)
-            throw Error("'a' specifier is allowed only for query molecules");
 
-         subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC));
+         if (scanner.lookNext() == 's')
+         {
+            scanner.skip(1);
+            
+            element = ELEM_As;
+            aromatic = ATOM_AROMATIC;
+         }
+         else
+         {
+            if (qatom.get() == 0)
+               throw Error("'a' specifier is allowed only for query molecules");
+
+            subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC));
+         }
+      }
+      else if (next == 's') // can be [s] or [se]
+      {
+         scanner.skip(1);
+         if (scanner.lookNext() == 'e')
+         {
+            scanner.skip(1);
+            element = ELEM_Se;
+            aromatic = ATOM_AROMATIC;
+         }
+         else
+         {
+            element = ELEM_S;
+            aromatic = ATOM_AROMATIC;
+         }
       }
       else if (next == 'h')
          // Why would anybody ever need 'implicit hydrogen'
