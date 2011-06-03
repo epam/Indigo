@@ -6,7 +6,6 @@
 CEXPORT {
 #include "postgres.h"
 #include "fmgr.h"
-#include "pg_config.h"
 }
 
 using namespace indigo;

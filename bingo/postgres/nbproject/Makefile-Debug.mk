@@ -17,7 +17,7 @@ RANLIB=ranlib
 CC=gcc
 CCC=g++
 CXX=g++
-FC=
+FC=gfortran
 AS=as
 
 # Macros
@@ -40,8 +40,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/pg_common/bingo_pg_ext_bitset.o \
 	${OBJECTDIR}/_ext/1019403175/ringo_exact.o \
 	${OBJECTDIR}/_ext/1019403175/mango_exact.o \
-	${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o \
 	${OBJECTDIR}/src/pg_am/pg_bingo_options.o \
+	${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o \
 	${OBJECTDIR}/src/pg_core/bingo_pg_config.o \
 	${OBJECTDIR}/_ext/1019403175/ringo_context.o \
 	${OBJECTDIR}/src/pg_am/pg_bingo_search.o \
@@ -153,15 +153,15 @@ ${OBJECTDIR}/_ext/1019403175/mango_exact.o: ../src/core/mango_exact.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -DBINGO_PG_NIX32 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_exact.o ../src/core/mango_exact.cpp
 
-${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o: ../src/core-c/mango_core_c_parallel.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
-	${RM} $@.d
-	$(COMPILE.cc) -g -DBINGO_PG_NIX32 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o ../src/core-c/mango_core_c_parallel.cpp
-
 ${OBJECTDIR}/src/pg_am/pg_bingo_options.o: src/pg_am/pg_bingo_options.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
 	$(COMPILE.cc) -g -DBINGO_PG_NIX32 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_options.o src/pg_am/pg_bingo_options.cpp
+
+${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o: ../src/core-c/mango_core_c_parallel.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
+	${RM} $@.d
+	$(COMPILE.cc) -g -DBINGO_PG_NIX32 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o ../src/core-c/mango_core_c_parallel.cpp
 
 ${OBJECTDIR}/src/pg_core/bingo_pg_config.o: src/pg_core/bingo_pg_config.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
