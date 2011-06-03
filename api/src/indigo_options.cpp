@@ -112,6 +112,12 @@ static void indigoSetFPAnyQwords (int qwords)
    self.fp_params.any_qwords = qwords;
 }
 
+static void indigoSetFPExt (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.fp_params.ext = (enabled != 0);
+}
+
 static void indigoSetEmbeddingUniqueness (const char *mode)
 {
    Indigo &self = indigoGetInstance();
@@ -164,6 +170,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("fp-sim-qwords", indigoSetFPSimQwords);
    mgr.setOptionHandlerInt("fp-any-qwords", indigoSetFPAnyQwords);
    mgr.setOptionHandlerInt("fp-tau-qwords", indigoSetFPTauQwords);
+   mgr.setOptionHandlerBool("fp-ext-enabled", indigoSetFPExt);
 
    mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness);
    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings);

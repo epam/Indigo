@@ -367,7 +367,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       se.process();
    }
    
-   if (!skip_ext)
+   if (!skip_ext && _parameters.ext)
       _calcExtraBits(mol, vfilter);
 }
 
@@ -466,23 +466,23 @@ const byte * MoleculeFingerprintBuilder::get ()
 
 byte * MoleculeFingerprintBuilder::getOrd ()
 {
-   return _total_fingerprint.ptr() + 3;
+   return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt();
 }
 
 byte * MoleculeFingerprintBuilder::getSim ()
 {
-   return _total_fingerprint.ptr() + 3 + _parameters.fingerprintSizeOrd();
+   return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd();
 }
 
 byte * MoleculeFingerprintBuilder::getTau ()
 {
-   return _total_fingerprint.ptr() + 3 + _parameters.fingerprintSizeOrd() +
+   return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd() +
           _parameters.fingerprintSizeSim();
 }
 
 byte * MoleculeFingerprintBuilder::getAny ()
 {
-   return _total_fingerprint.ptr() + 3 + _parameters.fingerprintSizeOrd() +
+   return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd() +
         _parameters.fingerprintSizeSim() + _parameters.fingerprintSizeTau();
 }
 

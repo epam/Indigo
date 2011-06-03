@@ -47,6 +47,7 @@ Indigo::Indigo ()
    fp_params.sim_qwords = 8;
    fp_params.tau_qwords = 10;
    fp_params.ord_qwords = 25;
+   fp_params.ext = true;
 
    embedding_edges_uniqueness = false;
    find_unique_embeddings = true;
