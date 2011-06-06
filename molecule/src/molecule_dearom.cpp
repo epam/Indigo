@@ -792,6 +792,8 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
       }
    }
    
+   // TODO: check aromatization dearomatization with d-orbitals
+   // CC1=C(C)C=[Se](C)C(=C1)C#N
    if (max_connectivity == -1)   
       max_connectivity = Element::getMaximumConnectivity(label, 
          charge, radical, false);
