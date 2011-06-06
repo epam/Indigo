@@ -111,6 +111,8 @@ void DfsWalk::walk ()
       {
          int nei_v = vertex.neiVertex(i);
 
+         if (ignored_vertices != 0 && ignored_vertices[nei_v] != 0)
+            continue;
          if (_root_vertices[nei_v] == 1 && _vertices[nei_v].dfs_state == 0)
             continue;
 
@@ -138,9 +140,6 @@ void DfsWalk::walk ()
          if (nei_idx == parent_vertex)
             continue;
          
-         if (ignored_vertices != 0 && ignored_vertices[nei_idx] != 0)
-            continue;
-
          if (_vertices[nei_idx].dfs_state == 2)
          {
             _edges[edge_idx].closing_cycle = 1;
