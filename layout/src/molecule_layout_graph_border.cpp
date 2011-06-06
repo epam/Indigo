@@ -16,7 +16,11 @@
 
 using namespace indigo;
 
-bool _isRayIntersect (float a, float b, const Vec2f &p, const Vec2f &v1, const Vec2f &v2) 
+// Return:
+//   0 - no intersection
+//   1 - intersection
+//  -1 - unknown. Ray is too near to the one of the points
+static int _isRayIntersectWithCheck (float a, float b, const Vec2f &p, const Vec2f &v1, const Vec2f &v2, bool check_precision) 
 {
    // Ray x=at+p.x, y=bt+p.y, t>=0 and segment [V1,V2];
    float a11, a12, a21, a22, b1, b2;
@@ -36,7 +40,7 @@ bool _isRayIntersect (float a, float b, const Vec2f &p, const Vec2f &v1, const V
    if (fabs(delta) < eps)
    {
       if (fabs(b1 * a21 - b2 * a11) > eps) 
-         return false;
+         return 0;
 
       if (fabs(a11) > eps) 
       {
@@ -59,18 +63,30 @@ bool _isRayIntersect (float a, float b, const Vec2f &p, const Vec2f &v1, const V
             b0 = pr;
          }
       }
+      if (check_precision)
+         if (fabs(a0) < eps && fabs(b0) <= eps)
+            return -1;
 
       if (a0 <= -eps && b0 <= -eps)
-         return false;
-      return true;
+         return 0;
+      return 1;
    }
    
    t = delta1 / delta;
    s = delta2 / delta;
 
+   if (check_precision)
+      if (fabs(s) < eps || fabs(s - 1) < eps)
+         return -1;
+
    if (t < -eps || s < -eps || s > 1 + eps)
-      return false;
-   return true;
+      return 0;
+   return 1;
+}
+
+static bool _isRayIntersect (float a, float b, const Vec2f &p, const Vec2f &v1, const Vec2f &v2) 
+{
+   return _isRayIntersectWithCheck(a, b, p, v1, v2, false) == 1;
 }
 
 // Check if point is outside biconnected component
@@ -224,56 +240,49 @@ bool MoleculeLayoutGraph::_isPointOutsideCycle (const Cycle &cycle, const Vec2f 
 // The same but with mapping
 bool MoleculeLayoutGraph::_isPointOutsideCycleEx (const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const
 {
-   int i, count = 0;
+   // TODO: check that point 'p' is equal to the one of cycle points (sometimes it happens)
    float a, b;
-   Vec2f v1, v2;
-   const float eps = 0.01f;
 
-   bool success = false;
-
-   while (!success)
+   int tries = 0;
+   while (tries < 50)
    {
-      success = true;
+      tries++;
 
+      // Choose random direction
       a = (float)rand();
       b = (float)rand();
       a = 2.f * (a / RAND_MAX - 0.5f);
       b = 2.f * (b / RAND_MAX - 0.5f);
 
-      if (fabs(a) < eps || fabs(b) < eps)
-      {
-         success = false;
-         continue;
-      }
+      // Calculate number of intersection with boundary
+      int count = 0;
 
-      for (i = 0; i < cycle.vertexCount(); i++)
+      for (int i = 0; i < cycle.vertexCount(); i++)
       {
-         const Vec2f &pos = getPos(mapping[cycle.getVertex(i)]);
-
-         if (fabs((pos.x - p.x) / a - (pos.y - p.y) / b) < EPSILON) 
+         int ret = _isRayIntersectWithCheck(a, b, p, getPos(mapping[cycle.getVertex(i)]),
+                                      getPos(mapping[cycle.getVertex((i + 1) % cycle.vertexCount())]), true);
+         if (ret == -1)
          {
-            count++;
-
-            if (count > 50)
-               return false;
-
-            success = false;
+            // Ray is too near to the point. Choose another one point
+            count = -1;
             break;
          }
+         if (ret == 1)
+            count++;
       }
+
+      if (count == -1)
+         // Try again
+         continue;
+
+      // If number of intersections is even then point is outside
+      if (count & 1)
+         return false;
+      return true;
    }
 
-   // Calculate
-   count = 0;
-
-   for (i = 0; i < cycle.vertexCount(); i++)
-      if (_isRayIntersect(a, b, p, getPos(mapping[cycle.getVertex(i)]),
-                                   getPos(mapping[cycle.getVertex((i + 1) % cycle.vertexCount())])))
-         count++;
-
-   if (count & 1)
-      return false;
-   return true;
+   // Return any value hoping it will never happen
+   return false;
 }
 
 // Extract component border

@@ -225,8 +225,8 @@ protected:
    static void _makeComponentsTree (BiconnectedDecomposer &decon,
       ObjArray<MoleculeLayoutGraph> &components, Array<int> &tree);
 
-   Array<LayoutVertex> _layout_vertices;
-   Array<LayoutEdge>   _layout_edges;
+   ObjArray<LayoutVertex> _layout_vertices;
+   ObjArray<LayoutEdge>   _layout_edges;
 
    Array<int> _fixed_vertices;
 
