@@ -191,7 +191,7 @@ Datum importsdf(PG_FUNCTION_ARGS) {
    QS_DEF(Array<Datum>, q_values);
    QS_DEF(Array<Oid>, q_oids);
    QS_DEF(Array<char>, q_nulls);
-   QS_DEF(ObjArray<BingoPgText>, q_data);
+   ObjArray<BingoPgText> q_data;
 
    qword session_id = bingoAllocateSessionID();
    bingoSetSessionID(session_id);

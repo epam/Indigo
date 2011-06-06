@@ -1,4 +1,4 @@
-﻿select 'CC' @ ('CC', '')::bingo.sub
+select 'CC' @ ('CC', '')::bingo.sub
 select 'CC' @ ('CC', '')::bingo.smarts
 select 'NC1=CC=CC(=C1)C1=CC=CC=C1' @ ('=', 'C12H11N')::bingo.gross
 
@@ -508,3 +508,7 @@ drop function bingo.getversion(oid)
 select * from test64k where a @ ('CC', '')::bingo.sub limit 100
 
 select bingo.getversion()
+
+create table ctest(a text, b text)
+select * from ctest
+select bingo.importSDF('ctest', 'a', '', '/home/tarquin/projects/indigo/indigo-git/bingo/tests/postgres/java_tests/test_import.sdf')
