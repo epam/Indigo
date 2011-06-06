@@ -163,7 +163,10 @@ CEXPORT int bingoSetConfigInt (const char *name, int value)
             set = false;
 
          if (set)
+         {
+            self.bingo_context->fp_parameters.ext = true;
             self.bingo_context->fp_parameters_ready = true;
+         }
 
          if (!set)
             throw BingoError("Unknown parameter name: '%s'", name);
