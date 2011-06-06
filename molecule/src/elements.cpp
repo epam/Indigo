@@ -359,7 +359,7 @@ int Element::calcValenceOfAromaticAtom (int elem, int charge, int n_arom, int mi
       {
          if (min_conn == 2) // no external bonds
             return 3; // CID 10872228
-         if (min_conn == 1) // one external bond
+         if (min_conn == 3) // one external bond
             return 3; // CID 11115581
       }
    }
