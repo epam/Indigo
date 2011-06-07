@@ -21,7 +21,7 @@ using namespace indigo;
 
 BaseMolecule::BaseMolecule ()
 {
-
+   _edit_revision = 0;
 }
 
 BaseMolecule::~BaseMolecule ()
@@ -62,6 +62,8 @@ void BaseMolecule::clear ()
    Graph::clear();
    _hl_atoms.clear();
    _hl_bonds.clear();
+
+   updateEditRevision();
 }
 
 bool BaseMolecule::hasCoord (BaseMolecule &mol)
@@ -258,6 +260,8 @@ void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int
 
    // subclass stuff (Molecule or QueryMolecule)
    _postMergeWithSubmolecule(mol, vertices, edges, mapping, skip_flags);
+
+   updateEditRevision();
 }
 
 
@@ -280,6 +284,8 @@ void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &ve
 
 int BaseMolecule::mergeAtoms (int atom1, int atom2)
 {
+   updateEditRevision();
+
    const Vertex &v1 = getVertex(atom1);
    const Vertex &v2 = getVertex(atom2);
 
@@ -378,6 +384,8 @@ void BaseMolecule::flipBond (int atom_parent, int atom_from, int atom_to)
 
    int src_bond_idx = findEdgeIndex(atom_parent, atom_from);
    removeEdge(src_bond_idx);
+
+   updateEditRevision();
 }
 
 void BaseMolecule::makeSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
@@ -531,6 +539,8 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
    // Remove vertices from graph
    for (i = 0; i < indices.size(); i++)
       removeVertex(indices[i]);
+
+   updateEditRevision();
 }
 
 void BaseMolecule::removeAtom (int idx)
@@ -562,6 +572,7 @@ void BaseMolecule::removeBonds (const Array<int> &indices)
       unhighlightBond(indices[i]);
       removeEdge(indices[i]);
    }
+   updateEditRevision();
 }
 
 void BaseMolecule::removeBond (int idx)
@@ -631,11 +642,13 @@ Vec3f & BaseMolecule::getAtomXyz (int idx)
 void BaseMolecule::setAtomXyz (int idx, float x, float y, float z)
 {
    _xyz[idx].set(x, y, z);
+   updateEditRevision();
 }
 
 void BaseMolecule::setAtomXyz (int idx, const Vec3f& v)
 {
    _xyz[idx].copy(v);
+   updateEditRevision();
 }
 
 int BaseMolecule::_addBaseAtom ()
@@ -644,6 +657,9 @@ int BaseMolecule::_addBaseAtom ()
 
    _xyz.expand(idx + 1);
    _xyz[idx].zero();
+
+   updateEditRevision();
+
    return idx;
 }
 
@@ -652,6 +668,7 @@ int BaseMolecule::_addBaseBond (int beg, int end)
    int idx = addEdge(beg, end);
 
    cis_trans.registerBond(idx);
+   updateEditRevision();
    return idx;
 }
 
@@ -751,7 +768,7 @@ void BaseMolecule::setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int 
    _rsite_attachment_points.expand(atom_idx + 1);
    _rsite_attachment_points[atom_idx].expandFill(order + 1, -1);
    _rsite_attachment_points[atom_idx][order] = att_atom_idx;
-
+   updateEditRevision();
 }
 
 int BaseMolecule::attachmentPointCount () const
@@ -768,11 +785,13 @@ void BaseMolecule::addAttachmentPoint (int order, int index)
       _attachment_index.resize(order);
 
    _attachment_index[order - 1].push(index);
+   updateEditRevision();
 }
 
 void BaseMolecule::removeAttachmentPoints ()
 {
    _attachment_index.clear();
+   updateEditRevision();
 }
 
 void BaseMolecule::removeAttachmentPointsFromAtom (int index)
@@ -787,6 +806,7 @@ void BaseMolecule::removeAttachmentPointsFromAtom (int index)
          else
             _attachment_index[i][j] = _attachment_index[i].pop();
       }
+   updateEditRevision();
 }
 
 int BaseMolecule::getAttachmentPoint (int order, int index) const
@@ -915,6 +935,7 @@ void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
       if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
          sgroup.bonds.remove(i);
    }
+   updateEditRevision();
 }
 
 void BaseMolecule::_removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> &mapping)
@@ -924,6 +945,7 @@ void BaseMolecule::_removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> 
    for (i = mg.parent_atoms.size() - 1; i >= 0; i--)
       if (mapping[mg.parent_atoms[i]] == -1)
          mg.parent_atoms.remove(i);
+   updateEditRevision();
 }
 
 bool BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
@@ -956,6 +978,8 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
       merged = true;
    }
    
+   if (merged)
+      updateEditRevision();
    return merged;
 }
 
@@ -963,18 +987,21 @@ void BaseMolecule::unhighlightAll ()
 {
    _hl_atoms.clear();
    _hl_bonds.clear();
+   updateEditRevision();
 }
 
 void BaseMolecule::highlightAtom (int idx)
 {
    _hl_atoms.expandFill(idx + 1, 0);
    _hl_atoms[idx] = 1;
+   updateEditRevision();
 }
 
 void BaseMolecule::highlightBond (int idx)
 {
    _hl_bonds.expandFill(idx + 1, 0);
    _hl_bonds[idx] = 1;
+   updateEditRevision();
 }
 
 void BaseMolecule::highlightAtoms (const Filter &filter)
@@ -984,6 +1011,7 @@ void BaseMolecule::highlightAtoms (const Filter &filter)
    for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
       if (filter.valid(i))
          highlightAtom(i);
+   updateEditRevision();
 }
 
 void BaseMolecule::highlightBonds (const Filter &filter)
@@ -993,18 +1021,25 @@ void BaseMolecule::highlightBonds (const Filter &filter)
    for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
       if (filter.valid(i))
          highlightBond(i);
+   updateEditRevision();
 }
 
 void BaseMolecule::unhighlightAtom (int idx)
 {
    if (_hl_atoms.size() > idx)
+   {
       _hl_atoms[idx] = 0;
+      updateEditRevision();
+   }
 }
 
 void BaseMolecule::unhighlightBond (int idx)
 {
    if (_hl_bonds.size() > idx)
+   {
       _hl_bonds[idx] = 0;
+      updateEditRevision();
+   }
 }
 
 int BaseMolecule::countHighlightedAtoms ()
@@ -1097,4 +1132,14 @@ void BaseMolecule::getAttachmentIndicesForAtom (int atom_idx, Array<int> &res)
             res.push(i);
       }
    }
+}
+
+int BaseMolecule::getEditRevision ()
+{
+   return _edit_revision;
+}
+
+void BaseMolecule::updateEditRevision ()
+{
+   _edit_revision++;
 }

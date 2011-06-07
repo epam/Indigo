@@ -51,6 +51,7 @@ void Molecule::clear ()
    _radicals.clear();
 
    _aromatized = false;
+   updateEditRevision();
 }
 
 void Molecule::_flipBond (int atom_parent, int atom_from, int atom_to)
@@ -59,6 +60,7 @@ void Molecule::_flipBond (int atom_parent, int atom_from, int atom_to)
    int bond_order = getBondOrder(src_bond_idx);
 
    addBond(atom_parent, atom_to, bond_order);
+   updateEditRevision();
 }
 
 void Molecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vertices,
@@ -185,8 +187,8 @@ void Molecule::_validateVertexConnectivity (int idx, bool validate)
       {
          _radicals[idx] = -1;
       }
-
    }
+   updateEditRevision();
 }
 
 void Molecule::setBondOrder (int idx, int order, bool keep_connectivity)
@@ -216,27 +218,32 @@ void Molecule::setBondOrder (int idx, int order, bool keep_connectivity)
       cis_trans.setParity(idx, 0);
 
    _aromatized = false;
+   updateEditRevision();
 }
 
 void Molecule::setBondOrder_Silent (int idx, int order)
 {
    _bond_orders[idx] = order;
+   updateEditRevision();
 }
 
 void Molecule::setAtomCharge (int idx, int charge)
 {
    _atoms[idx].charge = charge;
+   updateEditRevision();
 }
 
 void Molecule::setAtomIsotope (int idx, int isotope)
 {
    _atoms[idx].isotope = isotope;
+   updateEditRevision();
 }
 
 void Molecule::setAtomRadical (int idx, int radical)
 {
    _radicals.expandFill(idx + 1, -1);
    _radicals[idx] = radical;
+   updateEditRevision();
 }
 
 void Molecule::setExplicitValence (int idx, int valence)
@@ -244,6 +251,7 @@ void Molecule::setExplicitValence (int idx, int valence)
    _valence.expandFill(idx + 1, -1);
    _valence[idx] = valence;
    _atoms[idx].explicit_valence = true;
+   updateEditRevision();
 }
 
 void Molecule::resetExplicitValence (int idx)
@@ -251,12 +259,14 @@ void Molecule::resetExplicitValence (int idx)
    if (_valence.size() > idx)
       _valence[idx] = -1;
    _atoms[idx].explicit_valence = false;
+   updateEditRevision();
 }
 
 void Molecule::setValence (int idx, int valence)
 {
    _valence.expandFill(idx + 1, -1);
    _valence[idx] = valence;
+   updateEditRevision();
 }
 
 void Molecule::setImplicitH (int idx, int impl_h)
@@ -264,6 +274,7 @@ void Molecule::setImplicitH (int idx, int impl_h)
    _implicit_h.expandFill(idx + 1, -1);
    _implicit_h[idx] = impl_h;
    _atoms[idx].explicit_impl_h = true;
+   updateEditRevision();
 }
 
 bool Molecule::isImplicitHSet (int idx)
@@ -276,6 +287,7 @@ void Molecule::setPseudoAtom (int idx, const char *text)
    _atoms[idx].number = ELEM_PSEUDO;
    _atoms[idx].pseudoatom_value_idx = _pseudo_atom_values.add(text);
    // TODO: take care of memory allocated here in _pseudo_atom_values
+   updateEditRevision();
 }
 
 int Molecule::getVacantPiOrbitals (int atom_idx, int conn, int *lonepairs_out)
@@ -537,6 +549,7 @@ void Molecule::_removeAtoms (const Array<int> &indices, const int *mapping)
          }
       }
    }
+   updateEditRevision();
 }
 
 void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt )
@@ -578,6 +591,7 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt )
       _validateVertexConnectivity(i, false);
       _implicit_h[i] = impl_h - h_cnt;
    }
+   updateEditRevision();
 }
 
 int Molecule::getImplicitH (int idx)
@@ -955,6 +969,7 @@ void Molecule::saveBondOrders (Molecule &mol, Array<int> &orders)
 void Molecule::loadBondOrders (Molecule &mol, Array<int> &orders)
 {
    mol._bond_orders.copy(orders);
+   mol.updateEditRevision();
 }
 
 int Molecule::getAtomSubstCount (int idx)
@@ -1113,6 +1128,7 @@ bool Molecule::possibleBondOrder (int idx, int order)
 
 int Molecule::addAtom (int number)
 {
+   updateEditRevision();
    int idx = _addBaseAtom();
 
    _atoms.expand(idx + 1);
@@ -1123,6 +1139,7 @@ int Molecule::addAtom (int number)
 
 int Molecule::addBond (int beg, int end, int order)
 {
+   updateEditRevision();
    int idx = _addBaseBond(beg, end);
 
    _bond_orders.expand(idx + 1);
@@ -1139,6 +1156,7 @@ int Molecule::addBond (int beg, int end, int order)
 
 int Molecule::addBond_Silent (int beg, int end, int order)
 {
+   updateEditRevision();
    int idx = _addBaseBond(beg, end);
 
    _bond_orders.expand(idx + 1);
@@ -1185,6 +1203,7 @@ bool Molecule::bondStereoCare (int idx)
 
 bool Molecule::aromatize ()
 {
+   updateEditRevision();
    bool arom_found = MoleculeAromatizer::aromatizeBonds(*this);
    _aromatized = true;
    return arom_found;
@@ -1192,6 +1211,7 @@ bool Molecule::aromatize ()
 
 bool Molecule::dearomatize ()
 {
+   updateEditRevision();
    return MoleculeDearomatizer::dearomatizeMolecule(*this);
 }
 
@@ -1241,6 +1261,7 @@ void Molecule::setRSiteBits (int atom_idx, int bits)
    if (_atoms[atom_idx].number != ELEM_RSITE)
       throw Error("setRSiteBits(): atom #%d is not an r-site", atom_idx);
    _atoms[atom_idx].rgroup_bits = bits;
+   updateEditRevision();
 }
 
 
@@ -1255,6 +1276,7 @@ void Molecule::allowRGroupOnRSite (int atom_idx, int rg_idx)
    rg_idx--;
 
    _atoms[atom_idx].rgroup_bits |= (1 << rg_idx);
+   updateEditRevision();
 }
 
 bool Molecule::convertableToImplicitHydrogen (int idx)

@@ -296,6 +296,14 @@ public:
 
    static int getVacantPiOrbitals (int group, int charge, int radical, int conn, int *lonepairs_out);
 
+   // Returns edit revision for this molecule.
+   // Each time molecule is changed revision number is increased.
+   // If revision number is the same then molecule hasn't been changed.
+   int getEditRevision ();
+   // Manually update edit revision. This is required when molecule is changed
+   // directly without calling molecule methods (for example mol.cis_trans.clear() and etc.)
+   void updateEditRevision ();
+
    DEF_ERROR("molecule");
 protected:
 
@@ -322,7 +330,6 @@ protected:
    bool _mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
         Array<int> &mapping, Array<int> &edge_mapping);
 
-
    Array<int> _hl_atoms;
    Array<int> _hl_bonds;
    Array<Vec3f> _xyz;
@@ -330,6 +337,10 @@ protected:
    bool _rGroupFragment;
 
    ObjArray< Array<int> > _attachment_index;
+
+   // When molecule gets edited then edit revision is increased.
+   // If edit revision is the same then molecule wasn't edited
+   int _edit_revision;
 };
 
 }

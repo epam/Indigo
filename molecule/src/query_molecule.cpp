@@ -630,6 +630,7 @@ void QueryMolecule::_flipBond (int atom_parent, int atom_from, int atom_to)
    // Copy aromaticity information
    aromaticity.setCanBeAromatic(new_bond_idx, aromaticity.canBeAromatic(src_bond_idx));
    setBondStereoCare(new_bond_idx, bondStereoCare(src_bond_idx));
+   updateEditRevision();
 }
 
 void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vertices,
@@ -707,6 +708,7 @@ void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> 
             fixed_atoms.push(idx);
       }
    }
+   updateEditRevision();
 }
 
 void QueryMolecule::_postMergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vertices,
@@ -762,6 +764,7 @@ void QueryMolecule::_removeAtoms (const Array<int> &indices, const int *mapping)
          edges_to_remove.push(i);
    }
    _removeBonds(edges_to_remove);
+   updateEditRevision();
 }
 
 void QueryMolecule::_removeBonds (const Array<int> &indices)
@@ -770,6 +773,7 @@ void QueryMolecule::_removeBonds (const Array<int> &indices)
       _bonds.reset(indices[i]);
 
    _min_h.clear();
+   updateEditRevision();
 }
 
 bool QueryMolecule::Node::sureValue (int what_type, int &value_out)
@@ -1284,6 +1288,7 @@ int QueryMolecule::addAtom (Atom *atom)
    _atoms.expand(idx + 1);
    _atoms.set(idx, atom);
 
+   updateEditRevision();
    return idx;
 }
 
@@ -1294,6 +1299,7 @@ QueryMolecule::Atom & QueryMolecule::getAtom (int idx)
 
 QueryMolecule::Atom * QueryMolecule::releaseAtom (int idx)
 {
+   updateEditRevision();
    return _atoms.release(idx);
 }
 
@@ -1301,6 +1307,7 @@ void QueryMolecule::resetAtom (int idx, QueryMolecule::Atom *atom)
 {
    _atoms.reset(idx);
    _atoms[idx] = atom;
+   updateEditRevision();
 }
 
 int QueryMolecule::addBond (int beg, int end, QueryMolecule::Bond *bond)
@@ -1318,6 +1325,8 @@ int QueryMolecule::addBond (int beg, int end, QueryMolecule::Bond *bond)
    aromaticity.setCanBeAromatic(idx, false);
    setBondStereoCare(idx, false);
 
+   updateEditRevision();
+
    return idx;
 }
 
@@ -1328,6 +1337,7 @@ QueryMolecule::Bond & QueryMolecule::getBond (int idx)
 
 QueryMolecule::Bond * QueryMolecule::releaseBond (int idx)
 {
+   updateEditRevision();
    return _bonds.release(idx);
 }
 
@@ -1336,6 +1346,7 @@ void QueryMolecule::resetBond (int idx, QueryMolecule::Bond *bond)
    _bonds.reset(idx);
    _bonds[idx] = bond;
    _min_h.clear();
+   updateEditRevision();
 }
 
 void QueryMolecule::Atom::copy (Atom &other)
@@ -1457,6 +1468,7 @@ void QueryMolecule::clear ()
    aromaticity.clear();
    components.clear();
    fragment_smarts.clear();
+   updateEditRevision();
 }
 
 BaseMolecule * QueryMolecule::neu ()
@@ -1482,10 +1494,12 @@ void QueryMolecule::setBondStereoCare (int idx, bool stereo_care)
 
    _bond_stereo_care.expandFill(idx + 1, false);
    _bond_stereo_care[idx] = stereo_care;
+   updateEditRevision();
 }
 
 bool QueryMolecule::aromatize ()
 {
+   updateEditRevision();
    return QueryMoleculeAromatizer::aromatizeBonds(*this);
 }
 
@@ -1878,4 +1892,5 @@ void QueryMolecule::optimize ()
 {
    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
       getAtom(i).optimize();
+   updateEditRevision();
 }
