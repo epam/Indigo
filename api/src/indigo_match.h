@@ -20,6 +20,7 @@
 #include "molecule/molecule_tautomer_matcher.h"
 #include "reaction/reaction_substructure_matcher.h"
 #include "reaction/reaction.h"
+#include "molecule/molecule_neighbourhood_counters.h"
 
 class IndigoQueryMolecule;
 
@@ -81,7 +82,7 @@ public:
 
    virtual ~IndigoMoleculeSubstructureMatcher ();
 
-   IndigoMoleculeSubstructureMatchIter* iterateQueryMatches (QueryMolecule &query,
+   IndigoMoleculeSubstructureMatchIter* iterateQueryMatches (IndigoObject &query_object,
       bool embedding_edges_uniqueness, bool find_unique_embeddings, 
       bool for_iteration, int max_embeddings);
 
@@ -108,6 +109,7 @@ private:
    Molecule _target_arom_h_unfolded, _target_arom;
    Array<int> _mapping_arom_h_unfolded, _mapping_arom, _ignored_atoms;
    bool _arom_h_unfolded_prepared, _arom_prepared, _aromatized;
+   MoleculeAtomNeighbourhoodCounters _nei_counters, _nei_counters_h_unfolded;
 };
 
 class DLLEXPORT IndigoReactionSubstructureMatcher : public IndigoObject

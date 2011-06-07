@@ -480,13 +480,16 @@ void IndigoMoleculeSubstructureMatcher::unignoreAllAtoms ()
 }
 
 IndigoMoleculeSubstructureMatchIter*
-   IndigoMoleculeSubstructureMatcher::iterateQueryMatches (QueryMolecule &query,
+   IndigoMoleculeSubstructureMatcher::iterateQueryMatches (IndigoObject &query_object,
       bool embedding_edges_uniqueness, bool find_unique_embeddings, bool for_iteration, 
       int max_embeddings)
 {
+   QueryMolecule &query = query_object.getQueryMolecule();
+
    Molecule *target_prepared;
    Array<int> *mapping;
    bool *prepared;
+   MoleculeAtomNeighbourhoodCounters *nei_counters;
    if (MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens(query))
    {
       if (!_arom_h_unfolded_prepared)
@@ -495,6 +498,7 @@ IndigoMoleculeSubstructureMatchIter*
       target_prepared = &_target_arom_h_unfolded;
       mapping = &_mapping_arom_h_unfolded;
       prepared = &_arom_h_unfolded_prepared;
+      nei_counters = &_nei_counters_h_unfolded;
    }
    else
    {
@@ -503,14 +507,25 @@ IndigoMoleculeSubstructureMatchIter*
       target_prepared = &_target_arom;
       mapping = &_mapping_arom;
       prepared = &_arom_prepared;
+      nei_counters = &_nei_counters;
    }
-   if (!target.isAromatized() && !*prepared)
-      target_prepared->aromatize();
-   *prepared = true;
+   if (!*prepared)
+   {
+      if (!target.isAromatized())
+         target_prepared->aromatize();
+      nei_counters->calculate(*target_prepared);
+      *prepared = true;
+   }
 
    AutoPtr<IndigoMoleculeSubstructureMatchIter>
       iter(new IndigoMoleculeSubstructureMatchIter(*target_prepared, query, target,
                                                   (mode == RESONANCE)));
+   
+   if (query_object.type == IndigoObject::QUERY_MOLECULE)
+   {
+      IndigoQueryMolecule &qm_object = (IndigoQueryMolecule &)query_object;
+      iter->matcher.setNeiCounters(&qm_object.getNeiCounters(), nei_counters);
+   }
 
    iter->matcher.find_unique_embeddings = find_unique_embeddings;
    iter->matcher.find_unique_by_edges = embedding_edges_uniqueness;
@@ -641,7 +656,7 @@ IndigoMoleculeSubstructureMatcher & IndigoMoleculeSubstructureMatcher::cast (Ind
 IndigoMoleculeSubstructureMatchIter * IndigoMoleculeSubstructureMatcher::getMatchIterator (
       Indigo &self, int query, bool for_iteration, int max_embeddings)
 {
-   return iterateQueryMatches(self.getObject(query).getQueryMolecule(),
+   return iterateQueryMatches(self.getObject(query),
            self.embedding_edges_uniqueness, self.find_unique_embeddings, for_iteration, max_embeddings);
 }
 

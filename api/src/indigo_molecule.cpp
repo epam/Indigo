@@ -117,6 +117,7 @@ IndigoMolecule * IndigoMolecule::cloneFrom (IndigoObject & obj)
 
 IndigoQueryMolecule::IndigoQueryMolecule () : IndigoBaseMolecule(QUERY_MOLECULE)
 {
+   _nei_counters_edit_revision = -1;
 }
 
 IndigoQueryMolecule::~IndigoQueryMolecule ()
@@ -1580,6 +1581,16 @@ IndigoObject * IndigoQueryMolecule::clone ()
 const char * IndigoQueryMolecule::debugInfo ()
 {
    return "<query molecule>";
+}
+
+const MoleculeAtomNeighbourhoodCounters& IndigoQueryMolecule::getNeiCounters ()
+{
+   if (_nei_counters_edit_revision != qmol.getEditRevision())
+   {
+      _nei_counters.calculate(qmol);
+      _nei_counters_edit_revision = qmol.getEditRevision();
+   }
+   return _nei_counters;
 }
 
 CEXPORT int indigoHasZCoord (int molecule)

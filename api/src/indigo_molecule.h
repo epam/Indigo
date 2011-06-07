@@ -26,6 +26,7 @@
 #include "graph/graph_subtree_enumerator.h"
 #include "graph/cycle_enumerator.h"
 #include "graph/edge_subgraph_enumerator.h"
+#include "molecule/molecule_neighbourhood_counters.h"
 
 class DLLEXPORT IndigoBaseMolecule : public IndigoObject
 {
@@ -61,7 +62,13 @@ public:
 
    virtual IndigoObject * clone ();
 
+   const MoleculeAtomNeighbourhoodCounters& getNeiCounters ();
+
    QueryMolecule qmol;
+
+private:
+   MoleculeAtomNeighbourhoodCounters _nei_counters;
+   int _nei_counters_edit_revision;
 };
 
 class DLLEXPORT IndigoMolecule : public IndigoBaseMolecule
