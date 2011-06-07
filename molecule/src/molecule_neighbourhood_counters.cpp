@@ -41,8 +41,14 @@ void MoleculeAtomNeighbourhoodCounters::_calculate (BaseMolecule &mol, bool is_q
    _use_atom.zerofill();
 
    for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      if (!mol.possibleAtomNumber(i, ELEM_H) && !mol.isRSite(i))
+         _use_atom[i] = 1;
+      /*
       if (mol.getAtomNumber(i) != -1 && mol.getAtomNumber(i) != ELEM_H)
          _use_atom[i] = 1;
+      */
+   }
 
    _calculateLevel0(mol, is_query);
    for (int r = 1; r < Counters::RADIUS; r++)
@@ -166,14 +172,17 @@ void MoleculeAtomNeighbourhoodCounters::_calculateLevel0 (
          cnt0.trip_cnt = 1;
 
       int label = mol.getAtomNumber(i);
-      if (label == ELEM_N)
-         cnt0.heteroN_cnt++;
-      else if (label == ELEM_O)
-         cnt0.heteroO_cnt++;
-      else if (label != ELEM_C)
-         cnt0.hetero_cnt++;
-      else
-         cnt0.C_cnt++;
+      if (label != -1)
+      {
+         if (label == ELEM_N)
+            cnt0.heteroN_cnt++;
+         else if (label == ELEM_O)
+            cnt0.heteroO_cnt++;
+         else if (label != ELEM_C)
+            cnt0.hetero_cnt++;
+         else
+            cnt0.C_cnt++;
+      }
    } 
 }
 
