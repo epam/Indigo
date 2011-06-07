@@ -127,6 +127,7 @@ public:
 protected:
    void _detectAromaticGroups (int v_idx, const int *atom_external_conn);
 
+   int _getFixedConnectivitySpecific (int label, int charge, int min_conn, int n_arom);
 protected:
    BaseMolecule &_molecule;
    int _aromaticGroups;

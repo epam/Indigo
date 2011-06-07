@@ -726,6 +726,47 @@ void DearomatizationsGroups::constructGroups (DearomatizationsStorage &storage,
    }
 }
 
+int DearomatizationsGroups::_getFixedConnectivitySpecific (int elem, int charge, int min_conn, 
+   int n_arom)
+{
+   if (elem == ELEM_Se && charge == 0)
+   {
+      if (n_arom == 2) // two aromatic bonds
+      {
+         if (min_conn == 2) // no external bonds
+            return 2; // common case
+         if (min_conn == 3) // one external bond
+            return 4; // CID 10262587
+         if (min_conn == 4)
+            // CID 21204858, two single external bonds
+            // CID 14984497, one double aromatic bond
+            return 4;
+      }
+   }
+   else if (elem == ELEM_Se && charge == 1)
+   {
+      if (n_arom == 2) // two aromatic bonds
+      {
+         if (min_conn == 2) // no external bonds
+            return 3; // CID 10872228
+         if (min_conn == 3) // one external bond
+            return 3; // CID 11115581
+      }
+   }
+   else if (elem == ELEM_As && charge == 0)
+   {
+      if (n_arom == 2)  // two aromatic bonds
+      {
+         if (min_conn == 2) // no external bonds
+            return 3; // CID 136132
+         if (min_conn == 3) // one external bond
+            return 3; // CID 237687
+         // no other cases known from PubChem
+      }
+   }
+   return -1;
+}
+
 void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_external_conn)
 {
    int non_aromatic_conn = 0;
@@ -733,6 +774,7 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
       non_aromatic_conn = atom_external_conn[v_idx];
 
    const Vertex &vertex = _molecule.getVertex(v_idx);
+   int n_arom = 0;
    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i)) 
    {
       int e_idx = vertex.neiEdge(i);
@@ -748,6 +790,7 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
          continue;
       }
       non_aromatic_conn++;
+      n_arom++;
 
       int vn_idx = vertex.neiVertex(i);
       if (_vertexAromaticGroupIndex[vn_idx] != -1)
@@ -792,8 +835,15 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
       }
    }
    
-   // TODO: check aromatization dearomatization with d-orbitals
-   // CC1=C(C)C=[Se](C)C(=C1)C#N
+   // Explicit values for specific configurations
+   if (max_connectivity == -1)
+   {
+      max_connectivity = _getFixedConnectivitySpecific(label, charge, non_aromatic_conn, n_arom);
+      if (max_connectivity != -1)
+         impl_h_fixed = true;
+   }
+
+   // Apply general purpose method
    if (max_connectivity == -1)   
       max_connectivity = Element::getMaximumConnectivity(label, 
          charge, radical, false);
