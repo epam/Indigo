@@ -72,6 +72,7 @@ public:
    static bool sortSubstituents (BaseMolecule &mol, int *substituents);
 
    void restoreSubstituents (int bond_idx);
+   void registerUnfoldedHydrogen (int atom_idx, int added_hydrogen);
 
    static bool isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *edge_filter = NULL);
 

@@ -219,6 +219,32 @@ void MoleculeCisTrans::restoreSubstituents (int bond_idx)
       throw Error("can't sort restored substituents");
 }
 
+void MoleculeCisTrans::registerUnfoldedHydrogen (int atom_idx, int added_hydrogen)
+{
+   BaseMolecule &mol = _getMolecule();
+
+   const Vertex &vertex = mol.getVertex(atom_idx);
+   int i;
+
+   for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+   {
+      int bond_idx = vertex.neiEdge(i);
+      const Edge &edge = mol.getEdge(bond_idx);
+
+      if (_bonds.size() <= bond_idx)
+         continue;
+
+      if (_bonds[bond_idx].parity == 0)
+         continue;
+
+      int *subst = _bonds[bond_idx].substituents;
+
+      if (atom_idx == edge.beg && subst[1] == -1)
+         subst[1] = added_hydrogen;
+      if (atom_idx == edge.end && subst[3] == -1)
+         subst[3] = added_hydrogen;
+   }
+}
 
 void MoleculeCisTrans::clear ()
 {
@@ -579,17 +605,19 @@ void MoleculeCisTrans::buildOnSubmolecule (BaseMolecule &super, int *mapping)
             bond.substituents[j] = mapping[substituents[j]];
       }
 
-      int sum = 0;
+      bond.parity = parity;
+
       int tmp;
+
       if (bond.substituents[0] == -1)
       {
          __swap(bond.substituents[0], bond.substituents[1], tmp);
-         sum++;
+         bond.parity = 3 - bond.parity;
       }
       if (bond.substituents[2] == -1)
       {
          __swap(bond.substituents[2], bond.substituents[3], tmp);
-         sum++;
+         bond.parity = 3 - bond.parity;
       }
 
       if (bond.substituents[0] == -1 || bond.substituents[2] == -1)
@@ -598,17 +626,16 @@ void MoleculeCisTrans::buildOnSubmolecule (BaseMolecule &super, int *mapping)
          continue;
       }
 
-      bond.parity = applyMapping(parity, substituents, mapping);
-      if (sum % 2 == 1)
+      if (bond.substituents[1] != -1 && bond.substituents[1] < bond.substituents[0])
       {
-         if (bond.parity == CIS)
-            bond.parity = TRANS;
-         else
-            bond.parity = CIS;
+         __swap(bond.substituents[0], bond.substituents[1], tmp);
+         bond.parity = 3 - bond.parity;
       }
-
-      if (!sortSubstituents(sub, bond.substituents))
-         throw Error("buildOnSubmolecule() internal error");
+      if (bond.substituents[3] != -1 && bond.substituents[3] < bond.substituents[2])
+      {
+         __swap(bond.substituents[2], bond.substituents[3], tmp);
+         bond.parity = 3 - bond.parity;
+      }
    }
 }
 

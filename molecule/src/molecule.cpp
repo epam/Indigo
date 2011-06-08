@@ -586,6 +586,7 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt )
          }
 
          stereocenters.registerUnfoldedHydrogen(i, new_h_idx);
+         cis_trans.registerUnfoldedHydrogen(i, new_h_idx);
       }
 
       _validateVertexConnectivity(i, false);
@@ -657,7 +658,7 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
          for (i = 1; i <= attachmentPointCount(); i++)
          {
             int j = 0, aidx;
-
+ 
             for (j = 0; (aidx = getAttachmentPoint(i, j)) != -1; j++)
             {
                if (aidx == idx)
@@ -675,6 +676,8 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
          else if (atom.number == ELEM_O && atom.charge == 0)
             impl_h = 0;
          else if (atom.number == ELEM_N && atom.charge == 0 && degree == 3)
+            impl_h = 0;
+         else if (atom.number == ELEM_S && atom.charge == 0 && degree == 3)
             impl_h = 0;
       }
       else

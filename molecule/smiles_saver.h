@@ -95,6 +95,7 @@ protected:
    void _writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chirality, int depth, bool has_or_parent) const;
    void _writeSmartsBond (int idx, QueryMolecule::Bond *bond) const;
    void _markCisTrans ();
+   void _banSlashes ();
    int  _calcBondDirection (int idx, int vprev);
    bool _updateSideBonds (int bond_idx);
    void _writeRingCisTrans ();
@@ -127,15 +128,23 @@ protected:
    TL_CP_DECL(Array<int>, _attachment_cycle_numbers);
    TL_CP_DECL(Array<int>, _aromatic_bonds);
 
-   struct _RingCisTrans
-   {
-      bool is;
-      int nei_atom_beg;
-      int nei_atom_end;
-   };
+   // Some cis-trans bonds are considered "complicated", they are either:
+   // 1.   Ring bonds, which can not be saved with slash notation (conflicts are
+   //      unavoidable)
+   // 2.   Bonds that share their adjacent single with other cis-trans bonds that
+   //      have "unset" parity, for example: OC=CC=CC=CN |t:1,5|
+   //      for another example: C/C=C/C(/C=C/C)=C(/C=C/C)/C=C/C
+   //      Marvin erroneously saves that structure as N\C=C\C=C\C=C\O, which is
+   //      incorrect, as it introduces cis-trans parity on the middle bond
+   // 1+2: C[N+](O)=C1C=CC(=CO)C=C1
+   TL_CP_DECL(Array<int>, _complicated_cistrans);
+   // single bonds that can not be written as slashes; see item 2 above
+   TL_CP_DECL(Array<int>, _ban_slashes);
 
-   TL_CP_DECL(Array<_RingCisTrans>, _ring_cistrans);
-   bool _some_ring_cistrans_complicated;
+   // This flag does not necessarily mean "any of _complicated_cistrans == 1".
+   // If all _complicated_cistrans are actually ring CIS bonds, then the flag
+   // is not set.
+   bool _have_complicated_cistrans;
 
    int _n_attachment_points;
 
