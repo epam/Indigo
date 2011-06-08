@@ -97,6 +97,7 @@ protected:
    void _markCisTrans ();
    int  _calcBondDirection (int idx, int vprev);
    bool _updateSideBonds (int bond_idx);
+   void _writeRingCisTrans ();
    void _writeStereogroups ();
    void _writeRadicals ();
    void _writePseudoAtoms ();
@@ -110,7 +111,7 @@ protected:
 
    struct _DBond // directed bond (near cis-trans bond)
    {
-      int ctbond_beg; // cis-trans bond attached to the begin (-1 if there isn't any)
+      int ctbond_beg; // cis-trans bond attached to the beginning (-1 if there isn't any)
       int ctbond_end; // cis-trans bond attached to the end (-1 if there isn't any)
       int saved; // 0 -- not saved; 1 -- goes 'up' from begin to end; 2 -- goes 'down'
    };
@@ -125,6 +126,16 @@ protected:
    TL_CP_DECL(Array<int>, _attachment_indices);
    TL_CP_DECL(Array<int>, _attachment_cycle_numbers);
    TL_CP_DECL(Array<int>, _aromatic_bonds);
+
+   struct _RingCisTrans
+   {
+      bool is;
+      int nei_atom_beg;
+      int nei_atom_end;
+   };
+
+   TL_CP_DECL(Array<_RingCisTrans>, _ring_cistrans);
+   bool _some_ring_cistrans_complicated;
 
    int _n_attachment_points;
 

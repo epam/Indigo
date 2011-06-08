@@ -109,6 +109,7 @@ protected:
       int type;
       int dir; // 0 -- undirected; 1 -- goes 'up' from beg to end, 2 -- goes 'down'
       int topology;
+      int index;
    };
 
    struct _CycleDesc

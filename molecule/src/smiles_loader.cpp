@@ -218,7 +218,7 @@ void SmilesLoader::_readOtherStuff ()
       {
          bool skip = true;
 
-         // TODO: up/down designators -- skipped for now
+         // TODO: up/down designators (usually come atom coordinates) -- skipped for now
          if (_scanner.lookNext() == 'U')
             _scanner.skip(1);
          else if (_scanner.lookNext() == 'D')
@@ -399,6 +399,43 @@ void SmilesLoader::_readOtherStuff ()
             }
          }
       }
+      else if (c == 'c' || c == 't') // CIS and TRANS bonds
+      {
+         if (_scanner.readChar() != ':')
+            throw Error("colon expected after '%c' identifier", c);
+
+         while (isdigit(_scanner.lookNext()))
+         {
+            int idx = _scanner.readUnsigned();
+
+            _bmol->cis_trans.restoreSubstituents(_bonds[idx].index);
+            const int *subst = _bmol->cis_trans.getSubstituents(_bonds[idx].index);
+            int parity = ((c == 'c') ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
+
+            /* CXSmiles doc says:
+               the double bond has the representation a1-a2=a3-a4, where
+               a1 is the smallest atom index of the generated smiles connected to a2
+               a2 is the double bond smaller atom index in the generated smiles
+               a3 is the double bond larger atom index in the generated smiles
+               a4 is the smallest atom index of the generated smiles connected to a3
+
+             * We need to know if the calculated substituents' indices are not "smallest"
+             * (i.e. they have other substituent with smaller index on the same side).
+             * In that case, we invert the parity.
+             */
+
+            if (subst[1] != -1 && subst[1] < subst[0])
+               parity = 3 - parity;
+            if (subst[3] != -1 && subst[3] < subst[2])
+               parity = 3 - parity;
+
+            _bmol->cis_trans.setParity(_bonds[idx].index, parity);
+
+            if (_scanner.lookNext() == ',')
+               _scanner.skip(1);
+         }
+         
+      }
       else if (c == '(') // atom coordinates
       {
          for (int i = _bmol->vertexBegin(); i != _bmol->vertexEnd(); i = _bmol->vertexNext(i))
@@ -523,17 +560,18 @@ void SmilesLoader::_parseMolecule ()
                bond->beg = _atom_stack.top();
                bond->end = _cycles[number].beg;
                bond->type = -1; // will later become single or aromatic bond
+               bond->index = -1;
                _cycles[number].clear();
                added_bond = true;
 
                if (_qmol != 0)
                {
                   if (smarts_mode)
-                     _qmol->addBond(bond->beg, bond->end, QueryMolecule::Bond::oder(
+                     bond->index = _qmol->addBond(bond->beg, bond->end, QueryMolecule::Bond::oder(
                           new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
                           new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
                   else
-                     _qmol->addBond(bond->beg, bond->end, new QueryMolecule::Bond());
+                     bond->index = _qmol->addBond(bond->beg, bond->end, new QueryMolecule::Bond());
                }
 
                _atoms[bond->beg].neighbors.add(bond->end);
@@ -557,7 +595,7 @@ void SmilesLoader::_parseMolecule ()
 
                   bond_str.readString(_pending_bonds_pool.at(_cycles[number].pending_bond_str), false);
                   _readBond(bond_str, *bond, qbond);
-                  _qmol->addBond(bond->beg, bond->end, qbond.release());
+                  bond->index = _qmol->addBond(bond->beg, bond->end, qbond.release());
                }
                
                _cycles[number].clear();
@@ -641,6 +679,7 @@ void SmilesLoader::_parseMolecule ()
          bond->type = -1;
          bond->dir = 0;
          bond->topology = 0;
+         bond->index = -1;
       }
 
       AutoPtr<QueryMolecule::Bond> qbond;
@@ -706,7 +745,7 @@ void SmilesLoader::_parseMolecule ()
                   bond->end = _cycles[number].beg;
 
                   if (_qmol != 0)
-                     _qmol->addBond(bond->beg, bond->end, qbond.release());
+                     bond->index = _qmol->addBond(bond->beg, bond->end, qbond.release());
 
                   _atoms[bond->end].closure(number, bond->beg);
                   _atoms[bond->beg].neighbors.add(bond->end);
@@ -748,7 +787,7 @@ void SmilesLoader::_parseMolecule ()
                   }
 
                   if (_qmol != 0)
-                     _qmol->addBond(pending_bond.beg, bond->beg, qbond.release());
+                     pending_bond.index = _qmol->addBond(pending_bond.beg, bond->beg, qbond.release());
 
                   pending_bond.end = bond->beg;
                   _atoms[pending_bond.end].neighbors.add(pending_bond.beg);
@@ -832,7 +871,7 @@ void SmilesLoader::_parseMolecule ()
       {
          _qmol->addAtom(qatom.release());
          if (bond != 0)
-            _qmol->addBond(bond->beg, bond->end, qbond.release());
+            bond->index = _qmol->addBond(bond->beg, bond->end, qbond.release());
       }
 
       if (bond != 0)
@@ -943,7 +982,7 @@ void SmilesLoader::_loadParsedMolecule ()
 
          if (end == -1)
             throw Error("probably pending bond %d not closed", i);
-         _mol->addBond_Silent(beg, end, _bonds[i].type);
+         _bonds[i].index = _mol->addBond_Silent(beg, end, _bonds[i].type);
       }
    }
 

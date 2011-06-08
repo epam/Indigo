@@ -213,7 +213,7 @@ void MoleculeCisTrans::restoreSubstituents (int bond_idx)
    int *substituents = _bonds[bond_idx].substituents;
 
    if (!isGeomStereoBond(mol, bond_idx, substituents, false))
-      throw Error("can't restore substituents");
+      throw Error("restoreSubstituents(): not a cis-trans bond");
 
    if (!sortSubstituents(mol, substituents))
       throw Error("can't sort restored substituents");
@@ -295,9 +295,6 @@ void MoleculeCisTrans::buildFromSmiles (int *dirs)
       int beg = mol.getEdge(i).beg;
       int end = mol.getEdge(i).end;
 
-      if (mol.getEdgeTopology(i) == TOPOLOGY_RING)
-         continue;
-
       if (!isGeomStereoBond(mol, i, _bonds[i].substituents, false))
          continue;
 
@@ -368,11 +365,8 @@ void MoleculeCisTrans::buildFromSmiles (int *dirs)
          //throw Error("cis-trans bonds %d have co-directed subsituents", i);
          // can happen on fragments such as CC=C(C=CN)C=CO
          continue;
-      
 
-      if (subst_dirs[0] == 0 && subst_dirs[1] == 0)
-         continue;
-      if (subst_dirs[2] == 0 && subst_dirs[3] == 0)
+      if ((subst_dirs[0] == 0 && subst_dirs[1] == 0) || (subst_dirs[2] == 0 && subst_dirs[3] == 0))
          continue;
 
       if (subst_dirs[1] == 1)
@@ -737,4 +731,31 @@ int MoleculeCisTrans::count ()
          res++;
 
    return res;
+}
+
+bool MoleculeCisTrans::isRingTransBond (int i)
+{
+   const int *subst = getSubstituents(i);
+   int parity = getParity(i); // 1(CIS) or 2(TRANS)
+   BaseMolecule &mol = _getMolecule();
+   const Edge &edge = mol.getEdge(i);
+
+   if (mol.getBondTopology(i) != TOPOLOGY_RING)
+      throw Error("is RingTransBond(): not a ring bond given");
+
+   if (mol.getBondTopology(mol.findEdgeIndex(edge.beg, subst[0])) != TOPOLOGY_RING)
+   {
+      if (mol.getBondTopology(mol.findEdgeIndex(edge.beg, subst[1])) != TOPOLOGY_RING)
+         throw Error("unexpected: have not found ring substutient");
+      // invert parity
+      parity = 3 - parity;
+   }
+   if (mol.getBondTopology(mol.findEdgeIndex(edge.end, subst[2])) != TOPOLOGY_RING)
+   {
+      if (mol.getBondTopology(mol.findEdgeIndex(edge.end, subst[3])) != TOPOLOGY_RING)
+         throw Error("unexpected: have not found ring substutient");
+      // invert parity
+      parity = 3 - parity;
+   }
+   return (parity == MoleculeCisTrans::TRANS);
 }

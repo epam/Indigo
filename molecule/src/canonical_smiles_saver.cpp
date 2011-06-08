@@ -54,8 +54,41 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
          ignored[i] = 1;
 
    for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-      if (mol.getBondTopology(i) == TOPOLOGY_RING)
-         mol.cis_trans.setParity(i, 0);
+      if (mol.getBondTopology(i) == TOPOLOGY_RING && mol.cis_trans.getParity(i) != 0)
+      {
+         // we save cis/trans ring bonds into SMILES, but only those who
+         // do not participate in bigger ring systems
+         const Edge &edge = mol.getEdge(i);
+
+         if (mol.getAtomRingBondsCount(edge.beg) != 2 ||
+             mol.getAtomRingBondsCount(edge.end) != 2)
+         {
+            mol.cis_trans.setParity(i, 0);
+            continue;
+         }
+
+         // also, discard the cis-trans bonds that have been converted to aromatic
+         const Vertex &beg = mol.getVertex(edge.beg);
+         const Vertex &end = mol.getVertex(edge.end);
+         bool have_singlebond_beg = false;
+         bool have_singlebond_end = false;
+         int j;
+         
+         for (j = beg.neiBegin(); j != beg.neiEnd(); j = beg.neiNext(j))
+            if (mol.getBondOrder(beg.neiEdge(j)) == BOND_SINGLE)
+               have_singlebond_beg = true;
+
+         for (j = end.neiBegin(); j != end.neiEnd(); j = end.neiNext(j))
+            if (mol.getBondOrder(end.neiEdge(j)) == BOND_SINGLE)
+               have_singlebond_end = true;
+
+         if (!have_singlebond_beg || !have_singlebond_end)
+         {
+            mol.cis_trans.setParity(i, 0);
+            continue;
+         }
+      }
+         
 
    MoleculeAutomorphismSearch of;
 

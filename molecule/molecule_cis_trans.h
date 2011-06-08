@@ -75,6 +75,8 @@ public:
 
    static bool isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *edge_filter = NULL);
 
+   bool isRingTransBond (int bond_idx);
+
    DEF_ERROR("cis-trans");
 
    static bool isGeomStereoBond (BaseMolecule &mol, int bond_idx, int *substituents, bool have_xyz);
