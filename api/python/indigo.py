@@ -419,6 +419,8 @@ class Indigo:
     self.IndigoObject.unignoreAtom = Indigo._member_void_obj(Indigo._lib.indigoUnignoreAtom)
     self.IndigoObject.unignoreAllAtoms = Indigo._member_void(Indigo._lib.indigoUnignoreAllAtoms)
     self.IndigoObject.countMatches = Indigo._member_int_obj(Indigo._lib.indigoCountMatches)
+    self.IndigoObject.countMatchesWithLimit = Indigo._member_int_obj_int(Indigo._lib.indigoCountMatchesWithLimit)
+    
     self.IndigoObject.iterateMatches = Indigo._member_obj_obj(Indigo._lib.indigoIterateMatches)
     self.IndigoObject.highlightedTarget = Indigo._member_obj(Indigo._lib.indigoHighlightedTarget);
     self.IndigoObject.mapAtom = Indigo._member_obj_obj(Indigo._lib.indigoMapAtom);
@@ -762,6 +764,16 @@ class Indigo:
       return self.dispatcher._checkResult(func(self.id, param.id))
     return Indigo._make_wrapper_func(newfunc, func)
 	
+   
+  @staticmethod
+  def _member_int_obj_int (func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int, c_int]
+    def newfunc (self, param, param2):
+      self.dispatcher._setSID()
+      return self.dispatcher._checkResult(func(self.id, param.id, param2))
+    return Indigo._make_wrapper_func(newfunc, func)
+   
   @staticmethod
   def _member_obj (func):
     func.restype = c_int
