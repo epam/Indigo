@@ -222,6 +222,9 @@
     <ClCompile Include="..\common\gzip\gzip_scanner.cpp">
       <Filter>common\gzip</Filter>
     </ClCompile>
+    <ClCompile Include="src\molecule_allene_stereo.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_molecule.h">
@@ -385,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="..\common\gzip\gzip_scanner.h">
       <Filter>common\gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="molecule_allene_stereo.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

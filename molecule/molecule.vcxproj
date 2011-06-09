@@ -440,6 +440,7 @@
     <ClCompile Include="src\max_common_submolecule.cpp" />
     <ClCompile Include="src\molecule.cpp" />
     <ClCompile Include="src\molecule_3d_constraints.cpp" />
+    <ClCompile Include="src\molecule_allene_stereo.cpp" />
     <ClCompile Include="src\molecule_arom.cpp" />
     <ClCompile Include="src\molecule_arom_match.cpp" />
     <ClCompile Include="src\molecule_auto_loader.cpp" />
@@ -509,6 +510,7 @@
     <ClInclude Include="max_common_submolecule.h" />
     <ClInclude Include="molecule.h" />
     <ClInclude Include="molecule_3d_constraints.h" />
+    <ClInclude Include="molecule_allene_stereo.h" />
     <ClInclude Include="molecule_arom.h" />
     <ClInclude Include="molecule_arom_match.h" />
     <ClInclude Include="molecule_auto_loader.h" />
