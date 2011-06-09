@@ -1244,7 +1244,17 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
                return false;
           
             if (_is_rg_exist)
+            {
                mol_product.flipBond(pr_neibours[j], atom_from, atom_to);
+               
+               // TODO:
+               // Check that corresponding R-group fragment in monomer has cis-trans bond
+               // and check that AAM mapping is specified for that.
+               // For example for reaction OC([*])=O>>OC([*])=O and monomer C\C=C\C(O)=O 
+               // product shouldn't have should have cis-trans bonds because
+               // AAM is not specified on R-group atom neighbor
+               // Cis-trans bonds should be saved for such reaction: O[C:1]([*])=O>>O[C:1]([*])=O
+            }
          }
          mol_product.removeAtom(mapping[i]);
       }
