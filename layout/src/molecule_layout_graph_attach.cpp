@@ -115,7 +115,7 @@ bool MoleculeLayoutGraph::_splitCycle (const Cycle &cycle, const Array<int> &cyc
 // Split cycle into separate chains which are not drawn
 void MoleculeLayoutGraph::_splitCycle2 (const Cycle &cycle, const Array<int> &cycle_vertex_types, ObjArray < Array<int> > &chains_ext) const
 {
-   int i, j, k;
+   int i;
    
    chains_ext.clear();
    
