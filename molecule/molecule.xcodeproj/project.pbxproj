@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		810BD6E012F2D859004D1772 /* molecule_cml_loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 810BD6DE12F2D859004D1772 /* molecule_cml_loader.cpp */; };
 		810BD6E112F2D859004D1772 /* multiple_cml_loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 810BD6DF12F2D859004D1772 /* multiple_cml_loader.cpp */; };
+		816AB0E013A12ED500D37F95 /* molecule_allene_stereo.h in Headers */ = {isa = PBXBuildFile; fileRef = 816AB0DF13A12ED500D37F95 /* molecule_allene_stereo.h */; };
+		816AB0E213A12EE200D37F95 /* molecule_allene_stereo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 816AB0E113A12EE200D37F95 /* molecule_allene_stereo.cpp */; };
 		A70B4394112B4A3C00AE35BA /* gzip_output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A70B4390112B4A3C00AE35BA /* gzip_output.cpp */; };
 		A70B4396112B4A3C00AE35BA /* gzip_scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A70B4392112B4A3C00AE35BA /* gzip_scanner.cpp */; };
 		A73F9C3211396F720033F344 /* molecule_inchi_layers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A73F9C3111396F720033F344 /* molecule_inchi_layers.cpp */; };
@@ -87,6 +89,8 @@
 		810BD6DC12F2D844004D1772 /* multiple_cml_loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = multiple_cml_loader.h; sourceTree = "<group>"; };
 		810BD6DE12F2D859004D1772 /* molecule_cml_loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_cml_loader.cpp; path = src/molecule_cml_loader.cpp; sourceTree = "<group>"; };
 		810BD6DF12F2D859004D1772 /* multiple_cml_loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = multiple_cml_loader.cpp; path = src/multiple_cml_loader.cpp; sourceTree = "<group>"; };
+		816AB0DF13A12ED500D37F95 /* molecule_allene_stereo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = molecule_allene_stereo.h; sourceTree = "<group>"; };
+		816AB0E113A12EE200D37F95 /* molecule_allene_stereo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = molecule_allene_stereo.cpp; path = src/molecule_allene_stereo.cpp; sourceTree = "<group>"; };
 		A70B4390112B4A3C00AE35BA /* gzip_output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gzip_output.cpp; path = ../common/gzip/gzip_output.cpp; sourceTree = SOURCE_ROOT; };
 		A70B4391112B4A3C00AE35BA /* gzip_output.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gzip_output.h; path = ../common/gzip/gzip_output.h; sourceTree = SOURCE_ROOT; };
 		A70B4392112B4A3C00AE35BA /* gzip_scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gzip_scanner.cpp; path = ../common/gzip/gzip_scanner.cpp; sourceTree = SOURCE_ROOT; };
@@ -259,6 +263,8 @@
 		A7EDA44410624DDE006CBFAF /* src */ = {
 			isa = PBXGroup;
 			children = (
+				816AB0E113A12EE200D37F95 /* molecule_allene_stereo.cpp */,
+				816AB0DF13A12ED500D37F95 /* molecule_allene_stereo.h */,
 				810BD6DE12F2D859004D1772 /* molecule_cml_loader.cpp */,
 				810BD6DF12F2D859004D1772 /* multiple_cml_loader.cpp */,
 				810BD6DC12F2D844004D1772 /* multiple_cml_loader.h */,
@@ -447,6 +453,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				816AB0E013A12ED500D37F95 /* molecule_allene_stereo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -573,6 +580,7 @@
 				810BD6E012F2D859004D1772 /* molecule_cml_loader.cpp in Sources */,
 				810BD6E112F2D859004D1772 /* multiple_cml_loader.cpp in Sources */,
 				A74BFA96132A3C6700BE44D6 /* locale_guard.cpp in Sources */,
+				816AB0E213A12EE200D37F95 /* molecule_allene_stereo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
