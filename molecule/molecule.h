@@ -44,6 +44,7 @@ public:
    int addBond_Silent (int beg, int end, int order);
 
    void setAtomCharge (int idx, int charge);
+   void setAtomCharge_Silent (int idx, int charge);
    void setAtomIsotope (int idx, int isotope);
    void setAtomRadical (int idx, int radical);
    void setValence (int idx, int valence);
@@ -153,7 +154,7 @@ protected:
 
    Array<_Atom> _atoms;
    Array<int>   _bond_orders;
-   Array<int>   _connectivity;
+   Array<int>   _connectivity; // implicit H not included
    Array<int>   _aromaticity;
    Array<int>   _implicit_h;
    Array<int>   _total_h;

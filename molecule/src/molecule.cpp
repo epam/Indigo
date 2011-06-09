@@ -230,6 +230,18 @@ void Molecule::setBondOrder_Silent (int idx, int order)
 void Molecule::setAtomCharge (int idx, int charge)
 {
    _atoms[idx].charge = charge;
+   if (_implicit_h.size() > idx)
+      _implicit_h[idx] = -1;
+   if (_total_h.size() > idx)
+      _total_h[idx] = -1;
+   if (_radicals.size() > idx)
+      _radicals[idx] = -1;
+   updateEditRevision();
+}
+
+void Molecule::setAtomCharge_Silent (int idx, int charge)
+{
+   _atoms[idx].charge = charge;
    updateEditRevision();
 }
 

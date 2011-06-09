@@ -326,7 +326,7 @@ void MolfileLoader::_readCtab2000 ()
          if (atom_type == _ATOM_PSEUDO)
             _mol->setPseudoAtom(idx, buf);
 
-         _mol->setAtomCharge(idx, charge);
+         _mol->setAtomCharge_Silent(idx, charge);
          _mol->setAtomIsotope(idx, isotope);
          _mol->setAtomRadical(idx, radical);
 
@@ -654,7 +654,7 @@ void MolfileLoader::_readCtab2000 ()
                int charge = _scanner.readIntFix(3);
 
                if (_mol != 0)
-                  _mol->setAtomCharge(atom_idx, charge);
+                  _mol->setAtomCharge_Silent(atom_idx, charge);
                else
                {
                   _qmol->getAtom(atom_idx).removeConstraints(QueryMolecule::ATOM_CHARGE);
@@ -2029,7 +2029,7 @@ void MolfileLoader::_readCtab3000 ()
             int charge = strscan.readInt1();
 
             if (_mol != 0)
-               _mol->setAtomCharge(i, charge);
+               _mol->setAtomCharge_Silent(i, charge);
             else
             {
                _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
