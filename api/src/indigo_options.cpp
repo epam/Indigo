@@ -142,6 +142,8 @@ static void indigoSetEmbeddingUniqueness (const char *mode)
 static void indigoSetMaxEmbeddings (int value)
 {
    Indigo &self = indigoGetInstance();
+   if (value <= 0)
+      throw IndigoError("Maximum allowed embeddings limit must be positive.");
    self.max_embeddings = value;
 }
 

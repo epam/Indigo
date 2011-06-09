@@ -404,7 +404,8 @@ bool IndigoMoleculeSubstructureMatchIter::hasNext ()
          _found = matcher.findNext();
    }
    if (_embedding_index >= max_embeddings)
-      _found = false;
+      throw IndigoError("Number of embeddings exceeded maximum allowed limit (%d). "
+         "Adjust options to raise this limit.", max_embeddings);
 
    _need_find = false;
    return _found;
@@ -425,22 +426,30 @@ static bool _matchCountEmbeddingsCallback (Graph &sub, Graph &super,
    return true;
 }
 
-int IndigoMoleculeSubstructureMatchIter::countMatches ()
+int IndigoMoleculeSubstructureMatchIter::countMatches (int embeddings_limit)
 {
    if (max_embeddings <= 0)
-      return 0;
+      throw IndigoError("Maximum allowed embeddings limit must be positive "
+         "Adjust options to raise this limit.");
 
    MatchCountContext context;
    context.embeddings_count = 0;
-   context.max_count = max_embeddings;
+   if (embeddings_limit != 0)
+      context.max_count = __min(max_embeddings, embeddings_limit);
+   else
+      context.max_count = max_embeddings;
 
    matcher.find_all_embeddings = true;
    matcher.cb_embedding = _matchCountEmbeddingsCallback;
    matcher.cb_embedding_context = &context;
    matcher.find();
+   if (embeddings_limit != 0 && context.embeddings_count >= embeddings_limit)
+      return embeddings_limit;
+   if (context.embeddings_count >= max_embeddings)
+      throw IndigoError("Number of embeddings exceeded maximum allowed limit (%d). "
+         "Adjust options to raise this limit.", max_embeddings);
    return context.embeddings_count;
 }
-
 
 IndigoMoleculeSubstructureMatcher::IndigoMoleculeSubstructureMatcher (Molecule &target, int mode_) :
    IndigoObject(MOLECULE_SUBSTRUCTURE_MATCHER),
@@ -657,7 +666,8 @@ IndigoMoleculeSubstructureMatchIter * IndigoMoleculeSubstructureMatcher::getMatc
       Indigo &self, int query, bool for_iteration, int max_embeddings)
 {
    return iterateQueryMatches(self.getObject(query),
-           self.embedding_edges_uniqueness, self.find_unique_embeddings, for_iteration, max_embeddings);
+           self.embedding_edges_uniqueness, self.find_unique_embeddings, 
+           for_iteration, max_embeddings);
 }
 
 CEXPORT int indigoIgnoreAtom (int target_matcher, int atom_object)
@@ -795,6 +805,11 @@ CEXPORT int indigoMatch (int target_matcher, int query)
 
 int indigoCountMatches (int target_matcher, int query)
 {
+   return indigoCountMatchesWithLimit(target_matcher, query, 0);
+}
+
+CEXPORT int indigoCountMatchesWithLimit (int target_matcher, int query, int embeddings_limit)
+{
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(target_matcher);
@@ -804,16 +819,20 @@ int indigoCountMatches (int target_matcher, int query)
          IndigoMoleculeSubstructureMatcher &matcher = IndigoMoleculeSubstructureMatcher::cast(obj);
 
          if (matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
-            throw IndigoError("indigoCountMatches(): not supported in this mode");
+            throw IndigoError("count matches: not supported in this mode");
+
+         if (embeddings_limit > self.max_embeddings)
+            throw IndigoError("count matches: embeddings limit is more then maximum "
+               "allowed embeddings specified by options");
 
          AutoPtr<IndigoMoleculeSubstructureMatchIter>
             match_iter(matcher.getMatchIterator(self, query, false, self.max_embeddings));
 
-         return match_iter->countMatches();
+         return match_iter->countMatches(embeddings_limit);
       }
       if (obj.type == IndigoObject::REACTION_SUBSTRUCTURE_MATCHER)
-         throw IndigoError("indigoCountMatches(): can not work with reactions");
-      throw IndigoError("indigoCountMatches(): expected a matcher, got %s", obj.debugInfo());
+         throw IndigoError("count matches: can not work with reactions");
+      throw IndigoError("count matches: expected a matcher, got %s", obj.debugInfo());
    }
    INDIGO_END(-1)
 }

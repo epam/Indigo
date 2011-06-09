@@ -48,7 +48,7 @@ public:
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
-   int countMatches ();
+   int countMatches (int embeddings_limit);
 
    const char * debugInfo ();
 
@@ -57,9 +57,9 @@ public:
 
    Molecule &target, &original_target;
    QueryMolecule &query;
-   int max_embeddings;
 
    Array<int> mapping;
+   int max_embeddings;
 
 private:
    bool _initialized, _found, _need_find;

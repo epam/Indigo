@@ -629,6 +629,10 @@ CEXPORT int indigoMatch (int matcher, int query);
 // Counts the number of embeddings of the query structure into the target
 CEXPORT int indigoCountMatches (int matcher, int query);
 
+// Counts the number of embeddings of the query structure into the target
+// If number of embeddings is more then limit then limit is returned
+CEXPORT int indigoCountMatchesWithLimit (int matcher, int query, int embeddings_limit);
+
 // Returns substructure matches iterator
 CEXPORT int indigoIterateMatches (int matcher, int query);
 
