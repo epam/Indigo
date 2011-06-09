@@ -1057,6 +1057,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoCountMatches(self, query.self));
    }
    
+   public int countMatchesWithLimit (IndigoObject query, int embeddings_limit)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoCountMatchesWithLimit(self, query.self, embeddings_limit));
+   }
+   
    public IndigoObject iterateMatches (IndigoObject query)
    {
       dispatcher.setSessionID();

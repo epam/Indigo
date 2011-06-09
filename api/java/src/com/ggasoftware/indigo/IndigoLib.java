@@ -323,6 +323,7 @@ public interface IndigoLib extends Library
    int indigoUnignoreAllAtoms (int matcher);
    int indigoMatch (int matcher, int query);
    int indigoCountMatches (int matcher, int query);
+   int indigoCountMatchesWithLimit (int matcher, int query, int embeddings_limit);
    int indigoIterateMatches (int matcher, int query);
    int indigoHighlightedTarget (int match);
    int indigoMapAtom (int match, int query_atom);
