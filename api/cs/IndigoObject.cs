@@ -1088,6 +1088,12 @@ namespace com.ggasoftware.indigo
          return _indigo_lib.indigoCountMatches(self, query.self);
       }
 
+      public int countMatchesWithLimit (IndigoObject query, int embeddings_limit)
+      {
+         dispatcher.setSessionID();
+         return _indigo_lib.indigoCountMatchesWithLimit(self, query.self, embeddings_limit);
+      }
+
       public System.Collections.IEnumerable iterateMatches (IndigoObject query)
       {
          dispatcher.setSessionID();
