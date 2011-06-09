@@ -90,6 +90,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/molecule_cis_trans.o \
 	${OBJECTDIR}/src/molecule_tautomer_superstructure.o \
 	${OBJECTDIR}/src/molfile_saver.o \
+	${OBJECTDIR}/src/molecule_allene_stereo.o \
 	${OBJECTDIR}/src/multiple_cml_loader.o \
 	${OBJECTDIR}/src/icm_saver.o
 
@@ -404,6 +405,11 @@ ${OBJECTDIR}/src/molfile_saver.o: src/molfile_saver.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molfile_saver.o src/molfile_saver.cpp
+
+${OBJECTDIR}/src/molecule_allene_stereo.o: src/molecule_allene_stereo.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/molecule_allene_stereo.o src/molecule_allene_stereo.cpp
 
 ${OBJECTDIR}/src/multiple_cml_loader.o: src/multiple_cml_loader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

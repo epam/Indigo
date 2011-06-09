@@ -57,6 +57,8 @@
       <itemPath>molecule.h</itemPath>
       <itemPath>src/molecule_3d_constraints.cpp</itemPath>
       <itemPath>molecule_3d_constraints.h</itemPath>
+      <itemPath>src/molecule_allene_stereo.cpp</itemPath>
+      <itemPath>molecule_allene_stereo.h</itemPath>
       <itemPath>src/molecule_arom.cpp</itemPath>
       <itemPath>molecule_arom.h</itemPath>
       <itemPath>src/molecule_arom_match.cpp</itemPath>

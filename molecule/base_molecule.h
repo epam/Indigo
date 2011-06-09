@@ -17,9 +17,10 @@
 
 #include "graph/graph.h"
 #include "base_cpp/red_black.h"
-#include "molecule/molecule_stereocenters.h"
 #include "math/algebra.h"
+#include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_cis_trans.h"
+#include "molecule/molecule_allene_stereo.h"
 #include "base_cpp/obj_array.h"
 #include "molecule/molecule_rgroups.h"
 
@@ -232,6 +233,7 @@ public:
 
    MoleculeStereocenters stereocenters;
    MoleculeCisTrans cis_trans;
+   MoleculeAlleneStereo allene_stereo;
 
    bool have_xyz;
    bool chiral; // read-only; can be true only when loaded from a Molfile
