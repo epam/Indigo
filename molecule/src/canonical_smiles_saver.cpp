@@ -46,6 +46,9 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
 
    mol.clone(mol_, 0, 0);
 
+   // TODO: canonicalize allenes properly
+   mol.allene_stereo.clear();
+
    ignored.clear_resize(mol.vertexEnd());
    ignored.zerofill();
 

@@ -683,6 +683,9 @@ int MoleculeSubstructureMatcher::_embedding_common (int *core_sub, int *core_sup
    if (!MoleculeCisTrans::checkSub(query, _target, core_sub))
       return 1;
 
+   if (!MoleculeAlleneStereo::checkSub(query, _target, core_sub))
+      return 1;
+
    if (!_3d_constraints_checker->check(_target, core_sub))
       return 1;
 

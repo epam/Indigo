@@ -1691,6 +1691,8 @@ void MolfileLoader::_postLoad ()
       }
 
    _bmol->stereocenters.buildFromBonds(ignore_stereocenter_errors, _sensible_bond_directions.ptr());
+   _bmol->allene_stereo.buildFromBonds(ignore_stereocenter_errors, _sensible_bond_directions.ptr());
+
    if (!_chiral)
       for (i = 0; i < _atoms_num; i++)
       {

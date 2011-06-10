@@ -23,6 +23,9 @@ CEXPORT int indigoStereocenterType (int atom)
    {
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
+      if (ia.mol.allene_stereo.isCenter(ia.idx))
+         return INDIGO_ALLENE;
+
       switch (ia.mol.stereocenters.getType(ia.idx))
       {
          case MoleculeStereocenters::ATOM_ABS: return INDIGO_ABS;
@@ -31,7 +34,6 @@ CEXPORT int indigoStereocenterType (int atom)
          case MoleculeStereocenters::ATOM_ANY: return INDIGO_EITHER;
          default: return 0;
       }
-      return 0;
    }
    INDIGO_END(-1);
 }
@@ -43,6 +45,29 @@ CEXPORT int indigoCountStereocenters (int molecule)
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
 
       return mol.stereocenters.size();
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoClearAlleneCenters (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      mol.allene_stereo.clear();
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoCountAlleneCenters (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return mol.allene_stereo.size();
    }
    INDIGO_END(-1)
 }

@@ -20,6 +20,8 @@
 #pragma warning(disable:4251)
 #endif
 
+#include "base_cpp/exception.h"
+#include "base_cpp/red_black.h"
 
 namespace indigo {
 
@@ -32,21 +34,37 @@ public:
 
    void clear ();
 
-   void buildFromBonds (const int *bond_dirs, bool ignore_errors);
+   void buildFromBonds (bool ignore_errors, int *sensible_bonds_out);
+   void markBonds ();
+   int  sameside (const Vec3f &dir1, const Vec3f &dir2, const Vec3f &sep);
+   static bool checkSub (BaseMolecule &query, BaseMolecule &target, const int *mapping);
+
+   bool isCenter (int atom_idx);
+   int  size ();
+
+   DEF_ERROR("allene stereo");
 
 protected:
    struct _Atom
    {
       int left;     // number of the "left" neighbor atom
       int right;    // number of the "right" neighbor atom
-      int parity;   // 1 or 2
 
       // substituens: [0] and [1] are connected to the "left" neighbor,
       //              [2] and [3] are connected to the "right" neighbor.
-      //              
+      //              [1] and [3] may be -1 (implicit H)
+      //              [0] and [2] are never -1
       int subst[4];
+
+      // parity = 1  if [2]-nd substituent is rotated CCW w.r.t. [0]-th
+      //             substituent when we look at it from "left" to "right"
+      // parity = 2  if it is rotated CW
+      int parity;
    };
    BaseMolecule & _getMolecule();
+   bool _isAlleneCenter (BaseMolecule &mol, int idx, _Atom &atom, int *sensible_bonds_out);
+
+   RedBlackMap<int, _Atom> _centers;
 };
 
 }

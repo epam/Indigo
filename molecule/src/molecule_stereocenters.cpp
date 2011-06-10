@@ -302,7 +302,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
       else if (mol.possibleBondOrder(e_idx, BOND_DOUBLE))
          possible_double_bonds++;
 
-      if (_getBondStereo(atom_idx, v_idx) == BOND_EITHER)
+      if (mol.getBondDirection2(atom_idx, v_idx) == BOND_EITHER)
          is_either = true;
 
       nei_idx++;
@@ -323,7 +323,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
       for (i = 0; i < degree; i++)
       {
          stereocenter.pyramid[i] = edge_ids[i].nei_idx;
-         if (_getBondStereo(atom_idx, edge_ids[i].nei_idx) > 0)
+         if (mol.getBondDirection2(atom_idx, edge_ids[i].nei_idx) > 0)
             sensible_bonds_out[edge_ids[i].edge_idx] = 1;
       }
       _stereocenters.insert(atom_idx, stereocenter);
@@ -351,7 +351,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
 
       for (nei_idx = 0; nei_idx < 4; nei_idx++)
       {
-         int stereo = _getBondStereo(atom_idx, edge_ids[nei_idx].nei_idx);
+         int stereo = mol.getBondDirection2(atom_idx, edge_ids[nei_idx].nei_idx);
 
          if (stereo == BOND_UP || stereo == BOND_DOWN)
          {
@@ -413,14 +413,14 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
       if (main2 == -1)
          throw Error("internal error: can not find opposite bond");
 
-      if (main_dir == BOND_UP && _getBondStereo(atom_idx, edge_ids[main2].nei_idx) == BOND_DOWN)
+      if (main_dir == BOND_UP && mol.getBondDirection2(atom_idx, edge_ids[main2].nei_idx) == BOND_DOWN)
          throw Error("stereo types of the opposite bonds mismatch");
-      if (main_dir == BOND_DOWN && _getBondStereo(atom_idx, edge_ids[main2].nei_idx) == BOND_UP)
+      if (main_dir == BOND_DOWN && mol.getBondDirection2(atom_idx, edge_ids[main2].nei_idx) == BOND_UP)
          throw Error("stereo types of the opposite bonds mismatch");
 
-      if (main_dir == _getBondStereo(atom_idx, edge_ids[side1].nei_idx))
+      if (main_dir == mol.getBondDirection2(atom_idx, edge_ids[side1].nei_idx))
          throw Error("stereo types of non-opposite bonds match");
-      if (main_dir == _getBondStereo(atom_idx, edge_ids[side2].nei_idx))
+      if (main_dir == mol.getBondDirection2(atom_idx, edge_ids[side2].nei_idx))
          throw Error("stereo types of non-opposite bonds match");
 
       if (main1 == 3 || main2 == 3)
@@ -463,7 +463,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
 
       for (nei_idx = 0; nei_idx < 3; nei_idx++)
       {
-         dirs[nei_idx] = _getBondStereo(atom_idx, edge_ids[nei_idx].nei_idx);
+         dirs[nei_idx] = mol.getBondDirection2(atom_idx, edge_ids[nei_idx].nei_idx);
          if (dirs[nei_idx] == BOND_UP)
             n_up++;
          else if (dirs[nei_idx] == BOND_DOWN)
@@ -555,24 +555,10 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
    }
 
    for (i = 0; i < degree; i++)
-      if (_getBondStereo(atom_idx, edge_ids[i].nei_idx) > 0)
+      if (mol.getBondDirection2(atom_idx, edge_ids[i].nei_idx) > 0)
          sensible_bonds_out[edge_ids[i].edge_idx] = 1;
    
    _stereocenters.insert(atom_idx, stereocenter);
-}
-
-int MoleculeStereocenters::_getBondStereo (int center_idx, int nei_idx) const
-{
-   const BaseMolecule &mol = _getMolecule();
-   int idx = mol.findEdgeIndex(center_idx, nei_idx);
-
-   if (idx == -1)
-      throw Error("_getBondStereo(): can not find bond");
-
-   if (center_idx != mol.getEdge(idx).beg)
-      return 0;
-
-   return mol.getBondDirection(idx);
 }
 
 // 1 -- in the smaller angle, 2 -- in the bigger angle,

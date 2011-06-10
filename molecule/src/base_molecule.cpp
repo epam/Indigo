@@ -1169,6 +1169,19 @@ int BaseMolecule::getBondDirection (int idx) const
    return _bond_directions[idx];
 }
 
+int BaseMolecule::getBondDirection2 (int center_idx, int nei_idx)
+{
+   int idx = findEdgeIndex(center_idx, nei_idx);
+
+   if (idx == -1)
+      throw Error("getBondDirection2(): can not find bond");
+
+   if (center_idx != getEdge(idx).beg)
+      return 0;
+
+   return getBondDirection(idx);
+}
+
 void BaseMolecule::setBondDirection (int idx, int dir)
 {
    _bond_directions.expandFill(idx + 1, 0);

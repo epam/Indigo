@@ -252,7 +252,8 @@ enum
    INDIGO_CIS = 7,
    INDIGO_TRANS = 8,
    INDIGO_CHAIN = 9,
-   INDIGO_RING = 10
+   INDIGO_RING = 10,
+   INDIGO_ALLENE = 11
 };
 
 // Returns an iterator for all atoms of the given
@@ -377,6 +378,8 @@ CEXPORT int indigoDestination (int bond);
 CEXPORT int indigoClearCisTrans (int handle);
 CEXPORT int indigoClearStereocenters (int handle);
 CEXPORT int indigoCountStereocenters (int molecule);
+CEXPORT int indigoClearAlleneCenters (int molecule);
+CEXPORT int indigoCountAlleneCenters (int molecule);
 
 CEXPORT int indigoResetSymmetricCisTrans (int handle);
 CEXPORT int indigoMarkEitherCisTrans (int handle);

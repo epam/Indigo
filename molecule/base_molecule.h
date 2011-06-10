@@ -54,8 +54,8 @@ enum
 enum
 {
    BOND_UP = 1,
-   BOND_EITHER = 2,
-   BOND_DOWN = 3
+   BOND_DOWN = 2,
+   BOND_EITHER = 3
 };
 
 
@@ -317,6 +317,8 @@ public:
    void clearBondDirections ();
    int  getBondDirection (int idx) const;
    void setBondDirection (int idx, int dir);
+
+   int  getBondDirection2 (int center_idx, int nei_idx);
 
    DEF_ERROR("molecule");
 protected:

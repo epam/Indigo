@@ -146,8 +146,6 @@ protected:
 
    RedBlackMap<int, _Atom> _stereocenters;
 
-   int _getBondStereo (int center_idx, int nei_idx) const;
-
    static int _sign  (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3);
    static int _xyzzy (const Vec3f &v1, const Vec3f &v2, const Vec3f &u);
    static int _onPlane (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3, const Vec3f &v4);
