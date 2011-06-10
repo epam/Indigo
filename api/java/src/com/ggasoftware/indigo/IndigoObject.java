@@ -1083,7 +1083,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       int res = Indigo.checkResult(this, _lib.indigoMapAtom(self, query_atom.self));
       if (res == 0)
          return null;
-      return new IndigoObject(dispatcher, res);
+      return new IndigoObject(dispatcher, this, res);
    }
 
    public IndigoObject mapBond (IndigoObject query_bond)
@@ -1092,7 +1092,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       int res = Indigo.checkResult(this, _lib.indigoMapBond(self, query_bond.self));
       if (res == 0)
          return null;
-      return new IndigoObject(dispatcher, res);
+      return new IndigoObject(dispatcher, this, res);
    }
 
    public IndigoObject allScaffolds ()
