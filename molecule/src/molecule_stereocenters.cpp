@@ -323,7 +323,8 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
       for (i = 0; i < degree; i++)
       {
          stereocenter.pyramid[i] = edge_ids[i].nei_idx;
-         sensible_bonds_out[edge_ids[i].edge_idx] = 1;
+         if (_getBondStereo(atom_idx, edge_ids[i].nei_idx) > 0)
+            sensible_bonds_out[edge_ids[i].edge_idx] = 1;
       }
       _stereocenters.insert(atom_idx, stereocenter);
       return;
@@ -554,7 +555,8 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
    }
 
    for (i = 0; i < degree; i++)
-      sensible_bonds_out[edge_ids[i].edge_idx] = 1;
+      if (_getBondStereo(atom_idx, edge_ids[i].nei_idx) > 0)
+         sensible_bonds_out[edge_ids[i].edge_idx] = 1;
    
    _stereocenters.insert(atom_idx, stereocenter);
 }
