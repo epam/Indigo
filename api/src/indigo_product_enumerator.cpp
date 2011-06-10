@@ -47,6 +47,7 @@ static void product_proc( Molecule &product, Array<int> &monomers_indices, void 
    MoleculeLayout mol_layout(new_product);
    mol_layout.respect_existing_layout = false;
    mol_layout.make();
+   new_product.clearBondDirections();
    new_product.stereocenters.markBonds();
 
    reaction.clear();
@@ -55,9 +56,7 @@ static void product_proc( Molecule &product, Array<int> &monomers_indices, void 
       reaction.addReactantCopy(rpe_data->rpe->getMonomer(monomers_indices[i]), NULL, NULL);
 
    reaction.addProductCopy(new_product, NULL, NULL);
-
-   for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
-      reaction.getMolecule(i).stereocenters.markBonds();
+   reaction.markStereocenterBonds();
 
    reaction.name.copy(product.name);
 }

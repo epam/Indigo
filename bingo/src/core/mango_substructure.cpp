@@ -208,6 +208,7 @@ void MangoSubstructure::getHighlightedTarget (Array<char> &molfile_buf)
    {
       MoleculeLayout ml(_target);
       ml.make();
+      _target.clearBondDirections();
       _target.stereocenters.markBonds();
    }
 

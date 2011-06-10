@@ -1977,7 +1977,7 @@ void MoleculeRenderInternal::_initBondData ()
       d.norm.set(-d.dir.y, d.dir.x);
       d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2;
 
-      d.stereodir = _mol->stereocenters.getBondDirection(i);
+      d.stereodir = _mol->getBondDirection(i);
       d.cistrans = _mol->cis_trans.isIgnored(i);
       int ubid = _bondMappingInv.size() > i ? _bondMappingInv.at(i) : i;
       if (_data.reactingCenters.size() > ubid)
@@ -3323,7 +3323,7 @@ void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, con
       _cw.drawLine(be1.p, be2.p);
       bd.extP = bd.extN = lw / 2;
    }
-   else if (bd.stereodir == MoleculeStereocenters::BOND_UP)
+   else if (bd.stereodir == BOND_UP)
    {
       if (_ad(be2.aid).showLabel == false && !bd.isShort)
       {
@@ -3368,9 +3368,9 @@ void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, con
          _cw.fillQuad(r0, r, l, l0);
       }
    }
-   else if (bd.stereodir == MoleculeStereocenters::BOND_DOWN)
+   else if (bd.stereodir == BOND_DOWN)
       _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
-   else if (bd.stereodir == MoleculeStereocenters::BOND_EITHER)
+   else if (bd.stereodir == BOND_EITHER)
       _cw.drawTriangleZigzag(be1.p, r, l, stripeCnt);
    else
       throw Error("Unknown single bond stereo type");

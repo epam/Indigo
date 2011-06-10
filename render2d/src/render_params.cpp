@@ -120,6 +120,7 @@ void RenderParamInterface::_prepareMolecule (RenderParams& params, BaseMolecule&
    {
       MoleculeLayout ml(bm);
       ml.make();
+      bm.clearBondDirections();
       bm.stereocenters.markBonds();
    }
 }
@@ -133,6 +134,7 @@ void RenderParamInterface::_prepareReaction (RenderParams& params, BaseReaction&
       {
          MoleculeLayout ml(mol);
          ml.make();
+         mol.clearBondDirections();
          mol.stereocenters.markBonds();
       }
    }

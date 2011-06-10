@@ -305,11 +305,11 @@ void CmfLoader::_readBond (int &code, _BondDesc &bond)
       if (code >= CMF_BOND_FLAGS && code < CMF_BOND_FLAGS + CMF_NUM_OF_BOND_FLAGS)
          bond.flags |= (1 << (code - CMF_BOND_FLAGS));
       else if (code == CMF_BOND_UP)
-         bond.direction = MoleculeStereocenters::BOND_UP;
+         bond.direction = BOND_UP;
       else if (code == CMF_BOND_DOWN)
-         bond.direction = MoleculeStereocenters::BOND_DOWN;
+         bond.direction = BOND_DOWN;
       else if (code == CMF_BOND_EITHER)
-         bond.direction = MoleculeStereocenters::BOND_EITHER;
+         bond.direction = BOND_EITHER;
       else if (code == CMF_BOND_SWAP_ENDS)
          bond.swap = true;
       else if (code == CMF_HIGHLIGHTED)
@@ -528,7 +528,7 @@ void CmfLoader::loadMolecule (Molecule &mol)
          mol.setEdgeTopology(idx, TOPOLOGY_CHAIN);
 
       if (_bonds[i].direction != 0)
-         mol.stereocenters.setBondDirection(idx, _bonds[i].direction);
+         mol.setBondDirection(idx, _bonds[i].direction);
 
       if (_bonds[i].highlighted)
          mol.highlightBond(idx);

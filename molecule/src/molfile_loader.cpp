@@ -34,7 +34,7 @@ TL_CP_GET(_stereo_care_atoms),
 TL_CP_GET(_stereo_care_bonds),
 TL_CP_GET(_stereocenter_types),
 TL_CP_GET(_stereocenter_groups),
-TL_CP_GET(_bond_directions),
+TL_CP_GET(_sensible_bond_directions),
 TL_CP_GET(_ignore_cistrans),
 TL_CP_GET(_atom_types),
 TL_CP_GET(_hcount),
@@ -412,36 +412,6 @@ void MolfileLoader::_readCtab2000 ()
       int stereo = _scanner.readIntFix(3);
       int topology = 0;
 
-      int stereocenter_type = 0;
-
-      if (stereo == 1 || stereo == 6)
-      {
-         if (_chiral)
-            stereocenter_type = MoleculeStereocenters::ATOM_ABS;
-         else
-            stereocenter_type = MoleculeStereocenters::ATOM_AND;
-
-         if (stereo == 1)
-            _bond_directions[bond_idx] = MoleculeStereocenters::BOND_UP;
-         else // stereo == 6
-            _bond_directions[bond_idx] = MoleculeStereocenters::BOND_DOWN;
-      }
-      else if (stereo == 4)
-      {
-         _bond_directions[bond_idx] = MoleculeStereocenters::BOND_EITHER;
-         stereocenter_type = MoleculeStereocenters::ATOM_ANY;
-      }
-      else if (stereo == 3)
-         _ignore_cistrans[bond_idx] = 1;
-      else if (stereo != 0)
-         throw Error("unknown number for bond stereo: %d", stereo);
-
-      if (stereocenter_type > 0 && _stereocenter_types[beg - 1] == 0)
-      {
-         _stereocenter_types[beg - 1] = stereocenter_type;
-         _stereocenter_groups[beg - 1] = 1;
-      }
-
       try
       {
          _scanner.readLine(str, false);
@@ -465,13 +435,11 @@ void MolfileLoader::_readCtab2000 ()
       {
       }
 
-      int idx;
-
       if (_mol != 0)
       {
          if (order == BOND_SINGLE || order == BOND_DOUBLE ||
              order == BOND_TRIPLE || order == BOND_AROMATIC)
-            idx = _mol->addBond_Silent(beg - 1, end - 1, order);
+            _mol->addBond_Silent(beg - 1, end - 1, order);
          else if (order == _BOND_SINGLE_OR_DOUBLE)
             throw Error("'single or double' bonds are allowed only for queries");
          else if (order == _BOND_SINGLE_OR_AROMATIC)
@@ -519,15 +487,18 @@ void MolfileLoader::_readCtab2000 ()
 
          _qmol->addBond(beg - 1, end - 1, bond.release());
       }
-   }
 
-   // Special MDL rule of notation without chiral flag
-   //if (n_stereocenters > 1 && chiral)
-   //{
-   //   for (atom_idx = 0; atom_idx < _atoms.size(); atom_idx++)
-   //      if (_atoms[atom_idx].stereocenter == ATOM_STEREO_AND)
-   //         _atoms[atom_idx].stereocenter = ATOM_STEREO_NCF;
-   //}
+      if (stereo == 1)
+         _bmol->setBondDirection(bond_idx, BOND_UP);
+      else if (stereo == 6)
+         _bmol->setBondDirection(bond_idx, BOND_DOWN);
+      else if (stereo == 4)
+         _bmol->setBondDirection(bond_idx, BOND_EITHER);
+      else if (stereo == 3)
+         _ignore_cistrans[bond_idx] = 1;
+      else if (stereo != 0)
+         throw Error("unknown number for bond stereo: %d", stereo);
+   }
 
    int n_3d_features = -1;
 
@@ -1695,13 +1666,12 @@ void MolfileLoader::_postLoad ()
    // "either cis-trans", or "connected to either cis-trans".
    // The following loop does the correction.
    for (i = 0; i < _bonds_num; i++)
-      if (_bond_directions[i] == MoleculeStereocenters::BOND_EITHER)
+      if (_bmol->getBondDirection(i) == BOND_EITHER)
       {
          if (MoleculeCisTrans::isGeomStereoBond(*_bmol, i, 0, true))
          {
-            _bond_directions[i] = 0;
+            _bmol->setBondDirection(i, 0);
             _ignore_cistrans[i] = 1;
-            _stereocenter_types[_bmol->getEdge(i).beg] = 0;
          }
          else
          {
@@ -1712,17 +1682,38 @@ void MolfileLoader::_postLoad ()
             {
                if (MoleculeCisTrans::isGeomStereoBond(*_bmol, v.neiEdge(k), 0, true))
                {
-                  _bond_directions[i] = 0;
+                  _bmol->setBondDirection(i, 0);
                   _ignore_cistrans[v.neiEdge(k)] = 1;
-                  _stereocenter_types[_bmol->getEdge(i).beg] = 0;
                   break;
                }
             }
          }
       }
 
-   _bmol->stereocenters.buildFromBonds(_stereocenter_types.ptr(),
-      _stereocenter_groups.ptr(), _bond_directions.ptr(), ignore_stereocenter_errors);
+   _bmol->stereocenters.buildFromBonds(ignore_stereocenter_errors, _sensible_bond_directions.ptr());
+   if (!_chiral)
+      for (i = 0; i < _atoms_num; i++)
+      {
+         int type = _bmol->stereocenters.getType(i);
+
+         if (type == MoleculeStereocenters::ATOM_ABS)
+            _bmol->stereocenters.setType(i, MoleculeStereocenters::ATOM_AND, 1);
+      }
+   
+   for (i = 0; i < _atoms_num; i++)
+      if (_stereocenter_types[i] > 0)
+      {
+         if (_bmol->stereocenters.getType(i) == 0)
+            if (!ignore_stereocenter_errors)
+               throw Error("stereo type specified for atom #%d, but the bond"
+                    "directions does not say that it is a stereocenter", i);
+         _bmol->stereocenters.setType(i, _stereocenter_types[i], _stereocenter_groups[i]);
+      }
+
+   if (!ignore_stereocenter_errors)
+      for (i = 0; i < _bonds_num; i++)
+         if (_bmol->getBondDirection(i) > 0 && !_sensible_bond_directions[i])
+            throw Error("direction of bond #%d makes no sense", i);
 
    _bmol->cis_trans.build(_ignore_cistrans.ptr());
 
@@ -2052,7 +2043,7 @@ void MolfileLoader::_readCtab3000 ()
             //int cfg = strscan.readInt1();
 
             //if (cfg == 3)
-            //   _stereocenter_types[idx] = MoleculeStereocenters::ATOM_ANY;
+            //   _stereocenter_types[idx] = MoleculeStereocenters::ATOM4;
          }
          else if (strcmp(prop, "MASS") == 0)
          {
@@ -2291,22 +2282,13 @@ void MolfileLoader::_readCtab3000 ()
                int n = strscan.readInt1();
 
                if (n == 1)
-                  _bond_directions[i] = MoleculeStereocenters::BOND_UP;
+                  _bmol->setBondDirection(i, BOND_UP);
                else if (n == 3)
-                  _bond_directions[i] = MoleculeStereocenters::BOND_DOWN;
+                  _bmol->setBondDirection(i, BOND_DOWN);
                else if (n == 2)
-               {
-                  _bond_directions[i] = MoleculeStereocenters::BOND_EITHER;
-                  _stereocenter_types[beg] = MoleculeStereocenters::ATOM_ANY;
-               }
+                  _bmol->setBondDirection(i, BOND_EITHER);
                else
                   throw Error("unknown bond CFG=%d", n);
-
-               if (_stereocenter_types[beg] == 0)
-               {
-                  _stereocenter_types[beg] = _chiral ? MoleculeStereocenters::ATOM_ABS : MoleculeStereocenters::ATOM_AND;
-                  _stereocenter_groups[beg] = 1;
-               }
             }
             else if (strcmp(prop.ptr(), "STBOX") == 0)
             {
@@ -2390,7 +2372,7 @@ void MolfileLoader::_readCtab3000 ()
                   _bmol->highlightBond(strscan.readInt1() - 1);
             }
             else
-               throw Error("unknown hightlighted object: %s", what.ptr());
+               throw Error("unknown highlighted object: %s", what.ptr());
             
             continue;
          }
@@ -2799,8 +2781,8 @@ void MolfileLoader::_init ()
    _stereocenter_types.zerofill();
    _stereocenter_groups.clear_resize(_atoms_num);
    _stereocenter_groups.zerofill();
-   _bond_directions.clear_resize(_bonds_num);
-   _bond_directions.zerofill();
+   _sensible_bond_directions.clear_resize(_bonds_num);
+   _sensible_bond_directions.zerofill();
    _ignore_cistrans.clear_resize(_bonds_num);
    _ignore_cistrans.zerofill();
 

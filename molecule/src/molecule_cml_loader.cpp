@@ -71,12 +71,8 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
 void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
 {
    QS_DEF(RedBlackStringMap<int>, atoms);
-   QS_DEF(Array<int>, bond_orientations);
-   QS_DEF(Array<int>, atom_stereo_types);
    QS_DEF(Array<int>, total_h_count);
    atoms.clear();
-   bond_orientations.clear();
-   atom_stereo_types.clear();
    total_h_count.clear();
 
    const char *title = handle.Element()->Attribute("title");
@@ -182,7 +178,6 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
          if (sscanf(z3, "%f", &mol.getAtomXyz(idx).z) != 1)
             throw Error("error parsing z3");
       }
-      atom_stereo_types.push(0);
    }
 
    // Bonds
@@ -226,7 +221,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
             throw Error("error parsing order");
       }
 
-      mol.addBond_Silent(beg, end, order_val);
+      int idx = mol.addBond_Silent(beg, end, order_val);
 
       int dir = 0;
 
@@ -238,17 +233,16 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
          if (text != 0)
          {
             if (text[0] == 'W' && text[1] == 0)
-               dir = MoleculeStereocenters::BOND_UP;
+               dir = BOND_UP;
             if (text[0] == 'H' && text[1] == 0)
-               dir = MoleculeStereocenters::BOND_DOWN;
+               dir = BOND_DOWN;
             if ((text[0] == 'C' || text[0] == 'T') && text[1] == 0)
                have_cistrans_notation = true;
          }
       }
 
-      bond_orientations.push(dir);
       if (dir != 0)
-         atom_stereo_types[beg] = MoleculeStereocenters::ATOM_ABS;
+         mol.setBondDirection(idx, dir);
    }
 
    // Implicit H counts
@@ -325,7 +319,17 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
    }
 
    if (mol.stereocenters.size() == 0 && BaseMolecule::hasCoord(mol))
-      mol.stereocenters.buildFromBonds(atom_stereo_types.ptr(), 0, bond_orientations.ptr(), ignore_stereochemistry_errors);
+   {
+      QS_DEF(Array<int>, sensible_bond_orientations);
+
+      sensible_bond_orientations.clear_resize(mol.vertexEnd());
+      mol.stereocenters.buildFromBonds(ignore_stereochemistry_errors, sensible_bond_orientations.ptr());
+
+      if (!ignore_stereochemistry_errors)
+         for (i = 0; i < mol.vertexCount(); i++)
+            if (mol.getBondDirection(i) > 0 && !sensible_bond_orientations[i])
+               throw Error("direction of bond #%d makes no sense", i);
+   }
 
    // Cis-trans stuff
    if (have_cistrans_notation)

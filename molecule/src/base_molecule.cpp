@@ -62,6 +62,7 @@ void BaseMolecule::clear ()
    Graph::clear();
    _hl_atoms.clear();
    _hl_bonds.clear();
+   _bond_directions.clear();
 
    updateEditRevision();
 }
@@ -117,6 +118,22 @@ void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int
    }
    else
       _xyz.zerofill();
+
+
+   _bond_directions.expandFill(mol.edgeEnd(), 0);
+
+   // trick for molecules with incorrect stereochemistry, of which we do permutations
+   if (vertexCount() == mol.vertexCount() && edgeCount() == mol.edgeCount())
+   {
+      for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
+      {
+         const Edge &edge = mol.getEdge(j);
+
+         if (mol.getBondDirection(j) != 0)
+            _bond_directions[findEdgeIndex(mapping[edge.beg], mapping[edge.end])] =
+                    mol.getBondDirection(j);
+      }
+   }
 
    // RGroups
    if (!(skip_flags & SKIP_RGROUPS))
@@ -1142,4 +1159,23 @@ int BaseMolecule::getEditRevision ()
 void BaseMolecule::updateEditRevision ()
 {
    _edit_revision++;
+}
+
+int BaseMolecule::getBondDirection (int idx) const
+{
+   if (idx > _bond_directions.size() - 1)
+      return 0;
+
+   return _bond_directions[idx];
+}
+
+void BaseMolecule::setBondDirection (int idx, int dir)
+{
+   _bond_directions.expandFill(idx + 1, 0);
+   _bond_directions[idx] = dir;
+}
+
+void BaseMolecule::clearBondDirections ()
+{
+   _bond_directions.clear();
 }

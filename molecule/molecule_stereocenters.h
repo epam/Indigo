@@ -40,18 +40,11 @@ public:
       ATOM_ABS = 4
    };
 
-   enum
-   {
-      BOND_UP = 1,
-      BOND_EITHER = 2,
-      BOND_DOWN = 3
-   };
-
    explicit MoleculeStereocenters ();
 
    void clear ();
 
-   void buildFromBonds (const int *atom_types, const int *atom_groups, const int *bond_types, bool ignore_errors);
+   void buildFromBonds (bool ignore_errors, int *sensible_bonds_out);
 
    void buildFrom3dCoordinates ( void );
 
@@ -78,7 +71,7 @@ public:
    const int * getPyramid (int idx) const;
    int * getPyramid (int idx);
    void setType (int idx, int type, int group);
-   void inversePyramid (int idx);
+   void invertPyramid (int idx);
 
    bool sameGroup (int idx1, int idx2);
 
@@ -91,8 +84,6 @@ public:
    bool haveAllAbs ();
    bool haveAllAbsAny ();
    bool haveAllAndAny ();
-   int  getBondDirection (int idx) const;
-   void setBondDirection (int idx, int dir);
 
    void registerUnfoldedHydrogen (int atom_idx, int added_hydrogen);
 
@@ -154,7 +145,6 @@ protected:
    };
 
    RedBlackMap<int, _Atom> _stereocenters;
-   Array<int>              _bond_directions;
 
    int _getBondStereo (int center_idx, int nei_idx) const;
 
@@ -162,7 +152,7 @@ protected:
    static int _xyzzy (const Vec3f &v1, const Vec3f &v2, const Vec3f &u);
    static int _onPlane (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3, const Vec3f &v4);
 
-   void _buildOneCenter (int atom_idx, int group, int type, const int *bond_orientations);
+   void _buildOneCenter (int atom_idx, int *sensible_bonds_out);
 
    void _getGroups (int type, Array<int> &numbers);
    void _getGroup  (int type, int number, Array<int> &indices);

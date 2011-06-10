@@ -743,7 +743,7 @@ void ReactionEnumeratorState::_invertStereocenters( Molecule &molecule, int edge
             break;
 
          if (molecule.stereocenters.exists(atoms_to_reflect[j].idx))
-            molecule.stereocenters.inversePyramid(atoms_to_reflect[j].idx);
+            molecule.stereocenters.invertPyramid(atoms_to_reflect[j].idx);
 
          was_atoms[atoms_to_reflect[j].idx] = 1; 
       }
@@ -1108,8 +1108,8 @@ void ReactionEnumeratorState::_stereocentersUpdate( QueryMolecule &submolecule,
          if (MoleculeStereocenters::isPyramidMappingRigid(mapping))
             continue;
 
-         _full_product.stereocenters.markBonds();
-         _full_product.stereocenters.inversePyramid(rp_mapping[i]);
+         _full_product.stereocenters.invertPyramid(rp_mapping[i]);
+         _full_product.clearBondDirections();
          _full_product.stereocenters.markBonds();
       }
    }

@@ -32,6 +32,7 @@ CEXPORT int indigoLayout (int object)
          ml.max_iterations = self.layout_max_iterations;
          ml.bond_length = 1.6f;
          ml.make();
+         mol.clearBondDirections();
          mol.stereocenters.markBonds();
          for (i = 1; i <= mol.rgroups.getRGroupCount(); i++)
          {

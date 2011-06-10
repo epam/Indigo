@@ -32,7 +32,20 @@ public:
 
    void clear ();
 
+   void buildFromBonds (const int *bond_dirs, bool ignore_errors);
+
 protected:
+   struct _Atom
+   {
+      int left;     // number of the "left" neighbor atom
+      int right;    // number of the "right" neighbor atom
+      int parity;   // 1 or 2
+
+      // substituens: [0] and [1] are connected to the "left" neighbor,
+      //              [2] and [3] are connected to the "right" neighbor.
+      //              
+      int subst[4];
+   };
    BaseMolecule & _getMolecule();
 };
 

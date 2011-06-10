@@ -54,13 +54,13 @@ CEXPORT int indigoBondStereo (int bond)
       IndigoBond &ib = IndigoBond::cast(self.getObject(bond));
       BaseMolecule &mol = ib.mol;
 
-      int dir = mol.stereocenters.getBondDirection(ib.idx);
+      int dir = mol.getBondDirection(ib.idx);
 
-      if (dir == MoleculeStereocenters::BOND_UP)
+      if (dir == BOND_UP)
          return INDIGO_UP;
-      if (dir == MoleculeStereocenters::BOND_DOWN)
+      if (dir == BOND_DOWN)
          return INDIGO_DOWN;
-      if (dir == MoleculeStereocenters::BOND_EITHER)
+      if (dir == BOND_EITHER)
          return INDIGO_EITHER;
 
       int parity = mol.cis_trans.getParity(ib.idx);
@@ -125,7 +125,7 @@ CEXPORT int indigoResetStereo (int item)
       {
          IndigoBond &ib = IndigoBond::cast(self.getObject(item));
 
-         ib.mol.stereocenters.setBondDirection(ib.idx, 0);
+         ib.mol.setBondDirection(ib.idx, 0);
          ib.mol.cis_trans.setParity(ib.idx, 0);
       }
       else

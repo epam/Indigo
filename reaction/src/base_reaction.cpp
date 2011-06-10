@@ -139,7 +139,10 @@ int BaseReaction::findReactingCenter (BaseMolecule *mol, int bond_number)
 void BaseReaction::markStereocenterBonds()
 {
    for (int i = begin(); i < end(); i = next(i))
+   {
+      _allMolecules[i]->clearBondDirections();
       _allMolecules[i]->stereocenters.markBonds();
+   }
 }
 
 bool BaseReaction::haveCoord (BaseReaction &reaction)

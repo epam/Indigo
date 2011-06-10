@@ -51,6 +51,14 @@ enum
    BOND_AROMATIC = 4
 };
 
+enum
+{
+   BOND_UP = 1,
+   BOND_EITHER = 2,
+   BOND_DOWN = 3
+};
+
+
 // Flags that disables copying information in making submolecule,
 // merging with molecule and cloning procedures
 enum
@@ -306,6 +314,10 @@ public:
    // directly without calling molecule methods (for example mol.cis_trans.clear() and etc.)
    void updateEditRevision ();
 
+   void clearBondDirections ();
+   int  getBondDirection (int idx) const;
+   void setBondDirection (int idx, int dir);
+
    DEF_ERROR("molecule");
 protected:
 
@@ -334,6 +346,8 @@ protected:
 
    Array<int> _hl_atoms;
    Array<int> _hl_bonds;
+   Array<int> _bond_directions;
+
    Array<Vec3f> _xyz;
    ObjArray< Array<int> > _rsite_attachment_points;
    bool _rGroupFragment;

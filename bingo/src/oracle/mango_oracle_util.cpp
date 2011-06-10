@@ -358,6 +358,7 @@ ORAEXT OCILobLocator *oraMangoMolfile (OCIExtProcContext *ctx,
             MoleculeLayout layout(mol);
 
             layout.make();
+            mol.clearBondDirections();
             mol.stereocenters.markBonds();
          }
 
@@ -415,6 +416,7 @@ ORAEXT OCILobLocator *oraMangoCML (OCIExtProcContext *ctx,
             MoleculeLayout layout(mol);
 
             layout.make();
+            mol.clearBondDirections();
             mol.stereocenters.markBonds();
          }
 

@@ -69,7 +69,7 @@ protected:
    TL_CP_DECL(Array<int>, _stereo_care_bonds);
    TL_CP_DECL(Array<int>, _stereocenter_types);
    TL_CP_DECL(Array<int>, _stereocenter_groups);
-   TL_CP_DECL(Array<int>, _bond_directions);
+   TL_CP_DECL(Array<int>, _sensible_bond_directions);
    TL_CP_DECL(Array<int>, _ignore_cistrans);
 
    enum

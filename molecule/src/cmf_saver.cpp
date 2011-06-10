@@ -135,13 +135,13 @@ void CmfSaver::saveMolecule (Molecule &mol)
 
          if (save_bond_dirs)
          {
-            int dir = mol.stereocenters.getBondDirection(e_idx);
+            int dir = mol.getBondDirection(e_idx);
 
             if (dir != 0)
             {
-               if (dir == MoleculeStereocenters::BOND_UP)
+               if (dir == BOND_UP)
                   dir = CMF_BOND_UP;
-               else if (dir == MoleculeStereocenters::BOND_DOWN)
+               else if (dir == BOND_DOWN)
                   dir = CMF_BOND_DOWN;
                else
                   dir = CMF_BOND_EITHER;

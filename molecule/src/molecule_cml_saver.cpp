@@ -146,14 +146,13 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          else
             _output.printf(" order=\"A\"");
 
-         int dir = _mol->stereocenters.getBondDirection(i);
+         int dir = _mol->getBondDirection(i);
          int parity = _mol->cis_trans.getParity(i);
 
-         if (_mol->have_xyz && (dir == MoleculeStereocenters::BOND_UP ||
-                                dir == MoleculeStereocenters::BOND_DOWN))
+         if (_mol->have_xyz && (dir == BOND_UP || dir == BOND_DOWN))
          {
             _output.printf(">\n      <bondStereo>%s</bondStereo>\n    </bond>\n",
-                    (dir == MoleculeStereocenters::BOND_UP) ? "W" : "H");
+                    (dir == BOND_UP) ? "W" : "H");
          }
          else if (!_mol->have_xyz && parity != 0)
          {

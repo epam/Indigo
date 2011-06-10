@@ -478,13 +478,13 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
       out.printf("%d %d %d %d", iw, bond_order, _atom_mapping[edge.beg], _atom_mapping[edge.end]);
 
-      int direction = mol.stereocenters.getBondDirection(i);
+      int direction = mol.getBondDirection(i);
 
       switch (direction)
       {
-         case MoleculeStereocenters::BOND_UP:     out.printf(" CFG=1"); break;
-         case MoleculeStereocenters::BOND_EITHER: out.printf(" CFG=2"); break;
-         case MoleculeStereocenters::BOND_DOWN:   out.printf(" CFG=3"); break;
+         case BOND_UP:     out.printf(" CFG=1"); break;
+         case BOND_EITHER: out.printf(" CFG=2"); break;
+         case BOND_DOWN:   out.printf(" CFG=3"); break;
          case 0:
             if (mol.cis_trans.isIgnored(i))
                out.printf(" CFG=2");
@@ -903,13 +903,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       int topology = 0;
       int reacting_center = 0;
 
-      int direction = mol.stereocenters.getBondDirection(i);
+      int direction = mol.getBondDirection(i);
 
       switch (direction)
       {
-         case MoleculeStereocenters::BOND_UP: stereo = 1; break;
-         case MoleculeStereocenters::BOND_DOWN: stereo = 6; break;
-         case MoleculeStereocenters::BOND_EITHER: stereo = 4; break;
+         case BOND_UP: stereo = 1; break;
+         case BOND_DOWN: stereo = 6; break;
+         case BOND_EITHER: stereo = 4; break;
          case 0:
             if (mol.cis_trans.isIgnored(i))
                stereo = 3;
