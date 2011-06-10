@@ -606,8 +606,18 @@ CEXPORT int indigoOptimize (int query, const char *options)
    {
       IndigoObject &obj = self.getObject(query);
 
-      if (IndigoBaseMolecule::is(obj))
-         obj.getQueryMolecule().optimize();
+      if (obj.type == IndigoObject::QUERY_MOLECULE)
+      {
+         IndigoQueryMolecule &qm_obj = (IndigoQueryMolecule &)obj;
+         QueryMolecule &q = qm_obj.getQueryMolecule();
+         q.optimize();
+         
+         QS_DEF(Array<int>, transposition);
+         QS_DEF(QueryMolecule, transposed_q);
+         qm_obj.getNeiCounters().makeTranspositionForSubstructure(q, transposition);
+         transposed_q.makeSubmolecule(q, transposition, 0);
+         q.clone(transposed_q, 0, 0);
+      }
       else if (IndigoBaseReaction::is(obj))
          obj.getQueryReaction().optimize();
       else
