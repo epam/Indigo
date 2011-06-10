@@ -708,6 +708,22 @@ void QueryMolecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> 
             fixed_atoms.push(idx);
       }
    }
+
+   // components
+   if (!(skip_flags & SKIP_COMPONENTS))
+   {
+      for (i = 0; i < vertices.size(); i++)
+      {
+         int v_idx = vertices[i];
+         if (mol.components.size() > v_idx)
+         {
+            int newidx = mapping[v_idx];
+            components.expandFill(newidx + 1, 0);
+            components[newidx] = mol.components[v_idx];
+         }
+      }
+   }
+
    updateEditRevision();
 }
 
