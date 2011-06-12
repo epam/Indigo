@@ -360,6 +360,7 @@ ORAEXT OCILobLocator *oraMangoMolfile (OCIExtProcContext *ctx,
             layout.make();
             mol.clearBondDirections();
             mol.stereocenters.markBonds();
+            mol.allene_stereo.markBonds();
          }
 
          ArrayOutput output(icm);
@@ -418,6 +419,7 @@ ORAEXT OCILobLocator *oraMangoCML (OCIExtProcContext *ctx,
             layout.make();
             mol.clearBondDirections();
             mol.stereocenters.markBonds();
+            mol.allene_stereo.markBonds();
          }
 
          ArrayOutput output(icm);

@@ -33,6 +33,7 @@ TL_CP_GET(_atoms),
 TL_CP_GET(_hcount),
 TL_CP_GET(_dbonds),
 TL_CP_GET(_written_atoms),
+TL_CP_GET(_written_atoms_inv),
 TL_CP_GET(_written_bonds),
 TL_CP_GET(_polymer_indices),
 TL_CP_GET(_attachment_indices),
@@ -231,6 +232,24 @@ void SmilesSaver::_saveMolecule ()
          _atoms[v_prev_idx].ends_polymer = true;
    }
 
+   _written_atoms_inv.clear_resize(_bmol->vertexEnd());
+   _written_atoms_inv.fffill();
+   
+   for (i = 0; i < v_seq.size(); i++)
+   {
+      int v_idx = v_seq[i].idx;
+      int e_idx = v_seq[i].parent_edge;
+
+      if (e_idx == -1 || !walk.isClosure(e_idx))
+      {
+         _written_atoms.push(v_idx);
+         _written_atoms_inv[v_idx] = _written_atoms.size() - 1;
+      }
+
+      if (e_idx != -1)
+         _written_bonds.push(e_idx);
+   }
+
    // detect chiral configurations
    MoleculeStereocenters &stereocenters = _bmol->stereocenters;
 
@@ -303,16 +322,48 @@ void SmilesSaver::_saveMolecule ()
          _atoms[atom_idx].chirality = 2;
    }
 
-   for (i = 0; i < v_seq.size(); i++)
+   MoleculeAlleneStereo &allene_stereo = _bmol->allene_stereo;
+
+   for (i = allene_stereo.begin(); i != allene_stereo.end(); i = allene_stereo.next(i))
    {
-      int v_idx = v_seq[i].idx;
-      int e_idx = v_seq[i].parent_edge;
+      int atom_idx, left, right, parity, subst[4], subst_map[4] = {-1, -1, -1, -1};
+      int tmp;
 
-      if (e_idx == -1 || !walk.isClosure(e_idx))
-         _written_atoms.push(v_idx);
+      allene_stereo.get(i, atom_idx, left, right, subst, parity);
 
-      if (e_idx != -1)
-         _written_bonds.push(e_idx);
+      for (j = 0; j < 4; j++)
+         if (subst[j] >= 0)
+            subst_map[j] = _written_atoms_inv[subst[j]];
+
+      // Daylight doc says: Hydrogens attached to substituted allene-like atoms
+      // are taken to be immediately following that atom
+      if (subst_map[0] < 0)
+         subst_map[0] = _written_atoms_inv[left];
+      else if (subst[1] < 0)
+         subst_map[1] = _written_atoms_inv[left];
+
+      if (subst_map[2] < 0)
+         subst_map[2] = _written_atoms_inv[right];
+      else if (subst_map[3] < 0)
+         subst_map[3] = _written_atoms_inv[right];
+
+      if (subst_map[0] < 0 || subst_map[1] < 0 || subst_map[2] < 0 || subst_map[3] < 0)
+         throw Error("internal: allene subsituent not mapped");
+
+      if (subst_map[1] < subst_map[0])
+      {
+         __swap(subst_map[0], subst_map[1], tmp);
+         parity = 3 - parity;
+      }
+      if (subst_map[3] < subst_map[2])
+      {
+         __swap(subst_map[2], subst_map[3], tmp);
+         parity = 3 - parity;
+      }
+      if (subst_map[0] > subst_map[2])
+         parity = 3 - parity;
+
+      _atoms[atom_idx].chirality = parity;
    }
 
    if (canonize_chiralities)

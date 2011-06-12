@@ -183,6 +183,11 @@ int MoleculeExactMatcher::_embedding (Graph &subgraph, Graph &supergraph,
 
       if (!MoleculeCisTrans::checkSub(query, target, core_sub))
          return 1;
+
+      if (!MoleculeAlleneStereo::checkSub(query, target, core_sub))
+         return 1;
+      if (!MoleculeAlleneStereo::checkSub(target, query, core_super))
+         return 1;
    }
 
    if (self->flags & CONDITION_3D)

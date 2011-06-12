@@ -122,6 +122,7 @@ void RenderParamInterface::_prepareMolecule (RenderParams& params, BaseMolecule&
       ml.make();
       bm.clearBondDirections();
       bm.stereocenters.markBonds();
+      bm.allene_stereo.markBonds();
    }
 }
 
@@ -136,6 +137,7 @@ void RenderParamInterface::_prepareReaction (RenderParams& params, BaseReaction&
          ml.make();
          mol.clearBondDirections();
          mol.stereocenters.markBonds();
+         mol.allene_stereo.markBonds();
       }
    }
 }

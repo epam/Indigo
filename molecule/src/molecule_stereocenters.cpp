@@ -1454,7 +1454,7 @@ void MoleculeStereocenters::_convertAtomToImplicitHydrogen (int pyramid[4], int 
    moveImplicitHydrogenToEnd(pyramid);
 }
 
-void MoleculeStereocenters::_markBonds_One (int atom_idx)
+void MoleculeStereocenters::_markBond (int atom_idx)
 {
    BaseMolecule &mol = _getMolecule();
    const _Atom &atom = _stereocenters.at(atom_idx);
@@ -1596,7 +1596,7 @@ void MoleculeStereocenters::markBonds ()
    int i;
 
    for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-      _markBonds_One(_stereocenters.key(i));
+      _markBond(_stereocenters.key(i));
 }
 
 bool MoleculeStereocenters::isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *filter)

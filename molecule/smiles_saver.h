@@ -122,6 +122,7 @@ protected:
    TL_CP_DECL(Array<int>, _hcount);
    TL_CP_DECL(Array<_DBond>, _dbonds);
    TL_CP_DECL(Array<int>, _written_atoms);
+   TL_CP_DECL(Array<int>, _written_atoms_inv);
    TL_CP_DECL(Array<int>, _written_bonds);
    TL_CP_DECL(Array<int>, _polymer_indices);
    TL_CP_DECL(Array<int>, _attachment_indices);

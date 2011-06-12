@@ -79,13 +79,58 @@ void SmilesLoader::_calcStereocenters ()
    
    for (i = 0; i < _atoms.size(); i++)
    {
-      if (_atoms[i].chirality > 0)
-      {
-         QS_DEF(Array<int>, saved);
-         MoleculeStereocenters &stereocenters = _bmol->stereocenters;
+      if (_atoms[i].chirality == 0)
+         continue;
 
-         saved.clear_resize(_atoms.size());
-         saved.zerofill();
+      if (_bmol->getVertex(i).degree() == 2) // allene stereo center
+      {
+         int subst[4];
+         int subst2[4];
+         int left, right;
+         bool pure_h[4];
+
+         if (!MoleculeAlleneStereo::possibleCenter(*_bmol, i, left, right, subst, pure_h))
+         {
+            if (!ignore_stereochemistry_errors)
+               throw Error("chirality on atom %d makes no sense", i);
+            continue;
+         }
+
+         int tmp, parity = _atoms[i].chirality;
+
+         for (j = 0; j < 4; j++)
+            if (subst[j] == -1)
+               subst2[j] = -1;
+            else
+               subst2[j] = subst[j];
+
+         // Daylight doc says: Hydrogens attached to substituted allene-like atoms
+         // are taken to be immediately following that atom
+         if (subst2[1] == -1)
+            subst2[1] = left;
+         if (subst2[3] == -1)
+            subst2[3] = right;
+
+         if (subst2[1] < subst2[0])
+         {
+            __swap(subst2[1], subst2[0], tmp);
+            parity = 3 - parity;
+         }
+
+         if (subst2[3] < subst2[2])
+         {
+            __swap(subst2[3], subst2[2], tmp);
+            parity = 3 - parity;
+         }
+
+         if (subst2[2] < subst2[0])
+            parity = 3 - parity;
+
+         _bmol->allene_stereo.add(i, left, right, subst, parity);
+      }
+      else // ordinary tetrahedral stereo center
+      {
+         MoleculeStereocenters &stereocenters = _bmol->stereocenters;
 
          int pyramid[4] = {-1, -1, -1, -1};
          int counter = 0;
@@ -133,7 +178,7 @@ void SmilesLoader::_calcStereocenters ()
             pyramid[1] = pyramid[2];
             pyramid[2] = pyramid[3];
             pyramid[3] = j;
-            
+
             if (h_index == 0)
                h_index = 3;
             else if (h_index > 0)
@@ -148,7 +193,7 @@ void SmilesLoader::_calcStereocenters ()
                   throw Error("implicit hydrogen not allowed with %d neighbor atoms", counter - 1);
                continue;
             }
-            
+
             bool parity = true;
 
             for (j = h_index; j < 3; j++)
@@ -471,6 +516,7 @@ void SmilesLoader::_readOtherStuff ()
          if (_scanner.readChar() != ')')
             throw Error("expected ')' after coordinates");
          _bmol->stereocenters.markBonds();
+         _bmol->allene_stereo.markBonds();
       }
       else if (c == 'h') // highlighting (Indigo's own extension)
       {

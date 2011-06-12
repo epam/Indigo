@@ -34,6 +34,7 @@ CEXPORT int indigoLayout (int object)
          ml.make();
          mol.clearBondDirections();
          mol.stereocenters.markBonds();
+         mol.allene_stereo.markBonds();
          for (i = 1; i <= mol.rgroups.getRGroupCount(); i++)
          {
             RGroup &rgp = mol.rgroups.getRGroup(i);
@@ -47,6 +48,7 @@ CEXPORT int indigoLayout (int object)
                fragml.bond_length = 1.6f;
                fragml.make();
                rgp.fragments[j]->stereocenters.markBonds();
+               rgp.fragments[j]->allene_stereo.markBonds();
             }
          }
       } else if (IndigoBaseReaction::is(obj)) {

@@ -50,6 +50,7 @@ void BaseMolecule::clear ()
    name.clear();
    stereocenters.clear();
    cis_trans.clear();
+   allene_stereo.clear();
    rgroups.clear();
    _xyz.clear();
    _rsite_attachment_points.clear();
@@ -274,6 +275,8 @@ void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int
       cis_trans.buildOnSubmolecule(mol, mapping.ptr());
    else
       cis_trans.clear();
+
+   allene_stereo.buildOnSubmolecule(mol.allene_stereo, mapping.ptr());
 
    // subclass stuff (Molecule or QueryMolecule)
    _postMergeWithSubmolecule(mol, vertices, edges, mapping, skip_flags);

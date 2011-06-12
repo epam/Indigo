@@ -36,13 +36,23 @@ public:
 
    void buildFromBonds (bool ignore_errors, int *sensible_bonds_out);
    void markBonds ();
-   int  sameside (const Vec3f &dir1, const Vec3f &dir2, const Vec3f &sep);
+   static int  sameside (const Vec3f &dir1, const Vec3f &dir2, const Vec3f &sep);
+   void buildOnSubmolecule (MoleculeAlleneStereo &super, int *mapping);
    static bool checkSub (BaseMolecule &query, BaseMolecule &target, const int *mapping);
+
+   static bool possibleCenter (BaseMolecule &mol, int idx, int &left, int &right, int subst[4], bool pure_h[4]);
 
    bool isCenter (int atom_idx);
    int  size ();
+   int begin () const;
+   int end () const;
+   int next (int i) const;
+   void get (int i, int &atom_idx, int &left, int &right, int subst[4], int &parity);
+
+   void add (int atom_idx, int left, int right, int subst[4], int parity);
 
    DEF_ERROR("allene stereo");
+
 
 protected:
    struct _Atom
@@ -61,6 +71,8 @@ protected:
       // parity = 2  if it is rotated CW
       int parity;
    };
+
+
    BaseMolecule & _getMolecule();
    bool _isAlleneCenter (BaseMolecule &mol, int idx, _Atom &atom, int *sensible_bonds_out);
 

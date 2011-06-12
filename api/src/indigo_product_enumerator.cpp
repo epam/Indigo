@@ -49,6 +49,7 @@ static void product_proc( Molecule &product, Array<int> &monomers_indices, void 
    mol_layout.make();
    new_product.clearBondDirections();
    new_product.stereocenters.markBonds();
+   new_product.allene_stereo.markBonds();
 
    reaction.clear();
 

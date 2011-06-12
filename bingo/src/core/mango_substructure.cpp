@@ -210,6 +210,7 @@ void MangoSubstructure::getHighlightedTarget (Array<char> &molfile_buf)
       ml.make();
       _target.clearBondDirections();
       _target.stereocenters.markBonds();
+      _target.allene_stereo.markBonds();
    }
 
    if (preserve_bonds_on_highlighting)
