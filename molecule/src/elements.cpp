@@ -399,7 +399,7 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
          valence = 1;
          if (charge == 1 && conn == 0)
             hyd = 0;
-         if (charge == -1 && conn == 0)
+         else if (charge == -1 && conn == 0)
             hyd = 0;
          else if (charge == 0 && conn == 1)
             hyd = 0;
@@ -509,6 +509,11 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
             //                  [Ge-]: CID 19891516
             valence = 5;
             hyd = 0;
+         }
+         else if (charge == -1 && conn + rad == 4 && elem == ELEM_Si)
+         {
+            valence = 5; // CID 438107
+            hyd = 1;
          }
          else if ((elem == ELEM_Sn || elem == ELEM_Pb) && conn + rad + abs(charge) <= 2)
          {
