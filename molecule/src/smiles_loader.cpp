@@ -110,7 +110,7 @@ void SmilesLoader::_calcStereocenters ()
             subst2[1] = left;
          if (subst2[3] == -1)
             subst2[3] = right;
-
+         
          if (subst2[1] < subst2[0])
          {
             __swap(subst2[1], subst2[0], tmp);
@@ -123,8 +123,21 @@ void SmilesLoader::_calcStereocenters ()
             parity = 3 - parity;
          }
 
-         if (subst2[2] < subst2[0])
+         // move hydrogens from [0] and [2] to [1] and [3] respectively
+         if (pure_h[0])
+         {
+            if (subst[1] == -1)
+               throw Error("unexpected: subst[1] = -1");
+            __swap(subst[0], subst[1], tmp);
             parity = 3 - parity;
+         }
+         if (pure_h[2])
+         {
+            if (subst[3] == -1)
+               throw Error("unexpected: subst[3] = -1");
+            __swap(subst[2], subst[3], tmp);
+            parity = 3 - parity;
+         }
 
          _bmol->allene_stereo.add(i, left, right, subst, parity);
       }

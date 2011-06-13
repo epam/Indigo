@@ -241,6 +241,13 @@ bool MoleculeAlleneStereo::_isAlleneCenter (BaseMolecule &mol, int idx, _Atom &a
    if (atom.parity == 3)
       return false;
 
+   Vec3f prod;
+
+   prod.cross(vec_left, subst_vecs[0]);
+
+   if (prod.z > 0)
+      atom.parity = 3 - atom.parity;
+
    int tmp;
 
    // move hydrogens from [0] and [2] to [1] and [3] respectively
@@ -316,7 +323,6 @@ bool MoleculeAlleneStereo::checkSub (BaseMolecule &query, BaseMolecule &target, 
       {
          __swap(qs[0], qs[2], tmp);
          __swap(qs[1], qs[3], tmp);
-         parity = 3 - parity;
       }
 
       if (mapping[qs[0]] == ts[0])
@@ -462,6 +468,15 @@ void MoleculeAlleneStereo::get (int i, int &atom_idx, int &left, int &right, int
    memcpy(subst, atom.subst, sizeof(int) * 4);
 }
 
+void MoleculeAlleneStereo::getByAtomIdx (int atom_idx, int &left, int &right, int subst[4], int &parity)
+{
+   _Atom &atom = _centers.at(atom_idx);
+
+   left = atom.left;
+   right = atom.right;
+   parity = atom.parity;
+   memcpy(subst, atom.subst, sizeof(int) * 4);
+}
 
 void MoleculeAlleneStereo::add (int atom_idx, int left, int right, int subst[4], int parity)
 {
@@ -579,15 +594,31 @@ void MoleculeAlleneStereo::markBonds ()
 
       int dirs[4];
 
-      if ((ss == 1 && atom.parity == 1) || (ss == -1 && atom.parity == 2))
+      if (atom.parity == 2)
+      {
+         dirs[0] = BOND_DOWN;
+         dirs[1] = BOND_UP;
+      }
+      else
       {
          dirs[0] = BOND_UP;
          dirs[1] = BOND_DOWN;
       }
-      else
+
+      if (ss == -1)
       {
-         dirs[0] = BOND_DOWN;
-         dirs[1] = BOND_UP;
+         dirs[0] = 3 - dirs[0];
+         dirs[1] = 3 - dirs[1];
+      }
+
+      Vec3f prod;
+
+      prod.cross(vec_left, subst_vecs[0]);
+
+      if (prod.z > 0)
+      {
+         dirs[0] = 3 - dirs[0];
+         dirs[1] = 3 - dirs[1];
       }
 
       if (ss == 1)

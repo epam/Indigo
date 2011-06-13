@@ -360,8 +360,6 @@ void SmilesSaver::_saveMolecule ()
          __swap(subst_map[2], subst_map[3], tmp);
          parity = 3 - parity;
       }
-      if (subst_map[0] > subst_map[2])
-         parity = 3 - parity;
 
       _atoms[atom_idx].chirality = parity;
    }

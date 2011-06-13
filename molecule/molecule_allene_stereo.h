@@ -48,6 +48,7 @@ public:
    int end () const;
    int next (int i) const;
    void get (int i, int &atom_idx, int &left, int &right, int subst[4], int &parity);
+   void getByAtomIdx (int atom_idx, int &left, int &right, int subst[4], int &parity);
 
    void add (int atom_idx, int left, int right, int subst[4], int parity);
 

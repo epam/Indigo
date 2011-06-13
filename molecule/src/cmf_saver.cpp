@@ -268,12 +268,24 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
    {
       int deviation = isotope - Element::getDefaultIsotope(number);
 
-      deviation -= CMF_MIN_MASS_DIFF;
-
-      if (deviation < 0 || deviation >= CMF_NUM_OF_ISOTOPES)
-         throw Error("unexpected %s isotope: %d", Element::toString(number), isotope);
-
-      _encode(deviation + CMF_ISOTOPES);
+      if (deviation == 0)
+         _encode(CMF_ISOTOPE_ZERO);
+      else if (deviation == 1)
+         _encode(CMF_ISOTOPE_PLUS1);
+      else if (deviation == 2)
+         _encode(CMF_ISOTOPE_PLUS2);
+      else if (deviation == -1)
+         _encode(CMF_ISOTOPE_MINUS1);
+      else if (deviation == -2)
+         _encode(CMF_ISOTOPE_MINUS2);
+      else
+      {
+         deviation += 100;
+         if (deviation < 0 || deviation > 255)
+            throw Error("unexpected %s isotope: %d", Element::toString(number), isotope);
+         _encode(CMF_ISOTOPE_OTHER);
+         _encode(deviation);
+      }
    }
 
    int radical = 0;
@@ -338,6 +350,29 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
          code += CMF_MAX_STEREOGROUPS * 2 + 1;
       
       _encode(code);
+   }
+
+   if (mol.allene_stereo.isCenter(idx))
+   {
+      int left, right, parity, subst[4], tmp;
+
+      mol.allene_stereo.getByAtomIdx(idx, left, right, subst, parity);
+      if (mapping[subst[1]] != -1 && mapping[subst[1]] < mapping[subst[0]])
+      {
+         __swap(subst[1], subst[0], tmp);
+         parity = 3 - parity;
+      }
+      if (mapping[subst[3]] != -1 && mapping[subst[3]] < mapping[subst[2]])
+      {
+         __swap(subst[2], subst[3], tmp);
+         parity = 3 - parity;
+      }
+      if (mapping[subst[2]] < mapping[subst[0]])
+         parity = 3 - parity;
+      if (parity == 1)
+         _encode(CMF_STEREO_ALLENE_0);
+      else
+         _encode(CMF_STEREO_ALLENE_1);
    }
 
 

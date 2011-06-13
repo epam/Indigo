@@ -129,11 +129,27 @@ bool CmfLoader::_readAtom (int &code, _AtomDesc &atom, int atom_idx)
          return false;
    }
 
-   if (code >= CMF_ISOTOPES && code < CMF_ISOTOPES + CMF_NUM_OF_ISOTOPES)
+   if (code >= CMF_ISOTOPE_ZERO && code <= CMF_ISOTOPE_OTHER)
    {
-      int deviation = code - CMF_ISOTOPES;
+      int deviation;
 
-      deviation += CMF_MIN_MASS_DIFF;
+      if (code == CMF_ISOTOPE_ZERO)
+         deviation = 0;
+      else if (code == CMF_ISOTOPE_PLUS1)
+         deviation = 1;
+      else if (code == CMF_ISOTOPE_PLUS2)
+         deviation = 2;
+      else if (code == CMF_ISOTOPE_MINUS1)
+         deviation = -1;
+      else if (code == CMF_ISOTOPE_MINUS2)
+         deviation = -2;
+      else // CMF_ISOTOPE_OTHER
+      {
+         if (!_getNextCode(code))
+            throw Error("expecting mass difference");
+
+         deviation = code - 100;
+      }
 
       atom.isotope = Element::getDefaultIsotope(atom.label) + deviation;
 

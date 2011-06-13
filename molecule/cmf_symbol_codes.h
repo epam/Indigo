@@ -24,13 +24,11 @@ enum
 {
    /* Available values */
    CMF_NUM_OF_CYCLES = 16,
-   CMF_NUM_OF_AAM = 16,
    CMF_MIN_CHARGE = -5,
    CMF_MAX_CHARGE = 8,
    CMF_NUM_OF_CHARGES = CMF_MAX_CHARGE - CMF_MIN_CHARGE + 1,
    CMF_MIN_MASS_DIFF = -30,
    CMF_MAX_MASS_DIFF = 20,
-   CMF_NUM_OF_ISOTOPES = CMF_MAX_MASS_DIFF - CMF_MIN_MASS_DIFF + 1,
    CMF_MAX_STEREOGROUPS = 4,
    CMF_MAX_VALENCE = 6,
    CMF_MAX_IMPLICIT_H = 10,
@@ -83,75 +81,81 @@ enum
     * (zero charge is not used) */
    CMF_SEPARATOR = CMF_CHARGES - CMF_MIN_CHARGE,
 
-   /* 151 - where isotopes        *
-    * codes begin -30..-1,0,1..20 */
-   CMF_ISOTOPES = CMF_CHARGES + CMF_NUM_OF_CHARGES,
+   /* 151..156 - isotope codes */
+   CMF_ISOTOPE_ZERO  = CMF_CHARGES + CMF_NUM_OF_CHARGES,
+   CMF_ISOTOPE_PLUS1 = CMF_ISOTOPE_ZERO + 1,
+   CMF_ISOTOPE_PLUS2 = CMF_ISOTOPE_PLUS1 + 1,
+   CMF_ISOTOPE_MINUS1 = CMF_ISOTOPE_PLUS2 + 1,
+   CMF_ISOTOPE_MINUS2 = CMF_ISOTOPE_MINUS1 + 1,
+   CMF_ISOTOPE_OTHER = CMF_ISOTOPE_MINUS2 + 1, // followed by an extra byte
 
-   /* 202 - where stereocenter codes begin */
-   CMF_STEREO = CMF_ISOTOPES + CMF_NUM_OF_ISOTOPES,
+   /* 157 - where stereocenter codes begin */
+   CMF_STEREO = CMF_ISOTOPE_OTHER + 1,
    
-   /* 203 - 'any' stereocenter */
+   /* 157 - 'any' stereocenter */
    CMF_STEREO_ANY = CMF_STEREO,
    
-   /* 203 - 'and' stereo-group (1..4) */
+   /* 158 - 'and' stereo-group (1..4) */
    CMF_STEREO_AND_0 = CMF_STEREO + 1,
    
-   /* 204 - 'and' stereo-group (1..4) */
+   /* 162 - 'and' stereo-group (1..4) */
    CMF_STEREO_OR_0  = CMF_STEREO_AND_0 + CMF_MAX_STEREOGROUPS,
    
-   /* 211 - 'abs' stereocenter */
+   /* 166 - 'abs' stereocenter */
    CMF_STEREO_ABS_0 = CMF_STEREO_OR_0 + CMF_MAX_STEREOGROUPS,
    
-   /* 212 - 'and' stereo-group (1..4) */
+   /* 167 - 'and' stereo-group (1..4) */
    CMF_STEREO_AND_1 = CMF_STEREO_ABS_0 + 1,
    
-   /* 216 - 'and' stereo-group (1..4) */
+   /* 171 - 'and' stereo-group (1..4) */
    CMF_STEREO_OR_1  = CMF_STEREO_AND_1 + CMF_MAX_STEREOGROUPS,
    
-   /* 220 - 'abs' stereocenter */
+   /* 175 - 'abs' stereocenter */
    CMF_STEREO_ABS_1 = CMF_STEREO_OR_1 + CMF_MAX_STEREOGROUPS,
+
+   /* 176-177 - allene centers */
+   CMF_STEREO_ALLENE_0 = CMF_STEREO_ABS_1 + 1,
+   CMF_STEREO_ALLENE_1 = CMF_STEREO_ALLENE_0 + 1,
    
-   /* 221 - valence (1..5) */
-   CMF_VALENCE = CMF_STEREO_ABS_1 + 1,
+   /* 178 - valence (1..5) */
+   CMF_VALENCE = CMF_STEREO_ALLENE_1 + 1,
    
-   /* 228 - implicit hydrogen count (1..5) */
+   /* 185 - implicit hydrogen count (1..5) */
    CMF_IMPLICIT_H = CMF_VALENCE + CMF_MAX_VALENCE + 1,
    
-   /* 239 - singlet radical */
+   /* 196 - singlet radical */
    CMF_RADICAL_SINGLET = CMF_IMPLICIT_H + CMF_MAX_IMPLICIT_H + 1,
    
-   /* 240 - douplet radical */
+   /* 197 - douplet radical */
    CMF_RADICAL_DOUPLET = CMF_RADICAL_SINGLET + 1,
    
-   /* 241 - triplet radical  */
+   /* 198 - triplet radical  */
    CMF_RADICAL_TRIPLET = CMF_RADICAL_DOUPLET + 1,
 
-   /* 242 - bond flags */
+   /* 199 - bond flags */
    CMF_BOND_FLAGS = CMF_RADICAL_TRIPLET + 1,
 
-   /* 245 - atom flags */
+   /* 202 - atom flags */
    CMF_ATOM_FLAGS = CMF_BOND_FLAGS + CMF_NUM_OF_BOND_FLAGS,
 
-   /* 247-249 - bond directions (up/down/either) */
+   /* 204-206- bond directions (up/down/either) */
    CMF_BOND_UP = CMF_ATOM_FLAGS + CMF_NUM_OF_ATOM_FLAGS,
-
    CMF_BOND_DOWN = CMF_BOND_UP + 1,
-
    CMF_BOND_EITHER = CMF_BOND_DOWN + 1,
 
-   /* 250 - "swap bond ends" flag */
+   /* 207 - "swap bond ends" flag */
    CMF_BOND_SWAP_ENDS = CMF_BOND_EITHER + 1,
 
-   /* 251 - highlighting */
+   /* 208 - highlighting */
    CMF_HIGHLIGHTED = CMF_BOND_SWAP_ENDS + 1,
 
-   /* 252 - attachment point */
+   /* 209 - attachment point */
    CMF_ATTACHPT = CMF_HIGHLIGHTED + 1,
 
-   /* 253 - terminator */
+   /* 210 - terminator */
    CMF_TERMINATOR = CMF_ATTACHPT + 1,
 
-   /* Alphabet size = 254 */
+   /* Alphabet size = 211 */
    CMF_ALPHABET_SIZE = CMF_TERMINATOR + 1
 };
 
