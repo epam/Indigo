@@ -224,7 +224,8 @@ public:
       ALL,
       PSEUDO,
       RSITE,
-      STEREOCENTER
+      STEREOCENTER,
+      ALLENE_CENTER
    };
 
    IndigoAtomsIter (BaseMolecule *molecule, int type);

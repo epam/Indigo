@@ -202,6 +202,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoIterateStereocenters(self)));
    }
 
+   public IndigoObject iterateAlleneCenters ()
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoIterateAlleneCenters(self)));
+   }
+
    public IndigoObject iterateRGroups ()
    {
       dispatcher.setSessionID();
@@ -477,10 +483,22 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoClearStereocenters(self));
    }
 
+   public void clearAlleneCenters ()
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoClearAlleneCenters(self));
+   }
+
    public int countStereocenters ()
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoCountStereocenters(self));
+   }
+
+   public int countAlleneCenters ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoCountAlleneCenters(self));
    }
 
    public int resetSymmetricCisTrans ()

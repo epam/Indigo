@@ -291,6 +291,17 @@ bool MoleculeAlleneStereo::isCenter (int atom_idx)
    return _centers.at2(atom_idx) != 0;
 }
 
+void MoleculeAlleneStereo::invert (int atom_idx)
+{
+   _Atom &atom = _centers.at(atom_idx);
+   atom.parity = 3 - atom.parity;
+}
+
+void MoleculeAlleneStereo::reset (int atom_idx)
+{
+   _centers.remove(atom_idx);
+}
+
 int MoleculeAlleneStereo::size ()
 {
    return _centers.size();

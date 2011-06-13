@@ -278,6 +278,7 @@ class Indigo:
     self.IndigoObject.iteratePseudoatoms = Indigo._member_obj(Indigo._lib.indigoIteratePseudoatoms)
     self.IndigoObject.iterateRSites = Indigo._member_obj(Indigo._lib.indigoIterateRSites)
     self.IndigoObject.iterateStereocenters = Indigo._member_obj(Indigo._lib.indigoIterateStereocenters)
+    self.IndigoObject.iterateAlleneCenters = Indigo._member_obj(Indigo._lib.indigoIterateAlleneCenters)
     self.IndigoObject.iterateRGroups = Indigo._member_obj(Indigo._lib.indigoIterateRGroups)
     self.IndigoObject.iterateRGroupFragments = Indigo._member_obj(Indigo._lib.indigoIterateRGroupFragments)
     self.IndigoObject.countAttachmentPoints = Indigo._member_int(Indigo._lib.indigoCountAttachmentPoints)
@@ -339,7 +340,9 @@ class Indigo:
 
     self.IndigoObject.clearCisTrans = Indigo._member_void(Indigo._lib.indigoClearCisTrans)
     self.IndigoObject.clearStereocenters = Indigo._member_void(Indigo._lib.indigoClearStereocenters)
+    self.IndigoObject.clearAlleneCenters = Indigo._member_void(Indigo._lib.indigoClearAlleneCenters)
     self.IndigoObject.countStereocenters = Indigo._member_int(Indigo._lib.indigoCountStereocenters)
+    self.IndigoObject.countAlleneCenters = Indigo._member_int(Indigo._lib.indigoCountAlleneCenters)
     self.IndigoObject.resetSymmetricCisTrans = Indigo._member_int(Indigo._lib.indigoResetSymmetricCisTrans)
     self.IndigoObject.markEitherCisTrans = Indigo._member_int(Indigo._lib.indigoMarkEitherCisTrans)
     self.IndigoObject.addAtom = Indigo._member_obj_string(Indigo._lib.indigoAddAtom)

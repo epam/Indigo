@@ -119,6 +119,7 @@ public interface IndigoLib extends Library
    int indigoIteratePseudoatoms (int molecule);
    int indigoIterateRSites (int molecule);
    int indigoIterateStereocenters (int molecule);
+   int indigoIterateAlleneCenters (int molecule);
    int indigoIterateRGroups (int molecule);
    int indigoIsPseudoatom (int atom);
    int indigoIsRSite (int atom);
@@ -197,7 +198,9 @@ public interface IndigoLib extends Library
    int indigoDestination (int bond);
    int indigoClearCisTrans (int handle);
    int indigoClearStereocenters (int handle);
+   int indigoClearAlleneCenters (int handle);
    int indigoCountStereocenters (int molecule);
+   int indigoCountAlleneCenters (int molecule);
 
    int indigoResetSymmetricCisTrans (int handle);
    int indigoMarkEitherCisTrans (int handle);

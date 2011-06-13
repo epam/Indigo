@@ -241,6 +241,12 @@ int IndigoAtomsIter::_shift (int idx)
          if (_mol->stereocenters.getType(idx) != 0)
             break;
    }
+   else if (_type == ALLENE_CENTER)
+   {
+      for (; idx != _mol->vertexEnd(); idx = _mol->vertexNext(idx))
+         if (_mol->allene_stereo.isCenter(idx))
+            break;
+   }
 
    return idx;
 }
@@ -819,6 +825,15 @@ CEXPORT int indigoIterateStereocenters (int molecule)
    INDIGO_BEGIN
    {
       return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::STEREOCENTER);
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoIterateAlleneCenters (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::ALLENE_CENTER);
    }
    INDIGO_END(-1);
 }

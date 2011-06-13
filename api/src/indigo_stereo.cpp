@@ -108,10 +108,17 @@ CEXPORT int indigoInvertStereo (int item)
       {
          IndigoAtom &ia = IndigoAtom::cast(self.getObject(item));
 
-         int k, *pyramid = ia.mol.stereocenters.getPyramid(ia.idx);
-         if (pyramid == 0)
-            throw IndigoError("indigoInvertStereo: not a stereoatom");
-         __swap(pyramid[0], pyramid[1], k);
+         if (ia.mol.stereocenters.getType(ia.idx) > 0)
+         {
+            int k, *pyramid = ia.mol.stereocenters.getPyramid(ia.idx);
+            if (pyramid == 0)
+               throw IndigoError("indigoInvertStereo: internal");
+            __swap(pyramid[0], pyramid[1], k);
+         }
+         else if (ia.mol.allene_stereo.isCenter(ia.idx))
+            ia.mol.allene_stereo.invert(ia.idx);
+         else
+            throw IndigoError("indigoInvertStereo: not a stereo atom");
       }
       else if (IndigoBond::is(obj))
       {
@@ -144,7 +151,9 @@ CEXPORT int indigoResetStereo (int item)
          IndigoAtom &ia = IndigoAtom::cast(self.getObject(item));
 
          if (ia.mol.stereocenters.getType(ia.idx) != 0)
-             ia.mol.stereocenters.remove(ia.idx);
+            ia.mol.stereocenters.remove(ia.idx);
+         if (ia.mol.allene_stereo.isCenter(ia.idx))
+            ia.mol.allene_stereo.reset(ia.idx);
       }
       else if (IndigoBond::is(obj))
       {
