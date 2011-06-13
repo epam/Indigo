@@ -66,6 +66,8 @@ protected:
       int  stereo_group;
       bool stereo_invert_pyramid;
 
+      int  allene_stereo_parity;
+
       int  flags;
       
       bool rsite;

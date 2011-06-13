@@ -543,6 +543,7 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
    // stereo
    stereocenters.removeAtoms(indices);
    cis_trans.buildOnSubmolecule(*this, mapping.ptr());
+   allene_stereo.removeAtoms(indices);
 
    // highlighting
    for (i = 0; i < indices.size(); i++)
@@ -586,6 +587,7 @@ void BaseMolecule::removeBonds (const Array<int> &indices)
    _removeBonds(indices);
 
    stereocenters.removeBonds(indices);
+   allene_stereo.removeBonds(indices);
 
    for (int i = 0; i < indices.size(); i++)
    {

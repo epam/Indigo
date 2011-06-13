@@ -354,20 +354,12 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
 
    if (mol.allene_stereo.isCenter(idx))
    {
-      int left, right, parity, subst[4], tmp;
+      int left, right, parity, subst[4];
 
       mol.allene_stereo.getByAtomIdx(idx, left, right, subst, parity);
-      if (mapping[subst[1]] != -1 && mapping[subst[1]] < mapping[subst[0]])
-      {
-         __swap(subst[1], subst[0], tmp);
+      if (subst[1] != -1 && mapping[subst[1]] != -1 && mapping[subst[1]] < mapping[subst[0]])
          parity = 3 - parity;
-      }
-      if (mapping[subst[3]] != -1 && mapping[subst[3]] < mapping[subst[2]])
-      {
-         __swap(subst[2], subst[3], tmp);
-         parity = 3 - parity;
-      }
-      if (mapping[subst[2]] < mapping[subst[0]])
+      if (subst[3] != -1 && mapping[subst[3]] != -1 && mapping[subst[3]] < mapping[subst[2]])
          parity = 3 - parity;
       if (parity == 1)
          _encode(CMF_STEREO_ALLENE_0);

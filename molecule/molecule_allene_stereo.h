@@ -52,6 +52,10 @@ public:
 
    void add (int atom_idx, int left, int right, int subst[4], int parity);
 
+   void removeAtoms (const Array<int> &indices);
+   void removeBonds (const Array<int> &indices);
+   void registerUnfoldedHydrogen (int atom_idx, int added_hydrogen);
+
    DEF_ERROR("allene stereo");
 
 

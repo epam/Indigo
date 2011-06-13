@@ -599,6 +599,7 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt )
 
          stereocenters.registerUnfoldedHydrogen(i, new_h_idx);
          cis_trans.registerUnfoldedHydrogen(i, new_h_idx);
+         allene_stereo.registerUnfoldedHydrogen(i, new_h_idx);
       }
 
       _validateVertexConnectivity(i, false);

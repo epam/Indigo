@@ -96,7 +96,7 @@ void SmilesLoader::_calcStereocenters ()
             continue;
          }
 
-         int tmp, parity = _atoms[i].chirality;
+         int tmp, parity = 3 - _atoms[i].chirality;
 
          for (j = 0; j < 4; j++)
             if (subst[j] == -1)

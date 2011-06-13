@@ -646,3 +646,126 @@ void MoleculeAlleneStereo::markBonds ()
       }
    }
 }
+
+void MoleculeAlleneStereo::removeAtoms (const Array<int> &indices)
+{
+   BaseMolecule &mol = _getMolecule();
+   int i, j;
+
+   for (i = 0; i < indices.size(); i++)
+   {
+      int idx = indices[i];
+      if (_centers.find(idx))
+      {
+         _centers.remove(idx);
+         continue;
+      }
+      
+      // TODO: this can be done without looping through all centers
+      for (j = _centers.begin(); j != _centers.end(); j = _centers.next(j))
+      {
+         int center_idx = _centers.key(j);
+         _Atom &atom = _centers.value(j);
+
+         if (idx == atom.left || idx == atom.right)
+         {
+           _centers.remove(center_idx);
+           continue;
+         }
+
+         if (idx == atom.subst[1])
+            atom.subst[1] = -1;
+         else if (idx == atom.subst[3])
+            atom.subst[3] = -1;
+         else if (idx == atom.subst[0])
+         {
+            if (atom.subst[1] == -1 ||
+                    (mol.getAtomNumber(atom.subst[1]) == ELEM_H && mol.possibleAtomIsotope(atom.subst[1], 0)))
+            {
+               _centers.remove(center_idx);
+               continue;
+            }
+            atom.subst[0] = atom.subst[1];
+            atom.parity = 3 - atom.parity;
+         }
+         else if (idx == atom.subst[2])
+         {
+            if (atom.subst[3] == -1 ||
+                    (mol.getAtomNumber(atom.subst[3]) == ELEM_H && mol.possibleAtomIsotope(atom.subst[3], 0)))
+            {
+               _centers.remove(center_idx);
+               continue;
+            }
+            atom.subst[2] = atom.subst[3];
+            atom.parity = 3 - atom.parity;
+         }
+      }
+   }
+}
+
+void MoleculeAlleneStereo::removeBonds (const Array<int> &indices)
+{
+   BaseMolecule &mol = _getMolecule();
+   int i, j;
+
+   for (i = 0; i < indices.size(); i++)
+   {
+      int idx = indices[i];
+
+      // TODO: this can be done without looping through all centers
+      for (j = _centers.begin(); j != _centers.end(); j = _centers.next(j))
+      {
+         int center_idx = _centers.key(j);
+         _Atom &atom = _centers.value(j);
+
+         if (idx == mol.findEdgeIndex(center_idx, atom.left) || idx == mol.findEdgeIndex(center_idx, atom.right))
+         {
+           _centers.remove(center_idx);
+           continue;
+         }
+
+         if (idx == mol.findEdgeIndex(atom.left, atom.subst[1]))
+            atom.subst[1] = -1;
+         else if (idx == mol.findEdgeIndex(atom.right, atom.subst[3]))
+            atom.subst[3] = -1;
+         else if (idx == mol.findEdgeIndex(atom.left, atom.subst[0]))
+         {
+            if (atom.subst[1] == -1 ||
+                    (mol.getAtomNumber(atom.subst[1]) == ELEM_H && mol.possibleAtomIsotope(atom.subst[1], 0)))
+            {
+               _centers.remove(center_idx);
+               continue;
+            }
+            atom.subst[0] = atom.subst[1];
+            atom.parity = 3 - atom.parity;
+         }
+         else if (idx == mol.findEdgeIndex(atom.right, atom.subst[2]))
+         {
+            if (atom.subst[3] == -1 ||
+                    (mol.getAtomNumber(atom.subst[3]) == ELEM_H && mol.possibleAtomIsotope(atom.subst[3], 0)))
+            {
+               _centers.remove(center_idx);
+               continue;
+            }
+            atom.subst[2] = atom.subst[3];
+            atom.parity = 3 - atom.parity;
+         }
+      }
+   }
+}
+
+void MoleculeAlleneStereo::registerUnfoldedHydrogen (int atom_idx, int added_hydrogen)
+{
+   int j;
+   
+   // TODO: this can be done without looping through all centers
+   for (j = _centers.begin(); j != _centers.end(); j = _centers.next(j))
+   {
+      _Atom &atom = _centers.value(j);
+
+      if (atom_idx == atom.left && atom.subst[1] == -1)
+         atom.subst[1] = added_hydrogen;
+      else if (atom_idx == atom.right && atom.subst[3] == -1)
+         atom.subst[3] = added_hydrogen;
+   }
+}

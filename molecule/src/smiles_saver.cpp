@@ -339,7 +339,7 @@ void SmilesSaver::_saveMolecule ()
       // are taken to be immediately following that atom
       if (subst_map[0] < 0)
          subst_map[0] = _written_atoms_inv[left];
-      else if (subst[1] < 0)
+      else if (subst_map[1] < 0)
          subst_map[1] = _written_atoms_inv[left];
 
       if (subst_map[2] < 0)
@@ -361,7 +361,7 @@ void SmilesSaver::_saveMolecule ()
          parity = 3 - parity;
       }
 
-      _atoms[atom_idx].chirality = parity;
+      _atoms[atom_idx].chirality = 3 - parity;
    }
 
    if (canonize_chiralities)

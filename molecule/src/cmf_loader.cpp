@@ -197,6 +197,16 @@ bool CmfLoader::_readAtom (int &code, _AtomDesc &atom, int atom_idx)
          return false;
    }
 
+   if (code == CMF_STEREO_ALLENE_0 || code == CMF_STEREO_ALLENE_1)
+   {
+      if (code == CMF_STEREO_ALLENE_0)
+         atom.allene_stereo_parity = 1;
+      else
+         atom.allene_stereo_parity = 2;
+      if (!_getNextCode(code))
+         return false;
+   }
+
    if (code >= CMF_IMPLICIT_H && code <= CMF_IMPLICIT_H + CMF_MAX_IMPLICIT_H)
    {
       atom.hydrogens = code - CMF_IMPLICIT_H;
@@ -595,8 +605,43 @@ void CmfLoader::loadMolecule (Molecule &mol)
    if (!skip_stereocenters)
    {
       for (i = 0; i < _atoms.size(); i++)
+      {
          if (_atoms[i].stereo_type != 0)
             mol.stereocenters.add(i, _atoms[i].stereo_type, _atoms[i].stereo_group, _atoms[i].stereo_invert_pyramid);
+      }
+   }
+
+   for (i = 0; i < _atoms.size(); i++)
+   {
+      if (_atoms[i].allene_stereo_parity != 0)
+      {
+         int left, right, subst[4];
+         bool pure_h[4];
+         int parity = _atoms[i].allene_stereo_parity;
+         int tmp;
+
+         if (!MoleculeAlleneStereo::possibleCenter(mol, i, left, right, subst, pure_h))
+            throw Error("invalid molecule allene stereo marker");
+
+         if (subst[1] != -1 && subst[1] < subst[0])
+            __swap(subst[1], subst[0], tmp);
+
+         if (subst[3] != -1 && subst[3] < subst[2])
+            __swap(subst[3], subst[2], tmp);
+
+         if (pure_h[0])
+         {
+            __swap(subst[1], subst[0], tmp);
+            parity = 3 - parity;
+         }
+         if (pure_h[2])
+         {
+            __swap(subst[2], subst[3], tmp);
+            parity = 3 - parity;
+         }
+
+         mol.allene_stereo.add(i, left, right, subst, parity);
+      }
    }
 
    // for loadXyz()
