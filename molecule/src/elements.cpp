@@ -399,6 +399,8 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
          valence = 1;
          if (charge == 1 && conn == 0)
             hyd = 0;
+         if (charge == -1 && conn == 0)
+            hyd = 0;
          else if (charge == 0 && conn == 1)
             hyd = 0;
          else if (charge == 0 && conn == 0)
