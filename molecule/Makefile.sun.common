@@ -28,6 +28,7 @@ OBJS_libmolecule.a =  \
 	$(TARGETDIR_libmolecule.a)/max_common_submolecule.o \
 	$(TARGETDIR_libmolecule.a)/molecule.o \
 	$(TARGETDIR_libmolecule.a)/molecule_3d_constraints.o \
+	$(TARGETDIR_libmolecule.a)/molecule_allene_stereo.o \
 	$(TARGETDIR_libmolecule.a)/molecule_arom.o \
 	$(TARGETDIR_libmolecule.a)/molecule_arom_match.o \
 	$(TARGETDIR_libmolecule.a)/molecule_auto_loader.o \
@@ -139,6 +140,9 @@ $(TARGETDIR_libmolecule.a)/molecule.o: $(TARGETDIR_libmolecule.a) src/molecule.c
 
 $(TARGETDIR_libmolecule.a)/molecule_3d_constraints.o: $(TARGETDIR_libmolecule.a) src/molecule_3d_constraints.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_3d_constraints.cpp
+
+$(TARGETDIR_libmolecule.a)/molecule_allene_stereo.o: $(TARGETDIR_libmolecule.a) src/molecule_allene_stereo.cpp
+	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_allene_stereo.cpp
 
 $(TARGETDIR_libmolecule.a)/molecule_arom.o: $(TARGETDIR_libmolecule.a) src/molecule_arom.cpp
 	$(COMPILE.cc) $(CCFLAGS_libmolecule.a) $(CPPFLAGS_libmolecule.a) -o $@ src/molecule_arom.cpp
@@ -279,6 +283,7 @@ clean:
 		$(TARGETDIR_libmolecule.a)/max_common_submolecule.o \
 		$(TARGETDIR_libmolecule.a)/molecule.o \
 		$(TARGETDIR_libmolecule.a)/molecule_3d_constraints.o \
+		$(TARGETDIR_libmolecule.a)/molecule_allene_stereo.o \
 		$(TARGETDIR_libmolecule.a)/molecule_arom.o \
 		$(TARGETDIR_libmolecule.a)/molecule_arom_match.o \
 		$(TARGETDIR_libmolecule.a)/molecule_auto_loader.o \
