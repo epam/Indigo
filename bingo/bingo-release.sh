@@ -21,8 +21,8 @@ mkdir -p $name/sql/system
  
 cp LICENSE.GPL $name/
 cp $libname $name/bin/
+cp bingo-oracle-install.sh  $name/
 cp sql/dbcheck.sql $name/sql/
-cp sql/bingo-install.sh  $name/sql/
 cp sql/bingo/alter_routines.sql $name/sql/bingo/
 cp sql/bingo/alter_routines2.sql $name/sql/bingo/
 cp sql/bingo/bingo_calls.sql $name/sql/bingo/

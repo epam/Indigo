@@ -45,7 +45,7 @@ echo '    Do not ask for confirmation.'
 }
 
 libext=".so"
-if [ -f "../bin/libbingo.dylib" ]; then
+if [ -f "bin/libbingo.dylib" ]; then
   libext=".dylib"
 fi
 
@@ -119,20 +119,19 @@ fi
 
 mkdir -p $libdir
 
-echo set verify off >bingo/bingo_lib.sql 
-echo spool bingo_lib\; >>bingo/bingo_lib.sql 
-echo create or replace LIBRARY bingolib AS \'$libdir/libbingo$libext\' >>bingo/bingo_lib.sql 
-echo / >>bingo/bingo_lib.sql 
-echo spool off\; >>bingo/bingo_lib.sql 
+echo set verify off >sql/bingo/bingo_lib.sql 
+echo spool bingo_lib\; >>sql/bingo/bingo_lib.sql 
+echo create or replace LIBRARY bingolib AS \'$libdir/libbingo$libext\' >>sql/bingo/bingo_lib.sql 
+echo / >>sql/bingo/bingo_lib.sql 
+echo spool off\; >>sql/bingo/bingo_lib.sql 
 
-cp ../bin/libbingo$libext $libdir
+cp bin/libbingo$libext $libdir
 if [ $? != 0 ]; then
   echo 'Cannot copy libbingo'$libext' to '$libdir
   exit
 fi
 
-
-cd system
+cd sql/system
 if [ "$dbapass" = "" ]; then
   sqlplus $dbaname$instance @bingo_init.sql $bingoname $bingopass
 else
@@ -144,3 +143,5 @@ sqlplus $bingoname/$bingopass$instance @makebingo.sql
 sqlplus $bingoname/$bingopass$instance @bingo_config.sql
 cd ..
 sqlplus $bingoname/$bingopass$instance @dbcheck.sql
+cd ..
+

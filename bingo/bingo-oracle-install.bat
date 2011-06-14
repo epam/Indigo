@@ -99,19 +99,19 @@ goto end
 
 :L4
 
-echo set verify off >bingo\bingo_lib.sql 
-echo spool bingo_lib; >>bingo\bingo_lib.sql 
-echo create or replace LIBRARY bingolib AS '%libdir%\bingo-oracle.dll' >>bingo\bingo_lib.sql 
-echo / >>bingo\bingo_lib.sql 
-echo spool off; >>bingo\bingo_lib.sql 
+echo set verify off >sql\bingo\bingo_lib.sql 
+echo spool bingo_lib; >>sql\bingo\bingo_lib.sql 
+echo create or replace LIBRARY bingolib AS '%libdir%\bingo-oracle.dll' >>sql\bingo\bingo_lib.sql 
+echo / >>sql\bingo\bingo_lib.sql 
+echo spool off; >>sql\bingo\bingo_lib.sql 
 
 md %libdir%
-copy ..\bin\bingo-oracle.dll %libdir% /y
+copy bin\bingo-oracle.dll %libdir% /y
 if not %errorlevel%==0 goto end
 
 if not "%instance%"=="" set instance=@%instance%
 
-cd system
+cd sql\system
 if "%dbapass%"=="" goto emptypass
 sqlplus %dbaname%/%dbapass%%instance% @bingo_init.sql %bingoname% %bingopass%
 goto L5
@@ -125,7 +125,7 @@ sqlplus %bingoname%/%bingopass%%instance% @bingo_config.sql
 
 cd ..
 sqlplus %bingoname%/%bingopass%%instance% @dbcheck.sql
-
+cd ..
 goto end
 
 :usage
