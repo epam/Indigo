@@ -86,9 +86,9 @@ SetCompressor /SOLID lzma
 Section "${APP_NAME}"
  
   SetOutPath "$INSTDIR\lib\"
-  File /r "dist\lib\"
+  File /r "lib\"
   SetOutPath $INSTDIR
-  File "dist\chemdiff.jar"
+  File "chemdiff.jar"
   File "launch.bat"
   SetOutPath "$INSTDIR\tests\"
   File /r "tests\"

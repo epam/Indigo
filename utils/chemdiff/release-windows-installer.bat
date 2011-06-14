@@ -24,9 +24,11 @@ copy ..\..\common\java\common-controls\dist\common-controls.jar lib\
 copy ..\..\api\java\dist\indigo.jar lib\
 copy ..\..\api\renderer\java\dist\indigo-renderer.jar lib\
 cd src
-rem javac -cp ..\lib\indigo.jar;..\lib\indigo-renderer.jar;..\lib\common-controls.jar com/ggasoftware/indigo/chemdiff/*.java
-rem jar cvfm ..\chemdiff.jar ..\manifest.mf com/ggasoftware/indigo/chemdiff/*.class chemdiff-splash.png
+javac -cp ..\lib\indigo.jar;..\lib\indigo-renderer.jar;..\lib\common-controls.jar com/ggasoftware/indigo/chemdiff/*.java
+jar cvfm ..\chemdiff.jar ../META-INF/manifest.mf com/ggasoftware/indigo/chemdiff/*.class
+del /Q com/ggasoftware/indigo/chemdiff/*.class
 cd ..
+jar -uf chemdiff.jar META-INF/chemdiff-splash.png
 
 rem call dll-copy.bat
 echo start javaw -jar -Xss10m %%0\..\chemdiff.jar > launch.bat
