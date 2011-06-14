@@ -89,6 +89,7 @@ namespace com.ggasoftware.indigo
       int indigoIteratePseudoatoms (int molecule);
       int indigoIterateRSites (int molecule);
       int indigoIterateStereocenters (int molecule);
+      int indigoIterateAlleneCenters (int molecule);
       int indigoIterateRGroups (int molecule);
       int indigoIterateRGroupFragments (int rgroup);
       int indigoCountAttachmentPoints (int rgroup);
@@ -155,7 +156,9 @@ namespace com.ggasoftware.indigo
       int indigoDestination (int bond);
       int indigoClearCisTrans (int item);
       int indigoClearStereocenters (int item);
+      int indigoClearAlleneCenters (int item);
       int indigoCountStereocenters (int item);
+      int indigoCountAlleneCenters (int item);
       int indigoResetSymmetricCisTrans (int handle);
       int indigoMarkEitherCisTrans (int handle);
 

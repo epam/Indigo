@@ -215,6 +215,12 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateStereocenters(self));
       }
 
+      public System.Collections.IEnumerable iterateAlleneCenters ()
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateAlleneCenters(self));
+      }
+
       public System.Collections.IEnumerable iterateRGroups ()
       {
          dispatcher.setSessionID();
@@ -611,10 +617,22 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoClearStereocenters(self);
       }
 
+      public void clearAlleneCenters ()
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoClearAlleneCenters(self);
+      }
+
       public int countStereocenters ()
       {
          dispatcher.setSessionID();
          return _indigo_lib.indigoCountStereocenters(self);
+      }
+
+      public int countAlleneCenters ()
+      {
+         dispatcher.setSessionID();
+         return _indigo_lib.indigoCountAlleneCenters(self);
       }
 
       public int resetSymmetricCisTrans ()
