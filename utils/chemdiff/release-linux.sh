@@ -24,8 +24,9 @@ cd ../../../common/java/common-controls
 cd ../../../utils/chemdiff/src
 
 javac -cp ../../../common/jna/jna.jar:../../../api/java/dist/indigo.jar:../../../api/renderer/java/dist/indigo-renderer.jar:../../../common/java/common-controls/dist/common-controls.jar com/ggasoftware/indigo/chemdiff/*.java
-jar cvfm ../chemdiff.jar ../META-INF/MANIFEST.MF ../META-INF/chemdiff-splash.png com/ggasoftware/indigo/chemdiff/*.class
+jar cvfm ../chemdiff.jar ../META-INF/MANIFEST.MF com/ggasoftware/indigo/chemdiff/*.class
 cd ..
+jar uf chemdiff.jar META-INF/chemdiff-splash.png
 
 name=chemdiff-$version-linux
 
