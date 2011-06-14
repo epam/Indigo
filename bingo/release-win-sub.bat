@@ -7,7 +7,7 @@ mkdir %1\sql\system
 copy LICENSE.GPL %1\
 copy %2 %1\bin\
 copy sql\dbcheck.sql %1\sql\
-copy sql\bingo-install.bat %1\sql\
+copy bingo-oracle-install.bat %1\
 copy sql\bingo\alter_routines.sql %1\sql\bingo\
 copy sql\bingo\alter_routines2.sql %1\sql\bingo\
 copy sql\bingo\bingo_calls.sql %1\sql\bingo\
