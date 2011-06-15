@@ -32,8 +32,8 @@ TL_CP_GET(_query_match_state),
 TL_CP_GET(_enumerators)
 {
    _g2 = &supergraph;
+   _core_2.clear();
    validate();
-   _core_2.fffill();
 
    cb_embedding = 0;
    cb_match_vertex = 0;
@@ -58,7 +58,7 @@ EmbeddingEnumerator::~EmbeddingEnumerator ()
 void EmbeddingEnumerator::validate ()
 {
    // _core_2 must be preserved because there might be fixed vertices
-   _core_2.resize(_g2->vertexEnd());
+   _core_2.expandFill(_g2->vertexEnd(), -1);
    _g2_fast.setGraph(*_g2);
 }
 
