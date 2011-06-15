@@ -21,7 +21,7 @@ y=
 
 usage ()
 {
-echo 'Usage: bingo-install.sh [parameters]'
+echo 'Usage: bingo-oracle-install.sh [parameters]'
 echo 'Parameters:'
 echo '  -?, -help'
 echo '    Print this help message'

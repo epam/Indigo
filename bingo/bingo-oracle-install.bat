@@ -129,7 +129,7 @@ cd ..
 goto end
 
 :usage
-echo Usage: bingo-install.bat [parameters]
+echo Usage: bingo-oracle-install.bat [parameters]
 echo Parameters:
 echo   -?, -help
 echo     Print this help message
