@@ -375,7 +375,11 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
          return (flags & MATCH_DISABLED_AS_TRUE) != 0;
       }
       case QueryMolecule::ATOM_RADICAL:
+      {
+         if (target.isPseudoAtom(super_idx) || target.isRSite(super_idx))
+            return false;
          return query->valueWithinRange(target.getAtomRadical(super_idx));
+      }
       case QueryMolecule::ATOM_VALENCE:
       {
          if (flags & MATCH_ATOM_VALENCE)
@@ -394,10 +398,16 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
          return query->valueWithinRange(conn);
       }
       case QueryMolecule::ATOM_TOTAL_BOND_ORDER:
+      {
          // TODO: target.isPseudoAtom(super_idx) || target.isRSite(super_idx)
          return query->valueWithinRange(target.asMolecule().getAtomConnectivity(super_idx));
+      }
       case QueryMolecule::ATOM_TOTAL_H:
+      {
+         if (target.isPseudoAtom(super_idx) || target.isRSite(super_idx))
+            return false;
          return query->valueWithinRange(target.getAtomTotalH(super_idx));
+      }
       case QueryMolecule::ATOM_SUBSTITUENTS:
          return query->valueWithinRange(target.getAtomSubstCount(super_idx));
       case QueryMolecule::ATOM_SSSR_RINGS:
