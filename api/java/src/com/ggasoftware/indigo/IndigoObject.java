@@ -531,6 +531,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoSetIsotope(self, isotope));
    }
 
+   public void setImplicitHCount (int hcount)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoSetImplicitHCount(self, hcount));
+   }
+
    public IndigoObject addBond (IndigoObject atom, int order)
    {
       dispatcher.setSessionID();

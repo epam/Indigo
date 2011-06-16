@@ -209,6 +209,7 @@ public interface IndigoLib extends Library
 
    int indigoSetCharge (int atom, int charge);
    int indigoSetIsotope (int atom, int isotope);
+   int indigoSetImplicitHCount (int atom, int impl_h);
 
    int indigoAddBond (int source, int destination, int order);
    int indigoSetBondOrder (int bond, int order);

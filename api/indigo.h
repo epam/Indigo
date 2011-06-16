@@ -392,6 +392,10 @@ CEXPORT int indigoAddAtom (int molecule, const char *symbol);
 CEXPORT int indigoSetCharge (int atom, int charge);
 CEXPORT int indigoSetIsotope (int atom, int isotope);
 
+// Used for hacks with aromatic molecules; not recommended to use
+// in other situations
+CEXPORT int indigoSetImplicitHCount (int atom, int impl_h);
+
 // Accepts two atoms (source and destination) and the order of the new bond
 // (1/2/3/4 = single/double/triple/aromatic). Returns the added bond.
 CEXPORT int indigoAddBond (int source, int destination, int order);

@@ -2647,6 +2647,18 @@ CEXPORT int indigoSetIsotope (int atom, int isotope)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoSetImplicitHCount (int atom, int impl_h)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      ia.mol.asMolecule().setImplicitH(ia.idx, impl_h);
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoAddBond (int source, int destination, int order)
 {
    INDIGO_BEGIN
