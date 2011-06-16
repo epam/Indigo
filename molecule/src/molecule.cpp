@@ -709,7 +709,7 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
          impl_h = _valence[idx] - Element::calcValenceMinusHyd(atom.number, 0, 0, conn);
 
          if (impl_h < 0)
-            throw Error("explicit valence %d specified on %s, but %d bonds are drawn",
+            throw Element::Error("explicit valence %d specified on %s, but %d bonds are drawn",
                        _valence[idx], Element::toString(atom.number), conn);
       }
       else if (isNitrogenV5(idx))
@@ -1332,7 +1332,7 @@ void Molecule::checkForConsistency (Molecule &mol)
 
       // check that all explicit hydrogens are lone or 1-connected
       if (mol.getAtomNumber(i) == ELEM_H && vertex.degree() > 1)
-         throw Error("%d-connected hydrogen atom", vertex.degree());
+         throw Element::Error("%d-connected hydrogen atom", vertex.degree());
 
       // check that we are sure about implicit H counter and valence
       mol.getImplicitH(i);
