@@ -665,6 +665,12 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoSetIsotope(self, isotope);
       }
 
+      public void setImplicitHCount (int implh)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoSetImplicitHCount(self, implh);
+      }
+
       public IndigoObject addBond (IndigoObject dest, int order)
       {
          dispatcher.setSessionID();
