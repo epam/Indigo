@@ -71,6 +71,8 @@ TL_CP_GET(_used_target_h)
    find_unique_embeddings = false;
    find_unique_by_edges = false;
    save_for_iteration = false;
+   
+   not_ignore_first_atom = false;
 
    cb_embedding = 0;
    cb_embedding_context = 0;
@@ -94,11 +96,11 @@ MoleculeSubstructureMatcher::~MoleculeSubstructureMatcher ()
 {
 }
 
-bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom)
+bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom, bool is_fragment)
 {
    if (atom->type == QueryMolecule::ATOM_FRAGMENT)
    {
-      if (shouldUnfoldTargetHydrogens(atom->fragment.ref()))
+      if (_shouldUnfoldTargetHydrogens(atom->fragment.ref(), true))
          return true;
    }
    else if (atom->type == QueryMolecule::OP_AND ||
@@ -108,7 +110,7 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A (QueryMolecule:
       int i;
 
       for (i = 0; i < atom->children.size(); i++)
-         if (_shouldUnfoldTargetHydrogens_A((QueryMolecule::Atom *)atom->children[i]))
+         if (_shouldUnfoldTargetHydrogens_A((QueryMolecule::Atom *)atom->children[i], is_fragment))
             return true;
    }
 
@@ -116,6 +118,11 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A (QueryMolecule:
 }
 
 bool MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens (QueryMolecule &query)
+{
+   return _shouldUnfoldTargetHydrogens(query, false);
+}
+
+bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens (QueryMolecule &query, bool is_fragment)
 {
    int i, j;
 
@@ -151,9 +158,16 @@ bool MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens (QueryMolecule &qu
          // can be something other than hydrogen?
          if (query.getAtomNumber(i) == -1)
             return true;
+         if (is_fragment && i == query.vertexBegin())
+            // If first atom in a fragment is hydrogen then hydrogens should 
+            // be unfolded because of the matching logic: when fragment will be
+            // matched this first hydrogen should match some atom. 
+            // If hydrogens is not be unfolded in this case then 
+            // [$([#1][N])]C will not match NC.
+            return true;
       }
 
-      if (_shouldUnfoldTargetHydrogens_A(&query.getAtom(i)))
+      if (_shouldUnfoldTargetHydrogens_A(&query.getAtom(i), is_fragment))
          return true;
    }
 
@@ -164,7 +178,7 @@ bool MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens (QueryMolecule &qu
    {
       PtrPool<BaseMolecule> &frags = rgroups.getRGroup(i).fragments;
       for (j = frags.begin(); j != frags.end(); j = frags.next(j))
-         if (shouldUnfoldTargetHydrogens(frags[j]->asQueryMolecule()))
+         if (_shouldUnfoldTargetHydrogens(frags[j]->asQueryMolecule(), is_fragment))
             return true;
    }
 
@@ -191,6 +205,8 @@ void MoleculeSubstructureMatcher::setQuery (QueryMolecule &query)
    ignored.clear_resize(_query->vertexEnd());
 
    markIgnoredQueryHydrogens(*_query, ignored.ptr(), 0, 1);
+   if (not_ignore_first_atom)
+      ignored[_query->vertexBegin()] = 0;
 
    _3d_constrained_atoms.clear_resize(_query->vertexEnd());
    _3d_constrained_atoms.zerofill();
@@ -441,6 +457,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
          
          MoleculeSubstructureMatcher matcher(target.asMolecule());
 
+         matcher.not_ignore_first_atom = true;
          matcher.setQuery(*fragment);
          matcher.fmcache = fmcache;
 
@@ -1267,7 +1284,15 @@ void MoleculeSubstructureMatcher::markIgnoredHydrogens (BaseMolecule &mol, int *
 
       if (!mol.possibleAtomIsotope(i, 0))
          continue;
-      
+
+      if (mol.isQueryMolecule())
+      {
+         // Check if atom has fragment constraint.
+         // For example [$([#1][N])] should be ignored
+         if (mol.asQueryMolecule().getAtom(i).hasConstraint(QueryMolecule::ATOM_FRAGMENT))
+            continue;
+      }
+
       const Vertex &vertex = mol.getVertex(i);
 
       if (vertex.degree() == 1)

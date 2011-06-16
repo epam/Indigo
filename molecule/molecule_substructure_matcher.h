@@ -59,6 +59,10 @@ public:
    void setNeiCounters (const MoleculeAtomNeighbourhoodCounters *query_counters, 
                         const MoleculeAtomNeighbourhoodCounters *target_counters);
 
+   // Property indicating that first atom in the query should be ignored because
+   // it will be used later. For example, it is fixed during fragment matching
+   bool not_ignore_first_atom;
+
    bool use_aromaticity_matcher;
    bool use_pi_systems_matcher;
    GraphVertexEquivalence *vertex_equivalence_handler;
@@ -180,7 +184,8 @@ protected:
    static bool _canUseEquivalenceHeuristic (QueryMolecule &query);
    static bool _isSingleBond (Graph &graph, int edge_idx);
 
-   static bool _shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom);
+   static bool _shouldUnfoldTargetHydrogens (QueryMolecule &query, bool is_fragment);
+   static bool _shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom, bool is_fragment);
 
    static int _countSubstituents (Molecule &mol, int idx);
    
