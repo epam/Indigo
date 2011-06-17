@@ -1215,6 +1215,7 @@ namespace indigo
                   // Close import
                   BingoCore.lib.bingoSDFImportClose();
                   BingoCore.lib.bingoRDFImportClose();
+                  BingoCore.lib.bingoSMILESImportClose();
                }
             }
          }
@@ -1299,20 +1300,30 @@ namespace indigo
          SqlString file_name, SqlString id_column_name, SqlString bingo_schema)
       {
          bool have_id_col = !id_column_name.IsNull && id_column_name.Value.Length > 1;
-         StreamReader reader = null;
+
+         bool reader_opened = false;
+
+         Regex regex1 = new Regex(@"[\s]*[^\s]*[\s]*\|.*\|[\s]+([^\s].*)", RegexOptions.Compiled);
+         Regex regex2 = new Regex(@"[\s]*[^\s]*[\s]+([^\s\|].*)", RegexOptions.Compiled);
 
          bingoImportPopulateDataRow populateRowFunc =
                (row, parameters) =>
                {
-                  if (reader.EndOfStream)
+                  if (!reader_opened)
+                  {
+                     if (BingoCore.lib.bingoSMILESImportOpen(file_name.Value) != 1)
+                        throw new Exception(BingoCore.lib.bingoGetError());
+                     reader_opened = true;
+                  }
+                  if (BingoCore.lib.bingoSMILESImportEOF() != 0)
                      return false;
 
-                  String line = reader.ReadLine();
+                  String line = BingoCore.lib.bingoSMILESImportGetNext();
                   row[mol_column_name.Value] = line;
 
                   if (have_id_col)
                   {
-                     Match match = Regex.Match(line, @"[\s]*[^\s]*[\s]*\|.*\|[\s]+([^\s].*)");
+                     Match match = regex1.Match(line);
 
                      string id_data;
 
@@ -1320,7 +1331,7 @@ namespace indigo
                         id_data = match.Groups[1].Value;
                      else
                      {
-                        match = Regex.Match(line, @"[\s]*[^\s]*[\s]+([^\s\|].*)");
+                        match = regex2.Match(line);
 
                         if (match != Match.Empty)
                            id_data = match.Groups[1].Value;
@@ -1333,15 +1344,11 @@ namespace indigo
                   return true;
                };
 
-         using (reader = new StreamReader(file_name.Value))
-         {
-            string additional_parameters = "";
-            if (have_id_col)
-               additional_parameters = id_column_name.Value + " " + id_column_name.Value;
+         string additional_parameters = "";
+         if (have_id_col)
+            additional_parameters = id_column_name.Value + " " + id_column_name.Value;
 
-            _ImportData(table_name.Value, mol_column_name.Value,
-               additional_parameters, populateRowFunc);
-         }
+         _ImportData(table_name.Value, mol_column_name.Value, additional_parameters, populateRowFunc);
       }
 
       [SqlFunction(DataAccess = DataAccessKind.Read,

@@ -15,6 +15,7 @@
 #include "bingo_core_c_internal.h"
 
 #include "base_cpp/profiling.h"
+#include "gzip/gzip_scanner.h"
 
 using namespace indigo::bingo_core;
 
@@ -42,6 +43,7 @@ void BingoCore::reset ()
    error_handler = 0;
    error_handler_context = 0;
    skip_calculate_fp = false;
+   smiles_scanner = 0;
 
    // Clear warning and error message
    warning.clear();
@@ -648,4 +650,63 @@ CEXPORT int bingoIndexSetSkipFP (bool skip)
       return 1;
    }
    BINGO_END(-2, -2)
+}
+
+CEXPORT int bingoSMILESImportOpen (const char *file_name)
+{
+   BINGO_BEGIN
+   {
+      self.file_scanner.free();
+      self.file_scanner.create(file_name);
+
+      // detect if input is gzipped
+      byte magic[2];
+      int pos = self.file_scanner->tell();
+      self.file_scanner->readCharsFix(2, (char *)magic);
+      self.file_scanner->seek(pos, SEEK_SET);
+      if (magic[0] == 0x1f && magic[1] == 0x8b)
+      {
+         self.gz_scanner.reset(new GZipScanner(self.file_scanner.ref()));
+         self.smiles_scanner = self.gz_scanner.get();
+      }
+      else
+         self.smiles_scanner = self.file_scanner.get();
+      return 1;
+   }
+   BINGO_END(-2, -2)
+}
+
+CEXPORT int bingoSMILESImportClose ()
+{
+   BINGO_BEGIN
+   {
+      self.gz_scanner.reset(0);
+      self.file_scanner.free();
+      self.smiles_scanner = 0;
+   }
+   BINGO_END(-2, -2)
+}
+
+CEXPORT int bingoSMILESImportEOF ()
+{
+   BINGO_BEGIN
+   {
+      if (self.smiles_scanner == 0)
+         throw BingoError("SMILES import wasn't initialized");
+      return self.smiles_scanner->isEOF() ? 1 : 0;
+   }
+   BINGO_END(-2, -2)
+}
+
+CEXPORT const char * bingoSMILESImportGetNext ()
+{
+   BINGO_BEGIN
+   {
+      if (self.smiles_scanner == 0)
+         throw BingoError("SMILES import wasn't initialized");
+      // TODO: Name should be also extracted here...
+      self.smiles_scanner->readLine(self.buffer, true);
+      return self.buffer.ptr();
+   }
+   BINGO_END("", "")
 }

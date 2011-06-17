@@ -234,6 +234,11 @@ namespace indigo
       sbyte* bingoGetNameCore (
          [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len);
 
+      int bingoSMILESImportOpen ( [MarshalAs(UnmanagedType.LPStr)] string file_name);
+      int bingoSMILESImportClose ();
+      int bingoSMILESImportEOF ();
+      String bingoSMILESImportGetNext ();
+
       /* Test functions */
       int bingoCheckMemoryAllocate (int mem);
       int bingoCheckMemoryFree ();

@@ -25,6 +25,7 @@
 #include "core/bingo_error.h"
 
 #include "base_cpp/scanner.h"
+#include "base_cpp/auto_ptr.h"
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_loader.h"
 #include "molecule/elements.h"
@@ -37,6 +38,7 @@
 #include "reaction/reaction.h"
 #include "reaction/rxnfile_loader.h"
 #include "reaction/reaction_auto_loader.h"
+#include "gzip/gzip_scanner.h"
 
 #include "bingo_core_c.h"
 #include "bingo_core_c_parallel.h"
@@ -68,6 +70,10 @@ public:
    Obj<FileScanner> file_scanner;
    Obj<SdfLoader> sdf_loader;
    Obj<RdfLoader> rdf_loader;
+
+   AutoPtr<GZipScanner> gz_scanner;
+   Scanner *smiles_scanner;
+
    Array<char> buffer;
 
    MangoIndex *mango_index;

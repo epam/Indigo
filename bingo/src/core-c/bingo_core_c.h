@@ -62,6 +62,13 @@ CEXPORT int bingoRDFImportClose ();
 CEXPORT int bingoRDFImportEOF ();
 CEXPORT const char * bingoRDFImportGetNext ();
 CEXPORT const char * bingoRDFImportGetProperty (const char *param_name);
+/*
+ * SMILES import
+ */
+CEXPORT int bingoSMILESImportOpen (const char *file_name);
+CEXPORT int bingoSMILESImportClose ();
+CEXPORT int bingoSMILESImportEOF ();
+CEXPORT const char * bingoSMILESImportGetNext ();
 
 CEXPORT void bingoProfilingReset (byte reset_whole_session);
 CEXPORT const char* bingoProfilingGetStatistics (bool for_session);
