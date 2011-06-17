@@ -1407,11 +1407,15 @@ void SmilesSaver::_writeRadicals ()
       _output.printf("%d", i);
       
       for (j = i + 1; j < _written_atoms.size(); j++)
+      {
+         if (mol.isPseudoAtom(_written_atoms[j]) || mol.isRSite(_written_atoms[j]))
+            continue;
          if (mol.getAtomRadical_NoThrow(_written_atoms[j], 0) == radical)
          {
             marked[j] = 1;
             _output.printf(",%d", j);
          }
+      }
    }
 }
 
