@@ -74,6 +74,7 @@ protected:
    void _writeGenericSGroup3000 (BaseMolecule::SGroup &sgroup, int idx, const char *type, Output &output);
    void _writeDataSGroupDisplay (BaseMolecule::DataSGroup &datasgroup, Output &out);
    static bool _checkAttPointOrder (BaseMolecule &mol, int rsite);
+   static bool _hasNeighborEitherBond (BaseMolecule &mol, int edge_idx);
 
    Output &_output;
    bool    _v2000;

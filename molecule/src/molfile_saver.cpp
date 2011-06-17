@@ -487,7 +487,8 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          case BOND_DOWN:   out.printf(" CFG=3"); break;
          case 0:
             if (mol.cis_trans.isIgnored(i))
-               out.printf(" CFG=2");
+               if (!_hasNeighborEitherBond(mol, i))
+                  out.printf(" CFG=2");
             break;
       }
 
@@ -916,6 +917,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             break;
       }
 
+      if (stereo == 3)
+      {
+         // discard it if we have a neighbor "either" bond
+         if (_hasNeighborEitherBond(mol, i))
+            stereo = 0;
+      }
+
       if(reactionBondReactingCenter != 0 && reactionBondReactingCenter->at(i) != 0)
          reacting_center = reactionBondReactingCenter->at(i);
 
@@ -1307,4 +1315,21 @@ void MolfileSaver::_writeDataSGroupDisplay (BaseMolecule::DataSGroup &datasgroup
                 datasgroup.relative ? 'R' : 'A',
                 datasgroup.display_units ? 'U' : ' ',
                 datasgroup.dasp_pos);
+}
+
+bool MolfileSaver::_hasNeighborEitherBond (BaseMolecule &mol, int edge_idx)
+{
+   const Edge &edge = mol.getEdge(edge_idx);
+   const Vertex &beg = mol.getVertex(edge.beg);
+   const Vertex &end = mol.getVertex(edge.end);
+   int k;
+
+   for (k = beg.neiBegin(); k != beg.neiEnd(); k = beg.neiNext(k))
+      if (mol.getBondDirection2(edge.beg, beg.neiVertex(k)) == BOND_EITHER)
+         return true;
+
+   for (k = end.neiBegin(); k != end.neiEnd(); k = end.neiNext(k))
+      if (mol.getBondDirection2(edge.end, end.neiVertex(k)) == BOND_EITHER)
+         return true;
+   return false;
 }

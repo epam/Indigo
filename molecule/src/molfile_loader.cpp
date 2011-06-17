@@ -1664,14 +1664,13 @@ void MolfileLoader::_postLoad ()
 
    // Some "either" bonds may mean not "either stereocenter", but
    // "either cis-trans", or "connected to either cis-trans".
-   // The following loop does the correction.
    for (i = 0; i < _bonds_num; i++)
       if (_bmol->getBondDirection(i) == BOND_EITHER)
       {
          if (MoleculeCisTrans::isGeomStereoBond(*_bmol, i, 0, true))
          {
-            _bmol->setBondDirection(i, 0);
             _ignore_cistrans[i] = 1;
+            _sensible_bond_directions[i] = 1;
          }
          else
          {
@@ -1682,8 +1681,8 @@ void MolfileLoader::_postLoad ()
             {
                if (MoleculeCisTrans::isGeomStereoBond(*_bmol, v.neiEdge(k), 0, true))
                {
-                  _bmol->setBondDirection(i, 0);
                   _ignore_cistrans[v.neiEdge(k)] = 1;
+                  _sensible_bond_directions[i] = 1;
                   break;
                }
             }
