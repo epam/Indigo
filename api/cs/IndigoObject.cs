@@ -191,6 +191,24 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoAutomap(self, mode);
       }
 
+      public int atomMappingNumber (IndigoObject reaction_atom)
+      {
+         dispatcher.setSessionID();
+         return _indigo_lib.indigoGetAtomMappingNumber(self, reaction_atom.self);
+      }
+
+      public void setAtomMappingNumber (IndigoObject reaction_atom, int number)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoSetAtomMappingNumber(self, reaction_atom.self, number);
+      }
+
+      public void clearAAM ()
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoClearAAM(self);
+      }
+   
       public System.Collections.IEnumerable iterateAtoms ()
       {
          dispatcher.setSessionID();

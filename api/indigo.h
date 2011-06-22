@@ -239,6 +239,15 @@ CEXPORT int indigoOptimize (int query, const char *options);
 //    "clear"   : removes the mapping from the reaction.
 CEXPORT int indigoAutomap (int reaction, const char *mode);
 
+// Returns mapping number. It might appear that there is more them 
+// one atom with the same number in AAM
+// Value 0 means no mapping number has been specified.
+CEXPORT int indigoGetAtomMappingNumber (int reaction, int reaction_atom);
+CEXPORT int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int number);
+
+// Clears all reaction AAM information 
+CEXPORT int indigoClearAAM (int reaction);
+
 /* Accessing a molecule */
 
 enum

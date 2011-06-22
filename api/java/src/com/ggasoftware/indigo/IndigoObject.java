@@ -178,6 +178,24 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoAutomap(self, mode));
    }
 
+   public int atomMappingNumber (IndigoObject reaction_atom)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoGetAtomMappingNumber(self, reaction_atom.self));
+   }
+
+   public void setAtomMappingNumber (IndigoObject reaction_atom, int number)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoSetAtomMappingNumber(self, reaction_atom.self, number));
+   }
+   
+   public void clearAAM ()
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoClearAAM(self));
+   }
+   
    public IndigoObject iterateAtoms ()
    {
       dispatcher.setSessionID();

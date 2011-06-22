@@ -274,6 +274,10 @@ class Indigo:
     self.IndigoObject.saveRxnfile = Indigo._member_void_string(Indigo._lib.indigoSaveRxnfileToFile)
     self.IndigoObject.automap = Indigo._member_void_string(Indigo._lib.indigoAutomap)
 
+    self.IndigoObject.atomMappingNumber = Indigo._member_int_obj(Indigo._lib.indigoGetAtomMappingNumber)
+    self.IndigoObject.setAtomMappingNumber = Indigo._member_void_obj_int(Indigo._lib.indigoSetAtomMappingNumber)
+    self.IndigoObject.clearAAM = Indigo._member_void(Indigo._lib.indigoClearAAM)
+    
     self.IndigoObject.iterateAtoms = Indigo._member_obj(Indigo._lib.indigoIterateAtoms)
     self.IndigoObject.iteratePseudoatoms = Indigo._member_obj(Indigo._lib.indigoIteratePseudoatoms)
     self.IndigoObject.iterateRSites = Indigo._member_obj(Indigo._lib.indigoIterateRSites)
@@ -716,6 +720,16 @@ class Indigo:
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
+  def _member_void_obj_int (func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int, c_int]
+    def newfunc (self, other, param):
+      self.dispatcher._setSID()
+      self.dispatcher._checkResult(func(self.id, other.id, param))
+      return
+    return Indigo._make_wrapper_func(newfunc, func)
+
+  @staticmethod
   def _member_void_string (func):
     func.restype = c_int
     func.argtypes = [c_int, c_char_p]
@@ -767,8 +781,7 @@ class Indigo:
       self.dispatcher._setSID()
       return self.dispatcher._checkResult(func(self.id, param.id))
     return Indigo._make_wrapper_func(newfunc, func)
-	
-   
+      
   @staticmethod
   def _member_int_obj_int (func):
     func.restype = c_int

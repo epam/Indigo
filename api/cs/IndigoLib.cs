@@ -82,6 +82,9 @@ namespace com.ggasoftware.indigo
       int indigoSaveRxnfileToFile (int reaction, string filename);
       sbyte* indigoRxnfile (int reaction);
       int indigoAutomap (int reaction, string filename);
+      int indigoGetAtomMappingNumber (int reaction, int reaction_atom);
+      int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int number);
+      int indigoClearAAM (int reaction);
 
       int indigoOptimize (int query, string options);
 

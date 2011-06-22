@@ -454,6 +454,55 @@ CEXPORT int indigoAutomap (int reaction, const char *mode)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoGetAtomMappingNumber (int reaction, int reaction_atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(reaction_atom));
+
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+      int mol_idx = rxn.findMolecule(&ia.mol);
+
+      if (mol_idx == -1)
+         throw IndigoError("indigoGetAtomMapping(): input atom not found in the reaction");
+
+      return rxn.getAAM(mol_idx, ia.idx);
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int number)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(reaction_atom));
+
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+      int mol_idx = rxn.findMolecule(&ia.mol);
+
+      if (mol_idx == -1)
+         throw IndigoError("indigoSetAtomMapping(): input atom not found in the reaction");
+      if (number < 0)
+         throw IndigoError("indigoSetAtomMapping(): mapping number cannot be negative");
+
+      rxn.getAAMArray(mol_idx).at(ia.idx) = number;
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoClearAAM (int reaction)
+{
+   INDIGO_BEGIN
+   {
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+      rxn.clearAAM();
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
+
 CEXPORT int indigoLoadReactionSmarts (int source)
 {
    INDIGO_BEGIN
