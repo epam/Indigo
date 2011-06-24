@@ -198,6 +198,12 @@ float Metalayout::_getAverageBondLength()
 
 void Metalayout::getBoundRect (Vec2f& min, Vec2f& max, BaseMolecule& mol)
 {
+   if (mol.vertexCount() == 0)
+   {
+      min.zero();
+      max.zero();
+      return;
+   }
    const Vec3f& v0 = mol.getAtomXyz(mol.vertexBegin());
    Vec2f::projectZ(min, v0);
    Vec2f::projectZ(max, v0);
