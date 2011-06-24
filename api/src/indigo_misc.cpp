@@ -291,8 +291,18 @@ static void _removeHydrogens (Molecule &mol)
    to_remove.clear();
    for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
-      if (mol.getAtomNumber(i) == ELEM_H && mol.getAtomIsotope(i) == 0)
-         to_remove.push(i);
+      const Vertex &vertex = mol.getVertex(i);
+      if (vertex.degree() == 1)
+      {
+         if (mol.getAtomNumber(i) == ELEM_H && mol.getAtomIsotope(i) == 0)
+         {
+            int nei_idx = vertex.neiVertex(vertex.neiBegin());
+
+            if (mol.getAtomNumber(nei_idx) == ELEM_H && mol.getAtomIsotope(nei_idx) == 0)
+               continue; // do not remove rare H-H fragment
+            to_remove.push(i);
+         }
+      }
    }
 
    if (to_remove.size() > 0)
