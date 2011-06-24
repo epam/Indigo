@@ -671,6 +671,12 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(dispatcher, this, _indigo_lib.indigoAddAtom(self, symbol));
       }
 
+      public IndigoObject addRSite (string name)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoAddRSite(self, name));
+      }
+
       public void setCharge (int charge)
       {
          dispatcher.setSessionID();

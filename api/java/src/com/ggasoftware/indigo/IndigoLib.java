@@ -209,6 +209,7 @@ public interface IndigoLib extends Library
    int indigoMarkEitherCisTrans (int handle);
 
    int indigoAddAtom (int molecule, String symbol);
+   int indigoAddRSite (int molecule, String name);
 
    int indigoSetCharge (int atom, int charge);
    int indigoSetIsotope (int atom, int isotope);
@@ -346,4 +347,6 @@ public interface IndigoLib extends Library
    Pointer indigoToString (int handle);
    int indigoToBuffer (int handle, PointerByReference buf, IntByReference size);
    int indigoReactionProductEnumerate (int reaction, int monomers);
+
+   int indigoDbgBreakpoint ();
 }

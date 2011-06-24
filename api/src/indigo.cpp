@@ -218,8 +218,9 @@ CEXPORT void indigoDbgBreakpoint (void)
 #ifdef _WIN32
    if (!IsDebuggerPresent())
    {
-      int ret = MessageBox(NULL, "Wait for a debugger?", 
-         "Debugging (indigoDbgBreakpoint)", MB_OKCANCEL);
+      char msg[200];
+      sprintf(msg, "Wait for a debugger?\nPID=%d", GetCurrentProcessId());
+      int ret = MessageBox(NULL, msg, "Debugging (indigoDbgBreakpoint)", MB_OKCANCEL);
       if (ret == IDOK)
       {
          while (!IsDebuggerPresent())

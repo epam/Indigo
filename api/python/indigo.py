@@ -350,6 +350,7 @@ class Indigo:
     self.IndigoObject.resetSymmetricCisTrans = Indigo._member_int(Indigo._lib.indigoResetSymmetricCisTrans)
     self.IndigoObject.markEitherCisTrans = Indigo._member_int(Indigo._lib.indigoMarkEitherCisTrans)
     self.IndigoObject.addAtom = Indigo._member_obj_string(Indigo._lib.indigoAddAtom)
+    self.IndigoObject.addRSite = Indigo._member_obj_string(Indigo._lib.indigoAddRSite)
     self.IndigoObject.setCharge = Indigo._member_void_int(Indigo._lib.indigoSetCharge)
     self.IndigoObject.setIsotope = Indigo._member_void_int(Indigo._lib.indigoSetIsotope)
     self.IndigoObject.setImplicitHCount = Indigo._member_void_int(Indigo._lib.indigoSetImplicitHCount)

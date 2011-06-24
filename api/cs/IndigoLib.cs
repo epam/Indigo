@@ -166,6 +166,7 @@ namespace com.ggasoftware.indigo
       int indigoMarkEitherCisTrans (int handle);
 
       int indigoAddAtom (int molecule, string symbol);
+      int indigoAddRSite (int molecule, string name);
       int indigoSetCharge (int atom, int charge);
       int indigoSetIsotope (int atom, int isotope);
       int indigoSetImplicitHCount (int atom, int implh);

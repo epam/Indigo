@@ -537,6 +537,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoAddAtom(self, symbol)));
    }
 
+   public IndigoObject addRSite (String name)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoAddRSite(self, name)));
+   }
+
    public void setCharge (int charge)
    {
       dispatcher.setSessionID();
@@ -713,6 +719,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoSetXYZ(self, x, y, z));
+   }
+
+   public void setXYZ (float[] xyz)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoSetXYZ(self, xyz[0], xyz[1], xyz[2]));
    }
 
    public int countSuperatoms()

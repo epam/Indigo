@@ -398,6 +398,9 @@ CEXPORT int indigoMarkEitherCisTrans (int handle);
 // or a pseudoatom symbol, like "Pol". Returns the added atom.
 CEXPORT int indigoAddAtom (int molecule, const char *symbol);
 
+// Accepts Rsite name "R" (or just ""), "R1", "R2" or list with names "R1 R3"
+CEXPORT int indigoAddRSite (int molecule, const char *name);
+
 CEXPORT int indigoSetCharge (int atom, int charge);
 CEXPORT int indigoSetIsotope (int atom, int isotope);
 

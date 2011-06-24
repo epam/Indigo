@@ -426,6 +426,12 @@ public class Indigo
       return new IndigoObject(this, checkResult(this, _lib.indigoCreateFileSaver(filename, format)));
    }
 
+   public void dbgBreakpoint ()
+   {
+      setSessionID();
+      _lib.indigoDbgBreakpoint();
+   }
+
    public IndigoObject toIndigoArray (AbstractCollection<IndigoObject> coll)
    {
       setSessionID();
