@@ -68,7 +68,9 @@ public:
        // assumes the existing marks are absolutely correct. auto_aam changes only null marks 
       AAM_REGEN_KEEP = 1,
       // assumes the existing marks might be wrong and can be altered. auto_amm consider input mapping and change it if map wrong
-      AAM_REGEN_ALTER = 2 
+      AAM_REGEN_ALTER = 2,
+
+      MAX_PERMUTATIONS_NUMBER = 5000
    };
    
    ReactionAutomapper(BaseReaction& reaction);

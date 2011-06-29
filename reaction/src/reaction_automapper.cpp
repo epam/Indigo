@@ -667,6 +667,11 @@ void ReactionAutomapper::_permutation(Array<int>& s_array, ObjArray< Array<int> 
       per[i] = i+1;
    }
    while (1) {
+      /*
+       * Break to escape permutations out of memory error
+       */
+      if(p_array.size() > MAX_PERMUTATIONS_NUMBER)
+         break;
       Array<int>& new_array = p_array.push();
       new_array.resize(n);
       for (k = 0; k < n; k++) {
