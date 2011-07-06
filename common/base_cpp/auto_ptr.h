@@ -73,6 +73,11 @@ public:
       }
    }
 
+   void free ()
+   {
+      reset(0);
+   }
+
    AutoPtr<T>& operator= (T *ptr)
    {
       reset(ptr);
@@ -82,6 +87,12 @@ public:
    void create ()
    {
       reset(new T());
+   }
+
+   template<typename A>
+   void create (A &a)
+   {
+      reset(new T(a));
    }
 
    DEF_ERROR("autoptr");

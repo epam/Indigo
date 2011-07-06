@@ -193,8 +193,8 @@ bool ReactionSubstructureMatcher::_checkAAM ()
    // the reactands and products
    for (i = 0; i < _matchers.size() - 1; i++)
    {
-      int qmol_idx = _matchers[i]._current_molecule_1;
-      int tmol_idx = _matchers[i]._current_molecule_2;
+      int qmol_idx = _matchers[i]->_current_molecule_1;
+      int tmol_idx = _matchers[i]->_current_molecule_2;
       BaseMolecule &qmol = _query->getBaseMolecule(qmol_idx);
       ObjArray< RedBlackSet<int> > *cm;
       int j;
@@ -214,7 +214,7 @@ bool ReactionSubstructureMatcher::_checkAAM ()
          if (_query->asQueryReaction().getIgnorableAAM(qmol_idx, j))
             continue;
 
-         int mapped = _matchers[i]._current_core_1[j];
+         int mapped = _matchers[i]->_current_core_1[j];
          int taam = _target.getAAM(tmol_idx, mapped);
 
          if (taam == 0)
