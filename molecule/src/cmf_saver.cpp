@@ -567,17 +567,17 @@ void CmfSaver::saveXyz (Output &output)
       const Vec3f &pos = _mol->getAtomXyz(_atom_sequence[i]);
 
       if (xyz_range.x > EPSILON)
-         output.writeBinaryWord((word)(((pos.x - xyz_min.x) / xyz_range.x) * 65535));
+         output.writeBinaryWord((word)(((pos.x - xyz_min.x) / xyz_range.x) * 65535 + 0.5));
       else
          output.writeBinaryWord(0);
 
       if (xyz_range.y > EPSILON)
-         output.writeBinaryWord((word)(((pos.y - xyz_min.y) / xyz_range.y) * 65535));
+         output.writeBinaryWord((word)(((pos.y - xyz_min.y) / xyz_range.y) * 65535 + 0.5));
       else
          output.writeBinaryWord(0);
 
       if (have_z)
-         output.writeBinaryWord((word)(((pos.z - xyz_min.z) / (xyz_max.z - xyz_min.z)) * 65535));
+         output.writeBinaryWord((word)(((pos.z - xyz_min.z) / xyz_range.z) * 65535 + 0.5));
    }
 }
 
