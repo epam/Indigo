@@ -354,9 +354,19 @@ int BaseReactionSubstructureMatcher::_Matcher::nextPair ()
       if (first_aam_1 > 0 && first_aam_2 > 0)
       {
          // Check the other side if needed
-         int mol_1_idx_ss = _context._aam_to_second_side_1.at(first_aam_1);
-         int mol_2_idx_ss = _context._aam_to_second_side_2.at(first_aam_2);
+         int* mol_1_idx_ss_ptr = _context._aam_to_second_side_1.at2(first_aam_1);
+         int* mol_2_idx_ss_ptr = _context._aam_to_second_side_2.at2(first_aam_2);
 
+         if (mol_1_idx_ss_ptr == 0 && mol_2_idx_ss_ptr == 0)
+            // There is no pair for both atom
+            return _FIRST_SIDE; 
+
+         if (mol_1_idx_ss_ptr == 0 || mol_2_idx_ss_ptr == 0)
+            // One atom has a pair atom while other hasn't one
+            return _CONTINUE; 
+
+         int mol_1_idx_ss = *mol_1_idx_ss_ptr;
+         int mol_2_idx_ss = *mol_2_idx_ss_ptr;
          if ((mol_1_idx_ss < 0 && mol_1_idx_ss < mol_2_idx_ss))
             return _CONTINUE; // subreactions equal AAM-numbers more than superreaction
 
