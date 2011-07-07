@@ -109,8 +109,9 @@ class Indigo:
     def next (self):
       return self.__next__()
 
-  @staticmethod
-  def _initStatic (path = None):
+  # Python embeds path into .pyc code if method is marked with @staticmethod
+  # This causes an error when Indigo is loaded from different places by relative path
+  def _initStatic (self, path = None):
     if not path:
       cur_file = None
       cur_frame = inspect.currentframe()
