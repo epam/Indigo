@@ -113,17 +113,11 @@ class Indigo:
   # This causes an error when Indigo is loaded from different places by relative path
   def _initStatic (self, path = None):
     if not path:
-      cur_file = None
-      cur_frame = inspect.currentframe()
-      if cur_frame:
-         cur_file = inspect.getfile(cur_frame)
-      else:
-         cur_file = __file__
+      cur_file = os.path.abspath(__file__)
       dirname = os.path.dirname(cur_file)
       if not dirname:
         dirname = '.'
       path = dirname + '/lib'
-    
     if os.name == 'posix' and not platform.mac_ver()[0]:
       arch = platform.architecture()[0]
       path += "/Linux"
