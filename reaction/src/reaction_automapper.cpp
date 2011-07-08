@@ -984,8 +984,8 @@ bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<i
    if(out_map != 0)
       out_map->clear();
 
-   if(_super->vertexCount() < 2 || _sub->vertexCount() < 2)
-      return false;
+//   if(_super->vertexCount() < 2 || _sub->vertexCount() < 2)
+//      return false;
 
    Molecule *sub_molecule;
    Molecule *super_molecule;
@@ -1008,7 +1008,14 @@ bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<i
    if(in_map != 0) 
       mcs.incomingMap.copy(*in_map);
 
+   /*
+    * Search for exact mcs first
+    */
    mcs.findExactMCS();
+
+   /*
+    * Search for approximate mcs
+    */
    if (mcs.parametersForExact.isStopped) {
       mcs.findApproximateMCS();
    }

@@ -599,6 +599,10 @@ protected:
    Graph* _subgraph;
    Graph* _supergraph;
 
+   bool _findSimpleMcs();
+   void _clearSolutionMaps();
+   void _addSolutionMap(Array<int>& v_map, Array<int>& e_map);
+
 
    //method returns true if edges with input number completely matched
    bool _getEdgeColorCondition(Graph &graph1, Graph &graph2, int i, int j) const;
