@@ -36,7 +36,7 @@ void ReactionAutomapper::automap(int mode) {
       _checkAtomMapping(true, false, false);
    
    reaction_copy.reset(_reaction.neu());
-   reaction_copy->clone(_reaction, &mol_mapping, &mappings, 0);
+   reaction_copy->clone(_reaction, &mol_mapping, 0, &mappings);
    reaction_copy->aromatize();
 
    _createReactionMap(mode, reaction_copy.ref());
@@ -441,35 +441,41 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
 }
 
 void ReactionAutomapper::_setupReactionMap(int mode, BaseReaction& reaction_copy, Array<int> &mol_mapping, ObjArray< Array<int> >& mappings){
-   int i,j,v;
+   int mol_idx,j,v;
    if(mode == AAM_REGEN_KEEP)
       _usedVertices.zerofill();
-   for (i = _reaction.productBegin(); i < _reaction.productEnd(); i = _reaction.productNext(i)){
-      int ii = mol_mapping[i];
-      for (j = 0; j < _reaction.getAAMArray(i).size(); j++){
-         v = reaction_copy.getAAM(ii, mappings[i][j]);
+   for (mol_idx = _reaction.productBegin(); mol_idx < _reaction.productEnd(); mol_idx = _reaction.productNext(mol_idx)){
+      int mol_idx_u = mol_mapping[mol_idx];
+      Array<int>& react_aam = _reaction.getAAMArray(mol_idx);
+      for (j = 0; j < react_aam.size(); j++){
+         if(mappings[mol_idx][j] == -1)
+            continue;
+         v = reaction_copy.getAAM(mol_idx_u, mappings[mol_idx][j]);
          if(mode == AAM_REGEN_DISCARD)
-            _reaction.getAAMArray(i)[j] = v;
+            react_aam[j] = v;
 
          if(mode == AAM_REGEN_ALTER)
-            _reaction.getAAMArray(i)[j] = v;
+            react_aam[j] = v;
 
-         if(mode == AAM_REGEN_KEEP && _reaction.getAAM(i, j) == 0){
-            _reaction.getAAMArray(i)[j] = v;
+         if(mode == AAM_REGEN_KEEP && _reaction.getAAM(mol_idx, j) == 0){
+            react_aam[j] = v;
             _usedVertices[v] = 1;
          }
       }
    }
-   for (i = _reaction.reactantBegin(); i < _reaction.reactantEnd(); i = _reaction.reactantNext(i)){
-      int ii = mol_mapping[i];
-      for (j = 0; j < _reaction.getAAMArray(i).size(); j++){
-         v = reaction_copy.getAAM(ii, mappings[i][j]);
+   for (mol_idx = _reaction.reactantBegin(); mol_idx < _reaction.reactantEnd(); mol_idx = _reaction.reactantNext(mol_idx)){
+      int mol_idx_u = mol_mapping[mol_idx];
+      Array<int>& react_aam = _reaction.getAAMArray(mol_idx);
+      for (j = 0; j < react_aam.size(); j++) {
+         if(mappings[mol_idx][j] == -1)
+            continue;
+         v = reaction_copy.getAAM(mol_idx_u, mappings[mol_idx][j]);
          if(mode == AAM_REGEN_DISCARD)
-            _reaction.getAAMArray(i)[j] = v*_usedVertices[v];
+            react_aam[j] = v*_usedVertices[v];
          if(mode == AAM_REGEN_ALTER)
-            _reaction.getAAMArray(i)[j] = v*_usedVertices[v];
-         if(mode == AAM_REGEN_KEEP && _reaction.getAAM(i, j) == 0)
-            _reaction.getAAMArray(i)[j] = v*_usedVertices[v];
+            react_aam[j] = v*_usedVertices[v];
+         if(mode == AAM_REGEN_KEEP && _reaction.getAAM(mol_idx, j) == 0)
+            react_aam[j] = v*_usedVertices[v];
       }
    }
 }
