@@ -87,19 +87,19 @@ private:
       _MIN_VERTEX_SUB = 3
     };
    //sets up input mapping
-   void _initMappings(int mode, BaseReaction& reaction);
+   void _initMappings(BaseReaction& reaction);
    //searches AAM using mcs and substructure functions
-   void _createReactionMap(int mode, BaseReaction& reaction);
+   void _createReactionMap(BaseReaction& reaction);
    //controls AAM due to reacting centers in reaction; this could change reacting centers or AAM
 
    void _cleanReactants(BaseReaction& reaction);
 
-   void _handleWithProduct(const Array<int>& reactant_cons, Array<int>& product_mapping_tmp, BaseReaction& reaction, int mode, int product, ReactionMapMatchingData& react_map_match) ;
+   int _handleWithProduct(const Array<int>& reactant_cons, Array<int>& product_mapping_tmp, BaseReaction& reaction, int product, ReactionMapMatchingData& react_map_match) ;
    void _chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping, int product, int map_used, int map_complete);
    bool _checkAtomMapping(bool change_rc, bool change_aam, bool change_rc_null);
 
    //arranges all maps to AAM
-   void _setupReactionMap(int mode, BaseReaction& reaction, Array<int> &mol_mapping, ObjArray< Array<int> >& mappings);
+   void _setupReactionMap(BaseReaction& reaction, Array<int> &mol_mapping, ObjArray< Array<int> >& mappings);
    //takes account of possibility for molecule dissociation 
    void _considerDissociation();
 
@@ -116,6 +116,7 @@ private:
    int _maxMapUsed;
    int _maxVertUsed;
    int _maxCompleteMap;
+   int _mode;
 };
 
 
