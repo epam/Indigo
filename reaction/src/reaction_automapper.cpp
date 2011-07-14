@@ -146,12 +146,14 @@ void ReactionAutomapper::_createReactionMap(BaseReaction& reaction){
 
       for(int pmt = 0; pmt < permulations.size(); pmt++) {
          reaction_clone->clone(reaction, 0, 0, 0);
+         /*
+          * Apply new permutation
+          */
          int map_complete = _handleWithProduct(permulations[pmt], product_mapping_tmp, reaction_clone.ref(), product, react_map_match);
-         int map_used = 0;
-         for (int map_idx = 0; map_idx < product_mapping_tmp.size(); ++map_idx) 
-            if(product_mapping_tmp[map_idx] > 0)
-               ++map_used;
-         _chooseBestMapping(reaction, product_mapping_tmp, product, map_used, map_complete);
+         /*
+          * Collect statistic and choose the best mapping
+          */
+         _chooseBestMapping(reaction, product_mapping_tmp, product, map_complete);
       }
       _usedVertices.zerofill();
       for(int k = reaction.productBegin(); k <= product; k = reaction.productNext(k)){
@@ -161,7 +163,7 @@ void ReactionAutomapper::_createReactionMap(BaseReaction& reaction){
                _usedVertices[m] = 1;
          }
       }
-      _cleanReactants(reaction);
+//      _cleanReactants(reaction);
    }
 }
 
@@ -185,13 +187,18 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
    QS_DEF(Array<int>, matching_map);
    QS_DEF(Array<int>, rsub_map_in);
    QS_DEF(Array<int>, rsub_map_out);
+   QS_DEF(Array<int>, vertices_to_remove);
    int map_complete = 0;
 
    BaseMolecule& product_cut = reaction.getBaseMolecule(product);
-   //delete hydrogens 
+   /*
+    *delete hydrogens
+    */
+   vertices_to_remove.clear();
    for(int k = product_cut.vertexBegin(); k < product_cut.vertexEnd(); k = product_cut.vertexNext(k))
       if(product_cut.getAtomNumber(k) == ELEM_H)
-         product_cut.removeAtom(k);
+         vertices_to_remove.push(k);
+   product_cut.removeAtoms(vertices_to_remove);
 
    product_mapping_tmp.zerofill();
    
@@ -251,7 +258,12 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
    return map_complete;
 }
 
-void ReactionAutomapper::_chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping,  int product, int map_used, int map_complete) {
+void ReactionAutomapper::_chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping,  int product, int map_complete) {
+   int map_used = 0;
+   for (int map_idx = 0; map_idx < product_mapping.size(); ++map_idx)
+      if (product_mapping[map_idx] > 0)
+         ++map_used;
+         
    bool map_u = map_used > _maxMapUsed;
    bool map_c = (map_used == _maxMapUsed) && (map_complete > _maxCompleteMap);
    bool map_v = (map_used == _maxMapUsed) && (map_complete == _maxCompleteMap) && (_usedVertices[0] > _maxVertUsed); 

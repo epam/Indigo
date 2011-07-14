@@ -95,7 +95,7 @@ private:
    void _cleanReactants(BaseReaction& reaction);
 
    int _handleWithProduct(const Array<int>& reactant_cons, Array<int>& product_mapping_tmp, BaseReaction& reaction, int product, ReactionMapMatchingData& react_map_match) ;
-   void _chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping, int product, int map_used, int map_complete);
+   void _chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping, int product, int map_complete);
    bool _checkAtomMapping(bool change_rc, bool change_aam, bool change_rc_null);
 
    //arranges all maps to AAM
