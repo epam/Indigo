@@ -110,10 +110,11 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
     TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
     TL_CP_GET(_bonds_mapping_sub), TL_CP_GET(_bonds_mapping_super), 
-    TL_CP_GET(_att_points)
+    TL_CP_GET(_att_points), TL_CP_GET(_fmcache)
 {
    _reactant_idx = _reaction.reactantBegin();
 
+   _fmcache.clear();
    _fragments_aam_array.clear();
    _full_product.clear();
    _full_product.clone(cur_full_product, NULL, NULL);
@@ -161,10 +162,11 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
     TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
     TL_CP_GET(_bonds_mapping_sub), TL_CP_GET(_bonds_mapping_super), 
-    TL_CP_GET(_att_points)
+    TL_CP_GET(_att_points), TL_CP_GET(_fmcache)
 {
    _reactant_idx = cur_rpe_state._reactant_idx;
    
+   _fmcache.clear();
    _fragments_aam_array.clear();
    _fragments_aam_array.copy(cur_rpe_state._fragments_aam_array);
    _full_product.clear();
@@ -384,7 +386,9 @@ void ReactionEnumeratorState::_productProcess( void )
 
       ready_product.name.push('+');
    }
-   ready_product.name.top() = 0;
+
+   if (ready_product.name.size() != 0)
+      ready_product.name.top() = 0; 
 
    /* Adding a product to monomers lists */
    if (is_multistep_reaction)
@@ -580,7 +584,7 @@ bool ReactionEnumeratorState::_matchVertexCallback( Graph &subgraph, Graph &supe
    const Vertex &super_v = supermolecule.getVertex(super_idx);
 
    bool res = MoleculeSubstructureMatcher::matchQueryAtom(&qa_sub, supermolecule, super_idx, 
-                                           NULL, 0xFFFFFFFFUL);
+      &(rpe_state->_fmcache), 0xFFFFFFFFUL);
 
    if (!res)
       return false;

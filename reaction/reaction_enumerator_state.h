@@ -18,6 +18,7 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule_arom_match.h"
+#include "molecule/molecule_substructure_matcher.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
 #include "graph/embedding_enumerator.h"
@@ -92,7 +93,8 @@ private:
    TL_CP_DECL(Array<int>, _bonds_mapping_sub);
    TL_CP_DECL(Array<int>, _bonds_mapping_super);
    TL_CP_DECL(ObjArray< Array<int> >, _att_points);
-
+   TL_CP_DECL(MoleculeSubstructureMatcher::FragmentMatchCache, _fmcache);
+   
    AromaticityMatcher *_am;
    EmbeddingEnumerator *_ee;
    int _tube_idx;
@@ -131,7 +133,7 @@ private:
 
    QueryMolecule::Atom * _getReactantAtom( int atom_aam );
    
-      void _buildMolProduct( QueryMolecule &product, Molecule &mol_product, 
+   void _buildMolProduct( QueryMolecule &product, Molecule &mol_product, 
       Molecule &uncleaned_fragments, Array<int> &mapping_out );
 
    void _checkConstraints( QueryMolecule &reacant, Array<int> &rp_mapping);
