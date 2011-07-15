@@ -50,7 +50,7 @@ TL_CP_GET(_aam_core_first_side)
    _query = 0;
 
    _matchers.clear();
-   _matchers.push(*this);
+   _matchers.add(new _Matcher(*this));
 }
 
 void BaseReactionSubstructureMatcher::setQuery (BaseReaction &query)
@@ -90,11 +90,11 @@ bool BaseReactionSubstructureMatcher::find ()
    _molecule_core_2.fffill();
    _aam_core_first_side.clear();
 
-   _matchers.top().match_stereo = _match_stereo;
+   _matchers.top()->match_stereo = _match_stereo;
 
    while (1)
    {
-      int command = _matchers.top().nextPair();
+      int command = _matchers.top()->nextPair();
 
       if (command == _CONTINUE)
          continue;
@@ -109,16 +109,17 @@ bool BaseReactionSubstructureMatcher::find ()
          command = _NO_WAY;
       } else if (command != _NO_WAY)
       {
-         int mol1 = _matchers.top()._current_molecule_1;
-         int mol2 = _matchers.top()._current_molecule_2;
-         Array<int> &core1 = _matchers.top()._current_core_1;
-         Array<int> &core2 = _matchers.top()._current_core_2;
-         int mode = _matchers.top().getMode();
+         int mol1 = _matchers.top()->_current_molecule_1;
+         int mol2 = _matchers.top()->_current_molecule_2;
+         Array<int> &core1 = _matchers.top()->_current_core_1;
+         Array<int> &core2 = _matchers.top()->_current_core_2;
+         int mode = _matchers.top()->getMode();
 
-         _matchers.reserve(_matchers.size() + 1);
-         _matchers.push(_matchers.top());
-         _matchers.top().setMode(command);
-         if (!_matchers.top().addPair(mol1, mol2, core1, core2, mode == _FIRST_SIDE))
+         //_matchers.reserve(_matchers.size() + 1);
+         AutoPtr<_Matcher> top_matcher(new _Matcher(*_matchers.top()));
+         _matchers.add(top_matcher.release());
+         _matchers.top()->setMode(command);
+         if (!_matchers.top()->addPair(mol1, mol2, core1, core2, mode == _FIRST_SIDE))
             _matchers.pop();
       }
 
@@ -126,7 +127,7 @@ bool BaseReactionSubstructureMatcher::find ()
       {
          if (_matchers.size() > 1)
          {
-            _matchers.top().restore();
+            _matchers.top()->restore();
             _matchers.pop();
          }
          else
@@ -173,20 +174,20 @@ bool BaseReactionSubstructureMatcher::_checkAAM ()
 
    for (i = 1; i < _matchers.size() - 1; i++)
    {
-      if (_matchers[i].getMode() == _FIRST_SIDE)
+      if (_matchers[i]->getMode() == _FIRST_SIDE)
          continue;
 
-      BaseMolecule &mol1 = _query->getBaseMolecule(_matchers[i]._current_molecule_1);
+      BaseMolecule &mol1 = _query->getBaseMolecule(_matchers[i]->_current_molecule_1);
 
       for (j = mol1.vertexBegin(); j < mol1.vertexEnd(); j = mol1.vertexNext(j))
       {
-         int k = _matchers[i]._current_core_1[j];
+         int k = _matchers[i]->_current_core_1[j];
 
          if (k < 0)
             continue;
 
-         aam1 = _query->getAAM(_matchers[i]._current_molecule_1, j);
-         aam2 = _target.getAAM(_matchers[i]._current_molecule_2, k);
+         aam1 = _query->getAAM(_matchers[i]->_current_molecule_1, j);
+         aam2 = _target.getAAM(_matchers[i]->_current_molecule_2, k);
 
          if (aam1 > 0 && aam2 > 0)
             if ((aam = _aam_core_first_side.at2(aam1)) != 0 && *aam != aam2)
@@ -202,8 +203,8 @@ int BaseReactionSubstructureMatcher::getTargetMoleculeIndex (int query_mol_idx)
    // can be optimized, but as the number of molecules
    // seldom exceeds 5, the linear search is acceptable
    for (int i = 0; i < _matchers.size() - 1; i++)
-      if (_matchers[i]._current_molecule_1 == query_mol_idx)
-         return _matchers[i]._current_molecule_2;
+      if (_matchers[i]->_current_molecule_1 == query_mol_idx)
+         return _matchers[i]->_current_molecule_2;
 
    throw Error("getTargetMoleculeIndex(): can not find mapping for query molecule %d", query_mol_idx);
 }
@@ -211,8 +212,8 @@ int BaseReactionSubstructureMatcher::getTargetMoleculeIndex (int query_mol_idx)
 const int * BaseReactionSubstructureMatcher::getQueryMoleculeMapping (int query_mol_idx)
 {
    for (int i = 0; i < _matchers.size() - 1; i++)
-      if (_matchers[i]._current_molecule_1 == query_mol_idx)
-         return _matchers[i]._current_core_1.ptr();
+      if (_matchers[i]->_current_molecule_1 == query_mol_idx)
+         return _matchers[i]->_current_core_1.ptr();
 
    throw Error("getQueryMoleculeMapping(): can not find mapping for query molecule %d", query_mol_idx);
 }
@@ -226,8 +227,8 @@ void BaseReactionSubstructureMatcher::_highlight ()
    int i;
 
    for (i = 0; i < _matchers.size() - 1; i++)
-      _target.getBaseMolecule(_matchers[i]._current_molecule_2).highlightSubmolecule(
-         _query->getBaseMolecule(_matchers[i]._current_molecule_1), _matchers[i]._current_core_1.ptr(), true);
+      _target.getBaseMolecule(_matchers[i]->_current_molecule_2).highlightSubmolecule(
+         _query->getBaseMolecule(_matchers[i]->_current_molecule_1), _matchers[i]->_current_core_1.ptr(), true);
 }
 
 BaseReactionSubstructureMatcher::_Matcher::_Matcher (BaseReactionSubstructureMatcher &context) :
@@ -354,9 +355,19 @@ int BaseReactionSubstructureMatcher::_Matcher::nextPair ()
       if (first_aam_1 > 0 && first_aam_2 > 0)
       {
          // Check the other side if needed
-         int mol_1_idx_ss = _context._aam_to_second_side_1.at(first_aam_1);
-         int mol_2_idx_ss = _context._aam_to_second_side_2.at(first_aam_2);
+         int* mol_1_idx_ss_ptr = _context._aam_to_second_side_1.at2(first_aam_1);
+         int* mol_2_idx_ss_ptr = _context._aam_to_second_side_2.at2(first_aam_2);
 
+         if (mol_1_idx_ss_ptr == 0 && mol_2_idx_ss_ptr == 0)
+            // There is no pair for both atom
+            return _FIRST_SIDE; 
+
+         if (mol_1_idx_ss_ptr == 0 || mol_2_idx_ss_ptr == 0)
+            // One atom has a pair atom while other hasn't one
+            return _CONTINUE; 
+
+         int mol_1_idx_ss = *mol_1_idx_ss_ptr;
+         int mol_2_idx_ss = *mol_2_idx_ss_ptr;
          if ((mol_1_idx_ss < 0 && mol_1_idx_ss < mol_2_idx_ss))
             return _CONTINUE; // subreactions equal AAM-numbers more than superreaction
 
@@ -373,9 +384,9 @@ int BaseReactionSubstructureMatcher::_Matcher::nextPair ()
             int i;
 
             for (i = 0; i < _context._matchers.size(); i++)
-               if (_context._matchers[i]._current_molecule_1 == mol_1_idx_ss)
+               if (_context._matchers[i]->_current_molecule_1 == mol_1_idx_ss)
                {
-                  if (_context._matchers[i]._current_core_1[first_idx_1_ss] != first_idx_2_ss)
+                  if (_context._matchers[i]->_current_core_1[first_idx_1_ss] != first_idx_2_ss)
                      return _CONTINUE;
                   return _FIRST_SIDE;
                }
@@ -394,7 +405,7 @@ int BaseReactionSubstructureMatcher::_Matcher::nextPair ()
       Molecule &src_mol_2 = _context._target.getMolecule(_selected_molecule_2);
 
       int src_aam_1 = _context._query->findAamNumber(&src_mol_1, src_mol_1.vertexBegin());
-      int src_aam_2 = _context._target.findAamNumber(&src_mol_2, _context._matchers[_context._matchers.size() - 2]._current_core_1[src_mol_1.vertexBegin()]);
+      int src_aam_2 = _context._target.findAamNumber(&src_mol_2, _context._matchers[_context._matchers.size() - 2]->_current_core_1[src_mol_1.vertexBegin()]);
 
       BaseMolecule &mol_1 = _context._query->getBaseMolecule(_current_molecule_1);
       Molecule &mol_2 = _context._target.getMolecule(_current_molecule_2);

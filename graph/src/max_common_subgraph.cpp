@@ -49,8 +49,91 @@ void MaxCommonSubgraph::setGraphs(Graph& subgraph, Graph& supergraph)
    _subgraph = &subgraph; _supergraph = &supergraph;
 }
 
+bool MaxCommonSubgraph::_findSimpleMcs() {
+   _clearSolutionMaps();
+   parametersForExact.numberOfSolutions = 0;
+   if(_subgraph->vertexCount() == 0 && _supergraph->vertexCount() == 0)
+      return true;
+   
+   if(_subgraph->vertexCount() > 1 && _supergraph->vertexCount() > 1)
+      return false;
+   
+   QS_DEF(Array<int>, v_map);
+   QS_DEF(Array<int>, e_map);
+   v_map.resize(_subgraph->vertexEnd());
+   for (int i = 0; i < v_map.size(); ++i) 
+      v_map[i] = -1;
+   e_map.clear();
+   
+   if(_subgraph->vertexCount() == 1) {
+      Graph& q_graph = *_subgraph;
+      Graph& t_graph = *_supergraph;
+      int v_q = q_graph.vertexBegin();
+      int v_t = t_graph.vertexBegin();
+      if(conditionVerticesColor == 0) {
+         ++parametersForExact.numberOfSolutions;
+         v_map[v_q] = v_t;
+         _addSolutionMap(v_map, e_map);
+         return true;
+      }
+      for (; v_t != t_graph.vertexEnd(); v_t = t_graph.vertexNext(v_t)) {
+         if(conditionVerticesColor(q_graph, t_graph, 0, v_q, v_t, 0)) {
+            ++parametersForExact.numberOfSolutions;
+            v_map[v_q] = v_t;
+            _addSolutionMap(v_map, e_map);
+            return true;
+         }
+      }
+   } else if(_supergraph->vertexCount() == 1) {
+      Graph& q_graph = *_supergraph;
+      Graph& t_graph = *_subgraph;
+      int v_q = q_graph.vertexBegin();
+      int v_t = t_graph.vertexBegin();
+      if(conditionVerticesColor == 0) {
+         ++parametersForExact.numberOfSolutions;
+         v_map[v_t] = v_q;
+         _addSolutionMap(v_map, e_map);
+         return true;
+      }
+      for (; v_t != t_graph.vertexEnd(); v_t = t_graph.vertexNext(v_t)) {
+         if(conditionVerticesColor(q_graph, t_graph, 0, v_q, v_t, 0)) {
+            ++parametersForExact.numberOfSolutions;
+            v_map[v_t] = v_q;
+            _addSolutionMap(v_map, e_map);
+            return true;
+         }
+      }
+   }
+   return true;
+}
+
+void MaxCommonSubgraph::_clearSolutionMaps() {
+   _vertEdgeSolMap.clear();
+}
+
+void MaxCommonSubgraph::_addSolutionMap(Array<int>& v_map, Array<int>& e_map) {
+   int v_size = v_map.size();
+   int e_size = e_map.size();
+   _vertEdgeSolMap.push().resize(v_size + e_size + 2);
+   Array<int>& ve_map = _vertEdgeSolMap.top();
+   ve_map[0] = v_size;
+   ve_map[1] = e_size;
+   for (int i = 0; i < v_size; ++i) {
+      ve_map[2 + i] = v_map[i];
+   }
+   for (int i = 0; i < e_size; ++i) {
+      ve_map[2 + i + v_size] = e_map[i];
+   }
+}
+
 void MaxCommonSubgraph::findExactMCS(){
 
+   /*
+    * Check for single input molecules
+    */
+   if(_findSimpleMcs())
+      return;
+   
    ReGraph regraph;
    regraph.setMaxIteration(parametersForExact.maxIteration);
 

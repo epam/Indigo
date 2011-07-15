@@ -133,7 +133,7 @@ protected:
 
    Reaction &_target;
 
-   TL_CP_DECL(ObjArray<_Matcher>, _matchers);
+   TL_CP_DECL(PtrArray<_Matcher>, _matchers);
    TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_1);
    TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_2);
    TL_CP_DECL(Array<int>, _molecule_core_1);

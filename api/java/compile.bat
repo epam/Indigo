@@ -1,8 +1,21 @@
 @echo off
+
+if "%JAVA_HOME%"=="" goto jDef1
+goto jDef2
+:jDef1
+echo JAVA_HOME is not defined will use 'javac' and 'jar' commands
+set EXEC_JAVAC=javac
+set EXEC_JAR=jar
+goto jDefEx
+:jDef2
+set EXEC_JAVAC="%JAVA_HOME%\bin\javac"
+set EXEC_JAR="%JAVA_HOME%\bin\jar"
+:jDefEx
+
 mkdir dist
 cd src
-javac -cp ../../../common/jna/jna.jar com/ggasoftware/indigo/*.java
-jar cvf ../dist/indigo.jar com/ggasoftware/indigo/*.class
+%EXEC_JAVAC% -cp ../../../common/jna/jna.jar com/ggasoftware/indigo/*.java
+%EXEC_JAR% cvf ../dist/indigo.jar com/ggasoftware/indigo/*.class
 del /Q com\ggasoftware\indigo\*.class
 cd ..
 
@@ -23,11 +36,11 @@ copy "%ProgramFiles%\Microsoft Visual Studio 10.0\VC\redist\x86\Microsoft.VC100.
 copy "%ProgramFiles%\Microsoft Visual Studio 10.0\VC\redist\x64\Microsoft.VC100.CRT\msvcr100.dll" com\ggasoftware\indigo\Win\x64\
 :L2
 
-jar uf dist/indigo.jar com\ggasoftware\indigo\Win\x86\indigo.dll
-jar uf dist/indigo.jar com\ggasoftware\indigo\Win\x64\indigo.dll
-jar uf dist/indigo.jar com\ggasoftware\indigo\Win\x86\zlib.dll
-jar uf dist/indigo.jar com\ggasoftware\indigo\Win\x64\zlib.dll
-jar uf dist/indigo.jar com\ggasoftware\indigo\Win\x86\msvcr100.dll
-jar uf dist/indigo.jar com\ggasoftware\indigo\Win\x64\msvcr100.dll
+%EXEC_JAR% uf dist/indigo.jar com\ggasoftware\indigo\Win\x86\indigo.dll
+%EXEC_JAR% uf dist/indigo.jar com\ggasoftware\indigo\Win\x64\indigo.dll
+%EXEC_JAR% uf dist/indigo.jar com\ggasoftware\indigo\Win\x86\zlib.dll
+%EXEC_JAR% uf dist/indigo.jar com\ggasoftware\indigo\Win\x64\zlib.dll
+%EXEC_JAR% uf dist/indigo.jar com\ggasoftware\indigo\Win\x86\msvcr100.dll
+%EXEC_JAR% uf dist/indigo.jar com\ggasoftware\indigo\Win\x64\msvcr100.dll
 
 rd /S /Q com
