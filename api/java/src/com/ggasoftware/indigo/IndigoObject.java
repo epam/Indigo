@@ -537,10 +537,22 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoAddAtom(self, symbol)));
    }
 
+   public IndigoObject resetAtom (String symbol)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoResetAtom(self, symbol)));
+   }
+
    public IndigoObject addRSite (String name)
    {
       dispatcher.setSessionID();
       return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoAddRSite(self, name)));
+   }
+
+   public IndigoObject setRSite (String name)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoSetRSite(self, name)));
    }
 
    public void setCharge (int charge)
@@ -589,6 +601,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoUnhighlight(self));
+   }
+
+   public boolean isHighlighted ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoIsHighlighted(self)) == 1;
    }
 
    public int countComponents ()

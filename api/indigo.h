@@ -273,6 +273,7 @@ CEXPORT int indigoIterateRSites (int molecule);
 CEXPORT int indigoIterateStereocenters (int molecule);
 CEXPORT int indigoIterateAlleneCenters (int molecule);
 CEXPORT int indigoIterateRGroups (int molecule);
+
 CEXPORT int indigoIsPseudoatom (int atom);
 CEXPORT int indigoIsRSite (int atom);
 
@@ -397,9 +398,12 @@ CEXPORT int indigoMarkEitherCisTrans (int handle);
 // Accepts a symbol from the periodic table (like "C" or "Br"),
 // or a pseudoatom symbol, like "Pol". Returns the added atom.
 CEXPORT int indigoAddAtom (int molecule, const char *symbol);
+// Set a new atom instead of specified
+CEXPORT int indigoResetAtom (int atom, const char *symbol);
 
 // Accepts Rsite name "R" (or just ""), "R1", "R2" or list with names "R1 R3"
 CEXPORT int indigoAddRSite (int molecule, const char *name);
+CEXPORT int indigoSetRSite (int atom, const char *name);
 
 CEXPORT int indigoSetCharge (int atom, int charge);
 CEXPORT int indigoSetIsotope (int atom, int isotope);
@@ -423,6 +427,9 @@ CEXPORT int indigoHighlight (int item);
 
 // Access atoms, bonds, molecules, and reactions
 CEXPORT int indigoUnhighlight (int item);
+
+// Access atoms and bonds
+CEXPORT int indigoIsHighlighted (int item);
 
 /* Connected components of molecules */
 

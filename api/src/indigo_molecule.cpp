@@ -2622,40 +2622,74 @@ CEXPORT int indigoAddAtom (int molecule, const char *symbol)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoResetAtom (int atom, const char *symbol)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      Molecule &mol = ia.mol.asMolecule();
+
+      int elem = Element::fromString2(symbol);
+      int idx;
+
+      if (elem > 0)
+         idx = mol.resetAtom(ia.idx, elem);
+      else
+      {
+         idx = mol.resetAtom(ia.idx, ELEM_PSEUDO);
+         mol.setPseudoAtom(idx, symbol);
+      }
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+static void _parseRSites (const char *name, Array<int> &rsites)
+{
+   BufferScanner scanner(name);
+   rsites.clear();
+   while (!scanner.isEOF())
+   {
+      scanner.skipSpace();
+      if (scanner.lookNext() != 'R')
+         throw IndigoError("indigoAddRSite(): cannot parse '%s' as r-site name(s)", name);
+      scanner.readChar();
+      if (scanner.isEOF())
+         break;
+      if (isdigit(scanner.lookNext()))
+      {
+         int idx = scanner.readInt();
+         rsites.push(idx);
+      }
+
+      scanner.skipSpace();
+      if (scanner.lookNext() == ',' || scanner.lookNext() == ';')
+         scanner.readChar();
+   }
+}
+
+static void _indigoSetRSite (Molecule &mol, int atom_index, const char *name)
+{
+   // Parse r-sites
+   QS_DEF(Array<int>, rsites);
+   _parseRSites(name, rsites);
+   mol.resetAtom(atom_index, ELEM_RSITE);
+   mol.setRSiteBits(atom_index, 0);
+   for (int i = 0; i < rsites.size(); i++)
+      mol.allowRGroupOnRSite(atom_index, rsites[i]);
+}
+
 CEXPORT int indigoAddRSite (int molecule, const char *name)
 {
    INDIGO_BEGIN
    {
       Molecule &mol = self.getObject(molecule).getMolecule();
 
-      // Parse r-sites
-      BufferScanner scanner(name);
-      QS_DEF(Array<int>, rsites);
-      rsites.clear();
-      while (!scanner.isEOF())
-      {
-         scanner.skipSpace();
-         if (scanner.lookNext() != 'R')
-            throw IndigoError("indigoAddRSite(): cannot parse '%s' as r-site name(s)", name);
-         scanner.readChar();
-         if (scanner.isEOF())
-            break;
-         if (isdigit(scanner.lookNext()))
-         {
-            int idx = scanner.readInt();
-            rsites.push(idx);
-         }
-
-         scanner.skipSpace();
-         if (scanner.lookNext() == ',' || scanner.lookNext() == ';')
-            scanner.readChar();
-      }
-
       int idx = mol.addAtom(ELEM_RSITE);
       try 
       {
-         for (int i = 0; i < rsites.size(); i++)
-            mol.allowRGroupOnRSite(idx, rsites[i]);
+         _indigoSetRSite(mol, idx, name);
       }
       catch (...)
       {
@@ -2665,6 +2699,20 @@ CEXPORT int indigoAddRSite (int molecule, const char *name)
       }
 
       return self.addObject(new IndigoAtom(mol, idx));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetRSite (int atom, const char *name)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      Molecule &mol = ia.mol.asMolecule();
+
+      _indigoSetRSite(mol, ia.idx, name);
+
+      return 1;
    }
    INDIGO_END(-1)
 }

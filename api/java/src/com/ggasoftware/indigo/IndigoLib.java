@@ -209,7 +209,9 @@ public interface IndigoLib extends Library
    int indigoMarkEitherCisTrans (int handle);
 
    int indigoAddAtom (int molecule, String symbol);
+   int indigoResetAtom (int atom, String symbol);
    int indigoAddRSite (int molecule, String name);
+   int indigoSetRSite (int atom, String name);
 
    int indigoSetCharge (int atom, int charge);
    int indigoSetIsotope (int atom, int isotope);
@@ -222,6 +224,7 @@ public interface IndigoLib extends Library
 
    int indigoHighlight (int atom);
    int indigoUnhighlight (int item);
+   int indigoIsHighlighted (int item);
 
    int indigoCountComponents (int molecule);
    int indigoComponentIndex (int atom);

@@ -346,7 +346,9 @@ class Indigo:
     self.IndigoObject.resetSymmetricCisTrans = Indigo._member_int(Indigo._lib.indigoResetSymmetricCisTrans)
     self.IndigoObject.markEitherCisTrans = Indigo._member_int(Indigo._lib.indigoMarkEitherCisTrans)
     self.IndigoObject.addAtom = Indigo._member_obj_string(Indigo._lib.indigoAddAtom)
+    self.IndigoObject.resetAtom = Indigo._member_void_string(Indigo._lib.indigoResetAtom)
     self.IndigoObject.addRSite = Indigo._member_obj_string(Indigo._lib.indigoAddRSite)
+    self.IndigoObject.setRSite = Indigo._member_void_string(Indigo._lib.indigoSetRSite)
     self.IndigoObject.setCharge = Indigo._member_void_int(Indigo._lib.indigoSetCharge)
     self.IndigoObject.setIsotope = Indigo._member_void_int(Indigo._lib.indigoSetIsotope)
     self.IndigoObject.setImplicitHCount = Indigo._member_void_int(Indigo._lib.indigoSetImplicitHCount)
@@ -355,6 +357,7 @@ class Indigo:
     self.IndigoObject.merge = Indigo._member_obj_obj(Indigo._lib.indigoMerge)
     self.IndigoObject.highlight = Indigo._member_void(Indigo._lib.indigoHighlight)
     self.IndigoObject.unhighlight = Indigo._member_void(Indigo._lib.indigoUnhighlight)
+    self.IndigoObject.isHighlighted = Indigo._member_bool(Indigo._lib.indigoIsHighlighted)
 
     self.IndigoObject.countComponents = Indigo._member_int(Indigo._lib.indigoCountComponents)
     self.IndigoObject.componentIndex = Indigo._member_int(Indigo._lib.indigoComponentIndex)

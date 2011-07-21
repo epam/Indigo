@@ -37,6 +37,7 @@ public:
    virtual BaseMolecule * neu ();
 
    int addAtom (int label);
+   int resetAtom (int idx, int label);
    
    void setPseudoAtom (int idx, const char *text);
 

@@ -1144,12 +1144,18 @@ bool Molecule::possibleBondOrder (int idx, int order)
 
 int Molecule::addAtom (int number)
 {
-   updateEditRevision();
    int idx = _addBaseAtom();
-
    _atoms.expand(idx + 1);
+   return resetAtom(idx, number);
+}
+
+int Molecule::resetAtom (int idx, int number)
+{
+   updateEditRevision();
+
    memset(&_atoms[idx], 0, sizeof(_Atom));
    _atoms[idx].number = number;
+   _validateVertexConnectivity(idx, false);
    return idx;
 }
 

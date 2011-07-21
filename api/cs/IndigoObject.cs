@@ -671,10 +671,22 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(dispatcher, this, _indigo_lib.indigoAddAtom(self, symbol));
       }
 
+      public IndigoObject resetAtom (string symbol)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoResetAtom(self, symbol));
+      }
+
       public IndigoObject addRSite (string name)
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, this, _indigo_lib.indigoAddRSite(self, name));
+      }
+
+      public IndigoObject setRSite (string name)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoSetRSite(self, name));
       }
 
       public void setCharge (int charge)
@@ -723,6 +735,12 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          _indigo_lib.indigoUnhighlight(self);
+      }
+
+      public bool isHighlighted ()
+      {
+         dispatcher.setSessionID();
+         return _indigo_lib.indigoIsHighlighted(self) == 1;
       }
 
       public int countComponents ()

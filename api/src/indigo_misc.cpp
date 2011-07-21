@@ -610,6 +610,32 @@ CEXPORT int indigoUnhighlight (int item)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoIsHighlighted (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoAtom::is(obj))
+      {
+         IndigoAtom &ia = IndigoAtom::cast(obj);
+
+         return ia.mol.isAtomHighlighted(ia.idx) ? 1 : 0;
+      }
+      else if (IndigoBond::is(obj))
+      {
+         IndigoBond &ib = IndigoBond::cast(obj);
+
+         return ib.mol.isBondHighlighted(ib.idx) ? 1 : 0;
+      }
+      else
+         throw IndigoError("indigoHighlight(): expected atom or bond, got %s", obj.debugInfo());
+
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int indigoOptimize (int query, const char *options)
 {
    INDIGO_BEGIN

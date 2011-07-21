@@ -166,7 +166,9 @@ namespace com.ggasoftware.indigo
       int indigoMarkEitherCisTrans (int handle);
 
       int indigoAddAtom (int molecule, string symbol);
+      int indigoResetAtom (int atom, string symbol);
       int indigoAddRSite (int molecule, string name);
+      int indigoSetRSite (int atom, string name);
       int indigoSetCharge (int atom, int charge);
       int indigoSetIsotope (int atom, int isotope);
       int indigoSetImplicitHCount (int atom, int implh);
@@ -176,6 +178,7 @@ namespace com.ggasoftware.indigo
       int indigoMerge (int where_to, int what);
       int indigoHighlight (int item);
       int indigoUnhighlight (int item);
+      int indigoIsHighlighted (int item);
 
       int indigoCountComponents (int molecule);
       int indigoComponentIndex (int atom);
