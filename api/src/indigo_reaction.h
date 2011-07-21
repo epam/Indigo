@@ -35,6 +35,8 @@ public:
 
    static bool is (IndigoObject &obj);
 
+   virtual const char * debugInfo ();
+
    RedBlackStringObjMap< Array<char> > properties;
 };
 
@@ -51,6 +53,8 @@ public:
    virtual IndigoObject * clone ();
 
    static IndigoReaction * cloneFrom (IndigoObject & obj);
+
+   virtual const char * debugInfo ();
 
    Reaction rxn;
 };
@@ -69,6 +73,8 @@ public:
 
    static IndigoQueryReaction * cloneFrom (IndigoObject & obj);
 
+   virtual const char * debugInfo ();
+
    QueryReaction rxn;
 };
 
@@ -85,6 +91,8 @@ public:
    virtual IndigoObject * clone ();
    virtual RedBlackStringObjMap< Array<char> > * getProperties ();
    virtual void remove ();
+
+   virtual const char * debugInfo ();
 
    BaseReaction &rxn;
    int idx;
@@ -106,6 +114,8 @@ public:
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
+
+   virtual const char * debugInfo ();
 
 protected:
 

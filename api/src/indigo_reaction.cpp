@@ -23,6 +23,9 @@
 #include "indigo_array.h"
 #include "reaction/rsmiles_loader.h"
 
+//
+// IndigoBaseReaction
+//
 IndigoBaseReaction::IndigoBaseReaction (int type_) : IndigoObject(type_)
 {
 }
@@ -45,15 +48,27 @@ bool IndigoBaseReaction::is (IndigoObject &obj)
    return false;
 }
 
-
+const char * IndigoBaseReaction::debugInfo ()
+{
+   return "<base reaction>";
+}
 
 RedBlackStringObjMap< Array<char> > * IndigoBaseReaction::getProperties ()
 {
    return &properties;
 }
 
+//
+// IndigoBaseReaction
+//
+
 IndigoReaction::IndigoReaction () : IndigoBaseReaction(REACTION)
 {
+}
+
+const char * IndigoReaction::debugInfo ()
+{
+   return "<reaction>";
 }
 
 IndigoReaction::~IndigoReaction ()
@@ -77,8 +92,17 @@ const char * IndigoReaction::getName ()
    return rxn.name.ptr();
 }
 
+//
+// IndigoQueryReaction
+//
+
 IndigoQueryReaction::IndigoQueryReaction () : IndigoBaseReaction(QUERY_REACTION)
 {
+}
+
+const char * IndigoQueryReaction::debugInfo ()
+{
+   return "<query reaction>";
 }
 
 IndigoQueryReaction::~IndigoQueryReaction ()
@@ -102,11 +126,20 @@ const char * IndigoQueryReaction::getName ()
    return rxn.name.ptr();
 }
 
+//
+// IndigoReactionMolecule
+//
+
 IndigoReactionMolecule::IndigoReactionMolecule (BaseReaction &reaction, int index) :
 IndigoObject(REACTION_MOLECULE),
 rxn(reaction),
 idx(index)
 {
+}
+
+const char * IndigoReactionMolecule::debugInfo ()
+{
+   return "<reaction molecule>";
 }
 
 IndigoReactionMolecule::~IndigoReactionMolecule ()
@@ -151,12 +184,21 @@ void IndigoReactionMolecule::remove ()
    rxn.remove(idx);
 }
 
+//
+// IndigoReactionIter
+//
+
 IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, int subtype) :
 IndigoObject(REACTION_ITER),
 _rxn(rxn)
 {
    _subtype = subtype;
    _idx = -1;
+}
+
+const char * IndigoReactionIter::debugInfo ()
+{
+   return "<reaction molecule iterator>";
 }
 
 IndigoReactionIter::~IndigoReactionIter ()

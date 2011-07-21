@@ -662,3 +662,42 @@ CEXPORT int indigoOptimize (int query, const char *options)
    }
    INDIGO_END(-1);
 }
+
+static int _indigoHasCoord (int item, bool (*has_coord_func)(BaseMolecule &mol), const char *func_name)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoBaseMolecule::is(obj))
+      {
+         BaseMolecule &mol = obj.getBaseMolecule();
+         return has_coord_func(mol) ? 1 : 0;
+      }
+      else if (IndigoBaseReaction::is(obj))
+      {
+         BaseReaction &reaction = obj.getBaseReaction();
+         for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
+         {
+            BaseMolecule &mol = reaction.getBaseMolecule(i);
+            if (has_coord_func(mol))
+               return 1;
+         }
+         return 0;
+      }
+      else
+         throw IndigoError("%s: expected molecule or reaction, got %s", func_name, obj.debugInfo());
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoHasZCoord (int item)
+{
+   return _indigoHasCoord(item, BaseMolecule::hasZCoord, "indigoHasZCoord");
+}
+
+CEXPORT int indigoHasCoord (int item)
+{
+   return _indigoHasCoord(item, BaseMolecule::hasCoord, "indigoHasCoord");
+}

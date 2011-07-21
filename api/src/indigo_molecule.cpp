@@ -1607,28 +1607,6 @@ const MoleculeAtomNeighbourhoodCounters& IndigoQueryMolecule::getNeiCounters ()
    return _nei_counters;
 }
 
-CEXPORT int indigoHasZCoord (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-
-      return BaseMolecule::hasZCoord(mol) ? 1 : 0;
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT int indigoHasCoord (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-
-      return BaseMolecule::hasCoord(mol) ? 1 : 0;
-   }
-   INDIGO_END(-1)
-}
-
 CEXPORT int indigoIsChiral (int molecule)
 {
    INDIGO_BEGIN
