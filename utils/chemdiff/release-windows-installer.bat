@@ -31,7 +31,6 @@ cd ..
 jar -uf chemdiff.jar META-INF/chemdiff-splash.png
 
 rem call dll-copy.bat
-echo start javaw -jar -Xss10m %%0\..\chemdiff.jar > launch.bat
 
 %MAKENSIS% /DVERSION=%1 chemdiff_installer.nsi 
 goto END
