@@ -14,8 +14,8 @@ call compile.bat
 cd ..\renderer\java
 call compile.bat
 cd ..\..
-call indigo-java-release-win indigo-java-api-%1-windows
-call indigo-python-release-win indigo-python-api-%1-windows
-call indigo-libs-release-win indigo-libs-%1-win32 Win32 x86
-call indigo-libs-release-win indigo-libs-%1-win64 x64 x64
-call indigo-dotnet-release indigo-dotnet-%1
+call indigo-java-release-win build_release\indigo-java-api-%1-windows
+call indigo-python-release-win build_release\indigo-python-api-%1-windows
+call indigo-libs-release-win build_release\indigo-libs-%1-win32 Win32 x86
+call indigo-libs-release-win build_release\indigo-libs-%1-win64 x64 x64
+call indigo-dotnet-release build_release\indigo-dotnet-%1
