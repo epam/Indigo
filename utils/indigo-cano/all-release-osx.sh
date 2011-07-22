@@ -9,6 +9,6 @@ fi
 
 for osxver in '10.5' '10.6'; do
    xcodebuild -sdk macosx$osxver -configuration Release$osxver
-   ./release-unix.sh build_release/indigo-cano-$version-osx-$osxver \
+   ./release-unix.sh indigo-cano-$version-osx-$osxver \
        build/Release$osxver/indigo-cano
 done

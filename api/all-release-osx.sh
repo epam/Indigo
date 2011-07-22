@@ -7,8 +7,8 @@ if [ -z $version ]; then
   exit;
 fi
 
-javadistr=build_release/indigo-java-api-$version-osx
-pythondistr=build_release/indigo-python-api-$version-osx
+javadistr=indigo-java-api-$version-osx
+pythondistr=indigo-python-api-$version-osx
 
 rm -rf ./$javadistr ./$javadistr.zip
 mkdir $javadistr
@@ -20,7 +20,7 @@ cp python/indigo.py $pythondistr/
 cp renderer/python/indigo_renderer.py $pythondistr/
 
 for osxver in '10.5' '10.6'; do
-   libdistr=build_release/indigo-libs-$version-osx$osxver
+   libdistr=indigo-libs-$version-osx$osxver
    mkdir -p $libdistr
    mkdir -p $javadistr
    mkdir -p $pythondistr/lib/Mac/$osxver

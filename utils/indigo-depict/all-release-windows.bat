@@ -6,5 +6,5 @@ call "%ProgramFiles%\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
 :L2
 devenv indigo-depict.sln /build "Release|x64"
 devenv indigo-depict.sln /build "Release|Win32"
-call release-windows.bat build_release\indigo-depict-%1-win32 Win32
-call release-windows.bat build_release\indigo-depict-%1-win64 x64
+call release-windows.bat indigo-depict-%1-win32 Win32
+call release-windows.bat indigo-depict-%1-win64 x64
