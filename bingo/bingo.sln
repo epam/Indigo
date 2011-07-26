@@ -154,7 +154,6 @@ Global
 		{ED96DA19-3326-4DFB-9CB1-189895A367E5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{ED96DA19-3326-4DFB-9CB1-189895A367E5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{ED96DA19-3326-4DFB-9CB1-189895A367E5}.Release|Win32.ActiveCfg = Release|Any CPU
-		{ED96DA19-3326-4DFB-9CB1-189895A367E5}.Release|Win32.Build.0 = Release|Any CPU
 		{ED96DA19-3326-4DFB-9CB1-189895A367E5}.Release|x64.ActiveCfg = Release|Any CPU
 		{ED96DA19-3326-4DFB-9CB1-189895A367E5}.Release|x64.Build.0 = Release|Any CPU
 		{BBB579CB-8C95-4A28-8950-348CF56104AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -170,7 +169,6 @@ Global
 		{BBB579CB-8C95-4A28-8950-348CF56104AB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{BBB579CB-8C95-4A28-8950-348CF56104AB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{BBB579CB-8C95-4A28-8950-348CF56104AB}.Release|Win32.ActiveCfg = Release|Any CPU
-		{BBB579CB-8C95-4A28-8950-348CF56104AB}.Release|Win32.Build.0 = Release|Any CPU
 		{BBB579CB-8C95-4A28-8950-348CF56104AB}.Release|x64.ActiveCfg = Release|Any CPU
 		{BBB579CB-8C95-4A28-8950-348CF56104AB}.Release|x64.Build.0 = Release|Any CPU
 		{4E6FD6F0-3507-4B4F-B447-0D3E970E9ACF}.Debug|Any CPU.ActiveCfg = ReleaseDll|x64
