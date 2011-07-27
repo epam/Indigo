@@ -1,4 +1,4 @@
-@echo off
+rem @echo off
 if "%1" == "" goto NOVER
 mkdir lib
 rem mkdir lib\Win\x86
@@ -24,11 +24,12 @@ copy ..\..\common\java\common-controls\dist\common-controls.jar lib\
 copy ..\..\api\java\dist\indigo.jar lib\
 copy ..\..\api\renderer\java\dist\indigo-renderer.jar lib\
 cd src
-javac -cp ..\lib\indigo.jar;..\lib\indigo-renderer.jar;..\lib\common-controls.jar com/ggasoftware/indigo/chemdiff/*.java
-jar cvfm ..\chemdiff.jar ../META-INF/manifest.mf com/ggasoftware/indigo/chemdiff/*.class
-del /Q com/ggasoftware/indigo/chemdiff/*.class
+%EXEC_JAVAC% -cp ..\lib\indigo.jar;..\lib\indigo-renderer.jar;..\lib\common-controls.jar com/ggasoftware/indigo/chemdiff/*.java
+%EXEC_JAR% cvfm ../chemdiff.jar ../META-INF/manifest.mf com/ggasoftware/indigo/chemdiff/*.class
+
+del /Q com\ggasoftware\indigo\chemdiff\*.class
 cd ..
-jar -uf chemdiff.jar META-INF/chemdiff-splash.png
+%EXEC_JAR% -uf chemdiff.jar META-INF/chemdiff-splash.png
 
 rem call dll-copy.bat
 

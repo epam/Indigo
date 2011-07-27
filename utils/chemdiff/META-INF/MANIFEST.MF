@@ -2,3 +2,4 @@ Manifest-Version: 1.0
 Main-Class: com.ggasoftware.indigo.chemdiff.Main
 Class-Path: lib/indigo.jar lib/indigo-renderer.jar lib/jna.jar lib/common-controls.jar
 SplashScreen-Image: META-INF/chemdiff-splash.png
+
