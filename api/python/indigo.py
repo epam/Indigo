@@ -145,7 +145,7 @@ class Indigo:
     elif platform.mac_ver()[0]:
       path += "/Mac/"
       # append "10.5" or "10.6" to the path
-      mac_ver = platform.mac_ver()[0].split('.')[:2]
+      mac_ver = '.'.join(platform.mac_ver()[0].split('.')[:2])
       if mac_ver != "10.5":
          mac_ver == "10.6" # Try to use 10.6 Indigo version for even 10.7 Mac OS X
       path += mac_ver
