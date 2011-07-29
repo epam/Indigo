@@ -226,9 +226,9 @@ int ReactionEnumeratorState::buildProduct( void )
          if (!_isMonomerFromCurTube(i))
             continue;
 
-//       if (!is_self_react)
-//          if ((_reaction_monomers._deep_levels[i] == 0) && (_product_monomers.find(i) != -1))
-//             continue;
+       if (!is_self_react)
+          if ((_reaction_monomers._deep_levels[i] == 0) && (_product_monomers.find(i) != -1))
+             continue;
 
       ReactionEnumeratorState rpe_state(*this);
 
@@ -420,9 +420,15 @@ void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule )
 
       const Vertex &v = molecule.getVertex(i);
 
+      if (v.degree() == 0)
+         continue;
+
       if (v.degree() == 1)
       {
          int h_nei = v.neiVertex(v.neiBegin());
+
+         if (molecule.getAtomNumber(h_nei) == ELEM_H && molecule.getAtomIsotope(h_nei) == 0)
+            continue; // do not remove rare H-H fragment
 
          if (molecule.stereocenters.exists(h_nei) && 
              molecule.stereocenters.getPyramid(h_nei)[3] == -1)
@@ -589,10 +595,10 @@ bool ReactionEnumeratorState::_matchVertexCallback( Graph &subgraph, Graph &supe
    if (!res)
       return false;
 
-   if (supermolecule.getAtomNumber(super_idx) == ELEM_H)
+   if (supermolecule.getAtomNumber(super_idx) == ELEM_H && sub_v.degree() != 0)
    {
       int sub_free_rg_count = 0;
-      const Vertex &sub_v = submolecule.getVertex(sub_idx);
+      
       int sub_nei = sub_v.neiVertex(sub_v.neiBegin());
       const Vertex &sub_nei_v = submolecule.getVertex(sub_nei);
       for (int i = sub_nei_v.neiBegin(); i != sub_nei_v.neiEnd(); i = sub_nei_v.neiNext(i))
@@ -853,26 +859,22 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
           is_default = true;
 
       QueryMolecule::Atom *reactant_atom = _getReactantAtom(pr_aam);
-      if (reactant_atom == NULL)
-         throw Error("Incorrect AAM");
 
       if (product.getAtomNumber(i) == -1 && !is_default && !product.isRSite(i))
       {
          if (!has_aam)
             throw Error("Incorrect AAM");
 
-         if (!product.getAtom(i).possibleValue(QueryMolecule::ATOM_NUMBER, 
-                                    uncleaned_fragments.getAtomNumber(frags_idx)))
-            throw Error("product atom's impossible number");
-         else
-            mol_atom_idx = mol_product.addAtom(uncleaned_fragments.getAtomNumber(frags_idx));
+         mol_atom_idx = mol_product.addAtom(uncleaned_fragments.getAtomNumber(frags_idx));
       }
       else
          mol_atom_idx = mol_product.addAtom(product.getAtomNumber(i));
 
       
       int reactant_atom_charge = CHARGE_UNKNOWN;
-      reactant_atom->sureValue(QueryMolecule::ATOM_CHARGE, reactant_atom_charge);
+      
+      if (reactant_atom != 0)
+         reactant_atom->sureValue(QueryMolecule::ATOM_CHARGE, reactant_atom_charge);
       
       if (product.getAtomCharge(i) == CHARGE_UNKNOWN && !is_default  &&
           (reactant_atom_charge == product.getAtomCharge(i)))
@@ -888,7 +890,9 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
 
 
       int reactant_atom_isotope = -1;
-      reactant_atom->sureValue(QueryMolecule::ATOM_ISOTOPE, reactant_atom_isotope);
+      
+      if (reactant_atom != 0)
+         reactant_atom->sureValue(QueryMolecule::ATOM_ISOTOPE, reactant_atom_isotope);
 
       if (product.getAtomIsotope(i) == -1 && !is_default &&
           (reactant_atom_isotope == product.getAtomIsotope(i)))
@@ -904,7 +908,8 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
 
 
       int reactant_atom_radical = -1;
-      reactant_atom->sureValue(QueryMolecule::ATOM_RADICAL, reactant_atom_radical);
+      if (reactant_atom != 0)
+         reactant_atom->sureValue(QueryMolecule::ATOM_RADICAL, reactant_atom_radical);
 
       if (product.getAtomRadical(i) == -1 && !is_default &&
           (reactant_atom_radical == product.getAtomRadical(i)))
