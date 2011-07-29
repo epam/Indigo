@@ -865,7 +865,11 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
          if (!has_aam)
             throw Error("Incorrect AAM");
 
-         mol_atom_idx = mol_product.addAtom(uncleaned_fragments.getAtomNumber(frags_idx));
+         if (!product.getAtom(i).possibleValue(QueryMolecule::ATOM_NUMBER, 
+                                    uncleaned_fragments.getAtomNumber(frags_idx)))
+            throw Error("product atom's impossible number");
+         else
+            mol_atom_idx = mol_product.addAtom(uncleaned_fragments.getAtomNumber(frags_idx));
       }
       else
          mol_atom_idx = mol_product.addAtom(product.getAtomNumber(i));
