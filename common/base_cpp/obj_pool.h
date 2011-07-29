@@ -99,6 +99,11 @@ public:
       _pool.clear();
    }
 
+   bool hasElement(int idx) const
+   {
+      return _pool.hasElement(idx);
+   }
+
    const T & operator [] (int index) const
    {  
       return _pool[index];

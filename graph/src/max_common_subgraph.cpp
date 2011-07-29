@@ -115,7 +115,11 @@ void MaxCommonSubgraph::_addSolutionMap(Array<int>& v_map, Array<int>& e_map) {
    int v_size = v_map.size();
    int e_size = e_map.size();
    _vertEdgeSolMap.push().resize(v_size + e_size + 2);
+   
    Array<int>& ve_map = _vertEdgeSolMap.top();
+   for (int i = 0; i < ve_map.size(); ++i)
+      ve_map[i] = -1;
+   
    ve_map[0] = v_size;
    ve_map[1] = e_size;
    for (int i = 0; i < v_size; ++i) {
@@ -445,6 +449,7 @@ bool MaxCommonSubgraph::ReCreation::setMapping(){
 
 int MaxCommonSubgraph::ReCreation::createSolutionMaps() {
    QS_DEF(Array<int>, v_map);
+   QS_DEF(Array<int>, e_map);
 
    Graph& sub_graph = *_context._subgraph;
 
@@ -453,20 +458,17 @@ int MaxCommonSubgraph::ReCreation::createSolutionMaps() {
    int e_size = sub_graph.edgeEnd();
 
    for(int sol = _regraph.solBegin(); _regraph.solIsNotEnd(sol); sol = _regraph.solNext(sol)) {
-      Array<int>& new_map = _context._vertEdgeSolMap.push();
-      new_map.resize(2 + v_size + e_size);
-      new_map[0] = v_size;
-      new_map[1] = e_size;
       const Dbitset& bits = _regraph.getSolBitset(sol);
       setCorrespondence(bits, v_map);
-      for(int i = 0; i < v_size; ++i) {
-         new_map[i+2] = v_map[i];
-      }
+      v_map.resize(v_size);
+      e_map.resize(e_size);
       for(int i = 0; i < e_size; ++i)
-         new_map[i+2+v_size] = -1;
+         e_map[i] = -1;
+
       for(int x = bits.nextSetBit(0); x >= 0; x = bits.nextSetBit(x+1)) {
-         new_map[2+v_size+_regraph.getPoint(x)->getid1()] = _regraph.getPoint(x)->getid2();
+         e_map[_regraph.getPoint(x)->getid1()] = _regraph.getPoint(x)->getid2();
       }
+      _context._addSolutionMap(v_map, e_map);
    }
 
    if(_context.cbSolutionTerm == 0)

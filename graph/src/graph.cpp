@@ -82,6 +82,11 @@ bool Graph::haveEdge (int beg, int end) const
    return findEdgeIndex(beg, end) != -1;
 }
 
+bool Graph::hasVertex(int idx) const
+{
+   return _vertices->hasElement(idx);
+}
+
 int Graph::addEdge (int beg, int end)
 {
    if (beg == end)

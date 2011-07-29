@@ -115,7 +115,8 @@ public:
    int addEdge   (int beg, int end);
 
    int  findEdgeIndex (int beg, int end) const;
-   bool haveEdge (int beg, int end) const; 
+   bool haveEdge (int beg, int end) const;
+   bool hasVertex(int idx) const;
 
    void swapEdgeEnds (int edge_idx);
    void removeEdge (int idx);

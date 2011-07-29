@@ -73,6 +73,11 @@ public:
       _size--;
    }
 
+   bool hasElement(int idx) const
+   {
+      return (_next[idx] == -2);
+   }
+
    int size () const
    {
       return _size;
