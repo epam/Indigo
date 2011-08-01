@@ -129,11 +129,7 @@ void ReactionAutomapper::_createReactionMap(BaseReaction& reaction){
    }
 
    AutoPtr<BaseReaction> reaction_clone;
-   if(reaction.isQueryReaction())
-      reaction_clone.reset(new QueryReaction());
-   else
-      reaction_clone.reset(new Reaction());
-
+   reaction_clone.reset(reaction.neu());
 
    _permutation(reactant_indexes, permulations);
 
@@ -291,6 +287,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
    QS_DEF(Array<int>, mapping);
    QS_DEF(Array<int>, v_mapping);
    QS_DEF(Array<int>, null_map);
+   QS_DEF(Array<int>, rmol_map);
    AutoPtr<BaseReaction> reaction_copy_ptr;
    QS_DEF(ObjArray< Array<int> > , react_invmap);
 
@@ -309,7 +306,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
 
    BaseReaction &reaction_copy = reaction_copy_ptr.ref();
 
-   reaction_copy.clone(_reaction, 0, 0, &react_invmap);
+   reaction_copy.clone(_reaction, &rmol_map, 0, &react_invmap);
    reaction_copy.aromatize();
 
    for (int mol_idx = _reaction.begin(); mol_idx != _reaction.end(); mol_idx = _reaction.next(mol_idx)) {
@@ -374,9 +371,12 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
 
                   const Edge &r_edge = rmol.getEdge(bond_idx);
                   const Edge &p_edge = pmol.getEdge(mapping[i]);
+
+                  int copy_mol_idx = rmol_map[mol_idx];
+                  int copy_opp_idx = rmol_map[opp_idx];
                   
-                  BaseMolecule& cr_mol = reaction_copy.getBaseMolecule(mol_idx);
-                  BaseMolecule& cp_mol = reaction_copy.getBaseMolecule(opp_idx);
+                  BaseMolecule& cr_mol = reaction_copy.getBaseMolecule(copy_mol_idx);
+                  BaseMolecule& cp_mol = reaction_copy.getBaseMolecule(copy_opp_idx);
                   
                   int mol_edge_idx = cr_mol.findEdgeIndex(react_invmap.at(mol_idx)[r_edge.beg], react_invmap.at(mol_idx)[r_edge.end]);
                   int opp_edge_idx = cp_mol.findEdgeIndex(react_invmap.at(opp_idx)[p_edge.beg], react_invmap.at(opp_idx)[p_edge.end]);
@@ -409,6 +409,8 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
       BaseMolecule& rmol = _reaction.getBaseMolecule(mol_idx);
       for (int bond_idx = rmol.edgeBegin(); bond_idx < rmol.edgeEnd(); bond_idx = rmol.edgeNext(bond_idx)) {
          int rc_bond = _reaction.getReactingCenter(mol_idx, bond_idx);
+         if(rc_bond == RC_NOT_CENTER)
+            rc_bond = RC_UNCHANGED;
          bool aam_bond = ((_reaction.getAAM(mol_idx, rmol.getEdge(bond_idx).beg) > 0) && (_reaction.getAAM(mol_idx, rmol.getEdge(bond_idx).end) > 0)) || change_rc_null;
          if (aam_bond && ((bond_centers[mol_idx][bond_idx] & ~rc_bond) || rc_bond == 0)) {
             if (!change_rc && !change_aam) {
