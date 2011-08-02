@@ -420,9 +420,6 @@ void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule )
 
       const Vertex &v = molecule.getVertex(i);
 
-      if (v.degree() == 0)
-         continue;
-
       if (v.degree() == 1)
       {
          int h_nei = v.neiVertex(v.neiBegin());
