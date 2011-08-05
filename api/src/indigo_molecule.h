@@ -101,6 +101,8 @@ public:
    static IndigoAtom & cast (IndigoObject &obj);
    virtual void remove ();
 
+   virtual IndigoObject * clone ();
+
    BaseMolecule &mol;
    int idx;
 
@@ -504,6 +506,8 @@ public:
    IndigoSubmolecule (BaseMolecule &mol_, Array<int> &vertices_, Array<int> &edges_);
    IndigoSubmolecule (BaseMolecule &mol_, List<int> &vertices_, List<int> &edges_);
    virtual ~IndigoSubmolecule ();
+
+   virtual BaseMolecule & getBaseMolecule ();
 
    virtual int getIndex ();
    virtual IndigoObject * clone ();

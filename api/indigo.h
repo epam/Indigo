@@ -336,6 +336,8 @@ CEXPORT const char * indigoDescription (int data_sgroup);
 CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
         int nbonds, int *bonds, const char *description, const char *data);
 
+CEXPORT int indigoAddSuperatom (int molecule, int natoms, int *atoms, const char *name);
+
 CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *options);
 
 CEXPORT int indigoResetCharge (int atom);
@@ -468,6 +470,8 @@ CEXPORT int indigoIsChiral (int molecule);
 
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices);
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices, int nedges, int *edges);
+
+CEXPORT int indigoGetSubmolecule (int molecule, int nvertices, int *vertices);
 
 CEXPORT int indigoRemoveAtoms (int molecule, int nvertices, int *vertices);
 

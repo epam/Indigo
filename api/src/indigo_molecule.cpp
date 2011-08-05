@@ -210,6 +210,11 @@ void IndigoAtom::remove ()
    mol.removeAtom(idx);
 }
 
+IndigoObject * IndigoAtom::clone ()
+{
+   return new IndigoAtom(mol, idx);
+}
+
 IndigoAtomsIter::IndigoAtomsIter (BaseMolecule *mol, int type_) : IndigoObject(ATOMS_ITER)
 {
    _mol = mol;
@@ -1531,6 +1536,37 @@ CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoGetSubmolecule (int molecule, int nvertices, int *vertices)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      
+      QS_DEF(Array<int>, vertices_arr);
+      vertices_arr.copy(vertices, nvertices);
+
+      // Collect edges by vertices
+      QS_DEF(Array<int>, vertices_mask);
+      vertices_mask.clear_resize(mol.vertexEnd());
+      vertices_mask.zerofill();
+      for (int i = 0; i < nvertices; i++)
+         vertices_mask[vertices[i]] = 1;
+
+      QS_DEF(Array<int>, edges);
+      edges.clear();
+      for (int i = mol.edgeBegin(); i < mol.edgeEnd(); i = mol.edgeNext(i))
+      {
+         const Edge &edge = mol.getEdge(i);
+         if (vertices_mask[edge.beg] && vertices_mask[edge.end])
+            edges.push(i);
+      }
+
+      AutoPtr<IndigoSubmolecule> subptr(new IndigoSubmolecule(mol, vertices_arr, edges));
+      return self.addObject(subptr.release());
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices,
                                                        int nedges, int *edges)
 {
@@ -2293,6 +2329,25 @@ CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoAddSuperatom (int molecule, int natoms, int *atoms, const char *name)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      int idx = mol.superatoms.add();
+      BaseMolecule::Superatom &satom =  mol.superatoms.at(idx);
+      satom.subscript.appendString(name, true);
+      if (atoms == 0)
+         throw IndigoError("indigoAddSuperatom(): atoms were not specified");
+
+      for (int i = 0; i < natoms; i++)
+         satom.atoms.push(atoms[i]);
+
+      return self.addObject(new IndigoSuperatom(mol, idx));
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *options)
 {
    INDIGO_BEGIN
@@ -2789,6 +2844,11 @@ mol(mol_)
 
 IndigoSubmolecule::~IndigoSubmolecule ()
 {
+}
+
+BaseMolecule & IndigoSubmolecule::getBaseMolecule ()
+{
+   return mol;
 }
 
 int IndigoSubmolecule::getIndex ()
