@@ -26,29 +26,48 @@ CEXPORT int indigoLayout (int object)
       IndigoObject &obj = self.getObject(object);
       int i;
 
-      if (IndigoBaseMolecule::is(obj)) {
+      if (IndigoBaseMolecule::is(obj) || obj.type == IndigoObject::SUBMOLECULE) {
          BaseMolecule &mol = obj.getBaseMolecule();
          MoleculeLayout ml(mol);
          ml.max_iterations = self.layout_max_iterations;
          ml.bond_length = 1.6f;
-         ml.make();
-         mol.clearBondDirections();
-         mol.stereocenters.markBonds();
-         mol.allene_stereo.markBonds();
-         for (i = 1; i <= mol.rgroups.getRGroupCount(); i++)
+
+         Filter f;
+         if (obj.type == IndigoObject::SUBMOLECULE)
          {
-            RGroup &rgp = mol.rgroups.getRGroup(i);
+            IndigoSubmolecule &submol = (IndigoSubmolecule &)obj;
+            f.initNone(mol.vertexEnd());
+            for (int i = 0; i < submol.vertices.size(); i++)
+               f.unhide(submol.vertices[i]);
+            ml.filter = &f;
+         }
 
-            for (int j = rgp.fragments.begin(); j != rgp.fragments.end();
-                     j = rgp.fragments.next(j))
+         ml.make();
+         if (obj.type != IndigoObject::SUBMOLECULE)
+         {
+            // Not for submolecule yet
+            mol.clearBondDirections();
+            mol.stereocenters.markBonds();
+            mol.allene_stereo.markBonds();
+         }
+
+         if (obj.type != IndigoObject::SUBMOLECULE)
+         {
+            for (i = 1; i <= mol.rgroups.getRGroupCount(); i++)
             {
-               MoleculeLayout fragml(*rgp.fragments[j]);
+               RGroup &rgp = mol.rgroups.getRGroup(i);
 
-               fragml.max_iterations = self.layout_max_iterations;
-               fragml.bond_length = 1.6f;
-               fragml.make();
-               rgp.fragments[j]->stereocenters.markBonds();
-               rgp.fragments[j]->allene_stereo.markBonds();
+               for (int j = rgp.fragments.begin(); j != rgp.fragments.end();
+                        j = rgp.fragments.next(j))
+               {
+                  MoleculeLayout fragml(*rgp.fragments[j]);
+
+                  fragml.max_iterations = self.layout_max_iterations;
+                  fragml.bond_length = 1.6f;
+                  fragml.make();
+                  rgp.fragments[j]->stereocenters.markBonds();
+                  rgp.fragments[j]->allene_stereo.markBonds();
+               }
             }
          }
       } else if (IndigoBaseReaction::is(obj)) {

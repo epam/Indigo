@@ -449,8 +449,10 @@ class Indigo:
 
     self.IndigoObject.createSubmolecule = Indigo._member_obj_iarr(Indigo._lib.indigoCreateSubmolecule)
     self.IndigoObject.createEdgeSubmolecule = Indigo._member_obj_iarr_iarr(Indigo._lib.indigoCreateEdgeSubmolecule)
+    self.IndigoObject.getSubmolecule = Indigo._member_obj_iarr(Indigo._lib.indigoGetSubmolecule)
     self.IndigoObject.removeAtoms = Indigo._member_void_iarr(Indigo._lib.indigoRemoveAtoms)
     self.IndigoObject.addDataSGroup = Indigo._member_obj_iarr_iarr_string_string(Indigo._lib.indigoAddDataSGroup)
+    self.IndigoObject.addSuperatom = Indigo._member_obj_iarr_string(Indigo._lib.indigoAddSuperatom)
     self.IndigoObject.setDataSGroupXY = Indigo._member_void_float_float_string(Indigo._lib.indigoSetDataSGroupXY)
 
     self.IndigoObject._next = Indigo._member_obj(Indigo._lib.indigoNext)
@@ -918,6 +920,21 @@ class Indigo:
       return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
+  @staticmethod
+  def _member_obj_iarr_string (func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int, POINTER(c_int), c_char_p]
+    def newfunc (self, intarr1, str1):
+      arr1 = (c_int * len(intarr1))()
+      for i in xrange(len(intarr1)):
+        arr1[i] = intarr1[i]
+      self.dispatcher._setSID()
+      newobj = self.dispatcher._checkResult(func(self.id, len(intarr1), arr1, str1))
+      if newobj == 0:
+        return None
+      return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
+    return Indigo._make_wrapper_func(newfunc, func)
+    
   @staticmethod
   def _member_void_iarr (func):
     func.restype = c_int
