@@ -420,6 +420,9 @@ void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule )
 
       const Vertex &v = molecule.getVertex(i);
 
+      if (v.degree() == 0)
+         continue;
+
       if (v.degree() == 1)
       {
          int h_nei = v.neiVertex(v.neiBegin());
@@ -592,7 +595,7 @@ bool ReactionEnumeratorState::_matchVertexCallback( Graph &subgraph, Graph &supe
    if (!res)
       return false;
 
-   if (supermolecule.getAtomNumber(super_idx) == ELEM_H && sub_v.degree() != 0)
+   if (supermolecule.getAtomNumber(super_idx) == ELEM_H && sub_v.degree() != 0 && super_v.degree() != 0)
    {
       int sub_free_rg_count = 0;
       
@@ -671,10 +674,42 @@ void ReactionEnumeratorState::_findFragAtoms( Array<byte> &unfrag_mon_atoms,
 
 void ReactionEnumeratorState::_cleanFragments( void )
 {
+   if (_is_rg_exist)
+   {
+      QS_DEF(Array<int>, is_attached_hydrogen);
+      is_attached_hydrogen.clear();
+      is_attached_hydrogen.resize(_fragments.vertexEnd());
+      is_attached_hydrogen.zerofill();
+
+      for (int i = 0; i < _att_points.size(); i++)
+         for (int j = 0; j < _att_points[i].size(); j++)
+            if (_fragments.getAtomNumber(_att_points[i][j]) == ELEM_H)
+               is_attached_hydrogen[_att_points[i][j]] = 1;
+
+      for (int i = _fragments.vertexBegin(); i != _fragments.vertexEnd(); i = _fragments.vertexNext(i))
+      {
+         if (_fragments.getAtomNumber(i) != ELEM_H)
+            continue;
+      
+         const Vertex &h = _fragments.getVertex(i);
+      
+         if (h.degree() == 0)
+            continue;
+
+         int h_nei = h.neiVertex(h.neiBegin());
+
+         if (_fragments.stereocenters.exists(h_nei) && !_is_needless_atom[h_nei])
+            continue;
+
+         if (!is_attached_hydrogen[i])
+            _fragments.removeAtom(i);
+      }
+   }
+
    for (int i = _fragments.vertexBegin(); i != _fragments.vertexEnd(); i = _fragments.vertexNext(i))
       if (_is_needless_atom[i])
          _fragments.removeAtom(i);
-  
+
    for (int i = _fragments.edgeBegin(); i != _fragments.edgeEnd(); i = _fragments.edgeNext(i))
       if (_is_needless_bond[i])
          _fragments.removeBond(i);
@@ -1253,7 +1288,7 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
             if (mol_product.stereocenters.exists(atom_to) &&
                 mol_product.stereocenters.getPyramid(atom_to)[3] != -1)
                return false;
-          
+
             if (_is_rg_exist)
             {
                mol_product.flipBond(pr_neibours[j], atom_from, atom_to);
@@ -1354,6 +1389,59 @@ bool ReactionEnumeratorState::_checkFragment( QueryMolecule &submolecule,
    return true;
 }
 
+void ReactionEnumeratorState::_checkFragmentNecessity ( Array<int> &is_needless_att_point )
+{
+   QS_DEF(Array<int>, ranks);
+   ranks.clear();
+   ranks.resize(_fragments.vertexEnd());
+   ranks.fill(1);
+
+   for (int i = _fragments.vertexBegin(); 
+            i != _fragments.vertexEnd(); 
+            i = _fragments.vertexNext(i))
+   {
+      if (is_needless_att_point[i] != 1)
+         continue;
+
+      DfsWalk dfs(_fragments);
+
+      ranks[i] = 0; 
+
+      dfs.ignored_vertices = _is_needless_atom.ptr();
+      dfs.vertex_ranks = ranks.ptr();
+
+      dfs.walk();
+
+      const Array<DfsWalk::SeqElem> &sequence = dfs.getSequence();
+
+      ranks[i] = 1;
+
+      QS_DEF(Array<int>, needless_atoms);
+      needless_atoms.clear();
+   
+      int j;
+      bool is_fragment_needful = false;
+      for (j = 0; j < sequence.size(); j++)
+      {
+         if ((sequence[j].parent_vertex == -1) && (j != 0))
+            break;
+         
+         if (is_needless_att_point[sequence[j].idx] == 0)
+         {
+            is_fragment_needful = true;
+            break;
+         }
+
+         needless_atoms.push(sequence[j].idx);
+      }
+
+      if (is_fragment_needful)
+         continue;
+
+      for (j = 0; j < needless_atoms.size(); j++)
+         _is_needless_atom[needless_atoms[j]] = 1;
+   }
+}
 
 bool ReactionEnumeratorState::_addFragment( Molecule &fragment, 
                     QueryMolecule &submolecule, Array<int> &rp_mapping, const Array<int> &sub_rg_atoms,
@@ -1441,6 +1529,11 @@ bool ReactionEnumeratorState::_addFragment( Molecule &fragment,
       }
    }
 
+   QS_DEF(Array<int>, is_needless_att_point);
+   is_needless_att_point.clear();
+   is_needless_att_point.resize(_fragments.vertexEnd());
+   is_needless_att_point.fffill();
+
    for (int i = submolecule.vertexBegin(); i != submolecule.vertexEnd(); i = submolecule.vertexNext(i) )
    {
       if (_is_rg_exist && !submolecule.isRSite(i))
@@ -1452,14 +1545,19 @@ bool ReactionEnumeratorState::_addFragment( Molecule &fragment,
       if ((!_is_rg_exist) && (sub_v.degree() == frag_v.degree()))
          continue;
 
+      int frag_rg_idx = frag_mapping[core_sub[i]];
+
       int pr_i = rp_mapping[i];
       if (pr_i == -1)
+      {
+         is_needless_att_point[frag_rg_idx] = 1;
          continue; // No such RGroup in product
-      
+      }
+      is_needless_att_point[frag_rg_idx] = 0;
+         
       if (_is_rg_exist)
       {
          int sub_nv_idx = sub_v.neiVertex(sub_v.neiBegin());
-         int frag_rg_idx = frag_mapping[core_sub[i]];
          _att_points[pr_i].push(frag_rg_idx);
          if (_att_points[pr_i].size() == 2)
          {
@@ -1478,7 +1576,7 @@ bool ReactionEnumeratorState::_addFragment( Molecule &fragment,
                int tmp = _att_points[pr_i][0];
                _att_points[pr_i][0] = _att_points[pr_i][1];
                _att_points[pr_i][1] = tmp;
-            }      
+            }
          }
       }
       else
@@ -1487,6 +1585,8 @@ bool ReactionEnumeratorState::_addFragment( Molecule &fragment,
          _att_points[pr_i].push(frag_rg_idx);
       }
    }
+
+   _checkFragmentNecessity(is_needless_att_point);
 
    return true;
 }

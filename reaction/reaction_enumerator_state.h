@@ -88,8 +88,8 @@ private:
    TL_CP_DECL(QueryMolecule, _full_product);
    TL_CP_DECL(Array<int>, _product_monomers);
    TL_CP_DECL(Molecule, _fragments);
-   TL_CP_DECL(Array<byte>, _is_needless_atom);
-   TL_CP_DECL(Array<byte>, _is_needless_bond);
+   TL_CP_DECL(Array<int>, _is_needless_atom);
+   TL_CP_DECL(Array<int>, _is_needless_bond);
    TL_CP_DECL(Array<int>, _bonds_mapping_sub);
    TL_CP_DECL(Array<int>, _bonds_mapping_super);
    TL_CP_DECL(ObjArray< Array<int> >, _att_points);
@@ -149,6 +149,8 @@ private:
 
    bool _checkFragment( QueryMolecule &submolecule, Molecule &monomer, 
                         Array<byte> &unfrag_mon_atoms, int *core_sub );
+
+   void _checkFragmentNecessity ( Array<int> &is_needless_att_point );
 
    bool _addFragment( Molecule &fragment, QueryMolecule &submolecule, Array<int> &rp_mapping, 
       const Array<int> &sub_rg_atoms, int *core_sub, int *core_super );
