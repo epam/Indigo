@@ -91,25 +91,15 @@ bool MoleculeCisTrans::sortSubstituents (BaseMolecule &mol, int *substituents)
    if (h2 && h3)
       return false;
 
-   if (h1)
-      substituents[1] = -1;
-   else if (h0)
-   {
-      substituents[0] = substituents[1];
-      substituents[1] = -1;
-   }
-   else if (substituents[0] > substituents[1])
-      __swap(substituents[0], substituents[1], tmp);
+   // If hydrogens are explicit then keep them
 
-   if (h3)
-      substituents[3] = -1;
-   else if (h2)
-   {
-      substituents[2] = substituents[3];
-      substituents[3] = -1;
-   }
-   else if (substituents[2] > substituents[3])
-      __swap(substituents[2], substituents[3], tmp);
+   if (!h1)
+      if (h0 || substituents[0] > substituents[1])
+         __swap(substituents[0], substituents[1], tmp);
+
+   if (!h3)
+      if (h2 || substituents[2] > substituents[3])
+         __swap(substituents[2], substituents[3], tmp);
 
    return true;
 }
