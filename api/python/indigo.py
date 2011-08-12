@@ -40,6 +40,13 @@ class Indigo:
   CHAIN = 9
   RING = 10
 
+  RC_NOT_CENTER     = -1
+  RC_UNMARKED       =  0
+  RC_CENTER         =  1
+  RC_UNCHANGED      =  2
+  RC_MADE_OR_BROKEN =  4
+  RC_ORDER_CHANGED  =  8
+
   _zlib = None
   _crt = None
   _lib = None
@@ -276,6 +283,8 @@ class Indigo:
 
     self.IndigoObject.atomMappingNumber = Indigo._member_int_obj(Indigo._lib.indigoGetAtomMappingNumber)
     self.IndigoObject.setAtomMappingNumber = Indigo._member_void_obj_int(Indigo._lib.indigoSetAtomMappingNumber)
+    self.IndigoObject.reactingCenter = Indigo._member_intptr_obj(Indigo._lib.indigoGetReactingCenter)
+    self.IndigoObject.setReactingCenter = Indigo._member_void_obj_int(Indigo._lib.indigoSetReactingCenter)
     self.IndigoObject.clearAAM = Indigo._member_void(Indigo._lib.indigoClearAAM)
     
     self.IndigoObject.iterateAtoms = Indigo._member_obj(Indigo._lib.indigoIterateAtoms)
@@ -774,6 +783,19 @@ class Indigo:
       self.dispatcher._setSID()
       value = c_int()
       res = self.dispatcher._checkResult(func(self.id, pointer(value)))
+      if res == 0:
+        return None
+      return value.value
+    return Indigo._make_wrapper_func(newfunc, func)
+
+  @staticmethod
+  def _member_intptr_obj (func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int, POINTER(c_int)]
+    def newfunc (self, param):
+      self.dispatcher._setSID()
+      value = c_int()
+      res = self.dispatcher._checkResult(func(self.id, param.id, pointer(value)))
       if res == 0:
         return None
       return value.value
