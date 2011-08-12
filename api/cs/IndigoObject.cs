@@ -203,6 +203,22 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoSetAtomMappingNumber(self, reaction_atom.self, number);
       }
 
+      public ReactingCenter reactingCenter (IndigoObject bond)
+      {
+         int c;
+         dispatcher.setSessionID();
+
+         if (_indigo_lib.indigoGetReactingCenter(self, bond.self, &c) == 1)
+            return (ReactingCenter)c;
+         throw new IndigoException("reactingCenter(): unexpected result");
+      }
+
+      public void setReactingCenter (IndigoObject bond, ReactingCenter type)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoSetReactingCenter(self, bond.self, (int)type);
+      }
+
       public void clearAAM ()
       {
          dispatcher.setSessionID();
@@ -448,6 +464,28 @@ namespace com.ggasoftware.indigo
       public IndigoObject addDataSGroup (ICollection atoms, ICollection bonds, String description, String data)
       {
          return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
+      }
+
+      public IndigoObject addSuperatom (int[] atoms, String name)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, _indigo_lib.indigoAddSuperatom(self, atoms.Length, atoms, name));
+      }
+
+      public IndigoObject addSuperatom (ICollection atoms, String name)
+      {
+         return addSuperatom(Indigo.toIntArray(atoms), name);
+      }
+
+      public void addStereocenter (int type, int v1, int v2, int v3)
+      {
+         addStereocenter(type, v1, v2, v3, -1);
+      }
+
+      public void addStereocenter (int type, int v1, int v2, int v3, int v4)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoAddStereocenter(self, type, v1, v2, v3, v4);
       }
 
       public void setDataSGroupXY (float x, float y, String options)
@@ -875,6 +913,17 @@ namespace com.ggasoftware.indigo
       public IndigoObject createSubmolecule (ICollection vertices)
       {
          return createSubmolecule(Indigo.toIntArray(vertices));
+      }
+
+      public IndigoObject getSubmolecule (int[] vertices)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, _indigo_lib.indigoGetSubmolecule(self, vertices.Length, vertices));
+      }
+
+      public IndigoObject getSubmolecule (ICollection vertices)
+      {
+         return getSubmolecule(Indigo.toIntArray(vertices));
       }
 
       public IndigoObject createEdgeSubmolecule (int[] vertices, int[] edges)

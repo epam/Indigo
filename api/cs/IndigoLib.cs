@@ -86,6 +86,9 @@ namespace com.ggasoftware.indigo
       int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int number);
       int indigoClearAAM (int reaction);
 
+      int indigoGetReactingCenter (int reaction, int reaction_bond, int *rc);
+      int indigoSetReactingCenter (int reaction, int reaction_bond, int rc);
+
       int indigoOptimize (int query, string options);
 
       int indigoIterateAtoms (int molecule);
@@ -100,6 +103,9 @@ namespace com.ggasoftware.indigo
       int indigoIsRSite (int atom);
       int indigoStereocenterType (int atom);
       int indigoSingleAllowedRGroup (int rsite);
+
+      int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);
+
       sbyte* indigoSymbol (int atom);
       int indigoDegree (int atom);
       int indigoGetCharge (int atom, int* charge);
@@ -129,6 +135,8 @@ namespace com.ggasoftware.indigo
       sbyte* indigoDescription (int item);
       int indigoAddDataSGroup (int molecule, int natoms, int[] atoms, int nbonds, int[] bonds, string description, string data);
       int indigoSetDataSGroupXY (int sgroup, float x, float y, string options);
+
+      int indigoAddSuperatom (int molecule, int natoms, int []atoms, string name);
 
       float* indigoXYZ (int atom);
       int indigoSetXYZ (int atom, float x, float y, float z);
@@ -205,6 +213,9 @@ namespace com.ggasoftware.indigo
       int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int[] vertices,
                                          int nedges, int[] edges);
       int indigoRemoveAtoms (int molecule, int nvertices, int[] vertices);
+
+      int indigoGetSubmolecule (int molecule, int nvertices, int[] vertices);
+
       float indigoAlignAtoms (int molecule, int natoms, int[] atom_ids, float[] desired_xyz);
       int indigoAromatize (int item);
       int indigoDearomatize (int item);
