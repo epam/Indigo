@@ -297,6 +297,8 @@ CEXPORT int indigoIsRSite (int atom);
 CEXPORT int indigoStereocenterType (int atom);
 CEXPORT int indigoSingleAllowedRGroup (int rsite);
 
+CEXPORT int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);
+
 // Applicable to an R-Group, but not to a molecule
 CEXPORT int indigoIterateRGroupFragments (int rgroup);
 CEXPORT int indigoCountAttachmentPoints (int rgroup);

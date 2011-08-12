@@ -301,6 +301,8 @@ class Indigo:
     self.IndigoObject.singleAllowedRGroup = Indigo._member_int(Indigo._lib.indigoSingleAllowedRGroup)
     self.IndigoObject.symbol = Indigo._member_string(Indigo._lib.indigoSymbol)
 
+    self.IndigoObject.addStereocenter = Indigo._member_int_int_int_int_dint(Indigo._lib.indigoAddStereocenter)
+
     self.IndigoObject.degree = Indigo._member_int(Indigo._lib.indigoDegree)
     self.IndigoObject.charge = Indigo._member_intptr(Indigo._lib.indigoGetCharge)
     self.IndigoObject.explicitValence = Indigo._member_intptr(Indigo._lib.indigoGetExplicitValence)
@@ -855,6 +857,16 @@ class Indigo:
       return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
+  @staticmethod
+  def _member_int_int_int_int_dint (func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int, c_int, c_int, c_int]
+    def newfunc (self, param, v1, v2, v3, v4 = -1):
+      self.dispatcher._setSID()
+      self.dispatcher._checkResult(func(self.id, param, v1, v2, v3, v4))
+    return Indigo._make_wrapper_func(newfunc, func)
+    
+    
   @staticmethod
   def _member_obj_obj (func):
     func.restype = c_int
