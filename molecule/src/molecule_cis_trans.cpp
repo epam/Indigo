@@ -78,7 +78,7 @@ bool MoleculeCisTrans::_pureH (BaseMolecule &mol, int idx)
    return mol.getAtomNumber(idx) == ELEM_H && mol.possibleAtomIsotope(idx, 0);
 }
 
-bool MoleculeCisTrans::sortSubstituents (BaseMolecule &mol, int *substituents)
+bool MoleculeCisTrans::sortSubstituents (BaseMolecule &mol, int *substituents, bool *parity_changed)
 {
    bool h0 = _pureH(mol, substituents[0]);
    bool h1 = substituents[1] < 0 || _pureH(mol, substituents[1]);
@@ -91,15 +91,24 @@ bool MoleculeCisTrans::sortSubstituents (BaseMolecule &mol, int *substituents)
    if (h2 && h3)
       return false;
 
+   bool swapped = false;
    // If hydrogens are explicit then keep them
-
    if (!h1)
       if (h0 || substituents[0] > substituents[1])
+      {
          __swap(substituents[0], substituents[1], tmp);
+         swapped = !swapped;
+      }
 
    if (!h3)
       if (h2 || substituents[2] > substituents[3])
+      {
          __swap(substituents[2], substituents[3], tmp);
+         swapped = !swapped;
+      }
+
+   if (parity_changed != 0)
+      *parity_changed = swapped;
 
    return true;
 }
@@ -205,7 +214,7 @@ void MoleculeCisTrans::restoreSubstituents (int bond_idx)
    if (!isGeomStereoBond(mol, bond_idx, substituents, false))
       throw Error("restoreSubstituents(): not a cis-trans bond");
 
-   if (!sortSubstituents(mol, substituents))
+   if (!sortSubstituents(mol, substituents, 0))
       throw Error("can't sort restored substituents");
 }
 
@@ -279,7 +288,7 @@ void MoleculeCisTrans::build (int *exclude_bonds)
       if (!isGeomStereoBond(mol, i, substituents, true))
          continue;
 
-      if (!sortSubstituents(mol, substituents))
+      if (!sortSubstituents(mol, substituents, 0))
          continue;
 
       int sign = _sameside(mol, beg, end, substituents[0], substituents[2]);
@@ -314,7 +323,7 @@ void MoleculeCisTrans::buildFromSmiles (int *dirs)
       if (!isGeomStereoBond(mol, i, _bonds[i].substituents, false))
          continue;
 
-      if (!sortSubstituents(mol, _bonds[i].substituents))
+      if (!sortSubstituents(mol, _bonds[i].substituents, 0))
          continue;
 
       int substituents[4];
@@ -501,9 +510,14 @@ int MoleculeCisTrans::applyMapping (int parity, const int *substituents, const i
 {
    int sum = 0;
 
-   if (substituents[1] >= 0 && mapping[substituents[1]] < mapping[substituents[0]])
+   if (substituents[0] < 0 || substituents[2] < 0)
+      throw Error("Internal error in MoleculeCisTrans::applyMapping: substituents[0] < 0 || substituents[2] < 0");
+
+   if (substituents[1] >= 0 && mapping[substituents[1]] >= 0 && 
+         mapping[substituents[1]] < mapping[substituents[0]])
       sum++;
-   if (substituents[3] >= 0 && mapping[substituents[3]] < mapping[substituents[2]])
+   if (substituents[3] >= 0 && mapping[substituents[3]] >= 0 && 
+         mapping[substituents[3]] < mapping[substituents[2]])
       sum++;
 
    if ((sum % 2) == 0)
@@ -596,36 +610,15 @@ void MoleculeCisTrans::buildOnSubmolecule (BaseMolecule &super, int *mapping)
       }
 
       bond.parity = parity;
-
-      int tmp;
-
-      if (bond.substituents[0] == -1)
-      {
-         __swap(bond.substituents[0], bond.substituents[1], tmp);
-         bond.parity = 3 - bond.parity;
-      }
-      if (bond.substituents[2] == -1)
-      {
-         __swap(bond.substituents[2], bond.substituents[3], tmp);
-         bond.parity = 3 - bond.parity;
-      }
-
-      if (bond.substituents[0] == -1 || bond.substituents[2] == -1)
+      bool parity_changed;
+      if (!sortSubstituents(sub, bond.substituents, &parity_changed))
       {
          bond.parity = 0;
          continue;
       }
 
-      if (bond.substituents[1] != -1 && bond.substituents[1] < bond.substituents[0])
-      {
-         __swap(bond.substituents[0], bond.substituents[1], tmp);
+      if (parity_changed)
          bond.parity = 3 - bond.parity;
-      }
-      if (bond.substituents[3] != -1 && bond.substituents[3] < bond.substituents[2])
-      {
-         __swap(bond.substituents[2], bond.substituents[3], tmp);
-         bond.parity = 3 - bond.parity;
-      }
    }
 }
 
