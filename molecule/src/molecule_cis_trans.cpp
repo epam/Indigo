@@ -80,9 +80,9 @@ bool MoleculeCisTrans::_pureH (BaseMolecule &mol, int idx)
 
 bool MoleculeCisTrans::sortSubstituents (BaseMolecule &mol, int *substituents, bool *parity_changed)
 {
-   bool h0 = _pureH(mol, substituents[0]);
+   bool h0 = substituents[0] < 0 || _pureH(mol, substituents[0]);
    bool h1 = substituents[1] < 0 || _pureH(mol, substituents[1]);
-   bool h2 = _pureH(mol, substituents[2]);
+   bool h2 = substituents[2] < 0 || _pureH(mol, substituents[2]);
    bool h3 = substituents[3] < 0 || _pureH(mol, substituents[3]);
    int tmp;
 
