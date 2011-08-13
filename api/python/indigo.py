@@ -1028,7 +1028,10 @@ class Indigo:
     elif type(value1).__name__ == 'float' and value2 is None and value3 is None:
       self._checkResult(Indigo._lib.indigoSetOptionFloat(option, value1))
     elif type(value1).__name__ == 'bool' and value2 is None and value3 is None:
-      self._checkResult(Indigo._lib.indigoSetOptionBool(option, 1 if value1 else 0))
+      value1_b = 0
+      if value1:
+        value1_b = 1
+      self._checkResult(Indigo._lib.indigoSetOptionBool(option, value1_b))
     elif type(value1).__name__ == 'int' and value2 and \
          type(value2).__name__ == 'int' and value3 is None:
       self._checkResult(Indigo._lib.indigoSetOptionXY(option, value1, value2))
