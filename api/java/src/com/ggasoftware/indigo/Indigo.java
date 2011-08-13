@@ -32,6 +32,13 @@ public class Indigo
    public static final int CHAIN = 9;
    public static final int RING = 10;
 
+   public static final int RC_NOT_CENTER = -1;
+   public static final int RC_UNMARKED = 0;
+   public static final int RC_CENTER = 1;
+   public static final int RC_UNCHANGED = 2;
+   public static final int RC_MADE_OR_BROKEN = 4;
+   public static final int RC_ORDER_CHANGED = 8;
+           
    // JNA does not allow throwing exception from callbacks, thus we can not
    // use the error handler and we have to check the error codes. Below are
    // four functions to ease checking them.

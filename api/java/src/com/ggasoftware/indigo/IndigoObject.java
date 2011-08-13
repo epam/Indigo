@@ -289,6 +289,22 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return null;
    }
 
+   public int reactingCenter (IndigoObject bond)
+   {
+      dispatcher.setSessionID();
+
+      IntByReference res = new IntByReference();
+      if (Indigo.checkResult(this, _lib.indigoGetReactingCenter(self, bond.self, res)) == 1)
+         return res.getValue();
+      throw new IndigoException(this, "reactingCenter(): unexpected result");
+   }
+   
+   public void setReactingCenter (IndigoObject bond, int type)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoSetReactingCenter(self, bond.self, type));
+   }
+
    public Integer explicitValence ()
    {
       IntByReference res = new IntByReference();
@@ -828,6 +844,17 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
    }
 
+   public void addStereocenter (int type, int v1, int v2, int v3)
+   {
+      addStereocenter(type, v1, v2, v3, -1);
+   }
+
+   public void addStereocenter (int type, int v1, int v2, int v3, int v4)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoAddStereocenter(self, type, v1, v2, v3, v4));
+   }
+   
    public void setDataSGroupXY(float x, float y, String options)
    {
       dispatcher.setSessionID();

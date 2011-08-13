@@ -130,6 +130,8 @@ public interface IndigoLib extends Library
    int indigoStereocenterType (int atom);
    int indigoSingleAllowedRGroup (int rsite);
 
+   int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);
+      
    int indigoIterateRGroupFragments (int rgroup);
    int indigoCountAttachmentPoints (int rgroup);
 
@@ -145,6 +147,9 @@ public interface IndigoLib extends Library
    int indigoCountHydrogens (int atom, IntByReference valence);
    int indigoCountImplicitHydrogens (int item);
 
+   int indigoGetReactingCenter (int reaction, int reaction_bond, IntByReference rc);
+   int indigoSetReactingCenter (int reaction, int reaction_bond, int rc);
+   
    Pointer indigoXYZ (int atom);
    int indigoSetXYZ (int atom, float x, float y, float z);
 
