@@ -14,8 +14,13 @@ namespace indigo
 {
    public unsafe class BingoCore
    {
+      [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
       public delegate int GetNextRecordHandler (IntPtr context);
+
+      [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
       public delegate void ProcessResultHandler (IntPtr context);
+
+      [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
       public delegate void ProcessErrorHandler (int id, IntPtr context);
 
       private static BingoCoreLib _lib = null;
