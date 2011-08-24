@@ -46,6 +46,8 @@ public:
       ReactionMonomers();
 
       int size();
+      
+      void clear();
 
       Molecule & getMonomer( int reactant_idx, int index );
 
@@ -61,10 +63,12 @@ public:
    bool is_multistep_reaction;
    bool is_self_react;
    bool is_one_tube;
+   bool is_same_keeping;
+
    int max_deep_level;
    int max_product_count;
 
-   int buildProduct( void );
+   int buildProduct( bool is_transform );
 
    ReactionEnumeratorState( QueryReaction &cur_reaction, QueryMolecule &cur_full_product, 
       Array<int> &cur_product_aam_array, RedBlackStringMap<int> &cur_smiles_array, 
@@ -72,6 +76,8 @@ public:
       ObjArray< Array<int> > &cur_tubes_monomers );
 
    ReactionEnumeratorState( ReactionEnumeratorState &cur_rpe_state );
+
+   bool startEmbeddingTransformation( Molecule &monomer, bool is_transform );
 
 private:
    QueryReaction &_reaction;
@@ -88,8 +94,8 @@ private:
    TL_CP_DECL(QueryMolecule, _full_product);
    TL_CP_DECL(Array<int>, _product_monomers);
    TL_CP_DECL(Molecule, _fragments);
-   TL_CP_DECL(Array<byte>, _is_needless_atom);
-   TL_CP_DECL(Array<byte>, _is_needless_bond);
+   TL_CP_DECL(Array<int>, _is_needless_atom);
+   TL_CP_DECL(Array<int>, _is_needless_bond);
    TL_CP_DECL(Array<int>, _bonds_mapping_sub);
    TL_CP_DECL(Array<int>, _bonds_mapping_super);
    TL_CP_DECL(ObjArray< Array<int> >, _att_points);
@@ -114,8 +120,6 @@ private:
       const Molecule &monomer );
 
    int _calcMaxHCnt( QueryMolecule &molecule );
-
-   void _start_ee( Molecule &monomer );
 
    void _changeQueryNode( QueryMolecule &ee_reactant, int change_atom_idx );
 
@@ -149,6 +153,8 @@ private:
 
    bool _checkFragment( QueryMolecule &submolecule, Molecule &monomer, 
                         Array<byte> &unfrag_mon_atoms, int *core_sub );
+
+   void _checkFragmentNecessity ( Array<int> &is_needless_att_point );
 
    bool _addFragment( Molecule &fragment, QueryMolecule &submolecule, Array<int> &rp_mapping, 
       const Array<int> &sub_rg_atoms, int *core_sub, int *core_super );

@@ -72,6 +72,9 @@
     <ClCompile Include="src\reaction_cml_saver.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="reaction_transformation.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_reaction.h">
@@ -138,6 +141,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="reaction_cml_saver.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="reaction_transformation.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
