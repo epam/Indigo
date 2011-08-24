@@ -1038,6 +1038,39 @@ void MoleculeLayoutGraph::_assignFinalCoordinates (float bond_length, const Arra
       return;
    }
 
+   // flip molecule vertically if R1 is not above other R-groups
+   if (_molecule != 0 && _n_fixed == 0 && _molecule->countRSites() > 1) 
+   {
+      QS_DEF(Array<int>, rgroup_list);
+      Vec2f r1_pos, highest_pos(0.f, -1000.f);
+      bool r1_exist = false;
+      
+      for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+      {
+         if (_molecule->isRSite(_layout_vertices[i].ext_idx))
+         {
+            _molecule->getAllowedRGroups(_layout_vertices[i].ext_idx, rgroup_list);
+            if (rgroup_list.size() == 1 && rgroup_list[0] == 1)
+            {
+               r1_pos = _layout_vertices[i].pos;
+               r1_exist = true;
+            } else if (_layout_vertices[i].pos.y > highest_pos.y)
+            {
+               highest_pos = _layout_vertices[i].pos;
+            }
+         }
+      }
+      
+      if (r1_exist && r1_pos.y < highest_pos.y)
+      {
+         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+         {
+            _layout_vertices[i].pos.y *= -1;
+         }
+      }
+   }
+
+
    // 1. Choose scale ratio and first edge to match
    float scale = bond_length, src_norm, norm;
    int v1, v2, v3;
