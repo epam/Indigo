@@ -132,7 +132,7 @@ void ReactionProductEnumerator::buildProducts( void )
    rpe_state.max_product_count = max_product_count;
    rpe_state.is_one_tube = is_one_tube;
 
-   rpe_state.buildProduct();
+   rpe_state.buildProduct(false);
 }
 
 /*
