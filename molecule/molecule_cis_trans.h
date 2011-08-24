@@ -69,7 +69,7 @@ public:
 
    void buildOnSubmolecule (BaseMolecule &super, int *mapping);
 
-   static bool sortSubstituents (BaseMolecule &mol, int *substituents);
+   static bool sortSubstituents (BaseMolecule &mol, int *substituents, bool *parity_changed);
 
    void restoreSubstituents (int bond_idx);
    void registerUnfoldedHydrogen (int atom_idx, int added_hydrogen);

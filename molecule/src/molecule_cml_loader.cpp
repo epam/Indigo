@@ -372,7 +372,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
          if (!MoleculeCisTrans::isGeomStereoBond(mol, bond_idx, substituents, false))
             throw Error("cis-trans notation on a non cis-trans bond #%d", bond_idx);
 
-         if (!MoleculeCisTrans::sortSubstituents(mol, substituents))
+         if (!MoleculeCisTrans::sortSubstituents(mol, substituents, 0))
             throw Error("cis-trans notation on a non cis-trans bond #%d", bond_idx);
 
          BufferScanner strscan(atom_refs);

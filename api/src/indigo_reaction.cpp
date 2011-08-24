@@ -533,6 +533,42 @@ CEXPORT int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int num
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoGetReactingCenter (int reaction, int reaction_bond, int*rc) {
+   INDIGO_BEGIN
+   {
+      IndigoBond &ib = IndigoBond::cast(self.getObject(reaction_bond));
+
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+      int mol_idx = rxn.findMolecule(&ib.mol);
+
+      if (mol_idx == -1)
+         throw IndigoError("indigoGetReactingCenter(): input bond not found in the reaction");
+
+      *rc = rxn.getReactingCenter(mol_idx, ib.idx);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoSetReactingCenter (int reaction, int reaction_bond, int rc) {
+   INDIGO_BEGIN
+   {
+      IndigoBond &ib = IndigoBond::cast(self.getObject(reaction_bond));
+
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+      int mol_idx = rxn.findMolecule(&ib.mol);
+
+      if (mol_idx == -1)
+         throw IndigoError("indigoSetReactingCenter(): input bond not found in the reaction");
+      if (rc < -1 || rc > RC_TOTAL)
+         throw IndigoError("indigoSetReactingCenter(): invalid or unsupported reacting center: %d", rc);
+
+      rxn.getReactingCenterArray(mol_idx).at(ib.idx) = rc;
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int indigoClearAAM (int reaction)
 {
    INDIGO_BEGIN

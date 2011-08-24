@@ -38,6 +38,30 @@ CEXPORT int indigoStereocenterType (int atom)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      int core_type;
+      switch (type)
+      {
+         case INDIGO_ABS: core_type = MoleculeStereocenters::ATOM_ABS; break;
+         case INDIGO_OR: core_type = MoleculeStereocenters::ATOM_OR; break;
+         case INDIGO_AND: core_type = MoleculeStereocenters::ATOM_AND; break;
+         case INDIGO_EITHER: core_type = MoleculeStereocenters::ATOM_ANY; break;
+         default: throw IndigoError("Unknown stereocenter type");
+      }
+
+      int pyramid[4] = { v1, v2, v3, v4 };
+      ia.mol.stereocenters.add(ia.idx, core_type, 0, pyramid);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+
 CEXPORT int indigoCountStereocenters (int molecule)
 {
    INDIGO_BEGIN

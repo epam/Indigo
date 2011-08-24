@@ -9,6 +9,17 @@ using System.Collections;
 
 namespace com.ggasoftware.indigo
 {
+   [Flags]
+   public enum ReactingCenter
+   {
+      NOT_CENTER = -1,
+      UNMARKED = 0,
+      CENTER = 1,
+      UNCHANGED = 2,
+      MADE_OR_BROKEN = 4,
+      ORDER_CHANGED = 8
+   }
+
    public unsafe class Indigo : IDisposable
    {
       public const int ABS = 1;
@@ -21,6 +32,13 @@ namespace com.ggasoftware.indigo
       public const int TRANS = 8;
       public const int CHAIN = 9;
       public const int RING = 10;
+
+      public const int RC_NOT_CENTER = -1;
+      public const int INDIGO_RC_UNMARKED =  0;
+      public const int INDIGO_RC_CENTER = 1;
+      public const int INDIGO_RC_UNCHANGED = 2;
+      public const int INDIGO_RC_MADE_OR_BROKEN = 4;
+      public const int INDIGO_RC_ORDER_CHANGED = 8;
 
       public long getSID ()
       {

@@ -185,7 +185,18 @@ CEXPORT const char * indigoCml (int object);
 CEXPORT int indigoSaveMDLCT (int item, int output);
 
 /* Reactions, query reactions */
-
+/*
+ * Reaction centers
+ */
+enum
+{
+   INDIGO_RC_NOT_CENTER     = -1,
+   INDIGO_RC_UNMARKED       =  0,
+   INDIGO_RC_CENTER         =  1,
+   INDIGO_RC_UNCHANGED      =  2,
+   INDIGO_RC_MADE_OR_BROKEN =  4,
+   INDIGO_RC_ORDER_CHANGED  =  8
+};
 CEXPORT int indigoLoadReaction  (int source);
 CEXPORT int indigoLoadReactionFromString (const char *string);
 CEXPORT int indigoLoadReactionFromFile   (const char *filename);
@@ -245,6 +256,10 @@ CEXPORT int indigoAutomap (int reaction, const char *mode);
 CEXPORT int indigoGetAtomMappingNumber (int reaction, int reaction_atom);
 CEXPORT int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int number);
 
+// Getters and setters for reacting centers
+CEXPORT int indigoGetReactingCenter (int reaction, int reaction_bond, int*rc);
+CEXPORT int indigoSetReactingCenter (int reaction, int reaction_bond, int rc);
+
 // Clears all reaction AAM information 
 CEXPORT int indigoClearAAM (int reaction);
 
@@ -281,6 +296,8 @@ CEXPORT int indigoIsRSite (int atom);
 // or zero if the atom is not a stereoatom
 CEXPORT int indigoStereocenterType (int atom);
 CEXPORT int indigoSingleAllowedRGroup (int rsite);
+
+CEXPORT int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);
 
 // Applicable to an R-Group, but not to a molecule
 CEXPORT int indigoIterateRGroupFragments (int rgroup);
