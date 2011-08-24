@@ -1039,11 +1039,13 @@ void MoleculeLayoutGraph::_assignFinalCoordinates (float bond_length, const Arra
    }
 
    // flip molecule vertically if R1 is not above other R-groups
+   // flip molecule horizontally if R1 is not on the left
    if (_molecule != 0 && _n_fixed == 0 && _molecule->countRSites() > 1) 
    {
       QS_DEF(Array<int>, rgroup_list);
       Vec2f r1_pos, highest_pos(0.f, -1000.f);
       bool r1_exist = false;
+      float center_x = 0.f;
       
       for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
       {
@@ -1059,14 +1061,19 @@ void MoleculeLayoutGraph::_assignFinalCoordinates (float bond_length, const Arra
                highest_pos = _layout_vertices[i].pos;
             }
          }
+         center_x += _layout_vertices[i].pos.x;
       }
       
-      if (r1_exist && r1_pos.y < highest_pos.y)
+      center_x /= vertexCount();
+      
+      if (r1_exist)
       {
-         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-         {
-            _layout_vertices[i].pos.y *= -1;
-         }
+         if (r1_pos.y < highest_pos.y)
+            for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+               _layout_vertices[i].pos.y *= -1;
+         if (r1_pos.x > center_x)
+            for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+               _layout_vertices[i].pos.x *= -1;
       }
    }
 
