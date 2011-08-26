@@ -32,6 +32,7 @@
 #include "molecule/elements.h"
 #include "graph/dfs_walk.h"
 
+
 using namespace indigo;
 
 ReactionEnumeratorState::ReactionMonomers::ReactionMonomers() : TL_CP_GET(_monomers), 
@@ -1072,9 +1073,9 @@ void ReactionEnumeratorState::_checkConstraints( QueryMolecule &reactant, Array<
            (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_NUMBER))))
          throw Error("product atom's number constraint exist");
 
-      if (((_full_product.getAtomCharge(pr_i) == -1) && 
+      if (((_full_product.getAtomCharge(pr_i) == CHARGE_UNKNOWN) && 
            (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_CHARGE))) &&
-          !((reactant.getAtomCharge(i) == -1) && 
+          !((reactant.getAtomCharge(i) == CHARGE_UNKNOWN) && 
             (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_CHARGE))))
          throw Error("product atom's charge constraint exist");
 

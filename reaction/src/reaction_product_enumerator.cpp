@@ -135,38 +135,6 @@ void ReactionProductEnumerator::buildProducts( void )
    rpe_state.buildProduct(false);
 }
 
-/*
-void ReactionProductEnumerator::_buildTubesGrid_old( void )
-{
-   int tubes_count = 1;
-   for (int i = _reaction.reactantBegin(); i != _reaction.reactantEnd(); 
-      i = _reaction.reactantNext(i))
-      tubes_count *= getMonomersCount(i);
-   _tubes_monomers.resize(tubes_count);
-
-   for (int i = _reaction.reactantBegin(); i != _reaction.reactantEnd(); 
-      i = _reaction.reactantNext(i))
-   {
-      int cur_pos = 0;
-      for (int j = 0; j < _reaction_monomers.size(); j++)
-      {
-         if (_reaction_monomers._reactant_indexes[j] != i)
-            continue;
-
-         int tubes_with_monomer_count = 1;
-         for (int k = _reaction.reactantBegin(); k != _reaction.reactantEnd(); 
-            k = _reaction.reactantNext(k))
-            if (k != i)
-               tubes_with_monomer_count *= getMonomersCount(k);
-
-         int cur_mon_count = getMonomersCount(i);
-         for (int k = 0; k < tubes_with_monomer_count; k++)
-            _tubes_monomers[cur_pos + k * cur_mon_count].push(j);
-         cur_pos++;
-      }
-   }
-}*/
-
 void ReactionProductEnumerator::_buildTubesGrid( void )
 {
    QS_DEF(ObjArray< Array<int> >, digits);

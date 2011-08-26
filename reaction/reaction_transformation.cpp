@@ -66,7 +66,17 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
    return true;
 }
 
-void ReactionTransformation::_product_proc( Molecule &product, Array<int> &monomers_indices, void *userdata )
+bool ReactionTransformation::transform(ReusableObjArray<Molecule> &molecules, QueryReaction &reaction)
+{
+   for (int i = 0; i < molecules.size(); i++)
+      if (!transform(molecules[i], reaction))
+         return false;
+
+   return true;
+}
+
+void ReactionTransformation::_product_proc( Molecule &product, Array<int> &monomers_indices, 
+                                            void *userdata )
 {
    ReactionTransformation *rt = (ReactionTransformation *)userdata;
 
@@ -76,7 +86,8 @@ void ReactionTransformation::_product_proc( Molecule &product, Array<int> &monom
 }
 
 void ReactionTransformation::_mergeReactionComponents( QueryReaction &reaction, int mol_type, 
-                                                       QueryMolecule &merged_molecule, Array<int> &merged_aam)
+                                                       QueryMolecule &merged_molecule, 
+                                                       Array<int> &merged_aam)
 {
    merged_molecule.clear();
    merged_aam.clear();

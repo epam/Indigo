@@ -32,6 +32,9 @@ namespace indigo
       ReactionTransformation( void );
 
       bool transform(Molecule &molecule, QueryReaction &reaction);
+      
+      bool transform(ReusableObjArray<Molecule> &molecules, QueryReaction &reaction);
+
    private:
       TL_CP_DECL(QueryReaction, _merged_reaction);
       TL_CP_DECL(Molecule, _cur_monomer);
