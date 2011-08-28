@@ -120,6 +120,7 @@ protected:
    TL_CP_DECL(Pool<List<int>::Elem>, _neipool);
    TL_CP_DECL(ObjArray<_Atom>, _atoms);
    TL_CP_DECL(Array<int>, _hcount);
+   TL_CP_DECL(Array<int>, _hcount_ignored);
    TL_CP_DECL(Array<_DBond>, _dbonds);
    TL_CP_DECL(Array<int>, _written_atoms);
    TL_CP_DECL(Array<int>, _written_atoms_inv);
@@ -128,6 +129,7 @@ protected:
    TL_CP_DECL(Array<int>, _attachment_indices);
    TL_CP_DECL(Array<int>, _attachment_cycle_numbers);
    TL_CP_DECL(Array<int>, _aromatic_bonds);
+   TL_CP_DECL(Array<int>, _ignored_vertices);
 
    // Some cis-trans bonds are considered "complicated", they are either:
    // 1.   Ring bonds, which can not be saved with slash notation (conflicts are

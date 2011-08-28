@@ -536,6 +536,13 @@ void Molecule::_removeAtoms (const Array<int> &indices, const int *mapping)
          if (mapping[nei] < 0) // the neighbor is marked for removal too
             continue;
 
+         // Precalculate and store into cache number of implicit hydrogens
+         // This is required for correct hydrogens unfolding for molecules 
+         // like [H]S([H])([H])C (that is seems to be invalid)
+         if (!isRSite(nei) && !isPseudoAtom(nei))
+            if (_implicit_h.size() <= nei || _implicit_h[nei] < 0)
+               getImplicitH_NoThrow(nei, -1);
+
          if (_implicit_h.size() > nei && _implicit_h[nei] >= 0)
          {
             if (order == BOND_SINGLE)
@@ -1352,8 +1359,13 @@ bool Molecule::isAromatized ()
    return _aromatized;
 }
 
-// Moved this method here to supply both Smiles and CML savers
 bool Molecule::shouldWriteHCount (Molecule &mol, int idx)
+{
+   return shouldWriteHCountEx(mol, idx, 0);
+}
+
+// Moved this method here to supply both Smiles and CML savers
+bool Molecule::shouldWriteHCountEx (Molecule &mol, int idx, int h_to_ignore)
 {
    bool aromatic = (mol.getAtomAromaticity(idx) == ATOM_AROMATIC);
 
@@ -1387,6 +1399,8 @@ bool Molecule::shouldWriteHCount (Molecule &mol, int idx)
    int normal_val, normal_hyd;
 
    int impl_h = mol.getImplicitH_NoThrow(idx, -1);
+   if (impl_h >= 0)
+      impl_h += h_to_ignore;
    if (mol.isNitrogenV5(idx))
    {
       normal_val = 4;
@@ -1397,7 +1411,7 @@ bool Molecule::shouldWriteHCount (Molecule &mol, int idx)
       if (impl_h < 0)
          return false; // can not write an undefined H count
 
-      int conn = mol.getAtomConnectivity_noImplH(idx);
+      int conn = mol.getAtomConnectivity_noImplH(idx) - h_to_ignore;
 
       if (conn < 0)
          return false; // this is an aromatic atom -- dealed with that before

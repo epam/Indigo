@@ -131,6 +131,7 @@ public:
    static void checkForConsistency (Molecule &mol);
 
    static bool shouldWriteHCount (Molecule &mol, int idx);
+   static bool shouldWriteHCountEx (Molecule &mol, int idx, int h_to_ignore);
 
    bool isAromatized ();
 
