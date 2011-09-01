@@ -64,20 +64,21 @@ public:
    bool is_self_react;
    bool is_one_tube;
    bool is_same_keeping;
+   bool is_transform;
 
    int max_deep_level;
    int max_product_count;
-
-   int buildProduct( bool is_transform );
 
    ReactionEnumeratorState( QueryReaction &cur_reaction, QueryMolecule &cur_full_product, 
       Array<int> &cur_product_aam_array, RedBlackStringMap<int> &cur_smiles_array, 
       ReactionMonomers &cur_reaction_monomers, int &cur_product_coint, 
       ObjArray< Array<int> > &cur_tubes_monomers );
-
+         
    ReactionEnumeratorState( ReactionEnumeratorState &cur_rpe_state );
 
-   bool startEmbeddingTransformation( Molecule &monomer, bool is_transform );
+   int buildProduct( void );
+
+   bool performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms );
 
 private:
    QueryReaction &_reaction;
@@ -100,6 +101,8 @@ private:
    TL_CP_DECL(Array<int>, _bonds_mapping_super);
    TL_CP_DECL(ObjArray< Array<int> >, _att_points);
    TL_CP_DECL(MoleculeSubstructureMatcher::FragmentMatchCache, _fmcache);
+   TL_CP_DECL(Array<int>, _monomer_forbidden_atoms);
+   TL_CP_DECL(Array<int>, _product_forbidden_atoms);
    
    AromaticityMatcher *_am;
    EmbeddingEnumerator *_ee;
@@ -120,6 +123,8 @@ private:
       const Molecule &monomer );
 
    int _calcMaxHCnt( QueryMolecule &molecule );
+
+   bool _startEmbeddingEnumerator( Molecule &monomer );
 
    void _changeQueryNode( QueryMolecule &ee_reactant, int change_atom_idx );
 

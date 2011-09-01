@@ -53,12 +53,17 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
    re_state.is_one_tube = false;
    re_state.is_same_keeping = true;
    re_state.is_self_react = false;
+   re_state.is_transform = true;
    re_state.userdata = this;
    re_state.product_proc = _product_proc;
 
    _cur_monomer.clone(molecule, NULL, NULL);
 
-   while (re_state.startEmbeddingTransformation(_cur_monomer, true))
+   QS_DEF(Array<int>, forbidden_atoms);
+   forbidden_atoms.clear_resize(_cur_monomer.vertexEnd());
+   forbidden_atoms.zerofill();
+
+   while (re_state.performSingleTransformation(_cur_monomer, forbidden_atoms))
       ;
 
    molecule.clone(_cur_monomer, NULL, NULL);

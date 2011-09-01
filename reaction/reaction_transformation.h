@@ -19,12 +19,13 @@
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
+#include "reaction/reaction_enumerator_state.h"
 #include "graph/embedding_enumerator.h"
 #include "base_cpp/reusable_obj_array.h"
 
 namespace indigo
 {
-   class ReactionTransformation
+   class ReactionTransformation// : public ReactionEnumeratorState
    {
    public:
       DEF_ERROR("Reaction transformation");

@@ -119,7 +119,8 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
     TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
     TL_CP_GET(_bonds_mapping_sub), TL_CP_GET(_bonds_mapping_super), 
-    TL_CP_GET(_att_points), TL_CP_GET(_fmcache)
+    TL_CP_GET(_att_points), TL_CP_GET(_fmcache), 
+    TL_CP_GET(_monomer_forbidden_atoms), TL_CP_GET(_product_forbidden_atoms)
 {
    _reactant_idx = _reaction.reactantBegin();
 
@@ -136,6 +137,9 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
    _att_points.clear();
    _att_points.resize(cur_full_product.vertexEnd());
 
+   _monomer_forbidden_atoms.clear();
+   _product_forbidden_atoms.clear();
+
    _product_monomers.clear();
    _am = NULL;
    _ee = NULL;
@@ -144,6 +148,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
    is_self_react = false;
    is_one_tube = false;
    is_same_keeping = false;
+   is_transform = false;
    _is_frag_search = false;
    _is_rg_exist = false;
 
@@ -172,7 +177,8 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
     TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
     TL_CP_GET(_bonds_mapping_sub), TL_CP_GET(_bonds_mapping_super), 
-    TL_CP_GET(_att_points), TL_CP_GET(_fmcache)
+    TL_CP_GET(_att_points), TL_CP_GET(_fmcache), 
+    TL_CP_GET(_monomer_forbidden_atoms), TL_CP_GET(_product_forbidden_atoms)
 {
    _reactant_idx = cur_rpe_state._reactant_idx;
    
@@ -192,6 +198,11 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
    _bonds_mapping_super.clear();
    _bonds_mapping_super.copy(cur_rpe_state._bonds_mapping_super);
    _att_points.clear();
+   _monomer_forbidden_atoms.clear();
+   _monomer_forbidden_atoms.copy(cur_rpe_state._monomer_forbidden_atoms);
+   _product_forbidden_atoms.clear();
+   _product_forbidden_atoms.copy(cur_rpe_state._product_forbidden_atoms);
+
    for (int i = 0; i < cur_rpe_state._att_points.size(); i++)
    {
       Array<int> &new_array = _att_points.push();
@@ -211,6 +222,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
    is_self_react = cur_rpe_state.is_self_react;
    is_one_tube = cur_rpe_state.is_one_tube;
    is_same_keeping = cur_rpe_state.is_same_keeping;
+   is_transform = cur_rpe_state.is_transform;
    _is_rg_exist = cur_rpe_state._is_rg_exist;
 
    _is_frag_search = false;
@@ -219,7 +231,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
    userdata = cur_rpe_state.userdata;
 }
 
-int ReactionEnumeratorState::buildProduct( bool is_transform )
+int ReactionEnumeratorState::buildProduct( void )
 {
    if (_product_count >= max_product_count)
       return 0;
@@ -258,7 +270,7 @@ int ReactionEnumeratorState::buildProduct( bool is_transform )
 
       rpe_state._product_monomers.push(i);
       
-      rpe_state.startEmbeddingTransformation(ee_monomer, false);
+      rpe_state._startEmbeddingEnumerator(ee_monomer);
    }
 
    return 0;
@@ -408,7 +420,7 @@ void ReactionEnumeratorState::_productProcess( void )
       ready_product.name.top() = 0; 
 
    /* Adding a product to monomers lists */
-   if (is_multistep_reaction)
+   if (is_multistep_reaction && !is_transform)
    {
       int tube_idx = _findCurTube();
 
@@ -473,6 +485,7 @@ bool ReactionEnumeratorState::_nextMatchProcess( EmbeddingEnumerator &ee,
 
    _bonds_mapping_sub.copy(rpe_state._bonds_mapping_sub);
    _bonds_mapping_super.copy(rpe_state._bonds_mapping_super);
+   _product_forbidden_atoms.copy(rpe_state._product_forbidden_atoms);
 
    return stop_flag;
 }
@@ -497,7 +510,25 @@ int ReactionEnumeratorState::_calcMaxHCnt( QueryMolecule &molecule )
 }
 
 
-bool ReactionEnumeratorState::startEmbeddingTransformation( Molecule &monomer, bool is_transform )
+bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms )
+{
+   is_transform = true;
+
+   if (forbidden_atoms.size() != molecule.vertexEnd())
+      throw Error("forbidden atoms array size is incorrect");
+   
+   _monomer_forbidden_atoms.copy(forbidden_atoms);
+
+   if (!_startEmbeddingEnumerator(molecule))
+      return false;
+
+   forbidden_atoms.copy(_product_forbidden_atoms);
+
+   return true;
+}
+
+
+bool ReactionEnumeratorState::_startEmbeddingEnumerator( Molecule &monomer )
 {
    QS_DEF(QueryMolecule, ee_reactant);
    ee_reactant.clear();
@@ -558,6 +589,7 @@ bool ReactionEnumeratorState::startEmbeddingTransformation( Molecule &monomer, b
    ee.cb_vertex_remove = _removeAtomCallback;
    ee.cb_edge_add = _addBondCallback;
    ee.cb_allow_many_to_one = _allowManyToOneCallback;
+   ee.userdata = this;
    ee.setSubgraph(ee_reactant);
 
    ee.allow_many_to_one = true;
@@ -614,6 +646,10 @@ bool ReactionEnumeratorState::_matchVertexCallback( Graph &subgraph, Graph &supe
 
    if (!res)
       return false;
+
+   if (rpe_state->is_transform)
+      if (rpe_state->_monomer_forbidden_atoms[super_idx])
+         return false;
 
    if (supermolecule.getAtomNumber(super_idx) == ELEM_H && sub_v.degree() != 0 && super_v.degree() != 0)
    {
@@ -1242,6 +1278,13 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    mapping.clear();
 
    _buildMolProduct(product, mol_product, uncleaned_fragments, mapping);
+   
+   QS_DEF(Array<int>, old_marked_atoms);
+   old_marked_atoms.clear();
+
+   if (is_transform)
+      for (int i = mol_product.vertexBegin(); i < mol_product.vertexEnd(); i = mol_product.vertexNext(i))
+         old_marked_atoms.push(i);
 
    _cleanFragments();
 
@@ -1249,8 +1292,12 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    frags_mapping.clear_resize(_fragments.vertexEnd());
    frags_mapping.fffill();
    mol_product.mergeWithMolecule(_fragments, &frags_mapping);
-
    
+   if (is_transform)
+      for (int i = _fragments.vertexBegin(); i < _fragments.vertexEnd(); i = _fragments.vertexNext(i))
+         if (_monomer_forbidden_atoms[i])
+            old_marked_atoms.push(frags_mapping[i]);
+
    QS_DEF(Array<int>, product_mapping);
    product_mapping.clear_resize(_full_product.vertexEnd());
    for (int i = 0; i < _full_product.vertexEnd(); i++)
@@ -1291,7 +1338,7 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
             }
          }
       }
-      
+
       if (_is_rg_exist)
       {
          for (int j = 0; j < pr_neibours.size(); j++)
@@ -1385,7 +1432,18 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    /* Updating of cis-trans information on product & monomer's fragment border */
    _completeCisTrans(mol_product, uncleaned_fragments, frags_mapping);
 
-   ready_product_out.clone(mol_product, NULL, NULL);
+   QS_DEF(Array<int>, out_mapping);
+   out_mapping.clear_resize(mol_product.vertexEnd());
+   ready_product_out.clone(mol_product, &out_mapping, NULL);
+
+   if (is_transform)
+   {
+      _product_forbidden_atoms.clear_resize(ready_product_out.vertexEnd());
+      _product_forbidden_atoms.zerofill();
+
+      for (int i = 0; i < old_marked_atoms.size(); i++)
+         _product_forbidden_atoms[out_mapping[i]] = 1;
+   }
 
    return true;
 }
@@ -1501,6 +1559,9 @@ bool ReactionEnumeratorState::_addFragment( Molecule &fragment,
 
    const Array<int> &reactant_aam_array = _reaction.getAAMArray(_reactant_idx);
    QS_DEF(Array<int>, frag_mapping);
+
+   for (int i = 0; i < frag_mapping.size(); i++)
+      _fragments_aam_array.push(0);
    
    if (!_is_frag_search)
    {
@@ -1536,6 +1597,9 @@ bool ReactionEnumeratorState::_addFragment( Molecule &fragment,
       _is_needless_atom.push(0);
    for (int i = _is_needless_bond.size(); i < _fragments.edgeEnd(); i++)
       _is_needless_bond.push(0);
+   /* marked atoms array expanding */
+   for (int i = 0; i < frag_mapping.size(); i++)
+      _product_forbidden_atoms.push(0);
 
    /* _is_needless atom array updating */
    for (int i = 0; i < frag_mapping.size(); i++)
@@ -1729,21 +1793,30 @@ int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergr
    /* Updating fragments molecule */
    if (!rpe_state->_addFragment(mol_fragments, submolecule, rp_mapping, sub_qa_array, core_sub, core_super))
       return 1;
+
+   int next_reactant_idx = rpe_state->_reaction.reactantNext(rpe_state->_reactant_idx);
    
+   if (rpe_state->is_transform)
+   {
+      rpe_state->_productProcess();
+      return 0;
+   }
+
    if (rpe_state->is_one_tube && rpe_state->is_self_react)
    {
       ReactionEnumeratorState self_rxn_rpe_state(*rpe_state);
       self_rxn_rpe_state._is_frag_search = true;
-      self_rxn_rpe_state._reactant_idx = self_rxn_rpe_state._reaction.reactantNext(self_rxn_rpe_state._reactant_idx);
-      
+      self_rxn_rpe_state._reactant_idx = next_reactant_idx;
+         
       if (self_rxn_rpe_state._reactant_idx != self_rxn_rpe_state._reaction.reactantEnd())
-         self_rxn_rpe_state.startEmbeddingTransformation(self_rxn_rpe_state._fragments, false);
+         self_rxn_rpe_state._startEmbeddingEnumerator(self_rxn_rpe_state._fragments);
    }
-   
+
    ReactionEnumeratorState new_rpe_state(*rpe_state);
+   new_rpe_state._reactant_idx = next_reactant_idx;
    
-   new_rpe_state._reactant_idx = new_rpe_state._reaction.reactantNext(new_rpe_state._reactant_idx);
-   
-   new_rpe_state.buildProduct(false);
+   new_rpe_state.buildProduct();
+
    return 0;
 }
+ 
