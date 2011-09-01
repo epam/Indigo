@@ -300,6 +300,9 @@ static void _removeHydrogens (Molecule &mol)
 
             if (mol.getAtomNumber(nei_idx) == ELEM_H && mol.getAtomIsotope(nei_idx) == 0)
                continue; // do not remove rare H-H fragment
+            if (mol.stereocenters.getType(nei_idx) > 0)
+               if (mol.getVertex(nei_idx).degree() == 3)
+                  continue; // not to unfold hydrogens around stereocenters with lone pair
             to_remove.push(i);
          }
       }

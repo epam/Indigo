@@ -31,6 +31,7 @@ SmilesSaver::SmilesSaver (Output &output) : _output(output),
 TL_CP_GET(_neipool),
 TL_CP_GET(_atoms),
 TL_CP_GET(_hcount),
+TL_CP_GET(_hcount_ignored),
 TL_CP_GET(_dbonds),
 TL_CP_GET(_written_atoms),
 TL_CP_GET(_written_atoms_inv),
@@ -39,6 +40,7 @@ TL_CP_GET(_polymer_indices),
 TL_CP_GET(_attachment_indices),
 TL_CP_GET(_attachment_cycle_numbers),
 TL_CP_GET(_aromatic_bonds),
+TL_CP_GET(_ignored_vertices),
 TL_CP_GET(_complicated_cistrans),
 TL_CP_GET(_ban_slashes)
 {
@@ -79,31 +81,10 @@ void SmilesSaver::saveQueryMolecule (QueryMolecule &mol)
 
 void SmilesSaver::_saveMolecule ()
 {
-   QS_DEF(Array<int>, ignored_vertices);
    int i, j, k;
 
-   _checkRGroupsAndAttachmentPoints();
-   _checkSRU();
-   
-   _touched_cistransbonds = 0;
-   _complicated_cistrans.clear_resize(_bmol->edgeEnd());
-   _complicated_cistrans.zerofill();
-   _ban_slashes.clear_resize(_bmol->edgeEnd());
-   _ban_slashes.zerofill();
-   _markCisTrans();
-
-   _atoms.clear();
-   while (_atoms.size() < _bmol->vertexEnd())
-      _atoms.push(_neipool);
-
-   ignored_vertices.clear_resize(_bmol->vertexEnd());
-   ignored_vertices.zerofill();
-   _written_atoms.clear();
-   _written_bonds.clear();
-   _written_components = 0;
-
-   _aromatic_bonds.clear();
-
+   _ignored_vertices.clear_resize(_bmol->vertexEnd());
+   _ignored_vertices.zerofill();
    if (ignore_hydrogens)
    {
       if (_qmol != 0)
@@ -121,16 +102,38 @@ void SmilesSaver::_saveMolecule ()
                   if (_bmol->getVertex(nei).degree() == 3)
                      continue; // not ignoring hydrogens around stereocenters with lone pair
                
-               ignored_vertices[i] = 1;
+               _ignored_vertices[i] = 1;
             }
          }
    }
 
+   _checkRGroupsAndAttachmentPoints();
+   _checkSRU();
+
+   _touched_cistransbonds = 0;
+   _complicated_cistrans.clear_resize(_bmol->edgeEnd());
+   _complicated_cistrans.zerofill();
+   _ban_slashes.clear_resize(_bmol->edgeEnd());
+   _ban_slashes.zerofill();
+   _markCisTrans();
+
+   _atoms.clear();
+   while (_atoms.size() < _bmol->vertexEnd())
+      _atoms.push(_neipool);
+
+   _written_atoms.clear();
+   _written_bonds.clear();
+   _written_components = 0;
+
+   _aromatic_bonds.clear();
+
    _hcount.clear_resize(_bmol->vertexEnd());
+   _hcount_ignored.clear_resize(_bmol->vertexEnd());
 
    for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
    {
       _hcount[i] = 0;
+      _hcount_ignored[i] = 0;
       
       if (_mol != 0 && !_mol->isPseudoAtom(i) && !_mol->isRSite(i))
          _hcount[i] = _mol->getImplicitH_NoThrow(i, -1);
@@ -140,13 +143,16 @@ void SmilesSaver::_saveMolecule ()
       if (ignore_hydrogens)
       {
          if (_hcount[i] >= 0)
+         {
             for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
             {
                int idx = vertex.neiVertex(j);
                if (_bmol->getAtomNumber(idx) == ELEM_H && _bmol->getAtomIsotope(idx) == 0)
-                  if (ignored_vertices[idx])
-                     _hcount[i]++;
+                  if (_ignored_vertices[idx])
+                     _hcount_ignored[i]++;
             }
+            _hcount[i] += _hcount_ignored[i];
+         }
       }
 
       if (_bmol->getAtomAromaticity(i) == ATOM_AROMATIC)
@@ -160,7 +166,7 @@ void SmilesSaver::_saveMolecule ()
 
    DfsWalk walk(*_bmol);
    
-   walk.ignored_vertices = ignored_vertices.ptr();
+   walk.ignored_vertices = _ignored_vertices.ptr();
    walk.vertex_ranks = vertex_ranks;
    if (_bmol->repeating_units.size() > 0)
       walk.vertex_classes = _polymer_indices.ptr();
@@ -267,7 +273,7 @@ void SmilesSaver::_saveMolecule ()
       if (pyramid[3] == -1)
          implicit_h_idx = 3;
       else for (j = 0; j < 4; j++)
-         if (ignored_vertices[pyramid[j]])
+         if (_ignored_vertices[pyramid[j]])
          {
             implicit_h_idx = j;
             break;
@@ -720,7 +726,12 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
        atom_number != ELEM_B && atom_number != ELEM_I)
       need_brackets = true;
 
-   if (_mol != 0 && Molecule::shouldWriteHCount(*_mol, idx))
+   // Ignored hydrogens will be converted to implicit hydrogens.
+   // So number of ignored hydrogens should be passed into 
+   // shouldWriteHCount to save correctly [H]S([H])([H])C
+   // as C[SH3] when hydrogens are ignored (as in canonical smiles)
+   // instead of getting CS.
+   if (_mol != 0 && Molecule::shouldWriteHCountEx(*_mol, idx, _hcount_ignored[idx]))
    {
       hydro = _hcount[idx];
       if (hydro < 0 && !ignore_invalid_hcount)
@@ -1061,6 +1072,8 @@ void SmilesSaver::_markCisTrans ()
 
          for (j = beg.neiBegin(); j != beg.neiEnd(); j = beg.neiNext(j))
          {
+            if (_ignored_vertices[beg.neiVertex(j)])
+               continue;
             int idx = beg.neiEdge(j);
 
             if (idx != i && mol.getBondOrder(idx) == BOND_SINGLE)
@@ -1073,6 +1086,8 @@ void SmilesSaver::_markCisTrans ()
 
          for (j = end.neiBegin(); j != end.neiEnd(); j = end.neiNext(j))
          {
+            if (_ignored_vertices[end.neiVertex(j)])
+               continue;
             int idx = end.neiEdge(j);
 
             if (idx != i && mol.getBondOrder(idx) == BOND_SINGLE)
@@ -1103,6 +1118,8 @@ void SmilesSaver::_markCisTrans ()
 
          for (j = beg.neiBegin(); j != beg.neiEnd(); j = beg.neiNext(j))
          {
+            if (_ignored_vertices[beg.neiVertex(j)])
+               continue;
             int idx = beg.neiEdge(j);
 
             if (idx != i)
@@ -1116,6 +1133,8 @@ void SmilesSaver::_markCisTrans ()
 
          for (j = end.neiBegin(); j != end.neiEnd(); j = end.neiNext(j))
          {
+            if (_ignored_vertices[end.neiVertex(j)])
+               continue;
             int idx = end.neiEdge(j);
 
             if (idx != i)
