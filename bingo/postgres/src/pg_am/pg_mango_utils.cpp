@@ -26,6 +26,12 @@ Datum checkmolecule(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(gross);
 Datum gross(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(getweight);
+Datum getweight(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(getmass);
+Datum getmass(PG_FUNCTION_ARGS);
 }
 
 
@@ -133,4 +139,46 @@ Datum gross(PG_FUNCTION_ARGS) {
    PG_RETURN_CSTRING(result);
 }
 
+Datum getweight(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   Datum options_datum = PG_GETARG_DATUM(1);
 
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("getweight");
+
+   BingoPgText mol_text(mol_datum);
+   BingoPgText mol_options(options_datum);
+
+   float result = 0;
+
+   int buf_len;
+   const char* buf = mol_text.getText(buf_len);
+
+   mangoMass(buf, buf_len, mol_options.getString(), &result);
+
+   if(bingo_handler.error_raised)
+      PG_RETURN_NULL();
+
+   PG_RETURN_FLOAT4(result);
+}
+
+Datum getmass(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("getmass");
+   
+   BingoPgText mol_text(mol_datum);
+
+   float result = 0;
+
+   int buf_len;
+   const char* buf = mol_text.getText(buf_len);
+
+   mangoMass(buf, buf_len, 0, &result);
+
+   if(bingo_handler.error_raised)
+      PG_RETURN_NULL();
+
+   PG_RETURN_FLOAT4(result);
+}
