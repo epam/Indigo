@@ -194,8 +194,10 @@ static int _initializeIdQuery(Datum table_datum, Datum column_datum, Datum id_co
    query_out.printf("INSERT INTO %s(%s", tablename_text.getString(), column_text.getString());
    int column_count = 0;
    
-   if(id_column_datum != 0)
-      column_count = 1;
+   if(id_column_datum != 0 ) {
+      if(strcmp(id_column_text.getString(), "") !=0)
+         column_count = 1;
+   }
 
    for (int col_idx = 0; col_idx < column_count; ++col_idx) {
       query_out.printf(", %s", id_column_text.getString());
