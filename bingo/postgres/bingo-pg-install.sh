@@ -14,6 +14,7 @@
 libdir=$PWD/bin
 schema_name="bingo"
 libext=".so"
+y="0"
 
 usage ()
 {
@@ -26,6 +27,8 @@ echo '    Target directory to install bingo_postgres'$libext' (defaut {CURRENT_D
 echo '    If the directory does not exist, it will be created.'
 echo '  -schema name'
 echo '    Postgres schema name (default "bingo").'
+echo '  -y'
+echo '    Process default options'
 }
 
 
@@ -43,9 +46,12 @@ while [ "$#" != 0 ]; do
         shift
         libdir=$1
         ;;
-	   -schema)
+     -schema)
         shift
         schema_name=$1
+        ;;
+     -y)
+        y="1"
         ;;
      *)
         echo "Unknown parameter: $1";
