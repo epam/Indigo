@@ -32,14 +32,15 @@ Datum gross(PG_FUNCTION_ARGS);
 Datum smiles(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, "Molecule SMILES");
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("smiles");
 
    BingoPgText mol_text(mol_datum);
    int buf_size;
    const char* mol_buf = mol_text.getText(buf_size);
    char* result = BingoPgCommon::releaseString(mangoSMILES(mol_buf, buf_size, 0));
 
-   if(result == 0)
+   if(result == 0 || bingo_handler.error_raised)
       PG_RETURN_NULL();
    
    PG_RETURN_CSTRING(result);
@@ -48,14 +49,15 @@ Datum smiles(PG_FUNCTION_ARGS) {
 Datum cansmiles(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, "Molecule canonical SMILES");
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("cansmiles");
 
    BingoPgText mol_text(mol_datum);
    int buf_size;
    const char* mol_buf = mol_text.getText(buf_size);
    char* result = BingoPgCommon::releaseString(mangoSMILES(mol_buf, buf_size, 1));
 
-   if(result == 0)
+   if(result == 0 || bingo_handler.error_raised)
       PG_RETURN_NULL();
    
    PG_RETURN_CSTRING(result);
@@ -64,14 +66,15 @@ Datum cansmiles(PG_FUNCTION_ARGS) {
 Datum molfile(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, "Molecule molfile");
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("molfile");
 
    BingoPgText mol_text(mol_datum);
    int buf_size;
    const char* mol_buf = mol_text.getText(buf_size);
    char* result = BingoPgCommon::releaseString(mangoMolfile(mol_buf, buf_size));
 
-   if(result == 0)
+   if(result == 0 || bingo_handler.error_raised)
       PG_RETURN_NULL();
    
    PG_RETURN_CSTRING(result);
@@ -80,14 +83,15 @@ Datum molfile(PG_FUNCTION_ARGS) {
 Datum cml(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, "Molecule CML format");
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("cml");
 
    BingoPgText mol_text(mol_datum);
    int buf_size;
    const char* mol_buf = mol_text.getText(buf_size);
    char* result = BingoPgCommon::releaseString(mangoCML(mol_buf, buf_size));
 
-   if(result == 0)
+   if(result == 0 || bingo_handler.error_raised)
       PG_RETURN_NULL();
    
    PG_RETURN_CSTRING(result);
@@ -96,7 +100,8 @@ Datum cml(PG_FUNCTION_ARGS) {
 Datum checkmolecule(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, "Molecule check");
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("checkmolecule");
 
    BingoPgText mol_text(mol_datum);
    int buf_size;
@@ -104,7 +109,7 @@ Datum checkmolecule(PG_FUNCTION_ARGS) {
    
    char* result = BingoPgCommon::releaseString(mangoCheckMolecule(mol_buf, buf_size));
 
-   if(result == 0)
+   if(result == 0 || bingo_handler.error_raised)
       PG_RETURN_NULL();
 
    PG_RETURN_CSTRING(result);
@@ -113,7 +118,8 @@ Datum checkmolecule(PG_FUNCTION_ARGS) {
 Datum gross(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, "Molecule gross formula");
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("gross");
 
    BingoPgText mol_text(mol_datum);
    int buf_size;
@@ -121,7 +127,7 @@ Datum gross(PG_FUNCTION_ARGS) {
    
    char* result = BingoPgCommon::releaseString(mangoGross(mol_buf, buf_size));
 
-   if(result == 0)
+   if(result == 0 || bingo_handler.error_raised)
       PG_RETURN_NULL();
 
    PG_RETURN_CSTRING(result);

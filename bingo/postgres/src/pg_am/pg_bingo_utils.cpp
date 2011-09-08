@@ -73,7 +73,6 @@ Datum getindexstructurescount(PG_FUNCTION_ARGS){
 
    relation_close(rel, AccessShareLock);
 
-
    PG_RETURN_INT32(result);
 }
 

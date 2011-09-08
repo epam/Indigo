@@ -276,16 +276,27 @@ public:
    static void convertTo(const indigo::Array<char>& value_str, indigo::Array<char>& val) {
       val.copy(value_str);
    }
-
    class BingoSessionHandler {
    public:
-      BingoSessionHandler(unsigned int func_id, const char* func_n);
+      BingoSessionHandler(unsigned int func_id, bool raise_error);
       ~BingoSessionHandler();
       static void bingoErrorHandler(const char *message, void *context);
+
+      const char* getFunctionName() const {
+         return _functionName.size() ? _functionName.ptr() : 0;
+      }
+
+      void setFunctionName(const char* name) {
+         _functionName.readString(name, true);
+      }
+      bool raise_error;
+      bool error_raised;
    private:
       BingoSessionHandler(const BingoSessionHandler&); //no implicit copy
       qword _sessionId;
+      indigo::Array<char> _functionName;
    };
+
 
    DEF_ERROR("bingo postgres");
 private:

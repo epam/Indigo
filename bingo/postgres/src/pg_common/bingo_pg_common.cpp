@@ -233,9 +233,7 @@ char* BingoPgCommon::releaseString(const char* str) {
    return result;
 }
 
-static indigo::Array<char> error_func_name;
-
-BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id, const char* func_n) {
+BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id, bool raise): raise_error(raise), error_raised(false) {
    _sessionId = bingoAllocateSessionID();
    bingoSetSessionID(_sessionId);
    bingoSetContext(0);
@@ -246,17 +244,32 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id, const char*
 
    bingo_config.readDefaultConfig(schema_name);
    bingo_config.setUpBingoConfiguration();
-
-   error_func_name.readString(func_n, true);
-
-   bingoSetErrorHandler(bingoErrorHandler, error_func_name.ptr());
+   bingoTautomerRulesReady(0,0,0);
+   
+   bingoSetErrorHandler(bingoErrorHandler, this);
 }
 
 BingoPgCommon::BingoSessionHandler::~BingoSessionHandler() {
    bingoReleaseSessionID(_sessionId);
 }
 
-void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char *message, void *context) {
-   const char* call_func = (const char*) context;
-   elog(ERROR, "error while processing %s: %s", call_func, message);
+void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, void* self_ptr) {
+   BingoSessionHandler* self = (BingoSessionHandler*)self_ptr;
+
+   const char* func = self->getFunctionName();
+
+   if(self->raise_error) {
+      if (func)
+         elog(ERROR, "Runtime Error in bingo.'%s': %s", func, message);
+      else
+         elog(ERROR, "Runtime Error: %s", message);
+   } else {
+      self->error_raised = true;
+      if (func)
+         elog(WARNING, "Warning in bingo.'%s': %s", func, message);
+      else
+         elog(WARNING, "Warning: %s", message);
+   }
+
+
 }
