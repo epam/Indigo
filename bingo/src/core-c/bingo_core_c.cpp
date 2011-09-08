@@ -710,3 +710,32 @@ CEXPORT const char * bingoSMILESImportGetNext ()
    }
    BINGO_END("", "")
 }
+
+CEXPORT const char * bingoSMILESImportGetId ()
+{
+   BINGO_BEGIN
+   {
+      if (self.smiles_scanner == 0)
+         throw BingoError("SMILES import wasn't initialized");
+      /*
+       * Extract id name by skipping | symbols
+       */
+      BufferScanner strscan(self.buffer.ptr());
+
+      strscan.skipSpace();
+      while (!strscan.isEOF() && !isspace(strscan.readChar()));
+      strscan.skipSpace();
+      if (strscan.lookNext() == '|')
+      {
+         strscan.readChar();
+         while (!strscan.isEOF() && strscan.readChar() != '|');
+         strscan.skipSpace();
+      }
+
+      if (strscan.isEOF())
+         return 0;
+      else
+         return (const char*)strscan.curptr();
+   }
+   BINGO_END("", "")
+}

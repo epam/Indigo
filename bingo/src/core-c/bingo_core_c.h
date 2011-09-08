@@ -69,6 +69,7 @@ CEXPORT int bingoSMILESImportOpen (const char *file_name);
 CEXPORT int bingoSMILESImportClose ();
 CEXPORT int bingoSMILESImportEOF ();
 CEXPORT const char * bingoSMILESImportGetNext ();
+CEXPORT const char * bingoSMILESImportGetId ();
 
 CEXPORT void bingoProfilingReset (byte reset_whole_session);
 CEXPORT const char* bingoProfilingGetStatistics (bool for_session);

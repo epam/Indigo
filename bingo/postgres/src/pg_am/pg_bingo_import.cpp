@@ -35,6 +35,9 @@ Datum importsdf(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(importrdf);
 Datum importrdf(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(importsmiles);
+Datum importsmiles(PG_FUNCTION_ARGS);
+
 }
 
 static void bingoPgImportWarningHandler(const char *message, void *context) {
@@ -157,7 +160,7 @@ using namespace indigo;
 //
 //   PG_RETURN_VOID();
 //}
-static int _initializeQuery(Datum table_datum, Datum column_datum, Datum other_columns_datum, Array<char>& query_str) {
+static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum other_columns_datum, Array<char>& query_str) {
    BingoPgText tablename_text(table_datum);
    BingoPgText column_text(column_datum);
    BingoPgText other_columns_text(other_columns_datum);
@@ -170,6 +173,32 @@ static int _initializeQuery(Datum table_datum, Datum column_datum, Datum other_c
 
    for (int col_idx = 0; col_idx < column_count; ++col_idx) {
       query_out.printf(", %s", bingoImportGetColumnName(col_idx));
+   }
+   query_out.printf(") VALUES($1");
+
+   for (int col_idx = 0; col_idx < column_count; ++col_idx) {
+      query_out.printf(", $%d", col_idx + 2);
+   }
+   query_out.printf(")");
+   query_out.writeChar(0);
+   return column_count;
+}
+
+static int _initializeIdQuery(Datum table_datum, Datum column_datum, Datum id_column_datum, Array<char>& query_str) {
+   BingoPgText tablename_text(table_datum);
+   BingoPgText column_text(column_datum);
+   BingoPgText id_column_text(id_column_datum);
+
+   ArrayOutput query_out(query_str);
+
+   query_out.printf("INSERT INTO %s(%s", tablename_text.getString(), column_text.getString());
+   int column_count = 0;
+   
+   if(id_column_datum != 0)
+      column_count = 1;
+
+   for (int col_idx = 0; col_idx < column_count; ++col_idx) {
+      query_out.printf(", %s", id_column_text.getString());
    }
    query_out.printf(") VALUES($1");
 
@@ -200,7 +229,7 @@ Datum importsdf(PG_FUNCTION_ARGS) {
    BingoPgText fname_text(file_name_datum);
    bingoSDFImportOpen(fname_text.getString());
 
-   int column_count = _initializeQuery(table_datum, column_datum, other_columns_datum, query_str);
+   int column_count = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str);
 
    q_oids.clear();
    q_nulls.clear();
@@ -237,8 +266,7 @@ Datum importsdf(PG_FUNCTION_ARGS) {
    bingoSDFImportClose();
    bingoReleaseSessionID(session_id);
 
-
-   PG_RETURN_BOOL(true);
+   PG_RETURN_VOID();
 }
 
 
@@ -261,7 +289,7 @@ Datum importrdf(PG_FUNCTION_ARGS) {
    BingoPgText fname_text(file_name_datum);
    bingoRDFImportOpen(fname_text.getString());
 
-   int column_count = _initializeQuery(table_datum, column_datum, other_columns_datum, query_str);
+   int column_count = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str);
 
    q_oids.clear();
    q_nulls.clear();
@@ -299,5 +327,72 @@ Datum importrdf(PG_FUNCTION_ARGS) {
    bingoReleaseSessionID(session_id);
 
 
-   PG_RETURN_BOOL(true);
+   PG_RETURN_VOID();
+}
+
+Datum importsmiles(PG_FUNCTION_ARGS) {
+   Datum table_datum = PG_GETARG_DATUM(0);
+   Datum column_datum = PG_GETARG_DATUM(1);
+   Datum id_column_datum = PG_GETARG_DATUM(2);
+   Datum file_name_datum = PG_GETARG_DATUM(3);
+
+   QS_DEF(Array<char>, query_str);
+   QS_DEF(Array<Datum>, q_values);
+   QS_DEF(Array<Oid>, q_oids);
+   QS_DEF(Array<char>, q_nulls);
+   ObjArray<BingoPgText> q_data;
+
+   qword session_id = bingoAllocateSessionID();
+   bingoSetSessionID(session_id);
+   bingoSetErrorHandler(bingoPgImportErrorHandler, 0);
+
+   BingoPgText fname_text(file_name_datum);
+   bingoSMILESImportOpen(fname_text.getString());
+
+   int column_count = _initializeIdQuery(table_datum, column_datum, id_column_datum, query_str);
+
+   q_oids.clear();
+   q_nulls.clear();
+
+   for (int col_idx = 0; col_idx < column_count + 1; ++col_idx) {
+      q_oids.push(TEXTOID);
+      q_nulls.push(0);
+   }
+
+   SPI_connect();
+   while(!bingoSMILESImportEOF()) {
+      q_data.clear();
+      const char* data = bingoSMILESImportGetNext();
+      q_data.push().initFromString(data);
+
+      for (int col_idx = 0; col_idx < column_count; ++col_idx) {
+         const char* id_string = bingoSMILESImportGetId();
+         BingoPgText& id_data = q_data.push();
+         if(id_string == 0) {
+            q_nulls[col_idx + 1] = 'n';
+         } else {
+            id_data.initFromString(id_string);
+            q_nulls[col_idx + 1] = 0;
+         }
+      }
+
+      q_values.clear();
+      for (int q_idx = 0; q_idx < q_data.size(); ++q_idx) {
+         q_values.push(q_data[q_idx].getDatum());
+      }
+
+      SPI_execute_with_args(query_str.ptr(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.ptr(), false, 1);
+      /*
+       * Return back session id and error handler
+       */
+      bingoSetSessionID(session_id);
+      bingoSetErrorHandler(bingoPgImportWarningHandler, 0);
+   }
+   SPI_finish();
+
+   bingoSMILESImportClose();
+   bingoReleaseSessionID(session_id);
+
+
+   PG_RETURN_VOID();
 }
