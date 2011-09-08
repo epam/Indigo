@@ -10,6 +10,7 @@
 #include "bingo_pg_text.h"
 #include "bingo_core_c.h"
 #include "base_cpp/tlscont.h"
+#include "bingo_pg_config.h"
 
 CEXPORT {
 #include "postgres.h"
@@ -24,6 +25,8 @@ CEXPORT {
 //#include "parser/parse_func.h"
 //#include "funcapi.h"
 #include "executor/spi.h"
+#include "catalog/namespace.h"
+#include "utils/lsyscache.h"
 }
 
 
@@ -219,4 +222,41 @@ void BingoPgCommon::createDependency(const char* child_table, const char* parent
 
 void BingoPgCommon::dropDependency(const char* table_name) {
    executeQuery("DELETE FROM pg_depend WHERE objid='%s'::regclass::oid", table_name);
+}
+
+char* BingoPgCommon::releaseString(const char* str) {
+   if (str == 0)
+      return 0;
+   int size = strlen(str) + 1;
+   char* result = (char*) palloc(size);
+   memcpy(result, str, size);
+   return result;
+}
+
+static indigo::Array<char> error_func_name;
+
+BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id, const char* func_n) {
+   _sessionId = bingoAllocateSessionID();
+   bingoSetSessionID(_sessionId);
+   bingoSetContext(0);
+
+   const char* schema_name = get_namespace_name(get_func_namespace(func_id));
+
+   BingoPgConfig bingo_config;
+
+   bingo_config.readDefaultConfig(schema_name);
+   bingo_config.setUpBingoConfiguration();
+
+   error_func_name.readString(func_n, true);
+
+   bingoSetErrorHandler(bingoErrorHandler, error_func_name.ptr());
+}
+
+BingoPgCommon::BingoSessionHandler::~BingoSessionHandler() {
+   bingoReleaseSessionID(_sessionId);
+}
+
+void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char *message, void *context) {
+   const char* call_func = (const char*) context;
+   elog(ERROR, "error while processing %s: %s", call_func, message);
 }

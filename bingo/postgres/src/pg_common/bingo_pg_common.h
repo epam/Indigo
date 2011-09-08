@@ -64,6 +64,8 @@ public:
    static void createDependency(const char* child_table, const char* parent_table);
    static void dropDependency(const char* table_name);
 
+   static char* releaseString(const char* str);
+
 
 
    /*
@@ -275,15 +277,17 @@ public:
       val.copy(value_str);
    }
 
-   static void setDefaultValue(int& param) {
-      param = -1;
-   }
+   class BingoSessionHandler {
+   public:
+      BingoSessionHandler(unsigned int func_id, const char* func_n);
+      ~BingoSessionHandler();
+      static void bingoErrorHandler(const char *message, void *context);
+   private:
+      BingoSessionHandler(const BingoSessionHandler&); //no implicit copy
+      qword _sessionId;
+   };
 
-   static void setDefaultValue(bool& param) {
-      param = false;
-   }
-
-   DEF_ERROR("common helpers");
+   DEF_ERROR("bingo postgres");
 private:
    BingoPgCommon();
    BingoPgCommon(const BingoPgCommon&); //no implicit copy
