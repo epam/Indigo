@@ -55,34 +55,17 @@ Datum _mass_out(PG_FUNCTION_ARGS);
 
 using namespace indigo;
 
-static void bingoPgMassErrorHandler(const char *message, void *context) {
-   elog(ERROR, "error while bingo calculating mass: %s", message);
-}
-
 /*
  * Helper class for searching setup and perfoming
  */
 class _MangoContextHandler {
 public:
-   _MangoContextHandler(int type, unsigned int func_oid) :_type(type) {
-      _bingoSession = bingoAllocateSessionID();
-      bingoSetSessionID(_bingoSession);
-      bingoSetContext(0);
-
+   _MangoContextHandler(int type, unsigned int func_oid) :_type(type), _sessionHandler(func_oid, true){
       BingoPgCommon::getSearchTypeString(_type, _typeStr, true);
-
-      bingoSetErrorHandler(bingoErrorHandler, _typeStr.ptr());
-      
-      const char* schema_name = get_namespace_name(get_func_namespace(func_oid));
-
-      BingoPgConfig bingo_config;
-      bingo_config.readDefaultConfig(schema_name);
-      bingo_config.setUpBingoConfiguration();
-      bingoTautomerRulesReady(0,0,0);
+      _sessionHandler.setFunctionName(_typeStr.ptr());
    }
 
    ~_MangoContextHandler() {
-      bingoReleaseSessionID(_bingoSession);
    }
 
 
@@ -116,18 +99,12 @@ public:
 
       return res > 0;
    }
-   static void bingoErrorHandler(const char* message, void* func_str) {
-      char* func = (char*) func_str;
-      if (func)
-         elog(ERROR, "Error in bingo%s: %s", func, message);
-      else
-         elog(ERROR, "Error %s", message);
-   }
 private:
    _MangoContextHandler(const _MangoContextHandler&);//no implicit copy
    qword _bingoSession;
    int _type;
    indigo::Array<char> _typeStr;
+   BingoPgCommon::BingoSessionHandler _sessionHandler;
 };
 
 
@@ -222,6 +199,9 @@ Datum _match_mass_less(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
    char* mass_datum = PG_GETARG_CSTRING(1);
 
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, true);
+   bingo_handler.setFunctionName("mass less");
+
    BufferScanner scanner(mass_datum);
    float usr_mass = scanner.readFloat();
 
@@ -229,23 +209,10 @@ Datum _match_mass_less(PG_FUNCTION_ARGS){
 
    float mol_mass = 0;
 
-   qword session_id = bingoAllocateSessionID();
-   bingoSetSessionID(session_id);
-   bingoSetContext(0);
-   bingoSetErrorHandler(bingoPgMassErrorHandler, 0);
-
-   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
-
-   BingoPgConfig bingo_config;
-   bingo_config.readDefaultConfig(schema_name);
-   bingo_config.setUpBingoConfiguration();
-
    int buf_len;
    const char* buf = mol_text.getText(buf_len);
 
    mangoMass(buf, buf_len, 0, &mol_mass);
-
-   bingoReleaseSessionID(session_id);
 
    bool result = mol_mass < usr_mass;
 
@@ -255,6 +222,9 @@ Datum _match_mass_great(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
    char* mass_datum = PG_GETARG_CSTRING(1);
 
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, true);
+   bingo_handler.setFunctionName("mass great");
+
    BufferScanner scanner(mass_datum);
    float usr_mass = scanner.readFloat();
 
@@ -262,23 +232,10 @@ Datum _match_mass_great(PG_FUNCTION_ARGS){
 
    float mol_mass = 0;
 
-   qword session_id = bingoAllocateSessionID();
-   bingoSetSessionID(session_id);
-   bingoSetContext(0);
-   bingoSetErrorHandler(bingoPgMassErrorHandler, 0);
-
-   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
-
-   BingoPgConfig bingo_config;
-   bingo_config.readDefaultConfig(schema_name);
-   bingo_config.setUpBingoConfiguration();
-
    int buf_len;
    const char* buf = mol_text.getText(buf_len);
 
    mangoMass(buf, buf_len, 0, &mol_mass);
-
-   bingoReleaseSessionID(session_id);
 
    bool result = mol_mass > usr_mass;
 

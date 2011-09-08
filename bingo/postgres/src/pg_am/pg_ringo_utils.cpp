@@ -1,14 +1,11 @@
 #include "bingo_postgres.h"
 #include "bingo_pg_text.h"
 #include "bingo_core_c.h"
-#include "bingo_pg_index.h"
-#include "bingo_pg_config.h"
+#include "bingo_pg_common.h"
 
 CEXPORT {
 #include "postgres.h"
 #include "fmgr.h"
-#include "catalog/namespace.h"
-#include "utils/lsyscache.h"
 }
 
 CEXPORT {
@@ -22,76 +19,76 @@ PG_FUNCTION_INFO_V1(checkreaction);
 Datum checkreaction(PG_FUNCTION_ARGS);
 }
 
-static void bingoErrorHandler(const char *message, void *context) {
-   const char* call_func = (const char*)context;
-   elog(ERROR, "error while processing %s: %s", call_func, message);
-}
-
-static indigo::Array<char> func_name;
-
-static void _setupBingo(Oid func_id, const char* func_n) {
-   qword session_id = bingoAllocateSessionID();
-   bingoSetSessionID(session_id);
-   bingoSetContext(0);
-
-   const char* schema_name = get_namespace_name(get_func_namespace(func_id));
-
-   BingoPgConfig bingo_config;
-
-   bingo_config.readDefaultConfig(schema_name);
-   bingo_config.setUpBingoConfiguration();
-
-   func_name.readString(func_n, true);
-
-   bingoSetErrorHandler(bingoErrorHandler, func_name.ptr());
-}
-
 Datum aam(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
    Datum mode_datum = PG_GETARG_DATUM(1);
 
-   _setupBingo(fcinfo->flinfo->fn_oid, "Reaction AAM");
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("aam");
 
    BingoPgText react_text(react_datum);
    BingoPgText aam_mode(mode_datum);
+   
    int buf_size;
    const char* react_buf = react_text.getText(buf_size);
-   PG_RETURN_CSTRING(ringoAAM(react_buf, buf_size, aam_mode.getString()));
+
+   char* result = BingoPgCommon::releaseString(ringoAAM(react_buf, buf_size, aam_mode.getString()));
+
+   if(result == 0 || bingo_handler.error_raised)
+      PG_RETURN_NULL();
+
+   PG_RETURN_CSTRING(result);
 }
 
 Datum rxnfile(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
 
-   _setupBingo(fcinfo->flinfo->fn_oid, "Reaction RXN format");
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("rxnfile");
 
    BingoPgText react_text(react_datum);
    int buf_size;
    const char* react_buf = react_text.getText(buf_size);
-   PG_RETURN_CSTRING(ringoRxnfile(react_buf, buf_size));
+   char* result = BingoPgCommon::releaseString(ringoRxnfile(react_buf, buf_size));
+
+   if(result == 0 || bingo_handler.error_raised)
+      PG_RETURN_NULL();
+
+   PG_RETURN_CSTRING(result);
 }
 
 Datum rcml(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
 
-   _setupBingo(fcinfo->flinfo->fn_oid, "Reaction CML format");
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("rcml");
 
    BingoPgText react_text(react_datum);
    int buf_size;
    const char* react_buf = react_text.getText(buf_size);
-   PG_RETURN_CSTRING(ringoRCML(react_buf, buf_size));
+   char* result = BingoPgCommon::releaseString(ringoRCML(react_buf, buf_size));
+
+   if(result == 0 || bingo_handler.error_raised)
+      PG_RETURN_NULL();
+
+   PG_RETURN_CSTRING(result);
 }
 
 Datum checkreaction(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
 
-   _setupBingo(fcinfo->flinfo->fn_oid, "Reaction check");
+   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+   bingo_handler.setFunctionName("checkreaction");
 
    BingoPgText react_text(react_datum);
    int buf_size;
    const char* react_buf = react_text.getText(buf_size);
-   const char* result = ringoCheckReaction(react_buf, buf_size);
-   if(result == 0)
+
+   char* result = BingoPgCommon::releaseString(ringoCheckReaction(react_buf, buf_size));
+
+   if(result == 0 || bingo_handler.error_raised)
       PG_RETURN_NULL();
+
    PG_RETURN_CSTRING(result);
 }
 

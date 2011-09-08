@@ -40,25 +40,12 @@ using namespace indigo;
  */
 class _RingoContextHandler {
 public:
-   _RingoContextHandler(int type, unsigned int func_oid) :_type(type) {
-      _bingoSession = bingoAllocateSessionID();
-      bingoSetSessionID(_bingoSession);
-      bingoSetContext(0);
-
+   _RingoContextHandler(int type, unsigned int func_oid) :_type(type), _sessionHandler(func_oid, true) {
       BingoPgCommon::getSearchTypeString(_type, _typeStr, false);
-
-      bingoSetErrorHandler(bingoErrorHandler, _typeStr.ptr());
-
-      const char* schema_name = get_namespace_name(get_func_namespace(func_oid));
-
-      BingoPgConfig bingo_config;
-      bingo_config.readDefaultConfig(schema_name);
-      bingo_config.setUpBingoConfiguration();
-      bingoTautomerRulesReady(0,0,0);
+      _sessionHandler.setFunctionName(_typeStr.ptr());
    }
 
    ~_RingoContextHandler() {
-      bingoReleaseSessionID(_bingoSession);
    }
 
 
@@ -89,18 +76,13 @@ public:
 
       return res > 0;
    }
-   static void bingoErrorHandler(const char* message, void* func_str) {
-      char* func = (char*) func_str;
-      if (func)
-         elog(ERROR, "Error in bingo%s: %s", func, message);
-      else
-         elog(ERROR, "Error %s", message);
-   }
 private:
    _RingoContextHandler(const _RingoContextHandler&);//no implicit copy
+   
    qword _bingoSession;
    int _type;
    indigo::Array<char> _typeStr;
+   BingoPgCommon::BingoSessionHandler _sessionHandler;
 };
 
 
