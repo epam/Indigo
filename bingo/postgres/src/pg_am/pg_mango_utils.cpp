@@ -24,9 +24,8 @@ Datum cml(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(checkmolecule);
 Datum checkmolecule(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(getgross);
-Datum getgross(PG_FUNCTION_ARGS);
-
+PG_FUNCTION_INFO_V1(gross);
+Datum gross(PG_FUNCTION_ARGS);
 }
 
 
@@ -111,7 +110,7 @@ Datum checkmolecule(PG_FUNCTION_ARGS) {
    PG_RETURN_CSTRING(result);
 }
 
-Datum getgross(PG_FUNCTION_ARGS) {
+Datum gross(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
    BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, "Molecule gross formula");
