@@ -139,8 +139,8 @@ Datum _exact_internal(PG_FUNCTION_ARGS) {
 }
 
 Datum getsimilarity(PG_FUNCTION_ARGS) {
-   Datum query_datum = PG_GETARG_DATUM(0);
-   Datum target_datum = PG_GETARG_DATUM(1);
+   Datum target_datum = PG_GETARG_DATUM(0);
+   Datum query_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
 
    _MangoContextHandler bingo_context(BingoPgCommon::MOL_SIM, fcinfo->flinfo->fn_oid);
