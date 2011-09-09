@@ -20,6 +20,7 @@ public:
    const char* getString();
 
    uintptr_t getDatum();
+   PG_OBJECT release();
 private:
    BingoPgText(const BingoPgText&); //no implicit copy
 

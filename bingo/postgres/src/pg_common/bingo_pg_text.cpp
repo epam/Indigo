@@ -64,3 +64,9 @@ const char* BingoPgText::getString() {
 uintptr_t BingoPgText::getDatum() {
    return PointerGetDatum(_text);
 }
+
+PG_OBJECT BingoPgText::release() {
+   PG_OBJECT res_text = _text;
+   _text = 0;
+   return res_text;
+}

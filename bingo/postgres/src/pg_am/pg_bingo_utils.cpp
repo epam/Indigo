@@ -44,6 +44,12 @@ Datum getindexstructurescount(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(getversion);
 Datum getversion(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(filetotext);
+Datum filetotext(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(filetoblob);
+Datum filetoblob(PG_FUNCTION_ARGS);
+
 }
 
 CEXPORT {
@@ -183,4 +189,40 @@ bingo_desc(StringInfo buf, uint8 xl_info, char *rec) {
 
 Datum getversion(PG_FUNCTION_ARGS) {
    PG_RETURN_CSTRING(bingoGetVersion());
+}
+
+Datum filetotext(PG_FUNCTION_ARGS) {
+   Datum file_name_datum = PG_GETARG_DATUM(0);
+   BingoPgText fname_text(file_name_datum);
+   BingoPgText result_text;
+
+   try {
+      QS_DEF(Array<char>, buffer);
+      buffer.clear();
+      FileScanner f_scanner(fname_text.getString());
+      f_scanner.readAll(buffer);
+
+      result_text.initFromArray(buffer);
+   } catch (Exception& e) {
+      elog(ERROR, "Error: %s\n", e.message());
+   }
+   
+   PG_RETURN_TEXT_P(result_text.release());
+}
+
+Datum filetoblob(PG_FUNCTION_ARGS) {
+   Datum file_name_datum = PG_GETARG_DATUM(0);
+   BingoPgText fname_text(file_name_datum);
+   BingoPgText result_text;
+   try {
+      QS_DEF(Array<char>, buffer);
+      buffer.clear();
+      FileScanner f_scanner(fname_text.getString());
+      f_scanner.readAll(buffer);
+
+      result_text.initFromArray(buffer);
+   } catch (Exception& e) {
+      elog(ERROR, "Error: %s\n", e.message());
+   }
+   PG_RETURN_BYTEA_P(result_text.release());
 }
