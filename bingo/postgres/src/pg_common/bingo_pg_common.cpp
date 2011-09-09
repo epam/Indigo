@@ -11,6 +11,7 @@
 #include "bingo_core_c.h"
 #include "base_cpp/tlscont.h"
 #include "bingo_pg_config.h"
+#include <math.h>
 
 CEXPORT {
 #include "postgres.h"
@@ -177,10 +178,12 @@ void BingoPgCommon::setDefaultOptions() {
 ////
 ////   OidFunctionCall1(func_oid, text_query.getDatum());
 //}
+static int rnd_check = rand();
 
 int BingoPgCommon::executeQuery(indigo::Array<char>& query_str) {
    SPI_connect();
    int success = SPI_exec(query_str.ptr(), 1);
+   rnd_check = rand();
    int result = SPI_processed;
    SPI_finish();
    if(success < 0) {
@@ -207,21 +210,38 @@ bool BingoPgCommon::tableExists(const char* table_name) {
            "and table_name = '%s'", table_name) > 0);
    
 }
-
-void BingoPgCommon::createDependency(const char* child_table, const char* parent_table) {
-   QS_DEF(Array<char>, query_str);
-   ArrayOutput query_out(query_str);
-   query_out.clear();
-   query_out.printf("INSERT INTO pg_depend (classid, objid, objsubid, refclassid, refobjid, refobjsubid, deptype) VALUES (");
-   query_out.printf("'pg_class'::regclass::oid, '%s'::regclass::oid, 0, ", child_table);
-   query_out.printf("'pg_class'::regclass::oid, '%s'::regclass::oid, 0, 'i')", parent_table);
-   query_out.writeChar(0);
-   
-   executeQuery(query_str);
+CEXPORT {
+PG_FUNCTION_INFO_V1(_internal_func_check);
+Datum _internal_func_check(PG_FUNCTION_ARGS);
 }
 
-void BingoPgCommon::dropDependency(const char* table_name) {
-   executeQuery("DELETE FROM pg_depend WHERE objid='%s'::regclass::oid", table_name);
+
+
+Datum _internal_func_check(PG_FUNCTION_ARGS) {
+   int check_value = PG_GETARG_INT32(0);
+   bool result = (check_value == rnd_check);
+   PG_RETURN_BOOL(result);
+}
+
+void BingoPgCommon::createDependency(const char* schema_name, const char* child_table, const char* parent_table) {
+//   QS_DEF(Array<char>, query_str);
+//   ArrayOutput query_out(query_str);
+//   query_out.clear();
+//   query_out.printf("INSERT INTO pg_depend (classid, objid, objsubid, refclassid, refobjid, refobjsubid, deptype) VALUES (");
+//   query_out.printf("'pg_class'::regclass::oid, '%s'::regclass::oid, 0, ", child_table);
+//   query_out.printf("'pg_class'::regclass::oid, '%s'::regclass::oid, 0, 'i')", parent_table);
+//   query_out.writeChar(0);
+//   executeQuery(query_str);
+   rnd_check = rand();
+   executeQuery("SELECT %s._internal_func_011(%d, '%s', '%s')", schema_name, rnd_check, child_table, parent_table);
+}
+
+void BingoPgCommon::dropDependency(const char* schema_name, const char* table_name) {
+   rnd_check = rand();
+   executeQuery("SELECT %s._internal_func_012(%d, '%s')", schema_name, rnd_check, table_name);
+   
+//   executeQuery("DELETE FROM pg_depend WHERE objid='%s'::regclass::oid", table_name);
+//   executeQuery("DELETE FROM pg_depend WHERE objid='%s'::regclass::oid", table_name);
 }
 
 char* BingoPgCommon::releaseString(const char* str) {

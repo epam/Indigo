@@ -24,7 +24,7 @@ public:
    virtual int getType() const {return 0;}
    virtual int getFpSize() {return 0;}
 
-   virtual void prepareShadowInfo(){}
+   virtual void prepareShadowInfo(const char* schema_name){}
    virtual void insertShadowInfo(BingoPgFpData&){}
    virtual void finishShadowProcessing(){}
 

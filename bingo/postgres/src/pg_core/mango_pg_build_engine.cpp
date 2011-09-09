@@ -158,7 +158,7 @@ int MangoPgBuildEngine::getFpSize() {
    return result * 8;
 }
 
-void MangoPgBuildEngine::prepareShadowInfo() {
+void MangoPgBuildEngine::prepareShadowInfo(const char* schema_name) {
    /*
     * Create auxialiry tables
     */
@@ -170,7 +170,7 @@ void MangoPgBuildEngine::prepareShadowInfo() {
     * Drop table if exists (in case of truncate index)
     */
    if(BingoPgCommon::tableExists(shadow_rel_name)) {
-      BingoPgCommon::dropDependency(shadow_rel_name);
+      BingoPgCommon::dropDependency(schema_name, shadow_rel_name);
       BingoPgCommon::executeQuery("DROP TABLE %s", shadow_rel_name);
    }
 
@@ -189,15 +189,15 @@ void MangoPgBuildEngine::prepareShadowInfo() {
    "xyz bytea)", shadow_rel_name);
 
    if(BingoPgCommon::tableExists(shadow_hash_name)) {
-      BingoPgCommon::dropDependency(shadow_hash_name);
+      BingoPgCommon::dropDependency(schema_name, shadow_hash_name);
       BingoPgCommon::executeQuery("DROP TABLE %s", shadow_hash_name);
    }
    BingoPgCommon::executeQuery("CREATE TABLE %s (b_id tid, ex_hash integer, f_count integer)", shadow_hash_name);
    /*
     * Create dependency for new tables
     */
-   BingoPgCommon::createDependency(shadow_rel_name, rel_name);
-   BingoPgCommon::createDependency(shadow_hash_name, rel_name);
+   BingoPgCommon::createDependency(schema_name, shadow_rel_name, rel_name);
+   BingoPgCommon::createDependency(schema_name, shadow_hash_name, rel_name);
 }
 
 void MangoPgBuildEngine::finishShadowProcessing() {

@@ -61,8 +61,8 @@ public:
    static int executeQuery(const char *format, ...);
    static bool tableExists(const char* table_name);
 
-   static void createDependency(const char* child_table, const char* parent_table);
-   static void dropDependency(const char* table_name);
+   static void createDependency(const char* schema_name, const char* child_table, const char* parent_table);
+   static void dropDependency(const char* schema_name, const char* table_name);
 
    static char* releaseString(const char* str);
 

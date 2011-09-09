@@ -28,7 +28,7 @@ public:
    virtual int getFpSize();
    virtual int getType() const {return BINGO_INDEX_TYPE_MOLECULE;}
 
-   virtual void prepareShadowInfo();
+   virtual void prepareShadowInfo(const char* schema_name);
    virtual void insertShadowInfo(BingoPgFpData&);
    virtual void finishShadowProcessing();
 

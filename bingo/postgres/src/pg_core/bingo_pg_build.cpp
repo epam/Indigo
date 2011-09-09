@@ -97,7 +97,7 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name) {
     */
    _bufferIndex.writeBegin(fp_engine.ref(), bingo_config);
 
-   fp_engine.ref().prepareShadowInfo();
+   fp_engine.ref().prepareShadowInfo(schema_name);
 }
 
 void BingoPgBuild::_prepareUpdating() {

@@ -95,6 +95,7 @@ fi
 # Generate install script
 sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo/bingo_schema.sql.in  >bingo_install.sql
 sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/bingo_internal.sql.in >>bingo_install.sql
+sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo/bingo_pg.sql.in  >>bingo_install.sql
 
 sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/mango_internal.sql.in >>bingo_install.sql
 sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo/mango_pg.sql.in       >>bingo_install.sql
