@@ -61,27 +61,31 @@ bingo_build(PG_FUNCTION_ARGS) {
    /* 
     * Initialize the bingo index metadata page and initial blocks
     */
-
    const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
-   
-   BingoPgBuild build_engine(index, schema_name, true);
-   
-   /* 
-    * Do the heap scan
-    */
-   reltuples = IndexBuildHeapScan(heap, index, indexInfo, true,
-           bingoIndexCallback, (void *) &build_engine);
 
-   /*
-    * Return statistics
-    */
-   result = (IndexBuildResult *) palloc(sizeof (IndexBuildResult));
+   PG_BINGO_BEGIN
+   {
+      BingoPgBuild build_engine(index, schema_name, true);
+      /*
+       * Do the heap scan and build index
+       */
+      BINGO_PG_TRY {
+         reltuples = IndexBuildHeapScan(heap, index, indexInfo, true,
+              bingoIndexCallback, (void *) &build_engine);
+      } BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", err->message));
 
-   result->heap_tuples = reltuples;
-   /*
-    * Index is always cost cheaper so set tuples number 1
-    */
-   result->index_tuples = 1;
+      /*
+       * Return statistics
+       */
+      result = (IndexBuildResult *) palloc(sizeof (IndexBuildResult));
+
+      result->heap_tuples = reltuples;
+      /*
+       * Index is always cost cheaper so set tuples number 1
+       */
+      result->index_tuples = 1;
+   }
+   PG_BINGO_END
 
    PG_RETURN_POINTER(result);
 }
@@ -110,10 +114,6 @@ static void bingoIndexCallback(Relation index,
     * Molecule structure is a text
     */
    
-//   ++ ggg;
-//   if(ggg % 10000 == 0)
-//      elog(WARNING, "aaa %d", ggg);
-
    BingoPgText struct_text(values[0]);
    
    /*

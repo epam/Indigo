@@ -155,7 +155,7 @@ bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text)
 }
 
 void BingoPgBuild::_errorHandler(const char* message, void*) {
-   elog(ERROR, "Error while building index: %s", message);
+   throw BingoPgError("Error while building index: %s", message);
 }
 
 

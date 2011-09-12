@@ -193,36 +193,44 @@ Datum getversion(PG_FUNCTION_ARGS) {
 
 Datum filetotext(PG_FUNCTION_ARGS) {
    Datum file_name_datum = PG_GETARG_DATUM(0);
-   BingoPgText fname_text(file_name_datum);
-   BingoPgText result_text;
 
-   try {
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgText fname_text(file_name_datum);
+      BingoPgText result_text;
+
       QS_DEF(Array<char>, buffer);
       buffer.clear();
       FileScanner f_scanner(fname_text.getString());
       f_scanner.readAll(buffer);
 
       result_text.initFromArray(buffer);
-   } catch (Exception& e) {
-      elog(ERROR, "Error: %s\n", e.message());
+
+      result = result_text.release();
    }
+   PG_BINGO_END
    
-   PG_RETURN_TEXT_P(result_text.release());
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum filetoblob(PG_FUNCTION_ARGS) {
    Datum file_name_datum = PG_GETARG_DATUM(0);
-   BingoPgText fname_text(file_name_datum);
-   BingoPgText result_text;
-   try {
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgText fname_text(file_name_datum);
+      BingoPgText result_text;
       QS_DEF(Array<char>, buffer);
       buffer.clear();
       FileScanner f_scanner(fname_text.getString());
       f_scanner.readAll(buffer);
 
       result_text.initFromArray(buffer);
-   } catch (Exception& e) {
-      elog(ERROR, "Error: %s\n", e.message());
+      
+      result = result_text.release();
    }
-   PG_RETURN_BYTEA_P(result_text.release());
+   PG_BINGO_END
+
+   PG_RETURN_BYTEA_P(result);
 }
