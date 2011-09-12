@@ -178,19 +178,23 @@ char* BingoPgCommon::releaseString(const char* str) {
 }
 
 BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id, bool raise): raise_error(raise), error_raised(false) {
+   char* schema_name = 0;
+
+   BINGO_PG_TRY {
+      schema_name = get_namespace_name(get_func_namespace(func_id));
+   } BINGO_PG_HANDLE(throw Error("internal error while trying get namespace name"));
+
+   BingoPgConfig bingo_config;
+   bingo_config.readDefaultConfig(schema_name);
+
    _sessionId = bingoAllocateSessionID();
    bingoSetSessionID(_sessionId);
    bingoSetContext(0);
-
-   const char* schema_name = get_namespace_name(get_func_namespace(func_id));
-
-   BingoPgConfig bingo_config;
-
-   bingo_config.readDefaultConfig(schema_name);
+   bingoSetErrorHandler(bingoErrorHandler, this);
+   
    bingo_config.setUpBingoConfiguration();
    bingoTautomerRulesReady(0,0,0);
    
-   bingoSetErrorHandler(bingoErrorHandler, this);
 }
 
 BingoPgCommon::BingoSessionHandler::~BingoSessionHandler() {
@@ -204,9 +208,9 @@ void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, 
 
    if(self->raise_error) {
       if (func)
-         elog(ERROR, "Runtime Error in bingo.'%s': %s", func, message);
+         throw BingoPgError("Runtime Error in bingo.'%s': %s", func, message);
       else
-         elog(ERROR, "Runtime Error: %s", message);
+         throw BingoPgError("Runtime Error: %s", message);
    } else {
       self->error_raised = true;
       if (func)

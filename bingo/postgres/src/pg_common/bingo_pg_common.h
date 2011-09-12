@@ -279,7 +279,8 @@ public:
    class BingoSessionHandler {
    public:
       BingoSessionHandler(unsigned int func_id, bool raise_error);
-      ~BingoSessionHandler();
+      virtual ~BingoSessionHandler();
+
       static void bingoErrorHandler(const char *message, void *context);
 
       const char* getFunctionName() const {
@@ -306,5 +307,33 @@ private:
 
 };
 
+
+#define BINGO_PG_TRY PG_TRY();  
+
+#define BINGO_PG_HANDLE(handle_statement) \
+                     PG_CATCH(); { \
+                     ErrorData *err = CopyErrorData(); \
+                     handle_statement;\
+                     FreeErrorData(err); \
+                     FlushErrorState(); \
+                     } PG_END_TRY();
+
+#define PG_BINGO_BEGIN try 
+#define PG_BINGO_END    catch(indigo::Exception& e) { \
+                           elog(ERROR, "error: %s", e.message());\
+                       } catch(...) { \
+                           elog(ERROR, "bingo unknown error");\
+                       }
+
+class DLLEXPORT BingoPgError : public indigo::Exception {
+public:
+   explicit BingoPgError (const char *format, ...) {
+      va_list args;
+
+      va_start(args, format);
+      _init("bingo postgres", format, args);
+      va_end(args);
+   }
+};
 #endif	/* BINGO_PG_COMMON_H */
 
