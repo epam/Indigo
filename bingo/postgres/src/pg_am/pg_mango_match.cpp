@@ -108,11 +108,13 @@ Datum _sub_internal(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
    bool result = false;
-   PG_BINGO_BEGIN {
+   PG_BINGO_BEGIN
+   {
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_SUB, fcinfo->flinfo->fn_oid);
       result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
-   } PG_BINGO_END
-   
+   }
+   PG_BINGO_END
+
    PG_RETURN_BOOL(result);
 }
 
@@ -121,10 +123,12 @@ Datum _smarts_internal(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
    bool result = false;
-   PG_BINGO_BEGIN {
+   PG_BINGO_BEGIN
+   {
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_SMARTS, fcinfo->flinfo->fn_oid);
       result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
-   } PG_BINGO_END
+   }
+   PG_BINGO_END
    PG_RETURN_BOOL(result);
 }
 
@@ -133,10 +137,12 @@ Datum _exact_internal(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
    bool result = false;
-   PG_BINGO_BEGIN {
+   PG_BINGO_BEGIN
+   {
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_EXACT, fcinfo->flinfo->fn_oid);
       result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
-   } PG_BINGO_END
+   }
+   PG_BINGO_END
    PG_RETURN_BOOL(result);
 }
 
@@ -146,11 +152,13 @@ Datum getsimilarity(PG_FUNCTION_ARGS) {
    Datum options_datum = PG_GETARG_DATUM(2);
 
    float res = 0;
-   PG_BINGO_BEGIN {
+   PG_BINGO_BEGIN
+   {
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_SIM, fcinfo->flinfo->fn_oid);
-      if(bingo_context.matchInternal(query_datum, target_datum, options_datum))
+      if (bingo_context.matchInternal(query_datum, target_datum, options_datum))
          mangoSimilarityGetScore(&res);
-   } PG_BINGO_END
+   }
+   PG_BINGO_END
    PG_RETURN_FLOAT4(res);
 }
 
@@ -160,7 +168,8 @@ Datum _gross_internal(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(2);
 
    bool result = false;
-   PG_BINGO_BEGIN {
+   PG_BINGO_BEGIN
+   {
       BingoPgText query_text(query_datum);
       BingoPgText sign_text(query_sign);
       QS_DEF(indigo::Array<char>, bingo_query);
@@ -169,40 +178,43 @@ Datum _gross_internal(PG_FUNCTION_ARGS) {
       bingo_query.appendString(query_text.getString(), false);
 
       query_text.initFromArray(bingo_query);
-   
+
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_GROSS, fcinfo->flinfo->fn_oid);
 
       result = bingo_context.matchInternal(query_text.getDatum(), target_datum, 0);
-   } PG_BINGO_END
-   
+   }
+   PG_BINGO_END
+
    PG_RETURN_BOOL(result);
 }
 
-Datum _sim_internal(PG_FUNCTION_ARGS){
+Datum _sim_internal(PG_FUNCTION_ARGS) {
    float min_bound = PG_GETARG_FLOAT4(0);
    float max_bound = PG_GETARG_FLOAT4(1);
    Datum query_datum = PG_GETARG_DATUM(2);
    Datum target_datum = PG_GETARG_DATUM(3);
    Datum options_datum = PG_GETARG_DATUM(4);
    bool result = false;
-   PG_BINGO_BEGIN {
+   PG_BINGO_BEGIN
+   {
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_SIM, fcinfo->flinfo->fn_oid);
       float mol_sim = 0;
-      if(bingo_context.matchInternal(query_datum, target_datum, options_datum))
+      if (bingo_context.matchInternal(query_datum, target_datum, options_datum))
          mangoSimilarityGetScore(&mol_sim);
-      
+
       result = (mol_sim <= max_bound) && (mol_sim >= min_bound);
-   } PG_BINGO_END
+   }
+   PG_BINGO_END
    PG_RETURN_BOOL(result);
 }
 
-
-Datum _match_mass_less(PG_FUNCTION_ARGS){
+Datum _match_mass_less(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
    char* mass_datum = PG_GETARG_CSTRING(1);
 
    bool result = false;
-   PG_BINGO_BEGIN {
+   PG_BINGO_BEGIN
+   {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, true);
       bingo_handler.setFunctionName("mass less");
 
@@ -219,17 +231,19 @@ Datum _match_mass_less(PG_FUNCTION_ARGS){
       mangoMass(buf, buf_len, 0, &mol_mass);
 
       result = mol_mass < usr_mass;
-   } PG_BINGO_END
+   }
+   PG_BINGO_END
 
    PG_RETURN_BOOL(result);
 }
 
-Datum _match_mass_great(PG_FUNCTION_ARGS){
+Datum _match_mass_great(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
    char* mass_datum = PG_GETARG_CSTRING(1);
 
    bool result = false;
-   PG_BINGO_BEGIN {
+   PG_BINGO_BEGIN
+   {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, true);
       bingo_handler.setFunctionName("mass great");
 
@@ -246,7 +260,8 @@ Datum _match_mass_great(PG_FUNCTION_ARGS){
       mangoMass(buf, buf_len, 0, &mol_mass);
 
       result = mol_mass > usr_mass;
-   } PG_BINGO_END
+   }
+   PG_BINGO_END
 
    PG_RETURN_BOOL(result);
 }
@@ -254,7 +269,7 @@ Datum _match_mass_great(PG_FUNCTION_ARGS){
 Datum _mass_in(PG_FUNCTION_ARGS) {
    char *str = PG_GETARG_CSTRING(0);
    int size = strlen(str) + 1;
-   char* result = (char*)palloc(size);
+   char* result = (char*) palloc(size);
    memcpy(result, str, size);
    PG_RETURN_POINTER(result);
 }
@@ -262,7 +277,7 @@ Datum _mass_in(PG_FUNCTION_ARGS) {
 Datum _mass_out(PG_FUNCTION_ARGS) {
    char *str = PG_GETARG_CSTRING(0);
    int size = strlen(str) + 1;
-   char* result = (char*)palloc(size);
+   char* result = (char*) palloc(size);
    memcpy(result, str, size);
    PG_RETURN_CSTRING(result);
 }

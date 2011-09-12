@@ -38,84 +38,133 @@ Datum getmass(PG_FUNCTION_ARGS);
 Datum smiles(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("smiles");
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("smiles");
 
-   BingoPgText mol_text(mol_datum);
-   int buf_size;
-   const char* mol_buf = mol_text.getText(buf_size);
-   char* result = BingoPgCommon::releaseString(mangoSMILES(mol_buf, buf_size, 0));
+      BingoPgText mol_text(mol_datum);
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
+      const char* bingo_result = mangoSMILES(mol_buf, buf_size, 0);
 
-   if(result == 0 || bingo_handler.error_raised)
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+      result = BingoPgCommon::releaseString(bingo_result);
+   }
+   PG_BINGO_END
+
+   if (result == 0)
       PG_RETURN_NULL();
-   
+
    PG_RETURN_CSTRING(result);
 }
 
 Datum cansmiles(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("cansmiles");
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("cansmiles");
 
-   BingoPgText mol_text(mol_datum);
-   int buf_size;
-   const char* mol_buf = mol_text.getText(buf_size);
-   char* result = BingoPgCommon::releaseString(mangoSMILES(mol_buf, buf_size, 1));
+      BingoPgText mol_text(mol_datum);
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
+      const char* bingo_result = mangoSMILES(mol_buf, buf_size, 1);
 
-   if(result == 0 || bingo_handler.error_raised)
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+      result = BingoPgCommon::releaseString(bingo_result);
+   }
+   PG_BINGO_END
+
+   if (result == 0)
       PG_RETURN_NULL();
-   
+
    PG_RETURN_CSTRING(result);
 }
 
 Datum molfile(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("molfile");
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("molfile");
 
-   BingoPgText mol_text(mol_datum);
-   int buf_size;
-   const char* mol_buf = mol_text.getText(buf_size);
-   char* result = BingoPgCommon::releaseString(mangoMolfile(mol_buf, buf_size));
+      BingoPgText mol_text(mol_datum);
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
+      const char* bingo_result = mangoMolfile(mol_buf, buf_size);
 
-   if(result == 0 || bingo_handler.error_raised)
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+      result = BingoPgCommon::releaseString(bingo_result);
+   }
+   PG_BINGO_END
+
+   if (result == 0)
       PG_RETURN_NULL();
-   
+
    PG_RETURN_CSTRING(result);
 }
 
 Datum cml(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("cml");
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("cml");
+      BingoPgText mol_text(mol_datum);
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
+      const char* bingo_result = mangoCML(mol_buf, buf_size);
 
-   BingoPgText mol_text(mol_datum);
-   int buf_size;
-   const char* mol_buf = mol_text.getText(buf_size);
-   char* result = BingoPgCommon::releaseString(mangoCML(mol_buf, buf_size));
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
 
-   if(result == 0 || bingo_handler.error_raised)
+      result = BingoPgCommon::releaseString(bingo_result);
+   }
+   PG_BINGO_END
+
+   if (result == 0)
       PG_RETURN_NULL();
-   
+
    PG_RETURN_CSTRING(result);
 }
 
 Datum checkmolecule(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("checkmolecule");
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("checkmolecule");
+      BingoPgText mol_text(mol_datum);
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
 
-   BingoPgText mol_text(mol_datum);
-   int buf_size;
-   const char* mol_buf = mol_text.getText(buf_size);
-   
-   char* result = BingoPgCommon::releaseString(mangoCheckMolecule(mol_buf, buf_size));
+      const char* bingo_result = mangoCheckMolecule(mol_buf, buf_size);
 
-   if(result == 0 || bingo_handler.error_raised)
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+      result = BingoPgCommon::releaseString(bingo_result);
+
+   }
+   PG_BINGO_END
+
+   if (result == 0)
       PG_RETURN_NULL();
 
    PG_RETURN_CSTRING(result);
@@ -123,17 +172,26 @@ Datum checkmolecule(PG_FUNCTION_ARGS) {
 
 Datum gross(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("gross");
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("gross");
+      BingoPgText mol_text(mol_datum);
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
 
-   BingoPgText mol_text(mol_datum);
-   int buf_size;
-   const char* mol_buf = mol_text.getText(buf_size);
-   
-   char* result = BingoPgCommon::releaseString(mangoGross(mol_buf, buf_size));
+      const char* bingo_result = mangoGross(mol_buf, buf_size);
 
-   if(result == 0 || bingo_handler.error_raised)
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+      result = BingoPgCommon::releaseString(bingo_result);
+   }
+   PG_BINGO_END
+
+   if (result == 0)
       PG_RETURN_NULL();
 
    PG_RETURN_CSTRING(result);
@@ -142,43 +200,50 @@ Datum gross(PG_FUNCTION_ARGS) {
 Datum getweight(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
    Datum options_datum = PG_GETARG_DATUM(1);
-
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("getweight");
-
-   BingoPgText mol_text(mol_datum);
-   BingoPgText mol_options(options_datum);
-
    float result = 0;
 
-   int buf_len;
-   const char* buf = mol_text.getText(buf_len);
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("getweight");
 
-   mangoMass(buf, buf_len, mol_options.getString(), &result);
+      BingoPgText mol_text(mol_datum);
+      BingoPgText mol_options(options_datum);
 
-   if(bingo_handler.error_raised)
-      PG_RETURN_NULL();
+      int buf_len;
+      const char* buf = mol_text.getText(buf_len);
+
+      mangoMass(buf, buf_len, mol_options.getString(), &result);
+
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+   }
+   PG_BINGO_END
 
    PG_RETURN_FLOAT4(result);
 }
 
 Datum getmass(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
-
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("getmass");
    
-   BingoPgText mol_text(mol_datum);
-
    float result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("getmass");
 
-   int buf_len;
-   const char* buf = mol_text.getText(buf_len);
+      BingoPgText mol_text(mol_datum);
+      int buf_len;
+      const char* buf = mol_text.getText(buf_len);
 
-   mangoMass(buf, buf_len, 0, &result);
+      mangoMass(buf, buf_len, 0, &result);
 
-   if(bingo_handler.error_raised)
-      PG_RETURN_NULL();
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+   }
+   PG_BINGO_END
 
    PG_RETURN_FLOAT4(result);
 }

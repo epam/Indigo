@@ -22,19 +22,30 @@ Datum checkreaction(PG_FUNCTION_ARGS);
 Datum aam(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
    Datum mode_datum = PG_GETARG_DATUM(1);
-
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("aam");
-
-   BingoPgText react_text(react_datum);
-   BingoPgText aam_mode(mode_datum);
    
-   int buf_size;
-   const char* react_buf = react_text.getText(buf_size);
+   char* result = 0;
+   
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("aam");
 
-   char* result = BingoPgCommon::releaseString(ringoAAM(react_buf, buf_size, aam_mode.getString()));
+      BingoPgText react_text(react_datum);
+      BingoPgText aam_mode(mode_datum);
 
-   if(result == 0 || bingo_handler.error_raised)
+      int buf_size;
+      const char* react_buf = react_text.getText(buf_size);
+      const char* bingo_result = ringoAAM(react_buf, buf_size, aam_mode.getString());
+
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+      result = BingoPgCommon::releaseString(bingo_result);
+      
+   }
+   PG_BINGO_END
+
+   if (result == 0)
       PG_RETURN_NULL();
 
    PG_RETURN_CSTRING(result);
@@ -43,15 +54,27 @@ Datum aam(PG_FUNCTION_ARGS) {
 Datum rxnfile(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("rxnfile");
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
 
-   BingoPgText react_text(react_datum);
-   int buf_size;
-   const char* react_buf = react_text.getText(buf_size);
-   char* result = BingoPgCommon::releaseString(ringoRxnfile(react_buf, buf_size));
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("rxnfile");
 
-   if(result == 0 || bingo_handler.error_raised)
+      BingoPgText react_text(react_datum);
+      int buf_size;
+      const char* react_buf = react_text.getText(buf_size);
+      const char* bingo_result = ringoRxnfile(react_buf, buf_size);
+
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+      result = BingoPgCommon::releaseString(bingo_result);
+
+   }
+   PG_BINGO_END
+
+   if (result == 0)
       PG_RETURN_NULL();
 
    PG_RETURN_CSTRING(result);
@@ -60,15 +83,26 @@ Datum rxnfile(PG_FUNCTION_ARGS) {
 Datum rcml(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("rcml");
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("rcml");
 
-   BingoPgText react_text(react_datum);
-   int buf_size;
-   const char* react_buf = react_text.getText(buf_size);
-   char* result = BingoPgCommon::releaseString(ringoRCML(react_buf, buf_size));
+      BingoPgText react_text(react_datum);
+      int buf_size;
+      const char* react_buf = react_text.getText(buf_size);
+      const char* bingo_result = ringoRCML(react_buf, buf_size);
 
-   if(result == 0 || bingo_handler.error_raised)
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+      result = BingoPgCommon::releaseString(bingo_result);
+
+   }
+   PG_BINGO_END
+
+   if (result == 0)
       PG_RETURN_NULL();
 
    PG_RETURN_CSTRING(result);
@@ -77,16 +111,26 @@ Datum rcml(PG_FUNCTION_ARGS) {
 Datum checkreaction(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
 
-   BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
-   bingo_handler.setFunctionName("checkreaction");
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("checkreaction");
 
-   BingoPgText react_text(react_datum);
-   int buf_size;
-   const char* react_buf = react_text.getText(buf_size);
+      BingoPgText react_text(react_datum);
+      int buf_size;
+      const char* react_buf = react_text.getText(buf_size);
+      const char* bingo_result = ringoCheckReaction(react_buf, buf_size);
 
-   char* result = BingoPgCommon::releaseString(ringoCheckReaction(react_buf, buf_size));
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
 
-   if(result == 0 || bingo_handler.error_raised)
+      result = BingoPgCommon::releaseString(bingo_result);
+
+   }
+   PG_BINGO_END
+
+   if (result == 0)
       PG_RETURN_NULL();
 
    PG_RETURN_CSTRING(result);

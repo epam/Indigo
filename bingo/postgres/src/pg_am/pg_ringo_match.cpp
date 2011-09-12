@@ -38,14 +38,14 @@ using namespace indigo;
 /*
  * Helper class for searching setup and perfoming
  */
-class _RingoContextHandler {
+class _RingoContextHandler :public BingoPgCommon::BingoSessionHandler {
 public:
-   _RingoContextHandler(int type, unsigned int func_oid) :_type(type), _sessionHandler(func_oid, true) {
+   _RingoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid, true), _type(type) {
       BingoPgCommon::getSearchTypeString(_type, _typeStr, false);
-      _sessionHandler.setFunctionName(_typeStr.ptr());
+      setFunctionName(_typeStr.ptr());
    }
 
-   ~_RingoContextHandler() {
+   virtual ~_RingoContextHandler() {
    }
 
 
@@ -63,8 +63,8 @@ public:
        * Set up match parameters
        */
       int res = ringoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
-      if (res < 0) 
-         elog(ERROR, "Error while bingo%s loading a reaction: %s", _typeStr.ptr(), bingoGetError());
+      if (res < 0)
+         throw BingoPgError("Error while bingo%s loading a reaction: %s", _typeStr.ptr(), bingoGetError());
 
       int target_size;
       const char* target_data = target_text.getText(target_size);
@@ -78,22 +78,24 @@ public:
    }
 private:
    _RingoContextHandler(const _RingoContextHandler&);//no implicit copy
-   
-   qword _bingoSession;
    int _type;
    indigo::Array<char> _typeStr;
-   BingoPgCommon::BingoSessionHandler _sessionHandler;
 };
-
 
 Datum _rsub_internal(PG_FUNCTION_ARGS) {
    Datum query_datum = PG_GETARG_DATUM(0);
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
 
-   _RingoContextHandler bingo_context(BingoPgCommon::REACT_SUB, fcinfo->flinfo->fn_oid);
+   bool result = false;
+   PG_BINGO_BEGIN
+   {
+      _RingoContextHandler bingo_context(BingoPgCommon::REACT_SUB, fcinfo->flinfo->fn_oid);
+      result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
+   }
+   PG_BINGO_END
 
-   PG_RETURN_BOOL(bingo_context.matchInternal(query_datum, target_datum, options_datum));
+   PG_RETURN_BOOL(result);
 }
 
 Datum _rsmarts_internal(PG_FUNCTION_ARGS) {
@@ -101,9 +103,15 @@ Datum _rsmarts_internal(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
 
-   _RingoContextHandler bingo_context(BingoPgCommon::REACT_SMARTS, fcinfo->flinfo->fn_oid);
+   bool result = false;
+   PG_BINGO_BEGIN
+   {
+      _RingoContextHandler bingo_context(BingoPgCommon::REACT_SMARTS, fcinfo->flinfo->fn_oid);
+      result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
+   }
+   PG_BINGO_END
 
-   PG_RETURN_BOOL(bingo_context.matchInternal(query_datum, target_datum, options_datum));
+   PG_RETURN_BOOL(result);
 }
 
 Datum _rexact_internal(PG_FUNCTION_ARGS) {
@@ -111,7 +119,13 @@ Datum _rexact_internal(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
 
-   _RingoContextHandler bingo_context(BingoPgCommon::REACT_EXACT, fcinfo->flinfo->fn_oid);
+   bool result = false;
+   PG_BINGO_BEGIN
+   {
+      _RingoContextHandler bingo_context(BingoPgCommon::REACT_EXACT, fcinfo->flinfo->fn_oid);
+      result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
+   }
+   PG_BINGO_END
 
-   PG_RETURN_BOOL(bingo_context.matchInternal(query_datum, target_datum, options_datum));
+   PG_RETURN_BOOL(result);
 }
