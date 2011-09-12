@@ -38,9 +38,9 @@ bingo_build(PG_FUNCTION_ARGS) {
    Relation heap = (Relation) PG_GETARG_POINTER(0);
    Relation index = (Relation) PG_GETARG_POINTER(1);
    IndexInfo *indexInfo = (IndexInfo *) PG_GETARG_POINTER(2);
-   IndexBuildResult *result;
 //   BlockNumber relpages;
-   double reltuples;
+   IndexBuildResult *result = 0;
+   double reltuples = 0;
 
    elog(INFO, "start bingo build");
 

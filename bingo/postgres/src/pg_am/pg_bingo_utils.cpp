@@ -210,6 +210,9 @@ Datum filetotext(PG_FUNCTION_ARGS) {
       result = result_text.release();
    }
    PG_BINGO_END
+
+   if(result == 0)
+      PG_RETURN_NULL();
    
    PG_RETURN_TEXT_P(result);
 }
@@ -232,5 +235,8 @@ Datum filetoblob(PG_FUNCTION_ARGS) {
    }
    PG_BINGO_END
 
+   if(result == 0)
+      PG_RETURN_NULL();
+   
    PG_RETURN_BYTEA_P(result);
 }
