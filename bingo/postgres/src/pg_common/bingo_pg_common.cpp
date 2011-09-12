@@ -127,7 +127,7 @@ int BingoPgCommon::executeQuery(indigo::Array<char>& query_str) {
    int result = SPI_processed;
    SPI_finish();
    if(success < 0) {
-      elog(ERROR, "error (%d) while executing query: %s res",  success, query_str.ptr());
+      throw BingoPgError("error (%d) while executing query: %s res",  success, query_str.ptr());
    }
    return result;
 }
@@ -188,10 +188,8 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id, bool raise)
    bingo_config.readDefaultConfig(schema_name);
 
    _sessionId = bingoAllocateSessionID();
-   bingoSetSessionID(_sessionId);
-   bingoSetContext(0);
-   bingoSetErrorHandler(bingoErrorHandler, this);
-   
+   refresh();
+
    bingo_config.setUpBingoConfiguration();
    bingoTautomerRulesReady(0,0,0);
    
@@ -201,6 +199,12 @@ BingoPgCommon::BingoSessionHandler::~BingoSessionHandler() {
    bingoReleaseSessionID(_sessionId);
 }
 
+void BingoPgCommon::BingoSessionHandler::refresh() {
+   bingoSetSessionID(_sessionId);
+   bingoSetContext(0);
+   bingoSetErrorHandler(bingoErrorHandler, this);
+}
+
 void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, void* self_ptr) {
    BingoSessionHandler* self = (BingoSessionHandler*)self_ptr;
 
@@ -208,15 +212,15 @@ void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, 
 
    if(self->raise_error) {
       if (func)
-         throw BingoPgError("Runtime Error in bingo.'%s': %s", func, message);
+         throw BingoPgError("runtime error in bingo.'%s': %s", func, message);
       else
-         throw BingoPgError("Runtime Error: %s", message);
+         throw BingoPgError("runtime error: %s", message);
    } else {
       self->error_raised = true;
       if (func)
-         elog(WARNING, "Warning in bingo.'%s': %s", func, message);
+         elog(WARNING, "warning in bingo.'%s': %s", func, message);
       else
-         elog(WARNING, "Warning: %s", message);
+         elog(WARNING, "warning: %s", message);
    }
 
 

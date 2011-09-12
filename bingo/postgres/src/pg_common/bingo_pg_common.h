@@ -290,6 +290,8 @@ public:
       void setFunctionName(const char* name) {
          _functionName.readString(name, true);
       }
+
+      void refresh();
       bool raise_error;
       bool error_raised;
    private:
