@@ -71,7 +71,7 @@ public:
     * Returns true if matching is successfull
     * Throws an error if query can not be loaded
     */
-   bool matchInternal(Datum query_datum, Datum target_datum, Datum options_datum) {
+   int matchInternal(Datum query_datum, Datum target_datum, Datum options_datum) {
       BingoPgText query_text(query_datum);
       BingoPgText target_text(target_datum);
       BingoPgText options_text(options_datum);
@@ -92,10 +92,17 @@ public:
       
       res = mangoMatchTarget(target_data, target_size);
 
-      if (res < 0)
-         elog(WARNING, "Warning while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetWarning());
+      if (res < 0) {
+         QS_DEF(Array<char>, buffer_warn);
+         buffer_warn.readString(bingoGetWarning(), true);
+         const char* mol_name = bingoGetNameCore(target_data, target_size);
+         if(mol_name != 0 && strlen(mol_name) > 0)
+            elog(WARNING, "warning while bingo%s loading molecule with name ='%s': %s", _typeStr.ptr(), mol_name, buffer_warn.ptr());
+         else
+            elog(WARNING, "warning while bingo%s loading molecule: %s", _typeStr.ptr(), buffer_warn.ptr());
+      }
 
-      return res > 0;
+      return res;
    }
 private:
    _MangoContextHandler(const _MangoContextHandler&);//no implicit copy
@@ -107,43 +114,49 @@ Datum _sub_internal(PG_FUNCTION_ARGS) {
    Datum query_datum = PG_GETARG_DATUM(0);
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
-   bool result = false;
+   int result = 0;
    PG_BINGO_BEGIN
    {
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_SUB, fcinfo->flinfo->fn_oid);
       result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
+      if(result < 0)
+         PG_RETURN_NULL();
    }
    PG_BINGO_END
 
-   PG_RETURN_BOOL(result);
+   PG_RETURN_BOOL(result>0);
 }
 
 Datum _smarts_internal(PG_FUNCTION_ARGS) {
    Datum query_datum = PG_GETARG_DATUM(0);
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
-   bool result = false;
+   int result = 0;
    PG_BINGO_BEGIN
    {
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_SMARTS, fcinfo->flinfo->fn_oid);
       result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
+      if(result < 0)
+         PG_RETURN_NULL();
    }
    PG_BINGO_END
-   PG_RETURN_BOOL(result);
+   PG_RETURN_BOOL(result>0);
 }
 
 Datum _exact_internal(PG_FUNCTION_ARGS) {
    Datum query_datum = PG_GETARG_DATUM(0);
    Datum target_datum = PG_GETARG_DATUM(1);
    Datum options_datum = PG_GETARG_DATUM(2);
-   bool result = false;
+   int result = 0;
    PG_BINGO_BEGIN
    {
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_EXACT, fcinfo->flinfo->fn_oid);
       result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
+      if(result < 0)
+         PG_RETURN_NULL();
    }
    PG_BINGO_END
-   PG_RETURN_BOOL(result);
+   PG_RETURN_BOOL(result>0);
 }
 
 Datum getsimilarity(PG_FUNCTION_ARGS) {
@@ -154,8 +167,13 @@ Datum getsimilarity(PG_FUNCTION_ARGS) {
    float res = 0;
    PG_BINGO_BEGIN
    {
+      int result = 0;
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_SIM, fcinfo->flinfo->fn_oid);
-      if (bingo_context.matchInternal(query_datum, target_datum, options_datum))
+      result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
+      if(result < 0)
+         PG_RETURN_NULL();
+      
+      if (result > 0)
          mangoSimilarityGetScore(&res);
    }
    PG_BINGO_END
@@ -167,7 +185,7 @@ Datum _gross_internal(PG_FUNCTION_ARGS) {
    Datum query_datum = PG_GETARG_DATUM(1);
    Datum target_datum = PG_GETARG_DATUM(2);
 
-   bool result = false;
+   int result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgText query_text(query_datum);
@@ -182,10 +200,13 @@ Datum _gross_internal(PG_FUNCTION_ARGS) {
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_GROSS, fcinfo->flinfo->fn_oid);
 
       result = bingo_context.matchInternal(query_text.getDatum(), target_datum, 0);
+      
+      if(result < 0)
+         PG_RETURN_NULL();
    }
    PG_BINGO_END
 
-   PG_RETURN_BOOL(result);
+   PG_RETURN_BOOL(result>0);
 }
 
 Datum _sim_internal(PG_FUNCTION_ARGS) {
@@ -194,18 +215,24 @@ Datum _sim_internal(PG_FUNCTION_ARGS) {
    Datum query_datum = PG_GETARG_DATUM(2);
    Datum target_datum = PG_GETARG_DATUM(3);
    Datum options_datum = PG_GETARG_DATUM(4);
-   bool result = false;
+   int result = 0;
+   bool res_bool = false;
    PG_BINGO_BEGIN
    {
       _MangoContextHandler bingo_context(BingoPgCommon::MOL_SIM, fcinfo->flinfo->fn_oid);
       float mol_sim = 0;
-      if (bingo_context.matchInternal(query_datum, target_datum, options_datum))
+      result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
+
+      if(result < 0)
+         PG_RETURN_NULL();
+      
+      if (result > 0)
          mangoSimilarityGetScore(&mol_sim);
 
-      result = (mol_sim <= max_bound) && (mol_sim >= min_bound);
+      res_bool = (mol_sim <= max_bound) && (mol_sim >= min_bound);
    }
    PG_BINGO_END
-   PG_RETURN_BOOL(result);
+   PG_RETURN_BOOL(res_bool);
 }
 
 Datum _match_mass_less(PG_FUNCTION_ARGS) {

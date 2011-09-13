@@ -232,6 +232,7 @@ Datum filetoblob(PG_FUNCTION_ARGS) {
       result_text.initFromArray(buffer);
       
       result = result_text.release();
+
    }
    PG_BINGO_END
 
