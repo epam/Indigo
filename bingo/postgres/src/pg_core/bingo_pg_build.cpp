@@ -139,7 +139,9 @@ bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text)
    indigo::AutoPtr<BingoPgFpData> data;
 
    if (!fp_engine->processStructure(struct_text, data)) {
-      elog(WARNING, "can not insert a structure: %s", bingoGetWarning());
+      int block_number = ItemPointerGetBlockNumber((ItemPointer)item_ptr);
+      int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
+      elog(WARNING, "can not insert a structure with tid = (%d, %d): %s", block_number, offset_number,  bingoGetWarning());
       return false;
    }
 
