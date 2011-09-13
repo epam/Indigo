@@ -68,7 +68,7 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name) {
     * Safety check
     */
    if (RelationGetNumberOfBlocks(index) != 0)
-      elog(ERROR, "cannot initialize non-empty bingo index \"%s\"",
+      throw Error("cannot initialize non-empty bingo index \"%s\"",
            RelationGetRelationName(index));
 
    /*
@@ -89,7 +89,7 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name) {
    } else if (strcasecmp(func_name, "matchrsub") == 0) {
       fp_engine.reset(new RingoPgBuildEngine(bingo_config, rel_name));
    } else {
-      elog(ERROR, "unknown index build function %s", func_name);
+      throw Error("internal error: unknown index build function %s", func_name);
    }
 
    /*
@@ -118,7 +118,7 @@ void BingoPgBuild::_prepareUpdating() {
    else if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_REACTION)
       fp_engine.reset(new RingoPgBuildEngine(bingo_config, rel_name));
    else
-      elog(ERROR, "unknown index type %d", _bufferIndex.getIndexType());
+      throw Error("internal error: unknown index type %d", _bufferIndex.getIndexType());
 
    /*
     * Prepare for an update
@@ -155,7 +155,7 @@ bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text)
 }
 
 void BingoPgBuild::_errorHandler(const char* message, void*) {
-   throw BingoPgError("Error while building index: %s", message);
+   throw Error("Error while building index: %s", message);
 }
 
 

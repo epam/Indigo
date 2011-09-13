@@ -3,10 +3,13 @@
 
 #include "base_cpp/obj_array.h"
 #include "base_cpp/auto_ptr.h"
+#include "base_cpp/exception.h"
+
 #include "bingo_postgres.h"
 #include "pg_bingo_context.h"
 #include "bingo_pg_buffer.h"
 #include "bingo_pg_section.h"
+
 
 /*
  * Class for handling bingo meta info and sections
@@ -92,6 +95,8 @@ public:
    
    void readDictionary(indigo::Array<char>& _dictionary);
    void writeDictionary(BingoPgBuildEngine&);
+
+   DEF_ERROR("bingo index access");
 
 private:
    BingoPgIndex(const BingoPgIndex&); //no implicit copy

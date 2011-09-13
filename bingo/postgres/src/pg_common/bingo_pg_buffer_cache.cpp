@@ -147,7 +147,7 @@ void BingoPgBufferCacheMap::getXyzItem(int map_idx, ItemPointerData& xyz_item) {
 
 void BingoPgBufferCacheMap::_checkMapIdx(int map_idx) {
    if(map_idx >= BINGO_MOLS_PER_MAPBLOCK)
-      elog(ERROR, "internal error: map index %d is out of range %d", map_idx, BINGO_MOLS_PER_MAPBLOCK);
+      throw Error("internal error: map index %d is out of range %d", map_idx, BINGO_MOLS_PER_MAPBLOCK);
 }
 
 
@@ -290,7 +290,7 @@ unsigned short BingoPgBufferCacheBin::addBin(indigo::Array<char>& bin_buf) {
     * If read strategy then it is an update so read the buffer in this function also
     */
    if(!isEnoughSpace(bin_buf.sizeInBytes()))
-      elog(ERROR, "internal error: can not add cmf to the cache because is not enough space");
+      throw Error("internal error: can not add cmf to the cache because is not enough space");
 
    /*
     * Prepare output offset
@@ -321,7 +321,7 @@ unsigned short BingoPgBufferCacheBin::writeBin(indigo::Array<char>& bin_buf) {
     * If read strategy then it is an update so read the buffer in this function also
     */
    if(bin_buf.sizeInBytes() > MAX_SIZE)
-      elog(ERROR, "internal error: can not add cmf to the cache because is not enough space");
+      throw Error("internal error: can not add cmf to the cache because is not enough space");
 
    /*
     * Prepare output offset

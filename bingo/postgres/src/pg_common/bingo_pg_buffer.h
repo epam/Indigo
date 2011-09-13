@@ -2,6 +2,7 @@
 #define	_BINGO_PG_BUFFER_H__
 
 #include "bingo_postgres.h"
+#include "base_cpp/exception.h"
 /*
  * Class for postgres buffers handling
  */
@@ -52,6 +53,8 @@ public:
    void formEmptyIndexTuple(int size);
 
    bool isReady() const;
+   
+   DEF_ERROR("bingo buffer");
    
 private:
    BingoPgBuffer(const BingoPgBuffer&); //no implicit copy

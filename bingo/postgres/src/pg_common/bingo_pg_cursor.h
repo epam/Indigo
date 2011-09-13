@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "base_cpp/array.h"
+#include "base_cpp/exception.h"
 #include "bingo_postgres.h"
 
 class ItemPointerData;
@@ -19,6 +20,8 @@ public:
    void getId(int arg_idx, ItemPointerData&);
    void getText(int arg_idx, BingoPgText&);
    uintptr_t  getDatum(int arg_idx);
+
+   DEF_ERROR("bingo cursor access");
 private:
    BingoPgCursor(const BingoPgCursor&); //no implicit copy
 

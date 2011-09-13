@@ -215,6 +215,6 @@ void MangoPgBuildEngine::finishShadowProcessing() {
 
 
 void MangoPgBuildEngine::_errorHandler(const char* message, void*) {
-   elog(ERROR, "Error while building molecule index: %s", message);
+   throw BingoPgError("Error while building molecule index: %s", message);
 }
 

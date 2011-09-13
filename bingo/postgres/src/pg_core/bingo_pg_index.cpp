@@ -189,7 +189,7 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config) {
 
 void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine) {
    if(_strategy == READING_STRATEGY)
-      elog(ERROR, "can not write dictionary while there is no building stage");
+      throw Error("can not write dictionary while there is no building stage");
 
    int dict_size;
    const char* dict_buf = fp_engine.getDictionary(dict_size);
@@ -254,7 +254,7 @@ void BingoPgIndex::_setSectionOffset(int section_idx, int section_offset) {
     * There is the maximum limit of sections
     */
    if(section_buf_idx >= BINGO_SECTION_OFFSET_BLOCKS_NUM)
-      elog(ERROR, "internal error: can not add new section, max limit reached: %d", section_idx* BINGO_MOLS_PER_SECTION);
+      throw Error("internal error: can not add new section, max limit reached: %d", section_idx* BINGO_MOLS_PER_SECTION);
    int data_len;
    BingoPgBuffer& off_buffer = _sectionOffsetBuffers[section_buf_idx];
    /*
@@ -274,7 +274,7 @@ BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx) {
       return _currentSection.ref();
    if (_strategy == READING_STRATEGY) {
       if (section_idx >= getSectionNumber()) {
-         elog(ERROR, "could not get the buffer: section %d is out of bounds %d", section_idx, getSectionNumber());
+         throw Error("could not get the buffer: section %d is out of bounds %d", section_idx, getSectionNumber());
       }
       /*
        * Read the section using offset mapping
@@ -341,7 +341,7 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item) {
     * Assuming that insert only for a write strategy
     */
    if(_strategy == READING_STRATEGY)
-      elog(ERROR, "can not insert a structure while reading");
+      throw Error("can not insert a structure while reading");
    /*
     * If a structure can not be added to the current section then initialize the new
     */

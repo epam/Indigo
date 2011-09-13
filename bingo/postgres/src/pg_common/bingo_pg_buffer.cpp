@@ -72,10 +72,10 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num) {
     * Bingo forbids noncontiguous access
     */
    if (block_num > nblocks)
-      elog(ERROR, "internal error: access to noncontiguous page in bingo index \"%s\"",
+      throw Error( "internal error: access to noncontiguous page in bingo index \"%s\"",
            RelationGetRelationName(rel));
 //   if(block_num < nblocks)
-//      elog(ERROR, "internal error: access to already pinned block in bingo index");
+//      throw Error("internal error: access to already pinned block in bingo index");
 
    /*
     * smgr insists we use P_NEW to extend the relation
@@ -83,7 +83,7 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num) {
    if (block_num == nblocks) {
       _buffer = ReadBuffer(rel, P_NEW);
       if (BufferGetBlockNumber(_buffer) != block_num)
-         elog(ERROR, "unexpected relation size: %u, should be %u",
+         throw Error( "unexpected relation size: %u, should be %u",
               BufferGetBlockNumber(_buffer), block_num);
    } else
       _buffer = ReadBufferExtended(rel, MAIN_FORKNUM,  block_num, RBM_ZERO, NULL);
@@ -181,7 +181,7 @@ void* BingoPgBuffer::getIndexData(int& data_len) {
    data_len = IndexTupleSize(itup) - hoff;
 
    if(data_ptr == 0)
-      elog(ERROR, "internal error: empty ptr data for the block %d", _blockIdx);
+      throw Error("internal error: empty ptr data for the block %d", _blockIdx);
 
    return data_ptr;
 }
@@ -203,7 +203,7 @@ void BingoPgBuffer::formIndexTuple(void* map_data, int size) {
    if (PageAddItem(page, (Item) itup, itemsz, 0, false, false) == InvalidOffsetNumber) {
       pfree(itup);
       FreeTupleDesc(index_desc);
-      elog(ERROR, "failed to add index item");
+      throw Error("internal error: failed to add index item");
    }
 
    pfree(itup);

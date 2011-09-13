@@ -74,10 +74,10 @@ void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
 
 uintptr_t  BingoPgCursor::getDatum(int arg_idx) {
    if(SPI_processed == 0)
-      elog(ERROR, "can not get not processed tuple");
+      throw Error("can not get not processed tuple");
 
    if(SPI_tuptable == NULL)
-      elog(ERROR, "can not get null tuple");
+      throw Error("can not get null tuple");
 
    TupleDesc tupdesc = SPI_tuptable->tupdesc;
 
@@ -90,12 +90,12 @@ uintptr_t  BingoPgCursor::getDatum(int arg_idx) {
    bool isnull;
 
    if (arg_idx > tupdesc->natts)
-      elog(ERROR, "can not get tuple was not in query %d > %d", arg_idx, tupdesc->natts);
+      throw Error("can not get tuple was not in query %d > %d", arg_idx, tupdesc->natts);
 
    Datum record = SPI_getbinval(tuple, tupdesc, arg_idx, &isnull);
 
    if (isnull)
-      elog(ERROR, "can not get null tuple");
+      throw Error("can not get null tuple");
    
    return record;
 }

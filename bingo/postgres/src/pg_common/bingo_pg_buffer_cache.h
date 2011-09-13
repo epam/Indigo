@@ -4,6 +4,7 @@
 #include "bingo_pg_ext_bitset.h"
 #include "bingo_pg_buffer.h"
 #include "bingo_postgres.h"
+#include "base_cpp/exception.h"
 
 CEXPORT {
    #include "c.h"
@@ -61,6 +62,8 @@ public:
    void getCmfItem(int map_idx, ItemPointerData& cmf_item);
    void getXyzItem(int map_idx, ItemPointerData& xyz_item);
 
+   DEF_ERROR("bingo buffer cache");
+
 private:
    BingoPgBufferCacheMap(const BingoPgBufferCacheMap&); //no implicit copy
 
@@ -84,6 +87,8 @@ public:
    void andWithBitset(BingoPgExternalBitset& ext_bitset);
 
    void getCopy(BingoPgExternalBitset& other);
+
+   DEF_ERROR("bingo buffer cache fingerprints");
 
 private:
    BingoPgBufferCacheFp(const BingoPgBufferCacheFp&); //no implicit copy
@@ -121,6 +126,7 @@ public:
     */
    void readBin(unsigned short offset, indigo::Array<char>& result);
 
+   DEF_ERROR("bingo buffer cache binary data");
 private:
    BingoPgBufferCacheBin(const BingoPgBufferCacheBin&); //no implicit copy
 

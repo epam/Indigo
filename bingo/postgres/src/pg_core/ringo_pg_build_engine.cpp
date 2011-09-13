@@ -155,6 +155,6 @@ void RingoPgBuildEngine::finishShadowProcessing() {
 
 
 void RingoPgBuildEngine::_errorHandler(const char* message, void*) {
-   elog(ERROR, "Error while building reaction index: %s", message);
+   throw BingoPgError("Error while building reaction index: %s", message);
 }
 
