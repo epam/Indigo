@@ -1,5 +1,6 @@
 #include "bingo_pg_text.h"
 #include "bingo_pg_index.h"
+#include "bingo_pg_common.h"
 
 CEXPORT {
 #include "postgres.h"
@@ -20,18 +21,24 @@ BingoPgText::~BingoPgText() {
 void BingoPgText::init(uintptr_t text_datum) {
    clear();
    if (text_datum != 0) {
-      _text = DatumGetTextPCopy(text_datum);
+      BINGO_PG_TRY {
+         _text = DatumGetTextPCopy(text_datum);
+      } BINGO_PG_HANDLE(throw Error("internal error: can not get text data copy: %s", err->message));
    }
 }
 
 void BingoPgText::initFromString(const char* str) {
    clear();
-   _text = cstring_to_text(str);
+   BINGO_PG_TRY {
+      _text = cstring_to_text(str);
+   } BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a string: %s", err->message));
 }
 
 void BingoPgText::initFromArray(indigo::Array<char>& str) {
    clear();
-   _text = cstring_to_text_with_len(str.ptr(), str.sizeInBytes());
+   BINGO_PG_TRY {
+      _text = cstring_to_text_with_len(str.ptr(), str.sizeInBytes());
+   } BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a buffer: %s", err->message));
 }
 
 void BingoPgText::clear() {

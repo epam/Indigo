@@ -5,6 +5,7 @@
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/auto_ptr.h"
+#include "base_cpp/exception.h"
 #include "pg_bingo_context.h"
 #include "bingo_pg_buffer_cache.h"
 #include "bingo_postgres.h"
@@ -60,6 +61,8 @@ public:
    BingoPgBufferCacheBin& getBinBufferCache(int bin_idx) {return *_buffersBin[bin_idx];}
 
    void readSectionBitsCount(indigo::Array<int>& bits_count);
+
+   DEF_ERROR("bingo postgres section");
 
 private:
    BingoPgSection(const BingoPgSection&); //no implicit copy

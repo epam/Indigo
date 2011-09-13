@@ -5,8 +5,8 @@
 
 CEXPORT {
 #include "postgres.h"
-#include "fmgr.h"
 #include "storage/itemptr.h"
+#include "storage/block.h"
 }
 
 BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int offset):
@@ -247,7 +247,9 @@ void BingoPgSection::_setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, 
 
 void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data) {
    if(buf.size() == 0) {
-      ItemPointerSet(&item_data, InvalidBlockNumber, 0);
+      BINGO_PG_TRY {
+         ItemPointerSet(&item_data, InvalidBlockNumber, 0);
+      } BINGO_PG_HANDLE(throw Error("internal error: can not set block data: %s", err->message));
       return;
    }
    /*
@@ -279,7 +281,9 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
    /*
     * Set mappings
     */
-   ItemPointerSet(&item_data, last_buf, bin_offset);
+   BINGO_PG_TRY {
+      ItemPointerSet(&item_data, last_buf, bin_offset);
+   } BINGO_PG_HANDLE(throw Error("internal error: can not set block data: %s", err->message));
 }
 
 void BingoPgSection::_setBitsCountData(unsigned short bits_count) {

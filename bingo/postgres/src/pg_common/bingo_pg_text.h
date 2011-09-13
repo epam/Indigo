@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "bingo_postgres.h"
 #include "base_cpp/array.h"
+#include "base_cpp/exception.h"
 
 class BingoPgText {
 public:
@@ -21,6 +22,8 @@ public:
 
    uintptr_t getDatum();
    PG_OBJECT release();
+
+   DEF_ERROR("bingo postgres text");
 private:
    BingoPgText(const BingoPgText&); //no implicit copy
 

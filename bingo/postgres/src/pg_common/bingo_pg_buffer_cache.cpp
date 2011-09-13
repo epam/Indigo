@@ -3,11 +3,6 @@
 #include "bingo_pg_common.h"
 #include "base_cpp/scanner.h"
 
-CEXPORT {
-#include "postgres.h"
-#include "fmgr.h"
-}
-
 using namespace indigo;
 
 BingoPgBufferCache::BingoPgBufferCache(int block_id, PG_OBJECT index_ptr, bool write):

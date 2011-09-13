@@ -38,15 +38,23 @@ BingoPgCursor::~BingoPgCursor() {
    /*
     * JDBC drivers workaround
     */
-   Portal cur_ptr = SPI_cursor_find(_cursorName.ptr());
-   if(cur_ptr != NULL)
-      SPI_cursor_close((Portal)_cursorPtr);
-   SPI_finish();
+   BINGO_PG_TRY
+   {
+      Portal cur_ptr = SPI_cursor_find(_cursorName.ptr());
+      if (cur_ptr != NULL)
+         SPI_cursor_close((Portal) _cursorPtr);
+      SPI_finish();
+   }
+   BINGO_PG_HANDLE(throw Error("internal error: can not close the cursor: %s", err->message));
 }
 
 bool BingoPgCursor::next() {
 
-   SPI_cursor_fetch((Portal)_cursorPtr, true, 1);
+   BINGO_PG_TRY
+   {
+      SPI_cursor_fetch((Portal)_cursorPtr, true, 1);
+   }
+   BINGO_PG_HANDLE(throw Error("internal error: can not fetch the cursor: %s", err->message));
    
    if(SPI_processed == 0)
       return false;
@@ -58,14 +66,18 @@ bool BingoPgCursor::next() {
 }
 
 void BingoPgCursor::getId(int arg_idx, ItemPointerData& data) {
-   Datum record = getDatum(arg_idx);
-   ItemPointer tup = (ItemPointer) DatumGetPointer(record);
-   
-   int block_num = ItemPointerGetBlockNumber(tup);
-   int off_num = ItemPointerGetOffsetNumber(tup);
+   BINGO_PG_TRY
+   {
+      Datum record = getDatum(arg_idx);
+      ItemPointer tup = (ItemPointer) DatumGetPointer(record);
 
-   ItemPointerSetBlockNumber(&data, block_num);
-   ItemPointerSetOffsetNumber(&data, off_num);
+      int block_num = ItemPointerGetBlockNumber(tup);
+      int off_num = ItemPointerGetOffsetNumber(tup);
+
+      ItemPointerSetBlockNumber(&data, block_num);
+      ItemPointerSetOffsetNumber(&data, off_num);
+   }
+   BINGO_PG_HANDLE(throw Error("internal error: can not get the id from the data: %s", err->message));
 }
 void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
    Datum record = getDatum(arg_idx);
@@ -74,28 +86,34 @@ void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
 
 uintptr_t  BingoPgCursor::getDatum(int arg_idx) {
    if(SPI_processed == 0)
-      throw Error("can not get not processed tuple");
+      throw Error("internal error: can not get not processed tuple");
 
    if(SPI_tuptable == NULL)
-      throw Error("can not get null tuple");
+      throw Error("internal error: can not get null tuple");
 
-   TupleDesc tupdesc = SPI_tuptable->tupdesc;
+   Datum record = 0;
+   
+   BINGO_PG_TRY
+   {
+      TupleDesc tupdesc = SPI_tuptable->tupdesc;
 
-   /*
-    * Tuple index is always 0
-    */
-   int tuple_idx = 0;
+      /*
+       * Tuple index is always 0
+       */
+      int tuple_idx = 0;
 
-   HeapTuple tuple = SPI_tuptable->vals[tuple_idx];
-   bool isnull;
+      HeapTuple tuple = SPI_tuptable->vals[tuple_idx];
+      bool isnull;
 
-   if (arg_idx > tupdesc->natts)
-      throw Error("can not get tuple was not in query %d > %d", arg_idx, tupdesc->natts);
+      if (arg_idx > tupdesc->natts)
+         throw Error("internal error: can not get tuple was not in query %d > %d", arg_idx, tupdesc->natts);
 
-   Datum record = SPI_getbinval(tuple, tupdesc, arg_idx, &isnull);
+      record = SPI_getbinval(tuple, tupdesc, arg_idx, &isnull);
 
-   if (isnull)
-      throw Error("can not get null tuple");
+      if (isnull)
+         throw Error("internal error: can not get null tuple");
+   }
+   BINGO_PG_HANDLE(throw Error("internal error: can not get datum from the tuple: %s", err->message));
    
    return record;
 }
@@ -103,12 +121,17 @@ uintptr_t  BingoPgCursor::getDatum(int arg_idx) {
 void BingoPgCursor::_init(indigo::Array<char>& query_str) {
    Array<dword> arg_types;
 
-   SPI_connect();
-   SPIPlanPtr plan_ptr = SPI_prepare_cursor(query_str.ptr(), arg_types.size(), arg_types.ptr(), 0);
-   ++cursor_idx;
-   ArrayOutput cursor_name_out(_cursorName);
-   cursor_name_out.printf("bingo_cursor_%d", cursor_idx);
-   cursor_name_out.writeChar(0);
+   BINGO_PG_TRY
+   {
+      SPI_connect();
+      SPIPlanPtr plan_ptr = SPI_prepare_cursor(query_str.ptr(), arg_types.size(), arg_types.ptr(), 0);
 
-   _cursorPtr = SPI_cursor_open(_cursorName.ptr(), plan_ptr, 0, 0, true);
+      ++cursor_idx;
+      ArrayOutput cursor_name_out(_cursorName);
+      cursor_name_out.printf("bingo_cursor_%d", cursor_idx);
+      cursor_name_out.writeChar(0);
+
+      _cursorPtr = SPI_cursor_open(_cursorName.ptr(), plan_ptr, 0, 0, true);
+   }
+   BINGO_PG_HANDLE(throw Error("internal error: can not prepare or open a cursor: %s", err->message));
 }
