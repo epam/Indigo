@@ -17,18 +17,6 @@ CEXPORT {
 
 CEXPORT {
 
-//PG_FUNCTION_INFO_V1(bingoimportsdf_begin);
-//Datum bingoimportsdf_begin(PG_FUNCTION_ARGS);
-//
-//PG_FUNCTION_INFO_V1(bingoimportsdf_hasnext);
-//Datum bingoimportsdf_hasnext(PG_FUNCTION_ARGS);
-//
-//PG_FUNCTION_INFO_V1(bingoimportsdf_next);
-//Datum bingoimportsdf_next(PG_FUNCTION_ARGS);
-//
-//PG_FUNCTION_INFO_V1(bingoimportsdf_end);
-//Datum bingoimportsdf_end(PG_FUNCTION_ARGS);
-
 PG_FUNCTION_INFO_V1(importsdf);
 Datum importsdf(PG_FUNCTION_ARGS);
 

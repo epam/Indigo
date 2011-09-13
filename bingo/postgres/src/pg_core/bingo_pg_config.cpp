@@ -55,12 +55,12 @@ void BingoPgConfig::readDefaultConfig(const char* schema_name) {
 //    */
 //   Oid config_oid = RelnameGetRelid("bingo.bingo_config");
 //   if(config_oid == InvalidOid)
-//      elog(ERROR, "could not find config table: 'bingo.bingo_config'");
+//      throw Error( "could not find config table: 'bingo.bingo_config'");
 //   _readTable(config_oid, false);
 //
 //   Oid tau_oid = RelnameGetRelid("bingo_tau_config");
 //   if(tau_oid == InvalidOid)
-//      elog(ERROR, "could not find tau config table: 'bingo_tau_config'");
+//      throw Error( "could not find tau config table: 'bingo_tau_config'");
 //
 //   _readTable(tau_oid, true);
 //
@@ -161,10 +161,10 @@ void BingoPgConfig::deserialize(void* data, int data_len) {
 //
 //   if (tau) {
 //      if (ncolumns != 3)
-//         elog(ERROR, "tau config table should contain 3 columns");
+//         throw Error( "tau config table should contain 3 columns");
 //   } else {
 //      if (ncolumns != 2)
-//         elog(ERROR, "config table should contain 2 columns");
+//         throw Error( "config table should contain 2 columns");
 //   }
 //
 //   /*

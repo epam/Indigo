@@ -6,6 +6,7 @@
 
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/array.h"
+#include "base_cpp/exception.h"
 
 #include "bingo_postgres.h"
 #include "bingo_pg_index.h"
@@ -37,6 +38,8 @@ public:
    const char* getFuncName() const {return _funcName.ptr();}
    const char* getQuery() {return _queryText.getString();}
    const char* getOptions() {return _optionsText.getString();}
+
+   DEF_ERROR("bingo search engine");
 
 private:
    BingoPgSearch(const BingoPgSearch&); //no implicit copy

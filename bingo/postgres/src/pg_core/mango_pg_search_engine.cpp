@@ -99,7 +99,7 @@ void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
    if(scan_desc->numberOfKeys >= 1 && scan_desc->numberOfKeys <= 2) {
       _searchType = scan_desc->keyData[0].sk_strategy;
    } else {
-      elog(ERROR, "unsupported number of scan keys %d", scan_desc->numberOfKeys);
+      throw Error("unsupported number of scan keys %d", scan_desc->numberOfKeys);
    }
    /*
     * Set pseudo types
@@ -136,7 +136,7 @@ void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
          _prepareSimSearch(scan_desc);
          break;
       default:
-         elog(ERROR, "unsupported search type");
+         throw Error("unsupported search type %d", _searchType);
          break;
    }
 
@@ -157,7 +157,7 @@ bool MangoPgSearchEngine::searchNext(PG_OBJECT result_ptr) {
 }
 
 void MangoPgSearchEngine::_errorHandler(const char* message, void*) {
-   elog(ERROR, "Error while searching a molecule: %s", message);
+   throw Error("Error while searching a molecule: %s", message);
 }
 
 void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_clause_str, indigo::Array<char>& from_clause_str, indigo::Array<char>& where_clause_str) {
@@ -265,7 +265,7 @@ void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    if(mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString()) < 0)
-      elog(ERROR, "Can not set search context: %s", bingoGetError());
+      throw Error("Can not set search context: %s", bingoGetError());
 
 
    const char* fingerprint_buf;
@@ -295,7 +295,7 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    if(mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString()) < 0)
-      elog(ERROR, "Can not set search context: %s", bingoGetError());
+      throw Error("Can not set search context: %s", bingoGetError());
 
    if (strcasestr(search_options.getString(), "TAU") != 0) {
       _prepareExactTauStrings(what_clause, from_clause, where_clause);
@@ -326,7 +326,7 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    if(mangoSetupMatch(search_type.ptr(), gross_query.ptr(), 0) < 0)
-      elog(ERROR, "Can not set search context: %s", bingoGetError());
+      throw Error("Can not set search context: %s", bingoGetError());
 
    _searchCursor.reset(new BingoPgCursor("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), mangoGrossGetConditions()));
 }
@@ -357,7 +357,7 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr) {
          min_mass = mass_scanner.readFloat();
          min_mass_flag = true;
       } else {
-         elog(ERROR, "unsupported search mass and other types");
+         throw Error("unsupported search mass and other types");
       }
    }
 
@@ -386,10 +386,10 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    if (mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString()) < 0)
-      elog(ERROR, "Can not set search context: %s", bingoGetError());
+      throw Error("Can not set search context: %s", bingoGetError());
 
    if(min_bound > max_bound)
-      elog(ERROR, "min bound %f can not be greater then max bound %f", min_bound, max_bound);
+      throw Error("min bound %f can not be greater then max bound %f", min_bound, max_bound);
    
    mangoSimilaritySetMinMaxBounds(min_bound, max_bound);
 
@@ -407,84 +407,92 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1
    /*
     * Get query info
     */
-   HeapTupleHeader query_data = DatumGetHeapTupleHeader(arg_datum);
-   Oid tupType = HeapTupleHeaderGetTypeId(query_data);
-   int32 tupTypmod = HeapTupleHeaderGetTypMod(query_data);
-   TupleDesc tupdesc = lookup_rowtype_tupdesc(tupType, tupTypmod);
-   int ncolumns = tupdesc->natts;
+   BINGO_PG_TRY
+   {
+      HeapTupleHeader query_data = DatumGetHeapTupleHeader(arg_datum);
+      Oid tupType = HeapTupleHeaderGetTypeId(query_data);
+      int32 tupTypmod = HeapTupleHeaderGetTypMod(query_data);
+      TupleDesc tupdesc = lookup_rowtype_tupdesc(tupType, tupTypmod);
+      int ncolumns = tupdesc->natts;
 
-   if(ncolumns != 2)
-      elog(ERROR, "internal error: expecting two columns in query but was %d", ncolumns);
+      if (ncolumns != 2)
+         throw Error("internal error: expecting two columns in query but was %d", ncolumns);
 
-   HeapTupleData tuple;
-   /*
-    * Build a temporary HeapTuple control structure
-    */
-   tuple.t_len = HeapTupleHeaderGetDatumLength(query_data);
-   ItemPointerSetInvalid(&(tuple.t_self));
-   tuple.t_tableOid = InvalidOid;
-   tuple.t_data = query_data;
+      HeapTupleData tuple;
+      /*
+       * Build a temporary HeapTuple control structure
+       */
+      tuple.t_len = HeapTupleHeaderGetDatumLength(query_data);
+      ItemPointerSetInvalid(&(tuple.t_self));
+      tuple.t_tableOid = InvalidOid;
+      tuple.t_data = query_data;
 
-   Datum *values = (Datum *) palloc(ncolumns * sizeof (Datum));
-   bool *nulls = (bool *) palloc(ncolumns * sizeof (bool));
+      Datum *values = (Datum *) palloc(ncolumns * sizeof (Datum));
+      bool *nulls = (bool *) palloc(ncolumns * sizeof (bool));
 
-   /*
-    *  Break down the tuple into fields
-    */
-   heap_deform_tuple(&tuple, tupdesc, values, nulls);
+      /*
+       *  Break down the tuple into fields
+       */
+      heap_deform_tuple(&tuple, tupdesc, values, nulls);
 
-   /*
-    * Query tuple consist of query and options
-    */
-   str1.init(values[0]);
-   str2.init(values[1]);
+      /*
+       * Query tuple consist of query and options
+       */
+      str1.init(values[0]);
+      str2.init(values[1]);
 
-   pfree(values);
-   pfree(nulls);
-   ReleaseTupleDesc(tupdesc);
+      pfree(values);
+      pfree(nulls);
+      ReleaseTupleDesc(tupdesc);
+   }
+   BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", err->message));
 }
 
 void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound, float& max_bound, BingoPgText& str1, BingoPgText& str2) {
    /*
     * Get query info
     */
-   HeapTupleHeader query_data = DatumGetHeapTupleHeader(arg_datum);
-   Oid tupType = HeapTupleHeaderGetTypeId(query_data);
-   int32 tupTypmod = HeapTupleHeaderGetTypMod(query_data);
-   TupleDesc tupdesc = lookup_rowtype_tupdesc(tupType, tupTypmod);
-   int ncolumns = tupdesc->natts;
+   BINGO_PG_TRY
+   {
+      HeapTupleHeader query_data = DatumGetHeapTupleHeader(arg_datum);
+      Oid tupType = HeapTupleHeaderGetTypeId(query_data);
+      int32 tupTypmod = HeapTupleHeaderGetTypMod(query_data);
+      TupleDesc tupdesc = lookup_rowtype_tupdesc(tupType, tupTypmod);
+      int ncolumns = tupdesc->natts;
 
-   if(ncolumns != 4)
-      elog(ERROR, "internal error: expecting four columns in query but was %d", ncolumns);
+      if (ncolumns != 4)
+         throw Error("internal error: expecting four columns in query but was %d", ncolumns);
 
-   HeapTupleData tuple;
-   /*
-    * Build a temporary HeapTuple control structure
-    */
-   tuple.t_len = HeapTupleHeaderGetDatumLength(query_data);
-   ItemPointerSetInvalid(&(tuple.t_self));
-   tuple.t_tableOid = InvalidOid;
-   tuple.t_data = query_data;
+      HeapTupleData tuple;
+      /*
+       * Build a temporary HeapTuple control structure
+       */
+      tuple.t_len = HeapTupleHeaderGetDatumLength(query_data);
+      ItemPointerSetInvalid(&(tuple.t_self));
+      tuple.t_tableOid = InvalidOid;
+      tuple.t_data = query_data;
 
-   Datum *values = (Datum *) palloc(ncolumns * sizeof (Datum));
-   bool *nulls = (bool *) palloc(ncolumns * sizeof (bool));
+      Datum *values = (Datum *) palloc(ncolumns * sizeof (Datum));
+      bool *nulls = (bool *) palloc(ncolumns * sizeof (bool));
 
-   /*
-    *  Break down the tuple into fields
-    */
-   heap_deform_tuple(&tuple, tupdesc, values, nulls);
+      /*
+       *  Break down the tuple into fields
+       */
+      heap_deform_tuple(&tuple, tupdesc, values, nulls);
 
-   /*
-    * Query tuple consist of query and options
-    */
-   min_bound = DatumGetFloat4(values[0]);
-   max_bound = DatumGetFloat4(values[1]);
-   str1.init(values[2]);
-   str2.init(values[3]);
+      /*
+       * Query tuple consist of query and options
+       */
+      min_bound = DatumGetFloat4(values[0]);
+      max_bound = DatumGetFloat4(values[1]);
+      str1.init(values[2]);
+      str2.init(values[3]);
 
-   pfree(values);
-   pfree(nulls);
-   ReleaseTupleDesc(tupdesc);
+      pfree(values);
+      pfree(nulls);
+      ReleaseTupleDesc(tupdesc);
+   }
+   BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", err->message));
 }
 
 bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {

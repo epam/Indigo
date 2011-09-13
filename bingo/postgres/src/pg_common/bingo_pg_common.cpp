@@ -122,13 +122,19 @@ void BingoPgCommon::setDefaultOptions() {
 static int rnd_check = rand();
 
 int BingoPgCommon::executeQuery(indigo::Array<char>& query_str) {
-   SPI_connect();
-   int success = SPI_exec(query_str.ptr(), 1);
-   int result = SPI_processed;
-   SPI_finish();
-   if(success < 0) {
-      throw BingoPgError("error (%d) while executing query: %s res",  success, query_str.ptr());
+   int result = 0;
+   BINGO_PG_TRY
+   {
+      SPI_connect();
+      int success = SPI_exec(query_str.ptr(), 1);
+      result = SPI_processed;
+
+      SPI_finish();
+      if (success < 0) {
+         throw BingoPgError("error (%d) while executing query: %s res", success, query_str.ptr());
+      }
    }
+   BINGO_PG_HANDLE(throw BingoPgError("internal error: can not execute query: %s", err->message));
    return result;
 }
 
@@ -234,7 +240,7 @@ void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, 
 //   Oid func_oid = LookupFuncName(func_list, types.size(), types.ptr(), false);
 //
 //   if(func_oid == InvalidOid)
-//      elog(ERROR, "can not find the function %s", name);
+//      throw Error( "can not find the function %s", name);
 //
 //   list_free(func_list);
 //   return func_oid;
@@ -244,7 +250,7 @@ void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, 
 //void BingoPgCommon::executeQuery(const char* query_str) {
 //   int result = SPI_exec(query_str, 1);
 //   if(result < 0)
-//      elog(ERROR, "error while executing query: %s", query_str);
+//      throw Error( "error while executing query: %s", query_str);
 ////   Oid func_oid = getFunctionOid1("bingo_execute_func", TEXTOID);
 ////
 ////   BingoPgText text_query;
@@ -279,7 +285,7 @@ void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, 
 //
 //   /* Do not Check for */
 ////   if (fcinfo.isnull)
-////      elog(ERROR, "function %u returned NULL", flinfo.fn_oid);
+////      throw Error( "function %u returned NULL", flinfo.fn_oid);
 //
 //   return result;
 //}

@@ -81,7 +81,7 @@ void BingoPgSearch::_initScanSearch() {
    else if (index_type == BINGO_INDEX_TYPE_REACTION)
       _fpEngine.reset(new RingoPgSearchEngine(bingo_config, rel_name));
    else
-      elog(ERROR, "unknown index type %d", index_type);
+      throw Error("unknown index type %d", index_type);
 
    /*
     * Process query structure with parameters

@@ -65,7 +65,7 @@ void RingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
    if(scan_desc->numberOfKeys >= 1 && scan_desc->numberOfKeys <= 2) {
       _searchType = scan_desc->keyData[0].sk_strategy;
    } else {
-      elog(ERROR, "unsupported number of scan keys %d", scan_desc->numberOfKeys);
+      throw Error("unsupported number of scan keys %d", scan_desc->numberOfKeys);
    }
    _queryFpData.reset(new RingoPgFpData());
 
@@ -87,7 +87,7 @@ void RingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
          _prepareSmartsSearch(scan_desc);
          break;
       default:
-         elog(ERROR, "unsupported search type");
+         throw Error("unsupported search type");
          break;
    }
 
@@ -106,7 +106,7 @@ bool RingoPgSearchEngine::searchNext(PG_OBJECT result_ptr) {
 }
 
 void RingoPgSearchEngine::_errorHandler(const char* message, void*) {
-   elog(ERROR, "Error while searching a reaction: %s", message);
+   throw Error("Error while searching a reaction: %s", message);
 }
 
 void RingoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_clause_str, indigo::Array<char>& from_clause_str, indigo::Array<char>& where_clause_str) {
@@ -143,7 +143,7 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    if(ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString()) < 0)
-      elog(ERROR, "Can not set search context: %s", bingoGetError());
+      throw Error("Can not set search context: %s", bingoGetError());
 
 
    const char* fingerprint_buf;
@@ -173,7 +173,7 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    if(ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString()) < 0)
-      elog(ERROR, "Can not set search context: %s", bingoGetError());
+      throw Error("Can not set search context: %s", bingoGetError());
 
    _prepareExactQueryStrings(what_clause, from_clause, where_clause);
 
@@ -188,40 +188,44 @@ void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1
    /*
     * Get query info
     */
-   HeapTupleHeader query_data = DatumGetHeapTupleHeader(arg_datum);
-   Oid tupType = HeapTupleHeaderGetTypeId(query_data);
-   int32 tupTypmod = HeapTupleHeaderGetTypMod(query_data);
-   TupleDesc tupdesc = lookup_rowtype_tupdesc(tupType, tupTypmod);
-   int ncolumns = tupdesc->natts;
+   BINGO_PG_TRY
+   {
+      HeapTupleHeader query_data = DatumGetHeapTupleHeader(arg_datum);
+      Oid tupType = HeapTupleHeaderGetTypeId(query_data);
+      int32 tupTypmod = HeapTupleHeaderGetTypMod(query_data);
+      TupleDesc tupdesc = lookup_rowtype_tupdesc(tupType, tupTypmod);
+      int ncolumns = tupdesc->natts;
 
-   if(ncolumns != 2)
-      elog(ERROR, "internal error: expecting two columns in query but was %d", ncolumns);
+      if (ncolumns != 2)
+         throw Error("internal error: expecting two columns in query but was %d", ncolumns);
 
-   HeapTupleData tuple;
-   /*
-    * Build a temporary HeapTuple control structure
-    */
-   tuple.t_len = HeapTupleHeaderGetDatumLength(query_data);
-   ItemPointerSetInvalid(&(tuple.t_self));
-   tuple.t_tableOid = InvalidOid;
-   tuple.t_data = query_data;
+      HeapTupleData tuple;
+      /*
+       * Build a temporary HeapTuple control structure
+       */
+      tuple.t_len = HeapTupleHeaderGetDatumLength(query_data);
+      ItemPointerSetInvalid(&(tuple.t_self));
+      tuple.t_tableOid = InvalidOid;
+      tuple.t_data = query_data;
 
-   Datum *values = (Datum *) palloc(ncolumns * sizeof (Datum));
-   bool *nulls = (bool *) palloc(ncolumns * sizeof (bool));
+      Datum *values = (Datum *) palloc(ncolumns * sizeof (Datum));
+      bool *nulls = (bool *) palloc(ncolumns * sizeof (bool));
 
-   /*
-    *  Break down the tuple into fields
-    */
-   heap_deform_tuple(&tuple, tupdesc, values, nulls);
+      /*
+       *  Break down the tuple into fields
+       */
+      heap_deform_tuple(&tuple, tupdesc, values, nulls);
 
-   /*
-    * Query tuple consist of query and options
-    */
-   str1.init(values[0]);
-   str2.init(values[1]);
+      /*
+       * Query tuple consist of query and options
+       */
+      str1.init(values[0]);
+      str2.init(values[1]);
 
-   pfree(values);
-   pfree(nulls);
-   ReleaseTupleDesc(tupdesc);
+      pfree(values);
+      pfree(nulls);
+      ReleaseTupleDesc(tupdesc);
+   }
+   BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", err->message));
 }
 

@@ -41,23 +41,27 @@ bingo_insert(PG_FUNCTION_ARGS) {
    bool isnull = *((bool*) PG_GETARG_POINTER(2));
    ItemPointer ht_ctid = (ItemPointer) PG_GETARG_POINTER(3);
 
-   elog(INFO, "start bingo insert");
    /*
     * Skip inserting null tuples
     */
    if(isnull)
       PG_RETURN_BOOL(false);
 
-   BingoPgBuild build_engine(index, 0, false);
+   bool result = false;
 
-   /*
-    * Molecule structure is a text
-    */
-   BingoPgText struct_text(values[0]);
-   /*
-    * Insert a new structure
-    */
-   bool result = build_engine.insertStructure(ht_ctid, struct_text);
+   PG_BINGO_BEGIN
+   {
+      BingoPgBuild build_engine(index, 0, false);
+      /*
+       * Molecule structure is a text
+       */
+      BingoPgText struct_text(values[0]);
+      /*
+       * Insert a new structure
+       */
+      result = build_engine.insertStructure(ht_ctid, struct_text);
+   }
+   PG_BINGO_END
 
    //#ifdef NOT_USED
    //	Relation	heapRel = (Relation) PG_GETARG_POINTER(4);
@@ -105,51 +109,57 @@ bingo_bulkdelete(PG_FUNCTION_ARGS) {
    IndexBulkDeleteResult *stats = (IndexBulkDeleteResult *) PG_GETARG_POINTER(1);
    IndexBulkDeleteCallback bulk_del_cb = (IndexBulkDeleteCallback) PG_GETARG_POINTER(2);
    void *cb_state = (void *) PG_GETARG_POINTER(3);
+
    elog(INFO, "start test bulk delete");
-   /*
-    * Initialize local variables
-    */
-   Relation index_rel = info->index;
-   double tuples_removed =0;
-   ItemPointerData item_data;
-   ItemPointer item_ptr = &item_data;
-   BingoPgExternalBitset section_bitset(BINGO_MOLS_PER_SECTION);
-
-   /*
-    * Create index manager
-    */
-   BingoPgIndex bingo_index(index_rel);
-
-   /*
-    * Iterate through all the sections and search for removed tuples
-    */
-   int section_idx = bingo_index.readBegin();
-   for (; section_idx != bingo_index.readEnd(); section_idx = bingo_index.readNext(section_idx)) {
-      bingo_index.getSectionBitset(section_idx, section_bitset);
+   PG_BINGO_BEGIN
+   {
       /*
-       * Iterate through section structures
+       * Initialize local variables
        */
-      for (int mol_idx = section_bitset.begin(); mol_idx != section_bitset.end(); mol_idx = section_bitset.next(mol_idx)) {
-         bingo_index.readTidItem(section_idx, mol_idx, item_ptr);
-         if (bulk_del_cb(item_ptr, cb_state)) {
-            /*
-             * Remove the structure from the bingo index
-             */
-            bingo_index.removeStructure(section_idx, mol_idx);
-            tuples_removed += 1;
+      Relation index_rel = info->index;
+      double tuples_removed = 0;
+      ItemPointerData item_data;
+      ItemPointer item_ptr = &item_data;
+      BingoPgExternalBitset section_bitset(BINGO_MOLS_PER_SECTION);
+
+      /*
+       * Create index manager
+       */
+      BingoPgIndex bingo_index(index_rel);
+
+      /*
+       * Iterate through all the sections and search for removed tuples
+       */
+      int section_idx = bingo_index.readBegin();
+      for (; section_idx != bingo_index.readEnd(); section_idx = bingo_index.readNext(section_idx)) {
+         bingo_index.getSectionBitset(section_idx, section_bitset);
+         /*
+          * Iterate through section structures
+          */
+         for (int mol_idx = section_bitset.begin(); mol_idx != section_bitset.end(); mol_idx = section_bitset.next(mol_idx)) {
+            bingo_index.readTidItem(section_idx, mol_idx, item_ptr);
+            if (bulk_del_cb(item_ptr, cb_state)) {
+               /*
+                * Remove the structure from the bingo index
+                */
+               bingo_index.removeStructure(section_idx, mol_idx);
+               tuples_removed += 1;
+            }
          }
       }
-   }
-   /*
-    * Write new structures number
-    */
-   bingo_index.writeMetaInfo();
+      /*
+       * Write new structures number
+       */
+      bingo_index.writeMetaInfo();
 
-   if (stats == NULL)
-      stats = (IndexBulkDeleteResult *) palloc0(sizeof (IndexBulkDeleteResult));
-   
-   stats->estimated_count = false;
-   stats->tuples_removed = tuples_removed;
+      if (stats == NULL)
+         stats = (IndexBulkDeleteResult *) palloc0(sizeof (IndexBulkDeleteResult));
+
+      stats->estimated_count = false;
+      stats->tuples_removed = tuples_removed;
+
+   }
+   PG_BINGO_END
 
    PG_RETURN_POINTER(stats);
 }
@@ -163,7 +173,7 @@ Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS) {
    IndexVacuumInfo *info = (IndexVacuumInfo *) PG_GETARG_POINTER(0);
    IndexBulkDeleteResult *stats = (IndexBulkDeleteResult *) PG_GETARG_POINTER(1);
    Relation rel = info->index;
-   BlockNumber num_pages;
+   BlockNumber num_pages = 0;
 
    elog(INFO, "start test vacuum");
    /* 

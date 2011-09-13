@@ -9,6 +9,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/red_black.h"
+#include "base_cpp/exception.h"
 
 #include "pg_bingo_context.h"
 #include "bingo_postgres.h"
@@ -63,6 +64,8 @@ public:
 
    virtual void prepareQuerySearch(BingoPgIndex&, PG_OBJECT scan_desc);
    virtual bool searchNext(PG_OBJECT result_ptr);
+
+   DEF_ERROR("molecule search engine");
 
 private:
    MangoPgSearchEngine(const MangoPgSearchEngine&); // no implicit copy

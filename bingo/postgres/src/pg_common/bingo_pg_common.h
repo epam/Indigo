@@ -327,6 +327,14 @@ private:
                            elog(ERROR, "bingo unknown error");\
                        }
 
+#define PG_BINGO_HANDLE(statement)    catch(indigo::Exception& e) { \
+                           statement; \
+                           elog(ERROR, "error: %s", e.message());\
+                       } catch(...) { \
+                           statement; \
+                           elog(ERROR, "bingo unknown error");\
+                       }
+
 class DLLEXPORT BingoPgError : public indigo::Exception {
 public:
    explicit BingoPgError (const char *format, ...) {
