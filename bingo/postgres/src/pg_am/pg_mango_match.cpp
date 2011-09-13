@@ -87,13 +87,26 @@ public:
       int target_size;
       const char* target_data = target_text.getText(target_size);
       
-      if(_type == BingoPgCommon::MOL_GROSS)
+      QS_DEF(Array<char>, buffer_warn);
+      if(_type == BingoPgCommon::MOL_GROSS) {
+         buffer_warn.readString(_typeStr.ptr(), true);
+         const char* mol_name = bingoGetNameCore(target_data, target_size);
+         if(mol_name != 0 && strlen(mol_name) > 0) {
+            buffer_warn.appendString(" molecule with name='", true);
+            buffer_warn.appendString(mol_name, true);
+            buffer_warn.appendString("'", true);
+         }
+         
+         setFunctionName(buffer_warn.ptr());
+         raise_error = false;
          target_data = mangoGross(target_data, target_size);
+         if(error_raised)
+            return -1;
+      }
       
       res = mangoMatchTarget(target_data, target_size);
 
       if (res < 0) {
-         QS_DEF(Array<char>, buffer_warn);
          buffer_warn.readString(bingoGetWarning(), true);
          const char* mol_name = bingoGetNameCore(target_data, target_size);
          if(mol_name != 0 && strlen(mol_name) > 0)
