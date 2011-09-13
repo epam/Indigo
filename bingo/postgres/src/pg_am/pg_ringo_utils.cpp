@@ -17,6 +17,8 @@ PG_FUNCTION_INFO_V1(rcml);
 Datum rcml(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(checkreaction);
 Datum checkreaction(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(rsmiles);
+Datum rsmiles(PG_FUNCTION_ARGS);
 }
 
 Datum aam(PG_FUNCTION_ARGS) {
@@ -136,3 +138,29 @@ Datum checkreaction(PG_FUNCTION_ARGS) {
    PG_RETURN_CSTRING(result);
 }
 
+Datum rsmiles(PG_FUNCTION_ARGS) {
+   Datum react_datum = PG_GETARG_DATUM(0);
+
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("rsmiles");
+
+      BingoPgText react_text(react_datum);
+      int buf_size;
+      const char* react_buf = react_text.getText(buf_size);
+      const char* bingo_result = ringoRSMILES(react_buf, buf_size);
+
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+      result = BingoPgCommon::releaseString(bingo_result);
+   }
+   PG_BINGO_END
+
+   if (result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_CSTRING(result);
+}
