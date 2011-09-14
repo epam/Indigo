@@ -268,7 +268,8 @@ CEXPORT int bingoAddTautomerRule (int n, const char *beg, const char *end)
       bingoGetTauCondition(end, rule->aromaticity2, rule->list2);
 
       self.bingo_context->tautomer_rules.expand(n);
-      self.bingo_context->tautomer_rules[n - 1] = rule.release();
+      self.bingo_context->tautomer_rules.reset(n - 1);
+      self.bingo_context->tautomer_rules.set(n - 1, rule.release());
    }
    BINGO_END(1, 0);
 }

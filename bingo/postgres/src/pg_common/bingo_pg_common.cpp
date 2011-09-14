@@ -188,6 +188,7 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id, bool raise)
 
    BINGO_PG_TRY {
       schema_name = get_namespace_name(get_func_namespace(func_id));
+      pfree(schema_name);
    } BINGO_PG_HANDLE(throw Error("internal error while trying get namespace name: %s", err->message));
 
    BingoPgConfig bingo_config;
@@ -198,7 +199,6 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id, bool raise)
 
    bingo_config.setUpBingoConfiguration();
    bingoTautomerRulesReady(0,0,0);
-   
 }
 
 BingoPgCommon::BingoSessionHandler::~BingoSessionHandler() {
