@@ -23,7 +23,7 @@ void BingoPgText::init(uintptr_t text_datum) {
    if (text_datum != 0) {
       BINGO_PG_TRY {
          _text = DatumGetTextPCopy(text_datum);
-      } BINGO_PG_HANDLE(throw Error("internal error: can not get text data copy: %s", err->message));
+      } BINGO_PG_HANDLE(throw Error("internal error: can not get text data copy: %s", message));
    }
 }
 
@@ -31,14 +31,14 @@ void BingoPgText::initFromString(const char* str) {
    clear();
    BINGO_PG_TRY {
       _text = cstring_to_text(str);
-   } BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a string: %s", err->message));
+   } BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a string: %s", message));
 }
 
 void BingoPgText::initFromArray(indigo::Array<char>& str) {
    clear();
    BINGO_PG_TRY {
       _text = cstring_to_text_with_len(str.ptr(), str.sizeInBytes());
-   } BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a buffer: %s", err->message));
+   } BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a buffer: %s", message));
 }
 
 void BingoPgText::clear() {

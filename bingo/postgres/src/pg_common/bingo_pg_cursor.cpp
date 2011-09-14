@@ -45,7 +45,7 @@ BingoPgCursor::~BingoPgCursor() {
          SPI_cursor_close((Portal) _cursorPtr);
       SPI_finish();
    }
-   BINGO_PG_HANDLE(throw Error("internal error: can not close the cursor: %s", err->message));
+   BINGO_PG_HANDLE(throw Error("internal error: can not close the cursor: %s", message));
 }
 
 bool BingoPgCursor::next() {
@@ -54,7 +54,7 @@ bool BingoPgCursor::next() {
    {
       SPI_cursor_fetch((Portal)_cursorPtr, true, 1);
    }
-   BINGO_PG_HANDLE(throw Error("internal error: can not fetch the cursor: %s", err->message));
+   BINGO_PG_HANDLE(throw Error("internal error: can not fetch the cursor: %s", message));
    
    if(SPI_processed == 0)
       return false;
@@ -77,7 +77,7 @@ void BingoPgCursor::getId(int arg_idx, ItemPointerData& data) {
       ItemPointerSetBlockNumber(&data, block_num);
       ItemPointerSetOffsetNumber(&data, off_num);
    }
-   BINGO_PG_HANDLE(throw Error("internal error: can not get the id from the data: %s", err->message));
+   BINGO_PG_HANDLE(throw Error("internal error: can not get the id from the data: %s", message));
 }
 void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
    Datum record = getDatum(arg_idx);
@@ -113,7 +113,7 @@ uintptr_t  BingoPgCursor::getDatum(int arg_idx) {
       if (isnull)
          throw Error("internal error: can not get null tuple");
    }
-   BINGO_PG_HANDLE(throw Error("internal error: can not get datum from the tuple: %s", err->message));
+   BINGO_PG_HANDLE(throw Error("internal error: can not get datum from the tuple: %s", message));
    
    return record;
 }
@@ -133,5 +133,5 @@ void BingoPgCursor::_init(indigo::Array<char>& query_str) {
 
       _cursorPtr = SPI_cursor_open(_cursorName.ptr(), plan_ptr, 0, 0, true);
    }
-   BINGO_PG_HANDLE(throw Error("internal error: can not prepare or open a cursor: %s", err->message));
+   BINGO_PG_HANDLE(throw Error("internal error: can not prepare or open a cursor: %s", message));
 }

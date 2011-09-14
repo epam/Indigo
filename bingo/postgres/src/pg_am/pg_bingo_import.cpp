@@ -146,7 +146,7 @@ Datum importsdf(PG_FUNCTION_ARGS) {
             spi_success = SPI_execute_with_args(query_str.ptr(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.ptr(), false, 1);
             if(spi_success < 0)
                elog(WARNING, "can not insert a structure into a table");
-         } BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", err->message));
+         } BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", message));
          /*
           * Return back session id and error handler
           */
@@ -227,7 +227,7 @@ Datum importrdf(PG_FUNCTION_ARGS) {
             if (spi_success < 0)
                elog(WARNING, "can not insert a structure into a table");
          }
-         BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", err->message));
+         BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", message));
          /*
           * Return back session id and error handler
           */
@@ -313,7 +313,7 @@ Datum importsmiles(PG_FUNCTION_ARGS) {
             if (spi_success < 0)
                elog(WARNING, "can not insert a structure into a table");
          }
-         BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", err->message));
+         BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", message));
          /*
           * Return back session id and error handler
           */

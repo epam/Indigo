@@ -310,18 +310,26 @@ private:
 };
 
 
-#define BINGO_PG_TRY PG_TRY();  
+#define BINGO_PG_TRY {\
+   bool pg_error_raised = false; \
+   indigo::Array<char> pg_message; \
+   PG_TRY();
 
 #define BINGO_PG_HANDLE(handle_statement) \
    PG_CATCH(); { \
       ErrorData *err = CopyErrorData(); \
-      handle_statement;\
+      pg_message.readString(err->message, true); \
       FreeErrorData(err); \
       FlushErrorState(); \
-   } PG_END_TRY();
+      pg_error_raised = true; \
+   } PG_END_TRY(); \
+   if(pg_error_raised) { \
+      const char* message = pg_message.ptr(); \
+      handle_statement;\
+   }}
 
 
-#define PG_BINGO_BEGIN  \
+#define PG_BINGO_BEGIN { \
    int pg_err_mess = 0; \
    bool pg_raise_error = false; \
    try
@@ -338,7 +346,7 @@ private:
    } \
    if (pg_raise_error) { \
       errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess)); \
-   }
+   }}
 
 #define PG_BINGO_HANDLE(statement) \
    catch (indigo::Exception& e) { \
@@ -353,7 +361,7 @@ private:
    if (pg_raise_error) { \
       statement; \
       errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess)); \
-   }
+   }}
 
 class DLLEXPORT BingoPgError : public indigo::Exception {
 public:

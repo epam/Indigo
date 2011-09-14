@@ -226,6 +226,6 @@ void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1
       pfree(nulls);
       ReleaseTupleDesc(tupdesc);
    }
-   BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", err->message));
+   BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", message));
 }
 

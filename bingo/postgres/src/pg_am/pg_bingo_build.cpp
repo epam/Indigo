@@ -72,7 +72,7 @@ bingo_build(PG_FUNCTION_ARGS) {
       BINGO_PG_TRY {
          reltuples = IndexBuildHeapScan(heap, index, indexInfo, true,
               bingoIndexCallback, (void *) &build_engine);
-      } BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", err->message));
+      } BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", message));
 
       /*
        * Return statistics

@@ -249,7 +249,7 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
    if(buf.size() == 0) {
       BINGO_PG_TRY {
          ItemPointerSet(&item_data, InvalidBlockNumber, 0);
-      } BINGO_PG_HANDLE(throw Error("internal error: can not set block data: %s", err->message));
+      } BINGO_PG_HANDLE(throw Error("internal error: can not set block data: %s", message));
       return;
    }
    /*
@@ -283,7 +283,7 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
     */
    BINGO_PG_TRY {
       ItemPointerSet(&item_data, last_buf, bin_offset);
-   } BINGO_PG_HANDLE(throw Error("internal error: can not set block data: %s", err->message));
+   } BINGO_PG_HANDLE(throw Error("internal error: can not set block data: %s", message));
 }
 
 void BingoPgSection::_setBitsCountData(unsigned short bits_count) {

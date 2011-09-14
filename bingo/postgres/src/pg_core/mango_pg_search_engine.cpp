@@ -445,7 +445,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1
       pfree(nulls);
       ReleaseTupleDesc(tupdesc);
    }
-   BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", err->message));
+   BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", message));
 }
 
 void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound, float& max_bound, BingoPgText& str1, BingoPgText& str2) {
@@ -492,7 +492,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound
       pfree(nulls);
       ReleaseTupleDesc(tupdesc);
    }
-   BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", err->message));
+   BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", message));
 }
 
 bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {

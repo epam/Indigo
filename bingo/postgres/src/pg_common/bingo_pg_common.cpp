@@ -134,7 +134,7 @@ int BingoPgCommon::executeQuery(indigo::Array<char>& query_str) {
          throw BingoPgError("error (%d) while executing query: %s res", success, query_str.ptr());
       }
    }
-   BINGO_PG_HANDLE(throw BingoPgError("internal error: can not execute query: %s", err->message));
+   BINGO_PG_HANDLE(throw BingoPgError("internal error: can not execute query: %s", message));
    return result;
 }
 
@@ -189,7 +189,7 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id, bool raise)
    BINGO_PG_TRY {
       schema_name = get_namespace_name(get_func_namespace(func_id));
       pfree(schema_name);
-   } BINGO_PG_HANDLE(throw Error("internal error while trying get namespace name: %s", err->message));
+   } BINGO_PG_HANDLE(throw Error("internal error while trying get namespace name: %s", message));
 
    BingoPgConfig bingo_config;
    bingo_config.readDefaultConfig(schema_name);
