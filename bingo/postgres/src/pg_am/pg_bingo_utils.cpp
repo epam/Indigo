@@ -60,6 +60,9 @@ Datum getname(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(exportsdf);
 Datum exportsdf(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(exportrdf);
+Datum exportrdf(PG_FUNCTION_ARGS);
+
 }
 
 CEXPORT {
@@ -390,6 +393,51 @@ Datum exportsdf(PG_FUNCTION_ARGS) {
             file_output.printf("%s\n\n", buf_text.getString());
          }
          file_output.printf("\n$$$$\n");
+      }
+   }
+   PG_BINGO_END
+
+   PG_RETURN_VOID();
+}
+
+Datum exportrdf(PG_FUNCTION_ARGS) {
+   Datum table_datum = PG_GETARG_DATUM(0);
+   Datum column_datum = PG_GETARG_DATUM(1);
+   Datum other_columns_datum = PG_GETARG_DATUM(2);
+   Datum file_name_datum = PG_GETARG_DATUM(3);
+
+   PG_BINGO_BEGIN
+   {
+      QS_DEF(Array<char>, query_str);
+      RedBlackStringMap<int, false > field_list;
+
+      BingoPgText fname_text(file_name_datum);
+      FileOutput file_output(fname_text.getString());
+
+      int data_key = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str, field_list);
+
+      BingoPgCursor table_cursor(query_str.ptr());
+      BingoPgText buf_text;
+
+      file_output.printf("$RDFILE 1\n");
+
+      int str_idx = 0;
+      while (table_cursor.next()) {
+         ++str_idx;
+         table_cursor.getText(1, buf_text);
+         file_output.printf("$MFMT $MIREG %d\n", str_idx);
+         file_output.writeStringCR(buf_text.getString());
+
+         for (int k = field_list.begin(); k != field_list.end(); k = field_list.next(k)) {
+            if(data_key == k)
+               continue;
+
+            int col_idx = field_list.value(k);
+            const char* col_name = field_list.key(k);
+            table_cursor.getText(col_idx, buf_text);
+            file_output.printf("$DTYPE %s\n", col_name);
+            file_output.printf("$DATUM %s\n", buf_text.getString());
+         }
       }
    }
    PG_BINGO_END
