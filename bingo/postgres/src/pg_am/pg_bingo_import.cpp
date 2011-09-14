@@ -6,6 +6,7 @@
 #include "bingo_pg_text.h"
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
+#include "base_cpp/tlscont.h"
 
 CEXPORT {
 #include "postgres.h"

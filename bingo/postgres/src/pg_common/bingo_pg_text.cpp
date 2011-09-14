@@ -7,7 +7,7 @@ CEXPORT {
 #include "fmgr.h"
 #include "utils/builtins.h"
 }
-
+using namespace indigo;
 BingoPgText::BingoPgText():_text(0){
 }
 BingoPgText::BingoPgText(uintptr_t text_datum):_text(0) {

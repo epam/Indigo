@@ -2,12 +2,15 @@
 #include "bingo_pg_index.h"
 #include "bingo_pg_search_engine.h"
 #include "bingo_pg_common.h"
+#include "base_cpp/tlscont.h"
 
 CEXPORT {
 #include "postgres.h"
 #include "storage/itemptr.h"
 #include "storage/block.h"
 }
+
+using namespace indigo;
 
 BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int offset):
 _index(bingo_idx.getIndexPtr()),

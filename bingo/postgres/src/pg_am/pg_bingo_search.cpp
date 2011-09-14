@@ -3,6 +3,7 @@
 #include "pg_bingo_context.h"
 #include "bingo_pg_search_engine.h"
 #include "bingo_pg_common.h"
+#include "base_cpp/tlscont.h"
 
 CEXPORT {
 #include "postgres.h"
@@ -102,7 +103,7 @@ bingo_endscan(PG_FUNCTION_ARGS) {
 
    PG_RETURN_VOID();
 }
-
+using namespace indigo;
 /*
  * Get all tuples at once
  */
@@ -130,7 +131,6 @@ bingo_getbitmap(PG_FUNCTION_ARGS) {
        * Pop the last element
        */
       found_items.pop();
-
       BINGO_PG_TRY {
          tbm_add_tuples(tbm, found_items.ptr(), found_items.size(), false);
       } BINGO_PG_HANDLE(throw BingoPgError("internal error: can not add bitmap solution: %s", message));

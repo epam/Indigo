@@ -312,7 +312,7 @@ private:
 
 #define BINGO_PG_TRY {\
    bool pg_error_raised = false; \
-   indigo::Array<char> pg_message; \
+   QS_DEF(Array<char>, pg_message); \
    PG_TRY();
 
 #define BINGO_PG_HANDLE(handle_statement) \

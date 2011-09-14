@@ -2,6 +2,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 #include "bingo_pg_common.h"
+#include "base_cpp/tlscont.h"
 
 CEXPORT {
 #include "postgres.h"
@@ -13,6 +14,7 @@ CEXPORT {
 #include "utils/relcache.h"
 #include "storage/lock.h"
 }
+using namespace indigo;
 /*
  * Empty buffer constructor
  */

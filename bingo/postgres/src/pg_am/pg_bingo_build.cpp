@@ -3,6 +3,7 @@
 #include "bingo_pg_build.h"
 #include "bingo_pg_common.h"
 #include "bingo_pg_text.h"
+#include "base_cpp/tlscont.h"
 
 CEXPORT {
 #include "postgres.h"
@@ -16,7 +17,7 @@ CEXPORT {
 #include "catalog/namespace.h"
 #include "utils/lsyscache.h"
 }
-
+using namespace indigo;
 
 CEXPORT {
    PG_FUNCTION_INFO_V1(bingo_build);
