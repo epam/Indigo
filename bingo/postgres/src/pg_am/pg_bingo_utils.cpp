@@ -50,6 +50,9 @@ Datum filetotext(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(filetoblob);
 Datum filetoblob(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(getname);
+Datum getname(PG_FUNCTION_ARGS);
+
 }
 
 CEXPORT {
@@ -202,6 +205,9 @@ Datum filetotext(PG_FUNCTION_ARGS) {
 
       QS_DEF(Array<char>, buffer);
       buffer.clear();
+      /*
+       * Read file
+       */
       FileScanner f_scanner(fname_text.getString());
       f_scanner.readAll(buffer);
 
@@ -226,6 +232,9 @@ Datum filetoblob(PG_FUNCTION_ARGS) {
       BingoPgText result_text;
       QS_DEF(Array<char>, buffer);
       buffer.clear();
+      /*
+       * Read file
+       */
       FileScanner f_scanner(fname_text.getString());
       f_scanner.readAll(buffer);
 
@@ -240,4 +249,31 @@ Datum filetoblob(PG_FUNCTION_ARGS) {
       PG_RETURN_NULL();
    
    PG_RETURN_BYTEA_P(result);
+}
+
+Datum getname(PG_FUNCTION_ARGS) {
+   Datum target_datum = PG_GETARG_DATUM(0);
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      bingo_handler.setFunctionName("getname");
+
+      BingoPgText mol_text(target_datum);
+      int buf_size;
+      const char* target_buf = mol_text.getText(buf_size);
+
+      const char* bingo_result = bingoGetNameCore(target_buf, buf_size);
+
+      if (bingo_handler.error_raised)
+         PG_RETURN_NULL();
+
+      result = BingoPgCommon::releaseString(bingo_result);
+   }
+   PG_BINGO_END
+
+   if (result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_CSTRING(result);
 }
