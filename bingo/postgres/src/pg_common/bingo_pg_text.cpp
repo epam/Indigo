@@ -45,6 +45,7 @@ void BingoPgText::clear() {
    if(_text != 0)
       pfree(_text);
    _text = 0;
+   _cstr.clear();
 }
 const char* BingoPgText::getText(int& size) {
    if(_text == 0) {

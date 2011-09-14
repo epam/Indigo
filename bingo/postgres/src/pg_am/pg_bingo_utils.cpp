@@ -1,12 +1,16 @@
+
 #include "bingo_postgres.h"
+
+#include "base_cpp/scanner.h"
+#include "bingo_core_c.h"
+
 #include "bingo_pg_common.h"
 #include "pg_bingo_context.h"
-#include "bingo_core_c.h"
 #include "bingo_pg_config.h"
 #include "bingo_pg_text.h"
 #include "bingo_pg_buffer.h"
 #include "bingo_pg_config.h"
-#include "base_cpp/scanner.h"
+#include "bingo_pg_cursor.h"
 
 
 CEXPORT {
@@ -52,6 +56,9 @@ Datum filetoblob(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getname);
 Datum getname(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(exportsdf);
+Datum exportsdf(PG_FUNCTION_ARGS);
 
 }
 
@@ -276,4 +283,116 @@ Datum getname(PG_FUNCTION_ARGS) {
       PG_RETURN_NULL();
 
    PG_RETURN_CSTRING(result);
+}
+
+static void _parseQueryFieldList(const char* fields_str, RedBlackStringMap<int, false >& field_list) {
+   BufferScanner scanner(fields_str);
+
+   QS_DEF(Array<char>, buf_word);
+
+   scanner.skipSpace();
+   int column_idx = field_list.size();
+
+   while (!scanner.isEOF()) {
+      scanner.readWord(buf_word, " ,");
+      scanner.skipSpace();
+
+      if (field_list.find(buf_word.ptr()))
+         throw BingoPgError("parseQueryFieldList(): key %s is already presented in the query list", buf_word.ptr());
+
+      ++column_idx;
+      field_list.insert(buf_word.ptr(), column_idx);
+
+      if (scanner.isEOF())
+         break;
+
+      if (scanner.readChar() != ',')
+         throw BingoPgError("parseQueryFieldList(): comma expected");
+
+      scanner.skipSpace();
+   }
+}
+
+static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum other_column_datum, Array<char>& query_str, RedBlackStringMap<int, false >& field_list) {
+   BingoPgText tablename_text(table_datum);
+   BingoPgText column_text(column_datum);
+   BingoPgText other_column_text(other_column_datum);
+
+   field_list.clear();
+   
+   field_list.insert(column_text.getString(), 0);
+   int data_key = field_list.begin();
+
+   ArrayOutput query_out(query_str);
+   query_out.printf("SELECT %s", column_text.getString());
+   
+   if(other_column_datum != 0 ) {
+      const char* columns_list = other_column_text.getString();
+      if(strcmp(columns_list, "") !=0) {
+         _parseQueryFieldList(columns_list, field_list);
+         query_out.printf(", %s ", columns_list);
+      }
+   }
+
+   query_out.printf("FROM %s", tablename_text.getString());
+   query_out.writeChar(0);
+   
+   return data_key;
+}
+
+//class BingoExportSdfHandler : public BingoPgCommon::BingoSessionHandler {
+//public:
+//   BingoExportSdfHandler(unsigned int func_id, const char* fname):BingoSessionHandler(func_id, true) {
+//      setFunctionName("exportSDF");
+//      bingoSDFExportOpen(fname);
+////      SPI_connect();
+//   }
+//   virtual ~BingoImportSdfHandler() {
+////      SPI_finish();
+//      bingoSDFExportClose();
+//   }
+//
+//private:
+//   BingoExportSdfHandler(const BingoExportSdfHandler&); //no implicit copy
+//};
+
+Datum exportsdf(PG_FUNCTION_ARGS) {
+   Datum table_datum = PG_GETARG_DATUM(0);
+   Datum column_datum = PG_GETARG_DATUM(1);
+   Datum other_columns_datum = PG_GETARG_DATUM(2);
+   Datum file_name_datum = PG_GETARG_DATUM(3);
+
+   PG_BINGO_BEGIN
+   {
+      QS_DEF(Array<char>, query_str);
+      RedBlackStringMap<int, false > field_list;
+
+      BingoPgText fname_text(file_name_datum);
+      FileOutput file_output(fname_text.getString());
+
+      int data_key = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str, field_list);
+
+      BingoPgCursor table_cursor(query_str.ptr());
+      BingoPgText buf_text;
+
+      while (table_cursor.next()) {
+         table_cursor.getText(1, buf_text);
+         file_output.writeStringCR(buf_text.getString());
+         
+         for (int k = field_list.begin(); k != field_list.end(); k = field_list.next(k)) {
+            if(data_key == k)
+               continue;
+            
+            int col_idx = field_list.value(k);
+            const char* col_name = field_list.key(k);
+            table_cursor.getText(col_idx, buf_text);
+            file_output.printf(">  <%s>\n", col_name);
+            file_output.printf("%s\n\n", buf_text.getString());
+         }
+         file_output.printf("\n$$$$\n");
+      }
+   }
+   PG_BINGO_END
+
+   PG_RETURN_VOID();
 }
