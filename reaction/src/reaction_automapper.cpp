@@ -23,6 +23,10 @@
 using namespace indigo;
 
 ReactionAutomapper::ReactionAutomapper(BaseReaction& reaction):
+ignore_atom_charges(false),
+ignore_atom_valence(false),
+ignore_atom_isotopes(false),
+ignore_atom_radicals(false),
 _reaction(reaction),
 _maxMapUsed(0),
 _maxVertUsed(0),
@@ -52,8 +56,6 @@ void ReactionAutomapper::automap(int mode) {
 
 
    _checkAtomMapping(false, true, false);
-
-
    
 }
 
@@ -225,7 +227,7 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
       if(!map_exc) 
          rsub_map_in.clear();
 
-      RSubstructureMcs react_sub_mcs(reaction, react, product);
+      RSubstructureMcs react_sub_mcs(reaction, react, product, *this);
       bool find_sub = react_sub_mcs.searchSubstructureReact(_reaction.getBaseMolecule(react), &rsub_map_in, &rsub_map_out);
             
       if (!find_sub) {
@@ -550,12 +552,12 @@ void ReactionAutomapper::_considerDissociation(){
          }
          if(null_map_cut.vertexCount() == 0)
             break;
-         SubstructureMcs sss(full_map_cut, null_map_cut);
-         sss.cbMatchVertex = MaxCommonSubmolecule::matchAtoms;
-         sss.cbMatchEdge = MaxCommonSubmolecule::matchBonds;
-
+         
+         RSubstructureMcs rsm(_reaction, full_map_cut, null_map_cut, *this);
+         rsm.userdata = &rsm;
+         
          map.clear();
-         if(!sss.searchSubstructure(&map))
+         if(!rsm.searchSubstructure(&map))
             break;
          for(j = 0; j < map.size(); j++){
             if(map[j] >= 0 && map[j] < _reaction.getAAMArray(i).size()){
@@ -658,7 +660,7 @@ int ReactionAutomapper::_validMapFound(BaseReaction& reaction, int react, int pr
    if(react_copy.vertexCount() < _MIN_VERTEX_SUB)
       return result;
 
-   RSubstructureMcs rsub_mcs(reaction, react, prod);
+   RSubstructureMcs rsub_mcs(reaction, react, prod, *this);
    rsub_mcs.cbMatchVertex = RSubstructureMcs::atomConditionReact;
    rsub_mcs.cbMatchEdge = RSubstructureMcs::bondConditionReact;
    rsub_mcs.userdata = &rsub_mcs;
@@ -923,12 +925,36 @@ int ReactionMapMatchingData::_getEdgeId(int mol_idx, int edge) const {
    return result;
 }
 
-RSubstructureMcs::RSubstructureMcs(BaseReaction &reaction,  int sub_num, int super_num):
+RSubstructureMcs::RSubstructureMcs(BaseReaction &reaction,  int sub_num, int super_num, const  ReactionAutomapper& context):
 SubstructureMcs(reaction.getBaseMolecule(sub_num), reaction.getBaseMolecule(super_num)),
+flags(CONDITION_ALL),
 _reaction(reaction), 
 _subReactNumber(sub_num), 
-_superProductNumber(super_num) 
-{}
+_superProductNumber(super_num) {
+   setUpFlags(context);
+}
+
+RSubstructureMcs::RSubstructureMcs(BaseReaction &reaction, BaseMolecule& sub, BaseMolecule& super, const  ReactionAutomapper& context):
+SubstructureMcs(sub, super),
+flags(CONDITION_ALL),
+_reaction(reaction) {
+   setUpFlags(context);
+   cbMatchVertex = atomConditionReact;
+   cbMatchEdge = bondConditionReactSimple;
+}
+
+void RSubstructureMcs::setUpFlags(const ReactionAutomapper& context) {
+   flags = CONDITION_NONE;
+
+   if(!context.ignore_atom_charges)
+      flags |= CONDITION_ATOM_CHARGES;
+   if(!context.ignore_atom_isotopes)
+      flags |= CONDITION_ATOM_ISOTOPES;
+   if(!context.ignore_atom_radicals)
+      flags |= CONDITION_ATOM_RADICAL;
+   if(!context.ignore_atom_valence)
+      flags |= CONDITION_ATOM_VALENCE;
+}
 
 
 bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Array<int>* in_map, Array<int> *out_map){
@@ -959,7 +985,7 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
    for(int i = 0; i < 4; ++i) {
       EmbeddingEnumerator& emb_enum = emb_enums.push(*_super);
       emb_enum.setSubgraph(*_sub);
-      emb_enum.cb_match_vertex = RSubstructureMcs::atomConditionReact;
+      emb_enum.cb_match_vertex = atomConditionReact;
       emb_enum.cb_embedding = _embedding;
       emb_enum.userdata = this;
       if(i & 1)
@@ -1099,12 +1125,20 @@ void RSubstructureMcs::getReactingCenters(BaseMolecule& mol1, BaseMolecule& mol2
 }
 
 bool RSubstructureMcs::atomConditionReact (Graph &g1, Graph &g2, const int *core_sub, int i, int j, void* userdata) {
-   return MaxCommonSubmolecule::matchAtoms(g1, g2, 0, i, j, 0);
+   BaseMolecule &mol1 = (BaseMolecule &)g1;
+   BaseMolecule &mol2 = (BaseMolecule &)g2;
+   if(userdata == 0)
+      throw ReactionAutomapper::Error("internal AAM error: userdata should be not null for atom match");
+   RSubstructureMcs &rsm = *(RSubstructureMcs *)userdata;
+   
+   return _matchAtoms(mol1, mol2, i, j, rsm.flags);
 }
 bool RSubstructureMcs::bondConditionReact (Graph &g1, Graph &g2, int i, int j, void* userdata){
 
    Molecule &mol1 = (Molecule &)g1;
    Molecule &mol2 = (Molecule &)g2;
+   if(userdata == 0)
+      throw ReactionAutomapper::Error("internal AAM error: userdata should be not null for bond match");
    RSubstructureMcs &rsm = *(RSubstructureMcs *)userdata;
 
    int rc_reactant;
@@ -1146,9 +1180,10 @@ bool RSubstructureMcs::bondConditionReact (Graph &g1, Graph &g2, int i, int j, v
 
 bool RSubstructureMcs::bondConditionReactStrict (Graph &g1, Graph &g2, int i, int j, void* userdata) {
 
-   Molecule &mol1 = (Molecule &)g1;
-   Molecule &mol2 = (Molecule &)g2;
-
+   BaseMolecule &mol1 = (BaseMolecule &)g1;
+   BaseMolecule &mol2 = (BaseMolecule &)g2;
+   if(userdata == 0)
+      throw ReactionAutomapper::Error("internal AAM error: userdata should be not null for bond strict match");
    RSubstructureMcs &rsm = *(RSubstructureMcs *)userdata;
 
    int rc_reactant;
@@ -1185,6 +1220,16 @@ bool RSubstructureMcs::bondConditionReactStrict (Graph &g1, Graph &g2, int i, in
       return mol1.getBondOrder(i) != mol2.getBondOrder(j);
 
    //can change
+   return true;
+}
+
+bool RSubstructureMcs::bondConditionReactSimple (Graph &g1, Graph &g2, int i, int j, void* userdata) {
+   BaseMolecule &mol1 = (BaseMolecule &)g1;
+   BaseMolecule &mol2 = (BaseMolecule &)g2;
+   
+   if (mol1.getBondOrder(i) != mol2.getBondOrder(j))
+         return false;
+
    return true;
 }
 
@@ -1288,4 +1333,65 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
       }
    }
    return result;
+}
+
+bool RSubstructureMcs::_matchAtoms(BaseMolecule& query, BaseMolecule& target, int sub_idx, int super_idx, int flags) {
+
+   if (query.isRSite(sub_idx) && target.isRSite(super_idx))
+      return query.getRSiteBits(sub_idx) == target.getRSiteBits(super_idx);
+
+   if (query.isRSite(sub_idx) || target.isRSite(super_idx))
+      return false;
+
+   if (query.isPseudoAtom(sub_idx) && target.isPseudoAtom(super_idx)) {
+      if (strcmp(query.getPseudoAtom(sub_idx), target.getPseudoAtom(super_idx)) != 0)
+         return false;
+   } else if (!query.isPseudoAtom(sub_idx) && !target.isPseudoAtom(super_idx)) {
+      if (query.getAtomNumber(sub_idx) != target.getAtomNumber(super_idx))
+         return false;
+   } else
+      return false;
+
+   if (flags & CONDITION_ATOM_ISOTOPES)
+      if (query.getAtomIsotope(sub_idx) != target.getAtomIsotope(super_idx))
+         return false;
+
+   if (flags & CONDITION_ATOM_CHARGES) {
+      int qcharge = query.getAtomCharge(sub_idx);
+      int tcharge = target.getAtomCharge(super_idx);
+
+      if (qcharge == CHARGE_UNKNOWN)
+         qcharge = 0;
+      if (tcharge == CHARGE_UNKNOWN)
+         tcharge = 0;
+
+      if (qcharge != tcharge)
+         return false;
+   }
+
+   if (flags & CONDITION_ATOM_VALENCE) {
+      if (!query.isPseudoAtom(sub_idx)) {
+         if (!query.isQueryMolecule() && !target.isQueryMolecule()) {
+            if (query.getAtomValence(sub_idx) != target.getAtomValence(super_idx))
+               return false;
+         }
+      }
+   }
+
+   if (flags & CONDITION_ATOM_RADICAL) {
+      if (!query.isPseudoAtom(sub_idx)) {
+         int qrad = query.getAtomRadical(sub_idx);
+         int trad = target.getAtomRadical(super_idx);
+
+         if (qrad == -1)
+            qrad = 0;
+         if (trad == -1)
+            trad = 0;
+
+         if (qrad != trad)
+            return false;
+      }
+   }
+
+   return true;
 }

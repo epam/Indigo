@@ -77,7 +77,7 @@ bool MaxCommonSubgraph::_findSimpleMcs() {
          return true;
       }
       for (; v_t != t_graph.vertexEnd(); v_t = t_graph.vertexNext(v_t)) {
-         if(conditionVerticesColor(q_graph, t_graph, 0, v_q, v_t, 0)) {
+         if(conditionVerticesColor(q_graph, t_graph, 0, v_q, v_t, userdata)) {
             ++parametersForExact.numberOfSolutions;
             v_map[v_q] = v_t;
             _addSolutionMap(v_map, e_map);
@@ -96,7 +96,7 @@ bool MaxCommonSubgraph::_findSimpleMcs() {
          return true;
       }
       for (; v_t != t_graph.vertexEnd(); v_t = t_graph.vertexNext(v_t)) {
-         if(conditionVerticesColor(q_graph, t_graph, 0, v_q, v_t, 0)) {
+         if(conditionVerticesColor(q_graph, t_graph, 0, v_q, v_t, userdata)) {
             ++parametersForExact.numberOfSolutions;
             v_map[v_t] = v_q;
             _addSolutionMap(v_map, e_map);

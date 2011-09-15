@@ -633,6 +633,7 @@ public:
    //constuctors
    SubstructureMcs();
    SubstructureMcs(Graph& sub, Graph& super);
+   virtual ~SubstructureMcs(){}
 
    //sets graphs for substructure search considering their size
    void setGraphs(Graph& sub, Graph& super);

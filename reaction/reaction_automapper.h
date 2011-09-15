@@ -69,6 +69,8 @@ public:
       AAM_REGEN_KEEP = 1,
       // assumes the existing marks might be wrong and can be altered. auto_amm consider input mapping and change it if map wrong
       AAM_REGEN_ALTER = 2,
+      // special mode for clearing a mapping
+      AAM_REGEN_CLEAR = 3,
 
       MAX_PERMUTATIONS_NUMBER = 5000
    };
@@ -78,6 +80,15 @@ public:
    void automap(int mode);
 
    void correctReactingCenters(bool change_null_map) { _checkAtomMapping(true, false, change_null_map); }
+
+   /*
+    * Special flags
+    */
+   bool ignore_atom_charges;
+   bool ignore_atom_valence;
+   bool ignore_atom_isotopes;
+   bool ignore_atom_radicals;
+
 
    DEF_ERROR("Reaction automapper");
 
@@ -103,7 +114,9 @@ private:
    //takes account of possibility for molecule dissociation 
    void _considerDissociation();
 
+   //takes account of possibility for molecule dimerization
    void _considerDimerization();
+   
    int _validMapFound(BaseReaction& reaction, int react, int prod, Array<int>& sub_map) const;
    void _removeSmallComponents(BaseMolecule& mol) const ;
    //all permutation 
@@ -120,26 +133,37 @@ private:
 };
 
 
-class RSubstructureMcs :public SubstructureMcs {
+class RSubstructureMcs : public SubstructureMcs {
 public:
    enum {
+       // Conditions
+      CONDITION_NONE      = 0x0000,
+      CONDITION_ATOM_CHARGES = 0x0001, 
+      CONDITION_ATOM_VALENCE = 0x0002, 
+      CONDITION_ATOM_RADICAL = 0x0004, 
+      CONDITION_ATOM_ISOTOPES = 0x0008, 
+      CONDITION_ALL       = 0x000F,
+      
       //maximum iteratins in exact mcs method
       MAX_ITERATION_NUMBER = 50000
    };
-   RSubstructureMcs(BaseReaction& reaction, int subNum, int superNum);
+   RSubstructureMcs(BaseReaction& reaction, int subNum, int superNum, const ReactionAutomapper& context);
+   RSubstructureMcs(BaseReaction &reaction, BaseMolecule& sub, BaseMolecule& super, const ReactionAutomapper& context);
+   virtual ~RSubstructureMcs(){}
 
    //reaction molecules substructure search 
    bool searchSubstructureReact(BaseMolecule& init_rmol, const Array<int>* in_map, Array<int> *out_map);
-
+   //reaction molecules mcs search
    bool searchMaxCommonSubReact(const Array<int>* in_map, Array<int> *out_map);
 
-
-
+   //callback for atom matching
    static bool atomConditionReact (Graph &g1, Graph &g2, const int *core_sub, int i, int j, void* userdata);
    //callback for bonds matching
    static bool bondConditionReact (Graph &g1, Graph &g2, int i, int j, void* userdata);
    //callback for bonds matching strict rules
    static bool bondConditionReactStrict (Graph &g1, Graph &g2, int i, int j, void* userdata);
+   // simple exact bond matching
+   static bool bondConditionReactSimple (Graph &g1, Graph &g2, int i, int j, void* userdata);
 
       //callback for mcs sorting solutions
    static int cbMcsSolutionTerm(Array<int>&, Array<int>&, void*);
@@ -151,8 +175,14 @@ public:
    inline int getProductNumber() const { return _superProductNumber;}
    BaseReaction& getReaction() const { return _reaction; }
 
+   void setUpFlags(const ReactionAutomapper& context);
+
+   int flags;
+
 private:
    int _searchSubstructure(EmbeddingEnumerator& emb_enum, const Array<int>* in_map, Array<int> *out_map);
+   static bool _matchAtoms(BaseMolecule& query, BaseMolecule& target, int sub_idx, int super_idx, int flags);
+   
    BaseReaction& _reaction;
    int _subReactNumber;
    int _superProductNumber;

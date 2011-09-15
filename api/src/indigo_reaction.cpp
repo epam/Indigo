@@ -467,30 +467,68 @@ CEXPORT int indigoCountMolecules (int handle)
    INDIGO_END(-1);
 }
 
+static int readAAMOptions(const char* mode, ReactionAutomapper& ram) {
+   int nmode = ReactionAutomapper::AAM_REGEN_DISCARD;
+   
+   if (mode == 0 || mode[0] == 0)
+      return nmode;
+
+   QS_DEF(Array<char>, word);
+   BufferScanner scanner(mode);
+
+   while (1) {
+      scanner.skipSpace();
+
+      if (scanner.isEOF())
+         break;
+
+      scanner.readWord(word, 0);
+
+      if (strcasecmp(word.ptr(), "discard") == 0)
+         nmode = ReactionAutomapper::AAM_REGEN_DISCARD;
+      else if (strcasecmp(word.ptr(), "alter") == 0)
+         nmode = ReactionAutomapper::AAM_REGEN_ALTER;
+      else if (strcasecmp(word.ptr(), "keep") == 0)
+         nmode = ReactionAutomapper::AAM_REGEN_KEEP;
+      else if (strcasecmp(word.ptr(), "clear") == 0) 
+         nmode = ReactionAutomapper::AAM_REGEN_CLEAR;
+      else if (strcasecmp(word.ptr(), "ignore_charges") == 0)
+         ram.ignore_atom_charges = true;
+      else if (strcasecmp(word.ptr(), "ignore_isotopes") == 0)
+         ram.ignore_atom_isotopes = true;
+      else if (strcasecmp(word.ptr(), "ignore_radicals") == 0)
+         ram.ignore_atom_radicals = true;
+      else if (strcasecmp(word.ptr(), "ignore_valence") == 0)
+         ram.ignore_atom_valence = true;
+      else
+         throw IndigoError("indigoAutomap(): unknown mode: %s", word.ptr());
+   }
+
+   return nmode;
+}
+
 CEXPORT int indigoAutomap (int reaction, const char *mode)
 {
    INDIGO_BEGIN
    {
       BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      int nmode;
-
-      if (mode == 0 || mode[0] == 0 || strcasecmp(mode, "discard") == 0)
-         nmode = ReactionAutomapper::AAM_REGEN_DISCARD;
-      else if (strcasecmp(mode, "alter") == 0)
-         nmode = ReactionAutomapper::AAM_REGEN_ALTER;
-      else if (strcasecmp(mode, "keep") == 0)
-         nmode = ReactionAutomapper::AAM_REGEN_KEEP;
-      else if (strcasecmp(mode, "clear") == 0)
-      {
+      ReactionAutomapper ram(rxn);
+      /*
+       * Read options
+       */
+      int nmode = readAAMOptions(mode, ram);
+      /*
+       * Clear AAM if required
+       */
+      if(nmode == ReactionAutomapper::AAM_REGEN_CLEAR) {
          rxn.clearAAM();
          return 0;
       }
-      else
-         throw IndigoError("indigoAutomap(): unknown mode: %s", mode);
-
-      ReactionAutomapper ram(rxn);
-
+      /*
+       * Launch automap
+       */
       ram.automap(nmode);
+      
       return 1;
    }
    INDIGO_END(-1);
