@@ -32,7 +32,6 @@
 #include "molecule/elements.h"
 #include "graph/dfs_walk.h"
 
-
 using namespace indigo;
 
 ReactionEnumeratorState::ReactionMonomers::ReactionMonomers() : TL_CP_GET(_monomers), 
@@ -648,9 +647,10 @@ bool ReactionEnumeratorState::_matchVertexCallback( Graph &subgraph, Graph &supe
       return false;
 
    if (rpe_state->is_transform)
-      if (rpe_state->_monomer_forbidden_atoms[super_idx])
-         return false;
-
+      if (super_idx < rpe_state->_monomer_forbidden_atoms.size()) // otherwise super atom is unfolded hydrogen 
+         if (rpe_state->_monomer_forbidden_atoms[super_idx])
+            return false;
+   
    if (supermolecule.getAtomNumber(super_idx) == ELEM_H && sub_v.degree() != 0 && super_v.degree() != 0)
    {
       int sub_free_rg_count = 0;
@@ -1434,7 +1434,7 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
 
    QS_DEF(Array<int>, out_mapping);
    out_mapping.clear_resize(mol_product.vertexEnd());
-   ready_product_out.clone(mol_product, &out_mapping, NULL);
+   ready_product_out.clone(mol_product, NULL, &out_mapping);
 
    if (is_transform)
    {
@@ -1442,7 +1442,8 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
       _product_forbidden_atoms.zerofill();
 
       for (int i = 0; i < old_marked_atoms.size(); i++)
-         _product_forbidden_atoms[out_mapping[i]] = 1;
+         if (out_mapping[old_marked_atoms[i]] != -1)
+            _product_forbidden_atoms[out_mapping[old_marked_atoms[i]]] = 1;
    }
 
    return true;

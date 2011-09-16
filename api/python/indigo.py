@@ -503,7 +503,7 @@ class Indigo:
 
   def _static_void_int (self, func):
     func.restype = c_int
-    func.argtypes = []
+    func.argtypes = [ c_int ]
     def newfunc (param):
       self._setSID()
       self._checkResult(func(param))
@@ -1061,6 +1061,11 @@ class Indigo:
     if hasattr(self, '_lib'):
       Indigo._lib.indigoReleaseSessionId(self._sid)
       
+  def transform (self, obj_reaction, obj_molecules):
+    self._setSID()
+    indigo_array_molecules = self.convertToArray(obj_molecules)
+    self._lib.indigoTransform(obj_reaction.id, indigo_array_molecules.id)
+    
   def convertToArray (self, iteratable):
     if isinstance(iteratable, Indigo.IndigoObject):
       return iteratable
