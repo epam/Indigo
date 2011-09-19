@@ -12,7 +12,7 @@
 #include "bingo_pg_config.h"
 #include "bingo_pg_index.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "storage/bufmgr.h"
@@ -297,7 +297,7 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    if(mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString()) < 0)
       throw Error("Can not set search context: %s", bingoGetError());
 
-   if (strcasestr(search_options.getString(), "TAU") != 0) {
+   if (strcasecmp(search_options.getString(), "TAU") != 0) {
       _prepareExactTauStrings(what_clause, from_clause, where_clause);
    } else {
       _prepareExactQueryStrings(what_clause, from_clause, where_clause);

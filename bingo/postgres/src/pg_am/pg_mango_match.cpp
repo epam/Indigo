@@ -6,7 +6,7 @@
 #include "bingo_pg_config.h"
 #include "bingo_pg_text.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/relcache.h"
@@ -17,7 +17,7 @@ CEXPORT {
 #include "utils/lsyscache.h"
 }
 
-CEXPORT {
+extern "C" {
 PG_FUNCTION_INFO_V1(_sub_internal);
 Datum _sub_internal(PG_FUNCTION_ARGS);
 

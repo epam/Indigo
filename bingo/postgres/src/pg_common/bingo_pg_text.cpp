@@ -2,7 +2,7 @@
 #include "bingo_pg_index.h"
 #include "bingo_pg_common.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/builtins.h"

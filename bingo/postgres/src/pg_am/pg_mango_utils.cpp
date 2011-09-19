@@ -3,12 +3,12 @@
 #include "bingo_core_c.h"
 #include "bingo_pg_common.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 }
 
-CEXPORT {
+extern "C" {
 PG_FUNCTION_INFO_V1(smiles);
 Datum smiles(PG_FUNCTION_ARGS);
 

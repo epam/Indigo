@@ -1,7 +1,8 @@
 #ifndef PG_BINGO_CONTEXT_H__
 #define	PG_BINGO_CONTEXT_H__
 
-CEXPORT {
+
+extern "C" {
 #include "c.h"
 }
 

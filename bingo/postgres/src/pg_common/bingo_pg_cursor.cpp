@@ -5,7 +5,7 @@
 #include "base_cpp/output.h"
 #include "bingo_pg_text.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "catalog/pg_type.h"

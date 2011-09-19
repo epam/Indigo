@@ -124,6 +124,7 @@
 #include "utils/tqual.h"
 
 
+
 /* Hooks for plugins to get control when we ask for stats */
 get_relation_stats_hook_type get_relation_stats_hook = NULL;
 get_index_stats_hook_type get_index_stats_hook = NULL;
@@ -858,8 +859,7 @@ ineq_histogram_selectivity(PlannerInfo *root,
 						 * despite the previous checks, if for example "low"
 						 * is -Infinity.
 						 */
-						if (isnan(binfrac) ||
-							binfrac < 0.0 || binfrac > 1.0)
+						if (binfrac < 0.0 || binfrac > 1.0)
 							binfrac = 0.5;
 					}
 				}
@@ -1329,20 +1329,20 @@ patternsel(PG_FUNCTION_ARGS, Pattern_Type ptype, bool negate)
 /*
  *		regexeqsel		- Selectivity of regular-expression pattern match.
  */
-Datum
-regexeqsel(PG_FUNCTION_ARGS)
-{
-	PG_RETURN_FLOAT8(patternsel(fcinfo, Pattern_Type_Regex, false));
-}
+//Datum
+//regexeqsel(PG_FUNCTION_ARGS)
+//{
+//	PG_RETURN_FLOAT8(patternsel(fcinfo, Pattern_Type_Regex, false));
+//}
 
 /*
  *		icregexeqsel	- Selectivity of case-insensitive regex match.
  */
-Datum
-icregexeqsel(PG_FUNCTION_ARGS)
-{
-	PG_RETURN_FLOAT8(patternsel(fcinfo, Pattern_Type_Regex_IC, false));
-}
+//Datum
+//icregexeqsel(PG_FUNCTION_ARGS)
+//{
+//	PG_RETURN_FLOAT8(patternsel(fcinfo, Pattern_Type_Regex_IC, false));
+//}
 
 /*
  *		likesel			- Selectivity of LIKE pattern match.
@@ -6262,16 +6262,27 @@ Datum bingo_costestimate(PG_FUNCTION_ARGS);
 
 Datum
 bingo_costestimate(PG_FUNCTION_ARGS) {
+   
+
+   struct PlannerInfo *root;
+   struct IndexOptInfo *index;
+   struct List *indexQuals;
+   struct RelOptInfo *outer_rel;
+   struct Cost *indexStartupCost;
+   struct Cost *indexTotalCost;
+   struct Selectivity *indexSelectivity ;
+   double *indexCorrelation;
+
    elog(INFO, "bingo cost estimate 1");
 
-   PlannerInfo *root = (PlannerInfo *) PG_GETARG_POINTER(0);
-   IndexOptInfo *index = (IndexOptInfo *) PG_GETARG_POINTER(1);
-   List *indexQuals = (List *) PG_GETARG_POINTER(2);
-   RelOptInfo *outer_rel = (RelOptInfo *) PG_GETARG_POINTER(3);
-   Cost *indexStartupCost = (Cost *) PG_GETARG_POINTER(4);
-   Cost *indexTotalCost = (Cost *) PG_GETARG_POINTER(5);
-   Selectivity *indexSelectivity = (Selectivity *) PG_GETARG_POINTER(6);
-   double *indexCorrelation = (double *) PG_GETARG_POINTER(7);
+   root = (PlannerInfo *) PG_GETARG_POINTER(0);
+   index = (IndexOptInfo *) PG_GETARG_POINTER(1);
+   indexQuals = (List *) PG_GETARG_POINTER(2);
+   outer_rel = (RelOptInfo *) PG_GETARG_POINTER(3);
+   indexStartupCost = (Cost *) PG_GETARG_POINTER(4);
+   indexTotalCost = (Cost *) PG_GETARG_POINTER(5);
+   indexSelectivity = (Selectivity *) PG_GETARG_POINTER(6);
+   indexCorrelation = (double *) PG_GETARG_POINTER(7);
 
 /*
    elog(INFO, "bingo cost estimate %f", root->);
@@ -6319,3 +6330,6 @@ bingo_costestimate(PG_FUNCTION_ARGS) {
 
    PG_RETURN_VOID();
 }
+
+//Node	   *newNodeMacroHolder;
+char	   *BufferBlocks;

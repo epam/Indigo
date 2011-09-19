@@ -13,7 +13,7 @@
 #include "bingo_pg_cursor.h"
 
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/relcache.h"
@@ -26,7 +26,7 @@ CEXPORT {
 #include "utils/lsyscache.h"
 }
 
-CEXPORT {
+extern "C" {
 PG_FUNCTION_INFO_V1(bingo_test);
 Datum bingo_test(PG_FUNCTION_ARGS);
 
@@ -65,12 +65,10 @@ Datum exportrdf(PG_FUNCTION_ARGS);
 
 }
 
-CEXPORT {
-#ifdef PG_MODULE_MAGIC
-   PG_MODULE_MAGIC;
-#endif
 
-}
+
+
+
 
 using namespace indigo;
 

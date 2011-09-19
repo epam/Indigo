@@ -5,7 +5,7 @@
 #include "bingo_pg_common.h"
 #include "base_cpp/tlscont.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "access/skey.h"
@@ -15,7 +15,7 @@ CEXPORT {
 #include "utils/lsyscache.h"
 }
 
-CEXPORT {
+extern "C" {
 PG_FUNCTION_INFO_V1(bingo_beginscan);
 Datum bingo_beginscan(PG_FUNCTION_ARGS);
 

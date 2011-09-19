@@ -14,18 +14,20 @@
 #define PG_PORT_H
 
 #include <ctype.h>
-#include <netdb.h>
-#include <pwd.h>
 
 /* socket has a different definition on WIN32 */
 #ifndef WIN32
 typedef int pgsocket;
-
 #define PGINVALID_SOCKET (-1)
+//bingo comment
+#include <netdb.h>
+#include <pwd.h>
 #else
 typedef SOCKET pgsocket;
-
 #define PGINVALID_SOCKET INVALID_SOCKET
+//bingo 
+#include <winsock.h>
+#include <winsock2.h>
 #endif
 
 /* non-blocking */
@@ -151,7 +153,8 @@ extern int	pg_strncasecmp(const char *s1, const char *s2, size_t n);
 extern unsigned char pg_toupper(unsigned char ch);
 extern unsigned char pg_tolower(unsigned char ch);
 
-#ifdef USE_REPL_SNPRINTF
+// bingo comment
+#if defined(USE_REPL_SNPRINTF) || defined(WIN32) 
 
 /*
  * Versions of libintl >= 0.13 try to replace printf() and friends with
@@ -214,7 +217,8 @@ __attribute__((format(printf, 1, 2)));
 #define sprintf			pg_sprintf
 #define vfprintf		pg_vfprintf
 #define fprintf			pg_fprintf
-#define printf			pg_printf
+//bingo comment
+//#define printf			pg_printf
 #endif
 #endif   /* USE_REPL_SNPRINTF */
 

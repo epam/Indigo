@@ -12,7 +12,7 @@
 #include "mango_pg_build_engine.h"
 #include "ringo_pg_build_engine.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/relcache.h"

@@ -3,7 +3,7 @@
 #include "pg_bingo_context.h"
 
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "catalog/index.h"
@@ -22,7 +22,7 @@ CEXPORT {
 #include "utils/memutils.h"
 }
 
-CEXPORT {
+extern "C" {
 PG_FUNCTION_INFO_V1(bingo_options);
 Datum bingo_options(PG_FUNCTION_ARGS);
 }

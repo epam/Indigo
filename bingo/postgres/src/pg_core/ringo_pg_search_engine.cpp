@@ -12,7 +12,7 @@
 #include "bingo_pg_config.h"
 #include "bingo_pg_index.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "storage/bufmgr.h"

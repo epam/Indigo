@@ -4,7 +4,7 @@
 #include "bingo_pg_common.h"
 #include "base_cpp/tlscont.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "storage/bufmgr.h"

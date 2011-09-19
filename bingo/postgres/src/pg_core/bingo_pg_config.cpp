@@ -8,7 +8,7 @@
 #include "bingo_pg_text.h"
 #include "bingo_pg_cursor.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/relcache.h"

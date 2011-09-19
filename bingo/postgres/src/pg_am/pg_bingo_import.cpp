@@ -8,7 +8,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/builtins.h"
@@ -16,7 +16,7 @@ CEXPORT {
 #include "catalog/pg_type.h"
 }
 
-CEXPORT {
+extern "C" {
 
 PG_FUNCTION_INFO_V1(importsdf);
 Datum importsdf(PG_FUNCTION_ARGS);
