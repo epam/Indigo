@@ -30,7 +30,7 @@ extern "C" {
 
 extern "C" {
 PG_FUNCTION_INFO_V1(_internal_func_check);
-Datum _internal_func_check(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _internal_func_check(PG_FUNCTION_ARGS);
 }
 
 

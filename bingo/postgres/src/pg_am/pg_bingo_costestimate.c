@@ -6258,7 +6258,7 @@ gincostestimate(PG_FUNCTION_ARGS)
 	PG_RETURN_VOID();
 }
 PG_FUNCTION_INFO_V1(bingo_costestimate);
-Datum bingo_costestimate(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_costestimate(PG_FUNCTION_ARGS);
 
 Datum
 bingo_costestimate(PG_FUNCTION_ARGS) {

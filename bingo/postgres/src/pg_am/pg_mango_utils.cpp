@@ -10,28 +10,28 @@ extern "C" {
 
 extern "C" {
 PG_FUNCTION_INFO_V1(smiles);
-Datum smiles(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum smiles(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(cansmiles);
-Datum cansmiles(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum cansmiles(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(molfile);
-Datum molfile(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum molfile(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(cml);
-Datum cml(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum cml(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(checkmolecule);
-Datum checkmolecule(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum checkmolecule(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(gross);
-Datum gross(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum gross(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getweight);
-Datum getweight(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum getweight(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getmass);
-Datum getmass(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum getmass(PG_FUNCTION_ARGS);
 }
 
 

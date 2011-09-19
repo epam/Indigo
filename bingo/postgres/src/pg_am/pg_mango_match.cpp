@@ -19,34 +19,34 @@ extern "C" {
 
 extern "C" {
 PG_FUNCTION_INFO_V1(_sub_internal);
-Datum _sub_internal(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _sub_internal(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(_smarts_internal);
-Datum _smarts_internal(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _smarts_internal(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(_exact_internal);
-Datum _exact_internal(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _exact_internal(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getsimilarity);
-Datum getsimilarity(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum getsimilarity(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(_gross_internal);
-Datum _gross_internal(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _gross_internal(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(_sim_internal);
-Datum _sim_internal(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _sim_internal(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(_match_mass_less);
-Datum _match_mass_less(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _match_mass_less(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(_match_mass_great);
-Datum _match_mass_great(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _match_mass_great(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(_mass_in);
-Datum _mass_in(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _mass_in(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(_mass_out);
-Datum _mass_out(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _mass_out(PG_FUNCTION_ARGS);
 
 }
 

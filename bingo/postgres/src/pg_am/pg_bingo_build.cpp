@@ -24,11 +24,11 @@ using namespace indigo;
 
 extern "C" {
 #ifdef PG_MODULE_MAGIC
-   CEXPORT PG_MODULE_MAGIC;
+   PG_MODULE_MAGIC;
 #endif
 
-   PG_FUNCTION_INFO_V1(bingo_build);
-   Datum bingo_build(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(bingo_build);
+PGDLLEXPORT Datum bingo_build(PG_FUNCTION_ARGS);
 }
 
 static void bingoIndexCallback(Relation index,

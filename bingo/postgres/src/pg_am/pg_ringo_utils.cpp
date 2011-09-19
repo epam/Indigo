@@ -10,15 +10,15 @@ extern "C" {
 
 extern "C" {
 PG_FUNCTION_INFO_V1(aam);
-Datum aam(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum aam(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(rxnfile);
-Datum rxnfile(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum rxnfile(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(rcml);
-Datum rcml(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum rcml(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(checkreaction);
-Datum checkreaction(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum checkreaction(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(rsmiles);
-Datum rsmiles(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum rsmiles(PG_FUNCTION_ARGS);
 }
 
 Datum aam(PG_FUNCTION_ARGS) {

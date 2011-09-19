@@ -17,19 +17,19 @@ extern "C" {
 
 extern "C" {
 PG_FUNCTION_INFO_V1(bingo_beginscan);
-Datum bingo_beginscan(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_beginscan(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_gettuple);
-Datum bingo_gettuple(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_gettuple(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_getbitmap);
-Datum bingo_getbitmap(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_getbitmap(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_rescan);
-Datum bingo_rescan(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_rescan(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_endscan);
-Datum bingo_endscan(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_endscan(PG_FUNCTION_ARGS);
 }
 /*
  * Bingo searching initialization

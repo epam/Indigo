@@ -22,11 +22,11 @@ extern "C" {
 
 extern "C" {
 PG_FUNCTION_INFO_V1(bingo_insert);
-Datum bingo_insert(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_insert(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(bingo_bulkdelete);
-Datum bingo_bulkdelete(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_bulkdelete(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(bingo_vacuumcleanup);
-Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS);
 }
 
 

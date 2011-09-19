@@ -19,13 +19,13 @@ extern "C" {
 extern "C" {
 
 PG_FUNCTION_INFO_V1(importsdf);
-Datum importsdf(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum importsdf(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(importrdf);
-Datum importrdf(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum importrdf(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(importsmiles);
-Datum importsmiles(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum importsmiles(PG_FUNCTION_ARGS);
 
 }
 
