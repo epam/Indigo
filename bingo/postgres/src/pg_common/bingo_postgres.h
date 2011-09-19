@@ -2,6 +2,7 @@
 #define	_BINGO_POSTGRES_H__
 
 #ifdef _WIN32
+#define strcasestr strstr
 #ifndef __cplusplus
 #define CEXPORT __declspec(dllexport)
 #else
