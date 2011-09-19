@@ -560,16 +560,16 @@
 #define PACKAGE_NAME "PostgreSQL"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "PostgreSQL 9.0.2"
+#define PACKAGE_STRING "PostgreSQL 9.0.3"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "9.0.2"
+#define PACKAGE_VERSION "9.0.3"
 
 /* PostgreSQL version as a string */
-#define PG_VERSION "9.0.2"
+#define PG_VERSION "9.0.3"
 
 /* PostgreSQL version as a number */
-#define PG_VERSION_NUM 90002
+#define PG_VERSION_NUM 90003
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "postgresql"
@@ -579,7 +579,9 @@
 #define PG_KRB_SRVNAM "postgres"
 
 /* A string containing the version number, platform, and C compiler */
-#define PG_VERSION_STR "Uninitialized version string (win32)"
+#define __STRINGIFY(x) #x
+#define __STRINGIFY2(z) __STRINGIFY(z)
+#define PG_VERSION_STR "PostgreSQL 9.0.3, compiled by Visual C++ build " __STRINGIFY2(_MSC_VER) ", 64-bit"
 
 /* Define to the necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -680,3 +682,25 @@
 /* Define to empty if the keyword `volatile' does not work. Warning: valid
    code using `volatile' can become incorrect without. Disable with care. */
 /* #undef volatile */
+#define PG_MAJORVERSION "9.0"
+#define LOCALEDIR "/share/locale"
+/* defines added by config steps */
+#ifndef IGNORE_CONFIGURED_SETTINGS
+#define USE_INTEGER_DATETIMES 1
+#define USE_LDAP 1
+#define HAVE_LIBZ 1
+#define USE_SSL 1
+#define ENABLE_NLS 1
+#define BLCKSZ 8192
+#define RELSEG_SIZE 131072
+#define XLOG_BLCKSZ 8192
+#define XLOG_SEG_SIZE (16 * 1024 * 1024)
+#define USE_FLOAT4_BYVAL 1
+#define FLOAT4PASSBYVAL true
+#define FLOAT8PASSBYVAL false
+#define HAVE_LIBXML2
+#define USE_LIBXML
+#define HAVE_LIBXSLT
+#define USE_LIBXSLT
+#define VAL_CONFIGURE "--enable-thread-safety --enable-integer-datetimes --enable-nls --with-ldap --with-libxml --with-libxslt --with-perl --with-python"
+#endif /* IGNORE_CONFIGURED_SETTINGS */
