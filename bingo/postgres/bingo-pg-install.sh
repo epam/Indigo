@@ -15,7 +15,7 @@ libdir=$PWD/bin
 schema_name="bingo"
 libext=".so"
 y="0"
-
+pglibdir="0"
 usage ()
 {
 echo 'Usage: bingo-pg-install.sh [parameters]'
@@ -27,8 +27,11 @@ echo '    Target directory to install bingo_postgres'$libext' (defaut {CURRENT_D
 echo '    If the directory does not exist, it will be created.'
 echo '  -schema name'
 echo '    Postgres schema name (default "bingo").'
+echo '  -pglibdir'
+echo '    Use postgreSQL $libdir option (default "false")'
+echo '    Notice: bingo_postgres'$libext' must be placed in the package library directory'
 echo '  -y'
-echo '    Process default options'
+echo '    Process default options (default "false")'
 }
 
 
@@ -53,6 +56,9 @@ while [ "$#" != 0 ]; do
      -y)
         y="1"
         ;;
+     -pglibdir)
+        pglibdir="1"
+        ;;
      *)
         echo "Unknown parameter: $1";
         usage;
@@ -60,6 +66,10 @@ while [ "$#" != 0 ]; do
   esac
   shift
 done
+
+if [ "$pglibdir" != "0" ]; then
+  libdir='$libdir';
+fi
 
 echo "Target directory  : $libdir";
 echo "DBA schema name   : $schema_name";
@@ -73,23 +83,6 @@ if [ "$y" != "1" ]; then
     exit 0;
   fi
 fi
-
-if [ "$libdir" != "$PWD/bin" ]; then
-  mkdir -p $libdir
-  cp bin/bingo_postgres$libext $libdir
-fi
-
-if [ $? != 0 ]; then
-  echo 'Cannot copy bingo_postgres'$libext' to '$libdir
-  exit
-fi
-
-#echo set verify off >bingo/bingo_lib.sql 
-#echo spool bingo_lib\; >>bingo/bingo_lib.sql 
-#echo create or replace LIBRARY bingolib AS \'$libdir/bingo_postgres$libext\' >>bingo/bingo_lib.sql 
-#echo / >>bingo/bingo_lib.sql 
-#echo spool off\; >>bingo/bingo_lib.sql 
-
 
 
 # Generate install script
@@ -110,17 +103,3 @@ sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/bingo_config.sql.in
 sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo/bingo_uninstall.quick.sql.in >bingo_uninstall.sql
 
 
-#psql9.0 $dbaname -f bingo_postgres.sql
-
-#cd system
-#if [ "$dbapass" = "" ]; then
-#  sqlplus $dbaname$instance @bingo_init.sql $bingoname $bingopass
-#else
-#  sqlplus $dbaname/$dbapass$instance @bingo_init.sql $bingoname $bingopass
-#fi
-
-#cd ../bingo
-#sqlplus $bingoname/$bingopass$instance @makebingo.sql
-#sqlplus $bingoname/$bingopass$instance @bingo_config.sql
-#cd ..
-#sqlplus $bingoname/$bingopass$instance @dbcheck.sql

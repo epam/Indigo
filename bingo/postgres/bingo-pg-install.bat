@@ -12,10 +12,11 @@
 
 @echo off
 set libdir=%CD%/bin
-set libdir=%libdir:\=/%
+
 set schemaname=bingo
 set libext=".dll"
 set y=
+set pglibdir=
 
 goto L2
 
@@ -27,6 +28,7 @@ if "%1" == "" goto L3
 if "%1" == "-libdir" goto got_libdir
 if "%1" == "-schemaname" goto got_schemaname
 if "%1" == "-y" goto got_y
+if "%1" == "-pglibdir" goto :got_pglibdir
 if "%1" == "-help" goto usage
 if "%1" == "-?" goto usage
 if "%1" == "/?" goto usage
@@ -46,19 +48,31 @@ goto badparam
   shift
   set y=1
   goto L1
+
+:got_pglibdir
+  shift
+  set pglibdir=1
+  goto L1
   
 :badparam
   echo Unknown parameter: %1
   goto end
   
 :L3
+
+if "%pglibdir%"=="1" set libdir=$libdir
+
+set libdir=%libdir:\=/%
 echo Target directory  : %libdir%
 echo Schema name       : %schemaname%
+
 if "%y%"=="1" goto L4
 set /p proceed=Proceed (y/N)? 
 if "%proceed%"=="y" goto L4
 if "%proceed%"=="Y" goto L4
 goto end
+
+
 
 :L4
 @rem Delete install and uninstall scripts
@@ -124,6 +138,11 @@ echo     Target directory to install bingo_postgres%libext% (defaut %CD%\bin).
 echo     If the directory does not exist, it will be created.
 echo   -schema name
 echo     Postgres schema name (default "bingo").
+echo   -pglibdir
+echo     Use postgreSQL $libdir option (default "false")
+echo     Notice: bingo_postgres%libext% must be placed in the package library directory
+echo   -y
+echo     Process default options (default "false")
 goto end
 
 :end
