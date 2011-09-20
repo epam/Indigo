@@ -102,21 +102,21 @@ LDLIBSOPTIONS=../../layout/dist/Release32/GNU-Linux-x86/liblayout.a ../../reacti
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Release32.mk bin/bingo_postgres.so
+	"${MAKE}"  -f nbproject/Makefile-Release32.mk dist/x86/bingo_postgres.so
 
-bin/bingo_postgres.so: ../../layout/dist/Release32/GNU-Linux-x86/liblayout.a
+dist/x86/bingo_postgres.so: ../../layout/dist/Release32/GNU-Linux-x86/liblayout.a
 
-bin/bingo_postgres.so: ../../reaction/dist/Release32/GNU-Linux-x86/libreaction.a
+dist/x86/bingo_postgres.so: ../../reaction/dist/Release32/GNU-Linux-x86/libreaction.a
 
-bin/bingo_postgres.so: ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a
+dist/x86/bingo_postgres.so: ../../molecule/dist/Release32/GNU-Linux-x86/libmolecule.a
 
-bin/bingo_postgres.so: ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a
+dist/x86/bingo_postgres.so: ../../graph/dist/Release32/GNU-Linux-x86/libgraph.a
 
-bin/bingo_postgres.so: ../../tinyxml/dist/Release32/GNU-Linux-x86/libtinyxml.a
+dist/x86/bingo_postgres.so: ../../tinyxml/dist/Release32/GNU-Linux-x86/libtinyxml.a
 
-bin/bingo_postgres.so: ${OBJECTFILES}
-	${MKDIR} -p bin
-	${LINK.cc} -shared -o bin/bingo_postgres.so -fPIC ${OBJECTFILES} ${LDLIBSOPTIONS} 
+dist/x86/bingo_postgres.so: ${OBJECTFILES}
+	${MKDIR} -p dist/x86
+	${LINK.cc} -shared -o dist/x86/bingo_postgres.so -fPIC ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_buffer_cache.o: src/pg_common/bingo_pg_buffer_cache.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
@@ -374,7 +374,7 @@ ${OBJECTDIR}/src/pg_core/ringo_pg_search_engine.o: src/pg_core/ringo_pg_search_e
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/Release32
-	${RM} bin/bingo_postgres.so
+	${RM} dist/x86/bingo_postgres.so
 
 # Subprojects
 .clean-subprojects:
