@@ -6,7 +6,7 @@
 #include "bingo_postgres.h"
 #include "base_cpp/exception.h"
 
-CEXPORT {
+extern "C" {
    #include "c.h"
    #include "storage/itemptr.h"
 }

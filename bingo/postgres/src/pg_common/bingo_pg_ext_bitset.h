@@ -126,7 +126,7 @@ private:
 
    int _leastSignificantBitPosition(qword n) const;
 
-   inline int _wordsInUse() {return *_lastWordPtr;};
+   inline int _wordsInUse() {return (int)*_lastWordPtr;};
 
    qword* _words;
    

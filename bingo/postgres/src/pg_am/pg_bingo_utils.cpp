@@ -13,7 +13,7 @@
 #include "bingo_pg_cursor.h"
 
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/relcache.h"
@@ -26,51 +26,49 @@ CEXPORT {
 #include "utils/lsyscache.h"
 }
 
-CEXPORT {
+extern "C" {
 PG_FUNCTION_INFO_V1(bingo_test);
-Datum bingo_test(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_test(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_test_tid);
-Datum bingo_test_tid(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_test_tid(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_test_select);
-Datum bingo_test_select(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_test_select(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_markpos);
-Datum bingo_markpos(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_markpos(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_restrpos);
-Datum bingo_restrpos(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_restrpos(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getindexstructurescount);
-Datum getindexstructurescount(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum getindexstructurescount(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getversion);
-Datum getversion(PG_FUNCTION_ARGS);
+PGDLLEXPORT PGDLLEXPORT Datum getversion(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(filetotext);
-Datum filetotext(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum filetotext(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(filetoblob);
-Datum filetoblob(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum filetoblob(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getname);
-Datum getname(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum getname(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(exportsdf);
-Datum exportsdf(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum exportsdf(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(exportrdf);
-Datum exportrdf(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum exportrdf(PG_FUNCTION_ARGS);
 
 }
 
-CEXPORT {
-#ifdef PG_MODULE_MAGIC
-   PG_MODULE_MAGIC;
-#endif
 
-}
+
+
+
 
 using namespace indigo;
 

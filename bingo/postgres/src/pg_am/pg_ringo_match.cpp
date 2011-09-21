@@ -10,7 +10,7 @@
 #include "bingo_pg_text.h"
 
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/relcache.h"
@@ -21,15 +21,15 @@ CEXPORT {
 #include "utils/lsyscache.h"
 }
 
-CEXPORT {
+extern "C" {
 PG_FUNCTION_INFO_V1(_rsub_internal);
-Datum _rsub_internal(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _rsub_internal(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(_rsmarts_internal);
-Datum _rsmarts_internal(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _rsmarts_internal(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(_rexact_internal);
-Datum _rexact_internal(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _rexact_internal(PG_FUNCTION_ARGS);
 
 }
 

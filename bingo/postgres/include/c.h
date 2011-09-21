@@ -53,12 +53,16 @@
 #include "pg_config.h.nix64"
 #elif defined(BINGO_PG_NIX32)
 #include "pg_config.h.nix32"
+#elif defined(BINGO_PG_WIN32)
+#include "pg_config.h.win32"
+#elif defined(BINGO_PG_WIN64)
+#include "pg_config.h.win64"
 #endif
 
 #include "pg_config_manual.h"	/* must be after pg_config.h */
 #if !defined(WIN32) && !defined(__CYGWIN__)		/* win32 will include further
 												 * down */
-#include "pg_config_os.h"		/* must be before any system header files */
+#include "pg_config_os_nix.h"		/* must be before any system header files */
 #endif
 #include "postgres_ext.h"
 
@@ -91,7 +95,7 @@
 
 #if defined(WIN32) || defined(__CYGWIN__)
 /* We have to redefine some system functions after they are included above. */
-#include "pg_config_os.h"
+#include "pg_config_os_win.h"
 #endif
 
 /* Must be before gettext() games below */
@@ -100,7 +104,12 @@
 #define _(x) gettext(x)
 
 #ifdef ENABLE_NLS
-#include <libintl.h>
+// bingo comment 
+//#include <libintl.h>
+#define gettext(x) (x)
+#define dgettext(d,x) (x)
+#define ngettext(s,p,n) ((n) == 1 ? (s) : (p))
+#define dngettext(d,s,p,n) ((n) == 1 ? (s) : (p))
 #else
 #define gettext(x) (x)
 #define dgettext(d,x) (x)

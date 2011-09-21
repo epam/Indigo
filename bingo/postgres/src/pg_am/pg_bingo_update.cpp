@@ -3,7 +3,7 @@
 #include "bingo_postgres.h"
 #include "bingo_pg_text.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "catalog/index.h"
@@ -20,13 +20,13 @@ CEXPORT {
 #include "catalog/pg_type.h"
 }
 
-CEXPORT {
+extern "C" {
 PG_FUNCTION_INFO_V1(bingo_insert);
-Datum bingo_insert(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_insert(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(bingo_bulkdelete);
-Datum bingo_bulkdelete(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_bulkdelete(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(bingo_vacuumcleanup);
-Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS);
 }
 
 

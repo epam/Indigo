@@ -5,7 +5,7 @@
 #define	_BINGO_PG_BUILD_H__
 
 
-#include "base_c/defs.h"
+
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/exception.h"
 

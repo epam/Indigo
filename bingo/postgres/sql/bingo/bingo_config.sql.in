@@ -14,4 +14,5 @@ create table bingo_tau_config(rule_idx integer, tau_beg text, tau_end text);
 insert into bingo_tau_config(rule_idx, tau_beg, tau_end) values (1, 'N,O,P,S,As,Se,Sb,Te', 'N,O,P,S,As,Se,Sb,Te');
 insert into bingo_tau_config(rule_idx, tau_beg, tau_end) values (2, '0C', 'N,O,P,S');
 insert into bingo_tau_config(rule_idx, tau_beg, tau_end) values (3, '1C', 'N,O');
+COMMIT;
 

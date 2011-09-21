@@ -1,9 +1,19 @@
 *** Instalation guide ***
+
 * Linux
-   - compile the library
-   - launch bingo-pg-install.sh with options*. It creates bingo_install.sql
+   - launch bingo-pg-install.sh with options*. The script generates bingo_install.sql
+   - run psql with bingo_install.sql 
+    For example:
+        > ./bingo-pg-install.sh -libdir /tmp/bingo_lib
+        > psql -f bingo_install.sql DB_NAME USER_NAME
+
+
+* Windows
+   - launch bingo-pg-install.bat with options*. It creates bingo_install.sql
    - run psql with bingo_install.sql 
     For example:
         > make CONF=Release32
         > ./bingo-pg-install.sh -libdir /tmp/bingo_lib
-        > psql DB_NAME -f bingo_install.sql
+        > psql -f bingo_install.sql DB_NAME USER_NAME
+
+

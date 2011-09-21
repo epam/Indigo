@@ -13,7 +13,7 @@
 #include "bingo_pg_config.h"
 #include <math.h>
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "storage/bufmgr.h"
@@ -28,9 +28,9 @@ CEXPORT {
 #include "utils/lsyscache.h"
 }
 
-CEXPORT {
+extern "C" {
 PG_FUNCTION_INFO_V1(_internal_func_check);
-Datum _internal_func_check(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum _internal_func_check(PG_FUNCTION_ARGS);
 }
 
 

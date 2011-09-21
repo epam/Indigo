@@ -11,7 +11,7 @@
 #include "mango_pg_search_engine.h"
 #include "ringo_pg_search_engine.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/relcache.h"

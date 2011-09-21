@@ -3,22 +3,22 @@
 #include "bingo_core_c.h"
 #include "bingo_pg_common.h"
 
-CEXPORT {
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 }
 
-CEXPORT {
+extern "C" {
 PG_FUNCTION_INFO_V1(aam);
-Datum aam(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum aam(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(rxnfile);
-Datum rxnfile(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum rxnfile(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(rcml);
-Datum rcml(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum rcml(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(checkreaction);
-Datum checkreaction(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum checkreaction(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(rsmiles);
-Datum rsmiles(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum rsmiles(PG_FUNCTION_ARGS);
 }
 
 Datum aam(PG_FUNCTION_ARGS) {

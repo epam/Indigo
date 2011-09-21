@@ -6,7 +6,7 @@
 #include "base_cpp/exception.h"
 #include "bingo_postgres.h"
 
-class ItemPointerData;
+struct ItemPointerData;
 class BingoPgText;
 
 class BingoPgCursor {

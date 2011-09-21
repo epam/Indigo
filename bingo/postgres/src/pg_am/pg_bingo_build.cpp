@@ -5,7 +5,7 @@
 #include "bingo_pg_text.h"
 #include "base_cpp/tlscont.h"
 
-CEXPORT {
+extern "C"  {
 #include "postgres.h"
 #include "fmgr.h"
 #include "access/htup.h"
@@ -17,11 +17,18 @@ CEXPORT {
 #include "catalog/namespace.h"
 #include "utils/lsyscache.h"
 }
+
+
+
 using namespace indigo;
 
-CEXPORT {
-   PG_FUNCTION_INFO_V1(bingo_build);
-   Datum bingo_build(PG_FUNCTION_ARGS);
+extern "C" {
+#ifdef PG_MODULE_MAGIC
+   PG_MODULE_MAGIC;
+#endif
+
+PG_FUNCTION_INFO_V1(bingo_build);
+PGDLLEXPORT Datum bingo_build(PG_FUNCTION_ARGS);
 }
 
 static void bingoIndexCallback(Relation index,

@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="pg_common">
+      <UniqueIdentifier>{b939a64e-21d2-4ecf-904c-436ed1d6ed22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pg_core">
+      <UniqueIdentifier>{b4e376d1-1a37-438b-8b54-9c3449a7ce7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pg_am">
+      <UniqueIdentifier>{ea8a7958-cfbd-4d60-ad95-9c8fe35896f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core_c">
+      <UniqueIdentifier>{a39fffc0-c643-4737-ab3d-fb0aa657c1eb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\pg_common\bingo_pg_buffer.cpp">
+      <Filter>pg_common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_common\bingo_pg_buffer_cache.cpp">
+      <Filter>pg_common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_common\bingo_pg_common.cpp">
+      <Filter>pg_common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_common\bingo_pg_cursor.cpp">
+      <Filter>pg_common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_common\bingo_pg_ext_bitset.cpp">
+      <Filter>pg_common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_common\bingo_pg_section.cpp">
+      <Filter>pg_common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_common\bingo_pg_text.cpp">
+      <Filter>pg_common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_core\bingo_pg_build.cpp">
+      <Filter>pg_core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_core\bingo_pg_build_engine.cpp">
+      <Filter>pg_core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_core\bingo_pg_config.cpp">
+      <Filter>pg_core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_core\bingo_pg_index.cpp">
+      <Filter>pg_core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_core\bingo_pg_search.cpp">
+      <Filter>pg_core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_core\bingo_pg_search_engine.cpp">
+      <Filter>pg_core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_core\mango_pg_build_engine.cpp">
+      <Filter>pg_core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_core\mango_pg_search_engine.cpp">
+      <Filter>pg_core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_core\ringo_pg_build_engine.cpp">
+      <Filter>pg_core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_core\ringo_pg_search_engine.cpp">
+      <Filter>pg_core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_bingo_build.cpp">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_bingo_costestimate.c">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_bingo_gist.c">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_bingo_import.cpp">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_bingo_options.cpp">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_bingo_search.cpp">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_bingo_update.cpp">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_bingo_utils.cpp">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_mango_match.cpp">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_mango_utils.cpp">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_ringo_match.cpp">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pg_am\pg_ringo_utils.cpp">
+      <Filter>pg_am</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core-c\bingo_core_c.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core-c\bingo_core_c_parallel.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core-c\mango_core_c.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core-c\mango_core_c_parallel.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core-c\ringo_core_c.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core-c\ringo_core_c_parallel.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\bingo_context.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\mango_context.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\ringo_context.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\base_cpp\chunk_storage.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\mango_index.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\ringo_index.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\mango_exact.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\mango_gross.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\mango_similarity.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\mango_substructure.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\mango_tautomer.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\ringo_aam.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\ringo_exact.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\ringo_substructure.cpp">
+      <Filter>core_c</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\pg_common\bingo_pg_buffer.h">
+      <Filter>pg_common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_common\bingo_pg_buffer_cache.h">
+      <Filter>pg_common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_common\bingo_pg_common.h">
+      <Filter>pg_common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_common\bingo_pg_cursor.h">
+      <Filter>pg_common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_common\bingo_pg_ext_bitset.h">
+      <Filter>pg_common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_common\bingo_pg_section.h">
+      <Filter>pg_common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_common\bingo_pg_text.h">
+      <Filter>pg_common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_common\bingo_postgres.h">
+      <Filter>pg_common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_common\pg_bingo_context.h">
+      <Filter>pg_common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_core\bingo_pg_build.h">
+      <Filter>pg_core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_core\bingo_pg_build_engine.h">
+      <Filter>pg_core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_core\bingo_pg_config.h">
+      <Filter>pg_core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_core\bingo_pg_index.h">
+      <Filter>pg_core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_core\bingo_pg_search.h">
+      <Filter>pg_core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_core\bingo_pg_search_engine.h">
+      <Filter>pg_core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_core\mango_pg_build_engine.h">
+      <Filter>pg_core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_core\mango_pg_search_engine.h">
+      <Filter>pg_core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_core\ringo_pg_build_engine.h">
+      <Filter>pg_core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pg_core\ringo_pg_search_engine.h">
+      <Filter>pg_core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core-c\bingo_core_c.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core-c\bingo_core_c_internal.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core-c\bingo_core_c_parallel.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core-c\mango_core_c_parallel.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core-c\ringo_core_c_parallel.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\bingo_context.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\mango_context.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\ringo_context.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\base_cpp\chunk_storage.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\mango_index.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\ringo_index.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\bingo_error.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\bingo_index.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\mango_matchers.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\ringo_matchers.h">
+      <Filter>core_c</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

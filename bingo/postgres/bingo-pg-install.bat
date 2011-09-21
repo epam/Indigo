@@ -11,13 +11,12 @@
 @rem WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 @echo off
-set libdir=%ORACLE_HOME%\bin
-set dbaname=system
-set dbapass=
-set instance=
-set bingoname=bingo
-set bingopass=bingo
+set libdir=%CD%/bin
+
+set schemaname=bingo
+set libext=".dll"
 set y=
+set pglibdir=
 
 goto L2
 
@@ -27,13 +26,9 @@ shift
 :L2
 if "%1" == "" goto L3
 if "%1" == "-libdir" goto got_libdir
-if "%1" == "-dbaname" goto got_dbaname
-if "%1" == "-dbapass" goto got_dbapass
-if "%1" == "-instance" goto got_instance
-if "%1" == "-bingoname" goto got_bingoname
-if "%1" == "-bingopass" goto got_bingopass
+if "%1" == "-schemaname" goto got_schemaname
 if "%1" == "-y" goto got_y
-
+if "%1" == "-pglibdir" goto :got_pglibdir
 if "%1" == "-help" goto usage
 if "%1" == "-?" goto usage
 if "%1" == "/?" goto usage
@@ -44,122 +39,113 @@ goto badparam
   set libdir=%1
   goto L1
 
-:got_dbaname
+:got_schemaname
   shift
-  set dbaname=%1
-  goto L1
-
-:got_dbapass
-  shift
-  set dbapass=%1
-  goto L1
-
-:got_instance
-  shift
-  set instance=%1
-  goto L1
-
-:got_bingoname
-  shift
-  set bingoname=%1
-  goto L1
-
-:got_bingopass
-  shift
-  set bingopass=%1
+  set schemaname=%1
   goto L1
 
 :got_y
+  shift
   set y=1
+  goto L1
+
+:got_pglibdir
+  shift
+  set pglibdir=1
   goto L1
   
 :badparam
   echo Unknown parameter: %1
   goto end
-
+  
 :L3
 
+if "%pglibdir%"=="1" set libdir=$libdir
+
+set libdir=%libdir:\=/%
 echo Target directory  : %libdir%
-echo DBA name          : %dbaname%
-if not "%dbapass%" == "" echo DBA password      : %DBApass%
-if "%instance%"=="" echo Oracle instance   : [default]
-if not "%instance%"=="" echo Oracle instance   : %instance%
-echo Bingo name        : %BINGOname%
-echo Bingo password    : %BINGOpass%
+echo Schema name       : %schemaname%
 
 if "%y%"=="1" goto L4
-
 set /p proceed=Proceed (y/N)? 
-
 if "%proceed%"=="y" goto L4
 if "%proceed%"=="Y" goto L4
-
-echo Aborting
 goto end
 
+
+
 :L4
-
-echo set verify off >bingo\bingo_lib.sql 
-echo spool bingo_lib; >>bingo\bingo_lib.sql 
-echo create or replace LIBRARY bingolib AS '%libdir%\bingo-oracle.dll' >>bingo\bingo_lib.sql 
-echo / >>bingo\bingo_lib.sql 
-echo spool off; >>bingo\bingo_lib.sql 
-
-md %libdir%
-copy ..\bin\bingo-oracle.dll %libdir% /y
-if not %errorlevel%==0 goto end
-
-if not "%instance%"=="" set instance=@%instance%
-
-cd system
-if "%dbapass%"=="" goto emptypass
-sqlplus %dbaname%/%dbapass%%instance% @bingo_init.sql %bingoname% %bingopass%
+@rem Delete install and uninstall scripts
+if exist bingo_install.sql del bingo_install.sql
+@rem Generate replace.vbs script
+echo Dim FileName, OutputFileName, Find, ReplaceWith, FileContents, dFileContents >> replace.vbs
+echo Find         	= WScript.Arguments(0) >> replace.vbs
+echo ReplaceWith  	= WScript.Arguments(1) >> replace.vbs
+echo FileName     	= WScript.Arguments(2) >> replace.vbs
+echo OutputFileName 	= WScript.Arguments(3) >> replace.vbs
+echo.  >> replace.vbs
+echo FileContents = GetFile(FileName) >> replace.vbs
+echo.  >> replace.vbs
+echo dFileContents = replace(FileContents, Find, ReplaceWith, 1, -1, 1) >> replace.vbs
+echo.  >> replace.vbs
+echo WriteFile OutputFileName, dFileContents >> replace.vbs
+echo.  >> replace.vbs
+echo function GetFile(FileName) >> replace.vbs
+echo   Dim FS, FileStream >> replace.vbs
+echo   Set FS = CreateObject("Scripting.FileSystemObject") >> replace.vbs
+echo     on error resume Next >> replace.vbs
+echo     Set FileStream = FS.OpenTextFile(FileName) >> replace.vbs
+echo     GetFile = FileStream.ReadAll >> replace.vbs
+echo End Function >> replace.vbs
+echo.  >> replace.vbs
+echo function WriteFile(FileName, Contents) >> replace.vbs
+echo   Dim OutStream, FS >> replace.vbs
+echo.  >> replace.vbs
+echo   on error resume Next >> replace.vbs
+echo   Set FS = CreateObject("Scripting.FileSystemObject") >> replace.vbs
+echo     Set OutStream = FS.OpenTextFile(FileName, 8, True) >> replace.vbs
+echo     OutStream.Write Contents >> replace.vbs
+echo End Function >> replace.vbs
+@rem Generate install script
+cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo\bingo_schema.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo\bingo_pg.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo\bingo_internal.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo\mango_internal.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo\mango_pg.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo\ringo_internal.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo\ringo_pg.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo\bingo_am.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo\bingo_config.sql.in bingo_install.sql
+@rem Generate uninstall script
+if exist bingo_uninstall.sql del bingo_uninstall.sql
+cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo\bingo_uninstall.quick.sql.in bingo_uninstall.sql 
+@rem Delete replace.vbs script
+del replace.vbs
 goto L5
-:emptypass
-sqlplus %dbaname%%instance% @bingo_init.sql %bingoname% %bingopass%
 
 :L5
-cd ..\bingo
-sqlplus %bingoname%/%bingopass%%instance% @makebingo.sql
-sqlplus %bingoname%/%bingopass%%instance% @bingo_config.sql
-
-cd ..
-sqlplus %bingoname%/%bingopass%%instance% @dbcheck.sql
-
+@rem Run install script
+@rem psql...
 goto end
 
 :usage
-echo Usage: bingo-install.bat [parameters]
+echo Usage: bingo-pg-install.bat [parameters]
 echo Parameters:
 echo   -?, -help
 echo     Print this help message
 echo   -libdir path
-echo     Target directory to install bingo-oracle.dll (defaut %%ORACLE_HOME%%\bin).
+echo     Target directory to install bingo_postgres%libext% (defaut %CD%\bin).
 echo     If the directory does not exist, it will be created.
-echo   -dbaname name
-echo     Database administrator login (default "system").
-echo   -dbapass password
-echo     Database administrator password (no default).
-echo     If the password is not specified, you will have to enter it later.
-echo   -instance instance
-echo     Database instance (default instance by default).
-echo     You can specify full address like "server:1521/instance" as well.
-echo   -bingoname name
-echo     Name of cartridge pseudo-user (default "bingo").
-echo   -bingopass password
-echo     Password of the pseudo-user (default "bingo").
+echo   -schema name
+echo     Postgres schema name (default "bingo").
+echo   -pglibdir
+echo     Use postgreSQL $libdir option (default "false")
+echo     Notice: bingo_postgres%libext% must be placed in the package library directory
 echo   -y
-echo     Do not ask for confirmation.
+echo     Process default options (default "false")
 goto end
 
-
 :end
-
 set libdir=
-set dbaname=
-set dbapass=
-set instance=
-set bingoname=
-set bingopass=
-set y=
-set initsql=
+set schemaname=
+set libext=

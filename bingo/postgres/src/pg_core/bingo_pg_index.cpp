@@ -7,8 +7,7 @@
 #include "bingo_pg_config.h"
 #include "bingo_core_c.h"
 
-CEXPORT
-{
+extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "access/itup.h"

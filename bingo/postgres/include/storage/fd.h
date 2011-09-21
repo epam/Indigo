@@ -38,7 +38,13 @@
 #ifndef FD_H
 #define FD_H
 
+// bingo comment
+#ifdef WIN32
+#include "dirent/dirent.h"
+#else
 #include <dirent.h>
+#endif
+
 
 
 /*
