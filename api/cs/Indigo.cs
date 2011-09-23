@@ -425,6 +425,12 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(this, _indigo_lib.indigoCreateFileSaver(filename, format));
       }
 
+      public void transform (IndigoObject reaction, IndigoObject monomer)
+      {
+         setSessionID();
+         _indigo_lib.indigoTransform(reaction.self, monomer.self);
+      }
+
       public void free (int id)
       {
          setSessionID();

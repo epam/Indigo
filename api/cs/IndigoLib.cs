@@ -301,5 +301,6 @@ namespace com.ggasoftware.indigo
       int indigoToBuffer (int handle, byte** buf, int* size);
 
       int indigoReactionProductEnumerate (int reaction, int monomers);
+      int indigoTransform (int reaction, int monomers);
    }
 }
