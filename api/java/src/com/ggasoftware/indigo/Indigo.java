@@ -491,6 +491,10 @@ public class Indigo
             @Override
             public void run ()
             {
+               // Set signal to Indigo that all libraries were unloaded
+               _library_unloaded = true;
+               
+               // Remove all dependent files
                self.removeLibraries();
             }
             });
@@ -699,10 +703,17 @@ public class Indigo
    @SuppressWarnings("FinalizeDeclaration")
    protected void finalize () throws Throwable
    {
-      _lib.indigoReleaseSessionId(_sid);
+      if (!libraryUnloaded())
+         _lib.indigoReleaseSessionId(_sid);
       super.finalize();
    }
 
+   private static boolean _library_unloaded = false;
+   public static boolean libraryUnloaded ()
+   {
+      return _library_unloaded;
+   }
+   
    private String _path;
    private long _sid;
 
@@ -714,7 +725,7 @@ public class Indigo
    private static int _os = 0;
    private static String _dllpath = "";
    private static IndigoLib _lib = null;
-
+ 
    public static IndigoLib getLibrary ()
    {
       return _lib;

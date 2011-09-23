@@ -48,8 +48,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    @SuppressWarnings("FinalizeDeclaration")
    protected void finalize () throws Throwable
    {
-      dispatcher.setSessionID();
-      _lib.indigoFree(self);
+      if (!Indigo.libraryUnloaded())
+      {
+         dispatcher.setSessionID();
+         _lib.indigoFree(self);
+      }
       super.finalize();
    }
 
