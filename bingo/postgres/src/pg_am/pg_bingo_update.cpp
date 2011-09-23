@@ -6,19 +6,10 @@
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
+#include "utils/relcache.h"
+#include "utils/rel.h"
 #include "catalog/index.h"
-#include "access/relscan.h"
-#include "access/hash.h"
-#include "optimizer/cost.h"
-#include "optimizer/plancat.h"
-#include "catalog/pg_tablespace.h"
-#include "commands/tablespace.h"
-#include "access/reloptions.h"
 #include "storage/bufmgr.h"
-#include "utils/tuplesort.h"
-#include "utils/array.h"
-#include "catalog/pg_type.h"
-   #include "utils/lsyscache.h"
 }
 
 extern "C" {
@@ -52,7 +43,9 @@ bingo_insert(PG_FUNCTION_ARGS) {
 
    PG_BINGO_BEGIN
    {
-      const char* index_schema = get_namespace_name(get_rel_namespace(index->rd_id));
+      BingoPgWrapper rel_namespace;
+      const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
+      
       BingoPgBuild build_engine(index, 0, index_schema, false);
       /*
        * Molecule structure is a text

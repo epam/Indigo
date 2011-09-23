@@ -9,13 +9,9 @@ extern "C"  {
 #include "postgres.h"
 #include "fmgr.h"
 #include "access/htup.h"
-#include "access/itup.h"
 #include "utils/relcache.h"
-#include "nodes/execnodes.h"
 #include "storage/bufmgr.h"
 #include "catalog/index.h"
-#include "catalog/namespace.h"
-#include "utils/lsyscache.h"
 }
 
 
@@ -72,8 +68,10 @@ bingo_build(PG_FUNCTION_ARGS) {
      /*
       * Initialize the bingo index metadata page and initial blocks
       */
-      const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
-      const char* index_schema = get_namespace_name(get_rel_namespace(index->rd_id));
+      BingoPgWrapper func_namespace;
+      const char* schema_name = func_namespace.getFuncNameSpace(fcinfo->flinfo->fn_oid);
+      BingoPgWrapper rel_namespace;
+      const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
       
       BingoPgBuild build_engine(index, schema_name, index_schema, true);
       /*

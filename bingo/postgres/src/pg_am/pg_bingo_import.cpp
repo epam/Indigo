@@ -11,7 +11,6 @@
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
-#include "utils/builtins.h"
 #include "executor/spi.h"
 #include "catalog/pg_type.h"
 }

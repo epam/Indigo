@@ -300,3 +300,29 @@ void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, 
 //   args.push(arg1);
 //   return callFunction(oid, args);
 //}
+
+BingoPgWrapper::BingoPgWrapper():_ptr(0) {
+   
+}
+
+BingoPgWrapper::~BingoPgWrapper() {
+   clear();
+}
+
+void BingoPgWrapper::clear() {
+   if(_ptr != 0)
+      pfree(_ptr);
+   _ptr = 0;
+}
+
+const char* BingoPgWrapper::getFuncNameSpace(dword oid_func) {
+   clear();
+   _ptr = get_namespace_name(get_func_namespace(oid_func));
+   return (const char*)_ptr;
+}
+
+const char* BingoPgWrapper::getRelNameSpace(dword oid_rel) {
+   clear();
+   _ptr = get_namespace_name(get_rel_namespace(oid_rel));
+   return (const char*)_ptr;
+}

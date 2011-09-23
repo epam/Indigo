@@ -20,10 +20,6 @@ extern "C" {
 #include "storage/lock.h"
 #include "access/heapam.h"
 #include "storage/bufmgr.h"
-#include "catalog/pg_type.h"
-#include "parser/parse_func.h"
-#include "catalog/namespace.h"
-#include "utils/lsyscache.h"
 }
 
 extern "C" {

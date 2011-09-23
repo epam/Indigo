@@ -12,7 +12,6 @@ extern "C" {
 #include "access/relscan.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
-#include "utils/lsyscache.h"
 }
 
 extern "C" {
@@ -59,7 +58,9 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
        */
       scan->opaque = so;
 
-      const char* index_schema = get_namespace_name(get_rel_namespace(rel->rd_id));
+      BingoPgWrapper rel_namespace;
+      const char* index_schema = rel_namespace.getRelNameSpace(rel->rd_id);
+
       BingoPgCommon::appendPath(index_schema);
       
    }

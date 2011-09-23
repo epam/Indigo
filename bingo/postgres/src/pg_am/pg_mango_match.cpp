@@ -9,12 +9,6 @@
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
-#include "utils/relcache.h"
-#include "storage/lock.h"
-#include "access/heapam.h"
-#include "storage/bufmgr.h"
-#include "catalog/namespace.h"
-#include "utils/lsyscache.h"
 }
 
 extern "C" {

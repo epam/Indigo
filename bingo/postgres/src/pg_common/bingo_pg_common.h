@@ -309,6 +309,24 @@ private:
 
 
 };
+/*
+ * Class for handling PG objects
+ */
+class BingoPgWrapper {
+public:
+   BingoPgWrapper();
+   ~BingoPgWrapper();
+
+   void clear();
+
+   const char* getFuncNameSpace(dword oid_func);
+   const char* getRelNameSpace(dword oid_rel);
+
+private:
+   BingoPgWrapper(const BingoPgWrapper&); //no implicit copy
+
+   PG_OBJECT _ptr;
+};
 
 
 #define BINGO_PG_TRY {\
