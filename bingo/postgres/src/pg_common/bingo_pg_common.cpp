@@ -174,6 +174,10 @@ void BingoPgCommon::dropDependency(const char* schema_name, const char* table_na
    executeQuery("SELECT %s._internal_func_012(%d, '%s')", schema_name, rnd_check, table_name);
 }
 
+void BingoPgCommon::appendPath(const char* schema_name) {
+   executeQuery("SELECT set_config('search_path', current_setting('search_path') ||',%s'::text, true)", schema_name);
+}
+
 char* BingoPgCommon::releaseString(const char* str) {
    if (str == 0)
       return 0;

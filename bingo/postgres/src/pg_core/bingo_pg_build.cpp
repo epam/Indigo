@@ -28,6 +28,10 @@ _index(index_ptr),
 _bufferIndex(index_ptr),
 _buildingState(new_index) {
    /*
+    * Set path
+    */
+   BingoPgCommon::appendPath(schema_name);
+   /*
     * Prepare buffer section for building or updating
     */
    if (_buildingState) {
