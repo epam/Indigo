@@ -59,7 +59,7 @@ public:
 //   static void executeQuery(const char* query_str);
    static int executeQuery(indigo::Array<char>& query_str);
    static int executeQuery(const char *format, ...);
-   static bool tableExists(const char* table_name);
+   static bool tableExists(const char* schema_name,const char* table_name);
 
    static void createDependency(const char* schema_name,const char* index_schema, const char* child_table, const char* parent_table);
    static void dropDependency(const char* schema_name, const char* index_schema, const char* table_name);

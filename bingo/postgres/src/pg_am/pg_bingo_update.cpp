@@ -18,6 +18,7 @@ extern "C" {
 #include "utils/tuplesort.h"
 #include "utils/array.h"
 #include "catalog/pg_type.h"
+   #include "utils/lsyscache.h"
 }
 
 extern "C" {
@@ -51,7 +52,8 @@ bingo_insert(PG_FUNCTION_ARGS) {
 
    PG_BINGO_BEGIN
    {
-      BingoPgBuild build_engine(index, 0, 0, false);
+      const char* index_schema = get_namespace_name(get_rel_namespace(index->rd_id));
+      BingoPgBuild build_engine(index, 0, index_schema, false);
       /*
        * Molecule structure is a text
        */

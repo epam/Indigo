@@ -53,10 +53,12 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
        */
       BingoPgSearch* so = new BingoPgSearch(rel);
 
+
       /*
        * Setting bingo search context
        */
       scan->opaque = so;
+
    }
    PG_BINGO_END;
 

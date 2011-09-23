@@ -150,10 +150,10 @@ int BingoPgCommon::executeQuery(const char *format, ...) {
    return executeQuery(buf);
 }
 
-bool BingoPgCommon::tableExists(const char* table_name) {
+bool BingoPgCommon::tableExists(const char* schema_name,  const char* table_name) {
    return (executeQuery("select * from information_schema.tables where "
-           "table_catalog = CURRENT_CATALOG and table_schema = CURRENT_SCHEMA "
-           "and table_name = '%s'", table_name) > 0);
+           "table_catalog = CURRENT_CATALOG and table_schema = '%s' "
+           "and table_name = '%s'", schema_name, table_name) > 0);
    
 }
 

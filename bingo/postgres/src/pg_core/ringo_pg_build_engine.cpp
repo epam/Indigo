@@ -127,7 +127,7 @@ void RingoPgBuildEngine::prepareShadowInfo(const char* schema_name, const char* 
    /*
     * Drop table if exists (in case of truncate index)
     */
-   if(BingoPgCommon::tableExists(shadow_rel_name)) {
+   if(BingoPgCommon::tableExists(index_schema, shadow_rel_name)) {
       BingoPgCommon::dropDependency(schema_name, index_schema, shadow_rel_name);
       BingoPgCommon::executeQuery("DROP TABLE %s.%s", index_schema, shadow_rel_name);
    }
