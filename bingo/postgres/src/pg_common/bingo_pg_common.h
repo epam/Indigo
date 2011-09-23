@@ -63,7 +63,7 @@ public:
 
    static void createDependency(const char* schema_name, const char* child_table, const char* parent_table);
    static void dropDependency(const char* schema_name, const char* table_name);
-   void appendPath(const char* schema_name);
+   static void appendPath(const char* schema_name);
 
    static char* releaseString(const char* str);
 
