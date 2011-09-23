@@ -117,7 +117,7 @@ int RingoPgBuildEngine::getFpSize() {
    return result * 8;
 }
 
-void RingoPgBuildEngine::prepareShadowInfo(const char* schema_name) {
+void RingoPgBuildEngine::prepareShadowInfo(const char* schema_name, const char* index_schema) {
    /*
     * Create auxialiry tables
     */
@@ -128,19 +128,19 @@ void RingoPgBuildEngine::prepareShadowInfo(const char* schema_name) {
     * Drop table if exists (in case of truncate index)
     */
    if(BingoPgCommon::tableExists(shadow_rel_name)) {
-      BingoPgCommon::dropDependency(schema_name, shadow_rel_name);
-      BingoPgCommon::executeQuery("DROP TABLE %s", shadow_rel_name);
+      BingoPgCommon::dropDependency(schema_name, index_schema, shadow_rel_name);
+      BingoPgCommon::executeQuery("DROP TABLE %s.%s", index_schema, shadow_rel_name);
    }
 
-   BingoPgCommon::executeQuery("CREATE TABLE %s ("
+   BingoPgCommon::executeQuery("CREATE TABLE %s.%s ("
    "b_id tid,"
    "tid_map tid,"
-   "ex_hash integer)", shadow_rel_name);
+   "ex_hash integer)", index_schema, shadow_rel_name);
 
    /*
     * Create dependency for new tables
     */
-   BingoPgCommon::createDependency(schema_name, shadow_rel_name, rel_name);
+   BingoPgCommon::createDependency(schema_name, index_schema, shadow_rel_name, rel_name);
 }
 
 void RingoPgBuildEngine::finishShadowProcessing() {

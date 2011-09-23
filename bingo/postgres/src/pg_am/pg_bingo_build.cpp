@@ -66,14 +66,16 @@ bingo_build(PG_FUNCTION_ARGS) {
 //    */
 //   estimate_rel_size(heap, NULL, &relpages, &reltuples);
 
-   /* 
-    * Initialize the bingo index metadata page and initial blocks
-    */
-   const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
-
+   
    PG_BINGO_BEGIN
    {
-      BingoPgBuild build_engine(index, schema_name, true);
+     /*
+      * Initialize the bingo index metadata page and initial blocks
+      */
+      const char* schema_name = get_namespace_name(get_func_namespace(fcinfo->flinfo->fn_oid));
+      const char* index_schema = get_namespace_name(get_rel_namespace(index->rd_id));
+      
+      BingoPgBuild build_engine(index, schema_name, index_schema, true);
       /*
        * Do the heap scan and build index
        */

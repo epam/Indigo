@@ -23,20 +23,18 @@ extern "C" {
 }
 
 
-BingoPgBuild::BingoPgBuild(PG_OBJECT index_ptr, const char* schema_name, bool new_index):
+BingoPgBuild::BingoPgBuild(PG_OBJECT index_ptr, const char* schema_name, const char* index_schema, bool new_index):
 _index(index_ptr),
 _bufferIndex(index_ptr),
 _buildingState(new_index) {
    /*
-    * Set path
-    */
-   BingoPgCommon::appendPath(schema_name);
-   /*
     * Prepare buffer section for building or updating
     */
+   BingoPgCommon::appendPath(index_schema);
+   
    if (_buildingState) {
       _bufferIndex.setStrategy(BingoPgIndex::BUILDING_STRATEGY);
-      _prepareBuilding(schema_name);
+      _prepareBuilding(schema_name, index_schema);
    } else {
       _bufferIndex.setStrategy(BingoPgIndex::UPDATING_STRATEGY);
       _prepareUpdating();
@@ -62,7 +60,7 @@ BingoPgBuild::~BingoPgBuild() {
  * Inserts a new structure into the index
  * Returns true if insertion was successfull
  */
-void BingoPgBuild::_prepareBuilding(const char* schema_name) {
+void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_schema) {
    Relation index = (Relation) _index;
    char* rel_name = get_rel_name(index->rd_id);
    char* func_name = get_func_name(index->rd_support[0]);
@@ -101,7 +99,7 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name) {
     */
    _bufferIndex.writeBegin(fp_engine.ref(), bingo_config);
 
-   fp_engine.ref().prepareShadowInfo(schema_name);
+   fp_engine.ref().prepareShadowInfo(schema_name, index_schema);
 }
 
 void BingoPgBuild::_prepareUpdating() {

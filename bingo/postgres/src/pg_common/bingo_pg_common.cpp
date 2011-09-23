@@ -164,18 +164,18 @@ Datum _internal_func_check(PG_FUNCTION_ARGS) {
    PG_RETURN_BOOL(result);
 }
 
-void BingoPgCommon::createDependency(const char* schema_name, const char* child_table, const char* parent_table) {
+void BingoPgCommon::createDependency(const char* schema_name, const char* index_schema, const char* child_table, const char* parent_table) {
    rnd_check = rand();
-   executeQuery("SELECT %s._internal_func_011(%d, '%s', '%s')", schema_name, rnd_check, child_table, parent_table);
+   executeQuery("SELECT %s._internal_func_011(%d, '%s.%s', '%s.%s')", schema_name, rnd_check, index_schema, child_table, index_schema, parent_table);
 }
 
-void BingoPgCommon::dropDependency(const char* schema_name, const char* table_name) {
+void BingoPgCommon::dropDependency(const char* schema_name, const char* index_schema, const char* table_name) {
    rnd_check = rand();
-   executeQuery("SELECT %s._internal_func_012(%d, '%s')", schema_name, rnd_check, table_name);
+   executeQuery("SELECT %s._internal_func_012(%d, '%s.%s')", schema_name, rnd_check, index_schema, table_name);
 }
 
 void BingoPgCommon::appendPath(const char* schema_name) {
-   executeQuery("SELECT set_config('search_path', current_setting('search_path') ||',%s'::text, true)", schema_name);
+   executeQuery("SELECT set_config('search_path', current_setting('search_path') ||',%s'::text , false)", schema_name);
 }
 
 char* BingoPgCommon::releaseString(const char* str) {
