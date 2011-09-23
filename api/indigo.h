@@ -759,4 +759,6 @@ CEXPORT int indigoToBuffer (int handle, char **buf, int *size);
 // reactions with R-Sites replaced by the actual substituents.
 CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers);
 
+CEXPORT int indigoTransform (int reaction, int monomers);
+
 #endif

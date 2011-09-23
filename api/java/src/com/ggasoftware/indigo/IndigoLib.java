@@ -355,6 +355,7 @@ public interface IndigoLib extends Library
    Pointer indigoToString (int handle);
    int indigoToBuffer (int handle, PointerByReference buf, IntByReference size);
    int indigoReactionProductEnumerate (int reaction, int monomers);
+   int indigoTransform (int reaction, int monomers);
 
    int indigoDbgBreakpoint ();
 }

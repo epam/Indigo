@@ -434,6 +434,12 @@ public class Indigo
 
       return new IndigoObject(this, res);
    }
+
+   public void transform (IndigoObject reaction, IndigoObject monomers)
+   {
+      setSessionID();
+      _lib.indigoTransform(reaction.self, monomers.self);
+   }
    
    public IndigoObject createSaver (IndigoObject output, String format)
    {
