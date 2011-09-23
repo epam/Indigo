@@ -59,6 +59,9 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
        */
       scan->opaque = so;
 
+      const char* index_schema = get_namespace_name(get_rel_namespace(rel->rd_id));
+      BingoPgCommon::appendPath(index_schema);
+      
    }
    PG_BINGO_END;
 

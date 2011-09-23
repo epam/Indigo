@@ -175,7 +175,7 @@ void BingoPgCommon::dropDependency(const char* schema_name, const char* index_sc
 }
 
 void BingoPgCommon::appendPath(const char* schema_name) {
-   executeQuery("SELECT set_config('search_path', current_setting('search_path') ||',%s'::text , false)", schema_name);
+   executeQuery("SELECT set_config('search_path', current_setting('search_path') ||',%s'::text , true)", schema_name);
 }
 
 char* BingoPgCommon::releaseString(const char* str) {
