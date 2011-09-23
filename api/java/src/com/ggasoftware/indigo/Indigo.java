@@ -50,6 +50,13 @@ public class Indigo
       return result;
    }
 
+   static public int checkResult (Object obj, Object obj2, int result)
+   {
+      if (result < 0)
+         throw new IndigoException(new Object[] {obj, obj2}, _lib.indigoGetLastError());
+      return result;
+   }
+
    static public float checkResultFloat (Object obj, float result)
    {
       if (result < 0)
@@ -281,12 +288,13 @@ public class Indigo
       if (flags == null)
          flags = "";
 
-      int match = checkResult(this, _lib.indigoExactMatch(obj1.self, obj2.self, flags));
+      IndigoObject[] parent = new IndigoObject[]{obj1, obj2};
+      int match = checkResult(this, parent, _lib.indigoExactMatch(obj1.self, obj2.self, flags));
 
       if (match == 0)
          return null;
 
-      return new IndigoObject(this, new IndigoObject[]{obj1, obj2}, match);
+      return new IndigoObject(this, parent, match);
    }
 
    public IndigoObject exactMatch (IndigoObject obj1, IndigoObject obj2)
@@ -322,13 +330,15 @@ public class Indigo
       if (metrics == null)
          metrics = "";
       setSessionID();
-      return checkResultFloat(this, _lib.indigoSimilarity(obj1.self, obj2.self, metrics));
+      Object[] guard = new Object[]{this, obj1, obj2};
+      return checkResultFloat(guard, _lib.indigoSimilarity(obj1.self, obj2.self, metrics));
    }
 
    public int commonBits (IndigoObject fingerprint1, IndigoObject fingerprint2)
    {
       setSessionID();
-      return checkResult(this, _lib.indigoCommonBits(fingerprint1.self, fingerprint2.self));
+      Object[] guard = new Object[]{this, fingerprint1, fingerprint2};
+      return checkResult(guard, _lib.indigoCommonBits(fingerprint1.self, fingerprint2.self));
    }
 
    public IndigoObject unserialize (byte[] data)
@@ -370,7 +380,8 @@ public class Indigo
    public IndigoObject substructureMatcher (IndigoObject target, String mode)
    {
       setSessionID();
-      return new IndigoObject(this, target, checkResult(this, _lib.indigoSubstructureMatcher(target.self, mode)));
+      return new IndigoObject(this, target, checkResult(this, target, 
+              _lib.indigoSubstructureMatcher(target.self, mode)));
    }
 
    public IndigoObject substructureMatcher (IndigoObject target)
@@ -381,7 +392,8 @@ public class Indigo
    public IndigoObject extractCommonScaffold (IndigoObject structures, String options)
    {
       setSessionID();
-      int res = checkResult(this, _lib.indigoExtractCommonScaffold(structures.self, options));
+      int res = checkResult(this, structures, 
+              _lib.indigoExtractCommonScaffold(structures.self, options));
 
       if (res == 0)
          return null;
@@ -397,7 +409,8 @@ public class Indigo
    public IndigoObject decomposeMolecules (IndigoObject scaffold, IndigoObject structures)
    {
       setSessionID();
-      int res = checkResult(this, _lib.indigoDecomposeMolecules(scaffold.self, structures.self));
+      Object[] guard = new Object[]{this, scaffold, structures};
+      int res = checkResult(guard, _lib.indigoDecomposeMolecules(scaffold.self, structures.self));
 
       if (res == 0)
          return null;
@@ -413,7 +426,8 @@ public class Indigo
    public IndigoObject reactionProductEnumerate (IndigoObject reaction, IndigoObject monomers)
    {
       setSessionID();
-      int res = checkResult(this, _lib.indigoReactionProductEnumerate(reaction.self, monomers.self));
+      Object[] guard = new Object[]{this, reaction, monomers};
+      int res = checkResult(guard, _lib.indigoReactionProductEnumerate(reaction.self, monomers.self));
 
       if (res == 0)
          return null;
@@ -430,7 +444,8 @@ public class Indigo
    public IndigoObject createSaver (IndigoObject output, String format)
    {
       setSessionID();
-      return new IndigoObject(this, output, checkResult(this, _lib.indigoCreateSaver(output.self, format)));
+      return new IndigoObject(this, output, checkResult(this, output, 
+              _lib.indigoCreateSaver(output.self, format)));
    }
 
    public IndigoObject createFileSaver (String filename, String format)
@@ -497,6 +512,10 @@ public class Indigo
             @Override
             public void run ()
             {
+               // Set signal to Indigo that all libraries were unloaded
+               _library_unloaded = true;
+               
+               // Remove all dependent files
                self.removeLibraries();
             }
             });
@@ -705,10 +724,17 @@ public class Indigo
    @SuppressWarnings("FinalizeDeclaration")
    protected void finalize () throws Throwable
    {
-      _lib.indigoReleaseSessionId(_sid);
+      if (!libraryUnloaded())
+         _lib.indigoReleaseSessionId(_sid);
       super.finalize();
    }
 
+   private static boolean _library_unloaded = false;
+   public static boolean libraryUnloaded ()
+   {
+      return _library_unloaded;
+   }
+   
    private String _path;
    private long _sid;
 
@@ -720,7 +746,7 @@ public class Indigo
    private static int _os = 0;
    private static String _dllpath = "";
    private static IndigoLib _lib = null;
-
+ 
    public static IndigoLib getLibrary ()
    {
       return _lib;

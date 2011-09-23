@@ -134,8 +134,7 @@ echo Parameters:
 echo   -?, -help
 echo     Print this help message
 echo   -libdir path
-echo     Target directory to install bingo_postgres%libext% (defaut %CD%\bin).
-echo     If the directory does not exist, it will be created.
+echo     Target directory with the installed bingo_postgres%libext% (defaut %CD%\bin).
 echo   -schema name
 echo     Postgres schema name (default "bingo").
 echo   -pglibdir

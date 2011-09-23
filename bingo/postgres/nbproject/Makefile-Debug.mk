@@ -85,11 +85,11 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=
+CFLAGS=-fPIC
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-fPIC
+CXXFLAGS=-fPIC
 
 # Fortran Compiler Flags
 FFLAGS=

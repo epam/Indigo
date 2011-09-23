@@ -440,6 +440,7 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <commandLine>-fPIC</commandLine>
           <preprocessorList>
             <Elem>BINGO_PG_NIX32</Elem>
           </preprocessorList>
@@ -454,6 +455,7 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <commandLine>-fPIC</commandLine>
           <preprocessorList>
             <Elem>BINGO_PG_NIX32</Elem>
           </preprocessorList>
@@ -546,6 +548,7 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <commandLine>-fPIC</commandLine>
           <preprocessorList>
             <Elem>BINGO_PG_NIX32</Elem>
           </preprocessorList>
@@ -562,6 +565,7 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <commandLine>-fPIC</commandLine>
           <preprocessorList>
             <Elem>BINGO_PG_NIX32</Elem>
           </preprocessorList>
@@ -660,6 +664,7 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <commandLine>-fPIC</commandLine>
           <preprocessorList>
             <Elem>BINGO_PG_NIX64</Elem>
           </preprocessorList>
@@ -676,6 +681,7 @@
             <pElem>../src</pElem>
             <pElem>include</pElem>
           </incDir>
+          <commandLine>-fPIC</commandLine>
           <preprocessorList>
             <Elem>BINGO_PG_NIX64</Elem>
           </preprocessorList>

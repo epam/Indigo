@@ -48,8 +48,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    @SuppressWarnings("FinalizeDeclaration")
    protected void finalize () throws Throwable
    {
-      dispatcher.setSessionID();
-      _lib.indigoFree(self);
+      if (!Indigo.libraryUnloaded())
+      {
+         dispatcher.setSessionID();
+         _lib.indigoFree(self);
+      }
       super.finalize();
    }
 
@@ -95,19 +98,19 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void addReactant (IndigoObject molecule)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoAddReactant(self, molecule.self));
+      Indigo.checkResult(this, molecule, _lib.indigoAddReactant(self, molecule.self));
    }
 
    public void addProduct (IndigoObject molecule)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoAddProduct(self, molecule.self));
+      Indigo.checkResult(this, molecule, _lib.indigoAddProduct(self, molecule.self));
    }
 
    public void addCatalyst (IndigoObject molecule)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoAddCatalyst(self, molecule.self));
+      Indigo.checkResult(this, molecule, _lib.indigoAddCatalyst(self, molecule.self));
    }
 
    public int countReactants ()
@@ -181,13 +184,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public int atomMappingNumber (IndigoObject reaction_atom)
    {
       dispatcher.setSessionID();
-      return Indigo.checkResult(this, _lib.indigoGetAtomMappingNumber(self, reaction_atom.self));
+      return Indigo.checkResult(this, reaction_atom, _lib.indigoGetAtomMappingNumber(self, reaction_atom.self));
    }
 
    public void setAtomMappingNumber (IndigoObject reaction_atom, int number)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoSetAtomMappingNumber(self, reaction_atom.self, number));
+      Indigo.checkResult(this, reaction_atom, _lib.indigoSetAtomMappingNumber(self, reaction_atom.self, number));
    }
    
    public void clearAAM ()
@@ -294,7 +297,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
 
       IntByReference res = new IntByReference();
-      if (Indigo.checkResult(this, _lib.indigoGetReactingCenter(self, bond.self, res)) == 1)
+      if (Indigo.checkResult(this, bond, _lib.indigoGetReactingCenter(self, bond.self, res)) == 1)
          return res.getValue();
       throw new IndigoException(this, "reactingCenter(): unexpected result");
    }
@@ -302,7 +305,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void setReactingCenter (IndigoObject bond, int type)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoSetReactingCenter(self, bond.self, type));
+      Indigo.checkResult(this, bond, _lib.indigoSetReactingCenter(self, bond.self, type));
    }
 
    public Integer explicitValence ()
@@ -592,7 +595,8 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject addBond (IndigoObject atom, int order)
    {
       dispatcher.setSessionID();
-      return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoAddBond(self, atom.self, order)));
+      return new IndigoObject(dispatcher, this, 
+              Indigo.checkResult(this, atom, _lib.indigoAddBond(self, atom.self, order)));
    }
 
    public void setBondOrder (int order)
@@ -604,7 +608,8 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject merge (IndigoObject other)
    {
       dispatcher.setSessionID();
-      return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoMerge(self, other.self)));
+      return new IndigoObject(dispatcher, this, 
+              Indigo.checkResult(this, other, _lib.indigoMerge(self, other.self)));
    }
 
    public void highlight ()
@@ -640,13 +645,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject iterateComponents ()
    {
       dispatcher.setSessionID();
-      return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoIterateComponents(self)));
+      return new IndigoObject(dispatcher, this, 
+              Indigo.checkResult(this, _lib.indigoIterateComponents(self)));
    }
 
    public IndigoObject component (int index)
    {
       dispatcher.setSessionID();
-      return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoComponent(self, index)));
+      return new IndigoObject(dispatcher, this, 
+              Indigo.checkResult(this, _lib.indigoComponent(self, index)));
    }
 
    public int countSSSR ()
@@ -1052,13 +1059,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void sdfAppend (IndigoObject item)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoSdfAppend(self, item.self));
+      Indigo.checkResult(this, item, _lib.indigoSdfAppend(self, item.self));
    }
 
    public void smilesAppend (IndigoObject item)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoSmilesAppend(self, item.self));
+      Indigo.checkResult(this, item, _lib.indigoSmilesAppend(self, item.self));
    }
 
    public void rdfHeader()
@@ -1070,7 +1077,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void rdfAppend(IndigoObject item)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoRdfAppend(self, item.self));
+      Indigo.checkResult(this, item, _lib.indigoRdfAppend(self, item.self));
    }
 
    public void cmlHeader()
@@ -1082,7 +1089,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void cmlAppend(IndigoObject item)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoCmlAppend(self, item.self));
+      Indigo.checkResult(this, item, _lib.indigoCmlAppend(self, item.self));
    }
 
    public void cmlFooter()
@@ -1112,7 +1119,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public int arrayAdd (IndigoObject other)
    {
       dispatcher.setSessionID();
-      return Indigo.checkResult(this, _lib.indigoArrayAdd(self, other.self));
+      return Indigo.checkResult(this, other, _lib.indigoArrayAdd(self, other.self));
    }
 
    public IndigoObject at (int idx)
@@ -1124,13 +1131,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void ignoreAtom (IndigoObject atom)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoIgnoreAtom(self, atom.self));
+      Indigo.checkResult(this, atom, _lib.indigoIgnoreAtom(self, atom.self));
    }
 
    public void unignoreAtom (IndigoObject atom)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoUnignoreAtom(self, atom.self));
+      Indigo.checkResult(this, atom, _lib.indigoUnignoreAtom(self, atom.self));
    }
 
    public void unignoreAllAtoms ()
@@ -1142,7 +1149,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject match (IndigoObject query)
    {
       dispatcher.setSessionID();
-      int res = Indigo.checkResult(this, _lib.indigoMatch(self, query.self));
+      int res = Indigo.checkResult(this, query, _lib.indigoMatch(self, query.self));
 
       if (res == 0)
          return null;
@@ -1153,20 +1160,20 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public int countMatches (IndigoObject query)
    {
       dispatcher.setSessionID();
-      return Indigo.checkResult(this, _lib.indigoCountMatches(self, query.self));
+      return Indigo.checkResult(this, query, _lib.indigoCountMatches(self, query.self));
    }
    
    public int countMatchesWithLimit (IndigoObject query, int embeddings_limit)
    {
       dispatcher.setSessionID();
-      return Indigo.checkResult(this, _lib.indigoCountMatchesWithLimit(self, query.self, embeddings_limit));
+      return Indigo.checkResult(this, query, _lib.indigoCountMatchesWithLimit(self, query.self, embeddings_limit));
    }
    
    public IndigoObject iterateMatches (IndigoObject query)
    {
       dispatcher.setSessionID();
       return new IndigoObject(dispatcher, this,
-              Indigo.checkResult(this, _lib.indigoIterateMatches(self, query.self)));
+              Indigo.checkResult(this, query, _lib.indigoIterateMatches(self, query.self)));
    }
 
    public IndigoObject highlightedTarget ()
@@ -1179,7 +1186,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject mapAtom (IndigoObject query_atom)
    {
       dispatcher.setSessionID();
-      int res = Indigo.checkResult(this, _lib.indigoMapAtom(self, query_atom.self));
+      int res = Indigo.checkResult(this, query_atom, _lib.indigoMapAtom(self, query_atom.self));
       if (res == 0)
          return null;
       return new IndigoObject(dispatcher, this, res);
@@ -1187,8 +1194,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public IndigoObject mapBond (IndigoObject query_bond)
    {
+      Object[] guard = { this, query_bond };
       dispatcher.setSessionID();
-      int res = Indigo.checkResult(this, _lib.indigoMapBond(self, query_bond.self));
+      int res = Indigo.checkResult(this, query_bond, _lib.indigoMapBond(self, query_bond.self));
       if (res == 0)
          return null;
       return new IndigoObject(dispatcher, this, res);
@@ -1285,7 +1293,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void append (IndigoObject obj)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoAppend(self, obj.self));
+      Indigo.checkResult(this, obj, _lib.indigoAppend(self, obj.self));
    }
    
    public void optimize ()

@@ -172,6 +172,9 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
 
    mangoGetHash(false, -1, &hash_elements_count, &hash);
 
+   if(hash_elements_count > MAX_HASH_ELEMENTS)
+      hash_elements_count = MAX_HASH_ELEMENTS;
+
    from_clause.printf("%s sh", _shadowRelName.ptr());
 
    for (int i = 0; i < hash_elements_count; i++)
