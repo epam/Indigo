@@ -23,13 +23,26 @@ CEXPORT int indigoTransform (int reaction, int monomers)
 {
    INDIGO_BEGIN
    {
+      IndigoObject &monomers_object = self.getObject(monomers);
       QueryReaction &query_rxn = self.getObject(reaction).getQueryReaction();
-      IndigoArray &monomers_object = IndigoArray::cast(self.getObject(monomers));
 
       ReactionTransformation rt;
 
-      for (int i = 0; i < monomers_object.objects.size(); i++)
-         rt.transform(monomers_object.objects[i]->getMolecule(), query_rxn);
+      if (monomers_object.type == IndigoObject::MOLECULE)
+      {
+         Molecule &mol = monomers_object.getMolecule();
+         rt.transform(mol, query_rxn);
+      }
+      else if (monomers_object.type == IndigoObject::ARRAY)
+      {
+         IndigoArray &monomers_array = IndigoArray::cast(self.getObject(monomers));
+
+      
+         for (int i = 0; i < monomers_array.objects.size(); i++)
+            rt.transform(monomers_array.objects[i]->getMolecule(), query_rxn);
+      }
+      else
+         throw IndigoError("%s is not a molecule or array of molecules", self.getObject(monomers).debugInfo());
 
       return 1;
    }

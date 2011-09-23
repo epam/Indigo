@@ -251,7 +251,7 @@ class Indigo:
     self.extractCommonScaffold = self._static_obj_array_string(self._lib.indigoExtractCommonScaffold)
     self.decomposeMolecules = self._static_obj_obj_array(self._lib.indigoDecomposeMolecules)
     self.reactionProductEnumerate = self._static_obj_obj_array(self._lib.indigoReactionProductEnumerate)
-
+    
     self.createFileSaver = self._static_obj_string_string(self._lib.indigoCreateFileSaver)
 
     self.dbgBreakpoint = Indigo._lib.indigoDbgBreakpoint
@@ -1060,12 +1060,11 @@ class Indigo:
   def __del__ (self):
     if hasattr(self, '_lib'):
       Indigo._lib.indigoReleaseSessionId(self._sid)
-      
+         
   def transform (self, obj_reaction, obj_molecules):
     self._setSID()
-    indigo_array_molecules = self.convertToArray(obj_molecules)
-    self._lib.indigoTransform(obj_reaction.id, indigo_array_molecules.id)
-    
+    self._lib.indigoTransform(obj_reaction.id, obj_molecules.id)
+         
   def convertToArray (self, iteratable):
     if isinstance(iteratable, Indigo.IndigoObject):
       return iteratable
