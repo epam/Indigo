@@ -16,13 +16,6 @@
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
-#include "storage/bufmgr.h"
-#include "access/itup.h"
-#include "access/htup.h"
-#include "access/genam.h"
-#include "access/relscan.h"
-#include "access/tupdesc.h"
-#include "utils/typcache.h"
 }
 
 using namespace indigo;

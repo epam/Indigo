@@ -15,10 +15,9 @@ extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/relcache.h"
-#include "access/relscan.h"
 #include "access/genam.h"
+#include "access/relscan.h"
 #include "utils/rel.h"
-#include "utils/lsyscache.h"
 }
 
 
@@ -62,7 +61,8 @@ void BingoPgSearch::_initScanSearch() {
 
    Relation index = ((IndexScanDesc)_indexScanDesc)->indexRelation;
 
-   char* rel_name = get_rel_name(index->rd_id);
+   BingoPgWrapper rel_wr;
+   const char* rel_name = rel_wr.getRelName(index->rd_id);
 
    /*
     * Read configuration from index tuple

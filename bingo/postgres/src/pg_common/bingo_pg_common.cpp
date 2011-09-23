@@ -326,3 +326,14 @@ const char* BingoPgWrapper::getRelNameSpace(dword oid_rel) {
    _ptr = get_namespace_name(get_rel_namespace(oid_rel));
    return (const char*)_ptr;
 }
+const char* BingoPgWrapper::getFuncName(dword oid_func) {
+   clear();
+   _ptr = get_func_name(oid_func);
+   return (const char*)_ptr;
+}
+
+const char* BingoPgWrapper::getRelName(dword oid_rel) {
+   clear();
+   _ptr =  get_rel_name(oid_rel);
+   return (const char*)_ptr;
+}

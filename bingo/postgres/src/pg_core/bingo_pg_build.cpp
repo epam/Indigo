@@ -18,8 +18,6 @@ extern "C" {
 #include "utils/relcache.h"
 #include "utils/rel.h"
 #include "storage/bufmgr.h"
-#include "utils/lsyscache.h"
-#include "nodes/parsenodes.h"
 }
 
 
@@ -62,8 +60,11 @@ BingoPgBuild::~BingoPgBuild() {
  */
 void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_schema) {
    Relation index = (Relation) _index;
-   char* rel_name = get_rel_name(index->rd_id);
-   char* func_name = get_func_name(index->rd_support[0]);
+   BingoPgWrapper func_wr;
+   const char* func_name = func_wr.getFuncName(index->rd_support[0]);
+   
+   BingoPgWrapper rel_wr;
+   const char* rel_name = rel_wr.getRelName(index->rd_id);
 
    BingoPgConfig bingo_config;
    /*
@@ -104,7 +105,8 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
 
 void BingoPgBuild::_prepareUpdating() {
    Relation index = (Relation) _index;
-   char* rel_name = get_rel_name(index->rd_id);
+   BingoPgWrapper rel_wr;
+   const char* rel_name = rel_wr.getRelName(index->rd_id);
 
    BingoPgConfig bingo_config;
 

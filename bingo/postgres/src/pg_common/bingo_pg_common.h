@@ -321,6 +321,8 @@ public:
 
    const char* getFuncNameSpace(dword oid_func);
    const char* getRelNameSpace(dword oid_rel);
+   const char* getFuncName(dword oid_func);
+   const char* getRelName(dword oid_rel);
 
 private:
    BingoPgWrapper(const BingoPgWrapper&); //no implicit copy

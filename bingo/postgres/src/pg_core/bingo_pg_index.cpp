@@ -10,12 +10,7 @@
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
-#include "access/itup.h"
-#include "utils/relcache.h"
-#include "nodes/execnodes.h"
 #include "storage/bufmgr.h"
-#include "optimizer/plancat.h"
-#include "catalog/index.h"
 }
 
 BingoPgIndex::BingoPgIndex(PG_OBJECT index) :

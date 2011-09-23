@@ -13,11 +13,6 @@ extern "C" {
 #include "fmgr.h"
 #include "utils/relcache.h"
 #include "utils/rel.h"
-//#include "catalog/namespace.h"
-//#include "access/htup.h"
-//#include "access/heapam.h"
-//#include "storage/lock.h"
-//#include "utils/tqual.h"
 }
 
 using namespace indigo;
