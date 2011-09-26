@@ -244,6 +244,8 @@ TL_CP_GET(_mapped_aams)
    _current_molecule_2 = -1;
    _mapped_aams.clear();
    match_stereo = true;
+   _current_core_1.clear();
+   _current_core_2.clear();
 }
 
 BaseReactionSubstructureMatcher::_Matcher::_Matcher (const BaseReactionSubstructureMatcher::_Matcher &other) :
@@ -256,6 +258,10 @@ TL_CP_GET(_mapped_aams)
    _current_molecule_2 = -1;
    _mapped_aams.clear();
    match_stereo = other.match_stereo;
+   _current_core_1.clear();
+   _current_core_2.clear();
+   _selected_molecule_1 = -1;
+   _selected_molecule_2 = -1;
 }
 
 int BaseReactionSubstructureMatcher::_Matcher::_nextPair ()

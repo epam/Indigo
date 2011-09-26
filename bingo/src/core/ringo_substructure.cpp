@@ -74,6 +74,7 @@ void RingoSubstructure::loadQuery (Scanner &scanner)
 
    _initQuery(source, _query_reaction);
    _query_data_valid = false;
+   _smarts = false;
 }
 
 void RingoSubstructure::loadSMARTS (Scanner &scanner)

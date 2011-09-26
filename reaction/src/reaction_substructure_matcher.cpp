@@ -215,7 +215,11 @@ bool ReactionSubstructureMatcher::_checkAAM ()
             continue;
 
          int mapped = _matchers[i]->_current_core_1[j];
-         int taam = _target.getAAM(tmol_idx, mapped);
+
+         if(mapped < 0)
+            throw Error("internal error: can not call atom with negative number %d", mapped);
+         
+         int taam  = _target.getAAM(tmol_idx, mapped);
 
          if (taam == 0)
             return false;
