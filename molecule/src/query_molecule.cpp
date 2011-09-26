@@ -1766,6 +1766,7 @@ bool QueryMolecule::isKnownAttr (QueryMolecule::Atom& qa)
       qa.type == QueryMolecule::ATOM_TOTAL_H ||
       qa.type == QueryMolecule::ATOM_SUBSTITUENTS ||
       qa.type == QueryMolecule::ATOM_RING_BONDS ||
+      qa.type == QueryMolecule::ATOM_AROMATICITY ||
       qa.type == QueryMolecule::ATOM_UNSATURATION) && 
       qa.value_max == qa.value_min;
 }
@@ -1837,6 +1838,12 @@ int QueryMolecule::parseQueryAtom (QueryMolecule& qm, int aid, Array<int>& list)
       return notList ? QUERY_ATOM_NOTLIST : QUERY_ATOM_LIST;
    }
    return -1;
+}
+
+bool QueryMolecule::queryAtomIsRegular (QueryMolecule& qm, int aid) {
+   QueryMolecule::Atom& qa = qm.getAtom(aid);
+   QueryMolecule::Atom* qc = stripKnownAttrs(qa);
+   return qc && qc->type == QueryMolecule::ATOM_NUMBER;
 }
 
 QueryMolecule::Bond* QueryMolecule::getBondOrderTerm (QueryMolecule::Bond& qb, bool& complex)

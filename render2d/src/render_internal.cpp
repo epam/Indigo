@@ -1439,10 +1439,14 @@ void MoleculeRenderInternal::_initAtomData ()
       //printf("%s\n", buf.ptr());
 
       int atomNumber = bm.getAtomNumber(i);
-      if (_mol->isPseudoAtom(i))
+      QUERY_MOL_BEGIN(_mol);
+      if (!QueryMolecule::queryAtomIsRegular(qmol, i))
+         atomNumber = -1;
+      QUERY_MOL_END;
+      if (bm.isPseudoAtom(i))
       {
          ad.type = AtomDesc::TYPE_PSEUDO;
-         ad.pseudo.readString(_mol->getPseudoAtom(i), true);
+         ad.pseudo.readString(bm.getPseudoAtom(i), true);
       }
       else if (atomNumber < 0 || atomNumber == ELEM_RSITE)
          ad.type = AtomDesc::TYPE_QUERY;
