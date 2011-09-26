@@ -417,6 +417,10 @@ void RenderContext::drawTextItemText (const TextItem& ti)
       color.copy(opt.aamColor);
    else if (ti.ritype == RenderItem::RIT_DATASGROUP)
       color.copy(opt.dataGroupColor);
+   else if (ti.ritype == RenderItem::RIT_COMMENT)
+      color.copy(opt.commentColor);
+   else if (ti.ritype == RenderItem::RIT_TITLE)
+      color.copy(opt.titleColor);
    else
    {
       getColorVec(color, ti.color);

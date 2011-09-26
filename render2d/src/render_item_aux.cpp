@@ -36,12 +36,15 @@ void RenderItemAuxiliary::_drawText ()
 {                                  
    TextItem ti;
    ti.text.copy(text);
-   if (type == AUX_COMMENT)
+   if (type == AUX_COMMENT) {
       ti.fontsize = FONT_SIZE_COMMENT;
-   else if (type == AUX_TITLE)
+      ti.ritype = RenderItem::RIT_COMMENT;
+   } else if (type == AUX_TITLE) {
       ti.fontsize = FONT_SIZE_TITLE;
-   else
+      ti.ritype = RenderItem::RIT_TITLE;
+   } else {
       throw Error("Font size unknown");
+   }
    _rc.setTextItemSize(ti);
    ti.bbp.set(0,0);
    _rc.drawTextItemText(ti);

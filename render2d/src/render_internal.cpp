@@ -158,6 +158,7 @@ void RenderOptions::clear()
    highlightedLabelsVisible = false;
    implHVisible = true;
    commentColor.set(0,0,0);
+   titleColor.set(0,0,0);
    dataGroupColor.set(0,0,0);
    mode = MODE_NONE;
    hdc = 0;
