@@ -317,7 +317,7 @@ public:
 protected:
 
    int _calcAtomConnectivity (int idx);
-   void _getAtomDescription (Atom *atom, Output &out);
+   void _getAtomDescription (Atom *atom, Output &out, int depth);
    void _getBondDescription (Bond *bond, Output &out);
    int _getAtomMinH (Atom *atom);
    

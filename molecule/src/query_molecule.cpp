@@ -190,11 +190,13 @@ void QueryMolecule::getAtomDescription (int idx, Array<char> &description)
 {
    ArrayOutput out(description);
 
-   _getAtomDescription(_atoms[idx], out);
+   out.writeChar('[');
+   _getAtomDescription(_atoms[idx], out, 0);
+   out.writeChar(']');
    out.writeChar(0);
 }
 
-void QueryMolecule::_getAtomDescription (Atom *atom, Output &out)
+void QueryMolecule::_getAtomDescription (Atom *atom, Output &out, int depth)
 {
    int i;
    
@@ -205,32 +207,35 @@ void QueryMolecule::_getAtomDescription (Atom *atom, Output &out)
          return;
       case OP_AND:
       {
-         out.writeChar('(');
+         if (depth > 0)
+            out.writeChar('(');
          for (i = 0; i < atom->children.size(); i++)
          {
             if (i > 0)
-               out.writeString(" & ");
-            _getAtomDescription((Atom *)atom->children[i], out);
+               out.writeString(";");
+            _getAtomDescription((Atom *)atom->children[i], out, depth+1);
          }
-         out.writeChar(')');
+         if (depth > 0)
+            out.writeChar(')');
          return;
       }
       case OP_OR:
       {
-         out.writeChar('(');
+         if (depth > 0)
+            out.writeChar('(');
          for (i = 0; i < atom->children.size(); i++)
          {
             if (i > 0)
-               out.writeString(" | ");
-            _getAtomDescription((Atom *)atom->children[i], out);
+               out.writeString(",");
+            _getAtomDescription((Atom *)atom->children[i], out, depth+1);
          }
-         out.writeChar(')');
+         if (depth > 0)
+            out.writeChar(')');
          return;
       }
       case OP_NOT:
-         out.writeString("!(");
-         _getAtomDescription((Atom *)atom->children[0], out);
-         out.writeChar(')');
+         out.writeString("!");
+         _getAtomDescription((Atom *)atom->children[0], out,depth+1);
          return;
       case ATOM_NUMBER:
          out.writeString(Element::toString(atom->value_min));
@@ -239,38 +244,38 @@ void QueryMolecule::_getAtomDescription (Atom *atom, Output &out)
          out.writeString(atom->alias.ptr());
          return;
       case ATOM_CHARGE:
-         out.printf("charge = %d", atom->value_min);
+         out.printf("c%d", atom->value_min);
          return;
       case ATOM_ISOTOPE:
-         out.printf("isotope = %d", atom->value_min);
+         out.printf("i%d", atom->value_min);
          return;
       case ATOM_AROMATICITY:
          if (atom->value_min == ATOM_AROMATIC)
-            out.printf("aromatic");
+            out.printf("a");
          else
-            out.printf("aliphatic");
+            out.printf("A");
          return;
       case ATOM_RADICAL:
-         out.printf("radical = %d", atom->value_min);
+         out.printf("r%d", atom->value_min);
          return;
       case ATOM_FRAGMENT:
-         out.printf("<fragment");
+         out.printf("$(");
          if (atom->fragment->fragment_smarts.ptr() != 0 &&
              atom->fragment->fragment_smarts.size() > 0)
-            out.printf(" %s", atom->fragment->fragment_smarts.ptr());
-         out.printf(">");
+            out.printf("%s", atom->fragment->fragment_smarts.ptr());
+         out.printf(")");
          return;
       case ATOM_TOTAL_H:
-         out.printf("H = %d", atom->value_min);
+         out.printf("H%d", atom->value_min);
          return;
       case ATOM_CONNECTIVITY:
-         out.printf("conn = %d", atom->value_min);
+         out.printf("v%d", atom->value_min);
          return;
       case ATOM_SUBSTITUENTS:
-         out.printf("subst = %d", atom->value_min);
+         out.printf("s%d", atom->value_min);
          return;
       default:
-         out.printf("<constraint of type %d>", atom->type);
+         throw new Error("Unrecognized constraint type %d", atom->type);
    }
 }
 
@@ -1766,7 +1771,6 @@ bool QueryMolecule::isKnownAttr (QueryMolecule::Atom& qa)
       qa.type == QueryMolecule::ATOM_TOTAL_H ||
       qa.type == QueryMolecule::ATOM_SUBSTITUENTS ||
       qa.type == QueryMolecule::ATOM_RING_BONDS ||
-      qa.type == QueryMolecule::ATOM_AROMATICITY ||
       qa.type == QueryMolecule::ATOM_UNSATURATION) && 
       qa.value_max == qa.value_min;
 }
