@@ -24,8 +24,6 @@
 MangoGross::MangoGross (BingoContext &context) :
 _context(context)
 {
-   treat_x_as_pseudoatom = false;
-   ignore_closing_bond_direction_mismatch = false;
 }
 
 void MangoGross::parseQuery (const Array<char> &query)
@@ -137,8 +135,8 @@ bool MangoGross::checkMolecule (Scanner &scanner)
 
    MoleculeAutoLoader loader(scanner);
 
-   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+   loader.treat_x_as_pseudoatom = _context.treat_x_as_pseudoatom;
+   loader.ignore_closing_bond_direction_mismatch = _context.ignore_closing_bond_direction_mismatch;
    loader.loadMolecule(target);
 
    GrossFormula::collect(target, target_gross);

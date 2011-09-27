@@ -27,6 +27,8 @@ BingoContext::BingoContext (int id_)
 {
    id = id_;
    reset();
+   treat_x_as_pseudoatom.setName("treat_x_as_pseudoatom");
+   ignore_closing_bond_direction_mismatch.setName("ignore_closing_bond_direction_mismatch");
 }
 
 void BingoContext::reset ()
@@ -40,8 +42,8 @@ void BingoContext::reset ()
    tautomer_rules_ready = false;
    fp_parameters_ready = false;
    atomic_mass_map_ready = false;
-   treat_x_pseudo_ready = false;
-   ignore_cbdm_ready = false;
+   treat_x_as_pseudoatom.reset();
+   ignore_closing_bond_direction_mismatch.reset();
 }
 
 

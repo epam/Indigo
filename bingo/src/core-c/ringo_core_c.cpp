@@ -90,9 +90,9 @@ void _ringoCheckPseudoAndCBDM (BingoCore &self)
       throw BingoError("context not set");
 
    // TODO: pass this check inside RingoSubstructure
-   if (!self.bingo_context->treat_x_pseudo_ready)
+   if (!self.bingo_context->treat_x_as_pseudoatom.hasValue())
       throw BingoError("treat_x_as_pseudoatom option not set");
-   if (!self.bingo_context->ignore_cbdm_ready)
+   if (!self.bingo_context->ignore_closing_bond_direction_mismatch.hasValue())
       throw BingoError("ignore_closing_bond_direction_mismatch option not set");
 }
 

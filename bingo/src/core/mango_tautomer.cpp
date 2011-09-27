@@ -31,17 +31,15 @@ MangoTautomer::MangoTautomer (BingoContext &context) :
 _context(context)
 {
    preserve_bonds_on_highlighting = false;
-   treat_x_as_pseudoatom = false;
-   ignore_closing_bond_direction_mismatch = false;
 }
 
 void MangoTautomer::loadQuery (Scanner &scanner)
 {
    MoleculeAutoLoader loader(scanner);
 
-   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+   loader.treat_x_as_pseudoatom = _context.treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
-          ignore_closing_bond_direction_mismatch;
+          _context.ignore_closing_bond_direction_mismatch;
    
    if (_params.substructure)
    {
@@ -139,9 +137,9 @@ void MangoTautomer::loadTarget (Scanner &scanner)
 {
    MoleculeAutoLoader loader(scanner);
 
-   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+   loader.treat_x_as_pseudoatom = _context.treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
-          ignore_closing_bond_direction_mismatch;
+          _context.ignore_closing_bond_direction_mismatch;
    loader.loadMolecule(_target);
 
    _initTarget(false);

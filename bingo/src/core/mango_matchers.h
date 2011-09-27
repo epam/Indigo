@@ -64,8 +64,6 @@ public:
    float rms_threshold;
 
    bool preserve_bonds_on_highlighting;
-   bool treat_x_as_pseudoatom;
-   bool ignore_closing_bond_direction_mismatch;
    
    bool parse (const char *params);
    
@@ -140,9 +138,6 @@ public:
 
    static void calculateHash (Molecule &mol, Hash &hash);
 
-   bool treat_x_as_pseudoatom;
-   bool ignore_closing_bond_direction_mismatch;
-
 protected:
    BingoContext &_context;
 
@@ -207,9 +202,6 @@ public:
    
    const byte * getQueryFingerprint ();
 
-   bool treat_x_as_pseudoatom;
-   bool ignore_closing_bond_direction_mismatch;
-
    // Returns stored similarity score after calc, match or matchBinary
    float getSimilarityScore ();
 
@@ -270,9 +262,6 @@ public:
    bool parseSub   (const char *params);
    bool parseExact (const char *params);
 
-   bool treat_x_as_pseudoatom;
-   bool ignore_closing_bond_direction_mismatch;
-
 protected:
    BingoContext     &_context;
 
@@ -308,9 +297,6 @@ public:
    bool checkMolecule (Scanner &scanner);
 
    DEF_ERROR("gross formula");
-
-   bool treat_x_as_pseudoatom;
-   bool ignore_closing_bond_direction_mismatch;
 
 protected:
    BingoContext &_context;

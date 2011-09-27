@@ -15,6 +15,7 @@
 #ifndef __bingo_context__
 #define __bingo_context__
 
+#include "base_cpp/nullable.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_tautomer.h"
 #include "lzw/lzw_dictionary.h"
@@ -33,8 +34,6 @@ public:
    bool tautomer_rules_ready;
    bool fp_parameters_ready;
    bool atomic_mass_map_ready;
-   bool treat_x_pseudo_ready;
-   bool ignore_cbdm_ready;
 
    int     id;
    LzwDict cmf_dict;
@@ -43,14 +42,20 @@ public:
 
    int     nthreads;
 
+   Nullable<bool> treat_x_as_pseudoatom;
+   Nullable<bool> ignore_closing_bond_direction_mismatch;
+
    MoleculeFingerprintParameters fp_parameters;
 
    PtrArray<TautomerRule> tautomer_rules;
 
    RedBlackMap<int, float> relative_atomic_mass_map;
 
-   bool treat_x_as_pseudoatom;
-   bool ignore_closing_bond_direction_mismatch;
+   bool getTreatXAsPseudoatom ();
+   void setTreatXAsPseudoatom (bool state);
+
+   bool getIgnoreClosingBondDirectionMismatch ();
+   void setIgnoreClosingBondDirectionMismatch (bool state);
 
    static void remove (int id);
 

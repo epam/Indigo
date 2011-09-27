@@ -133,15 +133,9 @@ CEXPORT int bingoSetConfigInt (const char *name, int value)
       if (self.bingo_context == 0)
          throw BingoError("context not set");
       if (strcasecmp(name, "treat-x-as-pseudoatom") == 0 || strcasecmp(name, "treat_x_as_pseudoatom") == 0)
-      {
          self.bingo_context->treat_x_as_pseudoatom = (value != 0);
-         self.bingo_context->treat_x_pseudo_ready = true;
-      }
       else if (strcasecmp(name, "ignore-closing-bond-direction-mismatch") == 0 || strcasecmp(name, "ignore_closing_bond_direction_mismatch") == 0)
-      {
          self.bingo_context->ignore_closing_bond_direction_mismatch = (value != 0);
-         self.bingo_context->ignore_cbdm_ready = true;
-      }
       else if (strcasecmp(name, "nthreads") == 0)
       {
          self.bingo_context->nthreads = value;

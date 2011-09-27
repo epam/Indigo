@@ -70,21 +70,6 @@ MangoFetchContext & MangoFetchContext::create (MangoOracleContext &context,
    const BingoOracleContext &boc = context.context();
 
    new_context->id = id;
-   new_context->substructure.treat_x_as_pseudoatom = boc.treat_x_as_pseudoatom;
-   new_context->exact.treat_x_as_pseudoatom = boc.treat_x_as_pseudoatom;
-   new_context->similarity.treat_x_as_pseudoatom = boc.treat_x_as_pseudoatom;
-   new_context->tautomer.treat_x_as_pseudoatom = boc.treat_x_as_pseudoatom;
-   new_context->gross.treat_x_as_pseudoatom = boc.treat_x_as_pseudoatom;
-   new_context->substructure.ignore_closing_bond_direction_mismatch =
-           boc.ignore_closing_bond_direction_mismatch;
-   new_context->exact.ignore_closing_bond_direction_mismatch =
-           boc.ignore_closing_bond_direction_mismatch;
-   new_context->similarity.ignore_closing_bond_direction_mismatch =
-           boc.ignore_closing_bond_direction_mismatch;
-   new_context->tautomer.ignore_closing_bond_direction_mismatch =
-           boc.ignore_closing_bond_direction_mismatch;
-   new_context->gross.ignore_closing_bond_direction_mismatch =
-           boc.ignore_closing_bond_direction_mismatch;
 
    _instances.add(new_context.release());
    return *_instances.top();

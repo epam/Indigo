@@ -32,17 +32,15 @@ _context(context)
 {
    _flags = 0;
    _rms_threshold = 0;
-   treat_x_as_pseudoatom = false;
-   ignore_closing_bond_direction_mismatch = false;
 }
 
 void MangoExact::loadQuery (Scanner &scanner)
 {
    MoleculeAutoLoader loader(scanner);
 
-   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+   loader.treat_x_as_pseudoatom = _context.treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
-           ignore_closing_bond_direction_mismatch;
+           _context.ignore_closing_bond_direction_mismatch;
    loader.loadMolecule(_query);
    Molecule::checkForConsistency(_query);
 
@@ -131,9 +129,9 @@ void MangoExact::loadTarget (Scanner &scanner)
 {
    MoleculeAutoLoader loader(scanner);
 
-   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+   loader.treat_x_as_pseudoatom = _context.treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch =
-           ignore_closing_bond_direction_mismatch;
+           _context.ignore_closing_bond_direction_mismatch;
    loader.loadMolecule(_target);
    Molecule::checkForConsistency(_target);
    _initTarget(_target, false);

@@ -62,24 +62,6 @@ MangoOracleContext & MangoOracleContext::get (OracleEnv &env, int id, bool lock)
       moc->fingerprints.init(context, context.fp_parameters.fingerprintSize(),
          context.fp_parameters.fingerprintSizeExt(),
          context.fp_parameters.fingerprintSizeExtOrd());
-
-      moc->substructure.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-      moc->similarity.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-      moc->gross.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-      moc->tautomer.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-      moc->exact.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-
-      moc->substructure.ignore_closing_bond_direction_mismatch =
-              context.ignore_closing_bond_direction_mismatch;
-      moc->similarity.ignore_closing_bond_direction_mismatch =
-              context.ignore_closing_bond_direction_mismatch;
-      moc->gross.ignore_closing_bond_direction_mismatch =
-              context.ignore_closing_bond_direction_mismatch;
-      moc->tautomer.ignore_closing_bond_direction_mismatch =
-              context.ignore_closing_bond_direction_mismatch;
-      moc->exact.ignore_closing_bond_direction_mismatch =
-              context.ignore_closing_bond_direction_mismatch;
-
    }
 
    if (already == 0)
