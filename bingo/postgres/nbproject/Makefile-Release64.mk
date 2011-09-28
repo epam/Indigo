@@ -75,12 +75,12 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/pg_core/bingo_pg_index.o \
 	${OBJECTDIR}/_ext/393906193/bingo_core_c_parallel.o \
 	${OBJECTDIR}/src/pg_am/pg_bingo_utils.o \
-	${OBJECTDIR}/_ext/393906193/bingo_core_c.o \
 	${OBJECTDIR}/src/pg_core/mango_pg_build_engine.o \
-	${OBJECTDIR}/_ext/1019403175/mango_index.o \
 	${OBJECTDIR}/src/pg_am/pg_ringo_utils.o \
 	${OBJECTDIR}/src/pg_common/bingo_pg_section.o \
 	${OBJECTDIR}/src/pg_am/pg_bingo_update.o \
+	${OBJECTDIR}/_ext/393906193/bingo_core_c.o \
+	${OBJECTDIR}/_ext/1019403175/mango_index.o \
 	${OBJECTDIR}/src/pg_core/ringo_pg_search_engine.o
 
 
@@ -328,20 +328,10 @@ ${OBJECTDIR}/src/pg_am/pg_bingo_utils.o: src/pg_am/pg_bingo_utils.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -DBINGO_PG_NIX64 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_utils.o src/pg_am/pg_bingo_utils.cpp
 
-${OBJECTDIR}/_ext/393906193/bingo_core_c.o: ../src/core-c/bingo_core_c.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -DBINGO_PG_NIX64 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/bingo_core_c.o ../src/core-c/bingo_core_c.cpp
-
 ${OBJECTDIR}/src/pg_core/mango_pg_build_engine.o: src/pg_core/mango_pg_build_engine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -DBINGO_PG_NIX64 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/mango_pg_build_engine.o src/pg_core/mango_pg_build_engine.cpp
-
-${OBJECTDIR}/_ext/1019403175/mango_index.o: ../src/core/mango_index.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -DBINGO_PG_NIX64 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_index.o ../src/core/mango_index.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_ringo_utils.o: src/pg_am/pg_ringo_utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
@@ -357,6 +347,16 @@ ${OBJECTDIR}/src/pg_am/pg_bingo_update.o: src/pg_am/pg_bingo_update.cpp
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -DBINGO_PG_NIX64 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_update.o src/pg_am/pg_bingo_update.cpp
+
+${OBJECTDIR}/_ext/393906193/bingo_core_c.o: ../src/core-c/bingo_core_c.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -DBINGO_PG_NIX64 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/bingo_core_c.o ../src/core-c/bingo_core_c.cpp
+
+${OBJECTDIR}/_ext/1019403175/mango_index.o: ../src/core/mango_index.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -DBINGO_PG_NIX64 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -Iinclude -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_index.o ../src/core/mango_index.cpp
 
 ${OBJECTDIR}/src/pg_core/ringo_pg_search_engine.o: src/pg_core/ringo_pg_search_engine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core

@@ -338,11 +338,19 @@
       </logicalFolder>
       <itemPath>include/c.h</itemPath>
       <itemPath>include/fmgr.h</itemPath>
-      <itemPath>include/pg_config.h</itemPath>
-      <itemPath>include/pg_config.h.old</itemPath>
+      <itemPath>include/pg_config.h.mac</itemPath>
+      <itemPath>include/pg_config.h.nix32</itemPath>
+      <itemPath>include/pg_config.h.nix64</itemPath>
       <itemPath>include/pg_config.h.win32</itemPath>
+      <itemPath>include/pg_config.h.win64</itemPath>
+      <itemPath>include/pg_config_i386.h</itemPath>
       <itemPath>include/pg_config_manual.h</itemPath>
-      <itemPath>include/pg_config_os.h</itemPath>
+      <itemPath>include/pg_config_os_mac.h</itemPath>
+      <itemPath>include/pg_config_os_nix.h</itemPath>
+      <itemPath>include/pg_config_os_win.h</itemPath>
+      <itemPath>include/pg_config_ppc.h</itemPath>
+      <itemPath>include/pg_config_ppc64.h</itemPath>
+      <itemPath>include/pg_config_x86_64.h</itemPath>
       <itemPath>include/pgtime.h</itemPath>
       <itemPath>include/port.h</itemPath>
       <itemPath>include/postgres.h</itemPath>
@@ -782,7 +790,7 @@
           </incDir>
           <commandLine>-fPIC</commandLine>
           <preprocessorList>
-            <Elem>BINGO_PG_NIX32</Elem>
+            <Elem>BINGO_PG_MAC</Elem>
           </preprocessorList>
         </cTool>
         <ccTool>
@@ -799,7 +807,7 @@
           </incDir>
           <commandLine>-fPIC</commandLine>
           <preprocessorList>
-            <Elem>BINGO_PG_NIX32</Elem>
+            <Elem>BINGO_PG_MAC</Elem>
           </preprocessorList>
         </ccTool>
         <fortranCompilerTool>
@@ -899,7 +907,7 @@
           </incDir>
           <commandLine>-fPIC</commandLine>
           <preprocessorList>
-            <Elem>BINGO_PG_NIX64</Elem>
+            <Elem>BINGO_PG_MAC</Elem>
           </preprocessorList>
         </cTool>
         <ccTool>
@@ -916,7 +924,7 @@
           </incDir>
           <commandLine>-fPIC</commandLine>
           <preprocessorList>
-            <Elem>BINGO_PG_NIX64</Elem>
+            <Elem>BINGO_PG_MAC</Elem>
           </preprocessorList>
         </ccTool>
         <fortranCompilerTool>

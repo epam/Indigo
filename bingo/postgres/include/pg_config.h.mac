@@ -1,0 +1,14 @@
+#ifdef __BIG_ENDIAN__
+ #ifdef __LP64__
+  #include "pg_config_ppc64.h"
+ #else
+  #include "pg_config_ppc.h"
+ #endif
+#else
+ #ifdef __LP64__
+  #include "pg_config_x86_64.h"
+ #else
+  #include "pg_config_i386.h"
+ #endif
+#endif
+
