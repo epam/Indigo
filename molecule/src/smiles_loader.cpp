@@ -835,9 +835,12 @@ void SmilesLoader::_parseMolecule ()
 
                   if (bond_str.size() > 0)
                   {
-                     if ((int)strlen(str) != bond_str.size() || memcmp(str, bond_str.ptr(), strlen(str)) != 0)
-                        throw Error("cycle %d: closing bond description %.*s does not match pending bond description %s",
-                             number, bond_str.size(), bond_str.ptr(), str);
+                     if (!ignore_closing_bond_direction_mismatch)
+                     {
+                        if ((int)strlen(str) != bond_str.size() || memcmp(str, bond_str.ptr(), strlen(str)) != 0)
+                           throw Error("cycle %d: closing bond description %.*s does not match pending bond description %s",
+                                number, bond_str.size(), bond_str.ptr(), str);
+                     }
                   }
                   else
                   {

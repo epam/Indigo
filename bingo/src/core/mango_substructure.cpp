@@ -61,6 +61,8 @@ void MangoSubstructure::loadSMARTS (Scanner &scanner)
    SmilesLoader loader(scanner);
    QS_DEF(QueryMolecule, source);
 
+   loader.ignore_closing_bond_direction_mismatch =
+           _context.ignore_closing_bond_direction_mismatch;
    loader.loadSMARTS(source);
 
    if (!source.have_xyz && match_3d != 0)
