@@ -41,6 +41,9 @@ void ReactionAutomapper::automap(int mode) {
    QS_DEF(ObjArray< Array<int> >, mol_mappings);
    QS_DEF(Array<int>, react_mapping);
 
+   /*
+    * Check input atom mapping (if any)
+    */
    if (mode != AAM_REGEN_DISCARD) 
       _checkAtomMapping(true, false, false);
    
@@ -54,7 +57,9 @@ void ReactionAutomapper::automap(int mode) {
    _considerDissociation();
    _considerDimerization();
 
-
+   /*
+    * Check output atom mapping
+    */
    _checkAtomMapping(false, true, false);
    
 }
@@ -320,6 +325,12 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
       }
    }
 
+   /*
+    * Initialize reaction substructure handler by null molecules since it will not be callable by itself
+    */
+   Molecule tmp_mol;
+   RSubstructureMcs rsm(reaction_copy, tmp_mol, tmp_mol, *this);
+
 
    for (int mol_idx = _reaction.begin(); mol_idx != _reaction.end(); mol_idx = _reaction.next(mol_idx)) {
       BaseMolecule& rmol = _reaction.getBaseMolecule(mol_idx);
@@ -340,7 +351,8 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                      const Vertex& end_vert = pmol.getVertex(v_mapping[v_map]);
                      for (int nei_vert = end_vert.neiBegin(); nei_vert < end_vert.neiEnd(); nei_vert = end_vert.neiNext(nei_vert)) {
                         int end_nei_vert = end_vert.neiVertex(nei_vert);
-                        if (_reaction.getAAM(opp_idx, end_nei_vert) == 0 && MaxCommonSubmolecule::matchAtoms(rmol, pmol, 0, ve_end, end_nei_vert, 0)) {
+//                        if (_reaction.getAAM(opp_idx, end_nei_vert) == 0 && MaxCommonSubmolecule::matchAtoms(rmol, pmol, 0, ve_end, end_nei_vert, 0)) {
+                        if (_reaction.getAAM(opp_idx, end_nei_vert) == 0 && RSubstructureMcs::atomConditionReact(rmol, pmol, 0, ve_end, end_nei_vert, &rsm)) {
                            change_broken = false;
                            break;
                         }
@@ -358,7 +370,8 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                      const Vertex& beg_vert = pmol.getVertex(v_mapping[v_map]);
                      for (int nei_vert = beg_vert.neiBegin(); nei_vert < beg_vert.neiEnd(); nei_vert = beg_vert.neiNext(nei_vert)) {
                         int beg_nei_vert = beg_vert.neiVertex(nei_vert);
-                        if (_reaction.getAAM(opp_idx, beg_nei_vert) == 0 && MaxCommonSubmolecule::matchAtoms(rmol, pmol, 0, ve_beg, beg_nei_vert, 0)) {
+//                        if (_reaction.getAAM(opp_idx, beg_nei_vert) == 0 && MaxCommonSubmolecule::matchAtoms(rmol, pmol, 0, ve_beg, beg_nei_vert, 0)) {
+                        if (_reaction.getAAM(opp_idx, beg_nei_vert) == 0 && RSubstructureMcs::atomConditionReact(rmol, pmol, 0, ve_beg, beg_nei_vert, &rsm)) {
                            change_broken = false;
                            break;
                         }
@@ -391,7 +404,8 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                       continue;
                   }
 
-                  bool bond_cond_simple = MaxCommonSubmolecule::matchBonds(pmol, rmol, mapping[i], bond_idx, 0);
+//                  bool bond_cond_simple = MaxCommonSubmolecule::matchBonds(pmol, rmol, mapping[i], bond_idx, 0);
+                  bool bond_cond_simple = RSubstructureMcs::bondConditionReactSimple(pmol, rmol, mapping[i], bond_idx, &rsm);
                   
                   if (bond_cond_simple || (react_arom && prod_arom)) 
                      bond_centers[mol_idx][bond_idx] |= RC_UNCHANGED;
@@ -430,7 +444,9 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
          }
       }
    }
-   //erase all wrong map
+   /*
+    * erase all wrong map
+    */
    if(change_aam) {
       for(int i = _reaction.begin(); i < _reaction.end(); i = _reaction.next(i)) {
          BaseMolecule& rmol = _reaction.getBaseMolecule(i);
@@ -442,33 +458,36 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
          }
       }
       null_map.clear();
-      for(int i = _reaction.begin(); i < _reaction.end(); i = _reaction.next(i)) {
-         BaseMolecule& rmol = _reaction.getBaseMolecule(i);
-         for(int atom = rmol.vertexBegin(); atom < rmol.vertexEnd(); atom = rmol.vertexNext(atom)) {
-            const Vertex& vertex = rmol.getVertex(atom);
-            if(_reaction.getAAM(i ,atom) > 0 && vertex.degree() > 0) {
-               bool has_aam = false;
-               for(int nei = vertex.neiBegin(); nei < vertex.neiEnd(); nei = vertex.neiNext(nei)) {
-                  int nei_atom = vertex.neiVertex(nei);
-                  if(_reaction.getAAM(i, nei_atom) > 0) {
-                     has_aam = true;
-                     break;
-                  }
-               }
-               if(!has_aam)
-                  null_map.push(_reaction.getAAM(i, atom));
-            }
-         }
-      }
-      for(int i = _reaction.begin(); i < _reaction.end(); i = _reaction.next(i)) {
-         BaseMolecule& rmol = _reaction.getBaseMolecule(i);
-         for(int atom = rmol.vertexBegin(); atom < rmol.vertexEnd(); atom = rmol.vertexNext(atom)) {
-            for(int j = 0; j < null_map.size(); ++j) {
-               if(null_map[j] == _reaction.getAAM(i, atom))
-                  _reaction.getAAMArray(i).at(atom) = 0;
-            }
-         }
-      }
+      /*
+       * Check for single aam for atoms was removed since mcs can be one atom
+       */
+//      for(int i = _reaction.begin(); i < _reaction.end(); i = _reaction.next(i)) {
+//         BaseMolecule& rmol = _reaction.getBaseMolecule(i);
+//         for(int atom = rmol.vertexBegin(); atom < rmol.vertexEnd(); atom = rmol.vertexNext(atom)) {
+//            const Vertex& vertex = rmol.getVertex(atom);
+//            if(_reaction.getAAM(i ,atom) > 0 && vertex.degree() > 0) {
+//               bool has_aam = false;
+//               for(int nei = vertex.neiBegin(); nei < vertex.neiEnd(); nei = vertex.neiNext(nei)) {
+//                  int nei_atom = vertex.neiVertex(nei);
+//                  if(_reaction.getAAM(i, nei_atom) > 0) {
+//                     has_aam = true;
+//                     break;
+//                  }
+//               }
+//               if(!has_aam)
+//                  null_map.push(_reaction.getAAM(i, atom));
+//            }
+//         }
+//      }
+//      for(int i = _reaction.begin(); i < _reaction.end(); i = _reaction.next(i)) {
+//         BaseMolecule& rmol = _reaction.getBaseMolecule(i);
+//         for(int atom = rmol.vertexBegin(); atom < rmol.vertexEnd(); atom = rmol.vertexNext(atom)) {
+//            for(int j = 0; j < null_map.size(); ++j) {
+//               if(null_map[j] == _reaction.getAAM(i, atom))
+//                  _reaction.getAAMArray(i).at(atom) = 0;
+//            }
+//         }
+//      }
 
    }
 
