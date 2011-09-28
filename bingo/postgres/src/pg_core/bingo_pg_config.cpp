@@ -127,6 +127,7 @@ void BingoPgConfig::setUpBingoConfiguration() {
    /*
     * Iterate through all the configs
     */
+   bingoSetConfigInt("nthreads", -1);
    for (int c_idx = _rawConfig.begin(); c_idx != _rawConfig.end(); c_idx = _rawConfig.next(c_idx)) {
       bingoSetConfigInt(_rawConfig.key(c_idx), _getNumericValue(c_idx));
    }
@@ -202,7 +203,6 @@ int BingoPgConfig::_getNumericValue(int c_idx) {
 }
 
 void BingoPgConfig::_replaceInsertTauParameter(uintptr_t  rule_datum, uintptr_t  beg_datum, uintptr_t  end_datum) {
-   _tauParameters.clear();
    /*
     * tau parameter rule integer = begin string : end string
     */
