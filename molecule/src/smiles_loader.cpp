@@ -1143,7 +1143,7 @@ void SmilesLoader::_markAromaticBonds ()
             break;
          if (_bonds[idx].type == BOND_SINGLE || _bonds[idx].type == BOND_DOUBLE || _bonds[idx].type == BOND_TRIPLE)
             break;
-         if (_qmol != 0 && !_qmol->possibleBondOrder(idx, BOND_AROMATIC))
+         if (_qmol != 0 && !_qmol->possibleBondOrder(_bonds[idx].index, BOND_AROMATIC))
             break;
          if (_bonds[idx].type == -1)
             needs_modification = true;
@@ -1160,10 +1160,11 @@ void SmilesLoader::_markAromaticBonds ()
             if (_bonds[idx].type == -1)
             {
                _bonds[idx].type = BOND_AROMATIC;
+               int bond_index = _bonds[idx].index;
                if (_mol != 0)
-                  _mol->setBondOrder_Silent(idx, BOND_AROMATIC);
+                  _mol->setBondOrder_Silent(bond_index, BOND_AROMATIC);
                if (_qmol != 0)
-                  _qmol->resetBond(idx, QueryMolecule::Bond::und(_qmol->releaseBond(idx),
+                  _qmol->resetBond(bond_index, QueryMolecule::Bond::und(_qmol->releaseBond(bond_index),
                           new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
             }
          }
@@ -1175,10 +1176,11 @@ void SmilesLoader::_markAromaticBonds ()
    {
       if (_bonds[i].type == -1)
       {
+         int bond_index = _bonds[i].index;
          if (_mol != 0)
-            _mol->setBondOrder_Silent(i, BOND_SINGLE);
+            _mol->setBondOrder_Silent(bond_index, BOND_SINGLE);
          if (_qmol != 0)
-            _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(i),
+            _qmol->resetBond(bond_index, QueryMolecule::Bond::und(_qmol->releaseBond(bond_index),
                     new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE)));
       }
    }
