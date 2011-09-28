@@ -761,5 +761,239 @@
         </linkerTool>
       </compileType>
     </conf>
+    <conf name="MacRelease32" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+          <architecture>1</architecture>
+          <incDir>
+            <pElem>../..</pElem>
+            <pElem>../../common</pElem>
+            <pElem>src/pg_common</pElem>
+            <pElem>src/pg_core</pElem>
+            <pElem>../src/core-c</pElem>
+            <pElem>../src</pElem>
+            <pElem>include</pElem>
+          </incDir>
+          <commandLine>-fPIC</commandLine>
+          <preprocessorList>
+            <Elem>BINGO_PG_NIX32</Elem>
+          </preprocessorList>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <architecture>1</architecture>
+          <incDir>
+            <pElem>../..</pElem>
+            <pElem>../../common</pElem>
+            <pElem>src/pg_common</pElem>
+            <pElem>src/pg_core</pElem>
+            <pElem>../src/core-c</pElem>
+            <pElem>../src</pElem>
+            <pElem>include</pElem>
+          </incDir>
+          <commandLine>-fPIC</commandLine>
+          <preprocessorList>
+            <Elem>BINGO_PG_NIX32</Elem>
+          </preprocessorList>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <output>dist/x86/bingo_postgres.so</output>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../layout"
+                            CT="3"
+                            CN="Release32"
+                            AC="false"
+                            BL="true"
+                            WD="../../layout"
+                            BC="${MAKE}  -f Makefile CONF=Release32"
+                            CC="${MAKE}  -f Makefile CONF=Release32 clean"
+                            OP="dist/Release32/GNU-Linux-x86/liblayout.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../reaction"
+                            CT="3"
+                            CN="Release32"
+                            AC="false"
+                            BL="true"
+                            WD="../../reaction"
+                            BC="${MAKE}  -f Makefile CONF=Release32"
+                            CC="${MAKE}  -f Makefile CONF=Release32 clean"
+                            OP="dist/Release32/GNU-Linux-x86/libreaction.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../molecule"
+                            CT="3"
+                            CN="Release32"
+                            AC="false"
+                            BL="true"
+                            WD="../../molecule"
+                            BC="${MAKE}  -f Makefile CONF=Release32"
+                            CC="${MAKE}  -f Makefile CONF=Release32 clean"
+                            OP="dist/Release32/GNU-Linux-x86/libmolecule.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../graph"
+                            CT="3"
+                            CN="Release32"
+                            AC="false"
+                            BL="true"
+                            WD="../../graph"
+                            BC="${MAKE}  -f Makefile CONF=Release32"
+                            CC="${MAKE}  -f Makefile CONF=Release32 clean"
+                            OP="dist/Release32/GNU-Linux-x86/libgraph.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../tinyxml"
+                            CT="3"
+                            CN="Release32"
+                            AC="false"
+                            BL="true"
+                            WD="../../tinyxml"
+                            BC="${MAKE}  -f Makefile CONF=Release32"
+                            CC="${MAKE}  -f Makefile CONF=Release32 clean"
+                            OP="dist/Release32/GNU-Linux-x86/libtinyxml.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+          </linkerLibItems>
+          <commandLine>-undefined dynamic_lookup</commandLine>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="MacRelease64" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+          <architecture>2</architecture>
+          <incDir>
+            <pElem>../..</pElem>
+            <pElem>../../common</pElem>
+            <pElem>src/pg_common</pElem>
+            <pElem>src/pg_core</pElem>
+            <pElem>../src/core-c</pElem>
+            <pElem>../src</pElem>
+            <pElem>include</pElem>
+          </incDir>
+          <commandLine>-fPIC</commandLine>
+          <preprocessorList>
+            <Elem>BINGO_PG_NIX64</Elem>
+          </preprocessorList>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <architecture>2</architecture>
+          <incDir>
+            <pElem>../..</pElem>
+            <pElem>../../common</pElem>
+            <pElem>src/pg_common</pElem>
+            <pElem>src/pg_core</pElem>
+            <pElem>../src/core-c</pElem>
+            <pElem>../src</pElem>
+            <pElem>include</pElem>
+          </incDir>
+          <commandLine>-fPIC</commandLine>
+          <preprocessorList>
+            <Elem>BINGO_PG_NIX64</Elem>
+          </preprocessorList>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <output>dist/x64/bingo_postgres.so</output>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../layout"
+                            CT="3"
+                            CN="Release64"
+                            AC="false"
+                            BL="true"
+                            WD="../../layout"
+                            BC="${MAKE}  -f Makefile CONF=Release64"
+                            CC="${MAKE}  -f Makefile CONF=Release64 clean"
+                            OP="dist/Release64/GNU-Linux-x86/liblayout.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../reaction"
+                            CT="3"
+                            CN="Release64"
+                            AC="false"
+                            BL="true"
+                            WD="../../reaction"
+                            BC="${MAKE}  -f Makefile CONF=Release64"
+                            CC="${MAKE}  -f Makefile CONF=Release64 clean"
+                            OP="dist/Release64/GNU-Linux-x86/libreaction.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../molecule"
+                            CT="3"
+                            CN="Release64"
+                            AC="false"
+                            BL="true"
+                            WD="../../molecule"
+                            BC="${MAKE}  -f Makefile CONF=Release64"
+                            CC="${MAKE}  -f Makefile CONF=Release64 clean"
+                            OP="dist/Release64/GNU-Linux-x86/libmolecule.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../graph"
+                            CT="3"
+                            CN="Release64"
+                            AC="false"
+                            BL="true"
+                            WD="../../graph"
+                            BC="${MAKE}  -f Makefile CONF=Release64"
+                            CC="${MAKE}  -f Makefile CONF=Release64 clean"
+                            OP="dist/Release64/GNU-Linux-x86/libgraph.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../tinyxml"
+                            CT="3"
+                            CN="Release64"
+                            AC="false"
+                            BL="true"
+                            WD="../../tinyxml"
+                            BC="${MAKE}  -f Makefile CONF=Release64"
+                            CC="${MAKE}  -f Makefile CONF=Release64 clean"
+                            OP="dist/Release64/GNU-Linux-x86/libtinyxml.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibStdlibItem>DataCompression</linkerLibStdlibItem>
+            <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+          </linkerLibItems>
+          <commandLine>-undefined dynamic_lookup</commandLine>
+        </linkerTool>
+      </compileType>
+    </conf>
   </confs>
 </configurationDescriptor>

@@ -30,3 +30,19 @@ CND_ARTIFACT_PATH_Release64=dist/x64/bingo_postgres.so
 CND_PACKAGE_DIR_Release64=dist/Release64/GNU-Linux-x86/package
 CND_PACKAGE_NAME_Release64=libpostgres.so.tar
 CND_PACKAGE_PATH_Release64=dist/Release64/GNU-Linux-x86/package/libpostgres.so.tar
+# MacRelease32 configuration
+CND_PLATFORM_MacRelease32=GNU-Linux-x86
+CND_ARTIFACT_DIR_MacRelease32=dist/x86
+CND_ARTIFACT_NAME_MacRelease32=bingo_postgres.so
+CND_ARTIFACT_PATH_MacRelease32=dist/x86/bingo_postgres.so
+CND_PACKAGE_DIR_MacRelease32=dist/MacRelease32/GNU-Linux-x86/package
+CND_PACKAGE_NAME_MacRelease32=libpostgres.so.tar
+CND_PACKAGE_PATH_MacRelease32=dist/MacRelease32/GNU-Linux-x86/package/libpostgres.so.tar
+# MacRelease64 configuration
+CND_PLATFORM_MacRelease64=GNU-Linux-x86
+CND_ARTIFACT_DIR_MacRelease64=dist/x64
+CND_ARTIFACT_NAME_MacRelease64=bingo_postgres.so
+CND_ARTIFACT_PATH_MacRelease64=dist/x64/bingo_postgres.so
+CND_PACKAGE_DIR_MacRelease64=dist/MacRelease64/GNU-Linux-x86/package
+CND_PACKAGE_NAME_MacRelease64=libpostgres.so.tar
+CND_PACKAGE_PATH_MacRelease64=dist/MacRelease64/GNU-Linux-x86/package/libpostgres.so.tar
