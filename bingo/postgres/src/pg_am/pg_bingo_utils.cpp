@@ -310,10 +310,30 @@ static void _parseQueryFieldList(const char* fields_str, RedBlackStringMap<int, 
    }
 }
 
+static void checkExportNull(Datum text_datum, const char* message, BingoPgText& text) {
+   if(text_datum == 0)
+      throw BingoPgError("can not export structures: %s is empty", message);
+   text.init(text_datum);
+   int text_size = 0;
+   text.getText(text_size);
+   if(text_size == 0)
+      throw BingoPgError("can not export structures: %s is empty", message);
+}
+static void checkExportEmpty(Datum text_datum, BingoPgText& text) {
+   if(text_datum == 0)
+      text.initFromString("");
+   else
+      text.init(text_datum);
+}
+
 static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum other_column_datum, Array<char>& query_str, RedBlackStringMap<int, false >& field_list) {
-   BingoPgText tablename_text(table_datum);
-   BingoPgText column_text(column_datum);
-   BingoPgText other_column_text(other_column_datum);
+   BingoPgText tablename_text;
+   BingoPgText column_text;
+   BingoPgText other_column_text;
+
+   checkExportNull(table_datum, "table name", tablename_text);
+   checkExportNull(column_datum, "column name", column_text);
+   checkExportEmpty(other_column_datum, other_column_text);
 
    field_list.clear();
    
@@ -364,7 +384,8 @@ Datum exportsdf(PG_FUNCTION_ARGS) {
       QS_DEF(Array<char>, query_str);
       RedBlackStringMap<int, false > field_list;
 
-      BingoPgText fname_text(file_name_datum);
+      BingoPgText fname_text;
+      checkExportNull(file_name_datum, "file name", fname_text);
       FileOutput file_output(fname_text.getString());
 
       int data_key = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str, field_list);
@@ -405,7 +426,8 @@ Datum exportrdf(PG_FUNCTION_ARGS) {
       QS_DEF(Array<char>, query_str);
       RedBlackStringMap<int, false > field_list;
 
-      BingoPgText fname_text(file_name_datum);
+      BingoPgText fname_text;
+      checkExportNull(file_name_datum, "file name", fname_text);
       FileOutput file_output(fname_text.getString());
 
       int data_key = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str, field_list);
