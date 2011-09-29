@@ -244,7 +244,7 @@ void QueryMolecule::_getAtomDescription (Atom *atom, Output &out, int depth)
          out.writeString(atom->alias.ptr());
          return;
       case ATOM_CHARGE:
-         out.printf("c%d", atom->value_min);
+         out.printf("%+d", atom->value_min);
          return;
       case ATOM_ISOTOPE:
          out.printf("i%d", atom->value_min);
@@ -256,7 +256,7 @@ void QueryMolecule::_getAtomDescription (Atom *atom, Output &out, int depth)
             out.printf("A");
          return;
       case ATOM_RADICAL:
-         out.printf("r%d", atom->value_min);
+         out.printf("^%d", atom->value_min);
          return;
       case ATOM_FRAGMENT:
          out.printf("$(");
@@ -269,10 +269,25 @@ void QueryMolecule::_getAtomDescription (Atom *atom, Output &out, int depth)
          out.printf("H%d", atom->value_min);
          return;
       case ATOM_CONNECTIVITY:
-         out.printf("v%d", atom->value_min);
+         out.printf("X%d", atom->value_min);
          return;
       case ATOM_SUBSTITUENTS:
          out.printf("s%d", atom->value_min);
+         return;
+      case ATOM_RING_BONDS:
+         out.printf("rb%d", atom->value_min);
+         return;
+      case ATOM_UNSATURATION:
+         out.printf("u");
+         return;
+      case ATOM_TOTAL_BOND_ORDER:
+         out.printf("v%d", atom->value_min);
+         return;
+      case ATOM_SSSR_RINGS:
+         out.printf("R%d", atom->value_min);
+         return;
+      case ATOM_SMALLEST_RING_SIZE:
+         out.printf("r%d", atom->value_min);
          return;
       default:
          throw new Error("Unrecognized constraint type %d", atom->type);
