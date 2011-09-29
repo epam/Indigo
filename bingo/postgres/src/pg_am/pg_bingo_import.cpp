@@ -30,10 +30,30 @@ PGDLLEXPORT Datum importsmiles(PG_FUNCTION_ARGS);
 
 using namespace indigo;
 
+static void checkImportNull(Datum text_datum, const char* message, BingoPgText& text) {
+   if(text_datum == 0)
+      throw BingoPgError("can not import structures: %s is empty", message);
+   text.init(text_datum);
+   int text_size = 0;
+   text.getText(text_size);
+   if(text_size == 0)
+      throw BingoPgError("can not import structures: %s is empty", message);
+}
+static void checkImportEmpty(Datum text_datum, BingoPgText& text) {
+   if(text_datum == 0)
+      text.initFromString("");
+   else
+      text.init(text_datum);
+}
+
 static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum other_columns_datum, Array<char>& query_str) {
-   BingoPgText tablename_text(table_datum);
-   BingoPgText column_text(column_datum);
-   BingoPgText other_columns_text(other_columns_datum);
+   BingoPgText tablename_text;
+   BingoPgText column_text;
+   BingoPgText other_columns_text;
+
+   checkImportNull(table_datum, "table name", tablename_text);
+   checkImportNull(column_datum, "column name", column_text);
+   checkImportEmpty(other_columns_datum, other_columns_text);
    
    ArrayOutput query_out(query_str);
 
@@ -55,9 +75,13 @@ static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum o
 }
 
 static int _initializeIdQuery(Datum table_datum, Datum column_datum, Datum id_column_datum, Array<char>& query_str) {
-   BingoPgText tablename_text(table_datum);
-   BingoPgText column_text(column_datum);
-   BingoPgText id_column_text(id_column_datum);
+   BingoPgText tablename_text;
+   BingoPgText column_text;
+   BingoPgText id_column_text;
+
+   checkImportNull(table_datum, "table name", tablename_text);
+   checkImportNull(column_datum, "column name", column_text);
+   checkImportEmpty(id_column_datum, id_column_text);
 
    ArrayOutput query_out(query_str);
 
@@ -114,7 +138,9 @@ Datum importsdf(PG_FUNCTION_ARGS) {
       ObjArray<BingoPgText> q_data;
       int spi_success = 0;
 
-      BingoPgText fname_text(file_name_datum);
+      BingoPgText fname_text;
+      checkImportNull(file_name_datum, "file name", fname_text);
+
       BingoImportSdfHandler bingo_handler(fcinfo->flinfo->fn_oid, fname_text.getString());
 
       int column_count = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str);
@@ -192,7 +218,9 @@ Datum importrdf(PG_FUNCTION_ARGS) {
       ObjArray<BingoPgText> q_data;
       int spi_success = 0;
 
-      BingoPgText fname_text(file_name_datum);
+      BingoPgText fname_text;
+      checkImportNull(file_name_datum, "file name", fname_text);
+      
       BingoImportRdfHandler bingo_handler(fcinfo->flinfo->fn_oid, fname_text.getString());
 
       int column_count = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str);
@@ -272,7 +300,9 @@ Datum importsmiles(PG_FUNCTION_ARGS) {
       ObjArray<BingoPgText> q_data;
       int spi_success = 0;
 
-      BingoPgText fname_text(file_name_datum);
+      BingoPgText fname_text;
+      checkImportNull(file_name_datum, "file name", fname_text);
+      
       BingoImportSmilesHandler bingo_handler(fcinfo->flinfo->fn_oid, fname_text.getString());
 
       int column_count = _initializeIdQuery(table_datum, column_datum, id_column_datum, query_str);
