@@ -16,6 +16,7 @@
 #define __string_pool_h__
 
 #include "base_cpp/pool.h"
+#include "base_cpp/ptr_array.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -26,7 +27,6 @@ namespace indigo {
 class DLLEXPORT StringPool
 {
 public:
-
    StringPool ();
    ~StringPool ();
 
@@ -46,14 +46,10 @@ public:
 protected:
    DEF_ERROR("string pool");
 
-   struct Desc
-   {
-      int start;
-      int length; // including the trailing zero
-   };
+   int _add (const char *str, int size);
 
-   Pool<Desc>  _pool;
-   Array<char> _storage;
+   Pool<int>  _pool;
+   PtrArray< Array<char> > _storage;
 
 private:
    StringPool (const StringPool &); // no implicit copy

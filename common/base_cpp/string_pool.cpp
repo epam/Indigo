@@ -26,41 +26,43 @@ StringPool::~StringPool ()
 {
 }
 
-int StringPool::add (const char *str)
+int StringPool::_add (const char *str, int size)
 {
    int idx = _pool.add();
-   Desc &desc = _pool[idx];
+   
+   // Save self into to the pool to check used items
+   _pool[idx] = idx;
 
-   desc.start = _storage.size();
-   desc.length = (int)strlen(str) + 1;
+   if (idx >= _storage.size())
+      _storage.resize(idx + 1);
+   if (_storage.at(idx) == 0)
+      _storage.set(idx, new Array<char>());
+   if (size == -1 && str == 0)
+      throw Error("Internal error: size == -1 && str == 0");
 
-   _storage.resize(desc.start + desc.length);
-   if (desc.length > 0)
-      memcpy(_storage.ptr() + desc.start, str, desc.length - 1);
-   _storage[desc.start + desc.length - 1] = 0;
+   if (size == -1)
+      size = strlen(str);
+   _storage.at(idx)->resize(size + 1);
+   if (str != 0 && size != 0)
+      memcpy(at(idx), str, size);
+   at(idx)[size] = 0;
    return idx;
+}
+
+int StringPool::add (const char *str)
+{
+   return _add(str, -1);
 }
 
 int StringPool::add (int size)
 {
-   int idx = _pool.add();
-   Desc &desc = _pool[idx];
-
-   desc.start = _storage.size();
-   desc.length = size + 1;
-
-   _storage.resize(desc.start + desc.length);
-   return idx;
+   return _add(0, size);
 }
 
 int StringPool::add (Array<char> &str)
 {
-   int idx = add(str.size());
-   memcpy(at(idx), str.ptr(), str.size());
-   at(idx)[str.size()] = 0;
-   return idx;
+   return _add(str.ptr(), str.size());
 }
-
 
 void StringPool::remove (int idx)
 {
@@ -69,12 +71,12 @@ void StringPool::remove (int idx)
 
 char * StringPool::at (int idx)
 {
-   return _storage.ptr() + _pool[idx].start;
+   return _storage[_pool[idx]]->ptr();
 }
 
 const char * StringPool::at (int idx) const
 {
-   return _storage.ptr() + _pool[idx].start;
+   return _storage[_pool[idx]]->ptr();
 }
 
 int StringPool::size () const
@@ -100,5 +102,6 @@ int StringPool::next (int i) const
 void StringPool::clear ()
 {
    _pool.clear();
-   _storage.clear();
+   // Do not clear storage to enable memory reuse
+   // _storage.clear();
 }
