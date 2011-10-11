@@ -1000,7 +1000,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          if (str[1] != 0)
             c2 = str[1];
          
-         output.printf("%c%c ", c1, c2);
+         output.printf("%c%c  ", c1, c2);
       }
       output.writeCR();
    }

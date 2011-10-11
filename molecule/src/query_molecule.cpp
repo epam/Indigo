@@ -1801,10 +1801,16 @@ bool QueryMolecule::isNotAtom (QueryMolecule::Atom& qa, int elem) {
 
 bool QueryMolecule::collectAtomList (QueryMolecule::Atom& qa, Array<int>& list, bool& notList) {
    list.clear();
-   if (qa.type == QueryMolecule::OP_OR) {
-      notList = false;
-      for (int i = 0; i < qa.children.size(); ++i) {
-         QueryMolecule::Atom& qc = *qa.child(i);
+   if (qa.type == QueryMolecule::OP_OR || qa.type == QueryMolecule::OP_NOT) {
+      notList = (qa.type == QueryMolecule::OP_NOT);
+      QueryMolecule::Atom* qap = &qa;
+      if (notList) {
+         qap = qa.child(0);
+         if (qap->type != QueryMolecule::OP_OR)
+            return false;
+      }
+      for (int i = 0; i < qap->children.size(); ++i) {
+         QueryMolecule::Atom& qc = *qap->child(i);
          if (qc.type != QueryMolecule::ATOM_NUMBER || qc.value_min != qc.value_max)
             return false;
          list.push(qc.value_min);
