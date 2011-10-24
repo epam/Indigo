@@ -857,8 +857,8 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
               atoms, bonds.length, bonds, description, data)));
    }
 
-   public IndigoObject addDataSGroup (AbstractCollection<Integer> atoms,
-            AbstractCollection<Integer> bonds, String description, String data)
+   public IndigoObject addDataSGroup (Collection<Integer> atoms,
+            Collection<Integer> bonds, String description, String data)
    {
       return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
    }
@@ -891,7 +891,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
               Indigo.checkResult(this, _lib.indigoCreateSubmolecule(self, vertices.length, vertices)));
    }
 
-   public IndigoObject createSubmolecule (AbstractCollection<Integer> vertices)
+   public IndigoObject createSubmolecule (Collection<Integer> vertices)
    {
       return createSubmolecule(Indigo.toIntArray(vertices));
    }
@@ -903,7 +903,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
               Indigo.checkResult(this, _lib.indigoGetSubmolecule(self, vertices.length, vertices)));
    }
 
-   public IndigoObject getSubmolecule (AbstractCollection<Integer> vertices)
+   public IndigoObject getSubmolecule (Collection<Integer> vertices)
    {
       return getSubmolecule(Indigo.toIntArray(vertices));
    }
@@ -915,7 +915,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
               vertices, edges.length, edges)));
    }
 
-   public IndigoObject createEdgeSubmolecule (AbstractCollection<Integer> vertices, AbstractCollection<Integer> edges)
+   public IndigoObject createEdgeSubmolecule (Collection<Integer> vertices, Collection<Integer> edges)
    {
       return createEdgeSubmolecule(Indigo.toIntArray(vertices), Indigo.toIntArray(edges));
    }
@@ -926,7 +926,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoRemoveAtoms(self, vertices.length, vertices));
    }
 
-   public void removeAtoms (AbstractCollection<Integer> vertices)
+   public void removeAtoms (Collection<Integer> vertices)
    {
       removeAtoms(Indigo.toIntArray(vertices));
    }
@@ -939,7 +939,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResultFloat(this, _lib.indigoAlignAtoms(self, atom_ids.length, atom_ids, desired_xyz));
    }
 
-   public float alignAtoms (AbstractCollection<Integer> atom_ids, AbstractCollection<Float> desired_xyz)
+   public float alignAtoms (Collection<Integer> atom_ids, Collection<Float> desired_xyz)
    {
       return alignAtoms(Indigo.toIntArray(atom_ids), Indigo.toFloatArray(desired_xyz));
    }

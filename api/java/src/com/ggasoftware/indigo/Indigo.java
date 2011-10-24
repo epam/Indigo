@@ -401,7 +401,7 @@ public class Indigo
       return new IndigoObject(this, res);
    }
 
-   public IndigoObject extractCommonScaffold (AbstractCollection<IndigoObject> structures, String options)
+   public IndigoObject extractCommonScaffold (Collection<IndigoObject> structures, String options)
    {
       return extractCommonScaffold(toIndigoArray(structures), options);
    }
@@ -418,7 +418,7 @@ public class Indigo
       return new IndigoObject(this, res);
    }
 
-   public IndigoObject decomposeMolecules (IndigoObject scaffold, AbstractCollection<IndigoObject> structures)
+   public IndigoObject decomposeMolecules (IndigoObject scaffold, Collection<IndigoObject> structures)
    {
       return decomposeMolecules(scaffold, toIndigoArray(structures));
    }
@@ -460,7 +460,7 @@ public class Indigo
       _lib.indigoDbgBreakpoint();
    }
 
-   public IndigoObject toIndigoArray (AbstractCollection<IndigoObject> coll)
+   public IndigoObject toIndigoArray (Collection<IndigoObject> coll)
    {
       setSessionID();
 
@@ -471,7 +471,7 @@ public class Indigo
       return arr;
    }
 
-   public static int[] toIntArray (AbstractCollection<Integer> collection)
+   public static int[] toIntArray (Collection<Integer> collection)
    {
       if (collection == null)
          return new int[0];
@@ -485,7 +485,7 @@ public class Indigo
       return res;
    }
 
-   public static float[] toFloatArray (AbstractCollection<Float> collection)
+   public static float[] toFloatArray (Collection<Float> collection)
    {
       if (collection == null)
          return new float[0];
