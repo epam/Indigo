@@ -896,6 +896,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return createSubmolecule(Indigo.toIntArray(vertices));
    }
 
+   public IndigoObject getSubmolecule (int[] vertices)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher,
+              Indigo.checkResult(this, _lib.indigoGetSubmolecule(self, vertices.length, vertices)));
+   }
+
+   public IndigoObject getSubmolecule (AbstractCollection<Integer> vertices)
+   {
+      return getSubmolecule(Indigo.toIntArray(vertices));
+   }
+
    public IndigoObject createEdgeSubmolecule (int[] vertices, int[] edges)
    {
       return new IndigoObject(dispatcher,

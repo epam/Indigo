@@ -260,6 +260,7 @@ public interface IndigoLib extends Library
    int indigoIsChiral (int molecule);
 
    int indigoCreateSubmolecule (int molecule, int nvertices, int vertices[]);
+   int indigoGetSubmolecule (int molecule, int nvertices, int vertices[]);
    int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int vertices[], int nedges, int edges[]);
 
    int indigoRemoveAtoms (int molecule, int nvertices, int vertices[]);
