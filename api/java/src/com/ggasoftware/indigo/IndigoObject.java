@@ -274,7 +274,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void changeStereocenterType (int type)
    {
       dispatcher.setSessionID();
-      return Indigo.checkResult(this, _lib.indigoChangeStereocenterType(self, type));
+      Indigo.checkResult(this, _lib.indigoChangeStereocenterType(self, type));
    }
 
    public int singleAllowedRGroup ()
