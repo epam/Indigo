@@ -104,6 +104,7 @@ namespace com.ggasoftware.indigo
       int indigoStereocenterType (int atom);
       int indigoSingleAllowedRGroup (int rsite);
 
+      int indigoChangeStereocenterType (int atom, int type);
       int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);
 
       sbyte* indigoSymbol (int atom);
@@ -145,6 +146,7 @@ namespace com.ggasoftware.indigo
       int indigoResetRadical (int atom);
       int indigoResetIsotope (int atom);
       int indigoSetAttachmentPoint (int atom, int order);
+      int indigoIterateAttachmentPoints (int item, int order);
       int indigoClearAttachmentPoints (int item);
       int indigoRemoveConstraints (int item, string type);
       int indigoAddConstraint (int item, string type, string value);

@@ -307,7 +307,10 @@ CEXPORT int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, i
 
 // Applicable to an R-Group, but not to a molecule
 CEXPORT int indigoIterateRGroupFragments (int rgroup);
-CEXPORT int indigoCountAttachmentPoints (int rgroup);
+// Applicable to an R-Group and to a molecule
+// Returns maximal order of attachment points
+CEXPORT int indigoCountAttachmentPoints (int item);
+CEXPORT int indigoIterateAttachmentPoints (int item, int order);
 
 CEXPORT const char * indigoSymbol (int atom);
 CEXPORT int indigoDegree (int atom);

@@ -1139,7 +1139,11 @@ CEXPORT int indigoCountAttachmentPoints (int rgroup)
 {
    INDIGO_BEGIN
    {
-      IndigoRGroup &rgp = IndigoRGroup::cast(self.getObject(rgroup));
+      IndigoObject &object = self.getObject(rgroup);
+      if (IndigoBaseMolecule::is(object))
+         return object.getBaseMolecule().attachmentPointCount();
+
+      IndigoRGroup &rgp = IndigoRGroup::cast(object);
 
       return rgp.mol->rgroups.getRGroup(rgp.idx).fragments[0]->attachmentPointCount();
    }
@@ -3207,6 +3211,42 @@ CEXPORT int indigoCountImplicitHydrogens (int item)
       else
          throw IndigoError("indigoCountImplicitHydrogens: %s is not a molecule nor an atom",
                  obj.debugInfo());
+   }
+   INDIGO_END(-1)
+}
+
+//
+// IndigoAttachmentPointsIter
+//
+
+IndigoAttachmentPointsIter::IndigoAttachmentPointsIter (BaseMolecule &mol, int order) : 
+   IndigoObject(ATTACHMENT_POINTS_ITER), _mol(mol)
+{
+   _order = order;
+   _index = 0;
+}
+
+IndigoObject * IndigoAttachmentPointsIter::next ()
+{
+   int atom_index = _mol.getAttachmentPoint(_order, _index);
+   if (atom_index == -1)
+      return 0;
+   _index++;
+   return new IndigoAtom(_mol, atom_index);
+}
+
+bool IndigoAttachmentPointsIter::hasNext ()
+{
+   return _mol.getAttachmentPoint(_order, _index + 1) != -1;
+}
+
+CEXPORT int indigoIterateAttachmentPoints (int molecule, int order)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      return self.addObject(new IndigoAttachmentPointsIter(mol, order));
    }
    INDIGO_END(-1)
 }

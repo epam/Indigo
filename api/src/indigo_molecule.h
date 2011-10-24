@@ -620,6 +620,20 @@ protected:
    ObjArray< Array<int> > _edges;
 };
 
+class IndigoAttachmentPointsIter : public IndigoObject
+{
+public:
+   IndigoAttachmentPointsIter (BaseMolecule &mol, int order);
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+   BaseMolecule &_mol;
+   int _order, _index;
+};
+
+
 #ifdef _WIN32
 #pragma warning(pop)
 #endif

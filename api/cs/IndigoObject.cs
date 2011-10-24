@@ -295,6 +295,12 @@ namespace com.ggasoftware.indigo
          return _indigo_lib.indigoStereocenterType(self);
       }
 
+      public void changeStereocenterType (int type)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoChangeStereocenterType(self, type);
+      }
+
       public int singleAllowedRGroup ()
       {
          dispatcher.setSessionID();
@@ -411,6 +417,12 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateSuperatoms(self));
+      }
+
+      public IndigoObject iterateAttachmentPoints (int order)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoIterateAttachmentPoints(self, order));
       }
 
       public IndigoObject iterateDataSGroups ()

@@ -137,6 +137,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoCountMolecules(self));
    }
 
+   public IndigoObject iterateAttachmentPoints (int order)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoIterateAttachmentPoints(self, order)));
+   }
+	
    public IndigoObject iterateReactants ()
    {
       dispatcher.setSessionID();
@@ -263,6 +269,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoStereocenterType(self));
+   }
+	
+   public void changeStereocenterType (int type)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoChangeStereocenterType(self, type));
    }
 
    public int singleAllowedRGroup ()

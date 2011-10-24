@@ -31,7 +31,7 @@
 
 /* When Indigo internal code is used dynamically this define should be
  * compared with indigoVersion() to ensure libraries binary compatibility. */
-#define INDIGO_VERSION "1.1-beta6-pre5"
+#define INDIGO_VERSION "1.1-beta6-pre6"
 
 using namespace indigo;
 
@@ -127,7 +127,8 @@ public:
       CML_MOLECULE,
       CML_REACTION,
       MULTIPLE_CML_LOADER,
-      SAVER
+      SAVER,
+      ATTACHMENT_POINTS_ITER,
    };
 
    int type;

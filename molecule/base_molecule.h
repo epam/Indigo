@@ -189,9 +189,9 @@ public:
    int  getRSiteAttachmentPointByOrder (int idx, int order) const;
    void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
 
-   void addAttachmentPoint (int order, int index);
+   void addAttachmentPoint (int order, int atom_index);
    int  getAttachmentPoint (int order, int index) const;
-   void removeAttachmentPointsFromAtom (int index);
+   void removeAttachmentPointsFromAtom (int atom_index);
    int  attachmentPointCount () const;
    void removeAttachmentPoints ();
 

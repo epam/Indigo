@@ -128,6 +128,7 @@ public interface IndigoLib extends Library
    int indigoIsRSite (int atom);
 
    int indigoStereocenterType (int atom);
+   int indigoChangeStereocenterType (int atom, int type);
    int indigoSingleAllowedRGroup (int rsite);
 
    int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);
@@ -179,6 +180,7 @@ public interface IndigoLib extends Library
 
    int indigoSetAttachmentPoint (int atom, int order);
    int indigoClearAttachmentPoints (int item);
+   int indigoIterateAttachmentPoints (int item, int order);
 
    int indigoRemoveConstraints  (int item, String type);
    int indigoAddConstraint    (int item, String type, String value);

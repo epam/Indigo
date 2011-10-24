@@ -295,6 +295,8 @@ class Indigo:
     self.IndigoObject.iterateRGroups = Indigo._member_obj(Indigo._lib.indigoIterateRGroups)
     self.IndigoObject.iterateRGroupFragments = Indigo._member_obj(Indigo._lib.indigoIterateRGroupFragments)
     self.IndigoObject.countAttachmentPoints = Indigo._member_int(Indigo._lib.indigoCountAttachmentPoints)
+    self.IndigoObject.iterateAttachmentPoints = Indigo._member_obj_int(Indigo._lib.indigoIterateAttachmentPoints)
+    
     self.IndigoObject.isPseudoatom = Indigo._member_bool(Indigo._lib.indigoIsPseudoatom)
     self.IndigoObject.isRSite = Indigo._member_bool(Indigo._lib.indigoIsRSite)
     self.IndigoObject.stereocenterType = Indigo._member_int(Indigo._lib.indigoStereocenterType)

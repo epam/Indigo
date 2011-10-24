@@ -797,7 +797,7 @@ int BaseMolecule::attachmentPointCount () const
    return _attachment_index.size();
 }
 
-void BaseMolecule::addAttachmentPoint (int order, int index)
+void BaseMolecule::addAttachmentPoint (int order, int atom_index)
 {
    if (order < 1)
       throw Error("attachment point order %d no allowed (should start from 1)", order);
@@ -805,7 +805,7 @@ void BaseMolecule::addAttachmentPoint (int order, int index)
    if (_attachment_index.size() < order)
       _attachment_index.resize(order);
 
-   _attachment_index[order - 1].push(index);
+   _attachment_index[order - 1].push(atom_index);
    updateEditRevision();
 }
 
@@ -815,12 +815,12 @@ void BaseMolecule::removeAttachmentPoints ()
    updateEditRevision();
 }
 
-void BaseMolecule::removeAttachmentPointsFromAtom (int index)
+void BaseMolecule::removeAttachmentPointsFromAtom (int atom_index)
 {
    int i, j;
 
    for (i = 0; i < _attachment_index.size(); i++)
-      if ((j = _attachment_index[i].find(index)) != -1)
+      if ((j = _attachment_index[i].find(atom_index)) != -1)
       {
          if (j == _attachment_index[i].size() - 1)
             _attachment_index[i].pop();
