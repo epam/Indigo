@@ -49,6 +49,7 @@ public:
    void buildFrom3dCoordinates ( void );
 
    void markBonds ();
+   void markBond  (int atom_idx);
 
    // takes mapping from supermolecule to submolecule
    void buildOnSubmolecule (const MoleculeStereocenters &super, int *mapping);
@@ -160,7 +161,6 @@ protected:
 
    static void _convertAtomToImplicitHydrogen (int pyramid[4], int atom_to_remove);
 
-   void _markBond  (int atom_idx);
    void _removeBondDir (int atom_from, int atom_to);
 
    BaseMolecule & _getMolecule() const;

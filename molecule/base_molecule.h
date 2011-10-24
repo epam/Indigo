@@ -244,7 +244,8 @@ public:
    MoleculeAlleneStereo allene_stereo;
 
    bool have_xyz;
-   bool chiral; // read-only; can be true only when loaded from a Molfile
+
+   bool isChrial ();
 
    ObjPool<DataSGroup> data_sgroups;
    ObjPool<Superatom>  superatoms;

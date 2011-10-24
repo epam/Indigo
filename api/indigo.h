@@ -300,6 +300,7 @@ CEXPORT int indigoIsRSite (int atom);
 // returns INDIGO_{ABS,OR,AND,EITHER}
 // or zero if the atom is not a stereoatom
 CEXPORT int indigoStereocenterType (int atom);
+CEXPORT int indigoChangeStereocenterType (int atom, int type);
 CEXPORT int indigoSingleAllowedRGroup (int rsite);
 
 CEXPORT int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);

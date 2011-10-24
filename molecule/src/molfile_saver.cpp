@@ -232,7 +232,7 @@ void MolfileSaver::_writeCtabHeader2000 (Output &output, BaseMolecule &mol)
 {
    int chiral = 0;
 
-   if (!no_chiral && mol.stereocenters.size() != 0 && mol.stereocenters.haveAllAbsAny())
+   if (!no_chiral && mol.isChrial())
       chiral = 1;
 
    output.printfCR("%3d%3d%3d%3d%3d%3d%3d%3d%3d%3d%3d V2000",

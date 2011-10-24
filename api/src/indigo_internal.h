@@ -31,7 +31,7 @@
 
 /* When Indigo internal code is used dynamically this define should be
  * compared with indigoVersion() to ensure libraries binary compatibility. */
-#define INDIGO_VERSION "1.1-beta6-pre4"
+#define INDIGO_VERSION "1.1-beta6-pre5"
 
 using namespace indigo;
 

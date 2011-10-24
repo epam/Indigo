@@ -46,7 +46,6 @@ bool BaseMolecule::isQueryMolecule ()
 void BaseMolecule::clear ()
 {
    have_xyz = false;
-   chiral = false;
    name.clear();
    stereocenters.clear();
    cis_trans.clear();
@@ -1196,4 +1195,9 @@ void BaseMolecule::setBondDirection (int idx, int dir)
 void BaseMolecule::clearBondDirections ()
 {
    _bond_directions.clear();
+}
+
+bool BaseMolecule::isChrial ()
+{
+   return stereocenters.size() != 0 && stereocenters.haveAllAbsAny();
 }

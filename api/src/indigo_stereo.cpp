@@ -38,6 +38,36 @@ CEXPORT int indigoStereocenterType (int atom)
    INDIGO_END(-1);
 }
 
+static int mapStereocenterType (int api_stereocenter_type)
+{
+   switch (api_stereocenter_type)
+   {
+      case INDIGO_ABS: return MoleculeStereocenters::ATOM_ABS;
+      case INDIGO_OR: return MoleculeStereocenters::ATOM_OR;
+      case INDIGO_AND: return MoleculeStereocenters::ATOM_AND;
+      case INDIGO_EITHER: return MoleculeStereocenters::ATOM_ANY;
+      default: throw IndigoError("Unknown stereocenter type");
+   }
+}
+
+CEXPORT int indigoChangeStereocenterType (int atom, int type)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      if (ia.mol.stereocenters.getType(ia.idx) == 0)
+         throw IndigoError("Atom is not a stereocenter");
+
+      int group = ia.mol.stereocenters.getGroup(ia.idx);
+      ia.mol.stereocenters.setType(ia.idx, mapStereocenterType(type), group);
+      ia.mol.stereocenters.markBond(ia.idx);
+
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4)
 {
    INDIGO_BEGIN

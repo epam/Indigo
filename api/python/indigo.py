@@ -301,6 +301,7 @@ class Indigo:
     self.IndigoObject.singleAllowedRGroup = Indigo._member_int(Indigo._lib.indigoSingleAllowedRGroup)
     self.IndigoObject.symbol = Indigo._member_string(Indigo._lib.indigoSymbol)
 
+    self.IndigoObject.changeStereocenterType = Indigo._member_void_int(Indigo._lib.indigoChangeStereocenterType)
     self.IndigoObject.addStereocenter = Indigo._member_int_int_int_int_dint(Indigo._lib.indigoAddStereocenter)
 
     self.IndigoObject.degree = Indigo._member_int(Indigo._lib.indigoDegree)
