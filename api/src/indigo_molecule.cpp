@@ -3223,15 +3223,17 @@ IndigoAttachmentPointsIter::IndigoAttachmentPointsIter (BaseMolecule &mol, int o
    IndigoObject(ATTACHMENT_POINTS_ITER), _mol(mol)
 {
    _order = order;
-   _index = 0;
+   _index = -1;
 }
 
 IndigoObject * IndigoAttachmentPointsIter::next ()
 {
-   int atom_index = _mol.getAttachmentPoint(_order, _index);
-   if (atom_index == -1)
+   if (!hasNext())
       return 0;
    _index++;
+   int atom_index = _mol.getAttachmentPoint(_order, _index);
+   if (atom_index == -1)
+      throw IndigoError("Internal error in IndigoAttachmentPointsIter::next");
    return new IndigoAtom(_mol, atom_index);
 }
 
