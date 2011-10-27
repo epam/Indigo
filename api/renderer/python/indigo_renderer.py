@@ -14,7 +14,7 @@
 import indigo
 from indigo import *
 
-class IndigoRenderer:
+class IndigoRenderer(object):
 
   def __init__ (self, indigo):
     self.indigo = indigo

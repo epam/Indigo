@@ -28,7 +28,7 @@ class IndigoException (Exception):
   def __str__(self):
     return repr(self.value)
 
-class Indigo:
+class Indigo(object):
   ABS = 1
   OR = 2
   AND = 3
@@ -51,7 +51,7 @@ class Indigo:
   _crt = None
   _lib = None
   
-  class IndigoObject:
+  class IndigoObject(object):
     def __init__ (self, dispatcher, id, parent = None):
       self.id = id
       self.dispatcher = dispatcher
