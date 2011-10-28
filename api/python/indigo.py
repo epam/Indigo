@@ -251,6 +251,7 @@ class Indigo(object):
     self.extractCommonScaffold = self._static_obj_array_string(self._lib.indigoExtractCommonScaffold)
     self.decomposeMolecules = self._static_obj_obj_array(self._lib.indigoDecomposeMolecules)
     self.reactionProductEnumerate = self._static_obj_obj_array(self._lib.indigoReactionProductEnumerate)
+    self.transform = self._static_void_obj_obj(self._lib.indigoTransform)
     
     self.createFileSaver = self._static_obj_string_string(self._lib.indigoCreateFileSaver)
 
@@ -541,6 +542,14 @@ class Indigo(object):
     def newfunc (item1, item2):
       self._setSID()
       return self._checkResult(func(item1.id, item2.id))
+    return self._make_wrapper_func(newfunc, func)
+    
+  def _static_void_obj_obj (self, func):
+    func.restype = c_int
+    func.argtypes = [c_int, c_int]
+    def newfunc (item1, item2):
+      self._setSID()
+      self._checkResult(func(item1.id, item2.id))
     return self._make_wrapper_func(newfunc, func)
    
   def _static_obj_string (self, func):
@@ -1063,10 +1072,6 @@ class Indigo(object):
   def __del__ (self):
     if hasattr(self, '_lib'):
       Indigo._lib.indigoReleaseSessionId(self._sid)
-         
-  def transform (self, obj_reaction, obj_molecules):
-    self._setSID()
-    self._lib.indigoTransform(obj_reaction.id, obj_molecules.id)
          
   def convertToArray (self, iteratable):
     if isinstance(iteratable, Indigo.IndigoObject):

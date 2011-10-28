@@ -435,10 +435,11 @@ public class Indigo
       return new IndigoObject(this, res);
    }
 
-   public void transform (IndigoObject reaction, IndigoObject monomers)
+   public void transform (IndigoObject reaction, IndigoObject monomer)
    {
       setSessionID();
-      _lib.indigoTransform(reaction.self, monomers.self);
+      Object[] guard = new Object[]{this, reaction, monomer};
+      checkResult(guard, _lib.indigoTransform(reaction.self, monomer.self));
    }
    
    public IndigoObject createSaver (IndigoObject output, String format)
