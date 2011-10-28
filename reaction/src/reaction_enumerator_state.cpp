@@ -257,7 +257,7 @@ int ReactionEnumeratorState::buildProduct( void )
             continue;
 
       if (!is_self_react)
-         if ((_reaction_monomers._deep_levels[i] == 0) && (_product_monomers.find(i) != -1))
+         if ((_reaction_monomers._deep_levels[i] != 0) && (_product_monomers.find(i) != -1))
             continue;
 
       ReactionEnumeratorState rpe_state(*this);
@@ -948,7 +948,8 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
 
       QueryMolecule::Atom *reactant_atom = _getReactantAtom(pr_aam);
 
-      if (product.getAtomNumber(i) == -1 && !is_default && !product.isRSite(i))
+      if ((product.getAtomNumber(i) == -1 && !product.isPseudoAtom(i)) && 
+          !is_default && !product.isRSite(i))
       {
          if (!has_aam)
             throw Error("Incorrect AAM");
@@ -960,8 +961,12 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
             mol_atom_idx = mol_product.addAtom(uncleaned_fragments.getAtomNumber(frags_idx));
       }
       else
+      {
          mol_atom_idx = mol_product.addAtom(product.getAtomNumber(i));
 
+         if (product.isPseudoAtom(i))
+            mol_product.setPseudoAtom(i, product.getPseudoAtom(i));
+      }
       
       int reactant_atom_charge = CHARGE_UNKNOWN;
       
@@ -1076,11 +1081,7 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
 
          if (has_aam)
          {
-
-            if (product.getBond(i).hasConstraint(QueryMolecule::BOND_ORDER))
-               throw Error("product bond's order constraint exist");
-            else
-               mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], 
+            mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], 
                                uncleaned_fragments.getBondOrder(frags_bond_idx));
          }
          else
@@ -1093,6 +1094,8 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
 
    mol_product.stereocenters.buildOnSubmolecule(product.stereocenters, mapping_out.ptr());
    mol_product.cis_trans.buildOnSubmolecule(product, mapping_out.ptr());
+
+   mol_product.mergeSGroupsWithSubmolecule(product, mapping_out);
 }
 
 void ReactionEnumeratorState::_checkConstraints( QueryMolecule &reactant, Array<int> &rp_mapping)
@@ -1107,25 +1110,43 @@ void ReactionEnumeratorState::_checkConstraints( QueryMolecule &reactant, Array<
            (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_NUMBER))) &&
           !((reactant.getAtomNumber(i) == -1) && 
            (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_NUMBER))))
-         throw Error("product atom's number constraint exist");
+         throw Error("products atom %i has number constraint", i);
 
       if (((_full_product.getAtomCharge(pr_i) == CHARGE_UNKNOWN) && 
            (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_CHARGE))) &&
           !((reactant.getAtomCharge(i) == CHARGE_UNKNOWN) && 
             (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_CHARGE))))
-         throw Error("product atom's charge constraint exist");
+         throw Error("products atom %i has charge constraint", i);
 
       if (((_full_product.getAtomRadical(pr_i) == -1) && 
            (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_RADICAL))) &&
           !((reactant.getAtomRadical(i) == -1) && 
            (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_RADICAL))))
-         throw Error("product atom's radical constraint exist");
+         throw Error("products atom %i has radical constraint", i);
 
       if (((_full_product.getAtomIsotope(pr_i) == -1) && 
            (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_ISOTOPE))) &&
           !((reactant.getAtomIsotope(i) == -1) && 
            (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_ISOTOPE))))
-         throw Error("product atom's isotope constraint exist");
+         throw Error("products atom %i has isotope constraint", i);
+   }
+
+   QS_DEF(Array<int>, edge_mapping);
+   edge_mapping.clear_resize(reactant.edgeEnd());
+   edge_mapping.fffill();
+   _full_product.buildEdgeMapping(reactant, &rp_mapping, &edge_mapping);
+
+   for (int i = reactant.edgeBegin(); i != reactant.edgeEnd(); i = reactant.edgeNext(i))
+   {
+      int pr_i = edge_mapping[i];
+      if (pr_i == -1)
+         continue;
+
+      if (((_full_product.getBondOrder(pr_i) == -1) && 
+         (_full_product.getBond(pr_i).hasConstraint(QueryMolecule::BOND_ORDER))) &&
+          !((reactant.getBondOrder(i) == -1) && 
+           (reactant.getBond(i).hasConstraint(QueryMolecule::BOND_ORDER))))
+         throw Error("products bond %i has order constraint", pr_i);
    }
 }
 
@@ -1234,7 +1255,8 @@ void ReactionEnumeratorState::_completeCisTrans( Molecule &product, Molecule &un
       int k;
       for (k = 0; k < 4; k++)
       {
-         if (subs[k] == -1)
+         if (subs[k] == -1 || 
+            ((uncleaned_fragments.getAtomNumber(subs[k]) == ELEM_H) && frags_mapping[subs[k]] == -1)) // it's removed hydrogen
          {
             new_subs[k] = -1;
             continue;
@@ -1373,28 +1395,31 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
       }
       else
       {
-         int mon_atom = frags_mapping[_att_points[i][0]];
-         int pr_atom = mapping[i];
-         const Vertex &mon_v = mol_product.getVertex(mon_atom);
-         const Vertex &pr_v = mol_product.getVertex(pr_atom);
+         for (int j = 0; j < _att_points[i].size(); j++)
+         {
+            int mon_atom = frags_mapping[_att_points[i][j]];
+            int pr_atom = mapping[i];
+            const Vertex &mon_v = mol_product.getVertex(mon_atom);
+            const Vertex &pr_v = mol_product.getVertex(pr_atom);
 
-         for (int i = mon_v.neiBegin(); i != mon_v.neiEnd(); i = mon_v.neiNext(i))
-            if (MoleculeCisTrans::isGeomStereoBond(mol_product, mon_v.neiEdge(i), NULL, false))
-               mol_product.cis_trans.setParity(mon_v.neiEdge(i), 0);
-         if (mol_product.stereocenters.exists(mon_atom))
-            mol_product.stereocenters.remove(mon_atom);
+            for (int i = mon_v.neiBegin(); i != mon_v.neiEnd(); i = mon_v.neiNext(i))
+               if (MoleculeCisTrans::isGeomStereoBond(mol_product, mon_v.neiEdge(i), NULL, false))
+                  mol_product.cis_trans.setParity(mon_v.neiEdge(i), 0);
+            if (mol_product.stereocenters.exists(mon_atom))
+               mol_product.stereocenters.remove(mon_atom);
 
-         QS_DEF(Array<int>, neighbors);
-         neighbors.clear();
-         for (int i = mon_v.neiBegin(); i != mon_v.neiEnd(); i = mon_v.neiNext(i))
-            neighbors.push(mon_v.neiVertex(i));
-         for (int i = 0; i < neighbors.size(); i++)
-            if (mol_product.findEdgeIndex(neighbors[i], pr_atom) == -1)
-               mol_product.flipBond(neighbors[i], mon_atom, pr_atom);
+            QS_DEF(Array<int>, neighbors);
+            neighbors.clear();
+            for (int i = mon_v.neiBegin(); i != mon_v.neiEnd(); i = mon_v.neiNext(i))
+               neighbors.push(mon_v.neiVertex(i));
+            for (int i = 0; i < neighbors.size(); i++)
+               if (mol_product.findEdgeIndex(neighbors[i], pr_atom) == -1)
+                  mol_product.flipBond(neighbors[i], mon_atom, pr_atom);
 
-         mol_product.removeAtom(mon_atom);
-         //if (mol_product.mergeAtoms(frags_mapping[_att_points[i][0]], mapping[i]) == -1)
-         //   return false;
+            mol_product.removeAtom(mon_atom);
+            //if (mol_product.mergeAtoms(frags_mapping[_att_points[i][0]], mapping[i]) == -1)
+            //   return false;
+         }
       }
 
       product_mapping[mapping[i]] = frags_mapping[_att_points[i][0]];
@@ -1777,7 +1802,7 @@ int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergr
 
    rpe_state->_findR2PMapping(submolecule, rp_mapping);
 
-   rpe_state->_checkConstraints(submolecule, rp_mapping);
+   //rpe_state->_checkConstraints(submolecule, rp_mapping);
 
    rpe_state->_cistransUpdate(submolecule, supermolecule, NULL, rp_mapping, core_sub);
    rpe_state->_stereocentersUpdate(submolecule, supermolecule, rp_mapping, core_sub, core_super);
