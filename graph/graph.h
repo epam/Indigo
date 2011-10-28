@@ -129,6 +129,8 @@ public:
    void makeSubgraph (const Graph &other, const Filter &filter, Array<int> *mapping_out, Array<int> *inv_mapping);
    void cloneGraph (const Graph &other, Array<int> *mapping);
 
+   void buildEdgeMapping (const Graph &other, Array<int> *mapping, Array<int> *edge_mapping);
+
    void mergeWith (const Graph &other, Array<int> *mapping);
 
    void makeEdgeSubgraph (const Graph &other, const Array<int> &vertices, const Array<int> &edges, Array<int> *v_mapping, Array<int> *e_mapping);

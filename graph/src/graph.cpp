@@ -425,6 +425,23 @@ void Graph::_mergeWithSubgraph (const Graph &other, const Array<int> &vertices, 
    }
 }
 
+void Graph::buildEdgeMapping (const Graph &other, Array<int> *mapping, Array<int> *edge_mapping)
+{
+   for (int i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
+   {
+      const Edge &edge = other.getEdge(i);
+      int beg = mapping->at(edge.beg);
+      int end = mapping->at(edge.end);
+
+      if (beg != -1 && end != -1)
+      {
+         int idx = findEdgeIndex(beg, end);
+         if (edge_mapping != 0)
+            edge_mapping->at(i) = idx;
+      }
+   }
+}
+
 void Graph::mergeWith (const Graph &other, Array<int> *mapping)
 {
    QS_DEF(Array<int>, vertices);
