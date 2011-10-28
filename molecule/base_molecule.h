@@ -321,6 +321,10 @@ public:
 
    int  getBondDirection2 (int center_idx, int nei_idx);
 
+   void mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &mapping);
+
+   void mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &mapping, Array<int> &edge_mapping);
+
    DEF_ERROR("molecule");
 protected:
 
