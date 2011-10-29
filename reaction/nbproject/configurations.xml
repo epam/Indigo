@@ -38,6 +38,8 @@
       <itemPath>reaction_product_enumerator.h</itemPath>
       <itemPath>src/reaction_substructure_matcher.cpp</itemPath>
       <itemPath>reaction_substructure_matcher.h</itemPath>
+      <itemPath>src/reaction_transformation.cpp</itemPath>
+      <itemPath>reaction_transformation.h</itemPath>
       <itemPath>src/rsmiles_loader.cpp</itemPath>
       <itemPath>rsmiles_loader.h</itemPath>
       <itemPath>src/rsmiles_saver.cpp</itemPath>

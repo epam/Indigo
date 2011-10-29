@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "reaction_transformation.h"
-#include "reaction_enumerator_state.h"
+#include "reaction/reaction_transformation.h"
+#include "reaction/reaction_enumerator_state.h"
 
 using namespace indigo;
 

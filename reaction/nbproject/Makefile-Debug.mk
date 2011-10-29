@@ -37,6 +37,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/reaction_exact_matcher.o \
 	${OBJECTDIR}/src/base_reaction.o \
 	${OBJECTDIR}/src/query_reaction.o \
+	${OBJECTDIR}/src/reaction_transformation.o \
 	${OBJECTDIR}/src/rsmiles_loader.o \
 	${OBJECTDIR}/src/reaction_enumerator_state.o \
 	${OBJECTDIR}/src/reaction_auto_loader.o \
@@ -102,6 +103,11 @@ ${OBJECTDIR}/src/query_reaction.o: src/query_reaction.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/query_reaction.o src/query_reaction.cpp
+
+${OBJECTDIR}/src/reaction_transformation.o: src/reaction_transformation.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -I.. -I../common -I../tinyxml/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reaction_transformation.o src/reaction_transformation.cpp
 
 ${OBJECTDIR}/src/rsmiles_loader.o: src/rsmiles_loader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
