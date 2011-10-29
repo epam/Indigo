@@ -423,7 +423,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="reaction_transformation.cpp" />
     <ClCompile Include="src\base_reaction.cpp" />
     <ClCompile Include="src\base_reaction_substructure_matcher.cpp" />
     <ClCompile Include="src\crf_loader.cpp" />
@@ -442,6 +441,7 @@
     <ClCompile Include="src\reaction_neighborhood_counters.cpp" />
     <ClCompile Include="src\reaction_product_enumerator.cpp" />
     <ClCompile Include="src\reaction_substructure_matcher.cpp" />
+    <ClCompile Include="src\reaction_transformation.cpp" />
     <ClCompile Include="src\rsmiles_loader.cpp" />
     <ClCompile Include="src\rsmiles_saver.cpp" />
     <ClCompile Include="src\rxnfile_loader.cpp" />

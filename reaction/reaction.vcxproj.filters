@@ -72,7 +72,7 @@
     <ClCompile Include="src\reaction_cml_saver.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="reaction_transformation.cpp">
+    <ClCompile Include="src\reaction_transformation.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
