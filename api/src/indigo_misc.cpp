@@ -269,11 +269,8 @@ CEXPORT int indigoUnfoldHydrogens (int item)
       }
       else if (IndigoBaseReaction::is(obj))
       {
-         int i;
          Reaction &rxn = obj.getReaction();
-
-         for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-            rxn.getMolecule(i).unfoldHydrogens(0, -1);
+         rxn.unfoldHydrogens();
       }
       else
          throw IndigoError("indigoUnfoldHydrogens(): %s given", obj.debugInfo());
