@@ -487,7 +487,7 @@ CEXPORT int indigoSerialize (int item, byte **buf, int *size)
       {
          Reaction &rxn = obj.getReaction();
          IcrSaver saver(out);
-         saver.save_xyz = true;
+         saver.save_xyz = BaseReaction::haveCoord(rxn);
          saver.save_bond_dirs = true;
          saver.save_highlighting = true;
          saver.saveReaction(rxn);
