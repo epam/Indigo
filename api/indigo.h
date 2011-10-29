@@ -755,7 +755,7 @@ CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp);
 
 CEXPORT const char * indigoToString (int handle);
 CEXPORT int indigoToBuffer (int handle, char **buf, int *size);
-  
+
 /* Reaction products enumeration */
 
 // Accepts a query reaction with markd R-sites, and array of arrays
@@ -764,5 +764,13 @@ CEXPORT int indigoToBuffer (int handle, char **buf, int *size);
 CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers);
 
 CEXPORT int indigoTransform (int reaction, int monomers);
+
+/* Debug functionality */
+
+// Returns internal type of an object
+CEXPORT const char * indigoDbgInternalType (int object);
+
+// Internal breakpoint
+CEXPORT void indigoDbgBreakpoint (void);
 
 #endif

@@ -704,3 +704,17 @@ CEXPORT int indigoHasCoord (int item)
 {
    return _indigoHasCoord(item, BaseMolecule::hasCoord, "indigoHasCoord");
 }
+
+CEXPORT const char * indigoDbgInternalType (int object)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
+
+      char tmp[1024];
+      snprintf(tmp, 1023, "#%02d: %s", obj.type, obj.debugInfo());
+      self.tmp_string.readString(tmp, true);
+      return self.tmp_string.ptr();
+   }
+   INDIGO_END(0);
+}

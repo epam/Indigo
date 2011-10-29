@@ -256,6 +256,7 @@ class Indigo(object):
     self.createFileSaver = self._static_obj_string_string(self._lib.indigoCreateFileSaver)
 
     self.dbgBreakpoint = Indigo._lib.indigoDbgBreakpoint
+    self.IndigoObject.dbgInternalType = Indigo._member_string(Indigo._lib.indigoDbgInternalType)
     
     self.IndigoObject.close = Indigo._member_void(Indigo._lib.indigoClose)
     self.IndigoObject.clone = Indigo._member_obj(Indigo._lib.indigoClone)
