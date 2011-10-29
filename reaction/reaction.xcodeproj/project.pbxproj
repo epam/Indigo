@@ -29,6 +29,7 @@
 		A7EDA567106250A8006CBFAF /* reaction_automapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA53D1062503D006CBFAF /* reaction_automapper.cpp */; };
 		A7EDA568106250A8006CBFAF /* reaction_fingerprint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA53E1062503D006CBFAF /* reaction_fingerprint.cpp */; };
 		A7EDA569106250A8006CBFAF /* icr_saver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7EDA53B1062503D006CBFAF /* icr_saver.cpp */; };
+		D803A958145C58FE0072B250 /* reaction_transformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D803A957145C58FE0072B250 /* reaction_transformation.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -77,6 +78,8 @@
 		A7EDA55010625066006CBFAF /* rxnfile_loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rxnfile_loader.h; sourceTree = "<group>"; };
 		A7EDA55110625066006CBFAF /* rxnfile_saver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rxnfile_saver.h; sourceTree = "<group>"; };
 		A7EDA55610625076006CBFAF /* libreaction.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libreaction.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D803A955145C58F20072B250 /* reaction_transformation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reaction_transformation.h; sourceTree = "<group>"; };
+		D803A957145C58FE0072B250 /* reaction_transformation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reaction_transformation.cpp; path = src/reaction_transformation.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +104,8 @@
 		A7EDA53710625029006CBFAF /* src */ = {
 			isa = PBXGroup;
 			children = (
+				D803A957145C58FE0072B250 /* reaction_transformation.cpp */,
+				D803A955145C58F20072B250 /* reaction_transformation.h */,
 				A77B1A3313535C11008B21BF /* reaction_cml_loader.cpp */,
 				A77B1A3413535C11008B21BF /* reaction_cml_saver.cpp */,
 				A77B1A3013535C00008B21BF /* reaction_cml_loader.h */,
@@ -242,6 +247,7 @@
 				A778DF121250ADE00098784F /* reaction_exact_matcher.cpp in Sources */,
 				A77B1A3513535C11008B21BF /* reaction_cml_loader.cpp in Sources */,
 				A77B1A3613535C11008B21BF /* reaction_cml_saver.cpp in Sources */,
+				D803A958145C58FE0072B250 /* reaction_transformation.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
