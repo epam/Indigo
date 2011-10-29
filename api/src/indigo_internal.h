@@ -31,7 +31,7 @@
 
 /* When Indigo internal code is used dynamically this define should be
  * compared with indigoVersion() to ensure libraries binary compatibility. */
-#define INDIGO_VERSION "1.1-beta6-pre6"
+#define INDIGO_VERSION "1.1-beta6-pre7"
 
 using namespace indigo;
 
@@ -162,7 +162,7 @@ public:
    void copyProperties (RedBlackStringObjMap< Array<char> > &other);
 
 protected:
-   Array<char> _dbg_info; // allocated by debugInfo() on demand
+   AutoPtr< Array<char> > _dbg_info; // allocated by debugInfo() on demand
 private:
    IndigoObject (const IndigoObject &);
 };

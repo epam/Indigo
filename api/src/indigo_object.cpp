@@ -31,10 +31,14 @@ IndigoObject::~IndigoObject ()
 
 const char * IndigoObject::debugInfo ()
 {
-   ArrayOutput out(_dbg_info);
+   if (_dbg_info.get() != 0)
+      return _dbg_info->ptr();
+
+   _dbg_info.create();
+   ArrayOutput out(_dbg_info.ref());
    out.printf("<type %d>", type);
    out.writeChar(0);
-   return _dbg_info.ptr();
+   return _dbg_info->ptr();
 }
 
 void IndigoObject::toString (Array<char> &str)
