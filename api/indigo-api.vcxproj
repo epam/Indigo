@@ -300,7 +300,6 @@
     <ClCompile Include="src\indigo_savers.cpp" />
     <ClCompile Include="src\indigo_scaffold.cpp" />
     <ClCompile Include="src\indigo_stereo.cpp" />
-    <ClCompile Include="src\indigo_transformation.cpp" />
     <ClCompile Include="src\option_manager.cpp" />
   </ItemGroup>
   <ItemGroup>

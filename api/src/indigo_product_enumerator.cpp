@@ -27,6 +27,7 @@
 #include "reaction/rxnfile_saver.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_product_enumerator.h"
+#include "reaction/reaction_transformation.h" 
 
 struct ProductEnumeratorCallbackData 
 {
@@ -118,6 +119,36 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
       }
 
       return out_array;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoTransform (int reaction, int monomers)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &monomers_object = self.getObject(monomers);
+      QueryReaction &query_rxn = self.getObject(reaction).getQueryReaction();
+
+      ReactionTransformation rt;
+
+      if (monomers_object.type == IndigoObject::MOLECULE)
+      {
+         Molecule &mol = monomers_object.getMolecule();
+         rt.transform(mol, query_rxn);
+      }
+      else if (monomers_object.type == IndigoObject::ARRAY)
+      {
+         IndigoArray &monomers_array = IndigoArray::cast(self.getObject(monomers));
+
+      
+         for (int i = 0; i < monomers_array.objects.size(); i++)
+            rt.transform(monomers_array.objects[i]->getMolecule(), query_rxn);
+      }
+      else
+         throw IndigoError("%s is not a molecule or array of molecules", self.getObject(monomers).debugInfo());
+
+      return 1;
    }
    INDIGO_END(-1)
 }
