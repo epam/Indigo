@@ -19,6 +19,7 @@ public class IndigoObjectViewPanel extends JPanel
    private Indigo indigo;
    private IndigoRenderer indigo_renderer;
    private IndigoObject chem_obj;
+   private String error_string = null;
    int image_w;
    int image_h;
 
@@ -64,11 +65,14 @@ public class IndigoObjectViewPanel extends JPanel
       {
          JOptionPane msg_box = new JOptionPane();
          msg_box.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+         setErrorString(ex.getMessage());
       }
    }
 
    public void setIndigoObject (IndigoObject chem_obj, IndigoRenderer indigo_renderer)
    {
+      error_string = null;
+
       if (chem_obj == null)
       {
          image = null;
@@ -104,12 +108,24 @@ public class IndigoObjectViewPanel extends JPanel
       }
    }
 
+   public void setErrorString (String str)
+   {
+      error_string = new String(str);
+      update();
+   }
+
    @Override
    public void paintComponent (Graphics g)
    {
       g.setColor(Color.white);
       g.fillRect(0, 0, getWidth(), getHeight());
 
+      g.setColor(Color.black);
+      if (error_string != null)
+         g.drawString(error_string, (int)getWidth() / 2 - error_string.length() * 2,
+                                    (int)getHeight() / 2);
+
+      g.setColor(Color.white);
       if (image == null)
          return;
 
