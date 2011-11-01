@@ -114,32 +114,38 @@ public class IndigoObjectViewPanel extends JPanel
       update();
    }
 
+   public String getErrorString ()
+   {
+      return error_string;
+   }
+
    @Override
    public void paintComponent (Graphics g)
    {
       g.setColor(Color.white);
       g.fillRect(0, 0, getWidth(), getHeight());
 
-      g.setColor(Color.black);
-      if (error_string != null)
-         g.drawString(error_string, (int)getWidth() / 2 - error_string.length() * 2,
-                                    (int)getHeight() / 2);
-
-      g.setColor(Color.white);
-      if (image == null)
-         return;
-
-      if ((image_w != getWidth()) || (image_h != getHeight()))
+      if (image != null)
       {
-         setImageSize(getWidth(), getHeight());
-         renderImage();
+         g.setColor(Color.white);
+         if ((image_w != getWidth()) || (image_h != getHeight()))
+         {
+            setImageSize(getWidth(), getHeight());
+            renderImage();
+         }
+
+         double new_im_h = image.getHeight();
+         double new_im_w = image.getWidth();
+
+         g.drawImage(image, getWidth() / 2 - (int) new_im_w / 2,
+                 getHeight() / 2 - (int) new_im_h / 2,
+                 (int) new_im_w, (int) new_im_h, new ImageObs());
       }
 
-      double new_im_h = image.getHeight();
-      double new_im_w = image.getWidth();
-
-      g.drawImage(image, getWidth() / 2 - (int) new_im_w / 2,
-              getHeight() / 2 - (int) new_im_h / 2,
-              (int) new_im_w, (int) new_im_h, new ImageObs());
+      if (error_string != null)
+      {
+         g.setColor(Color.black);
+         g.drawString(error_string, 10, (int)getHeight() / 2);
+      }
    }
 }
