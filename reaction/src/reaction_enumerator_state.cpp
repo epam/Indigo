@@ -363,8 +363,6 @@ void ReactionEnumeratorState::_productProcess( void )
    if (!_attachFragments(ready_product))
       return;
 
-   _foldHydrogens(ready_product);
-
    ready_product.dearomatize();
 
    if (!is_same_keeping)
@@ -1306,7 +1304,8 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
 
    if (is_transform)
       for (int i = mol_product.vertexBegin(); i < mol_product.vertexEnd(); i = mol_product.vertexNext(i))
-         old_marked_atoms.push(i);
+         if (mol_product.getAtomNumber(i) != ELEM_H) // hydrogens isn't marked
+            old_marked_atoms.push(i);
 
    _cleanFragments();
 
@@ -1317,7 +1316,8 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    
    if (is_transform)
       for (int i = _fragments.vertexBegin(); i < _fragments.vertexEnd(); i = _fragments.vertexNext(i))
-         if (_monomer_forbidden_atoms[i])
+         if (i < _monomer_forbidden_atoms.size() && // Otherwise atom is unfolded hydrogen 
+             _monomer_forbidden_atoms[i])
             old_marked_atoms.push(frags_mapping[i]);
 
    QS_DEF(Array<int>, product_mapping);
@@ -1457,10 +1457,13 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    /* Updating of cis-trans information on product & monomer's fragment border */
    _completeCisTrans(mol_product, uncleaned_fragments, frags_mapping);
 
+   _foldHydrogens(mol_product);
+
    QS_DEF(Array<int>, out_mapping);
    out_mapping.clear_resize(mol_product.vertexEnd());
    ready_product_out.clone(mol_product, NULL, &out_mapping);
 
+   
    if (is_transform)
    {
       _product_forbidden_atoms.clear_resize(ready_product_out.vertexEnd());
