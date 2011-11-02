@@ -1,0 +1,235 @@
+C([H])(O)=[C@]=C(F)[H].C(Cl)(O)=[C@]=C(F)C
+C(O)=[C@@]=CF.C(Cl)(O)=[C@]=C(F)C
+C([H])(O[H])=[C@]=C(F)[H].C(Cl)(O[H])=[C@]=C(F)C([H])([H])[H]
+
+01 C(=[C@]=CO)C
+C(=[C@]=CO)C
+C(=[C@]=CO)C
+C([H])(=[C@]=C([H])O[H])C([H])([H])[H]
+
+02 C(=[C@@]=CO)C
+C(=[C@@]=CO)C
+C(=[C@@]=CO)C
+C([H])(=[C@@]=C([H])O[H])C([H])([H])[H]
+
+03 C(=C=CO)C
+no allene centers
+
+04 C(=[C@]=CO)C
+C(=[C@]=CO)C
+C(=[C@]=CO)C
+C([H])(=[C@]=C([H])O[H])C([H])([H])[H]
+
+05 C(=[C@@]=CO)C
+C(=[C@@]=CO)C
+C(=[C@@]=CO)C
+C([H])(=[C@@]=C([H])O[H])C([H])([H])[H]
+
+06 C(=C=CO)C
+no allene centers
+
+07 C(=C=CO)C
+no allene centers
+
+08 C(=C=CO)C
+no allene centers
+
+09 C(=C=CO)C
+no allene centers
+
+10 C(=[C@@]=CO)C
+C(=[C@@]=CO)C
+C(=[C@@]=CO)C
+C([H])(=[C@@]=C([H])O[H])C([H])([H])[H]
+
+11 caught 'molfile loader: direction of bond #1 makes no sense'
+
+12 C(=[C@]=CO)C
+C(=[C@]=CO)C
+C(=[C@]=CO)C
+C([H])(=[C@]=C([H])O[H])C([H])([H])[H]
+
+13 caught 'molfile loader: direction of bond #1 makes no sense'
+
+14 C(=[C@]=CO)C
+C(=[C@]=CO)C
+C(=[C@]=CO)C
+C([H])(=[C@]=C([H])O[H])C([H])([H])[H]
+
+15 caught 'molfile loader: direction of bond #1 makes no sense'
+
+16 C(=C=CO)C
+no allene centers
+
+17 C(=C=C(C)O)C
+no allene centers
+
+18 C(=C=C(C)O)C
+no allene centers
+
+19 C(=C=C(C)O)C
+no allene centers
+
+20 C(=C=C(C)O)C
+no allene centers
+
+21 C(=[C@@]=C(C)O)C
+C(=[C@@]=C(C)O)C
+C(=[C@@]=C(C)O)C
+C([H])(=[C@@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+22 C(=[C@]=C(C)O)C
+C(=[C@]=C(C)O)C
+C(=[C@]=C(C)O)C
+C([H])(=[C@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+23 caught 'molfile loader: direction of bond #1 makes no sense'
+
+24 C(=[C@@]=C(C)O)C
+C(=[C@@]=C(C)O)C
+C(=[C@@]=C(C)O)C
+C([H])(=[C@@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+25 C(=[C@@]=C(C)O)C
+C(=[C@@]=C(C)O)C
+C(=[C@@]=C(C)O)C
+C([H])(=[C@@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+26 caught 'molfile loader: direction of bond #1 makes no sense'
+
+27 caught 'molfile loader: direction of bond #1 makes no sense'
+
+28 caught 'molfile loader: direction of bond #1 makes no sense'
+
+29 caught 'molfile loader: direction of bond #1 makes no sense'
+
+30 C(O)(=[C@]=C(C)O)C
+C(O)(=[C@]=C(C)O)C
+C(O)(=[C@]=C(C)O)C
+C(O[H])(=[C@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+31 C(O)(=[C@]=C(C)O)C
+C(O)(=[C@]=C(C)O)C
+C(O)(=[C@]=C(C)O)C
+C(O[H])(=[C@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+32 C(O)(=[C@]=C(C)O)C
+C(O)(=[C@]=C(C)O)C
+C(O)(=[C@]=C(C)O)C
+C(O[H])(=[C@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+33 caught 'molfile loader: direction of bond #1 makes no sense'
+
+34 C(O)(=[C@@]=C(C)O)C
+C(O)(=[C@@]=C(C)O)C
+C(O)(=[C@@]=C(C)O)C
+C(O[H])(=[C@@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+35 C(O)(=[C@@]=C(C)O)C
+C(O)(=[C@@]=C(C)O)C
+C(O)(=[C@@]=C(C)O)C
+C(O[H])(=[C@@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+36 caught 'molfile loader: direction of bond #4 makes no sense'
+
+37 caught 'molfile loader: direction of bond #3 makes no sense'
+
+38 C(O)(=C=C(C)O)C
+no allene centers
+
+39 C(O)(=[C@]=C(C)O)C
+C(O)(=[C@]=C(C)O)C
+C(O)(=[C@]=C(C)O)C
+C(O[H])(=[C@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+40 C(O)(=[C@@]=C(C)O)C
+C(O)(=[C@@]=C(C)O)C
+C(O)(=[C@@]=C(C)O)C
+C(O[H])(=[C@@]=C(C([H])([H])[H])O[H])C([H])([H])[H]
+
+41 C(=[C@]=C([H])O)C
+C(=[C@]=C([H])O)C
+C(=[C@]=CO)C
+C([H])(=[C@]=C([H])O[H])C([H])([H])[H]
+
+42 C([H])(=[C@]=C([H])O)C
+C([H])(=[C@]=C([H])O)C
+C(=[C@]=CO)C
+C([H])(=[C@]=C([H])O[H])C([H])([H])[H]
+
+43 C([H])(=[C@@]=C([H])O)C
+C([H])(=[C@@]=C([H])O)C
+C(=[C@@]=CO)C
+C([H])(=[C@@]=C([H])O[H])C([H])([H])[H]
+
+44 C([H])(=[C@]=C([H])O)C
+C([H])(=[C@]=C([H])O)C
+C(=[C@]=CO)C
+C([H])(=[C@]=C([H])O[H])C([H])([H])[H]
+
+45 caught 'molfile loader: direction of bond #1 makes no sense'
+
+46 caught 'molfile loader: direction of bond #1 makes no sense'
+
+47 caught 'molfile loader: direction of bond #1 makes no sense'
+
+48 C([H])(=[C@]=CO)C
+C([H])(=[C@]=CO)C
+C(=[C@]=CO)C
+C([H])(=[C@]=C([H])O[H])C([H])([H])[H]
+
+49 C([H])(=[C@]=C([H])O)C
+C([H])(=[C@]=C([H])O)C
+C(=[C@]=CO)C
+C([H])(=[C@]=C([H])O[H])C([H])([H])[H]
+
+50 C([H])(=[C@]=C([H])O)C
+C([H])(=[C@]=C([H])O)C
+C(=[C@]=CO)C
+C([H])(=[C@]=C([H])O[H])C([H])([H])[H]
+
+01 :  01 04 12 14 22 30 31 32 39 41 42 44 48 49 50
+02 :  02 05 10 21 24 25 34 35 40 43
+03 :  01 02 03 04 05 06 07 08 09 10 12 14 16 17 18 19 20 21 22 24 25 30 31 32 34 35 38 39 40 41 42 43 44 48 49 50
+04 :  01 04 12 14 22 30 31 32 39 41 42 44 48 49 50
+05 :  02 05 10 21 24 25 34 35 40 43
+06 :  01 02 03 04 05 06 07 08 09 10 12 14 16 17 18 19 20 21 22 24 25 30 31 32 34 35 38 39 40 41 42 43 44 48 49 50
+07 :  01 02 03 04 05 06 07 08 09 10 12 14 16 17 18 19 20 21 22 24 25 30 31 32 34 35 38 39 40 41 42 43 44 48 49 50
+08 :  01 02 03 04 05 06 07 08 09 10 12 14 16 17 18 19 20 21 22 24 25 30 31 32 34 35 38 39 40 41 42 43 44 48 49 50
+09 :  01 02 03 04 05 06 07 08 09 10 12 14 16 17 18 19 20 21 22 24 25 30 31 32 34 35 38 39 40 41 42 43 44 48 49 50
+10 :  02 05 10 21 24 25 34 35 40 43
+12 :  01 04 12 14 22 30 31 32 39 41 42 44 48 49 50
+14 :  01 04 12 14 22 30 31 32 39 41 42 44 48 49 50
+16 :  01 02 03 04 05 06 07 08 09 10 12 14 16 17 18 19 20 21 22 24 25 30 31 32 34 35 38 39 40 41 42 43 44 48 49 50
+17 :  17 18 19 20 21 22 24 25 30 31 32 34 35 38 39 40
+18 :  17 18 19 20 21 22 24 25 30 31 32 34 35 38 39 40
+19 :  17 18 19 20 21 22 24 25 30 31 32 34 35 38 39 40
+20 :  17 18 19 20 21 22 24 25 30 31 32 34 35 38 39 40
+21 :  21 24 25 34 35 40
+22 :  22 30 31 32 39
+24 :  21 24 25 34 35 40
+25 :  21 24 25 34 35 40
+30 :  30 31 32 39
+31 :  30 31 32 39
+32 :  30 31 32 39
+34 :  34 35 40
+35 :  34 35 40
+38 :  30 31 32 34 35 38 39 40
+39 :  30 31 32 39
+40 :  34 35 40
+41 :  01 04 12 14 41 42 44 48 49 50
+42 :  01 04 12 14 41 42 44 48 49 50
+43 :  02 05 10 43
+44 :  01 04 12 14 41 42 44 48 49 50
+48 :  01 04 12 14 22 41 42 44 48 49 50
+49 :  01 04 12 14 41 42 44 48 49 50
+50 :  01 04 12 14 41 42 44 48 49 50
+
+../../../../molfiles/allenes/two-allenes.mol
+2 allene centers
+source mol: C([H])(O)=[C@]=C(F)[H].C(Cl)(O)=[C@]=C(F)C
+w/o allene centers: C([H])(O)=C=C(F)[H].C(Cl)(O)=C=C(F)C
+after inverting atom 1 : C([H])(O)=[C@@]=C(F)[H].C(Cl)(O)=[C@]=C(F)C
+after inverting atom 8 : C([H])(O)=[C@@]=C(F)[H].C(Cl)(O)=[C@@]=C(F)C
+after reseting atom 1 : C([H])(O)=C=C(F)[H].C(Cl)(O)=[C@@]=C(F)C
+after reseting atom 8 : C([H])(O)=C=C(F)[H].C(Cl)(O)=C=C(F)C

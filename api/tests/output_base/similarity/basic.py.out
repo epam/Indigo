@@ -1,0 +1,70 @@
+119914: C[C@H](CCO)NC(=O)C1CSC(CCCCCCC)N1C(=O)CCN1C2=CC=CC=C2SC2C=CC=CC1=2
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119915: C[C@H](CCO)NC(=O)C1CSC(C2CC3CC2CC3)N1C(=O)CCCCSC1C=CC(Cl)=CC=1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119916: C[C@H](CCO)NC(=O)C1CSC(C2CC3CC2CC3)N1C(=O)CSC1C=NC2=CC=CC=C2N=1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119917: CCCCCCCC1SCC(C(=O)NC2CC2)N1C(=O)CSC1C=NC2=CC=CC=C2N=1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119918: C=CCCC(=O)N1C(SCC1C(=O)NCC1C=CC(Cl)=CC=1)C1CC2CC1CC2
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119919: CN(CC(=O)N1C(CSC1C1CC2CCC1C2)C(=O)NCC1C=CC=C(C=1)C1=CC=CC=C1)C1=CC=CC=C1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119920: O=C(CCCC1C=CC=CC=1)N1C(SCC1C(=O)NC1CC1)C1CC2CC1CC2
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119921: C[C@H](CCO)NC(=O)C1CSC(C2C=CC=CC=2)N1C(=O)CSC1=NC2C=CC=CC=2S1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119922: CCCNC(=O)C1CSC(CCCCCCC)N1C(=O)CSC1C=NC2=CC=CC=C2N=1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119923: C[C@H](CCO)NC(=O)C1CSC(C2C=CC=CC=2)N1C(=O)CCC1=CC(O)=C(O)C=C1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0

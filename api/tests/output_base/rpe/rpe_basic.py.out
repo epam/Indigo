@@ -1,0 +1,99 @@
+***
+Reaction: O[*:1]>>[*:1][H]
+Monomers:
+    mol_0: C(O)C=C(O)C(O)
+    mol_1: OC(=C)C1=CC=CC=C1O
+Products:
+    mol_0: OCC=CCO
+    mol_0: CC=C(O)CO
+    mol_0: CC(O)=CCO
+    mol_1: C=CC1=CC=CC=C1O
+    mol_1: C=C(O)C1C=CC=CC=1
+***
+Reaction: [H]C([*:2])([*:3])C([*:5])([*:6])[*:7]>>C([*:2])([*:3])=C([*:5])([*:6])
+Monomers:
+    mol_0: C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)
+Products:
+***
+Reaction: [H]C([H,*:2])([H,*:3])C([H,*:5])([H,*:6])[H,*:7]>>C([H,*:2])([H,*:3])=C([H,*:5])([H,*:6])
+Monomers:
+    mol_0: C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)
+Products:
+    mol_0: ClCC(Cl)C(Cl)C(Cl)C(Cl)=CCl
+    mol_0: ClC1C=C(Cl)C(Cl)C(Cl)C1Cl
+    mol_0: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C=1Cl
+***
+Reaction: [H]C([H,*:2])([H,*:3])C([H,*:5])([H,*:6])[H,*:7]>>C([*:2])([*:3])=C([*:5])([H,*:6])
+Monomers:
+    mol_0: C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)
+Products:
+Error: Reaction product enumerator state: product atom's impossible number
+***
+Reaction: [*:1]C([*:2])=[*:3]>>[*:1]C=[*:3]
+Monomers:
+    mol_0: C=1(Cl)C=CC=CC1
+Products:
+***
+Reaction: [*:2]c(:[*:1]):[*:3]>>[*:1]:c:[*:3]
+Monomers:
+    mol_0: C=1(Cl)C=CC=CC1
+Products:
+    mol_0: C1C=CC=CC=1
+***
+Reaction: [*:1]>>[*;+:1]
+Monomers:
+    mol_0: C
+    mol_1: [H]
+Products:
+    mol_0: [CH3+]
+***
+Reaction: [*:1]>>[*;+0:1]
+Monomers:
+    mol_0: [C+]
+    mol_1: [H]
+Products:
+    mol_0: C
+***
+Reaction: [*:1]>>[O,N;+:1]
+Monomers:
+    mol_0: O
+    mol_1: N
+    mol_2: C
+Products:
+Error: Reaction product enumerator state: product atom's impossible number
+***
+Reaction: [H,*:2]>>N[*:2]
+Monomers:
+    mol_0: C
+Products:
+    mol_0: CN
+***
+Reaction: [H,*:1]>>N[H,*:1]
+Monomers:
+    mol_0: C
+Products:
+    mol_0: CN
+***
+Reaction: [H,*:1]>>[*:1]
+Monomers:
+    mol_0: C[2H]
+Products:
+Error: Reaction product enumerator state: product atom's impossible number
+***
+Reaction: [H,*:1]>>[H,*:1]
+Monomers:
+    mol_0: C[2H]
+Products:
+    mol_0: [2H]C
+***
+Reaction: [H,*:1]>>[*:1]
+Monomers:
+    mol_0: [H]
+Products:
+Error: Reaction product enumerator state: product atom's impossible number
+***
+Reaction: [H,*:1]>>[H,*:1]
+Monomers:
+    mol_0: [H]
+Products:
+    mol_0: [H]

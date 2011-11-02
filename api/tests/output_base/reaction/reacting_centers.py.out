@@ -1,0 +1,19 @@
+*** Test 1 ***
+CCCC>>CCCC
+reacting centers:
+0
+0
+0
+0
+0
+0
+modified centers:
+3
+3
+3
+3
+3
+3
+*** Test AAM ***
+reaction smiles CC=O>>CCO
+aam reaction smiles for given RC [CH3:1][CH:2]=[O:3]>>[CH3:1][CH2:2][OH:3]

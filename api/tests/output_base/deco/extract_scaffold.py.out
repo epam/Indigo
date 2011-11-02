@@ -1,0 +1,7 @@
+Should extract all possible exact MCS for given molecule set (non aromatic)
+  CC(C)OC(C)=O
+  CC=CC=C(C=C)OC1C=CC(Cl)=CC=1
+  CCOCC=CC(=CC)C(C=C)=CC
+  COCC1=CN=CC2NC3=CC=CC=C3C=21
+  COCC=C(C)N
+  ClC1C=CC(=CC=1)OC1C=CC=CC=1

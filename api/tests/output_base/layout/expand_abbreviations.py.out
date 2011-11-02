@@ -1,0 +1,6 @@
+*** Molecule set molecules/abbreviations_test.mol ***
+['NO2', 'SiPr', 'NO2', 'NO2', 'Ph', 'COOH', 'COOH']
+Smiles: C1N([N+](=O)[O-])C([N+](=O)[O-])C([N+](=O)[O-])C(CCC(C(=O)O)C(C(=O)O)C2C=CC=CC=2)C1SC(C)C
+*** Molecule set molecules/abbreviations_tests.sdf ***
+[]
+Exception for #1: SMILES saver: unsure hydrogen count on atom #34

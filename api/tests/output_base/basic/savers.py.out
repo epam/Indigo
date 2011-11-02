@@ -1,0 +1,64 @@
+*** Loading molecules *** 
+5: stereocenters: one bond up, one bond down -- indefinite case
+6: stereocenters: directions of opposite stereo bonds do not match
+8: stereocenters: stereo types of the opposite bonds mismatch
+9: stereocenters: stereo types of the opposite bonds mismatch
+10: stereocenters: stereo types of the opposite bonds mismatch
+11: stereocenters: stereo types of the opposite bonds mismatch
+12: stereocenters: stereo types of the opposite bonds mismatch
+14: stereocenters: one bond up, one bond down -- indefinite case
+18: stereocenters: directions of neighbor stereo bonds match
+24: stereocenters: stereo types of the opposite bonds mismatch
+52: stereocenters: one bond up, one bond down -- indefinite case
+90: stereocenters: one bond up, one bond down -- indefinite case
+135: stereocenters: one bond up, one bond down -- indefinite case
+161: stereocenters: one bond up, one bond down -- indefinite case
+163: stereocenters: one bond up, one bond down -- indefinite case
+*** Making query molecules *** 
+*** Making reactions *** 
+77: element: can not calculate valence on C, charge 0, connectivity 5
+78: element: can not calculate valence on C, charge 0, connectivity 5
+79: element: can not calculate valence on C, charge 0, connectivity 5
+80: element: can not calculate valence on C, charge 0, connectivity 5
+*** Making query reactions *** 
+*** Saving molecules in different formats *** 
+*** SDF *** 
+Exception on compare #66 from savers_out/out_mols.sdf with original object #77: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #67 from savers_out/out_mols.sdf with original object #78: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #68 from savers_out/out_mols.sdf with original object #79: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #69 from savers_out/out_mols.sdf with original object #80: element: can not calculate valence on C, charge 0, connectivity 5
+*** SMI with default name option. Should be disabled by default *** 
+Exception on compare #66 from savers_out/out_mols.smi with original object #77: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #67 from savers_out/out_mols.smi with original object #78: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #68 from savers_out/out_mols.smi with original object #79: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #69 from savers_out/out_mols.smi with original object #80: element: can not calculate valence on C, charge 0, connectivity 5
+*** SMI with names *** 
+Exception on compare #66 from savers_out/out_mols_with_names.smi with original object #77: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #67 from savers_out/out_mols_with_names.smi with original object #78: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #68 from savers_out/out_mols_with_names.smi with original object #79: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #69 from savers_out/out_mols_with_names.smi with original object #80: element: can not calculate valence on C, charge 0, connectivity 5
+*** SMI without names *** 
+Exception on compare #66 from savers_out/out_mols_without_names.smi with original object #77: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #67 from savers_out/out_mols_without_names.smi with original object #78: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #68 from savers_out/out_mols_without_names.smi with original object #79: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #69 from savers_out/out_mols_without_names.smi with original object #80: element: can not calculate valence on C, charge 0, connectivity 5
+*** CML *** 
+222: molecule: getAtomValence() does not work on pseudo-atoms
+Exception on compare #66 from savers_out/out_mols.cml with original object #77: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #67 from savers_out/out_mols.cml with original object #78: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #68 from savers_out/out_mols.cml with original object #79: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #69 from savers_out/out_mols.cml with original object #80: element: can not calculate valence on C, charge 0, connectivity 5
+*** RDF *** 
+Exception on compare #66 from savers_out/out_mols.rdf with original object #77: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #67 from savers_out/out_mols.rdf with original object #78: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #68 from savers_out/out_mols.rdf with original object #79: element: can not calculate valence on C, charge 0, connectivity 5
+Exception on compare #69 from savers_out/out_mols.rdf with original object #80: element: can not calculate valence on C, charge 0, connectivity 5
+*** Saving query molecules in different formats *** 
+*** SDF *** 
+*** RDF *** 
+*** Saving reactions in different formats *** 
+*** RDF *** 
+*** Reaction SMI without names *** 
+*** Reaction SMI with names *** 
+*** Saving query reactions in different formats *** 
+*** RDF *** 

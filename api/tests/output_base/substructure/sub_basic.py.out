@@ -1,0 +1,179 @@
+SMILES loader: cycle 1: closing bond description = does not match pending bond description -
+SMILES loader: cycle 1: closing bond description - does not match pending bond description =
+
+*** Test 0 ***
+Query: [#1]
+Target: c
+  count = 1
+
+*** Test 1 ***
+Query: [#1]
+Target: C
+  count = 4
+
+*** Test 2 ***
+Query: *~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101
+  count = 9298
+
+*** Test 3 ***
+Query: *~*~*~*~*~*~*~*~*~*~*~*1~*~*~*C=C1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101
+  count = 2106
+
+*** Test 4 ***
+Query: *~*~*~*~*~*~*~*~*~*~*~*~1~*~*~*~*~*~1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101
+  count = 2106
+
+*** Test 5 ***
+Query: *~*~*~*~*~*~*~*~*~*~*~[#1,#6]
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101
+  count = 5920
+
+*** Test 6 ***
+Query: molecules/r1_2ap.mol
+Target: c1cc2concc2cn1
+  count = 0
+
+*** Test 7 ***
+Query: molecules/r1_2ap_aal.mol
+Target: c1cc2cnocc2cn1
+  count = 0
+
+*** Test 8 ***
+Query: molecules/r2.mol
+Target: molecules/r2_target.mol
+  count = 7
+
+*** Test 9 ***
+Query: [#6]cccc[#6,#7]
+Target: c1ccccc1
+  count = 1
+
+*** Test 10 ***
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1
+  count = 0
+
+*** Test 11 ***
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1.c1ccccc1
+  count = 0
+
+*** Test 12 ***
+Query: molecules/q_rg_recurs2.mol
+Target: c1ccccc1
+  count = 0
+
+*** Test 13 ***
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1
+  count = 1
+
+*** Test 14 ***
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1.C1CCCCCC1
+  count = 541
+
+*** Test 15 ***
+Query: molecules/rgroups/c11100_3.mol
+Target: OC(=O)C1=CC=CC=C1
+  count = 1
+
+*** Test 16 ***
+Query: [N;!$(NC=O)]
+Target: NC=O
+  count = 0
+
+*** Test 17 ***
+Query: [N;!$([*,H]C=O)]
+Target: NC=O
+  count = 0
+
+*** Test 18 ***
+Query: [#1][N]
+Target: N
+  count = 1
+
+*** Test 19 ***
+Query: [$([#1][N])]
+Target: N
+  count = 3
+
+*** Test 20 ***
+Query: [$([#1][N])]C
+Target: NC
+  count = 0
+
+*** Test 21 ***
+Query: [$([#1][N])]N
+Target: NC
+  count = 2
+
+*** Test 22 ***
+Query: [!#6;!#1;!H0]
+Target: O
+  count = 1
+
+*** Test 23 ***
+Query: [!#6;!#1;!H0]
+Target: C* |$;Some value_p$|
+  count = 1
+
+*** Test 24 ***
+Query: [H]C(*)(*)C(*)(*)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+  count = 0
+
+*** Test 25 ***
+Query: [H]C(*)(*)C(*)(*)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+  count = 0
+
+*** Test 26 ***
+Query: C(C)(Cl)C(C)(Cl)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+  count = 0
+
+*** Test 27 ***
+Query: C(C)(Cl)C(C)(Cl)[H,*]
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+  count = 12
+
+*** Test 28 ***
+Query: [H]C(C)(Cl)C([H])(C)Cl
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+  count = 6
+
+*** Test 29 ***
+Query: C[*,H]
+Target: C
+  count = 0
+
+*** Test 30 ***
+Query: C[H,*]
+Target: C
+  count = 4
+
+*** Test 31 ***
+Query: [*,H]
+Target: [H]
+  count = 0
+
+*** Test 32 ***
+Query: [H,*]
+Target: [H]
+  count = 1
+
+*** Test 33 ***
+Query: N1OCCCC=1
+Target: N1OCCCC=1
+  count = 1
+
+*** Test 34 ***
+Query: N=1OCCCC1
+Target: N1OCCCC=1
+  count = 1
+
+*** Test 35 ***

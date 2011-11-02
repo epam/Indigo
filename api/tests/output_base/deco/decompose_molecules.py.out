@@ -1,0 +1,21 @@
+Should correctly save highlighted structues
+0:
+  sm1: OC[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@@H](O[C@H]2[C@H](O)[C@@H](O)[C@H](OCC3CCCCC3)O[C@@H]2CO)O1
+  sm2: OC[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@@H](O[C@H]2[C@H](O)[C@@H](O)[C@H](OCC3CCCCC3)O[C@@H]2CO)O1 |ha:0,1,2,3,4,5,6,7,8,9,10,29,hb:0,1,2,3,4,5,6,7,8,9,30,31|
+  can sm1: OC[C@H]1O[C@@H](OCC2CCCCC2)[C@H](O)[C@@H](O)[C@@H]1O[C@H]1O[C@H](CO)[C@@H](O)[C@H](O)[C@H]1O
+  can sm2: OC[C@H]1O[C@@H](OCC2CCCCC2)[C@H](O)[C@@H](O)[C@@H]1O[C@H]1O[C@H](CO)[C@@H](O)[C@H](O)[C@H]1O
+1:
+  sm1: OC[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@@H](O[C@H]2[C@H](O)[C@@H](CO)OC(O)[C@@H]2O)O1
+  sm2: OC[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@@H](O[C@H]2[C@H](O)[C@@H](CO)OC(O)[C@@H]2O)O1 |ha:0,1,2,3,4,5,6,7,8,9,10,22,hb:0,1,2,3,4,5,6,7,8,9,22,23|
+  can sm1: OC1O[C@H](CO)[C@@H](O)[C@H](O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2O)[C@H]1O
+  can sm2: OC1O[C@H](CO)[C@@H](O)[C@H](O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2O)[C@H]1O
+2:
+  sm1: [Cl-].COc1c(O)c(OC)cc(-c2[o+]c3c(c(cc(c3)O)O[C@@H]3[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O3)cc2O[C@@H]2[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O2)c1
+  sm2: [Cl-].COc1c(O)c(OC)cc(-c2[o+]c3c(c(cc(c3)O)O[C@@H]3[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O3)cc2O[C@@H]2[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O2)c1 |ha:34,35,36,37,38,39,40,41,42,43,44,45,hb:36,37,38,39,40,41,42,43,44,45,46,47|
+  can sm1: [Cl-].COc1cc(cc(OC)c1O)-c1[o+]c2cc(O)cc(O[C@H]3O[C@H](CO)[C@@H](O)[C@H](O)[C@H]3O)c2cc1O[C@H]1O[C@H](CO)[C@@H](O)[C@H](O)[C@H]1O
+  can sm2: [Cl-].COc1cc(cc(OC)c1O)-c1[o+]c2cc(O)cc(O[C@H]3O[C@H](CO)[C@@H](O)[C@H](O)[C@H]3O)c2cc1O[C@H]1O[C@H](CO)[C@@H](O)[C@H](O)[C@H]1O
+3:
+  sm1: COC(CCSCCO[C@H]1[C@H](O)[C@@H](O)[C@H](O[C@@H]2[C@H](O)[C@@H](O)[C@H](O[C@@H]3[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO[C@@H]4[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O4)O3)[C@@H](CO)O2)[C@@H](CO)O1)=O
+  sm2: COC(CCSCCO[C@H]1[C@H](O)[C@@H](O)[C@H](O[C@@H]2[C@H](O)[C@@H](O)[C@H](O[C@@H]3[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO[C@@H]4[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O4)O3)[C@@H](CO)O2)[C@@H](CO)O1)=O |ha:8,9,10,11,12,13,14,15,49,50,51,52,hb:8,9,10,11,12,13,14,51,52,53,54,55|
+  can sm1: COC(=O)CCSCCO[C@@H]1O[C@H](CO)[C@@H](O[C@H]2O[C@H](CO)[C@@H](O[C@H]3O[C@H](CO[C@H]4O[C@H](CO)[C@@H](O)[C@H](O)[C@H]4O)[C@@H](O)[C@H](O)[C@H]3O)[C@H](O)[C@H]2O)[C@H](O)[C@H]1O
+  can sm2: COC(=O)CCSCCO[C@@H]1O[C@H](CO)[C@@H](O[C@H]2O[C@H](CO)[C@@H](O[C@H]3O[C@H](CO[C@H]4O[C@H](CO)[C@@H](O)[C@H](O)[C@H]4O)[C@@H](O)[C@H](O)[C@H]3O)[C@H](O)[C@H]2O)[C@H](O)[C@H]1O

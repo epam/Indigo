@@ -1,0 +1,12 @@
+Smiles: c:c:c1:c(:c):c(:c)-c2[1c]-1cccc2:c
+  Aromatic bonds: 13
+Reloaded smiles: c:c:c1-[1c]2cccc(:c)c2-c(:c):c:1:c
+  Aromatic bonds: 13
+Smiles: c:c:c1-[1c]2cccc(:c)c2:c(:c)-c:1:c
+  Aromatic bonds: 13
+Reloaded smiles: c:c:c1:c(:c)-c(:c):c2[1c]-1cccc2:c
+  Aromatic bonds: 13
+Smiles: c:c:c1:c(:c):c(:c):c2[1c]-1cccc2:c
+  Aromatic bonds: 14
+Reloaded smiles: c:c:c1-[1c]2cccc(:c)c2:c(:c):c:1:c
+  Aromatic bonds: 14
