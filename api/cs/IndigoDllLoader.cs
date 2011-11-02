@@ -91,7 +91,8 @@ namespace com.ggasoftware.indigo
             data.file_name = data.file_name.Replace('/', '\\');
             data.handle = LoadLibrary(data.file_name);
             if (data.handle == IntPtr.Zero)
-               throw new IndigoException("Cannot load library " + dll_name);
+               throw new IndigoException("Cannot load library " + dll_name + 
+                  " from the temporary file " + data.file_name);
             _loaded_dlls.Add(dll_name, data);
             _dll_handles.Add(data);
          }
@@ -122,13 +123,7 @@ namespace com.ggasoftware.indigo
          Assembly resource_assembly, bool make_unique_dll_name)
       {
          if (path == null)
-         {
-            String result = _extractFromAssembly(filename,
-               resource_name, resource_assembly, make_unique_dll_name);
-            if (result != null)
-               return result;
-            path = "lib";
-         }
+            return _extractFromAssembly(filename, resource_name, resource_assembly, make_unique_dll_name);
          return Path.Combine(path, filename);
       }
 
@@ -144,36 +139,31 @@ namespace com.ggasoftware.indigo
       String _extractFromAssembly (String filename, String resource_name, 
          Assembly resource_assembly, bool make_unique_dll_name)
       {
-         try
-         {
-            ResourceManager manager = new ResourceManager(resource_name, resource_assembly);
-            Object file_data = manager.GetObject(filename);
+         ResourceManager manager = new ResourceManager(resource_name, resource_assembly);
+         Object file_data = manager.GetObject(filename);
+         if (file_data == null)
+            throw new IndigoException("Internal error: there is no resource " + filename);
 
-            String tmpdir_path = _getTemporaryDirectory(resource_assembly);
-            String version = resource_assembly.GetName().Version.ToString();
-            // Make per-version-unique dependent dll name 
-            String path = Path.Combine(tmpdir_path, filename);
-            String dir = Path.GetDirectoryName(path);
-            String name = Path.GetFileName(path);
+         String tmpdir_path = _getTemporaryDirectory(resource_assembly);
+         String version = resource_assembly.GetName().Version.ToString();
+         // Make per-version-unique dependent dll name 
+         String path = Path.Combine(tmpdir_path, filename);
+         String dir = Path.GetDirectoryName(path);
+         String name = Path.GetFileName(path);
 
-            String new_dll_name;
-            if (make_unique_dll_name)
-               new_dll_name = version + "_" + name;
-            else
-               new_dll_name = name;
+         String new_dll_name;
+         if (make_unique_dll_name)
+            new_dll_name = version + "_" + name;
+         else
+            new_dll_name = name;
             
-            String new_full_path = Path.Combine(dir, new_dll_name);
-            FileInfo file = new FileInfo(new_full_path);
-            file.Directory.Create();
-            // Check if file already exists
-            if (!file.Exists || file.Length == 0)
-               File.WriteAllBytes(file.FullName, (byte[])file_data);
-            return file.FullName;
-         }
-         catch
-         {
-            return null;
-         }
+         String new_full_path = Path.Combine(dir, new_dll_name);
+         FileInfo file = new FileInfo(new_full_path);
+         file.Directory.Create();
+         // Check if file already exists
+         if (!file.Exists || file.Length == 0)
+            File.WriteAllBytes(file.FullName, (byte[])file_data);
+         return file.FullName;
       }
 
       // Returns implementation of a given interface for wrapping function the specified DLL
