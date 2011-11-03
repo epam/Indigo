@@ -118,10 +118,19 @@ namespace indigo
             int ret = BingoCore.lib.mangoMatchTargetBinary(data_with_cmf,
                data_with_cmf.Length, xyz, xyz.Length);
 
-            if (ret == -2)
-               throw new Exception(BingoCore.lib.bingoGetError());
-            if (ret == -1)
-               throw new Exception(BingoCore.lib.bingoGetWarning());
+            if (ret < 0)
+            {
+               // Exception has happend
+               // Extract id
+               int id = _index_data.storage.getInt(storage_id, 0, conn, ref cache_index);
+
+               string msg = "Undef";
+               if (ret == -2)
+                  msg = BingoCore.lib.bingoGetError();
+               if (ret == -1)
+                  msg = BingoCore.lib.bingoGetWarning();
+               throw new Exception(String.Format("Id = {0}: {1}", id, msg));
+            }
 
             if (ret == 1)
             {
