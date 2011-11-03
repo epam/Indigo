@@ -4,9 +4,9 @@ from env_indigo import *
 
 indigo = Indigo()
 print("*** Test 1 ***")
-rxn = indigo.createReaction();
-rxn.addProduct(indigo.loadMolecule("CCCC"));
-rxn.addReactant(indigo.loadMolecule("CCCC"));
+rxn = indigo.createReaction()
+rxn.addProduct(indigo.loadMolecule("CCCC"))
+rxn.addReactant(indigo.loadMolecule("CCCC"))
 print(rxn.smiles())
 print("reacting centers:")
 for m in rxn.iterateMolecules():

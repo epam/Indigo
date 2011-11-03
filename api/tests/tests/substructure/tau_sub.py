@@ -1,4 +1,3 @@
-import random;
 import sys
 sys.path.append('../../common')
 from env_indigo import *

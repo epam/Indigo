@@ -12,5 +12,5 @@ scaffold_smiles = []
 for scaffold in deco.allScaffolds().iterateArray():
    scaffold_smiles.append(indigo.loadMolecule(scaffold.smiles()).canonicalSmiles())
 for smiles in sorted(scaffold_smiles):
-   print("  %s" % (smiles))
+   print "  %s" % smiles
    

@@ -1,6 +1,10 @@
 from inspect import getmembers
 from new import instancemethod, function
+import os
+
+os.environ['COVERAGE_LOADING'] = "1"
 from env_indigo import Indigo, IndigoObject
+del os.environ['COVERAGE_LOADING']
 
 class IndigoCoverageWrapper(Indigo):
     class IndigoObjectCoverageWrapper(IndigoObject):

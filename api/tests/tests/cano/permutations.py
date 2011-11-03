@@ -1,5 +1,4 @@
-import itertools;
-import random;
+import random
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -18,7 +17,7 @@ mol_db_names = [
    ("molecules/test_explicit_h.smi", indigo.iterateSmilesFile),
 ]
 def random_permutation(iterable, r=None):
-   "Random selection from itertools.permutations(iterable, r)"
+   """Random selection from itertools.permutations(iterable, r)"""
    pool = tuple(iterable)
    if r is None:
       r = len(pool)
@@ -79,7 +78,7 @@ def testMol(mol):
    return base_smiles
    
 for db_name, load_fund in mol_db_names:
-   print("Database: %s" % (db_name))
+   print("Database: %s" % db_name)
    idx = 0
    for item in load_fund(db_name):
       try:

@@ -3,7 +3,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-indigo.setOption("molfile-saving-skip-date", "1");
+indigo.setOption("molfile-saving-skip-date", "1")
 def infrange(start):
    cur = start
    while True:

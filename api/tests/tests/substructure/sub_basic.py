@@ -1,5 +1,3 @@
-import os;
-from itertools import *;
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -7,6 +5,9 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 def testSSS(mol, q):
+   """
+
+   """
    matcher = indigo.substructureMatcher(mol)
    try:
       print("Query: " + q.name())
@@ -16,21 +17,21 @@ def testSSS(mol, q):
       q.optimize()
       match_opt = matcher.match(q)
       cnt_opt = matcher.countMatches(q)
-      if (match != None) != (match_opt != None):
+      if (match or match_opt) and match != match_opt:
          msg = "match before and after optimization is different: match=%s and match_opt=%s" % (match, match_opt)
          print(msg)
-         sys.stderr.write(msg + "\n");
+         sys.stderr.write(msg + "\n")
       
       if cnt != cnt_opt:
          msg = "count before and after optimization is different: cnt=%d and cnt_opt=%d" % (cnt, cnt_opt)
          print(msg)
-         sys.stderr.write(msg + "\n");
+         sys.stderr.write(msg + "\n")
          
-      print("  count = %d" % (cnt))
+      print("  count = %d" % cnt)
       if (cnt > 0) != (match != None):
          msg = "match and countMatches returns contradicting results: match=%s and count=%d" % (match, cnt)
          print(msg)
-         sys.stderr.write(msg + "\n");
+         sys.stderr.write(msg + "\n")
    except IndigoException, e:      
       print("Error: " % (getIndigoExceptionText(e)))
 def loadWithCheck(func):
@@ -96,7 +97,7 @@ tests = [
    (lmol('C-1CCCCC=1'), lqmol("C=1CCCCC-1")),
 ]
 for i in range(len(tests)):
-   print("\n*** Test %d ***" % (i))
+   print("\n*** Test %d ***" % i)
    (mol, q) = tests[i]
-   if mol != None and q != None:
+   if mol and q:
       testSSS(mol, q)

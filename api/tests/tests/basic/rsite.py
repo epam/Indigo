@@ -1,22 +1,22 @@
-import os;
+import os
 import sys
 sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-indigo.setOption("molfile-saving-skip-date", "1");
+indigo.setOption("molfile-saving-skip-date", "1")
 if not os.path.exists("out"):
    os.makedirs("out")
 saver = indigo.createFileSaver("out/rsite.sdf", "sdf")
-mol = indigo.loadMolecule("CCNNCN");
-mol.addRSite("R");
-mol.addRSite("R");
-mol.addRSite("R1");
-mol.addRSite("");
-a3 = mol.addRSite("R3");
+mol = indigo.loadMolecule("CCNNCN")
+mol.addRSite("R")
+mol.addRSite("R")
+mol.addRSite("R1")
+mol.addRSite("")
+a3 = mol.addRSite("R3")
 print(mol.molfile())
 saver.append(mol)
-mol.addRSite("R1, R3");
+mol.addRSite("R1, R3")
 print(mol.molfile())
 saver.append(mol)
 a3.resetAtom("N")

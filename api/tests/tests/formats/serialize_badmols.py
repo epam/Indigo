@@ -18,7 +18,7 @@ def testSerializeBadMols (filename):
   mol2 = indigo.unserialize(buf)
   print reducePrecision(mol2.molfile())
   
-  query = indigo.loadSmarts("[*]1~[*]~[*]~[*]~[*]~[*]~1");
+  query = indigo.loadSmarts("[*]1~[*]~[*]~[*]~[*]~[*]~1")
   matcher = indigo.substructureMatcher(mol)
   for match in matcher.iterateMatches(query):
     for atom in query.iterateAtoms():

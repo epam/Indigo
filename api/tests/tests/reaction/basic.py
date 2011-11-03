@@ -34,7 +34,7 @@ rxn.addReactant(mol)
 print("Before layout:")
 print("  Has coord: %s" % (rxn.hasCoord()))
 print("  Has Z coord: %s" % (rxn.hasZCoord()))
-rxn.layout();
+rxn.layout()
 print("After layout:")
 print("  Has coord: %s" % (rxn.hasCoord()))
 print("  Has Z coord: %s" % (rxn.hasZCoord()))
@@ -46,7 +46,7 @@ for m in rxn.iterateMolecules():
       break
 print("  Has coord: %s" % (rxn.hasCoord()))
 print("  Has Z coord: %s" % (rxn.hasZCoord()))
-rxn.layout();
+rxn.layout()
 print("After layout:")
 print("  Has coord: %s" % (rxn.hasCoord()))
 print("  Has Z coord: %s" % (rxn.hasZCoord()))

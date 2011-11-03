@@ -17,8 +17,8 @@ def printHighlighting (ht):
    print("Highlighting:")
    hatoms = [a.index() for a in ht.iterateAtoms() if a.isHighlighted()]
    hbonds = [b.index() for b in ht.iterateBonds() if b.isHighlighted()]
-   print("  Atoms: %s" % (hatoms))
-   print("  Bonds: %s" % (hbonds))
+   print("  Atoms: %s" % hatoms)
+   print("  Bonds: %s" % hbonds)
    saver.append(ht)
 printHighlighting(ht)
 for a in ht.iterateAtoms():

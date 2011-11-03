@@ -58,7 +58,7 @@ def expand_abbreviations(m):
    
    saver.append(m)
 for mset in m_sets:
-   print("*** Molecule set %s ***" % (mset))
+   print "*** Molecule set %s ***" % mset
    idx = 1
    for m in indigo.iterateSDFile(mset):
       try:

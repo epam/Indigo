@@ -13,12 +13,12 @@ def transform(molset, reaction):
          yield prod
 def transformBySmiles (reaction_smiles, molecules_smiles):
    print("***")
-   print("Reaction: %s" % (reaction_smiles))
+   print("Reaction: %s" % reaction_smiles)
    print("Monomers:")
    molset = []
    for m, idx in zip(molecules_smiles, range(len(molecules_smiles))):
       mol = indigo.loadMolecule(m)
-      mol.setName("mol_%d" % (idx))
+      mol.setName("mol_%d" % idx)
       print("    %s: %s" % (mol.name(), m))
       molset.append(mol)
       

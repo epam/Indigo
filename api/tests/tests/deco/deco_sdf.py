@@ -7,12 +7,12 @@ def testScaffold (filename, mode, print_molfile):
   indigo.setOption("molfile-saving-skip-date", True)
   indigo.setOption("treat-x-as-pseudoatom", True)
   indigo.setOption("ignore-stereochemistry-errors", True)
-  arr = indigo.createArray();
+  arr = indigo.createArray()
   for item in indigo.iterateSDFile(filename):
-    item.aromatize();
+    item.aromatize()
     for atom in item.iterateAtoms():
       atom.setXYZ(0, 0, 0)
-    arr.arrayAdd(item);
+    arr.arrayAdd(item)
   scaf = indigo.extractCommonScaffold(arr, mode)
   print "scaffold: " + scaf.smiles()
   all_scaffolds = scaf.allScaffolds()

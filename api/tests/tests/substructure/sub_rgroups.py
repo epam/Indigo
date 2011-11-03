@@ -1,5 +1,4 @@
-import os;
-import fnmatch
+import os
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -20,7 +19,7 @@ cnt = 1
 for t in targets:
    if t.name() == "":
       try:
-         t.setName("#%d" % (cnt))
+         t.setName("#%d" % cnt)
          res_targets.append(t)
       except IndigoException, e:
          sys.stderr.write("setName for #%s: %s\n" % (cnt, getIndigoExceptionText(e)))
@@ -41,11 +40,11 @@ def performTest():
       for q in queries:
          try:
             m = matcher.match(q)
-            if m != None:
+            if m:
                query_results[q.name()] += 1
                print("  %s %s" % (t.name(), q.name()))
                cnt = matcher.countMatches(q)
-               print("    cnt=%d" % (cnt))
+               print("    cnt=%d" % cnt)
          except IndigoException, e:
             sys.stderr.write("%s %s: %s\n" % (t.name(), q.name(), getIndigoExceptionText(e)))
    print("\nResults per query:")

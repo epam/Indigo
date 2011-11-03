@@ -30,22 +30,6 @@ class Logger(object):
 
 def write_difference(fn_1, fn_2, fn_3):
     f_1 = open(fn_1, 'r')
-    f_1_text = f_1.read()
-    #f_1_text = f_1.read().replace(' \n', '').replace('\n\n', '\n').replace('\n\n', '\n').replace(' ', '')
-    f_1.close()
-    #f_1 = open(fn_1, 'w')
-    #f_1.write(f_1_text)
-    #f_1.close()
-    
-    f_2 = open(fn_2, 'r')   
-    f_2_text = f_2.read()
-    #f_2_text = f_2.read().replace(' \n', '').replace('\n\n', '\n').replace('\n\n', '\n').replace(' ', '')
-    f_2.close()
-    #f_2 = open(fn_2, 'w')
-    #//f_2.write(f_2_text)
-    #f_2.close()
-    
-    f_1 = open(fn_1, 'r')
     f_2 = open(fn_2, 'r')        
     lines_1 = f_1.readlines()
     lines_2 = f_2.readlines()
@@ -155,6 +139,7 @@ for root, filename in tests:
    base_output_file = os.path.join(base_dir, filename + ".out")
    
    base_exists = False
+   ndiffcnt = 0
    if os.path.exists(base_output_file):
       diff_file = os.path.join(test_dir, filename + ".diff")
       # copy reference file
@@ -172,7 +157,7 @@ for root, filename in tests:
       msg = "[FAILED: stderr]"
    elif not base_exists:
       msg = "[NEW]"
-   elif ndiffcnt == 0:
+   elif not ndiffcnt:
       msg = "[PASSED]"
       spacer = ' '
       spacer_len += 2

@@ -20,7 +20,7 @@ def testSerializeBadRxns (filename):
   rxn2 = indigo.unserialize(buf)
   print reducePrecision(rxn2.rxnfile())
   
-  query = indigo.loadReactionSmarts(">>[*]1~[*]~[*]~[*]~[*]~[*]~1");
+  query = indigo.loadReactionSmarts(">>[*]1~[*]~[*]~[*]~[*]~[*]~1")
   matcher = indigo.substructureMatcher(rxn)
   match = matcher.match(query)
   for qmol in query.iterateMolecules():

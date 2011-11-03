@@ -15,9 +15,9 @@ c2 = mol2.canonicalSmiles()
 print(c1)
 print(c2)
 if c1 != "C":
-   sys.stderr.write("%s != C\n" % (c1))
+   sys.stderr.write("%s != C\n" % c1)
 if c2 != "N":
-   sys.stderr.write("%s != N\n" % (c1))
+   sys.stderr.write("%s != N\n" % c1)
 for m1, m2 in zip(indigo1.iterateSmilesFile("molecules/helma.smi"), indigo2.iterateSmilesFile("molecules/helma.smi")):
    try:
       c1 = m1.canonicalSmiles()

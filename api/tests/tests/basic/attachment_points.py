@@ -4,7 +4,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-indigo.setOption("molfile-saving-skip-date", "1");
+indigo.setOption("molfile-saving-skip-date", "1")
 if not os.path.exists("out"):
    os.makedirs("out")
 outfile = "out/replaced_r_fragments.sdf"

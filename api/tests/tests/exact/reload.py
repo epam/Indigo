@@ -1,5 +1,4 @@
-import itertools;
-import random;
+import random
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -7,12 +6,12 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("ignore-stereochemistry-errors", "1")
-mol_db_names = [ \
-   "../../data/zinc-slice.sdf", \
-   "../../data/thiazolidines.sdf", \
-   "../../data/sugars.sdf" ]
+mol_db_names = [
+    "../../data/zinc-slice.sdf",
+    "../../data/thiazolidines.sdf",
+    "../../data/sugars.sdf" ]
 def random_permutation(iterable, r=None):
-   "Random selection from itertools.permutations(iterable, r)"
+   """Random selection from itertools.permutations(iterable, r)"""
    pool = tuple(iterable)
    if r is None:
       r = len(pool)
@@ -36,12 +35,12 @@ def testMol(mol):
       sys.stderr.write(msg + "\n")
    
 for db_name in mol_db_names:
-   print("Database: %s" % (db_name))
+   print "Database: %s" % db_name
    idx = 0
    for item in indigo.iterateSDFile(db_name):
       #print("%s (#%s)" % (item.name(), idx))
       if item.name() == "":
-         item.setName("#%d" % (idx))
+         item.setName("#%d" % idx)
       try:
          testMol(item)
       except IndigoException, e:

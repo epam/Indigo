@@ -1,4 +1,3 @@
-import os;
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -29,7 +28,7 @@ for t in targets:
          m = matcher.match(q)
       except IndigoException, e:
          sys.stderr.write("%s %s: %s\n" % (t.name(), q.name(), getIndigoExceptionText(e)))
-      if m != None:
+      if m:
          query_results[q.name()] += 1
          cnt = matcher.countMatches(q)
          print("%s %s: %d" % (t.name(), q.name(), cnt))

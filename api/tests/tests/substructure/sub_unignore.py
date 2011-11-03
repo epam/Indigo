@@ -1,4 +1,3 @@
-import os;
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -34,12 +33,12 @@ def runSingleTest (target_mol, queries):
    matcher = indigo.substructureMatcher(target_mol)
     
    for i in range(3):
-      print("\n  Subtest #%d" % (i))
+      print("\n  Subtest #%d" % i)
       global total_matches
       total_matches = 0
       first_total_matches = -1
       testIgnoreUnignoreAtoms(matcher, 1, queries)
-      print("  Total matches = %d" % (total_matches))
+      print "  Total matches = %d" % total_matches
       if first_total_matches == -1:
          first_total_matches = total_matches
       if first_total_matches != total_matches:

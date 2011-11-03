@@ -1,4 +1,3 @@
-import os;
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -79,11 +78,11 @@ def testMultipleSave (smifile, iterfunc, issmi):
     print cs2
     print cs3
     print cs4
-    if (cs2 != cs1):
+    if cs2 != cs1:
       print "MISMATCH"
-    if (cs3 != cs1):
+    if cs3 != cs1:
       print "MISMATCH"
-    if (cs4 != cs1):
+    if cs4 != cs1:
       print "MISMATCH"
 testMultipleSave("molecules/helma.smi", indigo.iterateSmilesFile, True)
 testMultipleSave("molecules/chemical-structures.smi", indigo.iterateSmilesFile, True)

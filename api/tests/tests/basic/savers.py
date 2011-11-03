@@ -4,7 +4,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-indigo.setOption("molfile-saving-skip-date", "1");
+indigo.setOption("molfile-saving-skip-date", "1")
 def infrange(start):
    cur = start
    while True:
@@ -101,14 +101,15 @@ def testSaveLoad (objs, filename, format, loader_func, compare_func, reloaded_ha
    loader = loader_func(filename)
    try:
       for i, m in zip(saved, loader):
+         orig_obj_id = None
          try:
             orig_obj = objs[i][1]
             orig_obj_id = objs[i][0]
             err_names = compare_names(orig_obj, m, reloaded_has_name)
-            if err_names != None:
+            if err_names:
                print("Original object #%d name doesn't match object name #%d in %s: %s" % (orig_obj_id, i + 1, filename, err_names))
             err = compare_func(orig_obj, m)
-            if err != None:
+            if err:
                print("Original object #%d doesn't match object #%d in %s: %s" % (orig_obj_id, i + 1, filename, err))
          except IndigoException, e:
             print("Exception on compare #%d from %s with original object #%d: %s" % (i + 1, filename, orig_obj_id, getIndigoExceptionText(e)))

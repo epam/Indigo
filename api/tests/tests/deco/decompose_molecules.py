@@ -17,13 +17,13 @@ print("Should correctly save highlighted structues")
 decomp_iter = indigo.decomposeMolecules(scaffold, array)
 cnt = 0
 for decomp in decomp_iter.iterateDecomposedMolecules():
-   print("%d:" % (cnt))
+   print "%d:" % cnt
    cnt += 1
    
-   high_mol = decomp.decomposedMoleculeHighlighted();
-   indigo.setOption("molfile-saving-mode", "2000");
+   high_mol = decomp.decomposedMoleculeHighlighted()
+   indigo.setOption("molfile-saving-mode", "2000")
    mol1 = indigo.loadMolecule(high_mol.molfile())
-   indigo.setOption("molfile-saving-mode", "3000");
+   indigo.setOption("molfile-saving-mode", "3000")
    mol2 = indigo.loadMolecule(high_mol.molfile())
    print("  sm1: " + mol1.smiles())
    print("  sm2: " + mol2.smiles())

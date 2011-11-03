@@ -7,7 +7,7 @@ indigo = Indigo()
 for root, dirnames, filenames in os.walk("molecules/set1"):
    filenames.sort()
    for filename in filenames:
-      print "%s: " % (filename),
+      print "%s: " % filename,
       try:
          mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
          print("  OK")

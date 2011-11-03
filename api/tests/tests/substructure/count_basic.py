@@ -1,4 +1,3 @@
-import os;
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -6,8 +5,8 @@ from env_indigo import *
 indigo = Indigo()
 mol = indigo.loadMolecule('C1C=CC=CC=1')
 mol.aromatize()
-q = indigo.loadQueryMolecule("C:C:C");
-m = indigo.substructureMatcher(mol).match(q);
+q = indigo.loadQueryMolecule("C:C:C")
+m = indigo.substructureMatcher(mol).match(q)
 if m is None:
    print("not matched")
 else:
@@ -58,11 +57,10 @@ def testSSS(mol, q):
          sys.stderr.write("    cnt3 > emb_limit\n")
          print("    cnt3 > emb_limit: %d > %d" % (cnt3, emb_limit))
          
-   opset = \
-   [ \
-      product(["embedding-uniqueness"], [ "atoms", "bonds", "none" ]), \
-      product(["max-embeddings"], [ 20, 0, 1, 5, 500, 10000, 50000 ]), \
-      product(["*embeddings limit*"], [ 0, 200 ]), \
+   opset = [
+      product(["embedding-uniqueness"], [ "atoms", "bonds", "none" ]),
+      product(["max-embeddings"], [ 20, 0, 1, 5, 500, 10000, 50000 ]),
+      product(["*embeddings limit*"], [ 0, 200 ]),
    ]
    opt_combintations = apply(product, opset)
    for opt_set in opt_combintations:
@@ -99,26 +97,26 @@ lsmarts = loadWithCheck(indigo.loadSmarts)
 lqmol = loadAromWithCheck(indigo.loadQueryMolecule)
 lmolf = loadWithCheck(indigo.loadMoleculeFromFile)
 lqmolf = loadAromWithCheck(indigo.loadQueryMoleculeFromFile)
-tests = [ \
-   (lmol('c'), lsmarts("[#1]")), \
-   (lmol('C'), lsmarts("[#1]")), \
-   (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lqmol("*~*~*~*~*~*~*~*~*~*~*~*~*~*~*")), \
-   (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lqmol("*~*~*~*~*~*~*~*~*~*~*~*1~*~*~*C=C1")), \
-   (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lqmol("*~*~*~*~*~*~*~*~*~*~*~*~1~*~*~*~*~*~1")), \
-   (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lsmarts("*~*~*~*~*~*~*~*~*~*~*~[#1,#6]")), \
-   (lmol('c1cc2concc2cn1'), lqmolf("molecules/r1_2ap.mol")), \
-   (lmol('c1cc2cnocc2cn1'), lqmolf("molecules/r1_2ap_aal.mol")), \
-   (lmolf('molecules/r2_target.mol'), lqmolf("molecules/r2.mol")), \
-   (lmol('c1ccccc1'), lsmarts("[#6]cccc[#6,#7]")), \
-   (lmol('c1ccccc1'), lqmolf("molecules/q_rg_recurs.mol")), \
-   (lmol('c1ccccc1.c1ccccc1'), lqmolf("molecules/q_rg_recurs.mol")), \
-   (lmol('c1ccccc1'), lqmolf("molecules/q_rg_recurs2.mol")), \
-   (lmol('C1CCCCCC1'), lqmolf("molecules/q_rg_recurs2.mol")), \
-   (lmol('C1CCCCCC1.C1CCCCCC1'), lqmolf("molecules/q_rg_recurs2.mol")), \
-   (lmol('OC(=O)C1=CC=CC=C1'), lqmolf("molecules/rgroups/c11100_3.mol")), \
+tests = [
+   (lmol('c'), lsmarts("[#1]")),
+   (lmol('C'), lsmarts("[#1]")),
+   (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lqmol("*~*~*~*~*~*~*~*~*~*~*~*~*~*~*")),
+   (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lqmol("*~*~*~*~*~*~*~*~*~*~*~*1~*~*~*C=C1")),
+   (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lqmol("*~*~*~*~*~*~*~*~*~*~*~*~1~*~*~*~*~*~1")),
+   (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lsmarts("*~*~*~*~*~*~*~*~*~*~*~[#1,#6]")),
+   (lmol('c1cc2concc2cn1'), lqmolf("molecules/r1_2ap.mol")),
+   (lmol('c1cc2cnocc2cn1'), lqmolf("molecules/r1_2ap_aal.mol")),
+   (lmolf('molecules/r2_target.mol'), lqmolf("molecules/r2.mol")),
+   (lmol('c1ccccc1'), lsmarts("[#6]cccc[#6,#7]")),
+   (lmol('c1ccccc1'), lqmolf("molecules/q_rg_recurs.mol")),
+   (lmol('c1ccccc1.c1ccccc1'), lqmolf("molecules/q_rg_recurs.mol")),
+   (lmol('c1ccccc1'), lqmolf("molecules/q_rg_recurs2.mol")),
+   (lmol('C1CCCCCC1'), lqmolf("molecules/q_rg_recurs2.mol")),
+   (lmol('C1CCCCCC1.C1CCCCCC1'), lqmolf("molecules/q_rg_recurs2.mol")),
+   (lmol('OC(=O)C1=CC=CC=C1'), lqmolf("molecules/rgroups/c11100_3.mol")),
 ]
 for i in range(len(tests)):
-   print("\n*** Test %d ***" % (i))
+   print("\n*** Test %d ***" % i)
    (mol, q) = tests[i]
-   if mol != None and q != None:
+   if mol and q:
       testSSS(mol, q)

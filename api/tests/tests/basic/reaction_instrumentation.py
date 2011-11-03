@@ -3,7 +3,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-indigo.setOption("molfile-saving-skip-date", "1");
+indigo.setOption("molfile-saving-skip-date", "1")
 def testReactionInstrumentation ():
   rxn = indigo.loadReaction("[PH5].CN>CC>")
   rxn.addReactant(indigo.loadMolecule("Oc1ccccc1"))

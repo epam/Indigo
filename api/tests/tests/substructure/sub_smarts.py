@@ -1,4 +1,3 @@
-import os;
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -23,11 +22,12 @@ for q in queries:
    query_results[q.name()] = 0
 def testQueryMatch (matcher, q, t):
    global query_results
+   m = None
    try:
       m = matcher.match(q)
    except IndigoException, e:
       sys.stderr.write("%s %s: %s\n" % (t.name(), q.name(), getIndigoExceptionText(e)))
-   if m != None:
+   if m:
       return matcher.countMatches(q)
    return 0
    
@@ -38,7 +38,7 @@ for t in targets:
       if cnt > 0:
          query_results[q.name()] += 1
          print("%s %s" % (t.name(), q.name()))
-         print("  cnt=%d" % (cnt))
+         print("  cnt=%d" % cnt)
       q.optimize()
       cnt2 = testQueryMatch(matcher, q, t)
       if cnt != cnt2:

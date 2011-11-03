@@ -9,7 +9,6 @@ from cStringIO import StringIO
 import traceback
 import os
 sys.path.append('common')
-from generate_coverage_report import generate_coverage_report
 
 class Logger(object):
     def __init__(self, output_file_name):
@@ -201,8 +200,9 @@ for root, filename in tests:
     test_results.append((root, filename, msg, tspend))
 
 if indigo.version().endswith('-coverage'):
+    from generate_coverage_report import generate_coverage_report
     generate_coverage_report(indigo, coverage_report_name)
 
 if nunit_report_name != "":
-   from generate_nunit_report import *
+   from generate_nunit_report import generateNUnitReport
    generateNUnitReport(test_results, nunit_report_name)

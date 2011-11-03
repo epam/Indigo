@@ -1,4 +1,3 @@
-import os;
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -24,7 +23,7 @@ def testIgnoreAtoms(matcher):
       prev_match_count = match_count
       for q in queries_mol:
          m = matcher.match(q)
-         if m != None:
+         if m:
             match_dict[q.smiles()] += 1
             match_count += 1
             # mark matched atoms as ignored
@@ -37,5 +36,5 @@ def testIgnoreAtoms(matcher):
 matcher = indigo.substructureMatcher(target_mol)
  
 for i in range(10):
-   print("\nTest #%d" % (i))
+   print "\nTest #%d" % i
    testIgnoreAtoms(matcher)

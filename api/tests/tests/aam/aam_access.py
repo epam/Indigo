@@ -14,7 +14,7 @@ def loadReaction (item):
       return indigo.loadReaction(item)
  
    # create reaction by molecules
-   rxn = indigo.createReaction();
+   rxn = indigo.createReaction()
    for react in item[0]:
       rxn.addReactant(indigo.loadMolecule(react))
    for prod in item[1]:
@@ -26,7 +26,7 @@ def printAAM (rxn):
       print("  Mol: %s" % (mol.smiles()))
       for a in mol.iterateAtoms():
          aamNumber = rxn.atomMappingNumber(a)
-         if aamNumber != 0:
+         if aamNumber:
             print("%d, %d: %d" % (a.index(), a.atomicNumber(), aamNumber))
    
 def testAutomap (item):
@@ -48,5 +48,5 @@ def testAutomap (item):
    rxn.automap("keep")
    printAAM(rxn)
 for item, number in zip(reactions, range(1000)):
-   print("\n*** Test %d ***" % (number))
+   print "\n*** Test %d ***" % number
    testAutomap(item)

@@ -1,4 +1,3 @@
-import os;
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -14,7 +13,7 @@ def testSmilesRGroups (filename):
     smi = mol.smiles()
     print smi
     print "  CanSMILES : ",
-    cansmi = mol.canonicalSmiles();
+    cansmi = mol.canonicalSmiles()
     print cansmi 
     print "  Match     : ",
     cansmi2 = indigo.loadMolecule(smi).canonicalSmiles()
@@ -34,7 +33,7 @@ def testSmilesRGroups (filename):
         smi = frag.smiles()
         print smi
         print "    CanSMILES : ",
-        cansmi = frag.canonicalSmiles();
+        cansmi = frag.canonicalSmiles()
         print cansmi
         print "    Match     : ",
         cansmi2 = indigo.loadMolecule(smi).canonicalSmiles()
