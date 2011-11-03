@@ -764,6 +764,14 @@ int DearomatizationsGroups::_getFixedConnectivitySpecific (int elem, int charge,
          // no other cases known from PubChem
       }
    }
+   else if (elem == ELEM_S && charge == 0)
+   {
+      if (n_arom == 2)
+      {
+         if (min_conn == 3)
+            return 4; // CS1=[As]C=N[AsH]1
+      }
+   }
    return -1;
 }
 
