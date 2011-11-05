@@ -331,6 +331,8 @@ protected:
    void _mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int> &vertices,
                                    const Array<int> *edges, Array<int> &mapping,
                                    Array<int> &edge_mapping, int skip_flags);
+
+   void _flipSGroupBond(SGroup &sgroup, int src_bond_idx, int new_bond_idx);
    
    virtual void _mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
            const Array<int> *edges, const Array<int> &mapping, int skip_flags) = 0;

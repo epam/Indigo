@@ -303,6 +303,12 @@ void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int
    updateEditRevision();
 }
 
+void BaseMolecule::_flipSGroupBond(SGroup &sgroup, int src_bond_idx, int new_bond_idx)
+{
+   int idx = sgroup.bonds.find(src_bond_idx);
+   if (idx != -1)
+      sgroup.bonds[idx] = new_bond_idx;
+}
 
 void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
                                          const Array<int> *edges, Array<int> *mapping_out,
@@ -423,6 +429,23 @@ void BaseMolecule::flipBond (int atom_parent, int atom_from, int atom_to)
 
    int src_bond_idx = findEdgeIndex(atom_parent, atom_from);
    removeEdge(src_bond_idx);
+
+   int new_bond_idx = findEdgeIndex(atom_parent, atom_to);
+   
+   // sgroups
+   int j;
+
+   for (j = data_sgroups.begin(); j != data_sgroups.end(); j = data_sgroups.next(j))
+      _flipSGroupBond(data_sgroups[j], src_bond_idx, new_bond_idx);
+
+   for (j = superatoms.begin(); j != superatoms.end(); j = superatoms.next(j))
+      _flipSGroupBond(superatoms[j], src_bond_idx, new_bond_idx);
+
+   for (j = repeating_units.begin(); j != repeating_units.end(); j = repeating_units.next(j))
+      _flipSGroupBond(repeating_units[j], src_bond_idx, new_bond_idx);
+
+   for (j = multiple_groups.begin(); j != multiple_groups.end(); j = multiple_groups.next(j))
+      _flipSGroupBond(multiple_groups[j], src_bond_idx, new_bond_idx);
 
    updateEditRevision();
 }
