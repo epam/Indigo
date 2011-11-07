@@ -361,4 +361,5 @@ public interface IndigoLib extends Library
    int indigoTransform (int reaction, int monomers);
 
    int indigoDbgBreakpoint ();
+   Pointer indigoDbgInternalType (int object);
 }

@@ -1332,4 +1332,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
          options = "";
       _lib.indigoOptimize(self, options);
    }
+
+   public String dbgInternalType ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoDbgInternalType(self));
+   }
 }

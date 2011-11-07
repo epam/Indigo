@@ -1351,5 +1351,11 @@ namespace com.ggasoftware.indigo
             options = "";
          _indigo_lib.indigoOptimize(self, options);
       }
+
+      public String dbgInternalType ()
+      {
+         dispatcher.setSessionID();
+         return new String(_indigo_lib.indigoDbgInternalType(self));
+      }
    }
 }
