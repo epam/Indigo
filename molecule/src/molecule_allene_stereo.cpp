@@ -663,12 +663,15 @@ void MoleculeAlleneStereo::removeAtoms (const Array<int> &indices)
    BaseMolecule &mol = _getMolecule();
    int i, j;
 
+   QS_DEF(Array<int>, centers_to_remove);
+   centers_to_remove.clear();
+
    for (i = 0; i < indices.size(); i++)
    {
       int idx = indices[i];
       if (_centers.find(idx))
       {
-         _centers.remove(idx);
+         centers_to_remove.push(idx);
          continue;
       }
       
@@ -680,8 +683,8 @@ void MoleculeAlleneStereo::removeAtoms (const Array<int> &indices)
 
          if (idx == atom.left || idx == atom.right)
          {
-           _centers.remove(center_idx);
-           continue;
+            centers_to_remove.push(center_idx);
+            continue;
          }
 
          if (idx == atom.subst[1])
@@ -693,7 +696,7 @@ void MoleculeAlleneStereo::removeAtoms (const Array<int> &indices)
             if (atom.subst[1] == -1 ||
                     (mol.getAtomNumber(atom.subst[1]) == ELEM_H && mol.possibleAtomIsotope(atom.subst[1], 0)))
             {
-               _centers.remove(center_idx);
+               centers_to_remove.push(center_idx);
                continue;
             }
             atom.subst[0] = atom.subst[1];
@@ -704,13 +707,20 @@ void MoleculeAlleneStereo::removeAtoms (const Array<int> &indices)
             if (atom.subst[3] == -1 ||
                     (mol.getAtomNumber(atom.subst[3]) == ELEM_H && mol.possibleAtomIsotope(atom.subst[3], 0)))
             {
-               _centers.remove(center_idx);
+               centers_to_remove.push(center_idx);
                continue;
             }
             atom.subst[2] = atom.subst[3];
             atom.parity = 3 - atom.parity;
          }
       }
+   }
+
+   for (int i = 0; i < centers_to_remove.size(); i++)
+   {
+      int idx = centers_to_remove[i];
+      if (_centers.find(idx))
+         _centers.remove(idx);
    }
 }
 
