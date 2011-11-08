@@ -160,6 +160,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
    _deep_level = 0;
    max_deep_level = 2;
    max_product_count = 1000;
+   max_reuse_count = 10;
 
    product_proc = NULL;
    userdata = NULL;
@@ -217,6 +218,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
    _tube_idx = cur_rpe_state._tube_idx;
    _deep_level = cur_rpe_state._deep_level;
    max_deep_level = cur_rpe_state.max_deep_level;
+   max_reuse_count = cur_rpe_state.max_reuse_count;
    is_multistep_reaction = cur_rpe_state.is_multistep_reaction;
    is_self_react = cur_rpe_state.is_self_react;
    is_one_tube = cur_rpe_state.is_one_tube;
@@ -363,6 +365,9 @@ void ReactionEnumeratorState::_productProcess( void )
    if (!_attachFragments(ready_product))
       return;
 
+   if (!is_transform)
+      _foldHydrogens(ready_product);
+
    ready_product.dearomatize();
 
    if (!is_same_keeping)
@@ -433,13 +438,16 @@ void ReactionEnumeratorState::_productProcess( void )
       product_proc(ready_product, _product_monomers, userdata);
 }
 
-void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule )
+void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep )
 {
    QS_DEF(Array<int>, hydrogens);
    hydrogens.clear();
 
    for (int i = molecule.vertexBegin(); i != molecule.vertexEnd(); i = molecule.vertexNext(i))
    {
+      if ((atoms_to_keep != 0) && (atoms_to_keep->at(i) == 1))
+         continue;
+
       if (molecule.getAtomNumber(i) != ELEM_H || 
           (molecule.getAtomIsotope(i) != 0 && molecule.getAtomIsotope(i) != -1))
          continue;
@@ -461,7 +469,6 @@ void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule )
             continue;
       }
 
-      
       hydrogens.push(i);
    }
 
@@ -517,7 +524,10 @@ bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, A
    _monomer_forbidden_atoms.copy(forbidden_atoms);
 
    if (!_startEmbeddingEnumerator(molecule))
+   {
+      _foldHydrogens(molecule, &_product_forbidden_atoms);
       return false;
+   }
 
    forbidden_atoms.copy(_product_forbidden_atoms);
 
@@ -646,7 +656,7 @@ bool ReactionEnumeratorState::_matchVertexCallback( Graph &subgraph, Graph &supe
 
    if (rpe_state->is_transform)
       if (super_idx < rpe_state->_monomer_forbidden_atoms.size()) // otherwise super atom is unfolded hydrogen 
-         if (rpe_state->_monomer_forbidden_atoms[super_idx])
+         if (rpe_state->_monomer_forbidden_atoms[super_idx] >= rpe_state->max_reuse_count)
             return false;
    
    if (supermolecule.getAtomNumber(super_idx) == ELEM_H && sub_v.degree() != 0 && super_v.degree() != 0)
@@ -1023,6 +1033,11 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
                                            product.getAtomXyz(i).z);
 
       mapping_out[i] = mol_atom_idx;
+
+      if (frags_idx != -1 && frags_idx < _monomer_forbidden_atoms.size())
+         _product_forbidden_atoms[mapping_out[i]] += _monomer_forbidden_atoms[frags_idx];
+      else
+         _product_forbidden_atoms[mapping_out[i]] = max_reuse_count;
    }
 
    for (int i = product.edgeBegin(); i != product.edgeEnd(); i = product.edgeNext(i))
@@ -1297,15 +1312,13 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    QS_DEF(Array<int>, mapping);
    mapping.clear();
 
-   _buildMolProduct(product, mol_product, uncleaned_fragments, mapping);
-   
-   QS_DEF(Array<int>, old_marked_atoms);
-   old_marked_atoms.clear();
+   _product_forbidden_atoms.clear_resize(product.vertexEnd() + _fragments.vertexCount());
+   _product_forbidden_atoms.zerofill();
 
-   if (is_transform)
-      for (int i = mol_product.vertexBegin(); i < mol_product.vertexEnd(); i = mol_product.vertexNext(i))
-         if (mol_product.getAtomNumber(i) != ELEM_H) // hydrogens isn't marked
-            old_marked_atoms.push(i);
+   for (int i = product.vertexBegin(); i != product.vertexEnd(); i = product.vertexNext(i))
+      _product_forbidden_atoms[i] = 1;
+
+   _buildMolProduct(product, mol_product, uncleaned_fragments, mapping);
 
    _cleanFragments();
 
@@ -1314,11 +1327,9 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    frags_mapping.fffill();
    mol_product.mergeWithMolecule(_fragments, &frags_mapping);
    
-   if (is_transform)
-      for (int i = _fragments.vertexBegin(); i < _fragments.vertexEnd(); i = _fragments.vertexNext(i))
-         if (i < _monomer_forbidden_atoms.size() && // Otherwise atom is unfolded hydrogen 
-             _monomer_forbidden_atoms[i])
-            old_marked_atoms.push(frags_mapping[i]);
+   for (int i = _fragments.vertexBegin(); i < _fragments.vertexEnd(); i = _fragments.vertexNext(i))
+      if (i < _monomer_forbidden_atoms.size() && _monomer_forbidden_atoms[i])
+         _product_forbidden_atoms[frags_mapping[i]] = _monomer_forbidden_atoms[i];
 
    QS_DEF(Array<int>, product_mapping);
    product_mapping.clear_resize(_full_product.vertexEnd());
@@ -1457,21 +1468,21 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    /* Updating of cis-trans information on product & monomer's fragment border */
    _completeCisTrans(mol_product, uncleaned_fragments, frags_mapping);
 
-   _foldHydrogens(mol_product);
-
    QS_DEF(Array<int>, out_mapping);
    out_mapping.clear_resize(mol_product.vertexEnd());
    ready_product_out.clone(mol_product, NULL, &out_mapping);
 
+   QS_DEF(Array<int>, old_marked_atoms);
+   old_marked_atoms.copy(_product_forbidden_atoms);
+
+   _product_forbidden_atoms.clear_resize(ready_product_out.vertexEnd());
+   _product_forbidden_atoms.zerofill();
    
    if (is_transform)
    {
-      _product_forbidden_atoms.clear_resize(ready_product_out.vertexEnd());
-      _product_forbidden_atoms.zerofill();
-
-      for (int i = 0; i < old_marked_atoms.size(); i++)
-         if (out_mapping[old_marked_atoms[i]] != -1)
-            _product_forbidden_atoms[out_mapping[old_marked_atoms[i]]] = 1;
+      for (int i = mol_product.vertexBegin(); i != mol_product.vertexEnd(); i = mol_product.vertexNext(i))
+         if (out_mapping[i] != -1 && old_marked_atoms[i])
+            _product_forbidden_atoms[out_mapping[i]] = old_marked_atoms[i];
    }
 
    return true;

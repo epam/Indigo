@@ -68,7 +68,8 @@ public:
 
    int max_deep_level;
    int max_product_count;
-
+   int max_reuse_count;
+   
    ReactionEnumeratorState( QueryReaction &cur_reaction, QueryMolecule &cur_full_product, 
       Array<int> &cur_product_aam_array, RedBlackStringMap<int> &cur_smiles_array, 
       ReactionMonomers &cur_reaction_monomers, int &cur_product_coint, 
@@ -115,7 +116,7 @@ private:
 
    bool _isMonomerFromCurTube( int monomer_idx );
    
-   static void _foldHydrogens( BaseMolecule &molecule );
+   static void _foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep = 0 );
 
    void _productProcess( void );
 
