@@ -5,9 +5,9 @@ from env_indigo import *
 
 indigo = Indigo()
 # load queries
-targets = list(indigo.iterateSDFile("molecules/rgroup_targets.sdf"))
+targets = list(indigo.iterateSDFile(joinPath("molecules/rgroup_targets.sdf")))
 queries = []
-query_dir = os.path.join("molecules", "rgroups")
+query_dir = joinPath("molecules", "rgroups")
 for root, dirnames, filenames in os.walk(query_dir):
    filenames.sort()
    for filename in filenames:

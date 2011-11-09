@@ -13,11 +13,11 @@ def sssrInfo (mol):
     print
 def testSSSR ():
   indigo.setOption("skip-3d-chirality", True)
-  files = os.listdir("../../data/chebi")
+  files = os.listdir(joinPath("../../data/chebi"))
   files.sort()
   for filename in files:
     print filename
-    mol = indigo.loadMoleculeFromFile("../../data/chebi/" + filename)
+    mol = indigo.loadMoleculeFromFile(joinPath("../../data/chebi/", filename))
     sssrInfo(mol)
     newmol = indigo.loadMolecule(mol.smiles())
     sssrInfo(newmol)

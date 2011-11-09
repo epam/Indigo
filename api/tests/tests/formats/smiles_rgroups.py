@@ -5,7 +5,7 @@ from env_indigo import *
 indigo = Indigo()
 def testSmilesRGroups (filename):
   print
-  print filename
+  print relativePath(filename)
   print
   mol = indigo.loadMoleculeFromFile(filename)
   try:
@@ -44,9 +44,9 @@ def testSmilesRGroups (filename):
       except IndigoException, e:
         print 'caught ' + getIndigoExceptionText(e)
       
-testSmilesRGroups('molecules/r_occur.mol')
-testSmilesRGroups('molecules/rgroup_a0.mol')
-testSmilesRGroups('molecules/rgroup_a1.mol')
-testSmilesRGroups('molecules/rgroup_all.mol')
-testSmilesRGroups('molecules/recursive1.mol')
-testSmilesRGroups('molecules/recursive2.mol')
+testSmilesRGroups(joinPath('molecules/r_occur.mol'))
+testSmilesRGroups(joinPath('molecules/rgroup_a0.mol'))
+testSmilesRGroups(joinPath('molecules/rgroup_a1.mol'))
+testSmilesRGroups(joinPath('molecules/rgroup_all.mol'))
+testSmilesRGroups(joinPath('molecules/recursive1.mol'))
+testSmilesRGroups(joinPath('molecules/recursive2.mol'))

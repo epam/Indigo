@@ -29,7 +29,7 @@ def makeQueryReaction (qm):
    
 mols = []
 print("*** Loading molecules *** ")
-for i, m in zip(infrange(1), indigo.iterateCMLFile("../../data/tetrahedral-all.cml")):
+for i, m in zip(infrange(1), indigo.iterateCMLFile(joinPath("../../data/tetrahedral-all.cml"))):
    try:
       mols.append((i, m.clone()))
    except IndigoException, e:

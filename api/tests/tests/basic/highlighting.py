@@ -9,9 +9,9 @@ mol.aromatize()
 q = indigo.loadQueryMolecule("C:*:C")
 m = indigo.substructureMatcher(mol).match(q)
 ht = m.highlightedTarget()
-if not os.path.exists("out"):
-   os.makedirs("out")
-saver = indigo.createFileSaver("out/highlighting.sdf", "sdf")
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joinPath("out"))
+saver = indigo.createFileSaver(joinPath("out/highlighting.sdf"), "sdf")
    
 def printHighlighting (ht):
    print("Highlighting:")

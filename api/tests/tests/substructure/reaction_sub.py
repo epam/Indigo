@@ -3,6 +3,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
+
 def testSingleReactionSub (rxn1, rxn2, expected, hl):
   rxn1 = indigo.loadQueryReaction(rxn1)
   rxn1.aromatize()
@@ -34,6 +35,7 @@ def testSingleReactionSub (rxn1, rxn2, expected, hl):
         mapped = mapped.index()
       print 'bond ', bond.index(), '->', mapped
   print match.highlightedTarget().smiles()
+  
 testSingleReactionSub("[H,O]CN[H,O]>CCC>[H]PC", "OCN>CC>PCO[H]", True, True)
 testSingleReactionSub("[Na+]>>", "[Na+]>>", True, True)
 testSingleReactionSub("[Na+]>>C1=CC=CC=C1", "[Na+]>>C1=CC=CC=C1", True, True)

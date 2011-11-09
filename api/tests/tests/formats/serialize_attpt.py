@@ -6,7 +6,7 @@ indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
 indigo.setOption("molfile-saving-skip-date", True)
 def testSerializeAttachmentPoints (filename):
-  print filename
+  print relativePath(filename)
   mol = indigo.loadMoleculeFromFile(filename)
   for rgp in mol.iterateRGroups():
     for frag in rgp.iterateRGroupFragments():
@@ -18,8 +18,8 @@ def testSerializeAttachmentPoints (filename):
       print "    " + frag2.canonicalSmiles()
       if frag.canonicalSmiles() != frag2.canonicalSmiles():
         print "    MISMATCH!!!"
-testSerializeAttachmentPoints("molecules/recursive1.mol")
-testSerializeAttachmentPoints("molecules/recursive2.mol")
-testSerializeAttachmentPoints("molecules/r_occur.mol")
-testSerializeAttachmentPoints("molecules/r_occur_2.mol")
-testSerializeAttachmentPoints("molecules/sub_mar_q01.mol")
+testSerializeAttachmentPoints(joinPath("molecules/recursive1.mol"))
+testSerializeAttachmentPoints(joinPath("molecules/recursive2.mol"))
+testSerializeAttachmentPoints(joinPath("molecules/r_occur.mol"))
+testSerializeAttachmentPoints(joinPath("molecules/r_occur_2.mol"))
+testSerializeAttachmentPoints(joinPath("molecules/sub_mar_q01.mol"))

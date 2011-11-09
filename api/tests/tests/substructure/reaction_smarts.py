@@ -33,6 +33,7 @@ def testSingleReactionSmarts (rxn1, rxn2, expected, hl):
         mapped = mapped.index()
       print 'bond ', bond.index(), '->', mapped
   print match.highlightedTarget().smiles()
+  
 testSingleReactionSmarts("C[H,O]>>C", "OC>>OC[H]", True, True)
 testSingleReactionSmarts("C>>C", "CC>>CC", True, False)
 testSingleReactionSmarts("C>>C", "[CH3:7][CH3:8]>>[CH3:7][CH3:8]", True, False)

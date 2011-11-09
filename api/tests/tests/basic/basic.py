@@ -5,7 +5,7 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 print("****** Query reload ********")
-q = indigo.loadQueryMoleculeFromFile("molecules/q_atom_list.mol")
+q = indigo.loadQueryMoleculeFromFile(joinPath("molecules/q_atom_list.mol"))
 qmf1 = q.molfile()
 print(qmf1)
 q2 = indigo.loadQueryMolecule(q.molfile())

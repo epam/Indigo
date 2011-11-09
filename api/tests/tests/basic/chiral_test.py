@@ -4,7 +4,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-set = [m for m in indigo.iterateSDFile('molecules/chiral_test.sdf')]
+set = [m for m in indigo.iterateSDFile(joinPath('molecules/chiral_test.sdf'))]
 def calculateCanonicalSmiles (set):
    sm_tuples = []
    for m in set:
@@ -21,9 +21,9 @@ for m in set:
       a.changeStereocenterType(Indigo.ABS)
       
 res1 = calculateCanonicalSmiles(set)
-if not os.path.exists("out"):
-   os.makedirs("out")
-outfile = "out/chiral_test_out.sdf"
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joinPath("out"))
+outfile = joinPath("out/chiral_test_out.sdf")
 saver = indigo.createFileSaver(outfile, "sdf")
 for m in set:
    saver.append(m)

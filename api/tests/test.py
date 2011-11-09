@@ -1,7 +1,6 @@
 # -*- coding: cp1251 -*-
 
 import os, sys
-import glob
 import fnmatch
 import subprocess
 import shutil

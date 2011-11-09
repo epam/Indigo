@@ -4,6 +4,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
+
 def transform(molset, reaction):
    output_reactions = indigo.reactionProductEnumerate(reaction, [ molset ])
    for out_rxn in output_reactions.iterateArray():
@@ -11,6 +12,7 @@ def transform(molset, reaction):
          prod = mol.clone()
          prod.setName(out_rxn.name())
          yield prod
+         
 def transformBySmiles (reaction_smiles, molecules_smiles):
    print("***")
    print("Reaction: %s" % reaction_smiles)

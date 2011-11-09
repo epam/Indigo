@@ -4,10 +4,8 @@ from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
-def testSSS(mol, q):
-   """
 
-   """
+def testSSS(mol, q):
    matcher = indigo.substructureMatcher(mol)
    try:
       print("Query: " + q.name())
@@ -34,11 +32,15 @@ def testSSS(mol, q):
          sys.stderr.write(msg + "\n")
    except IndigoException, e:      
       print("Error: " % (getIndigoExceptionText(e)))
+      
 def loadWithCheck(func):
    def wrapper(param):
       try:
          mol = func(param)
-         mol.setName(param)
+         if os.path.exists(param):
+            mol.setName(relativePath(param))             
+         else:
+             mol.setName(param)
          return mol
       except IndigoException, e:
          print(getIndigoExceptionText(e))
@@ -65,16 +67,16 @@ tests = [
    (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lqmol("*~*~*~*~*~*~*~*~*~*~*~*1~*~*~*C=C1")),
    (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lqmol("*~*~*~*~*~*~*~*~*~*~*~*~1~*~*~*~*~*~1")),
    (lmol('c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101'), lsmarts("*~*~*~*~*~*~*~*~*~*~*~[#1,#6]")),
-   (lmol('c1cc2concc2cn1'), lqmolf("molecules/r1_2ap.mol")),
-   (lmol('c1cc2cnocc2cn1'), lqmolf("molecules/r1_2ap_aal.mol")),
-   (lmolf('molecules/r2_target.mol'), lqmolf("molecules/r2.mol")),
+   (lmol('c1cc2concc2cn1'), lqmolf(joinPath("molecules/r1_2ap.mol"))),
+   (lmol('c1cc2cnocc2cn1'), lqmolf(joinPath("molecules/r1_2ap_aal.mol"))),
+   (lmolf(joinPath('molecules/r2_target.mol')), lqmolf(joinPath("molecules/r2.mol"))),
    (lmol('c1ccccc1'), lsmarts("[#6]cccc[#6,#7]")),
-   (lmol('c1ccccc1'), lqmolf("molecules/q_rg_recurs.mol")),
-   (lmol('c1ccccc1.c1ccccc1'), lqmolf("molecules/q_rg_recurs.mol")),
-   (lmol('c1ccccc1'), lqmolf("molecules/q_rg_recurs2.mol")),
-   (lmol('C1CCCCCC1'), lqmolf("molecules/q_rg_recurs2.mol")),
-   (lmol('C1CCCCCC1.C1CCCCCC1'), lqmolf("molecules/q_rg_recurs2.mol")),
-   (lmol('OC(=O)C1=CC=CC=C1'), lqmolf("molecules/rgroups/c11100_3.mol")),
+   (lmol('c1ccccc1'), lqmolf(joinPath("molecules/q_rg_recurs.mol"))),
+   (lmol('c1ccccc1.c1ccccc1'), lqmolf(joinPath("molecules/q_rg_recurs.mol"))),
+   (lmol('c1ccccc1'), lqmolf(joinPath("molecules/q_rg_recurs2.mol"))),
+   (lmol('C1CCCCCC1'), lqmolf(joinPath("molecules/q_rg_recurs2.mol"))),
+   (lmol('C1CCCCCC1.C1CCCCCC1'), lqmolf(joinPath("molecules/q_rg_recurs2.mol"))),
+   (lmol('OC(=O)C1=CC=CC=C1'), lqmolf(joinPath("molecules/rgroups/c11100_3.mol"))),
    (lmol('NC=O'), lsmarts("[N;!$(NC=O)]")),
    (lmol('NC=O'), lsmarts("[N;!$([*,H]C=O)]")),
    (lmol('N'), lsmarts("[#1][N]")),

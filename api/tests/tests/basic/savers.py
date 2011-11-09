@@ -34,14 +34,14 @@ def makeQueryReaction (qm):
    
 mols = []
 print("*** Loading molecules *** ")
-for i, m in zip(infrange(1), indigo.iterateCMLFile("../../data/tetrahedral-all.cml")):
+for i, m in zip(infrange(1), indigo.iterateCMLFile(joinPath("../../data/tetrahedral-all.cml"))):
    try:
       mols.append((i, m.clone()))
    except IndigoException, e:
       print("%d: %s" % (i, getIndigoExceptionText(e)))
       
 # add molecule with pseudoatoms
-mol_with_pseudo = indigo.loadMoleculeFromFile("molecules/aniline_pol_psd.mol")
+mol_with_pseudo = indigo.loadMoleculeFromFile(joinPath("molecules/aniline_pol_psd.mol"))
 mol_with_pseudo.setName("Molecule with pseudoatoms")
 mols.append((len(mols), mol_with_pseudo))
       
@@ -107,12 +107,12 @@ def testSaveLoad (objs, filename, format, loader_func, compare_func, reloaded_ha
             orig_obj_id = objs[i][0]
             err_names = compare_names(orig_obj, m, reloaded_has_name)
             if err_names:
-               print("Original object #%d name doesn't match object name #%d in %s: %s" % (orig_obj_id, i + 1, filename, err_names))
+               print("Original object #%d name doesn't match object name #%d in %s: %s" % (orig_obj_id, i + 1, relativePath(filename), err_names))
             err = compare_func(orig_obj, m)
             if err:
-               print("Original object #%d doesn't match object #%d in %s: %s" % (orig_obj_id, i + 1, filename, err))
+               print("Original object #%d doesn't match object #%d in %s: %s" % (orig_obj_id, i + 1, relativePath(filename), err))
          except IndigoException, e:
-            print("Exception on compare #%d from %s with original object #%d: %s" % (i + 1, filename, orig_obj_id, getIndigoExceptionText(e)))
+            print("Exception on compare #%d from %s with original object #%d: %s" % (i + 1, relativePath(filename), orig_obj_id, getIndigoExceptionText(e)))
    finally:
       #loader.close()
       pass
@@ -154,41 +154,41 @@ def compareQuery(m1, m2):
    if data1 != data2:
       return "Query molecules representation doesn't match: %s and %s" % (data1, data2)
    return None
-if not os.path.exists("savers_out"):
-   os.makedirs("savers_out")
+if not os.path.exists(joinPath("savers_out")):
+   os.makedirs(joinPath("savers_out"))
 # molecules   
 print("*** Saving molecules in different formats *** ")
 print("*** SDF *** ")
-testSaveLoad(mols, "savers_out/out_mols.sdf", "sdf", indigo.iterateSDFile, compare, True)
+testSaveLoad(mols, joinPath("savers_out/out_mols.sdf"), "sdf", indigo.iterateSDFile, compare, True)
 print("*** SMI with default name option. Should be disabled by default *** ")
-testSaveLoad(mols, "savers_out/out_mols.smi", "smiles", indigo.iterateSmilesFile, compare, False)
+testSaveLoad(mols, joinPath("savers_out/out_mols.smi"), "smiles", indigo.iterateSmilesFile, compare, False)
 print("*** SMI with names *** ")
 indigo.setOption("smiles-saving-write-name", "true")
-testSaveLoad(mols, "savers_out/out_mols_with_names.smi", "smiles", indigo.iterateSmilesFile, compare, True)
+testSaveLoad(mols, joinPath("savers_out/out_mols_with_names.smi"), "smiles", indigo.iterateSmilesFile, compare, True)
 print("*** SMI without names *** ")
 indigo.setOption("smiles-saving-write-name", "false")
-testSaveLoad(mols, "savers_out/out_mols_without_names.smi", "smiles", indigo.iterateSmilesFile, compare, False)
+testSaveLoad(mols, joinPath("savers_out/out_mols_without_names.smi"), "smiles", indigo.iterateSmilesFile, compare, False)
 print("*** CML *** ")
-testSaveLoad(mols, "savers_out/out_mols.cml", "cml", indigo.iterateCMLFile, compare, True)
+testSaveLoad(mols, joinPath("savers_out/out_mols.cml"), "cml", indigo.iterateCMLFile, compare, True)
 print("*** RDF *** ")
-testSaveLoad(mols, "savers_out/out_mols.rdf", "rdf", indigo.iterateRDFile, compare, True)
+testSaveLoad(mols, joinPath("savers_out/out_mols.rdf"), "rdf", indigo.iterateRDFile, compare, True)
 # query molecules   
 print("*** Saving query molecules in different formats *** ")
 print("*** SDF *** ")
-testSaveLoad(qmols, "savers_out/out_qmols.sdf", "sdf", indigo.iterateSDFile, compareQuery, True)
+testSaveLoad(qmols, joinPath("savers_out/out_qmols.sdf"), "sdf", indigo.iterateSDFile, compareQuery, True)
 print("*** RDF *** ")
-testSaveLoad(qmols, "savers_out/out_qmols.rdf", "rdf", indigo.iterateRDFile, compareQuery, True)
+testSaveLoad(qmols, joinPath("savers_out/out_qmols.rdf"), "rdf", indigo.iterateRDFile, compareQuery, True)
 # reactions
 print("*** Saving reactions in different formats *** ")
 print("*** RDF *** ")
-testSaveLoad(reacts, "savers_out/out_reacts.rdf", "rdf", indigo.iterateRDFile, compareReactions, True)
+testSaveLoad(reacts, joinPath("savers_out/out_reacts.rdf"), "rdf", indigo.iterateRDFile, compareReactions, True)
 print("*** Reaction SMI without names *** ")
 indigo.setOption("smiles-saving-write-name", "false")
-testSaveLoad(reacts, "savers_out/out_reacts_without_names.smi", "smi", indigo.iterateSmilesFile, compareReactions, False)
+testSaveLoad(reacts, joinPath("savers_out/out_reacts_without_names.smi"), "smi", indigo.iterateSmilesFile, compareReactions, False)
 print("*** Reaction SMI with names *** ")
 indigo.setOption("smiles-saving-write-name", "true")
-testSaveLoad(reacts, "savers_out/out_reacts_with_names.smi", "smi", indigo.iterateSmilesFile, compareReactions, True)
+testSaveLoad(reacts, joinPath("savers_out/out_reacts_with_names.smi"), "smi", indigo.iterateSmilesFile, compareReactions, True)
 # query reactions
 print("*** Saving query reactions in different formats *** ")
 print("*** RDF *** ")
-testSaveLoad(qreacts, "savers_out/out_qreacts.rdf", "rdf", indigo.iterateRDFile, compareQueryReactions, True)
+testSaveLoad(qreacts, joinPath("savers_out/out_qreacts.rdf"), "rdf", indigo.iterateRDFile, compareQueryReactions, True)

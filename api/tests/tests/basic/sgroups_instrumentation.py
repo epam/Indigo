@@ -4,9 +4,9 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-if not os.path.exists("out"):
-   os.makedirs("out")
-saver = indigo.createFileSaver("out/sgroups-instrumentation.sdf", "sdf")
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joinPath("out"))
+saver = indigo.createFileSaver(joinPath("out/sgroups-instrumentation.sdf"), "sdf")
    
 def testSGroupsInstrumentation ():
   indigo.setOption("molfile-saving-skip-date", True)

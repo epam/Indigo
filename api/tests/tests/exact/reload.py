@@ -7,9 +7,9 @@ indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("ignore-stereochemistry-errors", "1")
 mol_db_names = [
-    "../../data/zinc-slice.sdf",
-    "../../data/thiazolidines.sdf",
-    "../../data/sugars.sdf" ]
+    joinPath("../../data/zinc-slice.sdf"),
+    joinPath("../../data/thiazolidines.sdf"),
+    joinPath("../../data/sugars.sdf") ]
 def random_permutation(iterable, r=None):
    """Random selection from itertools.permutations(iterable, r)"""
    pool = tuple(iterable)
@@ -35,7 +35,7 @@ def testMol(mol):
       sys.stderr.write(msg + "\n")
    
 for db_name in mol_db_names:
-   print "Database: %s" % db_name
+   print "Database: %s" % relativePath(db_name)
    idx = 0
    for item in indigo.iterateSDFile(db_name):
       #print("%s (#%s)" % (item.name(), idx))

@@ -4,7 +4,7 @@ from env_indigo import *
 
 indigo = Indigo()
 def testFoldUnfoldSDF (sdfile):
-  print "testing", sdfile
+  print "testing", relativePath(sdfile)
   indigo.setOption("treat-x-as-pseudoatom", "true")
   indigo.setOption("ignore-stereochemistry-errors", "true")
   for mol in indigo.iterateSDFile(sdfile):
@@ -43,9 +43,9 @@ def testFoldUnfoldSingleReaction (smiles):
   rxn2.foldHydrogens()
   for mol in rxn2.iterateMolecules():
     print mol.countAtoms()
-testFoldUnfoldSDF("../../data/sugars.sdf")
+testFoldUnfoldSDF(joinPath("../../data/sugars.sdf"))
 testFoldUnfoldSingleMol("CC[H]")
 testFoldUnfoldSingleReaction("[H]CC>>CC")
 testFoldUnfoldSingleMol("[H][H]")
 testFoldUnfoldSingleMol("[2H]C")
-testFoldUnfoldSDF("molecules/cis_trans_hydrogens_cycle.sdf")
+testFoldUnfoldSDF(joinPath("molecules/cis_trans_hydrogens_cycle.sdf"))

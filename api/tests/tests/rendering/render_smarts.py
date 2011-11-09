@@ -5,14 +5,14 @@ from env_indigo import *
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
-out_dir = "out_smarts"
+out_dir = joinPath("out_smarts")
 if not os.path.exists(out_dir):
    os.makedirs(out_dir)
 indigo.setOption("render-output-format", "png")
 indigo.setOption("render-background-color", "255, 255, 255")
 indigo.setOption("render-coloring", "true")
 idx = 1
-for line in open("molecules/smarts.sma"):
+for line in open(joinPath("molecules/smarts.sma")):
    line = line.rstrip()
    print("%d: %s" % (idx, line))
    try:

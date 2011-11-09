@@ -4,7 +4,7 @@ from env_indigo import *
 
 indigo = Indigo()
 def testSmartsMolfile (filename):
-  print filename
+  print relativePath(filename)
   try:
     indigo.loadMoleculeFromFile(filename)
   except IndigoException, e:
@@ -31,4 +31,4 @@ def testSmartsMolfile (filename):
   else:
     print "not matched"
     
-testSmartsMolfile('molecules/smarts-mrv.mol')
+testSmartsMolfile(joinPath('molecules/smarts-mrv.mol'))

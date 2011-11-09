@@ -4,11 +4,13 @@ from env_indigo import *
 
 indigo = Indigo()
 def testMultipleSave (smifile, iterfunc, issmi):
-  print "TESTING", smifile
-  sdfout = indigo.writeFile("structures.sdf")
-  cmlout = indigo.writeFile("structures.cml")
-  rdfout = indigo.writeFile("structures.rdf")
-  smiout = indigo.writeFile("structures.smi")
+  print "TESTING", relativePath(smifile)
+  if not os.path.exists(joinPath('out')):
+      os.makedirs(joinPath('out'))
+  sdfout = indigo.writeFile(joinPath("out/structures.sdf"))
+  cmlout = indigo.writeFile(joinPath("out/structures.cml"))
+  rdfout = indigo.writeFile(joinPath("out/structures.rdf"))
+  smiout = indigo.writeFile(joinPath("out/structures.smi"))
   rdfout.rdfHeader()
   cmlout.cmlHeader()
   for item in iterfunc(smifile):
@@ -52,10 +54,10 @@ def testMultipleSave (smifile, iterfunc, issmi):
   rdfout.close()
   smiout.close()
   
-  cmliter = indigo.iterateCMLFile("structures.cml")
-  sdfiter = indigo.iterateSDFile("structures.sdf")
-  rdfiter = indigo.iterateRDFile("structures.rdf")
-  smiiter = indigo.iterateSmilesFile("structures.smi")
+  cmliter = indigo.iterateCMLFile(joinPath("out/structures.cml"))
+  sdfiter = indigo.iterateSDFile(joinPath("out/structures.sdf"))
+  rdfiter = indigo.iterateRDFile(joinPath("out/structures.rdf"))
+  smiiter = indigo.iterateSmilesFile(joinPath("out/structures.smi"))
   
   while sdfiter.hasNext():
     cml = cmliter.next()
@@ -84,7 +86,7 @@ def testMultipleSave (smifile, iterfunc, issmi):
       print "MISMATCH"
     if cs4 != cs1:
       print "MISMATCH"
-testMultipleSave("molecules/helma.smi", indigo.iterateSmilesFile, True)
-testMultipleSave("molecules/chemical-structures.smi", indigo.iterateSmilesFile, True)
-testMultipleSave("molecules/pubchem_7m_err.sdf", indigo.iterateSDFile, False)
-testMultipleSave("molecules/acd2d_err.sdf", indigo.iterateSDFile, False)
+testMultipleSave(joinPath("molecules/helma.smi"), indigo.iterateSmilesFile, True)
+testMultipleSave(joinPath("molecules/chemical-structures.smi"), indigo.iterateSmilesFile, True)
+testMultipleSave(joinPath("molecules/pubchem_7m_err.sdf"), indigo.iterateSDFile, False)
+testMultipleSave(joinPath("molecules/acd2d_err.sdf"), indigo.iterateSDFile, False)

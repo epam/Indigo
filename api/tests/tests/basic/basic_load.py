@@ -19,6 +19,6 @@ print("****** Canonical SMILES ********")
 mol.unhighlight()
 print(mol.canonicalSmiles())
 print("****** Loading SDF with multiline properties ********")
-for item in indigo.iterateSDFile("molecules/multiline_properties.sdf"):
+for item in indigo.iterateSDFile(joinPath("molecules/multiline_properties.sdf")):
    for prop in item.iterateProperties():
       print prop.name(), ":", prop.rawData()

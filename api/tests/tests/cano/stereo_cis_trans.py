@@ -6,16 +6,16 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 mol_db_names = [
-   ("../../data/zinc-slice.sdf", indigo.iterateSDFile),
-   ("../../data/thiazolidines.sdf", indigo.iterateSDFile),
-   ("../../data/sugars.sdf",indigo.iterateSDFile),
-   ("molecules/stereo_cis_trans.sdf",indigo.iterateSDFile),
-   ("molecules/helma.smi", indigo.iterateSmilesFile)
+   (joinPath("../../data/zinc-slice.sdf"), indigo.iterateSDFile),
+   (joinPath("../../data/thiazolidines.sdf"), indigo.iterateSDFile),
+   (joinPath("../../data/sugars.sdf"),indigo.iterateSDFile),
+   (joinPath("molecules/stereo_cis_trans.sdf"),indigo.iterateSDFile),
+   (joinPath("molecules/helma.smi"), indigo.iterateSmilesFile)
 ]
 
 def testAll (clear_cis_trans):
    for db_name, load_fund in mol_db_names:
-      print("Database: %s" % db_name)
+      print("Database: %s" % relativePath(db_name))
       idx = 1
       db_name_print = os.path.basename(db_name)
       for item in load_fund(db_name):
@@ -33,9 +33,9 @@ def testAll (clear_cis_trans):
                mol2.clearCisTrans()
             mol2.layout()
             mol2.markEitherCisTrans()
-            mol2.saveMolfile("out.mol")
+            mol2.saveMolfile(joinPath("out.mol"))
             cansm2 = mol2.canonicalSmiles()
-            mol3 = indigo.loadMoleculeFromFile("out.mol")
+            mol3 = indigo.loadMoleculeFromFile(joinPath("out.mol"))
             cansm3 = mol3.canonicalSmiles()
             if cansm2 != cansm3:
                sys.stderr.write("Different canonical smiles for #%s:\n" % idx)

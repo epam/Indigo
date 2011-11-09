@@ -42,11 +42,11 @@ def testScaffold (filename, mode, print_molfile):
       if not indigo.substructureMatcher(item).match(scaf):
         print "ERROR: scaffold", scaf.index(), "not found in the input structure", item.index()
 try:
-  testScaffold("../../data/thiazolidines.sdf", "exact 5", False)
+  testScaffold(joinPath("../../data/thiazolidines.sdf"), "exact 5", False)
 except IndigoException, e:
   print 'caught', getIndigoExceptionText(e)
-testScaffold("../../data/thiazolidines.sdf", "exact 10000", False)
-testScaffold("../../data/thiazolidines.sdf", "approx", False)
-testScaffold("../../data/thiazolidines.sdf", "approx 3", False)
-testScaffold("../../data/sugars.sdf", "exact", True)
-testScaffold("../../data/sugars.sdf", "approx", False)
+testScaffold(joinPath("../../data/thiazolidines.sdf"), "exact 10000", False)
+testScaffold(joinPath("../../data/thiazolidines.sdf"), "approx", False)
+testScaffold(joinPath("../../data/thiazolidines.sdf"), "approx 3", False)
+testScaffold(joinPath("../../data/sugars.sdf"), "exact", True)
+testScaffold(joinPath("../../data/sugars.sdf"), "approx", False)

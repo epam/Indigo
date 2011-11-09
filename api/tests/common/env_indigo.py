@@ -1,6 +1,7 @@
 # Setup enviroment for using Indigo both for Python, Jython and IronPython
 import sys
 import os
+import inspect
 
 def isIronPython():
     return sys.version.lower().find("ironpython") != -1
@@ -9,7 +10,7 @@ def isJython():
     return os.name == 'java'
 
 if isIronPython():
-    import clr
+    import clr #@UnresolvedImport
     cur_path = os.path.dirname(__file__)
     dll_full_path = os.path.join(cur_path, "../../../api/cs/bin/Release/indigo-cs.dll")
     rdll_full_path = os.path.join(cur_path, "../../../api/renderer/cs/bin/Release/indigo-renderer-cs.dll")
@@ -31,7 +32,7 @@ else:
     rdll_full_path = os.path.join(cur_path, "../../../api/renderer/python")
     sys.path.append(dll_full_path)
     sys.path.append(rdll_full_path)
-    if 'INDIGO_COVERAGE' in os.environ and 'COVERAGE_LOADING' in os.environ:
+    if 'INDIGO_COVERAGE' in os.environ:
         from indigo_coverage import IndigoCoverageWrapper as Indigo
     else:
         from indigo import Indigo
@@ -58,3 +59,13 @@ def getIndigoExceptionText(e):
     else:
         return e.value 
     
+def joinPath(*args):
+    frm = inspect.stack()[1]
+    mod = inspect.getmodule(frm[0]) 
+    return os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(mod.__file__)), *args))
+
+def relativePath(databaseFile):
+    frm = inspect.stack()[1]
+    mod = inspect.getmodule(frm[0]) 
+    #print("Database: %s" % os.path.relpath(databaseFile, os.path.dirname(mod.__file__))).replace('\\', '/')
+    return os.path.relpath(databaseFile, os.path.dirname(mod.__file__)).replace('\\', '/')

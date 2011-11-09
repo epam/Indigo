@@ -3,7 +3,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-mol_list = list(indigo.iterateSDFile("molecules/thiazolidines_slice.sdf"))
+mol_list = list(indigo.iterateSDFile(joinPath("molecules/thiazolidines_slice.sdf")))
 pairs = product(mol_list, mol_list)
 for (p1, p2) in pairs:
    print("%s %s" %(p1.name(), p2.name()))

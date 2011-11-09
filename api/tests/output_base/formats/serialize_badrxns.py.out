@@ -1,4 +1,4 @@
-../../../../rxnfiles/crazystereo.rxn
+reactions/crazystereo.rxn
 loaded
 $RXN
 
@@ -224,7 +224,7 @@ M  V30 END CTAB
 M  V30 END PRODUCT
 M  END
 
-../../../../rxnfiles/crazystereo-badvalence.rxn
+reactions/crazystereo-badvalence.rxn
 loaded
 $RXN
 

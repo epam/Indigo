@@ -11,7 +11,7 @@ def reducePrecision(str_data):
    # Remove last digit because of float-point rounding differences between Windows and Linux
    return re.sub("(\d.\d\d\d\d\d)\d", lambda m: "%s0" % m.group(1), str_data)
 def testSerializeBadMols (filename):
-  print filename
+  print relativePath(filename)
   mol = indigo.loadMoleculeFromFile(filename)
   buf = mol.serialize()
   print 'molecule serialized to', len(buf), 'bytes'
@@ -29,5 +29,5 @@ def testSerializeBadMols (filename):
   print 'highlighted molecule serialized to', len(buf), 'bytes'
   mol2 = indigo.unserialize(buf)
   print reducePrecision(mol2.molfile())
-testSerializeBadMols('molecules/crazystereo.mol')
-testSerializeBadMols('molecules/crazystereo-badvalence.mol')
+testSerializeBadMols(joinPath('molecules/crazystereo.mol'))
+testSerializeBadMols(joinPath('molecules/crazystereo-badvalence.mol'))

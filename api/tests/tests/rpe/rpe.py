@@ -4,23 +4,26 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
+
 def getProduct (reaction):
    for mol in reaction.iterateProducts() : 
       return mol
    return None  
+
 def loadSdf (sdf_path):
    return [m.clone() for m in indigo.iterateSDFile(sdf_path)]
    
 def buildRpeReactions (test_dir):
-   reaction = indigo.loadQueryReactionFromFile("tests/%s/reaction.rxn" % test_dir)
+   reaction = indigo.loadQueryReactionFromFile(joinPath("tests/{0}/reaction.rxn".format(test_dir)))
    mons = []
    for i in range(reaction.countReactants()):
-      reactant_mons = loadSdf("tests/%s/mons%d.sdf" % (test_dir, i + 1))
+      reactant_mons = loadSdf(joinPath("tests/{0}/mons{1}.sdf".format(test_dir, i + 1)))
       mons.append(reactant_mons)
    
    return indigo.reactionProductEnumerate(reaction, mons)
+
 def testRpe ():
-   for test_dir in sorted(os.listdir("tests")):
+   for test_dir in sorted(os.listdir(joinPath("tests"))):
       print("Test %s" % test_dir)
       rpe_reactions = buildRpeReactions(test_dir)
       products_smiles = []

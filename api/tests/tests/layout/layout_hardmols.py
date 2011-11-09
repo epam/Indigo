@@ -7,11 +7,11 @@ indigo = Indigo()
 def testLayout ():
   indigo.setOption("layout-max-iterations", 1)
   indigo.setOption("skip-3d-chirality", True)
-  files = os.listdir("../../data/chebi")
+  files = os.listdir(joinPath("../../data/chebi"))
   files.sort()
   for filename in files:
-    mol = indigo.loadMoleculeFromFile("../../data/chebi/" + filename)
-    print filename
+    mol = indigo.loadMoleculeFromFile(joinPath("../../data/chebi/", filename))
+    print relativePath(joinPath("../../data/chebi/", filename))
     try:
       mol.layout()
     except IndigoException, e:

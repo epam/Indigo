@@ -4,7 +4,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-for root, dirnames, filenames in os.walk("molecules/set1"):
+for root, dirnames, filenames in os.walk(joinPath("molecules/set1")):
    filenames.sort()
    for filename in filenames:
       print "%s: " % filename,

@@ -5,9 +5,9 @@ from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
-if not os.path.exists("out"):
-   os.makedirs("out")
-saver = indigo.createFileSaver("out/rsite.sdf", "sdf")
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joinPath("out"))
+saver = indigo.createFileSaver(joinPath("out/rsite.sdf"), "sdf")
 mol = indigo.loadMolecule("CCNNCN")
 mol.addRSite("R")
 mol.addRSite("R")

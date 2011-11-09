@@ -4,8 +4,8 @@ from env_indigo import *
 
 indigo = Indigo()
 # load queries
-targets = list(indigo.iterateSDFile("../../data/thiazolidines.sdf"))
-queries = [indigo.loadQueryMolecule(x.rawData()) for x in indigo.iterateSDFile("../../data/rand_queries_small.sdf")]
+targets = list(indigo.iterateSDFile(joinPath("../../data/thiazolidines.sdf")))
+queries = [indigo.loadQueryMolecule(x.rawData()) for x in indigo.iterateSDFile(joinPath("../../data/rand_queries_small.sdf"))]
 for i in range(len(queries)):
    queries[i].setName("#%s" % i)
    

@@ -5,17 +5,17 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 mol_db_names = [
-   ("../../data/tetrahedral-all.cml", indigo.iterateCMLFile),
-   ("molecules/helma.smi", indigo.iterateSmilesFile),
-   ("molecules/arom.sdf", indigo.iterateSDFile),
-   ("molecules/empty.sdf", indigo.iterateSDFile),
-   ("molecules/empty1.sdf", indigo.iterateSDFile)
+   (joinPath("../../data/tetrahedral-all.cml"), indigo.iterateCMLFile),
+   (joinPath("molecules/helma.smi"), indigo.iterateSmilesFile),
+   (joinPath("molecules/arom.sdf"), indigo.iterateSDFile),
+   (joinPath("molecules/empty.sdf"), indigo.iterateSDFile),
+   (joinPath("molecules/empty1.sdf"), indigo.iterateSDFile)
    ]
-f = indigo.writeFile("out.sdf")
-f2 = open("cano_out.smi", "w")
+f = indigo.writeFile(joinPath("out.sdf"))
+f2 = open(joinPath("cano_out.smi"), "w")
    
 for db_name, load_fund in mol_db_names:
-   print("Database: %s" % db_name)
+   print("Database: {0}".format(relativePath(db_name)))
    idx = 1
    for item in load_fund(db_name):
       try:
@@ -42,7 +42,7 @@ f2.close()
 print("*** Processing result molecules ***")
    
 idx = 1
-for item in indigo.iterateSDFile("out.sdf"):
+for item in indigo.iterateSDFile(joinPath("out.sdf")):
    try:
       cansm = item.canonicalSmiles()
    except IndigoException, e:

@@ -5,15 +5,16 @@ from env_indigo import *
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
-if not os.path.exists("out"):
-   os.makedirs("out")
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joinPath("out"))
+   
 def testAlignAtoms ():
   query = indigo.loadSmarts("[#7]1~[#6]~[#6]~[#7]~[#6]~[#6]2~[#6]~[#6]~[#6]~[#6]~[#6]~1~2")
-  sdfout = indigo.writeFile("out/aligned.sdf")
+  sdfout = indigo.writeFile(joinPath("out/aligned.sdf"))
   xyz = []
   collection = indigo.createArray()
   refatoms = []
-  for structure in indigo.iterateSDFile("molecules/benzodiazepine.sdf.gz"):
+  for structure in indigo.iterateSDFile(joinPath("molecules/benzodiazepine.sdf.gz")):
     match = indigo.substructureMatcher(structure).match(query)
     if not match:
       print "structure not matched, this is unexpected"
@@ -32,6 +33,7 @@ def testAlignAtoms ():
     collection.arrayAdd(structure)
     if structure.index() == 15:
       break
+  
   indigo.setOption("render-output-format", "png")
   indigo.setOption("render-highlight-thickness-enabled", "true")
   indigo.setOption("render-image-size", "400, 400")
@@ -40,6 +42,6 @@ def testAlignAtoms ():
   indigo.setOption("render-grid-title-offset", "2")
   indigo.setOption("render-grid-title-alignment", 0.5)
   indigo.setOption("render-coloring", "true")
-  renderer.renderGridToFile(collection, None, 4, "out/grid.png")
-  renderer.renderGridToFile(collection, refatoms, 4, "out/grid1.png")
+  renderer.renderGridToFile(collection, None, 4, joinPath("out/grid.png"))
+  renderer.renderGridToFile(collection, refatoms, 4, joinPath("out/grid1.png"))
 testAlignAtoms()

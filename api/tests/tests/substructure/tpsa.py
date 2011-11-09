@@ -4,7 +4,7 @@ from env_indigo import *
 
 indigo = Indigo()
 patterns = []
-for line in open("molecules/tpsa.tab").readlines()[1:]:
+for line in open(joinPath("molecules/tpsa.tab")).readlines()[1:]:
   parts = line.split("\t")
   patterns.append([float(parts[0]), indigo.loadSmarts(parts[1])])
 def calcTPSA (smiles):

@@ -4,7 +4,7 @@ from env_indigo import *
 
 indigo = Indigo()
 def testReactionSaveLoad (filename):
-  print "Loading", filename
+  print "Loading", relativePath(filename)
   rxn = indigo.loadReactionFromFile(filename)
   print rxn.smiles()
   rxn2 = indigo.loadReaction(rxn.smiles())
@@ -27,11 +27,11 @@ def testQueryReactionSaveLoad (filename):
   print rxn3.smiles()
   if rxn.countMolecules() != rxn3.countMolecules():
     print "ERROR: rxn != rxn3"
-testReactionSaveLoad("../../../../rxnfiles/disconnected_w_stereo.rxn")
-testReactionSaveLoad("../../../../rxnfiles/disconnected.rxn")
-testReactionSaveLoad("../../../../rxnfiles/catalysts3000.rxn")
-testReactionSaveLoad("../../../../rxnfiles/catalysts2000.rxn")
-testReactionSaveLoad("../../../../rxnfiles/amiderxn2.rxn")
-testReactionSaveLoad("../../../../rxnfiles/test_hi.rxn")
-testReactionSaveLoad("../../../../rxnfiles/pseudoatoms/psd-pol.rxn")
+testReactionSaveLoad(joinPath("../../../../rxnfiles/disconnected_w_stereo.rxn"))
+testReactionSaveLoad(joinPath("../../../../rxnfiles/disconnected.rxn"))
+testReactionSaveLoad(joinPath("../../../../rxnfiles/catalysts3000.rxn"))
+testReactionSaveLoad(joinPath("../../../../rxnfiles/catalysts2000.rxn"))
+testReactionSaveLoad(joinPath("../../../../rxnfiles/amiderxn2.rxn"))
+testReactionSaveLoad(joinPath("../../../../rxnfiles/test_hi.rxn"))
+testReactionSaveLoad(joinPath("../../../../rxnfiles/pseudoatoms/psd-pol.rxn"))
 #testQueryReactionSaveLoad("../../../../rxnfiles/pseudoatoms/x-o.rxn")

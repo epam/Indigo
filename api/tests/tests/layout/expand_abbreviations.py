@@ -7,13 +7,13 @@ indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", "true")
   
 m_sets = [
-   'molecules/abbreviations_test.mol',
-   'molecules/abbreviations_tests.sdf'
+   joinPath('molecules/abbreviations_test.mol'),
+   joinPath('molecules/abbreviations_tests.sdf')
 ]
-if not os.path.exists("out"):
-   os.makedirs("out")
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joinPath("out"))
    
-saver = indigo.createFileSaver("out/abbreviations_test_out.sdf", "SDF")
+saver = indigo.createFileSaver(joinPath("out/abbreviations_test_out.sdf"), "SDF")
 abbr_dict = { 
    "NO2" : "[O-][N+]([*])=O", 
    "Ph" : "*C1=CC=CC=C1",
@@ -58,7 +58,7 @@ def expand_abbreviations(m):
    
    saver.append(m)
 for mset in m_sets:
-   print "*** Molecule set %s ***" % mset
+   print "*** Molecule set %s ***" % relativePath(mset)
    idx = 1
    for m in indigo.iterateSDFile(mset):
       try:

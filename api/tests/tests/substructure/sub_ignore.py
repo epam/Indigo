@@ -3,7 +3,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-target_mol = indigo.loadMoleculeFromFile("molecules/for_ignore.mol")
+target_mol = indigo.loadMoleculeFromFile(joinPath("molecules/for_ignore.mol"))
 queries = [ "C1CCCC1", "C1CCCCC1", "OC=O", "C=C", "C1CCNCC1" ] 
 queries_mol = []
 match_dict = dict()
@@ -12,6 +12,7 @@ for qsm in queries:
    q.setName(qsm)
    queries_mol.append(q)
    match_dict[q.name()] = 0
+   
 def testIgnoreAtoms(matcher):
    for k in match_dict.keys():
       match_dict[k] = 0

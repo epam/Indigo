@@ -4,12 +4,12 @@ from env_indigo import *
 
 indigo = Indigo()
 # load targets
-targets = list(indigo.iterateSDFile("molecules/arom_targets.sdf"))
+targets = list(indigo.iterateSDFile(joinPath("molecules/arom_targets.sdf")))
 #targets = [ indigo.loadMoleculeFromFile("test.mol") ]
 for t in targets:
    t.aromatize()
 # load queries
-queries = [indigo.loadQueryMolecule(x.rawData()) for x in indigo.iterateSDFile("molecules/arom_queries.sdf")]
+queries = [indigo.loadQueryMolecule(x.rawData()) for x in indigo.iterateSDFile(joinPath("molecules/arom_queries.sdf"))]
 #queries = [ indigo.loadQueryMoleculeFromFile("query.mol") ]
 #indigo.dbgBreakpoint()
 for i in range(len(queries)):

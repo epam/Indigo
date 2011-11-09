@@ -11,7 +11,7 @@ def reducePrecision(str_data):
    # Remove last digit because of float-point rounding differences between Windows and Linux
    return re.sub("(\d.\d\d\d\d\d)\d", lambda m: "%s0" % m.group(1), str_data)
 def testSerializeBadRxns (filename):
-  print filename
+  print relativePath(filename)
   rxn = indigo.loadReactionFromFile(filename)
   print 'loaded'
   print rxn.rxnfile()
@@ -32,5 +32,5 @@ def testSerializeBadRxns (filename):
   print 'highlighted reaction serialized to', len(buf), 'bytes'
   rxn2 = indigo.unserialize(buf)
   print reducePrecision(rxn2.rxnfile())
-testSerializeBadRxns('../../../../rxnfiles/crazystereo.rxn')
-testSerializeBadRxns('../../../../rxnfiles/crazystereo-badvalence.rxn')
+testSerializeBadRxns(joinPath('reactions/crazystereo.rxn'))
+testSerializeBadRxns(joinPath('reactions/crazystereo-badvalence.rxn'))
