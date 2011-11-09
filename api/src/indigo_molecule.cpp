@@ -1394,6 +1394,8 @@ CEXPORT int indigoRemoveConstraints (int item, const char *str_type)
          type = QueryMolecule::ATOM_NUMBER;
       else if (strcasecmp(str_type, "rsite") == 0)
          type = QueryMolecule::ATOM_RSITE;
+      else if (strcasecmp(str_type, "hydrogens") == 0)
+         type = QueryMolecule::ATOM_TOTAL_H;
       else
          throw IndigoError("indigoRemoveConstraints(): can not parse type: %s", str_type);
 
