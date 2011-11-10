@@ -320,6 +320,10 @@ class Indigo(object):
 
     self.IndigoObject.countSuperatoms = Indigo._member_int(Indigo._lib.indigoCountSuperatoms)
     self.IndigoObject.countDataSGroups = Indigo._member_int(Indigo._lib.indigoCountDataSGroups)
+    self.IndigoObject.countRepeatingUnits = Indigo._member_int(Indigo._lib.indigoCountRepeatingUnits)
+    self.IndigoObject.countMultipleGroups = Indigo._member_int(Indigo._lib.indigoCountMultipleGroups)
+    self.IndigoObject.countGenericSGroups = Indigo._member_int(Indigo._lib.indigoCountGenericSGroups)
+    
     self.IndigoObject.iterateSuperatoms = Indigo._member_obj(Indigo._lib.indigoIterateSuperatoms)
     self.IndigoObject.iterateDataSGroups = Indigo._member_obj(Indigo._lib.indigoIterateDataSGroups)
     self.IndigoObject.getSuperatom = Indigo._member_obj_int(Indigo._lib.indigoGetSuperatom)
