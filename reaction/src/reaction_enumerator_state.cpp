@@ -445,7 +445,7 @@ void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule, Array<int>
 
    for (int i = molecule.vertexBegin(); i != molecule.vertexEnd(); i = molecule.vertexNext(i))
    {
-      if ((atoms_to_keep != 0) && (atoms_to_keep->at(i) == 1))
+      if ((atoms_to_keep != 0) && (atoms_to_keep->at(i)))
          continue;
 
       if (molecule.getAtomNumber(i) != ELEM_H || 
