@@ -286,6 +286,11 @@ int MoleculeAutomorphismSearch::_vertex_cmp (Graph &graph, int v1, int v2, const
    if (ret != 0)
       return -ret;
 
+   int h1 = mol.isAtomHighlighted(v1);
+   int h2 = mol.isAtomHighlighted(v1);
+   if (h1 != h2)
+      return h1 - h2;
+
    return 0;
 }
 
@@ -294,6 +299,7 @@ int MoleculeAutomorphismSearch::_edge_rank (Graph &graph, int edge_idx, const vo
    const MoleculeAutomorphismSearch &self = *(const MoleculeAutomorphismSearch *)context;
    Molecule &mol = (Molecule &)graph;
 
+   int rank0 = -1;
    if (self._cistrans_stereo_bond_parity[edge_idx] != 0)
    {
       // Check parity
@@ -303,13 +309,18 @@ int MoleculeAutomorphismSearch::_edge_rank (Graph &graph, int edge_idx, const vo
       if (beg_valid && end_valid)
       {
          if (self._cistrans_stereo_bond_parity[edge_idx] == 1)
-            return 5;
+            rank0 = 5;
          else 
-            return 6;
+            rank0 = 6;
       }
    }
 
-   return mol.getBondOrder(edge_idx);
+   if (rank0 == -1)
+      rank0 = mol.getBondOrder(edge_idx);
+
+   // Also take into account highlighting
+   int highlighted = mol.isBondHighlighted(edge_idx);
+   return 2 * rank0 + highlighted;
 }
 
 bool MoleculeAutomorphismSearch::_check_automorphism (Graph &graph, const Array<int> &mapping, const void *context)
