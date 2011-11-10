@@ -525,7 +525,7 @@ bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, A
 
    if (!_startEmbeddingEnumerator(molecule))
    {
-      _foldHydrogens(molecule, &_product_forbidden_atoms);
+      _foldHydrogens(molecule, &forbidden_atoms);
       return false;
    }
 
