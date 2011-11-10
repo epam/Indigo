@@ -1084,6 +1084,7 @@ void MolfileLoader::_readCtab2000 ()
          }
          else if (strncmp(chars, "SCN", 3) == 0)
          {
+            // The format is the following: M SCNnn8 sss ttt ...
             int n = _scanner.readIntFix(3);
 
             while (n-- > 0)
@@ -1094,15 +1095,21 @@ void MolfileLoader::_readCtab2000 ()
                if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SRU)
                {
                   BaseMolecule::RepeatingUnit &ru = _bmol->repeating_units[_sgroup_mapping[sgroup_idx]];
-                  _scanner.skipSpace();
-                  QS_DEF(Array<char>, id);
-                  _scanner.readWord(id, 0);
-                  if (strncmp(id.ptr(), "HH", 2) == 0)
+                  char id[4];
+                  _scanner.skip(1);
+                  _scanner.readCharsFix(3, id);
+
+                  if (strncmp(id, "HH", 2) == 0)
                      ru.connectivity = BaseMolecule::RepeatingUnit::HEAD_TO_HEAD;
-                  else if (strncmp(id.ptr(), "HT", 2) == 0)
+                  else if (strncmp(id, "HT", 2) == 0)
                      ru.connectivity = BaseMolecule::RepeatingUnit::HEAD_TO_TAIL;
-                  else if (strncmp(id.ptr(), "EU", 2) == 0)
+                  else if (strncmp(id, "EU", 2) == 0)
                      ru.connectivity = BaseMolecule::RepeatingUnit::EITHER;
+                  else
+                  {
+                     id[3] = 0;
+                     throw Error("Undefined Sgroup connectivity: '%s'", id);
+                  }
                }
             }
             _scanner.skipLine();
@@ -2325,96 +2332,120 @@ void MolfileLoader::_readCtab3000 ()
       _scanner.readLine(str, true);
    }
 
-   if (strncmp(str.ptr(), "M  V30 BEGIN COLLECTION", 23) == 0)
+   // Read collections and sgroups
+   // There is no predefined order: sgroups may appear before collection
+   bool collection_parsed = false, sgroups_parsed = false;
+   while (strncmp(str.ptr(), "M  V30 END CTAB", 15) != 0)
    {
-      while (1)
+      if (strncmp(str.ptr(), "M  V30 BEGIN COLLECTION", 23) == 0)
       {
-         _readMultiString(str);
-
-         if (strncmp(str.ptr(), "END COLLECTION", 14) == 0)
-            break;
-
-         BufferScanner strscan(str.ptr());
-         char coll[14];
-
-         strscan.readCharsFix(13, coll);
-         coll[13] = 0;
-
-         int stereo_type = 0;
-         int stereo_group = 0;
-         int n = 0;
-
-         if (strcmp(coll, "MDLV30/STERAC") == 0)
-            stereo_type = MoleculeStereocenters::ATOM_AND;
-         else if (strcmp(coll, "MDLV30/STEREL") == 0)
-            stereo_type = MoleculeStereocenters::ATOM_OR;
-         else if (strcmp(coll, "MDLV30/STEABS") == 0)
-            stereo_type = MoleculeStereocenters::ATOM_ABS;
-         else if (strcmp(coll, "MDLV30/HILITE") == 0)
-         {
-            QS_DEF(Array<char>, what);
-
-            strscan.skipSpace();
-            strscan.readWord(what, " =");
-
-            if (strcmp(what.ptr(), "ATOMS") == 0)
-            {
-               strscan.skip(2); // =(
-               n = strscan.readInt1();
-               while (n -- > 0)
-                  _bmol->highlightAtom(strscan.readInt1() - 1);
-            }
-            else if (strcmp(what.ptr(), "BONDS") == 0)
-            {
-               strscan.skip(2); // =(
-               n = strscan.readInt1();
-               while (n -- > 0)
-                  _bmol->highlightBond(strscan.readInt1() - 1);
-            }
-            else
-               throw Error("unknown highlighted object: %s", what.ptr());
-            
-            continue;
-         }
-         else
-            throw Error("unknown collection: %s", coll);
-
-         if (stereo_type == MoleculeStereocenters::ATOM_OR ||
-             stereo_type == MoleculeStereocenters::ATOM_AND)
-            stereo_group = strscan.readInt1();
-         else
-            strscan.skip(1);
-
-         strscan.skip(7); // ATOMS=(
-         n = strscan.readInt1();
-         while (n -- > 0)
-         {
-            int atom_idx = strscan.readInt1() - 1;
-            
-            _stereocenter_types[atom_idx] = stereo_type;
-            _stereocenter_groups[atom_idx] = stereo_group;
-         }
+         if (collection_parsed)
+            throw Error("COLLECTION block has already been parsed");
+         _readCollectionBlock3000();
+         collection_parsed = true;
       }
+      else if (strncmp(str.ptr(), "M  V30 BEGIN SGROUP", 19) == 0)
+      {
+         if (sgroups_parsed)
+            throw Error("SGROUP block has already been parsed");
+         _readSGroupsBlock3000();
+         sgroups_parsed = true;
+      }
+      else
+         throw Error("error reading CTAB block footer: %s", str.ptr());
+
       _scanner.readLine(str, true);
    }
-   else if (strncmp(str.ptr(), "M  V30 BEGIN SGROUP", 19) == 0)
+}
+
+void MolfileLoader::_readSGroupsBlock3000 ()
+{
+   QS_DEF(Array<char>, str);
+
+   while (1)
    {
-      while (1)
-      {
-         _readMultiString(str);
+      _readMultiString(str);
 
-         if (strncmp(str.ptr(), "END SGROUP", 10) == 0)
-            break;
-         if (STRCMP(str.ptr(), "M  V30 DEFAULT") == 0)
-            continue;
-         _readSGroup3000(str.ptr());
-      }
-      _scanner.readLine(str, true);
+      if (strncmp(str.ptr(), "END SGROUP", 10) == 0)
+         break;
+      if (STRCMP(str.ptr(), "M  V30 DEFAULT") == 0)
+         continue;
+      _readSGroup3000(str.ptr());
    }
+}
 
-   if (strncmp(str.ptr(), "M  V30 END CTAB", 15) != 0)
-      throw Error("error reading CTAB block footer");
+void MolfileLoader::_readCollectionBlock3000 ()
+{
+   QS_DEF(Array<char>, str);
 
+   while (1)
+   {
+      _readMultiString(str);
+
+      if (strncmp(str.ptr(), "END COLLECTION", 14) == 0)
+         break;
+
+      BufferScanner strscan(str.ptr());
+      char coll[14];
+
+      strscan.readCharsFix(13, coll);
+      coll[13] = 0;
+
+      int stereo_type = 0;
+      int stereo_group = 0;
+      int n = 0;
+
+      if (strcmp(coll, "MDLV30/STERAC") == 0)
+         stereo_type = MoleculeStereocenters::ATOM_AND;
+      else if (strcmp(coll, "MDLV30/STEREL") == 0)
+         stereo_type = MoleculeStereocenters::ATOM_OR;
+      else if (strcmp(coll, "MDLV30/STEABS") == 0)
+         stereo_type = MoleculeStereocenters::ATOM_ABS;
+      else if (strcmp(coll, "MDLV30/HILITE") == 0)
+      {
+         QS_DEF(Array<char>, what);
+
+         strscan.skipSpace();
+         strscan.readWord(what, " =");
+
+         if (strcmp(what.ptr(), "ATOMS") == 0)
+         {
+            strscan.skip(2); // =(
+            n = strscan.readInt1();
+            while (n -- > 0)
+               _bmol->highlightAtom(strscan.readInt1() - 1);
+         }
+         else if (strcmp(what.ptr(), "BONDS") == 0)
+         {
+            strscan.skip(2); // =(
+            n = strscan.readInt1();
+            while (n -- > 0)
+               _bmol->highlightBond(strscan.readInt1() - 1);
+         }
+         else
+            throw Error("unknown highlighted object: %s", what.ptr());
+            
+         continue;
+      }
+      else
+         throw Error("unknown collection: %s", coll);
+
+      if (stereo_type == MoleculeStereocenters::ATOM_OR ||
+            stereo_type == MoleculeStereocenters::ATOM_AND)
+         stereo_group = strscan.readInt1();
+      else
+         strscan.skip(1);
+
+      strscan.skip(7); // ATOMS=(
+      n = strscan.readInt1();
+      while (n -- > 0)
+      {
+         int atom_idx = strscan.readInt1() - 1;
+            
+         _stereocenter_types[atom_idx] = stereo_type;
+         _stereocenter_groups[atom_idx] = stereo_group;
+      }
+   }
 }
 
 void MolfileLoader::_preparePseudoAtomLabel (Array<char> &pseudo)

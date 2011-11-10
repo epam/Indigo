@@ -124,6 +124,8 @@ protected:
    void _readSGroup3000 (const char *str);
    void _readRGroups3000 ();
    void _readSGroupDisplay (Scanner &scanner, BaseMolecule::DataSGroup &dsg);
+   void _readCollectionBlock3000 ();
+   void _readSGroupsBlock3000 ();
    void _preparePseudoAtomLabel (Array<char> &pseudo);
    void _readMultiString (Array<char> &str);
    void _init ();

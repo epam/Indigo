@@ -41,11 +41,15 @@ int Scanner::readIntFix (int digits)
 
    char *end;
    result = strtol(buf, &end, 10);
+   // Check that some digits were read
+   if (buf == end)
+      throw Error("readIntFix(%d): invalid number representation: \"%s\"", digits, buf);
+
    // Check that the unread part contains only spaces
    while (end != buf + digits)
    {
       if (!isspace(*end))
-         throw Error("readIntFix(): invalid number representation: %s", buf);
+         throw Error("readIntFix(%d): invalid number representation: \"%s\"", digits, buf);
       end++;
    }
 
