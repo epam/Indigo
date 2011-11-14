@@ -4,7 +4,7 @@ from env_indigo import *
 
 indigo = Indigo()
 def testMultipleSave (smifile, iterfunc, issmi):
-  print "TESTING", relativePath(smifile)
+  print("TESTING " + relativePath(smifile))
   if not os.path.exists(joinPath('out')):
       os.makedirs(joinPath('out'))
   sdfout = indigo.writeFile(joinPath("out/structures.sdf"))
@@ -18,9 +18,9 @@ def testMultipleSave (smifile, iterfunc, issmi):
     try:
       item.countAtoms()
     except IndigoException, e:
-      print item.index(), ':', getIndigoExceptionText(e)
+      print('{0} : {1}'.format(item.index(), getIndigoExceptionText(e)))
       if issmi:
-        print item.rawData()
+        print(item.rawData())
       exc = True
     if not exc:
       #item.clearCisTrans()
@@ -30,15 +30,15 @@ def testMultipleSave (smifile, iterfunc, issmi):
       try:
         item.markEitherCisTrans()
       except IndigoException, e:
-        print item.index(), '(while markEitherCisTrans) :', getIndigoExceptionText(e)
+        print('{0} (while markEitherCisTrans) : {1}'.format(item.index(), getIndigoExceptionText(e)))
         if issmi:
-          print item.rawData()
+          print(item.rawData())
         continue
       
       if issmi:
-        item.setName("structure-" + str(item.index()) + " " + item.rawData())
+        item.setName("structure-{0} {1}".format((item.index()), item.rawData()))
       else:
-        item.setName("structure-" + str(item.index()))
+        item.setName("structure-{0}".format(item.index()))
       item.setProperty("NUMBER", str(item.index()))
       cmlout.cmlAppend(item)
       smiout.smilesAppend(item)
@@ -65,7 +65,7 @@ def testMultipleSave (smifile, iterfunc, issmi):
     rdf = rdfiter.next()
     smi = smiiter.next()
  
-    print sdf.index(), sdf.name()
+    print('{0} {1}'.format(sdf.index(), sdf.name()))
     sdf.resetSymmetricCisTrans()
     rdf.resetSymmetricCisTrans()
     try:
@@ -74,18 +74,18 @@ def testMultipleSave (smifile, iterfunc, issmi):
       cs3 = smi.canonicalSmiles()
       cs4 = cml.canonicalSmiles()
     except IndigoException, e:
-      print getIndigoExceptionText(e)
+      print(getIndigoExceptionText(e))
       continue
-    print cs1
-    print cs2
-    print cs3
-    print cs4
+    print(cs1)
+    print(cs2)
+    print(cs3)
+    print(cs4)
     if cs2 != cs1:
-      print "MISMATCH"
+      print("MISMATCH")
     if cs3 != cs1:
-      print "MISMATCH"
+      print("MISMATCH")
     if cs4 != cs1:
-      print "MISMATCH"
+      print("MISMATCH")
 testMultipleSave(joinPath("molecules/helma.smi"), indigo.iterateSmilesFile, True)
 testMultipleSave(joinPath("molecules/chemical-structures.smi"), indigo.iterateSmilesFile, True)
 testMultipleSave(joinPath("molecules/pubchem_7m_err.sdf"), indigo.iterateSDFile, False)

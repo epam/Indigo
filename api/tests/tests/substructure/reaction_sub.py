@@ -10,31 +10,31 @@ def testSingleReactionSub (rxn1, rxn2, expected, hl):
   rxn2 = indigo.loadReaction(rxn2)
   match = indigo.substructureMatcher(rxn2).match(rxn1)
   if match:
-    print "matched",
+    sys.stdout.write("matched")
   else:
-    print "unmatched",
+    sys.stdout.write("unmatched")
   if (match is None) == expected:
-    print " (unexpected)",
+    sys.stdout.write(" (unexpected)")
   print
   if not match or not hl:
     return
   for mol in rxn1.iterateMolecules():
-    print 'mol ', mol.index()
+    print('mol  {0}'.format(mol.index()))
     for atom in mol.iterateAtoms():
       mapped = match.mapAtom(atom)
       if not mapped:
         mapped = '?'
       else:
         mapped = mapped.index()
-      print 'atom ', atom.index(), '->', mapped
+      print('atom  {0} -> {1}'.format(atom.index(), mapped))
     for bond in mol.iterateBonds():
       mapped = match.mapBond(bond)
       if not mapped:
         mapped = '?'
       else:
         mapped = mapped.index()
-      print 'bond ', bond.index(), '->', mapped
-  print match.highlightedTarget().smiles()
+      print('bond  {0} -> {1}'.format(bond.index(), mapped))
+  print(match.highlightedTarget().smiles())
   
 testSingleReactionSub("[H,O]CN[H,O]>CCC>[H]PC", "OCN>CC>PCO[H]", True, True)
 testSingleReactionSub("[Na+]>>", "[Na+]>>", True, True)

@@ -17,7 +17,7 @@ def testAlignAtoms ():
   for structure in indigo.iterateSDFile(joinPath("molecules/benzodiazepine.sdf.gz")):
     match = indigo.substructureMatcher(structure).match(query)
     if not match:
-      print "structure not matched, this is unexpected"
+      print("structure not matched, this is unexpected")
       return
     if not structure.index():
       for atom in query.iterateAtoms():
@@ -25,7 +25,7 @@ def testAlignAtoms ():
     else:
       atoms = [match.mapAtom(atom).index() for atom in query.iterateAtoms()]
       x = structure.alignAtoms(atoms, xyz)
-      print '%.6f' % x
+      print('%.6f' % x)
     
       structure.foldHydrogens()
       sdfout.sdfAppend(structure)

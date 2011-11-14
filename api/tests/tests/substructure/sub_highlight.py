@@ -23,7 +23,7 @@ def testSubstructureHL ():
     if bond is None:
       continue
     bond.highlight()
-  print target.smiles()
+  print(target.smiles())
   target.unhighlight()
-  print target.smiles()
+  print(target.smiles())
 testSubstructureHL()

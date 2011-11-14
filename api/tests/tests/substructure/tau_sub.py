@@ -6,21 +6,22 @@ indigo = Indigo()
 def testSingleTauMatch (mol1, mol2, flags, expected, hl):
   match = indigo.substructureMatcher(mol2, flags).match(mol1)
   if match:
-    print "matched",
+    sys.stdout.write("matched")
   else:
-    print "unmatched",
+    sys.stdout.write("unmatched")
   if (match is None) == expected:
-    print "(unexpected)",
+    sys.stdout.write("(unexpected)")
   print
   if match and hl:
-    print match.highlightedTarget().smiles()
+    print(match.highlightedTarget().smiles())
     for atom in mol1.iterateAtoms():
       mapped = match.mapAtom(atom)
       if mapped is None:
         mapped = '?'
       else:
         mapped = mapped.index()
-      print atom.index(), '->', mapped
+      print('{0} -> {1}'.format(atom.index(), mapped))
+      
 def testTauSubFlags():
   indigo.clearTautomerRules()
   indigo.setTautomerRule(1, "N,O,P,S,As,Se,Sb,Te", "N,O,P,S,As,Se,Sb,Te")

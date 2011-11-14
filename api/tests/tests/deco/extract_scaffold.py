@@ -10,7 +10,7 @@ print("Should extract all possible exact MCS for given molecule set (non aromati
 deco = indigo.extractCommonScaffold([m1, m2], "EXACT")
 scaffold_smiles = []
 for scaffold in deco.allScaffolds().iterateArray():
-   scaffold_smiles.append(indigo.loadMolecule(scaffold.smiles()).canonicalSmiles())
+    scaffold_smiles.append(indigo.loadMolecule(scaffold.smiles()).canonicalSmiles())
 for smiles in sorted(scaffold_smiles):
-   print "  %s" % smiles
+    print("  %s" % smiles)
    

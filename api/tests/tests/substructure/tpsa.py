@@ -13,7 +13,7 @@ def calcTPSA (smiles):
   tpsa = 0
   for pattern in patterns:
     tpsa += pattern[0] * matcher.countMatches(pattern[1])
-  print tpsa
+  print(tpsa)
 calcTPSA("CN2C(=O)N(C)C(=O)C1=C2N=CN1C")
 calcTPSA("OCSCCCCC1=CC2=C(C=CC=C2P)C(Cl)=C1")
 calcTPSA("OCSCCCCc1cc(Cl)c2cccc(P)c2c1")

@@ -17,21 +17,21 @@ print("Should correctly save highlighted structues")
 decomp_iter = indigo.decomposeMolecules(scaffold, array)
 cnt = 0
 for decomp in decomp_iter.iterateDecomposedMolecules():
-   print "%d:" % cnt
-   cnt += 1
-   
-   high_mol = decomp.decomposedMoleculeHighlighted()
-   indigo.setOption("molfile-saving-mode", "2000")
-   mol1 = indigo.loadMolecule(high_mol.molfile())
-   indigo.setOption("molfile-saving-mode", "3000")
-   mol2 = indigo.loadMolecule(high_mol.molfile())
-   print("  sm1: " + mol1.smiles())
-   print("  sm2: " + mol2.smiles())
-   mol1.unhighlight()
-   mol2.unhighlight()
-   sm1 = mol1.canonicalSmiles()
-   sm2 = mol2.canonicalSmiles()
-   print("  can sm1: " + sm1)
-   print("  can sm2: " + sm2)
-   if sm1 != sm2:
-      sys.stderr.write("%s != %s\n" % (sm1, sm2))
+    print("%d:" % cnt)
+    cnt += 1
+    
+    high_mol = decomp.decomposedMoleculeHighlighted()
+    indigo.setOption("molfile-saving-mode", "2000")
+    mol1 = indigo.loadMolecule(high_mol.molfile())
+    indigo.setOption("molfile-saving-mode", "3000")
+    mol2 = indigo.loadMolecule(high_mol.molfile())
+    print("  sm1: " + mol1.smiles())
+    print("  sm2: " + mol2.smiles())
+    mol1.unhighlight()
+    mol2.unhighlight()
+    sm1 = mol1.canonicalSmiles()
+    sm2 = mol2.canonicalSmiles()
+    print("  can sm1: " + sm1)
+    print("  can sm2: " + sm2)
+    if sm1 != sm2:
+        sys.stderr.write("%s != %s\n" % (sm1, sm2))

@@ -37,5 +37,5 @@ def testIgnoreAtoms(matcher):
 matcher = indigo.substructureMatcher(target_mol)
  
 for i in range(10):
-   print "\nTest #%d" % i
+   print("\nTest #%d" % i)
    testIgnoreAtoms(matcher)

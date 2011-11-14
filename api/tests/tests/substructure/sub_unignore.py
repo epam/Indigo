@@ -38,7 +38,7 @@ def runSingleTest (target_mol, queries):
       total_matches = 0
       first_total_matches = -1
       testIgnoreUnignoreAtoms(matcher, 1, queries)
-      print "  Total matches = %d" % total_matches
+      print("  Total matches = %d" % total_matches)
       if first_total_matches == -1:
          first_total_matches = total_matches
       if first_total_matches != total_matches:

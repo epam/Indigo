@@ -31,7 +31,7 @@ def testRenderRGroups (filename, idx):
       frag.remove()
   renderer.renderToFile(mol, joinPath("out/norgroup-mol-{0}.png".format(idx)))
   renderer.renderToFile(qmol, joinPath("out/norgroup-qmol-{0}.png".format(idx)))
-  print idx + " OK"
+  print(idx + " OK")
 testRenderRGroups(joinPath("molecules/recursive1.mol"), "rec1")
 testRenderRGroups(joinPath("molecules/r_occur.mol"), "occur")
 testRenderRGroups(joinPath("molecules/r_resth.mol"), "resth")

@@ -13,22 +13,22 @@ smiles = [
 "CC1=C(C=[Se](C(=C1)C#N)C)C",
 "CC1=NC2=CC=CC=C2[Se]1"]
 for item in smiles:
-  print item
-  mol = indigo.loadMolecule(item)
-  mol.aromatize()
-  smi = mol.canonicalSmiles()
-  print '  ' + smi
-  
-  mol_reloaded_arom = indigo.loadMolecule(smi)
-  smi_reloaded = mol_reloaded_arom.canonicalSmiles()
-  print '   ' + smi_reloaded
-  if smi != smi_reloaded:
-    print '  MISMATCH:', smi, ' and ', smi_reloaded
+    print(item)
+    mol = indigo.loadMolecule(item)
+    mol.aromatize()
+    smi = mol.canonicalSmiles()
+    print('  ' + smi)
     
-  mol.dearomatize()
-  mol_reloaded_dearom = indigo.loadMolecule(mol.canonicalSmiles())
-  mol_reloaded_dearom.aromatize()
-  smi_reloaded_dearom = mol_reloaded_dearom.canonicalSmiles()
-  print '    ', smi_reloaded_dearom
-  if smi != smi_reloaded_dearom:
-    print '  MISMATCH DEAROM:', smi, ' and ', smi_reloaded_dearom
+    mol_reloaded_arom = indigo.loadMolecule(smi)
+    smi_reloaded = mol_reloaded_arom.canonicalSmiles()
+    print('   ' + smi_reloaded)
+    if smi != smi_reloaded:
+        print('  MISMATCH: ' + smi + '  and  ' + smi_reloaded)
+      
+    mol.dearomatize()
+    mol_reloaded_dearom = indigo.loadMolecule(mol.canonicalSmiles())
+    mol_reloaded_dearom.aromatize()
+    smi_reloaded_dearom = mol_reloaded_dearom.canonicalSmiles()
+    print('     ' + smi_reloaded_dearom)
+    if smi != smi_reloaded_dearom:
+        print('  MISMATCH DEAROM: ' + smi + '  and  ' + smi_reloaded_dearom)

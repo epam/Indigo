@@ -10,43 +10,46 @@ reactions = [
    "CCC>>CCO",
 ]
 def loadReaction (item):
-   if isinstance(item, str):
-      return indigo.loadReaction(item)
- 
-   # create reaction by molecules
-   rxn = indigo.createReaction()
-   for react in item[0]:
-      rxn.addReactant(indigo.loadMolecule(react))
-   for prod in item[1]:
-      rxn.addProduct(indigo.loadMolecule(prod))
-   return rxn
+    if isinstance(item, str):
+        return indigo.loadReaction(item)
+    
+    # create reaction by molecules
+    rxn = indigo.createReaction()
+    for react in item[0]:
+        rxn.addReactant(indigo.loadMolecule(react))
+        
+    for prod in item[1]:
+        rxn.addProduct(indigo.loadMolecule(prod))
+    return rxn
+
 def printAAM (rxn):
-   print rxn.smiles()
-   for mol in rxn.iterateMolecules():
-      print("  Mol: %s" % (mol.smiles()))
-      for a in mol.iterateAtoms():
-         aamNumber = rxn.atomMappingNumber(a)
-         if aamNumber:
-            print("%d, %d: %d" % (a.index(), a.atomicNumber(), aamNumber))
+    print(rxn.smiles())
+    for mol in rxn.iterateMolecules():
+        print("  Mol: %s" % (mol.smiles()))
+        for a in mol.iterateAtoms():
+            aamNumber = rxn.atomMappingNumber(a)
+            if aamNumber:
+                print("%d, %d: %d" % (a.index(), a.atomicNumber(), aamNumber))
    
 def testAutomap (item):
-   rxn = loadReaction(item)
-   print(rxn.smiles())
-   rxn.automap("discard")
-   printAAM(rxn)
-   print("Clear AAM and fix first atoms")
-   rxn.clearAAM()
-   r1 = rxn.iterateReactants().next()
-   p1 = rxn.iterateProducts().next()
-   ra1 = r1.iterateAtoms().next()
-   pa1 = p1.iterateAtoms().next()
-   # fix first atoms
-   rxn.setAtomMappingNumber(ra1, 1)
-   rxn.setAtomMappingNumber(pa1, 1)
-   printAAM(rxn)
-   print("Remapping with fixed atoms")
-   rxn.automap("keep")
-   printAAM(rxn)
+    rxn = loadReaction(item)
+    print(rxn.smiles())
+    rxn.automap("discard")
+    printAAM(rxn)
+    print("Clear AAM and fix first atoms")
+    rxn.clearAAM()
+    r1 = rxn.iterateReactants().next()
+    p1 = rxn.iterateProducts().next()
+    ra1 = r1.iterateAtoms().next()
+    pa1 = p1.iterateAtoms().next()
+    # fix first atoms
+    rxn.setAtomMappingNumber(ra1, 1)
+    rxn.setAtomMappingNumber(pa1, 1)
+    printAAM(rxn)
+    print("Remapping with fixed atoms")
+    rxn.automap("keep")
+    printAAM(rxn)
+    
 for item, number in zip(reactions, range(1000)):
-   print "\n*** Test %d ***" % number
-   testAutomap(item)
+    print("\n*** Test %d ***" % number)
+    testAutomap(item)

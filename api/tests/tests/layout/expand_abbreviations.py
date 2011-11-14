@@ -23,7 +23,7 @@ abbr_dict = {
 def expand_abbreviations(m):
    to_layout = []
    to_replace = [a for a in m.iterateAtoms() if a.symbol() in abbr_dict]
-   print [a.symbol() for a in to_replace]
+   print([a.symbol() for a in to_replace])
    for a in to_replace:
       name = a.symbol()
       expanded = indigo.loadMolecule(abbr_dict[a.symbol()])
@@ -58,7 +58,7 @@ def expand_abbreviations(m):
    
    saver.append(m)
 for mset in m_sets:
-   print "*** Molecule set %s ***" % relativePath(mset)
+   print("*** Molecule set %s ***" % relativePath(mset))
    idx = 1
    for m in indigo.iterateSDFile(mset):
       try:

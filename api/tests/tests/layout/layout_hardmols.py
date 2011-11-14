@@ -11,15 +11,15 @@ def testLayout ():
   files.sort()
   for filename in files:
     mol = indigo.loadMoleculeFromFile(joinPath("../../data/chebi/", filename))
-    print relativePath(joinPath("../../data/chebi/", filename))
+    print(relativePath(joinPath("../../data/chebi/", filename)))
     try:
       mol.layout()
     except IndigoException, e:
-      print getIndigoExceptionText(e)
-    print mol.smiles()
+      print(getIndigoExceptionText(e))
+    print(mol.smiles())
     newmol = indigo.loadMolecule(mol.smiles())
     try:
       newmol.layout()
     except IndigoException, e:
-      print getIndigoExceptionText(e)
+      print(getIndigoExceptionText(e))
 testLayout()
