@@ -6,6 +6,7 @@ from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
+
 def testSSS(mol, q):
    matcher = indigo.substructureMatcher(mol)
    try:
@@ -33,11 +34,15 @@ def testSSS(mol, q):
          sys.stderr.write(msg + "\n");
    except IndigoException, e:      
       print("Error: " % (getIndigoExceptionText(e)))
+      
 def loadWithCheck(func):
    def wrapper(param):
       try:
          mol = func(param)
-         mol.setName(relativePath(param))
+         if func == indigo.loadMoleculeFromFile:             
+             mol.setName(relativePath(param))
+         else:
+             mol.setName(param)
          return mol
       except IndigoException, e:
          print(getIndigoExceptionText(e))
@@ -45,12 +50,19 @@ def loadWithCheck(func):
    return wrapper
          
 def loadAromWithCheck(func):
-   def loader(param):
-      m = func(param)
-      m.setName(relativePath(param))
-      m.aromatize()
-      return m
-   return loadWithCheck(loader)
+    def loader(param):
+        try:
+            mol = func(param)
+            if func == indigo.loadQueryMoleculeFromFile:
+                mol.setName(relativePath(param))
+            else:
+                mol.setName(param)
+            mol.aromatize()
+            return mol  
+        except IndigoException, e:
+            print(getIndigoExceptionText(e))
+            return None
+    return loader
       
 lmol = loadWithCheck(indigo.loadMolecule)
 lsmarts = loadWithCheck(indigo.loadSmarts)

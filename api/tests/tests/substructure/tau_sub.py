@@ -11,7 +11,7 @@ def testSingleTauMatch (mol1, mol2, flags, expected, hl):
     sys.stdout.write("unmatched")
   if (match is None) == expected:
     sys.stdout.write("(unexpected)")
-  print
+  print()
   if match and hl:
     print(match.highlightedTarget().smiles())
     for atom in mol1.iterateAtoms():

@@ -4,6 +4,7 @@ import re
 import platform
 import os
 from threading import Thread, currentThread, enumerate, Lock
+from random import shuffle
 sys.path.append('common')
 from run_test import runTest
 from thread_printer import ThreadPrinter
@@ -69,18 +70,19 @@ def main():
             continue
         i = len(os.path.commonprefix([root, tests_dir]))
         rel_root = root[i + 1:]
-        for filename in fnmatch.filter(filenames, '*.py'):
+        for filename in fnmatch.filter(filenames, '*.py'):            
             tests.append((rel_root, filename))
-    tests.sort()
+    #tests.sort()    
+    shuffle(tests)
     
     # Calcuate maximum lenthd of the test names
     max_name_len = max([len(os.path.join(root, filename).replace('\\', '/')) for root, filename in tests])
     # add small gap
     max_name_len += 3   
     
-    sys.stdout = ThreadPrinter()
-    sys.stderr = ThreadPrinter()
     lock = Lock()
+    sys.stdout = ThreadPrinter(lock)
+    sys.stderr = ThreadPrinter(lock)
     for root, filename in tests:
         test_name = os.path.join(root, filename).replace('\\', '/')
         # Check test name by input pattern
@@ -90,11 +92,11 @@ def main():
         if exclude_pattern != "" and re.search(exclude_pattern, test_name):
             continue
         #runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_dir_base, test_results)
-        t = Thread(name=test_name, target=runTest, args=(root, filename, output_dir, max_name_len, tests_dir, indigo, output_dir_base, test_results, lock))
+        t = Thread(name=test_name, target=runTest, args=(root, filename, output_dir, max_name_len, tests_dir, indigo, output_dir_base, test_results))
         t.start()
     for thread in enumerate():
         if thread is not currentThread():
-            thread.join()
+            thread.join()            
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
 
