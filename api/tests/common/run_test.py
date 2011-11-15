@@ -38,7 +38,6 @@ def filterOldText(oldText):
                     "import sys",
                     "from env_indigo import *",
                     ""]:
-            print 'Removed line "{0}"'.format(line)
             continue        
         elif line.startswith('import') or line.startswith('from'):
             importLineList.append(line)
@@ -48,7 +47,8 @@ def filterOldText(oldText):
 
 def generateNewText(importLineList, testLineList):
     newTextLineList = []
-    newTextLineList.append('from __future__ import print_function')
+    if sys.version_info[0] < 3 and sys.version_info[1] >= 6:
+        newTextLineList.append('from __future__ import print_function')
     for line in importLineList:
         newTextLineList.append(line)
     newTextLineList.append("import sys")    
@@ -62,7 +62,6 @@ def generateNewText(importLineList, testLineList):
 def manageText(oldText):
     importLineList, testLineList = filterOldText(oldText.split('\n'))
     result = generateNewText(importLineList, testLineList)
-    #sys.__stderr__.write(result)
     return result
 
 def runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_dir_base, test_results):

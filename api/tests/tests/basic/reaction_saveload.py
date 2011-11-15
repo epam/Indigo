@@ -3,7 +3,6 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-
 def testReactionSaveLoad (filename):
     print("Loading " + relativePath(filename))
     rxn = indigo.loadReactionFromFile(filename)
@@ -38,3 +37,4 @@ testReactionSaveLoad(joinPath("reactions/amiderxn2.rxn"))
 testReactionSaveLoad(joinPath("reactions/test_hi.rxn"))
 testReactionSaveLoad(joinPath("reactions/pseudoatoms/psd-pol.rxn"))
 #testQueryReactionSaveLoad("reactions/pseudoatoms/x-o.rxn")
+    

@@ -16,7 +16,7 @@ def generate_coverage_report(indigo, reportFile):
     # Generate report for Indigo
     indigoCoveragePercent = 100.0 * float(len(indigoCoveredFunctionsList)) / float(indigoFunctionsNumber)
     reportTextStringList = list()
-    reportTextStringList.append('Indigo functions coverage is about {0} percents ({1} functions of {2}'.format(
+    reportTextStringList.append('Indigo functions coverage is about %s percents (%s functions of %s)' % (
         indigoCoveragePercent, len(indigoCoveredFunctionsList), indigoFunctionsNumber))
     reportTextStringList.append('Covered functions and number of calls:')
     maxLen = 0
@@ -24,11 +24,11 @@ def generate_coverage_report(indigo, reportFile):
         if len(function) > maxLen:
             maxLen = len(function)
     for callNumber, function in indigoCoveredFunctionsList:
-        resultString = '\t{0}{1}: {2}'.format(function, ' ' * (maxLen - len(function) + 1), callNumber)
+        resultString = '\t%s%s: %s' % (function, ' ' * (maxLen - len(function) + 1), callNumber)
         reportTextStringList.append(resultString)
     reportTextStringList.append('Uncovered functions:')
     for function in indigoNotCoveredFunctionsList:
-        reportTextStringList.append('\t{0}'.format(function))
+        reportTextStringList.append('\t%s' % function)
     # Generate report for IndigoObject
     indigoObjectCoveredFunctionsList = []
     indigoObjectNotCoveredFunctionsList = []
@@ -49,22 +49,22 @@ def generate_coverage_report(indigo, reportFile):
     indigoObjectCoveredFunctionsList.sort(reverse=True)
     indigoObjectNotCoveredFunctionsList.sort()
     indigoObjectCoveragePercent = 100.0 * float(len(indigoObjectCoveredFunctionsList)) / float(indigoObjectFunctionsNumber)
-    reportTextStringList.append('\nIndigoObject functions coverage is about {0} percents ({1} functions of {2}'.format(indigoObjectCoveragePercent, len(indigoObjectCoveredFunctionsList), indigoObjectFunctionsNumber))
+    reportTextStringList.append('\nIndigoObject functions coverage is about %s percents (%s functions of %s' % (indigoObjectCoveragePercent, len(indigoObjectCoveredFunctionsList), indigoObjectFunctionsNumber))
     typeList = sorted(indigoObjectCoveredFunctionsByTypeDict.keys())
     for type in sorted(indigoObjectCoveredFunctionsByTypeDict.keys()):
-        reportTextStringList.append('{0} (#{1}) functions coverage:'.format(indigo_coverage.IndigoObjectTypeDict[type], type))
+        reportTextStringList.append('%s (#%s) functions coverage:' % (indigo_coverage.IndigoObjectTypeDict[type], type))
         maxLen = 0
         indigoObjectCoveredFunctionsByTypeDict[type].sort(reverse=True)
         for callNumber, function in indigoObjectCoveredFunctionsByTypeDict[type]:
             if len(function) > maxLen:
                 maxLen = len(function)
         for callNumber, function in indigoObjectCoveredFunctionsByTypeDict[type]:
-            resultString = '\t{0}{1}: {2}'.format(function, ' ' * (maxLen - len(function) + 1), callNumber)
+            resultString = '\t%s%s: %s' % (function, ' ' * (maxLen - len(function) + 1), callNumber)
             reportTextStringList.append(resultString)
     reportTextStringList.append('Uncovered functions:')
     for function in indigoObjectNotCoveredFunctionsList:
-        reportTextStringList.append('\t{0}'.format(function))
-    reportTextStringList.append('Used IndigoObject types: {0}'.format(typeList))
+        reportTextStringList.append('\t%s' % (function))
+    reportTextStringList.append('Used IndigoObject types: %s' % (typeList))
     # Write full report
     f =  open(reportFile, 'wt')
     f.write('\n'.join(reportTextStringList))

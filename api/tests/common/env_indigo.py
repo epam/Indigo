@@ -76,9 +76,3 @@ def relativePath(databaseFile):
     frm = inspect.stack()[1][1]
     #mod = inspect.getmodule(frm[0]) 
     return os.path.relpath(databaseFile, os.path.dirname(frm)).replace('\\', '/')
-
-lock = Lock()
-
-def pprint(data):
-    with lock:
-        sys.stdout.write('{0}\n'.format(data))
