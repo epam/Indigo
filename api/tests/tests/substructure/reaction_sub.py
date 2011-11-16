@@ -15,7 +15,7 @@ def testSingleReactionSub (rxn1, rxn2, expected, hl):
     sys.stdout.write("unmatched")
   if (match is None) == expected:
     sys.stdout.write(" (unexpected)")
-  print()
+  print('')
   if not match or not hl:
     return
   for mol in rxn1.iterateMolecules():
