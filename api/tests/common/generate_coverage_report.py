@@ -48,7 +48,10 @@ def generate_coverage_report(indigo, reportFile):
                 indigoObjectCoveredFunctionsByTypeDict[type].append((value, key))
     indigoObjectCoveredFunctionsList.sort(reverse=True)
     indigoObjectNotCoveredFunctionsList.sort()
-    indigoObjectCoveragePercent = 100.0 * float(len(indigoObjectCoveredFunctionsList)) / float(indigoObjectFunctionsNumber)
+    if indigoObjectFunctionsNumber:
+        indigoObjectCoveragePercent = 100.0 * float(len(indigoObjectCoveredFunctionsList)) / float(indigoObjectFunctionsNumber)
+    else: 
+        indigoObjectCoveragePercent = 0.0
     reportTextStringList.append('\nIndigoObject functions coverage is about %s percents (%s functions of %s' % (indigoObjectCoveragePercent, len(indigoObjectCoveredFunctionsList), indigoObjectFunctionsNumber))
     typeList = sorted(indigoObjectCoveredFunctionsByTypeDict.keys())
     for type in sorted(indigoObjectCoveredFunctionsByTypeDict.keys()):

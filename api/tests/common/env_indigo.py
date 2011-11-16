@@ -11,36 +11,39 @@ def isIronPython():
 def isJython():
     return os.name == 'java'
 
-if isIronPython():
-    import clr #@UnresolvedImport
-    cur_path = os.path.dirname(__file__)
-    dll_full_path = os.path.join(cur_path, "../../../api/cs/bin/Release/indigo-cs.dll")
-    rdll_full_path = os.path.join(cur_path, "../../../api/renderer/cs/bin/Release/indigo-renderer-cs.dll")
-    clr.AddReferenceToFileAndPath(dll_full_path)
-    clr.AddReferenceToFileAndPath(rdll_full_path)
-    from com.ggasoftware.indigo import *
-elif isJython():
-    cur_path = os.path.dirname(__file__)
-    jar_full_path = os.path.abspath(os.path.join(cur_path, "../../../api/java/dist/indigo.jar"))
-    rjar_full_path = os.path.abspath(os.path.join(cur_path, "../../../api/renderer/java/dist/indigo-renderer.jar"))   
-    jna_full_path = os.path.abspath(os.path.join(cur_path, "../../../common/jna/jna.jar"))
-    sys.path.append(jar_full_path)
-    sys.path.append(rjar_full_path)
-    sys.path.append(jna_full_path)
-    from com.ggasoftware.indigo import *
+if 'INDIGO_COVERAGE' in os.environ:
+    from indigo_coverage import IndigoCoverageWrapper as Indigo
 else:
-    cur_path = os.path.dirname(__file__)
-    dll_full_path = os.path.join(cur_path, "../../../api/python")
-    rdll_full_path = os.path.join(cur_path, "../../../api/renderer/python")
-    sys.path.append(dll_full_path)
-    sys.path.append(rdll_full_path)
-    if 'INDIGO_COVERAGE' in os.environ:
-        from indigo_coverage import IndigoCoverageWrapper as Indigo
+    if isIronPython():
+        import clr #@UnresolvedImport
+        cur_path = os.path.dirname(__file__)
+        dll_full_path = os.path.join(cur_path, "../../../api/cs/bin/Release/indigo-cs.dll")
+        rdll_full_path = os.path.join(cur_path, "../../../api/renderer/cs/bin/Release/indigo-renderer-cs.dll")
+        clr.AddReferenceToFileAndPath(dll_full_path)
+        clr.AddReferenceToFileAndPath(rdll_full_path)
+        from com.ggasoftware.indigo import *
+    elif isJython():
+        cur_path = os.path.dirname(__file__)
+        jar_full_path = os.path.abspath(os.path.join(cur_path, "../../../api/java/dist/indigo.jar"))
+        rjar_full_path = os.path.abspath(os.path.join(cur_path, "../../../api/renderer/java/dist/indigo-renderer.jar"))   
+        jna_full_path = os.path.abspath(os.path.join(cur_path, "../../../common/jna/jna.jar"))
+        sys.path.append(jar_full_path)
+        sys.path.append(rjar_full_path)
+        sys.path.append(jna_full_path)    
+        from com.ggasoftware.indigo import *
     else:
+        cur_path = os.path.dirname(__file__)
+        dll_full_path = os.path.join(cur_path, "../../../api/python")
+        rdll_full_path = os.path.join(cur_path, "../../../api/renderer/python")
+        sys.path.append(dll_full_path)
+        sys.path.append(rdll_full_path)
+        #if 'INDIGO_COVERAGE' in os.environ:
+        #    from indigo_coverage import IndigoCoverageWrapper as Indigo
+        #else:
         from indigo import Indigo
-    IndigoObject = Indigo.IndigoObject
-    from indigo import IndigoException
-    from indigo_renderer import IndigoRenderer
+        IndigoObject = Indigo.IndigoObject
+        from indigo import IndigoException
+        from indigo_renderer import IndigoRenderer
 
 # product function implementation (it is not implemented Python 2.4)
 def product(*args, **kwds):
@@ -62,17 +65,9 @@ def getIndigoExceptionText(e):
         return e.value 
     
 def joinPath(*args):
-    #frm = inspect.stack()[1]
-    #mod = inspect.getmodule(frm[0]) 
-    #return os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(mod.__file__)), *args))
-    frm = inspect.stack()[1][1]
-    #mod = inspect.getmodule(frm[0]) 
+    frm = inspect.stack()[1][1] 
     return os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))
 
 def relativePath(databaseFile):
-    #frm = inspect.stack()[1]
-    #mod = inspect.getmodule(frm[0])
-    #return os.path.relpath(databaseFile, os.path.dirname(mod.__file__)).replace('\\', '/')
-    frm = inspect.stack()[1][1]
-    #mod = inspect.getmodule(frm[0]) 
+    frm = inspect.stack()[1][1] 
     return os.path.relpath(databaseFile, os.path.dirname(frm)).replace('\\', '/')

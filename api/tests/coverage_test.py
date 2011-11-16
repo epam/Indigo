@@ -8,6 +8,7 @@ from random import shuffle
 sys.path.append('common')
 from run_test import runTest
 from thread_printer import ThreadPrinter
+os.environ['INDIGO_COVERAGE'] = '1'
 from env_indigo import *
 test_results = []
 

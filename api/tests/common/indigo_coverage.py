@@ -1,9 +1,44 @@
+import sys
+import os
 from inspect import getmembers
 from new import instancemethod, function
 from indigo import Indigo
 
+
+def isIronPython():
+    return sys.version.lower().find("ironpython") != -1
+
+def isJython():
+    return os.name == 'java'
+
+if isIronPython():
+    import clr #@UnresolvedImport
+    cur_path = os.path.dirname(__file__)
+    dll_full_path = os.path.join(cur_path, "../../../api/cs/bin/Release/indigo-cs.dll")
+    rdll_full_path = os.path.join(cur_path, "../../../api/renderer/cs/bin/Release/indigo-renderer-cs.dll")
+    clr.AddReferenceToFileAndPath(dll_full_path)
+    clr.AddReferenceToFileAndPath(rdll_full_path)
+    from com.ggasoftware.indigo import *
+elif isJython():
+    cur_path = os.path.dirname(__file__)
+    jar_full_path = os.path.abspath(os.path.join(cur_path, "../../../api/java/dist/indigo.jar"))
+    rjar_full_path = os.path.abspath(os.path.join(cur_path, "../../../api/renderer/java/dist/indigo-renderer.jar"))   
+    jna_full_path = os.path.abspath(os.path.join(cur_path, "../../../common/jna/jna.jar"))
+    sys.path.append(jar_full_path)
+    sys.path.append(rjar_full_path)
+    sys.path.append(jna_full_path)
+    from com.ggasoftware.indigo import *
+else:
+    cur_path = os.path.dirname(__file__)
+    dll_full_path = os.path.join(cur_path, "../../../api/python")
+    rdll_full_path = os.path.join(cur_path, "../../../api/renderer/python")
+    sys.path.append(dll_full_path)
+    sys.path.append(rdll_full_path)
+    from indigo import Indigo
+    IndigoObject = Indigo.IndigoObject
+
 class IndigoCoverageWrapper(Indigo):
-    class IndigoObjectCoverageWrapper(Indigo.IndigoObject):
+    class IndigoObjectCoverageWrapper(IndigoObject):
         def __init__(self, dispatcher, id, parent=None):
             self.dispatcher = dispatcher
             self.id = id
@@ -29,12 +64,11 @@ class IndigoCoverageWrapper(Indigo):
             return object.__getattribute__(self, item)
         
     def __init__(self, path=None):
-        Indigo.IndigoObject = IndigoCoverageWrapper.IndigoObjectCoverageWrapper
         Indigo.__init__(self, path)
         self._indigoObjectCoverageDict = dict()
         self._indigoObjectCoverageByTypeDict = dict()
         m = self.createMolecule()
-        for item in getmembers(m):
+        for item in getmembers(IndigoObject):
             if type(item[1]) in (instancemethod, function) and not item[0].startswith('_'):
                 self._indigoObjectCoverageDict[item[0]] = 0
         self._indigoCoverageDict = dict()
