@@ -44,14 +44,4 @@ def testAlignAtoms ():
   indigo.setOption("render-coloring", "true")
   renderer.renderGridToFile(collection, None, 4, joinPath("out/grid.png"))
   renderer.renderGridToFile(collection, refatoms, 4, joinPath("out/grid1.png"))
-  
-  indigo.setOption("render-output-format", "svg")
-  renderer.renderGridToFile(collection, None, 4, joinPath("out/grid.svg"))
-  renderer.renderGridToFile(collection, refatoms, 4, joinPath("out/grid1.svg"))
-  print('\ngrid.svg:\n')
-  with open(joinPath('out/grid.svg')) as f:
-      print(f.read())
-  print('\ngrid1.svg:\n')
-  with open(joinPath('out/grid1.svg')) as f:
-      print(f.read())
 testAlignAtoms()

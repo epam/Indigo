@@ -2,9 +2,6 @@ import sys
 import os
 from inspect import getmembers
 from new import instancemethod, function
-from indigo import Indigo, IndigoException
-from indigo_renderer import IndigoRenderer
-
 
 def isIronPython():
     return sys.version.lower().find("ironpython") != -1
@@ -35,8 +32,10 @@ else:
     rdll_full_path = os.path.join(cur_path, "../../../api/renderer/python")
     sys.path.append(dll_full_path)
     sys.path.append(rdll_full_path)
-    from indigo import Indigo
+    from indigo import Indigo, IndigoException
     IndigoObject = Indigo.IndigoObject
+    from indigo_renderer import IndigoRenderer
+    
 
 class IndigoCoverageWrapper(Indigo):
     class IndigoObjectCoverageWrapper(IndigoObject):

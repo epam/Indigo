@@ -13,17 +13,11 @@ def renderRxnfile (filename, outfile):
   indigo.setOption("render-output-format", "svg")
   indigo.setOption("render-label-mode", "hetero")
   indigo.setOption("render-bond-length", 40.)
-  renderer.renderToFile(rxn, joinPath("out/%s.svg" % (outfile)))
-  print("\nout/%s.svg\n" % (outfile))
-  with open(joinPath("out/%s.svg" % (outfile))) as f:
-    print(f.read())
+  renderer.renderToFile(rxn, joinPath("out/{0}.svg".format(outfile)))
   rxn2 = indigo.loadReaction(rxn.smiles())
   #indigo.setOption("render-output-format", "png")
-  renderer.renderToFile(rxn2, joinPath("out/%s-smiles.svg" % (outfile)))
-  print("\nout/%s-smiles.svg\n" % (outfile))
-  with open(joinPath("out/%s-smiles.svg" % (outfile))) as f:
-    print(f.read())
-    
+  renderer.renderToFile(rxn2, joinPath("out/{0}-smiles.svg".format(outfile)))
+  
 renderRxnfile(joinPath("reactions/adama_reaction.rxn"), "adama_reaction")
 renderRxnfile(joinPath("reactions/epoxy.rxn"), "epoxy")
 print("Done")

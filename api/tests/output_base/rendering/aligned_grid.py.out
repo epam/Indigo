@@ -13,22 +13,3 @@
 0.000059
 0.000048
 0.000046
-
-grid.svg:
-
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="400pt" height="400pt" viewBox="0 0 400 400" version="1.1">
-<g id="surface0">
-</g>
-</svg>
-
-
-grid1.svg:
-
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="400pt" height="400pt" viewBox="0 0 400 400" version="1.1">
-<g id="surface0">
-<g style="fill:rgb(9.977717%,78.158784%,9.977717%);fill-opacity:1;">
-</g>
-</svg>
-
