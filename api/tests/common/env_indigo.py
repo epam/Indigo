@@ -12,7 +12,7 @@ def isJython():
     return os.name == 'java'
 
 if 'INDIGO_COVERAGE' in os.environ:
-    from indigo_coverage import IndigoCoverageWrapper as Indigo
+    from indigo_coverage import IndigoCoverageWrapper as Indigo, IndigoException, IndigoRenderer
 else:
     if isIronPython():
         import clr #@UnresolvedImport

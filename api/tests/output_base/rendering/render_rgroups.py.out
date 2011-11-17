@@ -2,3 +2,72 @@ rec1 OK
 occur OK
 resth OK
 2ap OK
+rec1 OK
+occur OK
+resth OK
+2ap OK
+adama_reaction-smiles.svg
+adama_reaction.svg
+aligned.sdf
+epoxy-smiles.svg
+epoxy.svg
+grid.png
+grid.svg
+grid1.png
+grid1.svg
+mol-with-indices.png
+mol-with-indices.svg
+noap-mol-2ap.png
+noap-mol-2ap.svg
+noap-mol-occur.png
+noap-mol-occur.svg
+noap-mol-rec1.png
+noap-mol-rec1.svg
+noap-mol-resth.png
+noap-mol-resth.svg
+noap-qmol-2ap.png
+noap-qmol-2ap.svg
+noap-qmol-2appng
+noap-qmol-occur.png
+noap-qmol-occur.svg
+noap-qmol-occurpng
+noap-qmol-rec1.png
+noap-qmol-rec1.svg
+noap-qmol-rec1png
+noap-qmol-resth.png
+noap-qmol-resth.svg
+noap-qmol-resthpng
+norgroup-mol-2ap.png
+norgroup-mol-2ap.svg
+norgroup-mol-occur.png
+norgroup-mol-occur.svg
+norgroup-mol-rec1.png
+norgroup-mol-rec1.svg
+norgroup-mol-resth.png
+norgroup-mol-resth.svg
+norgroup-qmol-2ap.png
+norgroup-qmol-2ap.svg
+norgroup-qmol-occur.png
+norgroup-qmol-occur.svg
+norgroup-qmol-rec1.png
+norgroup-qmol-rec1.svg
+norgroup-qmol-resth.png
+norgroup-qmol-resth.svg
+rgroup-mol-2ap.png
+rgroup-mol-2ap.svg
+rgroup-mol-occur.png
+rgroup-mol-occur.svg
+rgroup-mol-rec1.png
+rgroup-mol-rec1.svg
+rgroup-mol-resth.png
+rgroup-mol-resth.svg
+rgroup-qmol-2ap.png
+rgroup-qmol-2ap.svg
+rgroup-qmol-occur.png
+rgroup-qmol-occur.svg
+rgroup-qmol-rec1.png
+rgroup-qmol-rec1.svg
+rgroup-qmol-resth.png
+rgroup-qmol-resth.svg
+rsite_highlighted.png
+rsite_highlighted.svg

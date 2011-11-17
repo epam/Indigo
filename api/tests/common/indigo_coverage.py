@@ -2,7 +2,8 @@ import sys
 import os
 from inspect import getmembers
 from new import instancemethod, function
-from indigo import Indigo
+from indigo import Indigo, IndigoException
+from indigo_renderer import IndigoRenderer
 
 
 def isIronPython():
