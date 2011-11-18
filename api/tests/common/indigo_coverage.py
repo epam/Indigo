@@ -64,11 +64,12 @@ class IndigoCoverageWrapper(Indigo):
             return object.__getattribute__(self, item)
         
     def __init__(self, path=None):
+        Indigo.IndigoObject = IndigoCoverageWrapper.IndigoObjectCoverageWrapper
         Indigo.__init__(self, path)
         self._indigoObjectCoverageDict = dict()
         self._indigoObjectCoverageByTypeDict = dict()
         m = self.createMolecule()
-        for item in getmembers(IndigoObject):
+        for item in getmembers(m):
             if type(item[1]) in (instancemethod, function) and not item[0].startswith('_'):
                 self._indigoObjectCoverageDict[item[0]] = 0
         self._indigoCoverageDict = dict()

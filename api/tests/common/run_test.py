@@ -55,8 +55,11 @@ def generateNewText(importLineList, testLineList):
     newTextLineList.append("sys.path.append('../../common')")
     newTextLineList.append('from env_indigo import *\n')
     newTextLineList.append('def runIndigoTest():')
+    newTextLineList.append('    indigo = None')
+    
     for line in testLineList:
         newTextLineList.append('    %s' % line)
+    newTextLineList.append('    return indigo')
     return '\n'.join(newTextLineList)
 
 def manageText(oldText):
@@ -85,9 +88,10 @@ def runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_
         beginTime = time.time()
         stdout = ''
         stderr = ''
+        indigoOutput = None
         module = imp.load_module(filename[:-3], fp, pathname, description)
         try:
-            module.runIndigoTest()
+            indigoOutput = module.runIndigoTest()
         except Exception, e:
             stderr = traceback.format_exc()
         finally:
@@ -98,16 +102,15 @@ def runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_
             fp.close()
           
         stdout = sys.stdout.getValueByTestName(test_name)
-        if indigo.version().endswith('-coverage') and hasattr(module, 'indigo'):
-            indigoOutput = module.indigo
-            for item in module.indigo._indigoCoverageDict:
+        if indigo.version().endswith('-coverage') and indigoOutput:
+            for item in indigoOutput._indigoCoverageDict:
                 indigo._indigoCoverageDict[item] += indigoOutput._indigoCoverageDict[item]
-            for item in module.indigo._indigoObjectCoverageDict:
+            for item in indigoOutput._indigoObjectCoverageDict:
                 indigo._indigoObjectCoverageDict[item] += indigoOutput._indigoObjectCoverageDict[item]
-            for type in module.indigo._indigoObjectCoverageByTypeDict:
+            for type in indigoOutput._indigoObjectCoverageByTypeDict:
                 if not type in indigo._indigoObjectCoverageByTypeDict:
                     indigo._indigoObjectCoverageByTypeDict[type] = {}
-                for key, value in module.indigo._indigoObjectCoverageByTypeDict[type].items():
+                for key, value in indigoOutput._indigoObjectCoverageByTypeDict[type].items():
                     if not key in indigo._indigoObjectCoverageByTypeDict[type]:
                         indigo._indigoObjectCoverageByTypeDict[type][key] = 0
                     indigo._indigoObjectCoverageByTypeDict[type][key] += indigoOutput._indigoObjectCoverageByTypeDict[type][key]
