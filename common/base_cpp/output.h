@@ -36,13 +36,15 @@ public:
    virtual int  tell  () = 0;
    virtual void flush () = 0;
 
-   void writeByte        (byte value);
+   virtual void writeByte (byte value);
+
    void writeChar        (char value);
    void writeBinaryInt   (int   value);
    void writeBinaryDword (dword value);
    void writeBinaryWord  (word value);
    void writeBinaryFloat (float value);
    void writePackedShort (short value);
+   void writePackedUInt  (unsigned int value);
    void writeString      (const char *string);
    void writeStringCR    (const char *string);
    void writeCR          ();

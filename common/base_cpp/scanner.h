@@ -53,6 +53,7 @@ public:
    dword readBinaryDword ();
    float readBinaryFloat ();
    short readPackedShort ();
+   unsigned int readPackedUInt ();
 
    void  readCharsFix (int n, char *chars_out);
    float readFloatFix (int digits);

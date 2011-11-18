@@ -430,6 +430,22 @@ short Scanner::readPackedShort ()
    return high * (short)256 + low;
 }
 
+unsigned int Scanner::readPackedUInt ()
+{
+   unsigned int value = 0;
+
+   int shift = 0;
+   while (true)
+   {
+      byte cur = readByte();
+      value |= (cur & 0x7F) << shift;
+
+      if (!(cur & 0x80))
+         return value;
+      shift += 7;
+   }
+}
+
 void Scanner::readAll (Array<char> &arr)
 {
    arr.clear_resize(length() - tell());

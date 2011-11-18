@@ -151,6 +151,23 @@ void Output::writePackedShort (short value)
    }
 }
 
+void Output::writePackedUInt (unsigned int value)
+{
+   if (value == 0)
+   {
+      writeByte(0);
+      return;
+   }
+   while (value > 0)
+   {
+      if (value >= 128)
+         writeByte((value & 0x7F) | 0x80);
+      else
+         writeByte(value);
+      value >>= 7;
+   }
+}
+
 void Output::skip (int count)
 {
    seek(count, SEEK_CUR);
