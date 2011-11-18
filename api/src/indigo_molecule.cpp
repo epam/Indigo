@@ -3180,7 +3180,7 @@ CEXPORT int indigoCountHydrogens (int item, int *hydro)
          {
             if (mol.getAtomNumber(i) == ELEM_H)
                (*hydro)++;
-            else
+            else if (!mol.isPseudoAtom(i) && !mol.isRSite(i))
                (*hydro) += mol.getImplicitH(i);
          }
       }
