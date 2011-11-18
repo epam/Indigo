@@ -64,7 +64,7 @@ def manageText(oldText):
     result = generateNewText(importLineList, testLineList)
     return result
 
-def runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_dir_base, test_results):
+def runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_dir_base, test_results):    
     try:
         test_dir = os.path.join(output_dir, root)
         if not os.path.exists(test_dir):
@@ -74,7 +74,7 @@ def runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_
         test_root = os.path.join(tests_dir, root)    
         pathName = None
         fp, pathname, description = imp.find_module(filename[:-3], [os.path.join(tests_dir, root)])
-        originalTestText = fp.read()        
+        originalTestText = fp.read()
         fp.close()
         modifiedTestText = manageText(originalTestText)
         fp = open(pathname, 'wt')
@@ -96,11 +96,8 @@ def runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_
             fp = open(pathName, 'wt')
             fp.write(originalTestText)
             fp.close()
-            # if filename[:-3] in sys.modules:
-            #     sys.modules.pop(filename[:-3])
-            
-        stdout = sys.stdout.getValueByTestName(test_name) 
-        
+          
+        stdout = sys.stdout.getValueByTestName(test_name)
         if indigo.version().endswith('-coverage') and hasattr(module, 'indigo'):
             indigoOutput = module.indigo
             for item in module.indigo._indigoCoverageDict:
@@ -127,7 +124,6 @@ def runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_
         base_output_file = os.path.join(base_dir, filename + ".out")
         base_exists = False
         ndiffcnt = 0
-    
         if os.path.exists(base_output_file):
             diff_file = os.path.join(test_dir, filename + ".diff")
             # copy reference file

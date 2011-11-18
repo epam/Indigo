@@ -81,9 +81,9 @@ def main():
     # add small gap
     max_name_len += 3   
     
-    lock = Lock()
+    lock = Lock()    
     sys.stdout = ThreadPrinter(lock)
-    sys.stderr = ThreadPrinter(lock)
+    sys.stderr = ThreadPrinter(lock)    
     for root, filename in tests:
         test_name = os.path.join(root, filename).replace('\\', '/')
         # Check test name by input pattern

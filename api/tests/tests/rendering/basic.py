@@ -18,3 +18,8 @@ print(mol.smiles())
 indigo.setOption("render-output-format", "png")
 indigo.setOption("render-background-color", "255, 255, 255")
 renderer.renderToFile(mol, joinPath("out/rsite_highlighted.png"))
+indigo.setOption("render-output-format", "svg")
+renderer.renderToFile(mol, joinPath("out/rsite_highlighted.svg"))
+print('\nout/rsite_highlighted.svg:\n')
+with open(joinPath('out/rsite_highlighted.svg')) as f:
+    print(f.read())
