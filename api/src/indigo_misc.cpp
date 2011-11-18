@@ -497,7 +497,7 @@ CEXPORT int indigoSerialize (int item, byte **buf, int *size)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoUnserialize (byte *buf, int size)
+CEXPORT int indigoUnserialize (const byte *buf, int size)
 {
    INDIGO_BEGIN
    {

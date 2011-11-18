@@ -546,7 +546,7 @@ CEXPORT int indigoSetName (int handle, const char *name);
 // You should not free() the obtained buffer, but rather memcpy() it if you want to keep it
 CEXPORT int indigoSerialize (int handle, byte **buf, int *size);
 
-CEXPORT int indigoUnserialize (byte *buf, int size);
+CEXPORT int indigoUnserialize (const byte *buf, int size);
 
 // Applicable to molecules/reactions obtained from SDF or RDF files,
 // and to their clones, and to their R-Group deconvolutions.
