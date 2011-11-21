@@ -42751,3 +42751,101 @@ data Sgroups: 0 0
 allenecenters: 0 0 
 sssr: 2 2 
 repeating units: 1 1 
+
+Testing molecule #9
+molfile loader: direction of bond #19 makes no sense
+
+caught molfile loader: direction of bond #19 makes no sense
+
+
+Testing molecule #10
+C1C([N+]([O-])=O)=CC=CC=1
+[O-][N+](=O)C1C=CC=CC=1
+C1=CC=CC=C1[N+](=O)[O-]
+[O-][N+](=O)C1C=CC=CC=1
+Molecule:
+49434d0306786c06766b078f766b088d776d087771066c0671066c067178d3d5030204030101034e4f3207d29b9919c0b25cb1bf000000003633b340b05c314000000000004992ffffb66d00809224ff7f0000ffff00000000499200006ddb0000ffff00806ddbffff000080065a
+Reloaded molecule:
+49434d0306786e066c066e066c066e06766c78776b078f766d08776b088dd2cfcc4cc0ac5cb1bf000000003433b340ae5c31400000000000b66dffff9224ffff0000ff7f92240000b66d00004992ff7f6ddb0080ffff0000ffffffff
+* checkEqualProperties *
+generic Sgroups: 0 0 
+superatoms: 1 1 
+hydrogens: 5 5 
+bonds: 9 9 
+heavy atoms: 9 9 
+pseudoatoms: 0 0 
+attachment points: 0 0 
+atoms: 9 9 
+rsites: 0 0 
+stereocenters: 0 0 
+multiple groups: 0 0 
+components: 1 1 
+data Sgroups: 0 0 
+allenecenters: 0 0 
+sssr: 1 1 
+repeating units: 0 0 
+* checkEqualProperties *
+generic Sgroups: 0 0 
+superatoms: 0 0 
+hydrogens: 5 5 
+bonds: 9 9 
+heavy atoms: 9 9 
+pseudoatoms: 0 0 
+attachment points: 0 0 
+atoms: 9 9 
+rsites: 0 0 
+stereocenters: 0 0 
+multiple groups: 0 0 
+components: 1 1 
+data Sgroups: 0 0 
+allenecenters: 0 0 
+sssr: 1 1 
+repeating units: 0 0 
+Superatoms:
+ N O O
+ N O O
+c1c([N+]([O-])=O)cccc1
+[O-][N+](=O)c1ccccc1
+c1ccccc1[N+](=O)[O-]
+[O-][N+](=O)c1ccccc1
+Molecule:
+49434d0306787506766b078f766b088d776d087775067506750675067578d3d5030204030101034e4f3207d29b9919c0b25cb1bf000000003633b340b05c314000000000004992ffffb66d00809224ff7f0000ffff00000000499200006ddb0000ffff00806ddbffff000080065a
+Reloaded molecule:
+49434d03067875067506750675067506767578776b078f766d08776b088dd2cfcc4cc0ac5cb1bf000000003433b340ae5c31400000000000b66dffff9224ffff0000ff7f92240000b66d00004992ff7f6ddb0080ffff0000ffffffff
+* checkEqualProperties *
+generic Sgroups: 0 0 
+superatoms: 1 1 
+hydrogens: 5 5 
+bonds: 9 9 
+heavy atoms: 9 9 
+pseudoatoms: 0 0 
+attachment points: 0 0 
+atoms: 9 9 
+rsites: 0 0 
+stereocenters: 0 0 
+multiple groups: 0 0 
+components: 1 1 
+data Sgroups: 0 0 
+allenecenters: 0 0 
+sssr: 1 1 
+repeating units: 0 0 
+* checkEqualProperties *
+generic Sgroups: 0 0 
+superatoms: 0 0 
+hydrogens: 5 5 
+bonds: 9 9 
+heavy atoms: 9 9 
+pseudoatoms: 0 0 
+attachment points: 0 0 
+atoms: 9 9 
+rsites: 0 0 
+stereocenters: 0 0 
+multiple groups: 0 0 
+components: 1 1 
+data Sgroups: 0 0 
+allenecenters: 0 0 
+sssr: 1 1 
+repeating units: 0 0 
+Superatoms:
+ N O O
+ N O O
