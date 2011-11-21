@@ -539,10 +539,9 @@ Datum
 bingo_options(PG_FUNCTION_ARGS) {
    Datum reloptions = PG_GETARG_DATUM(0);
    bool validate = PG_GETARG_BOOL(1);
-   elog(INFO, "bingo options");
+   elog(NOTICE, "bingo options");
 
    bytea *result;
-    elog(INFO, "bingo options");
 
    result = bingo_reloptions(reloptions, validate);
 

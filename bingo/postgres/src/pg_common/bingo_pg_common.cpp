@@ -77,19 +77,19 @@ void BingoPgCommon::getSearchTypeString(int type, indigo::Array<char>& result, b
 }
 
 void BingoPgCommon::printBitset(const char* name, BingoPgExternalBitset& bitset) {
-   elog(INFO, "bitset = %s", name);
+   elog(NOTICE, "bitset = %s", name);
    indigo::Array<char> bits;
    indigo::ArrayOutput ao(bits);
    for (int x = bitset.begin(); x != bitset.end(); x = bitset.next(x)) {
       ao.printf("%d ", x);
    }
    bits.push(0);
-   elog(INFO, "%s", bits.ptr());
+   elog(NOTICE, "%s", bits.ptr());
 
 }
 
 void BingoPgCommon::printFPBitset(const char* name, unsigned char* bitset, int size) {
-   elog(INFO, "bitset = %s", name);
+   elog(NOTICE, "bitset = %s", name);
    indigo::Array<char> bits;
    indigo::ArrayOutput ao(bits);
    for (int fp_idx = 0; fp_idx < size; fp_idx++) {
@@ -98,7 +98,7 @@ void BingoPgCommon::printFPBitset(const char* name, unsigned char* bitset, int s
       }
    }
    bits.push(0);
-   elog(INFO, "%s", bits.ptr());
+   elog(NOTICE, "%s", bits.ptr());
 }
 
 

@@ -39,7 +39,7 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
    Relation rel = (Relation) PG_GETARG_POINTER(0);
    int keysz = PG_GETARG_INT32(1);
    ScanKey scankey = (ScanKey) PG_GETARG_POINTER(2);
-   elog(INFO, "start bingo search");
+   elog(NOTICE, "start bingo search");
    
    IndexScanDesc scan = RelationGetIndexScan(rel, keysz, scankey);
 
@@ -93,7 +93,7 @@ bingo_rescan(PG_FUNCTION_ARGS) {
 Datum
 bingo_endscan(PG_FUNCTION_ARGS) {
    IndexScanDesc scan = (IndexScanDesc) PG_GETARG_POINTER(0);
-   elog(INFO, "end scan");
+   elog(NOTICE, "end scan");
    
    PG_BINGO_BEGIN
    {
@@ -137,11 +137,10 @@ bingo_getbitmap(PG_FUNCTION_ARGS) {
        * Pop the last element
        */
       found_items.pop();
+      item_size = found_items.size();
       BINGO_PG_TRY {
          tbm_add_tuples(tbm, found_items.ptr(), found_items.size(), false);
       } BINGO_PG_HANDLE(throw BingoPgError("internal error: can not add bitmap solution: %s", message));
-
-      item_size = found_items.size();
    }
    PG_BINGO_HANDLE(delete search_engine);
 

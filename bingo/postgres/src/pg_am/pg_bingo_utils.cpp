@@ -92,12 +92,12 @@ Datum getindexstructurescount(PG_FUNCTION_ARGS){
 
 
 Datum bingo_test(PG_FUNCTION_ARGS) {
-   elog(INFO, "start test function 3");
+   elog(NOTICE, "start test function 3");
    PG_RETURN_VOID();
 }
 
 Datum bingo_test_tid(PG_FUNCTION_ARGS) {
-   elog(INFO, "start test function tid");
+   elog(NOTICE, "start test function tid");
 
    ItemPointer pp = (ItemPointer) palloc0(sizeof(ItemPointerData));
 

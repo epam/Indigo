@@ -46,7 +46,7 @@ bingo_build(PG_FUNCTION_ARGS) {
    IndexBuildResult *result = 0;
    double reltuples = 0;
 
-   elog(INFO, "start bingo build");
+   elog(NOTICE, "start bingo build");
 
 
    /*

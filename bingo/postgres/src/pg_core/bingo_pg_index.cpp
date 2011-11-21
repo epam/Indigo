@@ -88,8 +88,7 @@ int BingoPgIndex::readBegin() {
 }
 
 int BingoPgIndex::readNext(int section_idx) {
-   _currentSectionIdx = section_idx + 1;
-   return _currentSectionIdx;
+   return section_idx + 1;
 }
 
 /*
@@ -256,7 +255,7 @@ void BingoPgIndex::_setSectionOffset(int section_idx, int section_offset) {
     */
    off_buffer.changeAccess(BINGO_PG_WRITE);
    int* section_offsets = (int*)off_buffer.getIndexData(data_len);
-   section_offsets[section_buf_idx] = section_offset;
+   section_offsets[section_idx] = section_offset;
    off_buffer.changeAccess(BINGO_PG_NOLOCK);
 }
 
@@ -303,7 +302,7 @@ int BingoPgIndex::_getSectionOffset(int section_idx) {
     */
    off_buffer.changeAccess(BINGO_PG_READ);
    int* section_offsets = (int*)off_buffer.getIndexData(data_len);
-   result = section_offsets[section_buf_idx] ;
+   result = section_offsets[section_idx] ;
    off_buffer.changeAccess(BINGO_PG_NOLOCK);
    return result;
 }
@@ -357,7 +356,7 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item) {
     */
    ++_metaInfo.n_molecules;
    if (_metaInfo.n_molecules % 1000 == 0) {
-      elog(INFO, "processed %d structures", _metaInfo.n_molecules);
+      elog(NOTICE, "processed %d structures", _metaInfo.n_molecules);
    }
 
 }

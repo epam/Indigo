@@ -6273,8 +6273,6 @@ bingo_costestimate(PG_FUNCTION_ARGS) {
    struct Selectivity *indexSelectivity ;
    double *indexCorrelation;
 
-   elog(INFO, "bingo cost estimate 1");
-
    root = (PlannerInfo *) PG_GETARG_POINTER(0);
    index = (IndexOptInfo *) PG_GETARG_POINTER(1);
    indexQuals = (List *) PG_GETARG_POINTER(2);

@@ -105,7 +105,7 @@ bingo_bulkdelete(PG_FUNCTION_ARGS) {
    IndexBulkDeleteCallback bulk_del_cb = (IndexBulkDeleteCallback) PG_GETARG_POINTER(2);
    void *cb_state = (void *) PG_GETARG_POINTER(3);
 
-   elog(INFO, "start test bulk delete");
+   elog(NOTICE, "start test bulk delete");
    PG_BINGO_BEGIN
    {
       /*
@@ -170,7 +170,7 @@ Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS) {
    Relation rel = info->index;
    BlockNumber num_pages = 0;
 
-   elog(INFO, "start test vacuum");
+   elog(NOTICE, "start test vacuum");
    /* 
     * If bulkdelete wasn't called, return NULL signifying no change
     * Note: this covers the analyze_only case too
