@@ -737,6 +737,8 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
       if (hydro < 0 && !ignore_invalid_hcount)
          throw Error("unsure hydrogen count on atom #%d", idx);
    }
+   if (_qmol != 0)
+      _qmol->getAtom(idx).sureValue(QueryMolecule::ATOM_TOTAL_H, hydro);
 
    int charge = _bmol->getAtomCharge(idx);
    int isotope = _bmol->getAtomIsotope(idx);

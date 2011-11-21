@@ -314,6 +314,8 @@ public:
    // must belong to different connected components of the target molecule
    Array<int> components;
 
+   void invalidateAtom (int index);
+
 protected:
 
    int _calcAtomConnectivity (int idx);

@@ -16,3 +16,12 @@ M  ALS   3  5 F B   C   N   O   F
 M  ALS   4  5 F Sc  V   Zr  La  Ta  
 M  END
 
+****** Remove constraints and reload ********
+C1:N:C2:C(:[N+](:C:N:C:2:[NH]:1)[O-])N
+False
+C1:N:C2:C(:[N+](:C:N:C:2:N:1)[O-])N
+True
+C1:N:C2:C(:[N+](:C:N:C:2:N:1)[O-])N
+True
+C1:[NH]:C2:C(:C(N):[N+]([O-]):C:N:2):N:1
+False

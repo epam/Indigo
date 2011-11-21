@@ -45,7 +45,7 @@ if has_match != has_match2:
 # reload query from original smiles
 q3 = indigo.loadQueryMolecule(original_smiles)
 print(q3.smiles())
-has_match3 = (matcher.match(q2) != None)
+has_match3 = (matcher.match(q3) != None)
 print(has_match3)
 if has_match3 != has_match_orig:
     sys.stderr.write("Error: query molecule match is different after reloading from SMILES\n")

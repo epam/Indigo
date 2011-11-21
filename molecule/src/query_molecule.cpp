@@ -1353,10 +1353,8 @@ int QueryMolecule::addBond (int beg, int end, QueryMolecule::Bond *bond)
    _bonds.expand(idx + 1);
    _bonds.set(idx, bond);
 
-   if (_min_h.size() > beg)
-      _min_h[beg] = -1;
-   if (_min_h.size() > end)
-      _min_h[end] = -1;
+   invalidateAtom(beg);
+   invalidateAtom(end);
 
    aromaticity.setCanBeAromatic(idx, false);
    setBondStereoCare(idx, false);
@@ -1934,6 +1932,12 @@ int QueryMolecule::getQueryBondType (QueryMolecule::Bond& qb) {
    if (isOrBond(qb, BOND_DOUBLE, BOND_AROMATIC))
          return QUERY_BOND_DOUBLE_OR_AROMATIC;
    return -1;
+}
+
+void QueryMolecule::invalidateAtom (int index)
+{
+   if (_min_h.size() > index)
+      _min_h[index] = -1;
 }
 
 void QueryMolecule::optimize ()

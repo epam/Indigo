@@ -1400,6 +1400,7 @@ CEXPORT int indigoRemoveConstraints (int item, const char *str_type)
          throw IndigoError("indigoRemoveConstraints(): can not parse type: %s", str_type);
 
       qmol.getAtom(ia.idx).removeConstraints(type);
+      qmol.invalidateAtom(ia.idx);
 
       return 1;
    }
