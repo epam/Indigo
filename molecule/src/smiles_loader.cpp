@@ -1297,6 +1297,11 @@ void SmilesLoader::_handlePolymerRepetition (int i)
       throw Error("internal: polymer end not found");
    for (j = 0; j < _bonds.size(); j++)
    {
+      if (!_bmol->hasEdge(j))
+         // Edge was removed when virtual atoms for 
+         // attachment points are removed
+         continue;
+
       const Edge &edge = _bmol->getEdge(j);
 
       if (_atoms[edge.beg].polymer_index != i &&
@@ -1308,9 +1313,9 @@ void SmilesLoader::_handlePolymerRepetition (int i)
       else
       {
          // bond going out of the sgroup
-         if (edge.beg == start || edge.end == start)
+         if (start_bond == -1 && (edge.beg == start || edge.end == start))
             start_bond = j;
-         else if (edge.beg == end || edge.end == end)
+         else if (end_bond == -1 && (edge.beg == end || edge.end == end))
             end_bond = j;
          else
             throw Error("internal: unknown bond going from sgroup");
