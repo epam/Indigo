@@ -5839,6 +5839,7 @@ genericcostestimate(PlannerInfo *root,
 	 * indexes of different sizes from looking exactly equally attractive.
 	 */
 	*indexTotalCost += index->pages * spc_random_page_cost / 100000.0;
+	//*indexTotalCost += 1000;
 
 	/*
 	 * CPU cost: any complex expressions in the indexquals will need to be
@@ -5882,7 +5883,7 @@ genericcostestimate(PlannerInfo *root,
 	/*
 	 * Generic assumption about index correlation: there isn't any.
 	 */
-	*indexCorrelation = 0.0;
+	*indexCorrelation = -1.0;
 }
 
 
@@ -6328,6 +6329,45 @@ bingo_costestimate(PG_FUNCTION_ARGS) {
 
    PG_RETURN_VOID();
 }
+
+
+/*
+Datum
+bingo_costestimate(PG_FUNCTION_ARGS) {
+   struct PlannerInfo *root;
+   struct IndexOptInfo *index;
+   struct List *indexQuals;
+   struct RelOptInfo *outer_rel;
+   struct Cost *indexStartupCost;
+   struct Cost *indexTotalCost;
+   struct Selectivity *indexSelectivity;
+   double *indexCorrelation;
+
+   QualCost index_qual_cost;
+   int numIndexPages;
+   int numIndexTuples;
+
+   root = (PlannerInfo *) PG_GETARG_POINTER(0);
+   index = (IndexOptInfo *) PG_GETARG_POINTER(1);
+   indexQuals = (List *) PG_GETARG_POINTER(2);
+   outer_rel = (RelOptInfo *) PG_GETARG_POINTER(3);
+   indexStartupCost = (Cost *) PG_GETARG_POINTER(4);
+   indexTotalCost = (Cost *) PG_GETARG_POINTER(5);
+   indexSelectivity = (Selectivity *) PG_GETARG_POINTER(6);
+   indexCorrelation = (double *) PG_GETARG_POINTER(7);
+
+   *indexSelectivity = clauselist_selectivity(root, indexQuals, index->rel->relid, JOIN_INNER, NULL);
+
+   numIndexPages = 10;
+   numIndexPages = 100;
+   cost_qual_eval(&index_qual_cost, indexQuals, root);
+   *indexStartupCost = index_qual_cost.startup;
+   *indexTotalCost = seq_page_cost * numIndexPages +
+           (cpu_index_tuple_cost + index_qual_cost.per_tuple) * numIndexTuples;
+
+   PG_RETURN_VOID();
+}
+*/
 
 //Node	   *newNodeMacroHolder;
 char	   *BufferBlocks;
