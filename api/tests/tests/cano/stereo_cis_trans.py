@@ -12,6 +12,9 @@ mol_db_names = [
    (joinPath("molecules/helma.smi"), indigo.iterateSmilesFile)
 ]
 
+if not os.path.exists("out"):
+   os.makedirs("out")
+   
 def testAll (clear_cis_trans):
     for db_name, load_fund in mol_db_names:
         print("Database: %s" % relativePath(db_name))
@@ -32,9 +35,9 @@ def testAll (clear_cis_trans):
                     mol2.clearCisTrans()
                 mol2.layout()
                 mol2.markEitherCisTrans()
-                mol2.saveMolfile(joinPath("out.mol"))
+                mol2.saveMolfile(joinPath("out/out.mol"))
                 cansm2 = mol2.canonicalSmiles()
-                mol3 = indigo.loadMoleculeFromFile(joinPath("out.mol"))
+                mol3 = indigo.loadMoleculeFromFile(joinPath("out/out.mol"))
                 cansm3 = mol3.canonicalSmiles()
                 if cansm2 != cansm3:
                     sys.stderr.write("Different canonical smiles for #%s:\n" % idx)

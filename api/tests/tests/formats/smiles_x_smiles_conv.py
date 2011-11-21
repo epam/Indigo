@@ -1,12 +1,14 @@
 import sys
+import os
 sys.path.append('../../common')
 from env_indigo import *
+
+if not os.path.exists(joinPath('out')):
+    os.makedirs(joinPath('out'))
 
 indigo = Indigo()
 def testMultipleSave (smifile, iterfunc, issmi):
   print("TESTING " + relativePath(smifile))
-  if not os.path.exists(joinPath('out')):
-      os.makedirs(joinPath('out'))
   sdfout = indigo.writeFile(joinPath("out/structures.sdf"))
   cmlout = indigo.writeFile(joinPath("out/structures.cml"))
   rdfout = indigo.writeFile(joinPath("out/structures.rdf"))

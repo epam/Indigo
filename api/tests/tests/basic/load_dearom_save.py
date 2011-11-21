@@ -1,4 +1,5 @@
 import sys
+import os
 sys.path.append('../../common')
 from env_indigo import *
 
@@ -11,8 +12,12 @@ mol_db_names = [
    (joinPath("molecules/empty.sdf"), indigo.iterateSDFile),
    (joinPath("molecules/empty1.sdf"), indigo.iterateSDFile)
    ]
-f = indigo.writeFile(joinPath("out.sdf"))
-f2 = open(joinPath("cano_out.smi"), "w")
+   
+if not os.path.exists("out"):
+   os.makedirs("out")
+   
+f = indigo.writeFile(joinPath("out/out.sdf"))
+f2 = open(joinPath("out/cano_out.smi"), "w")
    
 for db_name, load_fund in mol_db_names:
    print("Database: {0}".format(relativePath(db_name)))
@@ -42,7 +47,7 @@ f2.close()
 print("*** Processing result molecules ***")
    
 idx = 1
-for item in indigo.iterateSDFile(joinPath("out.sdf")):
+for item in indigo.iterateSDFile(joinPath("out/out.sdf")):
    try:
       cansm = item.canonicalSmiles()
    except IndigoException, e:
