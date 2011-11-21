@@ -56,3 +56,52 @@ int LzwDecoder::get( void )
 
    return NextCode;
 }
+
+//
+// LzwScanner
+//
+LzwScanner::LzwScanner (LzwDecoder &decoder) : _decoder(decoder)
+{
+}
+
+void LzwScanner::read (int length, void *res)
+{
+   char *data = (char *)res;
+   for (int i = 0; i < length; i++)
+      data[i] = _decoder.get();
+}
+
+void LzwScanner::skip (int n)
+{
+   throw Error("skip is not implemented");
+}
+
+bool LzwScanner::isEOF ()
+{
+   return _decoder.isEOF();
+}
+
+int LzwScanner::lookNext ()
+{
+   throw Error("lookNext is not implemented");
+}
+
+void LzwScanner::seek (int pos, int from)
+{
+   throw Error("seek is not implemented");
+}
+
+int LzwScanner::length ()
+{
+   throw Error("length is not implemented");
+}
+
+int LzwScanner::tell ()
+{
+   throw Error("tell is not implemented");
+}
+
+byte LzwScanner::readByte ()
+{
+   return _decoder.get();
+}

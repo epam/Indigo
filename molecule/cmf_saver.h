@@ -17,10 +17,11 @@
 
 #include "base_cpp/obj.h"
 #include "lzw/lzw_encoder.h"
+#include "math/algebra.h"
+#include "molecule/base_molecule.h"
 
 namespace indigo {
 
-class Molecule;
 class Output;
 
 class CmfSaver
@@ -49,22 +50,51 @@ public:
 
    DEF_ERROR("CMF saver");
 
+   struct VecRange
+   {
+      Vec3f xyz_min, xyz_range;
+      bool have_z;
+   };
 protected:
 
    void _init ();
-   void _encode (int symbol);
+   void _encode (byte symbol);
+   void _encodePacked (int number);
 
    void _encodeAtom (Molecule &mol, int idx, const int *mapping);
    void _encodeBond (Molecule &mol, int idx, const int *mapping);
    void _encodeCycleNumer (int n);
 
-   void _writeXyz (Molecule &mol);
+   void _writeFloatInRange (Output &output, float v, float min, float range);
+
+   struct Mapping
+   {
+      Array<int> *atom_mapping, *bond_mapping;
+   };
+
+   void _encodeString (const Array<char> &str);
+   void _encodeUIntArray (const Array<int> &data, const Array<int> &mapping);
+
+   void _encodeExtSection (Molecule &mol, const Mapping &mapping);
+   void _encodeBaseSGroup (Molecule &mol, BaseMolecule::SGroup &sgroup, const Mapping &mapping);
+
+   //void _encodeSGroups (Molecule &mol, const Mapping &mapping);
+   void _writeSGroupsXyz (Molecule &mol, Output &output, const VecRange &range);
+   void _writeBaseSGroupXyz (Output &output, BaseMolecule::SGroup &sgroup, const VecRange &range);
+
+   void _writeVec3f (Output &output, const Vec3f &pos, const VecRange &range);
+   void _writeVec2f (Output &output, const Vec2f &pos, const VecRange &range);
+   void _writeDir2f (Output &output, const Vec2f &dir, const VecRange &range);
+
+   void _updateSGroupsXyzMinMax (Molecule &mol, Vec3f &min, Vec3f &max);
+   void _updateBaseSGroupXyzMinMax (BaseMolecule::SGroup &sgroup, Vec3f &min, Vec3f &max);
 
    TL_CP_DECL(Array<int>, _atom_sequence);
 
    Output     *_output;
-   LzwEncoder *_encoder;
    Obj<LzwEncoder> _encoder_obj;
+   LzwEncoder *_ext_encoder;
+   Obj<LzwOutput> _encoder_output_obj;
 
    Molecule *_mol;
 

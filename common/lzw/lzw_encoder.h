@@ -16,11 +16,10 @@
 #define __lzw_encoder_h__
 
 #include "base_cpp/bitoutworker.h"
+#include "base_cpp/output.h"
 #include "lzw/lzw_dictionary.h"
 
 namespace indigo {
-
-class Output;
 
 class LzwEncoder
 {
@@ -53,6 +52,20 @@ private:
    // no implicit copy
    LzwEncoder( const LzwEncoder & );
 
+};
+
+class LzwOutput : public Output
+{
+public:
+   LzwOutput (LzwEncoder &encoder);
+
+   virtual void write (const void *data, int size);
+   virtual void writeByte (byte value);
+   virtual void seek  (int offset, int from);
+   virtual int  tell  ();
+   virtual void flush ();
+private:
+   LzwEncoder &_encoder; 
 };
 
 }

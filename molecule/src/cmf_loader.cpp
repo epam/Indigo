@@ -24,26 +24,28 @@ CmfLoader::CmfLoader (LzwDict &dict, Scanner &scanner) :
 TL_CP_GET(_atoms),
 TL_CP_GET(_bonds),
 TL_CP_GET(_pseudo_labels),
-TL_CP_GET(_attachments)
+TL_CP_GET(_attachments),
+TL_CP_GET(_sgroup_order)
 {
    _init();
    _decoder_obj.create(dict, scanner);
-   _decoder = _decoder_obj.get();
-//   _decoder->setScanner(&scanner);
+   _lzw_scanner.create(_decoder_obj.ref());
+   _scanner = _lzw_scanner.get();
 }
 
 CmfLoader::CmfLoader (Scanner &scanner) :
-TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments)
+TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order)
 {
    _init();
    _scanner = &scanner;
 }
 
 CmfLoader::CmfLoader (LzwDecoder &decoder) :
-TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments)
+TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order)
 {
    _init();
-   _decoder = &decoder;
+   _lzw_scanner.create(decoder);
+   _scanner = _lzw_scanner.get();
 }
 
 void CmfLoader::_init ()
@@ -51,31 +53,20 @@ void CmfLoader::_init ()
    skip_cistrans = false;
    skip_stereocenters = false;
    skip_valence = false;
-   _decoder = 0;
+   _ext_decoder = 0;
    _scanner = 0;
    atom_flags = 0;
    bond_flags = 0;
+
+   _sgroup_order.clear();
 }
 
 bool CmfLoader::_getNextCode (int &code)
 {
-   if (_decoder != 0)
-   {
-      if (_decoder->isEOF())
-         return false;
-      code = _decoder->get();
-      return true;
-   }
-
-   if (_scanner != 0)
-   {
-      if (_scanner->isEOF())
-         return false;
-      code = _scanner->readByte();
-      return true;
-   }
-
-   throw Error("no _decoder, no _scanner");
+   if (_scanner->isEOF())
+      return false;
+   code = _scanner->readByte();
+   return true;
 }
 
 bool CmfLoader::_readAtom (int &code, _AtomDesc &atom, int atom_idx)
@@ -320,6 +311,12 @@ void CmfLoader::_readBond (int &code, _BondDesc &bond)
       bond.type = BOND_AROMATIC;
       bond.in_ring = true;
    }
+   else if (code == CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_CHAIN || code == CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_RING)
+   {
+      bond.cis_trans = -1;
+      bond.type = BOND_DOUBLE;
+      bond.in_ring = (code == CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_RING);
+   }
    else
       throw Error("cannot decode bond: code %d", code);
 
@@ -388,6 +385,8 @@ void CmfLoader::loadMolecule (Molecule &mol)
    if (!_getNextCode(code))
       return;
 
+   bool has_ext_part = false;
+
    /* Main loop */
    do 
    {
@@ -397,7 +396,12 @@ void CmfLoader::loadMolecule (Molecule &mol)
          throw Error("unexpected code");
 
       if (code == CMF_TERMINATOR)
+         break;
+
+      if (code == CMF_EXT)
       {
+         has_ext_part = true;
+         // Ext part has to be read till CMF_TERMINATOR
          break;
       }
 
@@ -565,6 +569,9 @@ void CmfLoader::loadMolecule (Molecule &mol)
 
    mol.validateEdgeTopologies();
 
+   if (has_ext_part)
+      _readExtSection(mol);
+
    if (atom_flags != 0)
    {
       atom_flags->clear();
@@ -587,7 +594,11 @@ void CmfLoader::loadMolecule (Molecule &mol)
       {
          if (_bonds[i].cis_trans != 0)
          {
-            mol.cis_trans.setParity(i, _bonds[i].cis_trans);
+            int parity = _bonds[i].cis_trans;
+            if (parity > 0)
+               mol.cis_trans.setParity(i, _bonds[i].cis_trans);
+            else
+               mol.cis_trans.ignore(i);
             mol.cis_trans.restoreSubstituents(i);
          }
       }
@@ -648,38 +659,218 @@ void CmfLoader::loadMolecule (Molecule &mol)
    _mol = &mol;
 }
 
+void CmfLoader::_readSGroup (int code, Molecule &mol)
+{
+   if (code == CMF_DATASGROUP)
+   {
+      int idx = mol.data_sgroups.add();
+      BaseMolecule::DataSGroup &s = mol.data_sgroups[idx];
+      _readGeneralSGroup(s);
+
+      _readString(s.description);
+      _readString(s.data);
+      byte bits = _scanner->readByte();
+      s.dasp_pos = bits & 0x0F;
+      s.detached = (bits & (1 << 4)) != 0;
+      s.relative = (bits & (1 << 5)) != 0;
+      s.display_units = (bits & (1 << 6)) != 0;
+   }
+   else if (code == CMF_SUPERATOM)
+   {
+      int idx = mol.superatoms.add();
+      BaseMolecule::Superatom &s = mol.superatoms[idx];
+      _readGeneralSGroup(s);
+      _readString(s.subscript);
+      s.bond_idx = (int)_scanner->readPackedUInt() - 1;
+   }
+   else if (code == CMF_REPEATINGUNIT)
+   {
+      int idx = mol.repeating_units.add();
+      BaseMolecule::RepeatingUnit &s = mol.repeating_units[idx];
+      _readGeneralSGroup(s);
+      s.connectivity = _scanner->readPackedUInt();
+   }
+   else if (code == CMF_MULTIPLEGROUP)
+   {
+      int idx = mol.multiple_groups.add();
+      BaseMolecule::MultipleGroup &s = mol.multiple_groups[idx];
+      _readGeneralSGroup(s);
+      _readUIntArray(s.parent_atoms);
+      s.multiplier = _scanner->readPackedUInt();
+   }
+   else if (code == CMF_GENERICSGROUP)
+   {
+      int idx = mol.generic_sgroups.add();
+      _readGeneralSGroup(mol.generic_sgroups[idx]);
+   }
+   else
+      throw Error("_readExtSection: unexpected SGroup code: %d", code);
+
+   _sgroup_order.push(code);
+}
+
+float CmfLoader::_readFloatInRange (Scanner &scanner, float min, float range)
+{
+   return min + ((float)scanner.readBinaryWord() / 65535) * range;
+}
+
+void CmfLoader::_readVec3f (Scanner &scanner, Vec3f &pos, const CmfSaver::VecRange &range)
+{
+   pos.x = _readFloatInRange(scanner, range.xyz_min.x, range.xyz_range.x);
+   pos.y = _readFloatInRange(scanner, range.xyz_min.y, range.xyz_range.y);
+
+   if (range.have_z)
+      pos.z = _readFloatInRange(scanner, range.xyz_min.z, range.xyz_range.z);
+   else
+      pos.z = 0;
+}
+
+void CmfLoader::_readVec2f (Scanner &scanner, Vec2f &pos, const CmfSaver::VecRange &range)
+{
+   pos.x = _readFloatInRange(scanner, range.xyz_min.x, range.xyz_range.x);
+   pos.y = _readFloatInRange(scanner, range.xyz_min.y, range.xyz_range.y);
+}
+
+void CmfLoader::_readDir2f (Scanner &scanner, Vec2f &dir, const CmfSaver::VecRange &range)
+{
+   dir.x = _readFloatInRange(scanner, range.xyz_min.x, 2 * range.xyz_range.x);
+   dir.y = _readFloatInRange(scanner, range.xyz_min.y, 2 * range.xyz_range.y);
+}
+
+
+void CmfLoader::_readBaseSGroupXyz (Scanner &scanner, BaseMolecule::SGroup &sgroup, const CmfSaver::VecRange &range)
+{
+   int len = scanner.readPackedUInt();
+   sgroup.brackets.resize(len);
+   for (int i = 0; i < len; i++)
+   {
+      _readVec2f(scanner, sgroup.brackets[i][0], range);
+      _readVec2f(scanner, sgroup.brackets[i][1], range);
+   }
+}
+
+void CmfLoader::_readSGroupXYZ (Scanner &scanner, int code, int idx_array[5], Molecule &mol, const CmfSaver::VecRange &range)
+{
+   if (code == CMF_DATASGROUP)
+   {
+      int idx = idx_array[0]++;
+      BaseMolecule::DataSGroup &s = mol.data_sgroups[idx];
+      _readBaseSGroupXyz(scanner, s, range);
+      _readVec2f(scanner, s.display_pos, range);
+   }
+   else if (code == CMF_SUPERATOM)
+   {
+      int idx = idx_array[1]++;
+      BaseMolecule::Superatom &s = mol.superatoms[idx];
+      _readBaseSGroupXyz(scanner, s, range);
+      if (s.bond_idx != -1)
+         _readDir2f(scanner, s.bond_dir, range);
+   }
+   else if (code == CMF_REPEATINGUNIT)
+   {
+      int idx = idx_array[2]++;
+      _readBaseSGroupXyz(scanner, mol.repeating_units[idx], range);
+   }
+   else if (code == CMF_MULTIPLEGROUP)
+   {
+      int idx = idx_array[3]++;
+      _readBaseSGroupXyz(scanner, mol.multiple_groups[idx], range);
+   }
+   else if (code == CMF_GENERICSGROUP)
+   {
+      int idx = idx_array[4]++;
+      _readBaseSGroupXyz(scanner, mol.generic_sgroups[idx], range);
+   }
+   else
+      throw Error("_readExtSection: unexpected SGroup code: %d", code);
+}
+
+
+void CmfLoader::_readString (Array<char> &dest)
+{
+   unsigned int len = _scanner->readPackedUInt();
+   dest.resize(len + 1);
+   _scanner->read(len, dest.ptr());
+   dest[len] = 0;
+}
+
+void CmfLoader::_readUIntArray (Array<int> &dest)
+{
+   unsigned int len = _scanner->readPackedUInt();
+   dest.clear_resize(len);
+   for (unsigned int i = 0; i < len; i++)
+      dest[i] = _scanner->readPackedUInt();
+}
+ 
+void CmfLoader::_readGeneralSGroup (BaseMolecule::SGroup &sgroup)
+{
+   _readUIntArray(sgroup.atoms);
+   _readUIntArray(sgroup.bonds);
+}
+ 
+void CmfLoader::_readExtSection (Molecule &mol)
+{
+   _sgroup_order.clear();
+   int code;
+   while (true)
+   {
+      if (!_getNextCode(code))
+         throw Error("_readExtSection: unexpected end of the stream");
+
+      if (code == CMF_TERMINATOR)
+         break;
+      // TODO provide a readers map to avoid such "if"s
+      else if (code == CMF_DATASGROUP || code == CMF_SUPERATOM || 
+         code == CMF_REPEATINGUNIT || code == CMF_MULTIPLEGROUP || code == CMF_GENERICSGROUP)
+      {
+         _readSGroup(code, mol);   
+      }
+      else if (code == CMF_RSITE_ATTACHMENTS)
+      {
+         int idx = _scanner->readPackedUInt();
+         int count = _scanner->readPackedUInt();
+         for (int i = 0; i < count; i++)
+         {
+            int idx2 = _scanner->readPackedUInt();
+            mol.setRSiteAttachmentOrder(idx, idx2, i);
+         }
+      }
+      else
+         throw Error("unexpected code: %d", code);
+   }
+}
+
 void CmfLoader::loadXyz (Scanner &scanner)
 {
    if (_mol == 0)
       throw Error("loadMolecule() must be called prior to loadXyz()");
 
    int i;
-   Vec3f xyz_min, xyz_range;
 
-   xyz_min.x = scanner.readBinaryFloat();
-   xyz_min.y = scanner.readBinaryFloat();
-   xyz_min.z = scanner.readBinaryFloat();
+   CmfSaver::VecRange range;
 
-   xyz_range.x = scanner.readBinaryFloat();
-   xyz_range.y = scanner.readBinaryFloat();
-   xyz_range.z = scanner.readBinaryFloat();
+   range.xyz_min.x = scanner.readBinaryFloat();
+   range.xyz_min.y = scanner.readBinaryFloat();
+   range.xyz_min.z = scanner.readBinaryFloat();
 
-   bool have_z = (scanner.readByte() != 0);
+   range.xyz_range.x = scanner.readBinaryFloat();
+   range.xyz_range.y = scanner.readBinaryFloat();
+   range.xyz_range.z = scanner.readBinaryFloat();
+
+   range.have_z = (scanner.readByte() != 0);
 
    for (i = 0; i < _atoms.size(); i++)
    {
       Vec3f pos;
-
-      pos.x = xyz_min.x + ((float)scanner.readBinaryWord() / 65535) * xyz_range.x;
-      pos.y = xyz_min.y + ((float)scanner.readBinaryWord() / 65535) * xyz_range.y;
-
-      if (have_z)
-         pos.z = xyz_min.z + ((float)scanner.readBinaryWord() / 65535) * xyz_range.z;
-      else
-         pos.z = 0;
+      _readVec3f(scanner, pos, range);
 
       _mol->setAtomXyz(i, pos.x, pos.y, pos.z);
    }
+
+   // Read sgroup coordinates data
+   int idx[5] = {0};
+   for (int i = 0; i < _sgroup_order.size(); i++)
+      _readSGroupXYZ(scanner, _sgroup_order[i], idx, *_mol, range);
 
    _mol->have_xyz = true;
 }

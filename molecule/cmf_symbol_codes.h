@@ -155,8 +155,30 @@ enum
    /* 210 - terminator */
    CMF_TERMINATOR = CMF_ATTACHPT + 1,
 
-   /* Alphabet size = 211 */
-   CMF_ALPHABET_SIZE = CMF_TERMINATOR + 1
+   /* 211 - Extended part: sgroups, ... */
+   CMF_EXT = CMF_TERMINATOR + 1,
+
+   /* SGroups */
+   /* 212 - Data SGroup */
+   CMF_DATASGROUP = CMF_EXT + 1,
+   /* 213 - Superatom */
+   CMF_SUPERATOM = CMF_DATASGROUP + 1,
+   /* 213 - Repeating unit */
+   CMF_REPEATINGUNIT = CMF_SUPERATOM + 1,
+   /* 214 - Multiple Group */
+   CMF_MULTIPLEGROUP = CMF_REPEATINGUNIT + 1,
+   /* 215 - Generic SGroup */
+   CMF_GENERICSGROUP = CMF_MULTIPLEGROUP + 1,
+
+   /* 216 - R-Site attachments */
+   CMF_RSITE_ATTACHMENTS = CMF_GENERICSGROUP + 1,
+
+   /* 217, 218 */
+   CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_RING = CMF_RSITE_ATTACHMENTS + 1,
+   CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_CHAIN = CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_RING + 1,
+
+   /* Alphabet size = 216 */
+   CMF_ALPHABET_SIZE = CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_CHAIN + 1
 };
 
 }

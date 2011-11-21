@@ -975,7 +975,8 @@ void BaseMolecule::MultipleGroup::collapse (BaseMolecule& bm, int id, Mapping& m
          int beg = in1 ? mapAtom.at(edge.beg) : edge.beg;
          int end = in2 ? mapAtom.at(edge.end) : edge.end;
          int bid = copyBaseBond(bm, beg, end, j);
-         mapBondInv.insert(bid, j);
+         if (!mapBondInv.find(bid))
+            mapBondInv.insert(bid, j);
       }
    }
 

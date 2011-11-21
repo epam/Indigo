@@ -19,6 +19,7 @@
 #include "lzw/lzw_dictionary.h"
 #include "lzw/lzw_decoder.h"
 #include "base_cpp/obj.h"
+#include "molecule/cmf_saver.h"
 
 namespace indigo {
 
@@ -105,15 +106,32 @@ protected:
    bool _readAtom (int &code, _AtomDesc &atom, int atom_idx);
    bool _readCycleNumber (int &code, int &n);
 
+   void _readExtSection (Molecule &mol);
+   void _readSGroup (int code, Molecule &mol);
+   void _readGeneralSGroup (BaseMolecule::SGroup &sgroup);
+
+   void _readSGroupXYZ (Scanner &scanner, int code, int idx_array[5], Molecule &mol, const CmfSaver::VecRange &range);
+   void _readBaseSGroupXyz (Scanner &scanner, BaseMolecule::SGroup &sgroup, const CmfSaver::VecRange &range);
+
+   void _readString (Array<char> &dest);
+   void _readUIntArray (Array<int> &dest);
+
+   void _readVec3f (Scanner &scanner, Vec3f &pos, const CmfSaver::VecRange &range);
+   void _readVec2f (Scanner &scanner, Vec2f &pos, const CmfSaver::VecRange &range);
+   void _readDir2f (Scanner &scanner, Vec2f &dir, const CmfSaver::VecRange &range);
+   float _readFloatInRange (Scanner &scanner, float min, float range);
+
    Scanner *_scanner;
    
    Obj<LzwDecoder> _decoder_obj;
-   LzwDecoder     *_decoder;
+   LzwDecoder     *_ext_decoder;
+   Obj<LzwScanner> _lzw_scanner;
 
    TL_CP_DECL(Array<_AtomDesc>, _atoms);
    TL_CP_DECL(Array<_BondDesc>, _bonds);
    TL_CP_DECL(StringPool,       _pseudo_labels);
    TL_CP_DECL(Array<_AttachmentDesc>, _attachments);
+   TL_CP_DECL(Array<int>, _sgroup_order);
    Molecule *_mol;
 
 private:

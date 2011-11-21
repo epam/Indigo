@@ -2012,11 +2012,13 @@ void MolfileLoader::_readCtab3000 ()
       int ecflag = 0;
       int radical = 0;
 
-      while (!strscan.isEOF())
+      while (true)
       {
-         QS_DEF(Array<char>, prop_arr);
-
          strscan.skipSpace();
+         if (strscan.isEOF())
+            break;
+
+         QS_DEF(Array<char>, prop_arr);
          strscan.readWord(prop_arr, "=");
 
          strscan.skip(1);
@@ -2791,10 +2793,19 @@ void MolfileLoader::_readSGroupDisplay (Scanner &scanner, BaseMolecule::DataSGro
       dsg.relative = true;
    if (scanner.readChar() == 'U')
       dsg.display_units = true;
-   scanner.skip(16);
-   int c = scanner.readChar();
-   if (c >= '1' && c <= '9')
-      dsg.dasp_pos = c - '0';
+
+   int cur = scanner.tell();
+   scanner.seek(0, SEEK_END);
+   int end = scanner.tell();
+   scanner.seek(cur, SEEK_SET);
+
+   if (end - cur + 1 > 16)
+   {
+      scanner.skip(16);
+      int c = scanner.readChar();
+      if (c >= '1' && c <= '9')
+         dsg.dasp_pos = c - '0';
+   }
 }
 
 

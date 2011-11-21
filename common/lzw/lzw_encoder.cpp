@@ -75,3 +75,37 @@ LzwEncoder::~LzwEncoder( void )
 {
    finish();
 }
+
+//
+// LzwOutput
+//
+
+LzwOutput::LzwOutput (LzwEncoder &encoder) : _encoder(encoder)
+{
+}
+
+void LzwOutput::writeByte (byte value)
+{
+   _encoder.send(value);
+}
+
+void LzwOutput::write (const void *data_, int size)
+{
+   const char *data = (const char *)data_;
+   for (int i = 0; i < size; i++)
+      _encoder.send(data[i]);
+}
+ 
+void LzwOutput::seek (int offset, int from)
+{
+   throw Error("can not 'seek' in LZW-output");
+}
+
+int LzwOutput::tell ()
+{
+   throw Error("can not 'tell' in LZW-output");
+}
+
+void LzwOutput::flush ()
+{
+}

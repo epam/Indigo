@@ -247,6 +247,7 @@ public:
 
    bool isChrial ();
 
+   // TODO: use a single array
    ObjPool<DataSGroup> data_sgroups;
    ObjPool<Superatom>  superatoms;
    ObjPool<RepeatingUnit> repeating_units;

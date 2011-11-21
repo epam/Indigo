@@ -35,14 +35,17 @@ TL_CP_GET(_atom_sequence)
       dict.init(CMF_ALPHABET_SIZE, CMF_BIT_CODE_SIZE);
 
    _encoder_obj.create(dict, output);
-   _encoder = _encoder_obj.get();
+   _encoder_output_obj.create(_encoder_obj.ref());
+   _output = _encoder_output_obj.get();
 }
 
 CmfSaver::CmfSaver (LzwEncoder &encoder) :
 TL_CP_GET(_atom_sequence)
 {
    _init();
-   _encoder = &encoder;
+   _ext_encoder = &encoder;
+   _encoder_output_obj.create(encoder);
+   _output = _encoder_output_obj.get();
 }
 
 CmfSaver::CmfSaver (Output &output) :
@@ -56,9 +59,8 @@ void CmfSaver::_init ()
 {
    atom_flags = 0;
    bond_flags = 0;
-   _encoder = 0;
-   _output = 0;
    _mol = 0;
+   _ext_encoder = 0;
    save_bond_dirs = false;
    save_highlighting = false;
 }
@@ -69,8 +71,8 @@ void CmfSaver::saveMolecule (Molecule &mol)
    DfsWalk walk(mol);
    QS_DEF(Array<int>, mapping);
 
-   if (_encoder != 0)
-      _encoder->start();
+   if (_ext_encoder != 0)
+      _ext_encoder->start();
 
    walk.walk();
 
@@ -88,6 +90,11 @@ void CmfSaver::saveMolecule (Molecule &mol)
    cycle_numbers.clear();
 
    _atom_sequence.clear();
+
+   QS_DEF(Array<int>, bond_mapping);
+   bond_mapping.clear_resize(mol.edgeEnd());
+   bond_mapping.fffill();
+   int bond_index = 0;
 
    /* Encode first atom */
    if (v_seq.size() > 0)
@@ -132,6 +139,7 @@ void CmfSaver::saveMolecule (Molecule &mol)
             throw Error("unexpected branch");
 
          _encodeBond(mol, e_idx, mapping.ptr());
+         bond_mapping[e_idx] = bond_index++;
 
          if (save_bond_dirs)
          {
@@ -199,6 +207,11 @@ void CmfSaver::saveMolecule (Molecule &mol)
       }
    }
 
+   Mapping mapping_group;
+   mapping_group.atom_mapping = &mapping;
+   mapping_group.bond_mapping = &bond_mapping;
+   _encodeExtSection(mol, mapping_group);
+
    _encode(CMF_TERMINATOR);
    
    // if have internal encoder, finish it
@@ -209,6 +222,180 @@ void CmfSaver::saveMolecule (Molecule &mol)
    _mol = &mol;
 }
 
+void CmfSaver::_encodeUIntArray (const Array<int> &data, const Array<int> &mapping)
+{
+   _output->writePackedUInt(data.size());
+   for (int i = 0; i < data.size(); i++)
+   {
+      int index = data[i];
+      int mapped = mapping[index];
+      if (mapped < 0)
+         throw Error("Internal error: mapping is invald");
+      _output->writePackedUInt(mapped);
+   }
+}
+
+void CmfSaver::_encodeBaseSGroup (Molecule &mol, BaseMolecule::SGroup &sgroup, const Mapping &mapping)
+{
+   _encodeUIntArray(sgroup.atoms, *mapping.atom_mapping);
+   _encodeUIntArray(sgroup.bonds, *mapping.bond_mapping);
+}
+
+void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
+{
+   bool ext_printed = false;
+   // Process all R-sites
+   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      if (mol.isRSite(i))
+      {
+         int count = 0;
+         while (mol.getRSiteAttachmentPointByOrder(i, count) >= 0)
+            count++;
+         if (count == 0)
+            continue;
+
+         if (!ext_printed)
+         {
+            _encode(CMF_EXT);
+            ext_printed = true;
+         }
+
+         _encode(CMF_RSITE_ATTACHMENTS);
+         int idx = mapping.atom_mapping->at(i);
+         if (idx < 0)
+            throw Error("Internal error: idx < 0");
+         _output->writePackedUInt(idx);
+         _output->writePackedUInt(count);
+         for (int j = 0; j < count; j++)
+         {
+            int att = mol.getRSiteAttachmentPointByOrder(i, j);
+            int idx2 = mapping.atom_mapping->at(att);
+            if (idx2 < 0)
+               throw Error("Internal error: idx2 < 0");
+            _output->writePackedUInt(idx2);
+         }
+      }
+   }
+
+   bool need_print_ext = mol.generic_sgroups.size() > 0 ||
+      mol.data_sgroups.size() > 0 ||
+      mol.superatoms.size() > 0 ||
+      mol.repeating_units.size() > 0 ||
+      mol.multiple_groups.size() > 0;
+
+   if (need_print_ext && !ext_printed)
+      _encode(CMF_EXT);
+
+   for (int i = 0; i < mol.generic_sgroups.size(); i++)
+   {
+      BaseMolecule::SGroup &sg = mol.data_sgroups[i];
+      _encode(CMF_GENERICSGROUP);
+      _encodeBaseSGroup(mol, sg, mapping);
+   }
+
+   for (int i = 0; i < mol.data_sgroups.size(); i++)
+   {
+      BaseMolecule::DataSGroup &sd = mol.data_sgroups[i];
+      _encode(CMF_DATASGROUP);
+      _encodeBaseSGroup(mol, sd, mapping);
+      _encodeString(sd.description);
+      _encodeString(sd.data);
+      // Pack detached, relative, display_units, and sd.dasp_pos into one byte
+      if (sd.dasp_pos < 0 || sd.dasp_pos > 9)
+         throw Error("DataSGroup dasp_pos field should be less than 10: %d", sd.dasp_pos);
+      byte packed = (sd.dasp_pos & 0x0F) | (sd.detached << 4) | (sd.relative << 5) | (sd.display_units << 6);
+      _output->writeByte(packed);
+   }
+
+   for (int i = 0; i < mol.superatoms.size(); i++)
+   {
+      BaseMolecule::Superatom &sa = mol.superatoms[i];
+      _encode(CMF_SUPERATOM);
+      _encodeBaseSGroup(mol, sa, mapping);
+      _encodeString(sa.subscript);
+
+      if (sa.bond_idx < -1)
+         throw Error("internal error: SGroup bond index is invalid: %d", sa.bond_idx);
+      _output->writePackedUInt(sa.bond_idx + 1);
+   }
+
+   for (int i = 0; i < mol.repeating_units.size(); i++)
+   {
+      BaseMolecule::RepeatingUnit &su = mol.repeating_units[i];
+      _encode(CMF_REPEATINGUNIT);
+      _encodeBaseSGroup(mol, su, mapping);
+      _output->writePackedUInt(su.connectivity);
+   }
+
+   for (int i = 0; i < mol.multiple_groups.size(); i++)
+   {
+      BaseMolecule::MultipleGroup &sm = mol.multiple_groups[i];
+      _encode(CMF_MULTIPLEGROUP);
+      _encodeBaseSGroup(mol, sm, mapping);
+      _encodeUIntArray(sm.parent_atoms, *mapping.atom_mapping);
+      if (sm.multiplier < 0)
+         throw Error("internal error: SGroup multiplier is negative: %d", sm.multiplier);
+      _output->writePackedUInt(sm.multiplier);
+   }
+}
+
+void CmfSaver::_writeBaseSGroupXyz (Output &output, BaseMolecule::SGroup &sgroup, const VecRange &range)
+{
+   output.writePackedUInt(sgroup.brackets.size());
+   for (int i = 0; i < sgroup.brackets.size(); i++)
+   {
+      _writeVec2f(output, sgroup.brackets[i][0], range);
+      _writeVec2f(output, sgroup.brackets[i][1], range);
+   }
+}
+
+void CmfSaver::_writeSGroupsXyz (Molecule &mol, Output &output, const VecRange &range)
+{
+   // XYZ data should be written in the same order as in _encodeSGroups
+   for (int i = 0; i < mol.generic_sgroups.size(); i++)
+   {
+      BaseMolecule::SGroup &sg = mol.data_sgroups[i];
+      _writeBaseSGroupXyz(output, sg, range);
+   }
+
+   for (int i = 0; i < mol.data_sgroups.size(); i++)
+   {
+      BaseMolecule::DataSGroup &sd = mol.data_sgroups[i];
+      _writeBaseSGroupXyz(output, sd, range);
+      _writeVec2f(output, sd.display_pos, range);
+   }
+
+   for (int i = 0; i < mol.superatoms.size(); i++)
+   {
+      BaseMolecule::Superatom &sa = mol.superatoms[i];
+      _writeBaseSGroupXyz(output, sa, range);
+      if (sa.bond_idx != -1)
+         _writeDir2f(output, sa.bond_dir, range);
+   }
+
+   for (int i = 0; i < mol.repeating_units.size(); i++)
+   {
+      BaseMolecule::RepeatingUnit &su = mol.repeating_units[i];
+      _writeBaseSGroupXyz(output, su, range);
+   }
+
+   for (int i = 0; i < mol.multiple_groups.size(); i++)
+   {
+      BaseMolecule::MultipleGroup &sm = mol.multiple_groups[i];
+      _writeBaseSGroupXyz(output, sm, range);
+   }
+}
+ 
+void CmfSaver::_encodeString (const Array<char> &str)
+{
+   unsigned int len = str.size();
+   if (len > 0 && str[len - 1] == 0)
+      len--;
+   _output->writePackedUInt(len);
+   _output->write(str.ptr(), len);
+}
+
 void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
 {
    int number = 0;
@@ -216,7 +403,6 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
    if (mol.isPseudoAtom(idx))
    {
       const char *str = mol.getPseudoAtom(idx);
-
       int len = strlen(str);
 
       if (len < 1)
@@ -465,6 +651,13 @@ void CmfSaver::_encodeBond (Molecule &mol, int idx, const int *mapping)
                _encode(CMF_BOND_DOUBLE_CHAIN_TRANS);
          }
       }
+      else if (mol.cis_trans.isIgnored(idx))
+      {
+         if (mol.getBondTopology(idx) == TOPOLOGY_RING)
+            _encode(CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_RING);
+         else
+            _encode(CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_CHAIN);
+      }
       else
       {
          if (mol.getBondTopology(idx) == TOPOLOGY_RING)
@@ -509,14 +702,100 @@ void CmfSaver::_encodeCycleNumer (int n)
    _encode(CMF_CYCLES + n);
 }
 
-void CmfSaver::_encode (int symbol)
+void CmfSaver::_encode (byte symbol)
 {
-   if (_output != 0)
-      _output->writeByte(symbol);
-   else if (_encoder != 0)
-      _encoder->send(symbol);
+   _output->writeByte(symbol);
+}
+
+void CmfSaver::_writeFloatInRange (Output &output, float v, float min, float range)
+{
+   if (range > EPSILON)
+   {
+      float v2 = (((v - min) / range) * 65535 + 0.5f);
+      if (v2 < 0 || v2 > 65536)
+         throw Error("Internal error: Value %f is outsize of [%f, %f]", v, min, min + range);
+      output.writeBinaryWord((word)v2);
+   }
    else
-      throw Error("no _output, no _encoder");
+      output.writeBinaryWord(0);
+}
+
+void CmfSaver::_writeVec3f (Output &output, const Vec3f &pos, const VecRange &range)
+{
+   _writeFloatInRange(output, pos.x, range.xyz_min.x, range.xyz_range.x);
+   _writeFloatInRange(output, pos.y, range.xyz_min.y, range.xyz_range.y);
+   if (range.have_z)
+      _writeFloatInRange(output, pos.z, range.xyz_min.z, range.xyz_range.z);
+}
+
+void CmfSaver::_writeVec2f (Output &output, const Vec2f &pos, const VecRange &range)
+{
+   _writeFloatInRange(output, pos.x, range.xyz_min.x, range.xyz_range.x);
+   _writeFloatInRange(output, pos.y, range.xyz_min.y, range.xyz_range.y);
+}
+
+void CmfSaver::_writeDir2f (Output &output, const Vec2f &dir, const VecRange &range)
+{
+   _writeFloatInRange(output, dir.x, -range.xyz_range.x, 2 * range.xyz_range.x);
+   _writeFloatInRange(output, dir.y, -range.xyz_range.y, 2 * range.xyz_range.y);
+}
+
+void CmfSaver::_updateSGroupsXyzMinMax (Molecule &mol, Vec3f &min, Vec3f &max)
+{
+
+   for (int i = 0; i < mol.generic_sgroups.size(); i++)
+   {
+      BaseMolecule::SGroup &s = mol.data_sgroups[i];
+      _updateBaseSGroupXyzMinMax(s, min, max);
+   }
+
+   for (int i = 0; i < mol.data_sgroups.size(); i++)
+   {
+      BaseMolecule::DataSGroup &s = mol.data_sgroups[i];
+      _updateBaseSGroupXyzMinMax(s, min, max);
+
+      Vec3f display_pos(s.display_pos.x, s.display_pos.y, 0);
+
+      min.min(display_pos);
+      max.max(display_pos);
+   }
+
+   for (int i = 0; i < mol.superatoms.size(); i++)
+   {
+      BaseMolecule::Superatom &s = mol.superatoms[i];
+      _updateBaseSGroupXyzMinMax(s, min, max);
+   }
+
+   for (int i = 0; i < mol.repeating_units.size(); i++)
+   {
+      BaseMolecule::RepeatingUnit &s = mol.repeating_units[i];
+      _updateBaseSGroupXyzMinMax(s, min, max);
+   }
+
+   for (int i = 0; i < mol.multiple_groups.size(); i++)
+   {
+      BaseMolecule::MultipleGroup &s = mol.multiple_groups[i];
+      _updateBaseSGroupXyzMinMax(s, min, max);
+   }
+
+}
+
+void CmfSaver::_updateBaseSGroupXyzMinMax (BaseMolecule::SGroup &sgroup, Vec3f &min, Vec3f &max)
+{
+   for (int i = 0; i < sgroup.brackets.size(); i++)
+   {
+      Vec2f v1 = sgroup.brackets[i][0];
+      Vec2f v2 = sgroup.brackets[i][1];
+
+      Vec3f v31(v1.x, v1.y, 0);
+      Vec3f v32(v2.x, v2.y, 0);
+
+      min.min(v31);
+      max.max(v31);
+
+      min.min(v32);
+      max.max(v32);
+   }
 }
 
 void CmfSaver::saveXyz (Output &output)
@@ -531,8 +810,8 @@ void CmfSaver::saveXyz (Output &output)
 
    Vec3f xyz_min( 10000,  10000,  10000);
    Vec3f xyz_max(-10000, -10000, -10000);
-   Vec3f xyz_range;
-   bool  have_z;
+
+   VecRange range;
 
    for (i = 0; i < _atom_sequence.size(); i++)
    {
@@ -541,44 +820,35 @@ void CmfSaver::saveXyz (Output &output)
       xyz_min.min(pos);
       xyz_max.max(pos);
    }
+   _updateSGroupsXyzMinMax(*_mol, xyz_min, xyz_max);
 
-   xyz_range.diff(xyz_max, xyz_min);
+   range.xyz_min = xyz_min;
+   range.xyz_range.diff(xyz_max, xyz_min);
 
-   output.writeBinaryFloat(xyz_min.x);
-   output.writeBinaryFloat(xyz_min.y);
-   output.writeBinaryFloat(xyz_min.z);
-   output.writeBinaryFloat(xyz_range.x);
-   output.writeBinaryFloat(xyz_range.y);
-   output.writeBinaryFloat(xyz_range.z);
+   output.writeBinaryFloat(range.xyz_min.x);
+   output.writeBinaryFloat(range.xyz_min.y);
+   output.writeBinaryFloat(range.xyz_min.z);
+   output.writeBinaryFloat(range.xyz_range.x);
+   output.writeBinaryFloat(range.xyz_range.y);
+   output.writeBinaryFloat(range.xyz_range.z);
    
-   if (xyz_range.z < EPSILON)
+   if (range.xyz_range.z < EPSILON)
    {
-      have_z = false;
+      range.have_z = false;
       output.writeByte(0);
    }
    else
    {
-      have_z = true;
+      range.have_z = true;
       output.writeByte(1);
    }
 
    for (i = 0; i < _atom_sequence.size(); i++)
    {
       const Vec3f &pos = _mol->getAtomXyz(_atom_sequence[i]);
-
-      if (xyz_range.x > EPSILON)
-         output.writeBinaryWord((word)(((pos.x - xyz_min.x) / xyz_range.x) * 65535 + 0.5));
-      else
-         output.writeBinaryWord(0);
-
-      if (xyz_range.y > EPSILON)
-         output.writeBinaryWord((word)(((pos.y - xyz_min.y) / xyz_range.y) * 65535 + 0.5));
-      else
-         output.writeBinaryWord(0);
-
-      if (have_z)
-         output.writeBinaryWord((word)(((pos.z - xyz_min.z) / xyz_range.z) * 65535 + 0.5));
+      _writeVec3f(output, pos, range);
    }
+   _writeSGroupsXyz(*_mol, output, range);
 }
 
 const Array<int> & CmfSaver::getAtomSequence ()

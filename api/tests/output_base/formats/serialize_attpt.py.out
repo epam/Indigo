@@ -1,10 +1,10 @@
 molecules/recursive1.mol
   rgroup 1 frag 0
-  fragment serialized to 50 bytes
+  fragment serialized to 55 bytes
     C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|
     C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|
   rgroup 1 frag 1
-  fragment serialized to 50 bytes
+  fragment serialized to 55 bytes
     C%91C%92.[*:3]%92.[*:1]%91 |$;;_R3;_AP1$|
     C%91C%92.[*:3]%92.[*:1]%91 |$;;_R3;_AP1$|
   rgroup 2 frag 0
@@ -17,11 +17,11 @@ molecules/recursive1.mol
     Cl%91.[*:1]%91 |$;_AP1$|
 molecules/recursive2.mol
   rgroup 1 frag 0
-  fragment serialized to 50 bytes
+  fragment serialized to 55 bytes
     C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|
     C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|
   rgroup 1 frag 1
-  fragment serialized to 50 bytes
+  fragment serialized to 55 bytes
     C%91C%92.[*:1]%92.[*:1]%91 |$;;_R1;_AP1$|
     C%91C%92.[*:1]%92.[*:1]%91 |$;;_R1;_AP1$|
   rgroup 2 frag 0

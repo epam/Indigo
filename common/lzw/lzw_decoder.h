@@ -16,11 +16,10 @@
 #define __lzw_decoder_h__
 
 #include "base_cpp/bitinworker.h"
+#include "base_cpp/scanner.h"
 #include "lzw/lzw_dictionary.h"
 
 namespace indigo {
-
-class Scanner;
 
 class LzwDecoder
 {
@@ -45,6 +44,26 @@ private:
    // no implicit copy
    LzwDecoder( const LzwDecoder & );
 
+};
+
+class LzwScanner : public Scanner
+{
+public:
+   LzwScanner (LzwDecoder &decoder);
+
+   virtual void read (int length, void *res);
+   virtual void skip (int n);
+   virtual bool isEOF ();
+   virtual int  lookNext ();
+   virtual void seek (int pos, int from);
+   virtual int  length ();
+   virtual int  tell ();
+
+   virtual byte readByte ();
+
+   DEF_ERROR("LZW-output");
+private:
+   LzwDecoder &_decoder;
 };
 
 }

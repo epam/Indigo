@@ -4,12 +4,13 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
+indigo.setOption("molfile-saving-skip-date", True)
+
 if not os.path.exists(joinPath("out")):
-    os.makedirs(joinPath("out"))
+   os.makedirs(joinPath("out"))
 saver = indigo.createFileSaver(joinPath("out/sgroups-instrumentation.sdf"), "sdf")
    
 def testSGroupsInstrumentation ():
-    indigo.setOption("molfile-saving-skip-date", True)
     mol = indigo.loadMolecule("c1ccccc1.CCC.O.N.P")
     mol.layout()
     saver.append(mol)
@@ -19,10 +20,21 @@ def testSGroupsInstrumentation ():
     sgroup4 = mol.addDataSGroup([11], [], "ID", "d")
     print(mol.molfile())
     saver.append(mol)
+
+    mol2 = indigo.unserialize(mol.serialize())
+
+    print(mol2.molfile())
+    saver.append(mol2)
+
     sgroup2.setDataSGroupXY(13, 1)
     sgroup3.setDataSGroupXY(.3, .3, "relative")
     sgroup4.setDataSGroupXY(5, 6, "absolute")
     print(mol.molfile())
     saver.append(mol)
+
+    mol2 = indigo.unserialize(mol.serialize())
+
+    print(mol2.molfile())
+    saver.append(mol2)
     
 testSGroupsInstrumentation()
