@@ -79,7 +79,8 @@ bool RenderParamInterface::needsLayoutSub (BaseMolecule& mol)
       for (int j = 0; j < atoms.size(); ++j)
          atomsToIgnore.insert(atoms[j]);
       for (int j = 0; j < patoms.size(); ++j)
-         atomsToIgnore.remove(patoms[j]);
+         if (atomsToIgnore.find(patoms[j]))
+            atomsToIgnore.remove(patoms[j]);
    }
    for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i)) {
       if (atomsToIgnore.find(i))
