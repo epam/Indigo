@@ -1,5 +1,3 @@
-import os;
-from itertools import *;
 import sys
 sys.path.append('../../common')
 from env_indigo import *
@@ -12,26 +10,26 @@ def testSSS(mol, q):
    try:
       print("Query: " + q.name())
       print("Target: " + mol.name())
-      match = matcher.match(q)
+      match = (matcher.match(q) != None)
       cnt = matcher.countMatches(q)
       q.optimize()
-      match_opt = matcher.match(q)
+      match_opt = (matcher.match(q) != None)
       cnt_opt = matcher.countMatches(q)
       if (match != None) != (match_opt != None):
          msg = "match before and after optimization is different: match=%s and match_opt=%s" % (match, match_opt)
          print(msg)
-         sys.stderr.write(msg + "\n");
+         sys.stderr.write(msg + "\n")
       
       if cnt != cnt_opt:
          msg = "count before and after optimization is different: cnt=%d and cnt_opt=%d" % (cnt, cnt_opt)
          print(msg)
-         sys.stderr.write(msg + "\n");
+         sys.stderr.write(msg + "\n")
          
       print("  count = %d" % (cnt))
-      if (cnt > 0) != (match != None):
+      if (cnt > 0) != match:
          msg = "match and countMatches returns contradicting results: match=%s and count=%d" % (match, cnt)
          print(msg)
-         sys.stderr.write(msg + "\n");
+         sys.stderr.write(msg + "\n")
    except IndigoException, e:      
       print("Error: " % (getIndigoExceptionText(e)))
       
