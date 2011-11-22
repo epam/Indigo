@@ -1099,23 +1099,24 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
          }
          else
          {
-            // In SMARTS information about this bond hasn't been saved
-            if (!product.getBond(i).hasConstraint(QueryMolecule::BOND_ORDER))
-               throw Error("There is no information about products bond #%d in monomer", i);
-
+            // If there is no information about this bond in smarts
             QueryMolecule::Atom &q_pr_beg = product.getAtom(pr_edge.beg);
             QueryMolecule::Atom &q_pr_end = product.getAtom(pr_edge.end);
-           
+
+
+            int beg_value, end_value;
             if ((product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC) && 
-                    product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_SINGLE)) &&
-                   (q_pr_beg.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC) &&
-                    q_pr_end.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC)))
+                 product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_SINGLE) &&
+                 !product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_DOUBLE) &&
+                 !product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_TRIPLE)) &&
+                   (q_pr_beg.sureValue(QueryMolecule::ATOM_AROMATICITY, beg_value) &&
+                    q_pr_end.sureValue(QueryMolecule::ATOM_AROMATICITY, end_value))
+                    && (beg_value == ATOM_AROMATIC) && (end_value == ATOM_AROMATIC))
             {
                   mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], BOND_AROMATIC);
             }        
             else
-               mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], product.getBondOrder(i));
-         }
+               throw Error("There is no information about products bond #%d in monomer", i);         }
       }
       else
          mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], 
