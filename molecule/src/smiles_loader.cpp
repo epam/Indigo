@@ -760,17 +760,7 @@ void SmilesLoader::_parseMolecule ()
          // empty bond designator?
          if (bond_str.size() < 1)
          {
-            // 1) SMARTS mode
-            //   A missing bond symbol is interpreted as "single or aromatic".
-            //   (http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html)
-            if (smarts_mode)
-               qbond.reset(QueryMolecule::Bond::oder(
-                    new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-                    new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-
-            // 2) query or non-query SMILES mode:
-            //    this is either single or aromatic bond, which
-            //    is detected after the scanning cycle (see below)
+            // Empty bonds are processed after loading the molecule
          }
          else
             _readBond(bond_str, *bond, qbond);
@@ -969,6 +959,38 @@ void SmilesLoader::_parseMolecule ()
          _handleCurlyBrace(atom, inside_polymer);
       if (inside_polymer)
          atom.polymer_index = _polymer_repetitions.size() - 1;
+   }
+
+
+   if (smarts_mode)
+   {
+      for (int i = _qmol->edgeBegin(); i != _qmol->edgeEnd(); i = _qmol->edgeNext(i))
+      {
+         const Edge &edge = _qmol->getEdge(i);
+         QueryMolecule::Bond &qbond = _qmol->getBond(i);
+
+         if (qbond.type != QueryMolecule::OP_NONE)
+            continue;
+
+         //   SMARTS mode
+         //   A missing bond symbol is interpreted as "single or aromatic".
+         //   (http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html)
+         // 
+         QueryMolecule::Atom &q_beg = _qmol->getAtom(edge.beg);
+         QueryMolecule::Atom &q_end = _qmol->getAtom(edge.end);
+
+         if (!q_beg.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC) && 
+             !q_end.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
+         {
+            _qmol->resetBond(i, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+         }
+         else
+         {
+            _qmol->resetBond(i, QueryMolecule::Bond::oder(
+               new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
+               new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
+         }
+      }
    }
 
    int i;
