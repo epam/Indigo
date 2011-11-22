@@ -1098,7 +1098,23 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
                                uncleaned_fragments.getBondOrder(frags_bond_idx));
          }
          else
-            throw Error("Incorrect AAM");
+         {
+            // In SMARTS information about this bond hasn't been saved
+            if (!product.getBond(i).hasConstraint(QueryMolecule::BOND_ORDER))
+               throw Error("There is no information about products bond #%d in monomer", i);
+
+            if (product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC) && 
+                product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_SINGLE))
+            {
+               QueryMolecule::Atom &q_pr_beg = product.getAtom(pr_edge.beg);
+               QueryMolecule::Atom &q_pr_end = product.getAtom(pr_edge.end);
+               if (q_pr_beg.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC) &&
+                   q_pr_end.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
+                   mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], BOND_AROMATIC);
+            }
+            
+            mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], product.getBondOrder(i));
+         }
       }
       else
          mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], 
