@@ -12,8 +12,8 @@ mol_db_names = [
    (joinPath("molecules/helma.smi"), indigo.iterateSmilesFile)
 ]
 
-if not os.path.exists("out"):
-   os.makedirs("out")
+if not os.path.exists(joinPath("out")):
+    os.makedirs(joinPath("out"))
    
 def testAll (clear_cis_trans):
     for db_name, load_fund in mol_db_names:

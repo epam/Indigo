@@ -5,14 +5,14 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1");
 
-if not os.path.exists("out"):
-   os.makedirs("out")
-saver = indigo.createFileSaver("out/allenes_out.sdf", "sdf")
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joinPath("out"))
+saver = indigo.createFileSaver(joinPath("out/allenes_out.sdf"), "sdf")
 
 allenes_sets = [ 
-    ("molecules/allenes/allenes.smi", indigo.iterateSmilesFile),
-    ("../../data/all-allenes.sdf", indigo.iterateSDFile),
-    ("molecules/allenes/two-allenes.mol", indigo.iterateSDFile)
+    (joinPath("molecules/allenes/allenes.smi"), indigo.iterateSmilesFile),
+    (joinPath("../../data/all-allenes.sdf"), indigo.iterateSDFile),
+    (joinPath("molecules/allenes/two-allenes.mol"), indigo.iterateSDFile)
     ]
 
 def testSingle(m):

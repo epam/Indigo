@@ -7,11 +7,11 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
-if not os.path.exists("out"):
-   os.makedirs("out")
-saver = indigo.createFileSaver("out/serialize_check.sdf", "sdf")
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joinPath("out"))
+saver = indigo.createFileSaver(joinPath("out/serialize_check.sdf"), "sdf")
 
-all_features_mol = indigo.loadMoleculeFromFile("molecules/all_features_mol.mol")
+all_features_mol = indigo.loadMoleculeFromFile(joinPath("molecules/all_features_mol.mol"))
 
 # Add highlighting
 for index in [1, 4, 5, 6, 7, 10, 40, 12, 13, 18, 20]:
@@ -22,7 +22,7 @@ for index in [5, 8, 1, 4, 5, 85, 10, 15, 112, 13, 2]:
     b = all_features_mol.getBond(index)
     b.highlight()
 
-hex_output = open("out/serialize_hex.txt", "w")
+hex_output = open(joinPath("out/serialize_hex.txt"), "w")
     
 def getMolProperties (mol):
     return { 
@@ -98,8 +98,8 @@ def processMol(mol):
 
     if cano_sm != cano_sm2 and cano_sm != "":
         sys.stderr.write("Canonical smiles are different:\n%s\n%s\n" % (cano_sm, cano_sm2))
-        open("out/cano_sm.smi", "w").write(cano_sm)
-        open("out/cano_sm2.smi", "w").write(cano_sm2)
+        open(joinPath("out/cano_sm.smi", "w")).write(cano_sm)
+        open(joinPath("out/cano_sm2.smi", "w")).write(cano_sm2)
 
     # Output serialized data to check consistency
     buf = mol.serialize()
@@ -121,13 +121,13 @@ def processMol(mol):
     
     if cano_sm != cano_sm_rel and cano_sm != "":
         sys.stderr.write("Canonical smiles are different after unserialize(serialize()):\n%s\n%s\n" % (cano_sm, cano_sm_rel))
-        open("out/cano_sm.smi", "w").write(cano_sm)
-        open("out/cano_sm_rel.smi", "w").write(cano_sm_rel)
+        open(joinPath("out/cano_sm.smi", "w")).write(cano_sm)
+        open(joinPath("out/cano_sm_rel.smi", "w")).write(cano_sm_rel)
     
     if cano_sm2 != cano_sm2_rel:
         sys.stderr.write("Canonical smiles are different after unserialize(serialize()):\n%s\n%s\n" % (cano_sm2, cano_sm2_rel))
-        open("out/cano_sm2.smi", "w").write(cano_sm2)
-        open("out/cano_sm2_rel.smi", "w").write(cano_sm2_rel)
+        open(joinPath("out/cano_sm2.smi", "w")).write(cano_sm2)
+        open(joinPath("out/cano_sm2_rel.smi", "w")).write(cano_sm2_rel)
 
     p1 = getMolProperties(mol)
     p1_rel = getMolProperties(mol_rel)
@@ -151,9 +151,9 @@ processMol(all_features_mol)
 
 # Process other molecules
 test_sets = [ 
-    ("../../data/thiazolidines.sdf", indigo.iterateSDFile),
-    ("../../data/all-allenes.sdf", indigo.iterateSDFile),
-    ("../../data/all_sgroups.sdf", indigo.iterateSDFile),
+    (joinPath("../../data/thiazolidines.sdf"), indigo.iterateSDFile),
+    (joinPath("../../data/all-allenes.sdf"), indigo.iterateSDFile),
+    (joinPath("../../data/all_sgroups.sdf"), indigo.iterateSDFile),
     ]
     
 for file, func in test_sets:
