@@ -1,6 +1,7 @@
 import sys
 import os
 from inspect import getmembers
+from types import BuiltinFunctionType, BuiltinMethodType, MethodType, FunctionType
 from new import instancemethod, function
 
 def isIronPython():
@@ -43,12 +44,12 @@ class IndigoCoverageWrapper(Indigo):
             self.dispatcher = dispatcher
             self.id = id
             self.parent = parent
-            self._type = None
             self._type = int(self.dbgInternalType()[1:3])
 
         def __getattribute__(self, item):
             dispatcher = object.__getattribute__(self, 'dispatcher')
             type = object.__getattribute__(self, '_type')
+            print(item, file=sys.__stderr__)
             if dispatcher is not None:
                 if item in dispatcher._indigoObjectCoverageDict:
                     dispatcher._indigoObjectCoverageDict[item] += 1
@@ -64,17 +65,23 @@ class IndigoCoverageWrapper(Indigo):
             return object.__getattribute__(self, item)
         
     def __init__(self, path=None):
-        Indigo.IndigoObject = IndigoCoverageWrapper.IndigoObjectCoverageWrapper
+        if isJython() or isIronPython():
+            IndigoObject = IndigoCoverageWrapper.IndigoObjectCoverageWrapper    
+            # TODO: Change standard IndigoObject to IndigoObjectCoverageWrapper
+        else:
+            Indigo.IndigoObject = IndigoCoverageWrapper.IndigoObjectCoverageWrapper
+            IndigoObject = IndigoCoverageWrapper.IndigoObjectCoverageWrapper
         Indigo.__init__(self, path)
         self._indigoObjectCoverageDict = dict()
         self._indigoObjectCoverageByTypeDict = dict()
         m = self.createMolecule()
         for item in getmembers(m):
-            if type(item[1]) in (instancemethod, function) and not item[0].startswith('_'):
+            #print(item[1], type(item[1]), file=sys.__stderr__)
+            if type(item[1]) in (instancemethod, function, BuiltinFunctionType, BuiltinMethodType, MethodType, FunctionType) and not item[0].startswith('_'):
                 self._indigoObjectCoverageDict[item[0]] = 0
         self._indigoCoverageDict = dict()
         for item in getmembers(self):
-            if type(item[1]) in (instancemethod, function) and not item[0].startswith('_'):
+            if type(item[1]) in (instancemethod, function, BuiltinFunctionType, BuiltinMethodType, MethodType, FunctionType) and not item[0].startswith('_'):
                 self._indigoCoverageDict[item[0]] = 0
 
     def __getattribute__(self, item):
