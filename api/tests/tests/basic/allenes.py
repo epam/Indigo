@@ -42,7 +42,7 @@ mols = []
         
 idx = 1
 for file, func in allenes_sets:
-    print("Molecules set: %s" % (file))
+    print("Molecules set: %s" % (relativePath(file)))
     it = func(file)
     for m in it:
         print("%d" % idx)

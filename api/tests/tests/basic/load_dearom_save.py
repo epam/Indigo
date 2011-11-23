@@ -13,8 +13,8 @@ mol_db_names = [
    (joinPath("molecules/empty1.sdf"), indigo.iterateSDFile)
    ]
    
-if not os.path.exists("out"):
-   os.makedirs("out")
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joiunPath("out"))
    
 f = indigo.writeFile(joinPath("out/out.sdf"))
 f2 = open(joinPath("out/cano_out.smi"), "w")

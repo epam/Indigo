@@ -69,38 +69,37 @@ def manageText(oldText):
 
 def runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_dir_base, test_results):    
     try:
+        originalTestName = filename[:-3]
+        modifiedTestName = '%s_modified' % (originalTestName)
         test_dir = os.path.join(output_dir, root)
         if not os.path.exists(test_dir):
             os.makedirs(test_dir)
         test_name = os.path.join(root, filename).replace('\\', '/')
         spacer_len = max_name_len - len(test_name)
         test_root = os.path.join(tests_dir, root)    
-        pathName = None
-        fp, pathname, description = imp.find_module(filename[:-3], [os.path.join(tests_dir, root)])
-        originalTestText = fp.read()
-        fp.close()
+        originalPathName = None
+        originalFp, originalPathName, originalDescription = imp.find_module(originalTestName, [os.path.join(tests_dir, root)])
+        originalTestText = originalFp.read()
+        originalFp.close()
         modifiedTestText = manageText(originalTestText)
-        fp = open(pathname, 'wt')
-        fp.write(modifiedTestText)
-        fp.close()
-        fp = open(pathname, 'U')
-        pathName = pathname            
-        beginTime = time.time()
+        modifiedPathName = '%s_modified.py' % (originalPathName[:-3])
+        modifiedFp = open(modifiedPathName, 'wt')
+        modifiedFp.write(modifiedTestText)
+        modifiedFp.close()                
         stdout = ''
         stderr = ''
         indigoOutput = None
-        module = imp.load_module(filename[:-3], fp, pathname, description)
+        modifiedFp, modifiedPathName, modifiedDescription = imp.find_module(modifiedTestName, [os.path.join(tests_dir, root)])          
+        beginTime = time.time()
+        module = imp.load_module(modifiedTestName, modifiedFp, modifiedPathName, modifiedDescription)
         try:
             indigoOutput = module.runIndigoTest()
         except Exception, e:
             stderr = traceback.format_exc()
         finally:
             totalTime = time.time() - beginTime                
-            fp.close()
-            fp = open(pathName, 'wt')
-            fp.write(originalTestText)
-            fp.close()
-          
+            modifiedFp.close()
+            os.remove(modifiedPathName)          
         stdout = sys.stdout.getValueByTestName(test_name)
         if indigo.version().endswith('-coverage') and indigoOutput:
             for item in indigoOutput._indigoCoverageDict:

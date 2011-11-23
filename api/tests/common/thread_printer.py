@@ -27,6 +27,7 @@ class ThreadPrinter(object):
     def getValueByTestName(self, testName):
         result = ''
         for key, value in self.fhs.items():
+            key = key.replace('_modified', '')
             if key == testName:
                 result = value.getvalue()
         return result

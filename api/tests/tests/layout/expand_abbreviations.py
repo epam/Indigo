@@ -13,8 +13,8 @@ m_sets = [
    joinPath('molecules/abbreviations_tests.sdf'),
    mol_file_name
 ]
-if not os.path.exists("out"):
-   os.makedirs("out")
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joinPath("out"))
    
 saver = indigo.createFileSaver(joinPath("out/abbreviations_test_out.sdf"), "SDF")
 
