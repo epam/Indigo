@@ -115,6 +115,8 @@ tests = [
    (lmol('C1CCCCCC1'), lqmolf(joinPath("molecules/q_rg_recurs2.mol"))),
    (lmol('C1CCCCCC1.C1CCCCCC1'), lqmolf(joinPath("molecules/q_rg_recurs2.mol"))),
    (lmol('OC(=O)C1=CC=CC=C1'), lqmolf(joinPath("molecules/rgroups/c11100_3.mol"))),
+   (lmol('N'), lsmarts("N-[#1,#112]")),
+   (lmol('N'), lsmarts("N-[#1]")),
 ]
 for i in range(len(tests)):
    print("\n*** Test %d ***" % i)

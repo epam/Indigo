@@ -41,7 +41,7 @@ class IndigoMoleculeSubstructureMatchIter : public IndigoObject
 {
 public:
    IndigoMoleculeSubstructureMatchIter (Molecule &target, QueryMolecule &query,
-           Molecule &original_target, bool resonance);
+           Molecule &original_target, bool resonance, bool disable_folding_query_h);
 
    virtual ~IndigoMoleculeSubstructureMatchIter ();
 

@@ -5549,3 +5549,765 @@ Test set:
   unmapped = 3
   count by iterate = 2
   count with limit 200 = 2
+
+*** Test 16 ***
+count = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 0)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 200)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 0)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 200)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 0)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 200)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+
+*** Test 17 ***
+count = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 0)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 200)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'atoms')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 0)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 200)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'bonds')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 20)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 0)
+core: Maximum allowed embeddings limit must be positive.
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 0)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 1)
+  ('*embeddings limit*', 200)
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  unmapped = 1
+core: Number of embeddings exceeded maximum allowed limit (1). Adjust options to raise this limit.
+  count by iterate = 1
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 5)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+core: count matches: embeddings limit is more then maximum allowed embeddings specified by options
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 500)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 10000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 0)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 0 = 3
+Test set:
+  ('embedding-uniqueness', 'none')
+  ('max-embeddings', 50000)
+  ('*embeddings limit*', 200)
+  count = 3
+  unmapped = 1
+  unmapped = 1
+  unmapped = 1
+  count by iterate = 3
+  count with limit 200 = 3

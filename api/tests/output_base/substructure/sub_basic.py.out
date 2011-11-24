@@ -94,7 +94,7 @@ Target: NC=O
 *** Test 18 ***
 Query: [#1][N]
 Target: N
-  count = 1
+  count = 3
 
 *** Test 19 ***
 Query: [$([#1][N])]

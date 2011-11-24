@@ -324,15 +324,14 @@ CEXPORT int indigoExactMatch (int handler1, int handler2, const char *flags)
 }
 
 IndigoMoleculeSubstructureMatchIter::IndigoMoleculeSubstructureMatchIter (Molecule &target_,
-                                                                          QueryMolecule &query_,
-                                                                          Molecule &original_target_,
-                                                                          bool resonance) :
+      QueryMolecule &query_, Molecule &original_target_, bool resonance, bool disable_folding_query_h) :
         IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER),
         matcher(target_),
         target(target_),
         original_target(original_target_),
         query(query_)
 {
+   matcher.disable_folding_query_h = disable_folding_query_h;
    matcher.setQuery(query);
    matcher.fmcache = &fmcache;
 
@@ -499,7 +498,10 @@ IndigoMoleculeSubstructureMatchIter*
    Array<int> *mapping;
    bool *prepared;
    MoleculeAtomNeighbourhoodCounters *nei_counters;
-   if (MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens(query))
+   
+   // If max_embeddings is 1 then it is only check for substructure 
+   // and not enumeration of number of matches
+   if (MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens(query, max_embeddings != 1))
    {
       if (!_arom_h_unfolded_prepared)
          _target_arom_h_unfolded.clone(target, &_mapping_arom_h_unfolded, 0);
@@ -528,7 +530,7 @@ IndigoMoleculeSubstructureMatchIter*
 
    AutoPtr<IndigoMoleculeSubstructureMatchIter>
       iter(new IndigoMoleculeSubstructureMatchIter(*target_prepared, query, target,
-                                                  (mode == RESONANCE)));
+                                                  (mode == RESONANCE), max_embeddings != 1));
    
    if (query_object.type == IndigoObject::QUERY_MOLECULE)
    {
@@ -557,7 +559,7 @@ bool IndigoMoleculeSubstructureMatcher::findTautomerMatch (
    bool *prepared;
    Molecule *target_prepared;
    Array<int> *mapping;
-   if (MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens(query))
+   if (MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens(query, false))
    {
       if (!_arom_h_unfolded_prepared)
          _target_arom_h_unfolded.clone(target, &_mapping_arom_h_unfolded, 0);
@@ -752,7 +754,7 @@ CEXPORT int indigoMatch (int target_matcher, int query)
          ram.correctReactingCenters(true);
          
          for (i = qrxn.begin(); i != qrxn.end(); i = qrxn.next(i))
-            if (MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens(qrxn.getQueryMolecule(i)))
+            if (MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens(qrxn.getQueryMolecule(i), false))
                break;
 
          if (i != qrxn.end())

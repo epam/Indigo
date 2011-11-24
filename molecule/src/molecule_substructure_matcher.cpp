@@ -71,6 +71,7 @@ TL_CP_GET(_used_target_h)
    find_unique_embeddings = false;
    find_unique_by_edges = false;
    save_for_iteration = false;
+   disable_folding_query_h = false;
    
    not_ignore_first_atom = false;
 
@@ -96,11 +97,11 @@ MoleculeSubstructureMatcher::~MoleculeSubstructureMatcher ()
 {
 }
 
-bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom, bool is_fragment)
+bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom, bool is_fragment, bool find_all_embeddings)
 {
    if (atom->type == QueryMolecule::ATOM_FRAGMENT)
    {
-      if (_shouldUnfoldTargetHydrogens(atom->fragment.ref(), true))
+      if (_shouldUnfoldTargetHydrogens(atom->fragment.ref(), true, find_all_embeddings))
          return true;
    }
    else if (atom->type == QueryMolecule::OP_AND ||
@@ -110,19 +111,19 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A (QueryMolecule:
       int i;
 
       for (i = 0; i < atom->children.size(); i++)
-         if (_shouldUnfoldTargetHydrogens_A((QueryMolecule::Atom *)atom->children[i], is_fragment))
+         if (_shouldUnfoldTargetHydrogens_A((QueryMolecule::Atom *)atom->children[i], is_fragment, find_all_embeddings))
             return true;
    }
 
    return false;
 }
 
-bool MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens (QueryMolecule &query)
+bool MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens (QueryMolecule &query, bool disable_folding_query_h)
 {
-   return _shouldUnfoldTargetHydrogens(query, false);
+   return _shouldUnfoldTargetHydrogens(query, false, disable_folding_query_h);
 }
 
-bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens (QueryMolecule &query, bool is_fragment)
+bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens (QueryMolecule &query, bool is_fragment, bool disable_folding_query_h)
 {
    int i, j;
 
@@ -165,9 +166,15 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens (QueryMolecule &q
             // If hydrogens is not be unfolded in this case then 
             // [$([#1][N])]C will not match NC.
             return true;
+
+         // If we need to find all embeddings then query hydrogens cannot be ignored:
+         // For example, if we are searching number of matcher for N-[#1] in N then 
+         // it should 3 instead of 1
+         if (disable_folding_query_h)
+            return true;
       }
 
-      if (_shouldUnfoldTargetHydrogens_A(&query.getAtom(i), is_fragment))
+      if (_shouldUnfoldTargetHydrogens_A(&query.getAtom(i), is_fragment, disable_folding_query_h))
          return true;
    }
 
@@ -178,7 +185,7 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens (QueryMolecule &q
    {
       PtrPool<BaseMolecule> &frags = rgroups.getRGroup(i).fragments;
       for (j = frags.begin(); j != frags.end(); j = frags.next(j))
-         if (_shouldUnfoldTargetHydrogens(frags[j]->asQueryMolecule(), is_fragment))
+         if (_shouldUnfoldTargetHydrogens(frags[j]->asQueryMolecule(), is_fragment, disable_folding_query_h))
             return true;
    }
 
@@ -204,7 +211,12 @@ void MoleculeSubstructureMatcher::setQuery (QueryMolecule &query)
 
    ignored.clear_resize(_query->vertexEnd());
 
-   markIgnoredQueryHydrogens(*_query, ignored.ptr(), 0, 1);
+   if (!disable_folding_query_h)
+      // If hydrogens are folded then the number of the all matchers is different
+      markIgnoredQueryHydrogens(*_query, ignored.ptr(), 0, 1);
+   else
+      ignored.zerofill();
+
    if (not_ignore_first_atom)
       ignored[_query->vertexBegin()] = 0;
 
@@ -218,7 +230,7 @@ void MoleculeSubstructureMatcher::setQuery (QueryMolecule &query)
    }
 
    if (!disable_unfolding_implicit_h &&
-       shouldUnfoldTargetHydrogens(*_query) &&
+       shouldUnfoldTargetHydrogens(*_query, disable_folding_query_h) &&
            !_target.isQueryMolecule())
    {
       _h_unfold = true;

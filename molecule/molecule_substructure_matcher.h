@@ -72,6 +72,7 @@ public:
    bool highlight;
 
    bool disable_unfolding_implicit_h;
+   bool disable_folding_query_h;
    bool restore_unfolded_h;
 
    int   match_3d;       // 0 or AFFINE or CONFORMATION
@@ -151,7 +152,7 @@ public:
 
    DEF_ERROR("molecule substructure matcher");
 
-   static bool shouldUnfoldTargetHydrogens (QueryMolecule &query);
+   static bool shouldUnfoldTargetHydrogens (QueryMolecule &query, bool find_all_embeddings);
 protected:
    
    struct MarkushContext
@@ -184,8 +185,8 @@ protected:
    static bool _canUseEquivalenceHeuristic (QueryMolecule &query);
    static bool _isSingleBond (Graph &graph, int edge_idx);
 
-   static bool _shouldUnfoldTargetHydrogens (QueryMolecule &query, bool is_fragment);
-   static bool _shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom, bool is_fragment);
+   static bool _shouldUnfoldTargetHydrogens (QueryMolecule &query, bool is_fragment, bool disable_folding_query_h);
+   static bool _shouldUnfoldTargetHydrogens_A (QueryMolecule::Atom *atom, bool is_fragment, bool disable_folding_query_h);
 
    static int _countSubstituents (Molecule &mol, int idx);
    
