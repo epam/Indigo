@@ -157,7 +157,7 @@ test_sets = [
     ]
     
 for file, func in test_sets:
-    print("Molecules set: %s" % (file))
+    print("Molecules set: %s" % (relativePath(file)))
     it = func(file)
     for m, idx in zip(it, range(100000)):
         print("\nTesting molecule #%d" % (idx))
