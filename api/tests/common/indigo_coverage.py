@@ -44,12 +44,12 @@ class IndigoCoverageWrapper(Indigo):
             self.dispatcher = dispatcher
             self.id = id
             self.parent = parent
+            self._type = None
             self._type = int(self.dbgInternalType()[1:3])
 
         def __getattribute__(self, item):
             dispatcher = object.__getattribute__(self, 'dispatcher')
             type = object.__getattribute__(self, '_type')
-            print(item, file=sys.__stderr__)
             if dispatcher is not None:
                 if item in dispatcher._indigoObjectCoverageDict:
                     dispatcher._indigoObjectCoverageDict[item] += 1

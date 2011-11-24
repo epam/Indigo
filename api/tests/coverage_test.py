@@ -90,7 +90,7 @@ def main():
         if test_name != "" and not re.search(pattern, test_name):
             continue
         # exclude some files from test by pattern
-        if exclude_pattern != "" and re.search(exclude_pattern, test_name):
+        if (exclude_pattern != "" and re.search(exclude_pattern, test_name)) or test_name.endswith('_modified.py'):
             continue
         #runTest(root, filename, output_dir, max_name_len, tests_dir, indigo, output_dir_base, test_results)
         t = Thread(name=test_name, target=runTest, args=(root, filename, output_dir, max_name_len, tests_dir, indigo, output_dir_base, test_results))

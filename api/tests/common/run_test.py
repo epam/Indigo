@@ -5,8 +5,15 @@ import shutil
 import sys
 import time
 import traceback
+import re
 
 def write_difference(fn_1, fn_2, fn_3):
+    def repl(matchobj):
+        result = str(round(float(matchobj.group(0)), 1))
+        if result == '-0.0':
+            result = ' 0.0'
+        return result
+
     f_1 = open(fn_1, 'r')
     f_2 = open(fn_2, 'r')        
     lines_1 = f_1.readlines()
@@ -15,8 +22,10 @@ def write_difference(fn_1, fn_2, fn_3):
     f_1.close()    
     for i in xrange(len(lines_1)):
         lines_1[i] = lines_1[i].splitlines()[0]
+        lines_1[i] = re.sub('([-|+]{0,1}\d+\.\d+)', repl, lines_1[i])
     for i in xrange(len(lines_2)):
-        lines_2[i] = lines_2[i].splitlines()[0]  
+        lines_2[i] = lines_2[i].splitlines()[0]
+        lines_2[i] = re.sub('([-|+]{0,1}\d+\.\d+)', repl, lines_2[i])  
     d = difflib.Differ()  
     result = d.compare(lines_2, lines_1)    
     f_3 = open(fn_3, 'w')
