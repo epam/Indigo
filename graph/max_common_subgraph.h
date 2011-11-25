@@ -245,6 +245,10 @@ public:
       void createRegraph();
       //method change input array to map which corresponds to list of ReGraph nodes (they are in bitset)
       void setCorrespondence(const Dbitset& b, Array<int>& map) const;
+      /*
+       * Inserts solution from the given mapping
+       */
+      bool insertSolution(const Array<int>& mapping);
       //sets input mapping to algorithm using
       bool setMapping();
       //creates all solutions
@@ -599,7 +603,7 @@ protected:
    Graph* _subgraph;
    Graph* _supergraph;
 
-   bool _findSimpleMcs();
+   bool _findTrivialMcs();
    void _clearSolutionMaps();
    void _addSolutionMap(Array<int>& v_map, Array<int>& e_map);
 

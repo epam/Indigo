@@ -49,7 +49,7 @@ void MaxCommonSubgraph::setGraphs(Graph& subgraph, Graph& supergraph)
    _subgraph = &subgraph; _supergraph = &supergraph;
 }
 
-bool MaxCommonSubgraph::_findSimpleMcs() {
+bool MaxCommonSubgraph::_findTrivialMcs() {
    _clearSolutionMaps();
    parametersForExact.numberOfSolutions = 0;
    if(_subgraph->vertexCount() == 0 && _supergraph->vertexCount() == 0)
@@ -107,6 +107,7 @@ bool MaxCommonSubgraph::_findSimpleMcs() {
    return true;
 }
 
+
 void MaxCommonSubgraph::_clearSolutionMaps() {
    _vertEdgeSolMap.clear();
 }
@@ -131,11 +132,10 @@ void MaxCommonSubgraph::_addSolutionMap(Array<int>& v_map, Array<int>& e_map) {
 }
 
 void MaxCommonSubgraph::findExactMCS(){
-
    /*
     * Check for single input molecules
     */
-   if(_findSimpleMcs())
+   if(_findTrivialMcs()) 
       return;
    
    ReGraph regraph;
@@ -152,8 +152,8 @@ void MaxCommonSubgraph::findExactMCS(){
    regraph.parse(find_all_str);
 
    parametersForExact.isStopped = regraph.stopped();
-
    parametersForExact.numberOfSolutions = rc.createSolutionMaps();
+
 
 }
 
@@ -408,10 +408,7 @@ void MaxCommonSubgraph::ReCreation::setCorrespondence(const Dbitset& bits, Array
    }
 }
 
-bool MaxCommonSubgraph::ReCreation::setMapping(){
-   if(_context.incomingMap.size() == 0)
-      return true;
-
+bool MaxCommonSubgraph::ReCreation::insertSolution(const Array<int>& mapping){
    Graph& sub_graph = *_context._subgraph;
    Graph& super_graph = *_context._supergraph;
    Dbitset solution(_regraph.size());
@@ -421,11 +418,11 @@ bool MaxCommonSubgraph::ReCreation::setMapping(){
    int a,b,c;
    for(int i = sub_graph.vertexBegin(); i < sub_graph.vertexEnd(); i = sub_graph.vertexNext(i)){
       for(int j = sub_graph.vertexBegin(); j < sub_graph.vertexEnd(); j = sub_graph.vertexNext(j)){
-         if(_context.incomingMap.at(i) != -1 && _context.incomingMap.at(j) != -1 && i != j ){
-            super_graph.getVertex(_context.incomingMap.at(i));
-            super_graph.getVertex(_context.incomingMap.at(j));
+         if(mapping.at(i) != -1 && mapping.at(j) != -1 && i != j ){
+            super_graph.getVertex(mapping.at(i));
+            super_graph.getVertex(mapping.at(j));
             a = sub_graph.findEdgeIndex(i, j);
-            b = super_graph.findEdgeIndex(_context.incomingMap.at(i), _context.incomingMap.at(j));
+            b = super_graph.findEdgeIndex(mapping.at(i), mapping.at(j));
             if(a != -1 && b != -1){
                c = _regraph.getPointIndex(a, b);
                if(c == -1){
@@ -444,6 +441,59 @@ bool MaxCommonSubgraph::ReCreation::setMapping(){
       return false;
    }
    return true;
+}
+
+bool MaxCommonSubgraph::ReCreation::setMapping(){
+   if(_context.incomingMap.size() == 0)
+      return true;
+
+   int vertex_number = 0;
+   int vertex_idx = 0;
+   for (int i = 0; i < _context.incomingMap.size(); ++i) {
+      if(_context.incomingMap[i] >= 0) {
+         ++vertex_number;
+         vertex_idx = i;
+      }
+   }
+
+   /*
+    * One vertex map workaround
+    * The algorithm works only with edges, therefore, we should create edges mapping (for every neighbor)
+    */
+   if(vertex_number == 0) {
+      return true;
+   } else if(vertex_number == 1) {
+      QS_DEF(Array<int>, mapping);
+      Graph& sub_graph = *_context._subgraph;
+      Graph& super_graph = *_context._supergraph;
+      const Vertex& vert_sub = sub_graph.getVertex(vertex_idx);
+      const Vertex& vert_super = super_graph.getVertex(_context.incomingMap[vertex_idx]);
+      bool result = true;
+      /*
+       * All possibilities for check
+       */
+      for (int i = vert_sub.neiBegin(); i != vert_sub.neiEnd(); i = vert_sub.neiNext(i)) {
+         int sub_nei_idx = vert_sub.neiVertex(i);
+         for (int j = vert_super.neiBegin(); j != vert_super.neiEnd(); j = vert_super.neiNext(j)) {
+            int super_nei_idx = vert_super.neiVertex(j);
+            /*
+             * Check vertex condition
+             */
+            if (_context.conditionVerticesColor &&
+                    !_context.conditionVerticesColor(sub_graph, super_graph, 0, sub_nei_idx, super_nei_idx, _context.userdata)) {
+               continue;
+            } 
+            mapping.copy(_context.incomingMap);
+            mapping.at(sub_nei_idx) = super_nei_idx;
+            result &= insertSolution(mapping);
+         }
+      }
+      return result;
+   } else {
+      return insertSolution(_context.incomingMap);
+   }
+   return true;
+   
 
 }
 
