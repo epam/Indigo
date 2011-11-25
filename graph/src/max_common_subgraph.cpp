@@ -482,7 +482,16 @@ bool MaxCommonSubgraph::ReCreation::setMapping(){
             if (_context.conditionVerticesColor &&
                     !_context.conditionVerticesColor(sub_graph, super_graph, 0, sub_nei_idx, super_nei_idx, _context.userdata)) {
                continue;
-            } 
+            }
+            /*
+             * Check edge condition
+             */
+            int sub_nei_ed = vert_sub.neiEdge(i);
+            int super_nei_ed = vert_super.neiEdge(j);
+            if(_context.conditionEdgeWeight &&
+                    !_context.conditionEdgeWeight(sub_graph, super_graph, sub_nei_ed, super_nei_ed, _context.userdata)) {
+               continue;
+            }
             mapping.copy(_context.incomingMap);
             mapping.at(sub_nei_idx) = super_nei_idx;
             result &= insertSolution(mapping);
