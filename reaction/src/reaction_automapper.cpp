@@ -19,6 +19,8 @@
 #include "base_cpp/red_black.h" 
 #include "molecule/elements.h"
 #include "base_cpp/auto_ptr.h"
+#include "graph/automorphism_search.h"
+#include "reaction/crf_saver.h"
 
 using namespace indigo;
 
@@ -1100,6 +1102,10 @@ bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<i
    }
 
    mcs.getMaxSolutionMap(out_map, 0);
+   /*
+    * Search best solution as far as mcs is not consider auto permutations
+    */
+   _selectBestAutomorphism(out_map);
    return true;
 }
 
@@ -1413,4 +1419,136 @@ bool RSubstructureMcs::_matchAtoms(BaseMolecule& query, BaseMolecule& target, in
    }
 
    return true;
+}
+
+
+void RSubstructureMcs::_selectBestAutomorphism(Array<int>* map_out) {
+   if(map_out == 0)
+      return;
+   
+   QS_DEF(Array<int>, ignore_atoms);
+   QS_DEF(Array<int>, current_map);
+
+   Molecule *sub_molecule;
+   Molecule *super_molecule;
+   if(_invert) {
+      sub_molecule = (Molecule*)_super;
+      super_molecule = (Molecule*)_sub;
+   } else {
+      sub_molecule = (Molecule*)_sub;
+      super_molecule = (Molecule*)_super;
+   }
+
+   ignore_atoms.resize(super_molecule->vertexEnd());
+   ignore_atoms.fill(1);
+   for (int i = 0; i < map_out->size(); ++i) {
+      if(map_out->at(i) >= 0)
+         ignore_atoms[map_out->at(i)] = 0;
+   }
+   
+   /*
+    * Set callbacks
+    */
+   AutomorphismSearch auto_search;
+   auto_search.cb_check_automorphism = _cbAutoCheckAutomorphismReact;
+   auto_search.ignored_vertices = ignore_atoms.ptr();
+   auto_search.getcanon = false;
+   auto_search.context = this;
+   /*
+    * Find all automorphisms
+    */
+   _autoMaps.clear();
+   auto_search.process(*super_molecule);
+
+   /*
+    * Score initial solution
+    */
+   int best_solution = -1;
+   int best_score;
+   best_score = _scoreSolution(sub_molecule, super_molecule, *map_out);
+   /*
+    * Score the best solution
+    */
+   for (int aut_idx = 0; aut_idx < _autoMaps.size(); ++aut_idx) {
+      /*
+       * Convert mapping
+       */
+      current_map.copy(*map_out);
+      for (int i = 0; i < current_map.size(); ++i) {
+         int sup_idx = current_map[i];
+         if(sup_idx >= 0)
+            current_map[i] = _autoMaps[aut_idx][sup_idx];
+      }
+      /*
+       * Calculate current score
+       */
+      int current_score = _scoreSolution(sub_molecule, super_molecule, current_map);
+      if(current_score > best_score) {
+         best_score = current_score;
+         best_solution = aut_idx;
+      }
+   }
+   /*
+    * Select best scoring solution
+    */
+   if(best_solution >= 0) {
+      current_map.copy(*map_out);
+      for (int i = 0; i < current_map.size(); ++i) {
+         int sup_idx = current_map[i];
+         if(sup_idx >= 0)
+            current_map[i] = _autoMaps[best_solution][sup_idx];
+      }
+      map_out->copy(current_map);
+   }
+
+}
+
+int RSubstructureMcs::_cbAutoVertexReact (Graph &graph, int idx1, int idx2, const void *context) {
+   return atomConditionReact(graph, graph, 0, idx1, idx2, (void*)context);
+}
+
+bool RSubstructureMcs::_cbAutoCheckAutomorphismReact (Graph &graph, const Array<int> &mapping, const void *context) {
+   RSubstructureMcs &rsm = *(RSubstructureMcs *)context;
+   rsm._autoMaps.push().copy(mapping);
+   return false;
+}
+
+int RSubstructureMcs::_scoreSolution(Molecule *sub_molecule, Molecule *super_molecule, Array<int>& v_map) {
+   int res_score = 0;
+   QS_DEF(Array<int>, edge_map);
+   edge_map.clear_resize(sub_molecule->edgeEnd());
+   edge_map.fill(-1);
+   
+   for (int vert_idx = 0; vert_idx < v_map.size(); ++vert_idx) {
+      int super_vert = v_map[vert_idx];
+      if(super_vert >= 0) {
+         /*
+          * Score vertex degree keeping
+          */
+         const Vertex& sub_vert = sub_molecule->getVertex(vert_idx);
+         if(sub_vert.degree() == super_molecule->getVertex(super_vert).degree())
+            ++res_score;
+         for (int k = sub_vert.neiBegin(); k != sub_vert.neiEnd(); k = sub_vert.neiNext(k)) {
+            int nei_vert = sub_vert.neiVertex(k);
+            if(v_map[nei_vert] >= 0) {
+               int sub_edge = sub_molecule->findEdgeIndex(vert_idx, nei_vert);
+               int super_edge = super_molecule->findEdgeIndex(super_vert, v_map[nei_vert]);
+               if(sub_edge != -1 && super_edge != -1)
+                  edge_map[sub_edge] = super_edge;
+            }
+         }
+      }
+   }
+   /*
+    * Score bond order keeping
+    */
+   for (int i = 0; i < edge_map.size(); ++i) {
+      if(edge_map[i] >= 0) {
+         if(sub_molecule->getBondOrder(i) == super_molecule->getBondOrder(edge_map[i]))
+            ++res_score;
+      }
+   }
+
+   return res_score;
+
 }

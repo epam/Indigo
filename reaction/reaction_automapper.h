@@ -182,10 +182,18 @@ public:
 private:
    int _searchSubstructure(EmbeddingEnumerator& emb_enum, const Array<int>* in_map, Array<int> *out_map);
    static bool _matchAtoms(BaseMolecule& query, BaseMolecule& target, int sub_idx, int super_idx, int flags);
+
+   void _selectBestAutomorphism(Array<int>* map_out);
+
+   static int  _cbAutoVertexReact (Graph &graph, int idx1, int idx2, const void *context);
+   static bool _cbAutoCheckAutomorphismReact (Graph &graph, const Array<int> &mapping, const void *context);
+   int _scoreSolution(Molecule *sub_molecule, Molecule *super_molecule, Array<int>& map);
    
    BaseReaction& _reaction;
    int _subReactNumber;
    int _superProductNumber;
+   
+   ObjArray< Array<int> > _autoMaps;
 };
 
 }
