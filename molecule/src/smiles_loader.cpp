@@ -760,7 +760,11 @@ void SmilesLoader::_parseMolecule ()
          // empty bond designator?
          if (bond_str.size() < 1)
          {
-            // Empty bonds are processed after loading the molecule
+            // In SMARTS mode a missing bond symbol is interpreted as "single or aromatic".
+            // (http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html)
+            // But if both atoms cannot be aromatic, then empty bond can be just 
+            // replaced to single.
+            // Such case is processed after 
          }
          else
             _readBond(bond_str, *bond, qbond);
@@ -964,32 +968,34 @@ void SmilesLoader::_parseMolecule ()
 
    if (smarts_mode)
    {
-      for (int i = _qmol->edgeBegin(); i != _qmol->edgeEnd(); i = _qmol->edgeNext(i))
+      // SMARTS mode: process only empty bonds, and replace them with single or aromatic
+      for (int i = 0; i < _bonds.size(); i++)
       {
-         const Edge &edge = _qmol->getEdge(i);
-         QueryMolecule::Bond &qbond = _qmol->getBond(i);
+         int index = _bonds[i].index;
 
-         if (qbond.type != QueryMolecule::OP_NONE)
+         QueryMolecule::Bond &qbond = _qmol->getBond(index);
+
+         if (qbond.type != QueryMolecule::OP_NONE || _bonds[i].type == _ANY_BOND)
             continue;
 
-         //   SMARTS mode
-         //   A missing bond symbol is interpreted as "single or aromatic".
-         //   (http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html)
-         // 
+         // A missing bond symbol is interpreted as "single or aromatic".
+         // (http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html)
+         const Edge &edge = _qmol->getEdge(index);
          QueryMolecule::Atom &q_beg = _qmol->getAtom(edge.beg);
          QueryMolecule::Atom &q_end = _qmol->getAtom(edge.end);
 
-         if (!q_beg.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC) && 
-             !q_end.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
+         AutoPtr<QueryMolecule::Bond> new_qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+
+         if (q_beg.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC) &&
+             q_end.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
          {
-            _qmol->resetBond(i, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+            new_qbond.reset(
+               QueryMolecule::Bond::oder(
+                  new_qbond.release(),
+                  new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
          }
-         else
-         {
-            _qmol->resetBond(i, QueryMolecule::Bond::oder(
-               new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-               new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-         }
+
+         _qmol->resetBond(index, new_qbond.release());
       }
    }
 
@@ -1617,7 +1623,9 @@ void SmilesLoader::_readBondSub (Array<char> &bond_str, _BondDesc &bond,
          }
       }
       else if (order == _ANY_BOND)
+      {
          bond.type = order;
+      }
 
       if (topology > 0)
       {

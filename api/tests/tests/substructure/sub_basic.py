@@ -34,18 +34,21 @@ def testSSS(mol, q):
       print("Error: " % (getIndigoExceptionText(e)))
       
 def loadWithCheck(func):
-   def wrapper(param):
-      try:
-         mol = func(param)
-         if func == indigo.loadMoleculeFromFile:             
-             mol.setName(relativePath(param))
-         else:
-             mol.setName(param)
-         return mol
-      except IndigoException, e:
-         print(getIndigoExceptionText(e))
-         return None
-   return wrapper
+    def wrapper(param):
+        try:
+            mol = func(param)
+            if func == indigo.loadMoleculeFromFile:             
+                mol.setName(relativePath(param))
+            else:
+                suffix = ""
+                if func == indigo.loadSmarts:             
+                    suffix = " (SMARTS)"
+                mol.setName(param + suffix)
+            return mol
+        except IndigoException, e:
+            print(getIndigoExceptionText(e))
+        return None
+    return wrapper
          
 def loadAromWithCheck(func):
     def loader(param):
@@ -104,6 +107,16 @@ tests = [
    (lmol('N1OCCCC=1'), lqmol("N1OCCCC=1")),
    (lmol('N1OCCCC=1'), lqmol("N=1OCCCC1")),
    (lmol('C-1CCCCC=1'), lqmol("C=1CCCCC-1")),
+   (lmol('C=1=C=C=C=C=1'), lqmol("C~1~C~C~C~C~1")),
+   (lmol('C=1=C=C=C=C=1'), lsmarts("C~1~C~C~C~C~1")),
+   (lmol('C=1=C=C=C=C=1'), lqmol("C1CCCC1")),
+   (lmol('C=1=C=C=C=C=1'), lsmarts("C1CCCC1")),
+   (lmol('C1C=CC=C1'), lsmarts("C1CCCC1")),
+   (lmol('C1C=CC=C1'), lsmarts("C~1~C~C~C~C~1")),
+   (lmol('c1cccc1'), lsmarts("C~1~C~C~C~C~1")),
+   (lmol('c1cccc1'), lqmol("C~1~C~C~C~C~1")),
+   (lmol('c1cccc1'), lsmarts("C1CCCC1")),
+   (lmol('c1cccc1'), lsmarts("[#6]1[#6][#6][#6][#6]1")),
 ]
 for i in range(len(tests)):
    print("\n*** Test %d ***" % (i))

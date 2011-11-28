@@ -138,6 +138,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119914 #261
   cnt=3
+119914 #264
+  cnt=24
 119915 #1
   cnt=500
 119915 #2
@@ -274,6 +276,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119915 #261
   cnt=3
+119915 #264
+  cnt=7
 119916 #1
   cnt=593
 119916 #2
@@ -398,6 +402,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119916 #261
   cnt=5
+119916 #264
+  cnt=15
 119917 #1
   cnt=338
 119917 #2
@@ -514,6 +520,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119917 #261
   cnt=4
+119917 #264
+  cnt=15
 119918 #1
   cnt=433
 119918 #2
@@ -622,6 +630,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119918 #261
   cnt=2
+119918 #264
+  cnt=20
 119919 #1
   cnt=691
 119919 #2
@@ -736,6 +746,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119919 #261
   cnt=2
+119919 #264
+  cnt=27
 119920 #1
   cnt=508
 119920 #2
@@ -840,6 +852,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119920 #261
   cnt=2
+119920 #264
+  cnt=12
 119921 #1
   cnt=352
 119921 #2
@@ -974,6 +988,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 119921 #262
   cnt=1
+119921 #264
+  cnt=38
 119922 #1
   cnt=315
 119922 #2
@@ -1090,6 +1106,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119922 #261
   cnt=4
+119922 #264
+  cnt=15
 119923 #1
   cnt=312
 119923 #2
@@ -1220,6 +1238,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 119923 #261
   cnt=5
+119923 #264
+  cnt=32
 119924 #1
   cnt=261
 119924 #2
@@ -1348,6 +1368,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119924 #261
   cnt=4
+119924 #264
+  cnt=10
 119925 #1
   cnt=410
 119925 #2
@@ -1578,6 +1600,8 @@ Cannot load query molecules from SMARTS
   cnt=5
 119926 #262
   cnt=1
+119926 #264
+  cnt=28
 119927 #1
   cnt=368
 119927 #2
@@ -1698,6 +1722,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 119927 #262
   cnt=1
+119927 #264
+  cnt=21
 119928 #1
   cnt=233
 119928 #2
@@ -1812,6 +1838,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119928 #262
   cnt=1
+119928 #264
+  cnt=6
 119929 #1
   cnt=218
 119929 #2
@@ -1918,6 +1946,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119929 #261
   cnt=2
+119929 #264
+  cnt=30
 119930 #1
   cnt=317
 119930 #2
@@ -2048,6 +2078,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119930 #262
   cnt=1
+119930 #264
+  cnt=29
 119931 #1
   cnt=273
 119931 #2
@@ -2178,6 +2210,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119931 #261
   cnt=5
+119931 #264
+  cnt=22
 119932 #1
   cnt=699
 119932 #2
@@ -2302,6 +2336,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119932 #261
   cnt=2
+119932 #264
+  cnt=46
 119933 #1
   cnt=334
 119933 #2
@@ -2426,6 +2462,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119933 #262
   cnt=1
+119933 #264
+  cnt=34
 119934 #1
   cnt=613
 119934 #2
@@ -2538,6 +2576,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119934 #261
   cnt=4
+119934 #264
+  cnt=35
 119935 #1
   cnt=582
 119935 #2
@@ -2650,6 +2690,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119935 #262
   cnt=2
+119935 #264
+  cnt=26
 119936 #1
   cnt=493
 119936 #2
@@ -2774,6 +2816,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119936 #261
   cnt=4
+119936 #264
+  cnt=10
 119937 #1
   cnt=811
 119937 #2
@@ -2878,6 +2922,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119937 #261
   cnt=2
+119937 #264
+  cnt=24
 119938 #1
   cnt=332
 119938 #2
@@ -3006,6 +3052,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119938 #262
   cnt=1
+119938 #264
+  cnt=20
 119939 #1
   cnt=340
 119939 #2
@@ -3142,6 +3190,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119939 #261
   cnt=4
+119939 #264
+  cnt=30
 119940 #1
   cnt=281
 119940 #2
@@ -3276,6 +3326,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119940 #261
   cnt=4
+119940 #264
+  cnt=41
 119941 #1
   cnt=452
 119941 #2
@@ -3386,6 +3438,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119941 #261
   cnt=2
+119941 #264
+  cnt=33
 119942 #1
   cnt=529
 119942 #2
@@ -3500,6 +3554,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119942 #261
   cnt=2
+119942 #264
+  cnt=54
 119943 #1
   cnt=377
 119943 #2
@@ -3630,6 +3686,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119943 #261
   cnt=4
+119943 #264
+  cnt=23
 119944 #1
   cnt=587
 119944 #2
@@ -3762,6 +3820,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 119944 #262
   cnt=1
+119944 #264
+  cnt=20
 119945 #1
   cnt=265
 119945 #2
@@ -3890,6 +3950,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119945 #261
   cnt=3
+119945 #264
+  cnt=37
 119946 #1
   cnt=434
 119946 #2
@@ -4014,6 +4076,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119946 #261
   cnt=3
+119946 #264
+  cnt=45
 119947 #1
   cnt=254
 119947 #2
@@ -4140,6 +4204,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119947 #261
   cnt=3
+119947 #264
+  cnt=10
 119948 #1
   cnt=457
 119948 #2
@@ -4364,6 +4430,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119949 #261
   cnt=2
+119949 #264
+  cnt=62
 119950 #1
   cnt=527
 119950 #2
@@ -4480,6 +4548,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119950 #261
   cnt=2
+119950 #264
+  cnt=27
 119951 #1
   cnt=700
 119951 #2
@@ -4604,6 +4674,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119951 #261
   cnt=4
+119951 #264
+  cnt=10
 119952 #1
   cnt=493
 119952 #2
@@ -4722,6 +4794,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119952 #261
   cnt=2
+119952 #264
+  cnt=12
 119953 #1
   cnt=531
 119953 #2
@@ -4854,6 +4928,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119953 #262
   cnt=1
+119953 #264
+  cnt=29
 119954 #1
   cnt=288
 119954 #2
@@ -4980,6 +5056,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119954 #261
   cnt=3
+119954 #264
+  cnt=53
 119955 #1
   cnt=315
 119955 #2
@@ -5098,6 +5176,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119955 #262
   cnt=1
+119955 #264
+  cnt=11
 119956 #1
   cnt=262
 119956 #2
@@ -5216,6 +5296,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119956 #261
   cnt=3
+119956 #264
+  cnt=57
 119957 #1
   cnt=166
 119957 #2
@@ -5442,6 +5524,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119958 #261
   cnt=3
+119958 #264
+  cnt=5
 119959 #1
   cnt=668
 119959 #2
@@ -5562,6 +5646,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119959 #261
   cnt=3
+119959 #264
+  cnt=45
 119960 #1
   cnt=254
 119960 #2
@@ -5672,6 +5758,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119960 #261
   cnt=2
+119960 #264
+  cnt=40
 119961 #1
   cnt=307
 119961 #2
@@ -5804,6 +5892,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119961 #261
   cnt=4
+119961 #264
+  cnt=57
 119962 #1
   cnt=486
 119962 #2
@@ -5920,6 +6010,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119962 #262
   cnt=1
+119962 #264
+  cnt=60
 119963 #1
   cnt=555
 119963 #2
@@ -6038,6 +6130,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119963 #261
   cnt=2
+119963 #264
+  cnt=50
 119964 #1
   cnt=302
 119964 #2
@@ -6156,6 +6250,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119964 #262
   cnt=1
+119964 #264
+  cnt=18
 119965 #1
   cnt=460
 119965 #2
@@ -6266,6 +6362,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119965 #262
   cnt=1
+119965 #264
+  cnt=6
 119966 #1
   cnt=359
 119966 #2
@@ -6380,6 +6478,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119966 #262
   cnt=2
+119966 #264
+  cnt=44
 119967 #1
   cnt=439
 119967 #2
@@ -6498,6 +6598,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119967 #261
   cnt=3
+119967 #264
+  cnt=79
 119968 #1
   cnt=274
 119968 #2
@@ -6608,6 +6710,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119968 #261
   cnt=2
+119968 #264
+  cnt=33
 119969 #1
   cnt=288
 119969 #2
@@ -6726,6 +6830,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119969 #262
   cnt=1
+119969 #264
+  cnt=41
 119970 #1
   cnt=274
 119970 #2
@@ -6854,6 +6960,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119970 #261
   cnt=3
+119970 #264
+  cnt=12
 119971 #1
   cnt=483
 119971 #2
@@ -6966,6 +7074,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119971 #261
   cnt=4
+119971 #264
+  cnt=35
 119972 #1
   cnt=267
 119972 #2
@@ -7088,6 +7198,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119972 #261
   cnt=5
+119972 #264
+  cnt=22
 119973 #1
   cnt=389
 119973 #2
@@ -7214,6 +7326,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119973 #261
   cnt=4
+119973 #264
+  cnt=57
 119974 #1
   cnt=384
 119974 #2
@@ -7332,6 +7446,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119974 #261
   cnt=3
+119974 #264
+  cnt=40
 119975 #1
   cnt=425
 119975 #2
@@ -7452,6 +7568,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119975 #261
   cnt=3
+119975 #264
+  cnt=22
 119976 #1
   cnt=412
 119976 #2
@@ -7578,6 +7696,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119976 #261
   cnt=3
+119976 #264
+  cnt=10
 119977 #1
   cnt=580
 119977 #2
@@ -7702,6 +7822,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119977 #261
   cnt=3
+119977 #264
+  cnt=44
 119978 #1
   cnt=601
 119978 #2
@@ -7812,6 +7934,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119978 #261
   cnt=4
+119978 #264
+  cnt=15
 119979 #1
   cnt=768
 119979 #2
@@ -7924,6 +8048,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119979 #261
   cnt=2
+119979 #264
+  cnt=24
 119980 #1
   cnt=530
 119980 #2
@@ -8038,6 +8164,8 @@ Cannot load query molecules from SMARTS
   cnt=5
 119980 #262
   cnt=1
+119980 #264
+  cnt=28
 119981 #1
   cnt=265
 119981 #2
@@ -8152,6 +8280,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119981 #261
   cnt=2
+119981 #264
+  cnt=12
 119982 #1
   cnt=648
 119982 #2
@@ -8284,6 +8414,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 119982 #262
   cnt=1
+119982 #264
+  cnt=29
 119983 #1
   cnt=368
 119983 #2
@@ -8394,6 +8526,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119983 #261
   cnt=2
+119983 #264
+  cnt=52
 119984 #1
   cnt=330
 119984 #2
@@ -8496,6 +8630,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119984 #261
   cnt=2
+119984 #264
+  cnt=44
 119985 #1
   cnt=285
 119985 #2
@@ -8624,6 +8760,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119985 #261
   cnt=4
+119985 #264
+  cnt=10
 119986 #1
   cnt=658
 119986 #2
@@ -8736,6 +8874,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119986 #261
   cnt=5
+119986 #264
+  cnt=44
 119987 #1
   cnt=387
 119987 #2
@@ -8866,6 +9006,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119987 #261
   cnt=4
+119987 #264
+  cnt=34
 119988 #1
   cnt=565
 119988 #2
@@ -8992,6 +9134,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119988 #261
   cnt=3
+119988 #264
+  cnt=30
 119989 #1
   cnt=188
 119989 #2
@@ -9098,6 +9242,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119989 #261
   cnt=2
+119989 #264
+  cnt=30
 119990 #1
   cnt=611
 119990 #2
@@ -9216,6 +9362,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119990 #261
   cnt=3
+119990 #264
+  cnt=12
 119991 #1
   cnt=467
 119991 #2
@@ -9326,6 +9474,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119991 #261
   cnt=2
+119991 #264
+  cnt=12
 119992 #1
   cnt=519
 119992 #2
@@ -9446,6 +9596,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119992 #261
   cnt=3
+119992 #264
+  cnt=19
 119993 #1
   cnt=313
 119993 #2
@@ -9574,6 +9726,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 119993 #261
   cnt=3
+119993 #264
+  cnt=39
 119994 #1
   cnt=676
 119994 #2
@@ -9690,6 +9844,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119994 #261
   cnt=3
+119994 #264
+  cnt=22
 119995 #1
   cnt=332
 119995 #2
@@ -9802,6 +9958,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119995 #261
   cnt=2
+119995 #264
+  cnt=60
 119996 #1
   cnt=566
 119996 #2
@@ -9922,6 +10080,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 119996 #262
   cnt=2
+119996 #264
+  cnt=35
 119997 #1
   cnt=151
 119997 #2
@@ -10028,6 +10188,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119997 #261
   cnt=2
+119997 #264
+  cnt=22
 119998 #1
   cnt=552
 119998 #2
@@ -10148,6 +10310,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 119998 #262
   cnt=1
+119998 #264
+  cnt=16
 119999 #1
   cnt=384
 119999 #2
@@ -10270,6 +10434,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 119999 #261
   cnt=3
+119999 #264
+  cnt=5
 120000 #1
   cnt=293
 120000 #2
@@ -10392,6 +10558,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120000 #261
   cnt=3
+120000 #264
+  cnt=34
 120001 #1
   cnt=833
 120001 #2
@@ -10504,6 +10672,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120001 #261
   cnt=2
+120001 #264
+  cnt=24
 120002 #1
   cnt=528
 120002 #2
@@ -10626,6 +10796,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120002 #261
   cnt=3
+120002 #264
+  cnt=10
 120003 #1
   cnt=283
 120003 #2
@@ -10740,6 +10912,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120003 #261
   cnt=2
+120003 #264
+  cnt=5
 120004 #1
   cnt=544
 120004 #2
@@ -10862,6 +11036,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120004 #261
   cnt=2
+120004 #264
+  cnt=24
 120005 #1
   cnt=537
 120005 #2
@@ -10980,6 +11156,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120005 #261
   cnt=5
+120005 #264
+  cnt=22
 120006 #1
   cnt=621
 120006 #2
@@ -11110,6 +11288,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120006 #261
   cnt=4
+120006 #264
+  cnt=10
 120007 #1
   cnt=311
 120007 #2
@@ -11236,6 +11416,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120007 #262
   cnt=1
+120007 #264
+  cnt=40
 120008 #1
   cnt=863
 120008 #2
@@ -11350,6 +11532,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120008 #261
   cnt=3
+120008 #264
+  cnt=44
 120009 #1
   cnt=466
 120009 #2
@@ -11476,6 +11660,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120009 #261
   cnt=2
+120009 #264
+  cnt=7
 120010 #1
   cnt=595
 120010 #2
@@ -11604,6 +11790,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120010 #261
   cnt=2
+120010 #264
+  cnt=44
 120011 #1
   cnt=695
 120011 #2
@@ -11726,6 +11914,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120011 #261
   cnt=3
+120011 #264
+  cnt=10
 120012 #1
   cnt=254
 120012 #2
@@ -11844,6 +12034,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120012 #261
   cnt=5
+120012 #264
+  cnt=46
 120013 #1
   cnt=656
 120013 #2
@@ -11952,6 +12144,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120013 #261
   cnt=2
+120013 #264
+  cnt=34
 120014 #1
   cnt=562
 120014 #2
@@ -12076,6 +12270,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120014 #261
   cnt=4
+120014 #264
+  cnt=10
 120015 #1
   cnt=343
 120015 #2
@@ -12214,6 +12410,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120015 #262
   cnt=1
+120015 #264
+  cnt=20
 120016 #1
   cnt=297
 120016 #2
@@ -12444,6 +12642,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120017 #261
   cnt=2
+120017 #264
+  cnt=7
 120018 #1
   cnt=471
 120018 #2
@@ -12558,6 +12758,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120018 #262
   cnt=1
+120018 #264
+  cnt=70
 120019 #1
   cnt=374
 120019 #2
@@ -12794,6 +12996,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120020 #261
   cnt=3
+120020 #264
+  cnt=19
 120021 #1
   cnt=358
 120021 #2
@@ -12920,6 +13124,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120021 #261
   cnt=5
+120021 #264
+  cnt=35
 120022 #1
   cnt=736
 120022 #2
@@ -13030,6 +13236,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120022 #261
   cnt=4
+120022 #264
+  cnt=15
 120023 #1
   cnt=669
 120023 #2
@@ -13148,6 +13356,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120023 #261
   cnt=5
+120023 #264
+  cnt=15
 120024 #1
   cnt=605
 120024 #2
@@ -13264,6 +13474,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120024 #261
   cnt=3
+120024 #264
+  cnt=64
 120025 #1
   cnt=673
 120025 #2
@@ -13374,6 +13586,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120025 #261
   cnt=2
+120025 #264
+  cnt=12
 120026 #1
   cnt=623
 120026 #2
@@ -13500,6 +13714,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120026 #261
   cnt=4
+120026 #264
+  cnt=23
 120027 #1
   cnt=291
 120027 #2
@@ -13636,6 +13852,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120027 #261
   cnt=4
+120027 #264
+  cnt=23
 120028 #1
   cnt=505
 120028 #2
@@ -13746,6 +13964,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120028 #261
   cnt=2
+120028 #264
+  cnt=5
 120029 #1
   cnt=341
 120029 #2
@@ -13858,6 +14078,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120029 #262
   cnt=1
+120029 #264
+  cnt=38
 120030 #1
   cnt=555
 120030 #2
@@ -13988,6 +14210,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120030 #261
   cnt=5
+120030 #264
+  cnt=10
 120031 #1
   cnt=576
 120031 #2
@@ -14112,6 +14336,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120031 #261
   cnt=4
+120031 #264
+  cnt=30
 120032 #1
   cnt=173
 120032 #2
@@ -14334,6 +14560,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120033 #261
   cnt=2
+120033 #264
+  cnt=12
 120034 #1
   cnt=588
 120034 #2
@@ -14446,6 +14674,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120034 #261
   cnt=2
+120034 #264
+  cnt=22
 120035 #1
   cnt=909
 120035 #2
@@ -14566,6 +14796,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120035 #261
   cnt=3
+120035 #264
+  cnt=24
 120036 #1
   cnt=325
 120036 #2
@@ -14680,6 +14912,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120036 #262
   cnt=1
+120036 #264
+  cnt=39
 120037 #1
   cnt=255
 120037 #2
@@ -14800,6 +15034,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120037 #261
   cnt=2
+120037 #264
+  cnt=20
 120038 #1
   cnt=529
 120038 #2
@@ -14908,6 +15144,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120038 #262
   cnt=1
+120038 #264
+  cnt=18
 120039 #1
   cnt=598
 120039 #2
@@ -15020,6 +15258,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120039 #261
   cnt=3
+120039 #264
+  cnt=86
 120040 #1
   cnt=608
 120040 #2
@@ -15140,6 +15380,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120040 #262
   cnt=1
+120040 #264
+  cnt=40
 120041 #1
   cnt=280
 120041 #2
@@ -15266,6 +15508,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120041 #261
   cnt=3
+120041 #264
+  cnt=10
 120042 #1
   cnt=579
 120042 #2
@@ -15390,6 +15634,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120042 #262
   cnt=1
+120042 #264
+  cnt=29
 120043 #1
   cnt=565
 120043 #2
@@ -15514,6 +15760,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120043 #261
   cnt=3
+120043 #264
+  cnt=5
 120044 #1
   cnt=513
 120044 #2
@@ -15648,6 +15896,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120044 #261
   cnt=4
+120044 #264
+  cnt=19
 120045 #1
   cnt=280
 120045 #2
@@ -15774,6 +16024,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120045 #261
   cnt=5
+120045 #264
+  cnt=42
 120046 #1
   cnt=557
 120046 #2
@@ -15880,6 +16132,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120046 #261
   cnt=2
+120046 #264
+  cnt=54
 120047 #1
   cnt=347
 120047 #2
@@ -16002,6 +16256,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120047 #262
   cnt=2
+120047 #264
+  cnt=55
 120048 #1
   cnt=529
 120048 #2
@@ -16120,6 +16376,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120048 #262
   cnt=1
+120048 #264
+  cnt=20
 120049 #1
   cnt=552
 120049 #2
@@ -16234,6 +16492,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120049 #261
   cnt=4
+120049 #264
+  cnt=15
 120050 #1
   cnt=423
 120050 #2
@@ -16344,6 +16604,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120050 #261
   cnt=2
+120050 #264
+  cnt=40
 120051 #1
   cnt=510
 120051 #2
@@ -16468,6 +16730,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120051 #262
   cnt=1
+120051 #264
+  cnt=29
 120052 #1
   cnt=239
 120052 #2
@@ -16588,6 +16852,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120052 #261
   cnt=3
+120052 #264
+  cnt=41
 120053 #1
   cnt=532
 120053 #2
@@ -16720,6 +16986,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120053 #261
   cnt=6
+120053 #264
+  cnt=22
 120054 #1
   cnt=557
 120054 #2
@@ -16838,6 +17106,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120054 #261
   cnt=3
+120054 #264
+  cnt=23
 120055 #1
   cnt=295
 120055 #2
@@ -16956,6 +17226,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120055 #261
   cnt=2
+120055 #264
+  cnt=29
 120056 #1
   cnt=572
 120056 #2
@@ -17066,6 +17338,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120056 #262
   cnt=1
+120056 #264
+  cnt=20
 120057 #1
   cnt=289
 120057 #2
@@ -17202,6 +17476,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120057 #261
   cnt=4
+120057 #264
+  cnt=10
 120058 #1
   cnt=742
 120058 #2
@@ -17330,6 +17606,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120058 #261
   cnt=4
+120058 #264
+  cnt=22
 120059 #1
   cnt=363
 120059 #2
@@ -17460,6 +17738,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120059 #261
   cnt=3
+120059 #264
+  cnt=35
 120060 #1
   cnt=435
 120060 #2
@@ -17584,6 +17864,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120060 #261
   cnt=5
+120060 #264
+  cnt=15
 120061 #1
   cnt=365
 120061 #2
@@ -17692,6 +17974,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120061 #262
   cnt=1
+120061 #264
+  cnt=41
 120062 #1
   cnt=396
 120062 #2
@@ -17812,6 +18096,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120062 #261
   cnt=3
+120062 #264
+  cnt=22
 120063 #1
   cnt=578
 120063 #2
@@ -17914,6 +18200,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120063 #261
   cnt=4
+120063 #264
+  cnt=15
 120064 #1
   cnt=314
 120064 #2
@@ -18036,6 +18324,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120064 #262
   cnt=1
+120064 #264
+  cnt=63
 120065 #1
   cnt=473
 120065 #2
@@ -18160,6 +18450,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120065 #262
   cnt=1
+120065 #264
+  cnt=71
 120066 #1
   cnt=289
 120066 #2
@@ -18276,6 +18568,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120066 #262
   cnt=1
+120066 #264
+  cnt=47
 120067 #1
   cnt=246
 120067 #2
@@ -18398,6 +18692,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120067 #261
   cnt=2
+120067 #264
+  cnt=7
 120068 #1
   cnt=186
 120068 #2
@@ -18504,6 +18800,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120068 #261
   cnt=2
+120068 #264
+  cnt=22
 120069 #1
   cnt=548
 120069 #2
@@ -18626,6 +18924,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120069 #262
   cnt=1
+120069 #264
+  cnt=20
 120070 #1
   cnt=389
 120070 #2
@@ -18740,6 +19040,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120070 #261
   cnt=4
+120070 #264
+  cnt=55
 120071 #1
   cnt=337
 120071 #2
@@ -18860,6 +19162,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120071 #261
   cnt=4
+120071 #264
+  cnt=15
 120072 #1
   cnt=484
 120072 #2
@@ -18974,6 +19278,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120072 #261
   cnt=2
+120072 #264
+  cnt=7
 120073 #1
   cnt=496
 120073 #2
@@ -19092,6 +19398,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120073 #261
   cnt=3
+120073 #264
+  cnt=84
 120074 #1
   cnt=435
 120074 #2
@@ -19210,6 +19518,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120074 #261
   cnt=3
+120074 #264
+  cnt=57
 120075 #1
   cnt=286
 120075 #2
@@ -19340,6 +19650,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120075 #261
   cnt=3
+120075 #264
+  cnt=30
 120076 #1
   cnt=679
 120076 #2
@@ -19458,6 +19770,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120076 #261
   cnt=4
+120076 #264
+  cnt=32
 120077 #1
   cnt=313
 120077 #2
@@ -19578,6 +19892,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120077 #262
   cnt=1
+120077 #264
+  cnt=38
 120078 #1
   cnt=585
 120078 #2
@@ -19708,6 +20024,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120078 #261
   cnt=3
+120078 #264
+  cnt=7
 120079 #1
   cnt=331
 120079 #2
@@ -19838,6 +20156,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120079 #261
   cnt=3
+120079 #264
+  cnt=30
 120080 #1
   cnt=482
 120080 #2
@@ -19956,6 +20276,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120080 #261
   cnt=3
+120080 #264
+  cnt=23
 120081 #1
   cnt=328
 120081 #2
@@ -20076,6 +20398,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120081 #262
   cnt=1
+120081 #264
+  cnt=49
 120082 #1
   cnt=173
 120082 #2
@@ -20298,6 +20622,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120083 #261
   cnt=2
+120083 #264
+  cnt=26
 120084 #1
   cnt=898
 120084 #2
@@ -20414,6 +20740,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120084 #261
   cnt=3
+120084 #264
+  cnt=22
 120085 #1
   cnt=749
 120085 #2
@@ -20530,6 +20858,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120085 #261
   cnt=3
+120085 #264
+  cnt=22
 120086 #1
   cnt=592
 120086 #2
@@ -20658,6 +20988,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120086 #261
   cnt=4
+120086 #264
+  cnt=19
 120087 #1
   cnt=305
 120087 #2
@@ -20772,6 +21104,8 @@ Cannot load query molecules from SMARTS
   cnt=5
 120087 #262
   cnt=1
+120087 #264
+  cnt=52
 120088 #1
   cnt=279
 120088 #2
@@ -20892,6 +21226,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120088 #261
   cnt=3
+120088 #264
+  cnt=41
 120089 #1
   cnt=571
 120089 #2
@@ -21030,6 +21366,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120089 #262
   cnt=1
+120089 #264
+  cnt=29
 120090 #1
   cnt=760
 120090 #2
@@ -21150,6 +21488,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120090 #261
   cnt=3
+120090 #264
+  cnt=42
 120091 #1
   cnt=271
 120091 #2
@@ -21272,6 +21612,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120091 #261
   cnt=2
+120091 #264
+  cnt=12
 120092 #1
   cnt=663
 120092 #2
@@ -21398,6 +21740,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120092 #262
   cnt=1
+120092 #264
+  cnt=20
 120093 #1
   cnt=567
 120093 #2
@@ -21512,6 +21856,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120093 #261
   cnt=2
+120093 #264
+  cnt=54
 120094 #1
   cnt=296
 120094 #2
@@ -21634,6 +21980,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120094 #261
   cnt=3
+120094 #264
+  cnt=34
 120095 #1
   cnt=638
 120095 #2
@@ -21748,6 +22096,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120095 #261
   cnt=3
+120095 #264
+  cnt=41
 120096 #1
   cnt=535
 120096 #2
@@ -21864,6 +22214,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120096 #261
   cnt=3
+120096 #264
+  cnt=39
 120097 #1
   cnt=428
 120097 #2
@@ -21996,6 +22348,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120097 #262
   cnt=1
+120097 #264
+  cnt=20
 120098 #1
   cnt=439
 120098 #2
@@ -22116,6 +22470,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120098 #261
   cnt=5
+120098 #264
+  cnt=35
 120099 #1
   cnt=321
 120099 #2
@@ -22236,6 +22592,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120099 #262
   cnt=1
+120099 #264
+  cnt=38
 120100 #1
   cnt=284
 120100 #2
@@ -22346,6 +22704,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120100 #261
   cnt=2
+120100 #264
+  cnt=40
 120101 #1
   cnt=476
 120101 #2
@@ -22474,6 +22834,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120101 #261
   cnt=3
+120101 #264
+  cnt=19
 120102 #1
   cnt=667
 120102 #2
@@ -22598,6 +22960,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120102 #261
   cnt=3
+120102 #264
+  cnt=32
 120103 #1
   cnt=337
 120103 #2
@@ -22718,6 +23082,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120103 #261
   cnt=3
+120103 #264
+  cnt=77
 120104 #1
   cnt=541
 120104 #2
@@ -22840,6 +23206,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120104 #262
   cnt=1
+120104 #264
+  cnt=29
 120105 #1
   cnt=205
 120105 #2
@@ -22942,6 +23310,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120105 #262
   cnt=1
+120105 #264
+  cnt=28
 120106 #1
   cnt=588
 120106 #2
@@ -23062,6 +23432,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120106 #261
   cnt=2
+120106 #264
+  cnt=25
 120107 #1
   cnt=197
 120107 #2
@@ -23288,6 +23660,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120108 #262
   cnt=1
+120108 #264
+  cnt=29
 120109 #1
   cnt=438
 120109 #2
@@ -23410,6 +23784,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120109 #261
   cnt=3
+120109 #264
+  cnt=56
 120110 #1
   cnt=179
 120110 #2
@@ -23648,6 +24024,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120111 #261
   cnt=2
+120111 #264
+  cnt=74
 120112 #1
   cnt=225
 120112 #2
@@ -23768,6 +24146,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120112 #261
   cnt=2
+120112 #264
+  cnt=20
 120113 #1
   cnt=361
 120113 #2
@@ -23894,6 +24274,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120113 #262
   cnt=2
+120113 #264
+  cnt=26
 120114 #1
   cnt=277
 120114 #2
@@ -24016,6 +24398,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120114 #261
   cnt=5
+120114 #264
+  cnt=22
 120115 #1
   cnt=376
 120115 #2
@@ -24150,6 +24534,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120115 #261
   cnt=4
+120115 #264
+  cnt=10
 120116 #1
   cnt=299
 120116 #2
@@ -24284,6 +24670,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120116 #261
   cnt=5
+120116 #264
+  cnt=10
 120117 #1
   cnt=420
 120117 #2
@@ -24400,6 +24788,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120117 #261
   cnt=3
+120117 #264
+  cnt=64
 120118 #1
   cnt=524
 120118 #2
@@ -24510,6 +24900,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120118 #261
   cnt=2
+120118 #264
+  cnt=12
 120119 #1
   cnt=310
 120119 #2
@@ -24620,6 +25012,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120119 #261
   cnt=2
+120119 #264
+  cnt=33
 120120 #1
   cnt=954
 120120 #2
@@ -24730,6 +25124,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120120 #261
   cnt=2
+120120 #264
+  cnt=46
 120121 #1
   cnt=278
 120121 #2
@@ -24864,6 +25260,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120121 #261
   cnt=3
+120121 #264
+  cnt=10
 120122 #1
   cnt=282
 120122 #2
@@ -24974,6 +25372,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120122 #261
   cnt=5
+120122 #264
+  cnt=46
 120123 #1
   cnt=819
 120123 #2
@@ -25092,6 +25492,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120123 #261
   cnt=4
+120123 #264
+  cnt=22
 120124 #1
   cnt=973
 120124 #2
@@ -25204,6 +25606,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120124 #261
   cnt=2
+120124 #264
+  cnt=24
 120125 #1
   cnt=307
 120125 #2
@@ -25334,6 +25738,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120125 #262
   cnt=1
+120125 #264
+  cnt=16
 120126 #1
   cnt=337
 120126 #2
@@ -25458,6 +25864,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120126 #261
   cnt=2
+120126 #264
+  cnt=25
 120127 #1
   cnt=245
 120127 #2
@@ -25580,6 +25988,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120127 #261
   cnt=5
+120127 #264
+  cnt=22
 120128 #1
   cnt=337
 120128 #2
@@ -25704,6 +26114,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120128 #261
   cnt=3
+120128 #264
+  cnt=54
 120129 #1
   cnt=347
 120129 #2
@@ -25808,6 +26220,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120129 #261
   cnt=4
+120129 #264
+  cnt=35
 120130 #1
   cnt=720
 120130 #2
@@ -25918,6 +26332,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120130 #261
   cnt=2
+120130 #264
+  cnt=5
 120131 #1
   cnt=467
 120131 #2
@@ -26046,6 +26462,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120131 #261
   cnt=4
+120131 #264
+  cnt=64
 120132 #1
   cnt=309
 120132 #2
@@ -26172,6 +26590,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120132 #262
   cnt=1
+120132 #264
+  cnt=29
 120133 #1
   cnt=444
 120133 #2
@@ -26516,6 +26936,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120135 #261
   cnt=4
+120135 #264
+  cnt=28
 120136 #1
   cnt=408
 120136 #2
@@ -26638,6 +27060,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120136 #261
   cnt=3
+120136 #264
+  cnt=23
 120137 #1
   cnt=538
 120137 #2
@@ -26764,6 +27188,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120137 #262
   cnt=1
+120137 #264
+  cnt=16
 120138 #1
   cnt=264
 120138 #2
@@ -26886,6 +27312,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120138 #261
   cnt=3
+120138 #264
+  cnt=34
 120139 #1
   cnt=260
 120139 #2
@@ -27012,6 +27440,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120139 #261
   cnt=2
+120139 #264
+  cnt=31
 120140 #1
   cnt=285
 120140 #2
@@ -27138,6 +27568,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120140 #262
   cnt=1
+120140 #264
+  cnt=13
 120141 #1
   cnt=616
 120141 #2
@@ -27358,6 +27790,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120142 #261
   cnt=2
+120142 #264
+  cnt=50
 120143 #1
   cnt=516
 120143 #2
@@ -27476,6 +27910,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120143 #261
   cnt=2
+120143 #264
+  cnt=24
 120144 #1
   cnt=268
 120144 #2
@@ -27600,6 +28036,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120144 #261
   cnt=3
+120144 #264
+  cnt=19
 120145 #1
   cnt=554
 120145 #2
@@ -27830,6 +28268,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120146 #261
   cnt=3
+120146 #264
+  cnt=24
 120147 #1
   cnt=295
 120147 #2
@@ -27948,6 +28388,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120147 #261
   cnt=3
+120147 #264
+  cnt=57
 120148 #1
   cnt=417
 120148 #2
@@ -28074,6 +28516,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120148 #261
   cnt=3
+120148 #264
+  cnt=41
 120149 #1
   cnt=261
 120149 #2
@@ -28188,6 +28632,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120149 #261
   cnt=2
+120149 #264
+  cnt=35
 120150 #1
   cnt=442
 120150 #2
@@ -28312,6 +28758,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120150 #261
   cnt=3
+120150 #264
+  cnt=60
 120151 #1
   cnt=207
 120151 #2
@@ -28548,6 +28996,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120152 #261
   cnt=2
+120152 #264
+  cnt=44
 120153 #1
   cnt=496
 120153 #2
@@ -28660,6 +29110,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120153 #261
   cnt=3
+120153 #264
+  cnt=19
 120154 #1
   cnt=635
 120154 #2
@@ -28790,6 +29242,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120154 #261
   cnt=5
+120154 #264
+  cnt=10
 120155 #1
   cnt=530
 120155 #2
@@ -28908,6 +29362,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120155 #261
   cnt=3
+120155 #264
+  cnt=23
 120156 #1
   cnt=534
 120156 #2
@@ -29018,6 +29474,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120156 #261
   cnt=4
+120156 #264
+  cnt=15
 120157 #1
   cnt=330
 120157 #2
@@ -29144,6 +29602,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120157 #261
   cnt=3
+120157 #264
+  cnt=43
 120158 #1
   cnt=290
 120158 #2
@@ -29272,6 +29732,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120158 #262
   cnt=1
+120158 #264
+  cnt=25
 120159 #1
   cnt=439
 120159 #2
@@ -29396,6 +29858,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120159 #261
   cnt=4
+120159 #264
+  cnt=32
 120160 #1
   cnt=319
 120160 #2
@@ -29528,6 +29992,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120160 #262
   cnt=1
+120160 #264
+  cnt=16
 120161 #1
   cnt=565
 120161 #2
@@ -29650,6 +30116,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120161 #261
   cnt=3
+120161 #264
+  cnt=43
 120162 #1
   cnt=555
 120162 #2
@@ -29766,6 +30234,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120162 #261
   cnt=5
+120162 #264
+  cnt=42
 120163 #1
   cnt=359
 120163 #2
@@ -29882,6 +30352,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120163 #261
   cnt=2
+120163 #264
+  cnt=22
 120164 #1
   cnt=318
 120164 #2
@@ -30020,6 +30492,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120164 #262
   cnt=1
+120164 #264
+  cnt=29
 120165 #1
   cnt=293
 120165 #2
@@ -30150,6 +30624,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120165 #262
   cnt=1
+120165 #264
+  cnt=29
 120166 #1
   cnt=517
 120166 #2
@@ -30282,6 +30758,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120166 #261
   cnt=4
+120166 #264
+  cnt=10
 120167 #1
   cnt=233
 120167 #2
@@ -30404,6 +30882,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120167 #261
   cnt=2
+120167 #264
+  cnt=35
 120168 #1
   cnt=466
 120168 #2
@@ -30530,6 +31010,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120168 #262
   cnt=1
+120168 #264
+  cnt=49
 120169 #1
   cnt=697
 120169 #2
@@ -30644,6 +31126,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120169 #261
   cnt=2
+120169 #264
+  cnt=54
 120170 #1
   cnt=452
 120170 #2
@@ -30764,6 +31248,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120170 #261
   cnt=3
+120170 #264
+  cnt=19
 120171 #1
   cnt=420
 120171 #2
@@ -30878,6 +31364,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120171 #261
   cnt=2
+120171 #264
+  cnt=5
 120172 #1
   cnt=350
 120172 #2
@@ -31008,6 +31496,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120172 #261
   cnt=5
+120172 #264
+  cnt=15
 120173 #1
   cnt=317
 120173 #2
@@ -31122,6 +31612,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120173 #261
   cnt=3
+120173 #264
+  cnt=30
 120174 #1
   cnt=677
 120174 #2
@@ -31240,6 +31732,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120174 #261
   cnt=5
+120174 #264
+  cnt=22
 120175 #1
   cnt=434
 120175 #2
@@ -31368,6 +31862,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120175 #261
   cnt=3
+120175 #264
+  cnt=32
 120176 #1
   cnt=415
 120176 #2
@@ -31496,6 +31992,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120176 #261
   cnt=4
+120176 #264
+  cnt=10
 120177 #1
   cnt=416
 120177 #2
@@ -31634,6 +32132,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120177 #262
   cnt=1
+120177 #264
+  cnt=29
 120178 #1
   cnt=397
 120178 #2
@@ -31764,6 +32264,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120178 #261
   cnt=5
+120178 #264
+  cnt=32
 120179 #1
   cnt=252
 120179 #2
@@ -31886,6 +32388,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120179 #261
   cnt=2
+120179 #264
+  cnt=7
 120180 #1
   cnt=272
 120180 #2
@@ -32128,6 +32632,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120181 #261
   cnt=2
+120181 #264
+  cnt=7
 120182 #1
   cnt=292
 120182 #2
@@ -32252,6 +32758,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120182 #261
   cnt=3
+120182 #264
+  cnt=40
 120183 #1
   cnt=503
 120183 #2
@@ -32370,6 +32878,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120183 #262
   cnt=1
+120183 #264
+  cnt=13
 120184 #1
   cnt=371
 120184 #2
@@ -32500,6 +33010,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120184 #262
   cnt=1
+120184 #264
+  cnt=69
 120185 #1
   cnt=299
 120185 #2
@@ -32616,6 +33128,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120185 #261
   cnt=4
+120185 #264
+  cnt=32
 120186 #1
   cnt=476
 120186 #2
@@ -32746,6 +33260,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120186 #261
   cnt=3
+120186 #264
+  cnt=42
 120187 #1
   cnt=827
 120187 #2
@@ -32854,6 +33370,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120187 #262
   cnt=1
+120187 #264
+  cnt=30
 120188 #1
   cnt=384
 120188 #2
@@ -32988,6 +33506,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120188 #262
   cnt=1
+120188 #264
+  cnt=40
 120189 #1
   cnt=568
 120189 #2
@@ -33098,6 +33618,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120189 #261
   cnt=2
+120189 #264
+  cnt=5
 120190 #1
   cnt=257
 120190 #2
@@ -33222,6 +33744,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120190 #261
   cnt=3
+120190 #264
+  cnt=19
 120191 #1
   cnt=491
 120191 #2
@@ -33330,6 +33854,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120191 #261
   cnt=4
+120191 #264
+  cnt=57
 120192 #1
   cnt=294
 120192 #2
@@ -33458,6 +33984,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120192 #261
   cnt=3
+120192 #264
+  cnt=5
 120193 #1
   cnt=198
 120193 #2
@@ -33700,6 +34228,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120194 #262
   cnt=1
+120194 #264
+  cnt=49
 120195 #1
   cnt=404
 120195 #2
@@ -33822,6 +34352,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120195 #261
   cnt=2
+120195 #264
+  cnt=35
 120196 #1
   cnt=591
 120196 #2
@@ -33950,6 +34482,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120196 #262
   cnt=1
+120196 #264
+  cnt=49
 120197 #1
   cnt=538
 120197 #2
@@ -34066,6 +34600,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120197 #261
   cnt=4
+120197 #264
+  cnt=10
 120198 #1
   cnt=288
 120198 #2
@@ -34180,6 +34716,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120198 #261
   cnt=2
+120198 #264
+  cnt=5
 120199 #1
   cnt=174
 120199 #2
@@ -34414,6 +34952,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120200 #261
   cnt=2
+120200 #264
+  cnt=27
 120201 #1
   cnt=649
 120201 #2
@@ -34536,6 +35076,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120201 #261
   cnt=2
+120201 #264
+  cnt=7
 120202 #1
   cnt=397
 120202 #2
@@ -34658,6 +35200,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120202 #261
   cnt=5
+120202 #264
+  cnt=22
 120203 #1
   cnt=574
 120203 #2
@@ -34780,6 +35324,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120203 #262
   cnt=1
+120203 #264
+  cnt=30
 120204 #1
   cnt=191
 120204 #2
@@ -34900,6 +35446,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120204 #261
   cnt=3
+120204 #264
+  cnt=22
 120205 #1
   cnt=453
 120205 #2
@@ -35024,6 +35572,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120205 #262
   cnt=1
+120205 #264
+  cnt=28
 120206 #1
   cnt=311
 120206 #2
@@ -35148,6 +35698,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120206 #261
   cnt=4
+120206 #264
+  cnt=32
 120207 #1
   cnt=546
 120207 #2
@@ -35280,6 +35832,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120207 #261
   cnt=4
+120207 #264
+  cnt=23
 120208 #1
   cnt=553
 120208 #2
@@ -35394,6 +35948,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120208 #261
   cnt=2
+120208 #264
+  cnt=32
 120209 #1
   cnt=337
 120209 #2
@@ -35642,6 +36198,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120210 #261
   cnt=4
+120210 #264
+  cnt=10
 120211 #1
   cnt=320
 120211 #2
@@ -35748,6 +36306,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120211 #261
   cnt=2
+120211 #264
+  cnt=22
 120212 #1
   cnt=488
 120212 #2
@@ -35878,6 +36438,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120212 #262
   cnt=1
+120212 #264
+  cnt=42
 120213 #1
   cnt=271
 120213 #2
@@ -36016,6 +36578,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120213 #261
   cnt=4
+120213 #264
+  cnt=19
 120214 #1
   cnt=359
 120214 #2
@@ -36148,6 +36712,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120214 #261
   cnt=4
+120214 #264
+  cnt=19
 120215 #1
   cnt=407
 120215 #2
@@ -36400,6 +36966,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120216 #262
   cnt=1
+120216 #264
+  cnt=49
 120217 #1
   cnt=348
 120217 #2
@@ -36532,6 +37100,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120217 #262
   cnt=2
+120217 #264
+  cnt=35
 120218 #1
   cnt=658
 120218 #2
@@ -36652,6 +37222,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120218 #261
   cnt=3
+120218 #264
+  cnt=19
 120219 #1
   cnt=433
 120219 #2
@@ -36780,6 +37352,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120219 #262
   cnt=1
+120219 #264
+  cnt=38
 120220 #1
   cnt=310
 120220 #2
@@ -36898,6 +37472,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120220 #261
   cnt=3
+120220 #264
+  cnt=57
 120221 #1
   cnt=292
 120221 #2
@@ -37016,6 +37592,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120221 #261
   cnt=5
+120221 #264
+  cnt=46
 120222 #1
   cnt=258
 120222 #2
@@ -37130,6 +37708,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120222 #261
   cnt=2
+120222 #264
+  cnt=5
 120223 #1
   cnt=420
 120223 #2
@@ -37258,6 +37838,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120223 #261
   cnt=3
+120223 #264
+  cnt=22
 120224 #1
   cnt=656
 120224 #2
@@ -37380,6 +37962,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120224 #261
   cnt=3
+120224 #264
+  cnt=54
 120225 #1
   cnt=368
 120225 #2
@@ -37486,6 +38070,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120225 #261
   cnt=2
+120225 #264
+  cnt=30
 120226 #1
   cnt=694
 120226 #2
@@ -37610,6 +38196,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120226 #262
   cnt=1
+120226 #264
+  cnt=51
 120227 #1
   cnt=365
 120227 #2
@@ -37738,6 +38326,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120227 #261
   cnt=4
+120227 #264
+  cnt=41
 120228 #1
   cnt=353
 120228 #2
@@ -37868,6 +38458,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120228 #261
   cnt=3
+120228 #264
+  cnt=7
 120229 #1
   cnt=323
 120229 #2
@@ -37992,6 +38584,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120229 #261
   cnt=2
+120229 #264
+  cnt=32
 120230 #1
   cnt=349
 120230 #2
@@ -38108,6 +38702,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120230 #261
   cnt=4
+120230 #264
+  cnt=15
 120231 #1
   cnt=536
 120231 #2
@@ -38212,6 +38808,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120231 #261
   cnt=2
+120231 #264
+  cnt=22
 120232 #1
   cnt=464
 120232 #2
@@ -38328,6 +38926,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120232 #261
   cnt=4
+120232 #264
+  cnt=15
 120233 #1
   cnt=293
 120233 #2
@@ -38450,6 +39050,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120233 #261
   cnt=3
+120233 #264
+  cnt=23
 120234 #1
   cnt=242
 120234 #2
@@ -38560,6 +39162,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120234 #262
   cnt=1
+120234 #264
+  cnt=36
 120235 #1
   cnt=581
 120235 #2
@@ -38670,6 +39274,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120235 #262
   cnt=1
+120235 #264
+  cnt=60
 120236 #1
   cnt=273
 120236 #2
@@ -38806,6 +39412,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120236 #261
   cnt=3
+120236 #264
+  cnt=35
 120237 #1
   cnt=506
 120237 #2
@@ -38932,6 +39540,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120237 #261
   cnt=3
+120237 #264
+  cnt=23
 120238 #1
   cnt=716
 120238 #2
@@ -39040,6 +39650,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120238 #261
   cnt=4
+120238 #264
+  cnt=37
 120239 #1
   cnt=348
 120239 #2
@@ -39270,6 +39882,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120240 #261
   cnt=4
+120240 #264
+  cnt=35
 120241 #1
   cnt=329
 120241 #2
@@ -39384,6 +39998,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120241 #261
   cnt=5
+120241 #264
+  cnt=66
 120242 #1
   cnt=438
 120242 #2
@@ -39516,6 +40132,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120242 #261
   cnt=4
+120242 #264
+  cnt=22
 120243 #1
   cnt=422
 120243 #2
@@ -39634,6 +40252,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120243 #261
   cnt=5
+120243 #264
+  cnt=46
 120244 #1
   cnt=277
 120244 #2
@@ -39760,6 +40380,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120244 #261
   cnt=3
+120244 #264
+  cnt=10
 120245 #1
   cnt=228
 120245 #2
@@ -39868,6 +40490,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120245 #261
   cnt=2
+120245 #264
+  cnt=42
 120246 #1
   cnt=594
 120246 #2
@@ -39986,6 +40610,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120246 #262
   cnt=1
+120246 #264
+  cnt=20
 120247 #1
   cnt=268
 120247 #2
@@ -40098,6 +40724,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120247 #261
   cnt=3
+120247 #264
+  cnt=41
 120248 #1
   cnt=494
 120248 #2
@@ -40220,6 +40848,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120248 #261
   cnt=4
+120248 #264
+  cnt=37
 120249 #1
   cnt=413
 120249 #2
@@ -40336,6 +40966,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120249 #261
   cnt=2
+120249 #264
+  cnt=57
 120250 #1
   cnt=551
 120250 #2
@@ -40446,6 +41078,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120250 #261
   cnt=2
+120250 #264
+  cnt=5
 120251 #1
   cnt=218
 120251 #2
@@ -40552,6 +41186,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120251 #261
   cnt=2
+120251 #264
+  cnt=30
 120252 #1
   cnt=466
 120252 #2
@@ -40668,6 +41304,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120252 #261
   cnt=3
+120252 #264
+  cnt=64
 120253 #1
   cnt=341
 120253 #2
@@ -40792,6 +41430,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120253 #262
   cnt=1
+120253 #264
+  cnt=20
 120254 #1
   cnt=311
 120254 #2
@@ -40906,6 +41546,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120254 #261
   cnt=2
+120254 #264
+  cnt=55
 120255 #1
   cnt=410
 120255 #2
@@ -41032,6 +41674,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120255 #261
   cnt=2
+120255 #264
+  cnt=29
 120256 #1
   cnt=827
 120256 #2
@@ -41158,6 +41802,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120256 #261
   cnt=3
+120256 #264
+  cnt=24
 120257 #1
   cnt=324
 120257 #2
@@ -41286,6 +41932,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120257 #261
   cnt=5
+120257 #264
+  cnt=42
 120258 #1
   cnt=416
 120258 #2
@@ -41398,6 +42046,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120258 #261
   cnt=3
+120258 #264
+  cnt=63
 120259 #1
   cnt=314
 120259 #2
@@ -41512,6 +42162,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120259 #261
   cnt=3
+120259 #264
+  cnt=61
 120260 #1
   cnt=715
 120260 #2
@@ -41636,6 +42288,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120260 #262
   cnt=1
+120260 #264
+  cnt=29
 120261 #1
   cnt=472
 120261 #2
@@ -41754,6 +42408,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120261 #261
   cnt=5
+120261 #264
+  cnt=22
 120262 #1
   cnt=179
 120262 #2
@@ -41868,6 +42524,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120262 #261
   cnt=2
+120262 #264
+  cnt=18
 120263 #1
   cnt=351
 120263 #2
@@ -41988,6 +42646,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120263 #262
   cnt=1
+120263 #264
+  cnt=38
 120264 #1
   cnt=224
 120264 #2
@@ -42110,6 +42770,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120264 #261
   cnt=2
+120264 #264
+  cnt=7
 120265 #1
   cnt=338
 120265 #2
@@ -42226,6 +42888,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120265 #261
   cnt=4
+120265 #264
+  cnt=31
 120266 #1
   cnt=281
 120266 #2
@@ -42362,6 +43026,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120266 #261
   cnt=6
+120266 #264
+  cnt=22
 120267 #1
   cnt=295
 120267 #2
@@ -42494,6 +43160,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120267 #261
   cnt=6
+120267 #264
+  cnt=46
 120268 #1
   cnt=329
 120268 #2
@@ -42610,6 +43278,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120268 #261
   cnt=2
+120268 #264
+  cnt=22
 120269 #1
   cnt=504
 120269 #2
@@ -42740,6 +43410,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120269 #261
   cnt=3
+120269 #264
+  cnt=10
 120270 #1
   cnt=280
 120270 #2
@@ -42854,6 +43526,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120270 #261
   cnt=3
+120270 #264
+  cnt=22
 120271 #1
   cnt=267
 120271 #2
@@ -42976,6 +43650,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120271 #261
   cnt=2
+120271 #264
+  cnt=35
 120272 #1
   cnt=349
 120272 #2
@@ -43094,6 +43770,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120272 #261
   cnt=2
+120272 #264
+  cnt=53
 120273 #1
   cnt=569
 120273 #2
@@ -43222,6 +43900,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120273 #261
   cnt=3
+120273 #264
+  cnt=54
 120274 #1
   cnt=457
 120274 #2
@@ -43346,6 +44026,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120274 #262
   cnt=1
+120274 #264
+  cnt=20
 120275 #1
   cnt=502
 120275 #2
@@ -43468,6 +44150,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120275 #261
   cnt=2
+120275 #264
+  cnt=7
 120276 #1
   cnt=496
 120276 #2
@@ -43594,6 +44278,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120276 #261
   cnt=5
+120276 #264
+  cnt=22
 120277 #1
   cnt=711
 120277 #2
@@ -43710,6 +44396,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120277 #262
   cnt=1
+120277 #264
+  cnt=42
 120278 #1
   cnt=381
 120278 #2
@@ -43836,6 +44524,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120278 #261
   cnt=6
+120278 #264
+  cnt=46
 120279 #1
   cnt=318
 120279 #2
@@ -43948,6 +44638,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120279 #261
   cnt=4
+120279 #264
+  cnt=35
 120280 #1
   cnt=431
 120280 #2
@@ -44058,6 +44750,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120280 #261
   cnt=5
+120280 #264
+  cnt=68
 120281 #1
   cnt=391
 120281 #2
@@ -44288,6 +44982,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120282 #262
   cnt=1
+120282 #264
+  cnt=45
 120283 #1
   cnt=297
 120283 #2
@@ -44416,6 +45112,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120283 #261
   cnt=4
+120283 #264
+  cnt=10
 120284 #1
   cnt=329
 120284 #2
@@ -44546,6 +45244,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120284 #262
   cnt=1
+120284 #264
+  cnt=29
 120285 #1
   cnt=588
 120285 #2
@@ -44652,6 +45352,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120285 #262
   cnt=1
+120285 #264
+  cnt=21
 120286 #1
   cnt=485
 120286 #2
@@ -44768,6 +45470,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120286 #261
   cnt=2
+120286 #264
+  cnt=20
 120287 #1
   cnt=269
 120287 #2
@@ -44892,6 +45596,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120287 #261
   cnt=4
+120287 #264
+  cnt=32
 120288 #1
   cnt=259
 120288 #2
@@ -45028,6 +45734,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120288 #261
   cnt=3
+120288 #264
+  cnt=7
 120289 #1
   cnt=730
 120289 #2
@@ -45146,6 +45854,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120289 #262
   cnt=1
+120289 #264
+  cnt=20
 120290 #1
   cnt=330
 120290 #2
@@ -45290,6 +46000,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120290 #262
   cnt=1
+120290 #264
+  cnt=29
 120291 #1
   cnt=370
 120291 #2
@@ -45430,6 +46142,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120291 #262
   cnt=1
+120291 #264
+  cnt=49
 120292 #1
   cnt=549
 120292 #2
@@ -45548,6 +46262,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120292 #261
   cnt=4
+120292 #264
+  cnt=64
 120293 #1
   cnt=792
 120293 #2
@@ -45664,6 +46380,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120293 #261
   cnt=2
+120293 #264
+  cnt=24
 120294 #1
   cnt=409
 120294 #2
@@ -45766,6 +46484,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120294 #262
   cnt=1
+120294 #264
+  cnt=6
 120295 #1
   cnt=524
 120295 #2
@@ -45890,6 +46610,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120295 #261
   cnt=3
+120295 #264
+  cnt=12
 120296 #1
   cnt=613
 120296 #2
@@ -46016,6 +46738,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120296 #261
   cnt=6
+120296 #264
+  cnt=22
 120297 #1
   cnt=344
 120297 #2
@@ -46138,6 +46862,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120297 #261
   cnt=4
+120297 #264
+  cnt=52
 120298 #1
   cnt=358
 120298 #2
@@ -46250,6 +46976,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120298 #261
   cnt=4
+120298 #264
+  cnt=35
 120299 #1
   cnt=197
 120299 #2
@@ -46480,6 +47208,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120300 #261
   cnt=3
+120300 #264
+  cnt=12
 120301 #1
   cnt=420
 120301 #2
@@ -46724,6 +47454,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120302 #261
   cnt=3
+120302 #264
+  cnt=19
 120303 #1
   cnt=706
 120303 #2
@@ -46834,6 +47566,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120303 #261
   cnt=2
+120303 #264
+  cnt=76
 120304 #1
   cnt=387
 120304 #2
@@ -46958,6 +47692,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120304 #261
   cnt=3
+120304 #264
+  cnt=19
 120305 #1
   cnt=446
 120305 #2
@@ -47074,6 +47810,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120305 #261
   cnt=4
+120305 #264
+  cnt=54
 120306 #1
   cnt=548
 120306 #2
@@ -47192,6 +47930,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120306 #261
   cnt=2
+120306 #264
+  cnt=24
 120307 #1
   cnt=668
 120307 #2
@@ -47310,6 +48050,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120307 #261
   cnt=2
+120307 #264
+  cnt=24
 120308 #1
   cnt=565
 120308 #2
@@ -47430,6 +48172,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120308 #261
   cnt=3
+120308 #264
+  cnt=22
 120309 #1
   cnt=524
 120309 #2
@@ -47552,6 +48296,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120309 #261
   cnt=4
+120309 #264
+  cnt=22
 120310 #1
   cnt=524
 120310 #2
@@ -47670,6 +48416,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120310 #261
   cnt=2
+120310 #264
+  cnt=5
 120311 #1
   cnt=477
 120311 #2
@@ -47790,6 +48538,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120311 #262
   cnt=1
+120311 #264
+  cnt=38
 120312 #1
   cnt=279
 120312 #2
@@ -47920,6 +48670,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120312 #261
   cnt=3
+120312 #264
+  cnt=23
 120313 #1
   cnt=303
 120313 #2
@@ -48056,6 +48808,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120313 #261
   cnt=4
+120313 #264
+  cnt=34
 120314 #1
   cnt=204
 120314 #2
@@ -48170,6 +48924,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120314 #262
   cnt=1
+120314 #264
+  cnt=6
 120315 #1
   cnt=474
 120315 #2
@@ -48306,6 +49062,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120315 #262
   cnt=1
+120315 #264
+  cnt=51
 120316 #1
   cnt=399
 120316 #2
@@ -48532,6 +49290,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120317 #261
   cnt=3
+120317 #264
+  cnt=10
 120318 #1
   cnt=543
 120318 #2
@@ -48654,6 +49414,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120318 #261
   cnt=3
+120318 #264
+  cnt=10
 120319 #1
   cnt=428
 120319 #2
@@ -48778,6 +49540,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120319 #261
   cnt=5
+120319 #264
+  cnt=44
 120320 #1
   cnt=630
 120320 #2
@@ -48896,6 +49660,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120320 #261
   cnt=2
+120320 #264
+  cnt=29
 120321 #1
   cnt=436
 120321 #2
@@ -49016,6 +49782,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120321 #261
   cnt=3
+120321 #264
+  cnt=22
 120322 #1
   cnt=241
 120322 #2
@@ -49130,6 +49898,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120322 #261
   cnt=2
+120322 #264
+  cnt=12
 120323 #1
   cnt=384
 120323 #2
@@ -49252,6 +50022,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120323 #262
   cnt=1
+120323 #264
+  cnt=58
 120324 #1
   cnt=542
 120324 #2
@@ -49486,6 +50258,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120325 #261
   cnt=2
+120325 #264
+  cnt=7
 120326 #1
   cnt=281
 120326 #2
@@ -49608,6 +50382,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120326 #261
   cnt=2
+120326 #264
+  cnt=5
 120327 #1
   cnt=309
 120327 #2
@@ -49716,6 +50492,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120327 #262
   cnt=1
+120327 #264
+  cnt=46
 120328 #1
   cnt=306
 120328 #2
@@ -49840,6 +50618,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120328 #261
   cnt=2
+120328 #264
+  cnt=27
 120329 #1
   cnt=445
 120329 #2
@@ -49970,6 +50750,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120329 #262
   cnt=1
+120329 #264
+  cnt=29
 120330 #1
   cnt=227
 120330 #2
@@ -50090,6 +50872,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120330 #261
   cnt=3
+120330 #264
+  cnt=30
 120331 #1
   cnt=427
 120331 #2
@@ -50208,6 +50992,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120331 #261
   cnt=2
+120331 #264
+  cnt=34
 120332 #1
   cnt=388
 120332 #2
@@ -50342,6 +51128,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120332 #261
   cnt=5
+120332 #264
+  cnt=10
 120333 #1
   cnt=179
 120333 #2
@@ -50440,6 +51228,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120333 #261
   cnt=2
+120333 #264
+  cnt=22
 120334 #1
   cnt=371
 120334 #2
@@ -50570,6 +51360,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120334 #261
   cnt=6
+120334 #264
+  cnt=22
 120335 #1
   cnt=251
 120335 #2
@@ -50692,6 +51484,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120335 #261
   cnt=3
+120335 #264
+  cnt=23
 120336 #1
   cnt=563
 120336 #2
@@ -50806,6 +51600,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120336 #262
   cnt=1
+120336 #264
+  cnt=11
 120337 #1
   cnt=491
 120337 #2
@@ -51038,6 +51834,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120338 #261
   cnt=3
+120338 #264
+  cnt=41
 120339 #1
   cnt=444
 120339 #2
@@ -51168,6 +51966,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120339 #261
   cnt=4
+120339 #264
+  cnt=32
 120340 #1
   cnt=301
 120340 #2
@@ -51394,6 +52194,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120341 #261
   cnt=3
+120341 #264
+  cnt=22
 120342 #1
   cnt=278
 120342 #2
@@ -51516,6 +52318,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120342 #261
   cnt=3
+120342 #264
+  cnt=23
 120343 #1
   cnt=438
 120343 #2
@@ -51638,6 +52442,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120343 #261
   cnt=3
+120343 #264
+  cnt=34
 120344 #1
   cnt=315
 120344 #2
@@ -51762,6 +52568,8 @@ Cannot load query molecules from SMARTS
   cnt=2
 120344 #261
   cnt=3
+120344 #264
+  cnt=33
 120345 #1
   cnt=282
 120345 #2
@@ -51880,6 +52688,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120345 #261
   cnt=2
+120345 #264
+  cnt=36
 120346 #1
   cnt=515
 120346 #2
@@ -51990,6 +52800,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120346 #261
   cnt=5
+120346 #264
+  cnt=22
 120347 #1
   cnt=340
 120347 #2
@@ -52130,6 +52942,8 @@ Cannot load query molecules from SMARTS
   cnt=4
 120347 #262
   cnt=1
+120347 #264
+  cnt=49
 120348 #1
   cnt=309
 120348 #2
@@ -52254,6 +53068,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120348 #262
   cnt=1
+120348 #264
+  cnt=20
 120349 #1
   cnt=401
 120349 #2
@@ -52372,6 +53188,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120349 #261
   cnt=3
+120349 #264
+  cnt=33
 120350 #1
   cnt=331
 120350 #2
@@ -52496,6 +53314,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120350 #262
   cnt=1
+120350 #264
+  cnt=20
 120351 #1
   cnt=455
 120351 #2
@@ -52606,6 +53426,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120351 #261
   cnt=3
+120351 #264
+  cnt=64
 120352 #1
   cnt=509
 120352 #2
@@ -52722,6 +53544,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120352 #262
   cnt=1
+120352 #264
+  cnt=25
 120353 #1
   cnt=692
 120353 #2
@@ -52840,6 +53664,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120353 #261
   cnt=3
+120353 #264
+  cnt=23
 120354 #1
   cnt=394
 120354 #2
@@ -52954,6 +53780,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120354 #261
   cnt=2
+120354 #264
+  cnt=12
 120355 #1
   cnt=542
 120355 #2
@@ -53090,6 +53918,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120355 #261
   cnt=4
+120355 #264
+  cnt=10
 120356 #1
   cnt=696
 120356 #2
@@ -53214,6 +54044,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120356 #261
   cnt=3
+120356 #264
+  cnt=22
 120357 #1
   cnt=305
 120357 #2
@@ -53324,6 +54156,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120357 #261
   cnt=2
+120357 #264
+  cnt=33
 120358 #1
   cnt=538
 120358 #2
@@ -53442,6 +54276,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120358 #261
   cnt=2
+120358 #264
+  cnt=24
 120359 #1
   cnt=451
 120359 #2
@@ -53554,6 +54390,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120359 #261
   cnt=2
+120359 #264
+  cnt=55
 120360 #1
   cnt=456
 120360 #2
@@ -53784,6 +54622,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120361 #262
   cnt=1
+120361 #264
+  cnt=49
 120362 #1
   cnt=734
 120362 #2
@@ -53898,6 +54738,8 @@ Cannot load query molecules from SMARTS
   cnt=3
 120362 #262
   cnt=1
+120362 #264
+  cnt=28
 120363 #1
   cnt=280
 120363 #2
@@ -54002,6 +54844,8 @@ Cannot load query molecules from SMARTS
   cnt=1
 120363 #261
   cnt=2
+120363 #264
+  cnt=40
 
 Results per query:
 #1: 450
@@ -54265,3 +55109,4 @@ Results per query:
 #261: 450
 #262: 99
 #263: 0
+#264: 422
