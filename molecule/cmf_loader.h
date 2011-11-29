@@ -39,7 +39,9 @@ public:
 
    // no dictionary, no decoder
    explicit CmfLoader (Scanner &scanner);
-      
+   
+   ~CmfLoader();
+
    void loadMolecule (Molecule &mol);
    void loadXyz (Scanner &scanner);
 

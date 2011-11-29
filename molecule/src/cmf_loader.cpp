@@ -48,6 +48,12 @@ TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_atta
    _scanner = _lzw_scanner.get();
 }
 
+CmfLoader::~CmfLoader()
+{
+   // Do nothing, but without explicit destructor Visual Studio produces invalid code
+   // that leads to "Attempted to read or write protected memory".
+}
+
 void CmfLoader::_init ()
 {
    skip_cistrans = false;
