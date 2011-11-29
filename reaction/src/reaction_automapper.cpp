@@ -1542,10 +1542,13 @@ int RSubstructureMcs::_scoreSolution(Molecule *sub_molecule, Molecule *super_mol
    /*
     * Score bond order keeping
     */
-   for (int i = 0; i < edge_map.size(); ++i) {
-      if(edge_map[i] >= 0) {
-         if(sub_molecule->getBondOrder(i) == super_molecule->getBondOrder(edge_map[i]))
+   for (int sub_idx = 0; sub_idx < edge_map.size(); ++sub_idx) {
+      int super_idx = edge_map[sub_idx];
+      if(super_idx >= 0) {
+         if(bondConditionReact(*sub_molecule, *super_molecule, sub_idx, super_idx, this)
+                 &&(sub_molecule->getBondOrder(sub_idx) == super_molecule->getBondOrder(super_idx))) {
             ++res_score;
+         }
       }
    }
 
