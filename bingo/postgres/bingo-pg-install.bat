@@ -45,12 +45,10 @@ goto badparam
   goto L1
 
 :got_y
-  shift
   set y=1
   goto L1
 
 :got_pglibdir
-  shift
   set pglibdir=1
   goto L1
   
