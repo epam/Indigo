@@ -16,6 +16,14 @@ schema_name="bingo"
 libext=".so"
 y="0"
 pglibdir="0"
+
+bingo_pg_name="bingo_postgres"
+
+if [ -f "bin/bingo_postgres.dylib" ]; then
+  libext=".dylib"
+  bingo_pg_name="bingo_postgres.dylib"
+fi
+
 usage ()
 {
 echo 'Usage: bingo-pg-install.sh [parameters]'
@@ -34,9 +42,7 @@ echo '    Process default options (default "false")'
 }
 
 
-#if [ -f "../bin/libbingo.dylib" ]; then
-#  libext=".dylib"
-#fi
+
 
 while [ "$#" != 0 ]; do
   case "$1" in
@@ -86,17 +92,17 @@ fi
 
 # Generate install script
 sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo/bingo_schema.sql.in  >bingo_install.sql
-sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/bingo_internal.sql.in >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/bingo/bingo_internal.sql.in >>bingo_install.sql
 sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo/bingo_pg.sql.in  >>bingo_install.sql
 
-sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/mango_internal.sql.in >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/bingo/mango_internal.sql.in >>bingo_install.sql
 sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo/mango_pg.sql.in       >>bingo_install.sql
 
-sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/ringo_internal.sql.in >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/bingo/ringo_internal.sql.in >>bingo_install.sql
 sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo/ringo_pg.sql.in       >>bingo_install.sql
 
-sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/bingo_am.sql.in     >>bingo_install.sql
-sed 's,BINGO_PATHNAME,'$libdir'/bingo_postgres,g' <sql/bingo/bingo_config.sql.in >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/bingo/bingo_am.sql.in     >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/bingo/bingo_config.sql.in >>bingo_install.sql
 
 #Generate uninstall script
 sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo/bingo_uninstall.quick.sql.in >bingo_uninstall.sql
