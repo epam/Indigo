@@ -105,6 +105,7 @@ public:
 
    static void moveImplicitHydrogenToEnd (int pyramid[4]);
    static void moveMinimalToEnd (int pyramid[4]);
+   static void moveElementToEnd (int pyramid[4], int element);
 
    static bool isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *filter = NULL);
 

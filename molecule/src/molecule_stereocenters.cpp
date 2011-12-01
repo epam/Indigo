@@ -1413,16 +1413,14 @@ void MoleculeStereocenters::moveImplicitHydrogenToEnd (int pyramid[4])
       throw Error("moveImplicitHydrogenToEnd(): no implicit hydrogen");
 }
 
-void MoleculeStereocenters::moveMinimalToEnd (int pyramid[4])
+void MoleculeStereocenters::moveElementToEnd (int pyramid[4], int element)
 {
    int cnt = 0;
 
-   int min_element = __min(__min(pyramid[0], pyramid[1]), __min(pyramid[2], pyramid[3]));
-
-   while (pyramid[3] != min_element)
+   while (pyramid[3] != element)
    {
       if (cnt == 4)
-         throw Error("moveMinimalToEnd(): internal error");
+         throw Error("moveElementToEnd(): internal error");
 
       _rotatePyramid(pyramid);
       cnt++;
@@ -1430,6 +1428,12 @@ void MoleculeStereocenters::moveMinimalToEnd (int pyramid[4])
 
    if (cnt & 1)
       __swap(pyramid[0], pyramid[1], cnt);
+}
+
+void MoleculeStereocenters::moveMinimalToEnd (int pyramid[4])
+{
+   int min_element = __min(__min(pyramid[0], pyramid[1]), __min(pyramid[2], pyramid[3]));
+   moveElementToEnd(pyramid, min_element);
 }
 
 void MoleculeStereocenters::_convertAtomToImplicitHydrogen (int pyramid[4], int atom_to_remove)
