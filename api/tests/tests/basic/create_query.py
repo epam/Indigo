@@ -4,6 +4,13 @@ from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
+
+if not os.path.exists(joinPath("out")):
+    os.makedirs(joinPath("out"))
+    
+saver = indigo.createFileSaver(joinPath("out/create_query.sdf"), "sdf")
+saverRxn = indigo.createFileSaver(joinPath("out/create_query.rdf"), "rdf")
+
 def infrange(start):
    cur = start
    while True:
@@ -47,6 +54,7 @@ for i, m in mols:
    try:
       qm = makeQueryMol(m)
       print("%d: %s" % (i, qm.molfile()))
+      saver.append(qm)
    except IndigoException, e:
       print("%d: %s" % (i, getIndigoExceptionText(e)))
 print("*** Reaction smiles *** ")
@@ -63,6 +71,7 @@ for i, m in mols:
       qm = makeQueryMol(m)
       qr = makeQueryReaction(qm)
       print("%d: %s" % (i, qr.rxnfile()))
+      saverRxn.append(qr)
    except IndigoException, e:
       print("%d: %s" % (i, getIndigoExceptionText(e)))
       

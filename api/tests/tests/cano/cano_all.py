@@ -11,7 +11,10 @@ mol_db_names = [
    (joinPath("molecules/helma.smi"), indigo.iterateSmilesFile),
    (joinPath("molecules/cis_trans.smi"), indigo.iterateSmilesFile),
    (joinPath("molecules/stereo_cis_trans.sdf"), indigo.iterateSDFile),
-   (joinPath("molecules/set1.sdf"), indigo.iterateSDFile) ]
+   (joinPath("molecules/set1.sdf"), indigo.iterateSDFile),
+   (joinPath("molecules/cano_stereocenters.sdf"), indigo.iterateSDFile),
+   (joinPath("../../data/tetrahedral-all.cml"), indigo.iterateCMLFile),
+]
 for db_name, load_fund in mol_db_names:
    print("Database: %s" % relativePath(db_name))
    idx = 1

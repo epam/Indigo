@@ -2488,3 +2488,243 @@ disconnected-0056-00 (#16): element: bad valence on Po having 8 drawn bonds, cha
 disconnected-0135-00 (#17): element: bad valence on I having 2 drawn bonds, charge 0, and 0 radical electrons
 disconnected-0179-00 (#18): C1=CC=CC=CC2=CC=CC=CC=C1C#C2.C1=CC=CC#C1.c1ccccc1
 disconnected-0214-00 (#19): [CH2-][O+]=C.C[N+](C)=[N-].C[S+]1C=CC2C=CC=CC=2[C-]1C(=O)C1=CC=CC=C1.CN(C)[N].C[NH+](C)[N-]C.C[Se+]1[CH-]C(=O)C2=CC=CC=C2C1.CC1=C[N-]C=[N+]1C.CN(C)[N].C[N+](C)(C)NS([O-])(=O)=O.C[BH2-][NH2+][BH2-][NH2+]C.C/C=C\C(=C/C=C)\C1C(=O)N2C=C(C=[N+]2C=1[O-])C1=CC=CC=C1.CC#[N+][NH-].C[N+]1[N-]OC(=O)C=1C(O)=O.C[N+]1[N-]C2=CC=CC3C=CC=C(N=1)C2=3.C[N+]1=NOC([O-])=C1C(O)=O.[O-]S(=O)(=O)C1C=C2C=CC=C3C=CC=C(C=1)[C+]32.[O-]C(=O)C1C=[S+]C2C=CC=CC=2C=1.[O-]C1OC(=[O+]C=1C1=CC=CC=C1)C1=CC=CC=C1.[S-]C1=C[CH+]SS1.Cl[As-2]12(Cl)OC=C[N+]1=CC=[O+]2.C1C=CC2C=C3[N-]C4=CC=CC=C4C3=C[N+]=2C=1.C1=CC=CC(=C1)[B-]1(OC2C=CC=C[N+]=2O1)C1=CC=CC=C1 |^4:29,^3:57|
+Database: molecules/cano_stereocenters.sdf
+tetrahedral-0216-00 (#1): C[C@@](N)(O)F.C[C@](N)(O)F
+Database: ../../data/tetrahedral-all.cml
+tetrahedral-0001-00 (#1): C[C@H](F)I
+tetrahedral-0002-00 (#2): C[C@@H](F)I
+tetrahedral-0003-00 (#3): C[C@@H](F)I
+tetrahedral-0004-00 (#4): C[C@H](F)I
+stereocenters: one bond up, one bond down -- indefinite case (#5): stereocenters: one bond up, one bond down -- indefinite case
+stereocenters: directions of opposite stereo bonds do not match (#6): stereocenters: directions of opposite stereo bonds do not match
+tetrahedral-0007-00 (#7): C[C@H](F)I
+stereocenters: stereo types of the opposite bonds mismatch (#8): stereocenters: stereo types of the opposite bonds mismatch
+stereocenters: stereo types of the opposite bonds mismatch (#9): stereocenters: stereo types of the opposite bonds mismatch
+stereocenters: stereo types of the opposite bonds mismatch (#10): stereocenters: stereo types of the opposite bonds mismatch
+stereocenters: stereo types of the opposite bonds mismatch (#11): stereocenters: stereo types of the opposite bonds mismatch
+stereocenters: stereo types of the opposite bonds mismatch (#12): stereocenters: stereo types of the opposite bonds mismatch
+tetrahedral-0013-00 (#13): C[C@H](F)I
+stereocenters: one bond up, one bond down -- indefinite case (#14): stereocenters: one bond up, one bond down -- indefinite case
+tetrahedral-0015-00 (#15): C[C@H](F)I
+tetrahedral-0016-00 (#16): C[C@H](F)I
+tetrahedral-0017-00 (#17): C[C@H](F)I
+stereocenters: directions of neighbor stereo bonds match (#18): stereocenters: directions of neighbor stereo bonds match
+tetrahedral-0019-00 (#19): C[C@H](F)I
+tetrahedral-0020-00 (#20): C[C@H](F)I
+tetrahedral-0021-00 (#21): C[C@H](F)I
+tetrahedral-0022-00 (#22): C[C@H](F)I
+tetrahedral-0023-00 (#23): C[C@@H](F)I
+stereocenters: stereo types of the opposite bonds mismatch (#24): stereocenters: stereo types of the opposite bonds mismatch
+tetrahedral-0025-00 (#25): OC(=O)[C@H](O)[C@@H](O)C(O)=O
+tetrahedral-0026-00 (#26): OC(=O)[C@@H](O)[C@H](O)C(O)=O
+tetrahedral-0027-00 (#27): C[C@H](O)C(C)O
+tetrahedral-0032-00 (#28): C[C@]1(Cl)C[C@H](Br)CCO1
+tetrahedral-0033-00 (#29): C[C@]1(Cl)C[C@@H](Br)CCO1
+tetrahedral-0036-00 (#30): C[C@@H]1[C@@H](C)[C@H]1C
+tetrahedral-0037-00 (#31): C1C[C@@H]2CC[C@H]3CC[C@@H]4CC[C@@H]1[C@]234
+tetrahedral-0038-00 (#32): C[C@](F)(Cl)I
+tetrahedral-0039-00 (#33): C[C@](F)(Cl)I
+tetrahedral-0040-00 (#34): C[C@](F)(Cl)I
+tetrahedral-0041-00 (#35): C[C@](F)(Cl)I
+tetrahedral-0042-00 (#36): C[C@](F)(Cl)I
+tetrahedral-0043-00 (#37): C[C@](F)(Cl)I
+tetrahedral-0044-00 (#38): C[C@](F)(Cl)I
+tetrahedral-0045-00 (#39): C[C@](F)(Cl)I
+tetrahedral-0046-00 (#40): C[C@](F)(Cl)I
+tetrahedral-0047-00 (#41): FC(Cl)(Cl)I
+tetrahedral-0048-00 (#42): C[C@](F)(Cl)I
+tetrahedral-0061-00 (#43): [2H][C@@H]([3H])C(C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0062-00 (#44): [2H][C@H]([3H])C(C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0063-00 (#45): [2H][C@@H]([3H])C(C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0064-00 (#46): [2H][C@@H]([3H])[C@](C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0065-00 (#47): [2H][C@@H]([3H])C(C)(C)C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0066-00 (#48): [2H]OC(=N)C1=CC(=CC(=C1)/C(/C)=C(/C)\CC)C(C)(C)[12CH3]
+tetrahedral-0067-00 (#49): [2H]OC(=N)C1=CC(=CC(=C1)/C(/C)=C(\C)/CC)C(C)(C)[12CH3]
+tetrahedral-0068-00 (#50): [2H]OC1NN=CC=1/C=C/[C@](C)(C([2H])[3H])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0069-00 (#51): C[C@H](CC)[C@H](C)CC
+stereocenters: one bond up, one bond down -- indefinite case (#52): stereocenters: one bond up, one bond down -- indefinite case
+tetrahedral-0071-00 (#53): CC1=CC[C@H]2C[C@@H]1C2(C)C
+tetrahedral-0072-00 (#54): C[C@H]([NH3+])C([O-])=O
+tetrahedral-0073-00 (#55): [NH3+][C@@H](CC1C=CC=CC=1)C([O-])=O
+tetrahedral-0074-00 (#56): [NH3+][C@@H](CO)C([O-])=O
+tetrahedral-0075-00 (#57): CC(C)[C@H]([NH3+])C([O-])=O
+tetrahedral-0076-00 (#58): [NH3+][C@@H](CC(O)=O)C([O-])=O
+tetrahedral-0077-00 (#59): [NH3+][C@@H](CCC(O)=O)C([O-])=O
+tetrahedral-0078-00 (#60): [NH3+][C@H](C([O-])=O)C1=CNC=[NH+]1
+tetrahedral-0079-00 (#61): [NH3+][C@@H](CS)C([O-])=O
+tetrahedral-0080-00 (#62): [NH3+]CCCC[C@H]([NH3+])C([O-])=O
+tetrahedral-0081-00 (#63): [NH3+][C@@H](CC1C=CC(O)=CC=1)C([O-])=O
+tetrahedral-0082-00 (#64): NC(=[NH2+])NCCC[C@H]([NH3+])C([O-])=O
+tetrahedral-0083-00 (#65): CC(C)C[C@H]([NH3+])C([O-])=O
+tetrahedral-0084-00 (#66): CC(CC)[C@H]([NH3+])C([O-])=O
+tetrahedral-0085-00 (#67): [NH3+][C@H](C([O-])=O)C1=CNC2C=CC=CC=21
+tetrahedral-0086-00 (#68): [O-]C(=O)[C@@H]1CCC[NH2+]1
+tetrahedral-0087-00 (#69): CSCC[C@H]([NH3+])C([O-])=O
+tetrahedral-0088-00 (#70): CC(O)[C@H]([NH3+])C([O-])=O
+tetrahedral-0089-00 (#71): NC(=O)C[C@H]([NH3+])C([O-])=O
+tetrahedral-0090-00 (#72): NC(=O)CC[C@H]([NH3+])C([O-])=O
+tetrahedral-0091-00 (#73): C[C@@H]1[C@@H](C)C(=O)NC1=O
+tetrahedral-0092-00 (#74): F[C@H](Cl)[C@@H](F)Cl
+tetrahedral-0093-00 (#75): [2H][C@H]([3H])C
+tetrahedral-0094-00 (#76): CN1C[C@@]2(CN(C)CC2)CC1
+tetrahedral-0095-00 (#77): element: can not calculate valence on C, charge 0, connectivity 5
+tetrahedral-0096-00 (#78): element: can not calculate valence on C, charge 0, connectivity 5
+tetrahedral-0097-00 (#79): element: can not calculate valence on C, charge 0, connectivity 5
+tetrahedral-0098-00 (#80): element: can not calculate valence on C, charge 0, connectivity 5
+tetrahedral-0099-00 (#81): OC[C@@H](O)[C@@H](O)[C@H](O)[C@@H](O)C=O
+tetrahedral-0100-00 (#82): OC[C@@H](O)[C@@H](O)C=O
+tetrahedral-0101-00 (#83): C[C@@H](NC=[N+](C)C)/[NH+]=C\N(C)C
+tetrahedral-0104-00 (#84): CO[C@]1(C)C[C@H](O[C@@H]2[C@@H](C)C(=O)O[C@H](CC)[C@@](C)(O)[C@H](O)[C@@H](C)C(=O)[C@H](C)C[C@@](C)(O)[C@H](O[C@@H]3O[C@H](C)C[C@@H]([C@H]3O)N(C)C)[C@H]2C)O[C@@H](C)[C@@H]1O
+tetrahedral-0105-00 (#85): CCC(C)C
+tetrahedral-0106-00 (#86): [2H]NC(=O)/C=C(/[CH2+])\[C@@H](C)S
+tetrahedral-0107-00 (#87): CO[C@H]1[C@H](O)[C@@H](O)[C@H](OC)[C@@H]([O-])[C@H]1[O-]
+tetrahedral-0108-00 (#88): C[C@H](Cl)Br
+tetrahedral-0109-00 (#89): Cl[C@@H](Br)I
+stereocenters: one bond up, one bond down -- indefinite case (#90): stereocenters: one bond up, one bond down -- indefinite case
+tetrahedral-0111-00 (#91): [2H]NC(=O)/C=C(/[CH2-])\[C@@H](C)S
+tetrahedral-0112-00 (#92): [2H]NC(=O)/C(/[Co]/C(/C(=O)N[2H])=C(\[CH2-])/[C@@H](C)S)=C(/[CH2-])\[C@@H](C)S
+tetrahedral-0113-00 (#93): N[C@@H](CC(O)=O)C(O)=O
+tetrahedral-0114-00 (#94): CC(C)C1CC[C@@H](C)C[C@H]1O
+tetrahedral-0115-00 (#95): CC1C(CC)[N@@]1CCC
+tetrahedral-0116-00 (#96): CC[S@@](C)=O
+tetrahedral-0117-00 (#97): CC[S@@+](C)[O-]
+tetrahedral-0118-00 (#98): CCCC[N@+](C)([O-])CC
+tetrahedral-0119-00 (#99): CCCC[P@](C)(=O)CC
+tetrahedral-0120-00 (#100): CCCC[P@+](C)([O-])CC
+tetrahedral-0121-00 (#101): CC[S@@](C)=S
+tetrahedral-0122-00 (#102): CC[S@@+](C)[S-]
+tetrahedral-0123-00 (#103): CCCC[P@](C)(=S)CC
+tetrahedral-0124-00 (#104): CCCC[P@+](C)([S-])CC
+tetrahedral-0125-00 (#105): CCCC[P@](C)(=[Se])CC
+tetrahedral-0126-00 (#106): CCCC[P@+](C)([Se-])CC
+tetrahedral-0127-00 (#107): CCCC[N@+](C)([S-])CC
+tetrahedral-0128-00 (#108): CCCC[N@+](C)([Se-])CC
+tetrahedral-0129-00 (#109): CCC[N@@]1[C@H](C)[C@@H]1C
+tetrahedral-0130-00 (#110): CC[S@@]([O-])=O
+tetrahedral-0131-00 (#111): CC[S@](=O)[S-]
+tetrahedral-0132-00 (#112): CC[S@@]([NH3+])=O
+tetrahedral-0133-00 (#113): CC[S@](=O)[N-]C
+tetrahedral-0134-00 (#114): CC[S@+]([O-])[S-]
+tetrahedral-0135-00 (#115): CC[S+]([O-])[O-]
+tetrahedral-0136-00 (#116): C[C@H](N)C(O)=O
+tetrahedral-0137-00 (#117): CC[C@@H](C)[N+]([O-])=O
+tetrahedral-0138-00 (#118): C[N@@+]([O-])(S)[SeH]
+tetrahedral-0139-00 (#119): C[C@@H]1C[C@H](C)O1
+tetrahedral-0140-00 (#120): C[C@@H]1C[C@@H](C)O1
+tetrahedral-0141-00 (#121): C[C@H]1C[C@H](C)O1
+tetrahedral-0142-00 (#122): C[C@@H]1C[C@H](C)C1
+tetrahedral-0143-00 (#123): C[C@@H]1C[C@@H](C)C1
+tetrahedral-0144-00 (#124): COCO[C@H](/C=C/CO[Si](C)(C)C(C)(C)C)[Sn](CCCC)(CCCC)CCCC
+tetrahedral-0145-00 (#125): CC(CO)[C@H]1OCO[C@H]([C@H]1O)C(C)CO
+tetrahedral-0146-00 (#126): CC(CO)[C@H]1OCO[C@H]([C@H]1O)C(C)CO
+tetrahedral-0147-00 (#127): CC(CO)[C@H]1OCO[C@H]([C@H]1O)C(C)CO
+tetrahedral-0148-00 (#128): C[C@H](CO)[C@H]1OCO[C@H]([C@H]1O)[C@H](C)CO
+tetrahedral-0149-00 (#129): C[C@@H](CO)[C@@H]1OCO[C@@H]([C@@H]1O)[C@@H](C)CO
+tetrahedral-0150-00 (#130): C[C@@H](CO)[C@@H]1OCO[C@@H]([C@@H]1O)[C@@H](C)CO
+tetrahedral-0151-00 (#131): C1=CC=CC=C1N1N=C2N(C1N2C1C=CC=CC=1)C1C=CC=CC=1
+tetrahedral-0152-00 (#132): [2H]C1C=CC(=CC=1)N1[C@@H]2N(N=C1N2C1C=CC=CC=1[2H])C1C=CC=CC=1
+tetrahedral-0153-00 (#133): CC/C=C\N1CC1
+tetrahedral-0154-00 (#134): CC[C@@H](C)CCC
+stereocenters: one bond up, one bond down -- indefinite case (#135): stereocenters: one bond up, one bond down -- indefinite case
+tetrahedral-0156-00 (#136): C/C=C1/[S@@](=O)C[S@]/1=O
+tetrahedral-0157-00 (#137): C/C=C1/[S@](=O)C[S@@]/1=O
+tetrahedral-0158-00 (#138): CC=C1[S@@](=O)C[S@@]1=O
+tetrahedral-0159-00 (#139): CC=C1[S@](=O)C[S@]1=O
+tetrahedral-0160-00 (#140): C/C=C1/[S@](=O)C[S@@]/1=O
+tetrahedral-0161-00 (#141): C/C=C1/[S@@](=O)C[S@]/1=O
+tetrahedral-0162-00 (#142): CC=C1[S@@](=O)C[S@@]1=O
+tetrahedral-0163-00 (#143): CC=C1[S@](=O)C[S@]1=O
+tetrahedral-0164-00 (#144): [NH3+][C@@H](CCC(O)=O)C([O-])=O
+tetrahedral-0165-00 (#145): C[C@H](O)Cl
+tetrahedral-0166-00 (#146): O[C@@H](S)Cl
+tetrahedral-0167-00 (#147): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0168-00 (#148): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0169-00 (#149): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0170-00 (#150): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0171-00 (#151): COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+tetrahedral-0172-00 (#152): COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+tetrahedral-0173-00 (#153): COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+tetrahedral-0174-00 (#154): COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+tetrahedral-0175-00 (#155): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0176-00 (#156): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0177-00 (#157): C[C@@H]1[C@@H](C)C(=O)NC1=O
+tetrahedral-0178-00 (#158): C[C@@](N)(S)Cl
+tetrahedral-0179-00 (#159): C[C@]1(N)C[C@@]2(C1)C(C)(N)[C@]1(C[C@@](C)(N)C1)C2(C)N
+tetrahedral-0180-00 (#160): C[C@@H](Cl)Br
+stereocenters: one bond up, one bond down -- indefinite case (#161): stereocenters: one bond up, one bond down -- indefinite case
+tetrahedral-0182-00 (#162): CC(C(C)Cl)C(C)Cl
+stereocenters: one bond up, one bond down -- indefinite case (#163): stereocenters: one bond up, one bond down -- indefinite case
+tetrahedral-0184-00 (#164): CC(=C(C)N)[C@@](C)(Cl)Br
+tetrahedral-0185-00 (#165): [2H][C@H]([3H])C(=O)[C@@H]1[C@@H](/C/1=C\O)C(O)=O
+tetrahedral-0186-00 (#166): C1CN[C@@]21CCN2
+tetrahedral-0187-00 (#167): C1CN[C@]21CCN2
+tetrahedral-0188-00 (#168): C[C@@]12C[N@](C1)C2
+tetrahedral-0189-00 (#169): C1[C@@]23C[C@]1(C2)CCCC3
+tetrahedral-0190-00 (#170): C[C@@]12C[C@](C)(C1)C2
+tetrahedral-0191-00 (#171): C1CCC21CCN2
+tetrahedral-0192-00 (#172): C1CCC21CCC2
+tetrahedral-0193-00 (#173): CC1(N)CN(C1)N(N1CC(C)(N)C1)N1CC(C)(N)C1
+tetrahedral-0194-00 (#174): C[C@@]1(N)C[La]2(C1)[La]1(C[C@@](C)(N)C1)[La]12C[C@@](C)(N)C1
+tetrahedral-0195-00 (#175): C[C@@]1(N)CS23(C1)(C[C@@](C)(N)C2)C[C@@](C)(N)C3
+tetrahedral-0196-00 (#176): CC1(N)CN(C1)C(N1CC(C)(N)C1)N1CC(C)(N)C1
+tetrahedral-0197-00 (#177): CC1(N)CC(C1)C(C1CC(C)(N)C1)C1CC(C)(N)C1
+tetrahedral-0198-00 (#178): C[C@]1(N)C[C@]2(C[C@@](C)(N)C2)C1
+tetrahedral-0199-00 (#179): C[C@@]1(N)C[C@](C)(N)C1
+tetrahedral-0200-00 (#180): C[C@@]1(N)C[C@@](C)(N)C1
+tetrahedral-0201-00 (#181): C[C@@]1(N)C[C@@]2(C1)[C@]1(C[C@@](C)(N)C1)[C@]12C[C@@](C)(N)C1
+tetrahedral-0202-00 (#182): C[C@@]1(N)C[C@@]2(C1)[C@]1(C[C@](C)(N)C1)[C@]12C[C@@](C)(N)C1
+tetrahedral-0203-00 (#183): CCC1(C)CP2(C)(C)[Sn]34P(C)(C)(C1)P3(C)(C)CC=CCP24(C)C
+tetrahedral-0204-00 (#184): CC1(C)C2C(C)(C)C1C2(C)C
+tetrahedral-0205-00 (#185): CC(CC)([C@](C)(CCC)CC)[C@](C)(CCC)CC
+tetrahedral-0206-00 (#186): C[C@@](CC)([C@](C)(CCC)CC)[C@@](C)(CCC)CC
+tetrahedral-0207-00 (#187): CC(CC)([C@@](C)(CCC)CC)[C@@](C)(CCC)CC
+tetrahedral-0208-00 (#188): CC(CC)([C@@](C)(CCC)CC)[C@@](C)(CCC)CC
+tetrahedral-0209-00 (#189): C[C@]1(C[C@@](C)(C1)CC)CC
+tetrahedral-0210-00 (#190): C[C@]1(C[C@@](C)(C1)CC)CC
+tetrahedral-0211-00 (#191): C[C@]1(C[C@]2(C[C@](C)(C2)CC)C1)CC
+tetrahedral-0212-00 (#192): C[C@@]1(C[C@]2(C[C@](C)(C2)CC)C1)CC
+tetrahedral-0213-00 (#193): C[C@@]1(C[C@@]2(C1)C[C@@]1(C2)C[C@]2(C[C@](C)(C2)CC)C1)CC
+tetrahedral-0214-00 (#194): C[C@]1(C[C@@]2(C1)C[C@@]1(C2)C[C@]2(C[C@](C)(C2)CC)C1)CC
+tetrahedral-0215-00 (#195): C[C@@](F)(Cl)Br
+tetrahedral-0216-00 (#196): C[C@@]12[C@]3(C)[C@@]4(C)[C@]1(C)[C@]1(C)[C@]2(C)[C@]3(C)[C@]14C
+tetrahedral-0217-00 (#197): C[C@@]12[C@@]3(C)[C@@]4(C)[C@]1(C)[C@@]1(C)[C@]2(C)[C@]3(C)[C@]14C
+tetrahedral-0218-00 (#198): C[C@@]12[C@@]3(C)[C@@]4(C)[C@]1(C)[C@@]1(C)[C@]2(C)[C@]3(C)[C@]14C
+tetrahedral-0219-00 (#199): C[C@](F)(Cl)Br
+tetrahedral-0220-00 (#200): C[C@](F)(Cl)Br
+tetrahedral-0221-00 (#201): C[C@@](F)(Cl)Br
+tetrahedral-0222-00 (#202): C[C@](F)(Cl)Br
+tetrahedral-0223-00 (#203): CCC[C@@](C)(CC)/C=C(\C)/CC
+tetrahedral-0224-00 (#204): C[C@@H](Cl)C1C=C(NN=1)[C@H](C)Cl
+tetrahedral-0225-00 (#205): C[C@H](Cl)C1C=C(NN=1)[C@@H](C)Cl
+tetrahedral-0226-00 (#206): C[C@@H](Cl)C1C=C(NN=1)[C@@H](C)Cl
+tetrahedral-0227-00 (#207): C[C@H](Cl)C1C=C(NN=1)[C@H](C)Cl
+tetrahedral-0228-00 (#208): O/C=C1/[C@@H]([C@@H]/1C(O)=O)C(O)=O
+tetrahedral-0229-00 (#209): O/C=C1/[C@@H]([C@@H]/1C(O)=O)C(O)=O
+tetrahedral-0230-00 (#210): OC(=O)[C@H]1[C@H](/C/1=C/O)[12C](O)=O
+tetrahedral-0231-00 (#211): [2H]OC(=O)[C@H]1[C@H](/C/1=C/O)C(O)=O
+tetrahedral-0232-00 (#212): [2H]OC(=O)[C@@H]1[C@@H](/C/1=C\O)C(O)=O
+tetrahedral-0233-00 (#213): C[C@@H]1[C@H](C)/C/1=C1\[C@H](C)[C@@H]\1C
+tetrahedral-0234-00 (#214): C[C@@H](Cl)[C@@H](C)Cl
+tetrahedral-0235-00 (#215): C[C@H](Cl)[C@H](C)Cl
+tetrahedral-0237-00 (#216): CC12C3CCC4(C)C5C(CC4C3CC=C1C[C@@H](O)C[C@H]2O)O[C@]1(CC(C(Cl)Cl)C(C)CO1)C5C
+tetrahedral-0238-00 (#217): C/C=C\[C@@H](C)CC
+tetrahedral-0239-00 (#218): [2H]NC(=O)[C@@]1(C(C)/C=C\C)[C@@](C(C)/C=C\C)(C(N)=O)[C@]1(C(C)/C=C\C)C(N)=O
+tetrahedral-0240-00 (#219): CC1[C@H](C)[C@@H]1C
+tetrahedral-0241-00 (#220): CC1[C@H](C)[C@@H]1C
+tetrahedral-0242-00 (#221): CC1[C@H](C)[C@@H]1C
+tetrahedral-0243-00 (#222): CC1[C@H](C)[C@@H]1C
+tetrahedral-0244-00 (#223): [2H]NC(=O)[C@@H]1[C@@H](C1C(N)=O)C(N)=O
+tetrahedral-0245-00 (#224): [2H]NC(=O)[C@H]1C([C@H]1C(N)=O)C([NH-])=O
+tetrahedral-0246-00 (#225): C[C@@H]1[C@@H](C)[C@H]1C
+tetrahedral-0247-00 (#226): C[C@@H]1[C@H](C)[C@@H]1C
+tetrahedral-0248-00 (#227): C[C@@H]1[C@@H](C)[C@H]1C
+tetrahedral-0249-00 (#228): C[C@@H]1[C@H](C)[C@@H]1C
+tetrahedral-0250-00 (#229): [2H][C@@H]1O[C@H]1CCCC
+tetrahedral-0251-00 (#230): CC1(C)O[C@H]2O[C@H]([C@H]3COC(C)(C)O3)C(=O)[C@H]2O1
+tetrahedral-0252-00 (#231): COC1=CC=CC=C1[P@@](C1C=CC=CC=1)C(C)(C)C
+tetrahedral-0253-00 (#232): COC1=CC=CC=C1[P@](C1C=CC=CC=1)C(C)(C)C
+tetrahedral-0254-00 (#233): CC1(C)O[C@H]2O[C@H](C3COC(C)(C)O3)C(=O)[C@H]2O1
+tetrahedral-0255-00 (#234): C[C@@H](Cl)[C@H](Cl)CC
+tetrahedral-0256-00 (#235): CC(Cl)[C@H](Cl)CC
+tetrahedral-0257-00 (#236): C[C@H]1C/C(=C/C)/C(=O)O[C@@H]2CCN3CC=C(COC(=O)[C@@]1(O)CO)[C@@H]32
+tetrahedral-0258-00 (#237): CC[N@@+](C)([O-])S
