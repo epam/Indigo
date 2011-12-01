@@ -446,7 +446,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
-            <pElem>${BINGO_PG_DIR}</pElem>
+            <pElem>${BINGO_PG_DIR}/include/server</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
         </cTool>
@@ -458,7 +458,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
-            <pElem>${BINGO_PG_DIR}</pElem>
+            <pElem>${BINGO_PG_DIR}/include/server</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
         </ccTool>
@@ -548,7 +548,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
-            <pElem>${BINGO_PG_DIR}</pElem>
+            <pElem>${BINGO_PG_DIR}/include/server</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
         </cTool>
@@ -562,7 +562,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
-            <pElem>${BINGO_PG_DIR}</pElem>
+            <pElem>${BINGO_PG_DIR}/include/server</pElem>
           </incDir>
           <inheritIncValues>false</inheritIncValues>
           <commandLine>-fPIC</commandLine>
@@ -659,7 +659,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
-            <pElem>${BINGO_PG_DIR}</pElem>
+            <pElem>${BINGO_PG_DIR}/include/server</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
         </cTool>
@@ -673,7 +673,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
-            <pElem>${BINGO_PG_DIR}</pElem>
+            <pElem>${BINGO_PG_DIR}/include/server</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
         </ccTool>
