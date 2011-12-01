@@ -103,35 +103,35 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D6C63DA1430C2B000CAD932 /* molecule.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A7EDA4CE10624F33006CBFAF /* libmolecule.a */;
+			remoteGlobalIDString = A7EDA4CE10624F33006CBFAF;
 			remoteInfo = molecule;
 		};
 		4D80FDB214879D170063751E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D6C63E41430C2CD00CAD932 /* graph.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A7EDA3FC10624B53006CBFAF /* libgraph.a */;
+			remoteGlobalIDString = A7EDA3FC10624B53006CBFAF;
 			remoteInfo = graph;
 		};
 		4D80FDC614879D270063751E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D6C63EE1430C2E200CAD932 /* tinyxml.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772 /* libtinyxml.a */;
+			remoteGlobalIDString = 810BD6BD12F2D5FF004D1772;
 			remoteInfo = tinyxml;
 		};
 		4D80FDCE14879D2F0063751E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D6C63F81430C31500CAD932 /* layout.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A7EDA5CA106251C3006CBFAF /* liblayout.a */;
+			remoteGlobalIDString = A7EDA5CA106251C3006CBFAF;
 			remoteInfo = layout;
 		};
 		4D80FDD614879D390063751E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D6C64061430C37200CAD932 /* reaction.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A7EDA55610625076006CBFAF /* libreaction.a */;
+			remoteGlobalIDString = A7EDA55610625076006CBFAF;
 			remoteInfo = reaction;
 		};
 /* End PBXContainerItemProxy section */
@@ -677,6 +677,7 @@
 				EXECUTABLE_PREFIX = "";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -777,9 +778,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = NO;
+				EXECUTABLE_EXTENSION = so;
 				EXECUTABLE_PREFIX = "";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -823,6 +825,7 @@
 				EXECUTABLE_PREFIX = "";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
