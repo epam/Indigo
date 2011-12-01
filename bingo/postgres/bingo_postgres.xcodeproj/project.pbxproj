@@ -134,6 +134,41 @@
 			remoteGlobalIDString = A7EDA55610625076006CBFAF;
 			remoteInfo = reaction;
 		};
+		4D99BE7D1487C7BA000814F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D6C63E41430C2CD00CAD932 /* graph.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA3FB10624B53006CBFAF /* graph */;
+			remoteInfo = graph;
+		};
+		4D99BE7F1487C7BF000814F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D6C64061430C37200CAD932 /* reaction.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA55510625076006CBFAF /* reaction */;
+			remoteInfo = reaction;
+		};
+		4D99BE811487C7C4000814F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D6C63EE1430C2E200CAD932 /* tinyxml.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772 /* tinyxml */;
+			remoteInfo = tinyxml;
+		};
+		4D99BE831487C7C7000814F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D6C63F81430C31500CAD932 /* layout.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA5C9106251C3006CBFAF /* layout */;
+			remoteInfo = layout;
+		};
+		4D99BE851487C7CA000814F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D6C63DA1430C2B000CAD932 /* molecule.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EDA4CD10624F33006CBFAF /* molecule */;
+			remoteInfo = molecule;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -501,6 +536,11 @@
 			buildRules = (
 			);
 			dependencies = (
+				4D99BE7E1487C7BA000814F9 /* PBXTargetDependency */,
+				4D99BE801487C7BF000814F9 /* PBXTargetDependency */,
+				4D99BE821487C7C4000814F9 /* PBXTargetDependency */,
+				4D99BE841487C7C7000814F9 /* PBXTargetDependency */,
+				4D99BE861487C7CA000814F9 /* PBXTargetDependency */,
 			);
 			name = bingo_postgres;
 			productName = bingo;
@@ -654,6 +694,34 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		4D99BE7E1487C7BA000814F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = graph;
+			targetProxy = 4D99BE7D1487C7BA000814F9 /* PBXContainerItemProxy */;
+		};
+		4D99BE801487C7BF000814F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = reaction;
+			targetProxy = 4D99BE7F1487C7BF000814F9 /* PBXContainerItemProxy */;
+		};
+		4D99BE821487C7C4000814F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = tinyxml;
+			targetProxy = 4D99BE811487C7C4000814F9 /* PBXContainerItemProxy */;
+		};
+		4D99BE841487C7C7000814F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = layout;
+			targetProxy = 4D99BE831487C7C7000814F9 /* PBXContainerItemProxy */;
+		};
+		4D99BE861487C7CA000814F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = molecule;
+			targetProxy = 4D99BE851487C7CA000814F9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		814E9A9F1369A41800469875 /* Release10.6 */ = {
 			isa = XCBuildConfiguration;
@@ -677,7 +745,7 @@
 				EXECUTABLE_PREFIX = "";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -692,6 +760,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "-fPIC";
 				OTHER_LDFLAGS = (
 					"-undefined",
 					suppress,
@@ -825,7 +894,7 @@
 				EXECUTABLE_PREFIX = "";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -840,6 +909,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "-fPIC";
 				OTHER_LDFLAGS = (
 					"-undefined",
 					suppress,
