@@ -1,10 +1,3 @@
-#include "bingo_pg_cursor.h"
-#include "bingo_pg_common.h"
-#include "pg_bingo_context.h"
-#include "base_cpp/tlscont.h"
-#include "base_cpp/output.h"
-#include "bingo_pg_text.h"
-
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -12,6 +5,17 @@ extern "C" {
 #include "storage/itemptr.h"
 #include "executor/spi.h"
 }
+#ifdef qsort
+#undef qsort
+#endif
+
+#include "bingo_pg_cursor.h"
+#include "bingo_pg_common.h"
+#include "pg_bingo_context.h"
+#include "base_cpp/tlscont.h"
+#include "base_cpp/output.h"
+#include "bingo_pg_text.h"
+
 
 using namespace indigo;
 

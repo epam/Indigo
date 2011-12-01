@@ -1,14 +1,18 @@
+extern "C" {
+#include "postgres.h"
+#include "storage/itemptr.h"
+#include "storage/block.h"
+}
+#ifdef qsort
+#undef qsort
+#endif
+
 #include "bingo_pg_section.h"
 #include "bingo_pg_index.h"
 #include "bingo_pg_search_engine.h"
 #include "bingo_pg_common.h"
 #include "base_cpp/tlscont.h"
 
-extern "C" {
-#include "postgres.h"
-#include "storage/itemptr.h"
-#include "storage/block.h"
-}
 
 using namespace indigo;
 

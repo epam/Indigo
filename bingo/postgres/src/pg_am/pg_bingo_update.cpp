@@ -1,8 +1,3 @@
-#include "bingo_pg_build.h"
-#include "bingo_pg_common.h"
-#include "bingo_postgres.h"
-#include "bingo_pg_text.h"
-
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -11,6 +6,15 @@ extern "C" {
 #include "catalog/index.h"
 #include "storage/bufmgr.h"
 }
+
+#ifdef qsort
+#undef qsort
+#endif
+#include "bingo_pg_build.h"
+#include "bingo_pg_common.h"
+#include "bingo_postgres.h"
+#include "bingo_pg_text.h"
+
 
 extern "C" {
 PG_FUNCTION_INFO_V1(bingo_insert);

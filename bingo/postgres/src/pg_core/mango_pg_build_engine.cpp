@@ -1,3 +1,11 @@
+extern "C" {
+#include "postgres.h"
+#include "fmgr.h"
+}
+#ifdef qsort
+#undef qsort
+#endif
+
 #include "mango_pg_build_engine.h"
 
 #include "base_c/bitarray.h"
@@ -13,10 +21,6 @@
 #include "bingo_pg_index.h"
 #include <float.h>
 
-extern "C" {
-#include "postgres.h"
-#include "fmgr.h"
-}
 
 using namespace indigo;
 

@@ -1,16 +1,20 @@
 #ifndef _BINGO_PG_BUFFER_CASHE__
 #define	_BINGO_PG_BUFFER_CASHE__
 
-#include "bingo_pg_ext_bitset.h"
-#include "bingo_pg_buffer.h"
-#include "bingo_postgres.h"
-#include "base_cpp/exception.h"
 
 extern "C" {
    #include "c.h"
    #include "storage/itemptr.h"
 }
 
+#ifdef qsort
+#undef qsort
+#endif
+
+#include "bingo_pg_ext_bitset.h"
+#include "bingo_pg_buffer.h"
+#include "bingo_postgres.h"
+#include "base_cpp/exception.h"
 /*
  * Class for data buffers handling
  */

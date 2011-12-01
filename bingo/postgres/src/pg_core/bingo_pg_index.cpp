@@ -1,3 +1,12 @@
+extern "C" {
+#include "postgres.h"
+#include "fmgr.h"
+#include "storage/bufmgr.h"
+}
+#ifdef qsort
+#undef qsort
+#endif
+
 #include "bingo_pg_index.h"
 #include "pg_bingo_context.h"
 #include "bingo_pg_ext_bitset.h"
@@ -7,11 +16,6 @@
 #include "bingo_pg_config.h"
 #include "bingo_core_c.h"
 
-extern "C" {
-#include "postgres.h"
-#include "fmgr.h"
-#include "storage/bufmgr.h"
-}
 
 BingoPgIndex::BingoPgIndex(PG_OBJECT index) :
 _index(index),

@@ -1,9 +1,3 @@
-#include "bingo_pg_buffer.h"
-#include "base_cpp/array.h"
-#include "base_cpp/tlscont.h"
-#include "bingo_pg_common.h"
-#include "base_cpp/tlscont.h"
-
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -14,6 +8,17 @@ extern "C" {
 #include "utils/relcache.h"
 #include "storage/lock.h"
 }
+
+#ifdef qsort
+#undef qsort
+#endif
+
+#include "bingo_pg_buffer.h"
+#include "base_cpp/array.h"
+#include "base_cpp/tlscont.h"
+#include "bingo_pg_common.h"
+#include "base_cpp/tlscont.h"
+
 using namespace indigo;
 /*
  * Empty buffer constructor

@@ -1,12 +1,16 @@
-#include "bingo_pg_text.h"
-#include "bingo_pg_index.h"
-#include "bingo_pg_common.h"
-
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/builtins.h"
 }
+#ifdef qsort
+#undef qsort
+#endif
+
+#include "bingo_pg_text.h"
+#include "bingo_pg_index.h"
+#include "bingo_pg_common.h"
+
 using namespace indigo;
 BingoPgText::BingoPgText():_text(0){
 }

@@ -1,3 +1,22 @@
+extern "C" {
+#include "postgres.h"
+#include "fmgr.h"
+#include "storage/bufmgr.h"
+#include "access/itup.h"
+#include "utils/relcache.h"
+#include "storage/lock.h"
+#include "access/heapam.h"
+#include "storage/bufmgr.h"
+#include "catalog/pg_type.h"
+#include "executor/spi.h"
+#include "catalog/namespace.h"
+#include "utils/lsyscache.h"
+}
+
+#ifdef qsort
+#undef qsort
+#endif
+
 #include "bingo_pg_common.h"
 #include "base_cpp/scanner.h"
 #include "molecule/molecule.h"
@@ -13,20 +32,6 @@
 #include "bingo_pg_config.h"
 #include <math.h>
 
-extern "C" {
-#include "postgres.h"
-#include "fmgr.h"
-#include "storage/bufmgr.h"
-#include "access/itup.h"
-#include "utils/relcache.h"
-#include "storage/lock.h"
-#include "access/heapam.h"
-#include "storage/bufmgr.h"
-#include "catalog/pg_type.h"
-#include "executor/spi.h"
-#include "catalog/namespace.h"
-#include "utils/lsyscache.h"
-}
 
 extern "C" {
 PG_FUNCTION_INFO_V1(_internal_func_check);

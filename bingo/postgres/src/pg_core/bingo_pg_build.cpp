@@ -1,3 +1,14 @@
+extern "C" {
+#include "postgres.h"
+#include "fmgr.h"
+#include "utils/relcache.h"
+#include "utils/rel.h"
+#include "storage/bufmgr.h"
+}
+#ifdef qsort
+#undef qsort
+#endif
+
 #include "bingo_pg_build.h"
 
 #include "bingo_core_c.h"
@@ -12,13 +23,6 @@
 #include "mango_pg_build_engine.h"
 #include "ringo_pg_build_engine.h"
 
-extern "C" {
-#include "postgres.h"
-#include "fmgr.h"
-#include "utils/relcache.h"
-#include "utils/rel.h"
-#include "storage/bufmgr.h"
-}
 
 
 BingoPgBuild::BingoPgBuild(PG_OBJECT index_ptr, const char* schema_name, const char* index_schema, bool new_index):

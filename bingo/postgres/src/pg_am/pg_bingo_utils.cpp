@@ -1,3 +1,15 @@
+extern "C" {
+#include "postgres.h"
+#include "fmgr.h"
+#include "utils/relcache.h"
+#include "storage/lock.h"
+#include "access/heapam.h"
+#include "storage/bufmgr.h"
+}
+
+#ifdef qsort
+#undef qsort
+#endif
 
 #include "bingo_postgres.h"
 
@@ -13,14 +25,6 @@
 #include "bingo_pg_cursor.h"
 
 
-extern "C" {
-#include "postgres.h"
-#include "fmgr.h"
-#include "utils/relcache.h"
-#include "storage/lock.h"
-#include "access/heapam.h"
-#include "storage/bufmgr.h"
-}
 
 extern "C" {
 PG_FUNCTION_INFO_V1(bingo_test);

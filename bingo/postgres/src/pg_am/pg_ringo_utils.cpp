@@ -1,12 +1,16 @@
+extern "C" {
+#include "postgres.h"
+#include "fmgr.h"
+}
+
+#ifdef qsort
+#undef qsort
+#endif
 #include "bingo_postgres.h"
 #include "bingo_pg_text.h"
 #include "bingo_core_c.h"
 #include "bingo_pg_common.h"
 
-extern "C" {
-#include "postgres.h"
-#include "fmgr.h"
-}
 
 extern "C" {
 PG_FUNCTION_INFO_V1(aam);

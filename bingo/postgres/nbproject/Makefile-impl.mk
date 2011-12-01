@@ -31,7 +31,7 @@ DEFAULTCONF=Debug
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Debug Release32 Release64 MacRelease32 MacRelease64 
+ALLCONFS=Debug Release32 Release64 
 
 
 # build

@@ -1,3 +1,13 @@
+extern "C" {
+#include "postgres.h"
+#include "fmgr.h"
+#include "utils/relcache.h"
+#include "utils/rel.h"
+}
+#ifdef qsort
+#undef qsort
+#endif
+
 #include "bingo_pg_config.h"
 #include "bingo_pg_common.h"
 #include "base_cpp/tlscont.h"
@@ -8,12 +18,6 @@
 #include "bingo_pg_text.h"
 #include "bingo_pg_cursor.h"
 
-extern "C" {
-#include "postgres.h"
-#include "fmgr.h"
-#include "utils/relcache.h"
-#include "utils/rel.h"
-}
 
 using namespace indigo;
 

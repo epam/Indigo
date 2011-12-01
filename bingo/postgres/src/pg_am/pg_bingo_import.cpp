@@ -1,3 +1,12 @@
+extern "C" {
+#include "postgres.h"
+#include "fmgr.h"
+#include "executor/spi.h"
+#include "catalog/pg_type.h"
+}
+#ifdef qsort
+#undef qsort
+#endif
 #include "bingo_postgres.h"
 #include "bingo_pg_common.h"
 #include "base_cpp/scanner.h"
@@ -8,12 +17,6 @@
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
 
-extern "C" {
-#include "postgres.h"
-#include "fmgr.h"
-#include "executor/spi.h"
-#include "catalog/pg_type.h"
-}
 
 extern "C" {
 

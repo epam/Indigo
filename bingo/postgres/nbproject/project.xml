@@ -23,8 +23,6 @@
                 <confElem>Debug</confElem>
                 <confElem>Release32</confElem>
                 <confElem>Release64</confElem>
-                <confElem>MacRelease32</confElem>
-                <confElem>MacRelease64</confElem>
             </confList>
         </data>
     </configuration>
