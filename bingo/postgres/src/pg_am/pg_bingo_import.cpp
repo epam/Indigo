@@ -7,6 +7,9 @@ extern "C" {
 #ifdef qsort
 #undef qsort
 #endif
+#ifdef printf
+#undef printf
+#endif
 #include "bingo_postgres.h"
 #include "bingo_pg_common.h"
 #include "base_cpp/scanner.h"

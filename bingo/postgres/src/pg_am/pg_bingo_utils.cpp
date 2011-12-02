@@ -7,8 +7,12 @@ extern "C" {
 #include "storage/bufmgr.h"
 }
 
+
 #ifdef qsort
 #undef qsort
+#endif
+#ifdef printf
+#undef printf
 #endif
 
 #include "bingo_postgres.h"

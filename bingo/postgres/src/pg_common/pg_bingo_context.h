@@ -6,6 +6,13 @@ extern "C" {
 #include "c.h"
 }
 
+#ifdef qsort
+#undef qsort
+#endif
+#ifdef printf
+#undef printf
+#endif
+
 typedef struct BingoMetaPageData {
    int bingo_index_version;
    int n_molecules;

@@ -8,6 +8,10 @@ extern "C" {
 #undef qsort
 #endif
 
+#ifdef printf
+#undef printf
+#endif
+
 #include "bingo_pg_search_engine.h"
 
 #include "base_c/bitarray.h"

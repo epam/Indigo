@@ -8,6 +8,12 @@ extern "C" {
 #ifdef qsort
 #undef qsort
 #endif
+#ifdef printf
+#undef printf
+#endif
+#ifdef vprintf
+#undef vprintf
+#endif
 
 #include "bingo_pg_cursor.h"
 #include "bingo_pg_common.h"

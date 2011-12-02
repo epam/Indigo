@@ -1,5 +1,11 @@
 #ifndef _BINGO_PG_COMMON_H__
 #define	_BINGO_PG_COMMON_H__
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
 #include <math.h>
 #include "bingo_postgres.h"

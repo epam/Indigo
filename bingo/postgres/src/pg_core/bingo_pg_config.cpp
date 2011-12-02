@@ -8,6 +8,10 @@ extern "C" {
 #undef qsort
 #endif
 
+#ifdef printf
+#undef printf
+#endif
+
 #include "bingo_pg_config.h"
 #include "bingo_pg_common.h"
 #include "base_cpp/tlscont.h"

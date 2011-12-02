@@ -9,6 +9,9 @@ extern "C" {
 #ifdef qsort
 #undef qsort
 #endif
+#ifdef printf
+#undef printf
+#endif
 
 #include "ringo_pg_search_engine.h"
 

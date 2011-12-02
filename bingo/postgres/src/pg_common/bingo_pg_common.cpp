@@ -16,6 +16,12 @@ extern "C" {
 #ifdef qsort
 #undef qsort
 #endif
+#ifdef printf
+#undef printf
+#endif
+#ifdef vprintf
+#undef vprintf
+#endif
 
 #include "bingo_pg_common.h"
 #include "base_cpp/scanner.h"

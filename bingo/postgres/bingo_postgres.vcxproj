@@ -108,7 +108,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;include;../src/core-c;src/pg_am;src/pg_core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;../src/core-c;src/pg_am;src/pg_core;$(BINGO_PG_DIR)\include\server;$(BINGO_PG_DIR)\include;$(BINGO_PG_DIR)\include\server\port\win32;$(BINGO_PG_DIR)\include\server\port\win32_msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;BINGO_PG_WIN32;_SECURE_SCL=0;HAVE_INET_ATON;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -137,7 +137,7 @@
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>postgres32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>postgres.lib</AdditionalDependencies>
       <OutputFile>dist/x86/bingo_postgres.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -147,7 +147,7 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
-      <AdditionalLibraryDirectories>lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BINGO_PG_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -163,7 +163,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;include;../src/core-c;src/pg_am;src/pg_core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;../src/core-c;src/pg_am;src/pg_core;$(BINGO_PG_DIR)\include\server;$(BINGO_PG_DIR)\include;$(BINGO_PG_DIR)\include\server\port\win32;$(BINGO_PG_DIR)\include\server\port\win32_msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;BINGO_PG_WIN64;_SECURE_SCL=0;HAVE_INET_ATON;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -191,7 +191,7 @@
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>postgres64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>postgres.lib</AdditionalDependencies>
       <OutputFile>dist/x64/bingo_postgres.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -201,7 +201,7 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX64</TargetMachine>
       <Profile>true</Profile>
-      <AdditionalLibraryDirectories>lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BINGO_PG_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -217,7 +217,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;include;../src/core-c;src/pg_am;src/pg_core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;../src/core-c;src/pg_am;src/pg_core;$(BINGO_PG_DIR)\include\server;$(BINGO_PG_DIR)\include;$(BINGO_PG_DIR)\include\server\port\win32;$(BINGO_PG_DIR)\include\server\port\win32_msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -243,7 +243,7 @@
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>lib/libecpg.lib;lib/libpgport.lib;lib/libpq.lib;lib/postgres.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>postgres.lib</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -270,7 +270,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;include;../src/core-c;src/pg_am;src/pg_core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;../src/core-c;src/pg_am;src/pg_core;$(BINGO_PG_DIR)\include\server;$(BINGO_PG_DIR)\include;$(BINGO_PG_DIR)\include\server\port\win32;$(BINGO_PG_DIR)\include\server\port\win32_msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;BINGO_PG_WIN64;_SECURE_SCL=0;HAVE_INET_ATON;WIN32;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -296,7 +296,7 @@
       <Culture>0x0419</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>lib/libecpg.lib;lib/libpgport.lib;lib/libpq.lib;lib/postgres.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>postgres.lib</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
