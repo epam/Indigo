@@ -108,8 +108,8 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;../src/core-c;src/pg_am;src/pg_core;$(BINGO_PG_DIR)\include\server;$(BINGO_PG_DIR)\include;$(BINGO_PG_DIR)\include\server\port\win32;$(BINGO_PG_DIR)\include\server\port\win32_msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;BINGO_PG_WIN32;_SECURE_SCL=0;HAVE_INET_ATON;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;../src/core-c;src/pg_am;src/pg_core;$(BINGO_PG_DIR32)\include\server;$(BINGO_PG_DIR32)\include;$(BINGO_PG_DIR32)\include\server\port\win32;$(BINGO_PG_DIR32)\include\server\port\win32_msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -147,7 +147,7 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
-      <AdditionalLibraryDirectories>$(BINGO_PG_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BINGO_PG_DIR32)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -163,8 +163,8 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;../src/core-c;src/pg_am;src/pg_core;$(BINGO_PG_DIR)\include\server;$(BINGO_PG_DIR)\include;$(BINGO_PG_DIR)\include\server\port\win32;$(BINGO_PG_DIR)\include\server\port\win32_msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;BINGO_PG_WIN64;_SECURE_SCL=0;HAVE_INET_ATON;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../src;../../common;../..;../../zlib-src/include;src/pg_common;../src/core-c;src/pg_am;src/pg_core;$(BINGO_PG_DIR64)\include\server;$(BINGO_PG_DIR64)\include;$(BINGO_PG_DIR64)\include\server\port\win32;$(BINGO_PG_DIR64)\include\server\port\win32_msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -201,7 +201,7 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX64</TargetMachine>
       <Profile>true</Profile>
-      <AdditionalLibraryDirectories>$(BINGO_PG_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BINGO_PG_DIR64)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
