@@ -23,3 +23,8 @@ renderer.renderToFile(mol, joinPath("out/rsite_highlighted.svg"))
 print('\nout/rsite_highlighted.svg:\n')
 with open(joinPath('out/rsite_highlighted.svg')) as f:
     print(f.read())
+    
+indigo.setOption("render-output-format", "png")
+indigo.setOption("ignore-stereochemistry-errors", "true")
+mol = indigo.loadQueryMoleculeFromFile(joinPath("molecules/bonds.mol"))
+renderer.renderToFile(mol, joinPath("out/bonds.png"))
