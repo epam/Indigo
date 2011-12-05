@@ -624,14 +624,7 @@ void SmilesLoader::_parseMolecule ()
                added_bond = true;
 
                if (_qmol != 0)
-               {
-                  if (smarts_mode)
-                     bond->index = _qmol->addBond(bond->beg, bond->end, QueryMolecule::Bond::oder(
-                          new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-                          new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-                  else
-                     bond->index = _qmol->addBond(bond->beg, bond->end, new QueryMolecule::Bond());
-               }
+                  bond->index = _qmol->addBond(bond->beg, bond->end, new QueryMolecule::Bond());
 
                _atoms[bond->beg].neighbors.add(bond->end);
                _atoms[bond->end].closure(number, bond->beg);
@@ -980,14 +973,25 @@ void SmilesLoader::_parseMolecule ()
 
          // A missing bond symbol is interpreted as "single or aromatic".
          // (http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html)
+         // But if an atom cannot be aromatic, then bond can be as single
          const Edge &edge = _qmol->getEdge(index);
          QueryMolecule::Atom &q_beg = _qmol->getAtom(edge.beg);
          QueryMolecule::Atom &q_end = _qmol->getAtom(edge.end);
 
          AutoPtr<QueryMolecule::Bond> new_qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
 
-         if (q_beg.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC) &&
-             q_end.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
+         bool beg_can_be_aromatic = q_beg.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC);
+         bool end_can_be_aromatic = q_end.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC);
+
+         int beg_label = _qmol->getAtomNumber(edge.beg);
+         if (beg_label != -1)
+            beg_can_be_aromatic &= Element::canBeAromatic(beg_label);
+
+         int end_label = _qmol->getAtomNumber(edge.end);
+         if (end_label != -1)
+            end_can_be_aromatic &= Element::canBeAromatic(end_label);
+
+         if (beg_can_be_aromatic && end_can_be_aromatic)
          {
             new_qbond.reset(
                QueryMolecule::Bond::oder(
