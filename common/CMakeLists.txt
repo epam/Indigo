@@ -1,8 +1,14 @@
-project(Common)
-
-# Collect file list for Base
+cmake_minimum_required(VERSION 2.6)
+project(Common C CXX)
+# Collect file list for BaseC
 file (GLOB BaseC_src base_c/*.c*)
 file (GLOB BaseC_src_excl base_c/*_posix.c*)
+if(NOT MSVC)
+    set(BaseC_src_excl ${CMAKE_CURRENT_SOURCE_DIR}/base_c/nano_win.c 
+                       ${CMAKE_CURRENT_SOURCE_DIR}/base_c/os_sync_win32.c
+                       ${CMAKE_CURRENT_SOURCE_DIR}/base_c/os_dir_win32.c
+                       ${CMAKE_CURRENT_SOURCE_DIR}/base_c/os_thread_win32.c)    
+endif()
 list (REMOVE_ITEM BaseC_src ${BaseC_src_excl})
 file (GLOB BaseC_headers base_c/*.h*)
 

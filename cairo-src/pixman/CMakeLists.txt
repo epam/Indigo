@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 2.6)
+project(Pixman C)
+
+set(Pixman_headers_dir ${CMAKE_CURRENT_SOURCE_DIR}/pixman)
+include_directories(${Pixman_headers_dir})
+
+
+add_definitions(-DPACKAGE -DHAVE_PTHREAD_SETSPECIFIC)
+file (GLOB Pixman_src "pixman/*.c")
+file (GLOB Pixman_headers "pixman/*.h")
+list(REMOVE_ITEM Pixman_src ${CMAKE_CURRENT_SOURCE_DIR}/pixman/pixman-vmx.c)
+list(REMOVE_ITEM Pixman_src ${CMAKE_CURRENT_SOURCE_DIR}/pixman/pixman-mmx.c)
+list(REMOVE_ITEM Pixman_src ${CMAKE_CURRENT_SOURCE_DIR}/pixman/pixman-sse2.c)
+list(REMOVE_ITEM Pixman_src ${CMAKE_CURRENT_SOURCE_DIR}/pixman/pixman-region.c)
+find_package(PNG)
+if (NOT PNG_FOUND)
+    include_directories(${PNG_SOURCE_DIR}/include)
+endif()
+add_library(pixman STATIC ${Pixman_src} ${Pixman_headers})
+if (NOT PNG_FOUND)
+    target_link_library(pixman png)
+endif()
