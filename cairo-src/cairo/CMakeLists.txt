@@ -6,7 +6,10 @@ set(Cairo_headers_dir ${CMAKE_CURRENT_SOURCE_DIR}/src/)
 
 include_directories(${Cairo_headers_dir} ${Pixman_headers_dir})
 
-add_definitions(-DHAVE_STDINT_H -DHAVE_PTHREAD_H -DCAIRO_HAS_DIRECTFB_SURFACE)
+if(UNIX)
+    add_definitions(-DHAVE_STDINT_H -DHAVE_PTHREAD_H -DCAIRO_HAS_DIRECTFB_SURFACE)
+endif()
+
 
 file (GLOB CAIRO_SOURCES src/*.c)
 file (GLOB CAIRO_HEADERS src/*.h)
@@ -31,7 +34,6 @@ if (NOT APPLE)
     list(REMOVE_ITEM CAIRO_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-quartz-font.c)
     list(REMOVE_ITEM CAIRO_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-quartz-surface.c)
 endif(NOT APPLE)
-
 if(UNIX)
     find_package(Freetype REQUIRED)
     if(NOT FREETYPE_FOUND)
@@ -39,16 +41,25 @@ if(UNIX)
     endif()
     add_definitions(-DCAIRO_HAS_FT_FONT)
     include_directories(${FREETYPE_INCLUDE_DIRS})
+else()
+    list(REMOVE_ITEM CAIRO_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-ft-font.c)   	
 endif(UNIX)
+
 find_package(PNG)
 if (NOT PNG_FOUND)
     include_directories(${PNG_SOURCE_DIR}/include)
 endif()
-
+find_package(ZLIB)
+if(NOT ZLIB_FOUND)
+    include_directories(${ZLib_SOURCE_DIR}/include)
+endif()
 
 add_library(cairo STATIC ${CAIRO_SOURCES})
     target_link_libraries(cairo pixman)
 if (NOT PNG_FOUND)
-    target_link_library(cairo png)
+    target_link_libraries(cairo png)
+endif()
+if(MSVC)
+    target_link_libraries(cairo msimg32)	
 endif()
 
