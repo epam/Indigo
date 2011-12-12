@@ -1,22 +1,29 @@
 Build:
-
-  Note: you should have the "zip" command-line utility installed on your system.
+  You can compile cartridge from the source. You should specify the PostgreSQL directory by setting the special environment variables: BINGO_PG_DIR, BINGO_PG_DIR32 and BINGO_PG_DIR64 variables are used while building. On Linux and Windows if bit-dependent (BINGO_PG_DIR32 or BINGO_PG_DIR64) variables are not specified, then it will be created from the BINGO_PG_DIR value. On MacOS the BINGO_PG_DIR variable is used 
 
   On Linux, run
 
     ./all-release-linux.sh $version
+    
+    BINGO_PG_DIR32 and BINGO_PG_DIR64 variables should be specified
 
   On Windows, run
 
     all-release-windows.bat $version
 
+    BINGO_PG_DIR32 and BINGO_PG_DIR64 variables should be specified
+
   On Mac OS X, run
 
-    not supported yet
+    ./all-release-osx.sh
+
+    BINGO_PG_DIR variable should be specified
 
   On Solaris, run:
 
     not supported yet
+
+  Note: you should have the "zip" command-line utility installed on your system.
 
   You will get a number of .zip archives for your selected platform,
   both 32-bit and 64-bit versions.
