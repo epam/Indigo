@@ -109,8 +109,7 @@ void BingoPgIndex::readMetaInfo() {
     */
    if (_sectionOffsetBuffers.size() == 0) {
       for (int block_idx = 0; block_idx < BINGO_SECTION_OFFSET_BLOCKS_NUM; ++block_idx) {
-         BingoPgBuffer& buffer = _sectionOffsetBuffers.push();
-         buffer.readBuffer(_index, block_idx + BINGO_METABLOCKS_NUM, BINGO_PG_NOLOCK);
+         _sectionOffsetBuffers.add(0);
       }
    }
 
@@ -163,7 +162,7 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config) {
     * Fulfil by max size
     */
    for (int block_idx = 0; block_idx < BINGO_SECTION_OFFSET_BLOCKS_NUM; ++block_idx) {
-      BingoPgBuffer& buffer = _sectionOffsetBuffers.push();
+      BingoPgBuffer buffer;
       buffer.writeNewBuffer(_index, _metaInfo.n_pages);
       buffer.formEmptyIndexTuple(BINGO_SECTION_OFFSET_PER_BLOCK * sizeof(int));
       buffer.changeAccess(BINGO_PG_NOLOCK);
@@ -246,21 +245,34 @@ void BingoPgIndex::_initializeNewSection() {
 }
 
 void BingoPgIndex::_setSectionOffset(int section_idx, int section_offset) {
+   int data_len;
+   int section_off_idx = section_idx % BINGO_SECTION_OFFSET_PER_BLOCK;
+   BingoPgBuffer& off_buffer = _getOffsetBuffer(section_idx);
+   /*
+    * Update section offset mapping buffer
+    */
+   off_buffer.changeAccess(BINGO_PG_WRITE);
+   int* section_offsets = (int*)off_buffer.getIndexData(data_len);
+   section_offsets[section_off_idx] = section_offset;
+   off_buffer.changeAccess(BINGO_PG_NOLOCK);
+}
+
+BingoPgBuffer& BingoPgIndex::_getOffsetBuffer(int section_idx) {
    int section_buf_idx = section_idx / BINGO_SECTION_OFFSET_PER_BLOCK;
    /*
     * There is the maximum limit of sections
     */
    if(section_buf_idx >= BINGO_SECTION_OFFSET_BLOCKS_NUM)
       throw Error("internal error: can not add new section, max limit reached: %d", section_idx* BINGO_MOLS_PER_SECTION);
-   int data_len;
-   BingoPgBuffer& off_buffer = _sectionOffsetBuffers[section_buf_idx];
-   /*
-    * Update section offset mapping buffer
-    */
-   off_buffer.changeAccess(BINGO_PG_WRITE);
-   int* section_offsets = (int*)off_buffer.getIndexData(data_len);
-   section_offsets[section_idx] = section_offset;
-   off_buffer.changeAccess(BINGO_PG_NOLOCK);
+   BingoPgBuffer* buffer = 0;
+   if(_sectionOffsetBuffers.at(section_buf_idx) == 0) {
+      _sectionOffsetBuffers.set(section_buf_idx, new BingoPgBuffer());
+      buffer = _sectionOffsetBuffers.at(section_buf_idx);
+      buffer->readBuffer(_index, section_buf_idx + BINGO_METABLOCKS_NUM, BINGO_PG_NOLOCK);
+   }
+   buffer = _sectionOffsetBuffers.at(section_buf_idx);
+   
+   return *buffer;
 }
 
 BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx) {
@@ -297,16 +309,16 @@ int BingoPgIndex::_getSectionOffset(int section_idx) {
    /*
     * Prepare section offset mapping 
     */
-   int section_buf_idx = section_idx / BINGO_SECTION_OFFSET_PER_BLOCK;
+   int section_off_idx = section_idx % BINGO_SECTION_OFFSET_PER_BLOCK;
    int data_len;
    int result;
-   BingoPgBuffer& off_buffer = _sectionOffsetBuffers[section_buf_idx];
+   BingoPgBuffer& off_buffer = _getOffsetBuffer(section_idx);
    /*
     * Read mapping
     */
    off_buffer.changeAccess(BINGO_PG_READ);
    int* section_offsets = (int*)off_buffer.getIndexData(data_len);
-   result = section_offsets[section_idx] ;
+   result = section_offsets[section_off_idx] ;
    off_buffer.changeAccess(BINGO_PG_NOLOCK);
    return result;
 }

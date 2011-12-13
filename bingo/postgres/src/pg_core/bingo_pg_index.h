@@ -104,6 +104,7 @@ private:
    void _initializeMetaPages(BingoPgConfig&);
    void _initializeNewSection();
    void _setSectionOffset(int section_idx, int section_offset);
+   BingoPgBuffer& _getOffsetBuffer(int section_idx);
 
    BingoPgSection& _jumpToSection(int section_idx);
    int _getSectionOffset(int section_idx);
@@ -115,7 +116,7 @@ private:
    BingoMetaPageData _metaInfo;
    BingoPgBuffer _metaBuffer;
    BingoPgBuffer _configBuffer;
-   indigo::ObjArray<BingoPgBuffer> _sectionOffsetBuffers;
+   indigo::PtrArray<BingoPgBuffer> _sectionOffsetBuffers;
    indigo::AutoPtr<BingoPgSection> _currentSection;
    int _currentSectionIdx;
 
