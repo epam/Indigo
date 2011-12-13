@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 
 project(IndigoRenderer CXX)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
+
 file (GLOB IndigoRenderer_src src/*.c*)
 file (GLOB IndigoRenderer_headers *.h src/*.h*)
 
@@ -13,5 +15,5 @@ endif()
 add_library(indigo_renderer STATIC ${IndigoRenderer_src} ${IndigoRenderer_headers})
 add_library(indigo_renderer_shared SHARED ${IndigoRenderer_src} ${IndigoRenderer_headers})
 
-target_link_libraries(indigo_renderer indigo cairo render2d)
-target_link_libraries(indigo_renderer_shared indigo cairo render2d)
+target_link_libraries(indigo_renderer indigo_shared cairo render2d)
+target_link_libraries(indigo_renderer_shared indigo_renderer)

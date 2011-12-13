@@ -8,8 +8,8 @@ file (GLOB Render2D_headers *.h *.hpp src/*.h src/*.hpp src/*.inc)
 #file (GLOB GZip_headers ${Common_SOURCE_DIR}/gzip/*.h*)
 #source_group("GZip" FILES ${GZip_src} ${GZip_headers})
 
-include_directories(. src ${Cairo_headers_dir} ${Common_SOURCE_DIR} ${Molecule_SOURCE_DIR}/..)# ${ZLib_HEADERS_DIR} ${TinyXML_HEADERS_DIR})
+include_directories(. src ${Cairo_headers_dir} ${Common_SOURCE_DIR} ${Molecule_SOURCE_DIR}/..)
 
 add_library(render2d ${Render2D_src} ${Render2D_headers}) #${GZip_src} ${GZip_headers})
 
-target_link_libraries(render2d)
+target_link_libraries(render2d cairo)

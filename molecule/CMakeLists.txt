@@ -12,4 +12,4 @@ include_directories(${Common_SOURCE_DIR} ${Molecule_SOURCE_DIR}/.. ${ZLib_HEADER
 
 add_library(molecule ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZip_headers})
 
-target_link_libraries(molecule graph zlib tinyxml)
+target_link_libraries(molecule graph z tinyxml)
