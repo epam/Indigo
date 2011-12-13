@@ -105,13 +105,9 @@ void BingoPgIndex::readMetaInfo() {
    _metaBuffer.changeAccess(BINGO_PG_NOLOCK);
 
    /*
-    * Read section buffers
+    * Prepare section buffers
     */
-   if (_sectionOffsetBuffers.size() == 0) {
-      for (int block_idx = 0; block_idx < BINGO_SECTION_OFFSET_BLOCKS_NUM; ++block_idx) {
-         _sectionOffsetBuffers.add(0);
-      }
-   }
+   _sectionOffsetBuffers.expand(BINGO_SECTION_OFFSET_BLOCKS_NUM);
 
 }
 
@@ -168,6 +164,7 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config) {
       buffer.changeAccess(BINGO_PG_NOLOCK);
       ++_metaInfo.n_pages;
    }
+   _sectionOffsetBuffers.expand(BINGO_SECTION_OFFSET_BLOCKS_NUM);
 
    /*
     * Write dictionary buffers
