@@ -87,6 +87,7 @@ public:
    //Performs a logical AND of two argument BitSets. result saves to this Bitset
    void bsAndBs(const BingoPgExternalBitset& set1,const BingoPgExternalBitset& set2);
    int bitsNumber() const;
+   bool hasBits() const;
 
    qword shiftOne(int shiftNumber);
 

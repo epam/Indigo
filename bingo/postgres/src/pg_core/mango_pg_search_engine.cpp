@@ -603,7 +603,7 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
       /*
        * If bitset is not null then matches are found
        */
-      if (_sectionBitset.bitsNumber() > 0) {
+      if (_sectionBitset.hasBits()) {
          /*
           * Set first match as an answer
           */

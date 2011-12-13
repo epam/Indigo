@@ -1,5 +1,6 @@
 
 #include "bingo_pg_ext_bitset.h"
+#include "base_c/bitarray.h"
 
 BingoPgExternalBitset::BingoPgExternalBitset() {
    _initWords(BITS_PER_WORD);
@@ -380,9 +381,25 @@ void BingoPgExternalBitset::bsAndBs(const BingoPgExternalBitset& set1, const Bin
 
 int BingoPgExternalBitset::bitsNumber() const {
    int bits_num = 0;
-   for (int i = 0; i < (*_lastWordPtr); ++i)
-      bits_num += _bitCount(_words[i]);
+//   for (int i = 0; i < (*_lastWordPtr); ++i)
+//      bits_num += _bitCount(_words[i]);
+   int b_count = 0;
+   byte q_size = sizeof(qword), byte_idx;
+   byte* cur_word;
+   for (int w_idx = 0; w_idx < (*_lastWordPtr); ++w_idx) {
+      cur_word = (byte*)(_words + w_idx);
+      b_count = 0;
+      for (byte_idx = 0; byte_idx < q_size; ++byte_idx) {
+         b_count += bitGetOnesCountByte(cur_word[byte_idx]);
+      }
+
+      bits_num += b_count;
+   }
    return bits_num;
+}
+
+bool BingoPgExternalBitset::hasBits() const {
+   return (*_lastWordPtr) != 0;
 }
 
 // some 64-bit compilators can not correctly work with big values shift. So it must be processed manually

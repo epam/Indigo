@@ -157,7 +157,7 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr) {
          /*
           * Iterate through the query bits
           */
-         for (int fp_idx = query_data.bitBegin(); fp_idx != query_data.bitEnd() && _sectionBitset.bitsNumber() > 0; fp_idx = query_data.bitNext(fp_idx)) {
+         for (int fp_idx = query_data.bitBegin(); fp_idx != query_data.bitEnd() && _sectionBitset.hasBits(); fp_idx = query_data.bitNext(fp_idx)) {
             int fp_block = query_data.getBit(fp_idx);
             /*
              * Get fingerprint buffer in the current section
@@ -168,7 +168,7 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr) {
       /*
        * If bitset is not null then matches are found
        */
-      if (_sectionBitset.bitsNumber() > 0) {
+      if (_sectionBitset.hasBits()) {
          /*
           * Set first match as an answer
           */
