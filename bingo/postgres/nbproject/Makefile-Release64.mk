@@ -48,8 +48,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/1019403175/mango_context.o \
 	${OBJECTDIR}/_ext/1149244103/chunk_storage.o \
 	${OBJECTDIR}/_ext/393906193/ringo_core_c_parallel.o \
-	${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o \
 	${OBJECTDIR}/src/pg_am/pg_mango_match.o \
+	${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o \
 	${OBJECTDIR}/src/pg_common/bingo_pg_text.o \
 	${OBJECTDIR}/_ext/393906193/ringo_core_c.o \
 	${OBJECTDIR}/src/pg_am/pg_ringo_match.o \
@@ -193,15 +193,15 @@ ${OBJECTDIR}/_ext/393906193/ringo_core_c_parallel.o: ../src/core-c/ringo_core_c_
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR64}/include/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/ringo_core_c_parallel.o ../src/core-c/ringo_core_c_parallel.cpp
 
-${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o: src/pg_common/bingo_pg_cursor.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/pg_common
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR64}/include/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o src/pg_common/bingo_pg_cursor.cpp
-
 ${OBJECTDIR}/src/pg_am/pg_mango_match.o: src/pg_am/pg_mango_match.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR64}/include/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_mango_match.o src/pg_am/pg_mango_match.cpp
+
+${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o: src/pg_common/bingo_pg_cursor.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/pg_common
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR64}/include/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o src/pg_common/bingo_pg_cursor.cpp
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_text.o: src/pg_common/bingo_pg_text.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common

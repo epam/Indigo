@@ -16,9 +16,7 @@
                 <make-dep-project>../../tinyxml</make-dep-project>
                 <make-dep-project>../../molecule</make-dep-project>
             </make-dep-projects>
-            <sourceRootList>
-                <sourceRootElem>include</sourceRootElem>
-            </sourceRootList>
+            <sourceRootList/>
             <confList>
                 <confElem>Debug</confElem>
                 <confElem>Release32</confElem>
