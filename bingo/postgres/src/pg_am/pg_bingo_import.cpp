@@ -19,6 +19,7 @@ extern "C" {
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
+#include "bingo_pg_cursor.h"
 
 
 extern "C" {
@@ -119,15 +120,81 @@ class BingoImportHandler : public BingoPgCommon::BingoSessionHandler {
 public:
    class ImportColumn {
    public:
-      ImportColumn(): isText(true) {}
+      ImportColumn() {}
       ~ImportColumn() {}
 
       Array<char> columnName;
-      Array<char> type;
-      bool isText;
+      Oid type;
    private:
       ImportColumn(const ImportColumn&); //no implicit copy
    };
+   
+   class ImportData {
+   public:
+      ImportData() {}
+      virtual ~ImportData() {}
+
+      virtual uintptr_t getDatum() = 0;
+      virtual void convert(const char* str) = 0;
+   private:
+      ImportData(const ImportData&); //no implicit copy
+   };
+   class ImportTextData : public ImportData {
+   public:
+      ImportTextData() {}
+      virtual ~ImportTextData() {}
+
+      BingoPgText data;
+
+      virtual uintptr_t getDatum() {
+         return data.getDatum();
+      }
+      virtual void convert(const char* str) {
+         data.initFromString(str);
+      }
+   private:
+      ImportTextData(const ImportTextData&); //no implicit copy
+   };
+   
+   class ImportInt8Data : public ImportData{
+   public:
+      ImportInt8Data():data(0) {}
+      virtual ~ImportInt8Data() {}
+      AutoPtr<int64> data;
+
+      virtual void convert(const char* str) {
+
+      }
+
+      virtual uintptr_t getDatum() {
+         if(data.get() == 0)
+            return 0;
+         else
+            return Int64GetDatum(data.ref());
+      }
+   private:
+      ImportInt8Data(const ImportInt8Data&); //no implicit copy
+   };
+   class ImportInt4Data : public ImportData{
+   public:
+      ImportInt4Data():data(0) {}
+      virtual ~ImportInt4Data() {}
+      AutoPtr<int32> data;
+
+      virtual void convert(const char* str) {
+         
+      }
+
+      virtual uintptr_t getDatum() {
+         if(data.get() == 0)
+            return 0;
+         else
+            return Int32GetDatum(data.ref());
+      }
+   private:
+      ImportInt4Data(const ImportInt4Data&); //no implicit copy
+   };
+   
 public:
    BingoImportHandler(unsigned int func_id):BingoSessionHandler(func_id, true) {
       SPI_connect();
@@ -137,7 +204,7 @@ public:
    }
    
    virtual bool hasNext() = 0;
-   virtual void getNextData(ObjArray<BingoPgText>& q_data) = 0;
+   virtual void getNextData() = 0;
 
    void init(Datum table_datum, Datum column_datum, Datum other_columns_datum) {
       BingoPgText tablename_text;
@@ -150,6 +217,8 @@ public:
 
       ArrayOutput column_names(_columnNames);
       _importColumns.clear();
+
+      _importColumns.push().columnName.readString(column_text.getString(), true);
       
       column_names.printf("%s(%s", tablename_text.getString(), column_text.getString());
 
@@ -176,54 +245,105 @@ public:
    }
 
    void _defineColumnTypes(const char* table_name) {
-      // TODO
+      Array<char> column_names;
+      for (int i = 0; i < _importColumns.size(); ++i) {
+         if(i != 0)
+            column_names.appendString(", ", true);
+         column_names.appendString(_importColumns[i].columnName.ptr(), true);
+      }
+
+      BingoPgCursor table_first("select %s from %s", column_names.ptr(), table_name);
+      table_first.next();
+
+      for (int i = 0; i < _importColumns.size(); ++i) {
+         int arg_type = table_first.getArgOid(i);
+         ImportColumn& dataCol = _importColumns.at(i);
+         
+         if((arg_type != INT4OID) &&
+                 (arg_type != INT8OID) &&
+                 (arg_type != TEXTOID) &&
+                 (arg_type != BYTEAOID))
+            throw BingoPgError("can not import a structure: unsupported column '%s' type; supported values: 'text', 'bytea', 'integer'", dataCol.columnName.ptr());
+
+         dataCol.type = arg_type;
+      }
+      
    }
 
-   void _addData(const char* data, int col_idx, ArrayOutput& column_values, ObjArray<BingoPgText>& q_data) {
-      ImportColumn& dataCol = _importColumns[col_idx];
-      if (dataCol.isText) {
-         BingoPgText& col_data = q_data.push();
-         
-         if(data != 0)
-            col_data.initFromString(data);
-         
-         column_values.printf(", $%d", q_data.size());
-      } else {
-         if(data == 0)
-            column_values.printf(", null");
-         else
-            column_values.printf(", '%s'::%s", data, dataCol.type.ptr());
+   void _addData(const char* data, int col_idx) {
+      AutoPtr<ImportData> import_data;
+      ImportColumn& import_column = _importColumns[col_idx];
+      
+      switch(import_column.type) {
+         case INT4OID:
+            import_data.reset(new ImportInt4Data());
+            break;
+         case INT8OID:
+            import_data.reset(new ImportInt8Data());
+            break;
+         case TEXTOID:
+            import_data.reset(new ImportTextData());
+            break;
+         case BYTEAOID:
+            import_data.reset(new ImportTextData());
+            break;
+         default:
+            throw BingoPgError("internal error: unknown data type %d", import_column.type);
       }
+
+      import_data->convert(data);
+
+      _importData.add(import_data.release());
    }
+//   void _addData(const char* data, int col_idx, ArrayOutput& column_values, ObjArray<BingoPgText>& q_data) {
+//      ImportColumn& dataCol = _importColumns[col_idx];
+//      if (dataCol.isText) {
+//         BingoPgText& col_data = q_data.push();
+//
+//         if(data != 0)
+//            col_data.initFromString(data);
+//
+//         column_values.printf(", $%d", q_data.size());
+//      } else {
+//         if(data == 0)
+//            column_values.printf(", null");
+//         else
+//            column_values.printf(", '%s'::%s", data, dataCol.type.ptr());
+//      }
+//   }
+   
    void import() {
       QS_DEF(Array<char>, query_str);
-      QS_DEF(Array<char>, insert_query_str);
       QS_DEF(Array<Datum>, q_values);
       QS_DEF(Array<Oid>, q_oids);
       QS_DEF(Array<char>, q_nulls);
       ObjArray<BingoPgText> q_data;
       int spi_success = 0;
 
+
+      /*
+       * Prepare query string
+       */
+      ArrayOutput query_string(query_str);
+      query_string.printf("INSERT INTO ");
+      query_string.printf("%s", _columnNames.ptr());
+      query_string.printf(" VALUES (");
+      
       q_nulls.clear();
       q_oids.clear();
-      int col_size = 1;
-
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         if(_importColumns[col_idx].isText)
-            ++col_size;
-      }
-      
-      for (int col_idx = 0; col_idx < col_size; ++col_idx) {
          q_nulls.push(0);
-         q_oids.push(TEXTOID);
+         q_oids.push(_importColumns[col_idx].type);
+
+         if(col_idx != 0)
+            query_string.printf(", ");
+         query_string.printf("$%d", col_idx + 1);
       }
-      /*
-       * Prepare query first part
-       */
-      insert_query_str.readString("INSERT INTO ", false);
-      insert_query_str.appendString(_columnNames.ptr(), false);
-      insert_query_str.appendString(" VALUES ", false);
+      query_string.printf(")");
+      query_string.writeChar(0);
+      
       raise_error = false;
+      
       /*
        * Loop through data 
        */
@@ -232,7 +352,11 @@ public:
          /*
           * Initialize data
           */
-         getNextData(q_data);
+         try {
+            getNextData();
+         } catch (Exception& e) {
+            elog(WARNING, "%s", e.message());
+         }
          /*
           * Initialize values for the query
           */
@@ -245,12 +369,6 @@ public:
                q_nulls[q_idx] = 0;
             }
          }
-         /*
-          * Prepare query string
-          */
-         query_str.copy(insert_query_str);
-         query_str.appendString(_columnValues.ptr(), true);
-
          BINGO_PG_TRY
          {
             /*
@@ -258,9 +376,10 @@ public:
              */
             spi_success = SPI_execute_with_args(query_str.ptr(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.ptr(), false, 1);
             if (spi_success < 0)
-               elog(WARNING, "can not insert a structure into a table");
+               elog(WARNING, "can not insert a structure into a table: %s", SPI_result_code_string(spi_success));
          }
          BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", message));
+
          /*
           * Return back session id and error handler
           */
@@ -271,9 +390,9 @@ public:
 protected:
    bool _parseColumns;
    Array<char> _columnNames;
-   Array<char> _columnValues;
    
    ObjArray<ImportColumn> _importColumns;
+   PtrArray<ImportData> _importData;
    
 private:
    BingoImportHandler(const BingoImportHandler&); //no implicit copy
@@ -295,19 +414,26 @@ public:
       return !bingoSDFImportEOF();
    }
 
-   virtual void getNextData(ObjArray<BingoPgText>& q_data) {
-      q_data.clear();
-      ArrayOutput column_values(_columnValues);
-
-      q_data.push().initFromString(bingoSDFImportGetNext());
-      column_values.printf("($1");
+   virtual void getNextData() {
+      _importData.clear();
+      
+      const char* data = 0;
+//      q_data.clear();
+//      ArrayOutput column_values(_columnValues);
+//
+//      q_data.push().initFromString();
+//      column_values.printf("($1");
       
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         const char* data = bingoImportGetPropertyValue(col_idx);
-         _addData(data, col_idx, column_values, q_data);
+         if(col_idx == 0)
+            data = bingoSDFImportGetNext();
+         else
+            data = bingoImportGetPropertyValue(col_idx);
+         _addData(data, col_idx);
+//         _addData(data, col_idx, column_values, q_data);
       }
-      column_values.printf(")");
-      column_values.writeChar(0);
+//      column_values.printf(")");
+//      column_values.writeChar(0);
    }
 
 private:
@@ -437,19 +563,26 @@ public:
       return !bingoRDFImportEOF();
    }
 
-   virtual void getNextData(ObjArray<BingoPgText>& q_data) {
-      q_data.clear();
-      ArrayOutput column_values(_columnValues);
+   virtual void getNextData() {
+//      q_data.clear();
+//      ArrayOutput column_values(_columnValues);
+//
+//      q_data.push().initFromString(bingoRDFImportGetNext());
+//      column_values.printf("($1");
 
-      q_data.push().initFromString(bingoRDFImportGetNext());
-      column_values.printf("($1");
+      const char* data = 0;
 
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         const char* data = bingoImportGetPropertyValue(col_idx);
-         _addData(data, col_idx, column_values, q_data);
+         if(col_idx == 0)
+            data = bingoSDFImportGetNext();
+         else
+            data = bingoImportGetPropertyValue(col_idx);
+         _addData(data, col_idx);
+//         const char* data = bingoImportGetPropertyValue(col_idx);
+//         _addData(data, col_idx, column_values, q_data);
       }
-      column_values.printf(")");
-      column_values.writeChar(0);
+//      column_values.printf(")");
+//      column_values.writeChar(0);
    }
 
 private:
@@ -566,20 +699,28 @@ public:
       return !bingoSMILESImportEOF();
    }
 
-   virtual void getNextData(ObjArray<BingoPgText>& q_data) {
-      q_data.clear();
-      ArrayOutput column_values(_columnValues);
+   virtual void getNextData() {
+//      q_data.clear();
+//      ArrayOutput column_values(_columnValues);
+//
+//      q_data.push().initFromString(bingoSMILESImportGetNext());
+//      column_values.printf("($1");
+//      int arg_idx = 1;
 
-      q_data.push().initFromString(bingoSMILESImportGetNext());
-      column_values.printf("($1");
-      int arg_idx = 1;
+      const char* data = 0;
 
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         const char* data = bingoSMILESImportGetId();
-         _addData(data, col_idx, column_values, q_data);
+         if(col_idx == 0)
+            data = bingoSMILESImportGetNext();
+         else
+            data = bingoSMILESImportGetId();
+         _addData(data, col_idx);
+         
+//         const char* data = bingoSMILESImportGetId();
+//         _addData(data, col_idx, column_values, q_data);
       }
-      column_values.printf(")");
-      column_values.writeChar(0);
+//      column_values.printf(")");
+//      column_values.writeChar(0);
    }
 private:
    BingoImportSmilesHandler(const BingoImportSmilesHandler&); //no implicit copy
