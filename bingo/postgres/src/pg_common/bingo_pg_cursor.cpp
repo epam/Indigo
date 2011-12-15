@@ -54,6 +54,7 @@ BingoPgCursor::~BingoPgCursor() {
       if (cur_ptr != NULL)
          SPI_cursor_close((Portal) _cursorPtr);
       SPI_finish();
+      SPI_pop_conditional(_pushed);
    }
    BINGO_PG_HANDLE(throw Error("internal error: can not close the cursor: %s", message));
 }
@@ -71,6 +72,7 @@ bool BingoPgCursor::next() {
    
    if(SPI_tuptable == NULL)
       return false;
+
 
    return true;
 }
@@ -128,11 +130,31 @@ uintptr_t  BingoPgCursor::getDatum(int arg_idx) {
    return record;
 }
 
+unsigned int BingoPgCursor::getArgOid(int arg_idx) {
+   if(SPI_tuptable == NULL)
+      throw Error("internal error: can not get null tuple");
+
+   Oid result = 0;
+
+   BINGO_PG_TRY
+   {
+      TupleDesc tupdesc = SPI_tuptable->tupdesc;
+      if(arg_idx >= tupdesc->natts)
+         throw Error("internal error: can not get argument %d natts = %d", arg_idx, tupdesc->natts);
+      result = tupdesc->attrs[arg_idx]->atttypid;
+      
+   }
+   BINGO_PG_HANDLE(throw Error("internal error: can not get datum from the tuple: %s", message));
+
+   return  result;
+}
+
 void BingoPgCursor::_init(indigo::Array<char>& query_str) {
    Array<dword> arg_types;
 
    BINGO_PG_TRY
    {
+      _pushed = SPI_push_conditional();
       SPI_connect();
       SPIPlanPtr plan_ptr = SPI_prepare_cursor(query_str.ptr(), arg_types.size(), arg_types.ptr(), 0);
 
@@ -142,6 +164,7 @@ void BingoPgCursor::_init(indigo::Array<char>& query_str) {
       cursor_name_out.writeChar(0);
 
       _cursorPtr = SPI_cursor_open(_cursorName.ptr(), plan_ptr, 0, 0, true);
+
    }
    BINGO_PG_HANDLE(throw Error("internal error: can not prepare or open a cursor: %s", message));
 }

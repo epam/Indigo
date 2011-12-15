@@ -20,6 +20,7 @@ public:
    void getId(int arg_idx, ItemPointerData&);
    void getText(int arg_idx, BingoPgText&);
    uintptr_t  getDatum(int arg_idx);
+   unsigned int getArgOid(int arg_idx);
 
    DEF_ERROR("bingo cursor access");
 private:
@@ -29,6 +30,7 @@ private:
 
    indigo::Array<char> _cursorName;
    PG_OBJECT _cursorPtr;
+   bool _pushed;
 
 };
 
