@@ -111,7 +111,7 @@ public:
             BINGO_PG_TRY
             {
                data.reset(new int64);
-               scanint8(str, true, data.get());
+               scanint8(str, false, data.get());
             }
             BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int64: %s", message));
          }
@@ -179,14 +179,20 @@ public:
       checkImportNull(table_datum, "table name", tablename_text);
       checkImportNull(column_datum, "column name", column_text);
       checkImportEmpty(other_columns_datum, other_columns_text);
-
-      ArrayOutput column_names(_columnNames);
+      /*
+       * Add the data column
+       */
       _importColumns.clear();
-
       _importColumns.push().columnName.readString(column_text.getString(), true);
       
+      /*
+       * Prepare query table with column name
+       */
+      ArrayOutput column_names(_columnNames);
       column_names.printf("%s(%s", tablename_text.getString(), column_text.getString());
-
+      /*
+       * Add additional columns
+       */
       if (_parseColumns) {
          int column_count = bingoImportParseFieldList(other_columns_text.getString());
          for (int col_idx = 0; col_idx < column_count; ++col_idx) {
@@ -210,16 +216,23 @@ public:
    }
 
    void _defineColumnTypes(const char* table_name) {
+      /*
+       * Read column names for query
+       */
       Array<char> column_names;
       for (int i = 0; i < _importColumns.size(); ++i) {
          if(i != 0)
             column_names.appendString(", ", true);
          column_names.appendString(_importColumns[i].columnName.ptr(), true);
       }
-
+      /*
+       * Make a query for types definition
+       */
       BingoPgCursor table_first("select %s from %s", column_names.ptr(), table_name);
       table_first.next();
-
+      /*
+       * Set up all types
+       */
       for (int i = 0; i < _importColumns.size(); ++i) {
          int arg_type = table_first.getArgOid(i);
          ImportColumn& dataCol = _importColumns.at(i);
@@ -238,7 +251,9 @@ public:
    void _addData(const char* data, int col_idx) {
       AutoPtr<ImportData> import_data;
       ImportColumn& import_column = _importColumns[col_idx];
-      
+      /*
+       * Detect the types and correspond class
+       */
       switch(import_column.type) {
          case INT4OID:
             import_data.reset(new ImportInt4Data());
@@ -255,9 +270,13 @@ public:
          default:
             throw BingoPgError("internal error: unknown data type %d", import_column.type);
       }
-
+      /*
+       * Convert the string
+       */
       import_data->convert(data);
-
+      /*
+       * Add a data to the array
+       */
       _importData.add(import_data.release());
    }
    
@@ -288,8 +307,6 @@ public:
       }
       query_string.printf(")");
       query_string.writeChar(0);
-      
-      raise_error = false;
       
       /*
        * Loop through the data
@@ -367,10 +384,15 @@ public:
        _importData.clear();
       
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         if(col_idx == 0) {
-            data = bingoSDFImportGetNext();
-         } else {
-            data = bingoImportGetPropertyValue(col_idx - 1);
+         try {
+            if (col_idx == 0) {
+               data = bingoSDFImportGetNext();
+            } else {
+               data = bingoImportGetPropertyValue(col_idx - 1);
+            }
+         } catch (Exception& e) {
+            elog(WARNING, "%s", e.message());
+            data = 0;
          }
          _addData(data, col_idx);
       }
@@ -429,10 +451,15 @@ public:
        _importData.clear();
 
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         if(col_idx == 0) {
-            data = bingoRDFImportGetNext();
-         } else {
-            data = bingoImportGetPropertyValue(col_idx - 1);
+         try {
+            if (col_idx == 0) {
+               data = bingoRDFImportGetNext();
+            } else {
+               data = bingoImportGetPropertyValue(col_idx - 1);
+            }
+         } catch (Exception& e) {
+            elog(WARNING, "%s", e.message());
+            data = 0;
          }
          _addData(data, col_idx);
       }
@@ -492,10 +519,15 @@ public:
       _importData.clear();
 
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         if(col_idx == 0)
-            data = bingoSMILESImportGetNext();
-         else
-            data = bingoSMILESImportGetId();
+         try {
+            if (col_idx == 0)
+               data = bingoSMILESImportGetNext();
+            else
+               data = bingoSMILESImportGetId();
+         } catch (Exception& e) {
+            elog(WARNING, "%s", e.message());
+            data = 0;
+         }
          _addData(data, col_idx);
          
       }
