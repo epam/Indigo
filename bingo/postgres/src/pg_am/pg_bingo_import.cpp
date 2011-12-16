@@ -150,7 +150,10 @@ public:
          return data.getDatum();
       }
       virtual void convert(const char* str) {
-         data.initFromString(str);
+         if(str != 0)
+            data.initFromString(str);
+         else
+            data.clear();
       }
    private:
       ImportTextData(const ImportTextData&); //no implicit copy
@@ -317,7 +320,7 @@ public:
       QS_DEF(Array<Datum>, q_values);
       QS_DEF(Array<Oid>, q_oids);
       QS_DEF(Array<char>, q_nulls);
-      ObjArray<BingoPgText> q_data;
+//      ObjArray<BingoPgText> q_data;
       int spi_success = 0;
 
 
@@ -348,7 +351,7 @@ public:
        * Loop through data 
        */
       while (hasNext()) {
-         q_data.clear();
+//         q_data.clear();
          /*
           * Initialize data
           */
@@ -361,8 +364,8 @@ public:
           * Initialize values for the query
           */
          q_values.clear();
-         for (int q_idx = 0; q_idx < q_data.size(); ++q_idx) {
-            q_values.push(q_data[q_idx].getDatum());
+         for (int q_idx = 0; q_idx < _importData.size(); ++q_idx) {
+            q_values.push(_importData[q_idx]->getDatum());
             if(q_values[q_idx] == 0) {
                q_nulls[q_idx] = 'n';
             } else {
@@ -418,6 +421,7 @@ public:
       _importData.clear();
       
       const char* data = 0;
+       _importData.clear();
 //      q_data.clear();
 //      ArrayOutput column_values(_columnValues);
 //
@@ -428,7 +432,7 @@ public:
          if(col_idx == 0)
             data = bingoSDFImportGetNext();
          else
-            data = bingoImportGetPropertyValue(col_idx);
+            data = bingoImportGetPropertyValue(col_idx - 1);
          _addData(data, col_idx);
 //         _addData(data, col_idx, column_values, q_data);
       }
@@ -571,12 +575,13 @@ public:
 //      column_values.printf("($1");
 
       const char* data = 0;
+       _importData.clear();
 
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
          if(col_idx == 0)
-            data = bingoSDFImportGetNext();
+            data = bingoRDFImportGetNext();
          else
-            data = bingoImportGetPropertyValue(col_idx);
+            data = bingoImportGetPropertyValue(col_idx - 1);
          _addData(data, col_idx);
 //         const char* data = bingoImportGetPropertyValue(col_idx);
 //         _addData(data, col_idx, column_values, q_data);
@@ -708,6 +713,7 @@ public:
 //      int arg_idx = 1;
 
       const char* data = 0;
+      _importData.clear();
 
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
          if(col_idx == 0)
