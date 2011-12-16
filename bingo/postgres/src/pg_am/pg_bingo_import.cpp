@@ -3,6 +3,8 @@ extern "C" {
 #include "fmgr.h"
 #include "executor/spi.h"
 #include "catalog/pg_type.h"
+#include "utils/int8.h"
+#include "utils/builtins.h"
 }
 #ifdef qsort
 #undef qsort
@@ -52,69 +54,6 @@ static void checkImportEmpty(Datum text_datum, BingoPgText& text) {
    else
       text.init(text_datum);
 }
-
-//static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum other_columns_datum, Array<char>& query_str) {
-//   BingoPgText tablename_text;
-//   BingoPgText column_text;
-//   BingoPgText other_columns_text;
-//
-//   checkImportNull(table_datum, "table name", tablename_text);
-//   checkImportNull(column_datum, "column name", column_text);
-//   checkImportEmpty(other_columns_datum, other_columns_text);
-//
-//   ArrayOutput query_out(query_str);
-//
-//   query_out.printf("INSERT INTO %s(%s", tablename_text.getString(), column_text.getString());
-//
-//   int column_count = bingoImportParseFieldList(other_columns_text.getString());
-//
-//   for (int col_idx = 0; col_idx < column_count; ++col_idx) {
-//      query_out.printf(", %s", bingoImportGetColumnName(col_idx));
-//   }
-//   query_out.printf(") VALUES($1");
-//
-//   for (int col_idx = 0; col_idx < column_count; ++col_idx) {
-//      query_out.printf(", $%d", col_idx + 2);
-//   }
-//   query_out.printf(")");
-//   query_out.writeChar(0);
-//   return column_count;
-//}
-//
-//static int _initializeIdQuery(Datum table_datum, Datum column_datum, Datum id_column_datum, Array<char>& query_str) {
-//   BingoPgText tablename_text;
-//   BingoPgText column_text;
-//   BingoPgText id_column_text;
-//
-//   checkImportNull(table_datum, "table name", tablename_text);
-//   checkImportNull(column_datum, "column name", column_text);
-//   checkImportEmpty(id_column_datum, id_column_text);
-//
-//   ArrayOutput query_out(query_str);
-//
-//   query_out.printf("INSERT INTO %s(%s", tablename_text.getString(), column_text.getString());
-//   int column_count = 0;
-//
-//   if(id_column_datum != 0 ) {
-//      if(strcmp(id_column_text.getString(), "") !=0)
-//         column_count = 1;
-//   }
-//
-//   for (int col_idx = 0; col_idx < column_count; ++col_idx) {
-//      query_out.printf(", %s", id_column_text.getString());
-//   }
-//   query_out.printf(") VALUES($1");
-//
-//   for (int col_idx = 0; col_idx < column_count; ++col_idx) {
-//      query_out.printf(", $%d", col_idx + 2);
-//   }
-//   query_out.printf(")");
-//   query_out.writeChar(0);
-//   return column_count;
-//
-//}
-
-
 
 class BingoImportHandler : public BingoPgCommon::BingoSessionHandler {
 public:
@@ -166,7 +105,16 @@ public:
       AutoPtr<int64> data;
 
       virtual void convert(const char* str) {
-
+         if(str == 0)
+            data.reset(0);
+         else {
+            BINGO_PG_TRY
+            {
+               data.reset(new int64);
+               scanint8(str, true, data.get());
+            }
+            BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int64: %s", message));
+         }
       }
 
       virtual uintptr_t getDatum() {
@@ -185,7 +133,21 @@ public:
       AutoPtr<int32> data;
 
       virtual void convert(const char* str) {
-         
+         if (str == 0)
+            data.reset(0);
+         else {
+            /*
+             * Pg atoi workaround
+             */
+            QS_DEF(Array<char>, str2);
+            str2.readString(str, true);
+            BINGO_PG_TRY
+            {
+               data.reset(new int32);
+               data.ref() = pg_atoi(str2.ptr(), sizeof (int32), 0);
+            }
+            BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int32: %s", message));
+         }
       }
 
       virtual uintptr_t getDatum() {
@@ -298,31 +260,13 @@ public:
 
       _importData.add(import_data.release());
    }
-//   void _addData(const char* data, int col_idx, ArrayOutput& column_values, ObjArray<BingoPgText>& q_data) {
-//      ImportColumn& dataCol = _importColumns[col_idx];
-//      if (dataCol.isText) {
-//         BingoPgText& col_data = q_data.push();
-//
-//         if(data != 0)
-//            col_data.initFromString(data);
-//
-//         column_values.printf(", $%d", q_data.size());
-//      } else {
-//         if(data == 0)
-//            column_values.printf(", null");
-//         else
-//            column_values.printf(", '%s'::%s", data, dataCol.type.ptr());
-//      }
-//   }
    
    void import() {
       QS_DEF(Array<char>, query_str);
       QS_DEF(Array<Datum>, q_values);
       QS_DEF(Array<Oid>, q_oids);
       QS_DEF(Array<char>, q_nulls);
-//      ObjArray<BingoPgText> q_data;
       int spi_success = 0;
-
 
       /*
        * Prepare query string
@@ -348,17 +292,17 @@ public:
       raise_error = false;
       
       /*
-       * Loop through data 
+       * Loop through the data
        */
       while (hasNext()) {
-//         q_data.clear();
          /*
-          * Initialize data
+          * Initialize the data
           */
          try {
             getNextData();
          } catch (Exception& e) {
-            elog(WARNING, "%s", e.message());
+            elog(WARNING, "can not import a structure: %s", e.message());
+            continue;
          }
          /*
           * Initialize values for the query
@@ -381,7 +325,7 @@ public:
             if (spi_success < 0)
                elog(WARNING, "can not insert a structure into a table: %s", SPI_result_code_string(spi_success));
          }
-         BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", message));
+         BINGO_PG_HANDLE(throw BingoPgError("can not import all the structures: SQL error: %s", message));
 
          /*
           * Return back session id and error handler
@@ -418,26 +362,18 @@ public:
    }
 
    virtual void getNextData() {
-      _importData.clear();
       
       const char* data = 0;
        _importData.clear();
-//      q_data.clear();
-//      ArrayOutput column_values(_columnValues);
-//
-//      q_data.push().initFromString();
-//      column_values.printf("($1");
       
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         if(col_idx == 0)
+         if(col_idx == 0) {
             data = bingoSDFImportGetNext();
-         else
+         } else {
             data = bingoImportGetPropertyValue(col_idx - 1);
+         }
          _addData(data, col_idx);
-//         _addData(data, col_idx, column_values, q_data);
       }
-//      column_values.printf(")");
-//      column_values.writeChar(0);
    }
 
 private:
@@ -472,85 +408,6 @@ Datum importsdf(PG_FUNCTION_ARGS) {
 
    PG_RETURN_VOID();
 }
-//Datum importsdf(PG_FUNCTION_ARGS) {
-//   Datum table_datum = PG_GETARG_DATUM(0);
-//   Datum column_datum = PG_GETARG_DATUM(1);
-//   Datum other_columns_datum = PG_GETARG_DATUM(2);
-//   Datum file_name_datum = PG_GETARG_DATUM(3);
-//
-//   PG_BINGO_BEGIN
-//   {
-//      QS_DEF(Array<char>, query_str);
-//      QS_DEF(Array<Datum>, q_values);
-//      QS_DEF(Array<Oid>, q_oids);
-//      QS_DEF(Array<char>, q_nulls);
-//      ObjArray<BingoPgText> q_data;
-//      int spi_success = 0;
-//
-//      BingoPgText fname_text;
-//      checkImportNull(file_name_datum, "file name", fname_text);
-//
-//      BingoImportSdfHandler bingo_handler(fcinfo->flinfo->fn_oid, fname_text.getString());
-//
-//      int column_count = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str);
-//
-//      q_oids.clear();
-//      q_nulls.clear();
-//
-//      for (int col_idx = 0; col_idx < column_count + 1; ++col_idx) {
-//         q_oids.push(TEXTOID);
-//         q_nulls.push(0);
-//      }
-//
-//      bingo_handler.raise_error = false;
-//      while (!bingoSDFImportEOF()) {
-//         q_data.clear();
-//         const char* data = bingoSDFImportGetNext();
-//         q_data.push().initFromString(data);
-//
-//         for (int col_idx = 0; col_idx < column_count; ++col_idx) {
-//            q_data.push().initFromString(bingoImportGetPropertyValue(col_idx));
-//         }
-//
-//         q_values.clear();
-//         for (int q_idx = 0; q_idx < q_data.size(); ++q_idx) {
-//            q_values.push(q_data[q_idx].getDatum());
-//         }
-//
-//         BINGO_PG_TRY {
-//            spi_success = SPI_execute_with_args(query_str.ptr(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.ptr(), false, 1);
-//            if(spi_success < 0)
-//               elog(WARNING, "can not insert a structure into a table");
-//         } BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", message));
-//         /*
-//          * Return back session id and error handler
-//          */
-//         bingo_handler.refresh();
-//
-//      }
-//
-//   }
-//   PG_BINGO_END
-//
-//   PG_RETURN_VOID();
-//}
-
-//class BingoImportRdfHandler : public BingoPgCommon::BingoSessionHandler {
-//public:
-//   BingoImportRdfHandler(unsigned int func_id, const char* fname):BingoSessionHandler(func_id, true) {
-//      setFunctionName("importRDF");
-//      bingoRDFImportOpen(fname);
-//      SPI_connect();
-//   }
-//   virtual ~BingoImportRdfHandler() {
-//      SPI_finish();
-//      bingoRDFImportClose();
-//   }
-//
-//private:
-//   BingoImportRdfHandler(const BingoImportRdfHandler&); //no implicit copy
-//};
-
 class BingoImportRdfHandler : public BingoImportHandler {
 public:
    BingoImportRdfHandler(unsigned int func_id, const char* fname):
@@ -568,26 +425,17 @@ public:
    }
 
    virtual void getNextData() {
-//      q_data.clear();
-//      ArrayOutput column_values(_columnValues);
-//
-//      q_data.push().initFromString(bingoRDFImportGetNext());
-//      column_values.printf("($1");
-
       const char* data = 0;
        _importData.clear();
 
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         if(col_idx == 0)
+         if(col_idx == 0) {
             data = bingoRDFImportGetNext();
-         else
+         } else {
             data = bingoImportGetPropertyValue(col_idx - 1);
+         }
          _addData(data, col_idx);
-//         const char* data = bingoImportGetPropertyValue(col_idx);
-//         _addData(data, col_idx, column_values, q_data);
       }
-//      column_values.printf(")");
-//      column_values.writeChar(0);
    }
 
 private:
@@ -623,72 +471,6 @@ Datum importrdf(PG_FUNCTION_ARGS) {
    PG_RETURN_VOID();
 }
 
-//Datum importrdf(PG_FUNCTION_ARGS) {
-//   Datum table_datum = PG_GETARG_DATUM(0);
-//   Datum column_datum = PG_GETARG_DATUM(1);
-//   Datum other_columns_datum = PG_GETARG_DATUM(2);
-//   Datum file_name_datum = PG_GETARG_DATUM(3);
-//
-//   PG_BINGO_BEGIN
-//   {
-//
-//      QS_DEF(Array<char>, query_str);
-//      QS_DEF(Array<Datum>, q_values);
-//      QS_DEF(Array<Oid>, q_oids);
-//      QS_DEF(Array<char>, q_nulls);
-//      ObjArray<BingoPgText> q_data;
-//      int spi_success = 0;
-//
-//      BingoPgText fname_text;
-//      checkImportNull(file_name_datum, "file name", fname_text);
-//
-//      BingoImportRdfHandler bingo_handler(fcinfo->flinfo->fn_oid, fname_text.getString());
-//
-//      int column_count = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str);
-//
-//      q_oids.clear();
-//      q_nulls.clear();
-//
-//      for (int col_idx = 0; col_idx < column_count + 1; ++col_idx) {
-//         q_oids.push(TEXTOID);
-//         q_nulls.push(0);
-//      }
-//
-//      bingo_handler.raise_error = false;
-//      while (!bingoRDFImportEOF()) {
-//         q_data.clear();
-//         const char* data = bingoRDFImportGetNext();
-//         q_data.push().initFromString(data);
-//
-//         for (int col_idx = 0; col_idx < column_count; ++col_idx) {
-//            q_data.push().initFromString(bingoImportGetPropertyValue(col_idx));
-//         }
-//
-//         q_values.clear();
-//         for (int q_idx = 0; q_idx < q_data.size(); ++q_idx) {
-//            q_values.push(q_data[q_idx].getDatum());
-//         }
-//
-//         BINGO_PG_TRY
-//         {
-//            spi_success = SPI_execute_with_args(query_str.ptr(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.ptr(), false, 1);
-//
-//            if (spi_success < 0)
-//               elog(WARNING, "can not insert a structure into a table");
-//         }
-//         BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", message));
-//         /*
-//          * Return back session id and error handler
-//          */
-//         bingo_handler.refresh();
-//      }
-//   }
-//   PG_BINGO_END
-//
-//
-//   PG_RETURN_VOID();
-//}
-
 class BingoImportSmilesHandler : public BingoImportHandler {
 public:
    BingoImportSmilesHandler(unsigned int func_id, const char* fname):BingoImportHandler(func_id) {
@@ -705,12 +487,6 @@ public:
    }
 
    virtual void getNextData() {
-//      q_data.clear();
-//      ArrayOutput column_values(_columnValues);
-//
-//      q_data.push().initFromString(bingoSMILESImportGetNext());
-//      column_values.printf("($1");
-//      int arg_idx = 1;
 
       const char* data = 0;
       _importData.clear();
@@ -722,30 +498,11 @@ public:
             data = bingoSMILESImportGetId();
          _addData(data, col_idx);
          
-//         const char* data = bingoSMILESImportGetId();
-//         _addData(data, col_idx, column_values, q_data);
       }
-//      column_values.printf(")");
-//      column_values.writeChar(0);
    }
 private:
    BingoImportSmilesHandler(const BingoImportSmilesHandler&); //no implicit copy
 };
-//class BingoImportSmilesHandler : public BingoPgCommon::BingoSessionHandler {
-//public:
-//   BingoImportSmilesHandler(unsigned int func_id, const char* fname):BingoSessionHandler(func_id, true) {
-//      setFunctionName("importSMILES");
-//      bingoSMILESImportOpen(fname);
-//      SPI_connect();
-//   }
-//   virtual ~BingoImportSmilesHandler() {
-//      SPI_finish();
-//      bingoSMILESImportClose();
-//   }
-//
-//private:
-//   BingoImportSmilesHandler(const BingoImportSmilesHandler&); //no implicit copy
-//};
 
 Datum importsmiles(PG_FUNCTION_ARGS) {
    Datum table_datum = PG_GETARG_DATUM(0);
@@ -773,77 +530,5 @@ Datum importsmiles(PG_FUNCTION_ARGS) {
    }
    PG_BINGO_END
 
-
    PG_RETURN_VOID();
 }
-//Datum importsmiles(PG_FUNCTION_ARGS) {
-//   Datum table_datum = PG_GETARG_DATUM(0);
-//   Datum column_datum = PG_GETARG_DATUM(1);
-//   Datum id_column_datum = PG_GETARG_DATUM(2);
-//   Datum file_name_datum = PG_GETARG_DATUM(3);
-//
-//   PG_BINGO_BEGIN
-//   {
-//
-//      QS_DEF(Array<char>, query_str);
-//      QS_DEF(Array<Datum>, q_values);
-//      QS_DEF(Array<Oid>, q_oids);
-//      QS_DEF(Array<char>, q_nulls);
-//      ObjArray<BingoPgText> q_data;
-//      int spi_success = 0;
-//
-//      BingoPgText fname_text;
-//      checkImportNull(file_name_datum, "file name", fname_text);
-//
-//      BingoImportSmilesHandler bingo_handler(fcinfo->flinfo->fn_oid, fname_text.getString());
-//
-//      int column_count = _initializeIdQuery(table_datum, column_datum, id_column_datum, query_str);
-//
-//      q_oids.clear();
-//      q_nulls.clear();
-//
-//      for (int col_idx = 0; col_idx < column_count + 1; ++col_idx) {
-//         q_oids.push(TEXTOID);
-//         q_nulls.push(0);
-//      }
-//
-//      bingo_handler.raise_error = false;
-//      while (!bingoSMILESImportEOF()) {
-//         q_data.clear();
-//         const char* data = bingoSMILESImportGetNext();
-//         q_data.push().initFromString(data);
-//
-//         for (int col_idx = 0; col_idx < column_count; ++col_idx) {
-//            const char* id_string = bingoSMILESImportGetId();
-//            BingoPgText& id_data = q_data.push();
-//            if (id_string == 0) {
-//               q_nulls[col_idx + 1] = 'n';
-//            } else {
-//               id_data.initFromString(id_string);
-//               q_nulls[col_idx + 1] = 0;
-//            }
-//         }
-//
-//         q_values.clear();
-//         for (int q_idx = 0; q_idx < q_data.size(); ++q_idx) {
-//            q_values.push(q_data[q_idx].getDatum());
-//         }
-//
-//         BINGO_PG_TRY
-//         {
-//            spi_success = SPI_execute_with_args(query_str.ptr(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.ptr(), false, 1);
-//            if (spi_success < 0)
-//               elog(WARNING, "can not insert a structure into a table");
-//         }
-//         BINGO_PG_HANDLE(throw BingoPgError("can not insert a structure into a table: %s", message));
-//         /*
-//          * Return back session id and error handler
-//          */
-//         bingo_handler.refresh();
-//      }
-//   }
-//   PG_BINGO_END
-//
-//
-//   PG_RETURN_VOID();
-//}
