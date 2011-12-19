@@ -12,3 +12,6 @@ add_library(indigo_shared SHARED ${Indigo_src} ${Indigo_headers})
 
 target_link_libraries(indigo molecule reaction layout)
 target_link_libraries(indigo_shared molecule reaction layout)
+
+set_property(TARGET indigo_shared PROPERTY LINK_INTERFACE_LIBRARIES "")
+
