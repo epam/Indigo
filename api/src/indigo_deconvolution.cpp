@@ -231,27 +231,15 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
    r_molecule.makeSubmolecule(mol_set, sub_filter, 0, &inv_scaf_map);
    r_molecule.unhighlightAll();
 
-   RedBlackMap<int, int> rgroup_idx_map;
-   rgroup_idx_map.clear();
+   /*
+    * Add rgroups (if not exist) to the full scaffold
+    */
+   _addCompleteRGroup(mol_set, emb_context);
 
    for (int rg_idx = 0; rg_idx < n_rgroups; ++rg_idx) {
       Array<int>& att_idx = attachment_index[rg_idx];
       Array<int>& att_ord = attachment_order[rg_idx];
 
-      /*
-       * Find if rgroup already exists
-       */
-      int new_rg_idx = _findOrAddFullRGroup(att_ord, att_idx, mol_set, emb_context.lastInvMapping);
-
-      /*
-       * TODO: check for duplicates
-       */
-      if(rgroup_idx_map.find(new_rg_idx))
-          continue;
-      /*
-       * Store internal rg index
-       */
-      rgroup_idx_map.insert(new_rg_idx, rg_idx);
       /*
        * Add new atom r-site
        */
@@ -265,7 +253,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
       /*
        * Add Rsites
        */
-       r_molecule.allowRGroupOnRSite(new_atom_idx, new_rg_idx);
+       r_molecule.allowRGroupOnRSite(new_atom_idx, rg_idx + 1);
       
       /*
        * Add all bonds
@@ -293,12 +281,12 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
       if (!r_molecule.isRSite(i))
          continue;
       
-      int r = r_molecule.getSingleAllowedRGroup(i);
-      RGroup & r_group = mol_rgroups.getRGroup(r);
+      int rg_idx = r_molecule.getSingleAllowedRGroup(i);
+      RGroup & r_group = mol_rgroups.getRGroup(rg_idx);
       /*
        * Get internal rg_idx
        */
-      int rg_idx = rgroup_idx_map.at(r);
+      --rg_idx;
       Molecule & fragment = r_group.fragments.at(r_group.fragments.add(new Molecule()))->asMolecule();
 
       Filter sub_filter_fr(visited_atoms.ptr(), Filter::EQ, rg_idx + SHIFT_IDX);
@@ -397,22 +385,29 @@ void IndigoDeconvolution::EmbContext::renumber(Array<int>& map, Array<int>& inv_
    }
 }
 
+
 /*
- * Find if rgroup already exists
- * Returns rgroup index
+ * Add rgroup if not exists
  */
-int IndigoDeconvolution::_findOrAddFullRGroup(Array<int>& att_order, Array<int>& att_idx, Molecule& qmol, Array<int>& map) {
+void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_context) {
+   ObjArray< Array<int> >& attachment_order = emb_context.attachmentOrder;
+   ObjArray< Array<int> >& attachment_index = emb_context.attachmentIndex;
+   Array<int>& map = emb_context.lastInvMapping;
+
+   int n_rgroups = emb_context.getRgroupNumber();
    /*
-    * Search for existing rsites
+    * Search for existing rgroups
     */
-   QS_DEF(RedBlackSet<int>, exist_atoms);
-   exist_atoms.clear();
+   QS_DEF(RedBlackStringMap<int>, match_rgroups);
+   match_rgroups.clear();
 
-   for (int i = 0; i < att_order.size(); ++i) {
-      exist_atoms.find_or_insert(map.at(att_order[i]));
-   }
-
+   QS_DEF(Array<char>, str_key);
+   ArrayOutput str_out(str_key);
+   
    int new_rg_idx = 0;
+   /*
+    * Create match strings
+    */
    int vert_idx = _fullScaffold.vertexBegin();
    for (; vert_idx != _fullScaffold.vertexEnd(); vert_idx = _fullScaffold.vertexNext(vert_idx)) {
       if (!_fullScaffold.isRSite(vert_idx))
@@ -421,32 +416,77 @@ int IndigoDeconvolution::_findOrAddFullRGroup(Array<int>& att_order, Array<int>&
 
       if(new_rg_idx < cur_rg_idx)
          new_rg_idx = cur_rg_idx;
-      
-      const Vertex& vert = _fullScaffold.getVertex(vert_idx);
 
-      bool not_found = (vert.degree() != exist_atoms.size());
-      for (int nei_idx = vert.neiBegin(); !not_found && nei_idx != vert.neiEnd(); nei_idx = vert.neiNext(nei_idx)) {
-         if (!exist_atoms.find(vert.neiVertex(nei_idx))) {
-            not_found = true;
-         }
-      }
-      
+      const Vertex& vert = _fullScaffold.getVertex(vert_idx);
       /*
-       * Find the match between new order and already added atom
+       * Strings contain only attachment indexes
        */
-      if(!not_found)
-         return cur_rg_idx;
+      str_out.clear();
+      for (int nei_idx = vert.neiBegin(); nei_idx != vert.neiEnd(); nei_idx = vert.neiNext(nei_idx)) {
+         int nei_vert = vert.neiVertex(nei_idx);
+         str_out.printf("%d", nei_vert);
+      }
+      str_out.writeChar(0);
+      /*
+       * Insert match string
+       */
+      if(match_rgroups.find(str_key.ptr())) {
+         match_rgroups.at(str_key.ptr()) += 1;
+      } else {
+         match_rgroups.insert(str_key.ptr(), 1);
+      }
+
    }
-   /*
-    * Increase rgroup index
-    */
-   ++new_rg_idx;
    
+   /*
+    * Loop through all rgroups and seek for matchings
+    */
+   bool match_not_found;
+   for (int rg_idx = 0; rg_idx < n_rgroups; ++rg_idx) {
+      Array<int>& att_idx = attachment_index[rg_idx];
+      Array<int>& att_ord = attachment_order[rg_idx];
+      /*
+       * Create match string
+       */
+      str_out.clear();
+      for (int a_x = 0; a_x < att_ord.size(); ++a_x) {
+         str_out.printf("%d", map.at(att_ord[a_x]));
+      }
+      str_out.writeChar(0);
+      /*
+       * Search for matches
+       */
+      match_not_found = false;
+      if(match_rgroups.find(str_key.ptr())) {
+         int& match_count = match_rgroups.at(str_key.ptr());
+         /*
+          * Remove matches
+          */
+         --match_count;
+         if(match_count < 0) {
+            match_not_found = true;
+         }
+      } else {
+         match_not_found = true;
+      }
+      /*
+       * Add rgroup to full scaffold
+       */
+      if(match_not_found) {
+         ++new_rg_idx;
+         _addFullRGroup(att_ord, att_idx, mol_set, map, new_rg_idx);
+      }
+   }
+}
+
+/*
+ */
+void IndigoDeconvolution::_addFullRGroup(Array<int>& att_order, Array<int>& att_idx, Molecule& qmol, Array<int>& map, int new_rg_idx) {
    /*
     * If not found then add Rsite to the full scaffold
     */
    int new_atom_idx = _fullScaffold.addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
-   
+
    Vec3f& atom_xyz = qmol.getAtomXyz(att_idx[0]);
    /*
     * Copy coordinates
@@ -468,11 +508,10 @@ int IndigoDeconvolution::_findOrAddFullRGroup(Array<int>& att_order, Array<int>&
       if (_fullScaffold.findEdgeIndex(new_atom_idx, att_self) == -1) {
          int edge_idx = qmol.findEdgeIndex(att_ord, att_idx[point_att]);
          if (edge_idx == -1)
-            throw Error("inner error while converting molecule to query");
+            throw Error("internal error while converting molecule to query");
          _fullScaffold.addBond(new_atom_idx, att_self, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
       }
    }
-   return new_rg_idx;
 }
 
 

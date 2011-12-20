@@ -82,7 +82,9 @@ private:
    void _makeRGroup (Item& elem);
    void _createRgroups(Molecule& molecule_set, Molecule& r_molecule, EmbContext& emb_context);
    void _parseOptions(const char* options);
-   int _findOrAddFullRGroup(Array<int>& att_order, Array<int>& att_idx, Molecule& qmol, Array<int>& map);
+   
+   void _addCompleteRGroup(Molecule& molecule_set, EmbContext& emb_context);
+   void _addFullRGroup(Array<int>& att_order, Array<int>& att_idx, Molecule& qmol, Array<int>& map, int new_rg_idx);
 
    static int _rGroupsEmbedding(Graph &g1, Graph &g2, int *core1, int *core2, void *userdata);
 
