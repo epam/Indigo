@@ -3,7 +3,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-
+indigo.setOption("molfile-saving-skip-date", True)
 
 def testHighlightDeco(structures):
    mols = []
