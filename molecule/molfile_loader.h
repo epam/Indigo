@@ -131,6 +131,7 @@ protected:
    void _init ();
 
    int _getElement (const char *buf);
+   char* _strtrim (char *buf);
 
    static int _asc_cmp_cb (int &v1, int &v2, void *context);
    void _postLoad ();

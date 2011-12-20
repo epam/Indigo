@@ -183,7 +183,11 @@ int MolfileLoader::_getElement (const char *buf)
    int i;
    char buf2[4] = {0, 0, 0, 0};
 
-   for (i = 0; i < 3; i++)
+   size_t len = strlen(buf);
+   if (len > 3)
+      throw Error("Internal error in MolfileLoader::_getElement: len = %d > 3", len);
+
+   for (i = 0; i < len; i++)
    {
       if (isspace(buf[i]))
          break;
@@ -195,6 +199,23 @@ int MolfileLoader::_getElement (const char *buf)
    }
 
    return Element::fromString2(buf2);
+}
+
+char* MolfileLoader::_strtrim (char *buf)
+{
+   while (*buf == ' ')
+      buf++;
+   if (*buf != 0)
+   {
+      size_t len = strlen(buf);
+      char *end = buf + len - 1;
+      while (*end == ' ')
+      {
+         *end = 0;
+         end--;
+      }
+   }
+   return buf;
 }
 
 void MolfileLoader::_readCtab2000 ()
@@ -215,7 +236,8 @@ void MolfileLoader::_readCtab2000 ()
 
       _scanner.skip(1);
 
-      char buf[4] = {0, 0, 0, 0};
+      char atom_label_array[4] = { 0 };
+      char *buf = atom_label_array;
       int label = 0;
       int isotope = 0;
 
@@ -226,41 +248,46 @@ void MolfileLoader::_readCtab2000 ()
       atom_type = _ATOM_ELEMENT;
 
       // read atom label and mass difference
-      _scanner.readCharsFix(3, buf);
-      
+      _scanner.readCharsFix(3, atom_label_array);
+
+      // Atom label can be both left-bound or right-bound: "  N", "N  " or even " N ".
+      buf = _strtrim(atom_label_array);
+
       isotope = _scanner.readIntFix(2);
 
-      if (buf[0] == 'R' && (buf[1] == '#' || buf[1] == ' '))
+      if (buf[0] == 0)
+         throw Error("Empty atom label");
+      else if (buf[0] == 'R' && (buf[1] == '#' || buf[1] == 0))
       {
          atom_type = _ATOM_R;
          label = ELEM_RSITE;
       }
-      else if (buf[0] == 'A' && buf[1] == ' ')
+      else if (buf[0] == 'A' && buf[1] == 0)
          atom_type = _ATOM_A; // will later become 'any atom' or pseudo atom
-      else if (buf[0] == 'X' && buf[1] == ' ' && !treat_x_as_pseudoatom)
+      else if (buf[0] == 'X' && buf[1] == 0 && !treat_x_as_pseudoatom)
       {
          if (_qmol == 0)
             throw Error("'X' label is allowed only for queries");
          atom_type = _ATOM_X;
       }
-      else if (buf[0] == 'Q' && buf[1] == ' ')
+      else if (buf[0] == 'Q' && buf[1] == 0)
       {
          if (_qmol == 0)
             throw Error("'Q' label is allowed only for queries");
          atom_type = _ATOM_Q;
       }
-      else if (buf[0] == 'L' && buf[1] == ' ')
+      else if (buf[0] == 'L' && buf[1] == 0)
       {
          if (_qmol == 0)
             throw Error("atom lists are allowed only for queries");
          atom_type = _ATOM_LIST;
       }
-      else if (buf[0] == 'D' && buf[1] == ' ')
+      else if (buf[0] == 'D' && buf[1] == 0)
       {
          label = ELEM_H;
          isotope = 2;
       }
-      else if (buf[0] == 'T' && buf[1] == ' ')
+      else if (buf[0] == 'T' && buf[1] == 0)
       {
          label = ELEM_H;
          isotope = 3;
@@ -274,11 +301,6 @@ void MolfileLoader::_readCtab2000 ()
             atom_type = _ATOM_PSEUDO;
             if (isotope != 0)
                throw Error("isotope number not allowed on pseudo-atoms");
-
-            if (buf[2] == ' ')
-               buf[2] = 0;
-            if (buf[1] == ' ')
-               buf[1] = 0;
          }
 
          if (isotope != 0)

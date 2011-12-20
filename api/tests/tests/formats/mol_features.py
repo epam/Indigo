@@ -13,3 +13,11 @@ saver.append(mol)
 mol = indigo.loadMoleculeFromFile(joinPath('molecules/all_features_mol.mol'))
 print(mol.molfile())
 saver.append(mol)
+
+print("Checking different MOLFILE features from the specification")
+for mol in indigo.iterateSDFile(joinPath('molecules/check_specification.sdf')):
+    try:
+        print(mol.canonicalSmiles())
+    except IndigoException, e:
+        print(getIndigoExceptionText(e))
+    
