@@ -1,0 +1,5 @@
+libindigo_renderer_shared.so
+{
+	global: indigoRender*;
+	local: *;
+};

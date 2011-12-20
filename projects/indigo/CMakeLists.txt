@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 2.6)
 #set(CMAKE_SUPPRESS_REGENERATION TRUE)
 
 project(IndigoSolution)
-
+if (NOT BUILD_DEBUG)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
 INCLUDE(../../common/cmake/GetSystemVersion.cmake)
 INCLUDE(../../common/cmake/MakeOutputPath.cmake)
 

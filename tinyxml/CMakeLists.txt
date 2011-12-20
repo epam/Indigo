@@ -1,7 +1,12 @@
 PROJECT(TinyXML)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../common/cmake/)
-find_package(TINYXML)
+if(USE_LOCAL_TINYXML)
+    set(TINYXML_FOUND "NO")
+    message(STATUS "Using local TinyXML")
+else()
+    find_package(TINYXML)
+endif()
 if (NOT TINYXML_FOUND)
     file (GLOB TinyXML_src src/*.c* src/*.def)
     file (GLOB TinyXML_headers include/*.h*)

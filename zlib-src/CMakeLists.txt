@@ -1,6 +1,10 @@
 PROJECT(z)
-
-find_package(ZLIB)
+if(USE_LOCAL_ZLIB)
+    set(ZLIB_FOUND "NO")
+    message(STATUS "Using local ZLib")
+else()
+    find_package(ZLIB)
+endif()
 if (NOT ZLIB_FOUND)
     file (GLOB ZLib_src src/*.c* src/*.def)
     file (GLOB ZLib_headers include/*.h*)

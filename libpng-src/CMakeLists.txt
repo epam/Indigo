@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
 
 project(PNG C)
-
-find_package(PNG)
+if(USE_LOCAL_PNG)
+    set(PNG_FOUND "NO")
+    message(STATUS "Using local LibPNG")
+else()
+    find_package(PNG)
+endif()
 if (NOT PNG_FOUND)
     include_directories(include)
 

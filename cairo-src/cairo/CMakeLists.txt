@@ -3,7 +3,12 @@ cmake_minimum_required(VERSION 2.6)
 project(Cairo C)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
-find_package(CAIRO)
+if(USE_LOCAL_CAIRO)
+    set(CAIRO_FOUND "NO")
+    message(STATUS "Using local Cairo")
+else()
+    find_package(CAIRO)
+endif()
 if (NOT CAIRO_FOUND)
     set(Cairo_headers_dir ${CMAKE_CURRENT_SOURCE_DIR}/src/)
 
@@ -12,7 +17,6 @@ if (NOT CAIRO_FOUND)
     if(UNIX)
         add_definitions(-DHAVE_STDINT_H -DHAVE_PTHREAD_H -DCAIRO_HAS_DIRECTFB_SURFACE)
     endif()
-
 
     file (GLOB CAIRO_SOURCES src/*.c)
     file (GLOB CAIRO_HEADERS src/*.h)
