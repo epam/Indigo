@@ -401,6 +401,7 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
    QS_DEF(RedBlackStringMap<int>, match_rgroups);
    match_rgroups.clear();
 
+   QS_DEF(Array<int>, str_keys);
    QS_DEF(Array<char>, str_key);
    ArrayOutput str_out(str_key);
    
@@ -421,10 +422,18 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
       /*
        * Strings contain only attachment indexes
        */
-      str_out.clear();
+      str_keys.clear();
       for (int nei_idx = vert.neiBegin(); nei_idx != vert.neiEnd(); nei_idx = vert.neiNext(nei_idx)) {
          int nei_vert = vert.neiVertex(nei_idx);
-         str_out.printf("%d", nei_vert);
+         str_keys.push(nei_vert);
+      }
+      /*
+       * Call sort and create string
+       */
+      str_keys.qsort(0, str_keys.size() - 1, IntCmpFunctor());
+      str_out.clear();
+      for (int key_idx = 0; key_idx < str_keys.size(); ++key_idx) {
+         str_out.printf("%d", str_keys[key_idx]);
       }
       str_out.writeChar(0);
       /*
@@ -448,9 +457,17 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
       /*
        * Create match string
        */
-      str_out.clear();
+      str_keys.clear();
       for (int a_x = 0; a_x < att_ord.size(); ++a_x) {
-         str_out.printf("%d", map.at(att_ord[a_x]));
+         str_keys.push(map.at(att_ord[a_x]));
+      }
+      /*
+       * Call sort and create string
+       */
+      str_keys.qsort(0, str_keys.size() - 1, IntCmpFunctor());
+      str_out.clear();
+      for (int key_idx = 0; key_idx < str_keys.size(); ++key_idx) {
+         str_out.printf("%d", str_keys[key_idx]);
       }
       str_out.writeChar(0);
       /*
