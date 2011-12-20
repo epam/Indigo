@@ -401,7 +401,7 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
    QS_DEF(RedBlackStringMap<int>, match_rgroups);
    match_rgroups.clear();
 
-   QS_DEF(Array<int>, str_keys);
+   QS_DEF(RedBlackSet<int>, str_keys);
    QS_DEF(Array<char>, str_key);
    ArrayOutput str_out(str_key);
    
@@ -425,15 +425,14 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
       str_keys.clear();
       for (int nei_idx = vert.neiBegin(); nei_idx != vert.neiEnd(); nei_idx = vert.neiNext(nei_idx)) {
          int nei_vert = vert.neiVertex(nei_idx);
-         str_keys.push(nei_vert);
+         str_keys.find_or_insert(nei_vert);
       }
       /*
        * Call sort and create string
        */
-      str_keys.qsort(0, str_keys.size() - 1, IntCmpFunctor());
       str_out.clear();
-      for (int key_idx = 0; key_idx < str_keys.size(); ++key_idx) {
-         str_out.printf("%d", str_keys[key_idx]);
+      for (int key_idx = str_keys.begin(); key_idx != str_keys.end(); key_idx = str_keys.next(key_idx)) {
+         str_out.printf("%d;", str_keys.key(key_idx));
       }
       str_out.writeChar(0);
       /*
@@ -444,8 +443,14 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
       } else {
          match_rgroups.insert(str_key.ptr(), 1);
       }
-
    }
+//   printf("***************\nmatch keys\n");
+//   for (int i = match_rgroups.begin(); i != match_rgroups.end(); i = match_rgroups.next(i)) {
+//      printf("key = %s val = %d\n", match_rgroups.key(i), match_rgroups.value(i));
+//   }
+//   FileOutput fo("res/fullscaf.mol");
+//   MolfileSaver ms(fo);
+//   ms.saveQueryMolecule(_fullScaffold);
    
    /*
     * Loop through all rgroups and seek for matchings
@@ -459,15 +464,14 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
        */
       str_keys.clear();
       for (int a_x = 0; a_x < att_ord.size(); ++a_x) {
-         str_keys.push(map.at(att_ord[a_x]));
+         str_keys.find_or_insert(map.at(att_ord[a_x]));
       }
       /*
        * Call sort and create string
        */
-      str_keys.qsort(0, str_keys.size() - 1, IntCmpFunctor());
       str_out.clear();
-      for (int key_idx = 0; key_idx < str_keys.size(); ++key_idx) {
-         str_out.printf("%d", str_keys[key_idx]);
+      for (int key_idx = str_keys.begin(); key_idx != str_keys.end(); key_idx = str_keys.next(key_idx)) {
+         str_out.printf("%d;", str_keys.key(key_idx));
       }
       str_out.writeChar(0);
       /*

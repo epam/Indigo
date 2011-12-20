@@ -100,13 +100,6 @@ private:
    QueryMolecule _fullScaffold;
    ObjArray<Item> _deconvolutionItems;
 
-   class IntCmpFunctor {
-   public:
-      int operator() (int v1, int v2){
-         return v1 - v2;
-      }
-   };
-
    DEF_ERROR("R-Group deconvolution");
 };
 
