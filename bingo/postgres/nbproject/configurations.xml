@@ -230,6 +230,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
+            <pElem>${BINGO_PG_DIR32}/include/server</pElem>
             <pElem>${BINGO_PG_DIR32}/include/postgresql/server</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
@@ -244,6 +245,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
+            <pElem>${BINGO_PG_DIR32}/include/server</pElem>
             <pElem>${BINGO_PG_DIR32}/include/postgresql/server</pElem>
           </incDir>
           <inheritIncValues>false</inheritIncValues>
@@ -341,6 +343,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
+            <pElem>${BINGO_PG_DIR64}/include/server</pElem>
             <pElem>${BINGO_PG_DIR64}/include/postgresql/server</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
@@ -355,6 +358,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
+            <pElem>${BINGO_PG_DIR64}/include/server</pElem>
             <pElem>${BINGO_PG_DIR64}/include/postgresql/server</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
