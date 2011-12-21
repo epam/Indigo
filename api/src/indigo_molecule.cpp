@@ -1119,7 +1119,19 @@ CEXPORT int indigoIterateRGroupFragments (int rgroup)
 
 bool IndigoRGroupsIter::hasNext ()
 {
-   return _idx + 1 <= _mol->rgroups.getRGroupCount();
+   bool result = false;
+   /*
+    * Skip empty fragments
+    */
+   while((_idx < _mol->rgroups.getRGroupCount()) &&
+           (_mol->rgroups.getRGroup(_idx + 1).fragments.size() == 0)) {
+      ++_idx;
+   }
+   
+   if(_idx < _mol->rgroups.getRGroupCount())
+      result = true;
+   
+   return result;
 }
 
 IndigoObject * IndigoRGroupsIter::next ()

@@ -217,6 +217,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
 
    QS_DEF(Array<int>, inv_scaf_map);
    QS_DEF(Array<int>, rg_mapping);
+   QS_DEF(Array<int>, rgidx_map);
 
    Array<int>& visited_atoms = emb_context.visitedAtoms;
 
@@ -234,8 +235,12 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
    /*
     * Add rgroups (if not exist) to the full scaffold
     */
-   _addCompleteRGroup(mol_set, emb_context);
+   _addCompleteRGroup(mol_set, emb_context, rgidx_map);
 
+   
+   /*
+    * Add all Rgroups
+    */
    for (int rg_idx = 0; rg_idx < n_rgroups; ++rg_idx) {
       Array<int>& att_idx = attachment_index[rg_idx];
       Array<int>& att_ord = attachment_order[rg_idx];
@@ -253,7 +258,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
       /*
        * Add Rsites
        */
-       r_molecule.allowRGroupOnRSite(new_atom_idx, rg_idx + 1);
+       r_molecule.allowRGroupOnRSite(new_atom_idx, rgidx_map[rg_idx]);
       
       /*
        * Add all bonds
@@ -270,23 +275,16 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
 
          r_molecule.setRSiteAttachmentOrder(new_atom_idx, inv_scaf_map[att_order], point_att);
       }
-   }
-
-   /*
-    * Add all Rgroups
-    */
-   MoleculeRGroups & mol_rgroups = r_molecule.rgroups;
-   
-   for (int i = r_molecule.vertexBegin(); i != r_molecule.vertexEnd(); i = r_molecule.vertexNext(i)) {
-      if (!r_molecule.isRSite(i))
-         continue;
+      MoleculeRGroups & mol_rgroups = r_molecule.rgroups;
       
-      int rg_idx = r_molecule.getSingleAllowedRGroup(i);
-      RGroup & r_group = mol_rgroups.getRGroup(rg_idx);
       /*
-       * Get internal rg_idx
+       * Get an internal rg_idx
        */
-      --rg_idx;
+      int rg_allow_idx = r_molecule.getSingleAllowedRGroup(new_atom_idx);
+      RGroup & r_group = mol_rgroups.getRGroup(rg_allow_idx);
+      /*
+       * Add a fragment
+       */
       Molecule & fragment = r_group.fragments.at(r_group.fragments.add(new Molecule()))->asMolecule();
 
       Filter sub_filter_fr(visited_atoms.ptr(), Filter::EQ, rg_idx + SHIFT_IDX);
@@ -389,7 +387,7 @@ void IndigoDeconvolution::EmbContext::renumber(Array<int>& map, Array<int>& inv_
 /*
  * Add rgroup if not exists
  */
-void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_context) {
+void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_context, Array<int>& rg_map) {
    ObjArray< Array<int> >& attachment_order = emb_context.attachmentOrder;
    ObjArray< Array<int> >& attachment_index = emb_context.attachmentIndex;
    Array<int>& map = emb_context.lastInvMapping;
@@ -398,12 +396,18 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
    /*
     * Search for existing rgroups
     */
-   QS_DEF(RedBlackStringMap<int>, match_rgroups);
+   QS_DEF(RedBlackStringObjMap< Array<int> >, match_rgroups);
    match_rgroups.clear();
-
+   /*
+    * A set to keep attachment orders
+    */
    QS_DEF(RedBlackSet<int>, str_keys);
+   /*
+    * A string to keep attachemnt orders strings
+    */
    QS_DEF(Array<char>, str_key);
    ArrayOutput str_out(str_key);
+   
    
    int new_rg_idx = 0;
    /*
@@ -438,11 +442,10 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
       /*
        * Insert match string
        */
-      if(match_rgroups.find(str_key.ptr())) {
-         match_rgroups.at(str_key.ptr()) += 1;
-      } else {
-         match_rgroups.insert(str_key.ptr(), 1);
+      if(!match_rgroups.find(str_key.ptr())) {
+         match_rgroups.insert(str_key.ptr());
       }
+      match_rgroups.at(str_key.ptr()).push(cur_rg_idx);
    }
 //   printf("***************\nmatch keys\n");
 //   for (int i = match_rgroups.begin(); i != match_rgroups.end(); i = match_rgroups.next(i)) {
@@ -456,6 +459,8 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
     * Loop through all rgroups and seek for matchings
     */
    bool match_not_found;
+   rg_map.clear_resize(n_rgroups);
+   int map_rg_idx;
    for (int rg_idx = 0; rg_idx < n_rgroups; ++rg_idx) {
       Array<int>& att_idx = attachment_index[rg_idx];
       Array<int>& att_ord = attachment_order[rg_idx];
@@ -479,13 +484,14 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
        */
       match_not_found = false;
       if(match_rgroups.find(str_key.ptr())) {
-         int& match_count = match_rgroups.at(str_key.ptr());
+         Array<int>& match_r = match_rgroups.at(str_key.ptr());
          /*
           * Remove matches
           */
-         --match_count;
-         if(match_count < 0) {
+         if(match_r.size() == 0 ) {
             match_not_found = true;
+         } else {
+            map_rg_idx = match_r.pop();
          }
       } else {
          match_not_found = true;
@@ -495,8 +501,13 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
        */
       if(match_not_found) {
          ++new_rg_idx;
+         map_rg_idx = new_rg_idx;
          _addFullRGroup(att_ord, att_idx, mol_set, map, new_rg_idx);
       }
+      /*
+       * Set up out map for rgroup
+       */
+      rg_map[rg_idx] = map_rg_idx;
    }
 }
 
