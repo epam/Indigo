@@ -28,6 +28,9 @@ extern "C" {
 
 PG_FUNCTION_INFO_V1(bingo_build);
 PGDLLEXPORT Datum bingo_build(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(bingo_buildempty);
+PGDLLEXPORT Datum bingo_buildempty(PG_FUNCTION_ARGS);
 }
 
 static void bingoIndexCallback(Relation index,
@@ -133,4 +136,40 @@ static void bingoIndexCallback(Relation index,
    build_engine.insertStructure(&htup->t_self, struct_text);
 }
 
+Datum
+bingo_buildempty(PG_FUNCTION_ARGS) {
+   Relation index = (Relation) PG_GETARG_POINTER(0);
 
+   elog(NOTICE, "start bingo empty build ");
+
+
+   /*
+    * We expect to be called exactly once for any index relation. If that's
+    * not the case, big trouble's what we have.
+    */
+   if (RelationGetNumberOfBlocks(index) != 0)
+      elog(ERROR, "index \"%s\" already contains data",
+           RelationGetRelationName(index));
+
+   //   /*
+   //    * Estimate the number of rows currently present in the table
+   //    */
+   //   estimate_rel_size(heap, NULL, &relpages, &reltuples);
+
+
+   PG_BINGO_BEGIN
+   {
+      /*
+       * Initialize the bingo index metadata page and initial blocks
+       */
+      BingoPgWrapper func_namespace;
+      const char* schema_name = func_namespace.getFuncNameSpace(fcinfo->flinfo->fn_oid);
+      BingoPgWrapper rel_namespace;
+      const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
+
+      BingoPgBuild build_engine(index, schema_name, index_schema, true);
+   }
+   PG_BINGO_END
+
+   PG_RETURN_VOID();
+}

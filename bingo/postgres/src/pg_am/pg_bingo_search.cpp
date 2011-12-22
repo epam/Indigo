@@ -37,15 +37,22 @@ PGDLLEXPORT Datum bingo_endscan(PG_FUNCTION_ARGS);
 /*
  * Bingo searching initialization
  */
-
 Datum
 bingo_beginscan(PG_FUNCTION_ARGS) {
    Relation rel = (Relation) PG_GETARG_POINTER(0);
    int keysz = PG_GETARG_INT32(1);
-   ScanKey scankey = (ScanKey) PG_GETARG_POINTER(2);
+
+#if PG_VERSION_NUM / 100 == 901
+   int norderbys = PG_GETARG_INT32(2);
+#elif PG_VERSION_NUM / 100 == 900
+   ScanKey norderbys = (ScanKey) PG_GETARG_POINTER(2);
+#else
+   elog(ERROR, "unsupported version %s", PG_VERSION)
+#endif
+
    elog(NOTICE, "start bingo search");
-   
-   IndexScanDesc scan = RelationGetIndexScan(rel, keysz, scankey);
+
+   IndexScanDesc scan = RelationGetIndexScan(rel, keysz, norderbys);
 
    scan->opaque = 0;
    
