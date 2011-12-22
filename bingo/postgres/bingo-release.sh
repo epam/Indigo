@@ -22,12 +22,13 @@ fi
 rm -rf ./$name
 
 mkdir -p $name/bin
+mkdir -p $name/sql
  
 cp ../LICENSE.GPL $name/
 cp README $name/
 cp INSTALL $name/
 cp $libname $name/bin/
 cp bingo-pg-install.sh  $name/
-cp -r sql/$pg_ver $name/
+cp sql/$pg_ver/* $name/sql
 
 zip -r -9 $name.zip $name
