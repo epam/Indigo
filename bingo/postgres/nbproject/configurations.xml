@@ -126,8 +126,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
-            <pElem>/opt/postgres9_debug/include/server</pElem>
-            <pElem>${BINGO_PG_DIR}/include/server</pElem>
+            <pElem>/opt/postgres9/9.0.6/include/postgresql/server</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
         </cTool>
@@ -139,8 +138,7 @@
             <pElem>src/pg_core</pElem>
             <pElem>../src/core-c</pElem>
             <pElem>../src</pElem>
-            <pElem>${BINGO_PG_DIR}/include/server</pElem>
-            <pElem>/opt/postgres9_debug/include/server</pElem>
+            <pElem>/opt/postgres9/9.0.6/include/postgresql/server</pElem>
           </incDir>
           <commandLine>-fPIC</commandLine>
         </ccTool>
