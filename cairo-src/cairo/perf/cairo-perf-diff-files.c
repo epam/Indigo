@@ -39,7 +39,7 @@ typedef struct _cairo_perf_report_options {
     double min_change;
     int use_utf;
     int print_change_bars;
-    int use_ms;
+    int use_ticks;
 } cairo_perf_report_options_t;
 
 typedef struct _cairo_perf_diff_files_args {
@@ -49,30 +49,43 @@ typedef struct _cairo_perf_diff_files_args {
 } cairo_perf_diff_files_args_t;
 
 static int
-test_diff_cmp_speedup_before_slowdown (const void *a, const void *b)
+test_diff_cmp_speedup_before_slowdown (const void *a,
+				       const void *b)
 {
     const test_diff_t *a_diff = a;
     const test_diff_t *b_diff = b;
 
     /* First make all speedups come before all slowdowns. */
-    if (a_diff->change > 1.0 && b_diff->change < 1.0)
+    if (a_diff->change > 0 && b_diff->change < 0)
 	return -1;
-    if (a_diff->change < 1.0 && b_diff->change > 1.0)
+    if (a_diff->change < 0 && b_diff->change > 0)
 	return 1;
 
-    /* Reverse sort by magnitude of change so larger changes come
-     * first */
-    if (fabs (a_diff->change) > fabs (b_diff->change))
-	return -1;
+    if (a_diff->change == b_diff->change)
+	return 0;
 
-    if (fabs (a_diff->change) < fabs (b_diff->change))
-	return 1;
+    /* Large speedups come first. */
+    if (a_diff->change > 0) {
+	    if (a_diff->change > b_diff->change)
+		    return -1;
+	    else
+		    return 1;
+    }
+
+    /* Large slowdowns come last. */
+    if (a_diff->change < 0) {
+	    if (a_diff->change < b_diff->change)
+		    return 1;
+	    else
+		    return -1;
+    }
 
     return 0;
 }
 
 static int
-test_diff_cmp (const void *a, const void *b)
+test_diff_cmp (const void *a,
+	       const void *b)
 {
     const test_diff_t *a_diff = a;
     const test_diff_t *b_diff = b;
@@ -90,9 +103,11 @@ test_diff_cmp (const void *a, const void *b)
 
 #define CHANGE_BAR_WIDTH 70
 static void
-print_change_bar (double change, double max_change, int use_utf)
+print_change_bar (double change,
+		  double max_change,
+		  int	 use_utf)
 {
-    int units_per_cell = (int) ceil (max_change / CHANGE_BAR_WIDTH);
+    int units_per_cell = ceil (max_change / CHANGE_BAR_WIDTH);
     static char const *ascii_boxes[8] = {
 	"****","***" ,"***", "**",
 	"**",  "*",   "*",   ""
@@ -135,15 +150,17 @@ print_change_bar (double change, double max_change, int use_utf)
 }
 
 static void
-test_diff_print_binary (test_diff_t			*diff,
-			double				 max_change,
-			cairo_perf_report_options_t	*options)
+test_diff_print_binary (test_diff_t		    *diff,
+			double			     max_change,
+			cairo_perf_report_options_t *options)
 {
-    printf ("%5s-%-4s %26s-%-3d  %6.2f %4.2f%% -> %6.2f %4.2f%%: %5.2fx ",
+    printf ("%5s-%-4s %26s-%-3d  %6.2f (%.2f %4.2f%%) -> %6.2f (%.2f %4.2f%%): %5.2fx ",
 	    diff->tests[0]->backend, diff->tests[0]->content,
 	    diff->tests[0]->name, diff->tests[0]->size,
+	    diff->tests[0]->stats.min_ticks / diff->tests[0]->stats.ticks_per_ms,
 	    diff->tests[0]->stats.median_ticks / diff->tests[0]->stats.ticks_per_ms,
 	    diff->tests[0]->stats.std_dev * 100,
+	    diff->tests[1]->stats.min_ticks / diff->tests[1]->stats.ticks_per_ms,
 	    diff->tests[1]->stats.median_ticks / diff->tests[1]->stats.ticks_per_ms,
 	    diff->tests[1]->stats.std_dev * 100,
 	    fabs (diff->change));
@@ -159,9 +176,9 @@ test_diff_print_binary (test_diff_t			*diff,
 }
 
 static void
-test_diff_print_multi (test_diff_t			*diff,
-		       double				 max_change,
-		       cairo_perf_report_options_t	*options)
+test_diff_print_multi (test_diff_t		   *diff,
+		       double			    max_change,
+		       cairo_perf_report_options_t *options)
 {
     int i;
     double test_time;
@@ -175,7 +192,7 @@ test_diff_print_multi (test_diff_t			*diff,
 
     for (i = 0; i < diff->num_tests; i++) {
 	test_time = diff->tests[i]->stats.min_ticks;
-	if (options->use_ms)
+	if (! options->use_ticks)
 	    test_time /= diff->tests[i]->stats.ticks_per_ms;
 	change = diff->max / test_time;
 	printf ("%8s %6.2f: %5.2fx ",
@@ -192,9 +209,9 @@ test_diff_print_multi (test_diff_t			*diff,
 
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 static void
-cairo_perf_reports_compare (cairo_perf_report_t		*reports,
-			    int				 num_reports,
-			    cairo_perf_report_options_t	*options)
+cairo_perf_reports_compare (cairo_perf_report_t 	*reports,
+			    int 			 num_reports,
+			    cairo_perf_report_options_t *options)
 {
     int i;
     test_report_t **tests, *min_test;
@@ -261,7 +278,7 @@ cairo_perf_reports_compare (cairo_perf_report_t		*reports,
 		test_report_cmp_backend_then_name (tests[i], min_test) == 0)
 	    {
 		test_time = tests[i]->stats.min_ticks;
-		if (options->use_ms)
+		if (! options->use_ticks)
 		    test_time /= tests[i]->stats.ticks_per_ms;
 		if (diff->num_tests == 0) {
 		    diff->min = test_time;
@@ -289,7 +306,7 @@ cairo_perf_reports_compare (cairo_perf_report_t		*reports,
 	    }
 	    old_time = diff->tests[0]->stats.min_ticks;
 	    new_time = diff->tests[1]->stats.min_ticks;
-	    if (options->use_ms) {
+	    if (! options->use_ticks) {
 		old_time /= diff->tests[0]->stats.ticks_per_ms;
 		new_time /= diff->tests[1]->stats.ticks_per_ms;
 	    }
@@ -301,7 +318,7 @@ cairo_perf_reports_compare (cairo_perf_report_t		*reports,
 	diff++;
 	num_diffs++;
     }
-    if (num_diffs < 2)
+    if (num_diffs == 0)
 	goto DONE;
 
     if (num_reports == 2)
@@ -386,9 +403,9 @@ usage (const char *argv0)
 }
 
 static void
-parse_args(int				  argc,
-	   char const			**argv,
-	   cairo_perf_diff_files_args_t  *args)
+parse_args (int 			   argc,
+	    char const			 **argv,
+	    cairo_perf_diff_files_args_t  *args)
 {
     int i;
 
@@ -400,7 +417,10 @@ parse_args(int				  argc,
 	    args->options.print_change_bars = 0;
 	}
 	else if (strcmp (argv[i], "--use-ms") == 0) {
-	    args->options.use_ms = 1;
+	    /* default */
+	}
+	else if (strcmp (argv[i], "--use-ticks") == 0) {
+	    args->options.use_ticks = 1;
 	}
 	else if (strcmp (argv[i], "--min-change") == 0) {
 	    char *end = NULL;
@@ -426,7 +446,8 @@ parse_args(int				  argc,
 }
 
 int
-main (int argc, const char *argv[])
+main (int	  argc,
+      const char *argv[])
 {
     cairo_perf_diff_files_args_t args = {
 	NULL,			/* filenames */
@@ -449,7 +470,7 @@ main (int argc, const char *argv[])
     reports = xmalloc (args.num_filenames * sizeof (cairo_perf_report_t));
 
     for (i = 0; i < args.num_filenames; i++ )
-	cairo_perf_report_load (&reports[i], args.filenames[i]);
+	cairo_perf_report_load (&reports[i], args.filenames[i], NULL);
 
     cairo_perf_reports_compare (reports, args.num_filenames, &args.options);
 

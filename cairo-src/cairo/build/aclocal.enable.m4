@@ -271,7 +271,7 @@ AC_DEFUN([CAIRO_ACCUMULATE],
 ])dnl
 
 dnl
-dnl CAIRO_ACCUMULATE(VAR, VALUE)
+dnl CAIRO_ACCUMULATE_BEFORE(VAR, VALUE)
 dnl
 dnl Prepends VALUE to accumulator VAR
 dnl

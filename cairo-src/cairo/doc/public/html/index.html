@@ -6,25 +6,15 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
 <link rel="home" href="index.html" title="Cairo: A Vector Graphics Library">
 <link rel="next" href="cairo-drawing.html" title="Drawing">
-<meta name="generator" content="GTK-Doc V1.11 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.15 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
-<link rel="chapter" href="cairo-drawing.html" title="Drawing">
-<link rel="chapter" href="cairo-fonts.html" title="Fonts">
-<link rel="chapter" href="cairo-surfaces.html" title="Surfaces">
-<link rel="chapter" href="cairo-support.html" title="Utilities">
-<link rel="index" href="index-all.html" title="Index">
-<link rel="index" href="index-1.2.html" title="Index of new symbols in 1.2">
-<link rel="index" href="index-1.4.html" title="Index of new symbols in 1.4">
-<link rel="index" href="index-1.6.html" title="Index of new symbols in 1.6">
-<link rel="index" href="index-1.8.html" title="Index of new symbols in 1.8">
-<link rel="appendix" href="language-bindings.html" title="Appendix A. Creating a language binding for cairo">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <div lang="en" class="book" title="Cairo: A Vector Graphics Library">
 <div class="titlepage">
 <div>
 <div><table class="navigation" id="top" width="100%" cellpadding="2" cellspacing="0"><tr><th valign="middle"><p class="title">Cairo: A Vector Graphics Library</p></th></tr></table></div>
-<div><p class="releaseinfo">for Cairo 1.8.10
+<div><p class="releaseinfo">for Cairo 1.10.2
 </p></div>
 </div>
 <hr>
@@ -33,88 +23,97 @@
 <dt><span class="chapter"><a href="cairo-drawing.html">Drawing</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="cairo-context.html">cairo_t</a></span><span class="refpurpose"> — The cairo drawing context</span>
+<span class="refentrytitle"><a href="cairo-cairo-t.html">cairo_t</a></span><span class="refpurpose"> — The cairo drawing context</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-paths.html">Paths</a></span><span class="refpurpose"> — Creating paths and manipulating path data</span>
+<span class="refentrytitle"><a href="cairo-Paths.html">Paths</a></span><span class="refpurpose"> — Creating paths and manipulating path data</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-pattern.html">cairo_pattern_t</a></span><span class="refpurpose"> — Sources for drawing</span>
+<span class="refentrytitle"><a href="cairo-cairo-pattern-t.html">cairo_pattern_t</a></span><span class="refpurpose"> — Sources for drawing</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-transformations.html">Transformations</a></span><span class="refpurpose"> — Manipulating the current transformation matrix</span>
+<span class="refentrytitle"><a href="cairo-Regions.html">Regions</a></span><span class="refpurpose"> — Representing a pixel-aligned area</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-text.html">Text</a></span><span class="refpurpose"> — Rendering text and glyphs</span>
+<span class="refentrytitle"><a href="cairo-Transformations.html">Transformations</a></span><span class="refpurpose"> — Manipulating the current transformation matrix</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="cairo-text.html">text</a></span><span class="refpurpose"> — Rendering text and glyphs</span>
 </dt>
 </dl></dd>
 <dt><span class="chapter"><a href="cairo-fonts.html">Fonts</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="cairo-font-face.html">cairo_font_face_t</a></span><span class="refpurpose"> — Base class for font faces</span>
+<span class="refentrytitle"><a href="cairo-cairo-font-face-t.html">cairo_font_face_t</a></span><span class="refpurpose"> — Base class for font faces</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-scaled-font.html">cairo_scaled_font_t</a></span><span class="refpurpose"> — Font face at particular size and options</span>
+<span class="refentrytitle"><a href="cairo-cairo-scaled-font-t.html">cairo_scaled_font_t</a></span><span class="refpurpose"> — Font face at particular size and options</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-font-options.html">cairo_font_options_t</a></span><span class="refpurpose"> — How a font should be rendered</span>
+<span class="refentrytitle"><a href="cairo-cairo-font-options-t.html">cairo_font_options_t</a></span><span class="refpurpose"> — How a font should be rendered</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-ft-font.html">FreeType Fonts</a></span><span class="refpurpose"> — Font support for FreeType</span>
+<span class="refentrytitle"><a href="cairo-FreeType-Fonts.html">FreeType Fonts</a></span><span class="refpurpose"> — Font support for FreeType</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-win32-font.html">Win32 Fonts</a></span><span class="refpurpose"> — Font support for Microsoft Windows</span>
+<span class="refentrytitle"><a href="cairo-Win32-Fonts.html">Win32 Fonts</a></span><span class="refpurpose"> — Font support for Microsoft Windows</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-quartz-font.html">Quartz (CGFont) Fonts</a></span><span class="refpurpose"> — Font support via CGFont on OS X</span>
+<span class="refentrytitle"><a href="cairo-Quartz-(CGFont)-Fonts.html">Quartz (CGFont) Fonts</a></span><span class="refpurpose"> — Font support via CGFont on OS X</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-user-font.html">User Fonts</a></span><span class="refpurpose"> — Font support with font data provided by the user</span>
+<span class="refentrytitle"><a href="cairo-User-Fonts.html">User Fonts</a></span><span class="refpurpose"> — Font support with font data provided by the user</span>
 </dt>
 </dl></dd>
 <dt><span class="chapter"><a href="cairo-surfaces.html">Surfaces</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="cairo-surface.html">cairo_surface_t</a></span><span class="refpurpose"> — Base class for surfaces</span>
+<span class="refentrytitle"><a href="cairo-cairo-device-t.html">cairo_device_t</a></span><span class="refpurpose"> — interface to underlying rendering system</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-image-surface.html">Image Surfaces</a></span><span class="refpurpose"> — Rendering to memory buffers</span>
+<span class="refentrytitle"><a href="cairo-cairo-surface-t.html">cairo_surface_t</a></span><span class="refpurpose"> — Base class for surfaces</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-pdf-surface.html">PDF Surfaces</a></span><span class="refpurpose"> — Rendering PDF documents</span>
+<span class="refentrytitle"><a href="cairo-Image-Surfaces.html">Image Surfaces</a></span><span class="refpurpose"> — Rendering to memory buffers</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-png-functions.html">PNG Support</a></span><span class="refpurpose"> — Reading and writing PNG images</span>
+<span class="refentrytitle"><a href="cairo-PDF-Surfaces.html">PDF Surfaces</a></span><span class="refpurpose"> — Rendering PDF documents</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-ps-surface.html">PostScript Surfaces</a></span><span class="refpurpose"> — Rendering PostScript documents</span>
+<span class="refentrytitle"><a href="cairo-PNG-Support.html">PNG Support</a></span><span class="refpurpose"> — Reading and writing PNG images</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-win32-surface.html">Win32 Surfaces</a></span><span class="refpurpose"> — Microsoft Windows surface support</span>
+<span class="refentrytitle"><a href="cairo-PostScript-Surfaces.html">PostScript Surfaces</a></span><span class="refpurpose"> — Rendering PostScript documents</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-svg-surface.html">SVG Surfaces</a></span><span class="refpurpose"> — Rendering SVG documents</span>
+<span class="refentrytitle"><a href="cairo-Recording-Surfaces.html">Recording Surfaces</a></span><span class="refpurpose"> — Records all drawing operations</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-quartz-surface.html">Quartz Surfaces</a></span><span class="refpurpose"> — Rendering to Quartz surfaces</span>
+<span class="refentrytitle"><a href="cairo-Win32-Surfaces.html">Win32 Surfaces</a></span><span class="refpurpose"> — Microsoft Windows surface support</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-xlib-surface.html">XLib Surfaces</a></span><span class="refpurpose"> — X Window System rendering using XLib</span>
+<span class="refentrytitle"><a href="cairo-SVG-Surfaces.html">SVG Surfaces</a></span><span class="refpurpose"> — Rendering SVG documents</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="cairo-Quartz-Surfaces.html">Quartz Surfaces</a></span><span class="refpurpose"> — Rendering to Quartz surfaces</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="cairo-XLib-Surfaces.html">XLib Surfaces</a></span><span class="refpurpose"> — X Window System rendering using XLib</span>
 </dt>
 </dl></dd>
 <dt><span class="chapter"><a href="cairo-support.html">Utilities</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="cairo-matrix.html">cairo_matrix_t</a></span><span class="refpurpose"> — Generic matrix operations</span>
+<span class="refentrytitle"><a href="cairo-cairo-matrix-t.html">cairo_matrix_t</a></span><span class="refpurpose"> — Generic matrix operations</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-error-status.html">Error handling</a></span><span class="refpurpose"> — Decoding cairo's status</span>
+<span class="refentrytitle"><a href="cairo-Error-handling.html">Error handling</a></span><span class="refpurpose"> — Decoding cairo's status</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-version-info.html">Version Information</a></span><span class="refpurpose"> — Compile-time and run-time version checks.</span>
+<span class="refentrytitle"><a href="cairo-Version-Information.html">Version Information</a></span><span class="refpurpose"> — Compile-time and run-time version checks.</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="cairo-types.html">Types</a></span><span class="refpurpose"> — Generic data types</span>
+<span class="refentrytitle"><a href="cairo-Types.html">Types</a></span><span class="refpurpose"> — Generic data types</span>
 </dt>
 </dl></dd>
 <dt><span class="index"><a href="index-all.html">Index</a></span></dt>
@@ -122,6 +121,7 @@
 <dt><span class="index"><a href="index-1.4.html">Index of new symbols in 1.4</a></span></dt>
 <dt><span class="index"><a href="index-1.6.html">Index of new symbols in 1.6</a></span></dt>
 <dt><span class="index"><a href="index-1.8.html">Index of new symbols in 1.8</a></span></dt>
+<dt><span class="index"><a href="index-1.10.html">Index of new symbols in 1.10</a></span></dt>
 <dt><span class="appendix"><a href="language-bindings.html">A. Creating a language binding for cairo</a></span></dt>
 <dd><dl>
 <dt><span class="sect1"><a href="language-bindings.html#bindings-general">General considerations</a></span></dt>
@@ -139,6 +139,6 @@
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.11</div>
+          Generated by GTK-Doc V1.15</div>
 </body>
 </html>

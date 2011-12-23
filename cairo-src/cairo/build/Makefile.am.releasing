@@ -34,10 +34,8 @@ RELEASE_UPLOAD_DIR =	$(RELEASE_UPLOAD_BASE)/$(RELEASE_OR_SNAPSHOT)s
 RELEASE_URL_BASE = 	http://cairographics.org/$(RELEASE_OR_SNAPSHOT)s
 RELEASE_ANNOUNCE_LIST = cairo-announce@cairographics.org (and CC gnome-announce-list@gnome.org)
 
-MANUAL_DATED =			cairo-manual-`date +%Y%m%d`
-MANUAL_TAR_FILE = 		$(MANUAL_DATED).tar.gz
 MANUAL_VERSIONED =		manual-$(VERSION)
-MANUAL_VERSIONED_TAR_FILE =	$(MANUAL_VERSIONED).tar.gz
+MANUAL_TAR_FILE =		$(MANUAL_VERSIONED).tar.gz
 MANUAL_UPLOAD_DIR =		$(RELEASE_UPLOAD_BASE)
 
 tar_file = $(PACKAGE)-$(VERSION).tar.gz
@@ -136,24 +134,24 @@ release-publish-message: releases/$(sha1_file)
 	@echo ""
 	@echo "============================== CUT HERE =============================="
 
-doc-publish: doc
-	rm -rf ./$(MANUAL_DATED)
-	cp -a doc/public/html $(MANUAL_DATED)
-	tar czf $(MANUAL_TAR_FILE) $(MANUAL_DATED)
-	scp $(MANUAL_TAR_FILE) $(RELEASE_UPLOAD_HOST):$(MANUAL_UPLOAD_DIR)
-	ssh $(RELEASE_UPLOAD_HOST) "cd $(MANUAL_UPLOAD_DIR) && tar xzf $(MANUAL_TAR_FILE) && rm -f manual && ln -s $(MANUAL_DATED) manual && ln -sf $(MANUAL_TAR_FILE) cairo-manual.tar.gz"
-
 doc-publish-versioned: doc
 	rm -rf ./$(MANUAL_VERSIONED)
 	cp -a doc/public/html $(MANUAL_VERSIONED)
-	tar czf $(MANUAL_VERSIONED_TAR_FILE) $(MANUAL_VERSIONED)
-	scp $(MANUAL_VERSIONED_TAR_FILE) $(RELEASE_UPLOAD_HOST):$(MANUAL_UPLOAD_DIR)
-	ssh $(RELEASE_UPLOAD_HOST) "cd $(MANUAL_UPLOAD_DIR) && tar xzf $(MANUAL_VERSIONED_TAR_FILE)"
+	tar czf $(MANUAL_TAR_FILE) $(MANUAL_VERSIONED)
+	scp $(MANUAL_TAR_FILE) $(RELEASE_UPLOAD_HOST):$(MANUAL_UPLOAD_DIR)
+	ssh $(RELEASE_UPLOAD_HOST) "cd $(MANUAL_UPLOAD_DIR) && tar xzf $(MANUAL_TAR_FILE) && ln -sf $(MANUAL_TAR_FILE) cairo-$(MANUAL_TAR_FILE)"
+
+doc-publish-symlinks:
+	ssh $(RELEASE_UPLOAD_HOST) "cd $(MANUAL_UPLOAD_DIR) && rm -f manual && ln -s $(MANUAL_VERSIONED) manual && ln -sf $(MANUAL_TAR_FILE) cairo-manual.tar.gz"
+
+doc-publish:
+	$(MAKE) $(AM_MAKEFLAGS) doc-publish-versioned
+	@if test "$(RELEASE_OR_SNAPSHOT)" = release; then $(MAKE) $(AM_MAKEFLAGS) doc-publish-symlinks; fi
 
 # Strict ordering enforced for parallel make to work
 release-publish: release-check
 	$(MAKE) $(AM_MAKEFLAGS) release-upload
-	$(MAKE) $(AM_MAKEFLAGS) doc-publish-versioned
+	$(MAKE) $(AM_MAKEFLAGS) doc-publish
 	$(MAKE) $(AM_MAKEFLAGS) release-publish-message
 
 if OS_WIN32
@@ -180,6 +178,7 @@ endif
 .PHONY: \
 	dist-clear-sticky-bits \
 	doc-publish \
+	doc-publish-symlinks \
 	doc-publish-versioned \
 	release-check \
 	release-publish \

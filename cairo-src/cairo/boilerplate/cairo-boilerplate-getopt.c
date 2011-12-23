@@ -47,12 +47,12 @@ int optopt = '?';
 
 
 static char** prev_argv = NULL;        /* Keep a copy of argv and argc to */
-static int prev_argc = 0;              /*    tell if getopt params change */
-static int argv_index = 0;             /* Option we're checking */
-static int argv_index2 = 0;            /* Option argument we're checking */
-static int opt_offset = 0;             /* Index into compounded "-option" */
-static int dashdash = 0;               /* True if "--" option reached */
-static int nonopt = 0;                 /* How many nonopts we've found */
+static int prev_argc = 0;	       /*    tell if getopt params change */
+static int argv_index = 0;	       /* Option we're checking */
+static int argv_index2 = 0;	       /* Option argument we're checking */
+static int opt_offset = 0;	       /* Index into compounded "-option" */
+static int dashdash = 0;	       /* True if "--" option reached */
+static int nonopt = 0;		       /* How many nonopts we've found */
 
 static void increment_index(void)
 {

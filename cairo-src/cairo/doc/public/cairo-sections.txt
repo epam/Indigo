@@ -1,7 +1,7 @@
 <SECTION>
 <FILE>cairo-ft</FILE>
-<TITLE>ft-font</TITLE>
 CAIRO_HAS_FT_FONT
+CAIRO_HAS_FC_FONT
 cairo_ft_font_face_create_for_ft_face
 cairo_ft_font_face_create_for_pattern
 cairo_ft_font_options_substitute
@@ -11,7 +11,6 @@ cairo_ft_scaled_font_unlock_face
 
 <SECTION>
 <FILE>cairo-win32-fonts</FILE>
-<TITLE>win32-font</TITLE>
 CAIRO_HAS_WIN32_FONT
 cairo_win32_font_face_create_for_logfontw
 cairo_win32_font_face_create_for_hfont
@@ -25,7 +24,6 @@ cairo_win32_scaled_font_get_device_to_logical
 
 <SECTION>
 <FILE>cairo-quartz-fonts</FILE>
-<TITLE>quartz-font</TITLE>
 CAIRO_HAS_QUARTZ_FONT
 cairo_quartz_font_face_create_for_cgfont
 cairo_quartz_font_face_create_for_atsu_font_id
@@ -33,7 +31,6 @@ cairo_quartz_font_face_create_for_atsu_font_id
 
 <SECTION>
 <FILE>cairo-user-fonts</FILE>
-<TITLE>user-font</TITLE>
 CAIRO_HAS_USER_FONT
 cairo_user_scaled_font_init_func_t
 cairo_user_scaled_font_render_glyph_func_t
@@ -52,7 +49,6 @@ cairo_user_font_face_get_text_to_glyphs_func
 
 <SECTION>
 <FILE>cairo-image</FILE>
-<TITLE>image-surface</TITLE>
 CAIRO_HAS_IMAGE_SURFACE
 cairo_format_t
 cairo_format_stride_for_width
@@ -67,16 +63,18 @@ cairo_image_surface_get_stride
 
 <SECTION>
 <FILE>cairo-pdf</FILE>
-<TITLE>pdf-surface</TITLE>
 CAIRO_HAS_PDF_SURFACE
 cairo_pdf_surface_create
 cairo_pdf_surface_create_for_stream
+cairo_pdf_surface_restrict_to_version
+cairo_pdf_version_t
+cairo_pdf_get_versions
+cairo_pdf_version_to_string
 cairo_pdf_surface_set_size
 </SECTION>
 
 <SECTION>
 <FILE>cairo-png</FILE>
-<TITLE>png-functions</TITLE>
 CAIRO_HAS_PNG_FUNCTIONS
 cairo_image_surface_create_from_png
 cairo_read_func_t
@@ -88,7 +86,6 @@ cairo_surface_write_to_png_stream
 
 <SECTION>
 <FILE>cairo-ps</FILE>
-<TITLE>ps-surface</TITLE>
 CAIRO_HAS_PS_SURFACE
 cairo_ps_surface_create
 cairo_ps_surface_create_for_stream
@@ -105,8 +102,14 @@ cairo_ps_surface_dsc_comment
 </SECTION>
 
 <SECTION>
+<FILE>cairo-recording</FILE>
+CAIRO_HAS_RECORDING_SURFACE
+cairo_recording_surface_create
+cairo_recording_surface_ink_extents
+</SECTION>
+
+<SECTION>
 <FILE>cairo-win32</FILE>
-<TITLE>win32-surface</TITLE>
 CAIRO_HAS_WIN32_SURFACE
 cairo_win32_surface_create
 cairo_win32_surface_create_with_dib
@@ -118,7 +121,6 @@ cairo_win32_surface_get_image
 
 <SECTION>
 <FILE>cairo-quartz</FILE>
-<TITLE>quartz-surface</TITLE>
 CAIRO_HAS_QUARTZ_SURFACE
 cairo_quartz_surface_create
 cairo_quartz_surface_create_for_cg_context
@@ -130,7 +132,6 @@ cairo_quartz_image_surface_get_image
 
 <SECTION>
 <FILE>cairo-xlib</FILE>
-<TITLE>xlib-surface</TITLE>
 CAIRO_HAS_XLIB_SURFACE
 cairo_xlib_surface_create
 cairo_xlib_surface_create_for_bitmap
@@ -147,7 +148,6 @@ cairo_xlib_surface_get_depth
 
 <SECTION>
 <FILE>cairo-xlib-xrender</FILE>
-<TITLE>xlib-xrender-surface</TITLE>
 CAIRO_HAS_XLIB_XRENDER_SURFACE
 cairo_xlib_surface_create_with_xrender_format
 cairo_xlib_surface_get_xrender_format
@@ -155,7 +155,6 @@ cairo_xlib_surface_get_xrender_format
 
 <SECTION>
 <FILE>cairo-svg</FILE>
-<TITLE>svg-surface</TITLE>
 CAIRO_HAS_SVG_SURFACE
 cairo_svg_surface_create
 cairo_svg_surface_create_for_stream
@@ -166,16 +165,38 @@ cairo_svg_version_to_string
 </SECTION>
 
 <SECTION>
+<FILE>cairo-device</FILE>
+cairo_device_t
+cairo_device_reference
+cairo_device_destroy
+cairo_device_status
+cairo_device_finish
+cairo_device_flush
+cairo_device_type_t
+cairo_device_get_type
+cairo_device_get_reference_count
+cairo_device_set_user_data
+cairo_device_get_user_data
+cairo_device_acquire
+cairo_device_release
+</SECTION>
+
+<SECTION>
 <FILE>cairo-surface</FILE>
-<TITLE>surface</TITLE>
+CAIRO_MIME_TYPE_JP2
+CAIRO_MIME_TYPE_JPEG
+CAIRO_MIME_TYPE_PNG
+CAIRO_MIME_TYPE_URI
 cairo_surface_t
 cairo_content_t
 cairo_surface_create_similar
+cairo_surface_create_for_rectangle
 cairo_surface_reference
 cairo_surface_destroy
 cairo_surface_status
 cairo_surface_finish
 cairo_surface_flush
+cairo_surface_get_device
 cairo_surface_get_font_options
 cairo_surface_get_content
 cairo_surface_mark_dirty
@@ -192,11 +213,12 @@ cairo_surface_get_user_data
 cairo_surface_copy_page
 cairo_surface_show_page
 cairo_surface_has_show_text_glyphs
+cairo_surface_set_mime_data
+cairo_surface_get_mime_data
 </SECTION>
 
 <SECTION>
 <FILE>cairo-version</FILE>
-<TITLE>version-info</TITLE>
 CAIRO_VERSION
 CAIRO_VERSION_MAJOR
 CAIRO_VERSION_MINOR
@@ -211,8 +233,36 @@ CAIRO_VERSION_STRINGIZE_
 </SECTION>
 
 <SECTION>
+<FILE>cairo-region</FILE>
+cairo_region_t
+cairo_region_create
+cairo_region_create_rectangle
+cairo_region_create_rectangles
+cairo_region_copy
+cairo_region_reference
+cairo_region_destroy
+cairo_region_status
+cairo_region_get_extents
+cairo_region_num_rectangles
+cairo_region_get_rectangle
+cairo_region_is_empty
+cairo_region_contains_point
+cairo_region_overlap_t
+cairo_region_contains_rectangle
+cairo_region_equal
+cairo_region_translate
+cairo_region_intersect
+cairo_region_intersect_rectangle
+cairo_region_subtract
+cairo_region_subtract_rectangle
+cairo_region_union
+cairo_region_union_rectangle
+cairo_region_xor
+cairo_region_xor_rectangle
+</SECTION>
+
+<SECTION>
 <FILE>cairo-pattern</FILE>
-<TITLE>pattern</TITLE>
 cairo_pattern_t
 cairo_pattern_add_color_stop_rgb
 cairo_pattern_add_color_stop_rgba
@@ -247,7 +297,6 @@ cairo_pattern_get_user_data
 
 <SECTION>
 <FILE>cairo-matrix</FILE>
-<TITLE>matrix</TITLE>
 cairo_matrix_t
 cairo_matrix_init
 cairo_matrix_init_identity
@@ -265,7 +314,6 @@ cairo_matrix_transform_point
 
 <SECTION>
 <FILE>cairo-status</FILE>
-<TITLE>error-status</TITLE>
 cairo_status_t
 cairo_status_to_string
 cairo_debug_reset_static_data
@@ -273,7 +321,6 @@ cairo_debug_reset_static_data
 
 <SECTION>
 <FILE>cairo-font-face</FILE>
-<TITLE>font-face</TITLE>
 cairo_font_face_t
 cairo_font_face_reference
 cairo_font_face_destroy
@@ -287,7 +334,6 @@ cairo_font_face_get_user_data
 
 <SECTION>
 <FILE>cairo-scaled-font</FILE>
-<TITLE>scaled-font</TITLE>
 cairo_scaled_font_t
 cairo_scaled_font_create
 cairo_scaled_font_reference
@@ -312,7 +358,6 @@ cairo_scaled_font_get_user_data
 
 <SECTION>
 <FILE>cairo-font-options</FILE>
-<TITLE>font-options</TITLE>
 cairo_font_options_t
 cairo_font_options_create
 cairo_font_options_copy
@@ -336,15 +381,14 @@ cairo_font_options_get_hint_metrics
 
 <SECTION>
 <FILE>cairo-types</FILE>
-<TITLE>types</TITLE>
 cairo_bool_t
 cairo_user_data_key_t
 cairo_destroy_func_t
+cairo_rectangle_int_t
 </SECTION>
 
 <SECTION>
 <FILE>cairo-transforms</FILE>
-<TITLE>transformations</TITLE>
 cairo_translate
 cairo_scale
 cairo_rotate
@@ -361,7 +405,6 @@ cairo_device_to_user_distance
 
 <SECTION>
 <FILE>cairo-paths</FILE>
-<TITLE>paths</TITLE>
 cairo_path_t
 cairo_path_data_t
 cairo_path_data_type_t
@@ -390,7 +433,6 @@ cairo_path_extents
 
 <SECTION>
 <FILE>cairo-text</FILE>
-<TITLE>text</TITLE>
 cairo_glyph_t
 cairo_font_slant_t
 cairo_font_weight_t
@@ -424,7 +466,6 @@ cairo_text_cluster_free
 
 <SECTION>
 <FILE>cairo</FILE>
-<TITLE>context</TITLE>
 cairo_t
 cairo_create
 cairo_reference
@@ -470,6 +511,7 @@ cairo_get_tolerance
 cairo_clip
 cairo_clip_preserve
 cairo_clip_extents
+cairo_in_clip
 cairo_reset_clip
 cairo_rectangle_t
 cairo_rectangle_list_t
@@ -549,7 +591,6 @@ cairo_matrix_destroy
 cairo_matrix_copy
 cairo_matrix_get_affine
 cairo_set_target_surface
-cairo_set_target_glitz
 cairo_set_target_image
 cairo_set_target_pdf
 cairo_set_target_png
@@ -560,7 +601,6 @@ cairo_set_target_xcb
 cairo_set_target_drawable
 cairo_get_status_string
 cairo_status_string
-CAIRO_FORMAT_RGB16_565
 CAIRO_FONT_TYPE_ATSUI
 cairo_atsui_font_face_create_for_atsu_font_id
 </SECTION>

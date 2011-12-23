@@ -1,31 +1,23 @@
 <!-- ##### SECTION Title ##### -->
-cairo_font_face_t
+cairo-font-face
 
 <!-- ##### SECTION Short_Description ##### -->
-Base class for font faces
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-#cairo_font_face_t represents a particular font at a particular weight,
-slant, and other characteristic but no size, transformation, or size.
-</para>
-<para>
-Font faces are created using <firstterm>font-backend</firstterm>-specific
-constructors, typically of the form
-cairo_<emphasis>backend</emphasis>_font_face_create(),
-or implicitly using the <firstterm>toy</firstterm> text API by way of
-cairo_select_font_face().  The resulting face can be accessed using
-cairo_get_font_face().
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_scaled_font_t</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
 
 
 <!-- ##### TYPEDEF cairo_font_face_t ##### -->

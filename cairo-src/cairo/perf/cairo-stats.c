@@ -26,7 +26,8 @@
 #include "cairo-stats.h"
 
 static int
-_cairo_perf_ticks_cmp (const void *_a, const void *_b)
+_cairo_perf_ticks_cmp (const void *_a,
+		       const void *_b)
 {
     const cairo_perf_ticks_t *a = _a;
     const cairo_perf_ticks_t *b = _b;
@@ -39,9 +40,9 @@ _cairo_perf_ticks_cmp (const void *_a, const void *_b)
 }
 
 void
-_cairo_stats_compute (cairo_stats_t		*stats,
-		      cairo_perf_ticks_t	*values,
-		      int			 num_values)
+_cairo_stats_compute (cairo_stats_t	 *stats,
+		      cairo_perf_ticks_t *values,
+		      int		  num_values)
 {
     int i;
     double sum, mean, delta, q1, q3, iqr;
@@ -61,7 +62,7 @@ _cairo_stats_compute (cairo_stats_t		*stats,
     qsort (values, num_values,
 	   sizeof (cairo_perf_ticks_t), _cairo_perf_ticks_cmp);
 
-    q1	 	= values[(1*num_values)/4];
+    q1		= values[(1*num_values)/4];
     q3		= values[(3*num_values)/4];
 
     iqr = q3 - q1;

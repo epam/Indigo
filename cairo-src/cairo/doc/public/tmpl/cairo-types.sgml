@@ -1,12 +1,12 @@
 <!-- ##### SECTION Title ##### -->
-Types
+cairo-types
 
 <!-- ##### SECTION Short_Description ##### -->
-Generic data types
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-Generic data types used in the cairo API
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -15,6 +15,9 @@ Generic data types used in the cairo API
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
 
 
 <!-- ##### TYPEDEF cairo_bool_t ##### -->
@@ -37,4 +40,14 @@ Generic data types used in the cairo API
 
 @data: 
 
+
+<!-- ##### STRUCT cairo_rectangle_int_t ##### -->
+<para>
+
+</para>
+
+@x: 
+@y: 
+@width: 
+@height: 
 

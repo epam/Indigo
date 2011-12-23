@@ -1,6 +1,7 @@
 #!/bin/sh
 
-LANG=C
+LC_ALL=C
+export LC_ALL
 
 if which nm 2>/dev/null >/dev/null; then
 	:
@@ -19,9 +20,10 @@ if tail -1 check-has-hidden-symbols.i | grep CAIRO_HAS_HIDDEN_SYMBOLS >/dev/null
 	exit 0
 fi
 
-get_cairo_syms='nm "$so" | grep " [BCDGINRSTVW] " | cut -d" " -f3'
 if [ "`uname -s`" = "Linux" ]; then
-       get_cairo_syms='( objdump -t "$so" | grep "^[^ ]* [^l.*]*[.]"; objdump -t "$so" | grep "[.]hidden.*\\<cairo"; ) | sed "s/.* //"'
+	get_cairo_syms='( objdump -t "$so" | grep "^[^ ]* [^l.*]*[.]"; objdump -t "$so" | grep "[.]hidden.*\\<cairo"; ) | sed "s/.* //"'
+else
+	get_cairo_syms='nm "$so" | grep " [BCDGINRSTVW] " | cut -d" " -f3'
 fi
 
 defs="cairo.def"
@@ -37,7 +39,7 @@ for def in $defs; do
 
 	{
 		echo EXPORTS
-		eval $get_cairo_syms | grep -v '^_cairo_test_\|^_fini\|^_init\|^_save[fg]pr\|^_rest[fg]pr' | sort -u
+		eval $get_cairo_syms | c++filt --no-params | grep -v '^_cairo_test_\|^_fini\|^_init\|^_save[fg]pr\|^_rest[fg]pr\|^_Z\|^__gnu' | sort -u
 		# cheat: copy the last line from the def file!
 		tail -n1 "$def"
 	} | diff "$def" - >&2 || stat=1

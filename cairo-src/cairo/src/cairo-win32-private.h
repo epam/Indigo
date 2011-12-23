@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -38,6 +38,7 @@
 
 #include "cairo-win32.h"
 #include "cairoint.h"
+#include "cairo-surface-clipper-private.h"
 
 #ifndef SHADEBLENDCAPS
 #define SHADEBLENDCAPS 120
@@ -81,6 +82,10 @@ typedef struct _cairo_win32_surface {
     cairo_rectangle_int_t clip_rect;
     HRGN initial_clip_rgn;
     cairo_bool_t had_simple_clip;
+    cairo_region_t *clip_region;
+
+    /* For path clipping to the printing-surface */
+    cairo_surface_clipper_t clipper;
 
     /* Surface DC flags */
     uint32_t flags;
@@ -91,6 +96,8 @@ typedef struct _cairo_win32_surface {
     cairo_bool_t path_empty;
     cairo_bool_t has_ctm;
     cairo_matrix_t ctm;
+    cairo_bool_t has_gdi_ctm;
+    cairo_matrix_t gdi_ctm;
     HBRUSH brush, old_brush;
     cairo_scaled_font_subsets_t *font_subsets;
 } cairo_win32_surface_t;
@@ -117,6 +124,12 @@ enum {
 
     /* Whether we can use GradientFill rectangles with this surface */
     CAIRO_WIN32_SURFACE_CAN_RECT_GRADIENT = (1<<6),
+
+    /* Whether we can use the CHECKJPEGFORMAT escape function */
+    CAIRO_WIN32_SURFACE_CAN_CHECK_JPEG = (1<<7),
+
+    /* Whether we can use the CHECKJPEGFORMAT escape function */
+    CAIRO_WIN32_SURFACE_CAN_CHECK_PNG = (1<<8),
 };
 
 cairo_status_t
@@ -131,20 +144,25 @@ _cairo_surface_is_win32_printing (cairo_surface_t *surface);
 cairo_status_t
 _cairo_win32_surface_finish (void *abstract_surface);
 
-cairo_int_status_t
+cairo_bool_t
 _cairo_win32_surface_get_extents (void		          *abstract_surface,
 				  cairo_rectangle_int_t   *rectangle);
 
 uint32_t
 _cairo_win32_flags_for_dc (HDC dc);
 
+cairo_status_t
+_cairo_win32_surface_set_clip_region (void           *abstract_surface,
+				      cairo_region_t *region);
+
 cairo_int_status_t
 _cairo_win32_surface_show_glyphs (void			*surface,
 				  cairo_operator_t	 op,
-				  cairo_pattern_t	*source,
+				  const cairo_pattern_t	*source,
 				  cairo_glyph_t		*glyphs,
 				  int			 num_glyphs,
 				  cairo_scaled_font_t	*scaled_font,
+				  cairo_clip_t		*clip,
 				  int			*remaining_glyphs);
 
 cairo_surface_t *
@@ -156,6 +174,7 @@ _cairo_win32_surface_create_similar (void	    *abstract_src,
 cairo_status_t
 _cairo_win32_surface_clone_similar (void *abstract_surface,
 				    cairo_surface_t *src,
+				    cairo_content_t content,
 				    int src_x,
 				    int src_y,
 				    int width,

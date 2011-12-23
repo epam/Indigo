@@ -72,7 +72,8 @@ compare_versions() {
     IFS="${IFS=         }"; ch_save_IFS="$IFS"; IFS="."
     set $ch_actual_version
     for ch_min in $ch_min_version; do
-        ch_cur=`echo $1 | sed 's/[^0-9].*$//'`; shift # remove letter suffixes
+        ch_cur=`echo $1 | sed 's/[^0-9].*$//'`; # remove letter suffixes
+        if [ $# -gt 0 ]; then shift; fi
         if [ -z "$ch_min" ]; then break; fi
         if [ -z "$ch_cur" ]; then ch_status=1; break; fi
         if [ $ch_cur -gt $ch_min ]; then break; fi
@@ -187,8 +188,10 @@ cd "$ORIGDIR" || exit 1
 
 rm -f config.cache
 
-do_cmd $srcdir/configure \
+if test -z "$NOCONFIGURE"; then
+  do_cmd $srcdir/configure \
 	--cache-file=config.cache \
 	--disable-static \
 	--enable-test-surfaces \
 	${1+"$@"} && echo "Now type \`make' to compile $PROJECT." || exit 1
+fi

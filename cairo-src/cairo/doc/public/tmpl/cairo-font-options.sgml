@@ -1,25 +1,23 @@
 <!-- ##### SECTION Title ##### -->
-cairo_font_options_t
+cairo-font-options
 
 <!-- ##### SECTION Short_Description ##### -->
-How a font should be rendered
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The font options specify how fonts should be rendered.  Most of the time the
-font options implied by a surface are just right and do not need any changes,
-but for pixel-based targets tweaking font options may result in superior
-output on a particular display.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_scaled_font_t</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
 
 
 <!-- ##### TYPEDEF cairo_font_options_t ##### -->
@@ -33,6 +31,7 @@ output on a particular display.
 
 </para>
 
+@void: 
 @Returns: 
 
 

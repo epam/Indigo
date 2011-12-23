@@ -29,8 +29,8 @@
 #include "cairo-perf.h"
 
 void
-_cairo_stats_compute (cairo_stats_t		*stats,
-		      cairo_perf_ticks_t	*values,
-		      int			 num_values);
+_cairo_stats_compute (cairo_stats_t	 *stats,
+		      cairo_perf_ticks_t *values,
+		      int		  num_values);
 
 #endif /* _CAIRO_STATS_H_ */

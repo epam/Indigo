@@ -23,8 +23,8 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Authors: Peter Weilbacher <mozilla@weilbacher.org>
- *          Vladimir Vukicevic <vladimir@pobox.com> (win32/linux code)
- *          Carl Worth <cworth@cworth.org> (win32/linux code)
+ *	    Vladimir Vukicevic <vladimir@pobox.com> (win32/linux code)
+ *	    Carl Worth <cworth@cworth.org> (win32/linux code)
  */
 
 #define INCL_BASE
@@ -46,7 +46,7 @@ static cairo_perf_timer_synchronize_t cairo_perf_timer_synchronize = NULL;
 static void *cairo_perf_timer_synchronize_closure = NULL;
 void
 cairo_perf_timer_set_synchronize (cairo_perf_timer_synchronize_t  synchronize,
-                                  void                           *closure)
+				  void				 *closure)
 {
     cairo_perf_timer_synchronize = synchronize;
     cairo_perf_timer_synchronize_closure = closure;
@@ -57,7 +57,7 @@ cairo_perf_timer_start (void) {
     QWORD time;
 
     if (cairo_perf_timer_synchronize)
-        cairo_perf_timer_synchronize (cairo_perf_timer_synchronize_closure);
+	cairo_perf_timer_synchronize (cairo_perf_timer_synchronize_closure);
     DosTmrQueryTime(&time);
     timer.start = (time.ulHi*4294967296.0 + time.ulLo);
 }
@@ -67,7 +67,7 @@ cairo_perf_timer_stop (void) {
     QWORD time;
 
     if (cairo_perf_timer_synchronize)
-        cairo_perf_timer_synchronize (cairo_perf_timer_synchronize_closure);
+	cairo_perf_timer_synchronize (cairo_perf_timer_synchronize_closure);
     DosTmrQueryTime(&time);
     timer.stop = (time.ulHi*4294967296.0 + time.ulLo);
 }

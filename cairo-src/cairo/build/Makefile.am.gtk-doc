@@ -10,8 +10,8 @@
 ####################################
 
 if GTK_DOC_USE_LIBTOOL
-GTKDOC_CC = $(LIBTOOL) --mode=compile $(CC) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-GTKDOC_LD = $(LIBTOOL) --mode=link $(CC) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
+GTKDOC_CC = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+GTKDOC_LD = $(LIBTOOL) --tag=CC --mode=link $(CC) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
 else
 GTKDOC_CC = $(CC) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 GTKDOC_LD = $(CC) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
@@ -54,7 +54,7 @@ if ENABLE_GTK_DOC
 doc: html-build.stamp
 else
 doc:
-	@echo "*** gtk-doc must be installed and enabled in order to make doc"
+	@echo "*** gtk-doc must be installed (and --enable-gtk-doc) in order to make doc"
 	@false
 endif
 
@@ -62,11 +62,10 @@ docs: html-build.stamp
 
 #### scan ####
 
-scan-build.stamp: $(HFILE_GLOB) $(CFILE_GLOB)
+scan-build.stamp: $(HFILE_GLOB) $(CFILE_GLOB) $(EXTRA_HFILES)
 	@echo 'gtk-doc: Scanning header files'
 	@-chmod -R u+w $(srcdir)
-	cd $(srcdir) && \
-	  gtkdoc-scan --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --ignore-headers="$(IGNORE_HFILES)" $(SCAN_OPTIONS) $(EXTRA_HFILES)
+	gtkdoc-scan --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --ignore-headers="$(IGNORE_HFILES)" $(SCAN_OPTIONS) $(EXTRA_HFILES) --output-dir=$(srcdir)
 	if grep -l '^..*$$' $(srcdir)/$(DOC_MODULE).types > /dev/null 2>&1 ; then \
 	    CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" gtkdoc-scangobj $(SCANGOBJ_OPTIONS) --module=$(DOC_MODULE) --output-dir=$(srcdir) ; \
 	else \
@@ -97,11 +96,13 @@ tmpl/*.sgml:
 
 #### xml ####
 
+# gtkdoc-mkdb is broken and requires a --root-dir=$(srcdir) option
+# The _srcdir diversion is fragile but works for make check; make distcheck
 sgml-build.stamp: tmpl.stamp $(HFILE_GLOB) $(CFILE_GLOB) $(DOC_MODULE)-sections.txt $(srcdir)/tmpl/*.sgml $(expand_content_files)
 	@echo 'gtk-doc: Building XML'
 	@-chmod -R u+w $(srcdir)
-	cd $(srcdir) && \
-	gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --output-format=xml --expand-content-files="$(expand_content_files)" --main-sgml-file=$(DOC_MAIN_SGML_FILE) $(MKDB_OPTIONS)
+	_srcdir="`pwd`/$(DOC_SOURCE_DIR)"; \
+	cd $(srcdir) && gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$$_srcdir --output-format=xml --expand-content-files="$(expand_content_files)" --main-sgml-file=$(DOC_MAIN_SGML_FILE) $(MKDB_OPTIONS)
 	touch sgml-build.stamp
 
 sgml.stamp: sgml-build.stamp
@@ -161,7 +162,7 @@ if ENABLE_GTK_DOC
 dist-check-gtkdoc:
 else
 dist-check-gtkdoc:
-	@echo "*** gtk-doc must be installed and enabled in order to make dist"
+	@echo "*** gtk-doc must be installed (and --enable-gtk-doc) in order to make dist"
 	@false
 endif
 

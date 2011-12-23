@@ -92,6 +92,9 @@ Here are the steps to follow to create a new cairo release:
 	* Generate an sha1sum file
 	* Sign the sha1sum using your GPG setup (asks for your GPG password)
 	* scp the three files to appear on http://cairographics.org/releases
+	* Generate a versioned manual and upload it to appear as both:
+	  http://cairographics.org/manual-X.Y.Z
+	  http://cairographics.org/manual
 	* Place local copies of the three files in the releases directory
 	* Create a LATEST-package-version file (after deleting any old one)
 	* Tag the entire source tree with a tag of the form X.Y.Z, and sign

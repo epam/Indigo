@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -36,14 +36,7 @@
 
 #include "cairoint.h"
 
-void
-_cairo_slope_init (cairo_slope_t *slope,
-		   const cairo_point_t *a,
-		   const cairo_point_t *b)
-{
-    slope->dx = b->x - a->x;
-    slope->dy = b->y - a->y;
-}
+#include "cairo-slope-private.h"
 
 /* Compare two slopes. Slope angles begin at 0 in the direction of the
    positive X axis and increase in the direction of the positive Y
@@ -94,9 +87,7 @@ _cairo_slope_compare (const cairo_slope_t *a, const cairo_slope_t *b)
      * of b by an infinitesimally small amount, (that is, 'a' will
      * always be considered less than 'b').
      */
-    if (((a->dx > 0) != (b->dx > 0)) ||
-	((a->dy > 0) != (b->dy > 0)))
-    {
+    if ((a->dx ^ b->dx) < 0 || (a->dy ^ b->dy) < 0) {
 	if (a->dx > 0 || (a->dx == 0 && a->dy > 0))
 	    return +1;
 	else

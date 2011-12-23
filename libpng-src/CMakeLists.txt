@@ -17,6 +17,10 @@ if (NOT PNG_FOUND)
         include_directories(${ZLib_SOURCE_DIR}/include)
     endif()
 
+    if(APPLE)
+        set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
+    endif()
+
     add_library(png STATIC ${PNG_SOURCES})
 
     target_link_libraries(png z)

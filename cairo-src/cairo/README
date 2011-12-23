@@ -6,8 +6,8 @@ What is cairo
 Cairo is a 2D graphics library with support for multiple output
 devices. Currently supported output targets include the X Window
 System, quartz, win32, and image buffers, as well as PDF, PostScript,
-and SVG file output. Experimental backends include OpenGL (through
-glitz), XCB, BeOS, OS/2, and DirectFB.
+and SVG file output. Experimental backends include OpenGL, XCB, BeOS,
+OS/2, and DirectFB.
 
 Cairo is designed to produce consistent output on all output media
 while taking advantage of display hardware acceleration when available
@@ -89,7 +89,7 @@ Supported, "standard" surface backends
 ------------------------------------
 	image backend (required)
 	------------------------
-	pixman >= 0.10.0	http://cairographics.org/releases
+	pixman >= 0.18.4	http://cairographics.org/releases
 
 	png support (can be left out if desired, but many
 	-----------  applications expect it to be present)
@@ -163,10 +163,6 @@ Font backends (required to have at least one)
 
 Experimental surface backends
 -----------------------------
-	glitz
-	-------------
-	glitz >= 0.4.4 		http://freedesktop.org/Software/glitz
-
 	xcb backend
 	-----------
 	XCB			http://xcb.freedesktop.org

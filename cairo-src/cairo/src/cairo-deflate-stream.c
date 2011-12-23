@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -35,6 +35,7 @@
  */
 
 #include "cairoint.h"
+#include "cairo-error-private.h"
 #include "cairo-output-stream-private.h"
 #include <zlib.h>
 
@@ -121,13 +122,14 @@ _cairo_deflate_stream_create (cairo_output_stream_t *output)
 	return _cairo_output_stream_create_in_error (output->status);
 
     stream = malloc (sizeof (cairo_deflate_stream_t));
-    if (stream == NULL) {
+    if (unlikely (stream == NULL)) {
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
 	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
     }
 
     _cairo_output_stream_init (&stream->base,
 			       _cairo_deflate_stream_write,
+			       NULL,
 			       _cairo_deflate_stream_close);
     stream->output = output;
 

@@ -1,29 +1,35 @@
 <!-- ##### SECTION Title ##### -->
-FreeType Fonts
+cairo-ft
 
 <!-- ##### SECTION Short_Description ##### -->
-Font support for FreeType
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The FreeType font backend is primarily used to render text on GNU/Linux
-systems, but can be used on other platforms too.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_font_face_t</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO CAIRO_HAS_FT_FONT ##### -->
 <para>
-Defined if the FreeType font backend is available.
-This macro can be used to conditionally compile backend-specific code.
+
+</para>
+
+
+
+<!-- ##### MACRO CAIRO_HAS_FC_FONT ##### -->
+<para>
+
 </para>
 
 

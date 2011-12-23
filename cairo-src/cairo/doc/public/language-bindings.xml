@@ -506,8 +506,13 @@ CAIRO_STATUS_WRITE_ERROR
       linkend="cairo-pattern-t"><type>cairo_pattern_t</type></link>
       in C, but in an object oriented language, there should instead
       be a hierarchy of types. (The functions that should map to
-      constructors for the various types are listed after the type,
-      methods on that type are listed below)
+      constructors or static methods for the various types are listed
+      after the type, methods on that type are listed below. Note that
+      cairo_pattern_create_rgb() and cairo_pattern_create_rgba()
+      should not be overloaded with each other as a SolidPattern()
+      constructor, but should appear as static methods instead.  This
+      is to maintain code clarity by making it clear how the arguments
+      relate to color components.)
     </para>
     <programlisting>
 cairo_pattern_t

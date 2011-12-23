@@ -1,30 +1,51 @@
 <!-- ##### SECTION Title ##### -->
-cairo_surface_t
+cairo-surface
 
 <!-- ##### SECTION Short_Description ##### -->
-Base class for surfaces
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-#cairo_surface_t is the abstract type representing all different drawing
-targets that cairo can render to.  The actual drawings are
-performed using a cairo <firstterm>context</firstterm>.
-</para>
-<para>
-A cairo surface is created by using <firstterm>backend</firstterm>-specific
-constructors, typically of the form
-cairo_<emphasis>backend</emphasis>_surface_create().
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_t()</listitem>
-<listitem>#cairo_pattern_t()</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO CAIRO_MIME_TYPE_JP2 ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO CAIRO_MIME_TYPE_JPEG ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO CAIRO_MIME_TYPE_PNG ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO CAIRO_MIME_TYPE_URI ##### -->
+<para>
+
+</para>
+
 
 
 <!-- ##### TYPEDEF cairo_surface_t ##### -->
@@ -49,6 +70,19 @@ cairo_<emphasis>backend</emphasis>_surface_create().
 
 @other: 
 @content: 
+@width: 
+@height: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_create_for_rectangle ##### -->
+<para>
+
+</para>
+
+@target: 
+@x: 
+@y: 
 @width: 
 @height: 
 @Returns: 
@@ -94,6 +128,15 @@ cairo_<emphasis>backend</emphasis>_surface_create().
 </para>
 
 @surface: 
+
+
+<!-- ##### FUNCTION cairo_surface_get_device ##### -->
+<para>
+
+</para>
+
+@surface: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_surface_get_font_options ##### -->
@@ -193,6 +236,16 @@ cairo_<emphasis>backend</emphasis>_surface_create().
 @CAIRO_SURFACE_TYPE_OS2: 
 @CAIRO_SURFACE_TYPE_WIN32_PRINTING: 
 @CAIRO_SURFACE_TYPE_QUARTZ_IMAGE: 
+@CAIRO_SURFACE_TYPE_SCRIPT: 
+@CAIRO_SURFACE_TYPE_QT: 
+@CAIRO_SURFACE_TYPE_RECORDING: 
+@CAIRO_SURFACE_TYPE_VG: 
+@CAIRO_SURFACE_TYPE_GL: 
+@CAIRO_SURFACE_TYPE_DRM: 
+@CAIRO_SURFACE_TYPE_TEE: 
+@CAIRO_SURFACE_TYPE_XML: 
+@CAIRO_SURFACE_TYPE_SKIA: 
+@CAIRO_SURFACE_TYPE_SUBSURFACE: 
 
 <!-- ##### FUNCTION cairo_surface_get_type ##### -->
 <para>
@@ -257,5 +310,30 @@ cairo_<emphasis>backend</emphasis>_surface_create().
 
 @surface: 
 @Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_set_mime_data ##### -->
+<para>
+
+</para>
+
+@surface: 
+@mime_type: 
+@data: 
+@length: 
+@destroy: 
+@closure: 
+@Returns: 
+
+
+<!-- ##### FUNCTION cairo_surface_get_mime_data ##### -->
+<para>
+
+</para>
+
+@surface: 
+@mime_type: 
+@data: 
+@length: 
 
 

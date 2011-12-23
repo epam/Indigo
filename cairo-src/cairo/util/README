@@ -50,14 +50,6 @@ applications.  This is useful for either extracting a test case triggering
 a bug from an application, or simply to get a general idea of how an
 application is using cairo.
 
-This tool lives outside the cairo source distribution right now and can
-be found in a git repository at:
-
-	http://cgit.freedesktop.org/~ickle/cairo-trace/
-
-There are plans to move it to this directory in the future, and possibly
-install it on the system.
-
 
 cairo-api-update and xr2cairo
 -----------------------------
@@ -66,4 +58,10 @@ These two scripts were used to convert source code written for pre-1.0
 cairo to newer API.  See $(top_srcdir)/PORTING_GUIDE for more information.
 
 These files are obsolete now and may be removed in a future version.
+
+
+cairo-view and waterfall
+------------------------
+
+These are two pycairo scripts useful for testing the toy font backend.
 

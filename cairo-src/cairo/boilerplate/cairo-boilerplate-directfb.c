@@ -9,8 +9,7 @@ make check
 
 */
 
-#include "cairo-boilerplate.h"
-#include "cairo-boilerplate-directfb-private.h"
+#include "cairo-boilerplate-private.h"
 
 #include <cairo-directfb.h>
 
@@ -22,22 +21,22 @@ make check
 D_DEBUG_DOMAIN (CairoDFB_Boiler, "CairoDFB/Boiler", "Cairo DirectFB Boilerplate");
 
 /* macro for a safe call to DirectFB functions */
-#define DFBCHECK(x...)  do{                                     \
-    err = x;                                                    \
-    if (err != DFB_OK) {                                        \
+#define DFBCHECK(x...)	do{					\
+    err = x;							\
+    if (err != DFB_OK) {					\
 	fprintf (stderr, "%s <%d>:\n\t", __FILE__, __LINE__); \
 	goto ERROR; \
-    }                                                           \
+    }								\
 } while (0)
 
 typedef struct _DFBInfo {
-    IDirectFB              *dfb;
+    IDirectFB		   *dfb;
     IDirectFBDisplayLayer  *layer;
-    IDirectFBWindow        *window;
-    IDirectFBSurface       *surface;
+    IDirectFBWindow	   *window;
+    IDirectFBSurface	   *surface;
 } DFBInfo;
 
-void
+static void
 _cairo_boilerplate_directfb_cleanup (void *closure)
 {
     DFBInfo *info = (DFBInfo *) closure;
@@ -60,7 +59,7 @@ _cairo_boilerplate_directfb_cleanup (void *closure)
 static DFBInfo *
 init (void)
 {
-    DFBDisplayLayerConfig        layer_config;
+    DFBDisplayLayerConfig	 layer_config;
     DFBGraphicsDeviceDescription desc;
     int err;
     DFBInfo *info;
@@ -95,26 +94,26 @@ ERROR:
 }
 
 static cairo_surface_t *
-_cairo_boilerplate_directfb_window_create_surface (DFBInfo		*info,
-						   cairo_content_t	 content,
-						   int			 width,
-						   int			 height)
+_cairo_boilerplate_directfb_window_create_surface (DFBInfo	   *info,
+						   cairo_content_t  content,
+						   int		    width,
+						   int		    height)
 {
     DFBWindowDescription desc;
     int err;
 
     D_DEBUG_AT (CairoDFB_Boiler, "%s (%p, %s, %dx%d)\n", __FUNCTION__, info,
-		content == CAIRO_CONTENT_ALPHA       ? "ALPHA" :
-		content == CAIRO_CONTENT_COLOR       ? "RGB"   :
+		content == CAIRO_CONTENT_ALPHA	     ? "ALPHA" :
+		content == CAIRO_CONTENT_COLOR	     ? "RGB"   :
 		content == CAIRO_CONTENT_COLOR_ALPHA ? "ARGB"  : "unknown content!",
 		width, height);
 
-    desc.flags  = DWDESC_POSX | DWDESC_POSY |
-	          DWDESC_WIDTH | DWDESC_HEIGHT;
-    desc.caps   = DSCAPS_NONE;
-    desc.posx   = 0;
-    desc.posy   = 0;
-    desc.width  = width;
+    desc.flags	= DWDESC_POSX | DWDESC_POSY |
+		  DWDESC_WIDTH | DWDESC_HEIGHT;
+    desc.caps	= DSCAPS_NONE;
+    desc.posx	= 0;
+    desc.posy	= 0;
+    desc.width	= width;
     desc.height = height;
     if (content == CAIRO_CONTENT_COLOR_ALPHA) {
 	desc.flags |= DWDESC_CAPS | DSDESC_PIXELFORMAT;
@@ -137,23 +136,23 @@ ERROR:
 }
 
 static cairo_surface_t *
-_cairo_boilerplate_directfb_bitmap_create_surface (DFBInfo		*info,
-						   cairo_content_t	 content,
-						   int			 width,
-						   int			 height)
+_cairo_boilerplate_directfb_bitmap_create_surface (DFBInfo	   *info,
+						   cairo_content_t  content,
+						   int		    width,
+						   int		    height)
 {
     int  err;
     DFBSurfaceDescription  desc;
 
     D_DEBUG_AT (CairoDFB_Boiler, "%s (%p, %s, %dx%d)\n", __FUNCTION__, info,
-		content == CAIRO_CONTENT_ALPHA       ? "ALPHA" :
-		content == CAIRO_CONTENT_COLOR       ? "RGB"   :
+		content == CAIRO_CONTENT_ALPHA	     ? "ALPHA" :
+		content == CAIRO_CONTENT_COLOR	     ? "RGB"   :
 		content == CAIRO_CONTENT_COLOR_ALPHA ? "ARGB"  : "unknown content!",
 		width, height);
 
     desc.flags = DSDESC_WIDTH | DSDESC_HEIGHT;
     desc.caps = DSCAPS_NONE;
-    desc.width  = width;
+    desc.width	= width;
     desc.height = height;
     if (content == CAIRO_CONTENT_COLOR_ALPHA) {
 	desc.flags |= DSDESC_PIXELFORMAT;
@@ -168,34 +167,34 @@ ERROR:
     return NULL;
 }
 
-cairo_surface_t *
-_cairo_boilerplate_directfb_create_surface (const char			 *name,
-					    cairo_content_t		  content,
-					    int				  width,
-					    int				  height,
-					    int				  max_width,
-					    int				  max_height,
-					    cairo_boilerplate_mode_t	  mode,
-					    int                           id,
-					    void			**closure)
+static cairo_surface_t *
+_cairo_boilerplate_directfb_create_surface (const char		      *name,
+					    cairo_content_t	       content,
+					    double		       width,
+					    double		       height,
+					    double		       max_width,
+					    double		       max_height,
+					    cairo_boilerplate_mode_t   mode,
+					    int 		       id,
+					    void		     **closure)
 {
 
     DFBInfo *info;
 
     info = init ();
     if (info == NULL)
-        return NULL;
+	return NULL;
 
     *closure = info;
 
     D_DEBUG_AT (CairoDFB_Boiler, "%s ('%s', %s, %dx%d, %s)\n",
 		__FUNCTION__, name,
-                content == CAIRO_CONTENT_ALPHA       ? "ALPHA" :
-                content == CAIRO_CONTENT_COLOR       ? "RGB"   :
-                content == CAIRO_CONTENT_COLOR_ALPHA ? "ARGB"  : "unknown content!",
-                width, height,
-                mode == CAIRO_BOILERPLATE_MODE_TEST ? "TEST" :
-                mode == CAIRO_BOILERPLATE_MODE_PERF ? "PERF" : "unknown mode!");
+		content == CAIRO_CONTENT_ALPHA	     ? "ALPHA" :
+		content == CAIRO_CONTENT_COLOR	     ? "RGB"   :
+		content == CAIRO_CONTENT_COLOR_ALPHA ? "ARGB"  : "unknown content!",
+		width, height,
+		mode == CAIRO_BOILERPLATE_MODE_TEST ? "TEST" :
+		mode == CAIRO_BOILERPLATE_MODE_PERF ? "PERF" : "unknown mode!");
 
     if (width == 0)
 	width = 1;
@@ -207,3 +206,29 @@ _cairo_boilerplate_directfb_create_surface (const char			 *name,
     else /* mode == CAIRO_BOILERPLATE_MODE_PERF */
 	return _cairo_boilerplate_directfb_window_create_surface (info, content, width, height);
 }
+
+static const cairo_boilerplate_target_t targets[] = {
+    {
+	"directfb", "directfb", NULL, NULL,
+	CAIRO_SURFACE_TYPE_DIRECTFB, CAIRO_CONTENT_COLOR, 0,
+	"cairo_directfb_surface_create",
+	_cairo_boilerplate_directfb_create_surface,
+	NULL, NULL,
+	_cairo_boilerplate_get_image_surface,
+	cairo_surface_write_to_png,
+	_cairo_boilerplate_directfb_cleanup,
+	NULL, NULL, TRUE, FALSE, FALSE
+    },
+    {
+	"directfb-bitmap", "directfb", NULL, NULL,
+	CAIRO_SURFACE_TYPE_DIRECTFB, CAIRO_CONTENT_COLOR_ALPHA, 0,
+	"cairo_directfb_surface_create",
+	_cairo_boilerplate_directfb_create_surface,
+	NULL, NULL,
+	_cairo_boilerplate_get_image_surface,
+	cairo_surface_write_to_png,
+	_cairo_boilerplate_directfb_cleanup,
+	NULL, NULL, FALSE, FALSE, FALSE
+    },
+};
+CAIRO_BOILERPLATE (directfb, targets);

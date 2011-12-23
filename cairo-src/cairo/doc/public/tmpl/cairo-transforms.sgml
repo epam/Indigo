@@ -1,26 +1,23 @@
 <!-- ##### SECTION Title ##### -->
-Transformations
+cairo-transforms
 
 <!-- ##### SECTION Short_Description ##### -->
-Manipulating the current transformation matrix
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The current transformation matrix, <firstterm>ctm</firstterm>, is a
-two-dimensional affine transformation that maps all coordinates and other
-drawing instruments from the <firstterm>user space</firstterm> into the
-surface's canonical coordinate system, also known as the <firstterm>device
-space</firstterm>.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_matrix_t</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
 
 
 <!-- ##### FUNCTION cairo_translate ##### -->

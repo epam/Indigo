@@ -46,7 +46,7 @@ xmalloc (size_t size)
 
     buf = malloc (size);
     if (buf == NULL) {
-	CAIRO_BOILERPLATE_LOG ("Error: Out of memory. Exiting.\n");
+	fprintf (stderr, "Error: Out of memory. Exiting.\n");
 	exit (1);
     }
 
@@ -54,7 +54,8 @@ xmalloc (size_t size)
 }
 
 void *
-xcalloc (size_t nmemb, size_t size)
+xcalloc (size_t nmemb,
+	 size_t size)
 {
     void *buf;
 
@@ -63,7 +64,7 @@ xcalloc (size_t nmemb, size_t size)
 
     buf = calloc (nmemb, size);
     if (buf == NULL) {
-	CAIRO_BOILERPLATE_LOG ("Error: Out of memory. Exiting\n");
+	fprintf (stderr, "Error: Out of memory. Exiting\n");
 	exit (1);
     }
 
@@ -71,11 +72,12 @@ xcalloc (size_t nmemb, size_t size)
 }
 
 void *
-xrealloc (void *buf, size_t size)
+xrealloc (void	 *buf,
+	  size_t  size)
 {
     buf = realloc (buf, size);
     if (buf == NULL && size != 0) {
-	CAIRO_BOILERPLATE_LOG ("Error: Out of memory. Exiting\n");
+	fprintf (stderr, "Error: Out of memory. Exiting\n");
 	exit (1);
     }
 
@@ -83,7 +85,9 @@ xrealloc (void *buf, size_t size)
 }
 
 void
-xasprintf (char **strp, const char *fmt, ...)
+xasprintf (char       **strp,
+	   const char  *fmt,
+			...)
 {
 #ifdef HAVE_VASPRINTF
     va_list va;
@@ -94,7 +98,7 @@ xasprintf (char **strp, const char *fmt, ...)
     va_end (va);
 
     if (ret < 0) {
-	CAIRO_BOILERPLATE_LOG ("Error: Out of memory. Exiting.\n");
+	fprintf (stderr, "Error: Out of memory. Exiting.\n");
 	exit (1);
     }
 #else /* !HAVE_VASNPRINTF */
@@ -108,14 +112,14 @@ xasprintf (char **strp, const char *fmt, ...)
     va_end (va);
 
     if (ret < 0) {
-	CAIRO_BOILERPLATE_LOG ("Failure in vsnprintf\n");
+	fprintf (stderr, "Failure in vsnprintf\n");
 	exit (1);
     }
 
     len = (ret + sizeof (int)) & -sizeof (int);
     *strp = malloc (len);
     if (*strp == NULL) {
-	CAIRO_BOILERPLATE_LOG ("Out of memory\n");
+	fprintf (stderr, "Out of memory\n");
 	exit (1);
     }
 
@@ -128,7 +132,7 @@ xasprintf (char **strp, const char *fmt, ...)
 
 	if (ret >= len) {
 	    free (*strp);
-	    CAIRO_BOILERPLATE_LOG ("Overflowed dynamic buffer\n");
+	    fprintf (stderr, "Overflowed dynamic buffer\n");
 	    exit (1);
 	}
     }
@@ -140,8 +144,23 @@ void
 xunlink (const char *pathname)
 {
     if (unlink (pathname) < 0 && errno != ENOENT) {
-	CAIRO_BOILERPLATE_LOG ("Error: Cannot remove %s: %s\n",
+	fprintf (stderr, "Error: Cannot remove %s: %s\n",
 			       pathname, strerror (errno));
 	exit (1);
     }
+}
+
+char *
+xstrdup (const char *str)
+{
+    if (str == NULL)
+	return NULL;
+
+    str = strdup (str);
+    if (str == NULL) {
+	fprintf (stderr, "Error: Out of memory. Exiting.\n");
+	exit (1);
+    }
+
+    return (char *) str;
 }

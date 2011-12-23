@@ -17,6 +17,8 @@ genlcov:
 	       < cairo-lcov.info > cairo-lcov.info.tmp
 	LANG=C $(LTP_GENHTML) --prefix $(top_builddir) --output-directory cairo-lcov --title "Cairo Code Coverage" --show-details cairo-lcov.info.tmp
 	$(RM) cairo-lcov.info.tmp
+
+html-local: lcov
 else
 lcov lcov-perf genlcov:
 	@echo You need to configure Cairo with support for gcov enabled.

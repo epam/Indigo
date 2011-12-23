@@ -1,13 +1,12 @@
 <!-- ##### SECTION Title ##### -->
-Paths
+cairo-paths
 
 <!-- ##### SECTION Short_Description ##### -->
-Creating paths and manipulating path data
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-Paths are the most basic drawing tools and are primarily used to implicitly
-generate simple masks.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -16,6 +15,9 @@ generate simple masks.
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
 
 
 <!-- ##### STRUCT cairo_path_t ##### -->

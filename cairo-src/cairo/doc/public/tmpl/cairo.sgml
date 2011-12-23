@@ -1,32 +1,23 @@
 <!-- ##### SECTION Title ##### -->
-cairo_t
+cairo
 
 <!-- ##### SECTION Short_Description ##### -->
-The cairo drawing context
+
 
 <!-- ##### SECTION Long_Description ##### -->
+<para>
 
-  <para>
-    #cairo_t is the main object used when drawing with cairo. To
-    draw with cairo, you create a #cairo_t, set the target surface,
-    and drawing options for the #cairo_t, create shapes with
-    functions like cairo_move_to() and cairo_line_to(), and then
-    draw shapes with cairo_stroke() or cairo_fill().
-  </para>
-  <para>
-    #cairo_t<!-- -->'s can be pushed to a stack via cairo_save().
-    They may then safely be changed, without loosing the current state.
-    Use cairo_restore() to restore to the saved state.
-  </para>
+</para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_surface_t</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
 
 
 <!-- ##### TYPEDEF cairo_t ##### -->
@@ -383,6 +374,21 @@ The cairo drawing context
 @CAIRO_OPERATOR_XOR: 
 @CAIRO_OPERATOR_ADD: 
 @CAIRO_OPERATOR_SATURATE: 
+@CAIRO_OPERATOR_MULTIPLY: 
+@CAIRO_OPERATOR_SCREEN: 
+@CAIRO_OPERATOR_OVERLAY: 
+@CAIRO_OPERATOR_DARKEN: 
+@CAIRO_OPERATOR_LIGHTEN: 
+@CAIRO_OPERATOR_COLOR_DODGE: 
+@CAIRO_OPERATOR_COLOR_BURN: 
+@CAIRO_OPERATOR_HARD_LIGHT: 
+@CAIRO_OPERATOR_SOFT_LIGHT: 
+@CAIRO_OPERATOR_DIFFERENCE: 
+@CAIRO_OPERATOR_EXCLUSION: 
+@CAIRO_OPERATOR_HSL_HUE: 
+@CAIRO_OPERATOR_HSL_SATURATION: 
+@CAIRO_OPERATOR_HSL_COLOR: 
+@CAIRO_OPERATOR_HSL_LUMINOSITY: 
 
 <!-- ##### FUNCTION cairo_set_operator ##### -->
 <para>
@@ -446,6 +452,17 @@ The cairo drawing context
 @y1: 
 @x2: 
 @y2: 
+
+
+<!-- ##### FUNCTION cairo_in_clip ##### -->
+<para>
+
+</para>
+
+@cr: 
+@x: 
+@y: 
+@Returns: 
 
 
 <!-- ##### FUNCTION cairo_reset_clip ##### -->

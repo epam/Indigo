@@ -1,34 +1,30 @@
 <!-- ##### SECTION Title ##### -->
-Image Surfaces
+cairo-image
 
 <!-- ##### SECTION Short_Description ##### -->
-Rendering to memory buffers
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-Image surfaces provide the ability to render to memory buffers
-either allocated by cairo or by the calling code.  The supported
-image formats are those defined in #cairo_format_t.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_surface_t</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO CAIRO_HAS_IMAGE_SURFACE ##### -->
 <para>
-Defined if the image surface backend is available.
-The image surface backend is always built in.
-This macro was added for completeness in cairo 1.8.
+
 </para>
 
-@Since: 1.8
 
 
 <!-- ##### ENUM cairo_format_t ##### -->
@@ -36,10 +32,12 @@ This macro was added for completeness in cairo 1.8.
 
 </para>
 
+@CAIRO_FORMAT_INVALID: 
 @CAIRO_FORMAT_ARGB32: 
 @CAIRO_FORMAT_RGB24: 
 @CAIRO_FORMAT_A8: 
 @CAIRO_FORMAT_A1: 
+@CAIRO_FORMAT_RGB16_565: 
 
 <!-- ##### FUNCTION cairo_format_stride_for_width ##### -->
 <para>

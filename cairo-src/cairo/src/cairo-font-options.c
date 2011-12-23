@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -35,10 +35,24 @@
  */
 
 #include "cairoint.h"
+#include "cairo-error-private.h"
+
+/**
+ * SECTION:cairo-font-options
+ * @Title: cairo_font_options_t
+ * @Short_Description: How a font should be rendered
+ * @See_Also: #cairo_scaled_font_t
+ *
+ * The font options specify how fonts should be rendered.  Most of the 
+ * time the font options implied by a surface are just right and do not 
+ * need any changes, but for pixel-based targets tweaking font options 
+ * may result in superior output on a particular display.
+ */
 
 static const cairo_font_options_t _cairo_font_options_nil = {
     CAIRO_ANTIALIAS_DEFAULT,
     CAIRO_SUBPIXEL_ORDER_DEFAULT,
+    CAIRO_LCD_FILTER_DEFAULT,
     CAIRO_HINT_STYLE_DEFAULT,
     CAIRO_HINT_METRICS_DEFAULT
 };
@@ -54,6 +68,7 @@ _cairo_font_options_init_default (cairo_font_options_t *options)
 {
     options->antialias = CAIRO_ANTIALIAS_DEFAULT;
     options->subpixel_order = CAIRO_SUBPIXEL_ORDER_DEFAULT;
+    options->lcd_filter = CAIRO_LCD_FILTER_DEFAULT;
     options->hint_style = CAIRO_HINT_STYLE_DEFAULT;
     options->hint_metrics = CAIRO_HINT_METRICS_DEFAULT;
 }
@@ -64,6 +79,7 @@ _cairo_font_options_init_copy (cairo_font_options_t		*options,
 {
     options->antialias = other->antialias;
     options->subpixel_order = other->subpixel_order;
+    options->lcd_filter = other->lcd_filter;
     options->hint_style = other->hint_style;
     options->hint_metrics = other->hint_metrics;
 }
@@ -189,6 +205,8 @@ cairo_font_options_merge (cairo_font_options_t       *options,
 	options->antialias = other->antialias;
     if (other->subpixel_order != CAIRO_SUBPIXEL_ORDER_DEFAULT)
 	options->subpixel_order = other->subpixel_order;
+    if (other->lcd_filter != CAIRO_LCD_FILTER_DEFAULT)
+	options->lcd_filter = other->lcd_filter;
     if (other->hint_style != CAIRO_HINT_STYLE_DEFAULT)
 	options->hint_style = other->hint_style;
     if (other->hint_metrics != CAIRO_HINT_METRICS_DEFAULT)
@@ -221,6 +239,7 @@ cairo_font_options_equal (const cairo_font_options_t *options,
 
     return (options->antialias == other->antialias &&
 	    options->subpixel_order == other->subpixel_order &&
+	    options->lcd_filter == other->lcd_filter &&
 	    options->hint_style == other->hint_style &&
 	    options->hint_metrics == other->hint_metrics);
 }
@@ -246,7 +265,8 @@ cairo_font_options_hash (const cairo_font_options_t *options)
 
     return ((options->antialias) |
 	    (options->subpixel_order << 4) |
-	    (options->hint_style << 8) |
+	    (options->lcd_filter << 8) |
+	    (options->hint_style << 12) |
 	    (options->hint_metrics << 16));
 }
 slim_hidden_def (cairo_font_options_hash);
@@ -325,6 +345,48 @@ cairo_font_options_get_subpixel_order (const cairo_font_options_t *options)
 	return CAIRO_SUBPIXEL_ORDER_DEFAULT;
 
     return options->subpixel_order;
+}
+
+/**
+ * _cairo_font_options_set_lcd_filter:
+ * @options: a #cairo_font_options_t
+ * @lcd_filter: the new LCD filter
+ *
+ * Sets the LCD filter for the font options object. The LCD filter
+ * specifies how pixels are filtered when rendered with an antialiasing
+ * mode of %CAIRO_ANTIALIAS_SUBPIXEL. See the documentation for
+ * #cairo_lcd_filter_t for full details.
+ *
+ * Since: 1.8
+ **/
+void
+_cairo_font_options_set_lcd_filter (cairo_font_options_t *options,
+				    cairo_lcd_filter_t    lcd_filter)
+{
+    if (cairo_font_options_status (options))
+	return;
+
+    options->lcd_filter = lcd_filter;
+}
+
+/**
+ * _cairo_font_options_get_lcd_filter:
+ * @options: a #cairo_font_options_t
+ *
+ * Gets the LCD filter for the font options object.
+ * See the documentation for #cairo_lcd_filter_t for full details.
+ *
+ * Return value: the LCD filter for the font options object
+ *
+ * Since: 1.8
+ **/
+cairo_lcd_filter_t
+_cairo_font_options_get_lcd_filter (const cairo_font_options_t *options)
+{
+    if (cairo_font_options_status ((cairo_font_options_t *) options))
+	return CAIRO_LCD_FILTER_DEFAULT;
+
+    return options->lcd_filter;
 }
 
 /**

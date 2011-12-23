@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -35,6 +35,7 @@
  */
 
 #include "cairoint.h"
+#include "cairo-error-private.h"
 
 typedef struct _lzw_buf {
     cairo_status_t status;
@@ -73,7 +74,7 @@ _lzw_buf_init (lzw_buf_t *buf, int size)
     buf->pending_bits = 0;
 
     buf->data = malloc (size);
-    if (buf->data == NULL) {
+    if (unlikely (buf->data == NULL)) {
 	buf->data_size = 0;
 	buf->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
 	return;
@@ -98,7 +99,7 @@ _lzw_buf_grow (lzw_buf_t *buf)
     if (new_size / 2 == buf->data_size)
 	new_data = realloc (buf->data, new_size);
 
-    if (new_data == NULL) {
+    if (unlikely (new_data == NULL)) {
 	free (buf->data);
 	buf->data_size = 0;
 	buf->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
@@ -137,7 +138,7 @@ _lzw_buf_store_bits (lzw_buf_t *buf, uint16_t value, int num_bits)
     while (buf->pending_bits >= 8) {
 	if (buf->num_data >= buf->data_size) {
 	    status = _lzw_buf_grow (buf);
-	    if (status)
+	    if (unlikely (status))
 		return;
 	}
 	buf->data[buf->num_data++] = buf->pending >> (buf->pending_bits - 8);
@@ -167,7 +168,7 @@ _lzw_buf_store_pending  (lzw_buf_t *buf)
 
     if (buf->num_data >= buf->data_size) {
 	status = _lzw_buf_grow (buf);
-	if (status)
+	if (unlikely (status))
 	    return;
     }
 

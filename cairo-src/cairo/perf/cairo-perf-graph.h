@@ -52,10 +52,10 @@ GtkWidget *
 graph_view_new (void);
 
 void
-graph_view_set_reports (GraphView *gv,
-	                test_case_t *tests,
-	                cairo_perf_report_t *reports,
-			int num_reports);
+graph_view_set_reports (GraphView	    *gv,
+			test_case_t	    *tests,
+			cairo_perf_report_t *reports,
+			int		     num_reports);
 
 void
 graph_view_update_visible (GraphView *gv);

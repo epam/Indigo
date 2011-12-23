@@ -1,7 +1,7 @@
 Cairo Library Source Code
 =========================
 
-This directory contains the source code to the cairo library.
+This directory contains the source code of the cairo library.
 
 
 Source Code Listing
@@ -60,7 +60,7 @@ be added to the regression test suite to test the new code.
 Bibliography
 ------------
 
-A detailed list of academic publications used in cairo code is availagle
+A detailed list of academic publications used in cairo code is available
 in the file $(top_srcdir)/BIBLIOGRAPHY.  Feel free to update as you
 implement more papers.
 

@@ -887,7 +887,7 @@ Date:   Thu Mar 1 23:34:34 2007 -0800
  1 files changed, 4 insertions(+), 1 deletions(-)
 
 commit df2d42ac7fb71997abd406fb5716c0bd85037c04
-Merge: ec11ca3 97dbbae
+Merge: ec11ca3... 97dbbae...
 Author: Carl Worth <cworth@cworth.org>
 Date:   Thu Mar 1 17:08:03 2007 -0800
 
@@ -2439,8 +2439,8 @@ Date:   Thu Feb 8 15:28:14 2007 -0800
 
     [cairo-surface] Use a macro definition for all nil surfaces
 
- src/cairo-surface.c |  137 ++++++++++++++-------------------------------------
- 1 files changed, 37 insertions(+), 100 deletions(-)
+ src/cairo-surface.c |  139 ++++++++++++++-------------------------------------
+ 1 files changed, 38 insertions(+), 101 deletions(-)
 
 commit aea0831d24c3fca59b9eb9dd8acce9d9cdd13f26
 Author: Kalle Vahlman <kalle.vahlman@gmail.com>
@@ -2692,8 +2692,8 @@ Date:   Tue Feb 6 17:21:22 2007 -0800
     This also allows some cleanup of the error-handling in
     cairo_scaled_font_create, (no more goto statements).
 
- src/cairo-scaled-font.c |   52 +++++++++++++++++++++++-----------------------
- 1 files changed, 26 insertions(+), 26 deletions(-)
+ src/cairo-scaled-font.c |   48 +++++++++++++++++++++++-----------------------
+ 1 files changed, 24 insertions(+), 24 deletions(-)
 
 commit fc660511ec7a51be909e5ed940354d39ef7ad633
 Author: Adrian Johnson <ajohnson@redneon.com>
@@ -3029,7 +3029,7 @@ Date:   Wed Jan 24 15:51:00 2007 -0500
  1 files changed, 1 insertions(+), 1 deletions(-)
 
 commit bb02b4e5ec40ac37462f487f2ad74b0123814277
-Merge: 48c2896 3b77512
+Merge: 48c2896... 3b77512...
 Author: Michael Emmel <memmel@debian.localdomain>
 Date:   Tue Jan 23 22:22:20 2007 -0800
 
@@ -3302,7 +3302,7 @@ Date:   Fri Jan 19 15:52:06 2007 -0800
  4 files changed, 75 insertions(+), 0 deletions(-)
 
 commit d08502d939b44956591f2865a73264713427194b
-Merge: eefcfbf 28d6a22
+Merge: eefcfbf... 28d6a22...
 Author: Vladimir Vukicevic <vladimir@pobox.com>
 Date:   Thu Jan 18 16:50:41 2007 -0800
 
@@ -3388,7 +3388,7 @@ Date:   Wed Jan 17 15:07:12 2007 -0800
  1 files changed, 13 insertions(+), 3 deletions(-)
 
 commit d9df44d8071d038060e0cc987871c185f7733a3d
-Merge: 4e1c2b1 b02b86d
+Merge: 4e1c2b1... b02b86d...
 Author: Vladimir Vukicevic <vladimir@pobox.com>
 Date:   Wed Jan 17 15:08:21 2007 -0800
 
@@ -4267,7 +4267,7 @@ Date:   Sat Dec 16 13:55:21 2006 -0500
  1 files changed, 6 insertions(+), 1 deletions(-)
 
 commit fa618df6e216f9418d4769ba01cd305f3f12a113
-Merge: 2b946cb 81a620f
+Merge: 2b946cb... 81a620f...
 Author: Carl Worth <cworth@cworth.org>
 Date:   Thu Dec 14 21:10:21 2006 -0800
 
@@ -4309,7 +4309,7 @@ Date:   Fri Dec 15 04:52:28 2006 +0100
  0 files changed, 0 insertions(+), 0 deletions(-)
 
 commit 15e8486ef1558b8049a4c7a5c2f50a7e4a2599da
-Merge: bf78be6 8b31038
+Merge: bf78be6... 8b31038...
 Author: U-JONATHAN-X60S\jonathan <jonathan@Jonathan-X60s.(none)>
 Date:   Fri Dec 15 02:31:13 2006 +0100
 
@@ -4362,7 +4362,7 @@ Date:   Thu Dec 14 06:55:58 2006 -0800
     image-rgb     stroke_linear_rgba_over-256  5.68 ->  4.10: 1.39x speedup
     ▍
 
- pixman/src/fbcompose.c                |  435 +++++++++++++++++++++++----------
+ pixman/src/fbcompose.c                |  425 +++++++++++++++++++++++----------
  test/clip-operator-ref.png            |  Bin 36956 -> 8262 bytes
  test/clip-operator-rgb24-ref.png      |  Bin 16507 -> 3258 bytes
  test/clip-operator.c                  |    6 +-
@@ -4386,7 +4386,7 @@ Date:   Thu Dec 14 06:55:58 2006 -0800
  test/unbounded-operator-ref.png       |  Bin 11964 -> 2777 bytes
  test/unbounded-operator-rgb24-ref.png |  Bin 6047 -> 1315 bytes
  test/unbounded-operator.c             |    6 +-
- 24 files changed, 321 insertions(+), 150 deletions(-)
+ 24 files changed, 316 insertions(+), 145 deletions(-)
 
 commit af9cce6aa295327b5256f55900b3debf9112b6ca
 Author: Carl Worth <cworth@cworth.org>
@@ -5714,8 +5714,8 @@ Date:   Mon Nov 20 03:14:20 2006 +0200
 
     Tweak comparators.
 
- src/cairo-bentley-ottmann.c |   62 ++++++++++++++++++++----------------------
- 1 files changed, 30 insertions(+), 32 deletions(-)
+ src/cairo-bentley-ottmann.c |   60 ++++++++++++++++++++----------------------
+ 1 files changed, 29 insertions(+), 31 deletions(-)
 
 commit 67359d7a58c14851936345417833b1e610987c19
 Author: Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
@@ -6105,7 +6105,7 @@ Date:   Mon Nov 20 09:32:00 2006 -0800
  4 files changed, 8 insertions(+), 8 deletions(-)
 
 commit 10920c1326362b4fadfa01019223647c23351127
-Merge: 1ed3811 2928f6e
+Merge: 1ed3811... 2928f6e...
 Author: Emmanuel Pacaud <emmanuel.pacaud@free.fr>
 Date:   Sat Nov 18 12:59:12 2006 +0100
 
@@ -6255,8 +6255,8 @@ Date:   Sat Nov 11 10:43:11 2006 -0800
      xlib-rgb   world_map-800  562.31 0.64% -> 460.51 0.83%:  1.22x speedup
     ▎
 
- src/cairo-path-stroke.c |   22 ++++++++--------------
- 1 files changed, 8 insertions(+), 14 deletions(-)
+ src/cairo-path-stroke.c |   20 +++++++-------------
+ 1 files changed, 7 insertions(+), 13 deletions(-)
 
 commit 3d53f623faed4aed2517e207d77a6da7e3b74fbd
 Author: Carl Worth <cworth@cworth.org>
@@ -6278,8 +6278,8 @@ Date:   Fri Nov 10 12:56:32 2006 -0800
      xlib-rgba  world_map-800  663.71 0.46% -> 567.74 0.19%:  1.17x speedup
     ▏
 
- src/cairo-path-stroke.c |   33 +++++++--------------------------
- 1 files changed, 7 insertions(+), 26 deletions(-)
+ src/cairo-path-stroke.c |   31 ++++++-------------------------
+ 1 files changed, 6 insertions(+), 25 deletions(-)
 
 commit fefa7d9b993b1fc0759cfe1f8faff8dec9dc5c85
 Author: Carl Worth <cworth@cworth.org>
@@ -7450,7 +7450,7 @@ Date:   Wed Oct 18 15:18:11 2006 -0700
  4 files changed, 3 insertions(+), 0 deletions(-)
 
 commit e21c155e73569f6533dd01bdd7ec62461e7f215f
-Merge: a53eabf 10cd23d
+Merge: a53eabf... 10cd23d...
 Author: Carl Worth <cworth@cworth.org>
 Date:   Wed Oct 18 15:03:04 2006 -0700
 
@@ -7529,7 +7529,7 @@ Date:   Tue Oct 17 17:53:43 2006 -0700
  1 files changed, 1 insertions(+), 1 deletions(-)
 
 commit c1f134fa13928f31c903d513920448b127749a4b
-Merge: 968ceee 157663e
+Merge: 968ceee... 157663e...
 Author: Ian Osgood <iano@quirkster.com>
 Date:   Wed Oct 18 08:15:47 2006 -0700
 
@@ -7754,7 +7754,7 @@ Date:   Thu Oct 12 23:42:50 2006 -0700
  1 files changed, 1 insertions(+), 1 deletions(-)
 
 commit 02e7b892bcb75a69eb28902e7f67e2e7778bfe7b
-Merge: 151e29d 648f4bc
+Merge: 151e29d... 648f4bc...
 Author: Michael Emmel <memmel@debian.localdomain>
 Date:   Thu Oct 12 20:40:11 2006 -0700
 
@@ -8805,7 +8805,7 @@ Date:   Sat Sep 9 19:52:48 2006 -0700
  1 files changed, 9 insertions(+), 4 deletions(-)
 
 commit d3076a1843bc2f05bab0df913d0c27f125bea162
-Merge: dfe3e20 78b8555
+Merge: dfe3e20... 78b8555...
 Author: Vladimir Vukicevic <vladimir@pobox.com>
 Date:   Sat Sep 9 18:57:57 2006 -0700
 
@@ -8877,7 +8877,7 @@ Date:   Sat Sep 9 16:40:58 2006 -0700
  4 files changed, 91 insertions(+), 70 deletions(-)
 
 commit 97f26c523590dcb208a7c0e4d00fd66f4ca58605
-Merge: 0e59041 416e945
+Merge: 0e59041... 416e945...
 Author: Vladimir Vukicevic <vladimir@pobox.com>
 Date:   Sat Sep 9 17:09:03 2006 -0700
 
@@ -10417,7 +10417,7 @@ Date:   Fri Aug 18 12:04:16 2006 -0400
  2 files changed, 0 insertions(+), 0 deletions(-)
 
 commit 861f1cb4f70cdbd7702eaf642b999a21ad01037d
-Merge: c2d92d4 fbb1758
+Merge: c2d92d4... fbb1758...
 Author: Carl Worth <cworth@cworth.org>
 Date:   Fri Aug 18 07:56:52 2006 -0700
 
@@ -11508,7 +11508,7 @@ Date:   Tue Aug 8 00:43:09 2006 -0700
  2 files changed, 0 insertions(+), 0 deletions(-)
 
 commit 401f0ce3c444e263f03055174791e993e6270c39
-Merge: 77fd0ef 02b54ca
+Merge: 77fd0ef... 02b54ca...
 Author: Carl Worth <cworth@cworth.org>
 Date:   Tue Aug 8 00:19:51 2006 -0700
 
@@ -11720,7 +11720,7 @@ Date:   Mon Aug 7 15:18:38 2006 -0700
  7 files changed, 17 insertions(+), 18 deletions(-)
 
 commit 959b85e98c8a0f546c9117da83f84c99ed00370f
-Merge: f1c70a0 7ee94c0
+Merge: f1c70a0... 7ee94c0...
 Author: Carl Worth <cworth@cworth.org>
 Date:   Mon Aug 7 15:06:47 2006 -0700
 
@@ -11992,7 +11992,7 @@ Date:   Wed Aug 2 19:12:51 2006 -0400
  9 files changed, 347 insertions(+), 181 deletions(-)
 
 commit c05dd48ac1afe0e4f3ec0c24797a9fbc3f98ce85
-Merge: e0bec64 0da4b93
+Merge: e0bec64... 0da4b93...
 Author: Michael Emmel <memmel@debian.localdomain>
 Date:   Wed Aug 2 14:32:50 2006 -0700
 
@@ -12420,7 +12420,7 @@ Date:   Wed Jul 26 15:48:56 2006 -0700
  1 files changed, 22 insertions(+), 6 deletions(-)
 
 commit 8601c2c68306c956744399099a941363d446b906
-Merge: cd2f50e b719188
+Merge: cd2f50e... b719188...
 Author: Michael Emmel <memmel@debian.localdomain>
 Date:   Thu Jul 20 23:04:37 2006 -0700
 
@@ -12553,7 +12553,7 @@ Date:   Thu Jul 13 15:56:12 2006 -0700
  2 files changed, 0 insertions(+), 0 deletions(-)
 
 commit 5d64efdbb8fc4e17d4fa44d21068870cd2aea7ce
-Merge: 9907813 6a5d66f
+Merge: 9907813... 6a5d66f...
 Author: Michael Emmel <memmel@debian.localdomain>
 Date:   Fri Jul 14 09:37:22 2006 -0700
 
@@ -12638,7 +12638,7 @@ Date:   Thu Jul 13 15:00:16 2006 -0700
  1 files changed, 3 insertions(+), 3 deletions(-)
 
 commit 307a17f78cd2adda8a59ef16385df3be5786d2bd
-Merge: 5ed64e3 1409b8b
+Merge: 5ed64e3... 1409b8b...
 Author: Michael Emmel <memmel@debian.localdomain>
 Date:   Thu Jul 13 12:17:25 2006 -0700
 

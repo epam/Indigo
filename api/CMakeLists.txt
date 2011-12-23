@@ -7,6 +7,10 @@ file (GLOB Indigo_headers *.h* src/*.h*)
 
 include_directories(${Indigo_SOURCE_DIR} ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/..)
 
+if(APPLE)
+    set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
+endif()
+
 add_library(indigo STATIC ${Indigo_src} ${Indigo_headers})
 add_library(indigo_shared SHARED ${Indigo_src} ${Indigo_headers})
 

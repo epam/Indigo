@@ -1,29 +1,28 @@
 <!-- ##### SECTION Title ##### -->
-Win32 Fonts
+cairo-win32-fonts
 
 <!-- ##### SECTION Short_Description ##### -->
-Font support for Microsoft Windows
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The Microsoft Windows font backend is primarily used to render text on
-Microsoft Windows systems.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_font_face_t</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO CAIRO_HAS_WIN32_FONT ##### -->
 <para>
-Defined if the Microsoft Windows font backend is available.
-This macro can be used to conditionally compile backend-specific code.
+
 </para>
 
 

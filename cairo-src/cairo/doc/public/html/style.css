@@ -1,13 +1,15 @@
 .synopsis, .classsynopsis
 {
-  background: #eeeeee;
-  border: solid 1px #aaaaaa;
+  /* tango:aluminium 1/2 */
+  background: #eeeeec;
+  border: solid 1px #d3d7cf;
   padding: 0.5em;
 }
 .programlisting
 {
-  background: #eeeeff;
-  border: solid 1px #aaaaff;
+  /* tango:sky blue 0/1 */
+  background: #e6f3ff;
+  border: solid 1px #729fcf;
   padding: 0.5em;
 }
 .variablelist
@@ -20,63 +22,62 @@
   vertical-align: top;
 }
 
-/* this is needed so that the local anchors are displayed below the naviagtion */
 @media screen {
   sup a.footnote
   {
     position: relative;
     top: 0em ! important;
+    
   }
-  div.refnamediv a[name], div.refsect1 a[name]
+  /* this is needed so that the local anchors are displayed below the naviagtion */
+  div.footnote a[name], div.refnamediv a[name], div.refsect1 a[name], div.refsect2 a[name], div.index a[name], div.glossary a[name], div.sect1 a[name]
   {
     position: relative;
-    top: -4.5em;
+    padding-top:4.5em;
   }
+  /* this seems to be a bug in the xsl style sheets when generating indexes */
+  div.index div.index
+  {
+    top: 0em;
+  }
+  /* make space for the fixed navigation bar and add space at the bottom so that
+   * link targets appear somewhat close to top
+   */
+  body
+  {
+    padding-top: 3.2em;
+    padding-bottom: 20em;
+  }
+  /* style and size the navigation bar */
   table.navigation#top
   {
-    background: #ffeeee;
-    border: solid 1px #ffaaaa;
+    position: fixed;
+    /* tango:scarlet red 0/1 */
+    background: #ffe6e6;
+    border: solid 1px #ef2929;
     margin-top: 0;
     margin-bottom: 0;
-    position: fixed;
     top: 0;
     left: 0;
-    height: 2em;
-    z-index: 1;
+    height: 3em;
+    z-index: 10;
   }
-  .navigation a
+  .navigation a, .navigation a:visited
   {
-    color: #770000;
+    /* tango:scarlet red 3 */
+    color: #a40000;
   }
-  .navigation a:visited
+  .navigation a:hover
   {
-    color: #550000;
+    /* tango:scarlet red 1 */
+    color: #ef2929;
   }
   td.shortcuts
   {
-    color: #770000;
+    /* tango:scarlet red 1 */
+    color: #ef2929;
     font-size: 80%;
     white-space: nowrap;
-  }
-  div.refentry, div.chapter, div.reference, div.part, div.book, div.glossary, div.sect1, div.appendix, div.preface
-  {
-    position: relative;
-    top: 3em;
-    z-index: 0;
-  }
-  div.glossary, div.index
-  {
-    position: relative;
-    top: 2em;
-    z-index: 0;
-  }
-  div.refnamediv
-  {
-    margin-top: 2em;
-  }
-  body
-  {
-    padding-bottom: 20em;
   }
 }
 @media print {
@@ -87,13 +88,14 @@
   div.titlepage table.navigation {
     visibility: visible;
     display: table;
-    background: #ffeeee;
-    border: solid 1px #ffaaaa;
+    /* tango:scarlet red 0/1 */
+    background: #ffe6e6;
+    border: solid 1px #ef2929;
     margin-top: 0;
     margin-bottom: 0;
     top: 0;
     left: 0;
-    height: 2em;
+    height: 3em;
   }
 }
 
@@ -101,7 +103,6 @@
 {
   font-size: 200%;
 }
-
 
 div.gallery-float
 {
@@ -116,44 +117,48 @@ div.gallery-spacer
 {
   clear: both;
 }
-a
+
+a, a:visited
 {
   text-decoration: none;
+  /* tango:sky blue 2 */
+  color: #3465a4;
 }
 a:hover
 {
   text-decoration: underline;
-  color: #FF0000;
+  /* tango:sky blue 1 */
+  color: #729fcf;
 }
 
 div.table table
 {
   border-collapse: collapse;
   border-spacing: 0px;
-  border-style: solid;
-  border-color: #777777;
-  border-width: 1px;
+  /* tango:aluminium 3 */
+  border: solid 1px #babdb6;
 }
 
 div.table table td, div.table table th
 {
-  border-style: solid;
-  border-color: #777777;
-  border-width: 1px;
+  /* tango:aluminium 3 */
+  border: solid 1px #babdb6;
   padding: 3px;
   vertical-align: top;
 }
 
 div.table table th
 {
-  background-color: #eeeeee;
+  /* tango:aluminium 2 */
+  background-color: #d3d7cf;
 }
 
 hr
 {
-  color: #777777;
-  background: #777777;
-  border: 0;
+  /* tango:aluminium 3 */
+  color: #babdb6;
+  background: #babdb6;
+  border: none 0px;
   height: 1px;
   clear: both;
 }
@@ -161,7 +166,100 @@ hr
 .footer
 {
   padding-top: 3.5em;
-  color: #777777;
+  /* tango:aluminium 3 */
+  color: #babdb6;
   text-align: center;
   font-size: 80%;
 }
+
+.warning
+{
+  /* tango:orange 0/1 */
+  background: #ffeed9;
+  border-color: #ffb04f;
+}
+.note
+{
+  /* tango:chameleon 0/0.5 */
+  background: #d8ffb2;
+  border-color: #abf562;
+}
+.note, .warning
+{
+  padding: 0.5em;
+  border-width: 1px;
+  border-style: solid;
+}
+.note h3, .warning h3
+{
+  margin-top: 0.0em
+}
+.note p, .warning p
+{
+  margin-bottom: 0.0em
+}
+
+/* blob links */
+h2 .extralinks, h3 .extralinks
+{
+  float: right;
+  /* tango:aluminium 3 */
+  color: #babdb6;
+  font-size: 80%;
+  font-weight: normal;
+}
+
+.annotation
+{
+  /* tango:aluminium 5 */
+  color: #555753;
+  font-size: 80%;
+  font-weight: normal;
+}
+
+/* code listings */
+
+.listing_code .programlisting .cbracket   { color: #a40000; } /* tango: scarlet red 3 */
+.listing_code .programlisting .comment    { color: #a1a39d; } /* tango: aluminium 4 */
+.listing_code .programlisting .function   { color: #000000; font-weight: bold; }
+.listing_code .programlisting .function a { color: #11326b; font-weight: bold; } /* tango: sky blue 4 */
+.listing_code .programlisting .keyword    { color: #4e9a06; } /* tango: chameleon 3  */
+.listing_code .programlisting .linenum    { color: #babdb6; } /* tango: aluminium 3 */
+.listing_code .programlisting .normal     { color: #000000; }
+.listing_code .programlisting .number     { color: #75507b; } /* tango: plum 2 */
+.listing_code .programlisting .preproc    { color: #204a87; } /* tango: sky blue 3  */
+.listing_code .programlisting .string     { color: #c17d11; } /* tango: chocolate 2 */
+.listing_code .programlisting .type       { color: #000000; }
+.listing_code .programlisting .type a     { color: #11326b; } /* tango: sky blue 4 */
+.listing_code .programlisting .symbol     { color: #ce5c00; } /* tango: orange 3 */
+
+.listing_frame {
+  /* tango:sky blue 1 */
+  border: solid 1px #729fcf;
+  padding: 0px;
+}
+
+.listing_lines, .listing_code {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0.5em;
+}
+.listing_lines {
+  /* tango:sky blue 0.5 */
+  background: #a6c5e3;
+  /* tango:aluminium 6 */
+  color: #2e3436;
+}
+.listing_code {
+  /* tango:sky blue 0 */
+  background: #e6f3ff;
+}
+.listing_code .programlisting {
+  /* override from previous */
+  border: none 0px;
+  padding: 0px;
+}
+.listing_lines pre, .listing_code pre {
+  margin: 0px;
+}
+

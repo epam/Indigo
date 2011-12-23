@@ -1,29 +1,28 @@
 <!-- ##### SECTION Title ##### -->
-Quartz Surfaces
+cairo-quartz
 
 <!-- ##### SECTION Short_Description ##### -->
-Rendering to Quartz surfaces
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The Quartz surface is used to render cairo graphics targeting the
-Apple OS X Quartz rendering system.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_surface_t</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO CAIRO_HAS_QUARTZ_SURFACE ##### -->
 <para>
-Defined if the Quartz surface backend is available.
-This macro can be used to conditionally compile backend-specific code.
+
 </para>
 
 

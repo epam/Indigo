@@ -281,8 +281,8 @@ Date:   Wed Aug 24 00:19:52 2005 +0000
     Update documentation for most path construction functions. Add discussion of the effects on the current point to all functions. Rephrase the wording of the relative functions. Big rewrite of cairo_arc description. Add discussion of join not caps to cairo_close_path.
 
  ChangeLog   |    4 ++
- src/cairo.c |  128 ++++++++++++++++++++++++++++++++++++++++------------------
- 2 files changed, 92 insertions(+), 40 deletions(-)
+ src/cairo.c |  130 ++++++++++++++++++++++++++++++++++++++++------------------
+ 2 files changed, 93 insertions(+), 41 deletions(-)
 
 commit 4f44cd809db5c72638d14963870848eba9f266d1
 Author: Carl Worth <cworth@cworth.org>
@@ -2499,9 +2499,9 @@ Date:   Fri Aug 5 20:30:43 2005 +0000
 
     Rather gratuitous (though mostly harmless) whitespace changes for font backend tables.
 
- ChangeLog      |    5 ++
- src/cairoint.h |  114 +++++++++++++++++++++++++++++++-------------------------
- 2 files changed, 68 insertions(+), 51 deletions(-)
+ ChangeLog      |    5 +++
+ src/cairoint.h |  104 +++++++++++++++++++++++++++++++-------------------------
+ 2 files changed, 63 insertions(+), 46 deletions(-)
 
 commit 4ad365f1834bf0204e44156a62b8e8539fb65ef9
 Author: Carl Worth <cworth@cworth.org>
@@ -5221,7 +5221,7 @@ Date:   Tue Jun 14 19:45:22 2005 +0000
  ChangeLog                  |   36 +++++++
  src/cairo-glitz-surface.c  |    1 +
  src/cairo-gstate-private.h |   16 +++-
- src/cairo-gstate.c         |  220 ++++++++++++++++++++++++++++++--------------
+ src/cairo-gstate.c         |  222 ++++++++++++++++++++++++++++++--------------
  src/cairo-image-surface.c  |    1 +
  src/cairo-pdf-surface.c    |  101 +++++++++++++++++++-
  src/cairo-ps-surface.c     |    1 +
@@ -5232,8 +5232,8 @@ Date:   Tue Jun 14 19:45:22 2005 +0000
  src/cairo-xlib-surface.c   |    1 +
  src/cairoint.h             |   71 +++++++++++---
  test/Makefile.am           |   11 ++-
- test/pdf-clip.c            |  134 +++++++++++++++++++++++++++
- 15 files changed, 582 insertions(+), 130 deletions(-)
+ test/pdf-clip.c            |  134 ++++++++++++++++++++++++++
+ 15 files changed, 583 insertions(+), 131 deletions(-)
 
 commit 663e39a63c6ae223dc3095d29fd95bc8885c74f2
 Author: Carl Worth <cworth@cworth.org>
@@ -6692,13 +6692,13 @@ Date:   Fri May 6 13:32:53 2005 +0000
  test/move-to-show-surface.c     |    5 +-
  test/select-font-no-show-text.c |    6 +-
  test/set-source.c               |    4 +-
- test/text-cache-crash.c         |   14 ++-
+ test/text-cache-crash.c         |   16 ++-
  test/text-rotate.c              |    6 +-
  test/transforms.c               |    2 +-
  test/translate-show-surface.c   |    5 +-
  test/trap-clip.c                |    8 +-
  util/cairo-api-update           |   48 +++++--
- 24 files changed, 273 insertions(+), 604 deletions(-)
+ 24 files changed, 274 insertions(+), 605 deletions(-)
 
 commit a790a2ea79507cae9564006ac32e27a0fcca8d60
 Author: Carl Worth <cworth@cworth.org>
@@ -9234,26 +9234,26 @@ Date:   Thu Mar 3 18:39:06 2005 +0000
 
  ChangeLog                 |   16 ++++++
  src/cairo-ft-font.c       |    7 ++-
- src/cairo-glitz-surface.c |  128 +++++++++++++++++++++++++++++++--------------
+ src/cairo-glitz-surface.c |  126 +++++++++++++++++++++++++++++++--------------
  src/cairo-gstate.c        |   21 ++++++-
- src/cairo-image-surface.c |   84 ++++++++++++++++-------------
- src/cairo-pattern.c       |   44 +++++++++++++++
+ src/cairo-image-surface.c |   82 ++++++++++++++++-------------
+ src/cairo-pattern.c       |   44 ++++++++++++++++
  src/cairo-pdf-surface.c   |   11 +++--
  src/cairo-ps-surface.c    |    2 +-
  src/cairo-surface.c       |   14 +++---
  src/cairo-xlib-surface.c  |   88 +++++++++++++++++--------------
  src/cairo_ft_font.c       |    7 ++-
- src/cairo_glitz_surface.c |  128 +++++++++++++++++++++++++++++++--------------
+ src/cairo_glitz_surface.c |  126 +++++++++++++++++++++++++++++++--------------
  src/cairo_gstate.c        |   21 ++++++-
- src/cairo_image_surface.c |   84 ++++++++++++++++-------------
- src/cairo_pattern.c       |   44 +++++++++++++++
+ src/cairo_image_surface.c |   82 ++++++++++++++++-------------
+ src/cairo_pattern.c       |   44 ++++++++++++++++
  src/cairo_pdf_surface.c   |   11 +++--
  src/cairo_png_surface.c   |    4 +-
  src/cairo_ps_surface.c    |    2 +-
  src/cairo_surface.c       |   14 +++---
  src/cairo_xlib_surface.c  |   88 +++++++++++++++++--------------
  src/cairoint.h            |   21 ++++++-
- 21 files changed, 568 insertions(+), 271 deletions(-)
+ 21 files changed, 564 insertions(+), 267 deletions(-)
 
 commit a97f4cce5e13cfa2dc3b843b3b37cb14cb16cf65
 Author: David Reveman <davidr@novell.com>
@@ -11439,7 +11439,7 @@ Date:   Tue Jan 11 10:03:01 2005 +0000
  src/cairo-gstate.c        |  164 ++++++++++++++++++++++++++++----------------
  src/cairo-hash.c          |    6 +-
  src/cairo-matrix.c        |   51 +++++++++++---
- src/cairo-wideint.c       |   48 ++++++++-----
+ src/cairo-wideint.c       |   46 ++++++++-----
  src/cairo-wideint.h       |   49 +++++++++-----
  src/cairo-xlib-surface.c  |   33 ++++++---
  src/cairo_cache.c         |    6 +-
@@ -11447,11 +11447,11 @@ Date:   Tue Jan 11 10:03:01 2005 +0000
  src/cairo_glitz_surface.c |    1 +
  src/cairo_gstate.c        |  164 ++++++++++++++++++++++++++++----------------
  src/cairo_matrix.c        |   51 +++++++++++---
- src/cairo_wideint.c       |   48 ++++++++-----
+ src/cairo_wideint.c       |   46 ++++++++-----
  src/cairo_wideint.h       |   49 +++++++++-----
  src/cairo_xlib_surface.c  |   33 ++++++---
  src/cairoint.h            |    2 +-
- 22 files changed, 735 insertions(+), 291 deletions(-)
+ 22 files changed, 733 insertions(+), 289 deletions(-)
 
 commit dc0d812f6c78bfc3e4cbf717cf09a4524d8f149c
 Author: Carl Worth <cworth@cworth.org>
@@ -12652,49 +12652,49 @@ Date:   Sat Sep 4 06:38:34 2004 +0000
  COPYING-LGPL-2.1          |  510 ++++++++++++++++++++++++++++++++++++++++++++
  COPYING-MPL-1.1           |  470 ++++++++++++++++++++++++++++++++++++++++
  ChangeLog                 |    8 +
- src/cairo-color.c         |   41 +++-
+ src/cairo-color.c         |   37 +++-
  src/cairo-features.h.in   |   41 +++-
  src/cairo-fixed.c         |   41 +++-
- src/cairo-font.c          |   41 +++-
- src/cairo-gstate.c        |   41 +++-
- src/cairo-hull.c          |   41 +++-
- src/cairo-image-surface.c |   41 +++-
- src/cairo-matrix.c        |   41 +++-
- src/cairo-path-bounds.c   |   41 +++-
- src/cairo-path-fill.c     |   41 +++-
- src/cairo-path-stroke.c   |   41 +++-
- src/cairo-path.c          |   41 +++-
- src/cairo-pen.c           |   41 +++-
- src/cairo-polygon.c       |   41 +++-
- src/cairo-ps-surface.c    |   41 +++-
- src/cairo-slope.c         |   41 +++-
- src/cairo-spline.c        |   41 +++-
- src/cairo-surface.c       |   41 +++-
- src/cairo-xcb-surface.c   |   41 +++-
- src/cairo-xlib-surface.c  |   41 +++-
- src/cairo.c               |   42 +++-
+ src/cairo-font.c          |   37 +++-
+ src/cairo-gstate.c        |   37 +++-
+ src/cairo-hull.c          |   37 +++-
+ src/cairo-image-surface.c |   37 +++-
+ src/cairo-matrix.c        |   37 +++-
+ src/cairo-path-bounds.c   |   37 +++-
+ src/cairo-path-fill.c     |   37 +++-
+ src/cairo-path-stroke.c   |   37 +++-
+ src/cairo-path.c          |   37 +++-
+ src/cairo-pen.c           |   37 +++-
+ src/cairo-polygon.c       |   37 +++-
+ src/cairo-ps-surface.c    |   37 +++-
+ src/cairo-slope.c         |   37 +++-
+ src/cairo-spline.c        |   37 +++-
+ src/cairo-surface.c       |   37 +++-
+ src/cairo-xcb-surface.c   |   37 +++-
+ src/cairo-xlib-surface.c  |   37 +++-
+ src/cairo.c               |   38 +++-
  src/cairo.h               |   37 +++-
- src/cairo_color.c         |   41 +++-
+ src/cairo_color.c         |   37 +++-
  src/cairo_fixed.c         |   41 +++-
- src/cairo_font.c          |   41 +++-
- src/cairo_gstate.c        |   41 +++-
- src/cairo_hull.c          |   41 +++-
- src/cairo_image_surface.c |   41 +++-
- src/cairo_matrix.c        |   41 +++-
- src/cairo_path.c          |   41 +++-
- src/cairo_path_bounds.c   |   41 +++-
- src/cairo_path_fill.c     |   41 +++-
- src/cairo_path_stroke.c   |   41 +++-
- src/cairo_pen.c           |   41 +++-
- src/cairo_polygon.c       |   41 +++-
- src/cairo_ps_surface.c    |   41 +++-
- src/cairo_slope.c         |   41 +++-
- src/cairo_spline.c        |   41 +++-
- src/cairo_surface.c       |   41 +++-
- src/cairo_xcb_surface.c   |   41 +++-
- src/cairo_xlib_surface.c  |   41 +++-
- src/cairoint.h            |   41 +++-
- 46 files changed, 2218 insertions(+), 1008 deletions(-)
+ src/cairo_font.c          |   37 +++-
+ src/cairo_gstate.c        |   37 +++-
+ src/cairo_hull.c          |   37 +++-
+ src/cairo_image_surface.c |   37 +++-
+ src/cairo_matrix.c        |   37 +++-
+ src/cairo_path.c          |   37 +++-
+ src/cairo_path_bounds.c   |   37 +++-
+ src/cairo_path_fill.c     |   37 +++-
+ src/cairo_path_stroke.c   |   37 +++-
+ src/cairo_pen.c           |   37 +++-
+ src/cairo_polygon.c       |   37 +++-
+ src/cairo_ps_surface.c    |   37 +++-
+ src/cairo_slope.c         |   37 +++-
+ src/cairo_spline.c        |   37 +++-
+ src/cairo_surface.c       |   37 +++-
+ src/cairo_xcb_surface.c   |   37 +++-
+ src/cairo_xlib_surface.c  |   37 +++-
+ src/cairoint.h            |   37 +++-
+ 46 files changed, 2142 insertions(+), 932 deletions(-)
 
 commit 31d0ddbf2a6acecea8ffede9f3f3942dcbc9c035
 Author: Carl Worth <cworth@cworth.org>

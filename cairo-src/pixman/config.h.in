@@ -3,23 +3,53 @@
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
+/* Whether we have alarm() */
+#undef HAVE_ALARM
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
+
+/* Whether we have feenableexcept() */
+#undef HAVE_FEENABLEEXCEPT
+
+/* Define to 1 if we have <fenv.h> */
+#undef HAVE_FENV_H
 
 /* Define to 1 if you have the `getisax' function. */
 #undef HAVE_GETISAX
 
+/* Whether we have getpagesize() */
+#undef HAVE_GETPAGESIZE
+
+/* Whether we have gettimeofday() */
+#undef HAVE_GETTIMEOFDAY
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the `pixman-1' library (-lpixman-1). */
+#undef HAVE_LIBPIXMAN_1
+
+/* Whether we have libpng */
+#undef HAVE_LIBPNG
+
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Whether we have mmap() */
+#undef HAVE_MMAP
+
+/* Whether we have mprotect() */
+#undef HAVE_MPROTECT
 
 /* Whether we have posix_memalign() */
 #undef HAVE_POSIX_MEMALIGN
 
 /* Whether pthread_setspecific() is supported */
 #undef HAVE_PTHREAD_SETSPECIFIC
+
+/* Whether we have sigaction() */
+#undef HAVE_SIGACTION
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -33,6 +63,9 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if we have <sys/mman.h> */
+#undef HAVE_SYS_MMAN_H
+
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
@@ -41,10 +74,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
-
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
-#undef LT_OBJDIR
 
 /* Name of package */
 #undef PACKAGE
@@ -61,9 +90,6 @@
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
-/* Define to the home page for this package. */
-#undef PACKAGE_URL
-
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
@@ -76,8 +102,14 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
+/* Whether the tool chain supports __attribute__((constructor)) */
+#undef TOOLCHAIN_SUPPORTS_ATTRIBUTE_CONSTRUCTOR
+
 /* Whether the tool chain supports __thread */
 #undef TOOLCHAIN_SUPPORTS__THREAD
+
+/* use ARM IWMMXT compiler intrinsics */
+#undef USE_ARM_IWMMXT
 
 /* use ARM NEON assembly optimizations */
 #undef USE_ARM_NEON
@@ -88,14 +120,17 @@
 /* use GNU-style inline assembler */
 #undef USE_GCC_INLINE_ASM
 
-/* use MMX compiler intrinsics */
-#undef USE_MMX
+/* use OpenMP in the test suite */
+#undef USE_OPENMP
 
 /* use SSE2 compiler intrinsics */
 #undef USE_SSE2
 
 /* use VMX compiler intrinsics */
 #undef USE_VMX
+
+/* use x86 MMX compiler intrinsics */
+#undef USE_X86_MMX
 
 /* Version number of package */
 #undef VERSION

@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -34,15 +34,37 @@
  *	Carl D. Worth <cworth@cworth.org>
  */
 
-#define _GNU_SOURCE
-
 #include "cairoint.h"
+#include "cairo-error-private.h"
 
 #if _XOPEN_SOURCE >= 600 || defined (_ISOC99_SOURCE)
 #define ISFINITE(x) isfinite (x)
 #else
 #define ISFINITE(x) ((x) * (x) >= 0.) /* check for NaNs */
 #endif
+
+/**
+ * SECTION:cairo-matrix
+ * @Title: cairo_matrix_t
+ * @Short_Description: Generic matrix operations
+ * @See_Also: #cairo_t
+ *
+ * #cairo_matrix_t is used throughout cairo to convert between different
+ * coordinate spaces.  A #cairo_matrix_t holds an affine transformation,
+ * such as a scale, rotation, shear, or a combination of these.
+ * The transformation of a point (<literal>x</literal>,<literal>y</literal>)
+ * is given by:
+ *
+ * <programlisting>
+ * x_new = xx * x + xy * y + x0;
+ * y_new = yx * x + yy * y + y0;
+ * </programlisting>
+ *
+ * The current transformation matrix of a #cairo_t, represented as a
+ * #cairo_matrix_t, defines the transformation from user-space
+ * coordinates to device-space coordinates. See cairo_get_matrix() and
+ * cairo_set_matrix().
+ */
 
 static void
 _cairo_matrix_scalar_multiply (cairo_matrix_t *matrix, double scalar);
@@ -371,6 +393,48 @@ _cairo_matrix_transform_bounding_box (const cairo_matrix_t *matrix,
     double min_x, max_x;
     double min_y, max_y;
 
+    if (matrix->xy == 0. && matrix->yx == 0.) {
+	/* non-rotation/skew matrix, just map the two extreme points */
+
+	if (matrix->xx != 1.) {
+	    quad_x[0] = *x1 * matrix->xx;
+	    quad_x[1] = *x2 * matrix->xx;
+	    if (quad_x[0] < quad_x[1]) {
+		*x1 = quad_x[0];
+		*x2 = quad_x[1];
+	    } else {
+		*x1 = quad_x[1];
+		*x2 = quad_x[0];
+	    }
+	}
+	if (matrix->x0 != 0.) {
+	    *x1 += matrix->x0;
+	    *x2 += matrix->x0;
+	}
+
+	if (matrix->yy != 1.) {
+	    quad_y[0] = *y1 * matrix->yy;
+	    quad_y[1] = *y2 * matrix->yy;
+	    if (quad_y[0] < quad_y[1]) {
+		*y1 = quad_y[0];
+		*y2 = quad_y[1];
+	    } else {
+		*y1 = quad_y[1];
+		*y2 = quad_y[0];
+	    }
+	}
+	if (matrix->y0 != 0.) {
+	    *y1 += matrix->y0;
+	    *y2 += matrix->y0;
+	}
+
+	if (is_tight)
+	    *is_tight = TRUE;
+
+	return;
+    }
+
+    /* general matrix */
     quad_x[0] = *x1;
     quad_y[0] = *y1;
     cairo_matrix_transform_point (matrix, &quad_x[0], &quad_y[0]);
@@ -406,7 +470,7 @@ _cairo_matrix_transform_bounding_box (const cairo_matrix_t *matrix,
     *y1 = min_y;
     *x2 = max_x;
     *y2 = max_y;
-    
+
     if (is_tight) {
         /* it's tight if and only if the four corner points form an axis-aligned
            rectangle.
@@ -473,7 +537,7 @@ _cairo_matrix_compute_adjoint (cairo_matrix_t *matrix)
  * cairo_matrix_invert:
  * @matrix: a #cairo_matrix_t
  *
- * Changes @matrix to be the inverse of it's original value. Not
+ * Changes @matrix to be the inverse of its original value. Not
  * all transformation matrices have inverses; if the matrix
  * collapses points together (it is <firstterm>degenerate</firstterm>),
  * then it has no inverse and this function will fail.
@@ -537,6 +601,15 @@ _cairo_matrix_is_invertible (const cairo_matrix_t *matrix)
     return ISFINITE (det) && det != 0.;
 }
 
+cairo_bool_t
+_cairo_matrix_is_scale_0 (const cairo_matrix_t *matrix)
+{
+    return matrix->xx == 0. &&
+           matrix->xy == 0. &&
+           matrix->yx == 0. &&
+           matrix->yy == 0.;
+}
+
 double
 _cairo_matrix_compute_determinant (const cairo_matrix_t *matrix)
 {
@@ -584,7 +657,7 @@ _cairo_matrix_compute_basis_scale_factors (const cairo_matrix_t *matrix,
 	double major, minor;
 
 	cairo_matrix_transform_distance (matrix, &x, &y);
-	major = sqrt(x*x + y*y);
+	major = hypot (x, y);
 	/*
 	 * ignore mirroring
 	 */
@@ -648,16 +721,9 @@ _cairo_matrix_is_integer_translation (const cairo_matrix_t *matrix,
     return FALSE;
 }
 
-/* By pixel exact here, we mean a matrix that is composed only of
- * 90 degree rotations, flips, and integer translations and produces a 1:1
- * mapping between source and destination pixels. If we transform an image
- * with a pixel-exact matrix, filtering is not useful.
- */
-cairo_private cairo_bool_t
-_cairo_matrix_is_pixel_exact (const cairo_matrix_t *matrix)
+cairo_bool_t
+_cairo_matrix_has_unity_scale (const cairo_matrix_t *matrix)
 {
-    cairo_fixed_t x0_fixed, y0_fixed;
-
     if (matrix->xy == 0.0 && matrix->yx == 0.0) {
 	if (! (matrix->xx == 1.0 || matrix->xx == -1.0))
 	    return FALSE;
@@ -669,6 +735,22 @@ _cairo_matrix_is_pixel_exact (const cairo_matrix_t *matrix)
 	if (! (matrix->yx == 1.0 || matrix->yx == -1.0))
 	    return FALSE;
     } else
+	return FALSE;
+
+    return TRUE;
+}
+
+/* By pixel exact here, we mean a matrix that is composed only of
+ * 90 degree rotations, flips, and integer translations and produces a 1:1
+ * mapping between source and destination pixels. If we transform an image
+ * with a pixel-exact matrix, filtering is not useful.
+ */
+cairo_bool_t
+_cairo_matrix_is_pixel_exact (const cairo_matrix_t *matrix)
+{
+    cairo_fixed_t x0_fixed, y0_fixed;
+
+    if (! _cairo_matrix_has_unity_scale (matrix))
 	return FALSE;
 
     x0_fixed = _cairo_fixed_from_double (matrix->x0);
@@ -799,7 +881,8 @@ _cairo_matrix_is_pixel_exact (const cairo_matrix_t *matrix)
 /* determine the length of the major axis of a circle of the given radius
    after applying the transformation matrix. */
 double
-_cairo_matrix_transformed_circle_major_axis (cairo_matrix_t *matrix, double radius)
+_cairo_matrix_transformed_circle_major_axis (const cairo_matrix_t *matrix,
+					     double radius)
 {
     double  a, b, c, d, f, g, h, i, j;
 
@@ -815,7 +898,7 @@ _cairo_matrix_transformed_circle_major_axis (cairo_matrix_t *matrix, double radi
     g = 0.5 * (i - j);
     h = a*c + b*d;
 
-    return radius * sqrt (f + sqrt (g*g+h*h));
+    return radius * sqrt (f + hypot (g, h));
 
     /*
      * we don't need the minor axis length, which is
@@ -825,7 +908,9 @@ _cairo_matrix_transformed_circle_major_axis (cairo_matrix_t *matrix, double radi
 
 void
 _cairo_matrix_to_pixman_matrix (const cairo_matrix_t	*matrix,
-				pixman_transform_t	*pixman_transform)
+				pixman_transform_t	*pixman_transform,
+				double xc,
+				double yc)
 {
     static const pixman_transform_t pixman_identity_transform = {{
         {1 << 16,        0,       0},
@@ -835,11 +920,9 @@ _cairo_matrix_to_pixman_matrix (const cairo_matrix_t	*matrix,
 
     if (_cairo_matrix_is_identity (matrix)) {
         *pixman_transform = pixman_identity_transform;
-    }
-    else {
-        cairo_matrix_t inv = *matrix;
-        double x = 0, y = 0;
-        pixman_vector_t vector;
+    } else {
+        cairo_matrix_t inv;
+	unsigned max_iterations;
 
         pixman_transform->matrix[0][0] = _cairo_fixed_16_16_from_double (matrix->xx);
         pixman_transform->matrix[0][1] = _cairo_fixed_16_16_from_double (matrix->xy);
@@ -859,29 +942,51 @@ _cairo_matrix_to_pixman_matrix (const cairo_matrix_t	*matrix,
          * for cairo, while pixman uses rounded versions of xx ... yy.
          * This error increases as a and b get larger.
          *
-         * To compensate for this, we fix the point (0, 0) in pattern
+         * To compensate for this, we fix the point (xc, yc) in pattern
          * space and adjust pixman's transform to agree with cairo's at
-         * that point. */
+         * that point.
+	 */
+
+	if (_cairo_matrix_has_unity_scale (matrix))
+	    return;
 
         /* Note: If we can't invert the transformation, skip the adjustment. */
+        inv = *matrix;
         if (cairo_matrix_invert (&inv) != CAIRO_STATUS_SUCCESS)
             return;
 
-        /* find the device space coordinate that maps to (0, 0) */
-        cairo_matrix_transform_point (&inv, &x, &y);
+        /* find the pattern space coordinate that maps to (xc, yc) */
+	xc += .5; yc += .5; /* offset for the pixel centre */
+	max_iterations = 5;
+	do {
+	    double x,y;
+	    pixman_vector_t vector;
+	    cairo_fixed_16_16_t dx, dy;
 
-        /* transform the resulting device space coordinate back
-         * to the pattern space, using pixman's transform */
-        vector.vector[0] = _cairo_fixed_16_16_from_double (x);
-        vector.vector[1] = _cairo_fixed_16_16_from_double (y);
-        vector.vector[2] = 1 << 16;
+	    vector.vector[0] = _cairo_fixed_16_16_from_double (xc);
+	    vector.vector[1] = _cairo_fixed_16_16_from_double (yc);
+	    vector.vector[2] = 1 << 16;
 
-        if (!pixman_transform_point_3d (pixman_transform, &vector))
-            return;
+	    if (! pixman_transform_point_3d (pixman_transform, &vector))
+		return;
 
-        /* Ideally, the vector should now be (0, 0). We can now compensate
-         * for the resulting error */
-        pixman_transform->matrix[0][2] -= vector.vector[0];
-        pixman_transform->matrix[1][2] -= vector.vector[1];
+	    x = pixman_fixed_to_double (vector.vector[0]);
+	    y = pixman_fixed_to_double (vector.vector[1]);
+	    cairo_matrix_transform_point (&inv, &x, &y);
+
+	    /* Ideally, the vector should now be (xc, yc).
+	     * We can now compensate for the resulting error.
+	     */
+	    x -= xc;
+	    y -= yc;
+	    cairo_matrix_transform_distance (matrix, &x, &y);
+	    dx = _cairo_fixed_16_16_from_double (x);
+	    dy = _cairo_fixed_16_16_from_double (y);
+	    pixman_transform->matrix[0][2] -= dx;
+	    pixman_transform->matrix[1][2] -= dy;
+
+	    if (dx == 0 && dy == 0)
+		break;
+	} while (--max_iterations);
     }
 }

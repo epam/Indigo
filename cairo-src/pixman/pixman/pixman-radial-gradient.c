@@ -1,3 +1,4 @@
+/* -*- Mode: c; c-basic-offset: 4; tab-width: 8; indent-tabs-mode: t; -*- */
 /*
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
@@ -33,291 +34,389 @@
 #include <math.h>
 #include "pixman-private.h"
 
-static void
-radial_gradient_get_scanline_32 (pixman_image_t *image,
-                                 int             x,
-                                 int             y,
-                                 int             width,
-                                 uint32_t *      buffer,
-                                 const uint32_t *mask,
-                                 uint32_t        mask_bits)
+static inline pixman_fixed_32_32_t
+dot (pixman_fixed_48_16_t x1,
+     pixman_fixed_48_16_t y1,
+     pixman_fixed_48_16_t z1,
+     pixman_fixed_48_16_t x2,
+     pixman_fixed_48_16_t y2,
+     pixman_fixed_48_16_t z2)
 {
     /*
-     * In the radial gradient problem we are given two circles (c₁,r₁) and
-     * (c₂,r₂) that define the gradient itself. Then, for any point p, we
-     * must compute the value(s) of t within [0.0, 1.0] representing the
-     * circle(s) that would color the point.
-     *
-     * There are potentially two values of t since the point p can be
-     * colored by both sides of the circle, (which happens whenever one
-     * circle is not entirely contained within the other).
-     *
-     * If we solve for a value of t that is outside of [0.0, 1.0] then we
-     * use the extend mode (NONE, REPEAT, REFLECT, or PAD) to map to a
-     * value within [0.0, 1.0].
-     *
-     * Here is an illustration of the problem:
-     *
-     *              p₂
-     *           p  •
-     *           •   ╲
-     *        ·       ╲r₂
-     *  p₁ ·           ╲
-     *  •              θ╲
-     *   ╲             ╌╌•
-     *    ╲r₁        ·   c₂
-     *    θ╲    ·
-     *    ╌╌•
-     *      c₁
-     *
-     * Given (c₁,r₁), (c₂,r₂) and p, we must find an angle θ such that two
-     * points p₁ and p₂ on the two circles are collinear with p. Then, the
-     * desired value of t is the ratio of the length of p₁p to the length
-     * of p₁p₂.
-     *
-     * So, we have six unknown values: (p₁x, p₁y), (p₂x, p₂y), θ and t.
-     * We can also write six equations that constrain the problem:
-     *
-     * Point p₁ is a distance r₁ from c₁ at an angle of θ:
-     *
-     *	1. p₁x = c₁x + r₁·cos θ
-     *	2. p₁y = c₁y + r₁·sin θ
-     *
-     * Point p₂ is a distance r₂ from c₂ at an angle of θ:
-     *
-     *	3. p₂x = c₂x + r2·cos θ
-     *	4. p₂y = c₂y + r2·sin θ
-     *
-     * Point p lies at a fraction t along the line segment p₁p₂:
-     *
-     *	5. px = t·p₂x + (1-t)·p₁x
-     *	6. py = t·p₂y + (1-t)·p₁y
-     *
-     * To solve, first subtitute 1-4 into 5 and 6:
-     *
-     * px = t·(c₂x + r₂·cos θ) + (1-t)·(c₁x + r₁·cos θ)
-     * py = t·(c₂y + r₂·sin θ) + (1-t)·(c₁y + r₁·sin θ)
-     *
-     * Then solve each for cos θ and sin θ expressed as a function of t:
-     *
-     * cos θ = (-(c₂x - c₁x)·t + (px - c₁x)) / ((r₂-r₁)·t + r₁)
-     * sin θ = (-(c₂y - c₁y)·t + (py - c₁y)) / ((r₂-r₁)·t + r₁)
-     *
-     * To simplify this a bit, we define new variables for several of the
-     * common terms as shown below:
-     *
-     *              p₂
-     *           p  •
-     *           •   ╲
-     *        ·  ┆    ╲r₂
-     *  p₁ ·     ┆     ╲
-     *  •     pdy┆      ╲
-     *   ╲       ┆       •c₂
-     *    ╲r₁    ┆   ·   ┆
-     *     ╲    ·┆       ┆cdy
-     *      •╌╌╌╌┴╌╌╌╌╌╌╌┘
-     *    c₁  pdx   cdx
-     *
-     * cdx = (c₂x - c₁x)
-     * cdy = (c₂y - c₁y)
-     *  dr =  r₂-r₁
-     * pdx =  px - c₁x
-     * pdy =  py - c₁y
-     *
-     * Note that cdx, cdy, and dr do not depend on point p at all, so can
-     * be pre-computed for the entire gradient. The simplifed equations
-     * are now:
-     *
-     * cos θ = (-cdx·t + pdx) / (dr·t + r₁)
-     * sin θ = (-cdy·t + pdy) / (dr·t + r₁)
-     *
-     * Finally, to get a single function of t and eliminate the last
-     * unknown θ, we use the identity sin²θ + cos²θ = 1. First, square
-     * each equation, (we knew a quadratic was coming since it must be
-     * possible to obtain two solutions in some cases):
-     *
-     * cos²θ = (cdx²t² - 2·cdx·pdx·t + pdx²) / (dr²·t² + 2·r₁·dr·t + r₁²)
-     * sin²θ = (cdy²t² - 2·cdy·pdy·t + pdy²) / (dr²·t² + 2·r₁·dr·t + r₁²)
-     *
-     * Then add both together, set the result equal to 1, and express as a
-     * standard quadratic equation in t of the form At² + Bt + C = 0
-     *
-     * (cdx² + cdy² - dr²)·t² - 2·(cdx·pdx + cdy·pdy + r₁·dr)·t + (pdx² + pdy² - r₁²) = 0
-     *
-     * In other words:
-     *
-     * A = cdx² + cdy² - dr²
-     * B = -2·(pdx·cdx + pdy·cdy + r₁·dr)
-     * C = pdx² + pdy² - r₁²
-     *
-     * And again, notice that A does not depend on p, so can be
-     * precomputed. From here we just use the quadratic formula to solve
-     * for t:
-     *
-     * t = (-2·B ± ⎷(B² - 4·A·C)) / 2·A
+     * Exact computation, assuming that the input values can
+     * be represented as pixman_fixed_16_16_t
      */
+    return x1 * x2 + y1 * y2 + z1 * z2;
+}
+
+static inline double
+fdot (double x1,
+      double y1,
+      double z1,
+      double x2,
+      double y2,
+      double z2)
+{
+    /*
+     * Error can be unbound in some special cases.
+     * Using clever dot product algorithms (for example compensated
+     * dot product) would improve this but make the code much less
+     * obvious
+     */
+    return x1 * x2 + y1 * y2 + z1 * z2;
+}
+
+static uint32_t
+radial_compute_color (double                    a,
+		      double                    b,
+		      double                    c,
+		      double                    inva,
+		      double                    dr,
+		      double                    mindr,
+		      pixman_gradient_walker_t *walker,
+		      pixman_repeat_t           repeat)
+{
+    /*
+     * In this function error propagation can lead to bad results:
+     *  - discr can have an unbound error (if b*b-a*c is very small),
+     *    potentially making it the opposite sign of what it should have been
+     *    (thus clearing a pixel that would have been colored or vice-versa)
+     *    or propagating the error to sqrtdiscr;
+     *    if discr has the wrong sign or b is very small, this can lead to bad
+     *    results
+     *
+     *  - the algorithm used to compute the solutions of the quadratic
+     *    equation is not numerically stable (but saves one division compared
+     *    to the numerically stable one);
+     *    this can be a problem if a*c is much smaller than b*b
+     *
+     *  - the above problems are worse if a is small (as inva becomes bigger)
+     */
+    double discr;
+
+    if (a == 0)
+    {
+	double t;
+
+	if (b == 0)
+	    return 0;
+
+	t = pixman_fixed_1 / 2 * c / b;
+	if (repeat == PIXMAN_REPEAT_NONE)
+	{
+	    if (0 <= t && t <= pixman_fixed_1)
+		return _pixman_gradient_walker_pixel (walker, t);
+	}
+	else
+	{
+	    if (t * dr > mindr)
+		return _pixman_gradient_walker_pixel (walker, t);
+	}
+
+	return 0;
+    }
+
+    discr = fdot (b, a, 0, b, -c, 0);
+    if (discr >= 0)
+    {
+	double sqrtdiscr, t0, t1;
+
+	sqrtdiscr = sqrt (discr);
+	t0 = (b + sqrtdiscr) * inva;
+	t1 = (b - sqrtdiscr) * inva;
+
+	/*
+	 * The root that must be used is the biggest one that belongs
+	 * to the valid range ([0,1] for PIXMAN_REPEAT_NONE, any
+	 * solution that results in a positive radius otherwise).
+	 *
+	 * If a > 0, t0 is the biggest solution, so if it is valid, it
+	 * is the correct result.
+	 *
+	 * If a < 0, only one of the solutions can be valid, so the
+	 * order in which they are tested is not important.
+	 */
+	if (repeat == PIXMAN_REPEAT_NONE)
+	{
+	    if (0 <= t0 && t0 <= pixman_fixed_1)
+		return _pixman_gradient_walker_pixel (walker, t0);
+	    else if (0 <= t1 && t1 <= pixman_fixed_1)
+		return _pixman_gradient_walker_pixel (walker, t1);
+	}
+	else
+	{
+	    if (t0 * dr > mindr)
+		return _pixman_gradient_walker_pixel (walker, t0);
+	    else if (t1 * dr > mindr)
+		return _pixman_gradient_walker_pixel (walker, t1);
+	}
+    }
+
+    return 0;
+}
+
+static uint32_t *
+radial_get_scanline_narrow (pixman_iter_t *iter, const uint32_t *mask)
+{
+    /*
+     * Implementation of radial gradients following the PDF specification.
+     * See section 8.7.4.5.4 Type 3 (Radial) Shadings of the PDF Reference
+     * Manual (PDF 32000-1:2008 at the time of this writing).
+     *
+     * In the radial gradient problem we are given two circles (c₁,r₁) and
+     * (c₂,r₂) that define the gradient itself.
+     *
+     * Mathematically the gradient can be defined as the family of circles
+     *
+     *     ((1-t)·c₁ + t·(c₂), (1-t)·r₁ + t·r₂)
+     *
+     * excluding those circles whose radius would be < 0. When a point
+     * belongs to more than one circle, the one with a bigger t is the only
+     * one that contributes to its color. When a point does not belong
+     * to any of the circles, it is transparent black, i.e. RGBA (0, 0, 0, 0).
+     * Further limitations on the range of values for t are imposed when
+     * the gradient is not repeated, namely t must belong to [0,1].
+     *
+     * The graphical result is the same as drawing the valid (radius > 0)
+     * circles with increasing t in [-inf, +inf] (or in [0,1] if the gradient
+     * is not repeated) using SOURCE operator composition.
+     *
+     * It looks like a cone pointing towards the viewer if the ending circle
+     * is smaller than the starting one, a cone pointing inside the page if
+     * the starting circle is the smaller one and like a cylinder if they
+     * have the same radius.
+     *
+     * What we actually do is, given the point whose color we are interested
+     * in, compute the t values for that point, solving for t in:
+     *
+     *     length((1-t)·c₁ + t·(c₂) - p) = (1-t)·r₁ + t·r₂
+     *
+     * Let's rewrite it in a simpler way, by defining some auxiliary
+     * variables:
+     *
+     *     cd = c₂ - c₁
+     *     pd = p - c₁
+     *     dr = r₂ - r₁
+     *     length(t·cd - pd) = r₁ + t·dr
+     *
+     * which actually means
+     *
+     *     hypot(t·cdx - pdx, t·cdy - pdy) = r₁ + t·dr
+     *
+     * or
+     *
+     *     ⎷((t·cdx - pdx)² + (t·cdy - pdy)²) = r₁ + t·dr.
+     *
+     * If we impose (as stated earlier) that r₁ + t·dr >= 0, it becomes:
+     *
+     *     (t·cdx - pdx)² + (t·cdy - pdy)² = (r₁ + t·dr)²
+     *
+     * where we can actually expand the squares and solve for t:
+     *
+     *     t²cdx² - 2t·cdx·pdx + pdx² + t²cdy² - 2t·cdy·pdy + pdy² =
+     *       = r₁² + 2·r₁·t·dr + t²·dr²
+     *
+     *     (cdx² + cdy² - dr²)t² - 2(cdx·pdx + cdy·pdy + r₁·dr)t +
+     *         (pdx² + pdy² - r₁²) = 0
+     *
+     *     A = cdx² + cdy² - dr²
+     *     B = pdx·cdx + pdy·cdy + r₁·dr
+     *     C = pdx² + pdy² - r₁²
+     *     At² - 2Bt + C = 0
+     *
+     * The solutions (unless the equation degenerates because of A = 0) are:
+     *
+     *     t = (B ± ⎷(B² - A·C)) / A
+     *
+     * The solution we are going to prefer is the bigger one, unless the
+     * radius associated to it is negative (or it falls outside the valid t
+     * range).
+     *
+     * Additional observations (useful for optimizations):
+     * A does not depend on p
+     *
+     * A < 0 <=> one of the two circles completely contains the other one
+     *   <=> for every p, the radiuses associated with the two t solutions
+     *       have opposite sign
+     */
+    pixman_image_t *image = iter->image;
+    int x = iter->x;
+    int y = iter->y;
+    int width = iter->width;
+    uint32_t *buffer = iter->buffer;
 
     gradient_t *gradient = (gradient_t *)image;
-    source_image_t *source = (source_image_t *)image;
     radial_gradient_t *radial = (radial_gradient_t *)image;
     uint32_t *end = buffer + width;
     pixman_gradient_walker_t walker;
-    pixman_bool_t affine = TRUE;
-    double cx = 1.;
-    double cy = 0.;
-    double cz = 0.;
-    double rx = x + 0.5;
-    double ry = y + 0.5;
-    double rz = 1.;
+    pixman_vector_t v, unit;
 
-    _pixman_gradient_walker_init (&walker, gradient, source->common.repeat);
+    /* reference point is the center of the pixel */
+    v.vector[0] = pixman_int_to_fixed (x) + pixman_fixed_1 / 2;
+    v.vector[1] = pixman_int_to_fixed (y) + pixman_fixed_1 / 2;
+    v.vector[2] = pixman_fixed_1;
 
-    if (source->common.transform)
+    _pixman_gradient_walker_init (&walker, gradient, image->common.repeat);
+
+    if (image->common.transform)
     {
-	pixman_vector_t v;
-	/* reference point is the center of the pixel */
-	v.vector[0] = pixman_int_to_fixed (x) + pixman_fixed_1 / 2;
-	v.vector[1] = pixman_int_to_fixed (y) + pixman_fixed_1 / 2;
-	v.vector[2] = pixman_fixed_1;
-	
-	if (!pixman_transform_point_3d (source->common.transform, &v))
-	    return;
+	if (!pixman_transform_point_3d (image->common.transform, &v))
+	    return iter->buffer;
 
-	cx = source->common.transform->matrix[0][0] / 65536.;
-	cy = source->common.transform->matrix[1][0] / 65536.;
-	cz = source->common.transform->matrix[2][0] / 65536.;
-	
-	rx = v.vector[0] / 65536.;
-	ry = v.vector[1] / 65536.;
-	rz = v.vector[2] / 65536.;
-
-	affine =
-	    source->common.transform->matrix[2][0] == 0 &&
-	    v.vector[2] == pixman_fixed_1;
+	unit.vector[0] = image->common.transform->matrix[0][0];
+	unit.vector[1] = image->common.transform->matrix[1][0];
+	unit.vector[2] = image->common.transform->matrix[2][0];
+    }
+    else
+    {
+	unit.vector[0] = pixman_fixed_1;
+	unit.vector[1] = 0;
+	unit.vector[2] = 0;
     }
 
-    if (affine)
+    if (unit.vector[2] == 0 && v.vector[2] == pixman_fixed_1)
     {
-	/* When computing t over a scanline, we notice that some expressions
-	 * are constant so we can compute them just once. Given:
+	/*
+	 * Given:
 	 *
-	 * t = (-2·B ± ⎷(B² - 4·A·C)) / 2·A
+	 * t = (B ± ⎷(B² - A·C)) / A
 	 *
 	 * where
 	 *
-	 * A = cdx² + cdy² - dr² [precomputed as radial->A]
-	 * B = -2·(pdx·cdx + pdy·cdy + r₁·dr)
+	 * A = cdx² + cdy² - dr²
+	 * B = pdx·cdx + pdy·cdy + r₁·dr
 	 * C = pdx² + pdy² - r₁²
+	 * det = B² - A·C
 	 *
 	 * Since we have an affine transformation, we know that (pdx, pdy)
 	 * increase linearly with each pixel,
 	 *
-	 * pdx = pdx₀ + n·cx,
-	 * pdy = pdy₀ + n·cy,
+	 * pdx = pdx₀ + n·ux,
+	 * pdy = pdy₀ + n·uy,
 	 *
-	 * we can then express B in terms of an linear increment along
-	 * the scanline:
-	 *
-	 * B = B₀ + n·cB, with
-	 * B₀ = -2·(pdx₀·cdx + pdy₀·cdy + r₁·dr) and
-	 * cB = -2·(cx·cdx + cy·cdy)
-	 *
-	 * Thus we can replace the full evaluation of B per-pixel (4 multiplies,
-	 * 2 additions) with a single addition.
+	 * we can then express B, C and det through multiple differentiation.
 	 */
-	double r1   = radial->c1.radius / 65536.;
-	double r1sq = r1 * r1;
-	double pdx  = rx - radial->c1.x / 65536.;
-	double pdy  = ry - radial->c1.y / 65536.;
-	double A = radial->A;
-	double invA = -65536. / (2. * A);
-	double A4 = -4. * A;
-	double B  = -2. * (pdx*radial->cdx + pdy*radial->cdy + r1*radial->dr);
-	double cB = -2. *  (cx*radial->cdx +  cy*radial->cdy);
-	pixman_bool_t invert = A * radial->dr < 0;
+	pixman_fixed_32_32_t b, db, c, dc, ddc;
+
+	/* warning: this computation may overflow */
+	v.vector[0] -= radial->c1.x;
+	v.vector[1] -= radial->c1.y;
+
+	/*
+	 * B and C are computed and updated exactly.
+	 * If fdot was used instead of dot, in the worst case it would
+	 * lose 11 bits of precision in each of the multiplication and
+	 * summing up would zero out all the bit that were preserved,
+	 * thus making the result 0 instead of the correct one.
+	 * This would mean a worst case of unbound relative error or
+	 * about 2^10 absolute error
+	 */
+	b = dot (v.vector[0], v.vector[1], radial->c1.radius,
+		 radial->delta.x, radial->delta.y, radial->delta.radius);
+	db = dot (unit.vector[0], unit.vector[1], 0,
+		  radial->delta.x, radial->delta.y, 0);
+
+	c = dot (v.vector[0], v.vector[1],
+		 -((pixman_fixed_48_16_t) radial->c1.radius),
+		 v.vector[0], v.vector[1], radial->c1.radius);
+	dc = dot (2 * (pixman_fixed_48_16_t) v.vector[0] + unit.vector[0],
+		  2 * (pixman_fixed_48_16_t) v.vector[1] + unit.vector[1],
+		  0,
+		  unit.vector[0], unit.vector[1], 0);
+	ddc = 2 * dot (unit.vector[0], unit.vector[1], 0,
+		       unit.vector[0], unit.vector[1], 0);
 
 	while (buffer < end)
 	{
-	    if (!mask || *mask++ & mask_bits)
+	    if (!mask || *mask++)
 	    {
-		pixman_fixed_48_16_t t;
-		double det = B * B + A4 * (pdx * pdx + pdy * pdy - r1sq);
-		if (det <= 0.)
-		    t = (pixman_fixed_48_16_t) (B * invA);
-		else if (invert)
-		    t = (pixman_fixed_48_16_t) ((B + sqrt (det)) * invA);
-		else
-		    t = (pixman_fixed_48_16_t) ((B - sqrt (det)) * invA);
-
-		*buffer = _pixman_gradient_walker_pixel (&walker, t);
+		*buffer = radial_compute_color (radial->a, b, c,
+						radial->inva,
+						radial->delta.radius,
+						radial->mindr,
+						&walker,
+						image->common.repeat);
 	    }
-	    ++buffer;
 
-	    pdx += cx;
-	    pdy += cy;
-	    B += cB;
+	    b += db;
+	    c += dc;
+	    dc += ddc;
+	    ++buffer;
 	}
     }
     else
     {
 	/* projective */
+	/* Warning:
+	 * error propagation guarantees are much looser than in the affine case
+	 */
 	while (buffer < end)
 	{
-	    if (!mask || *mask++ & mask_bits)
+	    if (!mask || *mask++)
 	    {
-		double pdx, pdy;
-		double B, C;
-		double det;
-		double c1x = radial->c1.x / 65536.0;
-		double c1y = radial->c1.y / 65536.0;
-		double r1  = radial->c1.radius / 65536.0;
-		pixman_fixed_48_16_t t;
-		double x, y;
-
-		if (rz != 0)
+		if (v.vector[2] != 0)
 		{
-		    x = rx / rz;
-		    y = ry / rz;
+		    double pdx, pdy, invv2, b, c;
+
+		    invv2 = 1. * pixman_fixed_1 / v.vector[2];
+
+		    pdx = v.vector[0] * invv2 - radial->c1.x;
+		    /*    / pixman_fixed_1 */
+
+		    pdy = v.vector[1] * invv2 - radial->c1.y;
+		    /*    / pixman_fixed_1 */
+
+		    b = fdot (pdx, pdy, radial->c1.radius,
+			      radial->delta.x, radial->delta.y,
+			      radial->delta.radius);
+		    /*  / pixman_fixed_1 / pixman_fixed_1 */
+
+		    c = fdot (pdx, pdy, -radial->c1.radius,
+			      pdx, pdy, radial->c1.radius);
+		    /*  / pixman_fixed_1 / pixman_fixed_1 */
+
+		    *buffer = radial_compute_color (radial->a, b, c,
+						    radial->inva,
+						    radial->delta.radius,
+						    radial->mindr,
+						    &walker,
+						    image->common.repeat);
 		}
 		else
 		{
-		    x = y = 0.;
+		    *buffer = 0;
 		}
-
-		pdx = x - c1x;
-		pdy = y - c1y;
-
-		B = -2 * (pdx * radial->cdx +
-			  pdy * radial->cdy +
-			  r1 * radial->dr);
-		C = (pdx * pdx + pdy * pdy - r1 * r1);
-
-		det = (B * B) - (4 * radial->A * C);
-		if (det < 0.0)
-		    det = 0.0;
-
-		if (radial->A * radial->dr < 0)
-		    t = (pixman_fixed_48_16_t) ((-B - sqrt (det)) / (2.0 * radial->A) * 65536);
-		else
-		    t = (pixman_fixed_48_16_t) ((-B + sqrt (det)) / (2.0 * radial->A) * 65536);
-
-		*buffer = _pixman_gradient_walker_pixel (&walker, t);
 	    }
-	    
+
 	    ++buffer;
 
-	    rx += cx;
-	    ry += cy;
-	    rz += cz;
+	    v.vector[0] += unit.vector[0];
+	    v.vector[1] += unit.vector[1];
+	    v.vector[2] += unit.vector[2];
 	}
     }
+
+    iter->y++;
+    return iter->buffer;
 }
 
-static void
-radial_gradient_property_changed (pixman_image_t *image)
+static uint32_t *
+radial_get_scanline_wide (pixman_iter_t *iter, const uint32_t *mask)
 {
-    image->common.get_scanline_32 = radial_gradient_get_scanline_32;
-    image->common.get_scanline_64 = _pixman_image_get_scanline_generic_64;
+    uint32_t *buffer = radial_get_scanline_narrow (iter, NULL);
+
+    pixman_expand ((uint64_t *)buffer, buffer, PIXMAN_a8r8g8b8, iter->width);
+
+    return buffer;
+}
+
+void
+_pixman_radial_gradient_iter_init (pixman_image_t *image, pixman_iter_t *iter)
+{
+    if (iter->flags & ITER_NARROW)
+	iter->get_scanline = radial_get_scanline_narrow;
+    else
+	iter->get_scanline = radial_get_scanline_wide;
 }
 
 PIXMAN_EXPORT pixman_image_t *
@@ -330,8 +429,6 @@ pixman_image_create_radial_gradient (pixman_point_fixed_t *        inner,
 {
     pixman_image_t *image;
     radial_gradient_t *radial;
-
-    return_val_if_fail (n_stops >= 2, NULL);
 
     image = _pixman_image_allocate ();
 
@@ -354,15 +451,20 @@ pixman_image_create_radial_gradient (pixman_point_fixed_t *        inner,
     radial->c2.x = outer->x;
     radial->c2.y = outer->y;
     radial->c2.radius = outer_radius;
-    radial->cdx = pixman_fixed_to_double (radial->c2.x - radial->c1.x);
-    radial->cdy = pixman_fixed_to_double (radial->c2.y - radial->c1.y);
-    radial->dr = pixman_fixed_to_double (radial->c2.radius - radial->c1.radius);
-    radial->A = (radial->cdx * radial->cdx +
-		 radial->cdy * radial->cdy -
-		 radial->dr  * radial->dr);
 
-    image->common.property_changed = radial_gradient_property_changed;
+    /* warning: this computations may overflow */
+    radial->delta.x = radial->c2.x - radial->c1.x;
+    radial->delta.y = radial->c2.y - radial->c1.y;
+    radial->delta.radius = radial->c2.radius - radial->c1.radius;
+
+    /* computed exactly, then cast to double -> every bit of the double
+       representation is correct (53 bits) */
+    radial->a = dot (radial->delta.x, radial->delta.y, -radial->delta.radius,
+		     radial->delta.x, radial->delta.y, radial->delta.radius);
+    if (radial->a != 0)
+	radial->inva = 1. * pixman_fixed_1 / radial->a;
+
+    radial->mindr = -1. * pixman_fixed_1 * radial->c1.radius;
 
     return image;
 }
-

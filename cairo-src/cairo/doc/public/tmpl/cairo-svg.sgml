@@ -1,29 +1,28 @@
 <!-- ##### SECTION Title ##### -->
-SVG Surfaces
+cairo-svg
 
 <!-- ##### SECTION Short_Description ##### -->
-Rendering SVG documents
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The SVG surface is used to render cairo graphics to
-SVG files and is a multi-page vector surface backend.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_surface_t()</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO CAIRO_HAS_SVG_SURFACE ##### -->
 <para>
-Defined if the SVG surface backend is available.
-This macro can be used to conditionally compile backend-specific code.
+
 </para>
 
 

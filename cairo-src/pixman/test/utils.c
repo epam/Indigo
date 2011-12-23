@@ -1,4 +1,29 @@
+#define _GNU_SOURCE
+
 #include "utils.h"
+#include <signal.h>
+
+#ifdef HAVE_GETTIMEOFDAY
+#include <sys/time.h>
+#else
+#include <time.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_MMAN_H
+#include <sys/mman.h>
+#endif
+
+#ifdef HAVE_FENV_H
+#include <fenv.h>
+#endif
+
+#ifdef HAVE_LIBPNG
+#include <png.h>
+#endif
 
 /* Random number seed
  */
@@ -109,25 +134,36 @@ compute_crc32 (uint32_t    in_crc32,
     return (crc32 ^ 0xFFFFFFFF);
 }
 
+pixman_bool_t
+is_little_endian (void)
+{
+    volatile uint16_t endian_check_var = 0x1234;
+
+    return (*(volatile uint8_t *)&endian_check_var == 0x34);
+}
+
 /* perform endian conversion of pixel data
  */
 void
-image_endian_swap (pixman_image_t *img, int bpp)
+image_endian_swap (pixman_image_t *img)
 {
     int stride = pixman_image_get_stride (img);
     uint32_t *data = pixman_image_get_data (img);
     int height = pixman_image_get_height (img);
+    int bpp = PIXMAN_FORMAT_BPP (pixman_image_get_format (img));
     int i, j;
 
     /* swap bytes only on big endian systems */
-    volatile uint16_t endian_check_var = 0x1234;
-    if (*(volatile uint8_t *)&endian_check_var != 0x12)
+    if (is_little_endian())
+	return;
+
+    if (bpp == 8)
 	return;
 
     for (i = 0; i < height; i++)
     {
 	uint8_t *line_data = (uint8_t *)data + stride * i;
-	/* swap bytes only for 16, 24 and 32 bpp for now */
+	
 	switch (bpp)
 	{
 	case 1:
@@ -187,15 +223,111 @@ image_endian_swap (pixman_image_t *img, int bpp)
 	    }
 	    break;
 	default:
+	    assert (FALSE);
 	    break;
 	}
     }
 }
 
+#define N_LEADING_PROTECTED	10
+#define N_TRAILING_PROTECTED	10
+
+typedef struct
+{
+    void *addr;
+    uint32_t len;
+    uint8_t *trailing;
+    int n_bytes;
+} info_t;
+
+#if defined(HAVE_MPROTECT) && defined(HAVE_GETPAGESIZE) && defined(HAVE_SYS_MMAN_H) && defined(HAVE_MMAP)
+
+/* This is apparently necessary on at least OS X */
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+
+void *
+fence_malloc (int64_t len)
+{
+    unsigned long page_size = getpagesize();
+    unsigned long page_mask = page_size - 1;
+    uint32_t n_payload_bytes = (len + page_mask) & ~page_mask;
+    uint32_t n_bytes =
+	(page_size * (N_LEADING_PROTECTED + N_TRAILING_PROTECTED + 2) +
+	 n_payload_bytes) & ~page_mask;
+    uint8_t *initial_page;
+    uint8_t *leading_protected;
+    uint8_t *trailing_protected;
+    uint8_t *payload;
+    uint8_t *addr;
+
+    if (len < 0)
+	abort();
+    
+    addr = mmap (NULL, n_bytes, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS,
+		 -1, 0);
+
+    if (addr == MAP_FAILED)
+    {
+	printf ("mmap failed on %lld %u\n", (long long int)len, n_bytes);
+	return NULL;
+    }
+
+    initial_page = (uint8_t *)(((unsigned long)addr + page_mask) & ~page_mask);
+    leading_protected = initial_page + page_size;
+    payload = leading_protected + N_LEADING_PROTECTED * page_size;
+    trailing_protected = payload + n_payload_bytes;
+
+    ((info_t *)initial_page)->addr = addr;
+    ((info_t *)initial_page)->len = len;
+    ((info_t *)initial_page)->trailing = trailing_protected;
+    ((info_t *)initial_page)->n_bytes = n_bytes;
+
+    if ((mprotect (leading_protected, N_LEADING_PROTECTED * page_size,
+		  PROT_NONE) == -1) ||
+	(mprotect (trailing_protected, N_TRAILING_PROTECTED * page_size,
+		  PROT_NONE) == -1))
+    {
+	munmap (addr, n_bytes);
+	return NULL;
+    }
+
+    return payload;
+}
+
+void
+fence_free (void *data)
+{
+    uint32_t page_size = getpagesize();
+    uint8_t *payload = data;
+    uint8_t *leading_protected = payload - N_LEADING_PROTECTED * page_size;
+    uint8_t *initial_page = leading_protected - page_size;
+    info_t *info = (info_t *)initial_page;
+
+    munmap (info->addr, info->n_bytes);
+}
+
+#else
+
+void *
+fence_malloc (int64_t len)
+{
+    return malloc (len);
+}
+
+void
+fence_free (void *data)
+{
+    free (data);
+}
+
+#endif
+
 uint8_t *
 make_random_bytes (int n_bytes)
 {
-    uint8_t *bytes = malloc (n_bytes);
+    uint8_t *bytes = fence_malloc (n_bytes);
     int i;
 
     if (!bytes)
@@ -205,4 +337,368 @@ make_random_bytes (int n_bytes)
 	bytes[i] = lcg_rand () & 0xff;
 
     return bytes;
+}
+
+#ifdef HAVE_LIBPNG
+
+static void
+pngify_pixels (uint32_t *pixels, int n_pixels)
+{
+    int i;
+
+    for (i = 0; i < n_pixels; ++i)
+    {
+	uint32_t p = pixels[i];
+	uint8_t *out = (uint8_t *)&(pixels[i]);
+	uint8_t a, r, g, b;
+
+	a = (p & 0xff000000) >> 24;
+	r = (p & 0x00ff0000) >> 16;
+	g = (p & 0x0000ff00) >> 8;
+	b = (p & 0x000000ff) >> 0;
+
+	if (a != 0)
+	{
+	    r = (r * 255) / a;
+	    g = (g * 255) / a;
+	    b = (b * 255) / a;
+	}
+
+	*out++ = r;
+	*out++ = g;
+	*out++ = b;
+	*out++ = a;
+    }
+}
+
+pixman_bool_t
+write_png (pixman_image_t *image, const char *filename)
+{
+    int width = pixman_image_get_width (image);
+    int height = pixman_image_get_height (image);
+    int stride = width * 4;
+    uint32_t *data = malloc (height * stride);
+    pixman_image_t *copy;
+    png_struct *write_struct;
+    png_info *info_struct;
+    pixman_bool_t result = FALSE;
+    FILE *f = fopen (filename, "wb");
+    png_bytep *row_pointers;
+    int i;
+
+    if (!f)
+	return FALSE;
+
+    row_pointers = malloc (height * sizeof (png_bytep));
+
+    copy = pixman_image_create_bits (
+	PIXMAN_a8r8g8b8, width, height, data, stride);
+
+    pixman_image_composite32 (
+	PIXMAN_OP_SRC, image, NULL, copy, 0, 0, 0, 0, 0, 0, width, height);
+
+    pngify_pixels (data, height * width);
+
+    for (i = 0; i < height; ++i)
+	row_pointers[i] = (png_bytep)(data + i * width);
+
+    if (!(write_struct = png_create_write_struct (
+	      PNG_LIBPNG_VER_STRING, NULL, NULL, NULL)))
+	goto out1;
+
+    if (!(info_struct = png_create_info_struct (write_struct)))
+	goto out2;
+
+    png_init_io (write_struct, f);
+
+    png_set_IHDR (write_struct, info_struct, width, height,
+		  8, PNG_COLOR_TYPE_RGB_ALPHA,
+		  PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
+		  PNG_FILTER_TYPE_BASE);
+
+    png_write_info (write_struct, info_struct);
+
+    png_write_image (write_struct, row_pointers);
+
+    png_write_end (write_struct, NULL);
+
+    result = TRUE;
+
+out2:
+    png_destroy_write_struct (&write_struct, &info_struct);
+
+out1:
+    if (fclose (f) != 0)
+	result = FALSE;
+
+    pixman_image_unref (copy);
+    free (row_pointers);
+    free (data);
+    return result;
+}
+
+#else /* no libpng */
+
+pixman_bool_t
+write_png (pixman_image_t *image, const char *filename)
+{
+    return FALSE;
+}
+
+#endif
+
+/*
+ * A function, which can be used as a core part of the test programs,
+ * intended to detect various problems with the help of fuzzing input
+ * to pixman API (according to some templates, aka "smart" fuzzing).
+ * Some general information about such testing can be found here:
+ * http://en.wikipedia.org/wiki/Fuzz_testing
+ *
+ * It may help detecting:
+ *  - crashes on bad handling of valid or reasonably invalid input to
+ *    pixman API.
+ *  - deviations from the behavior of older pixman releases.
+ *  - deviations from the behavior of the same pixman release, but
+ *    configured in a different way (for example with SIMD optimizations
+ *    disabled), or running on a different OS or hardware.
+ *
+ * The test is performed by calling a callback function a huge number
+ * of times. The callback function is expected to run some snippet of
+ * pixman code with pseudorandom variations to the data feeded to
+ * pixman API. A result of running each callback function should be
+ * some deterministic value which depends on test number (test number
+ * can be used as a seed for PRNG). When 'verbose' argument is nonzero,
+ * callback function is expected to print to stdout some information
+ * about what it does.
+ *
+ * Return values from many small tests are accumulated together and
+ * used as final checksum, which can be compared to some expected
+ * value. Running the tests not individually, but in a batch helps
+ * to reduce process start overhead and also allows to parallelize
+ * testing and utilize multiple CPU cores.
+ *
+ * The resulting executable can be run without any arguments. In
+ * this case it runs a batch of tests starting from 1 and up to
+ * 'default_number_of_iterations'. The resulting checksum is
+ * compared with 'expected_checksum' and FAIL or PASS verdict
+ * depends on the result of this comparison.
+ *
+ * If the executable is run with 2 numbers provided as command line
+ * arguments, they specify the starting and ending numbers for a test
+ * batch.
+ *
+ * If the executable is run with only one number provided as a command
+ * line argument, then this number is used to call the callback function
+ * once, and also with verbose flag set.
+ */
+int
+fuzzer_test_main (const char *test_name,
+		  int         default_number_of_iterations,
+		  uint32_t    expected_checksum,
+		  uint32_t    (*test_function)(int testnum, int verbose),
+		  int         argc,
+		  const char *argv[])
+{
+    int i, n1 = 1, n2 = 0;
+    uint32_t checksum = 0;
+    int verbose = getenv ("VERBOSE") != NULL;
+
+    if (argc >= 3)
+    {
+	n1 = atoi (argv[1]);
+	n2 = atoi (argv[2]);
+	if (n2 < n1)
+	{
+	    printf ("invalid test range\n");
+	    return 1;
+	}
+    }
+    else if (argc >= 2)
+    {
+	n2 = atoi (argv[1]);
+	checksum = test_function (n2, 1);
+	printf ("%d: checksum=%08X\n", n2, checksum);
+	return 0;
+    }
+    else
+    {
+	n1 = 1;
+	n2 = default_number_of_iterations;
+    }
+
+#ifdef USE_OPENMP
+    #pragma omp parallel for reduction(+:checksum) default(none) \
+					shared(n1, n2, test_function, verbose)
+#endif
+    for (i = n1; i <= n2; i++)
+    {
+	uint32_t crc = test_function (i, 0);
+	if (verbose)
+	    printf ("%d: %08X\n", i, crc);
+	checksum += crc;
+    }
+
+    if (n1 == 1 && n2 == default_number_of_iterations)
+    {
+	if (checksum == expected_checksum)
+	{
+	    printf ("%s test passed (checksum=%08X)\n",
+		    test_name, checksum);
+	}
+	else
+	{
+	    printf ("%s test failed! (checksum=%08X, expected %08X)\n",
+		    test_name, checksum, expected_checksum);
+	    return 1;
+	}
+    }
+    else
+    {
+	printf ("%d-%d: checksum=%08X\n", n1, n2, checksum);
+    }
+
+    return 0;
+}
+
+/* Try to obtain current time in seconds */
+double
+gettime (void)
+{
+#ifdef HAVE_GETTIMEOFDAY
+    struct timeval tv;
+
+    gettimeofday (&tv, NULL);
+    return (double)((int64_t)tv.tv_sec * 1000000 + tv.tv_usec) / 1000000.;
+#else
+    return (double)clock() / (double)CLOCKS_PER_SEC;
+#endif
+}
+
+uint32_t
+get_random_seed (void)
+{
+    double d = gettime();
+
+    lcg_srand (*(uint32_t *)&d);
+
+    return lcg_rand_u32 ();
+}
+
+static const char *global_msg;
+
+static void
+on_alarm (int signo)
+{
+    printf ("%s\n", global_msg);
+    exit (1);
+}
+
+void
+fail_after (int seconds, const char *msg)
+{
+#ifdef HAVE_SIGACTION
+#ifdef HAVE_ALARM
+    struct sigaction action;
+
+    global_msg = msg;
+
+    memset (&action, 0, sizeof (action));
+    action.sa_handler = on_alarm;
+
+    alarm (seconds);
+
+    sigaction (SIGALRM, &action, NULL);
+#endif
+#endif
+}
+
+void
+enable_fp_exceptions (void)
+{
+#ifdef HAVE_FENV_H
+#ifdef HAVE_FEENABLEEXCEPT
+    /* Note: we don't enable the FE_INEXACT trap because
+     * that happens quite commonly. It is possible that
+     * over- and underflow should similarly be considered
+     * okay, but for now the test suite passes with them
+     * enabled, and it's useful to know if they start
+     * occuring.
+     */
+    feenableexcept (FE_DIVBYZERO	|
+		    FE_INVALID		|
+		    FE_OVERFLOW		|
+		    FE_UNDERFLOW);
+#endif
+#endif
+}
+
+void *
+aligned_malloc (size_t align, size_t size)
+{
+    void *result;
+
+#ifdef HAVE_POSIX_MEMALIGN
+    if (posix_memalign (&result, align, size) != 0)
+      result = NULL;
+#else
+    result = malloc (size);
+#endif
+
+    return result;
+}
+
+#define CONVERT_15(c, is_rgb)						\
+    (is_rgb?								\
+     ((((c) >> 3) & 0x001f) |						\
+      (((c) >> 6) & 0x03e0) |						\
+      (((c) >> 9) & 0x7c00)) :						\
+     (((((c) >> 16) & 0xff) * 153 +					\
+       (((c) >>  8) & 0xff) * 301 +					\
+       (((c)      ) & 0xff) * 58) >> 2))
+
+void
+initialize_palette (pixman_indexed_t *palette, uint32_t depth, int is_rgb)
+{
+    int i;
+    uint32_t mask = (1 << depth) - 1;
+
+    for (i = 0; i < 32768; ++i)
+	palette->ent[i] = lcg_rand() & mask;
+
+    memset (palette->rgba, 0, sizeof (palette->rgba));
+
+    for (i = 0; i < mask + 1; ++i)
+    {
+	uint32_t rgba24;
+ 	pixman_bool_t retry;
+	uint32_t i15;
+
+	/* We filled the rgb->index map with random numbers, but we
+	 * do need the ability to round trip, that is if some indexed
+	 * color expands to an argb24, then the 15 bit version of that
+	 * color must map back to the index. Anything else, we don't
+	 * care about too much.
+	 */
+	do
+	{
+	    uint32_t old_idx;
+
+	    rgba24 = lcg_rand();
+	    i15 = CONVERT_15 (rgba24, is_rgb);
+
+	    old_idx = palette->ent[i15];
+	    if (CONVERT_15 (palette->rgba[old_idx], is_rgb) == i15)
+		retry = 1;
+	    else
+		retry = 0;
+	} while (retry);
+
+	palette->rgba[i] = rgba24;
+	palette->ent[i15] = i;
+    }
+
+    for (i = 0; i < mask + 1; ++i)
+    {
+	assert (palette->ent[CONVERT_15 (palette->rgba[i], is_rgb)] == i);
+    }
 }

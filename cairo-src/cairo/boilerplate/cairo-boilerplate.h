@@ -70,8 +70,8 @@
 # define UINT16_MAX	(65535)
 #endif
 
-#ifndef CAIRO_BOILERPLATE_LOG
-#define CAIRO_BOILERPLATE_LOG(...) fprintf(stderr, __VA_ARGS__)
+#ifndef CAIRO_BOILERPLATE_DEBUG
+#define CAIRO_BOILERPLATE_DEBUG(x)
 #endif
 
 #if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
@@ -93,10 +93,13 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+CAIRO_BEGIN_DECLS
 
 /* A fake format we use for the flattened ARGB output of the PS and
  * PDF surfaces. */
 #define CAIRO_TEST_CONTENT_COLOR_ALPHA_FLATTENED ((unsigned int) -1)
+
+extern const cairo_user_data_key_t cairo_boilerplate_output_basename_key;
 
 cairo_content_t
 cairo_boilerplate_content (cairo_content_t content);
@@ -115,24 +118,24 @@ typedef enum {
 typedef cairo_surface_t *
 (*cairo_boilerplate_create_surface_t) (const char		 *name,
 				       cairo_content_t		  content,
-				       int			  width,
-				       int			  height,
-				       int			  max_width,
-				       int			  max_height,
-				       cairo_boilerplate_mode_t	  mode,
-				       int                        id,
+				       double			  width,
+				       double			  height,
+				       double			  max_width,
+				       double			  max_height,
+				       cairo_boilerplate_mode_t   mode,
+				       int			  id,
 				       void			**closure);
 
 typedef void
 (*cairo_boilerplate_force_fallbacks_t) (cairo_surface_t *surface,
-	                                unsigned int flags);
+					unsigned int flags);
 
 typedef cairo_status_t
 (*cairo_boilerplate_finish_surface_t) (cairo_surface_t *surface);
 
 typedef cairo_surface_t *
 (*cairo_boilerplate_get_image_surface_t) (cairo_surface_t *surface,
-	                                  int page,
+					  int page,
 					  int width,
 					  int height);
 
@@ -146,39 +149,55 @@ typedef void
 typedef void
 (*cairo_boilerplate_wait_t) (void *closure);
 
-typedef struct _cairo_boilerplate_target
-{
+typedef char *
+(*cairo_boilerplate_describe_t) (void *closure);
+
+typedef struct _cairo_boilerplate_target {
     const char					*name;
+    const char					*basename;
     const char					*file_extension;
+    const char					*reference_target;
     cairo_surface_type_t			 expected_type;
     cairo_content_t				 content;
     unsigned int				 error_tolerance;
+    const char					*probe; /* runtime dl check */
     cairo_boilerplate_create_surface_t		 create_surface;
-    cairo_boilerplate_force_fallbacks_t		 force_fallbacks;
+    cairo_boilerplate_force_fallbacks_t 	 force_fallbacks;
     cairo_boilerplate_finish_surface_t		 finish_surface;
     cairo_boilerplate_get_image_surface_t	 get_image_surface;
     cairo_boilerplate_write_to_png_t		 write_to_png;
-    cairo_boilerplate_cleanup_t			 cleanup;
+    cairo_boilerplate_cleanup_t 		 cleanup;
     cairo_boilerplate_wait_t			 synchronize;
+    cairo_boilerplate_describe_t                 describe;
+    cairo_bool_t				 is_measurable;
     cairo_bool_t				 is_vector;
+    cairo_bool_t				 is_recording;
 } cairo_boilerplate_target_t;
 
-cairo_boilerplate_target_t **
-cairo_boilerplate_get_targets (int *num_targets, cairo_bool_t *limited_targets);
+const cairo_boilerplate_target_t *
+cairo_boilerplate_get_image_target (cairo_content_t content);
+
+const cairo_boilerplate_target_t *
+cairo_boilerplate_get_target_by_name (const char      *name,
+				      cairo_content_t  content);
+
+const cairo_boilerplate_target_t **
+cairo_boilerplate_get_targets (int	    *num_targets,
+			       cairo_bool_t *limited_targets);
 
 void
-cairo_boilerplate_free_targets (cairo_boilerplate_target_t **targets);
+cairo_boilerplate_free_targets (const cairo_boilerplate_target_t **targets);
 
 cairo_surface_t *
 _cairo_boilerplate_get_image_surface (cairo_surface_t *src,
-				      int page,
-				      int width,
-				      int height);
+				      int	       page,
+				      int	       width,
+				      int	       height);
 cairo_surface_t *
-cairo_boilerplate_get_image_surface_from_png (const char *filename,
-					      int width,
-					      int height,
-					      cairo_bool_t flatten);
+cairo_boilerplate_get_image_surface_from_png (const char   *filename,
+					      int	    width,
+					      int	    height,
+					      cairo_bool_t  flatten);
 
 cairo_surface_t *
 cairo_boilerplate_surface_create_in_error (cairo_status_t status);
@@ -188,14 +207,15 @@ enum {
 };
 
 FILE *
-cairo_boilerplate_open_any2ppm (const char *filename,
-				int page,
-				unsigned int flags);
+cairo_boilerplate_open_any2ppm (const char   *filename,
+				int	      page,
+				unsigned int  flags);
 cairo_surface_t *
 cairo_boilerplate_image_surface_create_from_ppm_stream (FILE *file);
 
 cairo_surface_t *
-cairo_boilerplate_convert_to_image (const char *filename, int page);
+cairo_boilerplate_convert_to_image (const char *filename,
+				    int 	page);
 
 int
 cairo_boilerplate_version (void);
@@ -203,6 +223,11 @@ cairo_boilerplate_version (void);
 const char*
 cairo_boilerplate_version_string (void);
 
+void
+cairo_boilerplate_fini (void);
+
 #include "cairo-boilerplate-system.h"
+
+CAIRO_END_DECLS
 
 #endif

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -28,7 +28,7 @@
  *
  * The Original Code is the cairo graphics library.
  *
- * The Initial Developer of the Original Code is Mozilla Corporation
+ * The Initial Developer of the Original Code is Mozilla Foundation
  *
  * Contributor(s):
  *	Vladimir Vukicevic <vladimir@pobox.com>
@@ -38,6 +38,13 @@
 #define CAIRO_MALLOC_PRIVATE_H
 
 #include "cairo-wideint-private.h"
+
+#if HAVE_MEMFAULT
+#include <memfault.h>
+#define CAIRO_INJECT_FAULT() MEMFAULT_INJECT_FAULT()
+#else
+#define CAIRO_INJECT_FAULT() 0
+#endif
 
 /**
  * _cairo_malloc:

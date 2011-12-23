@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -28,7 +28,7 @@
  *
  * The Original Code is the cairo graphics library.
  *
- * The Initial Developer of the Original Code is Mozilla Corporation.
+ * The Initial Developer of the Original Code is Mozilla Foundation.
  *
  * Contributor(s):
  *	Vladimir Vukicevic <vladimir@mozilla.com>
@@ -40,6 +40,26 @@
 
 #include "cairo-quartz.h"
 #include "cairo-quartz-private.h"
+
+#include "cairo-error-private.h"
+
+/**
+ * SECTION:cairo-quartz-fonts
+ * @Title: Quartz (CGFont) Fonts
+ * @Short_Description: Font support via CGFont on OS X
+ * @See_Also: #cairo_font_face_t
+ *
+ * The Quartz font backend is primarily used to render text on Apple
+ * MacOS X systems.  The CGFont API is used for the internal
+ * implementation of the font backend methods.
+ */
+
+/**
+ * CAIRO_HAS_QUARTZ_FONT:
+ *
+ * Defined if the Quartz font backend is available.
+ * This macro can be used to conditionally compile backend-specific code.
+ */
 
 /* CreateWithFontName exists in 10.5, but not in 10.4; CreateWithName isn't public in 10.4 */
 static CGFontRef (*CGFontCreateWithFontNamePtr) (CFStringRef) = NULL;
@@ -53,6 +73,8 @@ static CGRect (*CGFontGetFontBBoxPtr) (CGFontRef) = NULL;
 
 /* Not public, but present */
 static void (*CGFontGetGlyphsForUnicharsPtr) (CGFontRef, const UniChar[], const CGGlyph[], size_t) = NULL;
+static void (*CGContextSetAllowsFontSmoothingPtr) (CGContextRef, bool) = NULL;
+static bool (*CGContextGetAllowsFontSmoothingPtr) (CGContextRef) = NULL;
 
 /* Not public in the least bit */
 static CGPathRef (*CGFontGetGlyphPathPtr) (CGFontRef fontRef, CGAffineTransform *textTransform, int unknown, CGGlyph glyph) = NULL;
@@ -102,6 +124,9 @@ quartz_font_ensure_symbols(void)
     CGFontGetDescentPtr = dlsym(RTLD_DEFAULT, "CGFontGetDescent");
     CGFontGetLeadingPtr = dlsym(RTLD_DEFAULT, "CGFontGetLeading");
 
+    CGContextGetAllowsFontSmoothingPtr = dlsym(RTLD_DEFAULT, "CGContextGetAllowsFontSmoothing");
+    CGContextSetAllowsFontSmoothingPtr = dlsym(RTLD_DEFAULT, "CGContextSetAllowsFontSmoothing");
+
     if ((CGFontCreateWithFontNamePtr || CGFontCreateWithNamePtr) &&
 	CGFontGetGlyphBBoxesPtr &&
 	CGFontGetGlyphsForUnicharsPtr &&
@@ -131,6 +156,79 @@ struct _cairo_quartz_font_face {
  * font face backend
  */
 
+static cairo_status_t
+_cairo_quartz_font_face_create_for_toy (cairo_toy_font_face_t   *toy_face,
+					cairo_font_face_t      **font_face)
+{
+    const char *family;
+    char *full_name;
+    CFStringRef cgFontName = NULL;
+    CGFontRef cgFont = NULL;
+    int loop;
+
+    quartz_font_ensure_symbols();
+    if (! _cairo_quartz_font_symbols_present)
+	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+
+    family = toy_face->family;
+    full_name = malloc (strlen (family) + 64); // give us a bit of room to tack on Bold, Oblique, etc.
+    /* handle CSS-ish faces */
+    if (!strcmp(family, "serif") || !strcmp(family, "Times Roman"))
+	family = "Times";
+    else if (!strcmp(family, "sans-serif") || !strcmp(family, "sans"))
+	family = "Helvetica";
+    else if (!strcmp(family, "cursive"))
+	family = "Apple Chancery";
+    else if (!strcmp(family, "fantasy"))
+	family = "Papyrus";
+    else if (!strcmp(family, "monospace") || !strcmp(family, "mono"))
+	family = "Courier";
+
+    /* Try to build up the full name, e.g. "Helvetica Bold Oblique" first,
+     * then drop the bold, then drop the slant, then drop both.. finally
+     * just use "Helvetica".  And if Helvetica doesn't exist, give up.
+     */
+    for (loop = 0; loop < 5; loop++) {
+	if (loop == 4)
+	    family = "Helvetica";
+
+	strcpy (full_name, family);
+
+	if (loop < 3 && (loop & 1) == 0) {
+	    if (toy_face->weight == CAIRO_FONT_WEIGHT_BOLD)
+		strcat (full_name, " Bold");
+	}
+
+	if (loop < 3 && (loop & 2) == 0) {
+	    if (toy_face->slant == CAIRO_FONT_SLANT_ITALIC)
+		strcat (full_name, " Italic");
+	    else if (toy_face->slant == CAIRO_FONT_SLANT_OBLIQUE)
+		strcat (full_name, " Oblique");
+	}
+
+	if (CGFontCreateWithFontNamePtr) {
+	    cgFontName = CFStringCreateWithCString (NULL, full_name, kCFStringEncodingASCII);
+	    cgFont = CGFontCreateWithFontNamePtr (cgFontName);
+	    CFRelease (cgFontName);
+	} else {
+	    cgFont = CGFontCreateWithNamePtr (full_name);
+	}
+
+	if (cgFont)
+	    break;
+    }
+
+    if (!cgFont) {
+	/* Give up */
+	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    }
+
+    *font_face = cairo_quartz_font_face_create_for_cgfont (cgFont);
+    CGFontRelease (cgFont);
+
+    return CAIRO_STATUS_SUCCESS;
+}
+
 static void
 _cairo_quartz_font_face_destroy (void *abstract_face)
 {
@@ -138,6 +236,8 @@ _cairo_quartz_font_face_destroy (void *abstract_face)
 
     CGFontRelease (font_face->cgFont);
 }
+
+static const cairo_scaled_font_backend_t _cairo_quartz_scaled_font_backend;
 
 static cairo_status_t
 _cairo_quartz_font_face_scaled_font_create (void *abstract_face,
@@ -222,10 +322,10 @@ FINISH:
     return status;
 }
 
-static const cairo_font_face_backend_t _cairo_quartz_font_face_backend = {
+const cairo_font_face_backend_t _cairo_quartz_font_face_backend = {
     CAIRO_FONT_TYPE_QUARTZ,
+    _cairo_quartz_font_face_create_for_toy,
     _cairo_quartz_font_face_destroy,
-    NULL, /* direct implementation */
     _cairo_quartz_font_face_scaled_font_create
 };
 
@@ -251,7 +351,8 @@ cairo_quartz_font_face_create_for_cgfont (CGFontRef font)
 
     font_face = malloc (sizeof (cairo_quartz_font_face_t));
     if (!font_face) {
-	_cairo_error (CAIRO_STATUS_NO_MEMORY);
+	cairo_status_t ignore_status;
+	ignore_status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
 	return (cairo_font_face_t *)&_cairo_font_face_nil;
     }
 
@@ -270,137 +371,13 @@ static cairo_quartz_font_face_t *
 _cairo_quartz_scaled_to_face (void *abstract_font)
 {
     cairo_quartz_scaled_font_t *sfont = (cairo_quartz_scaled_font_t*) abstract_font;
-    cairo_font_face_t *font_face = cairo_scaled_font_get_font_face (&sfont->base);
-    if (!font_face || font_face->backend->type != CAIRO_FONT_TYPE_QUARTZ)
-	return NULL;
-
+    cairo_font_face_t *font_face = sfont->base.font_face;
+    assert (font_face->backend->type == CAIRO_FONT_TYPE_QUARTZ);
     return (cairo_quartz_font_face_t*) font_face;
 }
 
-static cairo_status_t
-_cairo_quartz_font_get_implementation (cairo_toy_font_face_t *toy_face,
-				       cairo_scaled_font_t **font_face_out)
-{
-    static cairo_user_data_key_t impl_font_face_key;
-    cairo_font_face_t *face;
-    cairo_status_t status;
-    const char *family = toy_face->family;
-    char *full_name = malloc(strlen(family) + 64); // give us a bit of room to tack on Bold, Oblique, etc.
-    CFStringRef cgFontName = NULL;
-    CGFontRef cgFont = NULL;
-    int loop;
-
-    face = cairo_font_face_get_user_data (&toy_face->base,
-					  &impl_font_face_key);
-    if (face) {
-	*font_face_out = face;
-	return CAIRO_STATUS_SUCCESS;
-    }
-
-    quartz_font_ensure_symbols();
-    if (! _cairo_quartz_font_symbols_present)
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
-
-    /* handle CSS-ish faces */
-    if (!strcmp(family, "serif") || !strcmp(family, "Times Roman"))
-	family = "Times";
-    else if (!strcmp(family, "sans-serif") || !strcmp(family, "sans"))
-	family = "Helvetica";
-    else if (!strcmp(family, "cursive"))
-	family = "Apple Chancery";
-    else if (!strcmp(family, "fantasy"))
-	family = "Papyrus";
-    else if (!strcmp(family, "monospace") || !strcmp(family, "mono"))
-	family = "Courier";
-
-    /* Try to build up the full name, e.g. "Helvetica Bold Oblique" first,
-     * then drop the bold, then drop the slant, then drop both.. finally
-     * just use "Helvetica".  And if Helvetica doesn't exist, give up.
-     */
-    for (loop = 0; loop < 5; loop++) {
-	if (loop == 4)
-	    family = "Helvetica";
-
-	strcpy (full_name, family);
-
-	if (loop < 3 && (loop & 1) == 0) {
-	    if (toy_face->weight == CAIRO_FONT_WEIGHT_BOLD)
-		strcat (full_name, " Bold");
-	}
-
-	if (loop < 3 && (loop & 2) == 0) {
-	    if (toy_face->slant == CAIRO_FONT_SLANT_ITALIC)
-		strcat (full_name, " Italic");
-	    else if (toy_face->slant == CAIRO_FONT_SLANT_OBLIQUE)
-		strcat (full_name, " Oblique");
-	}
-
-	if (CGFontCreateWithFontNamePtr) {
-	    cgFontName = CFStringCreateWithCString (NULL, full_name, kCFStringEncodingASCII);
-	    cgFont = CGFontCreateWithFontNamePtr (cgFontName);
-	    CFRelease (cgFontName);
-	} else {
-	    cgFont = CGFontCreateWithNamePtr (full_name);
-	}
-
-	if (cgFont)
-	    break;
-    }
-
-    if (!cgFont) {
-	/* Give up */
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
-    }
-
-    face = cairo_quartz_font_face_create_for_cgfont (cgFont);
-    CGFontRelease (cgFont);
-
-    if (face->status)
-	return face->status;
-
-    status = cairo_font_face_set_user_data (&toy_face->base,
-					    &impl_font_face_key,
-					    face,
-					    (cairo_destroy_func_t) cairo_font_face_destroy);
-
-    if (status) {
-	cairo_font_face_destroy (face);
-	return status;
-    }
-
-    *font_face_out = face;
-    return CAIRO_STATUS_SUCCESS;
-}
-
-static cairo_status_t
-_cairo_quartz_font_create_toy (cairo_toy_font_face_t *toy_face,
-			       const cairo_matrix_t *font_matrix,
-			       const cairo_matrix_t *ctm,
-			       const cairo_font_options_t *options,
-			       cairo_scaled_font_t **font_out)
-{
-    cairo_font_face_t *face;
-    cairo_scaled_font_t *scaled_font;
-    cairo_status_t status;
-
-    status = _cairo_quartz_font_get_implementation (toy_face, &face);
-    if (status)
-	return status;
-
-    status = _cairo_quartz_font_face_scaled_font_create (face,
-							 font_matrix, ctm,
-							 options,
-							 &scaled_font);
-    cairo_font_face_destroy (face);
-    if (status)
-	return status;
-
-    *font_out = scaled_font;
-    return CAIRO_STATUS_SUCCESS;
-}
-
 static void
-_cairo_quartz_font_fini(void *abstract_font)
+_cairo_quartz_scaled_font_fini(void *abstract_font)
 {
 }
 
@@ -414,36 +391,6 @@ _cairo_quartz_scaled_glyph_index (cairo_scaled_glyph_t *scaled_glyph) {
     return (CGGlyph) index;
 }
 
-static inline cairo_status_t
-_cairo_matrix_to_unit_quartz_matrix (const cairo_matrix_t *m, CGAffineTransform *txout,
-				     double *xout, double *yout)
-{
-    CGAffineTransform transform;
-    double xscale, yscale;
-    cairo_status_t status;
-
-    status = _cairo_matrix_compute_basis_scale_factors (m, &xscale, &yscale, 1);
-    if (status)
-	return status;
-
-    transform = CGAffineTransformMake (m->xx, - m->yx,
-				       - m->xy, m->yy,
-				       0.0f, 0.0f);
-    if (xout)
-	*xout = xscale;
-    if (yout)
-	*yout = yscale;
-
-    if (xscale)
-	xscale = 1.0 / xscale;
-    if (yscale)
-	yscale = 1.0 / yscale;
-
-    *txout = CGAffineTransformScale (transform, xscale, yscale);
-
-    return CAIRO_STATUS_SUCCESS;
-}
-
 static cairo_int_status_t
 _cairo_quartz_init_glyph_metrics (cairo_quartz_scaled_font_t *font,
 				  cairo_scaled_glyph_t *scaled_glyph)
@@ -452,7 +399,6 @@ _cairo_quartz_init_glyph_metrics (cairo_quartz_scaled_font_t *font,
 
     cairo_quartz_font_face_t *font_face = _cairo_quartz_scaled_to_face(font);
     cairo_text_extents_t extents = {0, 0, 0, 0, 0, 0};
-    CGAffineTransform textMatrix;
     CGGlyph glyph = _cairo_quartz_scaled_glyph_index (scaled_glyph);
     int advance;
     CGRect bbox;
@@ -466,6 +412,16 @@ _cairo_quartz_init_glyph_metrics (cairo_quartz_scaled_font_t *font,
     if (!CGFontGetGlyphAdvancesPtr (font_face->cgFont, &glyph, 1, &advance) ||
 	!CGFontGetGlyphBBoxesPtr (font_face->cgFont, &glyph, 1, &bbox))
 	goto FAIL;
+
+    /* broken fonts like Al Bayan return incorrect bounds for some null characters,
+       see https://bugzilla.mozilla.org/show_bug.cgi?id=534260 */
+    if (unlikely (bbox.origin.x == -32767 &&
+                  bbox.origin.y == -32767 &&
+                  bbox.size.width == 65534 &&
+                  bbox.size.height == 65534)) {
+        bbox.origin.x = bbox.origin.y = 0;
+        bbox.size.width = bbox.size.height = 0;
+    }
 
     status = _cairo_matrix_compute_basis_scale_factors (&font->base.scale,
 						  &xscale, &yscale, 1);
@@ -529,17 +485,20 @@ static void
 _cairo_quartz_path_apply_func (void *info, const CGPathElement *el)
 {
     cairo_path_fixed_t *path = (cairo_path_fixed_t *) info;
+    cairo_status_t status;
 
     switch (el->type) {
 	case kCGPathElementMoveToPoint:
-	    _cairo_path_fixed_move_to (path,
-				       _cairo_fixed_from_double(el->points[0].x),
-				       _cairo_fixed_from_double(el->points[0].y));
+	    status = _cairo_path_fixed_move_to (path,
+						_cairo_fixed_from_double(el->points[0].x),
+						_cairo_fixed_from_double(el->points[0].y));
+	    assert(!status);
 	    break;
 	case kCGPathElementAddLineToPoint:
-	    _cairo_path_fixed_line_to (path,
-				       _cairo_fixed_from_double(el->points[0].x),
-				       _cairo_fixed_from_double(el->points[0].y));
+	    status = _cairo_path_fixed_line_to (path,
+						_cairo_fixed_from_double(el->points[0].x),
+						_cairo_fixed_from_double(el->points[0].y));
+	    assert(!status);
 	    break;
 	case kCGPathElementAddQuadCurveToPoint: {
 	    cairo_fixed_t fx, fy;
@@ -549,26 +508,29 @@ _cairo_quartz_path_apply_func (void *info, const CGPathElement *el)
 	    x = _cairo_fixed_to_double (fx);
 	    y = _cairo_fixed_to_double (fy);
 
-	    _cairo_path_fixed_curve_to (path,
-					_cairo_fixed_from_double((x + el->points[0].x * 2.0) / 3.0),
-					_cairo_fixed_from_double((y + el->points[0].y * 2.0) / 3.0),
-					_cairo_fixed_from_double((el->points[0].x * 2.0 + el->points[1].x) / 3.0),
-					_cairo_fixed_from_double((el->points[0].y * 2.0 + el->points[1].y) / 3.0),
-					_cairo_fixed_from_double(el->points[1].x),
-					_cairo_fixed_from_double(el->points[1].y));
+	    status = _cairo_path_fixed_curve_to (path,
+						 _cairo_fixed_from_double((x + el->points[0].x * 2.0) / 3.0),
+						 _cairo_fixed_from_double((y + el->points[0].y * 2.0) / 3.0),
+						 _cairo_fixed_from_double((el->points[0].x * 2.0 + el->points[1].x) / 3.0),
+						 _cairo_fixed_from_double((el->points[0].y * 2.0 + el->points[1].y) / 3.0),
+						 _cairo_fixed_from_double(el->points[1].x),
+						 _cairo_fixed_from_double(el->points[1].y));
 	}
+	    assert(!status);
 	    break;
 	case kCGPathElementAddCurveToPoint:
-	    _cairo_path_fixed_curve_to (path,
-					_cairo_fixed_from_double(el->points[0].x),
-					_cairo_fixed_from_double(el->points[0].y),
-					_cairo_fixed_from_double(el->points[1].x),
-					_cairo_fixed_from_double(el->points[1].y),
-					_cairo_fixed_from_double(el->points[2].x),
-					_cairo_fixed_from_double(el->points[2].y));
+	    status = _cairo_path_fixed_curve_to (path,
+						 _cairo_fixed_from_double(el->points[0].x),
+						 _cairo_fixed_from_double(el->points[0].y),
+						 _cairo_fixed_from_double(el->points[1].x),
+						 _cairo_fixed_from_double(el->points[1].y),
+						 _cairo_fixed_from_double(el->points[2].x),
+						 _cairo_fixed_from_double(el->points[2].y));
+	    assert(!status);	    
 	    break;
 	case kCGPathElementCloseSubpath:
-	    _cairo_path_fixed_close_path (path);
+	    status = _cairo_path_fixed_close_path (path);
+	    assert(!status);
 	    break;
     }
 }
@@ -588,14 +550,12 @@ _cairo_quartz_init_glyph_path (cairo_quartz_scaled_font_t *font,
 	return CAIRO_STATUS_SUCCESS;
     }
 
+    /* scale(1,-1) * font->base.scale */
     textMatrix = CGAffineTransformMake (font->base.scale.xx,
-					-font->base.scale.yx,
+					font->base.scale.yx,
 					-font->base.scale.xy,
-					font->base.scale.yy,
-					font->base.scale.x0,
-					font->base.scale.y0);
-
-    textMatrix = CGAffineTransformConcat (textMatrix, CGAffineTransformMake (1.0, 0.0, 0.0, -1.0, 0.0, 0.0));
+					-font->base.scale.yy,
+					0, 0);
 
     glyphPath = CGFontGetGlyphPathPtr (font_face->cgFont, &textMatrix, 0, glyph);
     if (!glyphPath)
@@ -634,7 +594,6 @@ _cairo_quartz_init_glyph_surface (cairo_quartz_scaled_font_t *font,
     double xscale, yscale;
     double emscale = CGFontGetUnitsPerEmPtr (font_face->cgFont);
 
-    CGColorSpaceRef gray;
     CGContextRef cgContext = NULL;
     CGAffineTransform textMatrix;
     CGRect glyphRect, glyphRectInt;
@@ -669,11 +628,12 @@ _cairo_quartz_init_glyph_surface (cairo_quartz_scaled_font_t *font,
     if (status)
 	return status;
 
+    /* scale(1,-1) * font->base.scale * scale(1,-1) */
     textMatrix = CGAffineTransformMake (font->base.scale.xx,
 					-font->base.scale.yx,
 					-font->base.scale.xy,
 					font->base.scale.yy,
-					0.0f, 0.0f);
+					0, -0);
     glyphRect = CGRectMake (bbox.origin.x / emscale,
 			    bbox.origin.y / emscale,
 			    bbox.size.width / emscale,
@@ -706,29 +666,50 @@ _cairo_quartz_init_glyph_surface (cairo_quartz_scaled_font_t *font,
     if (surface->base.status)
 	return surface->base.status;
 
-    gray = CGColorSpaceCreateDeviceGray ();
-    cgContext = CGBitmapContextCreate (surface->data,
-				       surface->width,
-				       surface->height,
-				       8,
-				       surface->stride,
-				       gray,
-				       kCGImageAlphaNone);
-    CGColorSpaceRelease (gray);
+    if (surface->width != 0 && surface->height != 0) {
+	cgContext = CGBitmapContextCreate (surface->data,
+					   surface->width,
+					   surface->height,
+					   8,
+					   surface->stride,
+					   NULL,
+					   kCGImageAlphaOnly);
 
-    CGContextSetFont (cgContext, font_face->cgFont);
-    CGContextSetFontSize (cgContext, 1.0);
-    CGContextSetTextMatrix (cgContext, textMatrix);
+	if (cgContext == NULL) {
+	    cairo_surface_destroy (&surface->base);
+	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	}
 
-    CGContextClearRect (cgContext, CGRectMake (0.0f, 0.0f, width, height));
+	CGContextSetFont (cgContext, font_face->cgFont);
+	CGContextSetFontSize (cgContext, 1.0);
+	CGContextSetTextMatrix (cgContext, textMatrix);
 
-    if (font->base.options.antialias == CAIRO_ANTIALIAS_NONE)
-	CGContextSetShouldAntialias (cgContext, false);
+	switch (font->base.options.antialias) {
+	case CAIRO_ANTIALIAS_SUBPIXEL:
+	    CGContextSetShouldAntialias (cgContext, TRUE);
+	    CGContextSetShouldSmoothFonts (cgContext, TRUE);
+	    if (CGContextSetAllowsFontSmoothingPtr &&
+		!CGContextGetAllowsFontSmoothingPtr (cgContext))
+		CGContextSetAllowsFontSmoothingPtr (cgContext, TRUE);
+	    break;
+	case CAIRO_ANTIALIAS_NONE:
+	    CGContextSetShouldAntialias (cgContext, FALSE);
+	    break;
+	case CAIRO_ANTIALIAS_GRAY:
+	    CGContextSetShouldAntialias (cgContext, TRUE);
+	    CGContextSetShouldSmoothFonts (cgContext, FALSE);
+	    break;
+	case CAIRO_ANTIALIAS_DEFAULT:
+	default:
+	    /* Don't do anything */
+	    break;
+	}
 
-    CGContextSetRGBFillColor (cgContext, 1.0, 1.0, 1.0, 1.0);
-    CGContextShowGlyphsAtPoint (cgContext, - glyphOrigin.x, - glyphOrigin.y, &glyph, 1);
+	CGContextSetAlpha (cgContext, 1.0);
+	CGContextShowGlyphsAtPoint (cgContext, - glyphOrigin.x, - glyphOrigin.y, &glyph, 1);
 
-    CGContextRelease (cgContext);
+	CGContextRelease (cgContext);
+    }
 
     cairo_surface_set_device_offset (&surface->base,
 				     - glyphOrigin.x,
@@ -740,9 +721,9 @@ _cairo_quartz_init_glyph_surface (cairo_quartz_scaled_font_t *font,
 }
 
 static cairo_int_status_t
-_cairo_quartz_font_scaled_glyph_init (void *abstract_font,
-				      cairo_scaled_glyph_t *scaled_glyph,
-				      cairo_scaled_glyph_info_t info)
+_cairo_quartz_scaled_glyph_init (void *abstract_font,
+				 cairo_scaled_glyph_t *scaled_glyph,
+				 cairo_scaled_glyph_info_t info)
 {
     cairo_quartz_scaled_font_t *font = (cairo_quartz_scaled_font_t *) abstract_font;
     cairo_int_status_t status = CAIRO_STATUS_SUCCESS;
@@ -773,12 +754,10 @@ _cairo_quartz_ucs4_to_index (void *abstract_font,
     return glyph;
 }
 
-const cairo_scaled_font_backend_t _cairo_quartz_scaled_font_backend = {
+static const cairo_scaled_font_backend_t _cairo_quartz_scaled_font_backend = {
     CAIRO_FONT_TYPE_QUARTZ,
-    _cairo_quartz_font_get_implementation,
-    _cairo_quartz_font_create_toy,
-    _cairo_quartz_font_fini,
-    _cairo_quartz_font_scaled_glyph_init,
+    _cairo_quartz_scaled_font_fini,
+    _cairo_quartz_scaled_glyph_init,
     NULL, /* text_to_glyphs */
     _cairo_quartz_ucs4_to_index,
     NULL, /* show_glyphs */

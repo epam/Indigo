@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -41,8 +41,11 @@
 #include "cairo.h"
 
 #include "cairo-types-private.h"
+#include "cairo-list-private.h"
 #include "cairo-mutex-type-private.h"
 #include "cairo-reference-count-private.h"
+
+typedef struct _cairo_scaled_glyph_page cairo_scaled_glyph_page_t;
 
 struct _cairo_scaled_font {
     /* For most cairo objects, the rule for multiple threads is that
@@ -75,7 +78,6 @@ struct _cairo_scaled_font {
      *    scaled_font->mutex in the generic scaled_font code.
      */
 
-    /* must be first to be stored in a hash table */
     cairo_hash_entry_t hash_entry;
 
     /* useful bits for _cairo_scaled_font_nil */
@@ -83,26 +85,32 @@ struct _cairo_scaled_font {
     cairo_reference_count_t ref_count;
     cairo_user_data_array_t user_data;
 
+    cairo_font_face_t *original_font_face; /* may be NULL */
+
     /* hash key members */
     cairo_font_face_t *font_face; /* may be NULL */
     cairo_matrix_t font_matrix;	  /* font space => user space */
     cairo_matrix_t ctm;	          /* user space => device space */
     cairo_font_options_t options;
 
-    cairo_bool_t placeholder; /*  protected by fontmap mutex */
-
-    cairo_bool_t finished;
+    unsigned int placeholder : 1; /*  protected by fontmap mutex */
+    unsigned int holdover : 1;
+    unsigned int finished : 1;
 
     /* "live" scaled_font members */
-    cairo_matrix_t scale;	  /* font space => device space */
-    cairo_matrix_t scale_inverse; /* device space => font space */
-    double max_scale;		  /* maximum x/y expansion of scale */
-    cairo_font_extents_t extents; /* user space */
+    cairo_matrix_t scale;	     /* font space => device space */
+    cairo_matrix_t scale_inverse;    /* device space => font space */
+    double max_scale;		     /* maximum x/y expansion of scale */
+    cairo_font_extents_t extents;    /* user space */
+    cairo_font_extents_t fs_extents; /* font space */
 
     /* The mutex protects modification to all subsequent fields. */
     cairo_mutex_t mutex;
 
-    cairo_cache_t *glyphs;	  /* glyph index -> cairo_scaled_glyph_t */
+    cairo_hash_table_t *glyphs;
+    cairo_list_t glyph_pages;
+    cairo_bool_t cache_frozen;
+    cairo_bool_t global_cache_frozen;
 
     /*
      * One surface backend may store data in each glyph.
@@ -114,6 +122,10 @@ struct _cairo_scaled_font {
 
     /* font backend managing this scaled font */
     const cairo_scaled_font_backend_t *backend;
+    cairo_list_t link;
 };
+
+cairo_private void
+_cairo_scaled_font_revoke_ownership (cairo_scaled_font_t *scaled_font);
 
 #endif /* CAIRO_SCALED_FONT_PRIVATE_H */

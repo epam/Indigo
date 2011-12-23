@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -35,6 +35,9 @@
  */
 
 #include "cairoint.h"
+
+#include "cairo-error-private.h"
+#include "cairo-slope-private.h"
 
 typedef struct cairo_hull {
     cairo_point_t point;
@@ -91,6 +94,13 @@ _cairo_hull_vertex_compare (const void *av, const void *bv)
     cairo_hull_t *a = (cairo_hull_t *) av;
     cairo_hull_t *b = (cairo_hull_t *) bv;
     int ret;
+
+    /* Some libraries are reported to actually compare identical
+     * pointers and require the result to be 0. This is the crazy world we
+     * have to live in.
+     */
+    if (a == b)
+	return 0;
 
     ret = _cairo_slope_compare (&a->slope, &b->slope);
 
@@ -198,9 +208,12 @@ _cairo_hull_compute (cairo_pen_vertex_t *vertices, int *num_vertices)
     cairo_hull_t *hull;
     int num_hull = *num_vertices;
 
+    if (CAIRO_INJECT_FAULT ())
+	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+
     if (num_hull > ARRAY_LENGTH (hull_stack)) {
 	hull = _cairo_malloc_ab (num_hull, sizeof (cairo_hull_t));
-	if (hull == NULL)
+	if (unlikely (hull == NULL))
 	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
     } else {
 	hull = hull_stack;

@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -54,6 +54,7 @@
 #include "cairoint.h"
 
 #include "test-fallback-surface.h"
+#include "cairo-error-private.h"
 
 typedef struct _test_fallback_surface {
     cairo_surface_t base;
@@ -79,12 +80,14 @@ _cairo_test_fallback_surface_create (cairo_content_t	content,
 	return backing;
 
     surface = malloc (sizeof (test_fallback_surface_t));
-    if (surface == NULL) {
+    if (unlikely (surface == NULL)) {
 	cairo_surface_destroy (backing);
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
     }
 
-    _cairo_surface_init (&surface->base, &test_fallback_surface_backend,
+    _cairo_surface_init (&surface->base,
+			 &test_fallback_surface_backend,
+			 NULL, /* device */
 			 content);
 
     surface->backing = backing;
@@ -193,7 +196,7 @@ _test_fallback_surface_clone_similar (void		  *abstract_surface,
     return CAIRO_INT_STATUS_UNSUPPORTED;
 }
 
-static cairo_int_status_t
+static cairo_bool_t
 _test_fallback_surface_get_extents (void		  *abstract_surface,
 				    cairo_rectangle_int_t *rectangle)
 {
@@ -214,10 +217,10 @@ static const cairo_surface_backend_t test_fallback_surface_backend = {
     NULL, /* composite */
     NULL, /* fill_rectangles */
     NULL, /* composite_trapezoids */
+    NULL, /* create_span_renderer */
+    NULL, /* check_span_renderer */
     NULL, /* copy_page */
     NULL, /* show_page */
-    NULL, /* set_clip_region */
-    NULL, /* intersect_clip_path */
     _test_fallback_surface_get_extents,
     NULL, /* old_show_glyphs */
     NULL, /* get_font_options */

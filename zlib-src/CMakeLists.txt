@@ -13,5 +13,9 @@ if (NOT ZLIB_FOUND)
 
     include_directories(${ZLib_HEADERS_DIR})
 
+    if(APPLE)
+        set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
+    endif()
+
     add_library(z ${ZLib_src} ${ZLib_headers})
 endif()

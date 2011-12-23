@@ -1,29 +1,28 @@
 <!-- ##### SECTION Title ##### -->
-PostScript Surfaces
+cairo-ps
 
 <!-- ##### SECTION Short_Description ##### -->
-Rendering PostScript documents
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The PostScript surface is used to render cairo graphics to Adobe
-PostScript files and is a multi-page vector surface backend.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_surface_t</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO CAIRO_HAS_PS_SURFACE ##### -->
 <para>
-Defined if the PostScript surface backend is available.
-This macro can be used to conditionally compile backend-specific code.
+
 </para>
 
 

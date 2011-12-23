@@ -22,7 +22,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Authors: Vladimir Vukicevic <vladimir@pobox.com>
- *          Carl Worth <cworth@cworth.org>
+ *	    Carl Worth <cworth@cworth.org>
  */
 
 #define USE_WINAPI
@@ -45,8 +45,8 @@ static cairo_perf_timer_t timer;
 static cairo_perf_timer_synchronize_t cairo_perf_timer_synchronize = NULL;
 static void *cairo_perf_timer_synchronize_closure = NULL;
 void
-cairo_perf_timer_set_synchronize (cairo_perf_timer_synchronize_t	 synchronize,
-				  void					*closure)
+cairo_perf_timer_set_synchronize (cairo_perf_timer_synchronize_t  synchronize,
+				  void				 *closure)
 {
     cairo_perf_timer_synchronize = synchronize;
     cairo_perf_timer_synchronize_closure = closure;

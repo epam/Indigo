@@ -8,18 +8,8 @@
 <link rel="up" href="language-bindings.html" title="Appendix A. Creating a language binding for cairo">
 <link rel="prev" href="bindings-errors.html" title="Error handling">
 <link rel="next" href="bindings-surfaces.html" title="Surfaces">
-<meta name="generator" content="GTK-Doc V1.11 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.15 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
-<link rel="chapter" href="cairo-drawing.html" title="Drawing">
-<link rel="chapter" href="cairo-fonts.html" title="Fonts">
-<link rel="chapter" href="cairo-surfaces.html" title="Surfaces">
-<link rel="chapter" href="cairo-support.html" title="Utilities">
-<link rel="index" href="index-all.html" title="Index">
-<link rel="index" href="index-1.2.html" title="Index of new symbols in 1.2">
-<link rel="index" href="index-1.4.html" title="Index of new symbols in 1.4">
-<link rel="index" href="index-1.6.html" title="Index of new symbols in 1.6">
-<link rel="index" href="index-1.8.html" title="Index of new symbols in 1.8">
-<link rel="appendix" href="language-bindings.html" title="Appendix A. Creating a language binding for cairo">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
@@ -35,33 +25,38 @@
 <p>
       The cairo C API allows for creating a number of different types
       of patterns. All of these different types of patterns map to
-      <a class="link" href="cairo-pattern.html#cairo-pattern-t" title="cairo_pattern_t"><span class="type">cairo_pattern_t</span></a>
+      <a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-t" title="cairo_pattern_t"><span class="type">cairo_pattern_t</span></a>
       in C, but in an object oriented language, there should instead
       be a hierarchy of types. (The functions that should map to
-      constructors for the various types are listed after the type,
-      methods on that type are listed below)
+      constructors or static methods for the various types are listed
+      after the type, methods on that type are listed below. Note that
+      cairo_pattern_create_rgb() and cairo_pattern_create_rgba()
+      should not be overloaded with each other as a SolidPattern()
+      constructor, but should appear as static methods instead.  This
+      is to maintain code clarity by making it clear how the arguments
+      relate to color components.)
     </p>
 <pre class="programlisting">
 cairo_pattern_t
-      <a class="link" href="cairo-pattern.html#cairo-pattern-set-matrix" title="cairo_pattern_set_matrix ()"><code class="function">cairo_pattern_set_matrix()</code></a>
-      <a class="link" href="cairo-pattern.html#cairo-pattern-get-matrix" title="cairo_pattern_get_matrix ()"><code class="function">cairo_pattern_get_matrix()</code></a>
-   cairo_solid_pattern_t (<a class="link" href="cairo-pattern.html#cairo-pattern-create-rgb" title="cairo_pattern_create_rgb ()"><code class="function">cairo_pattern_create_rgb()</code></a> and <a class="link" href="cairo-pattern.html#cairo-pattern-create-rgba" title="cairo_pattern_create_rgba ()"><code class="function">cairo_pattern_create_rgba()</code></a>)
-   cairo_surface_pattern_t (<a class="link" href="cairo-pattern.html#cairo-pattern-create-for-surface" title="cairo_pattern_create_for_surface ()"><code class="function">cairo_pattern_create_for_surface()</code></a>)
-         <a class="link" href="cairo-pattern.html#cairo-pattern-set-extend" title="cairo_pattern_set_extend ()"><code class="function">cairo_pattern_set_extend()</code></a>
-         <a class="link" href="cairo-pattern.html#cairo-pattern-get-extend" title="cairo_pattern_get_extend ()"><code class="function">cairo_pattern_get_extend()</code></a>
-         <a class="link" href="cairo-pattern.html#cairo-pattern-set-filter" title="cairo_pattern_set_filter ()"><code class="function">cairo_pattern_set_filter()</code></a>
-         <a class="link" href="cairo-pattern.html#cairo-pattern-get-filter" title="cairo_pattern_get_filter ()"><code class="function">cairo_pattern_get_filter()</code></a>
+      <a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-set-matrix" title="cairo_pattern_set_matrix ()"><code class="function">cairo_pattern_set_matrix()</code></a>
+      <a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-get-matrix" title="cairo_pattern_get_matrix ()"><code class="function">cairo_pattern_get_matrix()</code></a>
+   cairo_solid_pattern_t (<a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-create-rgb" title="cairo_pattern_create_rgb ()"><code class="function">cairo_pattern_create_rgb()</code></a> and <a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-create-rgba" title="cairo_pattern_create_rgba ()"><code class="function">cairo_pattern_create_rgba()</code></a>)
+   cairo_surface_pattern_t (<a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-create-for-surface" title="cairo_pattern_create_for_surface ()"><code class="function">cairo_pattern_create_for_surface()</code></a>)
+         <a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-set-extend" title="cairo_pattern_set_extend ()"><code class="function">cairo_pattern_set_extend()</code></a>
+         <a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-get-extend" title="cairo_pattern_get_extend ()"><code class="function">cairo_pattern_get_extend()</code></a>
+         <a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-set-filter" title="cairo_pattern_set_filter ()"><code class="function">cairo_pattern_set_filter()</code></a>
+         <a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-get-filter" title="cairo_pattern_get_filter ()"><code class="function">cairo_pattern_get_filter()</code></a>
    cairo_gradient_t
-         <a class="link" href="cairo-pattern.html#cairo-pattern-add-color-stop-rgb" title="cairo_pattern_add_color_stop_rgb ()"><code class="function">cairo_pattern_add_color_stop_rgb()</code></a>
-         <a class="link" href="cairo-pattern.html#cairo-pattern-add-color-stop-rgba" title="cairo_pattern_add_color_stop_rgba ()"><code class="function">cairo_pattern_add_color_stop_rgba()</code></a>
-      cairo_linear_gradient_t (<a class="link" href="cairo-pattern.html#cairo-pattern-create-linear" title="cairo_pattern_create_linear ()"><code class="function">cairo_pattern_create_linear()</code></a>)
-      cairo_radial_gradient_t (<a class="link" href="cairo-pattern.html#cairo-pattern-create-radial" title="cairo_pattern_create_radial ()"><code class="function">cairo_pattern_create_radial()</code></a>)
+         <a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-add-color-stop-rgb" title="cairo_pattern_add_color_stop_rgb ()"><code class="function">cairo_pattern_add_color_stop_rgb()</code></a>
+         <a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-add-color-stop-rgba" title="cairo_pattern_add_color_stop_rgba ()"><code class="function">cairo_pattern_add_color_stop_rgba()</code></a>
+      cairo_linear_gradient_t (<a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-create-linear" title="cairo_pattern_create_linear ()"><code class="function">cairo_pattern_create_linear()</code></a>)
+      cairo_radial_gradient_t (<a class="link" href="cairo-cairo-pattern-t.html#cairo-pattern-create-radial" title="cairo_pattern_create_radial ()"><code class="function">cairo_pattern_create_radial()</code></a>)
     </pre>
 <p>
     </p>
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.11</div>
+          Generated by GTK-Doc V1.15</div>
 </body>
 </html>

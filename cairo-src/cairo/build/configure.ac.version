@@ -40,11 +40,3 @@ AC_SUBST(CAIRO_VERSION_MICRO)
 AC_SUBST(CAIRO_VERSION_SONUM)
 AC_SUBST(CAIRO_RELEASE_STATUS)
 AC_SUBST(CAIRO_LIBTOOL_VERSION_INFO)
-
-dnl Disable autoconf's version macros.  We try hard to not rebuild the entire
-dnl library just because version changed.  The PACKAGE_VERSION* stuff in
-dnl config.h is negating all the effort.
-AC_DEFINE(PACKAGE_VERSION,	[USE_cairo_version_OR_cairo_version_string_INSTEAD])
-AC_DEFINE(PACKAGE_STRING,	[USE_cairo_version_OR_cairo_version_string_INSTEAD])
-AC_DEFINE(PACKAGE_NAME,		[USE_cairo_INSTEAD])
-AC_DEFINE(PACKAGE_TARNAME,	[USE_cairo_INSTEAD])

@@ -15,6 +15,10 @@ if (NOT TINYXML_FOUND)
 
     include_directories(${TinyXML_HEADERS_DIR})
 
+    if(APPLE)
+        set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
+    endif()
+
     add_library(tinyxml ${TinyXML_src} ${TinyXML_headers})
 else()
     set(TinyXML_HEADERS_DIR ${TINYXML_INCLUDE_DIRS})

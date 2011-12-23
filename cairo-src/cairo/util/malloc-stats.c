@@ -32,14 +32,15 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 /* caller-logging */
 
 #include <string.h>
 
 struct alloc_stat_t {
-	int num;
-	long size;
+	unsigned int num;
+	unsigned long long size;
 };
 
 struct alloc_stats_t {
@@ -47,15 +48,19 @@ struct alloc_stats_t {
 };
 
 struct func_stat_t {
+	struct func_stat_t *next;
+
 	const void *addr;
 	const char *name;
 
 	struct alloc_stats_t stat;
 };
 
-static struct func_stat_t *func_stats = NULL;
-static int func_stats_num = 0;
-static int func_stats_size = 0;
+static struct alloc_stats_t total_allocations;
+static struct func_stat_t *func_stats[31627];
+static int func_stats_num;
+
+#define ARRAY_SIZE(A) (sizeof (A)/sizeof (A[0]))
 
 static void
 alloc_stats_add (struct alloc_stats_t *stats, int is_realloc, size_t size)
@@ -71,63 +76,95 @@ alloc_stats_add (struct alloc_stats_t *stats, int is_realloc, size_t size)
 
 #include <execinfo.h>
 
-static const char *
-resolve_addr (const void *addr) {
+static void *
+_perm_alloc (size_t size)
+{
+    static uint8_t *ptr;
+    static size_t rem;
 
+    void *ret;
+
+#define SUPERBLOCK_SIZE (1<<23)
+#define align(x, y) (((x) + ((y)-1)) & ~((y)-1))
+
+    size = align (size, 2 * sizeof (void *));
+    if (size > rem || rem == 0) {
+	ptr = malloc (SUPERBLOCK_SIZE);
+	if (ptr == NULL)
+	    exit (1);
+	rem = SUPERBLOCK_SIZE;
+    }
+
+#undef SUPERBLOCK_SIZE
+#undef align
+
+    ret = ptr;
+    rem -= size;
+    ptr += size;
+
+    return ret;
+}
+
+static void
+resolve_addrs (struct func_stat_t *func_stats, int num)
+{
+	int i;
+	void **addrs;
 	char **strings;
-	char *p;
-	const char *name = NULL;
 
-	if (addr == NULL)
-		return "(other)";
-	if (addr == (void *) -1)
-		return "(total)";
+	addrs = malloc (num * sizeof (void *));
+	for (i = 0; i < num; i++)
+		addrs[i] = (void *) func_stats[i].addr;
 
-	strings = backtrace_symbols ((void**)&addr, 1);
-	name = strdup (strings[0]);
+	strings = backtrace_symbols (addrs, num);
 
-	p = strchr (name, '\t');
-	if (p)
-		name = p + 1;
+	for (i = 0; i < num; i++) {
+		char *p;
+		char *name;
+		int len;
+
+		p = strchr (strings[i], '\t');
+		if (p)
+			p++;
+		else
+			p = strings[i];
+
+		len = strlen (p) + 1;
+		name = _perm_alloc (len);
+		memcpy (name, p, len);
+		func_stats[i].name = name;
+	}
 
 	free (strings);
-
-	return name;
+	free (addrs);
 }
 
 static void
 func_stats_add (const void *caller, int is_realloc, size_t size)
 {
 	int i;
-	const char *name;
+	struct func_stat_t *elt;
 
-	if (caller != (void *) -1 && caller != NULL)
-		func_stats_add ((void *) -1, is_realloc, size);
+	alloc_stats_add (&total_allocations, is_realloc, size);
 
-	for (i = 0; i < func_stats_num; i++) {
-		if (func_stats[i].addr == caller) {
-			alloc_stats_add (&func_stats[i].stat, is_realloc, size);
-			return;
-		}
+	i = ((uintptr_t) caller ^ 1215497) % ARRAY_SIZE (func_stats);
+	for (elt = func_stats[i]; elt != NULL; elt = elt->next) {
+		if (elt->addr == caller)
+			break;
 	}
 
-	if (i == func_stats_size) {
-		func_stats_size = func_stats_size ? func_stats_size * 2 : 16;
-		func_stats = realloc (func_stats, func_stats_size * sizeof (func_stats[0]));
-	}
-
-	name = resolve_addr (caller);
-
-	if (name) {
+	if (elt == NULL) {
 		func_stats_num++;
-		func_stats[i].addr = caller;
-		func_stats[i].name = name;
-		memset (&func_stats[i].stat, 0, sizeof (func_stats[i].stat));
-		alloc_stats_add (&func_stats[i].stat, is_realloc, size);
-		return;
+
+		elt = _perm_alloc (sizeof (struct func_stat_t));
+		elt->next = func_stats[i];
+		func_stats[i] = elt;
+		elt->addr = caller;
+		elt->name = NULL;
+		memset (&elt->stat, 0, sizeof (struct alloc_stats_t));
 	}
 
-	func_stats_add (NULL, is_realloc, size);
+	alloc_stats_add (&elt->stat, is_realloc, size);
 }
 
 /* wrapper stuff */
@@ -220,7 +257,7 @@ add_alloc_stats (struct alloc_stats_t *a, struct alloc_stats_t *b)
 static void
 dump_alloc_stats (struct alloc_stats_t *stats, const char *name)
 {
-	printf ("%8d %'11ld	%8d %'11ld	%8d %'11ld	%s\n",
+	printf ("%8u %'11llu	%8u %'11llu	%8u %'11llu	%s\n",
 		stats->total.num, stats->total.size,
 		stats->malloc.num, stats->malloc.size,
 		stats->realloc.num, stats->realloc.size,
@@ -254,13 +291,13 @@ compare_func_stats (const void *pa, const void *pb)
 	return compare_func_stats_name (pa, pb);
 }
 
-static void
-merge_similar_entries (void)
+static int
+merge_similar_entries (struct func_stat_t *func_stats, int num)
 {
 	int i, j;
 
 	j = 0;
-	for (i = 1; i < func_stats_num; i++) {
+	for (i = 1; i < num; i++) {
 		if (i != j && 0 == strcmp (func_stats[i].name, func_stats[j].name)) {
 			add_alloc_stats (&func_stats[j].stat, &func_stats[i].stat);
 		} else {
@@ -270,31 +307,61 @@ merge_similar_entries (void)
 		}
 	}
 	j++;
-	if (j < func_stats_num)
-		func_stats_num = j;
+
+	return j;
 }
 
 __attribute__ ((destructor))
 void
 malloc_stats (void)
 {
-	int i;
+	unsigned int i, j;
+	struct func_stat_t *sorted_func_stats;
 
 	old_hooks ();
 
-	/* merge entries with same name */
-	qsort (func_stats, func_stats_num, sizeof (func_stats[0]), compare_func_stats_name);
-	merge_similar_entries ();
-	qsort (func_stats, func_stats_num, sizeof (func_stats[0]), compare_func_stats);
+	if (! func_stats_num)
+		return;
 
-	if (func_stats_num) {
-		setlocale (LC_ALL, "");
+	sorted_func_stats = malloc (sizeof (struct func_stat_t) * (func_stats_num + 1));
+	if (sorted_func_stats == NULL)
+		return;
 
-		printf ("	 TOTAL			 MALLOC			REALLOC\n");
-		printf ("     num	size	     num	size	     num	size\n");
-
-		for (i = 0; i < func_stats_num; i++) {
-			dump_alloc_stats (&func_stats[i].stat, func_stats[i].name);
-		}
+	j = 0;
+	for (i = 0; i < ARRAY_SIZE (func_stats); i++) {
+		struct func_stat_t *elt;
+		for (elt = func_stats[i]; elt != NULL; elt = elt->next)
+			sorted_func_stats[j++] = *elt;
 	}
+
+	resolve_addrs (sorted_func_stats, j);
+
+	/* merge entries with same name */
+	qsort (sorted_func_stats, j,
+	       sizeof (struct func_stat_t), compare_func_stats_name);
+	j = merge_similar_entries (sorted_func_stats, j);
+
+	qsort (sorted_func_stats, j,
+	       sizeof (struct func_stat_t), compare_func_stats);
+
+	/* add total */
+	sorted_func_stats[j].next = NULL;
+	sorted_func_stats[j].addr = (void *) -1;
+	sorted_func_stats[j].name = "(total)";
+	sorted_func_stats[j].stat = total_allocations;
+	j++;
+
+	setlocale (LC_ALL, "");
+
+	printf ("	 TOTAL			 MALLOC			REALLOC\n");
+	printf ("     num	size	     num	size	     num	size\n");
+
+	for (i = 0; i < j; i++) {
+		dump_alloc_stats (&sorted_func_stats[i].stat,
+				  sorted_func_stats[i].name);
+	}
+
+	/* XXX free other stuff? */
+
+	free (sorted_func_stats);
 }

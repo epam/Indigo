@@ -5,19 +5,29 @@ dnl skipped and all flags rechecked.  So there's no need to do anything
 dnl else.  If for any reason you need to force a recheck, just change
 dnl MAYBE_WARN in an ignorable way (like adding whitespace)
 
+# -Wcast-align generates lots of false positive reports we need to
+# cast image data from uint8_t to uin32_t.
+
 MAYBE_WARN="-Wall -Wextra \
--Wsign-compare -Werror-implicit-function-declaration \
--Wpointer-arith -Wwrite-strings -Wstrict-prototypes \
--Wmissing-prototypes -Wmissing-declarations -Wnested-externs \
+-Wold-style-definition -Wdeclaration-after-statement \
+-Wmissing-declarations -Werror-implicit-function-declaration \
+-Wnested-externs -Wpointer-arith -Wwrite-strings \
+-Wsign-compare -Wstrict-prototypes -Wmissing-prototypes \
 -Wpacked -Wswitch-enum -Wmissing-format-attribute \
+-Wbad-function-cast -Wvolatile-register-var \
 -Wstrict-aliasing=2 -Winit-self -Wunsafe-loop-optimizations \
--Wdeclaration-after-statement -Wold-style-definition \
 -Wno-missing-field-initializers -Wno-unused-parameter \
--Wno-attributes -Wno-long-long -Winline"
+-Wno-attributes -Wno-long-long -Winline -Wlogical-op"
+
+dnl Sun Studio 12 likes to rag at us for abusing enums like
+dnl having cairo_status_t variables hold cairo_int_status_t
+dnl values.  It's bad, we know.  Now please be quiet.
+MAYBE_WARN="$MAYBE_WARN -erroff=E_ENUM_TYPE_MISMATCH_ARG \
+			-erroff=E_ENUM_TYPE_MISMATCH_OP"
 
 dnl We also abuse the warning-flag facility to enable other compiler
 dnl options.  Namely, the following:
-MAYBE_WARN="$MAYBE_WARN -fno-strict-aliasing -fno-common"
+MAYBE_WARN="$MAYBE_WARN -fno-strict-aliasing -fno-common -flto"
 
 dnl Also to turn various gcc/glibc-specific preprocessor checks
 MAYBE_WARN="$MAYBE_WARN -Wp,-D_FORTIFY_SOURCE=2"
@@ -42,7 +52,7 @@ AC_CACHE_CHECK([for supported warning flags], cairo_cv_warn_cflags, [
 	# last.
 
 	for W in $MAYBE_WARN; do
-		CAIRO_CC_TRY_FLAG([$W], [WARN_CFLAGS="$WARN_CFLAGS $W"])
+		CAIRO_CC_TRY_FLAG([$W],, [WARN_CFLAGS="$WARN_CFLAGS $W"])
 	done
 
 	cairo_cv_warn_cflags=$WARN_CFLAGS
@@ -59,9 +69,11 @@ CAIRO_CFLAGS="$CAIRO_CFLAGS $WARN_CFLAGS"
 AC_CACHE_CHECK([how to enable unused result warnings], cairo_cv_warn_unused_result, [
 	cairo_cv_warn_unused_result=""
 	if echo $WARN_CFLAGS | grep -e '-Wno-attributes' >/dev/null; then
-	    AC_TRY_COMPILE([__attribute__((__warn_unused_result__))
-		int f (int i) { return i; }], [],
-		[cairo_cv_warn_unused_result="__attribute__((__warn_unused_result__))"])
+	    CAIRO_CC_TRY_FLAG_SILENT(
+			[-Wno-attributes],
+			[__attribute__((__warn_unused_result__)) void f (void) {}
+			 __attribute__((__warn_unused_result__)) int g;],
+			[cairo_cv_warn_unused_result="__attribute__((__warn_unused_result__))"])
 	fi
 ])
 AC_DEFINE_UNQUOTED([WARN_UNUSED_RESULT], [$cairo_cv_warn_unused_result],
@@ -69,7 +81,7 @@ AC_DEFINE_UNQUOTED([WARN_UNUSED_RESULT], [$cairo_cv_warn_unused_result],
 
 dnl check linker flags
 AC_CACHE_CHECK([how to allow undefined symbols in shared libraries used by test suite], cairo_cv_test_undefined_ldflags,
-	       [CAIRO_CC_TRY_LINK_FLAG([-Wl,--allow-shlib-undefined],
+	       [CAIRO_CC_TRY_FLAG([-Wl,--allow-shlib-undefined], [],
 				  [cairo_cv_test_undefined_ldflags="-Wl,--allow-shlib-undefined]")])
 CAIRO_TEST_UNDEFINED_LDFLAGS="$cairo_cv_test_undefined_ldflags"
 AC_SUBST(CAIRO_TEST_UNDEFINED_LDFLAGS)

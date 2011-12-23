@@ -1,6 +1,7 @@
 #!/bin/sh
 
-LANG=C
+LC_ALL=C
+export LC_ALL
 
 if grep --version 2>/dev/null | grep GNU >/dev/null; then
 	:
@@ -16,8 +17,6 @@ echo Checking documentation for incorrect syntax
 
 cd "$srcdir"
 
-# Note: this test is also run from doc/public/ to check the SGML files
-
 if test "x$SGML_DOCS" = x; then
     FILES=$all_cairo_files
     if test "x$FILES" = x; then
@@ -27,7 +26,7 @@ fi
 
 enum_regexp="\([^%@']\|^\)\<\(FALSE\|TRUE\|NULL\|CAIRO_[0-9A-Z_]*\)\($\|[^(A-Za-z0-9_]\)"
 if test "x$SGML_DOCS" = x; then
-	enum_regexp='^[^:]*:[/ ][*]\(\|[ \t].*\)'$enum_regexp
+	enum_regexp='^[^:]*:[/ ][*]\(\|[ \t].*\)'$enum_regexp\($\|[^:]\)
 fi
 if echo $FILES | xargs grep . /dev/null | sed -e '/<programlisting>/,/<\/programlisting>/d' | grep "$enum_regexp" | grep -v '#####'; then
 	stat=1
@@ -43,7 +42,7 @@ else
 	type_regexp='\(.'$type_regexp'\)\|\('$type_regexp'.\)'
 fi
 
-if echo $FILES | xargs grep . /dev/null | sed -e '/<programlisting>/,/<\/programlisting>/d' | grep "$type_regexp" | grep -v '#####'; then
+if echo $FILES | xargs grep . /dev/null | sed -e '/<programlisting>/,/<\/programlisting>/d' | grep -v "@Title" | grep "$type_regexp" | grep -v '#####'; then
 	stat=1
 	echo Error: some type names in the docs are not prefixed by hash sign,
 	echo neither are the only token in the doc line followed by colon.
@@ -64,7 +63,7 @@ if echo $FILES | xargs grep . /dev/null | sed -e '/<programlisting>/,/<\/program
 	echo "	'$func_regexp'"
 fi >&2
 
-note_regexp='NOTE'
+note_regexp='\<NOTE\>'
 if echo $FILES | xargs grep "$note_regexp" /dev/null; then
 	stat=1
 	echo Error: some source files contain the string 'NOTE'.

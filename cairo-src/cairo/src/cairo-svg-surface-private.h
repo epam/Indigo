@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -44,6 +44,7 @@
 #include "cairo-svg.h"
 
 #include "cairo-surface-private.h"
+#include "cairo-surface-clipper-private.h"
 
 typedef struct cairo_svg_document cairo_svg_document_t;
 
@@ -51,8 +52,6 @@ typedef struct cairo_svg_surface {
     cairo_surface_t base;
 
     cairo_content_t content;
-
-    unsigned int id;
 
     double width;
     double height;
@@ -62,6 +61,7 @@ typedef struct cairo_svg_surface {
     cairo_output_stream_t *xml_node;
     cairo_array_t	   page_set;
 
+    cairo_surface_clipper_t clipper;
     unsigned int clip_level;
     unsigned int base_clip;
     cairo_bool_t is_base_clip_emitted;

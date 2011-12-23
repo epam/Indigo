@@ -1,36 +1,23 @@
 <!-- ##### SECTION Title ##### -->
-Error handling
+cairo-status
 
 <!-- ##### SECTION Short_Description ##### -->
-Decoding cairo's status
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-Cairo uses a single status type to represent all kinds of errors.  A status
-value of %CAIRO_STATUS_SUCCESS represents no error and has an integer value
-of zero.  All other status values represent an error.
-</para>
-<para>
-Cairo's error handling is designed to be easy to use and safe.  All major
-cairo objects <firstterm>retain</firstterm> an error status internally which
-can be queried anytime by the users using cairo*_status() calls.  In
-the mean time, it is safe to call all cairo functions normally even if the
-underlying object is in an error status.  This means that no error handling
-code is required before or after each individual cairo function call.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>cairo_status()</listitem>
-<listitem>cairo_surface_status()</listitem>
-<listitem>cairo_pattern_status()</listitem>
-<listitem>cairo_font_face_status()</listitem>
-<listitem>cairo_scaled_font_status()</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
 
 
 <!-- ##### ENUM cairo_status_t ##### -->
@@ -70,6 +57,11 @@ code is required before or after each individual cairo function call.
 @CAIRO_STATUS_INVALID_CLUSTERS: 
 @CAIRO_STATUS_INVALID_SLANT: 
 @CAIRO_STATUS_INVALID_WEIGHT: 
+@CAIRO_STATUS_INVALID_SIZE: 
+@CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED: 
+@CAIRO_STATUS_DEVICE_TYPE_MISMATCH: 
+@CAIRO_STATUS_DEVICE_ERROR: 
+@CAIRO_STATUS_LAST_STATUS: 
 
 <!-- ##### FUNCTION cairo_status_to_string ##### -->
 <para>
@@ -85,5 +77,6 @@ code is required before or after each individual cairo function call.
 
 </para>
 
+@void: 
 
 

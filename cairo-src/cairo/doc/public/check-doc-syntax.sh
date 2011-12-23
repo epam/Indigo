@@ -1,6 +1,7 @@
 #!/bin/sh
 
-LANG=C
+LC_ALL=C
+export LC_ALL
 
 test -z "$srcdir" && srcdir=.
 test -z "$top_srcdir" && top_srcdir=$srcdir/../..

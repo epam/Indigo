@@ -6,18 +6,6 @@
 /* whether memory barriers are needed around atomic operations */
 #undef ATOMIC_OP_NEEDS_MEMORY_BARRIER
 
-/* define if glitz backend can be tested against agl */
-#undef CAIRO_CAN_TEST_GLITZ_AGL_SURFACE
-
-/* define if glitz backend can be tested against egl */
-#undef CAIRO_CAN_TEST_GLITZ_EGL_SURFACE
-
-/* define if glitz backend can be tested against glx */
-#undef CAIRO_CAN_TEST_GLITZ_GLX_SURFACE
-
-/* define if glitz backend can be tested against wgl */
-#undef CAIRO_CAN_TEST_GLITZ_WGL_SURFACE
-
 /* Define to 1 if the PDF backend can be tested (need poppler and other
    dependencies for pdf2png) */
 #undef CAIRO_CAN_TEST_PDF_SURFACE
@@ -32,11 +20,26 @@
    */
 #undef CAIRO_CAN_TEST_WIN32_PRINTING_SURFACE
 
+/* Define to 1 to enable cairo's cairo-script-interpreter feature */
+#undef CAIRO_HAS_INTERPRETER
+
+/* Define to 1 to enable cairo's pthread feature */
+#undef CAIRO_HAS_PTHREAD
+
+/* Define to 1 if we have full pthread support */
+#undef CAIRO_HAS_REAL_PTHREAD
+
 /* Define to 1 if libspectre is available */
 #undef CAIRO_HAS_SPECTRE
 
+/* Define to 1 to enable cairo's symbol-lookup feature */
+#undef CAIRO_HAS_SYMBOL_LOOKUP
+
 /* Define to 1 to enable cairo's test surfaces feature */
 #undef CAIRO_HAS_TEST_SURFACES
+
+/* Define to 1 to enable cairo's cairo-trace feature */
+#undef CAIRO_HAS_TRACE
 
 /* Define to 1 to disable certain code paths that rely heavily on double
    precision floating-point calculation */
@@ -46,8 +49,21 @@
    significant word first */
 #undef FLOAT_WORDS_BIGENDIAN
 
+/* Define to 1 if you have the `alarm' function. */
+#undef HAVE_ALARM
+
+/* Define to 1 if you have the binutils development files installed */
+#undef HAVE_BFD
+
+/* Define to 1 if your compiler supports the __builtin_return_address()
+   intrinsic. */
+#undef HAVE_BUILTIN_RETURN_ADDRESS
+
 /* Define to 1 if you have the <byteswap.h> header file. */
 #undef HAVE_BYTESWAP_H
+
+/* Define to 1 if you have the `clock_gettime' function. */
+#undef HAVE_CLOCK_GETTIME
 
 /* Define to 1 if you have the `ctime_r' function. */
 #undef HAVE_CTIME_R
@@ -61,8 +77,14 @@
 /* Define to 1 if you have the `FcFini' function. */
 #undef HAVE_FCFINI
 
+/* Define to 1 if you have the `FcInit' function. */
+#undef HAVE_FCINIT
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
+
+/* Define to 1 if you have the `feclearexcept' function. */
+#undef HAVE_FECLEAREXCEPT
 
 /* Define to 1 if you have the `fedisableexcept' function. */
 #undef HAVE_FEDISABLEEXCEPT
@@ -70,8 +92,17 @@
 /* Define to 1 if you have the `feenableexcept' function. */
 #undef HAVE_FEENABLEEXCEPT
 
+/* Define to 1 if you have the <fenv.h> header file. */
+#undef HAVE_FENV_H
+
+/* Define to 1 if you have the `ffs' function. */
+#undef HAVE_FFS
+
 /* Define to 1 if you have the `flockfile' function. */
 #undef HAVE_FLOCKFILE
+
+/* Define to 1 if you have the `fork' function. */
+#undef HAVE_FORK
 
 /* FT_Bitmap_Size structure includes y_ppem field */
 #undef HAVE_FT_BITMAP_SIZE_Y_PPEM
@@ -94,8 +125,14 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the <io.h> header file. */
+#undef HAVE_IO_H
+
 /* Define to 1 if you have the <libgen.h> header file. */
 #undef HAVE_LIBGEN_H
+
+/* Enable if you have libatomic-ops-dev installed */
+#undef HAVE_LIB_ATOMIC_OPS
 
 /* Define to 1 if you have the `link' function. */
 #undef HAVE_LINK
@@ -109,11 +146,21 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
+/* Define to non-zero if your system has mkdir, and to 2 if your version of
+   mkdir requires a mode parameter */
+#undef HAVE_MKDIR
+
+/* Define to 1 if you have the `mmap' function. */
+#undef HAVE_MMAP
+
+/* Enable if you have MacOS X atomic operations */
+#undef HAVE_OS_ATOMIC_OPS
+
 /* Define to 1 if you have the `poppler_page_render' function. */
 #undef HAVE_POPPLER_PAGE_RENDER
 
-/* Define to 1 if you have the <pthread.h> header file. */
-#undef HAVE_PTHREAD_H
+/* Define to 1 if you have the `raise' function. */
+#undef HAVE_RAISE
 
 /* Define to 1 if you have the `rsvg_pixbuf_from_file' function. */
 #undef HAVE_RSVG_PIXBUF_FROM_FILE
@@ -145,6 +192,9 @@
 /* Define to 1 if you have the <sys/int_types.h> header file. */
 #undef HAVE_SYS_INT_TYPES_H
 
+/* Define to 1 if you have the <sys/mman.h> header file. */
+#undef HAVE_SYS_MMAN_H
+
 /* Define to 1 if you have the <sys/poll.h> header file. */
 #undef HAVE_SYS_POLL_H
 
@@ -159,6 +209,9 @@
 
 /* Define to 1 if you have the <sys/un.h> header file. */
 #undef HAVE_SYS_UN_H
+
+/* Define to 1 if you have the <time.h> header file. */
+#undef HAVE_TIME_H
 
 /* Define to 1 if the system has the type `uint128_t'. */
 #undef HAVE_UINT128_T
@@ -175,8 +228,17 @@
 /* Define to 1 if you have the `vasnprintf' function. */
 #undef HAVE_VASNPRINTF
 
+/* Define to 1 if you have the `waitpid' function. */
+#undef HAVE_WAITPID
+
 /* Define to 1 if you have the <windows.h> header file. */
 #undef HAVE_WINDOWS_H
+
+/* Define to 1 if you have zlib available */
+#undef HAVE_ZLIB
+
+/* Define to 1 if the system has the type `__uint128_t'. */
+#undef HAVE___UINT128_T
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -203,8 +265,48 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* Shared library file extension */
+#undef SHARED_LIB_EXT
+
+/* The size of `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* The size of `long long', as computed by sizeof. */
+#undef SIZEOF_LONG_LONG
+
+/* The size of `size_t', as computed by sizeof. */
+#undef SIZEOF_SIZE_T
+
+/* The size of `void *', as computed by sizeof. */
+#undef SIZEOF_VOID_P
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Enable extensions on AIX 3, Interix.  */
+#ifndef _ALL_SOURCE
+# undef _ALL_SOURCE
+#endif
+/* Enable GNU extensions on systems that have them.  */
+#ifndef _GNU_SOURCE
+# undef _GNU_SOURCE
+#endif
+/* Enable threading extensions on Solaris.  */
+#ifndef _POSIX_PTHREAD_SEMANTICS
+# undef _POSIX_PTHREAD_SEMANTICS
+#endif
+/* Enable extensions on HP NonStop.  */
+#ifndef _TANDEM_SOURCE
+# undef _TANDEM_SOURCE
+#endif
+/* Enable general extensions on Solaris.  */
+#ifndef __EXTENSIONS__
+# undef __EXTENSIONS__
+#endif
+
 
 /* Define to the value your compiler uses to support the warn-unused-result
    attribute */
@@ -237,6 +339,22 @@
 
 /* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING
+
+/* Number of bits in a file offset, on hosts where this is settable. */
+#undef _FILE_OFFSET_BITS
+
+/* Define for large files, on AIX-style hosts. */
+#undef _LARGE_FILES
+
+/* Define to 1 if on MINIX. */
+#undef _MINIX
+
+/* Define to 2 if the system does not provide POSIX.1 features except with
+   this defined. */
+#undef _POSIX_1_SOURCE
+
+/* Define to 1 if you need to in order for `stat' and other things to work. */
+#undef _POSIX_SOURCE
 
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */

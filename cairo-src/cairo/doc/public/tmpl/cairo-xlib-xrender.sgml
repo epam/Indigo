@@ -1,33 +1,28 @@
 <!-- ##### SECTION Title ##### -->
-XLib/XRender Backend
+cairo-xlib-xrender
 
 <!-- ##### SECTION Short_Description ##### -->
-X Window System rendering using XLib and the X Render extension
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The XLib surface is used to render cairo graphics to X Window System
-windows and pixmaps using the XLib and Xrender libraries.
-</para>
-<para>
-Note that the XLib surface automatically takes advantage of X Render extension
-if it is available.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_surface_t</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### MACRO CAIRO_HAS_XLIB_XRENDER_SURFACE ##### -->
 <para>
-Defined if the XLib/XRender surface functions are available.
-This macro can be used to conditionally compile backend-specific code.
+
 </para>
 
 

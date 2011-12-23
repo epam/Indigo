@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -116,7 +116,7 @@ _arc_segments_needed (double	      angle,
     major_axis = _cairo_matrix_transformed_circle_major_axis (ctm, radius);
     max_angle = _arc_max_angle_for_tolerance_normalized (tolerance / major_axis);
 
-    return (int) ceil (angle / max_angle);
+    return ceil (fabs (angle) / max_angle);
 }
 
 /* We want to draw a single spline approximating a circular arc radius
@@ -231,6 +231,10 @@ _cairo_arc_in_direction (cairo_t	  *cr,
 				angle,
 				angle + angle_step);
 	}
+    } else {
+	cairo_line_to (cr,
+		       xc + radius * cos (angle_min),
+		       yc + radius * sin (angle_min));
     }
 }
 

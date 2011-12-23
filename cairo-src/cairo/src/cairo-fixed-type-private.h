@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -28,7 +28,7 @@
  *
  * The Original Code is the cairo graphics library.
  *
- * The Initial Developer of the Original Code is Mozilla Corporation
+ * The Initial Developer of the Original Code is Mozilla Foundation
  *
  * Contributor(s):
  *	Vladimir Vukicevic <vladimir@pobox.com>
@@ -66,5 +66,10 @@ typedef int32_t cairo_fixed_t;
 
 /* An unsigned type of the same size as #cairo_fixed_t */
 typedef uint32_t cairo_fixed_unsigned_t;
+
+typedef struct _cairo_point {
+    cairo_fixed_t x;
+    cairo_fixed_t y;
+} cairo_point_t;
 
 #endif /* CAIRO_FIXED_TYPE_PRIVATE_H */

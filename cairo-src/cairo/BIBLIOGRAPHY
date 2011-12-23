@@ -68,6 +68,21 @@ of Bentley-Ottmann:
 
 	http://citeseer.ist.psu.edu/pugh90skip.html
 
+The random number generator used in our skip list implementation is a
+very small generator by Hars and Petruska.  The generator is based on
+an invertable function on Z_{2^32} with full period and is described
+in
+
+	Hars L. and Petruska G.,
+	``Pseudorandom Recursions: Small and Fast Pseurodandom
+	  Number Generators for Embedded Applications'',
+	Hindawi Publishing Corporation
+	EURASIP Journal on Embedded Systems
+	Volume 2007, Article ID 98417, 13 pages
+	doi:10.1155/2007/98417
+
+	http://www.hindawi.com/getarticle.aspx?doi=10.1155/2007/98417&e=cta
+
 From the result of the intersection-finding pass, we are currently
 computing a tessellation of trapezoids, (the exact manner is
 undergoing some work right now with some important speedup), but we

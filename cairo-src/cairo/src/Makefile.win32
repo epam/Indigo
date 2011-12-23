@@ -13,7 +13,7 @@ static: inform $(CFG)/cairo-static.lib
 dynamic: inform $(CFG)/cairo.dll
 
 $(CFG)/cairo.dll: $(OBJECTS)
-	$(CC) $(MS_MDFLAGS) $(MS_LDFLAGS) -Fe$@ $(PIXMAN_LIBS) $(OBJECTS) -link $(CAIRO_LIBS)
+	$(CC) $(OPT) $(MS_MDFLAGS) $(MS_LDFLAGS) -Fe$@ $(PIXMAN_LIBS) $(OBJECTS) -link $(CAIRO_LIBS)
 
 $(CFG)/cairo-static.lib: $(OBJECTS_STATIC)
 	lib -NOLOGO -OUT:$@ $(PIXMAN_LIBS) $(OBJECTS_STATIC)

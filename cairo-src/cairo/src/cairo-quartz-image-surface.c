@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -28,7 +28,7 @@
  *
  * The Original Code is the cairo graphics library.
  *
- * The Initial Developer of the Original Code is Mozilla Corporation.
+ * The Initial Developer of the Original Code is Mozilla Foundation.
  *
  * Contributor(s):
  *	Vladimir Vukicevic <vladimir@mozilla.com>
@@ -39,8 +39,11 @@
 #include "cairo-quartz-image.h"
 #include "cairo-quartz-private.h"
 
+#include "cairo-error-private.h"
+
 #define SURFACE_ERROR_NO_MEMORY (_cairo_surface_create_in_error(_cairo_error(CAIRO_STATUS_NO_MEMORY)))
 #define SURFACE_ERROR_TYPE_MISMATCH (_cairo_surface_create_in_error(_cairo_error(CAIRO_STATUS_SURFACE_TYPE_MISMATCH)))
+#define SURFACE_ERROR_INVALID_SIZE (_cairo_surface_create_in_error(_cairo_error(CAIRO_STATUS_INVALID_SIZE)))
 #define SURFACE_ERROR_INVALID_FORMAT (_cairo_surface_create_in_error(_cairo_error(CAIRO_STATUS_INVALID_FORMAT)))
 
 static void
@@ -57,9 +60,8 @@ _cairo_quartz_image_surface_create_similar (void *asurface,
 					    int height)
 {
     cairo_surface_t *result;
-    cairo_surface_t *isurf = cairo_image_surface_create (_cairo_format_from_content (content),
-							 width,
-							 height);
+    cairo_surface_t *isurf =
+	_cairo_image_surface_create_with_content (content, width, height);
     if (cairo_surface_status(isurf))
 	return isurf;
 
@@ -107,18 +109,16 @@ _cairo_quartz_image_surface_acquire_dest_image (void *asurface,
     *image_extra = NULL;
 
     return CAIRO_STATUS_SUCCESS;
-   
 }
 
-static cairo_int_status_t
+static cairo_bool_t
 _cairo_quartz_image_surface_get_extents (void *asurface,
 					 cairo_rectangle_int_t *extents)
 {
     cairo_quartz_image_surface_t *surface = (cairo_quartz_image_surface_t *) asurface;
 
     *extents = surface->extents;
-
-    return CAIRO_STATUS_SUCCESS;
+    return TRUE;
 }
 
 /* we assume some drawing happened to the image buffer; make sure it's
@@ -163,10 +163,10 @@ static const cairo_surface_backend_t cairo_quartz_image_surface_backend = {
     NULL, /* composite */
     NULL, /* fill_rectangles */
     NULL, /* composite_trapezoids */
+    NULL, /* create_span_renderer */
+    NULL, /* check_span_renderer */
     NULL, /* copy_page */
     NULL, /* show_page */
-    NULL, /* set_clip_region */
-    NULL, /* intersect_clip_path */
     _cairo_quartz_image_surface_get_extents,
     NULL, /* old_show_glyphs */
     NULL, /* get_font_options */
@@ -182,7 +182,6 @@ static const cairo_surface_backend_t cairo_quartz_image_surface_backend = {
     NULL, /* surface_show_glyphs */
     NULL, /* snapshot */
     NULL, /* is_similar */
-    NULL, /* reset */
     NULL  /* fill_stroke */
 
 };
@@ -225,10 +224,10 @@ cairo_quartz_image_surface_create (cairo_surface_t *surface)
     data = image_surface->data;
 
     if (!_cairo_quartz_verify_surface_size(width, height))
-	return SURFACE_ERROR_NO_MEMORY;
+	return SURFACE_ERROR_INVALID_SIZE;
 
     if (width == 0 || height == 0)
-	return SURFACE_ERROR_NO_MEMORY;
+	return SURFACE_ERROR_INVALID_SIZE;
 
     if (format != CAIRO_FORMAT_ARGB32 && format != CAIRO_FORMAT_RGB24)
 	return SURFACE_ERROR_INVALID_FORMAT;
@@ -261,6 +260,7 @@ cairo_quartz_image_surface_create (cairo_surface_t *surface)
 
     _cairo_surface_init (&qisurf->base,
 			 &cairo_quartz_image_surface_backend,
+			 NULL, /* device */
 			 _cairo_content_from_format (format));
 
     qisurf->extents.x = qisurf->extents.y = 0;

@@ -33,4 +33,8 @@ source_group("Math" FILES ${Math_src} ${Math_headers})
 
 include_directories(${Common_SOURCE_DIR})
 
+if(APPLE)
+    set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
+endif()
+
 add_library(common ${BaseC_src} ${BaseC_headers} ${BaseCpp_src} ${BaseCpp_headers} ${LZW_src} ${LZW_headers} ${Math_src} ${Math_headers})

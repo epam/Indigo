@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -69,6 +69,29 @@ _cairo_box_from_rectangle (cairo_box_t                 *box,
     box->p1.y = _cairo_fixed_from_int (rect->y);
     box->p2.x = _cairo_fixed_from_int (rect->x + rect->width);
     box->p2.y = _cairo_fixed_from_int (rect->y + rect->height);
+}
+
+void
+_cairo_boxes_get_extents (const cairo_box_t *boxes,
+			  int num_boxes,
+			  cairo_box_t *extents)
+{
+    int n;
+
+    assert (num_boxes > 0);
+    *extents = *boxes;
+
+    for (n = 1; n < num_boxes; n++) {
+	if (boxes[n].p1.x < extents->p1.x)
+	    extents->p1.x = boxes[n].p1.x;
+	if (boxes[n].p2.x > extents->p2.x)
+	    extents->p2.x = boxes[n].p2.x;
+
+	if (boxes[n].p1.y < extents->p1.y)
+	    extents->p1.y = boxes[n].p1.y;
+	if (boxes[n].p2.y > extents->p2.y)
+	    extents->p2.y = boxes[n].p2.y;
+    }
 }
 
 /* XXX We currently have a confusing mix of boxes and rectangles as
@@ -153,8 +176,8 @@ _cairo_box_intersects_line_segment (cairo_box_t *box, cairo_line_t *line)
 
     cairo_fixed_t xlen, ylen;
 
-    if (_cairo_box_contains_point(box, &line->p1) ||
-	_cairo_box_contains_point(box, &line->p2))
+    if (_cairo_box_contains_point (box, &line->p1) ||
+	_cairo_box_contains_point (box, &line->p2))
 	return TRUE;
 
     xlen = P2x - P1x;
@@ -216,7 +239,7 @@ _cairo_box_intersects_line_segment (cairo_box_t *box, cairo_line_t *line)
 }
 
 cairo_bool_t
-_cairo_box_contains_point (cairo_box_t *box, cairo_point_t *point)
+_cairo_box_contains_point (cairo_box_t *box, const cairo_point_t *point)
 {
     if (point->x < box->p1.x || point->x > box->p2.x ||
 	point->y < box->p1.y || point->y > box->p2.y)

@@ -25,14 +25,13 @@
  * Authors: Carl Worth <cworth@cworth.org>
  */
 
+#include "cairo-perf.h"
+#include "cairo-stats.h"
+
 /* We use _GNU_SOURCE for getline and strndup if available. */
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE
 #endif
-
-#include "cairo-perf.h"
-#include "cairo-stats.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,20 +49,25 @@
 typedef ptrdiff_t ssize_t;
 #endif
 
-#ifndef __USE_GNU
+#if !defined (__USE_GNU) && !defined(__USE_XOPEN2K8)
 static ssize_t
-getline (char **lineptr, size_t *n, FILE *stream);
+getline (char	**lineptr,
+	 size_t  *n,
+	 FILE	 *stream);
 
 static char *
-strndup (const char *s, size_t n);
+strndup (const char *s,
+	 size_t      n);
 #endif
 
 #ifdef _MSC_VER
 static long long
-strtoll(const char *nptr, char **endptr, int base);
+strtoll (const char  *nptr,
+	 char	    **endptr,
+	 int	      base);
 
 static char *
-basename(char *path);
+basename (char *path);
 #endif
 
 /* Ad-hoc parsing, macros with a strong dependence on the calling
@@ -88,7 +92,7 @@ do {									\
 	parse_error("expected integer but found %s", s);		\
     }									\
 } while (0)
-#define parse_long_long(result)						\
+#define parse_long_long(result) 					\
 do {									\
     (result) = strtoll (s, &end, 10);					\
     if (*s && end != s) {						\
@@ -121,7 +125,9 @@ do {									\
 } while (0)
 
 static test_report_status_t
-test_report_parse (test_report_t *report, char *line, char *configuration)
+test_report_parse (test_report_t *report,
+		   char 	 *line,
+		   char 	 *configuration)
 {
     char *end;
     char *s = line;
@@ -149,18 +155,18 @@ test_report_parse (test_report_t *report, char *line, char *configuration)
 
     report->configuration = configuration;
     parse_string (report->backend);
-    end = strrchr (report->backend, '-');
-    if (*end)
+    end = strrchr (report->backend, '.');
+    if (end)
 	*end++ = '\0';
-    report->content = end;
+    report->content = end ? end : xstrdup ("???");
 
     skip_space ();
 
     parse_string (report->name);
-    end = strrchr (report->name, '-');
-    if (*end)
+    end = strrchr (report->name, '.');
+    if (end)
 	*end++ = '\0';
-    report->size = atoi (end);
+    report->size = end ? atoi (end) : 0;
 
     skip_space ();
 
@@ -174,13 +180,23 @@ test_report_parse (test_report_t *report, char *line, char *configuration)
 
 	report->samples_size = 5;
 	report->samples = xmalloc (report->samples_size * sizeof (cairo_perf_ticks_t));
+	report->stats.min_ticks = 0;
 	do {
 	    if (report->samples_count == report->samples_size) {
 		report->samples_size *= 2;
 		report->samples = xrealloc (report->samples,
 					    report->samples_size * sizeof (cairo_perf_ticks_t));
 	    }
-	    parse_long_long (report->samples[report->samples_count++]);
+	    parse_long_long (report->samples[report->samples_count]);
+	    if (report->samples_count == 0) {
+		report->stats.min_ticks =
+		    report->samples[report->samples_count];
+	    } else if (report->stats.min_ticks >
+		       report->samples[report->samples_count]){
+		report->stats.min_ticks =
+		    report->samples[report->samples_count];
+	    }
+	    report->samples_count++;
 	    skip_space ();
 	} while (*s && *s != '\n');
 	report->stats.iterations = 0;
@@ -218,26 +234,28 @@ test_report_parse (test_report_t *report, char *line, char *configuration)
  * as needed. These aren't necessary full-fledged general purpose
  * implementations. They just get the job done for our purposes.
  */
-#ifndef __USE_GNU
+#if !defined (__USE_GNU) && !defined(__USE_XOPEN2K8)
 #define POORMANS_GETLINE_BUFFER_SIZE (65536)
 static ssize_t
-getline (char **lineptr, size_t *n, FILE *stream)
+getline (char	**lineptr,
+	 size_t  *n,
+	 FILE	 *stream)
 {
     if (!*lineptr)
     {
-        *n = POORMANS_GETLINE_BUFFER_SIZE;
-        *lineptr = (char *) malloc (*n);
+	*n = POORMANS_GETLINE_BUFFER_SIZE;
+	*lineptr = (char *) malloc (*n);
     }
 
     if (!fgets (*lineptr, *n, stream))
-        return -1;
+	return -1;
 
     if (!feof (stream) && !strchr (*lineptr, '\n'))
     {
-        fprintf (stderr, "The poor man's implementation of getline in "
-                          __FILE__ " needs a bigger buffer. Perhaps it's "
-                         "time for a complete implementation of getline.\n");
-        exit (0);
+	fprintf (stderr, "The poor man's implementation of getline in "
+			  __FILE__ " needs a bigger buffer. Perhaps it's "
+			 "time for a complete implementation of getline.\n");
+	exit (0);
     }
 
     return strlen (*lineptr);
@@ -245,21 +263,22 @@ getline (char **lineptr, size_t *n, FILE *stream)
 #undef POORMANS_GETLINE_BUFFER_SIZE
 
 static char *
-strndup (const char *s, size_t n)
+strndup (const char *s,
+	 size_t      n)
 {
     size_t len;
     char *sdup;
 
     if (!s)
-        return NULL;
+	return NULL;
 
     len = strlen (s);
     len = (n < len ? n : len);
     sdup = (char *) malloc (len + 1);
     if (sdup)
     {
-        memcpy (sdup, s, len);
-        sdup[len] = '\0';
+	memcpy (sdup, s, len);
+	sdup[len] = '\0';
     }
 
     return sdup;
@@ -272,13 +291,15 @@ strndup (const char *s, size_t n)
  */
 #ifdef _MSC_VER
 long long
-strtoll(const char *nptr, char **endptr, int base)
+strtoll (const char  *nptr,
+	 char	    **endptr,
+	 int	      base)
 {
     return _atoi64(nptr);
 }
 
 static char *
-basename(char *path)
+basename (char *path)
 {
     char *end, *s;
 
@@ -302,7 +323,8 @@ basename(char *path)
 #endif /* ifndef _MSC_VER */
 
 int
-test_report_cmp_backend_then_name (const void *a, const void *b)
+test_report_cmp_backend_then_name (const void *a,
+				   const void *b)
 {
     const test_report_t *a_test = a;
     const test_report_t *b_test = b;
@@ -338,15 +360,48 @@ test_report_cmp_backend_then_name (const void *a, const void *b)
     return 0;
 }
 
+int
+test_report_cmp_name (const void *a,
+		      const void *b)
+{
+    const test_report_t *a_test = a;
+    const test_report_t *b_test = b;
+
+    int cmp;
+
+    /* A NULL name is a list-termination marker, so force it last. */
+    if (a_test->name == NULL)
+	if (b_test->name == NULL)
+	    return 0;
+	else
+	    return 1;
+    else if (b_test->name == NULL)
+	return -1;
+
+    cmp = strcmp (a_test->name, b_test->name);
+    if (cmp)
+	return cmp;
+
+    if (a_test->size < b_test->size)
+	return -1;
+    if (a_test->size > b_test->size)
+	return 1;
+
+    return 0;
+}
+
 void
-cairo_perf_report_sort_and_compute_stats (cairo_perf_report_t *report)
+cairo_perf_report_sort_and_compute_stats (cairo_perf_report_t *report,
+					  int (*cmp) (const void*, const void*))
 {
     test_report_t *base, *next, *last, *t;
 
+    if (cmp == NULL)
+	cmp = test_report_cmp_backend_then_name;
+
     /* First we sort, since the diff needs both lists in the same
      * order */
-    qsort (report->tests, report->tests_count, sizeof (test_report_t),
-	   test_report_cmp_backend_then_name);
+    qsort (report->tests, report->tests_count, sizeof (test_report_t), cmp);
 
     /* The sorting also brings all related raw reports together so we
      * can condense them and compute the stats.
@@ -385,7 +440,8 @@ cairo_perf_report_sort_and_compute_stats (cairo_perf_report_t *report)
 
 void
 cairo_perf_report_load (cairo_perf_report_t *report,
-	                const char *filename)
+			const char *filename,
+			int (*cmp) (const void *, const void *))
 {
     FILE *file;
     test_report_status_t status;
@@ -395,27 +451,37 @@ cairo_perf_report_load (cairo_perf_report_t *report,
     char *configuration;
     char *dot;
     char *baseName;
+    const char *name;
 
-    configuration = xmalloc (strlen (filename) * sizeof (char) + 1);
-    strcpy (configuration, filename);
-    baseName = strdup (basename (configuration));
-    report->configuration = xmalloc (strlen (filename) * sizeof (char) + 1);
-    strcpy(report->configuration, baseName);
+    name = filename;
+    if (name == NULL)
+	name = "stdin";
+
+    configuration = xmalloc (strlen (name) * sizeof (char) + 1);
+    strcpy (configuration, name);
+    baseName = basename (configuration);
+    report->configuration = xmalloc (strlen (baseName) * sizeof (char) + 1);
+    strcpy (report->configuration, baseName);
     free (configuration);
+
     dot = strrchr (report->configuration, '.');
     if (dot)
 	*dot = '\0';
 
-    report->name = filename;
+    report->name = name;
     report->tests_size = 16;
     report->tests = xmalloc (report->tests_size * sizeof (test_report_t));
     report->tests_count = 0;
 
-    file = fopen (filename, "r");
-    if (file == NULL) {
-	fprintf (stderr, "Failed to open %s: %s\n",
-		 filename, strerror (errno));
-	exit (1);
+    if (filename == NULL) {
+	file = stdin;
+    } else {
+	file = fopen (filename, "r");
+	if (file == NULL) {
+	    fprintf (stderr, "Failed to open %s: %s\n",
+		     filename, strerror (errno));
+	    exit (1);
+	}
     }
 
     while (1) {
@@ -442,9 +508,10 @@ cairo_perf_report_load (cairo_perf_report_t *report,
     if (line)
 	free (line);
 
-    fclose (file);
+    if (filename != NULL)
+	fclose (file);
 
-    cairo_perf_report_sort_and_compute_stats (report);
+    cairo_perf_report_sort_and_compute_stats (report, cmp);
 
     /* Add one final report with a NULL name to terminate the list. */
     if (report->tests_count == report->tests_size) {
@@ -454,4 +521,3 @@ cairo_perf_report_load (cairo_perf_report_t *report,
     }
     report->tests[report->tests_count].name = NULL;
 }
-

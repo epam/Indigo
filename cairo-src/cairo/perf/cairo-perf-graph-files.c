@@ -68,8 +68,8 @@ cases_to_store (test_case_t *cases)
     const char *content = NULL;
 
     store = gtk_tree_store_new (CASE_NCOLS,
-	                        G_TYPE_BOOLEAN, /* shown */
-	                        G_TYPE_BOOLEAN, /* inconsistent */
+				G_TYPE_BOOLEAN, /* shown */
+				G_TYPE_BOOLEAN, /* inconsistent */
 				G_TYPE_STRING, /* backend */
 				G_TYPE_STRING, /* content */
 				G_TYPE_STRING, /* name */
@@ -82,7 +82,7 @@ cases_to_store (test_case_t *cases)
 	if (backend == NULL || strcmp (backend, cases->backend)) {
 	    gtk_tree_store_append (store, &backend_iter, NULL);
 	    gtk_tree_store_set (store, &backend_iter,
-		                CASE_SHOWN, TRUE,
+				CASE_SHOWN, TRUE,
 				CASE_BACKEND, cases->backend,
 				-1);
 	    backend = cases->backend;
@@ -91,7 +91,7 @@ cases_to_store (test_case_t *cases)
 	if (content == NULL || strcmp (content, cases->content)) {
 	    gtk_tree_store_append (store, &content_iter, &backend_iter);
 	    gtk_tree_store_set (store, &content_iter,
-		                CASE_SHOWN, TRUE,
+				CASE_SHOWN, TRUE,
 				CASE_BACKEND, cases->backend,
 				CASE_CONTENT, cases->content,
 				-1);
@@ -130,7 +130,9 @@ struct _app_data {
 };
 
 static void
-recurse_set_shown (GtkTreeModel *model, GtkTreeIter *parent, gboolean shown)
+recurse_set_shown (GtkTreeModel *model,
+		   GtkTreeIter	*parent,
+		   gboolean	 shown)
 {
     GtkTreeIter iter;
 
@@ -143,7 +145,7 @@ recurse_set_shown (GtkTreeModel *model, GtkTreeIter *parent, gboolean shown)
 	} else if (shown != c->shown) {
 	    c->shown = shown;
 	    gtk_tree_store_set (GTK_TREE_STORE (model), &iter,
-		                CASE_SHOWN, shown,
+				CASE_SHOWN, shown,
 				CASE_INCONSISTENT, FALSE,
 				-1);
 	}
@@ -151,7 +153,8 @@ recurse_set_shown (GtkTreeModel *model, GtkTreeIter *parent, gboolean shown)
 }
 
 static gboolean
-children_consistent (GtkTreeModel *model, GtkTreeIter *parent)
+children_consistent (GtkTreeModel *model,
+		     GtkTreeIter  *parent)
 {
     GtkTreeIter iter;
     gboolean first = TRUE;
@@ -161,7 +164,7 @@ children_consistent (GtkTreeModel *model, GtkTreeIter *parent)
 	gboolean active, inconsistent;
 
 	gtk_tree_model_get (model, &iter,
-		            CASE_INCONSISTENT, &inconsistent,
+			    CASE_INCONSISTENT, &inconsistent,
 			    CASE_SHOWN, &active,
 			    -1);
 	if (inconsistent)
@@ -178,13 +181,14 @@ children_consistent (GtkTreeModel *model, GtkTreeIter *parent)
 }
 
 static void
-check_consistent (GtkTreeModel *model, GtkTreeIter *child)
+check_consistent (GtkTreeModel *model,
+		  GtkTreeIter  *child)
 {
     GtkTreeIter parent;
 
     if (gtk_tree_model_iter_parent (model, &parent, child)) {
 	gtk_tree_store_set (GTK_TREE_STORE (model), &parent,
-		            CASE_INCONSISTENT,
+			    CASE_INCONSISTENT,
 			    ! children_consistent (model, &parent),
 			    -1);
 	check_consistent (model, &parent);
@@ -193,8 +197,8 @@ check_consistent (GtkTreeModel *model, GtkTreeIter *child)
 
 static void
 show_case_toggled (GtkCellRendererToggle *cell,
-	           gchar *str,
-		   struct _app_data *app)
+		   gchar		 *str,
+		   struct _app_data	 *app)
 {
     GtkTreeModel *model;
     GtkTreePath *path;
@@ -229,7 +233,9 @@ show_case_toggled (GtkCellRendererToggle *cell,
 }
 
 static gboolean
-git_read (GIOChannel *io, GIOCondition cond, struct _app_data *app)
+git_read (GIOChannel	   *io,
+	  GIOCondition	    cond,
+	  struct _app_data *app)
 {
     int fd;
 
@@ -259,7 +265,8 @@ git_read (GIOChannel *io, GIOCondition cond, struct _app_data *app)
 }
 
 static void
-do_git (struct _app_data *app, char **argv)
+do_git (struct _app_data  *app,
+	char		 **argv)
 {
     gint output;
     GError *error = NULL;
@@ -294,7 +301,9 @@ do_git (struct _app_data *app, char **argv)
 }
 
 static void
-gv_report_selected (GraphView *gv, int i, struct _app_data *app)
+gv_report_selected (GraphView	     *gv,
+		    int 	      i,
+		    struct _app_data *app)
 {
     cairo_perf_report_t *report;
     char *hyphen;
@@ -319,14 +328,14 @@ gv_report_selected (GraphView *gv, int i, struct _app_data *app)
 	argv[4] = NULL;
 
 	do_git (app, argv);
-	free (id);
+	g_free (id);
     }
 }
 
 static GtkWidget *
-window_create (test_case_t *cases,
+window_create (test_case_t	   *cases,
 	       cairo_perf_report_t *reports,
-	       int num_reports)
+	       int		    num_reports)
 {
     GtkWidget *window, *table, *w;
     GtkWidget *tv, *sw;
@@ -344,7 +353,7 @@ window_create (test_case_t *cases,
     window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title (GTK_WINDOW (window), "Cairo Performance Graph");
     g_object_set_data_full (G_OBJECT (window),
-	                    "app-data", data, (GDestroyNotify)g_free);
+			    "app-data", data, (GDestroyNotify)g_free);
 
     data->window = window;
 
@@ -364,7 +373,7 @@ window_create (test_case_t *cases,
 	    NULL);
     gtk_tree_view_append_column (GTK_TREE_VIEW (tv), column);
     g_signal_connect (renderer, "toggled",
-	              G_CALLBACK (show_case_toggled), data);
+		      G_CALLBACK (show_case_toggled), data);
 
     renderer = gtk_cell_renderer_text_new ();
     column = gtk_tree_view_column_new_with_attributes ("Backend",
@@ -400,12 +409,12 @@ window_create (test_case_t *cases,
 
     sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
-	                            GTK_POLICY_NEVER,
-	                            GTK_POLICY_AUTOMATIC);
+				    GTK_POLICY_NEVER,
+				    GTK_POLICY_AUTOMATIC);
     gtk_container_add (GTK_CONTAINER (sw), tv);
     gtk_widget_show (tv);
     gtk_table_attach (GTK_TABLE (table), sw,
-	              0, 1, 0, 2,
+		      0, 1, 0, 2,
 		      GTK_FILL, GTK_FILL,
 		      4, 4);
     gtk_widget_show (sw);
@@ -414,10 +423,10 @@ window_create (test_case_t *cases,
     w = graph_view_new ();
     data->gv = w;
     g_signal_connect (w, "report-selected",
-	              G_CALLBACK (gv_report_selected), data);
+		      G_CALLBACK (gv_report_selected), data);
     graph_view_set_reports ((GraphView *)w, cases, reports, num_reports);
     gtk_table_attach (GTK_TABLE (table), w,
-	              1, 2, 0, 1,
+		      1, 2, 0, 1,
 		      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		      4, 4);
     gtk_widget_show (w);
@@ -427,12 +436,12 @@ window_create (test_case_t *cases,
     data->git_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (w));
     sw = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
-	                            GTK_POLICY_NEVER,
-	                            GTK_POLICY_AUTOMATIC);
+				    GTK_POLICY_NEVER,
+				    GTK_POLICY_AUTOMATIC);
     gtk_container_add (GTK_CONTAINER (sw), w);
     gtk_widget_show (w);
     gtk_table_attach (GTK_TABLE (table), sw,
-	              1, 2, 1, 2,
+		      1, 2, 1, 2,
 		      GTK_FILL, GTK_FILL | GTK_EXPAND,
 		      4, 4);
     gtk_widget_show (sw);
@@ -444,7 +453,8 @@ window_create (test_case_t *cases,
 }
 
 static void
-name_to_color (const char *name, GdkColor *color)
+name_to_color (const char *name,
+	       GdkColor   *color)
 {
     gint v = g_str_hash (name);
 
@@ -455,7 +465,7 @@ name_to_color (const char *name, GdkColor *color)
 
 static test_case_t *
 test_cases_from_reports (cairo_perf_report_t *reports,
-	                 int num_reports)
+			 int		      num_reports)
 {
     test_case_t *cases, *c;
     test_report_t **tests;
@@ -550,7 +560,8 @@ test_cases_from_reports (cairo_perf_report_t *reports,
     return cases;
 }
 int
-main (int argc, char *argv[])
+main (int   argc,
+      char *argv[])
 {
     cairo_perf_report_t *reports;
     test_case_t *cases;
@@ -565,13 +576,13 @@ main (int argc, char *argv[])
 
     reports = xmalloc ((argc-1) * sizeof (cairo_perf_report_t));
     for (i = 1; i < argc; i++ )
-	cairo_perf_report_load (&reports[i-1], argv[i]);
+	cairo_perf_report_load (&reports[i-1], argv[i], NULL);
 
     cases = test_cases_from_reports (reports, argc-1);
 
     window = window_create (cases, reports, argc-1);
     g_signal_connect (window, "delete-event",
-	              G_CALLBACK (gtk_main_quit), NULL);
+		      G_CALLBACK (gtk_main_quit), NULL);
     gtk_widget_show (window);
 
     gtk_main ();

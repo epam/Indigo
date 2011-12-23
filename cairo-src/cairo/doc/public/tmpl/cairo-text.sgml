@@ -1,48 +1,23 @@
 <!-- ##### SECTION Title ##### -->
-Text
+cairo-text
 
 <!-- ##### SECTION Short_Description ##### -->
-Rendering text and glyphs
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-Cairo has two sets of text rendering capabilities:
-<itemizedlist>
-  <listitem>
-    The functions with <emphasis>text</emphasis> in their name form cairo's
-    <firstterm>toy</firstterm> text API.  The toy API takes UTF-8 encoded
-    text and is limited in its functionality to rendering simple
-    left-to-right text with no advanced features.  That means for example
-    that most complex scripts like Hebrew, Arabic, and Indic scripts are
-    out of question.  No kerning or correct positioning of diacritical marks
-    either.  The font selection is pretty limited too and doesn't handle the
-    case that the selected font does not cover the characters in the text.
-    This set of functions are really that, a toy text API, for testing and
-    demonstration purposes.  Any serious application should avoid them.
-  </listitem>
-  <listitem>
-    The functions with <emphasis>glyphs</emphasis> in their name form cairo's
-    <firstterm>low-level</firstterm> text API.  The low-level API relies on
-    the user to convert text to a set of glyph indexes and positions.  This
-    is a very hard problem and is best handled by external libraries, like
-    the pangocairo that is part of the Pango text layout and rendering library.
-    Pango is available from <ulink
-    url="http://www.pango.org/">http://www.pango.org/</ulink>.
-  </listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-<itemizedlist>
-<listitem>#cairo_font_face_t</listitem>
-<listitem>#cairo_scaled_font_t</listitem>
-<listitem>cairo_text_path()</listitem>
-<listitem>cairo_glyph_path()</listitem>
-</itemizedlist>
+
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
 
 
 <!-- ##### STRUCT cairo_glyph_t ##### -->
