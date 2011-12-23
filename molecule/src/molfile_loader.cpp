@@ -1109,6 +1109,7 @@ void MolfileLoader::_readCtab2000 ()
             // The format is the following: M SCNnn8 sss ttt ...
             int n = _scanner.readIntFix(3);
 
+            bool need_skip_line = true;
             while (n-- > 0)
             {
                _scanner.skip(1);
@@ -1132,9 +1133,16 @@ void MolfileLoader::_readCtab2000 ()
                      id[3] = 0;
                      throw Error("Undefined Sgroup connectivity: '%s'", id);
                   }
+                  if (id[2] == '\n')
+                     if (n != 0)
+                        throw Error("Unexpected end of M SCN");
+                     else
+                        // In some molfiles last space is not written
+                        need_skip_line = false;
                }
             }
-            _scanner.skipLine();
+            if (need_skip_line)
+               _scanner.skipLine();
          }
          else if (strncmp(chars, "MRV", 3) == 0)
          {
