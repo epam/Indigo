@@ -180,14 +180,13 @@ void MolfileLoader::_readCtabHeader ()
 
 int MolfileLoader::_getElement (const char *buf)
 {
-   int i;
    char buf2[4] = {0, 0, 0, 0};
 
    size_t len = strlen(buf);
    if (len > 3)
       throw Error("Internal error in MolfileLoader::_getElement: len = %d > 3", len);
 
-   for (i = 0; i < len; i++)
+   for (size_t i = 0; i < len; i++)
    {
       if (isspace(buf[i]))
          break;
@@ -1134,11 +1133,13 @@ void MolfileLoader::_readCtab2000 ()
                      throw Error("Undefined Sgroup connectivity: '%s'", id);
                   }
                   if (id[2] == '\n')
+                  {
                      if (n != 0)
                         throw Error("Unexpected end of M SCN");
                      else
                         // In some molfiles last space is not written
                         need_skip_line = false;
+                  }
                }
             }
             if (need_skip_line)
