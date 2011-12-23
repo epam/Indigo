@@ -1,0 +1,7 @@
+Name: cairo-xlib-xrender
+Description: Xlib Xrender surface backend for cairo graphics library
+Version: 1.10.2
+
+Requires: cairo-xlib xrender >= 0.6
+Libs:  
+Cflags: -I${pc_top_builddir}/${pcfiledir}/./src 
