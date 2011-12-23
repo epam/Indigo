@@ -59,8 +59,8 @@ public:
 
    void add (int bond_idx, int substituents[4], int parity);
 
-   int applyMapping (int idx, const int *mapping) const;
-   static int applyMapping (int parity, const int *substituents, const int *mapping);
+   int applyMapping (int idx, const int *mapping, bool sort) const;
+   static int applyMapping (int parity, const int *substituents, const int *mapping, bool sort);
 
    static int getMappingParitySign (BaseMolecule &query, BaseMolecule &target,
                                     int bond_idx, const int *mapping);
@@ -104,6 +104,8 @@ protected:
 
    static bool _pureH (BaseMolecule &mol, int idx);
    static int _sameside (BaseMolecule &mol, int i_beg, int i_end, int i_nei_beg, int i_nei_end);
+
+   static int _getPairParity (int v1, int v2, const int *mapping, bool sort);
 };
 
 }

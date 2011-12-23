@@ -227,3 +227,43 @@ Target: c1cccc1
 Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
 Target: c1cccc1
   count = 1
+
+*** Test 46 ***
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1
+  count = 1
+
+*** Test 47 ***
+Query: C\C=C/C
+Target: C\C=C\C
+  count = 0
+
+*** Test 48 ***
+Query: [H]\C=C/C
+Target: C\C=C\C
+  count = 2
+
+*** Test 49 ***
+Query: [H]/C=C/C
+Target: C\C=C\C
+  count = 0
+
+*** Test 50 ***
+Query: [H]\C=C/N
+Target: N\C=C\C
+  count = 1
+
+*** Test 51 ***
+Query: [*]C=CN
+Target: N\C=C\C
+  count = 1
+
+*** Test 52 ***
+Query: [H,*]\C=C\N
+Target: N\C=C\C
+  count = 1
+
+*** Test 53 ***
+Query: [H,*]\C=C/N
+Target: N\C=C\C
+  count = 1

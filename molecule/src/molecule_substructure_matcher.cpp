@@ -172,6 +172,20 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens (QueryMolecule &q
          // it should 3 instead of 1
          if (disable_folding_query_h)
             return true;
+
+         // Check if hydrogen forms a cis-trans bond or stereocenter
+         int nei_vertex_idx = vertex.neiVertex(vertex.neiBegin());
+         if (query.stereocenters.exists(nei_vertex_idx))
+            return true;
+
+         // For example for this query hydrogens should be unfolded: [H]\\C=C/C
+         const Vertex &nei_vertex = query.getVertex(nei_vertex_idx);
+         for (int nei = nei_vertex.neiBegin(); nei != nei_vertex.neiEnd(); nei = nei_vertex.neiNext(nei))
+         {
+            int edge = nei_vertex.neiEdge(nei);
+            if (query.cis_trans.getParity(edge) != 0)
+               return true;
+         }
       }
 
       if (_shouldUnfoldTargetHydrogens_A(&query.getAtom(i), is_fragment, disable_folding_query_h))
@@ -1313,6 +1327,26 @@ void MoleculeSubstructureMatcher::markIgnoredHydrogens (BaseMolecule &mol, int *
 
          if (mol.getAtomNumber(nei_idx) == ELEM_H && mol.possibleAtomIsotope(nei_idx, 0))
             continue; // do not ignore rare H-H fragment
+
+         // Check if hydrogen forms a cis-trans bond or stereocenter
+         int nei_vertex_idx = vertex.neiVertex(vertex.neiBegin());
+         if (mol.stereocenters.exists(nei_vertex_idx))
+            continue;
+
+         // For example for this query hydrogens should be unfolded: [H]\\C=C/C
+         const Vertex &nei_vertex = mol.getVertex(nei_vertex_idx);
+         bool not_ignore = false;
+         for (int nei = nei_vertex.neiBegin(); nei != nei_vertex.neiEnd(); nei = nei_vertex.neiNext(nei))
+         {
+            int edge = nei_vertex.neiEdge(nei);
+            if (mol.cis_trans.getParity(edge) != 0)
+            {
+               not_ignore = true;
+               break;
+            }
+         }
+         if (not_ignore)
+            continue;
 
          arr[i] = value_ignore;
       }

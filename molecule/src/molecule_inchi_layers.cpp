@@ -657,13 +657,13 @@ int CisTransStereochemistryLayer::compareMappings (const MoleculeInChIUtils::Map
 
       // Get mapped parity
       int parity1;
-      if (mol.cis_trans.applyMapping(e_idx, m1.mapping.ptr()) == MoleculeCisTrans::TRANS)
+      if (mol.cis_trans.applyMapping(e_idx, m1.mapping.ptr(), false) == MoleculeCisTrans::TRANS)
          parity1 = 1;
       else
          parity1 = 2;
 
       int parity2;
-      if (mol.cis_trans.applyMapping(e_idx, m2.mapping.ptr()) == MoleculeCisTrans::TRANS)
+      if (mol.cis_trans.applyMapping(e_idx, m2.mapping.ptr(), false) == MoleculeCisTrans::TRANS)
          parity2 = 1;
       else
          parity2 = 2;

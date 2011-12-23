@@ -395,18 +395,60 @@ bool MoleculeAutomorphismSearch::_checkStereocentersAutomorphism (Molecule &mol,
    return true;
 }
 
+void MoleculeAutomorphismSearch::_getSortedNei (Graph &g, int v_idx, Array<EdgeInfo> &sorted_nei, Array<int>& inv_mapping)
+{
+   sorted_nei.clear();
+
+   const Vertex &v = g.getVertex(v_idx);
+   for (int nei = v.neiBegin(); nei != v.neiEnd(); nei = v.neiNext(nei))
+   {
+      int nei_v_mapped = inv_mapping[v.neiVertex(nei)];
+      if (nei_v_mapped == -1)
+         continue;
+
+      int j = sorted_nei.size() - 1;
+      sorted_nei.push();
+
+      while (j >= 0)
+      {
+         if (sorted_nei[j].mapped_vertex > nei_v_mapped)
+         {
+            sorted_nei[j + 1] = sorted_nei[j];
+            j--;
+         }
+         else
+            break;
+      }
+
+      EdgeInfo &info = sorted_nei[j + 1];
+      info.mapped_vertex = nei_v_mapped;
+      info.edge = v.neiEdge(nei);
+   }
+}
+
+int MoleculeAutomorphismSearch::_getMappedBondOrderAndParity (Molecule &m, int e, Array<int>& inv_mapping) const
+{
+   int type = m.getBondOrder(e);
+
+   // Map parities to the provided new mapping
+   int parity = m.cis_trans.getParity(e);
+   if (parity != 0 && _getStereo(_cistrans_bond_state[e]) == _VALID)
+   {
+      int parity_mapped = MoleculeCisTrans::applyMapping(parity, 
+         m.cis_trans.getSubstituents(e), inv_mapping.ptr(), true);
+      type = type * 100 + parity_mapped;
+   }
+   return type;
+}
+
 
 int MoleculeAutomorphismSearch::_compare_mapped (Graph &graph, const Array<int> &mapping1, const Array<int> &mapping2, const void *context)
 {
    const MoleculeAutomorphismSearch &self = *(MoleculeAutomorphismSearch *)context;
    Molecule &mol = (Molecule &)graph;
-   int i;
 
    QS_DEF(Array<int>, inv_mapping1);
    QS_DEF(Array<int>, inv_mapping2);
-
-   QS_DEF(Array<int>, tmp1);
-   QS_DEF(Array<int>, tmp2);
 
    inv_mapping1.clear_resize(graph.vertexEnd());
    inv_mapping2.clear_resize(graph.vertexEnd());
@@ -414,10 +456,7 @@ int MoleculeAutomorphismSearch::_compare_mapped (Graph &graph, const Array<int> 
    inv_mapping1.fffill();
    inv_mapping2.fffill();
 
-   tmp1.clear_resize(graph.vertexEnd());
-   tmp2.clear_resize(graph.vertexEnd());
-
-   for (i = 0; i < mapping1.size(); i++)
+   for (int i = 0; i < mapping1.size(); i++)
    {
       inv_mapping1[mapping1[i]] = i;
       inv_mapping2[mapping2[i]] = i;
@@ -427,125 +466,41 @@ int MoleculeAutomorphismSearch::_compare_mapped (Graph &graph, const Array<int> 
    int min_diff_end = graph.vertexEnd();
    int diff_sign = 0;
 
-   for (i = graph.edgeBegin(); i != graph.edgeEnd(); i = graph.edgeNext(i))
+   // This function compares two mappings to select one of it 
+   // according to the defined (here) order.
+   // Canonical mapping is taken as the smallest mapping.
+   // To compare two mapping we compare their connectivity matrix 
+
+   QS_DEF(Array<EdgeInfo>, sorted_nei1);
+   QS_DEF(Array<EdgeInfo>, sorted_nei2);
+
+   // Compare connectivity matrix line by line
+   for (int i = 0; i < mapping1.size(); i++)
    {
-      const Edge &edge = graph.getEdge(i);
+      _getSortedNei(graph, mapping1[i], sorted_nei1, inv_mapping1);
+      _getSortedNei(graph, mapping2[i], sorted_nei2, inv_mapping2);
 
-      int beg1 = inv_mapping1[edge.beg], end1 = inv_mapping1[edge.end];
+      if (sorted_nei1.size() != sorted_nei2.size())
+         return sorted_nei1.size() > sorted_nei2.size() ? 1 : -1;
 
-      if (beg1 == -1 || end1 == -1)
-         continue;
-
-      int beg2 = inv_mapping2[edge.beg], end2 = inv_mapping2[edge.end], tmp;
-
-      if (beg1 > end1)
-         __swap(beg1, end1, tmp);
-      if (beg2 > end2)
-         __swap(beg2, end2, tmp);
-
-      bool ok1 = (beg1 < min_diff_beg || (beg1 == min_diff_beg && end1 < min_diff_end));
-      bool ok2 = (beg2 < min_diff_beg || (beg2 == min_diff_beg && end2 < min_diff_end));
-
-      if (!ok1 && !ok2)
-         continue;
-
-      int type1, type2;
-      int mapped_12 = graph.findEdgeIndex(mapping2[beg1], mapping2[end1]);
-      int mapped_21 = graph.findEdgeIndex(mapping1[beg2], mapping1[end2]);
-
-      type1 = type2 = mol.getBondOrder(i);
-
-      int mapped_12_type = (mapped_12 < 0) ? 0 : mol.getBondOrder(mapped_12);
-      int mapped_21_type = (mapped_21 < 0) ? 0 : mol.getBondOrder(mapped_21);
-
-      int parity = mol.cis_trans.getParity(i);
-      if (parity != 0 && self._getStereo(self._cistrans_bond_state[i]) == _VALID)
+      for (int j = 0; j < sorted_nei1.size(); j++)
       {
-         int subst[4];
+         int m1 = sorted_nei1[j].mapped_vertex;
+         int m2 = sorted_nei2[j].mapped_vertex;
+         if (m1 != m2)
+            return m1 > m2 ? 1 : -1;
 
-         memcpy(subst, mol.cis_trans.getSubstituents(i), 4 * sizeof(int));
-         if (inv_mapping1[subst[0]] >= 0 && inv_mapping1[subst[2]] >= 0)
-         {
-            if (subst[1] >= 0 && inv_mapping1[subst[1]] < 0)
-               subst[1] = -1;
-            if (subst[3] >= 0 && inv_mapping1[subst[3]] < 0)
-               subst[3] = -1;
+         int e1 = sorted_nei1[j].edge;
+         int e2 = sorted_nei2[j].edge;
 
-            int parity1 = MoleculeCisTrans::applyMapping(parity, subst, inv_mapping1.ptr());
-            type1 += parity1 * 10;
-         }
+         // Compare edge bond orders and parities
+         int type1 = self._getMappedBondOrderAndParity(mol, e1, inv_mapping1);
+         int type2 = self._getMappedBondOrderAndParity(mol, e2, inv_mapping2);
 
-         memcpy(subst, mol.cis_trans.getSubstituents(i), 4 * sizeof(int));
-         if (inv_mapping2[subst[0]] >= 0 && inv_mapping2[subst[2]] >= 0)
-         {
-            if (subst[1] >= 0 && inv_mapping2[subst[1]] < 0)
-               subst[1] = -1;
-            if (subst[3] >= 0 && inv_mapping2[subst[3]] < 0)
-               subst[3] = -1;
-
-            int parity2 = MoleculeCisTrans::applyMapping(parity, subst, inv_mapping2.ptr());
-            type2 += parity2 * 10;
-         }
-
-         int p12 = mol.cis_trans.getParity(mapped_12);
-
-         if (mapped_12 >= 0 && p12 > 0)
-         {
-            memcpy(subst, mol.cis_trans.getSubstituents(mapped_12), 4 * sizeof(int));
-
-            if (inv_mapping2[subst[0]] >= 0 && inv_mapping2[subst[2]] >= 0)
-            {
-               if (subst[1] >= 0 && inv_mapping2[subst[1]] < 0)
-                  subst[1] = -1;
-               if (subst[3] >= 0 && inv_mapping2[subst[3]] < 0)
-                  subst[3] = -1;
-
-               int parity_12 = MoleculeCisTrans::applyMapping(p12, subst, inv_mapping2.ptr());
-               mapped_12_type += parity_12 * 10;
-            }
-         }
-
-         int p21 = mol.cis_trans.getParity(mapped_21);
-
-         if (mapped_21 >= 0 && p21 > 0)
-         {
-            memcpy(subst, mol.cis_trans.getSubstituents(mapped_21), 4 * sizeof(int));
-
-            if (inv_mapping1[subst[0]] >= 0 && inv_mapping1[subst[2]] >= 0)
-            {
-               if (subst[1] >= 0 && inv_mapping1[subst[1]] < 0)
-                  subst[1] = -1;
-               if (subst[3] >= 0 && inv_mapping1[subst[3]] < 0)
-                  subst[3] = -1;
-
-               int parity_21 = MoleculeCisTrans::applyMapping(p21, subst, inv_mapping1.ptr());
-               mapped_21_type += parity_21 * 10;
-            }
-         }
-      }
-
-      if (type1 > mapped_12_type)
-      {
-         if (ok1)
-         {
-            min_diff_beg = beg1;
-            min_diff_end = end1;
-            diff_sign = 1;
-         }
-      }
-      if (type2 > mapped_21_type)
-      {
-         if (beg2 < min_diff_beg || (beg2 == min_diff_beg && end2 < min_diff_end))
-         {
-            min_diff_beg = beg2;
-            min_diff_end = end2;
-            diff_sign = -1;
-         }
+         if (type1 != type2)
+            return type1 > type2 ? 1 : -1;
       }
    }
-
-   if (diff_sign != 0)
-      return diff_sign;
 
    return self._compareMappedStereocenters(mol, mapping1, mapping2, inv_mapping1, inv_mapping2);
 }
@@ -717,7 +672,8 @@ int MoleculeAutomorphismSearch::_validCisTransBond (int idx, const Array<int> &o
    // To detect invalid stereocenters automorphism group structure shold be investigated.
    // NOTE: C\C=C1/C\C(C1)=C1\C/C(C1)=C\C
    // Double bond in the middle isn't cis-trans but current algorithm cannot detect this.
-   if (subst[1] != -1)
+
+   if (subst[0] != -1 && subst[1] != -1)
       if (orbits[subst[0]] == orbits[subst[1]])
       {
          if (_degree[subst[0]] == 1)
@@ -725,7 +681,7 @@ int MoleculeAutomorphismSearch::_validCisTransBond (int idx, const Array<int> &o
          return _UNDEF;
       }
 
-   if (subst[3] != -1)
+   if (subst[2] != -1 && subst[3] != -1)
       if (orbits[subst[2]] == orbits[subst[3]])
       {
          if (_degree[subst[2]] == 1)
@@ -757,6 +713,7 @@ int MoleculeAutomorphismSearch::_validStereocenterByAtom (int atom_index, Array<
    // Even if substituents are in the same orbit stereocenter can be valid.
    // But if substituents are in the same orbit and have degree 1 then such 
    // stereocenter is invalid.
+   bool has_undef = false;
    for (int i = 0; i < 4; i++)
    {
       if (substituents[i] == -1)
@@ -770,10 +727,11 @@ int MoleculeAutomorphismSearch::_validStereocenterByAtom (int atom_index, Array<
       {
          if (_degree[pyramid[i]] == 1)
             return _INVALID;
-         else
-            return _UNDEF;
+         has_undef = true;
       }
    }
+   if (has_undef)
+      return _UNDEF;
 
    // Detect parity 
    if (parity != NULL)
@@ -1013,23 +971,11 @@ bool MoleculeAutomorphismSearch::_isStereocenterMappedRigid (const MoleculeStere
 
 bool MoleculeAutomorphismSearch::_isCisTransBondMappedRigid (Molecule &mol, int i, const int *mapping)
 {
-   const Edge &edge = mol.getEdge(i);
    int parity = mol.cis_trans.getParity(i);
-   int subst[4];
+   int parity2 = MoleculeCisTrans::applyMapping(parity, mol.cis_trans.getSubstituents(i), mapping, false);
 
-   memcpy(subst, mol.cis_trans.getSubstituents(i), sizeof(int) * 4);
-
-   if (mapping[subst[0]] < 0 || mapping[subst[2]] < 0)
-      return true;
-
-   if (subst[1] >= 0 && mapping[subst[1]] < 0)
-      subst[1] = -1;
-   if (subst[3] >= 0 && mapping[subst[3]] < 0)
-      subst[3] = -1;
-
+   const Edge &edge = mol.getEdge(i);
    int i2 = mol.findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
-   int parity2 = MoleculeCisTrans::applyMapping(parity, subst, mapping);
-
    if (mol.cis_trans.getParity(i2) != parity2)
       return false;
 

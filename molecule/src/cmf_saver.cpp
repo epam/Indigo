@@ -634,16 +634,17 @@ void CmfSaver::_encodeBond (Molecule &mol, int idx, const int *mapping)
 
       if (parity != 0)
       {
-         parity = mol.cis_trans.applyMapping(parity, mol.cis_trans.getSubstituents(idx), mapping);
+         int mapped_parity = 
+            MoleculeCisTrans::applyMapping(parity, mol.cis_trans.getSubstituents(idx), mapping, true);
 
-         if (parity == MoleculeCisTrans::CIS)
+         if (mapped_parity == MoleculeCisTrans::CIS)
          {
             if (mol.getBondTopology(idx) == TOPOLOGY_RING)
                _encode(CMF_BOND_DOUBLE_RING_CIS);
             else
                _encode(CMF_BOND_DOUBLE_CHAIN_CIS);
          }
-         else // parity == MoleculeCisTrans::TRANS
+         else // mapped_parity == MoleculeCisTrans::TRANS
          {
             if (mol.getBondTopology(idx) == TOPOLOGY_RING)
                _encode(CMF_BOND_DOUBLE_RING_TRANS);
