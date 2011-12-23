@@ -117,6 +117,14 @@ tests = [
    (lmol('c1cccc1'), lqmol("C~1~C~C~C~C~1")),
    (lmol('c1cccc1'), lsmarts("C1CCCC1")),
    (lmol('c1cccc1'), lsmarts("[#6]1[#6][#6][#6][#6]1")),
+   (lmol('c1cccc1'), lsmarts("[#6]1[#6][#6][#6][#6]1")),
+   (lmol('C\\C=C\\C'), lqmol("C\\C=C/C")),
+   (lmol('C\\C=C\\C'), lqmol("[H]\\C=C/C")),
+   (lmol('C\\C=C\\C'), lqmol("[H]/C=C/C")),
+   (lmol('N\\C=C\\C'), lqmol("[H]\\C=C/N")),
+   (lmol('N\\C=C\\C'), lqmol("[*]C=CN")),
+   (lmol('N\\C=C\\C'), lqmol("[H,*]\\C=C\\N")),
+   (lmol('N\\C=C\\C'), lqmol("[H,*]\\C=C/N")),
 ]
 for i in range(len(tests)):
    print("\n*** Test %d ***" % (i))

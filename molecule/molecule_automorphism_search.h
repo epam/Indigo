@@ -89,6 +89,15 @@ protected:
    void _findAllPossibleCisTrans (Molecule &mol);
    void _findAllPossibleCisTransOneStep (Molecule &mol);
 
+   struct EdgeInfo
+   {
+      int mapped_vertex;
+      int edge;
+   };
+
+   static void _getSortedNei (Graph &g, int v, Array<EdgeInfo> &sorted_nei, Array<int>& inv_mapping);
+   int _getMappedBondOrderAndParity (Molecule &m, int e, Array<int>& inv_mapping) const;
+
    TL_CP_DECL(Array<int>, _approximation_orbits);
    TL_CP_DECL(Array<int>, _approximation_orbits_saved);
    TL_CP_DECL(Array<int>, _hcount);

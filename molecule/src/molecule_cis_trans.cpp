@@ -75,33 +75,59 @@ int MoleculeCisTrans::_sameside (BaseMolecule &molecule, int i_beg, int i_end, i
 
 bool MoleculeCisTrans::_pureH (BaseMolecule &mol, int idx)
 {
-   return mol.getAtomNumber(idx) == ELEM_H && mol.possibleAtomIsotope(idx, 0);
+   return mol.getAtomNumber(idx) == ELEM_H && mol.getAtomIsotope(idx) == 0;
 }
 
 bool MoleculeCisTrans::sortSubstituents (BaseMolecule &mol, int *substituents, bool *parity_changed)
 {
-   bool h0 = substituents[0] < 0 || _pureH(mol, substituents[0]);
-   bool h1 = substituents[1] < 0 || _pureH(mol, substituents[1]);
-   bool h2 = substituents[2] < 0 || _pureH(mol, substituents[2]);
-   bool h3 = substituents[3] < 0 || _pureH(mol, substituents[3]);
-   int tmp;
+   bool e0 = substituents[0] < 0;
+   bool e1 = substituents[1] < 0;
+   bool e2 = substituents[2] < 0;
+   bool e3 = substituents[3] < 0;
+
+   if (e0 && e1)
+      return false;
+   if (e2 && e3)
+      return false;
+
+   bool h0 = !e0 && _pureH(mol, substituents[0]);
+   bool h1 = !e1 && _pureH(mol, substituents[1]);
+   bool h2 = !e2 && _pureH(mol, substituents[2]);
+   bool h3 = !e3 && _pureH(mol, substituents[3]);
+   // Query molecules [H]/C=C/C and [H]\C=C/C are different
+   // But normal molecules are the same.
+   if (!mol.isQueryMolecule())
+   {
+      // TODO: handle [H]/N=C\C and [H]/N=C/C
+      h0 |= e0;
+      h1 |= e1;
+      h2 |= e2;
+      h3 |= e3;
+   }
 
    if (h0 && h1)
       return false;
    if (h2 && h3)
       return false;
 
-   bool swapped = false;
+   int tmp;
+
    // If hydrogens are explicit then keep them
-   if (!h1)
-      if (h0 || substituents[0] > substituents[1])
+   // And do not place explicit hydrogens to the end, because all static methods
+   // should be converted into non-static with checking whether atom is hydrogen 
+   // or not.
+   // For example, molecule [H]\C(O)=C/C can get invalid parity because static 
+   // functions getMappingParitySign, applyMapping doesn't know about 
+   bool swapped = false;
+   if (!e1)
+      if (e0 || substituents[0] > substituents[1])
       {
          __swap(substituents[0], substituents[1], tmp);
          swapped = !swapped;
       }
 
-   if (!h3)
-      if (h2 || substituents[2] > substituents[3])
+   if (!e3)
+      if (e2 || substituents[2] > substituents[3])
       {
          __swap(substituents[2], substituents[3], tmp);
          swapped = !swapped;
@@ -209,7 +235,8 @@ bool MoleculeCisTrans::isGeomStereoBond (BaseMolecule &mol, int bond_idx,
 void MoleculeCisTrans::restoreSubstituents (int bond_idx)
 {
    BaseMolecule &mol = _getMolecule();
-   int *substituents = _bonds[bond_idx].substituents;
+   _Bond &bond = _bonds[bond_idx];
+   int *substituents = bond.substituents;
 
    if (!isGeomStereoBond(mol, bond_idx, substituents, false))
       throw Error("restoreSubstituents(): not a cis-trans bond");
@@ -506,21 +533,38 @@ void MoleculeCisTrans::add (int bond_idx, int substituents[4], int parity)
       _bonds[bond_idx].substituents[i] = substituents[i];
 }
 
-int MoleculeCisTrans::applyMapping (int parity, const int *substituents, const int *mapping)
+int MoleculeCisTrans::_getPairParity (int v1, int v2, const int *mapping, bool sort)
+{
+   if (v1 < 0 || mapping[v1] < 0)
+   {
+      if (v2 < 0 || mapping[v2] < 0)
+         // Both mapped values result in undefined parity
+         return 0;
+      // v1 and v2 needs to be swapped for sorting, but mapping is stil rigid
+      return sort ? -1 : 1;
+   }
+   // mapping[v1] >= 0
+   if (v2 < 0 || mapping[v2] < 0)
+      // Second vertex is unmapped => no need to swap
+      return 1;
+
+   // mapping[v1] >= 0 && mapping[v2] >= 0
+   int m1 = mapping[v1];
+   int m2 = mapping[v2];
+   // Check that ordering is preserved
+   return (m1 < m2) == (v1 < v2) ? 1 : -1;
+}
+
+int MoleculeCisTrans::applyMapping (int parity, const int *substituents, const int *mapping, bool sort)
 {
    int sum = 0;
 
-   if (substituents[0] < 0 || substituents[2] < 0)
-      throw Error("Internal error in MoleculeCisTrans::applyMapping: substituents[0] < 0 || substituents[2] < 0");
+   int p1 = _getPairParity(substituents[0], substituents[1], mapping, sort);
+   int p2 = _getPairParity(substituents[2], substituents[3], mapping, sort);
+   if (p1 == 0 || p2 == 0)
+      return 0;
 
-   if (substituents[1] >= 0 && mapping[substituents[1]] >= 0 && 
-         mapping[substituents[1]] < mapping[substituents[0]])
-      sum++;
-   if (substituents[3] >= 0 && mapping[substituents[3]] >= 0 && 
-         mapping[substituents[3]] < mapping[substituents[2]])
-      sum++;
-
-   if ((sum % 2) == 0)
+   if (p1 * p2 > 0)
       return parity;
 
    return (parity == CIS) ? TRANS : CIS;
@@ -537,13 +581,55 @@ int MoleculeCisTrans::getMappingParitySign (BaseMolecule &query, BaseMolecule &t
    if (target_parity == 0)
       return 0;
 
-   int query_parity_mapped = applyMapping(query_parity,
-                                 query.cis_trans.getSubstituents(bond_idx), mapping);
+   const int *query_subst = query.cis_trans.getSubstituents(bond_idx);
+   int query_subst_mapped[4];
+   for (int i = 0; i < 4; i++)
+      query_subst_mapped[i] = query_subst[i] >= 0 ? mapping[query_subst[i]] : -1;
+   
+   int config_parity = 0;
+   int v1;
+   if (query_subst_mapped[0] >= 0)
+      v1 = query_subst_mapped[0];
+   else
+   {
+      v1 = query_subst_mapped[1];
+      config_parity++;
+   }
+   if (v1 == -1)
+      return 0;
 
-   if (query_parity_mapped != target_parity)
-      return -1;
+   int v2;
+   if (query_subst_mapped[2] >= 0)
+      v2 = query_subst_mapped[2];
+   else
+   {
+      v2 = query_subst_mapped[3];
+      config_parity++;
+   }
+   if (v2 == -1)
+      return 0;
 
-   return 1;
+   // Check configuration of v1 and v2 in the target
+   const int *target_subst = target.cis_trans.getSubstituents(target_edge_idx);
+   if (v1 == target_subst[0] || v1 == target_subst[2])
+      ;
+   else if (v1 == target_subst[1] || v1 == target_subst[3])
+      config_parity++;
+   else
+      throw Error("Internal error in MoleculeCisTrans::getMappingParitySign: mapping is invalid");
+   if (v2 == target_subst[0] || v2 == target_subst[2])
+      ;
+   else if (v2 == target_subst[1] || v2 == target_subst[3])
+      config_parity++;
+   else
+      throw Error("Internal error in MoleculeCisTrans::getMappingParitySign: mapping is invalid");
+
+   if (query_parity == TRANS)
+      config_parity++;
+   if (target_parity == TRANS)
+      config_parity++;
+
+   return config_parity % 2 == 0 ? 1 : -1;
 }
 
 bool MoleculeCisTrans::checkSub (BaseMolecule &query, BaseMolecule &target, const int *mapping)
@@ -631,19 +717,8 @@ bool MoleculeCisTrans::isAutomorphism (BaseMolecule &mol, const Array<int> &mapp
 
       const Edge &edge = mol.getEdge(i);
       int parity = mol.cis_trans.getParity(i);
-      int subst[4];
-
-      memcpy(subst, mol.cis_trans.getSubstituents(i), sizeof(int) * 4);
-
-      if (mapping[subst[0]] < 0 || mapping[subst[2]] < 0)
-         continue;
-
-      if (subst[1] >= 0 && mapping[subst[1]] < 0)
-         subst[1] = -1;
-      if (subst[3] >= 0 && mapping[subst[3]] < 0)
-         subst[3] = -1;
-
-      int parity2 = MoleculeCisTrans::applyMapping(parity, subst, mapping.ptr());
+      int parity2 = MoleculeCisTrans::applyMapping(parity, mol.cis_trans.getSubstituents(i), 
+         mapping.ptr(), false);
 
       int i2 = mol.findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
       if (mol.cis_trans.getParity(i2) != parity2)
@@ -653,9 +728,9 @@ bool MoleculeCisTrans::isAutomorphism (BaseMolecule &mol, const Array<int> &mapp
    return true;
 }
 
-int MoleculeCisTrans::applyMapping (int idx, const int *mapping) const
+int MoleculeCisTrans::applyMapping (int idx, const int *mapping, bool sort) const
 {
-   return applyMapping(getParity(idx), getSubstituents(idx), mapping);
+   return applyMapping(getParity(idx), getSubstituents(idx), mapping, sort);
 }
 
 void MoleculeCisTrans::flipBond (int atom_parent, int atom_from, int atom_to)
