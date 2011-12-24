@@ -56,7 +56,7 @@ public class IndigoRenderer
    public byte[] renderGridToBuffer (IndigoObject objects, int[] refAtoms, int ncolumns)
    {
       _indigo.setSessionID();
-      if (objects.count() != refAtoms.length)
+      if (refAtoms != null && objects.count() != refAtoms.length)
          throw new IndigoException(this, "refAtoms size does not match the number of objects");
       IndigoObject buf = _indigo.writeBuffer();
       Indigo.checkResult(this, _lib.indigoRenderGrid(objects.self, refAtoms, ncolumns, buf.self));
