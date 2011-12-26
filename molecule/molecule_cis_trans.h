@@ -62,6 +62,7 @@ public:
    int applyMapping (int idx, const int *mapping, bool sort) const;
    static int applyMapping (int parity, const int *substituents, const int *mapping, bool sort);
 
+   // Returns -2 if mapping is not valid
    static int getMappingParitySign (BaseMolecule &query, BaseMolecule &target,
                                     int bond_idx, const int *mapping);
 
