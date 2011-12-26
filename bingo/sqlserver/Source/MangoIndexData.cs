@@ -99,7 +99,11 @@ namespace indigo
             shadow_row["cmf"] = index.cmf;
             shadow_row["xyz"] = index.xyz;
             shadow_row["mass"] = index.mass;
-            shadow_row["fragments"] = index.hash.elements.Count;
+
+            int fragments_count = 0;
+            for (int i = 0; i < index.hash.elements.Count; i++)
+               fragments_count += index.hash.elements[i].count;
+            shadow_row["fragments"] = fragments_count;
 
             string[] counted = index.counted_elements_str.Split(',');
             for (int i = 0; i < MangoIndex.COUNTED_ELEMENTS_COUNT; i++)
