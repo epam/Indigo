@@ -619,7 +619,10 @@ int MoleculeCisTrans::getMappingParitySign (BaseMolecule &query, BaseMolecule &t
    int target_parity = target.cis_trans.getParity(target_edge_idx);
 
    if (target_parity == 0)
-      return 0;
+      if (query_parity != 0)
+         return -2; // Mapping is not valid
+      else
+         return 0;
 
    const int *query_subst = query.cis_trans.getSubstituents(bond_idx);
    int query_subst_mapped[4];
