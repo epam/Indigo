@@ -604,7 +604,7 @@ int MoleculeCisTrans::getMappingParitySign (BaseMolecule &query, BaseMolecule &t
       v1 = query_subst_mapped[1];
       config_parity++;
    }
-   if (v1 == -1)
+   if (v1 < 0)
       return 0;
 
    int v2;
@@ -615,7 +615,7 @@ int MoleculeCisTrans::getMappingParitySign (BaseMolecule &query, BaseMolecule &t
       v2 = query_subst_mapped[3];
       config_parity++;
    }
-   if (v2 == -1)
+   if (v2 < 0)
       return 0;
 
    // Check configuration of v1 and v2 in the target
@@ -655,7 +655,7 @@ bool MoleculeCisTrans::checkSub (BaseMolecule &query, BaseMolecule &target, cons
       if (query_parity == 0)
          throw Error("bond #%d has stereo-care flag, but is not cis-trans bond", i); 
 
-      if (getMappingParitySign(query, target, i, mapping) <= 0)
+      if (getMappingParitySign(query, target, i, mapping) < 0)
          return false;
    }   
    return true;
