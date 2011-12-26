@@ -219,6 +219,14 @@ bool MoleculeCisTrans::isGeomStereoBond (BaseMolecule &mol, int bond_idx,
          substituents[3] = end.neiVertex(i);
    }
 
+   // Check trianges when substituents are the same: CC1=C(N)C1
+   if (substituents[0] >= 0)
+      if (substituents[0] == substituents[2] || substituents[0] == substituents[3])
+         return false;
+   if (substituents[1] >= 0)
+      if (substituents[1] == substituents[2] || substituents[1] == substituents[3])
+         return false;
+
    if (have_xyz)
    {
       if (substituents[1] != -1 &&
