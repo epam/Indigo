@@ -60,7 +60,7 @@ int MoleculeCisTrans::sameside (const Vec3f &beg, const Vec3f &end, const Vec3f 
    float prod_beg = Vec3f::dot(norm_beg, norm);
    float prod_end = Vec3f::dot(norm_end, norm);
 
-   if ((float)(fabs(prod_beg)) < 1e-3 || (float)(fabs(prod_end)) < 1e-3)
+   if ((float)(fabs(prod_beg)) < 0.1 || (float)(fabs(prod_end)) < 0.1)
       return 0;
    //throw Error("double stereo bond is collinear with its neighbor bond");
 
@@ -71,6 +71,32 @@ int MoleculeCisTrans::_sameside (BaseMolecule &molecule, int i_beg, int i_end, i
 {
    return sameside(molecule.getAtomXyz(i_beg), molecule.getAtomXyz(i_end),
                    molecule.getAtomXyz(i_nei_beg), molecule.getAtomXyz(i_nei_end));
+}
+
+bool MoleculeCisTrans::sameline (const Vec3f &beg, const Vec3f &end, const Vec3f &nei_beg)
+{
+   Vec3f norm_diff, norm_beg;
+
+   norm_diff.diff(beg, end);
+   if (!norm_diff.normalize())
+      return true;
+   norm_beg.diff(nei_beg, beg);
+   if (!norm_beg.normalize())
+      return true;
+
+   Vec3f cross;
+   cross.cross(norm_diff, norm_beg);
+   float sin_angle = cross.lengthSqr();
+   if (fabs(sin_angle) < 0.01)
+      return true;
+
+   return false;
+}
+
+bool MoleculeCisTrans::_sameline (BaseMolecule &molecule, int i_beg, int i_end, int i_nei_beg)
+{
+   return sameline(molecule.getAtomXyz(i_beg), molecule.getAtomXyz(i_end),
+                   molecule.getAtomXyz(i_nei_beg));
 }
 
 bool MoleculeCisTrans::_pureH (BaseMolecule &mol, int idx)
@@ -232,8 +258,13 @@ bool MoleculeCisTrans::isGeomStereoBond (BaseMolecule &mol, int bond_idx,
       if (substituents[1] != -1 &&
           _sameside(mol, beg_idx, end_idx, substituents[0], substituents[1]) != -1)
          return false;
+      else if (_sameline(mol, beg_idx, end_idx, substituents[0]))
+         return false;
+
       if (substituents[3] != -1 &&
           _sameside(mol, beg_idx, end_idx, substituents[2], substituents[3]) != -1)
+         return false;
+      else if (_sameline(mol, beg_idx, end_idx, substituents[2]))
          return false;
    }
 
