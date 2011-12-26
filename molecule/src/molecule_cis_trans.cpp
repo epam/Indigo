@@ -301,12 +301,6 @@ void MoleculeCisTrans::build (int *exclude_bonds)
       _bonds[i].parity = 0;
       _bonds[i].ignored = 0;
 
-      if (exclude_bonds != 0 && exclude_bonds[i])
-      {
-         _bonds[i].ignored = 1;
-         continue;
-      }
-
       int beg = mol.getEdge(i).beg;
       int end = mol.getEdge(i).end;
 
@@ -314,6 +308,13 @@ void MoleculeCisTrans::build (int *exclude_bonds)
 
       if (!isGeomStereoBond(mol, i, substituents, true))
          continue;
+
+      // Ignore only bonds that can be cis-trans
+      if (exclude_bonds != 0 && exclude_bonds[i])
+      {
+         _bonds[i].ignored = 1;
+         continue;
+      }
 
       if (!sortSubstituents(mol, substituents, 0))
          continue;
