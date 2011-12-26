@@ -1587,12 +1587,16 @@ void SmilesLoader::_readBondSub (Array<char> &bond_str, _BondDesc &bond,
       {
          scanner.skip(1);
          order = BOND_SINGLE;
+         if (bond.dir == 2)
+            throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
          bond.dir = 1;
       }
       else if (next == '\\')
       {
          scanner.skip(1);
          order = BOND_SINGLE;
+         if (bond.dir == 1)
+            throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
          bond.dir = 2;
       }
       else if (next == '~')
