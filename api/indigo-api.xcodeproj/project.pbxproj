@@ -63,7 +63,6 @@
 		817B6A1511F8901400BC3D88 /* libmolecule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 817B69E111F88EE800BC3D88 /* libmolecule.a */; };
 		817B6A1611F8901900BC3D88 /* libgraph.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 817B69DB11F88ED200BC3D88 /* libgraph.a */; };
 		817B6A1A11F891F200BC3D88 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 817B6A1911F891F200BC3D88 /* libz.dylib */; };
-		817B6A1C11F8922400BC3D88 /* libcairo.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 817B6A1B11F8922400BC3D88 /* libcairo.dylib */; };
 		81995AF912AD82D90039AC00 /* indigo_loaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 81995AF812AD82D90039AC00 /* indigo_loaders.h */; };
 		81995AFA12AD82D90039AC00 /* indigo_loaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 81995AF812AD82D90039AC00 /* indigo_loaders.h */; };
 		819EB1A7125F797300CE1D88 /* indigo_array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 819EB1A6125F797300CE1D88 /* indigo_array.cpp */; };
@@ -228,7 +227,6 @@
 				817B6A1411F8901000BC3D88 /* libreaction.a in Frameworks */,
 				817B6A1311F8900C00BC3D88 /* liblayout.a in Frameworks */,
 				817B6A1A11F891F200BC3D88 /* libz.dylib in Frameworks */,
-				817B6A1C11F8922400BC3D88 /* libcairo.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
