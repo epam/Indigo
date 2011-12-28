@@ -121,247 +121,247 @@ dist/x86/bingo_postgres.so: ${OBJECTFILES}
 ${OBJECTDIR}/src/pg_common/bingo_pg_buffer_cache.o: src/pg_common/bingo_pg_buffer_cache.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_buffer_cache.o src/pg_common/bingo_pg_buffer_cache.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_buffer_cache.o src/pg_common/bingo_pg_buffer_cache.cpp
 
 ${OBJECTDIR}/src/pg_core/ringo_pg_build_engine.o: src/pg_core/ringo_pg_build_engine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/ringo_pg_build_engine.o src/pg_core/ringo_pg_build_engine.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/ringo_pg_build_engine.o src/pg_core/ringo_pg_build_engine.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_bingo_import.o: src/pg_am/pg_bingo_import.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_import.o src/pg_am/pg_bingo_import.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_import.o src/pg_am/pg_bingo_import.cpp
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_ext_bitset.o: src/pg_common/bingo_pg_ext_bitset.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_ext_bitset.o src/pg_common/bingo_pg_ext_bitset.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_ext_bitset.o src/pg_common/bingo_pg_ext_bitset.cpp
 
 ${OBJECTDIR}/_ext/1019403175/mango_gross.o: ../src/core/mango_gross.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_gross.o ../src/core/mango_gross.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_gross.o ../src/core/mango_gross.cpp
 
 ${OBJECTDIR}/_ext/1019403175/ringo_exact.o: ../src/core/ringo_exact.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_exact.o ../src/core/ringo_exact.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_exact.o ../src/core/ringo_exact.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_bingo_options.o: src/pg_am/pg_bingo_options.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_options.o src/pg_am/pg_bingo_options.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_options.o src/pg_am/pg_bingo_options.cpp
 
 ${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o: ../src/core-c/mango_core_c_parallel.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o ../src/core-c/mango_core_c_parallel.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/mango_core_c_parallel.o ../src/core-c/mango_core_c_parallel.cpp
 
 ${OBJECTDIR}/_ext/1019403175/ringo_context.o: ../src/core/ringo_context.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_context.o ../src/core/ringo_context.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_context.o ../src/core/ringo_context.cpp
 
 ${OBJECTDIR}/_ext/1019403175/mango_exact.o: ../src/core/mango_exact.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_exact.o ../src/core/mango_exact.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_exact.o ../src/core/mango_exact.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_bingo_search.o: src/pg_am/pg_bingo_search.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_search.o src/pg_am/pg_bingo_search.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_search.o src/pg_am/pg_bingo_search.cpp
 
 ${OBJECTDIR}/src/pg_core/bingo_pg_config.o: src/pg_core/bingo_pg_config.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_config.o src/pg_core/bingo_pg_config.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_config.o src/pg_core/bingo_pg_config.cpp
 
 ${OBJECTDIR}/_ext/1019403175/mango_context.o: ../src/core/mango_context.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_context.o ../src/core/mango_context.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_context.o ../src/core/mango_context.cpp
 
 ${OBJECTDIR}/_ext/393906193/ringo_core_c_parallel.o: ../src/core-c/ringo_core_c_parallel.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/ringo_core_c_parallel.o ../src/core-c/ringo_core_c_parallel.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/ringo_core_c_parallel.o ../src/core-c/ringo_core_c_parallel.cpp
 
 ${OBJECTDIR}/_ext/1149244103/chunk_storage.o: ../../common/base_cpp/chunk_storage.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1149244103
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1149244103/chunk_storage.o ../../common/base_cpp/chunk_storage.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1149244103/chunk_storage.o ../../common/base_cpp/chunk_storage.cpp
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_text.o: src/pg_common/bingo_pg_text.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_text.o src/pg_common/bingo_pg_text.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_text.o src/pg_common/bingo_pg_text.cpp
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o: src/pg_common/bingo_pg_cursor.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o src/pg_common/bingo_pg_cursor.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_cursor.o src/pg_common/bingo_pg_cursor.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_mango_match.o: src/pg_am/pg_mango_match.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_mango_match.o src/pg_am/pg_mango_match.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_mango_match.o src/pg_am/pg_mango_match.cpp
 
 ${OBJECTDIR}/_ext/393906193/ringo_core_c.o: ../src/core-c/ringo_core_c.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/ringo_core_c.o ../src/core-c/ringo_core_c.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/ringo_core_c.o ../src/core-c/ringo_core_c.cpp
 
 ${OBJECTDIR}/src/pg_core/bingo_pg_build_engine.o: src/pg_core/bingo_pg_build_engine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_build_engine.o src/pg_core/bingo_pg_build_engine.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_build_engine.o src/pg_core/bingo_pg_build_engine.cpp
 
 ${OBJECTDIR}/_ext/393906193/mango_core_c.o: ../src/core-c/mango_core_c.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/mango_core_c.o ../src/core-c/mango_core_c.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/mango_core_c.o ../src/core-c/mango_core_c.cpp
 
 ${OBJECTDIR}/_ext/1019403175/mango_tautomer.o: ../src/core/mango_tautomer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_tautomer.o ../src/core/mango_tautomer.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_tautomer.o ../src/core/mango_tautomer.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_ringo_match.o: src/pg_am/pg_ringo_match.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_ringo_match.o src/pg_am/pg_ringo_match.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_ringo_match.o src/pg_am/pg_ringo_match.cpp
 
 ${OBJECTDIR}/_ext/1019403175/ringo_index.o: ../src/core/ringo_index.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_index.o ../src/core/ringo_index.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_index.o ../src/core/ringo_index.cpp
 
 ${OBJECTDIR}/src/pg_core/bingo_pg_search.o: src/pg_core/bingo_pg_search.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_search.o src/pg_core/bingo_pg_search.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_search.o src/pg_core/bingo_pg_search.cpp
 
 ${OBJECTDIR}/_ext/1019403175/mango_substructure.o: ../src/core/mango_substructure.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_substructure.o ../src/core/mango_substructure.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_substructure.o ../src/core/mango_substructure.cpp
 
 ${OBJECTDIR}/_ext/1019403175/ringo_substructure.o: ../src/core/ringo_substructure.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_substructure.o ../src/core/ringo_substructure.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_substructure.o ../src/core/ringo_substructure.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_mango_utils.o: src/pg_am/pg_mango_utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_mango_utils.o src/pg_am/pg_mango_utils.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_mango_utils.o src/pg_am/pg_mango_utils.cpp
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_buffer.o: src/pg_common/bingo_pg_buffer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_buffer.o src/pg_common/bingo_pg_buffer.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_buffer.o src/pg_common/bingo_pg_buffer.cpp
 
 ${OBJECTDIR}/src/pg_core/mango_pg_search_engine.o: src/pg_core/mango_pg_search_engine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/mango_pg_search_engine.o src/pg_core/mango_pg_search_engine.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/mango_pg_search_engine.o src/pg_core/mango_pg_search_engine.cpp
 
 ${OBJECTDIR}/_ext/1019403175/ringo_aam.o: ../src/core/ringo_aam.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_aam.o ../src/core/ringo_aam.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/ringo_aam.o ../src/core/ringo_aam.cpp
 
 ${OBJECTDIR}/src/pg_core/bingo_pg_build.o: src/pg_core/bingo_pg_build.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_build.o src/pg_core/bingo_pg_build.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_build.o src/pg_core/bingo_pg_build.cpp
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_common.o: src/pg_common/bingo_pg_common.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_common.o src/pg_common/bingo_pg_common.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_common.o src/pg_common/bingo_pg_common.cpp
 
 ${OBJECTDIR}/_ext/1019403175/bingo_context.o: ../src/core/bingo_context.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/bingo_context.o ../src/core/bingo_context.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/bingo_context.o ../src/core/bingo_context.cpp
 
 ${OBJECTDIR}/_ext/1019403175/mango_similarity.o: ../src/core/mango_similarity.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_similarity.o ../src/core/mango_similarity.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_similarity.o ../src/core/mango_similarity.cpp
 
 ${OBJECTDIR}/src/pg_core/bingo_pg_search_engine.o: src/pg_core/bingo_pg_search_engine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_search_engine.o src/pg_core/bingo_pg_search_engine.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_search_engine.o src/pg_core/bingo_pg_search_engine.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_bingo_build.o: src/pg_am/pg_bingo_build.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_build.o src/pg_am/pg_bingo_build.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_build.o src/pg_am/pg_bingo_build.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_bingo_costestimate.o: src/pg_am/pg_bingo_costestimate.c 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_costestimate.o src/pg_am/pg_bingo_costestimate.c
+	$(COMPILE.c) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_costestimate.o src/pg_am/pg_bingo_costestimate.c
 
 ${OBJECTDIR}/src/pg_am/pg_bingo_gist.o: src/pg_am/pg_bingo_gist.c 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.c) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_gist.o src/pg_am/pg_bingo_gist.c
+	$(COMPILE.c) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_gist.o src/pg_am/pg_bingo_gist.c
 
 ${OBJECTDIR}/src/pg_am/pg_bingo_utils.o: src/pg_am/pg_bingo_utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_utils.o src/pg_am/pg_bingo_utils.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_utils.o src/pg_am/pg_bingo_utils.cpp
 
 ${OBJECTDIR}/src/pg_core/bingo_pg_index.o: src/pg_core/bingo_pg_index.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_index.o src/pg_core/bingo_pg_index.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/bingo_pg_index.o src/pg_core/bingo_pg_index.cpp
 
 ${OBJECTDIR}/_ext/393906193/bingo_core_c_parallel.o: ../src/core-c/bingo_core_c_parallel.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/bingo_core_c_parallel.o ../src/core-c/bingo_core_c_parallel.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/bingo_core_c_parallel.o ../src/core-c/bingo_core_c_parallel.cpp
 
 ${OBJECTDIR}/_ext/1019403175/mango_index.o: ../src/core/mango_index.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1019403175
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_index.o ../src/core/mango_index.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1019403175/mango_index.o ../src/core/mango_index.cpp
 
 ${OBJECTDIR}/_ext/393906193/bingo_core_c.o: ../src/core-c/bingo_core_c.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/393906193
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/bingo_core_c.o ../src/core-c/bingo_core_c.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/393906193/bingo_core_c.o ../src/core-c/bingo_core_c.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_ringo_utils.o: src/pg_am/pg_ringo_utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_ringo_utils.o src/pg_am/pg_ringo_utils.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_ringo_utils.o src/pg_am/pg_ringo_utils.cpp
 
 ${OBJECTDIR}/src/pg_common/bingo_pg_section.o: src/pg_common/bingo_pg_section.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_common
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_section.o src/pg_common/bingo_pg_section.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_common/bingo_pg_section.o src/pg_common/bingo_pg_section.cpp
 
 ${OBJECTDIR}/src/pg_core/mango_pg_build_engine.o: src/pg_core/mango_pg_build_engine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/mango_pg_build_engine.o src/pg_core/mango_pg_build_engine.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/mango_pg_build_engine.o src/pg_core/mango_pg_build_engine.cpp
 
 ${OBJECTDIR}/src/pg_am/pg_bingo_update.o: src/pg_am/pg_bingo_update.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_am
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_update.o src/pg_am/pg_bingo_update.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_am/pg_bingo_update.o src/pg_am/pg_bingo_update.cpp
 
 ${OBJECTDIR}/src/pg_core/ringo_pg_search_engine.o: src/pg_core/ringo_pg_search_engine.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/pg_core
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/include/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/ringo_pg_search_engine.o src/pg_core/ringo_pg_search_engine.cpp
+	$(COMPILE.cc) -O2 -I../.. -I../../common -Isrc/pg_common -Isrc/pg_core -I../src/core-c -I../src -I${BINGO_PG_DIR32}/server -I${BINGO_PG_DIR32}/include/postgresql/server -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/pg_core/ringo_pg_search_engine.o src/pg_core/ringo_pg_search_engine.cpp
 
 # Subprojects
 .build-subprojects:
