@@ -327,6 +327,7 @@ void CanvasOptions::clear ()
    commentPos = COMMENT_POS_BOTTOM;
    commentAlign = 0.5f;
    titleAlign = 0.5f;
+   titleOffset = 0;
    gridColumnNumber = 1;
    comment.clear();
    titleProp.clear();
