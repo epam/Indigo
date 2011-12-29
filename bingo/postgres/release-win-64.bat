@@ -1,5 +1,6 @@
 @echo off
 if "%1" == "" goto ERROR_0
+if "%2" == "" goto ERROR_2
 
 if "%ProgramFiles(x86)%" == "" goto L1
 call "%ProgramFiles(x86)%\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
@@ -18,15 +19,19 @@ goto CALL_BUILD
 
 :CALL_BUILD
 devenv bingo_postgres.sln /build "Release|x64"
-bingo-release.bat %1 dist\x64\bingo_postgres.dll
+bingo-release.bat %1 %2 dist\x64\bingo_postgres.dll
 goto EXIT_S
 
 :ERROR_0
-echo Please specify version
+echo Please specify bingo version
 goto EXIT_S
 
 :ERROR_1
 echo BINGO_PG_DIR is not specified
+goto EXIT_S
+
+:ERROR_2
+echo Please specify PostgreSQL version
 goto EXIT_S
 
 :EXIT_S

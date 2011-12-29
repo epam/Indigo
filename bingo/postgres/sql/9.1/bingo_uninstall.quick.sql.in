@@ -1,0 +1,4 @@
+BEGIN;
+drop schema BINGO_SCHEMANAME cascade;
+delete from pg_am where amname='bingo_idx';
+COMMIT;

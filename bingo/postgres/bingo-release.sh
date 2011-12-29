@@ -1,27 +1,34 @@
 #!/bin/sh
 
 name=$1
-libname=$2
+pg_ver=$2
+libname=$3
 
 if [ -z $name ]; then
-  echo "specify name";
+  echo "Please specify name";
+  exit;
+fi
+
+if [ -z $pg_ver ]; then
+  echo "Please specify PostgreSQL version";
   exit;
 fi
 
 if [ -z $libname ]; then
-  echo "specify library name";
+  echo "Please specify library name";
   exit;
 fi
 
 rm -rf ./$name
 
 mkdir -p $name/bin
+mkdir -p $name/sql
  
 cp ../LICENSE.GPL $name/
 cp README $name/
 cp INSTALL $name/
 cp $libname $name/bin/
 cp bingo-pg-install.sh  $name/
-cp -r sql $name/
+cp sql/$pg_ver/* $name/sql
 
 zip -r -9 $name.zip $name

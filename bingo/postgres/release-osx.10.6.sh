@@ -1,8 +1,12 @@
 #!/bin/sh
 
-
 if [ -z $1 ]; then
-  echo "specify version";
+  echo "Please specify bingo version";
+  exit;
+fi
+
+if [ -z $2 ]; then
+  echo "Please specify PostgreSQL version";
   exit;
 fi
 
@@ -12,5 +16,5 @@ exit;
 fi
 
 xcodebuild -sdk macosx10.6 -configuration Release10.6 -alltargets
-./bingo-release.sh $1 build/Release10.6/bingo_postgres.dylib
+./bingo-release.sh $1 $2 build/Release10.6/bingo_postgres.dylib
 

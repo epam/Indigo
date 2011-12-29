@@ -105,18 +105,18 @@ echo     Set OutStream = FS.OpenTextFile(FileName, 8, True) >> replace.vbs
 echo     OutStream.Write Contents >> replace.vbs
 echo End Function >> replace.vbs
 @rem Generate install script
-cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo\bingo_schema.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo\bingo_pg.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo\bingo_internal.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo\mango_internal.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo\mango_pg.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo\ringo_internal.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo\ringo_pg.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo\bingo_am.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo\bingo_config.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo_schema.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo_pg.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo_internal.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\mango_internal.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\mango_pg.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\ringo_internal.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\ringo_pg.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo_am.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo_config.sql.in bingo_install.sql
 @rem Generate uninstall script
 if exist bingo_uninstall.sql del bingo_uninstall.sql
-cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo\bingo_uninstall.quick.sql.in bingo_uninstall.sql 
+cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo_uninstall.quick.sql.in bingo_uninstall.sql 
 @rem Delete replace.vbs script
 del replace.vbs
 goto L5
