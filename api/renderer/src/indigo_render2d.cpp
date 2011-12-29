@@ -318,6 +318,10 @@ CEXPORT int indigoRender (int object, int output)
    INDIGO_BEGIN
    {
       RenderParams& rp = indigoRendererGetInstance().renderParams;
+      // If there are molecules/reactions in the arrays then current call will 
+      // rendere a grid -> needs to clear it
+      rp.clearArrays();
+
       IndigoObject &obj = self.getObject(object);
 
       if (IndigoBaseMolecule::is(obj))
@@ -425,6 +429,10 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
          throw IndigoError("Invalid output object type");
       }
       RenderParamInterface::render(rp);
+
+      // Release memory for arrays with molecules/reactions
+      rp.clearArrays();
+
       return 1;
    }
    INDIGO_END(-1)
