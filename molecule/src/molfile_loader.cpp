@@ -1621,8 +1621,7 @@ void MolfileLoader::_postLoad ()
             if (_bmol->getRSiteAttachmentPointByOrder(i, j) == -1)
             {
                QS_DEF(Array<int>, nei_indices);
-
-               nei_indices.clear_resize(vertex.degree());
+               nei_indices.clear();
 
                for (int nei_idx = vertex.neiBegin(); nei_idx < vertex.neiEnd(); nei_idx = vertex.neiNext(nei_idx))
                   nei_indices.push(vertex.neiVertex(nei_idx));
