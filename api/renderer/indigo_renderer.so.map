@@ -1,5 +1,12 @@
 libindigo_renderer_shared.so
 {
-	global: indigoRender*;
-	local: *;
+	global: 
+			indigoRenderWriteHDC;
+			indigoRender;
+			indigoRenderGrid;
+			indigoRenderToFile;
+			indigoRenderGridToFile;
+			indigoRenderReset;
+	local: 
+			*;
 };
