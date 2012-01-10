@@ -814,7 +814,7 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
       if (mol.isRSite(i) || mol.isPseudoAtom(i))
          _hcount[i] = 0;
       else
-         _hcount[i] = mol.getImplicitH(i);
+         _hcount[i] = mol.getImplicitH_NoThrow(i, -1);
 
       if (_hcount[i] < 0)
       {
@@ -833,7 +833,10 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
       }
 
       if (_hcount[i] < 0)
-         throw Error("unsure hydrogen count on atom #%d", i);
+         // Assign some unique number of hydrogens as this number is 
+         // undefines and can have any values. Atoms with undefines 
+         // number of hydrogens are not comparable.
+         _hcount[i] = 100 + i;
 
       const Vertex &vertex = mol.getVertex(i);
 

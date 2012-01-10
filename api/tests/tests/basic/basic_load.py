@@ -28,3 +28,14 @@ m = indigo.loadMolecule("PC{-}{+n}N")
 print(m.smiles())
 m = indigo.loadMolecule("PC{-}O{+n}N")      
 print(m.smiles())
+
+print("****** Finding invalid stereocenters ********")
+for item in indigo.iterateSDFile(joinPath("molecules/invalid_3d_stereocenters.sdf")):
+    try:
+        print(item.molfile())
+    except IndigoException, e:
+        print(getIndigoExceptionText(e))
+    try:
+        print(item.smiles())
+    except IndigoException, e:
+        print(getIndigoExceptionText(e))
