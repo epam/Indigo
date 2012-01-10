@@ -368,3 +368,24 @@ CEXPORT int indigoMarkEitherCisTrans (int handle)
    }
    INDIGO_END(-1)
 }
+
+CEXPORT int indigoMarkStereobonds (int handle)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+
+      if (IndigoBaseMolecule::is(obj))
+         obj.getMolecule().stereocenters.markBonds();
+      else if (IndigoBaseReaction::is(obj))
+      {
+         Reaction &rxn = obj.getReaction();
+         for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            rxn.getMolecule(i).stereocenters.markBonds();
+      }
+      else
+         throw IndigoError("only molecules and reactions have stereocenters");
+      return 0;
+   }
+   INDIGO_END(-1)
+}
