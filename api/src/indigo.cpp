@@ -205,6 +205,15 @@ IndigoError::IndigoError (const IndigoError &other) : Exception()
    other._cloneTo(this);
 }
 
+//
+// Options registrator
+//
+
+// Options registrator is placed in the main module to avoid being ignored by a 
+// linker as an unused object
+// http://stackoverflow.com/questions/1229430/how-do-i-prevent-my-unused-global-variables-being-compiled-out
+static _IndigoBasicOptionsHandlersSetter _indigo_basic_options_handlers_setter;
+
 // 
 // Debug methods
 //

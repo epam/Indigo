@@ -61,4 +61,3 @@ CEXPORT int indigoClone (int object)
    INDIGO_END(-1);
 }
 
-_IndigoBasicOptionsHandlersSetter _indigo_basic_options_handlers_setter;
