@@ -15,5 +15,8 @@ if(APPLE)
 endif()
 
 add_library(molecule ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZip_headers})
+if(VISIBILITY_HIDDEN)
+    SET_TARGET_PROPERTIES(molecule PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+endif()    
 
 target_link_libraries(molecule graph z tinyxml)

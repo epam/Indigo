@@ -17,27 +17,43 @@
 
 #ifdef _WIN32
 #define qword unsigned _int64
-#ifdef INDIGO_PLUGIN
-#define DLLEXPORT __declspec(dllimport)
-#else
-#define DLLEXPORT __declspec(dllexport)
-#endif
 #else
 #define qword unsigned long long
-#define DLLEXPORT
 #endif
 
+#ifndef DLLEXPORT
+#ifdef _WIN32
+#ifdef INDIGO_PLUGIN
+#define DLLEXPORT __declspec(dllimport)
+#else 
+#define DLLEXPORT __declspec(dllexport)
+#endif
+#elif (defined __GNUC__ || defined __APPLE__)
+#define DLLEXPORT __attribute__ ((visibility ("default")))
+#else
+#define DLLEXPORT
+#endif
+#endif
+
+#ifndef CEXPORT
 #ifdef _WIN32
 #ifndef __cplusplus
 #define CEXPORT __declspec(dllexport)
 #else
 #define CEXPORT extern "C" __declspec(dllexport)
 #endif
+#elif (defined __GNUC__ || defined __APPLE__)
+#ifndef __cplusplus
+#define CEXPORT __attribute__ ((visibility ("default")))
+#else
+#define CEXPORT extern "C" __attribute__ ((visibility ("default")))
+#endif
 #else
 #ifndef __cplusplus
-   #define CEXPORT
+#define CEXPORT
 #else
-   #define CEXPORT extern "C"
+#define CEXPORT extern "C"
+#endif
 #endif
 #endif
 

@@ -11,4 +11,8 @@ endif()
 
 add_library(graph ${Graph_src} ${Graph_headers})
 
+if(VISIBILITY_HIDDEN)
+    SET_TARGET_PROPERTIES(graph PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+endif()    
+
 target_link_libraries(graph common)

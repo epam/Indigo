@@ -20,6 +20,11 @@ if (NOT TINYXML_FOUND)
     endif()
 
     add_library(tinyxml ${TinyXML_src} ${TinyXML_headers})
+    
+    if(VISIBILITY_HIDDEN)
+        SET_TARGET_PROPERTIES(tinyxml PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+    endif()    
+    
 else()
     set(TinyXML_HEADERS_DIR ${TINYXML_INCLUDE_DIRS})
 endif()

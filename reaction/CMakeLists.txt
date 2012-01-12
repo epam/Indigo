@@ -11,4 +11,8 @@ endif()
 
 add_library(reaction ${Reaction_src} ${Reaction_headers})
 
+if(VISIBILITY_HIDDEN)
+    SET_TARGET_PROPERTIES(reaction PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+endif()    
+    
 target_link_libraries(reaction molecule)

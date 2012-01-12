@@ -11,4 +11,8 @@ endif()
 
 add_library(render2d ${Render2D_src} ${Render2D_headers})
 
+if(VISIBILITY_HIDDEN)
+        SET_TARGET_PROPERTIES(render2d PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+endif()
+
 target_link_libraries(render2d cairo)

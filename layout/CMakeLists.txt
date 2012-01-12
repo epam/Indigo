@@ -11,4 +11,8 @@ endif()
 
 add_library(layout ${Layout_src} ${Layout_headers})
 
+if(VISIBILITY_HIDDEN)
+    SET_TARGET_PROPERTIES(layout PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+endif()    
+
 target_link_libraries(layout molecule)

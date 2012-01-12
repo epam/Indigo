@@ -18,4 +18,8 @@ if (NOT ZLIB_FOUND)
     endif()
 
     add_library(z ${ZLib_src} ${ZLib_headers})
+    
+    if(VISIBILITY_HIDDEN)
+        SET_TARGET_PROPERTIES(z PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+    endif()    
 endif()

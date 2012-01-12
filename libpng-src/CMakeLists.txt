@@ -23,5 +23,8 @@ if (NOT PNG_FOUND)
 
     add_library(png STATIC ${PNG_SOURCES})
 
+    if(VISIBILITY_HIDDEN)        
+        SET_TARGET_PROPERTIES(png PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+    endif()
     target_link_libraries(png z)
 endif()

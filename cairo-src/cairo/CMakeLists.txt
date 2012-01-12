@@ -89,11 +89,18 @@ if (NOT CAIRO_FOUND)
     if(NOT ZLIB_FOUND)
         include_directories(${ZLib_SOURCE_DIR}/include)
     endif()
+    
     if(APPLE)
         set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
     endif()
-
+    
     add_library(cairo STATIC  ${CAIRO_SOURCES})
+        
+    if(VISIBILITY_HIDDEN)
+        SET_TARGET_PROPERTIES(cairo PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+    endif()
+
+
     target_link_libraries(cairo pixman)
     if(NOT PNG_FOUND)
         target_link_libraries(cairo png)
