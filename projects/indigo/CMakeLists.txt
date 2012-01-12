@@ -14,11 +14,11 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${COMMON_OUTPUT_PATH}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${COMMON_OUTPUT_PATH}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${COMMON_OUTPUT_PATH}/shared)
 
-add_subdirectory(../../common "${CMAKE_CURRENT_BINARY_DIR}/common")
-
 add_subdirectory(../../zlib-src "${CMAKE_CURRENT_BINARY_DIR}/zlib")
 # Get defined variable with the headers
 get_directory_property(ZLib_HEADERS_DIR DIRECTORY ../../zlib-src DEFINITION ZLib_HEADERS_DIR)
+
+add_subdirectory(../../common "${CMAKE_CURRENT_BINARY_DIR}/common")
 
 add_subdirectory(../../tinyxml "${CMAKE_CURRENT_BINARY_DIR}/tinyxml")
 # Get defined variable with the headers

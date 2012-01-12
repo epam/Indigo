@@ -17,6 +17,9 @@ if (NOT CAIRO_FOUND)
     if(UNIX OR APPLE)
         add_definitions(-DHAVE_STDINT_H -DCAIRO_HAS_PTHREAD -DPTHREAD_MUTEX_RECURSIVE)
     endif()
+    if(MSVC)
+    	add_definitions(-DDISABLE_SOME_FLOATING_POINT) # Fix lround missing problem
+    endif()
 
     file (GLOB CAIRO_SOURCES src/*.c)
     file (GLOB CAIRO_HEADERS src/*.h)
@@ -87,7 +90,7 @@ if (NOT CAIRO_FOUND)
     endif()
     find_package(ZLIB)
     if(NOT ZLIB_FOUND)
-        include_directories(${ZLib_SOURCE_DIR}/include)
+        include_directories(${ZLib_HEADERS_DIR})
     endif()
     
     if(APPLE)

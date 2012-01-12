@@ -14,7 +14,7 @@ if (NOT PNG_FOUND)
 
     find_package(ZLIB)
     if(NOT ZLIB_FOUND)
-        include_directories(${ZLib_SOURCE_DIR}/include)
+        include_directories(${ZLib_HEADERS_DIR})
     endif()
 
     if(APPLE)

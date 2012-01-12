@@ -32,6 +32,7 @@ source_group("LZW" FILES ${LZW_src} ${LZW_headers})
 source_group("Math" FILES ${Math_src} ${Math_headers})
 
 include_directories(${Common_SOURCE_DIR})
+include_directories(${ZLib_HEADERS_DIR})
 
 if(APPLE)
     set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")

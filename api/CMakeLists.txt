@@ -12,15 +12,16 @@ if(APPLE)
 endif()
 
 add_library(indigo STATIC ${Indigo_src} ${Indigo_headers})
-add_library(indigo_shared SHARED ${Indigo_src} ${Indigo_headers})
+add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers})
+SET_TARGET_PROPERTIES(indigo-shared PROPERTIES OUTPUT_NAME "indigo")
 
 if(VISIBILITY_HIDDEN)
     SET_TARGET_PROPERTIES(indigo PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
-    SET_TARGET_PROPERTIES(indigo_shared PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+    SET_TARGET_PROPERTIES(indigo-shared PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
 endif()    
 
 target_link_libraries(indigo molecule reaction layout)
-target_link_libraries(indigo_shared molecule reaction layout)
+target_link_libraries(indigo-shared molecule reaction layout)
 
-set_property(TARGET indigo_shared PROPERTY LINK_INTERFACE_LIBRARIES "")
+set_property(TARGET indigo-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 

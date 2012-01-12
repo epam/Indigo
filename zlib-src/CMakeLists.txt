@@ -1,4 +1,4 @@
-PROJECT(z)
+PROJECT(ZLIB)
 if(USE_LOCAL_ZLIB)
     set(ZLIB_FOUND "NO")
     message(STATUS "Using local ZLib")
@@ -8,9 +8,8 @@ endif()
 if (NOT ZLIB_FOUND)
     file (GLOB ZLib_src src/*.c* src/*.def)
     file (GLOB ZLib_headers include/*.h*)
-
-    set(ZLib_HEADERS_DIR ${ZLib_SOURCE_DIR}/include)
-
+	set(ZLib_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    set(ZLib_HEADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
     include_directories(${ZLib_HEADERS_DIR})
 
     if(APPLE)
@@ -18,7 +17,7 @@ if (NOT ZLIB_FOUND)
     endif()
 
     add_library(z ${ZLib_src} ${ZLib_headers})
-    
+        
     if(VISIBILITY_HIDDEN)
         SET_TARGET_PROPERTIES(z PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
     endif()    
