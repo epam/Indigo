@@ -571,9 +571,23 @@ void Molecule::_removeAtoms (const Array<int> &indices, const int *mapping)
    updateEditRevision();
 }
 
-void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt )
+void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt)
 {
-   int i, j, v_end = vertexEnd();
+   int v_end = vertexEnd();
+
+   QS_DEF(Array<int>, imp_h_count);
+   imp_h_count.clear_resize(vertexEnd());
+   imp_h_count.zerofill();
+
+   // getImplicitH can throw an exception, and we need to get the number of hydrogens
+   // before unfolding them
+   for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
+   {
+      if (isPseudoAtom(i) || isRSite(i))
+         continue;
+
+      imp_h_count[i] = getImplicitH(i);
+   }
 
    if (markers_out != 0)
    {
@@ -581,19 +595,19 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt )
       markers_out->zerofill();
    }
 
-   for (i = vertexBegin(); i < v_end; i = vertexNext(i))
+   for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
    {
-      if (isPseudoAtom(i) || isRSite(i))
+      int impl_h = imp_h_count[i];
+      if (impl_h == 0)
          continue;
 
-      int impl_h = getImplicitH(i);
       int h_cnt;
       if ((max_h_cnt == -1) || (max_h_cnt > impl_h))
          h_cnt = impl_h;
       else
          h_cnt = max_h_cnt;
 
-      for (j = 0; j < h_cnt; j++)
+      for (int j = 0; j < h_cnt; j++)
       {
          int new_h_idx = addAtom(ELEM_H);
 
@@ -612,6 +626,7 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt )
       _validateVertexConnectivity(i, false);
       _implicit_h[i] = impl_h - h_cnt;
    }
+
    updateEditRevision();
 }
 

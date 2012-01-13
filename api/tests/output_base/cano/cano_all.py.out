@@ -1762,8 +1762,8 @@ Database: ../../data/sugars.sdf
  (#317): [O-][N+](=O)C1C=CC(=CC=1)O[C@H]1O[C@H](CO)[C@@H](O)[C@H](O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2O)[C@H]1O
  (#318): CC(=O)O[C@H]1[C@H](O[C@@H]2O[C@H](COC(C)=O)[C@@H](OC(C)=O)[C@H](OC(C)=O)[C@H]2OC(C)=O)[C@@H](OC(C)=O)[C@@H](OC2C=CC(=CC=2)[N+]([O-])=O)O[C@@H]1COC(C)=O
 Database: molecules/helma.smi
- (#1): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1): ON(=O)c1ccc(Cl)cc1
+ (#2): Nc1ccc(cc1)N(O)=O
  (#3): C=CC1CC=CCC1
  (#4): CCc1ccccc1
  (#5): C=Cc1ccccc1
@@ -1818,7 +1818,7 @@ Database: molecules/helma.smi
  (#54): COCCl
  (#55): O=S1(=O)OCCO1
  (#56): CN(C)CCO
- (#57): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#57): CCCN(O)=O
  (#58): CC(=O)OC=C
  (#59): O=C1CCC(=O)O1
  (#60): Nc1cc(N)ccc1
@@ -1839,7 +1839,7 @@ Database: molecules/helma.smi
  (#75): OCCN(CCO)N=O
  (#76): O=S1(=O)CCCO1
  (#77): CC(=O)NNc1ccccc1
- (#78): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#78): [N-]=N=CC(=O)OCC(N)C(O)=O
  (#79): CC=C
  (#80): C[Hg]Cl
  (#81): OC(=O)C1C(C(O)=O)C2(Cl)C(Cl)=C(Cl)C1(Cl)C2(Cl)Cl
@@ -1855,7 +1855,7 @@ Database: molecules/helma.smi
  (#91): CCCCC(COC(=O)c1ccccc1C(=O)OCC(CCCC)CC)CC
  (#92): Clc1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
  (#93): Nc1ccccc1C(O)=O
- (#94): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#94): Nc1ccc(O)c(c1)N(O)=O
  (#95): OC(C(=O)c1ccccc1)c1ccccc1
  (#96): O=C1CCc2ccccc2O1
  (#97): Oc1ccc(Cl)cc1Cc1ccccc1
@@ -1866,12 +1866,12 @@ Database: molecules/helma.smi
  (#102): c1cccc2[s]c([n]c21)SSc1[n]c2ccccc2[s]1
  (#103): Oc1ccccc1O
  (#104): Oc1ccc(Cl)cc1Cl
- (#105): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#106): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#105): Cc1ccc(cc1N(O)=O)N(O)=O
+ (#106): Nc1[n]cc([s]1)N(O)=O
  (#107): CN(C)c1ccccc1
  (#108): CCOC(=O)C(CC(=O)OCC)SP(=S)(OC)OC
  (#109): CCCOC(=O)c1cc(O)c(O)c(O)c1
- (#110): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#110): Nc1ccc(cc1O)N(O)=O
  (#111): S=C(NC1CCCCC1)NC1CCCCC1
  (#112): S=C1NCCNC(=S)S[Zn]S1
  (#113): CC(O)CN(CC(C)O)CC(C)O
@@ -1890,7 +1890,7 @@ Database: molecules/helma.smi
  (#126): Cc1cc(c(O)c(c1)C(C)(C)C)C(C)(C)C
  (#127): O=C1NS(=O)(=O)c2ccccc12
  (#128): O=c1c2ccccc2c2ccc3c4c2c1ccc4c1ccccc1c3=O
- (#129): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#129): Cc1ccc2c(c1N(O)=O)C(=O)c1ccccc1C2=O
  (#130): CCCN(N=O)C(=N)NN(O)O
  (#131): CCCCN(N=O)C(=N)NN(O)O
  (#132): CCCCCN(N=O)C(=N)NN(O)O
@@ -1920,7 +1920,7 @@ Database: molecules/helma.smi
  (#156): FC(F)OC(F)(F)C(F)Cl
  (#157): OC(=O)CN(CC(O)=O)CC(O)=O
  (#158): Nc1ccc(cc1)Sc1ccc(N)cc1
- (#159): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#159): CCNC(=O)Nc1[n]cc([s]1)N(O)=O
  (#160): CC(=O)OCc1ccccc1
  (#161): CC(=O)Nc1ccc(cc1)C(=O)CCl
  (#162): CN(C)c1ccc(cc1)N=NS(=O)(=O)O[Na]
@@ -1951,23 +1951,23 @@ Database: molecules/helma.smi
  (#187): OS(=O)(=O)ONNCCc1ccccc1
  (#188): N#CN=[Ca]
  (#189): Nc1cc(Cl)c(cc1Cl)-c1cc(Cl)c(N)cc1Cl
- (#190): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#190): CCCN(CCC)c1c(cc(cc1N(O)=O)C(F)(F)F)N(O)=O
  (#191): CN(C)NC(=O)CCC(O)=O
  (#192): Oc1ccc(cc1C(=O)O[Na])N=Nc1ccc(cc1)-c1ccc(cc1)N=Nc1c2O[Cu]OC3=CC=C(CC3=NNc2ccc1O)S(=O)(=O)O[Na]
  (#193): COc1ccc(cc1)C(=O)C(Br)=CC(=O)O[Na]
  (#194): CN(N=O)c1cccc[n]1
  (#195): CN(N=O)c1cc[n]cc1
  (#196): CCOC(=O)C(CC(=O)OCC)SP(=O)(OC)OC
- (#197): element: bad valence on O having 3 drawn bonds, charge 0, and 0 radical electrons
+ (#197): Oc1c(I)c2=Oc3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
  (#198): CC=NN(C)C=O
  (#199): O=C1CCN(N=O)C(=O)N1
- (#200): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#200): CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
  (#201): CC(=O)Nc1cc(N)c(cc1)OCC
  (#202): Clc1cc2Oc3cc(Cl)c(Cl)cc3Oc2cc1Cl
- (#203): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#203): CC(=O)Nc1cc(c(cc1)OCC)N(O)=O
  (#204): CC1CCCC(=O)CCCC=Cc2cc(O)cc(O)c2C(=O)O1
  (#205): COc1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
- (#206): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#206): ON(=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
  (#207): O=C(CN(CC(=O)O[Na])CC(=O)O[Na])O[Na]
  (#208): CCCCCCN(N=O)C(N)=O
  (#209): CN(N=O)C(=O)NC(C=O)C(O)C(O)C(O)CO
@@ -1987,7 +1987,7 @@ Database: molecules/helma.smi
  (#223): CCN(CC)C(=S)S[Te](SC(=S)N(CC)CC)(SC(=S)N(CC)CC)SC(=S)N(CC)CC
  (#224): Nc1ccc(cc1)-c1ccccc1
  (#225): Cc1cc(N)c(C)cc1C
- (#226): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#226): CC1CN(N=Cc2ccc(o2)N(O)=O)C(=O)N1
  (#227): CN(C)C(=O)Nc1cc(ccc1)C(F)(F)F
  (#228): Nc1ccccc1-c1ccccc1
  (#229): Cc1cc(O)c2c(C(=O)C34C5C(O)C6C3C(O)C(C(O)=C4C2=O)C26C(C(=O)c3c(C2=O)c(O)c(C)cc3O)=C5O)c1O
@@ -1996,42 +1996,42 @@ Database: molecules/helma.smi
  (#232): CC1=CCC(CC1=O)C(C)=C
  (#233): CC(C)N(C(C)C)C(=O)SCC(Cl)=CCl
  (#234): CC12C(OC(C)=O)C(O)C(OC3C=C(C)C(=O)C(O)C13CO)C12CO1
- (#235): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#235): CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
  (#236): ClC1(Cl)C2(Cl)C3(Cl)C4(Cl)C2(Cl)C2(Cl)C(Cl)(C3(Cl)C12Cl)C4(Cl)Cl
  (#237): O=C1C2CC=CCC2C(=O)N1SC(Cl)(Cl)C(Cl)Cl
- (#238): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#238): Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)N(O)=O
  (#239): COc1cc(ccc1N=Nc1c(cc2cc(cc(N)c2c1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])-c1cc(OC)c(cc1)N=Nc1c(cc2cc(cc(N)c2c1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
  (#240): NCCCCCCCCCCC(O)=O
- (#241): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#241): COc1c(Cl)c(Cl)c(c(Cl)c1Cl)N(O)=O
  (#242): O=CC=CO[Na]
  (#243): c1[n]ccc2c1[nH]c1ccccc21
- (#244): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#244): ON(=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
  (#245): CN(C)c1ccc(cc1)C(=N)c1ccc(cc1)N(C)C
  (#246): Nc1ccc(N)c2c1C(=O)c1c(C2=O)c(N)ccc1N
  (#247): CNC(=S)N(C)C
  (#248): CC(C)CCCCCOC(=O)COc1ccc(Cl)cc1Cl
- (#249): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#250): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#251): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#249): Cc1ccc(cc1N(O)=O)N(O)=O
+ (#250): CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)N(O)=O
+ (#251): CN=N(C)O
  (#252): Nc1cc(cc2cc(c(N=Nc3ccc(cc3)-c3ccc(cc3)N=Nc3c(cc4cc(cc(N)c4c3O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])c(O)c12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
- (#253): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#253): CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
  (#254): Nc1ccc2c([nH]c3ccccc23)[n]1
  (#255): c1cccc2Oc3ccccc3Oc21
  (#256): O=NN1CCSCC1
- (#257): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#257): [N-]=N=N[Na]
  (#258): FC(F)OC(Cl)C(F)(F)F
  (#259): N#CC(=Cc1ccccc1Cl)C#N
  (#260): c1cccc2occc21
  (#261): Oc1ccc2cc(ccc2c1N=Nc1ccc(cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
- (#262): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#262): CNc1ccc(cc1N(O)=O)N(CCO)CCO
  (#263): Cc1cc(N=Nc2ccc(cc2)NC(C)=O)c(O)cc1
  (#264): CC(=O)Nc1cccc2Cc3ccccc3-c12
  (#265): CC(C)CC(=O)OCC=C
  (#266): Nc1cc(cc2cc(c3N=Nc4ccc(cc4O[Cu]Oc3c12)-c1cc2O[Cu]Oc3c4c(cc(cc4N)S(=O)(=O)O[Na])cc(c3N=Nc2cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na])S(=O)(=O)O[Na]
- (#267): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#267): Nc1cc(c(cc1)NCCO)N(O)=O
  (#268): CCOP(=S)(Oc1[n]c(Cl)c(Cl)cc1Cl)OCC
  (#269): COc1cc2OC3OC=CC3c2c2oc(=O)c3C(O)CCc3c12
- (#270): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#270): COP(=S)(Oc1ccc(cc1)N(O)=O)OC
  (#271): C1OC1C1CO1
  (#272): COc1c2occc2cc2ccc(=O)oc21
  (#273): CC(O)=O
@@ -2050,10 +2050,10 @@ Database: molecules/helma.smi
  (#286): Nc1[n]c(=O)[n](c[n]1)C1OC(CO)C(O)C1O
  (#287): OCC(CBr)(CBr)CO
  (#288): OC(=O)C=Cc1cc(O)c(O)cc1
- (#289): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#289): ON(=O)c1cc(ccc1NCCO)N(CCO)CCO
  (#290): Cc1cc([n]c([n]1)C(C)C)OP(=S)(OCC)OCC
- (#291): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#292): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#291): ON(=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
+ (#292): OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)N(O)=O
  (#293): Clc1cc2Oc3ccc(Cl)cc3Oc2cc1
  (#294): CN(C#N)N=O
  (#295): CC(=O)OC(C=C)c1ccc2OCOc2c1
@@ -2061,29 +2061,29 @@ Database: molecules/helma.smi
  (#297): CC(C)CCCC(C)C1CCC2C3CC=C4CC(CCC4(C)C3CCC21C)OC(=O)Cc1ccc(cc1)N(CCCl)CCCl
  (#298): Cc1cc(C)c(C)cc1N=Nc1c2ccc(cc2cc(c1O)S(O)(=O)=O)S(O)(=O)=O
  (#299): Oc1c2ccccc2c(cc1N=Nc1ccc(c2ccccc12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
- (#300): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#301): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#300): ON(=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
+ (#301): CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)N(O)=O
  (#302): CNNCc1ccc(cc1)C(=O)NC(C)C
- (#303): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#303): NC(=O)C(=Cc1ccc(o1)N(O)=O)c1ccco1
  (#304): Cc1cc(C)c(cc1)N=Nc1c2ccc(cc2cc(c1O)S(O)(=O)=O)S(O)(=O)=O
  (#305): CC(C)(Oc1ccc(cc1)C1CCCc2ccccc21)C(O)=O
  (#306): O=P1(NCCCl)OCCCN1CCCl
  (#307): CCCCN(CCCCO)N=O
  (#308): CCN(C#N)N=O
- (#309): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#309): Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
  (#310): CN(N=O)C(=O)Oc1ccccc1OC(C)C
  (#311): Cc1ccc2c([n]1)[n](CC)cc(C(O)=O)c2=O
  (#312): COc1ccc(cc1N)NOS(O)(=O)=O
  (#313): Nc1[n]c(N)[n]c2[n]c(N)c([n]c12)-c1ccccc1
  (#314): O=NN1CCCCCCCCCCCC1
  (#315): CC(N)(Cc1cc(O)c(O)cc1)C(O)=O
- (#316): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#316): ON(=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
  (#317): O=C1NC(=O)CN1N=O
  (#318): CC(CCC(O)=O)C1CCC2C3CCC4CC(O)CCC4(C)C3CCC21C
  (#319): CN(C)N=Nc1[n]c[nH]c1C(N)=O
  (#320): CN1C(=O)CN=C(c2cc(Cl)ccc12)c1ccccc1
- (#321): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#322): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#321): Cc1[n]cc(N(O)=O)[n]1CCO
+ (#322): C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)N(O)=O
  (#323): Cc1cc(c(N=Nc2cc(c3ccccc3c2O)S(O)(=O)=O)c(C)c1)S(O)(=O)=O
  (#324): CC1(C)OC2(C)CCC1CC2
  (#325): OC(CBr)C(O)C(O)C(O)CBr
@@ -2101,21 +2101,21 @@ Database: molecules/helma.smi
  (#337): Cc1ccc(c2[n]c3c(c(N)c(=O)c(C)c3oc12)C(=O)NC1C(C)OC(=O)C(C(C)C)N(C)C(=O)CN(C)C(=O)C2CCCN2C(=O)C(NC1=O)C(C)C)C(=O)NC1C(C)OC(=O)C(C(C)C)N(C)C(=O)CN(C)C(=O)C2CCCN2C(=O)C(NC1=O)C(C)C
  (#338): CC(=O)Oc1ccccc1C(O)=O
  (#339): OC(CO)C1OC(=O)C(O)=C1O
- (#340): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#341): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#342): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#340): OCCN1CCN(N=Cc2ccc(o2)N(O)=O)C1=O
+ (#341): OC(=O)CCN(O)=O
+ (#342): ON(=O)C(N(O)=O)(N(O)=O)N(O)=O
  (#343): CC(C)NCC(O)c1ccc2ccccc2c1
  (#344): CCCc1cc2OCOc2cc1COCCOCCOCCCC
  (#345): Oc1[n]cc(F)c(O)[n]1
- (#346): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#346): Oc1ccc(cc1N(O)=O)N(O)=O
  (#347): CN(CCCl)CCCl
  (#348): CCOC(N)=O
  (#349): CCOC(=O)C(O)(c1ccc(Cl)cc1)c1ccc(Cl)cc1
  (#350): COP(=O)(OC)OC
  (#351): CC(C)=CCl
  (#352): Nc1cc(N)c(Cl)cc1
- (#353): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#354): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#353): CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)N(O)=O
+ (#354): CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
  (#355): COc1ccc(cc1)C(O)C=C
  (#356): Oc1cc2C3c4ccc(O)c(O)c4OCC3(O)Cc2cc1O
  (#357): CC1C(=O)C(=C(O)C2=COC(C)C(C)C=12)C(O)=O
@@ -2127,12 +2127,12 @@ Database: molecules/helma.smi
  (#363): c1c2c3ccccc3ccc2cc2c3ccccc3ccc21
  (#364): CC(=O)N(O)c1cc2Cc3ccccc3-c2cc1
  (#365): CC(=O)Nc1cc2Cc3ccccc3-c2cc1
- (#366): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#367): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#366): Nc1cc(c(N)cc1)N(O)=O
+ (#367): CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
  (#368): Nc1ccc(cc1)-c1ccc(N)cc1
  (#369): O=C(CCl)c1ccccc1
  (#370): CCc1cc(cc[n]1)C(N)=S
- (#371): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#371): ON(=O)c1ccc(o1)-c1c[s]c[n]1
  (#372): CN1CCCC1c1c[n]ccc1
  (#373): NS(=O)(=O)c1cc(C(O)=O)c(cc1Cl)NCc1ccco1
  (#374): CC(C)NCC(O)c1ccc2ccccc2c1
@@ -2144,27 +2144,27 @@ Database: molecules/helma.smi
  (#380): ClC=CCCl
  (#381): CC(C)CN(N=O)C(=N)NN(O)O
  (#382): OCC(O)C(O)C(O)C(C=O)NC(=O)N(CCCl)N=O
- (#383): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#383): CN(C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
  (#384): CCN(CC)N=O
  (#385): Cc1cc(ccc1SC)OP(=S)(OC)OC
  (#386): Cc1cc(ccc1)N=Nc1ccc(cc1)N(C)C
  (#387): CS(=O)(=O)OCCCCOS(C)(=O)=O
  (#388): CCCCCCCCCCCCN(C)N=O
- (#389): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#389): Cc1[n]cc(N(O)=O)[n]1C
  (#390): O=C(C1CCCCC1)N1CC2c3ccccc3CCN2C(=O)C1
  (#391): O=NN1CC=CCC1
  (#392): O=NN1CCCN(CC1)N=O
  (#393): COC(=O)C1CN(CCC=1)N=O
  (#394): OCC1CO1
- (#395): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#395): CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)N(O)=O)o1
  (#396): Cc1cc(O)[n]c(S)[n]1
  (#397): ClC(Cl)(Cl)Cl
  (#398): CCCC[Sn](CCCC)(CCCC)O[Sn](CCCC)(CCCC)CCCC
- (#399): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#399): CCOP(=S)(Oc1ccc(cc1)N(O)=O)OCC
  (#400): Cc1ccc2cc3c(ccc4ccccc43)c3CCc1c32
  (#401): CCC(c1ccc(O)cc1)=C(CC)c1ccc(O)cc1
  (#402): Cc1c(Cl)c(=O)oc2cc(ccc12)OP(=S)(OCC)OCC
- (#403): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#403): OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)N(O)=O
  (#404): NC(CCC(O)=O)C(O)=O
  (#405): OC1CN(CC1)N=O
  (#406): NNC(N)=O
@@ -2191,16 +2191,16 @@ Database: molecules/helma.smi
  (#427): NS(=O)(=O)c1cc2c(cc1Cl)NCNS2(=O)=O
  (#428): CC(C)CCCC(C)CCCC(C)CCCC1(C)CCc2c(O1)c(C)c(C)c(OC(C)=O)c2C
  (#429): OCCN(CCO)c1[n]c([n]c2ccccc21)-c1ccc[s]1
- (#430): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#430): ON(=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
  (#431): CN(Cc1c[n]c2[n]c(N)[n]c(N)c2[n]1)c1ccc(cc1)C(=O)NC(CCC(O)=O)C(O)=O
  (#432): CSCCC(N)C(O)=O
  (#433): OC(=O)c1ccc[n]c1
- (#434): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#434): NC(=O)NN=Cc1ccc(o1)N(O)=O
  (#435): NNc1ccccc1
  (#436): O=NN1CCOCC1
  (#437): COP(=O)(OC)N1CCOCC1
  (#438): COC(N)=O
- (#439): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#439): Oc1cc(ccc1N(CCO)CCO)N(O)=O
  (#440): CC1CCC(CC=1)C(C)=C
  (#441): CN(C)c1ccc(cc1)N=Nc1ccccc1
  (#442): CC(Cc1ccccc1)NOS(=O)(=O)ONC(C)Cc1ccccc1
@@ -2210,9 +2210,9 @@ Database: molecules/helma.smi
  (#446): C[n]1cc[nH]c1=S
  (#447): ClC1(Cl)C2(Cl)C3C4CC(C5OC54)C3C1(Cl)C(Cl)=C2Cl
  (#448): C[n]1c(C)cc(=O)[n]1-c1ccccc1
- (#449): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#449): ON(=O)c1ccc2CCc3cccc1c32
  (#450): NC(=O)N(CC(O)=O)N=O
- (#451): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#451): ON(=O)c1cccc2ccc[n]c21
  (#452): Nc1cc(Cl)c(N)c(Cl)c1
  (#453): CNCC(O)c1cc(O)ccc1
  (#454): N=c1[nH][nH]c[n]1
@@ -2220,11 +2220,11 @@ Database: molecules/helma.smi
  (#456): CC[n]1c2ccc(N)cc2c2ccccc12
  (#457): Cc1cccc2ccc[n]c21
  (#458): Cc1cc(ccc1N)-c1cc(C)c(N)cc1
- (#459): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#459): ON(=O)c1cc2ccc[n]c2cc1
  (#460): CCN(N=O)C(=O)OCC
  (#461): Nc1ccc(cc1Cl)NOS(O)(=O)=O
- (#462): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#463): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#462): Nc1cc(ccc1C(O)=O)N(O)=O
+ (#463): OC(=O)c1ccc(cc1)N(O)=O
  (#464): NCCc1cc(O)c(O)cc1
  (#465): CC(=O)O[Hg]c1ccccc1
  (#466): CC(=O)Nc1ccc(cc1)OCC
@@ -2249,19 +2249,19 @@ Database: molecules/helma.smi
  (#485): Cc1ccccc1N
  (#486): Cc1ccc(N)cc1N
  (#487): Cc1cc(ccc1N)NOS(O)(=O)=O
- (#488): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#488): ON(=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])N(O)=O
  (#489): Cc1cc(N)ccc1
  (#490): CCO
  (#491): CC1(O)C2CC3C(C(O)=C(C(N)=O)C(=O)C3(O)C(O)=C2C(=O)c2c1cccc2O)N(C)C
  (#492): Cc1ccc(cc1)S(=O)(=O)NC(=O)NCCCC
  (#493): Nc1ccc(Cc2cc(Cl)c(N)cc2)cc1Cl
  (#494): Cc1ccc(cc1)S(=O)(=O)Oc1ccc(cc1)N=Nc1ccc(cc1C)-c1cc(C)c(cc1)N=Nc1c(O)ccc2cc(cc(c21)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
- (#495): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#495): COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)N(O)=O)c1O)N(O)=O
  (#496): Oc1cc[n]c(O)[n]1
  (#497): COS(C)(=O)=O
- (#498): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#498): ON(=O)c1ccc(C=NN2CC(=O)NC2=O)o1
  (#499): CCSCCC(N)C(O)=O
- (#500): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#500): CN(C)(C)CCO
  (#501): ClC(Cl)Cl
  (#502): ClC(Cl)(Cl)C(Cl)(Cl)Cl
  (#503): CNNCc1ccc(cc1)C(=O)NC(C)C
@@ -2285,7 +2285,7 @@ Database: molecules/helma.smi
  (#521): ClC(Cl)C(c1ccc(Cl)cc1)c1ccc(Cl)cc1
  (#522): ClC(Cl)(Cl)C(c1ccc(Cl)cc1)c1ccc(Cl)cc1
  (#523): CCc1ccc(cc1)C(C(Cl)Cl)c1ccc(CC)cc1
- (#524): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#524): Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)N(O)=O
  (#525): Cc1[n]c(N)cc2[nH]c3ccccc3c21
  (#526): CN(C)N=Nc1ccccc1
  (#527): NC(Cc1c[nH]c2ccccc21)C(O)=O
@@ -2313,7 +2313,7 @@ Database: molecules/helma.smi
  (#549): CP(=O)(OC)OC
  (#550): CCN(N=O)C(N)=O
  (#551): ClC(Cl)C(Cl)(Cl)Cl
- (#552): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#552): ON(=O)C(Cl)(Cl)Cl
  (#553): ClC1(Cl)C2(Cl)C3C=CC(Cl)C3C1(Cl)C(Cl)=C2Cl
  (#554): O[Sn](c1ccccc1)(c1ccccc1)c1ccccc1
  (#555): C[n]1c(N)[n]c2c3ccc[n]c3ccc12
@@ -2329,13 +2329,13 @@ Database: molecules/helma.smi
  (#565): CC1(OC1C(=O)OCC)c1ccccc1
  (#566): Cl[Fe](Cl)Cl
  (#567): Cc1cc2[n]cccc2c2[n]c(N)[n](C)c12
- (#568): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#568): NC(=NO)c1ccc(o1)N(O)=O
  (#569): OO
  (#570): Cc1c[n]c2ccc3c([n]c(N)[n]3C)c2[n]1
  (#571): O=Br(=O)O[K]
  (#572): Cl[Sn]Cl
  (#573): ClCl
- (#574): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#574): ON(=O)OCC(CON(O)=O)(CON(O)=O)CON(O)=O
  (#575): CCOP(=S)(OCC)SC1OCCOC1SP(=S)(OCC)OCC
  (#576): CCCCC(COP(=O)(OCC(CCCC)CC)OCC(CCCC)CC)CC
  (#577): CC1CC(C)(C)CC(=O)C=1
@@ -2346,7 +2346,7 @@ Database: molecules/helma.smi
  (#582): OC(=O)CCl
  (#583): ClC(Cl)C(Cl)Cl
  (#584): CN(C)C(=O)Cl
- (#585): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#585): CC(C)N(O)=O
  (#586): CCCCCCCCCCCCCCCC(=O)OCC=C(C)C=CC=C(C)C=CC1=C(C)CCCC1(C)C
  (#587): CC(C)(c1ccc(O)cc1)c1ccc(O)cc1
  (#588): Nc1ccc(cc1)S(=O)(=O)c1ccc(N)cc1
@@ -2355,7 +2355,7 @@ Database: molecules/helma.smi
  (#591): O=C1NS(=O)(=O)c2ccccc12
  (#592): CCCN(N=O)C(N)=O
  (#593): Cc1ccc2c(c1N)C(=O)c1ccccc1C2=O
- (#594): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#594): ON(=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
  (#595): CC1OC(CC(C)O1)OC(C)=O
  (#596): CC(=C)C1Cc2c3OC4COc5cc(OC)c(cc5C4C(=O)c3ccc2O1)OC
  (#597): NC(=N)NC(=N)NCCc1ccccc1
@@ -2366,7 +2366,7 @@ Database: molecules/helma.smi
  (#602): CCCCOC(=O)c1ccccc1C(=O)OCc1ccccc1
  (#603): O=NN(c1ccccc1)c1ccccc1
  (#604): COP(=S)(OC)SC[n]1[n][n]c2ccccc2c1=O
- (#605): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#605): ON(=O)c1cccc2ccccc21
  (#606): c1cccc2[nH]c3ccccc3c21
  (#607): NC(=O)Cc1cccc2ccccc21
  (#608): OC(=O)Cc1cccc2ccccc21
@@ -2382,14 +2382,14 @@ Database: molecules/helma.smi
  (#618): CN1CCCC1=O
  (#619): Oc1c(Cl)cc(Cl)cc1Cl
  (#620): Cc1ccccc1S(N)(=O)=O
- (#621): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#622): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#621): ON(=O)c1ccccc1Cl
+ (#622): CC(CC)c1cc(cc(c1O)N(O)=O)N(O)=O
  (#623): NC(=O)c1ccccc1C(N)=O
  (#624): CC1CC(=O)N(N=1)c1ccccc1
  (#625): Oc1ccccc1-c1ccccc1
  (#626): CN(C)c1ccc(cc1)C(=O)c1ccc(cc1)N(C)C
  (#627): c1cccc2ccccc21
- (#628): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#628): COc1ccccc1N(O)=O
  (#629): CC1=CC(C)(C)Nc2ccc(cc12)OCC
  (#630): Nc1cc2ccccc2cc1
  (#631): Cc1cc2ccc[n]c2cc1
@@ -2398,7 +2398,7 @@ Database: molecules/helma.smi
  (#634): Nc1ccc(cc1Cl)-c1cc(Cl)c(N)cc1
  (#635): Oc1c(N=Nc2ccc(c3ccccc23)S(O)(=O)=O)c2ccc(cc2cc1S(O)(=O)=O)S(O)(=O)=O
  (#636): c1ccccc1-c1ccccc1
- (#637): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#637): CC(=O)OC(OC(C)=O)c1ccc(o1)N(O)=O
  (#638): Nc1ccc(cc1)-c1ccccc1
  (#639): c1cccc2Nc3ccccc3Sc21
  (#640): Nc1ccc(cc1)-c1ccc(N)cc1
@@ -2410,7 +2410,7 @@ Database: molecules/helma.smi
  (#646): O=NN1CCCCCC1
  (#647): CCCNC(=O)NS(=O)(=O)c1ccc(Cl)cc1
  (#648): O=C(OOC(=O)c1ccccc1)c1ccccc1
- (#649): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#649): ON(=O)c1cc2[nH]c[n]c2cc1
  (#650): CCCc1cc2OCOc2cc1
  (#651): C=CCc1ccc2OCOc2c1
  (#652): OC(=O)COc1ccc(Cl)cc1Cl
@@ -2440,12 +2440,12 @@ Database: molecules/helma.smi
  (#676): CC(O)c1ccccc1
  (#677): NC(=O)c1c[n]cc[n]1
  (#678): Cc1cc2c(c3cc(C)c(cc3oc2cc1=NCC)NCC)-c1ccccc1C(=O)OCC
- (#679): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#680): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#681): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#682): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#683): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#684): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#679): Nc1c(Cl)cc(cc1Cl)N(O)=O
+ (#680): Cc1ccc(cc1N)N(O)=O
+ (#681): Nc1cc(ccc1N)N(O)=O
+ (#682): Nc1cc(ccc1O)N(O)=O
+ (#683): COc1ccc(cc1N)N(O)=O
+ (#684): CN(C)(C)CCCl
 Database: molecules/cis_trans.smi
  (#1): CN1C=C(/C=C2/SC(=S)N(CC([O-])=O)C/2=O)C2=CC=CC=C12
  (#2): CN1C=C(/C=C2\SC(=S)N(CC([O-])=O)C\2=O)C2=CC=CC=C12
@@ -2471,8 +2471,10 @@ Database: molecules/stereo_cis_trans.sdf
 Database: molecules/set1.sdf
 isotopes_nonh-0003-00 (#1): CC(C)([13CH3])c1cc(cc(c1)C([13CH3])([13CH3])[13CH3])C(C)([13CH3])[13CH3]
 organometallics-0029-00 (#2): F[P-](F)(F)(F)(F)F.[C-]12C3=C4C5=C1[Fe]167893542[C-]2[C-]1C6=C7C8=C92 |^1:12|
-organometallics-0038-00 (#3): element: bad valence on B having 4 drawn bonds, charge 3, and 0 radical electrons
-organometallics-0040-00 (#4): element: bad valence on B having 4 drawn bonds, charge 3, and 0 radical electrons
+organometallics-0038-00 (#3): SMILES saver: unsure hydrogen count on atom #2
+  Error after serialize: : SMILES saver: unsure hydrogen count on atom #11
+     for smiles: SMILES saver: unsure hydrogen count on atom #2 -> SMILES saver: unsure hydrogen count on atom #11
+organometallics-0040-00 (#4): SMILES saver: unsure hydrogen count on atom #15
 organometallics-0045-00 (#5): C[C]1[CH][C](C(=O)OCCP(C2C=CC=CC=2)C2C=CC=CC=2)[C](C)[CH]1.[CH2][CH][CH2].F[P-](F)(F)(F)(F)F.Cl[Ru+3] |^1:1,2,3,22,24,25,26,27|
 radicals-0030-00 (#6): c1cccc[c]1 |^1:5|
 radicals-0052-00 (#7): [CH2]c1cccc1 |^1:0|
@@ -2482,10 +2484,10 @@ spatial-0037-00 (#10): CO[C@@]1(C)O[C@H]([C@@H](O)/C=C/c2ccccc2)C(=O)O[C@@]1(C)O
 symmetric-0052-00 (#11): c1c2cc3cc4cc5cc6cc7cc8cc9cc%10cc%11cc%12cc%13cc%14cc1c1cc%14cc%13cc%12cc%11cc%10cc9cc8cc7cc6cc5cc4cc3cc2c1
 arom_het_5-0036-00 (#12): Cc1ccco1
 arom_het_6-0004-00 (#13): CC(C)(C)c1cc(cc(c1)C(C)(C)C)C(C)(C)C
-disconnected-0054-00 (#14): element: bad valence on Po having 8 drawn bonds, charge 0, and 0 radical electrons
-disconnected-0055-00 (#15): element: bad valence on Po having 8 drawn bonds, charge 0, and 0 radical electrons
-disconnected-0056-00 (#16): element: bad valence on Po having 8 drawn bonds, charge 0, and 0 radical electrons
-disconnected-0135-00 (#17): element: bad valence on I having 2 drawn bonds, charge 0, and 0 radical electrons
+disconnected-0054-00 (#14): SMILES saver: unsure hydrogen count on atom #155
+disconnected-0055-00 (#15): SMILES saver: unsure hydrogen count on atom #108
+disconnected-0056-00 (#16): SMILES saver: unsure hydrogen count on atom #278
+disconnected-0135-00 (#17): III.C(=P(C1C=CC=CC=1)(C1C=CC=CC=1)C1C=CC=CC=1)[P+](C1C=CC=CC=1)(C1C=CC=CC=1)C1C=CC=CC=1
 disconnected-0179-00 (#18): C1=CC=CC=CC2=CC=CC=CC=C1C#C2.C1=CC=CC#C1.c1ccccc1
 disconnected-0214-00 (#19): [CH2-][O+]=C.C[N+](C)=[N-].C[S+]1C=CC2C=CC=CC=2[C-]1C(=O)C1=CC=CC=C1.CN(C)[N].C[NH+](C)[N-]C.C[Se+]1[CH-]C(=O)C2=CC=CC=C2C1.CC1=C[N-]C=[N+]1C.CN(C)[N].C[N+](C)(C)NS([O-])(=O)=O.C[BH2-][NH2+][BH2-][NH2+]C.C/C=C\C(=C/C=C)\C1C(=O)N2C=C(C=[N+]2C=1[O-])C1=CC=CC=C1.CC#[N+][NH-].C[N+]1[N-]OC(=O)C=1C(O)=O.C[N+]1[N-]C2=CC=CC3C=CC=C(N=1)C2=3.C[N+]1=NOC([O-])=C1C(O)=O.[O-]S(=O)(=O)C1C=C2C=CC=C3C=CC=C(C=1)[C+]32.[O-]C(=O)C1C=[S+]C2C=CC=CC=2C=1.[O-]C1OC(=[O+]C=1C1=CC=CC=C1)C1=CC=CC=C1.[S-]C1=C[CH+]SS1.Cl[As-2]12(Cl)OC=C[N+]1=CC=[O+]2.C1C=CC2C=C3[N-]C4=CC=CC=C4C3=C[N+]=2C=1.C1=CC=CC(=C1)[B-]1(OC2C=CC=C[N+]=2O1)C1=CC=CC=C1 |^4:29,^3:57|
 Database: molecules/cano_stereocenters.sdf
@@ -2568,16 +2570,16 @@ tetrahedral-0092-00 (#74): F[C@H](Cl)[C@@H](F)Cl
 tetrahedral-0093-00 (#75): [2H][C@H]([3H])C
 tetrahedral-0094-00 (#76): CN1C[C@@]2(CN(C)CC2)CC1
 tetrahedral-0095-00 (#77): element: can not calculate valence on C, charge 0, connectivity 5
-  Error after serialize: : element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons
+  Error after serialize: : [2H]NC(=O)[C@H]1C(C(=N)=O)[C@H]1C(N)=O
      for smiles: O=C(N)[C@H]1[C@@H](C(N[2H])=O)C1C(=N)=O -> O=C([C@@H]1C(C(=O)=N)[C@@H]1C(=O)N[2H])N
 tetrahedral-0096-00 (#78): element: can not calculate valence on C, charge 0, connectivity 5
-  Error after serialize: : element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons
+  Error after serialize: : [2H]NC(=O)[C@@H]1C(C(=N)=O)[C@@H]1C(N)=O
      for smiles: O=C(N)[C@@H]1[C@H](C(N[2H])=O)C1C(=N)=O -> O=C([C@H]1C(C(=O)=N)[C@H]1C(=O)N[2H])N
 tetrahedral-0097-00 (#79): element: can not calculate valence on C, charge 0, connectivity 5
-  Error after serialize: : element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons
+  Error after serialize: : [2H]NC(=O)[C@@H]1[C@@H](C1C(=N)=O)C(=N)O
      for smiles: OC(=N)[C@H]1[C@@H](C(N[2H])=O)C1C(=N)=O -> OC([C@@H]1C(C(=O)=N)[C@@H]1C(=O)N[2H])=N
 tetrahedral-0098-00 (#80): element: can not calculate valence on C, charge 0, connectivity 5
-  Error after serialize: : element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons
+  Error after serialize: : [2H]NC(=O)[C@H]1[C@H](C1C(=N)=O)C(=N)O
      for smiles: OC(=N)[C@@H]1[C@H](C(N[2H])=O)C1C(=N)=O -> OC([C@H]1C(C(=O)=N)[C@H]1C(=O)N[2H])=N
 tetrahedral-0099-00 (#81): OC[C@@H](O)[C@@H](O)[C@H](O)[C@@H](O)C=O
 tetrahedral-0100-00 (#82): OC[C@@H](O)[C@@H](O)C=O
@@ -3012,257 +3014,257 @@ Database: molecules/cis_trans_expl_h.sdf
  (#254): C=CO
  (#255): C=C
  (#256): C=C
- (#257): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#258): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#259): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#257): CC(C)=N(C)C
+ (#258): CC(C)=N(C)O
+ (#259): CN=C(C)C
  (#260): CN=C(C)C
- (#261): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#262): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#263): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#261): CC(C)=N(C)O
+ (#262): CC(C)=N(O)O
+ (#263): CC(C)=NO
  (#264): CC(C)=NO
- (#265): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#266): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#267): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#265): CN=C(C)C
+ (#266): CC(C)=NO
+ (#267): CC(C)=N
  (#268): CC(C)=N
  (#269): CN=C(C)C
  (#270): CC(C)=NO
  (#271): CC(C)=N
  (#272): CC(C)=N
- (#273): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#274): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#275): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#273): CC(O)=N(C)C
+ (#274): C/C(/O)=N(\C)/O
+ (#275): C/N=C(\C)/O
  (#276): C/N=C(\C)/O
- (#277): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#278): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#279): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#277): C/C(/O)=N(/C)\O
+ (#278): CC(O)=N(O)O
+ (#279): C/C(/O)=N\O
  (#280): C/C(/O)=N\O
- (#281): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#282): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#283): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#281): C/N=C(/C)\O
+ (#282): C/C(/O)=N/O
+ (#283): CC(=N)O
  (#284): CC(=N)O
  (#285): C/N=C(/C)\O
  (#286): C/C(/O)=N/O
  (#287): CC(=N)O
  (#288): CC(=N)O
- (#289): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#290): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#291): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#289): CC=N(C)C
+ (#290): C/C=N(\C)/O
+ (#291): C/C=N\C
  (#292): C/C=N\C
- (#293): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#294): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#295): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#293): C/C=N(/C)\O
+ (#294): CC=N(O)O
+ (#295): C/C=N\O
  (#296): C/C=N\O
- (#297): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#298): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#299): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#297): C/C=N/C
+ (#298): C/C=N/O
+ (#299): CC=N
  (#300): CC=N
  (#301): C/C=N/C
  (#302): C/C=N/O
  (#303): CC=N
  (#304): CC=N
- (#305): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#306): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#307): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#305): CC=N(C)C
+ (#306): C/C=N(\C)/O
+ (#307): C/C=N\C
  (#308): C/C=N\C
- (#309): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#310): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#311): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#309): C/C=N(/C)\O
+ (#310): CC=N(O)O
+ (#311): C/C=N\O
  (#312): C/C=N\O
- (#313): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#314): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#315): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#313): C/C=N/C
+ (#314): C/C=N/O
+ (#315): CC=N
  (#316): CC=N
  (#317): C/C=N/C
  (#318): C/C=N/O
  (#319): CC=N
  (#320): CC=N
- (#321): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#322): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#323): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#321): CC(O)=N(C)C
+ (#322): C/C(/O)=N(/C)\O
+ (#323): C/N=C(/C)\O
  (#324): C/N=C(/C)\O
- (#325): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#326): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#327): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#325): C/C(/O)=N(\C)/O
+ (#326): CC(O)=N(O)O
+ (#327): C/C(/O)=N/O
  (#328): C/C(/O)=N/O
- (#329): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#330): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#331): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#329): C/N=C(\C)/O
+ (#330): C/C(/O)=N\O
+ (#331): CC(=N)O
  (#332): CC(=N)O
  (#333): C/N=C(\C)/O
  (#334): C/C(/O)=N\O
  (#335): CC(=N)O
  (#336): CC(=N)O
- (#337): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#338): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#339): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#337): CN(C)=C(O)O
+ (#338): CN(O)=C(O)O
+ (#339): CN=C(O)O
  (#340): CN=C(O)O
- (#341): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#342): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#343): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#341): CN(O)=C(O)O
+ (#342): OC(O)=N(O)O
+ (#343): ON=C(O)O
  (#344): ON=C(O)O
- (#345): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#346): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#347): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#345): CN=C(O)O
+ (#346): ON=C(O)O
+ (#347): N=C(O)O
  (#348): N=C(O)O
  (#349): CN=C(O)O
  (#350): ON=C(O)O
  (#351): N=C(O)O
  (#352): N=C(O)O
- (#353): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#354): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#355): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#353): CN(C)=CO
+ (#354): C/N(/O)=C\O
+ (#355): C/N=C\O
  (#356): C/N=C\O
- (#357): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#358): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#359): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#357): C/N(/O)=C/O
+ (#358): OC=N(O)O
+ (#359): O/C=N\O
  (#360): O/C=N\O
- (#361): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#362): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#363): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#361): C/N=C/O
+ (#362): O/C=N/O
+ (#363): N=CO
  (#364): N=CO
  (#365): C/N=C/O
  (#366): O/C=N/O
  (#367): N=CO
  (#368): N=CO
- (#369): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#370): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#371): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#369): CN(C)=CO
+ (#370): C/N(/O)=C\O
+ (#371): C/N=C\O
  (#372): C/N=C\O
- (#373): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#374): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#375): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#373): C/N(/O)=C/O
+ (#374): OC=N(O)O
+ (#375): O/C=N\O
  (#376): O/C=N\O
- (#377): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#378): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#379): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#377): C/N=C/O
+ (#378): O/C=N/O
+ (#379): N=CO
  (#380): N=CO
  (#381): C/N=C/O
  (#382): O/C=N/O
  (#383): N=CO
  (#384): N=CO
- (#385): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#386): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#387): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#385): CC=N(C)C
+ (#386): C/C=N(/C)\O
+ (#387): C/C=N/C
  (#388): C/C=N/C
- (#389): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#390): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#391): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#389): C/C=N(\C)/O
+ (#390): CC=N(O)O
+ (#391): C/C=N/O
  (#392): C/C=N/O
- (#393): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#394): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#395): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#393): C/C=N\C
+ (#394): C/C=N\O
+ (#395): CC=N
  (#396): CC=N
  (#397): C/C=N\C
  (#398): C/C=N\O
  (#399): CC=N
  (#400): CC=N
- (#401): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#402): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#403): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#401): CN(C)=CO
+ (#402): C/N(/O)=C/O
+ (#403): C/N=C/O
  (#404): C/N=C/O
- (#405): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#406): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#407): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#405): C/N(/O)=C\O
+ (#406): OC=N(O)O
+ (#407): O/C=N/O
  (#408): O/C=N/O
- (#409): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#410): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#411): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#409): C/N=C\O
+ (#410): O/C=N\O
+ (#411): N=CO
  (#412): N=CO
  (#413): C/N=C\O
  (#414): O/C=N\O
  (#415): N=CO
  (#416): N=CO
- (#417): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#418): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#419): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#417): CN(C)=C
+ (#418): CN(=C)O
+ (#419): CN=C
  (#420): CN=C
- (#421): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#422): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#423): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#421): CN(=C)O
+ (#422): C=N(O)O
+ (#423): C=NO
  (#424): C=NO
- (#425): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#426): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#427): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#425): CN=C
+ (#426): C=NO
+ (#427): C=N
  (#428): C=N
  (#429): CN=C
  (#430): C=NO
  (#431): C=N
  (#432): C=N
- (#433): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#434): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#435): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#433): CN(C)=C
+ (#434): CN(=C)O
+ (#435): CN=C
  (#436): CN=C
- (#437): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#438): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#439): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#437): CN(=C)O
+ (#438): C=N(O)O
+ (#439): C=NO
  (#440): C=NO
- (#441): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#442): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#443): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#441): CN=C
+ (#442): C=NO
+ (#443): C=N
  (#444): C=N
  (#445): CN=C
  (#446): C=NO
  (#447): C=N
  (#448): C=N
- (#449): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#450): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#451): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#449): CC=N(C)C
+ (#450): C/C=N(/C)\O
+ (#451): C/C=N/C
  (#452): C/C=N/C
- (#453): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#454): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#455): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#453): C/C=N(\C)/O
+ (#454): CC=N(O)O
+ (#455): C/C=N/O
  (#456): C/C=N/O
- (#457): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#458): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#459): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#457): C/C=N\C
+ (#458): C/C=N\O
+ (#459): CC=N
  (#460): CC=N
  (#461): C/C=N\C
  (#462): C/C=N\O
  (#463): CC=N
  (#464): CC=N
- (#465): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#466): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#467): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#465): CN(C)=CO
+ (#466): C/N(/O)=C/O
+ (#467): C/N=C/O
  (#468): C/N=C/O
- (#469): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#470): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#471): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#469): C/N(/O)=C\O
+ (#470): OC=N(O)O
+ (#471): O/C=N/O
  (#472): O/C=N/O
- (#473): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#474): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#475): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#473): C/N=C\O
+ (#474): O/C=N\O
+ (#475): N=CO
  (#476): N=CO
  (#477): C/N=C\O
  (#478): O/C=N\O
  (#479): N=CO
  (#480): N=CO
- (#481): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#482): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#483): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#481): CN(C)=C
+ (#482): CN(=C)O
+ (#483): CN=C
  (#484): CN=C
- (#485): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#486): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#487): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#485): CN(=C)O
+ (#486): C=N(O)O
+ (#487): C=NO
  (#488): C=NO
- (#489): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#490): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#491): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#489): CN=C
+ (#490): C=NO
+ (#491): C=N
  (#492): C=N
  (#493): CN=C
  (#494): C=NO
  (#495): C=N
  (#496): C=N
- (#497): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#498): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#499): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#497): CN(C)=C
+ (#498): CN(=C)O
+ (#499): CN=C
  (#500): CN=C
- (#501): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#502): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#503): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#501): CN(=C)O
+ (#502): C=N(O)O
+ (#503): C=NO
  (#504): C=NO
- (#505): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#506): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#507): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#505): CN=C
+ (#506): C=NO
+ (#507): C=N
  (#508): C=N
  (#509): CN=C
  (#510): C=NO
@@ -3780,54 +3782,54 @@ Database: molecules/cis_trans_expl_h.sdf
  (#1022): C=[PH2]O
  (#1023): C=[PH3]
  (#1024): C=[PH3]
- (#1025): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1026): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1027): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1028): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1029): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1030): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1031): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1032): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1033): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1034): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1035): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1036): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1037): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1038): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1039): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1040): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1041): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1042): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1043): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1044): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1045): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1046): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1047): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1048): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1049): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1050): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1051): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1052): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1053): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1054): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1055): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1056): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1057): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1058): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1059): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1060): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1061): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1062): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1063): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1064): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1065): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1066): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1067): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1068): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1069): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1070): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1071): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1072): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1025): CC(C)=N(C)C
+ (#1026): CC(O)=N(C)C
+ (#1027): CC=N(C)C
+ (#1028): CC=N(C)C
+ (#1029): CC(O)=N(C)C
+ (#1030): CN(C)=C(O)O
+ (#1031): CN(C)=CO
+ (#1032): CN(C)=CO
+ (#1033): CC=N(C)C
+ (#1034): CN(C)=CO
+ (#1035): CN(C)=C
+ (#1036): CN(C)=C
+ (#1037): CC=N(C)C
+ (#1038): CN(C)=CO
+ (#1039): CN(C)=C
+ (#1040): CN(C)=C
+ (#1041): CC(C)=N(C)O
+ (#1042): C/C(/O)=N(\C)/O
+ (#1043): C/C=N(\C)/O
+ (#1044): C/C=N(\C)/O
+ (#1045): C/C(/O)=N(/C)\O
+ (#1046): CN(O)=C(O)O
+ (#1047): C/N(/O)=C\O
+ (#1048): C/N(/O)=C\O
+ (#1049): C/C=N(/C)\O
+ (#1050): C/N(/O)=C/O
+ (#1051): CN(=C)O
+ (#1052): CN(=C)O
+ (#1053): C/C=N(/C)\O
+ (#1054): C/N(/O)=C/O
+ (#1055): CN(=C)O
+ (#1056): CN(=C)O
+ (#1057): CN=C(C)C
+ (#1058): C/N=C(\C)/O
+ (#1059): C/C=N\C
+ (#1060): C/C=N\C
+ (#1061): C/N=C(/C)\O
+ (#1062): CN=C(O)O
+ (#1063): C/N=C\O
+ (#1064): C/N=C\O
+ (#1065): C/C=N/C
+ (#1066): C/N=C/O
+ (#1067): CN=C
+ (#1068): CN=C
+ (#1069): C/C=N/C
+ (#1070): C/N=C/O
+ (#1071): CN=C
+ (#1072): CN=C
  (#1073): CN=C(C)C
  (#1074): C/N=C(\C)/O
  (#1075): C/C=N\C
@@ -3844,54 +3846,54 @@ Database: molecules/cis_trans_expl_h.sdf
  (#1086): C/N=C/O
  (#1087): CN=C
  (#1088): CN=C
- (#1089): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1090): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1091): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1092): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1093): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1094): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1095): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1096): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1097): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1098): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1099): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1100): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1101): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1102): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1103): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1104): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1105): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1106): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1107): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1108): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1109): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1110): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1111): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1112): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1113): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1114): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1115): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1116): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1117): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1118): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1119): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1120): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1121): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1122): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1123): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1124): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1125): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1126): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1127): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1128): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1129): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1130): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1131): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1132): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1133): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1134): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1135): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1136): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1089): CC(C)=N(C)O
+ (#1090): C/C(/O)=N(/C)\O
+ (#1091): C/C=N(/C)\O
+ (#1092): C/C=N(/C)\O
+ (#1093): C/C(/O)=N(\C)/O
+ (#1094): CN(O)=C(O)O
+ (#1095): C/N(/O)=C/O
+ (#1096): C/N(/O)=C/O
+ (#1097): C/C=N(\C)/O
+ (#1098): C/N(/O)=C\O
+ (#1099): CN(=C)O
+ (#1100): CN(=C)O
+ (#1101): C/C=N(\C)/O
+ (#1102): C/N(/O)=C\O
+ (#1103): CN(=C)O
+ (#1104): CN(=C)O
+ (#1105): CC(C)=N(O)O
+ (#1106): CC(O)=N(O)O
+ (#1107): CC=N(O)O
+ (#1108): CC=N(O)O
+ (#1109): CC(O)=N(O)O
+ (#1110): OC(O)=N(O)O
+ (#1111): OC=N(O)O
+ (#1112): OC=N(O)O
+ (#1113): CC=N(O)O
+ (#1114): OC=N(O)O
+ (#1115): C=N(O)O
+ (#1116): C=N(O)O
+ (#1117): CC=N(O)O
+ (#1118): OC=N(O)O
+ (#1119): C=N(O)O
+ (#1120): C=N(O)O
+ (#1121): CC(C)=NO
+ (#1122): C/C(/O)=N\O
+ (#1123): C/C=N\O
+ (#1124): C/C=N\O
+ (#1125): C/C(/O)=N/O
+ (#1126): ON=C(O)O
+ (#1127): O/C=N\O
+ (#1128): O/C=N\O
+ (#1129): C/C=N/O
+ (#1130): O/C=N/O
+ (#1131): C=NO
+ (#1132): C=NO
+ (#1133): C/C=N/O
+ (#1134): O/C=N/O
+ (#1135): C=NO
+ (#1136): C=NO
  (#1137): CC(C)=NO
  (#1138): C/C(/O)=N\O
  (#1139): C/C=N\O
@@ -3908,54 +3910,54 @@ Database: molecules/cis_trans_expl_h.sdf
  (#1150): O/C=N/O
  (#1151): C=NO
  (#1152): C=NO
- (#1153): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1154): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1155): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1156): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1157): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1158): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1159): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1160): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1161): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1162): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1163): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1164): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1165): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1166): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1167): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1168): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1169): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1170): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1171): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1172): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1173): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1174): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1175): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1176): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1177): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1178): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1179): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1180): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1181): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1182): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1183): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1184): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1185): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1186): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1187): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1188): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1189): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1190): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1191): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1192): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1193): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1194): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1195): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1196): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1197): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1198): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1199): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1200): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1153): CN=C(C)C
+ (#1154): C/N=C(/C)\O
+ (#1155): C/C=N/C
+ (#1156): C/C=N/C
+ (#1157): C/N=C(\C)/O
+ (#1158): CN=C(O)O
+ (#1159): C/N=C/O
+ (#1160): C/N=C/O
+ (#1161): C/C=N\C
+ (#1162): C/N=C\O
+ (#1163): CN=C
+ (#1164): CN=C
+ (#1165): C/C=N\C
+ (#1166): C/N=C\O
+ (#1167): CN=C
+ (#1168): CN=C
+ (#1169): CC(C)=NO
+ (#1170): C/C(/O)=N/O
+ (#1171): C/C=N/O
+ (#1172): C/C=N/O
+ (#1173): C/C(/O)=N\O
+ (#1174): ON=C(O)O
+ (#1175): O/C=N/O
+ (#1176): O/C=N/O
+ (#1177): C/C=N\O
+ (#1178): O/C=N\O
+ (#1179): C=NO
+ (#1180): C=NO
+ (#1181): C/C=N\O
+ (#1182): O/C=N\O
+ (#1183): C=NO
+ (#1184): C=NO
+ (#1185): CC(C)=N
+ (#1186): CC(=N)O
+ (#1187): CC=N
+ (#1188): CC=N
+ (#1189): CC(=N)O
+ (#1190): N=C(O)O
+ (#1191): N=CO
+ (#1192): N=CO
+ (#1193): CC=N
+ (#1194): N=CO
+ (#1195): C=N
+ (#1196): C=N
+ (#1197): CC=N
+ (#1198): N=CO
+ (#1199): C=N
+ (#1200): C=N
  (#1201): CC(C)=N
  (#1202): CC(=N)O
  (#1203): CC=N
@@ -4036,310 +4038,310 @@ Database: molecules/cis_trans_expl_h.sdf
  (#1278): N=CO
  (#1279): C=N
  (#1280): C=N
- (#1281): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1282): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1283): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1284): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1285): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1286): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1287): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1288): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1289): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1290): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1291): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1292): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1293): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1294): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1295): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1296): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1297): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1298): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1299): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1300): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1301): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1302): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1303): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1304): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1305): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1306): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1307): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1308): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1309): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1310): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1311): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1312): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1313): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1314): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1315): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1316): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1317): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1318): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1319): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1320): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1321): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1322): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1323): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1324): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1325): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1326): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1327): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1328): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1329): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1330): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1331): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1281): CN(C)=N(C)C
+ (#1282): CN(C)=N(C)O
+ (#1283): CN=N(C)C
+ (#1284): CN=N(C)C
+ (#1285): CN(C)=N(C)O
+ (#1286): CN(C)=N(O)O
+ (#1287): CN(C)=NO
+ (#1288): CN(C)=NO
+ (#1289): CN=N(C)C
+ (#1290): CN(C)=NO
+ (#1291): CN(C)=N
+ (#1292): CN(C)=N
+ (#1293): CN=N(C)C
+ (#1294): CN(C)=NO
+ (#1295): CN(C)=N
+ (#1296): CN(C)=N
+ (#1297): CN(C)=N(C)O
+ (#1298): C/N(/O)=N(\C)/O
+ (#1299): C/N=N(\C)/O
+ (#1300): C/N=N(\C)/O
+ (#1301): C/N(/O)=N(/C)\O
+ (#1302): CN(O)=N(O)O
+ (#1303): C/N(/O)=N\O
+ (#1304): C/N(/O)=N\O
+ (#1305): C/N=N(/C)\O
+ (#1306): C/N(/O)=N/O
+ (#1307): CN(=N)O
+ (#1308): CN(=N)O
+ (#1309): C/N=N(/C)\O
+ (#1310): C/N(/O)=N/O
+ (#1311): CN(=N)O
+ (#1312): CN(=N)O
+ (#1313): CN=N(C)C
+ (#1314): C/N=N(\C)/O
+ (#1315): C/N=N\C
+ (#1316): C/N=N\C
+ (#1317): C/N=N(/C)\O
+ (#1318): CN=N(O)O
+ (#1319): C/N=N\O
+ (#1320): C/N=N\O
+ (#1321): C/N=N/C
+ (#1322): C/N=N/O
+ (#1323): CN=N
+ (#1324): CN=N
+ (#1325): C/N=N/C
+ (#1326): C/N=N/O
+ (#1327): CN=N
+ (#1328): CN=N
+ (#1329): CN=N(C)C
+ (#1330): C/N=N(\C)/O
+ (#1331): C/N=N\C
  (#1332): C/N=N\C
- (#1333): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1334): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1335): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1333): C/N=N(/C)\O
+ (#1334): CN=N(O)O
+ (#1335): C/N=N\O
  (#1336): C/N=N\O
- (#1337): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1338): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1339): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1337): C/N=N/C
+ (#1338): C/N=N/O
+ (#1339): CN=N
  (#1340): CN=N
  (#1341): C/N=N/C
  (#1342): C/N=N/O
  (#1343): CN=N
  (#1344): CN=N
- (#1345): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1346): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1347): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1348): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1349): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1350): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1351): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1352): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1353): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1354): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1355): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1356): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1357): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1358): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1359): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1360): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1361): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1362): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1363): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1364): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1365): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1366): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1367): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1368): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1369): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1370): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1371): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1372): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1373): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1374): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1375): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1376): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1377): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1378): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1379): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1380): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1381): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1382): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1383): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1384): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1385): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1386): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1387): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1388): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1389): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1390): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1391): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1392): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1393): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1394): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1395): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1345): CN(C)=N(C)O
+ (#1346): C/N(/O)=N(/C)\O
+ (#1347): C/N=N(/C)\O
+ (#1348): C/N=N(/C)\O
+ (#1349): C/N(/O)=N(\C)/O
+ (#1350): CN(O)=N(O)O
+ (#1351): C/N(/O)=N/O
+ (#1352): C/N(/O)=N/O
+ (#1353): C/N=N(\C)/O
+ (#1354): C/N(/O)=N\O
+ (#1355): CN(=N)O
+ (#1356): CN(=N)O
+ (#1357): C/N=N(\C)/O
+ (#1358): C/N(/O)=N\O
+ (#1359): CN(=N)O
+ (#1360): CN(=N)O
+ (#1361): CN(C)=N(O)O
+ (#1362): CN(O)=N(O)O
+ (#1363): CN=N(O)O
+ (#1364): CN=N(O)O
+ (#1365): CN(O)=N(O)O
+ (#1366): ON(O)=N(O)O
+ (#1367): ON=N(O)O
+ (#1368): ON=N(O)O
+ (#1369): CN=N(O)O
+ (#1370): ON=N(O)O
+ (#1371): N=N(O)O
+ (#1372): N=N(O)O
+ (#1373): CN=N(O)O
+ (#1374): ON=N(O)O
+ (#1375): N=N(O)O
+ (#1376): N=N(O)O
+ (#1377): CN(C)=NO
+ (#1378): C/N(/O)=N\O
+ (#1379): C/N=N\O
+ (#1380): C/N=N\O
+ (#1381): C/N(/O)=N/O
+ (#1382): ON=N(O)O
+ (#1383): O/N=N\O
+ (#1384): O/N=N\O
+ (#1385): C/N=N/O
+ (#1386): O/N=N/O
+ (#1387): N=NO
+ (#1388): N=NO
+ (#1389): C/N=N/O
+ (#1390): O/N=N/O
+ (#1391): N=NO
+ (#1392): N=NO
+ (#1393): CN(C)=NO
+ (#1394): C/N(/O)=N\O
+ (#1395): C/N=N\O
  (#1396): C/N=N\O
- (#1397): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1398): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1399): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1397): C/N(/O)=N/O
+ (#1398): ON=N(O)O
+ (#1399): O/N=N\O
  (#1400): O/N=N\O
- (#1401): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1402): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1403): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1401): C/N=N/O
+ (#1402): O/N=N/O
+ (#1403): N=NO
  (#1404): N=NO
  (#1405): C/N=N/O
  (#1406): O/N=N/O
  (#1407): N=NO
  (#1408): N=NO
- (#1409): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1410): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1411): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1412): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1413): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1414): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1415): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1416): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1417): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1418): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1419): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1420): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1421): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1422): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1423): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1424): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1425): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1426): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1427): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1428): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1429): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1430): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1431): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1432): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1433): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1434): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1435): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1436): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1437): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1438): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1439): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1440): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1441): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1442): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1443): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1444): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1445): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1446): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1447): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1448): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1449): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1450): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1451): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1452): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1453): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1454): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1455): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1456): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1457): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1458): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1459): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1409): CN=N(C)C
+ (#1410): C/N=N(/C)\O
+ (#1411): C/N=N/C
+ (#1412): C/N=N/C
+ (#1413): C/N=N(\C)/O
+ (#1414): CN=N(O)O
+ (#1415): C/N=N/O
+ (#1416): C/N=N/O
+ (#1417): C/N=N\C
+ (#1418): C/N=N\O
+ (#1419): CN=N
+ (#1420): CN=N
+ (#1421): C/N=N\C
+ (#1422): C/N=N\O
+ (#1423): CN=N
+ (#1424): CN=N
+ (#1425): CN(C)=NO
+ (#1426): C/N(/O)=N/O
+ (#1427): C/N=N/O
+ (#1428): C/N=N/O
+ (#1429): C/N(/O)=N\O
+ (#1430): ON=N(O)O
+ (#1431): O/N=N/O
+ (#1432): O/N=N/O
+ (#1433): C/N=N\O
+ (#1434): O/N=N\O
+ (#1435): N=NO
+ (#1436): N=NO
+ (#1437): C/N=N\O
+ (#1438): O/N=N\O
+ (#1439): N=NO
+ (#1440): N=NO
+ (#1441): CN(C)=N
+ (#1442): CN(=N)O
+ (#1443): CN=N
+ (#1444): CN=N
+ (#1445): CN(=N)O
+ (#1446): N=N(O)O
+ (#1447): N=NO
+ (#1448): N=NO
+ (#1449): CN=N
+ (#1450): N=NO
+ (#1451): N=N
+ (#1452): N=N
+ (#1453): CN=N
+ (#1454): N=NO
+ (#1455): N=N
+ (#1456): N=N
+ (#1457): CN(C)=N
+ (#1458): CN(=N)O
+ (#1459): CN=N
  (#1460): CN=N
- (#1461): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1462): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1463): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1461): CN(=N)O
+ (#1462): N=N(O)O
+ (#1463): N=NO
  (#1464): N=NO
- (#1465): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1466): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1467): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1465): CN=N
+ (#1466): N=NO
+ (#1467): N=N
  (#1468): N=N
  (#1469): CN=N
  (#1470): N=NO
  (#1471): N=N
  (#1472): N=N
- (#1473): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1474): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1475): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1473): CN=N(C)C
+ (#1474): C/N=N(/C)\O
+ (#1475): C/N=N/C
  (#1476): C/N=N/C
- (#1477): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1478): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1479): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1477): C/N=N(\C)/O
+ (#1478): CN=N(O)O
+ (#1479): C/N=N/O
  (#1480): C/N=N/O
- (#1481): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1482): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1483): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1481): C/N=N\C
+ (#1482): C/N=N\O
+ (#1483): CN=N
  (#1484): CN=N
  (#1485): C/N=N\C
  (#1486): C/N=N\O
  (#1487): CN=N
  (#1488): CN=N
- (#1489): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1490): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1491): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1489): CN(C)=NO
+ (#1490): C/N(/O)=N/O
+ (#1491): C/N=N/O
  (#1492): C/N=N/O
- (#1493): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1494): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1495): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1493): C/N(/O)=N\O
+ (#1494): ON=N(O)O
+ (#1495): O/N=N/O
  (#1496): O/N=N/O
- (#1497): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1498): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1499): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1497): C/N=N\O
+ (#1498): O/N=N\O
+ (#1499): N=NO
  (#1500): N=NO
  (#1501): C/N=N\O
  (#1502): O/N=N\O
  (#1503): N=NO
  (#1504): N=NO
- (#1505): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1506): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1507): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1505): CN(C)=N
+ (#1506): CN(=N)O
+ (#1507): CN=N
  (#1508): CN=N
- (#1509): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1510): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1511): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1509): CN(=N)O
+ (#1510): N=N(O)O
+ (#1511): N=NO
  (#1512): N=NO
- (#1513): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1514): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1515): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1513): CN=N
+ (#1514): N=NO
+ (#1515): N=N
  (#1516): N=N
  (#1517): CN=N
  (#1518): N=NO
  (#1519): N=N
  (#1520): N=N
- (#1521): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1522): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1523): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1521): CN(C)=N
+ (#1522): CN(=N)O
+ (#1523): CN=N
  (#1524): CN=N
- (#1525): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1526): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1527): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1525): CN(=N)O
+ (#1526): N=N(O)O
+ (#1527): N=NO
  (#1528): N=NO
- (#1529): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1530): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1531): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1529): CN=N
+ (#1530): N=NO
+ (#1531): N=N
  (#1532): N=N
  (#1533): CN=N
  (#1534): N=NO
  (#1535): N=N
  (#1536): N=N
- (#1537): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1538): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1539): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1540): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1541): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1542): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1543): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1544): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1545): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1546): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1547): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1548): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1549): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1550): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1551): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1552): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1553): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1554): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1555): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1556): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1557): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1558): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1559): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1560): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1561): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1562): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1563): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1564): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1565): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1566): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1567): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1568): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1569): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1570): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1571): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1572): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1573): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1574): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1575): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1576): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1577): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1578): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1579): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1580): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1581): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1582): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1583): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1584): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1537): CN(C)=[Si](C)C
+ (#1538): CN(C)=[Si](C)O
+ (#1539): C[SiH]=N(C)C
+ (#1540): C[SiH]=N(C)C
+ (#1541): CN(C)=[Si](C)O
+ (#1542): CN(C)=[Si](O)O
+ (#1543): CN(C)=[SiH]O
+ (#1544): CN(C)=[SiH]O
+ (#1545): C[SiH]=N(C)C
+ (#1546): CN(C)=[SiH]O
+ (#1547): CN(C)=[SiH2]
+ (#1548): CN(C)=[SiH2]
+ (#1549): C[SiH]=N(C)C
+ (#1550): CN(C)=[SiH]O
+ (#1551): CN(C)=[SiH2]
+ (#1552): CN(C)=[SiH2]
+ (#1553): CN(O)=[Si](C)C
+ (#1554): C/N(/O)=[Si](\C)/O
+ (#1555): C/[SiH]=N(\C)/O
+ (#1556): C/[SiH]=N(\C)/O
+ (#1557): C/N(/O)=[Si](/C)\O
+ (#1558): CN(O)=[Si](O)O
+ (#1559): C/N(/O)=[SiH]\O
+ (#1560): C/N(/O)=[SiH]\O
+ (#1561): C/[SiH]=N(/C)\O
+ (#1562): C/N(/O)=[SiH]/O
+ (#1563): CN(O)=[SiH2]
+ (#1564): CN(O)=[SiH2]
+ (#1565): C/[SiH]=N(/C)\O
+ (#1566): C/N(/O)=[SiH]/O
+ (#1567): CN(O)=[SiH2]
+ (#1568): CN(O)=[SiH2]
+ (#1569): CN=[Si](C)C
+ (#1570): C/N=[Si](\C)/O
+ (#1571): C/N=[SiH]\C
+ (#1572): C/N=[SiH]\C
+ (#1573): C/N=[Si](/C)\O
+ (#1574): CN=[Si](O)O
+ (#1575): C/N=[SiH]\O
+ (#1576): C/N=[SiH]\O
+ (#1577): C/N=[SiH]/C
+ (#1578): C/N=[SiH]/O
+ (#1579): CN=[SiH2]
+ (#1580): CN=[SiH2]
+ (#1581): C/N=[SiH]/C
+ (#1582): C/N=[SiH]/O
+ (#1583): CN=[SiH2]
+ (#1584): CN=[SiH2]
  (#1585): CN=[Si](C)C
  (#1586): C/N=[Si](\C)/O
  (#1587): C/N=[SiH]\C
@@ -4356,54 +4358,54 @@ Database: molecules/cis_trans_expl_h.sdf
  (#1598): C/N=[SiH]/O
  (#1599): CN=[SiH2]
  (#1600): CN=[SiH2]
- (#1601): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1602): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1603): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1604): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1605): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1606): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1607): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1608): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1609): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1610): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1611): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1612): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1613): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1614): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1615): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1616): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1617): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1618): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1619): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1620): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1621): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1622): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1623): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1624): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1625): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1626): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1627): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1628): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1629): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1630): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1631): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1632): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1633): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1634): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1635): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1636): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1637): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1638): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1639): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1640): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1641): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1642): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1643): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1644): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1645): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1646): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1647): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1648): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1601): CN(O)=[Si](C)C
+ (#1602): C/N(/O)=[Si](/C)\O
+ (#1603): C/[SiH]=N(/C)\O
+ (#1604): C/[SiH]=N(/C)\O
+ (#1605): C/N(/O)=[Si](\C)/O
+ (#1606): CN(O)=[Si](O)O
+ (#1607): C/N(/O)=[SiH]/O
+ (#1608): C/N(/O)=[SiH]/O
+ (#1609): C/[SiH]=N(\C)/O
+ (#1610): C/N(/O)=[SiH]\O
+ (#1611): CN(O)=[SiH2]
+ (#1612): CN(O)=[SiH2]
+ (#1613): C/[SiH]=N(\C)/O
+ (#1614): C/N(/O)=[SiH]\O
+ (#1615): CN(O)=[SiH2]
+ (#1616): CN(O)=[SiH2]
+ (#1617): C[Si](C)=N(O)O
+ (#1618): C[Si](O)=N(O)O
+ (#1619): C[SiH]=N(O)O
+ (#1620): C[SiH]=N(O)O
+ (#1621): C[Si](O)=N(O)O
+ (#1622): ON(O)=[Si](O)O
+ (#1623): O[SiH]=N(O)O
+ (#1624): O[SiH]=N(O)O
+ (#1625): C[SiH]=N(O)O
+ (#1626): O[SiH]=N(O)O
+ (#1627): ON(O)=[SiH2]
+ (#1628): ON(O)=[SiH2]
+ (#1629): C[SiH]=N(O)O
+ (#1630): O[SiH]=N(O)O
+ (#1631): ON(O)=[SiH2]
+ (#1632): ON(O)=[SiH2]
+ (#1633): C[Si](C)=NO
+ (#1634): C/[Si](/O)=N\O
+ (#1635): C/[SiH]=N\O
+ (#1636): C/[SiH]=N\O
+ (#1637): C/[Si](/O)=N/O
+ (#1638): ON=[Si](O)O
+ (#1639): O/N=[SiH]\O
+ (#1640): O/N=[SiH]\O
+ (#1641): C/[SiH]=N/O
+ (#1642): O/N=[SiH]/O
+ (#1643): ON=[SiH2]
+ (#1644): ON=[SiH2]
+ (#1645): C/[SiH]=N/O
+ (#1646): O/N=[SiH]/O
+ (#1647): ON=[SiH2]
+ (#1648): ON=[SiH2]
  (#1649): C[Si](C)=NO
  (#1650): C/[Si](/O)=N\O
  (#1651): C/[SiH]=N\O
@@ -4420,54 +4422,54 @@ Database: molecules/cis_trans_expl_h.sdf
  (#1662): O/N=[SiH]/O
  (#1663): ON=[SiH2]
  (#1664): ON=[SiH2]
- (#1665): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1666): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1667): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1668): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1669): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1670): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1671): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1672): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1673): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1674): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1675): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1676): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1677): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1678): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1679): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1680): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1681): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1682): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1683): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1684): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1685): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1686): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1687): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1688): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1689): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1690): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1691): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1692): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1693): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1694): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1695): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1696): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1697): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1698): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1699): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1700): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1701): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1702): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1703): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1704): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1705): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1706): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1707): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1708): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1709): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1710): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1711): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1712): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1665): CN=[Si](C)C
+ (#1666): C/N=[Si](/C)\O
+ (#1667): C/N=[SiH]/C
+ (#1668): C/N=[SiH]/C
+ (#1669): C/N=[Si](\C)/O
+ (#1670): CN=[Si](O)O
+ (#1671): C/N=[SiH]/O
+ (#1672): C/N=[SiH]/O
+ (#1673): C/N=[SiH]\C
+ (#1674): C/N=[SiH]\O
+ (#1675): CN=[SiH2]
+ (#1676): CN=[SiH2]
+ (#1677): C/N=[SiH]\C
+ (#1678): C/N=[SiH]\O
+ (#1679): CN=[SiH2]
+ (#1680): CN=[SiH2]
+ (#1681): C[Si](C)=NO
+ (#1682): C/[Si](/O)=N/O
+ (#1683): C/[SiH]=N/O
+ (#1684): C/[SiH]=N/O
+ (#1685): C/[Si](/O)=N\O
+ (#1686): ON=[Si](O)O
+ (#1687): O/N=[SiH]/O
+ (#1688): O/N=[SiH]/O
+ (#1689): C/[SiH]=N\O
+ (#1690): O/N=[SiH]\O
+ (#1691): ON=[SiH2]
+ (#1692): ON=[SiH2]
+ (#1693): C/[SiH]=N\O
+ (#1694): O/N=[SiH]\O
+ (#1695): ON=[SiH2]
+ (#1696): ON=[SiH2]
+ (#1697): C[Si](C)=N
+ (#1698): C[Si](=N)O
+ (#1699): C[SiH]=N
+ (#1700): C[SiH]=N
+ (#1701): C[Si](=N)O
+ (#1702): N=[Si](O)O
+ (#1703): N=[SiH]O
+ (#1704): N=[SiH]O
+ (#1705): C[SiH]=N
+ (#1706): N=[SiH]O
+ (#1707): N=[SiH2]
+ (#1708): N=[SiH2]
+ (#1709): C[SiH]=N
+ (#1710): N=[SiH]O
+ (#1711): N=[SiH2]
+ (#1712): N=[SiH2]
  (#1713): C[Si](C)=N
  (#1714): C[Si](=N)O
  (#1715): C[SiH]=N
@@ -4548,54 +4550,54 @@ Database: molecules/cis_trans_expl_h.sdf
  (#1790): N=[SiH]O
  (#1791): N=[SiH2]
  (#1792): N=[SiH2]
- (#1793): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1794): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1795): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1796): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1797): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1798): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1799): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1800): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1801): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1802): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1803): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1804): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1805): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1806): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1807): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1808): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1809): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1810): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1811): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1812): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1813): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1814): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1815): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1816): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1817): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1818): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1819): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1820): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1821): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1822): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1823): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1824): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1825): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1826): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1827): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1828): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1829): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1830): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1831): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1832): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1833): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1834): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1835): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1836): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1837): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1838): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1839): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1840): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1793): CN(C)=P(C)C
+ (#1794): CN(C)=P(C)O
+ (#1795): C[PH2]=N(C)C
+ (#1796): C[PH2]=N(C)C
+ (#1797): CN(C)=P(C)O
+ (#1798): CN(C)=P(O)O
+ (#1799): CN(C)=[PH2]O
+ (#1800): CN(C)=[PH2]O
+ (#1801): C[PH2]=N(C)C
+ (#1802): CN(C)=[PH2]O
+ (#1803): CN(C)=[PH3]
+ (#1804): CN(C)=[PH3]
+ (#1805): C[PH2]=N(C)C
+ (#1806): CN(C)=[PH2]O
+ (#1807): CN(C)=[PH3]
+ (#1808): CN(C)=[PH3]
+ (#1809): CN(O)=P(C)C
+ (#1810): CN(O)=P(C)O
+ (#1811): C[PH2]=N(C)O
+ (#1812): C[PH2]=N(C)O
+ (#1813): CN(O)=P(C)O
+ (#1814): CN(O)=P(O)O
+ (#1815): CN(O)=[PH2]O
+ (#1816): CN(O)=[PH2]O
+ (#1817): C[PH2]=N(C)O
+ (#1818): CN(O)=[PH2]O
+ (#1819): CN(O)=[PH3]
+ (#1820): CN(O)=[PH3]
+ (#1821): C[PH2]=N(C)O
+ (#1822): CN(O)=[PH2]O
+ (#1823): CN(O)=[PH3]
+ (#1824): CN(O)=[PH3]
+ (#1825): CN=P(C)C
+ (#1826): CN=P(C)O
+ (#1827): CN=[PH2]C
+ (#1828): CN=[PH2]C
+ (#1829): CN=P(C)O
+ (#1830): CN=P(O)O
+ (#1831): CN=[PH2]O
+ (#1832): CN=[PH2]O
+ (#1833): CN=[PH2]C
+ (#1834): CN=[PH2]O
+ (#1835): CN=[PH3]
+ (#1836): CN=[PH3]
+ (#1837): CN=[PH2]C
+ (#1838): CN=[PH2]O
+ (#1839): CN=[PH3]
+ (#1840): CN=[PH3]
  (#1841): CN=P(C)C
  (#1842): CN=P(C)O
  (#1843): CN=[PH2]C
@@ -4612,54 +4614,54 @@ Database: molecules/cis_trans_expl_h.sdf
  (#1854): CN=[PH2]O
  (#1855): CN=[PH3]
  (#1856): CN=[PH3]
- (#1857): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1858): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1859): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1860): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1861): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1862): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1863): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1864): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1865): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1866): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1867): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1868): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1869): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1870): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1871): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1872): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1873): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1874): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1875): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1876): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1877): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1878): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1879): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1880): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1881): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1882): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1883): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1884): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1885): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1886): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1887): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1888): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1889): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1890): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1891): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1892): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1893): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1894): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1895): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1896): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1897): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1898): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1899): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1900): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1901): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1902): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1903): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1904): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1857): CN(O)=P(C)C
+ (#1858): CN(O)=P(C)O
+ (#1859): C[PH2]=N(C)O
+ (#1860): C[PH2]=N(C)O
+ (#1861): CN(O)=P(C)O
+ (#1862): CN(O)=P(O)O
+ (#1863): CN(O)=[PH2]O
+ (#1864): CN(O)=[PH2]O
+ (#1865): C[PH2]=N(C)O
+ (#1866): CN(O)=[PH2]O
+ (#1867): CN(O)=[PH3]
+ (#1868): CN(O)=[PH3]
+ (#1869): C[PH2]=N(C)O
+ (#1870): CN(O)=[PH2]O
+ (#1871): CN(O)=[PH3]
+ (#1872): CN(O)=[PH3]
+ (#1873): CP(C)=N(O)O
+ (#1874): CP(O)=N(O)O
+ (#1875): C[PH2]=N(O)O
+ (#1876): C[PH2]=N(O)O
+ (#1877): CP(O)=N(O)O
+ (#1878): ON(O)=P(O)O
+ (#1879): O[PH2]=N(O)O
+ (#1880): O[PH2]=N(O)O
+ (#1881): C[PH2]=N(O)O
+ (#1882): O[PH2]=N(O)O
+ (#1883): ON(O)=[PH3]
+ (#1884): ON(O)=[PH3]
+ (#1885): C[PH2]=N(O)O
+ (#1886): O[PH2]=N(O)O
+ (#1887): ON(O)=[PH3]
+ (#1888): ON(O)=[PH3]
+ (#1889): CP(C)=NO
+ (#1890): CP(O)=NO
+ (#1891): C[PH2]=NO
+ (#1892): C[PH2]=NO
+ (#1893): CP(O)=NO
+ (#1894): ON=P(O)O
+ (#1895): ON=[PH2]O
+ (#1896): ON=[PH2]O
+ (#1897): C[PH2]=NO
+ (#1898): ON=[PH2]O
+ (#1899): ON=[PH3]
+ (#1900): ON=[PH3]
+ (#1901): C[PH2]=NO
+ (#1902): ON=[PH2]O
+ (#1903): ON=[PH3]
+ (#1904): ON=[PH3]
  (#1905): CP(C)=NO
  (#1906): CP(O)=NO
  (#1907): C[PH2]=NO
@@ -4676,54 +4678,54 @@ Database: molecules/cis_trans_expl_h.sdf
  (#1918): ON=[PH2]O
  (#1919): ON=[PH3]
  (#1920): ON=[PH3]
- (#1921): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1922): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1923): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1924): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1925): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1926): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1927): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1928): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1929): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1930): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1931): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1932): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1933): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1934): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1935): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1936): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1937): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1938): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1939): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1940): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1941): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1942): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1943): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1944): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1945): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1946): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1947): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1948): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1949): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1950): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1951): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1952): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1953): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1954): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1955): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1956): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1957): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1958): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1959): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1960): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1961): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1962): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1963): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1964): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1965): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1966): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1967): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#1968): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#1921): CN=P(C)C
+ (#1922): CN=P(C)O
+ (#1923): CN=[PH2]C
+ (#1924): CN=[PH2]C
+ (#1925): CN=P(C)O
+ (#1926): CN=P(O)O
+ (#1927): CN=[PH2]O
+ (#1928): CN=[PH2]O
+ (#1929): CN=[PH2]C
+ (#1930): CN=[PH2]O
+ (#1931): CN=[PH3]
+ (#1932): CN=[PH3]
+ (#1933): CN=[PH2]C
+ (#1934): CN=[PH2]O
+ (#1935): CN=[PH3]
+ (#1936): CN=[PH3]
+ (#1937): CP(C)=NO
+ (#1938): CP(O)=NO
+ (#1939): C[PH2]=NO
+ (#1940): C[PH2]=NO
+ (#1941): CP(O)=NO
+ (#1942): ON=P(O)O
+ (#1943): ON=[PH2]O
+ (#1944): ON=[PH2]O
+ (#1945): C[PH2]=NO
+ (#1946): ON=[PH2]O
+ (#1947): ON=[PH3]
+ (#1948): ON=[PH3]
+ (#1949): C[PH2]=NO
+ (#1950): ON=[PH2]O
+ (#1951): ON=[PH3]
+ (#1952): ON=[PH3]
+ (#1953): CP(C)=N
+ (#1954): CP(=N)O
+ (#1955): C[PH2]=N
+ (#1956): C[PH2]=N
+ (#1957): CP(=N)O
+ (#1958): N=P(O)O
+ (#1959): N=[PH2]O
+ (#1960): N=[PH2]O
+ (#1961): C[PH2]=N
+ (#1962): N=[PH2]O
+ (#1963): N=[PH3]
+ (#1964): N=[PH3]
+ (#1965): C[PH2]=N
+ (#1966): N=[PH2]O
+ (#1967): N=[PH3]
+ (#1968): N=[PH3]
  (#1969): CP(C)=N
  (#1970): CP(=N)O
  (#1971): C[PH2]=N
@@ -5060,257 +5062,257 @@ Database: molecules/cis_trans_expl_h.sdf
  (#2302): OC=[SiH2]
  (#2303): C=[SiH2]
  (#2304): C=[SiH2]
- (#2305): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2306): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2307): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2305): CN(C)=[Si](C)C
+ (#2306): CN(O)=[Si](C)C
+ (#2307): CN=[Si](C)C
  (#2308): CN=[Si](C)C
- (#2309): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2310): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2311): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2309): CN(O)=[Si](C)C
+ (#2310): C[Si](C)=N(O)O
+ (#2311): C[Si](C)=NO
  (#2312): C[Si](C)=NO
- (#2313): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2314): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2315): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2313): CN=[Si](C)C
+ (#2314): C[Si](C)=NO
+ (#2315): C[Si](C)=N
  (#2316): C[Si](C)=N
  (#2317): CN=[Si](C)C
  (#2318): C[Si](C)=NO
  (#2319): C[Si](C)=N
  (#2320): C[Si](C)=N
- (#2321): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2322): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2323): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2321): CN(C)=[Si](C)O
+ (#2322): C/N(/O)=[Si](\C)/O
+ (#2323): C/N=[Si](\C)/O
  (#2324): C/N=[Si](\C)/O
- (#2325): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2326): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2327): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2325): C/N(/O)=[Si](/C)\O
+ (#2326): C[Si](O)=N(O)O
+ (#2327): C/[Si](/O)=N\O
  (#2328): C/[Si](/O)=N\O
- (#2329): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2330): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2331): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2329): C/N=[Si](/C)\O
+ (#2330): C/[Si](/O)=N/O
+ (#2331): C[Si](=N)O
  (#2332): C[Si](=N)O
  (#2333): C/N=[Si](/C)\O
  (#2334): C/[Si](/O)=N/O
  (#2335): C[Si](=N)O
  (#2336): C[Si](=N)O
- (#2337): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2338): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2339): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2337): C[SiH]=N(C)C
+ (#2338): C/[SiH]=N(\C)/O
+ (#2339): C/N=[SiH]\C
  (#2340): C/N=[SiH]\C
- (#2341): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2342): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2343): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2341): C/[SiH]=N(/C)\O
+ (#2342): C[SiH]=N(O)O
+ (#2343): C/[SiH]=N\O
  (#2344): C/[SiH]=N\O
- (#2345): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2346): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2347): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2345): C/N=[SiH]/C
+ (#2346): C/[SiH]=N/O
+ (#2347): C[SiH]=N
  (#2348): C[SiH]=N
  (#2349): C/N=[SiH]/C
  (#2350): C/[SiH]=N/O
  (#2351): C[SiH]=N
  (#2352): C[SiH]=N
- (#2353): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2354): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2355): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2353): C[SiH]=N(C)C
+ (#2354): C/[SiH]=N(\C)/O
+ (#2355): C/N=[SiH]\C
  (#2356): C/N=[SiH]\C
- (#2357): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2358): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2359): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2357): C/[SiH]=N(/C)\O
+ (#2358): C[SiH]=N(O)O
+ (#2359): C/[SiH]=N\O
  (#2360): C/[SiH]=N\O
- (#2361): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2362): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2363): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2361): C/N=[SiH]/C
+ (#2362): C/[SiH]=N/O
+ (#2363): C[SiH]=N
  (#2364): C[SiH]=N
  (#2365): C/N=[SiH]/C
  (#2366): C/[SiH]=N/O
  (#2367): C[SiH]=N
  (#2368): C[SiH]=N
- (#2369): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2370): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2371): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2369): CN(C)=[Si](C)O
+ (#2370): C/N(/O)=[Si](/C)\O
+ (#2371): C/N=[Si](/C)\O
  (#2372): C/N=[Si](/C)\O
- (#2373): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2374): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2375): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2373): C/N(/O)=[Si](\C)/O
+ (#2374): C[Si](O)=N(O)O
+ (#2375): C/[Si](/O)=N/O
  (#2376): C/[Si](/O)=N/O
- (#2377): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2378): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2379): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2377): C/N=[Si](\C)/O
+ (#2378): C/[Si](/O)=N\O
+ (#2379): C[Si](=N)O
  (#2380): C[Si](=N)O
  (#2381): C/N=[Si](\C)/O
  (#2382): C/[Si](/O)=N\O
  (#2383): C[Si](=N)O
  (#2384): C[Si](=N)O
- (#2385): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2386): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2387): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2385): CN(C)=[Si](O)O
+ (#2386): CN(O)=[Si](O)O
+ (#2387): CN=[Si](O)O
  (#2388): CN=[Si](O)O
- (#2389): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2390): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2391): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2389): CN(O)=[Si](O)O
+ (#2390): ON(O)=[Si](O)O
+ (#2391): ON=[Si](O)O
  (#2392): ON=[Si](O)O
- (#2393): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2394): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2395): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2393): CN=[Si](O)O
+ (#2394): ON=[Si](O)O
+ (#2395): N=[Si](O)O
  (#2396): N=[Si](O)O
  (#2397): CN=[Si](O)O
  (#2398): ON=[Si](O)O
  (#2399): N=[Si](O)O
  (#2400): N=[Si](O)O
- (#2401): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2402): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2403): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2401): CN(C)=[SiH]O
+ (#2402): C/N(/O)=[SiH]\O
+ (#2403): C/N=[SiH]\O
  (#2404): C/N=[SiH]\O
- (#2405): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2406): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2407): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2405): C/N(/O)=[SiH]/O
+ (#2406): O[SiH]=N(O)O
+ (#2407): O/N=[SiH]\O
  (#2408): O/N=[SiH]\O
- (#2409): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2410): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2411): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2409): C/N=[SiH]/O
+ (#2410): O/N=[SiH]/O
+ (#2411): N=[SiH]O
  (#2412): N=[SiH]O
  (#2413): C/N=[SiH]/O
  (#2414): O/N=[SiH]/O
  (#2415): N=[SiH]O
  (#2416): N=[SiH]O
- (#2417): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2418): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2419): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2417): CN(C)=[SiH]O
+ (#2418): C/N(/O)=[SiH]\O
+ (#2419): C/N=[SiH]\O
  (#2420): C/N=[SiH]\O
- (#2421): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2422): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2423): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2421): C/N(/O)=[SiH]/O
+ (#2422): O[SiH]=N(O)O
+ (#2423): O/N=[SiH]\O
  (#2424): O/N=[SiH]\O
- (#2425): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2426): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2427): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2425): C/N=[SiH]/O
+ (#2426): O/N=[SiH]/O
+ (#2427): N=[SiH]O
  (#2428): N=[SiH]O
  (#2429): C/N=[SiH]/O
  (#2430): O/N=[SiH]/O
  (#2431): N=[SiH]O
  (#2432): N=[SiH]O
- (#2433): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2434): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2435): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2433): C[SiH]=N(C)C
+ (#2434): C/[SiH]=N(/C)\O
+ (#2435): C/N=[SiH]/C
  (#2436): C/N=[SiH]/C
- (#2437): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2438): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2439): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2437): C/[SiH]=N(\C)/O
+ (#2438): C[SiH]=N(O)O
+ (#2439): C/[SiH]=N/O
  (#2440): C/[SiH]=N/O
- (#2441): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2442): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2443): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2441): C/N=[SiH]\C
+ (#2442): C/[SiH]=N\O
+ (#2443): C[SiH]=N
  (#2444): C[SiH]=N
  (#2445): C/N=[SiH]\C
  (#2446): C/[SiH]=N\O
  (#2447): C[SiH]=N
  (#2448): C[SiH]=N
- (#2449): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2450): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2451): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2449): CN(C)=[SiH]O
+ (#2450): C/N(/O)=[SiH]/O
+ (#2451): C/N=[SiH]/O
  (#2452): C/N=[SiH]/O
- (#2453): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2454): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2455): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2453): C/N(/O)=[SiH]\O
+ (#2454): O[SiH]=N(O)O
+ (#2455): O/N=[SiH]/O
  (#2456): O/N=[SiH]/O
- (#2457): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2458): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2459): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2457): C/N=[SiH]\O
+ (#2458): O/N=[SiH]\O
+ (#2459): N=[SiH]O
  (#2460): N=[SiH]O
  (#2461): C/N=[SiH]\O
  (#2462): O/N=[SiH]\O
  (#2463): N=[SiH]O
  (#2464): N=[SiH]O
- (#2465): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2466): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2467): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2465): CN(C)=[SiH2]
+ (#2466): CN(O)=[SiH2]
+ (#2467): CN=[SiH2]
  (#2468): CN=[SiH2]
- (#2469): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2470): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2471): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2469): CN(O)=[SiH2]
+ (#2470): ON(O)=[SiH2]
+ (#2471): ON=[SiH2]
  (#2472): ON=[SiH2]
- (#2473): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2474): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2475): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2473): CN=[SiH2]
+ (#2474): ON=[SiH2]
+ (#2475): N=[SiH2]
  (#2476): N=[SiH2]
  (#2477): CN=[SiH2]
  (#2478): ON=[SiH2]
  (#2479): N=[SiH2]
  (#2480): N=[SiH2]
- (#2481): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2482): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2483): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2481): CN(C)=[SiH2]
+ (#2482): CN(O)=[SiH2]
+ (#2483): CN=[SiH2]
  (#2484): CN=[SiH2]
- (#2485): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2486): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2487): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2485): CN(O)=[SiH2]
+ (#2486): ON(O)=[SiH2]
+ (#2487): ON=[SiH2]
  (#2488): ON=[SiH2]
- (#2489): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2490): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2491): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2489): CN=[SiH2]
+ (#2490): ON=[SiH2]
+ (#2491): N=[SiH2]
  (#2492): N=[SiH2]
  (#2493): CN=[SiH2]
  (#2494): ON=[SiH2]
  (#2495): N=[SiH2]
  (#2496): N=[SiH2]
- (#2497): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2498): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2499): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2497): C[SiH]=N(C)C
+ (#2498): C/[SiH]=N(/C)\O
+ (#2499): C/N=[SiH]/C
  (#2500): C/N=[SiH]/C
- (#2501): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2502): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2503): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2501): C/[SiH]=N(\C)/O
+ (#2502): C[SiH]=N(O)O
+ (#2503): C/[SiH]=N/O
  (#2504): C/[SiH]=N/O
- (#2505): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2506): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2507): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2505): C/N=[SiH]\C
+ (#2506): C/[SiH]=N\O
+ (#2507): C[SiH]=N
  (#2508): C[SiH]=N
  (#2509): C/N=[SiH]\C
  (#2510): C/[SiH]=N\O
  (#2511): C[SiH]=N
  (#2512): C[SiH]=N
- (#2513): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2514): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2515): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2513): CN(C)=[SiH]O
+ (#2514): C/N(/O)=[SiH]/O
+ (#2515): C/N=[SiH]/O
  (#2516): C/N=[SiH]/O
- (#2517): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2518): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2519): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2517): C/N(/O)=[SiH]\O
+ (#2518): O[SiH]=N(O)O
+ (#2519): O/N=[SiH]/O
  (#2520): O/N=[SiH]/O
- (#2521): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2522): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2523): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2521): C/N=[SiH]\O
+ (#2522): O/N=[SiH]\O
+ (#2523): N=[SiH]O
  (#2524): N=[SiH]O
  (#2525): C/N=[SiH]\O
  (#2526): O/N=[SiH]\O
  (#2527): N=[SiH]O
  (#2528): N=[SiH]O
- (#2529): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2530): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2531): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2529): CN(C)=[SiH2]
+ (#2530): CN(O)=[SiH2]
+ (#2531): CN=[SiH2]
  (#2532): CN=[SiH2]
- (#2533): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2534): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2535): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2533): CN(O)=[SiH2]
+ (#2534): ON(O)=[SiH2]
+ (#2535): ON=[SiH2]
  (#2536): ON=[SiH2]
- (#2537): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2538): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2539): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2537): CN=[SiH2]
+ (#2538): ON=[SiH2]
+ (#2539): N=[SiH2]
  (#2540): N=[SiH2]
  (#2541): CN=[SiH2]
  (#2542): ON=[SiH2]
  (#2543): N=[SiH2]
  (#2544): N=[SiH2]
- (#2545): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2546): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2547): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2545): CN(C)=[SiH2]
+ (#2546): CN(O)=[SiH2]
+ (#2547): CN=[SiH2]
  (#2548): CN=[SiH2]
- (#2549): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2550): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2551): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2549): CN(O)=[SiH2]
+ (#2550): ON(O)=[SiH2]
+ (#2551): ON=[SiH2]
  (#2552): ON=[SiH2]
- (#2553): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2554): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#2555): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#2553): CN=[SiH2]
+ (#2554): ON=[SiH2]
+ (#2555): N=[SiH2]
  (#2556): N=[SiH2]
  (#2557): CN=[SiH2]
  (#2558): ON=[SiH2]
@@ -6084,257 +6086,257 @@ Database: molecules/cis_trans_expl_h.sdf
  (#3326): OC=[PH3]
  (#3327): C=[PH3]
  (#3328): C=[PH3]
- (#3329): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3330): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3331): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3329): CN(C)=P(C)C
+ (#3330): CN(O)=P(C)C
+ (#3331): CN=P(C)C
  (#3332): CN=P(C)C
- (#3333): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3334): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3335): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3333): CN(O)=P(C)C
+ (#3334): CP(C)=N(O)O
+ (#3335): CP(C)=NO
  (#3336): CP(C)=NO
- (#3337): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3338): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3339): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3337): CN=P(C)C
+ (#3338): CP(C)=NO
+ (#3339): CP(C)=N
  (#3340): CP(C)=N
  (#3341): CN=P(C)C
  (#3342): CP(C)=NO
  (#3343): CP(C)=N
  (#3344): CP(C)=N
- (#3345): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3346): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3347): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3345): CN(C)=P(C)O
+ (#3346): CN(O)=P(C)O
+ (#3347): CN=P(C)O
  (#3348): CN=P(C)O
- (#3349): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3350): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3351): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3349): CN(O)=P(C)O
+ (#3350): CP(O)=N(O)O
+ (#3351): CP(O)=NO
  (#3352): CP(O)=NO
- (#3353): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3354): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3355): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3353): CN=P(C)O
+ (#3354): CP(O)=NO
+ (#3355): CP(=N)O
  (#3356): CP(=N)O
  (#3357): CN=P(C)O
  (#3358): CP(O)=NO
  (#3359): CP(=N)O
  (#3360): CP(=N)O
- (#3361): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3362): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3363): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3361): C[PH2]=N(C)C
+ (#3362): C[PH2]=N(C)O
+ (#3363): CN=[PH2]C
  (#3364): CN=[PH2]C
- (#3365): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3366): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3367): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3365): C[PH2]=N(C)O
+ (#3366): C[PH2]=N(O)O
+ (#3367): C[PH2]=NO
  (#3368): C[PH2]=NO
- (#3369): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3370): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3371): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3369): CN=[PH2]C
+ (#3370): C[PH2]=NO
+ (#3371): C[PH2]=N
  (#3372): C[PH2]=N
  (#3373): CN=[PH2]C
  (#3374): C[PH2]=NO
  (#3375): C[PH2]=N
  (#3376): C[PH2]=N
- (#3377): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3378): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3379): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3377): C[PH2]=N(C)C
+ (#3378): C[PH2]=N(C)O
+ (#3379): CN=[PH2]C
  (#3380): CN=[PH2]C
- (#3381): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3382): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3383): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3381): C[PH2]=N(C)O
+ (#3382): C[PH2]=N(O)O
+ (#3383): C[PH2]=NO
  (#3384): C[PH2]=NO
- (#3385): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3386): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3387): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3385): CN=[PH2]C
+ (#3386): C[PH2]=NO
+ (#3387): C[PH2]=N
  (#3388): C[PH2]=N
  (#3389): CN=[PH2]C
  (#3390): C[PH2]=NO
  (#3391): C[PH2]=N
  (#3392): C[PH2]=N
- (#3393): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3394): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3395): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3393): CN(C)=P(C)O
+ (#3394): CN(O)=P(C)O
+ (#3395): CN=P(C)O
  (#3396): CN=P(C)O
- (#3397): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3398): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3399): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3397): CN(O)=P(C)O
+ (#3398): CP(O)=N(O)O
+ (#3399): CP(O)=NO
  (#3400): CP(O)=NO
- (#3401): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3402): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3403): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3401): CN=P(C)O
+ (#3402): CP(O)=NO
+ (#3403): CP(=N)O
  (#3404): CP(=N)O
  (#3405): CN=P(C)O
  (#3406): CP(O)=NO
  (#3407): CP(=N)O
  (#3408): CP(=N)O
- (#3409): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3410): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3411): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3409): CN(C)=P(O)O
+ (#3410): CN(O)=P(O)O
+ (#3411): CN=P(O)O
  (#3412): CN=P(O)O
- (#3413): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3414): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3415): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3413): CN(O)=P(O)O
+ (#3414): ON(O)=P(O)O
+ (#3415): ON=P(O)O
  (#3416): ON=P(O)O
- (#3417): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3418): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3419): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3417): CN=P(O)O
+ (#3418): ON=P(O)O
+ (#3419): N=P(O)O
  (#3420): N=P(O)O
  (#3421): CN=P(O)O
  (#3422): ON=P(O)O
  (#3423): N=P(O)O
  (#3424): N=P(O)O
- (#3425): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3426): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3427): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3425): CN(C)=[PH2]O
+ (#3426): CN(O)=[PH2]O
+ (#3427): CN=[PH2]O
  (#3428): CN=[PH2]O
- (#3429): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3430): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3431): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3429): CN(O)=[PH2]O
+ (#3430): O[PH2]=N(O)O
+ (#3431): ON=[PH2]O
  (#3432): ON=[PH2]O
- (#3433): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3434): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3435): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3433): CN=[PH2]O
+ (#3434): ON=[PH2]O
+ (#3435): N=[PH2]O
  (#3436): N=[PH2]O
  (#3437): CN=[PH2]O
  (#3438): ON=[PH2]O
  (#3439): N=[PH2]O
  (#3440): N=[PH2]O
- (#3441): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3442): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3443): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3441): CN(C)=[PH2]O
+ (#3442): CN(O)=[PH2]O
+ (#3443): CN=[PH2]O
  (#3444): CN=[PH2]O
- (#3445): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3446): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3447): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3445): CN(O)=[PH2]O
+ (#3446): O[PH2]=N(O)O
+ (#3447): ON=[PH2]O
  (#3448): ON=[PH2]O
- (#3449): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3450): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3451): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3449): CN=[PH2]O
+ (#3450): ON=[PH2]O
+ (#3451): N=[PH2]O
  (#3452): N=[PH2]O
  (#3453): CN=[PH2]O
  (#3454): ON=[PH2]O
  (#3455): N=[PH2]O
  (#3456): N=[PH2]O
- (#3457): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3458): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3459): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3457): C[PH2]=N(C)C
+ (#3458): C[PH2]=N(C)O
+ (#3459): CN=[PH2]C
  (#3460): CN=[PH2]C
- (#3461): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3462): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3463): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3461): C[PH2]=N(C)O
+ (#3462): C[PH2]=N(O)O
+ (#3463): C[PH2]=NO
  (#3464): C[PH2]=NO
- (#3465): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3466): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3467): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3465): CN=[PH2]C
+ (#3466): C[PH2]=NO
+ (#3467): C[PH2]=N
  (#3468): C[PH2]=N
  (#3469): CN=[PH2]C
  (#3470): C[PH2]=NO
  (#3471): C[PH2]=N
  (#3472): C[PH2]=N
- (#3473): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3474): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3475): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3473): CN(C)=[PH2]O
+ (#3474): CN(O)=[PH2]O
+ (#3475): CN=[PH2]O
  (#3476): CN=[PH2]O
- (#3477): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3478): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3479): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3477): CN(O)=[PH2]O
+ (#3478): O[PH2]=N(O)O
+ (#3479): ON=[PH2]O
  (#3480): ON=[PH2]O
- (#3481): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3482): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3483): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3481): CN=[PH2]O
+ (#3482): ON=[PH2]O
+ (#3483): N=[PH2]O
  (#3484): N=[PH2]O
  (#3485): CN=[PH2]O
  (#3486): ON=[PH2]O
  (#3487): N=[PH2]O
  (#3488): N=[PH2]O
- (#3489): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3490): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3491): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3489): CN(C)=[PH3]
+ (#3490): CN(O)=[PH3]
+ (#3491): CN=[PH3]
  (#3492): CN=[PH3]
- (#3493): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3494): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3495): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3493): CN(O)=[PH3]
+ (#3494): ON(O)=[PH3]
+ (#3495): ON=[PH3]
  (#3496): ON=[PH3]
- (#3497): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3498): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3499): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3497): CN=[PH3]
+ (#3498): ON=[PH3]
+ (#3499): N=[PH3]
  (#3500): N=[PH3]
  (#3501): CN=[PH3]
  (#3502): ON=[PH3]
  (#3503): N=[PH3]
  (#3504): N=[PH3]
- (#3505): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3506): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3507): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3505): CN(C)=[PH3]
+ (#3506): CN(O)=[PH3]
+ (#3507): CN=[PH3]
  (#3508): CN=[PH3]
- (#3509): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3510): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3511): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3509): CN(O)=[PH3]
+ (#3510): ON(O)=[PH3]
+ (#3511): ON=[PH3]
  (#3512): ON=[PH3]
- (#3513): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3514): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3515): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3513): CN=[PH3]
+ (#3514): ON=[PH3]
+ (#3515): N=[PH3]
  (#3516): N=[PH3]
  (#3517): CN=[PH3]
  (#3518): ON=[PH3]
  (#3519): N=[PH3]
  (#3520): N=[PH3]
- (#3521): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3522): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3523): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3521): C[PH2]=N(C)C
+ (#3522): C[PH2]=N(C)O
+ (#3523): CN=[PH2]C
  (#3524): CN=[PH2]C
- (#3525): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3526): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3527): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3525): C[PH2]=N(C)O
+ (#3526): C[PH2]=N(O)O
+ (#3527): C[PH2]=NO
  (#3528): C[PH2]=NO
- (#3529): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3530): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3531): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3529): CN=[PH2]C
+ (#3530): C[PH2]=NO
+ (#3531): C[PH2]=N
  (#3532): C[PH2]=N
  (#3533): CN=[PH2]C
  (#3534): C[PH2]=NO
  (#3535): C[PH2]=N
  (#3536): C[PH2]=N
- (#3537): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3538): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3539): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3537): CN(C)=[PH2]O
+ (#3538): CN(O)=[PH2]O
+ (#3539): CN=[PH2]O
  (#3540): CN=[PH2]O
- (#3541): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3542): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3543): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3541): CN(O)=[PH2]O
+ (#3542): O[PH2]=N(O)O
+ (#3543): ON=[PH2]O
  (#3544): ON=[PH2]O
- (#3545): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3546): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3547): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3545): CN=[PH2]O
+ (#3546): ON=[PH2]O
+ (#3547): N=[PH2]O
  (#3548): N=[PH2]O
  (#3549): CN=[PH2]O
  (#3550): ON=[PH2]O
  (#3551): N=[PH2]O
  (#3552): N=[PH2]O
- (#3553): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3554): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3555): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3553): CN(C)=[PH3]
+ (#3554): CN(O)=[PH3]
+ (#3555): CN=[PH3]
  (#3556): CN=[PH3]
- (#3557): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3558): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3559): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3557): CN(O)=[PH3]
+ (#3558): ON(O)=[PH3]
+ (#3559): ON=[PH3]
  (#3560): ON=[PH3]
- (#3561): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3562): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3563): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3561): CN=[PH3]
+ (#3562): ON=[PH3]
+ (#3563): N=[PH3]
  (#3564): N=[PH3]
  (#3565): CN=[PH3]
  (#3566): ON=[PH3]
  (#3567): N=[PH3]
  (#3568): N=[PH3]
- (#3569): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3570): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3571): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3569): CN(C)=[PH3]
+ (#3570): CN(O)=[PH3]
+ (#3571): CN=[PH3]
  (#3572): CN=[PH3]
- (#3573): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3574): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3575): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3573): CN(O)=[PH3]
+ (#3574): ON(O)=[PH3]
+ (#3575): ON=[PH3]
  (#3576): ON=[PH3]
- (#3577): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3578): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
- (#3579): element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+ (#3577): CN=[PH3]
+ (#3578): ON=[PH3]
+ (#3579): N=[PH3]
  (#3580): N=[PH3]
  (#3581): CN=[PH3]
  (#3582): ON=[PH3]
@@ -6852,3 +6854,6 @@ Database: molecules/cis_trans_expl_h.sdf
  (#4094): O[PH2]=[PH3]
  (#4095): [PH3]=[PH3]
  (#4096): [PH3]=[PH3]
+Database: molecules/bad_valence.smi
+ (#1): CC=C(N(O)=O)N(O)=O
+ (#2): CC=C(N(O)=O)N(O)=O

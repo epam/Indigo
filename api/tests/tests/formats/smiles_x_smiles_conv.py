@@ -19,6 +19,7 @@ def testMultipleSave (smifile, iterfunc, issmi):
     exc = False
     try:
       item.countAtoms()
+      item.smiles()
     except IndigoException, e:
       print('{0} : {1}'.format(item.index(), getIndigoExceptionText(e)))
       if issmi:

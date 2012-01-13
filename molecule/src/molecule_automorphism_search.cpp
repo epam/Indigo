@@ -829,14 +829,23 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
             }
             else if (mol.getAtomNumber(i) == ELEM_O && mol.getAtomCharge(i) == 0)
                _hcount[i] = 0;
+            else
+               // This code will throw an error with a good explanation
+               _hcount[i] = mol.getImplicitH(i);
+         }
+         else
+         {
+            // Number of atoms are underfined, but all the properties like 
+            // connectivity, charge, and etc., and this mean that such 
+            // atoms are comparable even. 
+            // For example, this cis-trans bond is invalid even if the number
+            // of hydrogens are undefined: CC=C(N(C)=O)N(C)=O
+            _hcount[i] = 100; // Any big number.
+            // Later this number can be increased including neighbour hydrogens, 
+            // and this is correct, because nitrogens in these molecules are different:
+            // C[N](C)=O and [H][N]([H])(C)(C)=O
          }
       }
-
-      if (_hcount[i] < 0)
-         // Assign some unique number of hydrogens as this number is 
-         // undefines and can have any values. Atoms with undefines 
-         // number of hydrogens are not comparable.
-         _hcount[i] = 100 + i;
 
       const Vertex &vertex = mol.getVertex(i);
 

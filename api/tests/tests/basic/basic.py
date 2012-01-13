@@ -50,3 +50,18 @@ print(has_match3)
 if has_match3 != has_match_orig:
     sys.stderr.write("Error: query molecule match is different after reloading from SMILES\n")
 
+print("****** Bad valence, smiles and unfold ********")
+m = indigo.loadMolecule("C\C=C(/N(O)=O)N(O)=O")    
+sm = m.smiles()
+print(m.smiles())
+print(m.canonicalSmiles())
+try:
+    m.unfoldHydrogens()
+except IndigoException, e:
+    print("%s" % (getIndigoExceptionText(e)))
+    
+# If there was an exception in unfoldHydrogens then molecule should not be changed
+sm2 = m.smiles()
+if sm2 != sm:
+    sys.stderr.write("Error: %s != %s" % (sm, sm2))
+

@@ -25,7 +25,9 @@ molecules/r_occur.mol
 molecules/rgroup_a0.mol
 
   SMILES    :  C1%91C%92%93=CNC%94=1.[*:2]%91.[*:1]%92.[*:2]%93.[*:1]%94 |$;;;;;_AP2;_AP1;_AP2;_AP1$|
-  CanSMILES :  caught element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons
+  CanSMILES :  C1NC%91=C%92C%93%94=1.[*:1]%91.[*:2]%92.[*:1]%93.[*:2]%94 |$;;;;;_AP1;_AP2;_AP1;_AP2$|
+  Match     :  True
+  Match (2) :  True
 
 
 molecules/rgroup_a1.mol

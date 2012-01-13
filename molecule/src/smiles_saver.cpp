@@ -735,7 +735,12 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    {
       hydro = _hcount[idx];
       if (hydro < 0 && !ignore_invalid_hcount)
+      {
+         // This function will throw better error message with a description
+         _mol->getImplicitH(idx);
+         // If not error was thrown then throw it explicitly
          throw Error("unsure hydrogen count on atom #%d", idx);
+      }
    }
    if (_qmol != 0)
       _qmol->getAtom(idx).sureValue(QueryMolecule::ATOM_TOTAL_H, hydro);

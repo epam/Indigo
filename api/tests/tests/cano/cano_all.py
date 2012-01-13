@@ -16,6 +16,7 @@ mol_db_names = [
    (joinPath("../../data/tetrahedral-all.cml"), indigo.iterateCMLFile),
    (joinPath("molecules/cis_trans_set.sdf"), indigo.iterateSDFile),
    (joinPath("molecules/cis_trans_expl_h.sdf"), indigo.iterateSDFile),
+   (joinPath("molecules/bad_valence.smi"), indigo.iterateSmilesFile),
 ]
 
 def getNameAndCano (m):

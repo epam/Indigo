@@ -25,3 +25,7 @@ C1:N:C2:C(:[N+](:C:N:C:2:N:1)[O-])N
 True
 C1:[NH]:C2:C(:C(N):[N+]([O-]):C:N:2):N:1
 False
+****** Bad valence, smiles and unfold ********
+C/C=C(/N(=O)O)\N(=O)O
+CC=C(N(O)=O)N(O)=O
+element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
