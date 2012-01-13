@@ -15,6 +15,7 @@
 #include "indigo_io.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include "indigo_mapping.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_saver.h"
 #include "base_cpp/output.h"
@@ -465,6 +466,42 @@ CEXPORT int indigoCountMolecules (int handle)
       throw IndigoError("can not count molecules of %s", obj.debugInfo());
    }
    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetMolecule (int reaction, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+
+      return self.addObject(new IndigoReactionMolecule(rxn, index));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoMapMolecule (int handle, int molecule)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+      if (obj.type != IndigoObject::REACTION_MAPPING)
+         throw IndigoError("%s is not a reaction mapping object", obj.debugInfo());
+      IndigoReactionMapping &mapping = (IndigoReactionMapping &)obj;
+
+      IndigoObject &mol_obj = self.getObject(molecule);
+      if (mol_obj.type != IndigoObject::REACTION_MOLECULE)
+         throw IndigoError("%s is not a reaction molecule object", mol_obj.debugInfo());
+      IndigoReactionMolecule &mol = (IndigoReactionMolecule &)mol_obj;
+      
+      if (&mol.rxn != &mapping.from)
+         throw IndigoError("%s molecule doesn't correspond to a mapping %s", 
+            mol.debugInfo(), mapping.debugInfo());
+
+      int target_index = mapping.mol_mapping[mol.getIndex()];
+
+      return self.addObject(new IndigoReactionMolecule(mapping.to, target_index));
+   }
+   INDIGO_END(-1)
 }
 
 static int readAAMOptions(const char* mode, ReactionAutomapper& ram) {

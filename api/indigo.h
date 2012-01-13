@@ -225,6 +225,7 @@ CEXPORT int indigoCountProducts  (int reaction);
 CEXPORT int indigoCountCatalysts (int reaction);
 // Counts reactants, products, and catalysts.
 CEXPORT int indigoCountMolecules (int reaction);
+CEXPORT int indigoGetMolecule (int reaction, int index);
 
 CEXPORT int indigoIterateReactants (int reaction);
 CEXPORT int indigoIterateProducts  (int reaction);
@@ -682,7 +683,7 @@ CEXPORT int indigoUnignoreAllAtoms (int matcher);
 
 // Returns a new 'match' object on success, zero on fail
 //    matcher is an matcher object returned by indigoSubstructureMatcher
-CEXPORT int indigoMatch (int matcher, int query);
+CEXPORT int indigoMatch (int matcher, int query);                                                      
 
 // Counts the number of embeddings of the query structure into the target
 CEXPORT int indigoCountMatches (int matcher, int query);
@@ -713,6 +714,14 @@ CEXPORT int indigoMapAtom (int handle, int atom);
 // hydrogen) then return value is zero.
 //   You can use indigoIndex() to obtain the index of the returned bond.
 CEXPORT int indigoMapBond (int handle, int bond);
+
+// Accepts a molecule from the query reaction, not a molecule index.
+//   You can use indigoGetMolecule() to obtain the bond by its index.
+// Returns the corresponding target molecule, not a reaction index. If query
+// molecule doesn't match particular molecule in the target then return 
+// value is zero.
+//   You can use indigoIndex() to obtain the index of the returned molecule.
+CEXPORT int indigoMapMolecule (int handle, int molecule);
 
 /* Scaffold detection */
 
