@@ -160,25 +160,28 @@ enum
 
    /* SGroups */
    /* 212 - Data SGroup */
-   CMF_DATASGROUP = CMF_EXT + 1,
+   CMF_DATASGROUP,
    /* 213 - Superatom */
-   CMF_SUPERATOM = CMF_DATASGROUP + 1,
-   /* 213 - Repeating unit */
-   CMF_REPEATINGUNIT = CMF_SUPERATOM + 1,
-   /* 214 - Multiple Group */
-   CMF_MULTIPLEGROUP = CMF_REPEATINGUNIT + 1,
-   /* 215 - Generic SGroup */
-   CMF_GENERICSGROUP = CMF_MULTIPLEGROUP + 1,
+   CMF_SUPERATOM,
+   /* 214 - Repeating unit */
+   CMF_REPEATINGUNIT,
+   /* 215 - Multiple Group */
+   CMF_MULTIPLEGROUP,
+   /* 216 - Generic SGroup */
+   CMF_GENERICSGROUP,
 
-   /* 216 - R-Site attachments */
-   CMF_RSITE_ATTACHMENTS = CMF_GENERICSGROUP + 1,
+   /* 217 - R-Site attachments */
+   CMF_RSITE_ATTACHMENTS,
 
-   /* 217, 218 */
-   CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_RING = CMF_RSITE_ATTACHMENTS + 1,
-   CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_CHAIN = CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_RING + 1,
+   /* 218, 219 */
+   CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_RING,
+   CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_CHAIN,
 
-   /* Alphabet size = 216 */
-   CMF_ALPHABET_SIZE = CMF_BOND_DOUBLE_IGNORED_CIS_TRANS_CHAIN + 1
+   /* 220 - R-Site */
+   CMF_RSITE_EXT,
+
+   /* Alphabet size = 221 */
+   CMF_ALPHABET_SIZE
 };
 
 }

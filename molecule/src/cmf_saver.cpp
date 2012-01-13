@@ -420,11 +420,17 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
    }
    else if (mol.isRSite(idx))
    {
-      _encode(CMF_RSITE);
       int bits = mol.getRSiteBits(idx);
       if (bits > 255)
-         throw Error("R-site numbers higher than 7 are not supported");
-      _encode(bits);
+      {
+         _encode(CMF_RSITE_EXT);
+         _output->writePackedUInt((unsigned int)bits);
+      }
+      else
+      {
+         _encode(CMF_RSITE);
+         _encode(bits);
+      }
    }
    else
    {

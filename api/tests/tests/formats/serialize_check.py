@@ -154,6 +154,7 @@ test_sets = [
     (joinPath("../../data/thiazolidines.sdf"), indigo.iterateSDFile),
     (joinPath("../../data/all-allenes.sdf"), indigo.iterateSDFile),
     (joinPath("../../data/all_sgroups.sdf"), indigo.iterateSDFile),
+    (joinPath("molecules/serialize.sdf"), indigo.iterateSDFile),
     ]
     
 for file, func in test_sets:

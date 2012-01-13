@@ -102,10 +102,15 @@ bool CmfLoader::_readAtom (int &code, _AtomDesc &atom, int atom_idx)
 
       label[len] = 0;
    }
-   else if (code == CMF_RSITE)
+   else if (code == CMF_RSITE) 
    {
       atom.label = ELEM_RSITE;
       _getNextCode(atom.rsite_bits);
+   }
+   else if (code == CMF_RSITE_EXT) 
+   {
+      atom.label = ELEM_RSITE;
+      atom.rsite_bits = (int)_scanner->readPackedUInt();
    }
    else
       throw Error("bad atom number: %d", code);
@@ -506,7 +511,7 @@ void CmfLoader::loadMolecule (Molecule &mol)
       atom.pseudo_atom_idx = -1;
       atom.rsite = false;
 
-      if (code > 0 && (code < ELEM_MAX || code == CMF_PSEUDOATOM || code == CMF_RSITE))
+      if (code > 0 && (code < ELEM_MAX || code == CMF_PSEUDOATOM || code == CMF_RSITE || code == CMF_RSITE_EXT))
       {
          if (!_readAtom(code, atom, _atoms.size() - 1))
             break;

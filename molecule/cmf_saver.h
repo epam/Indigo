@@ -59,7 +59,6 @@ protected:
 
    void _init ();
    void _encode (byte symbol);
-   void _encodePacked (int number);
 
    void _encodeAtom (Molecule &mol, int idx, const int *mapping);
    void _encodeBond (Molecule &mol, int idx, const int *mapping);
