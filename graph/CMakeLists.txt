@@ -12,7 +12,10 @@ endif()
 add_library(graph ${Graph_src} ${Graph_headers})
 
 if(VISIBILITY_HIDDEN)
-    SET_TARGET_PROPERTIES(graph PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
 endif()    
-
+if(UNIX OR APPLE)
+    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
+endif()
+set_target_properties(graph PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 target_link_libraries(graph common)

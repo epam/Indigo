@@ -100,10 +100,12 @@ if (NOT CAIRO_FOUND)
     add_library(cairo STATIC  ${CAIRO_SOURCES})
         
     if(VISIBILITY_HIDDEN)
-        SET_TARGET_PROPERTIES(cairo PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+        SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
     endif()
-
-
+    if(UNIX OR APPLE)
+        SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
+    endif()
+    set_target_properties(cairo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
     target_link_libraries(cairo pixman)
     if(NOT PNG_FOUND)
         target_link_libraries(cairo png)

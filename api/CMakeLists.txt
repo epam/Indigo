@@ -16,9 +16,15 @@ add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers})
 SET_TARGET_PROPERTIES(indigo-shared PROPERTIES OUTPUT_NAME "indigo")
 
 if(VISIBILITY_HIDDEN)
-    SET_TARGET_PROPERTIES(indigo PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
-    SET_TARGET_PROPERTIES(indigo-shared PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
+
 endif()    
+if(UNIX OR APPLE)
+    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
+endif()
+
+set_target_properties(indigo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+set_target_properties(indigo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
 target_link_libraries(indigo molecule reaction layout)
 target_link_libraries(indigo-shared molecule reaction layout)

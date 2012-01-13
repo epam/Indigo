@@ -109,413 +109,611 @@ indigo/fast:
 .PHONY : indigo/fast
 
 #=============================================================================
-# Target rules for targets named indigo_shared
+# Target rules for targets named indigo-shared
 
 # Build rule for target.
-indigo_shared: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 indigo_shared
-.PHONY : indigo_shared
+indigo-shared: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 indigo-shared
+.PHONY : indigo-shared
 
 # fast build rule for target.
-indigo_shared/fast:
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/build
-.PHONY : indigo_shared/fast
+indigo-shared/fast:
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/build
+.PHONY : indigo-shared/fast
 
-# target to build an object file
-src/indigo.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo.o
+src/indigo.o: src/indigo.cpp.o
 .PHONY : src/indigo.o
 
-# target to preprocess a source file
-src/indigo.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo.i
+# target to build an object file
+src/indigo.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo.cpp.o
+.PHONY : src/indigo.cpp.o
+
+src/indigo.i: src/indigo.cpp.i
 .PHONY : src/indigo.i
 
-# target to generate assembly for a file
-src/indigo.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo.s
+# target to preprocess a source file
+src/indigo.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo.cpp.i
+.PHONY : src/indigo.cpp.i
+
+src/indigo.s: src/indigo.cpp.s
 .PHONY : src/indigo.s
 
-# target to build an object file
-src/indigo_array.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_array.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_array.o
+# target to generate assembly for a file
+src/indigo.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo.cpp.s
+.PHONY : src/indigo.cpp.s
+
+src/indigo_array.o: src/indigo_array.cpp.o
 .PHONY : src/indigo_array.o
 
-# target to preprocess a source file
-src/indigo_array.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_array.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_array.i
+# target to build an object file
+src/indigo_array.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_array.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_array.cpp.o
+.PHONY : src/indigo_array.cpp.o
+
+src/indigo_array.i: src/indigo_array.cpp.i
 .PHONY : src/indigo_array.i
 
-# target to generate assembly for a file
-src/indigo_array.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_array.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_array.s
+# target to preprocess a source file
+src/indigo_array.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_array.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_array.cpp.i
+.PHONY : src/indigo_array.cpp.i
+
+src/indigo_array.s: src/indigo_array.cpp.s
 .PHONY : src/indigo_array.s
 
-# target to build an object file
-src/indigo_basic.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_basic.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_basic.o
+# target to generate assembly for a file
+src/indigo_array.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_array.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_array.cpp.s
+.PHONY : src/indigo_array.cpp.s
+
+src/indigo_basic.o: src/indigo_basic.cpp.o
 .PHONY : src/indigo_basic.o
 
-# target to preprocess a source file
-src/indigo_basic.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_basic.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_basic.i
+# target to build an object file
+src/indigo_basic.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_basic.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_basic.cpp.o
+.PHONY : src/indigo_basic.cpp.o
+
+src/indigo_basic.i: src/indigo_basic.cpp.i
 .PHONY : src/indigo_basic.i
 
-# target to generate assembly for a file
-src/indigo_basic.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_basic.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_basic.s
+# target to preprocess a source file
+src/indigo_basic.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_basic.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_basic.cpp.i
+.PHONY : src/indigo_basic.cpp.i
+
+src/indigo_basic.s: src/indigo_basic.cpp.s
 .PHONY : src/indigo_basic.s
 
-# target to build an object file
-src/indigo_deconvolution.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_deconvolution.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_deconvolution.o
+# target to generate assembly for a file
+src/indigo_basic.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_basic.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_basic.cpp.s
+.PHONY : src/indigo_basic.cpp.s
+
+src/indigo_deconvolution.o: src/indigo_deconvolution.cpp.o
 .PHONY : src/indigo_deconvolution.o
 
-# target to preprocess a source file
-src/indigo_deconvolution.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_deconvolution.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_deconvolution.i
+# target to build an object file
+src/indigo_deconvolution.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_deconvolution.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_deconvolution.cpp.o
+.PHONY : src/indigo_deconvolution.cpp.o
+
+src/indigo_deconvolution.i: src/indigo_deconvolution.cpp.i
 .PHONY : src/indigo_deconvolution.i
 
-# target to generate assembly for a file
-src/indigo_deconvolution.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_deconvolution.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_deconvolution.s
+# target to preprocess a source file
+src/indigo_deconvolution.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_deconvolution.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_deconvolution.cpp.i
+.PHONY : src/indigo_deconvolution.cpp.i
+
+src/indigo_deconvolution.s: src/indigo_deconvolution.cpp.s
 .PHONY : src/indigo_deconvolution.s
 
-# target to build an object file
-src/indigo_fingerprints.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_fingerprints.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_fingerprints.o
+# target to generate assembly for a file
+src/indigo_deconvolution.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_deconvolution.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_deconvolution.cpp.s
+.PHONY : src/indigo_deconvolution.cpp.s
+
+src/indigo_fingerprints.o: src/indigo_fingerprints.cpp.o
 .PHONY : src/indigo_fingerprints.o
 
-# target to preprocess a source file
-src/indigo_fingerprints.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_fingerprints.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_fingerprints.i
+# target to build an object file
+src/indigo_fingerprints.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_fingerprints.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_fingerprints.cpp.o
+.PHONY : src/indigo_fingerprints.cpp.o
+
+src/indigo_fingerprints.i: src/indigo_fingerprints.cpp.i
 .PHONY : src/indigo_fingerprints.i
 
-# target to generate assembly for a file
-src/indigo_fingerprints.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_fingerprints.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_fingerprints.s
+# target to preprocess a source file
+src/indigo_fingerprints.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_fingerprints.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_fingerprints.cpp.i
+.PHONY : src/indigo_fingerprints.cpp.i
+
+src/indigo_fingerprints.s: src/indigo_fingerprints.cpp.s
 .PHONY : src/indigo_fingerprints.s
 
-# target to build an object file
-src/indigo_io.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_io.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_io.o
+# target to generate assembly for a file
+src/indigo_fingerprints.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_fingerprints.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_fingerprints.cpp.s
+.PHONY : src/indigo_fingerprints.cpp.s
+
+src/indigo_io.o: src/indigo_io.cpp.o
 .PHONY : src/indigo_io.o
 
-# target to preprocess a source file
-src/indigo_io.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_io.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_io.i
+# target to build an object file
+src/indigo_io.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_io.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_io.cpp.o
+.PHONY : src/indigo_io.cpp.o
+
+src/indigo_io.i: src/indigo_io.cpp.i
 .PHONY : src/indigo_io.i
 
-# target to generate assembly for a file
-src/indigo_io.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_io.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_io.s
+# target to preprocess a source file
+src/indigo_io.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_io.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_io.cpp.i
+.PHONY : src/indigo_io.cpp.i
+
+src/indigo_io.s: src/indigo_io.cpp.s
 .PHONY : src/indigo_io.s
 
-# target to build an object file
-src/indigo_layout.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_layout.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_layout.o
+# target to generate assembly for a file
+src/indigo_io.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_io.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_io.cpp.s
+.PHONY : src/indigo_io.cpp.s
+
+src/indigo_layout.o: src/indigo_layout.cpp.o
 .PHONY : src/indigo_layout.o
 
-# target to preprocess a source file
-src/indigo_layout.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_layout.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_layout.i
+# target to build an object file
+src/indigo_layout.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_layout.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_layout.cpp.o
+.PHONY : src/indigo_layout.cpp.o
+
+src/indigo_layout.i: src/indigo_layout.cpp.i
 .PHONY : src/indigo_layout.i
 
-# target to generate assembly for a file
-src/indigo_layout.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_layout.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_layout.s
+# target to preprocess a source file
+src/indigo_layout.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_layout.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_layout.cpp.i
+.PHONY : src/indigo_layout.cpp.i
+
+src/indigo_layout.s: src/indigo_layout.cpp.s
 .PHONY : src/indigo_layout.s
 
-# target to build an object file
-src/indigo_loaders.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_loaders.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_loaders.o
+# target to generate assembly for a file
+src/indigo_layout.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_layout.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_layout.cpp.s
+.PHONY : src/indigo_layout.cpp.s
+
+src/indigo_loaders.o: src/indigo_loaders.cpp.o
 .PHONY : src/indigo_loaders.o
 
-# target to preprocess a source file
-src/indigo_loaders.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_loaders.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_loaders.i
+# target to build an object file
+src/indigo_loaders.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_loaders.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_loaders.cpp.o
+.PHONY : src/indigo_loaders.cpp.o
+
+src/indigo_loaders.i: src/indigo_loaders.cpp.i
 .PHONY : src/indigo_loaders.i
 
-# target to generate assembly for a file
-src/indigo_loaders.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_loaders.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_loaders.s
+# target to preprocess a source file
+src/indigo_loaders.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_loaders.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_loaders.cpp.i
+.PHONY : src/indigo_loaders.cpp.i
+
+src/indigo_loaders.s: src/indigo_loaders.cpp.s
 .PHONY : src/indigo_loaders.s
 
-# target to build an object file
-src/indigo_macros.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_macros.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_macros.o
+# target to generate assembly for a file
+src/indigo_loaders.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_loaders.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_loaders.cpp.s
+.PHONY : src/indigo_loaders.cpp.s
+
+src/indigo_macros.o: src/indigo_macros.c.o
 .PHONY : src/indigo_macros.o
 
-# target to preprocess a source file
-src/indigo_macros.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_macros.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_macros.i
+# target to build an object file
+src/indigo_macros.c.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_macros.c.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_macros.c.o
+.PHONY : src/indigo_macros.c.o
+
+src/indigo_macros.i: src/indigo_macros.c.i
 .PHONY : src/indigo_macros.i
 
-# target to generate assembly for a file
-src/indigo_macros.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_macros.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_macros.s
+# target to preprocess a source file
+src/indigo_macros.c.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_macros.c.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_macros.c.i
+.PHONY : src/indigo_macros.c.i
+
+src/indigo_macros.s: src/indigo_macros.c.s
 .PHONY : src/indigo_macros.s
 
-# target to build an object file
-src/indigo_mapping.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_mapping.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_mapping.o
+# target to generate assembly for a file
+src/indigo_macros.c.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_macros.c.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_macros.c.s
+.PHONY : src/indigo_macros.c.s
+
+src/indigo_mapping.o: src/indigo_mapping.cpp.o
 .PHONY : src/indigo_mapping.o
 
-# target to preprocess a source file
-src/indigo_mapping.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_mapping.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_mapping.i
+# target to build an object file
+src/indigo_mapping.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_mapping.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_mapping.cpp.o
+.PHONY : src/indigo_mapping.cpp.o
+
+src/indigo_mapping.i: src/indigo_mapping.cpp.i
 .PHONY : src/indigo_mapping.i
 
-# target to generate assembly for a file
-src/indigo_mapping.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_mapping.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_mapping.s
+# target to preprocess a source file
+src/indigo_mapping.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_mapping.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_mapping.cpp.i
+.PHONY : src/indigo_mapping.cpp.i
+
+src/indigo_mapping.s: src/indigo_mapping.cpp.s
 .PHONY : src/indigo_mapping.s
 
-# target to build an object file
-src/indigo_match.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_match.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_match.o
+# target to generate assembly for a file
+src/indigo_mapping.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_mapping.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_mapping.cpp.s
+.PHONY : src/indigo_mapping.cpp.s
+
+src/indigo_match.o: src/indigo_match.cpp.o
 .PHONY : src/indigo_match.o
 
-# target to preprocess a source file
-src/indigo_match.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_match.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_match.i
+# target to build an object file
+src/indigo_match.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_match.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_match.cpp.o
+.PHONY : src/indigo_match.cpp.o
+
+src/indigo_match.i: src/indigo_match.cpp.i
 .PHONY : src/indigo_match.i
 
-# target to generate assembly for a file
-src/indigo_match.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_match.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_match.s
+# target to preprocess a source file
+src/indigo_match.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_match.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_match.cpp.i
+.PHONY : src/indigo_match.cpp.i
+
+src/indigo_match.s: src/indigo_match.cpp.s
 .PHONY : src/indigo_match.s
 
-# target to build an object file
-src/indigo_misc.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_misc.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_misc.o
+# target to generate assembly for a file
+src/indigo_match.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_match.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_match.cpp.s
+.PHONY : src/indigo_match.cpp.s
+
+src/indigo_misc.o: src/indigo_misc.cpp.o
 .PHONY : src/indigo_misc.o
 
-# target to preprocess a source file
-src/indigo_misc.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_misc.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_misc.i
+# target to build an object file
+src/indigo_misc.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_misc.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_misc.cpp.o
+.PHONY : src/indigo_misc.cpp.o
+
+src/indigo_misc.i: src/indigo_misc.cpp.i
 .PHONY : src/indigo_misc.i
 
-# target to generate assembly for a file
-src/indigo_misc.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_misc.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_misc.s
+# target to preprocess a source file
+src/indigo_misc.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_misc.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_misc.cpp.i
+.PHONY : src/indigo_misc.cpp.i
+
+src/indigo_misc.s: src/indigo_misc.cpp.s
 .PHONY : src/indigo_misc.s
 
-# target to build an object file
-src/indigo_molecule.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_molecule.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_molecule.o
+# target to generate assembly for a file
+src/indigo_misc.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_misc.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_misc.cpp.s
+.PHONY : src/indigo_misc.cpp.s
+
+src/indigo_molecule.o: src/indigo_molecule.cpp.o
 .PHONY : src/indigo_molecule.o
 
-# target to preprocess a source file
-src/indigo_molecule.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_molecule.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_molecule.i
+# target to build an object file
+src/indigo_molecule.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_molecule.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_molecule.cpp.o
+.PHONY : src/indigo_molecule.cpp.o
+
+src/indigo_molecule.i: src/indigo_molecule.cpp.i
 .PHONY : src/indigo_molecule.i
 
-# target to generate assembly for a file
-src/indigo_molecule.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_molecule.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_molecule.s
+# target to preprocess a source file
+src/indigo_molecule.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_molecule.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_molecule.cpp.i
+.PHONY : src/indigo_molecule.cpp.i
+
+src/indigo_molecule.s: src/indigo_molecule.cpp.s
 .PHONY : src/indigo_molecule.s
 
-# target to build an object file
-src/indigo_object.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_object.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_object.o
+# target to generate assembly for a file
+src/indigo_molecule.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_molecule.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_molecule.cpp.s
+.PHONY : src/indigo_molecule.cpp.s
+
+src/indigo_object.o: src/indigo_object.cpp.o
 .PHONY : src/indigo_object.o
 
-# target to preprocess a source file
-src/indigo_object.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_object.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_object.i
+# target to build an object file
+src/indigo_object.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_object.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_object.cpp.o
+.PHONY : src/indigo_object.cpp.o
+
+src/indigo_object.i: src/indigo_object.cpp.i
 .PHONY : src/indigo_object.i
 
-# target to generate assembly for a file
-src/indigo_object.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_object.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_object.s
+# target to preprocess a source file
+src/indigo_object.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_object.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_object.cpp.i
+.PHONY : src/indigo_object.cpp.i
+
+src/indigo_object.s: src/indigo_object.cpp.s
 .PHONY : src/indigo_object.s
 
-# target to build an object file
-src/indigo_options.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_options.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_options.o
+# target to generate assembly for a file
+src/indigo_object.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_object.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_object.cpp.s
+.PHONY : src/indigo_object.cpp.s
+
+src/indigo_options.o: src/indigo_options.cpp.o
 .PHONY : src/indigo_options.o
 
-# target to preprocess a source file
-src/indigo_options.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_options.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_options.i
+# target to build an object file
+src/indigo_options.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_options.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_options.cpp.o
+.PHONY : src/indigo_options.cpp.o
+
+src/indigo_options.i: src/indigo_options.cpp.i
 .PHONY : src/indigo_options.i
 
-# target to generate assembly for a file
-src/indigo_options.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_options.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_options.s
+# target to preprocess a source file
+src/indigo_options.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_options.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_options.cpp.i
+.PHONY : src/indigo_options.cpp.i
+
+src/indigo_options.s: src/indigo_options.cpp.s
 .PHONY : src/indigo_options.s
 
-# target to build an object file
-src/indigo_product_enumerator.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_product_enumerator.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_product_enumerator.o
+# target to generate assembly for a file
+src/indigo_options.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_options.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_options.cpp.s
+.PHONY : src/indigo_options.cpp.s
+
+src/indigo_product_enumerator.o: src/indigo_product_enumerator.cpp.o
 .PHONY : src/indigo_product_enumerator.o
 
-# target to preprocess a source file
-src/indigo_product_enumerator.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_product_enumerator.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_product_enumerator.i
+# target to build an object file
+src/indigo_product_enumerator.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_product_enumerator.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_product_enumerator.cpp.o
+.PHONY : src/indigo_product_enumerator.cpp.o
+
+src/indigo_product_enumerator.i: src/indigo_product_enumerator.cpp.i
 .PHONY : src/indigo_product_enumerator.i
 
-# target to generate assembly for a file
-src/indigo_product_enumerator.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_product_enumerator.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_product_enumerator.s
+# target to preprocess a source file
+src/indigo_product_enumerator.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_product_enumerator.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_product_enumerator.cpp.i
+.PHONY : src/indigo_product_enumerator.cpp.i
+
+src/indigo_product_enumerator.s: src/indigo_product_enumerator.cpp.s
 .PHONY : src/indigo_product_enumerator.s
 
-# target to build an object file
-src/indigo_properties.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_properties.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_properties.o
+# target to generate assembly for a file
+src/indigo_product_enumerator.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_product_enumerator.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_product_enumerator.cpp.s
+.PHONY : src/indigo_product_enumerator.cpp.s
+
+src/indigo_properties.o: src/indigo_properties.cpp.o
 .PHONY : src/indigo_properties.o
 
-# target to preprocess a source file
-src/indigo_properties.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_properties.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_properties.i
+# target to build an object file
+src/indigo_properties.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_properties.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_properties.cpp.o
+.PHONY : src/indigo_properties.cpp.o
+
+src/indigo_properties.i: src/indigo_properties.cpp.i
 .PHONY : src/indigo_properties.i
 
-# target to generate assembly for a file
-src/indigo_properties.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_properties.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_properties.s
+# target to preprocess a source file
+src/indigo_properties.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_properties.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_properties.cpp.i
+.PHONY : src/indigo_properties.cpp.i
+
+src/indigo_properties.s: src/indigo_properties.cpp.s
 .PHONY : src/indigo_properties.s
 
-# target to build an object file
-src/indigo_reaction.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_reaction.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_reaction.o
+# target to generate assembly for a file
+src/indigo_properties.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_properties.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_properties.cpp.s
+.PHONY : src/indigo_properties.cpp.s
+
+src/indigo_reaction.o: src/indigo_reaction.cpp.o
 .PHONY : src/indigo_reaction.o
 
-# target to preprocess a source file
-src/indigo_reaction.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_reaction.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_reaction.i
+# target to build an object file
+src/indigo_reaction.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_reaction.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_reaction.cpp.o
+.PHONY : src/indigo_reaction.cpp.o
+
+src/indigo_reaction.i: src/indigo_reaction.cpp.i
 .PHONY : src/indigo_reaction.i
 
-# target to generate assembly for a file
-src/indigo_reaction.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_reaction.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_reaction.s
+# target to preprocess a source file
+src/indigo_reaction.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_reaction.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_reaction.cpp.i
+.PHONY : src/indigo_reaction.cpp.i
+
+src/indigo_reaction.s: src/indigo_reaction.cpp.s
 .PHONY : src/indigo_reaction.s
 
-# target to build an object file
-src/indigo_savers.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_savers.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_savers.o
+# target to generate assembly for a file
+src/indigo_reaction.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_reaction.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_reaction.cpp.s
+.PHONY : src/indigo_reaction.cpp.s
+
+src/indigo_savers.o: src/indigo_savers.cpp.o
 .PHONY : src/indigo_savers.o
 
-# target to preprocess a source file
-src/indigo_savers.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_savers.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_savers.i
+# target to build an object file
+src/indigo_savers.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_savers.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_savers.cpp.o
+.PHONY : src/indigo_savers.cpp.o
+
+src/indigo_savers.i: src/indigo_savers.cpp.i
 .PHONY : src/indigo_savers.i
 
-# target to generate assembly for a file
-src/indigo_savers.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_savers.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_savers.s
+# target to preprocess a source file
+src/indigo_savers.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_savers.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_savers.cpp.i
+.PHONY : src/indigo_savers.cpp.i
+
+src/indigo_savers.s: src/indigo_savers.cpp.s
 .PHONY : src/indigo_savers.s
 
-# target to build an object file
-src/indigo_scaffold.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_scaffold.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_scaffold.o
+# target to generate assembly for a file
+src/indigo_savers.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_savers.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_savers.cpp.s
+.PHONY : src/indigo_savers.cpp.s
+
+src/indigo_scaffold.o: src/indigo_scaffold.cpp.o
 .PHONY : src/indigo_scaffold.o
 
-# target to preprocess a source file
-src/indigo_scaffold.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_scaffold.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_scaffold.i
+# target to build an object file
+src/indigo_scaffold.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_scaffold.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_scaffold.cpp.o
+.PHONY : src/indigo_scaffold.cpp.o
+
+src/indigo_scaffold.i: src/indigo_scaffold.cpp.i
 .PHONY : src/indigo_scaffold.i
 
-# target to generate assembly for a file
-src/indigo_scaffold.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_scaffold.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_scaffold.s
+# target to preprocess a source file
+src/indigo_scaffold.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_scaffold.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_scaffold.cpp.i
+.PHONY : src/indigo_scaffold.cpp.i
+
+src/indigo_scaffold.s: src/indigo_scaffold.cpp.s
 .PHONY : src/indigo_scaffold.s
 
-# target to build an object file
-src/indigo_stereo.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_stereo.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_stereo.o
+# target to generate assembly for a file
+src/indigo_scaffold.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_scaffold.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_scaffold.cpp.s
+.PHONY : src/indigo_scaffold.cpp.s
+
+src/indigo_stereo.o: src/indigo_stereo.cpp.o
 .PHONY : src/indigo_stereo.o
 
-# target to preprocess a source file
-src/indigo_stereo.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_stereo.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_stereo.i
+# target to build an object file
+src/indigo_stereo.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_stereo.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_stereo.cpp.o
+.PHONY : src/indigo_stereo.cpp.o
+
+src/indigo_stereo.i: src/indigo_stereo.cpp.i
 .PHONY : src/indigo_stereo.i
 
-# target to generate assembly for a file
-src/indigo_stereo.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_stereo.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/indigo_stereo.s
+# target to preprocess a source file
+src/indigo_stereo.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_stereo.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_stereo.cpp.i
+.PHONY : src/indigo_stereo.cpp.i
+
+src/indigo_stereo.s: src/indigo_stereo.cpp.s
 .PHONY : src/indigo_stereo.s
 
-# target to build an object file
-src/option_manager.o:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/option_manager.o
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/option_manager.o
+# target to generate assembly for a file
+src/indigo_stereo.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/indigo_stereo.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/indigo_stereo.cpp.s
+.PHONY : src/indigo_stereo.cpp.s
+
+src/option_manager.o: src/option_manager.cpp.o
 .PHONY : src/option_manager.o
 
-# target to preprocess a source file
-src/option_manager.i:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/option_manager.i
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/option_manager.i
+# target to build an object file
+src/option_manager.cpp.o:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/option_manager.cpp.o
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/option_manager.cpp.o
+.PHONY : src/option_manager.cpp.o
+
+src/option_manager.i: src/option_manager.cpp.i
 .PHONY : src/option_manager.i
 
-# target to generate assembly for a file
-src/option_manager.s:
-	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/option_manager.s
-	$(MAKE) -f CMakeFiles/indigo_shared.dir/build.make CMakeFiles/indigo_shared.dir/src/option_manager.s
+# target to preprocess a source file
+src/option_manager.cpp.i:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/option_manager.cpp.i
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/option_manager.cpp.i
+.PHONY : src/option_manager.cpp.i
+
+src/option_manager.s: src/option_manager.cpp.s
 .PHONY : src/option_manager.s
+
+# target to generate assembly for a file
+src/option_manager.cpp.s:
+	$(MAKE) -f CMakeFiles/indigo.dir/build.make CMakeFiles/indigo.dir/src/option_manager.cpp.s
+	$(MAKE) -f CMakeFiles/indigo-shared.dir/build.make CMakeFiles/indigo-shared.dir/src/option_manager.cpp.s
+.PHONY : src/option_manager.cpp.s
 
 # Help Target
 help:
@@ -525,7 +723,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... indigo"
-	@echo "... indigo_shared"
+	@echo "... indigo-shared"
 	@echo "... rebuild_cache"
 	@echo "... src/indigo.o"
 	@echo "... src/indigo.i"

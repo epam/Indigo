@@ -41,5 +41,10 @@ endif()
 add_library(common ${BaseC_src} ${BaseC_headers} ${BaseCpp_src} ${BaseCpp_headers} ${LZW_src} ${LZW_headers} ${Math_src} ${Math_headers})
 
 if(VISIBILITY_HIDDEN)
-    SET_TARGET_PROPERTIES(common PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
 endif()    
+if(UNIX OR APPLE)
+    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
+endif()
+
+set_target_properties(common PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")

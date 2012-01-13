@@ -12,7 +12,10 @@ endif()
 add_library(layout ${Layout_src} ${Layout_headers})
 
 if(VISIBILITY_HIDDEN)
-    SET_TARGET_PROPERTIES(layout PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
 endif()    
-
+if(UNIX OR APPLE)
+    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
+endif()
+set_target_properties(layout PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")    
 target_link_libraries(layout molecule)
