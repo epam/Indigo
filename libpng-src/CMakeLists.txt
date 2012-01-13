@@ -9,13 +9,13 @@ else()
 endif()
 if (NOT PNG_FOUND)
     include_directories(include)
-
+    set(PNG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
     aux_source_directory(src PNG_SOURCES)
 
-    find_package(ZLIB)
-    if(NOT ZLIB_FOUND)
-        include_directories(${ZLib_HEADERS_DIR})
-    endif()
+    #find_package(ZLIB)
+    #if(NOT ZLIB_FOUND)
+    include_directories(${ZLib_HEADERS_DIR})
+    #endif()
 
     if(APPLE)
         set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
