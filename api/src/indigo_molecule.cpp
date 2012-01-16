@@ -206,7 +206,7 @@ void IndigoQueryMolecule::parseAtomConstraint (const char* type, const char* val
    throw IndigoError("unsupported constraint type: %s", type);
 }
 
-QueryMolecule::Atom* parseAtomSMARTS (const char *string)
+QueryMolecule::Atom* IndigoQueryMolecule::parseAtomSMARTS (const char *string)
 {
    QS_DEF(QueryMolecule, qmol);
    qmol.clear();
