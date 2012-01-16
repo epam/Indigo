@@ -57,6 +57,7 @@ public:
 
    static IndigoQueryMolecule * cloneFrom (IndigoObject & obj);
    static void parseAtomConstraint (const char* type, const char* value, AutoPtr<QueryMolecule::Atom>&);
+   static QueryMolecule::Atom* parseAtomSMARTS (const char *string);
 
    const char * debugInfo ();
 

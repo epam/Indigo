@@ -143,14 +143,82 @@ IndigoQueryMolecule * IndigoQueryMolecule::cloneFrom( IndigoObject & obj )
    return molptr.release();
 }
 
-void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* value, AutoPtr<QueryMolecule::Atom>& atom) {
-   if(strcasecmp(type, "atomic-number") == 0) {
-      BufferScanner buf_scanner(value);
-      int atom_number = buf_scanner.readInt();
-      atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, atom_number));
-   } else {
-      throw IndigoError("unsupported constraint type: %s", type);
+void IndigoQueryMolecule::parseAtomConstraint (const char* type, const char* value, 
+   AutoPtr<QueryMolecule::Atom>& atom)
+{
+   struct Mapping
+   {
+      const char *key;
+      QueryMolecule::OpType value;
+   };
+
+   static Mapping mappingForInt[] = 
+   {
+      { "atomic-number", QueryMolecule::ATOM_NUMBER },
+      { "charge", QueryMolecule::ATOM_CHARGE },
+      { "isotope", QueryMolecule::ATOM_ISOTOPE },
+      { "radical", QueryMolecule::ATOM_RADICAL },
+      { "valence", QueryMolecule::ATOM_VALENCE },
+      { "connectivity", QueryMolecule::ATOM_CONNECTIVITY },
+      { "total-bond-order", QueryMolecule::ATOM_TOTAL_BOND_ORDER },
+      { "hygrogens", QueryMolecule::ATOM_TOTAL_H },
+      { "substituents", QueryMolecule::ATOM_SUBSTITUENTS },
+      { "ring", QueryMolecule::ATOM_SSSR_RINGS },
+      { "smallest-ring-size", QueryMolecule::ATOM_SMALLEST_RING_SIZE },
+      { "ring-bonds", QueryMolecule::ATOM_RING_BONDS },
+      { "rsite-mask", QueryMolecule::ATOM_RSITE }
+   };
+
+   for (int i = 0; i < NELEM(mappingForInt); i++)
+   {
+      if(strcasecmp(type, mappingForInt[i].key) == 0)
+      {
+         int int_value = 0;
+         if (value != NULL)
+         {
+            BufferScanner buf_scanner(value);
+            int_value = buf_scanner.readInt();
+         }
+         atom.reset(new QueryMolecule::Atom(mappingForInt[i].value, int_value));
+         return;
+      }
    }
+
+   if (strcasecmp(type, "rsite") == 0)
+   {
+      int int_value = 0;
+      if (value != NULL)
+      {
+         BufferScanner buf_scanner(value);
+         int_value = buf_scanner.readInt();
+      }
+      atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 1 << int_value));
+      return;
+   }
+   else if (strcasecmp(type, "smarts") == 0)
+   {
+      if (value == NULL)
+         throw IndigoError("Internal error: value argument in parseAtomConstraint has null value");
+      atom.reset(parseAtomSMARTS(value));
+      return;
+   }
+
+   throw IndigoError("unsupported constraint type: %s", type);
+}
+
+QueryMolecule::Atom* parseAtomSMARTS (const char *string)
+{
+   QS_DEF(QueryMolecule, qmol);
+   qmol.clear();
+
+   BufferScanner scanner(string);
+   SmilesLoader loader(scanner);
+
+   loader.loadQueryMolecule(qmol);
+   if (qmol.vertexCount() != 1)
+      throw IndigoError("cannot parse '%s' as a single-atom", string);
+
+   return qmol.releaseAtom(qmol.vertexBegin());
 }
 
 BaseMolecule & IndigoQueryMolecule::getBaseMolecule ()
@@ -1400,18 +1468,16 @@ CEXPORT int indigoRemoveConstraints (int item, const char *str_type)
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(item));
       QueryMolecule &qmol = ia.mol.asQueryMolecule();
 
-      int type;
+      if(strcasecmp(str_type, "smarts") == 0)
+         throw IndigoError("indigoRemoveConstraints(): type 'smarts' is not supported", str_type);
 
-      if (strcasecmp(str_type, "atomic-number") == 0)
-         type = QueryMolecule::ATOM_NUMBER;
-      else if (strcasecmp(str_type, "rsite") == 0)
-         type = QueryMolecule::ATOM_RSITE;
-      else if (strcasecmp(str_type, "hydrogens") == 0)
-         type = QueryMolecule::ATOM_TOTAL_H;
-      else
+      AutoPtr<QueryMolecule::Atom> atom;
+      IndigoQueryMolecule::parseAtomConstraint(str_type, NULL, atom);
+
+      if (atom->children.size() != 0)
          throw IndigoError("indigoRemoveConstraints(): can not parse type: %s", str_type);
 
-      qmol.getAtom(ia.idx).removeConstraints(type);
+      qmol.getAtom(ia.idx).removeConstraints(atom->type);
       qmol.invalidateAtom(ia.idx);
 
       return 1;
@@ -1455,15 +1521,13 @@ CEXPORT int indigoAddConstraintNot (int atom, const char *type, const char *valu
    INDIGO_END(-1);
 }
 
-/*
 CEXPORT int indigoAddConstraintOr(int atom, const char* type, const char* value)
 {
    INDIGO_BEGIN
    {
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
-      BaseMolecule *mol = ia.mol;
-      QueryMolecule& qmol = mol->asQueryMolecule();
+      QueryMolecule& qmol = ia.mol.asQueryMolecule();
       AutoPtr<QueryMolecule::Atom> atom_constraint;
 
       IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
@@ -1474,6 +1538,8 @@ CEXPORT int indigoAddConstraintOr(int atom, const char* type, const char* value)
    }
    INDIGO_END(-1);
 }
+
+/*
 CEXPORT int indigoAddConstraintOrNot(int atom, const char* type, const char* value)
 {
    INDIGO_BEGIN
@@ -2655,20 +2721,30 @@ CEXPORT int indigoAddAtom (int molecule, const char *symbol)
 {
    INDIGO_BEGIN
    {
-      Molecule &mol = self.getObject(molecule).getMolecule();
+      IndigoObject &obj = self.getObject(molecule);
+      BaseMolecule &bmol = obj.getBaseMolecule();
 
-      int elem = Element::fromString2(symbol);
       int idx;
-
-      if (elem > 0)
-         idx = mol.addAtom(elem);
+      if (bmol.isQueryMolecule())
+      {
+         QueryMolecule &qmol = bmol.asQueryMolecule();
+         idx = qmol.addAtom(IndigoQueryMolecule::parseAtomSMARTS(symbol));
+      }
       else
       {
-         idx = mol.addAtom(ELEM_PSEUDO);
-         mol.setPseudoAtom(idx, symbol);
+         Molecule &mol = bmol.asMolecule();
+         int elem = Element::fromString2(symbol);
+
+         if (elem > 0)
+            idx = mol.addAtom(elem);
+         else
+         {
+            idx = mol.addAtom(ELEM_PSEUDO);
+            mol.setPseudoAtom(idx, symbol);
+         }
       }
 
-      return self.addObject(new IndigoAtom(mol, idx));
+      return self.addObject(new IndigoAtom(bmol, idx));
    }
    INDIGO_END(-1)
 }
@@ -2678,17 +2754,27 @@ CEXPORT int indigoResetAtom (int atom, const char *symbol)
    INDIGO_BEGIN
    {
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
-      Molecule &mol = ia.mol.asMolecule();
 
-      int elem = Element::fromString2(symbol);
-      int idx;
+      BaseMolecule &bmol = ia.mol;
 
-      if (elem > 0)
-         idx = mol.resetAtom(ia.idx, elem);
+      if (bmol.isQueryMolecule())
+      {
+         QueryMolecule &qmol = bmol.asQueryMolecule();
+         qmol.resetAtom(ia.idx, IndigoQueryMolecule::parseAtomSMARTS(symbol));
+      }
       else
       {
-         idx = mol.resetAtom(ia.idx, ELEM_PSEUDO);
-         mol.setPseudoAtom(idx, symbol);
+         Molecule &mol = ia.mol.asMolecule();
+
+         int elem = Element::fromString2(symbol);
+
+         if (elem > 0)
+            mol.resetAtom(ia.idx, elem);
+         else
+         {
+            mol.resetAtom(ia.idx, ELEM_PSEUDO);
+            mol.setPseudoAtom(ia.idx, symbol);
+         }
       }
 
       return 1;
@@ -2814,7 +2900,12 @@ CEXPORT int indigoAddBond (int source, int destination, int order)
       if (&s_atom.mol != &d_atom.mol)
          throw IndigoError("indigoAddBond(): molecules do not match");
 
-      int idx = s_atom.mol.asMolecule().addBond(s_atom.idx, d_atom.idx, order);
+      int idx;
+      if (s_atom.mol.isQueryMolecule())
+         idx = s_atom.mol.asQueryMolecule().addBond(s_atom.idx, d_atom.idx, 
+            new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
+      else
+         idx = s_atom.mol.asMolecule().addBond(s_atom.idx, d_atom.idx, order);
 
       return self.addObject(new IndigoBond(s_atom.mol, idx));
    }
