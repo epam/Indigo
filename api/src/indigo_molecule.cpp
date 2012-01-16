@@ -166,7 +166,7 @@ void IndigoQueryMolecule::parseAtomConstraint (const char* type, const char* val
       { "ring", QueryMolecule::ATOM_SSSR_RINGS },
       { "smallest-ring-size", QueryMolecule::ATOM_SMALLEST_RING_SIZE },
       { "ring-bonds", QueryMolecule::ATOM_RING_BONDS },
-      { "rsite-mask", QueryMolecule::ATOM_RSITE }
+      { "rsite-mask", QueryMolecule::ATOM_RSITE },
    };
 
    for (int i = 0; i < NELEM(mappingForInt); i++)
@@ -202,12 +202,30 @@ void IndigoQueryMolecule::parseAtomConstraint (const char* type, const char* val
       atom.reset(parseAtomSMARTS(value));
       return;
    }
+   else if (strcasecmp(type, "aromaticity") == 0)
+   {
+      int int_value = 0;
+      if (value != NULL)
+      {
+         if (strcasecmp(value, "aromatic") == 0)
+            int_value = ATOM_AROMATIC;
+         else if (strcasecmp(value, "aliphatic") == 0)
+            int_value = ATOM_ALIPHATIC;
+         else
+            throw IndigoError("unsupported aromaticity type: %s", value);
+      }
+      atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, int_value));
+      return;
+   }
 
    throw IndigoError("unsupported constraint type: %s", type);
 }
 
 QueryMolecule::Atom* IndigoQueryMolecule::parseAtomSMARTS (const char *string)
 {
+   if (strlen(string) == 0)
+      return new QueryMolecule::Atom();
+
    QS_DEF(QueryMolecule, qmol);
    qmol.clear();
 
@@ -1497,6 +1515,7 @@ CEXPORT int indigoAddConstraint (int atom, const char *type, const char *value)
       IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
       
       qmol.resetAtom(ia.idx, QueryMolecule::Atom::und(qmol.releaseAtom(ia.idx), atom_constraint.release()));
+      qmol.invalidateAtom(ia.idx);
 
       return 1;
    }
@@ -1515,6 +1534,7 @@ CEXPORT int indigoAddConstraintNot (int atom, const char *type, const char *valu
       IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
 
       qmol.resetAtom(ia.idx, QueryMolecule::Atom::und(qmol.releaseAtom(ia.idx), QueryMolecule::Atom::nicht(atom_constraint.release())));
+      qmol.invalidateAtom(ia.idx);
 
       return 1;
    }
@@ -1533,6 +1553,7 @@ CEXPORT int indigoAddConstraintOr(int atom, const char* type, const char* value)
       IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
 
       qmol.resetAtom(ia.idx, QueryMolecule::Atom::oder(qmol.releaseAtom(ia.idx), atom_constraint.release()));
+      qmol.invalidateAtom(ia.idx);
 
       return 1;
    }
@@ -2764,6 +2785,7 @@ CEXPORT int indigoResetAtom (int atom, const char *symbol)
       {
          QueryMolecule &qmol = bmol.asQueryMolecule();
          qmol.resetAtom(ia.idx, IndigoQueryMolecule::parseAtomSMARTS(symbol));
+         qmol.invalidateAtom(ia.idx);
       }
       else
       {
