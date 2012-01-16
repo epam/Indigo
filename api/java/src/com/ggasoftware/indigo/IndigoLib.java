@@ -185,6 +185,7 @@ public interface IndigoLib extends Library
    int indigoRemoveConstraints  (int item, String type);
    int indigoAddConstraint    (int item, String type, String value);
    int indigoAddConstraintNot (int item, String type, String value);
+   int indigoAddConstraintOr  (int item, String type, String value);
 
    int indigoResetStereo (int item);
    int indigoInvertStereo (int item);
@@ -203,6 +204,7 @@ public interface IndigoLib extends Library
    int indigoBond (int nei);
    int indigoGetAtom (int molecule, int idx);
    int indigoGetBond (int molecule, int idx);
+   int indigoGetMolecule (int reaction, int idx);
 
    int indigoSource (int bond);
    int indigoDestination (int bond);
@@ -347,6 +349,7 @@ public interface IndigoLib extends Library
    int indigoHighlightedTarget (int match);
    int indigoMapAtom (int match, int query_atom);
    int indigoMapBond (int match, int query_bond);
+   int indigoMapMolecule (int match, int query_reaction_molecule);
 
    int indigoExtractCommonScaffold (int structures, String options);
    int indigoAllScaffolds (int extracted);

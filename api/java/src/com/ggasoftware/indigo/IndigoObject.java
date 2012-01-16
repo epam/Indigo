@@ -424,6 +424,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoAddConstraintNot(self, type, value));
    }
 
+   public void addConstraintOr (String type, String value)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoAddConstraintOr(self, type, value));
+   }
+
    public void resetStereo ()
    {
       dispatcher.setSessionID();
@@ -500,6 +506,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoGetAtom(self, idx)));
+   }
+
+   public IndigoObject getMolecule (int idx)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, this, Indigo.checkResult(this, _lib.indigoGetMolecule(self, idx)));
    }
 
    public IndigoObject getBond (int idx)
@@ -1211,6 +1223,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       int res = Indigo.checkResult(this, query_atom, _lib.indigoMapAtom(self, query_atom.self));
+      if (res == 0)
+         return null;
+      return new IndigoObject(dispatcher, this, res);
+   }
+
+   public IndigoObject mapMolecule (IndigoObject query_reaction_molecule)
+   {
+      dispatcher.setSessionID();
+      int res = Indigo.checkResult(this, query_reaction_molecule, 
+         _lib.indigoMapMolecule(self, query_reaction_molecule.self));
       if (res == 0)
          return null;
       return new IndigoObject(dispatcher, this, res);

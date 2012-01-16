@@ -344,6 +344,7 @@ class Indigo(object):
     self.IndigoObject.removeConstraints = Indigo._member_void_string(Indigo._lib.indigoRemoveConstraints)
     self.IndigoObject.addConstraint = Indigo._member_void_string_string(Indigo._lib.indigoAddConstraint)
     self.IndigoObject.addConstraintNot = Indigo._member_void_string_string(Indigo._lib.indigoAddConstraintNot)
+    self.IndigoObject.addConstraintOr = Indigo._member_void_string_string(Indigo._lib.indigoAddConstraintOr)
 
     self.IndigoObject.countAtoms = Indigo._member_int(Indigo._lib.indigoCountAtoms)
     self.IndigoObject.countBonds = Indigo._member_int(Indigo._lib.indigoCountBonds)
@@ -361,6 +362,8 @@ class Indigo(object):
     self.IndigoObject.getBond = Indigo._member_obj_int(Indigo._lib.indigoGetBond)
     self.IndigoObject.source = Indigo._member_obj(Indigo._lib.indigoSource)
     self.IndigoObject.destination = Indigo._member_obj(Indigo._lib.indigoDestination)
+
+    self.IndigoObject.getMolecule = Indigo._member_obj_int(Indigo._lib.indigoGetMolecule)
 
     self.IndigoObject.clearCisTrans = Indigo._member_void(Indigo._lib.indigoClearCisTrans)
     self.IndigoObject.clearStereocenters = Indigo._member_void(Indigo._lib.indigoClearStereocenters)
@@ -457,6 +460,8 @@ class Indigo(object):
     self.IndigoObject.highlightedTarget = Indigo._member_obj(Indigo._lib.indigoHighlightedTarget);
     self.IndigoObject.mapAtom = Indigo._member_obj_obj(Indigo._lib.indigoMapAtom);
     self.IndigoObject.mapBond = Indigo._member_obj_obj(Indigo._lib.indigoMapBond);	
+
+    self.IndigoObject.mapMolecule = Indigo._member_obj_obj(Indigo._lib.indigoMapMolecule);
 	
     self.IndigoObject.allScaffolds = Indigo._member_obj(Indigo._lib.indigoAllScaffolds);
     self.IndigoObject.decomposedMoleculeScaffold = Indigo._member_obj(Indigo._lib.indigoDecomposedMoleculeScaffold)

@@ -577,6 +577,12 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoAddConstraintNot(self, type, value);
       }
 
+      public void addConstraintOr (string type, string value)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoAddConstraintOr(self, type, value);
+      }
+
       public void invertStereo ()
       {
          dispatcher.setSessionID();
@@ -659,6 +665,12 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          return new IndigoObject(dispatcher, this, _indigo_lib.indigoGetBond(self, idx));
+      }
+
+      public IndigoObject getMolecule (int idx)
+      {
+         dispatcher.setSessionID();
+         return new IndigoObject(dispatcher, this, _indigo_lib.indigoGetMolecule(self, idx));
       }
 
       public IndigoObject source ()
@@ -1237,6 +1249,15 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          int mapped = _indigo_lib.indigoMapAtom(self, query_atom.self);
+         if (mapped == 0)
+            return null;
+         return new IndigoObject(dispatcher, mapped);
+      }
+
+      public IndigoObject mapMolecule (IndigoObject query_reaction_molecule)
+      {
+         dispatcher.setSessionID();
+         int mapped = _indigo_lib.indigoMapMolecule(self, query_reaction_molecule.self);
          if (mapped == 0)
             return null;
          return new IndigoObject(dispatcher, mapped);

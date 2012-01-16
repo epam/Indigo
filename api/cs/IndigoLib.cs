@@ -151,6 +151,7 @@ namespace com.ggasoftware.indigo
       int indigoRemoveConstraints (int item, string type);
       int indigoAddConstraint (int item, string type, string value);
       int indigoAddConstraintNot (int item, string type, string value);
+      int indigoAddConstraintOr (int item, string type, string value);
       int indigoInvertStereo (int atom);
       int indigoResetStereo (int atom);
       int indigoCountAtoms (int molecule);
@@ -165,6 +166,7 @@ namespace com.ggasoftware.indigo
       int indigoBond (int nei);
       int indigoGetAtom (int molecule, int idx);
       int indigoGetBond (int molecule, int idx);
+      int indigoGetMolecule (int reaction, int idx);
       int indigoSource (int bond);
       int indigoDestination (int bond);
       int indigoClearCisTrans (int item);
@@ -283,6 +285,7 @@ namespace com.ggasoftware.indigo
       int indigoHighlightedTarget (int match);
       int indigoMapAtom (int match, int query_atom);
       int indigoMapBond (int match, int query_bond);
+      int indigoMapMolecule (int match, int query_reaction_molecule);
 
       int indigoExtractCommonScaffold (int structures, string options);
       int indigoAllScaffolds (int extracted);
