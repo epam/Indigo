@@ -218,7 +218,7 @@ class Indigo(object):
     
     self.countReferences = self._static_int(self._lib.indigoCountReferences)
     self.createMolecule = self._static_obj(self._lib.indigoCreateMolecule)
-    self.createQueryMolefile = self._static_obj(self._lib.indigoCreateQueryMolecule)
+    self.createQueryMolecule = self._static_obj(self._lib.indigoCreateQueryMolecule)
     self.loadMolecule = self._static_obj_string(self._lib.indigoLoadMoleculeFromString)
     self.loadMoleculeFromFile = self._static_obj_string(self._lib.indigoLoadMoleculeFromFile)
     self.loadQueryMolecule = self._static_obj_string(self._lib.indigoLoadQueryMoleculeFromString)
