@@ -214,7 +214,7 @@ QueryMolecule::Atom* IndigoQueryMolecule::parseAtomSMARTS (const char *string)
    BufferScanner scanner(string);
    SmilesLoader loader(scanner);
 
-   loader.loadQueryMolecule(qmol);
+   loader.loadSMARTS(qmol);
    if (qmol.vertexCount() != 1)
       throw IndigoError("cannot parse '%s' as a single-atom", string);
 
@@ -1720,7 +1720,10 @@ const char * IndigoQueryMolecule::debugInfo ()
 
 const MoleculeAtomNeighbourhoodCounters& IndigoQueryMolecule::getNeiCounters ()
 {
-   if (_nei_counters_edit_revision != qmol.getEditRevision())
+   // TODO: implement query.getAtomEdit(...) instead of getAtom(...) to update nei counters
+   // automatically. Current approach is too complictated because
+   // we need to call updateEditRevision manually after changing an atom.
+   //if (_nei_counters_edit_revision != qmol.getEditRevision())
    {
       _nei_counters.calculate(qmol);
       _nei_counters_edit_revision = qmol.getEditRevision();
