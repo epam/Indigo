@@ -3,6 +3,11 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
+
+if not os.path.exists(joinPath("out")):
+   os.makedirs(joinPath("out"))
+saver = indigo.createFileSaver(joinPath("out/basic.rdf"), "rdf")
+
 print("*** Test 1 ***")
 mol = indigo.loadMolecule("")
 print(mol.smiles())
@@ -12,6 +17,7 @@ rxn = indigo.createReaction()
 rxn.addProduct(mol)
 rxn.layout()
 print(rxn.smiles())
+
 print("*** Test 2 ***")
 mol = indigo.loadMolecule("[H][H]")
 print(mol.smiles())
@@ -21,6 +27,7 @@ rxn = indigo.createReaction()
 rxn.addProduct(mol)
 rxn.layout()
 print(rxn.smiles())
+
 print("*** Test 3 ***")
 mol = indigo.loadMolecule("")
 print(mol.smiles())
@@ -61,3 +68,22 @@ r = indigo.loadReaction("CCCCCC>>CNCNCNCNCN")
 print(r.smiles())
 r.unfoldHydrogens()
 print(r.smiles())
+
+print("*** Get and Map molecule ***")
+rxn = indigo.loadReaction("CCC.NNN.OOO>[W]>CNC.NCN.CNC.N.OOO.CCC.NNN")
+for m in rxn.iterateMolecules():
+    print("%d: %s, %s" % (m.index(), m.smiles(), rxn.getMolecule(m.index()).smiles()))
+
+q = indigo.loadQueryReaction("NN.OO>>NC.N.O")
+matcher = indigo.substructureMatcher(rxn)
+match = matcher.match(q)
+for qm in q.iterateMolecules():
+    tm = match.mapMolecule(qm)
+    print(tm.smiles())
+    for qma in qm.iterateAtoms():
+        ta = match.mapAtom(qma)
+        ta.highlight()
+    for qmb in qm.iterateBonds():
+        tb = match.mapBond(qmb)
+        tb.highlight()
+saver.append(rxn)
