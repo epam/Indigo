@@ -8,6 +8,7 @@ import difflib
 import time
 import re
 import platform
+import datetime
 
 sys.path.append('common')
 from env_indigo import Indigo
@@ -77,6 +78,7 @@ if not os.path.exists(output_dir):
 sys.stdout = Logger(output_dir + "/results.txt") 
 
 print("Indigo version: " + indigo.version())
+print("Date & time: " + datetime.datetime.now().strftime("%d.%m.%Y %H:%M"))
 print("Platform: " + platform.platform())
 print("Processor: " + platform.processor())
 print("Python: " + sys.version)
