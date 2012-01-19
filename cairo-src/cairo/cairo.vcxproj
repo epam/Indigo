@@ -314,7 +314,6 @@
     <ClCompile Include="src\cairo-image-surface.c" />
     <ClCompile Include="src\cairo-lzw.c" />
     <ClCompile Include="src\cairo-matrix.c" />
-    <ClCompile Include="src\cairo-meta-surface.c" />
     <ClCompile Include="src\cairo-misc.c" />
     <ClCompile Include="src\cairo-mutex.c" />
     <ClCompile Include="src\cairo-output-stream.c" />
@@ -335,7 +334,6 @@
     <ClCompile Include="src\cairo-region.c" />
     <ClCompile Include="src\cairo-scaled-font-subsets.c" />
     <ClCompile Include="src\cairo-scaled-font.c" />
-    <ClCompile Include="src\cairo-skiplist.c" />
     <ClCompile Include="src\cairo-slope.c" />
     <ClCompile Include="src\cairo-spline.c" />
     <ClCompile Include="src\cairo-stroke-style.c" />
