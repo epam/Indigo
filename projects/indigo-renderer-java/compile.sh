@@ -6,10 +6,13 @@ else
   export EXEC_JAR=$JAVA_HOME/bin/jar;
   export EXEC_JAVAC=$JAVA_HOME/bin/javac;
 fi
-indigoJavaPath=../../api/java/src/com/ggasoftware/indigo
-indigoRendererJavaPath=../../api/renderer/java/src/com/ggasoftware/indigo
-mkdir dist
-rm -rf $indigoRendererJavaPath/*.class
-$EXEC_JAVAC -cp ../../common/jna/jna.jar $indigoJavaPath/*.java $indigoRendererJavaPath/*.java
-$EXEC_JAR cvf dist/indigo-renderer.jar $indigoRendererJavaPath/*.class
-rm -rf $indigoRendererJavaPath/*.class
+indigoJavaSourcePath=../../api/java/src/com/ggasoftware/indigo
+indigoRendererJavaPath=../../api/renderer/java/src/
+distPath=$PWD/dist
+rm -rf $distPath
+mkdir $distPath
+cd ../../api/renderer/java/src/
+rm -rf com/ggasoftware/indigo/*.class
+$EXEC_JAVAC -cp ../../../../projects/indigo-java/dist/indigo.jar:../../../../common/jna/jna.jar com/ggasoftware/indigo/*.java
+$EXEC_JAR cvf $distPath/indigo-renderer.jar com/ggasoftware/indigo/*.class
+rm -rf com/ggasoftware/indigo/*.class

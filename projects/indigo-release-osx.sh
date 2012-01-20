@@ -25,11 +25,11 @@ for osxver in '10.5' '10.6'; do
    mkdir -p $javadistr
    mkdir -p $pythondistr/lib/Mac/$osxver
    cd indigo-renderer
-   #rm CMakeCache.txt
-   #xcodebuild clean
-   cmake -G "Xcode"
    indigoRendererDistPath=$PWD/dist/Mac/$osxver/lib/Release
-   xcodebuild -sdk macosx$osxver -configuration Release
+   #rm CMakeCache.txt
+   #cmake -G Xcode -DSUBSYSTEM_FOLDER_NAME=$osxver
+   #cmake --build . --config Release --clean-first -- -sdk macosx$osxver
+   #cmake --build . --config Release -- -sdk macosx$osxver
    cd ..
    cp $apiPath/LICENSE.GPL $libdistr
    cp $apiPath/indigo.h $libdistr
@@ -48,19 +48,18 @@ for osxver in '10.5' '10.6'; do
    zip -r -9 $libdistr.zip $libdistr
 done
 
-exit;
-cd java
+cd indigo-java
 ./compile.sh
 ./pack-libs-osx.sh
-cd ../renderer/java
+cd ../indigo-renderer-java
 ./compile.sh
 ./pack-libs-osx.sh
-cd ../..
+cd ..
 
-cp LICENSE.GPL $javadistr/
-cp java/dist/indigo.jar $javadistr
-cp renderer/java/dist/indigo-renderer.jar $javadistr
-cp ../common/jna/jna.jar $javadistr
+cp $apiPath/LICENSE.GPL $javadistr/
+cp indigo-java/dist/indigo.jar $javadistr
+cp indigo-renderer-java/dist/indigo-renderer.jar $javadistr
+cp ../../common/jna/jna.jar $javadistr
 
 zip -r -9 $javadistr.zip $javadistr
 zip -r -9 $pythondistr.zip $pythondistr
