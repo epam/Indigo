@@ -31,7 +31,7 @@ class IndigoInchi(object):
         self._lib.indigoInchiResetOptions.restype = c_int
         self._lib.indigoInchiResetOptions.argtypes = []
         self._lib.indigoInchiLoadMolecule.restype = c_int
-        self._lib.indigoInchiLoadMolecule.argtypes = [c_int]
+        self._lib.indigoInchiLoadMolecule.argtypes = [c_char_p]
         self._lib.indigoInchiGetInchi.restype = c_char_p
         self._lib.indigoInchiGetInchi.argtypes = [c_int]
         self._lib.indigoInchiGetInchiKey.restype = c_char_p
@@ -49,27 +49,27 @@ class IndigoInchi(object):
     
     def loadMolecule (self, inchi):
         self.indigo._setSID()
-        res = self._checkResult(indigoInchiLoadMolecule(inchi))
+        res = self.indigo._checkResult(self._lib.indigoInchiLoadMolecule(inchi))
         if res == 0:
             return None
         return Indigo.IndigoObject(self.indigo, res)
 
     def getInchi (self, molecule):
         self.indigo._setSID()
-        return self.indigo._checkResultString(indigoInchiGetInchi(molecule.id))
+        return self.indigo._checkResultString(self._lib.indigoInchiGetInchi(molecule.id))
 
     def getInchiKey (self, inchi):
         self.indigo._setSID()
-        return self.indigo._checkResultString(indigoInchiGetInchiKey(inchi))
+        return self.indigo._checkResultString(self._lib.indigoInchiGetInchiKey(inchi))
                 
     def getWarning (self):
         self.indigo._setSID()
-        return self.indigo._checkResultString(indigoInchiGetWarning())
+        return self.indigo._checkResultString(self._lib.indigoInchiGetWarning())
                                 
     def getLog (self):
         self.indigo._setSID()
-        return self.indigo._checkResultString(indigoInchiGetLog())
+        return self.indigo._checkResultString(self._lib.indigoInchiGetLog())
             
     def getAuxInfo (self):
         self.indigo._setSID()
-        return self.indigo._checkResultString(indigoInchiGetAuxInfo())
+        return self.indigo._checkResultString(self._lib.indigoInchiGetAuxInfo())
