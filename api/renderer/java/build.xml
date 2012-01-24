@@ -74,7 +74,7 @@
     <target name="-post-compile">
         <echo message="Copying shared modules..."/>
         <copy todir="${build.classes.dir}/com/ggasoftware/indigo">
-            <fileset dir="../../dist/shared" excludes="**/*.lib" includes="**/*render*"/>
+            <fileset dir="../../libs/shared" excludes="**/*.lib" includes="**/*render*"/>
         </copy>
    </target>
 </project>

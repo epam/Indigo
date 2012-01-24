@@ -25,6 +25,6 @@ foreach(comp ${COMPONENTS})
 	INSTALL(FILES ${Indigo_SOURCE_DIR}/plugins/inchi/indigo-inchi.h DESTINATION . COMPONENT ${comp})
 endforeach()
 
-SET(CMAKE_INSTALL_PREFIX ${Indigo_SOURCE_DIR}/dist)
+SET(CMAKE_INSTALL_PREFIX ${Indigo_SOURCE_DIR}/libs)
 
 INCLUDE(CPack)
