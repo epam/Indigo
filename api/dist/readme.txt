@@ -1,0 +1,3 @@
+This directory is used to get the binary files by Python, Java and .NET wrappers
+Simply extract the indigo-shared libs here:
+...
