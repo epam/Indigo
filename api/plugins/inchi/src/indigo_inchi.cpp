@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "indigo_inchi.h"
+#include "indigo-inchi.h"
                       
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
@@ -369,7 +369,7 @@ _IndigoInchiOptionsHandlersSetter::_IndigoInchiOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
    OsLocker locker(mgr.lock);
-	
+   
    mgr.setOptionHandlerString("inchi-options", indigoInchiSetInchiOptions);
 }
 
