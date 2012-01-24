@@ -35,6 +35,8 @@ if (NOT PIXMAN_FOUND)
         SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
     endif()
     set_target_properties(pixman PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+	 set_property(TARGET pixman PROPERTY FOLDER "third_party")
 else()
     set(Pixman_headers_dir ${PIXMAN_INCLUDE_DIRS})
 endif()
+

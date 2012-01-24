@@ -115,6 +115,8 @@ if (NOT CAIRO_FOUND)
     if(MSVC)
         target_link_libraries(cairo msimg32)	
     endif()
+    set_property(TARGET cairo PROPERTY FOLDER "third_party")
 else()
     set(Cairo_headers_dir ${CAIRO_INCLUDE_DIRS})
 endif()
+

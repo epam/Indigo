@@ -35,3 +35,6 @@ endif()
 set_target_properties(indigo-renderer PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 set_target_properties(indigo-renderer-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 target_link_libraries(indigo-renderer-shared indigo-shared cairo render2d)
+
+set_property(TARGET indigo-renderer PROPERTY FOLDER "indigo-renderer")
+set_property(TARGET indigo-renderer-shared PROPERTY FOLDER "indigo-renderer")

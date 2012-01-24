@@ -1,35 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
 
 if (INDIGO_CONFIGURED)
-	message(STATUS "INDIGO CONFIGURED")
+	message(STATUS "  INDIGO CONFIGURED")
 	return()
 endif()
 
 project(IndigoSolution)
-if(NOT MSVC)
-	set(VISIBILITY_HIDDEN YES)
-endif()
-if(NOT BUILD_DEBUG)
-    set(CMAKE_BUILD_TYPE Release)
-else()
-    set(CMAKE_BUILD_TYPE Debug)
-endif()
-if(UNIX)
-	if (SUBSYSTEM_FOLDER_NAME MATCHES "x86")
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")	
-	elseif(SUBSYSTEM_FOLDER_NAME MATCHES "x64")
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
-	endif()
-endif()
-INCLUDE(../../common/cmake/GetSystemVersion.cmake)
-INCLUDE(../../common/cmake/MakeOutputPath.cmake)
-MESSAGE(STATUS "Common output dir: ${CMAKE_BINARY_DIR}/${COMMON_OUTPUT_PATH}")
 
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${COMMON_OUTPUT_PATH}/lib)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${COMMON_OUTPUT_PATH}/bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${COMMON_OUTPUT_PATH}/shared)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
+
+INCLUDE(ConfigureCommon)
 
 add_subdirectory(../../zlib-src "${CMAKE_CURRENT_BINARY_DIR}/zlib")
 # Get defined variable with the headers
@@ -46,6 +26,7 @@ add_subdirectory(../../molecule "${CMAKE_CURRENT_BINARY_DIR}/molecule")
 add_subdirectory(../../reaction "${CMAKE_CURRENT_BINARY_DIR}/reaction")
 
 add_subdirectory(../../layout "${CMAKE_CURRENT_BINARY_DIR}/layout")
+
 add_subdirectory(../../api "${CMAKE_CURRENT_BINARY_DIR}/api")
 
 set(INDIGO_CONFIGURED TRUE PARENT_SCOPE)

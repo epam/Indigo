@@ -1,3 +1,5 @@
 INCLUDE(GetSystemVersion)
 INCLUDE(SetBuildParameters)
 INCLUDE(MakeOutputPath)
+
+SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)

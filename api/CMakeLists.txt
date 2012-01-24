@@ -31,3 +31,5 @@ target_link_libraries(indigo-shared molecule reaction layout)
 
 set_property(TARGET indigo-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 
+set_property(TARGET indigo PROPERTY FOLDER "indigo")
+set_property(TARGET indigo-shared PROPERTY FOLDER "indigo")
