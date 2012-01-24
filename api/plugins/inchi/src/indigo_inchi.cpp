@@ -235,7 +235,7 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
    if (output.szLog)
       log.readString(output.szLog, true);
    if (output.szAuxInfo)
-      log.readString(output.szAuxInfo, true);
+      auxInfo.readString(output.szAuxInfo, true);
 
    if (ret != inchi_Ret_OKAY && ret != inchi_Ret_WARNING)
       throw IndigoError("Indigo-InChI: InChI generation failed: %s. Code: %d.", 
