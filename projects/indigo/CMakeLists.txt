@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
-#set(CMAKE_SUPPRESS_REGENERATION TRUE)
+
+if (INDIGO_CONFIGURED)
+	message(STATUS "INDIGO CONFIGURED")
+	return()
+endif()
 
 project(IndigoSolution)
 if(NOT MSVC)
@@ -43,3 +47,5 @@ add_subdirectory(../../reaction "${CMAKE_CURRENT_BINARY_DIR}/reaction")
 
 add_subdirectory(../../layout "${CMAKE_CURRENT_BINARY_DIR}/layout")
 add_subdirectory(../../api "${CMAKE_CURRENT_BINARY_DIR}/api")
+
+set(INDIGO_CONFIGURED TRUE PARENT_SCOPE)
