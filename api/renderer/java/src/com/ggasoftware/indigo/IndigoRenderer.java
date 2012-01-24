@@ -13,8 +13,9 @@
  ***************************************************************************/
 
 package com.ggasoftware.indigo;
-import java.io.*;
-import com.sun.jna.*;
+import com.sun.jna.Native;
+import java.io.File;
+import java.io.IOException;
 
 public class IndigoRenderer
 {

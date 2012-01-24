@@ -18,11 +18,11 @@ import com.sun.jna.Library;
 
 public interface IndigoInchiLib extends Library
 {
-	int indigoInchiResetOptions ();
-	int indigoInchiLoadMolecule (String inchi_string);
-	String indigoInchiGetInchi (int molecule);
-	String indigoInchiGetInchiKey (String inchi_string);
-	String indigoInchiGetWarning ();
-	String indigoInchiGetLog ();
-	String indigoInchiGetAuxInfo ();
+    int indigoInchiResetOptions ();
+    int indigoInchiLoadMolecule (String inchi_string);
+    String indigoInchiGetInchi (int molecule);
+    String indigoInchiGetInchiKey (String inchi_string);
+    String indigoInchiGetWarning ();
+    String indigoInchiGetLog ();
+    String indigoInchiGetAuxInfo ();
 }

@@ -14,8 +14,10 @@
 
 package com.ggasoftware.indigo;
 
-import com.sun.jna.*;
-import com.sun.jna.ptr.*;
+import com.sun.jna.Library;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.PointerByReference;
 
 public interface IndigoLib extends Library
 {

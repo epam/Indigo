@@ -71,10 +71,10 @@
     nbproject/build-impl.xml file. 
 
     -->
-	<target name="-post-compile">
-		<echo message="Copying shared modules..."/>
-		<copy todir="${build.classes.dir}/com/ggasoftware/indigo">
-			<fileset dir="../../../dist/shared" excludes="**/*.lib" includes="**/*inchi*"/>
-		</copy>
-   </target>
+    <target name="-post-compile">
+        <echo message="Copying shared modules..."/>
+        <copy todir="${build.classes.dir}/com/ggasoftware/indigo">
+            <fileset dir="../../../dist/shared" excludes="**/*.lib" includes="**/*inchi*"/>
+        </copy>
+    </target>
 </project>

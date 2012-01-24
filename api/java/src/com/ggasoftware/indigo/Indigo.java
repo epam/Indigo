@@ -14,10 +14,18 @@
 
 package com.ggasoftware.indigo;
 
-import java.io.*;
-import com.sun.jna.*;
-import java.lang.reflect.*;
-import java.util.*;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 public class Indigo
 {

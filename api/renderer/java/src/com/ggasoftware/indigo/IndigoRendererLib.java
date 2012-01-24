@@ -14,7 +14,8 @@
 
 package com.ggasoftware.indigo;
 
-import com.sun.jna.*;
+import com.sun.jna.Library;
+import com.sun.jna.Pointer;
 
 public interface IndigoRendererLib extends Library
 {

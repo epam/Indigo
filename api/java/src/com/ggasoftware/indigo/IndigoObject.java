@@ -13,9 +13,12 @@
  ***************************************************************************/
 
 package com.ggasoftware.indigo;
-import com.sun.jna.*;
-import com.sun.jna.ptr.*;
-import java.util.*;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.PointerByReference;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObject>
 {
