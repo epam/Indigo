@@ -13,6 +13,7 @@ endif()
 
 add_library(indigo STATIC ${Indigo_src} ${Indigo_headers})
 add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers})
+SET_TARGET_PROPERTIES(indigo PROPERTIES OUTPUT_NAME "indigo-static")
 SET_TARGET_PROPERTIES(indigo-shared PROPERTIES OUTPUT_NAME "indigo")
 
 if(VISIBILITY_HIDDEN)
@@ -33,3 +34,8 @@ set_property(TARGET indigo-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 
 set_property(TARGET indigo PROPERTY FOLDER "indigo")
 set_property(TARGET indigo-shared PROPERTY FOLDER "indigo")
+
+INSTALL(TARGETS indigo-shared
+		  RUNTIME DESTINATION shared)
+INSTALL(TARGETS indigo DESTINATION static)
+		  

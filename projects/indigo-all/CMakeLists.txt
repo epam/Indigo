@@ -9,3 +9,6 @@ INCLUDE(ConfigureCommon)
 add_subdirectory(../indigo "${CMAKE_CURRENT_BINARY_DIR}/indigo")
 add_subdirectory(../indigo-inchi "${CMAKE_CURRENT_BINARY_DIR}/indigo-inchi")
 add_subdirectory(../indigo-renderer "${CMAKE_CURRENT_BINARY_DIR}/indigo-renderer")
+
+SET(CPACK_GENERATOR "ZIP")
+INCLUDE(CPack)
