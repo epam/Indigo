@@ -1,0 +1,75 @@
+#
+# Copyright (C) 2010-2012 GGA Software Services LLC
+# 
+# This file is part of Indigo toolkit.
+# 
+# This file may be distributed and/or modified under the terms of the
+# GNU General Public License version 3 as published by the Free Software
+# Foundation and appearing in the file LICENSE.GPL included in the
+# packaging of this file.
+# 
+# This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+# WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+import indigo
+from indigo import *
+
+class IndigoInchi(object):
+
+    def __init__ (self, indigo):
+        self.indigo = indigo
+
+        if os.name == 'posix' and not platform.mac_ver()[0]:
+            self._lib = CDLL(indigo.dllpath + "/libindigo-inchi.so")
+        elif os.name == 'nt':
+            self._lib = CDLL(indigo.dllpath + "\indigo-inchi.dll")
+        elif platform.mac_ver()[0]:
+            self._lib = CDLL(indigo.dllpath + "/libindigo-inchi.dylib")
+        else:
+            raise IndigoException("unsupported OS: " + os.name)
+            
+        self._lib.indigoInchiResetOptions.restype = c_int
+        self._lib.indigoInchiResetOptions.argtypes = []
+        self._lib.indigoInchiLoadMolecule.restype = c_int
+        self._lib.indigoInchiLoadMolecule.argtypes = [c_int]
+        self._lib.indigoInchiGetInchi.restype = c_char_p
+        self._lib.indigoInchiGetInchi.argtypes = [c_int]
+        self._lib.indigoInchiGetInchiKey.restype = c_char_p
+        self._lib.indigoInchiGetInchiKey.argtypes = [c_char_p]
+        self._lib.indigoInchiGetWarning.restype = c_char_p
+        self._lib.indigoInchiGetWarning.argtypes = []
+        self._lib.indigoInchiGetLog.restype = c_char_p
+        self._lib.indigoInchiGetLog.argtypes = []
+        self._lib.indigoInchiGetAuxInfo.restype = c_char_p
+        self._lib.indigoInchiGetAuxInfo.argtypes = []
+        
+    def resetOptions (self):
+        self.indigo._setSID()
+        self.indigo._checkResult(self._lib.indigoInchiResetOptions())
+    
+    def loadMolecule (self, inchi):
+        self.indigo._setSID()
+        res = self._checkResult(indigoInchiLoadMolecule(inchi))
+        if res == 0:
+            return None
+        return Indigo.IndigoObject(self.indigo, res)
+
+    def getInchi (self, molecule):
+        self.indigo._setSID()
+        return self.indigo._checkResultString(indigoInchiGetInchi(molecule.id))
+
+    def getInchiKey (self, inchi):
+        self.indigo._setSID()
+        return self.indigo._checkResultString(indigoInchiGetInchiKey(inchi))
+                
+    def getWarning (self):
+        self.indigo._setSID()
+        return self.indigo._checkResultString(indigoInchiGetWarning())
+                                
+    def getLog (self):
+        self.indigo._setSID()
+        return self.indigo._checkResultString(indigoInchiGetLog())
+            
+    def getAuxInfo (self):
+        self.indigo._setSID()
+        return self.indigo._checkResultString(indigoInchiGetAuxInfo())
