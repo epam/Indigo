@@ -48,3 +48,4 @@ if(UNIX OR APPLE)
 endif()
 
 set_target_properties(common PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+pack_static(common)

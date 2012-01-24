@@ -38,3 +38,6 @@ target_link_libraries(indigo-renderer-shared indigo-shared cairo render2d)
 
 set_property(TARGET indigo-renderer PROPERTY FOLDER "indigo-renderer")
 set_property(TARGET indigo-renderer-shared PROPERTY FOLDER "indigo-renderer")
+
+pack_shared(indigo-renderer-shared)
+pack_static(indigo-renderer)

@@ -37,3 +37,7 @@ target_link_libraries(indigo-inchi-shared indigo-shared inchi)
 
 set_property(TARGET indigo-inchi PROPERTY FOLDER "indigo-inchi")
 set_property(TARGET indigo-inchi-shared PROPERTY FOLDER "indigo-inchi")
+
+PACK_SHARED(indigo-inchi-shared)
+PACK_STATIC(indigo-inchi)
+

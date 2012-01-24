@@ -35,7 +35,6 @@ set_property(TARGET indigo-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 set_property(TARGET indigo PROPERTY FOLDER "indigo")
 set_property(TARGET indigo-shared PROPERTY FOLDER "indigo")
 
-INSTALL(TARGETS indigo-shared
-		  RUNTIME DESTINATION shared)
-INSTALL(TARGETS indigo DESTINATION static)
+pack_shared(indigo-shared)
+pack_static(indigo)
 		  
