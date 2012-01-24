@@ -17,15 +17,20 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/base_molecule.h"
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
 
 namespace indigo {
 
 class Molecule;
 class QueryMolecule;
-class BaseMolecule;
 class Output;
 
-class MolfileSaver
+class DLLEXPORT MolfileSaver
 {
 public:
    enum
@@ -98,5 +103,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif
