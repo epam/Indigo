@@ -61,7 +61,7 @@ qword _ProfilingTimer::getTime () const
 
 namespace indigo
 {
-OsLock _profiling_global_lock, _profiling_global_names_lock;
+DLLEXPORT OsLock _profiling_global_lock, _profiling_global_names_lock;
 }
 ObjArray< Array<char> > ProfilingSystem::_names;
 

@@ -20,6 +20,11 @@
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 #define _PROF_GET_NAME_INDEX(var_name, name) \
    static int var_name##_name_index;                             \
    if (var_name##_name_index == 0)                               \
@@ -64,7 +69,7 @@
 namespace indigo {
 class Output;
 
-class ProfilingSystem
+class DLLEXPORT ProfilingSystem
 {
 public:
    static ProfilingSystem& getInstance ();
@@ -121,7 +126,7 @@ private:
 };
 
 // This class shouldn't be used explicitly
-class _ProfilingTimer
+class DLLEXPORT _ProfilingTimer
 {
 public:
    _ProfilingTimer   (int name_index);
@@ -135,9 +140,13 @@ private:
    qword _start_time, _dt;
 };
 
-extern OsLock _profiling_global_lock;
+extern DLLEXPORT OsLock _profiling_global_lock;
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif // __profiling_h__
 
