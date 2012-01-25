@@ -10,7 +10,7 @@ add_subdirectory(../indigo "${CMAKE_CURRENT_BINARY_DIR}/indigo")
 add_subdirectory(../indigo-inchi "${CMAKE_CURRENT_BINARY_DIR}/indigo-inchi")
 add_subdirectory(../indigo-renderer "${CMAKE_CURRENT_BINARY_DIR}/indigo-renderer")
 
-SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "shared/${SYSTEM_FOLDER_NAME}/${SUBSYSTEM_FOLDER_NAME}")
+SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}")
 INCLUDE(InstallRequiredSystemLibraries)
 
 SET(COMPONENTS static shared)
