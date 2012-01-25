@@ -29,4 +29,6 @@ add_subdirectory(../../layout "${CMAKE_CURRENT_BINARY_DIR}/layout")
 
 add_subdirectory(../../api "${CMAKE_CURRENT_BINARY_DIR}/api")
 
+SET(INDIGO_VERSION "${INDIGO_VERSION}" PARENT_SCOPE)
+
 set(INDIGO_CONFIGURED TRUE PARENT_SCOPE)
