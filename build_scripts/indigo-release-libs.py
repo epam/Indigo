@@ -10,6 +10,7 @@ parser.add_option('--generator', '-g', help='this option is passed as -G option 
 parser.add_option('--params', '-p', default="", help='additional build parameters')
 parser.add_option('--config', '-c', default="Release", help='project configuration')
 parser.add_option('--no-build', '-n', default=False, action="store_true", help='configure without building', dest="nobuild")
+parser.add_option('--clean', default=False, action="store_true", help='delete all the build data', dest="clean")
 
 (args, left_args) = parser.parse_args()
 if not args.generator:
@@ -24,6 +25,9 @@ build_dir = (args.generator + " " + args.params)
 build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
 full_build_dir = os.path.join(root, "build", build_dir)
+if os.path.exists(full_build_dir) and args.clean:
+    print("Removing previous project files")
+    shutil.rmtree(full_build_dir)
 if not os.path.exists(full_build_dir):
     os.makedirs(full_build_dir)
 
