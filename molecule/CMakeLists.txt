@@ -10,17 +10,7 @@ source_group("GZip" FILES ${GZip_src} ${GZip_headers})
 
 include_directories(${Common_SOURCE_DIR} ${Molecule_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR} ${TinyXML_HEADERS_DIR})
 
-if(APPLE)
-    set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
-endif()
-
 add_library(molecule ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZip_headers})
-if(VISIBILITY_HIDDEN)
-    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
-endif()   
-if(UNIX OR APPLE)
-    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
-endif() 
 set_target_properties(molecule PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 target_link_libraries(molecule graph z tinyxml)
 

@@ -13,9 +13,13 @@ add_subdirectory(../indigo-inchi "${CMAKE_CURRENT_BINARY_DIR}/indigo-inchi")
 message(STATUS "**** Indigo-renderer ****")
 add_subdirectory(../indigo-renderer "${CMAKE_CURRENT_BINARY_DIR}/indigo-renderer")
 
-SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}")
-INCLUDE(InstallRequiredSystemLibraries)
 
+SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+INCLUDE(InstallRequiredSystemLibraries)
+FOREACH(lib ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})
+	INSTALL(FILES ${lib} DESTINATION "shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}" COMPONENT shared)
+ENDFOREACH()
+  
 SET(COMPONENTS static shared)
 SET(CPACK_COMPONENTS_ALL ${COMPONENTS})
 set(CPACK_ARCHIVE_COMPONENT_INSTALL 1)
