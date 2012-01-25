@@ -3,14 +3,17 @@ import shutil
 import sys
 from os.path import *
 
-import argparse
-parser = argparse.ArgumentParser(description='Indigo libraries build script', 
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('generator', help='this option is passed as -G option for cmake')
-parser.add_argument('-params', '-p', default="", help='additional build parameters')
-parser.add_argument('-config', '-c', default="Release", help='project configuration')
+from optparse import OptionParser
 
-args = parser.parse_args()
+parser = OptionParser(description='Indigo libraries build script')
+parser.add_option('--generator', '-g', help='this option is passed as -G option for cmake')
+parser.add_option('--params', '-p', default="", help='additional build parameters')
+parser.add_option('--config', '-c', default="Release", help='project configuration')
+
+(args, left_args) = parser.parse_args()
+if not args.generator:
+    print("Generator must be specified")
+    exit()
 
 cur_dir = abspath(dirname(__file__))
 root = join(cur_dir, "..")
