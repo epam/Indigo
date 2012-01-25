@@ -16,7 +16,7 @@ if (NOT CAIRO_FOUND)
     include_directories(${Cairo_headers_dir} ${Pixman_headers_dir})
 
     if(UNIX OR APPLE)
-        add_definitions(-DHAVE_STDINT_H -DCAIRO_HAS_PTHREAD -DPTHREAD_MUTEX_RECURSIVE)
+        add_definitions(-DHAVE_STDINT_H -DCAIRO_HAS_PTHREAD)# -DPTHREAD_MUTEX_RECURSIVE)
     endif()
     if(MSVC)
     	add_definitions(-DDISABLE_SOME_FLOATING_POINT) # Fix lround missing problem
