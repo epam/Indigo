@@ -6,8 +6,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../com
 
 INCLUDE(ConfigureCommon)
 
+message(STATUS "**** Indigo ****")
 add_subdirectory(../indigo "${CMAKE_CURRENT_BINARY_DIR}/indigo")
+message(STATUS "**** Indigo-inchi ****")
 add_subdirectory(../indigo-inchi "${CMAKE_CURRENT_BINARY_DIR}/indigo-inchi")
+message(STATUS "**** Indigo-renderer ****")
 add_subdirectory(../indigo-renderer "${CMAKE_CURRENT_BINARY_DIR}/indigo-renderer")
 
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}")

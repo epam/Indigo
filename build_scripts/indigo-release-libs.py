@@ -9,6 +9,7 @@ parser = OptionParser(description='Indigo libraries build script')
 parser.add_option('--generator', '-g', help='this option is passed as -G option for cmake')
 parser.add_option('--params', '-p', default="", help='additional build parameters')
 parser.add_option('--config', '-c', default="Release", help='project configuration')
+parser.add_option('--no-build', '-n', default=False, action="store_true", help='configure without building', dest="nobuild")
 
 (args, left_args) = parser.parse_args()
 if not args.generator:
@@ -28,6 +29,9 @@ if not os.path.exists(full_build_dir):
 
 os.chdir(full_build_dir)
 os.system("cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir))
+
+if args.nobuild:
+    exit(0)
 
 for f in os.listdir(full_build_dir):
     path, ext = os.path.splitext(f)

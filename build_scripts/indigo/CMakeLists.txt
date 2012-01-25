@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
 if (INDIGO_CONFIGURED)
-	message(STATUS "  INDIGO CONFIGURED")
 	return()
 endif()
 
