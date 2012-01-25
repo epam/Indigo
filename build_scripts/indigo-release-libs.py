@@ -19,7 +19,8 @@ cur_dir = abspath(dirname(__file__))
 root = join(cur_dir, "..")
 project_dir = join(cur_dir, "indigo-all")
 
-build_dir = (args.generator + " " + args.params).replace(" ", "_")
+build_dir = (args.generator + " " + args.params)
+build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
 full_build_dir = os.path.join(root, "build", build_dir)
 if not os.path.exists(full_build_dir):
