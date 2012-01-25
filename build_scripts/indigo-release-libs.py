@@ -34,7 +34,7 @@ for f in os.listdir(full_build_dir):
         os.remove(join(full_build_dir, f))
 
 os.system("cmake --build . --config %s" % (args.config))
-if args.params.find("Makefiles") != -1:
+if args.generator.find("Makefiles") != -1:
     os.system("make package")
     os.system("make install")
 else:
