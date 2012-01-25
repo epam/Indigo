@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.6)
 
 project(Indigo)
 
+include(indigo-version.cmake)
+configure_file(${Indigo_SOURCE_DIR}/src/indigo_version.h.in ${Indigo_SOURCE_DIR}/src/indigo_version.h)
+
 file (GLOB Indigo_src src/*.c*)
 file (GLOB Indigo_headers *.h* src/*.h*)
 

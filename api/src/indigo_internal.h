@@ -29,9 +29,10 @@
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_tautomer.h"
 
-/* When Indigo internal code is used dynamically this define should be
- * compared with indigoVersion() to ensure libraries binary compatibility. */
-#define INDIGO_VERSION "1.1-beta8"
+/* When Indigo internal code is used dynamically the INDIGO_VERSION define 
+ * should be compared with indigoVersion() to ensure libraries binary 
+ * compatibility. */
+#include "indigo_version.h"
 
 using namespace indigo;
 
