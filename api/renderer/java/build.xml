@@ -79,7 +79,7 @@
    </target>
    <target name="-post-jar">
         <echo message="Copying jar to the dist directory..."/>
-        <copy todir="../../dist/java"> 
+        <copy todir="../../../dist/java"> 
             <fileset file="${dist.jar}" /> 
         </copy>
    </target>
