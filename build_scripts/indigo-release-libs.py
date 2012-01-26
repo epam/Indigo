@@ -61,12 +61,17 @@ for f in os.listdir(full_build_dir):
         os.remove(join(full_build_dir, f))
 
 os.system("cmake --build . --config %s" % (args.config))
-if args.generator.find("Makefiles") != -1:
+if args.generator.find("Unix Makefiles") != -1:
     os.system("make package")
     os.system("make install")
-else:
+else if args.generator.find("Xcode") != -1:
+    os.system("cmake --build . --target package --config %s" % (args.config))
+    os.system("cmake --build . --target install --config %s" % (args.config))
+else if args.generator.find("Visual Studio") != -1:
     os.system("cmake --build . --target PACKAGE --config %s" % (args.config))
     os.system("cmake --build . --target INSTALL --config %s" % (args.config))
+else:
+    print("Do not know how to run package and install target")
 
 os.chdir(root)
 if not os.path.exists("dist"):
