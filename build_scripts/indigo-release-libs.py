@@ -1,6 +1,7 @@
 import os
 import shutil
 import sys
+import subprocess
 from os.path import *
 
 from optparse import OptionParser
@@ -10,7 +11,7 @@ presets = {
     "win64" : ("Visual Studio 10 Win64", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
-    "mac10.5" : ("Xcode", ""),
+    "mac" : ("Xcode", ""),
 }
 
 parser = OptionParser(description='Indigo libraries build script')
@@ -50,7 +51,7 @@ if not os.path.exists(full_build_dir):
     os.makedirs(full_build_dir)
 
 os.chdir(full_build_dir)
-os.system("cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir))
+subprocess.check_call("cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir))
 
 if args.nobuild:
     exit(0)
@@ -60,16 +61,16 @@ for f in os.listdir(full_build_dir):
     if ext == ".zip":
         os.remove(join(full_build_dir, f))
 
-os.system("cmake --build . --config %s" % (args.config))
+subprocess.check_call("cmake --build . --config %s" % (args.config))
 if args.generator.find("Unix Makefiles") != -1:
-    os.system("make package")
-    os.system("make install")
-else if args.generator.find("Xcode") != -1:
-    os.system("cmake --build . --target package --config %s" % (args.config))
-    os.system("cmake --build . --target install --config %s" % (args.config))
-else if args.generator.find("Visual Studio") != -1:
-    os.system("cmake --build . --target PACKAGE --config %s" % (args.config))
-    os.system("cmake --build . --target INSTALL --config %s" % (args.config))
+    subprocess.check_call("make package")
+    subprocess.check_call("make install")
+elif args.generator.find("Xcode") != -1:
+    subprocess.check_call("cmake --build . --target package --config %s" % (args.config))
+    subprocess.check_call("cmake --build . --target install --config %s" % (args.config))
+elif args.generator.find("Visual Studio") != -1:
+    subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config))
+    subprocess.check_call("cmake --build . --target INSTALL --config %s" % (args.config))
 else:
     print("Do not know how to run package and install target")
 
