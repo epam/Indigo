@@ -15,6 +15,7 @@ include_directories(${IndigoInchi_SOURCE_DIR}
 	${InChI_SOURCE_DIR}/inchi_dll)
 
 if(MSVC)
+    # This should be set only for a shared library to avoid warnings
     add_definitions(-D_WINDLL -DINDIGO_PLUGIN)
 endif()
 
@@ -33,7 +34,13 @@ if(APPLE)
 endif()
 set_target_properties(indigo-inchi PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 set_target_properties(indigo-inchi-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+
 target_link_libraries(indigo-inchi-shared indigo-shared inchi)
+target_link_libraries(indigo-inchi indigo inchi)
+
+SET_TARGET_PROPERTIES(indigo-inchi PROPERTIES OUTPUT_NAME "indigo-inchi-static")
+
+set_property(TARGET indigo-inchi-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 
 set_property(TARGET indigo-inchi PROPERTY FOLDER "indigo-inchi")
 set_property(TARGET indigo-inchi-shared PROPERTY FOLDER "indigo-inchi")
@@ -41,3 +48,8 @@ set_property(TARGET indigo-inchi-shared PROPERTY FOLDER "indigo-inchi")
 PACK_SHARED(indigo-inchi-shared)
 PACK_STATIC(indigo-inchi)
 
+# Tests
+include(DefineTest)
+DEFINE_TEST(indigo-inchi-c-test-static "tests/c/indigo-inchi-test.c" indigo-inchi)
+DEFINE_TEST(indigo-inchi-c-test-shared "tests/c/indigo-inchi-test.c" indigo-inchi-shared)
+target_link_libraries(indigo-inchi-c-test-shared indigo-shared)

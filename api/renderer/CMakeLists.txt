@@ -34,10 +34,22 @@ if(UNIX OR APPLE)
 endif()
 set_target_properties(indigo-renderer PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 set_target_properties(indigo-renderer-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+
 target_link_libraries(indigo-renderer-shared indigo-shared cairo render2d)
+target_link_libraries(indigo-renderer indigo cairo render2d)
+
+SET_TARGET_PROPERTIES(indigo-renderer PROPERTIES OUTPUT_NAME "indigo-renderer-static")
+
+set_property(TARGET indigo-renderer-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 
 set_property(TARGET indigo-renderer PROPERTY FOLDER "indigo-renderer")
 set_property(TARGET indigo-renderer-shared PROPERTY FOLDER "indigo-renderer")
 
 pack_shared(indigo-renderer-shared)
 pack_static(indigo-renderer)
+
+# Tests
+include(DefineTest)
+DEFINE_TEST(indigo-renderer-c-test-static "tests/c/indigo-renderer-test.c" indigo-renderer)
+DEFINE_TEST(indigo-renderer-c-test-shared "tests/c/indigo-renderer-test.c" indigo-renderer-shared)
+target_link_libraries(indigo-renderer-c-test-shared indigo-shared)

@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.6)
 project(Indigo)
 
 include(indigo-version.cmake)
+MESSAGE(STATUS "Indigo version is ${INDIGO_VERSION}")
+SET(INDIGO_VERSION "${INDIGO_VERSION}" PARENT_SCOPE) # promote Indigo version
 configure_file(${Indigo_SOURCE_DIR}/src/indigo_version.h.in ${Indigo_SOURCE_DIR}/src/indigo_version.h)
 
 file (GLOB Indigo_src src/*.c*)
@@ -10,22 +12,10 @@ file (GLOB Indigo_headers *.h* src/*.h*)
 
 include_directories(${Indigo_SOURCE_DIR} ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/..)
 
-if(APPLE)
-    set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
-endif()
-
 add_library(indigo STATIC ${Indigo_src} ${Indigo_headers})
 add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers})
 SET_TARGET_PROPERTIES(indigo PROPERTIES OUTPUT_NAME "indigo-static")
 SET_TARGET_PROPERTIES(indigo-shared PROPERTIES OUTPUT_NAME "indigo")
-
-if(VISIBILITY_HIDDEN)
-    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
-
-endif()    
-if(UNIX OR APPLE)
-    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
-endif()
 
 set_target_properties(indigo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 set_target_properties(indigo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
@@ -40,4 +30,8 @@ set_property(TARGET indigo-shared PROPERTY FOLDER "indigo")
 
 pack_shared(indigo-shared)
 pack_static(indigo)
-		  
+
+# Tests
+include(DefineTest)
+DEFINE_TEST(indigo-c-test-static "tests/c/indigo-test.c" indigo)
+DEFINE_TEST(indigo-c-test-shared "tests/c/indigo-test.c" indigo-shared)

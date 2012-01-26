@@ -114,7 +114,13 @@ wrappers =  [
 wrappers_gen = [ "make-java-wrappers.py", "make-python-wrappers.py" ]
 for w, libs in wrappers:
     clearLibs()
+    any_exists = False
     for lib in libs:
-        unpackToLibs("indigo-libs-%s-%s-shared" % (version, lib))
+        name = "indigo-libs-%s-%s-shared" % (version, lib)
+        if exists(name + ".zip"):
+            any_exists = True
+            unpackToLibs(name)
+    if not any_exists:
+        continue
     for gen in wrappers_gen:
         os.system("%s %s -s \"-%s\"" % (sys.executable, join(api_dir, gen), w))
