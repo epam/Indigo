@@ -18,7 +18,7 @@ parser = OptionParser(description='Indigo libraries build script')
 parser.add_option('--generator', help='this option is passed as -G option for cmake')
 parser.add_option('--params', default="", help='additional build parameters')
 parser.add_option('--config', default="Release", help='project configuration')
-parser.add_option('--no-build', default=False, 
+parser.add_option('--nobuild', default=False, 
     action="store_true", help='configure without building', dest="nobuild")
 parser.add_option('--clean', default=False, action="store_true", 
     help='delete all the build data', dest="clean")
@@ -51,7 +51,7 @@ if not os.path.exists(full_build_dir):
     os.makedirs(full_build_dir)
 
 os.chdir(full_build_dir)
-subprocess.check_call("cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir))
+subprocess.check_call("cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir), shell=True)
 
 if args.nobuild:
     exit(0)
@@ -61,16 +61,16 @@ for f in os.listdir(full_build_dir):
     if ext == ".zip":
         os.remove(join(full_build_dir, f))
 
-subprocess.check_call("cmake --build . --config %s" % (args.config))
+subprocess.check_call("cmake --build . --config %s" % (args.config), shell=True)
 if args.generator.find("Unix Makefiles") != -1:
-    subprocess.check_call("make package")
-    subprocess.check_call("make install")
+    subprocess.check_call("make package", shell=True)
+    subprocess.check_call("make install", shell=True)
 elif args.generator.find("Xcode") != -1:
-    subprocess.check_call("cmake --build . --target package --config %s" % (args.config))
-    subprocess.check_call("cmake --build . --target install --config %s" % (args.config))
+    subprocess.check_call("cmake --build . --target package --config %s" % (args.config), shell=True)
+    subprocess.check_call("cmake --build . --target install --config %s" % (args.config), shell=True)
 elif args.generator.find("Visual Studio") != -1:
-    subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config))
-    subprocess.check_call("cmake --build . --target INSTALL --config %s" % (args.config))
+    subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config), shell=True)
+    subprocess.check_call("cmake --build . --target INSTALL --config %s" % (args.config), shell=True)
 else:
     print("Do not know how to run package and install target")
 
