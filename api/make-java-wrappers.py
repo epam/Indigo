@@ -3,6 +3,13 @@ import shutil
 from os.path import *
 import re
 
+from optparse import OptionParser
+
+parser = OptionParser(description='Indigo Java libraries build script')
+parser.add_option('--suffix', '-s', help='archive suffix', default="")
+
+(args, left_args) = parser.parse_args()
+
 # find indigo version
 version = ""
 for line in open("indigo-version.cmake"):
@@ -35,5 +42,6 @@ os.system("ant jar")
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "java")
 
-os.rename("java", "indigo-java-%s" % (version))
-os.system("zip -r -9 -m indigo-java-%s.zip indigo-java-%s" % (version, version))
+archive_name = "indigo-java-%s" % (version + args.suffix)
+os.rename("java", archive_name)
+os.system("zip -r -9 -m i%s.zip %s" % (archive_name, archive_name))

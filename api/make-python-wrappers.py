@@ -3,6 +3,13 @@ import shutil
 from os.path import *
 import re
 
+from optparse import OptionParser
+
+parser = OptionParser(description='Indigo Java libraries build script')
+parser.add_option('--suffix', '-s', help='archive suffix', default="")
+
+(args, left_args) = parser.parse_args()
+
 # find indigo version
 version = ""
 for line in open("indigo-version.cmake"):
@@ -16,7 +23,7 @@ dist_dir = join(root, "dist")
 if not os.path.exists(dist_dir):
     os.mkdir(dist_dir)
             
-archive_name = "indigo-python-" + version
+archive_name = "indigo-python-" + version + args.suffix
 
 dest = os.path.join(dist_dir, archive_name)
 if os.path.exists(dest):

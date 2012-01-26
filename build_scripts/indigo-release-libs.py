@@ -5,14 +5,32 @@ from os.path import *
 
 from optparse import OptionParser
 
+presets = {
+    "win32" : ("Visual Studio 10", ""),
+    "win64" : ("Visual Studio 10 Win64", ""),
+    "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
+    "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
+    "mac10.5" : ("Xcode", ""),
+}
+
 parser = OptionParser(description='Indigo libraries build script')
-parser.add_option('--generator', '-g', help='this option is passed as -G option for cmake')
-parser.add_option('--params', '-p', default="", help='additional build parameters')
-parser.add_option('--config', '-c', default="Release", help='project configuration')
-parser.add_option('--no-build', '-n', default=False, action="store_true", help='configure without building', dest="nobuild")
-parser.add_option('--clean', default=False, action="store_true", help='delete all the build data', dest="clean")
+parser.add_option('--generator', help='this option is passed as -G option for cmake')
+parser.add_option('--params', default="", help='additional build parameters')
+parser.add_option('--config', default="Release", help='project configuration')
+parser.add_option('--no-build', default=False, 
+    action="store_true", help='configure without building', dest="nobuild")
+parser.add_option('--clean', default=False, action="store_true", 
+    help='delete all the build data', dest="clean")
+parser.add_option('--preset', type="choice", dest="preset", 
+    choices=presets.keys(), help='build preset %s' % (str(presets.keys())))
 
 (args, left_args) = parser.parse_args()
+if len(left_args) > 0:
+    print("Unexpected arguments: %s" % (str(left_args)))
+    exit()
+
+if args.preset:
+    args.generator, args.params = presets[args.preset]
 if not args.generator:
     print("Generator must be specified")
     exit()
