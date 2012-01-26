@@ -12,7 +12,8 @@ parser.add_option('--suffix', '-s', help='archive suffix', default="")
 
 # find indigo version
 version = ""
-for line in open("indigo-version.cmake"):
+cur_dir = split(__file__)[0]
+for line in open(join(cur_dir, "indigo-version.cmake")):
     m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
     if m:
         version = m.group(1)
@@ -44,4 +45,4 @@ shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "java")
 
 archive_name = "indigo-java-%s" % (version + args.suffix)
 os.rename("java", archive_name)
-os.system("zip -r -9 -m i%s.zip %s" % (archive_name, archive_name))
+os.system("zip -r -9 -m %s.zip %s" % (archive_name, archive_name))
