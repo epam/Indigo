@@ -274,17 +274,23 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
       // ( 0]. Nucleus.;
       //   Begin from nontrivial component with maximum code
       //   if there's no then begin from vertex with maximum code and its neighbor with maximum code too
-      int nucleus_idx = 0;
+      int nucleus_idx = -1;
 
       if (!all_trivial)
       {
-         for (i = 1; i < n_comp; i++)
+         for (i = 0; i < n_comp; i++)
          {
             MoleculeLayoutGraph &component = bc_components[i];
 
-            if (!component.isSingleEdge() && component._total_morgan_code > bc_components[nucleus_idx]._total_morgan_code)
-               nucleus_idx = i;
+            if (!component.isSingleEdge())
+            {
+               if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]._total_morgan_code)
+                  nucleus_idx = i;
+            }
          }
+
+         if (nucleus_idx < 0)
+            throw Error("Internal error: cannot find nontrivial component");
 
          MoleculeLayoutGraph &nucleus = bc_components[nucleus_idx];
 
