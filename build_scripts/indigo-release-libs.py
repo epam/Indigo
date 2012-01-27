@@ -41,6 +41,9 @@ cur_dir = abspath(dirname(__file__))
 root = join(cur_dir, "..")
 project_dir = join(cur_dir, "indigo-all")
 
+if args.generator.find("Unix Makefiles") != -1:
+    args.params += " -DCMAKE_BUILD_TYPE=" + args.config
+    
 build_dir = (args.generator + " " + args.params)
 build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
@@ -52,9 +55,9 @@ if not os.path.exists(full_build_dir):
     os.makedirs(full_build_dir)
 
 os.chdir(full_build_dir)
-if args.generator.find("Unix Makefiles") != -1:
-    args.params += " -DCMAKE_BUILD_TYPE=" + args.config
-subprocess.check_call("cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir), shell=True)
+command = "cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir)
+print(command)
+subprocess.check_call(command, shell=True)
 
 if args.nobuild:
     exit(0)
