@@ -52,6 +52,8 @@ if not os.path.exists(full_build_dir):
     os.makedirs(full_build_dir)
 
 os.chdir(full_build_dir)
+if args.generator.find("Unix Makefiles") != -1:
+    args.params += " -DCMAKE_BUILD_TYPE=" + args.config
 subprocess.check_call("cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir), shell=True)
 
 if args.nobuild:
