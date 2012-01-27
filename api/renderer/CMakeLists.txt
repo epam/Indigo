@@ -10,8 +10,10 @@ file (GLOB IndigoRenderer_headers *.h src/*.h*)
 include_directories(${IndigoRenderer_SOURCE_DIR} ${Indigo_SOURCE_DIR} ${Indigo_SOURCE_DIR}/src ${Cairo_SOURCE_DIR} ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/..)
 
 if(MSVC)
-    add_definitions(-D_WINDLL -DINDIGO_PLUGIN)
+    add_definitions(-D_WINDLL)
 endif()
+add_definitions(-DINDIGO_PLUGIN)
+
 if(APPLE)
     set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
 endif()
