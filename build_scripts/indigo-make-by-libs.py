@@ -67,7 +67,8 @@ def join_archives (names, destname):
     
 os.chdir(join(cur_dir, "../dist"))
 #dist = abspath(join("..", "dist"))
-flatten_directory(".")
+if need_join_achieves:
+    flatten_directory(".")
 
 def join_archives_by_pattern (pattern, destname):
     archives = []
