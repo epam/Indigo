@@ -35,8 +35,10 @@ else:
         cur_path = os.path.dirname(__file__)
         dll_full_path = os.path.join(cur_path, "../../../api/python")
         rdll_full_path = os.path.join(cur_path, "../../../api/renderer/python")
+        idll_full_path = os.path.join(cur_path, "../../../api/plugins/inchi/python")
         sys.path.append(dll_full_path)
         sys.path.append(rdll_full_path)
+        sys.path.append(idll_full_path)
         #if 'INDIGO_COVERAGE' in os.environ:
         #    from indigo_coverage import IndigoCoverageWrapper as Indigo
         #else:
@@ -44,6 +46,7 @@ else:
         IndigoObject = Indigo.IndigoObject
         from indigo import IndigoException
         from indigo_renderer import IndigoRenderer
+        from indigo_inchi import IndigoInchi
 
 # product function implementation (it is not implemented Python 2.4)
 def product(*args, **kwds):

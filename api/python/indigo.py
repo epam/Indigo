@@ -47,7 +47,6 @@ class Indigo(object):
   RC_MADE_OR_BROKEN =  4
   RC_ORDER_CHANGED  =  8
 
-  _zlib = None
   _crt = None
   _lib = None
   
@@ -147,7 +146,6 @@ class Indigo(object):
         raise IndigoException("unknown platform " + arch)
       if os.path.exists(path + "/msvcr100.dll"):
         Indigo._crt = CDLL(path + "/msvcr100.dll")
-      Indigo._zlib = CDLL(path + "/zlib.dll")
       Indigo._lib = CDLL(path + "/indigo.dll")
     elif platform.mac_ver()[0]:
       path += "/Mac/"
