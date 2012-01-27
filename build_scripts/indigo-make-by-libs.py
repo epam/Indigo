@@ -7,7 +7,19 @@ import sys
 import re
 from zipfile import *
 from os.path import *
+from optparse import OptionParser
 
+parser = OptionParser(description='Indigo libraries repacking')
+parser.add_option('--libonlyname', help='extract only the library into api/lib')
+
+(args, left_args) = parser.parse_args()
+if len(left_args) > 0:
+    print("Unexpected arguments: %s" % (str(left_args)))
+    exit()
+
+need_join_achieves = (args.libonlyname == None)
+need_gen_wrappers = (args.libonlyname == None)
+    
 # find indigo version
 version = ""
 cur_dir = split(__file__)[0]
@@ -77,10 +89,11 @@ arc_joins = [
     ("indigo-libs-%ver%-mac-static", "indigo-libs-%ver%-mac.+-static" ),
 ]
 
-for dest, pattern in arc_joins:
-    p = pattern.replace("%ver%", version) + "\.zip"
-    d = dest.replace("%ver%", version)
-    join_archives_by_pattern(p, d)
+if need_join_achieves:
+    for dest, pattern in arc_joins:
+        p = pattern.replace("%ver%", version) + "\.zip"
+        d = dest.replace("%ver%", version)
+        join_archives_by_pattern(p, d)
 
     
 print("*** Making wrappers *** ")    
@@ -97,8 +110,6 @@ def clearLibs ():
         else:
             os.remove(ffull)
 
-clearLibs()
-
 def unpackToLibs (name):
     if exists("tmp"):
         shutil.rmtree("tmp")
@@ -112,9 +123,12 @@ wrappers =  [
     ("mac", ["mac"]),
     ("universal", ["win", "linux", "mac"]),
 ]    
+
 wrappers_gen = [ "make-java-wrappers.py", "make-python-wrappers.py" ]
 for w, libs in wrappers:
     clearLibs()
+    if args.libonlyname and w != args.libonlyname:
+        continue
     any_exists = False
     for lib in libs:
         name = "indigo-libs-%s-%s-shared" % (version, lib)
@@ -123,5 +137,6 @@ for w, libs in wrappers:
             unpackToLibs(name)
     if not any_exists:
         continue
-    for gen in wrappers_gen:
-        os.system("%s %s -s \"-%s\"" % (sys.executable, join(api_dir, gen), w))
+    if need_gen_wrappers:
+        for gen in wrappers_gen:
+            os.system("%s %s -s \"-%s\"" % (sys.executable, join(api_dir, gen), w))
