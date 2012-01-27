@@ -37,6 +37,9 @@ set_target_properties(indigo-inchi-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FL
 
 target_link_libraries(indigo-inchi-shared inchi) # do not link indigo-shared here
 target_link_libraries(indigo-inchi indigo inchi)
+if(MSVC)
+    target_link_libraries(indigo-inchi-shared indigo-shared)
+endif()
 
 SET_TARGET_PROPERTIES(indigo-inchi PROPERTIES OUTPUT_NAME "indigo-inchi-static")
 
