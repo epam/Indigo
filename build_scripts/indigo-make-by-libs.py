@@ -10,7 +10,8 @@ from os.path import *
 
 # find indigo version
 version = ""
-for line in open("../api/indigo-version.cmake"):
+cur_dir = split(__file__)[0]
+for line in open(join(cur_dir, "..", "api", "indigo-version.cmake")):
     m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
     if m:
         version = m.group(1)
@@ -52,7 +53,7 @@ def join_archives (names, destname):
         shutil.rmtree(name)
         os.remove("%s.zip" % (name))
     
-os.chdir("../dist")
+os.chdir(join(cur_dir, "../dist"))
 #dist = abspath(join("..", "dist"))
 flatten_directory(".")
 
