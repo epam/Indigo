@@ -38,7 +38,7 @@ set_target_properties(indigo-renderer PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}
 set_target_properties(indigo-renderer-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
 target_link_libraries(indigo-renderer-shared indigo-shared cairo render2d)
-target_link_libraries(indigo-renderer indigo cairo render2d)
+target_link_libraries(indigo-renderer indigo cairo render2d layout)
 
 SET_TARGET_PROPERTIES(indigo-renderer PROPERTIES OUTPUT_NAME "indigo-renderer-static")
 
