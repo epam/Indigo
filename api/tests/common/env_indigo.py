@@ -26,9 +26,11 @@ else:
         cur_path = os.path.dirname(__file__)
         jar_full_path = os.path.abspath(os.path.join(cur_path, "../../../api/java/dist/indigo.jar"))
         rjar_full_path = os.path.abspath(os.path.join(cur_path, "../../../api/renderer/java/dist/indigo-renderer.jar"))   
+        ijar_full_path = os.path.abspath(os.path.join(cur_path, "../../../api/plugins/inchi/java/dist/indigo-inchi.jar"))   
         jna_full_path = os.path.abspath(os.path.join(cur_path, "../../../common/jna/jna.jar"))
         sys.path.append(jar_full_path)
         sys.path.append(rjar_full_path)
+        sys.path.append(ijar_full_path)
         sys.path.append(jna_full_path)    
         from com.ggasoftware.indigo import *
     else:

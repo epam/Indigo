@@ -30,7 +30,43 @@ public class IndigoInchi
       _indigo.setSessionID();
       Indigo.checkResult(this, _lib.indigoInchiResetOptions());
    }
+	
+   public IndigoObject loadMolecule (String inchi)
+   {
+      _indigo.setSessionID();
+      return new IndigoObject(_indigo, Indigo.checkResult(this, _lib.indigoInchiLoadMolecule(inchi)));
+   }
    
+   public String getInchi (IndigoObject molecule)
+   {
+      _indigo.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoInchiGetInchi(molecule.self));
+   }
+   
+   public String getInchiKey (String inchi)
+   {
+      _indigo.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoInchiGetInchiKey(inchi));
+   }
+   
+   public String getWarning ()
+   {
+      _indigo.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoInchiGetWarning());
+   }
+      
+   public String getLog ()
+   {
+      _indigo.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoInchiGetLog());
+   }
+      
+   public String getAuxInfo ()
+   {
+      _indigo.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoInchiGetAuxInfo());
+   }
+         
    private static String getPathToBinary (String path, String filename)
    {
       String dllpath = Indigo.getPlatformDependentPath();

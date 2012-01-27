@@ -15,14 +15,15 @@
 package com.ggasoftware.indigo;
 
 import com.sun.jna.Library;
+import com.sun.jna.Pointer;
 
 public interface IndigoInchiLib extends Library
 {
     int indigoInchiResetOptions ();
     int indigoInchiLoadMolecule (String inchi_string);
-    String indigoInchiGetInchi (int molecule);
-    String indigoInchiGetInchiKey (String inchi_string);
-    String indigoInchiGetWarning ();
-    String indigoInchiGetLog ();
-    String indigoInchiGetAuxInfo ();
+    Pointer indigoInchiGetInchi (int molecule);
+    Pointer indigoInchiGetInchiKey (String inchi_string);
+    Pointer indigoInchiGetWarning ();
+    Pointer indigoInchiGetLog ();
+    Pointer indigoInchiGetAuxInfo ();
 }
