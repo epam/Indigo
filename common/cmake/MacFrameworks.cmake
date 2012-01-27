@@ -12,3 +12,16 @@ macro(ADD_FRAMEWORK fwname appname)
         MESSAGE(STATUS "Framework ${fwname} found at ${FRAMEWORK_${fwname}}")
     endif()
 endmacro(ADD_FRAMEWORK)
+
+macro(FIND_FRAMEWORK fwname)
+    find_library(FRAMEWORK_${fwname}
+        NAMES ${fwname}
+        PATHS ${CMAKE_OSX_SYSROOT}/System/Library
+        PATH_SUFFIXES Frameworks
+        NO_DEFAULT_PATH)
+    if( ${FRAMEWORK_${fwname}} STREQUAL FRAMEWORK_${fwname}-NOTFOUND)
+        MESSAGE(ERROR ": Framework ${fwname} not found")
+    else()
+        MESSAGE(STATUS "Framework ${fwname} found at ${FRAMEWORK_${fwname}}")
+    endif()
+endmacro(ADD_FRAMEWORK)
