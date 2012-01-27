@@ -29,13 +29,13 @@ if(UNIX AND NOT APPLE)
 		LINK_FLAGS -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/indigo_inchi.so.map)
 endif()
 if(APPLE)
-	SET_TARGET_PROPERTIES(indigo-inchi-shared PROPERTIES LINK_FLAGS "-Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/indigo_inchi.explist")
+	SET_TARGET_PROPERTIES(indigo-inchi-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup  -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/indigo_inchi.explist")
 	SET_TARGET_PROPERTIES(indigo-inchi PROPERTIES LINK_FLAGS "-Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/indigo_inchi.explist")
 endif()
 set_target_properties(indigo-inchi PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 set_target_properties(indigo-inchi-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
-target_link_libraries(indigo-inchi-shared indigo-shared inchi)
+target_link_libraries(indigo-inchi-shared inchi) # do not link indigo-shared here
 target_link_libraries(indigo-inchi indigo inchi)
 
 SET_TARGET_PROPERTIES(indigo-inchi PROPERTIES OUTPUT_NAME "indigo-inchi-static")
