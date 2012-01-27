@@ -57,6 +57,8 @@ pattern = ""
 exclude_pattern = ""
 nunit_report_name=""
 
+python_exec = sys.executable
+
 for i in range(1, len(sys.argv), 2):
    if sys.argv[i] == '-p':
       pattern = sys.argv[i + 1]
@@ -68,6 +70,8 @@ for i in range(1, len(sys.argv), 2):
       output_dir_base = sys.argv[i + 1]
    elif sys.argv[i] == '-n':
       nunit_report_name = sys.argv[i + 1]
+   elif sys.argv[i] == '-exec':
+      python_exec = sys.argv[i + 1]
    else:
       print("Unexpected options: %s" % (sys.argv[i]))
       exit()
@@ -124,7 +128,7 @@ for root, filename in tests:
    test_root = os.path.join(tests_dir, root)
 
    t0 = time.time()
-   p = subprocess.Popen([sys.executable, filename], cwd=test_root, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   p = subprocess.Popen([python_exec, filename], cwd=test_root, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    stdout, stderr = p.communicate()
    tspend = time.time() - t0
    
