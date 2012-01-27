@@ -40,4 +40,12 @@ endforeach()
 
 SET(CMAKE_INSTALL_PREFIX ${Indigo_SOURCE_DIR}/libs)
 
+# Add dlopen test
+if (NOT MSVC)
+	ENABLE_TESTING()
+	add_executable(dlopentest ${CMAKE_CURRENT_BINARY_DIR}/../../tests/api.mkv/dlopentest.c)
+	ADD_TEST(dlopenTest ${CMAKE_CURRENT_BINARY_DIR}/../../tests/api.mkv/dlopentest)
+endif()
+
 INCLUDE(CPack)
+INCLUDE(CTest)
