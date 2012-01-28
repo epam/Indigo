@@ -175,7 +175,7 @@ inchi_BondType IndigoInchi::getInchiBondType (int bond_order)
 
 void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input, Array<inchi_Atom> &atoms)
 {
-   QS_DEF(Array<char>, mapping);
+   QS_DEF(Array<int>, mapping);
    mapping.clear_resize(mol.vertexEnd());
    mapping.fffill();
    int index = 0;
@@ -188,7 +188,12 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input, Array<i
    {
       inchi_Atom &atom = atoms[mapping[v]];
       
-      strncpy(atom.elname, Element::toString(mol.getAtomNumber(v)), ATOM_EL_LEN);
+      int atom_number = mol.getAtomNumber(v);
+      if (atom_number == ELEM_PSEUDO)
+         throw IndigoError("Molecule with pseudoatom (%s) cannot be converted into InChI", mol.getPseudoAtom(v));
+      if (atom_number == ELEM_RSITE)
+         throw IndigoError("Molecule with RGroups cannot be converted into InChI");
+      strncpy(atom.elname, Element::toString(atom_number), ATOM_EL_LEN);
 
       Vec3f &c = mol.getAtomXyz(v);
       atom.x = c.x;
