@@ -43,6 +43,8 @@ os.system("ant jar")
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "java")
 
+shutil.copy(os.path.join(root, "common", "jna", "jna.jar"), "java")
+
 archive_name = "indigo-java-%s" % (version + args.suffix)
 os.rename("java", archive_name)
 os.system("zip -r -9 -m %s.zip %s" % (archive_name, archive_name))
