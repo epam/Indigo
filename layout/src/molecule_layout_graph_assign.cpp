@@ -274,10 +274,11 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
       // ( 0]. Nucleus.;
       //   Begin from nontrivial component with maximum code
       //   if there's no then begin from vertex with maximum code and its neighbor with maximum code too
-      int nucleus_idx = -1;
+      int nucleus_idx = 0;
 
       if (!all_trivial)
       {
+         nucleus_idx = -1;
          for (i = 0; i < n_comp; i++)
          {
             MoleculeLayoutGraph &component = bc_components[i];
