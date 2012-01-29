@@ -104,10 +104,27 @@
 #   define PIXMAN_GET_THREAD_LOCAL(name)				\
     (&name)
 
-#elif defined(__MINGW32__)
+#elif defined(__MINGW32__) || defined(_MSC_VER)
 
-#   define _NO_W32_PSEUDO_MODIFIERS
-#   include <windows.h>
+//		# http://comments.gmane.org/gmane.os.opendarwin.webkit.user/2817
+//		# http://msdn.microsoft.com/en-us/library/yx1x886y.aspx
+
+//#   define _NO_W32_PSEUDO_MODIFIERS
+//#   include <windows.h>
+
+/* We can't include <windows.h> as it causes carious clashes with
+ * identifiers in pixman, sigh. So just declare the functions we need
+ * here.
+ */
+void *ICEP(void* volatile* d, void* e, void* c);
+
+extern int __stdcall TlsAlloc (void);
+extern void* __stdcall TlsGetValue (unsigned);
+extern int __stdcall TlsSetValue (unsigned, void *);
+extern void* __stdcall CreateMutexA(void *, int, char *);
+extern int __stdcall CloseHandle(void *);
+extern unsigned __stdcall WaitForSingleObject (void *, unsigned);
+extern int __stdcall ReleaseMutex (void *); 
 
 #   define PIXMAN_DEFINE_THREAD_LOCAL(type, name)			\
     static volatile int tls_ ## name ## _initialized = 0;		\
@@ -132,7 +149,7 @@
 	    if (!tls_ ## name ## _mutex)				\
 	    {								\
 		void *mutex = CreateMutexA (NULL, 0, NULL);		\
-		if (InterlockedCompareExchangePointer (			\
+		if (ICEP (			\
 			&tls_ ## name ## _mutex, mutex, NULL) != NULL)	\
 		{							\
 		    CloseHandle (mutex);				\
@@ -157,13 +174,13 @@
 #   define PIXMAN_GET_THREAD_LOCAL(name)				\
     tls_ ## name ## _get ()
 
-#elif defined(_MSC_VER)
+/*#elif defined(_MSC_VER)
 
 #   define PIXMAN_DEFINE_THREAD_LOCAL(type, name)			\
     static __declspec(thread) type name
 #   define PIXMAN_GET_THREAD_LOCAL(name)				\
     (&name)
-
+*/
 #elif defined(HAVE_PTHREAD_SETSPECIFIC)
 
 #include <pthread.h>
