@@ -1,7 +1,0 @@
-Database: ../../data/zinc-slice.sdf
-Database: ../../data/thiazolidines.sdf
-Database: ../../data/sugars.sdf
-Exception for #262: stereocenters: one bond up, one bond down -- indefinite case
-Database: molecules/stereo_cis_trans.sdf
-Database: molecules/helma.smi
-Database: molecules/benzodiazepine_part.sdf

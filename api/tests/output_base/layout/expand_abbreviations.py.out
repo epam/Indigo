@@ -1,9 +1,0 @@
-*** Molecule set molecules/abbreviations_test.mol ***
-['NO2', 'SiPr', 'NO2', 'NO2', 'Ph', 'COOH', 'COOH']
-Smiles: C1N([N+](=O)[O-])C([N+](=O)[O-])C([N+](=O)[O-])C(CCC(C(=O)O)C(C(=O)O)C2C=CC=CC=2)C1SC(C)C
-*** Molecule set molecules/abbreviations_tests.sdf ***
-[]
-Exception for #1: SMILES saver: unsure hydrogen count on atom #34
-*** Molecule set out/abbreviations_super_mol.mol ***
-['OTf', 'TfO', 'SO2H', 'HO2S', 'SO3H', 'HO3S', 'ONO', 'ONO', 'CN', 'NC', 'Ph', 'Ph', 'ONO2', 'O2NO', 'COOH', 'HOOC', 'OTMS', 'TMSO', 'SiPr', 'iPrS', 'PO3H2', 'H2O3P', 'COOMe', 'MeOOC', 'NO2', 'O2N', 'CF3', 'F3C', 'OiPr', 'iPrO', 'COOEt', 'EtOOC', 'OBz', 'BzO', 'NCO', 'OCN', 'Si-Pr', 'i-PrS']
-Smiles: C(OS(=O)(=O)C(F)(F)F)OS(=O)(=O)C(F)(F)F.C(S(=O)O)S(=O)O.C(S(=O)(=O)O)S(=O)(=O)O.C(ON=O)ON=O.C(C#N)C#N.C(C1C=CC=CC=1)C1C=CC=CC=1.C(ON(=O)=O)ON(=O)=O.C(C(=O)O)C(=O)O.C(O[Si](C)(C)C)O[Si](C)(C)C.C(SC(C)C)SC(C)C.C(P(=O)(O)O)P(=O)(O)O.C(C(=O)OC)C(=O)OC.C([N+](=O)[O-])[N+](=O)[O-].C(C(F)(F)F)C(F)(F)F.C(OC(C)C)OC(C)C.C(C(=O)OCC)C(=O)OCC.C(OC(C1C=CC=CC=1)=O)OC(C1C=CC=CC=1)=O.C(N=C=O)N=C=O.C(SC(C)C)SC(C)C
