@@ -10,6 +10,19 @@ void onError (const char *message, void *context)
    exit(-1);
 }
 
+void testTransform ()
+{
+   int molecule = indigoLoadMoleculeFromString("[O-][C+]1CCCC1[N+]([O-])=O");
+   int transformation = indigoLoadReactionSmartsFromString("[*;+:1]-[*;-:2]>>[*:1]=[*:2]");
+
+   printf("Input: %s\n", indigoSmiles(molecule));
+   // This methods accepts a single molecule or Indigo array of molecules
+   // and modifies the source molecule in-place.
+   indigoTransform(transformation, molecule);
+   printf("Output: %s\n", indigoSmiles(molecule));
+   indigoFree(molecule);
+   indigoFree(transformation);
+}
 
 int main (void)
 {
@@ -27,5 +40,8 @@ int main (void)
       printf("Canonical SMILES is invalid for a molecule: %s != %s\n", simple_mol, indigoCanonicalSmiles(m));
       exit(-1);
    }
+   
+   testTransform();
+   
    return 0;
 }

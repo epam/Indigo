@@ -11,6 +11,45 @@ void onError (const char *message, void *context)
    exit(-1);
 }
 
+#ifdef WIN32
+#include <Windows.h>
+#endif
+
+void testHDC ()
+{
+   int buffer_object;
+   char *raw_ptr;
+   int size;
+#ifdef WIN32
+   HDC hdc, hdc2;
+#endif
+   int hdc_buffer_object;
+   int molecule;
+
+   molecule = indigoLoadMoleculeFromString("C1=CC=CC=C1");
+   indigoSetOption("render-output-format", "png");
+   indigoSetOption("render-background-color", "255, 255, 255");
+   indigoRenderToFile(molecule, "indigo-renderer-test.png");
+
+   buffer_object = indigoWriteBuffer();
+   indigoRender(molecule, buffer_object);
+
+   indigoToBuffer(buffer_object, &raw_ptr, &size);
+   //<Copy the raw_ptr data anywhere>
+   indigoFree(buffer_object);
+
+#ifdef WIN32
+   hdc = GetWindowDC(NULL);
+   hdc2 = CreateCompatibleDC(hdc);
+
+   hdc_buffer_object = indigoRenderWriteHDC(hdc2, 0);
+   indigoRender(molecule, hdc_buffer_object);
+   indigoFree(hdc_buffer_object);
+#endif
+
+   indigoFree(molecule);
+
+}
 
 int main (void)
 {
@@ -27,5 +66,6 @@ int main (void)
    indigoSetOption("render-background-color", "255, 255, 255"); 
    indigoRenderToFile(m, "indigo-renderer-test.png"); 
 
+   testHDC();
    return 0;
 }
