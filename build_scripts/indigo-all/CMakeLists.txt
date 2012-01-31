@@ -44,9 +44,8 @@ SET(CMAKE_INSTALL_PREFIX ${Indigo_SOURCE_DIR}/libs)
 LIBRARY_NAME(indigo)
 LIBRARY_NAME(indigo-inchi)
 LIBRARY_NAME(indigo-renderer)
-
 add_executable(dlopen-test ${CMAKE_CURRENT_BINARY_DIR}/../../api/tests/c/dlopen-test.c)
-add_test(dlopen-test ${CMAKE_CURRENT_BINARY_DIR}/dlopen-test ${Indigo_SOURCE_DIR}/libs/${indigo_NAME} ${Indigo_SOURCE_DIR}/libs/${indigo-inchi_NAME} ${Indigo_SOURCE_DIR}/libs/${indigo-renderer_NAME})
+add_test(dlopen-test ${CMAKE_CURRENT_BIN_DIR}/dist/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/shared/dlopen-test ${Indigo_SOURCE_DIR}/libs/${indigo_NAME} ${Indigo_SOURCE_DIR}/libs/${indigo-inchi_NAME} ${Indigo_SOURCE_DIR}/libs/${indigo-renderer_NAME})
 
 INCLUDE(CPack)
 INCLUDE(CTest)                        	
