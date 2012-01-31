@@ -39,14 +39,14 @@ foreach(comp ${COMPONENTS})
 endforeach()
 
 SET(CMAKE_INSTALL_PREFIX ${Indigo_SOURCE_DIR}/libs)
+                     
+# DLOPEN TESTS                                                      
+LIBRARY_NAME(indigo)
+LIBRARY_NAME(indigo-inchi)
+LIBRARY_NAME(indigo-renderer)
 
-# MR 2 MK: Test is not working.
-# Add dlopen test
-#if (NOT MSVC)
-#	ENABLE_TESTING()  # Testing has already been enabled in the begining
-#	add_executable(dlopentest ${CMAKE_CURRENT_BINARY_DIR}/../../tests/api.mkv/dlopentest.c)
-#	ADD_TEST(dlopenTest ${CMAKE_CURRENT_BINARY_DIR}/../../tests/api.mkv/dlopentest)
-#endif()
+add_executable(dlopen-test ${CMAKE_CURRENT_BINARY_DIR}/../../api/tests/c/dlopen-test.c)
+add_test(dlopen-test ${CMAKE_CURRENT_BINARY_DIR}/dlopen-test ${Indigo_SOURCE_DIR}/libs/${indigo_NAME} ${Indigo_SOURCE_DIR}/libs/${indigo-inchi_NAME} ${Indigo_SOURCE_DIR}/libs/${indigo-renderer_NAME})
 
 INCLUDE(CPack)
-INCLUDE(CTest)
+INCLUDE(CTest)                        	
