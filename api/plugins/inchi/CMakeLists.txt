@@ -49,10 +49,7 @@ if(APPLE)
 endif()              
 set_target_properties(indigo-inchi-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
-target_link_libraries(indigo-inchi-shared inchi) # do not link indigo-shared here
-if(MSVC)
-    target_link_libraries(indigo-inchi-shared indigo-shared)
-endif()
+target_link_libraries(indigo-inchi-shared inchi indigo-shared)
 set_property(TARGET indigo-inchi-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 set_property(TARGET indigo-inchi-shared PROPERTY FOLDER "indigo-inchi")
 PACK_SHARED(indigo-inchi-shared)
