@@ -16,7 +16,7 @@ endif()
 add_definitions(-DINDIGO_PLUGIN)
 
 # Indigo Renderer static
-if not (NO_STATIC)
+if (NOT NO_STATIC)
 	add_library(indigo-renderer STATIC ${IndigoRenderer_src} ${IndigoRenderer_headers})
 	if(UNIX AND NOT APPLE)
 		SET_TARGET_PROPERTIES(indigo-renderer PROPERTIES LINK_FLAGS -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/indigo_renderer.so.map)
