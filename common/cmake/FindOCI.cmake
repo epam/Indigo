@@ -11,7 +11,7 @@ FIND_PATH(OCI_INCLUDE_DIRS oci.h
 IF (WIN32)
   SET(LIBORASDK "orasdk.lib")
 ELSEIF(UNIX)
-  SET(LIBORASDK "liboci.so")
+  SET(LIBORASDK "liborasdk.so")
 ELSEIF(APPLE)
   SET(LIBORASDK "liborasdk.dylib")
 ENDIF()
