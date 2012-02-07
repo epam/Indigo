@@ -100,7 +100,7 @@ private:
    //sets up input mapping
    void _initMappings(BaseReaction& reaction);
    //searches AAM using mcs and substructure functions
-   void _createReactionMap(BaseReaction& reaction);
+   void _createReactionMap();
    //controls AAM due to reacting centers in reaction; this could change reacting centers or AAM
 
    void _cleanReactants(BaseReaction& reaction);
@@ -110,7 +110,7 @@ private:
    bool _checkAtomMapping(bool change_rc, bool change_aam, bool change_rc_null);
 
    //arranges all maps to AAM
-   void _setupReactionMap(BaseReaction& reaction, Array<int> &mol_mapping, ObjArray< Array<int> >& mappings);
+   void _setupReactionMap(Array<int> &mol_mapping, ObjArray< Array<int> >& mappings);
    //takes account of possibility for molecule dissociation 
    void _considerDissociation();
 
@@ -123,7 +123,8 @@ private:
    static void _permutation(Array<int>& ,ObjArray< Array<int> > &);
 
 
-   BaseReaction& _reaction;
+   BaseReaction& _initReaction;
+   AutoPtr<BaseReaction> _reactionCopy;
 
    Array<int> _usedVertices;
    int _maxMapUsed;
@@ -145,7 +146,9 @@ public:
       CONDITION_ALL       = 0x000F,
       
       //maximum iteratins in exact mcs method
-      MAX_ITERATION_NUMBER = 50000
+      MAX_ITERATION_NUMBER = 50000,
+      HIGH_PRIORITY_SCORE = 1000
+
    };
    RSubstructureMcs(BaseReaction& reaction, int subNum, int superNum, const ReactionAutomapper& context);
    RSubstructureMcs(BaseReaction &reaction, BaseMolecule& sub, BaseMolecule& super, const ReactionAutomapper& context);

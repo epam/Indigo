@@ -29,7 +29,7 @@ ignore_atom_charges(false),
 ignore_atom_valence(false),
 ignore_atom_isotopes(false),
 ignore_atom_radicals(false),
-_reaction(reaction),
+_initReaction(reaction),
 _maxMapUsed(0),
 _maxVertUsed(0),
 _maxCompleteMap(0),
@@ -38,7 +38,6 @@ _mode(AAM_REGEN_DISCARD){
 
 void ReactionAutomapper::automap(int mode) {
    _mode = mode;
-   AutoPtr<BaseReaction> reaction_copy;
 
    QS_DEF(ObjArray< Array<int> >, mol_mappings);
    QS_DEF(Array<int>, react_mapping);
@@ -48,13 +47,17 @@ void ReactionAutomapper::automap(int mode) {
     */
    if (mode != AAM_REGEN_DISCARD) 
       _checkAtomMapping(true, false, false);
+   /*
+    * Clone reaction
+    */
+   _reactionCopy.reset(_initReaction.neu());
+   BaseReaction& reaction = _reactionCopy.ref();
    
-   reaction_copy.reset(_reaction.neu());
-   reaction_copy->clone(_reaction, &react_mapping, 0, &mol_mappings);
-   reaction_copy->aromatize();
+   reaction.clone(_initReaction, &react_mapping, 0, &mol_mappings);
+   reaction.aromatize();
 
-   _createReactionMap(reaction_copy.ref());
-   _setupReactionMap(reaction_copy.ref(), react_mapping, mol_mappings);
+   _createReactionMap();
+   _setupReactionMap(react_mapping, mol_mappings);
 
    _considerDissociation();
    _considerDimerization();
@@ -69,6 +72,8 @@ void ReactionAutomapper::automap(int mode) {
 void ReactionAutomapper::_initMappings(BaseReaction& reaction){
 
    int i,j;
+
+   BaseReaction& copy_reaction = _reactionCopy.ref();
 
    if(_mode == AAM_REGEN_ALTER || _mode ==  AAM_REGEN_DISCARD){
       int current_map = 0;
@@ -89,7 +94,7 @@ void ReactionAutomapper::_initMappings(BaseReaction& reaction){
          for (j = 0; j < reaction.getAAMArray(i).size(); j++){
             used_maps.find_or_insert(reaction.getAAM(i, j));
             if(reaction.getAAM(i, j) > max_value)
-               max_value = _reaction.getAAM(i, j);
+               max_value = copy_reaction.getAAM(i, j);
          }
       }
       int new_size = used_maps.size();
@@ -117,12 +122,14 @@ void ReactionAutomapper::_initMappings(BaseReaction& reaction){
    }
 }
 
-void ReactionAutomapper::_createReactionMap(BaseReaction& reaction){
+void ReactionAutomapper::_createReactionMap(){
    int i, j;
    
    QS_DEF(ObjArray< Array<int> >, permulations);
    QS_DEF(Array<int>, product_mapping_tmp);
    QS_DEF(Array<int>, reactant_indexes);
+   
+   BaseReaction& reaction = _reactionCopy.ref();
    
 
    ReactionMapMatchingData react_map_match(reaction);
@@ -130,7 +137,7 @@ void ReactionAutomapper::_createReactionMap(BaseReaction& reaction){
 
    _initMappings(reaction);
 
-   reactant_indexes.resize(_reaction.reactantsCount());
+   reactant_indexes.resize(reaction.reactantsCount());
    j = 0;
    for(i = reaction.reactantBegin(); i < reaction.reactantEnd(); i = reaction.reactantNext(i)) {
       reactant_indexes[j] = i;
@@ -194,6 +201,8 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
    QS_DEF(Array<int>, rsub_map_out);
    QS_DEF(Array<int>, vertices_to_remove);
    int map_complete = 0;
+
+   BaseReaction& _reaction = _reactionCopy.ref();
 
    BaseMolecule& product_cut = reaction.getBaseMolecule(product);
    /*
@@ -289,7 +298,7 @@ void ReactionAutomapper::_chooseBestMapping(BaseReaction& reaction, Array<int>& 
 
 bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool change_rc_null) {
 
-   ReactionMapMatchingData map_match(_reaction);
+   ReactionMapMatchingData map_match(_initReaction);
    map_match.createBondMatchingData();
    
    QS_DEF(ObjArray< Array<int> >, bond_centers);
@@ -304,25 +313,25 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
    bool unchanged = true;
    
    bond_centers.clear();
-   for(int i = 0; i < _reaction.end(); ++i)
+   for(int i = 0; i < _initReaction.end(); ++i)
       bond_centers.push();
-   for(int i = _reaction.begin(); i < _reaction.end(); i = _reaction.next(i)) {
-      bond_centers[i].resize(_reaction.getBaseMolecule(i).edgeEnd());
+   for(int i = _initReaction.begin(); i < _initReaction.end(); i = _initReaction.next(i)) {
+      bond_centers[i].resize(_initReaction.getBaseMolecule(i).edgeEnd());
       bond_centers[i].zerofill();
    }
 
-   reaction_copy_ptr.reset(_reaction.neu());
+   reaction_copy_ptr.reset(_initReaction.neu());
 
    BaseReaction &reaction_copy = reaction_copy_ptr.ref();
 
-   reaction_copy.clone(_reaction, &rmol_map, 0, &react_invmap);
+   reaction_copy.clone(_initReaction, &rmol_map, 0, &react_invmap);
    reaction_copy.aromatize();
 
-   for (int mol_idx = _reaction.begin(); mol_idx != _reaction.end(); mol_idx = _reaction.next(mol_idx)) {
-      BaseMolecule& rmol = _reaction.getBaseMolecule(mol_idx);
+   for (int mol_idx = _initReaction.begin(); mol_idx != _initReaction.end(); mol_idx = _initReaction.next(mol_idx)) {
+      BaseMolecule& rmol = _initReaction.getBaseMolecule(mol_idx);
       for (int vert = rmol.vertexBegin(); vert < rmol.vertexEnd(); vert = rmol.vertexNext(vert)) {
-         if (_reaction.getAAM(mol_idx, vert) > 0 && map_match.beginAtomMap(mol_idx, vert) >= map_match.endAtomMap()) {
-            _reaction.getAAMArray(mol_idx).at(vert) = 0;
+         if (_initReaction.getAAM(mol_idx, vert) > 0 && map_match.beginAtomMap(mol_idx, vert) >= map_match.endAtomMap()) {
+            _initReaction.getAAMArray(mol_idx).at(vert) = 0;
          }
       }
    }
@@ -334,11 +343,11 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
    RSubstructureMcs rsm(reaction_copy, tmp_mol, tmp_mol, *this);
 
 
-   for (int mol_idx = _reaction.begin(); mol_idx != _reaction.end(); mol_idx = _reaction.next(mol_idx)) {
-      BaseMolecule& rmol = _reaction.getBaseMolecule(mol_idx);
+   for (int mol_idx = _initReaction.begin(); mol_idx != _initReaction.end(); mol_idx = _initReaction.next(mol_idx)) {
+      BaseMolecule& rmol = _initReaction.getBaseMolecule(mol_idx);
       for (int bond_idx = rmol.edgeBegin(); bond_idx < rmol.edgeEnd(); bond_idx = rmol.edgeNext(bond_idx)) {
          for(int opp_idx = map_match.beginMap(mol_idx); opp_idx < map_match.endMap(); opp_idx = map_match.nextMap(mol_idx, opp_idx)) {
-            BaseMolecule& pmol = _reaction.getBaseMolecule(opp_idx);
+            BaseMolecule& pmol = _initReaction.getBaseMolecule(opp_idx);
             map_match.getBondMap(mol_idx, opp_idx, bond_idx, &mapping);
 
             if(mapping.size() == 0) {
@@ -354,7 +363,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                      for (int nei_vert = end_vert.neiBegin(); nei_vert < end_vert.neiEnd(); nei_vert = end_vert.neiNext(nei_vert)) {
                         int end_nei_vert = end_vert.neiVertex(nei_vert);
 //                        if (_reaction.getAAM(opp_idx, end_nei_vert) == 0 && MaxCommonSubmolecule::matchAtoms(rmol, pmol, 0, ve_end, end_nei_vert, 0)) {
-                        if (_reaction.getAAM(opp_idx, end_nei_vert) == 0 && RSubstructureMcs::atomConditionReact(rmol, pmol, 0, ve_end, end_nei_vert, &rsm)) {
+                        if (_initReaction.getAAM(opp_idx, end_nei_vert) == 0 && RSubstructureMcs::atomConditionReact(rmol, pmol, 0, ve_end, end_nei_vert, &rsm)) {
                            change_broken = false;
                            break;
                         }
@@ -373,7 +382,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                      for (int nei_vert = beg_vert.neiBegin(); nei_vert < beg_vert.neiEnd(); nei_vert = beg_vert.neiNext(nei_vert)) {
                         int beg_nei_vert = beg_vert.neiVertex(nei_vert);
 //                        if (_reaction.getAAM(opp_idx, beg_nei_vert) == 0 && MaxCommonSubmolecule::matchAtoms(rmol, pmol, 0, ve_beg, beg_nei_vert, 0)) {
-                        if (_reaction.getAAM(opp_idx, beg_nei_vert) == 0 && RSubstructureMcs::atomConditionReact(rmol, pmol, 0, ve_beg, beg_nei_vert, &rsm)) {
+                        if (_initReaction.getAAM(opp_idx, beg_nei_vert) == 0 && RSubstructureMcs::atomConditionReact(rmol, pmol, 0, ve_beg, beg_nei_vert, &rsm)) {
                            change_broken = false;
                            break;
                         }
@@ -402,7 +411,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                   bool prod_arom = cp_mol.getBondOrder(opp_edge_idx) == BOND_AROMATIC;
 
                   if (change_aam && (react_arom || prod_arom) ) {
-                      bond_centers[mol_idx][bond_idx] |= _reaction.getReactingCenter(mol_idx, bond_idx);
+                      bond_centers[mol_idx][bond_idx] |= _initReaction.getReactingCenter(mol_idx, bond_idx);
                       continue;
                   }
 
@@ -423,24 +432,24 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
       }
    }
 
-   for (int mol_idx = _reaction.begin(); mol_idx != _reaction.end(); mol_idx = _reaction.next(mol_idx)) {
-      BaseMolecule& rmol = _reaction.getBaseMolecule(mol_idx);
+   for (int mol_idx = _initReaction.begin(); mol_idx != _initReaction.end(); mol_idx = _initReaction.next(mol_idx)) {
+      BaseMolecule& rmol = _initReaction.getBaseMolecule(mol_idx);
       for (int bond_idx = rmol.edgeBegin(); bond_idx < rmol.edgeEnd(); bond_idx = rmol.edgeNext(bond_idx)) {
-         int rc_bond = _reaction.getReactingCenter(mol_idx, bond_idx);
+         int rc_bond = _initReaction.getReactingCenter(mol_idx, bond_idx);
          if(rc_bond == RC_NOT_CENTER)
             rc_bond = RC_UNCHANGED;
-         bool aam_bond = ((_reaction.getAAM(mol_idx, rmol.getEdge(bond_idx).beg) > 0) && (_reaction.getAAM(mol_idx, rmol.getEdge(bond_idx).end) > 0)) || change_rc_null;
+         bool aam_bond = ((_initReaction.getAAM(mol_idx, rmol.getEdge(bond_idx).beg) > 0) && (_initReaction.getAAM(mol_idx, rmol.getEdge(bond_idx).end) > 0)) || change_rc_null;
          if (aam_bond && ((bond_centers[mol_idx][bond_idx] & ~rc_bond) || rc_bond == 0)) {
             if (!change_rc && !change_aam) {
                return false;
             } else if(change_rc) {
-               _reaction.getReactingCenterArray(mol_idx).at(bond_idx) = bond_centers[mol_idx][bond_idx];
+               _initReaction.getReactingCenterArray(mol_idx).at(bond_idx) = bond_centers[mol_idx][bond_idx];
                unchanged = false;
-            } else if(change_aam && rc_bond && _reaction.getSideType(mol_idx)== Reaction::REACTANT) {
+            } else if(change_aam && rc_bond && _initReaction.getSideType(mol_idx)== Reaction::REACTANT) {
                //only rc != 0 0 can match on every type of the bond
                //only reactants rules (lazy users)
-               null_map.push(_reaction.getAAM(mol_idx, rmol.getEdge(bond_idx).beg));
-               null_map.push(_reaction.getAAM(mol_idx, rmol.getEdge(bond_idx).end));
+               null_map.push(_initReaction.getAAM(mol_idx, rmol.getEdge(bond_idx).beg));
+               null_map.push(_initReaction.getAAM(mol_idx, rmol.getEdge(bond_idx).end));
                unchanged = false;
             }
          }
@@ -450,12 +459,12 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
     * erase all wrong map
     */
    if(change_aam) {
-      for(int i = _reaction.begin(); i < _reaction.end(); i = _reaction.next(i)) {
-         BaseMolecule& rmol = _reaction.getBaseMolecule(i);
+      for(int i = _initReaction.begin(); i < _initReaction.end(); i = _initReaction.next(i)) {
+         BaseMolecule& rmol = _initReaction.getBaseMolecule(i);
          for(int atom = rmol.vertexBegin(); atom < rmol.vertexEnd(); atom = rmol.vertexNext(atom)) {
             for(int j = 0; j < null_map.size(); ++j) {
-               if(null_map[j] == _reaction.getAAM(i, atom))
-                  _reaction.getAAMArray(i).at(atom) = 0;
+               if(null_map[j] == _initReaction.getAAM(i, atom))
+                  _initReaction.getAAMArray(i).at(atom) = 0;
             }
          }
       }
@@ -497,13 +506,16 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
 
 }
 
-void ReactionAutomapper::_setupReactionMap(BaseReaction& reaction_copy, Array<int> &react_mapping, ObjArray< Array<int> >& mol_mappings){
+void ReactionAutomapper::_setupReactionMap(Array<int> &react_mapping, ObjArray< Array<int> >& mol_mappings){
    int mol_idx,j,v;
    if(_mode == AAM_REGEN_KEEP)
       _usedVertices.zerofill();
-   for (mol_idx = _reaction.productBegin(); mol_idx < _reaction.productEnd(); mol_idx = _reaction.productNext(mol_idx)){
+   
+   BaseReaction& reaction_copy = _reactionCopy.ref();
+   
+   for (mol_idx = _initReaction.productBegin(); mol_idx < _initReaction.productEnd(); mol_idx = _initReaction.productNext(mol_idx)){
       int mol_idx_u = react_mapping[mol_idx];
-      Array<int>& react_aam = _reaction.getAAMArray(mol_idx);
+      Array<int>& react_aam = _initReaction.getAAMArray(mol_idx);
       for (j = 0; j < react_aam.size(); j++){
          if(mol_mappings[mol_idx][j] == -1)
             continue;
@@ -514,15 +526,15 @@ void ReactionAutomapper::_setupReactionMap(BaseReaction& reaction_copy, Array<in
          if(_mode == AAM_REGEN_ALTER)
             react_aam[j] = v;
 
-         if(_mode == AAM_REGEN_KEEP && _reaction.getAAM(mol_idx, j) == 0){
+         if(_mode == AAM_REGEN_KEEP && _initReaction.getAAM(mol_idx, j) == 0){
             react_aam[j] = v;
             _usedVertices[v] = 1;
          }
       }
    }
-   for (mol_idx = _reaction.reactantBegin(); mol_idx < _reaction.reactantEnd(); mol_idx = _reaction.reactantNext(mol_idx)){
+   for (mol_idx = _initReaction.reactantBegin(); mol_idx < _initReaction.reactantEnd(); mol_idx = _initReaction.reactantNext(mol_idx)){
       int mol_idx_u = react_mapping[mol_idx];
-      Array<int>& react_aam = _reaction.getAAMArray(mol_idx);
+      Array<int>& react_aam = _initReaction.getAAMArray(mol_idx);
       for (j = 0; j < react_aam.size(); j++) {
          if(mol_mappings[mol_idx][j] == -1)
             continue;
@@ -531,7 +543,7 @@ void ReactionAutomapper::_setupReactionMap(BaseReaction& reaction_copy, Array<in
             react_aam[j] = v*_usedVertices[v];
          if(_mode == AAM_REGEN_ALTER)
             react_aam[j] = v*_usedVertices[v];
-         if(_mode == AAM_REGEN_KEEP && _reaction.getAAM(mol_idx, j) == 0)
+         if(_mode == AAM_REGEN_KEEP && _initReaction.getAAM(mol_idx, j) == 0)
             react_aam[j] = v*_usedVertices[v];
       }
    }
@@ -542,6 +554,8 @@ void ReactionAutomapper::_considerDissociation(){
    Molecule full_map_cut;
    QS_DEF(Array<int>,map);
    int i, j, mcv, mcvsum;
+
+   BaseReaction& _reaction = _reactionCopy.ref();
 
    for (i = _reaction.begin(); i < _reaction.end(); i = _reaction.next(i)){
       mcvsum = 0;
@@ -598,6 +612,8 @@ void ReactionAutomapper::_considerDimerization() {
    QS_DEF(ObjArray< Array<int> >, inv_mappings);
    QS_DEF(Array<int>, sub_map);
    QS_DEF(Array<int>, max_sub_map);
+   
+   BaseReaction& _reaction = _reactionCopy.ref();
    AutoPtr<BaseReaction> reaction_copy_ptr;
 
    bool way_exit = true, map_changed = false;
@@ -664,7 +680,10 @@ void ReactionAutomapper::_considerDimerization() {
 int ReactionAutomapper::_validMapFound(BaseReaction& reaction, int react, int prod, Array<int>& sub_map) const {
 
    BaseMolecule &react_copy = reaction.getBaseMolecule(react);
+   
    int result = 0;
+   BaseReaction& _reaction = _reactionCopy.ref();
+   
    react_copy.clone(_reaction.getBaseMolecule(react), 0, 0);
    react_copy.aromatize();
 
@@ -1149,7 +1168,7 @@ void RSubstructureMcs::getReactingCenters(BaseMolecule& mol1, BaseMolecule& mol2
    }
 }
 
-bool RSubstructureMcs::atomConditionReact (Graph &g1, Graph &g2, const int *core_sub, int i, int j, void* userdata) {
+bool RSubstructureMcs::atomConditionReact (Graph &g1, Graph &g2, const int *, int i, int j, void* userdata) {
    BaseMolecule &mol1 = (BaseMolecule &)g1;
    BaseMolecule &mol2 = (BaseMolecule &)g2;
    if(userdata == 0)
@@ -1540,15 +1559,25 @@ int RSubstructureMcs::_scoreSolution(Molecule *sub_molecule, Molecule *super_mol
       }
    }
    /*
-    * Score bond order keeping
+    * Score bond order keeping with priority
     */
    for (int sub_idx = 0; sub_idx < edge_map.size(); ++sub_idx) {
       int super_idx = edge_map[sub_idx];
       if(super_idx >= 0) {
          if(bondConditionReact(*sub_molecule, *super_molecule, sub_idx, super_idx, this)
                  &&(sub_molecule->getBondOrder(sub_idx) == super_molecule->getBondOrder(super_idx))) {
-            ++res_score;
+            res_score += HIGH_PRIORITY_SCORE;
          }
+      }
+   }
+   /*
+    * Score atom number keeping with priority
+    */
+   for (int sub_idx = 0; sub_idx < v_map.size(); ++sub_idx) {
+      int super_idx = v_map[sub_idx];
+      if(super_idx >= 0) {
+         if(atomConditionReact(*sub_molecule, *super_molecule, 0, sub_idx, super_idx, this))
+            res_score += HIGH_PRIORITY_SCORE;
       }
    }
 
