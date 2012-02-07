@@ -555,13 +555,11 @@ void ReactionAutomapper::_considerDissociation(){
    QS_DEF(Array<int>,map);
    int i, j, mcv, mcvsum;
 
-   BaseReaction& _reaction = _reactionCopy.ref();
-
-   for (i = _reaction.begin(); i < _reaction.end(); i = _reaction.next(i)){
+   for (i = _initReaction.begin(); i < _initReaction.end(); i = _initReaction.next(i)){
       mcvsum = 0;
       mcv = 0;
-      for (j = 0; j < _reaction.getAAMArray(i).size(); j++){
-         if(_reaction.getAAM(i, j) == 0)
+      for (j = 0; j < _initReaction.getAAMArray(i).size(); j++){
+         if(_initReaction.getAAM(i, j) == 0)
             mcvsum++;
          else
             mcv++;
@@ -569,39 +567,39 @@ void ReactionAutomapper::_considerDissociation(){
       if(mcvsum < mcv || mcv <= _MIN_VERTEX_SUB)
          continue;
       
-      full_map_cut.clone(_reaction.getBaseMolecule(i), 0, 0);
+      full_map_cut.clone(_initReaction.getBaseMolecule(i), 0, 0);
       MoleculeAromatizer::aromatizeBonds(full_map_cut);
 
-      for (j = 0; j < _reaction.getAAMArray(i).size(); j++){
-         if(_reaction.getAAM(i, j) == 0)
+      for (j = 0; j < _initReaction.getAAMArray(i).size(); j++){
+         if(_initReaction.getAAM(i, j) == 0)
             full_map_cut.removeAtom(j);
       }
       if(full_map_cut.vertexCount() == 0)
          continue;
       while(mcvsum >= mcv){
-         null_map_cut.clone(_reaction.getBaseMolecule(i), 0, 0);
+         null_map_cut.clone(_initReaction.getBaseMolecule(i), 0, 0);
          MoleculeAromatizer::aromatizeBonds(null_map_cut);
-         for (j = 0; j < _reaction.getAAMArray(i).size(); j++){
-            if(_reaction.getAAM(i, j) > 0 || _reaction.getBaseMolecule(i).getAtomNumber(j) == ELEM_H)
+         for (j = 0; j < _initReaction.getAAMArray(i).size(); j++){
+            if(_initReaction.getAAM(i, j) > 0 || _initReaction.getBaseMolecule(i).getAtomNumber(j) == ELEM_H)
                null_map_cut.removeAtom(j);
          }
          if(null_map_cut.vertexCount() == 0)
             break;
          
-         RSubstructureMcs rsm(_reaction, full_map_cut, null_map_cut, *this);
+         RSubstructureMcs rsm(_initReaction, full_map_cut, null_map_cut, *this);
          rsm.userdata = &rsm;
          
          map.clear();
          if(!rsm.searchSubstructure(&map))
             break;
          for(j = 0; j < map.size(); j++){
-            if(map[j] >= 0 && map[j] < _reaction.getAAMArray(i).size()){
-               _reaction.getAAMArray(i)[map[j]] = _reaction.getAAM(i, j);
+            if(map[j] >= 0 && map[j] < _initReaction.getAAMArray(i).size()){
+               _initReaction.getAAMArray(i)[map[j]] = _initReaction.getAAM(i, j);
             }
          }
          mcvsum = 0;
-         for (j = 0; j < _reaction.getAAMArray(i).size(); j++){
-            if(_reaction.getAAM(i, j) == 0)
+         for (j = 0; j < _initReaction.getAAMArray(i).size(); j++){
+            if(_initReaction.getAAM(i, j) == 0)
                mcvsum++;
          }
       }
@@ -613,16 +611,15 @@ void ReactionAutomapper::_considerDimerization() {
    QS_DEF(Array<int>, sub_map);
    QS_DEF(Array<int>, max_sub_map);
    
-   BaseReaction& _reaction = _reactionCopy.ref();
    AutoPtr<BaseReaction> reaction_copy_ptr;
 
    bool way_exit = true, map_changed = false;
    int map_found, max_found , max_react_index = -1;
-   reaction_copy_ptr.reset(_reaction.neu());
+   reaction_copy_ptr.reset(_initReaction.neu());
 
    BaseReaction &reaction_copy = reaction_copy_ptr.ref();
 
-   reaction_copy.clone(_reaction, 0, 0, &inv_mappings);
+   reaction_copy.clone(_initReaction, 0, 0, &inv_mappings);
 
    for(int prod = reaction_copy.productBegin(); prod < reaction_copy.productEnd(); prod = reaction_copy.productNext(prod)) {
       BaseMolecule& pmol = reaction_copy.getBaseMolecule(prod);
@@ -666,12 +663,12 @@ void ReactionAutomapper::_considerDimerization() {
    }
 
    if(map_changed) {
-      for(int rindex = _reaction.productBegin(); rindex < _reaction.productEnd(); rindex = _reaction.productNext(rindex)) {
-         BaseMolecule& rmol = _reaction.getBaseMolecule(rindex);
+      for(int rindex = _initReaction.productBegin(); rindex < _initReaction.productEnd(); rindex = _initReaction.productNext(rindex)) {
+         BaseMolecule& rmol = _initReaction.getBaseMolecule(rindex);
          for(int vert = rmol.vertexBegin(); vert < rmol.vertexEnd(); vert = rmol.vertexNext(vert)) {
             int copy_aam = reaction_copy.getAAM(rindex, inv_mappings[rindex].at(vert));
-            if(_reaction.getAAM(rindex, vert) == 0 && copy_aam  > 0)
-               _reaction.getAAMArray(rindex).at(vert) = copy_aam ;
+            if(_initReaction.getAAM(rindex, vert) == 0 && copy_aam  > 0)
+               _initReaction.getAAMArray(rindex).at(vert) = copy_aam ;
          }
       }
    }
