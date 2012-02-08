@@ -65,6 +65,8 @@ private:
    public:
        EmbContext ();
        Array<int> visitedAtoms;
+       Array<int> scaffoldBonds;
+       Array<int> scaffoldAtoms;
        Array<int> lastMapping;
        Array<int> lastInvMapping;
        ObjArray< Array<int> > attachmentOrder;

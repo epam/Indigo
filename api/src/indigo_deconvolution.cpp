@@ -116,10 +116,8 @@ void IndigoDeconvolution::_makeRGroup(Item& elem) {
 
    _createRgroups(mol_out, rgroup_out, emb_context);
 
-   Filter sub_filter(emb_context.visitedAtoms.ptr(), Filter::EQ, 1);
-   mol_scaffold.makeSubmolecule(mol_out, sub_filter, 0, 0);
+   mol_scaffold.makeEdgeSubmolecule(mol_out,  emb_context.scaffoldAtoms, emb_context.scaffoldBonds, 0, 0);
    mol_scaffold.unhighlightAll();
-
 }
 
 
@@ -134,9 +132,15 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
 
    emb_context.lastMapping.copy(map, graph1.vertexEnd());
    emb_context.lastInvMapping.copy(inv_map, graph2.vertexEnd());
-
+   /*
+    * Visited atom = 1 in case of scaffold and > 1 in case of rgroup
+    */
    Array<int>& visited_atoms = emb_context.visitedAtoms;
-
+   /*
+    * Each array corresponds to a separate Rgroup.
+    * Order - atom number for scaffold
+    * Index - atom number for Rgroup
+    */
    ObjArray< Array<int> >& attachment_order = emb_context.attachmentOrder;
    ObjArray< Array<int> >& attachment_index = emb_context.attachmentIndex;
 
@@ -148,9 +152,15 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
 
    attachment_index.push();
    attachment_order.push();
-
+   /*
+    * Calculate scaffold atoms and Rgroups
+    */
+   Array<int>& scaf_atoms = emb_context.scaffoldAtoms;
+   scaf_atoms.clear();
+   
    for (int atom_idx = graph1.vertexBegin(); atom_idx < graph1.vertexEnd(); atom_idx = graph1.vertexNext(atom_idx)) {
       int start_idx = map[atom_idx];
+      scaf_atoms.push(start_idx);
 
       if (visited_atoms[start_idx] > 0)
          continue;
@@ -162,6 +172,7 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
 
          if (inv_map[cc_start_idx] >= 0 || visited_atoms[cc_start_idx] > 1)
             continue;
+
 
          int top = 1, bottom = 0;
 
@@ -207,14 +218,53 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
       }
 
       visited_atoms[start_idx] = 1;
-
    }
 
+   /*
+    * Calculate scaffold bonds for a scaffold in the molecule
+    * Also define empty Rgroups
+    */
+   Array<int>& scaf_bonds = emb_context.scaffoldBonds;
+   scaf_bonds.clear();
+
+   int v_idx1, v_idx2, e_idx_mol, e_idx_scaf;
+   
+   for (e_idx_mol = graph2.edgeBegin(); e_idx_mol != graph2.edgeEnd(); e_idx_mol = graph2.edgeNext(e_idx_mol)) {
+      const Edge& edge = graph2.getEdge(e_idx_mol);
+      v_idx1 = inv_map[edge.beg];
+      v_idx2 = inv_map[edge.end];
+      
+      if (v_idx1 >= 0 && v_idx2 >= 0) {
+         
+         e_idx_scaf = graph1.findEdgeIndex(v_idx1, v_idx2);
+
+         if (e_idx_scaf >= 0) {
+            /*
+             * Append existing edge
+             */
+            scaf_bonds.push(e_idx_mol);
+         } else {
+            /*
+             * Append non existent bond as a Rgroup with the same att idx and att order
+             */
+            attachment_index[n_rgroups].push(edge.beg);
+            attachment_order[n_rgroups].push(edge.end);
+            attachment_index[n_rgroups].push(edge.end);
+            attachment_order[n_rgroups].push(edge.beg);
+
+            attachment_index.push();
+            attachment_order.push();
+
+            ++n_rgroups;
+         }
+      }
+   }
    return result;
 }
 
 void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule, EmbContext& emb_context) {
 
+   QS_DEF(Array<int>, scaf_map);
    QS_DEF(Array<int>, inv_scaf_map);
    QS_DEF(Array<int>, rg_mapping);
    QS_DEF(Array<int>, rgidx_map);
@@ -226,10 +276,11 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
 
    int n_rgroups = emb_context.getRgroupNumber();
    /*
-    * Create copy
+    * Create a submolecule for a scaffold
     */
-   Filter sub_filter(visited_atoms.ptr(), Filter::EQ, 1);
-   r_molecule.makeSubmolecule(mol_set, sub_filter, 0, &inv_scaf_map);
+   r_molecule.makeEdgeSubmolecule(mol_set, 
+           emb_context.scaffoldAtoms,
+           emb_context.scaffoldBonds, &inv_scaf_map, 0);
    r_molecule.unhighlightAll();
 
    /*
@@ -269,7 +320,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
          if(r_molecule.findEdgeIndex(new_atom_idx, inv_scaf_map[att_order]) == -1) {
             int edge_idx = mol_set.findEdgeIndex(att_order, att_idx[point_att]);
             if(edge_idx == -1)
-               throw Error("inner error while converting molecule to query");
+               throw Error("internal error: can not find the edge for a scaffold");
             r_molecule.addBond(new_atom_idx, inv_scaf_map[att_order], mol_set.getBondOrder(edge_idx));
          }
 
