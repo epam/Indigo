@@ -22,8 +22,13 @@ add_subdirectory(../../reaction "${CMAKE_CURRENT_BINARY_DIR}/reaction")
 
 add_subdirectory(../../layout "${CMAKE_CURRENT_BINARY_DIR}/layout")
 
+add_subdirectory(../../oci "${CMAKE_CURRENT_BINARY_DIR}/oci")
+get_directory_property(OCI_INCLUDE_DIRS DIRECTORY ../../oci DEFINITION OCI_INCLUDE_DIRS)
+get_directory_property(OCI_LIBRARY_DIRS DIRECTORY ../../oci DEFINITION OCI_LIBRARY_DIRS)
+get_directory_property(OCI_LIBRARY DIRECTORY ../../oci DEFINITION OCI_LIBRARY)
+
+add_subdirectory(../../common/oracle "${CMAKE_CURRENT_BINARY_DIR}/common-oracle")
 add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-core-c")
 add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
-
 add_subdirectory(../../bingo "${CMAKE_CURRENT_BINARY_DIR}/bingo-oracle")
 

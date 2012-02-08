@@ -6,10 +6,11 @@
 
 FIND_PATH(OCI_INCLUDE_DIRS oci.h
     $ENV{ORACLE_HOME}/rdbms/public/
+    $ENV{ORACLE_HOME}/oci/include/
 )
 
 IF (WIN32)
-  SET(LIBORASDK "orasdk.lib")
+  SET(LIBORASDK "oci.lib")
 ELSEIF(UNIX)
   SET(LIBORASDK "liborasdk.so")
 ELSEIF(APPLE)
@@ -17,7 +18,8 @@ ELSEIF(APPLE)
 ENDIF()
 
 FIND_PATH(OCI_LIBRARY_DIRS ${LIBORASDK}
-    $ENV{ORACLE_HOME}/lib
+    $ENV{ORACLE_HOME}/lib/
+    $ENV{ORACLE_HOME}/oci/lib/msvc/
 )
 
 SET(OCI_FOUND "NO")
