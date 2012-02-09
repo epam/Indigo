@@ -29,6 +29,7 @@
 #include "molecule/molfile_saver.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_substructure_matcher.h"
+#include "base_cpp/red_black.h"
 
 IndigoDeconvolution::IndigoDeconvolution(bool aromatize):
 IndigoObject(IndigoObject::DECONVOLUTION),
@@ -271,10 +272,11 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
 
 void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule, EmbContext& emb_context) {
 
-   QS_DEF(Array<int>, scaf_map);
    QS_DEF(Array<int>, inv_scaf_map);
    QS_DEF(Array<int>, rg_mapping);
    QS_DEF(Array<int>, rgidx_map);
+   RedBlackMap<int, int> att_ord_map;
+   int att_order, att_idx;
 
    Array<int>& visited_atoms = emb_context.visitedAtoms;
 
@@ -300,14 +302,14 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
     * Add all Rgroups
     */
    for (int rg_idx = 0; rg_idx < n_rgroups; ++rg_idx) {
-      Array<int>& att_idx = attachment_index[rg_idx];
-      Array<int>& att_ord = attachment_order[rg_idx];
+      Array<int>& att_indexes = attachment_index[rg_idx];
+      Array<int>& att_orders = attachment_order[rg_idx];
 
       /*
        * Add new atom r-site
        */
       int new_atom_idx = r_molecule.addAtom(ELEM_RSITE);
-      Vec3f& atom_xyz = mol_set.getAtomXyz(att_idx[0]);
+      Vec3f& atom_xyz = mol_set.getAtomXyz(att_indexes[0]);
       /*
        * Copy coordinates
        */
@@ -319,19 +321,33 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
        r_molecule.allowRGroupOnRSite(new_atom_idx, rgidx_map[rg_idx]);
       
       /*
-       * Add all bonds
+       * Add all bonds and order maps
        */
-      for(int point_att = 0; point_att < att_idx.size(); ++point_att) {
-         int att_order = att_ord[point_att];
-
+      int att_val = 0;
+      att_ord_map.clear();
+      for(int p_idx = 0; p_idx < att_indexes.size(); ++p_idx) {
+         att_idx = att_indexes[p_idx];
+         att_order = att_orders[p_idx];
+         /*
+          * Fulfil attachment order map
+          */
+         if (!att_ord_map.find(att_order)) {
+            ++att_val;
+            att_ord_map.insert(att_order, att_val);
+         }
+          /*
+           * Add a bond with the same order
+           */
          if(r_molecule.findEdgeIndex(new_atom_idx, inv_scaf_map[att_order]) == -1) {
-            int edge_idx = mol_set.findEdgeIndex(att_order, att_idx[point_att]);
+            int edge_idx = mol_set.findEdgeIndex(att_order, att_idx);
             if(edge_idx == -1)
                throw Error("internal error: can not find the edge for a scaffold");
             r_molecule.addBond(new_atom_idx, inv_scaf_map[att_order], mol_set.getBondOrder(edge_idx));
          }
-
-         r_molecule.setRSiteAttachmentOrder(new_atom_idx, inv_scaf_map[att_order], point_att);
+         /*
+          * Set Rsite attachment order one lower since old api was not changed
+          */
+         r_molecule.setRSiteAttachmentOrder(new_atom_idx, inv_scaf_map[att_order], att_ord_map.at(att_order) - 1);
       }
       MoleculeRGroups & mol_rgroups = r_molecule.rgroups;
       
@@ -347,9 +363,14 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
 
       Filter sub_filter_fr(visited_atoms.ptr(), Filter::EQ, rg_idx + SHIFT_IDX);
       fragment.makeSubmolecule(mol_set, sub_filter_fr, 0, &rg_mapping);
-
-      for (int att_idx = 0; att_idx < attachment_index[rg_idx].size(); ++att_idx) {
-         fragment.addAttachmentPoint(att_idx + 1, rg_mapping.at(attachment_index[rg_idx][att_idx]));
+      /*
+       * Add attachment points
+       */
+      for (int p_idx = 0; p_idx < att_indexes.size(); ++p_idx) {
+         att_idx = rg_mapping.at(att_indexes[p_idx]);
+         att_order = att_orders[p_idx];
+         
+         fragment.addAttachmentPoint(att_ord_map.at(att_order), att_idx);
       }
 
    }
