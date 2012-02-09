@@ -695,7 +695,7 @@ CEXPORT int indigoDecomposedMoleculeScaffold (int decomp) {
       /*
        * Call layout
        */
-//      indigoLayout(obj_idx);
+      indigoLayout(obj_idx);
       return obj_idx;
    }
    INDIGO_END(-1)
