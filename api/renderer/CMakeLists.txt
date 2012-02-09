@@ -59,3 +59,7 @@ if(APPLE)
     FIND_FRAMEWORK(ApplicationServices)
     target_link_libraries(indigo-renderer-c-test-shared ${FRAMEWORK_ApplicationServices})
 endif()
+
+# DLOPEN test
+LIBRARY_NAME(indigo-renderer)
+add_test(dlopen-indigo-renderer-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-renderer_NAME})

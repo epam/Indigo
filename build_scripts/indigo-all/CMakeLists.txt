@@ -40,19 +40,11 @@ endforeach()
 
 SET(CMAKE_INSTALL_PREFIX ${Indigo_SOURCE_DIR}/libs)
                      
-# DLOPEN TESTS                                                      
+# DLOPEN TEST
 LIBRARY_NAME(indigo)
 LIBRARY_NAME(indigo-inchi)
 LIBRARY_NAME(indigo-renderer)
-add_executable(dlopen-test ${Indigo_SOURCE_DIR}/tests/c/dlopen-test.c)
-if (UNIX)
-    set_target_properties(dlopen-test PROPERTIES LINK_FLAGS "-rdynamic -ldl -pthread")
-endif()
-set_property(TARGET dlopen-test PROPERTY FOLDER "tests")
-add_test(dlopen-test ${CMAKE_CURRENT_BIN_DIR}/dist/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/shared/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-inchi_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-renderer_NAME})
-add_test(dlopen-indigo-test ${CMAKE_CURRENT_BIN_DIR}/dist/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/shared/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME})
-add_test(dlopen-indigo-inchi-test ${CMAKE_CURRENT_BIN_DIR}/dist/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/shared/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-inchi_NAME})
-add_test(dlopen-indigo-renderer-test ${CMAKE_CURRENT_BIN_DIR}/dist/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/shared/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-renderer_NAME})
-
+add_test(dlopen-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-inchi_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-renderer_NAME})
+ 
 INCLUDE(CPack)
 INCLUDE(CTest)                        	

@@ -56,4 +56,6 @@ PACK_SHARED(indigo-inchi-shared)
 DEFINE_TEST(indigo-inchi-c-test-shared "tests/c/indigo-inchi-test.c" indigo-inchi-shared)
 target_link_libraries(indigo-inchi-c-test-shared indigo-shared)
 
-
+#DLOPEN test
+LIBRARY_NAME(indigo-inchi)
+add_test(dlopen-indigo-inchi-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-inchi_NAME})
