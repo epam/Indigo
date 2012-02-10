@@ -429,17 +429,12 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
          for (int idx = 1; idx <= mol.attachmentPointCount(); idx++)
          {
-            int j;
-
-            for (j = 0; mol.getAttachmentPoint(idx, j) != -1; j++)
+            for (int j = 0; mol.getAttachmentPoint(idx, j) != -1; j++)
                if (mol.getAttachmentPoint(idx, j) == i)
                {
                   val |= 1 << (idx - 1);
                   break;
                }
-
-            if (mol.getAttachmentPoint(idx, j) != -1)
-               break;
          }
 
          if (val > 0)
