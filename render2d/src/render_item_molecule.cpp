@@ -64,11 +64,14 @@ void RenderItemMolecule::init ()
       }
       for (int i = 1; i <= rGroups.getRGroupCount(); ++i)
       {
+         RGroup& rg = rGroups.getRGroup(i);
+         if (rg.fragments.size() == 0)
+            continue;
+
          int lineRFrag = _factory.addItemHLine();
          _factory.getItemHLine(lineRFrag).init();
          items.push(lineRFrag);
 
-         RGroup& rg = rGroups.getRGroup(i);
          int label = _factory.addItemAuxiliary();
          _factory.getItemAuxiliary(label).type = RenderItemAuxiliary::AUX_RGROUP_LABEL;
          _factory.getItemAuxiliary(label).mol = mol;
