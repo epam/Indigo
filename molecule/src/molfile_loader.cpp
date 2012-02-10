@@ -1577,6 +1577,10 @@ void MolfileLoader::_readRGroupOccurrenceRanges (const char *str, Array<int> &ra
       }
       str++;
    }
+
+   if (beg == -1 && end == -1)
+      return;
+
    if (end == -1)
       end = beg;
    else
