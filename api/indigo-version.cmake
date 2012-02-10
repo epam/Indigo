@@ -1,1 +1,1 @@
-SET(INDIGO_VERSION "1.1-beta8")
+SET(INDIGO_VERSION "1.1-beta9-pre")
