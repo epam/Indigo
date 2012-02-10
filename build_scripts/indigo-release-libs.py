@@ -45,7 +45,7 @@ if args.generator.find("Unix Makefiles") != -1:
     args.params += " -DCMAKE_BUILD_TYPE=" + args.config
     
 build_dir = (args.generator + " " + args.params)
-build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
+build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
 full_build_dir = os.path.join(root, "build", build_dir)
 if os.path.exists(full_build_dir) and args.clean:
