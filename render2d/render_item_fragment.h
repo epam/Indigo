@@ -40,6 +40,7 @@ public:
    virtual int getAtomCount ();
 
    BaseMolecule* mol;
+   bool isRFragment;
    Array<int>* aam;
    Array<int>* reactingCenters;
    Array<int>* inversionArray;

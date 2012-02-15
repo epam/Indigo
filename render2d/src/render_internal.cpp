@@ -179,7 +179,7 @@ void RenderOptions::clear()
 }
 
 MoleculeRenderInternal::MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw) :
-_mol(NULL), _cw(cw), _settings(settings), _opt(opt), TL_CP_GET(_data), TL_CP_GET(_atomMapping), TL_CP_GET(_atomMappingInv), TL_CP_GET(_bondMappingInv)
+_mol(NULL), _cw(cw), _settings(settings), _opt(opt), TL_CP_GET(_data), TL_CP_GET(_atomMapping), TL_CP_GET(_atomMappingInv), TL_CP_GET(_bondMappingInv), isRFragment(false)
 {
    _data.clear();
    _atomMapping.clear();
@@ -209,6 +209,11 @@ void MoleculeRenderInternal::setMolecule (BaseMolecule* mol)
    _data.bonds.resize(_mol->edgeEnd());
    for (i = _mol->edgeBegin(); i != _mol->edgeEnd(); i = _mol->edgeNext(i))
       _bd(i).clear();
+}
+
+void MoleculeRenderInternal::setIsRFragment (bool isRFragment)
+{
+   this->isRFragment = isRFragment;
 }
 
 void MoleculeRenderInternal::setScaleFactor (const float scaleFactor, const Vec2f& min, const Vec2f& max)
@@ -297,6 +302,8 @@ void MoleculeRenderInternal::render ()
    _renderBondIds();
 
    _renderAtomIds();
+
+   _renderEmptyRFragment();
 }
 
 BondEnd& MoleculeRenderInternal::_be (int beid)
@@ -1700,6 +1707,40 @@ void MoleculeRenderInternal::_renderAtomIds ()
          }
       }
    }
+}
+
+void MoleculeRenderInternal::_renderEmptyRFragment ()
+{
+   if (!isRFragment || _data.atoms.size() > 0)
+      return;
+   int attachmentPointBegin = _data.attachmentPoints.size(); // always 0
+   int attachmentPointCount = 2;
+
+   Vec2f pos, dir1(1,0), dir2(-1,0);
+   float offset = 0.4f;
+   {
+      RenderItemAttachmentPoint& attachmentPoint = _data.attachmentPoints.push();
+
+      attachmentPoint.dir.copy(dir1);
+      attachmentPoint.p0.set(0,0);
+      attachmentPoint.p1.lineCombin(pos, dir1, offset);
+      attachmentPoint.color = CWC_BASE;
+      attachmentPoint.highlighted = false;
+      attachmentPoint.number = 1;
+   }
+   {
+      RenderItemAttachmentPoint& attachmentPoint = _data.attachmentPoints.push();
+
+      attachmentPoint.dir.copy(dir2);
+      attachmentPoint.p0.set(0,0);
+      attachmentPoint.p1.lineCombin(pos, dir2, offset);
+      attachmentPoint.color = CWC_BASE;
+      attachmentPoint.highlighted = false;
+      attachmentPoint.number = 2;
+   }
+   _cw.setSingleSource(CWC_BASE);
+   for (int i = 0; i < attachmentPointCount; ++i)
+      _cw.drawAttachmentPoint(_data.attachmentPoints[attachmentPointBegin + i]);
 }
 
 void MoleculeRenderInternal::_renderLabels ()

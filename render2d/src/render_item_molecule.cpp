@@ -85,6 +85,7 @@ void RenderItemMolecule::init ()
          {
             int id = _factory.addItemFragment();
             _factory.getItemFragment(id).mol = frags[j];
+            _factory.getItemFragment(id).isRFragment = true;
             _factory.getItemFragment(id).init();
             _factory.getItemHLine(lineRFrag).items.push(id);
          }

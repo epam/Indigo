@@ -25,6 +25,7 @@ class MoleculeRenderInternal {
 public:
    MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw);
    void setMolecule (BaseMolecule* mol);
+   void setIsRFragment (bool isRFragment);
    void setScaleFactor (const float scaleFactor, const Vec2f& min, const Vec2f& max);
    void render ();
 
@@ -83,6 +84,7 @@ private:
    void _findAnglesOverPi();
    void _renderBondIds();
    void _renderAtomIds();
+   void _renderEmptyRFragment();
    void _renderLabels();
    void _renderRings();
    void _renderSGroups ();
@@ -140,6 +142,7 @@ private:
    float _scale;
    Vec2f _min, _max;
    LocalOptions _lopt;
+   bool isRFragment;
    const RenderSettings& _settings;
    const RenderOptions& _opt;
    TL_CP_DECL(MoleculeRenderData, _data);

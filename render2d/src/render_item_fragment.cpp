@@ -32,7 +32,8 @@ RenderItemFragment::RenderItemFragment (RenderItemFactory& factory) :
    inversionArray(NULL),
    exactChangeArray(NULL),
    refAtom(-1),
-   _scaleFactor(1.0f)
+   _scaleFactor(1.0f),
+   isRFragment(false)
 {
 }
 
@@ -74,6 +75,7 @@ void RenderItemFragment::render ()
    _rc.translate(-origin.x, -origin.y);
    MoleculeRenderInternal rnd(_opt, _settings, _rc);
    rnd.setMolecule(mol);
+   rnd.setIsRFragment(isRFragment);
    rnd.setScaleFactor(_scaleFactor, _min, _max);
    rnd.setReactionComponentProperties(aam, reactingCenters, inversionArray);
    rnd.setQueryReactionComponentProperties(exactChangeArray);
