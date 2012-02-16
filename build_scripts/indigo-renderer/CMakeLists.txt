@@ -5,7 +5,6 @@ project(IndigoRenderer C CXX)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
 
 INCLUDE(ConfigureCommon)
-
 add_subdirectory(../indigo "${CMAKE_CURRENT_BINARY_DIR}/indigo")
 get_directory_property(ZLib_HEADERS_DIR DIRECTORY ../indigo DEFINITION ZLib_HEADERS_DIR)
 get_directory_property(ZLIB_FOUND DIRECTORY ../indigo DEFINITION ZLIB_FOUND)
