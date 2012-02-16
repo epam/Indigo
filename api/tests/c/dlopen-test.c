@@ -46,6 +46,9 @@ int main(int argc, char **argv)
 	HANDLE indigoInChIHandle;
 	HANDLE indigoRendererHandle;
 	VOID_RET_STR indigoVersion;
+    VOID_RET_STR indigoLoadMoleculeFromString;
+	VOID_RET_STR indigoWriteBuffer;
+	VOID_RET_STR indigoRender;
 	int indigoTest = 0;
 	int indigoInChITest = 0;
 	int indigoRendererTest = 0;
@@ -108,8 +111,11 @@ int main(int argc, char **argv)
 			printf("Cannot load %s\n", indigoRendererLibraryPath);
 			return 1;
 		}
-		printf("IndigoRenderer address: %d\n", (int)indigoRendererHandle);		
-		/* TODO: Execute IndigoRenderer function */
+		printf("IndigoRenderer address: %d\n", (int)indigoRendererHandle);
+        indigoLoadMoleculeFromString = DLSYM(indigoHandle, "indigoLoadMoleculeFromString");
+        indigoWriteBuffer = DLSYM(indigoHandle, "indigoWriteBuffer");
+        indigoRender = DLSYM(indigoRendererHandle, "indigoRender");
+        printf("indigoRender result: %d\n", indigoRender(indigoLoadMoleculeFromString("C"), indigoWriteBuffer()));
 	}
 	/* Close libraries */
 	if (indigoRendererTest)
