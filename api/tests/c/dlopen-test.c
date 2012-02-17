@@ -47,8 +47,10 @@ int main(int argc, char **argv)
 	HANDLE indigoRendererHandle;
 	VOID_RET_STR indigoVersion;
     VOID_RET_STR indigoLoadMoleculeFromString;
-	VOID_RET_STR indigoWriteBuffer;
+	VOID_RET_STR indigoSetOption;
+    VOID_RET_STR indigoWriteBuffer;
 	VOID_RET_STR indigoRender;
+    VOID_RET_STR indigoInchiGetInchi;
 	int indigoTest = 0;
 	int indigoInChITest = 0;
 	int indigoRendererTest = 0;
@@ -74,6 +76,7 @@ int main(int argc, char **argv)
 			indigoRendererTest = 1;
 			indigoRendererLibraryPath = argv[i];
 		}
+        
 	}
 	/* Tests */
 	if (indigoTest)
@@ -100,7 +103,9 @@ int main(int argc, char **argv)
 			return 1;
 		}
 		printf("IndigoInChI address: %d\n", (int)indigoInChIHandle);
-		/* TODO: Execute IndigoInChI function */
+        indigoInchiGetInchi = DLSYM(indigoInChIHandle, "indigoInchiGetInchi");
+        indigoLoadMoleculeFromString = DLSYM(indigoHandle, "indigoLoadMoleculeFromString");
+        printf("indigoInChI InChI: %s\n", indigoInchiGetInchi(indigoLoadMoleculeFromString("C")));
 	}
 	if (indigoRendererTest)
 	{
@@ -115,7 +120,10 @@ int main(int argc, char **argv)
         indigoLoadMoleculeFromString = DLSYM(indigoHandle, "indigoLoadMoleculeFromString");
         indigoWriteBuffer = DLSYM(indigoHandle, "indigoWriteBuffer");
         indigoRender = DLSYM(indigoRendererHandle, "indigoRender");
+        indigoSetOption = DLSYM(indigoHandle, "indigoSetOption");
+        indigoSetOption("render-output-format", "png");
         printf("indigoRender result: %d\n", indigoRender(indigoLoadMoleculeFromString("C"), indigoWriteBuffer()));
+        
 	}
 	/* Close libraries */
 	if (indigoRendererTest)
