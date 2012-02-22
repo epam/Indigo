@@ -282,13 +282,6 @@ BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx) {
       if (section_idx >= getSectionNumber()) {
          throw Error("could not get the buffer: section %d is out of bounds %d", section_idx, getSectionNumber());
       }
-      /*
-       * Read the section using offset mapping
-       */
-      _currentSectionIdx = section_idx;
-
-      int offset = _getSectionOffset(section_idx);
-      _currentSection.reset(new BingoPgSection(*this, offset));
    } else {
       /*
        * If strategy is writing or updating then append new sections
@@ -297,6 +290,14 @@ BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx) {
          _initializeNewSection();
       }
    }
+
+   /*
+    * Read the section using offset mapping
+    */
+   _currentSectionIdx = section_idx;
+
+   int offset = _getSectionOffset(section_idx);
+   _currentSection.reset(new BingoPgSection(*this, offset));
 
    return _currentSection.ref();
 
@@ -348,6 +349,11 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item) {
     */
    if(_strategy == READING_STRATEGY)
       throw Error("can not insert a structure while reading");
+   /*
+    * Jump to the last section
+    */
+   _jumpToSection(getSectionNumber() - 1);
+   
    /*
     * If a structure can not be added to the current section then initialize the new
     */
