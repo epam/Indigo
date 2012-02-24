@@ -93,6 +93,11 @@ public:
          _ptrarray[i] = 0;
    }
 
+   void removeLast ()
+   {
+      delete _ptrarray.pop();
+   }
+
    void remove (int idx)
    {
       delete _ptrarray[idx];

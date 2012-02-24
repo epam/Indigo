@@ -120,7 +120,7 @@ bool BaseReactionSubstructureMatcher::find ()
          _matchers.add(top_matcher.release());
          _matchers.top()->setMode(command);
          if (!_matchers.top()->addPair(mol1, mol2, core1, core2, mode == _FIRST_SIDE))
-            _matchers.pop();
+            _matchers.removeLast();
       }
 
       if (command == _NO_WAY)
@@ -128,7 +128,7 @@ bool BaseReactionSubstructureMatcher::find ()
          if (_matchers.size() > 1)
          {
             _matchers.top()->restore();
-            _matchers.pop();
+            _matchers.removeLast();
          }
          else
             return false;
