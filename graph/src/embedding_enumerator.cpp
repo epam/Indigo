@@ -526,6 +526,8 @@ int EmbeddingEnumerator::_Enumerator::nextPair ()
 {
    if (_current_node1 == -1)
    {
+      // _RETURN0 should be returned only once.
+      _current_node1 = -2;
       // all nodes of subgraph are mapped
       if (_context.cb_embedding == 0 || _context.cb_embedding(*_context._g1, *_context._g2,
           _context._core_1.ptr(), _context._core_2.ptr(), _context.userdata) == 0)
@@ -533,6 +535,8 @@ int EmbeddingEnumerator::_Enumerator::nextPair ()
       else
          return _NOWAY;
    }
+   if (_current_node1 == -2)
+      return _NOWAY;
 
    // check for dead state
    if (_t1_len > _t2_len && !_context.allow_many_to_one)
