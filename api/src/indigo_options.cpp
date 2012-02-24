@@ -153,6 +153,12 @@ static void indigoSetLayoutMaxIterations (int value)
    self.layout_max_iterations = value;
 }
 
+static void indigoAAMSetCancellationTimeout (int value)
+{
+   Indigo &self = indigoGetInstance();
+   self.aam_cancellation_timeout = value;
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -178,6 +184,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings);
 
    mgr.setOptionHandlerInt("layout-max-iterations", indigoSetLayoutMaxIterations);
+
+   mgr.setOptionHandlerInt("aam-timeout", indigoAAMSetCancellationTimeout);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

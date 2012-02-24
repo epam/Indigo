@@ -248,6 +248,8 @@ public:
 
    int layout_max_iterations; // default is zero -- no limit
 
+   int aam_cancellation_timeout; //default is zero - no timeout
+
    void initMolfileSaver (MolfileSaver &saver);
    void initRxnfileSaver (RxnfileSaver &saver);
 

@@ -18,6 +18,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/ptr_array.h"
 #include "molecule/max_common_submolecule.h"
+#include "base_cpp/cancellation_handler.h"
 
 namespace indigo {
 
@@ -91,6 +92,8 @@ public:
 
 
    DEF_ERROR("Reaction automapper");
+
+   CancellationHandler* cancellation;
 
 private:
    //parameter for dimerization and dissociation
@@ -190,7 +193,7 @@ private:
 
    static int  _cbAutoVertexReact (Graph &graph, int idx1, int idx2, const void *context);
    static bool _cbAutoCheckAutomorphismReact (Graph &graph, const Array<int> &mapping, const void *context);
-   int _scoreSolution(Molecule *sub_molecule, Molecule *super_molecule, Array<int>& map);
+   int _scoreSolution(BaseMolecule *sub_molecule, BaseMolecule *super_molecule, Array<int>& map);
    
    BaseReaction& _reaction;
    int _subReactNumber;

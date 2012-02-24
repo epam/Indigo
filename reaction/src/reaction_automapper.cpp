@@ -29,6 +29,7 @@ ignore_atom_charges(false),
 ignore_atom_valence(false),
 ignore_atom_isotopes(false),
 ignore_atom_radicals(false),
+cancellation(0),
 _initReaction(reaction),
 _maxMapUsed(0),
 _maxVertUsed(0),
@@ -166,6 +167,11 @@ void ReactionAutomapper::_createReactionMap(){
           * Collect statistic and choose the best mapping
           */
          _chooseBestMapping(reaction, product_mapping_tmp, product, map_complete);
+         /*
+          * Check for cancellation
+          */
+         if(cancellation && cancellation->isCancelled())
+            break;
       }
       _usedVertices.zerofill();
       for(int k = reaction.productBegin(); k <= product; k = reaction.productNext(k)){
@@ -1176,8 +1182,8 @@ bool RSubstructureMcs::atomConditionReact (Graph &g1, Graph &g2, const int *, in
 }
 bool RSubstructureMcs::bondConditionReact (Graph &g1, Graph &g2, int i, int j, void* userdata){
 
-   Molecule &mol1 = (Molecule &)g1;
-   Molecule &mol2 = (Molecule &)g2;
+   BaseMolecule &mol1 = (BaseMolecule &)g1;
+   BaseMolecule &mol2 = (BaseMolecule &)g2;
    if(userdata == 0)
       throw ReactionAutomapper::Error("internal AAM error: userdata should be not null for bond match");
    RSubstructureMcs &rsm = *(RSubstructureMcs *)userdata;
@@ -1445,14 +1451,14 @@ void RSubstructureMcs::_selectBestAutomorphism(Array<int>* map_out) {
    QS_DEF(Array<int>, ignore_atoms);
    QS_DEF(Array<int>, current_map);
 
-   Molecule *sub_molecule;
-   Molecule *super_molecule;
+   BaseMolecule *sub_molecule;
+   BaseMolecule *super_molecule;
    if(_invert) {
-      sub_molecule = (Molecule*)_super;
-      super_molecule = (Molecule*)_sub;
+      sub_molecule = (BaseMolecule*)_super;
+      super_molecule = (BaseMolecule*)_sub;
    } else {
-      sub_molecule = (Molecule*)_sub;
-      super_molecule = (Molecule*)_super;
+      sub_molecule = (BaseMolecule*)_sub;
+      super_molecule = (BaseMolecule*)_super;
    }
 
    ignore_atoms.resize(super_molecule->vertexEnd());
@@ -1529,7 +1535,7 @@ bool RSubstructureMcs::_cbAutoCheckAutomorphismReact (Graph &graph, const Array<
    return false;
 }
 
-int RSubstructureMcs::_scoreSolution(Molecule *sub_molecule, Molecule *super_molecule, Array<int>& v_map) {
+int RSubstructureMcs::_scoreSolution(BaseMolecule *sub_molecule, BaseMolecule *super_molecule, Array<int>& v_map) {
    int res_score = 0;
    QS_DEF(Array<int>, edge_map);
    edge_map.clear_resize(sub_molecule->edgeEnd());

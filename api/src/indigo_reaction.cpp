@@ -562,6 +562,14 @@ CEXPORT int indigoAutomap (int reaction, const char *mode)
          return 0;
       }
       /*
+       * Set timeout
+       */
+      AutoPtr<TimeoutCancellationHandler> timeout;
+      if(self.aam_cancellation_timeout > 0) {
+         timeout.create(self.aam_cancellation_timeout);
+         ram.cancellation = timeout.get();
+      }
+      /*
        * Launch automap
        */
       ram.automap(nmode);

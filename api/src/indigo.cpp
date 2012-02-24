@@ -58,6 +58,8 @@ Indigo::Indigo ()
    molfile_saving_skip_date = false;
 
    smiles_saving_write_name = false;
+
+   aam_cancellation_timeout = 0;
 }
 
 void Indigo::removeAllObjects ()
