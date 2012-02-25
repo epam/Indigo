@@ -23,6 +23,7 @@ if (NOT NO_STATIC)
 	set_property(TARGET indigo PROPERTY FOLDER "indigo")
 	pack_static(indigo)
 	DEFINE_TEST(indigo-c-test-static "tests/c/indigo-test.c" indigo)
+	SET_TARGET_PROPERTIES(indigo-c-test-static PROPERTIES LINKER_LANGUAGE CXX)
 endif()
 
 # Indigo shared
