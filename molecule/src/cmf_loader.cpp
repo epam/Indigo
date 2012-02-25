@@ -131,6 +131,17 @@ bool CmfLoader::_readAtom (int &code, _AtomDesc &atom, int atom_idx)
          return false;
    }
 
+   if (code == CMF_CHARGE_EXT)
+   {
+      int charge;
+      _getNextCode(charge);
+      charge -= 128;
+      atom.charge = charge;
+
+      if (!_getNextCode(code))
+         return false;
+   }
+
    if (code >= CMF_ISOTOPE_ZERO && code <= CMF_ISOTOPE_OTHER)
    {
       int deviation;
@@ -219,6 +230,13 @@ bool CmfLoader::_readAtom (int &code, _AtomDesc &atom, int atom_idx)
    if (code >= CMF_VALENCE && code <= CMF_VALENCE + CMF_MAX_VALENCE)
    {
       atom.valence = code - CMF_VALENCE;
+      if (!_getNextCode(code))
+         return false;
+   }
+
+   if (code == CMF_VALENCE_EXT)
+   {
+      atom.valence = (int)_scanner->readPackedUInt();
       if (!_getNextCode(code))
          return false;
    }

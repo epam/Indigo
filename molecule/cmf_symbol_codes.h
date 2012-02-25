@@ -180,7 +180,13 @@ enum
    /* 220 - R-Site */
    CMF_RSITE_EXT,
 
-   /* Alphabet size = 221 */
+   /* 221 - General charge */
+   CMF_CHARGE_EXT,
+
+   /* 222 - General valence */
+   CMF_VALENCE_EXT,
+
+   /* Alphabet size = 223 */
    CMF_ALPHABET_SIZE
 };
 

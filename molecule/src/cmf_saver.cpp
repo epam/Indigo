@@ -449,9 +449,15 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
       int charge2 = charge - CMF_MIN_CHARGE;
          
       if (charge2 < 0 || charge2 >= CMF_NUM_OF_CHARGES)
-         throw Error("unexpected atom charge: %d", charge);
-
-      _encode(charge2 + CMF_CHARGES);
+      {
+         _encode(CMF_CHARGE_EXT);
+         int charge3 = charge + 128;
+         if (charge3 < 0 || charge >= 256)
+            throw Error("unexpected atom charge: %d", charge);
+         _encode(charge3);
+      }
+      else
+         _encode(charge2 + CMF_CHARGES);
    }
 
    int isotope = mol.getAtomIsotope(idx);
@@ -586,8 +592,12 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
          {
             int valence = mol.getAtomValence(idx);
             if (valence < 0 || valence > CMF_MAX_VALENCE)
-               throw Error("valence %d is out of range", valence);
-            _encode(CMF_VALENCE + valence);
+            {
+               _encode(CMF_VALENCE_EXT);
+               _output->writePackedUInt(valence);
+            }
+            else
+               _encode(CMF_VALENCE + valence);
          }
          catch (Element::Error)
          {
