@@ -23,6 +23,12 @@
 #include "molecule/molecule_dearom.h"
 #include "molecule/base_molecule.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
+
 namespace indigo {
 
 class Molecule;
@@ -240,7 +246,7 @@ private:
    int _start_idx2;
 };
 
-class TautomerSuperStructure : public Molecule
+class DLLEXPORT TautomerSuperStructure : public Molecule
 {
 public:
    enum { NONE, TAUTOMER, ORIGINAL };
@@ -284,5 +290,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif
