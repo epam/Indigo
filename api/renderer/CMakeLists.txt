@@ -30,6 +30,8 @@ if (NOT NO_STATIC)
 	set_property(TARGET indigo-renderer PROPERTY FOLDER "indigo-renderer")
 	pack_static(indigo-renderer)
 	DEFINE_TEST(indigo-renderer-c-test-static "tests/c/indigo-renderer-test.c" indigo-renderer)
+	# Add stdc++ library required by indigo
+	SET_TARGET_PROPERTIES(indigo-renderer-c-test-static PROPERTIES LINKER_LANGUAGE CXX)
 	if(APPLE)
 		INCLUDE(GetSystemVersion)
 		INCLUDE(MacFrameworks)

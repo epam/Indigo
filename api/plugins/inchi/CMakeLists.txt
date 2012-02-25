@@ -35,6 +35,8 @@ if (NOT NO_STATIC)
 	set_property(TARGET indigo-inchi PROPERTY FOLDER "indigo-inchi")
 	PACK_STATIC(indigo-inchi)
 	DEFINE_TEST(indigo-inchi-c-test-static "tests/c/indigo-inchi-test.c" indigo-inchi)
+	# Add stdc++ library required by indigo
+	SET_TARGET_PROPERTIES(indigo-inchi-c-test-static PROPERTIES LINKER_LANGUAGE CXX)
 endif()
 
 # Indigo InChI shared
