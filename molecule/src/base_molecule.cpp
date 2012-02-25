@@ -1245,3 +1245,27 @@ bool BaseMolecule::isChrial ()
 {
    return stereocenters.size() != 0 && stereocenters.haveAllAbsAny();
 }
+
+void BaseMolecule::invalidateAtom (int index, int mask)
+{
+   if (mask & CHANGED_ATOM_NUMBER)
+   {
+      // Cis-trans and stereocenters can be removed
+      if (stereocenters.exists(index))
+      {
+         if (!stereocenters.isPossibleStereocenter(index))
+            stereocenters.remove(index);
+      }
+
+      const Vertex &v = getVertex(index);
+      for (int nei = v.neiBegin(); nei != v.neiEnd(); nei = v.neiNext(nei))
+      {
+         int edge_idx = v.neiEdge(nei);
+         if (cis_trans.getParity(edge_idx) != 0)
+         {
+            if (!cis_trans.isGeomStereoBond(*this, edge_idx, 0, false))
+               cis_trans.setParity(edge_idx, 0);
+         }
+      }
+   }
+}

@@ -1440,3 +1440,8 @@ bool Molecule::shouldWriteHCountEx (Molecule &mol, int idx, int h_to_ignore)
 
    return false;
 }
+
+void Molecule::invalidateAtom (int index, int mask)
+{
+   BaseMolecule::invalidateAtom(index, mask);
+}

@@ -139,6 +139,8 @@ public:
    bool isNitrogenV5 (int atom_index);
    bool isNitrogenV5ForConnectivity (int atom_index, int conn);
    
+   virtual void invalidateAtom (int index, int mask);
+
 protected:
    struct _Atom
    {

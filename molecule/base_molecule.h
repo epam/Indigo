@@ -235,6 +235,14 @@ public:
    // Returns true if all bonds were dearomatized
    virtual bool dearomatize () = 0;
 
+   enum
+   {
+      CHANGED_ATOM_NUMBER = 0x01,
+      CHANGED_CONNECTIVITY = 0x02,
+      CHANGED_ALL = 0xFF,
+   };
+   virtual void invalidateAtom (int index, int mask);
+
    Vec3f & getAtomXyz (int idx);
    void setAtomXyz (int idx, float x, float y, float z);
    void setAtomXyz (int idx, const Vec3f& v);

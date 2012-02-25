@@ -1353,8 +1353,8 @@ int QueryMolecule::addBond (int beg, int end, QueryMolecule::Bond *bond)
    _bonds.expand(idx + 1);
    _bonds.set(idx, bond);
 
-   invalidateAtom(beg);
-   invalidateAtom(end);
+   invalidateAtom(beg, CHANGED_CONNECTIVITY);
+   invalidateAtom(end, CHANGED_CONNECTIVITY);
 
    aromaticity.setCanBeAromatic(idx, false);
    setBondStereoCare(idx, false);
@@ -1934,8 +1934,9 @@ int QueryMolecule::getQueryBondType (QueryMolecule::Bond& qb) {
    return -1;
 }
 
-void QueryMolecule::invalidateAtom (int index)
+void QueryMolecule::invalidateAtom (int index, int mask)
 {
+   BaseMolecule::invalidateAtom(index, mask);
    if (_min_h.size() > index)
       _min_h[index] = -1;
 }

@@ -1496,7 +1496,7 @@ CEXPORT int indigoRemoveConstraints (int item, const char *str_type)
          throw IndigoError("indigoRemoveConstraints(): can not parse type: %s", str_type);
 
       qmol.getAtom(ia.idx).removeConstraints(atom->type);
-      qmol.invalidateAtom(ia.idx);
+      qmol.invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
 
       return 1;
    }
@@ -1515,7 +1515,7 @@ CEXPORT int indigoAddConstraint (int atom, const char *type, const char *value)
       IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
       
       qmol.resetAtom(ia.idx, QueryMolecule::Atom::und(qmol.releaseAtom(ia.idx), atom_constraint.release()));
-      qmol.invalidateAtom(ia.idx);
+      qmol.invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
 
       return 1;
    }
@@ -1534,7 +1534,7 @@ CEXPORT int indigoAddConstraintNot (int atom, const char *type, const char *valu
       IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
 
       qmol.resetAtom(ia.idx, QueryMolecule::Atom::und(qmol.releaseAtom(ia.idx), QueryMolecule::Atom::nicht(atom_constraint.release())));
-      qmol.invalidateAtom(ia.idx);
+      qmol.invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
 
       return 1;
    }
@@ -1553,7 +1553,7 @@ CEXPORT int indigoAddConstraintOr(int atom, const char* type, const char* value)
       IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
 
       qmol.resetAtom(ia.idx, QueryMolecule::Atom::oder(qmol.releaseAtom(ia.idx), atom_constraint.release()));
-      qmol.invalidateAtom(ia.idx);
+      qmol.invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
 
       return 1;
    }
@@ -2785,7 +2785,6 @@ CEXPORT int indigoResetAtom (int atom, const char *symbol)
       {
          QueryMolecule &qmol = bmol.asQueryMolecule();
          qmol.resetAtom(ia.idx, IndigoQueryMolecule::parseAtomSMARTS(symbol));
-         qmol.invalidateAtom(ia.idx);
       }
       else
       {
@@ -2801,6 +2800,7 @@ CEXPORT int indigoResetAtom (int atom, const char *symbol)
             mol.setPseudoAtom(ia.idx, symbol);
          }
       }
+      bmol.invalidateAtom(ia.idx, BaseMolecule::CHANGED_ATOM_NUMBER);
 
       return 1;
    }

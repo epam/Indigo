@@ -314,7 +314,7 @@ public:
    // must belong to different connected components of the target molecule
    Array<int> components;
 
-   void invalidateAtom (int index);
+   virtual void invalidateAtom (int index, int mask);
 
 protected:
 
