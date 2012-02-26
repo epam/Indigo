@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 project(Common C CXX)
 # Collect file list for BaseC
 file (GLOB BaseC_src base_c/*.c*)
