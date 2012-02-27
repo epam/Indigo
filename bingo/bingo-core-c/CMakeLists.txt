@@ -4,6 +4,7 @@ project(BingoCoreC C)
 
 file(GLOB BingoCoreC_src ../src/core-c/*.cpp)
 file(GLOB BingoCoreC_headers ../src/core-c/*.h)
+set(BingoCoreC_HEADERS_DIR ../src/core-c/)
 
 include_directories(../src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR})
 
