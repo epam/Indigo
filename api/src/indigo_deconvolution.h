@@ -34,13 +34,17 @@ private:
 public:
    class Item {
    public:
-      Item(Molecule& mol):mol_in(mol) {}
+      Item(Molecule& mol):mol_in(mol), mapping(0) {}
 
       Molecule & mol_in;
       Molecule   mol_out;
       Molecule rgroup_mol;
       Molecule mol_scaffold;
       RedBlackStringObjMap< Array<char> > properties;
+      /*
+       * Predefined match mapping
+       */
+      Array<int>* mapping;
    private:
       Item(const Item&);
    };
@@ -48,6 +52,7 @@ public:
    virtual ~IndigoDeconvolution();
 
    void addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props);
+   void addMolecule(Molecule& mol, Array<int>& mapping);
 
    void makeRGroups (QueryMolecule& scaffold);
 
@@ -94,6 +99,7 @@ private:
    static bool _matchBonds (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void* userdata);
    static void _addBond (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
    static void _removeAtom (Graph &subgraph, int sub_idx, void *userdata);
+   void _makeInvertMap(Array<int>& map, Array<int>& invmap);
 
 
    bool _aromatic;

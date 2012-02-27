@@ -27,6 +27,13 @@ IndigoMapping::~IndigoMapping ()
 {
 }
 
+IndigoObject * IndigoMapping::clone ()
+{
+   AutoPtr<IndigoMapping> res_ptr(new IndigoMapping(from, to));
+   res_ptr->mapping.copy(mapping);
+   return res_ptr.release();
+}
+
 IndigoReactionMapping::IndigoReactionMapping (BaseReaction &from_, BaseReaction &to_) :
 IndigoObject(REACTION_MAPPING),
 from(from_),
@@ -36,6 +43,16 @@ to(to_)
 
 IndigoReactionMapping::~IndigoReactionMapping ()
 {
+}
+
+IndigoObject * IndigoReactionMapping::clone ()
+{
+   AutoPtr<IndigoReactionMapping> res_ptr(new IndigoReactionMapping(from, to));
+   res_ptr->mol_mapping.copy(mol_mapping);
+   for (int i = 0; i < mappings.size(); ++i) {
+      res_ptr->mappings.push().copy(mappings[i]);
+   }
+   return res_ptr.release();
 }
 
 CEXPORT int indigoMapAtom (int handle, int atom)

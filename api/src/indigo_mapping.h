@@ -27,6 +27,8 @@ public:
    BaseMolecule &to;
    Array<int> mapping;
 
+   virtual IndigoObject * clone ();
+
 protected:
 };
 
@@ -41,6 +43,8 @@ public:
    
    Array< int > mol_mapping;
    ObjArray< Array<int> > mappings;
+
+   virtual IndigoObject * clone ();
 };
 
 #endif
