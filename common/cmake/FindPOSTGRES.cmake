@@ -3,19 +3,13 @@
 # POSTGRES_LIBRARY_DIRS
 # POSTGRES_INCLUDE_DIRS, where to find the headers
 
-FIND_PATH(POSTGRES_INCLUDE_DIRS pg_config.h
-    $ENV{BINGO_PG_DIR}/include
-    $ENV{BINGO_PG_DIR}
-    ~/Library/Frameworks
-    /Library/Frameworks
-    /usr/local/include
-    /usr/include/postgresql/$ENV{BINGO_PG_VERSION}
+FIND_PATH(POSTGRES_INCLUDE_DIRS postgres.h
+    $ENV{BINGO_PG_DIR}/include/server
+    $ENV{BINGO_PG_DIR}/server
+    /usr/local/include/server
+	/Library/PostgreSQL/$ENV{BINGO_PG_VERSION}/include/postgresql/server
     /usr/include/postgresql/$ENV{BINGO_PG_VERSION}/server
-    /sw/include # Fink
-    /opt/local/include/postgresql/$ENV{BINGO_PG_VERSION}
-    /opt/local/include/
-    /opt/csw/include # Blastwave
-    /opt/include
+    /opt/local/include/postgresql/$ENV{BINGO_PG_VERSION}/server
 )
 
 IF (MSVC)

@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.6)
 project(BingoPostgres)
 
 include(../bingo-version.cmake)
+include(SetBuildParameters)
+
 message(STATUS "BingoPostgres version is ${BINGO_VERSION}")
 
 find_package(POSTGRES)
@@ -33,7 +35,9 @@ endif()
 
 set_target_properties(bingo-postgres PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 set_target_properties(bingo-postgres-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-
+if (APPLE)
+	set_target_properties(bingo-postgres-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -undefined suppress -flat_namespace")
+endif()
 target_link_libraries(bingo-postgres bingo-core bingo-core-c molecule reaction layout )
 target_link_libraries(bingo-postgres-shared bingo-core bingo-core-c molecule reaction layout)
 if (MSVC)

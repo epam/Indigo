@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.6)
 project(BingoOracle)
 
 include(bingo-version.cmake)
+include(SetBuildParameters)
+
 message(STATUS "BingoOracle version is ${BINGO_VERSION}")
 
 file(GLOB Bingo_src src/oracle/*.cpp)

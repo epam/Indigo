@@ -138,35 +138,35 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D6C63E41430C2CD00CAD932 /* graph.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A7EDA3FB10624B53006CBFAF /* graph */;
+			remoteGlobalIDString = A7EDA3FB10624B53006CBFAF;
 			remoteInfo = graph;
 		};
 		4D99BE7F1487C7BF000814F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D6C64061430C37200CAD932 /* reaction.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A7EDA55510625076006CBFAF /* reaction */;
+			remoteGlobalIDString = A7EDA55510625076006CBFAF;
 			remoteInfo = reaction;
 		};
 		4D99BE811487C7C4000814F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D6C63EE1430C2E200CAD932 /* tinyxml.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772 /* tinyxml */;
+			remoteGlobalIDString = 810BD6BC12F2D5FF004D1772;
 			remoteInfo = tinyxml;
 		};
 		4D99BE831487C7C7000814F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D6C63F81430C31500CAD932 /* layout.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A7EDA5C9106251C3006CBFAF /* layout */;
+			remoteGlobalIDString = A7EDA5C9106251C3006CBFAF;
 			remoteInfo = layout;
 		};
 		4D99BE851487C7CA000814F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D6C63DA1430C2B000CAD932 /* molecule.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A7EDA4CD10624F33006CBFAF /* molecule */;
+			remoteGlobalIDString = A7EDA4CD10624F33006CBFAF;
 			remoteInfo = molecule;
 		};
 /* End PBXContainerItemProxy section */
@@ -184,7 +184,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		4D6C60CE1430BB8F00CAD932 /* bingo_postgres.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = bingo_postgres.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D6C60CE1430BB8F00CAD932 /* bingo_postgres.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; name = bingo_postgres.dylib; path = bingo_postgres.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D6C60E11430BE9500CAD932 /* bingo_pg_buffer_cache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_pg_buffer_cache.cpp; path = src/pg_common/bingo_pg_buffer_cache.cpp; sourceTree = "<group>"; };
 		4D6C60E21430BE9500CAD932 /* bingo_pg_buffer_cache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bingo_pg_buffer_cache.h; path = src/pg_common/bingo_pg_buffer_cache.h; sourceTree = "<group>"; };
 		4D6C60E31430BE9500CAD932 /* bingo_pg_buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bingo_pg_buffer.cpp; path = src/pg_common/bingo_pg_buffer.cpp; sourceTree = "<group>"; };
