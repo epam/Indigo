@@ -12,8 +12,10 @@ FIND_PATH(POSTGRES_INCLUDE_DIRS pg_config.h
     /usr/include
     /usr/include/postgres
 	/usr/include/postgresql
+	/usr/include/postgresql/$ENV{BINGO_PG_VERSION}
     /sw/include # Fink
     /opt/local/include # DarwinPorts
+	/opt/local/include/postgresql/$ENV{BINGO_PG_VERSION}
     /opt/csw/include # Blastwave
     /opt/include
 )

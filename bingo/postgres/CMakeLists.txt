@@ -9,6 +9,7 @@ find_package(POSTGRES)
 if (NOT POSTGRES_FOUND)
 	message(FATAL_ERROR "Postgres not found!")
 endif()
+message(STATUS "Postgres found at ${POSTGRES_INCLUDE_DIRS}")
 
 file(GLOB PG_AM_src src/pg_am/*.cpp src/pg_am/*.c)
 file(GLOB PG_AM_headers src/pg_am/*.h)
