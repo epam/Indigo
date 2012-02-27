@@ -234,6 +234,7 @@ public:
    bool skip_3d_chirality;
 
    bool deconvolution_aromatization;
+   bool deco_save_ap_bond_orders;
 
    int  molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
    bool molfile_saving_no_chiral;

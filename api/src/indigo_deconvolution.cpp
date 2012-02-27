@@ -34,6 +34,7 @@
 
 IndigoDeconvolution::IndigoDeconvolution(bool aromatize):
 IndigoObject(IndigoObject::DECONVOLUTION),
+save_ap_bond_orders(false),
 cbEmbedding(0),
 embeddingUserdata(0),
 _aromatic(aromatize)
@@ -364,7 +365,8 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
          /*
           * Set Rsite attachment order one lower since old api was not changed
           */
-         r_molecule.setRSiteAttachmentOrder(new_atom_idx, inv_scaf_map[att_order], att_ord_map.at(att_order) - 1);
+         if(!save_ap_bond_orders)
+            r_molecule.setRSiteAttachmentOrder(new_atom_idx, inv_scaf_map[att_order], att_ord_map.at(att_order) - 1);
       }
       MoleculeRGroups & mol_rgroups = r_molecule.rgroups;
       
@@ -384,10 +386,31 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
        * Add attachment points
        */
       for (int p_idx = 0; p_idx < att_indexes.size(); ++p_idx) {
-         att_idx = rg_mapping.at(att_indexes[p_idx]);
+         att_idx = att_indexes[p_idx];
          att_order = att_orders[p_idx];
          
-         fragment.addAttachmentPoint(att_ord_map.at(att_order), att_idx);
+         int att_idx_m = rg_mapping.at(att_idx);
+         int att_order_m = att_ord_map.at(att_order);
+         if(save_ap_bond_orders) {
+            /*
+             * TODO change to elem AP
+             */
+            int ap_atom_idx = fragment.addAtom(ELEM_PSEUDO);
+            int edge_idx = mol_set.findEdgeIndex(att_order, att_idx);
+            if(edge_idx == -1)
+               throw Error("internal error: can not find the edge for a fragment");
+            fragment.addBond(ap_atom_idx, att_idx_m, mol_set.getBondOrder(edge_idx));
+            /*
+             * Write AP pseude
+             */
+            QS_DEF(Array<char>, buf);
+            ArrayOutput ap_out(buf);
+            ap_out.printf("AP%d", att_order_m);
+            ap_out.writeChar(0);
+            fragment.setPseudoAtom(ap_atom_idx, buf.ptr());
+         } else {
+            fragment.addAttachmentPoint(att_order_m, att_idx_m);
+         }
       }
 
    }
@@ -653,6 +676,7 @@ CEXPORT int indigoDecomposeMolecules (int scaffold, int structures) {
       IndigoArray& mol_array = IndigoArray::cast(self.getObject(structures));
 
       AutoPtr<IndigoDeconvolution> deco(new IndigoDeconvolution(self.deconvolution_aromatization));
+      deco->save_ap_bond_orders = self.deco_save_ap_bond_orders;
       int i;
 
       for (i = 0; i < mol_array.objects.size(); i++)

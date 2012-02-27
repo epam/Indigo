@@ -58,6 +58,10 @@ public:
 
    QueryMolecule& getDecomposedScaffold();
    ObjArray<Item>& getItems ();
+   /*
+    * Save AP as sepearate atoms
+    */
+   bool save_ap_bond_orders;
 
    ObjArray<QueryMolecule> scaffolds;
 
