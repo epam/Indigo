@@ -62,6 +62,10 @@ public:
     * Save AP as sepearate atoms
     */
    bool save_ap_bond_orders;
+   /*
+    * Ignore match errors
+    */
+   bool ignore_errors;
 
    ObjArray<QueryMolecule> scaffolds;
 

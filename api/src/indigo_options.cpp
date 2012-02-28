@@ -50,6 +50,11 @@ static void indigoDecoSaveAPBondOrders (int enabled)
    Indigo &self = indigoGetInstance();
    self.deco_save_ap_bond_orders = (enabled != 0);
 }
+static void indigoDecoIgnoreErrors (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.deco_ignore_errors = (enabled != 0);
+}
 
 static void indigoSetMolfileSavingMode (const char *mode)
 {
@@ -175,6 +180,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("skip-3d-chirality", indigoSkip3dChirality);
    mgr.setOptionHandlerBool("deconvolution-aromatization", indigoDeconvolutionAromatization);
    mgr.setOptionHandlerBool("deco-save-ap-bond-orders", indigoDecoSaveAPBondOrders);
+   mgr.setOptionHandlerBool("deco-ignore-errors", indigoDecoIgnoreErrors);
    mgr.setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode);
    mgr.setOptionHandlerBool("molfile-saving-no-chiral", indigoSetMolfileSavingNoChiral);
    mgr.setOptionHandlerBool("molfile-saving-skip-date", indigoSetMolfileSavingSkipDate);

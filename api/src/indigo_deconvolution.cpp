@@ -38,6 +38,7 @@
 IndigoDeconvolution::IndigoDeconvolution(bool aromatize):
 IndigoObject(IndigoObject::DECONVOLUTION),
 save_ap_bond_orders(false),
+ignore_errors(false),
 cbEmbedding(0),
 embeddingUserdata(0),
 _aromatic(aromatize)
@@ -727,6 +728,7 @@ CEXPORT int indigoDecomposeMolecules (int scaffold, int structures) {
 
       AutoPtr<IndigoDeconvolution> deco(new IndigoDeconvolution(self.deconvolution_aromatization));
       deco->save_ap_bond_orders = self.deco_save_ap_bond_orders;
+      deco->ignore_errors = self.deco_ignore_errors;
       int i;
 
       for (i = 0; i < mol_array.objects.size(); i++)

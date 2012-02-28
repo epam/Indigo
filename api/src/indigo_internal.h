@@ -235,6 +235,7 @@ public:
 
    bool deconvolution_aromatization;
    bool deco_save_ap_bond_orders;
+   bool deco_ignore_errors;
 
    int  molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
    bool molfile_saving_no_chiral;
