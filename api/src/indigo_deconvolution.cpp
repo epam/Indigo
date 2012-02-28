@@ -132,8 +132,15 @@ void IndigoDeconvolution::_makeRGroup(Item& elem) {
    }
 
 
-   if(emb_context.lastMapping.size() == 0)
-      throw Error("no embeddings obtained");
+   if(emb_context.lastMapping.size() == 0) {
+      if(ignore_errors) {
+         rgroup_out.clear();
+         mol_out.clear();
+         mol_scaffold.clear();
+         return;
+      } else
+         throw Error("no embeddings obtained");
+   }
 
    mol_out.highlightSubmolecule(_scaffold, emb_context.lastMapping.ptr(), true);
 
@@ -793,6 +800,9 @@ CEXPORT int indigoDecomposedMoleculeScaffold (int decomp) {
           * Create simple scaffold with rsites
           */
          IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
+         if(elem.item.mol_out.vertexCount() == 0) {
+            throw IndigoError("indigoDecomposedMoleculeScaffold(): no embeddings were found for the molecule %d", elem.idx);
+         }
          mol_ptr.reset(new IndigoMolecule());
          IndigoMolecule& mol = (IndigoMolecule&) mol_ptr.ref();
 
@@ -820,6 +830,10 @@ CEXPORT int indigoDecomposedMoleculeHighlighted (int decomp) {
 
       IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
 
+      if(elem.item.mol_out.vertexCount() == 0) {
+         throw IndigoError("indigoDecomposedMoleculeHighlighted(): no embeddings were found for the molecule %d", elem.idx);
+      }
+
       AutoPtr<IndigoMolecule> mol;
       mol.create();
 
@@ -841,6 +855,10 @@ CEXPORT int indigoDecomposedMoleculeSubstituents (int decomp) {
 
       IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
 
+      if(elem.item.mol_out.vertexCount() == 0) {
+         throw IndigoError("indigoDecomposedMoleculeSubstituents(): no embeddings were found for the molecule %d", elem.idx);
+      }
+
       Molecule* qmol = &elem.item.rgroup_mol;
       return self.addObject(new IndigoRGroupsIter(qmol));
    }
@@ -857,6 +875,10 @@ CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp) {
          throw IndigoError("indigoDecomposedMoleculeWithRGroups(): not applicable to %s", obj.debugInfo());
 
       IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
+
+      if(elem.item.mol_out.vertexCount() == 0) {
+         throw IndigoError("indigoDecomposedMoleculeWithRGroups(): no embeddings were found for the molecule %d", elem.idx);
+      }
 
       mol_ptr.reset(new IndigoMolecule());
       mol_ptr->mol.clone(elem.item.rgroup_mol,0, 0);
