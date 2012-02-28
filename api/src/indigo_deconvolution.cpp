@@ -401,7 +401,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
                throw Error("internal error: can not find the edge for a fragment");
             fragment.addBond(ap_atom_idx, att_idx_m, mol_set.getBondOrder(edge_idx));
             /*
-             * Write AP pseude
+             * Write AP pseudo
              */
             QS_DEF(Array<char>, buf);
             ArrayOutput ap_out(buf);
