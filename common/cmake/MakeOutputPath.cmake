@@ -16,3 +16,9 @@ macro(PACK_SHARED proj)
 		DESTINATION shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
 		COMPONENT shared)
 endmacro()
+
+macro(PACK_BINGO proj)
+    INSTALL(TARGETS ${proj}
+        DESTINATION "lib"
+        COMPONENT shared)
+endmacro()

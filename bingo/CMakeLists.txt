@@ -15,6 +15,9 @@ include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${OCI_INCLU
 add_library(bingo-oracle STATIC ${Bingo_src} ${Bingo_headers})
 add_library(bingo-oracle-shared SHARED ${Bingo_src} ${Bingo_headers})
 
+SET_TARGET_PROPERTIES(bingo-oracle PROPERTIES OUTPUT_NAME "bingo-oracle-static")
+SET_TARGET_PROPERTIES(bingo-oracle-shared PROPERTIES OUTPUT_NAME "bingo_oracle")
+
 set_target_properties(bingo-oracle PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 set_target_properties(bingo-oracle-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
@@ -29,6 +32,5 @@ set_property(TARGET bingo-oracle-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 set_property(TARGET bingo-oracle PROPERTY FOLDER "bingo-oracle")
 set_property(TARGET bingo-oracle-shared PROPERTY FOLDER "bingo-oracle")
 
-#pack_shared(bingo-oracle-shared)
-#pack_static(bingo-oracle)
-
+pack_shared(bingo-oracle-shared)
+pack_static(bingo-oracle)

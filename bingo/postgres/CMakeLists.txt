@@ -4,6 +4,7 @@ project(BingoPostgres)
 
 include(../bingo-version.cmake)
 include(SetBuildParameters)
+SET(BINGO_VERSION "${BINGO_VERSION}" PARENT_SCOPE) # promote Bingo version
 
 message(STATUS "BingoPostgres version is ${BINGO_VERSION}")
 
@@ -26,30 +27,23 @@ if (MSVC)
 endif()
 
 if (NOT MSVC)
-	add_library(bingo-postgres STATIC ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers})
 	add_library(bingo-postgres-shared SHARED ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers})
 else()
-	add_library(bingo-postgres STATIC ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers} ${POSTGRES_INCLUDE_DIRS}/server/port/win32.h)
 	add_library(bingo-postgres-shared SHARED ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers} ${POSTGRES_INCLUDE_DIRS}/server/port/win32.h)
 endif()
+SET_TARGET_PROPERTIES(bingo-postgres-shared PROPERTIES OUTPUT_NAME "bingo_postgres")
 
-set_target_properties(bingo-postgres PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 set_target_properties(bingo-postgres-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 if (APPLE)
 	set_target_properties(bingo-postgres-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -undefined suppress -flat_namespace")
 endif()
-target_link_libraries(bingo-postgres bingo-core bingo-core-c molecule reaction layout )
 target_link_libraries(bingo-postgres-shared bingo-core bingo-core-c molecule reaction layout)
 if (MSVC)
-	target_link_libraries(bingo-postgres ${POSTGRES_LIBRARY})
 	target_link_libraries(bingo-postgres-shared ${POSTGRES_LIBRARY})
 endif()
 
 set_property(TARGET bingo-postgres-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
-
-set_property(TARGET bingo-postgres PROPERTY FOLDER "bingo-postgres")
 set_property(TARGET bingo-postgres-shared PROPERTY FOLDER "bingo-postgres")
 
-#pack_shared(bingo-postgres-shared)
-#pack_static(bingo-postgres)
+pack_bingo(bingo-postgres-shared)
 
