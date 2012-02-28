@@ -32,6 +32,9 @@
 #include "base_cpp/red_black.h"
 #include "indigo_mapping.h"
 
+
+
+
 IndigoDeconvolution::IndigoDeconvolution(bool aromatize):
 IndigoObject(IndigoObject::DECONVOLUTION),
 save_ap_bond_orders(false),
@@ -294,6 +297,7 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
    QS_DEF(Array<int>, rg_mapping);
    QS_DEF(Array<int>, rgidx_map);
    RedBlackMap<int, int> att_ord_map;
+   RedBlackMap<int, int> att_bond_map;
    int att_order, att_idx;
 
    Array<int>& visited_atoms = emb_context.visitedAtoms;
@@ -385,21 +389,23 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
       /*
        * Add attachment points
        */
+      att_bond_map.clear();
       for (int p_idx = 0; p_idx < att_indexes.size(); ++p_idx) {
          att_idx = att_indexes[p_idx];
          att_order = att_orders[p_idx];
          
          int att_idx_m = rg_mapping.at(att_idx);
          int att_order_m = att_ord_map.at(att_order);
+         
+         int edge_idx = mol_set.findEdgeIndex(att_order, att_idx);
+         if (edge_idx == -1)
+            throw Error("internal error: can not find the edge for a fragment");
          if(save_ap_bond_orders) {
             /*
              * TODO change to elem AP
              */
             int ap_atom_idx = fragment.addAtom(ELEM_PSEUDO);
-            int edge_idx = mol_set.findEdgeIndex(att_order, att_idx);
-            if(edge_idx == -1)
-               throw Error("internal error: can not find the edge for a fragment");
-            fragment.addBond(ap_atom_idx, att_idx_m, mol_set.getBondOrder(edge_idx));
+
             /*
              * Write AP pseudo
              */
@@ -408,6 +414,25 @@ void IndigoDeconvolution::_createRgroups(Molecule& mol_set, Molecule& r_molecule
             ap_out.printf("AP%d", att_order_m);
             ap_out.writeChar(0);
             fragment.setPseudoAtom(ap_atom_idx, buf.ptr());
+            /*
+             * Add AP bond
+             * Check for empty RGroup first
+             */
+            if(att_idx_m == -1) {
+               /*
+                * Add AP saved on the previous iteration or add as a new for the following AP
+                */
+               if(att_bond_map.find(edge_idx)) {
+                  fragment.addBond(ap_atom_idx, att_bond_map.at(edge_idx), mol_set.getBondOrder(edge_idx));
+               } else {
+                  att_bond_map.insert(edge_idx, ap_atom_idx);
+               }
+            } else {
+               /*
+                * Add bond order
+                */
+               fragment.addBond(ap_atom_idx, att_idx_m, mol_set.getBondOrder(edge_idx));
+            }
          } else {
             fragment.addAttachmentPoint(att_order_m, att_idx_m);
          }
@@ -515,6 +540,14 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
    ObjArray< Array<int> >& attachment_index = emb_context.attachmentIndex;
    Array<int>& map = emb_context.lastInvMapping;
 
+//   saveMoleculeAsReaction(mol_set, "res/i_mol_set.rxn");
+//   saveMoleculeAsReaction(_fullScaffold, "res/i_full_scaf.rxn", true);
+//   printf("****map\n");
+//   for (int i = 0; i < map.size(); ++i) {
+//      printf("%d %d\n", i ,map[i]);
+//   }
+//   printf("**** end map\n");
+
    int n_rgroups = emb_context.getRgroupNumber();
    /*
     * Search for existing rgroups
@@ -570,13 +603,20 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
       }
       match_rgroups.at(str_key.ptr()).push(cur_rg_idx);
    }
-//   printf("***************\nmatch keys\n");
-//   for (int i = match_rgroups.begin(); i != match_rgroups.end(); i = match_rgroups.next(i)) {
-//      printf("key = %s val = %d\n", match_rgroups.key(i), match_rgroups.value(i));
+//   {
+//      printf("***************\nmatch keys\n");
+//      for (int i = match_rgroups.begin(); i != match_rgroups.end(); i = match_rgroups.next(i)) {
+//         Array<int>& value = match_rgroups.value(i);
+//         printf("key = %s val = ", match_rgroups.key(i));
+//         for (int j = 0; j < value.size(); ++j) {
+//            printf("%d, ", value[j] );
+//         }
+//         printf("\n");
+//      }
+//      FileOutput fo("res/fullscaf.mol");
+//      MolfileSaver ms(fo);
+//      ms.saveQueryMolecule(_fullScaffold);
 //   }
-//   FileOutput fo("res/fullscaf.mol");
-//   MolfileSaver ms(fo);
-//   ms.saveQueryMolecule(_fullScaffold);
    
    /*
     * Loop through all rgroups and seek for matchings
@@ -632,36 +672,46 @@ void IndigoDeconvolution::_addCompleteRGroup(Molecule& mol_set, EmbContext& emb_
        */
       rg_map[rg_idx] = map_rg_idx;
    }
+//   {
+//      FileOutput fo("res/fullscaf.mol");
+//      MolfileSaver ms(fo);
+//      ms.saveQueryMolecule(_fullScaffold);
+//   }
 }
 
 /*
  */
-void IndigoDeconvolution::_addFullRGroup(Array<int>& att_order, Array<int>& att_idx, Molecule& qmol, Array<int>& map, int new_rg_idx) {
+void IndigoDeconvolution::_addFullRGroup(Array<int>& att_orders, Array<int>& att_indexes, Molecule& qmol, Array<int>& map, int new_rg_idx) {
    /*
     * If not found then add Rsite to the full scaffold
     */
-   int new_atom_idx = _fullScaffold.addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+   int att_order, att_idx, att_self, new_atom_idx;
+   
+   if (att_indexes.size() > 0) {
+      new_atom_idx = _fullScaffold.addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
 
-   Vec3f& atom_xyz = qmol.getAtomXyz(att_idx[0]);
-   /*
-    * Copy coordinates
-    */
-   _fullScaffold.setAtomXyz(new_atom_idx, atom_xyz.x, atom_xyz.y, atom_xyz.z);
+      /*
+       * Copy coordinates
+       */
+      Vec3f& atom_xyz = qmol.getAtomXyz(att_indexes[0]);
+      _fullScaffold.setAtomXyz(new_atom_idx, atom_xyz.x, atom_xyz.y, atom_xyz.z);
 
-   /*
-    * Add Rsites
-    */
-   _fullScaffold.allowRGroupOnRSite(new_atom_idx, new_rg_idx);
+      /*
+       * Add Rsites
+       */
+      _fullScaffold.allowRGroupOnRSite(new_atom_idx, new_rg_idx);
+   }
 
    /*
     * Add all bonds
     */
-   for (int point_att = 0; point_att < att_idx.size(); ++point_att) {
-      int att_ord = att_order[point_att];
-      int att_self = map[att_ord];
+   for (int point_att = 0; point_att < att_indexes.size(); ++point_att) {
+      att_order = att_orders[point_att];
+      att_idx = att_indexes[point_att];
+      att_self = map[att_order];
 
       if (_fullScaffold.findEdgeIndex(new_atom_idx, att_self) == -1) {
-         int edge_idx = qmol.findEdgeIndex(att_ord, att_idx[point_att]);
+         int edge_idx = qmol.findEdgeIndex(att_order, att_idx);
          if (edge_idx == -1)
             throw Error("internal error while converting molecule to query");
          _fullScaffold.addBond(new_atom_idx, att_self, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
