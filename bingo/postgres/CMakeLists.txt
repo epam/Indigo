@@ -27,7 +27,7 @@ file(GLOB BingoCoreC_headers ../src/core-c/*.h)
 
 include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR}  ${BingoCoreC_HEADERS_DIR} ${BingoCore_HEADERS_DIR} ${POSTGRES_INCLUDE_DIRS} src/pg_common/ src/pg_am/ src/pg_core/ ../src)
 if (MSVC)
-	include_directories(${POSTGRES_INCLUDE_DIRS}/port/win32_msvc ${POSTGRES_INCLUDE_DIRS}/port/win32)
+	include_directories(${POSTGRES_INCLUDE_DIRS}/port/win32_msvc ${POSTGRES_INCLUDE_DIRS}/port/win32 ${POSTGRES_INCLUDE_DIRS}/..)
 endif()
 
 if (NOT MSVC)                                                                                                                                                            
