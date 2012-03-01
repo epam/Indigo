@@ -4,6 +4,7 @@ project(BingoCore)
 
 file(GLOB BingoCore_src ../src/core/*.cpp)
 file(GLOB BingoCore_headers ../src/core/*.h)
+set(BingoCore_HEADERS_DIR ../src/core)
 
 include(SetBuildParameters)
 include_directories(../src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/..)

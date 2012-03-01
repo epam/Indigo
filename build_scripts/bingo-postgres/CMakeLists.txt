@@ -25,8 +25,15 @@ add_subdirectory(../../reaction "${CMAKE_CURRENT_BINARY_DIR}/reaction")
 add_subdirectory(../../layout "${CMAKE_CURRENT_BINARY_DIR}/layout")
 add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-core-c")
 get_directory_property(BingoCoreC_HEADERS_DIR DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCoreC_HEADERS_DIR)
+#get_directory_property(BingoCoreC_src DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCoreC_src)
+#get_directory_property(BingoCoreC_headers DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCoreC_headers)    
+
 
 add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
+get_directory_property(BingoCore_HEADERS_DIR DIRECTORY ../../bingo/bingo-core DEFINITION BingoCore_HEADERS_DIR)
+#get_directory_property(BingoCore_src DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCore_src)    
+#get_directory_property(BingoCore_headers DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCore_headers)
+
 add_subdirectory(../../bingo/postgres "${CMAKE_CURRENT_BINARY_DIR}/bingo-postgres")
 
 SET(BINGO_VERSION "${BINGO_VERSION}")
