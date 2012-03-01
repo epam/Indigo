@@ -31,12 +31,6 @@ add_subdirectory(../../bingo/postgres "${CMAKE_CURRENT_BINARY_DIR}/bingo-postgre
 
 SET(BINGO_VERSION "${BINGO_VERSION}")
 
-#SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
-#INCLUDE(InstallRequiredSystemLibraries)
-#FOREACH(lib ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})#
-#	INSTALL(FILES ${lib} DESTINATION "lib" COMPONENT shared)
-#ENDFOREACH()
-
 SET(COMPONENTS shared)
 
 # Uncomment it in CMake 2.8.8:  http://www.gccxml.org/Bug/view.php?id=12129
@@ -50,6 +44,7 @@ foreach(comp ${COMPONENTS})
 	INSTALL(FILES ${Bingo_SOURCE_DIR}/LICENSE.GPL DESTINATION . COMPONENT ${comp})
 	INSTALL(FILES ${BingoPostgres_SOURCE_DIR}/INSTALL DESTINATION . COMPONENT ${comp})
 	INSTALL(FILES ${BingoPostgres_SOURCE_DIR}/README DESTINATION . COMPONENT ${comp})
+	INSTALL(DIRECTORY ${BingoPostgres_SOURCE_DIR}/sql/$ENV{BINGO_PG_VERSION}/ DESTINATION sql COMPONENT ${comp})
 	IF(${SYSTEM_NAME} MATCHES "Win")
 		INSTALL(FILES ${BingoPostgres_SOURCE_DIR}/bingo-pg-install.bat DESTINATION . COMPONENT ${comp})
 	ELSE()
