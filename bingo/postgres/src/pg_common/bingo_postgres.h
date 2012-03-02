@@ -3,17 +3,6 @@
 
 #ifdef _WIN32
 #define strcasestr strstr
-#ifndef __cplusplus
-#define CEXPORT __declspec(dllexport)
-#else
-#define CEXPORT extern "C" __declspec(dllexport)
-#endif
-#else
-#ifndef __cplusplus
-   #define CEXPORT
-#else
-   #define CEXPORT extern "C"
-#endif
 #endif
 
 #define BINGO_METAPAGE	0                       /* metapage is always block 0 */

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
 project(BingoPostgres)
 
@@ -25,7 +25,7 @@ file(GLOB BingoCore_headers ../src/core/*.h)
 file(GLOB BingoCoreC_src ../src/core-c/*.cpp ../src/core-c/*.c)
 file(GLOB BingoCoreC_headers ../src/core-c/*.h)
 
-include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR}  ${BingoCoreC_HEADERS_DIR} ${BingoCore_HEADERS_DIR} ${POSTGRES_INCLUDE_DIRS} src/pg_common/ src/pg_am/ src/pg_core/ ../src)
+include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR}  ${BingoCoreC_HEADERS_DIR} ${BingoCore_HEADERS_DIR} ${POSTGRES_INCLUDE_DIRS} src/pg_common/ src/pg_am/ src/pg_core/ ../src ../src/core ../src/core-c)
 if (MSVC)
 	include_directories(${POSTGRES_INCLUDE_DIRS}/port/win32_msvc ${POSTGRES_INCLUDE_DIRS}/port/win32 ${POSTGRES_INCLUDE_DIRS}/..)
 endif()
@@ -41,6 +41,10 @@ set_target_properties(bingo-postgres-shared PROPERTIES COMPILE_FLAGS "${COMPILE_
 if (APPLE)
 	set_target_properties(bingo-postgres-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -undefined suppress -flat_namespace")
 endif()
+if (APPLE OR UNIX)
+	set_target_properties(bingo-postgres-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -pthread")
+endif()
+
 target_link_libraries(bingo-postgres-shared molecule reaction layout)
 if (MSVC)
 	target_link_libraries(bingo-postgres-shared ${POSTGRES_LIBRARY})

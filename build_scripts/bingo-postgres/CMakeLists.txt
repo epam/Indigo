@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
 project(BingoPostgresSolution)
 
+set(BINGO "YES")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
 set(Bingo_SOURCE_DIR ../../bingo/)
 set(BingoPostgres_SOURCE_DIR ../../bingo/postgres)
@@ -23,16 +24,10 @@ add_subdirectory(../../molecule "${CMAKE_CURRENT_BINARY_DIR}/molecule")
 add_subdirectory(../../reaction "${CMAKE_CURRENT_BINARY_DIR}/reaction")
 
 add_subdirectory(../../layout "${CMAKE_CURRENT_BINARY_DIR}/layout")
-add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-core-c")
-get_directory_property(BingoCoreC_HEADERS_DIR DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCoreC_HEADERS_DIR)
-#get_directory_property(BingoCoreC_src DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCoreC_src)
-#get_directory_property(BingoCoreC_headers DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCoreC_headers)    
-
-
-add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
-get_directory_property(BingoCore_HEADERS_DIR DIRECTORY ../../bingo/bingo-core DEFINITION BingoCore_HEADERS_DIR)
-#get_directory_property(BingoCore_src DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCore_src)    
-#get_directory_property(BingoCore_headers DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCore_headers)
+#add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-core-c")
+#get_directory_property(BingoCoreC_HEADERS_DIR DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCoreC_HEADERS_DIR)
+#add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
+#get_directory_property(BingoCore_HEADERS_DIR DIRECTORY ../../bingo/bingo-core DEFINITION BingoCore_HEADERS_DIR)
 
 add_subdirectory(../../bingo/postgres "${CMAKE_CURRENT_BINARY_DIR}/bingo-postgres")
 
@@ -62,4 +57,3 @@ endforeach()
 SET(CMAKE_INSTALL_PREFIX ${BingoPostgres_SOURCE_DIR}/libs)
 
 INCLUDE(CPack)
-INCLUDE(CTest)
