@@ -11,7 +11,7 @@
 @rem WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 @echo off
-set libdir=%CD%/bin
+set libdir=%CD%/lib
 
 set schemaname=bingo
 set libext=".dll"
