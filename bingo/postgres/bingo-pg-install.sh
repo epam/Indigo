@@ -19,7 +19,7 @@ pglibdir="0"
 
 bingo_pg_name="bingo_postgres"
 
-if [ -f "bin/bingo_postgres.dylib" ]; then
+if [ -f "lib/bingo_postgres.dylib" ]; then
   libext=".dylib"
   bingo_pg_name="bingo_postgres.dylib"
 fi
