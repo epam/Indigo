@@ -17,7 +17,7 @@ libext=".so"
 y="0"
 pglibdir="0"
 
-bingo_pg_name="libbingo_postgres"
+bingo_pg_name="bingo_postgres"
 
 if [ -f "bin/bingo_postgres.dylib" ]; then
   libext=".dylib"
