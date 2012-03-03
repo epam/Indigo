@@ -250,21 +250,21 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
    if (n_components > 1)
    {
       const Array<int> &decomposition = getDecomposition();
-      float x_min, x_max, x_start = 0.f, dx;
-      float y_min, y_max, y_start = 0.f, max_height = 0.f, dy;
-      int i, j;
-      int col_count = (int)ceil(sqrt((float)n_components));
-      int row, col;
+      int i, j, k;
       
       molecule_edge_mapping.clear_resize(edgeEnd());
       
       for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
          molecule_edge_mapping[i] = getEdgeExtIdx(i);
+       
+      ObjArray<MoleculeLayoutGraph> components;
+       
+      components.reserve(n_components);
       
       for (i = 0; i < n_components; i++)
       {
          Filter comp_filter(decomposition.ptr(), Filter::EQ, i);
-         MoleculeLayoutGraph component;
+         MoleculeLayoutGraph &component = components.push();
 
          component.makeLayoutSubgraph(*this, comp_filter);
          component.max_iterations = max_iterations;
@@ -300,20 +300,85 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
             component._assignAbsoluteCoordinates(bond_length);
          }
          component._assignFinalCoordinates(bond_length, src_layout);
+      }
+       
+      // position components
+      float x_min, x_max, x_start = 0.f, dx;
+      float y_min, y_max, y_start = 0.f, max_height = 0.f, dy;
+      int col_count;
+      int row, col;
+      int n_fixed = 0;
+       
+      // fixed first
+      if (filter != 0)
+      {
+         x_min = 1.0E+20f;
+         y_min = 1.0E+20f;
+         
+         // find fixed components
+         for (i = 0; i < n_components; i++)
+         {
+            MoleculeLayoutGraph &component = components[i];
+            
+            if (component._n_fixed > 0)
+            {
+               n_fixed++;
+               
+               for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
+               {
+                  const Vec2f &pos = component.getPos(j);
+                  
+                  if (pos.x < x_min)
+                     x_min = pos.x;
+                  if (pos.y < y_min)
+                     y_min = pos.y;
+                  if (pos.y > y_start)
+                     y_start = pos.y;
+               }
+            }
+         }
 
+         // position fixed
+         if (n_fixed > 0)
+         {
+            dy = -y_min;
+            dx = -x_min;
+            
+            for (i = 0; i < n_components; i++)
+            {
+               MoleculeLayoutGraph &component = components[i];
+               
+               if (component._n_fixed > 0)
+                  for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
+                     _layout_vertices[component.getVertexExtIdx(j)].pos.sum(component.getPos(j), Vec2f(dx, dy));
+            }
+
+            y_start += dy + 2 * bond_length;
+         }
+      }
+       
+      col_count = (int)ceil(sqrt((float)n_components - n_fixed));
+       
+      for (i = 0, k = 0; i < n_components; i++)
+      {
+         MoleculeLayoutGraph &component = components[i];
+         
+         if (component._n_fixed > 0)
+            continue;
+         
          // Component shifting
-         row = i / col_count;
-         col = i % col_count;
-
+         row = k / col_count;
+         col = k % col_count;
+         
          x_min = 1.0E+20f;
          x_max = -1.0E+20f;
          y_min = 1.0E+20f;
          y_max = -1.0E+20f;
-
+         
          for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
          {
             const Vec2f &pos = component.getPos(j);
-
+            
             if (pos.x < x_min)
                x_min = pos.x;
             if (pos.x > x_max)
@@ -323,30 +388,29 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
             if (pos.y > y_max)
                y_max = pos.y;
          }
-
+         
          if (col == 0 && row > 0)
          {
             y_start += max_height + 2 * bond_length;
             max_height = 0.f;
          }
-
+         
          if (col > 0)
             dx = x_start - x_min + 2 * bond_length;
          else
             dx = -x_min;
-
-         if (row > 0)
-            dy = y_start - y_min;
-         else
-            dy = -y_min;
-
+         
+         dy = y_start - y_min;
+         
          for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
             _layout_vertices[component.getVertexExtIdx(j)].pos.sum(component.getPos(j), Vec2f(dx, dy));
-
+         
          x_start = x_max + dx;
-
+         
          if (y_max - y_min > max_height)
             max_height = y_max - y_min;
+         
+         k++;
       }
    } else
    {
