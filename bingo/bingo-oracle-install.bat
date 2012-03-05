@@ -106,7 +106,7 @@ echo / >>sql\bingo\bingo_lib.sql
 echo spool off; >>sql\bingo\bingo_lib.sql 
 
 md %libdir%
-copy bin\bingo-oracle.dll %libdir% /y
+copy lib\bingo-oracle.dll %libdir% /y
 if not %errorlevel%==0 goto end
 
 if not "%instance%"=="" set instance=@%instance%

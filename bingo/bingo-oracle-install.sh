@@ -45,7 +45,7 @@ echo '    Do not ask for confirmation.'
 }
 
 libext=".so"
-if [ -f "bin/libbingo.dylib" ]; then
+if [ -f "lib/libbingo.dylib" ]; then
   libext=".dylib"
 fi
 
@@ -125,7 +125,7 @@ echo create or replace LIBRARY bingolib AS \'$libdir/libbingo$libext\' >>sql/bin
 echo / >>sql/bingo/bingo_lib.sql 
 echo spool off\; >>sql/bingo/bingo_lib.sql 
 
-cp bin/libbingo$libext $libdir
+cp lib/libbingo$libext $libdir
 if [ $? != 0 ]; then
   echo 'Cannot copy libbingo'$libext' to '$libdir
   exit

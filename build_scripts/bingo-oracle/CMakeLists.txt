@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.6)
 
 project(BingoOracleSolution)
 
+set(Bingo_SOURCE_DIR ../../bingo/)
+set(BingoOracle_SOURCE_DIR ../../bingo/)
+
 set(BINGO "YES")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
 
@@ -33,7 +36,30 @@ add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-cor
 add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
 add_subdirectory(../../bingo "${CMAKE_CURRENT_BINARY_DIR}/bingo-oracle")
 
+SET(BINGO_VERSION "${BINGO_VERSION}")
+
+SET(COMPONENTS shared)
+
+# Uncomment it in CMake 2.8.8:  http://www.gccxml.org/Bug/view.php?id=12129
+SET(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
+
+SET(CPACK_COMPONENTS_ALL ${COMPONENTS})
+set(CPACK_ARCHIVE_COMPONENT_INSTALL 1)
+SET(CPACK_GENERATOR "ZIP")
+SET(CPACK_PACKAGE_FILE_NAME "bingo-oracle-${BINGO_VERSION}-${PACKAGE_SUFFIX}")
+foreach(comp ${COMPONENTS})
+	INSTALL(FILES ${Bingo_SOURCE_DIR}/LICENSE.GPL DESTINATION . COMPONENT ${comp})
+	INSTALL(DIRECTORY ${BingoOracle_SOURCE_DIR}/sql/ DESTINATION sql COMPONENT ${comp})
+	IF(${SYSTEM_NAME} MATCHES "Win")
+		INSTALL(FILES ${BingoOracle_SOURCE_DIR}/bingo-oracle-install.bat DESTINATION . COMPONENT ${comp})
+	ELSE()
+		INSTALL(FILES ${BingoOracle_SOURCE_DIR}/bingo-oracle-install.sh DESTINATION . COMPONENT ${comp})
+	ENDIF()
+endforeach()
+
+SET(CMAKE_INSTALL_PREFIX ${BingoOracle_SOURCE_DIR}/libs)
+
 INCLUDE(CPack)
-INCLUDE(CTest)
+
 
 
