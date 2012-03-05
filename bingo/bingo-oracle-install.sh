@@ -26,7 +26,7 @@ echo 'Parameters:'
 echo '  -?, -help'
 echo '    Print this help message'
 echo '  -libdir path'
-echo '    Target directory to install libbingo'$libext' (defaut $ORACLE_HOME/lib).'
+echo '    Target directory to install libbingo-oracle'$libext' (defaut $ORACLE_HOME/lib).'
 echo '    If the directory does not exist, it will be created.'
 echo '  -dbaname name'
 echo '    Database administrator login (default "system").'
@@ -45,7 +45,7 @@ echo '    Do not ask for confirmation.'
 }
 
 libext=".so"
-if [ -f "lib/libbingo.dylib" ]; then
+if [ -f "lib/libbingo-oracle.dylib" ]; then
   libext=".dylib"
 fi
 
@@ -121,13 +121,13 @@ mkdir -p $libdir
 
 echo set verify off >sql/bingo/bingo_lib.sql 
 echo spool bingo_lib\; >>sql/bingo/bingo_lib.sql 
-echo create or replace LIBRARY bingolib AS \'$libdir/libbingo$libext\' >>sql/bingo/bingo_lib.sql 
+echo create or replace LIBRARY bingolib AS \'$libdir/libbingo-oracle$libext\' >>sql/bingo/bingo_lib.sql 
 echo / >>sql/bingo/bingo_lib.sql 
 echo spool off\; >>sql/bingo/bingo_lib.sql 
 
-cp lib/libbingo$libext $libdir
+cp lib/libbingo-oracle$libext $libdir
 if [ $? != 0 ]; then
-  echo 'Cannot copy libbingo'$libext' to '$libdir
+  echo 'Cannot copy libbingo-oracle'$libext' to '$libdir
   exit
 fi
 

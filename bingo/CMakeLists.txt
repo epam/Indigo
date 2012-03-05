@@ -15,15 +15,14 @@ include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${OCI_INCLU
 
 add_library(bingo-oracle-shared SHARED ${Bingo_src} ${Bingo_headers})
 
-SET_TARGET_PROPERTIES(bingo-oracle-shared PROPERTIES OUTPUT_NAME "bingo_oracle")
-
 set_target_properties(bingo-oracle-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
-target_link_libraries(bingo-oracle-shared bingo-core molecule reaction layout ${OCI_LIBRARY} common-oracle)
+target_link_libraries(bingo-oracle-shared bingo-core molecule reaction layout common-oracle common)
 if (MSVC)
-	target_link_libraries(bingo-oracle-shared odbc32 odbccp32)
+	target_link_libraries(bingo-oracle-shared odbc32 odbccp32 ${OCI_LIBRARY})
 endif()
 set_property(TARGET bingo-oracle-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
+
 SET_TARGET_PROPERTIES(bingo-oracle-shared PROPERTIES OUTPUT_NAME "bingo-oracle")
 
 set_property(TARGET bingo-oracle-shared PROPERTY FOLDER "bingo-oracle")

@@ -2,19 +2,21 @@ cmake_minimum_required(VERSION 2.8)
 project(Common C CXX)
 # Collect file list for BaseC
 file (GLOB BaseC_src base_c/*.c*)
-file (GLOB BaseC_src_excl base_c/*_posix.c*)
-if(NOT MSVC)
-    set(BaseC_src_excl ${CMAKE_CURRENT_SOURCE_DIR}/base_c/nano_win.c 
-                       ${CMAKE_CURRENT_SOURCE_DIR}/base_c/os_sync_win32.c
-                       ${CMAKE_CURRENT_SOURCE_DIR}/base_c/os_dir_win32.c
-                       ${CMAKE_CURRENT_SOURCE_DIR}/base_c/os_thread_win32.c)    
+if (MSVC)
+    file (GLOB BaseC_src_excl base_c/*_posix.c*)
+else()
+    file (GLOB BaseC_src_excl base_c/*_win.c* base_c/*_win32.c*)
 endif()
 list (REMOVE_ITEM BaseC_src ${BaseC_src_excl})
 file (GLOB BaseC_headers base_c/*.h*)
 
 # Collect file list for BaseCpp
 file (GLOB BaseCpp_src base_cpp/*.c*)
-file (GLOB BaseCpp_src_excl base_cpp/*_posix.c*)
+if (MSVC)
+    file (GLOB BaseCpp_src_excl base_cpp/*_posix.c*)
+else()
+    file (GLOB BaseCpp_src_excl base_cpp/*_win.c* base_cpp/*_win32.c*)
+endif()
 list (REMOVE_ITEM BaseCpp_src ${BaseCpp_src_excl})
 file (GLOB BaseCpp_headers base_cpp/*.h*)
 
