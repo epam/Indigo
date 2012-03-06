@@ -91,6 +91,7 @@ bool CycleEnumerator::_pathFinder (const SpanningTree &spt, int ext_v1, int ext_
          {
             if (visited_vertices[cur_start_idx + i])
                continue;
+            visited_vertices[cur_start_idx + i] = 1;
             
             int u = spt.getExtVertexIndex(v_vertex.neiVertex(i));
             int e = spt.getExtEdgeIndex(v_vertex.neiEdge(i));
@@ -118,7 +119,6 @@ bool CycleEnumerator::_pathFinder (const SpanningTree &spt, int ext_v1, int ext_
             {
                edges.push(e);
                vertices.push(u);
-               visited_vertices[cur_start_idx + i] = 1;
                flags[u] = 1;
 
                cur_start_idx += v_vertex.neiEnd();
