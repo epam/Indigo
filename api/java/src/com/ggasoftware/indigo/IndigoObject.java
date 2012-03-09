@@ -47,14 +47,20 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return dispatcher;
    }
    
+   public void dispose ()
+   {
+      if (self >= 0) {
+         dispatcher.setSessionID();
+         _lib.indigoFree(self);
+         self = -1;
+      }
+   }
    @Override
    @SuppressWarnings("FinalizeDeclaration")
    protected void finalize () throws Throwable
    {
-      if (!Indigo.libraryUnloaded())
-      {
-         dispatcher.setSessionID();
-         _lib.indigoFree(self);
+      if (!Indigo.libraryUnloaded()) {
+          dispose();
       }
       super.finalize();
    }
