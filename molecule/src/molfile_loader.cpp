@@ -2313,8 +2313,12 @@ void MolfileLoader::_readCtab3000 ()
             _qmol->addBond(beg, end, bond.release());
          }
 
-         while (!strscan.isEOF())
+         while (true)
          {
+            strscan.skipSpace();
+            if (strscan.isEOF())
+               break;
+
             QS_DEF(Array<char>, prop);
 
             strscan.readWord(prop, "=");
