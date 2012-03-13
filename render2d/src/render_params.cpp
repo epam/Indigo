@@ -77,7 +77,7 @@ bool RenderParamInterface::needsLayoutSub (BaseMolecule& mol)
       const Array<int>& atoms = mol.multiple_groups[i].atoms;
       const Array<int>& patoms = mol.multiple_groups[i].parent_atoms;
       for (int j = 0; j < atoms.size(); ++j)
-         atomsToIgnore.insert(atoms[j]);
+         atomsToIgnore.find_or_insert(atoms[j]);
       for (int j = 0; j < patoms.size(); ++j)
          if (atomsToIgnore.find(patoms[j]))
             atomsToIgnore.remove(patoms[j]);

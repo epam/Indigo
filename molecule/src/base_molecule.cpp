@@ -961,7 +961,12 @@ void BaseMolecule::MultipleGroup::collapse (BaseMolecule& bm, int id, Mapping& m
    toRemove.clear();
    for (int j = 0; j < group.atoms.size(); ++j) {
       int k = j % group.parent_atoms.size();
-      mapAtom.insert(group.atoms[j], group.atoms[k]);
+      int *value = mapAtom.at2(group.atoms[j]);
+      if (value == 0)
+         mapAtom.insert(group.atoms[j], group.atoms[k]);
+      else if (*value != group.atoms[k])
+         throw Error("Invalid mapping in MultipleGroup::collapse");
+
       if (k != j)
          toRemove.push(group.atoms[j]);
    }
