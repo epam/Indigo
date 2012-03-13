@@ -244,9 +244,10 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
 
    if (ret != inchi_Ret_OKAY && ret != inchi_Ret_WARNING)
    {
+      // Construct error before dispoing inchi output to preserve error message
+      IndigoError error("Indigo-InChI: InChI generation failed: %s. Code: %d.", output.szMessage, ret);
       FreeINCHI(&output);
-      throw IndigoError("Indigo-InChI: InChI generation failed: %s. Code: %d.", 
-         output.szMessage, ret);
+      throw error;
    }
 
    inchi.readString(output.szInChI, true);
