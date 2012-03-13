@@ -1746,10 +1746,13 @@ void MolfileLoader::_postLoad ()
       if (_stereocenter_types[i] > 0)
       {
          if (_bmol->stereocenters.getType(i) == 0)
+         {
             if (!ignore_stereocenter_errors)
-               throw Error("stereo type specified for atom #%d, but the bond"
+               throw Error("stereo type specified for atom #%d, but the bond "
                     "directions does not say that it is a stereocenter", i);
-         _bmol->stereocenters.setType(i, _stereocenter_types[i], _stereocenter_groups[i]);
+         }
+         else
+            _bmol->stereocenters.setType(i, _stereocenter_types[i], _stereocenter_groups[i]);
       }
 
    if (!ignore_stereocenter_errors)
