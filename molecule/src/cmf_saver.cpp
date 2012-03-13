@@ -287,14 +287,14 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
    if (need_print_ext && !ext_printed)
       _encode(CMF_EXT);
 
-   for (int i = 0; i < mol.generic_sgroups.size(); i++)
+   for (int i = mol.generic_sgroups.begin(); i != mol.generic_sgroups.end(); i = mol.generic_sgroups.next(i))
    {
       BaseMolecule::SGroup &sg = mol.data_sgroups[i];
       _encode(CMF_GENERICSGROUP);
       _encodeBaseSGroup(mol, sg, mapping);
    }
 
-   for (int i = 0; i < mol.data_sgroups.size(); i++)
+   for (int i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
    {
       BaseMolecule::DataSGroup &sd = mol.data_sgroups[i];
       _encode(CMF_DATASGROUP);
@@ -308,7 +308,7 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       _output->writeByte(packed);
    }
 
-   for (int i = 0; i < mol.superatoms.size(); i++)
+   for (int i = mol.superatoms.begin(); i != mol.superatoms.end(); i = mol.superatoms.next(i))
    {
       BaseMolecule::Superatom &sa = mol.superatoms[i];
       _encode(CMF_SUPERATOM);
@@ -320,7 +320,7 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       _output->writePackedUInt(sa.bond_idx + 1);
    }
 
-   for (int i = 0; i < mol.repeating_units.size(); i++)
+   for (int i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))
    {
       BaseMolecule::RepeatingUnit &su = mol.repeating_units[i];
       _encode(CMF_REPEATINGUNIT);
@@ -328,7 +328,7 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       _output->writePackedUInt(su.connectivity);
    }
 
-   for (int i = 0; i < mol.multiple_groups.size(); i++)
+   for (int i = mol.multiple_groups.begin(); i != mol.multiple_groups.end(); i = mol.multiple_groups.next(i))
    {
       BaseMolecule::MultipleGroup &sm = mol.multiple_groups[i];
       _encode(CMF_MULTIPLEGROUP);
@@ -353,20 +353,20 @@ void CmfSaver::_writeBaseSGroupXyz (Output &output, BaseMolecule::SGroup &sgroup
 void CmfSaver::_writeSGroupsXyz (Molecule &mol, Output &output, const VecRange &range)
 {
    // XYZ data should be written in the same order as in _encodeSGroups
-   for (int i = 0; i < mol.generic_sgroups.size(); i++)
+   for (int i = mol.generic_sgroups.begin(); i != mol.generic_sgroups.end(); i = mol.generic_sgroups.next(i))
    {
-      BaseMolecule::SGroup &sg = mol.data_sgroups[i];
+      BaseMolecule::SGroup &sg = mol.generic_sgroups[i];
       _writeBaseSGroupXyz(output, sg, range);
    }
 
-   for (int i = 0; i < mol.data_sgroups.size(); i++)
+   for (int i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
    {
       BaseMolecule::DataSGroup &sd = mol.data_sgroups[i];
       _writeBaseSGroupXyz(output, sd, range);
       _writeVec2f(output, sd.display_pos, range);
    }
 
-   for (int i = 0; i < mol.superatoms.size(); i++)
+   for (int i = mol.superatoms.begin(); i != mol.superatoms.end(); i = mol.superatoms.next(i))
    {
       BaseMolecule::Superatom &sa = mol.superatoms[i];
       _writeBaseSGroupXyz(output, sa, range);
@@ -374,13 +374,13 @@ void CmfSaver::_writeSGroupsXyz (Molecule &mol, Output &output, const VecRange &
          _writeDir2f(output, sa.bond_dir, range);
    }
 
-   for (int i = 0; i < mol.repeating_units.size(); i++)
+   for (int i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))
    {
       BaseMolecule::RepeatingUnit &su = mol.repeating_units[i];
       _writeBaseSGroupXyz(output, su, range);
    }
 
-   for (int i = 0; i < mol.multiple_groups.size(); i++)
+   for (int i = mol.multiple_groups.begin(); i != mol.multiple_groups.end(); i = mol.multiple_groups.next(i))
    {
       BaseMolecule::MultipleGroup &sm = mol.multiple_groups[i];
       _writeBaseSGroupXyz(output, sm, range);
@@ -759,14 +759,13 @@ void CmfSaver::_writeDir2f (Output &output, const Vec2f &dir, const VecRange &ra
 
 void CmfSaver::_updateSGroupsXyzMinMax (Molecule &mol, Vec3f &min, Vec3f &max)
 {
-
-   for (int i = 0; i < mol.generic_sgroups.size(); i++)
+   for (int i = mol.generic_sgroups.begin(); i != mol.generic_sgroups.end(); i = mol.generic_sgroups.next(i))
    {
-      BaseMolecule::SGroup &s = mol.data_sgroups[i];
+      BaseMolecule::SGroup &s = mol.generic_sgroups[i];
       _updateBaseSGroupXyzMinMax(s, min, max);
    }
 
-   for (int i = 0; i < mol.data_sgroups.size(); i++)
+   for (int i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
    {
       BaseMolecule::DataSGroup &s = mol.data_sgroups[i];
       _updateBaseSGroupXyzMinMax(s, min, max);
@@ -777,24 +776,23 @@ void CmfSaver::_updateSGroupsXyzMinMax (Molecule &mol, Vec3f &min, Vec3f &max)
       max.max(display_pos);
    }
 
-   for (int i = 0; i < mol.superatoms.size(); i++)
+   for (int i = mol.superatoms.begin(); i != mol.superatoms.end(); i = mol.superatoms.next(i))
    {
       BaseMolecule::Superatom &s = mol.superatoms[i];
       _updateBaseSGroupXyzMinMax(s, min, max);
    }
 
-   for (int i = 0; i < mol.repeating_units.size(); i++)
+   for (int i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))
    {
       BaseMolecule::RepeatingUnit &s = mol.repeating_units[i];
       _updateBaseSGroupXyzMinMax(s, min, max);
    }
 
-   for (int i = 0; i < mol.multiple_groups.size(); i++)
+   for (int i = mol.multiple_groups.begin(); i != mol.multiple_groups.end(); i = mol.multiple_groups.next(i))
    {
       BaseMolecule::MultipleGroup &s = mol.multiple_groups[i];
       _updateBaseSGroupXyzMinMax(s, min, max);
    }
-
 }
 
 void CmfSaver::_updateBaseSGroupXyzMinMax (BaseMolecule::SGroup &sgroup, Vec3f &min, Vec3f &max)
