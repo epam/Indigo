@@ -2702,7 +2702,7 @@ void MolfileLoader::_readSGroup3000 (const char *str)
             int idx = scanner.readInt() - 1;
 
             if (strcmp(type.ptr(), "MUL") == 0)
-               ((BaseMolecule::MultipleGroup *)sgroup)->parent_atoms.push(idx - 1);
+               ((BaseMolecule::MultipleGroup *)sgroup)->parent_atoms.push(idx);
 
             scanner.skipSpace();
          }
@@ -2814,7 +2814,7 @@ void MolfileLoader::_readSGroup3000 (const char *str)
             n = scanner.readInt1();
             while (n -- > 0)
             {
-               scanner.readInt();
+               scanner.readFloat();
                scanner.skipSpace();
             }
             scanner.skip(1); // )
