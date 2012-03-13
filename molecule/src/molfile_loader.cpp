@@ -615,13 +615,7 @@ void MolfileLoader::_readCtab2000 ()
                }
                else
                {
-                  if (atomlist.get() == 0)
-                     atomlist.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER,
-                                    Element::fromString(chars)));
-                  else
-                     atomlist.reset(QueryMolecule::Atom::oder(atomlist.release(),
-                        new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER,
-                        Element::fromString(chars))));
+                  _appendQueryAtom(chars, atomlist);
                }
             }
 
@@ -1218,6 +1212,21 @@ void MolfileLoader::_readCtab2000 ()
       for (int atom_idx = 0; atom_idx < _atoms_num; atom_idx++)
          if (_atom_types[atom_idx] == _ATOM_A)
             throw Error("'any' atoms are allowed only for queries");
+}
+
+void MolfileLoader::_appendQueryAtom (const char *atom_label, AutoPtr<QueryMolecule::Atom> &atom)
+{
+   int atom_number = Element::fromString2(atom_label);
+   AutoPtr<QueryMolecule::Atom> cur_atom;
+   if (atom_number != -1)
+      cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, atom_number));
+   else
+      cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, atom_label));
+
+   if (atom.get() == 0)
+      atom.reset(cur_atom.release());
+   else
+      atom.reset(QueryMolecule::Atom::oder(atom.release(), cur_atom.release()));
 }
 
 void MolfileLoader::_convertCharge (int value, int &charge, int &radical)
@@ -1936,12 +1945,7 @@ void MolfileLoader::_readCtab3000 ()
             }
             else
             {
-               if (query_atom.get() == 0)
-                  query_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER,
-                                   Element::fromString(buf.ptr())));
-               else
-                  query_atom.reset(QueryMolecule::Atom::oder(query_atom.release(),
-                    new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, Element::fromString(buf.ptr()))));
+               _appendQueryAtom(buf.ptr(), query_atom);
             }
 
             if (stopchar == ']')

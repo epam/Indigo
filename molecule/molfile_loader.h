@@ -19,6 +19,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
+#include "molecule/query_molecule.h"
 
 namespace indigo {
 
@@ -129,6 +130,7 @@ protected:
    void _preparePseudoAtomLabel (Array<char> &pseudo);
    void _readMultiString (Array<char> &str);
    void _init ();
+   void _appendQueryAtom (const char *atom_label, AutoPtr<QueryMolecule::Atom> &atom);
 
    int _getElement (const char *buf);
    char* _strtrim (char *buf);
