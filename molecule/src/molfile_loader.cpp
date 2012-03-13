@@ -1114,12 +1114,13 @@ void MolfileLoader::_readCtab2000 ()
                _scanner.skip(1);
                int sgroup_idx = _scanner.readIntFix(3) - 1;
 
+               char id[4];
+               _scanner.skip(1);
+               _scanner.readCharsFix(3, id);
+
                if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SRU)
                {
                   BaseMolecule::RepeatingUnit &ru = _bmol->repeating_units[_sgroup_mapping[sgroup_idx]];
-                  char id[4];
-                  _scanner.skip(1);
-                  _scanner.readCharsFix(3, id);
 
                   if (strncmp(id, "HH", 2) == 0)
                      ru.connectivity = BaseMolecule::RepeatingUnit::HEAD_TO_HEAD;
