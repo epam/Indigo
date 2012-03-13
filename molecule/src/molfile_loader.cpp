@@ -2143,12 +2143,14 @@ void MolfileLoader::_readCtab3000 ()
                if (subst == -1)
                   _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
                            new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, 0)));
+               else if (subst == -2)
+                  throw Error("Query substitution count as drawn is not supported yet (SUBST=%d)", subst);
                else if (subst > 0)
                   _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
                            new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS,
                                   subst, (subst < 6 ? subst : 100))));
                else
-                  throw Error("invalid SUBST value: %d", hcount);
+                  throw Error("invalid SUBST value: %d", subst);
             }
          }
          else if (strcmp(prop, "UNSAT") == 0)
