@@ -2397,6 +2397,8 @@ void MolfileLoader::_readCtab3000 ()
          _readSGroupsBlock3000();
          sgroups_parsed = true;
       }
+      else if (strncmp(str.ptr(), "M  V30 LINKNODE", 15) == 0)
+         throw Error("link nodes are not supported yet (%s)", str.ptr());
       else
          throw Error("error reading CTAB block footer: %s", str.ptr());
 
