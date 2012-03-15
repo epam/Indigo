@@ -976,7 +976,7 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring) {
       p2.copy(pp[(j + 1) % len]);
       p1.rotate(tilt);
       p2.rotate(tilt);
-      bool revOrder = p1.x > p2.x;
+      bool revOrder = (p1.x > p2.x) || (p1.x == p2.x && p1.y > p2.y);
       Segment& segment = segments.push();
       segment.id = j;
       segment.p0.copy(revOrder ? p2 : p1);
