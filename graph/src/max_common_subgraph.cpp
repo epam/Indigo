@@ -1736,14 +1736,20 @@ void MaxCommonSubgraph::_getSolutionMaps(int count, ObjArray< Array<int> >& v_ma
 SubstructureMcs::SubstructureMcs():
 cbMatchEdge(0),
 cbMatchVertex(0),
-userdata(0)
+userdata(0),
+_sub(0),
+_super(0),
+_invert(false)
 {
 }
 
 SubstructureMcs::SubstructureMcs(Graph &sub, Graph &super):
 cbMatchEdge(0),
 cbMatchVertex(0),
-userdata(0)
+userdata(0),
+_sub(0),
+_super(0),
+_invert(false)
 {
    setGraphs(sub, super);
 }
@@ -1769,6 +1775,9 @@ void SubstructureMcs::setGraphs(Graph &sub, Graph &super){
 }
 //searches substructure for graphs and maps vertices
 bool SubstructureMcs::searchSubstructure(Array<int> *map) {
+   
+   if(_sub == 0 || _super == 0)
+      throw MaxCommonSubgraph::Error("internal AAM error: not initialized sub-mcs molecules");
 
    EmbeddingEnumerator emb_enum(*_super);
    emb_enum.setSubgraph(*_sub);

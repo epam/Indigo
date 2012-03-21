@@ -153,6 +153,7 @@ public:
       HIGH_PRIORITY_SCORE = 1000
 
    };
+   RSubstructureMcs(BaseReaction& reaction, const ReactionAutomapper& context);
    RSubstructureMcs(BaseReaction& reaction, int subNum, int superNum, const ReactionAutomapper& context);
    RSubstructureMcs(BaseReaction &reaction, BaseMolecule& sub, BaseMolecule& super, const ReactionAutomapper& context);
    virtual ~RSubstructureMcs(){}

@@ -261,7 +261,7 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
          int v = rsub_map_out.at(j);
          if (v >= 0) {
             /*
-             * Check delte Y exchange problem possibility
+             * Check delta Y exchange problem possibility
              */
             if(!product_cut.hasVertex(v))
                continue;
@@ -345,8 +345,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
    /*
     * Initialize reaction substructure handler by null molecules since it will not be callable by itself
     */
-   Molecule tmp_mol;
-   RSubstructureMcs rsm(reaction_copy, tmp_mol, tmp_mol, *this);
+   RSubstructureMcs rsm(reaction_copy, *this);
 
 
    for (int mol_idx = _initReaction.begin(); mol_idx != _initReaction.end(); mol_idx = _initReaction.next(mol_idx)) {
@@ -368,7 +367,6 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                      const Vertex& end_vert = pmol.getVertex(v_mapping[v_map]);
                      for (int nei_vert = end_vert.neiBegin(); nei_vert < end_vert.neiEnd(); nei_vert = end_vert.neiNext(nei_vert)) {
                         int end_nei_vert = end_vert.neiVertex(nei_vert);
-//                        if (_reaction.getAAM(opp_idx, end_nei_vert) == 0 && MaxCommonSubmolecule::matchAtoms(rmol, pmol, 0, ve_end, end_nei_vert, 0)) {
                         if (_initReaction.getAAM(opp_idx, end_nei_vert) == 0 && RSubstructureMcs::atomConditionReact(rmol, pmol, 0, ve_end, end_nei_vert, &rsm)) {
                            change_broken = false;
                            break;
@@ -387,7 +385,6 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                      const Vertex& beg_vert = pmol.getVertex(v_mapping[v_map]);
                      for (int nei_vert = beg_vert.neiBegin(); nei_vert < beg_vert.neiEnd(); nei_vert = beg_vert.neiNext(nei_vert)) {
                         int beg_nei_vert = beg_vert.neiVertex(nei_vert);
-//                        if (_reaction.getAAM(opp_idx, beg_nei_vert) == 0 && MaxCommonSubmolecule::matchAtoms(rmol, pmol, 0, ve_beg, beg_nei_vert, 0)) {
                         if (_initReaction.getAAM(opp_idx, beg_nei_vert) == 0 && RSubstructureMcs::atomConditionReact(rmol, pmol, 0, ve_beg, beg_nei_vert, &rsm)) {
                            change_broken = false;
                            break;
@@ -421,7 +418,6 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                       continue;
                   }
 
-//                  bool bond_cond_simple = MaxCommonSubmolecule::matchBonds(pmol, rmol, mapping[i], bond_idx, 0);
                   bool bond_cond_simple = RSubstructureMcs::bondConditionReactSimple(pmol, rmol, mapping[i], bond_idx, &rsm);
                   
                   if (bond_cond_simple || (react_arom && prod_arom)) 
@@ -968,19 +964,29 @@ int ReactionMapMatchingData::_getEdgeId(int mol_idx, int edge) const {
    return result;
 }
 
+RSubstructureMcs::RSubstructureMcs(BaseReaction& reaction, const ReactionAutomapper& context):
+flags(CONDITION_ALL),
+_reaction(reaction),
+_subReactNumber(-1),
+_superProductNumber(-1) {
+   setUpFlags(context);
+}
+
 RSubstructureMcs::RSubstructureMcs(BaseReaction &reaction,  int sub_num, int super_num, const  ReactionAutomapper& context):
-SubstructureMcs(reaction.getBaseMolecule(sub_num), reaction.getBaseMolecule(super_num)),
 flags(CONDITION_ALL),
 _reaction(reaction), 
 _subReactNumber(sub_num), 
 _superProductNumber(super_num) {
+   setGraphs(reaction.getBaseMolecule(sub_num), reaction.getBaseMolecule(super_num));
    setUpFlags(context);
 }
 
 RSubstructureMcs::RSubstructureMcs(BaseReaction &reaction, BaseMolecule& sub, BaseMolecule& super, const  ReactionAutomapper& context):
-SubstructureMcs(sub, super),
 flags(CONDITION_ALL),
-_reaction(reaction) {
+_reaction(reaction),
+_subReactNumber(-1),
+_superProductNumber(-1){
+   setGraphs(sub, super);
    setUpFlags(context);
    cbMatchVertex = atomConditionReact;
    cbMatchEdge = bondConditionReactSimple;
@@ -1001,7 +1007,9 @@ void RSubstructureMcs::setUpFlags(const ReactionAutomapper& context) {
 
 
 bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Array<int>* in_map, Array<int> *out_map){
-
+   if(_sub == 0 || _super == 0)
+      throw ReactionAutomapper::Error("internal AAM error: not initialized sub-mcs molecules");
+   
    QS_DEF(ObjArray< Array<int> >, tmp_maps);
    QS_DEF(ObjArray<EmbeddingEnumerator>, emb_enums);
    QS_DEF(Array<int>, in_map_cut);
@@ -1084,11 +1092,15 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
 
 bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<int> *out_map) {
 
+   if(_sub == 0 || _super == 0)
+      throw ReactionAutomapper::Error("internal AAM error: not initialized sub-mcs molecules");
+
    if(out_map != 0)
       out_map->clear();
 
 //   if(_super->vertexCount() < 2 || _sub->vertexCount() < 2)
 //      return false;
+
 
    Molecule *sub_molecule;
    Molecule *super_molecule;
@@ -1133,6 +1145,9 @@ bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<i
 
 int RSubstructureMcs::findReactionCenter(BaseMolecule& mol, int bondNum) const {
    int edgeInd = bondNum;
+   if(_sub == 0 || _super == 0)
+      throw ReactionAutomapper::Error("internal AAM error: not initialized sub-mcs molecules");
+   
    if(_sub == &mol){
       if(_invert){
          return _reaction.getReactingCenter(_superProductNumber, edgeInd);
@@ -1151,6 +1166,9 @@ int RSubstructureMcs::findReactionCenter(BaseMolecule& mol, int bondNum) const {
 }
 
 void RSubstructureMcs::getReactingCenters(BaseMolecule& mol1, BaseMolecule& mol2, int bond1, int bond2, int& rc_reactant, int& rc_product) const {
+   if(_sub == 0 || _super == 0)
+      throw ReactionAutomapper::Error("internal AAM error: not initialized sub-mcs molecules");
+   
    if(_sub == &mol1 && _super == &mol2){
       if(_invert) {
          rc_reactant = _reaction.getReactingCenter(_subReactNumber, bond2);
@@ -1315,7 +1333,9 @@ int RSubstructureMcs::cbMcsSolutionTerm(Array<int>& a1, Array<int>& a2, void* co
 
 
 int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const Array<int>* in_map, Array<int> *out_map) {
-   
+
+   if(_sub == 0 || _super == 0)
+      throw ReactionAutomapper::Error("internal AAM error: not initialized sub-mcs molecules");
 
    int result = 0;
    if(in_map != 0) {
