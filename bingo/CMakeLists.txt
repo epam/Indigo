@@ -20,6 +20,8 @@ set_target_properties(bingo-oracle-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FL
 target_link_libraries(bingo-oracle-shared bingo-core molecule reaction layout common-oracle common)
 if (MSVC)
 	target_link_libraries(bingo-oracle-shared odbc32 odbccp32 ${OCI_LIBRARY})
+elseif(APPLE)
+	target_link_libraries(bingo-oracle-shared ${OCI_LIBRARY})
 endif()
 set_property(TARGET bingo-oracle-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 
