@@ -82,7 +82,7 @@ void ScaffoldDetection::_searchExactScaffold(GraphBasket& basket) {
          Graph& graph_bask = basket.getGraph(bgraph);
 
          sub_mcs.setGraphs(graph_bask, graph_set);
-         if(sub_mcs.searchSubstructure(0) && !sub_mcs.isInverted()) 
+         if(!sub_mcs.isInverted() && sub_mcs.searchSubstructure(0))
             continue;
 
          mcs.setGraphs(graph_bask, graph_set);
@@ -160,7 +160,7 @@ void ScaffoldDetection::_searchApproximateScaffold(GraphBasket& basket) {
          Graph& graph_bask = basket.getGraph(bgraph);
          //search sub
          sub_mcs.setGraphs(graph_bask, graph_set);
-         if(sub_mcs.searchSubstructure(0) && !sub_mcs.isInverted()) 
+         if(!sub_mcs.isInverted() && sub_mcs.searchSubstructure(0))
             continue;
          //search mcs
 

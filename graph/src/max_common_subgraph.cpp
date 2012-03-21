@@ -1777,7 +1777,7 @@ void SubstructureMcs::setGraphs(Graph &sub, Graph &super){
 bool SubstructureMcs::searchSubstructure(Array<int> *map) {
    
    if(_sub == 0 || _super == 0)
-      throw MaxCommonSubgraph::Error("internal AAM error: not initialized sub-mcs molecules");
+      throw MaxCommonSubgraph::Error("internal AAM error: not initialized sub-mcs graphs");
 
    EmbeddingEnumerator emb_enum(*_super);
    emb_enum.setSubgraph(*_sub);
