@@ -1004,7 +1004,9 @@ void RSubstructureMcs::setUpFlags(const ReactionAutomapper& context) {
    if(!context.ignore_atom_valence)
       flags |= CONDITION_ATOM_VALENCE;
 }
-
+bool RSubstructureMcs::searchSubstructure(Array<int>* map) {
+   SubstructureMcs::searchSubstructure(map);
+}
 
 bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Array<int>* in_map, Array<int> *out_map){
    if(_sub == 0 || _super == 0)

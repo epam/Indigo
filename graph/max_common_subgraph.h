@@ -642,7 +642,7 @@ public:
    //sets graphs for substructure search considering their size
    void setGraphs(Graph& sub, Graph& super);
    //searches substructure for graphs and maps vertices
-   bool searchSubstructure(Array<int>* map);
+   virtual bool searchSubstructure(Array<int>* map);
 
    //condition for edge match
    bool (*cbMatchEdge) (Graph &graph1, Graph &graph2, int i, int j, void *userdata);
