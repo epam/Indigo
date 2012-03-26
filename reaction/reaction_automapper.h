@@ -197,12 +197,22 @@ private:
    static int  _cbAutoVertexReact (Graph &graph, int idx1, int idx2, const void *context);
    static bool _cbAutoCheckAutomorphismReact (Graph &graph, const Array<int> &mapping, const void *context);
    int _scoreSolution(BaseMolecule *sub_molecule, BaseMolecule *super_molecule, Array<int>& map);
+   void _createQueryTransposition();
+   void _detransposeOutputMap(Array<int>* map) const;
+   void _transposeInputMap(const Array<int>* map, Array<int>& input_map) const;
+   inline int _getTransposedBondIndex(BaseMolecule& mol, int bond) const;
    
    BaseReaction& _reaction;
    int _subReactNumber;
    int _superProductNumber;
    
    ObjArray< Array<int> > _autoMaps;
+
+   AutoPtr<BaseMolecule> _transposedQuery;
+   Array<int> _transposition;
+   Array<int> _invTransposition;
+   Array<int> _bondTransposition;
+   
 };
 
 }

@@ -21,6 +21,7 @@
 #include "base_cpp/auto_ptr.h"
 #include "graph/automorphism_search.h"
 #include "reaction/crf_saver.h"
+#include "molecule/molecule_neighbourhood_counters.h"
 
 using namespace indigo;
 
@@ -978,6 +979,7 @@ _reaction(reaction),
 _subReactNumber(sub_num), 
 _superProductNumber(super_num) {
    setGraphs(reaction.getBaseMolecule(sub_num), reaction.getBaseMolecule(super_num));
+   _createQueryTransposition();
    setUpFlags(context);
 }
 
@@ -987,6 +989,7 @@ _reaction(reaction),
 _subReactNumber(-1),
 _superProductNumber(-1){
    setGraphs(sub, super);
+   _createQueryTransposition();
    setUpFlags(context);
    cbMatchVertex = atomConditionReact;
    cbMatchEdge = bondConditionReactSimple;
@@ -1005,7 +1008,13 @@ void RSubstructureMcs::setUpFlags(const ReactionAutomapper& context) {
       flags |= CONDITION_ATOM_VALENCE;
 }
 bool RSubstructureMcs::searchSubstructure(Array<int>* map) {
-   SubstructureMcs::searchSubstructure(map);
+   bool result = SubstructureMcs::searchSubstructure(map);
+   /*
+    * Transpose map back
+    */
+   if(result)
+      _detransposeOutputMap(map);
+   return result;
 }
 
 bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Array<int>* in_map, Array<int> *out_map){
@@ -1120,10 +1129,14 @@ bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<i
    mcs.conditionEdgeWeight = bondConditionReact;
    mcs.cbSolutionTerm = cbMcsSolutionTerm;  
    mcs.userdata = this;
-   mcs.parametersForApproximate.randomize = true;
+   /*
+    * Do not randomize
+    */
+//   mcs.parametersForApproximate.randomize = true;
 
-   if(in_map != 0) 
-      mcs.incomingMap.copy(*in_map);
+   if(in_map != 0) {
+      _transposeInputMap(in_map, mcs.incomingMap);
+   }
 
    /*
     * Search for exact mcs first
@@ -1142,26 +1155,30 @@ bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<i
     * Search best solution as far as mcs is not consider auto permutations
     */
    _selectBestAutomorphism(out_map);
+   /*
+    * Transpose map back
+    */
+   _detransposeOutputMap(out_map);
    return true;
 }
 
 int RSubstructureMcs::findReactionCenter(BaseMolecule& mol, int bondNum) const {
-   int edgeInd = bondNum;
    if(_sub == 0 || _super == 0)
       throw ReactionAutomapper::Error("internal AAM error: not initialized sub-mcs molecules");
    
    if(_sub == &mol){
+      bondNum = _getTransposedBondIndex(mol, bondNum);
       if(_invert){
-         return _reaction.getReactingCenter(_superProductNumber, edgeInd);
+         return _reaction.getReactingCenter(_superProductNumber, bondNum);
       }else{
-         return _reaction.getReactingCenter(_subReactNumber, edgeInd);
+         return _reaction.getReactingCenter(_subReactNumber, bondNum);
       }
    }
    if(_super == &mol){
       if(_invert){
-         return _reaction.getReactingCenter(_subReactNumber, edgeInd);
+         return _reaction.getReactingCenter(_subReactNumber, bondNum);
       }else{
-         return _reaction.getReactingCenter(_superProductNumber, edgeInd);
+         return _reaction.getReactingCenter(_superProductNumber, bondNum);
       }
    }
    return -2;
@@ -1170,8 +1187,9 @@ int RSubstructureMcs::findReactionCenter(BaseMolecule& mol, int bondNum) const {
 void RSubstructureMcs::getReactingCenters(BaseMolecule& mol1, BaseMolecule& mol2, int bond1, int bond2, int& rc_reactant, int& rc_product) const {
    if(_sub == 0 || _super == 0)
       throw ReactionAutomapper::Error("internal AAM error: not initialized sub-mcs molecules");
-   
-   if(_sub == &mol1 && _super == &mol2){
+
+   if(_sub == &mol1 && _super == &mol2) {
+      bond1 = _getTransposedBondIndex(mol1, bond1);
       if(_invert) {
          rc_reactant = _reaction.getReactingCenter(_subReactNumber, bond2);
          rc_product = _reaction.getReactingCenter(_superProductNumber, bond1);
@@ -1181,6 +1199,7 @@ void RSubstructureMcs::getReactingCenters(BaseMolecule& mol1, BaseMolecule& mol2
       }
    }
    if(_sub == &mol2 && _super == &mol1){
+      bond2 = _getTransposedBondIndex(mol2, bond2);
       if(_invert) {
          rc_reactant = _reaction.getReactingCenter(_subReactNumber, bond1);
          rc_product = _reaction.getReactingCenter(_superProductNumber, bond2);
@@ -1338,7 +1357,11 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
 
    if(_sub == 0 || _super == 0)
       throw ReactionAutomapper::Error("internal AAM error: not initialized sub-mcs molecules");
-
+   QS_DEF(Array<int>, input_map);
+   if(in_map != 0) {
+      _transposeInputMap(in_map, input_map);
+      in_map = &input_map;
+   }
    int result = 0;
    if(in_map != 0) {
       for(int i = 0; i < in_map->size(); i++) {
@@ -1401,6 +1424,7 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
          }
       }
    }
+   _detransposeOutputMap(out_map);
    return result;
 }
 
@@ -1561,7 +1585,7 @@ int RSubstructureMcs::_scoreSolution(BaseMolecule *sub_molecule, BaseMolecule *s
    int res_score = 0;
    QS_DEF(Array<int>, edge_map);
    edge_map.clear_resize(sub_molecule->edgeEnd());
-   edge_map.fill(-1);
+   edge_map.fffill();
    
    for (int vert_idx = 0; vert_idx < v_map.size(); ++vert_idx) {
       int super_vert = v_map[vert_idx];
@@ -1608,4 +1632,95 @@ int RSubstructureMcs::_scoreSolution(BaseMolecule *sub_molecule, BaseMolecule *s
 
    return res_score;
 
+}
+
+void RSubstructureMcs::_createQueryTransposition() {
+   QS_DEF(Array<int>, transposition);
+   
+   MoleculeAtomNeighbourhoodCounters nei_counters;
+   nei_counters.calculate((Molecule&)*_sub);
+   nei_counters.makeTranspositionForSubstructure((Molecule&)*_sub, transposition);
+   /*
+    * Create map
+    */
+   _transposedQuery.reset(new Molecule());
+   _transposedQuery->makeSubmolecule((Molecule&)*_sub, transposition, &_transposition);
+   
+   /*
+    * Create inv map
+    */
+   _invTransposition.resize(_transposition.size());
+   _invTransposition.fffill();
+   for (int i = 0; i < _transposition.size(); ++i) {
+      if(_transposition[i] >= 0)
+         _invTransposition[_transposition[i]] = i;
+   }
+   /*
+    * Create bond map
+    */
+   _bondTransposition.resize(_transposedQuery->edgeEnd());
+   _bondTransposition.fffill();
+   for (int e_idx = _sub->edgeBegin(); e_idx != _sub->edgeEnd(); e_idx = _sub->edgeNext(e_idx)) {
+      int vert1 = _transposition[_sub->getEdge(e_idx).beg];
+      int vert2 = _transposition[_sub->getEdge(e_idx).end];
+      int edge = _transposedQuery->findEdgeIndex(vert1, vert2);
+      if(edge >= 0)
+         _bondTransposition[edge] = e_idx;
+   }
+   
+   _sub = _transposedQuery.get();
+}
+
+void RSubstructureMcs::_detransposeOutputMap(Array<int>* map) const {
+   if(map && _transposedQuery.get()) {
+      QS_DEF(Array<int>, buf_map);
+      buf_map.resize(map->size());
+      buf_map.fffill();
+      if(_invert) {
+         for (int i = 0; i < map->size(); ++i) {
+            if(map->at(i) >= 0)
+               buf_map[i] = _invTransposition[map->at(i)];
+         }
+         map->copy(buf_map);
+      } else {
+         for (int i = 0; i < map->size(); ++i) {
+            if(_invTransposition[i] >= 0)
+               buf_map[_invTransposition[i]] = map->at(i);
+         }
+         map->copy(buf_map);
+      }
+   }
+}
+
+void RSubstructureMcs::_transposeInputMap(const Array<int>* map, Array<int>& input_map) const {
+   input_map.clear();
+   if (map == 0)
+      return;
+   if (_transposedQuery.get()) {
+      input_map.resize(map->size());
+      input_map.fffill();
+      if (_invert) {
+         for (int i = 0; i < map->size(); ++i) {
+            if (map->at(i) >= 0)
+               input_map[i] = _transposition[map->at(i)];
+         }
+      } else {
+         for (int i = 0; i < map->size(); ++i) {
+            if (_invTransposition[i] >= 0)
+               input_map[_transposition[i]] = map->at(i);
+         }
+      }
+   } else {
+      input_map.copy(*map);
+   }
+
+}
+
+int RSubstructureMcs::_getTransposedBondIndex(BaseMolecule& mol, int bond) const {
+   int result = bond;
+
+   if(_transposedQuery.get() != 0 && _sub == &mol)
+      result = _bondTransposition[bond];
+   
+   return result;
 }
