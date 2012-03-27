@@ -55,6 +55,8 @@ TL_CP_GET(_edge_ranks_in_refine)
    context_automorphism = 0;
    _given_graph = 0;
    ignored_vertices = 0;
+
+   _call_stack.clear();
 }
 
 AutomorphismSearch::~AutomorphismSearch ()
