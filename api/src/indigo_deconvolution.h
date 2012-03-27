@@ -37,7 +37,7 @@ public:
    IndigoDeconvolution(bool aromatize);
    virtual ~IndigoDeconvolution(){}
 
-   void addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props);
+   void addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props, int idx);
 
    void setScaffold (QueryMolecule& scaffold);
    void makeRGroups (QueryMolecule& scaffold);
@@ -126,19 +126,21 @@ private:
 class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
 {
 public:
-   IndigoDeconvolutionElem (Molecule& mol);
-   IndigoDeconvolutionElem (Molecule& mol, int index);
+   IndigoDeconvolutionElem (Molecule& mol, RedBlackStringObjMap< Array<char> >* props);
+   IndigoDeconvolutionElem (Molecule& mol, int* index);
    IndigoDeconvolutionElem (IndigoDeconvolutionElem& elem);
 
    virtual ~IndigoDeconvolutionElem ();
 
-   virtual int getIndex ();
+   virtual int getIndex () {return idx;}
    int idx;
 
    Molecule mol_in;
    IndigoDeconvolution::DecompositionEnumerator deco_enum;
 
    RedBlackStringObjMap< Array<char> > properties;
+
+   void _copyProperties(RedBlackStringObjMap< Array<char> >* props);
 };
 
 class DLLEXPORT IndigoDeconvolutionIter : public IndigoObject {

@@ -66,7 +66,6 @@ void IndigoDeconvolution::makeRGroups (QueryMolecule& scaffold) {
       IndigoDeconvolutionElem& elem = _deconvolutionElems[mol_idx];
       makeRGroup(elem);
    }
-
 }
 
 
@@ -431,21 +430,23 @@ void IndigoDeconvolution::_createRgroups(EmbContext& emb_context) {
    }
 }
 
-IndigoDeconvolutionElem::IndigoDeconvolutionElem (Molecule& mol, int index) :
-IndigoObject(DECONVOLUTION_ELEM), idx(index)
+IndigoDeconvolutionElem::IndigoDeconvolutionElem (Molecule& mol, int* index) :
+IndigoObject(DECONVOLUTION_ELEM), idx(*index)
 {
    mol_in.clone_KeepIndices(mol, 0);
 }
 
-IndigoDeconvolutionElem::IndigoDeconvolutionElem (Molecule& mol) :
+IndigoDeconvolutionElem::IndigoDeconvolutionElem (Molecule& mol, RedBlackStringObjMap< Array<char> >* props) :
 IndigoObject(DECONVOLUTION_ELEM), idx(-1)
 {
    mol_in.clone_KeepIndices(mol, 0);
+   _copyProperties(props);
 }
 
 IndigoDeconvolutionElem::IndigoDeconvolutionElem (IndigoDeconvolutionElem& other):
 IndigoObject(DECONVOLUTION_ELEM), idx(other.idx) {
    mol_in.clone_KeepIndices(other.mol_in, 0);
+   _copyProperties(&other.properties);
    
    deco_enum.contexts.clear();
    for (int i = 0; i < other.deco_enum.contexts.size(); ++i) {
@@ -453,8 +454,14 @@ IndigoObject(DECONVOLUTION_ELEM), idx(other.idx) {
    }
 }
 
-int IndigoDeconvolutionElem::getIndex () {
-   return idx;
+
+void IndigoDeconvolutionElem::_copyProperties(RedBlackStringObjMap< Array<char> >* props) {
+   properties.clear();
+
+   if (props != 0) {
+      for (int i = props->begin(); i != props->end(); i = props->next(i))
+         properties.value(properties.insert(props->key(i))).copy(props->value(i));
+   }
 }
 
 IndigoDeconvolutionElem::~IndigoDeconvolutionElem ()
@@ -484,8 +491,8 @@ IndigoDeconvolutionIter::~IndigoDeconvolutionIter ()
 {
 }
 
-void IndigoDeconvolution::addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props) {
-   IndigoDeconvolutionElem & item = _deconvolutionElems.push(mol);
+void IndigoDeconvolution::addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props, int idx) {
+   IndigoDeconvolutionElem & item = _deconvolutionElems.push(mol, &idx);
    int i;
    
    if (props != 0)
@@ -747,7 +754,7 @@ CEXPORT int indigoDecomposeMolecules (int scaffold, int structures) {
             /*
              * Add molecule
              */
-         deco->addMolecule(obj.getMolecule(), obj.getProperties());
+         deco->addMolecule(obj.getMolecule(), obj.getProperties(), i);
       }
 
       QueryMolecule& scaf = self.getObject(scaffold).getQueryMolecule();
@@ -922,7 +929,7 @@ CEXPORT int indigoDecomposeMolecule(int decomp, int mol) {
       IndigoDeconvolution& deco = (IndigoDeconvolution &)obj;
 
       AutoPtr<IndigoDeconvolutionElem> deco_elem;
-      deco_elem.reset(new IndigoDeconvolutionElem(self.getObject(mol).getMolecule()));
+      deco_elem.reset(new IndigoDeconvolutionElem(self.getObject(mol).getMolecule(), self.getObject(mol).getProperties()));
 
       deco.makeRGroup(deco_elem.ref());
 
