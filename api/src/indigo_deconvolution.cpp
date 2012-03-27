@@ -82,8 +82,7 @@ void IndigoDeconvolution::makeRGroup(IndigoDeconvolutionElem& elem) {
 
    mol_out.clone_KeepIndices(mol_in, 0);
 
-   EmbContext emb_context;
-   emb_context.lastMapping.clear();
+   DecompositionIterator deco_iter;
 
    if(_aromatic) 
       MoleculeAromatizer::aromatizeBonds(mol_out);
@@ -91,20 +90,14 @@ void IndigoDeconvolution::makeRGroup(IndigoDeconvolutionElem& elem) {
    /*
     * Search for the query match
     */
-   AutoPtr<AromaticityMatcher> am;
 
-   if (_aromatic && AromaticityMatcher::isNecessary(_scaffold)) {
-      am.reset(new AromaticityMatcher(_scaffold, mol_out));
-      emb_context.am = am.get();
-   } else
-      emb_context.am = 0;
+   if (_aromatic && AromaticityMatcher::isNecessary(_scaffold)) 
+      deco_iter.am.reset(new AromaticityMatcher(_scaffold, mol_out));
 
-
+   deco_iter.fmcache.reset(new MoleculeSubstructureMatcher::FragmentMatchCache);
+   deco_iter.fmcache->clear();
+   
    EmbeddingEnumerator emb_enum(mol_out);
-   QS_DEF(MoleculeSubstructureMatcher::FragmentMatchCache, fmcache);
-
-   fmcache.clear();
-   emb_context.fmcache = &fmcache;
 
    /*
     * Set options
@@ -115,13 +108,13 @@ void IndigoDeconvolution::makeRGroup(IndigoDeconvolutionElem& elem) {
    emb_enum.cb_match_vertex = _matchAtoms;
    emb_enum.cb_vertex_remove = _removeAtom;
    emb_enum.cb_edge_add = _addBond;
-   emb_enum.userdata = &emb_context;
+   emb_enum.userdata = &deco_iter;
    /*
     * Find subgraph
     */
    emb_enum.process();
 
-   if(emb_context.lastMapping.size() == 0) {
+   if(deco_iter.contexts.size() == 0) {
       if(ignore_errors) {
          rgroup_out.clear();
          mol_out.clear();
@@ -129,14 +122,15 @@ void IndigoDeconvolution::makeRGroup(IndigoDeconvolutionElem& elem) {
          return;
       } else
          throw Error("no embeddings obtained");
+   } else {
+      EmbContext& emb_context = deco_iter.contexts[0];
+      mol_out.highlightSubmolecule(_scaffold, emb_context.lastMapping.ptr(), true);
+
+      _createRgroups(mol_out, rgroup_out, emb_context);
+
+      mol_scaffold.makeEdgeSubmolecule(mol_out, emb_context.scaffoldAtoms, emb_context.scaffoldBonds, 0, 0);
+      mol_scaffold.unhighlightAll();
    }
-
-   mol_out.highlightSubmolecule(_scaffold, emb_context.lastMapping.ptr(), true);
-
-   _createRgroups(mol_out, rgroup_out, emb_context);
-
-   mol_scaffold.makeEdgeSubmolecule(mol_out,  emb_context.scaffoldAtoms, emb_context.scaffoldBonds, 0, 0);
-   mol_scaffold.unhighlightAll();
 }
 
 
@@ -147,7 +141,9 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
    int result = 0;
    int n_rgroups = 0;
 
-   EmbContext& emb_context = *(EmbContext*)userdata;
+   DecompositionIterator& deco_iter = *(DecompositionIterator*)userdata;
+
+   EmbContext& emb_context = deco_iter.contexts.push();
 
    emb_context.lastMapping.copy(map, graph1.vertexEnd());
    emb_context.lastInvMapping.copy(inv_map, graph2.vertexEnd());
@@ -910,46 +906,44 @@ CEXPORT int indigoAddDecomposition(int decomp, int q_match) {
 }
 
 IndigoDeconvolution::EmbContext::EmbContext(){
-   am = 0;
-   fmcache = 0;
 }
 
 bool IndigoDeconvolution::_matchAtoms (Graph &g1, Graph &g2, const int *, int sub_idx, int super_idx, void* userdata){
    QueryMolecule::Atom* q_atom = &((BaseMolecule &)g1).asQueryMolecule().getAtom(sub_idx);
    BaseMolecule &target = (BaseMolecule &)g2;
-   EmbContext& emb_context = *(EmbContext*)userdata;
+   DecompositionIterator& emb_context = *(DecompositionIterator*)userdata;
 
-   return MoleculeSubstructureMatcher::matchQueryAtom(q_atom, target, super_idx, emb_context.fmcache, 0xFFFFFFFF);
+   return MoleculeSubstructureMatcher::matchQueryAtom(q_atom, target, super_idx, emb_context.fmcache.get(), 0xFFFFFFFF);
 }
 
 
 bool IndigoDeconvolution::_matchBonds (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void* userdata){
-   EmbContext& emb_context = *(EmbContext*)userdata;
+   DecompositionIterator& emb_context = *(DecompositionIterator*)userdata;
 
    QueryMolecule &query = (QueryMolecule &)subgraph;
    BaseMolecule &target  = (BaseMolecule &)supergraph;
    QueryMolecule::Bond &sub_bond = query.getBond(sub_idx);
 
-   if (!MoleculeSubstructureMatcher::matchQueryBond(&sub_bond, target, sub_idx, super_idx, emb_context.am, 0xFFFFFFFF))
+   if (!MoleculeSubstructureMatcher::matchQueryBond(&sub_bond, target, sub_idx, super_idx, emb_context.am.get(), 0xFFFFFFFF))
       return false;
 
    return true;
 }
 
 void IndigoDeconvolution::_removeAtom (Graph &subgraph, int sub_idx, void *userdata){
-   EmbContext& emb_context = *(EmbContext*)userdata;
+   DecompositionIterator& emb_context = *(DecompositionIterator*)userdata;
 
-   if (emb_context.am != 0)
+   if (emb_context.am.get() != 0)
       emb_context.am->unfixNeighbourQueryBond(sub_idx);
 }
 
 void IndigoDeconvolution::_addBond (Graph &subgraph, Graph &supergraph,
                                     int sub_idx, int super_idx, void *userdata)
 {
-   EmbContext& emb_context = *(EmbContext*)userdata;
+   DecompositionIterator& emb_context = *(DecompositionIterator*)userdata;
    BaseMolecule &target = (BaseMolecule &)supergraph;
    
-   if (emb_context.am != 0)
+   if (emb_context.am.get() != 0)
       emb_context.am->fixQueryBond(sub_idx, target.getBondOrder(super_idx) == BOND_AROMATIC);
 }
 

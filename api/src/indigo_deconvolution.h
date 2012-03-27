@@ -94,10 +94,20 @@ private:
 
        void renumber(Array<int>& map, Array<int>& inv_map);
 
-       AromaticityMatcher *am;
-       MoleculeSubstructureMatcher::FragmentMatchCache *fmcache;
    private:
        EmbContext(const EmbContext&); //no implicit copy
+   };
+   class DecompositionIterator {
+   public:
+      DecompositionIterator(){}
+      ~DecompositionIterator(){}
+
+      AutoPtr<AromaticityMatcher> am;
+      AutoPtr<MoleculeSubstructureMatcher::FragmentMatchCache> fmcache;
+       
+      ObjArray<EmbContext> contexts;
+   private:
+      DecompositionIterator(const DecompositionIterator&); //no implicit copy
    };
    
    void _createRgroups(Molecule& molecule_set, Molecule& r_molecule, EmbContext& emb_context);
