@@ -29,7 +29,7 @@ CEXPORT const char * indigoVersion ()
    return INDIGO_VERSION;
 }
 
-Indigo::Indigo ()
+Indigo::Indigo () : timeout_cancellation_handler(0)
 {
    error_handler = 0;
    error_handler_context = 0;
@@ -62,6 +62,7 @@ Indigo::Indigo ()
    smiles_saving_write_name = false;
 
    aam_cancellation_timeout = 0;
+   cancellation_timeout = 0;
 }
 
 void Indigo::removeAllObjects ()
@@ -73,6 +74,12 @@ void Indigo::removeAllObjects ()
       delete _objects.value(i);
 
    _objects.clear();
+}
+
+void Indigo::resetCancellationHandler ()
+{
+   timeout_cancellation_handler.reset(cancellation_timeout);
+   setCancellationHandler(&timeout_cancellation_handler);
 }
 
 void Indigo::initMolfileSaver (MolfileSaver &saver)

@@ -169,6 +169,12 @@ static void indigoAAMSetCancellationTimeout (int value)
    self.aam_cancellation_timeout = value;
 }
 
+static void indigoSetCancellationTimeout (int value)
+{
+   Indigo &self = indigoGetInstance();
+   self.cancellation_timeout = value;
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -198,6 +204,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("layout-max-iterations", indigoSetLayoutMaxIterations);
 
    mgr.setOptionHandlerInt("aam-timeout", indigoAAMSetCancellationTimeout);
+   mgr.setOptionHandlerInt("timeout", indigoSetCancellationTimeout);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

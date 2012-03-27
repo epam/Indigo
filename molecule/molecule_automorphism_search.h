@@ -21,6 +21,7 @@ namespace indigo {
 
 class Molecule;
 class MoleculeStereocenters;
+class CancellationHandler;
 
 class MoleculeAutomorphismSearch : public AutomorphismSearch
 {
@@ -45,6 +46,8 @@ public:
    Array<int> possible_cis_trans_to_check;
 
    DEF_ERROR("Molecule automorphism search");
+   DEF_TIMEOUT_EXCEPTION("Molecule automorphism search");
+
 protected:
    static int  _vertex_cmp  (Graph &graph, int v1, int v2, const void *context);
    static int  _edge_rank    (Graph &graph, int edge_idx, const void *context);
@@ -112,6 +115,8 @@ protected:
    int _target_stereocenter, _target_bond;
    bool _target_stereocenter_parity_inv, _target_bond_parity_inv;
    int _fixed_atom;
+
+   CancellationHandler *_cancellation_handler;
 };
 
 }

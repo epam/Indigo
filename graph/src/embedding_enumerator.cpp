@@ -12,10 +12,12 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include "graph/embedding_enumerator.h"
+
 #include "base_c/defs.h"
 #include "base_cpp/tlscont.h"
+#include "base_cpp/cancellation_handler.h"
 #include "graph/graph.h"
-#include "graph/embedding_enumerator.h"
 #include "graph/graph_vertex_equivalence.h"
 
 using namespace indigo;
@@ -42,6 +44,9 @@ TL_CP_GET(_enumerators)
    cb_edge_add = 0;
    cb_vertex_add = 0;
    userdata = 0;
+
+   _cancellation_handler = getCancellationHandler();
+   _cancellation_check_number = 0;
 
    allow_many_to_one = false;
 
@@ -254,6 +259,15 @@ bool EmbeddingEnumerator::processNext ()
       }
       else if (command == _RETURN0)
          return true;
+
+      if (_cancellation_handler != NULL)
+      {
+         // Check only each 100th time
+         if ((_cancellation_check_number % 100) == 0)
+            if (_cancellation_handler->isCancelled())
+               throw TimeoutException("%s", _cancellation_handler->cancelledRequestMessage());
+         _cancellation_check_number++;
+      }
    }
 
    while (_enumerators.size() > 1)

@@ -16,51 +16,50 @@
 #define __cancellation_handler_h__
 
 #include "base_c/defs.h"
-#include "base_c/nano.h"
+#include "base_cpp/array.h"
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
 
 namespace indigo
 {
 
-class CancellationHandler
+class DLLEXPORT CancellationHandler
 {
 public:
-   virtual bool isCancelled() = 0;
-   virtual const char* cancelledRequestMessage() = 0;
+   virtual bool isCancelled () = 0;
+   virtual const char* cancelledRequestMessage () = 0;
 };
 
-class TimeoutCancellationHandler : public CancellationHandler
+class DLLEXPORT TimeoutCancellationHandler : public CancellationHandler
 {
 public:
-   TimeoutCancellationHandler(int mseconds):_mseconds(mseconds)
-   {
-      _currentTime = nanoClock();
-   }
-   virtual ~TimeoutCancellationHandler(){}
+   TimeoutCancellationHandler(int mseconds);
+   virtual ~TimeoutCancellationHandler();
 
-   virtual bool isCancelled()
-   {
-      qword dif_time = nanoClock() - _currentTime;
-      if( nanoHowManySeconds(dif_time) * 1000 > _mseconds)
-      {
-         ArrayOutput mes_out(_message);
-         mes_out.printf("The operation timed out: %d ms", _mseconds);
-         mes_out.writeChar(0);
-         return true;
-      }
-      return false;
-   }
-   virtual const char* cancelledRequestMessage()
-   {
-      return _message.ptr();
-   }
+   virtual bool isCancelled();
+   virtual const char* cancelledRequestMessage();
+
+   void reset (int mseconds);
+
 private:
    Array<char> _message;
    int _mseconds;
    qword _currentTime;
-   TimeoutCancellationHandler(const TimeoutCancellationHandler&); //no implicit copy
 };
 
+// Global thread-local cancellation handler
+DLLEXPORT CancellationHandler* getCancellationHandler ();
+// Returns previous cancellation handler
+DLLEXPORT CancellationHandler* setCancellationHandler (CancellationHandler* handler);
+
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif /* __cancellation_handler_h__ */
 

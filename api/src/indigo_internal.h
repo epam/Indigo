@@ -24,6 +24,7 @@
 
 #include "base_cpp/exception.h"
 #include "base_cpp/io_base.h"
+#include "base_cpp/cancellation_handler.h"
 
 #include "option_manager.h"
 #include "molecule/molecule_fingerprint.h"
@@ -252,6 +253,11 @@ public:
 
    int aam_cancellation_timeout; //default is zero - no timeout
 
+   int cancellation_timeout; // default is 0 seconds - no timeout
+   TimeoutCancellationHandler timeout_cancellation_handler;
+
+   void resetCancellationHandler ();
+
    void initMolfileSaver (MolfileSaver &saver);
    void initRxnfileSaver (RxnfileSaver &saver);
 
@@ -266,7 +272,7 @@ protected:
 
 
 #define INDIGO_BEGIN { Indigo &self = indigoGetInstance(); \
-      try { self.error_message.clear();
+      try { self.error_message.clear(); self.resetCancellationHandler(); 
 
 #define INDIGO_END(fail) } \
       catch (Exception &ex)         \

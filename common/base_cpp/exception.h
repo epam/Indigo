@@ -49,37 +49,43 @@ protected:
 private:
 };
 
-}
+#define DEF_EXCEPTION(ExceptionName, prefix) \
+   class ExceptionName : public indigo::Exception                 \
+   {                                                              \
+   public:                                                        \
+      explicit ExceptionName (const char *format, ...) :          \
+      Exception()                                                 \
+      {                                                           \
+         va_list args;                                            \
+                                                                  \
+         va_start(args, format);                                  \
+         _init(prefix, format, args);                             \
+         va_end(args);                                            \
+      }                                                           \
+                                                                  \
+      virtual ~ExceptionName () {}                                \
+      virtual Exception* clone ()                                 \
+      {                                                           \
+         ExceptionName *error = new ExceptionName("");            \
+         _cloneTo(error);                                         \
+         return error;                                            \
+      }                                                           \
+      virtual void throwSelf ()                                   \
+      {                                                           \
+         throw *this;                                             \
+      }                                                           \
+      ExceptionName (const ExceptionName &other) : Exception ()   \
+      {                                                           \
+         other._cloneTo(this);                                    \
+      }                                                           \
+   }
 
 #define DEF_ERROR(error_prefix) \
-   class Error : public indigo::Exception             \
-   {                                                  \
-   public:                                            \
-      explicit Error (const char *format, ...) :      \
-      Exception()                                     \
-      {                                               \
-         va_list args;                                \
-                                                      \
-         va_start(args, format);                      \
-         _init(error_prefix, format, args);           \
-         va_end(args);                                \
-      }                                               \
-                                                      \
-      virtual ~Error () {}                            \
-      virtual Exception* clone ()                     \
-      {                                               \
-         Error *error = new Error("");                \
-         _cloneTo(error);                             \
-         return error;                                \
-      }                                               \
-      virtual void throwSelf ()                       \
-      {                                               \
-         throw *this;                                 \
-      }                                               \
-      Error (const Error &other) : Exception ()\
-      {\
-         other._cloneTo(this); \
-      }\
-   }
+   DEF_EXCEPTION(Error, error_prefix)
+
+#define DEF_TIMEOUT_EXCEPTION(prefix) \
+   DEF_EXCEPTION(TimeoutException, prefix ## " timeout")
+
+}
 
 #endif // __exception_h__

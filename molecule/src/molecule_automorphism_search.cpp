@@ -15,10 +15,11 @@
 #include "molecule/molecule_automorphism_search.h"
 
 #include "base_cpp/profiling.h"
+#include "base_cpp/cancellation_handler.h"
 #include "graph/spanning_tree.h"
+#include "graph/graph_decomposer.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_scaffold_detection.h"
-#include "graph/graph_decomposer.h"
 #include "molecule/elements.h"
 
 using namespace indigo;
@@ -44,6 +45,8 @@ MoleculeAutomorphismSearch::MoleculeAutomorphismSearch () :
    detect_invalid_cistrans_bonds = false;
    find_canonical_ordering = false;
    _fixed_atom = -1;
+
+   _cancellation_handler = getCancellationHandler();
 }
 
 void MoleculeAutomorphismSearch::_getFirstApproximation (Molecule &mol)
@@ -328,9 +331,10 @@ bool MoleculeAutomorphismSearch::_check_automorphism (Graph &graph, const Array<
    const MoleculeAutomorphismSearch &self = *(MoleculeAutomorphismSearch *)context;
    Molecule &mol = (Molecule &)graph;
 
-   int i;
+   if (self._cancellation_handler != 0 && self._cancellation_handler->isCancelled())
+      throw TimeoutException("%s", self._cancellation_handler->cancelledRequestMessage());
 
-   for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {
       const Edge &edge = mol.getEdge(i);
 
@@ -346,7 +350,7 @@ bool MoleculeAutomorphismSearch::_check_automorphism (Graph &graph, const Array<
          return false;
    }
 
-   for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {
       if (self._getStereo(self._cistrans_bond_state[i]) != _VALID || mol.cis_trans.getParity(i) == 0)
          continue;

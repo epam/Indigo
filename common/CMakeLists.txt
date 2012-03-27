@@ -18,6 +18,8 @@ file (GLOB BaseCpp_src_excl base_cpp/*_posix.c*)
 list (REMOVE_ITEM BaseCpp_src ${BaseCpp_src_excl})
 file (GLOB BaseCpp_headers base_cpp/*.h*)
 
+# comment to regenerate files
+
 # Collect file list for LZW
 file (GLOB LZW_src lzw/*.c*)
 file (GLOB LZW_headers lzw/*.h*)

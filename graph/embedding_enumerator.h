@@ -30,6 +30,7 @@ namespace indigo {
 
 class Graph;
 class GraphVertexEquivalence;
+class CancellationHandler;
 
 class DLLEXPORT EmbeddingEnumerator
 {
@@ -94,6 +95,7 @@ public:
    void validate ();
 
    DEF_ERROR("embedding enumerator");
+   DEF_TIMEOUT_EXCEPTION("embedding enumerator");
 
 protected:
 
@@ -187,6 +189,9 @@ protected:
    };
 
    TL_CP_DECL(ObjArray<_Enumerator>, _enumerators);
+
+   int _cancellation_check_number;
+   CancellationHandler* _cancellation_handler;
 };
 
 }
