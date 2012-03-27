@@ -26,25 +26,7 @@
 #pragma warning(disable:4251)
 #endif
 
-class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
-{
-public:
-   IndigoDeconvolutionElem (Molecule& mol);
-   IndigoDeconvolutionElem (Molecule& mol, int index);
-   IndigoDeconvolutionElem (IndigoDeconvolutionElem& elem);
-
-   virtual ~IndigoDeconvolutionElem ();
-
-   virtual int getIndex ();
-
-   int idx;
-
-   Molecule & mol_in;
-   Molecule mol_out;
-   Molecule rgroup_mol;
-   Molecule mol_scaffold;
-   RedBlackStringObjMap< Array<char> > properties;
-};
+class IndigoDeconvolutionElem;
 
 class DLLEXPORT IndigoDeconvolution : public IndigoObject {
 private:
@@ -78,7 +60,7 @@ public:
    void *embeddingUserdata;
 
 
-private:
+public:
    class EmbContext {
    public:
        EmbContext ();
@@ -93,24 +75,31 @@ private:
        int getRgroupNumber() const { return attachmentIndex.size()-1;}
 
        void renumber(Array<int>& map, Array<int>& inv_map);
+       void copy(EmbContext& other);
+
+       Molecule mol_out;
+       Molecule rgroup_mol;
+       Molecule mol_scaffold;
 
    private:
        EmbContext(const EmbContext&); //no implicit copy
    };
-   class DecompositionIterator {
+   
+   class DecompositionEnumerator {
    public:
-      DecompositionIterator(){}
-      ~DecompositionIterator(){}
+      DecompositionEnumerator(){}
+      ~DecompositionEnumerator(){}
 
       AutoPtr<AromaticityMatcher> am;
       AutoPtr<MoleculeSubstructureMatcher::FragmentMatchCache> fmcache;
        
       ObjArray<EmbContext> contexts;
    private:
-      DecompositionIterator(const DecompositionIterator&); //no implicit copy
+      DecompositionEnumerator(const DecompositionEnumerator&); //no implicit copy
    };
-   
-   void _createRgroups(Molecule& molecule_set, Molecule& r_molecule, EmbContext& emb_context);
+
+private:
+   void _createRgroups(EmbContext& emb_context);
    void _parseOptions(const char* options);
    
    void _addCompleteRGroup(Molecule& molecule_set, EmbContext& emb_context, Array<int>& rg_map);
@@ -132,6 +121,24 @@ private:
    ObjArray<IndigoDeconvolutionElem> _deconvolutionElems;
 
    DEF_ERROR("R-Group deconvolution");
+};
+
+class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
+{
+public:
+   IndigoDeconvolutionElem (Molecule& mol);
+   IndigoDeconvolutionElem (Molecule& mol, int index);
+   IndigoDeconvolutionElem (IndigoDeconvolutionElem& elem);
+
+   virtual ~IndigoDeconvolutionElem ();
+
+   virtual int getIndex ();
+   int idx;
+
+   Molecule mol_in;
+   IndigoDeconvolution::DecompositionEnumerator deco_enum;
+
+   RedBlackStringObjMap< Array<char> > properties;
 };
 
 class DLLEXPORT IndigoDeconvolutionIter : public IndigoObject {
