@@ -45,8 +45,7 @@ _aromatic(aromatize)
 {
 }
 
-void IndigoDeconvolution::makeRGroups (QueryMolecule& scaffold) {
-
+void IndigoDeconvolution::setScaffold (QueryMolecule& scaffold) {
    /*
     * Clone molecules
     */
@@ -57,9 +56,14 @@ void IndigoDeconvolution::makeRGroups (QueryMolecule& scaffold) {
       QueryMoleculeAromatizer::aromatizeBonds(_scaffold);
       QueryMoleculeAromatizer::aromatizeBonds(_fullScaffold);
    }
+}
+
+void IndigoDeconvolution::makeRGroups (QueryMolecule& scaffold) {
+
+   setScaffold(scaffold);
    
-   for (int mol_idx = 0; mol_idx < _deconvolutionItems.size(); ++mol_idx) {
-      Item& elem = _deconvolutionItems[mol_idx];
+   for (int mol_idx = 0; mol_idx < _deconvolutionElems.size(); ++mol_idx) {
+      Item& elem = _deconvolutionElems[mol_idx];
       _makeRGroup(elem);
    }
 
@@ -83,54 +87,39 @@ void IndigoDeconvolution::_makeRGroup(Item& elem) {
 
    if(_aromatic) 
       MoleculeAromatizer::aromatizeBonds(mol_out);
+
    /*
-    * If mapping was already defined, then do not search
+    * Search for the query match
     */
-   if(elem.mapping) {
-      /*
-       * Call emb callback with mapping
-       */
-      QS_DEF(Array<int>, inv_map);
-      inv_map.resize(mol_out.vertexCount());
-      inv_map.fill(-1);
-      _makeInvertMap(*elem.mapping, inv_map);
+   AutoPtr<AromaticityMatcher> am;
 
-      _rGroupsEmbedding(_scaffold, mol_out, elem.mapping->ptr(), inv_map.ptr(), &emb_context);
-   } else {
-      /*
-       * Search for the query match
-       */
-      AutoPtr<AromaticityMatcher> am;
-
-      if (_aromatic && AromaticityMatcher::isNecessary(_scaffold)) {
-         am.reset(new AromaticityMatcher(_scaffold, mol_out));
-         emb_context.am = am.get();
-      } else
-         emb_context.am = 0;
+   if (_aromatic && AromaticityMatcher::isNecessary(_scaffold)) {
+      am.reset(new AromaticityMatcher(_scaffold, mol_out));
+      emb_context.am = am.get();
+   } else
+      emb_context.am = 0;
 
 
-      EmbeddingEnumerator emb_enum(mol_out);
-      QS_DEF(MoleculeSubstructureMatcher::FragmentMatchCache, fmcache);
+   EmbeddingEnumerator emb_enum(mol_out);
+   QS_DEF(MoleculeSubstructureMatcher::FragmentMatchCache, fmcache);
 
-      fmcache.clear();
-      emb_context.fmcache = &fmcache;
+   fmcache.clear();
+   emb_context.fmcache = &fmcache;
 
-      /*
-       * Set options
-       */
-      emb_enum.setSubgraph(_scaffold);
-      emb_enum.cb_embedding = _rGroupsEmbedding;
-      emb_enum.cb_match_edge = _matchBonds;
-      emb_enum.cb_match_vertex = _matchAtoms;
-      emb_enum.cb_vertex_remove = _removeAtom;
-      emb_enum.cb_edge_add = _addBond;
-      emb_enum.userdata = &emb_context;
-      /*
-       * Find subgraph
-       */
-      emb_enum.process();
-   }
-
+   /*
+    * Set options
+    */
+   emb_enum.setSubgraph(_scaffold);
+   emb_enum.cb_embedding = _rGroupsEmbedding;
+   emb_enum.cb_match_edge = _matchBonds;
+   emb_enum.cb_match_vertex = _matchAtoms;
+   emb_enum.cb_vertex_remove = _removeAtom;
+   emb_enum.cb_edge_add = _addBond;
+   emb_enum.userdata = &emb_context;
+   /*
+    * Find subgraph
+    */
+   emb_enum.process();
 
    if(emb_context.lastMapping.size() == 0) {
       if(ignore_errors) {
@@ -486,7 +475,7 @@ IndigoDeconvolutionIter::~IndigoDeconvolutionIter ()
 }
 
 void IndigoDeconvolution::addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props) {
-   Item & item = _deconvolutionItems.push(mol);
+   Item & item = _deconvolutionElems.push(mol);
    int i;
    
    if (props != 0)
@@ -495,10 +484,6 @@ void IndigoDeconvolution::addMolecule(Molecule& mol, RedBlackStringObjMap< Array
          item.properties.value(item.properties.insert(props->key(i))).copy(props->value(i));
    }
 }
-void IndigoDeconvolution::addMolecule(Molecule& mol, Array<int>& mapping) {
-   Item & item = _deconvolutionItems.push(mol);
-   item.mapping = &mapping;
-}
 
 QueryMolecule& IndigoDeconvolution::getDecomposedScaffold() {
    return _fullScaffold;
@@ -506,7 +491,7 @@ QueryMolecule& IndigoDeconvolution::getDecomposedScaffold() {
 
 ObjArray<IndigoDeconvolution::Item>& IndigoDeconvolution::getItems ()
 {
-   return _deconvolutionItems;
+   return _deconvolutionElems;
 }
 
 IndigoDeconvolution::~IndigoDeconvolution() {
@@ -741,20 +726,10 @@ CEXPORT int indigoDecomposeMolecules (int scaffold, int structures) {
       for (i = 0; i < mol_array.objects.size(); i++)
       {
          IndigoObject &obj = *mol_array.objects[i];
-         if(obj.type == IndigoObject::MAPPING) {
-            /*
-             * Does not support query defined for match
-             * TODO: If mapping is different
-             */
-            IndigoMapping & mapping = (IndigoMapping&)obj;
-            deco->addMolecule(mapping.to.asMolecule(), mapping.mapping);
-         } else {
             /*
              * Add molecule
              */
-            deco->addMolecule(obj.getMolecule(), obj.getProperties());
-         }
-
+         deco->addMolecule(obj.getMolecule(), obj.getProperties());
       }
 
       QueryMolecule& scaf = self.getObject(scaffold).getQueryMolecule();
@@ -892,6 +867,30 @@ CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp) {
       return obj_idx;
    }
    INDIGO_END(-1)
+}
+
+CEXPORT int indigoCreateDecomposer(int scaffold) {
+   INDIGO_BEGIN
+   {
+      AutoPtr<IndigoDeconvolution> deco(new IndigoDeconvolution(self.deconvolution_aromatization));
+      deco->save_ap_bond_orders = self.deco_save_ap_bond_orders;
+      deco->ignore_errors = self.deco_ignore_errors;
+
+      QueryMolecule& scaf = self.getObject(scaffold).getQueryMolecule();
+
+      deco->setScaffold(scaf);
+      return self.addObject(deco.release());
+   }
+   INDIGO_END(-1)
+}
+CEXPORT int indigoDecomposeMolecule(int decomp, int mol) {
+
+}
+CEXPORT int indigoIterateDecompositions(int deco_item) {
+
+}
+CEXPORT int indigoAddDecomposition(int decomp, int q_match) {
+   
 }
 
 IndigoDeconvolution::EmbContext::EmbContext(){

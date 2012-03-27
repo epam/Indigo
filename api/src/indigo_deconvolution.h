@@ -34,17 +34,13 @@ private:
 public:
    class Item {
    public:
-      Item(Molecule& mol):mol_in(mol), mapping(0) {}
+      Item(Molecule& mol):mol_in(mol) {}
 
       Molecule & mol_in;
       Molecule   mol_out;
       Molecule rgroup_mol;
       Molecule mol_scaffold;
       RedBlackStringObjMap< Array<char> > properties;
-      /*
-       * Predefined match mapping
-       */
-      Array<int>* mapping;
    private:
       Item(const Item&);
    };
@@ -52,8 +48,8 @@ public:
    virtual ~IndigoDeconvolution();
 
    void addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props);
-   void addMolecule(Molecule& mol, Array<int>& mapping);
 
+   void setScaffold (QueryMolecule& scaffold);
    void makeRGroups (QueryMolecule& scaffold);
 
    QueryMolecule& getDecomposedScaffold();
@@ -114,7 +110,7 @@ private:
 
    QueryMolecule _scaffold;
    QueryMolecule _fullScaffold;
-   ObjArray<Item> _deconvolutionItems;
+   ObjArray<Item> _deconvolutionElems;
 
    DEF_ERROR("R-Group deconvolution");
 };
@@ -137,7 +133,7 @@ class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
 {
 public:
    IndigoDeconvolutionElem (IndigoDeconvolution::Item &item, int index);
-   ~IndigoDeconvolutionElem ();
+   virtual ~IndigoDeconvolutionElem ();
 
    virtual int getIndex ();
 

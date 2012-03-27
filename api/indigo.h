@@ -778,6 +778,15 @@ CEXPORT int indigoDecomposedMoleculeHighlighted (int decomp);
 // is identical to the indigoDecomposedMoleculeScaffold()
 CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp);
 
+/*
+ * Decomposition Iteration API
+ */
+CEXPORT int indigoCreateDecomposer(int scaffold);
+CEXPORT int indigoDecomposeMolecule(int decomp, int mol);
+CEXPORT int indigoIterateDecompositions(int deco_item);
+CEXPORT int indigoAddDecomposition(int decomp, int q_match);
+
+
 /* Other */
 
 CEXPORT const char * indigoToString (int handle);
