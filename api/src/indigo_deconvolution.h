@@ -26,34 +26,43 @@
 #pragma warning(disable:4251)
 #endif
 
+class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
+{
+public:
+   IndigoDeconvolutionElem (Molecule& mol);
+   IndigoDeconvolutionElem (Molecule& mol, int index);
+   IndigoDeconvolutionElem (IndigoDeconvolutionElem& elem);
+
+   virtual ~IndigoDeconvolutionElem ();
+
+   virtual int getIndex ();
+
+   int idx;
+
+   Molecule & mol_in;
+   Molecule mol_out;
+   Molecule rgroup_mol;
+   Molecule mol_scaffold;
+   RedBlackStringObjMap< Array<char> > properties;
+};
+
 class DLLEXPORT IndigoDeconvolution : public IndigoObject {
 private:
    enum {
       SHIFT_IDX = 2
    };
 public:
-   class Item {
-   public:
-      Item(Molecule& mol):mol_in(mol) {}
-
-      Molecule & mol_in;
-      Molecule   mol_out;
-      Molecule rgroup_mol;
-      Molecule mol_scaffold;
-      RedBlackStringObjMap< Array<char> > properties;
-   private:
-      Item(const Item&);
-   };
    IndigoDeconvolution(bool aromatize);
-   virtual ~IndigoDeconvolution();
+   virtual ~IndigoDeconvolution(){}
 
    void addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props);
 
    void setScaffold (QueryMolecule& scaffold);
    void makeRGroups (QueryMolecule& scaffold);
+   void makeRGroup (IndigoDeconvolutionElem& elem);
 
-   QueryMolecule& getDecomposedScaffold();
-   ObjArray<Item>& getItems ();
+   QueryMolecule& getDecomposedScaffold() { return _fullScaffold; }
+   ObjArray<IndigoDeconvolutionElem>& getItems () {return _deconvolutionElems;}
    /*
     * Save AP as sepearate atoms
     */
@@ -90,7 +99,7 @@ private:
    private:
        EmbContext(const EmbContext&); //no implicit copy
    };
-   void _makeRGroup (Item& elem);
+   
    void _createRgroups(Molecule& molecule_set, Molecule& r_molecule, EmbContext& emb_context);
    void _parseOptions(const char* options);
    
@@ -110,7 +119,7 @@ private:
 
    QueryMolecule _scaffold;
    QueryMolecule _fullScaffold;
-   ObjArray<Item> _deconvolutionElems;
+   ObjArray<IndigoDeconvolutionElem> _deconvolutionElems;
 
    DEF_ERROR("R-Group deconvolution");
 };
@@ -118,7 +127,7 @@ private:
 class DLLEXPORT IndigoDeconvolutionIter : public IndigoObject {
 public:
 
-   IndigoDeconvolutionIter(ObjArray<IndigoDeconvolution::Item>& items);
+   IndigoDeconvolutionIter(ObjArray<IndigoDeconvolutionElem>& items);
    virtual ~IndigoDeconvolutionIter();
 
    virtual IndigoObject * next ();
@@ -126,20 +135,10 @@ public:
 
 protected:
    int _index;
-   ObjArray<IndigoDeconvolution::Item>& _items;
+   ObjArray<IndigoDeconvolutionElem>& _items;
 };
 
-class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
-{
-public:
-   IndigoDeconvolutionElem (IndigoDeconvolution::Item &item, int index);
-   virtual ~IndigoDeconvolutionElem ();
 
-   virtual int getIndex ();
-
-   IndigoDeconvolution::Item &item;
-   int idx;
-};
 
 #ifdef _WIN32
 #pragma warning(pop)
