@@ -27,6 +27,7 @@
 #endif
 
 class IndigoDeconvolutionElem;
+class IndigoDecompositionMatch;
 
 class DLLEXPORT IndigoDeconvolution : public IndigoObject {
 private:
@@ -34,14 +35,14 @@ private:
       SHIFT_IDX = 2
    };
 public:
-   IndigoDeconvolution(bool aromatize);
+   IndigoDeconvolution();
    virtual ~IndigoDeconvolution(){}
 
    void addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props, int idx);
 
    void setScaffold (QueryMolecule& scaffold);
    void makeRGroups (QueryMolecule& scaffold);
-   void makeRGroup (IndigoDeconvolutionElem& elem);
+   void makeRGroup (IndigoDeconvolutionElem& elem, bool all_matches = false);
 
    QueryMolecule& getDecomposedScaffold() { return _fullScaffold; }
    ObjArray<IndigoDeconvolutionElem>& getItems () {return _deconvolutionElems;}
@@ -53,56 +54,36 @@ public:
     * Ignore match errors
     */
    bool ignore_errors;
-
-   ObjArray<QueryMolecule> scaffolds;
+   /*
+    * Aromatize
+    */
+   bool aromatize;
 
    int (*cbEmbedding) (const int *sub_vert_map, const int *sub_edge_map, const void* info, void* userdata);
    void *embeddingUserdata;
 
-
 public:
-   class EmbContext {
-   public:
-       EmbContext ();
-       Array<int> visitedAtoms;
-       Array<int> scaffoldBonds;
-       Array<int> scaffoldAtoms;
-       Array<int> lastMapping;
-       Array<int> lastInvMapping;
-       ObjArray< Array<int> > attachmentOrder;
-       ObjArray< Array<int> > attachmentIndex;
-
-       int getRgroupNumber() const { return attachmentIndex.size()-1;}
-
-       void renumber(Array<int>& map, Array<int>& inv_map);
-       void copy(EmbContext& other);
-
-       Molecule mol_out;
-       Molecule rgroup_mol;
-       Molecule mol_scaffold;
-
-   private:
-       EmbContext(const EmbContext&); //no implicit copy
-   };
    
    class DecompositionEnumerator {
    public:
-      DecompositionEnumerator(){}
+      DecompositionEnumerator():all_matches(false){}
       ~DecompositionEnumerator(){}
 
       AutoPtr<AromaticityMatcher> am;
       AutoPtr<MoleculeSubstructureMatcher::FragmentMatchCache> fmcache;
        
-      ObjArray<EmbContext> contexts;
+      ObjArray<IndigoDecompositionMatch> contexts;
+      bool all_matches;
    private:
       DecompositionEnumerator(const DecompositionEnumerator&); //no implicit copy
    };
 
+   void addCompleteRGroup(IndigoDecompositionMatch& emb_context, Array<int>& rg_map);
+   void createRgroups(IndigoDecompositionMatch& emb_context);
+
 private:
-   void _createRgroups(EmbContext& emb_context);
    void _parseOptions(const char* options);
    
-   void _addCompleteRGroup(Molecule& molecule_set, EmbContext& emb_context, Array<int>& rg_map);
    void _addFullRGroup(Array<int>& att_order, Array<int>& att_idx, Molecule& qmol, Array<int>& map, int new_rg_idx);
 
    static int _rGroupsEmbedding(Graph &g1, Graph &g2, int *core1, int *core2, void *userdata);
@@ -114,8 +95,6 @@ private:
    void _makeInvertMap(Array<int>& map, Array<int>& invmap);
 
 
-   bool _aromatic;
-
    QueryMolecule _scaffold;
    QueryMolecule _fullScaffold;
    ObjArray<IndigoDeconvolutionElem> _deconvolutionElems;
@@ -126,6 +105,7 @@ private:
 class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
 {
 public:
+   IndigoDeconvolutionElem (Molecule& mol);
    IndigoDeconvolutionElem (Molecule& mol, RedBlackStringObjMap< Array<char> >* props);
    IndigoDeconvolutionElem (Molecule& mol, int* index);
    IndigoDeconvolutionElem (IndigoDeconvolutionElem& elem);
@@ -133,6 +113,7 @@ public:
    virtual ~IndigoDeconvolutionElem ();
 
    virtual int getIndex () {return idx;}
+   virtual RedBlackStringObjMap< Array<char> > * getProperties() {return &properties;}
    int idx;
 
    Molecule mol_in;
@@ -141,6 +122,31 @@ public:
    RedBlackStringObjMap< Array<char> > properties;
 
    void _copyProperties(RedBlackStringObjMap< Array<char> >* props);
+};
+
+class DLLEXPORT IndigoDecompositionMatch : public IndigoObject {
+public:
+   IndigoDecompositionMatch();
+   Array<int> visitedAtoms;
+   Array<int> scaffoldBonds;
+   Array<int> scaffoldAtoms;
+   Array<int> lastMapping;
+   Array<int> lastInvMapping;
+   ObjArray< Array<int> > attachmentOrder;
+   ObjArray< Array<int> > attachmentIndex;
+
+   int getRgroupNumber() const {
+      return attachmentIndex.size() - 1;
+   }
+
+   void renumber(Array<int>& map, Array<int>& inv_map);
+   void copy(IndigoDecompositionMatch& other);
+
+   Molecule mol_out;
+   Molecule rgroup_mol;
+   Molecule mol_scaffold;
+private:
+   IndigoDecompositionMatch(const IndigoDecompositionMatch&); //no implicit copy
 };
 
 class DLLEXPORT IndigoDeconvolutionIter : public IndigoObject {
@@ -155,6 +161,20 @@ public:
 protected:
    int _index;
    ObjArray<IndigoDeconvolutionElem>& _items;
+};
+class DLLEXPORT IndigoDecompositionMatchIter : public IndigoObject {
+public:
+
+   IndigoDecompositionMatchIter(ObjArray<IndigoDecompositionMatch>& matches);
+   virtual ~IndigoDecompositionMatchIter(){}
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+   virtual int getIndex() {return _index;}
+
+protected:
+   int _index;
+   ObjArray<IndigoDecompositionMatch>& _matches;
 };
 
 

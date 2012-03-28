@@ -131,6 +131,8 @@ public:
       MULTIPLE_CML_LOADER,
       SAVER,
       ATTACHMENT_POINTS_ITER,
+      DECOMPOSITION_MATCH,
+      DECOMPOSITION_MATCH_ITER
    };
 
    int type;
