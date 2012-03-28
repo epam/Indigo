@@ -84,7 +84,7 @@ double RenderContext::fontGetSize(FONT_SIZE size)
 
 void RenderContext::fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold)
 {
-   cairo_select_font_face(cr, "Arial", CAIRO_FONT_SLANT_NORMAL, bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
+   cairo_select_font_face(cr, _fontfamily.ptr(), CAIRO_FONT_SLANT_NORMAL, bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
    cairoCheckStatus();
    cairo_set_font_size(cr, fontGetSize(size));
    cairoCheckStatus();

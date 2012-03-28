@@ -249,7 +249,7 @@ void RenderContext::init()
    fontsInit();
 
    cairo_text_extents_t te;
-   cairo_select_font_face(_cr, "Arial", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+   cairo_select_font_face(_cr, _fontfamily.ptr(), CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
    cairoCheckStatus();
    cairo_set_font_size(_cr, _settings.fzz[FONT_SIZE_ATTR]);
    cairoCheckStatus();
