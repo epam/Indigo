@@ -112,8 +112,8 @@
     <PostBuildEvent>del $(ProjectDir)sql\assembly\$(TargetName).*
 copy $(TargetDir)$(TargetName).* $(ProjectDir)sql\assembly\
 </PostBuildEvent>
-    <PreBuildEvent>copy /Y $(SolutionDir)Win32\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)Resources\Win\x86
-copy /Y $(SolutionDir)x64\$(ConfigurationName)\bingo-core-c.dll $(ProjectDir)Resources\Win\x64
+    <PreBuildEvent>copy /Y $(DllPath32)\bingo-core-c.dll $(ProjectDir)Resources\Win\x86
+    copy /Y $(DllPath64)\bingo-core-c.dll $(ProjectDir)Resources\Win\x64
 </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>

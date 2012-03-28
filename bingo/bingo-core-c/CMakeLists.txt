@@ -10,10 +10,17 @@ include(SetBuildParameters)
 include_directories(../src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR})
 
 add_library(bingo-core-c STATIC ${BingoCoreC_src} ${BingoCoreC_headers})
-set_target_properties(bingo-core-c PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers})
+target_link_libraries(bingo-core-c-shared molecule reaction layout bingo-core)
 
+set_target_properties(bingo-core-c PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 SET_TARGET_PROPERTIES(bingo-core-c PROPERTIES LINKER_LANGUAGE C)
 set_property(TARGET bingo-core-c PROPERTY FOLDER "bingo-core-c")
+
+set_target_properties(bingo-core-c-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+SET_TARGET_PROPERTIES(bingo-core-c-shared PROPERTIES LINKER_LANGUAGE C)
+set_property(TARGET bingo-core-c-shared PROPERTY FOLDER "bingo-core-c")
+set_property(TARGET bingo-core-c-shared PROPERTY OUTPUT_NAME "bingo-core-c")
 
 
 
