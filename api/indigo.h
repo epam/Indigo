@@ -783,7 +783,7 @@ CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp);
  */
 CEXPORT int indigoCreateDecomposer(int scaffold);
 CEXPORT int indigoDecomposeMolecule(int decomp, int mol);
-CEXPORT int indigoIterateDecompositions(int decomp, int deco_item);
+CEXPORT int indigoIterateDecompositions(int deco_item);
 CEXPORT int indigoAddDecomposition(int decomp, int q_match);
 
 

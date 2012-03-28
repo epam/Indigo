@@ -42,7 +42,7 @@ public:
 
    void setScaffold (QueryMolecule& scaffold);
    void makeRGroups (QueryMolecule& scaffold);
-   void makeRGroup (IndigoDeconvolutionElem& elem, bool all_matches = false);
+   void makeRGroup (IndigoDeconvolutionElem& elem, bool all_matches, bool change_scaffold);
 
    QueryMolecule& getDecomposedScaffold() { return _fullScaffold; }
    ObjArray<IndigoDeconvolutionElem>& getItems () {return _deconvolutionElems;}
@@ -78,8 +78,8 @@ public:
       DecompositionEnumerator(const DecompositionEnumerator&); //no implicit copy
    };
 
-   void addCompleteRGroup(IndigoDecompositionMatch& emb_context, Array<int>& rg_map);
-   void createRgroups(IndigoDecompositionMatch& emb_context);
+   void addCompleteRGroup(IndigoDecompositionMatch& emb_context, bool change_scaffold, Array<int>* rg_map);
+   void createRgroups(IndigoDecompositionMatch& emb_context, bool change_scaffold);
 
 private:
    void _parseOptions(const char* options);
@@ -114,6 +114,7 @@ public:
 
    virtual int getIndex () {return idx;}
    virtual RedBlackStringObjMap< Array<char> > * getProperties() {return &properties;}
+   IndigoDeconvolution* deco;
    int idx;
 
    Molecule mol_in;
