@@ -149,7 +149,8 @@ else:
         if m:
             version = m.group(1)
     os.chdir('dist')
-    os.remove('bingo-sqlserver-%s.zip' % version)
+    if os.path.exists('bingo-sqlserver-%s.zip' % version):
+        os.remove('bingo-sqlserver-%s.zip' % version)
     shutil.make_archive('bingo-sqlserver-%s' % version, format='zip', root_dir=join(root, 'dist', 'bingo-sqlserver'))
     shutil.rmtree('bingo-sqlserver')
     os.chdir(root)
