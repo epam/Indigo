@@ -25,6 +25,12 @@ public class IndigoInchi
       _indigo = indigo;
    }
 
+   public String version ()
+   {
+      _indigo.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoInchiVersion());
+   }
+	
    public void resetOptions ()
    {
       _indigo.setSessionID();

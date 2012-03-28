@@ -28,6 +28,8 @@ class IndigoInchi(object):
         else:
             raise IndigoException("unsupported OS: " + os.name)
             
+        self._lib.indigoInchiVersion.restype = c_char_p
+        self._lib.indigoInchiVersion.argtypes = []
         self._lib.indigoInchiResetOptions.restype = c_int
         self._lib.indigoInchiResetOptions.argtypes = []
         self._lib.indigoInchiLoadMolecule.restype = c_int
@@ -54,6 +56,10 @@ class IndigoInchi(object):
             return None
         return Indigo.IndigoObject(self.indigo, res)
 
+    def version (self):
+        self.indigo._setSID()
+        return self.indigo._checkResultString(self._lib.indigoInchiVersion())
+        
     def getInchi (self, molecule):
         self.indigo._setSID()
         return self.indigo._checkResultString(self._lib.indigoInchiGetInchi(molecule.id))

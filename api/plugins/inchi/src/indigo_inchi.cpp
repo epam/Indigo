@@ -22,8 +22,14 @@
 #include "option_manager.h"
 
 #include "inchi_api.h"
+#include "mode.h"
 
 using namespace indigo;
+
+CEXPORT const char* indigoInchiVersion ()
+{
+   return INCHI_NAME " version " INCHI_VERSION TARGET_ID_STRING;
+}
 
 //
 // IndigoInchi

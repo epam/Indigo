@@ -19,6 +19,7 @@ import com.sun.jna.Pointer;
 
 public interface IndigoInchiLib extends Library
 {
+    Pointer indigoInchiVersion ();
     int indigoInchiResetOptions ();
     int indigoInchiLoadMolecule (String inchi_string);
     Pointer indigoInchiGetInchi (int molecule);
