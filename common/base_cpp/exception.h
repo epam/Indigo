@@ -84,7 +84,7 @@ private:
    DEF_EXCEPTION(Error, error_prefix)
 
 #define DEF_TIMEOUT_EXCEPTION(prefix) \
-   DEF_EXCEPTION(TimeoutException, prefix ## " timeout")
+   DEF_EXCEPTION(TimeoutException, prefix " timeout")
 
 }
 
