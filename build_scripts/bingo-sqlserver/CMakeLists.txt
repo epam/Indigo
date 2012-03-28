@@ -1,0 +1,36 @@
+cmake_minimum_required(VERSION 2.8)
+
+project(BingoSqlServerSolution)
+
+set(BINGO "YES")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
+set(Bingo_SOURCE_DIR ../../bingo/)
+set(BingoSqlServer_SOURCE_DIR ../../bingo/sqlserver)
+
+INCLUDE(ConfigureCommon)
+
+add_subdirectory(../../zlib-src "${CMAKE_CURRENT_BINARY_DIR}/zlib")
+# Get defined variable with the headers
+get_directory_property(ZLib_HEADERS_DIR DIRECTORY ../../zlib-src DEFINITION ZLib_HEADERS_DIR)
+
+add_subdirectory(../../common "${CMAKE_CURRENT_BINARY_DIR}/common")
+
+add_subdirectory(../../tinyxml "${CMAKE_CURRENT_BINARY_DIR}/tinyxml")
+# Get defined variable with the headers
+get_directory_property(TinyXML_HEADERS_DIR DIRECTORY ../../tinyxml DEFINITION TinyXML_HEADERS_DIR)
+
+add_subdirectory(../../graph "${CMAKE_CURRENT_BINARY_DIR}/graph")
+add_subdirectory(../../molecule "${CMAKE_CURRENT_BINARY_DIR}/molecule")
+add_subdirectory(../../reaction "${CMAKE_CURRENT_BINARY_DIR}/reaction")
+
+add_subdirectory(../../layout "${CMAKE_CURRENT_BINARY_DIR}/layout")
+add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
+get_directory_property(BingoCore_HEADERS_DIR DIRECTORY ../../bingo/bingo-core DEFINITION BingoCore_HEADERS_DIR)
+
+add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-core-c")
+get_directory_property(BingoCoreC_HEADERS_DIR DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCoreC_HEADERS_DIR)
+
+SET(BINGO_VERSION "${BINGO_VERSION}")
+
+#ADD_CUSTOM_COMMAND(OUTPUT ../../bingo/sqlserver COMMAND msbuild)
+
