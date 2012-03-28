@@ -79,6 +79,8 @@ public:
 
    bool isRingTransBond (int bond_idx);
 
+   bool convertableToImplicitHydrogen (int idx);
+
    DEF_ERROR("cis-trans");
 
    static bool isGeomStereoBond (BaseMolecule &mol, int bond_idx, int *substituents, bool have_xyz);
@@ -109,6 +111,10 @@ protected:
    static bool _sameline (BaseMolecule &molecule, int i_beg, int i_end, int i_nei_beg);
 
    static int _getPairParity (int v1, int v2, const int *mapping, bool sort);
+   static bool _commonHasLonePair (BaseMolecule &mol, int v1, int v2);
+
+   static void _fillExplicitHydrogens (BaseMolecule &mol, int bond_idx, int subst[4]);
+   static void _fillAtomExplicitHydrogens (BaseMolecule &mol, int atom_idx, int subst[2]);
 };
 
 }

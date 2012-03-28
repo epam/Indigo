@@ -1334,6 +1334,9 @@ bool Molecule::convertableToImplicitHydrogen (int idx)
          if (stereocenters.getType(nei) > 0)
             if (getVertex(nei).degree() == 3)
                return false; // not ignoring hydrogens around stereocenters with lone pair
+         
+         if (!cis_trans.convertableToImplicitHydrogen(idx))
+            return false;
 
          return true;
       }

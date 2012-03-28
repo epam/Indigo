@@ -287,23 +287,8 @@ static void _removeHydrogens (Molecule &mol)
 
    to_remove.clear();
    for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-   {
-      const Vertex &vertex = mol.getVertex(i);
-      if (vertex.degree() == 1)
-      {
-         if (mol.getAtomNumber(i) == ELEM_H && mol.getAtomIsotope(i) == 0)
-         {
-            int nei_idx = vertex.neiVertex(vertex.neiBegin());
-
-            if (mol.getAtomNumber(nei_idx) == ELEM_H && mol.getAtomIsotope(nei_idx) == 0)
-               continue; // do not remove rare H-H fragment
-            if (mol.stereocenters.getType(nei_idx) > 0)
-               if (mol.getVertex(nei_idx).degree() == 3)
-                  continue; // not to unfold hydrogens around stereocenters with lone pair
-            to_remove.push(i);
-         }
-      }
-   }
+      if (mol.convertableToImplicitHydrogen(i))
+         to_remove.push(i);
 
    if (to_remove.size() > 0)
       mol.removeAtoms(to_remove);

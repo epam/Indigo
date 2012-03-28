@@ -104,6 +104,40 @@ bool MoleculeCisTrans::_pureH (BaseMolecule &mol, int idx)
    return mol.getAtomNumber(idx) == ELEM_H && mol.getAtomIsotope(idx) == 0;
 }
 
+bool MoleculeCisTrans::_commonHasLonePair (BaseMolecule &mol, int v1, int v2)
+{
+   if (v1 != -1 && v2 != -1)
+      return false;
+   const Vertex *v;
+   if (v1 == -1)
+      v = &mol.getVertex(v2);
+   else
+      v = &mol.getVertex(v1);
+   int common = v->neiVertex(v->neiBegin());
+   if (mol.getAtomNumber(common) == ELEM_N && mol.getAtomCharge(common) == 0)
+      return true;
+   return false;
+}
+
+bool MoleculeCisTrans::convertableToImplicitHydrogen (int idx)
+{
+   // check [H]\N=C\C
+   BaseMolecule &mol = _getMolecule();
+   const Vertex &v = mol.getVertex(idx);
+   int nei = v.neiVertex(v.neiBegin());
+
+   // Find double bond
+   const Vertex &base = mol.getVertex(nei);
+   for (int i = base.neiBegin(); i != base.neiEnd(); i = base.neiNext(i))
+   {
+      int edge = base.neiEdge(i);
+      if (mol.getBondOrder(edge) == BOND_DOUBLE)
+         return getParity(edge) == 0 || base.degree() != 2;
+   }
+   return true;
+}
+
+
 bool MoleculeCisTrans::sortSubstituents (BaseMolecule &mol, int *substituents, bool *parity_changed)
 {
    bool e0 = substituents[0] < 0;
@@ -124,11 +158,17 @@ bool MoleculeCisTrans::sortSubstituents (BaseMolecule &mol, int *substituents, b
    // But normal molecules are the same.
    if (!mol.isQueryMolecule())
    {
-      // TODO: handle [H]/N=C\C and [H]/N=C/C
-      h0 |= e0;
-      h1 |= e1;
-      h2 |= e2;
-      h3 |= e3;
+      // Handle [H]/N=C\C and [H]/N=C/C
+      if (!_commonHasLonePair(mol, substituents[0], substituents[1]))
+      {
+         h0 |= e0;
+         h1 |= e1;
+      }
+      if (!_commonHasLonePair(mol, substituents[2], substituents[3]))
+      {
+         h2 |= e2;
+         h3 |= e3;
+      }
    }
 
    if (h0 && h1)
@@ -394,26 +434,7 @@ void MoleculeCisTrans::buildFromSmiles (int *dirs)
          continue;
 
       int substituents[4];
-
-      memcpy(substituents, _bonds[i].substituents, 4 * sizeof(int));
-
-      if (substituents[1] == -1)
-      {
-         const Vertex &vbeg = mol.getVertex(beg);
-
-         for (int j = vbeg.neiBegin(); j != vbeg.neiEnd(); j = vbeg.neiNext(j))
-            if (_pureH(mol, vbeg.neiVertex(j)))
-               substituents[1] = vbeg.neiVertex(j);
-      }
-
-      if (substituents[3] == -1)
-      {
-         const Vertex &vend = mol.getVertex(end);
-
-         for (int j = vend.neiBegin(); j != vend.neiEnd(); j = vend.neiNext(j))
-            if (_pureH(mol, vend.neiVertex(j)))
-               substituents[3] = vend.neiVertex(j);
-      }
+      getSubstituents_All(i, substituents);
 
       int subst_dirs[4] = {0, 0, 0, 0};
       int nei_edge;
@@ -528,41 +549,39 @@ const int * MoleculeCisTrans::getSubstituents (int bond_idx) const
    return _bonds[bond_idx].substituents;
 }
 
+void MoleculeCisTrans::_fillAtomExplicitHydrogens (BaseMolecule &mol, int atom_idx, int subst[2])
+{
+   const Vertex &vertex = mol.getVertex(atom_idx);
+
+   for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+   {
+      int nei = vertex.neiVertex(i);
+      // check [H]\N=C\C
+      if (_pureH(mol, nei))
+      {
+         if (subst[0] != nei)
+            subst[1] = nei;
+         else if (subst[1] != nei)
+            subst[0] = nei;
+         else
+            throw Error("internal error in _fillAtomExplicitHydrogens");
+      }
+   }
+}
+
+void MoleculeCisTrans::_fillExplicitHydrogens (BaseMolecule &mol, int bond_idx, int subst[4])
+{
+   _fillAtomExplicitHydrogens(mol, mol.getEdge(bond_idx).beg, subst);
+   _fillAtomExplicitHydrogens(mol, mol.getEdge(bond_idx).end, subst + 2);
+}
+
+
 void MoleculeCisTrans::getSubstituents_All (int bond_idx, int subst[4])
 {
-   int i;
    BaseMolecule &mol = _getMolecule();
 
    memcpy(subst, _bonds[bond_idx].substituents, 4 * sizeof(int));
-
-   if (subst[1] == -1)
-   {
-      const Vertex &vertex = mol.getVertex(mol.getEdge(bond_idx).beg);
-
-      for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
-      {
-         if (_pureH(mol, vertex.neiVertex(i)))
-         {
-            subst[1] = vertex.neiVertex(i);
-            break;
-         }
-      }
-   }
-
-   if (subst[3] == -1)
-   {
-      const Vertex &vertex = mol.getVertex(mol.getEdge(bond_idx).end);
-
-      for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
-      {
-         if (_pureH(mol, vertex.neiVertex(i)))
-         {
-            subst[3] = vertex.neiVertex(i);
-            break;
-         }
-      }
-   }
-
+   _fillExplicitHydrogens(mol, bond_idx, subst);
 }
 
 void MoleculeCisTrans::add (int bond_idx, int substituents[4], int parity)

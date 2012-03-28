@@ -91,20 +91,8 @@ void SmilesSaver::_saveMolecule ()
          throw Error("ignore_hydrogens does not make sense for query molecules");
       
       for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
-         if (_bmol->getAtomNumber(i) == ELEM_H && _bmol->getAtomIsotope(i) == 0 &&
-             _bmol->getVertex(i).degree() == 1)
-         {
-            int nei = _bmol->getVertex(i).neiVertex(_bmol->getVertex(i).neiBegin());
-            
-            if (_bmol->getAtomNumber(nei) != ELEM_H)
-            {
-               if (_bmol->stereocenters.getType(nei) > 0)
-                  if (_bmol->getVertex(nei).degree() == 3)
-                     continue; // not ignoring hydrogens around stereocenters with lone pair
-               
-               _ignored_vertices[i] = 1;
-            }
-         }
+         if (_mol->asMolecule().convertableToImplicitHydrogen(i))
+            _ignored_vertices[i] = 1;
    }
 
    _checkRGroupsAndAttachmentPoints();
