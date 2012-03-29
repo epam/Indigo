@@ -30,7 +30,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "base_cpp/red_black.h"
-#include "indigo_mapping.h"
+#include "graph/automorphism_search.h"
 
 
 
@@ -140,21 +140,25 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
    DecompositionEnumerator& deco_enum = *(DecompositionEnumerator*)userdata;
    int result = deco_enum.all_matches ? 1 : 0;
 
-   IndigoDecompositionMatch& emb_context = deco_enum.contexts.push();
+   if(deco_enum.shouldContinue(map, graph1.vertexEnd()))
+      return result;
 
-   emb_context.lastMapping.copy(map, graph1.vertexEnd());
-   emb_context.lastInvMapping.copy(inv_map, graph2.vertexEnd());
+   IndigoDecompositionMatch deco_match;
+
+   deco_match.lastMapping.copy(map, graph1.vertexEnd());
+   deco_match.lastInvMapping.copy(inv_map, graph2.vertexEnd());
+
    /*
     * Visited atom = 1 in case of scaffold and > 1 in case of rgroup
     */
-   Array<int>& visited_atoms = emb_context.visitedAtoms;
+   Array<int>& visited_atoms = deco_match.visitedAtoms;
    /*
     * Each array corresponds to a separate Rgroup.
     * Order - atom number for scaffold
     * Index - atom number for Rgroup
     */
-   ObjArray< Array<int> >& attachment_order = emb_context.attachmentOrder;
-   ObjArray< Array<int> >& attachment_index = emb_context.attachmentIndex;
+   ObjArray< Array<int> >& attachment_order = deco_match.attachmentOrder;
+   ObjArray< Array<int> >& attachment_index = deco_match.attachmentIndex;
 
    visited_atoms.clear_resize(graph2.vertexEnd());
    visited_atoms.zerofill();
@@ -233,7 +237,7 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
     * Calculate scaffold bonds for a scaffold in the molecule
     * Also define empty Rgroups
     */
-   Array<int>& scaf_bonds = emb_context.scaffoldBonds;
+   Array<int>& scaf_bonds = deco_match.scaffoldBonds;
    scaf_bonds.clear();
 
    int v_idx1, v_idx2, e_idx_mol, e_idx_scaf;
@@ -271,12 +275,14 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
    /*
     * Calculate scaffold atoms
     */
-   Array<int>& scaf_atoms = emb_context.scaffoldAtoms;
+   Array<int>& scaf_atoms = deco_match.scaffoldAtoms;
    scaf_atoms.clear();
    for (int a_idx = graph2.vertexBegin(); a_idx != graph2.vertexEnd(); a_idx = graph2.vertexNext(a_idx)) {
       if(inv_map[a_idx] >= 0)
          scaf_atoms.push(a_idx);
    }
+
+   deco_enum.addMatch(deco_match, graph2);
 
    return result;
 }
@@ -579,7 +585,6 @@ void IndigoDecompositionMatch::copy(IndigoDecompositionMatch& other) {
    mol_scaffold.clone_KeepIndices(other.mol_scaffold, 0);
 }
 
-
 /*
  * Add rgroup if not exists
  */
@@ -820,6 +825,220 @@ void IndigoDeconvolution::_makeInvertMap(Array<int>& map, Array<int>& invmap) {
          invmap[map[i]] = i;
       }
    }
+}
+bool IndigoDeconvolution::DecompositionEnumerator::shouldContinue(int* map, int size) {
+   if(contexts.size() == 0)
+      return false;
+   
+   RedBlackSet<int> map_set;
+   for (int i = 0; i < size; ++i) {
+      if(map[i] >= 0)
+         map_set.find_or_insert(map[i]);
+   }
+
+   for (int m_idx = 0; m_idx < contexts.size(); ++m_idx) {
+      Array<int>& scaf_atoms = contexts[m_idx].scaffoldAtoms;
+      if(map_set.size() != scaf_atoms.size())
+         continue;
+      int i = 0;
+      for (; i < scaf_atoms.size(); ++i) {
+         if(!map_set.find(scaf_atoms[i]))
+            break;
+      }
+      if(i == scaf_atoms.size())
+         return true;
+   }
+   return false;
+}
+
+
+void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionMatch& match, Graph& super) {
+   /*
+    * Add all automorphisms
+    */
+   Molecule& mol_set = (Molecule&)super;
+   Molecule r_molecule;
+   int att_idx, att_order;
+
+   QS_DEF(Array<int>, inv_scaf_map);
+   int n_rgroups = match.getRgroupNumber();
+   ObjArray< Array<int> >& attachment_order = match.attachmentOrder;
+   ObjArray< Array<int> >& attachment_index = match.attachmentIndex;
+   /*
+    * Create a submolecule for a scaffold
+    */
+   r_molecule.makeEdgeSubmolecule(mol_set,
+           match.scaffoldAtoms,
+           match.scaffoldBonds, &inv_scaf_map, 0);
+   r_molecule.unhighlightAll();
+
+
+   /*
+    * Add all Rgroups
+    */
+   RedBlackMap<int, int> r_sites;
+   for (int rg_idx = 0; rg_idx < n_rgroups; ++rg_idx) {
+      Array<int>& att_indexes = attachment_index[rg_idx];
+      Array<int>& att_orders = attachment_order[rg_idx];
+      /*
+       * Add new atom r-site
+       */
+      int new_atom_idx = r_molecule.addAtom(ELEM_RSITE);
+      r_sites.insert(new_atom_idx, rg_idx);
+
+      /*
+       * Add all bonds and order maps
+       */
+      for(int p_idx = 0; p_idx < att_indexes.size(); ++p_idx) {
+         att_idx = att_indexes[p_idx];
+         att_order = att_orders[p_idx];
+          /*
+           * Add a bond with the same order
+           */
+         if(r_molecule.findEdgeIndex(new_atom_idx, inv_scaf_map[att_order]) == -1) {
+            int edge_idx = mol_set.findEdgeIndex(att_order, att_idx);
+            if(edge_idx == -1)
+               throw Error("internal error: can not find the edge for a scaffold");
+            r_molecule.addBond(new_atom_idx, inv_scaf_map[att_order], BOND_SINGLE);
+         }
+      }
+   }
+
+   /*
+    * Set callbacks
+    */
+   AutomorphismSearch auto_search;
+   auto_search.cb_check_automorphism = _cbAutoCheckAutomorphism;
+   auto_search.getcanon = false;
+   auto_search.context = this;
+   /*
+    * Find all automorphisms
+    */
+   _autoMaps.clear();
+   auto_search.process(r_molecule);
+   /*
+    * Add match itself
+    */
+   contexts.push().copy(match);
+   
+   RedBlackSet<int> processed_r;
+   ObjArray< Array<int> > rsite_orders;
+   QS_DEF(Array<int>, swap_order);
+   Array<int>& direct_order = rsite_orders.push();
+   for (int rs_idx = r_sites.begin(); rs_idx != r_sites.end(); rs_idx = r_sites.next(rs_idx)) {
+      direct_order.push(r_sites.key(rs_idx));
+   }
+   for (int auto_idx = 0; auto_idx < _autoMaps.size(); ++auto_idx) {
+      Array<int>& auto_map = _autoMaps[auto_idx];
+      /*
+       * Check for correctness and condition
+       */
+      swap_order.clear();
+      for (int rs_idx = r_sites.begin(); rs_idx != r_sites.end(); rs_idx = r_sites.next(rs_idx)) {
+         int rs_key = r_sites.key(rs_idx);
+         if (!r_sites.find(auto_map[rs_key]))
+            throw IndigoDeconvolution::Error("internal error: incorrect automorphism for a scaffold");
+         /*
+          * Create swap order
+          */
+          swap_order.push(auto_map[rs_key]);
+      }
+      if(!_foundOrder(rsite_orders, swap_order)) {
+         IndigoDecompositionMatch& nu_match = contexts.push();
+         nu_match.copy(match);
+         rsite_orders.push().copy(swap_order);
+         /*
+          * Swap RGroup indexes
+          */
+         processed_r.clear();
+         for (int rs_idx = r_sites.begin(); rs_idx != r_sites.end(); rs_idx = r_sites.next(rs_idx)) {
+            int rs_key = r_sites.key(rs_idx);
+            if(!processed_r.find(rs_key) && auto_map[rs_key] != rs_key) {
+               processed_r.find_or_insert(rs_key);
+               processed_r.find_or_insert(auto_map[rs_key]);
+               _swapIndexes(nu_match, r_sites.value(rs_idx), r_sites.at(auto_map[rs_key]));
+            }
+         }
+      }
+   }
+   
+}
+
+bool IndigoDeconvolution::DecompositionEnumerator::_foundOrder(ObjArray< Array<int> >& rsite_orders, Array<int>& swap_order) {
+   bool found = false;
+   
+   for (int o_idx = 0; o_idx < rsite_orders.size(); ++o_idx) {
+      Array<int>& r_order = rsite_orders[o_idx];
+      if(r_order.size() != swap_order.size())
+         continue;
+      int r_idx = 0;
+      for (; r_idx < r_order.size(); ++r_idx) {
+         if(r_order[r_idx] != swap_order[r_idx])
+            break;
+      }
+      if(r_idx == r_order.size()) {
+         found = true;
+         break;
+      }
+   }
+   
+   return found;
+}
+
+void IndigoDeconvolution::DecompositionEnumerator::_swapIndexes(IndigoDecompositionMatch& match, int old_idx, int new_idx) {
+   QS_DEF(Array<int>, tmp_buf);
+   ObjArray< Array<int> >& attachment_order = match.attachmentOrder;
+   ObjArray< Array<int> >& attachment_index = match.attachmentIndex;
+
+   tmp_buf.copy(attachment_order[old_idx]);
+   attachment_order[old_idx].copy(attachment_order[new_idx]);
+   attachment_order[new_idx].copy(tmp_buf);
+
+   tmp_buf.copy(attachment_index[old_idx]);
+   attachment_index[old_idx].copy(attachment_index[new_idx]);
+   attachment_index[new_idx].copy(tmp_buf);
+
+   Array<int>& visited_atoms = match.visitedAtoms;
+
+   for (int i = 0; i < visited_atoms.size(); ++i) {
+      if(visited_atoms[i] == (old_idx + SHIFT_IDX)) {
+         visited_atoms[i] = new_idx + SHIFT_IDX;
+      } else if(visited_atoms[i] == (new_idx + SHIFT_IDX)) {
+         visited_atoms[i] = old_idx + SHIFT_IDX;
+      }
+   }
+}
+
+bool IndigoDeconvolution::DecompositionEnumerator::_cbAutoCheckAutomorphism (Graph &graph, const Array<int> &mapping, const void *context) {
+   DecompositionEnumerator &deco_enum = *(DecompositionEnumerator *)context;
+
+   bool should_add = true;
+   /*
+    * Check atom and bond conditioins
+    */
+   for (int i = graph.vertexBegin(); i != graph.vertexEnd(); i = graph.vertexNext(i)) {
+      if(!MaxCommonSubmolecule::matchAtoms(graph, graph, 0, i, mapping[i], 0)) {
+         should_add = false;
+         break;
+      }
+   }
+
+   for (int i = graph.edgeBegin(); i != graph.edgeEnd() && should_add; i = graph.edgeNext(i)) {
+      const Edge& edge = graph.getEdge(i);
+      int e_idx = graph.findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
+      if(e_idx == -1) {
+         should_add = false;
+         break;
+      }
+      if(!MaxCommonSubmolecule::matchBonds(graph, graph, i, e_idx, 0)) {
+         should_add = false;
+         break;
+      }
+   }
+
+   if(should_add)
+      deco_enum._autoMaps.push().copy(mapping);
+   return false;
 }
 
 

@@ -74,8 +74,17 @@ public:
        
       ObjArray<IndigoDecompositionMatch> contexts;
       bool all_matches;
+
+      bool shouldContinue(int* map, int size);
+      void addMatch(IndigoDecompositionMatch& match, Graph& super);
+
    private:
       DecompositionEnumerator(const DecompositionEnumerator&); //no implicit copy
+      bool _foundOrder(ObjArray< Array<int> >& rsite_orders, Array<int>& swap_order);
+      void _swapIndexes(IndigoDecompositionMatch&, int old_idx, int new_idx) ;
+
+      static bool _cbAutoCheckAutomorphism (Graph &graph, const Array<int> &mapping, const void *context);
+      ObjArray< Array<int> > _autoMaps;
    };
 
    void addCompleteRGroup(IndigoDecompositionMatch& emb_context, bool change_scaffold, Array<int>* rg_map);
