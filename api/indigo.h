@@ -781,9 +781,13 @@ CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp);
 /*
  * Decomposition Iteration API
  */
+// Returns a 'decomposition' object
 CEXPORT int indigoCreateDecomposer(int scaffold);
+// Returns a 'decomposition' item
 CEXPORT int indigoDecomposeMolecule(int decomp, int mol);
+// Returns decomposition iterator
 CEXPORT int indigoIterateDecompositions(int deco_item);
+// Adds the input decomposition to a full scaffold
 CEXPORT int indigoAddDecomposition(int decomp, int q_match);
 
 
