@@ -41,7 +41,7 @@ Indigo::Indigo () : timeout_cancellation_handler(0)
    skip_3d_chirality = false;
    deconvolution_aromatization = true;
    deco_save_ap_bond_orders = false;
-   deco_ignore_errors = false;
+   deco_ignore_errors = true;
    molfile_saving_mode = 0;
    molfile_saving_no_chiral = false;
    filename_encoding = ENCODING_ASCII;
