@@ -66,7 +66,7 @@ public:
    
    class DecompositionEnumerator {
    public:
-      DecompositionEnumerator():all_matches(false){}
+      DecompositionEnumerator():all_matches(false), remove_rsites(false){}
       ~DecompositionEnumerator(){}
 
       AutoPtr<AromaticityMatcher> am;
@@ -74,6 +74,7 @@ public:
        
       ObjArray<IndigoDecompositionMatch> contexts;
       bool all_matches;
+      bool remove_rsites;
 
       bool shouldContinue(int* map, int size);
       void addMatch(IndigoDecompositionMatch& match, Graph& super);
@@ -89,7 +90,8 @@ public:
 
    void addCompleteRGroup(IndigoDecompositionMatch& emb_context, bool change_scaffold, Array<int>* rg_map);
    void createRgroups(IndigoDecompositionMatch& emb_context, bool change_scaffold);
-
+   
+   DEF_ERROR("R-Group deconvolution");
 private:
    void _parseOptions(const char* options);
    
@@ -106,9 +108,9 @@ private:
 
    QueryMolecule _scaffold;
    QueryMolecule _fullScaffold;
+   bool _userDefinedScaffold;
    ObjArray<IndigoDeconvolutionElem> _deconvolutionElems;
 
-   DEF_ERROR("R-Group deconvolution");
 };
 
 class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
@@ -151,6 +153,7 @@ public:
 
    void renumber(Array<int>& map, Array<int>& inv_map);
    void copy(IndigoDecompositionMatch& other);
+   void removeRsitesFromMaps(Graph& query_graph);
 
    Molecule mol_out;
    Molecule rgroup_mol;

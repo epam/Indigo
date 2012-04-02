@@ -41,7 +41,8 @@ save_ap_bond_orders(false),
 ignore_errors(false),
 aromatize(true),
 cbEmbedding(0),
-embeddingUserdata(0)
+embeddingUserdata(0),
+_userDefinedScaffold(false)
 {
 }
 
@@ -56,6 +57,40 @@ void IndigoDeconvolution::setScaffold (QueryMolecule& scaffold) {
       QueryMoleculeAromatizer::aromatizeBonds(_scaffold);
       QueryMoleculeAromatizer::aromatizeBonds(_fullScaffold);
    }
+   /*
+    * Define user scaffold
+    */
+   _userDefinedScaffold = false;
+   for (int i = _scaffold.vertexBegin(); i != _scaffold.vertexEnd(); i = _scaffold.vertexNext(i)) {
+      if(_scaffold.isRSite(i)) {
+         _userDefinedScaffold = true;
+         break;
+      }
+   }
+   /*
+    * Replace and set hydrogen count
+    */
+   if(_userDefinedScaffold) {
+      for (int i = _scaffold.vertexBegin(); i != _scaffold.vertexEnd(); i = _scaffold.vertexNext(i)) {
+         /*
+          * Atom is not a rsite than set implicit hydrogens count
+          */
+         if(_scaffold.getAtomNumber(i) < 0)
+            continue;
+
+         int subst_count = 0;
+         const Vertex &vertex = _scaffold.getVertex(i);
+         for (int j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j)) {
+            if (_scaffold.getAtomNumber(vertex.neiVertex(j)) != ELEM_H)
+               ++subst_count;
+         }
+
+         AutoPtr<QueryMolecule::Atom> qatom;
+         qatom.reset(QueryMolecule::Atom::und(_scaffold.releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst_count)));
+         _scaffold.resetAtom(i, qatom.release());
+      }
+   }
+
 }
 
 void IndigoDeconvolution::makeRGroups (QueryMolecule& scaffold) {
@@ -69,8 +104,12 @@ void IndigoDeconvolution::makeRGroups (QueryMolecule& scaffold) {
    }
 }
 
+#include "../../tests/api.as/all_tests.h"
 
 void IndigoDeconvolution::makeRGroup(IndigoDeconvolutionElem& elem, bool all_matches, bool change_scaffold) {
+
+   if(_fullScaffold.vertexCount() == 0)
+      throw Error("error: scaffold vertex count equals 0");
    
    Molecule& mol_in = elem.mol_in;
    
@@ -92,6 +131,7 @@ void IndigoDeconvolution::makeRGroup(IndigoDeconvolutionElem& elem, bool all_mat
    deco_enum.fmcache.reset(new MoleculeSubstructureMatcher::FragmentMatchCache);
    deco_enum.fmcache->clear();
    deco_enum.all_matches = all_matches;
+   deco_enum.remove_rsites = _userDefinedScaffold;
    deco_enum.contexts.clear();
 
    /*
@@ -139,14 +179,17 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
 
    DecompositionEnumerator& deco_enum = *(DecompositionEnumerator*)userdata;
    int result = deco_enum.all_matches ? 1 : 0;
-
-   if(deco_enum.shouldContinue(map, graph1.vertexEnd()))
-      return result;
-
+   
    IndigoDecompositionMatch deco_match;
 
    deco_match.lastMapping.copy(map, graph1.vertexEnd());
    deco_match.lastInvMapping.copy(inv_map, graph2.vertexEnd());
+   
+   if(deco_enum.remove_rsites)
+      deco_match.removeRsitesFromMaps(graph1);
+
+   if(deco_enum.shouldContinue(deco_match.lastMapping.ptr(), graph1.vertexEnd()))
+      return result;
 
    /*
     * Visited atom = 1 in case of scaffold and > 1 in case of rgroup
@@ -173,7 +216,10 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
     */
    
    for (int atom_idx = graph1.vertexBegin(); atom_idx < graph1.vertexEnd(); atom_idx = graph1.vertexNext(atom_idx)) {
-      int start_idx = map[atom_idx];
+      int start_idx = deco_match.lastMapping[atom_idx];
+
+      if(start_idx == -1)
+         continue;
 
       if (visited_atoms[start_idx] > 0)
          continue;
@@ -183,7 +229,7 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
       for (int cc = start_vertex.neiBegin(); cc != start_vertex.neiEnd(); cc = start_vertex.neiNext(cc)) {
          int cc_start_idx = start_vertex.neiVertex(cc);
 
-         if (inv_map[cc_start_idx] >= 0 || visited_atoms[cc_start_idx] > 1)
+         if (deco_match.lastInvMapping[cc_start_idx] >= 0 || visited_atoms[cc_start_idx] > 1)
             continue;
 
 
@@ -209,7 +255,7 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
                if (queue_markers[nei_idx] != 0)
                   continue;
 
-               if (inv_map[nei_idx] >= 0) {
+               if (deco_match.lastInvMapping[nei_idx] >= 0) {
                   attachment_index[n_rgroups].push(cur_idx);
                   attachment_order[n_rgroups].push(nei_idx);
                } else {
@@ -244,8 +290,8 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
    
    for (e_idx_mol = graph2.edgeBegin(); e_idx_mol != graph2.edgeEnd(); e_idx_mol = graph2.edgeNext(e_idx_mol)) {
       const Edge& edge = graph2.getEdge(e_idx_mol);
-      v_idx1 = inv_map[edge.beg];
-      v_idx2 = inv_map[edge.end];
+      v_idx1 = deco_match.lastInvMapping[edge.beg];
+      v_idx2 = deco_match.lastInvMapping[edge.end];
       
       if (v_idx1 >= 0 && v_idx2 >= 0) {
          
@@ -278,7 +324,7 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph &graph1, Graph &graph2, int *ma
    Array<int>& scaf_atoms = deco_match.scaffoldAtoms;
    scaf_atoms.clear();
    for (int a_idx = graph2.vertexBegin(); a_idx != graph2.vertexEnd(); a_idx = graph2.vertexNext(a_idx)) {
-      if(inv_map[a_idx] >= 0)
+      if(deco_match.lastInvMapping[a_idx] >= 0)
          scaf_atoms.push(a_idx);
    }
 
@@ -585,6 +631,20 @@ void IndigoDecompositionMatch::copy(IndigoDecompositionMatch& other) {
    mol_scaffold.clone_KeepIndices(other.mol_scaffold, 0);
 }
 
+void  IndigoDecompositionMatch::removeRsitesFromMaps(Graph& query_graph) {
+   QueryMolecule& qmol = (QueryMolecule&)query_graph;
+   if(lastMapping.size() != qmol.vertexEnd())
+      throw IndigoDeconvolution::Error("internal error: undefined mapping");
+   for (int i = qmol.vertexBegin(); i != qmol.vertexEnd(); i = qmol.vertexNext(i)) {
+      if(qmol.isRSite(i)) {
+         int inv_idx = lastMapping[i];
+         lastInvMapping[inv_idx] = -1;
+         lastMapping[i] = -1;
+      }
+   }
+
+}
+
 /*
  * Add rgroup if not exists
  */
@@ -720,7 +780,7 @@ void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& emb_contex
       if(match_not_found) {
          ++new_rg_idx;
          map_rg_idx = new_rg_idx;
-         if(change_scaffold)
+         if(change_scaffold && !_userDefinedScaffold)
             _addFullRGroup(att_ord, att_idx, mol_set, map, new_rg_idx);
       }
       /*
