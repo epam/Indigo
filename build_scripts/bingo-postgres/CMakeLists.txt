@@ -9,6 +9,12 @@ set(BingoPostgres_SOURCE_DIR ../../bingo/postgres)
 
 INCLUDE(ConfigureCommon)
 
+if(MSVC)
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+	#set_target_properties(bingo-core-c-shared PROPERTIES LINKER_FLAGS "/NODEFAULTLIB:libc.lib /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcd.lib /NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrtd.lib")	
+endif()
+
 add_subdirectory(../../zlib-src "${CMAKE_CURRENT_BINARY_DIR}/zlib")
 # Get defined variable with the headers
 get_directory_property(ZLib_HEADERS_DIR DIRECTORY ../../zlib-src DEFINITION ZLib_HEADERS_DIR)

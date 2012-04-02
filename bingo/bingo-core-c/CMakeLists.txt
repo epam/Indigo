@@ -19,6 +19,7 @@ set_property(TARGET bingo-core-c PROPERTY FOLDER "bingo-core-c")
 
 set_target_properties(bingo-core-c-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 SET_TARGET_PROPERTIES(bingo-core-c-shared PROPERTIES LINKER_LANGUAGE C)
+
 set_property(TARGET bingo-core-c-shared PROPERTY FOLDER "bingo-core-c")
 set_property(TARGET bingo-core-c-shared PROPERTY OUTPUT_NAME "bingo-core-c")
 

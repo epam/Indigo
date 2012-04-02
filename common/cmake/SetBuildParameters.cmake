@@ -1,3 +1,6 @@
+if(MSVC)
+	add_definitions(/D "_CRT_SECURE_NO_WARNINGS")
+endif()
 if(NOT MSVC AND NOT BINGO)
 	set(VISIBILITY_HIDDEN YES)
 endif()
