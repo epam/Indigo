@@ -83,6 +83,7 @@ public:
       DecompositionEnumerator(const DecompositionEnumerator&); //no implicit copy
       bool _foundOrder(ObjArray< Array<int> >& rsite_orders, Array<int>& swap_order);
       void _swapIndexes(IndigoDecompositionMatch&, int old_idx, int new_idx) ;
+      void _addAllRsites(Molecule&, Molecule&, IndigoDecompositionMatch&, Array<int>&, RedBlackMap<int, int>&);
 
       static bool _cbAutoCheckAutomorphism (Graph &graph, const Array<int> &mapping, const void *context);
       ObjArray< Array<int> > _autoMaps;
@@ -146,6 +147,7 @@ public:
    Array<int> lastInvMapping;
    ObjArray< Array<int> > attachmentOrder;
    ObjArray< Array<int> > attachmentIndex;
+   ObjArray< Array<int> > scafAutoMaps;
 
    int getRgroupNumber() const {
       return attachmentIndex.size() - 1;
@@ -154,6 +156,7 @@ public:
    void renumber(Array<int>& map, Array<int>& inv_map);
    void copy(IndigoDecompositionMatch& other);
    void removeRsitesFromMaps(Graph& query_graph);
+   void copyScafAutoMaps(ObjArray< Array<int> >& autoMaps);
 
    Molecule mol_out;
    Molecule rgroup_mol;
