@@ -62,7 +62,7 @@ BingoCore& BingoCore::getInstance ()
 
 CEXPORT const char * bingoGetVersion ()
 {
-   return bingo_version_string;  
+   return BINGO_VERSION;  
 }                    
 
 CEXPORT const char * bingoGetError ()

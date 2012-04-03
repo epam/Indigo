@@ -19,10 +19,11 @@
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_tautomer.h"
 #include "lzw/lzw_dictionary.h"
+#include "bingo_version.h"
 
 using namespace indigo;
 
-extern const char *bingo_version_string;
+// extern const char *bingo_version_string;
 
 class BingoContext
 {

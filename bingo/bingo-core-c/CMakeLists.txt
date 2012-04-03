@@ -4,10 +4,14 @@ project(BingoCoreC C)
 
 file(GLOB BingoCoreC_src ../src/core-c/*.cpp)
 file(GLOB BingoCoreC_headers ../src/core-c/*.h)
-set(BingoCoreC_HEADERS_DIR ../src/core-c/)
+set(BingoCoreC_HEADERS_DIR ../src/core-c/)                                 
+include(../bingo-version.cmake)
+MESSAGE(STATUS "BingoCoreC version is ${BINGO_VERSION}")
+configure_file(${BingoCoreC_SOURCE_DIR}/../src/core/bingo_version.h.in ${BingoCoreC_SOURCE_DIR}/../src/core/bingo_version.h)
+
 include(SetBuildParameters)
 
-include_directories(../src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR})
+include_directories(../src ../src/core ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR})
 
 add_library(bingo-core-c STATIC ${BingoCoreC_src} ${BingoCoreC_headers})
 add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers})

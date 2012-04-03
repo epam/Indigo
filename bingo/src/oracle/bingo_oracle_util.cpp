@@ -670,8 +670,11 @@ ORAEXT OCIString *oraGetVersion (OCIExtProcContext *ctx, short *return_indicator
    {
       OracleEnv env(ctx, logger);
 
-      env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (const oratext *)bingo_version_string,
-         strlen(bingo_version_string), &result));
+      // env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (const oratext *)bingo_version_string,
+      //   strlen(bingo_version_string), &result));
+      env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (const oratext *)BINGO_VERSION,
+        strlen(BINGO_VERSION), &result));
+
 
       *return_indicator = OCI_IND_NOTNULL;
    }

@@ -5,8 +5,8 @@ project(BingoOracle)
 include(bingo-version.cmake)
 include(SetBuildParameters)
 
+INCLUDE(bingo-version.cmake)
 message(STATUS "BingoOracle version is ${BINGO_VERSION}")
-SET(BINGO_VERSION "${BINGO_VERSION}" PARENT_SCOPE) # promote Bingo version
 
 file(GLOB Bingo_src src/oracle/*.cpp)
 file(GLOB Bingo_headers src/oracle/*.h)
@@ -29,4 +29,5 @@ SET_TARGET_PROPERTIES(bingo-oracle-shared PROPERTIES OUTPUT_NAME "bingo-oracle")
 
 set_property(TARGET bingo-oracle-shared PROPERTY FOLDER "bingo-oracle")
 
+SET(BINGO_VERSION "${BINGO_VERSION}" PARENT_SCOPE) # promote Bingo version
 pack_bingo(bingo-oracle-shared)

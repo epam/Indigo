@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 
 project(BingoOracleSolution)
 
-set(Bingo_SOURCE_DIR ../../bingo/)
-set(BingoOracle_SOURCE_DIR ../../bingo/)
+set(Bingo_SOURCE_DIR ../../bingo)
+set(BingoOracle_SOURCE_DIR ../../bingo)
 
 set(BINGO "YES")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
@@ -42,10 +42,9 @@ get_directory_property(OCI_INCLUDE_DIRS DIRECTORY ../../oci DEFINITION OCI_INCLU
 get_directory_property(OCI_LIBRARY_DIRS DIRECTORY ../../oci DEFINITION OCI_LIBRARY_DIRS)
 get_directory_property(OCI_LIBRARY DIRECTORY ../../oci DEFINITION OCI_LIBRARY)
 
-add_subdirectory(../../common/oracle "${CMAKE_CURRENT_BINARY_DIR}/common-oracle")
-add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-core-c")
 add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
-
+#add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-core-c")
+add_subdirectory(../../common/oracle "${CMAKE_CURRENT_BINARY_DIR}/common-oracle")
 add_subdirectory(../../bingo "${CMAKE_CURRENT_BINARY_DIR}/bingo-oracle")
 
 SET(BINGO_VERSION "${BINGO_VERSION}")

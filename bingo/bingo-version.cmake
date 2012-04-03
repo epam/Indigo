@@ -1,1 +1,1 @@
-SET(BINGO_VERSION "1.7-beta3")
+SET(BINGO_VERSION "1.7-beta4")
