@@ -96,7 +96,7 @@ public:
 private:
    void _parseOptions(const char* options);
    
-   void _addFullRGroup(Array<int>& att_order, Array<int>& att_idx, Molecule& qmol, Array<int>& map, int new_rg_idx);
+   void _addFullRGroup(IndigoDecompositionMatch& deco_match, Array<int>& auto_map, int rg_idx, int new_rg_idx);
 
    static int _rGroupsEmbedding(Graph &g1, Graph &g2, int *core1, int *core2, void *userdata);
 
@@ -105,6 +105,9 @@ private:
    static void _addBond (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
    static void _removeAtom (Graph &subgraph, int sub_idx, void *userdata);
    void _makeInvertMap(Array<int>& map, Array<int>& invmap);
+   int _createRgMap(IndigoDecompositionMatch& deco_match, int aut_idx,
+      RedBlackStringObjMap<Array<int> >& match_rgroups, Array<int>* rg_map_buf, bool change_scaffold);
+   int _getRgScore(Array<int>& rg_map) const;
 
 
    QueryMolecule _scaffold;
@@ -157,6 +160,7 @@ public:
    void copy(IndigoDecompositionMatch& other);
    void removeRsitesFromMaps(Graph& query_graph);
    void copyScafAutoMaps(ObjArray< Array<int> >& autoMaps);
+   void invertScafAutoMaps();
 
    Molecule mol_out;
    Molecule rgroup_mol;
