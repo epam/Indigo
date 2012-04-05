@@ -20,6 +20,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_substructure_matcher.h"
+#include "base_cpp/obj_list.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -72,21 +73,22 @@ public:
       AutoPtr<AromaticityMatcher> am;
       AutoPtr<MoleculeSubstructureMatcher::FragmentMatchCache> fmcache;
        
-      ObjArray<IndigoDecompositionMatch> contexts;
+      void calculateAutoMaps(Graph& sub);
+      bool shouldContinue(int* map, int size);
+      void addMatch(IndigoDecompositionMatch& match, Graph& sub, Graph& super);
+
       bool all_matches;
       bool remove_rsites;
-
-      bool shouldContinue(int* map, int size);
-      void addMatch(IndigoDecompositionMatch& match, Graph& super);
-
+      ObjArray<IndigoDecompositionMatch> contexts;
    private:
       DecompositionEnumerator(const DecompositionEnumerator&); //no implicit copy
       bool _foundOrder(ObjArray< Array<int> >& rsite_orders, Array<int>& swap_order);
-      void _swapIndexes(IndigoDecompositionMatch&, int old_idx, int new_idx) ;
+      void _swapIndexes(IndigoDecompositionMatch&, int old_idx, int new_idx);
+      void _refineAutoMaps(ObjList<Array<int> >& auto_maps, Graph& sub, Graph& super, Array<int>& scaf_map);
       void _addAllRsites(Molecule&, Molecule&, IndigoDecompositionMatch&, Array<int>&, RedBlackMap<int, int>&);
 
       static bool _cbAutoCheckAutomorphism (Graph &graph, const Array<int> &mapping, const void *context);
-      ObjArray< Array<int> > _autoMaps;
+      ObjList< Array<int> > _autoMaps;
    };
 
    void addCompleteRGroup(IndigoDecompositionMatch& emb_context, bool change_scaffold, Array<int>* rg_map);
@@ -150,7 +152,7 @@ public:
    Array<int> lastInvMapping;
    ObjArray< Array<int> > attachmentOrder;
    ObjArray< Array<int> > attachmentIndex;
-   ObjArray< Array<int> > scafAutoMaps;
+   ObjList< Array<int> > scafAutoMaps;
 
    int getRgroupNumber() const {
       return attachmentIndex.size() - 1;
@@ -159,7 +161,7 @@ public:
    void renumber(Array<int>& map, Array<int>& inv_map);
    void copy(IndigoDecompositionMatch& other);
    void removeRsitesFromMaps(Graph& query_graph);
-   void copyScafAutoMaps(ObjArray< Array<int> >& autoMaps);
+   void copyScafAutoMaps(ObjList< Array<int> >& autoMaps);
    void invertScafAutoMaps();
 
    Molecule mol_out;
