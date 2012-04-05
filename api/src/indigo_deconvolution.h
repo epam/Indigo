@@ -163,12 +163,15 @@ public:
    void copy(IndigoDecompositionMatch& other);
    void removeRsitesFromMaps(Graph& query_graph);
    void copyScafAutoMaps(ObjList< Array<int> >& autoMaps);
+   void completeScaffold(IndigoDeconvolution* deco);
 
    Molecule mol_out;
    Molecule rgroup_mol;
    Molecule mol_scaffold;
 private:
    IndigoDecompositionMatch(const IndigoDecompositionMatch&); //no implicit copy
+
+   bool _completeScaffold;
 };
 
 class DLLEXPORT IndigoDeconvolutionIter : public IndigoObject {
