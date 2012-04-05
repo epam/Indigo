@@ -67,7 +67,7 @@ public:
    
    class DecompositionEnumerator {
    public:
-      DecompositionEnumerator():all_matches(false), remove_rsites(false){}
+      DecompositionEnumerator():all_matches(false), remove_rsites(false), deco(0){}
       ~DecompositionEnumerator(){}
 
       AutoPtr<AromaticityMatcher> am;
@@ -79,6 +79,7 @@ public:
 
       bool all_matches;
       bool remove_rsites;
+      IndigoDeconvolution* deco;
       ObjArray<IndigoDecompositionMatch> contexts;
    private:
       DecompositionEnumerator(const DecompositionEnumerator&); //no implicit copy
@@ -132,7 +133,6 @@ public:
 
    virtual int getIndex () {return idx;}
    virtual RedBlackStringObjMap< Array<char> > * getProperties() {return &properties;}
-   IndigoDeconvolution* deco;
    int idx;
 
    Molecule mol_in;
@@ -163,11 +163,13 @@ public:
    void copy(IndigoDecompositionMatch& other);
    void removeRsitesFromMaps(Graph& query_graph);
    void copyScafAutoMaps(ObjList< Array<int> >& autoMaps);
-   void completeScaffold(IndigoDeconvolution* deco);
+   void completeScaffold();
 
    Molecule mol_out;
    Molecule rgroup_mol;
    Molecule mol_scaffold;
+
+   IndigoDeconvolution* deco;
 private:
    IndigoDecompositionMatch(const IndigoDecompositionMatch&); //no implicit copy
 
