@@ -85,10 +85,11 @@ public:
       bool _foundOrder(ObjArray< Array<int> >& rsite_orders, Array<int>& swap_order);
       void _swapIndexes(IndigoDecompositionMatch&, int old_idx, int new_idx);
       void _refineAutoMaps(ObjList<Array<int> >& auto_maps, Graph& sub, Graph& super, Array<int>& scaf_map);
-      void _addAllRsites(Molecule&, Molecule&, IndigoDecompositionMatch&, Array<int>&, RedBlackMap<int, int>&);
+      void _addAllRsites(QueryMolecule&, IndigoDecompositionMatch&, RedBlackMap<int, int>&);
 
       static bool _cbAutoCheckAutomorphism (Graph &graph, const Array<int> &mapping, const void *context);
       ObjList< Array<int> > _autoMaps;
+      ObjList< Array<int> > _scafAutoMaps;
    };
 
    void addCompleteRGroup(IndigoDecompositionMatch& emb_context, bool change_scaffold, Array<int>* rg_map);
@@ -162,7 +163,6 @@ public:
    void copy(IndigoDecompositionMatch& other);
    void removeRsitesFromMaps(Graph& query_graph);
    void copyScafAutoMaps(ObjList< Array<int> >& autoMaps);
-   void invertScafAutoMaps();
 
    Molecule mol_out;
    Molecule rgroup_mol;
