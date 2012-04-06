@@ -899,7 +899,7 @@ void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& deco_match
    /*
     * Search all automorphism matchings for scaffold and select the best one
     */
-   int best_idx = 0, min_rg_num = 1<<15, best_rg_score = 0;
+   int best_idx = 0, min_rg_num = 1<<15, best_rg_score = 1<<15;
    QS_DEF(Array<int>, rg_map_buf);
 
    if(deco_match.scafAutoMaps.size() == 0)
@@ -919,7 +919,7 @@ void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& deco_match
           * If new RGroup number is the same then minimize RGroup order
           */
          int score = _getRgScore(rg_map_buf);
-         if(score > best_rg_score) {
+         if(score < best_rg_score) {
             best_rg_score = score;
             best_idx = aut_idx;
          }
@@ -1130,12 +1130,20 @@ int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int 
 }
 
 int IndigoDeconvolution::_getRgScore(Array<int>& rg_map) const {
-   /*
-    * Summurize all products
-    */
    int result = 0;
    for (int i = 0; i < rg_map.size(); ++i) {
-      result += (i + 1) * rg_map[i];
+      result += rg_map[i];
+   }
+   /*
+    * Get strictly increasing seq
+    */
+   if(rg_map.size() > 1) {
+      int dif;
+      for (int i = 1; i < rg_map.size(); ++i) {
+         dif = rg_map[i] - rg_map[i-1];
+         if(dif < 0)
+            result += (100 * dif) * (-1);
+      }
    }
 
    return result;
