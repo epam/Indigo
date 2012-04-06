@@ -15,6 +15,7 @@ include_directories(../src ../src/core ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}
 
 add_library(bingo-core-c STATIC ${BingoCoreC_src} ${BingoCoreC_headers})
 add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers})
+target_link_libraries(bingo-core-c bingo-core)
 target_link_libraries(bingo-core-c-shared molecule reaction layout bingo-core)
 
 set_target_properties(bingo-core-c PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
@@ -25,7 +26,7 @@ set_target_properties(bingo-core-c-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FL
 SET_TARGET_PROPERTIES(bingo-core-c-shared PROPERTIES LINKER_LANGUAGE C)
 
 set_property(TARGET bingo-core-c PROPERTY OUTPUT_NAME "bingo-core-c-static")
-set_property(TARGET bingo-core-c-shared PROPERTY FOLDER "bingo-core-c")
+set_property(TARGET bingo-core-c-shared PROPERTY FOLDER "bingo-core-c-shared")
 set_property(TARGET bingo-core-c-shared PROPERTY OUTPUT_NAME "bingo-core-c")
 
 
