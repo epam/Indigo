@@ -47,7 +47,7 @@ elseif(UNIX)
 	set_target_properties(bingo-postgres-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -pthread")
 endif()
 
-target_link_libraries(bingo-postgres-shared bingo-core-c molecule reaction layout)
+target_link_libraries(bingo-postgres-shared bingo-core-c bingo-core molecule reaction layout)
 if (MSVC)
 	target_link_libraries(bingo-postgres-shared ${POSTGRES_LIBRARY})
 endif()
