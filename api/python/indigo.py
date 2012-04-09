@@ -248,6 +248,7 @@ class Indigo(object):
     
     self.extractCommonScaffold = self._static_obj_array_string(self._lib.indigoExtractCommonScaffold)
     self.decomposeMolecules = self._static_obj_obj_array(self._lib.indigoDecomposeMolecules)
+    self.createDecomposer = self._static_obj_obj(self._lib.indigoCreateDecomposer)
     self.reactionProductEnumerate = self._static_obj_obj_array(self._lib.indigoReactionProductEnumerate)
     self.transform = self._static_void_obj_obj(self._lib.indigoTransform)
     
@@ -464,9 +465,11 @@ class Indigo(object):
     self.IndigoObject.allScaffolds = Indigo._member_obj(Indigo._lib.indigoAllScaffolds);
     self.IndigoObject.decomposedMoleculeScaffold = Indigo._member_obj(Indigo._lib.indigoDecomposedMoleculeScaffold)
     self.IndigoObject.iterateDecomposedMolecules = Indigo._member_obj(Indigo._lib.indigoIterateDecomposedMolecules)
-    self.IndigoObject.iterateDecomposedMolecules = Indigo._member_obj(Indigo._lib.indigoIterateDecomposedMolecules)
     self.IndigoObject.decomposedMoleculeHighlighted = Indigo._member_obj(Indigo._lib.indigoDecomposedMoleculeHighlighted)
     self.IndigoObject.decomposedMoleculeWithRGroups = Indigo._member_obj(Indigo._lib.indigoDecomposedMoleculeWithRGroups)
+    self.IndigoObject.decomposeMolecule = Indigo._member_obj_obj(Indigo._lib.indigoDecomposeMolecule)
+    self.IndigoObject.iterateDecompositions = Indigo._member_obj(Indigo._lib.indigoIterateDecompositions)
+    self.IndigoObject.addDecomposition = Indigo._member_void_obj(Indigo._lib.indigoAddDecomposition)
     
     self.IndigoObject.index = Indigo._member_int(Indigo._lib.indigoIndex)
 
