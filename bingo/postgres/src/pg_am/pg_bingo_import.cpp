@@ -307,11 +307,14 @@ public:
       }
       query_string.printf(")");
       query_string.writeChar(0);
-      
+
+      int debug_idx = 0;
       /*
        * Loop through the data
        */
       while (hasNext()) {
+         ++debug_idx;
+         elog(DEBUG1, "bingo: %s: processing data entry with index %d", getFunctionName(), debug_idx);
          /*
           * Initialize the data
           */

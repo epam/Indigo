@@ -145,10 +145,12 @@ bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text)
     */
 
    indigo::AutoPtr<BingoPgFpData> data;
+   int block_number = ItemPointerGetBlockNumber((ItemPointer) item_ptr);
+   int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
+
+   elog(DEBUG1, "bingo: create index: processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);
 
    if (!fp_engine->processStructure(struct_text, data)) {
-      int block_number = ItemPointerGetBlockNumber((ItemPointer)item_ptr);
-      int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
       elog(WARNING, "can not insert a structure with tid = (%d, %d): %s", block_number, offset_number,  bingoGetWarning());
       return false;
    }
