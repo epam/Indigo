@@ -28,6 +28,13 @@ OptionManager::OptionManager ()
 
 void OptionManager::callOptionHandlerInt (const char* name, int value) {
    CHECK_OPT_DEFINED(name);
+
+   if (typeMap.at(name) == OPTION_BOOL && (value == 0 || value == 1))
+   {
+      hMapBool.at(name)(value);
+      return;
+   }
+
    CHECK_OPT_TYPE(name, OPTION_INT);
    hMapInt.at(name)(value);
 }
