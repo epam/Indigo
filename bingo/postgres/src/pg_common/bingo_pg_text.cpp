@@ -46,8 +46,14 @@ void BingoPgText::initFromArray(indigo::Array<char>& str) {
 }
 
 void BingoPgText::clear() {
-   if(_text != 0)
-      pfree(_text);
+   if(_text != 0) {
+      BINGO_PG_TRY {
+         pfree(_text);
+         /*
+          * Warning since can not throw an error from destructor
+          */
+      } BINGO_PG_HANDLE(elog(WARNING, "internal : can not free text from a buffer: %s", message));
+   }
    _text = 0;
    _cstr.clear();
 }
