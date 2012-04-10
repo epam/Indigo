@@ -1268,7 +1268,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoDecomposedMoleculeScaffold(self)));
    }
-
+   @Deprecated
    public IndigoObject iterateDecomposedMolecules ()
    {
       dispatcher.setSessionID();
@@ -1285,6 +1285,30 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoDecomposedMoleculeWithRGroups(self)));
+   }
+
+   public IndigoObject decomposeMolecule (IndigoObject mol)
+   {
+      dispatcher.setSessionID();
+      int res = Indigo.checkResult(this, _lib.indigoDecomposeMolecule(self, mol.self));
+      if (res == 0)
+         return null;
+      return new IndigoObject(dispatcher, this, res);
+   }
+
+   public IndigoObject iterateDecompositions ()
+   {
+      dispatcher.setSessionID();
+      int res = Indigo.checkResult(this, _lib.indigoIterateDecompositions(self));
+      if (res == 0)
+         return null;
+      return new IndigoObject(dispatcher, this, res);
+   }
+
+   public void addDecomposition (IndigoObject q_match)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoAddDecomposition(self, q_match.self));
    }
 
    public Iterator<IndigoObject> iterator ()

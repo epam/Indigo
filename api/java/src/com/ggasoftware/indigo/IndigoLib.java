@@ -360,6 +360,11 @@ public interface IndigoLib extends Library
    int indigoIterateDecomposedMolecules (int decomp);
    int indigoDecomposedMoleculeHighlighted (int decomp);
    int indigoDecomposedMoleculeWithRGroups (int decomp);
+   int indigoCreateDecomposer(int scaffold);
+   int indigoDecomposeMolecule(int decomp, int mol);
+   int indigoIterateDecompositions(int deco_item);
+   int indigoAddDecomposition(int decomp, int q_match);
+   
    Pointer indigoToString (int handle);
    int indigoToBuffer (int handle, PointerByReference buf, IntByReference size);
    int indigoReactionProductEnumerate (int reaction, int monomers);

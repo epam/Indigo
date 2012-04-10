@@ -414,6 +414,10 @@ public class Indigo
       return extractCommonScaffold(toIndigoArray(structures), options);
    }
 
+   /**
+    * Use createDecomposer() and decomposeMolecule()
+    */
+   @Deprecated
    public IndigoObject decomposeMolecules (IndigoObject scaffold, IndigoObject structures)
    {
       setSessionID();
@@ -426,11 +430,27 @@ public class Indigo
       return new IndigoObject(this, res);
    }
 
+   /**
+    * Use createDecomposer() and decomposeMolecule()
+    */
+   @Deprecated
    public IndigoObject decomposeMolecules (IndigoObject scaffold, Collection<IndigoObject> structures)
    {
       return decomposeMolecules(scaffold, toIndigoArray(structures));
    }
-   
+
+   public IndigoObject createDecomposer (IndigoObject scaffold)
+   {
+      setSessionID();
+      Object[] guard = new Object[]{this, scaffold};
+      int res = checkResult(guard, _lib.indigoCreateDecomposer(scaffold.self));
+
+      if (res == 0)
+         return null;
+
+      return new IndigoObject(this, res);
+   }
+
    public IndigoObject reactionProductEnumerate (IndigoObject reaction, IndigoObject monomers)
    {
       setSessionID();
