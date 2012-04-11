@@ -40,6 +40,11 @@ static void bingoIndexCallback(Relation index,
         bool tupleIsAlive,
         void *state);
 
+#include <signal.h>
+void error_handler(int i) {
+   elog(ERROR, "query was cancelled");
+}
+
 /*
  * Bingo build the index
  */
@@ -52,8 +57,8 @@ bingo_build(PG_FUNCTION_ARGS) {
    IndexBuildResult *result = 0;
    double reltuples = 0;
 
+   signal(SIGINT, &error_handler);
    elog(NOTICE, "start bingo build");
-
 
    /*
     * We expect to be called exactly once for any index relation. If that's

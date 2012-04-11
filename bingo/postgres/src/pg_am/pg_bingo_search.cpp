@@ -34,6 +34,12 @@ PGDLLEXPORT Datum bingo_rescan(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(bingo_endscan);
 PGDLLEXPORT Datum bingo_endscan(PG_FUNCTION_ARGS);
 }
+
+#include <signal.h>
+void error_handler(int i) {
+   elog(ERROR, "query was cancelled");
+}
+
 /*
  * Bingo searching initialization
  */
@@ -55,6 +61,8 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
    IndexScanDesc scan = RelationGetIndexScan(rel, keysz, norderbys);
 
    scan->opaque = 0;
+
+   signal(SIGINT, &error_handler);
    
    PG_BINGO_BEGIN
    {
