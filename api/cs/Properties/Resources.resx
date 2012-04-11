@@ -124,19 +124,14 @@
   <data name="Win/x86/indigo.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\Win\x86\indigo.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Win/x86/msvcr100.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Win\x86\msvcr100.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Win/x86/zlib.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Win\x86\zlib.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Win/x64/indigo.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\Win\x64\indigo.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Win/x64/msvcr100.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\Win\x64\msvcr100.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Win/x64/zlib.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Win\x64\zlib.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="Win/x86/msvcr100.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\Win\x86\msvcr100.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

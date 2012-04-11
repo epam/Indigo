@@ -94,14 +94,20 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resource\Win\x64\msvcr100.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resource\Win\x86\msvcr100.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>copy $(ProjectDir)..\dll\Win32\$(ConfigurationName)\indigo.dll $(ProjectDir)Resource\Win\x86
-copy $(ProjectDir)..\dll\x64\$(ConfigurationName)\indigo.dll $(ProjectDir)Resource\Win\x64
-copy $(ProjectDir)..\..\zlib-src\Win32\ReleaseDll\zlib.dll $(ProjectDir)Resource\Win\x86
-copy $(ProjectDir)..\..\zlib-src\x64\ReleaseDll\zlib.dll $(ProjectDir)Resource\Win\x64
-copy "$(DevEnvDir)..\..\VC\redist\x86\Microsoft.VC100.CRT\msvcr100.dll" $(ProjectDir)Resource\Win\x86
-copy "$(DevEnvDir)..\..\VC\redist\x64\Microsoft.VC100.CRT\msvcr100.dll" $(ProjectDir)Resource\Win\x64</PreBuildEvent>
+    <PreBuildEvent>
+	copy $(DllPath64)\indigo.dll $(ProjectDir)Resource\Win\x64
+	copy $(DllPath64)\msvcr100.dll $(ProjectDir)Resource\Win\x64
+	copy $(DllPath32)\indigo.dll $(ProjectDir)Resource\Win\x86
+	copy $(DllPath32)\msvcr100.dll $(ProjectDir)Resource\Win\x86
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

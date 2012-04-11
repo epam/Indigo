@@ -1,51 +1,14 @@
-import os
-import shutil
-from os.path import *
-import re
 from optparse import OptionParser
+import os
+from os.path import join, abspath, dirname
+import re
+import shutil
+import subprocess
 
-def outputName(outputBaseName):
-    #targetPlatform = args.suffix[1:]
-    #if targetPlatform == 'win':
-    suffix = '.dll'
-    prefix = ''
-    #elif targetPlatform == 'mac':
-    #    suffix = '.dylib'
-    #    prefix = 'lib'
-    #elif targetPlatform == 'linux':
-    #    suffix = '.so'
-    #    prefix = 'lib'
-    #else:
-    #    raise ValueError('Unsupported system: %s' % os.name)
-    return prefix + outputBaseName + suffix
-
-def buildInPath(path, outputBaseName, resourceList, reference=None):
-    os.chdir(path)
-    if os.path.exists('dist'):
-        shutil.rmtree('dist')
-    os.mkdir('dist')
-    execCommand = "csc /unsafe /target:library /optimize /out:%s/%s" % (join(dist_dir, 'cs'), outputName(outputBaseName))
-    if reference:
-        execCommand += ' /reference:%s' % reference
-    for resource in resourceList:
-        if resource != '':
-            execCommand += ' /resource:%s' % resource
-    execCommand += " *.cs"
-    print execCommand    
-    os.system(execCommand)
-        
 parser = OptionParser(description='Indigo C# libraries build script')
 parser.add_option('--suffix', '-s', help='archive suffix', default="")
 
 (args, left_args) = parser.parse_args()
-
-# find indigo version
-version = ""
-cur_dir = split(__file__)[0]
-for line in open(join(cur_dir, "indigo-version.cmake")):
-    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
-    if m:
-        version = m.group(1)
 
 api_dir = abspath(dirname(__file__))
 root = join(api_dir, "..")
@@ -53,33 +16,57 @@ dist_dir = join(root, "dist")
 if not os.path.exists(dist_dir):
     os.mkdir(dist_dir)
 
+version = ""
+cur_dir = os.path.abspath(os.curdir)
+for line in open(join(api_dir, "indigo-version.cmake")):
+    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
+    if m:
+        version = m.group(1)
+
 os.chdir(dist_dir)
 if os.path.exists("cs"):
     shutil.rmtree("cs")
 os.mkdir('cs')
 
-if os.path.exists(join(api_dir, "cs", "Resource")):
-    shutil.rmtree(join(api_dir, "cs", "Resource"), ignore_errors=True)
-if os.path.exists(join(api_dir, "renderer", "cs", "Resource")):
-    shutil.rmtree(join(api_dir, "renderer", "cs", "Resource"),  ignore_errors=True)
-        
-for file in os.listdir(join(api_dir, 'libs', 'shared')):
-    shutil.copytree(join(api_dir, 'libs', 'shared', file), join(api_dir, "cs", "Resource", file))
-    shutil.copytree(join(api_dir, 'libs', 'shared', file), join(api_dir, "renderer", "cs", "Resource", file))
-    
-buildInPath(os.path.join(api_dir, "cs"), 
-            'indigo-cs',
-            [join('Resource', 'Win', 'x64', 'indigo.dll')+','+join('Win', 'x64', 'indigo.dll'),
-             join('Resource', 'Win', 'x86', 'indigo.dll')+','+join('Win', 'x86', 'indigo.dll')])
-buildInPath(os.path.join(api_dir, "renderer", 'cs'), 
-            'indigo-renderer-cs',
-            [join('Resource', 'Win', 'x64', 'indigo-renderer.dll')+','+join('Win', 'x64', 'indigo-renderer.dll'),
-             join('Resource', 'Win', 'x86', 'indigo-renderer.dll')+','+join('Win', 'x86', 'indigo-renderer.dll')],       
-            os.path.join(dist_dir, "cs", outputName('indigo-cs')))
-# TODO: Add Indigo C# InChI plugin
+# Builld Indigo-cs
+indigoCsPath = join(api_dir, "cs")
+if os.path.exists(join(indigoCsPath, "Resource")):
+    shutil.rmtree(join(indigoCsPath, "Resource"))
+os.makedirs(join(indigoCsPath, "Resource", 'Win', 'x64'))
+os.makedirs(join(indigoCsPath, "Resource", 'Win', 'x86'))
+
+os.chdir(indigoCsPath)
+command = 'msbuild /t:Rebuild /p:Configuration=Release /property:DllPath32=%s /property:DllPath64=%s' % (join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
+subprocess.check_call(command)
+
+
+# Build IndigoRendere-cs
+indigoRendererCsPath = join(api_dir, "renderer", "cs")
+if os.path.exists(join(indigoRendererCsPath, "Resource")):
+    shutil.rmtree(join(indigoRendererCsPath, "Resource"))
+os.makedirs(join(indigoRendererCsPath, "Resource", 'Win', 'x64'))
+os.makedirs(join(indigoRendererCsPath, "Resource", 'Win', 'x86'))
+
+os.chdir(indigoRendererCsPath)
+command = 'msbuild /t:Rebuild /p:Configuration=Release /property:DllPath32=%s /property:DllPath64=%s' % (join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
+subprocess.check_call(command)
+
+# Build IndigoInchi-cs
+indigoInchiCsPath = join(api_dir, "plugins", "inchi", "cs")
+if os.path.exists(join(indigoInchiCsPath, "Resource")):
+    shutil.rmtree(join(indigoInchiCsPath, "Resource"))
+os.makedirs(join(indigoInchiCsPath, "Resource", 'Win', 'x64'))
+os.makedirs(join(indigoInchiCsPath, "Resource", 'Win', 'x86'))
+
+os.chdir(indigoInchiCsPath)
+command = 'msbuild /t:Rebuild /p:Configuration=Release /property:DllPath32=%s /property:DllPath64=%s' % (join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
+subprocess.check_call(command)
 
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "cs")
+shutil.copy(join(indigoCsPath, 'bin', 'Release', 'indigo-cs.dll'), "cs")
+shutil.copy(join(indigoRendererCsPath, 'bin', 'Release', 'indigo-renderer-cs.dll'), "cs")
+shutil.copy(join(indigoInchiCsPath, 'bin', 'Release', 'indigo-inchi-cs.dll'), "cs")
 
 archive_name = "indigo-cs-%s" % (version + args.suffix)
 os.rename("cs", archive_name)

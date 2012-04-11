@@ -49,6 +49,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cairo", "..\cairo-src\cairo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\tinyxml\tinyxml.vcxproj", "{BB3E941D-B8F0-4660-94CC-592F7C7856A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "indigo-inchi-cs", "plugins\inchi\cs\indigo-inchi-cs.csproj", "{A88F82B7-F522-4238-80D6-DE033CD7892E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -690,6 +692,44 @@ Global
 		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.ReleaseDotNet|Win32.ActiveCfg = ReleaseMT|x64
 		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.ReleaseDotNet|x64.ActiveCfg = ReleaseMT|x64
 		{BB3E941D-B8F0-4660-94CC-592F7C7856A2}.ReleaseDotNet|x64.Build.0 = ReleaseMT|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|Win32.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|x64.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|x64.Build.0 = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDLL|Any CPU.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDLL|Mixed Platforms.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDLL|Mixed Platforms.Build.0 = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDLL|Win32.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDLL|x64.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDLL|x64.Build.0 = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDotNet|Any CPU.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDotNet|Mixed Platforms.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDotNet|Mixed Platforms.Build.0 = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDotNet|Win32.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDotNet|x64.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.DebugDotNet|x64.Build.0 = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|Mixed Platforms.Build.0 = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|Win32.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|x64.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|x64.Build.0 = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDLL|Any CPU.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDLL|Mixed Platforms.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDLL|Mixed Platforms.Build.0 = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDLL|Win32.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDLL|x64.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDLL|x64.Build.0 = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDotNet|Any CPU.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDotNet|Mixed Platforms.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDotNet|Mixed Platforms.Build.0 = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDotNet|Win32.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDotNet|x64.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.ReleaseDotNet|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

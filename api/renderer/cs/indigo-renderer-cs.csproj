@@ -98,9 +98,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>copy $(ProjectDir)..\dll\Win32\$(ConfigurationName)\indigo-renderer.dll $(ProjectDir)Resource\Win\x86
-copy $(ProjectDir)..\dll\x64\$(ConfigurationName)\indigo-renderer.dll $(ProjectDir)Resource\Win\x64
-</PreBuildEvent>
+    <PreBuildEvent>
+	copy $(DllPath64)\indigo-renderer.dll $(ProjectDir)Resource\Win\x64
+	copy $(DllPath32)\indigo-renderer.dll $(ProjectDir)Resource\Win\x86
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
