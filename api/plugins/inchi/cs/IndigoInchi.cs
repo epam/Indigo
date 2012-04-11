@@ -18,48 +18,54 @@ namespace com.ggasoftware.indigo
             IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
             dll_loader.loadLibrary(dllpath, "indigo-inchi.dll",
                "com.ggasoftware.indigo.Properties.Resources", false);
-            _inchi_lib = dll_loader.getInterface<IndigoInchiLib>("indigo-renderer.dll");
+            _inchi_lib = dll_loader.getInterface<IndigoInchiLib>("indigo-inchi.dll");
 
             _indigo = indigo;
         }
 
-        public String indigoInchiVersion()
+        public String version()
         {
             _indigo.setSessionID();
             return new String(_inchi_lib.indigoInchiVersion());
         }
 
-        public int indigoInchiResetOptions()
+        public int resetOptions()
         {
             _indigo.setSessionID();
             return _inchi_lib.indigoInchiResetOptions();
         }
 
-        public String indigoInchiGetInchi(int molecule)
+        public IndigoObject loadMolecule(String inchi_string)
         {
-               _indigo.setSessionID();
-               return new String(_inchi_lib.indigoInchiGetInchi(molecule));
+            _indigo.setSessionID();
+            return new IndigoObject(_indigo, _inchi_lib.indigoInchiLoadMolecule(inchi_string));
         }
 
-        public String indigoInchiGetInchiKey(String inchi_string)
+        public String getInchi(IndigoObject molecule)
+        {
+               _indigo.setSessionID();
+               return new String(_inchi_lib.indigoInchiGetInchi(molecule.self));
+        }
+
+        public String getInchiKey(String inchi_string)
         {
             _indigo.setSessionID();
             return new String(_inchi_lib.indigoInchiGetInchiKey(inchi_string));
         }
 
-        public String indigoInchiGetWarning()
+        public String getWarning()
         {
             _indigo.setSessionID();
             return new String(_inchi_lib.indigoInchiGetWarning());
         }
 
-        public String indigoInchiGetLog()
+        public String getLog()
         {
             _indigo.setSessionID();
             return new String(_inchi_lib.indigoInchiGetLog());
         }
 
-        public String indigoInchiGetAuxInfo()
+        public String getAuxInfo()
         {
             _indigo.setSessionID();
             return new String(_inchi_lib.indigoInchiGetAuxInfo());
