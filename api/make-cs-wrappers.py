@@ -5,6 +5,14 @@ import re
 import shutil
 import subprocess
 
+if os.name == 'nt':
+    msbuildcommand = 'msbuild /t:Rebuild /p:Configuration=Release'
+else:
+    # Mono
+    msbuildcommand = 'xbuild /t:Rebuild /p:Configuration=Release'
+
+# TODO: Support Mono
+
 parser = OptionParser(description='Indigo C# libraries build script')
 parser.add_option('--suffix', '-s', help='archive suffix', default="")
 
@@ -36,7 +44,7 @@ os.makedirs(join(indigoCsPath, "Resource", 'Win', 'x64'))
 os.makedirs(join(indigoCsPath, "Resource", 'Win', 'x86'))
 
 os.chdir(indigoCsPath)
-command = 'msbuild /t:Rebuild /p:Configuration=Release /property:DllPath32=%s /property:DllPath64=%s' % (join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
+command = '%s /property:DllPath32=%s /property:DllPath64=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
 subprocess.check_call(command)
 
 
@@ -48,7 +56,7 @@ os.makedirs(join(indigoRendererCsPath, "Resource", 'Win', 'x64'))
 os.makedirs(join(indigoRendererCsPath, "Resource", 'Win', 'x86'))
 
 os.chdir(indigoRendererCsPath)
-command = 'msbuild /t:Rebuild /p:Configuration=Release /property:DllPath32=%s /property:DllPath64=%s' % (join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
+command = '%s /property:DllPath32=%s /property:DllPath64=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
 subprocess.check_call(command)
 
 # Build IndigoInchi-cs
@@ -59,7 +67,7 @@ os.makedirs(join(indigoInchiCsPath, "Resource", 'Win', 'x64'))
 os.makedirs(join(indigoInchiCsPath, "Resource", 'Win', 'x86'))
 
 os.chdir(indigoInchiCsPath)
-command = 'msbuild /t:Rebuild /p:Configuration=Release /property:DllPath32=%s /property:DllPath64=%s' % (join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
+command = '%s /property:DllPath32=%s /property:DllPath64=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
 subprocess.check_call(command)
 
 os.chdir(dist_dir)
