@@ -1302,6 +1302,29 @@ namespace com.ggasoftware.indigo
          return new IndigoObject(dispatcher, _indigo_lib.indigoDecomposedMoleculeWithRGroups(self));
       }
 
+      public IndigoObject decomposeMolecule(IndigoObject mol)
+      {
+          dispatcher.setSessionID();
+          int res =  _indigo_lib.indigoDecomposeMolecule(self, mol.self);
+          if (res == 0)
+              return null;
+          return new IndigoObject(dispatcher, this, res);
+      }
+
+      public System.Collections.IEnumerable iterateDecompositions()
+      {
+          dispatcher.setSessionID();
+          int res = _indigo_lib.indigoIterateDecompositions(self);
+          if (res == 0)
+              return null;
+          return new IndigoObject(dispatcher, this, res);
+      }
+
+      public void addDecomposition(IndigoObject q_match)
+      {
+          dispatcher.setSessionID();
+          _indigo_lib.indigoAddDecomposition(self, q_match.self);
+      }
       public IEnumerator GetEnumerator ()
       {
          while (true)

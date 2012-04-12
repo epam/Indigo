@@ -406,6 +406,12 @@ namespace com.ggasoftware.indigo
       {
          return decomposeMolecules(scaffold, toIndigoArray(structures));
       }
+      
+      public IndigoObject createDecomposer(IndigoObject scaffold)
+      {
+          setSessionID();
+          return new IndigoObject(this, _indigo_lib.indigoCreateDecomposer(scaffold.self));
+      }
 
       public IndigoObject reactionProductEnumerate (IndigoObject reaction, IndigoObject monomers)
       {

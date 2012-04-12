@@ -296,6 +296,10 @@ namespace com.ggasoftware.indigo
       int indigoDecomposedMoleculeHighlighted (int decomp);
       int indigoDecomposedMoleculeSubstituents (int decomp);
       int indigoDecomposedMoleculeWithRGroups (int decomp);
+      int indigoCreateDecomposer(int scaffold);
+      int indigoDecomposeMolecule(int decomp, int mol);
+      int indigoIterateDecompositions(int deco_item);
+      int indigoAddDecomposition(int decomp, int q_match);
 
       int indigoNext (int iter);
       int indigoHasNext (int iter);
