@@ -15,7 +15,6 @@ add_subdirectory(../indigo-inchi "${CMAKE_CURRENT_BINARY_DIR}/indigo-inchi")
 message(STATUS "**** Indigo-renderer ****")
 add_subdirectory(../indigo-renderer "${CMAKE_CURRENT_BINARY_DIR}/indigo-renderer")
 
-
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
 INCLUDE(InstallRequiredSystemLibraries)
 FOREACH(lib ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})

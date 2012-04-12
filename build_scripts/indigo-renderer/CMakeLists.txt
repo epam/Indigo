@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.8)
 
 project(IndigoRenderer C CXX)
 
+if (INDIGO_RENDERER_CONFIGURED)
+	return()
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
 
 INCLUDE(ConfigureCommon)
@@ -19,3 +23,4 @@ get_directory_property(Cairo_headers_dir DIRECTORY ../../cairo-src/cairo DEFINIT
 add_subdirectory(../../render2d "${CMAKE_CURRENT_BINARY_DIR}/render2d")
 add_subdirectory(../../api/renderer "${CMAKE_CURRENT_BINARY_DIR}/renderer")
 
+set(INDIGO_RENDERER_CONFIGURED TRUE PARENT_SCOPE)

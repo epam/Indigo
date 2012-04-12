@@ -21,3 +21,8 @@ add_subdirectory(../indigo-renderer "${CMAKE_CURRENT_BINARY_DIR}/indigo-renderer
 
 add_executable(indigo-depict ../../utils/indigo-depict/main.c)
 target_link_libraries(indigo-depict indigo indigo-renderer)
+pack_executable(indigo-depict)
+
+SET(INDIGO_VERSION "${INDIGO_VERSION}" PARENT_SCOPE)
+set(INDIGO_CONFIGURED TRUE PARENT_SCOPE)
+set(INDIGO_RENDERER_CONFIGURED TRUE PARENT_SCOPE)

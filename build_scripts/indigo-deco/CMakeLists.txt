@@ -20,3 +20,7 @@ add_subdirectory(../indigo "${CMAKE_CURRENT_BINARY_DIR}/indigo")
 
 add_executable(indigo-deco ../../utils/indigo-deco/main.c)
 target_link_libraries(indigo-deco indigo)
+pack_executable(indigo-deco)
+
+SET(INDIGO_VERSION "${INDIGO_VERSION}" PARENT_SCOPE)
+set(INDIGO_CONFIGURED TRUE PARENT_SCOPE)

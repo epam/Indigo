@@ -17,6 +17,12 @@ macro(PACK_SHARED proj)
 		COMPONENT shared)
 endmacro()
 
+macro(PACK_EXECUTABLE proj)
+	INSTALL(TARGETS ${proj}
+		DESTINATION .
+		COMPONENT shared)
+endmacro()
+
 macro(PACK_BINGO proj)
     INSTALL(TARGETS ${proj}
         DESTINATION "lib"
