@@ -61,9 +61,17 @@ void MangoShadowTable::addMolecule (OracleEnv &env, const char *rowid,
    {
       _main_table_statement.create(env);
       _main_table_statement_count = 0;
+      
+      /*
+      APPEND_VALUES hint causes Oracle internal error: 
+      OCI call error: ORA-00600: internal error code, arguments: 
+         [koklGetLocAndFlag1], [], [], [], [], [], [], [], [], [], [], []
+      But it should be faster. Replace 'flase' with append when Oracle bug is fixed.
+      The error appears on Oracle 11.2 Win 7 x64
+      */
       _main_table_statement->append("INSERT %s INTO %s VALUES ("
               ":rid, :blockno, :offset, :gross, :cmf, :xyz, :mass, :fragcount",
-              append ? "/*+ APPEND_VALUES */" : "",
+              false ? "/*+ APPEND_VALUES */" : "",
               _table_name.ptr());
 
       if (append)
