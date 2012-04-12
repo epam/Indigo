@@ -5,6 +5,7 @@ extern "C" {
 #include "access/relscan.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
+#include "miscadmin.h"
 }
 
 #ifdef qsort
@@ -35,10 +36,15 @@ PG_FUNCTION_INFO_V1(bingo_endscan);
 PGDLLEXPORT Datum bingo_endscan(PG_FUNCTION_ARGS);
 }
 
-#include <signal.h>
-void error_handler(int i) {
-   elog(ERROR, "query was cancelled");
-}
+//#include <signal.h>
+//__sighandler_t old_handler = 0;
+
+//static void error_handler(int i) {
+////   signal(SIGINT, old_handler);
+////   elog(WARNING, "aaa");
+////   elog(ERROR, "query was cancelled");
+////   throw CancelException();
+//}
 
 /*
  * Bingo searching initialization
@@ -56,13 +62,13 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
    elog(ERROR, "unsupported version %s", PG_VERSION)
 #endif
 
-   elog(NOTICE, "start bingo search");
+   elog(DEBUG1, "start bingo search");
 
    IndexScanDesc scan = RelationGetIndexScan(rel, keysz, norderbys);
 
    scan->opaque = 0;
 
-   signal(SIGINT, &error_handler);
+//   old_handler = signal(SIGINT, &error_handler);
    
    PG_BINGO_BEGIN
    {
@@ -84,6 +90,8 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
       
    }
    PG_BINGO_END;
+
+//   signal(SIGINT, old_handler);
 
    PG_RETURN_POINTER(scan);
 }
@@ -112,7 +120,7 @@ bingo_rescan(PG_FUNCTION_ARGS) {
 Datum
 bingo_endscan(PG_FUNCTION_ARGS) {
    IndexScanDesc scan = (IndexScanDesc) PG_GETARG_POINTER(0);
-   elog(NOTICE, "end scan");
+   elog(DEBUG1, "end scan");
    
    PG_BINGO_BEGIN
    {

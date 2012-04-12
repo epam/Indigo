@@ -74,7 +74,7 @@ private:
    
    PG_OBJECT _index;
    int _offset;
-   bool _writeStrategy;
+   int _idxStrategy;
 
    BingoSectionInfoData _sectionInfo;
    BingoPgBuffer _sectionInfoBuffer;

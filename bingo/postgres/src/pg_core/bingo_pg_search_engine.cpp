@@ -129,7 +129,7 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr) {
    BingoPgFpData& query_data = _queryFpData.ref();
    BingoPgIndex& bingo_index = *_bufferIndexPtr;
    /*
-    * If there are mathces found on the previous steps
+    * If there are matches found on the previous steps
     */
    if(_fetchFound) {
        if(_fetchForNext()) {

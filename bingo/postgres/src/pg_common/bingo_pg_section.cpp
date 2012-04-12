@@ -19,7 +19,7 @@ using namespace indigo;
 BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int offset):
 _index(bingo_idx.getIndexPtr()),
 _offset(offset),
-_writeStrategy(false){
+_idxStrategy(bingo_idx.getIndexStrategy()){
 
    /*
     * Clear section metainfo
@@ -29,12 +29,8 @@ _writeStrategy(false){
    /*
     * Prepare section strategy
     */
-   _writeStrategy = false;
-   if(bingo_idx.getIndexStrategy() == BingoPgIndex::BUILDING_STRATEGY)
-      _writeStrategy = true;
-   
-
-   if(_writeStrategy) {
+   bool write = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
+   if(write) {
       /*
        * If write then create new buffers
        */
@@ -45,7 +41,7 @@ _writeStrategy(false){
       /*
        * Initialize existing structures fingerprint
        */
-      _existStructures.reset(new BingoPgBufferCacheFp(offset + 1, _index, _writeStrategy));
+      _existStructures.reset(new BingoPgBufferCacheFp(offset + 1, _index, true));
 
       /*
        * Initialize bits number buffers
@@ -65,29 +61,29 @@ _writeStrategy(false){
       int data_len;
       BingoSectionInfoData* data = (BingoSectionInfoData*)_sectionInfoBuffer.getIndexData(data_len);
       _sectionInfo = *data;
+      _sectionInfoBuffer.changeAccess(BINGO_PG_NOLOCK);
       
-      _existStructures.reset(new BingoPgBufferCacheFp(offset + 1, _index, _writeStrategy));
+      _existStructures.reset(new BingoPgBufferCacheFp(offset + 1, _index, false));
    }
    
    int fp_count = _sectionInfo.n_blocks_for_fp;
    int map_count = _sectionInfo.n_blocks_for_map;
    int bin_count = _sectionInfo.n_blocks_for_bin;
-
    /*
     * Prepare for reading or writing all the data buffers
     */
    int block_offset = offset + SECTION_META_PAGES + SECTION_BITSNUMBER_PAGES;
    for (int i = 0; i < map_count; ++i) {
-      _buffersMap.add(new BingoPgBufferCacheMap(block_offset, _index, _writeStrategy));
+      _buffersMap.add(new BingoPgBufferCacheMap(block_offset, _index, write));
       ++block_offset;
    }
    for (int i = 0; i < fp_count; ++i) {
-      _buffersFp.add(new BingoPgBufferCacheFp(block_offset, _index, _writeStrategy));
+      _buffersFp.add(new BingoPgBufferCacheFp(block_offset, _index, write));
       ++block_offset;
    }
    
    for (int i = 0; i < bin_count; ++i) {
-      _buffersBin.add(new BingoPgBufferCacheBin(block_offset, _index, _writeStrategy));
+      _buffersBin.add(new BingoPgBufferCacheBin(block_offset, _index, write));
       ++block_offset;
    }
 
@@ -98,12 +94,12 @@ BingoPgSection::~BingoPgSection() {
     * Write meta info
     */
    _sectionInfo.n_blocks_for_bin = _buffersBin.size();
-   if(_writeStrategy) {
+   if(_idxStrategy == BingoPgIndex::BUILDING_STRATEGY) {
       _sectionInfo.section_size = getPagesCount();
       _sectionInfoBuffer.changeAccess(BINGO_PG_WRITE);
       _sectionInfoBuffer.formIndexTuple(&_sectionInfo, sizeof(_sectionInfo));
       _sectionInfoBuffer.changeAccess(BINGO_PG_NOLOCK);
-   } else {
+   } else if(_idxStrategy == BingoPgIndex::UPDATING_STRATEGY){
       _sectionInfoBuffer.changeAccess(BINGO_PG_WRITE);
       int data_len;
       BingoSectionInfoData* data = (BingoSectionInfoData*)_sectionInfoBuffer.getIndexData(data_len);

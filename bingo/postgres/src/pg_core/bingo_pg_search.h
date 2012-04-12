@@ -23,7 +23,6 @@ class BingoPgSearch {
 public:
    BingoPgSearch(PG_OBJECT rel);
    ~BingoPgSearch();
-
    /*
     * Searches for the next match. Return true if search was successfull
     * Sets up item pointer
