@@ -63,11 +63,15 @@ void BingoPgIndex::writeBegin(BingoPgBuildEngine& fp_engine, BingoPgConfig& bing
 }
 
 void BingoPgIndex::updateBegin() {
-   readBegin();
    _strategy = UPDATING_STRATEGY;
+   /*
+    * Read meta information
+    */
+   readMetaInfo();
    /*
     * Jump to the last section
     */
+   _currentSectionIdx = -1;
    _jumpToSection(_metaInfo.n_sections - 1);
 }
 
@@ -75,17 +79,15 @@ void BingoPgIndex::updateBegin() {
  * Begins to read sections
  */
 int BingoPgIndex::readBegin() {
+   _strategy = READING_STRATEGY;
    /*
     * Read meta information
     */
    readMetaInfo();
-
-   _strategy = READING_STRATEGY;
-
-   _currentSectionIdx = -1;
    /*
     * Jump to the first section
     */
+   _currentSectionIdx = -1;
    _jumpToSection(0);
 
    return _currentSectionIdx;
@@ -237,7 +239,7 @@ void BingoPgIndex::_initializeNewSection() {
    /*
     * Prepare a new section
     */
-   _currentSection.reset(new BingoPgSection(*this, section_offset));
+   _currentSection.reset(new BingoPgSection(*this, BUILDING_STRATEGY, section_offset));
    ++_metaInfo.n_sections;
 }
 
@@ -278,16 +280,17 @@ BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx) {
     */
    if (_currentSectionIdx == section_idx)
       return _currentSection.ref();
-   if (_strategy == READING_STRATEGY) {
-      if (section_idx >= getSectionNumber()) {
+   if (section_idx >= getSectionNumber()) {
+      if (_strategy == READING_STRATEGY) {
          throw Error("could not get the buffer: section %d is out of bounds %d", section_idx, getSectionNumber());
-      }
-   } else {
-      /*
-       * If strategy is writing or updating then append new sections
-       */
-      while (section_idx >= getSectionNumber()) {
-         _initializeNewSection();
+      } else {
+         /*
+          * If strategy is writing or updating then append new sections
+          */
+         while (section_idx >= getSectionNumber()) {
+            _initializeNewSection();
+         }
+         return _currentSection.ref();
       }
    }
 
@@ -297,7 +300,7 @@ BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx) {
    _currentSectionIdx = section_idx;
 
    int offset = _getSectionOffset(section_idx);
-   _currentSection.reset(new BingoPgSection(*this, offset));
+   _currentSection.reset(new BingoPgSection(*this, _strategy, offset));
 
    return _currentSection.ref();
 

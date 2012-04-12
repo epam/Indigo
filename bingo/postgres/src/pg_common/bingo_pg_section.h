@@ -32,7 +32,7 @@ public:
       SECTION_BITSNUMBER_PAGES = 16,
       SECTION_BITS_PER_BLOCK = 4000 /* 4000 * sizeof(unsigned short) < 8K*/
    };
-   BingoPgSection(BingoPgIndex& bingo_idx, int offset);
+   BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset);
    ~BingoPgSection();
 
    void clear();

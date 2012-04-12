@@ -16,10 +16,10 @@ extern "C" {
 
 using namespace indigo;
 
-BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int offset):
+BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset):
 _index(bingo_idx.getIndexPtr()),
 _offset(offset),
-_idxStrategy(bingo_idx.getIndexStrategy()){
+_idxStrategy(idx_strategy){
 
    /*
     * Clear section metainfo
