@@ -287,14 +287,15 @@ OracleEnv::OracleEnv (OCIExtProcContext *ctx, OracleLogger &logger) : _logger(lo
    _ctx = ctx;
 }
 
-OracleEnv::OracleEnv (const char* name, const char* password, const char* base, OracleLogger &logger) : _logger(logger)
+OracleEnv::OracleEnv (const char* name, const char* password, const char* base, OracleLogger &logger, bool object_mode) : _logger(logger)
 {     
    _envhp = 0;
    _svchp = 0;
    _errhp = 0;
    _ctx = 0;
    
-   callOCI(OCIEnvCreate( &_envhp, (ub4)OCI_DEFAULT, (dvoid *)0, 
+   ub4 mode = object_mode ? OCI_OBJECT : OCI_DEFAULT;
+   callOCI(OCIEnvCreate( &_envhp, mode, (dvoid *)0, 
                          0, 0, 0, (size_t)0, (dvoid **)0));
    dvoid *errhp = 0;
 

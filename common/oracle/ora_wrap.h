@@ -55,7 +55,7 @@ class OracleEnv
 {
 public:
    explicit OracleEnv (OCIExtProcContext *ctx, OracleLogger &logger);
-   explicit OracleEnv (const char *name, const char *password, const char *base, OracleLogger &logger);
+   explicit OracleEnv (const char *name, const char *password, const char *base, OracleLogger &logger, bool object_mode = false);
    virtual ~OracleEnv ();
 
    inline OCIEnv    * envhp () {return _envhp;}
