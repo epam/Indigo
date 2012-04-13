@@ -51,7 +51,8 @@ public:
    void loadMoleculeFromInchi (const char *inchi, Molecule &mol);
    void parseInchiOutput (const inchi_OutputStruct &inchi_output, Molecule &mol);
 
-   void generateInchiInput (Molecule &mol, inchi_Input &input, Array<inchi_Atom> &atoms);
+   void generateInchiInput (Molecule &mol, inchi_Input &input, 
+      Array<inchi_Atom> &atoms, Array<inchi_Stereo0D> &stereo);
    void saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi);
 
    static inchi_BondType getInchiBondType (int bond_order);
@@ -179,7 +180,8 @@ inchi_BondType IndigoInchi::getInchiBondType (int bond_order)
    throw IndigoError("Indigo-InChI: unexpected bond order %d", bond_order);
 }
 
-void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input, Array<inchi_Atom> &atoms)
+void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input, 
+   Array<inchi_Atom> &atoms, Array<inchi_Stereo0D> &stereo)
 {
    QS_DEF(Array<int>, mapping);
    mapping.clear_resize(mol.vertexEnd());
@@ -190,6 +192,7 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input, Array<i
    atoms.clear_resize(index);
    atoms.zerofill();
 
+   stereo.clear();
    for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
    {
       inchi_Atom &atom = atoms[mapping[v]];
@@ -205,7 +208,7 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input, Array<i
       atom.x = c.x;
       atom.y = c.y;
       atom.z = c.z;
-
+                              
       // connectivity
       const Vertex &vtx = mol.getVertex(v);
       int nei_idx = 0;
@@ -225,9 +228,39 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input, Array<i
       atom.charge = mol.getAtomCharge(v);
    }
   
+   // Process cis-trans bonds
+   for (int e = mol.edgeBegin(); e != mol.edgeEnd(); e = mol.edgeNext(e))
+   {
+      if (mol.cis_trans.getParity(e) == 0)
+         continue;
+
+      int subst[4];
+      mol.cis_trans.getSubstituents_All(e, subst);
+
+      const Edge &edge = mol.getEdge(e);
+
+      inchi_Stereo0D &st = stereo.push();
+
+      // Write it as
+      // #0 - #1 = #2 - #3
+      st.neighbor[0] = subst[0];
+      st.neighbor[1] = edge.beg;
+      st.neighbor[2] = edge.end;
+      st.neighbor[3] = subst[2];
+
+      if (mol.cis_trans.getParity(e) == MoleculeCisTrans::CIS)
+         st.parity = INCHI_PARITY_ODD;
+      else
+         st.parity = INCHI_PARITY_EVEN;
+
+      st.central_atom = NO_ATOM;
+      st.type = INCHI_StereoType_DoubleBond;
+   }
+
    input.atom = atoms.ptr();
    input.num_atoms = atoms.size();
-   input.stereo0D = 0;
+   input.stereo0D = stereo.ptr();
+   input.num_stereo0D = stereo.size();
    input.szOptions = options.ptr();
 }
  
@@ -235,7 +268,8 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
 {
    inchi_Input input;
    QS_DEF(Array<inchi_Atom>, atoms);
-   generateInchiInput(mol, input, atoms);
+   QS_DEF(Array<inchi_Stereo0D>, stereo);
+   generateInchiInput(mol, input, atoms, stereo);
 
    inchi_Output output;
    
