@@ -553,8 +553,8 @@ void ReactionAutomapper::_setupReactionMap(Array<int> &react_mapping, ObjArray< 
 }
 
 void ReactionAutomapper::_considerDissociation(){
-   Molecule null_map_cut;
-   Molecule full_map_cut;
+   AutoPtr<BaseMolecule> null_map_cut;
+   AutoPtr<BaseMolecule> full_map_cut;
    QS_DEF(Array<int>,map);
    int i, j, mcv, mcvsum;
 
@@ -569,29 +569,32 @@ void ReactionAutomapper::_considerDissociation(){
       }
       if(mcvsum < mcv || mcv <= _MIN_VERTEX_SUB)
          continue;
-      
-      full_map_cut.clone(_initReaction.getBaseMolecule(i), 0, 0);
-      MoleculeAromatizer::aromatizeBonds(full_map_cut);
+      BaseMolecule& ibase_mol = _initReaction.getBaseMolecule(i);
+      full_map_cut.reset(ibase_mol.neu());
+      full_map_cut->clone_KeepIndices(ibase_mol, 0);
+      full_map_cut->aromatize();
+
 
       for (j = 0; j < _initReaction.getAAMArray(i).size(); j++){
          if(_initReaction.getAAM(i, j) == 0)
-            full_map_cut.removeAtom(j);
+            full_map_cut->removeAtom(j);
       }
-      if(full_map_cut.vertexCount() == 0)
+      if(full_map_cut->vertexCount() == 0)
          continue;
       while(mcvsum >= mcv){
-         null_map_cut.clone(_initReaction.getBaseMolecule(i), 0, 0);
-         MoleculeAromatizer::aromatizeBonds(null_map_cut);
+         null_map_cut.reset(ibase_mol.neu());
+         null_map_cut->clone_KeepIndices(ibase_mol, 0);
+         null_map_cut->aromatize();
          for (j = 0; j < _initReaction.getAAMArray(i).size(); j++){
             if(_initReaction.getAAM(i, j) > 0 || _initReaction.getBaseMolecule(i).getAtomNumber(j) == ELEM_H)
-               null_map_cut.removeAtom(j);
+               null_map_cut->removeAtom(j);
          }
-         if(null_map_cut.vertexCount() == 0)
+         if(null_map_cut->vertexCount() == 0)
             break;
-         
-         RSubstructureMcs rsm(_initReaction, full_map_cut, null_map_cut, *this);
+
+         RSubstructureMcs rsm(_initReaction, full_map_cut.ref(), null_map_cut.ref(), *this);
          rsm.userdata = &rsm;
-         
+
          map.clear();
          if(!rsm.searchSubstructure(&map))
             break;
@@ -609,6 +612,7 @@ void ReactionAutomapper::_considerDissociation(){
    }
 
 }
+
 void ReactionAutomapper::_considerDimerization() {
    QS_DEF(ObjArray< Array<int> >, inv_mappings);
    QS_DEF(Array<int>, sub_map);
@@ -1636,16 +1640,23 @@ int RSubstructureMcs::_scoreSolution(BaseMolecule *sub_molecule, BaseMolecule *s
 
 void RSubstructureMcs::_createQueryTransposition() {
    QS_DEF(Array<int>, transposition);
-   
+
    MoleculeAtomNeighbourhoodCounters nei_counters;
-   nei_counters.calculate((Molecule&)*_sub);
-   nei_counters.makeTranspositionForSubstructure((Molecule&)*_sub, transposition);
+   if(_reaction.isQueryReaction()) {
+      nei_counters.calculate((QueryMolecule&)*_sub);
+      _transposedQuery.reset(new QueryMolecule());
+
+   } else {
+      nei_counters.calculate((Molecule&)*_sub);
+      _transposedQuery.reset(new Molecule());
+   }
+
+   nei_counters.makeTranspositionForSubstructure((BaseMolecule&)*_sub, transposition);
    /*
     * Create map
     */
-   _transposedQuery.reset(new Molecule());
-   _transposedQuery->makeSubmolecule((Molecule&)*_sub, transposition, &_transposition);
-   
+   _transposedQuery->makeSubmolecule((BaseMolecule&)*_sub, transposition, &_transposition);
+
    /*
     * Create inv map
     */
@@ -1667,22 +1678,24 @@ void RSubstructureMcs::_createQueryTransposition() {
       if(edge >= 0)
          _bondTransposition[edge] = e_idx;
    }
-   
+
    _sub = _transposedQuery.get();
 }
 
 void RSubstructureMcs::_detransposeOutputMap(Array<int>* map) const {
    if(map && _transposedQuery.get()) {
       QS_DEF(Array<int>, buf_map);
-      buf_map.resize(map->size());
-      buf_map.fffill();
       if(_invert) {
+         buf_map.resize(map->size());
+         buf_map.fffill();
          for (int i = 0; i < map->size(); ++i) {
             if(map->at(i) >= 0)
                buf_map[i] = _invTransposition[map->at(i)];
          }
          map->copy(buf_map);
       } else {
+         buf_map.resize(_transposition.size());
+         buf_map.fffill();
          for (int i = 0; i < map->size(); ++i) {
             if(_invTransposition[i] >= 0)
                buf_map[_invTransposition[i]] = map->at(i);
