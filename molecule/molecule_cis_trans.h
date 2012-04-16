@@ -58,6 +58,7 @@ public:
    void getSubstituents_All (int bond_idx, int subst[4]);
 
    void add (int bond_idx, int substituents[4], int parity);
+   bool registerBondAndSubstituents (int idx);
 
    int applyMapping (int idx, const int *mapping, bool sort) const;
    static int applyMapping (int parity, const int *substituents, const int *mapping, bool sort);

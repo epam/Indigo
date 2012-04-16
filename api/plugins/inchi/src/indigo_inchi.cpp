@@ -162,6 +162,52 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
          }
       }
    }
+
+   // Process stereoconfiguration
+   for (int i = 0; i < inchi_output.num_stereo0D; i++)
+   {
+      inchi_Stereo0D &stereo0D = inchi_output.stereo0D[i];
+      if (stereo0D.type == INCHI_StereoType_DoubleBond)
+      {
+         int bond = mol.findEdgeIndex(stereo0D.neighbor[1], stereo0D.neighbor[2]);
+
+         bool valid = mol.cis_trans.registerBondAndSubstituents(bond);
+         if (!valid)
+            throw IndigoError("Indigo-InChI: Unsupported cis-trans configuration for "
+               "bond %d (atoms %d-%d-%d-%d)", bond, stereo0D.neighbor[0], stereo0D.neighbor[1], 
+               stereo0D.neighbor[2], stereo0D.neighbor[3]);
+
+         int vb, ve;
+         const Edge &edge = mol.getEdge(bond);
+         if (edge.beg == stereo0D.neighbor[1])
+         {
+            vb = stereo0D.neighbor[0];
+            ve = stereo0D.neighbor[3];
+         }
+         else if (edge.beg == stereo0D.neighbor[2])
+         {
+            vb = stereo0D.neighbor[3];
+            ve = stereo0D.neighbor[0];
+         }
+         else
+            throw IndigoError("Indigo-InChI: Internal error: cannot find cis-trans bond indices");
+
+         const int *subst = mol.cis_trans.getSubstituents(bond);
+         bool same_side;
+         if (subst[0] == vb)
+            same_side = (subst[2] == ve);
+         else if (subst[1] == vb)
+            same_side = (subst[3] == ve);
+         else
+            throw IndigoError("Indigo-InChI: Internal error: cannot find cis-trans bond indices (#2)");
+
+         if (stereo0D.parity == INCHI_PARITY_EVEN)
+            same_side = !same_side;
+
+         mol.cis_trans.setParity(bond, same_side ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
+      }
+   }
+
 }
 
 inchi_BondType IndigoInchi::getInchiBondType (int bond_order)

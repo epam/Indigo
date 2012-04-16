@@ -368,6 +368,21 @@ void MoleculeCisTrans::registerBond (int idx)
    _bonds[idx].clear();
 }
 
+bool MoleculeCisTrans::registerBondAndSubstituents (int idx)
+{
+   BaseMolecule &mol = _getMolecule();
+
+   registerBond(idx);
+
+   if (!isGeomStereoBond(mol, idx, _bonds[idx].substituents, false))
+      return false;
+
+   if (!sortSubstituents(mol, _bonds[idx].substituents, 0))
+      return false;
+
+   return true;
+}
+
 void MoleculeCisTrans::build (int *exclude_bonds)
 {
    BaseMolecule &mol = _getMolecule();
@@ -422,16 +437,10 @@ void MoleculeCisTrans::buildFromSmiles (int *dirs)
 
    for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {
-      _bonds[i].parity = 0;
+      bool valid = registerBondAndSubstituents(i);
 
       int beg = mol.getEdge(i).beg;
       int end = mol.getEdge(i).end;
-
-      if (!isGeomStereoBond(mol, i, _bonds[i].substituents, false))
-         continue;
-
-      if (!sortSubstituents(mol, _bonds[i].substituents, 0))
-         continue;
 
       int substituents[4];
       getSubstituents_All(i, substituents);
