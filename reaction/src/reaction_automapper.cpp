@@ -48,7 +48,7 @@ void ReactionAutomapper::automap(int mode) {
     */
    CancellationHandler* prev_handler = 0;
    if(cancellation) {
-      prev_handler = setCancellationHandler(cancellation);
+      prev_handler = setCancellationHandler(0);
    }
    /*
     * Check input atom mapping (if any)
@@ -1405,11 +1405,13 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
 
    int proc = 1;
    if (_context.cancellation) {
+      setCancellationHandler(_context.cancellation);
       try {
          proc = emb_enum.process();
       } catch (Exception& e) {
          proc = 1;
       }
+      setCancellationHandler(0);
    } else {
       proc = emb_enum.process();
    }
