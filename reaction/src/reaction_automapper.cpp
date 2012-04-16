@@ -43,7 +43,13 @@ void ReactionAutomapper::automap(int mode) {
 
    QS_DEF(ObjArray< Array<int> >, mol_mappings);
    QS_DEF(Array<int>, react_mapping);
-
+   /*
+    * Set cancellation handler
+    */
+   CancellationHandler* prev_handler = 0;
+   if(cancellation) {
+      prev_handler = setCancellationHandler(cancellation);
+   }
    /*
     * Check input atom mapping (if any)
     */
@@ -68,6 +74,12 @@ void ReactionAutomapper::automap(int mode) {
     * Check output atom mapping
     */
    _checkAtomMapping(false, true, false);
+   /*
+    * Set cancellation handler back
+    */
+   if(prev_handler) {
+      setCancellationHandler(prev_handler);
+   }
    
 }
 
@@ -971,6 +983,7 @@ int ReactionMapMatchingData::_getEdgeId(int mol_idx, int edge) const {
 
 RSubstructureMcs::RSubstructureMcs(BaseReaction& reaction, const ReactionAutomapper& context):
 flags(CONDITION_ALL),
+_context(context),
 _reaction(reaction),
 _subReactNumber(-1),
 _superProductNumber(-1) {
@@ -979,6 +992,7 @@ _superProductNumber(-1) {
 
 RSubstructureMcs::RSubstructureMcs(BaseReaction &reaction,  int sub_num, int super_num, const  ReactionAutomapper& context):
 flags(CONDITION_ALL),
+_context(context),
 _reaction(reaction), 
 _subReactNumber(sub_num), 
 _superProductNumber(super_num) {
@@ -989,6 +1003,7 @@ _superProductNumber(super_num) {
 
 RSubstructureMcs::RSubstructureMcs(BaseReaction &reaction, BaseMolecule& sub, BaseMolecule& super, const  ReactionAutomapper& context):
 flags(CONDITION_ALL),
+_context(context),
 _reaction(reaction),
 _subReactNumber(-1),
 _superProductNumber(-1){
@@ -1388,7 +1403,16 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
    if(result == -1)
       return result;
 
-   int proc = emb_enum.process();
+   int proc = 1;
+   if (_context.cancellation) {
+      try {
+         proc = emb_enum.process();
+      } catch (Exception& e) {
+         proc = 1;
+      }
+   } else {
+      proc = emb_enum.process();
+   }
 
    if(proc == 1)
       return -1;

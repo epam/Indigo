@@ -201,7 +201,8 @@ private:
    void _detransposeOutputMap(Array<int>* map) const;
    void _transposeInputMap(const Array<int>* map, Array<int>& input_map) const;
    inline int _getTransposedBondIndex(BaseMolecule& mol, int bond) const;
-   
+
+   const ReactionAutomapper& _context;
    BaseReaction& _reaction;
    int _subReactNumber;
    int _superProductNumber;
