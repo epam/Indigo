@@ -774,6 +774,7 @@ void MoleculeRenderInternal::_prepareSGroups()
                         bid = mol.addBond(said, naid, mol.getBondOrder(nbid));
                         mol.setEdgeTopology(bid, mol.getBondTopology(nbid));
                      }
+                     _bondMappingInv.remove(bid);
                      _bondMappingInv.insert(bid, _bondMappingInv.at(nbid));
                   }
                }
