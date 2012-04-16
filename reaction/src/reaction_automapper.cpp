@@ -1027,7 +1027,19 @@ void RSubstructureMcs::setUpFlags(const ReactionAutomapper& context) {
       flags |= CONDITION_ATOM_VALENCE;
 }
 bool RSubstructureMcs::searchSubstructure(Array<int>* map) {
-   bool result = SubstructureMcs::searchSubstructure(map);
+   bool result = false;
+
+   if (_context.cancellation) {
+      setCancellationHandler(_context.cancellation);
+      try {
+         result = SubstructureMcs::searchSubstructure(map);
+      } catch (Exception& e) {
+         result = false;
+      }
+      setCancellationHandler(0);
+   } else {
+      result = SubstructureMcs::searchSubstructure(map);
+   }
    /*
     * Transpose map back
     */
