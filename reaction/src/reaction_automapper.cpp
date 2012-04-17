@@ -58,14 +58,16 @@ void ReactionAutomapper::automap(int mode) {
    /*
     * Clone reaction
     */
-   _reactionCopy.reset(_initReaction.neu());
-   BaseReaction& reaction = _reactionCopy.ref();
-   
-   reaction.clone(_initReaction, &react_mapping, 0, &mol_mappings);
-   reaction.aromatize();
+   _createReactionCopy(react_mapping, mol_mappings);
+//   _reactionCopy.reset(_initReaction.neu());
+//   BaseReaction& reaction = _reactionCopy.ref();
+//
+//   reaction.clone(_initReaction, &react_mapping, 0, &mol_mappings);
+//   reaction.aromatize();
 
    _createReactionMap();
-   _setupReactionMap(react_mapping, mol_mappings);
+   _setupReactionInvMap(react_mapping, mol_mappings);
+//   _setupReactionMap(react_mapping, mol_mappings);
 
    _considerDissociation();
    _considerDimerization();
@@ -81,6 +83,111 @@ void ReactionAutomapper::automap(int mode) {
       setCancellationHandler(prev_handler);
    }
    
+}
+
+void ReactionAutomapper::_createReactionCopy(Array<int>& mol_mapping, ObjArray< Array<int> >& mappings) {
+   _reactionCopy.reset(_initReaction.neu());
+   
+   mol_mapping.clear();
+   mappings.clear();
+   int mol_idx = _initReaction.reactantBegin();
+   for (; mol_idx != _initReaction.reactantEnd(); mol_idx = _initReaction.reactantNext(mol_idx)) {
+      _createMoleculeCopy(mol_idx, true, mol_mapping, mappings);
+   }
+   mol_idx = _initReaction.productBegin();
+   for (; mol_idx != _initReaction.productEnd(); mol_idx = _initReaction.productNext(mol_idx)) {
+      _createMoleculeCopy(mol_idx, false, mol_mapping, mappings);
+   }
+   _reactionCopy->aromatize();
+}
+
+void ReactionAutomapper::_createMoleculeCopy(int mol_idx, bool reactant, Array<int> &mol_mapping, ObjArray< Array<int> >& mappings) {
+   QS_DEF(Array<int>, vertices_map);
+   QS_DEF(Array<int>, vertices_to_clone);
+   int  cmol_idx, ncomp, edge_beg, edge_end, edge_idx;
+   BaseReaction& reaction = _reactionCopy.ref();
+   BaseMolecule& mol = _initReaction.getBaseMolecule(mol_idx);
+   /*
+    * Calculate components
+    */
+   ncomp = mol.countComponents();
+   const Array<int> &decomposition = mol.getDecomposition();
+   /*
+    * Add each component as a separate molecule
+    */
+   for (int comp_idx = 0; comp_idx < ncomp; ++comp_idx) {
+      vertices_to_clone.clear();
+      for (int j = mol.vertexBegin(); j < mol.vertexEnd(); j = mol.vertexNext(j)) {
+         if (decomposition[j] == comp_idx)
+            vertices_to_clone.push(j);
+      }
+      if(reactant)
+         cmol_idx = reaction.addReactant();
+      else
+         cmol_idx = reaction.addProduct();
+
+      while (cmol_idx >= mol_mapping.size()) 
+         mol_mapping.push(-1);
+      while (cmol_idx >= mappings.size())
+         mappings.push();
+
+      mol_mapping[cmol_idx] = mol_idx;
+      BaseMolecule& cmol = reaction.getBaseMolecule(cmol_idx);
+      /*
+       * Create component clone
+       */
+      cmol.makeSubmolecule(mol, vertices_to_clone, &vertices_map, 0);
+      Array<int>& vertices_inv_map = mappings[cmol_idx];
+      vertices_inv_map.resize(cmol.vertexEnd());
+      _makeInvertMap(vertices_map, vertices_inv_map);
+      /*
+       * Fulfil AAM information
+       */
+      Array<int>& aam_array = reaction.getAAMArray(cmol_idx);
+      aam_array.resize(cmol.vertexEnd());
+      aam_array.zerofill();
+      for (int i = cmol.vertexBegin(); i != cmol.vertexEnd(); i = cmol.vertexNext(i)) {
+         if(vertices_inv_map[i] < 0)
+            throw Error("internal error: invalid clone for disconnected component");
+         aam_array[i] = _initReaction.getAAM(mol_idx, vertices_inv_map[i]);
+      }
+      /*
+       * Fulfil inversion information
+       */
+      Array<int>& inv_array = reaction.getInversionArray(cmol_idx);
+      inv_array.resize(cmol.vertexEnd());
+      inv_array.zerofill();
+      for (int i = cmol.vertexBegin(); i != cmol.vertexEnd(); i = cmol.vertexNext(i)) {
+         if(vertices_inv_map[i] < 0)
+            throw Error("internal error: invalid clone for disconnected component");
+         inv_array[i] = _initReaction.getInversion(mol_idx, vertices_inv_map[i]);
+      }
+      /*
+       * Fulfil Reacting centers information
+       */
+      Array<int>& rc_array = reaction.getReactingCenterArray(cmol_idx);
+      rc_array.resize(cmol.edgeEnd());
+      rc_array.zerofill();
+      for (int i = cmol.edgeBegin(); i != cmol.edgeEnd(); i = cmol.edgeNext(i)) {
+         edge_beg = vertices_inv_map[cmol.getEdge(i).beg];
+         edge_end = vertices_inv_map[cmol.getEdge(i).end];
+         if(edge_beg < 0 || edge_end < 0)
+            throw Error("internal error: invalid clone for disconnected component");
+         edge_idx = mol.findEdgeIndex(edge_beg, edge_end);
+         if(edge_idx < 0)
+            throw Error("internal error: invalid clone for disconnected component");
+         rc_array[i] = _initReaction.getReactingCenter(mol_idx, edge_idx);
+      }
+   }
+}
+
+void ReactionAutomapper::_makeInvertMap(Array<int>& map,Array<int>& invmap){
+   invmap.fffill();
+   for(int i = 0; i < map.size(); i++){
+      if(map[i] != -1){
+         invmap[map[i]] = i;
+      }
+   }
 }
 
 void ReactionAutomapper::_initMappings(BaseReaction& reaction){
@@ -559,6 +666,57 @@ void ReactionAutomapper::_setupReactionMap(Array<int> &react_mapping, ObjArray< 
             react_aam[j] = v*_usedVertices[v];
          if(_mode == AAM_REGEN_KEEP && _initReaction.getAAM(mol_idx, j) == 0)
             react_aam[j] = v*_usedVertices[v];
+      }
+   }
+}
+void ReactionAutomapper::_setupReactionInvMap(Array<int> &react_mapping, ObjArray< Array<int> >& mol_mappings){
+   int mol_idx, mol_idx_map, j, v, map_j;
+   if(_mode == AAM_REGEN_KEEP)
+      _usedVertices.zerofill();
+
+   BaseReaction& reaction_copy = _reactionCopy.ref();
+   
+   mol_idx = reaction_copy.productBegin();
+   for (; mol_idx < reaction_copy.productEnd(); mol_idx = reaction_copy.productNext(mol_idx)){
+      mol_idx_map = react_mapping[mol_idx];
+      Array<int>& react_aam = _initReaction.getAAMArray(mol_idx_map);
+      Array<int>& creact_aam = reaction_copy.getAAMArray(mol_idx);
+      for (j = 0; j < creact_aam.size(); j++) {
+         map_j = mol_mappings[mol_idx][j];
+         if(map_j < 0)
+            continue;
+         v = creact_aam[j];
+         if(_mode == AAM_REGEN_DISCARD)
+            react_aam[map_j] = v;
+
+         if(_mode == AAM_REGEN_ALTER)
+            react_aam[map_j] = v;
+
+         if(_mode == AAM_REGEN_KEEP && _initReaction.getAAM(mol_idx_map, map_j) == 0){
+            react_aam[map_j] = v;
+            _usedVertices[v] = 1;
+         }
+      }
+   }
+   mol_idx = reaction_copy.reactantBegin();
+   for (; mol_idx < reaction_copy.reactantEnd(); mol_idx = reaction_copy.reactantNext(mol_idx)){
+      mol_idx_map = react_mapping[mol_idx];
+      Array<int>& react_aam = _initReaction.getAAMArray(mol_idx_map);
+      Array<int>& creact_aam = reaction_copy.getAAMArray(mol_idx);
+      for (j = 0; j < creact_aam.size(); j++) {
+         map_j = mol_mappings[mol_idx][j];
+         if(map_j < 0)
+            continue;
+         v = creact_aam[j];
+         
+         if(_mode == AAM_REGEN_DISCARD)
+            react_aam[map_j] = v*_usedVertices[v];
+
+         if(_mode == AAM_REGEN_ALTER)
+            react_aam[map_j] = v*_usedVertices[v];
+
+         if(_mode == AAM_REGEN_KEEP && _initReaction.getAAM(mol_idx_map, map_j) == 0)
+            react_aam[map_j] = v*_usedVertices[v];
       }
    }
 }

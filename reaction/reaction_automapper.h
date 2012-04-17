@@ -100,6 +100,9 @@ private:
     enum {
       _MIN_VERTEX_SUB = 3
     };
+   void _createReactionCopy(Array<int> &mol_mapping, ObjArray< Array<int> >& mappings);
+   void _createMoleculeCopy(int mol_idx, bool reactant, Array<int> &mol_mapping, ObjArray< Array<int> >& mappings);
+   void _makeInvertMap(Array<int>& map,Array<int>& invmap);
    //sets up input mapping
    void _initMappings(BaseReaction& reaction);
    //searches AAM using mcs and substructure functions
@@ -114,6 +117,7 @@ private:
 
    //arranges all maps to AAM
    void _setupReactionMap(Array<int> &mol_mapping, ObjArray< Array<int> >& mappings);
+   void _setupReactionInvMap(Array<int> &mol_mapping, ObjArray< Array<int> >& mappings);
    //takes account of possibility for molecule dissociation 
    void _considerDissociation();
 
