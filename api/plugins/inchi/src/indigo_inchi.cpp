@@ -179,6 +179,9 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
       inchi_Stereo0D &stereo0D = inchi_output.stereo0D[i];
       if (stereo0D.type == INCHI_StereoType_DoubleBond)
       {
+         if (stereo0D.parity != INCHI_PARITY_ODD && stereo0D.parity != INCHI_PARITY_EVEN)
+            continue;
+
          int bond = mol.findEdgeIndex(stereo0D.neighbor[1], stereo0D.neighbor[2]);
 
          bool valid = mol.cis_trans.registerBondAndSubstituents(bond);
