@@ -289,10 +289,10 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input,
 
       // Write it as
       // #0 - #1 = #2 - #3
-      st.neighbor[0] = subst[0];
-      st.neighbor[1] = edge.beg;
-      st.neighbor[2] = edge.end;
-      st.neighbor[3] = subst[2];
+      st.neighbor[0] = mapping[subst[0]];
+      st.neighbor[1] = mapping[edge.beg];
+      st.neighbor[2] = mapping[edge.end];
+      st.neighbor[3] = mapping[subst[2]];
 
       if (mol.cis_trans.getParity(e) == MoleculeCisTrans::CIS)
          st.parity = INCHI_PARITY_ODD;
@@ -301,6 +301,59 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input,
 
       st.central_atom = NO_ATOM;
       st.type = INCHI_StereoType_DoubleBond;
+   }
+
+   // Process tetrahedral stereocenters
+   for (int i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
+   {
+      int v = mol.stereocenters.getAtomIndex(i);
+
+      int type, group, pyramid[4];
+      mol.stereocenters.get(v, type, group, pyramid);
+      for (int i = 0; i < 4; i++)
+         if (pyramid[i] != -1)
+            pyramid[i] = mapping[pyramid[i]];
+
+      inchi_Stereo0D &st = stereo.push();
+
+      /*
+         4 neighbors
+
+                  X                    neighbor[4] : {#W, #X, #Y, #Z}
+                  |                    central_atom: #A
+               W--A--Y                 type        : INCHI_StereoType_Tetrahedral
+                  |
+                  Z
+         parity: if (X,Y,Z) are clockwize when seen from W then parity is 'e' otherwise 'o'
+         Example (see AXYZW above): if W is above the plane XYZ then parity = 'e'
+
+         3 neighbors
+
+                    Y          Y       neighbor[4] : {#A, #X, #Y, #Z}
+                   /          /        central_atom: #A
+               X--A  (e.g. O=S   )     type        : INCHI_StereoType_Tetrahedral
+                   \          \
+                    Z          Z
+      */
+      int offset = 0;
+      if (pyramid[3] == -1)
+         offset = 1;
+
+      st.neighbor[offset] = mapping[pyramid[0]];
+      st.neighbor[offset + 1] = mapping[pyramid[1]];
+      st.neighbor[offset + 2] = mapping[pyramid[2]];
+      if (offset == 0)
+         st.neighbor[3] = mapping[pyramid[3]];
+      else
+         st.neighbor[0] = mapping[v];
+
+      st.parity = INCHI_PARITY_ODD;
+      if (offset != 0)
+         st.parity = INCHI_PARITY_ODD;
+      else
+         st.parity = INCHI_PARITY_EVEN;
+      st.central_atom = mapping[v];
+      st.type = INCHI_StereoType_Tetrahedral;
    }
 
    input.atom = atoms.ptr();
