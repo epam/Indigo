@@ -24,6 +24,8 @@
 #include "inchi_api.h"
 #include "mode.h"
 
+#include <algorithm>
+
 using namespace indigo;
 
 CEXPORT const char* indigoInchiVersion ()
@@ -205,6 +207,30 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
             same_side = !same_side;
 
          mol.cis_trans.setParity(bond, same_side ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
+      }
+      else if (stereo0D.type == INCHI_StereoType_Tetrahedral)
+      {
+         if (stereo0D.parity != INCHI_PARITY_ODD && stereo0D.parity != INCHI_PARITY_EVEN)
+            continue;
+         int pyramid[4];
+         if (stereo0D.central_atom == stereo0D.neighbor[0])
+         {
+            pyramid[1] = stereo0D.neighbor[1];
+            pyramid[0] = stereo0D.neighbor[2];
+            pyramid[2] = stereo0D.neighbor[3];
+            pyramid[3] = -1;
+         }
+         else
+         {
+            pyramid[0] = stereo0D.neighbor[0];
+            pyramid[1] = stereo0D.neighbor[1];
+            pyramid[2] = stereo0D.neighbor[2];
+            pyramid[3] = stereo0D.neighbor[3];
+         }
+         if (stereo0D.parity == INCHI_PARITY_ODD)
+            std::swap(pyramid[0], pyramid[1]);
+
+         mol.stereocenters.add(stereo0D.central_atom, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
       }
    }
 
