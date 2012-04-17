@@ -261,7 +261,6 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
 
       if(!map_exc) 
          rsub_map_in.clear();
-
       RSubstructureMcs react_sub_mcs(reaction, react, product, *this);
       bool find_sub = react_sub_mcs.searchSubstructureReact(_reaction.getBaseMolecule(react), &rsub_map_in, &rsub_map_out);
             
@@ -1075,6 +1074,9 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
    if(_super->vertexCount() < 2 || _sub->vertexCount() < 2)
       return false;
 
+   if (_context.cancellation) 
+      setCancellationHandler(_context.cancellation);
+      
    for(int i = 0; i < 4; ++i) {
       EmbeddingEnumerator& emb_enum = emb_enums.push(*_super);
       emb_enum.setSubgraph(*_sub);
@@ -1087,8 +1089,9 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
          emb_enum.cb_match_edge = bondConditionReactStrict;
       tmp_maps.push().clear();
       results[i] = -1;
-   }  
-
+   }
+   if (_context.cancellation)
+      setCancellationHandler(0);
 
    Array<int>* in_map_c = 0;
    
@@ -1417,13 +1420,11 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
 
    int proc = 1;
    if (_context.cancellation) {
-      setCancellationHandler(_context.cancellation);
       try {
          proc = emb_enum.process();
       } catch (Exception& e) {
          proc = 1;
       }
-      setCancellationHandler(0);
    } else {
       proc = emb_enum.process();
    }
