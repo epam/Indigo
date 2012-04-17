@@ -118,12 +118,6 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
       const inchi_Atom &inchi_atom = inchi_output.atom[i];
 
       int idx = mol.addAtom(Element::fromString(inchi_atom.elname));
-      mol.setAtomCharge(idx, inchi_atom.charge);
-      if (inchi_atom.isotopic_mass)
-         mol.setAtomIsotope(idx, inchi_atom.isotopic_mass);
-      if (inchi_atom.radical)
-         mol.setAtomRadical(idx, inchi_atom.radical);
-      mol.setImplicitH(idx, inchi_atom.num_iso_H[0]);
       atom_indices.push(idx);
    }
 
@@ -163,6 +157,20 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
             mol.addBond(root_atom, h, BOND_SINGLE);
          }
       }
+   }
+
+   // Set atom charges, radicals and etc.
+   for (int i = 0; i < inchi_output.num_atoms; i++)
+   {
+      const inchi_Atom &inchi_atom = inchi_output.atom[i];
+
+      int idx = atom_indices[i];
+      mol.setAtomCharge(idx, inchi_atom.charge);
+      if (inchi_atom.isotopic_mass)
+         mol.setAtomIsotope(idx, inchi_atom.isotopic_mass);
+      if (inchi_atom.radical)
+         mol.setAtomRadical(idx, inchi_atom.radical);
+      mol.setImplicitH(idx, inchi_atom.num_iso_H[0]);
    }
 
    // Process stereoconfiguration
@@ -212,6 +220,7 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
       {
          if (stereo0D.parity != INCHI_PARITY_ODD && stereo0D.parity != INCHI_PARITY_EVEN)
             continue;
+
          int pyramid[4];
          if (stereo0D.central_atom == stereo0D.neighbor[0])
          {
