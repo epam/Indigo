@@ -121,6 +121,7 @@ private:
    void _considerDimerization();
    
    int _validMapFound(BaseReaction& reaction, int react, int prod, Array<int>& sub_map) const;
+   void _removeUnusedInfo(BaseReaction& reaction, int mol_idx, bool aam_presented) const;
    void _removeSmallComponents(BaseMolecule& mol) const ;
    //all permutation 
    static void _permutation(Array<int>& ,ObjArray< Array<int> > &);

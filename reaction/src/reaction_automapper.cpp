@@ -625,6 +625,7 @@ void ReactionAutomapper::_considerDissociation(){
 }
 
 void ReactionAutomapper::_considerDimerization() {
+   QS_DEF(Array<int>, mol_mapping);
    QS_DEF(ObjArray< Array<int> >, inv_mappings);
    QS_DEF(Array<int>, sub_map);
    QS_DEF(Array<int>, max_sub_map);
@@ -637,22 +638,26 @@ void ReactionAutomapper::_considerDimerization() {
 
    BaseReaction &reaction_copy = reaction_copy_ptr.ref();
 
-   reaction_copy.clone(_initReaction, 0, 0, &inv_mappings);
+   reaction_copy.clone(_initReaction, &mol_mapping, 0, &inv_mappings);
+   /*
+    * Clear reactants
+    */
+   for(int react = reaction_copy.reactantBegin(); react < reaction_copy.reactantEnd(); react = reaction_copy.reactantNext(react)) {
+      _removeUnusedInfo(reaction_copy, react, false);
+      _removeSmallComponents(reaction_copy.getBaseMolecule(react));
+   }
 
    for(int prod = reaction_copy.productBegin(); prod < reaction_copy.productEnd(); prod = reaction_copy.productNext(prod)) {
       BaseMolecule& pmol = reaction_copy.getBaseMolecule(prod);
       pmol.aromatize();
       way_exit = true;
       while(way_exit) {
-         for(int vert = pmol.vertexBegin(); vert < pmol.vertexEnd(); vert = pmol.vertexNext(vert)) {
-            if((reaction_copy.getAAM(prod, vert) > 0) || (pmol.getAtomNumber(vert) == ELEM_H))
-               pmol.removeAtom(vert);
-         }
-         for(int edg = pmol.edgeBegin(); edg < pmol.edgeEnd(); edg = pmol.edgeNext(edg)) {
-            if(reaction_copy.getReactingCenter(prod, edg) == RC_MADE_OR_BROKEN)
-               pmol.removeEdge(edg);
-         }
+         /*
+          * Clear presented AAM
+          */
+         _removeUnusedInfo(reaction_copy, prod, true);
          _removeSmallComponents(pmol);
+         
          if(pmol.vertexCount() < _MIN_VERTEX_SUB)
             way_exit = false;
 
@@ -683,8 +688,9 @@ void ReactionAutomapper::_considerDimerization() {
    if(map_changed) {
       for(int rindex = _initReaction.productBegin(); rindex < _initReaction.productEnd(); rindex = _initReaction.productNext(rindex)) {
          BaseMolecule& rmol = _initReaction.getBaseMolecule(rindex);
+         int mrindex = mol_mapping[rindex];
          for(int vert = rmol.vertexBegin(); vert < rmol.vertexEnd(); vert = rmol.vertexNext(vert)) {
-            int copy_aam = reaction_copy.getAAM(rindex, inv_mappings[rindex].at(vert));
+            int copy_aam = reaction_copy.getAAM(mrindex, inv_mappings[rindex].at(vert));
             if(_initReaction.getAAM(rindex, vert) == 0 && copy_aam  > 0)
                _initReaction.getAAMArray(rindex).at(vert) = copy_aam ;
          }
@@ -697,20 +703,6 @@ int ReactionAutomapper::_validMapFound(BaseReaction& reaction, int react, int pr
    BaseMolecule &react_copy = reaction.getBaseMolecule(react);
    
    int result = 0;
-   BaseReaction& _reaction = _reactionCopy.ref();
-   
-   react_copy.clone(_reaction.getBaseMolecule(react), 0, 0);
-   react_copy.aromatize();
-
-   for(int vert = react_copy.vertexBegin(); vert < react_copy.vertexEnd(); vert = react_copy.vertexNext(vert)) {
-      if((reaction.getAAM(react, vert) == 0) || (react_copy.getAtomNumber(vert) == ELEM_H))
-         react_copy.removeAtom(vert);
-   }
-   for(int edg = react_copy.edgeBegin(); edg < react_copy.edgeEnd(); edg = react_copy.edgeNext(edg)) {
-      if(reaction.getReactingCenter(react, edg) == RC_MADE_OR_BROKEN)
-         react_copy.removeEdge(edg);
-   }
-   _removeSmallComponents(react_copy);
 
    if(react_copy.vertexCount() < _MIN_VERTEX_SUB)
       return result;
@@ -724,6 +716,39 @@ int ReactionAutomapper::_validMapFound(BaseReaction& reaction, int react, int pr
       result = __min(react_copy.vertexCount(), reaction.getBaseMolecule(prod).vertexCount());
 
    return result;
+}
+
+void ReactionAutomapper::_removeUnusedInfo(BaseReaction& reaction, int mol_idx, bool aam_presented) const {
+   QS_DEF(Array<int>, vertices_to_remove);
+   QS_DEF(Array<int>, edges_to_remove);
+   vertices_to_remove.clear();
+   edges_to_remove.clear();
+   
+   BaseMolecule& mol = reaction.getBaseMolecule(mol_idx);
+   
+   int i;
+   bool aam;
+   for(i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i)) {
+      if(aam_presented)
+         aam = (reaction.getAAM(mol_idx, i) > 0);
+      else
+         aam = (reaction.getAAM(mol_idx, i) == 0);
+
+      if(aam || (mol.getAtomNumber(i) == ELEM_H))
+         vertices_to_remove.push(i);
+   }
+   for (i = 0; i < vertices_to_remove.size(); ++i) {
+      mol.removeAtom(vertices_to_remove[i]);
+   }
+   for(i = mol.edgeBegin(); i < mol.edgeEnd(); i = mol.edgeNext(i)) {
+      if(reaction.getReactingCenter(mol_idx, i) == RC_MADE_OR_BROKEN)
+         edges_to_remove.push(i);
+   }
+   for (i = 0; i < edges_to_remove.size(); ++i) {
+      mol.removeBond(edges_to_remove[i]);
+   }
+
+
 }
 
 void ReactionAutomapper::_removeSmallComponents(BaseMolecule& mol) const {
