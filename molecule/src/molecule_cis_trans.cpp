@@ -437,7 +437,8 @@ void MoleculeCisTrans::buildFromSmiles (int *dirs)
 
    for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {
-      bool valid = registerBondAndSubstituents(i);
+      if (!registerBondAndSubstituents(i))
+         continue;
 
       int beg = mol.getEdge(i).beg;
       int end = mol.getEdge(i).end;
