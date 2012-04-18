@@ -1738,6 +1738,7 @@ CEXPORT int indigoAddDecomposition(int decomp, int q_match) {
       IndigoDecompositionMatch& match = (IndigoDecompositionMatch&)in_match;
 
       deco.addCompleteRGroup(match, true, 0);
+      return 0;
 
    }
    INDIGO_END(-1)
