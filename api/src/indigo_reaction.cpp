@@ -663,6 +663,18 @@ CEXPORT int indigoClearAAM (int reaction)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoCorrectReactingCenters (int reaction)
+{
+   INDIGO_BEGIN
+   {
+      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+      ReactionAutomapper ram(rxn);
+      ram.correctReactingCenters(true);
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
 
 CEXPORT int indigoLoadReactionSmarts (int source)
 {

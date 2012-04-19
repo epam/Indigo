@@ -285,6 +285,10 @@ CEXPORT int indigoSetReactingCenter (int reaction, int reaction_bond, int rc);
 // Clears all reaction AAM information 
 CEXPORT int indigoClearAAM (int reaction);
 
+// Corrects reacting centers according to AAM
+CEXPORT int indigoCorrectReactingCenters (int reaction);
+
+
 /* Accessing a molecule */
 
 enum
