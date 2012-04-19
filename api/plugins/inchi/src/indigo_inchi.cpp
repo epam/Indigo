@@ -57,6 +57,8 @@ public:
       Array<inchi_Atom> &atoms, Array<inchi_Stereo0D> &stereo);
    void saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi);
 
+   void neutralizeV5Nitrogen (Molecule &mol);
+
    static inchi_BondType getInchiBondType (int bond_order);
 };
 
@@ -103,6 +105,36 @@ void IndigoInchi::loadMoleculeFromInchi (const char *inchi_string, Molecule &mol
       FreeStructFromINCHI(&inchi_output);
       throw;
    }
+}
+
+void IndigoInchi::neutralizeV5Nitrogen (Molecule &mol)
+{
+   // Initial structure C[C@H](O)[C@H](COC)/N=[N+](\[O-])/C=CCCCCCC
+   // is loaded via InChI as CCCCCCC=CN(=O)=N[C@@H](COC)[C@H](C)O
+   // and we cannot restore cis-trans configuration for O=N=N-C bond
+   for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
+      if (mol.isNitrogenV5(v))
+      {
+         const Vertex &vertex = mol.getVertex(v);
+         for (int nei = vertex.neiBegin(); nei != vertex.neiEnd(); nei = vertex.neiNext(nei))
+         {
+            int nei_edge = vertex.neiEdge(nei);
+            if (mol.getBondOrder(nei_edge) != BOND_DOUBLE)
+               continue;
+
+            int nei_idx = vertex.neiVertex(nei);
+            int number = mol.getAtomNumber(nei_idx);
+            int charge = mol.getAtomCharge(nei_idx);
+            int radical = mol.getAtomRadical(nei_idx);
+            if ((number == ELEM_O || number == ELEM_S) && charge == 0 && radical == 0)
+            {
+               mol.setAtomCharge(v, 1);
+               mol.setAtomCharge(nei_idx, -1);
+               mol.setBondOrder(nei_edge, BOND_SINGLE);
+               break;
+            }
+         }
+      }
 }
 
 void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Molecule &mol)
@@ -172,6 +204,8 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
          mol.setAtomRadical(idx, inchi_atom.radical);
       mol.setImplicitH(idx, inchi_atom.num_iso_H[0]);
    }
+
+   neutralizeV5Nitrogen(mol);
 
    // Process stereoconfiguration
    for (int i = 0; i < inchi_output.num_stereo0D; i++)
@@ -301,12 +335,20 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input,
          atom.neighbor[nei_idx] = mapping[vtx.neiVertex(nei)];
          int edge_idx = vtx.neiEdge(nei);
          atom.bond_type[nei_idx] = getInchiBondType(mol.getBondOrder(edge_idx));
+         if (mol.cis_trans.isIgnored(edge_idx))
+            atom.bond_stereo[nei_idx] = INCHI_BOND_STEREO_DOUBLE_EITHER;
+         else
+            atom.bond_stereo[nei_idx] = INCHI_BOND_STEREO_NONE;
          nei_idx++;
       }
       atom.num_bonds = vtx.degree();
 
       // Other properties
-      atom.num_iso_H[0] = mol.getImplicitH_NoThrow(v, -1); // -1 means INCHI adds implicit H automatically
+      if (Molecule::shouldWriteHCount(mol, v))
+         atom.num_iso_H[0] = mol.getImplicitH_NoThrow(v, -1); // -1 means INCHI adds implicit H automatically
+      else
+         atom.num_iso_H[0] = -1;
+
       atom.isotopic_mass = mol.getAtomIsotope(v);
       atom.radical = mol.getAtomRadical(v);
       atom.charge = mol.getAtomCharge(v);
@@ -406,7 +448,32 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
    inchi_Input input;
    QS_DEF(Array<inchi_Atom>, atoms);
    QS_DEF(Array<inchi_Stereo0D>, stereo);
-   generateInchiInput(mol, input, atoms, stereo);
+
+   // Check if structure has aromatic bonds
+   bool has_aromatic = false;
+   for (int e = mol.edgeBegin(); e != mol.edgeEnd(); e = mol.edgeNext(e))
+      if (mol.getBondOrder(e) == BOND_AROMATIC)
+      {
+         has_aromatic = true;
+         break;
+      }
+
+   Molecule *target = &mol;
+   Obj<Molecule> dearom;
+   if (has_aromatic)
+   {
+      dearom.create();
+      dearom->clone(mol, 0, 0);
+      try
+      {
+         dearom->dearomatize();
+      }
+      catch (DearomatizationsGroups::Error &)
+      {
+      }
+      target = dearom.get();
+   }
+   generateInchiInput(*target, input, atoms, stereo);
 
    inchi_Output output;
    
