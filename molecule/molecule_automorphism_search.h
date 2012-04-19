@@ -37,6 +37,11 @@ public:
    bool detect_invalid_cistrans_bonds;
    bool find_canonical_ordering;
 
+   // By default all the atoms with undefinded number of hydrogens throws an exception.
+   // If allow_undefined is true then such atoms are simply uncomparable and some 
+   // symmetries might be lost.
+   bool allow_undefined;
+
    bool invalidCisTransBond (int idx);
    bool invalidStereocenter (int idx);
 

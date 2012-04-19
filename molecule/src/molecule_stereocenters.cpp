@@ -142,6 +142,7 @@ void MoleculeStereocenters::buildFrom3dCoordinates ( void )
 
    MoleculeAutomorphismSearch am;
    am.detect_invalid_stereocenters = true;
+   am.allow_undefined = true;
    am.process(mol);
 
    for (i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))

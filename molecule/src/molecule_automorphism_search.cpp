@@ -46,6 +46,8 @@ MoleculeAutomorphismSearch::MoleculeAutomorphismSearch () :
    find_canonical_ordering = false;
    _fixed_atom = -1;
 
+   allow_undefined = false;
+
    _cancellation_handler = getCancellationHandler();
 }
 
@@ -834,8 +836,14 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
             else if (mol.getAtomNumber(i) == ELEM_O && mol.getAtomCharge(i) == 0)
                _hcount[i] = 0;
             else
-               // This code will throw an error with a good explanation
-               _hcount[i] = mol.getImplicitH(i);
+            {
+               if (!allow_undefined)
+                  // This code will throw an error with a good explanation
+                  _hcount[i] = mol.getImplicitH(i);
+               else
+                  // Make number of hydrogens unique in order to make such atoms unique
+                  _hcount[i] = 101 + i; 
+            }
          }
          else
          {
