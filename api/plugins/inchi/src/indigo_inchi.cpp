@@ -354,14 +354,25 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input,
       atom.num_bonds = vtx.degree();
 
       // Other properties
-      if (Molecule::shouldWriteHCount(mol, v) || mol.isExplicitValenceSet(v))
-         atom.num_iso_H[0] = mol.getImplicitH_NoThrow(v, -1); // -1 means INCHI adds implicit H automatically
-      else
-         atom.num_iso_H[0] = -1;
-
       atom.isotopic_mass = mol.getAtomIsotope(v);
       atom.radical = mol.getAtomRadical(v);
       atom.charge = mol.getAtomCharge(v);
+
+      // Hydrogens
+      int hcount = -1;
+      if (Molecule::shouldWriteHCount(mol, v) || mol.isExplicitValenceSet(v) || mol.isImplicitHSet(v))
+      {
+         if (atom_number == ELEM_C && atom.charge == 0)
+         {
+            // Do not set number of implicit hydrogens here as InChI throws an exception on
+            // the molecule B1=CB=c2cc3B=CC=c3cc12
+            ;
+         }
+         else
+            // set -1 to tell InChI add implicit hydrogens automatically
+            hcount = mol.getImplicitH_NoThrow(v, -1); 
+      }
+      atom.num_iso_H[0] = hcount;
    }
   
    // Process cis-trans bonds
