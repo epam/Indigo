@@ -51,6 +51,7 @@ public:
    void setValence (int idx, int valence);
    void setExplicitValence (int idx, int valence);
    void resetExplicitValence (int idx);
+   bool isExplicitValenceSet (int idx);
 
    void setImplicitH    (int idx, int impl_h);
    bool isImplicitHSet  (int idx);

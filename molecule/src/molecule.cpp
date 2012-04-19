@@ -274,6 +274,11 @@ void Molecule::resetExplicitValence (int idx)
    updateEditRevision();
 }
 
+bool Molecule::isExplicitValenceSet (int idx)
+{
+   return _atoms[idx].explicit_valence;
+}
+
 void Molecule::setValence (int idx, int valence)
 {
    _valence.expandFill(idx + 1, -1);

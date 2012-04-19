@@ -332,19 +332,29 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input,
       int nei_idx = 0;
       for (int nei = vtx.neiBegin(); nei != vtx.neiEnd(); nei = vtx.neiNext(nei))
       {
-         atom.neighbor[nei_idx] = mapping[vtx.neiVertex(nei)];
+         int v_nei = vtx.neiVertex(nei);
+         atom.neighbor[nei_idx] = mapping[v_nei];
          int edge_idx = vtx.neiEdge(nei);
          atom.bond_type[nei_idx] = getInchiBondType(mol.getBondOrder(edge_idx));
+
+         int bond_stereo = INCHI_BOND_STEREO_NONE;
          if (mol.cis_trans.isIgnored(edge_idx))
-            atom.bond_stereo[nei_idx] = INCHI_BOND_STEREO_DOUBLE_EITHER;
+            bond_stereo = INCHI_BOND_STEREO_DOUBLE_EITHER;
          else
-            atom.bond_stereo[nei_idx] = INCHI_BOND_STEREO_NONE;
+         {
+            int dir = mol.getBondDirection2(v, v_nei);
+            if (mol.getBondDirection2(v, v_nei) == BOND_EITHER)
+               bond_stereo = INCHI_BOND_STEREO_SINGLE_1EITHER;
+            else if (mol.getBondDirection2(v_nei, v) == BOND_EITHER)
+               bond_stereo = INCHI_BOND_STEREO_SINGLE_2EITHER;
+         }
+         atom.bond_stereo[nei_idx] = bond_stereo;
          nei_idx++;
       }
       atom.num_bonds = vtx.degree();
 
       // Other properties
-      if (Molecule::shouldWriteHCount(mol, v))
+      if (Molecule::shouldWriteHCount(mol, v) || mol.isExplicitValenceSet(v))
          atom.num_iso_H[0] = mol.getImplicitH_NoThrow(v, -1); // -1 means INCHI adds implicit H automatically
       else
          atom.num_iso_H[0] = -1;
@@ -390,6 +400,9 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input,
 
       int type, group, pyramid[4];
       mol.stereocenters.get(v, type, group, pyramid);
+      if (type == MoleculeStereocenters::ATOM_ANY)
+         continue;
+
       for (int i = 0; i < 4; i++)
          if (pyramid[i] != -1)
             pyramid[i] = mapping[pyramid[i]];
