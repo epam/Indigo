@@ -1,1 +1,0 @@
-release-win-sub.bat %1 Win32\Release\bingo-oracle.dll %2
