@@ -362,7 +362,8 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input,
       int hcount = -1;
       if (Molecule::shouldWriteHCount(mol, v) || mol.isExplicitValenceSet(v) || mol.isImplicitHSet(v))
       {
-         if (atom_number == ELEM_C && atom.charge == 0)
+         if (mol.getAtomAromaticity(v) == ATOM_AROMATIC &&
+            atom_number == ELEM_C && atom.charge == 0 && atom.radical == 0)
          {
             // Do not set number of implicit hydrogens here as InChI throws an exception on
             // the molecule B1=CB=c2cc3B=CC=c3cc12
