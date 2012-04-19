@@ -287,6 +287,7 @@ class Indigo(object):
     self.IndigoObject.reactingCenter = Indigo._member_intptr_obj(Indigo._lib.indigoGetReactingCenter)
     self.IndigoObject.setReactingCenter = Indigo._member_void_obj_int(Indigo._lib.indigoSetReactingCenter)
     self.IndigoObject.clearAAM = Indigo._member_void(Indigo._lib.indigoClearAAM)
+    self.IndigoObject.correctReactingCenters = Indigo._member_void(Indigo._lib.indigoCorrectReactingCenters)
     
     self.IndigoObject.iterateAtoms = Indigo._member_obj(Indigo._lib.indigoIterateAtoms)
     self.IndigoObject.iteratePseudoatoms = Indigo._member_obj(Indigo._lib.indigoIteratePseudoatoms)

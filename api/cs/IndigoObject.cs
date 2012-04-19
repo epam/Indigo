@@ -224,6 +224,12 @@ namespace com.ggasoftware.indigo
          dispatcher.setSessionID();
          _indigo_lib.indigoClearAAM(self);
       }
+
+      public void correctReactingCenters ()
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoCorrectReactingCenters(self);
+      }
    
       public System.Collections.IEnumerable iterateAtoms ()
       {

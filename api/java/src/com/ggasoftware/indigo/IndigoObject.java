@@ -214,6 +214,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoClearAAM(self));
    }
    
+   public void correctReactingCenters ()
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoCorrectReactingCenters(self));
+   }
+   
    public IndigoObject iterateAtoms ()
    {
       dispatcher.setSessionID();

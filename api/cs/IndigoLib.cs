@@ -85,6 +85,7 @@ namespace com.ggasoftware.indigo
       int indigoGetAtomMappingNumber (int reaction, int reaction_atom);
       int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int number);
       int indigoClearAAM (int reaction);
+      int indigoCorrectReactingCenters (int reaction);
 
       int indigoGetReactingCenter (int reaction, int reaction_bond, int *rc);
       int indigoSetReactingCenter (int reaction, int reaction_bond, int rc);

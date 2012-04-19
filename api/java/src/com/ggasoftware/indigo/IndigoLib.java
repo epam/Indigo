@@ -119,6 +119,7 @@ public interface IndigoLib extends Library
    int indigoGetAtomMappingNumber (int reaction, int reaction_atom);
    int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int number);
    int indigoClearAAM (int reaction);
+   int indigoCorrectReactingCenters (int reaction);
 
    int indigoIterateAtoms (int molecule);
    int indigoIteratePseudoatoms (int molecule);
