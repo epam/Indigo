@@ -142,10 +142,11 @@ else:
         open(join(root, 'dist', 'bingo-sqlserver', 'assembly', 'bingo-sqlserver.dll', 'w')).close()
     else:
         shutil.copyfile(join(root, 'bingo', 'sqlserver', 'bin', args.config, 'bingo-sqlserver.dll'), join(root, 'dist', 'bingo-sqlserver', 'assembly', 'bingo-sqlserver.dll'))
+        
     # Get version
     version = ""
     for line in open(join('bingo', "bingo-version.cmake")):
-        m = re.search('SET\(BINGO_VERSION "(.*)"', line)
+        m = re.search('SET\(BINGO_VERSION "([^\"]*)\"', line)
         if m:
             version = m.group(1)
     os.chdir('dist')
