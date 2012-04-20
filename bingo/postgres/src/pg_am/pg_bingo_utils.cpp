@@ -50,7 +50,7 @@ PG_FUNCTION_INFO_V1(getindexstructurescount);
 PGDLLEXPORT Datum getindexstructurescount(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getversion);
-PGDLLEXPORT PGDLLEXPORT Datum getversion(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum getversion(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(filetotext);
 PGDLLEXPORT Datum filetotext(PG_FUNCTION_ARGS);
