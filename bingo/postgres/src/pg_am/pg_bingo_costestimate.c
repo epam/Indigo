@@ -329,9 +329,9 @@ bingo_costestimate(PG_FUNCTION_ARGS) {
    struct IndexOptInfo *index;
    struct List *indexQuals;
    struct RelOptInfo *outer_rel;
-   struct Cost *indexStartupCost;
-   struct Cost *indexTotalCost;
-   struct Selectivity *indexSelectivity ;
+   Cost *indexStartupCost;
+   Cost *indexTotalCost;
+   Selectivity *indexSelectivity ;
    double *indexCorrelation;
 
    root = (PlannerInfo *) PG_GETARG_POINTER(0);
