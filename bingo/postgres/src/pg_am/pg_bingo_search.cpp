@@ -62,8 +62,6 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
    elog(ERROR, "unsupported version %s", PG_VERSION)
 #endif
 
-   elog(DEBUG1, "start bingo search");
-
    IndexScanDesc scan = RelationGetIndexScan(rel, keysz, norderbys);
 
    scan->opaque = 0;
@@ -120,7 +118,7 @@ bingo_rescan(PG_FUNCTION_ARGS) {
 Datum
 bingo_endscan(PG_FUNCTION_ARGS) {
    IndexScanDesc scan = (IndexScanDesc) PG_GETARG_POINTER(0);
-   elog(DEBUG1, "end scan");
+   elog(DEBUG1, "bingo: search: finish searching");
    
    PG_BINGO_BEGIN
    {

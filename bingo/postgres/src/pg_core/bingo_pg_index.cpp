@@ -363,11 +363,13 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item) {
    if (!_currentSection->isExtended()) {
       _initializeNewSection();
    }
-
+   elog(DEBUG1, "bingo: index: start adding a structure to the section %d", _currentSectionIdx);
    /*
     * Add a structure
     */
    _currentSection->addStructure(data_item);
+   
+   elog(DEBUG1, "bingo: index: finish adding a structure to the section %d", _currentSectionIdx);
 
    /*
     * Return cmf map to the output

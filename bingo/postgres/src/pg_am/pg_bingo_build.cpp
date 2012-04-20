@@ -58,7 +58,8 @@ bingo_build(PG_FUNCTION_ARGS) {
    double reltuples = 0;
 
 //   signal(SIGINT, &error_handler);
-   elog(NOTICE, "start bingo build");
+   elog(DEBUG1, "bingo: build: start building index");
+   
 
    /*
     * We expect to be called exactly once for any index relation. If that's
@@ -83,6 +84,7 @@ bingo_build(PG_FUNCTION_ARGS) {
       const char* schema_name = func_namespace.getFuncNameSpace(fcinfo->flinfo->fn_oid);
       BingoPgWrapper rel_namespace;
       const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
+
       
       BingoPgBuild build_engine(index, schema_name, index_schema, true);
       /*

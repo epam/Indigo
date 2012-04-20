@@ -39,9 +39,11 @@ _searchType(-1) {
    _relName.readString(rel_name, true);
    _shadowRelName.readString(rel_name, true);
    _shadowRelName.appendString("_shadow", true);
+   elog(DEBUG1, "bingo: ringo build: start building '%s'", _relName.ptr());
 }
 
 RingoPgBuildEngine::~RingoPgBuildEngine() {
+   elog(DEBUG1, "bingo: ringo build: finish building '%s'", _relName.ptr());
    bingoIndexEnd();
 }
 

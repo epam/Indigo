@@ -70,6 +70,8 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
    BingoPgWrapper rel_wr;
    const char* rel_name = rel_wr.getRelName(index->rd_id);
 
+   elog(DEBUG1, "bingo: index build: start create index '%s'", rel_name);
+
    BingoPgConfig bingo_config;
    /*
     * Safety check
@@ -112,6 +114,8 @@ void BingoPgBuild::_prepareUpdating() {
    BingoPgWrapper rel_wr;
    const char* rel_name = rel_wr.getRelName(index->rd_id);
 
+   elog(DEBUG1, "bingo: index build: start update index '%s'", rel_name);
+
    BingoPgConfig bingo_config;
 
    _bufferIndex.readMetaInfo();
@@ -148,10 +152,10 @@ bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text)
    int block_number = ItemPointerGetBlockNumber((ItemPointer) item_ptr);
    int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
 
-   elog(DEBUG1, "bingo: create index: processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);
+   elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);
 
    if (!fp_engine->processStructure(struct_text, data)) {
-      elog(WARNING, "can not insert a structure with tid = (%d, %d): %s", block_number, offset_number,  bingoGetWarning());
+      elog(WARNING, "can not insert a structure with ctid='(%d,%d)'::tid: %s", block_number, offset_number,  bingoGetWarning());
       return false;
    }
 
@@ -162,6 +166,8 @@ bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text)
    _bufferIndex.insertStructure(data_ref);
 
    fp_engine->insertShadowInfo(data_ref);
+   
+   elog(DEBUG1, "bingo: insert structure: finish processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);
 
    return true;
 }

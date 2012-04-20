@@ -57,6 +57,10 @@ private:
     */
    bool _buildingState;
 
+#ifdef BINGO_PG_INTEGRITY_DEBUG
+   indigo::AutoPtr<FileOutput> debug_fileoutput;
+#endif
+
 };
 
 #endif	/* BINGO_PG_BUILD_H */

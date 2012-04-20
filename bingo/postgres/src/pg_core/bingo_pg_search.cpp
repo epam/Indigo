@@ -31,6 +31,12 @@ BingoPgSearch::BingoPgSearch(PG_OBJECT rel):
 _initSearch(true),
 _indexScanDesc(0),
 _bufferIndex(rel) {
+   Relation rel_idx = (Relation)rel;
+   BingoPgWrapper rel_wr;
+   const char* rel_name = rel_wr.getRelName(rel_idx->rd_id);
+
+   elog(DEBUG1, "bingo: search: start searching for idx '%s'", rel_name);
+   
    _bufferIndex.setStrategy(BingoPgIndex::READING_STRATEGY);
 }
 

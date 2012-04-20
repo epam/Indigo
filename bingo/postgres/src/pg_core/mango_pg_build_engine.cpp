@@ -41,9 +41,12 @@ _searchType(-1) {
    _shadowRelName.appendString("_shadow", true);
    _shadowHashRelName.readString(rel_name, true);
    _shadowHashRelName.appendString("_shadow_hash", true);
+
+   elog(DEBUG1, "bingo: mango build: start building '%s'", _relName.ptr());
 }
 
 MangoPgBuildEngine::~MangoPgBuildEngine() {
+   elog(DEBUG1, "bingo: mango build: finish building '%s'", _relName.ptr());
    bingoIndexEnd();
 }
 

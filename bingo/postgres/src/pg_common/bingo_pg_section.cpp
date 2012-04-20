@@ -130,7 +130,7 @@ bool BingoPgSection::isExtended() {
 
 void BingoPgSection::addStructure(BingoPgFpData& item_data) {
    int current_str = _sectionInfo.n_structures;
-
+   elog(DEBUG1, "bingo: section: insert a structure %d", current_str);
    /*
     * Set fp bits
     */
@@ -144,6 +144,7 @@ void BingoPgSection::addStructure(BingoPgFpData& item_data) {
    /*
     * Set tid map
     */
+   elog(DEBUG1, "bingo: section: set tid map: map buffer idx = %d offset = %d", map_buf_idx, map_idx);
    _buffersMap[map_buf_idx]->setTidItem(map_idx, item_data.getTidItem());
 
    /*
@@ -234,6 +235,8 @@ void BingoPgSection::_setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, 
     */
    _buffersMap[map_buf_idx]->setCmfItem(map_idx, cmf_item);
 
+   elog(DEBUG1, "bingo: section: set cmf map: buffer = %d, offset = %d", ItemPointerGetBlockNumber(&cmf_item), ItemPointerGetOffsetNumber(&cmf_item));
+
 }
 
 void BingoPgSection::_setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx) {
@@ -246,6 +249,8 @@ void BingoPgSection::_setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, 
     * Set mappings
     */
    _buffersMap[map_buf_idx]->setXyzItem(map_idx, xyz_item);
+
+   elog(DEBUG1, "bingo: section: set xyz map: buffer = %d, offset = %d", ItemPointerGetBlockNumber(&xyz_item), ItemPointerGetOffsetNumber(&xyz_item));
 }
 
 void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data) {
