@@ -462,6 +462,8 @@ void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>
    int map_mol_idx = mol_idx % BINGO_MOLS_PER_MAPBLOCK;
    BingoPgBufferCacheMap& map_cache = current_section.getMapBufferCache(map_block_idx);
 
+   elog(DEBUG1, "bingo: index: read cmf: start read structure %d for section = %d", mol_idx, section_idx);
+
    /*
     * Get cmf item
     */
@@ -473,13 +475,16 @@ void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>
    dword block_num = ItemPointerGetBlockNumber(&cmf_item);
    if(block_num == InvalidBlockNumber) {
       cmf_buf.clear();
+      elog(DEBUG1, "bingo: index: read cmf: cmf is empty for structure %d for section = %d", mol_idx, section_idx);
       return;
    }
+   unsigned short block_offset = ItemPointerGetOffsetNumber(&cmf_item);
    /*
     * Read cmf buffer for a given offset
     */
    BingoPgBufferCacheBin& bin_cache = current_section.getBinBufferCache(block_num);
-   bin_cache.readBin(ItemPointerGetOffsetNumber(&cmf_item), cmf_buf);
+   bin_cache.readBin(block_offset, cmf_buf);
+   elog(DEBUG1, "bingo: index: read cmf: successfully read cmf of size %d for block %d offset %d", cmf_buf.size(), block_num, block_offset);
 }
 
 void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>& xyz_buf) {
@@ -490,6 +495,8 @@ void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>
    int map_block_idx = mol_idx / BINGO_MOLS_PER_MAPBLOCK;
    int map_mol_idx = mol_idx % BINGO_MOLS_PER_MAPBLOCK;
    BingoPgBufferCacheMap& map_cache = current_section.getMapBufferCache(map_block_idx);
+
+   elog(DEBUG1, "bingo: index: read xyz: start read structure %d for section = %d", mol_idx, section_idx);
 
    /*
     * Get xyz item
@@ -502,11 +509,14 @@ void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>
    dword block_num = ItemPointerGetBlockNumber(&xyz_item);
    if(block_num == InvalidBlockNumber) {
       xyz_buf.clear();
+      elog(DEBUG1, "bingo: index: read xyz: xyz is empty for structure %d for section = %d", mol_idx, section_idx);
       return;
    }
+   unsigned short block_offset = ItemPointerGetOffsetNumber(&xyz_item);
    /*
     * Read xyz buffer for a given offset
     */
    BingoPgBufferCacheBin& bin_cache = current_section.getBinBufferCache(block_num);
-   bin_cache.readBin(ItemPointerGetOffsetNumber(&xyz_item), xyz_buf);
+   bin_cache.readBin(block_offset, xyz_buf);
+   elog(DEBUG1, "bingo: index: read xyz: successfully read xyz of size %d for block %d offset %d", xyz_buf.size(), block_num, block_offset);
 }
