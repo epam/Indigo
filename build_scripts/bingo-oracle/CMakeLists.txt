@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.6)
 project(BingoOracleSolution)
 
 set(Bingo_SOURCE_DIR ../../bingo)
-set(BingoOracle_SOURCE_DIR ../../bingo)
 
 set(BINGO "YES")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
@@ -43,9 +42,8 @@ get_directory_property(OCI_LIBRARY_DIRS DIRECTORY ../../oci DEFINITION OCI_LIBRA
 get_directory_property(OCI_LIBRARY DIRECTORY ../../oci DEFINITION OCI_LIBRARY)
 
 add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
-#add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-core-c")
 add_subdirectory(../../common/oracle "${CMAKE_CURRENT_BINARY_DIR}/common-oracle")
-add_subdirectory(../../bingo "${CMAKE_CURRENT_BINARY_DIR}/bingo-oracle")
+add_subdirectory(../../bingo/oracle "${CMAKE_CURRENT_BINARY_DIR}/bingo-oracle")
 
 SET(BINGO_VERSION "${BINGO_VERSION}")
 
@@ -62,9 +60,9 @@ foreach(comp ${COMPONENTS})
 	INSTALL(FILES ${Bingo_SOURCE_DIR}/LICENSE.GPL DESTINATION . COMPONENT ${comp})
 	INSTALL(DIRECTORY ${BingoOracle_SOURCE_DIR}/sql/ DESTINATION sql COMPONENT ${comp})
 	IF(${SYSTEM_NAME} MATCHES "Win")
-		INSTALL(FILES ${BingoOracle_SOURCE_DIR}/bingo-oracle-install.bat DESTINATION . COMPONENT ${comp})
+		INSTALL(FILES ${BingoOracle_SOURCE_DIR}/setup/bingo-oracle-install.bat DESTINATION . COMPONENT ${comp})
 	ELSE()
-		INSTALL(FILES ${BingoOracle_SOURCE_DIR}/bingo-oracle-install.sh DESTINATION . COMPONENT ${comp})
+		INSTALL(FILES ${BingoOracle_SOURCE_DIR}/setup/bingo-oracle-install.sh DESTINATION . COMPONENT ${comp})
 	ENDIF()
 endforeach()
 
