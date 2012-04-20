@@ -191,8 +191,13 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine) {
 
    _metaInfo.n_blocks_for_dictionary = 0;
    
+   elog(DEBUG1, "bingo: index: update dictionary with size = %d", dict_size);
+   
    if(dict_size == 0) 
       return;
+
+   if(dict_size > BingoPgBufferCacheBin::MAX_SIZE * BINGO_DICTIONARY_BLOCKS_NUM)
+      throw Error("can not insert a dictionary with size = %d", dict_size);
    
    /*
     * Fulfil dictionary buffers

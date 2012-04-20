@@ -316,7 +316,7 @@ unsigned short BingoPgBufferCacheBin::writeBin(indigo::Array<char>& bin_buf) {
     * If read strategy then it is an update so read the buffer in this function also
     */
    if(bin_buf.sizeInBytes() > MAX_SIZE)
-      throw Error("internal error: can not add cmf to the cache because is not enough space");
+      throw Error("internal error: can not add bin to the cache because is not enough space");
 
    /*
     * Prepare output offset
