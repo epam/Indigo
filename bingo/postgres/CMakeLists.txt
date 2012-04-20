@@ -4,7 +4,6 @@ project(BingoPostgres)
 
 include(../bingo-version.cmake)
 include(SetBuildParameters)
-SET(BINGO_VERSION "${BINGO_VERSION}" PARENT_SCOPE) # promote Bingo version
 
 message(STATUS "BingoPostgres version is ${BINGO_VERSION}")
 
@@ -20,21 +19,15 @@ file(GLOB PG_COMMON_src src/pg_common/*.cpp src/pg_common/*.c)
 file(GLOB PG_COMMON_headers src/pg_common/*.h)
 file(GLOB PG_CORE_src src/pg_core/*.cpp src/pg_core/*.c)
 file(GLOB PG_CORE_headers src/pg_core/*.h)
-file(GLOB BingoCore_src ../src/core/*.cpp ../src/core/*.c)
-file(GLOB BingoCore_headers ../src/core/*.h)
-file(GLOB BingoCoreC_src ../src/core-c/*.cpp ../src/core-c/*.c)
-file(GLOB BingoCoreC_headers ../src/core-c/*.h)
 
-include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR}  ${BingoCoreC_HEADERS_DIR} ${BingoCore_HEADERS_DIR} ${POSTGRES_INCLUDE_DIRS} src/pg_common/ src/pg_am/ src/pg_core/ ../src ../src/core ../src/core-c)
+include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR}  ${BingoCoreC_HEADERS_DIR} ${BingoCore_HEADERS_DIR} ${POSTGRES_INCLUDE_DIRS} src/pg_common/ src/pg_am/ src/pg_core/)
 if (MSVC)
 	include_directories(${POSTGRES_INCLUDE_DIRS}/port/win32_msvc ${POSTGRES_INCLUDE_DIRS}/port/win32 ${POSTGRES_INCLUDE_DIRS}/..)
 endif()
 
 if (NOT MSVC)                                                                                                                                                            
-#	add_library(bingo-postgres-shared SHARED ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers} ${BingoCore_src} ${BingoCore_headers} ${BingoCoreC_src} ${BingoCoreC_headers})
 	add_library(bingo-postgres-shared SHARED ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers})
 else()
-#	add_library(bingo-postgres-shared SHARED ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers} ${POSTGRES_INCLUDE_DIRS}/port/win32.h ${BingoCore_src} ${BingoCore_headers} ${BingoCoreC_src} ${BingoCoreC_headers})
 	add_library(bingo-postgres-shared SHARED ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers} ${POSTGRES_INCLUDE_DIRS}/port/win32.h)
 endif()
 SET_TARGET_PROPERTIES(bingo-postgres-shared PROPERTIES OUTPUT_NAME "bingo_postgres")
