@@ -28,7 +28,7 @@ RingoPgBuildEngine::RingoPgBuildEngine(BingoPgConfig& bingo_config, const char* 
 BingoPgBuildEngine(),
 _searchType(-1) {
    _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
+//   bingoSetErrorHandler(_errorHandler, 0);
    /*
     * Set up bingo configuration
     */
@@ -50,7 +50,7 @@ RingoPgBuildEngine::~RingoPgBuildEngine() {
 bool RingoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>& data_ptr) {
 
    _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
+//   bingoSetErrorHandler(_errorHandler, 0);
 
    data_ptr.reset(new RingoPgFpData());
    RingoPgFpData& data = (RingoPgFpData&)data_ptr.ref();
@@ -109,7 +109,7 @@ void RingoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
 int RingoPgBuildEngine::getFpSize() {
    int result;
    _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
+//   bingoSetErrorHandler(_errorHandler, 0);
 
    bingoGetConfigInt("reaction-fp-size-bytes", &result);
 

@@ -30,7 +30,7 @@ public:
     */
    bool insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text);
 
-   DEF_ERROR("BuildEngine");
+   DEF_ERROR("build engine");
 
 private:
    BingoPgBuild(const BingoPgBuild&); //no implicit copy

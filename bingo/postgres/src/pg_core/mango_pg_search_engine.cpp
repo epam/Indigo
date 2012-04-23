@@ -46,7 +46,7 @@ MangoPgSearchEngine::MangoPgSearchEngine(BingoPgConfig& bingo_config, const char
 BingoPgSearchEngine(),
 _searchType(-1) {
    _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
+//   bingoSetErrorHandler(_errorHandler, 0);
    /*
     * Set up bingo configuration
     */
@@ -67,6 +67,7 @@ MangoPgSearchEngine::~MangoPgSearchEngine() {
 
 bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
    bool result = false;
+   int bingo_res;
    QS_DEF(Array<char>, mol_buf);
    QS_DEF(Array<char>, xyz_buf);
    mol_buf.clear();
@@ -74,18 +75,28 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
 
    if(_searchType == BingoPgCommon::MOL_SUB || _searchType == BingoPgCommon::MOL_EXACT || _searchType == BingoPgCommon::MOL_SMARTS) {
       _bufferIndexPtr->readCmfItem(section_idx, structure_idx, mol_buf);
-      if(mangoNeedCoords()) {
+      bingo_res = mangoNeedCoords();
+      CORE_HANDLE_ERROR(bingo_res, 0, "search: error while getting coordinates flag", bingoGetError());
+      
+      if(bingo_res > 0) {
          _bufferIndexPtr->readXyzItem(section_idx, structure_idx, xyz_buf);
       }
-      result = (mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes()) == 1);
+      bingo_res = mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
+      
+      CORE_HANDLE_ERROR(bingo_res, 0, "search: error while matching binary target", bingoGetError());
+      CORE_HANDLE_WARNING(bingo_res, 0, "search: error while matching binary target", bingoGetWarning());
+      result = (bingo_res > 0);
    } else if(_searchType == BingoPgCommon::MOL_GROSS) {
       BingoPgText gross_text;
       _searchCursor->getText(2, gross_text);
 
       int gross_len;
       gross_text.getText(gross_len);
-
-      result = mangoMatchTarget(gross_text.getString(), gross_len) == 1;
+      bingo_res = mangoMatchTarget(gross_text.getString(), gross_len);
+      CORE_HANDLE_ERROR(bingo_res, 0, "search: error while matching gross target", bingoGetError());
+      CORE_HANDLE_WARNING(bingo_res, 0, "search: error while matching gross target", bingoGetWarning());
+      
+      result = (bingo_res > 0);
    } else if(_searchType == BingoPgCommon::MOL_MASS || _searchType == BingoPgCommon::MOL_SIM) {
       return true;
    }
@@ -110,7 +121,7 @@ void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
    _queryFpData.reset(new MangoPgFpData());
 
    _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
+//   bingoSetErrorHandler(_errorHandler, 0);
 
    BingoPgSearchEngine::prepareQuerySearch(bingo_idx, scan_desc);
 

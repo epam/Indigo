@@ -6,6 +6,7 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/auto_ptr.h"
+#include "base_cpp/exception.h"
 
 #include "bingo_pg_build_engine.h"
 #include "bingo_postgres.h"
@@ -35,7 +36,7 @@ public:
 private:
    MangoPgBuildEngine(const MangoPgBuildEngine&); // no implicit copy
 
-   static void _errorHandler(const char* message, void* context);
+   void _handleError(int res, int success_res, const char* message, bool only_warn);
 
    indigo::Array<char> _relName;
    indigo::Array<char> _shadowRelName;

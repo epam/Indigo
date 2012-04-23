@@ -223,29 +223,29 @@ BingoPgCommon::BingoSessionHandler::~BingoSessionHandler() {
 void BingoPgCommon::BingoSessionHandler::refresh() {
    bingoSetSessionID(_sessionId);
    bingoSetContext(0);
-   bingoSetErrorHandler(bingoErrorHandler, this);
+//   bingoSetErrorHandler(bingoErrorHandler, this);
 }
 
-void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, void* self_ptr) {
-   BingoSessionHandler* self = (BingoSessionHandler*)self_ptr;
-
-   const char* func = self->getFunctionName();
-
-   if(self->raise_error) {
-      if (func)
-         throw BingoPgError("runtime error in bingo.'%s': %s", func, message);
-      else
-         throw BingoPgError("runtime error: %s", message);
-   } else {
-      self->error_raised = true;
-      if (func)
-         elog(WARNING, "warning in bingo.'%s': %s", func, message);
-      else
-         elog(WARNING, "warning: %s", message);
-   }
-
-
-}
+//void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, void* self_ptr) {
+//   BingoSessionHandler* self = (BingoSessionHandler*)self_ptr;
+//
+//   const char* func = self->getFunctionName();
+//
+//   if(self->raise_error) {
+//      if (func)
+//         throw BingoPgError("runtime error in bingo.'%s': %s", func, message);
+//      else
+//         throw BingoPgError("runtime error: %s", message);
+//   } else {
+//      self->error_raised = true;
+//      if (func)
+//         elog(WARNING, "warning in bingo.'%s': %s", func, message);
+//      else
+//         elog(WARNING, "warning: %s", message);
+//   }
+//
+//
+//}
 //dword BingoPgCommon::getFunctionOid(const char* name, indigo::Array<dword>& types) {
 //   indigo::Array<char> fname;
 //   fname.readString(name, true);

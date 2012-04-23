@@ -28,7 +28,7 @@ MangoPgBuildEngine::MangoPgBuildEngine(BingoPgConfig& bingo_config, const char* 
 BingoPgBuildEngine(),
 _searchType(-1) {
    _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
+//   bingoSetErrorHandler(_errorHandler, 0);
    /*
     * Set up bingo configuration
     */
@@ -53,7 +53,8 @@ MangoPgBuildEngine::~MangoPgBuildEngine() {
 bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>& data_ptr) {
 
    _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
+   int bingo_res;
+//   bingoSetErrorHandler(_errorHandler, 0);
 
    data_ptr.reset(new MangoPgFpData());
    MangoPgFpData& data = (MangoPgFpData&)data_ptr.ref();
@@ -67,7 +68,10 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    /*
     * Process target
     */
-   if(mangoIndexProcessSingleRecord() <= 0)
+   bingo_res = mangoIndexProcessSingleRecord();
+
+   CORE_HANDLE_WARNING(bingo_res, 1, "error while processing record", bingoGetWarning());
+   if(bingo_res < 1)
       return false;
 
    const char* cmf_buf;
@@ -84,9 +88,13 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    /*
     * Get prepared data
     */
-   mangoIndexReadPreparedMolecule(0, &cmf_buf, &cmf_len, &xyz_buf, &xyz_len,
+   bingo_res = mangoIndexReadPreparedMolecule(0, &cmf_buf, &cmf_len, &xyz_buf, &xyz_len,
                  &gross_str, &counter_elements_str, &fp_buf, &fp_len,
                  &fp_sim_str, &mass, &sim_fp_bits_count);
+
+   CORE_HANDLE_WARNING(bingo_res, 1, "error while prepare record", bingoGetError());
+   if(bingo_res < 1)
+      return false;
 
 
    /*
@@ -99,11 +107,20 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
     */
    dword ex_hash;
    int ex_hash_count;
-   mangoGetHash(1, -1, &ex_hash_count, &ex_hash);
+   bingo_res = mangoGetHash(1, -1, &ex_hash_count, &ex_hash);
+
+   CORE_HANDLE_WARNING(bingo_res, 1, "error while calculating hash for a record", bingoGetError());
+   if(bingo_res < 1)
+      return false;
+   
    int target_fragments = 0;
    for (int comp_idx = 0; comp_idx < ex_hash_count; ++comp_idx) {
       int comp_count;
-      mangoGetHash(1, comp_idx, &comp_count, &ex_hash);
+      bingo_res = mangoGetHash(1, comp_idx, &comp_count, &ex_hash);
+      
+      CORE_HANDLE_WARNING(bingo_res, 1, "error while calculating hash for a record", bingoGetError());
+      if(bingo_res < 1)
+         return false;
       data.insertHash(ex_hash, comp_count);
       target_fragments += comp_count;
    }
@@ -151,7 +168,7 @@ void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
 int MangoPgBuildEngine::getFpSize() {
    int result;
    _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
+//   bingoSetErrorHandler(_errorHandler, 0);
 
    bingoGetConfigInt("fp-size-bytes", &result);
 
@@ -214,7 +231,4 @@ void MangoPgBuildEngine::finishShadowProcessing() {
 }
 
 
-void MangoPgBuildEngine::_errorHandler(const char* message, void*) {
-   throw BingoPgError("Error while building molecule index: %s", message);
-}
 

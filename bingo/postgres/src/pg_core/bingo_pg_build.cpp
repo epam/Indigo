@@ -155,7 +155,7 @@ bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text)
    elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);
 
    if (!fp_engine->processStructure(struct_text, data)) {
-      elog(WARNING, "can not insert a structure with ctid='(%d,%d)'::tid: %s", block_number, offset_number,  bingoGetWarning());
+      elog(WARNING, "can not insert a structure with ctid='(%d,%d)'::tid (see at the previous warning)", block_number, offset_number);
       return false;
    }
 

@@ -34,7 +34,7 @@ RingoPgSearchEngine::RingoPgSearchEngine(BingoPgConfig& bingo_config, const char
 BingoPgSearchEngine(),
 _searchType(-1) {
    _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
+//   bingoSetErrorHandler(_errorHandler, 0);
    /*
     * Set up bingo configuration
     */
@@ -74,7 +74,7 @@ void RingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
    _queryFpData.reset(new RingoPgFpData());
 
    _setBingoContext();
-   bingoSetErrorHandler(_errorHandler, 0);
+//   bingoSetErrorHandler(_errorHandler, 0);
 
    BingoPgSearchEngine::prepareQuerySearch(bingo_idx, scan_desc);
 

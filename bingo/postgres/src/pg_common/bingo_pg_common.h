@@ -408,5 +408,16 @@ public:
       va_end(args);
    }
 };
+
+#define CORE_HANDLE_ERROR(res, success_res, suffix, message)\
+   if (res < success_res) {\
+      throw BingoPgError("%s: %s", suffix, message);\
+   }
+
+#define CORE_HANDLE_WARNING(res, success_res, suffix, message)\
+   if (res < success_res) {\
+      elog(WARNING, "%s: %s", suffix, message);\
+   }
+
 #endif	/* BINGO_PG_COMMON_H */
 
