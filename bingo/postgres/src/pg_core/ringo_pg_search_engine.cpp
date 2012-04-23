@@ -100,6 +100,8 @@ void RingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
 bool RingoPgSearchEngine::searchNext(PG_OBJECT result_ptr) {
 
    bool result = false;
+   _setBingoContext();
+   
    if (_searchType == BingoPgCommon::REACT_EXACT) {
       result = _searchNextCursor(result_ptr);
    } else if(_searchType == BingoPgCommon::REACT_SUB || _searchType == BingoPgCommon::REACT_SMARTS) {

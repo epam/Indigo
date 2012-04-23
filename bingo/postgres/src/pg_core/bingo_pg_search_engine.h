@@ -85,7 +85,7 @@ public:
    void setItemPointer(PG_OBJECT result_ptr);
 
    void loadDictionary(BingoPgIndex&);
-   const char* getDictionary(int& size);
+//   const char* getDictionary(int& size);
 
 private:
    BingoPgSearchEngine(const BingoPgSearchEngine&); //no implicit copy

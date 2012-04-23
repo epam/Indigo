@@ -145,6 +145,7 @@ void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
 bool MangoPgSearchEngine::searchNext(PG_OBJECT result_ptr) {
 
    bool result = false;
+   _setBingoContext();
    if (_searchType == BingoPgCommon::MOL_EXACT || _searchType == BingoPgCommon::MOL_GROSS || _searchType == BingoPgCommon::MOL_MASS) {
       result = _searchNextCursor(result_ptr);
    } else if(_searchType == BingoPgCommon::MOL_SUB || _searchType == BingoPgCommon::MOL_SMARTS) {
@@ -499,7 +500,6 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound
 }
 
 bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
-   _setBingoContext();
 
    BingoPgFpData& query_data = _queryFpData.ref();
    BingoPgIndex& bingo_index = *_bufferIndexPtr;

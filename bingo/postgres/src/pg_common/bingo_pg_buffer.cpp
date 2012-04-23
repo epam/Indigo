@@ -232,6 +232,9 @@ void* BingoPgBuffer::getIndexData(int& data_len) {
    if(data_ptr == 0)
       throw Error("internal error: empty ptr data for the block %d", _blockIdx);
 
+   if(data_len < 0)
+      throw Error("internal error: corrupted block %d data len is %d", _blockIdx, data_len);
+
    return data_ptr;
 }
 

@@ -127,7 +127,8 @@ bingo_endscan(PG_FUNCTION_ARGS) {
       /*
        * Delete bingo search context
        */
-      delete so;
+      if(so != NULL)
+         delete so;
       scan->opaque = NULL;
    }
    PG_BINGO_END
@@ -181,6 +182,9 @@ bingo_gettuple(PG_FUNCTION_ARGS) {
    bool result = false;
 
    BingoPgSearch* search_engine = (BingoPgSearch*) scan->opaque;
+   if(search_engine == NULL)
+      elog(ERROR, "bingo: search error: search context was deleted");
+   
    PG_BINGO_BEGIN
    {
       scan->xs_recheck = false;
@@ -193,7 +197,7 @@ bingo_gettuple(PG_FUNCTION_ARGS) {
       result = search_engine->next(scan, &scan->xs_ctup.t_self);
 
    }
-   PG_BINGO_HANDLE(delete search_engine);
+   PG_BINGO_HANDLE(delete search_engine; scan->opaque=NULL);
    /*
     * If true then searching was successfull
     */

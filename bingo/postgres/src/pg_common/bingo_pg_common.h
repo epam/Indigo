@@ -336,13 +336,13 @@ private:
    PG_OBJECT _ptr;
 };
 
-class CancelException {
-public:
-   explicit CancelException(){}
-   virtual ~CancelException(){}
-   CancelException(const CancelException&){}
-private:
-};
+//class CancelException {
+//public:
+//   explicit CancelException(){}
+//   virtual ~CancelException(){}
+//   CancelException(const CancelException&){}
+//private:
+//};
 
 
 #define BINGO_PG_TRY {\
@@ -374,10 +374,6 @@ private:
       pg_raise_error = true; \
       errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
       pg_err_mess = errmsg("error: %s", e.message()); \
-   } catch (CancelException& e) { \
-      pg_raise_error = true; \
-      errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
-      pg_err_mess = errmsg("query was cancelled"); \
    } catch (...) { \
       pg_raise_error = true; \
       errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
@@ -392,10 +388,6 @@ private:
       pg_raise_error = true; \
       errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
       pg_err_mess = errmsg("error: %s", e.message()); \
-   } catch (CancelException& e) { \
-      pg_raise_error = true; \
-      errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
-      pg_err_mess = errmsg("query was cancelled"); \
    } catch (...) { \
       pg_raise_error = true; \
       errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \

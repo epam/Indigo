@@ -54,7 +54,7 @@ public:
 
    bool isReady() const;
    
-   DEF_ERROR("bingo buffer access");
+   DEF_ERROR("bingo buffer");
    
 private:
    BingoPgBuffer(const BingoPgBuffer&); //no implicit copy
