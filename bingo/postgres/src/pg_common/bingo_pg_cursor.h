@@ -1,7 +1,6 @@
 #ifndef _BINGO_PG_CURSOR_H__
 #define	_BINGO_PG_CURSOR_H__
 
-#include <stdint.h>
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 #include "bingo_postgres.h"

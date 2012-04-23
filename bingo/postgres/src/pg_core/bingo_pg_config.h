@@ -1,7 +1,6 @@
 #ifndef _BINGO_PG_CONFIG_H__
 #define	_BINGO_PG_CONFIG_H__
 
-#include <stdint.h>
 #include "bingo_postgres.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/exception.h"

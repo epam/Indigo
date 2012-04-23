@@ -1,7 +1,6 @@
 #ifndef _BINGO_PG_TEXT_H__
 #define	_BINGO_PG_TEXT_H__
 
-#include <stdint.h>
 #include "bingo_postgres.h"
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
