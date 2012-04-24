@@ -161,7 +161,7 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    int fp_len;
 
    bingo_res = ringoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-   CORE_HANDLE_ERROR(bingo_res, 0, "reaction search engine: can not get query fingerprint", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not get query fingerprint", bingoGetError());
 
    int size_bits = fp_len * 8;
    data.setFingerPrints(fingerprint_buf, size_bits);

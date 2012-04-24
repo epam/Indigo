@@ -301,7 +301,7 @@ void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    int fp_len;
 
    bingo_res = mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-   CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: can not get query fingerprint", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get query fingerprint", bingoGetError());
 
 
    int size_bits = fp_len * 8;
@@ -362,7 +362,8 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {
    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set search context", bingoGetError());
 
    const char* gross_conditions = mangoGrossGetConditions();
-   CORE_HANDLE_ERROR(0, 1, "molecule search engine: can not get gross conditions", bingoGetError());
+   if(gross_conditions == 0)
+      CORE_HANDLE_ERROR(0, 1, "molecule search engine: can not get gross conditions", bingoGetError());
 
    _searchCursor.reset(new BingoPgCursor("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), gross_conditions));
 }
