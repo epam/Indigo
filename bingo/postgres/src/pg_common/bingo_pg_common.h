@@ -285,10 +285,10 @@ public:
    }
    class BingoSessionHandler {
    public:
-      BingoSessionHandler(unsigned int func_id, bool raise_error);
+      BingoSessionHandler(unsigned int func_id);
       virtual ~BingoSessionHandler();
 
-      static void bingoErrorHandler(const char *message, void *context);
+//      static void bingoErrorHandler(const char *message, void *context);
 
       const char* getFunctionName() const {
          return _functionName.size() ? _functionName.ptr() : 0;
@@ -299,8 +299,6 @@ public:
       }
 
       void refresh();
-      bool raise_error;
-      bool error_raised;
    private:
       BingoSessionHandler(const BingoSessionHandler&); //no implicit copy
       qword _sessionId;
@@ -404,7 +402,7 @@ public:
       va_list args;
 
       va_start(args, format);
-      _init("bingo postgres", format, args);
+      _init("bingo", format, args);
       va_end(args);
    }
 };

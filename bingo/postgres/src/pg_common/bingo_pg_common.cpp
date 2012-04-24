@@ -198,7 +198,7 @@ char* BingoPgCommon::releaseString(const char* str) {
    return result;
 }
 
-BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id, bool raise): raise_error(raise), error_raised(false) {
+BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id) {
    char* schema_name = 0;
 
    BINGO_PG_TRY {

@@ -268,7 +268,7 @@ Datum getname(PG_FUNCTION_ARGS) {
    char* result = 0;
    PG_BINGO_BEGIN
    {
-      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, false);
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
       bingo_handler.setFunctionName("getname");
 
       BingoPgText mol_text(target_datum);
@@ -276,9 +276,10 @@ Datum getname(PG_FUNCTION_ARGS) {
       const char* target_buf = mol_text.getText(buf_size);
 
       const char* bingo_result = bingoGetNameCore(target_buf, buf_size);
-
-      if (bingo_handler.error_raised)
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.getname", bingoGetError());
          PG_RETURN_NULL();
+      }
 
       result = BingoPgCommon::releaseString(bingo_result);
    }

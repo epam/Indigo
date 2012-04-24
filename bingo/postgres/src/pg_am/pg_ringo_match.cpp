@@ -38,7 +38,7 @@ using namespace indigo;
  */
 class _RingoContextHandler :public BingoPgCommon::BingoSessionHandler {
 public:
-   _RingoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid, true), _type(type) {
+   _RingoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid), _type(type) {
       BingoPgCommon::getSearchTypeString(_type, _typeStr, false);
       setFunctionName(_typeStr.ptr());
    }

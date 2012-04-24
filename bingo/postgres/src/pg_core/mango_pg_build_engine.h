@@ -36,7 +36,7 @@ public:
 private:
    MangoPgBuildEngine(const MangoPgBuildEngine&); // no implicit copy
 
-   void _handleError(int res, int success_res, const char* message, bool only_warn);
+//   void _handleError(int res, int success_res, const char* message, bool only_warn);
 
    indigo::Array<char> _relName;
    indigo::Array<char> _shadowRelName;

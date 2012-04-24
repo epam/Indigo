@@ -56,7 +56,7 @@ using namespace indigo;
  */
 class _MangoContextHandler: public BingoPgCommon::BingoSessionHandler {
 public:
-   _MangoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid, true), _type(type) {
+   _MangoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid), _type(type) {
       BingoPgCommon::getSearchTypeString(_type, _typeStr, true);
       setFunctionName(_typeStr.ptr());
    }
@@ -97,10 +97,11 @@ public:
          }
          
          setFunctionName(buffer_warn.ptr());
-         raise_error = false;
          target_data = mangoGross(target_data, target_size);
-         if(error_raised)
+         if(target_data == 0) {
+            CORE_HANDLE_WARNING(0, 1, "bingo.gross", bingoGetError());
             return -1;
+         }
       }
       
       res = mangoMatchTarget(target_data, target_size);
@@ -254,7 +255,7 @@ Datum _match_mass_less(PG_FUNCTION_ARGS) {
    bool result = false;
    PG_BINGO_BEGIN
    {
-      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, true);
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
       bingo_handler.setFunctionName("mass less");
 
       BufferScanner scanner(mass_datum);
@@ -264,10 +265,11 @@ Datum _match_mass_less(PG_FUNCTION_ARGS) {
 
       float mol_mass = 0;
 
-      int buf_len;
+      int buf_len, bingo_res;
       const char* buf = mol_text.getText(buf_len);
 
-      mangoMass(buf, buf_len, 0, &mol_mass);
+      bingo_res = mangoMass(buf, buf_len, 0, &mol_mass);
+      CORE_HANDLE_ERROR(bingo_res, 1, "mass matcher: error while calculating mass", bingoGetError());
 
       result = mol_mass < usr_mass;
    }
@@ -283,7 +285,7 @@ Datum _match_mass_great(PG_FUNCTION_ARGS) {
    bool result = false;
    PG_BINGO_BEGIN
    {
-      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid, true);
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
       bingo_handler.setFunctionName("mass great");
 
       BufferScanner scanner(mass_datum);
@@ -293,10 +295,11 @@ Datum _match_mass_great(PG_FUNCTION_ARGS) {
 
       float mol_mass = 0;
 
-      int buf_len;
+      int buf_len, bingo_res;
       const char* buf = mol_text.getText(buf_len);
 
-      mangoMass(buf, buf_len, 0, &mol_mass);
+      bingo_res = mangoMass(buf, buf_len, 0, &mol_mass);
+      CORE_HANDLE_ERROR(bingo_res, 1, "mass matcher: error while calculating mass", bingoGetError());
 
       result = mol_mass > usr_mass;
    }

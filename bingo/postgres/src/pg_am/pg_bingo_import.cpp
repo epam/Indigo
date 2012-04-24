@@ -161,7 +161,7 @@ public:
    };
    
 public:
-   BingoImportHandler(unsigned int func_id):BingoSessionHandler(func_id, true) {
+   BingoImportHandler(unsigned int func_id):BingoSessionHandler(func_id) {
       SPI_connect();
    }
    virtual ~BingoImportHandler() {
@@ -355,6 +355,7 @@ public:
 
    }
 protected:
+   int bingo_res;
    bool _parseColumns;
    Array<char> _columnNames;
    
@@ -371,14 +372,18 @@ public:
    BingoImportHandler(func_id) {
       _parseColumns = true;
       setFunctionName("importSDF");
-      bingoSDFImportOpen(fname);
+      bingo_res = bingoSDFImportOpen(fname);
+      CORE_HANDLE_ERROR(bingo_res, 1, "importSDF", bingoGetError());
    }
    virtual ~BingoImportSdfHandler() {
-      bingoSDFImportClose();
+      bingo_res = bingoSDFImportClose();
+      CORE_HANDLE_WARNING(bingo_res, 1, "importSDF close", bingoGetError());
    }
 
    virtual bool hasNext() {
-      return !bingoSDFImportEOF();
+      bingo_res = bingoSDFImportEOF();
+      CORE_HANDLE_ERROR(bingo_res, 0, "importSDF", bingoGetError());
+      return !bingo_res;
    }
 
    virtual void getNextData() {
@@ -387,16 +392,13 @@ public:
        _importData.clear();
       
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         try {
-            if (col_idx == 0) {
-               data = bingoSDFImportGetNext();
-            } else {
-               data = bingoImportGetPropertyValue(col_idx - 1);
-            }
-         } catch (Exception& e) {
-            elog(WARNING, "%s", e.message());
-            data = 0;
-         }
+         if (col_idx == 0) 
+            data = bingoSDFImportGetNext();
+         else
+            data = bingoImportGetPropertyValue(col_idx - 1);
+         
+         if (data == 0)
+            CORE_HANDLE_WARNING(0, 1, "importSDF", bingoGetError());
          _addData(data, col_idx);
       }
    }
@@ -439,14 +441,19 @@ public:
    BingoImportHandler(func_id) {
       _parseColumns = true;
       setFunctionName("importRDF");
-      bingoRDFImportOpen(fname);
+      bingo_res = bingoRDFImportOpen(fname);
+      CORE_HANDLE_ERROR(bingo_res, 1, "importRDF", bingoGetError());
    }
    virtual ~BingoImportRdfHandler() {
-      bingoRDFImportClose();
+      bingo_res = bingoRDFImportClose();
+      CORE_HANDLE_WARNING(bingo_res, 1, "importRDF close", bingoGetError());
    }
 
    virtual bool hasNext() {
-      return !bingoRDFImportEOF();
+      bingo_res = bingoRDFImportEOF();
+      CORE_HANDLE_ERROR(bingo_res, 0, "importRDF", bingoGetError());
+      
+      return !bingo_res;
    }
 
    virtual void getNextData() {
@@ -454,16 +461,13 @@ public:
        _importData.clear();
 
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         try {
-            if (col_idx == 0) {
-               data = bingoRDFImportGetNext();
-            } else {
-               data = bingoImportGetPropertyValue(col_idx - 1);
-            }
-         } catch (Exception& e) {
-            elog(WARNING, "%s", e.message());
-            data = 0;
-         }
+         if (col_idx == 0) 
+            data = bingoRDFImportGetNext();
+         else 
+            data = bingoImportGetPropertyValue(col_idx - 1);
+         
+         if (data == 0)
+            CORE_HANDLE_WARNING(0, 1, "importRDF", bingoGetError());
          _addData(data, col_idx);
       }
    }
@@ -506,14 +510,18 @@ public:
    BingoImportSmilesHandler(unsigned int func_id, const char* fname):BingoImportHandler(func_id) {
       _parseColumns = false;
       setFunctionName("importSMILES");
-      bingoSMILESImportOpen(fname);
+      bingo_res = bingoSMILESImportOpen(fname);
+      CORE_HANDLE_WARNING(bingo_res, 1, "importSmiles", bingoGetError());
    }
    virtual ~BingoImportSmilesHandler() {
-      bingoSMILESImportClose();
+      bingo_res = bingoSMILESImportClose();
+      CORE_HANDLE_WARNING(bingo_res, 1, "importSmiles close", bingoGetError());
    }
 
    virtual bool hasNext() {
-      return !bingoSMILESImportEOF();
+      bingo_res = bingoSMILESImportEOF();
+      CORE_HANDLE_ERROR(bingo_res, 0, "importSmiles", bingoGetError());
+      return !bingo_res;
    }
 
    virtual void getNextData() {
@@ -522,15 +530,16 @@ public:
       _importData.clear();
 
       for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx) {
-         try {
-            if (col_idx == 0)
-               data = bingoSMILESImportGetNext();
-            else
-               data = bingoSMILESImportGetId();
-         } catch (Exception& e) {
-            elog(WARNING, "%s", e.message());
-            data = 0;
+         if (col_idx == 0) {
+            data = bingoSMILESImportGetNext();
+            if (data == 0)
+               CORE_HANDLE_WARNING(0, 1, "importSMILES", bingoGetError());
+         } else {
+            data = bingoSMILESImportGetId();
+            if(data == 0)
+               CORE_HANDLE_WARNING(0, 1, "importSMILES", "can not get smiles id");
          }
+
          _addData(data, col_idx);
          
       }
