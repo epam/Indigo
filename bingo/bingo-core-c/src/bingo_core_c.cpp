@@ -350,7 +350,7 @@ CEXPORT const char * bingoImportGetPropertyValue (int idx) {
          throw BingoError("bingo import has not been initialized yet");
       }
    }
-   BINGO_END("", "")
+   BINGO_END("", 0)
 }
 
 
@@ -394,7 +394,7 @@ CEXPORT const char * bingoSDFImportGetNext ()
       self.sdf_loader->data.push(0);
       return self.sdf_loader->data.ptr();
    }
-   BINGO_END("", "")
+   BINGO_END("", 0)
 }
 
 CEXPORT const char * bingoSDFImportGetProperty (const char *param_name)
@@ -403,7 +403,7 @@ CEXPORT const char * bingoSDFImportGetProperty (const char *param_name)
    {
       return self.sdf_loader->properties[param_name].ptr();
    }
-   BINGO_END("", "")
+   BINGO_END("", 0)
 }
 
 CEXPORT int bingoRDFImportOpen (const char *file_name)
@@ -444,7 +444,7 @@ CEXPORT const char * bingoRDFImportGetNext ()
       self.rdf_loader->data.push(0);
       return self.rdf_loader->data.ptr();
    }
-   BINGO_END("", "")
+   BINGO_END("", 0)
 }
 
 CEXPORT const char * bingoRDFImportGetProperty (const char *param_name)
@@ -453,7 +453,7 @@ CEXPORT const char * bingoRDFImportGetProperty (const char *param_name)
    {
       return self.rdf_loader->properties[param_name].ptr();
    }
-   BINGO_END("", "")
+   BINGO_END("", 0)
 }
 
 
@@ -703,7 +703,7 @@ CEXPORT const char * bingoSMILESImportGetNext ()
       self.smiles_scanner->readLine(self.buffer, true);
       return self.buffer.ptr();
    }
-   BINGO_END("", "")
+   BINGO_END("", 0)
 }
 
 CEXPORT const char * bingoSMILESImportGetId ()
@@ -732,5 +732,5 @@ CEXPORT const char * bingoSMILESImportGetId ()
       else
          return (const char*)strscan.curptr();
    }
-   BINGO_END("", "")
+   BINGO_END("", 0)
 }
