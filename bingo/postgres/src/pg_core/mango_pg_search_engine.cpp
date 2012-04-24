@@ -81,10 +81,10 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
       if(bingo_res > 0) {
          _bufferIndexPtr->readXyzItem(section_idx, structure_idx, xyz_buf);
       }
+
       bingo_res = mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
-      
-      CORE_HANDLE_WARNING(bingo_res, 0, "search engine: error while matching binary target", bingoGetWarning());
       CORE_HANDLE_ERROR(bingo_res, 0, "search engine: error while matching binary target", bingoGetError());
+
       result = (bingo_res > 0);
    } else if(_searchType == BingoPgCommon::MOL_GROSS) {
       BingoPgText gross_text;
@@ -92,8 +92,8 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
 
       int gross_len;
       gross_text.getText(gross_len);
+      
       bingo_res = mangoMatchTarget(gross_text.getString(), gross_len);
-      CORE_HANDLE_WARNING(bingo_res, 0, "search engine: error while matching gross target", bingoGetWarning());
       CORE_HANDLE_ERROR(bingo_res, 0, "search engine: error while matching gross target", bingoGetError());
       
       result = (bingo_res > 0);

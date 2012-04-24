@@ -53,11 +53,15 @@ RingoPgSearchEngine::~RingoPgSearchEngine() {
 
 bool RingoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
    bool result = false;
+   int bingo_res;
    QS_DEF(Array<char>, react_buf);
    react_buf.clear();
 
    _bufferIndexPtr->readCmfItem(section_idx, structure_idx, react_buf);
-   result = ringoMatchTargetBinary(react_buf.ptr(), react_buf.sizeInBytes()) == 1;
+   bingo_res = ringoMatchTargetBinary(react_buf.ptr(), react_buf.sizeInBytes());
+   CORE_HANDLE_ERROR(bingo_res, 0, "search engine: error while matching target", bingoGetError());
+
+   result =  (bingo_res == 1);
    
    return result;
 }
@@ -124,7 +128,8 @@ void RingoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
    from_clause.printf("%s", _shadowRelName.ptr());
 
    dword ex_hash;
-   ringoGetHash(0, &ex_hash);
+   int bingo_res = ringoGetHash(0, &ex_hash);
+   CORE_HANDLE_ERROR(bingo_res, 1, "search engine: error while getting hash", bingoGetError());
 
    where_clause.printf("ex_hash=%d", ex_hash);
 
@@ -137,6 +142,7 @@ void RingoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
 void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    IndexScanDesc scan_desc = (IndexScanDesc) scan_desc_ptr;
    QS_DEF(Array<char>, search_type);
+   int bingo_res;
    BingoPgText search_query;
    BingoPgText search_options;
    BingoPgFpData& data = _queryFpData.ref();
@@ -148,14 +154,14 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    /*
     * Set up matching parameters
     */
-   if(ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString()) < 0)
-      throw Error("Can not set search context: %s", bingoGetError());
-
+   bingo_res = ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   CORE_HANDLE_ERROR(bingo_res, 0, "search engine: can not set search context", bingoGetError());
 
    const char* fingerprint_buf;
    int fp_len;
 
-   ringoGetQueryFingerprint(&fingerprint_buf, &fp_len);
+   bingo_res = ringoGetQueryFingerprint(&fingerprint_buf, &fp_len);
+   CORE_HANDLE_ERROR(bingo_res, 0, "search engine: can not get query fingerprint", bingoGetError());
 
    int size_bits = fp_len * 8;
    data.setFingerPrints(fingerprint_buf, size_bits);
@@ -170,6 +176,7 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    QS_DEF(Array<char>, search_type);
    BingoPgText search_query;
    BingoPgText search_options;
+   int bingo_res;
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, false);
 
@@ -178,8 +185,8 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    /*
     * Set up matching parameters
     */
-   if(ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString()) < 0)
-      throw Error("Can not set search context: %s", bingoGetError());
+   bingo_res = ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   CORE_HANDLE_ERROR(bingo_res, 0, "search engine: can not set search context", bingoGetError());
 
    _prepareExactQueryStrings(what_clause, from_clause, where_clause);
 

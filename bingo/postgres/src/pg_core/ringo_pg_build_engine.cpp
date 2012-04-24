@@ -55,7 +55,7 @@ bool RingoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    data_ptr.reset(new RingoPgFpData());
    RingoPgFpData& data = (RingoPgFpData&)data_ptr.ref();
 
-   int struct_size;
+   int struct_size, bingo_res;
    const char* struct_ptr = struct_text.getText(struct_size);
    /*
     * Set target data
@@ -64,7 +64,9 @@ bool RingoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    /*
     * Process target
     */
-   if(ringoIndexProcessSingleRecord() <= 0)
+   bingo_res = ringoIndexProcessSingleRecord();
+   CORE_HANDLE_WARNING(bingo_res, 1, "build engine: error while processing record", bingoGetWarning());
+   if(bingo_res < 1)
       return false;
 
    const char* crf_buf;
@@ -74,13 +76,19 @@ bool RingoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    /*
     * Get prepared data
     */
-   ringoIndexReadPreparedReaction(0, &crf_buf, &crf_len, &fp_buf, &fp_len);
+   bingo_res = ringoIndexReadPreparedReaction(0, &crf_buf, &crf_len, &fp_buf, &fp_len);
+   CORE_HANDLE_WARNING(bingo_res, 1, "build engine: error while prepare record", bingoGetError());
+   if(bingo_res < 1)
+      return false;
 
    /*
     * Set hash information
     */
    dword ex_hash;
-   ringoGetHash(1, &ex_hash);
+   bingo_res = ringoGetHash(1, &ex_hash);
+   CORE_HANDLE_WARNING(bingo_res, 1, "build engine: error while get hash", bingoGetError());
+   if(bingo_res < 1)
+      return false;
    data.setHash(ex_hash);
    
    /*
