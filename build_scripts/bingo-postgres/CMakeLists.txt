@@ -42,6 +42,8 @@ add_subdirectory(../../bingo/postgres "${CMAKE_CURRENT_BINARY_DIR}/bingo-postgre
 SET(BINGO_VERSION "${BINGO_VERSION}")
 
 SET(BINGO_PG_VERSION "$ENV{BINGO_PG_VERSION}" CACHE STRING "PostgreSQL version (9.0, 9.1)")
+SET(BINGO_PG_DIR "$ENV{BINGO_PG_DIR}" CACHE STRING "PostgreSQL folder")
+
 SET(COMPONENTS shared)
 
 # Uncomment it in CMake 2.8.8:  http://www.gccxml.org/Bug/view.php?id=12129
