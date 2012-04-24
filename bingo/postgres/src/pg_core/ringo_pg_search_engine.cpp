@@ -155,7 +155,7 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
-   CORE_HANDLE_ERROR(bingo_res, 0, "reaction search engine: can not set search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not set rsub search context", bingoGetError());
 
    const char* fingerprint_buf;
    int fp_len;
@@ -186,7 +186,7 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
-   CORE_HANDLE_ERROR(bingo_res, 0, "reaction search engine: can not set search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not set rexact search context", bingoGetError());
 
    _prepareExactQueryStrings(what_clause, from_clause, where_clause);
 

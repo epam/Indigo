@@ -295,13 +295,13 @@ void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
-   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set sub search context", bingoGetError());
 
    const char* fingerprint_buf;
    int fp_len;
 
    bingo_res = mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get query fingerprint", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get sub query fingerprint", bingoGetError());
 
 
    int size_bits = fp_len * 8;
@@ -327,7 +327,7 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
-   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set exact search context", bingoGetError());
 
    if (strcasestr(search_options.getString(), "TAU") != 0) {
       _prepareExactTauStrings(what_clause, from_clause, where_clause);
@@ -359,7 +359,7 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = mangoSetupMatch(search_type.ptr(), gross_query.ptr(), 0);
-   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set gross search context", bingoGetError());
 
    const char* gross_conditions = mangoGrossGetConditions();
    if(gross_conditions == 0)
@@ -424,7 +424,7 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
-   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set sim search context", bingoGetError());
 
    if(min_bound > max_bound)
       throw Error("min bound %f can not be greater then max bound %f", min_bound, max_bound);
