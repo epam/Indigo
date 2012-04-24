@@ -20,15 +20,15 @@ if(MSVC)
 	set(CMAKE_SHARED_LIBRARY_CXX_FLAGS "/NODEFAULTLIB:libc.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcd.lib /NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrtd.lib")
 endif()
 
-add_subdirectory(../../zlib-src "${CMAKE_CURRENT_BINARY_DIR}/zlib")
+add_subdirectory(../../third_party/zlib-src "${CMAKE_CURRENT_BINARY_DIR}/zlib")
 # Get defined variable with the headers
-get_directory_property(ZLib_HEADERS_DIR DIRECTORY ../../zlib-src DEFINITION ZLib_HEADERS_DIR)
+get_directory_property(ZLib_HEADERS_DIR DIRECTORY ../../third_party/zlib-src DEFINITION ZLib_HEADERS_DIR)
 
 add_subdirectory(../../common "${CMAKE_CURRENT_BINARY_DIR}/common")
 
-add_subdirectory(../../tinyxml "${CMAKE_CURRENT_BINARY_DIR}/tinyxml")
+add_subdirectory(../../third_party/tinyxml "${CMAKE_CURRENT_BINARY_DIR}/tinyxml")
 # Get defined variable with the headers
-get_directory_property(TinyXML_HEADERS_DIR DIRECTORY ../../tinyxml DEFINITION TinyXML_HEADERS_DIR)
+get_directory_property(TinyXML_HEADERS_DIR DIRECTORY ../../third_party/tinyxml DEFINITION TinyXML_HEADERS_DIR)
 
 add_subdirectory(../../graph "${CMAKE_CURRENT_BINARY_DIR}/graph")
 add_subdirectory(../../molecule "${CMAKE_CURRENT_BINARY_DIR}/molecule")
@@ -36,10 +36,10 @@ add_subdirectory(../../reaction "${CMAKE_CURRENT_BINARY_DIR}/reaction")
 
 add_subdirectory(../../layout "${CMAKE_CURRENT_BINARY_DIR}/layout")
 
-add_subdirectory(../../oci "${CMAKE_CURRENT_BINARY_DIR}/oci")
-get_directory_property(OCI_INCLUDE_DIRS DIRECTORY ../../oci DEFINITION OCI_INCLUDE_DIRS)
-get_directory_property(OCI_LIBRARY_DIRS DIRECTORY ../../oci DEFINITION OCI_LIBRARY_DIRS)
-get_directory_property(OCI_LIBRARY DIRECTORY ../../oci DEFINITION OCI_LIBRARY)
+add_subdirectory(../../third_party/oci "${CMAKE_CURRENT_BINARY_DIR}/oci")
+get_directory_property(OCI_INCLUDE_DIRS DIRECTORY ../../third_party/oci DEFINITION OCI_INCLUDE_DIRS)
+get_directory_property(OCI_LIBRARY_DIRS DIRECTORY ../../third_party/oci DEFINITION OCI_LIBRARY_DIRS)
+get_directory_property(OCI_LIBRARY DIRECTORY ../../third_party/oci DEFINITION OCI_LIBRARY)
 
 add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
 add_subdirectory(../../common/oracle "${CMAKE_CURRENT_BINARY_DIR}/common-oracle")
