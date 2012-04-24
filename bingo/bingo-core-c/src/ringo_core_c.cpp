@@ -377,7 +377,7 @@ CEXPORT int ringoGetQueryFingerprint (const char **query_fp, int *query_fp_len)
       *query_fp = self.buffer.ptr();
       *query_fp_len = self.buffer.size();
    }
-   BINGO_END(-2, -2)
+   BINGO_END(1, -2)
 }
 
 CEXPORT int ringoSetHightlightingMode (int enable)
