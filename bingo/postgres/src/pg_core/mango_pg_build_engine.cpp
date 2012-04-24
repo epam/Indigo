@@ -70,7 +70,7 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
     */
    bingo_res = mangoIndexProcessSingleRecord();
 
-   CORE_HANDLE_WARNING(bingo_res, 1, "error while processing record", bingoGetWarning());
+   CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while processing record", bingoGetWarning());
    if(bingo_res < 1)
       return false;
 
@@ -92,7 +92,7 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
                  &gross_str, &counter_elements_str, &fp_buf, &fp_len,
                  &fp_sim_str, &mass, &sim_fp_bits_count);
 
-   CORE_HANDLE_WARNING(bingo_res, 1, "error while prepare record", bingoGetError());
+   CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while prepare record", bingoGetError());
    if(bingo_res < 1)
       return false;
 
@@ -109,7 +109,7 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    int ex_hash_count;
    bingo_res = mangoGetHash(1, -1, &ex_hash_count, &ex_hash);
 
-   CORE_HANDLE_WARNING(bingo_res, 1, "error while calculating hash for a record", bingoGetError());
+   CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while calculating hash for a record", bingoGetError());
    if(bingo_res < 1)
       return false;
    
@@ -118,7 +118,7 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
       int comp_count;
       bingo_res = mangoGetHash(1, comp_idx, &comp_count, &ex_hash);
       
-      CORE_HANDLE_WARNING(bingo_res, 1, "error while calculating hash for a record", bingoGetError());
+      CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while calculating hash for a record", bingoGetError());
       if(bingo_res < 1)
          return false;
       data.insertHash(ex_hash, comp_count);
