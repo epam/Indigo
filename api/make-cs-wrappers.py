@@ -49,7 +49,7 @@ subprocess.check_call(command)
 
 
 # Build IndigoRendere-cs
-indigoRendererCsPath = join(api_dir, "renderer", "cs")
+indigoRendererCsPath = join(api_dir, "plugins", "renderer", "cs")
 if os.path.exists(join(indigoRendererCsPath, "Resource")):
     shutil.rmtree(join(indigoRendererCsPath, "Resource"))
 os.makedirs(join(indigoRendererCsPath, "Resource", 'Win', 'x64'))

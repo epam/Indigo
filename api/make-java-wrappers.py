@@ -32,7 +32,7 @@ os.chdir(os.path.join(api_dir, "java"))
 os.system("ant clean")
 os.system("ant jar")
 
-os.chdir(os.path.join(api_dir, "renderer", "java"))
+os.chdir(os.path.join(api_dir, "plugins", "renderer", "java"))
 os.system("ant clean")
 os.system("ant jar")
 

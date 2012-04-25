@@ -31,7 +31,7 @@ if os.path.exists(dest):
     shutil.rmtree(dest)
 os.mkdir(dest)
 shutil.copy(os.path.join(api_dir, "python", "indigo.py"), dest)
-shutil.copy(os.path.join(api_dir, "renderer", "python", "indigo_renderer.py"), dest)
+shutil.copy(os.path.join(api_dir, "plugins", "renderer", "python", "indigo_renderer.py"), dest)
 shutil.copy(os.path.join(api_dir, "plugins", "inchi", "python", "indigo_inchi.py"), dest)
 shutil.copytree(os.path.join(api_dir, "libs", "shared"), 
     os.path.join(dest, "lib"), 
