@@ -349,6 +349,7 @@ int parseParams (Params* p, int argc, char *argv[]) {
    p->outfile_ext[3] = 0;
    strncpy(p->outfile_ext, p->outfile + strlen(p->outfile) - 3, 3);
 
+   indigoSetOptionBool("treat-x-as-pseudoatom", 1);
    indigoSetOptionBool("render-coloring", 1);
    indigoSetOptionBool("render-highlight-color-enabled", 1);
 
