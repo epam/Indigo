@@ -5,6 +5,7 @@ import os
 import shutil
 import sys
 import re
+import subprocess
 from zipfile import *
 from os.path import *
 from optparse import OptionParser
@@ -54,13 +55,13 @@ def join_archives (names, destname):
         if not exists(name + ".zip"):
             return
     for name in names:
-        os.system("unzip %s.zip -d %s" % (name, name))
+        subprocess.check_call("unzip %s.zip -d %s" % (name, name), shell=True)
     os.mkdir(destname)
     for name in names:
         move_dir_content(name, destname)
     if exists(destname + ".zip"):
         os.remove(destname + ".zip")
-    os.system("zip -r -9 -m %s.zip %s" % (destname, destname))
+    subprocess.check_call("zip -r -9 -m %s.zip %s" % (destname, destname), shell=True)
     for name in names:
         shutil.rmtree(name)
         os.remove("%s.zip" % (name))
@@ -114,7 +115,7 @@ def clearLibs ():
 def unpackToLibs (name):
     if exists("tmp"):
         shutil.rmtree("tmp")
-    os.system("unzip %s.zip -d tmp" % (name))
+    subprocess.check_call("unzip %s.zip -d tmp" % (name), shell=True)
     move_dir_content(join("tmp", name), libs_dir)
     shutil.rmtree("tmp")
 
@@ -141,4 +142,4 @@ for w, libs in wrappers:
     if need_gen_wrappers:
         for gen in wrappers_gen:
             if not (w != 'win' and gen == 'make-cs-wrappers.py'):
-                os.system('%s %s -s "-%s"' % (sys.executable, join(api_dir, gen), w))
+                subprocess.check_call('%s %s -s "-%s"' % (sys.executable, join(api_dir, gen), w), shell=True)
