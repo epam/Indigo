@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(IndigoDepict)
 
-include_directories(../../api ../../api/renderer ../../common)
+include_directories(../../api ../../api/plugins/renderer ../../common)
 
 add_executable(indigo-depict main.c)
 if(APPLE)
