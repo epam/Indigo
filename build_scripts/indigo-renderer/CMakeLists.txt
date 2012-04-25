@@ -25,6 +25,6 @@ add_subdirectory(../../third_party/cairo-src/cairo "${CMAKE_CURRENT_BINARY_DIR}/
 get_directory_property(Cairo_headers_dir DIRECTORY ../../third_party/cairo-src/cairo DEFINITION Cairo_headers_dir)
 
 add_subdirectory(../../render2d "${CMAKE_CURRENT_BINARY_DIR}/render2d")
-add_subdirectory(../../api/renderer "${CMAKE_CURRENT_BINARY_DIR}/renderer")
+add_subdirectory(../../api/plugins/renderer "${CMAKE_CURRENT_BINARY_DIR}/renderer")
 
 set(INDIGO_RENDERER_CONFIGURED TRUE PARENT_SCOPE)
