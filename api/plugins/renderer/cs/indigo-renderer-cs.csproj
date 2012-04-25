@@ -66,7 +66,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\cs\indigo-cs.csproj">
+    <ProjectReference Include="..\..\..\cs\indigo-cs.csproj">
       <Project>{9813B608-3372-4D46-B432-1533CBF54C62}</Project>
       <Name>indigo-cs</Name>
     </ProjectReference>
