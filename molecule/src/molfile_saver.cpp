@@ -368,7 +368,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
       if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
          out.printf(" CHG=%d", charge);
-      if (!mol.isQueryMolecule() && !mol.isRSite(i))
+      if (!mol.isQueryMolecule() && !mol.isRSite(i) && !mol.isPseudoAtom(i))
       {
          if (mol.getAtomAromaticity(i) == ATOM_AROMATIC &&
                  ((atom_number != ELEM_C && atom_number != ELEM_O) || charge != 0))
@@ -858,7 +858,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
 
       stereo_parity = _getStereocenterParity(mol, i);
 
-      if (!mol.isQueryMolecule() && !mol.isRSite(i))
+      if (!mol.isQueryMolecule() && !mol.isRSite(i) && !mol.isPseudoAtom(i))
       {
          if (mol.getAtomAromaticity(i) == ATOM_AROMATIC &&
                  ((atom_number != ELEM_C && atom_number != ELEM_O) || atom_charge != 0))
