@@ -19,9 +19,14 @@
 #include "base_cpp/ptr_array.h"
 #include "graph/graph.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
-class BiconnectedDecomposer
+class DLLEXPORT BiconnectedDecomposer
 {
 public:
    explicit BiconnectedDecomposer (const Graph &graph);
@@ -52,5 +57,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

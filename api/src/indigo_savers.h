@@ -15,9 +15,14 @@
 #ifndef __indigo_savers__
 #define __indigo_savers__
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 #include "indigo_internal.h"
 
-class IndigoSaver : public IndigoObject
+class DLLEXPORT IndigoSaver : public IndigoObject
 {
 public:
    IndigoSaver (Output &output);
@@ -96,5 +101,9 @@ protected:
    virtual void _append (IndigoObject &object);
    virtual void _appendHeader ();
 };
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif // __indigo_savers__
