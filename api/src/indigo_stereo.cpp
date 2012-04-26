@@ -231,14 +231,20 @@ CEXPORT int indigoClearStereocenters (int object)
       IndigoObject &obj = self.getObject(object);
 
       if (IndigoBaseMolecule::is(obj))
+      {
          obj.getBaseMolecule().stereocenters.clear();
+         obj.getBaseMolecule().clearBondDirections();
+      }
       else if (IndigoBaseReaction::is(obj))
       {
          BaseReaction &rxn = obj.getBaseReaction();
          int i;
 
          for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+         {
             rxn.getBaseMolecule(i).stereocenters.clear();
+            rxn.getBaseMolecule(i).clearBondDirections();
+         }
       }
       else
          throw IndigoError("only molecules and reactions have stereocenters");
