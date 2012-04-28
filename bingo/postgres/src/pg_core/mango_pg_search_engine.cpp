@@ -17,6 +17,7 @@ extern "C" {
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
+#include "base_cpp/profiling.h"
 
 #include "bingo_pg_text.h"
 #include "bingo_pg_common.h"
@@ -66,12 +67,20 @@ MangoPgSearchEngine::~MangoPgSearchEngine() {
 }
 
 bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
+   
+   profTimerStart(t0, "mango_pg.match_target");
+   
+   if(_searchType == BingoPgCommon::MOL_SIM || _searchType == BingoPgCommon::MOL_MASS) {
+      return true;
+   }
+   
    bool result = false;
    int bingo_res;
    QS_DEF(Array<char>, mol_buf);
    QS_DEF(Array<char>, xyz_buf);
    mol_buf.clear();
    xyz_buf.clear();
+
 
    if(_searchType == BingoPgCommon::MOL_SUB || _searchType == BingoPgCommon::MOL_EXACT || _searchType == BingoPgCommon::MOL_SMARTS) {
       _bufferIndexPtr->readCmfItem(section_idx, structure_idx, mol_buf);
@@ -97,8 +106,8 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
       CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while matching gross target", bingoGetError());
       
       result = (bingo_res > 0);
-   } else if(_searchType == BingoPgCommon::MOL_MASS || _searchType == BingoPgCommon::MOL_SIM) {
-      return true;
+   } else {
+      throw Error("internal error: undefined search type");
    }
    return result;
 }
@@ -537,13 +546,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound
 
 bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
 
-   BingoPgFpData& query_data = _queryFpData.ref();
-   BingoPgIndex& bingo_index = *_bufferIndexPtr;
-   QS_DEF(Array<int>, bits_count);
-   QS_DEF(Array<int>, common_ones);
-   BingoPgExternalBitset screening_bitset(BINGO_MOLS_PER_SECTION);
-
-   int* min_bounds, * max_bounds, bingo_res;
+   profTimerStart(t0, "mango_pg.search_sim");
    /*
     * If there are mathces found on the previous steps
     */
@@ -553,10 +556,17 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
           return true;
        } else {
           _fetchFound = false;
-          _currentSection = bingo_index.readNext(_currentSection);
+          _currentSection = _bufferIndexPtr->readNext(_currentSection);
        }
    }
+   
+   BingoPgFpData& query_data = _queryFpData.ref();
+   BingoPgIndex& bingo_index = *_bufferIndexPtr;
+   QS_DEF(Array<int>, bits_count);
+   QS_DEF(Array<int>, common_ones);
+   BingoPgExternalBitset screening_bitset(BINGO_MOLS_PER_SECTION);
 
+   int* min_bounds, * max_bounds, bingo_res;
    /*
     * Iterate through the sections
     */
@@ -574,11 +584,16 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
          /*
           * Read structures bits count
           */
+//         profTimerStart(t5, "mango_pg.get_section_bits");
          bingo_index.getSectionBitsCount(_currentSection, bits_count);
+//         profTimerStop(t5);
          /*
           * Prepare min max bounds
           */
+//         profTimerStart(t3, "mango_pg.get_min_max");
          bingo_res =  mangoSimilarityGetBitMinMaxBoundsArray(bits_count.size(), bits_count.ptr(), &min_bounds, &max_bounds);
+//         profTimerStop(t3);
+         
          CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting similarity bounds array", bingoGetError());
 
          /*
@@ -596,12 +611,19 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
             /*
              * Copy passed structures on each iteration step
              */
+//            profTimerStart(t7, "mango_pg.copy");
             screening_bitset.copy(_sectionBitset);
+//            profTimerStop(t7);
 
             /*
              * Get commons in fingerprint buffer
              */
+            
+//            profTimerStart(t2, "mango_pg.andwith");
             bingo_index.andWithBitset(_currentSection, fp_block, screening_bitset);
+//            profTimerStop(t2);
+
+//            profTimerStart(t4, "mango_pg.new_common_ones");
             int screen_idx = screening_bitset.begin();
             for (; screen_idx != screening_bitset.end() && possible_str_count > 0; screen_idx = screening_bitset.next(screen_idx)) {
                /*
@@ -617,12 +639,14 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
                   --possible_str_count;
                }
             }
+//            profTimerStop(t4);
             ++iteration_idx;
          }
 
          /*
           * Screen the last time for all the possible structures
           */
+//         profTimerStart(t6, "mango_pg.lst_screen");
          int screen_idx = _sectionBitset.begin();
          for (; screen_idx != _sectionBitset.end() && possible_str_count > 0; screen_idx = _sectionBitset.next(screen_idx)) {
             int& one_counter = common_ones[screen_idx];
@@ -634,6 +658,7 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
                --possible_str_count;
             }
          }
+//         profTimerStop(t6);
 
       }
 
@@ -645,6 +670,7 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
           * Set first match as an answer
           */
          if(_fetchForNext()) {
+            profTimerStop(t0);
             setItemPointer(result_ptr);
             /*
              * Set fetch found to return on the next steps
