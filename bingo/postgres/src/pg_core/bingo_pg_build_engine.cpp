@@ -8,7 +8,6 @@
 
 using namespace indigo;
 
-
 BingoPgBuildEngine::BingoPgBuildEngine():
 _bufferIndexPtr(0) {
    _bingoSession = bingoAllocateSessionID();
