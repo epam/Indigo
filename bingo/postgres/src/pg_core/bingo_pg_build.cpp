@@ -13,6 +13,7 @@ extern "C" {
 
 #include "bingo_core_c.h"
 #include "base_cpp/auto_ptr.h"
+#include "base_cpp/profiling.h"
 
 #include "pg_bingo_context.h"
 #include "bingo_pg_buffer.h"
@@ -151,6 +152,7 @@ bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text)
    indigo::AutoPtr<BingoPgFpData> data;
    int block_number = ItemPointerGetBlockNumber((ItemPointer) item_ptr);
    int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
+   profTimerStart(t0, "bingo_pg.insert");
 
    elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);
 
