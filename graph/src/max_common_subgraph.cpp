@@ -693,7 +693,7 @@ void MaxCommonSubgraph::ReGraph::parse(bool findAllStructure){
                ++_nbIteration;
                if(_maxIteration > -1 && _nbIteration >= _maxIteration)
                   _stop = true;
-               if(_nbIteration % 100 == 0) {
+               if(_nbIteration % 10 == 0) {
                   if(cancellation_handler != 0) {
                      if(cancellation_handler->isCancelled())
                         throw Error("mcs search was cancelled: %s", cancellation_handler->cancelledRequestMessage());
