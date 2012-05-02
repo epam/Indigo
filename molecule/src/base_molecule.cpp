@@ -192,6 +192,15 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
    }
 }
 
+void BaseMolecule::clearSGroups()
+{
+   data_sgroups.clear();
+   superatoms.clear();
+   repeating_units.clear();
+   multiple_groups.clear();
+   generic_sgroups.clear();
+}
+
 void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int> &vertices,
                                               const Array<int> *edges, Array<int> &mapping,
                                               Array<int> &edge_mapping, int skip_flags)

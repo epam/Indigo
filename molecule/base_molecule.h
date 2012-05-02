@@ -333,6 +333,7 @@ public:
    void mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &mapping);
 
    void mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &mapping, Array<int> &edge_mapping);
+   void clearSGroups();
 
    DEF_ERROR("molecule");
 protected:
