@@ -20,11 +20,16 @@
 #include "math/algebra.h"
 #include "molecule/base_molecule.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Output;
 
-class CmfSaver
+class DLLEXPORT CmfSaver
 {
 public:
 
@@ -102,5 +107,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif /* __cmf_saver_h__ */
