@@ -291,7 +291,7 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
 
    for (int i = mol.generic_sgroups.begin(); i != mol.generic_sgroups.end(); i = mol.generic_sgroups.next(i))
    {
-      BaseMolecule::SGroup &sg = mol.data_sgroups[i];
+      BaseMolecule::SGroup &sg = mol.generic_sgroups[i];
       _encode(CMF_GENERICSGROUP);
       _encodeBaseSGroup(mol, sg, mapping);
    }
