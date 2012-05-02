@@ -228,6 +228,8 @@ void CmfSaver::_encodeUIntArray (const Array<int> &data, const Array<int> &mappi
    for (int i = 0; i < data.size(); i++)
    {
       int index = data[i];
+      if (index < 0)
+         throw Error("Internal error: index is invald: %d", index);
       int mapped = mapping[index];
       if (mapped < 0)
          throw Error("Internal error: mapping is invald");
