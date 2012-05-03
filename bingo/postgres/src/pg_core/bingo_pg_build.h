@@ -30,7 +30,7 @@ public:
     * Inserts a new structure into the index
     * Returns true if insertion was successfull
     */
-   bool insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text);
+   bool insertStructure(PG_OBJECT item_ptr, uintptr_t text_ptr);
    void insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_ptr);
    void flush();
 

@@ -47,16 +47,17 @@ RingoPgBuildEngine::~RingoPgBuildEngine() {
    bingoIndexEnd();
 }
 
-bool RingoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>& data_ptr) {
+bool RingoPgBuildEngine::processStructure(StructCache& struct_cache) {
 
    _setBingoContext();
 //   bingoSetErrorHandler(_errorHandler, 0);
 
-   data_ptr.reset(new RingoPgFpData());
-   RingoPgFpData& data = (RingoPgFpData&)data_ptr.ref();
+   struct_cache.data.reset(new RingoPgFpData());
+   RingoPgFpData& data = (RingoPgFpData&)struct_cache.data.ref();
+   data.setTidItem(&struct_cache.ptr);
 
    int struct_size, bingo_res;
-   const char* struct_ptr = struct_text.getText(struct_size);
+   const char* struct_ptr = struct_cache.text->getText(struct_size);
    /*
     * Set target data
     */
@@ -105,7 +106,7 @@ void RingoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
 
    for (int str_idx = 0; str_idx < struct_caches.size(); ++str_idx) {
       StructCache& struct_cache = struct_caches[str_idx];
-      processStructure(struct_cache.text.ref(), struct_cache.data);
+      processStructure(struct_cache);
       if(struct_cache.data.get() != 0) {
          struct_cache.data->setTidItem(&struct_cache.ptr);
       }

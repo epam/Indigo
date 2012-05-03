@@ -42,8 +42,8 @@ public:
    BingoPgBuildEngine();
    virtual ~BingoPgBuildEngine();
 
-   virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&){return true;}
-   virtual void processStructures(indigo::ObjArray<StructCache>& struct_cache){}
+   virtual bool processStructure(StructCache& struct_cache){return true;}
+   virtual void processStructures(indigo::ObjArray<StructCache>& struct_caches){}
 
    virtual int getType() const {return 0;}
    virtual int getFpSize() {return 0;}

@@ -145,29 +145,31 @@ void BingoPgBuild::_prepareUpdating() {
 }
 
 
-bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text) {
+bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, uintptr_t text_ptr) {
    /*
     * Insert a new structure
     */
 
-   indigo::AutoPtr<BingoPgFpData> data;
    int block_number = ItemPointerGetBlockNumber((ItemPointer) item_ptr);
    int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
    profTimerStart(t0, "bingo_pg.insert");
 
+   BingoPgBuildEngine::StructCache struct_cache;
+   struct_cache.text.reset(new BingoPgText(text_ptr));
+   struct_cache.ptr = *((ItemPointer) item_ptr);
+
    elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);
 
-   if (!fp_engine->processStructure(struct_text, data)) {
-      elog(WARNING, "can not insert a structure with ctid='(%d,%d)'::tid (see at the previous warning)", block_number, offset_number);
+   if (!fp_engine->processStructure(struct_cache)) {
       return false;
    }
 
-   BingoPgFpData& data_ref = data.ref();
-
-   data_ref.setTidItem(item_ptr);
+   if(struct_cache.data.get() == 0)
+      return false;
+   
+   BingoPgFpData& data_ref = struct_cache.data.ref();
 
    _bufferIndex.insertStructure(data_ref);
-
    fp_engine->insertShadowInfo(data_ref);
    
    elog(DEBUG1, "bingo: insert structure: finish processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);

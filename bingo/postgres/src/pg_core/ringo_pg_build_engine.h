@@ -20,7 +20,7 @@ public:
    RingoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name);
    virtual ~RingoPgBuildEngine();
 
-   virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&);
+   virtual bool processStructure(StructCache& struct_cache);
    virtual void processStructures(indigo::ObjArray<StructCache>& struct_cache);
 
    virtual int getFpSize();

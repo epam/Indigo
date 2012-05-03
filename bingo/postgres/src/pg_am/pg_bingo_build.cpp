@@ -136,12 +136,10 @@ static void bingoIndexCallback(Relation index,
     * Molecule structure is a text
     */
    
-//   BingoPgText struct_text(values[0]);
-   
    /*
     * Insert a new structure
     */
-//   build_engine.insertStructure(&htup->t_self, struct_text);
+//   build_engine.insertStructure(&htup->t_self, values[0]);
    build_engine.insertStructureParallel(&htup->t_self, values[0]);
 }
 

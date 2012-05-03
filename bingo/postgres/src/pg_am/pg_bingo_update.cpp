@@ -52,13 +52,10 @@ bingo_insert(PG_FUNCTION_ARGS) {
       
       BingoPgBuild build_engine(index, 0, index_schema, false);
       /*
+       * Insert a new structure
        * Molecule structure is a text
        */
-      BingoPgText struct_text(values[0]);
-      /*
-       * Insert a new structure
-       */
-      result = build_engine.insertStructure(ht_ctid, struct_text);
+      result = build_engine.insertStructure(ht_ctid, values[0]);
    }
    PG_BINGO_END
 

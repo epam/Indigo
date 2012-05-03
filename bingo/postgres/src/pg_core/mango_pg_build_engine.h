@@ -25,7 +25,7 @@ public:
    MangoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name);
    virtual ~MangoPgBuildEngine();
 
-   virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&);
+   virtual bool processStructure(StructCache& struct_cache);
    virtual void processStructures(indigo::ObjArray<StructCache>& struct_caches);
 
    virtual int getFpSize();

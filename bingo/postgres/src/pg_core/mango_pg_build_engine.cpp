@@ -28,7 +28,6 @@ MangoPgBuildEngine::MangoPgBuildEngine(BingoPgConfig& bingo_config, const char* 
 BingoPgBuildEngine(),
 _searchType(-1) {
    _setBingoContext();
-//   bingoSetErrorHandler(_errorHandler, 0);
    /*
     * Set up bingo configuration
     */
@@ -51,14 +50,15 @@ MangoPgBuildEngine::~MangoPgBuildEngine() {
    bingoIndexEnd();
 }
 
-bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>& data_ptr) {
+bool MangoPgBuildEngine::processStructure(StructCache& struct_cache) {
 
    _setBingoContext();
    int bingo_res;
-//   bingoSetErrorHandler(_errorHandler, 0);
 
-   data_ptr.reset(new MangoPgFpData());
-   MangoPgFpData& data = (MangoPgFpData&)data_ptr.ref();
+   BingoPgText& struct_text = struct_cache.text.ref();
+   ItemPointer item_ptr = &struct_cache.ptr;
+   int block_number = ItemPointerGetBlockNumber(item_ptr);
+   int offset_number = ItemPointerGetOffsetNumber(item_ptr);
 
    int struct_size;
    const char* struct_ptr = struct_text.getText(struct_size);
@@ -71,71 +71,17 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
     */
    bingo_res = mangoIndexProcessSingleRecord();
 
-   CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while processing record", bingoGetWarning());
+   CORE_HANDLE_WARNING_TID(bingo_res, 1, "molecule build engine: error while processing record", block_number, offset_number, bingoGetWarning());
    if(bingo_res < 1)
       return false;
 
-   const char* cmf_buf;
-   int cmf_len;
-   const char*xyz_buf;
-   int xyz_len;
-   const char*gross_str;
-   const char*counter_elements_str;
-   const char*fp_buf;
-   int fp_len;
-   const char *fp_sim_str;
-   float mass;
-   int sim_fp_bits_count;
-   /*
-    * Get prepared data
-    */
-   bingo_res = mangoIndexReadPreparedMolecule(0, &cmf_buf, &cmf_len, &xyz_buf, &xyz_len,
-                 &gross_str, &counter_elements_str, &fp_buf, &fp_len,
-                 &fp_sim_str, &mass, &sim_fp_bits_count);
-
-   CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while prepare record", bingoGetError());
-   if(bingo_res < 1)
+   AutoPtr<MangoPgFpData> fp_data(new MangoPgFpData());
+   if(_readPreparedInfo(0, fp_data.ref(), getFpSize())) {
+      struct_cache.data.reset(fp_data.release());
+      struct_cache.data->setTidItem(item_ptr);
+   } else {
       return false;
-
-
-   /*
-    * Set gross formula
-    */
-   data.setGrossStr(gross_str, counter_elements_str);
-
-   /*
-    * Set hash information
-    */
-   dword ex_hash;
-   int ex_hash_count;
-   bingo_res = mangoGetHash(1, -1, &ex_hash_count, &ex_hash);
-
-   CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while calculating hash for a record", bingoGetError());
-   if(bingo_res < 1)
-      return false;
-   
-   int target_fragments = 0;
-   for (int comp_idx = 0; comp_idx < ex_hash_count; ++comp_idx) {
-      int comp_count;
-      bingo_res = mangoGetHash(1, comp_idx, &comp_count, &ex_hash);
-      
-      CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while calculating hash for a record", bingoGetError());
-      if(bingo_res < 1)
-         return false;
-      data.insertHash(ex_hash, comp_count);
-      target_fragments += comp_count;
    }
-   data.setFragmentsCount(target_fragments);
-
-   /*
-    * Set common info
-    */
-   data.setCmf(cmf_buf, cmf_len);
-   data.setXyz(xyz_buf, xyz_len);
-   data.setFingerPrints(fp_buf, getFpSize());
-   data.setMass(mass);
-   data.setBitsCount(sim_fp_bits_count);
-
    return true;
 }
 
@@ -152,6 +98,7 @@ void MangoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
     */
    bingo_res = bingoIndexProcess(false, _getNextRecordCb, _processResultCb, _processErrorCb, this);
    CORE_HANDLE_ERROR(bingo_res, 0, "molecule build engine: error while processing records", bingoGetError());
+   _setBingoContext();
 }
 
 void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
@@ -184,7 +131,6 @@ void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
 int MangoPgBuildEngine::getFpSize() {
    int result;
    _setBingoContext();
-//   bingoSetErrorHandler(_errorHandler, 0);
 
    bingoGetConfigInt("fp-size-bytes", &result);
 
@@ -314,7 +260,6 @@ bool MangoPgBuildEngine::_readPreparedInfo(int* id, MangoPgFpData& data, int fp_
    CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while prepare record", bingoGetError());
    if(bingo_res < 1)
       return false;
-
 
    /*
     * Set gross formula
