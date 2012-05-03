@@ -21,7 +21,7 @@ public:
    virtual ~RingoPgBuildEngine();
 
    virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&);
-   virtual void processStructures(indigo::ObjArray<StructCache>& struct_cache){}
+   virtual void processStructures(indigo::ObjArray<StructCache>& struct_cache);
 
    virtual int getFpSize();
    virtual int getType() const {return BINGO_INDEX_TYPE_REACTION;}

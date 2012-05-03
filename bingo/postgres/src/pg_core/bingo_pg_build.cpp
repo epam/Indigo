@@ -181,9 +181,7 @@ void BingoPgBuild::insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_pt
     */
    BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache.push();
    struct_cache.text.reset(new BingoPgText(text_ptr));
-   struct_cache.ptr.reset(new ItemPointerData());
-   ItemPointerData& item_p = struct_cache.ptr.ref();
-   item_p = *(ItemPointer) item_ptr;
+   struct_cache.ptr = *((ItemPointer) item_ptr);
    
    if(_parrallelCache.size() > MAX_CACHE_SIZE) 
       flush();
@@ -200,8 +198,9 @@ void BingoPgBuild::flush() {
 
    for (int c_idx = 0; c_idx < _parrallelCache.size(); ++c_idx) {
       BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache[c_idx];
-      if(struct_cache.data.get() == 0)
+      if(struct_cache.data.get() == 0) {
          continue;
+      }
       
       BingoPgFpData& data_ref = struct_cache.data.ref();
       _bufferIndex.insertStructure(data_ref);

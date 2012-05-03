@@ -277,11 +277,12 @@ void MangoPgBuildEngine::_processResultCb (void *context) {
    if(_readPreparedInfo(&cache_idx, fp_data.ref(), engine->_fpSize)) {
       StructCache& struct_cache = struct_caches[cache_idx];
       struct_cache.data.reset(fp_data.release());
+      struct_cache.data->setTidItem(&struct_cache.ptr);
    }
 
 }
 void MangoPgBuildEngine::_processErrorCb (int id, void *context) {
-
+   elog(WARNING, "%d", id);
 }
 
 

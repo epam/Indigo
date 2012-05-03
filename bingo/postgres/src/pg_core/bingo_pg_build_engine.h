@@ -32,8 +32,8 @@ public:
    public:
       StructCache(){}
       ~StructCache(){}
+      ItemPointerData ptr;
       indigo::AutoPtr<BingoPgText> text;
-      indigo::AutoPtr<ItemPointerData> ptr;
       indigo::AutoPtr<BingoPgFpData> data;
    private:
       StructCache(const StructCache&); //no implicit copy

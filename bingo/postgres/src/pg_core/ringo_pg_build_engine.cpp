@@ -99,6 +99,19 @@ bool RingoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
 
    return true;
 }
+
+void RingoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches) {
+   _setBingoContext();
+
+   for (int str_idx = 0; str_idx < struct_caches.size(); ++str_idx) {
+      StructCache& struct_cache = struct_caches[str_idx];
+      processStructure(struct_cache.text.ref(), struct_cache.data);
+      if(struct_cache.data.get() != 0) {
+         struct_cache.data->setTidItem(&struct_cache.ptr);
+      }
+   }
+
+}
 void RingoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
    RingoPgFpData& data = (RingoPgFpData&) item_data;
 
