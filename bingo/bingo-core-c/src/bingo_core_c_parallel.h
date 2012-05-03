@@ -77,6 +77,7 @@ public:
    int (*get_next_record_cb) (void *context);
    void (*process_result_cb) (void *context);
    void (*process_error_cb) (int id, void *context);
+   bool _finished;
 
 protected:
    // This method should be overridden to setup current processed record so
@@ -91,7 +92,6 @@ private:
    virtual bool _setupCommand (OsCommand &command);
    virtual void _handleResult (OsCommandResult &result);
 
-   bool _finished;
    int _records_per_command;
    OsLock _lock_for_exclusive_access;
 };
