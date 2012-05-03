@@ -80,6 +80,7 @@ bool MangoPgBuildEngine::processStructure(StructCache& struct_cache) {
       struct_cache.data.reset(fp_data.release());
       struct_cache.data->setTidItem(item_ptr);
    } else {
+      elog(WARNING, "molecule build engine: internal error while processing record with ctid='(%d,%d)'::tid: see at the previous warning", block_number, offset_number);
       return false;
    }
    return true;
@@ -215,7 +216,7 @@ int MangoPgBuildEngine::_getNextRecordCb (void *context) {
 void MangoPgBuildEngine::_processResultCb (void *context) {
    MangoPgBuildEngine* engine = (MangoPgBuildEngine*)context;
    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
-   int cache_idx;
+   int cache_idx = -1;
    AutoPtr<MangoPgFpData> fp_data(new MangoPgFpData());
    /*
     * Prepare info
@@ -224,6 +225,15 @@ void MangoPgBuildEngine::_processResultCb (void *context) {
       StructCache& struct_cache = struct_caches[cache_idx];
       struct_cache.data.reset(fp_data.release());
       struct_cache.data->setTidItem(&struct_cache.ptr);
+   } else {
+      if(cache_idx != -1) {
+         ItemPointer item_ptr = &(struct_caches[cache_idx].ptr);
+         int block_number = ItemPointerGetBlockNumber(item_ptr);
+         int offset_number = ItemPointerGetOffsetNumber(item_ptr);
+         elog(WARNING, "molecule build engine: internal error while processing record with ctid='(%d,%d)'::tid: see at the previous warning", block_number, offset_number);
+      } else {
+         elog(WARNING, "molecule build engine: internal error while processing record: see at the previous warning");
+      }
    }
 
 }
