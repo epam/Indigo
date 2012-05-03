@@ -47,6 +47,7 @@ _searchType(-1) {
 
 MangoPgBuildEngine::~MangoPgBuildEngine() {
    elog(DEBUG1, "bingo: mango build: finish building '%s'", _relName.ptr());
+   _setBingoContext();
    bingoIndexEnd();
 }
 
@@ -141,7 +142,6 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
 void MangoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches) {
    _setBingoContext();
    int bingo_res;
-//   bingoSetErrorHandler(_errorHandler, 0);
 
    _currentCache = 0;
    _structCaches = &struct_caches;
@@ -151,9 +151,7 @@ void MangoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
     * Process target
     */
    bingo_res = bingoIndexProcess(false, _getNextRecordCb, _processResultCb, _processErrorCb, this);
-   CORE_HANDLE_WARNING(bingo_res, 0, "molecule build engine: error while processing record", bingoGetWarning());
-
-
+   CORE_HANDLE_ERROR(bingo_res, 0, "molecule build engine: error while processing records", bingoGetError());
 }
 
 void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
@@ -262,7 +260,7 @@ int MangoPgBuildEngine::_getNextRecordCb (void *context) {
    const char* struct_ptr = struct_cache.text->getText(struct_size);
 
    /*
-    * Set target data
+    * Set target data. There is no need to handle errors
     */
    bingoSetIndexRecordData(cache_idx, struct_ptr, struct_size);
    ++cache_idx;
@@ -273,7 +271,9 @@ void MangoPgBuildEngine::_processResultCb (void *context) {
    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
    int cache_idx;
    AutoPtr<MangoPgFpData> fp_data(new MangoPgFpData());
-   
+   /*
+    * Prepare info
+    */
    if(_readPreparedInfo(&cache_idx, fp_data.ref(), engine->_fpSize)) {
       StructCache& struct_cache = struct_caches[cache_idx];
       struct_cache.data.reset(fp_data.release());
@@ -282,7 +282,12 @@ void MangoPgBuildEngine::_processResultCb (void *context) {
 
 }
 void MangoPgBuildEngine::_processErrorCb (int id, void *context) {
-   elog(WARNING, "%d", id);
+   MangoPgBuildEngine* engine = (MangoPgBuildEngine*)context;
+   ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
+   ItemPointer item_ptr = &(struct_caches[id].ptr);
+   int block_number = ItemPointerGetBlockNumber(item_ptr);
+   int offset_number = ItemPointerGetOffsetNumber(item_ptr);
+   elog(WARNING, "molecule build engine: error while processing record with ctid='(%d,%d)'::tid: %s", block_number, offset_number, bingoGetWarning());
 }
 
 

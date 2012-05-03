@@ -63,6 +63,7 @@ _searchType(-1) {
 }
 
 MangoPgSearchEngine::~MangoPgSearchEngine() {
+   _setBingoContext();
    bingoIndexEnd();
 }
 
