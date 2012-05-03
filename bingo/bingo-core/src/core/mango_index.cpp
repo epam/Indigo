@@ -43,6 +43,9 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
            _context->ignore_closing_bond_direction_mismatch;
    loader.loadMolecule(mol);
 
+   //Skip all SGroups
+   mol.clearSGroups();
+
    Molecule::checkForConsistency(mol);
 
    // Make aromatic molecule

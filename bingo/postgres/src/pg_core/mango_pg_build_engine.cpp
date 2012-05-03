@@ -138,6 +138,24 @@ bool MangoPgBuildEngine::processStructure(BingoPgText& struct_text, indigo::Auto
    return true;
 }
 
+void MangoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches) {
+   _setBingoContext();
+   int bingo_res;
+//   bingoSetErrorHandler(_errorHandler, 0);
+
+   _currentCache = 0;
+   _structCaches = &struct_caches;
+   _fpSize = getFpSize();
+   
+   /*
+    * Process target
+    */
+   bingo_res = bingoIndexProcess(false, _getNextRecordCb, _processResultCb, _processErrorCb, this);
+   CORE_HANDLE_WARNING(bingo_res, 0, "molecule build engine: error while processing record", bingoGetWarning());
+
+
+}
+
 void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data) {
    MangoPgFpData& data = (MangoPgFpData&)item_data;
 
@@ -228,6 +246,108 @@ void MangoPgBuildEngine::finishShadowProcessing() {
    BingoPgCommon::executeQuery("CREATE INDEX %s_cmf_idx ON %s(b_id)", shadow_rel_name,  shadow_rel_name);
    BingoPgCommon::executeQuery("CREATE INDEX %s_hash_idx ON %s using hash(ex_hash)", shadow_hash_rel_name,  shadow_hash_rel_name);
 
+}
+
+int MangoPgBuildEngine::_getNextRecordCb (void *context) {
+   MangoPgBuildEngine* engine = (MangoPgBuildEngine*)context;
+   
+   int& cache_idx = engine->_currentCache;
+   ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
+   if(cache_idx >= struct_caches.size())
+      return 0;
+
+   StructCache& struct_cache = struct_caches[cache_idx];
+
+   int struct_size;
+   const char* struct_ptr = struct_cache.text->getText(struct_size);
+
+   /*
+    * Set target data
+    */
+   bingoSetIndexRecordData(cache_idx, struct_ptr, struct_size);
+   ++cache_idx;
+   return 1;
+}
+void MangoPgBuildEngine::_processResultCb (void *context) {
+   MangoPgBuildEngine* engine = (MangoPgBuildEngine*)context;
+   ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
+   int cache_idx;
+   AutoPtr<MangoPgFpData> fp_data(new MangoPgFpData());
+   
+   if(_readPreparedInfo(&cache_idx, fp_data.ref(), engine->_fpSize)) {
+      StructCache& struct_cache = struct_caches[cache_idx];
+      struct_cache.data.reset(fp_data.release());
+   }
+
+}
+void MangoPgBuildEngine::_processErrorCb (int id, void *context) {
+
+}
+
+
+bool MangoPgBuildEngine::_readPreparedInfo(int* id, MangoPgFpData& data, int fp_size) {
+   int bingo_res;
+   const char* cmf_buf;
+   int cmf_len;
+   const char*xyz_buf;
+   int xyz_len;
+   const char*gross_str;
+   const char*counter_elements_str;
+   const char*fp_buf;
+   int fp_len;
+   const char *fp_sim_str;
+   float mass;
+   int sim_fp_bits_count;
+   /*
+    * Get prepared data
+    */
+   bingo_res = mangoIndexReadPreparedMolecule(id, &cmf_buf, &cmf_len, &xyz_buf, &xyz_len,
+                 &gross_str, &counter_elements_str, &fp_buf, &fp_len,
+                 &fp_sim_str, &mass, &sim_fp_bits_count);
+
+   CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while prepare record", bingoGetError());
+   if(bingo_res < 1)
+      return false;
+
+
+   /*
+    * Set gross formula
+    */
+   data.setGrossStr(gross_str, counter_elements_str);
+
+   /*
+    * Set hash information
+    */
+   dword ex_hash;
+   int ex_hash_count;
+   bingo_res = mangoGetHash(1, -1, &ex_hash_count, &ex_hash);
+
+   CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while calculating hash for a record", bingoGetError());
+   if(bingo_res < 1)
+      return false;
+
+   int target_fragments = 0;
+   for (int comp_idx = 0; comp_idx < ex_hash_count; ++comp_idx) {
+      int comp_count;
+      bingo_res = mangoGetHash(1, comp_idx, &comp_count, &ex_hash);
+
+      CORE_HANDLE_WARNING(bingo_res, 1, "molecule build engine: error while calculating hash for a record", bingoGetError());
+      if(bingo_res < 1)
+         return false;
+      data.insertHash(ex_hash, comp_count);
+      target_fragments += comp_count;
+   }
+   data.setFragmentsCount(target_fragments);
+
+   /*
+    * Set common info
+    */
+   data.setCmf(cmf_buf, cmf_len);
+   data.setXyz(xyz_buf, xyz_len);
+   data.setFingerPrints(fp_buf, fp_size);
+   data.setMass(mass);
+   data.setBitsCount(sim_fp_bits_count);
+   return true;
 }
 
 

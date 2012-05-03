@@ -17,6 +17,8 @@ extern "C" {
 #include "base_c/bitarray.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/array.h"
+#include "base_cpp/profiling.h"
+
 #include "bingo_core_c.h"
 
 #include "bingo_pg_text.h"
@@ -124,6 +126,8 @@ bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr) {
 }
 
 bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr) {
+   
+   profTimerStart(t0, "bingo_pg.search_sub");
    BingoPgFpData& query_data = _queryFpData.ref();
    BingoPgIndex& bingo_index = *_bufferIndexPtr;
    /*
@@ -138,7 +142,7 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr) {
           _currentSection = bingo_index.readNext(_currentSection);
        }
    }
-
+   profTimerStart(t1, "bingo_pg.search_fp");
    /*
     * Iterate through the sections
     */
@@ -171,6 +175,7 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr) {
           * Set first match as an answer
           */
          if(_fetchForNext()) {
+            profTimerStop(t1);
             setItemPointer(result_ptr);
             /*
              * Set fetch found to return on the next steps

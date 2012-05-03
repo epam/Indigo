@@ -7,6 +7,7 @@ extern "C" {
 #undef qsort
 #endif
 
+#include "base_cpp/profiling.h"
 #include "bingo_pg_index.h"
 #include "pg_bingo_context.h"
 #include "bingo_pg_ext_bitset.h"
@@ -467,6 +468,7 @@ bool BingoPgIndex::isStructureRemoved(ItemPointerData& cmf_item) {
 }
 
 void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>& cmf_buf) {
+   profTimerStart(t0, "bingo_pg.read_cmf");
    /*
     * Prepare info for reading
     */

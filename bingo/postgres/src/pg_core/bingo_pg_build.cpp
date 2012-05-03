@@ -13,11 +13,13 @@ extern "C" {
 
 #include "bingo_core_c.h"
 #include "base_cpp/auto_ptr.h"
+#include "base_cpp/profiling.h"
 
 #include "pg_bingo_context.h"
 #include "bingo_pg_buffer.h"
 #include "bingo_pg_config.h"
 #include "bingo_pg_common.h"
+#include "bingo_pg_text.h"
 #include "bingo_pg_ext_bitset.h"
 #include "bingo_pg_search_engine.h"
 #include "mango_pg_build_engine.h"
@@ -151,6 +153,7 @@ bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text)
    indigo::AutoPtr<BingoPgFpData> data;
    int block_number = ItemPointerGetBlockNumber((ItemPointer) item_ptr);
    int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
+   profTimerStart(t0, "bingo_pg.insert");
 
    elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);
 
@@ -172,8 +175,62 @@ bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, BingoPgText& struct_text)
    return true;
 }
 
-void BingoPgBuild::_errorHandler(const char* message, void*) {
-   throw Error("Error while building index: %s", message);
+void BingoPgBuild::insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_ptr) {
+   /*
+    * Insert a new structure
+    */
+   BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache.push();
+   struct_cache.text.reset(new BingoPgText(text_ptr));
+   struct_cache.ptr.reset(new ItemPointerData());
+   ItemPointerData& item_p = struct_cache.ptr.ref();
+   item_p = *(ItemPointer) item_ptr;
+   
+   if(_parrallelCache.size() > MAX_CACHE_SIZE) 
+      flush();
+
 }
+
+void BingoPgBuild::flush() {
+   profTimerStart(t0, "bingo_pg.insert_parallel");
+
+   if(_parrallelCache.size() == 0)
+      return;
+   
+   fp_engine->processStructures(_parrallelCache);
+
+   for (int c_idx = 0; c_idx < _parrallelCache.size(); ++c_idx) {
+      BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache[c_idx];
+      if(struct_cache.data.get() == 0)
+         continue;
+      
+      BingoPgFpData& data_ref = struct_cache.data.ref();
+      _bufferIndex.insertStructure(data_ref);
+      fp_engine->insertShadowInfo(data_ref);
+   }
+
+   _parrallelCache.clear();
+
+//   indigo::AutoPtr<BingoPgFpData> data;
+//   int block_number = ItemPointerGetBlockNumber((ItemPointer) item_ptr);
+//   int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
+
+//   elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);
+
+//   if (!fp_engine->processStructure(struct_text, data)) {
+//      elog(WARNING, "can not insert a structure with ctid='(%d,%d)'::tid (see at the previous warning)", block_number, offset_number);
+//      return;
+//   }
+
+//   BingoPgFpData& data_ref = data.ref();
+
+//   data_ref.setTidItem(item_ptr);
+
+
+//   elog(DEBUG1, "bingo: insert structure: finish processing the table entry with ctid='(%d,%d)'::tid",  block_number, offset_number);
+}
+
+//void BingoPgBuild::_errorHandler(const char* message, void*) {
+//   throw Error("Error while building index: %s", message);
+//}
 
 

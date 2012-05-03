@@ -12,8 +12,9 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "graph/max_common_subgraph.h"
 #include "base_cpp/array.h"
+#include "base_cpp/cancellation_handler.h"
+#include "graph/max_common_subgraph.h"
 #include "time.h"
 
 using namespace indigo;
@@ -567,6 +568,7 @@ void MaxCommonSubgraph::ReCreation::getSolutionListsSuper(ObjArray< Array<int> >
 MaxCommonSubgraph::ReGraph::ReGraph():
    cbEmbedding(0),
    userdata(0),
+   cancellation_handler(0),
    _nbIteration(0), 
    _maxIteration(-1),
    _firstGraphSize(0), 
@@ -574,11 +576,13 @@ MaxCommonSubgraph::ReGraph::ReGraph():
    _findAllStructure(true), 
    _stop(false),
    _solutionObjList(_pool) {
+   cancellation_handler = getCancellationHandler();
 }
 
 MaxCommonSubgraph::ReGraph::ReGraph(MaxCommonSubgraph& context):
 cbEmbedding(0),
    userdata(0),
+   cancellation_handler(0),
    _nbIteration(0),
    _maxIteration(-1),
    _firstGraphSize(0),
@@ -587,6 +591,7 @@ cbEmbedding(0),
    _stop(false),
    _solutionObjList(_pool) {
    setMaxIteration(context.parametersForExact.maxIteration);
+   cancellation_handler = getCancellationHandler();
 }
 
 
@@ -688,6 +693,12 @@ void MaxCommonSubgraph::ReGraph::parse(bool findAllStructure){
                ++_nbIteration;
                if(_maxIteration > -1 && _nbIteration >= _maxIteration)
                   _stop = true;
+               if(_nbIteration % 10 == 0) {
+                  if(cancellation_handler != 0) {
+                     if(cancellation_handler->isCancelled())
+                        throw Error("mcs search was cancelled: %s", cancellation_handler->cancelledRequestMessage());
+                  }
+               }
             } else { 
                xk[level] = -1;
                --level;
@@ -1484,6 +1495,7 @@ int MaxCommonSubgraph::Greedy::_matchedEdges(){
 MaxCommonSubgraph::RandomDisDec::RandomDisDec(AdjMatricesStore &aj):
 _adjMstore(aj),TL_CP_GET(_errorList),TL_CP_GET(_listErrVertices),_maxIteration(MAX_ITERATION){
    setIterationNumber(aj._context.parametersForApproximate.maxIteration);
+   cancellation_handler = getCancellationHandler();
 }
 
 void MaxCommonSubgraph::RandomDisDec::refinementStage(){
@@ -1524,6 +1536,12 @@ void MaxCommonSubgraph::RandomDisDec::refinementStage(){
       //if iteration reach max limit - when end cycle
       if(t > (_maxIteration * _n) || _errorNumber == 0){
          _stop = true;
+      }
+      if (t % 100 == 0) {
+         if (cancellation_handler != 0) {
+            if (cancellation_handler->isCancelled())
+               throw Error("mcs search was cancelled: %s", cancellation_handler->cancelledRequestMessage());
+         }
       }
 
       if(_stop)

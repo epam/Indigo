@@ -29,9 +29,9 @@
    static int var_name##_name_index;                             \
    if (var_name##_name_index == 0)                               \
    {                                                             \
-      OsLocker locker(_profiling_global_lock);                   \
+      indigo::OsLocker locker(indigo::_profiling_global_lock);   \
       if (var_name##_name_index == 0) {                          \
-         ProfilingSystem &inst = ProfilingSystem::getInstance(); \
+         indigo::ProfilingSystem &inst = indigo::ProfilingSystem::getInstance(); \
          var_name##_name_index = inst.getNameIndex(name);        \
       }                                                          \
    }
@@ -39,7 +39,7 @@
 
 #define profTimerStart(var_name, name) \
    _PROF_GET_NAME_INDEX(var_name, name)   \
-   _ProfilingTimer var_name##_timer(var_name##_name_index)
+   indigo::_ProfilingTimer var_name##_timer(var_name##_name_index)
 
 #define profTimerStop(var_name) \
    var_name##_timer.stop()

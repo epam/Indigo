@@ -35,6 +35,10 @@ void RingoIndex::prepare (Scanner &rxnfile, Output &output, OsLock *lock_for_exc
            _context->ignore_closing_bond_direction_mismatch;
    rrd.loadReaction(reaction);
 
+   // Skip all SGroups
+   for (int mol_idx = reaction.begin(); mol_idx != reaction.end(); mol_idx = reaction.next(mol_idx)) 
+      reaction.getBaseMolecule(mol_idx).clearSGroups();
+
    Reaction::checkForConsistency(reaction);
 
    ReactionAutomapper ram(reaction);
