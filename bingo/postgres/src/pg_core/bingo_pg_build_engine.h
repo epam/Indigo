@@ -59,8 +59,16 @@ private:
    BingoPgBuildEngine(const BingoPgBuildEngine&); //no implicit copy
 protected:
    void _setBingoContext();
+
+   static int _getNextRecordCb (void *context);
+   static void _processErrorCb (int id, void *context);
+
    qword _bingoSession;
    BingoPgIndex* _bufferIndexPtr;
+
+   indigo::ObjArray<StructCache>* _structCaches;
+   int _currentCache;
+   int _fpSize;
 };
 
 

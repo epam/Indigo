@@ -193,26 +193,6 @@ void MangoPgBuildEngine::finishShadowProcessing() {
 
 }
 
-int MangoPgBuildEngine::_getNextRecordCb (void *context) {
-   MangoPgBuildEngine* engine = (MangoPgBuildEngine*)context;
-   
-   int& cache_idx = engine->_currentCache;
-   ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
-   if(cache_idx >= struct_caches.size())
-      return 0;
-
-   StructCache& struct_cache = struct_caches[cache_idx];
-
-   int struct_size;
-   const char* struct_ptr = struct_cache.text->getText(struct_size);
-
-   /*
-    * Set target data. There is no need to handle errors
-    */
-   bingoSetIndexRecordData(cache_idx, struct_ptr, struct_size);
-   ++cache_idx;
-   return 1;
-}
 void MangoPgBuildEngine::_processResultCb (void *context) {
    MangoPgBuildEngine* engine = (MangoPgBuildEngine*)context;
    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
@@ -237,15 +217,6 @@ void MangoPgBuildEngine::_processResultCb (void *context) {
    }
 
 }
-void MangoPgBuildEngine::_processErrorCb (int id, void *context) {
-   MangoPgBuildEngine* engine = (MangoPgBuildEngine*)context;
-   ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
-   ItemPointer item_ptr = &(struct_caches[id].ptr);
-   int block_number = ItemPointerGetBlockNumber(item_ptr);
-   int offset_number = ItemPointerGetOffsetNumber(item_ptr);
-   elog(WARNING, "molecule build engine: error while processing record with ctid='(%d,%d)'::tid: %s", block_number, offset_number, bingoGetWarning());
-}
-
 
 bool MangoPgBuildEngine::_readPreparedInfo(int* id, MangoPgFpData& data, int fp_size) {
    int bingo_res;

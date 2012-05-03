@@ -38,9 +38,7 @@ public:
 private:
    MangoPgBuildEngine(const MangoPgBuildEngine&); // no implicit copy
 
-   static int _getNextRecordCb (void *context);
    static void _processResultCb (void *context);
-   static void _processErrorCb (int id, void *context);
    static bool _readPreparedInfo(int* id, MangoPgFpData& data, int fp_size);
 
 //   void _handleError(int res, int success_res, const char* message, bool only_warn);
@@ -50,11 +48,6 @@ private:
    indigo::Array<char> _shadowHashRelName;
 
    int _searchType;
-
-
-   indigo::ObjArray<StructCache>* _structCaches;
-   int _currentCache;
-   int _fpSize;
 
 };
 
