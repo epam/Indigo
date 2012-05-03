@@ -32,8 +32,8 @@ public:
    public:
       StructCache(){}
       ~StructCache(){}
+      ItemPointerData ptr;
       indigo::AutoPtr<BingoPgText> text;
-      indigo::AutoPtr<ItemPointerData> ptr;
       indigo::AutoPtr<BingoPgFpData> data;
    private:
       StructCache(const StructCache&); //no implicit copy
@@ -42,8 +42,8 @@ public:
    BingoPgBuildEngine();
    virtual ~BingoPgBuildEngine();
 
-   virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&){return true;}
-   virtual void processStructures(indigo::ObjArray<StructCache>& struct_cache){}
+   virtual bool processStructure(StructCache& struct_cache){return true;}
+   virtual void processStructures(indigo::ObjArray<StructCache>& struct_caches){}
 
    virtual int getType() const {return 0;}
    virtual int getFpSize() {return 0;}
@@ -59,8 +59,16 @@ private:
    BingoPgBuildEngine(const BingoPgBuildEngine&); //no implicit copy
 protected:
    void _setBingoContext();
+
+   static int _getNextRecordCb (void *context);
+   static void _processErrorCb (int id, void *context);
+
    qword _bingoSession;
    BingoPgIndex* _bufferIndexPtr;
+
+   indigo::ObjArray<StructCache>* _structCaches;
+   int _currentCache;
+   int _fpSize;
 };
 
 

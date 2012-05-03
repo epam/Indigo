@@ -417,5 +417,10 @@ public:
       elog(WARNING, "%s: %s", suffix, message);\
    }
 
+#define CORE_HANDLE_WARNING_TID(res, success_res, suffix, block, offset, message)\
+   if (res < success_res) {\
+      elog(WARNING, "%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, message);\
+   }
+
 #endif	/* BINGO_PG_COMMON_H */
 

@@ -95,7 +95,7 @@ bingo_build(PG_FUNCTION_ARGS) {
               bingoIndexCallback, (void *) &build_engine);
       } BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", message));
 
-//      build_engine.flush();
+      build_engine.flush();
       /*
        * Return statistics
        */
@@ -136,13 +136,11 @@ static void bingoIndexCallback(Relation index,
     * Molecule structure is a text
     */
    
-   BingoPgText struct_text(values[0]);
-   
    /*
     * Insert a new structure
     */
-   build_engine.insertStructure(&htup->t_self, struct_text);
-//   build_engine.insertStructureParallel(&htup->t_self, values[0]);
+//   build_engine.insertStructure(&htup->t_self, values[0]);
+   build_engine.insertStructureParallel(&htup->t_self, values[0]);
 }
 
 Datum
