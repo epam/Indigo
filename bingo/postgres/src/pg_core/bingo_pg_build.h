@@ -30,7 +30,8 @@ public:
     * Inserts a new structure into the index
     * Returns true if insertion was successfull
     */
-   bool insertStructure(PG_OBJECT item_ptr, uintptr_t text_ptr);
+   void insertStructure(PG_OBJECT item_ptr, uintptr_t text_ptr);
+   bool insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr);
    void insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_ptr);
    void flush();
 

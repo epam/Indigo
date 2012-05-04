@@ -49,6 +49,15 @@ const char* BingoPgBuildEngine::getDictionary(int& size) {
    return dict_buf;
 }
 
+int BingoPgBuildEngine::getNthreads() {
+   int result;
+   _setBingoContext();
+
+   bingoGetConfigInt("nthreads", &result);
+
+   return result;
+}
+
 
 int BingoPgBuildEngine::_getNextRecordCb (void *context) {
    BingoPgBuildEngine* engine = (BingoPgBuildEngine*)context;

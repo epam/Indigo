@@ -144,12 +144,19 @@ void BingoPgBuild::_prepareUpdating() {
    fp_engine->loadDictionary(_bufferIndex);
 }
 
+void BingoPgBuild::insertStructure(PG_OBJECT item_ptr, uintptr_t text_ptr) {
+   if(fp_engine->getNthreads() == 1) {
+      insertStructureSingle(item_ptr, text_ptr);
+   } else {
+      insertStructureParallel(item_ptr, text_ptr);
+   }
+}
 
-bool BingoPgBuild::insertStructure(PG_OBJECT item_ptr, uintptr_t text_ptr) {
+
+bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr) {
    /*
     * Insert a new structure
     */
-
    int block_number = ItemPointerGetBlockNumber((ItemPointer) item_ptr);
    int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
    profTimerStart(t0, "bingo_pg.insert");
