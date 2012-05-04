@@ -2,6 +2,7 @@ import os
 import shutil
 from os.path import *
 import re
+import subprocess
 
 from optparse import OptionParser
 
@@ -29,16 +30,16 @@ if os.path.exists("java"):
     shutil.rmtree("java")
     
 os.chdir(os.path.join(api_dir, "java"))
-os.system("ant clean")
-os.system("ant jar")
+subprocess.check_call(["ant", "clean"], shell=True)
+subprocess.check_call(["ant", "jar"], shell=True)
 
 os.chdir(os.path.join(api_dir, "plugins", "renderer", "java"))
-os.system("ant clean")
-os.system("ant jar")
+subprocess.check_call(["ant", "clean"], shell=True)
+subprocess.check_call(["ant", "jar"], shell=True)
 
 os.chdir(os.path.join(api_dir, "plugins", "inchi", "java"))
-os.system("ant clean")
-os.system("ant jar")
+subprocess.check_call(["ant", "clean"], shell=True)
+subprocess.check_call(["ant", "jar"], shell=True)
 
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "java")
@@ -47,4 +48,4 @@ shutil.copy(os.path.join(root, "common", "jna", "jna.jar"), "java")
 
 archive_name = "indigo-java-%s" % (version + args.suffix)
 os.rename("java", archive_name)
-os.system("zip -r -9 -m %s.zip %s" % (archive_name, archive_name))
+subprocess.check_call("zip -r -9 -m %s.zip %s" % (archive_name, archive_name), shell=True)
