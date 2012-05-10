@@ -138,6 +138,7 @@ int MangoPgBuildEngine::getFpSize() {
    return result * 8;
 }
 
+
 void MangoPgBuildEngine::prepareShadowInfo(const char* schema_name, const char* index_schema) {
    /*
     * Create auxialiry tables

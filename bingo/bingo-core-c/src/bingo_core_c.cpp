@@ -189,6 +189,8 @@ CEXPORT int bingoGetConfigInt (const char *name, int *value)
          *value = self.sub_screening_max_bits;
       else if (strcasecmp(name, "SIM_SCREENING_PASS_MARK") == 0)
          *value = self.sim_screening_pass_mark;
+      else if (strcasecmp(name, "nthreads") == 0)
+         *value = self.bingo_context->nthreads;
       else
          throw BingoError("unknown parameter name: %s", name);
    }

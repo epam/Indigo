@@ -186,8 +186,8 @@ enum
    /* 222 - General valence */
    CMF_VALENCE_EXT,
 
-   /* Alphabet size = 223 */
-   CMF_ALPHABET_SIZE
+   /* Alphabet size = 256. Any number can be used because of writing integer indices */
+   CMF_ALPHABET_SIZE = 256
 };
 
 }

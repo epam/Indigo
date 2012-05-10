@@ -55,6 +55,7 @@ public:
    void loadDictionary(BingoPgIndex&);
    const char* getDictionary(int& size);
 
+   int getNthreads();
 private:
    BingoPgBuildEngine(const BingoPgBuildEngine&); //no implicit copy
 protected:

@@ -169,6 +169,13 @@ static relopt_int intRelOpts[] =
 			RELOPT_KIND_BINGO
 		}, -1, 0, 2000000000
 	},
+	{
+		{
+			"nthreads",
+			"",
+			RELOPT_KIND_BINGO
+		}, -1, 0, 2000000000
+	},
 	/* list terminator */
 	{{NULL}}
 
@@ -520,7 +527,9 @@ bingo_reloptions(Datum reloptions, bool validate) {
       {"sub_screening_max_bits", RELOPT_TYPE_INT,
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, sub_screening_max_bits)},
       {"sim_screening_pass_mark", RELOPT_TYPE_INT,
-              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, sim_screening_pass_mark)}
+              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, sim_screening_pass_mark)},
+      {"nthreads", RELOPT_TYPE_INT,
+              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, nthreads)}
    };
 
    options = bingoParseRelOptions(reloptions, validate, RELOPT_KIND_BINGO, &numoptions);
@@ -543,7 +552,6 @@ Datum
 bingo_options(PG_FUNCTION_ARGS) {
    Datum reloptions = PG_GETARG_DATUM(0);
    bool validate = PG_GETARG_BOOL(1);
-   elog(NOTICE, "bingo options");
 
    bytea *result;
 

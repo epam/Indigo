@@ -133,14 +133,9 @@ static void bingoIndexCallback(Relation index,
    BingoPgBuild &build_engine = *(BingoPgBuild *) state;
 
    /*
-    * Molecule structure is a text
+    * Insert a new structure (single or parallel)
     */
-   
-   /*
-    * Insert a new structure
-    */
-//   build_engine.insertStructure(&htup->t_self, values[0]);
-   build_engine.insertStructureParallel(&htup->t_self, values[0]);
+   build_engine.insertStructure(&htup->t_self, values[0]);
 }
 
 Datum
