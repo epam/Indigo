@@ -278,7 +278,8 @@ void ReactionAutomapper::_createReactionMap(){
          /*
           * Collect statistic and choose the best mapping
           */
-         _chooseBestMapping(reaction, product_mapping_tmp, product, map_complete);
+         if(_chooseBestMapping(reaction, product_mapping_tmp, product, map_complete))
+            break;
          /*
           * Check for cancellation
           */
@@ -395,11 +396,12 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
    return map_complete;
 }
 
-void ReactionAutomapper::_chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping,  int product, int map_complete) {
-   int map_used = 0;
+bool ReactionAutomapper::_chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping,  int product, int map_complete) {
+   int map_used = 0, total_map_used;
    for (int map_idx = 0; map_idx < product_mapping.size(); ++map_idx)
-      if (product_mapping[map_idx] > 0)
+      if (product_mapping[map_idx] > 0) 
          ++map_used;
+      
          
    bool map_u = map_used > _maxMapUsed;
    bool map_c = (map_used == _maxMapUsed) && (map_complete > _maxCompleteMap);
@@ -409,7 +411,18 @@ void ReactionAutomapper::_chooseBestMapping(BaseReaction& reaction, Array<int>& 
       _maxVertUsed = _usedVertices[0];
       _maxCompleteMap = map_complete;
       reaction.getAAMArray(product).copy(product_mapping);
+      /*
+       * Check if map covers all a reaction molecules
+       */
+      total_map_used = 0;
+      for (int i = 1; i < _usedVertices.size(); ++i) {
+         if(_usedVertices[i]) 
+            ++total_map_used;
+      }
+      if((total_map_used + _usedVertices[0]) >= (_usedVertices.size() - 1))
+         return true;
    }
+   return false;
 }
 
 
