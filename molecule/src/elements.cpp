@@ -374,6 +374,34 @@ int Element::calcValenceOfAromaticAtom (int elem, int charge, int n_arom, int mi
          // no other cases known from PubChem
       }
    }
+   else if (elem == ELEM_Te && charge == 0)
+   {
+      if (n_arom == 2)  // two aromatic bonds
+      {
+         if (min_conn == 2) // no external bonds
+            return 3; // CID 136053
+         if (min_conn == 4)
+            // CID 3088544, two single external bonds
+            // CID 11457076, one double external bonds
+            return 4;
+      }
+      else if (n_arom == 4)
+      {
+         if (min_conn == 4)
+            // CID 11070061, four aromatic external bonds
+            return 4;
+      }
+      // no other cases known from PubChem
+   }
+   else if (elem == ELEM_Te && charge == 1)
+   {
+      if (n_arom == 2) // two aromatic bonds
+      {
+         if (min_conn == 3) // one external bond
+            return 3; // CID 20802344
+      }
+      // no other cases known from PubChem
+   }
    
    return -1;
 }

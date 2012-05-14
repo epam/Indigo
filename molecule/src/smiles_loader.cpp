@@ -1982,7 +1982,7 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       // We assume that this must be an alphabetic character and also
       // something not from the alphabetic SMARTS 'atomic primitives'
       // (see http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html).
-      else if (isalpha(next) && strchr("hrvxas", next) == NULL)
+      else if (isalpha(next) && strchr("hrvxast", next) == NULL)
       {
          scanner.skip(1);
 
@@ -2106,6 +2106,20 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
             element = ELEM_S;
             aromatic = ATOM_AROMATIC;
          }
+      }
+      else if (next == 't') // [te]
+      {
+         // Aromatic Te cannot occure in SMILES by specification, but 
+         // RDKit produces it within extended SMILES
+         scanner.skip(1);
+         if (scanner.lookNext() == 'e')
+         {
+            scanner.skip(1);
+            element = ELEM_Te;
+            aromatic = ATOM_AROMATIC;
+         }
+         else
+            throw Error("invalid character within atom description: '%c'", next);
       }
       else if (next == 'h')
          // Why would anybody ever need 'implicit hydrogen'

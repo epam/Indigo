@@ -146,6 +146,9 @@ void SmilesSaver::_saveMolecule ()
       if (_bmol->getAtomAromaticity(i) == ATOM_AROMATIC)
       {
          _atoms[i].aromatic = true;
+         // From the SMILES specification:
+         // Please note that only atoms on the following list 
+         // can be considered aromatic: C, N, O, P, S, As, Se, and * (wildcard).
          static int allowed_lowercase[] = {ELEM_B, ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_Se, ELEM_As};
          if (_bmol->atomNumberBelongs(i, allowed_lowercase, NELEM(allowed_lowercase)))
             _atoms[i].lowercase = true;
