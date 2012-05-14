@@ -244,11 +244,8 @@ void ReactionAutomapper::_initMappings(BaseReaction& reaction){
 }
 
 void ReactionAutomapper::_createReactionMap(){
-   int i, j;
-   
-   QS_DEF(ObjArray< Array<int> >, permulations);
+   QS_DEF(ObjArray< Array<int> >, reactant_permutations);
    QS_DEF(Array<int>, product_mapping_tmp);
-   QS_DEF(Array<int>, reactant_indexes);
    
    BaseReaction& reaction = _reactionCopy.ref();
    
@@ -258,17 +255,12 @@ void ReactionAutomapper::_createReactionMap(){
 
    _initMappings(reaction);
 
-   reactant_indexes.resize(reaction.reactantsCount());
-   j = 0;
-   for(i = reaction.reactantBegin(); i < reaction.reactantEnd(); i = reaction.reactantNext(i)) {
-      reactant_indexes[j] = i;
-      ++j;
-   }
-
    AutoPtr<BaseReaction> reaction_clone;
    reaction_clone.reset(reaction.neu());
-
-   _permutation(reactant_indexes, permulations);
+   /*
+    * Create all possible permutations for reactants
+    */
+   _createPermutations(reaction, reactant_permutations);
 
    for(int product = reaction.productBegin(); product < reaction.productEnd(); product = reaction.productNext(product)){
       product_mapping_tmp.clear_resize(reaction.getAAMArray(product).size());
@@ -277,12 +269,12 @@ void ReactionAutomapper::_createReactionMap(){
       _maxVertUsed = 0;
       _maxCompleteMap = 0;
 
-      for(int pmt = 0; pmt < permulations.size(); pmt++) {
+      for(int pmt = 0; pmt < reactant_permutations.size(); pmt++) {
          reaction_clone->clone(reaction, 0, 0, 0);
          /*
           * Apply new permutation
           */
-         int map_complete = _handleWithProduct(permulations[pmt], product_mapping_tmp, reaction_clone.ref(), product, react_map_match);
+         int map_complete = _handleWithProduct(reactant_permutations[pmt], product_mapping_tmp, reaction_clone.ref(), product, react_map_match);
          /*
           * Collect statistic and choose the best mapping
           */
@@ -930,7 +922,80 @@ void ReactionAutomapper::_removeSmallComponents(BaseMolecule& mol) const {
 
 }
 
- 
+void ReactionAutomapper::_createPermutations(BaseReaction& reaction, ObjArray< Array<int> > & permutations) {
+   QS_DEF(Array<int>, reactant_indexes);
+   QS_DEF(Array<int>, reactant_small);
+   QS_DEF(Array<int>, reactant_buf);
+   reactant_indexes.clear();
+   reactant_small.clear();
+   /*
+    * Permutate only big components
+    */
+   int v_count;
+   for(int r_idx = reaction.reactantBegin(); r_idx < reaction.reactantEnd(); r_idx = reaction.reactantNext(r_idx)) {
+      BaseMolecule& mol = reaction.getBaseMolecule(r_idx);
+      /*
+       * Count only nonhydrogens
+       */
+      v_count = 0;
+      for (int j = mol.vertexBegin(); j < mol.vertexEnd(); j = mol.vertexNext(j)) {
+         if (mol.getAtomNumber(j) != ELEM_H)
+            v_count++;
+      }
+      
+      if(v_count < MIN_PERMUTATION_SIZE)
+         reactant_small.push(r_idx);
+      else
+         reactant_indexes.push(r_idx);
+   }
+
+   _permutation(reactant_indexes, permutations);
+   /*
+    * If there are no small components then exit
+    */
+   if(reactant_small.size() == 0)
+      return;
+   
+   /*
+    * Appent small components
+    */
+   int p_size = permutations.size();
+   /*
+    * Workaround to consider permutation limit
+    */
+   if(p_size * 2 < MAX_PERMUTATIONS_NUMBER) {
+      /*
+       * Add possible small components before and after permutations (increase p size)
+       */
+      for (int i = 0; i < p_size; ++i) {
+         permutations.push().copy(permutations[i]);
+      }
+   } else {
+      /*
+       * Add possible small components and not increase p size
+       */
+      p_size /= 2;
+   }
+   /*
+    * Add small components before and after
+    */
+   for (int i = 0; i < permutations.size(); ++i) {
+      Array<int>& perm = permutations[i];
+      if(i < p_size) {
+         /*
+          * After
+          */
+         perm.concat(reactant_small);
+      } else {
+         /*
+          * Before
+          */
+         reactant_buf.copy(reactant_small);
+         reactant_buf.concat(perm);
+         perm.copy(reactant_buf);
+      }
+   }
+}
 
 //all transpositions for numbers from 0 to n-1
 void ReactionAutomapper::_permutation(Array<int>& s_array, ObjArray< Array<int> > &p_array) {
