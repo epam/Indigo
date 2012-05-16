@@ -822,6 +822,9 @@ int evcmp (const Event& a, const Event& b, void* context) {
       return 1;
    if (a.p.y < b.p.y)
       return -1;
+   // If edge has zero length then 'begin' should be before 'end'
+   if (a.id == b.id && a.begin && !b.begin)
+       return -1;
    if (a.begin && !b.begin)
       return 1;
    if (!a.begin && b.begin)
