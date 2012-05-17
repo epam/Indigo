@@ -392,10 +392,10 @@ int Dbitset::Iterator::begin() {
       }
    }
    
-   _fromWordIdx = 0;
-   if (_fromWordIdx >= _wordsInUse)
+   if (_wordsInUse == 0)
       return -1;
 
+   _fromWordIdx = -1;
    _fromBitIdx = -1;
    _fromByteIdx = -1;
    _fromIndexes = 0;
@@ -407,9 +407,9 @@ int Dbitset::Iterator::begin() {
 int Dbitset::Iterator::next() {
    if(_fromIndexes) {
       ++_fromBitIdx;
-      if(_fromBitIdx < _fromIndexes->size()) {
-         return _fromIndexes->at(_fromBitIdx) + (_fromByteIdx << 3) + (_fromWordIdx << 6);
-      }
+      if(_fromBitIdx < _fromIndexes->size()) 
+         return _fromIndexes->at(_fromBitIdx) + _shiftByte + _shiftWord;
+      
    }
    _fromIndexes = 0;
    if(_fromWord) {
@@ -421,7 +421,8 @@ int Dbitset::Iterator::next() {
          _fromIndexes = &(all_indexes.at(from_byte));
 
          _fromBitIdx = 0;
-         return _fromIndexes->at(_fromBitIdx) + (_fromByteIdx << 3) + (_fromWordIdx << 6);
+         _shiftByte = _fromByteIdx << 3;
+         return _fromIndexes->at(_fromBitIdx) + _shiftByte + _shiftWord;
       }
    }
    _fromWord = 0;
@@ -438,8 +439,9 @@ int Dbitset::Iterator::next() {
          _fromIndexes = &(all_indexes.at(from_byte));
          
          _fromBitIdx = 0;
-         
-         return _fromIndexes->at(_fromBitIdx) + (_fromByteIdx << 3) + (_fromWordIdx << 6);
+         _shiftByte = _fromByteIdx << 3;
+         _shiftWord = _fromWordIdx << 6;
+         return _fromIndexes->at(_fromBitIdx) + _shiftByte + _shiftWord;
       }
    }
    

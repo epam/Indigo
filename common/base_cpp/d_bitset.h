@@ -162,6 +162,9 @@ public:
          qword* _fromWord;
          Array<int>* _fromIndexes;
 
+         int _shiftByte;
+         int _shiftWord;
+
       private:
          Iterator(const Iterator&); //no implicit copy
       };
