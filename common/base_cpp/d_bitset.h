@@ -139,6 +139,34 @@ public:
 
    qword shiftOne(int shiftNumber);
 
+   class Iterator {
+      public:
+         Iterator(Dbitset&);
+
+         ~Iterator() {
+         }
+         
+         int begin();
+         int next();
+         inline int end() { return -1; }
+
+   private:
+
+         void _fillIndexes(byte buf, Array<int>&indexes);
+         int _wordsInUse;
+         qword* _words;
+
+         int _fromWordIdx;
+         int _fromByteIdx;
+         int _fromBitIdx;
+         qword* _fromWord;
+         Array<int>* _fromIndexes;
+
+      private:
+         Iterator(const Iterator&); //no implicit copy
+      };
+
+
 
    DEF_ERROR("Dynamic bitset");
 };

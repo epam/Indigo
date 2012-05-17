@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "base_cpp/d_bitset.h"
+#include "base_cpp/obj_array.h"
 
 using namespace indigo;
 
@@ -369,3 +370,89 @@ qword Dbitset::shiftOne(int shiftNumber) {
    result = result << shiftNumber;
    return result;
 }
+
+
+
+Dbitset::Iterator::Iterator(Dbitset& self):
+_fromWordIdx(0),
+_fromByteIdx(-1),
+_fromBitIdx(-1),
+_fromIndexes(0) {
+   _words = self._words.ptr();
+   _wordsInUse = self._wordsInUse;
+}
+
+static ObjArray< Array<int> > all_indexes;
+
+int Dbitset::Iterator::begin() {
+   if(all_indexes.size() == 0) {
+      for (unsigned int buf = 0; buf < 256; ++buf) {
+         Array<int>& indexes = all_indexes.push();
+         _fillIndexes(buf, indexes);
+      }
+   }
+   
+   _fromWordIdx = 0;
+   if (_fromWordIdx >= _wordsInUse)
+      return -1;
+
+   _fromBitIdx = -1;
+   _fromByteIdx = -1;
+   _fromIndexes = 0;
+   _fromWord = 0;
+   
+   return next();
+}
+
+int Dbitset::Iterator::next() {
+   if(_fromIndexes) {
+      ++_fromBitIdx;
+      if(_fromBitIdx < _fromIndexes->size()) {
+         return _fromIndexes->at(_fromBitIdx) + (_fromByteIdx << 3) + (_fromWordIdx << 6);
+      }
+   }
+   _fromIndexes = 0;
+   if(_fromWord) {
+      for (++_fromByteIdx; _fromByteIdx < 8; ++_fromByteIdx) {
+         int from_byte = ((byte*) _fromWord)[_fromByteIdx];
+         if (from_byte == 0)
+            continue;
+
+         _fromIndexes = &(all_indexes.at(from_byte));
+
+         _fromBitIdx = 0;
+         return _fromIndexes->at(_fromBitIdx) + (_fromByteIdx << 3) + (_fromWordIdx << 6);
+      }
+   }
+   _fromWord = 0;
+   for (++_fromWordIdx; _fromWordIdx < _wordsInUse; ++_fromWordIdx) {
+      _fromWord = &_words[_fromWordIdx];
+      if(*_fromWord == 0)
+         continue;
+      
+      for (_fromByteIdx = 0; _fromByteIdx < 8; ++_fromByteIdx) {
+         int from_byte = ((byte*) _fromWord)[_fromByteIdx];
+         if (from_byte == 0)
+            continue;
+
+         _fromIndexes = &(all_indexes.at(from_byte));
+         
+         _fromBitIdx = 0;
+         
+         return _fromIndexes->at(_fromBitIdx) + (_fromByteIdx << 3) + (_fromWordIdx << 6);
+      }
+   }
+   
+   return -1;
+}
+
+void Dbitset::Iterator::_fillIndexes(byte buf, Array<int>&indexes) {
+   byte test_buf;
+   for (int buf_idx = 0; buf_idx < 8; ++buf_idx) {
+      test_buf = (byte)1 << buf_idx;
+      if(buf & test_buf) {
+         indexes.push(buf_idx);
+      }
+   }
+}
+
