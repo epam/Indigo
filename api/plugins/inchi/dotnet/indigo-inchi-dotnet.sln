@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "indigo-inchi-cs", "indigo-inchi-cs.csproj", "{A88F82B7-F522-4238-80D6-DE033CD7892E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "indigo-inchi-dotnet", "indigo-inchi-dotnet.csproj", "{A88F82B7-F522-4238-80D6-DE033CD7892E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

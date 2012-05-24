@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>com.ggasoftware.indigo</RootNamespace>
-    <AssemblyName>indigo-inchi-cs</AssemblyName>
+    <AssemblyName>indigo-inchi-dotnet</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -61,8 +61,8 @@
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="indigo-cs">
-      <HintPath>..\..\..\cs\bin\Release\indigo-cs.dll</HintPath>
+    <Reference Include="indigo-dotnet">
+      <HintPath>..\..\..\dotnet\bin\Release\indigo-dotnet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

@@ -126,7 +126,7 @@ wrappers =  [
     ("universal", ["win", "linux", "mac"]),
 ]    
 
-wrappers_gen = [ "make-java-wrappers.py", "make-python-wrappers.py", 'make-cs-wrappers.py']
+wrappers_gen = [ "make-java-wrappers.py", "make-python-wrappers.py", 'make-dotnet-wrappers.py']
 for w, libs in wrappers:
     clearLibs()
     if args.libonlyname and w != args.libonlyname:
@@ -141,5 +141,5 @@ for w, libs in wrappers:
         continue
     if need_gen_wrappers:
         for gen in wrappers_gen:
-            if not (w != 'win' and gen == 'make-cs-wrappers.py'):
+            if not (w != 'win' and gen == 'make-dotnet-wrappers.py'):
                 subprocess.check_call('%s %s -s "-%s"' % (sys.executable, join(api_dir, gen), w), shell=True)
