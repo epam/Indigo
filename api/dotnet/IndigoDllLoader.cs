@@ -51,7 +51,6 @@ namespace com.ggasoftware.indigo
 			case PlatformID.Win32NT:
 				return WindowsLoader.LoadLibrary (filename);
 			case PlatformID.Unix:
-				System.Console.WriteLine(filename.Replace ("\\", "/"));
 				string unixName = IndigoDllLoader.getUnixName ();
 				switch (unixName) {
 				case "Darwin":
