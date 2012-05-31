@@ -30,7 +30,7 @@ namespace com.ggasoftware.indigo
 					dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesMac", false);
 					break;
 				case "Linux":
-					libraryName = "libingido-inchi.so";
+					libraryName = "libindigo-inchi.so";
 					dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesLinux", false);
 					break;
 				default:
