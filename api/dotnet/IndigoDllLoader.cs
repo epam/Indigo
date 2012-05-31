@@ -25,11 +25,11 @@ namespace com.ggasoftware.indigo
 	
 	class LinuxLoader 
 	{
-		[DllImport("libdl.so")] 
-		public static extern IntPtr dlopen(string filename, int flags);
-		[DllImport("libdl.so")] 
+		[DllImport("libdl.so.2")] 
+                public static extern IntPtr dlopen([MarshalAs(UnmanagedType.LPTStr)] string filename, int flags);
+		[DllImport("libdl.so.2")] 
 		public static extern int dlclose(IntPtr handle);
-		[DllImport("libdl.so")] 
+		[DllImport("libdl.so.2")] 
 		public static extern IntPtr dlsym(IntPtr libraryPointer, string procedureName);
 	}
 	
@@ -51,6 +51,7 @@ namespace com.ggasoftware.indigo
 			case PlatformID.Win32NT:
 				return WindowsLoader.LoadLibrary (filename);
 			case PlatformID.Unix:
+				System.Console.WriteLine(filename.Replace ("\\", "/"));
 				string unixName = IndigoDllLoader.getUnixName ();
 				switch (unixName) {
 				case "Darwin":
