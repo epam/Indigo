@@ -72,6 +72,8 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="indigo.snk" />
+    <None Include="Resource\Mac\10.5\libindigo.dylib" />
+    <None Include="Resource\Mac\10.6\libindigo.dylib" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -91,25 +93,41 @@
     </BootstrapperPackage>
   </ItemGroup>
   <!-- <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "> -->
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx" />
+  <ItemGroup Condition="'$(Win)' == '1'">
+    <EmbeddedResource Include="Properties\ResourcesWin.resx" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(Linux)' == '1'">
+    <EmbeddedResource Include="Properties\ResourcesLinux.resx" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Mac)' == '1'">
+    <EmbeddedResource Include="Properties\ResourcesMac.resx" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Win)' == '1'">
     <None Include="Resource\Win\x64\msvcr100.dll" />
-    <None Include="Resource\Win\x64\msvcp100.dll" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Win)' == '1'">
     <None Include="Resource\Win\x86\msvcr100.dll" />
-    <None Include="Resource\Win\x86\msvcp100.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Win)' == '1'">
     <PreBuildEvent>
-	copy $(ProjectDir)\..\libs\shared\Win\x64\indigo.dll $(ProjectDir)Resource\Win\x64
-	copy $(ProjectDir)\..\libs\shared\Win\x64\msvcr100.dll $(ProjectDir)Resource\Win\x64
-	copy $(ProjectDir)\..\libs\shared\Win\x64\msvcp100.dll $(ProjectDir)Resource\Win\x64
-	copy $(ProjectDir)\..\libs\shared\Win\x86\indigo.dll $(ProjectDir)Resource\Win\x86
-	copy $(ProjectDir)\..\libs\shared\Win\x86\msvcr100.dll $(ProjectDir)Resource\Win\x86
-	copy $(ProjectDir)\..\libs\shared\Win\x86\msvcp100.dll $(ProjectDir)Resource\Win\x86
-</PreBuildEvent>
+		$(Copy) $(LibraryPath)\Win\x64\msvcr100.dll $(ProjectDir)\Resource\Win\x64
+		$(Copy) $(LibraryPath)\Win\x64\indigo.dll $(ProjectDir)\Resource\Win\x64
+		$(Copy) $(LibraryPath)\Win\x86\msvcr100.dll $(ProjectDir)\Resource\Win\x86
+		$(Copy) $(LibraryPath)\Win\x86\indigo.dll $(ProjectDir)\Resource\Win\x86	
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Linux)' == '1'">
+    <PreBuildEvent>
+		$(Copy) $(LibraryPath)\Linux\x64\libindigo.so $(ProjectDir)\Resource\Linux\x64
+		$(Copy) $(LibraryPath)\Linux\x86\libindigo.so $(ProjectDir)\Resource\Linux\x86
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Mac)' == '1'">
+    <PreBuildEvent>
+		$(Copy) $(LibraryPath)\Mac\10.5\libindigo.dylib $(ProjectDir)\Resource\Mac\10.5
+		$(Copy) $(LibraryPath)\Mac\10.6\libindigo.dylib $(ProjectDir)\Resource\Mac\10.6
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -118,4 +136,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Resource\Mac\" />
+  </ItemGroup>
 </Project>

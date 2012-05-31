@@ -6,19 +6,42 @@ using System.IO;
 
 namespace com.ggasoftware.indigo
 {
+	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public unsafe class IndigoInchi
     {
         private Indigo _indigo;
         private IndigoInchiLib _inchi_lib;
 
-        public IndigoInchi(Indigo indigo)
-        {
-            String dllpath = indigo.getDllPath();
-
-            IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
-            dll_loader.loadLibrary(dllpath, "indigo-inchi.dll",
-               "com.ggasoftware.indigo.Properties.Resources", false);
-            _inchi_lib = dll_loader.getInterface<IndigoInchiLib>("indigo-inchi.dll");
+        public IndigoInchi (Indigo indigo)
+		{
+			String dllpath = indigo.getDllPath ();
+			string libraryName;
+			IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
+			switch (Environment.OSVersion.Platform) {
+			case PlatformID.Win32NT:
+				libraryName = "indigo-inchi.dll";
+				dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin", false);
+				break;
+			case PlatformID.Unix:
+				string unixName = IndigoDllLoader.getUnixName ();
+				switch (unixName) {
+				case "Darwin":
+					libraryName = "libindigo-inchi.dylib";
+					dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesMac", false);
+					break;
+				case "Linux":
+					libraryName = "libingido-inchi.so";
+					dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesLinux", false);
+					break;
+				default:
+					throw new PlatformNotSupportedException (String.Format ("Unsupported Unix: {0}", unixName));
+				}
+				break;
+			default:
+				throw new PlatformNotSupportedException (String.Format ("Unsupported platform: {0}", Environment.OSVersion.Platform));
+			}
+			
+            _inchi_lib = dll_loader.getInterface<IndigoInchiLib>(libraryName);
 
             _indigo = indigo;
         }

@@ -6,11 +6,106 @@ using System.Resources;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Diagnostics;
 
 namespace com.ggasoftware.indigo
 {
+	class LibraryLoader
+	{
+		
+	class WindowsLoader
+	{
+			[DllImport("kernel32")]
+			public static extern IntPtr LoadLibrary(string lpFileName);
+			[DllImport("kernel32.dll")]
+			public static extern int FreeLibrary(IntPtr module);
+			[DllImport("kernel32.dll")]
+			public static extern IntPtr GetProcAddress (IntPtr hModule, string procedureName);
+	}
+	
+	class LinuxLoader 
+	{
+		[DllImport("libdl.so")] 
+		public static extern IntPtr dlopen(string filename, int flags);
+		[DllImport("libdl.so")] 
+		public static extern int dlclose(IntPtr handle);
+		[DllImport("libdl.so")] 
+		public static extern IntPtr dlsym(IntPtr libraryPointer, string procedureName);
+	}
+	
+	
+	class MacLoader 
+	{
+		[DllImport("libdl.dylib")] 
+		public static extern IntPtr dlopen(string filename, int flags);
+		[DllImport("libdl.dylib")] 
+		public static extern int dlclose(IntPtr handle);
+		[DllImport("libdl.dylib")] 
+		public static extern IntPtr dlsym(IntPtr libraryPointer, string procedureName);
+	}
+	
+		
+		public static IntPtr LoadLibrary (string filename)
+		{
+			switch (Environment.OSVersion.Platform) {
+			case PlatformID.Win32NT:
+				return WindowsLoader.LoadLibrary (filename);
+			case PlatformID.Unix:
+				string unixName = IndigoDllLoader.getUnixName ();
+				switch (unixName) {
+				case "Darwin":
+					return MacLoader.dlopen (filename.Replace ('\\', '/'), 2);
+				case "Linux":
+					return LinuxLoader.dlopen (filename.Replace ('\\', '/'), 2);
+				
+				}
+				break;
+			}
+			return IntPtr.Zero;
+		}
+		
+		public static int FreeLibrary (IntPtr handle)
+		{
+			switch (Environment.OSVersion.Platform) {
+			case PlatformID.Win32NT:
+				return WindowsLoader.FreeLibrary(handle);
+			case PlatformID.Unix:
+				string unixName = IndigoDllLoader.getUnixName ();
+				switch (unixName) {
+				case "Darwin":
+					return MacLoader.dlclose (handle);
+				case "Linux":
+					return LinuxLoader.dlclose (handle);
+				
+				}
+				break;
+			}		
+			return 0;
+		}
+		
+		public static IntPtr GetProcAddress (IntPtr library, string procedureName)
+		{
+			switch (Environment.OSVersion.Platform) {
+			case PlatformID.Win32NT:
+				return WindowsLoader.GetProcAddress (library, procedureName);
+			case PlatformID.Unix:
+				string unixName = IndigoDllLoader.getUnixName ();
+				switch (unixName) {
+				case "Darwin":
+					return MacLoader.dlsym (library, procedureName);
+				case "Linux":
+					return LinuxLoader.dlsym (library, procedureName);
+				}
+				break;
+			}
+			return IntPtr.Zero;
+		}	
+	}
+	
+	
+	
    // Singleton DLL loader
-   public class IndigoDllLoader
+   public class IndigoDllLoader	
    {
       private static volatile IndigoDllLoader _instance;
       private static object _global_sync_root = new Object();
@@ -66,47 +161,105 @@ namespace com.ggasoftware.indigo
       // Local synchronization object
       Object _sync_object = new Object();
 
+	  public static string getUnixName ()
+		{
+			Process pUname = new Process ();
+			pUname.StartInfo.UseShellExecute = false;
+			pUname.StartInfo.RedirectStandardOutput = true;
+			pUname.StartInfo.FileName = "uname";
+			pUname.Start ();
+			string outputUname = pUname.StandardOutput.ReadToEnd ();
+			pUname.WaitForExit ();
+			return outputUname.Trim();
+		}
+		
+		public static string getUnixMajorVersion ()
+		{
+			Process pUnameR = new Process ();
+			pUnameR.StartInfo.UseShellExecute = false;
+			pUnameR.StartInfo.RedirectStandardOutput = true;
+			pUnameR.StartInfo.FileName = "uname";
+			pUnameR.StartInfo.Arguments = "-r";
+			pUnameR.Start ();
+			string outputUnameR = pUnameR.StandardOutput.ReadToEnd ();
+			pUnameR.WaitForExit ();
+			return outputUnameR.Split('.')[0];
+		}
+		
       public void loadLibrary (String path, String dll_name, string resource_name, bool make_unique_dll_name)
-      {
-         lock (_sync_object)
-         {
-            DllData data = null;
-            if (_loaded_dlls.TryGetValue(dll_name, out data))
-            { 
-               // Library has already been loaded
-               if (data.lib_path != path)
-                  throw new IndigoException(
-                     String.Format("Library {0} has already been loaded by different path {1}",
-                     dll_name, data.lib_path));
-               return;
-            }
+		{
+			lock (_sync_object) {
+				DllData data = null;
+				if (_loaded_dlls.TryGetValue (dll_name, out data)) { 
+					// Library has already been loaded
+					if (data.lib_path != path)
+						throw new IndigoException (
+                     String.Format ("Library {0} has already been loaded by different path {1}",
+                     dll_name, data.lib_path)
+						);
+					return;
+				}
 
-            String subprefix = (IntPtr.Size == 8) ? "Win/x64/" : "Win/x86/";
+				String subprefix = null;
+				
+				switch (Environment.OSVersion.Platform) {
+				case PlatformID.Win32NT:
+					subprefix = (IntPtr.Size == 8) ? "Win/x64/" : "Win/x86/";
+					break;
+				case PlatformID.Unix:
+					string unixName = getUnixName ();
+					switch (unixName) {
+					case "Darwin":
+						string macVersion = getUnixMajorVersion ();
+						switch (macVersion) {
+						case "10":
+						case "11":
+							subprefix = "Mac/10.6/";
+							break;
+						case "9":
+							subprefix = "Mac/10.5/";
+							break;
+						default:
+							throw new PlatformNotSupportedException (String.Format ("Unsupported Mac OS X version: {0}", macVersion));
+						}
+						break;
+					case "Linux":
+						subprefix = (IntPtr.Size == 8) ? "Linux/x64/" : "Linux/x86/";
+						break;
+					default:
+						throw new PlatformNotSupportedException (String.Format ("Unsupported Unix: {0}", unixName));
+					}
+					break;
+				default: 
+					throw new PlatformNotSupportedException (String.Format (
+						"Unsupported platform: {0}",
+						Environment.OSVersion.Platform
+					)
+					);		
+				}
+				
+				data = new DllData ();
+				data.lib_path = path;
+				data.file_name = _getPathToBinary (path, subprefix + dll_name,
+               resource_name, Assembly.GetCallingAssembly (), make_unique_dll_name);
 
-            data = new DllData();
-            data.lib_path = path;
-            data.file_name = _getPathToBinary(path, subprefix + dll_name,
-               resource_name, Assembly.GetCallingAssembly(), make_unique_dll_name);
+				data.file_name = data.file_name.Replace ('/', '\\');
 
-            data.file_name = data.file_name.Replace('/', '\\');
-            data.handle = LoadLibrary(data.file_name);
-            if (data.handle == IntPtr.Zero)
-               throw new IndigoException("Cannot load library " + dll_name + 
-                  " from the temporary file " + data.file_name);
-            _loaded_dlls.Add(dll_name, data);
-            _dll_handles.Add(data);
+				data.handle = LibraryLoader.LoadLibrary (data.file_name);
+				
+				if (data.handle == IntPtr.Zero)
+					throw new Exception ("Cannot load library " + dll_name + 
+						" from the temporary file " + data.file_name
+					);
+
+				_loaded_dlls.Add (dll_name, data);
+
+				_dll_handles.Add (data);
          }
-      }
-
-      [DllImport("kernel32")]
-      static extern IntPtr LoadLibrary(string lpFileName);
-      [DllImport("kernel32.dll")]
-      static extern int FreeLibrary(IntPtr module);
-      [DllImport("kernel32.dll")]
-      public static extern IntPtr GetProcAddress (IntPtr hModule, string procedureName);
+	}
 
       ~IndigoDllLoader ()
-      {
+      {		
          lock (_global_sync_root)
          {
             _instance = null;
@@ -115,7 +268,7 @@ namespace com.ggasoftware.indigo
             // Unload all loaded libraries in the reverse order
             _dll_handles.Reverse();
             foreach (DllData dll in _dll_handles)
-               FreeLibrary(dll.handle);
+               LibraryLoader.FreeLibrary(dll.handle);
          }
       }
 
@@ -169,17 +322,20 @@ namespace com.ggasoftware.indigo
 
       // Returns implementation of a given interface for wrapping function the specified DLL
       public IT getInterface<IT> (string dll_name) where IT : class
-      {
-         lock (_sync_object)
-         {
-            Type itype = typeof(IT);
-            // Check if such interface was already loaded
-            WrappedInterface interf = null;
-            if (!_loaded_dlls[dll_name].interfaces.TryGetValue(itype, out interf))
-            {
-               interf = createInterface<IT>(dll_name);
-               _loaded_dlls[dll_name].interfaces.Add(itype, interf);
-            }
+		{
+			lock (_sync_object) {
+				Type itype = typeof(IT);
+				// Check if such interface was already loaded
+				WrappedInterface interf = null;
+				if (_loaded_dlls.ContainsKey (dll_name)) {
+					if (!_loaded_dlls [dll_name].interfaces.TryGetValue (itype, out interf)) {
+						interf = createInterface<IT> (dll_name);
+						_loaded_dlls [dll_name].interfaces.Add (itype, interf);
+					}
+				} else {
+					interf = createInterface<IT> (dll_name);
+					_loaded_dlls [dll_name].interfaces.Add (itype, interf);
+				}
 
             return (IT)interf.instance;
          }
@@ -290,7 +446,7 @@ namespace com.ggasoftware.indigo
             FieldBuilder delegate_field =
                tb.DefineField(delegate_field_name, typeof(Delegate), FieldAttributes.Private);
 
-            IntPtr proc = GetProcAddress(dll_handle, m.Name);
+            IntPtr proc = LibraryLoader.GetProcAddress(dll_handle, m.Name);
             if (proc == IntPtr.Zero)
                throw new IndigoException(String.Format("Cannot find procedure {0} in the library {1}",
                   m.Name, dll_name));

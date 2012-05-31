@@ -460,20 +460,41 @@ namespace com.ggasoftware.indigo
       }
 
       private void init (string lib_path)
-      {
-         IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
-
-         dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.ggasoftware.indigo.Properties.Resources", false);
-         dll_loader.loadLibrary(lib_path, "msvcp100.dll", "com.ggasoftware.indigo.Properties.Resources", false);
-         //dll_loader.loadLibrary(lib_path, "zlib.dll", "com.ggasoftware.indigo.Properties.Resources", false);
-         dll_loader.loadLibrary(lib_path, "indigo.dll", "com.ggasoftware.indigo.Properties.Resources", false);
-
+		{
+			string libraryName;
+			IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
+			switch (Environment.OSVersion.Platform) {
+			case PlatformID.Win32NT:
+				libraryName = "indigo.dll";
+				dll_loader.loadLibrary (lib_path, "msvcr100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin", false);
+				dll_loader.loadLibrary (lib_path, "msvcp100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin", false);
+				dll_loader.loadLibrary (lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin", false);
+				break;
+			case PlatformID.Unix:
+				string unixName = IndigoDllLoader.getUnixName ();
+				switch (unixName) {
+				case "Darwin":
+					libraryName = "libindigo.dylib";
+					dll_loader.loadLibrary (lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesMac", false);
+					break;
+				case "Linux":
+					libraryName = "libindigo.so";
+					dll_loader.loadLibrary (lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesLinux", false);
+					break;
+				default:
+					throw new PlatformNotSupportedException (String.Format ("Unsupported Unix: {0}", unixName));
+				}
+				break;
+			default:
+				throw new PlatformNotSupportedException(String.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
+			}
+			
          // Save instance id to check if session was allocated for this instance
          _dll_loader_id = IndigoDllLoader.InstanceId;
 
          _dllpath = lib_path;
 
-         _indigo_lib = dll_loader.getInterface<IndigoLib>("indigo.dll");
+         _indigo_lib = dll_loader.getInterface<IndigoLib>(libraryName); 
 
          _sid = _indigo_lib.indigoAllocSessionId();
          _indigo_lib.indigoSetSessionId(_sid);
