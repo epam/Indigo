@@ -125,7 +125,7 @@
     <value>..\Resource\Linux\x86\libindigo.so;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Linux/x64/libindigo.so" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Linux\x86\libindigo.so;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resource\Linux\x64\libindigo.so;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 </root>

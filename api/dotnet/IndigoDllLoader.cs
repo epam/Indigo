@@ -54,9 +54,9 @@ namespace com.ggasoftware.indigo
 				string unixName = IndigoDllLoader.getUnixName ();
 				switch (unixName) {
 				case "Darwin":
-					return MacLoader.dlopen (filename.Replace ('\\', '/'), 2);
+					return MacLoader.dlopen (filename.Replace ("\\", "/"), 2);
 				case "Linux":
-					return LinuxLoader.dlopen (filename.Replace ('\\', '/'), 2);
+					return LinuxLoader.dlopen (filename.Replace ("\\", "/"), 2);
 				
 				}
 				break;
