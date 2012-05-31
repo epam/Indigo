@@ -129,7 +129,7 @@ wrappers =  [
     ("linux", ["linux"]),
     ("mac", ["mac"]),
     ("universal", ["win", "linux", "mac"]),
-]    
+]
 
 wrappers_gen = [ "make-java-wrappers.py", "make-python-wrappers.py", 'make-dotnet-wrappers.py']
 
@@ -137,14 +137,17 @@ for w, libs in wrappers:
     clearLibs()
     if args.libonlyname and w != args.libonlyname:
         continue
-    any_exists = False
+    any_exists = True
     for lib in libs:
         name = "indigo-libs-%s-%s-shared" % (version, lib)
         if exists(name + ".zip"):
-            any_exists = True
+            any_exists = any_exists and True
             unpackToLibs(name)
+        else:
+            any_exists = any_exists and False
     if not any_exists:
         continue
     if need_gen_wrappers:
         for gen in wrappers_gen:
             subprocess.check_call('%s %s -s "-%s"' % (sys.executable, join(api_dir, gen), w), shell=True)
+

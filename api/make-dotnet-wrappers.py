@@ -17,7 +17,7 @@ parser.add_option('--suffix', '-s', help='archive suffix', default="")
 (args, left_args) = parser.parse_args()
 
 wrappers =  (args.suffix[1:], )
-if wrappers == 'universal':
+if 'universal' in wrappers:
     wrappers = ('win', 'linux', 'mac')
 
 api_dir = abspath(dirname(__file__))
@@ -97,6 +97,7 @@ else:
 
 os.chdir(indigoRendererDotNetPath)
 command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+print command
 subprocess.check_call(command, shell=True)
 
 # Build IndigoInchi-dotnet
@@ -126,6 +127,7 @@ else:
 
 os.chdir(indigoInchiDotNetPath)
 command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+print command
 subprocess.check_call(command, shell=True)
 
 # Zip results
