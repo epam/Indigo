@@ -170,6 +170,7 @@ namespace com.ggasoftware.indigo
 			pUname.Start ();
 			string outputUname = pUname.StandardOutput.ReadToEnd ();
 			pUname.WaitForExit ();
+			pUname.Close ();
 			return outputUname.Trim();
 		}
 		
@@ -183,6 +184,7 @@ namespace com.ggasoftware.indigo
 			pUnameR.Start ();
 			string outputUnameR = pUnameR.StandardOutput.ReadToEnd ();
 			pUnameR.WaitForExit ();
+			pUnameR.Close ();
 			return outputUnameR.Split('.')[0];
 		}
 		
