@@ -1,10 +1,18 @@
+import glob
 import os
 import shutil
-import sys
 import subprocess
 from os.path import *
-
+from zipfile import ZipFile
 from optparse import OptionParser
+import re
+
+version = ""
+cur_dir = split(__file__)[0]
+for line in open(join(os.path.dirname(os.path.abspath(__file__)), "..", "api", "indigo-version.cmake")):
+    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
+    if m:
+        version = m.group(1)
 
 presets = {
     "win32" : ("Visual Studio 10", ""),
@@ -86,3 +94,42 @@ for f in os.listdir(full_build_dir):
     path, ext = os.path.splitext(f)
     if ext == ".zip":
         shutil.copy(join(full_build_dir, f), join(dist_dir, f.replace('-shared', '')))
+
+# Chemdiff
+for filename in os.listdir(dist_dir):
+    if filename.startswith("indigo-java") :
+        os.chdir(dist_dir)
+        if os.path.exists("indigo-java"):
+            shutil.rmtree("indigo-java")
+        os.mkdir("indigo-java")
+        java_dir = join(dist_dir, "indigo-java")
+        if filename.endswith("-win.zip") or filename.endswith("-universal.zip"):
+            uz = ZipFile(join(dist_dir, filename))
+            uz.extractall(path=dist_dir)
+            os.rename(join(dist_dir, filename)[:-4], "indigo-java")
+            if filename.endswith('-universal.zip'):
+                os.chdir(join(root, "utils", "chemdiff"))
+                subprocess.check_call(["ant", "clean"], shell=True)
+                subprocess.check_call(["ant", "jar"], shell=True)
+                shutil.copyfile(join("dist", "chemdiff.jar"), join(dist_dir, "chemdiff.jar"))
+                shutil.copyfile(join("chemdiff.sh"), join(dist_dir, "chemdiff.sh"))
+                shutil.copyfile(join("LICENSE.GPL"), join(dist_dir, "LICENSE.GPL"))
+                os.chdir(dist_dir)
+                os.mkdir("lib")
+                for file in glob.glob("indigo-java/*.jar"):
+                    shutil.copy(file, "lib")
+                shutil.copy(join(root, "common/java/common-controls/dist/common-controls.jar"), "lib")
+                with ZipFile("chemdiff-%s-universal.zip" % version, 'w') as zip:
+                    zip.write("chemdiff.jar")
+                    zip.write("chemdiff.sh")
+                    zip.write("LICENSE.GPL")
+                    zip.write("lib/")
+                os.remove("chemdiff.jar")
+                os.remove("chemdiff.sh")
+                os.remove("LICENSE.GPL")
+                shutil.rmtree("lib")
+            else:
+                continue
+                # TODO: Add Windows support
+        else:
+            continue
