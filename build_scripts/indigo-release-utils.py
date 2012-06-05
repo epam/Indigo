@@ -46,12 +46,12 @@ if not args.generator:
     exit()
 
 cur_dir = abspath(dirname(__file__))
-root = join(cur_dir, "..")
+root = os.path.normpath(join(cur_dir, ".."))
 project_dir = join(cur_dir, "indigo-utils")
 
 if args.generator.find("Unix Makefiles") != -1:
     args.params += " -DCMAKE_BUILD_TYPE=" + args.config
-    
+
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_utils_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
@@ -61,6 +61,12 @@ if os.path.exists(full_build_dir) and args.clean:
     shutil.rmtree(full_build_dir)
 if not os.path.exists(full_build_dir):
     os.makedirs(full_build_dir)
+
+os.chdir(root)
+if not os.path.exists("dist"):
+    os.mkdir("dist")
+dist_dir = join(root, "dist")
+
 
 os.chdir(full_build_dir)
 command = "cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir)
@@ -84,12 +90,8 @@ elif args.generator.find("Visual Studio") != -1:
     subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config), shell=True)
 else:
     print("Do not know how to run package and install target")
-                                                              
-os.chdir(root)
-if not os.path.exists("dist"):
-    os.mkdir("dist")
-dist_dir = join(root, "dist")
-    
+
+
 for f in os.listdir(full_build_dir):
     path, ext = os.path.splitext(f)
     if ext == ".zip":
@@ -97,39 +99,36 @@ for f in os.listdir(full_build_dir):
 
 # Chemdiff
 for filename in os.listdir(dist_dir):
-    if filename.startswith("indigo-java") :
+    if filename.startswith("indigo-java-") :
         os.chdir(dist_dir)
         if os.path.exists("indigo-java"):
             shutil.rmtree("indigo-java")
         os.mkdir("indigo-java")
         java_dir = join(dist_dir, "indigo-java")
-        if filename.endswith("-win.zip") or filename.endswith("-universal.zip"):
-            uz = ZipFile(join(dist_dir, filename))
-            uz.extractall(path=dist_dir)
-            os.rename(join(dist_dir, filename)[:-4], "indigo-java")
-            if filename.endswith('-universal.zip'):
-                os.chdir(join(root, "utils", "chemdiff"))
-                subprocess.check_call(["ant", "clean"], shell=True)
-                subprocess.check_call(["ant", "jar"], shell=True)
-                shutil.copyfile(join("dist", "chemdiff.jar"), join(dist_dir, "chemdiff.jar"))
-                shutil.copyfile(join("chemdiff.sh"), join(dist_dir, "chemdiff.sh"))
-                shutil.copyfile(join("LICENSE.GPL"), join(dist_dir, "LICENSE.GPL"))
-                os.chdir(dist_dir)
-                os.mkdir("lib")
-                for file in glob.glob("indigo-java/*.jar"):
-                    shutil.copy(file, "lib")
-                shutil.copy(join(root, "common/java/common-controls/dist/common-controls.jar"), "lib")
-                with ZipFile("chemdiff-%s-universal.zip" % version, 'w') as zip:
-                    zip.write("chemdiff.jar")
-                    zip.write("chemdiff.sh")
-                    zip.write("LICENSE.GPL")
-                    zip.write("lib/")
-                os.remove("chemdiff.jar")
-                os.remove("chemdiff.sh")
-                os.remove("LICENSE.GPL")
-                shutil.rmtree("lib")
-            else:
-                continue
-                # TODO: Add Windows support
-        else:
-            continue
+        distVersion = filename.replace("indigo-java-%s-" % version , '').replace('.zip', '')
+        fullChemdiffName = "chemdiff-%s-%s" % (version, distVersion)
+        uz = ZipFile(join(dist_dir, filename))
+        uz.extractall(path=dist_dir)
+        os.rename(join(dist_dir, filename)[:-4], "indigo-java")
+        if os.path.exists(join(dist_dir, "chemdiff")):
+            shutil.rmtree(join(dist_dir, "chemdiff"))
+        os.mkdir(join(dist_dir, "chemdiff"))
+        os.mkdir(join(dist_dir, "chemdiff", fullChemdiffName))
+        os.chdir(join(root, "utils", "chemdiff"))
+        subprocess.check_call(["ant", "clean"], stdout=subprocess.PIPE)#, shell=True)
+        subprocess.check_call(["ant", "jar"], stdout=subprocess.PIPE)#, shell=True)
+        shutil.copy(join("dist", "chemdiff.jar"), join(dist_dir, "chemdiff", fullChemdiffName, "chemdiff.jar"))
+        shutil.copy(join("chemdiff.sh"), join(dist_dir, "chemdiff", fullChemdiffName,"chemdiff.sh"))
+        shutil.copy(join("LICENSE.GPL"), join(dist_dir, "chemdiff", fullChemdiffName, "LICENSE.GPL"))
+        os.chdir(join(dist_dir, "chemdiff", fullChemdiffName))
+        os.mkdir("lib")
+        for file in glob.glob("../../indigo-java/*.jar"):
+            if not (file.endswith('indigo-inchi.jar')):
+                shutil.copy(file, "lib")
+        shutil.copy(join(root, "common/java/common-controls/dist/common-controls.jar"), "lib")
+        os.chdir(dist_dir)
+        shutil.make_archive(fullChemdiffName, "zip", "chemdiff")
+        shutil.rmtree("chemdiff")
+        #if filename.endswith('-win.zip'):
+        #    os.chdir(join(root, "utils", "chemdiff"))
+        #    subprocess.check_call(["makensis", "/DVersion=%s" % version, "chemdiff_installer.nsi"], shell=True)
