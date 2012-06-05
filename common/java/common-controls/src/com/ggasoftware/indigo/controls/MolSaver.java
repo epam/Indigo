@@ -14,6 +14,8 @@ public class MolSaver
    private Indigo _indigo;
    private FileOpener _fopener = new FileOpener();
    private ArrayList<RenderableObject> _failed_to_save = null;
+   
+   private boolean saveReactionProducts = false;
 
    public MolSaver (Indigo indigo)
    {
@@ -30,6 +32,11 @@ public class MolSaver
       return _failed_to_save;
    }
 
+   void setSaveReactionProducts (boolean state)
+   {
+       saveReactionProducts = state;
+   }
+   
    public String saveMols (ArrayList<? extends RenderableObject> mol_datas)
    {
       _failed_to_save = new ArrayList<RenderableObject>();
@@ -56,7 +63,7 @@ public class MolSaver
          if (choosed_extension.compareTo("rxn") == 0)
          {
             if (mol_datas.isEmpty() && mol_datas.size() > 1)
-               throw new IndigoCheckedException("Can save only single molecules into RXN format");
+               throw new IndigoCheckedException("Can save only single item into RXN format");
             mol_datas.get(0).getRenderableObject().saveRxnfile(out_file_path);
             return out_file_path;
          }
@@ -80,7 +87,11 @@ public class MolSaver
                      m.layout();
                   m.markEitherCisTrans();
 
-                  file_saver.append(m);
+                  if (!saveReactionProducts)
+                      file_saver.append(m);
+                  else
+                      for (IndigoObject product: m.iterateProducts())
+                          file_saver.append(product);
                }
                catch (IndigoException ex)
                {

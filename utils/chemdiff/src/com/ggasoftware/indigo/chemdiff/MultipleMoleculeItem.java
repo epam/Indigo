@@ -3,8 +3,12 @@ package com.ggasoftware.indigo.chemdiff;
 import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoObject;
 import com.ggasoftware.indigo.IndigoRenderer;
+import com.ggasoftware.indigo.chemdiff.CanonicalCodeGenerator;
+import com.ggasoftware.indigo.controls.Global;
 import com.ggasoftware.indigo.controls.IndigoCheckedException;
+import com.ggasoftware.indigo.controls.MoleculeItem;
 import com.ggasoftware.indigo.controls.RenderableObject;
+import com.ggasoftware.indigo.controls.RenderableObjectWithId;
 import java.util.ArrayList;
 
 public class MultipleMoleculeItem extends RenderableObjectWithId
