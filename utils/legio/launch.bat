@@ -1,0 +1,1 @@
+start javaw -jar -Xss10m legio.jar 
