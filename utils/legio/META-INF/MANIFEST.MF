@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: com.ggasoftware.indigo.legio.Main
+Class-Path: lib/common-controls.jar lib/indigo.jar lib/indigo-renderer.jar lib/jna.jar
+SplashScreen-Image: META-INF/legio-splash.png
+
