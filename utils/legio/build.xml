@@ -9,7 +9,68 @@
 <!-- in the project's Project Properties dialog box.-->
 <project name="legio" default="default" basedir=".">
     <description>Builds, tests, and runs the project legio.</description>
-    <import file="nbproject/build-impl.xml"/>
+    <!--<import file="nbproject/build-impl.xml"/>-->
+
+	<property name="lib.dir"     value="lib"/>
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+    </path>
+	<filelist id="dist_jars" dir="${lib.dir}">
+		<file name="indigo.jar"/>
+		<file name="indigo-renderer.jar"/>
+		<file name="jna.jar"/>
+		<file name="common-controls.jar"/>
+	</filelist>
+	<property name="indigo-java.dir" value="../../dist/indigo-java"/>
+	<property name="common-controls.dir" value="../../common/java/common-controls"/>
+	<target name="clean">
+        <delete dir="build"/>
+		<delete dir="lib"/>
+		<delete dir="dist"/>
+		<!--
+		<delete dir="dist/lib"/>
+		<delete dir="dist/javadoc"/>
+		<delete file="dist/README.txt"/>
+        <delete file="dist/legio.jar"/>
+        <delete file="lib/indigo.jar"/>
+        <delete file="lib/indigo-renderer.jar"/>
+        <delete file="lib/jna.jar"/>
+        <delete file="lib/common-controls.jar"/>-->
+    </target>
+	<target name="init-deps">
+		<!-- Build common controls-->	
+		<subant target="jar">
+	      <fileset dir="${common-controls.dir}" includes="build.xml"/>
+	    </subant>
+		<!--Copy libs-->
+		<mkdir dir="lib"/>
+	  	<copy file="${indigo-java.dir}/indigo.jar" todir="${lib.dir}"/>
+	  	<copy file="${indigo-java.dir}/indigo-renderer.jar" todir="${lib.dir}"/>
+	  	<copy file="${indigo-java.dir}/jna.jar" todir="${lib.dir}"/>
+	  	<copy file="${common-controls.dir}/dist/common-controls.jar" todir="${lib.dir}"/>
+	</target>
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" includeantruntime="false" classpathref="classpath"/>
+    </target>
+ 	<target name="jar" depends="init-deps,compile">
+        <mkdir dir="dist"/>
+		<copy todir="dist/lib" >
+			<filelist refid="dist_jars"/> 
+			<mapper type="flatten"/>
+    	</copy>
+		<jar destfile="dist/legio.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="com.ggasoftware.indigo.legio.Main"/>
+				<attribute name="SplashScreen-Image" value="META-INF/legio-splash.png"/>
+				<attribute name="Class-Path" value="lib/common-controls.jar lib/jna.jar lib/indigo-renderer.jar lib/indigo.jar"/>
+			</manifest>
+			<metainf dir="META-INF" includes="**/legio-splash.png"/>
+        </jar>
+    </target>
+
+
+
     <!--
 
     There exist several targets which are by default empty and which can be 
