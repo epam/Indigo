@@ -56,6 +56,11 @@ for filename in os.listdir(dist_dir):
             if not (file.endswith('indigo-inchi.jar')):
                 shutil.copy(file, "lib")
         shutil.copy(join(root, "common/java/common-controls/dist/common-controls.jar"), "lib")
+        if os.name == "nt" and os.path.exists("chemdiff.sh"):
+            with open("chemdiff.sh", "rb") as f:
+                text = f.read()
+            with open("chemdiff.sh", "wb") as f:
+                f.write(text.replace("\r\n", "\n"))
         os.chdir(dist_dir)
         shutil.make_archive(fullChemdiffName, "zip", "chemdiff")
         if filename.endswith('-win.zip'):
@@ -66,7 +71,7 @@ for filename in os.listdir(dist_dir):
             os.chdir(dist_dir)
         shutil.rmtree("chemdiff")
         shutil.rmtree("indigo-java")
-		
+        
 # Legio
 for filename in os.listdir(dist_dir):
     if filename.startswith("indigo-java-") :
@@ -99,6 +104,11 @@ for filename in os.listdir(dist_dir):
             if not (file.endswith('indigo-inchi.jar')):
                 shutil.copy(file, "lib")
         shutil.copy(join(root, "common/java/common-controls/dist/common-controls.jar"), "lib")
+        if os.name == "nt" and os.path.exists("legio.sh"):
+            with open("legio.sh", "rb") as f:
+                text = f.read()
+            with open("legio.sh", "wb") as f:
+                f.write(text.replace("\r\n", "\n"))
         os.chdir(dist_dir)
         shutil.make_archive(fullLegioName, "zip", "legio")
         if filename.endswith('-win.zip'):
