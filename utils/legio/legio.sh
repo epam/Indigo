@@ -9,3 +9,4 @@ while [ -h "$path" ]; do
 done
 
 java $JAVA_OPTS -jar $(dirname $path)/legio.jar "$@"
+

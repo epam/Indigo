@@ -49,6 +49,7 @@ for filename in os.listdir(dist_dir):
         else:
             shutil.copy(join("chemdiff.sh"), join(dist_dir, "chemdiff", fullChemdiffName,"chemdiff.sh"))
         shutil.copy(join("LICENSE.GPL"), join(dist_dir, "chemdiff", fullChemdiffName, "LICENSE.GPL"))
+        shutil.copytree(join(root, "utils", "chemdiff", "tests"), join(dist_dir, "chemdiff", fullChemdiffName, "tests"))
         os.chdir(join(dist_dir, "chemdiff", fullChemdiffName))
         os.mkdir("lib")
         for file in glob.glob("../../indigo-java/*.jar"):
@@ -60,11 +61,11 @@ for filename in os.listdir(dist_dir):
         if filename.endswith('-win.zip'):
             os.chdir(join(dist_dir, "chemdiff", fullChemdiffName))
             shutil.copy(join(root, "utils", "chemdiff", "chemdiff_installer.nsi"), join(dist_dir, "chemdiff", fullChemdiffName, "chemdiff_installer.nsi"))
-            shutil.copytree(join(root, "utils", "chemdiff", "tests"), join(dist_dir, "chemdiff", fullChemdiffName, "tests"))
             subprocess.check_call(["makensis", "/DVersion=%s" % version, "chemdiff_installer.nsi"], shell=True)
             shutil.copy("chemdiff-%s-installer.exe" % version, join(dist_dir, "chemdiff-%s-installer.exe" % version))
             os.chdir(dist_dir)
         shutil.rmtree("chemdiff")
+        shutil.rmtree("indigo-java")
 		
 # Legio
 for filename in os.listdir(dist_dir):
@@ -74,35 +75,35 @@ for filename in os.listdir(dist_dir):
             shutil.rmtree("indigo-java")
         java_dir = join(dist_dir, "indigo-java")
         distVersion = filename.replace("indigo-java-%s-" % version , '').replace('.zip', '')
-        fullChemdiffName = "legio-%s-%s" % (version, distVersion)
+        fullLegioName = "legio-%s-%s" % (version, distVersion)
         uz = ZipFile(join(dist_dir, filename))
         uz.extractall(path=dist_dir)
         os.rename(join(dist_dir, filename)[:-4], "indigo-java")
         if os.path.exists(join(dist_dir, "legio")):
             shutil.rmtree(join(dist_dir, "legio"))
         os.mkdir(join(dist_dir, "legio"))
-        os.mkdir(join(dist_dir, "legio", fullChemdiffName))
+        os.mkdir(join(dist_dir, "legio", fullLegioName))
         os.chdir(join(root, "utils", "legio"))
         subprocess.check_call("ant clean", shell=True)
         subprocess.check_call("ant jar", shell=True)
-        shutil.copy(join("dist", "legio.jar"), join(dist_dir, "legio", fullChemdiffName, "legio.jar"))
+        shutil.copy(join("dist", "legio.jar"), join(dist_dir, "legio", fullLegioName, "legio.jar"))
         if filename.endswith('-win.zip'):
-            shutil.copy(join("launch.bat"), join(dist_dir, "legio", fullChemdiffName,"launch.bat"))
+            shutil.copy(join("launch.bat"), join(dist_dir, "legio", fullLegioName,"launch.bat"))
         else:
-            shutil.copy(join("legio.sh"), join(dist_dir, "legio", fullChemdiffName,"legio.sh"))
-        shutil.copy(join("LICENSE.GPL"), join(dist_dir, "legio", fullChemdiffName, "LICENSE.GPL"))
-        os.chdir(join(dist_dir, "legio", fullChemdiffName))
+            shutil.copy(join("legio.sh"), join(dist_dir, "legio", fullLegioName,"legio.sh"))
+        shutil.copy(join("LICENSE.GPL"), join(dist_dir, "legio", fullLegioName, "LICENSE.GPL"))
+        shutil.copytree(join(root, "utils", "legio", "tests"), join(dist_dir, "legio", fullLegioName, "tests"))
+        os.chdir(join(dist_dir, "legio", fullLegioName))
         os.mkdir("lib")
         for file in glob.glob("../../indigo-java/*.jar"):
             if not (file.endswith('indigo-inchi.jar')):
                 shutil.copy(file, "lib")
         shutil.copy(join(root, "common/java/common-controls/dist/common-controls.jar"), "lib")
         os.chdir(dist_dir)
-        shutil.make_archive(fullChemdiffName, "zip", "legio")
+        shutil.make_archive(fullLegioName, "zip", "legio")
         if filename.endswith('-win.zip'):
-            os.chdir(join(dist_dir, "legio", fullChemdiffName))
-            shutil.copy(join(root, "utils", "legio", "legio_installer.nsi"), join(dist_dir, "legio", fullChemdiffName, "legio_installer.nsi"))
-            shutil.copytree(join(root, "utils", "legio", "tests"), join(dist_dir, "legio", fullChemdiffName, "tests"))
+            os.chdir(join(dist_dir, "legio", fullLegioName))
+            shutil.copy(join(root, "utils", "legio", "legio_installer.nsi"), join(dist_dir, "legio", fullLegioName, "legio_installer.nsi"))
             subprocess.check_call(["makensis", "/DVersion=%s" % version, "legio_installer.nsi"], shell=True)
             shutil.copy("legio-%s-installer.exe" % version, join(dist_dir, "legio-%s-installer.exe" % version))
             os.chdir(dist_dir)
