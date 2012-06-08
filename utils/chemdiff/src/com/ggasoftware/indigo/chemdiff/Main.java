@@ -4,7 +4,6 @@ import com.ggasoftware.indigo.controls.MessageBox;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 public class Main
 {

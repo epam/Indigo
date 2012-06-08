@@ -73,7 +73,8 @@ public:
       // special mode for clearing a mapping
       AAM_REGEN_CLEAR = 3,
 
-      MAX_PERMUTATIONS_NUMBER = 5000
+      MAX_PERMUTATIONS_NUMBER = 5000,
+      MIN_PERMUTATION_SIZE = 3
    };
    
    ReactionAutomapper(BaseReaction& reaction);
@@ -112,7 +113,7 @@ private:
    void _cleanReactants(BaseReaction& reaction);
 
    int _handleWithProduct(const Array<int>& reactant_cons, Array<int>& product_mapping_tmp, BaseReaction& reaction, int product, ReactionMapMatchingData& react_map_match) ;
-   void _chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping, int product, int map_complete);
+   bool _chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping, int product, int map_complete);
    bool _checkAtomMapping(bool change_rc, bool change_aam, bool change_rc_null);
 
    //arranges all maps to AAM
@@ -127,7 +128,8 @@ private:
    int _validMapFound(BaseReaction& reaction, int react, int prod, Array<int>& sub_map) const;
    void _removeUnusedInfo(BaseReaction& reaction, int mol_idx, bool aam_presented) const;
    void _removeSmallComponents(BaseMolecule& mol) const ;
-   //all permutation 
+   void _createPermutations(BaseReaction& reaction, ObjArray< Array<int> > &);
+   //all permutation
    static void _permutation(Array<int>& ,ObjArray< Array<int> > &);
 
 
