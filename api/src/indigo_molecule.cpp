@@ -147,40 +147,58 @@ IndigoQueryMolecule * IndigoQueryMolecule::cloneFrom( IndigoObject & obj )
 void IndigoQueryMolecule::parseAtomConstraint (const char* type, const char* value, 
    AutoPtr<QueryMolecule::Atom>& atom)
 {
+   enum KeyType { Int, Bool };
    struct Mapping
    {
       const char *key;
       QueryMolecule::OpType value;
+      KeyType key_type;
    };
 
-   static Mapping mappingForInt[] = 
+   static Mapping mappingForKeys[] = 
    {
-      { "atomic-number", QueryMolecule::ATOM_NUMBER },
-      { "charge", QueryMolecule::ATOM_CHARGE },
-      { "isotope", QueryMolecule::ATOM_ISOTOPE },
-      { "radical", QueryMolecule::ATOM_RADICAL },
-      { "valence", QueryMolecule::ATOM_VALENCE },
-      { "connectivity", QueryMolecule::ATOM_CONNECTIVITY },
-      { "total-bond-order", QueryMolecule::ATOM_TOTAL_BOND_ORDER },
-      { "hydrogens", QueryMolecule::ATOM_TOTAL_H },
-      { "substituents", QueryMolecule::ATOM_SUBSTITUENTS },
-      { "ring", QueryMolecule::ATOM_SSSR_RINGS },
-      { "smallest-ring-size", QueryMolecule::ATOM_SMALLEST_RING_SIZE },
-      { "ring-bonds", QueryMolecule::ATOM_RING_BONDS },
-      { "rsite-mask", QueryMolecule::ATOM_RSITE },
+      { "atomic-number", QueryMolecule::ATOM_NUMBER, Int },
+      { "charge", QueryMolecule::ATOM_CHARGE, Int },
+      { "isotope", QueryMolecule::ATOM_ISOTOPE, Int },
+      { "radical", QueryMolecule::ATOM_RADICAL, Int },
+      { "valence", QueryMolecule::ATOM_VALENCE, Int },
+      { "connectivity", QueryMolecule::ATOM_CONNECTIVITY, Int },
+      { "total-bond-order", QueryMolecule::ATOM_TOTAL_BOND_ORDER, Int },
+      { "hydrogens", QueryMolecule::ATOM_TOTAL_H, Int },
+      { "substituents", QueryMolecule::ATOM_SUBSTITUENTS, Int },
+      { "ring", QueryMolecule::ATOM_SSSR_RINGS, Int },
+      { "smallest-ring-size", QueryMolecule::ATOM_SMALLEST_RING_SIZE, Int },
+      { "ring-bonds", QueryMolecule::ATOM_RING_BONDS, Int },
+      { "rsite-mask", QueryMolecule::ATOM_RSITE, Int },
+      { "highlighting", QueryMolecule::HIGHLIGHTING, Bool },
    };
 
-   for (int i = 0; i < NELEM(mappingForInt); i++)
+   for (int i = 0; i < NELEM(mappingForKeys); i++)
    {
-      if(strcasecmp(type, mappingForInt[i].key) == 0)
+      if(strcasecmp(type, mappingForKeys[i].key) == 0)
       {
          int int_value = 0;
          if (value != NULL)
          {
-            BufferScanner buf_scanner(value);
-            int_value = buf_scanner.readInt();
+            if (mappingForKeys[i].key_type == Int)
+            {
+               BufferScanner buf_scanner(value);
+               int_value = buf_scanner.readInt();
+            }
+            else if (mappingForKeys[i].key_type == Bool)
+            {
+               if (strcasecmp(value, "true") == 0)
+                  int_value = 1;
+               else if (strcasecmp(value, "false") == 0)
+                  int_value = 0;
+               else
+               {
+                  BufferScanner buf_scanner(value);
+                  int_value = buf_scanner.readInt();
+               }
+            }
          }
-         atom.reset(new QueryMolecule::Atom(mappingForInt[i].value, int_value));
+         atom.reset(new QueryMolecule::Atom(mappingForKeys[i].value, int_value));
          return;
       }
    }
