@@ -406,6 +406,7 @@ class Indigo(object):
 
     self.IndigoObject.canonicalSmiles = Indigo._member_string(Indigo._lib.indigoCanonicalSmiles)
     self.IndigoObject.layeredCode = Indigo._member_string(Indigo._lib.indigoLayeredCode)
+    self.IndigoObject.symmetryClasses = Indigo._member_intbuf(Indigo._lib.indigoSymmetryClasses)
 
     self.IndigoObject.hasCoord = Indigo._member_bool(Indigo._lib.indigoHasCoord)
     self.IndigoObject.hasZCoord = Indigo._member_bool(Indigo._lib.indigoHasZCoord)
@@ -686,6 +687,20 @@ class Indigo(object):
       c_buf = POINTER(c_char)()
       self.dispatcher._checkResult(func(self.id, pointer(c_buf), pointer(c_size)))
       res = array('c')
+      for i in xrange(c_size.value):
+        res.append(c_buf[i])
+      return res
+    return Indigo._make_wrapper_func(newfunc, func)
+
+  @staticmethod
+  def _member_intbuf (func):
+    func.restype = POINTER(c_int)
+    func.argtypes = [c_int, POINTER(c_int)]
+    def newfunc (self):
+      self.dispatcher._setSID()
+      c_size = c_int()
+      c_buf = self.dispatcher._checkResultPtr(func(self.id, pointer(c_size)))
+      res = array('i')
       for i in xrange(c_size.value):
         res.append(c_buf[i])
       return res
@@ -1076,10 +1091,13 @@ class Indigo(object):
       raise IndigoException(Indigo._lib.indigoGetLastError())
     return result
 
-  def _checkResultString (self, result):
+  def _checkResultPtr (self, result):
     if result is None:
       raise IndigoException(Indigo._lib.indigoGetLastError())
     return result
+    
+  def _checkResultString (self, result):
+    return self._checkResultPtr(result)
 
   def __del__ (self):
     if hasattr(self, '_lib'):

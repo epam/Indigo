@@ -1375,6 +1375,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return p.getByteArray(0, size.getValue());
    }
    
+   public int[] symmetryClasses ()
+   {
+      IntByReference count = new IntByReference();
+
+      dispatcher.setSessionID();
+      Pointer p = Indigo.checkResultPointer(this, _lib.indigoSymmetryClasses(self, count));
+      return p.getIntArray(0, count.getValue());
+   }
+   
    public void append (IndigoObject obj)
    {
       dispatcher.setSessionID();

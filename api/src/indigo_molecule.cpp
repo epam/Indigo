@@ -27,6 +27,7 @@
 #include "base_c/bitarray.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/elements.h"
+#include "molecule/molecule_automorphism_search.h"
 #include "base_cpp/scanner.h"
 #include "indigo_mapping.h"
 
@@ -1593,6 +1594,43 @@ CEXPORT const char * indigoCanonicalSmiles (int molecule)
       saver.saveMolecule(mol);
       self.tmp_string.push(0);
       return self.tmp_string.ptr();
+   }
+   INDIGO_END(0);
+}
+
+CEXPORT const int * indigoSymmetryClasses (int molecule, int *count_out)
+{
+   INDIGO_BEGIN
+   {
+      Molecule &mol = self.getObject(molecule).getMolecule();
+
+      QS_DEF(Molecule, m2);
+      m2.clone_KeepIndices(mol);
+      m2.aromatize();
+
+      QS_DEF(Array<int>, ignored);
+      ignored.clear_resize(m2.vertexEnd());
+      ignored.zerofill();
+
+      for (int i = m2.vertexBegin(); i < m2.vertexEnd(); i = m2.vertexNext(i))
+         if (m2.convertableToImplicitHydrogen(i))
+            ignored[i] = 1;
+
+      MoleculeAutomorphismSearch of;
+
+      QS_DEF(Array<int>, orbits);
+      of.find_canonical_ordering = true;
+      of.ignored_vertices = ignored.ptr();
+      of.process(m2);
+      of.getCanonicallyOrderedOrbits(orbits);
+
+      self.tmp_string.resize(orbits.sizeInBytes());
+      self.tmp_string.copy((char*)orbits.ptr(), orbits.sizeInBytes());
+
+      if (count_out != 0)
+         *count_out= orbits.size();
+
+      return (const int*)self.tmp_string.ptr();
    }
    INDIGO_END(0);
 }

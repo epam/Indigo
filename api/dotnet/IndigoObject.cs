@@ -910,6 +910,18 @@ namespace com.ggasoftware.indigo
          return new String(_indigo_lib.indigoCanonicalSmiles(self));
       }
 
+      public int[] symmetryClasses()
+      {
+         dispatcher.setSessionID();
+         int count;
+         int* classes = _indigo_lib.indigoSymmetryClasses(self, &count);
+
+         int[] res = new int[count];
+         for (int i = 0; i < count; ++i)
+             res[i] = classes[i];
+         return res;
+      }
+
       public string layeredCode ()
       {
          dispatcher.setSessionID();

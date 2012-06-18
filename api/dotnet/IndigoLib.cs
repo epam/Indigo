@@ -309,6 +309,7 @@ namespace com.ggasoftware.indigo
 
       sbyte* indigoToString (int handle);
       int indigoToBuffer (int handle, byte** buf, int* size);
+      int* indigoSymmetryClasses(int molecule, int* size);
 
       int indigoReactionProductEnumerate (int reaction, int monomers);
       int indigoTransform (int reaction, int monomers);
