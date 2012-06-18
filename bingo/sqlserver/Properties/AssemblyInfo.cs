@@ -11,7 +11,7 @@ using System.Data.Sql;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("GGA Software Services LLC")]
 [assembly: AssemblyProduct("Bingo")]
-[assembly: AssemblyCopyright("Copyright © GGA Software Services LLC 2010")]
+[assembly: AssemblyCopyright("Copyright © GGA Software Services LLC 2010-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -27,5 +27,5 @@ using System.Data.Sql;
 //
 // You can specify all the values or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.6.*")]
+[assembly: AssemblyVersion("1.7.*")]
 
