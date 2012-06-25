@@ -259,6 +259,7 @@ public interface IndigoLib extends Library
 
    Pointer indigoCanonicalSmiles (int molecule);
    Pointer indigoLayeredCode (int molecule);
+   Pointer indigoSymmetryClasses (int molecule, IntByReference count);
 
    int indigoHasCoord (int molecule);
    int indigoHasZCoord (int molecule);

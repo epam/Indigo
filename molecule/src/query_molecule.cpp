@@ -445,7 +445,7 @@ QueryMolecule::Atom::Atom (int type_, int value) : Node(type_)
        type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY ||
        type_ == ATOM_TOTAL_BOND_ORDER ||
        type_ == ATOM_UNSATURATION || type == ATOM_SSSR_RINGS ||
-       type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE)
+       type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING)
       value_min = value_max = value;
    else
       throw Error("bad type: %d", type_);

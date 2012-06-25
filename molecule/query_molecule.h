@@ -71,7 +71,9 @@ public:
       ATOM_AROMATICITY,
 
       BOND_ORDER,
-      BOND_TOPOLOGY
+      BOND_TOPOLOGY,
+
+      HIGHLIGHTING
    };
 
    class DLLEXPORT Node

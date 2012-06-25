@@ -15,6 +15,6 @@
 #ifndef __indigo_version__
 #define __indigo_version__
 
-#define INDIGO_VERSION "${INDIGO_VERSION}"
+#define INDIGO_VERSION "${INDIGO_VERSION_EXT}"
 
 #endif
