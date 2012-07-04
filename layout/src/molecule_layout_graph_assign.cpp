@@ -350,6 +350,11 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
 
       if (assigned_list.size() == 0)
       {
+          // restore ignored ears in chains
+          for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+              if (_layout_vertices[i].type == ELEMENT_IGNORE)
+                  _layout_vertices[i].type = ELEMENT_BOUNDARY;
+          
          _refineCoordinates(bc_decom, bc_components, bc_tree);
          return;
       }
