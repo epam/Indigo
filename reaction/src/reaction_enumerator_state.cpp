@@ -1445,6 +1445,7 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
                if (mol_product.findEdgeIndex(neighbors[i], pr_atom) == -1)
                   mol_product.flipBond(neighbors[i], mon_atom, pr_atom);
 
+	    frags_mapping[_att_points[i][j]] = pr_atom;
             mol_product.removeAtom(mon_atom);
             //if (mol_product.mergeAtoms(frags_mapping[_att_points[i][0]], mapping[i]) == -1)
             //   return false;
