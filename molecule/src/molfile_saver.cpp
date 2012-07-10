@@ -697,7 +697,7 @@ void MolfileSaver::_writeOccurrenceRanges (Output &out, const Array<int> &occurr
          out.printf("%d-%d", occurrence >> 16, occurrence & 0xFFFF);
 
       if (i != occurrences.size() - 1)
-         out.printf(", ");
+         out.printf(",");
    }
 }
 
