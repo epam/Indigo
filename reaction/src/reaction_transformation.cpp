@@ -14,6 +14,7 @@
 
 #include "reaction/reaction_transformation.h"
 #include "reaction/reaction_enumerator_state.h"
+#include "layout/molecule_layout.h"
 
 using namespace indigo;
 
@@ -30,6 +31,8 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
    
    int reactant_idx = _merged_reaction.reactantBegin();
    int product_idx = _merged_reaction.productBegin();
+
+   bool has_coord = BaseMolecule::hasCoord(molecule);
 
    QS_DEF(QueryMolecule, cur_full_product);
    cur_full_product.clear();
@@ -67,6 +70,13 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
       ;
 
    molecule.clone(_cur_monomer, NULL, NULL);
+
+   if (has_coord)
+   {
+      MoleculeLayout ml(molecule);
+      ml.make();
+      molecule.stereocenters.markBonds();
+   }
 
    return true;
 }
