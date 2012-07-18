@@ -47,7 +47,7 @@ GRANT create table TO $(bingo);
 go
 
 -- Create tables for bingo user
-create table [$(bingo)].CONFIG (n int, name varchar(100), value varchar(4000));
+create table [$(bingo)].CONFIG (n int not null, name varchar(100) not null, value varchar(4000), primary key(n, name));
 create index CONFIG_N on [$(bingo)].CONFIG(n); 
 insert into [$(bingo)].CONFIG values(0, 'treat-x-as-pseudoatom', '0');
 insert into [$(bingo)].CONFIG values(0, 'ignore-closing-bond-direction-mismatch', '0');
@@ -63,20 +63,20 @@ insert into [$(bingo)].CONFIG values(0, 'KEEP_CACHE', '0');
 insert into [$(bingo)].CONFIG values(0, 'SIM_SCREENING_PASS_MARK', '128');
 go
 
-create table [$(bingo)].CONFIG_BIN (n int, name varchar(100), value varbinary(max));
+create table [$(bingo)].CONFIG_BIN (n int not null, name varchar(100) not null, value varbinary(max), primary key(n, name));
 create index CONFIG_BIN_N on [$(bingo)].CONFIG_BIN(n); 
 go
 
 -- Create context
-create table [$(bingo)].CONTEXT (obj_id int, database_id int, full_table_name varchar(100), id_column varchar(100), data_column varchar(100), type varchar(100));
+create table [$(bingo)].CONTEXT (obj_id int not null, database_id int not null, full_table_name varchar(100), id_column varchar(100), data_column varchar(100), type varchar(100), primary key (obj_id, database_id));
 create index CONTEXT_ID on [$(bingo)].CONTEXT(obj_id);
 go
 
 -- Create table with tautomer rules
-create table [$(bingo)].TAUTOMER_RULES (id int, begg varchar(100), endd varchar(100));
-insert into [$(bingo)].TAUTOMER_RULES values (1, 'N,O,P,S,As,Se,Sb,Te', 'N,O,P,S,As,Se,Sb,Te');
-insert into [$(bingo)].TAUTOMER_RULES values (2, '0C', 'N,O,P,S');
-insert into [$(bingo)].TAUTOMER_RULES values (3, '1C', 'N,O');
+create table [$(bingo)].TAUTOMER_RULES (id int identity primary key, begg varchar(100), endd varchar(100));
+insert into [$(bingo)].TAUTOMER_RULES(begg, endd) values ('N,O,P,S,As,Se,Sb,Te', 'N,O,P,S,As,Se,Sb,Te');
+insert into [$(bingo)].TAUTOMER_RULES(begg, endd) values ('0C', 'N,O,P,S');
+insert into [$(bingo)].TAUTOMER_RULES(begg, endd) values ('1C', 'N,O');
 go
  
 -- Create roles
