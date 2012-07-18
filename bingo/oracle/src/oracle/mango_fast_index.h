@@ -40,6 +40,8 @@ public:
    virtual float calcSelectivity (OracleEnv &env, int total_count);
    virtual int getIOCost (OracleEnv &env, float selectivity);
 
+   virtual bool getLastRowid (OraRowidText &id);
+
    DEF_ERROR("mango fast fetch");
 
 protected:
@@ -58,6 +60,8 @@ protected:
    int _cur_idx;
    int _matched;
    int _unmatched;
+
+   int _last_id;
 
    BingoFingerprints::Screening _screening;
 

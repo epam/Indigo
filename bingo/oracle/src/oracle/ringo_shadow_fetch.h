@@ -34,6 +34,8 @@ public:
    virtual int getIOCost (OracleEnv &env, float selectivity);
    virtual int getTotalCount (OracleEnv &env);
 
+   virtual bool getLastRowid (OraRowidText &id);
+
    int countOracleBlocks (OracleEnv &env);
 
    void prepareNonSubstructure (OracleEnv &env);

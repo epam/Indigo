@@ -36,6 +36,9 @@ public:
    virtual bool  end () = 0;
    virtual int getIOCost (OracleEnv &env, float selectivity) = 0;
 
+   // In case of exceptions this rowid corresponds to the structure that was tried to be matched last time
+   virtual bool getLastRowid (OraRowidText &id) = 0;
+
    TL_CP_DECL(List<OraRowidText>, matched);
 };
 

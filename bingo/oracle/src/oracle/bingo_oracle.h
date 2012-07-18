@@ -42,6 +42,20 @@ extern const char *log_filename;
    catch (OracleError &error) { error.raise(logger, ctx); }                 \
    catch (...) { OracleError(-1, "unknown exception").raise(logger, ctx); }                  
 
+#define ORA_TRY_FETCH_BEGIN \
+   try
+
+#define ORA_TRY_FETCH_END \
+      catch (Exception &e)                                                       \
+      {                                                                          \
+         const char *rid_text = "<null>";                                        \
+         OraRowidText rid;                                                       \
+         if (!fetch_engine.getLastRowid(rid))                                    \
+            rid_text = rid.ptr();                                                \
+         throw Exception("%s. Last rowid was %s", e.message(), rid_text);         \
+      }
+
+
 int  bingoPopRowidsToArray  (OracleEnv &env, List<OraRowidText> &matched, int maxrows, OCIArray *array);
 int  bingoGetExactRightPart (OracleEnv &env, OCINumber *p_strt, OCINumber *p_stop, int flags);
 void bingoBuildQueryID      (OracleEnv &env, const char *oper, const Array<char> &query_buf,
