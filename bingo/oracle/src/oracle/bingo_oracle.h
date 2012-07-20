@@ -50,7 +50,7 @@ extern const char *log_filename;
       {                                                                          \
          const char *rid_text = "<null>";                                        \
          OraRowidText rid;                                                       \
-         if (!fetch_engine.getLastRowid(rid))                                    \
+         if (fetch_engine.getLastRowid(rid))                                     \
             rid_text = rid.ptr();                                                \
          throw Exception("%s. Last rowid was %s", e.message(), rid_text);         \
       }
