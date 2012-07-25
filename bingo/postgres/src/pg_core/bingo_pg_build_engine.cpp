@@ -50,12 +50,14 @@ const char* BingoPgBuildEngine::getDictionary(int& size) {
 }
 
 int BingoPgBuildEngine::getNthreads() {
-   int result;
-   _setBingoContext();
-
-   bingoGetConfigInt("nthreads", &result);
-
-   return result;
+   // NO THREADS AT THE MOMENT BECAUSE IT IS NOT STABLE
+   return 1;
+//   int result;
+//   _setBingoContext();
+//
+//   bingoGetConfigInt("nthreads", &result);
+//
+//   return result;
 }
 
 
