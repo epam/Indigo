@@ -410,8 +410,17 @@ int BaseReactionSubstructureMatcher::_Matcher::nextPair ()
       BaseMolecule &src_mol_1 = _context._query->getBaseMolecule(_selected_molecule_1);
       Molecule &src_mol_2 = _context._target.getMolecule(_selected_molecule_2);
 
-      int src_aam_1 = _context._query->findAamNumber(&src_mol_1, src_mol_1.vertexBegin());
-      int src_aam_2 = _context._target.findAamNumber(&src_mol_2, _context._matchers[_context._matchers.size() - 2]->_current_core_1[src_mol_1.vertexBegin()]);
+      int src_aam_1 = 0;
+      int src_aam_2 = 0;
+
+      Array<int> &prev_core_1 = _context._matchers[_context._matchers.size() - 2]->_current_core_1;
+      for (int i = src_mol_1.vertexBegin(); i < src_mol_1.vertexEnd(); i = src_mol_1.vertexNext(i))
+         if (prev_core_1[i] >= 0)
+         {
+            src_aam_1 = _context._query->getAAM(_selected_molecule_1, i);
+            src_aam_2 = _context._target.getAAM(_selected_molecule_2, prev_core_1[i]);
+            break;
+         }
 
       BaseMolecule &mol_1 = _context._query->getBaseMolecule(_current_molecule_1);
       Molecule &mol_2 = _context._target.getMolecule(_current_molecule_2);
