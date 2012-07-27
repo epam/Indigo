@@ -793,17 +793,33 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
          if (n_pos == 1 && adjacent_list.size() == 3) // to avoid four bonds to be drawn like cross
          {
             n_pos = 5;
-            int n_matter = 0;
+            int n_matter = 0, n_matter_2 = 0, n_single = 0;
+            const Vertex &drawn_vert = getVertex(vert.neiVertex(drawn_idx));
             
+            if (drawn_vert.degree() > 2)
+                n_matter_2++;
+            else if (drawn_vert.degree() == 1)
+                n_single++;
+             
             for (i = 0; i < adjacent_list.size(); i++)
-               if (getVertex(adjacent_list[i]).degree() != 1)
+            {
+               int adj_degree = getVertex(adjacent_list[i]).degree();
+                
+               if (adj_degree == 1)
+                  n_single++;
+               else
                   n_matter++;
+                
+               if (adj_degree > 2)
+                  n_matter_2++;
+            }
             
-            if (n_matter == 1)
+            if (n_matter == 1) // draw ears
             {
                two_ears = true;
                n_pos = 2;
-            }
+            } else if (n_matter_2 > 1 || n_single == 4) // cross-like case
+               n_pos = 3;
          } else
             n_pos = adjacent_list.size();
       } else 
