@@ -132,13 +132,15 @@ for w, libs in wrappers:
     clearLibs()
     if args.libonlyname and w != args.libonlyname:
         continue
-    any_exists = False
+    libExists = True
     for lib in libs:
         name = "indigo-libs-%s-%s-shared" % (version, lib)
         if exists(name + ".zip"):
-            any_exists = True
+            libExists &= True
             unpackToLibs(name)
-    if not any_exists:
+        else:
+            libExists &= False
+    if not libExists:
         continue
     if need_gen_wrappers:
         for gen in wrappers_gen:
