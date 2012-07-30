@@ -41,7 +41,7 @@ IndigoGross::~IndigoGross ()
 
 void IndigoGross::toString (Array<char> &str)
 {
-   GrossFormula::toString(gross, str);
+   GrossFormula::toString_Hill(gross, str);
 }
 
 IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
