@@ -824,18 +824,18 @@ public class Indigo
 
       if (_os == OS_MACOS)
       {
-         // FIXME: Solve problem with OS Version not supported"
          String version = System.getProperty("os.version");
          int minorVersion = Integer.parseInt(version.split("\\.")[1]);
          Integer usingVersion = null;
+
          for (int i = minorVersion; i >= 5; i--) {
-            if (new File(path + "10." + i).exists()) {
+            if (Indigo.class.getResourceAsStream("/com/ggasoftware/indigo/" + path + "10." + i) != null) {
                usingVersion = i;
                break;
             }
          }
          if (usingVersion == null) {
-            throw new Error("OS version not supported");  
+            throw new Error("OS version not supported: Mac OS X 10." + minorVersion);  
          }
          path += "10." + usingVersion;
       }
