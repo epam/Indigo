@@ -151,8 +151,8 @@ class Indigo(object):
       path += "/Mac/"
       # append "10.5" or "10.6" to the path
       mac_ver = '.'.join(platform.mac_ver()[0].split('.')[:2])
-      if mac_ver == "10.7":
-         mac_ver = "10.6" # Try to use 10.6 Indigo version for Mac OS X 10.7
+      if mac_ver != "10.5":
+         mac_ver = "10.6" # Try to use 10.6 Indigo version for Mac OS X 10.7 and 10.8 
       path += mac_ver
       Indigo._lib = CDLL(path + "/libindigo.dylib", mode=RTLD_GLOBAL)
     else:

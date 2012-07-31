@@ -823,10 +823,8 @@ public class Indigo
          
          if (version.startsWith("10.5"))
             path += "10.5";
-         else if (version.startsWith("10.6") || version.startsWith("10.7"))
-            path += "10.6";
          else
-            throw new Error("OS version not supported");
+            path += "10.6";
       }
       else if (_os == OS_SOLARIS)
       {
