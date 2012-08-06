@@ -26,7 +26,7 @@ DLLEXPORT Indigo & indigoGetInstance ()
 
 CEXPORT const char * indigoVersion ()
 {
-   return INDIGO_VERSION;
+   return INDIGO_VERSION_EXT;
 }
 
 Indigo::Indigo () : timeout_cancellation_handler(0)
