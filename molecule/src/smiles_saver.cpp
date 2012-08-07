@@ -845,7 +845,7 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
          else if (chirality == 2)
             _output.printf("@@");
 
-         if (chirality > 0 || _bmol->getAtomRadical_NoThrow(idx, 0) != 0)
+         if (chirality > 0 || _bmol->getAtomRadical_NoThrow(idx, 0) > 0)
          {
             int hydro = _bmol->getAtomTotalH(idx);
 
@@ -895,6 +895,16 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
       case QueryMolecule::OP_NONE:
          _output.writeChar('*');
          break;
+      case QueryMolecule::ATOM_TOTAL_H:
+      {
+         int hydro = atom->value_min;
+
+         if (hydro > 1)
+            _output.printf("H%d", hydro);
+         else if (hydro == 1)
+            _output.printf("H");
+         break;
+      }
       default:
          ;
    }
