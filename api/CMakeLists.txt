@@ -42,6 +42,7 @@ DEFINE_TEST(indigo-c-test-shared "tests/c/indigo-test.c" indigo-shared)
 add_executable(dlopen-test ${Indigo_SOURCE_DIR}/tests/c/dlopen-test.c)
 if (UNIX)
     set_target_properties(dlopen-test PROPERTIES LINK_FLAGS "-rdynamic -ldl -pthread")
+    TARGET_LINK_LIBRARIES(dlopen-test "-rdynamic -ldl -pthread")
 endif()
 set_property(TARGET dlopen-test PROPERTY FOLDER "tests")
 #DLOPEN test
