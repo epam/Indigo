@@ -883,6 +883,8 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       const Edge &edge = mol.getEdge(i);
       int bond_order = mol.getBondOrder(i);
 
+      int indigo_topology = -1;
+
       if (bond_order < 0 && qmol != 0)
       {
          int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
@@ -898,10 +900,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       }
 
       if (bond_order < 0)
-         throw Error("unrepresentable query bond");
+      {
+         Array<char> buf;
+         qmol->getBondDescription(i, buf);
+         throw Error("unrepresentable query bond: %s", buf.ptr());
+      }
 
       int stereo = 0;
-      int topology = 0;
       int reacting_center = 0;
 
       int direction = mol.getBondDirection(i);
@@ -923,6 +928,15 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          if (_hasNeighborEitherBond(mol, i))
             stereo = 0;
       }
+
+      if (qmol != 0 && indigo_topology == -1)
+         qmol->getBond(i).sureValue(QueryMolecule::BOND_TOPOLOGY, indigo_topology);
+
+      int topology = 0;
+      if (indigo_topology == TOPOLOGY_RING)
+         topology = 1;
+      else if (indigo_topology == TOPOLOGY_CHAIN)
+         topology = 2;
 
       if(reactionBondReactingCenter != 0 && reactionBondReactingCenter->at(i) != 0)
          reacting_center = reactionBondReactingCenter->at(i);

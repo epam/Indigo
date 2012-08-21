@@ -1895,6 +1895,9 @@ QueryMolecule::Bond* QueryMolecule::getBondOrderTerm (QueryMolecule::Bond& qb, b
 
 bool QueryMolecule::isOrBond (QueryMolecule::Bond& qb, int type1, int type2)
 {
+   if ((qb.type == OP_AND || qb.type == OP_OR) && qb.children.size() == 1)
+      return isOrBond(*qb.child(0), type1, type2);
+
    if (qb.type != QueryMolecule::OP_OR || qb.children.size() != 2)
       return false;
    QueryMolecule::Bond& b1 = *qb.child(0);
@@ -1908,6 +1911,9 @@ bool QueryMolecule::isOrBond (QueryMolecule::Bond& qb, int type1, int type2)
 
 bool QueryMolecule::isSingleOrDouble (QueryMolecule::Bond& qb)
 {
+   if ((qb.type == OP_AND || qb.type == OP_OR) && qb.children.size() == 1)
+      return isSingleOrDouble(*qb.child(0));
+
    if (qb.type != QueryMolecule::OP_AND || qb.children.size() != 2)
       return false;
    QueryMolecule::Bond& b1 = *qb.child(0);
@@ -1922,14 +1928,26 @@ bool QueryMolecule::isSingleOrDouble (QueryMolecule::Bond& qb)
    return true;
 }
 
-int QueryMolecule::getQueryBondType (QueryMolecule::Bond& qb) {
+int QueryMolecule::getQueryBondType (QueryMolecule::Bond& qb)
+{
    if (!qb.hasConstraint(QueryMolecule::BOND_ORDER))
       return QUERY_BOND_ANY;
-   if (isSingleOrDouble(qb) || isOrBond(qb, BOND_SINGLE, BOND_DOUBLE))
+
+   QueryMolecule::Bond* qb2 = &qb;
+   AutoPtr<QueryMolecule::Bond> qb_modified;
+   int topology;
+   if (qb.sureValue(QueryMolecule::BOND_TOPOLOGY, topology))
+   {
+      qb_modified.reset(qb.clone());
+      qb_modified->removeConstraints(QueryMolecule::BOND_TOPOLOGY);
+      qb2 = qb_modified.get();
+   }
+
+   if (isSingleOrDouble(*qb2) || isOrBond(*qb2, BOND_SINGLE, BOND_DOUBLE))
          return QUERY_BOND_SINGLE_OR_DOUBLE;
-   if (isOrBond(qb, BOND_SINGLE, BOND_AROMATIC))
+   if (isOrBond(*qb2, BOND_SINGLE, BOND_AROMATIC))
          return QUERY_BOND_SINGLE_OR_AROMATIC;
-   if (isOrBond(qb, BOND_DOUBLE, BOND_AROMATIC))
+   if (isOrBond(*qb2, BOND_DOUBLE, BOND_AROMATIC))
          return QUERY_BOND_DOUBLE_OR_AROMATIC;
    return -1;
 }
