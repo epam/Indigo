@@ -335,6 +335,8 @@ public:
    void mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &mapping, Array<int> &edge_mapping);
    void clearSGroups();
 
+   void getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res);
+
    DEF_ERROR("molecule");
 protected:
 

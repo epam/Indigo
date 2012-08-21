@@ -261,6 +261,16 @@ void Metalayout::adjustMol (BaseMolecule& mol, const Vec2f& min, const Vec2f& po
 {
    float scaleFactor = getScaleFactor();
 
+   // Compute center points for the data sgroups
+   QS_DEF(Array<Vec2f>, data_centers);
+   data_centers.resize(mol.data_sgroups.end());
+   for (int i = mol.data_sgroups.begin(); i < mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
+   {
+      BaseMolecule::DataSGroup &group = mol.data_sgroups[i];
+      if (!group.relative)
+         mol.getSGroupAtomsCenterPoint(group, data_centers[i]);
+   }
+
    for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
    {
       Vec2f v;
@@ -271,4 +281,17 @@ void Metalayout::adjustMol (BaseMolecule& mol, const Vec2f& min, const Vec2f& po
       v.y = -v.y;
       mol.setAtomXyz(i, v.x, v.y, 0);
    }  
+
+   // Adjust data-sgroup label positions with absolute coordinates
+   for (int i = mol.data_sgroups.begin(); i < mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
+   {
+      BaseMolecule::DataSGroup &group = mol.data_sgroups[i];
+      if (!group.relative)
+      {
+         Vec2f new_center;
+         mol.getSGroupAtomsCenterPoint(group, new_center);
+         group.display_pos.add(new_center);
+         group.display_pos.sub(data_centers[i]);
+      }
+   }
 }

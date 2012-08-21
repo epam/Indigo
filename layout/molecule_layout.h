@@ -49,6 +49,8 @@ protected:
    static BaseMolecule& cb_getMol (int id, void* context);
    static void cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
 
+   void _updateDataSGroups ();
+
    void _init ();
 
    Metalayout _ml;

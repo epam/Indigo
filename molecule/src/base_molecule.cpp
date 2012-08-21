@@ -1283,3 +1283,17 @@ void BaseMolecule::invalidateAtom (int index, int mask)
       }
    }
 }
+
+void BaseMolecule::getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res)
+{
+   res.set(0, 0);
+   for (int j = 0; j < sgroup.atoms.size(); j++)
+   {
+      int ai = sgroup.atoms[j];
+      Vec3f &p = getAtomXyz(ai);
+      res.x += p.x;
+      res.y += p.y;
+   }
+   if (sgroup.atoms.size() != 0)
+      res.scale(1.0f / sgroup.atoms.size());
+}
