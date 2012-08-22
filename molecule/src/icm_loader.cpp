@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "molecule/icm_loader.h"
+#include "molecule/icm_saver.h"
 #include "base_cpp/scanner.h"
 #include "molecule/cmf_loader.h"
 #include "molecule/molecule.h"
@@ -29,8 +30,9 @@ void IcmLoader::loadMolecule (Molecule &mol)
    char id[3];
 
    _scanner.readCharsFix(3, id);
-   if (strncmp(id, "ICM", 3) != 0)
-      throw Error("expected 'ICM', got %.*s", 3, id);
+   if (strncmp(id, IcmSaver::VERSION, 3) != 0)
+      throw Error("expected '%s', got %.*s. Resave your molecule with new format.", 
+         IcmSaver::VERSION, 3, id);
 
    char bits = _scanner.readChar();
 

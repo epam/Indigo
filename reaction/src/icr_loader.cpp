@@ -29,8 +29,8 @@ void IcrLoader::loadReaction (Reaction &reaction)
    char id[3];
 
    _scanner.readCharsFix(3, id);
-   if (strncmp(id, "ICR", 3) != 0)
-      throw Error("expected 'ICR', got %.*s", 3, id);
+   if (strncmp(id, "IR2", 3) != 0)
+      throw Error("expected 'IR2', got %.*s. Resave your reaction with new format.", 3, id);
 
    char bits = _scanner.readChar();
 

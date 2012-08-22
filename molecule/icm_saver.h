@@ -25,6 +25,7 @@ class Output;
 class IcmSaver
 {
 public:
+   static const char* VERSION;
 
    explicit IcmSaver (Output &output);
 

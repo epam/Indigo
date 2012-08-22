@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+const char* IcmSaver::VERSION = "IM2";
+
 IcmSaver::IcmSaver (Output &output) : _output(output)
 {
    save_xyz = false;
@@ -28,7 +30,7 @@ IcmSaver::IcmSaver (Output &output) : _output(output)
 
 void IcmSaver::saveMolecule (Molecule &mol)
 {
-   _output.writeString("ICM");
+   _output.writeString(VERSION);
 
    int features = 0;
 

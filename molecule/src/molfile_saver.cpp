@@ -648,7 +648,9 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          _writeGenericSGroup3000(mol.superatoms[i], idx++, "SUP", out);
          if (mol.superatoms[i].bond_idx >= 0)
             out.printf(" XBONDS=(1 %d)", _bond_mapping[mol.superatoms[i].bond_idx]);
-         out.printf(" LABEL=%s ESTATE=E", mol.superatoms[i].subscript.ptr());
+         if (mol.superatoms[i].subscript.size() > 1)
+            out.printf(" LABEL=%s", mol.superatoms[i].subscript.ptr());
+         out.printf(" ESTATE=E");
          _writeMultiString(output, buf.ptr(), buf.size());
       }
       for (i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
@@ -675,7 +677,8 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             out.printf(" CONNECT=HT");
          else
             out.printf(" CONNECT=EU");
-         out.printf(" LABEL=%s", mol.repeating_units[i].subscript.ptr());
+         if (mol.repeating_units[i].subscript.size() > 1)
+            out.printf(" LABEL=%s", mol.repeating_units[i].subscript.ptr());
          _writeMultiString(output, buf.ptr(), buf.size());
       }
       for (i = mol.multiple_groups.begin(); i != mol.multiple_groups.end(); i = mol.multiple_groups.next(i))

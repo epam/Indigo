@@ -25,6 +25,7 @@ class Output;
 class IcrSaver
 {
 public:
+   static const char* VERSION;
 
    explicit IcrSaver (Output &output);
 
