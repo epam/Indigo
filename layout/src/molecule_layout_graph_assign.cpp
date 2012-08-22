@@ -838,6 +838,7 @@ void MoleculeLayoutGraph::_buildOutline (void)
    int first_idx = vertexBegin();
    float min_y = getPos(first_idx).y;
    const float EPS = 0.0001f;
+   const float EPS_ANGLE = 1e-6f;
 
    for (i = vertexNext(first_idx); i < vertexEnd(); i = vertexNext(i))
    {
@@ -887,6 +888,11 @@ void MoleculeLayoutGraph::_buildOutline (void)
 
          cur_angle = v.tiltAngle2() - i_angle;
 
+         // If cur_angle is almost zero but negative due to numeric errors (-1e-8) then 
+         // on some structures the results are not stable and even inifinite loop appreas
+         // Example of such structure: ClC1(C(=O)C2(Cl)C3(Cl)C14Cl)C5(Cl)C2(Cl)C3(Cl)C(Cl)(Cl)C45Cl
+         if (fabs(cur_angle) < EPS_ANGLE)
+            cur_angle = 0;
          if (cur_angle < 0.f)
             cur_angle += 2 * PI;
 
