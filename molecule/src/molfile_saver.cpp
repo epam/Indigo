@@ -675,6 +675,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             out.printf(" CONNECT=HT");
          else
             out.printf(" CONNECT=EU");
+         out.printf(" LABEL=%s", mol.repeating_units[i].subscript.ptr());
          _writeMultiString(output, buf.ptr(), buf.size());
       }
       for (i = mol.multiple_groups.begin(); i != mol.multiple_groups.end(); i = mol.multiple_groups.next(i))
@@ -1248,6 +1249,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
                output.printfCR("M  SBV %3d %3d %9.4f %9.4f", i + 1,
                        _bond_mapping[superatom.bond_idx], superatom.bond_dir.x, superatom.bond_dir.y);
             }
+         }
+         else if (sgroup_types[i] == _SGROUP_TYPE_SRU)
+         {
+            BaseMolecule::RepeatingUnit &sru = mol.repeating_units[sgroup_ids[i]];
+
+            if (sru.subscript.size() > 1)
+               output.printfCR("M  SMT %3d %s", i + 1, sru.subscript.ptr());
          }
          else if (sgroup_types[i] == _SGROUP_TYPE_DAT)
          {

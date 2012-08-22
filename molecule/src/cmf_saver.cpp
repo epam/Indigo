@@ -327,6 +327,7 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       BaseMolecule::RepeatingUnit &su = mol.repeating_units[i];
       _encode(CMF_REPEATINGUNIT);
       _encodeBaseSGroup(mol, su, mapping);
+      _encodeString(su.subscript);
       _output->writePackedUInt(su.connectivity);
    }
 

@@ -159,6 +159,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
          ru.connectivity = superru.connectivity;
       else
          repeating_units.remove(idx);
+      ru.subscript.copy(superru.subscript);
    }
 
    // multiple groups

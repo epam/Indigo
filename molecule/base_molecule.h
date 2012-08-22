@@ -127,6 +127,7 @@ public:
       virtual ~RepeatingUnit ();
 
       int connectivity;
+      Array<char> subscript; // SMT in Molfile format
    };
 
    class DLLEXPORT MultipleGroup : public SGroup

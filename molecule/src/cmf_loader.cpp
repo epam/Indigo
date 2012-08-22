@@ -717,6 +717,7 @@ void CmfLoader::_readSGroup (int code, Molecule &mol)
       int idx = mol.repeating_units.add();
       BaseMolecule::RepeatingUnit &s = mol.repeating_units[idx];
       _readGeneralSGroup(s);
+      _readString(s.subscript);
       s.connectivity = _scanner->readPackedUInt();
    }
    else if (code == CMF_MULTIPLEGROUP)

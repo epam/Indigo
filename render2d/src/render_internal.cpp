@@ -634,7 +634,7 @@ void MoleculeRenderInternal::_initSruGroups()
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
       index.fontsize = FONT_SIZE_ATTR;
-      bprintf(index.text, "n");
+      bprintf(index.text, group.subscript.size() > 0 ? group.subscript.ptr() : "n");
       _positionIndex(sg, tiIndex, true);
       if (group.connectivity != BaseMolecule::RepeatingUnit::HEAD_TO_TAIL) {
          int tiConn = _pushTextItem(sg, RenderItem::RIT_SGROUP);
