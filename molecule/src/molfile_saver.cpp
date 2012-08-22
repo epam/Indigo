@@ -441,6 +441,13 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             out.printf(" ATTCHPT=%d", val == 3 ? -1 : val);
       }
 
+      if (qmol != 0)
+      {
+         int unsat;
+         if (qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
+            out.printf(" UNSAT=1");
+      }
+
       _writeMultiString(output, buf.ptr(), buf.size());
    }
 
@@ -735,6 +742,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    QS_DEF(Array<int>, isotopes);
    QS_DEF(Array<int>, pseudoatoms);
    QS_DEF(Array<int>, atom_lists);
+   QS_DEF(Array<int>, unsaturated);
 
    _atom_mapping.clear_resize(mol.vertexEnd());
    _bond_mapping.clear_resize(mol.edgeEnd());
@@ -744,6 +752,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    isotopes.clear();
    pseudoatoms.clear();
    atom_lists.clear();
+   unsaturated.clear();
 
    int iw = 1;
 
@@ -854,6 +863,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          int *r = radicals.push();
          r[0] = i;
          r[1] = radical;
+      }
+
+      if (qmol != 0)
+      {
+         int unsat;
+         if (qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
+            unsaturated.push(i);
       }
 
       stereo_parity = _getStereocenterParity(mol, i);
@@ -981,6 +997,19 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          output.printf("M  ISO%3d", __min(isotopes.size(), j + 8) - j);
          for (i = j; i < __min(isotopes.size(), j + 8); i++)
             output.printf(" %3d %3d", _atom_mapping[isotopes[i]], mol.getAtomIsotope(isotopes[i]));
+         output.writeCR();
+         j += 8;
+      }
+   }
+
+   if (unsaturated.size() > 0)
+   {
+      int j = 0;
+      while (j < unsaturated.size())
+      {
+         output.printf("M  UNS%3d", __min(unsaturated.size(), j + 8) - j);
+         for (i = j; i < __min(unsaturated.size(), j + 8); i++)
+            output.printf(" %3d %3d", _atom_mapping[unsaturated[i]], 1);
          output.writeCR();
          j += 8;
       }
