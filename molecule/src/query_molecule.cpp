@@ -142,6 +142,8 @@ int QueryMolecule::getAtomRingBondsCount (int idx)
 
    if (_atoms[idx]->sureValue(ATOM_RING_BONDS, res))
       return res;
+   if (_atoms[idx]->sureValue(ATOM_RING_BONDS_AS_DRAWN, res))
+      return res;
 
    return -1;
 }
@@ -276,6 +278,9 @@ void QueryMolecule::_getAtomDescription (Atom *atom, Output &out, int depth)
          return;
       case ATOM_RING_BONDS:
          out.printf("rb%d", atom->value_min);
+         return;
+      case ATOM_RING_BONDS_AS_DRAWN:
+         out.printf("rb*");
          return;
       case ATOM_UNSATURATION:
          out.printf("u");
@@ -440,7 +445,7 @@ QueryMolecule::Atom::Atom (int type_, int value) : Node(type_)
    if (type_ == ATOM_NUMBER  || type_ == ATOM_CHARGE ||
        type_ == ATOM_ISOTOPE || type_ == ATOM_RADICAL ||
        type_ == ATOM_AROMATICITY || type_ == ATOM_VALENCE ||
-       type_ == ATOM_RING_BONDS || 
+       type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN || 
        type_ == ATOM_SUBSTITUENTS ||
        type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY ||
        type_ == ATOM_TOTAL_BOND_ORDER ||
@@ -1783,7 +1788,8 @@ bool QueryMolecule::isKnownAttr (QueryMolecule::Atom& qa)
       qa.type == QueryMolecule::ATOM_VALENCE ||
       qa.type == QueryMolecule::ATOM_TOTAL_H ||
       qa.type == QueryMolecule::ATOM_SUBSTITUENTS ||
-      qa.type == QueryMolecule::ATOM_RING_BONDS ||
+      qa.type == QueryMolecule::ATOM_RING_BONDS || 
+      qa.type == QueryMolecule::ATOM_RING_BONDS_AS_DRAWN ||
       qa.type == QueryMolecule::ATOM_UNSATURATION) && 
       qa.value_max == qa.value_min;
 }

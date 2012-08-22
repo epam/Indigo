@@ -757,7 +757,7 @@ void MolfileLoader::_readCtab2000 ()
                            rbonds++;
 
                      _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                        new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbonds)));
+                        new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
                   }
                   else if (rbcount > 1)
                      _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),

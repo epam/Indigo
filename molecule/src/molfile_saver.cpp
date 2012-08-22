@@ -265,6 +265,33 @@ void MolfileSaver::_writeMultiString (Output &output, const char *string, int le
    }
 }
 
+bool MolfileSaver::_getRingBondCountFlagValue (QueryMolecule &qmol, int idx, int &value)
+{
+   QueryMolecule::Atom &atom = qmol.getAtom(idx);
+   int rbc;
+   if (atom.hasConstraint(QueryMolecule::ATOM_RING_BONDS))
+   {
+      if (atom.sureValue(QueryMolecule::ATOM_RING_BONDS, rbc))
+      {
+         value = rbc;
+         if (value == 0)
+            value = -1;
+         return true;
+      }
+      int rbc_values[1] = { 4 };
+      if (atom.sureValueBelongs(QueryMolecule::ATOM_RING_BONDS, rbc_values, 1))
+      {
+         value = 4;
+         return true;
+      }
+   }
+   else if (atom.sureValue(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbc))
+   {
+      value = -2;
+      return true;
+   }
+   return false;
+}
 
 void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 {
@@ -446,6 +473,9 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          int unsat;
          if (qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
             out.printf(" UNSAT=1");
+         int rbc;
+         if (_getRingBondCountFlagValue(*qmol, i, rbc))
+            out.printf(" RBCNT=%d", rbc);
       }
 
       _writeMultiString(output, buf.ptr(), buf.size());
@@ -504,6 +534,19 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
       if (reacting_center != 0)
          out.printf(" RXCTR=%d", reacting_center);
+
+      int indigo_topology = -1;
+      if (qmol != 0)
+         qmol->getBond(i).sureValue(QueryMolecule::BOND_TOPOLOGY, indigo_topology);
+
+      int topology = 0;
+      if (indigo_topology == TOPOLOGY_RING)
+         topology = 1;
+      else if (indigo_topology == TOPOLOGY_CHAIN)
+         topology = 2;
+
+      if (topology != 0)
+         out.printf(" TOPO=%d", topology);
 
       _writeMultiString(output, buf.ptr(), buf.size());
    }
@@ -743,6 +786,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    QS_DEF(Array<int>, pseudoatoms);
    QS_DEF(Array<int>, atom_lists);
    QS_DEF(Array<int>, unsaturated);
+   QS_DEF(Array<int[2]>, ring_bonds);
 
    _atom_mapping.clear_resize(mol.vertexEnd());
    _bond_mapping.clear_resize(mol.edgeEnd());
@@ -753,6 +797,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    pseudoatoms.clear();
    atom_lists.clear();
    unsaturated.clear();
+   ring_bonds.clear();
 
    int iw = 1;
 
@@ -870,6 +915,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          int unsat;
          if (qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
             unsaturated.push(i);
+         int rbc;
+         if (_getRingBondCountFlagValue(*qmol, i, rbc))
+         {
+            int *r = ring_bonds.push();
+            r[0] = i;
+            r[1] = rbc;
+         }
       }
 
       stereo_parity = _getStereocenterParity(mol, i);
@@ -1010,6 +1062,19 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          output.printf("M  UNS%3d", __min(unsaturated.size(), j + 8) - j);
          for (i = j; i < __min(unsaturated.size(), j + 8); i++)
             output.printf(" %3d %3d", _atom_mapping[unsaturated[i]], 1);
+         output.writeCR();
+         j += 8;
+      }
+   }
+
+   if (ring_bonds.size() > 0)
+   {
+      int j = 0;
+      while (j < ring_bonds.size())
+      {
+         output.printf("M  RBC%3d", __min(ring_bonds.size(), j + 8) - j);
+         for (i = j; i < __min(ring_bonds.size(), j + 8); i++)
+            output.printf(" %3d %3d", _atom_mapping[ring_bonds[i][0]], ring_bonds[i][1]);
          output.writeCR();
          j += 8;
       }

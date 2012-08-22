@@ -457,6 +457,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       case QueryMolecule::ATOM_SMALLEST_RING_SIZE:
          return query->valueWithinRange(target.vertexSmallestRingSize(super_idx));
       case QueryMolecule::ATOM_RING_BONDS:
+      case QueryMolecule::ATOM_RING_BONDS_AS_DRAWN:
          return query->valueWithinRange(target.getAtomRingBondsCount(super_idx));
       case QueryMolecule::ATOM_UNSATURATION:
          return !target.isSaturatedAtom(super_idx);

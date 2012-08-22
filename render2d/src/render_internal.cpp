@@ -1275,6 +1275,7 @@ bool MoleculeRenderInternal::_hasQueryModifiers (int aid)
    QUERY_MOL_BEGIN(_mol);
    QueryMolecule::Atom& qa = qmol.getAtom(aid);
    hasConstraints = qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS) ||
+      qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN) ||
       qa.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS) ||
       qa.hasConstraint(QueryMolecule::ATOM_UNSATURATION) ||
       qa.hasConstraint(QueryMolecule::ATOM_TOTAL_H);
@@ -2215,6 +2216,12 @@ void MoleculeRenderInternal::_writeQueryModifier (Output& output, int aid)
          needDelimiter = _writeDelimiter(needDelimiter, output);
          if (ringBondCount >= 0)
             output.printf("rb%i", ringBondCount);
+      }
+
+      if (qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN))
+      {
+         needDelimiter = _writeDelimiter(needDelimiter, output);
+         output.printf("rb*");
       }
 
       if (qa.hasConstraint(QueryMolecule::ATOM_UNSATURATION))
