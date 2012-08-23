@@ -180,7 +180,8 @@ bool MoleculeAlleneStereo::_isAlleneCenter (BaseMolecule &mol, int idx, _Atom &a
       throw Error("zero bond length");
 
    // they should go in one line
-   if (fabs(Vec3f::dot(vec_left, vec_right) + 1) > 0.001)
+   // 0.04 is equivalent to 16 degress because it is hard to draw a straight line accurately
+   if (fabs(Vec3f::dot(vec_left, vec_right) + 1) > 0.04)
       return false;
 
    // check that if there are two left substituents, they do not lie on the same side
