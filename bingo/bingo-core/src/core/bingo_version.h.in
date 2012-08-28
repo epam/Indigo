@@ -15,6 +15,6 @@
 #ifndef __bingo_version__
 #define __bingo_version__
 
-#define BINGO_VERSION "${BINGO_VERSION}"
+#define BINGO_VERSION "${BINGO_VERSION_EXT}"
 
 #endif
