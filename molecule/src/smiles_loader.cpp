@@ -2092,13 +2092,21 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
             subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC));
          }
       }
-      else if (next == 's') // can be [s] or [se]
+      else if (next == 's') // can be [s], [se] or [si]
       {
          scanner.skip(1);
          if (scanner.lookNext() == 'e')
          {
             scanner.skip(1);
             element = ELEM_Se;
+            aromatic = ATOM_AROMATIC;
+         }
+         else if (scanner.lookNext() == 'i')
+         {
+            // Aromatic Si cannot occure in SMILES by specification, but 
+            // Cactvs produces it
+            scanner.skip(1);
+            element = ELEM_Si;
             aromatic = ATOM_AROMATIC;
          }
          else
