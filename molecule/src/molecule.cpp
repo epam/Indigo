@@ -397,6 +397,9 @@ void Molecule::calcAromaticAtomConnectivity (int idx, int &n_arom, int &min_conn
       else
          min_conn += order;
    }
+
+   if (isImplicitHSet(idx))
+      min_conn += getImplicitH(idx);
 }
 
 

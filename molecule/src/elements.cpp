@@ -402,6 +402,22 @@ int Element::calcValenceOfAromaticAtom (int elem, int charge, int n_arom, int mi
       }
       // no other cases known from PubChem
    }
+   else if (elem == ELEM_B)
+   {
+      if (n_arom == 2)
+      {
+         if (min_conn == 3) // one external bond
+            return 3; // CID 574072
+      }
+   }
+   else if (elem == ELEM_Si)
+   {
+      if (n_arom == 2)
+      {
+         if (min_conn == 3) // one external bond
+            return 4; // CID 18943170
+      }
+   }
    
    return -1;
 }

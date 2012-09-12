@@ -858,6 +858,11 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
 
    int atom_aromatic_connectivity = max_connectivity - non_aromatic_conn;
    if (atom_aromatic_connectivity < 0)
+      max_connectivity = Element::getMaximumConnectivity(label, 
+         charge, radical, true);
+
+   atom_aromatic_connectivity = max_connectivity - non_aromatic_conn;
+   if (atom_aromatic_connectivity < 0)
       throw Error("internal error: atom_aromatic_connectivity < 0");
 
    _vertexIsAcceptSingleEdge[v_idx] = true;
