@@ -329,7 +329,7 @@ void RSmilesSaver::_writeRadicals ()
 
       if (radical == RADICAL_SINGLET)
          _output.writeString("^3:");
-      else if (radical == RADICAL_DOUPLET)
+      else if (radical == RADICAL_DOUBLET)
          _output.writeString("^1:");
       else // RADICAL_TRIPLET
          _output.writeString("^4:");

@@ -1575,7 +1575,7 @@ int QueryMolecule::getAtomMaxH (int idx)
       if (!possibleAtomCharge(idx, charge))
          continue;
 
-      for (radical = 0; radical <= RADICAL_DOUPLET; radical++)
+      for (radical = 0; radical <= RADICAL_DOUBLET; radical++)
       {
          if (!possibleAtomRadical(idx, radical))
             continue;

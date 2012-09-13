@@ -57,7 +57,7 @@ void Element::_initPeriodic (int element, const char *name, int period, int grou
 
 int Element::radicalElectrons (int radical)
 {
-   if (radical == RADICAL_DOUPLET)
+   if (radical == RADICAL_DOUBLET)
       return 1;
    if (radical == RADICAL_SINGLET || radical == RADICAL_TRIPLET)
       return 2;

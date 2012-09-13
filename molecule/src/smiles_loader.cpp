@@ -368,7 +368,7 @@ void SmilesLoader::_readOtherStuff ()
          int radical;
 
          if (rad == 1)
-            radical = RADICAL_DOUPLET;
+            radical = RADICAL_DOUBLET;
          else if (rad == 3)
             radical = RADICAL_SINGLET;
          else if (rad == 4)

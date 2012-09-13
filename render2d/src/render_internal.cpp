@@ -2877,7 +2877,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          const TextItem& label = _data.textitems[tilabel];
          Vec2f ltc(label.bbp);
 
-         if (radical == RADICAL_DOUPLET)
+         if (radical == RADICAL_DOUBLET)
          {
             giRadical = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
             GraphItem& itemRadical = _data.graphitems[giRadical];

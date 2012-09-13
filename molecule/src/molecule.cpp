@@ -765,8 +765,8 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
                radical = 0;
             else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, impl_h, false))
                radical = RADICAL_SINGLET;
-            else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET, conn, valence, impl_h, false))
-               radical = RADICAL_DOUPLET;
+            else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn, valence, impl_h, false))
+               radical = RADICAL_DOUBLET;
             else
                throw Element::Error("can not calculate valence on %s, charge %d, connectivity %d",
                        Element::toString(atom.number), atom.charge, conn);
@@ -898,9 +898,9 @@ int Molecule::getAtomValence (int idx)
          else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, normal_impl_h, false) &&
                  normal_impl_h == impl_h)
             radical = RADICAL_SINGLET; // [CH2]
-         else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET, conn, valence, normal_impl_h, false) &&
+         else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn, valence, normal_impl_h, false) &&
                  normal_impl_h == impl_h)
-            radical = RADICAL_DOUPLET; // [CH3]
+            radical = RADICAL_DOUBLET; // [CH3]
          else if (Element::calcValence(atom.number, atom.charge, 0, conn + impl_h, valence, normal_impl_h, false) &&
                  normal_impl_h == 0)
          {
@@ -915,10 +915,10 @@ int Molecule::getAtomValence (int idx)
             valence = conn + impl_h;
             unusual_valence = true;
          }
-         else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET, conn + impl_h, valence, normal_impl_h, false) &&
+         else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn + impl_h, valence, normal_impl_h, false) &&
                  normal_impl_h == 0)
          {
-            radical = RADICAL_DOUPLET; // [PH4]
+            radical = RADICAL_DOUBLET; // [PH4]
             valence = conn + impl_h;
             unusual_valence = true;
          }
@@ -956,8 +956,8 @@ int Molecule::getAtomValence (int idx)
             radical = 0;
          else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, impl_h, false))
             radical = RADICAL_SINGLET;
-         else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUPLET, conn, valence, impl_h, false))
-            radical = RADICAL_DOUPLET;
+         else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn, valence, impl_h, false))
+            radical = RADICAL_DOUBLET;
          else
             throw Element::Error("can not calculate valence on %s, charge %d, connectivity %d",
                     Element::toString(atom.number), atom.charge, conn);

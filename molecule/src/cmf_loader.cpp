@@ -174,8 +174,8 @@ bool CmfLoader::_readAtom (int &code, _AtomDesc &atom, int atom_idx)
    {
       if (code == CMF_RADICAL_SINGLET)
          atom.radical = RADICAL_SINGLET;
-      else if (code == CMF_RADICAL_DOUPLET)
-         atom.radical = RADICAL_DOUPLET;
+      else if (code == CMF_RADICAL_DOUBLET)
+         atom.radical = RADICAL_DOUBLET;
       else // code == CMF_RADICAL_TRIPLET
          atom.radical = RADICAL_TRIPLET;
       

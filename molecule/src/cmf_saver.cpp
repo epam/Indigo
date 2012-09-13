@@ -506,8 +506,8 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
    {
       if (radical == RADICAL_SINGLET)
          _encode(CMF_RADICAL_SINGLET);
-      else if (radical == RADICAL_DOUPLET)
-         _encode(CMF_RADICAL_DOUPLET);
+      else if (radical == RADICAL_DOUBLET)
+         _encode(CMF_RADICAL_DOUBLET);
       else if (radical == RADICAL_TRIPLET)
          _encode(CMF_RADICAL_TRIPLET);
       else
