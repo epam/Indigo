@@ -1,3 +1,16 @@
+Indigo 1.1.4
+----------
+* Allene stereocenters detection algorithm is not throwing exception in case there are not atom coordinates
+* Aromatic [si] can be loaded from SMILES
+* Dearomatization improvements for B, Si, P atoms. There was an issue that the dearomatization method didn't work with the molecule CB1OB(C)OB(C)O1 if it was loaded from SMILES in aromatic form.
+
+New methods:
+
+* setExplicitValence.
+* radical, setRadical. This methods returns and accepts Indigo.SINGLET, Indigo.DOUBLET or Indigo.TRIPLET radicals.
+
+Thanks to Ferenc for suggestions to add these methods: <https://groups.google.com/d/msg/indigo-general/NBqNZ4Ik4-Y/goMuQxL9ZkEJ>
+
 Indigo 1.1.3
 ----------
 
