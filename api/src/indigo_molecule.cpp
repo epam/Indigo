@@ -1322,6 +1322,17 @@ CEXPORT int indigoGetExplicitValence (int atom, int *valence)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoSetExplicitValence (int atom, int valence)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      ia.mol.asMolecule().setExplicitValence(ia.idx, valence);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int indigoIsotope (int atom)
 {
    INDIGO_BEGIN
@@ -1363,6 +1374,59 @@ CEXPORT int indigoGetRadicalElectrons (int atom, int *electrons)
          return 0;
       }
       *electrons = Element::radicalElectrons(rad);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+static int mapRadicalToIndigoRadical (int radical)
+{
+   switch (radical)
+   {
+   case 0: return 0;
+   case RADICAL_SINGLET: return INDIGO_SINGLET;
+   case RADICAL_DOUBLET: return INDIGO_DOUBLET;
+   case RADICAL_TRIPLET: return INDIGO_TRIPLET;
+   default: throw IndigoError("Unknown radical type");
+   }
+}
+
+static int mapIndigoRadicalToRadical (int indigo_radical)
+{
+   switch (indigo_radical)
+   {
+   case 0: return 0;
+   case INDIGO_SINGLET: return RADICAL_SINGLET;
+   case INDIGO_DOUBLET: return RADICAL_DOUBLET;
+   case INDIGO_TRIPLET: return RADICAL_TRIPLET;
+   default: throw IndigoError("Unknown radical type");
+   }
+}
+
+CEXPORT int indigoGetRadical (int atom, int *radical)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      int rad = ia.mol.getAtomRadical(ia.idx);
+
+      if (rad == -1)
+      {
+         *radical = 0;
+         return 0;
+      }
+      *radical = mapRadicalToIndigoRadical(rad);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoSetRadical (int atom, int radical)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      ia.mol.asMolecule().setAtomRadical(ia.idx, mapIndigoRadicalToRadical(radical));
       return 1;
    }
    INDIGO_END(-1);

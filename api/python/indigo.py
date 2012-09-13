@@ -39,7 +39,12 @@ class Indigo(object):
   TRANS = 8
   CHAIN = 9
   RING = 10
-
+  ALLENE = 11
+  
+  SINGLET = 101
+  DOUBLET = 102
+  TRIPLET = 103
+   
   RC_NOT_CENTER     = -1
   RC_UNMARKED       =  0
   RC_CENTER         =  1
@@ -311,7 +316,10 @@ class Indigo(object):
     self.IndigoObject.degree = Indigo._member_int(Indigo._lib.indigoDegree)
     self.IndigoObject.charge = Indigo._member_intptr(Indigo._lib.indigoGetCharge)
     self.IndigoObject.explicitValence = Indigo._member_intptr(Indigo._lib.indigoGetExplicitValence)
+    self.IndigoObject.setExplicitValence = Indigo._member_void_int(Indigo._lib.indigoSetExplicitValence)
     self.IndigoObject.radicalElectrons = Indigo._member_intptr(Indigo._lib.indigoGetRadicalElectrons)
+    self.IndigoObject.radical = Indigo._member_intptr(Indigo._lib.indigoGetRadical)
+    self.IndigoObject.setRadical = Indigo._member_void_int(Indigo._lib.indigoSetRadical)
     self.IndigoObject.atomicNumber = Indigo._member_int(Indigo._lib.indigoAtomicNumber)
     self.IndigoObject.isotope = Indigo._member_int(Indigo._lib.indigoIsotope)
     self.IndigoObject.valence = Indigo._member_int(Indigo._lib.indigoValence)

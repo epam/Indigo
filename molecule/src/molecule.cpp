@@ -191,6 +191,16 @@ void Molecule::_validateVertexConnectivity (int idx, bool validate)
    updateEditRevision();
 }
 
+void Molecule::_invalidateVertexCache (int idx)
+{
+   if (!isExplicitValenceSet(idx) && _valence.size() > idx)
+      _valence[idx] = -1;
+   if (!isImplicitHSet(idx) && _implicit_h.size() > idx)
+      _implicit_h[idx] = -1;
+   if (_total_h.size() > idx)
+      _total_h[idx] = -1;
+}
+
 void Molecule::setBondOrder (int idx, int order, bool keep_connectivity)
 {
    const Edge &edge = getEdge(idx);
@@ -255,6 +265,7 @@ void Molecule::setAtomRadical (int idx, int radical)
 {
    _radicals.expandFill(idx + 1, -1);
    _radicals[idx] = radical;
+   _invalidateVertexCache(idx);
    updateEditRevision();
 }
 
@@ -263,6 +274,7 @@ void Molecule::setExplicitValence (int idx, int valence)
    _valence.expandFill(idx + 1, -1);
    _valence[idx] = valence;
    _atoms[idx].explicit_valence = true;
+   _invalidateVertexCache(idx);
    updateEditRevision();
 }
 
@@ -271,6 +283,7 @@ void Molecule::resetExplicitValence (int idx)
    if (_valence.size() > idx)
       _valence[idx] = -1;
    _atoms[idx].explicit_valence = false;
+   _invalidateVertexCache(idx);
    updateEditRevision();
 }
 
@@ -291,6 +304,7 @@ void Molecule::setImplicitH (int idx, int impl_h)
    _implicit_h.expandFill(idx + 1, -1);
    _implicit_h[idx] = impl_h;
    _atoms[idx].explicit_impl_h = true;
+   _invalidateVertexCache(idx);
    updateEditRevision();
 }
 

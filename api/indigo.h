@@ -303,7 +303,11 @@ enum
    INDIGO_TRANS = 8,
    INDIGO_CHAIN = 9,
    INDIGO_RING = 10,
-   INDIGO_ALLENE = 11
+   INDIGO_ALLENE = 11,
+
+   INDIGO_SINGLET = 101,
+   INDIGO_DOUBLET = 102,
+   INDIGO_TRIPLET = 103,
 };
 
 // Returns an iterator for all atoms of the given
@@ -341,8 +345,9 @@ CEXPORT int indigoDegree (int atom);
 CEXPORT int indigoGetCharge (int atom, int *charge);
 // Same as indigoGetCharge
 CEXPORT int indigoGetExplicitValence (int atom, int *valence);
-// Same as indigoGetCharge
-CEXPORT int indigoGetRadicalElectrons (int atom, int *electrons);
+
+CEXPORT int indigoSetExplicitValence (int atom, int valence);
+
 // Returns a number of element from the periodic table.
 // Returns zero on ambiguous atom.
 // Can not be applied to pseudo-atoms and R-sites.
@@ -389,7 +394,6 @@ CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *opt
 
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
-CEXPORT int indigoResetRadical (int atom);
 CEXPORT int indigoResetIsotope (int atom);
 
 CEXPORT int indigoSetAttachmentPoint (int atom, int order);
@@ -458,6 +462,13 @@ CEXPORT int indigoSetRSite (int atom, const char *name);
 
 CEXPORT int indigoSetCharge (int atom, int charge);
 CEXPORT int indigoSetIsotope (int atom, int isotope);
+
+// If the radical is nonambiguous, returns 1 and writes *electrons
+CEXPORT int indigoGetRadicalElectrons (int atom, int *electrons);
+// If the radical is nonambiguous, returns 1 and writes *radical
+CEXPORT int indigoGetRadical (int atom, int *radical);
+CEXPORT int indigoSetRadical (int atom, int radical);
+CEXPORT int indigoResetRadical (int atom);
 
 // Used for hacks with aromatic molecules; not recommended to use
 // in other situations

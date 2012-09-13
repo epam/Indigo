@@ -182,6 +182,8 @@ protected:
    // information is cleared.
    void _validateVertexConnectivity   (int idx, bool validate);
 
+   void _invalidateVertexCache (int idx);
+
 private:
    Molecule (const Molecule &); // no implicit copy
 

@@ -111,6 +111,7 @@ namespace com.ggasoftware.indigo
       sbyte* indigoSymbol (int atom);
       int indigoDegree (int atom);
       int indigoGetCharge (int atom, int* charge);
+      int indigoGetRadical (int atom, int* radical);
       int indigoGetExplicitValence (int atom, int* valence);
       int indigoGetRadicalElectrons (int atom, int* electrons);
       int indigoAtomicNumber (int atom);
@@ -183,8 +184,10 @@ namespace com.ggasoftware.indigo
       int indigoAddRSite (int molecule, string name);
       int indigoSetRSite (int atom, string name);
       int indigoSetCharge (int atom, int charge);
+      int indigoSetExplicitValence (int atom, int valence);
       int indigoSetIsotope (int atom, int isotope);
       int indigoSetImplicitHCount (int atom, int implh);
+      int indigoSetRadical (int atom, int radical);
 
       int indigoAddBond (int source, int destination, int order);
       int indigoSetBondOrder (int bond, int order);
@@ -315,5 +318,5 @@ namespace com.ggasoftware.indigo
       int indigoTransform (int reaction, int monomers);
 
       sbyte* indigoDbgInternalType (int item);
-	}
+   }
 }

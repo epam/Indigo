@@ -183,6 +183,11 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoFree(s);
       }
 
+      public void automap ()
+      {
+         automap("");
+      }
+
       public void automap (String mode)
       {
          if (mode == null)
@@ -355,6 +360,16 @@ namespace com.ggasoftware.indigo
          return null;
       }
 
+      public int? radical ()
+      {
+         int c;
+         dispatcher.setSessionID();
+
+         if (_indigo_lib.indigoGetRadical(self, &c) == 1)
+            return c;
+         return null;
+      }
+
       public int atomicNumber ()
       {
          dispatcher.setSessionID();
@@ -504,6 +519,11 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          _indigo_lib.indigoAddStereocenter(self, type, v1, v2, v3, v4);
+      }
+
+      public void setDataSGroupXY (float x, float y)
+      {
+         setDataSGroupXY(x, y, "");
       }
 
       public void setDataSGroupXY (float x, float y, String options)
@@ -761,6 +781,18 @@ namespace com.ggasoftware.indigo
       {
          dispatcher.setSessionID();
          _indigo_lib.indigoSetCharge(self, charge);
+      }
+
+      public void setRadical (int radical)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoSetRadical(self, radical);
+      }
+
+      public void setExplicitValence (int valence)
+      {
+         dispatcher.setSessionID();
+         _indigo_lib.indigoSetExplicitValence(self, valence);
       }
 
       public void setIsotope (int isotope)
