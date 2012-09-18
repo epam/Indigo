@@ -1,1 +1,1 @@
-SET(INDIGO_VERSION "1.1-rc")
+SET(INDIGO_VERSION "1.1-biconnected")
