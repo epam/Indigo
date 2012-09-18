@@ -20,3 +20,4 @@ endif()
 set_target_properties(layout PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")    
 target_link_libraries(layout molecule)
 pack_static(layout)
+
