@@ -15,6 +15,7 @@
 #include "layout/molecule_layout_macrocycles.h"
 
 #include "base_cpp/profiling.h"
+#include <limits.h>
 
 using namespace indigo;
 
