@@ -4,6 +4,7 @@ import com.ggasoftware.indigo.Indigo;
 import com.ggasoftware.indigo.IndigoException;
 import com.ggasoftware.indigo.IndigoObject;
 import com.ggasoftware.indigo.controls.IndigoCheckedException;
+import com.ggasoftware.indigo.controls.MoleculeItem;
 
 public class CanonicalCodeGenerator
 {
@@ -36,8 +37,8 @@ public class CanonicalCodeGenerator
       IndigoObject neg_q_atom = charge_pattern.getAtom(1);
       IndigoObject q_bond = charge_pattern.getBond(0);
       
-      int cnt = 0, prev_cnt = 0;
-      IndigoObject match_iter = null;
+      int cnt = 0, prev_cnt;
+      IndigoObject match_iter;
       do
       {
          IndigoObject matcher = mol.getIndigo().substructureMatcher(mol);

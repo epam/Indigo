@@ -88,8 +88,8 @@
     <Compile Include="Source\BingoCore.cs" />
     <Compile Include="Source\BingoStorage.cs" />
     <Compile Include="Source\BingoUtils.cs" />
-    <Compile Include="..\..\api\cs\IndigoDllLoader.cs" />
-    <Compile Include="..\..\api\cs\IndigoException.cs" />
+    <Compile Include="..\..\api\dotnet\IndigoDllLoader.cs" />
+    <Compile Include="..\..\api\dotnet\IndigoException.cs" />
     <Compile Include="Source\MangoCommon.cs" />
     <Compile Include="Source\MangoFastIndexFetch.cs" />
     <Compile Include="Source\MangoIndex.cs" />

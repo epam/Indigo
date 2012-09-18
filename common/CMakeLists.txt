@@ -52,4 +52,7 @@ if(UNIX OR APPLE)
 endif()
 
 set_target_properties(common PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+if(UNIX)
+	TARGET_LINK_LIBRARIES(common "-lpthread")
+endif()
 pack_static(common)

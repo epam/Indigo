@@ -45,6 +45,7 @@ protected:
                           int (*cmp)(_ElemCounter &, _ElemCounter &, void *));
    static int _cmp      (_ElemCounter &ec1, _ElemCounter &ec2, void *context);
    static int _cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void *context);
+   static int _cmp_hill_no_carbon (_ElemCounter &ec1, _ElemCounter &ec2, void *context);
 };
 
 }

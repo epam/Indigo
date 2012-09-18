@@ -188,6 +188,7 @@ protected:
    void _assignFirstCycle(const Cycle &cycle);
    void _attachCrossingEdges ();
    void _attachDandlingVertices (int vert_idx, Array<int> &adjacent_list);
+   void _attachEars (int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos);
    void _buildOutline (void);
 
    // attaching cycles

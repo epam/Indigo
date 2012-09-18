@@ -15,6 +15,7 @@ class BingoPgText;
 class BingoPgIndex;
 class BingoPgConfig;
 class BingoPgFpData;
+class MangoPgFpData;
 
 /*
  * Class for procession molecule fingerprint data
@@ -24,7 +25,8 @@ public:
    MangoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name);
    virtual ~MangoPgBuildEngine();
 
-   virtual bool processStructure(BingoPgText& struct_text, indigo::AutoPtr<BingoPgFpData>&);
+   virtual bool processStructure(StructCache& struct_cache);
+   virtual void processStructures(indigo::ObjArray<StructCache>& struct_caches);
 
    virtual int getFpSize();
    virtual int getType() const {return BINGO_INDEX_TYPE_MOLECULE;}
@@ -35,6 +37,9 @@ public:
 
 private:
    MangoPgBuildEngine(const MangoPgBuildEngine&); // no implicit copy
+
+   static void _processResultCb (void *context);
+   static bool _readPreparedInfo(int* id, MangoPgFpData& data, int fp_size);
 
 //   void _handleError(int res, int success_res, const char* message, bool only_warn);
 

@@ -634,7 +634,7 @@ void MoleculeRenderInternal::_initSruGroups()
       int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
       TextItem& index = _data.textitems[tiIndex];
       index.fontsize = FONT_SIZE_ATTR;
-      bprintf(index.text, "n");
+      bprintf(index.text, group.subscript.size() > 0 ? group.subscript.ptr() : "n");
       _positionIndex(sg, tiIndex, true);
       if (group.connectivity != BaseMolecule::RepeatingUnit::HEAD_TO_TAIL) {
          int tiConn = _pushTextItem(sg, RenderItem::RIT_SGROUP);
@@ -1278,6 +1278,7 @@ bool MoleculeRenderInternal::_hasQueryModifiers (int aid)
    QUERY_MOL_BEGIN(_mol);
    QueryMolecule::Atom& qa = qmol.getAtom(aid);
    hasConstraints = qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS) ||
+      qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN) ||
       qa.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS) ||
       qa.hasConstraint(QueryMolecule::ATOM_UNSATURATION) ||
       qa.hasConstraint(QueryMolecule::ATOM_TOTAL_H);
@@ -2220,6 +2221,12 @@ void MoleculeRenderInternal::_writeQueryModifier (Output& output, int aid)
             output.printf("rb%i", ringBondCount);
       }
 
+      if (qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN))
+      {
+         needDelimiter = _writeDelimiter(needDelimiter, output);
+         output.printf("rb*");
+      }
+
       if (qa.hasConstraint(QueryMolecule::ATOM_UNSATURATION))
       {
          needDelimiter = _writeDelimiter(needDelimiter, output);
@@ -2873,7 +2880,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          const TextItem& label = _data.textitems[tilabel];
          Vec2f ltc(label.bbp);
 
-         if (radical == RADICAL_DOUPLET)
+         if (radical == RADICAL_DOUBLET)
          {
             giRadical = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
             GraphItem& itemRadical = _data.graphitems[giRadical];

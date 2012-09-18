@@ -127,6 +127,7 @@ public:
       virtual ~RepeatingUnit ();
 
       int connectivity;
+      Array<char> subscript; // SMT in Molfile format
    };
 
    class DLLEXPORT MultipleGroup : public SGroup
@@ -333,6 +334,9 @@ public:
    void mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &mapping);
 
    void mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &mapping, Array<int> &edge_mapping);
+   void clearSGroups();
+
+   void getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res);
 
    DEF_ERROR("molecule");
 protected:

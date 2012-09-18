@@ -1,10 +1,18 @@
+import glob
 import os
 import shutil
-import sys
 import subprocess
 from os.path import *
-
+from zipfile import ZipFile
 from optparse import OptionParser
+import re
+
+version = ""
+cur_dir = split(__file__)[0]
+for line in open(join(os.path.dirname(os.path.abspath(__file__)), "..", "api", "indigo-version.cmake")):
+    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
+    if m:
+        version = m.group(1)
 
 presets = {
     "win32" : ("Visual Studio 10", ""),
@@ -38,12 +46,12 @@ if not args.generator:
     exit()
 
 cur_dir = abspath(dirname(__file__))
-root = join(cur_dir, "..")
+root = os.path.normpath(join(cur_dir, ".."))
 project_dir = join(cur_dir, "indigo-utils")
 
 if args.generator.find("Unix Makefiles") != -1:
     args.params += " -DCMAKE_BUILD_TYPE=" + args.config
-    
+
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_utils_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
@@ -53,6 +61,11 @@ if os.path.exists(full_build_dir) and args.clean:
     shutil.rmtree(full_build_dir)
 if not os.path.exists(full_build_dir):
     os.makedirs(full_build_dir)
+
+os.chdir(root)
+if not os.path.exists("dist"):
+    os.mkdir("dist")
+dist_dir = join(root, "dist")
 
 os.chdir(full_build_dir)
 command = "cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir)
@@ -76,12 +89,8 @@ elif args.generator.find("Visual Studio") != -1:
     subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config), shell=True)
 else:
     print("Do not know how to run package and install target")
-                                                              
-os.chdir(root)
-if not os.path.exists("dist"):
-    os.mkdir("dist")
-dist_dir = join(root, "dist")
-    
+
+
 for f in os.listdir(full_build_dir):
     path, ext = os.path.splitext(f)
     if ext == ".zip":

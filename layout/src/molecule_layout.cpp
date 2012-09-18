@@ -277,6 +277,45 @@ void _placeSGroupBracketsHorizontal (Array<Vec2f[2]>& brackets, BaseMolecule& mo
    right[1].set(max.x, min.y);
 }
 
+void MoleculeLayout::_updateDataSGroups ()
+{
+   // Move Data-SGroups with absolute coordinates according to new position
+   QS_DEF(Array<int>, layout_graph_mapping);
+   layout_graph_mapping.resize(_molecule.vertexEnd());
+   layout_graph_mapping.fffill();
+   for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
+   {
+      int vi = _layout_graph.getVertexExtIdx(i);
+      layout_graph_mapping[vi] = i;
+   }
+
+   for (int i = _molecule.data_sgroups.begin(); i < _molecule.data_sgroups.end(); i = _molecule.data_sgroups.next(i))
+   {
+      BaseMolecule::DataSGroup &group = _molecule.data_sgroups[i];
+      if (!group.relative)
+      {
+         Vec2f before;
+         _molecule.getSGroupAtomsCenterPoint(group, before);
+
+         Vec2f after;
+         for (int j = 0; j < group.atoms.size(); j++)
+         {
+            int ai = group.atoms[j];
+            const LayoutVertex &vert = _layout_graph.getLayoutVertex(layout_graph_mapping[ai]);
+            after.x += vert.pos.x;
+            after.y += vert.pos.y;
+         }
+
+         if (group.atoms.size() != 0)
+            after.scale(1.0f / group.atoms.size());
+
+         Vec2f delta;
+         delta.diff(after, before);
+         group.display_pos.add(delta);
+      }
+   }
+}
+
 void MoleculeLayout::_make ()
 {
    _layout_graph.max_iterations = max_iterations;
@@ -298,6 +337,10 @@ void MoleculeLayout::_make ()
       _layout_graph.layout(*_bm, bond_length, 0, respect_existing_layout);
 
 
+   // 1. Update data-sgroup label position before changing molecule atoms positions
+   _updateDataSGroups();
+
+   // 2. Update atoms
    for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
    {
       const LayoutVertex &vert = _layout_graph.getLayoutVertex(i);

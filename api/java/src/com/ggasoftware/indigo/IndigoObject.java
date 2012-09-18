@@ -188,6 +188,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoSaveRxnfileToFile(self, filename));
    }
 
+   public void automap ()
+   {
+      automap("");
+   }
+
    public void automap (String mode)
    {
       if (mode == null)
@@ -348,6 +353,14 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       IntByReference res = new IntByReference();
       dispatcher.setSessionID();
       if (Indigo.checkResult(this, _lib.indigoGetRadicalElectrons(self, res)) == 1)
+         return res.getValue();
+      return null;
+   }
+   public Integer radical ()
+   {
+      IntByReference res = new IntByReference();
+      dispatcher.setSessionID();
+      if (Indigo.checkResult(this, _lib.indigoGetRadical(self, res)) == 1)
          return res.getValue();
       return null;
    }
@@ -617,6 +630,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoSetCharge(self, charge));
+   }
+
+   public void setRadical (int radical)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoSetRadical(self, radical));
+   }
+
+   public void setExplicitValence (int valence)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoSetExplicitValence(self, valence));
    }
 
    public void setIsotope (int isotope)
@@ -901,6 +926,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoAddStereocenter(self, type, v1, v2, v3, v4));
    }
    
+   public void setDataSGroupXY(float x, float y)
+   {
+      setDataSGroupXY(x, y, "");
+   }
    public void setDataSGroupXY(float x, float y, String options)
    {
       dispatcher.setSessionID();
@@ -1373,6 +1402,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoToBuffer(self, ptr, size));
       Pointer p = ptr.getValue();
       return p.getByteArray(0, size.getValue());
+   }
+   
+   public int[] symmetryClasses ()
+   {
+      IntByReference count = new IntByReference();
+
+      dispatcher.setSessionID();
+      Pointer p = Indigo.checkResultPointer(this, _lib.indigoSymmetryClasses(self, count));
+      return p.getIntArray(0, count.getValue());
    }
    
    public void append (IndigoObject obj)

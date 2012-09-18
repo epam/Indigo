@@ -39,6 +39,11 @@ public class Indigo
    public static final int TRANS = 8;
    public static final int CHAIN = 9;
    public static final int RING = 10;
+   public static final int ALLENE = 11;
+  
+   public static final int SINGLET = 101;
+   public static final int DOUBLET = 102;
+   public static final int TRIPLET = 103;
 
    public static final int RC_NOT_CENTER = -1;
    public static final int RC_UNMARKED = 0;
@@ -823,10 +828,8 @@ public class Indigo
          
          if (version.startsWith("10.5"))
             path += "10.5";
-         else if (version.startsWith("10.6") || version.startsWith("10.7"))
-            path += "10.6";
          else
-            throw new Error("OS version not supported");
+            path += "10.6";
       }
       else if (_os == OS_SOLARIS)
       {

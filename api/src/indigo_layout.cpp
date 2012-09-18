@@ -60,11 +60,7 @@ CEXPORT int indigoLayout (int object)
                for (int j = rgp.fragments.begin(); j != rgp.fragments.end();
                         j = rgp.fragments.next(j))
                {
-                  MoleculeLayout fragml(*rgp.fragments[j]);
-
-                  fragml.max_iterations = self.layout_max_iterations;
-                  fragml.bond_length = 1.6f;
-                  fragml.make();
+                  rgp.fragments[j]->clearBondDirections();
                   rgp.fragments[j]->stereocenters.markBonds();
                   rgp.fragments[j]->allene_stereo.markBonds();
                }

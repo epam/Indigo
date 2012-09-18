@@ -457,6 +457,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       case QueryMolecule::ATOM_SMALLEST_RING_SIZE:
          return query->valueWithinRange(target.vertexSmallestRingSize(super_idx));
       case QueryMolecule::ATOM_RING_BONDS:
+      case QueryMolecule::ATOM_RING_BONDS_AS_DRAWN:
          return query->valueWithinRange(target.getAtomRingBondsCount(super_idx));
       case QueryMolecule::ATOM_UNSATURATION:
          return !target.isSaturatedAtom(super_idx);
@@ -502,6 +503,8 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       }
       case QueryMolecule::ATOM_AROMATICITY:
          return query->valueWithinRange(target.getAtomAromaticity(super_idx));
+      case QueryMolecule::HIGHLIGHTING:
+         return query->valueWithinRange((int)target.isAtomHighlighted(super_idx));
       default:
          throw Error("bad query atom type: %d", query->type);
    }
@@ -554,6 +557,8 @@ bool MoleculeSubstructureMatcher::matchQueryBond (QueryMolecule::Bond *query,
       }
       case QueryMolecule::BOND_TOPOLOGY:
          return target.getEdgeTopology(super_idx) == query->value;
+      case QueryMolecule::HIGHLIGHTING:
+         return query->value == (int)target.isAtomHighlighted(super_idx);
       default:
          throw Error("bad query bond type: %d", query->type);
    }

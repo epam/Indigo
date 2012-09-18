@@ -41,7 +41,7 @@ namespace indigo
 
          // Create shadow table for molecule components
          BingoSqlUtils.ExecNonQuery(conn,
-            "CREATE TABLE {0} (id int not null, hash int not null, count int not null)",
+            "CREATE TABLE {0} (id int not null, hash int not null, count int not null, primary key(id, hash))",
             componentsTable);
       }
 

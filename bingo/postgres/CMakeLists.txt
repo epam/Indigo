@@ -5,7 +5,7 @@ project(BingoPostgres)
 include(../bingo-version.cmake)
 include(SetBuildParameters)
 
-message(STATUS "BingoPostgres version is ${BINGO_VERSION}")
+message(STATUS "BingoPostgres version is ${BINGO_VERSION_EXT}")
 
 find_package(POSTGRES)
 if (NOT POSTGRES_FOUND)

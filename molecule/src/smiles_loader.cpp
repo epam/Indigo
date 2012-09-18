@@ -368,7 +368,7 @@ void SmilesLoader::_readOtherStuff ()
          int radical;
 
          if (rad == 1)
-            radical = RADICAL_DOUPLET;
+            radical = RADICAL_DOUBLET;
          else if (rad == 3)
             radical = RADICAL_SINGLET;
          else if (rad == 4)
@@ -1982,7 +1982,7 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       // We assume that this must be an alphabetic character and also
       // something not from the alphabetic SMARTS 'atomic primitives'
       // (see http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html).
-      else if (isalpha(next) && strchr("hrvxas", next) == NULL)
+      else if (isalpha(next) && strchr("hrvxast", next) == NULL)
       {
          scanner.skip(1);
 
@@ -2092,7 +2092,7 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
             subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC));
          }
       }
-      else if (next == 's') // can be [s] or [se]
+      else if (next == 's') // can be [s], [se] or [si]
       {
          scanner.skip(1);
          if (scanner.lookNext() == 'e')
@@ -2101,11 +2101,33 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
             element = ELEM_Se;
             aromatic = ATOM_AROMATIC;
          }
+         else if (scanner.lookNext() == 'i')
+         {
+            // Aromatic Si cannot occure in SMILES by specification, but 
+            // Cactvs produces it
+            scanner.skip(1);
+            element = ELEM_Si;
+            aromatic = ATOM_AROMATIC;
+         }
          else
          {
             element = ELEM_S;
             aromatic = ATOM_AROMATIC;
          }
+      }
+      else if (next == 't') // [te]
+      {
+         // Aromatic Te cannot occure in SMILES by specification, but 
+         // RDKit produces it within extended SMILES
+         scanner.skip(1);
+         if (scanner.lookNext() == 'e')
+         {
+            scanner.skip(1);
+            element = ELEM_Te;
+            aromatic = ATOM_AROMATIC;
+         }
+         else
+            throw Error("invalid character within atom description: '%c'", next);
       }
       else if (next == 'h')
          // Why would anybody ever need 'implicit hydrogen'

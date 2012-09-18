@@ -757,7 +757,7 @@ void MolfileLoader::_readCtab2000 ()
                            rbonds++;
 
                      _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                        new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbonds)));
+                        new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
                   }
                   else if (rbcount > 1)
                      _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
@@ -1058,6 +1058,12 @@ void MolfileLoader::_readCtab2000 ()
                BaseMolecule::MultipleGroup &mg = _bmol->multiple_groups[_sgroup_mapping[sgroup_idx]];
                mg.multiplier = _scanner.readInt();
                _scanner.skipLine();
+            }
+            else if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SRU)
+            {
+               _scanner.skip(1);
+               BaseMolecule::RepeatingUnit &sru = _bmol->repeating_units[_sgroup_mapping[sgroup_idx]];
+               _scanner.readLine(sru.subscript, true);
             }
             else
                _scanner.skipLine();
@@ -2640,6 +2646,7 @@ void MolfileLoader::_readSGroup3000 (const char *str)
    BaseMolecule::SGroup *sgroup;
    BaseMolecule::DataSGroup *dsg = 0;
    BaseMolecule::Superatom *sup = 0;
+   BaseMolecule::RepeatingUnit *sru = 0;
 
    if (strcmp(type.ptr(), "SUP") == 0)
    {
@@ -2652,7 +2659,10 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       sgroup = dsg;
    }
    else if (strcmp(type.ptr(), "SRU") == 0)
-      sgroup = &_bmol->repeating_units[_bmol->repeating_units.add()];
+   {
+      sru = &_bmol->repeating_units[_bmol->repeating_units.add()];
+      sgroup = sru;
+   }
    else if (strcmp(type.ptr(), "MUL") == 0)
       sgroup = &_bmol->multiple_groups[_bmol->multiple_groups.add()];
    else if (strcmp(type.ptr(), "GEN") == 0)
@@ -2802,9 +2812,13 @@ void MolfileLoader::_readSGroup3000 (const char *str)
                break;
             if (sup != 0)
                sup->subscript.push(c);
+            if (sru != 0)
+               sru->subscript.push(c);
          }
          if (sup != 0)
             sup->subscript.push(0);
+         if (sru != 0)
+            sru->subscript.push(0);
       }
       else 
       {

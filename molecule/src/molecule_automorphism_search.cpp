@@ -30,6 +30,7 @@ MoleculeAutomorphismSearch::MoleculeAutomorphismSearch () :
    TL_CP_GET(_hcount),
    TL_CP_GET(_cistrans_stereo_bond_parity),
    TL_CP_GET(_degree),
+   TL_CP_GET(_independent_component_index),
    TL_CP_GET(_stereocenter_state),
    TL_CP_GET(_cistrans_bond_state)
 {
@@ -158,8 +159,34 @@ void MoleculeAutomorphismSearch::process (Molecule &mol)
       _markComplicatedStereocentersAsValid(mol);
 
       // Find invalid stereocenters and bonds iteratively
-      while (_findInvalidStereo(mol))
-         ;
+      // For each component
+      const int *ignored_vertices_saved = ignored_vertices;
+
+      GraphDecomposer decomposer(mol);
+      int ncomp = decomposer.decompose();
+      QS_DEF(Array<int>, ignored_vertices_arr);
+      ignored_vertices_arr.resize(mol.vertexEnd());
+      ignored_vertices = ignored_vertices_arr.ptr();
+
+      for (int comp = 0; comp < ncomp; comp++)
+      {
+         // Copy existing ignores vertices
+         if (ignored_vertices_saved != 0)
+            ignored_vertices_arr.copy(ignored_vertices_saved, mol.vertexEnd());
+         else
+            ignored_vertices_arr.zerofill();
+
+         for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+         {
+            if (decomposer.getComponent(i) != comp)
+               ignored_vertices_arr[i] = 1;
+         }
+
+         while (_findInvalidStereo(mol))
+            ;
+      }
+
+      ignored_vertices = ignored_vertices_saved;
    }
 
    // Mark all other stereocenters and stereobonds as valid
@@ -292,9 +319,14 @@ int MoleculeAutomorphismSearch::_vertex_cmp (Graph &graph, int v1, int v2, const
       return -ret;
 
    int h1 = mol.isAtomHighlighted(v1);
-   int h2 = mol.isAtomHighlighted(v1);
+   int h2 = mol.isAtomHighlighted(v2);
    if (h1 != h2)
       return h1 - h2;
+
+   int i1 = self._independent_component_index[v1];
+   int i2 = self._independent_component_index[v2];
+   if (i1 != i2)
+      return i1 - i2;
 
    return 0;
 }
@@ -355,6 +387,10 @@ bool MoleculeAutomorphismSearch::_check_automorphism (Graph &graph, const Array<
    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {
       if (self._getStereo(self._cistrans_bond_state[i]) != _VALID || mol.cis_trans.getParity(i) == 0)
+         continue;
+
+      const Edge &edge = mol.getEdge(i);
+      if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
          continue;
 
       if (!_isCisTransBondMappedRigid(mol, i, mapping.ptr()))
@@ -875,6 +911,18 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
             _degree[i]++;
       }
    }
+
+   // Compute independent components if the canonical ordering is not required
+   _independent_component_index.clear_resize(mol.vertexEnd());
+   if (!find_canonical_ordering)
+   {
+      // We can mark different connected components as independent
+      GraphDecomposer decomposer(mol);
+      decomposer.decompose();
+      _independent_component_index.copy(decomposer.getDecomposition());
+   }
+   else
+      _independent_component_index.fffill();
 }
 
 void MoleculeAutomorphismSearch::_markValidOrInvalidStereo (bool find_valid, 
@@ -1039,6 +1087,8 @@ bool MoleculeAutomorphismSearch::_findInvalidStereo (Molecule &mol)
    for (int i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
    {
       int atom_index = stereocenters.getAtomIndex(i);
+      if (ignored_vertices != 0 && ignored_vertices[atom_index])
+         continue;
 
       if (_stereocenter_state[atom_index] != _UNDEF)
          continue;
@@ -1116,6 +1166,13 @@ bool MoleculeAutomorphismSearch::_findInvalidStereoCisTrans (Molecule &mol)
    {
       if (_cistrans_bond_state[i] != _UNDEF || mol.cis_trans.getParity(i) == 0)
          continue;
+
+      if (ignored_vertices != 0)
+      {
+         const Edge &edge = mol.getEdge(i);
+         if (ignored_vertices[edge.beg] || ignored_vertices[edge.end])
+            continue;
+      }
 
       _cistrans_bond_state[i] = _INVALID;
 

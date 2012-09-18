@@ -21,13 +21,18 @@
 #include "base_cpp/obj.h"
 #include "molecule/cmf_saver.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Molecule;
 class Scanner;
 struct Vec3f;
 
-class CmfLoader
+class DLLEXPORT CmfLoader
 {
 public:
 
@@ -141,5 +146,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif /* __cmf_loader_h__ */

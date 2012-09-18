@@ -228,6 +228,8 @@ void CmfSaver::_encodeUIntArray (const Array<int> &data, const Array<int> &mappi
    for (int i = 0; i < data.size(); i++)
    {
       int index = data[i];
+      if (index < 0)
+         throw Error("Internal error: index is invald: %d", index);
       int mapped = mapping[index];
       if (mapped < 0)
          throw Error("Internal error: mapping is invald");
@@ -289,7 +291,7 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
 
    for (int i = mol.generic_sgroups.begin(); i != mol.generic_sgroups.end(); i = mol.generic_sgroups.next(i))
    {
-      BaseMolecule::SGroup &sg = mol.data_sgroups[i];
+      BaseMolecule::SGroup &sg = mol.generic_sgroups[i];
       _encode(CMF_GENERICSGROUP);
       _encodeBaseSGroup(mol, sg, mapping);
    }
@@ -325,6 +327,7 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       BaseMolecule::RepeatingUnit &su = mol.repeating_units[i];
       _encode(CMF_REPEATINGUNIT);
       _encodeBaseSGroup(mol, su, mapping);
+      _encodeString(su.subscript);
       _output->writePackedUInt(su.connectivity);
    }
 
@@ -503,8 +506,8 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
    {
       if (radical == RADICAL_SINGLET)
          _encode(CMF_RADICAL_SINGLET);
-      else if (radical == RADICAL_DOUPLET)
-         _encode(CMF_RADICAL_DOUPLET);
+      else if (radical == RADICAL_DOUBLET)
+         _encode(CMF_RADICAL_DOUBLET);
       else if (radical == RADICAL_TRIPLET)
          _encode(CMF_RADICAL_TRIPLET);
       else

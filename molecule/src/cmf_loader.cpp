@@ -174,8 +174,8 @@ bool CmfLoader::_readAtom (int &code, _AtomDesc &atom, int atom_idx)
    {
       if (code == CMF_RADICAL_SINGLET)
          atom.radical = RADICAL_SINGLET;
-      else if (code == CMF_RADICAL_DOUPLET)
-         atom.radical = RADICAL_DOUPLET;
+      else if (code == CMF_RADICAL_DOUBLET)
+         atom.radical = RADICAL_DOUBLET;
       else // code == CMF_RADICAL_TRIPLET
          atom.radical = RADICAL_TRIPLET;
       
@@ -717,6 +717,7 @@ void CmfLoader::_readSGroup (int code, Molecule &mol)
       int idx = mol.repeating_units.add();
       BaseMolecule::RepeatingUnit &s = mol.repeating_units[idx];
       _readGeneralSGroup(s);
+      _readString(s.subscript);
       s.connectivity = _scanner->readPackedUInt();
    }
    else if (code == CMF_MULTIPLEGROUP)

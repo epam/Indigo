@@ -1,6 +1,7 @@
 
 #include "bingo_pg_ext_bitset.h"
 #include "base_c/bitarray.h"
+#include "base_cpp/obj_array.h"
 
 BingoPgExternalBitset::BingoPgExternalBitset() {
    _initWords(BITS_PER_WORD);
@@ -412,4 +413,89 @@ qword BingoPgExternalBitset::shiftOne(int shiftNumber) {
    }
    result = result << shiftNumber;
    return result;
+}
+
+BingoPgExternalBitset::Iterator::Iterator(BingoPgExternalBitset& self):
+_fromWordIdx(0),
+_fromByteIdx(-1),
+_fromBitIdx(-1),
+_fromIndexes(0) {
+   _words = self._words;
+   _wordsInUse = *self._lastWordPtr;
+}
+
+static indigo::ObjArray< indigo::Array<int> > all_indexes;
+
+int BingoPgExternalBitset::Iterator::begin() {
+   if(all_indexes.size() == 0) {
+      for (unsigned int buf = 0; buf < 256; ++buf) {
+         indigo::Array<int>& indexes = all_indexes.push();
+         _fillIndexes(buf, indexes);
+      }
+   }
+
+   if (_wordsInUse == 0)
+      return -1;
+
+   _fromWordIdx = -1;
+   _fromBitIdx = -1;
+   _fromByteIdx = -1;
+   _fromIndexes = 0;
+   _fromWord = 0;
+
+   return next();
+}
+
+int BingoPgExternalBitset::Iterator::next() {
+   if(_fromIndexes) {
+      ++_fromBitIdx;
+      if(_fromBitIdx < _fromIndexes->size())
+         return _fromIndexes->at(_fromBitIdx) + _shiftByte + _shiftWord;
+
+   }
+   _fromIndexes = 0;
+   if(_fromWord) {
+      for (++_fromByteIdx; _fromByteIdx < 8; ++_fromByteIdx) {
+         int from_byte = ((byte*) _fromWord)[_fromByteIdx];
+         if (from_byte == 0)
+            continue;
+
+         _fromIndexes = &(all_indexes.at(from_byte));
+
+         _fromBitIdx = 0;
+         _shiftByte = _fromByteIdx << 3;
+         return _fromIndexes->at(_fromBitIdx) + _shiftByte + _shiftWord;
+      }
+   }
+   _fromWord = 0;
+   for (++_fromWordIdx; _fromWordIdx < _wordsInUse; ++_fromWordIdx) {
+      _fromWord = &_words[_fromWordIdx];
+      if(*_fromWord == 0)
+         continue;
+
+      for (_fromByteIdx = 0; _fromByteIdx < 8; ++_fromByteIdx) {
+         int from_byte = ((byte*) _fromWord)[_fromByteIdx];
+         if (from_byte == 0)
+            continue;
+
+         _fromIndexes = &(all_indexes.at(from_byte));
+
+         _fromBitIdx = 0;
+         _shiftByte = _fromByteIdx << 3;
+         _shiftWord = _fromWordIdx << 6;
+         return _fromIndexes->at(_fromBitIdx) + _shiftByte + _shiftWord;
+      }
+   }
+
+   return -1;
+}
+
+void BingoPgExternalBitset::Iterator::_fillIndexes(byte buf, indigo::Array<int>&indexes) {
+   byte test_buf;
+   for (int buf_idx = 0; buf_idx < 8; ++buf_idx) {
+      test_buf = (byte)1 << buf_idx;
+      if(buf & test_buf) {
+         indexes.push(buf_idx);
+      }
+   }
 }

@@ -22,6 +22,7 @@ public class SingleIndigoObjectWindow extends javax.swing.JFrame
 
       obj_panel.setObject(chem_obj, indigo_renderer);
 
+      _is_reaction = is_reaction;
       _indigo_renderer = indigo_renderer;
       if (chem_obj != null)
       {

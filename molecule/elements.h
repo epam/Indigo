@@ -143,7 +143,7 @@ enum
 enum
 {
    RADICAL_SINGLET = 1,
-   RADICAL_DOUPLET = 2,
+   RADICAL_DOUBLET = 2,
    RADICAL_TRIPLET = 3
 };
 

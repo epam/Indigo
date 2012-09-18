@@ -255,21 +255,25 @@ ORAEXT int oraMangoIndexFetch (OCIExtProcContext *ctx, int fetch_id,
 
       BingoFetchEngine &fetch_engine = *context.fetch_engine;
 
-      if (maxrows > 100)
-         maxrows = 100;
-
-      // can have fetched rowid-s from the selectivity computation phase
-      maxrows -= bingoPopRowidsToArray(env, fetch_engine.matched, maxrows, *array);
-
-      if (maxrows > 0 && !fetch_engine.end())
+      ORA_TRY_FETCH_BEGIN
       {
-         env.dbgPrintfTS("[fetcher #%d] ", context.id);
+         if (maxrows > 100)
+            maxrows = 100;
 
-         fetch_engine.fetch(env, maxrows);
+         // can have fetched rowid-s from the selectivity computation phase
          maxrows -= bingoPopRowidsToArray(env, fetch_engine.matched, maxrows, *array);
-      }
 
-      return fetch_engine.end() ? 0 : 1;
+         if (maxrows > 0 && !fetch_engine.end())
+         {
+            env.dbgPrintfTS("[fetcher #%d] ", context.id);
+
+            fetch_engine.fetch(env, maxrows);
+            maxrows -= bingoPopRowidsToArray(env, fetch_engine.matched, maxrows, *array);
+         }
+
+         return fetch_engine.end() ? 0 : 1;
+      }
+      ORA_TRY_FETCH_END
    }
    ORABLOCK_END
 

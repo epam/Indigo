@@ -1,6 +1,8 @@
 package com.ggasoftware.indigo.controls;
 
-import com.ggasoftware.indigo.*;
+import com.ggasoftware.indigo.Indigo;
+import com.ggasoftware.indigo.IndigoObject;
+import com.ggasoftware.indigo.IndigoRenderer;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;

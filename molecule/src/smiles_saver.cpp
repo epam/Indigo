@@ -146,6 +146,9 @@ void SmilesSaver::_saveMolecule ()
       if (_bmol->getAtomAromaticity(i) == ATOM_AROMATIC)
       {
          _atoms[i].aromatic = true;
+         // From the SMILES specification:
+         // Please note that only atoms on the following list 
+         // can be considered aromatic: C, N, O, P, S, As, Se, and * (wildcard).
          static int allowed_lowercase[] = {ELEM_B, ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_Se, ELEM_As};
          if (_bmol->atomNumberBelongs(i, allowed_lowercase, NELEM(allowed_lowercase)))
             _atoms[i].lowercase = true;
@@ -842,7 +845,7 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
          else if (chirality == 2)
             _output.printf("@@");
 
-         if (chirality > 0 || _bmol->getAtomRadical_NoThrow(idx, 0) != 0)
+         if (chirality > 0 || _bmol->getAtomRadical_NoThrow(idx, 0) > 0)
          {
             int hydro = _bmol->getAtomTotalH(idx);
 
@@ -892,6 +895,16 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
       case QueryMolecule::OP_NONE:
          _output.writeChar('*');
          break;
+      case QueryMolecule::ATOM_TOTAL_H:
+      {
+         int hydro = atom->value_min;
+
+         if (hydro > 1)
+            _output.printf("H%d", hydro);
+         else if (hydro == 1)
+            _output.printf("H");
+         break;
+      }
       default:
          ;
    }
@@ -1413,7 +1426,7 @@ void SmilesSaver::_writeRadicals ()
     
       if (radical == RADICAL_SINGLET)
          _output.writeString("^3:");
-      else if (radical == RADICAL_DOUPLET)
+      else if (radical == RADICAL_DOUBLET)
          _output.writeString("^1:");
       else // RADICAL_TRIPLET
          _output.writeString("^4:");

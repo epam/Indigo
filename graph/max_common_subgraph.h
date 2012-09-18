@@ -23,6 +23,7 @@
 #include "base_cpp/red_black.h" 
 #include "math.h"
 #include "base_cpp/obj_list.h"
+#include "base_cpp/cancellation_handler.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -93,7 +94,6 @@ public:
    //callback for managing/ if return 0 then algorithm will end its work
    int (*cbEmbedding) (const int *sub_vert_map, const int *sub_edge_map, const void* info, void* userdata);
    void *embeddingUserdata;
-
 
    //Exact method: Hanser's algorithm
    //-------------------------------------------------------------------------------------------------------------------
@@ -203,6 +203,8 @@ public:
       int (*cbEmbedding) (const int *sub_vert_map, const int *sub_edge_map, const void* info, void* userdata);
       void *userdata;
 
+      CancellationHandler* cancellation_handler;
+
    protected:
       //list of ReGraph nodes each node keeping track of its  neighbours
       PtrArray<RePoint> _graph;
@@ -219,7 +221,7 @@ public:
       bool _findAllStructure;
       // flag to define if search was breaking
       bool _stop;
-
+      
       // Checks if a potantial solution is a real one 
       // (not included in a previous solution)
       //  and add this solution to the solution list
@@ -461,6 +463,8 @@ public:
       int getError() { return _errorNumber; }
       //sets maximum iteration number limit
       void setIterationNumber(int max);
+
+      CancellationHandler* cancellation_handler;
    private:
       //returns number of unmatched edges
       int _goalFunction();

@@ -30,6 +30,7 @@ MangoFastIndex::MangoFastIndex (MangoFetchContext &context) :
 _context(context)
 {
    _fetch_type = 0;
+   _last_id = -1;
 }
 
 MangoFastIndex::~MangoFastIndex ()
@@ -52,9 +53,23 @@ void MangoFastIndex::_decompressRowid (const Array<char> &stored, OraRowidText &
    rid.ptr()[18] = 0;
 }
 
+bool MangoFastIndex::getLastRowid (OraRowidText &id)
+{
+   if (_last_id < 0)
+      return false;
+
+   BingoStorage &storage = this->_context.context().context().storage;
+   QS_DEF(Array<char>, stored);
+   
+   storage.get(_last_id, stored);
+   _decompressRowid(stored, id);
+   return true;
+}
 
 void MangoFastIndex::_match (OracleEnv &env, int idx)
 {
+   _last_id = idx;
+
    BingoStorage &storage = this->_context.context().context().storage;
    QS_DEF(Array<char>, stored);
    

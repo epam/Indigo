@@ -142,6 +142,8 @@ int QueryMolecule::getAtomRingBondsCount (int idx)
 
    if (_atoms[idx]->sureValue(ATOM_RING_BONDS, res))
       return res;
+   if (_atoms[idx]->sureValue(ATOM_RING_BONDS_AS_DRAWN, res))
+      return res;
 
    return -1;
 }
@@ -276,6 +278,9 @@ void QueryMolecule::_getAtomDescription (Atom *atom, Output &out, int depth)
          return;
       case ATOM_RING_BONDS:
          out.printf("rb%d", atom->value_min);
+         return;
+      case ATOM_RING_BONDS_AS_DRAWN:
+         out.printf("rb*");
          return;
       case ATOM_UNSATURATION:
          out.printf("u");
@@ -440,12 +445,12 @@ QueryMolecule::Atom::Atom (int type_, int value) : Node(type_)
    if (type_ == ATOM_NUMBER  || type_ == ATOM_CHARGE ||
        type_ == ATOM_ISOTOPE || type_ == ATOM_RADICAL ||
        type_ == ATOM_AROMATICITY || type_ == ATOM_VALENCE ||
-       type_ == ATOM_RING_BONDS || 
+       type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN || 
        type_ == ATOM_SUBSTITUENTS ||
        type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY ||
        type_ == ATOM_TOTAL_BOND_ORDER ||
        type_ == ATOM_UNSATURATION || type == ATOM_SSSR_RINGS ||
-       type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE)
+       type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING)
       value_min = value_max = value;
    else
       throw Error("bad type: %d", type_);
@@ -1570,7 +1575,7 @@ int QueryMolecule::getAtomMaxH (int idx)
       if (!possibleAtomCharge(idx, charge))
          continue;
 
-      for (radical = 0; radical <= RADICAL_DOUPLET; radical++)
+      for (radical = 0; radical <= RADICAL_DOUBLET; radical++)
       {
          if (!possibleAtomRadical(idx, radical))
             continue;
@@ -1783,7 +1788,8 @@ bool QueryMolecule::isKnownAttr (QueryMolecule::Atom& qa)
       qa.type == QueryMolecule::ATOM_VALENCE ||
       qa.type == QueryMolecule::ATOM_TOTAL_H ||
       qa.type == QueryMolecule::ATOM_SUBSTITUENTS ||
-      qa.type == QueryMolecule::ATOM_RING_BONDS ||
+      qa.type == QueryMolecule::ATOM_RING_BONDS || 
+      qa.type == QueryMolecule::ATOM_RING_BONDS_AS_DRAWN ||
       qa.type == QueryMolecule::ATOM_UNSATURATION) && 
       qa.value_max == qa.value_min;
 }
@@ -1895,6 +1901,9 @@ QueryMolecule::Bond* QueryMolecule::getBondOrderTerm (QueryMolecule::Bond& qb, b
 
 bool QueryMolecule::isOrBond (QueryMolecule::Bond& qb, int type1, int type2)
 {
+   if ((qb.type == OP_AND || qb.type == OP_OR) && qb.children.size() == 1)
+      return isOrBond(*qb.child(0), type1, type2);
+
    if (qb.type != QueryMolecule::OP_OR || qb.children.size() != 2)
       return false;
    QueryMolecule::Bond& b1 = *qb.child(0);
@@ -1908,6 +1917,9 @@ bool QueryMolecule::isOrBond (QueryMolecule::Bond& qb, int type1, int type2)
 
 bool QueryMolecule::isSingleOrDouble (QueryMolecule::Bond& qb)
 {
+   if ((qb.type == OP_AND || qb.type == OP_OR) && qb.children.size() == 1)
+      return isSingleOrDouble(*qb.child(0));
+
    if (qb.type != QueryMolecule::OP_AND || qb.children.size() != 2)
       return false;
    QueryMolecule::Bond& b1 = *qb.child(0);
@@ -1922,14 +1934,26 @@ bool QueryMolecule::isSingleOrDouble (QueryMolecule::Bond& qb)
    return true;
 }
 
-int QueryMolecule::getQueryBondType (QueryMolecule::Bond& qb) {
+int QueryMolecule::getQueryBondType (QueryMolecule::Bond& qb)
+{
    if (!qb.hasConstraint(QueryMolecule::BOND_ORDER))
       return QUERY_BOND_ANY;
-   if (isSingleOrDouble(qb) || isOrBond(qb, BOND_SINGLE, BOND_DOUBLE))
+
+   QueryMolecule::Bond* qb2 = &qb;
+   AutoPtr<QueryMolecule::Bond> qb_modified;
+   int topology;
+   if (qb.sureValue(QueryMolecule::BOND_TOPOLOGY, topology))
+   {
+      qb_modified.reset(qb.clone());
+      qb_modified->removeConstraints(QueryMolecule::BOND_TOPOLOGY);
+      qb2 = qb_modified.get();
+   }
+
+   if (isSingleOrDouble(*qb2) || isOrBond(*qb2, BOND_SINGLE, BOND_DOUBLE))
          return QUERY_BOND_SINGLE_OR_DOUBLE;
-   if (isOrBond(qb, BOND_SINGLE, BOND_AROMATIC))
+   if (isOrBond(*qb2, BOND_SINGLE, BOND_AROMATIC))
          return QUERY_BOND_SINGLE_OR_AROMATIC;
-   if (isOrBond(qb, BOND_DOUBLE, BOND_AROMATIC))
+   if (isOrBond(*qb2, BOND_DOUBLE, BOND_AROMATIC))
          return QUERY_BOND_DOUBLE_OR_AROMATIC;
    return -1;
 }

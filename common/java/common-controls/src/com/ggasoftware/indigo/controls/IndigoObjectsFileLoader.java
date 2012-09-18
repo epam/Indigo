@@ -17,10 +17,17 @@ public class IndigoObjectsFileLoader extends
    private Indigo indigo;
    private File file;
    
+   private boolean useProxyObjects = true;
+   
    public IndigoObjectsFileLoader (Indigo indigo, File file)
    {
       this.indigo = indigo;
       this.file = file;
+   }
+   
+   public void setUseProxyObject (boolean useProxyObjects)
+   {
+       this.useProxyObjects = useProxyObjects;
    }
    
    @Override
@@ -38,7 +45,12 @@ public class IndigoObjectsFileLoader extends
             return null;
          
          int index = item.index();
-         IndigoObjectWrapper obj = new IndigoIteratorItem(iterator_object, index);
+         IndigoObjectWrapper obj;
+         if (useProxyObjects)
+            obj = new IndigoIteratorItem(iterator_object, index);
+         else
+            obj = new PureIndigoObject(item.clone());
+             
          objects.add(obj);
 
          setProgress(100 * index / count);

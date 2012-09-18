@@ -74,12 +74,12 @@
     <target name="-post-compile">
         <echo message="Copying shared modules..."/>
         <copy todir="${build.classes.dir}/com/ggasoftware/indigo">
-            <fileset dir="../../libs/shared" excludes="**/*.lib" includes="**/*render*"/>
+            <fileset dir="../../../libs/shared" excludes="**/*.lib" includes="**/*render*"/>
         </copy>
    </target>
    <target name="-post-jar">
         <echo message="Copying jar to the dist directory..."/>
-        <copy todir="../../../dist/java"> 
+        <copy todir="../../../../dist/java"> 
             <fileset file="${dist.jar}" /> 
         </copy>
    </target>

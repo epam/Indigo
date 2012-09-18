@@ -52,6 +52,7 @@ typedef struct BingoIndexOptions {
    int fp_sim_size;
    int sub_screening_max_bits;
    int sim_screening_pass_mark;
+   int nthreads;
 } BingoIndexOptions;
 
 

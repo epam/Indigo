@@ -27,6 +27,7 @@
 #include "base_c/bitarray.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/elements.h"
+#include "molecule/molecule_automorphism_search.h"
 #include "base_cpp/scanner.h"
 #include "indigo_mapping.h"
 
@@ -40,7 +41,7 @@ IndigoGross::~IndigoGross ()
 
 void IndigoGross::toString (Array<char> &str)
 {
-   GrossFormula::toString(gross, str);
+   GrossFormula::toString_Hill(gross, str);
 }
 
 IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
@@ -146,40 +147,58 @@ IndigoQueryMolecule * IndigoQueryMolecule::cloneFrom( IndigoObject & obj )
 void IndigoQueryMolecule::parseAtomConstraint (const char* type, const char* value, 
    AutoPtr<QueryMolecule::Atom>& atom)
 {
+   enum KeyType { Int, Bool };
    struct Mapping
    {
       const char *key;
       QueryMolecule::OpType value;
+      KeyType key_type;
    };
 
-   static Mapping mappingForInt[] = 
+   static Mapping mappingForKeys[] = 
    {
-      { "atomic-number", QueryMolecule::ATOM_NUMBER },
-      { "charge", QueryMolecule::ATOM_CHARGE },
-      { "isotope", QueryMolecule::ATOM_ISOTOPE },
-      { "radical", QueryMolecule::ATOM_RADICAL },
-      { "valence", QueryMolecule::ATOM_VALENCE },
-      { "connectivity", QueryMolecule::ATOM_CONNECTIVITY },
-      { "total-bond-order", QueryMolecule::ATOM_TOTAL_BOND_ORDER },
-      { "hydrogens", QueryMolecule::ATOM_TOTAL_H },
-      { "substituents", QueryMolecule::ATOM_SUBSTITUENTS },
-      { "ring", QueryMolecule::ATOM_SSSR_RINGS },
-      { "smallest-ring-size", QueryMolecule::ATOM_SMALLEST_RING_SIZE },
-      { "ring-bonds", QueryMolecule::ATOM_RING_BONDS },
-      { "rsite-mask", QueryMolecule::ATOM_RSITE },
+      { "atomic-number", QueryMolecule::ATOM_NUMBER, Int },
+      { "charge", QueryMolecule::ATOM_CHARGE, Int },
+      { "isotope", QueryMolecule::ATOM_ISOTOPE, Int },
+      { "radical", QueryMolecule::ATOM_RADICAL, Int },
+      { "valence", QueryMolecule::ATOM_VALENCE, Int },
+      { "connectivity", QueryMolecule::ATOM_CONNECTIVITY, Int },
+      { "total-bond-order", QueryMolecule::ATOM_TOTAL_BOND_ORDER, Int },
+      { "hydrogens", QueryMolecule::ATOM_TOTAL_H, Int },
+      { "substituents", QueryMolecule::ATOM_SUBSTITUENTS, Int },
+      { "ring", QueryMolecule::ATOM_SSSR_RINGS, Int },
+      { "smallest-ring-size", QueryMolecule::ATOM_SMALLEST_RING_SIZE, Int },
+      { "ring-bonds", QueryMolecule::ATOM_RING_BONDS, Int },
+      { "rsite-mask", QueryMolecule::ATOM_RSITE, Int },
+      { "highlighting", QueryMolecule::HIGHLIGHTING, Bool },
    };
 
-   for (int i = 0; i < NELEM(mappingForInt); i++)
+   for (int i = 0; i < NELEM(mappingForKeys); i++)
    {
-      if(strcasecmp(type, mappingForInt[i].key) == 0)
+      if(strcasecmp(type, mappingForKeys[i].key) == 0)
       {
          int int_value = 0;
          if (value != NULL)
          {
-            BufferScanner buf_scanner(value);
-            int_value = buf_scanner.readInt();
+            if (mappingForKeys[i].key_type == Int)
+            {
+               BufferScanner buf_scanner(value);
+               int_value = buf_scanner.readInt();
+            }
+            else if (mappingForKeys[i].key_type == Bool)
+            {
+               if (strcasecmp(value, "true") == 0)
+                  int_value = 1;
+               else if (strcasecmp(value, "false") == 0)
+                  int_value = 0;
+               else
+               {
+                  BufferScanner buf_scanner(value);
+                  int_value = buf_scanner.readInt();
+               }
+            }
          }
-         atom.reset(new QueryMolecule::Atom(mappingForInt[i].value, int_value));
+         atom.reset(new QueryMolecule::Atom(mappingForKeys[i].value, int_value));
          return;
       }
    }
@@ -1303,6 +1322,17 @@ CEXPORT int indigoGetExplicitValence (int atom, int *valence)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoSetExplicitValence (int atom, int valence)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      ia.mol.asMolecule().setExplicitValence(ia.idx, valence);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int indigoIsotope (int atom)
 {
    INDIGO_BEGIN
@@ -1344,6 +1374,59 @@ CEXPORT int indigoGetRadicalElectrons (int atom, int *electrons)
          return 0;
       }
       *electrons = Element::radicalElectrons(rad);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+static int mapRadicalToIndigoRadical (int radical)
+{
+   switch (radical)
+   {
+   case 0: return 0;
+   case RADICAL_SINGLET: return INDIGO_SINGLET;
+   case RADICAL_DOUBLET: return INDIGO_DOUBLET;
+   case RADICAL_TRIPLET: return INDIGO_TRIPLET;
+   default: throw IndigoError("Unknown radical type");
+   }
+}
+
+static int mapIndigoRadicalToRadical (int indigo_radical)
+{
+   switch (indigo_radical)
+   {
+   case 0: return 0;
+   case INDIGO_SINGLET: return RADICAL_SINGLET;
+   case INDIGO_DOUBLET: return RADICAL_DOUBLET;
+   case INDIGO_TRIPLET: return RADICAL_TRIPLET;
+   default: throw IndigoError("Unknown radical type");
+   }
+}
+
+CEXPORT int indigoGetRadical (int atom, int *radical)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      int rad = ia.mol.getAtomRadical(ia.idx);
+
+      if (rad == -1)
+      {
+         *radical = 0;
+         return 0;
+      }
+      *radical = mapRadicalToIndigoRadical(rad);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoSetRadical (int atom, int radical)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      ia.mol.asMolecule().setAtomRadical(ia.idx, mapIndigoRadicalToRadical(radical));
       return 1;
    }
    INDIGO_END(-1);
@@ -1593,6 +1676,43 @@ CEXPORT const char * indigoCanonicalSmiles (int molecule)
       saver.saveMolecule(mol);
       self.tmp_string.push(0);
       return self.tmp_string.ptr();
+   }
+   INDIGO_END(0);
+}
+
+CEXPORT const int * indigoSymmetryClasses (int molecule, int *count_out)
+{
+   INDIGO_BEGIN
+   {
+      Molecule &mol = self.getObject(molecule).getMolecule();
+
+      QS_DEF(Molecule, m2);
+      m2.clone_KeepIndices(mol);
+      m2.aromatize();
+
+      QS_DEF(Array<int>, ignored);
+      ignored.clear_resize(m2.vertexEnd());
+      ignored.zerofill();
+
+      for (int i = m2.vertexBegin(); i < m2.vertexEnd(); i = m2.vertexNext(i))
+         if (m2.convertableToImplicitHydrogen(i))
+            ignored[i] = 1;
+
+      MoleculeAutomorphismSearch of;
+
+      QS_DEF(Array<int>, orbits);
+      of.find_canonical_ordering = true;
+      of.ignored_vertices = ignored.ptr();
+      of.process(m2);
+      of.getCanonicallyOrderedOrbits(orbits);
+
+      self.tmp_string.resize(orbits.sizeInBytes());
+      self.tmp_string.copy((char*)orbits.ptr(), orbits.sizeInBytes());
+
+      if (count_out != 0)
+         *count_out= orbits.size();
+
+      return (const int*)self.tmp_string.ptr();
    }
    INDIGO_END(0);
 }

@@ -39,7 +39,12 @@ class Indigo(object):
   TRANS = 8
   CHAIN = 9
   RING = 10
-
+  ALLENE = 11
+  
+  SINGLET = 101
+  DOUBLET = 102
+  TRIPLET = 103
+   
   RC_NOT_CENTER     = -1
   RC_UNMARKED       =  0
   RC_CENTER         =  1
@@ -151,8 +156,8 @@ class Indigo(object):
       path += "/Mac/"
       # append "10.5" or "10.6" to the path
       mac_ver = '.'.join(platform.mac_ver()[0].split('.')[:2])
-      if mac_ver == "10.7":
-         mac_ver = "10.6" # Try to use 10.6 Indigo version for Mac OS X 10.7
+      if mac_ver != "10.5":
+         mac_ver = "10.6" # Try to use 10.6 Indigo version for Mac OS X 10.7 and 10.8 
       path += mac_ver
       Indigo._lib = CDLL(path + "/libindigo.dylib", mode=RTLD_GLOBAL)
     else:
@@ -311,7 +316,10 @@ class Indigo(object):
     self.IndigoObject.degree = Indigo._member_int(Indigo._lib.indigoDegree)
     self.IndigoObject.charge = Indigo._member_intptr(Indigo._lib.indigoGetCharge)
     self.IndigoObject.explicitValence = Indigo._member_intptr(Indigo._lib.indigoGetExplicitValence)
+    self.IndigoObject.setExplicitValence = Indigo._member_void_int(Indigo._lib.indigoSetExplicitValence)
     self.IndigoObject.radicalElectrons = Indigo._member_intptr(Indigo._lib.indigoGetRadicalElectrons)
+    self.IndigoObject.radical = Indigo._member_intptr(Indigo._lib.indigoGetRadical)
+    self.IndigoObject.setRadical = Indigo._member_void_int(Indigo._lib.indigoSetRadical)
     self.IndigoObject.atomicNumber = Indigo._member_int(Indigo._lib.indigoAtomicNumber)
     self.IndigoObject.isotope = Indigo._member_int(Indigo._lib.indigoIsotope)
     self.IndigoObject.valence = Indigo._member_int(Indigo._lib.indigoValence)
@@ -406,6 +414,7 @@ class Indigo(object):
 
     self.IndigoObject.canonicalSmiles = Indigo._member_string(Indigo._lib.indigoCanonicalSmiles)
     self.IndigoObject.layeredCode = Indigo._member_string(Indigo._lib.indigoLayeredCode)
+    self.IndigoObject.symmetryClasses = Indigo._member_intbuf(Indigo._lib.indigoSymmetryClasses)
 
     self.IndigoObject.hasCoord = Indigo._member_bool(Indigo._lib.indigoHasCoord)
     self.IndigoObject.hasZCoord = Indigo._member_bool(Indigo._lib.indigoHasZCoord)
@@ -686,6 +695,20 @@ class Indigo(object):
       c_buf = POINTER(c_char)()
       self.dispatcher._checkResult(func(self.id, pointer(c_buf), pointer(c_size)))
       res = array('c')
+      for i in xrange(c_size.value):
+        res.append(c_buf[i])
+      return res
+    return Indigo._make_wrapper_func(newfunc, func)
+
+  @staticmethod
+  def _member_intbuf (func):
+    func.restype = POINTER(c_int)
+    func.argtypes = [c_int, POINTER(c_int)]
+    def newfunc (self):
+      self.dispatcher._setSID()
+      c_size = c_int()
+      c_buf = self.dispatcher._checkResultPtr(func(self.id, pointer(c_size)))
+      res = array('i')
       for i in xrange(c_size.value):
         res.append(c_buf[i])
       return res
@@ -1076,10 +1099,13 @@ class Indigo(object):
       raise IndigoException(Indigo._lib.indigoGetLastError())
     return result
 
-  def _checkResultString (self, result):
+  def _checkResultPtr (self, result):
     if result is None:
       raise IndigoException(Indigo._lib.indigoGetLastError())
     return result
+    
+  def _checkResultString (self, result):
+    return self._checkResultPtr(result)
 
   def __del__ (self):
     if hasattr(self, '_lib'):

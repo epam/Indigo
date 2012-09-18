@@ -159,6 +159,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
          ru.connectivity = superru.connectivity;
       else
          repeating_units.remove(idx);
+      ru.subscript.copy(superru.subscript);
    }
 
    // multiple groups
@@ -190,6 +191,15 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
       else
          generic_sgroups.remove(idx);
    }
+}
+
+void BaseMolecule::clearSGroups()
+{
+   data_sgroups.clear();
+   superatoms.clear();
+   repeating_units.clear();
+   multiple_groups.clear();
+   generic_sgroups.clear();
 }
 
 void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int> &vertices,
@@ -1273,4 +1283,18 @@ void BaseMolecule::invalidateAtom (int index, int mask)
          }
       }
    }
+}
+
+void BaseMolecule::getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res)
+{
+   res.set(0, 0);
+   for (int j = 0; j < sgroup.atoms.size(); j++)
+   {
+      int ai = sgroup.atoms[j];
+      Vec3f &p = getAtomXyz(ai);
+      res.x += p.x;
+      res.y += p.y;
+   }
+   if (sgroup.atoms.size() != 0)
+      res.scale(1.0f / sgroup.atoms.size());
 }

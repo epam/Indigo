@@ -142,13 +142,15 @@ bool MoleculeAlleneStereo::_isAlleneCenter (BaseMolecule &mol, int idx, _Atom &a
    Vec3f subst_vecs[4];
    int j, k;
 
+   bool zero_bond_length = false;
+
    for (k = 0; k < 2; k++)
       if (atom.subst[k] >= 0)
       {
          dirs[k] = mol.getBondDirection2(atom.left, atom.subst[k]);
          subst_vecs[k].diff(mol.getAtomXyz(atom.subst[k]), mol.getAtomXyz(atom.left));
          if (!subst_vecs[k].normalize())
-            throw Error("zero bond length");
+            zero_bond_length = true;
       }
 
    for (k = 2; k < 4; k++)
@@ -157,7 +159,7 @@ bool MoleculeAlleneStereo::_isAlleneCenter (BaseMolecule &mol, int idx, _Atom &a
          dirs[k] = mol.getBondDirection2(atom.right, atom.subst[k]);
          subst_vecs[k].diff(mol.getAtomXyz(atom.subst[k]), mol.getAtomXyz(atom.right));
          if (!subst_vecs[k].normalize())
-            throw Error("zero bond length");
+            zero_bond_length = true;
       }
 
    if (dirs[0] == 0 && dirs[1] == 0 && dirs[2] == 0 && dirs[3] == 0)
@@ -168,6 +170,9 @@ bool MoleculeAlleneStereo::_isAlleneCenter (BaseMolecule &mol, int idx, _Atom &a
       return false;
    if (dirs[2] != 0 && dirs[2] == dirs[3] && dirs[2] != BOND_EITHER)
       return false;
+
+   if (zero_bond_length)
+      throw Error("zero bond length");
 
    Vec3f pos_center = mol.getAtomXyz(idx);
    Vec3f vec_left = mol.getAtomXyz(atom.left);
@@ -180,7 +185,8 @@ bool MoleculeAlleneStereo::_isAlleneCenter (BaseMolecule &mol, int idx, _Atom &a
       throw Error("zero bond length");
 
    // they should go in one line
-   if (fabs(Vec3f::dot(vec_left, vec_right) + 1) > 0.001)
+   // 0.04 is equivalent to 16 degress because it is hard to draw a straight line accurately
+   if (fabs(Vec3f::dot(vec_left, vec_right) + 1) > 0.04)
       return false;
 
    // check that if there are two left substituents, they do not lie on the same side
@@ -274,9 +280,16 @@ void MoleculeAlleneStereo::buildFromBonds (bool ignore_errors, int *sensible_bon
    {
       _Atom atom;
 
-      if (!_isAlleneCenter(mol, i, atom, sensible_bonds_out))
-         continue;
-      
+      try
+      {
+         if (!_isAlleneCenter(mol, i, atom, sensible_bonds_out))
+            continue;
+      }
+      catch (Error &err)
+      {
+         if (!ignore_errors)
+            throw err;
+      }
       _centers.insert(i, atom);
    }
 }

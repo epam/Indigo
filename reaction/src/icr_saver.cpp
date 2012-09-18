@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+const char* IcrSaver::VERSION = "IR2";
+
 IcrSaver::IcrSaver (Output &output) : _output(output)
 {
    save_xyz = false;
@@ -28,7 +30,7 @@ IcrSaver::IcrSaver (Output &output) : _output(output)
 
 void IcrSaver::saveReaction (Reaction &reaction)
 {
-   _output.writeString("ICR");
+   _output.writeString(VERSION);
 
    int features = 0;
 

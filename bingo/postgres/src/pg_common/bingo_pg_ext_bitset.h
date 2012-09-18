@@ -133,6 +133,39 @@ private:
    
    indigo::Array<qword> _internalWords;
    indigo::Array<qword> _serializeWords;
+public:
+   class Iterator {
+   public:
+      Iterator(BingoPgExternalBitset&);
+
+      ~Iterator() {
+      }
+
+      int begin();
+      int next();
+
+      inline int end() {
+         return -1;
+      }
+
+   private:
+
+      void _fillIndexes(byte buf, indigo::Array<int>&indexes);
+      int _wordsInUse;
+      qword* _words;
+
+      int _fromWordIdx;
+      int _fromByteIdx;
+      int _fromBitIdx;
+      qword* _fromWord;
+      indigo::Array<int>* _fromIndexes;
+
+      int _shiftByte;
+      int _shiftWord;
+
+   private:
+      Iterator(const Iterator&); //no implicit copy
+      };
 };
 
 

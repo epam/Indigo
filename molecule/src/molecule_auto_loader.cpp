@@ -18,6 +18,7 @@
 #include "molecule/smiles_loader.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/icm_loader.h"
+#include "molecule/icm_saver.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "gzip/gzip_scanner.h"
@@ -198,7 +199,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 
       _scanner->readCharsFix(3, id);
       _scanner->seek(pos, SEEK_SET);
-      if (strncmp(id, "ICM", 3) == 0)
+      if (strncmp(id, IcmSaver::VERSION, 3) == 0)
       {
          if (query)
             throw Error("cannot load query molecule from ICM format");

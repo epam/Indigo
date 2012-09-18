@@ -687,6 +687,30 @@ bool MoleculeLayoutGraph::_attachCycleWithIntersections (const Cycle &cycle, flo
    return true;
 }
 
+// Attach two atoms to the same side of chain
+void MoleculeLayoutGraph::_attachEars (int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos)
+{
+   Vec2f v1, v2, v3, v4;
+   float phi = 13*PI/24;
+   const Vertex &vert = getVertex(vert_idx);
+   
+   _layout_vertices[ears[0]].type = ELEMENT_IGNORE;
+   _layout_vertices[ears[1]].type = ELEMENT_IGNORE;
+   _layout_edges[vert.neiEdge(vert.findNeiVertex(ears[0]))].type = ELEMENT_BOUNDARY;
+   _layout_edges[vert.neiEdge(vert.findNeiVertex(ears[1]))].type = ELEMENT_BOUNDARY;
+   
+   v1 = getPos(vert_idx);
+   v2 = getPos(drawn_idx);
+   _calculatePos(phi, v1, rest_pos, v3);
+   _calculatePos(phi + 2*PI/3, v1, rest_pos, v4);
+   
+   if (Vec2f::dist(v3, v2) < Vec2f::dist(v4, v2))
+      v3 = v4;
+   
+   _layout_vertices[ears[0]].pos = v3;
+   _calculatePos(PI/4, v1, v3, getPos(ears[1]));
+}
+
 // Attach set of trivial components
 void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adjacent_list)
 {
@@ -696,9 +720,10 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
    Vec2f v1, v2;
    QS_DEF(Array<Vec2f>, positions);
    int parity = 0;
+   bool two_ears = false; // mark the case with two atoms to be drawn on the same side of chain
 
    const Vertex &vert = getVertex(vert_idx);
-
+    
    // Calculate number of drawn edges
    for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
    {
@@ -768,14 +793,33 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
          if (n_pos == 1 && adjacent_list.size() == 3) // to avoid four bonds to be drawn like cross
          {
             n_pos = 5;
+            int n_matter = 0, n_matter_2 = 0, n_single = 0;
+            const Vertex &drawn_vert = getVertex(vert.neiVertex(drawn_idx));
             
+            if (drawn_vert.degree() > 2)
+                n_matter_2++;
+            else if (drawn_vert.degree() == 1)
+                n_single++;
+             
             for (i = 0; i < adjacent_list.size(); i++)
-               if (getVertex(adjacent_list[i]).degree() != 1)
-               {
-                  n_pos = adjacent_list.size();
-                  break;
-               }
-                  
+            {
+               int adj_degree = getVertex(adjacent_list[i]).degree();
+                
+               if (adj_degree == 1)
+                  n_single++;
+               else
+                  n_matter++;
+                
+               if (adj_degree > 2)
+                  n_matter_2++;
+            }
+            
+            if (n_matter == 1) // draw ears
+            {
+               two_ears = true;
+               n_pos = 2;
+            } else if (n_matter_2 > 1 || n_single == 4) // cross-like case
+               n_pos = 3;
          } else
             n_pos = adjacent_list.size();
       } else 
@@ -796,16 +840,7 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
 
       phi = 2 * PI / (n_pos + 1);
       v1 = getPos(vert_idx);
-
-      for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
-      {
-         if (getVertexType(vert.neiVertex(i)) != ELEMENT_NOT_DRAWN &&
-            getEdgeType(vert.neiEdge(i)) != ELEMENT_NOT_DRAWN)
-         {
-            v2 = getPos(vert.neiVertex(i));
-            break;
-         }
-      }
+      v2 = getPos(vert.neiVertex(drawn_idx));
 
       _calculatePos(phi, v1, v2, positions[0]);
 
@@ -814,7 +849,7 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
          v2 = positions[i - 1];
          _calculatePos(phi, v1, v2, positions[i]);
       }
-
+      
       // Check cis/trans
       if (_molecule != 0 && n_pos == 2)
       {
@@ -869,6 +904,22 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
          }
       }
    }
+   
+   int ears[2] = {-1, -1};
+   
+   if (two_ears)
+   {
+      for (i = 0; i < adjacent_list.size(); i++)
+      {
+         if (getVertex(adjacent_list[i]).degree() != 1)
+            continue;
+         if (ears[0] == -1)
+            ears[0] = adjacent_list[i];
+         else
+            ears[1] = adjacent_list[i];
+      }
+   }
+
 
    // Calculate energy
    if (parity == 0)
@@ -884,17 +935,18 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
       energies.zerofill();
 
       for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-         if (getVertexType(i) != ELEMENT_NOT_DRAWN)
+         if (getVertexType(i) != ELEMENT_NOT_DRAWN && getVertexType(i) != ELEMENT_IGNORE)
          {
             norm_a[i] = _layout_vertices[i].morgan_code;
             norm += norm_a[i] * norm_a[i];
          }
-
+       
       norm = sqrt(norm);
 
       for (i = 0; i < n_pos; i++) 
+      {
          for (j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
-            if (getVertexType(j) != ELEMENT_NOT_DRAWN)
+            if (getVertexType(j) != ELEMENT_NOT_DRAWN && getVertexType(j) != ELEMENT_IGNORE)
             {
                p0.diff(positions[i], getPos(j));
                r = p0.lengthSqr();
@@ -907,6 +959,7 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
 
                energies[i] += ((norm_a[j] / norm + 0.5) / r);
             }
+      }
 
       // Sort by energies
       for (i = 0; i < n_pos; i++)
@@ -919,6 +972,25 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
    }
 
    // Assign coordinates
+   if (two_ears)
+   {
+      for (i = 0; i < adjacent_list.size(); i++)
+      {
+         j = adjacent_list[i];
+         if (getVertex(j).degree() != 1)
+         {
+            _layout_vertices[j].type = ELEMENT_BOUNDARY;
+            _layout_edges[vert.neiEdge(vert.findNeiVertex(j))].type = ELEMENT_BOUNDARY;
+            _layout_vertices[j].pos = positions[0];
+            break;
+         }
+      }
+      
+      _attachEars(vert_idx, vert.neiVertex(drawn_idx), ears, positions[0]);
+      
+      return;
+   }
+   
    j = 0;
    while (adjacent_list.size() > 0)
    {

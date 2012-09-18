@@ -31,14 +31,14 @@ extern "C" {
 
 
 extern "C" {
-PG_FUNCTION_INFO_V1(bingo_test);
-PGDLLEXPORT Datum bingo_test(PG_FUNCTION_ARGS);
-
-PG_FUNCTION_INFO_V1(bingo_test_tid);
-PGDLLEXPORT Datum bingo_test_tid(PG_FUNCTION_ARGS);
-
-PG_FUNCTION_INFO_V1(bingo_test_select);
-PGDLLEXPORT Datum bingo_test_select(PG_FUNCTION_ARGS);
+//PG_FUNCTION_INFO_V1(bingo_test);
+//PGDLLEXPORT Datum bingo_test(PG_FUNCTION_ARGS);
+//
+//PG_FUNCTION_INFO_V1(bingo_test_tid);
+//PGDLLEXPORT Datum bingo_test_tid(PG_FUNCTION_ARGS);
+//
+//PG_FUNCTION_INFO_V1(bingo_test_select);
+//PGDLLEXPORT Datum bingo_test_select(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_markpos);
 PGDLLEXPORT Datum bingo_markpos(PG_FUNCTION_ARGS);
@@ -67,10 +67,16 @@ PGDLLEXPORT Datum exportsdf(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(exportrdf);
 PGDLLEXPORT Datum exportrdf(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(_reset_profiling_info);
+PGDLLEXPORT Datum _reset_profiling_info(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(_get_profiling_info);
+PGDLLEXPORT Datum _get_profiling_info(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(_print_profiling_info);
+PGDLLEXPORT Datum _print_profiling_info(PG_FUNCTION_ARGS);
+
 }
-
-
-
 
 
 
@@ -99,21 +105,21 @@ Datum getindexstructurescount(PG_FUNCTION_ARGS){
 
 
 
-Datum bingo_test(PG_FUNCTION_ARGS) {
-   elog(NOTICE, "start test function 3");
-   PG_RETURN_VOID();
-}
-
-Datum bingo_test_tid(PG_FUNCTION_ARGS) {
-   elog(NOTICE, "start test function tid");
-
-   ItemPointer pp = (ItemPointer) palloc0(sizeof(ItemPointerData));
-
-   ItemPointerSet(pp, 1, 2);
-
-   PG_RETURN_POINTER(pp);
-}
-
+//Datum bingo_test(PG_FUNCTION_ARGS) {
+//   elog(NOTICE, "start test function 3");
+//   PG_RETURN_VOID();
+//}
+//
+//Datum bingo_test_tid(PG_FUNCTION_ARGS) {
+//   elog(NOTICE, "start test function tid");
+//
+//   ItemPointer pp = (ItemPointer) palloc0(sizeof(ItemPointerData));
+//
+//   ItemPointerSet(pp, 1, 2);
+//
+//   PG_RETURN_POINTER(pp);
+//}
+//
 //static Oid getFunc(const char* name, Array<Oid>& types) {
 //   Array<char> fname;
 //   fname.readString(name, true);
@@ -467,5 +473,35 @@ Datum exportrdf(PG_FUNCTION_ARGS) {
    }
    PG_BINGO_END
 
+   PG_RETURN_VOID();
+}
+
+Datum _reset_profiling_info(PG_FUNCTION_ARGS) {
+   bingoProfilingReset(true);
+   PG_RETURN_VOID();
+}
+
+Datum _get_profiling_info(PG_FUNCTION_ARGS) {
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      const char* bingo_result = bingoProfilingGetStatistics(true);
+      result = BingoPgCommon::releaseString(bingo_result);
+   }
+   PG_BINGO_END
+
+   if (result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_CSTRING(result);
+}
+
+Datum _print_profiling_info(PG_FUNCTION_ARGS) {
+   PG_BINGO_BEGIN
+   {
+      const char* bingo_result = bingoProfilingGetStatistics(true);
+      elog(NOTICE, "\n%s", bingo_result);
+   }
+   PG_BINGO_END
    PG_RETURN_VOID();
 }

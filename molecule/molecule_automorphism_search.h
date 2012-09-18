@@ -111,6 +111,7 @@ protected:
    TL_CP_DECL(Array<int>, _hcount);
    TL_CP_DECL(Array<int>, _cistrans_stereo_bond_parity);
    TL_CP_DECL(Array<int>, _degree);
+   TL_CP_DECL(Array<int>, _independent_component_index);
 
    enum { _NO_STEREO = -1, _INVALID, _VALID, _UNDEF };
    TL_CP_DECL(Array<int>, _stereocenter_state);

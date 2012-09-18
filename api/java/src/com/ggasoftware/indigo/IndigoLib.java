@@ -143,6 +143,7 @@ public interface IndigoLib extends Library
    int indigoDegree (int atom);
 
    int indigoGetCharge (int atom, IntByReference charge);
+   int indigoGetRadical (int atom, IntByReference radical);
    int indigoGetExplicitValence (int atom, IntByReference valence);
    int indigoGetRadicalElectrons (int atom, IntByReference electrons);
    int indigoAtomicNumber (int atom);
@@ -226,8 +227,10 @@ public interface IndigoLib extends Library
    int indigoSetRSite (int atom, String name);
 
    int indigoSetCharge (int atom, int charge);
+   int indigoSetExplicitValence (int atom, int valence);
    int indigoSetIsotope (int atom, int isotope);
    int indigoSetImplicitHCount (int atom, int impl_h);
+   int indigoSetRadical (int atom, int radical);
 
    int indigoAddBond (int source, int destination, int order);
    int indigoSetBondOrder (int bond, int order);
@@ -259,6 +262,7 @@ public interface IndigoLib extends Library
 
    Pointer indigoCanonicalSmiles (int molecule);
    Pointer indigoLayeredCode (int molecule);
+   Pointer indigoSymmetryClasses (int molecule, IntByReference count);
 
    int indigoHasCoord (int molecule);
    int indigoHasZCoord (int molecule);

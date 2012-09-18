@@ -5,7 +5,7 @@ project(BingoOracle)
 include(../bingo-version.cmake)
 include(SetBuildParameters)
 
-message(STATUS "BingoOracle version is ${BINGO_VERSION}")
+message(STATUS "BingoOracle version is ${BINGO_VERSION_EXT}")
 
 file(GLOB Bingo_src src/oracle/*.cpp)
 file(GLOB Bingo_headers src/oracle/*.h)

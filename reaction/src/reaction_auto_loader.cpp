@@ -16,6 +16,7 @@
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
 #include "reaction/icr_loader.h"
+#include "reaction/icr_saver.h"
 #include "gzip/gzip_scanner.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
@@ -125,7 +126,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
 
       _scanner->readCharsFix(3, id);
       _scanner->seek(pos, SEEK_SET);
-      if (strncmp(id, "ICR", 3) == 0)
+      if (strncmp(id, IcrSaver::VERSION, 3) == 0)
       {
          if (query)
             throw Error("cannot load query reaction from ICR format");
