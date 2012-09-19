@@ -102,7 +102,6 @@ bool RenderParamInterface::needsLayoutSub (BaseMolecule& mol)
 
 bool RenderParamInterface::needsLayout (BaseMolecule& mol)
 {
-   return false;
    if (needsLayoutSub(mol))
       return true;
 
