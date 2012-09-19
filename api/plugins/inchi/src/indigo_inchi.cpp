@@ -199,7 +199,10 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
       int idx = atom_indices[i];
       mol.setAtomCharge(idx, inchi_atom.charge);
       if (inchi_atom.isotopic_mass)
-         mol.setAtomIsotope(idx, inchi_atom.isotopic_mass);
+      {
+         int default_iso = Element::getDefaultIsotope(mol.getAtomNumber(idx));
+         mol.setAtomIsotope(idx, default_iso + inchi_atom.isotopic_mass - ISOTOPIC_SHIFT_FLAG);
+      }
       if (inchi_atom.radical)
          mol.setAtomRadical(idx, inchi_atom.radical);
       mol.setImplicitH(idx, inchi_atom.num_iso_H[0]);
