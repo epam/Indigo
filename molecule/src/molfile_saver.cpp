@@ -938,11 +938,11 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       }
       
       Vec3f pos = mol.getAtomXyz(i);
-      if (fabs(pos.x) < 1e-5)
+      if (fabs(pos.x) < 1e-5f)
          pos.x = 0;
-      if (fabs(pos.y) < 1e-5)
+      if (fabs(pos.y) < 1e-5f)
          pos.y = 0;
-      if (fabs(pos.z) < 1e-5)
+      if (fabs(pos.z) < 1e-5f)
          pos.z = 0;
 
       output.printfCR("%10.4f%10.4f%10.4f %c%c%c%2d"
