@@ -989,16 +989,16 @@ int Element::getDefaultIsotope (int element)
    return p.default_isotope;
 }
 
-float Element::getIsotopicComposition (int element, int isotope)
+bool Element::getIsotopicComposition (int element, int isotope, float &res)
 {
    _IsotopeValue *value = _instance._isotope_parameters_map.at2(
       _IsotopeKey(element, isotope));
 
    if (value == 0)
-      throw Error("getIsotopicComposition: isotope (%s, %d) not found",
-         toString(element), isotope);
+      return false;
 
-   return value->isotopic_composition;
+   res = value->isotopic_composition;
+   return true;
 }
 
 void Element::getMinMaxIsotopeIndex  (int element, int &min, int &max)

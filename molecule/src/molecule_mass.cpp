@@ -122,7 +122,10 @@ float MoleculeMass::mostAbundantMass (Molecule &mol)
       Element::getMinMaxIsotopeIndex(i, min_iso, max_iso);
       for (int j = min_iso; j <= max_iso; j++)
       {
-         float composition = Element::getIsotopicComposition(i, j);
+         float composition;
+         if (!Element::getIsotopicComposition(i, j, composition))
+            continue;
+
          int such_isotope_count = (int)(composition * count / 100 + 0.5f);
 
          molmass += Element::getRelativeIsotopicMass(i, j) * such_isotope_count;
