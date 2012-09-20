@@ -164,7 +164,8 @@ bool MoleculeStereocenters::isPossibleStereocenter (int atom_idx,
    int sure_double_bonds = 0;
    int possible_double_bonds = 0;
 
-   if (vertex.degree() > 4)
+   int degree = vertex.degree();
+   if (degree > 4 || degree <= 2)
       return 0;
 
    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
@@ -265,7 +266,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
 
    int n_pure_hydrogens = 0;
 
-   if (degree > 4)
+   if (degree <= 2 || degree > 4)
       return;
 
    bool is_either = false;
@@ -599,6 +600,11 @@ int MoleculeStereocenters::_xyzzy (const Vec3f &v1, const Vec3f &v2, const Vec3f
 
 int MoleculeStereocenters::_sign (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3)
 {
+   // Check the angle between bonds
+   float dot_eps = 0.997; // Corresponds to 4.5 degrees
+   if (Vec3f::dot(v1, v2) > dot_eps || Vec3f::dot(v1, v3) > dot_eps || Vec3f::dot(v2, v3) > dot_eps)
+      throw Error("angle between bonds is too small");
+
    float res = (v1.x - v3.x) * (v2.y - v3.y) - (v1.y - v3.y) * (v2.x - v3.x);
    float eps = 1e-3f;
 
