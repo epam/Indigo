@@ -1014,7 +1014,7 @@ float Element::getRelativeIsotopicMass (int element, int isotope)
       _IsotopeKey(element, isotope));
 
    if (value == 0)
-      throw Error("getRelativeAtomicMass: isotope (%s, %d) not found",
+      throw Error("getRelativeIsotopicMass: isotope (%s, %d) not found",
          toString(element), isotope);
 
    return value->mass;

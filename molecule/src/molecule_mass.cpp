@@ -27,35 +27,58 @@ MoleculeMass::MoleculeMass()
 float MoleculeMass::molecularWeight (Molecule &mol)
 {
    double molmass = 0;
+   int impl_h = 0;
+   int elements_count[ELEM_MAX] = {0};
 
    for (int v = mol.vertexBegin(); 
             v != mol.vertexEnd(); 
             v = mol.vertexNext(v))
    {
       if (mol.isPseudoAtom(v) || mol.isRSite(v))
+      {
          continue;
+      }
 
       int number = mol.getAtomNumber(v);
       int isotope = mol.getAtomIsotope(v);
-      int impl_h = mol.getImplicitH(v);
+      
 
       if (isotope == 0)
       {
          float *value = 0;
          if (relative_atomic_mass_map != NULL)
+         {
             value = relative_atomic_mass_map->at2(number);
+         }
 
          if (value == 0)
-            molmass += Element::getStandardAtomicWeight(number);
+         {
+            elements_count[number]++;
+         }
          else
+         {
             molmass += *value;
+         }
       }
       else
+      {
          molmass += Element::getRelativeIsotopicMass(number, isotope);
+      }
 
       // Add hydrogens
-      molmass += Element::getStandardAtomicWeight(ELEM_H) * impl_h;
+      impl_h += mol.getImplicitH(v);
+      
    } 
+
+   for (int i = ELEM_MIN; i < ELEM_MAX; i++) 
+   {
+      if (elements_count[i])
+      {
+         molmass += Element::getStandardAtomicWeight(i) * (double)elements_count[i];
+      }
+   }
+
+   molmass += Element::getStandardAtomicWeight(ELEM_H) * impl_h;
 
    return (float)molmass;
 }
