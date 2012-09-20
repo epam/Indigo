@@ -937,7 +937,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             hydrogens_count = mol.asMolecule().getImplicitH_NoThrow(i, -1) + 1;
       }
       
-      Vec3f &pos = mol.getAtomXyz(i);
+      Vec3f pos = mol.getAtomXyz(i);
+      if (fabs(pos.x) < 1e-5)
+         pos.x = 0;
+      if (fabs(pos.y) < 1e-5)
+         pos.y = 0;
+      if (fabs(pos.z) < 1e-5)
+         pos.z = 0;
 
       output.printfCR("%10.4f%10.4f%10.4f %c%c%c%2d"
                     "%3d%3d%3d%3d%3d"
