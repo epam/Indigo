@@ -362,11 +362,11 @@ static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum o
       const char* columns_list = other_column_text.getString();
       if(strcmp(columns_list, "") !=0) {
          _parseQueryFieldList(columns_list, field_list);
-         query_out.printf(", %s ", columns_list);
+         query_out.printf(", %s", columns_list);
       }
    }
 
-   query_out.printf("FROM %s", tablename_text.getString());
+   query_out.printf(" FROM %s", tablename_text.getString());
    query_out.writeChar(0);
    
    return data_key;
