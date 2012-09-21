@@ -638,6 +638,17 @@ void indigoInchiSetInchiOptions (const char *options)
 {
    IndigoInchi &inchi = indigoInchiGetInstance();
    inchi.options.readString(options, true);
+   // Replace '/' and '-' according to InChI manual:
+   //   "(use - instead of / for O.S. other than MS Windows)"
+#ifdef _WIN32
+   for (int i = 0; i < inchi.options.size(); i++)
+      if (inchi.options[i] == '-')
+         inchi.options[i] = '/';
+#else
+   for (int i = 0; i < inchi.options.size(); i++)
+      if (inchi.options[i] == '/')
+         inchi.options[i] = '-';
+#endif
 }
 
 class _IndigoInchiOptionsHandlersSetter
