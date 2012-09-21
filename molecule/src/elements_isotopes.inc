@@ -3053,3 +3053,18 @@
       ADD(ELEM_Lr, 261, 261.10694f, 0.0f);
       ADD(ELEM_Lr, 262, 262.10969f, 0.0f);
       ADD(ELEM_Lr, 263, 263.11139f, 0.0f);
+   SET(ELEM_Rf, 267);
+      ADD(ELEM_Rf, 253, 253.10069f, 0.0f);
+      ADD(ELEM_Rf, 254, 254.10018f, 0.0f);
+      ADD(ELEM_Rf, 255, 255.10134f, 0.0f);
+      ADD(ELEM_Rf, 256, 256.10116f, 0.0f);
+      ADD(ELEM_Rf, 257, 257.10299f, 0.0f);
+      ADD(ELEM_Rf, 258, 258.10349f, 0.0f);
+      ADD(ELEM_Rf, 259, 259.10564f, 0.0f);
+      ADD(ELEM_Rf, 260, 260.10644f, 0.0f);
+      ADD(ELEM_Rf, 261, 261.10877f, 0.0f);
+      ADD(ELEM_Rf, 262, 262.10993f, 0.0f);
+      ADD(ELEM_Rf, 263, 263.11255f, 0.0f);
+      ADD(ELEM_Rf, 266, 266.11796f, 0.0f);
+      ADD(ELEM_Rf, 267, 267.12153f, 0.0f);
+      ADD(ELEM_Rf, 268, 268.12364f, 0.0f);

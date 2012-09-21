@@ -182,7 +182,7 @@ public:
    static int   getDefaultIsotope       (int element);
    static float getRelativeIsotopicMass (int element, int isotope);
    static float getStandardAtomicWeight (int element);
-   static float getIsotopicComposition  (int element, int isotope);
+   static bool  getIsotopicComposition  (int element, int isotope, float &res);
    static void  getMinMaxIsotopeIndex   (int element, int &min, int &max);
 
    static bool  canBeAromatic (int element);
