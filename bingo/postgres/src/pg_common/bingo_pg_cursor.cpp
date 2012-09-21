@@ -127,6 +127,13 @@ void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
          data.initFromString(result);
          pfree(result);
       }
+      // TODO: Any Inidgo exceptions are being catched in PG_BINGO_END outside of this function
+      // and there PG_BINGO_END raises Postgres exception this is being catched here in BINGO_PG_HANDLE...
+      // This can cause an inifinite exception throwing loop, but variables on the stack here in this function 
+      // are being already removed from stack. So Visual Studio reports "buffer overrun" exception and terminates 
+      // everything :)
+      // Here is an example:
+      // throw Error("internal error: no output function is available (SPI_getvalue)");
    }
    BINGO_PG_HANDLE(throw Error("internal error: can not get datum from the tuple: %s", message));
 }
