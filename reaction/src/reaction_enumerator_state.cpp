@@ -434,6 +434,7 @@ void ReactionEnumeratorState::_productProcess( void )
       }
    }
 
+   ready_product.clearXyz();
    if (product_proc != NULL)
       product_proc(ready_product, _product_monomers, userdata);
 }
@@ -1431,21 +1432,21 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
             const Vertex &mon_v = mol_product.getVertex(mon_atom);
             const Vertex &pr_v = mol_product.getVertex(pr_atom);
 
-            for (int i = mon_v.neiBegin(); i != mon_v.neiEnd(); i = mon_v.neiNext(i))
-               if (MoleculeCisTrans::isGeomStereoBond(mol_product, mon_v.neiEdge(i), NULL, false))
-                  mol_product.cis_trans.setParity(mon_v.neiEdge(i), 0);
+            for (int k = mon_v.neiBegin(); k != mon_v.neiEnd(); k = mon_v.neiNext(k))
+               if (MoleculeCisTrans::isGeomStereoBond(mol_product, mon_v.neiEdge(k), NULL, false))
+                  mol_product.cis_trans.setParity(mon_v.neiEdge(k), 0);
             if (mol_product.stereocenters.exists(mon_atom))
                mol_product.stereocenters.remove(mon_atom);
 
             QS_DEF(Array<int>, neighbors);
             neighbors.clear();
-            for (int i = mon_v.neiBegin(); i != mon_v.neiEnd(); i = mon_v.neiNext(i))
-               neighbors.push(mon_v.neiVertex(i));
-            for (int i = 0; i < neighbors.size(); i++)
-               if (mol_product.findEdgeIndex(neighbors[i], pr_atom) == -1)
-                  mol_product.flipBond(neighbors[i], mon_atom, pr_atom);
+            for (int k = mon_v.neiBegin(); k != mon_v.neiEnd(); k = mon_v.neiNext(k))
+               neighbors.push(mon_v.neiVertex(k));
+            for (int k = 0; k < neighbors.size(); k++)
+               if (mol_product.findEdgeIndex(neighbors[k], pr_atom) == -1)
+                  mol_product.flipBond(neighbors[k], mon_atom, pr_atom);
 
-	    frags_mapping[_att_points[i][j]] = pr_atom;
+            frags_mapping[_att_points[i][j]] = pr_atom;
             mol_product.removeAtom(mon_atom);
             //if (mol_product.mergeAtoms(frags_mapping[_att_points[i][0]], mapping[i]) == -1)
             //   return false;
