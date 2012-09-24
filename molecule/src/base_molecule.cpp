@@ -725,6 +725,13 @@ void BaseMolecule::setAtomXyz (int idx, const Vec3f& v)
    updateEditRevision();
 }
 
+void BaseMolecule::clearXyz ()
+{
+   for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+      setAtomXyz(i, 0, 0, 0);
+   have_xyz = 0;
+}
+
 int BaseMolecule::_addBaseAtom ()
 {
    int idx = addVertex();

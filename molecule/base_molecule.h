@@ -248,6 +248,8 @@ public:
    void setAtomXyz (int idx, float x, float y, float z);
    void setAtomXyz (int idx, const Vec3f& v);
 
+   void clearXyz ();
+
    MoleculeStereocenters stereocenters;
    MoleculeCisTrans cis_trans;
    MoleculeAlleneStereo allene_stereo;
