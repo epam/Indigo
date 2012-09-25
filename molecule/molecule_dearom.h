@@ -123,7 +123,7 @@ public:
    bool* getAcceptDoubleBonds (void);
    bool  isAcceptDoubleBond   (int atom);
 
-   DEF_ERROR("Dearomatization groups");
+   DECL_ERROR;
 protected:
    void _detectAromaticGroups (int v_idx, const int *atom_external_conn);
 

@@ -537,6 +537,8 @@ DearomatizationsStorage::DearomatizationsStorage (void)
 // DearomatizationsGroups
 //
 
+IMPL_ERROR(DearomatizationsGroups, "Dearomatization groups");
+
 DearomatizationsGroups::DearomatizationsGroups (BaseMolecule &molecule) :
    _molecule(molecule),
    TL_CP_GET(_vertexAromaticGroupIndex),
