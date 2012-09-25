@@ -18,6 +18,7 @@
 #include <limits.h>
 
 using namespace indigo;
+using namespace std;
 
 
 bool MoleculeLayoutMacrocycles::canApply (BaseMolecule &mol)
@@ -63,6 +64,8 @@ double MoleculeLayoutMacrocycles::layout (BaseMolecule &mol)
 #include <cmath>
 #include <string>
 #include <sstream>
+#include <map>
+#include <stdio.h>
 
 using namespace std;
 
@@ -75,46 +78,30 @@ int isIntersec(double x1, double y1, double x2, double y2, double x3, double y3,
    double s3 = (x1 - x3) * (y2 - y3) - (y1 - y3) * (x2 - x3);
    double s4 = (x1 - x4) * (y2 - y4) - (y1 - y4) * (x2 - x4);
 
-   return s1 * s2 <= 0 && s3 * s4 <= 0;
+   double eps = 1e-9;
+
+   if (abs(s1) + abs(s2) > eps) return s1 * s2 <= 0 && s3 * s4 <= 0;
+
+   return (x3 <= x1 && x1 <= x4 && y3 <= y1 && y1 <= y4 ||
+          x3 <= x2 && x2 <= x4 && y3 <= y2 && y2 <= y4  ||
+          x1 <= x3 && x3 <= x2 && y1 <= y3 && y3 <= y2  ||
+          x1 <= x4 && x4 <= x2 && y1 <= y4 && y4 <= y2);
 }
 
 double distPP(double x1, double y1, double x2, double y2) {return sqrt(sqr(x1 - x2) + sqr(y1 - y2));}
 
 double distPL(double x1, double y1, double x2, double y2, double x3, double y3) {
-   double phi = rand();
-   double sn = sin(phi);
-   double cs = cos(phi);
-
-   double xx;
-   double yy;
-   xx = x1*cs - y1*sn;
-   yy = y1*cs + x1*sn;
-   x1 = xx;
-   y1 = yy;
-   xx = x2*cs - y2*sn;
-   yy = y2*cs + x2*sn;
-   x2 = xx;
-   y2 = yy;
-   xx = x3*cs - y3*sn;
-   yy = y3*cs + x3*sn;
-   x3 = xx;
-   y3 = yy;
+   if ((x1 - x2)*(x3 - x2) + (y1 - y2)*(y3 - y2) <= 0) return distPP(x1, y1, x2, y2);
+   if ((x1 - x3)*(x2 - x3) + (y1 - y3)*(y2 - y3) <= 0) return distPP(x1, y1, x3, y3);
 
    double a = y2 - y3;
    double b = x3 - x2;
    double c = x2*y3 - x3*y2;
    double s = sqrt(a*a + b*b);
-   a /= s;
-   b /= s;
-   c /= s;
 
    double t = - c - a*x1 - b*y1;
 
-   xx = x1 + t*a;
-   yy = y1 + t*b;
-
-   if (x2 <= xx && xx <= x3 || x3 <= xx && xx <= x2) return abs(t);
-   return min(distPP(x1, y1, x2, y2), distPP(x1, y1, x3, y3));
+   return abs(t/s);
 }
 
 double distLL(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
@@ -218,9 +205,7 @@ void improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *v
             for (int t = vertexNumber[j], s = 0; t != vertexNumber[nextj]; t = (t + 1)%molSize, s++) {
                if (t != vertexNumber[worstVertex] && (t + 1)%molSize != vertexNumber[worstVertex] && t != (vertexNumber[worstVertex] + 1) % molSize) {
                   double dist = 0;
-                  double sqrt2 = sqrt(2.0);
-                  //if (abs(xx - x[worstVertex]) <= sqrt2 && abs(yy - y[worstVertex]) <= sqrt2) dist = distPP(xx, yy, x[worstVertex], y[worstVertex]);
-                  //else dist = 1000;
+                  double sqrt2 = 1.4142135623730950488016887242097;
                   dist = distPP(xx, yy, x[worstVertex], y[worstVertex]);
                   if (dist < sqrt2 && dist > eps) {
                      double coef = (sqrt2 - dist)/dist;
@@ -285,22 +270,22 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
          yy.push_back((y[i] * (edgeLenght[i] - t) + y[(i + 1)%ind] * t)/edgeLenght[i]);
       }
 
-      int size = xx.size();
-      for (int i = 0; i < size; i++)
-         for (int j = 0; j < size; j++) if (abs((i - j + size + size/2) % size - size/2) >= 2) {
-            int nexti = (i + 1) % size;
-            int nextj = (j + 1) % size;
-            double dist = distLL(xx[i], yy[i], xx[nexti], yy[nexti], xx[j], yy[j], xx[nextj], yy[nextj]);
+   int size = xx.size();
+   for (int i = 0; i < size; i++)
+      for (int j = 0; j < size; j++) if (i != j && (i + 1) % size != j && i != (j + 1) % size) {
+         int nexti = (i + 1) % size;
+         int nextj = (j + 1) % size;
+         double dist = distLL(xx[i], yy[i], xx[nexti], yy[nexti], xx[j], yy[j], xx[nextj], yy[nextj]);
 
-            if (abs(dist) < eps) {
-               add++;
-               //printf("%5.5f %5.5f %5.5f %5.5f %5.5f %5.5f %5.5f %5.5f \n", xx[i], yy[i], xx[nexti], yy[nexti], xx[j], yy[j], xx[nextj], yy[nextj]);
-            }
-            else if (dist < sqrt(2.0)) result = max(result, sqrt(2.0)/dist - 1);
+         if (abs(dist) < eps) {
+            add++;
+            //printf("%5.5f %5.5f %5.5f %5.5f %5.5f %5.5f %5.5f %5.5f \n", xx[i], yy[i], xx[nexti], yy[nexti], xx[j], yy[j], xx[nextj], yy[nextj]);
          }
+         else if (dist < 1) result = max(result, 1/dist - 1);
+      }
 
-         //printf("%5.5f\n", result);
-         return result + 1000.0 * add;
+   //printf("%5.5f\n", result);
+   return result + 1000.0 * add;
 
 }
 
@@ -396,16 +381,11 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
                int y_start = max(init_y - max_dist, init_y - max_dist + ychenge);
                int y_finish = min(init_y + max_dist, init_y + max_dist + ychenge);
                for (int x = x_start; x <= x_finish; x++) {
-                  signed char *ar1 = *(*(*(*(minRotates + k + 1) + rot) + p) + x + xchenge);
-                  //signed char *ar2 = *(*(*(*(minRotates + k) + rot) + p) + x);
+                  signed char *ar1 = minRotates[k + 1][rot][p][x + xchenge] + ychenge;
                   signed char *ar2 = minRotates[k][rot][p][x];
                   for (int y = y_start; y <= y_finish; y++) {
-                     //if (minRotates[k][rot][p][x][y] < CHAR_MAX) printf("%d %d %d\n", minRotates[k][rot][p][x][y], x, y);
-                     /*                            if (minRotates[k + 1][rot][p][x + xchenge][y + ychenge] > minRotates[k][rot][p][x][y]) {
-                     minRotates[k + 1][rot][p][x + xchenge][y + ychenge] = minRotates[k][rot][p][x][y];
-                     }*/
-                     if (ar1[y + ychenge] > ar2[y]) {
-                        ar1[y + ychenge] = ar2[y];
+                     if (ar1[y] > ar2[y]) {
+                        ar1[y] = ar2[y];
                      }
                   }
                }
@@ -426,14 +406,11 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
                   int y_start = max(init_y - max_dist, init_y - max_dist + ychenge);
                   int y_finish = min(init_y + max_dist, init_y + max_dist + ychenge);
                   for (int x = x_start; x <= x_finish; x++) {
-                     signed char *ar1 = *(*(*(*(minRotates + k + 1) + nextRot) + p) + x + xchenge);
-                     signed char *ar2 = *(*(*(*(minRotates + k) + rot) + p) + x);
+                     signed char *ar1 = minRotates[k + 1][nextRot][p][x + xchenge] + ychenge;
+                     signed char *ar2 = minRotates[k][rot][p][x];
                      for (int y = y_start; y <= y_finish; y++) {
-                        /*                                if (minRotates[k + 1][nextRot][p][x + xchenge][y + ychenge] > 1 + minRotates[k][rot][p][x][y]) {
-                        minRotates[k + 1][nextRot][p][x + xchenge][y + ychenge] = 1 + minRotates[k][rot][p][x][y];
-                        }*/
-                        if (ar1[y + ychenge] > 1 + ar2[y]) {
-                           ar1[y + ychenge] = 1 + ar2[y];
+                        if (ar1[y] > 1 + ar2[y]) {
+                           ar1[y] = 1 + ar2[y];
                         }
                      }
                   }
@@ -452,14 +429,11 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
                   int y_start = max(init_y - max_dist, init_y - max_dist + ychenge);
                   int y_finish = min(init_y + max_dist, init_y + max_dist + ychenge);
                   for (int x = x_start; x <= x_finish; x++) {
-                     signed char *ar1 = *(*(*(*(minRotates + k + 1) + nextRot) + (p ^ 1)) + x + xchenge);
-                     signed char *ar2 = *(*(*(*(minRotates + k) + rot) + p) + x);
+                     signed char *ar1 = minRotates[k + 1][nextRot][p ^ 1][x + xchenge] + ychenge;
+                     signed char *ar2 = minRotates[k][rot][p][x];
                      for (int y = y_start; y <= y_finish; y++) {
-                        /*                                if (minRotates[k + 1][nextRot][p ^ 1][x + xchenge][y + ychenge] > minRotates[k][rot][p][x][y]) {
-                        minRotates[k + 1][nextRot][p ^ 1][x + xchenge][y + ychenge] = minRotates[k][rot][p][x][y];
-                        }*/
-                        if (ar1[y + ychenge] > ar2[y]) {
-                           ar1[y + ychenge] = ar2[y];
+                        if (ar1[y] > ar2[y]) {
+                           ar1[y] = ar2[y];
                         }
                      }
                   }
@@ -485,14 +459,14 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
                   int diffCoord;
                   int startx = init_x;
                   int starty = init_y;
-                  if (rot % 6 == 1) {
+/*                  if (rot % 6 == 1) {
                      startx--;
                      starty--;
                   }
                   if (rot % 6 == 5) {
                      startx -= 2;
                      starty++;
-                  }
+                  }*/
                   if ((x - startx) * (y - starty) >= 0) diffCoord = abs(x - startx) + abs(y - starty); // x and y both positive or negative, vector (y-x) is not neseccary
                   else diffCoord = min(abs(x - startx), abs(y - starty)) + abs((x - startx) - (y - starty)); // x and y are has got diggerent signs, vector (y-x) is neseccary
                   int diffRot;
@@ -517,6 +491,10 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
    vector<int> ys;
    vector<int> rots;
 
+   int best_rots[] = {55, 55, 53, 53, 55, 53, 53, 53, 55, 53, 53, 53, 55, 55, 55, 53, 55, 53, 53, 55, 53, 55, 57, 51, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59};
+   int best_xs[] = {49, 48, 47, 48, 47, 49, 46, 49, 50, 47, 48, 48, 51, 48, 50, 50, 49, 50, 45, 49, 46, 46, 50, 50, 44, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50, 50, 50, 50, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 56, 44, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50, 50, 50, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 56, 44, 44, 44, 44, 44, 45, 45, 45, 46, 46, 47, 47, 47, 48, 49, 49, 50, 50, 50, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 56, 44, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 47, 47, 47, 47, 48, 48, 49, 50, 50, 50, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 56, 44, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50, 50, 50, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 56, 44, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50, 50, 50, 50, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 56};
+   int best_ys[] = {49, 51, 50, 51, 50, 52, 52, 49, 47, 53, 48, 54, 48, 48, 50, 50, 52, 53, 51, 46, 49, 49, 47, 53, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 44, 47, 50, 53, 56, 45, 48, 54, 46, 55, 44, 47, 56, 45, 46, 55, 44, 47, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 52, 55, 44, 47, 53, 56, 45, 54, 55, 44, 53, 56, 45, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56, 45, 48, 51, 54, 46, 49, 52, 55, 44, 47, 50, 53, 56};
+
    for (int global_diff = 0; global_diff <= 4; global_diff++) {
       for (int rot = max(init_rot - molSize, 0); rot <= min(init_rot + molSize, max_size - 1); rot++) {
          for (int p = 0; p < 2; p++) {
@@ -528,14 +506,14 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
                      int diffCoord;
                      int startx = init_x;
                      int starty = init_y;
-                     if (rot % 6 == 1) {
+/*                     if (rot % 6 == 1) {
                         startx--;
                         starty--;
                      }
                      if (rot % 6 == 5) {
                         startx -= 2;
                         starty++;
-                     }
+                     }*/
                      if ((x - startx) * (y - starty) >= 0) diffCoord = abs(x - startx) + abs(y - starty); // x and y both positive or negative, vector (y-x) is not neseccary
                      else diffCoord = min(abs(x - startx), abs(y - starty)) + abs((x - startx) - (y - starty)); // x and y are has got diggerent signs, vector (y-x) is neseccary
                      int diffRot;
@@ -555,6 +533,33 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
       }
    }
 
+   vector<int> quality;
+   for (int i = 0; i < xs.size(); i++) quality.push_back(10000);
+   for (int i = 0; i < quality.size(); i++) {
+      for (int j = 0; j < 342; j++) if (xs[i] == best_xs[j] && ys[i] == best_ys[j] && rots[i] == best_rots[j]) quality[i] = j;
+   }
+
+   /*for (int i = 0; i < xs.size(); i++)
+      for (int j = 0; j < xs.size() - 1; j++)
+         if (quality[j] > quality[j + 1]) {
+            int temp;
+            temp = xs[j];
+            xs[j] = xs[j + 1];
+            xs[j + 1] = temp;
+            temp = ps[j];
+            ps[j] = ps[j + 1];
+            ps[j + 1] = temp;
+            temp = ys[j];
+            ys[j] = ys[j + 1];
+            ys[j + 1] = temp;
+            temp = rots[j];
+            rots[j] = rots[j + 1];
+            rots[j + 1] = temp;
+            temp = quality[j];
+            quality[j] = quality[j + 1];
+            quality[j + 1] = temp;
+         }*/
+
    printf("Best diff: %d\n", best_diff);
    printf("Best position: %d %d %d %d\n", best_x, best_y, best_rot, best_p);
    printf("Double-Rotates in best case: %d\n", minRotates[molSize][best_rot][best_p][best_x][best_y]);
@@ -571,8 +576,10 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
 
    int last_rotate_angle = 1;
 
-
+   printf("-- Start\n");
+   
    for (int index = 0; index < xs.size() && bestBadness > 0.5; index++) {
+   //for (int index = 0; index < xs.size(); index++) {
       int displayIndex = index;
       //printf("%d\n", index);
       x_result[molSize] = xs[index];
@@ -650,13 +657,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
                last_rotate_angle = 1;
             }
          }
-         /*   printf("There are %d angled vertexes.", ind);
-         for (int i = 0; i < ind; i++) printf("%d ", vertexNumber[i]);
-         printf("\n");
-         for (int i = 0; i < ind; i++) printf("%d ", edgeLenght[i]);
-         printf("\n");
-         for (int i = 0; i < ind; i++) printf("%d ", rotateAngle[i]);
-         printf("\n");*/
 
          double x[max_size];
          double y[max_size];
@@ -664,14 +664,16 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
             x[i] = x_result[vertexNumber[i]] + y_result[vertexNumber[i]] * 0.5;
             y[i] = sqrt(3.0)/2 * y_result[vertexNumber[i]];
          }
-         //    for (int i = 0; i < ind; i++) printf("%10.10f %10.10f\n", x[i], y[i]);
-         //    printf("\n");
 
-         smoothing(ind, molSize, rotateAngle, edgeLenght, vertexNumber, x, y, profi);
+         double startBadness = badness(ind, molSize, rotateAngle, edgeLenght, vertexNumber, x, y);
+         if (startBadness > 0.001) smoothing(ind, molSize, rotateAngle, edgeLenght, vertexNumber, x, y, profi);
 
          double newBadness = 0;
          newBadness = badness(ind, molSize, rotateAngle, edgeLenght, vertexNumber, x, y);
          //printf("%10.10f\n", newBadness);
+
+         printf("-- %d %d %d %5.5f %5.5f\n", xs[displayIndex], ys[displayIndex], rots[displayIndex], startBadness, newBadness);
+
 
          if (newBadness < bestBadness) {
             bestBadness = newBadness;
@@ -692,8 +694,9 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(BaseMolecule &mol, bool
             }
          }
    }
-
+   //fclose (stdout);
    printf("%5.5f\n", bestBadness);
+   printf("--- %d\n", bestIndex);
    //    printf("\n");
 
    //    for (int i = 0; i < ind; i++) printf("%10.10f %10.10f\n", x[i], y[i]);

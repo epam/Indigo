@@ -27,6 +27,7 @@ namespace indigo {
 class DLLEXPORT MoleculeLayoutMacrocycles
 {
 public:
+
    static bool canApply (BaseMolecule &mol);
 
    double layout (BaseMolecule &mol);
