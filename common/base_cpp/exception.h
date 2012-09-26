@@ -86,6 +86,50 @@ private:
 #define DEF_TIMEOUT_EXCEPTION(prefix) \
    DEF_EXCEPTION(TimeoutException, prefix " timeout")
 
+#define DECL_EXCEPTION(ExceptionName) \
+   class DLLEXPORT ExceptionName : public indigo::Exception       \
+   {                                                              \
+   public:                                                        \
+      explicit ExceptionName (const char *format, ...);           \
+      virtual ~ExceptionName ();                                  \
+      virtual Exception* clone ();                                \
+      virtual void throwSelf ();                                  \
+      ExceptionName (const ExceptionName &other);                 \
+   }
+
+#define IMPL_EXCEPTION(Namespace, ExceptionName, prefix) \
+   Namespace::ExceptionName::ExceptionName (const char *format, ...) \
+      : indigo::Exception()                                                            \
+   {                                                                                   \
+      va_list args;                                                                    \
+                                                                                       \
+      va_start(args, format);                                                          \
+      _init(prefix, format, args);                                                     \
+      va_end(args);                                                                    \
+   }                                                                                   \
+                                                                                       \
+   Namespace::ExceptionName::~ExceptionName () {}                                      \
+                                                                                       \
+   indigo::Exception* Namespace::ExceptionName::clone ()                                       \
+   {                                                                                   \
+      ExceptionName *error = new ExceptionName("");                                    \
+      _cloneTo(error);                                                                 \
+      return error;                                                                    \
+   }                                                                                   \
+   void Namespace::ExceptionName::throwSelf ()                                         \
+   {                                                                                   \
+      throw *this;                                                                     \
+   }                                                                                   \
+   Namespace::ExceptionName::ExceptionName (const ExceptionName &other) : Exception () \
+   {                                                                                   \
+      other._cloneTo(this);                                                            \
+   }                                                                                   \
+
+#define DECL_ERROR DECL_EXCEPTION(Error)
+
+#define IMPL_ERROR(Namespace, error_prefix) \
+   IMPL_EXCEPTION(Namespace, Error, error_prefix)
+
 }
 
 #endif // __exception_h__

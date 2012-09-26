@@ -9,10 +9,14 @@ from optparse import OptionParser
 presets = {
     "win32" : ("Visual Studio 10", ""),
     "win64" : ("Visual Studio 10 Win64", ""),
+    "win32-2012" : ("Visual Studio 11", ""),
+    "win64-2012" : ("Visual Studio 11 Win64", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
+    "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
+    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),   
 }
 
 parser = OptionParser(description='Indigo libraries build script')

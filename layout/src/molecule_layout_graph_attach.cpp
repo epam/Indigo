@@ -793,13 +793,21 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
          if (n_pos == 1 && adjacent_list.size() == 3) // to avoid four bonds to be drawn like cross
          {
             n_pos = 5;
-            int n_matter = 0, n_matter_2 = 0, n_single = 0;
+            int n_matter = 0, n_matter_2 = 0, n_single = 0, n_double_bond = 0;
             const Vertex &drawn_vert = getVertex(vert.neiVertex(drawn_idx));
             
             if (drawn_vert.degree() > 2)
                 n_matter_2++;
             else if (drawn_vert.degree() == 1)
                 n_single++;
+             
+            if (_molecule != 0)
+            {
+               int type = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx]);
+               
+               if (type == BOND_DOUBLE)
+                  n_double_bond++;
+            }
              
             for (i = 0; i < adjacent_list.size(); i++)
             {
@@ -812,13 +820,22 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
                 
                if (adj_degree > 2)
                   n_matter_2++;
+
+               if (_molecule != 0)
+               {
+                  int nei_idx = vert.findNeiVertex(adjacent_list[i]);
+                  int type = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[vert.neiEdge(nei_idx)].ext_idx]);
+                  
+                  if (type == BOND_DOUBLE)
+                     n_double_bond++;
+               }
             }
             
-            if (n_matter == 1) // draw ears
+            if (n_matter == 1 && n_double_bond < 2) // draw ears
             {
                two_ears = true;
                n_pos = 2;
-            } else if (n_matter_2 > 1 || n_single == 4) // cross-like case
+            } else if (n_matter_2 > 1 || n_double_bond > 1 || n_single == 4) // cross-like case
                n_pos = 3;
          } else
             n_pos = adjacent_list.size();

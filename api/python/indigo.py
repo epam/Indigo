@@ -151,15 +151,21 @@ class Indigo(object):
         raise IndigoException("unknown platform " + arch)
       if os.path.exists(path + "/msvcr100.dll"):
         Indigo._crt = CDLL(path + "/msvcr100.dll")
+      if os.path.exists(path + "/msvcr110.dll"):
+        Indigo._crt = CDLL(path + "/msvcr110.dll")
       Indigo._lib = CDLL(path + "/indigo.dll")
     elif platform.mac_ver()[0]:
       path += "/Mac/"
-      # append "10.5" or "10.6" to the path
       mac_ver = '.'.join(platform.mac_ver()[0].split('.')[:2])
-      if mac_ver != "10.5":
-         mac_ver = "10.6" # Try to use 10.6 Indigo version for Mac OS X 10.7 and 10.8 
-      path += mac_ver
-      Indigo._lib = CDLL(path + "/libindigo.dylib", mode=RTLD_GLOBAL)
+      current_mac_ver = int(mac_ver.split('.')[1])
+      using_mac_ver = None
+      for version in reversed(range(5, current_mac_ver + 1)):
+        if os.path.exists(path + '/10.' + str(version)):
+          using_mac_ver = str(version)
+          break
+      if (using_mac_ver is None):
+        raise IndigoException("no binaries for this version of Mac OS X: " + mac_ver)
+      Indigo._lib = CDLL(path + '/10.' + using_mac_ver + "/libindigo.dylib", mode=RTLD_GLOBAL)
     else:
       raise IndigoException("unsupported OS: " + os.name)
 
@@ -468,10 +474,10 @@ class Indigo(object):
     self.IndigoObject.iterateMatches = Indigo._member_obj_obj(Indigo._lib.indigoIterateMatches)
     self.IndigoObject.highlightedTarget = Indigo._member_obj(Indigo._lib.indigoHighlightedTarget);
     self.IndigoObject.mapAtom = Indigo._member_obj_obj(Indigo._lib.indigoMapAtom);
-    self.IndigoObject.mapBond = Indigo._member_obj_obj(Indigo._lib.indigoMapBond);	
+    self.IndigoObject.mapBond = Indigo._member_obj_obj(Indigo._lib.indigoMapBond);  
 
     self.IndigoObject.mapMolecule = Indigo._member_obj_obj(Indigo._lib.indigoMapMolecule);
-	
+  
     self.IndigoObject.allScaffolds = Indigo._member_obj(Indigo._lib.indigoAllScaffolds);
     self.IndigoObject.decomposedMoleculeScaffold = Indigo._member_obj(Indigo._lib.indigoDecomposedMoleculeScaffold)
     self.IndigoObject.iterateDecomposedMolecules = Indigo._member_obj(Indigo._lib.indigoIterateDecomposedMolecules)
@@ -649,7 +655,7 @@ class Indigo(object):
         return None
       return Indigo.IndigoObject(self, self._checkResult(res), obj)
     return self._make_wrapper_func(newfunc, func)
-		
+    
   def _static_obj_obj_obj (self, func):
     func.restype = c_int
     func.argtypes = [c_int, c_int]
