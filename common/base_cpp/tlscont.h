@@ -47,7 +47,7 @@ public:
    // assigned automatically (not by manual TL_SET_SESSION_ID call)
    void releaseSessionId (qword id);
 
-   DEF_ERROR("TLS");
+   DECL_ERROR;
 
 private:
    _SIDManager (void);

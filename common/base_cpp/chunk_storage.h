@@ -41,7 +41,7 @@ public:
 
    void pop ();
 
-   DEF_ERROR("chunk storage");
+   DECL_ERROR;
 private:
    Array<byte> _arr;
    Array<int> _offset;

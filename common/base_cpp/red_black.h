@@ -30,9 +30,13 @@ struct RedBlackNodeBase
    int color;
 };
 
+DECL_EXCEPTION(RedBlackTreeError);
+
 template <typename Key, typename Node> class RedBlackTree
 {
 public:
+   DECL_TPL_ERROR(RedBlackTreeError);
+
    enum
    {
       RED = 0,
@@ -197,8 +201,6 @@ public:
 
       return idx != -1 && sign == 0;
    }
-
-   DEF_ERROR("red-black tree");
 
 protected:
    virtual int _compare (Key key, const Node &node) const = 0;

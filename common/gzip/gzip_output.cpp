@@ -16,6 +16,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(GZipOutput, "GZip output");
+
 GZipOutput::GZipOutput (Output &dest, int level) :
 _dest(dest),
 TL_CP_GET(_outbuf),

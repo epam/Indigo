@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(SmartTableOutput, "smart table output");
+
 SmartTableOutput::SmartTableOutput (Output &output, bool use_smart_printing) :
    TL_CP_GET(_lines),
    TL_CP_GET(_line_formats),

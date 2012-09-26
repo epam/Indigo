@@ -25,7 +25,7 @@ class LzwEncoder
 {
 public:
 
-   DEF_ERROR("LZW encoder");
+   DECL_ERROR;
 
    LzwEncoder( LzwDict &NewDict, Output &NewOut );
 

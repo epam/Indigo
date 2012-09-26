@@ -35,7 +35,7 @@ public:
    virtual int  tell  ();
    virtual void flush ();
 
-   DEF_ERROR("GZip output");
+   DECL_ERROR;
    
 protected:
    Output  &_dest;

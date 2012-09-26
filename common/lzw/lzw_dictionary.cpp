@@ -24,6 +24,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(LzwDict, "LZW dictionary");
+
 LzwDict::LzwDict( void ) : 
    TL_CP_GET(_storage), 
    TL_CP_GET(_nextPointers), 

@@ -24,6 +24,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(Scanner, "scanner");
+
 Scanner::~Scanner ()
 {
 }

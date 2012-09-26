@@ -19,6 +19,8 @@ using namespace indigo;
 _SIDManager _SIDManager::_instance;
 OsLock _SIDManager::_lock;
 
+IMPL_ERROR(_SIDManager, "TLS");
+
 _SIDManager& _SIDManager::getInst (void)
 {
    return _instance;

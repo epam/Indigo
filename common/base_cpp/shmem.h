@@ -29,7 +29,7 @@ public:
 
    void * ptr () {return _pointer;}
 
-   DEF_ERROR("shared memory");
+   DECL_ERROR;
 private:
    bool   _was_first;
    char   _id[1024];

@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(LzwEncoder, "LZW encoder");
+
 LzwEncoder::LzwEncoder( LzwDict &NewDict, Output &NewOut ) : 
 _dict(NewDict), _bitout(_dict.getBitCodeSize(), NewOut) 
 {

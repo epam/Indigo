@@ -17,6 +17,11 @@
 
 #include "base_cpp/exception.h"
 
+namespace indigo
+{
+
+DECL_EXCEPTION(NullableError);
+
 template <typename T>
 class Nullable
 {
@@ -62,7 +67,7 @@ public:
       variable_name = name;
    }
 
-   DEF_ERROR("Nullable");
+   DECL_TPL_ERROR(NullableError);
 
 private:
    T _value;
@@ -70,6 +75,6 @@ private:
    const char *variable_name;
 };
 
+}
+
 #endif // __nullable__
-
-

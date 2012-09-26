@@ -86,7 +86,7 @@ public:
    qword getLabelValue       (const char *name, bool total = false);
    qword getLabelCallCount   (const char *name, bool total = false);
 
-   DEF_ERROR("Profiling system");
+   DECL_ERROR;
 private:
    struct Record
    {

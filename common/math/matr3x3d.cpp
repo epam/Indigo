@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(Matr3x3d, "Matr3x3d");
+
 Matr3x3d::Matr3x3d ()
 {
    memset(elements, 0, 9 * sizeof(double));

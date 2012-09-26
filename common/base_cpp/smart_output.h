@@ -39,7 +39,7 @@ public:
    
    enum { HLINE_CHAR = '\a' } ;
 
-   DEF_ERROR("smart table output");
+   DECL_ERROR;
 
 private:
    void _updateColumnWidths (int index, Array<int> &widths);

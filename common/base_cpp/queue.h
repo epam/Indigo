@@ -21,11 +21,13 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(QueueError);
+
 // Queue with fixed max length
 template <typename T> class Queue
 {
 public:
-   DEF_ERROR("queue");
+   DECL_TPL_ERROR(QueueError);
 
    explicit Queue (void)
    {

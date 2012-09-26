@@ -26,7 +26,7 @@ namespace indigo
 class DLLEXPORT Output
 {
 public:
-   DEF_ERROR("output");
+   DECL_ERROR;
 
    explicit Output ();
    virtual ~Output ();

@@ -34,7 +34,7 @@ class DLLEXPORT LzwDict
 
 public:
 
-   DEF_ERROR("LZW dictionary");
+   DECL_ERROR;
 
    /* Dictionary constants */
    enum {

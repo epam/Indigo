@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(SharedMemory, "shared memory");
+
 SharedMemory::SharedMemory (const char *name, int size, bool no_map_if_first)
 {
    char *winapi_error;

@@ -24,8 +24,7 @@ namespace indigo {
 class LzwDecoder
 {
 public:
-
-   DEF_ERROR("LZW decoder");
+   DECL_ERROR;
 
    LzwDecoder( LzwDict &NewDict, Scanner &NewIn );
 
@@ -61,7 +60,7 @@ public:
 
    virtual byte readByte ();
 
-   DEF_ERROR("LZW-output");
+   DECL_ERROR;
 private:
    LzwDecoder &_decoder;
 };

@@ -47,7 +47,7 @@ struct Transform3f;
 struct Vec3f;
 struct Vec2f
 {
-   DEF_ERROR("Vec2f");
+   DECL_ERROR;
 
    Vec2f () : x(0), y(0) {}
    Vec2f (const Vec2f &a) : x(a.x), y(a.y) {}
@@ -338,7 +338,7 @@ const Vec3f VZero3f (0.f, 0.f, 0.f);
 
 struct Transform3f
 {
-   DEF_ERROR("transform3f");
+   DECL_ERROR;
 
    float elements[16];
 
@@ -386,7 +386,7 @@ struct Matr3x3d
 {
    double elements[9];
 
-   DEF_ERROR("Matr3x3d");
+   DECL_ERROR;
 
    Matr3x3d ();
 

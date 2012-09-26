@@ -16,6 +16,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(ChunkStorage, "chunk storage");
+
 ChunkStorage::ChunkStorage ()
 {
    _offset.push(0);

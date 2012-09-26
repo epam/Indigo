@@ -19,6 +19,8 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(AutoPtrError);
+
 template <typename T> class AutoPtr
 {
 public:
@@ -95,7 +97,7 @@ public:
       reset(new T(a));
    }
 
-   DEF_ERROR("autoptr");
+   DECL_TPL_ERROR(AutoPtrError);
 
 protected:
    T *_ptr;

@@ -26,7 +26,7 @@ namespace indigo {
 class DLLEXPORT Scanner
 {
 public:
-   DEF_ERROR("scanner");
+   DECL_ERROR;
 
    virtual ~Scanner ();
 

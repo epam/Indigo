@@ -24,6 +24,8 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(DbitsetError);
+
 class DLLEXPORT Dbitset {
    //bitsets are packed into arrays of "words."  Currently a word is
    //a long long, which consists of 64 bits, requiring 6 address bits.
@@ -169,9 +171,7 @@ public:
          Iterator(const Iterator&); //no implicit copy
       };
 
-
-
-   DEF_ERROR("Dynamic bitset");
+   DECL_TPL_ERROR(DbitsetError);
 };
 
 }

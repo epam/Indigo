@@ -49,43 +49,6 @@ protected:
 private:
 };
 
-#define DEF_EXCEPTION(ExceptionName, prefix) \
-   class ExceptionName : public indigo::Exception                 \
-   {                                                              \
-   public:                                                        \
-      explicit ExceptionName (const char *format, ...) :          \
-      Exception()                                                 \
-      {                                                           \
-         va_list args;                                            \
-                                                                  \
-         va_start(args, format);                                  \
-         _init(prefix, format, args);                             \
-         va_end(args);                                            \
-      }                                                           \
-                                                                  \
-      virtual ~ExceptionName () {}                                \
-      virtual Exception* clone ()                                 \
-      {                                                           \
-         ExceptionName *error = new ExceptionName("");            \
-         _cloneTo(error);                                         \
-         return error;                                            \
-      }                                                           \
-      virtual void throwSelf ()                                   \
-      {                                                           \
-         throw *this;                                             \
-      }                                                           \
-      ExceptionName (const ExceptionName &other) : Exception ()   \
-      {                                                           \
-         other._cloneTo(this);                                    \
-      }                                                           \
-   }
-
-#define DEF_ERROR(error_prefix) \
-   DEF_EXCEPTION(Error, error_prefix)
-
-#define DEF_TIMEOUT_EXCEPTION(prefix) \
-   DEF_EXCEPTION(TimeoutException, prefix " timeout")
-
 #define DECL_EXCEPTION(ExceptionName) \
    class DLLEXPORT ExceptionName : public indigo::Exception       \
    {                                                              \
@@ -126,9 +89,49 @@ private:
    }                                                                                   \
 
 #define DECL_ERROR DECL_EXCEPTION(Error)
+#define DECL_TPL_ERROR(CommonErrorName) typedef CommonErrorName Error
 
 #define IMPL_ERROR(Namespace, error_prefix) \
    IMPL_EXCEPTION(Namespace, Error, error_prefix)
+
+// Deprecated
+
+#define DEF_EXCEPTION(ExceptionName, prefix) \
+   class ExceptionName : public indigo::Exception                 \
+   {                                                              \
+   public:                                                        \
+      explicit ExceptionName (const char *format, ...) :          \
+      Exception()                                                 \
+      {                                                           \
+         va_list args;                                            \
+                                                                  \
+         va_start(args, format);                                  \
+         _init(prefix, format, args);                             \
+         va_end(args);                                            \
+      }                                                           \
+                                                                  \
+      virtual ~ExceptionName () {}                                \
+      virtual Exception* clone ()                                 \
+      {                                                           \
+         ExceptionName *error = new ExceptionName("");            \
+         _cloneTo(error);                                         \
+         return error;                                            \
+      }                                                           \
+      virtual void throwSelf ()                                   \
+      {                                                           \
+         throw *this;                                             \
+      }                                                           \
+      ExceptionName (const ExceptionName &other) : Exception ()   \
+      {                                                           \
+         other._cloneTo(this);                                    \
+      }                                                           \
+   }
+
+#define DEF_ERROR(error_prefix) \
+   DEF_EXCEPTION(Error, error_prefix)
+
+#define DEF_TIMEOUT_EXCEPTION(prefix) \
+   DEF_EXCEPTION(TimeoutException, prefix " timeout")
 
 }
 

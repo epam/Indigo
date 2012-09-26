@@ -19,6 +19,8 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(ObjError);
+
 // Reusable storage for object
 template <typename T> class Obj
 {
@@ -130,7 +132,7 @@ public:
       }
    }
 
-   DEF_ERROR("obj");
+   DECL_TPL_ERROR(ObjError);
 protected:
    T* _ptr () const
    {

@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(LzwDecoder, "LZW decoder");
+
 LzwDecoder::LzwDecoder( LzwDict &NewDict, Scanner &NewIn ) : _dict(NewDict), 
    _bitin(_dict.getBitCodeSize(), NewIn), TL_CP_GET(_symbolsBuf) 
 {    
@@ -60,6 +62,9 @@ int LzwDecoder::get( void )
 //
 // LzwScanner
 //
+
+IMPL_ERROR(LzwScanner, "LZW scanner");
+
 LzwScanner::LzwScanner (LzwDecoder &decoder) : _decoder(decoder)
 {
 }

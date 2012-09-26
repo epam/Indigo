@@ -16,6 +16,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(Vec2f, "Vec2f");
+
 bool Vec2f::normalize ()
 {
    float l = lengthSqr();

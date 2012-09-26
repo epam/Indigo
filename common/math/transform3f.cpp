@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(Transform3f, "transform3f");
+
 void Transform3f::copy (const Transform3f &other)
 {
    memcpy(elements, other.elements, 16 * sizeof(float));

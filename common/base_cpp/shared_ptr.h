@@ -15,6 +15,8 @@ protected:
    static OsLock _lock;
 };
 
+DECL_EXCEPTION(SharedPtrError);
+
 template <typename T> class SharedPtr : public SharedPtrStaticData
 {
 public:
@@ -60,7 +62,7 @@ public:
       }
    }
 
-   DEF_ERROR("SharedPtr error");
+   DECL_TPL_ERROR(SharedPtrError);
 
 protected:
    void _release ()

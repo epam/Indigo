@@ -24,6 +24,8 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(PtrPoolError);
+
 template <typename T> class PtrPool
 {
 public:
@@ -36,7 +38,7 @@ public:
       clear();
    }
 
-   DEF_ERROR("ptr pool");
+   DECL_TPL_ERROR(PtrPoolError);
 
    int add (T *obj)
    {

@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(StringPool, "string pool");
+
 StringPool::StringPool ()
 {
 }

@@ -26,10 +26,12 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(ArrayError);
+
 template <typename T> class Array
 {
 public:
-   DEF_ERROR("array");
+   DECL_TPL_ERROR(ArrayError);
 
    explicit Array ()
    {

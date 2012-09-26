@@ -20,11 +20,12 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(PoolError);
+
 template <typename T> class Pool
 {
 public:
-
-   DEF_ERROR("pool");
+   DECL_TPL_ERROR(PoolError);
 
    Pool () : _size(0), _first(-1)
    {

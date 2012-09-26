@@ -24,6 +24,8 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(PtrArrayError);
+
 template <typename T> class PtrArray
 {
 public:
@@ -36,7 +38,7 @@ public:
       clear();
    }
 
-   DEF_ERROR("ptr array");
+   DECL_TPL_ERROR(PtrArrayError);
 
    T & add (T *obj)
    {
