@@ -24,7 +24,7 @@ public:
    RenderItemContainer (RenderItemFactory& factory);
    virtual ~RenderItemContainer () {}
 
-   DEF_ERROR("RenderItemContainer");
+   DECL_ERROR;
 
    virtual void estimateSize ();
    virtual void setObjScale (float scale);

@@ -23,6 +23,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RenderItemReaction, "RenderItemReaction");
+
 RenderItemReaction::RenderItemReaction (RenderItemFactory& factory) : 
    RenderItemContainer(factory),
    rxn(NULL),

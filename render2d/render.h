@@ -24,7 +24,7 @@ public:
    Render (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet);
    virtual ~Render() = 0;
 
-   DEF_ERROR("Render");
+   DECL_ERROR;
 
 protected:
    float _getObjScale (int item);

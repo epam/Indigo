@@ -25,7 +25,7 @@ public:
 
    RenderItemAuxiliary (RenderItemFactory& factory);
    virtual ~RenderItemAuxiliary ();
-   DEF_ERROR("RenderItemAuxiliary");
+   DECL_ERROR;
 
    virtual void estimateSize () { renderIdle(); }
    virtual void setObjScale (float scale) {}

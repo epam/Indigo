@@ -53,7 +53,7 @@ public:
      
 class RenderParamInterface {
 public:
-   DEF_ERROR("render param interface");
+   DECL_ERROR;
    static void render (RenderParams& params);
 
 private:

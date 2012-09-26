@@ -25,7 +25,7 @@ public:
    virtual ~RenderGrid();
    void draw ();
 
-   DEF_ERROR("RenderGrid");
+   DECL_ERROR;
 
    Array<int> objs;
    Array<int> titles;

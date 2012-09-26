@@ -26,7 +26,7 @@ namespace indigo {
 class RenderContext
 {
 public:
-   DEF_ERROR("render context");
+   DECL_ERROR;
 
    void checkPathNonEmpty () const;
 

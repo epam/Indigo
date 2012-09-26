@@ -12,7 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "molecule/base_molecule.h"
-#include "base_cpp/output.h"
+#include "render2d/render_item_factory.h"
 
 using namespace indigo;
+
+IMPL_ERROR(RenderItemFactory, "RenderItemFactory");

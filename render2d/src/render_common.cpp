@@ -158,6 +158,8 @@ void BondEnd::clear ()
    width = 0;
 }
 
+IMPL_ERROR(BondDescr, "molrender bond description");
+
 BondDescr::BondDescr ()
 {
    clear();

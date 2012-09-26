@@ -29,6 +29,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RenderSingle, "RenderSingle");
+
 RenderSingle::RenderSingle (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet) : Render(rc, factory, cnvOpt, bondLength, bondLengthSet)
 {}
 

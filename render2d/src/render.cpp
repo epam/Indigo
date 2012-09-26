@@ -29,6 +29,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(Render, "Render");
+
 Render::Render (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet) :
    minMarg(2),
    _rc(rc), _settings(rc.getRenderSettings()), _cnvOpt(cnvOpt), _opt(rc.opt), 

@@ -22,6 +22,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RenderItemAuxiliary, "RenderItemAuxiliary");
+
 RenderItemAuxiliary::RenderItemAuxiliary (RenderItemFactory& factory) : 
    RenderItemBase(factory),
    arrowLength(_settings.arrowLength)

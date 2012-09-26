@@ -24,7 +24,7 @@ public:
    RenderItemHLine (RenderItemFactory& factory);
    virtual ~RenderItemHLine () {}
 
-   DEF_ERROR("RenderItemHLine");
+   DECL_ERROR;
 
    virtual void init ();
    virtual void estimateSize ();

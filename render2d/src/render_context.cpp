@@ -23,6 +23,8 @@ using namespace indigo;
 
 RenderContext::TextLock RenderContext::_tlock;
 
+IMPL_ERROR(RenderContext, "render context");
+
 #ifdef _WIN32
 
 #define NOMINMAX

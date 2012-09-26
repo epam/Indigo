@@ -32,7 +32,7 @@ public:
    void setReactionComponentProperties (const Array<int>* aam, const Array<int>* reactingCenters, const Array<int>* inversions);
    void setQueryReactionComponentProperties (const Array<int>* exactChanges);
 
-   DEF_ERROR("molecule render internal");
+   DECL_ERROR;
 private:
    enum STEREOGROUPS_MODE {STEREOGROUPS_SHOW, STEREOGROUPS_HIDE};
    struct LocalOptions {

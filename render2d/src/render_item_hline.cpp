@@ -23,6 +23,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RenderItemHLine, "RenderItemHLine");
+
 RenderItemHLine::RenderItemHLine (RenderItemFactory& factory) : 
    RenderItemContainer(factory)
 {

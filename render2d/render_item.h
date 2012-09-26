@@ -29,7 +29,7 @@ public:
    {
    }
 
-   DEF_ERROR("RenderItemBase");
+   DECL_ERROR;
 
    virtual void estimateSize () = 0;
    virtual void setObjScale (float scale) = 0;

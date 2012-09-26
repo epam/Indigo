@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RenderItemBase, "RenderItemBase");
+
 RenderItemBase::RenderItemBase (RenderItemFactory& factory) : referenceY(0),
         _factory(factory),
         _rc(factory.rc), _settings(factory.rc._settings), _opt(factory.rc.opt)

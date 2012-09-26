@@ -60,7 +60,7 @@ public:
    {
    }
 
-   DEF_ERROR("RenderItemFactory");
+   DECL_ERROR;
 
    enum TYPE {
       TYPE_Fragment,

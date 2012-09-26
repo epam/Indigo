@@ -23,6 +23,7 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RenderItemFragment, "RenderItemFragment");
 
 RenderItemFragment::RenderItemFragment (RenderItemFactory& factory) : 
    RenderItemBase(factory),

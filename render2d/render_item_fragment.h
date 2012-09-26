@@ -26,7 +26,7 @@ public:
    RenderItemFragment (RenderItemFactory& factory);
    virtual ~RenderItemFragment ();
 
-   DEF_ERROR("RenderItemFragment");
+   DECL_ERROR;
 
    virtual void estimateSize ();
    virtual void setObjScale (float scale) { 

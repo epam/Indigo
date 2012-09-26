@@ -33,6 +33,7 @@ class BaseMolecule;
 class Reaction;
 class QueryMolecule;
 class QueryReaction;
+class Output;
 
 enum DINGO_MODE {MODE_NONE, MODE_PDF, MODE_PNG, MODE_SVG, MODE_EMF, MODE_HDC, MODE_PRN};
 enum LABEL_MODE {LABEL_MODE_NONE, LABEL_MODE_HETERO, LABEL_MODE_TERMINAL_HETERO, LABEL_MODE_ALL};
@@ -209,7 +210,7 @@ private:
 struct BondDescr : public Edge {
    BondDescr ();
 
-   DEF_ERROR("molrender bond description");
+   DECL_ERROR;
 
    void clear ();
 

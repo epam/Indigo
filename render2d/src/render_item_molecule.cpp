@@ -23,6 +23,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RenderItemMolecule, "RenderItemMolecule");
+
 RenderItemMolecule::RenderItemMolecule (RenderItemFactory& factory) : 
    RenderItemContainer(factory),
    mol(NULL),

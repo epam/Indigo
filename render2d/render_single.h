@@ -25,7 +25,7 @@ public:
    virtual ~RenderSingle();
    void draw ();
 
-   DEF_ERROR("RenderSingle");
+   DECL_ERROR;
 
    int obj;
    int comment;

@@ -26,7 +26,7 @@ public:
    RenderItemReaction (RenderItemFactory& factory);
    virtual ~RenderItemReaction () {}
 
-   DEF_ERROR("RenderItemReaction");
+   DECL_ERROR;
 
    virtual void init ();
    virtual void estimateSize ();

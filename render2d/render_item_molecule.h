@@ -26,7 +26,7 @@ public:
    RenderItemMolecule (RenderItemFactory& factory);
    virtual ~RenderItemMolecule () {}
 
-   DEF_ERROR("RenderItemMolecule");
+   DECL_ERROR;
 
    virtual void init ();
    virtual void estimateSize ();

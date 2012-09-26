@@ -29,6 +29,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RenderGrid, "RenderGrid");
+
 RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet) :
    Render(rc, factory, cnvOpt, bondLength, bondLengthSet), nColumns(cnvOpt.gridColumnNumber), comment(-1)
 {}

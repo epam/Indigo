@@ -69,6 +69,8 @@ void RenderParams::clear ()
    clearArrays();
 }
 
+IMPL_ERROR(RenderParamInterface, "render param interface");
+
 bool RenderParamInterface::needsLayoutSub (BaseMolecule& mol)
 {
    QS_DEF(RedBlackSet<int>, atomsToIgnore);
