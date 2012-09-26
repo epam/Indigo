@@ -34,7 +34,7 @@
 #include "graph/automorphism_search.h"
 
 
-
+IMPL_ERROR(IndigoDeconvolution, "R-Group deconvolution");
 
 IndigoDeconvolution::IndigoDeconvolution():
 IndigoObject(IndigoObject::DECONVOLUTION),

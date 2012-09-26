@@ -96,7 +96,7 @@ public:
    void addCompleteRGroup(IndigoDecompositionMatch& emb_context, bool change_scaffold, Array<int>* rg_map);
    void createRgroups(IndigoDecompositionMatch& emb_context, bool change_scaffold);
    
-   DEF_ERROR("R-Group deconvolution");
+   DECL_ERROR;
 private:
    void _parseOptions(const char* options);
    

@@ -22,6 +22,8 @@ DLLEXPORT OptionManager & indigoGetOptionManager ()
    return indigo_option_manager.ref();
 }
 
+IMPL_ERROR(OptionManager, "option manager");
+
 OptionManager::OptionManager ()
 {
 }
