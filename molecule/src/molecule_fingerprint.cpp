@@ -28,6 +28,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeFingerprintBuilder, "fingerprint builder");
+
 MoleculeFingerprintBuilder::MoleculeFingerprintBuilder (BaseMolecule &mol,
                      const MoleculeFingerprintParameters &parameters):
 _mol(mol),

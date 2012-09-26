@@ -17,6 +17,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MultipleCmlLoader, "multiple CML loader");
+
 MultipleCmlLoader::MultipleCmlLoader (Scanner &scanner) :
 TL_CP_GET(data),
 TL_CP_GET(_tags),

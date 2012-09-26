@@ -35,7 +35,7 @@ public:
 
    int  getArcValue (int arc) const;
 
-   DEF_ERROR("SkewSymmetricFlowFinder");
+   DECL_ERROR;
 private:
    void _init ();
 

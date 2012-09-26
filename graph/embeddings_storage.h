@@ -50,7 +50,7 @@ public:
    const int* getEdges (int emb_idx, int &count) const;
    const int* getMappingSub (int emb_idx, int &count) const;
 
-   DEF_ERROR("embeddings storage");
+   DECL_ERROR;
 private:
    Array<int> _all_vertices, _all_edges, _all_mappings;
    struct _EmbeddingData

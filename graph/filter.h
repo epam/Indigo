@@ -54,7 +54,7 @@ public:
    void collectGraphEdges (const Graph &graph, Array<int> &indices) const;
    int  count (const Graph &graph) const;
 
-   DEF_ERROR("filter");
+   DECL_ERROR;
 
 protected:
    const int *_filter;

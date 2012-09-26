@@ -24,6 +24,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeExactMatcher, "molecule exact matcher");
+
 MoleculeExactMatcher::MoleculeExactMatcher (BaseMolecule &query, BaseMolecule &target) :
 _query(query),
 _target(target),

@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(DfsWalk, "DFS walk");
+
 DfsWalk::DfsWalk (const Graph &graph) :
 _graph(graph),
 TL_CP_GET(_vertices),

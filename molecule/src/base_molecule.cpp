@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(BaseMolecule, "molecule");
+
 BaseMolecule::BaseMolecule ()
 {
    _edit_revision = 0;

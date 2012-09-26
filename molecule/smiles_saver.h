@@ -37,7 +37,7 @@ class Molecule;
 class DLLEXPORT SmilesSaver
 {
 public:
-   DEF_ERROR("SMILES saver");
+   DECL_ERROR;
 
    SmilesSaver (Output &output);
    ~SmilesSaver ();

@@ -28,7 +28,7 @@ class MultipleCmlLoader
 {
 public:
 
-   DEF_ERROR("multiple CML loader");
+   DECL_ERROR;
    
    MultipleCmlLoader (Scanner &scanner);
 

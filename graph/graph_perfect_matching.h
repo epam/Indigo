@@ -65,7 +65,7 @@ public:
    // e_idx - edge index in graph (not mapping)
    virtual bool checkEdge   (int e_idx) { return true; }
 
-   DEF_ERROR("graph perfect matching");
+   DECL_ERROR;
 protected:
    bool _PathFinder (int v_idx, int needMatchingEdge);
 

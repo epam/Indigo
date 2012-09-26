@@ -35,7 +35,7 @@ class QueryMolecule;
 class DLLEXPORT SmilesLoader
 {
 public:
-   DEF_ERROR("SMILES loader");
+   DECL_ERROR;
 
    SmilesLoader (Scanner &scanner);
    ~SmilesLoader ();

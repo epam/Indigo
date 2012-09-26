@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeExactSubstructureMatcher, "molecule exact substructure matcher");
+
 MoleculeExactSubstructureMatcher::MoleculeExactSubstructureMatcher (Molecule &query, Molecule &target) :
 _query(query),
 _target(target),

@@ -52,7 +52,7 @@ public:
    // Get parity according to InChI standart
    static int getParityInChI (Molecule &mol, int bond);
 
-   DEF_ERROR("InChI utility");
+   DECL_ERROR;
 private:
    static void _ensureLabelsInitialized ();
    static void _initializeAtomLabels ();

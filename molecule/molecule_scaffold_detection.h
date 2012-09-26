@@ -51,7 +51,7 @@ class MoleculeScaffoldDetection: public ScaffoldDetection {
 
 
 
-      DEF_ERROR("Mol basket");
+      DECL_ERROR;
       
 
    private:
@@ -90,7 +90,7 @@ public:
    ObjArray<Molecule>* searchStructures;
    ObjArray<QueryMolecule>* basketStructures;
 
-   DEF_ERROR("Molecule Scaffold detection");
+   DECL_ERROR;
 };
 
 }

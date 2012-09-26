@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(Filter, "filter");
+
 Filter::Filter () :
 _filter(0),
 _value(0),

@@ -57,7 +57,7 @@ public:
    Array<int> *atom_flags;
    Array<int> *bond_flags;
 
-   DEF_ERROR("CMF loader");
+   DECL_ERROR;
 protected:
 
    struct _AtomDesc

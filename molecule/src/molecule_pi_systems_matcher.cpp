@@ -20,6 +20,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculePiSystemsMatcher, "Pi-system matcher");
+
 MoleculePiSystemsMatcher::MoleculePiSystemsMatcher (Molecule &target) 
    : _target(target),
    TL_CP_GET(_atom_pi_system_idx),

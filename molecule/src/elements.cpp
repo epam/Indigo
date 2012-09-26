@@ -26,6 +26,8 @@ using namespace indigo;
 
 Element Element::_instance;
 
+IMPL_ERROR(Element, "element");
+
 Element::Element ()
 {
    _element_parameters.resize(ELEM_MAX);

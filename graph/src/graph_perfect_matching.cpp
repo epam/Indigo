@@ -25,6 +25,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(GraphPerfectMatching, "graph perfect matching");
+
 GraphPerfectMatching::GraphPerfectMatching (const Graph &graph, int params) :
    _graph(graph),
    TL_CP_GET(_matchingEdgesLocal),

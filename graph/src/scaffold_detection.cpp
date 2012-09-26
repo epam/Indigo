@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(ScaffoldDetection, "Scaffold detection");
+
 ScaffoldDetection::ScaffoldDetection (ObjArray<Graph>* graph_set):
 cbEdgeWeight(0), 
 cbVerticesColor(0),
@@ -229,6 +231,8 @@ int ScaffoldDetection::GraphBasket::_copmpareRingsCount(Graph& g1, Graph& g2, vo
       result = g2.edgeCount() - g1.edgeCount();
    return result;
 }
+
+IMPL_ERROR(ScaffoldDetection::GraphBasket, "Graph basket");
 
 ScaffoldDetection::GraphBasket::GraphBasket():
 cbSortSolutions(0),

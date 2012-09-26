@@ -40,7 +40,7 @@ public:
    TL_CP_DECL(Array<char>, data);
    TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
 
-   DEF_ERROR("SDF loader");
+   DECL_ERROR;
 
 protected:
    Scanner *_scanner;

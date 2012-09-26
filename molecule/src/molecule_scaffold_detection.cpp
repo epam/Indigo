@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeScaffoldDetection, "Molecule Scaffold detection");
+
 MoleculeScaffoldDetection::MoleculeScaffoldDetection (ObjArray<Molecule>* mol_set):
 ScaffoldDetection(0),
 searchStructures(mol_set),
@@ -144,6 +146,8 @@ bool MoleculeScaffoldDetection::matchAtoms (Graph &g1, Graph &g2, const int *, i
 
    return MoleculeSubstructureMatcher::matchQueryAtom(q_atom, *target, super_idx, 0, 0xFFFFFFFF);
 }
+
+IMPL_ERROR(MoleculeScaffoldDetection::MoleculeBasket, "Mol basket");
 
 MoleculeScaffoldDetection::MoleculeBasket::MoleculeBasket():
 cbSortSolutions(0),

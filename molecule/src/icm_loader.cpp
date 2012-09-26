@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(IcmLoader, "ICM loader");
+
 IcmLoader::IcmLoader (Scanner &scanner) : _scanner(scanner)
 {
 }

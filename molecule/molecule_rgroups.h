@@ -54,7 +54,7 @@ public:
    MoleculeRGroups ();
    ~MoleculeRGroups ();
 
-   DEF_ERROR("molecule rgroups");
+   DECL_ERROR;
 
    void copyRGroupsFromMolecule (MoleculeRGroups &other);
 

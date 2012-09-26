@@ -26,6 +26,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(CmfSaver, "CMF saver");
+
 CmfSaver::CmfSaver (LzwDict &dict, Output &output) :
 TL_CP_GET(_atom_sequence)
 {

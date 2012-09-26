@@ -88,7 +88,7 @@ public:
    void (*cb_fragment) (BaseMolecule &mol, const Array<int> &vertices, const Array<int> &edges,
                         bool use_atoms, bool use_bonds, dword hash);
 
-   DEF_ERROR("fingerprint builder");
+   DECL_ERROR;
 protected:
 
    static void _handleTree     (Graph &graph, const int *v_mapping, const int *e_mapping, void *context);

@@ -55,7 +55,7 @@ public:
     */
    bool isMolecule() const { return _isMolecule;}
 
-   DEF_ERROR("RDF loader");
+   DECL_ERROR;
 
 protected:
 

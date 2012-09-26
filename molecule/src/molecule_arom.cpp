@@ -26,6 +26,9 @@ using namespace indigo;
 //
 // AromatizerBase
 // 
+
+IMPL_ERROR(AromatizerBase, "aromatizer");
+
 AromatizerBase::AromatizerBase (BaseMolecule &molecule) : _basemol(molecule),
    TL_CP_GET(_bonds_arom),
    TL_CP_GET(_bonds_arom_count),

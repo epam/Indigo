@@ -53,6 +53,8 @@ depth(0)
       query_marking[i] = -1;
 }
 
+IMPL_ERROR(MoleculeSubstructureMatcher, "molecule substructure matcher");
+
 MoleculeSubstructureMatcher::MoleculeSubstructureMatcher (BaseMolecule &target) :
 _target(target),
 TL_CP_GET(_3d_constrained_atoms),

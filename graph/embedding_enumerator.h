@@ -94,7 +94,7 @@ public:
    // Update internal structures to fit all target vertices that might be added
    void validate ();
 
-   DEF_ERROR("embedding enumerator");
+   DECL_ERROR;
    DEF_TIMEOUT_EXCEPTION("embedding enumerator");
 
 protected:

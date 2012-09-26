@@ -64,7 +64,7 @@ public:
    // an inverse mapping for 'core_sub'.
    bool match (int *core_sub, int *core_super);
 
-   DEF_ERROR("AromaticityMatcher");
+   DECL_ERROR;
 protected:
    QueryMolecule &_query;
    BaseMolecule &_base;

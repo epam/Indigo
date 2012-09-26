@@ -41,7 +41,7 @@ public:
    // Method for constructing internal layer information
    void construct (Molecule &mol);
 
-   DEF_ERROR("InChI layer");
+   DECL_ERROR;
 protected:
    Molecule& _getMolecule ();
 

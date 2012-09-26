@@ -35,7 +35,7 @@ class QueryMolecule;
 class DLLEXPORT MolfileLoader
 {
 public:
-   DEF_ERROR("molfile loader");
+   DECL_ERROR;
 
    MolfileLoader (Scanner &scanner);
 

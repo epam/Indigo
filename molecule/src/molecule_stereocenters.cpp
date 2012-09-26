@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeStereocenters, "stereocenters");
+
 MoleculeStereocenters::MoleculeStereocenters ()
 {
 }

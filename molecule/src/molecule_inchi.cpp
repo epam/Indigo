@@ -24,6 +24,8 @@ using namespace indigo;
 
 using namespace MoleculeInChILayers;
 
+IMPL_ERROR(MoleculeInChI, "InChI canonicalizer");
+
 MoleculeInChI::MoleculeInChI (Output &output) :
    _output(output),
    TL_CP_GET(_components),

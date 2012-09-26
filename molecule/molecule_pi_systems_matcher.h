@@ -39,7 +39,7 @@ public:
 
    void copyLocalization (Molecule &target);
 
-   DEF_ERROR("Pi-system matcher");
+   DECL_ERROR;
 private:
    // Returns number of pi-systems
    int _initMarks (void);

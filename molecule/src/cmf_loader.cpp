@@ -20,6 +20,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(CmfLoader, "CMF loader");
+
 CmfLoader::CmfLoader (LzwDict &dict, Scanner &scanner) :
 TL_CP_GET(_atoms),
 TL_CP_GET(_bonds),

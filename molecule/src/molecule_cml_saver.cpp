@@ -20,6 +20,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeCmlSaver, "molecule CML saver");
+
 MoleculeCmlSaver::MoleculeCmlSaver (Output &output) : _output(output)
 {
    skip_cml_tag = false;

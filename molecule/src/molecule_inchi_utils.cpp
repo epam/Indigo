@@ -27,6 +27,8 @@ using namespace indigo;
 Array<int> MoleculeInChIUtils::_atom_lables_sorted;
 Array<int> MoleculeInChIUtils::_atom_lables_ranks;
 
+IMPL_ERROR(MoleculeInChIUtils, "InChI utility");
+
 const Array<int>& MoleculeInChIUtils::getLexSortedAtomLables ()
 {
    _ensureLabelsInitialized();

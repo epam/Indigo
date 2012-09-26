@@ -35,6 +35,8 @@ void MoleculeAutoLoader::_init ()
    skip_3d_chirality = false;
 }
 
+IMPL_ERROR(MoleculeAutoLoader, "molecule auto loader");
+
 MoleculeAutoLoader::MoleculeAutoLoader (Scanner &scanner)
 {
    _scanner = &scanner;

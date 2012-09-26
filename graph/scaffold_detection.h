@@ -45,7 +45,7 @@ public:
 
    int maxIterations;
 
-   DEF_ERROR("Scaffold detection");
+   DECL_ERROR;
 
 public:
    //class for keeping graphs
@@ -87,7 +87,7 @@ public:
       void *userdata;
 
 
-      DEF_ERROR("Graph basket");
+      DECL_ERROR;
 
    protected:
 

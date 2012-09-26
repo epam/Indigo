@@ -82,7 +82,7 @@ public:
 
    bool convertableToImplicitHydrogen (int idx);
 
-   DEF_ERROR("cis-trans");
+   DECL_ERROR;
 
    static bool isGeomStereoBond (BaseMolecule &mol, int bond_idx, int *substituents, bool have_xyz);
    static int  sameside (const Vec3f &beg, const Vec3f &end, const Vec3f &nei_beg, const Vec3f &nei_end);

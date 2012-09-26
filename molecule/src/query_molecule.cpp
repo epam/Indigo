@@ -434,6 +434,8 @@ QueryMolecule::Node::~Node ()
 {
 }
 
+IMPL_ERROR(QueryMolecule::Atom, "query atom");
+
 QueryMolecule::Atom::Atom () : Node(OP_NONE)
 {
    value_min = 0;

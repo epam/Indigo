@@ -20,6 +20,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeAlleneStereo, "allene stereo");
+
 MoleculeAlleneStereo::MoleculeAlleneStereo ()
 {
 }

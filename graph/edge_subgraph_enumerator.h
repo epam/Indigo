@@ -35,7 +35,7 @@ public:
 
    void *userdata;
 
-   DEF_ERROR("edge subgraph enumerator");
+   DECL_ERROR;
 
 protected:
    int  _fCIS ();

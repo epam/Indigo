@@ -22,6 +22,8 @@ using namespace indigo;
 
 enum { BOND_SINGLE_OR_DOUBLE = -100 };
 
+IMPL_ERROR(MoleculeElectronsLocalizer, "Electron localizer");
+
 MoleculeElectronsLocalizer::MoleculeElectronsLocalizer (Molecule &skeleton) :
    _skeleton(skeleton),
    TL_CP_GET(_extended_skeleton),

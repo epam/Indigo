@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(SpanningTree, "spanning tree");
+
 SpanningTree::SpanningTree (Graph &graph, const Filter *vertex_filter, const Filter *edge_filter) : _graph(graph),
 TL_CP_GET(_edges_list),
 TL_CP_GET(_depth_counters),

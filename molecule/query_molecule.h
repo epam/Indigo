@@ -188,7 +188,7 @@ public:
       
       virtual void _optimize ();
 
-      DEF_ERROR("query atom");
+      DECL_ERROR;
    };
 
    class DLLEXPORT Bond : public Node

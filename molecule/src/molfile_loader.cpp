@@ -28,6 +28,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MolfileLoader, "molfile loader");
+
 MolfileLoader::MolfileLoader (Scanner &scanner) : 
 _scanner(scanner),
 TL_CP_GET(_stereo_care_atoms),

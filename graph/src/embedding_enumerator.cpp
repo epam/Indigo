@@ -22,6 +22,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(EmbeddingEnumerator, "embedding enumerator");
+
 EmbeddingEnumerator::EmbeddingEnumerator (Graph &supergraph) :
 TL_CP_GET(_core_1),
 TL_CP_GET(_core_2),

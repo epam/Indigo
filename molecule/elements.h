@@ -150,7 +150,7 @@ enum
 class DLLEXPORT Element
 {
 public:
-   DEF_ERROR("element");
+   DECL_ERROR;
 
    static const char * toString (int element);
    static int fromString (const char *name);

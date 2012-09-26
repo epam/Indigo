@@ -16,6 +16,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(SkewSymmetricNetwork, "skew symmetric network");
+
 const Graph& SkewSymmetricNetwork::g() const
 {
    return _g;

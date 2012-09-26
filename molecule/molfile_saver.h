@@ -60,7 +60,7 @@ public:
    const Array<int>* reactionAtomExactChange;
    const Array<int>* reactionBondReactingCenter;
 
-   DEF_ERROR("molfile saver");
+   DECL_ERROR;
    
 protected:
    void _saveMolecule (BaseMolecule &mol, bool query);

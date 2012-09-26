@@ -46,7 +46,7 @@ public:
    int getComponentVerticesCount (int component) const;
    int getComponentEdgesCount    (int component) const;
 
-   DEF_ERROR("Graph decomposer");
+   DECL_ERROR;
 protected:
    const Graph &_graph;
    int n_comp;

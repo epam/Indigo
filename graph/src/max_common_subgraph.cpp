@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MaxCommonSubgraph, "MCS");
+
 MaxCommonSubgraph::MaxCommonSubgraph(Graph &subgraph, Graph &supergraph) :
    conditionEdgeWeight(0),
    conditionVerticesColor(0),

@@ -21,6 +21,8 @@ using namespace indigo;
 
 const char* IcmSaver::VERSION = "IM2";
 
+IMPL_ERROR(IcmSaver, "ICM saver");
+
 IcmSaver::IcmSaver (Output &output) : _output(output)
 {
    save_xyz = false;

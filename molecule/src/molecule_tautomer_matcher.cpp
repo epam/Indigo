@@ -22,6 +22,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeTautomerMatcher, "molecule tautomer matcher");
+
 MoleculeTautomerMatcher::MoleculeTautomerMatcher (Molecule &target, bool substructure) :
 _substructure(substructure),
 _force_hydrogens(false),

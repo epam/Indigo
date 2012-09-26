@@ -41,7 +41,7 @@ public:
    int getIncomingCount (int idx) const;
    void getVertexComponents (int idx, Array<int> &components) const;
 
-   DEF_ERROR("biconnected_decomposer");
+   DECL_ERROR;
 
 protected:
    void _biconnect (int v, int u);

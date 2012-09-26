@@ -340,7 +340,7 @@ public:
 
    void getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res);
 
-   DEF_ERROR("molecule");
+   DECL_ERROR;
 protected:
 
    void _mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int> &vertices,

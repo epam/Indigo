@@ -20,6 +20,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(CanonicalSmilesSaver, "canonical SMILES saver");
+
 CanonicalSmilesSaver::CanonicalSmilesSaver (Output &output) : _output(output)
 {
    find_invalid_stereo = true;

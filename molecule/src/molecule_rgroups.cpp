@@ -59,6 +59,8 @@ bool RGroup::occurrenceSatisfied (int value)
    return false;
 }
 
+IMPL_ERROR(MoleculeRGroups, "molecule rgroups");
+
 MoleculeRGroups::MoleculeRGroups ()
 {
 }

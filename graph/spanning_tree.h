@@ -66,7 +66,7 @@ public:
 
    void markAllEdgesInCycles (int *marks_out, int value);
 
-   DEF_ERROR("spanning tree");
+   DECL_ERROR;
 protected:
    struct StackElem
    {

@@ -34,7 +34,7 @@ class DearomatizationsStorage
 {
    friend class DearomatizationsStorageWrapper;
 public:
-   DEF_ERROR("Dearomatization storage");
+   DECL_ERROR;
 
    explicit DearomatizationsStorage ();
 
@@ -210,7 +210,7 @@ protected:
 class DearomatizationMatcher
 {
 public:
-   DEF_ERROR("Dearomatization matcher");
+   DECL_ERROR;
 
    DearomatizationMatcher (DearomatizationsStorage &dearomatizations, BaseMolecule &molecule,
       const int *atom_external_conn);

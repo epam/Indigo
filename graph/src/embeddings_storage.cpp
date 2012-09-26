@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(GraphEmbeddingsStorage, "embeddings storage");
+
 GraphEmbeddingsStorage::GraphEmbeddingsStorage ()
 {
    unique_by_edges = false;

@@ -34,7 +34,7 @@ public:
 
    void saveMolecule (Molecule &mol) const;
 
-   DEF_ERROR("canonical SMILES saver");
+   DECL_ERROR;
 
 protected:
 

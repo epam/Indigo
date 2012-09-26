@@ -150,7 +150,7 @@ public:
 
    static void makeTransposition (BaseMolecule &mol, Array<int> &transposition);
 
-   DEF_ERROR("molecule substructure matcher");
+   DECL_ERROR;
 
    static bool shouldUnfoldTargetHydrogens (QueryMolecule &query, bool find_all_embeddings);
 protected:

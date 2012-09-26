@@ -22,6 +22,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(AromaticityMatcher, "AromaticityMatcher");
+
 AromaticityMatcher::AromaticityMatcher (QueryMolecule &query, BaseMolecule &base) :
    _query(query), _base(base),
    TL_CP_GET(_matching_edges_state)

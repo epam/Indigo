@@ -50,7 +50,7 @@ public:
    // will be removed from this array.
    Array<int> possible_cis_trans_to_check;
 
-   DEF_ERROR("Molecule automorphism search");
+   DECL_ERROR;
    DEF_TIMEOUT_EXCEPTION("Molecule automorphism search");
 
 protected:

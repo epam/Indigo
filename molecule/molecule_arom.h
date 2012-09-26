@@ -48,7 +48,7 @@ public:
 
    void setBondAromaticCount (int e_idx, int count);
 
-   DEF_ERROR("aromatizer");
+   DECL_ERROR;
 protected:
    // Functions for overloading
    virtual bool _checkVertex         (int v_idx);

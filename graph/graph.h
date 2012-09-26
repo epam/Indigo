@@ -90,7 +90,7 @@ struct Edge
 class DLLEXPORT Graph
 {
 public:
-   DEF_ERROR("graph");
+   DECL_ERROR;
 
    explicit Graph ();
    virtual ~Graph ();

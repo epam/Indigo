@@ -50,7 +50,7 @@ public:
 
    const byte * get ();
 
-   DEF_ERROR("chain fingerprint builder");
+   DECL_ERROR;
 protected:
 
    static void _handleChain (Graph &graph, int size, const int *vertices, const int *edges, void *context);

@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeCmlLoader, "molecule CML loader");
+
 MoleculeCmlLoader::MoleculeCmlLoader (Scanner &scanner)
 {
    _scanner = &scanner;

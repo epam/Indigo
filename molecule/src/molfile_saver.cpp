@@ -24,6 +24,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MolfileSaver, "molfile saver");
+
 MolfileSaver::MolfileSaver (Output &output) :
 reactionAtomMapping(0),
 reactionAtomInversion(0),

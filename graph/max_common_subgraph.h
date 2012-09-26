@@ -35,7 +35,7 @@ namespace indigo {
 class DLLEXPORT MaxCommonSubgraph{
 public:
 
-   DEF_ERROR("MCS");
+   DECL_ERROR;
 
    MaxCommonSubgraph(Graph& subgraph, Graph& supergraph);
    ~MaxCommonSubgraph();

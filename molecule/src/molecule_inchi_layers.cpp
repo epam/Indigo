@@ -25,6 +25,8 @@
 using namespace indigo;
 using namespace indigo::MoleculeInChILayers;
 
+IMPL_ERROR(AbstractLayer, "InChI layer");
+
 //
 // AbstractLayer
 //

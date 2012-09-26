@@ -34,7 +34,7 @@ public:
 
    const Array<int> *fixed_vertices;
 
-   DEF_ERROR("graph affine matcher");
+   DECL_ERROR;
 
 protected:
 

@@ -109,7 +109,7 @@ public:
 
    static bool isAutomorphism (BaseMolecule &mol, const Array<int> &mapping, const Filter *filter = NULL);
 
-   DEF_ERROR("stereocenters");
+   DECL_ERROR;
 
    static void getPyramidMapping (const MoleculeStereocenters &query,
                                   const MoleculeStereocenters &target,

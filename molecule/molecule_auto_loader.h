@@ -42,7 +42,7 @@ public:
    bool treat_x_as_pseudoatom;
    bool skip_3d_chirality;
 
-   DEF_ERROR("molecule auto loader");
+   DECL_ERROR;
 
    static bool tryMDLCT (Scanner &scanner, Array<char> &outbuf);
 

@@ -319,6 +319,8 @@ void TautomerChainFinder::restore ()
       _context.dearomatizationMatcher->unfixBond(_bond_idx2);
 }
 
+IMPL_ERROR(TautomerChainChecker, "tautomer chain checker");
+
 TautomerChainChecker::TautomerChainChecker (TautomerSearchContext &context,
                                             const Array<int> &core1, const Array<int> &core2,
                                             int start_path_number) :

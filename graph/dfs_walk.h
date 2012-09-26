@@ -56,7 +56,7 @@ public:
 
    void getNeighborsClosing (int v_idx, Array<int> &res);
 
-   DEF_ERROR("DFS walk");
+   DECL_ERROR;
 protected:
    struct _VertexDesc
    {

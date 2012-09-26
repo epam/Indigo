@@ -41,7 +41,7 @@ public:
    // Save InChI code to the output
    void outputInChI (Molecule &mol);
 
-   DEF_ERROR("InChI canonicalizer");
+   DECL_ERROR;
 
 private:
    //

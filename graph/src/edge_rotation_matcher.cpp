@@ -20,6 +20,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(EdgeRotationMatcher, "edge rotation matcher");
+
 EdgeRotationMatcher::EdgeRotationMatcher (Graph &subgraph, Graph &supergraph, const int *mapping) :
 _subgraph(subgraph),
 _supergraph(supergraph),

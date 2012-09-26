@@ -17,6 +17,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(SkewSymmetricFlowFinder, "SkewSymmetricFlowFinder");
+
 SkewSymmetricFlowFinder::SkewSymmetricFlowFinder 
    (const SkewSymmetricNetwork &network) :
    TL_CP_GET(_arc_values), 

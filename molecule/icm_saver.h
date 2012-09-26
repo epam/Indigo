@@ -35,7 +35,7 @@ public:
    bool save_bond_dirs;
    bool save_highlighting;
 
-   DEF_ERROR("ICM saver");
+   DECL_ERROR;
 
 protected:
    Output &_output;

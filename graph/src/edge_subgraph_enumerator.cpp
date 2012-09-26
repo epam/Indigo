@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(EdgeSubgraphEnumerator, "edge subgraph enumerator");
+
 EdgeSubgraphEnumerator::EdgeSubgraphEnumerator (Graph &graph) :
 _graph(graph),
 TL_CP_GET(_subgraph),

@@ -74,7 +74,7 @@ public:
       INFINITY = 0x7FFF
    };
 
-   DEF_ERROR("automorphism search");
+   DECL_ERROR;
 
 protected:
 

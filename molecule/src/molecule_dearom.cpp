@@ -527,6 +527,8 @@ void DearomatizationsStorage::loadBinary (Scanner &scanner)
    }
 }
 
+IMPL_ERROR(DearomatizationsStorage, "Dearomatization storage");
+
 DearomatizationsStorage::DearomatizationsStorage (void)
 {
    _dearomParams = Dearomatizer::PARAMS_NO_DEAROMATIZATIONS;
@@ -893,6 +895,8 @@ bool DearomatizationsGroups::isAcceptDoubleBond (int atom)
 //
 // DearomatizationMatcher
 //
+
+IMPL_ERROR(DearomatizationMatcher, "Dearomatization matcher");
 
 DearomatizationMatcher::DearomatizationMatcher (DearomatizationsStorage &dearomatizations, 
    BaseMolecule &molecule, const int *atom_external_conn) 

@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(BiconnectedDecomposer, "biconnected_decomposer");
+
 BiconnectedDecomposer::BiconnectedDecomposer (const Graph &graph) :
 _graph(graph),
 TL_CP_GET(_components),

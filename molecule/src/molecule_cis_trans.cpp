@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeCisTrans, "cis-trans");
+
 BaseMolecule & MoleculeCisTrans::_getMolecule ()
 {
    char dummy[sizeof(BaseMolecule)];

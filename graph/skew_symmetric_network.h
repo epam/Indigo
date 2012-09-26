@@ -80,7 +80,7 @@ public:
    int  getArcCapacity  (int edge) const;
    void setArcCapacity  (int edge, int capacity);
 
-   DEF_ERROR("skew symmetric network");
+   DECL_ERROR;
 private:
    Graph _g;
    Array<int> _symmetry;

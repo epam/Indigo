@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(GraphAffineMatcher, "graph affine matcher");
+
 GraphAffineMatcher::GraphAffineMatcher (Graph &subgraph, Graph &supergraph, const int *mapping) :
 _subgraph(subgraph),
 _supergraph(supergraph),

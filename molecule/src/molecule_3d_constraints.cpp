@@ -26,6 +26,8 @@ QueryMolecule & Molecule3dConstraints::_getMolecule ()
    return *(QueryMolecule *)((char *)this - offset);
 }
 
+IMPL_ERROR(Molecule3dConstraints, "molecule 3d constraints");
+
 Molecule3dConstraints::Molecule3dConstraints ()
 {
 }
@@ -509,6 +511,8 @@ void Molecule3dConstraints::removeAtoms (const int *mapping)
       new_constraints.release(i);
    }
 }
+
+IMPL_ERROR(Molecule3dConstraintsChecker, "molecule 3d constraints checker");
 
 Molecule3dConstraintsChecker::Molecule3dConstraintsChecker (const Molecule3dConstraints &constraints) :
 _constraints(constraints),

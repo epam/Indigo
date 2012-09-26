@@ -42,6 +42,8 @@ int Vertex::findNeiEdge (int idx) const
    return -1;
 }
 
+IMPL_ERROR(Graph, "graph");
+
 Graph::Graph ()
 {
    _vertices = new ObjPool<Vertex>();

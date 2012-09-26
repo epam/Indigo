@@ -31,7 +31,7 @@ public:
 
    void loadMolecule (Molecule &mol);
 
-   DEF_ERROR("ICM loader");
+   DECL_ERROR;
 
 protected:
    Scanner &_scanner;

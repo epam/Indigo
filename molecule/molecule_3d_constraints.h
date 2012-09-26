@@ -262,7 +262,7 @@ public:
 
    void clear ();
 
-   DEF_ERROR("molecule 3d constraints");
+   DECL_ERROR;
 
 protected:
 
@@ -284,7 +284,7 @@ public:
 
    void markUsedAtoms (int *arr, int value);
 
-   DEF_ERROR("molecule 3d constraints checker");
+   DECL_ERROR;
 protected:
    void  _cache       (int idx);
    float _getAngle    (int idx);

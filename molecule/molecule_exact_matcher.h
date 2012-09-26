@@ -54,7 +54,7 @@ public:
 
    bool needCoords ();
 
-   DEF_ERROR("molecule exact matcher");
+   DECL_ERROR;
 protected:
    BaseMolecule &_query;
    BaseMolecule &_target;

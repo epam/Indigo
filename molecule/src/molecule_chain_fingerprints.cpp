@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeChainFingerprintBuilder, "chain fingerprint builder");
+
 MoleculeChainFingerprintBuilder::MoleculeChainFingerprintBuilder
         (Molecule &mol, const MoleculeChainFingerprintParameters &parameters) :
 _mol(mol), _parameters(parameters),

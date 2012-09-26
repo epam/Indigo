@@ -17,6 +17,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(GraphConstrainedBMatchingFinder, "b-matching finder");
+
 GraphConstrainedBMatchingFinder::GraphConstrainedBMatchingFinder (
    const Graph &g, const ObjArray< Array<int> > &nodes_per_set,
    const Array<int> *per_set_set_id)

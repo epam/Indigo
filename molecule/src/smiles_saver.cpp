@@ -27,6 +27,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(SmilesSaver, "SMILES saver");
+
 SmilesSaver::SmilesSaver (Output &output) : _output(output),
 TL_CP_GET(_neipool),
 TL_CP_GET(_atoms),

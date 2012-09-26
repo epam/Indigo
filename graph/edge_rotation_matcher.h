@@ -34,7 +34,7 @@ public:
 
    bool match (float rsm_threshold, float eps);
 
-   DEF_ERROR("edge rotation matcher");
+   DECL_ERROR;
 
 protected:
    struct _DirEdge

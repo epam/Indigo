@@ -32,7 +32,7 @@ public:
 
    dword flags;
 
-   DEF_ERROR("molecule exact substructure matcher");
+   DECL_ERROR;
 protected:
    Molecule &_query;
    Molecule &_target;

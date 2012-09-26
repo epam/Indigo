@@ -58,7 +58,7 @@ public:
    void removeBonds (const Array<int> &indices);
    void registerUnfoldedHydrogen (int atom_idx, int added_hydrogen);
 
-   DEF_ERROR("allene stereo");
+   DECL_ERROR;
 
 
 protected:

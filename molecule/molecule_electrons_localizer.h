@@ -82,7 +82,7 @@ public:
    int getLocalizationChargesCount () const;
    bool isAllAtomsHaveOctet () const;
 
-   DEF_ERROR("Electron localizer");
+   DECL_ERROR;
 
 private:
    void _construct ();

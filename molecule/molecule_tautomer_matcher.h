@@ -27,7 +27,7 @@ class AromaticityMatcher;
 class MoleculeTautomerMatcher
 {
 public:
-   DEF_ERROR("molecule tautomer matcher");
+   DECL_ERROR;
 
    bool highlight;
 

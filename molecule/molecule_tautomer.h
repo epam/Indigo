@@ -202,7 +202,7 @@ public:
    bool releaseChain ();
    void restoreChain ();
 
-   DEF_ERROR("tautomer chain checker");
+   DECL_ERROR;
 private:
    bool _checkInterPathBonds ();
 

@@ -77,7 +77,7 @@ public:
    int getEdgeMultiplicity (int edge) const;
    int getNodeIncidentEdgesCount (int node) const;
 
-   DEF_ERROR("b-matching finder");
+   DECL_ERROR;
 private:
    struct ConstraintSet
    { 
