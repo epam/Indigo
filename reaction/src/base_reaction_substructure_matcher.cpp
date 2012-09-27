@@ -24,6 +24,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(BaseReactionSubstructureMatcher, "reaction substructure matcher");
+
 BaseReactionSubstructureMatcher::BaseReactionSubstructureMatcher (Reaction &target) :
 _target(target),
 TL_CP_GET(_matchers),

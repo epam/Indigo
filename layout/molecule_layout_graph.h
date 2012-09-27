@@ -117,7 +117,7 @@ public:
    void saveDebug ();
 #endif
 
-   DEF_ERROR("layout_graph");
+   DECL_ERROR;
 
 protected:
 

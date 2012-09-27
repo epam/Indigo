@@ -21,6 +21,8 @@ using namespace indigo;
 
 const char* IcrSaver::VERSION = "IR2";
 
+IMPL_ERROR(IcrSaver, "ICR saver");
+
 IcrSaver::IcrSaver (Output &output) : _output(output)
 {
    save_xyz = false;

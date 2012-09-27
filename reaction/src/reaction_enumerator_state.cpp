@@ -104,6 +104,8 @@ void ReactionEnumeratorState::ReactionMonomers::removeMonomer( int idx )
    _tube_indexes.pop();
 }
 
+IMPL_ERROR(ReactionEnumeratorState, "Reaction product enumerator state");
+
 ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
     QueryMolecule &cur_full_product, Array<int> &cur_product_aam_array, 
     RedBlackStringMap<int> &cur_smiles_array, ReactionMonomers &cur_reaction_monomers, 

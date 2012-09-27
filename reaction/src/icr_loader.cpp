@@ -20,6 +20,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(IcrLoader, "ICR loader");
+
 IcrLoader::IcrLoader (Scanner &scanner) : _scanner(scanner)
 {
 }

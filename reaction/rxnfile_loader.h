@@ -38,7 +38,7 @@ public:
    bool ignore_stereocenter_errors;
    bool ignore_noncritical_query_features;
    
-   DEF_ERROR("RXN loader");
+   DECL_ERROR;
 protected:
 
    BaseReaction  *_brxn;

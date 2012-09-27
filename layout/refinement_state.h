@@ -41,8 +41,8 @@ struct RefinementState
    float height;
    TL_CP_DECL(Array<Vec2f>, layout);
 
+   DECL_ERROR;
 private:
-   DEF_ERROR("refinement");
 
    MoleculeLayoutGraph &_graph;
 };

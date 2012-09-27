@@ -36,7 +36,7 @@ public:
 
    Scanner *xyz_scanner;
 
-   DEF_ERROR("CRF loader");
+   DECL_ERROR;
 protected:
 
    void _init ();

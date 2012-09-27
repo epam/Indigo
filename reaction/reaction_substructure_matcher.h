@@ -32,7 +32,7 @@ public:
    ReactionSubstructureMatcher (Reaction &target);
    bool use_daylight_aam_mode;
 
-   DEF_ERROR("reaction substructure matcher");
+   DECL_ERROR;
 
 protected:
 

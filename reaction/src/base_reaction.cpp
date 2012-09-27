@@ -17,6 +17,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(BaseReaction, "reaction");
+
 BaseReaction::BaseReaction ()
 {
    clear();

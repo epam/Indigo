@@ -92,7 +92,7 @@ public:
    float verticalIntervalFactor;
    float bondLength;
    
-   DEF_ERROR("metalayout");
+   DECL_ERROR;
 private:
    Vec2f _contentSize;
    float _avel, _scaleFactor, _offset;

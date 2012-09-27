@@ -31,7 +31,7 @@ namespace indigo {
 class ReactionEnumeratorState
 {
 public:
-   DEF_ERROR("Reaction product enumerator state");
+   DECL_ERROR;
 
    class ReactionMonomers
    {

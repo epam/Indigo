@@ -31,7 +31,7 @@ public:
 
    void loadReaction (Reaction &reaction);
 
-   DEF_ERROR("ICR loader");
+   DECL_ERROR;
 
 protected:
    Scanner &_scanner;

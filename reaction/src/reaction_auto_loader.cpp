@@ -33,6 +33,8 @@ void ReactionAutoLoader::_init ()
    ignore_noncritical_query_features = false;
 }
 
+IMPL_ERROR(ReactionAutoLoader, "reaction auto loader");
+
 ReactionAutoLoader::ReactionAutoLoader (Scanner &scanner)
 {
    _scanner = &scanner;

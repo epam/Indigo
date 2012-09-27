@@ -22,6 +22,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RxnfileSaver, "Rxnfile saver");
+
 RxnfileSaver::RxnfileSaver(Output &output) : 
    _output(output)
 {

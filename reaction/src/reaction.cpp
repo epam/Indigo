@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(Reaction, "reaction");
+
 Reaction::Reaction()
 {
 }

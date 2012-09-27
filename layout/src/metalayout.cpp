@@ -34,6 +34,8 @@ void Metalayout::LayoutLine::clear ()
       width = 0;
 }
 
+IMPL_ERROR(Metalayout, "metalayout");
+
 Metalayout::Metalayout () :
 horizontalIntervalFactor(0.4f), verticalIntervalFactor(0.6f), bondLength(1.0f), _avel(1.0f), _scaleFactor(1.0f)
 {

@@ -22,6 +22,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RSmilesSaver, "reaction SMILES saver");
+
 RSmilesSaver::RSmilesSaver (Output &output) :
 _output(output),
 TL_CP_GET(_written_atoms),

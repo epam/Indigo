@@ -28,7 +28,7 @@ namespace indigo
    class ReactionTransformation// : public ReactionEnumeratorState
    {
    public:
-      DEF_ERROR("Reaction transformation");
+      DECL_ERROR;
 
       ReactionTransformation( void );
 

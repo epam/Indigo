@@ -16,6 +16,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RefinementState, "refinement");
+
 RefinementState::RefinementState (MoleculeLayoutGraph &graph) :
 dist(0.f),
 energy(0),

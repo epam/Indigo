@@ -39,7 +39,7 @@ public:
    int molfile_saving_mode; // MolfileSaver::MODE_***, default zero
    bool skip_date;
 
-   DEF_ERROR("Rxnfile saver");
+   DECL_ERROR;
 
 protected:
 

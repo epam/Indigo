@@ -27,7 +27,7 @@ class QueryReaction;
 class DLLEXPORT RSmilesLoader
 {
 public:
-   DEF_ERROR("reaction SMILES loader");
+   DECL_ERROR;
 
    RSmilesLoader (Scanner &scanner);
 

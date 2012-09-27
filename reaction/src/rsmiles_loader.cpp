@@ -24,6 +24,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RSmilesLoader, "reaction SMILES loader");
+
 RSmilesLoader::RSmilesLoader (Scanner &scanner) : _scanner(scanner)
 {
    ignore_closing_bond_direction_mismatch = false;

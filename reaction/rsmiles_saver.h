@@ -35,7 +35,7 @@ class Reaction;
 class DLLEXPORT RSmilesSaver
 {
 public:
-   DEF_ERROR("reaction SMILES saver");
+   DECL_ERROR;
 
    RSmilesSaver (Output &output);
 

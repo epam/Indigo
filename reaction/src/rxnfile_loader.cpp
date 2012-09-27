@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RxnfileLoader, "RXN loader");
+
 RxnfileLoader::RxnfileLoader (Scanner& scanner): _scanner(scanner){
    _v3000 = false;
    ignore_stereocenter_errors = false;

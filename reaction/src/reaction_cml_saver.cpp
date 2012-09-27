@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(ReactionCmlSaver, "reaction CML saver");
+
 ReactionCmlSaver::ReactionCmlSaver (Output &output) : _output(output)
 {
    skip_cml_tag = false;

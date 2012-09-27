@@ -92,7 +92,7 @@ public:
    bool ignore_atom_radicals;
 
 
-   DEF_ERROR("Reaction automapper");
+   DECL_ERROR;
 
    CancellationHandler* cancellation;
 

@@ -27,7 +27,7 @@ class ReactionCmlLoader
 {
 public:
 
-   DEF_ERROR("reaction CML loader");
+   DECL_ERROR;
 
    ReactionCmlLoader (Scanner &scanner);
    ~ReactionCmlLoader ();

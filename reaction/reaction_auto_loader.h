@@ -41,7 +41,7 @@ public:
    bool ignore_stereocenter_errors;
    bool ignore_noncritical_query_features;
 
-   DEF_ERROR("reaction auto loader");
+   DECL_ERROR;
 
 protected:
    Scanner *_scanner;

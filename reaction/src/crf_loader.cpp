@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(CrfLoader, "CRF loader");
+
 CrfLoader::CrfLoader (LzwDict &dict, Scanner &scanner) :
 _scanner(scanner)
 {

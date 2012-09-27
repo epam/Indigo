@@ -39,7 +39,7 @@ public:
    virtual int  length ();
    virtual void readAll (Array<char> &arr);
 
-   DEF_ERROR("GZip scanner");
+   DECL_ERROR;
 protected:
    Scanner  &_source;
    z_stream  _zstream;

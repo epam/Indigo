@@ -53,7 +53,7 @@ public:
    int getTargetMoleculeIndex (int query_molecule_idx);
    const int * getQueryMoleculeMapping (int query_mol_idx);
 
-   DEF_ERROR("reaction substructure matcher");
+   DECL_ERROR;
 
    bool (*match_atoms) (BaseReaction &query_, Reaction &target,
                         int sub_mol_idx, int sub_atom_idx, int super_mol_idx, int super_atom_idx, void *context);

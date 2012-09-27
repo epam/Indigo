@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(CrfSaver, "CRF saver");
+
 CrfSaver::CrfSaver (LzwDict &dict, Output &output) : _output(output)
 {
    if (!dict.isInitialized())

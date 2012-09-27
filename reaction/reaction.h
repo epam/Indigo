@@ -72,7 +72,7 @@ public:
 
    void unfoldHydrogens ();
 
-   DEF_ERROR("reaction");
+   DECL_ERROR;
 
 protected:
 

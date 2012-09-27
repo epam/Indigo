@@ -16,6 +16,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(GZipScanner, "GZip scanner");
+
 GZipScanner::GZipScanner (Scanner &source) :
 _source(source),
 TL_CP_GET(_inbuf),

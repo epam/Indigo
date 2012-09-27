@@ -25,7 +25,7 @@ namespace indigo {
 class ReactionProductEnumerator
 {
 public:
-   DEF_ERROR("Reaction product enumerator");
+   DECL_ERROR;
    
    bool is_multistep_reaction;    /* if true - all reactants in monomer take part in reaction, false - one */
    bool is_self_react; /* if true - monomer's molecule can react with itself, false - can't */

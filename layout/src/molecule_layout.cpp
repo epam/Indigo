@@ -19,6 +19,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeLayout, "molecule_layout");
+
 MoleculeLayout::MoleculeLayout (BaseMolecule &molecule) :
 _molecule(molecule)
 {

@@ -40,7 +40,7 @@ public:
    bool save_bond_dirs;
    bool save_highlighting;
 
-   DEF_ERROR("CRF saver");
+   DECL_ERROR;
 
 protected:
 

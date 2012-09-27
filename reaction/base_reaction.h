@@ -120,7 +120,7 @@ public:
 
    Array<char> name;
 
-   DEF_ERROR("reaction");
+   DECL_ERROR;
 
 protected:
 

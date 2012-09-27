@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(PatternLayout, "molecule");
+
 PatternLayout::PatternLayout () : _morgan_code(0), _fixed(false)
 {
 }

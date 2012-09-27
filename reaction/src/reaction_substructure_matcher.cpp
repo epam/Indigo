@@ -23,6 +23,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(ReactionSubstructureMatcher, "reaction substructure matcher");
+
 ReactionSubstructureMatcher::ReactionSubstructureMatcher (Reaction &target) :
 BaseReactionSubstructureMatcher(target),
 TL_CP_GET(_fmcaches)

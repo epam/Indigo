@@ -25,6 +25,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(ReactionAutomapper, "Reaction automapper");
+
 ReactionAutomapper::ReactionAutomapper(BaseReaction& reaction):
 ignore_atom_charges(false),
 ignore_atom_valence(false),

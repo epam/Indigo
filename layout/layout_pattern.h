@@ -63,7 +63,7 @@ public:
    const PatternBond  & getBond       (int idx) const;
    const Array<Vec2f> & getOutline    () const { return _outline; }
 
-   DEF_ERROR("molecule");
+   DECL_ERROR;
 
 protected:
 

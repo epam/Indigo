@@ -20,6 +20,8 @@ using namespace indigo;
 
 TL_DEF(MoleculeLayoutGraph, ObjArray<PatternLayout>, _patterns);
 
+IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
+
 MoleculeLayoutGraph::MoleculeLayoutGraph ()
 {
    _total_morgan_code = 0;

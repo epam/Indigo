@@ -39,7 +39,7 @@ public:
    Filter *filter;
    int  max_iterations;
 
-   DEF_ERROR("molecule_layout");
+   DECL_ERROR;
 
 protected:
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, BaseMolecule& mol);
