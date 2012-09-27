@@ -97,7 +97,7 @@ else:
     dllPath = {}
     
     vsversion = 'Visual Studio'
-    if args.preset.find("2012"):
+    if args.preset.find("2012") != -1:
         vsversion += ' 11'
     else:
         vsversion += ' 10'
