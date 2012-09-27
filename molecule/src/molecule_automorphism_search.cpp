@@ -25,6 +25,7 @@
 using namespace indigo;
 
 IMPL_ERROR(MoleculeAutomorphismSearch, "Molecule automorphism search");
+IMPL_TIMEOUT_EXCEPTION(MoleculeAutomorphismSearch, "Molecule automorphism search");
 
 MoleculeAutomorphismSearch::MoleculeAutomorphismSearch () :
    TL_CP_GET(_approximation_orbits),

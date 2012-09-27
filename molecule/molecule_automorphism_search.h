@@ -51,7 +51,7 @@ public:
    Array<int> possible_cis_trans_to_check;
 
    DECL_ERROR;
-   DEF_TIMEOUT_EXCEPTION("Molecule automorphism search");
+   DECL_TIMEOUT_EXCEPTION;
 
 protected:
    static int  _vertex_cmp  (Graph &graph, int v1, int v2, const void *context);

@@ -23,6 +23,7 @@
 using namespace indigo;
 
 IMPL_ERROR(EmbeddingEnumerator, "embedding enumerator");
+IMPL_TIMEOUT_EXCEPTION(EmbeddingEnumerator, "embedding enumerator");
 
 EmbeddingEnumerator::EmbeddingEnumerator (Graph &supergraph) :
 TL_CP_GET(_core_1),

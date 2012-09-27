@@ -95,7 +95,7 @@ public:
    void validate ();
 
    DECL_ERROR;
-   DEF_TIMEOUT_EXCEPTION("embedding enumerator");
+   DECL_TIMEOUT_EXCEPTION;
 
 protected:
 
