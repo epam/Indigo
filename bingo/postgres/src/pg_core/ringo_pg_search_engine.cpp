@@ -30,6 +30,8 @@ extern "C" {
 
 using namespace indigo;
 
+IMPL_ERROR(RingoPgSearchEngine, "reaction search engine");
+
 RingoPgSearchEngine::RingoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name):
 BingoPgSearchEngine(),
 _searchType(-1) {

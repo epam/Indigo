@@ -24,6 +24,8 @@
 #include "bingo_storage.h"
 #include "base_cpp/profiling.h"
 
+IMPL_ERROR(BingoFingerprints, "screening");
+
 BingoFingerprints::BingoFingerprints (int context_id) :
 TL_CP_GET(_table_name)
 {

@@ -46,7 +46,7 @@ public:
    void prepareGross (OracleEnv &env, int right_part);
    void prepareMass (OracleEnv &env);
 
-   DEF_ERROR("mango shadow fetch");
+   DECL_ERROR;
 protected:
    
    enum

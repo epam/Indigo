@@ -41,7 +41,7 @@ public:
 
    const char * getName ();
 
-   DEF_ERROR("ringo shadow table");
+   DECL_ERROR;
 
 protected:
    Array<char>              _table_name;

@@ -21,7 +21,7 @@ public:
    uintptr_t  getDatum(int arg_idx);
    unsigned int getArgOid(int arg_idx);
 
-   DEF_ERROR("bingo cursor access");
+   DECL_ERROR;
 private:
    BingoPgCursor(const BingoPgCursor&); //no implicit copy
 

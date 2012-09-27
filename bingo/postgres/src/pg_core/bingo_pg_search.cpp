@@ -27,6 +27,8 @@ extern "C" {
 
 using namespace indigo;
 
+IMPL_ERROR(BingoPgSearch, "bingo search engine");
+
 BingoPgSearch::BingoPgSearch(PG_OBJECT rel):
 _initSearch(true),
 _indexScanDesc(0),

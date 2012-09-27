@@ -54,7 +54,7 @@ public:
 
    inline MangoOracleContext & context () {return _context;}
 
-   DEF_ERROR("mango fetch context");
+   DECL_ERROR;
 
 protected:
    Array<char> _query_id;

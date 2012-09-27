@@ -35,7 +35,7 @@ public:
    void insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_ptr);
    void flush();
 
-   DEF_ERROR("build engine");
+   DECL_ERROR;
 
 private:
    BingoPgBuild(const BingoPgBuild&); //no implicit copy

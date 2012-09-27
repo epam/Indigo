@@ -41,7 +41,7 @@ public:
    void prepareNonSubstructure (OracleEnv &env);
    void prepareExact (OracleEnv &env, int right_part);
 
-   DEF_ERROR("ringo shadow fetch");
+   DECL_ERROR;
 protected:
    enum
    {

@@ -36,7 +36,7 @@ public:
    RingoExact exact;
    RingoAAM ringoAAM;
 
-   DEF_ERROR("ringo context");
+   DECL_ERROR;
 
    static int begin ();
    static int end ();

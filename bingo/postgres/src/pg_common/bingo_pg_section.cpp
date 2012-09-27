@@ -16,6 +16,8 @@ extern "C" {
 
 using namespace indigo;
 
+IMPL_ERROR(BingoPgSection, "bingo postgres section");
+
 BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset):
 _index(bingo_idx.getIndexPtr()),
 _offset(offset),

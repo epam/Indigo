@@ -19,6 +19,8 @@ TL_DEF(MangoContext, PtrArray<MangoContext>, _instances);
 
 OsLock MangoContext::_instances_lock;
 
+IMPL_ERROR(MangoContext, "mango context");
+
 MangoContext::MangoContext (BingoContext &context) :
 substructure(context),
 similarity(context),

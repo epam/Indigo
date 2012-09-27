@@ -18,6 +18,8 @@
 #include "molecule/elements.h"
 #include "core/mango_index.h"
 
+IMPL_ERROR(MangoShadowTable, "shadow table");
+
 MangoShadowTable::MangoShadowTable (int context_id)
 {
    _table_name.push(0);

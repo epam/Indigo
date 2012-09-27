@@ -22,7 +22,7 @@ public:
    uintptr_t getDatum();
    PG_OBJECT release();
 
-   DEF_ERROR("bingo postgres text");
+   DECL_ERROR;
 private:
    BingoPgText(const BingoPgText&); //no implicit copy
 

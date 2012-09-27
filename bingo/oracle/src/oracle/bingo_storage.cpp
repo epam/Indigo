@@ -20,6 +20,8 @@
 #include "base_cpp/auto_ptr.h"
 #include "oracle/ora_logger.h"
 
+IMPL_ERROR(BingoStorage, "storage");
+
 BingoStorage::BingoStorage (OracleEnv &env, int context_id)
 {
    _shmem_state = 0;

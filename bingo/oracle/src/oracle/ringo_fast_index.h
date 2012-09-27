@@ -39,7 +39,7 @@ public:
 
    int getTotalCount (OracleEnv &env);
 
-   DEF_ERROR("ringo fast fetch");
+   DECL_ERROR;
 
 protected:
    enum

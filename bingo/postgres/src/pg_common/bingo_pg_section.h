@@ -62,7 +62,7 @@ public:
 
    void readSectionBitsCount(indigo::Array<int>& bits_count);
 
-   DEF_ERROR("bingo postgres section");
+   DECL_ERROR;
 
 private:
    BingoPgSection(const BingoPgSection&); //no implicit copy

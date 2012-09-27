@@ -19,6 +19,8 @@ TL_DEF(RingoContext, PtrArray<RingoContext>, _instances);
 
 OsLock RingoContext::_instances_lock;
 
+IMPL_ERROR(RingoContext, "ringo context");
+
 RingoContext::RingoContext (BingoContext &context) :
 substructure(context),
 exact(context),

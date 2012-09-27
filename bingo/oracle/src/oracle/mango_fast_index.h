@@ -42,7 +42,7 @@ public:
 
    virtual bool getLastRowid (OraRowidText &id);
 
-   DEF_ERROR("mango fast fetch");
+   DECL_ERROR;
 
 protected:
    

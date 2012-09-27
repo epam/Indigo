@@ -62,7 +62,7 @@ public:
 
    void reset ();
 
-   DEF_ERROR("bingo context");
+   DECL_ERROR;
 
    static BingoContext * get (int id);
    static BingoContext * existing (int id);

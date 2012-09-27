@@ -27,6 +27,8 @@ using namespace indigo;
 
 static int cursor_idx = 0;
 
+IMPL_ERROR(BingoPgCursor, "bingo cursor access");
+
 BingoPgCursor::BingoPgCursor(const char *format, ...) {
    Array<char> buf;
    va_list args;

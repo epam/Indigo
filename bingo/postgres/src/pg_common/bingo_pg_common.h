@@ -305,8 +305,7 @@ public:
       indigo::Array<char> _functionName;
    };
 
-
-   DEF_ERROR("bingo postgres");
+   DECL_ERROR;
 private:
    BingoPgCommon();
    BingoPgCommon(const BingoPgCommon&); //no implicit copy

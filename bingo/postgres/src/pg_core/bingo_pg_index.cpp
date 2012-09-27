@@ -17,6 +17,7 @@ extern "C" {
 #include "bingo_pg_config.h"
 #include "bingo_core_c.h"
 
+IMPL_ERROR(BingoPgIndex, "bingo index");
 
 BingoPgIndex::BingoPgIndex(PG_OBJECT index) :
 _index(index),

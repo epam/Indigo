@@ -38,7 +38,7 @@ public:
    const char* getQuery() {return _queryText.getString();}
    const char* getOptions() {return _optionsText.getString();}
 
-   DEF_ERROR("bingo search engine");
+   DECL_ERROR;
 
 private:
    BingoPgSearch(const BingoPgSearch&); //no implicit copy

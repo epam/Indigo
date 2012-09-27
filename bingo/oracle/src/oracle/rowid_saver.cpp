@@ -20,6 +20,8 @@
 #include "oracle/rowid_saver.h"
 #include "oracle/rowid_symbol_codes.h"
 
+IMPL_ERROR(RowIDSaver, "rowID saver");
+
 RowIDSaver::RowIDSaver( LzwDict &NewDict, Output &NewOut ) 
 {
    if (!NewDict.isInitialized())

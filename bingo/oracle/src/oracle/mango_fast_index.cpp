@@ -26,6 +26,8 @@
 #include "oracle/rowid_loader.h"
 #include "base_c/bitarray.h"
 
+IMPL_ERROR(MangoFastIndex, "mango fast fetch");
+
 MangoFastIndex::MangoFastIndex (MangoFetchContext &context) :
 _context(context)
 {

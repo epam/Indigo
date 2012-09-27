@@ -17,6 +17,8 @@
 #include "molecule/elements.h"
 #include "base_cpp/output.h"
 
+IMPL_ERROR(RingoShadowTable, "ringo shadow table");
+
 RingoShadowTable::RingoShadowTable (int context_id)
 {
    _table_name.push(0);

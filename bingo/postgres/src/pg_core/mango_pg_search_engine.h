@@ -68,7 +68,7 @@ public:
    virtual void prepareQuerySearch(BingoPgIndex&, PG_OBJECT scan_desc);
    virtual bool searchNext(PG_OBJECT result_ptr);
 
-   DEF_ERROR("molecule search engine");
+   DECL_ERROR;
 
 private:
    MangoPgSearchEngine(const MangoPgSearchEngine&); // no implicit copy

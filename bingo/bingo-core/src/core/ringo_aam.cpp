@@ -18,6 +18,8 @@
 #include "reaction/reaction_automapper.h"
 #include "layout/reaction_layout.h"
 
+IMPL_ERROR(RingoAAM, "ringo AAM");
+
 RingoAAM::RingoAAM(){
    treat_x_as_pseudoatom = false;
    ignore_closing_bond_direction_mismatch = false;

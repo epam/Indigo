@@ -27,6 +27,8 @@
 #include "molecule/elements.h"
 #include "base_cpp/profiling.h"
 
+IMPL_ERROR(MangoTautomer, "tautomer matcher");
+
 MangoTautomer::MangoTautomer (BingoContext &context) :
 _context(context)
 {

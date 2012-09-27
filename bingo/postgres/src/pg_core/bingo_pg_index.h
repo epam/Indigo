@@ -96,7 +96,7 @@ public:
    void readDictionary(indigo::Array<char>& _dictionary);
    void writeDictionary(BingoPgBuildEngine&);
 
-   DEF_ERROR("bingo index");
+   DECL_ERROR;
 
 private:
    BingoPgIndex(const BingoPgIndex&); //no implicit copy

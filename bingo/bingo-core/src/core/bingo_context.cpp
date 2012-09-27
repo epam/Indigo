@@ -23,6 +23,8 @@ TL_DEF(BingoContext, PtrArray<BingoContext>, _instances);
 
 OsLock BingoContext::_instances_lock;
 
+IMPL_ERROR(BingoContext, "bingo context");
+
 BingoContext::BingoContext (int id_)
 {
    id = id_;

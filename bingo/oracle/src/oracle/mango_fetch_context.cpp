@@ -21,6 +21,8 @@
 TL_DEF(MangoFetchContext, PtrArray<MangoFetchContext>, _instances);
 OsLock MangoFetchContext::_instances_lock;
 
+IMPL_ERROR(MangoFetchContext, "mango fetch context");
+
 
 MangoFetchContext::MangoFetchContext (int id_, MangoOracleContext &context,
                                       const Array<char> &query_id) :

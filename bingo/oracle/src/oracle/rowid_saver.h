@@ -34,7 +34,7 @@ class RowIDSaver
 
 public:
 
-   DEF_ERROR("rowID saver");
+   DECL_ERROR;
 
    RowIDSaver( LzwDict &NewDict, Output &NewOut );
 

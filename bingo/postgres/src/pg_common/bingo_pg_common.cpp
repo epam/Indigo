@@ -47,6 +47,8 @@ PGDLLEXPORT Datum _internal_func_check(PG_FUNCTION_ARGS);
 
 using namespace indigo;
 
+IMPL_ERROR(BingoPgCommon, "bingo postgres");
+
 void BingoPgCommon::getSearchTypeString(int type, indigo::Array<char>& result, bool molecule) {
    result.clear();
    if (molecule) {

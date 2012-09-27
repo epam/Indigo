@@ -54,7 +54,7 @@ public:
 
    inline RingoOracleContext & context () {return _context;}
 
-   DEF_ERROR("ringo fetch context");
+   DECL_ERROR;
 
 protected:
    Array<char> _query_id;

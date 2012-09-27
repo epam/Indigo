@@ -31,7 +31,7 @@ class RowIDLoader
 {
 public:
 
-   DEF_ERROR("rowID loader");
+   DECL_ERROR;
 
    RowIDLoader( LzwDict &NewDict, Scanner &NewIn );
 

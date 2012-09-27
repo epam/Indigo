@@ -21,6 +21,8 @@
 #include "molecule/gross_formula.h"
 #include "molecule/elements.h"
 
+IMPL_ERROR(MangoGross, "gross formula");
+
 MangoGross::MangoGross (BingoContext &context) :
 _context(context)
 {

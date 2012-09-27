@@ -56,7 +56,7 @@ public:
    const char * getName ();
    const char * getComponentsName ();
 
-   DEF_ERROR("shadow table");
+   DECL_ERROR;
 
 protected:
    Array<char> _table_name, _components_table_name;

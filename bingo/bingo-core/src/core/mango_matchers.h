@@ -67,7 +67,7 @@ public:
    
    bool parse (const char *params);
    
-   DEF_ERROR("substructure");
+   DECL_ERROR;
 
 protected:
    BingoContext &_context;
@@ -205,7 +205,7 @@ public:
    // Returns stored similarity score after calc, match or matchBinary
    float getSimilarityScore ();
 
-   DEF_ERROR("mango similarity");
+   DECL_ERROR;
 protected:
    BingoContext &_context;
    Array<byte>   _query_fp;
@@ -255,7 +255,7 @@ public:
 
    bool preserve_bonds_on_highlighting;
    
-   DEF_ERROR("tautomer matcher");
+   DECL_ERROR;
 
    Params                 _params;
 
@@ -296,7 +296,7 @@ public:
    bool checkMolecule (const Array<char> &target_buf);
    bool checkMolecule (Scanner &scanner);
 
-   DEF_ERROR("gross formula");
+   DECL_ERROR;
 
 protected:
    BingoContext &_context;

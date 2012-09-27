@@ -43,6 +43,8 @@ void MangoPgFpData::setGrossStr(const char* gross_str, const char* counter_str) 
    _gross.appendString(counter_str, true);
 }
 
+IMPL_ERROR(MangoPgSearchEngine, "molecule search engine");
+
 MangoPgSearchEngine::MangoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name):
 BingoPgSearchEngine(),
 _searchType(-1) {

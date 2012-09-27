@@ -11,7 +11,11 @@ extern "C" {
 #include "bingo_pg_index.h"
 #include "bingo_pg_common.h"
 
+
 using namespace indigo;
+
+IMPL_ERROR(BingoPgText, "bingo postgres text");
+
 BingoPgText::BingoPgText():_text(0){
 }
 BingoPgText::BingoPgText(uintptr_t text_datum):_text(0) {

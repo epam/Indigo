@@ -64,7 +64,7 @@ public:
 
    const byte * getQueryFingerprint ();
 
-   DEF_ERROR("reaction substructure");
+   DECL_ERROR;
 protected:
 
    BingoContext &_context;
@@ -106,7 +106,7 @@ public:
    bool treat_x_as_pseudoatom;
    bool ignore_closing_bond_direction_mismatch;
 
-   DEF_ERROR("ringo AAM");
+   DECL_ERROR;
 
 protected:
    Reaction _reaction;
@@ -140,7 +140,7 @@ public:
    bool treat_x_as_pseudoatom;
    bool ignore_closing_bond_direction_mismatch;
 
-   DEF_ERROR("Ringo exact");
+   DECL_ERROR;
 protected:
    BingoContext &_context;
 

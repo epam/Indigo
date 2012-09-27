@@ -28,6 +28,8 @@
 #include "layout/reaction_layout.h"
 #include "reaction/rsmiles_loader.h"
 
+IMPL_ERROR(RingoSubstructure, "reaction substructure");
+
 RingoSubstructure::RingoSubstructure (BingoContext &context) :
 _context(context)
 {

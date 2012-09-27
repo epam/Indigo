@@ -38,7 +38,7 @@ public:
    static int end ();
    static int next (int k);
 
-   DEF_ERROR("mango context");
+   DECL_ERROR;
 
    static void remove (int id);
 

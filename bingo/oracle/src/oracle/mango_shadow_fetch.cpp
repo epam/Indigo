@@ -23,6 +23,8 @@
 #include "oracle/mango_fetch_context.h"
 #include "base_cpp/profiling.h"
 
+IMPL_ERROR(MangoShadowFetch, "mango shadow fetch");
+
 MangoShadowFetch::MangoShadowFetch (MangoFetchContext &context) :
 _context(context)
 {

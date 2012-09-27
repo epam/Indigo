@@ -48,7 +48,7 @@ public:
    virtual void prepareQuerySearch(BingoPgIndex&, PG_OBJECT scan_desc);
    virtual bool searchNext(PG_OBJECT result_ptr);
 
-   DEF_ERROR("reaction search engine");
+   DECL_ERROR;
 private:
    RingoPgSearchEngine(const RingoPgSearchEngine&); // no implicit copy
 

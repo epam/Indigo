@@ -20,6 +20,9 @@ extern "C" {
 #include "base_cpp/tlscont.h"
 
 using namespace indigo;
+
+IMPL_ERROR(BingoPgBuffer, "bingo buffer");
+
 /*
  * Empty buffer constructor
  */

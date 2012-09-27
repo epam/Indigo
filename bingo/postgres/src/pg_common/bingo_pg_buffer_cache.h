@@ -66,7 +66,7 @@ public:
    void getCmfItem(int map_idx, ItemPointerData& cmf_item);
    void getXyzItem(int map_idx, ItemPointerData& xyz_item);
 
-   DEF_ERROR("bingo buffer cache");
+   DECL_ERROR;
 
 private:
    BingoPgBufferCacheMap(const BingoPgBufferCacheMap&); //no implicit copy
@@ -92,7 +92,7 @@ public:
 
    void getCopy(BingoPgExternalBitset& other);
 
-   DEF_ERROR("bingo buffer cache fingerprints");
+   DECL_ERROR;
 
 private:
    BingoPgBufferCacheFp(const BingoPgBufferCacheFp&); //no implicit copy
@@ -130,7 +130,7 @@ public:
     */
    void readBin(unsigned short offset, indigo::Array<char>& result);
 
-   DEF_ERROR("bingo buffer cache binary data");
+   DECL_ERROR;
 private:
    BingoPgBufferCacheBin(const BingoPgBufferCacheBin&); //no implicit copy
 

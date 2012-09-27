@@ -116,7 +116,7 @@ public:
    int countOracleBlocks (OracleEnv &env);
    int getTotalCount (OracleEnv &env);
 
-   DEF_ERROR("screening");
+   DECL_ERROR;
 
 protected:
    // constant configuration parameters

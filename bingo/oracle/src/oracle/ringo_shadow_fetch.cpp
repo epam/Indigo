@@ -18,6 +18,8 @@
 
 #include "oracle/ringo_fetch_context.h"
 
+IMPL_ERROR(RingoShadowFetch, "ringo shadow fetch");
+
 RingoShadowFetch::RingoShadowFetch (RingoFetchContext &context) :
 _context(context)
 {

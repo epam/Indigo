@@ -24,6 +24,8 @@
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
 
+IMPL_ERROR(RingoExact, "Ringo exact");
+
 RingoExact::RingoExact (BingoContext &context) :
 _context(context)
 {

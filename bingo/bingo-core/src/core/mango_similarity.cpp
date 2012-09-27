@@ -22,6 +22,8 @@
 #include "molecule/cmf_loader.h"
 #include "molecule/molecule_arom.h"
 
+IMPL_ERROR(MangoSimilarity, "mango similarity");
+
 MangoSimilarity::MangoSimilarity (BingoContext &context) :
 _context(context)
 {

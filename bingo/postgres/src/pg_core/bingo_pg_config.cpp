@@ -25,6 +25,8 @@ extern "C" {
 
 using namespace indigo;
 
+IMPL_ERROR(BingoPgConfig, "bingo postgres config");
+
 void BingoPgConfig::readDefaultConfig(const char* schema_name) {
    _rawConfig.clear();
    _tauParameters.clear();

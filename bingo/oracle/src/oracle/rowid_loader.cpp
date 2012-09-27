@@ -20,6 +20,8 @@
 #include "oracle/rowid_loader.h"
 #include "oracle/rowid_symbol_codes.h"
 
+IMPL_ERROR(RowIDLoader, "rowID loader");
+
 RowIDLoader::RowIDLoader( LzwDict &NewDict, Scanner &NewIn ) : 
    _decoder(NewDict, NewIn)
 {   

@@ -21,6 +21,8 @@
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/rowid_loader.h"
 
+IMPL_ERROR(RingoFastIndex, "ringo fast fetch");
+
 RingoFastIndex::RingoFastIndex (RingoFetchContext &context) :
 _context(context)
 {

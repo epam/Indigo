@@ -25,7 +25,7 @@ extern "C" {
 #include "mango_pg_build_engine.h"
 #include "ringo_pg_build_engine.h"
 
-
+IMPL_ERROR(BingoPgBuild, "build engine");
 
 BingoPgBuild::BingoPgBuild(PG_OBJECT index_ptr, const char* schema_name, const char* index_schema, bool new_index):
 _index(index_ptr),

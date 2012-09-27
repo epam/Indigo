@@ -51,7 +51,7 @@ public:
    int  count ();
    void get (int n, Array<char> &out);
    
-   DEF_ERROR("storage");
+   DECL_ERROR;
    
 protected:
    enum

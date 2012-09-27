@@ -20,6 +20,8 @@
 TL_DEF(RingoFetchContext, PtrArray<RingoFetchContext>, _instances);
 OsLock RingoFetchContext::_instances_lock;
 
+IMPL_ERROR(RingoFetchContext, "ringo fetch context");
+
 RingoFetchContext::RingoFetchContext (int id_, RingoOracleContext &context,
                                       const Array<char> &query_id) :
 substructure(context.context()),

@@ -29,6 +29,8 @@
 #include "base_cpp/profiling.h"
 #include "base_cpp/ptr_pool.h"
 
+IMPL_ERROR(MangoSubstructure, "substructure");
+
 MangoSubstructure::MangoSubstructure (BingoContext &context) :
 _context(context)
 {
