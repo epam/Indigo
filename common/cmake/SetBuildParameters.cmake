@@ -31,7 +31,11 @@ if(APPLE)
     	set(CMAKE_OSX_ARCHITECTURES "x86_64")
 	endif()
 	message(STATUS ${CMAKE_OSX_ARCHITECTURES})
-    set(CMAKE_OSX_SYSROOT /Developer/SDKs/MacOSX${SUBSYSTEM_NAME}.sdk) 
+    if (${XCODE_VERSION} GREATER 4.2)
+        set(CMAKE_OSX_SYSROOT /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SUBSYSTEM_NAME}.sdk) 
+    else
+        set(CMAKE_OSX_SYSROOT /Developer/SDKs/MacOSX${SUBSYSTEM_NAME}.sdk) 
+    endif
     set(CMAKE_OSX_DEPLOYMENT_TARGET ${SUBSYSTEM_NAME})
     message(STATUS "SDK: ${CMAKE_OSX_SYSROOT}")
     message(STATUS "Deployment target: ${CMAKE_OSX_DEPLOYMENT_TARGET}")
