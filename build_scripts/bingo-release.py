@@ -95,7 +95,14 @@ if args.dbms != 'sqlserver':
             shutil.copy(join(full_build_dir, f), join(dist_dir, f.replace('-shared.zip', '.zip')))
 else:
     dllPath = {}
-    for arch, generator in (('x86', 'Visual Studio 10'), ('x64', 'Visual Studio 10 Win64')):
+    
+    vsversion = 'Visual Studio'
+    if args.preset.find("2012"):
+        vsversion += ' 11'
+    else:
+        vsversion += ' 10'
+    
+    for arch, generator in (('x86', vsversion), ('x64', vsversion + ' Win64')):
         build_dir = (args.dbms + " " + generator + " " + args.params)
         build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
         full_build_dir = os.path.join(root, "build", build_dir)
