@@ -2,6 +2,7 @@ extern "C"  {
 #include "postgres.h"
 #include "fmgr.h"
 #include "access/htup.h"
+#include "utils/rel.h"
 #include "utils/relcache.h"
 #include "storage/bufmgr.h"
 #include "catalog/index.h"
