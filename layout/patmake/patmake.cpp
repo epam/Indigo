@@ -18,8 +18,6 @@
 #include "molecule/molecule.h"
 #include "molecule/molfile_loader.h"
 
-DEF_ERROR("patmake");
-
 int edge_cmp (const int &e1, const int &e2, const void *context)
 {
    Molecule &mol = *(Molecule *)context;
