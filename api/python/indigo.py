@@ -165,7 +165,8 @@ class Indigo(object):
           break
       if (using_mac_ver is None):
         raise IndigoException("no binaries for this version of Mac OS X: " + mac_ver)
-      Indigo._lib = CDLL(path + '/10.' + using_mac_ver + "/libindigo.dylib", mode=RTLD_GLOBAL)
+      path += '/10.' + using_mac_ver
+      Indigo._lib = CDLL(path + "/libindigo.dylib", mode=RTLD_GLOBAL)
     else:
       raise IndigoException("unsupported OS: " + os.name)
 
