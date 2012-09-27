@@ -36,7 +36,7 @@ public:
    class ReactionMonomers
    {
    public:
-      DEF_ERROR("Reaction product enumerator");
+      DECL_ERROR;
 
       TL_CP_DECL(ReusableObjArray<Molecule>, _monomers);
       TL_CP_DECL(Array<int>, _reactant_indexes);

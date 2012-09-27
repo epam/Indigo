@@ -34,6 +34,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(ReactionEnumeratorState::ReactionMonomers, "Reaction product enumerator");
+
 ReactionEnumeratorState::ReactionMonomers::ReactionMonomers() : TL_CP_GET(_monomers), 
     TL_CP_GET(_reactant_indexes), TL_CP_GET(_deep_levels), TL_CP_GET(_tube_indexes)
 {
