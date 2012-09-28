@@ -99,7 +99,8 @@ amstorage,
 amclusterable,
 amkeytype,
 amcanorderbyop,
-ampredlocks
+ampredlocks,
+amcanreturn
 )
 VALUES (
 'bingo_idx',
@@ -130,7 +131,8 @@ false,
 false,
 23,
 false,
-false
+false,
+0
 );
 
 --**************************** MANGO OPERATOR CLASS *********************
