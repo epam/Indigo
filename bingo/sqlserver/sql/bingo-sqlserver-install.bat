@@ -1,4 +1,4 @@
-@rem Copyright (C) 2009-2011 GGA Software Services LLC
+@rem Copyright (C) 2009-2012 GGA Software Services LLC
 @rem 
 @rem This file is part of Indigo toolkit.
 @rem 
