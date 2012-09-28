@@ -4,8 +4,10 @@ Indigo 1.1.5
 New features:
 
 * Rutherfordium isotopes atomic weights added
-* Additional check for an invalid stereocenter when an angle between bonds is small. Thanks to Karen: <https://groups.google.com/d/msg/indigo-general/zYHfZs9V72Q/lB_KHfMxmi8J>
-* Options passed to the InChI plugin are being automatically corrected independent of OS. You can use both '-' and '/' prefixes on all the systems. Look more at <http://ggasoftware.com/opensource/indigo/api#options> 
+* Additional check for an invalid stereocenter when an angle between bonds is small.  
+Thanks to Karen: <https://groups.google.com/d/msg/indigo-general/zYHfZs9V72Q/lB_KHfMxmi8J>
+* Options passed to the InChI plugin are being automatically corrected independent of OS. You can use both '-' and '/' prefixes on all the systems.  
+Look more at <http://ggasoftware.com/opensource/indigo/api#options>  
 Thanks to Karen for the suggestion: <https://groups.google.com/d/msg/indigo-general/XxPC2EuT0-g/7kNUasWWpz0J>
 * Build scripts now work with Visual Studio 2012
 * Cross-like layout of atom with four bonds for molecules like CCS(=O)(=O)CC
