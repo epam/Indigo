@@ -35,6 +35,7 @@ public:
    void smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, double *x, double *y, bool profi);
    double badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, double *x, double *y);
    double depictionMacrocycleMol(BaseMolecule &mol, bool profi);
+   double depictionCircle(BaseMolecule &mol);
 
    DEF_ERROR("macrocycles");
 };
