@@ -256,11 +256,8 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
 }
 
 void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, double *x, double *y, bool profi) {
-   int kol[100];
-   for (int i = 0; i < ind; i++) kol[i] = 0;
-   for (int i = 0; i < 10000; i++) kol[improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, x, y, profi)]++;
-   for (int i = 0; i < ind; i++) printf("%d: %d\n", i, kol[i]);
-   printf("\n");
+   for (int i = 0; i < 10000; i++) 
+      improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, x, y, profi);
 }
 
 double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, double *x, double *y) {
