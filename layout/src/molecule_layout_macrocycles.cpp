@@ -38,7 +38,7 @@ bool MoleculeLayoutMacrocycles::canApply (BaseMolecule &mol)
 
 double depictionMacrocycleMol(BaseMolecule &mol, bool profi);
 
-//double depictionCircle(BaseMolecule &mol);
+double depictionCircle(BaseMolecule &mol);
 
 double MoleculeLayoutMacrocycles::layout (BaseMolecule &mol)
 {
