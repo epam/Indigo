@@ -55,6 +55,8 @@ void usage (void)
            "   Center double bonds which have an adjacent stereo bond (disabled by default)\n"
            "-query\n"
            "   Treat the input as a query molecule or reaction (disabled by default)\n"
+           "-smarts\n"
+           "   Treat the input as a SMARTS query molecule or reaction (disabled by default)\n"
            "-idfield <string>\n"
            "   SDF/RDF field to be put in place of '%%s' in the names of saved files\n"
            "   (default is molecule/reaction number)\n"
@@ -259,7 +261,7 @@ typedef struct tagParams {
    const char *id;
    const char *string_to_load;
    const char *file_to_load;
-   int hydro_set, query_set;
+   int hydro_set, query_set, smarts_set;
    int aromatization;
    int out_ext;
    const char *comment;
@@ -584,6 +586,10 @@ int parseParams (Params* p, int argc, char *argv[]) {
       {
          p->query_set = 1;
       }
+      else if (strcmp(argv[i], "-smarts") == 0)
+      {
+         p->smarts_set = 1;
+      }
       else if (strcmp(argv[i], "-id") == 0)
       {
          if (++i == argc)
@@ -775,7 +781,8 @@ int main (int argc, char *argv[])
       p.string_to_load = 
       p.file_to_load = NULL;
    p.hydro_set = 
-      p.query_set = 0;
+      p.query_set = 
+     p.smarts_set = 0;
    p.aromatization = NONE;
    p.comment_field = NULL;
    p.comment = NULL;
@@ -821,7 +828,13 @@ int main (int argc, char *argv[])
       if (p.out_ext == OEXT_RXN)
          ERROR("reaction output specified for molecule input\n");
 
-      obj = (p.query_set) ? indigoLoadQueryMolecule(reader) : indigoLoadMolecule(reader);
+      if (p.smarts_set)
+         obj = indigoLoadSmarts(reader);
+      else if (p.query_set)
+         obj = indigoLoadQueryMolecule(reader);
+      else
+         obj = indigoLoadMolecule(reader);
+
       _prepare(obj, p.aromatization);
       if (p.action == ACTION_LAYOUT) {
          indigoLayout(obj);
@@ -840,7 +853,12 @@ int main (int argc, char *argv[])
       if (p.out_ext == OEXT_MOL)
          ERROR("molecule output specified for reaction input\n"); 
 
-      obj = p.query_set ? indigoLoadQueryReaction(reader) : indigoLoadReaction(reader);
+      if (p.smarts_set)
+         obj = indigoLoadReactionSmarts(reader);
+      else if (p.query_set)
+         obj = indigoLoadQueryReaction(reader);
+      else
+         obj = indigoLoadReaction(reader);
       _prepare(obj, p.aromatization);
       if (p.action == ACTION_LAYOUT) {
          indigoLayout(obj);
