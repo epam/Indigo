@@ -1073,20 +1073,21 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
 
          if (frags_beg != -1 && frags_end == -1)
          {
-            if (!product.isRSite(pr_edge.end))
-               throw Error("Incorrect AAM");
-            frags_end = _att_points[pr_edge.end][0];
-            if (uncleaned_fragments.findEdgeIndex(frags_beg, frags_end) == -1)
-               frags_end = _att_points[pr_edge.end][1];
-         }
-
-         if (frags_beg == -1 && frags_end != -1)
+            if (product.isRSite(pr_edge.end))
+            {
+               frags_end = _att_points[pr_edge.end][0];
+               if (uncleaned_fragments.findEdgeIndex(frags_beg, frags_end) == -1)
+                  frags_end = _att_points[pr_edge.end][1];
+            }
+         } 
+         else if (frags_beg == -1 && frags_end != -1)
          {
-            if (!product.isRSite(pr_edge.beg))
-               throw Error("Incorrect AAM");
-            frags_beg = _att_points[pr_edge.beg][0];
-            if (uncleaned_fragments.findEdgeIndex(frags_beg, frags_end) == -1)
-               frags_beg = _att_points[pr_edge.beg][1];
+            if (product.isRSite(pr_edge.beg))
+            {
+               frags_beg = _att_points[pr_edge.beg][0];
+               if (uncleaned_fragments.findEdgeIndex(frags_beg, frags_end) == -1)
+                  frags_beg = _att_points[pr_edge.beg][1];
+            }
          }
 
 
