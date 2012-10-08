@@ -95,7 +95,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
       }
 
       bingo_res = mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
-      CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while matching binary target", bingoGetError());
+      CORE_HANDLE_ERROR_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetError());
 
       result = (bingo_res > 0);
    } else if(_searchType == BingoPgCommon::MOL_GROSS) {
