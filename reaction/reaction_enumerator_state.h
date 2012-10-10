@@ -144,7 +144,7 @@ private:
    QueryMolecule::Atom * _getReactantAtom( int atom_aam );
    
    void _buildMolProduct( QueryMolecule &product, Molecule &mol_product, 
-      Molecule &uncleaned_fragments, Array<int> &mapping_out );
+      Molecule &uncleaned_fragments, Array<int> &all_forbidden_atoms, Array<int> &mapping_out );
 
    void _checkConstraints( QueryMolecule &reacant, Array<int> &rp_mapping);
 
@@ -154,6 +154,8 @@ private:
 
    void _completeCisTrans( Molecule &product, Molecule &uncleaned_fragments, 
                             Array<int> &frags_mapping );
+
+   bool _flipBond( Molecule &mol, int atom_parent, int atom_from, int atom_to );
 
    bool _attachFragments( Molecule &ready_product_out );
 

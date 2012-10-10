@@ -366,6 +366,7 @@ void ReactionEnumeratorState::_productProcess( void )
 
    QS_DEF(Molecule, ready_product);
    ready_product.clear();
+
    if (!_attachFragments(ready_product))
       return;
 
@@ -932,7 +933,7 @@ QueryMolecule::Atom * ReactionEnumeratorState::_getReactantAtom( int atom_aam )
 }
 
 void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule &mol_product, 
-                                  Molecule &uncleaned_fragments, Array<int> &mapping_out )
+                                  Molecule &uncleaned_fragments, Array<int> &all_forbidden_atoms, Array<int> &mapping_out )
 {
    mol_product.clear();
    mapping_out.clear_resize(product.vertexEnd());
@@ -1040,9 +1041,9 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
       mapping_out[i] = mol_atom_idx;
 
       if (frags_idx != -1 && frags_idx < _monomer_forbidden_atoms.size())
-         _product_forbidden_atoms[mapping_out[i]] += _monomer_forbidden_atoms[frags_idx];
+         all_forbidden_atoms[mapping_out[i]] += _monomer_forbidden_atoms[frags_idx];
       else
-         _product_forbidden_atoms[mapping_out[i]] = max_reuse_count;
+         all_forbidden_atoms[mapping_out[i]] = max_reuse_count;
    }
 
    for (int i = product.edgeBegin(); i != product.edgeEnd(); i = product.edgeNext(i))
@@ -1321,6 +1322,36 @@ void ReactionEnumeratorState::_completeCisTrans( Molecule &product, Molecule &un
    }
 }
 
+bool ReactionEnumeratorState::_flipBond( Molecule &mol, int atom_parent, int atom_from, int atom_to )
+{
+   bool is_correct = true;
+
+   try
+   {
+      mol.getAtomValence(atom_parent);
+      mol.getAtomValence(atom_to);
+   }
+   catch (Element::Error &)
+   {
+      is_correct = false;
+   }
+   
+   mol.flipBond(atom_parent, atom_from, atom_to);
+
+   try
+   {
+      mol.getAtomValence(atom_parent);
+      mol.getAtomValence(atom_to);
+   }
+   catch (Element::Error &)
+   {
+      if (is_correct)
+         return false;
+   }
+   
+   return true;
+}
+
 bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
 {
    QS_DEF(QueryMolecule, product);
@@ -1336,13 +1367,16 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    QS_DEF(Array<int>, mapping);
    mapping.clear();
 
-   _product_forbidden_atoms.clear_resize(product.vertexEnd() + _fragments.vertexCount());
-   _product_forbidden_atoms.zerofill();
+   QS_DEF(Array<int>, all_forbidden_atoms);
+   all_forbidden_atoms.clear();
+
+   all_forbidden_atoms.clear_resize(product.vertexEnd() + _fragments.vertexCount());
+   all_forbidden_atoms.zerofill();
 
    for (int i = product.vertexBegin(); i != product.vertexEnd(); i = product.vertexNext(i))
-      _product_forbidden_atoms[i] = 1;
+      all_forbidden_atoms[i] = 1;
 
-   _buildMolProduct(product, mol_product, uncleaned_fragments, mapping);
+   _buildMolProduct(product, mol_product, uncleaned_fragments, all_forbidden_atoms, mapping);
 
    _cleanFragments();
 
@@ -1353,7 +1387,7 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    
    for (int i = _fragments.vertexBegin(); i < _fragments.vertexEnd(); i = _fragments.vertexNext(i))
       if (i < _monomer_forbidden_atoms.size() && _monomer_forbidden_atoms[i])
-         _product_forbidden_atoms[frags_mapping[i]] = _monomer_forbidden_atoms[i];
+         all_forbidden_atoms[frags_mapping[i]] = _monomer_forbidden_atoms[i];
 
    QS_DEF(Array<int>, product_mapping);
    product_mapping.clear_resize(_full_product.vertexEnd());
@@ -1415,8 +1449,13 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
 
             if (_is_rg_exist)
             {
-               mol_product.flipBond(pr_neibours[j], atom_from, atom_to);
-               
+               if (!_flipBond(mol_product, pr_neibours[j], atom_from, atom_to))
+               {
+                  _product_forbidden_atoms.copy(_monomer_forbidden_atoms);
+                  _product_forbidden_atoms[_att_points[i][j]] = max_reuse_count;
+                  return false;
+               }
+
                // TODO:
                // Check that corresponding R-group fragment in monomer has cis-trans bond
                // and check that AAM mapping is specified for that.
@@ -1449,7 +1488,12 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
                neighbors.push(mon_v.neiVertex(k));
             for (int k = 0; k < neighbors.size(); k++)
                if (mol_product.findEdgeIndex(neighbors[k], pr_atom) == -1)
-                  mol_product.flipBond(neighbors[k], mon_atom, pr_atom);
+                  if (!_flipBond(mol_product, neighbors[k], mon_atom, pr_atom))
+                  {
+                     _product_forbidden_atoms.copy(_monomer_forbidden_atoms);
+                     _product_forbidden_atoms[_att_points[i][j]] = max_reuse_count;
+                     return false;
+                  }
 
             frags_mapping[_att_points[i][j]] = pr_atom;
             mol_product.removeAtom(mon_atom);
@@ -1497,17 +1541,14 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    out_mapping.clear_resize(mol_product.vertexEnd());
    ready_product_out.clone(mol_product, NULL, &out_mapping);
 
-   QS_DEF(Array<int>, old_marked_atoms);
-   old_marked_atoms.copy(_product_forbidden_atoms);
-
    _product_forbidden_atoms.clear_resize(ready_product_out.vertexEnd());
    _product_forbidden_atoms.zerofill();
    
    if (is_transform)
    {
       for (int i = mol_product.vertexBegin(); i != mol_product.vertexEnd(); i = mol_product.vertexNext(i))
-         if (out_mapping[i] != -1 && old_marked_atoms[i])
-            _product_forbidden_atoms[out_mapping[i]] = old_marked_atoms[i];
+         if (out_mapping[i] != -1 && all_forbidden_atoms[i])
+            _product_forbidden_atoms[out_mapping[i]] = all_forbidden_atoms[i];
    }
 
    return true;
@@ -1663,8 +1704,8 @@ bool ReactionEnumeratorState::_addFragment( Molecule &fragment,
    for (int i = _is_needless_bond.size(); i < _fragments.edgeEnd(); i++)
       _is_needless_bond.push(0);
    /* marked atoms array expanding */
-   for (int i = 0; i < frag_mapping.size(); i++)
-      _product_forbidden_atoms.push(0);
+   //for (int i = 0; i < frag_mapping.size(); i++)
+   //   _product_forbidden_atoms.push(0);
 
    /* _is_needless atom array updating */
    for (int i = 0; i < frag_mapping.size(); i++)
