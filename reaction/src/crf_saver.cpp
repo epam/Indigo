@@ -32,6 +32,7 @@ CrfSaver::CrfSaver (LzwDict &dict, Output &output) : _output(output)
    xyz_output = 0;
    save_bond_dirs = false;
    save_highlighting = false;
+   save_mapping = false;
 }
 
 CrfSaver::CrfSaver (Output &output) : _output(output)
@@ -39,6 +40,7 @@ CrfSaver::CrfSaver (Output &output) : _output(output)
    xyz_output = 0;
    save_bond_dirs = false;
    save_highlighting = false;
+   save_mapping = false;
 }
 
 void CrfSaver::saveReaction (Reaction &reaction)
@@ -116,6 +118,8 @@ void CrfSaver::_writeMolecule (Molecule &molecule)
 
    saver->save_bond_dirs = save_bond_dirs;
    saver->save_highlighting = save_highlighting;
+   saver->save_mapping = save_mapping;
+
    saver->saveMolecule(molecule);
 
    if (_aam != 0)

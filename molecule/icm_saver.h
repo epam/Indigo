@@ -34,6 +34,7 @@ public:
    bool save_xyz;
    bool save_bond_dirs;
    bool save_highlighting;
+   bool save_ordering;
 
    DECL_ERROR;
 

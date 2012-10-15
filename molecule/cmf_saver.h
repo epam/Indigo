@@ -52,6 +52,7 @@ public:
 
    bool save_bond_dirs;
    bool save_highlighting;
+   bool save_mapping;
 
    DECL_ERROR;
 
@@ -78,6 +79,7 @@ protected:
 
    void _encodeString (const Array<char> &str);
    void _encodeUIntArray (const Array<int> &data, const Array<int> &mapping);
+   void _encodeUIntArray (const Array<int> &data);
 
    void _encodeExtSection (Molecule &mol, const Mapping &mapping);
    void _encodeBaseSGroup (Molecule &mol, BaseMolecule::SGroup &sgroup, const Mapping &mapping);

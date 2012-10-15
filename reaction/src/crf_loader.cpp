@@ -91,6 +91,7 @@ void CrfLoader::_loadMolecule (Molecule &molecule)
    loader->bond_flags = &bond_flags;
 
    loader->loadMolecule(molecule);
+   bool has_mapping = loader->has_mapping;
 
    if (_atom_stereo_flags != 0)
    {
@@ -98,10 +99,13 @@ void CrfLoader::_loadMolecule (Molecule &molecule)
       _atom_stereo_flags->zerofill();
       for (i = 0; i < molecule.vertexCount(); i++)
       {
+         int idx = i;
+         if (has_mapping)
+            idx = loader->inv_atom_mapping_to_restore[i];
          if (atom_flags[i] & 1)
-            _atom_stereo_flags->at(i) |= STEREO_RETAINS;
+            _atom_stereo_flags->at(idx) |= STEREO_RETAINS;
          if (atom_flags[i] & 2)
-            _atom_stereo_flags->at(i) |= STEREO_INVERTS;
+            _atom_stereo_flags->at(idx) |= STEREO_INVERTS;
       }
    }
 
@@ -112,12 +116,16 @@ void CrfLoader::_loadMolecule (Molecule &molecule)
 
       for (i = 0; i < molecule.edgeCount(); i++)
       {
+         int idx = i;
+         if (has_mapping)
+            idx = loader->inv_bond_mapping_to_restore[i];
+
          if (bond_flags[i] & 1)
-            _bond_rc_flags->at(i) |= RC_UNCHANGED;
+            _bond_rc_flags->at(idx) |= RC_UNCHANGED;
          if (bond_flags[i] & 2)
-            _bond_rc_flags->at(i) |= RC_MADE_OR_BROKEN;
+            _bond_rc_flags->at(idx) |= RC_MADE_OR_BROKEN;
          if (bond_flags[i] & 4)
-            _bond_rc_flags->at(i) |= RC_ORDER_CHANGED;
+            _bond_rc_flags->at(idx) |= RC_ORDER_CHANGED;
       }
    }
 
@@ -134,7 +142,10 @@ void CrfLoader::_loadMolecule (Molecule &molecule)
          else
             value = _scanner.readByte();
 
-         _aam->at(i) = value - 1;
+         int idx = i;
+         if (has_mapping)
+            idx = loader->inv_atom_mapping_to_restore[i];
+         _aam->at(idx) = value - 1;
       }
    }
 

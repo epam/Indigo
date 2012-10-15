@@ -463,6 +463,7 @@ CEXPORT int indigoSerialize (int item, byte **buf, int *size)
          saver.save_xyz = mol.have_xyz;
          saver.save_bond_dirs = true;
          saver.save_highlighting = true;
+         saver.save_ordering = self.preserve_ordering_in_serialize;
          saver.saveMolecule(mol);
       }
       else if (IndigoBaseReaction::is(obj))
@@ -472,6 +473,7 @@ CEXPORT int indigoSerialize (int item, byte **buf, int *size)
          saver.save_xyz = BaseReaction::haveCoord(rxn);
          saver.save_bond_dirs = true;
          saver.save_highlighting = true;
+         saver.save_ordering = self.preserve_ordering_in_serialize;
          saver.saveReaction(rxn);
       }
 

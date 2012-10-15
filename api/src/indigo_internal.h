@@ -263,6 +263,8 @@ public:
    void initMolfileSaver (MolfileSaver &saver);
    void initRxnfileSaver (RxnfileSaver &saver);
 
+   bool preserve_ordering_in_serialize;
+
 protected:
 
    RedBlackMap<int, IndigoObject *> _objects;

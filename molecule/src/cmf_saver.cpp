@@ -65,6 +65,7 @@ void CmfSaver::_init ()
    _ext_encoder = 0;
    save_bond_dirs = false;
    save_highlighting = false;
+   save_mapping = false;
 }
 
 void CmfSaver::saveMolecule (Molecule &mol)
@@ -239,6 +240,18 @@ void CmfSaver::_encodeUIntArray (const Array<int> &data, const Array<int> &mappi
    }
 }
 
+void CmfSaver::_encodeUIntArray (const Array<int> &data)
+{
+   _output->writePackedUInt(data.size());
+   for (int i = 0; i < data.size(); i++)
+   {
+      int index = data[i];
+      if (index < 0)
+         throw Error("Internal error: index is invald: %d", index);
+      _output->writePackedUInt(index);
+   }
+}
+
 void CmfSaver::_encodeBaseSGroup (Molecule &mol, BaseMolecule::SGroup &sgroup, const Mapping &mapping)
 {
    _encodeUIntArray(sgroup.atoms, *mapping.atom_mapping);
@@ -289,7 +302,10 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       mol.multiple_groups.size() > 0;
 
    if (need_print_ext && !ext_printed)
+   {
       _encode(CMF_EXT);
+      ext_printed = true;
+   }
 
    for (int i = mol.generic_sgroups.begin(); i != mol.generic_sgroups.end(); i = mol.generic_sgroups.next(i))
    {
@@ -342,6 +358,20 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       if (sm.multiplier < 0)
          throw Error("internal error: SGroup multiplier is negative: %d", sm.multiplier);
       _output->writePackedUInt(sm.multiplier);
+   }
+
+   // Encode mappings to restore
+   if (save_mapping)
+   {
+      if (!ext_printed)
+      {
+         _encode(CMF_EXT);
+         ext_printed = true;
+      }
+      _encode(CMF_MAPPING);
+
+      _encodeUIntArray(*mapping.atom_mapping);
+      _encodeUIntArray(*mapping.bond_mapping);
    }
 }
 
@@ -408,7 +438,7 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
    if (mol.isPseudoAtom(idx))
    {
       const char *str = mol.getPseudoAtom(idx);
-      int len = strlen(str);
+      size_t len = strlen(str);
 
       if (len < 1)
          throw Error("empty pseudo-atom");
@@ -416,7 +446,7 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
          throw Error("pseudo-atom labels %d characters long are not supported (255 is the limit)", len);
 
       _encode(CMF_PSEUDOATOM);
-      _encode(len);
+      _encode((byte)len);
       
       do
       {

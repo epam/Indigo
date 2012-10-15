@@ -28,6 +28,7 @@ IcmSaver::IcmSaver (Output &output) : _output(output)
    save_xyz = false;
    save_bond_dirs = false;
    save_highlighting = false;
+   save_ordering = false;
 }
 
 void IcmSaver::saveMolecule (Molecule &mol)
@@ -48,6 +49,7 @@ void IcmSaver::saveMolecule (Molecule &mol)
 
    saver.save_bond_dirs = save_bond_dirs;
    saver.save_highlighting = save_highlighting;
+   saver.save_mapping = save_ordering;
 
    saver.saveMolecule(mol);
    if (save_xyz)

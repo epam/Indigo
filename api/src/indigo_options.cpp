@@ -175,6 +175,12 @@ static void indigoSetCancellationTimeout (int value)
    self.cancellation_timeout = value;
 }
 
+static void indigoSetPreserveOrderingInSerialize (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.preserve_ordering_in_serialize = (enabled != 0);
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -205,6 +211,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 
    mgr.setOptionHandlerInt("aam-timeout", indigoAAMSetCancellationTimeout);
    mgr.setOptionHandlerInt("timeout", indigoSetCancellationTimeout);
+
+   mgr.setOptionHandlerBool("serialize-preserve-ordering", indigoSetPreserveOrderingInSerialize);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

@@ -27,7 +27,11 @@ TL_CP_GET(_atoms),
 TL_CP_GET(_bonds),
 TL_CP_GET(_pseudo_labels),
 TL_CP_GET(_attachments),
-TL_CP_GET(_sgroup_order)
+TL_CP_GET(_sgroup_order),
+TL_CP_GET(atom_mapping_to_restore),
+TL_CP_GET(inv_atom_mapping_to_restore),
+TL_CP_GET(bond_mapping_to_restore),
+TL_CP_GET(inv_bond_mapping_to_restore)
 {
    _init();
    _decoder_obj.create(dict, scanner);
@@ -36,14 +40,22 @@ TL_CP_GET(_sgroup_order)
 }
 
 CmfLoader::CmfLoader (Scanner &scanner) :
-TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order)
+TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order),
+TL_CP_GET(atom_mapping_to_restore),
+TL_CP_GET(inv_atom_mapping_to_restore),
+TL_CP_GET(bond_mapping_to_restore),
+TL_CP_GET(inv_bond_mapping_to_restore)
 {
    _init();
    _scanner = &scanner;
 }
 
 CmfLoader::CmfLoader (LzwDecoder &decoder) :
-TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order)
+TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order),
+TL_CP_GET(atom_mapping_to_restore),
+TL_CP_GET(inv_atom_mapping_to_restore),
+TL_CP_GET(bond_mapping_to_restore),
+TL_CP_GET(inv_bond_mapping_to_restore)
 {
    _init();
    _lzw_scanner.create(decoder);
@@ -67,6 +79,8 @@ void CmfLoader::_init ()
    bond_flags = 0;
 
    _sgroup_order.clear();
+
+   has_mapping = false;
 }
 
 bool CmfLoader::_getNextCode (int &code)
@@ -688,6 +702,25 @@ void CmfLoader::loadMolecule (Molecule &mol)
 
    // for loadXyz()
    _mol = &mol;
+
+   // Check if atom mapping was used
+   if (has_mapping)
+   {
+      // Compute inv_atom_mapping_to_restore
+      inv_atom_mapping_to_restore.clear_resize(atom_mapping_to_restore.size());
+      for (int i = 0; i < atom_mapping_to_restore.size(); i++)
+         inv_atom_mapping_to_restore[atom_mapping_to_restore[i]] = i;
+
+      // Compute inv_bond_mapping_to_restore
+      inv_bond_mapping_to_restore.clear_resize(bond_mapping_to_restore.size());
+      for (int i = 0; i < bond_mapping_to_restore.size(); i++)
+         inv_bond_mapping_to_restore[bond_mapping_to_restore[i]] = i;
+
+      QS_DEF(Molecule, tmp);
+      tmp.makeEdgeSubmolecule(mol, atom_mapping_to_restore, bond_mapping_to_restore, NULL);
+      mol.clone(tmp, NULL, NULL);
+
+   }
 }
 
 void CmfLoader::_readSGroup (int code, Molecule &mol)
@@ -867,6 +900,13 @@ void CmfLoader::_readExtSection (Molecule &mol)
             mol.setRSiteAttachmentOrder(idx, idx2, i);
          }
       }
+      else if (code == CMF_MAPPING)
+      {
+         // atom_mapping_to_restore
+         _readUIntArray(atom_mapping_to_restore);
+         _readUIntArray(bond_mapping_to_restore);
+         has_mapping = true;
+      }
       else
          throw Error("unexpected code: %d", code);
    }
@@ -895,8 +935,11 @@ void CmfLoader::loadXyz (Scanner &scanner)
    {
       Vec3f pos;
       _readVec3f(scanner, pos, range);
+      int idx = i;
+      if (has_mapping)
+         idx = inv_atom_mapping_to_restore[i];
 
-      _mol->setAtomXyz(i, pos.x, pos.y, pos.z);
+      _mol->setAtomXyz(idx, pos.x, pos.y, pos.z);
    }
 
    // Read sgroup coordinates data

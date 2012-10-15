@@ -39,6 +39,7 @@ public:
 
    bool save_bond_dirs;
    bool save_highlighting;
+   bool save_mapping;
 
    DECL_ERROR;
 

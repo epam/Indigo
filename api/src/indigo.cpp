@@ -63,6 +63,8 @@ Indigo::Indigo () : timeout_cancellation_handler(0)
 
    aam_cancellation_timeout = 0;
    cancellation_timeout = 0;
+
+   preserve_ordering_in_serialize = false;
 }
 
 void Indigo::removeAllObjects ()

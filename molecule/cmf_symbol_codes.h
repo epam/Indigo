@@ -186,6 +186,9 @@ enum
    /* 222 - General valence */
    CMF_VALENCE_EXT,
 
+   /* 223 - Atom mapping to restore */
+   CMF_MAPPING,
+
    /* Alphabet size = 256. Any number can be used because of writing integer indices */
    CMF_ALPHABET_SIZE = 256
 };

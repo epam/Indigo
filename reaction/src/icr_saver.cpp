@@ -28,6 +28,7 @@ IcrSaver::IcrSaver (Output &output) : _output(output)
    save_xyz = false;
    save_bond_dirs = false;
    save_highlighting = false;
+   save_ordering = false;
 }
 
 void IcrSaver::saveReaction (Reaction &reaction)
@@ -51,5 +52,6 @@ void IcrSaver::saveReaction (Reaction &reaction)
 
    saver.save_bond_dirs = save_bond_dirs;
    saver.save_highlighting = save_highlighting;
+   saver.save_mapping = save_ordering;
    saver.saveReaction(reaction);
 }
