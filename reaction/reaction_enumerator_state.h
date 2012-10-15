@@ -155,7 +155,7 @@ private:
    void _completeCisTrans( Molecule &product, Molecule &uncleaned_fragments, 
                             Array<int> &frags_mapping );
 
-   bool _flipBond( Molecule &mol, int atom_parent, int atom_from, int atom_to );
+   bool _checkValence( Molecule &mol, int atom_idx );
 
    bool _attachFragments( Molecule &ready_product_out );
 

@@ -588,7 +588,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator( Molecule &monomer )
    am.create(ee_reactant, ee_monomer);
    _am = am.get();
 
-   ee_monomer.unfoldHydrogens(NULL, _calcMaxHCnt(ee_reactant));
+   ee_monomer.unfoldHydrogens(NULL, _calcMaxHCnt(ee_reactant), true);
 
    _bonds_mapping_sub.clear_resize(ee_reactant.edgeEnd());
    _bonds_mapping_sub.fffill();
@@ -1024,9 +1024,17 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
 
       if (product.getAtomRadical(i) == -1 && !is_default &&
           (reactant_atom_radical == product.getAtomRadical(i)))
-      {
+      { 
          if (has_aam)
-            mol_product.setAtomRadical(mol_atom_idx, uncleaned_fragments.getAtomRadical(frags_idx));
+         {
+            try
+            {
+               mol_product.setAtomRadical(mol_atom_idx, uncleaned_fragments.getAtomRadical(frags_idx));
+            }
+            catch (Element::Error &)
+            {
+            }
+         }
       }
       else
       {
@@ -1322,33 +1330,17 @@ void ReactionEnumeratorState::_completeCisTrans( Molecule &product, Molecule &un
    }
 }
 
-bool ReactionEnumeratorState::_flipBond( Molecule &mol, int atom_parent, int atom_from, int atom_to )
+bool ReactionEnumeratorState::_checkValence( Molecule &mol, int atom_idx )
 {
-   bool is_correct = true;
-
    try
    {
-      mol.getAtomValence(atom_parent);
-      mol.getAtomValence(atom_to);
+      mol.getAtomValence(atom_idx);
    }
    catch (Element::Error &)
    {
-      is_correct = false;
+      return false;
    }
-   
-   mol.flipBond(atom_parent, atom_from, atom_to);
 
-   try
-   {
-      mol.getAtomValence(atom_parent);
-      mol.getAtomValence(atom_to);
-   }
-   catch (Element::Error &)
-   {
-      if (is_correct)
-         return false;
-   }
-   
    return true;
 }
 
@@ -1430,6 +1422,11 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
          }
       }
 
+      bool is_valid = false;
+
+      if (is_transform && _att_points[i].size() != 0 && _checkValence(mol_product, frags_mapping[_att_points[i][0]]))
+         is_valid = true;
+
       if (_is_rg_exist)
       {
          for (int j = 0; j < pr_neibours.size(); j++)
@@ -1447,23 +1444,16 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
                 mol_product.stereocenters.getPyramid(atom_to)[3] != -1)
                return false;
 
-            if (_is_rg_exist)
-            {
-               if (!_flipBond(mol_product, pr_neibours[j], atom_from, atom_to))
-               {
-                  _product_forbidden_atoms.copy(_monomer_forbidden_atoms);
-                  _product_forbidden_atoms[_att_points[i][j]] = max_reuse_count;
-                  return false;
-               }
 
-               // TODO:
-               // Check that corresponding R-group fragment in monomer has cis-trans bond
-               // and check that AAM mapping is specified for that.
-               // For example for reaction OC([*])=O>>OC([*])=O and monomer C\C=C\C(O)=O 
-               // product shouldn't have should have cis-trans bonds because
-               // AAM is not specified on R-group atom neighbor
-               // Cis-trans bonds should be saved for such reaction: O[C:1]([*])=O>>O[C:1]([*])=O
-            }
+            mol_product.flipBond(pr_neibours[j], atom_from, atom_to);
+
+            // TODO:
+            // Check that corresponding R-group fragment in monomer has cis-trans bond
+            // and check that AAM mapping is specified for that.
+            // For example for reaction OC([*])=O>>OC([*])=O and monomer C\C=C\C(O)=O 
+            // product shouldn't have should have cis-trans bonds because
+            // AAM is not specified on R-group atom neighbor
+            // Cis-trans bonds should be saved for such reaction: O[C:1]([*])=O>>O[C:1]([*])=O
          }
          mol_product.removeAtom(mapping[i]);
       }
@@ -1486,14 +1476,11 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
             neighbors.clear();
             for (int k = mon_v.neiBegin(); k != mon_v.neiEnd(); k = mon_v.neiNext(k))
                neighbors.push(mon_v.neiVertex(k));
+
+
             for (int k = 0; k < neighbors.size(); k++)
                if (mol_product.findEdgeIndex(neighbors[k], pr_atom) == -1)
-                  if (!_flipBond(mol_product, neighbors[k], mon_atom, pr_atom))
-                  {
-                     _product_forbidden_atoms.copy(_monomer_forbidden_atoms);
-                     _product_forbidden_atoms[_att_points[i][j]] = max_reuse_count;
-                     return false;
-                  }
+                  mol_product.flipBond(neighbors[k], mon_atom, pr_atom);
 
             frags_mapping[_att_points[i][j]] = pr_atom;
             mol_product.removeAtom(mon_atom);
@@ -1503,6 +1490,14 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
       }
 
       product_mapping[mapping[i]] = frags_mapping[_att_points[i][0]];
+
+
+      if (is_transform && _att_points[i].size() != 0 && is_valid && !_checkValence(mol_product, mapping[i]))
+      {
+         _product_forbidden_atoms.copy(_monomer_forbidden_atoms);
+         _product_forbidden_atoms[_att_points[i][0]] = max_reuse_count;
+         return false;
+      }
 
       /* Border stereocenters copying */
       int nv_idx = 0;
