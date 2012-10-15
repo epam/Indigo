@@ -120,7 +120,7 @@ public:
    static int matchAtomsCmp (Graph &g1, Graph &g2, int idx1, int idx2,
                              void *userdata);
 
-   void unfoldHydrogens (Array<int> *markers_out, int max_h_cnt = -1);
+   void unfoldHydrogens (Array<int> *markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false);
 
    static void saveBondOrders (Molecule &mol, Array<int> &orders);
    static void loadBondOrders (Molecule &mol, Array<int> &orders);

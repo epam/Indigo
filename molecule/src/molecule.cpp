@@ -593,7 +593,7 @@ void Molecule::_removeAtoms (const Array<int> &indices, const int *mapping)
    updateEditRevision();
 }
 
-void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt)
+void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt, bool impl_h_no_throw)
 {
    int v_end = vertexEnd();
 
@@ -608,7 +608,10 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt)
       if (isPseudoAtom(i) || isRSite(i))
          continue;
 
-      imp_h_count[i] = getImplicitH(i);
+      if (impl_h_no_throw)
+         imp_h_count[i] = getImplicitH_NoThrow(i, 0);
+      else
+         imp_h_count[i] = getImplicitH(i);
    }
 
    if (markers_out != 0)
