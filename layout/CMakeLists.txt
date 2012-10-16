@@ -18,6 +18,6 @@ if(UNIX OR APPLE)
     SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
 endif()
 set_target_properties(layout PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")    
-target_link_libraries(layout molecule)
+target_link_libraries(layout molecule common)
 pack_static(layout)
 

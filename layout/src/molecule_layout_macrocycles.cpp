@@ -44,8 +44,11 @@ double MoleculeLayoutMacrocycles::layout (BaseMolecule &mol)
 {
    profTimerStart(t, "bc.layout");
 
+   printf("1\n");
    double b = depictionMacrocycleMol(mol, false);
+   printf("2\n");
    double b2 = depictionMacrocycleMol(mol, true);
+   printf("3\n");
    double b3 = depictionCircle(mol);
 
    if (b <= b2 && b <= b3) {
@@ -94,6 +97,9 @@ double MoleculeLayoutMacrocycles::layout (BaseMolecule &mol)
 #include <sstream>
 #include <map>
 #include <stdio.h>
+#include <math/random.h>
+#include "layout/molecule_layout.h"
+
 
 using namespace std;
 
@@ -142,8 +148,8 @@ double distLL(double x1, double y1, double x2, double y2, double x3, double y3, 
       min(distPL(x3, y3, x1, y1, x2, y2), distPL(x4, y4, x1, y1, x2, y2)));
 }
 
-int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, double *x, double *y, bool profi) {
-   int worstVertex = rand() % ind;
+int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, double *x, double *y, Random* rand, bool profi) {
+   int worstVertex = (*rand).next(ind);
 
    double x1 = x[(worstVertex - 1 + ind) % ind];
    double y1 = y[(worstVertex - 1 + ind) % ind];
@@ -201,21 +207,30 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
                double b = x[(i + 1)%ind] - x[i];
                double c = x[i]*y[(i + 1)%ind] - x[(i + 1)%ind]*y[i];
                double s = sqrt(a*a + b*b);
+
                a /= s;
                b /= s;
                c /= s;
 
                double t = - c - x[worstVertex] * a - y[worstVertex] * b;
 
-               double xx = x[worstVertex] + t*a;
-               double yy = y[worstVertex] + t*b;
-               if (distPP(x[worstVertex], y[worstVertex], x[i], y[i]) < distPP(x[worstVertex], y[worstVertex], xx, yy)) {
+               double xx;
+               double yy;
+
+               if (s < eps) {
                   xx = x[i];
                   yy = y[i];
-               }
-               if (distPP(x[worstVertex], y[worstVertex], x[(i + 1)%ind], y[(i + 1)%ind]) < distPP(x[worstVertex], y[worstVertex], xx, yy)) {
-                  xx = x[(i + 1)%ind];
-                  yy = y[(i + 1)%ind];
+               } else {
+                  xx = x[worstVertex] + t*a;
+                  yy = y[worstVertex] + t*b;
+                  if (distPP(x[worstVertex], y[worstVertex], x[i], y[i]) < distPP(x[worstVertex], y[worstVertex], xx, yy)) {
+                     xx = x[i];
+                     yy = y[i];
+                  }
+                  if (distPP(x[worstVertex], y[worstVertex], x[(i + 1)%ind], y[(i + 1)%ind]) < distPP(x[worstVertex], y[worstVertex], xx, yy)) {
+                     xx = x[(i + 1)%ind];
+                     yy = y[(i + 1)%ind];
+                  }
                }
 
                double coef = (1 - dist)/dist;
@@ -256,8 +271,12 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
 }
 
 void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, double *x, double *y, bool profi) {
-   for (int i = 0; i < 10000; i++) 
-      improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, x, y, profi);
+   Random rand(931170240);
+   int kol[100];
+   for (int i = 0; i < ind; i++) kol[i] = 0;
+   for (int i = 0; i < 10000; i++) kol[improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, x, y, &rand, profi)]++;
+   for (int i = 0; i < ind; i++) printf("%d: %d\n", i, kol[i]);
+   printf("\n");
 }
 
 double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, double *x, double *y) {
@@ -767,10 +786,10 @@ double MoleculeLayoutMacrocycles::depictionCircle(BaseMolecule &mol) {
    vector<int> order;
    for (int i = 0; i < molSize; i++) {
       switch (mol.getBondOrder(mol.findEdgeIndex(vert[i], vert[(i + 1) % molSize]))) {
-      case BOND_SINGLE : order.push_back(1); break;
-      case BOND_DOUBLE : order.push_back(2); break;
-      case BOND_TRIPLE : order.push_back(3); break;
-      case BOND_AROMATIC : order.push_back(1); break;
+         case BOND_SINGLE : order.push_back(1); break;
+         case BOND_DOUBLE : order.push_back(2); break;
+         case BOND_TRIPLE : order.push_back(3); break;
+         case BOND_AROMATIC : order.push_back(1); break;
       }
    }
 

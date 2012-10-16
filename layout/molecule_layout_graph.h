@@ -46,6 +46,16 @@ enum
    ELEMENT_IGNORE
 };
 
+struct LayoutCycle
+{
+   int size;
+   double* x;
+   double* y;
+   int* difficulty;
+   int* order;
+   int* cis_trans;
+};
+
 struct LayoutVertex
 {
    LayoutVertex () { memset(this, 0, sizeof(LayoutVertex)); }
@@ -245,7 +255,8 @@ protected:
 
    TL_DECL(ObjArray<PatternLayout>, _patterns);
 };
-
+   
+   
 }
 
 #ifdef _WIN32
