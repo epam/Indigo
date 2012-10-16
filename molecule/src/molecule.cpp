@@ -164,7 +164,7 @@ void Molecule::_validateVertexConnectivity (int idx, bool validate)
    if (validate)
    {
       getAtomConnectivity_noImplH(idx);
-      getImplicitH(idx);
+      getImplicitH_NoThrow(idx, -1);
       getAtomValence(idx);
    }
    else

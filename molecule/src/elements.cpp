@@ -1112,8 +1112,10 @@ int Element::electrons (int elem, int charge)
 int Element::getMaximumConnectivity (int elem, int charge, 
                                      int radical, bool use_d_orbital)
 {
-   int electrons = Element::electrons(elem, charge);
-   int vacant_orbitals = Element::orbitals(elem, use_d_orbital) - radical;
+   int rad_electrons = radicalElectrons(radical);
+   int electrons = Element::electrons(elem, charge) - rad_electrons;
+   int rad_orbitals = radicalOrbitals(radical);
+   int vacant_orbitals = Element::orbitals(elem, use_d_orbital) - rad_orbitals;
    if (electrons <= vacant_orbitals)
       return electrons;
    else 

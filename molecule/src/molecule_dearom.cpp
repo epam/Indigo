@@ -1358,9 +1358,9 @@ void MoleculeDearomatizer::dearomatizeGroup (int group, int dearomatization_inde
    for (int i = 0; i < bondsCount; i++)
    {
       if (bitGetBit(bondsState, i))
-         _mol.setBondOrder(bondsMap[i], BOND_DOUBLE);
+         _mol.setBondOrder(bondsMap[i], BOND_DOUBLE, true);
       else
-         _mol.setBondOrder(bondsMap[i], BOND_SINGLE);
+         _mol.setBondOrder(bondsMap[i], BOND_SINGLE, true);
    }
 }
 
