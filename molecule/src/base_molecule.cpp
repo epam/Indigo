@@ -767,6 +767,18 @@ int BaseMolecule::getAtomRadical_NoThrow (int idx, int fallback)
    }
 }
 
+int BaseMolecule::getAtomValence_NoThrow (int idx, int fallback)
+{
+   try
+   {
+      return getAtomValence(idx);
+   }
+   catch (Element::Error &)
+   {
+      return fallback;
+   }
+}
+
 int BaseMolecule::possibleAtomTotalH (int idx, int hcount)
 {
    int minh = getAtomMinH(idx);

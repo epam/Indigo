@@ -422,7 +422,10 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       {
          if (target.isPseudoAtom(super_idx) || target.isRSite(super_idx))
             return false;
-         return query->valueWithinRange(target.getAtomRadical(super_idx));
+         int radical = target.getAtomRadical_NoThrow(super_idx, -1);
+         if (radical == -1)
+            return false;
+         return query->valueWithinRange(radical);
       }
       case QueryMolecule::ATOM_VALENCE:
       {
@@ -430,7 +433,10 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
          {
             if (target.isPseudoAtom(super_idx) || target.isRSite(super_idx))
                return false;
-            return query->valueWithinRange(target.getAtomValence(super_idx));
+            int valence = target.getAtomValence_NoThrow(super_idx, -1);
+            if (valence == -1)
+               return false;
+            return query->valueWithinRange(valence);
          }
          return (flags & MATCH_DISABLED_AS_TRUE) != 0;
       }
@@ -444,7 +450,10 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       case QueryMolecule::ATOM_TOTAL_BOND_ORDER:
       {
          // TODO: target.isPseudoAtom(super_idx) || target.isRSite(super_idx)
-         return query->valueWithinRange(target.asMolecule().getAtomConnectivity(super_idx));
+         int conn = target.asMolecule().getAtomConnectivity_NoThrow(super_idx, -1);
+         if (conn == -1)
+            return false;
+         return query->valueWithinRange(conn);
       }
       case QueryMolecule::ATOM_TOTAL_H:
       {

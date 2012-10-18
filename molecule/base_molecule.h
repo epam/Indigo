@@ -168,6 +168,7 @@ public:
    virtual int getAtomRingBondsCount (int idx) = 0; // >= 0 -- ring bonds count, -1 -- not sure
 
    int getAtomRadical_NoThrow (int idx, int fallback);
+   int getAtomValence_NoThrow (int idx, int fallback);
 
    virtual int getAtomMaxH   (int idx) = 0;
    virtual int getAtomMinH   (int idx) = 0;
