@@ -347,6 +347,18 @@ int Molecule::getAtomConnectivity (int idx)
    return impl_h + conn;
 }
 
+int Molecule::getAtomConnectivity_NoThrow (int idx, int fallback)
+{
+   try
+   {
+      return getAtomConnectivity(idx);
+   }
+   catch (Element::Error &)
+   {
+      return fallback;
+   }
+}
+
 int Molecule::getAtomConnectivity_noImplH (int idx)
 {
    if (_connectivity.size() > idx && _connectivity[idx] >= 0)

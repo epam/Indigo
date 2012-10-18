@@ -287,7 +287,10 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
    }
 
    Molecule &mol = (Molecule &)_basemol;
-   int conn = mol.getAtomConnectivity(v_idx);
+   int conn = mol.getAtomConnectivity_NoThrow(v_idx, -1);
+   if (conn == -1)
+      return -1;
+
    // Atom is already aromatic and in general number of hydrogens 
    // cannot be deduced. But if atom can have one single or onle 
    // double bond while being aromatic then pi label can be calculated

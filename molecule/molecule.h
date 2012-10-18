@@ -98,6 +98,7 @@ public:
 
    int getAtomConnectivity (int idx);
    int getAtomConnectivity_noImplH (int idx);
+   int getAtomConnectivity_NoThrow (int idx, int fallback);
    int calcAtomConnectivity_noImplH (int idx);
    void calcAromaticAtomConnectivity (int idx, int &n_arom, int &min_conn);
    bool isSaturatedAtom (int idx);
