@@ -280,7 +280,7 @@ CEXPORT int indigoUnfoldHydrogens (int item)
    INDIGO_END(-1)
 }
 
-static void _removeHydrogens (Molecule &mol)
+static bool _removeHydrogens (Molecule &mol)
 {
    QS_DEF(Array<int>, to_remove);
    int i;
@@ -292,6 +292,7 @@ static void _removeHydrogens (Molecule &mol)
 
    if (to_remove.size() > 0)
       mol.removeAtoms(to_remove);
+   return to_remove.size() > 0;
 }
 
 CEXPORT int indigoFoldHydrogens (int item)
@@ -701,4 +702,48 @@ CEXPORT const char * indigoDbgInternalType (int object)
       return self.tmp_string.ptr();
    }
    INDIGO_END(0);
+}
+
+CEXPORT int indigoNormalize (int structure, const char *options)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(structure);
+      Molecule &mol = obj.getMolecule();
+
+      bool changed = false;
+
+      // Fold hydrogens
+      changed |= _removeHydrogens(mol);
+
+      // Neutralize charges
+      for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+      {
+         int charge = mol.getAtomCharge(i);
+         if (charge == 1 && mol.getAtomNumber(i) == ELEM_N)
+         {
+            const Vertex &v = mol.getVertex(i);
+            for (int nei = v.neiBegin(); nei != v.neiEnd(); nei = v.neiNext(nei))
+            {
+               int j = v.neiVertex(nei);
+               int charge2 = mol.getAtomCharge(j);
+               if (charge2 == -1 && mol.getAtomNumber(j) == ELEM_O)
+               {
+                  int edge_idx = v.neiEdge(nei);
+                  if (mol.getBondOrder(edge_idx) == BOND_SINGLE)
+                  {
+                     mol.setAtomCharge(i, 0);
+                     mol.setAtomCharge(j, 0);
+                     mol.setBondOrder(edge_idx, BOND_DOUBLE);
+                     changed = true;
+                     break;
+                  }
+               }
+            }
+         }
+      }
+      
+      return changed;
+   }
+   INDIGO_END(-1);
 }

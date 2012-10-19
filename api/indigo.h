@@ -257,6 +257,11 @@ CEXPORT const char * indigoRxnfile (int reaction);
 // (works for both query molecules and query reactions)
 CEXPORT int indigoOptimize (int query, const char *options);
 
+// Methods for structure normalization
+// It neutrailzes charges, resolves 5-valence Nitrogen, removes hydrogens and etc.
+// Default options is empty.
+CEXPORT int indigoNormalize (int structure, const char *options);
+
 // Automatic reaction atom-to-atom mapping
 // mode is one of the following (separated by a space):
 //    "discard" : discards the existing mapping entirely and considers only

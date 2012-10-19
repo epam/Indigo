@@ -459,6 +459,8 @@ class Indigo(object):
     self.IndigoObject.cmlFooter = Indigo._member_void(Indigo._lib.indigoCmlFooter)
     self.IndigoObject.append = Indigo._member_void_obj(Indigo._lib.indigoAppend)
 
+    self.IndigoObject.normalize = Indigo._member_bool_string(Indigo._lib.indigoNormalize)
+    
     self.IndigoObject.iterateArray = Indigo._member_obj(Indigo._lib.indigoIterateArray)
     self.IndigoObject.count = Indigo._member_int(Indigo._lib.indigoCount)
     self.IndigoObject.clear = Indigo._member_void(Indigo._lib.indigoClear)
