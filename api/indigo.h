@@ -84,6 +84,7 @@ CEXPORT void  indigoSetSessionId     (qword id);
 // further allocations.
 CEXPORT void  indigoReleaseSessionId (qword id);
 
+
 // Get the last error message
 CEXPORT const char * indigoGetLastError (void);
 
@@ -96,6 +97,9 @@ CEXPORT int indigoFree (int handle);
 CEXPORT int indigoClone (int object);
 // Count object currently allocated
 CEXPORT int indigoCountReferences (void);
+
+// Deallocate all the objects in the current session
+CEXPORT int indigoFreeAllObject ();
 
 /* Options */
 

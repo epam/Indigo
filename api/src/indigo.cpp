@@ -146,6 +146,12 @@ CEXPORT int indigoFree (int handle)
    return 1;
 }
 
+CEXPORT int indigoFreeAllObject ()
+{
+   indigoGetInstance().removeAllObjects();
+   return 1;
+}
+
 CEXPORT int indigoCountReferences (void)
 {
    INDIGO_BEGIN
