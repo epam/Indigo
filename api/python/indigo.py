@@ -1,6 +1,6 @@
 #
 #
-# Copyright (C) 2010-2011 GGA Software Services LLC
+# Copyright (C) 2010-2012 GGA Software Services LLC
 # 
 # This file is part of Indigo toolkit.
 # 
