@@ -954,69 +954,8 @@ CEXPORT const char * indigoSymbol (int atom)
    {
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
-      if (ia.mol.isPseudoAtom(ia.idx))
-         return ia.mol.getPseudoAtom(ia.idx);
-      else if (ia.mol.isRSite(ia.idx))
-      {
-         QS_DEF(Array<int>, rgroups);
-         int i;
-         ia.mol.getAllowedRGroups(ia.idx, rgroups);
-
-         if (rgroups.size() == 0)
-            return "R";
-
-         ArrayOutput output(self.tmp_string);
-         for (i = 0; i < rgroups.size(); i++)
-         {
-            if (i > 0)
-               output.writeChar(',');
-            output.printf("R%d", rgroups[i]);
-         }
-         output.writeChar(0);
-         return self.tmp_string.ptr();
-      }
-      else 
-      {
-         int number = ia.mol.getAtomNumber(ia.idx);
-         QS_DEF(Array<int>, list);
-
-         if (number != -1)
-            return Element::toString(number);
-
-         int query_atom_type;
-
-         if (ia.mol.isQueryMolecule() &&
-               (query_atom_type = QueryMolecule::parseQueryAtom(ia.mol.asQueryMolecule(), ia.idx, list)) != -1)
-         {
-            if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
-               return "A";
-            if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
-               return "Q";
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
-               return "X";
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
-                     query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
-            {
-               int k;
-               ArrayOutput output(self.tmp_string);
-
-               if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
-                  output.writeString("NOT");
-
-               output.writeChar('[');
-               for (k = 0; k < list.size(); k++)
-               {
-                  if (k > 0)
-                     output.writeChar(',');
-                  output.writeString(Element::toString(list[k]));
-               }
-               output.writeChar(']');
-               output.writeChar(0);
-               return self.tmp_string.ptr();
-            }
-         }
-      }
-      return "*";
+      ia.mol.getAtomSymbol(ia.idx, self.tmp_string);
+      return self.tmp_string.ptr();
    }
    INDIGO_END(0);
 }

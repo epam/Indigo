@@ -13,6 +13,9 @@
  ***************************************************************************/
 
 #include "molecule/base_molecule.h"
+
+#include "base_cpp/output.h"
+#include "molecule/elements.h"
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_arom_match.h"
@@ -1318,4 +1321,86 @@ void BaseMolecule::getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res)
    }
    if (sgroup.atoms.size() != 0)
       res.scale(1.0f / sgroup.atoms.size());
+}
+
+void BaseMolecule::getAtomSymbol (int v, Array<char> &result)
+{
+   if (isPseudoAtom(v))
+   {
+      result.readString(getPseudoAtom(v), true);
+   }
+   else if (isRSite(v))
+   {
+      QS_DEF(Array<int>, rgroups);
+      int i;
+      getAllowedRGroups(v, rgroups);
+
+      if (rgroups.size() == 0)
+      {
+         result.readString("R", true);
+      }
+
+      ArrayOutput output(result);
+      for (i = 0; i < rgroups.size(); i++)
+      {
+         if (i > 0)
+            output.writeChar(',');
+         output.printf("R%d", rgroups[i]);
+      }
+      output.writeChar(0);
+   }
+   else 
+   {
+      int number = getAtomNumber(v);
+      QS_DEF(Array<int>, list);
+
+      if (number != -1)
+      {
+         result.readString(Element::toString(number), true);
+         return;
+      }
+
+      int query_atom_type;
+
+      if (isQueryMolecule() &&
+            (query_atom_type = QueryMolecule::parseQueryAtom(asQueryMolecule(), v, list)) != -1)
+      {
+         if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
+         {
+            result.readString("A", true);
+            return;
+         }
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
+         {
+            result.readString("Q", true);
+            return;
+         }
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
+         {
+            result.readString("X", true);
+            return;
+         }
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
+                  query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+         {
+            int k;
+            ArrayOutput output(result);
+
+            if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+               output.writeString("NOT");
+
+            output.writeChar('[');
+            for (k = 0; k < list.size(); k++)
+            {
+               if (k > 0)
+                  output.writeChar(',');
+               output.writeString(Element::toString(list[k]));
+            }
+            output.writeChar(']');
+            output.writeChar(0);
+         }
+      }
+   }
+   if (result.size() == 0)
+      result.readString("*", true);
 }

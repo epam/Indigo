@@ -341,6 +341,8 @@ public:
 
    void getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res);
 
+   void getAtomSymbol (int v, Array<char> &output);
+
    DECL_ERROR;
 protected:
 

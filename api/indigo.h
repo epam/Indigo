@@ -641,7 +641,7 @@ CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2);
 
 // Accepts two molecules, two reactions, or two fingerprints.
 // Returns the similarity measure between them.
-// Metrics: "tanimoto", "tversky", "tversky <alpha> <beta>", or "euclid-sub".
+// Metrics: "tanimoto", "tversky", "tversky <alpha> <beta>", "euclid-sub" or "normalized-edit"
 // Zero pointer or empty string defaults to "tanimoto".
 // "tversky" without numbers defaults to alpha = beta = 0.5
 CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics);
