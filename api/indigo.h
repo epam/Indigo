@@ -99,7 +99,7 @@ CEXPORT int indigoClone (int object);
 CEXPORT int indigoCountReferences (void);
 
 // Deallocate all the objects in the current session
-CEXPORT int indigoFreeAllObject ();
+CEXPORT int indigoFreeAllObjects ();
 
 /* Options */
 

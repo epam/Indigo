@@ -146,7 +146,7 @@ CEXPORT int indigoFree (int handle)
    return 1;
 }
 
-CEXPORT int indigoFreeAllObject ()
+CEXPORT int indigoFreeAllObjects ()
 {
    indigoGetInstance().removeAllObjects();
    return 1;
