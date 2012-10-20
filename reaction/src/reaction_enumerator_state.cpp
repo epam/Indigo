@@ -1117,21 +1117,26 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
             // If there is no information about this bond in smarts
             QueryMolecule::Atom &q_pr_beg = product.getAtom(pr_edge.beg);
             QueryMolecule::Atom &q_pr_end = product.getAtom(pr_edge.end);
+            
 
-
-            int beg_value, end_value;
-            if ((product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC) && 
-                 product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_SINGLE) &&
-                 !product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_DOUBLE) &&
-                 !product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_TRIPLE)) &&
+            //int beg_value, end_value;
+            bool can_be_aromatic = product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC);
+            bool can_be_single = product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_SINGLE);
+            bool can_be_double = product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_DOUBLE);
+            bool can_be_triple = product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_TRIPLE);
+            if ((can_be_aromatic && can_be_single && !can_be_double && !can_be_triple)/* &&
                    (q_pr_beg.sureValue(QueryMolecule::ATOM_AROMATICITY, beg_value) &&
                     q_pr_end.sureValue(QueryMolecule::ATOM_AROMATICITY, end_value))
-                    && (beg_value == ATOM_AROMATIC) && (end_value == ATOM_AROMATIC))
+                    && (beg_value == ATOM_AROMATIC) && (end_value == ATOM_AROMATIC)*/)
             {
                   mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], BOND_AROMATIC);
-            }        
+            }
+            else if ((!can_be_aromatic && can_be_single && !can_be_double && !can_be_triple))
+            {
+                  mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], BOND_SINGLE);
+            }
             else
-               throw Error("There is no information about products bond #%d in monomer", i);         }
+               throw Error("There is no information about products bond #%d", i);         }
       }
       else
          mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], 
@@ -1142,58 +1147,6 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
    mol_product.cis_trans.buildOnSubmolecule(product, mapping_out.ptr());
 
    mol_product.mergeSGroupsWithSubmolecule(product, mapping_out);
-}
-
-void ReactionEnumeratorState::_checkConstraints( QueryMolecule &reactant, Array<int> &rp_mapping)
-{
-   for (int i = reactant.vertexBegin(); i != reactant.vertexEnd(); i = reactant.vertexNext(i))
-   {
-      int pr_i = rp_mapping[i];
-      if (pr_i == -1)
-         continue;
-
-      if (((_full_product.getAtomNumber(pr_i) == -1) && 
-           (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_NUMBER))) &&
-          !((reactant.getAtomNumber(i) == -1) && 
-           (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_NUMBER))))
-         throw Error("products atom %i has number constraint", i);
-
-      if (((_full_product.getAtomCharge(pr_i) == CHARGE_UNKNOWN) && 
-           (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_CHARGE))) &&
-          !((reactant.getAtomCharge(i) == CHARGE_UNKNOWN) && 
-            (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_CHARGE))))
-         throw Error("products atom %i has charge constraint", i);
-
-      if (((_full_product.getAtomRadical(pr_i) == -1) && 
-           (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_RADICAL))) &&
-          !((reactant.getAtomRadical(i) == -1) && 
-           (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_RADICAL))))
-         throw Error("products atom %i has radical constraint", i);
-
-      if (((_full_product.getAtomIsotope(pr_i) == -1) && 
-           (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_ISOTOPE))) &&
-          !((reactant.getAtomIsotope(i) == -1) && 
-           (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_ISOTOPE))))
-         throw Error("products atom %i has isotope constraint", i);
-   }
-
-   QS_DEF(Array<int>, edge_mapping);
-   edge_mapping.clear_resize(reactant.edgeEnd());
-   edge_mapping.fffill();
-   _full_product.buildEdgeMapping(reactant, &rp_mapping, &edge_mapping);
-
-   for (int i = reactant.edgeBegin(); i != reactant.edgeEnd(); i = reactant.edgeNext(i))
-   {
-      int pr_i = edge_mapping[i];
-      if (pr_i == -1)
-         continue;
-
-      if (((_full_product.getBondOrder(pr_i) == -1) && 
-         (_full_product.getBond(pr_i).hasConstraint(QueryMolecule::BOND_ORDER))) &&
-          !((reactant.getBondOrder(i) == -1) && 
-           (reactant.getBond(i).hasConstraint(QueryMolecule::BOND_ORDER))))
-         throw Error("products bond %i has order constraint", pr_i);
-   }
 }
 
 void ReactionEnumeratorState::_stereocentersUpdate( QueryMolecule &submolecule,
@@ -1858,7 +1811,6 @@ int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergr
    sub_qa_array.clear() ;
    QS_DEF(Molecule, mol_fragments);
    mol_fragments.clear();
-   /*rpe_state->_mapping_super.fffill();*/
    
    if (!rpe_state->_is_rg_exist && !rpe_state->_am->match(core_sub, core_super))
       return 1;
@@ -1876,8 +1828,6 @@ int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergr
    rp_mapping.fffill();
 
    rpe_state->_findR2PMapping(submolecule, rp_mapping);
-
-   //rpe_state->_checkConstraints(submolecule, rp_mapping);
 
    rpe_state->_cistransUpdate(submolecule, supermolecule, NULL, rp_mapping, core_sub);
    rpe_state->_stereocentersUpdate(submolecule, supermolecule, rp_mapping, core_sub, core_super);

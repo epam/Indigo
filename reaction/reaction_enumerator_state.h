@@ -146,8 +146,6 @@ private:
    void _buildMolProduct( QueryMolecule &product, Molecule &mol_product, 
       Molecule &uncleaned_fragments, Array<int> &all_forbidden_atoms, Array<int> &mapping_out );
 
-   void _checkConstraints( QueryMolecule &reacant, Array<int> &rp_mapping);
-
    void _stereocentersUpdate( QueryMolecule &submolecule,
       Molecule &supermolecule, const Array<int> &rp_mapping,
       int *core_sub, int *core_super );
