@@ -252,6 +252,21 @@ void CmfSaver::_encodeUIntArray (const Array<int> &data)
    }
 }
 
+void CmfSaver::_encodeUIntArraySkipNegative (const Array<int> &data)
+{
+   int len = 0;
+   for (int i = 0; i < data.size(); i++)
+      if (data[i] >= 0)
+         len++;
+   _output->writePackedUInt(len);
+   for (int i = 0; i < data.size(); i++)
+   {
+      int index = data[i];
+      if (index >= 0)
+         _output->writePackedUInt(index);
+   }
+}
+
 void CmfSaver::_encodeBaseSGroup (Molecule &mol, BaseMolecule::SGroup &sgroup, const Mapping &mapping)
 {
    _encodeUIntArray(sgroup.atoms, *mapping.atom_mapping);
@@ -370,8 +385,8 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       }
       _encode(CMF_MAPPING);
 
-      _encodeUIntArray(*mapping.atom_mapping);
-      _encodeUIntArray(*mapping.bond_mapping);
+      _encodeUIntArraySkipNegative(*mapping.atom_mapping);
+      _encodeUIntArraySkipNegative(*mapping.bond_mapping);
    }
 }
 
