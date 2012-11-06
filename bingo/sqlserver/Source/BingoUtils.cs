@@ -7,6 +7,8 @@ using System.Data.SqlTypes;
 using System.Data.SqlClient;
 using System.Text;
 using indigo.SqlAttributes;
+using System.Diagnostics;
+using System.Threading;
 
 namespace indigo
 {
@@ -187,8 +189,13 @@ namespace indigo
                       "{0:G}: {1}", DateTime.Now, String.Format(message, args));
 
                   sw.WriteLine(logLine);
-                  double size_mb = GC.GetTotalMemory(false) / 1000 / 1000.0;
-                  sw.WriteLine(String.Format("GC Memory: {0:0.00} Mb", size_mb));
+                  double size_mb = GC.GetTotalMemory(false) / 1024 / 1024.0;
+                  int processId = Process.GetCurrentProcess().Id;
+                  int threadId = Thread.CurrentThread.ManagedThreadId;
+                  Process proc = Process.GetCurrentProcess();
+                  double proc_size_mb = proc.PrivateMemorySize64 / 1024 / 1024.0;
+                  sw.WriteLine(String.Format("   GC Memory: {0:0.00} Mb. Process id: {1}. Thread id: {2}. AppDomain: {3}. PrivateMemory: {4:0.00} Mb",
+                     size_mb, processId, threadId, AppDomain.CurrentDomain.FriendlyName, proc_size_mb));
                }
             }
             catch
