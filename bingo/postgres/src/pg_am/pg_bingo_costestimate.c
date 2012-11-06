@@ -316,7 +316,7 @@ genericcostestimate(PlannerInfo *root,
 	 */
 	*indexCorrelation = -1.0;
 }
-
+#if PG_VERSION_NUM / 100 == 902
 static void
 genericcostestimate92(PlannerInfo *root,
 					IndexPath *path,
@@ -544,7 +544,7 @@ genericcostestimate92(PlannerInfo *root,
 	 */
 	*indexCorrelation = -1.0;
 }
-
+#endif
 
 PG_FUNCTION_INFO_V1(bingo_costestimate);
 PGDLLEXPORT Datum bingo_costestimate(PG_FUNCTION_ARGS);
