@@ -362,6 +362,9 @@ namespace indigo
                   }
                   catch (Exception ex)
                   {
+                     if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
+                        Thread.ResetAbort();
+
                      BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
 
                      if ((op_flags & BingoOp.LOCK_INDEX) != 0)
@@ -386,6 +389,8 @@ namespace indigo
          }
          finally
          {
+            if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
+               Thread.ResetAbort();
             if (ext_conn != null)
                ext_conn.Close();
          }
