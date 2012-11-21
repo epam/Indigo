@@ -26,6 +26,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(SharedMemory, "shared memory");
+
 SharedMemory::SharedMemory (const char *name, int size, bool no_map_if_first)
 {
    snprintf(_filename, sizeof(_filename), "/tmp/indigo_shm_%s", name);
