@@ -317,6 +317,28 @@ genericcostestimate(PlannerInfo *root,
 	*indexCorrelation = -1.0;
 }
 #if PG_VERSION_NUM / 100 == 902
+static List *
+add_predicate_to_quals(IndexOptInfo *index, List *indexQuals)
+{
+	List	   *predExtraQuals = NIL;
+	ListCell   *lc;
+
+	if (index->indpred == NIL)
+		return indexQuals;
+
+	foreach(lc, index->indpred)
+	{
+		Node	   *predQual = (Node *) lfirst(lc);
+		List	   *oneQual = list_make1(predQual);
+
+		if (!predicate_implied_by(oneQual, indexQuals))
+			predExtraQuals = list_concat(predExtraQuals, oneQual);
+	}
+	/* list_concat avoids modifying the passed-in indexQuals list */
+	return list_concat(predExtraQuals, indexQuals);
+}
+
+
 static void
 genericcostestimate92(PlannerInfo *root,
 					IndexPath *path,
@@ -346,9 +368,9 @@ genericcostestimate92(PlannerInfo *root,
 	 * given indexquals to produce a more accurate idea of the index
 	 * selectivity.
 	 */
-/*
+
 	selectivityQuals = add_predicate_to_quals(index, indexQuals);
-*/
+
 
 	/*
 	 * Check for ScalarArrayOpExpr index quals, and estimate the number of
