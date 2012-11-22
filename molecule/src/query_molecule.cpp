@@ -1738,14 +1738,14 @@ bool QueryMolecule::isRSite (int atom_idx)
    return _atoms[atom_idx]->sureValue(ATOM_RSITE, bits);
 }
 
-int QueryMolecule::getRSiteBits (int atom_idx)
+dword QueryMolecule::getRSiteBits (int atom_idx)
 {
    int bits;
 
    if (!_atoms[atom_idx]->sureValue(ATOM_RSITE, bits))
       throw Error("getRSiteBits(): atom #%d is not an r-site", atom_idx);
 
-   return bits;
+   return (dword)bits;
 }
 
 void QueryMolecule::allowRGroupOnRSite (int atom_idx, int rg_idx)

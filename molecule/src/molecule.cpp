@@ -1330,7 +1330,7 @@ bool Molecule::isRSite (int atom_idx)
    return _atoms[atom_idx].number == ELEM_RSITE;
 }
 
-int Molecule::getRSiteBits (int atom_idx)
+dword Molecule::getRSiteBits (int atom_idx)
 {
    if (_atoms[atom_idx].number != ELEM_RSITE)
       throw Error("getRSiteBits(): atom #%d is not an r-site", atom_idx);

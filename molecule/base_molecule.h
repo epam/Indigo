@@ -182,9 +182,9 @@ public:
    int countRSites ();
    int countSGroups ();
 
-   virtual bool isRSite (int atom_idx) = 0;
-   virtual int  getRSiteBits (int atom_idx) = 0;
-   virtual void allowRGroupOnRSite (int atom_idx, int rg_idx) = 0;
+   virtual bool  isRSite (int atom_idx) = 0;
+   virtual dword getRSiteBits (int atom_idx) = 0;
+   virtual void  allowRGroupOnRSite (int atom_idx, int rg_idx) = 0;
 
    void getAllowedRGroups (int atom_idx, Array<int> &rgroup_list);
    int  getSingleAllowedRGroup (int atom_idx);

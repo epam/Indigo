@@ -804,7 +804,7 @@ void BaseMolecule::getAllowedRGroups (int atom_idx, Array<int> &rgroup_list)
 {
    rgroup_list.clear();
 
-   int bits = getRSiteBits(atom_idx);
+   dword bits = getRSiteBits(atom_idx);
    int rg_idx = 1;
 
    while (bits != 0)
@@ -819,7 +819,7 @@ void BaseMolecule::getAllowedRGroups (int atom_idx, Array<int> &rgroup_list)
 
 int BaseMolecule::getSingleAllowedRGroup (int atom_idx)
 {
-   int bits = getRSiteBits(atom_idx);
+   dword bits = getRSiteBits(atom_idx);
    int rg_idx = 1;
 
    while (bits != 0)

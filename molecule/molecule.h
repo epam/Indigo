@@ -82,9 +82,10 @@ public:
 
    virtual bool isPseudoAtom (int idx);
    virtual const char * getPseudoAtom (int idx);
-   virtual bool isRSite (int atom_idx);
-   virtual int  getRSiteBits (int atom_idx);
-   virtual void allowRGroupOnRSite (int atom_idx, int rg_idx);
+
+   virtual bool  isRSite (int atom_idx);
+   virtual dword getRSiteBits (int atom_idx);
+   virtual void  allowRGroupOnRSite (int atom_idx, int rg_idx);
            void setRSiteBits (int atom_idx, int bits);
 
    virtual bool bondStereoCare (int idx);
