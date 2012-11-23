@@ -16,6 +16,7 @@
 #include "base_cpp/scanner.h"
 #include "molecule/cmf_loader.h"
 #include "reaction/reaction.h"
+#include "reaction/crf_common.h"
 
 using namespace indigo;
 
@@ -39,9 +40,12 @@ _scanner(scanner)
 void CrfLoader::loadReaction (Reaction &reaction)
 {
    int i;
-   int nreactants = _scanner.readByte();
-   int nproducts = _scanner.readByte();
+   int nreactants = _scanner.readPackedUInt();
+   int nproducts = _scanner.readPackedUInt();
    byte flags = _scanner.readByte();
+   int ncatalyst = 0;
+   if (flags & CrfFeatureFlags::CRF_CATALYST)
+      ncatalyst = _scanner.readPackedUInt();
 
    reaction.clear();
 
@@ -54,24 +58,30 @@ void CrfLoader::loadReaction (Reaction &reaction)
    for (i = 0; i < nreactants; i++)
    {
       int index = reaction.addReactant();
-      _bond_rc_flags = &reaction.getReactingCenterArray(index);
-      _atom_stereo_flags = &reaction.getInversionArray(index);
-      if (have_aam)
-         _aam = &reaction.getAAMArray(index);
-
-      _loadMolecule(reaction.getMolecule(index));
+      _loadReactionMolecule(reaction, index, have_aam);
    }
 
    for (i = 0; i < nproducts; i++)
    {
       int index = reaction.addProduct();
-      _bond_rc_flags = &reaction.getReactingCenterArray(index);
-      _atom_stereo_flags = &reaction.getInversionArray(index);
-      if (have_aam)
-         _aam = &reaction.getAAMArray(index);
-
-      _loadMolecule(reaction.getMolecule(index));
+      _loadReactionMolecule(reaction, index, have_aam);
    }
+
+   for (i = 0; i < ncatalyst; i++)
+   {
+      int index = reaction.addCatalyst();
+      _loadReactionMolecule(reaction, index, have_aam);
+   }
+}
+
+void CrfLoader::_loadReactionMolecule (Reaction &reaction, int index, bool have_aam)
+{
+   _bond_rc_flags = &reaction.getReactingCenterArray(index);
+   _atom_stereo_flags = &reaction.getInversionArray(index);
+   if (have_aam)
+      _aam = &reaction.getAAMArray(index);
+
+   _loadMolecule(reaction.getMolecule(index));
 }
 
 void CrfLoader::_loadMolecule (Molecule &molecule)

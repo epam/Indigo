@@ -42,6 +42,7 @@ protected:
    void _init ();
 
    void _loadMolecule (Molecule &molecule);
+   void _loadReactionMolecule (Reaction &reaction, int index, bool have_aam);
 
    Scanner &_scanner;
 

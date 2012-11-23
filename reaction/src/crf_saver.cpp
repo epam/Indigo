@@ -18,6 +18,7 @@
 #include "molecule/cmf_saver.h"
 #include "base_cpp/output.h"
 #include "molecule/cmf_symbol_codes.h"
+#include "reaction/crf_common.h"
 
 using namespace indigo;
 
@@ -54,24 +55,29 @@ void CrfSaver::saveReaction (Reaction &reaction)
    _aam = 0;
 
    for (i = reaction.reactantBegin(); i < reaction.reactantEnd(); i = reaction.reactantNext(i))
-   {
-      _atom_stereo_flags = reaction.getInversionArray(i).ptr();
-      _bond_rc_flags = reaction.getReactingCenterArray(i).ptr();
-      _aam = reaction.getAAMArray(i).ptr();
-      _writeMolecule(reaction.getMolecule(i));
-   }
+         _writeReactionMolecule(reaction, i);
 
    for (i = reaction.productBegin(); i < reaction.productEnd(); i = reaction.productNext(i))
+         _writeReactionMolecule(reaction, i);
+
+   if (reaction.catalystCount() > 0)
    {
-      _atom_stereo_flags = reaction.getInversionArray(i).ptr();
-      _bond_rc_flags = reaction.getReactingCenterArray(i).ptr();
-      _aam = reaction.getAAMArray(i).ptr();
-      _writeMolecule(reaction.getMolecule(i));
+      for (i = reaction.catalystBegin(); i < reaction.catalystEnd(); i = reaction.catalystNext(i))
+         _writeReactionMolecule(reaction, i);
    }
 
    if (_encoder.get() != 0)
       _encoder->finish();
 }
+
+void CrfSaver::_writeReactionMolecule (Reaction &reaction, int i)
+{
+   _atom_stereo_flags = reaction.getInversionArray(i).ptr();
+   _bond_rc_flags = reaction.getReactingCenterArray(i).ptr();
+   _aam = reaction.getAAMArray(i).ptr();
+   _writeMolecule(reaction.getMolecule(i));
+}
+
 
 void CrfSaver::_writeMolecule (Molecule &molecule)
 {
@@ -139,12 +145,16 @@ void CrfSaver::_writeMolecule (Molecule &molecule)
 
 void CrfSaver::_writeReactionInfo (Reaction &reaction)
 {
-   _output.writeByte(reaction.reactantsCount());
-   _output.writeByte(reaction.productsCount());
+   _output.writePackedUInt(reaction.reactantsCount());
+   _output.writePackedUInt(reaction.productsCount());
 
-   byte have_aam = 1;
+   byte features = CrfFeatureFlags::CRF_AAM;
+   if (reaction.catalystCount() > 0)
+      features |= CrfFeatureFlags::CRF_CATALYST;
 
-   _output.writeByte(have_aam);
+   _output.writeByte(features);
+   if (reaction.catalystCount() > 0)
+      _output.writePackedUInt(reaction.catalystCount());
 }
 
 void CrfSaver::_writeAam (const int *aam, const Array<int> &sequence)

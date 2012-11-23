@@ -20,3 +20,4 @@ endif()
 set_target_properties(reaction PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 target_link_libraries(reaction molecule)
 pack_static(reaction)
+
