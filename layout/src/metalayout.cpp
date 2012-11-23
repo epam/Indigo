@@ -136,6 +136,7 @@ void Metalayout::scaleSz()
          if (item.fragment) {
             item.scaledSize.diff(item.max, item.min);
             item.scaledSize.scale(_scaleFactor);
+            item.scaledSize.max(Vec2f(bondLength, bondLength));
          }
       }
 }
@@ -277,6 +278,7 @@ void Metalayout::adjustMol (BaseMolecule& mol, const Vec2f& min, const Vec2f& po
    {
       Vec2f v;
       Vec2f::projectZ(v, mol.getAtomXyz(i));
+      v.y = -v.y;
       v.sub(min);
       v.scale(scaleFactor);
       v.add(pos);
