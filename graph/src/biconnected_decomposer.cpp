@@ -140,6 +140,11 @@ int BiconnectedDecomposer::decompose ()
          }
       }
    
+   return componentsCount();
+}
+
+int BiconnectedDecomposer::componentsCount ()
+{
    return _components.size();
 }
 

@@ -35,6 +35,8 @@ public:
    // returns the amount of biconnected components
    int decompose ();
 
+   int componentsCount ();
+
    bool isArticulationPoint (int idx) const;
    void getComponent (int idx, Filter &filter) const;
    const Array<int> & getIncomingComponents (int idx) const;
