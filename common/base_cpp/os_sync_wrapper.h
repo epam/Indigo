@@ -68,7 +68,7 @@ typedef OsLockerT<OsLock, true>        OsLockerNullable;
 //
 // Semaphore wrapper
 //
-class OsSemaphore
+class DLLEXPORT OsSemaphore
 {
 public:
    OsSemaphore  (int initial_count, int max_count);
