@@ -168,21 +168,13 @@ void MoleculeLayoutGraph::_splitCycle2 (const Cycle &cycle, const Array<int> &cy
 // Attach cycle outside component border. Component must have given number of common edges or any (if 0)
 bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length, int n_common_edges)
 {
-   MoleculeLayoutGraph new_bc;
-   int i, j, k;
    int n_common_e = 0, n_common_v = 0;
-   bool is_attached = false;
    QS_DEF(Array<int>, cycle_vertex_types);
-   QS_DEF(Array<int>, border1v);
-   QS_DEF(Array<int>, border1e);
-   QS_DEF(Array<int>, border2v);
-   QS_DEF(Array<int>, border2e);
-   Vec2f p;
 
    cycle_vertex_types.clear_resize(cycle.vertexCount());
    cycle_vertex_types.zerofill();
 
-   for (i = 0; i < cycle.vertexCount(); i++)
+   for (int i = 0; i < cycle.vertexCount(); i++)
    {
       cycle_vertex_types[i] = _layout_vertices[cycle.getVertex(i)].type;
 
@@ -203,80 +195,7 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
    // Find new border
    // If then all edges are drawn return true, else return false
    if  (n_common_v == cycle.vertexCount())
-   {
-      is_attached = true;
-
-      for (i = 0; i < cycle.vertexCount(); i++)
-      {
-         if (_layout_edges[cycle.getEdge(i)].type == ELEMENT_NOT_DRAWN)
-         {
-            for (j = edgeBegin(); j < edgeEnd(); j = edgeNext(j))
-               if (_layout_edges[j].type > ELEMENT_NOT_DRAWN)
-                  if ((_calcIntersection(i, j) % 10) != 1)
-                  {
-                     is_attached = false;
-                     break;
-                  }
-
-            if (!is_attached)
-               continue;
-
-            if  (cycle_vertex_types[i] == ELEMENT_INTERNAL ||
-                 cycle_vertex_types[(i + 1) % cycle.vertexCount()] == ELEMENT_INTERNAL)
-            {
-               _layout_edges[cycle.getEdge(i)].type = ELEMENT_INTERNAL;
-            } else
-            {  // Both vertices are boundary.
-               // Check if edge is boundary by its center
-               p.lineCombin2(_layout_vertices[cycle.getVertex(i)].pos, 0.9f,
-                  _layout_vertices[cycle.getVertexC(i + 1)].pos, 0.1f);
-
-               if  (_isPointOutside(p))
-               {
-                  _splitBorder(cycle.getVertex(i), cycle.getVertexC(i + 1), border1v, border1e, border2v, border2e);
-
-                  _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
-
-                  // Ignore border1 and check if vertices are inside new bound
-                  // if no then restore Border1 and ignore Border2
-                  for (j = 0; j < border1e.size(); j++)
-                  {
-                     if (j > 0)
-                        _layout_vertices[border1v[j]].type = ELEMENT_IGNORE;
-                     _layout_edges[border1e[j]].type = ELEMENT_IGNORE;
-                  }
-
-                  p.lineCombin2(_layout_vertices[border1v[1]].pos, 0.9f, _layout_vertices[border1v[2]].pos, 0.1f);
-
-                  if (!_isPointOutside(p))
-                  {
-                     for (j = 0; j < border1e.size(); j++)
-                     {
-                        if (j > 0)
-                           _layout_vertices[border1v[j]].type = ELEMENT_INTERNAL;
-                        _layout_edges[border1e[j]].type = ELEMENT_INTERNAL;
-                     }
-                  } else {
-                     for (j = 0; j < border1e.size(); j++)
-                     {
-                        if (j > 0)
-                           _layout_vertices[border1v[j]].type = ELEMENT_BOUNDARY;
-                        _layout_edges[border1e[j]].type = ELEMENT_BOUNDARY;
-                     }
-                     for (j = 0; j < border2e.size(); j++)
-                     {
-                        if (j > 0)
-                           _layout_vertices[border2v[j]].type = ELEMENT_INTERNAL;
-                        _layout_edges[border2e[j]].type = ELEMENT_INTERNAL;
-                     }
-                  }
-               } else
-                   _layout_edges[cycle.getEdge(i)].type = ELEMENT_INTERNAL;
-            }
-         }
-      }
-      return is_attached;
-   }
+      return _drawEdgesWithoutIntersection(cycle, cycle_vertex_types);
 
    // Attach cycle of two parts:
    //   chain_int - internal and boundary vertices of component
@@ -291,6 +210,14 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
 
    if (!_splitCycle(cycle, cycle_vertex_types, true, chain_ext, chain_int, c_beg, c_end))
       return false;
+
+   int i, k;
+   bool is_attached = false;
+   QS_DEF(Array<int>, border1v);
+   QS_DEF(Array<int>, border1e);
+   QS_DEF(Array<int>, border2v);
+   QS_DEF(Array<int>, border2e);
+   Vec2f p;
 
    // Make Border1, Border2 from component border (borders have two common vertices)
    _splitBorder(c_beg, c_end, border1v, border1e, border2v, border2e);
@@ -322,45 +249,11 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
             return false;
       }
 
-      bool bad_try = false;
-
-      // Check chain_ext is outside bound
-      for (i = 1; i < chain_ext.size() - 1; i++)
-      {
-         if (!_isPointOutside(next_bc._layout_vertices[mapping[chain_ext[i]]].pos))
-         {
-            bad_try = true;
-            break;
-         }
-      }
-
-      if (bad_try)
+      if (!_checkBadTryChainOutside(chain_ext, next_bc, mapping))
          continue;
 
       // Check edges from chain_ext intersect previous border other than in the ends
-      for (i = 0; i < chain_ext.size() - 1 && !bad_try; i++)
-         for (j = next_bc.edgeBegin(); j < next_bc.edgeEnd(); j = next_bc.edgeNext(j))
-         {
-            if (_layout_edges[next_bc._layout_edges[j].ext_idx].type == ELEMENT_BOUNDARY)
-            {
-               const Vertex &vert = next_bc.getVertex(mapping[chain_ext[i]]);
-               int edge1_idx = vert.neiEdge(vert.findNeiVertex(mapping[chain_ext[i + 1]]));
-               int intersect = next_bc._calcIntersection(edge1_idx, j);
-
-               const Edge &edge1 = next_bc.getEdge(edge1_idx);
-               const Edge &edge2 = next_bc.getEdge(j);
-
-               // Check if edges intersect
-               if ((intersect % 10) != 1 || (intersect == 21 && edge1.beg != edge2.beg && edge1.beg != edge2.end
-                  && edge1.end != edge2.beg && edge1.end != edge2.end))
-               {
-                  bad_try = true;
-                  break;
-               }
-            }
-         }
-
-      if (bad_try)
+      if (!_checkBadTryBorderIntersection(chain_ext, next_bc, mapping))
          continue;
 
       // If Border1 lays inside cycle [chain_ext,border2] than it becomes internal and Border2 becomes boundary
@@ -1018,4 +911,128 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
       _layout_edges[vert.neiEdge(vert.findNeiVertex(i))].type = ELEMENT_BOUNDARY;
       j++;
    }
+}
+
+bool MoleculeLayoutGraph::_drawEdgesWithoutIntersection (const Cycle &cycle, Array<int> & cycle_vertex_types)
+{
+   bool is_attached = true;
+   Vec2f p;
+
+   QS_DEF(Array<int>, border1v);
+   QS_DEF(Array<int>, border1e);
+   QS_DEF(Array<int>, border2v);
+   QS_DEF(Array<int>, border2e);
+
+   for (int i = 0; i < cycle.vertexCount(); i++)
+   {
+      if (_layout_edges[cycle.getEdge(i)].type == ELEMENT_NOT_DRAWN)
+      {
+         for (int j = edgeBegin(); j < edgeEnd(); j = edgeNext(j))
+            if (_layout_edges[j].type > ELEMENT_NOT_DRAWN)
+               if ((_calcIntersection(i, j) % 10) != 1)
+               {
+                  is_attached = false;
+                  break;
+               }
+
+         if (!is_attached)
+            continue;
+
+         if  (cycle_vertex_types[i] == ELEMENT_INTERNAL ||
+            cycle_vertex_types[(i + 1) % cycle.vertexCount()] == ELEMENT_INTERNAL)
+         {
+            _layout_edges[cycle.getEdge(i)].type = ELEMENT_INTERNAL;
+         } 
+         else
+         {  // Both vertices are boundary.
+            // Check if edge is boundary by its center
+            p.lineCombin2(_layout_vertices[cycle.getVertex(i)].pos, 0.9f,
+               _layout_vertices[cycle.getVertexC(i + 1)].pos, 0.1f);
+
+            if  (_isPointOutside(p))
+            {
+               _splitBorder(cycle.getVertex(i), cycle.getVertexC(i + 1), border1v, border1e, border2v, border2e);
+
+               _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
+
+               // Ignore border1 and check if vertices are inside new bound
+               // if no then restore Border1 and ignore Border2
+               for (int j = 0; j < border1e.size(); j++)
+               {
+                  if (j > 0)
+                     _layout_vertices[border1v[j]].type = ELEMENT_IGNORE;
+                  _layout_edges[border1e[j]].type = ELEMENT_IGNORE;
+               }
+
+               p.lineCombin2(_layout_vertices[border1v[1]].pos, 0.9f, _layout_vertices[border1v[2]].pos, 0.1f);
+
+               if (!_isPointOutside(p))
+               {
+                  for (int j = 0; j < border1e.size(); j++)
+                  {
+                     if (j > 0)
+                        _layout_vertices[border1v[j]].type = ELEMENT_INTERNAL;
+                     _layout_edges[border1e[j]].type = ELEMENT_INTERNAL;
+                  }
+               }
+               else
+               {
+                  for (int j = 0; j < border1e.size(); j++)
+                  {
+                     if (j > 0)
+                        _layout_vertices[border1v[j]].type = ELEMENT_BOUNDARY;
+                     _layout_edges[border1e[j]].type = ELEMENT_BOUNDARY;
+                  }
+                  for (int j = 0; j < border2e.size(); j++)
+                  {
+                     if (j > 0)
+                        _layout_vertices[border2v[j]].type = ELEMENT_INTERNAL;
+                     _layout_edges[border2e[j]].type = ELEMENT_INTERNAL;
+                  }
+               }
+            } 
+            else
+               _layout_edges[cycle.getEdge(i)].type = ELEMENT_INTERNAL;
+         }
+      }
+   }
+
+   return is_attached;
+}
+
+bool MoleculeLayoutGraph::_checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping)
+{
+   for (int i = 0; i < chain_ext.size() - 1; i++)
+      for (int j = next_bc.edgeBegin(); j < next_bc.edgeEnd(); j = next_bc.edgeNext(j))
+      {
+         if (_layout_edges[next_bc._layout_edges[j].ext_idx].type == ELEMENT_BOUNDARY)
+         {
+            const Vertex &vert = next_bc.getVertex(mapping[chain_ext[i]]);
+            int edge1_idx = vert.neiEdge(vert.findNeiVertex(mapping[chain_ext[i + 1]]));
+            int intersect = next_bc._calcIntersection(edge1_idx, j);
+
+            const Edge &edge1 = next_bc.getEdge(edge1_idx);
+            const Edge &edge2 = next_bc.getEdge(j);
+
+            // Check if edges intersect
+            if ((intersect % 10) != 1 || (intersect == 21 && edge1.beg != edge2.beg && edge1.beg != edge2.end
+               && edge1.end != edge2.beg && edge1.end != edge2.end))
+            {
+               return false;
+            }
+         }
+      }
+
+   return true;
+}
+
+bool MoleculeLayoutGraph::_checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping)
+{
+   // Check chain_ext is outside bound
+   for (int i = 1; i < chain_ext.size() - 1; i++)
+   {
+      if (!_isPointOutside(next_bc._layout_vertices[mapping[chain_ext[i]]].pos))
+         return false;
+   }
+   return true;
 }

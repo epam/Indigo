@@ -69,12 +69,12 @@ static int _vertex_cmp (int &n1, int &n2, void *context)
 
 void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
 {
+
    BiconnectedDecomposer bc_decom(*this);
    QS_DEF(Array<int>, bc_tree);
    QS_DEF(ObjArray<MoleculeLayoutGraph>, bc_components);
    QS_DEF(Array<int>, fixed_components);
    bool all_trivial = true;
-   int i, j = -1;
 
    int n_comp = bc_decom.decompose();
 
@@ -83,7 +83,7 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
 
    bc_components.clear();
 
-   for (i = 0; i < n_comp; i++)
+   for (int i = 0; i < n_comp; i++)
    {
       Filter comp;
       bc_decom.getComponent(i, comp);
@@ -94,168 +94,13 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
    _makeComponentsTree(bc_decom, bc_components, bc_tree);
 
    // 1. Find biconnected components forming connected subgraph from fixed vertices
-   if (_n_fixed > 0)
-   {
-      QS_DEF(Array<int>, fixed_count);
+   _findFixedComponents(bc_decom, fixed_components, bc_components);
 
-      fixed_count.clear_resize(n_comp);
-      fixed_count.zerofill();
+   all_trivial = _assignComponentsRelativeCoordinates(bc_components, fixed_components, bc_decom);
 
-      // calculate number of fixed vertices in each component
-      for (i = 0; i < n_comp; i++)
-      {
-         Filter filter;
-         
-         bc_decom.getComponent(i, filter);
+   int i, j = -1;
 
-         for (j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
-            if (filter.valid(j) && _fixed_vertices[j])
-               fixed_count[i]++;
-      }
-
-      // keep only with fixed number greater than a half
-      for (i = 0; i < n_comp; i++)
-      {
-         Filter filter;
-         
-         bc_decom.getComponent(i, filter);
-
-         if (fixed_count[i] > filter.count(*this) / 2)
-            fixed_components[i] = 1;
-      }
-
-      _fixed_vertices.zerofill();
-
-      // update fixed vertices
-      for (i = 0; i < n_comp; i++)
-      {
-         if (!fixed_components[i])
-            continue;
-
-         MoleculeLayoutGraph &component = bc_components[i];
-
-         for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
-            _fixed_vertices[component.getVertexExtIdx(j)] = 1;
-      }
-
-      Filter fixed_filter(_fixed_vertices.ptr(), Filter::EQ, 1);
-
-      Graph fixed_graph;
-      QS_DEF(Array<int>, fixed_mapping);
-
-      fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, 0);
-
-      if (Graph::isConnected(fixed_graph))
-         _n_fixed = fixed_filter.count(*this);
-      else
-      {  // fixed subgraph is not connected - choose its greatest component
-         int n = fixed_graph.countComponents();
-         const Array<int> &decomposition = fixed_graph.getDecomposition();
-
-         fixed_count.clear_resize(n);
-         fixed_count.zerofill();
-
-         for (i = fixed_graph.vertexBegin(); i < fixed_graph.vertexEnd(); i = fixed_graph.vertexNext(i))
-            fixed_count[decomposition[i]]++;
-
-         j = 0;
-         for (i = 1; i < n; i++)
-            if (fixed_count[i] > fixed_count[j])
-               j = i;
-
-         Filter max_filter(decomposition.ptr(), Filter::EQ, j);
-
-         // update fixed vertices
-         _fixed_vertices.zerofill();
-         _n_fixed = 0;
-
-         for (i = fixed_graph.vertexBegin(); i < fixed_graph.vertexEnd(); i = fixed_graph.vertexNext(i))
-         {
-            if (max_filter.valid(i))
-            {
-               _fixed_vertices[fixed_mapping[i]] = 1;
-               _n_fixed++;
-            }
-         }
-
-         for (i = 0; i < n_comp; i++)
-         {
-            if (!fixed_components[i])
-               continue;
-
-            MoleculeLayoutGraph &component = bc_components[i];
-
-            if (!max_filter.valid(component.getVertexExtIdx(component.vertexBegin())))
-               fixed_components[i] = 0;
-         }
-      }
-   }
-       
-   // Possible solutions:
-   // 1. a) vertex code is calculated inside component (doesn't depend on neighbors) or
-   //    b) vertex code is calculated respecting whole graph
-   // 2. a) component code is the sum of 1a codes
-   //    b) component code is the sum of 1b codes
-   // Initially was 1a and 2b then changed to 1b and 2b
-   for (i = 0; i < n_comp; i++)
-   {
-      MoleculeLayoutGraph &component = bc_components[i];
-      component.max_iterations = max_iterations;
-
-      //component._calcMorganCodes();
-      component._total_morgan_code = 0;
-
-      for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
-         component._total_morgan_code += _layout_vertices[component.getLayoutVertex(j).ext_idx].morgan_code;
-
-      // Mark cyclic atoms
-      if (!component.isSingleEdge())
-      {
-         all_trivial = false;
-
-         for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
-         {
-            component._layout_vertices[j].is_cyclic = true;
-            _layout_vertices[component._layout_vertices[j].ext_idx].is_cyclic = true;
-         }
-
-         for (j = component.edgeBegin(); j < component.edgeEnd(); j = component.edgeNext(j))
-         {
-            component._layout_edges[j].is_cyclic = true;
-            _layout_edges[component._layout_edges[j].ext_idx].is_cyclic = true;
-         }
-      }
-
-      int fixed = fixed_components[i];
-
-      component._assignRelativeCoordinates(fixed, *this);
-
-      if (fixed != fixed_components[i])
-      {
-         fixed_components[i] = fixed;
-
-         // update fixed vertices
-         _fixed_vertices.resize(vertexEnd());
-         _fixed_vertices.zerofill();
-         _n_fixed = 0;
-         for (j = 0; j < n_comp; j++)
-         {
-            if (!fixed_components[j])
-               continue;
-
-            Filter fix_filter;
-            
-            bc_decom.getComponent(j, fix_filter);
-
-            for (int k = vertexBegin(); k < vertexEnd(); k = vertexNext(k))
-               if (!_fixed_vertices[k])
-               {
-                  _fixed_vertices[k] = 1;
-                  _n_fixed++;
-               }
-         }
-      }
-   }
+  
 
    if (_n_fixed > 0)
    {
@@ -269,7 +114,8 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
       MoleculeLayoutGraph &component = bc_components[j];
 
       _first_vertex_idx = component._layout_vertices[component.vertexBegin()].ext_idx;
-   } else
+   }
+   else
    {
       // ( 0]. Nucleus.;
       //   Begin from nontrivial component with maximum code
@@ -321,6 +167,8 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
          _layout_edges[nucleus_edge].type = ELEMENT_BOUNDARY;
       }
    }
+
+  
 
    // ( 1] atoms assigned absolute coordinates and adjacent to atoms not;
    //   assigned coordinates are put on a list;
@@ -375,6 +223,8 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
          //       at the top of the list with descending ATCD numbers and acyclic atoms;
          //       at the bottom of the list with descending ATCD numbers;;
          adjacent_list.clear();
+
+        
 
          for (i = vert_k.neiBegin(); i < vert_k.neiEnd(); i = vert_k.neiNext(i))
             if (_layout_vertices[vert_k.neiVertex(i)].type == ELEMENT_NOT_DRAWN)
@@ -501,28 +351,9 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
 {
    int i;
 
-
    if (isSingleEdge())
    {
-      // Trivial component layout
-      int idx1 = vertexBegin();
-      int idx2 = vertexNext(idx1);
-
-      _layout_vertices[idx1].type = ELEMENT_BOUNDARY;
-      _layout_vertices[idx2].type = ELEMENT_BOUNDARY;
-
-      if (fixed_component)
-      {
-         _layout_vertices[idx1].pos = supergraph.getPos(getVertexExtIdx(idx1));
-         _layout_vertices[idx2].pos = supergraph.getPos(getVertexExtIdx(idx2));
-      } else
-      {
-         _layout_vertices[idx1].pos.set(0.f, 0.f);
-         _layout_vertices[idx2].pos.set(0.f, 1.f);
-      }
-
-      _layout_edges[edgeBegin()].type = ELEMENT_BOUNDARY;
-
+      _assignRelativeSingleEdge(fixed_component, supergraph);
       return;
    }
 
@@ -541,71 +372,11 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
          return;
 
       fixed_component = 0;
-   } else
-   { // try to find pattern      
-      TL_GET(ObjArray<PatternLayout>, _patterns);
-
-      MorganCode morgan(*this);
-      QS_DEF(Array<long>, morgan_codes);
-
-      morgan.calculate(morgan_codes, 3, 7);
-
-      long morgan_code = 0;
-
-      for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-         morgan_code += morgan_codes[i];
-
-      int left = 0;
-      int right = _patterns.size() - 1;
-      int pat_idx = 0;
-      int cmp;
-
-      while (left < right)
-      {
-         if (right - left == 1)
-         {
-            if (_pattern_cmp2(_patterns[left], vertexCount(), edgeCount(), morgan_code) == 0)
-               pat_idx = left;
-            else if (_pattern_cmp2(_patterns[right], vertexCount(), edgeCount(), morgan_code) == 0) 
-               pat_idx = right;
-            break;
-         }
-
-         pat_idx = (right + left) / 2;
-
-         cmp = _pattern_cmp2(_patterns[pat_idx], vertexCount(), edgeCount(), morgan_code);
-
-         if (cmp < 0)
-            left = pat_idx;
-         else
-            right = pat_idx;
-      }
-
-      while (pat_idx > 0 && _pattern_cmp2(_patterns[pat_idx - 1], vertexCount(), edgeCount(), morgan_code) == 0)
-         pat_idx--;
-
-      while (pat_idx < _patterns.size() && _pattern_cmp2(_patterns[pat_idx], vertexCount(), edgeCount(), morgan_code) == 0)
-      {
-         // Match pattern
-         // TODO: check different attachment points
-         PatternLayout &pattern = _patterns[pat_idx];
-
-         EmbeddingEnumerator ee(*this);
-
-         ee.setSubgraph(pattern);
-         ee.cb_match_edge = _match_pattern_bond;
-         ee.cb_embedding = _pattern_embedding;
-         ee.userdata = this;
-
-         if (!ee.process())
-         {
-            if (pattern.isFixed())
-               fixed_component = 1;
-            return;
-         }
-
-         pat_idx++;
-      }
+   } 
+   else
+   { 
+      if (_tryToFindPattern(fixed_component))
+         return;
    }
 
    //TODO: repair exception with vec2f
@@ -1223,4 +994,277 @@ void MoleculeLayoutGraph::_assignFinalCoordinates (float bond_length, const Arra
          }
       }
    }
+}
+
+void MoleculeLayoutGraph::_findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, ObjArray<MoleculeLayoutGraph> & bc_components )
+{
+  
+
+   // 1. Find biconnected components forming connected subgraph from fixed vertices
+   if (_n_fixed == 0)
+      return;
+
+   int n_comp = bc_decom.componentsCount();
+   QS_DEF(Array<int>, fixed_count);
+
+   fixed_count.clear_resize(n_comp);
+   fixed_count.zerofill();
+
+   // calculate number of fixed vertices in each component
+   for (int i = 0; i < n_comp; i++)
+   { 
+      Filter filter;
+
+      bc_decom.getComponent(i, filter);
+
+      for (int j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
+         if (filter.valid(j) && _fixed_vertices[j])
+            fixed_count[i]++;
+   }
+
+   // keep only with fixed number greater than a half
+   for (int i = 0; i < n_comp; i++)
+   {
+      Filter filter;
+
+      bc_decom.getComponent(i, filter);
+
+      if (fixed_count[i] > filter.count(*this) / 2)
+         fixed_components[i] = 1;
+   }
+
+   _fixed_vertices.zerofill();
+
+   // update fixed vertices
+   for (int i = 0; i < n_comp; i++)
+   {
+      if (!fixed_components[i])
+         continue;
+
+      MoleculeLayoutGraph &component = bc_components[i];
+
+      for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
+         _fixed_vertices[component.getVertexExtIdx(j)] = 1;
+   }
+
+   Filter fixed_filter(_fixed_vertices.ptr(), Filter::EQ, 1);
+
+   Graph fixed_graph;
+   QS_DEF(Array<int>, fixed_mapping);
+
+   fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, 0);
+
+   if (Graph::isConnected(fixed_graph))
+      _n_fixed = fixed_filter.count(*this);
+   else
+   { 
+      // fixed subgraph is not connected - choose its greatest component
+      int n = fixed_graph.countComponents();
+      const Array<int> &decomposition = fixed_graph.getDecomposition();
+
+      fixed_count.clear_resize(n);
+      fixed_count.zerofill();
+
+      for (int i = fixed_graph.vertexBegin(); i < fixed_graph.vertexEnd(); i = fixed_graph.vertexNext(i))
+         fixed_count[decomposition[i]]++;
+
+      int j = 0;
+      for (int i = 1; i < n; i++)
+         if (fixed_count[i] > fixed_count[j])
+            j = i;
+
+      Filter max_filter(decomposition.ptr(), Filter::EQ, j);
+
+      // update fixed vertices
+      _fixed_vertices.zerofill();
+      _n_fixed = 0;
+
+      for (int i = fixed_graph.vertexBegin(); i < fixed_graph.vertexEnd(); i = fixed_graph.vertexNext(i))
+      {
+         if (max_filter.valid(i))
+         {
+            _fixed_vertices[fixed_mapping[i]] = 1;
+            _n_fixed++;
+         }
+      }
+
+      for (int i = 0; i < n_comp; i++)
+      {
+         if (!fixed_components[i])
+            continue;
+
+         MoleculeLayoutGraph &component = bc_components[i];
+
+         if (!max_filter.valid(component.getVertexExtIdx(component.vertexBegin())))
+            fixed_components[i] = 0;
+      }
+   }
+}
+
+bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates (ObjArray<MoleculeLayoutGraph> & bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom)
+{
+  
+
+   bool all_trivial = true;
+   int n_comp = bc_decom.componentsCount();
+
+   // Possible solutions:
+   // 1. a) vertex code is calculated inside component (doesn't depend on neighbors) or
+   //    b) vertex code is calculated respecting whole graph
+   // 2. a) component code is the sum of 1a codes
+   //    b) component code is the sum of 1b codes
+   // Initially was 1a and 2b then changed to 1b and 2b
+   for (int i = 0; i < n_comp; i++)
+   {
+      MoleculeLayoutGraph &component = bc_components[i];
+      component.max_iterations = max_iterations;
+
+      //component._calcMorganCodes();
+      component._total_morgan_code = 0;
+
+      for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
+         component._total_morgan_code += _layout_vertices[component.getLayoutVertex(j).ext_idx].morgan_code;
+
+      // Mark cyclic atoms
+      if (!component.isSingleEdge())
+      {
+         all_trivial = false;
+
+         for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
+         {
+            component._layout_vertices[j].is_cyclic = true;
+            _layout_vertices[component._layout_vertices[j].ext_idx].is_cyclic = true;
+         }
+
+         for (int j = component.edgeBegin(); j < component.edgeEnd(); j = component.edgeNext(j))
+         {
+            component._layout_edges[j].is_cyclic = true;
+            _layout_edges[component._layout_edges[j].ext_idx].is_cyclic = true;
+         }
+      }
+
+      int fixed = fixed_components[i];
+
+      component._assignRelativeCoordinates(fixed, *this);
+
+      if (fixed != fixed_components[i])
+      {
+         fixed_components[i] = fixed;
+
+         // update fixed vertices
+         _fixed_vertices.resize(vertexEnd());
+         _fixed_vertices.zerofill();
+         _n_fixed = 0;
+         for (int j = 0; j < n_comp; j++)
+         {
+            if (!fixed_components[j])
+               continue;
+
+            Filter fix_filter;
+
+            bc_decom.getComponent(j, fix_filter);
+
+            for (int k = vertexBegin(); k < vertexEnd(); k = vertexNext(k))
+               if (!_fixed_vertices[k])
+               {
+                  _fixed_vertices[k] = 1;
+                  _n_fixed++;
+               }
+         }
+      }
+   }
+   return all_trivial;
+}
+
+void MoleculeLayoutGraph::_assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph) 
+{
+   // Trivial component layout
+   int idx1 = vertexBegin();
+   int idx2 = vertexNext(idx1);
+
+   _layout_vertices[idx1].type = ELEMENT_BOUNDARY;
+   _layout_vertices[idx2].type = ELEMENT_BOUNDARY;
+
+   if (fixed_component)
+   {
+      _layout_vertices[idx1].pos = supergraph.getPos(getVertexExtIdx(idx1));
+      _layout_vertices[idx2].pos = supergraph.getPos(getVertexExtIdx(idx2));
+   }
+   else
+   {
+      _layout_vertices[idx1].pos.set(0.f, 0.f);
+      _layout_vertices[idx2].pos.set(0.f, 1.f);
+   }
+
+   _layout_edges[edgeBegin()].type = ELEMENT_BOUNDARY;
+}
+
+bool MoleculeLayoutGraph::_tryToFindPattern (int &fixed_component)
+{
+   // try to find pattern      
+   TL_GET(ObjArray<PatternLayout>, _patterns);
+
+   MorganCode morgan(*this);
+   QS_DEF(Array<long>, morgan_codes);
+
+   morgan.calculate(morgan_codes, 3, 7);
+
+   long morgan_code = 0;
+
+   for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+      morgan_code += morgan_codes[i];
+
+   int left = 0;
+   int right = _patterns.size() - 1;
+   int pat_idx = 0;
+   int cmp;
+
+   while (left < right)
+   {
+      if (right - left == 1)
+      {
+         if (_pattern_cmp2(_patterns[left], vertexCount(), edgeCount(), morgan_code) == 0)
+            pat_idx = left;
+         else if (_pattern_cmp2(_patterns[right], vertexCount(), edgeCount(), morgan_code) == 0) 
+            pat_idx = right;
+         break;
+      }
+
+      pat_idx = (right + left) / 2;
+
+      cmp = _pattern_cmp2(_patterns[pat_idx], vertexCount(), edgeCount(), morgan_code);
+
+      if (cmp < 0)
+         left = pat_idx;
+      else
+         right = pat_idx;
+   }
+
+   while (pat_idx > 0 && _pattern_cmp2(_patterns[pat_idx - 1], vertexCount(), edgeCount(), morgan_code) == 0)
+      pat_idx--;
+
+   while (pat_idx < _patterns.size() && _pattern_cmp2(_patterns[pat_idx], vertexCount(), edgeCount(), morgan_code) == 0)
+   {
+      // Match pattern
+      // TODO: check different attachment points
+      PatternLayout &pattern = _patterns[pat_idx];
+
+      EmbeddingEnumerator ee(*this);
+
+      ee.setSubgraph(pattern);
+      ee.cb_match_edge = _match_pattern_bond;
+      ee.cb_embedding = _pattern_embedding;
+      ee.userdata = this;
+
+      if (!ee.process())
+      {
+         if (pattern.isFixed())
+            fixed_component = 1;
+         return true;
+      }
+
+      pat_idx++;
+   }
+
+   return false;
 }

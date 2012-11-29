@@ -173,6 +173,9 @@ protected:
    void _copyLayout (MoleculeLayoutGraph &component);
    void _getAnchor (int &v1, int &v2, int &v3) const;
 
+   void _findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, ObjArray<MoleculeLayoutGraph> &bc_components);
+   bool _assignComponentsRelativeCoordinates (ObjArray<MoleculeLayoutGraph> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
+
    // refine
    void _refineCoordinates (const BiconnectedDecomposer &bc_decomposer, const ObjArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree);
    bool _allowRotateAroundVertex (int idx) const;
@@ -185,6 +188,8 @@ protected:
 
    // assigning coordinates
    void _assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph);
+   bool _tryToFindPattern (int &fixed_component);
+   void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignFirstCycle(const Cycle &cycle);
    void _attachCrossingEdges ();
    void _attachDandlingVertices (int vert_idx, Array<int> &adjacent_list);
@@ -193,6 +198,11 @@ protected:
 
    // attaching cycles
    bool _attachCycleOutside (const Cycle &cycle, float length, int n_common);
+   bool _drawEdgesWithoutIntersection (const Cycle &cycle, Array<int> & cycle_vertex_types);
+
+   bool _checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping);
+   bool _checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping);
+
    bool _attachCycleInside (const Cycle &cycle, float length);
    bool _attachCycleWithIntersections (const Cycle &cycle, float length);
    void _setChainType (const Array<int> &chain, const Array<int> &mapping, int type);
