@@ -30,12 +30,12 @@ void CycleBasis::create(const Graph& graph) {
    _cycles.clear();
    _cycleVertices.clear();
 
+   QS_DEF(Graph, subgraph);
+
    Filter filter;
    for (int i = 0; i < comp_num; ++i) {
       bic_dec.getComponent(i, filter);
       
-      Graph subgraph;
-
       // create subgraph and store mapping
       subgraph.makeSubgraph(graph, filter, &mapping_out, 0);
 

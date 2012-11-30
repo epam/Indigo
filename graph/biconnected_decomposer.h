@@ -48,6 +48,9 @@ public:
 protected:
    void _biconnect (int v, int u);
 
+   bool _pushToStack (Array<int> &dfs_stack, int v);
+   void _processIfNotPushed (Array<int> &dfs_stack, int w);
+
    const Graph &_graph;
    TL_CP_DECL(PtrArray<Array<int> >, _components);
    TL_CP_DECL(Array<int>, _dfs_order);
