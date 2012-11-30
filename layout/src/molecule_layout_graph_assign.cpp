@@ -69,7 +69,6 @@ static int _vertex_cmp (int &n1, int &n2, void *context)
 
 void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
 {
-
    BiconnectedDecomposer bc_decom(*this);
    QS_DEF(Array<int>, bc_tree);
    QS_DEF(ObjArray<MoleculeLayoutGraph>, bc_components);
@@ -98,77 +97,9 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
 
    all_trivial = _assignComponentsRelativeCoordinates(bc_components, fixed_components, bc_decom);
 
+   _findFirstVertexIdx(n_comp, fixed_components, bc_components, all_trivial);
+
    int i, j = -1;
-
-  
-
-   if (_n_fixed > 0)
-   {
-      for (i = 0; i < n_comp; i++)
-         if (fixed_components[i])
-         {
-            _copyLayout(bc_components[i]);
-            j = i;
-         }
-
-      MoleculeLayoutGraph &component = bc_components[j];
-
-      _first_vertex_idx = component._layout_vertices[component.vertexBegin()].ext_idx;
-   }
-   else
-   {
-      // ( 0]. Nucleus.;
-      //   Begin from nontrivial component with maximum code
-      //   if there's no then begin from vertex with maximum code and its neighbor with maximum code too
-      int nucleus_idx = 0;
-
-      if (!all_trivial)
-      {
-         nucleus_idx = -1;
-         for (i = 0; i < n_comp; i++)
-         {
-            MoleculeLayoutGraph &component = bc_components[i];
-
-            if (!component.isSingleEdge())
-            {
-               if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]._total_morgan_code)
-                  nucleus_idx = i;
-            }
-         }
-
-         if (nucleus_idx < 0)
-            throw Error("Internal error: cannot find nontrivial component");
-
-         MoleculeLayoutGraph &nucleus = bc_components[nucleus_idx];
-
-         _copyLayout(nucleus);
-         _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
-      } else 
-      {
-         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-            if (_layout_vertices[i].morgan_code > _layout_vertices[nucleus_idx].morgan_code)
-               nucleus_idx = i;
-
-         const Vertex &nucleus = getVertex(nucleus_idx);
-         int nucleus_idx2 = nucleus.neiBegin();
-
-         for (j = nucleus.neiNext(nucleus_idx2); j < nucleus.neiEnd(); j = nucleus.neiNext(j))
-            if (_layout_vertices[nucleus.neiVertex(j)].morgan_code > _layout_vertices[nucleus.neiVertex(nucleus_idx2)].morgan_code)
-               nucleus_idx2 = j;
-
-         int nucleus_edge = nucleus.neiEdge(nucleus_idx2);
-         nucleus_idx2 = nucleus.neiVertex(nucleus_idx2);
-
-         _first_vertex_idx = nucleus_idx;
-         _layout_vertices[nucleus_idx].type = ELEMENT_BOUNDARY;
-         _layout_vertices[nucleus_idx].pos.set(0.f, 0.f);
-         _layout_vertices[nucleus_idx2].type = ELEMENT_BOUNDARY;
-         _layout_vertices[nucleus_idx2].pos.set(1.f, 0.f);
-         _layout_edges[nucleus_edge].type = ELEMENT_BOUNDARY;
-      }
-   }
-
-  
 
    // ( 1] atoms assigned absolute coordinates and adjacent to atoms not;
    //   assigned coordinates are put on a list;
@@ -177,40 +108,8 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
 
    while (true) 
    {
-      assigned_list.clear();
-
-      for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-      {
-         if (_layout_vertices[i].type == ELEMENT_NOT_DRAWN)
-            continue;
-
-         const Vertex &vert = getVertex(i);
-
-         for (j = vert.neiBegin(); j < vert.neiEnd(); j = vert.neiNext(j))
-         {
-            if (_layout_vertices[vert.neiVertex(j)].type == ELEMENT_NOT_DRAWN)
-            {
-               assigned_list.push(i);
-               break;
-            }
-         }
-      }
-
-      if (assigned_list.size() == 0)
-      {
-          // restore ignored ears in chains
-          for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-              if (_layout_vertices[i].type == ELEMENT_IGNORE)
-                  _layout_vertices[i].type = ELEMENT_BOUNDARY;
-          
-         _refineCoordinates(bc_decom, bc_components, bc_tree);
+      if (!_prepareAssignedList(assigned_list, bc_decom, bc_components, bc_tree))
          return;
-      }
-
-      // ( 2] the list is ordered with cyclic atoms at the top of the list;
-      //   with descending ATCD numbers and acyclic atoms at the bottom;
-      //   of the list with descending ATCD numbers;;
-      assigned_list.qsort(_vertex_cmp, this);
 
       // ( 3.i] let k = 0  ( top of the list];;
       while (assigned_list.size() != 0)
@@ -223,8 +122,6 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
          //       at the top of the list with descending ATCD numbers and acyclic atoms;
          //       at the bottom of the list with descending ATCD numbers;;
          adjacent_list.clear();
-
-        
 
          for (i = vert_k.neiBegin(); i < vert_k.neiEnd(); i = vert_k.neiNext(i))
             if (_layout_vertices[vert_k.neiVertex(i)].type == ELEMENT_NOT_DRAWN)
@@ -251,7 +148,8 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
             adjacent_list.qsort(_vertex_cmp, this);
 
             _attachDandlingVertices(k, adjacent_list);
-         } else
+         } 
+         else
          {
             // Component layout in current vertex should have the same angles between components.
             // So it depends on component order and their flipping (for nontrivial components)
@@ -998,8 +896,6 @@ void MoleculeLayoutGraph::_assignFinalCoordinates (float bond_length, const Arra
 
 void MoleculeLayoutGraph::_findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, ObjArray<MoleculeLayoutGraph> & bc_components )
 {
-  
-
    // 1. Find biconnected components forming connected subgraph from fixed vertices
    if (_n_fixed == 0)
       return;
@@ -1012,7 +908,7 @@ void MoleculeLayoutGraph::_findFixedComponents (BiconnectedDecomposer &bc_decom,
 
    // calculate number of fixed vertices in each component
    for (int i = 0; i < n_comp; i++)
-   { 
+   {
       Filter filter;
 
       bc_decom.getComponent(i, filter);
@@ -1103,8 +999,6 @@ void MoleculeLayoutGraph::_findFixedComponents (BiconnectedDecomposer &bc_decom,
 
 bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates (ObjArray<MoleculeLayoutGraph> & bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom)
 {
-  
-
    bool all_trivial = true;
    int n_comp = bc_decom.componentsCount();
 
@@ -1267,4 +1161,113 @@ bool MoleculeLayoutGraph::_tryToFindPattern (int &fixed_component)
    }
 
    return false;
+}
+
+void MoleculeLayoutGraph::_findFirstVertexIdx (int n_comp, Array<int> & fixed_components, ObjArray<MoleculeLayoutGraph> &bc_components, bool all_trivial)
+{
+   if (_n_fixed > 0)
+   {
+      int j;
+      for (int i = 0; i < n_comp; i++)
+         if (fixed_components[i])
+         {
+            _copyLayout(bc_components[i]);
+            j = i;
+         }
+
+         MoleculeLayoutGraph &component = bc_components[j];
+
+         _first_vertex_idx = component._layout_vertices[component.vertexBegin()].ext_idx;
+   }
+   else
+   {
+      // ( 0]. Nucleus.;
+      //   Begin from nontrivial component with maximum code
+      //   if there's no then begin from vertex with maximum code and its neighbor with maximum code too
+      int nucleus_idx = 0;
+
+      if (!all_trivial)
+      {
+         nucleus_idx = -1;
+         for (int i = 0; i < n_comp; i++)
+         {
+            MoleculeLayoutGraph &component = bc_components[i];
+
+            if (!component.isSingleEdge())
+            {
+               if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]._total_morgan_code)
+                  nucleus_idx = i;
+            }
+         }
+
+         if (nucleus_idx < 0)
+            throw Error("Internal error: cannot find nontrivial component");
+
+         MoleculeLayoutGraph &nucleus = bc_components[nucleus_idx];
+
+         _copyLayout(nucleus);
+         _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
+      } else 
+      {
+         for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+            if (_layout_vertices[i].morgan_code > _layout_vertices[nucleus_idx].morgan_code)
+               nucleus_idx = i;
+
+         const Vertex &nucleus = getVertex(nucleus_idx);
+         int nucleus_idx2 = nucleus.neiBegin();
+
+         for (int j = nucleus.neiNext(nucleus_idx2); j < nucleus.neiEnd(); j = nucleus.neiNext(j))
+            if (_layout_vertices[nucleus.neiVertex(j)].morgan_code > _layout_vertices[nucleus.neiVertex(nucleus_idx2)].morgan_code)
+               nucleus_idx2 = j;
+
+         int nucleus_edge = nucleus.neiEdge(nucleus_idx2);
+         nucleus_idx2 = nucleus.neiVertex(nucleus_idx2);
+
+         _first_vertex_idx = nucleus_idx;
+         _layout_vertices[nucleus_idx].type = ELEMENT_BOUNDARY;
+         _layout_vertices[nucleus_idx].pos.set(0.f, 0.f);
+         _layout_vertices[nucleus_idx2].type = ELEMENT_BOUNDARY;
+         _layout_vertices[nucleus_idx2].pos.set(1.f, 0.f);
+         _layout_edges[nucleus_edge].type = ELEMENT_BOUNDARY;
+      }
+   }
+}
+
+bool MoleculeLayoutGraph::_prepareAssignedList (Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, ObjArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree)
+{
+   assigned_list.clear();
+
+   for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+   {
+      if (_layout_vertices[i].type == ELEMENT_NOT_DRAWN)
+         continue;
+
+      const Vertex &vert = getVertex(i);
+
+      for (int j = vert.neiBegin(); j < vert.neiEnd(); j = vert.neiNext(j))
+      {
+         if (_layout_vertices[vert.neiVertex(j)].type == ELEMENT_NOT_DRAWN)
+         {
+            assigned_list.push(i);
+            break;
+         }
+      }
+   }
+
+   if (assigned_list.size() == 0)
+   {
+      // restore ignored ears in chains
+      for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+         if (_layout_vertices[i].type == ELEMENT_IGNORE)
+            _layout_vertices[i].type = ELEMENT_BOUNDARY;
+
+      _refineCoordinates(bc_decom, bc_components, bc_tree);
+      return false;
+   }
+
+   // ( 2] the list is ordered with cyclic atoms at the top of the list;
+   //   with descending ATCD numbers and acyclic atoms at the bottom;
+   //   of the list with descending ATCD numbers;;
+   assigned_list.qsort(_vertex_cmp, this);
+   return true;
 }

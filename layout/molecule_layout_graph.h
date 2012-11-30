@@ -169,6 +169,8 @@ protected:
 
    // for whole graph
    void _assignAbsoluteCoordinates (float bond_length);
+   void _findFirstVertexIdx (int n_comp, Array<int> & fixed_components, ObjArray<MoleculeLayoutGraph> &bc_components, bool all_trivial);
+   bool _prepareAssignedList (Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, ObjArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree);
    void _assignFinalCoordinates (float bond_length, const Array<Vec2f> &src_layout);
    void _copyLayout (MoleculeLayoutGraph &component);
    void _getAnchor (int &v1, int &v2, int &v3) const;
@@ -235,6 +237,9 @@ protected:
    // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
    static void _makeComponentsTree (BiconnectedDecomposer &decon,
       ObjArray<MoleculeLayoutGraph> &components, Array<int> &tree);
+
+   void _layoutMultipleComponents (BaseMolecule & molecule, bool respect_existing, const Filter * filter, float bond_length);
+   void _layoutSingleComponent (BaseMolecule &molecule, bool respect_existing, const Filter * filter, float bond_length);
 
    ObjArray<LayoutVertex> _layout_vertices;
    ObjArray<LayoutEdge>   _layout_edges;
