@@ -87,6 +87,8 @@ struct Edge
    }
 };
 
+class CycleBasis;
+
 class DLLEXPORT Graph
 {
 public:
@@ -187,6 +189,9 @@ protected:
 
    void _calculateTopology ();
    void _calculateSSSR ();
+   void _calculateSSSRInit ();
+   void _calculateSSSRByCycleBasis (CycleBasis &basis);
+   void _calculateSSSRAddEdgesAndVertices (const Array<int> &cycle, List<int> &edges, List<int> &vertices);
    void _calculateComponents ();
 
    // This is a bad hack for those who are too lazy to handle the mappings.
