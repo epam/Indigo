@@ -195,6 +195,10 @@ protected:
    void _assignFirstCycle(const Cycle &cycle);
    void _attachCrossingEdges ();
    void _attachDandlingVertices (int vert_idx, Array<int> &adjacent_list);
+   void _calculatePositionsOneNotDrawn (Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx);
+   void _calculatePositionsSingleDrawn (int vert_idx, Array<int> &adjacent_list, int &n_pos, int drawn_idx, bool &two_ears, Array<Vec2f> &positions, int &parity);
+   void _orderByEnergy (Array<Vec2f> &positions);
+
    void _attachEars (int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos);
    void _buildOutline (void);
 

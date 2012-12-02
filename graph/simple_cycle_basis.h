@@ -42,15 +42,12 @@ private:
     void _createEdgeIndexMap();
     int _getEdgeIndex(int edge) const;
 
-
-
+    void _prepareSubgraph (Graph &subgraph);
 
     RedBlackMap<int, int> vertices_spanning_tree;
     
     RedBlackMap<int, int> spanning_tree_vertices;
     RedBlackMap<int, int> _edgeIndexMap;
-
-
 
     const Graph& _graph;
 

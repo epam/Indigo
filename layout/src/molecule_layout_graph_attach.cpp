@@ -607,9 +607,7 @@ void MoleculeLayoutGraph::_attachEars (int vert_idx, int drawn_idx, int *ears, c
 // Attach set of trivial components
 void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adjacent_list)
 {
-   int i, j;
    int n_pos = 0, not_drawn_idx = 0, drawn_idx = -1;
-   float phi;
    Vec2f v1, v2;
    QS_DEF(Array<Vec2f>, positions);
    int parity = 0;
@@ -618,7 +616,7 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
    const Vertex &vert = getVertex(vert_idx);
     
    // Calculate number of drawn edges
-   for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
+   for (int i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
    {
       if (getVertexType(vert.neiVertex(i)) != ELEMENT_NOT_DRAWN &&
           getEdgeType(vert.neiEdge(i)) != ELEMENT_NOT_DRAWN)
@@ -632,194 +630,19 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
    if (n_pos > 1 && adjacent_list.size() == 1)
    {
       // n_pos of drawn edges and one not drawn 
-      positions.clear_resize(n_pos);
-
-      Vec2f p0;
-
-      QS_DEF(Array<float>, angles); // polar angles of drawn edges
-      QS_DEF(Array<int>, edges); // edge indices in CCW order
-
-      angles.clear();
-      edges.clear();
-
-      // find angles
-      for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
-      {
-         if (i == not_drawn_idx)
-            continue;
-
-         edges.push(i);
-         p0.diff(getPos(vert.neiVertex(i)), getPos(vert_idx));
-         angles.push(p0.tiltAngle2());
-      }
-
-      // sort
-      for (i = 0; i < n_pos; i++)
-         for (j = i + 1; j < n_pos; j++)
-            if (angles[i] > angles[j])
-            {
-               angles.swap(i, j);
-               edges.swap(i, j);
-            }
-
-      // place new edge between drawn
-      v1 = getPos(vert_idx);
-
-      for (i = 0; i < n_pos - 1; i++)
-      {
-         v2 = getPos(vert.neiVertex(edges[i]));
-         phi = (angles[i + 1] - angles[i]) / 2;
-         _calculatePos(phi, v1, v2, positions[i]);      
-      }
-
-      v2 = getPos(vert.neiVertex(edges.top()));
-      phi = (2 * PI + angles[0] - angles.top()) / 2;
-      _calculatePos(phi, v1, v2, positions.top());
-   } else 
+      _calculatePositionsOneNotDrawn(positions, n_pos, vert_idx, not_drawn_idx);
+   } 
+   else 
    {
       // Single drawn edge
-      // Split 2pi to n_pos+1 parts
-      // Place vertices like regular polygon
-      // Drawn is first vertex, other in CCW order
-      if (adjacent_list.size() > 1)
-      {
-         if (n_pos == 1 && adjacent_list.size() == 3) // to avoid four bonds to be drawn like cross
-         {
-            n_pos = 5;
-            int n_matter = 0, n_matter_2 = 0, n_single = 0, n_double_bond = 0;
-            const Vertex &drawn_vert = getVertex(vert.neiVertex(drawn_idx));
-            
-            if (drawn_vert.degree() > 2)
-                n_matter_2++;
-            else if (drawn_vert.degree() == 1)
-                n_single++;
-             
-            if (_molecule != 0)
-            {
-               int type = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx]);
-               
-               if (type == BOND_DOUBLE)
-                  n_double_bond++;
-            }
-             
-            for (i = 0; i < adjacent_list.size(); i++)
-            {
-               int adj_degree = getVertex(adjacent_list[i]).degree();
-                
-               if (adj_degree == 1)
-                  n_single++;
-               else
-                  n_matter++;
-                
-               if (adj_degree > 2)
-                  n_matter_2++;
-
-               if (_molecule != 0)
-               {
-                  int nei_idx = vert.findNeiVertex(adjacent_list[i]);
-                  int type = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[vert.neiEdge(nei_idx)].ext_idx]);
-                  
-                  if (type == BOND_DOUBLE)
-                     n_double_bond++;
-               }
-            }
-            
-            if (n_matter == 1 && n_double_bond < 2) // draw ears
-            {
-               two_ears = true;
-               n_pos = 2;
-            } else if (n_matter_2 > 1 || n_double_bond > 1 || n_single == 4) // cross-like case
-               n_pos = 3;
-         } else
-            n_pos = adjacent_list.size();
-      } else 
-      {
-         int type1 = 0, type2 = 0;
-
-         if (_molecule != 0)
-         {
-            int first_nei = vert.neiBegin();
-            type1 = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[vert.neiEdge(first_nei)].ext_idx]);
-            type2 = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[vert.neiEdge(vert.neiNext(first_nei))].ext_idx]);
-         }
-         if (n_pos != 1 || (!(type1 == BOND_TRIPLE || type2 == BOND_TRIPLE) && !(type1 == BOND_DOUBLE && type2 == BOND_DOUBLE)))
-            n_pos = 2;
-      }
-
-      positions.clear_resize(n_pos);
-
-      phi = 2 * PI / (n_pos + 1);
-      v1 = getPos(vert_idx);
-      v2 = getPos(vert.neiVertex(drawn_idx));
-
-      _calculatePos(phi, v1, v2, positions[0]);
-
-      for (i = 1; i < n_pos; i++)
-      {
-         v2 = positions[i - 1];
-         _calculatePos(phi, v1, v2, positions[i]);
-      }
-      
-      // Check cis/trans
-      if (_molecule != 0 && n_pos == 2)
-      {
-         parity = _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx]);
-
-         if (parity != 0)
-         {
-            int substituents[4];
-            _molecule->cis_trans.getSubstituents_All(_molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx], substituents);
-           
-            int to_draw_substituent = -1;
-
-            for (i = 0; i < 4; i++)
-               if (substituents[i] == _layout_vertices[adjacent_list.top()].ext_idx)
-               {
-                  to_draw_substituent = i;
-                  break;
-               }
-
-            const Vertex &drawn_vert = getVertex(vert.neiVertex(drawn_idx));
-
-            int drawn_substituent = -1;
-            int drawn_substituent_idx = -1;
-    
-            for (i = drawn_vert.neiBegin(); i < drawn_vert.neiEnd(); i = drawn_vert.neiNext(i))
-               if (drawn_vert.neiVertex(i) != vert_idx) // must be drawn
-               {
-                  for (j = 0; j < 4; j++)
-                     if (substituents[j] == _layout_vertices[drawn_vert.neiVertex(i)].ext_idx)
-                     {
-                        drawn_substituent_idx = drawn_vert.neiVertex(i);
-                        drawn_substituent = j;
-                        break;
-                     }
-                  break;
-               }
-           
-            bool same_side = false;
-
-            if ((parity == MoleculeCisTrans::CIS) == (abs(to_draw_substituent - drawn_substituent) == 2))
-               same_side = true;
-          
-            int side_sign = MoleculeCisTrans::sameside(Vec3f(_layout_vertices[vert.neiVertex(drawn_idx)].pos), 
-               Vec3f(_layout_vertices[vert_idx].pos), Vec3f(_layout_vertices[drawn_substituent_idx].pos), Vec3f(positions[0]));
-
-            if (same_side)
-            {
-               if (side_sign == -1)
-                  positions.swap(0, 1);
-            } else if (side_sign == 1)
-               positions.swap(0, 1);
-         }
-      }
+      _calculatePositionsSingleDrawn(vert_idx, adjacent_list, n_pos, drawn_idx, two_ears, positions, parity);
    }
    
    int ears[2] = {-1, -1};
    
    if (two_ears)
    {
-      for (i = 0; i < adjacent_list.size(); i++)
+      for (int i = 0; i < adjacent_list.size(); i++)
       {
          if (getVertex(adjacent_list[i]).degree() != 1)
             continue;
@@ -830,63 +653,16 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
       }
    }
 
-
    // Calculate energy
    if (parity == 0)
-   {
-      QS_DEF(Array<double>, energies);
-      QS_DEF(Array<double>, norm_a);
-      double norm = 0.0;
-      float r = 0.f;
-      Vec2f p0;
-
-      energies.clear_resize(n_pos);
-      norm_a.clear_resize(vertexEnd());
-      energies.zerofill();
-
-      for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-         if (getVertexType(i) != ELEMENT_NOT_DRAWN && getVertexType(i) != ELEMENT_IGNORE)
-         {
-            norm_a[i] = _layout_vertices[i].morgan_code;
-            norm += norm_a[i] * norm_a[i];
-         }
-       
-      norm = sqrt(norm);
-
-      for (i = 0; i < n_pos; i++) 
-      {
-         for (j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
-            if (getVertexType(j) != ELEMENT_NOT_DRAWN && getVertexType(j) != ELEMENT_IGNORE)
-            {
-               p0.diff(positions[i], getPos(j));
-               r = p0.lengthSqr();
-
-               if  (r < EPSILON)
-               {
-                  energies[i] = 1E+20f;
-                  continue;
-               }
-
-               energies[i] += ((norm_a[j] / norm + 0.5) / r);
-            }
-      }
-
-      // Sort by energies
-      for (i = 0; i < n_pos; i++)
-         for (j = i + 1; j < n_pos; j++)
-            if (energies[j] < energies[i])
-            {
-               energies.swap(i, j);
-               positions.swap(i, j);
-            }
-   }
+      _orderByEnergy(positions);
 
    // Assign coordinates
    if (two_ears)
    {
-      for (i = 0; i < adjacent_list.size(); i++)
+      for (int i = 0; i < adjacent_list.size(); i++)
       {
-         j = adjacent_list[i];
+         int j = adjacent_list[i];
          if (getVertex(j).degree() != 1)
          {
             _layout_vertices[j].type = ELEMENT_BOUNDARY;
@@ -901,10 +677,10 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
       return;
    }
    
-   j = 0;
+   int j = 0;
    while (adjacent_list.size() > 0)
    {
-      i = adjacent_list.pop();
+      int i = adjacent_list.pop();
 
       _layout_vertices[i].pos = positions[j];
       _layout_vertices[i].type = ELEMENT_BOUNDARY;
@@ -1035,4 +811,250 @@ bool MoleculeLayoutGraph::_checkBadTryChainOutside (Array<int> &chain_ext, Molec
          return false;
    }
    return true;
+}
+
+void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn (Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx)
+{
+   positions.clear_resize(n_pos);
+
+   const Vertex &vert = getVertex(vert_idx);
+   Vec2f v1, v2, p0;
+   float phi;
+
+   QS_DEF(Array<float>, angles); // polar angles of drawn edges
+   QS_DEF(Array<int>, edges); // edge indices in CCW order
+
+   angles.clear();
+   edges.clear();
+
+   // find angles
+   for (int i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
+   {
+      if (i == not_drawn_idx)
+         continue;
+
+      edges.push(i);
+      p0.diff(getPos(vert.neiVertex(i)), getPos(vert_idx));
+      angles.push(p0.tiltAngle2());
+   }
+
+   // sort
+   for (int i = 0; i < n_pos; i++)
+      for (int j = i + 1; j < n_pos; j++)
+         if (angles[i] > angles[j])
+         {
+            angles.swap(i, j);
+            edges.swap(i, j);
+         }
+
+         // place new edge between drawn
+         v1 = getPos(vert_idx);
+
+         for (int i = 0; i < n_pos - 1; i++)
+         {
+            v2 = getPos(vert.neiVertex(edges[i]));
+            phi = (angles[i + 1] - angles[i]) / 2;
+            _calculatePos(phi, v1, v2, positions[i]);      
+         }
+
+         v2 = getPos(vert.neiVertex(edges.top()));
+         phi = (2 * PI + angles[0] - angles.top()) / 2;
+         _calculatePos(phi, v1, v2, positions.top());
+}
+
+void MoleculeLayoutGraph::_calculatePositionsSingleDrawn (int vert_idx, Array<int> &adjacent_list, int &n_pos, 
+                                                          int drawn_idx, bool &two_ears, Array<Vec2f> &positions, int &parity)
+{
+   // Split 2pi to n_pos+1 parts
+   // Place vertices like regular polygon
+   // Drawn is first vertex, other in CCW order
+
+   Vec2f v1, v2;
+   float phi;
+   const Vertex &vert = getVertex(vert_idx);
+
+   if (adjacent_list.size() > 1)
+   {
+      if (n_pos == 1 && adjacent_list.size() == 3) // to avoid four bonds to be drawn like cross
+      {
+         n_pos = 5;
+         int n_matter = 0, n_matter_2 = 0, n_single = 0, n_double_bond = 0;
+         const Vertex &drawn_vert = getVertex(vert.neiVertex(drawn_idx));
+
+         if (drawn_vert.degree() > 2)
+            n_matter_2++;
+         else if (drawn_vert.degree() == 1)
+            n_single++;
+
+         if (_molecule != 0)
+         {
+            int type = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx]);
+
+            if (type == BOND_DOUBLE)
+               n_double_bond++;
+         }
+
+         for (int i = 0; i < adjacent_list.size(); i++)
+         {
+            int adj_degree = getVertex(adjacent_list[i]).degree();
+
+            if (adj_degree == 1)
+               n_single++;
+            else
+               n_matter++;
+
+            if (adj_degree > 2)
+               n_matter_2++;
+
+            if (_molecule != 0)
+            {
+               int nei_idx = vert.findNeiVertex(adjacent_list[i]);
+               int type = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[vert.neiEdge(nei_idx)].ext_idx]);
+
+               if (type == BOND_DOUBLE)
+                  n_double_bond++;
+            }
+         }
+
+         if (n_matter == 1 && n_double_bond < 2) // draw ears
+         {
+            two_ears = true;
+            n_pos = 2;
+         } else if (n_matter_2 > 1 || n_double_bond > 1 || n_single == 4) // cross-like case
+            n_pos = 3;
+      } else
+         n_pos = adjacent_list.size();
+   }
+   else 
+   {
+      int type1 = 0, type2 = 0;
+
+      if (_molecule != 0)
+      {
+         int first_nei = vert.neiBegin();
+         type1 = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[vert.neiEdge(first_nei)].ext_idx]);
+         type2 = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[vert.neiEdge(vert.neiNext(first_nei))].ext_idx]);
+      }
+      if (n_pos != 1 || (!(type1 == BOND_TRIPLE || type2 == BOND_TRIPLE) && !(type1 == BOND_DOUBLE && type2 == BOND_DOUBLE)))
+         n_pos = 2;
+   }
+
+   positions.clear_resize(n_pos);
+
+   phi = 2 * PI / (n_pos + 1);
+   v1 = getPos(vert_idx);
+   v2 = getPos(vert.neiVertex(drawn_idx));
+
+   _calculatePos(phi, v1, v2, positions[0]);
+
+   for (int i = 1; i < n_pos; i++)
+   {
+      v2 = positions[i - 1];
+      _calculatePos(phi, v1, v2, positions[i]);
+   }
+
+   // Check cis/trans
+   if (_molecule != 0 && n_pos == 2)
+   {
+      parity = _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx]);
+
+      if (parity != 0)
+      {
+         int substituents[4];
+         _molecule->cis_trans.getSubstituents_All(_molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx], substituents);
+
+         int to_draw_substituent = -1;
+
+         for (int i = 0; i < 4; i++)
+            if (substituents[i] == _layout_vertices[adjacent_list.top()].ext_idx)
+            {
+               to_draw_substituent = i;
+               break;
+            }
+
+            const Vertex &drawn_vert = getVertex(vert.neiVertex(drawn_idx));
+
+            int drawn_substituent = -1;
+            int drawn_substituent_idx = -1;
+
+            for (int i = drawn_vert.neiBegin(); i < drawn_vert.neiEnd(); i = drawn_vert.neiNext(i))
+               if (drawn_vert.neiVertex(i) != vert_idx) // must be drawn
+               {
+                  for (int j = 0; j < 4; j++)
+                     if (substituents[j] == _layout_vertices[drawn_vert.neiVertex(i)].ext_idx)
+                     {
+                        drawn_substituent_idx = drawn_vert.neiVertex(i);
+                        drawn_substituent = j;
+                        break;
+                     }
+                     break;
+               }
+
+               bool same_side = false;
+
+               if ((parity == MoleculeCisTrans::CIS) == (abs(to_draw_substituent - drawn_substituent) == 2))
+                  same_side = true;
+
+               int side_sign = MoleculeCisTrans::sameside(Vec3f(_layout_vertices[vert.neiVertex(drawn_idx)].pos), 
+                  Vec3f(_layout_vertices[vert_idx].pos), Vec3f(_layout_vertices[drawn_substituent_idx].pos), Vec3f(positions[0]));
+
+               if (same_side)
+               {
+                  if (side_sign == -1)
+                     positions.swap(0, 1);
+               } else if (side_sign == 1)
+                  positions.swap(0, 1);
+      }
+   }
+}
+
+void MoleculeLayoutGraph::_orderByEnergy (Array<Vec2f> &positions)
+{
+   QS_DEF(Array<double>, energies);
+   QS_DEF(Array<double>, norm_a);
+   double norm = 0.0;
+   float r = 0.f;
+   Vec2f p0;
+
+   int n_pos = positions.size();
+
+   energies.clear_resize(n_pos);
+   norm_a.clear_resize(vertexEnd());
+   energies.zerofill();
+
+   for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+      if (getVertexType(i) != ELEMENT_NOT_DRAWN && getVertexType(i) != ELEMENT_IGNORE)
+      {
+         norm_a[i] = _layout_vertices[i].morgan_code;
+         norm += norm_a[i] * norm_a[i];
+      }
+
+      norm = sqrt(norm);
+
+      for (int i = 0; i < n_pos; i++) 
+      {
+         for (int j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
+            if (getVertexType(j) != ELEMENT_NOT_DRAWN && getVertexType(j) != ELEMENT_IGNORE)
+            {
+               p0.diff(positions[i], getPos(j));
+               r = p0.lengthSqr();
+
+               if  (r < EPSILON)
+               {
+                  energies[i] = 1E+20f;
+                  continue;
+               }
+
+               energies[i] += ((norm_a[j] / norm + 0.5) / r);
+            }
+      }
+
+      // Sort by energies
+      for (int i = 0; i < n_pos; i++)
+         for (int j = i + 1; j < n_pos; j++)
+            if (energies[j] < energies[i])
+            {
+               energies.swap(i, j);
+               positions.swap(i, j);
+            }
 }

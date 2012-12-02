@@ -19,7 +19,8 @@
 
 using namespace indigo;
 
-void CycleBasis::create(const Graph& graph) {
+void CycleBasis::create(const Graph& graph)
+{
    QS_DEF(Array<int>, mapping_out);
 
    // using biconnected decomposer since components will contain smallest cycles
