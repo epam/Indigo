@@ -1338,6 +1338,7 @@ void BaseMolecule::getAtomSymbol (int v, Array<char> &result)
       if (rgroups.size() == 0)
       {
          result.readString("R", true);
+         return;
       }
 
       ArrayOutput output(result);
