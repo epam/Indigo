@@ -14,6 +14,7 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
+#include "base_cpp/os_sync_wrapper.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
@@ -147,6 +148,15 @@ void RenderParamInterface::_prepareReaction (RenderParams& params, BaseReaction&
 
 void RenderParamInterface::render (RenderParams& params)
 {
+   // Disable multithreaded SVG rendering due to the Cairo issue. See IND-482
+   OsLock *render_lock = 0;
+   if (params.rOpt.mode == MODE_SVG)
+   {
+      static ThreadSafeStaticObj<OsLock> svg_lock;
+      render_lock = svg_lock.ptr();
+   }
+   OsLockerNullable locker(render_lock);
+
    if (params.rmode == RENDER_NONE)
       throw Error("No object to render specified");
 
