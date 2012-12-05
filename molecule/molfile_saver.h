@@ -80,6 +80,7 @@ protected:
    void _writeDataSGroupDisplay (BaseMolecule::DataSGroup &datasgroup, Output &out);
    static bool _checkAttPointOrder (BaseMolecule &mol, int rsite);
    static bool _hasNeighborEitherBond (BaseMolecule &mol, int edge_idx);
+   int _getHCount (BaseMolecule &mol, int i, int atom_number, int atom_charge);
 
    static int _getStereocenterParity (BaseMolecule &mol, int idx);
 

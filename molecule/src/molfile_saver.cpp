@@ -397,19 +397,13 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
       if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
          out.printf(" CHG=%d", charge);
-      if (!mol.isQueryMolecule() && !mol.isRSite(i) && !mol.isPseudoAtom(i))
-      {
-         if (mol.getAtomAromaticity(i) == ATOM_AROMATIC &&
-                 ((atom_number != ELEM_C && atom_number != ELEM_O) || charge != 0))
-         {
-            int hcount = mol.asMolecule().getImplicitH_NoThrow(i, -1);
 
-            if (hcount > 0)
-               out.printf(" HCOUNT=%d", hcount);
-            else if (hcount == 0)
-               out.printf(" HCOUNT=-1");
-         }
-      }
+      int hcount = _getHCount(mol, i, atom_number, charge);
+      if (hcount > 0)
+         out.printf(" HCOUNT=%d", hcount);
+      else if (hcount == 0)
+         out.printf(" HCOUNT=-1");
+
       if (radical > 0)
          out.printf(" RAD=%d", radical);
       if (stereo_parity > 0)
@@ -932,13 +926,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
 
       stereo_parity = _getStereocenterParity(mol, i);
 
-      if (!mol.isQueryMolecule() && !mol.isRSite(i) && !mol.isPseudoAtom(i))
-      {
-         if (mol.getAtomAromaticity(i) == ATOM_AROMATIC &&
-                 ((atom_number != ELEM_C && atom_number != ELEM_O) || atom_charge != 0))
-            hydrogens_count = mol.asMolecule().getImplicitH_NoThrow(i, -1) + 1;
-      }
-      
+      hydrogens_count = _getHCount(mol, i, atom_number, atom_charge);
+      if (hydrogens_count == -1)
+         hydrogens_count = 0;
+      else 
+         // molfile stores h+1
+         hydrogens_count++;
+
       Vec3f pos = mol.getAtomXyz(i);
       if (fabs(pos.x) < 1e-5f)
          pos.x = 0;
@@ -1513,4 +1507,24 @@ bool MolfileSaver::_hasNeighborEitherBond (BaseMolecule &mol, int edge_idx)
       if (mol.getBondDirection2(edge.end, end.neiVertex(k)) == BOND_EITHER)
          return true;
    return false;
+}
+
+int MolfileSaver::_getHCount (BaseMolecule &mol, int i, int atom_number, int atom_charge)
+{
+   int hydrogens_count = -1;
+   if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
+   {
+      if (!mol.isQueryMolecule())
+      {
+         if (mol.getAtomAromaticity(i) == ATOM_AROMATIC &&
+            ((atom_number != ELEM_C && atom_number != ELEM_O) || atom_charge != 0))
+            hydrogens_count = mol.asMolecule().getImplicitH_NoThrow(i, -1);
+      }
+      else
+      {
+         if (!mol.asQueryMolecule().getAtom(i).sureValue(QueryMolecule::ATOM_TOTAL_H, hydrogens_count))
+            hydrogens_count = -1;
+      }
+   }
+   return hydrogens_count;
 }
