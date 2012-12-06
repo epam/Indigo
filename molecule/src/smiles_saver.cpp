@@ -24,6 +24,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule_arom_match.h"
 #include "graph/cycle_basis.h"
+#include "molecule/molecule_savers.h"
 
 using namespace indigo;
 
@@ -123,10 +124,18 @@ void SmilesSaver::_saveMolecule ()
    for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
    {
       _hcount[i] = 0;
+      if (_mol != 0)
+      {
+         if (!_mol->isPseudoAtom(i) && !_mol->isRSite(i))
+            _hcount[i] = _mol->getImplicitH_NoThrow(i, -1);
+      }
+      else
+      {
+         int atom_number = _bmol->getAtomNumber(i);
+         int atom_charge = _bmol->getAtomCharge(i);
+         _hcount[i] = MoleculeSavers::getHCount(*_bmol, i, atom_number, atom_charge);
+      }
       _hcount_ignored[i] = 0;
-      
-      if (_mol != 0 && !_mol->isPseudoAtom(i) && !_mol->isRSite(i))
-         _hcount[i] = _mol->getImplicitH_NoThrow(i, -1);
 
       const Vertex &vertex = _bmol->getVertex(i);
 
@@ -740,16 +749,24 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    // shouldWriteHCount to save correctly [H]S([H])([H])C
    // as C[SH3] when hydrogens are ignored (as in canonical smiles)
    // instead of getting CS.
-   if (_mol != 0 && Molecule::shouldWriteHCountEx(*_mol, idx, _hcount_ignored[idx]))
+   if (_mol != 0)
    {
-      hydro = _hcount[idx];
-      if (hydro < 0 && !ignore_invalid_hcount)
+      if (Molecule::shouldWriteHCountEx(*_mol, idx, _hcount_ignored[idx]))
       {
-         // This function will throw better error message with a description
-         _mol->getImplicitH(idx);
-         // If not error was thrown then throw it explicitly
-         throw Error("unsure hydrogen count on atom #%d", idx);
+         hydro = _hcount[idx];
+         if (hydro < 0 && !ignore_invalid_hcount)
+         {
+            // This function will throw better error message with a description
+            _mol->getImplicitH(idx);
+            // If not error was thrown then throw it explicitly
+            throw Error("unsure hydrogen count on atom #%d", idx);
+         }
       }
+   }
+   else if (_qmol != 0)
+   {
+      // For query molecules write hydrogens if is was specified
+      hydro = _hcount[idx];
    }
    if (_qmol != 0)
       _qmol->getAtom(idx).sureValue(QueryMolecule::ATOM_TOTAL_H, hydro);
@@ -765,7 +782,8 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
 
    if (need_brackets)
    {
-      if (hydro == -1)
+      // Check sure number of hydrogens only for the ordinary molecule
+      if (hydro == -1 && _mol != 0)
       {
          hydro = _hcount[idx];
 

@@ -1141,6 +1141,48 @@ bool QueryMolecule::Node::sureValueBelongs (int what_type, const int *arr, int c
    }
 }
 
+QueryMolecule::Atom* QueryMolecule::Atom::sureConstraint (int what_type)
+{
+   int count = 0;
+   Atom *found = (Atom*)_findSureConstraint(what_type, count);
+   if (count == 1)
+      return found;
+   return NULL;
+}
+
+QueryMolecule::Node* QueryMolecule::Node::_findSureConstraint (int what_type, int &count)
+{
+   switch (type)
+   {
+   case OP_AND:
+   case OP_OR:
+      {
+         Node *subnode_found = NULL;
+         for (int i = 0; i < children.size(); i++)
+         {
+            Node *subnode = children[i]->_findSureConstraint(what_type, count);
+            if (subnode != NULL)
+               subnode_found = subnode;
+         }
+         return subnode_found;
+      }
+   case OP_NOT:
+      {
+         Node *subnode = children[0]->_findSureConstraint(what_type, count);
+         return NULL; // Do not return anything in this case but increase count if found
+      }
+   case OP_NONE:
+      return NULL;
+   default:
+      if (type == what_type)
+      {
+         count++;
+         return this;
+      }
+      return NULL;
+   }
+}
+
 bool QueryMolecule::Node::sureValueBelongsInv (int what_type, const int *arr, int count)
 {
    int i;

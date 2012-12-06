@@ -15,3 +15,4 @@ set_target_properties(molecule PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 target_link_libraries(molecule graph z tinyxml)
 
 pack_static(molecule)
+

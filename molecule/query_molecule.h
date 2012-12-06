@@ -126,6 +126,8 @@ public:
       virtual bool _possibleValue      (int what_type, int what_value) = 0;
       virtual bool _possibleValuePair  (int what_type1, int what_value1,
                                         int what_type2, int what_value2) = 0;
+
+      Node* _findSureConstraint (int what_type, int &count);
       
       virtual bool _sureValue        (int what_type, int &value_out) = 0;
       virtual bool _sureValueBelongs (int what_type, const int *arr, int count) = 0;
@@ -153,6 +155,8 @@ public:
       bool valueWithinRange (int value);
 
       bool hasConstraintWithValue (int what_type, int what_value);
+
+      Atom* sureConstraint (int what_type);
 
       int value_min;
       int value_max;

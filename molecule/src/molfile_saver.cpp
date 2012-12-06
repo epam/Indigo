@@ -12,15 +12,17 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include "molecule/molfile_saver.h"
+
 #include <time.h>
 
 #include "base_cpp/output.h"
+#include "base_cpp/locale_guard.h"
 #include "molecule/molecule.h"
-#include "molecule/molfile_saver.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
-#include "base_cpp/locale_guard.h"
+#include "molecule/molecule_savers.h"
 
 using namespace indigo;
 
@@ -398,7 +400,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
          out.printf(" CHG=%d", charge);
 
-      int hcount = _getHCount(mol, i, atom_number, charge);
+      int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
       if (hcount > 0)
          out.printf(" HCOUNT=%d", hcount);
       else if (hcount == 0)
@@ -926,7 +928,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
 
       stereo_parity = _getStereocenterParity(mol, i);
 
-      hydrogens_count = _getHCount(mol, i, atom_number, atom_charge);
+      hydrogens_count = MoleculeSavers::getHCount(mol, i, atom_number, atom_charge);
       if (hydrogens_count == -1)
          hydrogens_count = 0;
       else 
@@ -1507,24 +1509,4 @@ bool MolfileSaver::_hasNeighborEitherBond (BaseMolecule &mol, int edge_idx)
       if (mol.getBondDirection2(edge.end, end.neiVertex(k)) == BOND_EITHER)
          return true;
    return false;
-}
-
-int MolfileSaver::_getHCount (BaseMolecule &mol, int i, int atom_number, int atom_charge)
-{
-   int hydrogens_count = -1;
-   if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
-   {
-      if (!mol.isQueryMolecule())
-      {
-         if (mol.getAtomAromaticity(i) == ATOM_AROMATIC &&
-            ((atom_number != ELEM_C && atom_number != ELEM_O) || atom_charge != 0))
-            hydrogens_count = mol.asMolecule().getImplicitH_NoThrow(i, -1);
-      }
-      else
-      {
-         if (!mol.asQueryMolecule().getAtom(i).sureValue(QueryMolecule::ATOM_TOTAL_H, hydrogens_count))
-            hydrogens_count = -1;
-      }
-   }
-   return hydrogens_count;
 }
