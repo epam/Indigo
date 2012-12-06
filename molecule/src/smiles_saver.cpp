@@ -707,7 +707,23 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    }
 
    if (atom_number < 1)
-      throw Error("zero atom number");
+   {
+      if (_qmol != 0)
+      {
+         // Check for !H meaning any atom in SMILES
+         int value;
+         if (_qmol->getAtom(idx).sureValueInv(QueryMolecule::ATOM_NUMBER, value))
+         {
+            if (value == ELEM_H)
+            {
+               _output.printf("[*]");
+               return;
+            }
+         }
+      }
+
+      throw Error("undefined atom number");
+   }
 
    if (atom_atom_mapping != 0)
       aam = atom_atom_mapping[idx];
