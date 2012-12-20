@@ -260,6 +260,8 @@ public:
    virtual int getBondTopology (int idx);
    virtual bool possibleBondOrder (int idx, int order);
 
+   virtual int getAtomTotalH (int idx);
+
    bool isZeroedBond (int idx);
 
    const int * getMapping ();
@@ -287,6 +289,7 @@ protected:
    TL_CP_DECL(Array<int>,  _mapping);
    TL_CP_DECL(Array<int>,  _inv_mapping);
    TL_CP_DECL(Array<int>,  _edge_mapping);
+   TL_CP_DECL(Array<int>,  _total_h);
 };
 
 }
