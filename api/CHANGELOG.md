@@ -1,3 +1,34 @@
+Indigo 1.1.7
+----------
+
+New features:
+* stack usage has been significantly reduced. Almost all the test works find under 256Kb stack limit, meaning that everything should work in .NET and Java environment without any additional settings. Problem appeared in using Indigo in WCF service in IIS. 
+* initial implementation of `indigoNormalize` method in Indigo API. It removed hydrogens and neutralize [N+][O-] into N=O. Other transformation are coming soon and suggestions are welcome.
+* new similarity methods `normalized-edit` to return an approximate measure of changes that needs to be applied to convert one molecule into another. Used in Imago testing framework to measure recognition quality based on reference files.
+* reaction catalysts serialization
+* layout method flips a molecule to ensure that that first atom is right to the last one: https://groups.google.com/d/msg/indigo-general/EBOc2BT1_N0/Gl-2ZpVmUQcJ
+* query molfile saver outputs a number of implicit hydrogens
+
+Fixed:
+* substructure matcher throws an exception if molecule has invalid valences: https://groups.google.com/d/msg/indigo-bugs/IoFmqShx6nE/FinoBUtK-RsJ
+* aromatization method throws an exception if molecule has invalid valences: https://groups.google.com/d/msg/indigo-general/MlBa6Wc31L8/03i5Yfe0FP4J
+* molecule dearomatization with radicals doesn't work
+* several issues in reaction product enumerator
+* layout issue: https://groups.google.com/d/msg/indigo-dev/zWzfGTqMKKw/Fvak2zeYXyoJ
+* another issue with molecule R-groups layout 
+* issue with saving a molfile with R-site with index 32 causing high memory consumption. Additional internal check has been added to prohibit unexpectedly large memory allocations (that usually means bug)
+* regression in the R-group label method for an R-site without any number
+* bug in the highlightedTarget method if a molecule has been changed before
+* SVG multithreaded rending has been disabled due to the potential issue with Cairo libraries. Need to update Cairo libraries to check if problem still appear.
+* issue with tautomer substructure matching for the aromatic compounds
+
+Indigo 1.1.6 (no public announcement)
+----------
+
+* option to preserve atom and bond ordering during serialization process. Used in KNIME: http://tech.knime.org/forum/indigo/indigo-bug-in-handling-sdfs
+* reaction product enumerator handles larger class of transformations
+* option `smarts` for indigo-depict to draw SMARTS
+
 Indigo 1.1.5
 ----------
 
