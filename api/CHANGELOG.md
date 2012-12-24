@@ -21,6 +21,7 @@ Fixed:
 * bug in the highlightedTarget method if a molecule has been changed before
 * SVG multithreaded rending has been disabled due to the potential issue with Cairo libraries. Need to update Cairo libraries to check if problem still appear.
 * issue with tautomer substructure matching for the aromatic compounds
+* molecule aromatization method doesn't affect R-group fragments
 
 Indigo 1.1.6 (no public announcement)
 ----------
