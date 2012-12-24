@@ -399,6 +399,20 @@ bool MoleculeAromatizer::aromatizeBonds (Molecule &mol)
          mol.setBondOrder(e_idx, BOND_AROMATIC, true);
          aromatic_bond_found = true;
       }
+
+   // Aromatize RGroups
+   int n_rgroups = mol.rgroups.getRGroupCount();
+   for (int i = 1; i <= n_rgroups; i++)
+   {
+      PtrPool<BaseMolecule> &frags = mol.rgroups.getRGroup(i).fragments;
+
+      for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
+      {
+         Molecule &fragment = frags[j]->asMolecule();
+         aromatic_bond_found |= MoleculeAromatizer::aromatizeBonds(fragment);
+      }
+   }
+
    return aromatic_bond_found;
 }
 
