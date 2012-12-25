@@ -35,6 +35,9 @@ PGDLLEXPORT Datum getweight(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getmass);
 PGDLLEXPORT Datum getmass(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(fingerprint);
+PGDLLEXPORT Datum fingerprint(PG_FUNCTION_ARGS);
 }
 
 
@@ -261,4 +264,41 @@ Datum getmass(PG_FUNCTION_ARGS){
    PG_BINGO_END
 
    PG_RETURN_FLOAT4(result);
+}
+
+Datum fingerprint(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   Datum options_datum = PG_GETARG_DATUM(1);
+
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
+      bingo_handler.setFunctionName("fingerprint");
+
+      BingoPgText mol_text(mol_datum);
+      BingoPgText mol_options(options_datum);
+      
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
+
+      int res_buf;
+      const char* bingo_result = mangoFingerprint(mol_buf, buf_size, mol_options.getString(), &res_buf);
+
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.fingerprint", bingoGetError());
+         PG_RETURN_NULL();
+      }
+
+      BingoPgText result_data;
+      result_data.initFromBuffer(bingo_result, res_buf);
+
+      result = result_data.release();
+   }
+   PG_BINGO_END
+
+   if(result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_BYTEA_P(result);
 }

@@ -48,6 +48,12 @@ void BingoPgText::initFromArray(indigo::Array<char>& str) {
       _text = cstring_to_text_with_len(str.ptr(), str.sizeInBytes());
    } BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a buffer: %s", message));
 }
+void BingoPgText::initFromBuffer(const char* buf, int buf_len) {
+   clear();
+   BINGO_PG_TRY {
+      _text = cstring_to_text_with_len(buf, buf_len);
+   } BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a buffer: %s", message));
+}
 
 void BingoPgText::clear() {
    if(_text != 0) {

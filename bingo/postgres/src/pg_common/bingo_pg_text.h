@@ -15,6 +15,7 @@ public:
    void init(uintptr_t text_datum);
    void initFromString(const char* str);
    void initFromArray(indigo::Array<char>& str);
+   void initFromBuffer(const char* buf, int buf_len);
 
    const char* getText(int& size);
    const char* getString();
