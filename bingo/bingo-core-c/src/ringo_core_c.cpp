@@ -16,7 +16,6 @@
 
 #include "base_cpp/profiling.h"
 #include "molecule/molfile_loader.h"
-#include "molecule/molfile_loader.h"
 #include "molecule/smiles_saver.h"
 #include "molecule/cmf_saver.h"
 #include "reaction/rsmiles_saver.h"
@@ -27,6 +26,7 @@
 #include "reaction/crf_saver.h"
 #include "reaction/icr_saver.h"
 #include "reaction/reaction_cml_saver.h"
+#include "reaction/reaction_fingerprint.h"
 
 using namespace indigo::bingo_core;
 
@@ -86,6 +86,9 @@ CEXPORT int ringoIndexReadPreparedReaction (int *id,
 
 void _ringoCheckPseudoAndCBDM (BingoCore &self)
 {
+   if (self.bingo_context == 0)
+      throw BingoError("context not set");
+    
    if (self.ringo_context == 0)
       throw BingoError("context not set");
 
@@ -465,4 +468,38 @@ CEXPORT int ringoGetHash (bool for_index, dword *hash)
       }
    }
    BINGO_END(-2, -2)
+}
+
+CEXPORT const char* ringoFingerprint(const char* reaction, int reaction_len, const char* options, int *out_len)
+{
+   BINGO_BEGIN
+   {
+      _ringoCheckPseudoAndCBDM(self);
+
+      BufferScanner scanner(reaction, reaction_len);
+
+      QS_DEF(Reaction, target);
+
+      ReactionAutoLoader loader(scanner);
+
+      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
+      loader.ignore_closing_bond_direction_mismatch =
+         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      loader.loadReaction(target);
+
+
+      ReactionFingerprintBuilder builder(target, self.bingo_context->fp_parameters);
+      builder.parseFingerprintType(options, false);
+
+      builder.process();
+
+      const char* buf = (const char*)builder.get();
+      int buf_len = self.bingo_context->fp_parameters.fingerprintSizeExtOrdSim() * 2;
+
+      self.buffer.copy(buf, buf_len);
+
+      *out_len = self.buffer.size();
+      return self.buffer.ptr();
+   }
+   BINGO_END(0, 0)
 }

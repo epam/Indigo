@@ -183,6 +183,8 @@ CEXPORT const char * ringoCheckReaction (const char *reaction, int reaction_len)
 CEXPORT int ringoGetQueryFingerprint (const char **query_fp, int *query_fp_len);
 CEXPORT int ringoSetHightlightingMode (int enable);
 CEXPORT const char* ringoGetHightlightedReaction ();
+CEXPORT const char* ringoICR (const char* reaction, int reaction_len, bool save_xyz, int *out_len);
 CEXPORT int ringoGetHash (bool for_index, dword *hash);
+CEXPORT const char* ringoFingerprint (const char* reaction, int reaction_len, const char* options, int *out_len);
 
 #endif // __bingo_core_c_h___
