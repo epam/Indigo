@@ -146,6 +146,7 @@ CEXPORT const char* mangoGross (const char *target_buf, int target_buf_len);
 CEXPORT const char* mangoGrossGetConditions ();
 CEXPORT const char * mangoCheckMolecule (const char *molecule, int molecule_len);
 CEXPORT const char* mangoICM (const char* molecule, int molecule_len, bool save_xyz, int *out_len);
+CEXPORT const char* mangoFingerprint (const char* molecule, int molecule_len, const char* options, int *out_len);
 CEXPORT int mangoIndexProcess (
    int (*get_next_record_cb) (void *context),
    void (*process_result_cb) (void *context),

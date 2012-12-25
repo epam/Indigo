@@ -137,6 +137,9 @@ CEXPORT int mangoGetHash (bool for_index, int index, int *count, dword *hash)
 
 void _mangoCheckPseudoAndCBDM (BingoCore &self)
 {
+   if (self.bingo_context == 0)
+      throw BingoError("context not set");
+    
    if (self.mango_context == 0)
       throw BingoError("context not set");
 
@@ -833,6 +836,40 @@ CEXPORT const char* mangoICM (const char* molecule, int molecule_len, bool save_
       IcmSaver saver(out);
       saver.save_xyz = (save_xyz != 0);
       saver.saveMolecule(target);
+
+      *out_len = self.buffer.size();
+      return self.buffer.ptr();
+   }
+   BINGO_END(0, 0)
+}
+
+CEXPORT const char* mangoFingerprint(const char* molecule, int molecule_len, const char* options, int *out_len)
+{
+   BINGO_BEGIN
+   {
+      _mangoCheckPseudoAndCBDM(self);
+
+      BufferScanner scanner(molecule, molecule_len);
+
+      QS_DEF(Molecule, target);
+
+      MoleculeAutoLoader loader(scanner);
+
+      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
+      loader.ignore_closing_bond_direction_mismatch =
+         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      loader.loadMolecule(target);
+
+
+      MoleculeFingerprintBuilder builder(target, self.bingo_context->fp_parameters);
+      builder.parseFingerprintType(options, false);
+
+      builder.process();
+
+      const char* buf = (const char*)builder.get();
+      int buf_len = self.bingo_context->fp_parameters.fingerprintSize();
+
+      self.buffer.copy(buf, buf_len);
 
       *out_len = self.buffer.size();
       return self.buffer.ptr();
