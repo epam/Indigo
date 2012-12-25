@@ -36,6 +36,10 @@ public:
    byte * get ();
    byte * getSim ();
 
+   void parseFingerprintType(const char *type, bool query);
+
+   DECL_ERROR;
+
 protected:
          BaseReaction                  &_reaction;
    const MoleculeFingerprintParameters &_parameters;
