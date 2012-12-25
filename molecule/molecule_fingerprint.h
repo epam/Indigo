@@ -88,6 +88,8 @@ public:
    void (*cb_fragment) (BaseMolecule &mol, const Array<int> &vertices, const Array<int> &edges,
                         bool use_atoms, bool use_bonds, dword hash);
 
+   void parseFingerprintType(const char *type, bool query);
+
    DECL_ERROR;
 protected:
 
