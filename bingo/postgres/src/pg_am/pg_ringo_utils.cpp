@@ -23,6 +23,8 @@ PG_FUNCTION_INFO_V1(checkreaction);
 PGDLLEXPORT Datum checkreaction(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(rsmiles);
 PGDLLEXPORT Datum rsmiles(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(rfingerprint);
+PGDLLEXPORT Datum rfingerprint(PG_FUNCTION_ARGS);
 }
 
 Datum aam(PG_FUNCTION_ARGS) {
@@ -174,4 +176,41 @@ Datum rsmiles(PG_FUNCTION_ARGS) {
       PG_RETURN_NULL();
 
    PG_RETURN_CSTRING(result);
+}
+
+Datum rfingerprint(PG_FUNCTION_ARGS){
+   Datum react_datum = PG_GETARG_DATUM(0);
+   Datum options_datum = PG_GETARG_DATUM(1);
+
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
+      bingo_handler.setFunctionName("rfingerprint");
+
+      BingoPgText r_text(react_datum);
+      BingoPgText react_options(options_datum);
+
+      int buf_size;
+      const char* mol_buf = r_text.getText(buf_size);
+
+      int res_buf;
+      const char* bingo_result = ringoFingerprint(mol_buf, buf_size, react_options.getString(), &res_buf);
+
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.rfingerprint", bingoGetError());
+         PG_RETURN_NULL();
+      }
+
+      BingoPgText result_data;
+      result_data.initFromBuffer(bingo_result, res_buf);
+
+      result = result_data.release();
+   }
+   PG_BINGO_END
+
+   if(result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_BYTEA_P(result);
 }
