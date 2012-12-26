@@ -25,6 +25,8 @@ PG_FUNCTION_INFO_V1(rsmiles);
 PGDLLEXPORT Datum rsmiles(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(rfingerprint);
 PGDLLEXPORT Datum rfingerprint(PG_FUNCTION_ARGS);
+PG_FUNCTION_INFO_V1(compactreaction);
+PGDLLEXPORT Datum compactreaction(PG_FUNCTION_ARGS);
 }
 
 Datum aam(PG_FUNCTION_ARGS) {
@@ -192,13 +194,49 @@ Datum rfingerprint(PG_FUNCTION_ARGS){
       BingoPgText react_options(options_datum);
 
       int buf_size;
-      const char* mol_buf = r_text.getText(buf_size);
+      const char* r_buf = r_text.getText(buf_size);
 
       int res_buf;
-      const char* bingo_result = ringoFingerprint(mol_buf, buf_size, react_options.getString(), &res_buf);
+      const char* bingo_result = ringoFingerprint(r_buf, buf_size, react_options.getString(), &res_buf);
 
       if(bingo_result == 0) {
          CORE_HANDLE_WARNING(0, 1, "bingo.rfingerprint", bingoGetError());
+         PG_RETURN_NULL();
+      }
+
+      BingoPgText result_data;
+      result_data.initFromBuffer(bingo_result, res_buf);
+
+      result = result_data.release();
+   }
+   PG_BINGO_END
+
+   if(result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_BYTEA_P(result);
+}
+
+Datum compactreaction(PG_FUNCTION_ARGS){
+   Datum react_datum = PG_GETARG_DATUM(0);
+   Datum options_xyz = PG_GETARG_BOOL(1);
+
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
+      bingo_handler.setFunctionName("compactreaction");
+
+      BingoPgText r_text(react_datum);
+
+      int buf_size;
+      const char* r_buf = r_text.getText(buf_size);
+
+      int res_buf;
+      const char* bingo_result = ringoICR(r_buf, buf_size, options_xyz, &res_buf);
+
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.compactreaction", bingoGetError());
          PG_RETURN_NULL();
       }
 

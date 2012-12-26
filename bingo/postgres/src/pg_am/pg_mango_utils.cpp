@@ -38,6 +38,9 @@ PGDLLEXPORT Datum getmass(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(fingerprint);
 PGDLLEXPORT Datum fingerprint(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(compactmolecule);
+PGDLLEXPORT Datum compactmolecule(PG_FUNCTION_ARGS);
 }
 
 
@@ -287,6 +290,42 @@ Datum fingerprint(PG_FUNCTION_ARGS){
 
       if(bingo_result == 0) {
          CORE_HANDLE_WARNING(0, 1, "bingo.fingerprint", bingoGetError());
+         PG_RETURN_NULL();
+      }
+
+      BingoPgText result_data;
+      result_data.initFromBuffer(bingo_result, res_buf);
+
+      result = result_data.release();
+   }
+   PG_BINGO_END
+
+   if(result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_BYTEA_P(result);
+}
+
+Datum compactmolecule(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   bool options_xyz = PG_GETARG_BOOL(1);
+
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
+      bingo_handler.setFunctionName("compactmolecule");
+
+      BingoPgText mol_text(mol_datum);
+
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
+
+      int res_buf;
+      const char* bingo_result = mangoICM(mol_buf, buf_size, options_xyz, &res_buf);
+
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.compactmolecule", bingoGetError());
          PG_RETURN_NULL();
       }
 
