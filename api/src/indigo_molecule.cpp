@@ -2160,6 +2160,11 @@ void IndigoSuperatom::remove ()
    mol.superatoms.remove(idx);
 }
 
+const char * IndigoSuperatom::getName ()
+{
+   return mol.superatoms[idx].subscript.ptr();
+}
+
 IndigoSuperatom & IndigoSuperatom::cast (IndigoObject &obj)
 {
    if (obj.type == IndigoObject::SUPERATOM)

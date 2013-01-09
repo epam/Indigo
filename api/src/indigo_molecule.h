@@ -301,6 +301,8 @@ public:
    virtual int getIndex ();
    virtual void remove ();
 
+   virtual const char * getName ();
+
    static IndigoSuperatom & cast (IndigoObject &obj);
    BaseMolecule::Superatom & get();
 
