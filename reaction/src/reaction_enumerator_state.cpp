@@ -581,7 +581,23 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator( Molecule &monomer )
    ee_monomer.clone(monomer, NULL, NULL);
 
    ee_monomer.aromatize();
-   ee_monomer.cis_trans.build(NULL);
+
+
+   if (BaseMolecule::hasCoord(ee_monomer))
+   {
+      // Double Cis or Trans bonds are excluded from cis-trans build
+      QS_DEF(Array<int>, cis_trans_excluded);
+      cis_trans_excluded.clear_resize(ee_monomer.edgeEnd());
+      cis_trans_excluded.zerofill();
+
+      for (int i = ee_monomer.edgeBegin(); i < ee_monomer.edgeEnd(); i = ee_monomer.edgeNext(i))
+      {
+         if (ee_monomer.cis_trans.isIgnored(i))
+            cis_trans_excluded[i] = 1;
+      }
+      
+      ee_monomer.cis_trans.build(cis_trans_excluded.ptr());
+   }
 
    QS_DEF(Obj<AromaticityMatcher>, am);
    am.free();
