@@ -1,9 +1,9 @@
-= GGA Indigo projects =
+# GGA Indigo projects #
 
 Copyright (c) 2009-2012 GGA Software Services LLC
 GNU General Public License version 3
 
-== Introduction ==
+## Introduction ##
 
 This repository includes:
 	* Bingo: Chemistry search engine for Oracle, Microsoft SQL Server and PostgreSQL databases
@@ -21,18 +21,18 @@ Main directory structure:
 	* bingo: Bingo sources
 	* build_scripts: CMake and python scripts for building all the sources
 
-== Source code organization ==
+## Source code organization ##
 
 Each project is placed in the corresponding directory with CMakeList.txt configuration
 file, that does not include other projects. In order to build the whole project with the
 correct references you need to use CMake configurations from the build_scripts directory.
 
-== Build instructions ==
+## Build instructions ##
 
 All the cmake projects are placed in build_scripts directories. You can use them manually,
 or execute preconfigured scripts that does all the job.
 
-== Bingo build instructions ==
+## Bingo build instructions ##
 
 To generate project configuration, build the source code, and create the archives for 
 installation you need to execute build_scripts\bingo-release.py:
@@ -42,7 +42,7 @@ installation you need to execute build_scripts\bingo-release.py:
 The are different cmake presets:
 	linux32, linux64, win32, win64, mac10.5, mac10.6 (for 10.7 also)
 
-== Indigo build instructions ==
+## Indigo build instructions ##
 
 To generate project configuration, build the source code, and create the archives for 
 installation you need to execute build_scripts\bingo-release.py:
