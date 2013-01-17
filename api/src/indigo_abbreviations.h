@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-#include "base_cpp\obj_array.h"
+#include "base_cpp/obj_array.h"
 
 namespace indigo 
 {

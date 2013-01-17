@@ -734,7 +734,17 @@ CEXPORT int indigoExpandAbbreviations (int molecule)
       if (Molecule::hasCoord(mol))
       {
          // Detect average bond length
-         for (int e = mol.edgeBegin(); e != mol.edgeEnd(); e = mol.edgeNext(e))         {            const Edge &edge = mol.getEdge(e);            Vec3f p1 = mol.getAtomXyz(edge.beg);            Vec3f p2 = mol.getAtomXyz(edge.end);            Vec3f diff;            diff.diff(p1, p2);            avg_bond_length += diff.length();         }         avg_bond_length /= mol.edgeCount();      }
+         for (int e = mol.edgeBegin(); e != mol.edgeEnd(); e = mol.edgeNext(e))
+         {
+            const Edge &edge = mol.getEdge(e);
+            Vec3f p1 = mol.getAtomXyz(edge.beg);
+            Vec3f p2 = mol.getAtomXyz(edge.end);
+            Vec3f diff;
+            diff.diff(p1, p2);
+            avg_bond_length += diff.length();
+         }
+         avg_bond_length /= mol.edgeCount();
+      }
 
       int count = 0;
       for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
