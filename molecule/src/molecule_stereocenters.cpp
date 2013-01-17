@@ -1469,8 +1469,12 @@ void MoleculeStereocenters::_convertAtomToImplicitHydrogen (int pyramid[4], int 
 
 void MoleculeStereocenters::markBond (int atom_idx)
 {
+   const _Atom *atom_ptr = _stereocenters.at2(atom_idx);
+   if (atom_ptr == NULL)
+      return;
+
    BaseMolecule &mol = _getMolecule();
-   const _Atom &atom = _stereocenters.at(atom_idx);
+   const _Atom &atom = *atom_ptr;
    int pyramid[4];
    int mult = 1;
    int size = 0;

@@ -816,6 +816,10 @@ CEXPORT int indigoIterateDecompositions(int deco_item);
 // Adds the input decomposition to a full scaffold
 CEXPORT int indigoAddDecomposition(int decomp, int q_match);
 
+/*
+ * Abbreviations
+ */
+CEXPORT int indigoExpandAbbreviations (int molecule);
 
 /* Other */
 

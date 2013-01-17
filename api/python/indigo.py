@@ -427,6 +427,8 @@ class Indigo(object):
     self.IndigoObject.hasZCoord = Indigo._member_bool(Indigo._lib.indigoHasZCoord)
     self.IndigoObject.isChiral = Indigo._member_bool(Indigo._lib.indigoIsChiral)
     
+    self.IndigoObject.expandAbbreviations = Indigo._member_int(Indigo._lib.indigoExpandAbbreviations)
+    
     self.IndigoObject.aromatize = Indigo._member_bool(Indigo._lib.indigoAromatize)
     self.IndigoObject.dearomatize = Indigo._member_bool(Indigo._lib.indigoDearomatize)
     self.IndigoObject.foldHydrogens = Indigo._member_void(Indigo._lib.indigoFoldHydrogens)

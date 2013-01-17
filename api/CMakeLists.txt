@@ -12,14 +12,17 @@ configure_file(${Indigo_SOURCE_DIR}/src/indigo_version.h.in ${Indigo_SOURCE_DIR}
 file (GLOB Indigo_src src/*.c*)
 file (GLOB Indigo_headers *.h* src/*.h*)
 
-include_directories(${Indigo_SOURCE_DIR} ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/..)
+# Get defined variable with the headers for TinyXML
+get_directory_property(TinyXML_HEADERS_DIR DIRECTORY ../third_party/tinyxml DEFINITION TinyXML_HEADERS_DIR)
+
+include_directories(${Indigo_SOURCE_DIR} ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${TinyXML_HEADERS_DIR})
 
 # Indigo static
 if (NOT NO_STATIC)
 	add_library(indigo STATIC ${Indigo_src} ${Indigo_headers})
 	SET_TARGET_PROPERTIES(indigo PROPERTIES OUTPUT_NAME "indigo-static")
 	set_target_properties(indigo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-	target_link_libraries(indigo molecule reaction layout)
+	target_link_libraries(indigo molecule reaction layout tinyxml)
 	set_property(TARGET indigo PROPERTY FOLDER "indigo")
 	pack_static(indigo)
 	DEFINE_TEST(indigo-c-test-static "tests/c/indigo-test.c" indigo)
@@ -31,7 +34,7 @@ endif()
 add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers})
 SET_TARGET_PROPERTIES(indigo-shared PROPERTIES OUTPUT_NAME "indigo")
 set_target_properties(indigo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-target_link_libraries(indigo-shared molecule reaction layout)
+target_link_libraries(indigo-shared molecule reaction layout tinyxml)
 set_property(TARGET indigo-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 set_property(TARGET indigo-shared PROPERTY FOLDER "indigo")
 if (NOT PACK_INDIGO_NOT)
