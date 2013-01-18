@@ -834,7 +834,15 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn (Array<Vec2f> &position
          continue;
 
       edges.push(i);
-      p0.diff(getPos(vert.neiVertex(i)), getPos(vert_idx));
+      Vec2f &v1 = getPos(vert.neiVertex(i));
+      Vec2f &v2 = getPos(vert_idx);
+      p0.diff(v1, v2);
+      if (p0.length() < EPSILON)
+      {
+         // Perturbate coordinate
+         v1.y += 0.001;
+         p0.diff(v1, v2);
+      }
       angles.push(p0.tiltAngle2());
    }
 

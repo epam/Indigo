@@ -703,9 +703,15 @@ bool AbbreviationExpander::expandAtomAbbreviation (Molecule &mol, int v)
    for (int i = 0; i < right_atoms.size(); i++)
       mol.flipBond(right_atoms[i], v, mapping[target_end]);
 
-   //added_atoms
+   // Collect added atoms and set their coordinate to the initial atom
+   // Layout procedure will find correct atom coordinates, but neighbours 
+   // should know correct relative position
    for (int ve = expanded.vertexBegin(); ve != expanded.vertexEnd(); ve = expanded.vertexNext(ve))
+   {
+      int idx = mapping[ve];
+      mol.setAtomXyz(idx, mol.getAtomXyz(v));
       added_atoms.push(mapping[ve]);
+   }
 
    int sid = mol.superatoms.add();
    Molecule::Superatom &super = mol.superatoms[sid];
@@ -746,12 +752,19 @@ CEXPORT int indigoExpandAbbreviations (int molecule)
          avg_bond_length /= mol.edgeCount();
       }
 
-      int count = 0;
+      // Collect pseudoatoms first because abbreviation can change atom ordering because 
+      // it deletes atoms and adds new ones
+      Array<int> pseudoatoms;
       for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
       {
          if (mol.isPseudoAtom(v))
-            // Try to expand this pseudoatom
-            count += expander.expandAtomAbbreviation(mol, v);
+            pseudoatoms.push(v);
+      }
+      int count = 0;
+      for (int i = 0; i < pseudoatoms.size(); i++)
+      {
+         // Try to expand this pseudoatom
+         count += expander.expandAtomAbbreviation(mol, pseudoatoms[i]);
       }
 
       if (count > 0 && Molecule::hasCoord(mol))
@@ -759,7 +772,10 @@ CEXPORT int indigoExpandAbbreviations (int molecule)
          // Layout expanded parts
          MoleculeLayout ml(mol);
          ml.max_iterations = self.layout_max_iterations;
-         ml.bond_length = avg_bond_length;
+         ml.respect_existing_layout = true;
+         // Check if there are not bonds at all or if the coordinates are invalid
+         if (fabs(avg_bond_length) > 0.001)
+            ml.bond_length = avg_bond_length;
 
          Filter f;
          f.initNone(mol.vertexEnd());

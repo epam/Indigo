@@ -446,6 +446,10 @@ void BaseMolecule::flipBond (int atom_parent, int atom_from, int atom_to)
    removeEdge(src_bond_idx);
 
    int new_bond_idx = findEdgeIndex(atom_parent, atom_to);
+
+   // Clear bond direction because sterecenters 
+   // should mark bond directions properly
+   setBondDirection(new_bond_idx, 0);
    
    // sgroups
    int j;
