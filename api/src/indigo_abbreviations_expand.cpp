@@ -66,12 +66,19 @@ struct AttPoint
 class AbbreviationExpander
 {
 public:
-   AbbreviationExpander (ObjArray<Abbreviation> &abbreviations) : abbreviations(abbreviations) {}
+   AbbreviationExpander (ObjArray<Abbreviation> &abbreviations) : abbreviations(abbreviations)
+   {
+      ignore_case = false;
+      tokenize_level = 0;
+      tokenize_direction = expand_direction = RIGHT;
+   }
 
    // Settings
    ObjArray<Abbreviation> &abbreviations;
    Direction tokenize_direction, expand_direction;
    int tokenize_level;
+
+   bool ignore_case;
 
    // Results
    int input_index, output_index;
@@ -93,7 +100,17 @@ private:
    bool tryExpandToken (TokenChain &tokens, size_t &offset, Molecule &m, AttPoint &attach_to);
    bool expandParsedTokensWithRev (TokenChain &tokens, Molecule &m, AttPoint &attach_to);
    void attachBond (Molecule &m, AttPoint &attach_to, int index);
+
+   bool compareStrings (const char *s1, const char *s2, size_t len);
 };
+
+bool AbbreviationExpander::compareStrings (const char *s1, const char *s2, size_t len)
+{
+   if (ignore_case)
+      return strncasecmp(s1, s2, len) == 0;
+   else
+      return strncmp(s1, s2, len) == 0;
+}
 
 int AbbreviationExpander::tokensizeSubExpression (const char *label, TokenChain &tokens)
 {
@@ -160,7 +177,7 @@ int AbbreviationExpander::scanSinlgeToken (const char *label, Token &dest)
                if (alias.length() < best_matched_length)
                   continue;
 
-               if (strncmp(label, alias.c_str(), alias.length()) == 0)
+               if (compareStrings(label, alias.c_str(), alias.length()))
                {
                   best_matched_length = alias.length();
                   best_abbreviation = i;
@@ -584,18 +601,20 @@ bool AbbreviationExpander::expand (const char *label, int input_order, int outpu
 
 struct Options
 {
-   Options (Direction expand_direction, Direction tokenize_direction, int tokenize_level = 1) :
-      expand_direction_(expand_direction), 
-      tokenize_direction_(tokenize_direction), tokenize_level_(tokenize_level) {}
+   Options (Direction expand_direction, Direction tokenize_direction, int tokenize_level = 1, bool ignore_case = false) :
+      expand_direction(expand_direction), 
+      tokenize_direction(tokenize_direction), tokenize_level(tokenize_level) {}
 
-   Direction expand_direction_, tokenize_direction_;
-   int tokenize_level_;
+   Direction expand_direction, tokenize_direction;
+   int tokenize_level;
+   bool ignore_case;
 
    void set (AbbreviationExpander &expander)
    {
-      expander.expand_direction = expand_direction_;
-      expander.tokenize_direction = tokenize_direction_;
-      expander.tokenize_level = tokenize_level_;
+      expander.expand_direction = expand_direction;
+      expander.tokenize_direction = tokenize_direction;
+      expander.tokenize_level = tokenize_level;
+      expander.ignore_case = ignore_case;
    }
 };
 
@@ -670,6 +689,16 @@ bool AbbreviationExpander::expandAtomAbbreviation (Molecule &mol, int v)
          options.push(Options(LEFT, LEFT, 2));
       }
    }
+
+   // Duplicate all the options with ignore case flag
+   int opt_cnt = options.size();
+   for (int i = 0; i < opt_cnt; i++)
+   {
+      Options opt = options[i];
+      opt.ignore_case = true;
+      options.push(opt);
+   }
+
    bool found = false;
    Molecule expanded;
    for (int i = 0; i < options.size(); i++)
