@@ -12,55 +12,25 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "indigo-inchi.h"
-                      
-#include "molecule/elements.h"
+#include "indigo_inchi_core.h" 
+
+#include "base_cpp/obj.h"
 #include "molecule/molecule.h"
+#include "molecule/elements.h"
+#include "molecule/molecule_dearom.h"
 
-#include "indigo_internal.h"
-#include "indigo_molecule.h"
-#include "option_manager.h"
-
-#include "inchi_api.h"
 #include "mode.h"
 
 #include <algorithm>
 
 using namespace indigo;
 
-CEXPORT const char* indigoInchiVersion ()
+IMPL_ERROR(IndigoInchi, "indigo-inchi")
+
+const char* IndigoInchi::version ()
 {
-   return INCHI_NAME " version " INCHI_VERSION TARGET_ID_STRING;
+	return INCHI_NAME " version " INCHI_VERSION TARGET_ID_STRING;
 }
-
-//
-// IndigoInchi
-//
-
-class IndigoInchi
-{
-public:
-   IndigoInchi ();
-
-   void clear();
-
-   // Input parameters
-   Array<char> options;
-
-   // Output additional results
-   Array<char> warning, log, auxInfo;
-
-   void loadMoleculeFromInchi (const char *inchi, Molecule &mol);
-   void parseInchiOutput (const inchi_OutputStruct &inchi_output, Molecule &mol);
-
-   void generateInchiInput (Molecule &mol, inchi_Input &input, 
-      Array<inchi_Atom> &atoms, Array<inchi_Stereo0D> &stereo);
-   void saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi);
-
-   void neutralizeV5Nitrogen (Molecule &mol);
-
-   static inchi_BondType getInchiBondType (int bond_order);
-};
 
 IndigoInchi::IndigoInchi ()
 {
@@ -75,6 +45,22 @@ void IndigoInchi::clear()
    warning.clear();
    log.clear();
    auxInfo.clear();
+}
+
+static inchi_BondType getInchiBondType (int bond_order)
+{
+   switch (bond_order)
+   {
+   case BOND_SINGLE:
+      return INCHI_BOND_TYPE_SINGLE;
+   case BOND_DOUBLE:
+      return INCHI_BOND_TYPE_DOUBLE;
+   case BOND_TRIPLE:
+      return INCHI_BOND_TYPE_TRIPLE;
+   case BOND_AROMATIC:
+      return INCHI_BOND_TYPE_ALTERN;
+   }
+   throw IndigoInchi::Error("unexpected bond order %d", bond_order);
 }
 
 void IndigoInchi::loadMoleculeFromInchi (const char *inchi_string, Molecule &mol)
@@ -95,7 +81,7 @@ void IndigoInchi::loadMoleculeFromInchi (const char *inchi_string, Molecule &mol
          log.readString(inchi_output.szLog, true);
 
       if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING)
-         throw IndigoError("Indigo-InChI: InChI loading failed: %s. Code: %d.", 
+         throw Error("Indigo-InChI: InChI loading failed: %s. Code: %d.", 
             inchi_output.szMessage, retcode);
 
       parseInchiOutput(inchi_output, mol);
@@ -223,7 +209,7 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
 
          bool valid = mol.cis_trans.registerBondAndSubstituents(bond);
          if (!valid)
-            throw IndigoError("Indigo-InChI: Unsupported cis-trans configuration for "
+            throw Error("Indigo-InChI: Unsupported cis-trans configuration for "
                "bond %d (atoms %d-%d-%d-%d)", bond, stereo0D.neighbor[0], stereo0D.neighbor[1], 
                stereo0D.neighbor[2], stereo0D.neighbor[3]);
 
@@ -240,7 +226,7 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
             ve = stereo0D.neighbor[0];
          }
          else
-            throw IndigoError("Indigo-InChI: Internal error: cannot find cis-trans bond indices");
+            throw Error("Indigo-InChI: Internal error: cannot find cis-trans bond indices");
 
          const int *subst = mol.cis_trans.getSubstituents(bond);
          bool same_side;
@@ -249,7 +235,7 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
          else if (subst[1] == vb)
             same_side = (subst[3] == ve);
          else
-            throw IndigoError("Indigo-InChI: Internal error: cannot find cis-trans bond indices (#2)");
+            throw Error("Indigo-InChI: Internal error: cannot find cis-trans bond indices (#2)");
 
          if (stereo0D.parity == INCHI_PARITY_EVEN)
             same_side = !same_side;
@@ -285,22 +271,6 @@ void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Mole
 
 }
 
-inchi_BondType IndigoInchi::getInchiBondType (int bond_order)
-{
-   switch (bond_order)
-   {
-   case BOND_SINGLE:
-      return INCHI_BOND_TYPE_SINGLE;
-   case BOND_DOUBLE:
-      return INCHI_BOND_TYPE_DOUBLE;
-   case BOND_TRIPLE:
-      return INCHI_BOND_TYPE_TRIPLE;
-   case BOND_AROMATIC:
-      return INCHI_BOND_TYPE_ALTERN;
-   }
-   throw IndigoError("Indigo-InChI: unexpected bond order %d", bond_order);
-}
-
 void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input, 
    Array<inchi_Atom> &atoms, Array<inchi_Stereo0D> &stereo)
 {
@@ -320,9 +290,9 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input,
       
       int atom_number = mol.getAtomNumber(v);
       if (atom_number == ELEM_PSEUDO)
-         throw IndigoError("Molecule with pseudoatom (%s) cannot be converted into InChI", mol.getPseudoAtom(v));
+         throw Error("Molecule with pseudoatom (%s) cannot be converted into InChI", mol.getPseudoAtom(v));
       if (atom_number == ELEM_RSITE)
-         throw IndigoError("Molecule with RGroups cannot be converted into InChI");
+         throw Error("Molecule with RGroups cannot be converted into InChI");
       strncpy(atom.elname, Element::toString(atom_number), ATOM_EL_LEN);
 
       Vec3f &c = mol.getAtomXyz(v);
@@ -517,7 +487,7 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
    if (ret != inchi_Ret_OKAY && ret != inchi_Ret_WARNING)
    {
       // Construct error before dispoing inchi output to preserve error message
-      IndigoError error("Indigo-InChI: InChI generation failed: %s. Code: %d.", output.szMessage, ret);
+      Error error("Indigo-InChI: InChI generation failed: %s. Code: %d.", output.szMessage, ret);
       FreeINCHI(&output);
       throw error;
    }
@@ -526,145 +496,4 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
 
    FreeINCHI(&output);
 }
-
-
-//
-// Session Inchi instance
-//
-
-_SessionLocalContainer<IndigoInchi> indigo_inchi_self;
-
-IndigoInchi &indigoInchiGetInstance ()
-{
-   return indigo_inchi_self.getLocalCopy();
-}
-
-// 
-// C interface functions
-//
-
-CEXPORT int indigoInchiResetOptions (void)
-{
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance();
-   indigo_inchi.clear();
-   return 0;
-}
-
-CEXPORT int indigoInchiLoadMolecule (const char *inchi_string)
-{
-   INDIGO_BEGIN
-   {
-      IndigoInchi &indigo_inchi = indigoInchiGetInstance();
-
-      AutoPtr<IndigoMolecule> mol_obj(new IndigoMolecule());
-
-      indigo_inchi.loadMoleculeFromInchi(inchi_string, mol_obj->mol);
-      return self.addObject(mol_obj.release());
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT const char* indigoInchiGetInchi (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      IndigoInchi &indigo_inchi = indigoInchiGetInstance();
-      IndigoObject &obj = self.getObject(molecule);
-
-      indigo_inchi.saveMoleculeIntoInchi(obj.getMolecule(), self.tmp_string);
-      return self.tmp_string.ptr();
-   }
-   INDIGO_END(0)
-}
-
-CEXPORT const char* indigoInchiGetInchiKey (const char *inchi_string)
-{
-   INDIGO_BEGIN
-   {
-      self.tmp_string.resize(30);
-      self.tmp_string.zerofill();
-      int ret = GetINCHIKeyFromINCHI(inchi_string, 0, 0, self.tmp_string.ptr(), 0, 0);
-      if (ret != INCHIKEY_OK)
-      {
-         if (ret == INCHIKEY_UNKNOWN_ERROR)
-            throw IndigoError("Indigo-InChI: INCHIKEY_UNKNOWN_ERROR");
-         else if (ret == INCHIKEY_EMPTY_INPUT)
-            throw IndigoError("Indigo-InChI: INCHIKEY_EMPTY_INPUT");
-         else if (ret == INCHIKEY_INVALID_INCHI_PREFIX)
-            throw IndigoError("Indigo-InChI: INCHIKEY_INVALID_INCHI_PREFIX");
-         else if (ret == INCHIKEY_NOT_ENOUGH_MEMORY)
-            throw IndigoError("Indigo-InChI: INCHIKEY_NOT_ENOUGH_MEMORY");
-         else if (ret == INCHIKEY_INVALID_INCHI)
-            throw IndigoError("Indigo-InChI: INCHIKEY_INVALID_INCHI");
-         else if (ret == INCHIKEY_INVALID_STD_INCHI)
-            throw IndigoError("Indigo-InChI: INCHIKEY_INVALID_STD_INCHI");
-         else
-            throw IndigoError("Indigo-InChI: Undefined error");
-      }
-      return self.tmp_string.ptr();
-   }
-   INDIGO_END(0)
-}
-
-CEXPORT const char* indigoInchiGetWarning ()
-{
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance();
-   if (indigo_inchi.warning.size() != 0)
-      return indigo_inchi.warning.ptr();
-   return "";
-}
-
-CEXPORT const char* indigoInchiGetLog ()
-{
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance();
-   if (indigo_inchi.log.size() != 0)
-      return indigo_inchi.log.ptr();
-   return "";
-}
-
-CEXPORT const char* indigoInchiGetAuxInfo ()
-{
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance();
-   if (indigo_inchi.auxInfo.size() != 0)
-      return indigo_inchi.auxInfo.ptr();
-   return "";
-}
-
-//
-// Options
-//
-
-void indigoInchiSetInchiOptions (const char *options)
-{
-   IndigoInchi &inchi = indigoInchiGetInstance();
-   inchi.options.readString(options, true);
-   // Replace '/' and '-' according to InChI manual:
-   //   "(use - instead of / for O.S. other than MS Windows)"
-#ifdef _WIN32
-   for (int i = 0; i < inchi.options.size(); i++)
-      if (inchi.options[i] == '-')
-         inchi.options[i] = '/';
-#else
-   for (int i = 0; i < inchi.options.size(); i++)
-      if (inchi.options[i] == '/')
-         inchi.options[i] = '-';
-#endif
-}
-
-class _IndigoInchiOptionsHandlersSetter
-{
-public:
-   _IndigoInchiOptionsHandlersSetter ();
-};
-
-_IndigoInchiOptionsHandlersSetter::_IndigoInchiOptionsHandlersSetter ()
-{
-   OptionManager &mgr = indigoGetOptionManager();
-   OsLocker locker(mgr.lock);
-   
-   mgr.setOptionHandlerString("inchi-options", indigoInchiSetInchiOptions);
-}
-
-_IndigoInchiOptionsHandlersSetter _indigo_inchi_options_handlers_setter;
-
 

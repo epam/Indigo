@@ -49,8 +49,8 @@ protected:
 private:
 };
 
-#define DECL_EXCEPTION(ExceptionName) \
-   class DLLEXPORT ExceptionName : public indigo::Exception       \
+#define DECL_EXCEPTION_BODY(ExceptionName) \
+   ExceptionName : public indigo::Exception       \
    {                                                              \
    public:                                                        \
       explicit ExceptionName (const char *format, ...);           \
@@ -59,6 +59,12 @@ private:
       virtual void throwSelf ();                                  \
       ExceptionName (const ExceptionName &other);                 \
    }
+
+#define DECL_EXCEPTION(ExceptionName) \
+   class DLLEXPORT DECL_EXCEPTION_BODY(ExceptionName)
+
+#define DECL_EXCEPTION_NO_EXP(ExceptionName) \
+   class DECL_EXCEPTION_BODY(ExceptionName)
 
 #define IMPL_EXCEPTION(Namespace, ExceptionName, prefix) \
    Namespace::ExceptionName::ExceptionName (const char *format, ...) \
@@ -89,6 +95,7 @@ private:
    }                                                                                   \
 
 #define DECL_ERROR DECL_EXCEPTION(Error)
+#define DECL_ERROR_NO_EXP DECL_EXCEPTION_NO_EXP(Error)
 #define DECL_TPL_ERROR(CommonErrorName) typedef CommonErrorName Error
 
 #define IMPL_ERROR(Namespace, error_prefix) \
