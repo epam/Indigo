@@ -26,6 +26,8 @@
 #include "molecule/icm_saver.h"
 #include "molecule/molecule_cml_saver.h"
 
+#include "indigo_inchi_core.h"
+
 using namespace indigo::bingo_core;
 
 CEXPORT int mangoIndexProcessSingleRecord ()
@@ -849,6 +851,9 @@ CEXPORT const char* mangoFingerprint(const char* molecule, int molecule_len, con
    {
       _mangoCheckPseudoAndCBDM(self);
 
+      if (!self.bingo_context->fp_parameters_ready)
+         throw BingoError("Fingerprint settings not ready");
+
       BufferScanner scanner(molecule, molecule_len);
 
       QS_DEF(Molecule, target);
@@ -859,7 +864,6 @@ CEXPORT const char* mangoFingerprint(const char* molecule, int molecule_len, con
       loader.ignore_closing_bond_direction_mismatch =
          self.bingo_context->ignore_closing_bond_direction_mismatch;
       loader.loadMolecule(target);
-
 
       MoleculeFingerprintBuilder builder(target, self.bingo_context->fp_parameters);
       builder.parseFingerprintType(options, false);
@@ -872,6 +876,32 @@ CEXPORT const char* mangoFingerprint(const char* molecule, int molecule_len, con
       self.buffer.copy(buf, buf_len);
 
       *out_len = self.buffer.size();
+      return self.buffer.ptr();
+   }
+   BINGO_END(0, 0)
+}
+
+CEXPORT const char* mangoInChI(const char* molecule, int molecule_len, const char* options, int *out_len)
+{
+   BINGO_BEGIN
+   {
+      _mangoCheckPseudoAndCBDM(self);
+
+      BufferScanner scanner(molecule, molecule_len);
+
+      QS_DEF(Molecule, target);
+
+      MoleculeAutoLoader loader(scanner);
+
+      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
+      loader.ignore_closing_bond_direction_mismatch =
+         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      loader.loadMolecule(target);
+
+      IndigoInchi inchi;
+      inchi.options.readString(options, true);
+      inchi.saveMoleculeIntoInchi(target, self.buffer);
+
       return self.buffer.ptr();
    }
    BINGO_END(0, 0)

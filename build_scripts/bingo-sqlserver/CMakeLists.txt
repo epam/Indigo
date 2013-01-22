@@ -38,6 +38,8 @@ add_subdirectory(../../layout "${CMAKE_CURRENT_BINARY_DIR}/layout")
 add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
 get_directory_property(BingoCore_HEADERS_DIR DIRECTORY ../../bingo/bingo-core DEFINITION BingoCore_HEADERS_DIR)
 
+add_subdirectory(../../third_party/inchi "${CMAKE_CURRENT_BINARY_DIR}/inchi")
+
 add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-core-c")
 get_directory_property(BingoCoreC_HEADERS_DIR DIRECTORY ../../bingo/bingo-core-c DEFINITION BingoCoreC_HEADERS_DIR)
 

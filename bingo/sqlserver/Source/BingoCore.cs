@@ -30,7 +30,7 @@ namespace indigo
          {
             if (_lib == null)
             {
-               IndigoDllLoader.Instance.loadLibrary(null, "bingo-core-c.dll", "indigo.resource", true);
+               IndigoDllLoader.Instance.loadLibrary(null, "bingo-core-c.dll", "indigo.resource", false);
                _lib = IndigoDllLoader.Instance.getInterface<BingoCoreLib>("bingo-core-c.dll");
             }
             return _lib;
@@ -203,6 +203,41 @@ namespace indigo
       public static string mangoSMILES (byte[] buffer, bool canonical)
       {
          sbyte* res = lib.mangoSMILES(buffer, buffer.Length, canonical ? 1 : 0);
+
+         if ((IntPtr)res == IntPtr.Zero)
+            return null;
+
+         return new String(res);
+      }
+
+      public static byte[] mangoFingerprint(byte[] molecule, string options)
+      {
+         int fp_len;
+         IntPtr fp_ptr = lib.mangoFingerprint(molecule, molecule.Length, options, out fp_len);
+         if (fp_ptr == IntPtr.Zero)
+            return null;
+
+         byte[] fp = new byte[fp_len];
+         Marshal.Copy(fp_ptr, fp, 0, fp_len);
+         return fp;
+      }
+
+      public static byte[] ringoFingerprint(byte[] reaction, string options)
+      {
+         int fp_len;
+         IntPtr fp_ptr = lib.ringoFingerprint(reaction, reaction.Length, options, out fp_len);
+         if (fp_ptr == IntPtr.Zero)
+            return null;
+
+         byte[] fp = new byte[fp_len];
+         Marshal.Copy(fp_ptr, fp, 0, fp_len);
+         return fp;
+      }
+
+      public static string mangoInChI(byte[] molecule, string options)
+      {
+         int out_len;
+         sbyte* res = lib.mangoInChI(molecule, molecule.Length, options, out out_len);
 
          if ((IntPtr)res == IntPtr.Zero)
             return null;

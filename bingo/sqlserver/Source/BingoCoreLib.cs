@@ -153,7 +153,19 @@ namespace indigo
       sbyte* ringoRCML (
          [MarshalAs(UnmanagedType.LPArray)] byte[] reaction, int reaction_len);
 
-      sbyte* mangoGetCountedElementName (int index);
+      IntPtr mangoFingerprint(
+         [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len, 
+         [MarshalAs(UnmanagedType.LPStr)] string options, out int out_len);
+
+      IntPtr ringoFingerprint(
+         [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len,
+         [MarshalAs(UnmanagedType.LPStr)] string options, out int out_len);
+
+      sbyte* mangoInChI(
+         [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len,
+         [MarshalAs(UnmanagedType.LPStr)] string options, out int out_len);
+
+      sbyte* mangoGetCountedElementName(int index);
 
       int mangoNeedCoords ();
 

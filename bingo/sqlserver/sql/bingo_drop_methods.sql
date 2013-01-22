@@ -167,6 +167,15 @@ GO
 DROP PROCEDURE [$(bingo)].z_ExportSDF 
 GO
 
+DROP FUNCTION [$(bingo)].Fingerprint 
+GO
+
+DROP FUNCTION [$(bingo)].FingerprintB 
+GO
+
+DROP FUNCTION [$(bingo)].z_Fingerprint 
+GO
+
 DROP PROCEDURE [$(bingo)].FlushOperations 
 GO
 
@@ -228,6 +237,15 @@ DROP PROCEDURE [$(bingo)].ImportSMILES
 GO
 
 DROP PROCEDURE [$(bingo)].z_ImportSMILES 
+GO
+
+DROP FUNCTION [$(bingo)].InChI 
+GO
+
+DROP FUNCTION [$(bingo)].InChIB 
+GO
+
+DROP FUNCTION [$(bingo)].z_InChI 
 GO
 
 DROP FUNCTION [$(bingo)].Mass 
@@ -315,6 +333,15 @@ DROP FUNCTION [$(bingo)].RExactB
 GO
 
 DROP FUNCTION [$(bingo)].z_RExact 
+GO
+
+DROP FUNCTION [$(bingo)].RFingerprint 
+GO
+
+DROP FUNCTION [$(bingo)].RFingerprintB 
+GO
+
+DROP FUNCTION [$(bingo)].z_RFingerprint 
 GO
 
 DROP FUNCTION [$(bingo)].RSMARTS 

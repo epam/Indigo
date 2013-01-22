@@ -476,6 +476,9 @@ CEXPORT const char* ringoFingerprint(const char* reaction, int reaction_len, con
    {
       _ringoCheckPseudoAndCBDM(self);
 
+      if (!self.bingo_context->fp_parameters_ready)
+         throw BingoError("Fingerprint settings not ready");
+
       BufferScanner scanner(reaction, reaction_len);
 
       QS_DEF(Reaction, target);
@@ -486,7 +489,6 @@ CEXPORT const char* ringoFingerprint(const char* reaction, int reaction_len, con
       loader.ignore_closing_bond_direction_mismatch =
          self.bingo_context->ignore_closing_bond_direction_mismatch;
       loader.loadReaction(target);
-
 
       ReactionFingerprintBuilder builder(target, self.bingo_context->fp_parameters);
       builder.parseFingerprintType(options, false);

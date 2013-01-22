@@ -1553,6 +1553,62 @@ namespace indigo
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlString InChI(SqlBinary molecule, SqlString options, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            ContextFlags flags = ContextFlags.X_PSEUDO | ContextFlags.IGNORE_CBDM;
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0, flags);
+            }
+
+            return BingoCore.mangoInChI(molecule.Value, options.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlBinary Fingerprint(SqlBinary molecule, SqlString options, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            ContextFlags flags = ContextFlags.X_PSEUDO | 
+               ContextFlags.IGNORE_CBDM | ContextFlags.FINGERPRINTS;
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0, flags);
+            }
+
+            return BingoCore.mangoFingerprint(molecule.Value, options.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "reaction")]
+      public static SqlBinary RFingerprint(SqlBinary reaction, SqlString options, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            ContextFlags flags = ContextFlags.X_PSEUDO |
+               ContextFlags.IGNORE_CBDM | ContextFlags.FINGERPRINTS;
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0, flags);
+            }
+
+            return BingoCore.ringoFingerprint(reaction.Value, options.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
       public static SqlString CML (SqlBinary molecule, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())

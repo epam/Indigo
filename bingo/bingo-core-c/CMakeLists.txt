@@ -9,12 +9,12 @@ set(BingoCoreC_HEADERS_DIR ${BingoCoreC_SOURCE_DIR}/src CACHE INTERNAL "include 
 
 include(SetBuildParameters)
 
-include_directories(../src ../src/core ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR} ${BingoCore_HEADERS_DIR})
+include_directories(../src ../src/core ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR} ${BingoCore_HEADERS_DIR} ${Common_SOURCE_DIR}/../api/plugins/inchi/src ${InChI_SOURCE_DIR}/inchi_dll)
 
-add_library(bingo-core-c STATIC ${BingoCoreC_src} ${BingoCoreC_headers})
-add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers})
-target_link_libraries(bingo-core-c bingo-core)
-target_link_libraries(bingo-core-c-shared molecule reaction layout bingo-core)
+add_library(bingo-core-c STATIC ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/../api/plugins/inchi/src/indigo_inchi_core.cpp)
+add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/../api/plugins/inchi/src/indigo_inchi_core.cpp)
+target_link_libraries(bingo-core-c bingo-core inchi)
+target_link_libraries(bingo-core-c-shared molecule reaction layout bingo-core inchi)
 
 set_target_properties(bingo-core-c PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 set_property(TARGET bingo-core-c PROPERTY FOLDER "bingo-core-c")
