@@ -43,6 +43,9 @@ get_directory_property(OCI_LIBRARY DIRECTORY ../../third_party/oci DEFINITION OC
 
 add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
 add_subdirectory(../../common/oracle "${CMAKE_CURRENT_BINARY_DIR}/common-oracle")
+
+add_subdirectory(../../third_party/inchi "${CMAKE_CURRENT_BINARY_DIR}/inchi")
+
 add_subdirectory(../../bingo/oracle "${CMAKE_CURRENT_BINARY_DIR}/bingo-oracle")
 
 SET(BINGO_VERSION "${BINGO_VERSION}")
