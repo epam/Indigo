@@ -226,6 +226,17 @@ create or replace function RSMILES_blob (r in BLOB) return VARCHAR2
   with context parameters (context, r, r indicator short,
                              return indicator short, return OCIString);
 /
+create or replace function RFingerprint_clob (r in CLOB, options in VARCHAR2) return BLOB
+  AS language C name "oraRingoFingerprint" library bingolib  
+  with context parameters (context, r, r indicator short, options, options indicator short,
+                           return indicator short, return OCILobLocator);
+/
+create or replace function RFingerprint_blob (r in BLOB, options in VARCHAR2) return BLOB
+  AS language C name "oraRingoFingerprint" library bingolib  
+  with context parameters (context, r, r indicator short, options, options indicator short,
+                           return indicator short, return OCILobLocator);
+/
+
 create or replace function CheckReaction (r in CLOB) return VARCHAR2
   AS language C name "oraRingoCheckReaction" library bingolib  
   with context parameters (context, r, r indicator short,

@@ -314,6 +314,16 @@ create or replace function InChI_blob (m in BLOB, options in VARCHAR2) return VA
   with context parameters (context, m, m indicator short, options, options indicator short,
                            return indicator short, return OCIString);
 /
+create or replace function Fingerprint_clob (m in CLOB, options in VARCHAR2) return BLOB
+  AS language C name "oraMangoFingerprint" library bingolib  
+  with context parameters (context, m, m indicator short, options, options indicator short,
+                           return indicator short, return OCILobLocator);
+/
+create or replace function Fingerprint_blob (m in BLOB, options in VARCHAR2) return BLOB
+  AS language C name "oraMangoFingerprint" library bingolib  
+  with context parameters (context, m, m indicator short, options, options indicator short,
+                           return indicator short, return OCILobLocator);
+/
 create or replace function CANSMILES_clob (m in CLOB) return VARCHAR2
   AS language C name "oraMangoCanonicalSMILES" library bingolib  
   with context parameters (context, m, m indicator short,

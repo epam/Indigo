@@ -129,6 +129,11 @@ create or replace operator InChI binding
    (CLOB, VARCHAR2) return VARCHAR2 using MangoPackage.InChI,
    (BLOB, VARCHAR2) return VARCHAR2 using MangoPackage.InChI;   
    
+create or replace operator Fingerprint binding
+   (VARCHAR2, VARCHAR2) return BLOB using MangoPackage.Fingerprint,
+   (CLOB, VARCHAR2) return BLOB using MangoPackage.Fingerprint,
+   (BLOB, VARCHAR2) return BLOB using MangoPackage.Fingerprint;   
+   
 create or replace operator CANSMILES binding
    (VARCHAR2) return VARCHAR2 using MangoPackage.CANSMILES,
    (CLOB) return VARCHAR2 using MangoPackage.CANSMILES,
@@ -177,6 +182,7 @@ grant execute on Molfile to public;
 grant execute on CML to public;
 grant execute on SMILES to public;
 grant execute on InChI to public;
+grant execute on Fingerprint to public;
 grant execute on CANSMILES to public;
 grant execute on SubHi to public;
 grant execute on SmartsHi to public;
