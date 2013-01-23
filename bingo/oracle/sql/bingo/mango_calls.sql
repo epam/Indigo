@@ -304,6 +304,16 @@ create or replace function SMILES_blob (m in BLOB) return VARCHAR2
   with context parameters (context, m, m indicator short,
                            return indicator short, return OCIString);
 /
+create or replace function InChI_clob (m in CLOB, options in VARCHAR2) return VARCHAR2
+  AS language C name "oraMangoInchi" library bingolib  
+  with context parameters (context, m, m indicator short, options, options indicator short,
+                           return indicator short, return OCIString);
+/
+create or replace function InChI_blob (m in BLOB, options in VARCHAR2) return VARCHAR2
+  AS language C name "oraMangoInchi" library bingolib  
+  with context parameters (context, m, m indicator short, options, options indicator short,
+                           return indicator short, return OCIString);
+/
 create or replace function CANSMILES_clob (m in CLOB) return VARCHAR2
   AS language C name "oraMangoCanonicalSMILES" library bingolib  
   with context parameters (context, m, m indicator short,

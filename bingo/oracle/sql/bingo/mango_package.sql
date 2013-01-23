@@ -176,6 +176,9 @@ CREATE OR REPLACE PACKAGE MangoPackage IS
    function CANSMILES (target in VARCHAR2) return VARCHAR2;
    function CANSMILES (target in CLOB) return VARCHAR2;
    function CANSMILES (target in BLOB) return VARCHAR2;
+   function InChI (target in VARCHAR2, options in VARCHAR2) return VARCHAR2;
+   function InChI (target in CLOB, options in VARCHAR2) return VARCHAR2;
+   function InChI (target in BLOB, options in VARCHAR2) return VARCHAR2;
 END MangoPackage;
 /
 CREATE OR REPLACE PACKAGE BODY MangoPackage IS
@@ -689,6 +692,19 @@ CREATE OR REPLACE PACKAGE BODY MangoPackage IS
    begin
       return SMILES_blob(target);
    end SMILES;
+
+   function InChI (target in VARCHAR2, options in VARCHAR2) return VARCHAR2 is
+   begin
+      return InChI_clob(to_clob(target), options);
+   end InChI;
+   function InChI (target in CLOB, options in VARCHAR2) return VARCHAR2 is
+   begin
+      return InChI_clob(target, options);
+   end InChI;
+   function InChI (target in BLOB, options in VARCHAR2) return VARCHAR2 is
+   begin
+      return InChI_blob(target, options);
+   end InChI;
 
    function CANSMILES (target in VARCHAR2) return VARCHAR2 is
    begin

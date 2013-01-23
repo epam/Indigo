@@ -33,8 +33,6 @@
 #include "molecule/icm_loader.h"
 #include "molecule/elements.h"
 
-#include "indigo_inchi_core.h"
-
 using namespace indigo;
 
 static OCINumber * _mangoSub (OracleEnv &env, MangoOracleContext &context,
@@ -623,59 +621,6 @@ ORAEXT OCINumber * oraMangoMolecularMass (OCIExtProcContext *ctx, int context_id
          // This is needed for Oracle 9. Returning NULL drops the extproc.
          result = OracleExtproc::createDouble(env, 0);
       else
-         *return_ind = OCI_IND_NOTNULL;
-   }
-   ORABLOCK_END
-
-   return result;
-}
-
-ORAEXT OCIString * oraMangoInchi (OCIExtProcContext *ctx, int context_id,
-    OCILobLocator *target_loc, short target_ind,
-    const char    *options,    short options_ind,
-    short *return_ind)
-{
-   OCIString *result = NULL;
-
-   ORABLOCK_BEGIN
-   {
-      *return_ind = OCI_IND_NULL;
-
-      OracleEnv env(ctx, logger);
-
-      if (options_ind != OCI_IND_NOTNULL)
-         options = "";
-
-      if (target_ind == OCI_IND_NOTNULL)
-      {
-         MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
-
-         QS_DEF(Array<char>, target_buf);
-
-         OracleLOB target_lob(env, target_loc);
-
-         target_lob.readAll(target_buf, false);
-
-         QS_DEF(Molecule, target);
-
-         MoleculeAutoLoader loader(target_buf);
-   
-         loader.treat_x_as_pseudoatom = context.context().treat_x_as_pseudoatom;
-         loader.ignore_closing_bond_direction_mismatch =
-                 context.context().ignore_closing_bond_direction_mismatch;
-         loader.loadMolecule(target);
-
-         QS_DEF(Array<char>, inchi);
-
-         IndigoInchi inchi_calc;
-         inchi_calc.options.readString(options, true);
-         inchi_calc.saveMoleculeIntoInchi(target, inchi);
-
-         env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text *)inchi.ptr(),
-                                          inchi.size() - 1, &result));
-      }
-
-      if (result != 0)
          *return_ind = OCI_IND_NOTNULL;
    }
    ORABLOCK_END
