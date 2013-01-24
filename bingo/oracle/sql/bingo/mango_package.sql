@@ -179,6 +179,7 @@ CREATE OR REPLACE PACKAGE MangoPackage IS
    function InChI (target in VARCHAR2, options in VARCHAR2) return VARCHAR2;
    function InChI (target in CLOB, options in VARCHAR2) return VARCHAR2;
    function InChI (target in BLOB, options in VARCHAR2) return VARCHAR2;
+   function InChIKey (inchi in VARCHAR2) return VARCHAR2;
    function Fingerprint (target in VARCHAR2, options in VARCHAR2) return BLOB;
    function Fingerprint (target in CLOB, options in VARCHAR2) return BLOB;
    function Fingerprint (target in BLOB, options in VARCHAR2) return BLOB;
@@ -708,6 +709,11 @@ CREATE OR REPLACE PACKAGE BODY MangoPackage IS
    begin
       return InChI_blob(target, options);
    end InChI;
+   
+   function InChIKey (inchi in VARCHAR2) return VARCHAR2 is
+   begin
+      return InChIKey_str(inchi);
+   end InChIKey;
 
    function Fingerprint (target in VARCHAR2, options in VARCHAR2) return BLOB is
    begin

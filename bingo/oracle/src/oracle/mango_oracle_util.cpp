@@ -497,6 +497,38 @@ ORAEXT OCIString * oraMangoInchi (OCIExtProcContext *ctx,
    return result;
 }
 
+ORAEXT OCIString * oraMangoInchiKey (OCIExtProcContext *ctx,
+    const char    *inchi, short inchi_ind,
+    short *return_ind)
+{
+   OCIString *result = NULL;
+
+   ORABLOCK_BEGIN
+   {
+      *return_ind = OCI_IND_NULL;
+
+      OracleEnv env(ctx, logger);
+
+      if (inchi_ind == OCI_IND_NOTNULL)
+      {
+         BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
+
+         QS_DEF(Array<char>, inchikey_buf);
+
+         IndigoInchi::InChIKey(inchi, inchikey_buf);
+
+         env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text *)inchikey_buf.ptr(),
+                                          inchikey_buf.size() - 1, &result));
+      }
+
+      if (result != 0)
+         *return_ind = OCI_IND_NOTNULL;
+   }
+   ORABLOCK_END
+
+   return result;
+}
+
 ORAEXT OCILobLocator * oraMangoFingerprint (OCIExtProcContext *ctx,
     OCILobLocator *target_loc, short target_ind,
     const char    *options,    short options_ind,
