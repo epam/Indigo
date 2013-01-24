@@ -515,3 +515,27 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
    FreeINCHI(&output);
 }
 
+void IndigoInchi::InChIKey (const char *inchi, Array<char> &output)
+{
+   output.resize(30);
+   output.zerofill();
+   int ret = GetINCHIKeyFromINCHI(inchi, 0, 0, output.ptr(), 0, 0);
+   if (ret != INCHIKEY_OK)
+   {
+      if (ret == INCHIKEY_UNKNOWN_ERROR)
+         throw Error("INCHIKEY_UNKNOWN_ERROR");
+      else if (ret == INCHIKEY_EMPTY_INPUT)
+         throw Error("INCHIKEY_EMPTY_INPUT");
+      else if (ret == INCHIKEY_INVALID_INCHI_PREFIX)
+         throw Error("INCHIKEY_INVALID_INCHI_PREFIX");
+      else if (ret == INCHIKEY_NOT_ENOUGH_MEMORY)
+         throw Error("INCHIKEY_NOT_ENOUGH_MEMORY");
+      else if (ret == INCHIKEY_INVALID_INCHI)
+         throw Error("INCHIKEY_INVALID_INCHI");
+      else if (ret == INCHIKEY_INVALID_STD_INCHI)
+         throw Error("INCHIKEY_INVALID_STD_INCHI");
+      else
+         throw Error("Undefined error");
+   }
+}
+

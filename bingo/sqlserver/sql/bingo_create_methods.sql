@@ -1105,6 +1105,35 @@ grant execute on [$(bingo)].InChIB to $(bingo)_reader
 GO
 
 --
+-- InChIKey
+--
+CREATE FUNCTION [$(bingo)].z_InChIKey 
+  (
+    @inchi nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].InChIKey
+GO
+ADD SIGNATURE TO [$(bingo)].z_InChIKey BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].InChIKey 
+  (
+    @inchi nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_InChIKey (@inchi, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].InChIKey to $(bingo)_reader
+GO
+
+--
 -- Mass
 --
 CREATE FUNCTION [$(bingo)].z_Mass 

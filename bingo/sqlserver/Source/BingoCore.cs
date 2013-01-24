@@ -245,7 +245,17 @@ namespace indigo
          return new String(res);
       }
 
-      public static int mangoGetQueryFingerprint (out byte[] fp)
+      public static string mangoInChIKey(string incho)
+      {
+         sbyte* res = lib.mangoInChIKey(incho);
+
+         if ((IntPtr)res == IntPtr.Zero)
+            return null;
+
+         return new String(res);
+      }
+
+      public static int mangoGetQueryFingerprint(out byte[] fp)
       {
          IntPtr fp_ptr;
          int fp_len;

@@ -248,6 +248,12 @@ GO
 DROP FUNCTION [$(bingo)].z_InChI 
 GO
 
+DROP FUNCTION [$(bingo)].InChIKey 
+GO
+
+DROP FUNCTION [$(bingo)].z_InChIKey 
+GO
+
 DROP FUNCTION [$(bingo)].Mass 
 GO
 

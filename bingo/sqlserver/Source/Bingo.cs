@@ -1570,6 +1570,17 @@ namespace indigo
 
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader]
+      public static SqlString InChIKey(SqlString inchi, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            return BingoCore.mangoInChIKey(inchi.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunctionForReader(str_bin = "molecule")]
       public static SqlBinary Fingerprint(SqlBinary molecule, SqlString options, SqlString bingo_schema)
       {

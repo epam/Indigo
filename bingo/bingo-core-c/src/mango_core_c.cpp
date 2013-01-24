@@ -909,3 +909,13 @@ CEXPORT const char* mangoInChI(const char* molecule, int molecule_len, const cha
    BINGO_END(0, 0)
 }
 
+CEXPORT const char* mangoInChIKey(const char* inchi)
+{
+   BINGO_BEGIN
+   {
+      IndigoInchi::InChIKey(inchi, self.buffer);
+      return self.buffer.ptr();
+   }
+   BINGO_END(0, 0)
+}
+

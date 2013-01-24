@@ -165,6 +165,8 @@ namespace indigo
          [MarshalAs(UnmanagedType.LPArray)] byte[] molecule, int molecule_len,
          [MarshalAs(UnmanagedType.LPStr)] string options, out int out_len);
 
+      sbyte* mangoInChIKey([MarshalAs(UnmanagedType.LPStr)] string inchi);
+
       sbyte* mangoGetCountedElementName(int index);
 
       int mangoNeedCoords ();

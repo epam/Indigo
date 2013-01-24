@@ -81,26 +81,7 @@ CEXPORT const char* indigoInchiGetInchiKey (const char *inchi_string)
 {
    INDIGO_BEGIN
    {
-      self.tmp_string.resize(30);
-      self.tmp_string.zerofill();
-      int ret = GetINCHIKeyFromINCHI(inchi_string, 0, 0, self.tmp_string.ptr(), 0, 0);
-      if (ret != INCHIKEY_OK)
-      {
-         if (ret == INCHIKEY_UNKNOWN_ERROR)
-            throw IndigoError("Indigo-InChI: INCHIKEY_UNKNOWN_ERROR");
-         else if (ret == INCHIKEY_EMPTY_INPUT)
-            throw IndigoError("Indigo-InChI: INCHIKEY_EMPTY_INPUT");
-         else if (ret == INCHIKEY_INVALID_INCHI_PREFIX)
-            throw IndigoError("Indigo-InChI: INCHIKEY_INVALID_INCHI_PREFIX");
-         else if (ret == INCHIKEY_NOT_ENOUGH_MEMORY)
-            throw IndigoError("Indigo-InChI: INCHIKEY_NOT_ENOUGH_MEMORY");
-         else if (ret == INCHIKEY_INVALID_INCHI)
-            throw IndigoError("Indigo-InChI: INCHIKEY_INVALID_INCHI");
-         else if (ret == INCHIKEY_INVALID_STD_INCHI)
-            throw IndigoError("Indigo-InChI: INCHIKEY_INVALID_STD_INCHI");
-         else
-            throw IndigoError("Indigo-InChI: Undefined error");
-      }
+      IndigoInchi::InChIKey(inchi_string, self.tmp_string);
       return self.tmp_string.ptr();
    }
    INDIGO_END(0)

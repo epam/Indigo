@@ -50,6 +50,8 @@ public:
 
    static const char* version ();
 
+   static void InChIKey (const char *inchi, Array<char> &output);
+
    DECL_EXCEPTION_NO_EXP(Error);
 };
 
