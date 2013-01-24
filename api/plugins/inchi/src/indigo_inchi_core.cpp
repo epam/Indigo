@@ -480,7 +480,25 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
    if (output.szMessage)
       warning.readString(output.szMessage, true);
    if (output.szLog)
+   {
+      const char *unrec_opt_prefix = "Unrecognized option:";
+      if (strncmp(output.szLog, unrec_opt_prefix, strlen(unrec_opt_prefix)) == 0)
+      {
+         size_t i;
+         for (i = 0; i < strlen(output.szLog); i++)
+            if (output.szLog[i] == '\n')   
+               break;
+         Array<char> unrec_opt;
+         if (i > 0)
+            unrec_opt.copy(output.szLog, i - 1);
+         unrec_opt.push(0);
+         
+         FreeINCHI(&output);
+         throw Error("Indigo-InChI: %s.", unrec_opt.ptr());;
+      }
+
       log.readString(output.szLog, true);
+   }
    if (output.szAuxInfo)
       auxInfo.readString(output.szAuxInfo, true);
 
