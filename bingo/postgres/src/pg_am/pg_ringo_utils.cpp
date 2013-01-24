@@ -33,7 +33,7 @@ Datum aam(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
    Datum mode_datum = PG_GETARG_DATUM(1);
    
-   char* result = 0;
+   void* result = 0;
    
    PG_BINGO_BEGIN
    {
@@ -52,7 +52,9 @@ Datum aam(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
       
    }
    PG_BINGO_END
@@ -60,13 +62,13 @@ Datum aam(PG_FUNCTION_ARGS) {
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum rxnfile(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
 
@@ -83,7 +85,9 @@ Datum rxnfile(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
 
    }
    PG_BINGO_END
@@ -91,13 +95,13 @@ Datum rxnfile(PG_FUNCTION_ARGS) {
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum rcml(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -113,7 +117,9 @@ Datum rcml(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
 
    }
    PG_BINGO_END
@@ -121,13 +127,13 @@ Datum rcml(PG_FUNCTION_ARGS) {
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum checkreaction(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -140,7 +146,9 @@ Datum checkreaction(PG_FUNCTION_ARGS) {
       if(bingo_result == 0)
          PG_RETURN_NULL();
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
 
    }
    PG_BINGO_END
@@ -148,13 +156,13 @@ Datum checkreaction(PG_FUNCTION_ARGS) {
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum rsmiles(PG_FUNCTION_ARGS) {
    Datum react_datum = PG_GETARG_DATUM(0);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -170,14 +178,16 @@ Datum rsmiles(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum rfingerprint(PG_FUNCTION_ARGS){
