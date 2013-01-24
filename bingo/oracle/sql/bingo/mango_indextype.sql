@@ -125,12 +125,13 @@ create or replace operator SMILES binding
    (BLOB) return VARCHAR2 using MangoPackage.SMILES;
 
 create or replace operator InChI binding
-   (VARCHAR2, VARCHAR2) return VARCHAR2 using MangoPackage.InChI,
-   (CLOB, VARCHAR2) return VARCHAR2 using MangoPackage.InChI,
-   (BLOB, VARCHAR2) return VARCHAR2 using MangoPackage.InChI;   
+   (VARCHAR2, VARCHAR2) return CLOB using MangoPackage.InChI,
+   (CLOB, VARCHAR2) return CLOB using MangoPackage.InChI,
+   (BLOB, VARCHAR2) return CLOB using MangoPackage.InChI;   
    
 create or replace operator InChIKey binding
-   (VARCHAR2) return VARCHAR2 using MangoPackage.InChIKey;   
+   (VARCHAR2) return VARCHAR2 using MangoPackage.InChIKey,
+   (CLOB) return VARCHAR2 using MangoPackage.InChIKey;
    
 create or replace operator Fingerprint binding
    (VARCHAR2, VARCHAR2) return BLOB using MangoPackage.Fingerprint,

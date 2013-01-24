@@ -444,12 +444,12 @@ ORAEXT OCILobLocator *oraMangoCML (OCIExtProcContext *ctx,
 }
 
 
-ORAEXT OCIString * oraMangoInchi (OCIExtProcContext *ctx,
+ORAEXT OCILobLocator * oraMangoInchi (OCIExtProcContext *ctx,
     OCILobLocator *target_loc, short target_ind,
     const char    *options,    short options_ind,
     short *return_ind)
 {
-   OCIString *result = NULL;
+   OCILobLocator *result = NULL;
 
    ORABLOCK_BEGIN
    {
@@ -473,7 +473,7 @@ ORAEXT OCIString * oraMangoInchi (OCIExtProcContext *ctx,
          QS_DEF(Molecule, target);
 
          MoleculeAutoLoader loader(target_buf);
-   
+
          loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
          loader.ignore_closing_bond_direction_mismatch =
                  context.ignore_closing_bond_direction_mismatch;
@@ -485,12 +485,15 @@ ORAEXT OCIString * oraMangoInchi (OCIExtProcContext *ctx,
          inchi_calc.setOptions(options);
          inchi_calc.saveMoleculeIntoInchi(target, inchi);
 
-         env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text *)inchi.ptr(),
-                                          inchi.size() - 1, &result));
-      }
+         inchi_calc.saveMoleculeIntoInchi(target, inchi);
 
-      if (result != 0)
+         OracleLOB lob(env);
+         lob.createTemporaryCLOB();
+         lob.write(0, inchi);
+         lob.doNotDelete();
+         result = lob.get();
          *return_ind = OCI_IND_NOTNULL;
+      }
    }
    ORABLOCK_END
 
@@ -498,7 +501,7 @@ ORAEXT OCIString * oraMangoInchi (OCIExtProcContext *ctx,
 }
 
 ORAEXT OCIString * oraMangoInchiKey (OCIExtProcContext *ctx,
-    const char    *inchi, short inchi_ind,
+    OCILobLocator *inchi_loc, short inchi_ind,
     short *return_ind)
 {
    OCIString *result = NULL;
@@ -513,9 +516,16 @@ ORAEXT OCIString * oraMangoInchiKey (OCIExtProcContext *ctx,
       {
          BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
 
+         OracleLOB inchi_lob(env, inchi_loc); 
+         char* inchi_buf = new char[inchi_lob.getLength()]; 
+         inchi_lob.read(0, inchi_buf, inchi_lob.getLength());
+
          QS_DEF(Array<char>, inchikey_buf);
 
-         IndigoInchi::InChIKey(inchi, inchikey_buf);
+         IndigoInchi::InChIKey(inchi_buf, inchikey_buf);
+
+         delete[] inchi_buf;
+         inchi_buf = 0;
 
          env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text *)inchikey_buf.ptr(),
                                           inchikey_buf.size() - 1, &result));
