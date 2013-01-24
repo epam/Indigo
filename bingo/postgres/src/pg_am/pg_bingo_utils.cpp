@@ -289,9 +289,9 @@ Datum getname(PG_FUNCTION_ARGS) {
          CORE_HANDLE_WARNING(0, 1, "bingo.getname", bingoGetError());
          PG_RETURN_NULL();
       }
+      
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
-
       result = result_text.release();
    }
    PG_BINGO_END

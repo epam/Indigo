@@ -53,7 +53,7 @@ PGDLLEXPORT Datum inchikey(PG_FUNCTION_ARGS);
 Datum smiles(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -68,20 +68,22 @@ Datum smiles(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum cansmiles(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -97,20 +99,22 @@ Datum cansmiles(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum molfile(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -126,19 +130,21 @@ Datum molfile(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum cml(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -154,19 +160,21 @@ Datum cml(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum checkmolecule(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -181,7 +189,9 @@ Datum checkmolecule(PG_FUNCTION_ARGS) {
       if(bingo_result == 0)
          PG_RETURN_NULL();
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
 
    }
    PG_BINGO_END
@@ -189,12 +199,12 @@ Datum checkmolecule(PG_FUNCTION_ARGS) {
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum gross(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -211,14 +221,16 @@ Datum gross(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum getweight(PG_FUNCTION_ARGS){
@@ -352,7 +364,7 @@ Datum inchi(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
    Datum options_datum = PG_GETARG_DATUM(1);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -372,19 +384,21 @@ Datum inchi(PG_FUNCTION_ARGS){
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum inchikey(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -400,12 +414,14 @@ Datum inchikey(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
