@@ -36,6 +36,7 @@ add_subdirectory(../../reaction "${CMAKE_CURRENT_BINARY_DIR}/reaction")
 add_subdirectory(../../layout "${CMAKE_CURRENT_BINARY_DIR}/layout")
 
 add_subdirectory(../../bingo/bingo-core "${CMAKE_CURRENT_BINARY_DIR}/bingo-core")
+add_subdirectory(../../third_party/inchi "${CMAKE_CURRENT_BINARY_DIR}/inchi")
 add_subdirectory(../../bingo/bingo-core-c "${CMAKE_CURRENT_BINARY_DIR}/bingo-core-c")
 add_subdirectory(../../bingo/postgres "${CMAKE_CURRENT_BINARY_DIR}/bingo-postgres")
 
