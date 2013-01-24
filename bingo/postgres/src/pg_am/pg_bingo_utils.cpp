@@ -209,7 +209,10 @@ bingo_desc(StringInfo buf, uint8 xl_info, char *rec) {
 }
 
 Datum getversion(PG_FUNCTION_ARGS) {
-   PG_RETURN_CSTRING(bingoGetVersion());
+   BingoPgText result_text;
+   result_text.initFromString(bingoGetVersion());
+
+   PG_RETURN_TEXT_P(result_text.release());
 }
 
 Datum filetotext(PG_FUNCTION_ARGS) {
@@ -271,7 +274,7 @@ Datum filetoblob(PG_FUNCTION_ARGS) {
 
 Datum getname(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(0);
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -286,15 +289,17 @@ Datum getname(PG_FUNCTION_ARGS) {
          CORE_HANDLE_WARNING(0, 1, "bingo.getname", bingoGetError());
          PG_RETURN_NULL();
       }
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 static void _parseQueryFieldList(const char* fields_str, RedBlackStringMap<int, false >& field_list) {
