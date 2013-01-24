@@ -15,7 +15,9 @@ presets = {
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
-    }
+    "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
+    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),   
+}
 
 parser = OptionParser(description='Bingo build script')
 parser.add_option('--generator', help='this option is passed as -G option for cmake')
