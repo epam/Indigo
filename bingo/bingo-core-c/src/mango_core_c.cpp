@@ -901,6 +901,8 @@ CEXPORT const char* mangoInChI(const char* molecule, int molecule_len, const cha
       IndigoInchi inchi;
       inchi.options.readString(options, true);
       inchi.saveMoleculeIntoInchi(target, self.buffer);
+      
+      *out_len = self.buffer.size();
 
       return self.buffer.ptr();
    }
