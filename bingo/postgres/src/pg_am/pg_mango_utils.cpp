@@ -44,6 +44,9 @@ PGDLLEXPORT Datum compactmolecule(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(inchi);
 PGDLLEXPORT Datum inchi(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(inchikey);
+PGDLLEXPORT Datum inchikey(PG_FUNCTION_ARGS);
 }
 
 
@@ -366,6 +369,34 @@ Datum inchi(PG_FUNCTION_ARGS){
 
       if(bingo_result == 0) {
          CORE_HANDLE_WARNING(0, 1, "bingo.inchi", bingoGetError());
+         PG_RETURN_NULL();
+      }
+
+      result = BingoPgCommon::releaseString(bingo_result);
+   }
+   PG_BINGO_END
+
+   if (result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_CSTRING(result);
+}
+
+Datum inchikey(PG_FUNCTION_ARGS) {
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   char* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
+      bingo_handler.setFunctionName("inchikey");
+
+      BingoPgText mol_text(mol_datum);
+      const char* mol_buf = mol_text.getString();
+
+      const char* bingo_result = mangoInChIKey(mol_buf);
+
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.inchikey", bingoGetError());
          PG_RETURN_NULL();
       }
 
