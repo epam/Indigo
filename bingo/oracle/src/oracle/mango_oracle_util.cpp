@@ -485,8 +485,6 @@ ORAEXT OCILobLocator * oraMangoInchi (OCIExtProcContext *ctx,
          inchi_calc.setOptions(options);
          inchi_calc.saveMoleculeIntoInchi(target, inchi);
 
-         inchi_calc.saveMoleculeIntoInchi(target, inchi);
-
          OracleLOB lob(env);
          lob.createTemporaryCLOB();
          lob.write(0, inchi);
@@ -516,16 +514,13 @@ ORAEXT OCIString * oraMangoInchiKey (OCIExtProcContext *ctx,
       {
          BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
 
+         QS_DEF(Array<char>, inchi);
          OracleLOB inchi_lob(env, inchi_loc); 
-         char* inchi_buf = new char[inchi_lob.getLength()]; 
-         inchi_lob.read(0, inchi_buf, inchi_lob.getLength());
+         inchi_lob.readAll(inchi, true);
 
          QS_DEF(Array<char>, inchikey_buf);
 
-         IndigoInchi::InChIKey(inchi_buf, inchikey_buf);
-
-         delete[] inchi_buf;
-         inchi_buf = 0;
+         IndigoInchi::InChIKey(inchi.ptr(), inchikey_buf);
 
          env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text *)inchikey_buf.ptr(),
                                           inchikey_buf.size() - 1, &result));
