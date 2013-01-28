@@ -153,6 +153,24 @@ AS
         FUNCTION	5	_match_mass_less(text, mass),
         FUNCTION	6	_match_mass_great(text, mass),
         FUNCTION	7	matchSim(text, sim);
+		
+CREATE OPERATOR CLASS bmolecule
+FOR TYPE bytea USING bingo_idx
+AS
+        OPERATOR        1       public.@ (bytea, sub),
+        OPERATOR        2       public.@ (bytea, exact),
+        OPERATOR        3       public.@ (bytea, smarts),
+        OPERATOR        4       public.@ (bytea, gross),
+        OPERATOR        5       public.< (bytea, mass),
+        OPERATOR        6       public.> (bytea, mass),
+        OPERATOR        7       public.@ (bytea, sim),
+        FUNCTION	1	matchSub(bytea, sub),
+        FUNCTION	2	matchExact(bytea, exact),
+        FUNCTION	3	matchSmarts(bytea, smarts),
+        FUNCTION	4	matchGross(bytea, gross),
+        FUNCTION	5	_match_mass_less(bytea, mass),
+        FUNCTION	6	_match_mass_great(bytea, mass),
+        FUNCTION	7	matchSim(bytea, sim);
         
 --**************************** RINGO OPERATOR CLASS *********************
 CREATE OPERATOR CLASS reaction
