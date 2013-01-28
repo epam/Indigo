@@ -249,6 +249,8 @@ public:
    }
 
    void _addData(const char* data, int col_idx) {
+      if(data == 0)
+		  return;
       AutoPtr<ImportData> import_data;
       ImportColumn& import_column = _importColumns[col_idx];
       /*
