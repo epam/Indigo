@@ -30,6 +30,10 @@ class Scanner;
  */
 class RdfLoader
 {
+	/*
+	 * Max data size is 100 Mb
+	 */
+	enum { MAX_DATA_SIZE = 104857600 };
 public:
    RdfLoader (Scanner &scanner);
    ~RdfLoader ();

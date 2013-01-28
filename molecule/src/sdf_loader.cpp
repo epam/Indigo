@@ -145,6 +145,9 @@ void SdfLoader::readNext ()
 
       if (!pending_emptyline)
          output.writeStringCR(str.ptr());
+
+	  if(data.size() > MAX_DATA_SIZE)
+		  throw Error("data size exceeded the acceptable size %d bytes, Please check for correct file format", MAX_DATA_SIZE);
    }
    
    while (1)
