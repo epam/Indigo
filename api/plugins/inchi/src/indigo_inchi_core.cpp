@@ -47,6 +47,22 @@ void IndigoInchi::clear()
    auxInfo.clear();
 }
 
+void IndigoInchi::setOptions (const char *opt)
+{
+   options.readString(opt, true);
+   // Replace '/' and '-' according to InChI manual:
+   //   "(use - instead of / for O.S. other than MS Windows)"
+#ifdef _WIN32
+   for (int i = 0; i < options.size(); i++)
+      if (options[i] == '-')
+         options[i] = '/';
+#else
+   for (int i = 0; i < options.size(); i++)
+      if (options[i] == '/')
+         options[i] = '-';
+#endif
+}
+
 static inchi_BondType getInchiBondType (int bond_order)
 {
    switch (bond_order)

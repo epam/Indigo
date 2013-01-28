@@ -482,7 +482,7 @@ ORAEXT OCIString * oraMangoInchi (OCIExtProcContext *ctx,
          QS_DEF(Array<char>, inchi);
 
          IndigoInchi inchi_calc;
-         inchi_calc.options.readString(options, true);
+         inchi_calc.setOptions(options);
          inchi_calc.saveMoleculeIntoInchi(target, inchi);
 
          env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text *)inchi.ptr(),

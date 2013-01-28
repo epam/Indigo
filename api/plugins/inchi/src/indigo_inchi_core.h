@@ -33,7 +33,7 @@ public:
    void clear();
 
    // Input parameters
-   Array<char> options;
+   void setOptions (const char *opt);
 
    // Output additional results
    Array<char> warning, log, auxInfo;
@@ -53,6 +53,9 @@ public:
    static void InChIKey (const char *inchi, Array<char> &output);
 
    DECL_EXCEPTION_NO_EXP(Error);
+
+private:
+   Array<char> options;
 };
 
 }
