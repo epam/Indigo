@@ -170,4 +170,12 @@ AS
         FUNCTION	2	matchRExact(text, rexact),
         FUNCTION	3	matchRSmarts(text, rsmarts);
                
-
+CREATE OPERATOR CLASS breaction
+FOR TYPE bytea USING bingo_idx
+AS
+        OPERATOR        1       public.@ (bytea, rsub),
+        OPERATOR        2       public.@ (bytea, rexact),
+        OPERATOR        3       public.@ (bytea, rsmarts),
+        FUNCTION	1	matchRSub(bytea, rsub),
+        FUNCTION	2	matchRExact(bytea, rexact),
+        FUNCTION	3	matchRSmarts(bytea, rsmarts);
