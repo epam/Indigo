@@ -487,6 +487,9 @@ ORAEXT OCILobLocator * oraMangoInchi (OCIExtProcContext *ctx,
 
          OracleLOB lob(env);
          lob.createTemporaryCLOB();
+         // Exclude terminating zero
+         if (inchi.top() == 0)
+            inchi.pop();
          lob.write(0, inchi);
          lob.doNotDelete();
          result = lob.get();
