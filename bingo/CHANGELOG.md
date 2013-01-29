@@ -25,8 +25,8 @@ Bingo PostgreSQL-specific changes:
 * Postgres 9.2 support was added
 * Bug with cost estimation engine was fixed
 * `bingo.compactMolecule(molecule, xyz)` and `bingo.compactReaction(reaction, xyz)` methods were added
-* All utilite methods now return text (not cstring)
-* All utilite methods now accept binary bytea parameter for input structures(returned by bingo.compactMolecule() and bingo.compactReaction())
+* All utility methods now return text (not `cstring`)
+* All utility methods now accept binary byte parameter for input structures(returned by `bingo.compactMolecule()` and `bingo.compactReaction()`)
 
 Bingo Oracle-specific changes: 
 
