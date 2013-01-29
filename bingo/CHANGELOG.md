@@ -7,11 +7,11 @@ New methods for Bingo Oracle, SQL Server and PostgreSQL:
 
 * `bingo.InChI(molecule, options)` method to compute InChI identifier. You can pass any options that are supported by InChI library via `options` argument. For example you can provide options in the following way:
 
-  `bingo.InChI(molecule, '/DoNotAddH /SUU /SLUUD')`
+        bingo.InChI(molecule, '/DoNotAddH /SUU /SLUUD')
 
 * `bingo.InChIKey(inchi)` method to compute InChI Key. To get an InChI key from a molecule with a default options use the following syntax:
 
-  `select bingo.InChIKey(bingo.InChI(molecule, ''))`
+        select bingo.InChIKey(bingo.InChI(molecule, ''))
 
 * `bingo.fingerprint(molecule, options)` and `bingo.rfingerprint(reaction, options)` methods to compute fingerprints. The options are the same as we have for the IndigoObject.fingerprint method in Indigo:
   * sim - "Similarity fingerprint", useful for calculating similarity measures (the default)
