@@ -533,7 +533,7 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
 
 void IndigoInchi::InChIKey (const char *inchi, Array<char> &output)
 {
-   output.resize(30);
+   output.resize(28);
    output.zerofill();
    int ret = GetINCHIKeyFromINCHI(inchi, 0, 0, output.ptr(), 0, 0);
    if (ret != INCHIKEY_OK)
