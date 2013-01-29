@@ -13,7 +13,7 @@ New methods for Bingo Oracle, SQL Server and PostgreSQL:
 
   `select bingo.InChIKey(bingo.InChI(molecule, ''))`
 
-* `ingo.fingerprint(molecule, options)` and `bingo.rfingerprint(reaction, options)` methods to compute fingerprints. The options are the same as we have for the IndigoObject.fingerprint method in Indigo:
+* `bingo.fingerprint(molecule, options)` and `bingo.rfingerprint(reaction, options)` methods to compute fingerprints. The options are the same as we have for the IndigoObject.fingerprint method in Indigo:
   * sim - "Similarity fingerprint", useful for calculating similarity measures (the default)
   * sub - "Substructure fingerprint", useful for substructure screening 
   * sub-res - "Resonance substructure fingerprint", useful for resonance substructure screening
@@ -22,9 +22,11 @@ New methods for Bingo Oracle, SQL Server and PostgreSQL:
 
 Bingo PostgreSQL-specific changes: 
 
-* Parallel indexing
-* Cost estimation ...
-* ...
+* Postgres 9.2 support was added
+* Bug with cost estimation engine was fixed
+* `bingo.compactMolecule(molecule, xyz)` and `bingo.compactReaction(reaction, xyz)` methods were added
+* All utilite methods now return text (not cstring)
+* All utilite methods now accept binary bytea parameter for input structures(returned by bingo.compactMolecule() and bingo.compactReaction())
 
 Bingo Oracle-specific changes: 
 
