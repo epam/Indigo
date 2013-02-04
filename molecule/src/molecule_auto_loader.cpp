@@ -201,7 +201,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 
       _scanner->readCharsFix(3, id);
       _scanner->seek(pos, SEEK_SET);
-      if (strncmp(id, IcmSaver::VERSION, 3) == 0)
+      if (IcmSaver::checkVersion(id))
       {
          if (query)
             throw Error("cannot load query molecule from ICM format");

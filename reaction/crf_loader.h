@@ -35,6 +35,7 @@ public:
    void loadReaction (Reaction &reaction);
 
    Scanner *xyz_scanner;
+   int version; // By default the latest version 2 is used
 
    DECL_ERROR;
 protected:

@@ -54,6 +54,8 @@ public:
    bool skip_stereocenters;
    bool skip_valence;
 
+   int version; // By default the latest version 2 is used
+
    Array<int> *atom_flags;
    Array<int> *bond_flags;
 

@@ -19,9 +19,15 @@
 
 using namespace indigo;
 
-const char* IcmSaver::VERSION = "IM2";
+const char* IcmSaver::VERSION2 = "IM2";
+const char* IcmSaver::VERSION1 = "ICM";
 
 IMPL_ERROR(IcmSaver, "ICM saver");
+
+bool IcmSaver::checkVersion (const char *prefix)
+{
+   return strncmp(prefix, VERSION1, 3) == 0 || strncmp(prefix, VERSION2, 3) == 0;
+}
 
 IcmSaver::IcmSaver (Output &output) : _output(output)
 {
@@ -33,7 +39,7 @@ IcmSaver::IcmSaver (Output &output) : _output(output)
 
 void IcmSaver::saveMolecule (Molecule &mol)
 {
-   _output.writeString(VERSION);
+   _output.writeString(VERSION2);
 
    int features = 0;
 

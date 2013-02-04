@@ -45,6 +45,8 @@ public:
 
 protected:
 
+   void _init ();
+
    void _writeReactionInfo (Reaction &reaction);
    void _writeAam (const int *aam, const Array<int> &sequence);
    void _writeMolecule (Molecule &molecule);

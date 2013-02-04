@@ -22,19 +22,25 @@ using namespace indigo;
 
 IMPL_ERROR(CrfLoader, "CRF loader");
 
+void CrfLoader::_init ()
+{
+   xyz_scanner = 0;
+   version = 2;
+}
+
 CrfLoader::CrfLoader (LzwDict &dict, Scanner &scanner) :
 _scanner(scanner)
 {
    _dict = &dict;
    _decoder.create(dict, scanner);
-   xyz_scanner = 0;
+   _init();
 }
 
 CrfLoader::CrfLoader (Scanner &scanner) :
 _scanner(scanner)
 {
    _dict = 0;
-   xyz_scanner = 0;
+   _init();
 }
 
 void CrfLoader::loadReaction (Reaction &reaction)
@@ -99,7 +105,7 @@ void CrfLoader::_loadMolecule (Molecule &molecule)
 
    loader->atom_flags = &atom_flags;
    loader->bond_flags = &bond_flags;
-
+   loader->version = version;
    loader->loadMolecule(molecule);
    bool has_mapping = loader->has_mapping;
 

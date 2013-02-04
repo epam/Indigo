@@ -81,6 +81,8 @@ void CmfLoader::_init ()
    _sgroup_order.clear();
 
    has_mapping = false;
+
+   version = 2;
 }
 
 bool CmfLoader::_getNextCode (int &code)
@@ -752,7 +754,11 @@ void CmfLoader::_readSGroup (int code, Molecule &mol)
       int idx = mol.repeating_units.add();
       BaseMolecule::RepeatingUnit &s = mol.repeating_units[idx];
       _readGeneralSGroup(s);
-      _readString(s.subscript);
+      if (version >= 2)
+         _readString(s.subscript);
+      else
+         s.subscript.readString("n", true);
+
       s.connectivity = _scanner->readPackedUInt();
    }
    else if (code == CMF_MULTIPLEGROUP)

@@ -128,7 +128,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
 
       _scanner->readCharsFix(3, id);
       _scanner->seek(pos, SEEK_SET);
-      if (strncmp(id, IcrSaver::VERSION, 3) == 0)
+      if (IcrSaver::checkVersion(id))
       {
          if (query)
             throw Error("cannot load query reaction from ICR format");

@@ -24,24 +24,26 @@ using namespace indigo;
 
 IMPL_ERROR(CrfSaver, "CRF saver");
 
-CrfSaver::CrfSaver (LzwDict &dict, Output &output) : _output(output)
+void CrfSaver::_init ()
 {
-   if (!dict.isInitialized())
-      dict.init(CMF_ALPHABET_SIZE, CMF_BIT_CODE_SIZE);
-   
-   _encoder.create(dict, output);
    xyz_output = 0;
    save_bond_dirs = false;
    save_highlighting = false;
    save_mapping = false;
 }
 
+CrfSaver::CrfSaver (LzwDict &dict, Output &output) : _output(output)
+{
+   if (!dict.isInitialized())
+      dict.init(CMF_ALPHABET_SIZE, CMF_BIT_CODE_SIZE);
+   
+   _encoder.create(dict, output);
+   _init();
+}
+
 CrfSaver::CrfSaver (Output &output) : _output(output)
 {
-   xyz_output = 0;
-   save_bond_dirs = false;
-   save_highlighting = false;
-   save_mapping = false;
+   _init();
 }
 
 void CrfSaver::saveReaction (Reaction &reaction)

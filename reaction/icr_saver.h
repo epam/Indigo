@@ -25,7 +25,9 @@ class Output;
 class IcrSaver
 {
 public:
-   static const char* VERSION;
+   static const char *VERSION1, *VERSION2;
+
+   static bool checkVersion (const char *prefix);
 
    explicit IcrSaver (Output &output);
 

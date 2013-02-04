@@ -489,7 +489,7 @@ CEXPORT int indigoUnserialize (const byte *buf, int size)
 {
    INDIGO_BEGIN
    {
-      if (size > 3 && memcmp(buf, IcmSaver::VERSION, 3) == 0)
+      if (IcmSaver::checkVersion((const char *)buf))
       {
          BufferScanner scanner(buf, size);
          IcmLoader loader(scanner);
@@ -497,7 +497,7 @@ CEXPORT int indigoUnserialize (const byte *buf, int size)
          loader.loadMolecule(im->mol);
          return self.addObject(im.release());
       }
-      else if (size > 3 && memcmp(buf, IcrSaver::VERSION, 3) == 0)
+      else if (IcrSaver::checkVersion((const char *)buf))
       {
          BufferScanner scanner(buf, size);
          IcrLoader loader(scanner);
