@@ -1,6 +1,8 @@
 Bingo 1.7.7
 ----------
 
+*29 January 2013*
+
 This is a stable Bingo release for the all three databases: Oracle, MS SQL Server, and PostgreSQL. It includes all the bug fixes from the Indigo branch.
 
 New methods for Bingo Oracle, SQL Server and PostgreSQL:
@@ -44,6 +46,8 @@ Also we switch to a continues version numbering like we are doing with Indigo re
 Bingo 1.7 beta4
 ----------
 
+*24 April 2012*
+
 All the improvements have been merged from the Indigo branch (versions above 1.1 beta6), including: 
 
 * Better handling of molecules with invalid valence. 
@@ -64,6 +68,8 @@ Also, bug with Oracle 11.2 on Windows 7 x64 was fixed.
 Bingo 1.7 beta3
 ----------
 
+*28 December 2011*
+
 All the bugfixes and improvements from the Indigo branch have been merged into the Bingo branch including: 
 
 * Cis-trans issues has been fixed. 
@@ -74,13 +80,17 @@ Bingo-specific changes:
 * Support of the PostgresSQL 9.1 
 * Now binary files for Oracle are available for download, because we eliminated a linkage with OCI libraries. No building from source is required any more for getting Bingo for Oracle on Windows. 
 
-Bingo 1.7 beta2 (no public announcement)
+Bingo 1.7 beta2
 ----------
+
+*30 November 2011 (no public announcement)*
 
 Bugfix release.
 
 Bingo 1.7 beta1
 ----------
+
+*29 September 2011*
 
 First Bingo version for PostgreSQL. The cartridge is covered 
 almost all the functionality taken from the Bingo Oracle and the Bingo 
@@ -95,5 +105,7 @@ other Bingo implementations.
 
 Bingo 1.6.0
 ----------
+
+*17 June 2011*
 
 The stable Bingo release.
