@@ -513,7 +513,7 @@ public:
       _parseColumns = false;
       setFunctionName("importSMILES");
       bingo_res = bingoSMILESImportOpen(fname);
-      CORE_HANDLE_WARNING(bingo_res, 1, "importSmiles", bingoGetError());
+      CORE_HANDLE_ERROR(bingo_res, 1, "importSmiles", bingoGetError());
    }
    virtual ~BingoImportSmilesHandler() {
       bingo_res = bingoSMILESImportClose();
