@@ -61,7 +61,8 @@ bool RingoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
 
    _bufferIndexPtr->readCmfItem(section_idx, structure_idx, react_buf);
    bingo_res = ringoMatchTargetBinary(react_buf.ptr(), react_buf.sizeInBytes());
-   CORE_HANDLE_ERROR(bingo_res, 0, "reaction search engine: error while matching target", bingoGetError());
+   CORE_HANDLE_ERROR_TID(bingo_res, -1,  "reaction search engine: error while matching target", section_idx, structure_idx,bingoGetError());
+   CORE_HANDLE_ERROR_TID(bingo_res, 0, "reaction search engine: error while matching target", section_idx, structure_idx, bingoGetWarning());
 
    result =  (bingo_res == 1);
    
@@ -188,6 +189,8 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   CORE_HANDLE_ERROR(bingo_res, -1, "reaction search engine: can not set rexact search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 0, "reaction search engine: can not set rexact search context", bingoGetWarning());
    CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not set rexact search context", bingoGetError());
 
    _prepareExactQueryStrings(what_clause, from_clause, where_clause);
