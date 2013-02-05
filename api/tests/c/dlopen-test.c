@@ -88,10 +88,10 @@ int main(int argc, char **argv)
 			printf("Cannot load %s\n", indigoLibraryPath);
 			return 1;
 		}
-		printf("Indigo instance: %d\n", (int)indigoHandle);		
+		printf("Indigo instance: %lu\n", (unsigned long)indigoHandle);		
 		/* Execute Indigo function */
 		indigoVersion = DLSYM(indigoHandle, "indigoVersion");
-		printf("Indigo address: %s\n", indigoVersion());
+		printf("Indigo version: %s\n", indigoVersion());
 	}	
 	if (indigoInChITest)
 	{
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 			printf("Cannot load %s\n", indigoInChILibraryPath);
 			return 1;
 		}
-		printf("IndigoInChI address: %d\n", (int)indigoInChIHandle);
+		printf("IndigoInChI address: %lu\n", (unsigned long)indigoInChIHandle);
         indigoInchiGetInchi = DLSYM(indigoInChIHandle, "indigoInchiGetInchi");
         indigoLoadMoleculeFromString = DLSYM(indigoHandle, "indigoLoadMoleculeFromString");
         printf("indigoInChI InChI: %s\n", indigoInchiGetInchi(indigoLoadMoleculeFromString("C")));
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 			printf("Cannot load %s\n", indigoRendererLibraryPath);
 			return 1;
 		}
-		printf("IndigoRenderer address: %d\n", (int)indigoRendererHandle);
+		printf("IndigoRenderer address: %lu\n", (unsigned long)indigoRendererHandle);
         indigoLoadMoleculeFromString = DLSYM(indigoHandle, "indigoLoadMoleculeFromString");
         indigoWriteBuffer = DLSYM(indigoHandle, "indigoWriteBuffer");
         indigoRender = DLSYM(indigoRendererHandle, "indigoRender");
