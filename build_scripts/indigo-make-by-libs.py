@@ -12,12 +12,17 @@ from optparse import OptionParser
 
 parser = OptionParser(description='Indigo libraries repacking')
 parser.add_option('--libonlyname', help='extract only the library into api/lib')
+parser.add_option('--config', default="Release", help='project configuration')
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
     print("Unexpected arguments: %s" % (str(left_args)))
     exit()
 
+suffix = ""
+if args.config.lower() != "release":  
+    suffix = "-" + args.config.lower()
+    
 need_join_achieves = (args.libonlyname == None)
 need_gen_wrappers = (args.libonlyname == None)
     
@@ -94,7 +99,7 @@ arc_joins = [
 if need_join_achieves:
     for dest, pattern in arc_joins:
         p = pattern.replace("%ver%", version) + "\.zip"
-        d = dest.replace("%ver%", version)
+        d = dest.replace("%ver%", version) + suffix
         join_archives_by_pattern(p, d)
 
     
