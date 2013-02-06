@@ -62,7 +62,7 @@ bool RingoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
    _bufferIndexPtr->readCmfItem(section_idx, structure_idx, react_buf);
    bingo_res = ringoMatchTargetBinary(react_buf.ptr(), react_buf.sizeInBytes());
    CORE_HANDLE_ERROR_TID(bingo_res, -1,  "reaction search engine: error while matching target", section_idx, structure_idx,bingoGetError());
-   CORE_HANDLE_ERROR_TID(bingo_res, 0, "reaction search engine: error while matching target", section_idx, structure_idx, bingoGetWarning());
+   CORE_RETURN_WARNING_TID(bingo_res, 0, "reaction search engine: error while matching target", section_idx, structure_idx, bingoGetWarning());
 
    result =  (bingo_res == 1);
    
@@ -158,6 +158,8 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   CORE_HANDLE_ERROR(bingo_res, -1, "reaction search engine: can not set rsub search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 0, "reaction search engine: can not set rsub search context", bingoGetWarning());
    CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not set rsub search context", bingoGetError());
 
    const char* fingerprint_buf;

@@ -96,7 +96,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
 
       bingo_res = mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
       CORE_HANDLE_ERROR_TID(bingo_res, -1, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetError());
-      CORE_HANDLE_ERROR_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetWarning());
+      CORE_RETURN_WARNING_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetWarning());
 
       result = (bingo_res > 0);
    } else if(_searchType == BingoPgCommon::MOL_GROSS) {
@@ -108,7 +108,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
       
       bingo_res = mangoMatchTarget(gross_text.getString(), gross_len);
       CORE_HANDLE_ERROR(bingo_res, -1, "molecule search engine: error while matching gross target", bingoGetError());
-      CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while matching gross target", bingoGetWarning());
+      CORE_RETURN_WARNING(bingo_res, 0, "molecule search engine: error while matching gross target", bingoGetWarning());
       
       result = (bingo_res > 0);
    } else {
@@ -343,6 +343,8 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   CORE_HANDLE_ERROR(bingo_res, -1, "molecule search engine: can not set exact search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: can not set exact search context", bingoGetWarning());
    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set exact search context", bingoGetError());
 
    if (strcasestr(search_options.getString(), "TAU") != 0) {
@@ -375,6 +377,8 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = mangoSetupMatch(search_type.ptr(), gross_query.ptr(), 0);
+   CORE_HANDLE_ERROR(bingo_res, -1, "molecule search engine: can not set gross search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: can not set gross search context", bingoGetWarning());
    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set gross search context", bingoGetError());
 
    const char* gross_conditions = mangoGrossGetConditions();
@@ -440,6 +444,8 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
     * Set up matching parameters
     */
    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   CORE_HANDLE_ERROR(bingo_res, -1, "molecule search engine: can not set sim search context", bingoGetError());
+   CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: can not set sim search context", bingoGetWarning());
    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set sim search context", bingoGetError());
 
    if(min_bound > max_bound)
