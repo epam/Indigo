@@ -15,11 +15,6 @@ include_directories(${IndigoInchi_SOURCE_DIR}
 	${InChI_SOURCE_DIR}/inchi_dll)
 include(DefineTest)
 
-if(MSVC)
-    # This should be set only for a shared library to avoid warnings
-    add_definitions(-D_WINDLL -DINDIGO_PLUGIN)
-endif()
-
 # Indigo InChI static
 if (NOT NO_STATIC)
 	add_library(indigo-inchi STATIC ${IndigoInchi_src} ${IndigoInchi_headers})
@@ -50,6 +45,11 @@ if(APPLE)
 	SET_TARGET_PROPERTIES(indigo-inchi-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup  -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/indigo_inchi.explist")
 endif()              
 set_target_properties(indigo-inchi-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+
+if(MSVC)
+    # This should be set only for a shared library to avoid warnings
+	set_target_properties(indigo-inchi-shared PROPERTIES COMPILE_FLAGS "-D_WINDLL -DINDIGO_PLUGIN")
+endif()
 
 if (NOT APPLE)
 	target_link_libraries(indigo-inchi-shared inchi indigo-shared)

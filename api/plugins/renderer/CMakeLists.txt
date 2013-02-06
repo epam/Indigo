@@ -10,11 +10,6 @@ file (GLOB IndigoRenderer_headers *.h src/*.h*)
 include_directories(${IndigoRenderer_SOURCE_DIR} ${Indigo_SOURCE_DIR} ${Indigo_SOURCE_DIR}/src ${Cairo_SOURCE_DIR} ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/..)
 include(DefineTest)
 
-if(MSVC)
-    add_definitions(-D_WINDLL)
-endif()
-add_definitions(-DINDIGO_PLUGIN)
-
 # Indigo Renderer static
 if (NOT NO_STATIC)
 	add_library(indigo-renderer STATIC ${IndigoRenderer_src} ${IndigoRenderer_headers})
@@ -58,6 +53,12 @@ else()
 endif()
 set_property(TARGET indigo-renderer-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 set_property(TARGET indigo-renderer-shared PROPERTY FOLDER "indigo-renderer")
+
+if(MSVC)
+    # This should be set only for a shared library to avoid warnings
+	set_target_properties(indigo-renderer-shared PROPERTIES COMPILE_FLAGS "-D_WINDLL -DINDIGO_PLUGIN")
+endif()
+
 if (NOT PACK_INDIGO_NOT)
 	pack_shared(indigo-renderer-shared)
 endif()
@@ -68,6 +69,8 @@ if(APPLE)
     FIND_FRAMEWORK(ApplicationServices)
     target_link_libraries(indigo-renderer-c-test-shared ${FRAMEWORK_ApplicationServices})
 endif()
+
+
 
 # DLOPEN test
 #LIBRARY_NAME(indigo-renderer)
