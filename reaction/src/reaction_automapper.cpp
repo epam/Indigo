@@ -48,10 +48,8 @@ void ReactionAutomapper::automap(int mode) {
    /*
     * Set cancellation handler
     */
-   CancellationHandler* prev_handler = 0;
-   if(cancellation) {
-      prev_handler = setCancellationHandler(0);
-   }
+   AAMCancellationWrapper canc_wrapper(cancellation);
+   
    /*
     * Check input atom mapping (if any)
     */
@@ -61,15 +59,12 @@ void ReactionAutomapper::automap(int mode) {
     * Clone reaction
     */
    _createReactionCopy(react_mapping, mol_mappings);
-//   _reactionCopy.reset(_initReaction.neu());
-//   BaseReaction& reaction = _reactionCopy.ref();
-//
-//   reaction.clone(_initReaction, &react_mapping, 0, &mol_mappings);
-//   reaction.aromatize();
 
+   /*
+    * Create AAM map
+    */
    _createReactionMap();
    _setupReactionInvMap(react_mapping, mol_mappings);
-//   _setupReactionMap(react_mapping, mol_mappings);
 
    _considerDissociation();
    _considerDimerization();
@@ -78,12 +73,6 @@ void ReactionAutomapper::automap(int mode) {
     * Check output atom mapping
     */
    _checkAtomMapping(false, true, false);
-   /*
-    * Set cancellation handler back
-    */
-   if(prev_handler) {
-      setCancellationHandler(prev_handler);
-   }
    
 }
 
@@ -365,7 +354,6 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
          rsub_map_in.clear();
       RSubstructureMcs react_sub_mcs(reaction, react, product, *this);
       bool find_sub = react_sub_mcs.searchSubstructureReact(_reaction.getBaseMolecule(react), &rsub_map_in, &rsub_map_out);
-            
       if (!find_sub) {
          react_sub_mcs.searchMaxCommonSubReact(&rsub_map_in, &rsub_map_out);
       }
@@ -1292,13 +1280,11 @@ bool RSubstructureMcs::searchSubstructure(Array<int>* map) {
    bool result = false;
 
    if (_context.cancellation) {
-      setCancellationHandler(_context.cancellation);
       try {
          result = SubstructureMcs::searchSubstructure(map);
       } catch (Exception& e) {
          result = false;
       }
-      setCancellationHandler(0);
    } else {
       result = SubstructureMcs::searchSubstructure(map);
    }
@@ -1337,9 +1323,6 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
    if(_super->vertexCount() < 2 || _sub->vertexCount() < 2)
       return false;
 
-   if (_context.cancellation) 
-      setCancellationHandler(_context.cancellation);
-      
    for(int i = 0; i < 4; ++i) {
       EmbeddingEnumerator& emb_enum = emb_enums.push(*_super);
       emb_enum.setSubgraph(*_sub);
@@ -1353,8 +1336,6 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
       tmp_maps.push().clear();
       results[i] = -1;
    }
-   if (_context.cancellation)
-      setCancellationHandler(0);
 
    Array<int>* in_map_c = 0;
    
@@ -1433,19 +1414,22 @@ bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<i
 
    if(in_map != 0) {
       _transposeInputMap(in_map, mcs.incomingMap);
-   }
+    }
 
-   /*
-    * Search for exact mcs first
-    */
-   mcs.findExactMCS();
-
-   /*
-    * Search for approximate mcs
-    */
-   if (mcs.parametersForExact.isStopped) {
-      mcs.findApproximateMCS();
-   }
+    try {
+        /*
+         * Search for exact mcs first
+         */
+        mcs.findExactMCS();
+        /*
+         * Search for approximate mcs
+         */
+        if (mcs.parametersForExact.isStopped) {
+            mcs.findApproximateMCS();
+        }
+    } catch (Exception& e) {
+        return false;
+    }
 
    mcs.getMaxSolutionMap(out_map, 0);
    /*
@@ -2038,4 +2022,14 @@ int RSubstructureMcs::_getTransposedBondIndex(BaseMolecule& mol, int bond) const
       result = _bondTransposition[bond];
    
    return result;
+}
+
+AAMCancellationWrapper::AAMCancellationWrapper(CancellationHandler* canc) {
+   _prev = setCancellationHandler(canc);
+}
+
+AAMCancellationWrapper::~AAMCancellationWrapper() {
+     if(_prev) {
+        setCancellationHandler(_prev);
+     }
 }

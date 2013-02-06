@@ -240,6 +240,10 @@ MaxCommonSubgraph::ReCreation::ReCreation(ReGraph &rgr, MaxCommonSubgraph& conte
 
 void MaxCommonSubgraph::ReCreation::createRegraph(){
    _regraph.clear();
+    if (_regraph.cancellation_handler != 0) {
+        if (_regraph.cancellation_handler->isCancelled())
+            throw Error("mcs search was cancelled: %s", _regraph.cancellation_handler->cancelledRequestMessage());
+    }
    _nodeConstructor();
    _edgesConstructor();
 }
@@ -611,6 +615,8 @@ void MaxCommonSubgraph::ReGraph::clear(){
 void MaxCommonSubgraph::ReGraph::parse(bool findAllStructure){
    _size = _graph.size();
    _findAllStructure = findAllStructure;
+
+
 
    Dbitset pnode_g1(_firstGraphSize);
    Dbitset pnode_g2(_secondGraphSize);

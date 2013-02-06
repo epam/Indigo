@@ -223,6 +223,15 @@ private:
    
 };
 
+class AAMCancellationWrapper {
+public:
+    AAMCancellationWrapper(CancellationHandler*);
+    ~AAMCancellationWrapper();
+private:
+    AAMCancellationWrapper(const AAMCancellationWrapper&);
+    CancellationHandler* _prev;
+};
+
 }
 
 #endif
