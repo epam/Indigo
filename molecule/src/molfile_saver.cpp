@@ -251,19 +251,17 @@ void MolfileSaver::_writeAtomLabel (Output &output, int label)
 void MolfileSaver::_writeMultiString (Output &output, const char *string, int len)
 {
    int limit = 70;
-   while (1)
+   while (len > 0)
    {
       output.writeString("M  V30 ");
 
       if (len <= limit)
-      {
-         output.write(string, len);
-         output.writeCR();
-         break;
-      }
+         limit = len;
 
       output.write(string, limit);
-      output.writeStringCR("-");
+      if (len != limit)
+         output.writeString("-");
+      output.writeCR();
       len -= limit;
       string += limit;
    }
@@ -657,12 +655,41 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          _writeGenericSGroup3000(mol.data_sgroups[i], idx++, "DAT", out);
          const char *desc = mol.data_sgroups[i].description.ptr();
          if (desc != 0 && strlen(desc) > 0)
-            out.printf(" FIELDNAME=%s", desc);
+         {
+            out.writeString(" FIELDNAME=");
+            bool space_found = (strchr(desc, ' ') != NULL);
+            if (space_found)
+               out.writeString("\"");
+            out.writeString(desc);
+            if (space_found)
+               out.writeString("\"");
+         }
          out.printf(" FIELDDISP=\"");
          _writeDataSGroupDisplay(mol.data_sgroups[i], out);
          out.printf("\"");
-         if (mol.data_sgroups[i].data.size() > 0)
-            out.printf(" FIELDDATA=%.*s", mol.data_sgroups[i].data.size(), mol.data_sgroups[i].data.ptr());
+         if (mol.data_sgroups[i].data.size() > 0 && mol.data_sgroups[i].data[0] != 0)
+         {
+            // Split field data by new lines
+            int len = mol.data_sgroups[i].data.size();
+            char *data = mol.data_sgroups[i].data.ptr();
+            while (len > 0)
+            {
+               int j;
+               for (j = 0; j < len; j++)
+                  if (data[j] == '\n')
+                     break;
+
+               out.printf(" FIELDDATA=\"%.*s\"", j, data);
+               if (data[j] == '\n')
+                  j++;
+
+               data += j;
+               len -= j;
+
+               if (*data == 0)
+                  break;
+            }
+         }
          _writeMultiString(output, buf.ptr(), buf.size());
       }
       for (i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))
@@ -1285,16 +1312,33 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             output.writeCR();
 
             k = datasgroup.data.size();
+            if (k > 0 && datasgroup.data.top() == 0)
+               k--; // Exclude terminating zero
+
             char *ptr = datasgroup.data.ptr();
-            while (k > 69)
+            while (k > 0)
             {
-               output.printf("M  SCD %3d %69s", i + 1, ptr);
-               ptr += 69;
-               k -= 69;
+               int j;
+               for (j = 0; j < 69 && j < k; j++)
+                  if (ptr[j] == '\n')
+                     break;
+
+               // Print ptr[0..i]
+               output.writeString("M  ");
+               if (j != 69 || j == k)
+                  output.writeString("SED ");
+               else
+                  output.writeString("SCD ");
+               output.printf("%3d ", i + 1);
+
+               output.write(ptr, j);
+               if (ptr[j] == '\n')
+                  j++;
+
+               ptr += j;
+               k -= j;
                output.writeCR();
             }
-            output.printf("M  SED %3d %.*s", i + 1, k, ptr);
-            output.writeCR();
          }
          else if (sgroup_types[i] == _SGROUP_TYPE_MUL)
          {

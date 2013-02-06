@@ -350,6 +350,10 @@ void Scanner::appendLine (Array<char> &out, bool append_zero)
    if (isEOF())
       throw Error("appendLine(): end of stream");
 
+   if (out.size() > 0)
+      while (out.top() == 0)
+         out.pop();
+
    do
    {
       char c = readChar();

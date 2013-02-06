@@ -274,6 +274,22 @@ public:
       return _array[_length - 1];
    }
 
+   T & top (int offset)
+   {
+      if (_length - offset <= 0)
+         throw Error("stack underflow");
+
+      return _array[_length - 1 - offset];
+   }
+
+   const T & top (int offset) const
+   {
+      if (_length - offset <= 0)
+         throw Error("stack underflow");
+
+      return _array[_length - 1 - offset];
+   }
+
    void resize (int newsize)
    {
       if (newsize > _reserved)
