@@ -586,7 +586,7 @@ void DearomatizationsGroups::getGroupData (int group, int flags,
 
          int label = _molecule.getAtomNumber(v_idx);
          int charge = _molecule.getAtomCharge(v_idx);
-         int radical = _molecule.getAtomRadical(v_idx);
+         int radical = _molecule.getAtomRadical_NoThrow(v_idx, -1);
 
          // Treat unset charge and radical as zero;
          // We have checked before in detectAromaticGroups()
@@ -827,7 +827,9 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
 
    int label = _molecule.getAtomNumber(v_idx);
    int charge = _molecule.getAtomCharge(v_idx);
-   int radical = _molecule.getAtomRadical(v_idx);
+   // If radical is undefined then treat it as there are not radical
+   // Because if there were a radical it should have been explicitly marked
+   int radical = _molecule.getAtomRadical_NoThrow(v_idx, 0);
 
    int max_connectivity = -1;
    if (!_molecule.isQueryMolecule())
