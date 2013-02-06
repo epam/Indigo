@@ -1295,6 +1295,15 @@ void ReactionEnumeratorState::_completeCisTrans( Molecule &product, Molecule &un
          continue;
 
       int pr_bond_idx = product.findEdgeIndex(frags_mapping[edge.beg], frags_mapping[edge.end]);
+
+      /* if begin of edge in fragments matches end off edge in product subs pairs should be swaped */
+      int tmp;
+      if (frags_mapping[edge.beg] == product.getEdge(pr_bond_idx).end)
+      {
+         __swap(new_subs[0], new_subs[2], tmp);
+         __swap(new_subs[1], new_subs[3], tmp);
+      }
+
       product.cis_trans.add(pr_bond_idx, new_subs, uncleaned_fragments.cis_trans.getParity(i));
    }
 }
