@@ -139,7 +139,7 @@ for w, libs in wrappers:
         continue
     libExists = True
     for lib in libs:
-        name = "indigo-libs-%s-%s-shared" % (version, lib)
+        name = "indigo-libs-%s-%s-shared%s" % (version, lib, suffix)
         if exists(name + ".zip"):
             libExists &= True
             unpackToLibs(name)
@@ -150,4 +150,4 @@ for w, libs in wrappers:
     if need_gen_wrappers:
         for gen in wrappers_gen:
             if not (w != 'win' and gen == 'make-dotnet-wrappers.py'):
-                subprocess.check_call('%s %s -s "-%s"' % (sys.executable, join(api_dir, gen), w), shell=True)
+                subprocess.check_call('%s %s -s "-%s"' % (sys.executable, join(api_dir, gen), w + suffix), shell=True)
