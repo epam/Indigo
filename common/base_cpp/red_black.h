@@ -1144,6 +1144,18 @@ public:
       return this->_nodes->at(node).value;
    }
 
+   void copy (const RedBlackStringObjMap<Value> &other)
+   {
+      clear();
+      for (int i = other.begin(); i != other.end(); i = other.next(i))
+      {
+         const char *key = other.key(i);
+         int id = insert(key);
+         // Use `copy` method if `Value` type
+         value(id).copy(other.value(i));
+      }
+   }
+
 protected:
    virtual int _compare (const char* key, const Node &node) const
    {

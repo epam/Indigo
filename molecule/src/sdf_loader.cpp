@@ -189,6 +189,9 @@ void SdfLoader::readNext ()
 
          do
          {
+            if (_scanner->isEOF())
+               break;
+
             _scanner->readLine(str, true);
             if (str.size() > 1)
             {
