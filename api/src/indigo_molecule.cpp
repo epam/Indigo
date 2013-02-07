@@ -479,7 +479,6 @@ IndigoObject * IndigoBondsIter::next ()
    return bond.release();
 }
 
-
 CEXPORT int indigoLoadMolecule (int source)
 {
    INDIGO_BEGIN
@@ -498,6 +497,7 @@ CEXPORT int indigoLoadMolecule (int source)
       Molecule &mol = molptr->mol;
 
       loader.loadMolecule(mol);
+      molptr->properties.copy(loader.properties);
 
       return self.addObject(molptr.release());
    }
@@ -519,6 +519,8 @@ CEXPORT int indigoLoadQueryMolecule (int source)
       QueryMolecule &qmol = molptr->qmol;
 
       loader.loadQueryMolecule(qmol);
+      molptr->properties.copy(loader.properties);
+
       return self.addObject(molptr.release());
    }
    INDIGO_END(-1);

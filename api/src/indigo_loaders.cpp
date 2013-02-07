@@ -70,8 +70,7 @@ IndigoObject(type)
    _loaded = false;
    _data.copy(data);
 
-   for (int i = properties.begin(); i != properties.end(); i = properties.next(i))
-      _properties.value(_properties.insert(properties.key(i))).copy(properties.value(i));
+   _properties.copy(properties);
 
    _index = index;
    _offset = offset;
