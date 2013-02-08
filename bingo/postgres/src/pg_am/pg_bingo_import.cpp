@@ -321,10 +321,12 @@ public:
          try {
             getNextData();
          } catch (Exception& e) {
-            elog(WARNING, "can not import a structure: %s", e.message());
-
+            /*
+             * Handle incorrect format errors
+             */
             if(strstr(e.message(), "data size exceeded the acceptable size") != 0)
                throw BingoPgError(e.message());
+            elog(WARNING, "can not import a structure: %s", e.message());
             continue;
          }
          /*
@@ -401,9 +403,12 @@ public:
             data = bingoImportGetPropertyValue(col_idx - 1);
          
          if (data == 0) {
-            CORE_HANDLE_WARNING(0, 1, "importSDF", bingoGetError());
+            /*
+             * Handle incorrect format errors
+             */
             if(strstr(bingoGetError(), "data size exceeded the acceptable size") != 0)
                throw BingoPgError(bingoGetError());
+            CORE_HANDLE_WARNING(0, 1, "importSDF", bingoGetError());
          }
 
 
@@ -475,9 +480,12 @@ public:
             data = bingoImportGetPropertyValue(col_idx - 1);
          
          if (data == 0) {
-            CORE_HANDLE_WARNING(0, 1, "importRDF", bingoGetError());
+            /*
+             * Handle incorrect format errors
+             */
             if(strstr(bingoGetError(), "data size exceeded the acceptable size") != 0)
                throw BingoPgError(bingoGetError());
+            CORE_HANDLE_WARNING(0, 1, "importRDF", bingoGetError());
          }
          _addData(data, col_idx);
       }
