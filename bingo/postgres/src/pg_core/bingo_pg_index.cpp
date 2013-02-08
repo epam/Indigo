@@ -395,7 +395,7 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item) {
     */
    ++_metaInfo.n_molecules;
    if (_metaInfo.n_molecules % 1000 == 0) {
-      elog(NOTICE, "processed %d structures", _metaInfo.n_molecules);
+      elog(NOTICE, "bingo.index: %d structures processed", _metaInfo.n_molecules);
    }
 
 }

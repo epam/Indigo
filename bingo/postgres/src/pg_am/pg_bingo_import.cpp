@@ -352,6 +352,8 @@ public:
          }
          BINGO_PG_HANDLE(throw BingoPgError("can not import all the structures: SQL error: %s", message));
 
+         if(debug_idx % 1000 == 0)
+            elog(NOTICE, "bingo.import: %d structures processed", debug_idx);
          /*
           * Return back session id and error handler
           */
