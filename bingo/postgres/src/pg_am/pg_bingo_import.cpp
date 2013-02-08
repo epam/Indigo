@@ -249,8 +249,6 @@ public:
    }
 
    void _addData(const char* data, int col_idx) {
-      if(data == 0)
-		  return;
       AutoPtr<ImportData> import_data;
       ImportColumn& import_column = _importColumns[col_idx];
       /*
@@ -324,6 +322,9 @@ public:
             getNextData();
          } catch (Exception& e) {
             elog(WARNING, "can not import a structure: %s", e.message());
+
+            if(strstr(e.message(), "data size exceeded the acceptable size") != 0)
+               throw BingoPgError(e.message());
             continue;
          }
          /*
@@ -399,8 +400,13 @@ public:
          else
             data = bingoImportGetPropertyValue(col_idx - 1);
          
-         if (data == 0)
+         if (data == 0) {
             CORE_HANDLE_WARNING(0, 1, "importSDF", bingoGetError());
+            if(strstr(bingoGetError(), "data size exceeded the acceptable size") != 0)
+               throw BingoPgError(bingoGetError());
+         }
+
+
          _addData(data, col_idx);
       }
    }
@@ -468,8 +474,11 @@ public:
          else 
             data = bingoImportGetPropertyValue(col_idx - 1);
          
-         if (data == 0)
+         if (data == 0) {
             CORE_HANDLE_WARNING(0, 1, "importRDF", bingoGetError());
+            if(strstr(bingoGetError(), "data size exceeded the acceptable size") != 0)
+               throw BingoPgError(bingoGetError());
+         }
          _addData(data, col_idx);
       }
    }
