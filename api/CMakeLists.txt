@@ -25,7 +25,7 @@ if (NOT NO_STATIC)
 	target_link_libraries(indigo molecule reaction layout tinyxml)
 	set_property(TARGET indigo PROPERTY FOLDER "indigo")
 	# No exports in case of static library: define empty EXPORT_SYMBOL definition
-	set_target_properties(indigo PROPERTIES COMPILE_FLAGS "-DEXPORT_SYMBOL=")
+	set_target_properties(indigo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL= ")
 	pack_static(indigo)
 	
 	DEFINE_TEST(indigo-c-test-static "tests/c/indigo-test.c" indigo)
