@@ -109,6 +109,11 @@ bingo_rescan(PG_FUNCTION_ARGS) {
       memmove(scan->keyData, scankey, scan->numberOfKeys * sizeof (ScanKeyData));
    }
 
+   BingoPgSearch* so = (BingoPgSearch*) scan->opaque;
+   if (so != NULL) {
+      so->prepareRescan(scan);
+   }
+
    PG_RETURN_VOID();
 }
 

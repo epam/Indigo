@@ -38,6 +38,8 @@ public:
    const char* getQuery() {return _queryText.getString();}
    const char* getOptions() {return _optionsText.getString();}
 
+   void prepareRescan(PG_OBJECT scan_desc_ptr);
+
    DECL_ERROR;
 
 private:

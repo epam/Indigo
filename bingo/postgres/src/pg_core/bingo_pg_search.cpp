@@ -68,6 +68,15 @@ bool BingoPgSearch::next(PG_OBJECT scan_desc_ptr, PG_OBJECT result_ptr) {
 
 }
 
+void BingoPgSearch::prepareRescan(PG_OBJECT scan_desc_ptr) {
+   _indexScanDesc = scan_desc_ptr;
+   if(_initSearch) {
+      _initScanSearch();
+   } else {
+      _fpEngine->prepareQuerySearch(_bufferIndex, _indexScanDesc);
+   }
+}
+
 void BingoPgSearch::_initScanSearch() {
    _initSearch = false;
 
