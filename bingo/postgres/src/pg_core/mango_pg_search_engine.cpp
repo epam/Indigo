@@ -424,8 +424,8 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr) {
 void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
    IndexScanDesc scan_desc = (IndexScanDesc) scan_desc_ptr;
    QS_DEF(Array<char>, search_type);
-   BingoPgText search_query;
-   BingoPgText search_options;
+   Array<char> search_query;
+   Array<char> search_options;
    int bingo_res;
    float min_bound = 0, max_bound = 1;
    BingoPgFpData& data = _queryFpData.ref();
@@ -436,7 +436,7 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
             /*
     * Set up matching parameters
     */
-   bingo_res = mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set sim search context", bingoGetError());
 
    if(min_bound > max_bound)
@@ -506,7 +506,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, Array<char>& str1
    BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", message));
 }
 
-void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound, float& max_bound, BingoPgText& str1, BingoPgText& str2) {
+void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound, float& max_bound, indigo::Array<char>& str1_out, indigo::Array<char>& str2_out) {
    /*
     * Get query info
     */
@@ -543,8 +543,12 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound
        */
       min_bound = DatumGetFloat4(values[0]);
       max_bound = DatumGetFloat4(values[1]);
+      BingoPgText str1, str2;
       str1.init(values[2]);
       str2.init(values[3]);
+
+      str1_out.readString(str1.getString(), true);
+      str2_out.readString(str2.getString(), true);
 
       pfree(values);
       pfree(nulls);

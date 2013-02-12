@@ -146,8 +146,8 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    IndexScanDesc scan_desc = (IndexScanDesc) scan_desc_ptr;
    QS_DEF(Array<char>, search_type);
    int bingo_res;
-   BingoPgText search_query;
-   BingoPgText search_options;
+   Array<char> search_query;
+   Array<char> search_options;
    BingoPgFpData& data = _queryFpData.ref();
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, false);
@@ -157,7 +157,7 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    /*
     * Set up matching parameters
     */
-   bingo_res = ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   bingo_res = ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
    CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not set rsub search context", bingoGetError());
 
    const char* fingerprint_buf;
@@ -177,8 +177,8 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    QS_DEF(Array<char>, from_clause);
    QS_DEF(Array<char>, where_clause);
    QS_DEF(Array<char>, search_type);
-   BingoPgText search_query;
-   BingoPgText search_options;
+   Array<char> search_query;
+   Array<char> search_options;
    int bingo_res;
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, false);
@@ -188,7 +188,7 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    /*
     * Set up matching parameters
     */
-   bingo_res = ringoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   bingo_res = ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
    CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not set rexact search context", bingoGetError());
 
    _prepareExactQueryStrings(what_clause, from_clause, where_clause);
@@ -200,7 +200,7 @@ void RingoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr) {
    _prepareSubSearch(scan_desc_ptr);
 }
 
-void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1, BingoPgText& str2) {
+void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, indigo::Array<char>& str1_out, indigo::Array<char>& str2_out) {
    /*
     * Get query info
     */
@@ -235,8 +235,12 @@ void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1
       /*
        * Query tuple consist of query and options
        */
+      BingoPgText str1, str2;
       str1.init(values[0]);
       str2.init(values[1]);
+
+      str1_out.readString(str1.getString(), true);
+      str2_out.readString(str2.getString(), true);
 
       pfree(values);
       pfree(nulls);
