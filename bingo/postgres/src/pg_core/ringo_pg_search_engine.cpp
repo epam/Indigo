@@ -81,11 +81,7 @@ void RingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
    _queryFpData.reset(new RingoPgFpData());
 
    _setBingoContext();
-//   bingoSetErrorHandler(_errorHandler, 0);
-
    BingoPgSearchEngine::prepareQuerySearch(bingo_idx, scan_desc);
-
-   loadDictionary(bingo_idx);
 
    switch(_searchType) {
       case BingoPgCommon::REACT_SUB:

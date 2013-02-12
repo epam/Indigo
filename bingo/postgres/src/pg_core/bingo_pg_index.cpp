@@ -34,6 +34,7 @@ _strategy(READING_STRATEGY) {
    _metaInfo.n_molecules = 0;
    _metaInfo.index_type = 0;
    _metaInfo.n_pages = 0;
+   _currentSectionIdx = -1;
 }
 
 /*
@@ -89,7 +90,6 @@ int BingoPgIndex::readBegin() {
    /*
     * Jump to the first section
     */
-   _currentSectionIdx = -1;
    _jumpToSection(0);
 
    return _currentSectionIdx;

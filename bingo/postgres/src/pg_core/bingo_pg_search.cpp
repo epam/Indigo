@@ -108,7 +108,7 @@ void BingoPgSearch::_initScanSearch() {
     * Process query structure with parameters
     */
    _fpEngine->prepareQuerySearch(_bufferIndex, _indexScanDesc);
-
+   _fpEngine->loadDictionary(_bufferIndex);
 }
 
 

@@ -118,6 +118,8 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
 
 void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT scan_desc_ptr) {
 
+   profTimerStart(t0, "mango_pg.prepare_query_search");
+
    IndexScanDesc scan_desc = (IndexScanDesc) scan_desc_ptr;
 
    if(scan_desc->numberOfKeys >= 1 && scan_desc->numberOfKeys <= 2) {
@@ -134,10 +136,8 @@ void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
    _queryFpData.reset(new MangoPgFpData());
 
    _setBingoContext();
-
+   
    BingoPgSearchEngine::prepareQuerySearch(bingo_idx, scan_desc);
-
-   loadDictionary(bingo_idx);
 
    switch(_searchType) {
       case BingoPgCommon::MOL_SUB:
@@ -331,6 +331,8 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    Array<char> search_query;
    Array<char> search_options;
    int bingo_res;
+
+   profTimerStart(t0, "mango_pg.prepare_exact_search");
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
