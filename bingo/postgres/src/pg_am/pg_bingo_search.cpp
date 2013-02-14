@@ -102,17 +102,22 @@ bingo_rescan(PG_FUNCTION_ARGS) {
    IndexScanDesc scan = (IndexScanDesc) PG_GETARG_POINTER(0);
    ScanKey scankey = (ScanKey) PG_GETARG_POINTER(1);
 
-   /*
-    * Update scan key, if a new one is given
-    */
-   if (scankey && scan->numberOfKeys > 0) {
-      memmove(scan->keyData, scankey, scan->numberOfKeys * sizeof (ScanKeyData));
-   }
+   PG_BINGO_BEGIN
+   {
+      /*
+       * Update scan key, if a new one is given
+       */
+      if (scankey && scan->numberOfKeys > 0) {
+         memmove(scan->keyData, scankey, scan->numberOfKeys * sizeof (ScanKeyData));
+      }
 
-   BingoPgSearch* so = (BingoPgSearch*) scan->opaque;
-   if (so != NULL) {
-      so->prepareRescan(scan);
+      BingoPgSearch* so = (BingoPgSearch*) scan->opaque;
+      if (so != NULL) {
+         so->prepareRescan(scan);
+      }
+
    }
+   PG_BINGO_END;
 
    PG_RETURN_VOID();
 }
