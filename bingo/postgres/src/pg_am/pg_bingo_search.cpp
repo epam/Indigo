@@ -65,6 +65,7 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
    IndexScanDesc scan = RelationGetIndexScan(rel, keysz, norderbys);
 
    scan->opaque = 0;
+   BingoPgSearch* so = 0;
 
 //   old_handler = signal(SIGINT, &error_handler);
    
@@ -73,7 +74,7 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
       /*
        * Prepare search context
        */
-      BingoPgSearch* so = new BingoPgSearch(rel);
+      so = new BingoPgSearch(rel);
 
 
       /*
@@ -87,7 +88,7 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
       BingoPgCommon::appendPath(index_schema);
       
    }
-   PG_BINGO_END;
+   PG_BINGO_HANDLE(delete so; scan->opaque=NULL);
 
 //   signal(SIGINT, old_handler);
 
@@ -102,6 +103,7 @@ bingo_rescan(PG_FUNCTION_ARGS) {
    IndexScanDesc scan = (IndexScanDesc) PG_GETARG_POINTER(0);
    ScanKey scankey = (ScanKey) PG_GETARG_POINTER(1);
 
+   BingoPgSearch* so = 0;
    PG_BINGO_BEGIN
    {
       /*
@@ -111,13 +113,13 @@ bingo_rescan(PG_FUNCTION_ARGS) {
          memmove(scan->keyData, scankey, scan->numberOfKeys * sizeof (ScanKeyData));
       }
 
-      BingoPgSearch* so = (BingoPgSearch*) scan->opaque;
+      so = (BingoPgSearch*) scan->opaque;
       if (so != NULL) {
          so->prepareRescan(scan);
       }
 
    }
-   PG_BINGO_END;
+   PG_BINGO_HANDLE(delete so; scan->opaque=NULL);
 
    PG_RETURN_VOID();
 }
