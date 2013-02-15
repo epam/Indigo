@@ -1,3 +1,20 @@
+Bingo 1.7.8b2
+----------
+
+*15 February 2013*
+
+General changes for Bingo Oracle, SQL Server and PostgreSQL:
+
+* all the bug fixes from the Indigo branch (AAM cancellation timeout, aromatization bug fixed and others)
+
+Bingo PostgreSQL-specific changes: 
+
+* import sdf bug was fixed (throw error on incorrect format)
+* bug with the rescan queries was fixed (join queries now work properly)
+* errors while binary matching were fixed 
+* multi-threading was implemented for index building (creating index performance was improved)
+
+
 Bingo 1.7.7
 ----------
 
