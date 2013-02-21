@@ -1,3 +1,24 @@
+Indigo 1.1.8
+----------
+
+*1 March 2013*
+
+New features:
+
+* For superatoms IndigoObject.name() returns superatom label
+* New method indigoExpandAbbreviations in the Indigo C interface. Bindings for Java, C# will be ready soon.
+* Single record in SDF file is limited to 100Mb to prevent accident out-of-memory exceptions when loading non-SDF files.
+* Indigo compact molecule and reaction format is compatible with previous versions. KNIME workflows that are using Indigo nodes will work fine with previously saved workflows.
+* Indigo.loadMolecule reads molecule properties from SDF file too. Karen Karapetyan: [https://groups.google.com/d/msg/indigo-general/-2aYCKW8nSs/xteR7sFtsKIJ]()
+
+Fixed:
+
+* Issues with transformations. Thanks to Karen Karapetyan for various bug reports!
+* Exception on invalid options in the InChI plugin
+* Issues with long multiline in molfile data s-groups
+* Aromaticity matcher issue. Thanks to James Davidson for the bug report: [https://groups.google.com/d/topic/indigo-general/yhTfm6XsKTM/discussion]()
+* Atom-to-atom mapping timeout issue
+
 Indigo 1.1.7
 ----------
 
