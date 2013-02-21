@@ -835,7 +835,7 @@ public class Indigo
             }
          }
          if (usingVersion == null) {
-            throw new Error("OS version not supported: Mac OS X 10." + minorVersion);  
+            throw new Error("Indigo cannot load libraries for Mac OS X 10." + minorVersion);  
          }
          path += "10." + usingVersion;
       }
