@@ -829,13 +829,13 @@ public class Indigo
          Integer usingVersion = null;
 
          for (int i = minorVersion; i >= 5; i--) {
-            if (Indigo.class.getResourceAsStream("/com/ggasoftware/indigo/" + path + "10." + i) != null) {
+            if (Indigo.class.getResourceAsStream("/com/ggasoftware/indigo/" + path + "10." + i + "/libindigo.dylib") != null) {
                usingVersion = i;
                break;
             }
          }
          if (usingVersion == null) {
-            throw new Error("Indigo cannot load libraries for Mac OS X 10." + minorVersion);  
+            throw new Error("Indigo cannot find native libraries for Mac OS X 10." + minorVersion);  
          }
          path += "10." + usingVersion;
       }
