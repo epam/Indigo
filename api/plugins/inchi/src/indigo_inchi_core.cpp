@@ -25,6 +25,9 @@
 
 using namespace indigo;
 
+// Inchi doesn't seem to support multithreading
+static OsLock inchi_lock;
+
 IMPL_ERROR(IndigoInchi, "indigo-inchi")
 
 const char* IndigoInchi::version ()
@@ -81,6 +84,9 @@ static inchi_BondType getInchiBondType (int bond_order)
 
 void IndigoInchi::loadMoleculeFromInchi (const char *inchi_string, Molecule &mol)
 {
+   // lock
+   OsLocker locker(inchi_lock);
+
    inchi_InputINCHI inchi_input;
    inchi_input.szInChI = (char *)inchi_string;
    inchi_input.szOptions = (char *)options.ptr();
@@ -491,6 +497,9 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
 
    inchi_Output output;
    
+   // lock
+   OsLocker locker(inchi_lock);
+
    int ret = GetINCHI(&input, &output);
 
    if (output.szMessage)
@@ -533,6 +542,9 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
 
 void IndigoInchi::InChIKey (const char *inchi, Array<char> &output)
 {
+   // lock
+   OsLocker locker(inchi_lock);
+
    output.resize(28);
    output.zerofill();
    int ret = GetINCHIKeyFromINCHI(inchi, 0, 0, output.ptr(), 0, 0);
