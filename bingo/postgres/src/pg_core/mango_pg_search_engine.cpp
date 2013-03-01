@@ -676,6 +676,11 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
 //         profTimerStop(t6);
 
       }
+      /*
+       * Return false on empty fingerprint
+       */
+      if(query_data.bitEnd() == 0)
+         return false;
 
       /*
        * If bitset is not null then matches are found
