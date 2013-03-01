@@ -141,8 +141,8 @@ void RdfLoader::readNext() {
          output.printf("%s\n", _innerBuffer.ptr());
       }
 
-	  if(data.size() > MAX_DATA_SIZE)
-		  throw Error("data size exceeded the acceptable size %d bytes, Please check for correct file format", MAX_DATA_SIZE);
+      if(data.size() > MAX_DATA_SIZE)
+         throw Error("data size exceeded the acceptable size %d bytes, Please check for correct file format", MAX_DATA_SIZE);
 
    } while(_readLine(_getScanner(), _innerBuffer));
 
