@@ -1,5 +1,5 @@
 #ifndef _BINGO_PG_SECTION_H__
-#define	_BINGO_PG_SECTION_H__
+#define _BINGO_PG_SECTION_H__
 
 #include "base_cpp/array.h"
 #include "base_cpp/ptr_array.h"
@@ -87,5 +87,5 @@ private:
    indigo::ObjArray<BingoPgBuffer> _bitsCountBuffers;
 };
 
-#endif	/* BINGO_PG_SECTION1_H */
+#endif /* BINGO_PG_SECTION1_H */
 

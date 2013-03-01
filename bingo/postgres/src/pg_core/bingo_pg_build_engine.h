@@ -1,5 +1,5 @@
 #ifndef _BINGO_PG_BUILD_ENGINE_H__
-#define	_BINGO_PG_BUILD_ENGINE_H__
+#define _BINGO_PG_BUILD_ENGINE_H__
 
 extern "C" {
    #include "c.h"
@@ -74,5 +74,5 @@ protected:
 
 
 
-#endif	/* BINGO_PG_BUILD_ENGINE_H */
+#endif /* BINGO_PG_BUILD_ENGINE_H */
 

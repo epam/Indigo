@@ -1,5 +1,5 @@
 #ifndef _BINGO_PG_CURSOR_H__
-#define	_BINGO_PG_CURSOR_H__
+#define _BINGO_PG_CURSOR_H__
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
@@ -33,5 +33,5 @@ private:
 
 };
 
-#endif	/* BINGO_PG_CURSOR_H */
+#endif /* BINGO_PG_CURSOR_H */
 

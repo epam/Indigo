@@ -1,5 +1,5 @@
 #ifndef _BINGO_PG_INDEX_H__
-#define	_BINGO_PG_INDEX_H__
+#define _BINGO_PG_INDEX_H__
 
 #include "base_cpp/obj_array.h"
 #include "base_cpp/auto_ptr.h"
@@ -124,5 +124,5 @@ private:
 
 
 
-#endif	/* BINGO_PG_SECTION_H */
+#endif /* BINGO_PG_SECTION_H */
 

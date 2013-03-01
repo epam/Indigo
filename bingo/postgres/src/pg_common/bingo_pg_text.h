@@ -1,5 +1,5 @@
 #ifndef _BINGO_PG_TEXT_H__
-#define	_BINGO_PG_TEXT_H__
+#define _BINGO_PG_TEXT_H__
 
 #include "bingo_postgres.h"
 #include "base_cpp/array.h"
@@ -31,5 +31,5 @@ private:
    indigo::Array<char> _cstr;
 };
 
-#endif	/* BINGO_PG_TEXT_H */
+#endif /* BINGO_PG_TEXT_H */
 

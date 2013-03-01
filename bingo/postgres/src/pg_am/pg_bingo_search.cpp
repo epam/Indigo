@@ -96,7 +96,7 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
 }
 
 /*
- *	Rescan an index relation
+ * Rescan an index relation
  */
 Datum
 bingo_rescan(PG_FUNCTION_ARGS) {
