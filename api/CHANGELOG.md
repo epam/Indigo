@@ -18,6 +18,7 @@ Fixed:
 * Issues with long multiline in molfile data s-groups
 * Aromaticity matcher issue. Thanks to James Davidson for the bug report: [https://groups.google.com/d/topic/indigo-general/yhTfm6XsKTM/discussion]()
 * Atom-to-atom mapping timeout issue
+* File handlers leak in indigo.iterateSDFile method in case of empty file
 
 Indigo 1.1.7
 ----------

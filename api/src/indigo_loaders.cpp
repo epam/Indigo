@@ -42,8 +42,10 @@ IndigoObject(SDF_LOADER)
    _own_scanner = 0;
    sdf_loader = 0;
 
-   _own_scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);
-   sdf_loader = new SdfLoader(*_own_scanner);
+   // AutoPtr guard in case of exception in SdfLoader (happens in case of empty file)
+   AutoPtr<FileScanner> scanner(new FileScanner(indigoGetInstance().filename_encoding, filename));
+   sdf_loader = new SdfLoader(*scanner.get());
+   _own_scanner = scanner.release();
 }
 
 IndigoSdfLoader::~IndigoSdfLoader ()
