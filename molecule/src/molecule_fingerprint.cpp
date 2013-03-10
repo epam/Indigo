@@ -234,28 +234,25 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
       }
       
       // ORD and ANY are made of all fragments having more than 2 vertices
-      if (vertices.size() > 2)
+      if (use_atoms && use_bonds)
       {
-         if (use_atoms && use_bonds)
+         if (!skip_ord && _parameters.ord_qwords > 0)
+            set_ord = true;
+      }
+      else if (_parameters.any_qwords > 0)
+      {
+         if (use_atoms)
          {
-            if (!skip_ord && _parameters.ord_qwords > 0)
-               set_ord = true;
-         }
-         else if (_parameters.any_qwords > 0)
-         {
-            if (use_atoms)
-            {
-               if (!skip_any_bonds)
-                  set_any = true;
-            }
-            else if (use_bonds)
-            {
-               if (!skip_any_atoms)
-                  set_any = true;
-            }
-            else if (!skip_any_atoms_bonds)
+            if (!skip_any_bonds)
                set_any = true;
          }
+         else if (use_bonds)
+         {
+            if (!skip_any_atoms)
+               set_any = true;
+         }
+         else if (!skip_any_atoms_bonds)
+            set_any = true;
       }
    }
 
@@ -277,7 +274,7 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
    if (2 * vertices.size() > 3 * different_vertex_count)
       bits_per_fragment = 5;
    else if (vertices.size() <= 3)
-      bits_per_fragment = 3;
+      bits_per_fragment = 2;
    else if (vertices.size() >= 5 && vertices.size() != edges.size())
       bits_per_fragment = 1;
    else
@@ -412,7 +409,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
 
       _is_cycle = false;
       se.context = this;
-      se.min_vertices = 2;
+      se.min_vertices = 1;
       se.max_vertices = sim_only ? 5 : 7;
       se.handle_maximal = false;
       se.maximal_critera_value_callback = _maximalSubgraphCriteriaValue;
