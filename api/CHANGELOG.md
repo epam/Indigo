@@ -1,7 +1,7 @@
 Indigo 1.1.8
 ----------
 
-*1 March 2013*
+*10 March 2013*
 
 New features:
 
