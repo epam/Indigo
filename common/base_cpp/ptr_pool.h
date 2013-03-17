@@ -87,6 +87,9 @@ public:
    const T *  at (int index) const { return _ptrpool[index]; }
          T *& at (int index)       { return _ptrpool[index]; }
 
+   const T& ref (int index) const { return *_ptrpool[index]; }
+         T& ref (int index)       { return *_ptrpool[index]; }
+
 protected:
    Pool<T *> _ptrpool;
 private:
