@@ -21,6 +21,7 @@
 #include "base_cpp/gray_codes.h"
 #include "base_cpp/d_bitset.h"
 #include "graph/graph_perfect_matching.h"
+#include "molecule/molecule_arom.h"
 
 namespace indigo {
 
@@ -155,7 +156,7 @@ public:
       PARAMS_SAVE_JUST_HETERATOMS       // Store just heteroatoms configuration
    }; 
 public:
-   explicit Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn);
+   explicit Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn, const AromaticityOptions &options = AromaticityOptions());
    virtual ~Dearomatizer ();
 
    void  enumerateDearomatizations  (DearomatizationsStorage &dearomatizations);
@@ -182,6 +183,7 @@ protected:
    GraphMatchingFixed  _graphMatching;
 
    BaseMolecule &_molecule;
+   const AromaticityOptions &_options;
    int _connectivityGroups;
    int _activeGroup;
 
@@ -295,9 +297,9 @@ public:
 
    // Function dearomatizes as much as possible.
    // Returns true if all bonds were dearomatized, false overwise
-   static bool dearomatizeMolecule (Molecule &mol);
+   static bool dearomatizeMolecule (Molecule &mol, const AromaticityOptions &options = AromaticityOptions());
 
-   static bool restoreHydrogens (Molecule &mol, bool exception_if_not_unique);
+   static bool restoreHydrogens (Molecule &mol, bool exception_if_not_unique, const AromaticityOptions &options = AromaticityOptions());
 
    void dearomatizeGroup (int group, int dearomatization_index);
    void restoreHydrogens (int group, int dearomatization_index);

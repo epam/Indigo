@@ -23,6 +23,7 @@
 #include "molecule/molecule_allene_stereo.h"
 #include "base_cpp/obj_array.h"
 #include "molecule/molecule_rgroups.h"
+#include "molecule/molecule_arom.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -233,9 +234,9 @@ public:
    virtual bool bondStereoCare (int idx) = 0;
 
    // Returns true if some bonds were changed
-   virtual bool aromatize () = 0;
+   virtual bool aromatize (const AromaticityOptions &options = AromaticityOptions()) = 0;
    // Returns true if all bonds were dearomatized
-   virtual bool dearomatize () = 0;
+   virtual bool dearomatize (const AromaticityOptions &options = AromaticityOptions()) = 0;
 
    enum
    {

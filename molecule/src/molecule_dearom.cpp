@@ -26,8 +26,8 @@ using namespace indigo;
 
 static int _dearomatizationParams = Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION;
 
-Dearomatizer::Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn) :
-   _graphMatching(molecule), _molecule(molecule), _aromaticGroups(molecule),
+Dearomatizer::Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn, const AromaticityOptions &options) :
+   _graphMatching(molecule), _molecule(molecule), _aromaticGroups(molecule), _options(options),
    TL_CP_GET(_aromaticGroupData),
    //TL_CP_GET(_edgesFixed),
    //TL_CP_GET(_verticesFixed),
@@ -196,6 +196,9 @@ void Dearomatizer::_processMatching (Molecule &submolecule, int group,
       e_idx < submolecule.edgeEnd(); 
       e_idx = submolecule.edgeNext(e_idx))
    {
+      if (submolecule.getBondTopology(e_idx) != TOPOLOGY_RING)
+         // Do not change any bond orders that are not in rings
+         continue;
       const Edge &edge = submolecule.getEdge(e_idx);
       int supIdx = _molecule.findEdgeIndex(_submoleculeMapping[edge.beg], 
          _submoleculeMapping[edge.end]);
@@ -207,13 +210,13 @@ void Dearomatizer::_processMatching (Molecule &submolecule, int group,
    }
 
    // Check aromaticity
-   MoleculeAromatizer::aromatizeBonds(submolecule);
+   MoleculeAromatizer::aromatizeBonds(submolecule, _options);
    bool isAromatic = true;
    for (int e_idx = submolecule.edgeBegin(); 
       e_idx < submolecule.edgeEnd(); 
       e_idx = submolecule.edgeNext(e_idx))
    {
-      if (submolecule.getBondOrder(e_idx) != BOND_AROMATIC)
+      if (submolecule.getBondTopology(e_idx) == TOPOLOGY_RING && submolecule.getBondOrder(e_idx) != BOND_AROMATIC)
       {
          isAromatic = false;
          break;
@@ -239,12 +242,13 @@ void Dearomatizer::_prepareGroup (int group, Molecule &submolecule)
 
    Filter filter(_aromaticGroupData.verticesFilter.ptr(), Filter::EQ, 1);
    submolecule.makeSubmolecule(_molecule, filter, &_submoleculeMapping, NULL, SKIP_ALL);
-   // Rremove aromatic bonds
+   // Remove non-aromatic bonds
    for (int e_idx = submolecule.edgeBegin(); 
       e_idx < submolecule.edgeEnd(); 
       e_idx = submolecule.edgeNext(e_idx))
    {
-      if (submolecule.getBondOrder(e_idx) != BOND_AROMATIC)
+      // Keep double bonds too
+      if (submolecule.getBondOrder(e_idx) == BOND_SINGLE)
          submolecule.removeEdge(e_idx);
    }
 
@@ -705,6 +709,37 @@ int DearomatizationsGroups::detectAromaticGroups (const int *atom_external_conn)
 
       _vertexAromaticGroupIndex[v_idx] = currentAromaticGroup++;
       _detectAromaticGroups(v_idx, atom_external_conn);
+   }
+
+   // Add atoms that are connected to the aromaic group with double bonds
+   // like in O=C1NC=CC=C1
+   for (int e_idx = _molecule.edgeBegin(); 
+      e_idx < _molecule.edgeEnd(); 
+      e_idx = _molecule.edgeNext(e_idx))
+   {
+      const Edge &e = _molecule.getEdge(e_idx);
+      int &g1 = _vertexAromaticGroupIndex[e.beg];
+      int &g2 = _vertexAromaticGroupIndex[e.end];
+      if (g1 == g2)
+         continue;
+      if (_molecule.getBondOrder(e_idx) == BOND_DOUBLE)
+      {
+         int dangling_v;
+         if (g1 != -1)
+         {
+            g2 = g1;
+            dangling_v = e.end;
+         }
+         else
+         {
+            g1 = g2;
+            dangling_v = e.beg;
+         }
+
+         // Handle tricky case with 5-valence Nitrogen: CC1=CC=CC=[N]1=C
+         _vertexIsAcceptDoubleEdge[dangling_v] = false;
+         _vertexIsAcceptSingleEdge[dangling_v] = true;
+      }
    }
 
    _aromaticGroups = currentAromaticGroup;
@@ -1398,10 +1433,10 @@ void MoleculeDearomatizer::restoreHydrogens (int group, int dearomatization_inde
    }
 }
 
-bool MoleculeDearomatizer::dearomatizeMolecule (Molecule &mol)
+bool MoleculeDearomatizer::dearomatizeMolecule (Molecule &mol, const AromaticityOptions &options)
 {
    DearomatizationsStorage dst;
-   Dearomatizer dearomatizer(mol, 0);
+   Dearomatizer dearomatizer(mol, 0, options);
    dearomatizer.setDearomatizationParams(Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION);
    dearomatizer.enumerateDearomatizations(dst);
    MoleculeDearomatizer mol_dearom(mol, dst);
@@ -1415,10 +1450,10 @@ bool MoleculeDearomatizer::dearomatizeMolecule (Molecule &mol)
    return all_dearomatzied;
 }
 
-bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, bool exception_if_not_unique)
+bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, bool exception_if_not_unique, const AromaticityOptions &options)
 {
    DearomatizationsStorage dst;
-   Dearomatizer dearomatizer(mol, 0);
+   Dearomatizer dearomatizer(mol, 0, options);
    int params;
    if (exception_if_not_unique)
       params = Dearomatizer::PARAMS_SAVE_JUST_HETERATOMS;

@@ -265,6 +265,8 @@ public:
 
    bool preserve_ordering_in_serialize;
 
+   AromaticityOptions arom_options;
+
 protected:
 
    RedBlackMap<int, IndigoObject *> _objects;

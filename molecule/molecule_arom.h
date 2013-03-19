@@ -29,6 +29,15 @@ class Molecule;
 class QueryMolecule;
 class BaseMolecule;
 
+struct AromaticityOptions
+{
+   enum Method { BASIC, GENERIC };
+
+   Method method;
+
+   AromaticityOptions (Method method = BASIC) : method(method) {}
+};
+
 // Aromatization classes
 class DLLEXPORT AromatizerBase
 {
@@ -89,9 +98,9 @@ class DLLEXPORT MoleculeAromatizer : public AromatizerBase
 {
 public:
    // Interface function for aromatization
-   static bool aromatizeBonds (Molecule &mol);
+   static bool aromatizeBonds (Molecule &mol, const AromaticityOptions &options = AromaticityOptions());
 
-   MoleculeAromatizer (Molecule &molecule);
+   MoleculeAromatizer (Molecule &molecule, const AromaticityOptions &options);
    void precalculatePiLabels ();
 
    static void findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds);
@@ -103,6 +112,8 @@ protected:
 
    int _getPiLabel (int v_idx);
    int _getPiLabelByConn (int v_idx, int conn);
+
+   AromaticityOptions _options;
 
    TL_CP_DECL(Array<int>, _pi_labels);
 };

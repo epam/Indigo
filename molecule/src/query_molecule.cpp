@@ -1585,13 +1585,13 @@ void QueryMolecule::setBondStereoCare (int idx, bool stereo_care)
    updateEditRevision();
 }
 
-bool QueryMolecule::aromatize ()
+bool QueryMolecule::aromatize (const AromaticityOptions &options)
 {
    updateEditRevision();
    return QueryMoleculeAromatizer::aromatizeBonds(*this);
 }
 
-bool QueryMolecule::dearomatize ()
+bool QueryMolecule::dearomatize (const AromaticityOptions &options)
 {
    throw Error("Dearomatization not implemented");
 }

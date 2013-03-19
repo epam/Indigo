@@ -1282,18 +1282,18 @@ bool Molecule::bondStereoCare (int idx)
    return cis_trans.getParity(idx) != 0;
 }
 
-bool Molecule::aromatize ()
+bool Molecule::aromatize (const AromaticityOptions &options)
 {
    updateEditRevision();
-   bool arom_found = MoleculeAromatizer::aromatizeBonds(*this);
+   bool arom_found = MoleculeAromatizer::aromatizeBonds(*this, options);
    _aromatized = true;
    return arom_found;
 }
 
-bool Molecule::dearomatize ()
+bool Molecule::dearomatize (const AromaticityOptions &options)
 {
    updateEditRevision();
-   return MoleculeDearomatizer::dearomatizeMolecule(*this);
+   return MoleculeDearomatizer::dearomatizeMolecule(*this, options);
 }
 
 int Molecule::getAtomMaxH (int idx)

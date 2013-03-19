@@ -181,6 +181,17 @@ static void indigoSetPreserveOrderingInSerialize (int enabled)
    self.preserve_ordering_in_serialize = (enabled != 0);
 }
 
+static void indigoSetAromaticityModel (const char *model)
+{
+   Indigo &self = indigoGetInstance();
+   if (strcasecmp(model, "basic") == 0)
+      self.arom_options.method = AromaticityOptions::BASIC;
+   else if (strcasecmp(model, "generic") == 0)
+      self.arom_options.method = AromaticityOptions::GENERIC;
+   else
+      throw IndigoError("unknown value: %s. Allowed values are \"basic\", \"generic\"", model);
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -213,6 +224,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("timeout", indigoSetCancellationTimeout);
 
    mgr.setOptionHandlerBool("serialize-preserve-ordering", indigoSetPreserveOrderingInSerialize);
+
+   mgr.setOptionHandlerString("aromaticity-model", indigoSetAromaticityModel);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

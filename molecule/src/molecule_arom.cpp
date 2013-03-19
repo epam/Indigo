@@ -250,10 +250,11 @@ void AromatizerBase::setBondAromaticCount (int e_idx, int count)
 // MoleculeAromatizer
 // 
 
-MoleculeAromatizer::MoleculeAromatizer (Molecule &molecule) : AromatizerBase(molecule),
+MoleculeAromatizer::MoleculeAromatizer (Molecule &molecule, const AromaticityOptions &options) : AromatizerBase(molecule),
    TL_CP_GET(_pi_labels)
 {
    _pi_labels.clear_resize(molecule.vertexEnd());
+   _options = options;
 }
 
 int MoleculeAromatizer::_getPiLabel (int v_idx)
@@ -273,17 +274,33 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
       return -1;
 
    int non_arom_conn = 0, arom_bonds = 0;
+   int n_double_ext = 0;
    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
    {
-      int type = _basemol.getBondOrder(vertex.neiEdge(i));
+      int bond_idx = vertex.neiEdge(i);
+      int type = _basemol.getBondOrder(bond_idx);
       if (type == BOND_DOUBLE)
-         return 1;
+      {
+         if (_basemol.getBondTopology(bond_idx) == TOPOLOGY_RING)
+            return 1;
+         if (!_acceptOutgoingDoubleBond(v_idx, bond_idx))
+            return -1;
+         n_double_ext++;
+      }
       if (type == BOND_TRIPLE)
          return -1;
       if (type == BOND_AROMATIC)
          arom_bonds++;
       else
          non_arom_conn++;
+   }
+   if (n_double_ext > 1)
+      return -1;
+   else if (n_double_ext == 1)
+   {
+      // Only a single external double bond that was accepted in _acceptOutgoingDoubleBond
+      // It means that it is C=S, C=O, or C=N, like in O=C1NC=CC(=O)N1
+      return 0;
    }
 
    Molecule &mol = (Molecule &)_basemol;
@@ -372,11 +389,20 @@ bool MoleculeAromatizer::_isCycleAromatic (const int *cycle, int cycle_len)
 
 bool MoleculeAromatizer::_acceptOutgoingDoubleBond (int atom, int bond)
 {
-   /*
-   // Bonds in rings are not accepted
-   if (_basemol.getBondTopology(bond) != TOPOLOGY_CHAIN)
-      return false;
-   */
+   if (_options.method == AromaticityOptions::GENERIC)
+   {
+      // CC1=CC=CC=[N]1=C
+      if (_basemol.getAtomNumber(atom) == ELEM_C)
+      {
+         int end = _basemol.getEdgeEnd(atom, bond);
+         int end_number = _basemol.getAtomNumber(end);
+         // [O-][N+](=O)C1=CNC=C(Cl)C1=O (see CID 11850826)
+         // CN1SC(=N)N(C)C1=S (see CID 11949795)
+         if (end_number == ELEM_N || end_number == ELEM_O || end_number == ELEM_S)
+            // Corresponding pi label is 0
+            return true;
+      }
+   }
 
    Molecule &mol = _basemol.asMolecule();
    if (mol.isNitrogenV5(atom))
@@ -385,9 +411,9 @@ bool MoleculeAromatizer::_acceptOutgoingDoubleBond (int atom, int bond)
    return false;
 }
 
-bool MoleculeAromatizer::aromatizeBonds (Molecule &mol)
+bool MoleculeAromatizer::aromatizeBonds (Molecule &mol, const AromaticityOptions &options)
 {
-   MoleculeAromatizer aromatizer(mol);
+   MoleculeAromatizer aromatizer(mol, options);
 
    aromatizer.precalculatePiLabels();
    aromatizer.aromatize();
@@ -409,7 +435,7 @@ bool MoleculeAromatizer::aromatizeBonds (Molecule &mol)
       for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
       {
          Molecule &fragment = frags[j]->asMolecule();
-         aromatic_bond_found |= MoleculeAromatizer::aromatizeBonds(fragment);
+         aromatic_bond_found |= MoleculeAromatizer::aromatizeBonds(fragment, options);
       }
    }
 
