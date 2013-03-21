@@ -31,6 +31,7 @@ for line in open(join(api_dir, "indigo-version.cmake")):
     m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
     if m:
         version = m.group(1)
+        break
     else:
         raise RuntimeError("Could not find indigo-version!")
 
@@ -59,7 +60,7 @@ else:
     linux = 0
 
 if 'mac' in wrappers:
-    os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.5'))
+    #os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.5'))
     os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.6'))
     mac = 1
 else:
@@ -89,7 +90,7 @@ else:
     linux = 0
 
 if 'mac' in wrappers:
-    os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.5'))
+    #os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.5'))
     os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.6'))
     mac = 1
 else:
@@ -119,7 +120,7 @@ else:
     linux = 0
 
 if 'mac' in wrappers:
-    os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.5'))
+    #os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.5'))
     os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.6'))
     mac = 1
 else:

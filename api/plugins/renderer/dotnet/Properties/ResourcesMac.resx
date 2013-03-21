@@ -121,7 +121,9 @@
   <data name="Mac/10.6/libindigo-renderer.dylib" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\Mac\10.6\libindigo-renderer.dylib;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <!--
   <data name="Mac/10.5/libindigo-renderer.dylib" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\Mac\10.5\libindigo-renderer.dylib;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  -->
 </root>

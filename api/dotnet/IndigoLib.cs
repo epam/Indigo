@@ -10,7 +10,7 @@ namespace com.ggasoftware.indigo
       void indigoSetSessionId (long id);
       void indigoReleaseSessionId (long id);
       sbyte* indigoGetLastError ();
-      void indigoSetErrorHandler (Indigo.ErrorHandler handler, Indigo context);
+      //void indigoSetErrorHandler (Indigo.ErrorHandler handler, Indigo context);
       void indigoSetErrorMessage (String message);
       int indigoFree (int id);
       int indigoClone (int id);

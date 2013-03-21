@@ -216,10 +216,8 @@ namespace com.ggasoftware.indigo
 						switch (macVersion) {
 						case "10":
 						case "11":
+                  case "12":
 							subprefix = "Mac/10.6/";
-							break;
-						case "9":
-							subprefix = "Mac/10.5/";
 							break;
 						default:
 							throw new PlatformNotSupportedException (String.Format ("Unsupported Mac OS X version: {0}", macVersion));

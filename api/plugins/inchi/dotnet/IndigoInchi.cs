@@ -7,12 +7,12 @@ using System.IO;
 namespace com.ggasoftware.indigo
 {
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    public unsafe class IndigoInchi
-    {
-        private Indigo _indigo;
-        private IndigoInchiLib _inchi_lib;
+	public unsafe class IndigoInchi
+	{
+		private Indigo _indigo;
+		private IndigoInchiLib _inchi_lib;
 
-        public IndigoInchi (Indigo indigo)
+		public IndigoInchi (Indigo indigo)
 		{
 			String dllpath = indigo.getDllPath ();
 			string libraryName;
@@ -41,57 +41,57 @@ namespace com.ggasoftware.indigo
 				throw new PlatformNotSupportedException (String.Format ("Unsupported platform: {0}", Environment.OSVersion.Platform));
 			}
 			
-            _inchi_lib = dll_loader.getInterface<IndigoInchiLib>(libraryName);
+			_inchi_lib = dll_loader.getInterface<IndigoInchiLib> (libraryName);
 
-            _indigo = indigo;
-        }
+			_indigo = indigo;
+		}
 
-        public String version()
-        {
-            _indigo.setSessionID();
-            return new String(_inchi_lib.indigoInchiVersion());
-        }
-
-        public int resetOptions()
-        {
-            _indigo.setSessionID();
-            return _inchi_lib.indigoInchiResetOptions();
-        }
-
-        public IndigoObject loadMolecule(String inchi_string)
-        {
-            _indigo.setSessionID();
-            return new IndigoObject(_indigo, _inchi_lib.indigoInchiLoadMolecule(inchi_string));
-        }
-
-        public String getInchi(IndigoObject molecule)
-        {
-               _indigo.setSessionID();
-               return new String(_inchi_lib.indigoInchiGetInchi(molecule.self));
-        }
-
-        public String getInchiKey(String inchi_string)
-        {
-            _indigo.setSessionID();
-            return new String(_inchi_lib.indigoInchiGetInchiKey(inchi_string));
-        }
-
-        public String getWarning()
-        {
-            _indigo.setSessionID();
-            return new String(_inchi_lib.indigoInchiGetWarning());
-        }
-
-        public String getLog()
-        {
-            _indigo.setSessionID();
-            return new String(_inchi_lib.indigoInchiGetLog());
-        }
-
-        public String getAuxInfo()
-        {
-            _indigo.setSessionID();
-            return new String(_inchi_lib.indigoInchiGetAuxInfo());
-        }
-    }
+		public String version ()
+		{
+			_indigo.setSessionID ();
+			return new String (_indigo.checkResult (_inchi_lib.indigoInchiVersion ()));
+		}
+		
+		public int resetOptions ()
+		{
+			_indigo.setSessionID ();
+			return _indigo.checkResult (_inchi_lib.indigoInchiResetOptions ());
+		}
+		
+		public IndigoObject loadMolecule (String inchi_string)
+		{
+			_indigo.setSessionID ();
+			return new IndigoObject (_indigo, _indigo.checkResult (_inchi_lib.indigoInchiLoadMolecule (inchi_string)));
+		}
+		
+		public String getInchi (IndigoObject molecule)
+		{
+			_indigo.setSessionID ();
+			return new String (_indigo.checkResult (_inchi_lib.indigoInchiGetInchi (molecule.self)));
+		}
+		
+		public String getInchiKey (String inchi_string)
+		{
+			_indigo.setSessionID ();
+			return new String (_indigo.checkResult (_inchi_lib.indigoInchiGetInchiKey (inchi_string)));
+		}
+		
+		public String getWarning ()
+		{
+			_indigo.setSessionID ();
+			return new String (_indigo.checkResult (_inchi_lib.indigoInchiGetWarning ()));
+		}
+		
+		public String getLog ()
+		{
+			_indigo.setSessionID ();
+			return new String (_indigo.checkResult (_inchi_lib.indigoInchiGetLog ()));
+		}
+		
+		public String getAuxInfo ()
+		{
+			_indigo.setSessionID ();
+			return new String (_indigo.checkResult (_inchi_lib.indigoInchiGetAuxInfo ()));
+		}
+	}
 }
