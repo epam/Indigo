@@ -300,6 +300,9 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
    {
       // Only a single external double bond that was accepted in _acceptOutgoingDoubleBond
       // It means that it is C=S, C=O, or C=N, like in O=C1NC=CC(=O)N1
+      int atom_number = _basemol.getAtomNumber(v_idx);
+      if (atom_number == ELEM_S)
+         return 2;
       return 0;
    }
 
@@ -392,15 +395,26 @@ bool MoleculeAromatizer::_acceptOutgoingDoubleBond (int atom, int bond)
    if (_options.method == AromaticityOptions::GENERIC)
    {
       // CC1=CC=CC=[N]1=C
-      if (_basemol.getAtomNumber(atom) == ELEM_C)
+      int atom_number = _basemol.getAtomNumber(atom);
+      if (atom_number == ELEM_C || atom_number == ELEM_S)
       {
          int end = _basemol.getEdgeEnd(atom, bond);
          int end_number = _basemol.getAtomNumber(end);
-         // [O-][N+](=O)C1=CNC=C(Cl)C1=O (see CID 11850826)
-         // CN1SC(=N)N(C)C1=S (see CID 11949795)
-         if (end_number == ELEM_N || end_number == ELEM_O || end_number == ELEM_S)
-            // Corresponding pi label is 0
-            return true;
+         if (atom_number == ELEM_C)
+         {
+            // [O-][N+](=O)C1=CNC=C(Cl)C1=O (see CID 11850826)
+            // CN1SC(=N)N(C)C1=S (see CID 11949795)
+            if (end_number == ELEM_N || end_number == ELEM_O || end_number == ELEM_S)
+               // Corresponding pi label is 0
+               return true;
+         }
+         if (atom_number == ELEM_S)
+         {
+            // O=S1N=CC=N1
+            if (end_number == ELEM_O)
+               // Corresponding pi label is 0
+               return true;
+         }
       }
    }
 

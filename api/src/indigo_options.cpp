@@ -192,6 +192,12 @@ static void indigoSetAromaticityModel (const char *model)
       throw IndigoError("unknown value: %s. Allowed values are \"basic\", \"generic\"", model);
 }
 
+static void indigoSetDearomatizeVerification (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.arom_options.dearomatize_check = (enabled != 0);
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -226,6 +232,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("serialize-preserve-ordering", indigoSetPreserveOrderingInSerialize);
 
    mgr.setOptionHandlerString("aromaticity-model", indigoSetAromaticityModel);
+   mgr.setOptionHandlerBool("dearomatize-verification", indigoSetDearomatizeVerification);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

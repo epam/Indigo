@@ -34,8 +34,9 @@ struct AromaticityOptions
    enum Method { BASIC, GENERIC };
 
    Method method;
+   bool dearomatize_check;
 
-   AromaticityOptions (Method method = BASIC) : method(method) {}
+   AromaticityOptions (Method method = BASIC) : method(method), dearomatize_check(true) {}
 };
 
 // Aromatization classes

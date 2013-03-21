@@ -24,6 +24,16 @@
 
 using namespace indigo;
 
+//
+// Indigo aromaticiy model remarks.
+// C1=CC2=CC=CC=CC2=C1 is aromatized into c1:c2-c(:c:c:c:c:c:2):c:c:1 but not into 
+//    c1cc2cccccc2c1 because single bond is not aromatic.
+// 
+// O=C1C=CC(=O)C2=C1SC=CS2 is not aromatized to O=c1ccc(=O)c2sccsc12 because 
+//    of double bond inside cycle that is prohibited. Big cycle has 4n+2 electrons
+//    but is not treated as aromatic because of this double bond.
+//
+
 static int _dearomatizationParams = Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION;
 
 Dearomatizer::Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn, const AromaticityOptions &options) :
@@ -210,20 +220,28 @@ void Dearomatizer::_processMatching (Molecule &submolecule, int group,
    }
 
    // Check aromaticity
-   MoleculeAromatizer::aromatizeBonds(submolecule, _options);
-   bool isAromatic = true;
-   for (int e_idx = submolecule.edgeBegin(); 
-      e_idx < submolecule.edgeEnd(); 
-      e_idx = submolecule.edgeNext(e_idx))
+   bool valid = true;
+   if (_options.dearomatize_check)
    {
-      if (submolecule.getBondTopology(e_idx) == TOPOLOGY_RING && submolecule.getBondOrder(e_idx) != BOND_AROMATIC)
+      // Check configuration only if antiaromaticity is not allowed
+      // For example structure c1ccc1 is not aromatic but antiaromatic, and 
+      // kekulized form is C1=CC=C1
+      // Dearomatization without verification can be used for finding kekulized form
+      // that is not necessary aromatic
+      MoleculeAromatizer::aromatizeBonds(submolecule, _options);
+      for (int e_idx = submolecule.edgeBegin(); 
+         e_idx < submolecule.edgeEnd(); 
+         e_idx = submolecule.edgeNext(e_idx))
       {
-         isAromatic = false;
-         break;
+         if (submolecule.getBondTopology(e_idx) == TOPOLOGY_RING && submolecule.getBondOrder(e_idx) != BOND_AROMATIC)
+         {
+            valid = false;
+            break;
+         }
       }
    }
 
-   if (isAromatic)
+   if (valid)
    {
       if (_dearomatizationParams == PARAMS_SAVE_ALL_DEAROMATIZATIONS) 
          // Enumerate all equivalent dearomatizations
@@ -809,7 +827,14 @@ int DearomatizationsGroups::_getFixedConnectivitySpecific (int elem, int charge,
       {
          if (min_conn == 3)
             return 4; // CS1=[As]C=N[AsH]1
+         if (min_conn == 4)
+            return 4; // O=S1N=CC=N1
       }
+   }
+   else if (elem == ELEM_N && charge == 0)
+   {
+      if (n_arom == 2 && min_conn == 4)
+         return 5; // 5-valence Nitrogen: CC(c1cc[n](=O)cc1)=O
    }
    return -1;
 }
