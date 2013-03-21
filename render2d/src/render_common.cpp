@@ -308,7 +308,7 @@ void RenderSettings::init (float sf)
    equalityInterval = plusSize / 2;
    rGroupIfThenInterval = bondLineWidth * 4;
    neighboringLabelTolerance = 1.3f;
-   minSin = 0.6f;
+   minSin = 0.49f;
    neighboringAtomDistanceTresholdA = 0.8f;
    neighboringAtomDistanceTresholdB = 0.5f;
 }
