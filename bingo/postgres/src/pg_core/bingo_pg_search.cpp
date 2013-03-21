@@ -74,10 +74,6 @@ void BingoPgSearch::prepareRescan(PG_OBJECT scan_desc_ptr) {
       _initScanSearch();
    } else {
       /*
-       * Clean all pinned buffers
-       */
-      _bufferIndex.clearAllBuffers();
-      /*
        * Prepare query
        */
       _fpEngine->prepareQuerySearch(_bufferIndex, _indexScanDesc);
