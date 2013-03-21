@@ -276,23 +276,52 @@ CEXPORT int indigoClearCisTrans (int object)
    INDIGO_END(-1)
 }
 
-static int _resetSymmetricCisTrans (Molecule &mol)
+static int _resetSymmetric (Molecule &mol, bool cistrans, bool stereo)
 {
    MoleculeAutomorphismSearch am;
-   int i, sum = 0;
+   int sum = 0;
 
-   am.detect_invalid_cistrans_bonds = true;
+   if (cistrans)
+      am.detect_invalid_cistrans_bonds = true;
+   if (stereo)
+      am.detect_invalid_stereocenters = true;
    am.process(mol);
 
-   for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   if (cistrans)
    {
-      if (mol.cis_trans.getParity(i) == 0)
-         continue;
-
-      if (am.invalidCisTransBond(i))
+      for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
       {
-         mol.cis_trans.setParity(i, 0);
-         sum++;
+         if (mol.cis_trans.getParity(i) == 0)
+            continue;
+
+         if (am.invalidCisTransBond(i))
+         {
+            mol.cis_trans.setParity(i, 0);
+            sum++;
+         }
+      }
+   }
+
+   if (stereo)
+   {
+      QS_DEF(Array<int>, to_remove);
+      to_remove.clear();
+      for (int i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
+      {
+         int atom_index = mol.stereocenters.getAtomIndex(i);
+         if (am.invalidStereocenter(atom_index))
+         {
+            to_remove.push(atom_index);
+            sum++;
+         }
+      }
+      for (int i = 0; i < to_remove.size(); i++)
+         mol.stereocenters.remove(to_remove[i]);
+
+      if (to_remove.size() > 0)
+      {
+         mol.clearBondDirections();
+         mol.stereocenters.markBonds();
       }
    }
    return sum;
@@ -338,14 +367,36 @@ CEXPORT int indigoResetSymmetricCisTrans (int handle)
       IndigoObject &obj = self.getObject(handle);
 
       if (IndigoBaseMolecule::is(obj))
-         return _resetSymmetricCisTrans(obj.getMolecule());
+         return _resetSymmetric(obj.getMolecule(), true, false);
       else if (IndigoBaseReaction::is(obj))
       {
          Reaction &rxn = obj.getReaction();
          int i, sum = 0;
 
          for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-            sum += _resetSymmetricCisTrans(rxn.getMolecule(i));
+            sum += _resetSymmetric(rxn.getMolecule(i), true, false);
+         return sum;
+      }
+      throw IndigoError("only molecules and reactions have cis-trans");
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoResetSymmetricStereocenters (int handle)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+
+      if (IndigoBaseMolecule::is(obj))
+         return _resetSymmetric(obj.getMolecule(), false, true);
+      else if (IndigoBaseReaction::is(obj))
+      {
+         Reaction &rxn = obj.getReaction();
+         int i, sum = 0;
+
+         for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            sum += _resetSymmetric(rxn.getMolecule(i), false, true);
          return sum;
       }
       throw IndigoError("only molecules and reactions have cis-trans");

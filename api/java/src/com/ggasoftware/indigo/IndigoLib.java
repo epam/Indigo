@@ -219,6 +219,7 @@ public interface IndigoLib extends Library
    int indigoCountAlleneCenters (int molecule);
 
    int indigoResetSymmetricCisTrans (int handle);
+   int indigoResetSymmetricStereocenters (int handle);
    int indigoMarkEitherCisTrans (int handle);
 
    int indigoAddAtom (int molecule, String symbol);

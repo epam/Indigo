@@ -596,6 +596,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoResetSymmetricCisTrans(self));
    }
 
+   public int resetSymmetricStereocenters ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoResetSymmetricStereocenters(self));
+   }
+
    public int markEitherCisTrans ()
    {
       dispatcher.setSessionID();

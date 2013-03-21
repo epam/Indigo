@@ -438,6 +438,7 @@ CEXPORT int indigoClearAlleneCenters (int molecule);
 CEXPORT int indigoCountAlleneCenters (int molecule);
 
 CEXPORT int indigoResetSymmetricCisTrans (int handle);
+CEXPORT int indigoResetSymmetricStereocenters (int handle);
 CEXPORT int indigoMarkEitherCisTrans (int handle);
 CEXPORT int indigoMarkStereobonds (int handle);
 

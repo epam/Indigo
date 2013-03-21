@@ -747,6 +747,12 @@ namespace com.ggasoftware.indigo
          return _indigo_lib.indigoResetSymmetricCisTrans(self);
       }
 
+      public int resetSymmetricStereocenters ()
+      {
+         dispatcher.setSessionID();
+         return _indigo_lib.indigoResetSymmetricStereocenters(self);
+      }
+
       public int markEitherCisTrans ()
       {
          dispatcher.setSessionID();

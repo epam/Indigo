@@ -177,6 +177,7 @@ namespace com.ggasoftware.indigo
       int indigoCountStereocenters (int item);
       int indigoCountAlleneCenters (int item);
       int indigoResetSymmetricCisTrans (int handle);
+      int indigoResetSymmetricStereocenters (int handle);
       int indigoMarkEitherCisTrans (int handle);
 
       int indigoAddAtom (int molecule, string symbol);
