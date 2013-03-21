@@ -335,7 +335,6 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    profTimerStart(t0, "mango_pg.prepare_exact_search");
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
-
    _getScanQueries(scan_desc->keyData[0].sk_argument, search_query, search_options);
 
    /*
@@ -350,7 +349,9 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
       _prepareExactQueryStrings(what_clause, from_clause, where_clause);
    }
    _searchCursor.free();
+   profTimerStart(t4, "mango_pg.exact_search_cursor");
    _searchCursor.reset(new BingoPgCursor("SELECT %s FROM %s WHERE %s",what_clause.ptr(), from_clause.ptr(), where_clause.ptr()));
+   profTimerStop(t4);
 }
 
 void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {

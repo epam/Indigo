@@ -300,6 +300,7 @@ BingoPgBuffer& BingoPgIndex::_getOffsetBuffer(int section_idx) {
 }
 
 BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx) {
+
    /*
     * Return if current section is already set
     */
@@ -318,13 +319,15 @@ BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx) {
          return _currentSection.ref();
       }
    }
-
+   profTimerStart(t0, "bingo_pg.read_section");
    /*
     * Read the section using offset mapping
     */
    _currentSectionIdx = section_idx;
 
+   profTimerStart(t1, "bingo_pg.get_offset");
    int offset = _getSectionOffset(section_idx);
+   profTimerStop(t1);
    _currentSection.reset(new BingoPgSection(*this, _strategy, offset));
 
    return _currentSection.ref();
@@ -423,6 +426,7 @@ void BingoPgIndex::readTidItem(ItemPointerData& cmf_item, PG_OBJECT result_ptr) 
 }
 
 void BingoPgIndex::readTidItem(int section_idx, int mol_idx, PG_OBJECT result_ptr) {
+   profTimerStart(t0, "bingo_pg.read_tid");
    /*
     * Prepare info for reading
     */

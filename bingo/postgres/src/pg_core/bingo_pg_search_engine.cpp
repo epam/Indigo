@@ -98,6 +98,7 @@ void BingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT)
 }
 
 bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr) {
+   profTimerStart(t0, "bingo_pg.search_cursor");
    ItemPointerData cmf_item;
    /*
     * Iterate through the cursor
