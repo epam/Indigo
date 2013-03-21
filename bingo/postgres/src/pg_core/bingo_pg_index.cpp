@@ -238,6 +238,14 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine) {
    
 }
 
+void BingoPgIndex::clearAllBuffers() {
+   _metaBuffer.clear();
+   int offset_size = _sectionOffsetBuffers.size();
+   _sectionOffsetBuffers.clear();
+   _sectionOffsetBuffers.expand(offset_size);
+   _currentSection.free();
+}
+
 /*
  * Initializes and fulfils a new section
  */

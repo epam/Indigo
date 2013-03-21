@@ -95,6 +95,10 @@ public:
    
    void readDictionary(indigo::Array<char>& _dictionary);
    void writeDictionary(BingoPgBuildEngine&);
+   /*
+    * Clear all buffers
+    */
+   void clearAllBuffers();
 
    DECL_ERROR;
 
