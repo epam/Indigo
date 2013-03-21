@@ -244,6 +244,7 @@ void BingoPgIndex::clearAllBuffers() {
    _sectionOffsetBuffers.clear();
    _sectionOffsetBuffers.expand(offset_size);
    _currentSection.free();
+   _currentSectionIdx = -1;
 }
 
 /*
