@@ -67,8 +67,6 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
    scan->opaque = 0;
    BingoPgSearch* so = 0;
 
-//   old_handler = signal(SIGINT, &error_handler);
-   
    PG_BINGO_BEGIN
    {
       /*
@@ -89,8 +87,6 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
       
    }
    PG_BINGO_HANDLE(delete so; scan->opaque=NULL);
-
-//   signal(SIGINT, old_handler);
 
    PG_RETURN_POINTER(scan);
 }
@@ -200,9 +196,6 @@ bingo_gettuple(PG_FUNCTION_ARGS) {
    PG_BINGO_BEGIN
    {
       scan->xs_recheck = false;
-      /*
-       * Get search engine
-       */
       /*
        * Fetch to the next item
        */

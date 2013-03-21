@@ -115,7 +115,6 @@ private:
    
    BingoMetaPageData _metaInfo;
    BingoPgBuffer _metaBuffer;
-   BingoPgBuffer _configBuffer;
    indigo::PtrArray<BingoPgBuffer> _sectionOffsetBuffers;
    indigo::AutoPtr<BingoPgSection> _currentSection;
    int _currentSectionIdx;

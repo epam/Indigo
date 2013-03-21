@@ -92,7 +92,7 @@ bool BingoPgSearchEngine::matchTarget(ItemPointerData& item_data) {
 
 void BingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT) {
    _bufferIndexPtr = &bingo_idx;
-   _currentSection = _bufferIndexPtr->readBegin();
+   _currentSection = -1;
    _currentIdx = -1;
    _fetchFound = false;
 }
@@ -143,6 +143,9 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr) {
        }
    }
    profTimerStart(t1, "bingo_pg.search_fp");
+   
+   if(_currentSection < 0)
+      _currentSection = bingo_index.readBegin();
    /*
     * Iterate through the sections
     */

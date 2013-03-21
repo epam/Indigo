@@ -103,9 +103,18 @@ int BingoPgIndex::readNext(int section_idx) {
  * Reads meta information
  */
 void BingoPgIndex::readMetaInfo() {
+   /*
+    * Read meta buffer
+    */
    _metaBuffer.readBuffer(_index, BINGO_METAPAGE, BINGO_PG_READ);
+   /*
+    * Copy meta info
+    */
    BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(_metaBuffer.getBuffer()));
    _metaInfo = *meta_page;
+   /*
+    * Return buffer pin
+    */
    _metaBuffer.changeAccess(BINGO_PG_NOLOCK);
 
    /*
@@ -119,15 +128,14 @@ void BingoPgIndex::readConfigParameters(BingoPgConfig& bingo_config) {
    /*
     * Read configuration page
     */
-   _configBuffer.readBuffer(_index, BINGO_CONFIG_PAGE, BINGO_PG_READ);
+   BingoPgBuffer config_buffer(_index, BINGO_CONFIG_PAGE, BINGO_PG_READ);
 
    /*
     * Deserialize binary stored parameters
     */
    int data_len;
-   void* data = _configBuffer.getIndexData(data_len);
+   void* data = config_buffer.getIndexData(data_len);
    bingo_config.deserialize(data, data_len);
-   _configBuffer.changeAccess(BINGO_PG_NOLOCK);
 }
 
 /*
@@ -153,9 +161,10 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config) {
     */
    indigo::Array<char> config_data;
    bingo_config.serialize(config_data);
-   _configBuffer.writeNewBuffer(_index, BINGO_CONFIG_PAGE);
-   _configBuffer.formIndexTuple(config_data.ptr(), config_data.sizeInBytes());
-   _configBuffer.changeAccess(BINGO_PG_NOLOCK);
+   BingoPgBuffer config_buffer;
+   config_buffer.writeNewBuffer(_index, BINGO_CONFIG_PAGE);
+   config_buffer.formIndexTuple(config_data.ptr(), config_data.sizeInBytes());
+   config_buffer.clear();
    ++_metaInfo.n_pages;
    /*
     * Write section mapping buffers
@@ -165,7 +174,7 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config) {
       BingoPgBuffer buffer;
       buffer.writeNewBuffer(_index, _metaInfo.n_pages);
       buffer.formEmptyIndexTuple(BINGO_SECTION_OFFSET_PER_BLOCK * sizeof(int));
-      buffer.changeAccess(BINGO_PG_NOLOCK);
+      buffer.clear();
       ++_metaInfo.n_pages;
    }
    _sectionOffsetBuffers.expand(BINGO_SECTION_OFFSET_BLOCKS_NUM);

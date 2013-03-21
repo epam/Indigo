@@ -583,6 +583,11 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
 
    int* min_bounds, * max_bounds, bingo_res;
    /*
+    * Read first section
+    */
+   if(_currentSection < 0)
+      _currentSection = bingo_index.readBegin();
+   /*
     * Iterate through the sections
     */
    for (; _currentSection < bingo_index.readEnd(); _currentSection = bingo_index.readNext(_currentSection)) {
