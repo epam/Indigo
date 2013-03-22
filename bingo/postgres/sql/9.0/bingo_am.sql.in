@@ -18,11 +18,6 @@ RETURNS boolean
 AS 'BINGO_PATHNAME'
 LANGUAGE C STRICT VOLATILE;
 
-CREATE OR REPLACE FUNCTION bingo_getbitmap(internal, internal)
-RETURNS int8
-AS 'BINGO_PATHNAME'
-LANGUAGE C STRICT VOLATILE;
-
 CREATE OR REPLACE FUNCTION bingo_rescan(internal, internal)
 RETURNS void
 AS 'BINGO_PATHNAME'
@@ -98,7 +93,7 @@ VALUES (
 'bingo_insert(internal, internal, internal, internal, internal)'::regprocedure::oid,
 'bingo_beginscan(internal, internal, internal)'::regprocedure::oid,
 'bingo_gettuple(internal, internal)'::regprocedure::oid,
-'bingo_getbitmap(internal, internal)'::regprocedure::oid,
+0,
 'bingo_rescan(internal, internal)'::regprocedure::oid,
 'bingo_endscan(internal)'::regprocedure::oid,
 'bingo_markpos(internal)'::regprocedure::oid,

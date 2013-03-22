@@ -25,9 +25,11 @@ PGDLLEXPORT Datum bingo_beginscan(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_gettuple);
 PGDLLEXPORT Datum bingo_gettuple(PG_FUNCTION_ARGS);
-
-PG_FUNCTION_INFO_V1(bingo_getbitmap);
-PGDLLEXPORT Datum bingo_getbitmap(PG_FUNCTION_ARGS);
+/*
+ * Turn off bitmap scan
+ */
+// PG_FUNCTION_INFO_V1(bingo_getbitmap);
+// PGDLLEXPORT Datum bingo_getbitmap(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bingo_rescan);
 PGDLLEXPORT Datum bingo_rescan(PG_FUNCTION_ARGS);
@@ -147,39 +149,39 @@ using namespace indigo;
 /*
  * Get all tuples at once
  */
-Datum
-bingo_getbitmap(PG_FUNCTION_ARGS) {
-   IndexScanDesc scan = (IndexScanDesc) PG_GETARG_POINTER(0);
-   TIDBitmap *tbm = (TIDBitmap *) PG_GETARG_POINTER(1);
-
-   qword item_size = 0;
-   BingoPgSearch* search_engine = (BingoPgSearch*) scan->opaque;
-   PG_BINGO_BEGIN
-   {
-      /*
-       * Create search engine
-       */
-      /*
-       * Fetch to the next item and add result to the bitmap
-       */
-      indigo::Array<ItemPointerData> found_items;
-      ItemPointer item_ptr;
-      do {
-         item_ptr = &found_items.push();
-      } while (search_engine->next(scan, item_ptr));
-      /*
-       * Pop the last element
-       */
-      found_items.pop();
-      item_size = found_items.size();
-      BINGO_PG_TRY {
-         tbm_add_tuples(tbm, found_items.ptr(), found_items.size(), false);
-      } BINGO_PG_HANDLE(throw BingoPgError("internal error: can not add bitmap solution: %s", message));
-   }
-   PG_BINGO_HANDLE(delete search_engine);
-
-   PG_RETURN_INT64(item_size);
-}
+//Datum
+//bingo_getbitmap(PG_FUNCTION_ARGS) {
+//   IndexScanDesc scan = (IndexScanDesc) PG_GETARG_POINTER(0);
+//   TIDBitmap *tbm = (TIDBitmap *) PG_GETARG_POINTER(1);
+//
+//   qword item_size = 0;
+//   BingoPgSearch* search_engine = (BingoPgSearch*) scan->opaque;
+//   PG_BINGO_BEGIN
+//   {
+//      /*
+//       * Create search engine
+//       */
+//      /*
+//       * Fetch to the next item and add result to the bitmap
+//       */
+//      indigo::Array<ItemPointerData> found_items;
+//      ItemPointer item_ptr;
+//      do {
+//         item_ptr = &found_items.push();
+//      } while (search_engine->next(scan, item_ptr));
+//      /*
+//       * Pop the last element
+//       */
+//      found_items.pop();
+//      item_size = found_items.size();
+//      BINGO_PG_TRY {
+//         tbm_add_tuples(tbm, found_items.ptr(), found_items.size(), false);
+//      } BINGO_PG_HANDLE(throw BingoPgError("internal error: can not add bitmap solution: %s", message));
+//   }
+//   PG_BINGO_HANDLE(delete search_engine);
+//
+//   PG_RETURN_INT64(item_size);
+//}
 /*
  * Get a tuples by a chain
  */
