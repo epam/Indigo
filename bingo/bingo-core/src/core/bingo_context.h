@@ -29,6 +29,13 @@ class BingoContext
 {
 public:
 
+   enum {
+      /*
+       * Default operation timeout = 5000 ms
+       */
+      DEFAULT_TIMEOUT = 5000
+   };
+
    explicit BingoContext (int id_);
    virtual ~BingoContext ();
 
@@ -42,6 +49,7 @@ public:
    int     fp_chunk_qwords;
 
    int     nthreads;
+   int     timeout;
 
    Nullable<bool> treat_x_as_pseudoatom;
    Nullable<bool> ignore_closing_bond_direction_mismatch;
