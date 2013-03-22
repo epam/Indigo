@@ -93,6 +93,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
          _bufferIndexPtr->readXyzItem(section_idx, structure_idx, xyz_buf);
       }
 
+//      CORE_HANDLE_WARNING_TID(0, 1, "matching binary target", section_idx, structure_idx, " ");
       bingo_res = mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
       CORE_HANDLE_ERROR_TID(bingo_res, -1, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetError());
       CORE_RETURN_WARNING_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetWarning());
@@ -340,6 +341,7 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    /*
     * Set up matching parameters
     */
+//   elog(WARNING, "processing query: %s", search_query.ptr());
    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set exact search context", bingoGetError());
 
@@ -352,6 +354,8 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    profTimerStart(t4, "mango_pg.exact_search_cursor");
    _searchCursor.reset(new BingoPgCursor("SELECT %s FROM %s WHERE %s",what_clause.ptr(), from_clause.ptr(), where_clause.ptr()));
    profTimerStop(t4);
+//   if(nanoHowManySeconds(profTimerGetTime(t4) )> 1)
+//      elog(WARNING, "select %s from %s where %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
 }
 
 void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {

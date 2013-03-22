@@ -55,7 +55,7 @@ private:
 class MangoPgSearchEngine : public BingoPgSearchEngine {
 public:
    enum {
-      MAX_HASH_ELEMENTS = 10
+      MAX_HASH_ELEMENTS = 5
    };
    MangoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name);
    virtual ~MangoPgSearchEngine();
