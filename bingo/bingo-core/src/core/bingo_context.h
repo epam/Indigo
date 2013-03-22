@@ -31,9 +31,9 @@ public:
 
    enum {
       /*
-       * Default operation timeout = 5000 ms
+       * Default operation timeout = 60000 ms
        */
-      DEFAULT_TIMEOUT = 5000
+      DEFAULT_TIMEOUT = 60000
    };
 
    explicit BingoContext (int id_);
