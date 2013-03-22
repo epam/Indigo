@@ -54,6 +54,16 @@ private:
 DLLEXPORT CancellationHandler* getCancellationHandler ();
 // Returns previous cancellation handler
 DLLEXPORT CancellationHandler* setCancellationHandler (CancellationHandler* handler);
+/*
+ * Automatic cancellation handler can be used to store cancel callback within one code block
+ */
+class DLLEXPORT AutoCancellationHandler {
+public:
+   AutoCancellationHandler(CancellationHandler& hand);
+   virtual ~AutoCancellationHandler();
+private:
+   CancellationHandler* _prev;
+};
 
 }
 
