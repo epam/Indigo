@@ -95,18 +95,20 @@
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resource\Win\x64\msvcr100.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resource\Win\x86\msvcr100.dll" />
+    <Content Include="Resource\Win\x64\msvcr100.dll" />
+    <Content Include="Resource\Win\x64\msvcp100.dll" />
+    <Content Include="Resource\Win\x86\msvcr100.dll" />
+    <Content Include="Resource\Win\x86\msvcp100.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
 	copy $(ProjectDir)\..\libs\shared\Win\x64\indigo.dll $(ProjectDir)Resource\Win\x64
 	copy $(ProjectDir)\..\libs\shared\Win\x64\msvcr100.dll $(ProjectDir)Resource\Win\x64
+	copy $(ProjectDir)\..\libs\shared\Win\x64\msvcp100.dll $(ProjectDir)Resource\Win\x64
 	copy $(ProjectDir)\..\libs\shared\Win\x86\indigo.dll $(ProjectDir)Resource\Win\x86
 	copy $(ProjectDir)\..\libs\shared\Win\x86\msvcr100.dll $(ProjectDir)Resource\Win\x86
+	copy $(ProjectDir)\..\libs\shared\Win\x86\msvcp100.dll $(ProjectDir)Resource\Win\x86
 </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
