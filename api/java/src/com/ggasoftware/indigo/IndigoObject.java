@@ -1438,6 +1438,19 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       _lib.indigoOptimize(self, options);
    }
 
+   public void normalize ()
+   {
+      normalize(null);
+   }
+
+   public void normalize (String options)
+   {
+      dispatcher.setSessionID();
+      if (options == null)
+         options = "";
+      _lib.indigoNormalize(self, options);
+   }
+
    public String dbgInternalType ()
    {
       dispatcher.setSessionID();

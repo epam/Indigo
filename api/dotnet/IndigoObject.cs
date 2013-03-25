@@ -1452,6 +1452,19 @@ namespace com.ggasoftware.indigo
          _indigo_lib.indigoOptimize(self, options);
       }
 
+      public void normalize ()
+      {
+         normalize(null);
+      }
+
+      public void normalize (string options)
+      {
+         dispatcher.setSessionID();
+         if (options == null)
+            options = "";
+         _indigo_lib.indigoNormalize(self, options);
+      }
+
       public String dbgInternalType ()
       {
          dispatcher.setSessionID();

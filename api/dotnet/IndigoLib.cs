@@ -92,6 +92,8 @@ namespace com.ggasoftware.indigo
 
       int indigoOptimize (int query, string options);
 
+      int indigoNormalize (int structure, string options);
+
       int indigoIterateAtoms (int molecule);
       int indigoIteratePseudoatoms (int molecule);
       int indigoIterateRSites (int molecule);
