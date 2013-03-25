@@ -151,8 +151,12 @@ class Indigo(object):
         raise IndigoException("unknown platform " + arch)
       if os.path.exists(path + "/msvcr100.dll"):
         Indigo._crt = CDLL(path + "/msvcr100.dll")
+        if os.path.exists(path + "/msvcp100.dll"):
+        Indigo._crt = CDLL(path + "/msvcp100.dll")
       if os.path.exists(path + "/msvcr110.dll"):
         Indigo._crt = CDLL(path + "/msvcr110.dll")
+        if os.path.exists(path + "/msvcp110.dll"):
+        Indigo._crt = CDLL(path + "/msvcp110.dll")
       Indigo._lib = CDLL(path + "/indigo.dll")
     elif platform.mac_ver()[0]:
       path += "/Mac/"
@@ -386,7 +390,6 @@ class Indigo(object):
     self.IndigoObject.countStereocenters = Indigo._member_int(Indigo._lib.indigoCountStereocenters)
     self.IndigoObject.countAlleneCenters = Indigo._member_int(Indigo._lib.indigoCountAlleneCenters)
     self.IndigoObject.resetSymmetricCisTrans = Indigo._member_int(Indigo._lib.indigoResetSymmetricCisTrans)
-    self.IndigoObject.resetSymmetricStereocenters = Indigo._member_int(Indigo._lib.indigoResetSymmetricStereocenters)
     self.IndigoObject.markEitherCisTrans = Indigo._member_int(Indigo._lib.indigoMarkEitherCisTrans)
     self.IndigoObject.addAtom = Indigo._member_obj_string(Indigo._lib.indigoAddAtom)
     self.IndigoObject.resetAtom = Indigo._member_void_string(Indigo._lib.indigoResetAtom)

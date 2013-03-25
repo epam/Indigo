@@ -720,6 +720,8 @@ public class Indigo
       {
          if((new File(getPathToBinary(path, "msvcr100.dll"))).exists())
             System.load(getPathToBinary(path, "msvcr100.dll"));
+         if((new File(getPathToBinary(path, "msvcp100.dll"))).exists())
+            System.load(getPathToBinary(path, "msvcp100.dll"));
          _lib = (IndigoLib)Native.loadLibrary(getPathToBinary(path, "indigo.dll"), IndigoLib.class);
       }
    }
