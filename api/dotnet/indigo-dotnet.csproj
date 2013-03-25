@@ -95,10 +95,10 @@
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resource\Win\x64\msvcr100.dll" />
-    <Content Include="Resource\Win\x64\msvcp100.dll" />
-    <Content Include="Resource\Win\x86\msvcr100.dll" />
-    <Content Include="Resource\Win\x86\msvcp100.dll" />
+    <None Include="Resource\Win\x64\msvcr100.dll" />
+    <None Include="Resource\Win\x64\msvcp100.dll" />
+    <None Include="Resource\Win\x86\msvcr100.dll" />
+    <None Include="Resource\Win\x86\msvcp100.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
