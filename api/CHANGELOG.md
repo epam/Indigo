@@ -1,3 +1,21 @@
+Indigo 1.1.9
+----------
+
+*25 March 2013*
+
+New features:
+
+* Single atoms are encoded into Indigo fingerprint. In the previous versions we enumerated subgraphs starting from 2 atoms.
+* new method IndigoObject.resetSymmetricStereocenters to clear stereocenters that are not real stereocenters like in `CC[C@@H](CN)CC`
+
+
+Changes:
+
+* Implicit hydrogens are rendered better if they are on the bottom of an aromatic ring
+* Missing dependency file msvcp100.dll is loaded automatically. 
+* Smiles saver doesn't throw exception about implicit hydrogens if they are not saving in SMILES
+* Workaround for a clang 3.2 compiler bug that caused incorrect similarity values on Mac OS X platforms
+
 Indigo 1.1.8
 ----------
 
