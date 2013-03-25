@@ -140,6 +140,7 @@ namespace com.ggasoftware.indigo
          Assembly resource_assembly, bool make_unique_dll_name)
       {
          ResourceManager manager = new ResourceManager(resource_name, resource_assembly);
+
          Object file_data = manager.GetObject(filename);
          if (file_data == null)
             throw new IndigoException("Internal error: there is no resource " + filename);
