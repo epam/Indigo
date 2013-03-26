@@ -95,7 +95,7 @@ if args.dbms != 'sqlserver':
     for f in os.listdir(full_build_dir):
         path, ext = os.path.splitext(f)
         if ext == ".zip":
-            shutil.rmtree(join(full_build_dir, f.replace('-shared.zip', ''), f.replace('-shared.zip', '')))
+            shutil.rmtree(join(full_build_dir, f.replace('-shared.zip', ''), f.replace('-shared.zip', '')), ignore_errors=True)
             zf = ZipFile(join(full_build_dir, f))
             zf.extractall(join(full_build_dir, f.replace('-shared.zip', ''), f.replace('-shared.zip', '')))
             zf = ZipFile(join(dist_dir, f.replace('-shared.zip', '.zip')), 'w')
