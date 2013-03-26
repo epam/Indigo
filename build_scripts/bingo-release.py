@@ -108,13 +108,13 @@ if args.dbms != 'sqlserver':
             os.chdir(root)
 else:
     dllPath = {}
-    
+
     vsversion = 'Visual Studio'
     if args.preset.find("2012") != -1:
         vsversion += ' 11'
     else:
         vsversion += ' 10'
-    
+
     for arch, generator in (('x86', vsversion), ('x64', vsversion + ' Win64')):
         build_dir = (args.dbms + " " + generator + " " + args.params)
         build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
@@ -161,9 +161,9 @@ else:
         os.makedirs(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version))
     else:
         shutil.rmtree(join(root, 'dist', 'bingo-sqlserver-%s' % version))
-        os.makedirs(join(root, 'dist',  'bingo-sqlserver-%s' % version,  'bingo-sqlserver%s' % version))
+        os.makedirs(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver%s' % version))
 
-    os.mkdir(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly'))
+    os.makedirs(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly'))
     for item in os.listdir(join(root, 'bingo', 'sqlserver', 'sql')):
         if item.endswith('.sql') or item.endswith('.bat'):
             shutil.copyfile(join(root, 'bingo', 'sqlserver', 'sql', item), join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, item))
@@ -172,11 +172,10 @@ else:
         open(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll', 'w')).close()
     else:
         shutil.copyfile(join(root, 'bingo', 'sqlserver', 'bin', args.config, 'bingo-sqlserver.dll'), join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll'))
-        
 
     os.chdir('dist')
     if os.path.exists('bingo-sqlserver-%s.zip' % version):
         os.remove('bingo-sqlserver-%s.zip' % version)
-    shutil.make_archive('bingo-sqlserver-%s' % version, format='zip', root_dir=join(root, 'dist', 'bingo-sqlserver'))
-    shutil.rmtree('bingo-sqlserver')
+    shutil.make_archive('bingo-sqlserver-%s' % version, format='zip', root_dir=join(root, 'dist', 'bingo-sqlserver-%s' % version))
+    shutil.rmtree('bingo-sqlserver-%s' % version)
     os.chdir(root)
