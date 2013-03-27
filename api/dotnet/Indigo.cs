@@ -496,18 +496,12 @@ namespace com.ggasoftware.indigo
 				dll_loader.loadLibrary (lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin", false);
 				break;
 			case PlatformID.Unix:
-				string unixName = IndigoDllLoader.getUnixName ();
-				switch (unixName) {
-				case "Darwin":
+				if (IndigoDllLoader.isMac()) {
 					libraryName = "libindigo.dylib";
 					dll_loader.loadLibrary (lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesMac", false);
-					break;
-				case "Linux":
+				} else {
 					libraryName = "libindigo.so";
 					dll_loader.loadLibrary (lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesLinux", false);
-					break;
-				default:
-					throw new PlatformNotSupportedException (String.Format ("Unsupported Unix: {0}", unixName));
 				}
 				break;
 			default:

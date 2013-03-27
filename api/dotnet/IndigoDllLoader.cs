@@ -51,15 +51,11 @@ namespace com.ggasoftware.indigo
 			case PlatformID.Win32NT:
 				return WindowsLoader.LoadLibrary (filename);
 			case PlatformID.Unix:
-				string unixName = IndigoDllLoader.getUnixName ();
-				switch (unixName) {
-				case "Darwin":
+				if (IndigoDllLoader.isMac()) {
 					return MacLoader.dlopen (filename.Replace ("\\", "/"), 2);
-				case "Linux":
+				} else {
 					return LinuxLoader.dlopen (filename.Replace ("\\", "/"), 2);
-				
 				}
-				break;
 			}
 			return IntPtr.Zero;
 		}
@@ -70,15 +66,11 @@ namespace com.ggasoftware.indigo
 			case PlatformID.Win32NT:
 				return WindowsLoader.FreeLibrary(handle);
 			case PlatformID.Unix:
-				string unixName = IndigoDllLoader.getUnixName ();
-				switch (unixName) {
-				case "Darwin":
+				if (IndigoDllLoader.isMac()) {
 					return MacLoader.dlclose (handle);
-				case "Linux":
+				} else {
 					return LinuxLoader.dlclose (handle);
-				
 				}
-				break;
 			}		
 			return 0;
 		}
@@ -89,14 +81,11 @@ namespace com.ggasoftware.indigo
 			case PlatformID.Win32NT:
 				return WindowsLoader.GetProcAddress (library, procedureName);
 			case PlatformID.Unix:
-				string unixName = IndigoDllLoader.getUnixName ();
-				switch (unixName) {
-				case "Darwin":
+				if (IndigoDllLoader.isMac()) {
 					return MacLoader.dlsym (library, procedureName);
-				case "Linux":
+				} else {
 					return LinuxLoader.dlsym (library, procedureName);
 				}
-				break;
 			}
 			return IntPtr.Zero;
 		}	
@@ -161,6 +150,7 @@ namespace com.ggasoftware.indigo
       // Local synchronization object
       Object _sync_object = new Object();
 
+		/*
 	  public static string getUnixName ()
 		{
 			Process pUname = new Process ();
@@ -187,6 +177,30 @@ namespace com.ggasoftware.indigo
 			pUnameR.Close ();
 			return outputUnameR.Split('.')[0];
 		}
+		*/
+
+		// Pinta way to find if Unix system is Linux or Mac
+		[DllImport ("libc")]
+		static extern int uname (IntPtr buf);
+
+		static public bool isMac ()
+		{
+			IntPtr buf = IntPtr.Zero;
+			try {
+				buf = Marshal.AllocHGlobal (8192);
+				// This is a hacktastic way of getting sysname from uname ()
+				if (uname (buf) == 0) {
+					string os = Marshal.PtrToStringAnsi (buf);
+					if (os == "Darwin")
+						return true;
+				}
+			} catch {
+			} finally {
+				if (buf != IntPtr.Zero)
+					Marshal.FreeHGlobal (buf);
+			}
+			return false;
+		}
 		
       public void loadLibrary (String path, String dll_name, string resource_name, bool make_unique_dll_name)
 		{
@@ -209,25 +223,13 @@ namespace com.ggasoftware.indigo
 					subprefix = (IntPtr.Size == 8) ? "Win/x64/" : "Win/x86/";
 					break;
 				case PlatformID.Unix:
-					string unixName = getUnixName ();
-					switch (unixName) {
-					case "Darwin":
-						string macVersion = getUnixMajorVersion ();
-						switch (macVersion) {
-						case "10":
-						case "11":
-                  case "12":
-							subprefix = "Mac/10.6/";
-							break;
-						default:
-							throw new PlatformNotSupportedException (String.Format ("Unsupported Mac OS X version: {0}", macVersion));
-						}
-						break;
-					case "Linux":
+					if (isMac())
+					{
+						subprefix = "Mac/10.6/";
+					}
+					else 
+					{
 						subprefix = (IntPtr.Size == 8) ? "Linux/x64/" : "Linux/x86/";
-						break;
-					default:
-						throw new PlatformNotSupportedException (String.Format ("Unsupported Unix: {0}", unixName));
 					}
 					break;
 				default: 
