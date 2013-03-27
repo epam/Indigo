@@ -180,26 +180,18 @@ namespace com.ggasoftware.indigo
 		*/
 
 		// Pinta way to find if Unix system is Linux or Mac
-		[DllImport ("libc")]
-		static extern int uname (IntPtr buf);
-
+		//[DllImport ("libc")]
+		//static extern int uname (IntPtr buf);
+	
 		static public bool isMac ()
 		{
-			IntPtr buf = IntPtr.Zero;
-			try {
-				buf = Marshal.AllocHGlobal (8192);
-				// This is a hacktastic way of getting sysname from uname ()
-				if (uname (buf) == 0) {
-					string os = Marshal.PtrToStringAnsi (buf);
-					if (os == "Darwin")
-						return true;
-				}
-			} catch {
-			} finally {
-				if (buf != IntPtr.Zero)
-					Marshal.FreeHGlobal (buf);
+			Mono.Unix.Native.Utsname results;
+			var res = Mono.Unix.Native.Syscall.uname(out results);
+			if(res != 0)
+			{
+				throw new Exception("uname call failed!");
 			}
-			return false;
+			return (results.sysname == "Darwin");
 		}
 		
       public void loadLibrary (String path, String dll_name, string resource_name, bool make_unique_dll_name)
