@@ -40,8 +40,6 @@ static PtrPool<bingo::Matcher> _searches;
 
 static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *type, const char *options, bool create)
 {
-   bingo::Index *index;
-
    MoleculeFingerprintParameters fp_params;
 
    fp_params.ext = 0;
@@ -50,14 +48,14 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
    fp_params.tau_qwords = 0;
    fp_params.sim_qwords = 8;
    
+   AutoPtr<bingo::Index> context;
+
    if (strcmp(type, "molecule") == 0)
-      index = new bingo::MoleculeIndex();
+      context = new bingo::MoleculeIndex();
    else if (strcmp(type, "reaction") == 0)
-      index = new bingo::ReactionIndex();
+      context = new bingo::ReactionIndex();
    else
       throw BingoException("wrong database type option");
-
-   AutoPtr<bingo::Index> context(index);
 
    if (create)
       context->create(location, fp_params);
@@ -105,8 +103,7 @@ CEXPORT int bingoInsertRecordObj (int db, int obj_id)
       bingo::Index &bingo_index = _bingo_instances.ref(db);
       IndigoObject &obj = self.getObject(obj_id);
 
-
-      if (bingo_index.getType() == bingo::IND_MOL)
+      if (bingo_index.getType() == bingo::Index::MOLECULE)
       {
          if (!IndigoMolecule::is(obj))
             throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
@@ -114,7 +111,7 @@ CEXPORT int bingoInsertRecordObj (int db, int obj_id)
          int id = bingo_index.add(bingo::IndexMolecule(obj.getMolecule()));
          return id;
       }
-      else if (bingo_index.getType() == bingo::IND_RXN)
+      else if (bingo_index.getType() == bingo::Index::REACTION)
       {
          if (!IndigoReaction::is(obj))
             throw BingoException("bingoInsertRecordObj: Only reaction objects can be added to reaction index");

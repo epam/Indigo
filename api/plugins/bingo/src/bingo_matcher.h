@@ -10,17 +10,23 @@ using namespace indigo;
 
 namespace bingo
 {
+   // TODO: review this header
+
    class Matcher
    {
    public:
       virtual bool next () = 0;
       virtual int currentId () = 0;
+
+      // TODO: virtual destructor ????
    };
    
    class MatcherQueryData
    {
    public:
       virtual /*const*/ QueryObject &getQueryObject() /*const*/ = 0;
+
+      // TODO: virtual destructor ????
    };
 
    class SimilarityQueryData : public MatcherQueryData

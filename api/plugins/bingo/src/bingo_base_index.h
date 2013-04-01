@@ -12,8 +12,6 @@ using namespace indigo;
 
 namespace bingo
 {
-   typedef enum {IND_NO_TYPE = -1, IND_MOL, IND_RXN} IndexType;
-
    class Matcher;
    class MatcherQueryData;
 
@@ -33,25 +31,25 @@ namespace bingo
       virtual int add( /* const */ IndexObject &obj ) = 0;
       virtual void remove( int id ) = 0;
    
+      typedef enum {MOLECULE, REACTION} IndexType;
+
       virtual IndexType getType() = 0;
    };
    
    class BaseIndex : public Index
    {
    public:
-      BaseIndex();
-
       // Usage:
       //    createMatcher("sub", SubstructureMatcherQuery("C*N"));
       //    createMatcher("sub-fast", SubstructureMatcherQuery("C*N"));
 
       virtual void create( const char *location, const MoleculeFingerprintParameters &fp_params );
 
-      virtual void load( const char *location );
+      virtual void load (const char *location);
       
-      virtual int add( /* const */ IndexObject &obj );
+      virtual int add (/* const */ IndexObject &obj);
 
-      virtual void remove( int id );
+      virtual void remove (int id);
 
       const MoleculeFingerprintParameters & getFingerprintParams() const;
 
@@ -68,6 +66,9 @@ namespace bingo
       virtual ~BaseIndex();
 
    protected:
+      BaseIndex (IndexType type);
+
+   protected:
       TranspFpStorage _sub_fp_storage;
       RowFpStorage _sim_fp_storage;
       MoleculeFingerprintParameters _fp_params;
@@ -76,16 +77,9 @@ namespace bingo
       IndexType _type;
       Properties _properties;
 
-      int _object_count;
+      int _object_count; // TODO: private
 
-      std::string _location;
-      std::string _sub_filename;
-      std::string _sub_info_filename;
-      std::string _sim_filename;
-      std::string _sim_info_filename;
-      std::string _props_filename;
-      std::string _cf_data_filename;
-      std::string _cf_offset_filename;
+      std::string _location; // TODO: move to StorageManager
 
       void _saveProperties( const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size );
    };

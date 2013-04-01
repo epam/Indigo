@@ -6,17 +6,17 @@
 
 using namespace bingo;
 
-BaseIndex::BaseIndex()
-{
-   _type = IND_NO_TYPE;
+static const char *_sub_filename = "sub_fp.fp";
+static const char *_sub_info_filename = "sub_fp_info.fp";
+static const char *_sim_filename = "sim_fp.fp";
+static const char *_sim_info_filename = "sim_fp_info.fp";
+static const char *_props_filename = "properties";
+static const char *_cf_data_filename = "cf_data";
+static const char *_cf_offset_filename = "cf_offset";
 
-   _sub_filename = "sub_fp.fp";
-   _sub_info_filename = "sub_fp_info.fp";
-   _sim_filename = "sim_fp.fp";
-   _sim_info_filename = "sim_fp_info.fp";
-   _props_filename = "properties";
-   _cf_data_filename = "cf_data";
-   _cf_offset_filename = "cf_offset";
+BaseIndex::BaseIndex(IndexType type)
+{
+   _type = type;
 
    _object_count = 0;
 }
@@ -27,6 +27,10 @@ BaseIndex::BaseIndex()
 
 void BaseIndex::create( const char *location, const MoleculeFingerprintParameters &fp_params )
 {
+   // TODO: introduce global parameters table, local parameters table and constants
+
+   // TODO: create storage manager in a specified location
+
    int sub_block_size = 128;
    int sim_block_size = 128;
 
@@ -45,11 +49,11 @@ void BaseIndex::create( const char *location, const MoleculeFingerprintParameter
 
    _saveProperties(fp_params, sub_block_size, sim_block_size);
 
-   FileStorage *sub_stor = _file_storage_manager.create(sub_path.c_str(), sub_block_size);
-   FileStorage *sim_stor = _file_storage_manager.create(sim_path.c_str(), sim_block_size);
+   AutoPtr<Storage> sub_stor = _file_storage_manager.create(sub_path.c_str(), sub_block_size);
+   AutoPtr<Storage> sim_stor = _file_storage_manager.create(sim_path.c_str(), sim_block_size);
 
-   _sub_fp_storage.create(_fp_params.fingerprintSize(), sub_stor, sub_info_path.c_str());
-   _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), sim_stor, sim_info_path.c_str());
+   _sub_fp_storage.create(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
+   _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), sim_stor.release(), sim_info_path.c_str());
    
    _cf_storage.create(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }
@@ -89,23 +93,30 @@ void BaseIndex::load( const char *location )
 
 int BaseIndex::add( /* const */ IndexObject &obj )
 {
-   Array<byte> sub_fp;
-   Array<byte> sim_fp;
-   Array<char> cf_str;
+   // TODO: Split prepare and add into index because of potential 
+   //    MoleculeIndex features: molecule mass, molecular formula, etc.
+   // Prepare + atomic Add
+   struct ObjectIndexData 
+   {
+      Array<byte> sub_fp;
+      Array<byte> sim_fp;
+      Array<char> cf_str;
+   };
+   QS_DEF(ObjectIndexData, data);
 
-   obj.buildCfString(cf_str);
-   obj.buildFingerprint(_fp_params, &sub_fp, &sim_fp);
+   obj.buildCfString(data.cf_str);
+   obj.buildFingerprint(_fp_params, &data.sub_fp, &data.sim_fp);
 
-   _sub_fp_storage.add(sub_fp.ptr());
-   _sim_fp_storage.add(sim_fp.ptr());
-   _cf_storage.add(cf_str.ptr(), cf_str.size(), _object_count);
+   _sub_fp_storage.add(data.sub_fp.ptr());
+   _sim_fp_storage.add(data.sim_fp.ptr());
+   _cf_storage.add(data.cf_str.ptr(), data.cf_str.size(), _object_count);
    
    return _object_count++;
 }
 
 void BaseIndex::remove( int id )
 {
-   return;
+   throw Exception("Not implemented yet...");
 }
 
 const MoleculeFingerprintParameters & BaseIndex::getFingerprintParams() const
@@ -133,7 +144,7 @@ int BaseIndex::getObjectsCount() const
    return _object_count;
 }
 
-IndexType BaseIndex::getType()
+Index::IndexType BaseIndex::getType()
 {
    return _type;
 }
@@ -144,6 +155,7 @@ BaseIndex::~BaseIndex()
 
 void BaseIndex::_saveProperties( const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size )
 {
+   // TODO: separate fp parameters
    std::stringstream sstr;
    sstr << _fp_params.ext << ' ' <<
            _fp_params.ord_qwords << ' ' <<
@@ -153,6 +165,8 @@ void BaseIndex::_saveProperties( const MoleculeFingerprintParameters &fp_params,
 
    _properties.add("fp_params", sstr.str().c_str());
 
+   // TODO: Properties.add(string, int)
+   // Properties.getInt(string), etc.
    sstr.str(std::string());
    sstr << sub_block_size;
    _properties.add("sub_block_size", sstr.str().c_str());

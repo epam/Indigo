@@ -5,6 +5,12 @@
 
 namespace bingo
 {
+   // TODO: 
+   // * StorageManager.load (name) without block_size
+   // * FileStorageManager::ctor (location)
+   // * + property table with block_size
+   // * remove StorageManager.get (replace with load)
+
    class StorageManager
    {
    public:
@@ -15,11 +21,9 @@ namespace bingo
    class FileStorageManager : public StorageManager
    {
    public:
-      FileStorage * create( const char *name, int block_size );
-
-      FileStorage * load( const char *name, int block_size );
-
-      FileStorage * get( const char *name );
+      FileStorage * create ( const char *name, int block_size );
+      FileStorage * load   ( const char *name, int block_size );
+      FileStorage * get    ( const char *name ); // ???
    };
 };
 

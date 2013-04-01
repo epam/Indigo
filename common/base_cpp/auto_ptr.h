@@ -24,7 +24,7 @@ DECL_EXCEPTION(AutoPtrError);
 template <typename T> class AutoPtr
 {
 public:
-   explicit AutoPtr (T *ptr = 0)
+   AutoPtr (T *ptr = 0)
    {
       _ptr = ptr;
    }

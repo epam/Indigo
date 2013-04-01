@@ -5,15 +5,19 @@
 
 using namespace bingo;
 
-MoleculeIndex::MoleculeIndex() : BaseIndex()
+MoleculeIndex::MoleculeIndex() : BaseIndex(MOLECULE)
 {
-   _type = IND_MOL;
 }
 
 Matcher* MoleculeIndex::createMatcher (const char *type, const MatcherQueryData *query_data)
 {
    if (strcmp(type, "sub") == 0)
    {
+      // TODO: AutPtr<MoleculeSubMatcher> to avoid memory leak in 
+      //   case of exception in matcher->setQueryData.
+
+      // MR TODO: type cast with type checking based on dynamic_cast
+
       MoleculeSubMatcher *matcher = new MoleculeSubMatcher(*this);
       matcher->setQueryData((SubstructureQueryData *)query_data);
       return matcher;
@@ -30,9 +34,8 @@ Matcher* MoleculeIndex::createMatcher (const char *type, const MatcherQueryData 
    return 0;
 }
    
-ReactionIndex::ReactionIndex() : BaseIndex()
+ReactionIndex::ReactionIndex() : BaseIndex(REACTION)
 {
-   _type = IND_RXN;
 }
 
 Matcher* ReactionIndex::createMatcher (const char *type, const MatcherQueryData *query_data)
