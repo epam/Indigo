@@ -32,6 +32,9 @@ public:
    virtual void insertShadowInfo(BingoPgFpData&);
    virtual void finishShadowProcessing();
 
+   // hardcode return single threading for reactions due to an instable state
+   int getNthreads() {return 1;}
+
 private:
    RingoPgBuildEngine(const RingoPgBuildEngine&); // no implicit copy
 
