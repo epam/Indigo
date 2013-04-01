@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #ifndef __reaction_fingerprint__
+#define __reaction_fingerprint__
 
 #include "base_cpp/tlscont.h"
 
