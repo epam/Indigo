@@ -183,15 +183,42 @@ namespace com.ggasoftware.indigo
 		//[DllImport ("libc")]
 		//static extern int uname (IntPtr buf);
 	
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        struct utsname
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string sysname;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string nodename;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string release;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string version;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string machine;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 1024)]
+            public string extraJustInCase;
+
+        }
+
+		[DllImport("libc")]
+        private static extern void uname(out utsname uname_struct);
+
+		private static string detectUnixKernel()
+        {            
+            utsname uts = new utsname();
+            uname(out uts);
+			return uts.sysname.ToString();
+        }
+
 		static public bool isMac ()
 		{
-			Mono.Unix.Native.Utsname results;
-			var res = Mono.Unix.Native.Syscall.uname(out results);
-			if(res != 0)
-			{
-				throw new Exception("uname call failed!");
-			}
-			return (results.sysname == "Darwin");
+			return (detectUnixKernel() == "Darwin");
 		}
 		
       public void loadLibrary (String path, String dll_name, string resource_name, bool make_unique_dll_name)
