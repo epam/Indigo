@@ -18,7 +18,7 @@
 #include "indigo.h"
 
 CEXPORT int bingoCreateDatabaseFile (const char *location, const char *type, const char *options);
-CEXPORT int bingoLoadDatabaseFile (const char *location);
+CEXPORT int bingoLoadDatabaseFile (const char *location, const char *type);
 CEXPORT int bingoCloseDatabase (int db);
 
 //
