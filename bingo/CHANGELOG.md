@@ -10,6 +10,7 @@ General changes:
 * Smiles saver doesn't throw exception about implicit hydrogens if they are not saving in SMILES
 
 Bingo PostgreSQL-specific changes:
+
 * bug with similarity search for null structures was fixed
 * performance was improved for join queries
 * bug with exact join query (windows) was fixed 
