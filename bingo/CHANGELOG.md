@@ -1,3 +1,18 @@
+Bingo 1.7.9
+----------
+
+*2 April 2013*
+
+Bingo PostgreSQL-specific changes:
+* bug with similarity search for null structures was fixed
+* performance was improved for join queries
+* bug with exact join query (windows) was fixed 
+* timeout was implemented for exact search (default is 1 min)
+* bitmap scan feature was turned off by default for bingo
+
+
+
+
 Bingo 1.7.8b2
 ----------
 
