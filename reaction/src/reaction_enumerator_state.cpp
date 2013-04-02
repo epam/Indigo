@@ -123,7 +123,8 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
     TL_CP_GET(_bonds_mapping_sub), TL_CP_GET(_bonds_mapping_super), 
     TL_CP_GET(_att_points), TL_CP_GET(_fmcache), 
-    TL_CP_GET(_monomer_forbidden_atoms), TL_CP_GET(_product_forbidden_atoms)
+    TL_CP_GET(_monomer_forbidden_atoms), TL_CP_GET(_product_forbidden_atoms),
+    TL_CP_GET(_original_hydrogens)
 {
    _reactant_idx = _reaction.reactantBegin();
 
@@ -136,6 +137,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
    _is_needless_bond.clear();
    _bonds_mapping_sub.clear();
    _bonds_mapping_super.clear();
+   _original_hydrogens.clear();
 
    _att_points.clear();
    _att_points.resize(cur_full_product.vertexEnd());
@@ -182,7 +184,8 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
     TL_CP_GET(_bonds_mapping_sub), TL_CP_GET(_bonds_mapping_super), 
     TL_CP_GET(_att_points), TL_CP_GET(_fmcache), 
-    TL_CP_GET(_monomer_forbidden_atoms), TL_CP_GET(_product_forbidden_atoms)
+    TL_CP_GET(_monomer_forbidden_atoms), TL_CP_GET(_product_forbidden_atoms),
+    TL_CP_GET(_original_hydrogens)
 {
    _reactant_idx = cur_rpe_state._reactant_idx;
    
@@ -206,6 +209,8 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
    _monomer_forbidden_atoms.copy(cur_rpe_state._monomer_forbidden_atoms);
    _product_forbidden_atoms.clear();
    _product_forbidden_atoms.copy(cur_rpe_state._product_forbidden_atoms);
+   _original_hydrogens.clear();
+   _original_hydrogens.copy(cur_rpe_state._original_hydrogens);
 
    for (int i = 0; i < cur_rpe_state._att_points.size(); i++)
    {
@@ -444,7 +449,7 @@ void ReactionEnumeratorState::_productProcess( void )
       product_proc(ready_product, _product_monomers, userdata);
 }
 
-void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep )
+void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep, Array<int> *original_hydrogens )
 {
    QS_DEF(Array<int>, hydrogens);
    hydrogens.clear();
@@ -452,6 +457,9 @@ void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule, Array<int>
    for (int i = molecule.vertexBegin(); i != molecule.vertexEnd(); i = molecule.vertexNext(i))
    {
       if ((atoms_to_keep != 0) && (atoms_to_keep->at(i)))
+         continue;
+
+      if ((original_hydrogens != 0) && (original_hydrogens->find(i) != -1))
          continue;
 
       if (molecule.getAtomNumber(i) != ELEM_H || 
@@ -496,6 +504,7 @@ bool ReactionEnumeratorState::_nextMatchProcess( EmbeddingEnumerator &ee,
    _bonds_mapping_sub.copy(rpe_state._bonds_mapping_sub);
    _bonds_mapping_super.copy(rpe_state._bonds_mapping_super);
    _product_forbidden_atoms.copy(rpe_state._product_forbidden_atoms);
+   _original_hydrogens.copy(rpe_state._original_hydrogens);
 
    return stop_flag;
 }
@@ -520,7 +529,7 @@ int ReactionEnumeratorState::_calcMaxHCnt( QueryMolecule &molecule )
 }
 
 
-bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms )
+bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms, Array<int> &original_hydrogens )
 {
    is_transform = true;
 
@@ -529,12 +538,15 @@ bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, A
    
    _monomer_forbidden_atoms.copy(forbidden_atoms);
 
+   _original_hydrogens.copy(original_hydrogens);
+
    if (!_startEmbeddingEnumerator(molecule))
    {
-      _foldHydrogens(molecule, &forbidden_atoms);
+      _foldHydrogens(molecule, &forbidden_atoms, &_original_hydrogens);
       return false;
    }
 
+   original_hydrogens.copy(_original_hydrogens);
    forbidden_atoms.copy(_product_forbidden_atoms);
 
    return true;
@@ -1517,11 +1529,25 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    _product_forbidden_atoms.clear_resize(ready_product_out.vertexEnd());
    _product_forbidden_atoms.zerofill();
    
+   QS_DEF(Array<int>, temp_orig_hydr);
+   temp_orig_hydr.clear();
+
    if (is_transform)
    {
       for (int i = mol_product.vertexBegin(); i != mol_product.vertexEnd(); i = mol_product.vertexNext(i))
          if (out_mapping[i] != -1 && all_forbidden_atoms[i])
             _product_forbidden_atoms[out_mapping[i]] = all_forbidden_atoms[i];
+
+      for (int i = 0; i <_original_hydrogens.size(); i++)
+      {
+         int new_h_idx = frags_mapping[_original_hydrogens[i]];
+         
+         if (new_h_idx == -1)
+            continue;
+
+         temp_orig_hydr.push(out_mapping[new_h_idx]);
+      }
+      _original_hydrogens.copy(temp_orig_hydr);
    }
 
    return true;

@@ -79,7 +79,7 @@ public:
 
    int buildProduct( void );
 
-   bool performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms );
+   bool performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms, Array<int> &original_hydrogens );
 
 private:
    QueryReaction &_reaction;
@@ -104,7 +104,9 @@ private:
    TL_CP_DECL(MoleculeSubstructureMatcher::FragmentMatchCache, _fmcache);
    TL_CP_DECL(Array<int>, _monomer_forbidden_atoms);
    TL_CP_DECL(Array<int>, _product_forbidden_atoms);
-   
+
+   TL_CP_DECL(Array<int>, _original_hydrogens);
+
    AromaticityMatcher *_am;
    EmbeddingEnumerator *_ee;
    int _tube_idx;
@@ -116,7 +118,7 @@ private:
 
    bool _isMonomerFromCurTube( int monomer_idx );
    
-   static void _foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep = 0 );
+   static void _foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep = 0, Array<int> *original_hydrogens = 0 );
 
    void _productProcess( void );
 

@@ -15,6 +15,7 @@
 #include "reaction/reaction_transformation.h"
 #include "reaction/reaction_enumerator_state.h"
 #include "layout/molecule_layout.h"
+#include "molecule/elements.h"
 
 using namespace indigo;
 
@@ -67,7 +68,15 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
    forbidden_atoms.clear_resize(_cur_monomer.vertexEnd());
    forbidden_atoms.zerofill();
 
-   while (re_state.performSingleTransformation(_cur_monomer, forbidden_atoms))
+   QS_DEF(Array<int>, original_hydrogens);
+   original_hydrogens.clear();
+   for (int i = _cur_monomer.vertexBegin(); i != _cur_monomer.vertexEnd(); i = _cur_monomer.vertexNext(i))
+   {
+      if (_cur_monomer.getAtomNumber(i) == ELEM_H)
+         original_hydrogens.push(i);
+   }
+
+   while (re_state.performSingleTransformation(_cur_monomer, forbidden_atoms, original_hydrogens))
       ;
 
    molecule.clone(_cur_monomer, NULL, NULL);
