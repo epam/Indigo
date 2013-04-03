@@ -9,24 +9,24 @@ MoleculeIndex::MoleculeIndex() : BaseIndex(MOLECULE)
 {
 }
 
-Matcher* MoleculeIndex::createMatcher (const char *type, const MatcherQueryData *query_data)
+Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query_data)
 {
    if (strcmp(type, "sub") == 0)
    {
       // TODO: AutPtr<MoleculeSubMatcher> to avoid memory leak in 
-      //   case of exception in matcher->setQueryData.
+      //   case of exception in matcher->setQueryData. --DONE
 
-      // MR TODO: type cast with type checking based on dynamic_cast
+      // MR TODO: type cast with type checking based on dynamic_cast --DONE
 
-      MoleculeSubMatcher *matcher = new MoleculeSubMatcher(*this);
-      matcher->setQueryData((SubstructureQueryData *)query_data);
-      return matcher;
+      AutoPtr<MoleculeSubMatcher> matcher(new MoleculeSubMatcher(*this));
+      matcher->setQueryData(dynamic_cast<SubstructureQueryData *>(query_data));
+      return matcher.release();
    }
    else if (strcmp(type, "sim") == 0)
    {
-      SimMatcher *matcher = new SimMatcher(*this);
-      matcher->setQueryData((SimilarityQueryData *)query_data);
-      return matcher;
+      AutoPtr<SimMatcher> matcher(new SimMatcher(*this));
+      matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
+      return matcher.release();
    }
    else
       throw Exception("createMatcher: undefined type");
@@ -34,23 +34,23 @@ Matcher* MoleculeIndex::createMatcher (const char *type, const MatcherQueryData 
    return 0;
 }
    
-ReactionIndex::ReactionIndex() : BaseIndex(REACTION)
+ReactionIndex::ReactionIndex () : BaseIndex(REACTION)
 {
 }
 
-Matcher* ReactionIndex::createMatcher (const char *type, const MatcherQueryData *query_data)
+Matcher* ReactionIndex::createMatcher (const char *type, MatcherQueryData *query_data)
 {
    if (strcmp(type, "sub") == 0)
    {
-      ReactionSubMatcher *matcher = new ReactionSubMatcher(*this);
-      matcher->setQueryData((SubstructureQueryData *)query_data);
-      return matcher;
+      AutoPtr<ReactionSubMatcher> matcher(new ReactionSubMatcher(*this));
+      matcher->setQueryData(dynamic_cast<SubstructureQueryData *>(query_data));
+      return matcher.release();
    }
    else if (strcmp(type, "sim") == 0)
    {
-      SimMatcher *matcher = new SimMatcher(*this);
-      matcher->setQueryData((SimilarityQueryData *)query_data);
-      return matcher;
+      AutoPtr<SimMatcher> matcher(new SimMatcher(*this));
+      matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
+      return matcher.release();
    }
    else
       throw Exception("createMatcher: undefined type");

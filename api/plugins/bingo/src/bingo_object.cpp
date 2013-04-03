@@ -16,11 +16,11 @@
 using namespace indigo;
 using namespace bingo;
 
-BaseMoleculeQuery::BaseMoleculeQuery( BaseMolecule &mol ) : _base_mol(mol)
+BaseMoleculeQuery::BaseMoleculeQuery (BaseMolecule &mol) : _base_mol(mol)
 {
 }
 
-void BaseMoleculeQuery::buildFingerprint( const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp )// const
+bool BaseMoleculeQuery::buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp)// const
 {
    MoleculeFingerprintBuilder fp_builder(_base_mol, fp_params);
 
@@ -30,28 +30,30 @@ void BaseMoleculeQuery::buildFingerprint( const MoleculeFingerprintParameters &f
       sub_fp->copy(fp_builder.get(), fp_params.fingerprintSize());
    if (sim_fp)
       sim_fp->copy(fp_builder.getSim(), fp_params.fingerprintSizeSim());
+
+   return true;
 }
       
-const BaseMolecule & BaseMoleculeQuery::getMolecule()
+const BaseMolecule & BaseMoleculeQuery::getMolecule ()
 {
    return _base_mol;
 }
 
-SubstructureMoleculeQuery::SubstructureMoleculeQuery( /* const */ QueryMolecule &mol ) : BaseMoleculeQuery(_mol)
+SubstructureMoleculeQuery::SubstructureMoleculeQuery (/* const */ QueryMolecule &mol) : BaseMoleculeQuery(_mol)
 {
    _mol.clone(mol, 0, 0);
 }
 
-SimilarityMoleculeQuery::SimilarityMoleculeQuery( /* const */ Molecule &mol ) : BaseMoleculeQuery(_mol)
+SimilarityMoleculeQuery::SimilarityMoleculeQuery (/* const */ Molecule &mol) : BaseMoleculeQuery(_mol)
 {
    _mol.clone(mol, 0, 0);
 }
 
-BaseReactionQuery::BaseReactionQuery( BaseReaction &rxn ) : _base_rxn(rxn)
+BaseReactionQuery::BaseReactionQuery (BaseReaction &rxn) : _base_rxn(rxn)
 {
 }
 
-void BaseReactionQuery::buildFingerprint( const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp ) // const
+bool BaseReactionQuery::buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) // const
 {
    ReactionFingerprintBuilder fp_builder(_base_rxn, fp_params);
 
@@ -61,6 +63,8 @@ void BaseReactionQuery::buildFingerprint( const MoleculeFingerprintParameters &f
       sub_fp->copy(fp_builder.get(), fp_params.fingerprintSize());
    if (sim_fp)
       sim_fp->copy(fp_builder.getSim(), fp_params.fingerprintSizeSim());
+
+   return true;
 }
 
 const BaseReaction & BaseReactionQuery::getReaction()
@@ -68,44 +72,71 @@ const BaseReaction & BaseReactionQuery::getReaction()
    return _base_rxn;
 }
 
-SubstructureReactionQuery::SubstructureReactionQuery( /* const */ QueryReaction &rxn ) : BaseReactionQuery(_rxn)
+SubstructureReactionQuery::SubstructureReactionQuery (/* const */ QueryReaction &rxn) : BaseReactionQuery(_rxn)
 {
    _rxn.clone(rxn, 0, 0, 0);
 }
 
-SimilarityReactionQuery::SimilarityReactionQuery( /* const */ Reaction &rxn ) : BaseReactionQuery(_rxn)
+SimilarityReactionQuery::SimilarityReactionQuery (/* const */ Reaction &rxn) : BaseReactionQuery(_rxn)
 {
    _rxn.clone(rxn, 0, 0, 0);
 }
    
-IndexMolecule::IndexMolecule( /* const */ Molecule &mol )
+IndexMolecule::IndexMolecule (/* const */ Molecule &mol)
 {
    _mol.clone(mol, 0, 0);
 }
 
-void IndexMolecule::buildFingerprint( const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp ) // const
+bool IndexMolecule::buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) // const
 {
    MoleculeFingerprintBuilder fp_builder(_mol, fp_params);
 
    fp_builder.process();
 
-   sub_fp->copy(fp_builder.get(), fp_params.fingerprintSize());
-   sim_fp->copy(fp_builder.getSim(), fp_params.fingerprintSizeSim());
+   if (sub_fp)
+      sub_fp->copy(fp_builder.get(), fp_params.fingerprintSize());
+   if (sim_fp)
+      sim_fp->copy(fp_builder.getSim(), fp_params.fingerprintSizeSim());
+
+   return true;
 }
 
-void IndexMolecule::buildCfString( Array<char> &cf )// const
+bool IndexMolecule::buildCfString (Array<char> &cf)// const
 {
    ArrayOutput arr_out(cf);
    CmfSaver cmf_saver(arr_out);
 
    cmf_saver.saveMolecule(_mol);
+
+   return true;
 }
 
-void IndexMolecule::loadFromCfString( const char *cf, int length )
+IndexReaction::IndexReaction (/* const */ Reaction &rxn)
 {
-   BufferScanner buf_scn(cf, length);
-   CmfLoader cmf_loader(buf_scn);
+   _rxn.clone(rxn, 0, 0, 0);
+}
 
-   cmf_loader.loadMolecule(_mol);
+bool IndexReaction::buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) // const
+{
+   ReactionFingerprintBuilder fp_builder(_rxn, fp_params);
+
+   fp_builder.process();
+
+   if (sub_fp)
+      sub_fp->copy(fp_builder.get(), fp_params.fingerprintSize());
+   if (sim_fp)
+      sim_fp->copy(fp_builder.getSim(), fp_params.fingerprintSizeSim());
+
+   return true;
+}
+
+bool IndexReaction::buildCfString (Array<char> &cf)// const
+{
+   ArrayOutput arr_out(cf);
+   CrfSaver crf_saver(arr_out);
+
+   crf_saver.saveReaction(_rxn);
+
+   return true;
 }
 

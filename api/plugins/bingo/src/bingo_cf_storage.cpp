@@ -2,12 +2,12 @@
 
 using namespace bingo;
 
-CfStorage::CfStorage( void )
+CfStorage::CfStorage (void)
 {
    _cf_count = 0;
 }
 
-void CfStorage::create( const char *cf_filename, const char *offset_filename )
+void CfStorage::create (const char *cf_filename, const char *offset_filename)
 {
    _cf_filename = cf_filename;
    _offset_filename = offset_filename;
@@ -16,7 +16,7 @@ void CfStorage::create( const char *cf_filename, const char *offset_filename )
    _offset_file.open(offset_filename, std::ios::out);
 }
 
-void CfStorage::load( const char *cf_filename, const char *offset_filename )
+void CfStorage::load (const char *cf_filename, const char *offset_filename)
 {
    _cf_filename = cf_filename;
    _offset_filename = offset_filename;
@@ -25,7 +25,7 @@ void CfStorage::load( const char *cf_filename, const char *offset_filename )
    _offset_file.open(offset_filename, std::ios::out | std::ios::app | std::ios::binary);
 }
 
-const char * CfStorage::get( int idx, int &len )
+const char * CfStorage::get (int idx, int &len)
 {
    _cf_file.close();
    _offset_file.close();
@@ -45,7 +45,7 @@ const char * CfStorage::get( int idx, int &len )
    return _cur_cf_str; 
 }
 
-void CfStorage::add( const char *data, int len, int idx )
+void CfStorage::add (const char *data, int len, int idx)
 {
    _cf_file.close();
    _offset_file.close();
@@ -73,7 +73,7 @@ void CfStorage::add( const char *data, int len, int idx )
    _cf_file.flush();
 }
 
-void CfStorage::remove( int idx )
+void CfStorage::remove (int idx)
 {
 
 }

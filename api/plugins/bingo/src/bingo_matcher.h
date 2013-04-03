@@ -18,22 +18,25 @@ namespace bingo
       virtual bool next () = 0;
       virtual int currentId () = 0;
 
+      virtual ~Matcher () {};
+
       // TODO: virtual destructor ????
    };
    
    class MatcherQueryData
    {
    public:
-      virtual /*const*/ QueryObject &getQueryObject() /*const*/ = 0;
+      virtual /*const*/ QueryObject &getQueryObject () /*const*/ = 0;
 
+      virtual ~MatcherQueryData () {};
       // TODO: virtual destructor ????
    };
 
    class SimilarityQueryData : public MatcherQueryData
    {
    public:
-      virtual float getMin() const = 0;
-      virtual float getMax() const = 0;
+      virtual float getMin () const = 0;
+      virtual float getMax () const = 0;
    };
 
    class SubstructureQueryData : public MatcherQueryData
@@ -43,13 +46,13 @@ namespace bingo
    class MoleculeSimilarityQueryData : public SimilarityQueryData
    {
    public:
-      MoleculeSimilarityQueryData( /* const */ Molecule &mol, float min_coef, float max_coef );
+      MoleculeSimilarityQueryData (/* const */ Molecule &mol, float min_coef, float max_coef);
 
-      virtual /*const*/ QueryObject &getQueryObject() /*const*/ ;
+      virtual /*const*/ QueryObject &getQueryObject () /*const*/ ;
 
-      virtual float getMin() const ;
+      virtual float getMin () const ;
 
-      virtual float getMax() const ;
+      virtual float getMax () const ;
 
    private:
       SimilarityMoleculeQuery _obj;
@@ -60,13 +63,13 @@ namespace bingo
    class ReactionSimilarityQueryData : public SimilarityQueryData
    {
    public:
-      ReactionSimilarityQueryData( /* const */ Reaction &rxn, float min_coef, float max_coef );
+      ReactionSimilarityQueryData (/* const */ Reaction &rxn, float min_coef, float max_coef);
 
-      virtual /*const*/ QueryObject &getQueryObject() /*const*/ ;
+      virtual /*const*/ QueryObject &getQueryObject () /*const*/ ;
 
-      virtual float getMin() const ;
+      virtual float getMin () const ;
 
-      virtual float getMax() const ;
+      virtual float getMax () const ;
 
    protected:
       SimilarityReactionQuery _obj;
@@ -77,9 +80,9 @@ namespace bingo
    class MoleculeSubstructureQueryData : public SubstructureQueryData
    {
    public:
-      MoleculeSubstructureQueryData( /* const */ QueryMolecule &qmol );
+      MoleculeSubstructureQueryData (/* const */ QueryMolecule &qmol);
 
-      virtual /*const*/ QueryObject &getQueryObject() /*const*/;
+      virtual /*const*/ QueryObject &getQueryObject () /*const*/;
 
    private:
       SubstructureMoleculeQuery _obj;
@@ -88,9 +91,9 @@ namespace bingo
    class ReactionSubstructureQueryData : public SubstructureQueryData
    {
    public:
-      ReactionSubstructureQueryData( /* const */ QueryReaction &qrxn );
+      ReactionSubstructureQueryData (/* const */ QueryReaction &qrxn);
 
-      virtual /*const*/ QueryObject &getQueryObject() /*const*/;
+      virtual /*const*/ QueryObject &getQueryObject () /*const*/;
 
    private:
       SubstructureReactionQuery _obj;
@@ -99,15 +102,13 @@ namespace bingo
    class BaseSubstructureMatcher : public Matcher
    {
    public:
-      BaseSubstructureMatcher(/*const */ BaseIndex &index);
+      BaseSubstructureMatcher (/*const */ BaseIndex &index);
    
       virtual bool next ();
       
       virtual int currentId ();
 
-      void setQueryData(SubstructureQueryData *query_data);
-
-      virtual ~BaseSubstructureMatcher();
+      void setQueryData (SubstructureQueryData *query_data);
 
    protected:
       int _fp_size;
@@ -116,9 +117,9 @@ namespace bingo
       /*const*/ AutoPtr<SubstructureQueryData> _query_data;
       Array<byte> _query_fp;
 
-      void _findPackCandidates( int pack_idx );
+      void _findPackCandidates (int pack_idx);
 
-      void _findIncCandidates();
+      void _findIncCandidates ();
 
       virtual bool _tryCurrent ()/* const */ = 0;
 
@@ -132,9 +133,9 @@ namespace bingo
    class MoleculeSubMatcher : public BaseSubstructureMatcher
    {
    public:
-      MoleculeSubMatcher(/*const */ BaseIndex &index);
+      MoleculeSubMatcher (/*const */ BaseIndex &index);
 
-      const Array<int> & currentMapping();
+      const Array<int> & currentMapping ();
 
    private:
       Array<int> _mapping;
@@ -147,7 +148,7 @@ namespace bingo
    public:
       ReactionSubMatcher(/*const */ BaseIndex &index);
 
-      const ObjArray<Array<int>> & currentMapping();
+      const ObjArray<Array<int>> & currentMapping ();
 
    private:
       ObjArray<Array<int>> _mapping;
@@ -158,13 +159,13 @@ namespace bingo
    class SimMatcher : public Matcher
    {
    public:
-      SimMatcher(/*const */ BaseIndex &index );
+      SimMatcher (/*const */ BaseIndex &index);
 
       virtual bool next ();
       
       virtual int currentId ();
       
-      void setQueryData(SimilarityQueryData *query_data);
+      void setQueryData (SimilarityQueryData *query_data);
 
       ~SimMatcher();
 
@@ -177,7 +178,7 @@ namespace bingo
       const byte *_cur_loc;
       Array<byte> _query_fp;
 
-      float _calcTanimoto( const byte *fp );
+      float _calcTanimoto (const byte *fp);
    };
 };
 

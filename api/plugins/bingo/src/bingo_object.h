@@ -24,7 +24,8 @@ namespace bingo
    class QueryObject
    {
    public:
-      virtual void buildFingerprint( const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp )/* const */ = 0;
+      virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp)/* const */ = 0;
+      virtual ~QueryObject () {};
    };
 
    //////////////////////////
@@ -37,11 +38,11 @@ namespace bingo
       BaseMolecule &_base_mol;
       
    public:
-      BaseMoleculeQuery( BaseMolecule &mol );
+      BaseMoleculeQuery (BaseMolecule &mol);
 
-      virtual void buildFingerprint( const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp ) /*const*/;
+      virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/;
       
-      const BaseMolecule &getMolecule();
+      const BaseMolecule &getMolecule ();
    };
 
    class SubstructureMoleculeQuery : public BaseMoleculeQuery
@@ -50,7 +51,7 @@ namespace bingo
       QueryMolecule _mol;
       
    public:
-      SubstructureMoleculeQuery( /* const */ QueryMolecule &mol );
+      SubstructureMoleculeQuery (/* const */ QueryMolecule &mol);
    };
 
    class SimilarityMoleculeQuery : public BaseMoleculeQuery
@@ -59,7 +60,7 @@ namespace bingo
       Molecule _mol;
       
    public:
-      SimilarityMoleculeQuery( /* const */ Molecule &mol );
+      SimilarityMoleculeQuery (/* const */ Molecule &mol);
    };
 
    //////////////////////////
@@ -72,17 +73,17 @@ namespace bingo
       BaseReaction &_base_rxn;
       
    public:
-      BaseReactionQuery( BaseReaction &rxn );
+      BaseReactionQuery (BaseReaction &rxn);
 
-      virtual void buildFingerprint( const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp ) /*const*/;
+      virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/;
 
-      const BaseReaction &getReaction();
+      const BaseReaction &getReaction ();
    };
 
    class SubstructureReactionQuery : public BaseReactionQuery
    {
    public:
-      SubstructureReactionQuery( /* const */ QueryReaction &rxn );
+      SubstructureReactionQuery (/* const */ QueryReaction &rxn);
 
    private:
       QueryReaction _rxn;
@@ -91,7 +92,7 @@ namespace bingo
    class SimilarityReactionQuery : public BaseReactionQuery
    {
    public:
-      SimilarityReactionQuery( /* const */ Reaction &rxn );
+      SimilarityReactionQuery (/* const */ Reaction &rxn);
 
    private:
       Reaction _rxn;
@@ -100,11 +101,11 @@ namespace bingo
    class IndexObject
    {
    public:
-      virtual void buildFingerprint( const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp ) /* const */ = 0;
+      virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /* const */ = 0;
 
-      virtual void buildCfString( Array<char> &cf )/* const */ = 0;
-
-      virtual void loadFromCfString( const char *cf, int length ) = 0;
+      virtual bool buildCfString (Array<char> &cf)/* const */ = 0;
+            
+      virtual ~IndexObject () {};
    };
 
    class IndexMolecule : public IndexObject
@@ -113,13 +114,24 @@ namespace bingo
       Molecule _mol;
 
    public:
-      IndexMolecule( /* const */ Molecule &mol );
+      IndexMolecule (/* const */ Molecule &mol);
 
-      virtual void buildFingerprint( const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp ) /*const*/;
+      virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/;
 
-      virtual void buildCfString( Array<char> &cf ) /*const*/;
+      virtual bool buildCfString (Array<char> &cf) /*const*/;
+   };
 
-      virtual void loadFromCfString( const char *cf, int length );
+   class IndexReaction : public IndexObject
+   {
+   protected:
+      Reaction _rxn;
+
+   public:
+      IndexReaction (/* const */ Reaction &rxn);
+
+      virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/;
+
+      virtual bool buildCfString (Array<char> &cf) /*const*/;
    };
 };
 

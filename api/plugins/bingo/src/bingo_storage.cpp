@@ -7,7 +7,7 @@ using namespace indigo;
 
 using namespace bingo;
 
-Storage::Storage( int block_size ) : _block_size(block_size)
+Storage::Storage (int block_size) : _block_size(block_size)
 {
 }
 
@@ -17,7 +17,7 @@ int Storage::getBlockSize( void )
 }
 
 
-FileStorage::FileStorage( const char *filename, int block_size, bool create ) : Storage(block_size)
+FileStorage::FileStorage (const char *filename, int block_size, bool create) : Storage(block_size)
 {
    if (create)
    {
@@ -31,20 +31,20 @@ FileStorage::FileStorage( const char *filename, int block_size, bool create ) : 
    }
 }
 
-void FileStorage::readBlock( int block_id, byte *data )
+void FileStorage::readBlock (int block_id, byte *data)
 {
    _file_scanner->seek(block_id * _block_size, SEEK_SET);
    _file_scanner->read(_block_size, data);
 }
 
-void FileStorage::writeBlock( int block_id, const byte *data )
+void FileStorage::writeBlock (int block_id, const byte *data)
 {
    _file_output->seek(block_id * _block_size, SEEK_SET);
    _file_output->write(data, _block_size);
    _file_output->flush();
 }
 
-FileStorage::~FileStorage( void )
+FileStorage::~FileStorage ()
 {
    delete _file_output;
    delete _file_scanner;

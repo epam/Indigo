@@ -22,18 +22,20 @@ namespace bingo
       //    createMatcher("sub", SubstructureMatcherQuery("C*N"));
       //    createMatcher("sub-fast", SubstructureMatcherQuery("C*N"));
       
-      virtual Matcher* createMatcher (const char *type, const MatcherQueryData *query_data) = 0;
+      virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data) = 0;
 
-      virtual void create( const char *location, const MoleculeFingerprintParameters &fp_params ) = 0;
+      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params) = 0;
 
-      virtual void load( const char *location ) = 0;
+      virtual void load (const char *location) = 0;
 
-      virtual int add( /* const */ IndexObject &obj ) = 0;
-      virtual void remove( int id ) = 0;
+      virtual int add (/* const */ IndexObject &obj) = 0;
+      virtual void remove (int id) = 0;
    
       typedef enum {MOLECULE, REACTION} IndexType;
 
-      virtual IndexType getType() = 0;
+      virtual IndexType getType () = 0;
+
+      virtual ~Index () {};
    };
    
    class BaseIndex : public Index
@@ -43,7 +45,7 @@ namespace bingo
       //    createMatcher("sub", SubstructureMatcherQuery("C*N"));
       //    createMatcher("sub-fast", SubstructureMatcherQuery("C*N"));
 
-      virtual void create( const char *location, const MoleculeFingerprintParameters &fp_params );
+      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params);
 
       virtual void load (const char *location);
       
@@ -51,37 +53,48 @@ namespace bingo
 
       virtual void remove (int id);
 
-      const MoleculeFingerprintParameters & getFingerprintParams() const;
+      const MoleculeFingerprintParameters & getFingerprintParams () const;
 
-      const TranspFpStorage & getSubStorage() const;
+      const TranspFpStorage & getSubStorage () const;
 
-      const RowFpStorage & getSimStorage() const;
+      const RowFpStorage & getSimStorage () const;
 
-      /*const */CfStorage & getCfStorage() /*const*/;
+      /*const */CfStorage & getCfStorage () /*const*/;
 
-      int getObjectsCount() const;
+      int getObjectsCount () const;
 
-      virtual IndexType getType();
+      virtual IndexType getType ();
 
-      virtual ~BaseIndex();
+      virtual ~BaseIndex ();
 
    protected:
       BaseIndex (IndexType type);
+      IndexType _type;
 
-   protected:
+   private:
+      struct _ObjectIndexData 
+      {
+         Array<byte> sub_fp;
+         Array<byte> sim_fp;
+         Array<char> cf_str;
+      };
+
+      _ObjectIndexData _object_index_data;
       TranspFpStorage _sub_fp_storage;
       RowFpStorage _sim_fp_storage;
       MoleculeFingerprintParameters _fp_params;
       CfStorage _cf_storage;
-      FileStorageManager _file_storage_manager;
-      IndexType _type;
+      AutoPtr<FileStorageManager> _file_storage_manager;
       Properties _properties;
+      std::string _location; // TODO: move to StorageManager --DONE
 
-      int _object_count; // TODO: private
+      int _object_count;
 
-      std::string _location; // TODO: move to StorageManager
+      void _saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size);
 
-      void _saveProperties( const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size );
+      bool _prepareIndexData (IndexObject &obj);
+
+      void _insertIndexData();
    };
 };
 

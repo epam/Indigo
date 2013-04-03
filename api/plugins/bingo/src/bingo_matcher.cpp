@@ -6,27 +6,27 @@ using namespace indigo;
 
 using namespace bingo;
 
-MoleculeSimilarityQueryData::MoleculeSimilarityQueryData( /* const */ Molecule &qmol, float min_coef, float max_coef ) : 
+MoleculeSimilarityQueryData::MoleculeSimilarityQueryData (/* const */ Molecule &qmol, float min_coef, float max_coef) : 
    _obj(qmol), _min(min_coef), _max(max_coef)
 {
 }
 
-/*const*/ QueryObject & MoleculeSimilarityQueryData::getQueryObject() /*const*/
+/*const*/ QueryObject & MoleculeSimilarityQueryData::getQueryObject () /*const*/
 {
    return _obj;
 }
 
-float MoleculeSimilarityQueryData::getMin() const
+float MoleculeSimilarityQueryData::getMin () const
 {
    return _min;
 }
 
-float MoleculeSimilarityQueryData::getMax() const
+float MoleculeSimilarityQueryData::getMax () const
 {
    return _max;
 }
 
-ReactionSimilarityQueryData::ReactionSimilarityQueryData( /* const */ Reaction &qrxn, float min_coef, float max_coef ) : 
+ReactionSimilarityQueryData::ReactionSimilarityQueryData (/* const */ Reaction &qrxn, float min_coef, float max_coef) : 
    _obj(qrxn), _min(min_coef), _max(max_coef)
 {
 }
@@ -36,30 +36,30 @@ ReactionSimilarityQueryData::ReactionSimilarityQueryData( /* const */ Reaction &
    return _obj;
 }
 
-float ReactionSimilarityQueryData::getMin() const
+float ReactionSimilarityQueryData::getMin () const
 {
    return _min;
 }
 
-float ReactionSimilarityQueryData::getMax() const
+float ReactionSimilarityQueryData::getMax () const
 {
    return _max;
 }
 
 
    
-MoleculeSubstructureQueryData::MoleculeSubstructureQueryData( /* const */ QueryMolecule &qmol ) : _obj(qmol)
+MoleculeSubstructureQueryData::MoleculeSubstructureQueryData (/* const */ QueryMolecule &qmol) : _obj(qmol)
 {
 }
 
-/*const*/ QueryObject & MoleculeSubstructureQueryData::getQueryObject() /*const*/
+/*const*/ QueryObject & MoleculeSubstructureQueryData::getQueryObject () /*const*/
 {
    return _obj;
 }
    
 
    
-ReactionSubstructureQueryData::ReactionSubstructureQueryData( /* const */ QueryReaction &qrxn ) : _obj(qrxn)
+ReactionSubstructureQueryData::ReactionSubstructureQueryData (/* const */ QueryReaction &qrxn) : _obj(qrxn)
 {
 }
 
@@ -70,7 +70,7 @@ ReactionSubstructureQueryData::ReactionSubstructureQueryData( /* const */ QueryR
 
    
    
-BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex &index) : 
+BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index) : 
    _index(index), _fp_storage(_index.getSubStorage())
 {
    _fp_size = _index.getFingerprintParams().fingerprintSize();
@@ -115,7 +115,7 @@ int BaseSubstructureMatcher::currentId ()
    return _current_id;
 }
 
-void BaseSubstructureMatcher::setQueryData(SubstructureQueryData *query_data)
+void BaseSubstructureMatcher::setQueryData (SubstructureQueryData *query_data)
 {
    _query_data.reset(query_data);
 
@@ -123,11 +123,7 @@ void BaseSubstructureMatcher::setQueryData(SubstructureQueryData *query_data)
    _query_data->getQueryObject().buildFingerprint(fp_params, &_query_fp, 0);
 }
 
-BaseSubstructureMatcher::~BaseSubstructureMatcher()
-{
-}
-
-void BaseSubstructureMatcher::_findPackCandidates( int pack_idx )
+void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
 {
    _candidates.clear();
    Array<bool> is_candidate;
@@ -168,7 +164,7 @@ void BaseSubstructureMatcher::_findPackCandidates( int pack_idx )
    delete block;
 }
 
-void BaseSubstructureMatcher::_findIncCandidates()
+void BaseSubstructureMatcher::_findIncCandidates ()
 {
    _candidates.clear();
    Array<bool> is_candidate;
@@ -204,12 +200,12 @@ void BaseSubstructureMatcher::_findIncCandidates()
 }
 
 
-MoleculeSubMatcher::MoleculeSubMatcher(/*const */ BaseIndex &index) : BaseSubstructureMatcher(index)
+MoleculeSubMatcher::MoleculeSubMatcher (/*const */ BaseIndex &index) : BaseSubstructureMatcher(index)
 {
    _mapping.clear();
 }
 
-const Array<int> & MoleculeSubMatcher::currentMapping()
+const Array<int> & MoleculeSubMatcher::currentMapping ()
 {
 
 
@@ -246,12 +242,12 @@ bool MoleculeSubMatcher::_tryCurrent ()// const
    
    
    
-ReactionSubMatcher::ReactionSubMatcher(/*const */ BaseIndex &index) : BaseSubstructureMatcher(index)
+ReactionSubMatcher::ReactionSubMatcher (/*const */ BaseIndex &index) : BaseSubstructureMatcher(index)
 {
    _mapping.clear();
 }
 
-const ObjArray<Array<int>> & ReactionSubMatcher::currentMapping()
+const ObjArray<Array<int>> & ReactionSubMatcher::currentMapping ()
 {
    return _mapping;
 }
@@ -295,7 +291,7 @@ bool ReactionSubMatcher::_tryCurrent ()// const
 }
 
 
-SimMatcher::SimMatcher(/*const */ BaseIndex &index ) : _index(index)
+SimMatcher::SimMatcher (/*const */ BaseIndex &index ) : _index(index)
 {
    _current_id = -1;
    _current_block = new byte[_index.getSimStorage().getBlockSize()];
@@ -344,7 +340,7 @@ int SimMatcher::currentId ()
 }
 
 
-void SimMatcher::setQueryData(SimilarityQueryData *query_data)
+void SimMatcher::setQueryData (SimilarityQueryData *query_data)
 {
    _query_data = query_data;
 
@@ -352,12 +348,12 @@ void SimMatcher::setQueryData(SimilarityQueryData *query_data)
    _query_data->getQueryObject().buildFingerprint(fp_params, 0, &_query_fp);
 }
 
-SimMatcher::~SimMatcher()
+SimMatcher::~SimMatcher ()
 {
    delete _current_block;
 }
 
-float SimMatcher::_calcTanimoto( const byte *fp )
+float SimMatcher::_calcTanimoto (const byte *fp)
 {
    static int _bit_count[] = {0,1,1,2,1,2,2,3,1,
                         2,2,3,2,3,3,4,1,2,2,3,2,3,3,4,

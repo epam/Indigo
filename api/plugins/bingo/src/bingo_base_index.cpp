@@ -14,7 +14,7 @@ static const char *_props_filename = "properties";
 static const char *_cf_data_filename = "cf_data";
 static const char *_cf_offset_filename = "cf_offset";
 
-BaseIndex::BaseIndex(IndexType type)
+BaseIndex::BaseIndex (IndexType type)
 {
    _type = type;
 
@@ -25,14 +25,14 @@ BaseIndex::BaseIndex(IndexType type)
 //    createMatcher("sub", SubstructureMatcherQuery("C*N"));
 //    createMatcher("sub-fast", SubstructureMatcherQuery("C*N"));
 
-void BaseIndex::create( const char *location, const MoleculeFingerprintParameters &fp_params )
+void BaseIndex::create (const char *location, const MoleculeFingerprintParameters &fp_params)
 {
    // TODO: introduce global parameters table, local parameters table and constants
 
-   // TODO: create storage manager in a specified location
+   // TODO: create storage manager in a specified location --DONE
 
    int sub_block_size = 128;
-   int sim_block_size = 128;
+   int sim_block_size = 1024;
 
    _location = location;
    std::string sub_path = _location + _sub_filename;
@@ -49,8 +49,10 @@ void BaseIndex::create( const char *location, const MoleculeFingerprintParameter
 
    _saveProperties(fp_params, sub_block_size, sim_block_size);
 
-   AutoPtr<Storage> sub_stor = _file_storage_manager.create(sub_path.c_str(), sub_block_size);
-   AutoPtr<Storage> sim_stor = _file_storage_manager.create(sim_path.c_str(), sim_block_size);
+   _file_storage_manager.reset(new FileStorageManager(location));
+
+   AutoPtr<Storage> sub_stor = _file_storage_manager->create(sub_path.c_str(), sub_block_size);
+   AutoPtr<Storage> sim_stor = _file_storage_manager->create(sim_path.c_str(), sim_block_size);
 
    _sub_fp_storage.create(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
    _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), sim_stor.release(), sim_info_path.c_str());
@@ -58,7 +60,7 @@ void BaseIndex::create( const char *location, const MoleculeFingerprintParameter
    _cf_storage.create(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }
 
-void BaseIndex::load( const char *location )
+void BaseIndex::load (const char *location)
 {
    _location = location;
    std::string sub_path = _location + _sub_filename;
@@ -71,8 +73,14 @@ void BaseIndex::load( const char *location )
 
    _properties.load(props_path.c_str());
 
-   int sub_block_size = atoi(_properties.get("sub_block_size"));
-   int sim_block_size = atoi(_properties.get("sim_block_size"));
+   _fp_params.ext = (bool)_properties.getUDec("fp_ext");
+   _fp_params.ord_qwords = _properties.getUDec("fp_ord");
+   _fp_params.any_qwords = _properties.getUDec("fp_any");
+   _fp_params.tau_qwords = _properties.getUDec("fp_tau");
+   _fp_params.sim_qwords = _properties.getUDec("fp_sim");
+
+   int sub_block_size = _properties.getUDec("sub_block_size");
+   int sim_block_size = _properties.getUDec("sim_block_size");
 
    std::istringstream isstr(std::string(_properties.get("fp_params")));
 
@@ -82,8 +90,10 @@ void BaseIndex::load( const char *location )
            _fp_params.tau_qwords >>
            _fp_params.sim_qwords;
 
-   FileStorage *sub_stor = _file_storage_manager.load(sub_path.c_str(), sub_block_size);
-   FileStorage *sim_stor = _file_storage_manager.load(sim_path.c_str(), sim_block_size);
+   _file_storage_manager.reset(new FileStorageManager(location));
+
+   FileStorage *sub_stor = _file_storage_manager->load(sub_path.c_str());
+   FileStorage *sim_stor = _file_storage_manager->load(sim_path.c_str());
 
    _sub_fp_storage.load(_fp_params.fingerprintSize(), sub_stor, sub_info_path.c_str());
    _sim_fp_storage.load(_fp_params.fingerprintSizeSim(), sim_stor, sim_info_path.c_str());
@@ -91,60 +101,49 @@ void BaseIndex::load( const char *location )
    _cf_storage.load(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }
 
-int BaseIndex::add( /* const */ IndexObject &obj )
+int BaseIndex::add (/* const */ IndexObject &obj)
 {
    // TODO: Split prepare and add into index because of potential 
    //    MoleculeIndex features: molecule mass, molecular formula, etc.
-   // Prepare + atomic Add
-   struct ObjectIndexData 
-   {
-      Array<byte> sub_fp;
-      Array<byte> sim_fp;
-      Array<char> cf_str;
-   };
-   QS_DEF(ObjectIndexData, data);
+   // Prepare + atomic Add --DONE
 
-   obj.buildCfString(data.cf_str);
-   obj.buildFingerprint(_fp_params, &data.sub_fp, &data.sim_fp);
-
-   _sub_fp_storage.add(data.sub_fp.ptr());
-   _sim_fp_storage.add(data.sim_fp.ptr());
-   _cf_storage.add(data.cf_str.ptr(), data.cf_str.size(), _object_count);
+   _prepareIndexData(obj);
+   _insertIndexData();
    
    return _object_count++;
 }
 
-void BaseIndex::remove( int id )
+void BaseIndex::remove (int id)
 {
    throw Exception("Not implemented yet...");
 }
 
-const MoleculeFingerprintParameters & BaseIndex::getFingerprintParams() const
+const MoleculeFingerprintParameters & BaseIndex::getFingerprintParams () const
 {
    return _fp_params;
 }
 
-const TranspFpStorage & BaseIndex::getSubStorage() const
+const TranspFpStorage & BaseIndex::getSubStorage () const
 {
    return _sub_fp_storage;
 }
 
-const RowFpStorage & BaseIndex::getSimStorage() const
+const RowFpStorage & BaseIndex::getSimStorage () const
 {
    return _sim_fp_storage;
 }
 
-/*const */CfStorage & BaseIndex::getCfStorage()// const
+/*const */CfStorage & BaseIndex::getCfStorage ()// const
 {
    return _cf_storage;
 }
 
-int BaseIndex::getObjectsCount() const
+int BaseIndex::getObjectsCount () const
 {
    return _object_count;
 }
 
-Index::IndexType BaseIndex::getType()
+Index::IndexType BaseIndex::getType ()
 {
    return _type;
 }
@@ -153,25 +152,36 @@ BaseIndex::~BaseIndex()
 {
 }
 
-void BaseIndex::_saveProperties( const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size )
+void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size)
 {
-   // TODO: separate fp parameters
-   std::stringstream sstr;
-   sstr << _fp_params.ext << ' ' <<
-           _fp_params.ord_qwords << ' ' <<
-           _fp_params.any_qwords << ' ' <<
-           _fp_params.tau_qwords << ' ' <<
-           _fp_params.sim_qwords;
+   // TODO: separate fp parameters --DONE
+   _properties.add("fp_ext", _fp_params.ext);
+   _properties.add("fp_ord", _fp_params.ord_qwords);
+   _properties.add("fp_any", _fp_params.any_qwords);
+   _properties.add("fp_tau", _fp_params.tau_qwords);
+   _properties.add("fp_sim", _fp_params.sim_qwords);
 
-   _properties.add("fp_params", sstr.str().c_str());
+   // TODO: Properties.add(string, int) --DONE
+   // Properties.getInt(string), etc. --DONE
+   _properties.add("sub_block_size", sub_block_size);
 
-   // TODO: Properties.add(string, int)
-   // Properties.getInt(string), etc.
-   sstr.str(std::string());
-   sstr << sub_block_size;
-   _properties.add("sub_block_size", sstr.str().c_str());
+   _properties.add("sim_block_size", sim_block_size);
+}
 
-   sstr.str(std::string());
-   sstr << sim_block_size;
-   _properties.add("sim_block_size", sstr.str().c_str());
+bool BaseIndex::_prepareIndexData (IndexObject &obj)
+{
+   if (!obj.buildCfString(_object_index_data.cf_str))
+      return false;
+
+   if (!obj.buildFingerprint(_fp_params, &_object_index_data.sub_fp, &_object_index_data.sim_fp))
+      return false;
+
+   return true;
+}
+
+void BaseIndex::_insertIndexData ()
+{
+   _sub_fp_storage.add(_object_index_data.sub_fp.ptr());
+   _sim_fp_storage.add(_object_index_data.sim_fp.ptr());
+   _cf_storage.add(_object_index_data.cf_str.ptr(), _object_index_data.cf_str.size(), _object_count);
 }

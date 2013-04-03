@@ -2,17 +2,24 @@
 
 using namespace bingo;
 
-FileStorage * FileStorageManager::create( const char *name, int block_size )
+const char * FileStorageManager::_prop_filename = "fs_manager_properties";
+
+FileStorageManager::FileStorageManager (const char *location) : _loc(location)
 {
-   return new FileStorage(name, block_size, true);
+   _prop_table.load((_loc + _prop_filename).c_str());
 }
 
-FileStorage * FileStorageManager::load( const char *name, int block_size )
+FileStorage * FileStorageManager::create (const char *name, int block_size)
 {
+   FileStorage * new_storage = new FileStorage(name, block_size, true);
+
+   _prop_table.add(name, block_size);
+
+   return new_storage;
+}
+
+FileStorage * FileStorageManager::load (const char *name)
+{
+   size_t block_size = _prop_table.getUDec(name);
    return new FileStorage(name, block_size, false);
-}
-
-FileStorage * FileStorageManager::get( const char *name )
-{
-   return 0;
 }

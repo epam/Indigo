@@ -115,6 +115,9 @@ CEXPORT int bingoInsertRecordObj (int db, int obj_id)
       {
          if (!IndigoReaction::is(obj))
             throw BingoException("bingoInsertRecordObj: Only reaction objects can be added to reaction index");
+
+         int id = bingo_index.add(bingo::IndexReaction(obj.getReaction()));
+         return id;
       }
       else
          throw BingoException("bingoInsertRecordObj: Incorrect database");

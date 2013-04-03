@@ -4,14 +4,14 @@
 
 using namespace bingo;
 
-BaseFpStorage::BaseFpStorage( ) : _fp_size(0), _storage(0)
+BaseFpStorage::BaseFpStorage () : _fp_size(0), _storage(0)
 {
    _block_count = 0;
    _inc_buffer = 0;
    _inc_count = 0;
 }
 
-void BaseFpStorage::_loadInfo( const char *info_filename )
+void BaseFpStorage::_loadInfo (const char *info_filename)
 {
    std::ifstream is(info_filename, std::ifstream::binary);
 
@@ -23,7 +23,7 @@ void BaseFpStorage::_loadInfo( const char *info_filename )
    }
 }
 
-void BaseFpStorage::_createFpStorage( int fp_size, Storage *storage, int inc_fp_capacity, const char *info_filename )
+void BaseFpStorage::_createFpStorage (int fp_size, Storage *storage, int inc_fp_capacity, const char *info_filename)
 {
    _fp_size = fp_size;
    _storage = storage;
@@ -40,7 +40,7 @@ void BaseFpStorage::_createFpStorage( int fp_size, Storage *storage, int inc_fp_
    _inc_file.flush();
 }
 
-void BaseFpStorage::_loadFpStorage( int fp_size, Storage *storage, int inc_fp_capacity, const char *info_filename )
+void BaseFpStorage::_loadFpStorage (int fp_size, Storage *storage, int inc_fp_capacity, const char *info_filename)
 {
    _fp_size = fp_size;
    _storage = storage;
@@ -50,7 +50,7 @@ void BaseFpStorage::_loadFpStorage( int fp_size, Storage *storage, int inc_fp_ca
    _inc_file.open(info_filename, std::ios::out | std::ios::app | std::ios::binary);
 }
 
-void BaseFpStorage::add( const byte *fp )
+void BaseFpStorage::add (const byte *fp)
 {
    memcpy(_inc_buffer + (_inc_count * _fp_size), fp, _fp_size);
    
@@ -70,42 +70,42 @@ void BaseFpStorage::add( const byte *fp )
    }
 }
 
-int BaseFpStorage::getBlockSize( void ) const
+int BaseFpStorage::getBlockSize () const
 {
    return _storage->getBlockSize();
 }
 
-void BaseFpStorage::getBlock( int idx, byte *data ) const
+void BaseFpStorage::getBlock (int idx, byte *data) const
 {
    _storage->readBlock(idx, data);
 }
 
-int BaseFpStorage::getBlockCount() const
+int BaseFpStorage::getBlockCount () const
 {
    return _block_count;
 }
 
-const byte *BaseFpStorage::getIncrement() const
+const byte *BaseFpStorage::getIncrement () const
 {
    return _inc_buffer;
 }
 
-int BaseFpStorage::getIncrementSize( void ) const
+int BaseFpStorage::getIncrementSize () const
 {
    return _inc_count;
 }
 
-int BaseFpStorage::getIncrementCapacity( void ) const
+int BaseFpStorage::getIncrementCapacity () const
 {
    return _inc_max_count;
 }
 
-BaseFpStorage::~BaseFpStorage()
+BaseFpStorage::~BaseFpStorage ()
 {
    delete _inc_buffer;
 }
 
-void TranspFpStorage::_addIncToStorage()
+void TranspFpStorage::_addIncToStorage ()
 {
    byte *block_buf = new byte[_storage->getBlockSize()];
    byte block_b = 0;
@@ -144,43 +144,43 @@ TranspFpStorage::TranspFpStorage()
    _pack_count = 0;
 }
 
-void TranspFpStorage::create( int fp_size, Storage *storage, const char *info_filename )
+void TranspFpStorage::create (int fp_size, Storage *storage, const char *info_filename)
 {
    _createFpStorage(fp_size, storage, storage->getBlockSize() * 8, info_filename);
 }
 
-void TranspFpStorage::load( int fp_size, Storage *storage, const char *info_filename )
+void TranspFpStorage::load (int fp_size, Storage *storage, const char *info_filename)
 {
    _loadFpStorage(fp_size, storage, storage->getBlockSize() * 8, info_filename);
    _pack_count = _block_count / (fp_size * 8);
 }
 
-int TranspFpStorage::getPackCount( void ) const
+int TranspFpStorage::getPackCount () const
 {
    return _pack_count;
 }
 
-void RowFpStorage::_addIncToStorage()
+void RowFpStorage::_addIncToStorage ()
 {
    _storage->writeBlock(_block_count, _inc_buffer);
    _block_count++;
 }
 
-RowFpStorage::RowFpStorage()
+RowFpStorage::RowFpStorage ()
 {
 }
 
-void RowFpStorage::create( int fp_size, Storage *storage, const char *info_filename )
+void RowFpStorage::create (int fp_size, Storage *storage, const char *info_filename)
 {
    _createFpStorage(fp_size, storage, storage->getBlockSize() / fp_size, info_filename);
 }
 
-void RowFpStorage::load( int fp_size, Storage *storage, const char *info_filename )
+void RowFpStorage::load (int fp_size, Storage *storage, const char *info_filename)
 {
    _loadFpStorage(fp_size, storage, storage->getBlockSize() / fp_size, info_filename);
 }
 
-int RowFpStorage::getFpPerBlockCount() const
+int RowFpStorage::getFpPerBlockCount () const
 {
    return _storage->getBlockSize() / _fp_size;
 }

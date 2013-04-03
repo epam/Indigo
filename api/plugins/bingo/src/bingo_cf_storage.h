@@ -17,18 +17,18 @@ namespace bingo
    public:
       CfStorage( void );
 
-      void create( const char *cf_filename, const char *offset_filename );
+      void create (const char *cf_filename, const char *offset_filename);
 
-      void load( const char *cf_filename, const char *offset_filename );
+      void load (const char *cf_filename, const char *offset_filename);
 
-      const char * get( int idx, int &len );
+      const char * get (int idx, int &len);
 
-      void add( const char *data, int len, int idx );
+      void add (const char *data, int len, int idx);
 
-      void remove( int idx );
+      void remove (int idx);
 
    private:
-      static const int _max_cf_len = 30;
+      static const int _max_cf_len = 100;
 
       struct _Addr
       {

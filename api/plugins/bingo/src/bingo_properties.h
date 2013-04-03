@@ -11,20 +11,26 @@ namespace bingo
    class Properties
    {
    public:
-      Properties();
+      Properties ();
 
-      void create( const char *filename );
+      void create (const char *filename);
 
-      void load( const char *filename );
+      void load (const char *filename);
 
-      void add( const char *prop_name, const char *value );
+      void add (const char *prop_name, const char *value);
 
-      const char * get( const char *prop_name );
+      void add (const char *prop_name, size_t value);
+
+      const char * get (const char *prop_name);
+
+      size_t getUDec (const char *prop_name);
 
    private:
       typedef std::pair<const std::string, std::string> _PropertyPair;
 
-      void _parseProperty( const std::string &line );
+      void _rewritePropFile ();
+
+      static void _parseProperty (const std::string &line, std::string &prop_out, std::string &value_out);
 
       std::string _filename;
       std::map<const std::string, std::string> _props;

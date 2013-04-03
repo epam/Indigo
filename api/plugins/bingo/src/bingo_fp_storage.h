@@ -88,13 +88,13 @@ namespace  bingo
    class RowFpStorage : public BaseFpStorage
    {
    public:
-      RowFpStorage();
+      RowFpStorage ();
 
-      virtual void create( int fp_size, Storage *storage, const char *inc_filename );
+      virtual void create (int fp_size, Storage *storage, const char *inc_filename);
 
-      virtual void load( int fp_size, Storage *storage, const char *inc_filename );
+      virtual void load (int fp_size, Storage *storage, const char *inc_filename);
 
-      int getFpPerBlockCount() const;
+      int getFpPerBlockCount () const;
 
    private:
       void _addIncToStorage();

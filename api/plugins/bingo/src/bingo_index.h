@@ -11,7 +11,7 @@ namespace bingo
    public:
       MoleculeIndex();
 
-      virtual Matcher* createMatcher (const char *type, const MatcherQueryData *query_data);
+      virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data);
    };
    
    class ReactionIndex : public BaseIndex
@@ -19,7 +19,7 @@ namespace bingo
    public:
       ReactionIndex();
 
-      virtual Matcher* createMatcher (const char *type, const MatcherQueryData *query_data);
+      virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data);
    };
 };
 

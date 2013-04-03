@@ -2,10 +2,11 @@
 #define __bingo_storage_manager__
 
 #include "bingo_storage.h"
+#include "bingo_properties.h"
 
 namespace bingo
 {
-   // TODO: 
+   // TODO: --DONE
    // * StorageManager.load (name) without block_size
    // * FileStorageManager::ctor (location)
    // * + property table with block_size
@@ -14,16 +15,24 @@ namespace bingo
    class StorageManager
    {
    public:
-      virtual Storage * create( const char *name, int block_size ) = 0;
-      virtual Storage * get( const char *name ) = 0;
+      virtual Storage * create ( const char *name, int block_size ) = 0;
+      virtual Storage * load ( const char *name ) = 0;
+
+      virtual ~StorageManager () {};
    };
 
    class FileStorageManager : public StorageManager
    {
+   private:
+      static const char *_prop_filename;
+      std::string _loc;
+      Properties _prop_table;
+
    public:
-      FileStorage * create ( const char *name, int block_size );
-      FileStorage * load   ( const char *name, int block_size );
-      FileStorage * get    ( const char *name ); // ???
+      FileStorageManager (const char *location);
+
+      FileStorage * create (const char *name, int block_size);
+      FileStorage * load   (const char *name);
    };
 };
 
