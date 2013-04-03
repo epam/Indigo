@@ -70,6 +70,26 @@ namespace com.ggasoftware.indigo
             return result;
         }
 
+        public float* checkResult(float* result)
+        {
+            if (result == null)
+            {
+                throw new IndigoException(new String(_indigo_lib.indigoGetLastError()));
+            }
+
+            return result;
+        }
+
+        public int* checkResult(int* result)
+        {
+            if (result == null)
+            {
+                throw new IndigoException(new String(_indigo_lib.indigoGetLastError()));
+            }
+
+            return result;
+        }
+
         public long getSID()
         {
             return _sid;
