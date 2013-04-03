@@ -149,39 +149,6 @@ namespace com.ggasoftware.indigo
       List<DllData> _dll_handles = new List<DllData>();
       // Local synchronization object
       Object _sync_object = new Object();
-
-		/*
-	  public static string getUnixName ()
-		{
-			Process pUname = new Process ();
-			pUname.StartInfo.UseShellExecute = false;
-			pUname.StartInfo.RedirectStandardOutput = true;
-			pUname.StartInfo.FileName = "uname";
-			pUname.Start ();
-			string outputUname = pUname.StandardOutput.ReadToEnd ();
-			pUname.WaitForExit ();
-			pUname.Close ();
-			return outputUname.Trim();
-		}
-		
-		public static string getUnixMajorVersion ()
-		{
-			Process pUnameR = new Process ();
-			pUnameR.StartInfo.UseShellExecute = false;
-			pUnameR.StartInfo.RedirectStandardOutput = true;
-			pUnameR.StartInfo.FileName = "uname";
-			pUnameR.StartInfo.Arguments = "-r";
-			pUnameR.Start ();
-			string outputUnameR = pUnameR.StandardOutput.ReadToEnd ();
-			pUnameR.WaitForExit ();
-			pUnameR.Close ();
-			return outputUnameR.Split('.')[0];
-		}
-		*/
-
-		// Pinta way to find if Unix system is Linux or Mac
-		//[DllImport ("libc")]
-		//static extern int uname (IntPtr buf);
 	
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         struct utsname
@@ -292,6 +259,10 @@ namespace com.ggasoftware.indigo
                LibraryLoader.FreeLibrary(dll.handle);
          }
       }
+
+	  public bool isValid() {
+			return (_instance != null);
+		}
 
       string _getPathToBinary (String path, String filename, String resource_name,
          Assembly resource_assembly, bool make_unique_dll_name)

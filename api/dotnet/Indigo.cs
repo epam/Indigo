@@ -37,12 +37,8 @@ namespace com.ggasoftware.indigo
 		public const int SINGLET = 101;
 		public const int DOUBLET = 102;
 		public const int TRIPLET = 103;
-		public const int RC_NOT_CENTER = -1;
-		public const int INDIGO_RC_UNMARKED = 0;
-		public const int INDIGO_RC_CENTER = 1;
-		public const int INDIGO_RC_UNCHANGED = 2;
-		public const int INDIGO_RC_MADE_OR_BROKEN = 4;
-		public const int INDIGO_RC_ORDER_CHANGED = 8;
+
+		private IndigoDllLoader dll_loader;
 
 		public float checkResult (float result)
 		{
@@ -487,7 +483,7 @@ namespace com.ggasoftware.indigo
 		private void init (string lib_path)
 		{
 			string libraryName;
-			IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
+			dll_loader = IndigoDllLoader.Instance;
 			switch (Environment.OSVersion.Platform) {
 			case PlatformID.Win32NT:
 				libraryName = "indigo.dll";
@@ -528,10 +524,12 @@ namespace com.ggasoftware.indigo
 
 		public void Dispose ()
 		{
-			if (_sid >= 0) {
-				if (IndigoDllLoader.InstanceId == _dll_loader_id)
-					_indigo_lib.indigoReleaseSessionId (_sid);
-				_sid = -1;
+			if (dll_loader.isValid()) {
+				if (_sid >= 0) {
+					if (IndigoDllLoader.InstanceId == _dll_loader_id)
+						_indigo_lib.indigoReleaseSessionId (_sid);
+					_sid = -1;
+				}
 			}
 		}
 

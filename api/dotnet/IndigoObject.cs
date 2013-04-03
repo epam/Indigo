@@ -12,9 +12,11 @@ namespace com.ggasoftware.indigo
       private Indigo dispatcher;
       private object parent; // to prevent GC killing the parent object
       private IndigoLib _indigo_lib;
+	  private IndigoDllLoader dll_loader;
 
       public IndigoObject (Indigo dispatcher, int id) : this(dispatcher, null, id)
       {
+			dll_loader = IndigoDllLoader.Instance;
       }
 
       public IndigoObject (Indigo dispatcher, object parent, int id)
@@ -23,6 +25,7 @@ namespace com.ggasoftware.indigo
          this.self = id;
          this.parent = parent;
          _indigo_lib = dispatcher._indigo_lib;
+		 dll_loader = IndigoDllLoader.Instance;
       }
 
       ~IndigoObject ()
@@ -46,12 +49,14 @@ namespace com.ggasoftware.indigo
             // Check that the session is still alive
             // (.NET has no problem disposing referenced
             // objects before the objects that reference to them)
-            if (dispatcher.getSID() >= 0)
-            {
-               dispatcher.setSessionID();
-               dispatcher.free(self);
-               self = -1;
-            }
+			if (dll_loader.isValid()) {
+	            if (dispatcher.getSID() >= 0)
+	            {
+	               dispatcher.setSessionID();
+	               dispatcher.free(self);
+	               self = -1;
+	            }
+				}
          }
       }
 
