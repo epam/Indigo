@@ -115,7 +115,7 @@ namespace com.ggasoftware.indigo
 			if (refatoms.Length != items.count ())
 				throw new IndigoException ("renderGridToFile(): refatoms[] size must be equal to the number of objects");
 			
-			_renderer_lib.indigoRenderGridToFile (items.self, refatoms, ncolumns, filename);
+			_indigo.checkResult(_renderer_lib.indigoRenderGridToFile (items.self, refatoms, ncolumns, filename));
 		}
 		
 		public static void SaveMetafile (Metafile mf, Stream stream)
