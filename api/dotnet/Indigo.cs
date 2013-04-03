@@ -38,6 +38,13 @@ namespace com.ggasoftware.indigo
         public const int DOUBLET = 102;
         public const int TRIPLET = 103;
 
+        public const int RC_NOT_CENTER = -1;
+        public const int RC_UNMARKED = 0;
+        public const int RC_CENTER = 1;
+        public const int RC_UNCHANGED = 2;
+        public const int RC_MADE_OR_BROKEN = 4;
+        public const int RC_ORDER_CHANGED = 8;
+
         private IndigoDllLoader dll_loader;
 
         public float checkResult(float result)
