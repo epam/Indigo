@@ -402,7 +402,12 @@ void MoleculeCisTrans::build (int *exclude_bonds)
 
       int *substituents = _bonds[i].substituents;
 
-      if (!isGeomStereoBond(mol, i, substituents, true))
+      bool have_xyz = true;
+      // If bond is marked with ignore flag then read this flag 
+      // even if coordinates are not valid.
+      if (exclude_bonds != 0 && exclude_bonds[i])
+         have_xyz = false;
+      if (!isGeomStereoBond(mol, i, substituents, have_xyz))
          continue;
 
       // Ignore only bonds that can be cis-trans
