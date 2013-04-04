@@ -181,7 +181,7 @@ int RenderContext::getMaxPageSize () const
 {
    if (opt.mode == MODE_PDF)
       return 14400;
-   return -1;
+   return INT_MAX;
 }
 
 cairo_status_t RenderContext::writer (void *closure, const unsigned char *data, unsigned int length)

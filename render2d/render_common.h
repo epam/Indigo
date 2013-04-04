@@ -341,6 +341,8 @@ struct CanvasOptions {
 
    int width;
    int height;
+   int maxWidth;
+   int maxHeight;
    int xOffset;
    int yOffset;
    float bondLength;

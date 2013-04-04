@@ -37,7 +37,9 @@ public:
    Vec2f objArea;
    int width, height;
 private:
-   float _getScale ();
+   float _getScaleGivenSize (int w, int h);
+   int _getDefaultWidth (const float s);
+   int _getDefaultHeight (const float s);
    void _drawComment ();
    void _drawObj ();
 };

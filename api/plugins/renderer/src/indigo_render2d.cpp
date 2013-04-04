@@ -56,6 +56,30 @@ void indigoRenderSetCommentOffset (int offset)
    rp.cnvOpt.commentOffset = offset;
 }
 
+void indigoRenderSetImageWidth (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.width = v;
+}
+
+void indigoRenderSetImageHeight (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.height = v;
+}
+
+void indigoRenderSetImageMaxWidth (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.maxWidth = v;
+}
+
+void indigoRenderSetImageMaxHeight (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.maxHeight = v;
+}
+
 void indigoRenderSetTitleOffset (int offset)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -517,6 +541,10 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    OsLocker locker(mgr.lock);
 
    mgr.setOptionHandlerInt("render-comment-offset", indigoRenderSetCommentOffset);
+   mgr.setOptionHandlerInt("render-image-width", indigoRenderSetImageWidth);
+   mgr.setOptionHandlerInt("render-image-height", indigoRenderSetImageHeight);
+   mgr.setOptionHandlerInt("render-image-max-width", indigoRenderSetImageMaxWidth);
+   mgr.setOptionHandlerInt("render-image-max-height", indigoRenderSetImageMaxHeight);
 
    mgr.setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat);
    mgr.setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode);

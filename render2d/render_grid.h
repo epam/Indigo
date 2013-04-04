@@ -48,7 +48,9 @@ private:
    Vec2f commentSize;
    int _width, _height;
 
-   float _getScale ();
+   float _getScaleGivenSize (int w, int h);
+   int _getDefaultWidth (const float s);
+   int _getDefaultHeight (const float s);
 };
 
 }

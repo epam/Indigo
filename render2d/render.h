@@ -28,6 +28,12 @@ public:
 
 protected:
    float _getObjScale (int item);
+   int _getMaxWidth ();
+   int _getMaxHeight ();
+   float _getScale (int w, int h);
+   virtual float _getScaleGivenSize (int w, int h) = 0;
+   virtual int _getDefaultWidth (const float s) = 0;
+   virtual int _getDefaultHeight (const float s) = 0;
 
    int minMarg;
    RenderContext& _rc;
