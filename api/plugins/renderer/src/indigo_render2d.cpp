@@ -485,7 +485,7 @@ CEXPORT int indigoRenderGridToFile (int objects, int* refAtoms, int nColumns, co
    return res;
 }
 
-CEXPORT int indigoRenderReset (int render)
+CEXPORT int indigoRenderReset ()
 {
    INDIGO_BEGIN
    {

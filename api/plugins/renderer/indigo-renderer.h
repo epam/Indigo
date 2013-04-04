@@ -41,6 +41,6 @@ CEXPORT int indigoRenderToFile (int object, const char *filename);
 CEXPORT int indigoRenderGridToFile (int objects, int* refAtoms, int nColumns, const char *filename);
 
 // Resets all the rendering settings
-CEXPORT int indigoRenderReset (int render);
+CEXPORT int indigoRenderReset ();
 
 #endif
