@@ -752,6 +752,8 @@ public class Indigo {
 
         @SuppressWarnings("CallToThreadDumpStack")
         public synchronized void removeLibraries() {
+            return;
+            /*
             for (int idx = files.size() - 1; idx >= 0; idx--) {
                 String fullpath = files.get(idx);
 
@@ -792,6 +794,7 @@ public class Indigo {
                 (new File(fullpath)).delete();
                 (new File(directories.get(idx))).delete();
             }
+            */
         }
     }
 }
