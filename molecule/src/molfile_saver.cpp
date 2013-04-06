@@ -295,6 +295,34 @@ bool MolfileSaver::_getRingBondCountFlagValue (QueryMolecule &qmol, int idx, int
    return false;
 }
 
+bool MolfileSaver::_getSubstitutionCountFlagValue (QueryMolecule &qmol, int idx, int &value)
+{
+   QueryMolecule::Atom &atom = qmol.getAtom(idx);
+   int v;
+   if (atom.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS))
+   {
+      if (atom.sureValue(QueryMolecule::ATOM_SUBSTITUENTS, v))
+      {
+         value = v;
+         if (value == 0)
+            value = -1;
+         return true;
+      }
+      int values[1] = { 4 };
+      if (atom.sureValueBelongs(QueryMolecule::ATOM_SUBSTITUENTS, values, 1))
+      {
+         value = 4;
+         return true;
+      }
+   }
+   else if (atom.sureValue(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, v))
+   {
+      value = -2;
+      return true;
+   }
+   return false;
+}
+
 void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 {
    QueryMolecule *qmol = 0;
@@ -469,6 +497,9 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          int unsat;
          if (qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
             out.printf(" UNSAT=1");
+         int subst;
+         if (_getSubstitutionCountFlagValue(*qmol, i, subst))
+            out.printf(" SUBST=%d", subst);
          int rbc;
          if (_getRingBondCountFlagValue(*qmol, i, rbc))
             out.printf(" RBCNT=%d", rbc);
@@ -815,6 +846,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    QS_DEF(Array<int>, pseudoatoms);
    QS_DEF(Array<int>, atom_lists);
    QS_DEF(Array<int>, unsaturated);
+   QS_DEF(Array<int[2]>, substitution_count);
    QS_DEF(Array<int[2]>, ring_bonds);
 
    _atom_mapping.clear_resize(mol.vertexEnd());
@@ -826,6 +858,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    pseudoatoms.clear();
    atom_lists.clear();
    unsaturated.clear();
+   substitution_count.clear();
    ring_bonds.clear();
 
    int iw = 1;
@@ -950,6 +983,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             int *r = ring_bonds.push();
             r[0] = i;
             r[1] = rbc;
+         }
+         int subst;
+         if (_getSubstitutionCountFlagValue(*qmol, i, subst))
+         {
+            int *s = substitution_count.push();
+            s[0] = i;
+            s[1] = subst;
          }
       }
 
@@ -1097,6 +1137,19 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          output.printf("M  UNS%3d", __min(unsaturated.size(), j + 8) - j);
          for (i = j; i < __min(unsaturated.size(), j + 8); i++)
             output.printf(" %3d %3d", _atom_mapping[unsaturated[i]], 1);
+         output.writeCR();
+         j += 8;
+      }
+   }
+
+   if (substitution_count.size() > 0)
+   {
+      int j = 0;
+      while (j < substitution_count.size())
+      {
+         output.printf("M  SUB%3d", __min(substitution_count.size(), j + 8) - j);
+         for (i = j; i < __min(substitution_count.size(), j + 8); i++)
+            output.printf(" %3d %3d", _atom_mapping[substitution_count[i][0]], substitution_count[i][1]);
          output.writeCR();
          j += 8;
       }
