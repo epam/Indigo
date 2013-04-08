@@ -321,6 +321,7 @@ CanvasOptions::CanvasOptions ()
 void CanvasOptions::clear ()
 {
    width = height = -1;
+   maxWidth = maxHeight = -1;
    xOffset = yOffset = 0;
    bondLength = -1;
    gridMarginX = gridMarginY = 0;
