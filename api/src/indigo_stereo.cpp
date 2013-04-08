@@ -285,6 +285,7 @@ static int _resetSymmetric (Molecule &mol, bool cistrans, bool stereo)
       am.detect_invalid_cistrans_bonds = true;
    if (stereo)
       am.detect_invalid_stereocenters = true;
+   am.allow_undefined = true;
    am.process(mol);
 
    if (cistrans)
@@ -348,6 +349,7 @@ static int _markEitherCisTrans (Molecule &mol)
       am.possible_cis_trans_to_check.push(i);
    }
 
+   am.allow_undefined = true;
    am.process(mol);
 
    for (i = 0; i < am.possible_cis_trans_to_check.size(); i++)

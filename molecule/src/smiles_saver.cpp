@@ -54,7 +54,7 @@ TL_CP_GET(_ban_slashes)
    write_extra_info = true;
    _mol = 0;
    smarts_mode = false;
-   ignore_invalid_hcount = false;
+   ignore_invalid_hcount = true;
    separate_rsites = true;
    rsite_indices_as_aam = true;
    _n_attachment_points = 0;

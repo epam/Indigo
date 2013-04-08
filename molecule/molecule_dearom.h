@@ -297,10 +297,15 @@ public:
    // Returns true if all bonds were dearomatized, false overwise
    static bool dearomatizeMolecule (Molecule &mol);
 
+   static bool restoreHydrogens (Molecule &mol, bool exception_if_not_unique);
+
    void dearomatizeGroup (int group, int dearomatization_index);
+   void restoreHydrogens (int group, int dearomatization_index);
 private:
    DearomatizationsStorage &_dearomatizations;
    Molecule &_mol;
+
+   TL_CP_DECL(Array<int>, vertex_connectivity);
 };
 
 }
