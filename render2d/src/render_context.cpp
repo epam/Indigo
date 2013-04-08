@@ -19,6 +19,8 @@
 #include "reaction/reaction.h"
 #include "render_context.h"
 
+#include <limits.h>
+
 using namespace indigo;
 
 RenderContext::TextLock RenderContext::_tlock;
