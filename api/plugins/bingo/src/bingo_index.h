@@ -10,7 +10,7 @@ namespace bingo
    {
    public:
       MoleculeIndex();
-
+      
       virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data);
    };
    

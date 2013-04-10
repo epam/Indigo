@@ -4,6 +4,9 @@
 #include <sstream>
 #include <string>
 
+#include "base_cpp/profiling.h"
+#include "base_cpp/output.h"
+
 using namespace bingo;
 
 static const char *_sub_filename = "sub_fp.fp";
@@ -31,8 +34,8 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    // TODO: create storage manager in a specified location --DONE
 
-   int sub_block_size = 128;
-   int sim_block_size = 1024;
+   int sub_block_size = 8192;
+   int sim_block_size = 8192;
 
    _location = location;
    std::string sub_path = _location + _sub_filename;
@@ -73,14 +76,14 @@ void BaseIndex::load (const char *location)
 
    _properties.load(props_path.c_str());
 
-   _fp_params.ext = (bool)_properties.getUDec("fp_ext");
-   _fp_params.ord_qwords = _properties.getUDec("fp_ord");
-   _fp_params.any_qwords = _properties.getUDec("fp_any");
-   _fp_params.tau_qwords = _properties.getUDec("fp_tau");
-   _fp_params.sim_qwords = _properties.getUDec("fp_sim");
+   _fp_params.ext = (_properties.getULong("fp_ext") != 0);
+   _fp_params.ord_qwords = _properties.getULong("fp_ord");
+   _fp_params.any_qwords = _properties.getULong("fp_any");
+   _fp_params.tau_qwords = _properties.getULong("fp_tau");
+   _fp_params.sim_qwords = _properties.getULong("fp_sim");
 
-   int sub_block_size = _properties.getUDec("sub_block_size");
-   int sim_block_size = _properties.getUDec("sim_block_size");
+   int sub_block_size = _properties.getULong("sub_block_size");
+   int sim_block_size = _properties.getULong("sim_block_size");
 
    std::istringstream isstr(std::string(_properties.get("fp_params")));
 
@@ -107,8 +110,17 @@ int BaseIndex::add (/* const */ IndexObject &obj)
    //    MoleculeIndex features: molecule mass, molecular formula, etc.
    // Prepare + atomic Add --DONE
 
-   _prepareIndexData(obj);
-   _insertIndexData();
+   int id;
+
+   {
+      profTimerStart(t_in, "prepare_obj_data");      
+      _prepareIndexData(obj);
+   }
+
+   {
+      profTimerStart(t_in, "add_obj_data");      
+      _insertIndexData();
+   }
    
    return _object_count++;
 }

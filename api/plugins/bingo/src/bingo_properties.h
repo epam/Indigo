@@ -19,11 +19,11 @@ namespace bingo
 
       void add (const char *prop_name, const char *value);
 
-      void add (const char *prop_name, size_t value);
+      void add (const char *prop_name, unsigned long value);
 
       const char * get (const char *prop_name);
 
-      size_t getUDec (const char *prop_name);
+      unsigned long getULong (const char *prop_name);
 
    private:
       typedef std::pair<const std::string, std::string> _PropertyPair;

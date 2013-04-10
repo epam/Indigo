@@ -20,6 +20,6 @@ FileStorage * FileStorageManager::create (const char *name, int block_size)
 
 FileStorage * FileStorageManager::load (const char *name)
 {
-   size_t block_size = _prop_table.getUDec(name);
+   unsigned long block_size = _prop_table.getULong(name);
    return new FileStorage(name, block_size, false);
 }

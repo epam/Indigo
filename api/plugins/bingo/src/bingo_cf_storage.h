@@ -28,19 +28,21 @@ namespace bingo
       void remove (int idx);
 
    private:
-      static const int _max_cf_len = 100;
+      static const int _max_cf_len = 1024;
 
       struct _Addr
       {
          int offset;
-         short len;
+         int len;
       };
-      
+
       int _cf_count;
 
       char _cur_cf_str[_max_cf_len];
-      std::fstream _cf_file;
-      std::fstream _offset_file;
+      std::ifstream _cf_infile;
+      std::ifstream _offset_infile;
+      std::ofstream _cf_outfile;
+      std::ofstream _offset_outfile;
       std::string _cf_filename;
       std::string _offset_filename;
    };

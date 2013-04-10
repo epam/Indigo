@@ -29,6 +29,7 @@ namespace bingo
       virtual void load (const char *location) = 0;
 
       virtual int add (/* const */ IndexObject &obj) = 0;
+
       virtual void remove (int id) = 0;
    
       typedef enum {MOLECULE, REACTION} IndexType;

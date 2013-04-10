@@ -2,6 +2,8 @@
 
 #include "molecule\molecule_substructure_matcher.h"
 
+#include "base_cpp/profiling.h"
+
 using namespace indigo;
 
 using namespace bingo;
@@ -99,6 +101,9 @@ bool BaseSubstructureMatcher::next ()
          _current_cand_id = 0;
       }
 
+      if (_candidates.size() == 0)
+         continue;
+
       _current_id = _candidates[_current_cand_id];
 
       if (_tryCurrent())
@@ -125,6 +130,9 @@ void BaseSubstructureMatcher::setQueryData (SubstructureQueryData *query_data)
 
 void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
 {
+   profTimerStart(t, "findPackCandidates");
+   
+   profTimerStart(t1, "pack_prep");
    _candidates.clear();
    Array<bool> is_candidate;
 
@@ -138,10 +146,15 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
    byte *block = new byte[fp_storage.getBlockSize()];
 
    int fp_size_in_bits = _fp_size * 8;
+   profTimerStop(t1);
 
+   profTimerStart(t2, "pack_loop");
    for (int j = 0; j < fp_size_in_bits; j++)
    {
-      fp_storage.getBlock(pack_idx * fp_size_in_bits + j, block);
+      {
+         profTimerStart(t2_1, "pack_loop_getblock");
+         fp_storage.getBlock(pack_idx * fp_size_in_bits + j, block);
+      }
 
       byte query_bit = query_fp[j / 8] & (0x80 >> (j % 8));
       
@@ -149,6 +162,9 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
       {
          for (int bit_cnt  = 0; bit_cnt < 8; bit_cnt++)
          {
+            if (!is_candidate[k * 8 + bit_cnt])
+               continue;
+
             byte block_bit = block[k] & (0x80 >> bit_cnt);
             
             if (query_bit & !block_bit)
@@ -156,16 +172,20 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
          }
       }
    }
+   profTimerStop(t2);
 
+   profTimerStart(t3, "pack_copy_cands");
    for (int i = 0; i < is_candidate.size(); i++)
       if (is_candidate[i])
          _candidates.push(i + pack_idx * fp_storage.getBlockSize());
+   profTimerStop(t3);
 
    delete block;
 }
 
 void BaseSubstructureMatcher::_findIncCandidates ()
 {
+   profTimerStart(t, "findIncCandidates");
    _candidates.clear();
    Array<bool> is_candidate;
 
@@ -214,6 +234,8 @@ const Array<int> & MoleculeSubMatcher::currentMapping ()
 
 bool MoleculeSubMatcher::_tryCurrent ()// const
 {
+   profTimerStart(t1, "try_getMolecule");
+   
    SubstructureMoleculeQuery &query = (SubstructureMoleculeQuery &)(_query_data->getQueryObject());
    QueryMolecule &query_mol = (QueryMolecule &)(query.getMolecule());
    Molecule target_mol;
@@ -227,11 +249,18 @@ bool MoleculeSubMatcher::_tryCurrent ()// const
 
    cmf_loader.loadMolecule(target_mol);
 
+   profTimerStop(t1);
+
    MoleculeSubstructureMatcher msm(target_mol);
 
    msm.setQuery(query_mol);
 
-   if (msm.find())
+   profTimerStart(t2, "try_subFind");
+   bool find_res = msm.find();
+   profTimerStop(t2);
+
+   profTimerStart(t3, "try_mapping_copy");
+   if (find_res)
    {
       _mapping.copy(msm.getTargetMapping(), target_mol.vertexCount());
       return true;

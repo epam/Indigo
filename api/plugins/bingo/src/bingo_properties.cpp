@@ -55,7 +55,7 @@ void Properties::add (const char *prop_name, const char *value)
    _rewritePropFile();
 }
 
-void Properties::add (const char *prop_name, size_t value)
+void Properties::add (const char *prop_name, unsigned long value)
 {
    std::ostringstream osstr;
    osstr << value;
@@ -68,9 +68,9 @@ const char * Properties::get (const char *prop_name)
    return _props[prop_name].c_str();
 }
 
-size_t Properties::getUDec (const char *prop_name)
+unsigned long Properties::getULong (const char *prop_name)
 {
-   size_t u_dec;
+   unsigned long u_dec;
    std::istringstream isstr(_props[prop_name]);
    isstr >> u_dec;
 
