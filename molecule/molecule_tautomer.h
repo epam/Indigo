@@ -77,6 +77,8 @@ struct TautomerSearchContext
 
    int max_chains;
 
+   AromaticityOptions arom_options;
+
    TL_CP_DECL(DearomatizationsStorage, dearomatizations);
 
    TL_CP_DECL(Array<int>, core_1);

@@ -1228,7 +1228,7 @@ bool TautomerChainChecker::_matchAromatizedQuery()
 
    ee.setSubgraph(aromatized_query);
 
-   AromaticityMatcher am(aromatized_query, (Molecule &)_context.g2);
+   AromaticityMatcher am(aromatized_query, (Molecule &)_context.g2, _context.arom_options);
 
    ee.userdata = &am;
 

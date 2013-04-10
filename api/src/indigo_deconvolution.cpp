@@ -124,7 +124,10 @@ void IndigoDeconvolution::makeRGroup(IndigoDeconvolutionElem& elem, bool all_mat
     * Set enumerator parameters
     */
    if (aromatize && AromaticityMatcher::isNecessary(_scaffold))
-      deco_enum.am.reset(new AromaticityMatcher(_scaffold, mol_in));
+   {
+      Indigo &indigo = indigoGetInstance();
+      deco_enum.am.reset(new AromaticityMatcher(_scaffold, mol_in, indigo.arom_options));
+   }
 
    deco_enum.fmcache.reset(new MoleculeSubstructureMatcher::FragmentMatchCache);
    deco_enum.fmcache->clear();

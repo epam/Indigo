@@ -394,6 +394,8 @@ bool MoleculeAromatizer::_acceptOutgoingDoubleBond (int atom, int bond)
 {
    if (_options.method == AromaticityOptions::GENERIC)
    {
+      // Note: this method should be in sync with QueryMoleculeAromatizer::_acceptOutgoingDoubleBond
+
       // CC1=CC=CC=[N]1=C
       int atom_number = _basemol.getAtomNumber(atom);
       if (atom_number == ELEM_C || atom_number == ELEM_S)
@@ -460,7 +462,8 @@ bool MoleculeAromatizer::aromatizeBonds (Molecule &mol, const AromaticityOptions
 // QueryMoleculeAromatizer
 //
 
-QueryMoleculeAromatizer::QueryMoleculeAromatizer (QueryMolecule &molecule) : AromatizerBase(molecule), 
+QueryMoleculeAromatizer::QueryMoleculeAromatizer (QueryMolecule &molecule, const AromaticityOptions &options) : 
+   AromatizerBase(molecule), 
    TL_CP_GET(_pi_labels),
    TL_CP_GET(_aromatic_cycles)
 {
@@ -469,6 +472,7 @@ QueryMoleculeAromatizer::QueryMoleculeAromatizer (QueryMolecule &molecule) : Aro
    _aromatic_cycles.reserve(100);
    _mode = FUZZY;
    _collecting = false;
+   _options = options;
 }
 
 void QueryMoleculeAromatizer::precalculatePiLabels ()
@@ -586,8 +590,22 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
 
    if (exact_double_bonds > 1)
    {
-      if (!query.possibleNitrogenV5(v_idx))
-         return PiValue(-1, -1);
+      if (_options.method == AromaticityOptions::BASIC)
+      {
+         if (!query.possibleNitrogenV5(v_idx))
+            return PiValue(-1, -1);
+      }
+      else
+      {
+         bool possible_c = _basemol.possibleAtomNumber(v_idx, ELEM_C);
+         bool possible_s = _basemol.possibleAtomNumber(v_idx, ELEM_S);
+         if (possible_s && possible_c)
+            return PiValue(0, 2);
+         else if (possible_s)
+            return PiValue(2, 2);
+         else
+            return PiValue(0, 0);
+      }
    }
 
    if (has_query_bond)
@@ -596,8 +614,10 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
          return PiValue(-1, -1);
       else
       {
-         if (exact_double_bonds > 0)
-            return PiValue(1, 1);
+         if (_options.method == AromaticityOptions::BASIC)
+            if (exact_double_bonds > 0)
+               return PiValue(1, 1);
+
          return PiValue(0, 2); // TODO: check different cases 
       }
    }
@@ -636,7 +656,35 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
       return PiValue(1, 1);
 
    if (exact_double_bonds >= 1)
+   {
+      if (_options.method == AromaticityOptions::BASIC)
+      {
+         if (exact_double_bonds > 0)
+            return PiValue(1, 1);
+      }
+      else
+      {
+         for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+         {
+            int edge = vertex.neiEdge(i);
+            if (query.possibleBondOrder(edge, BOND_DOUBLE))
+            {
+               if (_acceptOutgoingDoubleBond(v_idx, edge))
+               {
+                  bool possible_c = _basemol.possibleAtomNumber(v_idx, ELEM_C);
+                  bool possible_s = _basemol.possibleAtomNumber(v_idx, ELEM_S);
+                  if (possible_s && possible_c)
+                     return PiValue(1, 2);
+                  else if (possible_s)
+                     return PiValue(1, 2);
+                  else
+                     return PiValue(0, 1);
+               }
+            }
+         }
+      }
       return PiValue(1, 1);
+   }
 
    int valence, implicit_h;
    if (!Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false))
@@ -652,16 +700,6 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
       pi_label = 2;
 
    return PiValue(pi_label, pi_label);
-
-   /*
-   // Atom have query bond attached
-   if (pi_label_without_double_bound == -1)
-      return PiValue(1, 1, -1);
-   if (pi_label_without_double_bound == 0)
-      return PiValue(0, 1, -1);
-   else
-      return PiValue(1, 2, -1);
-   */
 }
 
 void QueryMoleculeAromatizer::_handleAromaticCycle (const int *cycle, int cycle_len)
@@ -684,8 +722,41 @@ bool QueryMoleculeAromatizer::_acceptOutgoingDoubleBond (int atom, int bond)
    if (_mode == EXACT)
       return false;
 
+   if (_options.method == AromaticityOptions::GENERIC)
+   {
+      // Note: this method should be in sync with MoleculeAromatizer::_acceptOutgoingDoubleBond
+
+      // CC1=CC=CC=[N]1=C
+      bool possible_c = _basemol.possibleAtomNumber(atom, ELEM_C);
+      bool possible_s = _basemol.possibleAtomNumber(atom, ELEM_S);
+      if (possible_c || possible_s)
+      {
+         int end = _basemol.getEdgeEnd(atom, bond);
+         int end_number = _basemol.getAtomNumber(end);
+         if (possible_c)
+         {
+            // [O-][N+](=O)C1=CNC=C(Cl)C1=O (see CID 11850826)
+            // CN1SC(=N)N(C)C1=S (see CID 11949795)
+            if (_basemol.possibleAtomNumber(end, ELEM_N) || 
+                  _basemol.possibleAtomNumber(end, ELEM_O) || _basemol.possibleAtomNumber(end, ELEM_S))
+               // Corresponding pi label is 0
+               return true;
+         }
+         if (possible_s)
+         {
+            // O=S1N=CC=N1
+            if (_basemol.possibleAtomNumber(end, ELEM_O))
+               // Corresponding pi label is 0
+               return true;
+         }
+      }
+   }
+
    QueryMolecule &qmol = _basemol.asQueryMolecule();
-   return qmol.possibleNitrogenV5(atom);
+   if (qmol.possibleNitrogenV5(atom))
+      return true;
+
+   return false;
 }
 
 void QueryMoleculeAromatizer::setMode (int mode)
@@ -693,18 +764,18 @@ void QueryMoleculeAromatizer::setMode (int mode)
    _mode = mode;
 }
 
-bool QueryMoleculeAromatizer::aromatizeBonds (QueryMolecule &mol)
+bool QueryMoleculeAromatizer::aromatizeBonds (QueryMolecule &mol, const AromaticityOptions &options)
 {
-   return _aromatizeBonds(mol, -1);
+   return _aromatizeBonds(mol, -1, options);
 }
 
-bool QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additional_atom)
+bool QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additional_atom, const AromaticityOptions &options)
 {
    bool aromatized = false;
    // Mark edges that can be aromatic in some matching
-   aromatized |= _aromatizeBondsFuzzy(mol);
+   aromatized |= _aromatizeBondsFuzzy(mol, options);
    // Aromatize all aromatic cycles
-   aromatized |= _aromatizeBondsExact(mol);
+   aromatized |= _aromatizeBondsExact(mol, options);
 
    MoleculeRGroups &rgroups = mol.rgroups;
    int n_rgroups = rgroups.getRGroupCount();
@@ -754,14 +825,14 @@ bool QueryMoleculeAromatizer::_aromatizeBonds (QueryMolecule &mol, int additiona
       {
          QueryMolecule &fragment = frags[j]->asQueryMolecule();
 
-         aromatized |= _aromatizeRGroupFragment(fragment, rgroups_attached_single[i]);
+         aromatized |= _aromatizeRGroupFragment(fragment, rgroups_attached_single[i], options);
       }
    }
    return aromatized;
 }
 
 bool QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment, 
-                                                        bool add_single_bonds)
+                                                        bool add_single_bonds, const AromaticityOptions &options)
 {
    // Add additional atom to attachment points
    int additional_atom = fragment.addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 1));
@@ -793,7 +864,7 @@ bool QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment,
       }
    }
 
-   bool aromatized = _aromatizeBonds(fragment, additional_atom);
+   bool aromatized = _aromatizeBonds(fragment, additional_atom, options);
 
    QS_DEF(Array<int>, indices);
    indices.clear();
@@ -804,10 +875,10 @@ bool QueryMoleculeAromatizer::_aromatizeRGroupFragment (QueryMolecule &fragment,
 }
 
 // Some cycles with query features can be aromatized
-bool QueryMoleculeAromatizer::_aromatizeBondsExact (QueryMolecule &qmol)
+bool QueryMoleculeAromatizer::_aromatizeBondsExact (QueryMolecule &qmol, const AromaticityOptions &options)
 {
    bool aromatized = false;
-   QueryMoleculeAromatizer aromatizer(qmol);
+   QueryMoleculeAromatizer aromatizer(qmol, options);
 
    aromatizer.setMode(QueryMoleculeAromatizer::EXACT);
    aromatizer.precalculatePiLabels();
@@ -829,10 +900,10 @@ bool QueryMoleculeAromatizer::_aromatizeBondsExact (QueryMolecule &qmol)
    return aromatized;
 }
 
-bool QueryMoleculeAromatizer::_aromatizeBondsFuzzy (QueryMolecule &mol)
+bool QueryMoleculeAromatizer::_aromatizeBondsFuzzy (QueryMolecule &mol, const AromaticityOptions &options)
 {
    bool aromatized = false;
-   QueryMoleculeAromatizer aromatizer(mol);
+   QueryMoleculeAromatizer aromatizer(mol, options);
 
    aromatizer.setMode(QueryMoleculeAromatizer::FUZZY);
    aromatizer.precalculatePiLabels();

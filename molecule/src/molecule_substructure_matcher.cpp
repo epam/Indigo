@@ -316,7 +316,7 @@ bool MoleculeSubstructureMatcher::find ()
    _used_target_h.zerofill();
 
    if (use_aromaticity_matcher && AromaticityMatcher::isNecessary(*_query))
-      _am.create(*_query, _target);
+      _am.create(*_query, _target, arom_options);
    else
       _am.free();
 

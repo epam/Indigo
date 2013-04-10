@@ -123,11 +123,11 @@ class QueryMoleculeAromatizer : public AromatizerBase
 {
 public:
    // Interface function for query molecule aromatization
-   static bool aromatizeBonds (QueryMolecule &mol);
+   static bool aromatizeBonds (QueryMolecule &mol, const AromaticityOptions &options = AromaticityOptions());
 
    enum { EXACT, FUZZY };
 
-   explicit QueryMoleculeAromatizer (QueryMolecule &molecule);
+   QueryMoleculeAromatizer (QueryMolecule &molecule, const AromaticityOptions &options);
 
    void setMode              (int mode);
    void precalculatePiLabels ();
@@ -148,12 +148,12 @@ protected:
    virtual void _handleAromaticCycle (const int *cycle, int cycle_len);
    virtual bool _acceptOutgoingDoubleBond (int atom, int bond);
 
-   static bool _aromatizeBondsExact (QueryMolecule &mol);
-   static bool _aromatizeBondsFuzzy (QueryMolecule &mol);
+   static bool _aromatizeBondsExact (QueryMolecule &mol, const AromaticityOptions &options);
+   static bool _aromatizeBondsFuzzy (QueryMolecule &mol, const AromaticityOptions &options);
 
-   static bool _aromatizeBonds (QueryMolecule &mol, int additional_atom);
+   static bool _aromatizeBonds (QueryMolecule &mol, int additional_atom, const AromaticityOptions &options);
 
-   static bool _aromatizeRGroupFragment (QueryMolecule &fragment, bool add_single_bonds);
+   static bool _aromatizeRGroupFragment (QueryMolecule &fragment, bool add_single_bonds, const AromaticityOptions &options);
 
    PiValue _getPiLabel           (int v_idx);
 
@@ -162,6 +162,7 @@ protected:
 
    int _mode;
    bool _collecting;
+   AromaticityOptions _options;
 };
 
 // Structure that keeps query infromation abount bonds that 

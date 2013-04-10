@@ -458,7 +458,7 @@ bool BaseReactionSubstructureMatcher::_Matcher::_initEnumerator (BaseMolecule &m
 
    if (mol_1.isQueryMolecule() && _context.use_aromaticity_matcher &&
        AromaticityMatcher::isNecessary(mol_1.asQueryMolecule()))
-      _am.reset(new AromaticityMatcher(mol_1.asQueryMolecule(), mol_2));
+      _am.reset(new AromaticityMatcher(mol_1.asQueryMolecule(), mol_2, _context.arom_options));
    else
       _am.reset(0);
 

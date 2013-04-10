@@ -1588,7 +1588,7 @@ void QueryMolecule::setBondStereoCare (int idx, bool stereo_care)
 bool QueryMolecule::aromatize (const AromaticityOptions &options)
 {
    updateEditRevision();
-   return QueryMoleculeAromatizer::aromatizeBonds(*this);
+   return QueryMoleculeAromatizer::aromatizeBonds(*this, options);
 }
 
 bool QueryMolecule::dearomatize (const AromaticityOptions &options)

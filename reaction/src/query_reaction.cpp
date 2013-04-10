@@ -179,7 +179,7 @@ int QueryReaction::_addBaseMolecule (int side)
 bool QueryReaction::aromatize(const AromaticityOptions &options) {
    bool arom_found = false;
    for (int i = begin(); i < end(); i = next(i)) {
-      arom_found |= QueryMoleculeAromatizer::aromatizeBonds(*(QueryMolecule *)_allMolecules[i]);
+      arom_found |= QueryMoleculeAromatizer::aromatizeBonds(*(QueryMolecule *)_allMolecules[i], options);
    }
 
    return arom_found;

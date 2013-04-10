@@ -523,7 +523,10 @@ IndigoMoleculeSubstructureMatchIter*
    if (!*prepared)
    {
       if (!target.isAromatized())
-         target_prepared->aromatize();
+      {
+         Indigo &indigo = indigoGetInstance();
+         target_prepared->aromatize(indigo.arom_options);
+      }
       nei_counters->calculate(*target_prepared);
       *prepared = true;
    }
@@ -537,6 +540,9 @@ IndigoMoleculeSubstructureMatchIter*
       IndigoQueryMolecule &qm_object = (IndigoQueryMolecule &)query_object;
       iter->matcher.setNeiCounters(&qm_object.getNeiCounters(), nei_counters);
    }
+
+   Indigo &indigo = indigoGetInstance();
+   iter->matcher.arom_options = indigo.arom_options;
 
    iter->matcher.find_unique_embeddings = find_unique_embeddings;
    iter->matcher.find_unique_by_edges = embedding_edges_uniqueness;
