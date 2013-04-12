@@ -99,12 +99,12 @@ class DLLEXPORT MoleculeAromatizer : public AromatizerBase
 {
 public:
    // Interface function for aromatization
-   static bool aromatizeBonds (Molecule &mol, const AromaticityOptions &options = AromaticityOptions());
+   static bool aromatizeBonds (Molecule &mol, const AromaticityOptions &options);
 
    MoleculeAromatizer (Molecule &molecule, const AromaticityOptions &options);
    void precalculatePiLabels ();
 
-   static void findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds);
+   static void findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds, const AromaticityOptions &options);
 
 protected:
    virtual bool _checkVertex      (int v_idx);
@@ -123,7 +123,7 @@ class QueryMoleculeAromatizer : public AromatizerBase
 {
 public:
    // Interface function for query molecule aromatization
-   static bool aromatizeBonds (QueryMolecule &mol, const AromaticityOptions &options = AromaticityOptions());
+   static bool aromatizeBonds (QueryMolecule &mol, const AromaticityOptions &options);
 
    enum { EXACT, FUZZY };
 

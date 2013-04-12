@@ -108,7 +108,8 @@ void ReactionEnumeratorState::ReactionMonomers::removeMonomer( int idx )
 
 IMPL_ERROR(ReactionEnumeratorState, "Reaction product enumerator state");
 
-ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
+ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext &context,
+    QueryReaction &cur_reaction,
     QueryMolecule &cur_full_product, Array<int> &cur_product_aam_array, 
     RedBlackStringMap<int> &cur_smiles_array, ReactionMonomers &cur_reaction_monomers, 
     int &cur_product_count, ObjArray< Array<int> > &cur_tubes_monomers ) :
@@ -118,6 +119,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
     _product_aam_array(cur_product_aam_array),
     _smiles_array(cur_smiles_array),
     _reaction_monomers(cur_reaction_monomers),
+    _context(context),
     TL_CP_GET(_fragments_aam_array), TL_CP_GET(_full_product), 
     TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
@@ -173,6 +175,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
 }
 
 ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_rpe_state ) : 
+    _context(cur_rpe_state._context),
     _reaction(cur_rpe_state._reaction),
     _product_count(cur_rpe_state._product_count),
     _tubes_monomers(cur_rpe_state._tubes_monomers),
@@ -378,7 +381,7 @@ void ReactionEnumeratorState::_productProcess( void )
    if (!is_transform)
       _foldHydrogens(ready_product);
 
-   ready_product.dearomatize();
+   ready_product.dearomatize(_context.arom_options);
 
    if (!is_same_keeping)
    {
@@ -560,7 +563,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator( Molecule &monomer )
    ee_reactant.clone(_reaction.getQueryMolecule(_reactant_idx), NULL, NULL);
    ee_reactant.cis_trans.build(NULL);
 
-   ee_reactant.aromatize();
+   ee_reactant.aromatize(_context.arom_options);
 
    for (int i = ee_reactant.edgeBegin(); i != ee_reactant.edgeEnd(); i = ee_reactant.edgeNext(i))
    {
@@ -592,7 +595,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator( Molecule &monomer )
    ee_monomer.clear();
    ee_monomer.clone(monomer, NULL, NULL);
 
-   ee_monomer.aromatize();
+   ee_monomer.aromatize(_context.arom_options);
 
 
    if (BaseMolecule::hasCoord(ee_monomer))

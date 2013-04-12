@@ -234,9 +234,9 @@ public:
    virtual bool bondStereoCare (int idx) = 0;
 
    // Returns true if some bonds were changed
-   virtual bool aromatize (const AromaticityOptions &options = AromaticityOptions()) = 0;
+   virtual bool aromatize (const AromaticityOptions &options) = 0;
    // Returns true if all bonds were dearomatized
-   virtual bool dearomatize (const AromaticityOptions &options = AromaticityOptions()) = 0;
+   virtual bool dearomatize (const AromaticityOptions &options) = 0;
 
    enum
    {

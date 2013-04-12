@@ -1222,7 +1222,7 @@ bool TautomerChainChecker::_matchAromatizedQuery()
    QS_DEF(Array<int>, mapping);
 
    aromatized_query.clone(((BaseMolecule &)_context.g1).asQueryMolecule(), 0, &mapping);
-   QueryMoleculeAromatizer::aromatizeBonds(aromatized_query);
+   QueryMoleculeAromatizer::aromatizeBonds(aromatized_query, _context.arom_options);
 
    EmbeddingEnumerator ee(_context.g2);
 

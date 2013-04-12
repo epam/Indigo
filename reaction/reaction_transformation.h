@@ -17,6 +17,7 @@
 
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
+#include "molecule/molecule_arom.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction_enumerator_state.h"
@@ -35,6 +36,8 @@ namespace indigo
       bool transform(Molecule &molecule, QueryReaction &reaction);
       
       bool transform(ReusableObjArray<Molecule> &molecules, QueryReaction &reaction);
+
+      AromaticityOptions arom_options;
 
    private:
       TL_CP_DECL(QueryReaction, _merged_reaction);

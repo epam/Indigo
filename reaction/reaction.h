@@ -55,8 +55,8 @@ public:
 
    Molecule & getMolecule (int index);
 
-   virtual bool aromatize (const AromaticityOptions &options = AromaticityOptions());
-   virtual bool dearomatize (const AromaticityOptions &options = AromaticityOptions());
+   virtual bool aromatize (const AromaticityOptions &options);
+   virtual bool dearomatize (const AromaticityOptions &options);
 
    virtual Reaction & asReaction ();
 

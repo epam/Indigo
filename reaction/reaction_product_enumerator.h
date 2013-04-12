@@ -34,6 +34,8 @@ public:
    int max_deep_level;
    void *userdata;
 
+   AromaticityOptions arom_options;
+
    ReactionProductEnumerator( QueryReaction &reaction );
    ~ReactionProductEnumerator() {}
 
@@ -52,6 +54,7 @@ public:
    void buildProducts( void );
    
    void (*product_proc)( Molecule &product, Array<int> &monomers_indices, void *userdata );
+
 private:
    bool _is_rg_exist;
    int _product_count;

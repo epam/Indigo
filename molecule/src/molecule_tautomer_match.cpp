@@ -25,7 +25,8 @@ using namespace indigo;
 class PathRulesChecker;
 
 TautomerSearchContext::TautomerSearchContext (BaseMolecule &g1_, BaseMolecule &g2_, GraphDecomposer &decomposer1_,
-                                              GraphDecomposer &decomposer2_, const PtrArray<TautomerRule> &rules_list_) :
+                                              GraphDecomposer &decomposer2_, const PtrArray<TautomerRule> &rules_list_, 
+                                              const AromaticityOptions &arom_options) :
 g1(g1_),
 g2(g2_),
 decomposer1(decomposer1_),
@@ -48,6 +49,7 @@ TL_CP_GET(edge_types_2),
 TL_CP_GET(n1),
 TL_CP_GET(n2)
 {
+   this->arom_options = arom_options;
    if (g2.vertexCount() + g2.edgeCount() > 80)
       max_chains = 1;
    else if (g2.vertexCount() + g2.edgeCount() > 40)
@@ -55,7 +57,7 @@ TL_CP_GET(n2)
    else
       max_chains = 0;
 
-   dearomatizer.create(g2.asMolecule(), (int *)0);
+   dearomatizer.create(g2.asMolecule(), (int *)0, arom_options);
    dearomatizer->enumerateDearomatizations(dearomatizations);
 
    dearomatizationMatcher.create(dearomatizations, g2.asMolecule(), (int *)0);

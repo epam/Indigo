@@ -54,7 +54,7 @@ struct TautomerRule
 struct TautomerSearchContext
 {
    explicit TautomerSearchContext (BaseMolecule &g1_, BaseMolecule &g2_, GraphDecomposer &decomposer1_, GraphDecomposer &decomposer2_,
-      const PtrArray<TautomerRule> &rules_list_);
+      const PtrArray<TautomerRule> &rules_list_, const AromaticityOptions &arom_options);
    virtual ~TautomerSearchContext ();
 
    BaseMolecule &g1;

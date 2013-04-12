@@ -31,6 +31,8 @@ public:
 
    bool highlight;
 
+   AromaticityOptions arom_options;
+
    MoleculeTautomerMatcher (Molecule &target, bool substructure);
 
    void setQuery (BaseMolecule &query);

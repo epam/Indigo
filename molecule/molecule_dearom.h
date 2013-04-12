@@ -156,7 +156,7 @@ public:
       PARAMS_SAVE_JUST_HETERATOMS       // Store just heteroatoms configuration
    }; 
 public:
-   explicit Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn, const AromaticityOptions &options = AromaticityOptions());
+   explicit Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn, const AromaticityOptions &options);
    virtual ~Dearomatizer ();
 
    void  enumerateDearomatizations  (DearomatizationsStorage &dearomatizations);
@@ -297,7 +297,7 @@ public:
 
    // Function dearomatizes as much as possible.
    // Returns true if all bonds were dearomatized, false overwise
-   static bool dearomatizeMolecule (Molecule &mol, const AromaticityOptions &options = AromaticityOptions());
+   static bool dearomatizeMolecule (Molecule &mol, const AromaticityOptions &options);
 
    static bool restoreHydrogens (Molecule &mol, bool exception_if_not_unique, const AromaticityOptions &options = AromaticityOptions());
 

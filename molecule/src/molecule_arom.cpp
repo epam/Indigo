@@ -923,7 +923,7 @@ bool QueryMoleculeAromatizer::_aromatizeBondsFuzzy (QueryMolecule &mol, const Ar
    return aromatized;
 }
 
-void MoleculeAromatizer::findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds)
+void MoleculeAromatizer::findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds, const AromaticityOptions &options)
 {
    AutoPtr<BaseMolecule> clone;
    QS_DEF(Array<int>, mapping);
@@ -945,7 +945,7 @@ void MoleculeAromatizer::findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms
 
    clone->clone(mol, &mapping, 0);
 
-   clone->aromatize();
+   clone->aromatize(options);
 
    for (int i = clone->edgeBegin(); i != clone->edgeEnd(); i = clone->edgeNext(i))
    {

@@ -91,6 +91,7 @@ public:
    bool ignore_atom_isotopes;
    bool ignore_atom_radicals;
 
+   AromaticityOptions arom_options;
 
    DECL_ERROR;
 
@@ -194,6 +195,7 @@ public:
    void setUpFlags(const ReactionAutomapper& context);
 
    int flags;
+   AromaticityOptions arom_options;
 
 private:
    int _searchSubstructure(EmbeddingEnumerator& emb_enum, const Array<int>* in_map, Array<int> *out_map);

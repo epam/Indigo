@@ -55,8 +55,9 @@ void IndigoDeconvolution::setScaffold (QueryMolecule& scaffold) {
    _fullScaffold.clone_KeepIndices(scaffold, 0);
 
    if(aromatize) {
-      QueryMoleculeAromatizer::aromatizeBonds(_scaffold);
-      QueryMoleculeAromatizer::aromatizeBonds(_fullScaffold);
+      Indigo &indigo = indigoGetInstance();
+      QueryMoleculeAromatizer::aromatizeBonds(_scaffold, indigo.arom_options);
+      QueryMoleculeAromatizer::aromatizeBonds(_fullScaffold, indigo.arom_options);
    }
    /*
     * Define user scaffold
@@ -118,7 +119,10 @@ void IndigoDeconvolution::makeRGroup(IndigoDeconvolutionElem& elem, bool all_mat
    }
 
    if(aromatize)
-      MoleculeAromatizer::aromatizeBonds(mol_in);
+   {
+      Indigo &indigo = indigoGetInstance();
+      MoleculeAromatizer::aromatizeBonds(mol_in, indigo.arom_options);
+   }
 
    /*
     * Set enumerator parameters

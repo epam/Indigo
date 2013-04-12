@@ -57,7 +57,11 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
          found_invalid_h = true;
    }
    if (found_invalid_h)
-      MoleculeDearomatizer::restoreHydrogens(mol_, true);
+   {
+      AromaticityOptions options;
+      options.method = AromaticityOptions::GENERIC;
+      MoleculeDearomatizer::restoreHydrogens(mol_, true, options);
+   }
 
    mol.clone(mol_, 0, 0);
 

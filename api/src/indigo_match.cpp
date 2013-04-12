@@ -270,6 +270,7 @@ CEXPORT int indigoExactMatch (int handler1, int handler2, const char *flags)
          {
             MoleculeTautomerMatcher matcher(mol2, false);
 
+            matcher.arom_options = self.arom_options;
             matcher.setRulesList(&self.tautomer_rules);
             matcher.setRules(params.conditions, params.force_hydrogens, params.ring_chain);
             matcher.setQuery(mol1);
@@ -581,8 +582,9 @@ bool IndigoMoleculeSubstructureMatcher::findTautomerMatch (
       mapping = &_mapping_arom;
       prepared = &_arom_prepared;
    }
+   Indigo &indigo = indigoGetInstance();
    if (!target.isAromatized() && !*prepared)
-      target_prepared->aromatize();
+      target_prepared->aromatize(indigo.arom_options);
    *prepared = true;
    
    if (tau_matcher.get() == 0)
@@ -594,6 +596,7 @@ bool IndigoMoleculeSubstructureMatcher::findTautomerMatch (
    tau_matcher->setRulesList(&tautomer_rules);
    tau_matcher->setRules(tau_params.conditions, tau_params.force_hydrogens, tau_params.ring_chain);
    tau_matcher->setQuery(query);
+   tau_matcher->arom_options = indigo.arom_options;
    if (!tau_matcher->find())
       return false;
 
@@ -757,6 +760,7 @@ CEXPORT int indigoMatch (int target_matcher, int query)
          int i, j;
 
          ReactionAutomapper ram(qrxn);
+         ram.arom_options = self.arom_options;
          ram.correctReactingCenters(true);
          
          for (i = qrxn.begin(); i != qrxn.end(); i = qrxn.next(i))
@@ -776,6 +780,8 @@ CEXPORT int indigoMatch (int target_matcher, int query)
 
          matcher.matcher->use_daylight_aam_mode = matcher.daylight_aam;
          matcher.matcher->setQuery(qrxn);
+         matcher.matcher->arom_options = self.arom_options;
+
          if (!matcher.matcher->find())
             return 0;
 
@@ -881,7 +887,8 @@ IndigoReactionSubstructureMatcher::IndigoReactionSubstructureMatcher (Reaction &
 {
    target.clone(target_, &mol_mapping, &mappings, 0);
 
-   target.aromatize();
+   Indigo &indigo = indigoGetInstance();
+   target.aromatize(indigo.arom_options);
    daylight_aam = false;
 }
 

@@ -292,8 +292,8 @@ public:
    virtual bool bondStereoCare (int idx);
    void setBondStereoCare (int idx, bool stereo_care);
 
-   virtual bool aromatize (const AromaticityOptions &options = AromaticityOptions());
-   virtual bool dearomatize (const AromaticityOptions &options = AromaticityOptions());
+   virtual bool aromatize (const AromaticityOptions &options);
+   virtual bool dearomatize (const AromaticityOptions &options);
 
    int addAtom (Atom *atom);
    Atom & getAtom (int idx);

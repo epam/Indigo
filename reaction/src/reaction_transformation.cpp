@@ -50,7 +50,10 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
 
    int product_count = 0;
 
-   ReactionEnumeratorState re_state(_merged_reaction, cur_full_product, 
+   ReactionEnumeratorContext context;
+   context.arom_options = arom_options;
+
+   ReactionEnumeratorState re_state(context, _merged_reaction, cur_full_product, 
       cur_cur_monomer_aam_array, cur_smiles_array, cur_reaction_monomers, 
       product_count, cur_tubes_monomers);
    
