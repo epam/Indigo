@@ -38,9 +38,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
    int sim_block_size = 8192;
 
    _location = location;
-   std::string sub_path = _location + _sub_filename;
    std::string sub_info_path = _location + _sub_info_filename;
-   std::string sim_path = _location + _sim_filename;
    std::string sim_info_path = _location + _sim_info_filename;
    std::string props_path = _location + _props_filename;
    std::string _cf_data_path = _location + _cf_data_filename;
@@ -54,8 +52,8 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    _file_storage_manager.reset(new FileStorageManager(location));
 
-   AutoPtr<Storage> sub_stor = _file_storage_manager->create(sub_path.c_str(), sub_block_size);
-   AutoPtr<Storage> sim_stor = _file_storage_manager->create(sim_path.c_str(), sim_block_size);
+   AutoPtr<Storage> sub_stor = _file_storage_manager->create(_sub_filename, sub_block_size);
+   AutoPtr<Storage> sim_stor = _file_storage_manager->create(_sim_filename, sim_block_size);
 
    _sub_fp_storage.create(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
    _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), sim_stor.release(), sim_info_path.c_str());
@@ -66,9 +64,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 void BaseIndex::load (const char *location)
 {
    _location = location;
-   std::string sub_path = _location + _sub_filename;
    std::string sub_info_path = _location + _sub_info_filename;
-   std::string sim_path = _location + _sim_filename;
    std::string sim_info_path = _location + _sim_info_filename;
    std::string props_path = _location + _props_filename;
    std::string _cf_data_path = _location + _cf_data_filename;
@@ -95,8 +91,8 @@ void BaseIndex::load (const char *location)
 
    _file_storage_manager.reset(new FileStorageManager(location));
 
-   FileStorage *sub_stor = _file_storage_manager->load(sub_path.c_str());
-   FileStorage *sim_stor = _file_storage_manager->load(sim_path.c_str());
+   FileStorage *sub_stor = _file_storage_manager->load(_sub_filename);
+   FileStorage *sim_stor = _file_storage_manager->load(_sim_filename);
 
    _sub_fp_storage.load(_fp_params.fingerprintSize(), sub_stor, sub_info_path.c_str());
    _sim_fp_storage.load(_fp_params.fingerprintSizeSim(), sim_stor, sim_info_path.c_str());
@@ -109,9 +105,6 @@ int BaseIndex::add (/* const */ IndexObject &obj)
    // TODO: Split prepare and add into index because of potential 
    //    MoleculeIndex features: molecule mass, molecular formula, etc.
    // Prepare + atomic Add --DONE
-
-   int id;
-
    {
       profTimerStart(t_in, "prepare_obj_data");      
       _prepareIndexData(obj);

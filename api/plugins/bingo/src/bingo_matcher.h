@@ -113,6 +113,7 @@ namespace bingo
    protected:
       int _fp_size;
       int _current_id;
+      int _cand_count;
       /*const*/ BaseIndex &_index;
       /*const*/ AutoPtr<SubstructureQueryData> _query_data;
       Array<byte> _query_fp;

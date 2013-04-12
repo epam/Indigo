@@ -11,7 +11,7 @@ FileStorageManager::FileStorageManager (const char *location) : _loc(location)
 
 FileStorage * FileStorageManager::create (const char *name, int block_size)
 {
-   FileStorage * new_storage = new FileStorage(name, block_size, true);
+   FileStorage * new_storage = new FileStorage((_loc + name).c_str(), block_size, true);
 
    _prop_table.add(name, block_size);
 
@@ -21,5 +21,5 @@ FileStorage * FileStorageManager::create (const char *name, int block_size)
 FileStorage * FileStorageManager::load (const char *name)
 {
    unsigned long block_size = _prop_table.getULong(name);
-   return new FileStorage(name, block_size, false);
+   return new FileStorage((_loc + name).c_str(), block_size, false);
 }

@@ -52,7 +52,7 @@ void CfStorage::add (const char *data, int len, int idx)
    addr.len = len;
 
    _cf_outfile.seekp(0, std::ios::end);
-   addr.offset = _cf_outfile.tellp();
+   addr.offset = (int)_cf_outfile.tellp();
 
    _cf_outfile.write(data, len);
 

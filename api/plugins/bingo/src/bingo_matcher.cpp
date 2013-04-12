@@ -47,8 +47,6 @@ float ReactionSimilarityQueryData::getMax () const
 {
    return _max;
 }
-
-
    
 MoleculeSubstructureQueryData::MoleculeSubstructureQueryData (/* const */ QueryMolecule &qmol) : _obj(qmol)
 {
@@ -59,7 +57,6 @@ MoleculeSubstructureQueryData::MoleculeSubstructureQueryData (/* const */ QueryM
    return _obj;
 }
    
-
    
 ReactionSubstructureQueryData::ReactionSubstructureQueryData (/* const */ QueryReaction &qrxn) : _obj(qrxn)
 {
@@ -69,7 +66,6 @@ ReactionSubstructureQueryData::ReactionSubstructureQueryData (/* const */ QueryR
 {
    return _obj;
 }
-
    
    
 BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index) : 
@@ -78,15 +74,16 @@ BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index) :
    _fp_size = _index.getFingerprintParams().fingerprintSize();
    
    _current_id = -1;
-
    _current_cand_id = -1;
    _current_pack = -1;
+
+   _cand_count = 0;
 }
 
 bool BaseSubstructureMatcher::next ()
 {
    int fp_size_in_bits = _fp_size * 8;
-
+   
    _current_cand_id++;
    while (!((_current_pack == _fp_storage.getPackCount()) && (_current_cand_id == _candidates.size())))
    {
@@ -94,9 +91,15 @@ bool BaseSubstructureMatcher::next ()
       {
          _current_pack++;
          if (_current_pack < _fp_storage.getPackCount())
+         {
             _findPackCandidates(_current_pack);
+            _cand_count += _candidates.size();
+         }
          else
+         {
             _findIncCandidates();
+            _cand_count += _candidates.size();
+         }
 
          _current_cand_id = 0;
       }
@@ -112,6 +115,8 @@ bool BaseSubstructureMatcher::next ()
       _current_cand_id++;
    }
 
+
+   profIncCounter("sub_count_cand", _cand_count);
    return false;
 }
 
@@ -130,62 +135,50 @@ void BaseSubstructureMatcher::setQueryData (SubstructureQueryData *query_data)
 
 void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
 {
-   profTimerStart(t, "findPackCandidates");
-   
-   profTimerStart(t1, "pack_prep");
    _candidates.clear();
-   Array<bool> is_candidate;
 
    const TranspFpStorage &fp_storage = _index.getSubStorage();
 
    const byte *query_fp = _query_fp.ptr();
 
-   is_candidate.clear_resize( fp_storage.getBlockSize() * 8);
-   is_candidate.fill(true);
-
    byte *block = new byte[fp_storage.getBlockSize()];
 
    int fp_size_in_bits = _fp_size * 8;
-   profTimerStop(t1);
 
-   profTimerStart(t2, "pack_loop");
+   Array<byte> fit_bits;
+   fit_bits.clear_resize(fp_storage.getBlockSize());
+   fit_bits.fill(255);
+
    for (int j = 0; j < fp_size_in_bits; j++)
    {
-      {
-         profTimerStart(t2_1, "pack_loop_getblock");
-         fp_storage.getBlock(pack_idx * fp_size_in_bits + j, block);
-      }
+
+      fp_storage.getBlock(pack_idx * fp_size_in_bits + j, block);
 
       byte query_bit = query_fp[j / 8] & (0x80 >> (j % 8));
+
+      if (!query_bit)
+         continue;
       
       for (int k = 0; k < fp_storage.getBlockSize(); k++)
-      {
-         for (int bit_cnt  = 0; bit_cnt < 8; bit_cnt++)
-         {
-            if (!is_candidate[k * 8 + bit_cnt])
-               continue;
+         fit_bits[k] &= block[k];
+   }
 
-            byte block_bit = block[k] & (0x80 >> bit_cnt);
+   for (int k = 0; k < fp_storage.getBlockSize(); k++)
+   {
+      for (int bit_cnt  = 0; bit_cnt < 8; bit_cnt++)
+      {
+         byte fp_flag = fit_bits[k] & (0x80 >> bit_cnt);
             
-            if (query_bit & !block_bit)
-               is_candidate[k * 8 + bit_cnt] = false;
-         }
+         if (fp_flag)
+            _candidates.push(k * 8 + bit_cnt + pack_idx * fp_storage.getBlockSize());
       }
    }
-   profTimerStop(t2);
-
-   profTimerStart(t3, "pack_copy_cands");
-   for (int i = 0; i < is_candidate.size(); i++)
-      if (is_candidate[i])
-         _candidates.push(i + pack_idx * fp_storage.getBlockSize());
-   profTimerStop(t3);
 
    delete block;
 }
 
 void BaseSubstructureMatcher::_findIncCandidates ()
 {
-   profTimerStart(t, "findIncCandidates");
    _candidates.clear();
    Array<bool> is_candidate;
 
@@ -227,15 +220,11 @@ MoleculeSubMatcher::MoleculeSubMatcher (/*const */ BaseIndex &index) : BaseSubst
 
 const Array<int> & MoleculeSubMatcher::currentMapping ()
 {
-
-
    return _mapping;
 }
 
 bool MoleculeSubMatcher::_tryCurrent ()// const
 {
-   profTimerStart(t1, "try_getMolecule");
-   
    SubstructureMoleculeQuery &query = (SubstructureMoleculeQuery &)(_query_data->getQueryObject());
    QueryMolecule &query_mol = (QueryMolecule &)(query.getMolecule());
    Molecule target_mol;
@@ -249,17 +238,12 @@ bool MoleculeSubMatcher::_tryCurrent ()// const
 
    cmf_loader.loadMolecule(target_mol);
 
-   profTimerStop(t1);
-
    MoleculeSubstructureMatcher msm(target_mol);
 
    msm.setQuery(query_mol);
 
-   profTimerStart(t2, "try_subFind");
    bool find_res = msm.find();
-   profTimerStop(t2);
-
-   profTimerStart(t3, "try_mapping_copy");
+   
    if (find_res)
    {
       _mapping.copy(msm.getTargetMapping(), target_mol.vertexCount());
@@ -268,7 +252,6 @@ bool MoleculeSubMatcher::_tryCurrent ()// const
 
    return false;
 }
-   
    
    
 ReactionSubMatcher::ReactionSubMatcher (/*const */ BaseIndex &index) : BaseSubstructureMatcher(index)
