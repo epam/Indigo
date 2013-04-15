@@ -24,6 +24,11 @@
 
 using namespace indigo;
 
+// Exceptions
+IMPL_EXCEPTION(indigo, DearomatizationException, "dearomatization");
+IMPL_EXCEPTION2(indigo, NonUniqueDearomatizationException, 
+                DearomatizationException, "non-unique dearomatization");
+
 //
 // Indigo aromaticiy model remarks.
 // C1=CC2=CC=CC=CC2=C1 is aromatized into c1:c2-c(:c:c:c:c:c:2):c:c:1 but not into 
@@ -549,7 +554,7 @@ void DearomatizationsStorage::loadBinary (Scanner &scanner)
    }
 }
 
-IMPL_ERROR(DearomatizationsStorage, "Dearomatization storage");
+IMPL_ERROR2(DearomatizationsStorage, DearomatizationException, "Dearomatization storage");
 
 DearomatizationsStorage::DearomatizationsStorage (void)
 {
@@ -561,7 +566,7 @@ DearomatizationsStorage::DearomatizationsStorage (void)
 // DearomatizationsGroups
 //
 
-IMPL_ERROR(DearomatizationsGroups, "Dearomatization groups");
+IMPL_ERROR2(DearomatizationsGroups, DearomatizationException, "Dearomatization groups");
 
 DearomatizationsGroups::DearomatizationsGroups (BaseMolecule &molecule) :
    _molecule(molecule),
@@ -961,7 +966,7 @@ bool DearomatizationsGroups::isAcceptDoubleBond (int atom)
 // DearomatizationMatcher
 //
 
-IMPL_ERROR(DearomatizationMatcher, "Dearomatization matcher");
+IMPL_ERROR2(DearomatizationMatcher, DearomatizationException, "Dearomatization matcher");
 
 DearomatizationMatcher::DearomatizationMatcher (DearomatizationsStorage &dearomatizations, 
    BaseMolecule &molecule, const int *atom_external_conn) 
@@ -1476,7 +1481,7 @@ bool MoleculeDearomatizer::dearomatizeMolecule (Molecule &mol, const Aromaticity
       if (cnt == 0)
          all_dearomatzied = false;
       else if (cnt > 1 && options.unique_dearomatization)
-         throw DearomatizationsGroups::Error("Dearomatization is not unique");
+         throw NonUniqueDearomatizationException("Dearomatization is not unique");
       else
          mol_dearom.dearomatizeGroup(i, 0);
    }
@@ -1501,7 +1506,7 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOpt
       if (cnt == 0)
          all_dearomatzied = false;
       else if (cnt > 1 && options.unique_dearomatization)
-         throw DearomatizationsGroups::Error("Dearomatization is not unique. Cannot restore hydrogens.");
+         throw NonUniqueDearomatizationException("Dearomatization is not unique. Cannot restore hydrogens.");
       else
          mol_dearom.restoreHydrogens(i, 0);
    }

@@ -30,12 +30,15 @@ class Molecule;
 class Scanner;
 class Output;
 
+DECL_EXCEPTION(DearomatizationException);
+DECL_EXCEPTION2(NonUniqueDearomatizationException, DearomatizationException);
+
 // Storage for dearomatizations
 class DearomatizationsStorage
 {
    friend class DearomatizationsStorageWrapper;
 public:
-   DECL_ERROR;
+   DECL_ERROR2(DearomatizationException);
 
    explicit DearomatizationsStorage ();
 
@@ -124,7 +127,7 @@ public:
    bool* getAcceptDoubleBonds (void);
    bool  isAcceptDoubleBond   (int atom);
 
-   DECL_ERROR;
+   DECL_ERROR2(DearomatizationException);
 protected:
    void _detectAromaticGroups (int v_idx, const int *atom_external_conn);
 
@@ -212,7 +215,7 @@ protected:
 class DearomatizationMatcher
 {
 public:
-   DECL_ERROR;
+   DECL_ERROR2(DearomatizationException);
 
    DearomatizationMatcher (DearomatizationsStorage &dearomatizations, BaseMolecule &molecule,
       const int *atom_external_conn);

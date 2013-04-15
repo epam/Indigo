@@ -491,7 +491,12 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
          arom_options.unique_dearomatization = true;
          dearom->dearomatize(arom_options);
       }
-      catch (DearomatizationsGroups::Error &)
+      catch (NonUniqueDearomatizationException &ex)
+      {
+         // Do not allow non-unique dearomatizations
+         ex.throwSelf();
+      }
+      catch (DearomatizationException &)
       {
       }
       target = dearom.get();
