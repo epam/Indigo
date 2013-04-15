@@ -198,6 +198,12 @@ static void indigoSetDearomatizeVerification (int enabled)
    self.arom_options.dearomatize_check = (enabled != 0);
 }
 
+static void indigoSetDearomatizeUnique (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.unique_dearomatization = (enabled != 0);
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -233,6 +239,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 
    mgr.setOptionHandlerString("aromaticity-model", indigoSetAromaticityModel);
    mgr.setOptionHandlerBool("dearomatize-verification", indigoSetDearomatizeVerification);
+   mgr.setOptionHandlerBool("unique-dearomatization", indigoSetDearomatizeUnique);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

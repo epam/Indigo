@@ -266,6 +266,8 @@ public:
    bool preserve_ordering_in_serialize;
 
    AromaticityOptions arom_options;
+   // This option is moved out of arom_options because it should be used only in indigoDearomatize method
+   bool unique_dearomatization; 
 
 protected:
 

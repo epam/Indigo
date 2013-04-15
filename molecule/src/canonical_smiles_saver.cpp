@@ -60,7 +60,8 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
    {
       AromaticityOptions options;
       options.method = AromaticityOptions::GENERIC;
-      MoleculeDearomatizer::restoreHydrogens(mol_, true, options);
+      options.unique_dearomatization = true;
+      MoleculeDearomatizer::restoreHydrogens(mol_, options);
    }
 
    mol.clone(mol_, 0, 0);

@@ -36,7 +36,9 @@ struct AromaticityOptions
    Method method;
    bool dearomatize_check;
 
-   AromaticityOptions (Method method = BASIC) : method(method), dearomatize_check(true) {}
+   bool unique_dearomatization;
+
+   AromaticityOptions (Method method = BASIC) : method(method), dearomatize_check(true), unique_dearomatization(false) {}
 };
 
 // Aromatization classes

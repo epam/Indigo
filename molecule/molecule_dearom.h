@@ -299,7 +299,7 @@ public:
    // Returns true if all bonds were dearomatized, false overwise
    static bool dearomatizeMolecule (Molecule &mol, const AromaticityOptions &options);
 
-   static bool restoreHydrogens (Molecule &mol, bool exception_if_not_unique, const AromaticityOptions &options = AromaticityOptions());
+   static bool restoreHydrogens (Molecule &mol, const AromaticityOptions &options);
 
    void dearomatizeGroup (int group, int dearomatization_index);
    void restoreHydrogens (int group, int dearomatization_index);

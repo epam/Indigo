@@ -58,10 +58,13 @@ CEXPORT int indigoDearomatize (int object)
    {
       IndigoObject &obj = self.getObject(object);
 
+      AromaticityOptions arom_options;
+      arom_options.unique_dearomatization = self.unique_dearomatization;
+
       if (IndigoBaseMolecule::is(obj))
-         return obj.getBaseMolecule().dearomatize(self.arom_options) ? 1 : 0;
+         return obj.getBaseMolecule().dearomatize(arom_options) ? 1 : 0;
       if (IndigoBaseReaction::is(obj))
-         return obj.getBaseReaction().dearomatize(self.arom_options) ? 1 : 0;
+         return obj.getBaseReaction().dearomatize(arom_options) ? 1 : 0;
       throw IndigoError("Only molecules and reactions can be dearomatized");
    }
    INDIGO_END(-1)
