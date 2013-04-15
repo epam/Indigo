@@ -58,7 +58,7 @@ CEXPORT int indigoDearomatize (int object)
    {
       IndigoObject &obj = self.getObject(object);
 
-      AromaticityOptions arom_options;
+      AromaticityOptions arom_options = self.arom_options;
       arom_options.unique_dearomatization = self.unique_dearomatization;
 
       if (IndigoBaseMolecule::is(obj))
