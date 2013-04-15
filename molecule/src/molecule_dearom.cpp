@@ -877,11 +877,14 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
    {
       Molecule &m = _molecule.asMolecule();
       // Check if number of hydrogens are fixed
-      if (m.isImplicitHSet(v_idx) && atom_external_conn == 0)
+      if (atom_external_conn == 0)
       {
-         int impl_h = m.getImplicitH(v_idx);
-         non_aromatic_conn += impl_h;
-         impl_h_fixed = true;
+         int impl_h = m.getImplicitH_NoThrow(v_idx, -1);
+         if (impl_h != -1)
+         {
+            non_aromatic_conn += impl_h;
+            impl_h_fixed = true;
+         }
       }
    }
 
@@ -1462,12 +1465,7 @@ bool MoleculeDearomatizer::dearomatizeMolecule (Molecule &mol, const Aromaticity
 {
    DearomatizationsStorage dst;
    Dearomatizer dearomatizer(mol, 0, options);
-   int params;
-   if (options.unique_dearomatization)
-      params = Dearomatizer::PARAMS_SAVE_JUST_HETERATOMS;
-   else
-      params = Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION;
-   dearomatizer.setDearomatizationParams(params);
+   dearomatizer.setDearomatizationParams(Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION);
    dearomatizer.enumerateDearomatizations(dst);
    MoleculeDearomatizer mol_dearom(mol, dst);
 
@@ -1477,7 +1475,7 @@ bool MoleculeDearomatizer::dearomatizeMolecule (Molecule &mol, const Aromaticity
       int cnt = dst.getGroupDearomatizationsCount(i);
       if (cnt == 0)
          all_dearomatzied = false;
-      else if (cnt > 1)
+      else if (cnt > 1 && options.unique_dearomatization)
          throw DearomatizationsGroups::Error("Dearomatization is not unique");
       else
          mol_dearom.dearomatizeGroup(i, 0);
@@ -1489,13 +1487,7 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOpt
 {
    DearomatizationsStorage dst;
    Dearomatizer dearomatizer(mol, 0, options);
-   int params;
-   if (options.unique_dearomatization)
-      params = Dearomatizer::PARAMS_SAVE_JUST_HETERATOMS;
-   else
-      params = Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION;
-
-   dearomatizer.setDearomatizationParams(params);
+   dearomatizer.setDearomatizationParams(Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION);
    dearomatizer.enumerateDearomatizations(dst);
    MoleculeDearomatizer mol_dearom(mol, dst);
   
@@ -1508,7 +1500,7 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOpt
       int cnt = dst.getGroupDearomatizationsCount(i);
       if (cnt == 0)
          all_dearomatzied = false;
-      else if (cnt > 1)
+      else if (cnt > 1 && options.unique_dearomatization)
          throw DearomatizationsGroups::Error("Dearomatization is not unique. Cannot restore hydrogens.");
       else
          mol_dearom.restoreHydrogens(i, 0);
