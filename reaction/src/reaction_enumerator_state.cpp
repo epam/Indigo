@@ -616,7 +616,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator( Molecule &monomer )
 
    QS_DEF(Obj<AromaticityMatcher>, am);
    am.free();
-   am.create(ee_reactant, ee_monomer, AromaticityOptions());
+   am.create(ee_reactant, ee_monomer, _context.arom_options);
    _am = am.get();
 
    ee_monomer.unfoldHydrogens(NULL, _calcMaxHCnt(ee_reactant), true);
