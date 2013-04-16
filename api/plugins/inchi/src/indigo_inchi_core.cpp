@@ -28,6 +28,18 @@ using namespace indigo;
 // Inchi doesn't seem to support multithreading
 static OsLock inchi_lock;
 
+namespace indigo
+{
+   // Structure that matches both inchi_OutputStruct and tagINCHI_Input
+   struct InchiOutput
+   {
+       inchi_Atom     *atom;         
+       inchi_Stereo0D *stereo0D;     
+       AT_NUM          num_atoms;    
+       AT_NUM          num_stereo0D; 
+   };
+}
+
 IMPL_ERROR(IndigoInchi, "indigo-inchi")
 
 const char* IndigoInchi::version ()
@@ -82,6 +94,38 @@ static inchi_BondType getInchiBondType (int bond_order)
    throw IndigoInchi::Error("unexpected bond order %d", bond_order);
 }
 
+void IndigoInchi::loadMoleculeFromAux (const char *aux, Molecule &mol)
+{
+   // lock
+   OsLocker locker(inchi_lock);
+
+   inchi_Input data_inp;
+   memset(&data_inp, 0, sizeof(data_inp));
+   InchiInpData data;
+   memset(&data, 0, sizeof(data));
+   data.pInp = &data_inp;
+
+   try 
+   {
+      int retcode = Get_inchi_Input_FromAuxInfo((char*)aux, 0, 0, &data);
+      if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING )
+         throw Error("Indigo-InChI: Aux InChI loading failed: %s. Code: %d.", 
+            data.szErrMsg, retcode);
+
+      InchiOutput output;
+      output.atom = data_inp.atom;
+      output.stereo0D = data_inp.stereo0D;
+      output.num_atoms = data_inp.num_atoms;
+      output.num_stereo0D = data_inp.num_stereo0D;
+      parseInchiOutput(output, mol);
+   }
+   catch (...)
+   {
+      Free_inchi_Input(&data_inp);
+      throw;
+   }
+}
+
 void IndigoInchi::loadMoleculeFromInchi (const char *inchi_string, Molecule &mol)
 {
    // lock
@@ -106,7 +150,12 @@ void IndigoInchi::loadMoleculeFromInchi (const char *inchi_string, Molecule &mol
          throw Error("Indigo-InChI: InChI loading failed: %s. Code: %d.", 
             inchi_output.szMessage, retcode);
 
-      parseInchiOutput(inchi_output, mol);
+      InchiOutput output;
+      output.atom = inchi_output.atom;
+      output.stereo0D = inchi_output.stereo0D;
+      output.num_atoms = inchi_output.num_atoms;
+      output.num_stereo0D = inchi_output.num_stereo0D;
+      parseInchiOutput(output, mol);
    }
    catch (...)
    {
@@ -145,7 +194,7 @@ void IndigoInchi::neutralizeV5Nitrogen (Molecule &mol)
       }
 }
 
-void IndigoInchi::parseInchiOutput (const inchi_OutputStruct &inchi_output, Molecule &mol)
+void IndigoInchi::parseInchiOutput (const InchiOutput &inchi_output, Molecule &mol)
 {
    mol.clear();
 

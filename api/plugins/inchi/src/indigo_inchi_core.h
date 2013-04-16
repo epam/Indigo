@@ -23,7 +23,9 @@
 namespace indigo
 {
 
+// Forward declaration
 class Molecule; 
+struct InchiOutput;
 
 class IndigoInchi
 {
@@ -39,9 +41,11 @@ public:
    Array<char> warning, log, auxInfo;
 
    void loadMoleculeFromInchi (const char *inchi, Molecule &mol);
+   void loadMoleculeFromAux (const char *aux, Molecule &mol);
+
    void saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi);
 
-   void parseInchiOutput (const inchi_OutputStruct &inchi_output, Molecule &mol);
+   void parseInchiOutput (const InchiOutput &inchi_output, Molecule &mol);
 
    void generateInchiInput (Molecule &mol, inchi_Input &input, 
       Array<inchi_Atom> &atoms, Array<inchi_Stereo0D> &stereo);
