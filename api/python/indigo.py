@@ -40,11 +40,11 @@ class Indigo(object):
   CHAIN = 9
   RING = 10
   ALLENE = 11
-  
+
   SINGLET = 101
   DOUBLET = 102
   TRIPLET = 103
-   
+
   RC_NOT_CENTER     = -1
   RC_UNMARKED       =  0
   RC_CENTER         =  1
@@ -54,13 +54,13 @@ class Indigo(object):
 
   _crt = None
   _lib = None
-  
+
   class IndigoObject(object):
     def __init__ (self, dispatcher, id, parent = None):
       self.id = id
       self.dispatcher = dispatcher
       self.parent = parent
-    
+
     def grossFormula (self):
       self.dispatcher._setSID()
       gfid = self.dispatcher._checkResult(Indigo._lib.indigoGrossFormula(self.id))
@@ -76,7 +76,7 @@ class Indigo(object):
       buf = self.dispatcher.writeBuffer()
       self.dispatcher._checkResult(Indigo._lib.indigoSaveMDLCT(self.id, buf.id))
       return buf.toBuffer()
-    
+
     def xyz (self):
       self.dispatcher._setSID()
       xyz = Indigo._lib.indigoXYZ(self.id)
@@ -110,7 +110,7 @@ class Indigo(object):
       if getattr(Indigo, "_lib", None) is not None:
         self.dispatcher._setSID()
         Indigo._lib.indigoFree(self.id)
-        
+
     def __iter__ (self):
       return self
     def __next__ (self):
@@ -222,14 +222,14 @@ class Indigo(object):
     Indigo._lib.indigoSimilarity.argtypes = [c_int, c_int, c_char_p]
     Indigo._lib.indigoDbgBreakpoint.restype = None
     Indigo._lib.indigoDbgBreakpoint.argtypes = None
-    
+
   def __init__ (self, path = None):
     if Indigo._lib == None:
       self._initStatic(path)
-      
+
     self._sid = Indigo._lib.indigoAllocSessionId()
     self._setSID()
-    
+
     self.countReferences = self._static_int(self._lib.indigoCountReferences)
     self.createMolecule = self._static_obj(self._lib.indigoCreateMolecule)
     self.createQueryMolecule = self._static_obj(self._lib.indigoCreateQueryMolecule)
@@ -261,18 +261,18 @@ class Indigo(object):
     self.setTautomerRule = self._static_void_int_string_string(self._lib.indigoSetTautomerRule)
     self.removeTautomerRule = self._static_void_int(self._lib.indigoRemoveTautomerRule)
     self.clearTautomerRules = self._static_void(self._lib.indigoClearTautomerRules)
-    
+
     self.extractCommonScaffold = self._static_obj_array_string(self._lib.indigoExtractCommonScaffold)
     self.decomposeMolecules = self._static_obj_obj_array(self._lib.indigoDecomposeMolecules)
     self.createDecomposer = self._static_obj_obj(self._lib.indigoCreateDecomposer)
     self.reactionProductEnumerate = self._static_obj_obj_array(self._lib.indigoReactionProductEnumerate)
     self.transform = self._static_void_obj_obj(self._lib.indigoTransform)
-    
+
     self.createFileSaver = self._static_obj_string_string(self._lib.indigoCreateFileSaver)
 
     self.dbgBreakpoint = Indigo._lib.indigoDbgBreakpoint
     self.IndigoObject.dbgInternalType = Indigo._member_string(Indigo._lib.indigoDbgInternalType)
-    
+
     self.IndigoObject.close = Indigo._member_void(Indigo._lib.indigoClose)
     self.IndigoObject.clone = Indigo._member_obj(Indigo._lib.indigoClone)
 
@@ -293,7 +293,7 @@ class Indigo(object):
     self.IndigoObject.iterateMolecules  = Indigo._member_obj(Indigo._lib.indigoIterateMolecules)
 
     self.IndigoObject.optimize = Indigo._member_void_string(Indigo._lib.indigoOptimize)
-    
+
     self.IndigoObject.rxnfile = Indigo._member_string(Indigo._lib.indigoRxnfile)
     self.IndigoObject.saveRxnfile = Indigo._member_void_string(Indigo._lib.indigoSaveRxnfileToFile)
     self.IndigoObject.automap = Indigo._member_void_string(Indigo._lib.indigoAutomap)
@@ -304,7 +304,7 @@ class Indigo(object):
     self.IndigoObject.setReactingCenter = Indigo._member_void_obj_int(Indigo._lib.indigoSetReactingCenter)
     self.IndigoObject.clearAAM = Indigo._member_void(Indigo._lib.indigoClearAAM)
     self.IndigoObject.correctReactingCenters = Indigo._member_void(Indigo._lib.indigoCorrectReactingCenters)
-    
+
     self.IndigoObject.iterateAtoms = Indigo._member_obj(Indigo._lib.indigoIterateAtoms)
     self.IndigoObject.iteratePseudoatoms = Indigo._member_obj(Indigo._lib.indigoIteratePseudoatoms)
     self.IndigoObject.iterateRSites = Indigo._member_obj(Indigo._lib.indigoIterateRSites)
@@ -314,7 +314,7 @@ class Indigo(object):
     self.IndigoObject.iterateRGroupFragments = Indigo._member_obj(Indigo._lib.indigoIterateRGroupFragments)
     self.IndigoObject.countAttachmentPoints = Indigo._member_int(Indigo._lib.indigoCountAttachmentPoints)
     self.IndigoObject.iterateAttachmentPoints = Indigo._member_obj_int(Indigo._lib.indigoIterateAttachmentPoints)
-    
+
     self.IndigoObject.isPseudoatom = Indigo._member_bool(Indigo._lib.indigoIsPseudoatom)
     self.IndigoObject.isRSite = Indigo._member_bool(Indigo._lib.indigoIsRSite)
     self.IndigoObject.stereocenterType = Indigo._member_int(Indigo._lib.indigoStereocenterType)
@@ -342,7 +342,7 @@ class Indigo(object):
     self.IndigoObject.countRepeatingUnits = Indigo._member_int(Indigo._lib.indigoCountRepeatingUnits)
     self.IndigoObject.countMultipleGroups = Indigo._member_int(Indigo._lib.indigoCountMultipleGroups)
     self.IndigoObject.countGenericSGroups = Indigo._member_int(Indigo._lib.indigoCountGenericSGroups)
-    
+
     self.IndigoObject.iterateSuperatoms = Indigo._member_obj(Indigo._lib.indigoIterateSuperatoms)
     self.IndigoObject.iterateDataSGroups = Indigo._member_obj(Indigo._lib.indigoIterateDataSGroups)
     self.IndigoObject.getSuperatom = Indigo._member_obj_int(Indigo._lib.indigoGetSuperatom)
@@ -422,7 +422,7 @@ class Indigo(object):
     self.IndigoObject.mostAbundantMass = Indigo._member_float(Indigo._lib.indigoMostAbundantMass)
 
     self.IndigoObject.serialize = Indigo._member_buf(Indigo._lib.indigoSerialize)
-    self.IndigoObject.toBuffer = Indigo._member_buf(Indigo._lib.indigoToBuffer)
+    self.IndigoObject.toBuffer = Indigo._member_bytebuf(Indigo._lib.indigoToBuffer)
 
     self.IndigoObject.canonicalSmiles = Indigo._member_string(Indigo._lib.indigoCanonicalSmiles)
     self.IndigoObject.layeredCode = Indigo._member_string(Indigo._lib.indigoLayeredCode)
@@ -431,14 +431,14 @@ class Indigo(object):
     self.IndigoObject.hasCoord = Indigo._member_bool(Indigo._lib.indigoHasCoord)
     self.IndigoObject.hasZCoord = Indigo._member_bool(Indigo._lib.indigoHasZCoord)
     self.IndigoObject.isChiral = Indigo._member_bool(Indigo._lib.indigoIsChiral)
-    
+
     self.IndigoObject.expandAbbreviations = Indigo._member_int(Indigo._lib.indigoExpandAbbreviations)
-    
+
     self.IndigoObject.aromatize = Indigo._member_bool(Indigo._lib.indigoAromatize)
     self.IndigoObject.dearomatize = Indigo._member_bool(Indigo._lib.indigoDearomatize)
     self.IndigoObject.foldHydrogens = Indigo._member_void(Indigo._lib.indigoFoldHydrogens)
     self.IndigoObject.unfoldHydrogens = Indigo._member_void(Indigo._lib.indigoUnfoldHydrogens)
-    self.IndigoObject.layout = Indigo._member_void(Indigo._lib.indigoLayout)    
+    self.IndigoObject.layout = Indigo._member_void(Indigo._lib.indigoLayout)
 
     self.IndigoObject.smiles = Indigo._member_string(Indigo._lib.indigoSmiles)
     self.IndigoObject.name = Indigo._member_string(Indigo._lib.indigoName)
@@ -467,27 +467,27 @@ class Indigo(object):
     self.IndigoObject.append = Indigo._member_void_obj(Indigo._lib.indigoAppend)
 
     self.IndigoObject.normalize = Indigo._member_bool_string(Indigo._lib.indigoNormalize)
-    
+
     self.IndigoObject.iterateArray = Indigo._member_obj(Indigo._lib.indigoIterateArray)
     self.IndigoObject.count = Indigo._member_int(Indigo._lib.indigoCount)
     self.IndigoObject.clear = Indigo._member_void(Indigo._lib.indigoClear)
     self.IndigoObject.arrayAdd = Indigo._member_int_obj(Indigo._lib.indigoArrayAdd)
     self.IndigoObject.at = Indigo._member_obj_int(Indigo._lib.indigoAt)
-    
+
     self.IndigoObject.match = Indigo._member_obj_obj(Indigo._lib.indigoMatch)
     self.IndigoObject.ignoreAtom = Indigo._member_void_obj(Indigo._lib.indigoIgnoreAtom)
     self.IndigoObject.unignoreAtom = Indigo._member_void_obj(Indigo._lib.indigoUnignoreAtom)
     self.IndigoObject.unignoreAllAtoms = Indigo._member_void(Indigo._lib.indigoUnignoreAllAtoms)
     self.IndigoObject.countMatches = Indigo._member_int_obj(Indigo._lib.indigoCountMatches)
     self.IndigoObject.countMatchesWithLimit = Indigo._member_int_obj_int(Indigo._lib.indigoCountMatchesWithLimit)
-    
+
     self.IndigoObject.iterateMatches = Indigo._member_obj_obj(Indigo._lib.indigoIterateMatches)
     self.IndigoObject.highlightedTarget = Indigo._member_obj(Indigo._lib.indigoHighlightedTarget);
     self.IndigoObject.mapAtom = Indigo._member_obj_obj(Indigo._lib.indigoMapAtom);
-    self.IndigoObject.mapBond = Indigo._member_obj_obj(Indigo._lib.indigoMapBond);  
+    self.IndigoObject.mapBond = Indigo._member_obj_obj(Indigo._lib.indigoMapBond);
 
     self.IndigoObject.mapMolecule = Indigo._member_obj_obj(Indigo._lib.indigoMapMolecule);
-  
+
     self.IndigoObject.allScaffolds = Indigo._member_obj(Indigo._lib.indigoAllScaffolds);
     self.IndigoObject.decomposedMoleculeScaffold = Indigo._member_obj(Indigo._lib.indigoDecomposedMoleculeScaffold)
     self.IndigoObject.iterateDecomposedMolecules = Indigo._member_obj(Indigo._lib.indigoIterateDecomposedMolecules)
@@ -496,7 +496,7 @@ class Indigo(object):
     self.IndigoObject.decomposeMolecule = Indigo._member_obj_obj(Indigo._lib.indigoDecomposeMolecule)
     self.IndigoObject.iterateDecompositions = Indigo._member_obj(Indigo._lib.indigoIterateDecompositions)
     self.IndigoObject.addDecomposition = Indigo._member_void_obj(Indigo._lib.indigoAddDecomposition)
-    
+
     self.IndigoObject.index = Indigo._member_int(Indigo._lib.indigoIndex)
 
     self.IndigoObject.createSubmolecule = Indigo._member_obj_iarr(Indigo._lib.indigoCreateSubmolecule)
@@ -509,20 +509,20 @@ class Indigo(object):
 
     self.IndigoObject._next = Indigo._member_obj(Indigo._lib.indigoNext)
     self.IndigoObject.hasNext = Indigo._member_bool(Indigo._lib.indigoHasNext)
-    
+
   @staticmethod
   def _make_wrapper_func (wrapper, func):
-    """Return wrapper function with changed name 
-    """    
+    """Return wrapper function with changed name
+    """
     name = func.__name__ + "_wrapper"
     c = wrapper.func_code
     newcode = new.code( c.co_argcount, c.co_nlocals, c.co_stacksize,
                         c.co_flags, c.co_code, c.co_consts, c.co_names,
                         c.co_varnames, "indigo core", name, 1, c.co_lnotab, c.co_freevars, c.co_cellvars )
-               
+
     new_wrapper = new.function(newcode, globals(), name=name, closure=wrapper.func_closure, argdefs=wrapper.func_defaults)
     return new_wrapper
-     
+
   def _static_obj (self, func):
     func.restype = c_int
     func.argtypes = []
@@ -564,7 +564,7 @@ class Indigo(object):
         return None
       return Indigo.IndigoObject(self, self._checkResult(res))
     return self._make_wrapper_func(newfunc, func)
-  
+
   def _static_int (self, func):
     func.restype = c_int
     func.argtypes = []
@@ -580,7 +580,7 @@ class Indigo(object):
       self._setSID()
       return self._checkResult(func(item1.id, item2.id))
     return self._make_wrapper_func(newfunc, func)
-    
+
   def _static_void_obj_obj (self, func):
     func.restype = c_int
     func.argtypes = [c_int, c_int]
@@ -588,7 +588,7 @@ class Indigo(object):
       self._setSID()
       self._checkResult(func(item1.id, item2.id))
     return self._make_wrapper_func(newfunc, func)
-   
+
   def _static_obj_string (self, func):
     func.restype = c_int
     func.argtypes = [c_char_p]
@@ -640,7 +640,7 @@ class Indigo(object):
         return None
       return Indigo.IndigoObject(self, self._checkResult(res))
     return self._make_wrapper_func(newfunc, func)
-    
+
   def _static_obj_array_string (self, func):
     func.restype = c_int
     func.argtypes = [c_int, c_char_p]
@@ -665,7 +665,7 @@ class Indigo(object):
         return None
       return Indigo.IndigoObject(self, self._checkResult(res), obj)
     return self._make_wrapper_func(newfunc, func)
-    
+
   def _static_obj_obj_obj (self, func):
     func.restype = c_int
     func.argtypes = [c_int, c_int]
@@ -693,7 +693,7 @@ class Indigo(object):
     Indigo._lib.indigoSetSessionId(self._sid)
 
   @staticmethod
-  def _member_string (func): 
+  def _member_string (func):
     func.restype = c_char_p
     func.argtypes = [c_int]
     def newfunc (self):
@@ -703,18 +703,33 @@ class Indigo(object):
 
   @staticmethod
   def _member_buf (func):
-    func.restype = c_int
-    func.argtypes = [c_int, POINTER(POINTER(c_char)), POINTER(c_int)]
-    def newfunc (self):
-      self.dispatcher._setSID()
-      c_size = c_int()
-      c_buf = POINTER(c_char)()
-      self.dispatcher._checkResult(func(self.id, pointer(c_buf), pointer(c_size)))
-      res = array('c')
-      for i in xrange(c_size.value):
-        res.append(c_buf[i])
-      return res
-    return Indigo._make_wrapper_func(newfunc, func)
+      func.restype = c_int
+      func.argtypes = [c_int, POINTER(POINTER(c_char)), POINTER(c_int)]
+      def newfunc (self):
+          self.dispatcher._setSID()
+          c_size = c_int()
+          c_buf = POINTER(c_char)()
+          self.dispatcher._checkResult(func(self.id, pointer(c_buf), pointer(c_size)))
+          res = array('c')
+          for i in xrange(c_size.value):
+              res.append(c_buf[i])
+          return res
+      return Indigo._make_wrapper_func(newfunc, func)
+
+  @staticmethod
+  def _member_bytebuf (func):
+      func.restype = c_int
+      func.argtypes = [c_int, POINTER(POINTER(c_byte)), POINTER(c_int)]
+      def newfunc (self):
+          self.dispatcher._setSID()
+          c_size = c_int()
+          c_buf = POINTER(c_byte)()
+          self.dispatcher._checkResult(func(self.id, pointer(c_buf), pointer(c_size)))
+          res = array('b')
+          for i in xrange(c_size.value):
+              res.append(c_buf[i])
+          return res
+      return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
   def _member_intbuf (func):
@@ -738,7 +753,7 @@ class Indigo(object):
     def newfunc (self):
       self.dispatcher._setSID()
       res = self.dispatcher._checkResult(func(self.id))
-      return res == 1                                                 
+      return res == 1
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
@@ -748,7 +763,7 @@ class Indigo(object):
     def newfunc (self, str):
       self.dispatcher._setSID()
       res = self.dispatcher._checkResult(func(self.id, str))
-      return res == 1                                                 
+      return res == 1
     return Indigo._make_wrapper_func(newfunc, func)
 
   @staticmethod
@@ -874,7 +889,7 @@ class Indigo(object):
       self.dispatcher._setSID()
       return self.dispatcher._checkResult(func(self.id, param.id))
     return Indigo._make_wrapper_func(newfunc, func)
-      
+
   @staticmethod
   def _member_int_obj_int (func):
     func.restype = c_int
@@ -883,7 +898,7 @@ class Indigo(object):
       self.dispatcher._setSID()
       return self.dispatcher._checkResult(func(self.id, param.id, param2))
     return Indigo._make_wrapper_func(newfunc, func)
-   
+
   @staticmethod
   def _member_obj (func):
     func.restype = c_int
@@ -928,8 +943,8 @@ class Indigo(object):
       self.dispatcher._setSID()
       self.dispatcher._checkResult(func(self.id, param, v1, v2, v3, v4))
     return Indigo._make_wrapper_func(newfunc, func)
-    
-    
+
+
   @staticmethod
   def _member_obj_obj (func):
     func.restype = c_int
@@ -1031,7 +1046,7 @@ class Indigo(object):
         return None
       return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
-    
+
   @staticmethod
   def _member_void_iarr (func):
     func.restype = c_int
@@ -1119,14 +1134,14 @@ class Indigo(object):
     if result is None:
       raise IndigoException(Indigo._lib.indigoGetLastError())
     return result
-    
+
   def _checkResultString (self, result):
     return self._checkResultPtr(result)
 
   def __del__ (self):
     if hasattr(self, '_lib'):
       Indigo._lib.indigoReleaseSessionId(self._sid)
-         
+
   def convertToArray (self, iteratable):
     if isinstance(iteratable, Indigo.IndigoObject):
       return iteratable

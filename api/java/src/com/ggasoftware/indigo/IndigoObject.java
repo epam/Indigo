@@ -1435,20 +1435,26 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       if (options == null)
          options = "";
-      _lib.indigoOptimize(self, options);
+      Indigo.checkResult(this, _lib.indigoOptimize(self, options));
    }
 
-   public void normalize ()
+   public boolean normalize ()
    {
-      normalize(null);
+      return normalize(null);
    }
 
-   public void normalize (String options)
+   public boolean normalize (String options)
    {
       dispatcher.setSessionID();
       if (options == null)
          options = "";
-      _lib.indigoNormalize(self, options);
+      return (Indigo.checkResult(this, _lib.indigoNormalize(self, options)) == 1);
+   }
+
+   public int expandAbbreviations()
+   {
+         dispatcher.setSessionID();
+         return Indigo.checkResult(this, _lib.indigoExpandAbbreviations(self));
    }
 
    public String dbgInternalType ()

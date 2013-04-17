@@ -476,6 +476,20 @@ namespace com.ggasoftware.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoReactionProductEnumerate(reaction.self, monomers.self)));
         }
 
+        public IndigoObject reactionProductEnumerate(IndigoObject reaction, IEnumerable monomers)
+        {
+            setSessionID();
+            IndigoObject indigoArrayArray = createArray();
+            foreach (IEnumerable iter in monomers) {
+                IndigoObject indigoArray = createArray();
+                foreach(IndigoObject monomer in iter) {
+                    indigoArray.arrayAdd(monomer);
+                }
+                indigoArrayArray.arrayAdd(indigoArray);
+            }
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoReactionProductEnumerate(reaction.self, indigoArrayArray.self)));
+        }
+
         public IndigoObject createSaver(IndigoObject output, string format)
         {
             setSessionID();

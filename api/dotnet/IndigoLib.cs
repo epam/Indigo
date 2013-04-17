@@ -319,6 +319,8 @@ namespace com.ggasoftware.indigo
         int indigoReactionProductEnumerate(int reaction, int monomers);
         int indigoTransform(int reaction, int monomers);
 
+        int indigoExpandAbbreviations (int structure);
+
         sbyte* indigoDbgInternalType(int item);
     }
 }

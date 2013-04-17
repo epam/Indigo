@@ -670,6 +670,26 @@ public class Indigo {
         return new IndigoObject(this, res);
     }
 
+    public IndigoObject reactionProductEnumerate(IndigoObject reaction, Iterable<Iterable> monomers) {
+        setSessionID();
+        Object[] guard = new Object[]{this, reaction, monomers};
+
+        IndigoObject monomersArrayArray = createArray();
+        for (Iterable<IndigoObject> iter: monomers) {
+            IndigoObject monomersArray = createArray();
+            for (IndigoObject monomer: iter) {
+                monomersArray.arrayAdd(monomer);
+            }
+            monomersArrayArray.arrayAdd(monomersArray);
+        }
+
+        int res = checkResult(guard, _lib.indigoReactionProductEnumerate(reaction.self, monomersArrayArray.self));
+        if (res == 0)
+            return null;
+
+        return new IndigoObject(this, res);
+    }
+
     public void transform(IndigoObject reaction, IndigoObject monomer) {
         setSessionID();
         Object[] guard = new Object[]{this, reaction, monomer};

@@ -1458,17 +1458,23 @@ namespace com.ggasoftware.indigo
             dispatcher.checkResult(_indigo_lib.indigoOptimize(self, options));
         }
 
-        public void normalize()
+        public bool normalize()
         {
-            normalize(null);
+            return normalize(null);
         }
 
-        public void normalize(string options)
+        public bool normalize(string options)
         {
             dispatcher.setSessionID();
             if (options == null)
                 options = "";
-            dispatcher.checkResult(_indigo_lib.indigoNormalize(self, options));
+            return (dispatcher.checkResult(_indigo_lib.indigoNormalize(self, options)) == 1);
+        }
+
+        public int expandAbbreviations()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoExpandAbbreviations(self));
         }
 
         public String dbgInternalType()
