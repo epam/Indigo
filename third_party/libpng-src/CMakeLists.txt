@@ -14,7 +14,6 @@ if (NOT PNG_FOUND)
     include_directories(include)
     set(PNG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
     aux_source_directory(src PNG_SOURCES)
-    set()
     if (NOT ZLIB_FOUND)
 	     message(STATUS "Finding zlib for libpng")
 		  # TODO: if zlib is local that use it too
