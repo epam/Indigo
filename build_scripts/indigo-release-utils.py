@@ -70,7 +70,7 @@ if not os.path.exists("dist"):
 dist_dir = join(root, "dist")
 
 os.chdir(full_build_dir)
-command = "cmake -G \"%s\" \"%s\" \"%s\"" % (args.generator, args.params, project_dir)
+command = 'cmake -G \"%s\" %s %s' % (args.generator, args.params, project_dir)
 print(command)
 subprocess.check_call(command, shell=True)
 
@@ -82,7 +82,9 @@ for f in os.listdir(full_build_dir):
     if ext == ".zip":
         os.remove(join(full_build_dir, f))
 
-subprocess.call("cmake --build . --config %s" % (args.config), shell=True)
+command = "cmake --build . --config %s" % (args.config)
+print command
+subprocess.call(command, shell=True)
 if args.generator.find("Unix Makefiles") != -1:
     subprocess.check_call("make package", shell=True)
 elif args.generator.find("Xcode") != -1:
