@@ -81,6 +81,12 @@ void RamStorage::readBlock (int block_id, byte *data)
 
 void RamStorage::writeBlock (int block_id, const byte *data)
 {
+   if (block_id >= _blocks.size())
+      _blocks.expand(block_id + 1);
+
+   if (_blocks[block_id].get() == 0)
+      _blocks[block_id].reset(new byte[_block_size]);
+
    memcpy(_blocks[block_id].get(), data, _block_size);
    _file.seekp(block_id * _block_size);
    _file.write((char *)data, _block_size);

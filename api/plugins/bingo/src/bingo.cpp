@@ -136,7 +136,11 @@ CEXPORT int bingoDeleteRecord (int db, int index)
 {
    INDIGO_BEGIN
    {
-      throw BingoException("bingoDeleteRecord is not implemented yet");
+      bingo::Index &bingo_index = _bingo_instances.ref(db);
+
+      bingo_index.remove(index);
+
+      return index;
    }
    INDIGO_END(-1);
 }

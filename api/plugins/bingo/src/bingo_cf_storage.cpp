@@ -34,15 +34,21 @@ void CfStorage::load (const char *cf_filename, const char *offset_filename)
    int i = 0;
    while (_offset_infile.read((char *)(&addr), sizeof(addr)))
    {
-      _cf_infile.seekg(addr.offset);
-      _cf_infile.read(_cf_buf, addr.len);
-      _cf_buf[addr.len] = 0;
+      char *buf = new char[addr.len];
 
-      _cf_strings.push_back(_cf_buf);
+      _cf_infile.seekg(addr.offset);
+      _cf_infile.read(buf, addr.len);
+
+      _CfBuf &cf_buf = _cf_strings.push();
+      
+      cf_buf.buf.reset(buf);
+      cf_buf.len = addr.len;
+
       if (i % 100000 == 0)
          std::cout << i << std::endl;
       i++;
    }
+
    _cf_infile.close();
    _offset_infile.close();
    _cf_infile.open(cf_filename, std::ios::in | std::ios::app | std::ios::binary);
@@ -51,14 +57,14 @@ void CfStorage::load (const char *cf_filename, const char *offset_filename)
 
 const char * CfStorage::get (int idx, int &len)
 {
-   if (_cf_strings[idx].length() == 0)
+   if (_cf_strings[idx].len == 0)
    {
       len = -1;
       return 0;
    }
 
-   len = (int)_cf_strings[idx].length();
-   return _cf_strings[idx].c_str();
+   len = (int)_cf_strings[idx].len;
+   return _cf_strings[idx].buf.get();
 }
 
 void CfStorage::add (const char *data, int len, int idx)
@@ -68,8 +74,10 @@ void CfStorage::add (const char *data, int len, int idx)
 
    if (idx >= _cf_strings.size())
       _cf_strings.resize(idx + 1);
-   _cf_strings[idx].append(data, 0, len);
-   _cf_strings[idx].append(0);
+
+   _cf_strings[idx].buf.reset(new char[len]);
+   memcpy(_cf_strings[idx].buf.get(), data, len);
+   _cf_strings[idx].len = len;
 
    _cf_outfile.seekp(0, std::ios::end);
    addr.offset = (int)_cf_outfile.tellp();
@@ -88,7 +96,8 @@ void CfStorage::add (const char *data, int len, int idx)
 
 void CfStorage::remove (int idx)
 {
-   _cf_strings[idx].clear();
+   _cf_strings[idx].buf.release();
+   _cf_strings[idx].len = -1;
 
    _Addr addr;
    addr.len = -1;

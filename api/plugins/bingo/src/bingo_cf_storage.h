@@ -1,6 +1,7 @@
 #ifndef __cmf_storage__
 #define __cmf_storage__
 
+#include "base_cpp\obj_array.h"
 #include "base_cpp\array.h"
 #include "base_cpp\tlscont.h"
 #include "base_cpp\tlscont.h"
@@ -34,13 +35,20 @@ namespace bingo
    
       struct _Addr
       {
-         int offset;
-         int len;
+         unsigned long offset;
+         long len;
       };
 
       int _cf_count;
 
-      std::vector<std::string> _cf_strings;
+      
+      struct _CfBuf
+      {
+         AutoPtr<char> buf;
+         long len;
+      };
+
+      ObjArray<_CfBuf> _cf_strings;
 
       char _cf_buf[_max_cf_len];
       std::ifstream _cf_infile;

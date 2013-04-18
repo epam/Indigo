@@ -120,7 +120,7 @@ int BaseIndex::add (/* const */ IndexObject &obj)
 
 void BaseIndex::remove (int id)
 {
-   throw Exception("Not implemented yet...");
+   _cf_storage.remove(id);
 }
 
 const MoleculeFingerprintParameters & BaseIndex::getFingerprintParams () const

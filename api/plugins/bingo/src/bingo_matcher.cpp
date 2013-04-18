@@ -263,6 +263,9 @@ bool MoleculeSubMatcher::_tryCurrent ()// const
    BufferScanner buf_scn(cf_str, cf_len);
    CmfLoader cmf_loader(buf_scn);
 
+   if (cf_len == -1)
+      return false;
+
    cmf_loader.loadMolecule(target_mol);
    profTimerStop(tr_g);
 
@@ -304,6 +307,9 @@ bool ReactionSubMatcher::_tryCurrent ()// const
 
    int cf_len;
    const char *cf_str = cf_storage.get(_current_id, cf_len);
+
+   if (cf_len == -1)
+      return false;
 
    BufferScanner buf_scn(cf_str, cf_len);
    CrfLoader crf_loader(buf_scn);
