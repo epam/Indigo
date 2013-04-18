@@ -43,8 +43,8 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
    MoleculeFingerprintParameters fp_params;
 
    fp_params.ext = 0;
-   fp_params.any_qwords = 4;
-   fp_params.ord_qwords = 4;
+   fp_params.any_qwords = 15;
+   fp_params.ord_qwords = 25;
    fp_params.tau_qwords = 0;
    fp_params.sim_qwords = 8;
    
@@ -107,6 +107,8 @@ CEXPORT int bingoInsertRecordObj (int db, int obj_id)
       {
          if (!IndigoMolecule::is(obj))
             throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
+
+         obj.getBaseMolecule().aromatize();
          
          bingo::IndexMolecule ind_mol(obj.getMolecule());
          int id = bingo_index.add(ind_mol);
@@ -116,6 +118,8 @@ CEXPORT int bingoInsertRecordObj (int db, int obj_id)
       {
          if (!IndigoReaction::is(obj))
             throw BingoException("bingoInsertRecordObj: Only reaction objects can be added to reaction index");
+
+         obj.getBaseReaction().aromatize();
 
          int id = bingo_index.add(bingo::IndexReaction(obj.getReaction()));
          return id;
@@ -145,6 +149,8 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
       
       if (IndigoQueryMolecule::is(obj))
       {
+         obj.getBaseMolecule().aromatize();
+
          AutoPtr<bingo::MoleculeSubstructureQueryData> query_data(new bingo::MoleculeSubstructureQueryData(obj.getQueryMolecule()));
 
          bingo::MoleculeIndex &bingo_index = dynamic_cast<bingo::MoleculeIndex &>(_bingo_instances.ref(db));
@@ -153,6 +159,8 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
       }
       else if (IndigoQueryReaction::is(obj))
       {
+         obj.getBaseReaction().aromatize();
+
          AutoPtr<bingo::ReactionSubstructureQueryData> query_data(new bingo::ReactionSubstructureQueryData(obj.getQueryReaction()));
 
          bingo::ReactionIndex &bingo_index = dynamic_cast<bingo::ReactionIndex &>(_bingo_instances.ref(db));
@@ -173,6 +181,8 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
       
       if (IndigoMolecule::is(obj))
       {
+         obj.getBaseMolecule().aromatize();
+
          AutoPtr<bingo::MoleculeSimilarityQueryData> query_data(new bingo::MoleculeSimilarityQueryData(obj.getMolecule(), min, max));
 
          bingo::MoleculeIndex &bingo_index = dynamic_cast<bingo::MoleculeIndex &>(_bingo_instances.ref(db));
@@ -181,6 +191,8 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
       }
       else if (IndigoReaction::is(obj))
       {
+         obj.getBaseReaction().aromatize();
+
          AutoPtr<bingo::ReactionSimilarityQueryData> query_data(new bingo::ReactionSimilarityQueryData(obj.getReaction(), min, max));
 
          bingo::ReactionIndex &bingo_index = dynamic_cast<bingo::ReactionIndex &>(_bingo_instances.ref(db));

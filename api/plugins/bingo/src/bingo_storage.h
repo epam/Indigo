@@ -3,6 +3,9 @@
 
 #include "base_cpp\output.h"
 #include "base_cpp\scanner.h"
+#include "base_cpp\auto_ptr.h"
+
+#include "fstream"
 
 using namespace indigo;
 
@@ -37,6 +40,22 @@ namespace bingo
    private:
       FileOutput *_file_output;
       FileScanner *_file_scanner;
+   };
+
+   class RamStorage : public Storage
+   {
+   public:
+      RamStorage (const char *filename, int block_size, bool create);
+
+      virtual void readBlock (int block_id, byte *data);
+
+      virtual void writeBlock (int block_id, const byte *data);
+
+      virtual ~RamStorage ();
+
+   private:
+      std::ofstream _file;
+      ObjArray<AutoPtr<byte>> _blocks;
    };
 };
 

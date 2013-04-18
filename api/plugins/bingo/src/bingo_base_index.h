@@ -85,7 +85,7 @@ namespace bingo
       RowFpStorage _sim_fp_storage;
       MoleculeFingerprintParameters _fp_params;
       CfStorage _cf_storage;
-      AutoPtr<FileStorageManager> _file_storage_manager;
+      AutoPtr<StorageManager> _storage_manager;
       Properties _properties;
       std::string _location; // TODO: move to StorageManager --DONE
 

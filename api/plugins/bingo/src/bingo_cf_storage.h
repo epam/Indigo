@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <string>
 
 using namespace indigo;
 
@@ -28,8 +30,8 @@ namespace bingo
       void remove (int idx);
 
    private:
-      static const int _max_cf_len = 1024;
-
+      static const int _max_cf_len = 8192;
+   
       struct _Addr
       {
          int offset;
@@ -38,7 +40,9 @@ namespace bingo
 
       int _cf_count;
 
-      char _cur_cf_str[_max_cf_len];
+      std::vector<std::string> _cf_strings;
+
+      char _cf_buf[_max_cf_len];
       std::ifstream _cf_infile;
       std::ifstream _offset_infile;
       std::ofstream _cf_outfile;

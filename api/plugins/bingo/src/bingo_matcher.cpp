@@ -2,6 +2,7 @@
 
 #include "molecule\molecule_substructure_matcher.h"
 
+#include "base_c/bitarray.h"
 #include "base_cpp/profiling.h"
 
 using namespace indigo;
@@ -89,6 +90,7 @@ bool BaseSubstructureMatcher::next ()
    {
       if (_current_cand_id == _candidates.size())
       {
+         profTimerStart(tf, "sub_find_cand");
          _current_pack++;
          if (_current_pack < _fp_storage.getPackCount())
          {
@@ -102,6 +104,7 @@ bool BaseSubstructureMatcher::next ()
          }
 
          _current_cand_id = 0;
+         profTimerStop(tf);
       }
 
       if (_candidates.size() == 0)
@@ -109,12 +112,13 @@ bool BaseSubstructureMatcher::next ()
 
       _current_id = _candidates[_current_cand_id];
 
+      profTimerStart(tt, "sub_try");
       if (_tryCurrent())
          return true;
+      profTimerStop(tt);
 
       _current_cand_id++;
    }
-
 
    profIncCounter("sub_count_cand", _cand_count);
    return false;
@@ -131,10 +135,16 @@ void BaseSubstructureMatcher::setQueryData (SubstructureQueryData *query_data)
 
    const MoleculeFingerprintParameters & fp_params = _index.getFingerprintParams();
    _query_data->getQueryObject().buildFingerprint(fp_params, &_query_fp, 0);
+
+   int bit_cnt = bitGetOnesCount(_query_fp.ptr(), _fp_size);
+
+   profIncCounter("query_bit_count", bit_cnt);
 }
 
 void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
 {
+   profTimerStart(t, "sub_find_cand_pack");
+
    _candidates.clear();
 
    const TranspFpStorage &fp_storage = _index.getSubStorage();
@@ -149,19 +159,32 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
    fit_bits.clear_resize(fp_storage.getBlockSize());
    fit_bits.fill(255);
 
+   profTimerStart(tgs, "sub_find_cand_pack_get_search");
+   int left = 0, right = fp_storage.getBlockSize() - 1;
    for (int j = 0; j < fp_size_in_bits; j++)
    {
-
-      fp_storage.getBlock(pack_idx * fp_size_in_bits + j, block);
-
       byte query_bit = query_fp[j / 8] & (0x80 >> (j % 8));
 
       if (!query_bit)
          continue;
       
-      for (int k = 0; k < fp_storage.getBlockSize(); k++)
+      profTimerStart(tgb, "sub_find_cand_pack_get_block");
+      fp_storage.getBlock(pack_idx * fp_size_in_bits + j, block);
+      profTimerStop(tgb);
+
+      profTimerStart(tgu, "sub_find_cand_pack_fit_update");
+      for (int k = left; k <= right; k++)
          fit_bits[k] &= block[k];
+
+      while(fit_bits[left] == 0 && (left != right))
+         left++;
+      while(fit_bits[right] == 0 && (left != right))
+         right--;
+
+      profTimerStop(tgu);
    }
+   profTimerStop(tgs);
+   
 
    for (int k = 0; k < fp_storage.getBlockSize(); k++)
    {
@@ -170,7 +193,7 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
          byte fp_flag = fit_bits[k] & (0x80 >> bit_cnt);
             
          if (fp_flag)
-            _candidates.push(k * 8 + bit_cnt + pack_idx * fp_storage.getBlockSize());
+            _candidates.push(k * 8 + bit_cnt + pack_idx * fp_storage.getBlockSize() * 8);
       }
    }
 
@@ -179,6 +202,7 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
 
 void BaseSubstructureMatcher::_findIncCandidates ()
 {
+   profTimerStart(t, "sub_find_cand_inc");
    _candidates.clear();
    Array<bool> is_candidate;
 
@@ -231,18 +255,25 @@ bool MoleculeSubMatcher::_tryCurrent ()// const
    CfStorage &cf_storage = _index.getCfStorage();
 
    int cf_len;
+   profTimerStart(tr_gr, "sub_try_get_cmf");
    const char *cf_str = cf_storage.get(_current_id, cf_len);
+   profTimerStop(tr_gr);
 
+   profTimerStart(tr_g, "sub_try_load_from_cmf");
    BufferScanner buf_scn(cf_str, cf_len);
    CmfLoader cmf_loader(buf_scn);
 
    cmf_loader.loadMolecule(target_mol);
+   profTimerStop(tr_g);
 
+   profTimerStart(tr_m, "sub_try_matching");
    MoleculeSubstructureMatcher msm(target_mol);
 
    msm.setQuery(query_mol);
 
    bool find_res = msm.find();
+   
+   profTimerStop(tr_m);
    
    if (find_res)
    {

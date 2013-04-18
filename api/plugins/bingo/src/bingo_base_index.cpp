@@ -50,10 +50,10 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    _saveProperties(fp_params, sub_block_size, sim_block_size);
 
-   _file_storage_manager.reset(new FileStorageManager(location));
+   _storage_manager.reset(new RamStorageManager(location));
 
-   AutoPtr<Storage> sub_stor = _file_storage_manager->create(_sub_filename, sub_block_size);
-   AutoPtr<Storage> sim_stor = _file_storage_manager->create(_sim_filename, sim_block_size);
+   AutoPtr<Storage> sub_stor = _storage_manager->create(_sub_filename, sub_block_size);
+   AutoPtr<Storage> sim_stor = _storage_manager->create(_sim_filename, sim_block_size);
 
    _sub_fp_storage.create(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
    _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), sim_stor.release(), sim_info_path.c_str());
@@ -89,13 +89,13 @@ void BaseIndex::load (const char *location)
            _fp_params.tau_qwords >>
            _fp_params.sim_qwords;
 
-   _file_storage_manager.reset(new FileStorageManager(location));
+   _storage_manager.reset(new RamStorageManager(location));
 
-   FileStorage *sub_stor = _file_storage_manager->load(_sub_filename);
-   FileStorage *sim_stor = _file_storage_manager->load(_sim_filename);
+   AutoPtr<Storage> sub_stor = _storage_manager->load(_sub_filename);
+   AutoPtr<Storage> sim_stor = _storage_manager->load(_sim_filename);
 
-   _sub_fp_storage.load(_fp_params.fingerprintSize(), sub_stor, sub_info_path.c_str());
-   _sim_fp_storage.load(_fp_params.fingerprintSizeSim(), sim_stor, sim_info_path.c_str());
+   _sub_fp_storage.load(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
+   _sim_fp_storage.load(_fp_params.fingerprintSizeSim(), sim_stor.release(), sim_info_path.c_str());
 
    _cf_storage.load(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }

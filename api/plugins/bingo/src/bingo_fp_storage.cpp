@@ -128,6 +128,7 @@ void TranspFpStorage::_addIncToStorage ()
                block_b = 0;
             }
          }
+
          _storage->writeBlock((_pack_count *  _fp_size * 8) + byte_cnt * 8 + bit_cnt, block_buf);
          _block_count++;
       }
