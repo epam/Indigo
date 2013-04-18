@@ -23,6 +23,7 @@ All changes:
 * Additional "unique-dearomatization" option. If this option is set to true Indigo will throw an exception of dearomatization configuration is ambiguous (that means that canonical SMILES cannot be generated): [https://groups.google.com/d/msg/indigo-bugs/WIH8bWQpVHs/Z8VLlXR2U28J]()
 * IndigoInchi.loadMolecule can now load molecules from InChI Aux infromation. Thanks to Nico: [http://tech.knime.org/forum/indigo/inchi-conversion-into-2d-structure#comment-28514]()
 * Indigo Renderer doesn't have a dependency on the new GLIBC any more. This dependency prevented loading of Indigo Renderer on CentOS 5.9 and less.
+* Minor changes in Java and C# bindings: expandAbbreviations method has been add, typo in countDataSGroups has been fixed
 
 Indigo 1.1.9
 ----------
