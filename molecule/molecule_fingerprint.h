@@ -93,7 +93,7 @@ public:
    DECL_ERROR;
 protected:
 
-   static void _handleTree     (Graph &graph, const int *v_mapping, const int *e_mapping, void *context);
+   static void _handleTree     (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _handleCycle    (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
    static int _vertex_code (Graph &graph, int vertex_idx, void *context);

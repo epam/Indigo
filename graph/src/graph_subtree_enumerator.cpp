@@ -19,6 +19,8 @@ using namespace indigo;
 GraphSubtreeEnumerator::GraphSubtreeEnumerator (Graph &graph) :
 _graph(graph),
 TL_CP_GET(_subtree),
+TL_CP_GET(_vertices),
+TL_CP_GET(_edges),
 TL_CP_GET(_v_mapping),
 TL_CP_GET(_e_mapping),
 TL_CP_GET(_inv_e_mapping),
@@ -28,6 +30,7 @@ TL_CP_GET(_dfs_front)
    min_vertices = 1;
    max_vertices = graph.vertexCount();
    callback = 0;
+   callback2 = 0;
    context = 0;
    handle_maximal = false;
    maximal_critera_value_callback = 0;
@@ -58,12 +61,16 @@ void GraphSubtreeEnumerator::process ()
 
    int root_idx = _subtree.addVertex();
 
+   _edges.clear();
+   _vertices.clear();
+
    for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
    {
       if (vfilter != 0 && !vfilter->valid(i))
          continue;
 
       _v_mapping[i] = root_idx;
+      _vertices.push(i);
 
       int cur_maximal_criteria_value = 0;
       if (handle_maximal && maximal_critera_value_callback != 0)
@@ -73,6 +80,7 @@ void GraphSubtreeEnumerator::process ()
       _reverseSearch(i, cur_maximal_criteria_value);
 
       _v_mapping[i] = -1;
+      _vertices.pop();
    }
 }
 
@@ -136,6 +144,9 @@ void GraphSubtreeEnumerator::_reverseSearch (int v_idx, int cur_maximal_criteria
 
          int new_e_idx = _subtree.addEdge(new_v_idx, _v_mapping[parent]);
 
+         _vertices.push(xe.v);
+         _edges.push(xe.e);
+
          _v_mapping[xe.v] = new_v_idx;
          _e_mapping[xe.e] = new_e_idx;
          _inv_e_mapping[new_e_idx] = xe.e;
@@ -155,12 +166,16 @@ void GraphSubtreeEnumerator::_reverseSearch (int v_idx, int cur_maximal_criteria
 
          _v_mapping[xe.v] = -1;
          _e_mapping[xe.e] = -1;
+
+         _vertices.pop();
+         _edges.pop();
+
          _inv_e_mapping[new_e_idx] = -1;
          _subtree.removeVertex(new_v_idx);
       }
    }
 
-   if (nvertices >= min_vertices && nvertices <= max_vertices && callback != 0)
+   if (nvertices >= min_vertices && nvertices <= max_vertices && (callback != 0 || callback2 != 0))
    {
       if (handle_maximal)
       {
@@ -168,7 +183,10 @@ void GraphSubtreeEnumerator::_reverseSearch (int v_idx, int cur_maximal_criteria
             return; // This subgraph isn't maximal
       }
 
-      callback(_graph, _v_mapping.ptr(), _e_mapping.ptr(), context);
+      if (callback)
+         callback(_graph, _v_mapping.ptr(), _e_mapping.ptr(), context);
+      if (callback2)
+         callback2(_graph, _vertices, _edges, context);
    }
 }
 

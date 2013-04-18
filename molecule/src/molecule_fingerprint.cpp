@@ -122,14 +122,8 @@ bool MoleculeFingerprintBuilder::_handleCycle (Graph &graph,
 }
 
 void MoleculeFingerprintBuilder::_handleTree (Graph &graph,
-        const int *v_mapping, const int *e_mapping, void *context)
+        const Array<int> &vertices, const Array<int> &edges, void *context)
 {
-   QS_DEF(Array<int>, vertices);
-   QS_DEF(Array<int>, edges);
-
-   Graph::filterVertices(graph, v_mapping, FILTER_NEQ, -1, vertices);
-   Graph::filterEdges(graph, e_mapping, FILTER_NEQ, -1, edges);
-
    MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
    self->_handleSubgraph(graph, vertices, edges);
 }
@@ -413,7 +407,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       se.max_vertices = sim_only ? 5 : 7;
       se.handle_maximal = false;
       se.maximal_critera_value_callback = _maximalSubgraphCriteriaValue;
-      se.callback = _handleTree;
+      se.callback2 = _handleTree;
       se.process();
    }
    
