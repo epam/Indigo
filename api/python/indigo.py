@@ -209,7 +209,7 @@ class Indigo(object):
     Indigo._lib.indigoSaveMDLCT.restype = c_int
     Indigo._lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
     Indigo._lib.indigoUnserialize.restype = c_int
-    Indigo._lib.indigoUnserialize.argtypes = [POINTER(c_char), c_int]
+    Indigo._lib.indigoUnserialize.argtypes = [POINTER(c_byte), c_int]
     Indigo._lib.indigoXYZ.restype = POINTER(c_float)
     Indigo._lib.indigoXYZ.argtypes = [c_int]
     Indigo._lib.indigoSetXYZ.restype = c_int
@@ -421,7 +421,7 @@ class Indigo(object):
     self.IndigoObject.monoisotopicMass = Indigo._member_float(Indigo._lib.indigoMonoisotopicMass)
     self.IndigoObject.mostAbundantMass = Indigo._member_float(Indigo._lib.indigoMostAbundantMass)
 
-    self.IndigoObject.serialize = Indigo._member_buf(Indigo._lib.indigoSerialize)
+    self.IndigoObject.serialize = Indigo._member_bytebuf(Indigo._lib.indigoSerialize)
     self.IndigoObject.toBuffer = Indigo._member_bytebuf(Indigo._lib.indigoToBuffer)
 
     self.IndigoObject.canonicalSmiles = Indigo._member_string(Indigo._lib.indigoCanonicalSmiles)
@@ -1091,7 +1091,7 @@ class Indigo(object):
 
   def unserialize (self, arr):
     self._setSID()
-    values = (c_char * len(arr))()
+    values = (c_byte * len(arr))()
     for i in xrange(len(arr)):
       values[i] = arr[i]
     res = Indigo._lib.indigoUnserialize(values, len(arr))

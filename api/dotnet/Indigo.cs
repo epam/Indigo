@@ -153,6 +153,12 @@ namespace com.ggasoftware.indigo
             checkResult(_indigo_lib.indigoSetOptionInt(name, value));
         }
 
+        public void setOption(string name, float valuer, float valueg, float valueb)
+        {
+            setSessionID();
+            checkResult(_indigo_lib.indigoSetOptionColor(name, valuer / 255.0f, valueg / 255.0f, valueb / 255.0f));
+        }
+
         public void setOption(string name, Color value)
         {
             setSessionID();

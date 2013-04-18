@@ -844,7 +844,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoCountSuperatoms(self));
    }
 
-   public int countDataSGgroups()
+   public int countDataSGroups()
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoCountDataSGroups(self));
