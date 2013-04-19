@@ -91,6 +91,19 @@ CEXPORT int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, i
    INDIGO_END(-1);
 }
 
+CEXPORT const int* indigoStereocenterPyramid (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+      int *pyramid = ia.mol.stereocenters.getPyramid(ia.idx);
+      if (pyramid == 0)
+         throw IndigoError("No stereocenter at the atom %d", atom);
+
+      return ia.mol.stereocenters.getPyramid(ia.idx);
+   }
+   INDIGO_END(NULL);
+}
 
 CEXPORT int indigoCountStereocenters (int molecule)
 {

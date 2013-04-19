@@ -318,6 +318,7 @@ class Indigo(object):
     self.IndigoObject.isPseudoatom = Indigo._member_bool(Indigo._lib.indigoIsPseudoatom)
     self.IndigoObject.isRSite = Indigo._member_bool(Indigo._lib.indigoIsRSite)
     self.IndigoObject.stereocenterType = Indigo._member_int(Indigo._lib.indigoStereocenterType)
+    self.IndigoObject.stereocenterPyramid = Indigo._member_iarr4(Indigo._lib.indigoStereocenterPyramid)
     self.IndigoObject.singleAllowedRGroup = Indigo._member_int(Indigo._lib.indigoSingleAllowedRGroup)
     self.IndigoObject.symbol = Indigo._member_string(Indigo._lib.indigoSymbol)
 
@@ -996,6 +997,18 @@ class Indigo(object):
       return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
     return Indigo._make_wrapper_func(newfunc, func)
 
+  @staticmethod
+  def _member_iarr4 (func):
+    func.restype = POINTER(c_int)
+    func.argtypes = [c_int]
+    def newfunc (self):
+      ptr = self.dispatcher._checkResultPtr(func(self.id))
+      res = [0] * 4
+      for i in xrange(4):
+          res[i] = ptr[i]
+      return res
+    return Indigo._make_wrapper_func(newfunc, func)
+    
   @staticmethod
   def _member_obj_iarr_iarr (func):
     func.restype = c_int
