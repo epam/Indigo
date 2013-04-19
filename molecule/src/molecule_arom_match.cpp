@@ -24,13 +24,15 @@ using namespace indigo;
 
 IMPL_ERROR(AromaticityMatcher, "AromaticityMatcher");
 
-AromaticityMatcher::AromaticityMatcher (QueryMolecule &query, BaseMolecule &base) :
+AromaticityMatcher::AromaticityMatcher (QueryMolecule &query, BaseMolecule &base, const AromaticityOptions &arom_options) :
    _query(query), _base(base),
    TL_CP_GET(_matching_edges_state)
 {
    _submolecule.reset(base.neu());
    _matching_edges_state.clear();
    
+   _arom_options = arom_options;
+
    validateQuery();
 }
 
@@ -323,7 +325,7 @@ bool AromaticityMatcher::match (int *core_sub, int *core_super)
       // Find dearomatization
       if (dearomatizer.get() == NULL)
       {
-         dearomatizer.create(_submolecule.ref(), external_conn.ptr());
+         dearomatizer.create(_submolecule.ref(), external_conn.ptr(), _arom_options);
          dearomatizer->enumerateDearomatizations(dearomatizations);
          dearomatizationMatcher.create(dearomatizations, 
             _submolecule.ref(), external_conn.ptr());

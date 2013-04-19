@@ -34,6 +34,8 @@ DLLEXPORT int   bitTestEqualityByMask (const void *bits1, const void *bits2,
 DLLEXPORT int   bitGetAandBxorNotC (const void *a, const void *b, const void *c, void *res, int nbits);
 // Get number of ones
 DLLEXPORT int   bitGetOnesCountByte (byte value);
+DLLEXPORT int   bitGetOnesCountQword (qword value);
+DLLEXPORT int   bitGetOnesCountDword (dword value);
 DLLEXPORT int   bitGetOnesCount (const byte *data, int size);
 // Get high-order 1-bit in byte
 DLLEXPORT int   bitGetOneHOIndex  (byte value);

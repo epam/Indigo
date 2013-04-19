@@ -137,9 +137,9 @@ CEXPORT int bingoSetConfigInt (const char *name, int value)
       else if (strcasecmp(name, "ignore-closing-bond-direction-mismatch") == 0 || strcasecmp(name, "ignore_closing_bond_direction_mismatch") == 0)
          self.bingo_context->ignore_closing_bond_direction_mismatch = (value != 0);
       else if (strcasecmp(name, "nthreads") == 0)
-      {
          self.bingo_context->nthreads = value;
-      }
+      else if (strcasecmp(name, "timeout") == 0)
+         self.bingo_context->timeout = value;
       else
       {
          bool set = true;
@@ -191,6 +191,8 @@ CEXPORT int bingoGetConfigInt (const char *name, int *value)
          *value = self.sim_screening_pass_mark;
       else if (strcasecmp(name, "nthreads") == 0)
          *value = self.bingo_context->nthreads;
+      else if (strcasecmp(name, "timeout") == 0)
+         *value = self.bingo_context->timeout;
       else
          throw BingoError("unknown parameter name: %s", name);
    }

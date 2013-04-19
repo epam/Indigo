@@ -67,18 +67,18 @@ void Reaction::loadBondOrders (Reaction& reaction, ObjArray< Array<int> > &bond_
    }
 }
 
-bool Reaction::aromatize() {
+bool Reaction::aromatize(const AromaticityOptions &options) {
    bool arom_found = false;
    for (int i = begin(); i < end(); i = next(i)) {
-      arom_found |= MoleculeAromatizer::aromatizeBonds(*(Molecule *)_allMolecules[i]);
+      arom_found |= MoleculeAromatizer::aromatizeBonds(*(Molecule *)_allMolecules[i], options);
    }
    return arom_found;
 }
 
-bool Reaction::dearomatize() {
+bool Reaction::dearomatize(const AromaticityOptions &options) {
    bool all_dearomatized = true;
    for (int i = begin(); i < end(); i = next(i)) {
-      all_dearomatized &= MoleculeDearomatizer::dearomatizeMolecule(*(Molecule *)_allMolecules[i]);
+      all_dearomatized &= MoleculeDearomatizer::dearomatizeMolecule(*(Molecule *)_allMolecules[i], options);
    }
    return all_dearomatized;
 }

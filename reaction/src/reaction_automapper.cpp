@@ -89,7 +89,7 @@ void ReactionAutomapper::_createReactionCopy(Array<int>& mol_mapping, ObjArray< 
    for (; mol_idx != _initReaction.productEnd(); mol_idx = _initReaction.productNext(mol_idx)) {
       _createMoleculeCopy(mol_idx, false, mol_mapping, mappings);
    }
-   _reactionCopy->aromatize();
+   _reactionCopy->aromatize(arom_options);
 }
 
 void ReactionAutomapper::_createMoleculeCopy(int mol_idx, bool reactant, Array<int> &mol_mapping, ObjArray< Array<int> >& mappings) {
@@ -445,7 +445,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
    BaseReaction &reaction_copy = reaction_copy_ptr.ref();
 
    reaction_copy.clone(_initReaction, &rmol_map, 0, &react_invmap);
-   reaction_copy.aromatize();
+   reaction_copy.aromatize(arom_options);
 
    for (int mol_idx = _initReaction.begin(); mol_idx != _initReaction.end(); mol_idx = _initReaction.next(mol_idx)) {
       BaseMolecule& rmol = _initReaction.getBaseMolecule(mol_idx);
@@ -736,7 +736,7 @@ void ReactionAutomapper::_considerDissociation(){
       BaseMolecule& ibase_mol = _initReaction.getBaseMolecule(i);
       full_map_cut.reset(ibase_mol.neu());
       full_map_cut->clone_KeepIndices(ibase_mol, 0);
-      full_map_cut->aromatize();
+      full_map_cut->aromatize(arom_options);
 
 
       for (j = 0; j < _initReaction.getAAMArray(i).size(); j++){
@@ -748,7 +748,7 @@ void ReactionAutomapper::_considerDissociation(){
       while(mcvsum >= mcv){
          null_map_cut.reset(ibase_mol.neu());
          null_map_cut->clone_KeepIndices(ibase_mol, 0);
-         null_map_cut->aromatize();
+         null_map_cut->aromatize(arom_options);
          for (j = 0; j < _initReaction.getAAMArray(i).size(); j++){
             if(_initReaction.getAAM(i, j) > 0 || _initReaction.getBaseMolecule(i).getAtomNumber(j) == ELEM_H)
                null_map_cut->removeAtom(j);
@@ -802,7 +802,7 @@ void ReactionAutomapper::_considerDimerization() {
 
    for(int prod = reaction_copy.productBegin(); prod < reaction_copy.productEnd(); prod = reaction_copy.productNext(prod)) {
       BaseMolecule& pmol = reaction_copy.getBaseMolecule(prod);
-      pmol.aromatize();
+      pmol.aromatize(arom_options);
       way_exit = true;
       while(way_exit) {
          /*
@@ -1275,6 +1275,7 @@ void RSubstructureMcs::setUpFlags(const ReactionAutomapper& context) {
       flags |= CONDITION_ATOM_RADICAL;
    if(!context.ignore_atom_valence)
       flags |= CONDITION_ATOM_VALENCE;
+   arom_options = context.arom_options;
 }
 bool RSubstructureMcs::searchSubstructure(Array<int>* map) {
    bool result = false;
@@ -1317,7 +1318,7 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
    if(react_vsize < 2) {
       mol_react.clone(init_rmol, 0, 0);
       react_vsize = mol_react.vertexCount();
-      mol_react.aromatize();
+      mol_react.aromatize(arom_options);
    }
 
    if(_super->vertexCount() < 2 || _sub->vertexCount() < 2)
@@ -1359,7 +1360,7 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
    results[1] = _searchSubstructure(emb_enums[1], in_map_c, &tmp_maps[1]);
 
    mol_react.clone(init_rmol, 0, 0);
-   mol_react.aromatize();
+   mol_react.aromatize(arom_options);
 
    if(mol_react.vertexCount() > react_vsize) {
       results[2] = _searchSubstructure(emb_enums[2], in_map, &tmp_maps[2]);

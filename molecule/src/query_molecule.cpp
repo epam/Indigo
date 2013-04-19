@@ -132,6 +132,8 @@ int QueryMolecule::getAtomSubstCount (int idx)
 
    if (_atoms[idx]->sureValue(ATOM_SUBSTITUENTS, res))
       return res;
+   if (_atoms[idx]->sureValue(ATOM_SUBSTITUENTS_AS_DRAWN, res))
+      return res;
 
    return -1;
 }
@@ -275,6 +277,9 @@ void QueryMolecule::_getAtomDescription (Atom *atom, Output &out, int depth)
          return;
       case ATOM_SUBSTITUENTS:
          out.printf("s%d", atom->value_min);
+         return;
+      case ATOM_SUBSTITUENTS_AS_DRAWN:
+         out.printf("s*");
          return;
       case ATOM_RING_BONDS:
          out.printf("rb%d", atom->value_min);
@@ -447,8 +452,8 @@ QueryMolecule::Atom::Atom (int type_, int value) : Node(type_)
    if (type_ == ATOM_NUMBER  || type_ == ATOM_CHARGE ||
        type_ == ATOM_ISOTOPE || type_ == ATOM_RADICAL ||
        type_ == ATOM_AROMATICITY || type_ == ATOM_VALENCE ||
-       type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN || 
-       type_ == ATOM_SUBSTITUENTS ||
+       type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN ||
+       type_ == ATOM_SUBSTITUENTS || type_ == ATOM_SUBSTITUENTS_AS_DRAWN ||
        type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY ||
        type_ == ATOM_TOTAL_BOND_ORDER ||
        type_ == ATOM_UNSATURATION || type == ATOM_SSSR_RINGS ||
@@ -1580,13 +1585,13 @@ void QueryMolecule::setBondStereoCare (int idx, bool stereo_care)
    updateEditRevision();
 }
 
-bool QueryMolecule::aromatize ()
+bool QueryMolecule::aromatize (const AromaticityOptions &options)
 {
    updateEditRevision();
-   return QueryMoleculeAromatizer::aromatizeBonds(*this);
+   return QueryMoleculeAromatizer::aromatizeBonds(*this, options);
 }
 
-bool QueryMolecule::dearomatize ()
+bool QueryMolecule::dearomatize (const AromaticityOptions &options)
 {
    throw Error("Dearomatization not implemented");
 }
@@ -1832,6 +1837,7 @@ bool QueryMolecule::isKnownAttr (QueryMolecule::Atom& qa)
       qa.type == QueryMolecule::ATOM_VALENCE ||
       qa.type == QueryMolecule::ATOM_TOTAL_H ||
       qa.type == QueryMolecule::ATOM_SUBSTITUENTS ||
+      qa.type == QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN ||
       qa.type == QueryMolecule::ATOM_RING_BONDS || 
       qa.type == QueryMolecule::ATOM_RING_BONDS_AS_DRAWN ||
       qa.type == QueryMolecule::ATOM_UNSATURATION) && 

@@ -26,6 +26,7 @@
 #include "base_cpp/crc32.h"
 #include "molecule/elements.h"
 #include "core/mango_index.h"
+#include "base_cpp/cancellation_handler.h"
 
 MangoExact::MangoExact (BingoContext &context) :
 _context(context) 
@@ -189,6 +190,11 @@ bool MangoExact::matchBinary (Scanner &scanner, Scanner *xyz_scanner)
       loader.loadXyz(*xyz_scanner);
 
    _initTarget(_target, true);
+   /*
+    * Set up timeout for matching
+    */
+   TimeoutCancellationHandler timeout(_context.timeout);
+   AutoCancellationHandler auto_cancel(timeout);
 
    MoleculeExactMatcher matcher(_query, _target);
 

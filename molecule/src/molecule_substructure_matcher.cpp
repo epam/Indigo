@@ -316,7 +316,7 @@ bool MoleculeSubstructureMatcher::find ()
    _used_target_h.zerofill();
 
    if (use_aromaticity_matcher && AromaticityMatcher::isNecessary(*_query))
-      _am.create(*_query, _target);
+      _am.create(*_query, _target, arom_options);
    else
       _am.free();
 
@@ -462,6 +462,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
          return query->valueWithinRange(target.getAtomTotalH(super_idx));
       }
       case QueryMolecule::ATOM_SUBSTITUENTS:
+      case QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN:
          return query->valueWithinRange(target.getAtomSubstCount(super_idx));
       case QueryMolecule::ATOM_SSSR_RINGS:
          return query->valueWithinRange(target.vertexCountSSSR(super_idx));

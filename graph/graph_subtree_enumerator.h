@@ -33,6 +33,7 @@ public:
    Filter *vfilter;
 
    void (*callback)(Graph &graph, const int *v_mapping, const int *e_mapping, void *context);
+   void (*callback2)(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
    // Callback function that returns some value for subgraph.
    // Graph is treated to be maximal by this criteria if one of its supergraph 
@@ -57,6 +58,9 @@ protected:
 
    TL_CP_DECL(Graph, _subtree);
 
+   TL_CP_DECL(Array<int>, _vertices); // array with subgraph vertices
+   TL_CP_DECL(Array<int>, _edges);    // array with subgraph edges
+
    TL_CP_DECL(Array<int>, _v_mapping); // from _graph to _subtree
    TL_CP_DECL(Array<int>, _e_mapping); // from _graph to _subtree
    TL_CP_DECL(Array<int>, _inv_e_mapping); // from _subtree to _graph
@@ -68,6 +72,7 @@ protected:
 
    void _reverseSearch (int v_idx, int cur_maximal_criteria_value);
    int  _fCIS ();
+   void _leafMaxEdgeValues (int &m1, int &m2, int &max_vertex);
 };
 
 }

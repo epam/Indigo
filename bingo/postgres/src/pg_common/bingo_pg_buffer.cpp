@@ -34,13 +34,19 @@ _blockIdx(0){
 /*
  * New buffer constructor
  */
-BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num) {
+BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num):
+_buffer(InvalidBuffer),
+_lock(BINGO_PG_NOLOCK),
+_blockIdx(0) {
    writeNewBuffer(rel_ptr, block_num);
 }
 /*
  * Existing buffer constructor
  */
-BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int lock) {
+BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int lock):
+_buffer(InvalidBuffer),
+_lock(BINGO_PG_NOLOCK),
+_blockIdx(0) {
    readBuffer(rel_ptr, block_num, lock);
 }
 /*

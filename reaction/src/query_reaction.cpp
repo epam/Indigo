@@ -176,16 +176,16 @@ int QueryReaction::_addBaseMolecule (int side)
    return idx;
 }
 
-bool QueryReaction::aromatize() {
+bool QueryReaction::aromatize(const AromaticityOptions &options) {
    bool arom_found = false;
    for (int i = begin(); i < end(); i = next(i)) {
-      arom_found |= QueryMoleculeAromatizer::aromatizeBonds(*(QueryMolecule *)_allMolecules[i]);
+      arom_found |= QueryMoleculeAromatizer::aromatizeBonds(*(QueryMolecule *)_allMolecules[i], options);
    }
 
    return arom_found;
 }
 
-bool QueryReaction::dearomatize() {
+bool QueryReaction::dearomatize(const AromaticityOptions &options) {
    throw Error("Dearomatization not implemented");
 }
 

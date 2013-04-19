@@ -122,7 +122,10 @@ void ReactionProductEnumerator::buildProducts( void )
    _smiles_array.clear();
    _product_count = 0;
 
-   ReactionEnumeratorState rpe_state(_reaction, all_products, 
+   ReactionEnumeratorContext context;
+   context.arom_options = arom_options;
+
+   ReactionEnumeratorState rpe_state(context, _reaction, all_products, 
                       _product_aam_array, _smiles_array, _reaction_monomers, 
                       _product_count, _tubes_monomers);
 

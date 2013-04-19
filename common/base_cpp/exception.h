@@ -49,8 +49,8 @@ protected:
 private:
 };
 
-#define DECL_EXCEPTION_BODY(ExceptionName) \
-   ExceptionName : public indigo::Exception       \
+#define DECL_EXCEPTION_BODY(ExceptionName, Parent) \
+   ExceptionName : public Parent       \
    {                                                              \
    public:                                                        \
       explicit ExceptionName (const char *format, ...);           \
@@ -58,17 +58,27 @@ private:
       virtual Exception* clone ();                                \
       virtual void throwSelf ();                                  \
       ExceptionName (const ExceptionName &other);                 \
+   protected:                                                     \
+      explicit ExceptionName ();           \
    }
 
-#define DECL_EXCEPTION(ExceptionName) \
-   class DLLEXPORT DECL_EXCEPTION_BODY(ExceptionName)
+#define DECL_EXCEPTION2(ExceptionName, Parent) \
+   class DLLEXPORT DECL_EXCEPTION_BODY(ExceptionName, Parent)
 
-#define DECL_EXCEPTION_NO_EXP(ExceptionName) \
-   class DECL_EXCEPTION_BODY(ExceptionName)
+#define DECL_EXCEPTION(ExceptionName) DECL_EXCEPTION2(ExceptionName, indigo::Exception)
 
-#define IMPL_EXCEPTION(Namespace, ExceptionName, prefix) \
-   Namespace::ExceptionName::ExceptionName (const char *format, ...) \
-      : indigo::Exception()                                                            \
+#define DECL_EXCEPTION_NO_EXP2(ExceptionName, Parent) \
+   class DECL_EXCEPTION_BODY(ExceptionName, Parent)
+
+#define DECL_EXCEPTION_NO_EXP(ExceptionName) DECL_EXCEPTION_NO_EXP2(ExceptionName, indigo::Exception)
+
+#define IMPL_EXCEPTION2(Namespace, ExceptionName, Parent, prefix) \
+   Namespace::ExceptionName::ExceptionName () \
+   {                                                                                   \
+   }                                                                                   \
+                                                                                       \
+   Namespace::ExceptionName::ExceptionName (const char *format, ...)                   \
+      : Parent()                                                                       \
    {                                                                                   \
       va_list args;                                                                    \
                                                                                        \
@@ -89,17 +99,24 @@ private:
    {                                                                                   \
       throw *this;                                                                     \
    }                                                                                   \
-   Namespace::ExceptionName::ExceptionName (const ExceptionName &other) : Exception () \
+   Namespace::ExceptionName::ExceptionName (const ExceptionName &other) : Parent () \
    {                                                                                   \
       other._cloneTo(this);                                                            \
    }                                                                                   \
 
-#define DECL_ERROR DECL_EXCEPTION(Error)
+#define IMPL_EXCEPTION(Namespace, ExceptionName, prefix) \
+   IMPL_EXCEPTION2(Namespace, ExceptionName, indigo::Exception, prefix)
+
+#define DECL_ERROR2(Parent) DECL_EXCEPTION2(Error, Parent)
+#define DECL_ERROR DECL_ERROR2(indigo::Exception)
 #define DECL_ERROR_NO_EXP DECL_EXCEPTION_NO_EXP(Error)
+
 #define DECL_TPL_ERROR(CommonErrorName) typedef CommonErrorName Error
 
-#define IMPL_ERROR(Namespace, error_prefix) \
-   IMPL_EXCEPTION(Namespace, Error, error_prefix)
+#define IMPL_ERROR2(Namespace, Parent, error_prefix) \
+   IMPL_EXCEPTION2(Namespace, Error, Parent, error_prefix)
+
+#define IMPL_ERROR(Namespace, error_prefix) IMPL_ERROR2(Namespace, indigo::Exception, error_prefix)
 
 #define DECL_TIMEOUT_EXCEPTION DECL_EXCEPTION(TimeoutException)
 #define IMPL_TIMEOUT_EXCEPTION(Namespace, prefix) \

@@ -1629,7 +1629,7 @@ CEXPORT const int * indigoSymmetryClasses (int molecule, int *count_out)
 
       QS_DEF(Molecule, m2);
       m2.clone_KeepIndices(mol);
-      m2.aromatize();
+      m2.aromatize(self.arom_options);
 
       QS_DEF(Array<int>, ignored);
       ignored.clear_resize(m2.vertexEnd());

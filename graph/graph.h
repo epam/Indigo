@@ -120,6 +120,7 @@ public:
    bool haveEdge (int beg, int end) const;
    bool hasEdge (int idx) const;
    bool hasVertex(int idx) const;
+   int  getEdgeEnd (int beg, int edge) const;
 
    void swapEdgeEnds (int edge_idx);
    void removeEdge (int idx);

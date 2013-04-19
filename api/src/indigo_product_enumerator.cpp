@@ -66,6 +66,7 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
       IndigoArray &monomers_object = IndigoArray::cast(self.getObject(monomers));
 
       ReactionProductEnumerator rpe(query_rxn);
+      rpe.arom_options = self.arom_options;
 
       ObjArray<Reaction> out_reactions;
 
@@ -134,6 +135,7 @@ CEXPORT int indigoTransform (int reaction, int monomers)
       QueryReaction &query_rxn = self.getObject(reaction).getQueryReaction();
 
       ReactionTransformation rt;
+      rt.arom_options = self.arom_options;
 
       if (monomers_object.type == IndigoObject::MOLECULE)
       {

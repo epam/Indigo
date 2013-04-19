@@ -28,6 +28,12 @@
 
 namespace indigo {
 
+class ReactionEnumeratorContext
+{
+public:
+   AromaticityOptions arom_options;
+};
+
 class ReactionEnumeratorState
 {
 public:
@@ -70,7 +76,7 @@ public:
    int max_product_count;
    int max_reuse_count;
    
-   ReactionEnumeratorState( QueryReaction &cur_reaction, QueryMolecule &cur_full_product, 
+   ReactionEnumeratorState(ReactionEnumeratorContext &context, QueryReaction &cur_reaction, QueryMolecule &cur_full_product, 
       Array<int> &cur_product_aam_array, RedBlackStringMap<int> &cur_smiles_array, 
       ReactionMonomers &cur_reaction_monomers, int &cur_product_coint, 
       ObjArray< Array<int> > &cur_tubes_monomers );
@@ -79,9 +85,11 @@ public:
 
    int buildProduct( void );
 
-   bool performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms );
+   bool performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms, Array<int> &original_hydrogens );
 
 private:
+   ReactionEnumeratorContext &_context;
+
    QueryReaction &_reaction;
    int _reactant_idx;
 
@@ -104,7 +112,9 @@ private:
    TL_CP_DECL(MoleculeSubstructureMatcher::FragmentMatchCache, _fmcache);
    TL_CP_DECL(Array<int>, _monomer_forbidden_atoms);
    TL_CP_DECL(Array<int>, _product_forbidden_atoms);
-   
+
+   TL_CP_DECL(Array<int>, _original_hydrogens);
+
    AromaticityMatcher *_am;
    EmbeddingEnumerator *_ee;
    int _tube_idx;
@@ -116,7 +126,7 @@ private:
 
    bool _isMonomerFromCurTube( int monomer_idx );
    
-   static void _foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep = 0 );
+   static void _foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep = 0, Array<int> *original_hydrogens = 0 );
 
    void _productProcess( void );
 

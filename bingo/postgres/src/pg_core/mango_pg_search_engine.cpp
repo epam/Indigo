@@ -93,6 +93,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
          _bufferIndexPtr->readXyzItem(section_idx, structure_idx, xyz_buf);
       }
 
+//      CORE_HANDLE_WARNING_TID(0, 1, "matching binary target", section_idx, structure_idx, " ");
       bingo_res = mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
       CORE_HANDLE_ERROR_TID(bingo_res, -1, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetError());
       CORE_RETURN_WARNING_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetWarning());
@@ -335,12 +336,12 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    profTimerStart(t0, "mango_pg.prepare_exact_search");
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
-
    _getScanQueries(scan_desc->keyData[0].sk_argument, search_query, search_options);
 
    /*
     * Set up matching parameters
     */
+//   elog(WARNING, "processing query: %s", search_query.ptr());
    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set exact search context", bingoGetError());
 
@@ -350,7 +351,11 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
       _prepareExactQueryStrings(what_clause, from_clause, where_clause);
    }
    _searchCursor.free();
+   profTimerStart(t4, "mango_pg.exact_search_cursor");
    _searchCursor.reset(new BingoPgCursor("SELECT %s FROM %s WHERE %s",what_clause.ptr(), from_clause.ptr(), where_clause.ptr()));
+   profTimerStop(t4);
+//   if(nanoHowManySeconds(profTimerGetTime(t4) )> 1)
+//      elog(WARNING, "select %s from %s where %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
 }
 
 void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {
@@ -582,6 +587,11 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
    BingoPgExternalBitset screening_bitset(BINGO_MOLS_PER_SECTION);
 
    int* min_bounds, * max_bounds, bingo_res;
+   /*
+    * Read first section
+    */
+   if(_currentSection < 0)
+      _currentSection = bingo_index.readBegin();
    /*
     * Iterate through the sections
     */

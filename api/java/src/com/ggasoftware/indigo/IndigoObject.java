@@ -290,7 +290,14 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoStereocenterType(self));
    }
-	
+   
+   public int[] stereocenterPyramid ()
+   {
+      dispatcher.setSessionID();
+      Pointer ptr = Indigo.checkResultPointer(this, _lib.indigoStereocenterPyramid(self));
+      return ptr.getIntArray(0, 4);
+   }
+   
    public void changeStereocenterType (int type)
    {
       dispatcher.setSessionID();
@@ -596,6 +603,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoResetSymmetricCisTrans(self));
    }
 
+   public int resetSymmetricStereocenters ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoResetSymmetricStereocenters(self));
+   }
+
    public int markEitherCisTrans ()
    {
       dispatcher.setSessionID();
@@ -838,7 +851,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoCountSuperatoms(self));
    }
 
-   public int countDataSGgroups()
+   public int countDataSGroups()
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoCountDataSGroups(self));
@@ -1429,7 +1442,26 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       if (options == null)
          options = "";
-      _lib.indigoOptimize(self, options);
+      Indigo.checkResult(this, _lib.indigoOptimize(self, options));
+   }
+
+   public boolean normalize ()
+   {
+      return normalize(null);
+   }
+
+   public boolean normalize (String options)
+   {
+      dispatcher.setSessionID();
+      if (options == null)
+         options = "";
+      return (Indigo.checkResult(this, _lib.indigoNormalize(self, options)) == 1);
+   }
+
+   public int expandAbbreviations()
+   {
+         dispatcher.setSessionID();
+         return Indigo.checkResult(this, _lib.indigoExpandAbbreviations(self));
    }
 
    public String dbgInternalType ()

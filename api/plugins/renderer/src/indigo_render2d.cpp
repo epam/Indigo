@@ -56,13 +56,37 @@ void indigoRenderSetCommentOffset (int offset)
    rp.cnvOpt.commentOffset = offset;
 }
 
+void indigoRenderSetImageWidth (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.width = v;
+}
+
+void indigoRenderSetImageHeight (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.height = v;
+}
+
+void indigoRenderSetImageMaxWidth (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.maxWidth = v;
+}
+
+void indigoRenderSetImageMaxHeight (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.maxHeight = v;
+}
+
 void indigoRenderSetTitleOffset (int offset)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.cnvOpt.titleOffset = offset;
 }                    
 
-void indigoRenderSetOutputFormat (const char *format)
+DINGO_MODE indigoRenderMapOutputFormat (const char *format)
 {
    TL_DECL_GET(StringIntMap, outFmtMap);
    if (outFmtMap.size() == 0) {
@@ -71,8 +95,13 @@ void indigoRenderSetOutputFormat (const char *format)
       outFmtMap.insert("svg", MODE_SVG);
       outFmtMap.insert("emf", MODE_EMF);
    }
+   return outFmtMap.find(format) ? (DINGO_MODE)outFmtMap.at(format) : MODE_NONE;
+}
+
+void indigoRenderSetOutputFormat (const char *format)
+{
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.mode = (DINGO_MODE)outFmtMap.at(format);
+   rp.rOpt.mode = indigoRenderMapOutputFormat(format);
 }
 
 void indigoRenderSetImageSize (int width, int height)
@@ -438,6 +467,14 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
    INDIGO_END(-1)
 }
 
+DINGO_MODE indigoRenderGuessOutputFormat(const char* filename)
+{
+   int len = strlen(filename);
+   if (len < 4 || filename[len-4] != '.')
+      return MODE_NONE;
+   return indigoRenderMapOutputFormat(filename + len - 3);
+}
+
 CEXPORT int indigoRenderToFile (int object, const char *filename)
 {
    int f = indigoWriteFile(filename);
@@ -445,7 +482,11 @@ CEXPORT int indigoRenderToFile (int object, const char *filename)
    if (f == -1)
       return -1;
 
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   DINGO_MODE setMode = rp.rOpt.mode;
+   rp.rOpt.mode = (setMode == MODE_NONE) ? indigoRenderGuessOutputFormat(filename) : setMode;
    int res = indigoRender(object, f);
+   rp.rOpt.mode = setMode;
 
    indigoFree(f);
    return res;
@@ -458,13 +499,17 @@ CEXPORT int indigoRenderGridToFile (int objects, int* refAtoms, int nColumns, co
    if (f == -1)
       return -1;
 
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   DINGO_MODE setMode = rp.rOpt.mode;
+   rp.rOpt.mode = (setMode == MODE_NONE) ? indigoRenderGuessOutputFormat(filename) : setMode;
    int res = indigoRenderGrid(objects, refAtoms, nColumns, f);
+   rp.rOpt.mode = setMode;
 
    indigoFree(f);
    return res;
 }
 
-CEXPORT int indigoRenderReset (int render)
+CEXPORT int indigoRenderReset ()
 {
    INDIGO_BEGIN
    {
@@ -496,6 +541,10 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    OsLocker locker(mgr.lock);
 
    mgr.setOptionHandlerInt("render-comment-offset", indigoRenderSetCommentOffset);
+   mgr.setOptionHandlerInt("render-image-width", indigoRenderSetImageWidth);
+   mgr.setOptionHandlerInt("render-image-height", indigoRenderSetImageHeight);
+   mgr.setOptionHandlerInt("render-image-max-width", indigoRenderSetImageMaxWidth);
+   mgr.setOptionHandlerInt("render-image-max-height", indigoRenderSetImageMaxHeight);
 
    mgr.setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat);
    mgr.setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode);

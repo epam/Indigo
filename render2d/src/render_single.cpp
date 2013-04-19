@@ -89,7 +89,14 @@ void RenderSingle::draw ()
    outerMargin.x = (float)(minMarg + _cnvOpt.marginX);
    outerMargin.y = (float)(minMarg + _cnvOpt.marginY);
 
-   scale = _getScale();
+   width = __min(width, _getMaxWidth());
+   height = __min(height, _getMaxHeight());
+   scale = _getScale(width, height);
+   if (width < 1)
+      width = _getDefaultWidth(scale);
+   if (height < 1)
+      height = _getDefaultHeight(scale);
+
    _rc.initContext(width, height);
    objArea.set((float)width, (float)height);
    objArea.addScaled(outerMargin, -2);
@@ -114,37 +121,28 @@ void RenderSingle::draw ()
    _rc.removeStoredTransform();
 }
 
-float RenderSingle::_getScale ()
+int RenderSingle::_getDefaultWidth (const float s)
 {
-   int maxPageSize = _rc.getMaxPageSize();
-   float s;
-   bool imageSizeSet = width > 0 && height > 0;
-   s = (float)_bondLength;
-   int defaultWidth = (int)ceil(__max(objSize.x * s, commentSize.x) + outerMargin.x * 2);
-   int defaultHeight = (int)ceil(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2);
+   return (int)ceil(__max(__max(objSize.x * s, commentSize.x) + outerMargin.x * 2, 1));
+}
 
-   if (!imageSizeSet) {
-      width = defaultWidth;
-      height = defaultHeight;
-   }
-   if (maxPageSize > 0 && __max(width, height) > maxPageSize) {
-      width = __min(width, maxPageSize);
-      height = __min(height, maxPageSize);
-      imageSizeSet = true;
-   }
-   if (imageSizeSet && (defaultWidth > width || defaultHeight > height || !_bondLengthSet)) {
-      float absX = 2 * outerMargin.x;
-      float absY = commentSize.y + 2 * outerMargin.y + commentOffset;
-      float x = width - absX,
-         y = height - absY;
-      if (x < commentSize.x + 1 || y < 1)
-         throw Error("Image too small, the layout requires at least %dx%d",
-            (int)(absX + commentSize.x + 2),
-            (int)(absY + 2));
-      if (x * objSize.y < y * objSize.x)
-         s = x / objSize.x;
-      else
-         s = y / objSize.y;
-   }
-   return s;
+int RenderSingle::_getDefaultHeight (const float s)
+{
+   return (int)ceil(__max(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2, 1));
+}
+
+float RenderSingle::_getScaleGivenSize(int w, int h)
+{
+   float absX = 2 * outerMargin.x;
+   float absY = commentSize.y + 2 * outerMargin.y + commentOffset;
+   float x = w - absX,
+      y = h - absY;
+   if (x < commentSize.x + 1 || y < 1)
+      throw Error("Image too small, the layout requires at least %dx%d",
+         (int)(absX + commentSize.x + 2),
+         (int)(absY + 2));
+   if (x * objSize.y < y * objSize.x)
+      return x / objSize.x;
+   else
+      return y / objSize.y;
 }

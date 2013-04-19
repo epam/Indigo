@@ -85,4 +85,12 @@ CancellationHandler* setCancellationHandler (CancellationHandler* handler)
    return prev;
 }
 
+AutoCancellationHandler::AutoCancellationHandler(CancellationHandler& hand) {
+   _prev = setCancellationHandler(&hand);
+}
+
+AutoCancellationHandler::~AutoCancellationHandler() {
+   setCancellationHandler(_prev);
+}
+
 }

@@ -90,8 +90,8 @@ public:
 
    virtual bool bondStereoCare (int idx);
 
-   virtual bool aromatize ();
-   virtual bool dearomatize ();
+   virtual bool aromatize (const AromaticityOptions &options);
+   virtual bool dearomatize (const AromaticityOptions &options);
 
    int getImplicitH (int idx);
    int getImplicitH_NoThrow (int idx, int fallback);

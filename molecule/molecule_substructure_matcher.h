@@ -67,6 +67,8 @@ public:
    bool use_pi_systems_matcher;
    GraphVertexEquivalence *vertex_equivalence_handler;
 
+   AromaticityOptions arom_options;
+
    FragmentMatchCache *fmcache;
 
    bool highlight;

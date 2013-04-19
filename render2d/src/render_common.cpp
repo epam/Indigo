@@ -308,7 +308,7 @@ void RenderSettings::init (float sf)
    equalityInterval = plusSize / 2;
    rGroupIfThenInterval = bondLineWidth * 4;
    neighboringLabelTolerance = 1.3f;
-   minSin = 0.6f;
+   minSin = 0.49f;
    neighboringAtomDistanceTresholdA = 0.8f;
    neighboringAtomDistanceTresholdB = 0.5f;
 }
@@ -321,6 +321,7 @@ CanvasOptions::CanvasOptions ()
 void CanvasOptions::clear ()
 {
    width = height = -1;
+   maxWidth = maxHeight = -1;
    xOffset = yOffset = 0;
    bondLength = -1;
    gridMarginX = gridMarginY = 0;

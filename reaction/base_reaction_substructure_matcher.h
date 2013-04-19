@@ -48,6 +48,8 @@ public:
    bool highlight;
    bool use_aromaticity_matcher;
 
+   AromaticityOptions arom_options;
+
    bool find ();
 
    int getTargetMoleculeIndex (int query_molecule_idx);

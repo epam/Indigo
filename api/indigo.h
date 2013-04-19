@@ -317,6 +317,10 @@ CEXPORT int indigoIsRSite (int atom);
 // or zero if the atom is not a stereoatom
 CEXPORT int indigoStereocenterType (int atom);
 CEXPORT int indigoChangeStereocenterType (int atom, int type);
+
+// returns 4 integers with atom indices that defines stereocenter pyramid
+CEXPORT const int* indigoStereocenterPyramid (int atom);
+
 CEXPORT int indigoSingleAllowedRGroup (int rsite);
 
 CEXPORT int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);
@@ -438,6 +442,7 @@ CEXPORT int indigoClearAlleneCenters (int molecule);
 CEXPORT int indigoCountAlleneCenters (int molecule);
 
 CEXPORT int indigoResetSymmetricCisTrans (int handle);
+CEXPORT int indigoResetSymmetricStereocenters (int handle);
 CEXPORT int indigoMarkEitherCisTrans (int handle);
 CEXPORT int indigoMarkStereobonds (int handle);
 

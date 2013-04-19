@@ -717,7 +717,7 @@ void MolfileLoader::_readCtab2000 ()
                else if (sub_count == -2)
                {
                   _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                     new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, _qmol->getVertex(atom_idx).degree())));
+                     new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, _qmol->getVertex(atom_idx).degree())));
                }
                else if (sub_count > 0)
                   _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),

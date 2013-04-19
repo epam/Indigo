@@ -73,6 +73,9 @@ void BingoPgSearch::prepareRescan(PG_OBJECT scan_desc_ptr) {
    if(_initSearch) {
       _initScanSearch();
    } else {
+      /*
+       * Prepare query
+       */
       _fpEngine->prepareQuerySearch(_bufferIndex, _indexScanDesc);
    }
 }

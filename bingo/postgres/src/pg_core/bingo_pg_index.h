@@ -95,6 +95,10 @@ public:
    
    void readDictionary(indigo::Array<char>& _dictionary);
    void writeDictionary(BingoPgBuildEngine&);
+   /*
+    * Clear all buffers
+    */
+   void clearAllBuffers();
 
    DECL_ERROR;
 
@@ -115,7 +119,6 @@ private:
    
    BingoMetaPageData _metaInfo;
    BingoPgBuffer _metaBuffer;
-   BingoPgBuffer _configBuffer;
    indigo::PtrArray<BingoPgBuffer> _sectionOffsetBuffers;
    indigo::AutoPtr<BingoPgSection> _currentSection;
    int _currentSectionIdx;

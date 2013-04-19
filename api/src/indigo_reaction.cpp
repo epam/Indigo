@@ -550,6 +550,7 @@ CEXPORT int indigoAutomap (int reaction, const char *mode)
    {
       BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
       ReactionAutomapper ram(rxn);
+      ram.arom_options = self.arom_options;
       /*
        * Read options
        */
@@ -669,6 +670,7 @@ CEXPORT int indigoCorrectReactingCenters (int reaction)
    {
       BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
       ReactionAutomapper ram(rxn);
+      ram.arom_options = self.arom_options;
       ram.correctReactingCenters(true);
       return 0;
    }

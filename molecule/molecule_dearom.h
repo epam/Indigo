@@ -21,6 +21,7 @@
 #include "base_cpp/gray_codes.h"
 #include "base_cpp/d_bitset.h"
 #include "graph/graph_perfect_matching.h"
+#include "molecule/molecule_arom.h"
 
 namespace indigo {
 
@@ -29,12 +30,15 @@ class Molecule;
 class Scanner;
 class Output;
 
+DECL_EXCEPTION(DearomatizationException);
+DECL_EXCEPTION2(NonUniqueDearomatizationException, DearomatizationException);
+
 // Storage for dearomatizations
 class DearomatizationsStorage
 {
    friend class DearomatizationsStorageWrapper;
 public:
-   DECL_ERROR;
+   DECL_ERROR2(DearomatizationException);
 
    explicit DearomatizationsStorage ();
 
@@ -123,7 +127,7 @@ public:
    bool* getAcceptDoubleBonds (void);
    bool  isAcceptDoubleBond   (int atom);
 
-   DECL_ERROR;
+   DECL_ERROR2(DearomatizationException);
 protected:
    void _detectAromaticGroups (int v_idx, const int *atom_external_conn);
 
@@ -155,7 +159,7 @@ public:
       PARAMS_SAVE_JUST_HETERATOMS       // Store just heteroatoms configuration
    }; 
 public:
-   explicit Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn);
+   explicit Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn, const AromaticityOptions &options);
    virtual ~Dearomatizer ();
 
    void  enumerateDearomatizations  (DearomatizationsStorage &dearomatizations);
@@ -182,6 +186,7 @@ protected:
    GraphMatchingFixed  _graphMatching;
 
    BaseMolecule &_molecule;
+   const AromaticityOptions &_options;
    int _connectivityGroups;
    int _activeGroup;
 
@@ -210,7 +215,7 @@ protected:
 class DearomatizationMatcher
 {
 public:
-   DECL_ERROR;
+   DECL_ERROR2(DearomatizationException);
 
    DearomatizationMatcher (DearomatizationsStorage &dearomatizations, BaseMolecule &molecule,
       const int *atom_external_conn);
@@ -295,12 +300,17 @@ public:
 
    // Function dearomatizes as much as possible.
    // Returns true if all bonds were dearomatized, false overwise
-   static bool dearomatizeMolecule (Molecule &mol);
+   static bool dearomatizeMolecule (Molecule &mol, const AromaticityOptions &options);
+
+   static bool restoreHydrogens (Molecule &mol, const AromaticityOptions &options);
 
    void dearomatizeGroup (int group, int dearomatization_index);
+   void restoreHydrogens (int group, int dearomatization_index);
 private:
    DearomatizationsStorage &_dearomatizations;
    Molecule &_mol;
+
+   TL_CP_DECL(Array<int>, vertex_connectivity);
 };
 
 }

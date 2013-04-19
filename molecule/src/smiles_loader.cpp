@@ -1258,11 +1258,10 @@ void SmilesLoader::_setRadicalsAndHCounts ()
                _mol->setImplicitH(idx, 0);
          }
          else
-            // it is probably not fair to set it to zero at
-            // this point, but other choices seem to be worse:
-            //   1) raise an exception (too ugly)
-            //   2) try to de-aromatize the molecule to know the implicit hydrogens (too complicated)
-            _mol->setImplicitH(idx, 0);
+         {
+            // Leave the number of hydrogens as unspecified
+            // Dearomatization algorithm can find any suitable configuration
+         }
       }
    }
 }

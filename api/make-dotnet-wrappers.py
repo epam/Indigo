@@ -11,12 +11,14 @@ else:
     # Mono
     msbuildcommand = 'xbuild /t:Rebuild /p:Configuration=Release'
 
-# TODO: Support Mono
-
 parser = OptionParser(description='Indigo .NET libraries build script')
 parser.add_option('--suffix', '-s', help='archive suffix', default="")
 
 (args, left_args) = parser.parse_args()
+
+wrappers =  (args.suffix[1:], )
+if 'universal' in wrappers:
+    wrappers = ('win', 'linux', 'mac')
 
 api_dir = abspath(dirname(__file__))
 root = join(api_dir, "..")
@@ -24,12 +26,14 @@ dist_dir = join(root, "dist")
 if not os.path.exists(dist_dir):
     os.mkdir(dist_dir)
 
-version = ""
 cur_dir = os.path.abspath(os.curdir)
 for line in open(join(api_dir, "indigo-version.cmake")):
     m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
     if m:
         version = m.group(1)
+        break
+    else:
+        raise RuntimeError("Could not find indigo-version!")
 
 os.chdir(dist_dir)
 if os.path.exists("dotnet"):
@@ -40,36 +44,94 @@ os.mkdir('dotnet')
 indigoDotNetPath = join(api_dir, "dotnet")
 if os.path.exists(join(indigoDotNetPath, "Resource")):
     shutil.rmtree(join(indigoDotNetPath, "Resource"))
-os.makedirs(join(indigoDotNetPath, "Resource", 'Win', 'x64'))
-os.makedirs(join(indigoDotNetPath, "Resource", 'Win', 'x86'))
+
+if 'win' in wrappers:
+    os.makedirs(join(indigoDotNetPath, "Resource", 'Win', 'x64'))
+    os.makedirs(join(indigoDotNetPath, "Resource", 'Win', 'x86'))
+    win = 1
+else:
+    win = 0
+
+if 'linux' in wrappers:
+    os.makedirs(join(indigoDotNetPath, "Resource", 'Linux', 'x64'))
+    os.makedirs(join(indigoDotNetPath, "Resource", 'Linux', 'x86'))
+    linux = 1
+else:
+    linux = 0
+
+if 'mac' in wrappers:
+    #os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.5'))
+    os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.6'))
+    mac = 1
+else:
+    mac = 0
 
 os.chdir(indigoDotNetPath)
-command = '%s /property:DllPath32=%s /property:DllPath64=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
-subprocess.check_call(command)
-
+command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+print command
+subprocess.check_call(command, shell=True)
 
 # Build IndigoRenderer-dotnet
 indigoRendererDotNetPath = join(api_dir, "plugins", "renderer", "dotnet")
 if os.path.exists(join(indigoRendererDotNetPath, "Resource")):
     shutil.rmtree(join(indigoRendererDotNetPath, "Resource"))
-os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Win', 'x64'))
-os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Win', 'x86'))
+if 'win' in wrappers:
+    os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Win', 'x64'))
+    os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Win', 'x86'))
+    win = 1
+else:
+    win = 0
+
+if 'linux' in wrappers:
+    os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Linux', 'x64'))
+    os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Linux', 'x86'))
+    linux = 1
+else:
+    linux = 0
+
+if 'mac' in wrappers:
+    #os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.5'))
+    os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.6'))
+    mac = 1
+else:
+    mac = 0
 
 os.chdir(indigoRendererDotNetPath)
-command = '%s /property:DllPath32=%s /property:DllPath64=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
-subprocess.check_call(command)
+command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+print command
+subprocess.check_call(command, shell=True)
 
 # Build IndigoInchi-dotnet
 indigoInchiDotNetPath = join(api_dir, "plugins", "inchi", "dotnet")
 if os.path.exists(join(indigoInchiDotNetPath, "Resource")):
     shutil.rmtree(join(indigoInchiDotNetPath, "Resource"))
-os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Win', 'x64'))
-os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Win', 'x86'))
+if 'win' in wrappers:
+    os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Win', 'x64'))
+    os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Win', 'x86'))
+    win = 1
+else:
+    win = 0
+
+if 'linux' in wrappers:
+    os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Linux', 'x64'))
+    os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Linux', 'x86'))
+    linux = 1
+else:
+    linux = 0
+
+if 'mac' in wrappers:
+    #os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.5'))
+    os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.6'))
+    mac = 1
+else:
+    mac = 0
 
 os.chdir(indigoInchiDotNetPath)
-command = '%s /property:DllPath32=%s /property:DllPath64=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared', 'Win', 'x86'), join(api_dir, 'libs', 'shared', 'Win', 'x64'))
-subprocess.check_call(command)
+command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+print command
+subprocess.check_call(command, shell=True)
 
+# Zip results
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "dotnet")
 shutil.copy(join(indigoDotNetPath, 'bin', 'Release', 'indigo-dotnet.dll'), "dotnet")

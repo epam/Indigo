@@ -115,6 +115,8 @@ public interface IndigoLib extends Library
 
    int indigoOptimize (int query, String options);
 
+   int indigoNormalize (int structure, String options);
+
    int indigoAutomap (int reaction, String mode);
    int indigoGetAtomMappingNumber (int reaction, int reaction_atom);
    int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int number);
@@ -131,6 +133,7 @@ public interface IndigoLib extends Library
    int indigoIsRSite (int atom);
 
    int indigoStereocenterType (int atom);
+   Pointer indigoStereocenterPyramid (int atom);
    int indigoChangeStereocenterType (int atom, int type);
    int indigoSingleAllowedRGroup (int rsite);
 
@@ -219,6 +222,7 @@ public interface IndigoLib extends Library
    int indigoCountAlleneCenters (int molecule);
 
    int indigoResetSymmetricCisTrans (int handle);
+   int indigoResetSymmetricStereocenters (int handle);
    int indigoMarkEitherCisTrans (int handle);
 
    int indigoAddAtom (int molecule, String symbol);
@@ -369,11 +373,13 @@ public interface IndigoLib extends Library
    int indigoDecomposeMolecule(int decomp, int mol);
    int indigoIterateDecompositions(int deco_item);
    int indigoAddDecomposition(int decomp, int q_match);
-   
+
    Pointer indigoToString (int handle);
    int indigoToBuffer (int handle, PointerByReference buf, IntByReference size);
    int indigoReactionProductEnumerate (int reaction, int monomers);
    int indigoTransform (int reaction, int monomers);
+
+   int indigoExpandAbbreviations (int structure);
 
    int indigoDbgBreakpoint ();
    Pointer indigoDbgInternalType (int object);

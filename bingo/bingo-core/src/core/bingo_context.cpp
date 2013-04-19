@@ -38,6 +38,7 @@ void BingoContext::reset ()
    cmf_dict.reset();
 
    nthreads = 0;
+   timeout = DEFAULT_TIMEOUT;
    treat_x_as_pseudoatom = false;
    ignore_closing_bond_direction_mismatch = false;
 

@@ -369,10 +369,10 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
          return;
 
       if (zero_bond_length)
-         throw Error("zero bond length");
+         throw Error("zero bond length near atom %d", atom_idx);
 
       if (n_pure_hydrogens > 1)
-         throw Error("%d hydrogens near stereocenter", n_pure_hydrogens);
+         throw Error("%d hydrogens near stereocenter %d", n_pure_hydrogens, atom_idx);
 
       int xyz1, xyz2;
 
@@ -415,17 +415,17 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
       }
 
       if (main2 == -1)
-         throw Error("internal error: can not find opposite bond");
+         throw Error("internal error: can not find opposite bond near atom %d", atom_idx);
 
       if (main_dir == BOND_UP && mol.getBondDirection2(atom_idx, edge_ids[main2].nei_idx) == BOND_DOWN)
-         throw Error("stereo types of the opposite bonds mismatch");
+         throw Error("stereo types of the opposite bonds mismatch near atom %d", atom_idx);
       if (main_dir == BOND_DOWN && mol.getBondDirection2(atom_idx, edge_ids[main2].nei_idx) == BOND_UP)
-         throw Error("stereo types of the opposite bonds mismatch");
+         throw Error("stereo types of the opposite bonds mismatch near atom %d", atom_idx);
 
       if (main_dir == mol.getBondDirection2(atom_idx, edge_ids[side1].nei_idx))
-         throw Error("stereo types of non-opposite bonds match");
+         throw Error("stereo types of non-opposite bonds match near atom %d", atom_idx);
       if (main_dir == mol.getBondDirection2(atom_idx, edge_ids[side2].nei_idx))
-         throw Error("stereo types of non-opposite bonds match");
+         throw Error("stereo types of non-opposite bonds match near atom %d", atom_idx);
 
       if (main1 == 3 || main2 == 3)
          last_atom_dir = main_dir;
@@ -496,7 +496,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
          {
             if (dirs[(main_nei + 1) % 3] == dirs[main_nei] ||
                 dirs[(main_nei + 2) % 3] == dirs[main_nei])
-               throw Error("directions of neighbor stereo bonds match");
+               throw Error("directions of neighbor stereo bonds match near atom %d", atom_idx);
             if (dirs[main_nei] == BOND_UP)
                dir = -1;
          }
@@ -508,7 +508,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
             if (d1 == 0)
                d1 = d2;
             else if (d2 != 0 && d1 != d2)
-               throw Error("directions of opposite stereo bonds do not match");
+               throw Error("directions of opposite stereo bonds do not match near atom %d", atom_idx);
                
             if (d1 == 0)
                return;
@@ -520,26 +520,26 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
       else if (!degenerate)
       {
          if (n_down > 0 && n_up > 0)
-            throw Error("one bond up, one bond down -- indefinite case");
+            throw Error("one bond up, one bond down -- indefinite case near atom %d", atom_idx);
 
          if (!possible_lone_pair)
          {
             if (n_up == 3)
-               throw Error("all 3 bonds up near stereoatom");
+               throw Error("all 3 bonds up near stereoatom %d", atom_idx);
             if (n_down == 3)
-               throw Error("all 3 bonds down near stereoatom");
+               throw Error("all 3 bonds down near stereoatom %d", atom_idx);
          } 
          if (n_down > 0)
             dir = -1;
       }
       else
-         throw Error("degenerate case for 3 bonds near stereoatom");
+         throw Error("degenerate case for 3 bonds near stereoatom %d", atom_idx);
 
       if (zero_bond_length)
-         throw Error("zero bond length");
+         throw Error("zero bond length near atom %d", atom_idx);
 
       if (n_pure_hydrogens > 0 && !possible_lone_pair)
-         throw Error("have hydrogen(s) besides implicit hydrogen near stereocenter");
+         throw Error("have hydrogen(s) besides implicit hydrogen near stereocenter %d", atom_idx);
 
       int sign = _sign(edge_ids[0].vec, edge_ids[1].vec, edge_ids[2].vec);
 

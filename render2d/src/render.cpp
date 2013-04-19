@@ -56,3 +56,33 @@ float Render::_getObjScale (int item)
    float objScale = 1 / avgBondLength;
    return objScale;
 }
+
+int Render::_getMaxWidth ()
+{
+   int maxPageSize = _rc.getMaxPageSize();
+   return _cnvOpt.maxWidth > 0 ? __min(_cnvOpt.maxWidth, maxPageSize) : maxPageSize;
+}
+
+int Render::_getMaxHeight ()
+{
+   int maxPageSize = _rc.getMaxPageSize();
+   return _cnvOpt.maxHeight > 0 ? __min(_cnvOpt.maxHeight, maxPageSize) : maxPageSize;
+}
+
+float Render::_getScale (int w, int h)
+{
+   float s = (float)_bondLength;
+   int maxWidth = _getMaxWidth();
+   int maxHeight = _getMaxHeight();
+   int defaultWidth = _getDefaultWidth(s);
+   int defaultHeight = _getDefaultHeight(s);
+   if (h >= 1 && w >= 1)
+      return _getScaleGivenSize(w, h);
+   if (h >= 1)
+      return _getScaleGivenSize(maxWidth, h);
+   if (w >= 1)
+      return _getScaleGivenSize(w, maxHeight);
+   if (defaultWidth <= maxWidth && defaultHeight <= maxHeight)
+      return s;
+   return _getScaleGivenSize(__min(defaultWidth, maxWidth), __min(defaultHeight, maxHeight));
+}

@@ -63,6 +63,7 @@ public:
       ATOM_TOTAL_H,
       //ATOM_IMPLICIT_H,
       ATOM_SUBSTITUENTS,
+      ATOM_SUBSTITUENTS_AS_DRAWN,
       ATOM_SSSR_RINGS,
       ATOM_SMALLEST_RING_SIZE,
       ATOM_RING_BONDS,
@@ -291,8 +292,8 @@ public:
    virtual bool bondStereoCare (int idx);
    void setBondStereoCare (int idx, bool stereo_care);
 
-   virtual bool aromatize ();
-   virtual bool dearomatize ();
+   virtual bool aromatize (const AromaticityOptions &options);
+   virtual bool dearomatize (const AromaticityOptions &options);
 
    int addAtom (Atom *atom);
    Atom & getAtom (int idx);

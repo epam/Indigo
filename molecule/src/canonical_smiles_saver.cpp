@@ -17,6 +17,7 @@
 #include "molecule/smiles_saver.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/elements.h"
+#include "molecule/molecule_dearom.h"
 
 using namespace indigo;
 
@@ -25,7 +26,6 @@ IMPL_ERROR(CanonicalSmilesSaver, "canonical SMILES saver");
 CanonicalSmilesSaver::CanonicalSmilesSaver (Output &output) : _output(output)
 {
    find_invalid_stereo = true;
-   ignore_invalid_hcount = false;
 }
 
 CanonicalSmilesSaver::~CanonicalSmilesSaver ()
@@ -45,6 +45,24 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
 
    if (mol_.repeating_units.size() > 0)
       throw Error("can not canonicalize a polymer");
+
+   // Detect hydrogens configuration if aromatic but not ambiguous
+   bool found_invalid_h = false;
+   for (i = mol_.vertexBegin(); i != mol_.vertexEnd(); i = mol_.vertexNext(i))
+   {
+      if (mol_.isRSite(i) || mol_.isPseudoAtom(i))
+         continue;
+
+      if (mol_.getImplicitH_NoThrow(i, -1) == -1)
+         found_invalid_h = true;
+   }
+   if (found_invalid_h)
+   {
+      AromaticityOptions options;
+      options.method = AromaticityOptions::GENERIC;
+      options.unique_dearomatization = true;
+      MoleculeDearomatizer::restoreHydrogens(mol_, options);
+   }
 
    mol.clone(mol_, 0, 0);
 
@@ -94,7 +112,6 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
          }
       }
          
-
    MoleculeAutomorphismSearch of;
 
    of.detect_invalid_cistrans_bonds = find_invalid_stereo;
@@ -119,7 +136,7 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
 
    SmilesSaver saver(_output);
 
-   saver.ignore_invalid_hcount = ignore_invalid_hcount;
+   saver.ignore_invalid_hcount = false;
    saver.vertex_ranks = ranks.ptr();
    saver.ignore_hydrogens = true;
    saver.canonize_chiralities = true;

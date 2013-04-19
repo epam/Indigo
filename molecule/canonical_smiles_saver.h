@@ -30,7 +30,6 @@ public:
    ~CanonicalSmilesSaver ();
 
    bool find_invalid_stereo;
-   bool ignore_invalid_hcount;
 
    void saveMolecule (Molecule &mol) const;
 

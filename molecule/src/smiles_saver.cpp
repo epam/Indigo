@@ -54,7 +54,7 @@ TL_CP_GET(_ban_slashes)
    write_extra_info = true;
    _mol = 0;
    smarts_mode = false;
-   ignore_invalid_hcount = false;
+   ignore_invalid_hcount = true;
    separate_rsites = true;
    rsite_indices_as_aam = true;
    _n_attachment_points = 0;
@@ -744,6 +744,15 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
        atom_number != ELEM_B && atom_number != ELEM_I)
       need_brackets = true;
 
+   int charge = _bmol->getAtomCharge(idx);
+   int isotope = _bmol->getAtomIsotope(idx);
+
+   if (charge == CHARGE_UNKNOWN)
+      charge = 0;
+
+   if (chirality > 0 || charge != 0 || isotope > 0 || aam > 0)
+      need_brackets = true;
+
    // Ignored hydrogens will be converted to implicit hydrogens.
    // So number of ignored hydrogens should be passed into 
    // shouldWriteHCount to save correctly [H]S([H])([H])C
@@ -754,7 +763,7 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
       if (Molecule::shouldWriteHCountEx(*_mol, idx, _hcount_ignored[idx]))
       {
          hydro = _hcount[idx];
-         if (hydro < 0 && !ignore_invalid_hcount)
+         if (hydro < 0 && !ignore_invalid_hcount && need_brackets)
          {
             // This function will throw better error message with a description
             _mol->getImplicitH(idx);
@@ -771,13 +780,7 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    if (_qmol != 0)
       _qmol->getAtom(idx).sureValue(QueryMolecule::ATOM_TOTAL_H, hydro);
 
-   int charge = _bmol->getAtomCharge(idx);
-   int isotope = _bmol->getAtomIsotope(idx);
-
-   if (charge == CHARGE_UNKNOWN)
-      charge = 0;
-
-   if (chirality > 0 || charge != 0 || isotope > 0 || hydro >= 0 || aam > 0)
+   if (hydro >= 0)
       need_brackets = true;
 
    if (need_brackets)

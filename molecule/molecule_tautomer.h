@@ -54,7 +54,7 @@ struct TautomerRule
 struct TautomerSearchContext
 {
    explicit TautomerSearchContext (BaseMolecule &g1_, BaseMolecule &g2_, GraphDecomposer &decomposer1_, GraphDecomposer &decomposer2_,
-      const PtrArray<TautomerRule> &rules_list_);
+      const PtrArray<TautomerRule> &rules_list_, const AromaticityOptions &arom_options);
    virtual ~TautomerSearchContext ();
 
    BaseMolecule &g1;
@@ -76,6 +76,8 @@ struct TautomerSearchContext
    bool (*cb_check_rules) (TautomerSearchContext &context, int first1, int first2, int last1, int last2);
 
    int max_chains;
+
+   AromaticityOptions arom_options;
 
    TL_CP_DECL(DearomatizationsStorage, dearomatizations);
 

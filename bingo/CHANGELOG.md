@@ -1,3 +1,21 @@
+Bingo 1.7.9
+----------
+
+*3 April 2013*
+
+General changes:
+
+* Fingerprints now include information about single-atom fragments. This resolved an issue with empty fingerprints for single-atom molecules. Also this change makes substruture search more efficient in case of rare atoms in a query.
+* Timeout parameter for exact search method for a single structure. Default value is 1 min.
+* Smiles saver doesn't throw exception about implicit hydrogens if they are not saving in SMILES
+
+Bingo PostgreSQL-specific changes:
+
+* bug with similarity search for null structures was fixed
+* performance was improved for join queries
+* bug with exact join query (windows) was fixed 
+* bitmap scan feature was turned off by default for bingo
+
 Bingo 1.7.8b2
 ----------
 

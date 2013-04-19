@@ -1,3 +1,51 @@
+Indigo 1.1.10
+----------
+
+*19 April 2013*
+
+This release has two major additions: 
+
+1. We started to support Mono and provide a .NET version that runs on Linux and Mac OS X. This was done with help of developers from Royal Society of Chemistry (<http://www.rsc.org>) who also helped us to localize and fix several stability issues in our .NET version.
+
+2. Indigo now understand aromatic rings with external double bonds such as O=C1C=CC=CC=C1. To enable this mode you have to set "aromaticity-model" option to "generic" (while default version is "basic").
+
+All changes:
+
+* Mono support: now we provide .NET modules for Windows, Linux, Mac OS X, and a universal bundle that works on all the specified platforms. Thanks to Dimitry Ivanov for various suggestions: <https://groups.google.com/d/msg/indigo-dev/ObLkSecXrOw/g2RGOojqjosJ>
+* Indigo Renderer automatically selects output format based on the file extension. It is not necessary to specify "render-output-format" option if you are rendering into a file.
+* Original hydrogens are not folded during molecule transformations. Thanks to Ken for the bug report: <https://groups.google.com/d/msg/indigo-bugs/359gCN9OrMg/fKoMt5kS9XcJ>
+* Either cis/trans bond marked is preserved during molfile loading even if substitutes are collinear. Again thanks to Ken for the suggestion: <https://groups.google.com/d/msg/indigo-bugs/oszcYWrwctI/3t2XuonNAaYJ>
+* Indigo Renderer now has additional options for partial image size specification. These options are: "render-image-width", "render-image-height", "render-image-max-width", "render-image-max-height"
+* Fixed an issue in the SMILES loader module that set invalid number of implicit hydrogens: <https://groups.google.com/d/msg/indigo-bugs/i7g3hoSXxhI/XaXsEOVJ8_cJ>
+* Generic aromaticity model that can be enabled by "aromaticity-model" option. Thanks to Daniel for pushing us to implement this functionality.
+* Another aromaticity option for find any kekulize configuration if Indigo cannot dearomatize a structure. For example Indigo cannot dearomatize the structure c1ccc2c(ccc2)cc1, because there are no bonds configuration such that the structure is aromatic. But you can try to find approximate kekulize configuration if you specify option "dearomatize-verification" to "false".
+* Indigo now uses dearomatization module to find number of hydrogens in aromatic rings in the IndigoObject.canonicalSmiles() method. If hydrogens configuration is ambiguous then Indigo throws an exception about this.
+* Additional "unique-dearomatization" option. If this option is set to true Indigo will throw an exception of dearomatization configuration is ambiguous (that means that canonical SMILES cannot be generated): <https://groups.google.com/d/msg/indigo-bugs/WIH8bWQpVHs/Z8VLlXR2U28J>
+* IndigoInchi.loadMolecule can now load molecules from InChI Aux infromation. Thanks to Nico: <http://tech.knime.org/forum/indigo/inchi-conversion-into-2d-structure#comment-28514>
+* Indigo Renderer doesn't have a dependency on the new GLIBC any more. This dependency prevented loading of Indigo Renderer on CentOS 5.9 and less.
+* Minor changes in Java and C# bindings: expandAbbreviations method has been add, typo in countDataSGroups has been fixed
+* New method to get stereocenter pyramid. Thanks to Daniel for the feature request: <https://groups.google.com/d/msg/indigo-dev/z0a1QwRMrx4/0s-KEtPBB_EJ>
+* Fingerprints computation now works 30% faster.
+* All stereocenter exceptions now includes also atom index: <https://groups.google.com/d/msg/indigo-bugs/nZOmFCEsNqk/S92lgH5zjvwJ>
+
+Indigo 1.1.9
+----------
+
+*25 March 2013*
+
+New features:
+
+* Single atoms are encoded into Indigo fingerprint. In the previous versions we enumerated subgraphs starting from 2 atoms.
+* new method IndigoObject.resetSymmetricStereocenters to clear stereocenters that are not real stereocenters like in `CC[C@@H](CN)CC`
+
+
+Changes:
+
+* Implicit hydrogens are rendered better if they are on the bottom of an aromatic ring
+* Missing dependency file msvcp100.dll is loaded automatically. 
+* Smiles saver doesn't throw exception about implicit hydrogens if they are not saving in SMILES
+* Workaround for a clang 3.2 compiler bug that caused incorrect similarity values on Mac OS X platforms
+
 Indigo 1.1.8
 ----------
 
@@ -9,14 +57,14 @@ New features:
 * New method indigoExpandAbbreviations in the Indigo C interface. Bindings for Java, C# will be ready soon.
 * Single record in SDF file is limited to 100Mb to prevent accident out-of-memory exceptions when loading non-SDF files.
 * Indigo compact molecule and reaction format is compatible with previous versions. KNIME workflows that are using Indigo nodes will work fine with previously saved workflows.
-* Indigo.loadMolecule reads molecule properties from SDF file too. Karen Karapetyan: [https://groups.google.com/d/msg/indigo-general/-2aYCKW8nSs/xteR7sFtsKIJ]()
+* Indigo.loadMolecule reads molecule properties from SDF file too. Karen Karapetyan: <https://groups.google.com/d/msg/indigo-general/-2aYCKW8nSs/xteR7sFtsKIJ>
 
 Fixed:
 
 * Issues with transformations. Thanks to Karen Karapetyan for various bug reports!
 * Exception on invalid options in the InChI plugin
 * Issues with long multiline in molfile data s-groups
-* Aromaticity matcher issue. Thanks to James Davidson for the bug report: [https://groups.google.com/d/topic/indigo-general/yhTfm6XsKTM/discussion]()
+* Aromaticity matcher issue. Thanks to James Davidson for the bug report: <https://groups.google.com/d/topic/indigo-general/yhTfm6XsKTM/discussion>
 * Atom-to-atom mapping timeout issue
 * File handlers leak in indigo.iterateSDFile method in case of empty file
 

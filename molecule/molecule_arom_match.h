@@ -37,7 +37,7 @@ class QueryMolecule;
 class AromaticityMatcher
 {
 public:
-   AromaticityMatcher (QueryMolecule &query, BaseMolecule &base);
+   AromaticityMatcher (QueryMolecule &query, BaseMolecule &base, const AromaticityOptions &arom_options);
 
    // Check if aromaticity matcher is necessary for specified query
    static bool isNecessary (QueryMolecule &query);
@@ -68,6 +68,8 @@ public:
 protected:
    QueryMolecule &_query;
    BaseMolecule &_base;
+
+   AromaticityOptions _arom_options;
 
    enum {
       ANY = 0, AROMATIC, NONAROMATIC

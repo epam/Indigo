@@ -94,6 +94,14 @@ bool Graph::hasVertex(int idx) const
    return _vertices->hasElement(idx);
 }
 
+int Graph::getEdgeEnd (int beg, int edge) const
+{
+   const Edge &e = getEdge(edge);
+   if (e.beg == beg)
+      return e.end;
+   return e.beg;
+}
+
 int Graph::addEdge (int beg, int end)
 {
    if (beg == end)
