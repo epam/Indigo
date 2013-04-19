@@ -131,12 +131,43 @@ command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /prop
 print command
 subprocess.check_call(command, shell=True)
 
+# Build Bingo-dotnet
+bingoDotNetPath = join(api_dir, "plugins", "bingo", "dotnet")
+if os.path.exists(join(bingoDotNetPath, "Resource")):
+    shutil.rmtree(join(bingoDotNetPath, "Resource"))
+if 'win' in wrappers:
+    os.makedirs(join(bingoDotNetPath, "Resource", 'Win', 'x64'))
+    os.makedirs(join(bingoDotNetPath, "Resource", 'Win', 'x86'))
+    win = 1
+else:
+    win = 0
+
+if 'linux' in wrappers:
+    os.makedirs(join(bingoDotNetPath, "Resource", 'Linux', 'x64'))
+    os.makedirs(join(bingoDotNetPath, "Resource", 'Linux', 'x86'))
+    linux = 1
+else:
+    linux = 0
+
+if 'mac' in wrappers:
+    #os.makedirs(join(bingoDotNetPath, "Resource", 'Mac', '10.5'))
+    os.makedirs(join(bingoDotNetPath, "Resource", 'Mac', '10.6'))
+    mac = 1
+else:
+    mac = 0
+
+os.chdir(bingoDotNetPath)
+command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+print command
+subprocess.check_call(command, shell=True)
+
 # Zip results
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "dotnet")
 shutil.copy(join(indigoDotNetPath, 'bin', 'Release', 'indigo-dotnet.dll'), "dotnet")
 shutil.copy(join(indigoRendererDotNetPath, 'bin', 'Release', 'indigo-renderer-dotnet.dll'), "dotnet")
 shutil.copy(join(indigoInchiDotNetPath, 'bin', 'Release', 'indigo-inchi-dotnet.dll'), "dotnet")
+shutil.copy(join(bingoDotNetPath, 'bin', 'Release', 'bingo-dotnet.dll'), "dotnet")
 
 archive_name = "indigo-dotnet-%s" % (version + args.suffix)
 os.rename("dotnet", archive_name)

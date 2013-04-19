@@ -87,7 +87,7 @@ namespace com.ggasoftware.indigo
 			{
 				options = "";
 			}
-			return new BingoObject(_indigo.checkResult(_bingo_lib.bingoSearchSub(_bingo, query.self, options)));
+			return new BingoObject(_indigo.checkResult(_bingo_lib.bingoSearchSub(_bingo, query.self, options)), _indigo, _bingo_lib);
 		}
 
 		public BingoObject searchSim(IndigoObject query, float min, float max, string metric)
@@ -97,7 +97,7 @@ namespace com.ggasoftware.indigo
 			{
 				metric = "tanimoto";
 			}
-			return new BingoObject(_indigo.checkResult(_bingo_lib.bingoSearchSub(_bingo, query.self, min, max, metric)));
+			return new BingoObject(_indigo.checkResult(_bingo_lib.bingoSearchSim(_bingo, query.self, min, max, metric)), _indigo, _bingo_lib);
 		}
 	}
 }

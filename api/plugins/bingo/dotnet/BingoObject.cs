@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace com.ggasoftware.indigo
 {
-	public class BingoObject : IEnumerable
+	public class BingoObject
 	{
 		public int self;
 		private Indigo _indigo;
