@@ -134,15 +134,32 @@ void GraphSubtreeEnumerator::_reverseSearch (int v_idx, int cur_maximal_criteria
 
    if (nvertices < max_vertices)
    {
+      // Additional check to reduce number of checked "new_e_idx == _fCIS()" in the inner loop
+      // new_e_idx can be equal to _fCIS() only if edge number is maximal that means that
+      // it is greater than previous maximum or 2nd statistic. And if new_e_idx is not attached 
+      // to the previous maximum edge then previous maximum persists and we need to compare only
+      // with m1. Otherwise we have to compare with m2.
+      int m1, m2, max_vertex;
+      _leafMaxEdgeValues(m1, m2, max_vertex);
+
       for (int i = _dfs_front[nvertices].begin();
            i != _dfs_front[nvertices].end(); i = _dfs_front[nvertices].next(i))
       {
          VertexEdge xe = _dfs_front[nvertices][i];
+         // Edge number should be greater then m2
+         if (xe.e < m2)
+            continue;
+
+         int parent = _graph.getEdge(xe.e).beg + _graph.getEdge(xe.e).end - xe.v;
+         int subtree_parent = _v_mapping[parent];
+         // If edge is attached to the previous maximum then it replaces it and
+         // edge number should be greater then m1
+         if (subtree_parent != max_vertex && xe.e < m1)
+            continue;
 
          int new_v_idx = _subtree.addVertex();
-         int parent = _graph.getEdge(xe.e).beg + _graph.getEdge(xe.e).end - xe.v;
 
-         int new_e_idx = _subtree.addEdge(new_v_idx, _v_mapping[parent]);
+         int new_e_idx = _subtree.addEdge(new_v_idx, subtree_parent);
 
          _vertices.push(xe.v);
          _edges.push(xe.e);
@@ -189,6 +206,36 @@ void GraphSubtreeEnumerator::_reverseSearch (int v_idx, int cur_maximal_criteria
          callback2(_graph, _vertices, _edges, context);
    }
 }
+
+void GraphSubtreeEnumerator::_leafMaxEdgeValues (int &m1, int &m2, int &max_vertex)
+{
+   m1 = -1;
+   m2 = -1;
+   max_vertex = -1;
+
+   for (int i = _subtree.vertexBegin(); i != _subtree.vertexEnd(); i = _subtree.vertexNext(i))
+   {
+      const Vertex &vertex = _subtree.getVertex(i);
+      if (vertex.degree() == 1)
+      {
+         int nei_first = vertex.neiBegin();
+         int edge_idx = vertex.neiEdge(nei_first);
+         int value = _inv_e_mapping[edge_idx];
+
+         if (value > m1)
+         {
+            m2 = m1;
+            m1 = value;
+            max_vertex = i;
+         }
+         else if (value > m2)
+         {
+            m2 = value;
+         }
+      }
+   }
+}
+
 
 // The index of edge whose removal won't disconnect the _subtree
 // (the edge corresponding to the maximal _graph edge is selected)

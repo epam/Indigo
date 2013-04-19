@@ -72,6 +72,7 @@ protected:
 
    void _reverseSearch (int v_idx, int cur_maximal_criteria_value);
    int  _fCIS ();
+   void _leafMaxEdgeValues (int &m1, int &m2, int &max_vertex);
 };
 
 }
