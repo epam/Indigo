@@ -26,6 +26,7 @@ All changes:
 * Minor changes in Java and C# bindings: expandAbbreviations method has been add, typo in countDataSGroups has been fixed
 * New method to get stereocenter pyramid. Thanks to Daniel for the feature request: [https://groups.google.com/d/msg/indigo-dev/z0a1QwRMrx4/0s-KEtPBB_EJ]()
 * Fingerprints computation now works 30% faster.
+* All stereocenter exceptions now includes also atom index: [https://groups.google.com/d/msg/indigo-bugs/nZOmFCEsNqk/S92lgH5zjvwJ]()
 
 Indigo 1.1.9
 ----------
