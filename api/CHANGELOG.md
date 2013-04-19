@@ -1,7 +1,7 @@
 Indigo 1.1.10
 ----------
 
-*18 April 2013*
+*19 April 2013*
 
 This release has two major additions: 
 
@@ -24,6 +24,8 @@ All changes:
 * IndigoInchi.loadMolecule can now load molecules from InChI Aux infromation. Thanks to Nico: [http://tech.knime.org/forum/indigo/inchi-conversion-into-2d-structure#comment-28514]()
 * Indigo Renderer doesn't have a dependency on the new GLIBC any more. This dependency prevented loading of Indigo Renderer on CentOS 5.9 and less.
 * Minor changes in Java and C# bindings: expandAbbreviations method has been add, typo in countDataSGroups has been fixed
+* New method to get stereocenter pyramid. Thanks to Daniel for the feature request: [https://groups.google.com/d/msg/indigo-dev/z0a1QwRMrx4/0s-KEtPBB_EJ]()
+* Fingerprints computation now works 30% faster.
 
 Indigo 1.1.9
 ----------
