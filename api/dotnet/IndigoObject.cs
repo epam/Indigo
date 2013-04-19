@@ -313,6 +313,17 @@ namespace com.ggasoftware.indigo
             return dispatcher.checkResult(_indigo_lib.indigoStereocenterType(self));
         }
 
+        public int[] stereocenterPyramid()
+        {
+            dispatcher.setSessionID();
+            int* pyramid_ptr = dispatcher.checkResult(_indigo_lib.indigoStereocenterPyramid(self));
+
+            int[] res = new int[4];
+            for (int i = 0; i < 4; ++i)
+                res[i] = pyramid_ptr[i];
+            return res;
+        }
+
         public void changeStereocenterType(int type)
         {
             dispatcher.setSessionID();

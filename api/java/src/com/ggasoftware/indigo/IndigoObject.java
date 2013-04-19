@@ -290,7 +290,14 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoStereocenterType(self));
    }
-	
+   
+   public int[] stereocenterPyramid ()
+   {
+      dispatcher.setSessionID();
+      Pointer ptr = Indigo.checkResultPointer(this, _lib.indigoStereocenterPyramid(self));
+      return ptr.getIntArray(0, 4);
+   }
+   
    public void changeStereocenterType (int type)
    {
       dispatcher.setSessionID();

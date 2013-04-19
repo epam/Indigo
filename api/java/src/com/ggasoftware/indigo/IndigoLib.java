@@ -133,6 +133,7 @@ public interface IndigoLib extends Library
    int indigoIsRSite (int atom);
 
    int indigoStereocenterType (int atom);
+   Pointer indigoStereocenterPyramid (int atom);
    int indigoChangeStereocenterType (int atom, int type);
    int indigoSingleAllowedRGroup (int rsite);
 

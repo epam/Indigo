@@ -104,6 +104,7 @@ namespace com.ggasoftware.indigo
         int indigoIsPseudoatom(int atom);
         int indigoIsRSite(int atom);
         int indigoStereocenterType(int atom);
+        int* indigoStereocenterPyramid(int atom);
         int indigoSingleAllowedRGroup(int rsite);
 
         int indigoChangeStereocenterType(int atom, int type);
