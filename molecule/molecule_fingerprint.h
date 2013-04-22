@@ -99,8 +99,7 @@ protected:
    static int _vertex_code (Graph &graph, int vertex_idx, void *context);
    static int _edge_code (Graph &graph, int edge_idx, void *context);
 
-   static int _maximalSubgraphCriteriaValue (Graph &graph, const int *v_mapping, 
-      const int *e_mapping, void *context);
+   static int _maximalSubgraphCriteriaValue (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
    void _handleSubgraph (Graph &graph, const Array<int> &vertices, const Array<int> &edges);
 

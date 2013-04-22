@@ -129,28 +129,26 @@ void MoleculeFingerprintBuilder::_handleTree (Graph &graph,
 }
 
 int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue (Graph &graph,
-      const int *v_mapping, const int *e_mapping, void *context)
+      const Array<int> &vertices, const Array<int> &edges, void *context)
 {
    BaseMolecule &mol = (BaseMolecule &)graph;
    int ret = 0;
-   int i;
+   int ni;
    MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
 
    // Check if fragment has query atoms or query bonds
-   for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   for (ni = 0; ni < vertices.size(); ni++)
    {
-      if (v_mapping[i] < 0)
-         continue;
+      int i = vertices[ni];
       if (mol.getAtomNumber(i) == -1)
          break;
    }
 
-   bool has_query_atoms = (i != mol.vertexEnd());
+   bool has_query_atoms = (ni != vertices.size());
 
-   for (i = mol.edgeBegin(); i !=  mol.edgeEnd(); i = mol.edgeNext(i))
+   for (ni = 0; ni < edges.size(); ni++)
    {
-      if (e_mapping[i] < 0)
-         continue;
+      int i = edges[ni];
       int bond_order = mol.getBondOrder(i);
       if (bond_order == -1 ||
             (self->query && mol.asQueryMolecule().aromaticity.canBeAromatic(i) && 
@@ -158,7 +156,7 @@ int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue (Graph &graph,
          break;
    }
 
-   bool has_query_bonds = (i != mol.edgeEnd());
+   bool has_query_bonds = (ni != edges.size());
 
    if (has_query_atoms)
       ret |= 1;
@@ -407,7 +405,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       se.max_vertices = sim_only ? 5 : 7;
       se.handle_maximal = false;
       se.maximal_critera_value_callback = _maximalSubgraphCriteriaValue;
-      se.callback2 = _handleTree;
+      se.callback = _handleTree;
       se.process();
    }
    
