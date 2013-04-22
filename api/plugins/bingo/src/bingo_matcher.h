@@ -172,7 +172,7 @@ namespace bingo
 
    private:
       const BaseIndex &_index;
-      /* const */ SimilarityQueryData *_query_data;
+      /* const */ AutoPtr<SimilarityQueryData> _query_data;
       int _fp_size;
       int _current_id;
       byte *_current_block;

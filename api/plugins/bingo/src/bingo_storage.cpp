@@ -61,7 +61,7 @@ RamStorage::RamStorage (const char *filename, int block_size, bool create) : Sto
 
       while (!ifile.eof())
       {
-         AutoPtr<byte> block = new byte[_block_size];
+         AutoPtr<byte> block(new byte[_block_size]);
 
          if (!ifile.read((char *)block.get(), _block_size))
             break;

@@ -51,9 +51,9 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
    AutoPtr<bingo::Index> context;
 
    if (strcmp(type, "molecule") == 0)
-      context = new bingo::MoleculeIndex();
+      context.reset(new bingo::MoleculeIndex());
    else if (strcmp(type, "reaction") == 0)
-      context = new bingo::ReactionIndex();
+      context.reset(new bingo::ReactionIndex());
    else
       throw BingoException("wrong database type option");
 

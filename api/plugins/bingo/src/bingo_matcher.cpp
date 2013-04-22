@@ -390,7 +390,7 @@ int SimMatcher::currentId ()
 
 void SimMatcher::setQueryData (SimilarityQueryData *query_data)
 {
-   _query_data = query_data;
+   _query_data.reset(query_data);
 
    const MoleculeFingerprintParameters & fp_params = _index.getFingerprintParams();
    _query_data->getQueryObject().buildFingerprint(fp_params, 0, &_query_fp);
