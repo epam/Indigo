@@ -31,7 +31,7 @@ namespace indigo
 
    FILE *openFile( Encoding filename_encoding, const char *filename, const char *mode);
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
    _locale_t getCLocale ();
 
    class CLocale

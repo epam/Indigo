@@ -84,7 +84,7 @@ void Output::vprintf (const char *format, va_list args)
    int n;
    while (true)
    {
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
       n = _vsnprintf_l(str.ptr(), str.size(), format, getCLocale(), args);
 #else
       n = vsnprintf(str.ptr(), str.size(), format, args);

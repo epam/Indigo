@@ -27,4 +27,6 @@ get_directory_property(Cairo_headers_dir DIRECTORY ../../third_party/cairo-src/c
 add_subdirectory(../../render2d "${CMAKE_CURRENT_BINARY_DIR}/render2d")
 add_subdirectory(../../api/plugins/renderer "${CMAKE_CURRENT_BINARY_DIR}/renderer")
 
-set(INDIGO_RENDERER_CONFIGURED TRUE PARENT_SCOPE)
+IF (PARENT_SCOPE)
+	set(INDIGO_RENDERER_CONFIGURED TRUE PARENT_SCOPE)
+ENDIF()
