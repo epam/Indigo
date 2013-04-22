@@ -12,8 +12,8 @@ void CfStorage::create (const char *cf_filename, const char *offset_filename)
    _cf_filename = cf_filename;
    _offset_filename = offset_filename;
 
-   _cf_outfile.open(_cf_filename, std::ios::out | std::ios::binary);
-   _offset_outfile.open(_offset_filename, std::ios::out | std::ios::binary);
+   _cf_outfile.open(cf_filename, std::ios::out | std::ios::binary);
+   _offset_outfile.open(offset_filename, std::ios::out | std::ios::binary);
    
    _cf_infile.open(cf_filename, std::ios::in | std::ios::app | std::ios::binary);
    _offset_infile.open(offset_filename, std::ios::in | std::ios::app | std::ios::binary);
@@ -24,8 +24,8 @@ void CfStorage::load (const char *cf_filename, const char *offset_filename)
    _cf_filename = cf_filename;
    _offset_filename = offset_filename;
 
-   _cf_outfile.open(_cf_filename, std::ios::out | std::ios::app | std::ios::binary);
-   _offset_outfile.open(_offset_filename, std::ios::out | std::ios::app | std::ios::binary);
+   _cf_outfile.open(cf_filename, std::ios::out | std::ios::app | std::ios::binary);
+   _offset_outfile.open(offset_filename, std::ios::out | std::ios::app | std::ios::binary);
    
    _cf_infile.open(cf_filename, std::ios::in | std::ios::app | std::ios::binary);
    _offset_infile.open(offset_filename, std::ios::in | std::ios::app | std::ios::binary);
