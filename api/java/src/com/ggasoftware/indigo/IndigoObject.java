@@ -772,12 +772,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public String grossFormula ()
    {
       dispatcher.setSessionID();
-      int gf = _lib.indigoGrossFormula(self);
-      String result = Indigo.checkResultString(this, _lib.indigoToString(gf));
-      _lib.indigoFree(gf);
-      return result;
+      int gf = -1;
+      try {
+         gf = Indigo.checkResult(this, _lib.indigoGrossFormula(self));
+         String result = Indigo.checkResultString(this, _lib.indigoToString(gf));
+         return result;
+      } finally {
+         _lib.indigoFree(gf);
+      }
    }
-   
+
    public float molecularWeight ()
    {
       dispatcher.setSessionID();

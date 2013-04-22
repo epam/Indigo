@@ -936,10 +936,18 @@ namespace com.ggasoftware.indigo
         public String grossFormula()
         {
             dispatcher.setSessionID();
-            int gf = dispatcher.checkResult(_indigo_lib.indigoGrossFormula(self));
-            String result = new String(dispatcher.checkResult(_indigo_lib.indigoToString(gf)));
-            dispatcher.checkResult(_indigo_lib.indigoFree(gf));
-            return result;
+            int gf = -1;
+            try
+            {
+                gf = dispatcher.checkResult(_indigo_lib.indigoGrossFormula(self));
+                String result = new String(dispatcher.checkResult(_indigo_lib.indigoToString(gf)));
+                return result;
+            }
+            finally
+            {
+                dispatcher.checkResult(_indigo_lib.indigoFree(gf));
+            }
+
         }
 
         public float molecularWeight()
