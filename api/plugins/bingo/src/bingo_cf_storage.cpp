@@ -34,10 +34,15 @@ void CfStorage::load (const char *cf_filename, const char *offset_filename)
    int i = 0;
    while (_offset_infile.read((char *)(&addr), sizeof(addr)))
    {
-      char *buf = new char[addr.len];
+      char *buf = NULL;
+      
+      if (addr.len != -1)
+      {
+         buf = new char[addr.len];
 
-      _cf_infile.seekg(addr.offset);
-      _cf_infile.read(buf, addr.len);
+         _cf_infile.seekg(addr.offset);
+         _cf_infile.read(buf, addr.len);
+      }
 
       _CfBuf &cf_buf = _cf_strings.push();
       

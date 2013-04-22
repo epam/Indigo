@@ -173,8 +173,7 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
       profTimerStop(tgb);
 
       profTimerStart(tgu, "sub_find_cand_pack_fit_update");
-      for (int k = left; k <= right; k++)
-         fit_bits[k] &= block[k];
+      bitAnd(fit_bits.ptr() + left, block + left, right - left);
 
       while(fit_bits[left] == 0 && (left != right))
          left++;
@@ -404,30 +403,8 @@ SimMatcher::~SimMatcher ()
 
 float SimMatcher::_calcTanimoto (const byte *fp)
 {
-   static int _bit_count[] = {0,1,1,2,1,2,2,3,1,
-                        2,2,3,2,3,3,4,1,2,2,3,2,3,3,4,
-                        2,3,3,4,3,4,4,5,1,2,2,3,2,3,3,4,2,3,
-                        3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,
-                        4,5,5,6,1,2,2,3,2,3,3,4,2,3,3,4,3,4,
-                        4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,
-                        2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,3,4,
-                        4,5,4,5,5,6,4,5,5,6,5,6,6,7,1,2,2,3,
-                        2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,
-                        4,5,3,4,4,5,4,5,5,6,2,3,3,4,3,4,4,5,
-                        3,4,4,5,4,5,5,6,3,4,4,5,4,5,5,6,4,5,
-                        5,6,5,6,6,7,2,3,3,4,3,4,4,5,3,4,4,5,
-                        4,5,5,6,3,4,4,5,4,5,5,6,4,5,5,6,5,6,
-                        6,7,3,4,4,5,4,5,5,6,4,5,5,6,5,6,6,7,
-                        4,5,5,6,5,6,6,7,5,6,6,7,6,7,7,8};
-
-   int common_bits = 0;
-   int or_bits = 0;
+   int common_bits = bitCommonOnes(fp, _query_fp.ptr(), _fp_size);
+   int unique_bits = bitUniqueOnes(fp, _query_fp.ptr(), _fp_size);
       
-   for (int k = 0; k < _fp_size; k++)
-   {
-      common_bits += _bit_count[fp[k] & _query_fp[k]];
-      or_bits +=_bit_count[fp[k] | _query_fp[k]];
-   }
-
-   return (float)common_bits / or_bits;
+   return (float)common_bits / (common_bits + unique_bits);
 }

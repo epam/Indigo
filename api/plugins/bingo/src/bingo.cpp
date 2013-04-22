@@ -229,7 +229,7 @@ CEXPORT int bingoNext (int search_obj)
    INDIGO_END(-1);
 }
 
-CEXPORT int bingoGetCurrentIndex (int search_obj)
+CEXPORT int bingoGetCurrentId (int search_obj)
 {
    INDIGO_BEGIN
    {
