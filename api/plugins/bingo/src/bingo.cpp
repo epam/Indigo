@@ -121,7 +121,8 @@ CEXPORT int bingoInsertRecordObj (int db, int obj_id)
 
          obj.getBaseReaction().aromatize(self.arom_options);
 
-         int id = bingo_index.add(bingo::IndexReaction(obj.getReaction()));
+         bingo::IndexReaction ind_rxn(obj.getReaction());
+         int id = bingo_index.add(ind_rxn);
          return id;
       }
       else
