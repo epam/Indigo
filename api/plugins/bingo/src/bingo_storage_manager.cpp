@@ -11,7 +11,7 @@ FileStorageManager::FileStorageManager (const char *location) : _loc(location)
 
 FileStorage * FileStorageManager::create (const char *name, int block_size)
 {
-   AutoPtr<FileStorage> new_storage = new FileStorage((_loc + name).c_str(), block_size, true);
+   AutoPtr<FileStorage> new_storage(new FileStorage((_loc + name).c_str(), block_size, true));
 
    _prop_table.add(name, block_size);
 
@@ -33,7 +33,7 @@ RamStorageManager::RamStorageManager (const char *location) : _loc(location)
 
 RamStorage * RamStorageManager::create (const char *name, int block_size)
 {
-   AutoPtr<RamStorage> new_storage = new RamStorage((_loc + name).c_str(), block_size, true);
+   AutoPtr<RamStorage> new_storage(new RamStorage((_loc + name).c_str(), block_size, true));
 
    _prop_table.add(name, block_size);
 
