@@ -4,7 +4,7 @@
 #include "bingo_object.h"
 #include "bingo_base_index.h"
 
-#include "molecule\molecule_substructure_matcher.h"
+#include "molecule/molecule_substructure_matcher.h"
 
 using namespace indigo;
 
@@ -149,10 +149,10 @@ namespace bingo
    public:
       ReactionSubMatcher(/*const */ BaseIndex &index);
 
-      const ObjArray<Array<int>> & currentMapping ();
+      const ObjArray<Array<int> > & currentMapping ();
 
    private:
-      ObjArray<Array<int>> _mapping;
+      ObjArray<Array<int> > _mapping;
 
       virtual bool _tryCurrent () /*const*/;
    };

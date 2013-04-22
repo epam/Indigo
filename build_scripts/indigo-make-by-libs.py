@@ -1,4 +1,4 @@
-# This module assumes that you have installed all the 
+# This module assumes that you have installed all the
 # libs files in the <source root>/dist directory
 
 import os
@@ -20,12 +20,12 @@ if len(left_args) > 0:
     exit()
 
 suffix = ""
-if args.config.lower() != "release":  
+if args.config.lower() != "release":
     suffix = "-" + args.config.lower()
-    
+
 need_join_achieves = (args.libonlyname == None)
 need_gen_wrappers = (args.libonlyname == None)
-    
+
 # find indigo version
 version = ""
 cur_dir = split(__file__)[0]
@@ -53,8 +53,8 @@ def move_dir_content (src_dir, dest_dir):
             move_dir_content(f2, destf2)
         elif not exists(destf2):
             shutil.move(f2, destf2)
-        
-    
+
+
 def join_archives (names, destname):
     for name in names:
         if not exists(name + ".zip"):
@@ -70,7 +70,7 @@ def join_archives (names, destname):
     for name in names:
         shutil.rmtree(name)
         os.remove("%s.zip" % (name))
-    
+
 os.chdir(join(cur_dir, "../dist"))
 #dist = abspath(join("..", "dist"))
 if need_join_achieves:
@@ -85,7 +85,7 @@ def join_archives_by_pattern (pattern, destname):
         return
     print(archives)
     join_archives(archives, destname)
-    
+
 
 arc_joins = [
     ("indigo-libs-%ver%-linux-shared", "indigo-libs-%ver%-linux.+-shared" ),
@@ -102,8 +102,8 @@ if need_join_achieves:
         d = dest.replace("%ver%", version) + suffix
         join_archives_by_pattern(p, d)
 
-    
-print("*** Making wrappers *** ")    
+
+print("*** Making wrappers *** ")
 
 api_dir = abspath("../api")
 libs_dir = join(api_dir, "libs")
@@ -124,7 +124,7 @@ def unpackToLibs (name):
     move_dir_content(join("tmp", name), libs_dir)
     shutil.rmtree("tmp")
 
-wrappers =  [ 
+wrappers =  [
     ("win", ["win"]),
     ("linux", ["linux"]),
     ("mac", ["mac"]),

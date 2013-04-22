@@ -1,7 +1,7 @@
 #include "bingo_storage.h"
 
-#include "base_cpp\output.h"
-#include "base_cpp\scanner.h"
+#include "base_cpp/output.h"
+#include "base_cpp/scanner.h"
 
 using namespace indigo;
 

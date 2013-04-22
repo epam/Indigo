@@ -1,17 +1,17 @@
 #include "bingo_object.h"
 
-#include "reaction\reaction.h"
-#include "reaction\query_reaction.h"
-#include "reaction\crf_saver.h"
-#include "reaction\crf_loader.h"
-#include "reaction\reaction_fingerprint.h"
-#include "reaction\reaction_substructure_matcher.h"
+#include "reaction/reaction.h"
+#include "reaction/query_reaction.h"
+#include "reaction/crf_saver.h"
+#include "reaction/crf_loader.h"
+#include "reaction/reaction_fingerprint.h"
+#include "reaction/reaction_substructure_matcher.h"
 
-#include "molecule\molecule.h"
-#include "molecule\cmf_saver.h"
-#include "molecule\cmf_loader.h"
-#include "molecule\molecule_fingerprint.h"
-#include "molecule\molecule_substructure_matcher.h"
+#include "molecule/molecule.h"
+#include "molecule/cmf_saver.h"
+#include "molecule/cmf_loader.h"
+#include "molecule/molecule_fingerprint.h"
+#include "molecule/molecule_substructure_matcher.h"
 
 using namespace indigo;
 using namespace bingo;

@@ -31,7 +31,7 @@ if (NOT NO_STATIC)
 	# No exports in case of static library: define empty EXPORT_SYMBOL definition
 	set_target_properties(indigo-inchi PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL=")
 	PACK_STATIC(indigo-inchi)
-	
+
 	DEFINE_TEST(indigo-inchi-c-test-static "tests/c/indigo-inchi-test.c" indigo-inchi)
 	# Add stdc++ library required by indigo
 	SET_TARGET_PROPERTIES(indigo-inchi-c-test-static PROPERTIES LINKER_LANGUAGE CXX)
@@ -46,7 +46,7 @@ if(UNIX AND NOT APPLE)
 endif()
 if(APPLE)
 	SET_TARGET_PROPERTIES(indigo-inchi-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup  -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/indigo_inchi.explist")
-endif()              
+endif()
 set_target_properties(indigo-inchi-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
 if(MSVC)

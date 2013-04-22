@@ -1,6 +1,6 @@
 #include "bingo_properties.h"
 
-#include "base_cpp\exception.h"
+#include "base_cpp/exception.h"
 
 #include <iostream>
 #include <fstream>

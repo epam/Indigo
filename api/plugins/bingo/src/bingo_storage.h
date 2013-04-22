@@ -1,9 +1,9 @@
 #ifndef __bingo_storage__
 #define __bingo_storage__
 
-#include "base_cpp\output.h"
-#include "base_cpp\scanner.h"
-#include "base_cpp\auto_ptr.h"
+#include "base_cpp/output.h"
+#include "base_cpp/scanner.h"
+#include "base_cpp/auto_ptr.h"
 
 #include "fstream"
 
@@ -55,7 +55,7 @@ namespace bingo
 
    private:
       std::ofstream _file;
-      ObjArray<AutoPtr<byte>> _blocks;
+      ObjArray<AutoPtr<byte> > _blocks;
    };
 };
 

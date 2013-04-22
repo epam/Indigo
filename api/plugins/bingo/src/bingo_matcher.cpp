@@ -1,6 +1,6 @@
 #include "bingo_matcher.h"
 
-#include "molecule\molecule_substructure_matcher.h"
+#include "molecule/molecule_substructure_matcher.h"
 
 #include "base_c/bitarray.h"
 #include "base_cpp/profiling.h"
@@ -292,7 +292,7 @@ ReactionSubMatcher::ReactionSubMatcher (/*const */ BaseIndex &index) : BaseSubst
    _mapping.clear();
 }
 
-const ObjArray<Array<int>> & ReactionSubMatcher::currentMapping ()
+const ObjArray<Array<int> > & ReactionSubMatcher::currentMapping ()
 {
    return _mapping;
 }

@@ -109,7 +109,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Mac)' == '1'">
     <PreBuildEvent>
-		$(Copy) $(LibraryPath)\Mac\10.5\libbingo.dylib $(ProjectDir)Resource\Mac\10.5
 		$(Copy) $(LibraryPath)\Mac\10.6\libbingo.dylib $(ProjectDir)Resource\Mac\10.6
     </PreBuildEvent>
   </PropertyGroup>
@@ -119,7 +118,6 @@
 		$(Copy) $(LibraryPath)\Win\x86\bingo.dll $(ProjectDir)Resource\Win\x86
 		$(Copy) $(LibraryPath)\Linux\x64\libbingo.so $(ProjectDir)Resource\Linux\x64
 		$(Copy) $(LibraryPath)\Linux\x86\libbingo.so $(ProjectDir)Resource\Linux\x86
-		$(Copy) $(LibraryPath)\Mac\10.5\libbingo.dylib $(ProjectDir)Resource\Mac\10.5
 		$(Copy) $(LibraryPath)\Mac\10.6\libbingo.dylib $(ProjectDir)Resource\Mac\10.6
     </PreBuildEvent>
   </PropertyGroup>

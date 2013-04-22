@@ -23,10 +23,11 @@ typedef const char* (*STR_RET_INT) (int);
 typedef const char* (*STR_RET_VOID) (void);
 typedef int (*INT_RET_INT_INT) (int, int);
 typedef int (*INT_RET_STR_STR) (const char *, const char *);
+typedef int (*INT_RET_INT) (int);
 
 /* Try to dynamically load library and check load status. */
 HANDLE dlOpenWithCheck(const char *libraryPath)
-{	
+{
    HANDLE handle = DLOPEN(libraryPath);
 #ifdef _WIN32
    /* On Windows error code is returned by LoadLibrary() and can be between 0 and 31 */
@@ -50,19 +51,29 @@ int main(int argc, char **argv)
    HANDLE indigoHandle;
    HANDLE indigoInChIHandle;
    HANDLE indigoRendererHandle;
+   HANDLE bingoHandle;
+
    STR_RET_VOID indigoVersion;
    INT_RET_STR indigoLoadMoleculeFromString;
    INT_RET_STR_STR indigoSetOption;
    INT_RET indigoWriteBuffer;
    INT_RET_INT_INT indigoRender;
    STR_RET_INT indigoInchiGetInchi;
+   INT_RET_STR_STR bingoCreateDatabaseFile;
+   INT_RET_INT bingoCloseDatabase;
+
    int indigoTest = 0;
    int indigoInChITest = 0;
    int indigoRendererTest = 0;
+   int bingoTest = 0;
+
    const char *indigoLibraryPath;
    const char *indigoInChILibraryPath;
    const char *indigoRendererLibraryPath;
+   const char *bingoLibraryPath;
+
    int i = 0;
+
    /* Parse arguments and set variables*/
    for (i = 0; i < argc; i++)
    {
@@ -81,7 +92,11 @@ int main(int argc, char **argv)
          indigoRendererTest = 1;
          indigoRendererLibraryPath = argv[i];
       }
-
+      if (strstr(argv[i], "bingo"))
+      {
+         bingoTest = 1;
+         bingoLibraryPath = argv[i];
+      }
    }
    /* Tests */
    if (indigoTest)
@@ -135,7 +150,30 @@ int main(int argc, char **argv)
       res = indigoRender(m, buf);
       printf("indigoRender result: %d\n", res);
    }
+   if (bingoTest)
+   {
+      int db;
+      printf("Indigo address: %lu\n", indigoHandle);
+      printf("Bingo path: %s\n", bingoLibraryPath);
+      /* Load Bingo */
+      bingoHandle = dlOpenWithCheck(bingoLibraryPath);
+      if (!bingoHandle)
+      {
+         printf("Cannot load %s\n", bingoLibraryPath);
+         return 1;
+      }
+      printf("Bingo address: %lu\n", (unsigned long)bingoHandle);
+      bingoCreateDatabaseFile = (INT_RET_STR_STR)DLSYM(bingoHandle, "bingoCreateDatabaseFile");
+      bingoCloseDatabase = (INT_RET_INT)DLSYM(bingoHandle, "bingoCloseDatabase");
+      db = bingoCreateDatabaseFile("test.db", "molecule");
+      printf("Bingo database ID: %d\n", db);
+      printf("Bingo close database status: %d\n", bingoCloseDatabase(db));
+   }
    /* Close libraries */
+   if (bingoTest)
+   {
+      DLCLOSE(bingoHandle);
+   }
    if (indigoRendererTest)
    {
       DLCLOSE(indigoRendererHandle);
