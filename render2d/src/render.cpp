@@ -71,7 +71,15 @@ int Render::_getMaxHeight ()
 
 float Render::_getScale (int w, int h)
 {
-   float s = (float)_bondLength;
+   float scale = _getMaxScale(w, h);
+   if (_bondLength > 0 && _bondLength < scale)
+      return _bondLength;
+   return scale;
+}
+
+float Render::_getMaxScale (int w, int h)
+{
+   float s = (float)(_bondLength > 0 ? _bondLength : 100);
    int maxWidth = _getMaxWidth();
    int maxHeight = _getMaxHeight();
    int defaultWidth = _getDefaultWidth(s);
