@@ -23,7 +23,7 @@ if (NOT NO_STATIC)
 	if(APPLE)
 		SET_TARGET_PROPERTIES(bingo PROPERTIES LINK_FLAGS "-Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/bingo.explist")
 	endif()
-	set_target_properties(bingo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+	#set_target_properties(bingo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 	SET_TARGET_PROPERTIES(bingo PROPERTIES OUTPUT_NAME "bingo-static")
 	set_property(TARGET bingo PROPERTY FOLDER "bingo")
 	# No exports in case of static library: define empty EXPORT_SYMBOL definition
@@ -44,7 +44,7 @@ endif()
 if(APPLE)
 	SET_TARGET_PROPERTIES(bingo-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup  -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/bingo.explist")
 endif()
-set_target_properties(bingo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+#set_target_properties(bingo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
 if(MSVC)
 	# This should be set only for a shared library to avoid warnings
