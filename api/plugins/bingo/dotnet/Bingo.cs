@@ -18,19 +18,19 @@ namespace com.ggasoftware.indigo
 			String dllpath = indigo.getDllPath ();
 			string libraryName;
 			IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
-			switch (Environment.OSVersion.Platform) 
+			switch (Environment.OSVersion.Platform)
 			{
 			case PlatformID.Win32NT:
 				libraryName = "bingo.dll";
 				dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin", false);
 				break;
 			case PlatformID.Unix:
-				if (IndigoDllLoader.isMac()) 
+				if (IndigoDllLoader.isMac())
 				{
 					libraryName = "libbingo.dylib";
 					dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesMac", false);
-				} 
-				else 
+				}
+				else
 				{
 					libraryName = "libbingo.so";
 					dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesLinux", false);
@@ -39,7 +39,7 @@ namespace com.ggasoftware.indigo
 			default:
 				throw new PlatformNotSupportedException (String.Format ("Unsupported platform: {0}", Environment.OSVersion.Platform));
 			}
-			
+
 			_bingo_lib = dll_loader.getInterface<BingoLib>(libraryName);
 			_indigo = indigo;
 			_bingo = -1;
@@ -48,7 +48,7 @@ namespace com.ggasoftware.indigo
 		public void createDatabaseFile(string location, string type, string options)
 		{
 			_indigo.setSessionID();
-			if (options == null) 
+			if (options == null)
 			{
 				options = "";
 			}
@@ -61,20 +61,20 @@ namespace com.ggasoftware.indigo
 			_bingo = _indigo.checkResult(_bingo_lib.bingoLoadDatabaseFile(location, type));
 		}
 
-		public void deleteDatabase()
+		public void closeDatabase()
 		{
 			_indigo.setSessionID();
-			_indigo.checkResult(_bingo_lib.bingoDeleteDatabase(_bingo));
-			_bingo = -1;			                   
+			_indigo.checkResult(_bingo_lib.bingoCloseDatabase(_bingo));
+			_bingo = -1;
 		}
 
-		public void insert(BingoObject record) 
+		public void insertRecordObject(BingoObject record)
 		{
 			_indigo.setSessionID();
 			_indigo.checkResult(_bingo_lib.bingoInsertRecordObj(_bingo, record.self));
 		}
 
-		public void delete(int index) 
+		public void deleteRecord(int index)
 		{
 			_indigo.setSessionID();
 			_indigo.checkResult(_bingo_lib.bingoDeleteRecord(_bingo, index));
@@ -83,7 +83,7 @@ namespace com.ggasoftware.indigo
 		public BingoObject searchSub(IndigoObject query, string options)
 		{
 			_indigo.setSessionID();
-			if (options == null) 
+			if (options == null)
 			{
 				options = "";
 			}
@@ -93,7 +93,7 @@ namespace com.ggasoftware.indigo
 		public BingoObject searchSim(IndigoObject query, float min, float max, string metric)
 		{
 			_indigo.setSessionID();
-			if (metric == null) 
+			if (metric == null)
 			{
 				metric = "tanimoto";
 			}

@@ -22,13 +22,13 @@ namespace com.ggasoftware.indigo
 			self = _indigo.checkResult(_bingo_lib.bingoNext(self));
 		}
 
-		public int getCurrentIndex()
+		public int getCurrentId()
 		{
 			_indigo.setSessionID();
-			return _indigo.checkResult(_bingo_lib.bingoGetCurrentIndex(self));
+			return _indigo.checkResult(_bingo_lib.bingoGetCurrentId(self));
 		}
 
-		public IndigoObject getIndigoObject()
+		public IndigoObject getObject()
 		{
 			_indigo.setSessionID();
 			return new IndigoObject(_indigo, _indigo.checkResult(_bingo_lib.bingoGetObject(self)));

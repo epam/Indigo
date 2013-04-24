@@ -33,6 +33,7 @@ os.mkdir(dest)
 shutil.copy(os.path.join(api_dir, "python", "indigo.py"), dest)
 shutil.copy(os.path.join(api_dir, "plugins", "renderer", "python", "indigo_renderer.py"), dest)
 shutil.copy(os.path.join(api_dir, "plugins", "inchi", "python", "indigo_inchi.py"), dest)
+shutil.copy(os.path.join(api_dir, "plugins", "bingo", "python", "bingo.py"), dest)
 shutil.copytree(os.path.join(api_dir, "libs", "shared"), 
     os.path.join(dest, "lib"), 
     ignore = shutil.ignore_patterns("*.lib"))
