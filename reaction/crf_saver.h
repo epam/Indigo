@@ -18,13 +18,18 @@
 #include "lzw/lzw_encoder.h"
 #include "base_cpp/obj.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Molecule;
 class Reaction;
 class LzwDict;
 
-class CrfSaver
+class DLLEXPORT CrfSaver
 {
 public:
    // external dictionary, internal encoder
@@ -64,5 +69,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

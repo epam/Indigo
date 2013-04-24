@@ -17,12 +17,17 @@
 
 #include "base_cpp/tlscont.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class BaseReaction;
 struct MoleculeFingerprintParameters;
 
-class ReactionFingerprintBuilder
+class DLLEXPORT ReactionFingerprintBuilder
 {
 public:
    ReactionFingerprintBuilder (BaseReaction &reaction, const MoleculeFingerprintParameters &parameters);
@@ -52,5 +57,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

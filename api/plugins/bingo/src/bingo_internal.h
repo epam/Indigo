@@ -25,7 +25,7 @@
 namespace indigo
 {
 
-DECL_EXCEPTION(BingoException);
+DECL_EXCEPTION_NO_EXP(BingoException);
 
 };
 
