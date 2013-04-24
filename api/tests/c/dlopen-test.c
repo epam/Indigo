@@ -108,7 +108,7 @@ int main(int argc, char **argv)
          printf("Cannot load %s\n", indigoLibraryPath);
          return 1;
       }
-      printf("Indigo instance: %lu\n", (unsigned long)indigoHandle);		
+      printf("Indigo instance: %lu\n", (unsigned long)indigoHandle);
       /* Execute Indigo function */
       indigoVersion = (STR_RET_VOID)DLSYM(indigoHandle, "indigoVersion");
       printf("Indigo version: %s\n", indigoVersion());
@@ -153,8 +153,6 @@ int main(int argc, char **argv)
    if (bingoTest)
    {
       int db;
-      printf("Indigo address: %lu\n", indigoHandle);
-      printf("Bingo path: %s\n", bingoLibraryPath);
       /* Load Bingo */
       bingoHandle = dlOpenWithCheck(bingoLibraryPath);
       if (!bingoHandle)

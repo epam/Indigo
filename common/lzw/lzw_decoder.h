@@ -21,7 +21,7 @@
 
 namespace indigo {
 
-class LzwDecoder
+class DLLEXPORT LzwDecoder
 {
 public:
    DECL_ERROR;

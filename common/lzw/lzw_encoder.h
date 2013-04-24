@@ -21,7 +21,7 @@
 
 namespace indigo {
 
-class LzwEncoder
+class DLLEXPORT LzwEncoder
 {
 public:
 
