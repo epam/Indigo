@@ -68,7 +68,7 @@ namespace com.ggasoftware.indigo
 			_bingo = -1;
 		}
 
-		public void insertRecordObject(BingoObject record)
+		public void insertRecordObj(IndigoObject record)
 		{
 			_indigo.setSessionID();
 			_indigo.checkResult(_bingo_lib.bingoInsertRecordObj(_bingo, record.self));

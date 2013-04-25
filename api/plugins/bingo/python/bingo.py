@@ -11,8 +11,8 @@
 # This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 # WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-import indigo
 from indigo import *
+
 
 class BingoException(Exception):
     def __init__(self, value):
@@ -21,8 +21,9 @@ class BingoException(Exception):
     def __str__(self):
         return repr(self.value)
 
+
 class Bingo(object):
-    def __init__ (self, indigo):
+    def __init__(self, indigo):
         self.indigo = indigo
         self.bingo = -1
 
@@ -58,51 +59,45 @@ class Bingo(object):
         self._lib.bingoEndSearch.restype = c_int
         self._lib.bingoEndSearch.argtypes = [c_int]
 
-
     def __del__(self):
         self.bingo = -1
 
-
-    def createDatabaseFile(self, path, type, options):
+    def createDatabaseFile(self, path, type, options=''):
         self.indigo._setSID()
         if not options:
             options = ''
         self.bingo = self.indigo._checkResult(self._lib.bingoCreateDatabaseFile(path, type, options))
 
-
-    def loadDatabase(self, path, type):
+    def loadDatabaseFile(self, path, type):
         self.indigo._setSID()
         self.bingo = self.indigo._checkResult(self._lib.bingoLoadDatabaseFile(path, type))
-
 
     def closeDatabase(self):
         self.indigo._setSID()
         self.indigo._checkResult(self._lib.bingoCloseDatabase(self.bingo))
         self.bingo = -1
 
-
     def insertRecordObj(self, obj):
         self.indigo._setSID()
         self.indigo._checkResult(self._lib.bingoInsertRecordObj(self.bingo, obj.id))
-
 
     def deleteRecord(self, index):
         self.indigo._setSID()
         self.indigo._checkResult(self._lib.bingoDeleteRecord(self.bingo, index))
 
-
-    def searchSub(self, query, options):
+    def searchSub(self, query, options=''):
         self.indigo._setSID()
         if not options:
             options = ''
-        return BingoObject(self.indigo._checkResult(self._lib.bingoSearchSub(self.bingo, query.id, options)), self.indigo, self)
+        return BingoObject(self.indigo._checkResult(self._lib.bingoSearchSub(self.bingo, query.id, options)),
+                           self.indigo, self)
 
-
-    def searchSim(self, query, min, max, metric):
+    def searchSim(self, query, min, max, metric='tanimoto'):
         self.indigo._setSID()
         if not metric:
             metric = 'tanimoto'
-        return BingoObject(self.indigo._checkResult(self._lib.bingoSearchSim(self.bingo, query.id, min, max, metric)), self.indigo, self)
+        return BingoObject(self.indigo._checkResult(self._lib.bingoSearchSim(self.bingo, query.id, min, max, metric)),
+                           self.indigo, self)
 
 
 class BingoObject(object):
@@ -111,25 +106,21 @@ class BingoObject(object):
         self.indigo = indigo
         self.bingo = bingo
 
-
     def __del__(self):
         self.id = -1
 
-
     def next(self):
         self.indigo._setSID()
-        self.id = self.indigo._checkResult(self.bingo._lib.bingoNext(self.id));
+        return True if self.indigo._checkResult(self.bingo._lib.bingoNext(self.id)) == 1 else False
 
 
     def getCurrentId(self):
         self.indigo._setSID()
-        return self.indigo._checkResult(self.bingo._lib.bingoGetCurrentId(self.id));
-
+        return self.indigo._checkResult(self.bingo._lib.bingoGetCurrentId(self.id))
 
     def getObject(self):
         self.indigo._setSID()
         return self.indigo.IndigoObject(self.indigo, self.indigo._checkResult(self.bingo._lib.bingoGetObject(self.id)))
-
 
     def endSearch(self):
         self.indigo._setSID()

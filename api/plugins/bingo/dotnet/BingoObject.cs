@@ -5,7 +5,7 @@ namespace com.ggasoftware.indigo
 {
 	public class BingoObject
 	{
-		public int self;
+		private int _self;
 		private Indigo _indigo;
 		private BingoLib _bingo_lib;
 
@@ -16,10 +16,16 @@ namespace com.ggasoftware.indigo
 			this._bingo_lib = bingo_lib;
 		}
 
-		public void next()
+        public int self
+        {
+            get { return _self; }
+            set { _self = value; }
+        }
+
+		public bool next()
 		{
 			_indigo.setSessionID();
-			self = _indigo.checkResult(_bingo_lib.bingoNext(self));
+			return (_indigo.checkResult(_bingo_lib.bingoNext(self)) == 1) ? true : false;
 		}
 
 		public int getCurrentId()
