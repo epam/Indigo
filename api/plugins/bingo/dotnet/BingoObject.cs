@@ -5,45 +5,42 @@ namespace com.ggasoftware.indigo
 {
 	public class BingoObject
 	{
-		private int _self;
+		private int _id;
 		private Indigo _indigo;
-		private BingoLib _bingo_lib;
+		private BingoLib _bingoLib;
 
-		public BingoObject(int self, Indigo indigo, BingoLib bingo_lib)
+		public BingoObject(int id, Indigo indigo, BingoLib bingo_lib)
 		{
-			this.self = self;
+			this._id = id;
 			this._indigo = indigo;
-			this._bingo_lib = bingo_lib;
+			this._bingoLib = bingo_lib;
 		}
 
-        public int self
+		~BingoObject()
+		{
+			_indigo.checkResult(_bingoLib.bingoEndSearch(_id));
+			_id = -1;
+		}
+
+        public int id
         {
-            get { return _self; }
-            set { _self = value; }
+            get { return _id; }
+            set { _id = value; }
         }
 
 		public bool next()
 		{
-			_indigo.setSessionID();
-			return (_indigo.checkResult(_bingo_lib.bingoNext(self)) == 1) ? true : false;
+			return (_indigo.checkResult(_bingoLib.bingoNext(_id)) == 1) ? true : false;
 		}
 
 		public int getCurrentId()
 		{
-			_indigo.setSessionID();
-			return _indigo.checkResult(_bingo_lib.bingoGetCurrentId(self));
+			return _indigo.checkResult(_bingoLib.bingoGetCurrentId(_id));
 		}
 
-		public IndigoObject getObject()
+		public IndigoObject getIndigoObject()
 		{
-			_indigo.setSessionID();
-			return new IndigoObject(_indigo, _indigo.checkResult(_bingo_lib.bingoGetObject(self)));
-		}
-
-		public void endSearch()
-		{
-			_indigo.setSessionID();
-			_indigo.checkResult(_bingo_lib.bingoEndSearch(self));
+			return new IndigoObject(_indigo, _indigo.checkResult(_bingoLib.bingoGetObject(_id)));
 		}
 	}
 }

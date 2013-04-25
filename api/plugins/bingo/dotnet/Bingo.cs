@@ -10,12 +10,25 @@ namespace com.ggasoftware.indigo
 	public unsafe class Bingo
 	{
 		private Indigo _indigo;
-		private BingoLib _bingo_lib;
-		private int _bingo;
+		private BingoLib _lib;
+		private int _id;
 
-		public Bingo (Indigo indigo)
+		private Bingo (Indigo indigo, int id, BingoLib lib)
 		{
-			String dllpath = indigo.getDllPath ();
+			_indigo = indigo;
+			_lib = lib;
+			_id = id;
+		}
+
+		~Bingo()
+		{
+			_indigo.checkResult(_lib.bingoCloseDatabase(_id));
+			_id = -1;
+		}
+
+		private static BingoLib getLib(Indigo indigo)
+		{
+			String dllpath = indigo.getDllPath();
 			string libraryName;
 			IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
 			switch (Environment.OSVersion.Platform)
@@ -39,65 +52,53 @@ namespace com.ggasoftware.indigo
 			default:
 				throw new PlatformNotSupportedException (String.Format ("Unsupported platform: {0}", Environment.OSVersion.Platform));
 			}
-
-			_bingo_lib = dll_loader.getInterface<BingoLib>(libraryName);
-			_indigo = indigo;
-			_bingo = -1;
+			
+			return dll_loader.getInterface<BingoLib>(libraryName);
 		}
 
-		public void createDatabaseFile(string location, string type, string options)
+		public static Bingo createDatabaseFile(Indigo indigo, string location, string type, string options)
 		{
-			_indigo.setSessionID();
 			if (options == null)
 			{
 				options = "";
 			}
-			_bingo = _indigo.checkResult(_bingo_lib.bingoCreateDatabaseFile(location, type, options));
+			BingoLib lib = Bingo.getLib(indigo);
+			return new Bingo(indigo, indigo.checkResult(lib.bingoCreateDatabaseFile(location, type, options)), lib);
 		}
 
-		public void loadDatabaseFile(string location, string type)
+		public static Bingo loadDatabaseFile(Indigo indigo, string location, string type)
 		{
-			_indigo.setSessionID();
-			_bingo = _indigo.checkResult(_bingo_lib.bingoLoadDatabaseFile(location, type));
+			BingoLib lib = Bingo.getLib(indigo);
+			return new Bingo(indigo, indigo.checkResult(lib.bingoLoadDatabaseFile(location, type)), lib);
 		}
 
-		public void closeDatabase()
+
+		public void insert(IndigoObject record)
 		{
-			_indigo.setSessionID();
-			_indigo.checkResult(_bingo_lib.bingoCloseDatabase(_bingo));
-			_bingo = -1;
+			_indigo.checkResult(_lib.bingoInsertRecordObj(_id, record.self));
 		}
 
-		public void insertRecordObj(IndigoObject record)
+		public void delete(int index)
 		{
-			_indigo.setSessionID();
-			_indigo.checkResult(_bingo_lib.bingoInsertRecordObj(_bingo, record.self));
-		}
-
-		public void deleteRecord(int index)
-		{
-			_indigo.setSessionID();
-			_indigo.checkResult(_bingo_lib.bingoDeleteRecord(_bingo, index));
+			_indigo.checkResult(_lib.bingoDeleteRecord(_id, index));
 		}
 
 		public BingoObject searchSub(IndigoObject query, string options)
 		{
-			_indigo.setSessionID();
 			if (options == null)
 			{
 				options = "";
 			}
-			return new BingoObject(_indigo.checkResult(_bingo_lib.bingoSearchSub(_bingo, query.self, options)), _indigo, _bingo_lib);
+			return new BingoObject(_indigo.checkResult(_lib.bingoSearchSub(_id, query.self, options)), _indigo, _lib);
 		}
 
 		public BingoObject searchSim(IndigoObject query, float min, float max, string metric)
 		{
-			_indigo.setSessionID();
 			if (metric == null)
 			{
 				metric = "tanimoto";
 			}
-			return new BingoObject(_indigo.checkResult(_bingo_lib.bingoSearchSim(_bingo, query.self, min, max, metric)), _indigo, _bingo_lib);
+			return new BingoObject(_indigo.checkResult(_lib.bingoSearchSim(_id, query.self, min, max, metric)), _indigo, _lib);
 		}
 	}
 }

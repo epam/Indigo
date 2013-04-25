@@ -23,19 +23,10 @@ class BingoException(Exception):
 
 
 class Bingo(object):
-    def __init__(self, indigo):
+    def __init__(self, id, indigo, lib):
+        self.id = id
         self.indigo = indigo
-        self.bingo = -1
-
-        if os.name == 'posix' and not platform.mac_ver()[0]:
-            self._lib = CDLL(indigo.dllpath + "/libbingo.so")
-        elif os.name == 'nt':
-            self._lib = CDLL(indigo.dllpath + "\bingo.dll")
-        elif platform.mac_ver()[0]:
-            self._lib = CDLL(indigo.dllpath + "/libbingo.dylib")
-        else:
-            raise BingoException("unsupported OS: " + os.name)
-
+        self._lib = lib
         self._lib.bingoCreateDatabaseFile.restype = c_int
         self._lib.bingoCreateDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
         self._lib.bingoLoadDatabaseFile.restype = c_int
@@ -60,43 +51,53 @@ class Bingo(object):
         self._lib.bingoEndSearch.argtypes = [c_int]
 
     def __del__(self):
-        self.bingo = -1
+        self.indigo._checkResult(self._lib.bingoCloseDatabase(self.id))
+        self.id = -1
 
-    def createDatabaseFile(self, path, type, options=''):
-        self.indigo._setSID()
+    @staticmethod
+    def _getLib(indigo):
+        if os.name == 'posix' and not platform.mac_ver()[0]:
+            _lib = CDLL(indigo.dllpath + "/libbingo.so")
+        elif os.name == 'nt':
+            _lib = CDLL(indigo.dllpath + "\bingo.dll")
+        elif platform.mac_ver()[0]:
+            _lib = CDLL(indigo.dllpath + "/libbingo.dylib")
+        else:
+            raise BingoException("unsupported OS: " + os.name)
+        return _lib
+
+    @staticmethod
+    def createDatabaseFile(indigo, path, type, options=''):
         if not options:
             options = ''
-        self.bingo = self.indigo._checkResult(self._lib.bingoCreateDatabaseFile(path, type, options))
+        lib = Bingo._getLib(indigo)
+        lib.bingoCreateDatabaseFile.restype = c_int
+        lib.bingoCreateDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
+        return Bingo(indigo._checkResult(lib.bingoCreateDatabaseFile(path, type, options)), indigo, lib)
 
-    def loadDatabaseFile(self, path, type):
-        self.indigo._setSID()
-        self.bingo = self.indigo._checkResult(self._lib.bingoLoadDatabaseFile(path, type))
+    @staticmethod
+    def loadDatabaseFile(indigo, path, type):
+        lib = Bingo._getLib(indigo)
+        lib.bingoLoadDatabaseFile.restype = c_int
+        lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p]
+        return Bingo(indigo._checkResult(lib.bingoLoadDatabaseFile(path, type)), indigo, lib)
 
-    def closeDatabase(self):
-        self.indigo._setSID()
-        self.indigo._checkResult(self._lib.bingoCloseDatabase(self.bingo))
-        self.bingo = -1
+    def insert(self, indigoObject):
+        self.indigo._checkResult(self._lib.bingoInsertRecordObj(self.id, indigoObject.id))
 
-    def insertRecordObj(self, obj):
-        self.indigo._setSID()
-        self.indigo._checkResult(self._lib.bingoInsertRecordObj(self.bingo, obj.id))
-
-    def deleteRecord(self, index):
-        self.indigo._setSID()
-        self.indigo._checkResult(self._lib.bingoDeleteRecord(self.bingo, index))
+    def delete(self, index):
+        self.indigo._checkResult(self._lib.bingoDeleteRecord(self.id, index))
 
     def searchSub(self, query, options=''):
-        self.indigo._setSID()
         if not options:
             options = ''
-        return BingoObject(self.indigo._checkResult(self._lib.bingoSearchSub(self.bingo, query.id, options)),
+        return BingoObject(self.indigo._checkResult(self._lib.bingoSearchSub(self.id, query.id, options)),
                            self.indigo, self)
 
     def searchSim(self, query, min, max, metric='tanimoto'):
-        self.indigo._setSID()
         if not metric:
             metric = 'tanimoto'
-        return BingoObject(self.indigo._checkResult(self._lib.bingoSearchSim(self.bingo, query.id, min, max, metric)),
+        return BingoObject(self.indigo._checkResult(self._lib.bingoSearchSim(self.id, query.id, min, max, metric)),
                            self.indigo, self)
 
 
@@ -107,21 +108,14 @@ class BingoObject(object):
         self.bingo = bingo
 
     def __del__(self):
+        self.indigo._checkResult(self.bingo._lib.bingoEndSearch(self.id))
         self.id = -1
 
     def next(self):
-        self.indigo._setSID()
         return True if self.indigo._checkResult(self.bingo._lib.bingoNext(self.id)) == 1 else False
 
-
     def getCurrentId(self):
-        self.indigo._setSID()
         return self.indigo._checkResult(self.bingo._lib.bingoGetCurrentId(self.id))
 
-    def getObject(self):
-        self.indigo._setSID()
+    def getIndigoObject(self):
         return self.indigo.IndigoObject(self.indigo, self.indigo._checkResult(self.bingo._lib.bingoGetObject(self.id)))
-
-    def endSearch(self):
-        self.indigo._setSID()
-        self.indigo._checkResult(self.bingo._lib.bingoEndSearch(self.id))
