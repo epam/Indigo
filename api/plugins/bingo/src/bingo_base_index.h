@@ -66,7 +66,7 @@ namespace bingo
 
       virtual IndexType getType ();
 
-      static IndexType determineType (const char *location);
+      static const char * determineType (const char *location);
 
       virtual ~BaseIndex ();
 
@@ -95,6 +95,8 @@ namespace bingo
       std::ofstream _mapping_outfile;
 
       int _object_count;
+
+      int _first_free_id;
 
       void _parseOptions (const char *options);
 

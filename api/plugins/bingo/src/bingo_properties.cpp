@@ -44,6 +44,8 @@ void Properties::load (const char *filename)
 
       property_file.close();
    }
+   else
+      throw Exception("Property file missed");
 }
 
 void Properties::add (const char *prop_name, const char *value)
@@ -70,6 +72,11 @@ const char * Properties::get (const char *prop_name)
 
 unsigned long Properties::getULong (const char *prop_name)
 {
+  _props[prop_name];
+
+  if (_props[prop_name].length() == 0)
+     throw Exception("Unknown property field");
+
    unsigned long u_dec;
    std::istringstream isstr(_props[prop_name]);
    isstr >> u_dec;

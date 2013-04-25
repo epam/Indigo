@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <direct.h> 
 
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/auto_ptr.h"
@@ -49,6 +50,10 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
    fp_params.sim_qwords = 8;
    
    AutoPtr<bingo::Index> context;
+   std::string loc_dir(location);
+
+   if (loc_dir.find_last_of('\\') != loc_dir.length() - 1)
+      loc_dir += '\\';
 
    if (strcmp(type, "molecule") == 0)
       context.reset(new bingo::MoleculeIndex());
@@ -58,9 +63,12 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
       throw BingoException("wrong database type option");
 
    if (create)
-      context->create(location, fp_params, options);
+   {
+      mkdir(loc_dir.c_str());
+      context->create(loc_dir.c_str(), fp_params, options);
+   }
    else
-      context->load(location);
+      context->load(loc_dir.c_str());
 
    int db_id = _bingo_instances.add(context.release());
 

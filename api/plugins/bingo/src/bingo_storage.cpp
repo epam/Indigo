@@ -28,6 +28,9 @@ FileStorage::FileStorage (const char *filename, int block_size, bool create) : S
    {
       _file_output = new FileOutput(true, filename);
       _file_scanner = new FileScanner(filename);
+
+      if (_file_output == 0 || _file_scanner == 0)
+         throw Exception("Fingerprint storage file missed");
    }
 }
 

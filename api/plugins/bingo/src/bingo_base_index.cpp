@@ -17,28 +17,26 @@ static const char *_props_filename = "properties";
 static const char *_cf_data_filename = "cf_data";
 static const char *_cf_offset_filename = "cf_offset";
 static const char *_id_mapping_filename = "id_mapping";
+static const char *_reaction_type = "reaction";
+static const char *_molecule_type = "molecule";
 
 BaseIndex::BaseIndex (IndexType type)
 {
    _type = type;
 
    _object_count = 0;
+   _first_free_id = 0;
 }
-
-// Usage:
-//    createMatcher("sub", SubstructureMatcherQuery("C*N"));
-//    createMatcher("sub-fast", SubstructureMatcherQuery("C*N"));
 
 void BaseIndex::create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options)
 {
    // TODO: introduce global parameters table, local parameters table and constants
 
-   // TODO: create storage manager in a specified location --DONE
-
    int sub_block_size = 8192;
    int sim_block_size = 8192;
 
    _location = location;
+   
    std::string sub_info_path = _location + _sub_info_filename;
    std::string sim_info_path = _location + _sim_info_filename;
    std::string props_path = _location + _props_filename;
@@ -54,7 +52,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    _saveProperties(fp_params, sub_block_size, sim_block_size);
 
-   _storage_manager.reset(new RamStorageManager(location));
+   _storage_manager.reset(new RamStorageManager(location, true));
 
    _mapping_outfile.open(_mapping_path.c_str(), std::ios::out);
 
@@ -79,6 +77,10 @@ void BaseIndex::load (const char *location)
 
    _properties.load(props_path.c_str());
 
+   const char *type_str = (_type == MOLECULE ? _molecule_type : _reaction_type);
+   if (strcmp(_properties.get("base_type"), type_str) != 0)
+      throw Exception("Loading databse: wrong type propety");
+
    _fp_params.ext = (_properties.getULong("fp_ext") != 0);
    _fp_params.ord_qwords = _properties.getULong("fp_ord");
    _fp_params.any_qwords = _properties.getULong("fp_any");
@@ -87,15 +89,7 @@ void BaseIndex::load (const char *location)
 
    _mappingLoad(_mapping_path.c_str());
 
-   std::istringstream isstr(std::string(_properties.get("fp_params")));
-
-   isstr >> _fp_params.ext >>
-           _fp_params.ord_qwords >>
-           _fp_params.any_qwords >>
-           _fp_params.tau_qwords >>
-           _fp_params.sim_qwords;
-
-   _storage_manager.reset(new RamStorageManager(location));
+   _storage_manager.reset(new RamStorageManager(location, false));
 
    AutoPtr<Storage> sub_stor(_storage_manager->load(_sub_filename));
    AutoPtr<Storage> sim_stor(_storage_manager->load(_sim_filename));
@@ -108,9 +102,6 @@ void BaseIndex::load (const char *location)
 
 int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
 {
-   // TODO: Split prepare and add into index because of potential 
-   //    MoleculeIndex features: molecule mass, molecular formula, etc.
-   // Prepare + atomic Add --DONE
    {
       profTimerStart(t_in, "prepare_obj_data");      
       _prepareIndexData(obj);
@@ -122,8 +113,18 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
    }
 
    if (obj_id == -1)
-      obj_id = _object_count;
+   {
+      for (int i = _first_free_id; i < _back_id_mapping.size(); i++)
+      {
+         if (_back_id_mapping[i] == -1)
+         {
+            _first_free_id = i;
+            break;
+         }
+      }
 
+      obj_id = _first_free_id;
+   }
    _mappingAdd(obj_id, _object_count);
    
    _object_count++;
@@ -184,14 +185,14 @@ Index::IndexType BaseIndex::getType ()
    return _type;
 }
 
-Index::IndexType BaseIndex::determineType (const char *location)
+const char * BaseIndex::determineType (const char *location)
 {
    Properties props;
    std::string path(location);
    path += _props_filename;
 
    props.load(path.c_str());
-   return (Index::IndexType)props.getULong("base_type");
+   return props.get("base_type");
 }
 
 BaseIndex::~BaseIndex()
@@ -224,7 +225,7 @@ void BaseIndex::_parseOptions (const char *options)
 
 void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size)
 {
-   _properties.add("base_type", _type);
+   _properties.add("base_type", (_type == MOLECULE ? _molecule_type : _reaction_type));
 
    _properties.add("fp_ext", _fp_params.ext);
    _properties.add("fp_ord", _fp_params.ord_qwords);
@@ -269,12 +270,13 @@ void BaseIndex::_mappingAssign (int obj_id, int base_id)
 {
    if (_id_mapping.size() <= base_id)
       _id_mapping.expandFill(base_id + 1, -1);
-
-   _id_mapping[base_id] = obj_id;
-
    if (_back_id_mapping.size() <= obj_id)
       _back_id_mapping.expandFill(obj_id + 1, -1);
 
+   if (_id_mapping[base_id] != -1 || _back_id_mapping[obj_id] != -1)
+      throw Exception("insert fail: this id was already used");
+
+   _id_mapping[base_id] = obj_id;
    _back_id_mapping[obj_id] = base_id;
 }
 
@@ -283,6 +285,7 @@ void BaseIndex::_mappingAdd (int obj_id, int base_id)
    _mappingAssign(obj_id, base_id);
 
    _mapping_outfile << obj_id << ' ' << base_id << std::endl;
+   _mapping_outfile.flush();
 }
 
 void BaseIndex::_mappingRemove (int obj_id)

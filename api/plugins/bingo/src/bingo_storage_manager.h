@@ -23,7 +23,7 @@ namespace bingo
       Properties _prop_table;
 
    public:
-      FileStorageManager (const char *location);
+      FileStorageManager (const char *location, bool is_create);
 
       FileStorage * create (const char *name, int block_size);
       FileStorage * load   (const char *name);
@@ -37,7 +37,7 @@ namespace bingo
       Properties _prop_table;
 
    public:
-      RamStorageManager (const char *location);
+      RamStorageManager (const char *location, bool is_create);
 
       RamStorage * create (const char *name, int block_size);
       RamStorage * load   (const char *name);

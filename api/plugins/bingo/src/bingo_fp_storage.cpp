@@ -48,6 +48,9 @@ void BaseFpStorage::_loadFpStorage (int fp_size, Storage *storage, int inc_fp_ca
    _loadInfo(info_filename);
    _inc_max_count = inc_fp_capacity;
    _inc_file.open(info_filename, std::ios::out | std::ios::app | std::ios::binary);
+
+    if (!_inc_file.is_open())
+      throw Exception("Fingerprint increment file missed");
 }
 
 void BaseFpStorage::add (const byte *fp)
