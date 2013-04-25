@@ -10,7 +10,6 @@ using namespace indigo;
 
 namespace bingo
 {
-   // TODO: review this header
 
    class Matcher
    {
@@ -19,8 +18,6 @@ namespace bingo
       virtual int currentId () = 0;
 
       virtual ~Matcher () {};
-
-      // TODO: virtual destructor ????
    };
    
    class MatcherQueryData
@@ -29,7 +26,6 @@ namespace bingo
       virtual /*const*/ QueryObject &getQueryObject () /*const*/ = 0;
 
       virtual ~MatcherQueryData () {};
-      // TODO: virtual destructor ????
    };
 
    class SimilarityQueryData : public MatcherQueryData
@@ -160,7 +156,7 @@ namespace bingo
    class SimMatcher : public Matcher
    {
    public:
-      SimMatcher (/*const */ BaseIndex &index);
+      SimMatcher (BaseIndex &index);
 
       virtual bool next ();
       

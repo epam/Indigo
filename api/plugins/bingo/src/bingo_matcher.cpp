@@ -126,7 +126,8 @@ bool BaseSubstructureMatcher::next ()
 
 int BaseSubstructureMatcher::currentId ()
 {
-   return _current_id;
+   const Array<int> &id_mapping = _index.getIdMapping();
+   return id_mapping[_current_id];
 }
 
 void BaseSubstructureMatcher::setQueryData (SubstructureQueryData *query_data)
@@ -384,7 +385,8 @@ bool SimMatcher::next ()
     
 int SimMatcher::currentId ()
 {
-   return _current_id;
+   const Array<int> &id_mapping = _index.getIdMapping();
+   return id_mapping[_current_id];
 }
 
 

@@ -18,21 +18,19 @@ namespace bingo
    class Index
    {
    public:
-      // Usage:
-      //    createMatcher("sub", SubstructureMatcherQuery("C*N"));
-      //    createMatcher("sub-fast", SubstructureMatcherQuery("C*N"));
-      
       virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data) = 0;
 
-      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params) = 0;
+      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options) = 0;
 
       virtual void load (const char *location) = 0;
 
-      virtual int add (/* const */ IndexObject &obj) = 0;
+      virtual int add (IndexObject &obj, int obj_id) = 0;
 
       virtual void remove (int id) = 0;
    
       typedef enum {MOLECULE, REACTION} IndexType;
+
+      virtual const char * getIdPropertyName () = 0;
 
       virtual IndexType getType () = 0;
 
@@ -42,15 +40,11 @@ namespace bingo
    class BaseIndex : public Index
    {
    public:
-      // Usage:
-      //    createMatcher("sub", SubstructureMatcherQuery("C*N"));
-      //    createMatcher("sub-fast", SubstructureMatcherQuery("C*N"));
-
-      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params);
+      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options);
 
       virtual void load (const char *location);
       
-      virtual int add (/* const */ IndexObject &obj);
+      virtual int add (IndexObject &obj, int obj_id);
 
       virtual void remove (int id);
 
@@ -60,11 +54,19 @@ namespace bingo
 
       const RowFpStorage & getSimStorage () const;
 
-      /*const */CfStorage & getCfStorage () /*const*/;
+      const Array<int> & getIdMapping () const;
+
+      const Array<int> & getBackIdMapping () const;
+
+      CfStorage & getCfStorage ();
 
       int getObjectsCount () const;
 
+      virtual const char * getIdPropertyName ();
+
       virtual IndexType getType ();
+
+      static IndexType determineType (const char *location);
 
       virtual ~BaseIndex ();
 
@@ -80,6 +82,8 @@ namespace bingo
          Array<char> cf_str;
       };
 
+      Array<int> _id_mapping;
+      Array<int> _back_id_mapping;
       _ObjectIndexData _object_index_data;
       TranspFpStorage _sub_fp_storage;
       RowFpStorage _sim_fp_storage;
@@ -87,15 +91,26 @@ namespace bingo
       CfStorage _cf_storage;
       AutoPtr<StorageManager> _storage_manager;
       Properties _properties;
-      std::string _location; // TODO: move to StorageManager --DONE
+      std::string _location;
+      std::ofstream _mapping_outfile;
 
       int _object_count;
+
+      void _parseOptions (const char *options);
 
       void _saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size);
 
       bool _prepareIndexData (IndexObject &obj);
 
       void _insertIndexData();
+
+      void _mappingLoad (const char * mapping_path);
+
+      void _mappingAssign (int obj_id, int base_id);
+
+      void _mappingAdd (int obj_id, int base_id);
+
+      void _mappingRemove (int obj_id);
    };
 };
 

@@ -58,13 +58,44 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
       throw BingoException("wrong database type option");
 
    if (create)
-      context->create(location, fp_params);
+      context->create(location, fp_params, options);
    else
       context->load(location);
 
    int db_id = _bingo_instances.add(context.release());
 
    return db_id;
+}
+
+
+static int _insertObjectToDatabase ( Indigo &self, bingo::Index &bingo_index, IndigoObject &indigo_obj, int obj_id)
+{
+   if (bingo_index.getType() == bingo::Index::MOLECULE)
+   {
+      if (!IndigoMolecule::is(indigo_obj))
+         throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
+
+      indigo_obj.getBaseMolecule().aromatize(self.arom_options);
+         
+      bingo::IndexMolecule ind_mol(indigo_obj.getMolecule());
+      int id = bingo_index.add(ind_mol, obj_id);
+      return id;
+   }
+   else if (bingo_index.getType() == bingo::Index::REACTION)
+   {
+      if (!IndigoReaction::is(indigo_obj))
+         throw BingoException("bingoInsertRecordObj: Only reaction objects can be added to reaction index");
+
+      indigo_obj.getBaseReaction().aromatize(self.arom_options);
+
+      bingo::IndexReaction ind_rxn(indigo_obj.getReaction());
+      int id = bingo_index.add(ind_rxn, obj_id);
+      return id;
+   }
+   else
+      throw BingoException("bingoInsertRecordObj: Incorrect database");
+
+   return -1;
 }
 
 
@@ -96,39 +127,40 @@ CEXPORT int bingoCloseDatabase (int db)
    INDIGO_END(-1);
 }
 
-CEXPORT int bingoInsertRecordObj (int db, int obj_id)
+CEXPORT int bingoInsertRecordObj (int db, int obj)
 {
    INDIGO_BEGIN
    {
+      IndigoObject &indigo_obj = self.getObject(obj);
       bingo::Index &bingo_index = _bingo_instances.ref(db);
-      IndigoObject &obj = self.getObject(obj_id);
 
-      if (bingo_index.getType() == bingo::Index::MOLECULE)
+      long obj_id = -1;
+      RedBlackStringObjMap< Array<char> > *properties = indigo_obj.getProperties();
+
+      if (properties != 0)
       {
-         if (!IndigoMolecule::is(obj))
-            throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
+         const char *key_name = bingo_index.getIdPropertyName();
 
-         obj.getBaseMolecule().aromatize(self.arom_options);
-         
-         bingo::IndexMolecule ind_mol(obj.getMolecule());
-         int id = bingo_index.add(ind_mol);
-         return id;
+         if (strlen(key_name) != 0 && properties->find(key_name))
+         {
+            Array<char> &key_str = properties->at(key_name);
+            obj_id = strtol(key_str.ptr(), NULL, 10);
+         }
       }
-      else if (bingo_index.getType() == bingo::Index::REACTION)
-      {
-         if (!IndigoReaction::is(obj))
-            throw BingoException("bingoInsertRecordObj: Only reaction objects can be added to reaction index");
 
-         obj.getBaseReaction().aromatize(self.arom_options);
+      return _insertObjectToDatabase (self, bingo_index, indigo_obj, obj_id);
+   }
+   INDIGO_END(-1);
+}
 
-         bingo::IndexReaction ind_rxn(obj.getReaction());
-         int id = bingo_index.add(ind_rxn);
-         return id;
-      }
-      else
-         throw BingoException("bingoInsertRecordObj: Incorrect database");
+CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &indigo_obj = self.getObject(obj);
+      bingo::Index &bingo_index = _bingo_instances.ref(db);
 
-      return -1;
+      return _insertObjectToDatabase (self, bingo_index, indigo_obj, id);
    }
    INDIGO_END(-1);
 }
@@ -154,7 +186,7 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
       
       if (IndigoQueryMolecule::is(obj))
       {
-		  obj.getBaseMolecule().aromatize(self.arom_options);
+         obj.getBaseMolecule().aromatize(self.arom_options);
 
          AutoPtr<bingo::MoleculeSubstructureQueryData> query_data(new bingo::MoleculeSubstructureQueryData(obj.getQueryMolecule()));
 

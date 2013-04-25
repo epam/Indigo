@@ -104,7 +104,7 @@ namespace bingo
       virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /* const */ = 0;
 
       virtual bool buildCfString (Array<char> &cf)/* const */ = 0;
-            
+
       virtual ~IndexObject () {};
    };
 

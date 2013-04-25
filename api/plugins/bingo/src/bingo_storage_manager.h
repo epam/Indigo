@@ -6,12 +6,6 @@
 
 namespace bingo
 {
-   // TODO: --DONE
-   // * StorageManager.load (name) without block_size
-   // * FileStorageManager::ctor (location)
-   // * + property table with block_size
-   // * remove StorageManager.get (replace with load)
-
    class StorageManager
    {
    public:

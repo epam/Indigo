@@ -13,11 +13,6 @@ Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query
 {
    if (strcmp(type, "sub") == 0)
    {
-      // TODO: AutPtr<MoleculeSubMatcher> to avoid memory leak in 
-      //   case of exception in matcher->setQueryData. --DONE
-
-      // MR TODO: type cast with type checking based on dynamic_cast --DONE
-
       AutoPtr<MoleculeSubMatcher> matcher(new MoleculeSubMatcher(*this));
       matcher->setQueryData(dynamic_cast<SubstructureQueryData *>(query_data));
       return matcher.release();
@@ -33,7 +28,7 @@ Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query
 
    return 0;
 }
-   
+
 ReactionIndex::ReactionIndex () : BaseIndex(REACTION)
 {
 }
