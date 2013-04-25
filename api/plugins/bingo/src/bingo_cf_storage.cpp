@@ -30,6 +30,12 @@ void CfStorage::load (const char *cf_filename, const char *offset_filename)
    _cf_infile.open(cf_filename, std::ios::in | std::ios::app | std::ios::binary);
    _offset_infile.open(offset_filename, std::ios::in | std::ios::app | std::ios::binary);
 
+   if (!_cf_infile.is_open() || !_cf_outfile.is_open())
+      throw Exception("cf storage file missed");
+
+   if (!_offset_infile.is_open() || !_offset_outfile.is_open())
+      throw Exception("cf storage offset file missed");
+
    _Addr addr;
    int i = 0;
    while (_offset_infile.read((char *)(&addr), sizeof(addr)))

@@ -15,6 +15,8 @@
 #ifndef __os_dir__
 #define __os_dir__
 
+#include "base_c/defs.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -29,8 +31,8 @@ enum
    OS_DIR_OTHER
 };
 
-int osDirExists (const char *dirname);
-int osDirCreate (const char *dirname);
+DLLEXPORT int osDirExists (const char *dirname);
+DLLEXPORT int osDirCreate (const char *dirname);
 
 const char * osDirLastError (char *buf, int max_size);
 

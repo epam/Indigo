@@ -12,6 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+
 #include "bingo.h"
 #include "bingo_object.h"
 
@@ -25,7 +26,6 @@
 
 #include <stdio.h>
 #include <string>
-#include <direct.h> 
 
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/auto_ptr.h"
@@ -63,10 +63,7 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
       throw BingoException("wrong database type option");
 
    if (create)
-   {
-      mkdir(loc_dir.c_str());
       context->create(loc_dir.c_str(), fp_params, options);
-   }
    else
       context->load(loc_dir.c_str());
 

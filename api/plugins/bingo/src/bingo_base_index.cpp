@@ -6,6 +6,7 @@
 
 #include "base_cpp/profiling.h"
 #include "base_cpp/output.h"
+#include "base_c/os_dir.h"
 
 using namespace bingo;
 
@@ -34,6 +35,8 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    int sub_block_size = 8192;
    int sim_block_size = 8192;
+
+   osDirCreate(location);
 
    _location = location;
    
@@ -67,6 +70,11 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
 void BaseIndex::load (const char *location)
 {
+   if (osDirExists(location) == OS_DIR_NOTFOUND)
+      throw Exception("database directory missed");
+
+   osDirCreate(location);
+
    _location = location;
    std::string sub_info_path = _location + _sub_info_filename;
    std::string sim_info_path = _location + _sim_info_filename;
@@ -255,6 +263,9 @@ void BaseIndex::_insertIndexData ()
 void BaseIndex::_mappingLoad (const char * mapping_path)
 {
    std::ifstream mapping_file(mapping_path);
+
+   if (!mapping_file.is_open())
+      throw Exception("mapping file missed");
 
    int obj_id;
    int base_id;
