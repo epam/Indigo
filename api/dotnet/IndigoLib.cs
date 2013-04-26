@@ -185,6 +185,7 @@ namespace com.ggasoftware.indigo
         int indigoResetSymmetricStereocenters(int handle);
         int indigoMarkEitherCisTrans(int handle);
         int indigoMarkStereobonds(int handle);
+        int indigoValidateChirality(int handle);
 
         int indigoAddAtom(int molecule, string symbol);
         int indigoResetAtom(int atom, string symbol);

@@ -449,6 +449,8 @@ CEXPORT int indigoResetSymmetricStereocenters (int handle);
 CEXPORT int indigoMarkEitherCisTrans (int handle);
 CEXPORT int indigoMarkStereobonds (int handle);
 
+CEXPORT int indigoValidateChirality (int handle);
+
 // Accepts a symbol from the periodic table (like "C" or "Br"),
 // or a pseudoatom symbol, like "Pol". Returns the added atom.
 CEXPORT int indigoAddAtom (int molecule, const char *symbol);

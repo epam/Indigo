@@ -675,6 +675,11 @@ void MoleculeStereocenters::setType (int idx, int type, int group)
    _stereocenters.at(idx).group = group;
 }
 
+void MoleculeStereocenters::setType (int idx, int type)
+{
+   _stereocenters.at(idx).type = type;
+}
+
 const int * MoleculeStereocenters::getPyramid (int idx) const
 {
    return _stereocenters.at(idx).pyramid;
@@ -693,8 +698,8 @@ int * MoleculeStereocenters::getPyramid (int idx)
 void MoleculeStereocenters::invertPyramid (int idx)
 {
    int tmp;
-
-   __swap(_stereocenters.at(idx).pyramid[0], _stereocenters.at(idx).pyramid[1], tmp);
+   int *pyramid = getPyramid(idx);
+   __swap(pyramid[0], pyramid[1], tmp);
 }
 
 void MoleculeStereocenters::getAbsAtoms (Array<int> &indices)
@@ -792,6 +797,17 @@ bool MoleculeStereocenters::haveAllAbs ()
          return false;
 
    return true;
+}
+
+bool MoleculeStereocenters::haveAbs ()
+{
+   int i;
+
+   for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+      if (_stereocenters.value(i).type == ATOM_ABS)
+         return true;
+
+   return false;
 }
 
 bool MoleculeStereocenters::haveAllAbsAny ()

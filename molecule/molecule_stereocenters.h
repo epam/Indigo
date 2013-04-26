@@ -73,6 +73,7 @@ public:
    const int * getPyramid (int idx) const;
    int * getPyramid (int idx);
    void setType (int idx, int type, int group);
+   void setType (int idx, int type);
    void invertPyramid (int idx);
 
    bool sameGroup (int idx1, int idx2);
@@ -83,6 +84,7 @@ public:
    void getOrGroup   (int number, Array<int> &indices);
    void getAndGroup  (int number, Array<int> &indices);
 
+   bool haveAbs ();
    bool haveAllAbs ();
    bool haveAllAbsAny ();
    bool haveAllAndAny ();

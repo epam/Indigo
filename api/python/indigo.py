@@ -397,6 +397,7 @@ class Indigo(object):
     self.IndigoObject.resetSymmetricStereocenters = Indigo._member_int(Indigo._lib.indigoResetSymmetricStereocenters)
     self.IndigoObject.markEitherCisTrans = Indigo._member_int(Indigo._lib.indigoMarkEitherCisTrans)
     self.IndigoObject.markStereobonds = Indigo._member_void(Indigo._lib.indigoMarkStereobonds)
+    self.IndigoObject.validateChirality = Indigo._member_void(Indigo._lib.indigoValidateChirality)
     self.IndigoObject.addAtom = Indigo._member_obj_string(Indigo._lib.indigoAddAtom)
     self.IndigoObject.resetAtom = Indigo._member_void_string(Indigo._lib.indigoResetAtom)
     self.IndigoObject.addRSite = Indigo._member_obj_string(Indigo._lib.indigoAddRSite)

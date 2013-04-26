@@ -633,6 +633,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoMarkStereobonds(self));
    }
 
+   public int validateChirality ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoValidateChirality(self));
+   }
+
    public IndigoObject addAtom (String symbol)
    {
       dispatcher.setSessionID();

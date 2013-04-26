@@ -795,6 +795,12 @@ namespace com.ggasoftware.indigo
             return dispatcher.checkResult(_indigo_lib.indigoMarkStereobonds(self));
         }
 
+        public int validateChirality()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoValidateChirality(self));
+        }
+
         public IndigoObject addAtom(string symbol)
         {
             dispatcher.setSessionID();
