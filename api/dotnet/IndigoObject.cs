@@ -313,6 +313,12 @@ namespace com.ggasoftware.indigo
             return dispatcher.checkResult(_indigo_lib.indigoStereocenterType(self));
         }
 
+        public int stereocenterGroup()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoStereocenterGroup(self));
+        }
+
         public int[] stereocenterPyramid()
         {
             dispatcher.setSessionID();
@@ -328,6 +334,12 @@ namespace com.ggasoftware.indigo
         {
             dispatcher.setSessionID();
             dispatcher.checkResult(_indigo_lib.indigoChangeStereocenterType(self, type));
+        }
+
+        public void setStereocenterGroup(int group)
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(_indigo_lib.indigoSetStereocenterGroup(self, group));
         }
 
         public int singleAllowedRGroup()
@@ -775,6 +787,12 @@ namespace com.ggasoftware.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoMarkEitherCisTrans(self));
+        }
+
+        public int markStereobonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoMarkStereobonds(self));
         }
 
         public IndigoObject addAtom(string symbol)

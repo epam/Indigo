@@ -50,6 +50,35 @@ static int mapStereocenterType (int api_stereocenter_type)
    }
 }
 
+CEXPORT int indigoStereocenterGroup (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      if (ia.mol.stereocenters.getType(ia.idx) == 0)
+         throw IndigoError("Atom is not a stereocenter");
+
+      return ia.mol.stereocenters.getGroup(ia.idx);
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoSetStereocenterGroup (int atom, int group)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      if (ia.mol.stereocenters.getType(ia.idx) == 0)
+         throw IndigoError("Atom is not a stereocenter");
+
+      ia.mol.stereocenters.setGroup(ia.idx, group);
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int indigoChangeStereocenterType (int atom, int type)
 {
    INDIGO_BEGIN
@@ -61,7 +90,8 @@ CEXPORT int indigoChangeStereocenterType (int atom, int type)
 
       int group = ia.mol.stereocenters.getGroup(ia.idx);
       ia.mol.stereocenters.setType(ia.idx, mapStereocenterType(type), group);
-      ia.mol.stereocenters.markBond(ia.idx);
+      if (ia.mol.have_xyz)
+         ia.mol.stereocenters.markBond(ia.idx);
 
       return 0;
    }

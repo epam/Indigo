@@ -133,7 +133,9 @@ public interface IndigoLib extends Library
    int indigoIsRSite (int atom);
 
    int indigoStereocenterType (int atom);
+   int indigoStereocenterGroup (int atom);
    Pointer indigoStereocenterPyramid (int atom);
+   int indigoSetStereocenterGroup (int atom, int group);
    int indigoChangeStereocenterType (int atom, int type);
    int indigoSingleAllowedRGroup (int rsite);
 
@@ -224,6 +226,7 @@ public interface IndigoLib extends Library
    int indigoResetSymmetricCisTrans (int handle);
    int indigoResetSymmetricStereocenters (int handle);
    int indigoMarkEitherCisTrans (int handle);
+   int indigoMarkStereobonds (int handle);
 
    int indigoAddAtom (int molecule, String symbol);
    int indigoResetAtom (int atom, String symbol);

@@ -664,6 +664,11 @@ int MoleculeStereocenters::getGroup (int idx) const
    return _stereocenters.at(idx).group;
 }
 
+void MoleculeStereocenters::setGroup (int idx, int group)
+{
+   _stereocenters.at(idx).group = group;
+}
+
 void MoleculeStereocenters::setType (int idx, int type, int group)
 {
    _stereocenters.at(idx).type = type;

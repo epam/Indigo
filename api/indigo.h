@@ -318,6 +318,9 @@ CEXPORT int indigoIsRSite (int atom);
 CEXPORT int indigoStereocenterType (int atom);
 CEXPORT int indigoChangeStereocenterType (int atom, int type);
 
+CEXPORT int indigoStereocenterGroup (int atom);
+CEXPORT int indigoSetStereocenterGroup (int atom, int group);
+
 // returns 4 integers with atom indices that defines stereocenter pyramid
 CEXPORT const int* indigoStereocenterPyramid (int atom);
 

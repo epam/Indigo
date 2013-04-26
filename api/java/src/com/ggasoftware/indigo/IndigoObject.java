@@ -291,6 +291,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoStereocenterType(self));
    }
    
+   public int stereocenterGroup ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoStereocenterGroup(self));
+   }
+   
    public int[] stereocenterPyramid ()
    {
       dispatcher.setSessionID();
@@ -302,6 +308,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoChangeStereocenterType(self, type));
+   }
+
+   public void setStereocenterGroup (int group)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoSetStereocenterGroup(self, group));
    }
 
    public int singleAllowedRGroup ()
@@ -613,6 +625,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoMarkEitherCisTrans(self));
+   }
+
+   public int markStereobonds ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoMarkStereobonds(self));
    }
 
    public IndigoObject addAtom (String symbol)

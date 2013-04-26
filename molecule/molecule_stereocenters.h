@@ -69,6 +69,7 @@ public:
 
    int getType  (int idx) const;
    int getGroup (int idx) const;
+   void setGroup (int idx, int group);
    const int * getPyramid (int idx) const;
    int * getPyramid (int idx);
    void setType (int idx, int type, int group);
