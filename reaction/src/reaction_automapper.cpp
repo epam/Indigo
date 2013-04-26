@@ -1429,6 +1429,8 @@ bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<i
             mcs.findApproximateMCS();
         }
     } catch (Exception& e) {
+		if(strstr(e.message(), "input mapping incorrect") != 0)
+			throw e;
         return false;
     }
 
