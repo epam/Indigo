@@ -10,7 +10,6 @@ using namespace indigo;
 
 namespace bingo
 {
-
    class Matcher
    {
    public:

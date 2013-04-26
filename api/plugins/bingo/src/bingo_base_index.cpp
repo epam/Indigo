@@ -122,7 +122,8 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
 
    if (obj_id == -1)
    {
-      for (int i = _first_free_id; i < _back_id_mapping.size(); i++)
+      int i;
+      for (i = _first_free_id; i < _back_id_mapping.size(); i++)
       {
          if (_back_id_mapping[i] == -1)
          {
@@ -131,8 +132,12 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
          }
       }
 
+      if (i == _back_id_mapping.size())
+         _first_free_id = _back_id_mapping.size();
+
       obj_id = _first_free_id;
    }
+
    _mappingAdd(obj_id, _object_count);
    
    _object_count++;

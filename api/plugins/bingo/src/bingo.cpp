@@ -52,8 +52,8 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
    AutoPtr<bingo::Index> context;
    std::string loc_dir(location);
 
-   if (loc_dir.find_last_of('\\') != loc_dir.length() - 1)
-      loc_dir += '\\';
+   if (loc_dir.find_last_of('/') != loc_dir.length() - 1)
+      loc_dir += '/';
 
    if (strcmp(type, "molecule") == 0)
       context.reset(new bingo::MoleculeIndex());
