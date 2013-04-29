@@ -23,6 +23,7 @@ typedef const char* (*STR_RET_INT) (int);
 typedef const char* (*STR_RET_VOID) (void);
 typedef int (*INT_RET_INT_INT) (int, int);
 typedef int (*INT_RET_STR_STR) (const char *, const char *);
+typedef int (*INT_RET_STR_STR_STR) (const char *, const char *, const char *);
 typedef int (*INT_RET_INT) (int);
 
 /* Try to dynamically load library and check load status. */
@@ -59,7 +60,7 @@ int main(int argc, char **argv)
    INT_RET indigoWriteBuffer;
    INT_RET_INT_INT indigoRender;
    STR_RET_INT indigoInchiGetInchi;
-   INT_RET_STR_STR bingoCreateDatabaseFile;
+   INT_RET_STR_STR_STR bingoCreateDatabaseFile;
    INT_RET_INT bingoCloseDatabase;
 
    int indigoTest = 0;
@@ -161,9 +162,9 @@ int main(int argc, char **argv)
          return 1;
       }
       printf("Bingo address: %lu\n", (unsigned long)bingoHandle);
-      bingoCreateDatabaseFile = (INT_RET_STR_STR)DLSYM(bingoHandle, "bingoCreateDatabaseFile");
+      bingoCreateDatabaseFile = (INT_RET_STR_STR_STR)DLSYM(bingoHandle, "bingoCreateDatabaseFile");
       bingoCloseDatabase = (INT_RET_INT)DLSYM(bingoHandle, "bingoCloseDatabase");
-      db = bingoCreateDatabaseFile("test.db", "molecule");
+      db = bingoCreateDatabaseFile("test.db", "molecule", "");
       printf("Bingo database ID: %d\n", db);
       printf("Bingo close database status: %d\n", bingoCloseDatabase(db));
    }

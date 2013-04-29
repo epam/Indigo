@@ -59,7 +59,7 @@ class Bingo(object):
         if os.name == 'posix' and not platform.mac_ver()[0]:
             _lib = CDLL(indigo.dllpath + "/libbingo.so")
         elif os.name == 'nt':
-            _lib = CDLL(indigo.dllpath + "\bingo.dll")
+            _lib = CDLL(indigo.dllpath + "/bingo.dll")
         elif platform.mac_ver()[0]:
             _lib = CDLL(indigo.dllpath + "/libbingo.dylib")
         else:
