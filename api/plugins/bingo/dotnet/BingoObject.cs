@@ -18,7 +18,7 @@ namespace com.ggasoftware.indigo
 
 		~BingoObject()
 		{
-			_indigo.checkResult(_bingoLib.bingoEndSearch(_id));
+			Bingo.checkResult(_indigo, _bingoLib.bingoEndSearch(_id));
 			_id = -1;
 		}
 
@@ -30,17 +30,17 @@ namespace com.ggasoftware.indigo
 
 		public bool next()
 		{
-			return (_indigo.checkResult(_bingoLib.bingoNext(_id)) == 1) ? true : false;
+			return (Bingo.checkResult(_indigo, _bingoLib.bingoNext(_id)) == 1) ? true : false;
 		}
 
 		public int getCurrentId()
 		{
-			return _indigo.checkResult(_bingoLib.bingoGetCurrentId(_id));
+			return Bingo.checkResult(_indigo, _bingoLib.bingoGetCurrentId(_id));
 		}
 
 		public IndigoObject getIndigoObject()
 		{
-			return new IndigoObject(_indigo, _indigo.checkResult(_bingoLib.bingoGetObject(_id)));
+			return new IndigoObject(_indigo, Bingo.checkResult(_indigo, _bingoLib.bingoGetObject(_id)));
 		}
 	}
 }
