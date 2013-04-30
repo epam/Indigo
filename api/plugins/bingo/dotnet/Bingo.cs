@@ -22,8 +22,22 @@ namespace com.ggasoftware.indigo
 
 		~Bingo()
 		{
-			Bingo.checkResult(_indigo, _lib.bingoCloseDatabase(_id));
-			_id = -1;
+			Dispose();
+		}
+
+
+		public void Dispose()
+		{
+			if (_id >= 0)
+			{
+				Bingo.checkResult(_indigo, _lib.bingoCloseDatabase(_id));
+				_id = -1;
+			}
+		}
+
+		public void close()
+		{
+			Dispose();
 		}
 
         public static int checkResult(Indigo indigo, int result)
@@ -73,13 +87,15 @@ namespace com.ggasoftware.indigo
 				options = "";
 			}
 			BingoLib lib = Bingo.getLib(indigo);
-			return new Bingo(indigo, Bingo.checkResult(indigo, lib.bingoCreateDatabaseFile(location, type, options)), lib);
+			int databaseID = Bingo.checkResult(indigo, lib.bingoCreateDatabaseFile(location, type, options));
+			return new Bingo(indigo, databaseID, lib);
 		}
 
 		public static Bingo loadDatabaseFile(Indigo indigo, string location, string type)
 		{
 			BingoLib lib = Bingo.getLib(indigo);
-			return new Bingo(indigo, Bingo.checkResult(indigo, lib.bingoLoadDatabaseFile(location, type)), lib);
+			int databaseID = Bingo.checkResult(indigo, lib.bingoLoadDatabaseFile(location, type));
+			return new Bingo(indigo, databaseID, lib);
 		}
 
 
