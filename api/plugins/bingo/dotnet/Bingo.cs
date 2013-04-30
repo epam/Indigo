@@ -7,7 +7,7 @@ using System.IO;
 namespace com.ggasoftware.indigo
 {
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-	public unsafe class Bingo
+	public unsafe class Bingo : IDisposable
 	{
 		private Indigo _indigo;
 		private BingoLib _lib;
@@ -99,10 +99,15 @@ namespace com.ggasoftware.indigo
 		}
 
 
-		public void insert(IndigoObject record)
-		{
-			Bingo.checkResult(_indigo, _lib.bingoInsertRecordObj(_id, record.self));
-		}
+        public int insert(IndigoObject record)
+        {
+            return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObj(_id, record.self));
+        }
+
+        public int insert(IndigoObject record, int index)
+        {
+            return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithId(_id, record.self, index));
+        }
 
 		public void delete(int index)
 		{

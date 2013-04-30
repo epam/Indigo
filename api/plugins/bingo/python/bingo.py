@@ -35,6 +35,8 @@ class Bingo(object):
         self._lib.bingoCloseDatabase.argtypes = [c_int]
         self._lib.bingoInsertRecordObj.restype = c_int
         self._lib.bingoInsertRecordObj.argtypes = [c_int, c_int]
+        self._lib.bingoInsertRecordObjWithId.restype = c_int
+        self._lib.bingoInsertRecordObjWithId.argtypes = [c_int, c_int, c_int]
         self._lib.bingoDeleteRecord.restype = c_int
         self._lib.bingoDeleteRecord.argtypes = [c_int, c_int]
         self._lib.bingoSearchSub.restype = c_int
@@ -51,8 +53,13 @@ class Bingo(object):
         self._lib.bingoEndSearch.argtypes = [c_int]
 
     def __del__(self):
-        Bingo._checkResult(self.indigo, self._lib.bingoCloseDatabase(self.id))
-        self.id = -1
+        self.close()
+
+    def close(self):
+        if self.id >= 0:
+            Bingo._checkResult(self.indigo, self._lib.bingoCloseDatabase(self.id))
+            self.id = -1
+
 
     @staticmethod
     def _checkResult(indigo, result):
@@ -88,8 +95,11 @@ class Bingo(object):
         lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p]
         return Bingo(Bingo._checkResult(indigo, lib.bingoLoadDatabaseFile(path, type)), indigo, lib)
 
-    def insert(self, indigoObject):
-        Bingo._checkResult(self.indigo, self._lib.bingoInsertRecordObj(self.id, indigoObject.id))
+    def insert(self, indigoObject, index=None):
+        if not index:
+            return Bingo._checkResult(self.indigo, self._lib.bingoInsertRecordObj(self.id, indigoObject.id))
+        else:
+            return Bingo._checkResult(self.indigo, self._lib.bingoInsertRecordObjWithId(self.id, indigoObject.id, index))
 
     def delete(self, index):
         Bingo._checkResult(self.indigo, self._lib.bingoDeleteRecord(self.id, index))
@@ -114,8 +124,12 @@ class BingoObject(object):
         self.bingo = bingo
 
     def __del__(self):
-        Bingo._checkResult(self.indigo, self.bingo._lib.bingoEndSearch(self.id))
-        self.id = -1
+        self.close()
+
+    def close(self):
+        if self.id >= 0:
+            Bingo._checkResult(self.indigo, self.bingo._lib.bingoEndSearch(self.id))
+            self.id = -1
 
     def next(self):
         return True if Bingo._checkResult(self.indigo, self.bingo._lib.bingoNext(self.id)) == 1 else False

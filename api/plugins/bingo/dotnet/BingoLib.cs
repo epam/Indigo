@@ -10,6 +10,7 @@ namespace com.ggasoftware.indigo
 		int bingoLoadDatabaseFile(string location, string type);
 		int bingoCloseDatabase(int db);
 		int bingoInsertRecordObj (int db, int obj);
+        int bingoInsertRecordObjWithId(int db, int obj, int id);
 		int bingoDeleteRecord (int db, int index);
 		int bingoSearchSub (int db, int query_obj, string options);
 		int bingoSearchSim (int db, int query_obj, float min, float max, string options);

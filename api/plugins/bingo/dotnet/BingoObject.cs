@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace com.ggasoftware.indigo
 {
-	public class BingoObject
+	public class BingoObject : IDisposable
 	{
 		private int _id;
 		private Indigo _indigo;
@@ -18,9 +18,22 @@ namespace com.ggasoftware.indigo
 
 		~BingoObject()
 		{
-			Bingo.checkResult(_indigo, _bingoLib.bingoEndSearch(_id));
-			_id = -1;
+            Dispose();
 		}
+
+        public void Dispose()
+        {
+            if (_id >= 0)
+            {
+                Bingo.checkResult(_indigo, _bingoLib.bingoEndSearch(_id));
+                _id = -1;
+            }
+        }
+
+        public void close()
+        {
+            Dispose();
+        }
 
         public int id
         {
