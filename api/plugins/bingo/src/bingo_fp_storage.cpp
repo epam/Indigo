@@ -13,7 +13,7 @@ BaseFpStorage::BaseFpStorage () : _fp_size(0), _storage(0)
 
 void BaseFpStorage::_loadInfo (const char *info_filename)
 {
-   std::ifstream is(info_filename, std::ifstream::binary);
+   std::ifstream is(info_filename, std::ios::in | std::ios::binary);
 
    if (is)
    {
@@ -21,6 +21,8 @@ void BaseFpStorage::_loadInfo (const char *info_filename)
       is.read((char *)&_inc_count, sizeof(_inc_count));
       is.read((char *)_inc_buffer, _inc_count * _fp_size);
    }
+
+   is.close();
 }
 
 void BaseFpStorage::_createFpStorage (int fp_size, Storage *storage, int inc_fp_capacity, const char *info_filename)
@@ -31,7 +33,7 @@ void BaseFpStorage::_createFpStorage (int fp_size, Storage *storage, int inc_fp_
    _block_count = 0;
    _inc_count = 0;
    _inc_max_count = inc_fp_capacity;
-   _inc_file.open(info_filename, std::ios::out | std::ios::binary);
+   _inc_file.open(info_filename, std::ios::out | std::ios::binary | std::ios::trunc);
 
    _inc_file.seekp(0);
    _inc_file.write((char *)&(_block_count), sizeof(_block_count));
@@ -47,8 +49,9 @@ void BaseFpStorage::_loadFpStorage (int fp_size, Storage *storage, int inc_fp_ca
    _inc_buffer = new byte[_fp_size * inc_fp_capacity];
    _loadInfo(info_filename);
    _inc_max_count = inc_fp_capacity;
-   _inc_file.open(info_filename, std::ios::out | std::ios::app | std::ios::binary);
-
+   
+   _inc_file.open(info_filename, std::ios::in | std::ios::out | std::ios::binary);
+   
     if (!_inc_file.is_open())
       throw Exception("Fingerprint increment file missed");
 }
@@ -56,14 +59,17 @@ void BaseFpStorage::_loadFpStorage (int fp_size, Storage *storage, int inc_fp_ca
 void BaseFpStorage::add (const byte *fp)
 {
    memcpy(_inc_buffer + (_inc_count * _fp_size), fp, _fp_size);
-   
+
    _inc_file.seekp(sizeof(_inc_count) + sizeof(_block_count) + _inc_count * _fp_size);
+
    _inc_file.write((char *)fp, _fp_size);
-   _inc_count++;
-   _inc_file.seekp(0);
-   _inc_file.write((char *)&(_block_count), sizeof(_block_count));
-   _inc_file.write((char *)&(_inc_count), sizeof(_inc_count));
    
+   _inc_count++;
+   _inc_file.seekp(0, std::ios::beg);
+   _inc_file.write(reinterpret_cast<const char *>(&_block_count), sizeof(_block_count));
+   _inc_file.seekp(sizeof(_block_count), std::ios::beg);
+   _inc_file.write(reinterpret_cast<const char *>(&_inc_count), sizeof(_inc_count));
+
    _inc_file.flush();
 
    if (_inc_count == _inc_max_count)
@@ -105,6 +111,7 @@ int BaseFpStorage::getIncrementCapacity () const
 
 BaseFpStorage::~BaseFpStorage ()
 {
+   _inc_file.close();
    delete _inc_buffer;
 }
 

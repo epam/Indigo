@@ -32,7 +32,7 @@ namespace bingo
 
       virtual const char * getIdPropertyName () = 0;
 
-      virtual IndexType getType () = 0;
+      virtual IndexType getType () const = 0;
 
       virtual ~Index () {};
    };
@@ -64,7 +64,7 @@ namespace bingo
 
       virtual const char * getIdPropertyName ();
 
-      virtual IndexType getType ();
+      virtual IndexType getType () const;
 
       static const char * determineType (const char *location);
 

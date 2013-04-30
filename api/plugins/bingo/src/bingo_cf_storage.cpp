@@ -21,8 +21,8 @@ void CfStorage::load (const char *cf_filename, const char *offset_filename)
    _cf_filename = cf_filename;
    _offset_filename = offset_filename;
 
-   _cf_file.open(cf_filename, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
-   _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
+   _cf_file.open(cf_filename, std::ios::in | std::ios::out | std::ios::binary);
+   _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::binary);
 
    if (!_cf_file.is_open())
       throw Exception("cf storage file missed");
@@ -49,15 +49,13 @@ void CfStorage::load (const char *cf_filename, const char *offset_filename)
       cf_buf.buf.reset(buf);
       cf_buf.len = addr.len;
 
-      if (i % 100000 == 0)
-         std::cout << i << std::endl;
       i++;
    }
 
    _cf_file.close();
    _offset_file.close();
-   _cf_file.open(cf_filename, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
-   _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
+   _cf_file.open(cf_filename, std::ios::in | std::ios::out | std::ios::binary);
+   _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::binary);
 }
 
 const char * CfStorage::get (int idx, int &len)
@@ -92,9 +90,6 @@ void CfStorage::add (const char *data, int len, int idx)
    _offset_file.seekp(idx * sizeof(addr));
    _offset_file.write((char *)&addr, sizeof(addr));
    _offset_file.flush();
-
-   if (sizeof(addr) <= 0)
-      addr.len = addr.len;
 
    _cf_file.flush();
 }

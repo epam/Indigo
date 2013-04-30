@@ -15,10 +15,45 @@ namespace bingo
    public:
       virtual bool next () = 0;
       virtual int currentId () = 0;
+      virtual const char * currentCf ( int &len ) = 0;
+      virtual const Index & getIndex () = 0;
 
       virtual ~Matcher () {};
    };
    
+   class BaseMatcher : public Matcher
+   {
+   public:
+      BaseMatcher(BaseIndex &index) : _index(index)
+      {
+         _current_id = 0;
+      }
+
+      virtual bool next () = 0;
+
+      virtual int currentId ()
+      {
+         const Array<int> &id_mapping = _index.getIdMapping();
+         return id_mapping[_current_id];
+      }
+
+      virtual const char * currentCf ( int &len )
+      {
+         return _index.getCfStorage().get(_current_id, len);
+      }
+
+      virtual const Index & getIndex ()
+      {
+         return _index;
+      }
+
+   protected:
+      BaseIndex &_index;
+      int _current_id;
+
+      virtual ~BaseMatcher () {};
+   };
+
    class MatcherQueryData
    {
    public:
@@ -94,22 +129,18 @@ namespace bingo
       SubstructureReactionQuery _obj;
    };
 
-   class BaseSubstructureMatcher : public Matcher
+   class BaseSubstructureMatcher : public BaseMatcher
    {
    public:
       BaseSubstructureMatcher (/*const */ BaseIndex &index);
    
       virtual bool next ();
-      
-      virtual int currentId ();
 
       void setQueryData (SubstructureQueryData *query_data);
 
    protected:
       int _fp_size;
-      int _current_id;
       int _cand_count;
-      /*const*/ BaseIndex &_index;
       /*const*/ AutoPtr<SubstructureQueryData> _query_data;
       Array<byte> _query_fp;
 
@@ -152,24 +183,21 @@ namespace bingo
       virtual bool _tryCurrent () /*const*/;
    };
    
-   class SimMatcher : public Matcher
+   class SimMatcher : public BaseMatcher
    {
    public:
       SimMatcher (BaseIndex &index);
 
       virtual bool next ();
       
-      virtual int currentId ();
-      
       void setQueryData (SimilarityQueryData *query_data);
 
       ~SimMatcher();
 
    private:
-      const BaseIndex &_index;
       /* const */ AutoPtr<SimilarityQueryData> _query_data;
       int _fp_size;
-      int _current_id;
+
       byte *_current_block;
       const byte *_cur_loc;
       Array<byte> _query_fp;

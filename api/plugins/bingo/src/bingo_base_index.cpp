@@ -64,7 +64,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
    else
       throw Exception("Unknown storage type");
 
-   _mapping_outfile.open(_mapping_path.c_str(), std::ios::out);
+   _mapping_outfile.open(_mapping_path.c_str(), std::ios::out | std::ios::trunc);
 
    AutoPtr<Storage> sub_stor(_storage_manager->create(_sub_filename, sub_block_size));
    AutoPtr<Storage> sim_stor(_storage_manager->create(_sim_filename, sim_block_size));
@@ -112,6 +112,8 @@ void BaseIndex::load (const char *location)
       _storage_manager.reset(new FileStorageManager(location, false));
    else
       throw Exception("Unknown storage type");
+
+    _mapping_outfile.open(_mapping_path.c_str(), std::ios::out | std::ios::app);
 
    AutoPtr<Storage> sub_stor(_storage_manager->load(_sub_filename));
    AutoPtr<Storage> sim_stor(_storage_manager->load(_sim_filename));
@@ -162,7 +164,7 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
 
 void BaseIndex::remove (int obj_id)
 {
-   if (_back_id_mapping.size() <= obj_id)
+   if (obj_id < 0 || obj_id >= _back_id_mapping.size())
       throw Exception("There is no object with this id");
 
    _cf_storage.remove(_back_id_mapping[obj_id]);
@@ -209,7 +211,7 @@ const char * BaseIndex::getIdPropertyName ()
    return _properties.get("key");
 }
 
-Index::IndexType BaseIndex::getType ()
+Index::IndexType BaseIndex::getType () const
 {
    return _type;
 }
@@ -318,6 +320,7 @@ void BaseIndex::_mappingAdd (int obj_id, int base_id)
 {
    _mappingAssign(obj_id, base_id);
 
+   _mapping_outfile.seekp(0, std::ios::end);
    _mapping_outfile << obj_id << ' ' << base_id << std::endl;
    _mapping_outfile.flush();
 }

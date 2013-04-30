@@ -79,9 +79,7 @@ const char * Properties::get (const char *prop_name)
 
 unsigned long Properties::getULong (const char *prop_name)
 {
-  _props[prop_name];
-
-  if (_props[prop_name].length() == 0)
+   if (_props.find(prop_name) == _props.end())
      throw Exception("Unknown property field");
 
    unsigned long u_dec;

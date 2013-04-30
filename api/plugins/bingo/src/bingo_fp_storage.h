@@ -46,7 +46,7 @@ namespace  bingo
 
       virtual int getIncrementCapacity( void ) const;
 
-      ~BaseFpStorage();
+      virtual ~BaseFpStorage();
 
    private:
       void _loadInfo( const char *info_filename );

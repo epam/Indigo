@@ -126,6 +126,9 @@ CEXPORT int bingoCloseDatabase (int db)
 {
    INDIGO_BEGIN
    {
+      if (db < 0 || db >= _bingo_instances.size())
+         throw Exception("Incorrect database object");
+
       _bingo_instances.remove(db);
       return 1;
    }
@@ -136,6 +139,9 @@ CEXPORT int bingoInsertRecordObj (int db, int obj)
 {
    INDIGO_BEGIN
    {
+      if (db < 0 || db >= _bingo_instances.size())
+         throw Exception("Incorrect database object");
+
       IndigoObject &indigo_obj = self.getObject(obj);
       bingo::Index &bingo_index = _bingo_instances.ref(db);
 
@@ -162,6 +168,9 @@ CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id)
 {
    INDIGO_BEGIN
    {
+      if (db < 0 || db >= _bingo_instances.size())
+         throw Exception("Incorrect database object");
+
       IndigoObject &indigo_obj = self.getObject(obj);
       bingo::Index &bingo_index = _bingo_instances.ref(db);
 
@@ -170,15 +179,18 @@ CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id)
    INDIGO_END(-1);
 }
 
-CEXPORT int bingoDeleteRecord (int db, int index)
+CEXPORT int bingoDeleteRecord (int db, int id)
 {
    INDIGO_BEGIN
    {
+      if (db < 0 || db >= _bingo_instances.size())
+         throw Exception("Incorrect database object");
+
       bingo::Index &bingo_index = _bingo_instances.ref(db);
 
-      bingo_index.remove(index);
+      bingo_index.remove(id);
 
-      return index;
+      return id;
    }
    INDIGO_END(-1);
 }
@@ -187,6 +199,9 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
 {
    INDIGO_BEGIN
    {
+      if (db < 0 || db >= _bingo_instances.size())
+         throw Exception("Incorrect database object");
+
       IndigoObject &obj = self.getObject(query_obj);
       
       if (IndigoQueryMolecule::is(obj))
@@ -219,6 +234,9 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
 {
    INDIGO_BEGIN
    {
+      if (db < 0 || db >= _bingo_instances.size())
+         throw Exception("Incorrect database object");
+
       IndigoObject &obj = self.getObject(query_obj);
       
       if (IndigoMolecule::is(obj))
@@ -252,6 +270,9 @@ CEXPORT int bingoEndSearch (int search_obj)
 {
    INDIGO_BEGIN
    {
+      if (search_obj < 0 || search_obj >= _searches.size())
+         throw Exception("Incorrect search object");
+
       _searches.remove(search_obj);
       return 1;
    }
@@ -262,6 +283,9 @@ CEXPORT int bingoNext (int search_obj)
 {
    INDIGO_BEGIN
    {
+      if (search_obj < 0 || search_obj >= _searches.size())
+         throw Exception("Incorrect search object");
+
       return _searches.ref(search_obj).next();
    }
    INDIGO_END(-1);
@@ -271,6 +295,9 @@ CEXPORT int bingoGetCurrentId (int search_obj)
 {
    INDIGO_BEGIN
    {
+      if (search_obj < 0 || search_obj >= _searches.size())
+         throw Exception("Incorrect search object");
+
       return _searches.ref(search_obj).currentId();
    }
    INDIGO_END(-1);
@@ -280,7 +307,45 @@ CEXPORT int bingoGetObject (int search_obj)
 {
    INDIGO_BEGIN
    {
-      throw BingoException("bingoGetObject is not implemented yet");
+      if (search_obj < 0 || search_obj >= _searches.size())
+         throw Exception("Incorrect search object");
+
+      bingo::Matcher &matcher = _searches.ref(search_obj);
+      const bingo::Index &bingo_index = matcher.getIndex();
+      
+      int cf_len = -1;
+      const char *cf_buf = matcher.currentCf(cf_len);
+      BufferScanner buf_scn(cf_buf, cf_len);
+      
+      if (cf_len == -1)
+         throw Exception("Can't load object");
+
+      if (bingo_index.getType() == bingo::Index::MOLECULE)
+      {
+         AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
+
+         Molecule &mol = molptr->mol;
+
+         CmfLoader cmf_loader(buf_scn);
+
+         cmf_loader.loadMolecule(mol);
+
+         return self.addObject(molptr.release());
+      }
+      else if (bingo_index.getType() == bingo::Index::REACTION)
+      {
+         AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
+
+         Reaction &rxn = rxnptr->rxn;
+
+         CrfLoader crf_loader(buf_scn);
+
+         crf_loader.loadReaction(rxn);
+
+         return self.addObject(rxnptr.release());
+      }
+      else
+         throw BingoException("bingoGetObject: Incorrect database");
    }
    INDIGO_END(-1);
 }

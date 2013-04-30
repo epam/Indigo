@@ -69,8 +69,7 @@ ReactionSubstructureQueryData::ReactionSubstructureQueryData (/* const */ QueryR
 }
    
    
-BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index) : 
-   _index(index), _fp_storage(_index.getSubStorage())
+BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index) : BaseMatcher(index), _fp_storage(_index.getSubStorage())
 {
    _fp_size = _index.getFingerprintParams().fingerprintSize();
    
@@ -122,12 +121,6 @@ bool BaseSubstructureMatcher::next ()
 
    profIncCounter("sub_count_cand", _cand_count);
    return false;
-}
-
-int BaseSubstructureMatcher::currentId ()
-{
-   const Array<int> &id_mapping = _index.getIdMapping();
-   return id_mapping[_current_id];
 }
 
 void BaseSubstructureMatcher::setQueryData (SubstructureQueryData *query_data)
@@ -340,7 +333,7 @@ bool ReactionSubMatcher::_tryCurrent ()// const
 }
 
 
-SimMatcher::SimMatcher (/*const */ BaseIndex &index ) : _index(index)
+SimMatcher::SimMatcher (/*const */ BaseIndex &index ) : BaseMatcher(index)
 {
    _current_id = -1;
    _current_block = new byte[_index.getSimStorage().getBlockSize()];
@@ -382,13 +375,6 @@ bool SimMatcher::next ()
 
    return false;
 }
-    
-int SimMatcher::currentId ()
-{
-   const Array<int> &id_mapping = _index.getIdMapping();
-   return id_mapping[_current_id];
-}
-
 
 void SimMatcher::setQueryData (SimilarityQueryData *query_data)
 {
