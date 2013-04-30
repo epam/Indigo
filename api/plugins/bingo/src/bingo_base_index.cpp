@@ -64,7 +64,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
    else
       throw Exception("Unknown storage type");
 
-   _mapping_outfile.open(_mapping_path.c_str(), std::ios::out | std::ios::trunc);
+   _mapping_outfile.open(_mapping_path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
 
    AutoPtr<Storage> sub_stor(_storage_manager->create(_sub_filename, sub_block_size));
    AutoPtr<Storage> sim_stor(_storage_manager->create(_sim_filename, sim_block_size));
@@ -115,7 +115,7 @@ void BaseIndex::load (const char *location, const char *options)
    else
       throw Exception("Unknown storage type");
 
-    _mapping_outfile.open(_mapping_path.c_str(), std::ios::out | std::ios::app);
+    _mapping_outfile.open(_mapping_path.c_str(), std::ios::in | std::ios::out | std::ios::binary);
 
    AutoPtr<Storage> sub_stor(_storage_manager->load(_sub_filename));
    AutoPtr<Storage> sim_stor(_storage_manager->load(_sim_filename));
@@ -292,19 +292,26 @@ void BaseIndex::_insertIndexData ()
 
 void BaseIndex::_mappingLoad (const char * mapping_path)
 {
-   std::ifstream mapping_file(mapping_path);
+   std::ifstream mapping_file(mapping_path, std::ios::in | std::ios::binary);
 
    if (!mapping_file.is_open())
       throw Exception("mapping file missed");
 
-   int obj_id;
-   int base_id;
-   mapping_file >> obj_id >> base_id;
+   int obj_id = -1;
+   int base_id = 0;
+
+   mapping_file.seekg(0);
+   mapping_file.read((char *)&obj_id, sizeof(obj_id));
+
    while (mapping_file.good())
    {
       _mappingAssign(obj_id, base_id);
-      mapping_file >> obj_id >> base_id;
+      base_id++;
+      mapping_file.seekg(base_id * sizeof(obj_id));
+      mapping_file.read((char *)&obj_id, sizeof(obj_id));
    }
+
+   return;
 }
 
 void BaseIndex::_mappingAssign (int obj_id, int base_id)
@@ -314,10 +321,14 @@ void BaseIndex::_mappingAssign (int obj_id, int base_id)
    if (_back_id_mapping.size() <= obj_id)
       _back_id_mapping.expandFill(obj_id + 1, -1);
 
-   if (_id_mapping[base_id] != -1 || _back_id_mapping[obj_id] != -1)
+   _id_mapping[base_id] = obj_id;
+   
+   if (obj_id == -1)
+      return;
+   
+   if (_back_id_mapping[obj_id] != -1)
       throw Exception("insert fail: this id was already used");
 
-   _id_mapping[base_id] = obj_id;
    _back_id_mapping[obj_id] = base_id;
 }
 
@@ -325,8 +336,8 @@ void BaseIndex::_mappingAdd (int obj_id, int base_id)
 {
    _mappingAssign(obj_id, base_id);
 
-   _mapping_outfile.seekp(0, std::ios::end);
-   _mapping_outfile << obj_id << ' ' << base_id << std::endl;
+   _mapping_outfile.seekp(base_id * sizeof(obj_id));
+   _mapping_outfile.write((char *)&obj_id, sizeof(obj_id));
    _mapping_outfile.flush();
 }
 
@@ -334,7 +345,13 @@ void BaseIndex::_mappingRemove (int obj_id)
 {
    if (_back_id_mapping[obj_id] != -1)
    {
+      int new_id = -1;
+      _mapping_outfile.seekp(_back_id_mapping[obj_id] * sizeof(obj_id));
+      _mapping_outfile.write((char *)&new_id, sizeof(new_id));
+      _mapping_outfile.flush();
+
       _id_mapping[_back_id_mapping[obj_id]] = -1;
       _back_id_mapping[obj_id] = -1;
    }
+
 }

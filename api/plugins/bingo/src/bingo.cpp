@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <string>
 
-#include "base_cpp/ptr_pool.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/exception.h"
 
@@ -139,7 +139,7 @@ CEXPORT int bingoInsertRecordObj (int db, int obj)
 {
    INDIGO_BEGIN
    {
-      if (db < 0 || db >= _bingo_instances.size())
+      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
          throw Exception("Incorrect database object");
 
       IndigoObject &indigo_obj = self.getObject(obj);
@@ -168,7 +168,7 @@ CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id)
 {
    INDIGO_BEGIN
    {
-      if (db < 0 || db >= _bingo_instances.size())
+      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
          throw Exception("Incorrect database object");
 
       IndigoObject &indigo_obj = self.getObject(obj);
@@ -183,7 +183,7 @@ CEXPORT int bingoDeleteRecord (int db, int id)
 {
    INDIGO_BEGIN
    {
-      if (db < 0 || db >= _bingo_instances.size())
+      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
          throw Exception("Incorrect database object");
 
       bingo::Index &bingo_index = _bingo_instances.ref(db);
@@ -199,7 +199,7 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
 {
    INDIGO_BEGIN
    {
-      if (db < 0 || db >= _bingo_instances.size())
+      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
          throw Exception("Incorrect database object");
 
       IndigoObject &obj = self.getObject(query_obj);
@@ -234,7 +234,7 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
 {
    INDIGO_BEGIN
    {
-      if (db < 0 || db >= _bingo_instances.size())
+      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
          throw Exception("Incorrect database object");
 
       IndigoObject &obj = self.getObject(query_obj);
@@ -270,7 +270,7 @@ CEXPORT int bingoEndSearch (int search_obj)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < 0 || search_obj >= _searches.size())
+      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
          throw Exception("Incorrect search object");
 
       _searches.remove(search_obj);
@@ -283,10 +283,10 @@ CEXPORT int bingoNext (int search_obj)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < 0 || search_obj >= _searches.size())
+      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
          throw Exception("Incorrect search object");
 
-      return _searches.ref(search_obj).next();
+      return _searches[search_obj]->next();
    }
    INDIGO_END(-1);
 }
@@ -295,7 +295,7 @@ CEXPORT int bingoGetCurrentId (int search_obj)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < 0 || search_obj >= _searches.size())
+      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
          throw Exception("Incorrect search object");
 
       return _searches.ref(search_obj).currentId();
@@ -307,7 +307,7 @@ CEXPORT int bingoGetObject (int search_obj)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < 0 || search_obj >= _searches.size())
+      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
          throw Exception("Incorrect search object");
 
       bingo::Matcher &matcher = _searches.ref(search_obj);

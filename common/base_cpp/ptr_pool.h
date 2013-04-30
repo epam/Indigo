@@ -51,6 +51,11 @@ public:
       _ptrpool.remove(idx);
    }
 
+   bool hasElement(int idx) const
+   {
+      return _ptrpool.hasElement(idx);
+   }
+
    int size ()
    {
       return _ptrpool.size();
