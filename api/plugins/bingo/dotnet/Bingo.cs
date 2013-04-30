@@ -79,7 +79,7 @@ namespace com.ggasoftware.indigo
             return dll_loader.getInterface<BingoLib>(libraryName);
         }
 
-        public static Bingo createDatabaseFile(Indigo indigo, string location, string type, string options = null)
+        public static Bingo createDatabaseFile(Indigo indigo, string location, string type, string options)
         {
             if (options == null)
             {
@@ -90,7 +90,14 @@ namespace com.ggasoftware.indigo
             return new Bingo(indigo, databaseID, lib);
         }
 
-        public static Bingo loadDatabaseFile(Indigo indigo, string location, string type, string options = null)
+        public static Bingo loadDatabaseFile(Indigo indigo, string location, string type)
+        {
+            BingoLib lib = Bingo.getLib(indigo);
+            int databaseID = Bingo.checkResult(indigo, lib.bingoLoadDatabaseFile(location, type, ""));
+            return new Bingo(indigo, databaseID, lib);
+        }
+
+        public static Bingo loadDatabaseFile(Indigo indigo, string location, string type, string options)
         {
             if (options == null)
             {
