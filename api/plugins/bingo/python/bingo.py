@@ -23,14 +23,14 @@ class BingoException(Exception):
 
 
 class Bingo(object):
-    def __init__(self, id, indigo, lib):
-        self.id = id
-        self.indigo = indigo
+    def __init__(self, bingoId, indigo, lib):
+        self._id = bingoId
+        self._indigo = indigo
         self._lib = lib
         self._lib.bingoCreateDatabaseFile.restype = c_int
         self._lib.bingoCreateDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
         self._lib.bingoLoadDatabaseFile.restype = c_int
-        self._lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p]
+        self._lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
         self._lib.bingoCloseDatabase.restype = c_int
         self._lib.bingoCloseDatabase.argtypes = [c_int]
         self._lib.bingoInsertRecordObj.restype = c_int
@@ -56,10 +56,9 @@ class Bingo(object):
         self.close()
 
     def close(self):
-        if self.id >= 0:
-            Bingo._checkResult(self.indigo, self._lib.bingoCloseDatabase(self.id))
-            self.id = -1
-
+        if self._id >= 0:
+            Bingo._checkResult(self._indigo, self._lib.bingoCloseDatabase(self._id))
+            self._id = -1
 
     @staticmethod
     def _checkResult(indigo, result):
@@ -80,62 +79,67 @@ class Bingo(object):
         return _lib
 
     @staticmethod
-    def createDatabaseFile(indigo, path, type, options=''):
+    def createDatabaseFile(indigo, path, databaseType, options=''):
         if not options:
             options = ''
         lib = Bingo._getLib(indigo)
         lib.bingoCreateDatabaseFile.restype = c_int
         lib.bingoCreateDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
-        return Bingo(Bingo._checkResult(indigo, lib.bingoCreateDatabaseFile(path, type, options)), indigo, lib)
+        return Bingo(Bingo._checkResult(indigo, lib.bingoCreateDatabaseFile(path, databaseType, options)), indigo, lib)
 
     @staticmethod
-    def loadDatabaseFile(indigo, path, type):
+    def loadDatabaseFile(indigo, path, databaseType, options=''):
+        if not options:
+            options = ''
         lib = Bingo._getLib(indigo)
         lib.bingoLoadDatabaseFile.restype = c_int
         lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p]
-        return Bingo(Bingo._checkResult(indigo, lib.bingoLoadDatabaseFile(path, type)), indigo, lib)
+        return Bingo(Bingo._checkResult(indigo, lib.bingoLoadDatabaseFile(path, databaseType, options)), indigo, lib)
 
     def insert(self, indigoObject, index=None):
         if not index:
-            return Bingo._checkResult(self.indigo, self._lib.bingoInsertRecordObj(self.id, indigoObject.id))
+            return Bingo._checkResult(self._indigo, self._lib.bingoInsertRecordObj(self._id, indigoObject.id))
         else:
-            return Bingo._checkResult(self.indigo, self._lib.bingoInsertRecordObjWithId(self.id, indigoObject.id, index))
+            return Bingo._checkResult(self._indigo,
+                                      self._lib.bingoInsertRecordObjWithId(self._id, indigoObject.id, index))
 
     def delete(self, index):
-        Bingo._checkResult(self.indigo, self._lib.bingoDeleteRecord(self.id, index))
+        Bingo._checkResult(self._indigo, self._lib.bingoDeleteRecord(self._id, index))
 
     def searchSub(self, query, options=''):
         if not options:
             options = ''
-        return BingoObject(Bingo._checkResult(self.indigo, self._lib.bingoSearchSub(self.id, query.id, options)),
-                           self.indigo, self)
+        return BingoObject(Bingo._checkResult(self._indigo, self._lib.bingoSearchSub(self._id, query.id, options)),
+                           self._indigo, self)
 
-    def searchSim(self, query, min, max, metric='tanimoto'):
+    def searchSim(self, query, minSim, maxSim, metric='tanimoto'):
         if not metric:
             metric = 'tanimoto'
-        return BingoObject(Bingo._checkResult(self.indigo, self._lib.bingoSearchSim(self.id, query.id, min, max, metric)),
-                           self.indigo, self)
+        return BingoObject(
+            Bingo._checkResult(self._indigo, self._lib.bingoSearchSim(self._id, query.id, minSim, maxSim, metric)),
+            self._indigo, self)
 
 
 class BingoObject(object):
-    def __init__(self, id, indigo, bingo):
-        self.id = id
-        self.indigo = indigo
-        self.bingo = bingo
+    def __init__(self, objId, indigo, bingo):
+        self._id = objId
+        self._indigo = indigo
+        self._bingo = bingo
 
     def __del__(self):
         self.close()
 
     def close(self):
-        if self.id >= 0:
-            Bingo._checkResult(self.indigo, self.bingo._lib.bingoEndSearch(self.id))
-            self.id = -1
+        if self._id >= 0:
+            Bingo._checkResult(self._indigo, self._bingo._lib.bingoEndSearch(self._id))
+            self._id = -1
 
     def next(self):
-        return True if Bingo._checkResult(self.indigo, self.bingo._lib.bingoNext(self.id)) == 1 else False
+        return True if Bingo._checkResult(self._indigo, self._bingo._lib.bingoNext(self._id)) == 1 else False
 
     def getCurrentId(self):
-        return Bingo._checkResult(self.indigo, self.bingo._lib.bingoGetCurrentId(self.id))
+        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoGetCurrentId(self._id))
 
     def getIndigoObject(self):
-        return Indigo.IndigoObject(self.indigo, Bingo._checkResult(self.indigo, self.bingo._lib.bingoGetObject(self.id)))
+        return Indigo.IndigoObject(self._indigo,
+                                   Bingo._checkResult(self._indigo, self._bingo._lib.bingoGetObject(self._id)))

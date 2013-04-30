@@ -3,23 +3,23 @@ using System.Collections;
 
 namespace com.ggasoftware.indigo
 {
-	public class BingoObject : IDisposable
-	{
-		private int _id;
-		private Indigo _indigo;
-		private BingoLib _bingoLib;
+    public class BingoObject : IDisposable
+    {
+        private int _id;
+        private Indigo _indigo;
+        private BingoLib _bingoLib;
 
-		public BingoObject(int id, Indigo indigo, BingoLib bingo_lib)
-		{
-			this._id = id;
-			this._indigo = indigo;
-			this._bingoLib = bingo_lib;
-		}
+        public BingoObject(int id, Indigo indigo, BingoLib bingo_lib)
+        {
+            this._id = id;
+            this._indigo = indigo;
+            this._bingoLib = bingo_lib;
+        }
 
-		~BingoObject()
-		{
+        ~BingoObject()
+        {
             Dispose();
-		}
+        }
 
         public void Dispose()
         {
@@ -41,19 +41,19 @@ namespace com.ggasoftware.indigo
             set { _id = value; }
         }
 
-		public bool next()
-		{
-			return (Bingo.checkResult(_indigo, _bingoLib.bingoNext(_id)) == 1) ? true : false;
-		}
+        public bool next()
+        {
+            return (Bingo.checkResult(_indigo, _bingoLib.bingoNext(_id)) == 1) ? true : false;
+        }
 
-		public int getCurrentId()
-		{
-			return Bingo.checkResult(_indigo, _bingoLib.bingoGetCurrentId(_id));
-		}
+        public int getCurrentId()
+        {
+            return Bingo.checkResult(_indigo, _bingoLib.bingoGetCurrentId(_id));
+        }
 
-		public IndigoObject getIndigoObject()
-		{
-			return new IndigoObject(_indigo, Bingo.checkResult(_indigo, _bingoLib.bingoGetObject(_id)));
-		}
-	}
+        public IndigoObject getIndigoObject()
+        {
+            return new IndigoObject(_indigo, Bingo.checkResult(_indigo, _bingoLib.bingoGetObject(_id)));
+        }
+    }
 }

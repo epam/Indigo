@@ -7,7 +7,7 @@ namespace com.ggasoftware.indigo
 	public unsafe interface BingoLib
     {
 		int bingoCreateDatabaseFile(string location, string type, string options);
-		int bingoLoadDatabaseFile(string location, string type);
+		int bingoLoadDatabaseFile(string location, string type, string options);
 		int bingoCloseDatabase(int db);
 		int bingoInsertRecordObj (int db, int obj);
         int bingoInsertRecordObjWithId(int db, int obj, int id);
