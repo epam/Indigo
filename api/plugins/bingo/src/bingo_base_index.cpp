@@ -75,7 +75,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
    _cf_storage.create(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }
 
-void BaseIndex::load (const char *location)
+void BaseIndex::load (const char *location, const char *options)
 {
    if (osDirExists(location) == OS_DIR_NOTFOUND)
       throw Exception("database directory missed");
@@ -91,6 +91,8 @@ void BaseIndex::load (const char *location)
    std::string _mapping_path = _location + _id_mapping_filename;
 
    _properties.load(props_path.c_str());
+
+   _parseOptions(options);
 
    const char *type_str = (_type == MOLECULE ? _molecule_type : _reaction_type);
    if (strcmp(_properties.get("base_type"), type_str) != 0)
@@ -233,6 +235,9 @@ BaseIndex::~BaseIndex()
 
 void BaseIndex::_parseOptions (const char *options)
 {
+   if (options == 0 || strlen(options) == 0)
+      return;
+
    std::stringstream options_stream;
    options_stream << options;
 

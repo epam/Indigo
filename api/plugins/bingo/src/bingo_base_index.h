@@ -22,7 +22,7 @@ namespace bingo
 
       virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options) = 0;
 
-      virtual void load (const char *location) = 0;
+      virtual void load (const char *location, const char *options) = 0;
 
       virtual int add (IndexObject &obj, int obj_id) = 0;
 
@@ -42,7 +42,7 @@ namespace bingo
    public:
       virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options);
 
-      virtual void load (const char *location);
+      virtual void load (const char *location, const char *options);
       
       virtual int add (IndexObject &obj, int obj_id);
 

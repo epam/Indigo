@@ -2,7 +2,7 @@
 
 using namespace bingo;
 
-const char * FileStorageManager::_prop_filename = "file_manager_properties";
+const char * StorageManager::_prop_filename = "manager_properties";
 
 FileStorageManager::FileStorageManager (const char *location, bool is_create) : _loc(location)
 {
@@ -26,8 +26,6 @@ FileStorage * FileStorageManager::load (const char *name)
    unsigned long block_size = _prop_table.getULong(name);
    return new FileStorage((_loc + name).c_str(), block_size, false);
 }
-
-const char * RamStorageManager::_prop_filename = "ram_manager_properties";
 
 RamStorageManager::RamStorageManager (const char *location, bool is_create) : _loc(location)
 {

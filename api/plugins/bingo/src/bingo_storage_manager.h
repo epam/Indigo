@@ -13,12 +13,13 @@ namespace bingo
       virtual Storage * load ( const char *name ) = 0;
 
       virtual ~StorageManager () {};
+   protected:
+      static const char *_prop_filename;
    };
 
    class FileStorageManager : public StorageManager
    {
    private:
-      static const char *_prop_filename;
       std::string _loc;
       Properties _prop_table;
 
@@ -32,7 +33,6 @@ namespace bingo
    class RamStorageManager : public StorageManager
    {
    private:
-      static const char *_prop_filename;
       std::string _loc;
       Properties _prop_table;
 

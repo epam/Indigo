@@ -65,7 +65,7 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
    if (create)
       context->create(loc_dir.c_str(), fp_params, options);
    else
-      context->load(loc_dir.c_str());
+      context->load(loc_dir.c_str(), options);
 
    int db_id = _bingo_instances.add(context.release());
 
@@ -113,11 +113,11 @@ CEXPORT int bingoCreateDatabaseFile (const char *location, const char *type, con
    INDIGO_END(-1);
 }
 
-CEXPORT int bingoLoadDatabaseFile (const char *location, const char *type)
+CEXPORT int bingoLoadDatabaseFile (const char *location, const char *type, const char *options)
 {
    INDIGO_BEGIN
    {
-      return _bingoCreateOrLoadDatabaseFile(location, type, NULL, false);
+      return _bingoCreateOrLoadDatabaseFile(location, type, options, false);
    }
    INDIGO_END(-1);
 }
