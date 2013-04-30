@@ -2,7 +2,7 @@
 
 using namespace bingo;
 
-const char * FileStorageManager::_prop_filename = "fs_manager_properties";
+const char * FileStorageManager::_prop_filename = "file_manager_properties";
 
 FileStorageManager::FileStorageManager (const char *location, bool is_create) : _loc(location)
 {

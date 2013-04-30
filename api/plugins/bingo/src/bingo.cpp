@@ -146,7 +146,7 @@ CEXPORT int bingoInsertRecordObj (int db, int obj)
       {
          const char *key_name = bingo_index.getIdPropertyName();
 
-         if (strlen(key_name) != 0 && properties->find(key_name))
+         if (key_name != 0 && properties->find(key_name))
          {
             Array<char> &key_str = properties->at(key_name);
             obj_id = strtol(key_str.ptr(), NULL, 10);

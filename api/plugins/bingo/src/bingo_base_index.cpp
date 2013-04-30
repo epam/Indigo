@@ -20,6 +20,8 @@ static const char *_cf_offset_filename = "cf_offset";
 static const char *_id_mapping_filename = "id_mapping";
 static const char *_reaction_type = "reaction";
 static const char *_molecule_type = "molecule";
+static const char *_ram_storage_type = "ram";
+static const char *_file_storage_type = "file";
 
 BaseIndex::BaseIndex (IndexType type)
 {
@@ -55,7 +57,12 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    _saveProperties(fp_params, sub_block_size, sim_block_size);
 
-   _storage_manager.reset(new RamStorageManager(location, true));
+   if ((_properties.get("storage") == 0) || strcmp(_properties.get("storage"), _ram_storage_type) == 0)
+      _storage_manager.reset(new RamStorageManager(location, true));
+   else if (strcmp(_properties.get("storage"), _file_storage_type) == 0)
+      _storage_manager.reset(new FileStorageManager(location, true));
+   else
+      throw Exception("Unknown storage type");
 
    _mapping_outfile.open(_mapping_path.c_str(), std::ios::out);
 
@@ -95,9 +102,16 @@ void BaseIndex::load (const char *location)
    _fp_params.tau_qwords = _properties.getULong("fp_tau");
    _fp_params.sim_qwords = _properties.getULong("fp_sim");
 
+   _object_count = _properties.getULong("size");
+
    _mappingLoad(_mapping_path.c_str());
 
-   _storage_manager.reset(new RamStorageManager(location, false));
+   if ((_properties.get("storage") == 0) || (strcmp(_properties.get("storage"), _ram_storage_type) == 0))
+      _storage_manager.reset(new RamStorageManager(location, false));
+   else if (strcmp(_properties.get("storage"), _file_storage_type) == 0)
+      _storage_manager.reset(new FileStorageManager(location, false));
+   else
+      throw Exception("Unknown storage type");
 
    AutoPtr<Storage> sub_stor(_storage_manager->load(_sub_filename));
    AutoPtr<Storage> sim_stor(_storage_manager->load(_sim_filename));
@@ -141,6 +155,8 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
    _mappingAdd(obj_id, _object_count);
    
    _object_count++;
+   _properties.add("size", _object_count);
+   
    return obj_id;
 }
 
@@ -221,7 +237,7 @@ void BaseIndex::_parseOptions (const char *options)
    std::string line;
    while (options_stream.good())
    {
-      std::getline(options_stream, line);
+      std::getline(options_stream, line, ';');
 
       if (line.size() == 0)
          continue;
@@ -245,6 +261,8 @@ void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params,
    _properties.add("fp_any", _fp_params.any_qwords);
    _properties.add("fp_tau", _fp_params.tau_qwords);
    _properties.add("fp_sim", _fp_params.sim_qwords);
+
+   _properties.add("size", _object_count);
 }
 
 bool BaseIndex::_prepareIndexData (IndexObject &obj)

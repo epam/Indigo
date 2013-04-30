@@ -12,11 +12,8 @@ void CfStorage::create (const char *cf_filename, const char *offset_filename)
    _cf_filename = cf_filename;
    _offset_filename = offset_filename;
 
-   _cf_outfile.open(cf_filename, std::ios::out | std::ios::binary);
-   _offset_outfile.open(offset_filename, std::ios::out | std::ios::binary);
-   
-   _cf_infile.open(cf_filename, std::ios::in | std::ios::app | std::ios::binary);
-   _offset_infile.open(offset_filename, std::ios::in | std::ios::app | std::ios::binary);
+   _cf_file.open(cf_filename, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
+   _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
 }
 
 void CfStorage::load (const char *cf_filename, const char *offset_filename)
@@ -24,21 +21,18 @@ void CfStorage::load (const char *cf_filename, const char *offset_filename)
    _cf_filename = cf_filename;
    _offset_filename = offset_filename;
 
-   _cf_outfile.open(cf_filename, std::ios::out | std::ios::app | std::ios::binary);
-   _offset_outfile.open(offset_filename, std::ios::out | std::ios::app | std::ios::binary);
-   
-   _cf_infile.open(cf_filename, std::ios::in | std::ios::app | std::ios::binary);
-   _offset_infile.open(offset_filename, std::ios::in | std::ios::app | std::ios::binary);
+   _cf_file.open(cf_filename, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
+   _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
 
-   if (!_cf_infile.is_open() || !_cf_outfile.is_open())
+   if (!_cf_file.is_open())
       throw Exception("cf storage file missed");
 
-   if (!_offset_infile.is_open() || !_offset_outfile.is_open())
+   if (!_offset_file.is_open())
       throw Exception("cf storage offset file missed");
 
    _Addr addr;
    int i = 0;
-   while (_offset_infile.read((char *)(&addr), sizeof(addr)))
+   while (_offset_file.read((char *)(&addr), sizeof(addr)))
    {
       char *buf = NULL;
       
@@ -46,8 +40,8 @@ void CfStorage::load (const char *cf_filename, const char *offset_filename)
       {
          buf = new char[addr.len];
 
-         _cf_infile.seekg(addr.offset);
-         _cf_infile.read(buf, addr.len);
+         _cf_file.seekg(addr.offset);
+         _cf_file.read(buf, addr.len);
       }
 
       _CfBuf &cf_buf = _cf_strings.push();
@@ -60,10 +54,10 @@ void CfStorage::load (const char *cf_filename, const char *offset_filename)
       i++;
    }
 
-   _cf_infile.close();
-   _offset_infile.close();
-   _cf_infile.open(cf_filename, std::ios::in | std::ios::app | std::ios::binary);
-   _offset_infile.open(offset_filename, std::ios::in | std::ios::app | std::ios::binary);
+   _cf_file.close();
+   _offset_file.close();
+   _cf_file.open(cf_filename, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
+   _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
 }
 
 const char * CfStorage::get (int idx, int &len)
@@ -90,19 +84,19 @@ void CfStorage::add (const char *data, int len, int idx)
    memcpy(_cf_strings[idx].buf.get(), data, len);
    _cf_strings[idx].len = len;
 
-   _cf_outfile.seekp(0, std::ios::end);
-   addr.offset = (int)_cf_outfile.tellp();
+   _cf_file.seekp(0, std::ios::end);
+   addr.offset = (int)_cf_file.tellp();
 
-   _cf_outfile.write(data, len);
+   _cf_file.write(data, len);
 
-   _offset_outfile.seekp(idx * sizeof(addr));
-   _offset_outfile.write((char *)&addr, sizeof(addr));
-   _offset_outfile.flush();
+   _offset_file.seekp(idx * sizeof(addr));
+   _offset_file.write((char *)&addr, sizeof(addr));
+   _offset_file.flush();
 
    if (sizeof(addr) <= 0)
       addr.len = addr.len;
 
-   _cf_outfile.flush();
+   _cf_file.flush();
 }
 
 void CfStorage::remove (int idx)
@@ -113,7 +107,7 @@ void CfStorage::remove (int idx)
    _Addr addr;
    addr.len = -1;
 
-   _offset_outfile.seekp(idx * sizeof(addr) + sizeof(addr.offset));
-   _offset_outfile.write((char *)&addr.len, sizeof(addr.len));
-   _offset_outfile.flush();
+   _offset_file.seekp(idx * sizeof(addr) + sizeof(addr.offset));
+   _offset_file.write((char *)&addr.len, sizeof(addr.len));
+   _offset_file.flush();
 }

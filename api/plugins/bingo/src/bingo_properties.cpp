@@ -53,7 +53,11 @@ void Properties::add (const char *prop_name, const char *value)
    if (_filename.empty())
       throw Exception("Property file's name wasn't initialized");
 
-   _props.insert(_PropertyPair(prop_name, value));
+   if (_props.find(prop_name) == _props.end())
+      _props.insert(_PropertyPair(prop_name, value));
+   else
+      _props[prop_name].assign(value);
+
    _rewritePropFile();
 }
 
@@ -67,6 +71,9 @@ void Properties::add (const char *prop_name, unsigned long value)
 
 const char * Properties::get (const char *prop_name)
 {
+   if (_props.find(prop_name) == _props.end())
+      return 0;
+
    return _props[prop_name].c_str();
 }
 

@@ -51,10 +51,8 @@ namespace bingo
       ObjArray<_CfBuf> _cf_strings;
 
       char _cf_buf[_max_cf_len];
-      std::ifstream _cf_infile;
-      std::ifstream _offset_infile;
-      std::ofstream _cf_outfile;
-      std::ofstream _offset_outfile;
+      std::fstream _cf_file;
+      std::fstream _offset_file;
       std::string _cf_filename;
       std::string _offset_filename;
    };
