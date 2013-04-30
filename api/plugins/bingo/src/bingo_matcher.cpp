@@ -9,6 +9,27 @@ using namespace indigo;
 
 using namespace bingo;
 
+BaseMatcher::BaseMatcher(BaseIndex &index) : _index(index)
+{
+   _current_id = 0;
+}
+
+int BaseMatcher::currentId ()
+{
+   const Array<int> &id_mapping = _index.getIdMapping();
+   return id_mapping[_current_id];
+}
+
+const char * BaseMatcher::currentCf ( int &len )
+{
+   return _index.getCfStorage().get(_current_id, len);
+}
+
+const Index & BaseMatcher::getIndex ()
+{
+   return _index;
+}
+
 MoleculeSimilarityQueryData::MoleculeSimilarityQueryData (/* const */ Molecule &qmol, float min_coef, float max_coef) : 
    _obj(qmol), _min(min_coef), _max(max_coef)
 {
@@ -345,9 +366,16 @@ bool SimMatcher::next ()
    _current_id++;
    const RowFpStorage &fp_storage = _index.getSimStorage();
    int stor_fp_count = fp_storage.getBlockCount() * fp_storage.getFpPerBlockCount() + fp_storage.getIncrementSize();
+   CfStorage &cf_storage = _index.getCfStorage();
 
    while (_current_id < stor_fp_count)
    {
+      int cf_len;
+      const char *cf_str = cf_storage.get(_current_id, cf_len);
+      if (cf_len == -1)
+         return false;
+
+
       int fp_per_block = fp_storage.getBlockSize() / _fp_size;
       int block_idx = _current_id / fp_per_block;
 

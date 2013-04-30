@@ -126,8 +126,8 @@ CEXPORT int bingoCloseDatabase (int db)
 {
    INDIGO_BEGIN
    {
-      if (db < 0 || db >= _bingo_instances.size())
-         throw Exception("Incorrect database object");
+      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
+         throw BingoException("Incorrect database object");
 
       _bingo_instances.remove(db);
       return 1;
@@ -140,7 +140,7 @@ CEXPORT int bingoInsertRecordObj (int db, int obj)
    INDIGO_BEGIN
    {
       if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw Exception("Incorrect database object");
+         throw BingoException("Incorrect database object");
 
       IndigoObject &indigo_obj = self.getObject(obj);
       bingo::Index &bingo_index = _bingo_instances.ref(db);
@@ -169,7 +169,7 @@ CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id)
    INDIGO_BEGIN
    {
       if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw Exception("Incorrect database object");
+         throw BingoException("Incorrect database object");
 
       IndigoObject &indigo_obj = self.getObject(obj);
       bingo::Index &bingo_index = _bingo_instances.ref(db);
@@ -184,7 +184,7 @@ CEXPORT int bingoDeleteRecord (int db, int id)
    INDIGO_BEGIN
    {
       if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw Exception("Incorrect database object");
+         throw BingoException("Incorrect database object");
 
       bingo::Index &bingo_index = _bingo_instances.ref(db);
 
@@ -200,7 +200,7 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
    INDIGO_BEGIN
    {
       if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw Exception("Incorrect database object");
+         throw BingoException("Incorrect database object");
 
       IndigoObject &obj = self.getObject(query_obj);
       
@@ -235,7 +235,7 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
    INDIGO_BEGIN
    {
       if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw Exception("Incorrect database object");
+         throw BingoException("Incorrect database object");
 
       IndigoObject &obj = self.getObject(query_obj);
       
@@ -271,7 +271,7 @@ CEXPORT int bingoEndSearch (int search_obj)
    INDIGO_BEGIN
    {
       if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw Exception("Incorrect search object");
+         throw BingoException("Incorrect search object");
 
       _searches.remove(search_obj);
       return 1;
@@ -284,7 +284,7 @@ CEXPORT int bingoNext (int search_obj)
    INDIGO_BEGIN
    {
       if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw Exception("Incorrect search object");
+         throw BingoException("Incorrect search object");
 
       return _searches[search_obj]->next();
    }
@@ -296,7 +296,7 @@ CEXPORT int bingoGetCurrentId (int search_obj)
    INDIGO_BEGIN
    {
       if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw Exception("Incorrect search object");
+         throw BingoException("Incorrect search object");
 
       return _searches.ref(search_obj).currentId();
    }
@@ -308,7 +308,7 @@ CEXPORT int bingoGetObject (int search_obj)
    INDIGO_BEGIN
    {
       if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw Exception("Incorrect search object");
+         throw BingoException("Incorrect search object");
 
       bingo::Matcher &matcher = _searches.ref(search_obj);
       const bingo::Index &bingo_index = matcher.getIndex();
@@ -318,7 +318,7 @@ CEXPORT int bingoGetObject (int search_obj)
       BufferScanner buf_scn(cf_buf, cf_len);
       
       if (cf_len == -1)
-         throw Exception("Can't load object");
+         throw BingoException("Can't load object");
 
       if (bingo_index.getType() == bingo::Index::MOLECULE)
       {

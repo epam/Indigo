@@ -24,28 +24,13 @@ namespace bingo
    class BaseMatcher : public Matcher
    {
    public:
-      BaseMatcher(BaseIndex &index) : _index(index)
-      {
-         _current_id = 0;
-      }
+      BaseMatcher(BaseIndex &index);
 
-      virtual bool next () = 0;
+      virtual int currentId ();
 
-      virtual int currentId ()
-      {
-         const Array<int> &id_mapping = _index.getIdMapping();
-         return id_mapping[_current_id];
-      }
+      virtual const char * currentCf ( int &len );
 
-      virtual const char * currentCf ( int &len )
-      {
-         return _index.getCfStorage().get(_current_id, len);
-      }
-
-      virtual const Index & getIndex ()
-      {
-         return _index;
-      }
+      virtual const Index & getIndex ();
 
    protected:
       BaseIndex &_index;
