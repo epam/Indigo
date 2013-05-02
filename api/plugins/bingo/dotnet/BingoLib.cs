@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
+#pragma warning disable 1591
+
 namespace com.ggasoftware.indigo
 {
-	internal unsafe interface BingoLib
+	public unsafe interface BingoLib
     {
 		int bingoCreateDatabaseFile(string location, string type, string options);
 		int bingoLoadDatabaseFile(string location, string type, string options);
