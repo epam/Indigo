@@ -5,26 +5,37 @@ using System.Runtime.Serialization;
 
 namespace com.ggasoftware.indigo
 {
-   public class BingoException : Exception
-   {
-      public BingoException ()
-         : base()
-      {
-      }
+    /// <summary>
+    /// Bingo exception
+    /// </summary>
+    public class BingoException : Exception
+    {
+        /// <summary>
+        /// </summary>
+        public BingoException()
+            : base()
+        {
+        }
 
-      public BingoException (string message)
-         : base(message)
-      {
-      }
+        /// <summary>
+        /// </summary>
+        public BingoException(string message)
+            : base(message)
+        {
+        }
 
-      protected BingoException (SerializationInfo info, StreamingContext context)
-         : base(info, context)
-      {
-      }
+        /// <summary>
+        /// </summary>
+        protected BingoException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
 
-      public BingoException (string message, Exception innerException)
-         : base(message, innerException)
-      {
-      }
-   }
+        /// <summary>
+        /// </summary>
+        public BingoException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+    }
 }

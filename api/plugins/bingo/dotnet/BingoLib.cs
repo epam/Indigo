@@ -4,7 +4,7 @@ using System.Text;
 
 namespace com.ggasoftware.indigo
 {
-	public unsafe interface BingoLib
+	internal unsafe interface BingoLib
     {
 		int bingoCreateDatabaseFile(string location, string type, string options);
 		int bingoLoadDatabaseFile(string location, string type, string options);

@@ -6,6 +6,9 @@ using System.IO;
 
 namespace com.ggasoftware.indigo
 {
+    /// <summary>
+    /// Bingo instance corresponds to a single chemical database
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public unsafe class Bingo : IDisposable
     {
@@ -20,11 +23,17 @@ namespace com.ggasoftware.indigo
             _id = id;
         }
 
+        /// <summary>
+        /// Destructor
+        /// </summary>
         ~Bingo()
         {
             Dispose();
         }
 
+        /// <summary>
+        /// Dispose method that closes the database
+        /// </summary>
         public void Dispose()
         {
             if (_id >= 0)
@@ -34,12 +43,15 @@ namespace com.ggasoftware.indigo
             }
         }
 
+        /// <summary>
+        /// Method to close a databse
+        /// </summary>
         public void close()
         {
             Dispose();
         }
 
-        public static int checkResult(Indigo indigo, int result)
+        internal static int checkResult(Indigo indigo, int result)
         {
             if (result < 0)
             {
@@ -79,7 +91,15 @@ namespace com.ggasoftware.indigo
             return dll_loader.getInterface<BingoLib>(libraryName);
         }
 
-        public static Bingo createDatabaseFile(Indigo indigo, string location, string type, string options)
+        /// <summary>
+        /// Creates a chemical storage of a specifed type in a specified location
+        /// </summary>
+        /// <param name="indigo">Indigo instance</param>
+        /// <param name="location">Directory with the files location</param>
+        /// <param name="type">"molecule" or "reaction"</param>
+        /// <param name="options">Additional options separated with a semicolon. See the Bingo documentation for more details.</param>
+        /// <returns>Bingo database instance</returns>
+        public static Bingo createDatabaseFile(Indigo indigo, string location, string type, string options = null)
         {
             if (options == null)
             {
@@ -90,14 +110,15 @@ namespace com.ggasoftware.indigo
             return new Bingo(indigo, databaseID, lib);
         }
 
-        public static Bingo loadDatabaseFile(Indigo indigo, string location, string type)
-        {
-            BingoLib lib = Bingo.getLib(indigo);
-            int databaseID = Bingo.checkResult(indigo, lib.bingoLoadDatabaseFile(location, type, ""));
-            return new Bingo(indigo, databaseID, lib);
-        }
-
-        public static Bingo loadDatabaseFile(Indigo indigo, string location, string type, string options)
+        /// <summary>
+        /// Loads a chemical storage of a specifed type from a specified location
+        /// </summary>
+        /// <param name="indigo">Indigo instance</param>
+        /// <param name="location">Directory with the files location</param>
+        /// <param name="type">"molecule" or "reaction"</param>
+        /// <param name="options">Additional options separated with a semicolon. See the Bingo documentation for more details.</param>
+        /// <returns>Bingo database instance</returns>
+        public static Bingo loadDatabaseFile(Indigo indigo, string location, string type, string options = null)
         {
             if (options == null)
             {
@@ -108,22 +129,42 @@ namespace com.ggasoftware.indigo
             return new Bingo(indigo, databaseID, lib);
         }
 
+        /// <summary>
+        /// Insert a structure into the database and returns id of this structure
+        /// </summary>
+        /// <param name="record">Indigo object with a chemical structure (molecule or reaction)</param>
+        /// <returns>record id</returns>
         public int insert(IndigoObject record)
         {
             return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObj(_id, record.self));
         }
 
-        public int insert(IndigoObject record, int index)
+        /// <summary>
+        /// Inserts a structure under a specified id
+        /// </summary>
+        /// <param name="record">Indigo object with a chemical structure (molecule or reaction)</param>
+        /// <param name="id">record id</param>
+        public void insert(IndigoObject record, int id)
         {
-            return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithId(_id, record.self, index));
+            Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithId(_id, record.self, id));
         }
 
-        public void delete(int index)
+        /// <summary>
+        /// Delete a record by id
+        /// </summary>
+        /// <param name="id">Record id</param>
+        public void delete(int id)
         {
-            Bingo.checkResult(_indigo, _lib.bingoDeleteRecord(_id, index));
+            Bingo.checkResult(_indigo, _lib.bingoDeleteRecord(_id, id));
         }
 
-        public BingoObject searchSub(IndigoObject query, string options)
+        /// <summary>
+        /// Execute substructure search operation
+        /// </summary>
+        /// <param name="query">Indigo query object (molecule or reaction)</param>
+        /// <param name="options">Search options</param>
+        /// <returns>Bingo search object instanse</returns>
+        public BingoObject searchSub(IndigoObject query, string options = null)
         {
             if (options == null)
             {
@@ -132,7 +173,15 @@ namespace com.ggasoftware.indigo
             return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSub(_id, query.self, options)), _indigo, _lib);
         }
 
-        public BingoObject searchSim(IndigoObject query, float min, float max, string metric)
+        /// <summary>
+        /// Execute similarity search operation
+        /// </summary>
+        /// <param name="query">indigo object (molecule or reaction)</param>
+        /// <param name="min">Minimum similarity value</param>
+        /// <param name="max">Maximum similairy value</param>
+        /// <param name="metric">Default value is "tanimoto"</param>
+        /// <returns>Bingo search object instanse</returns>
+        public BingoObject searchSim(IndigoObject query, float min, float max, string metric = null)
         {
             if (metric == null)
             {
