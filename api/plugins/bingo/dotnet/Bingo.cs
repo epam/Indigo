@@ -44,7 +44,7 @@ namespace com.ggasoftware.indigo
         }
 
         /// <summary>
-        /// Method to close a databse
+        /// Method to close a database
         /// </summary>
         public void close()
         {
