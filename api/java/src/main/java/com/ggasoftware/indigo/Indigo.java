@@ -234,7 +234,7 @@ public class Indigo {
 
     private static String getPathToBinary(String path, String filename) {
         if (path == null) {
-            String res = extractFromJar(Indigo.class, "/com/ggasoftware/indigo/" + _dllpath, filename);
+            String res = extractFromJar(Indigo.class, "/" + _dllpath, filename);
             if (res != null)
                 return res;
             path = "lib";
@@ -317,7 +317,7 @@ public class Indigo {
             Integer usingVersion = null;
 
             for (int i = minorVersion; i >= 5; i--) {
-                if (Indigo.class.getResourceAsStream("/com/ggasoftware/indigo/" + path + "10." + i + "/libindigo.dylib") != null) {
+                if (Indigo.class.getResourceAsStream("/" + path + "10." + i + "/libindigo.dylib") != null) {
                     usingVersion = i;
                     break;
                 }

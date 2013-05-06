@@ -71,7 +71,7 @@ public class IndigoRenderer
 
       if (path == null)
       {
-         String res = Indigo.extractFromJar(IndigoRenderer.class, "/com/ggasoftware/indigo/" + dllpath, filename);
+         String res = Indigo.extractFromJar(IndigoRenderer.class, "/" + dllpath, filename);
          if (res != null)
             return res;
          path = "lib";
