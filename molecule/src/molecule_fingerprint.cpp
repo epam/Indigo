@@ -32,6 +32,7 @@ IMPL_ERROR(MoleculeFingerprintBuilder, "fingerprint builder");
 
 MoleculeFingerprintBuilder::MoleculeFingerprintBuilder (BaseMolecule &mol,
                      const MoleculeFingerprintParameters &parameters):
+cancellation(0),
 _mol(mol),
 _parameters(parameters),
 TL_CP_GET(_total_fingerprint)
@@ -58,6 +59,8 @@ MoleculeFingerprintBuilder::~MoleculeFingerprintBuilder ()
 
 void MoleculeFingerprintBuilder::process ()
 {
+   AutoCancellationHandler canc_wrapper(*cancellation);
+
    _total_fingerprint.zerofill();
    _makeFingerprint(_mol);
 }
@@ -117,6 +120,10 @@ bool MoleculeFingerprintBuilder::_handleCycle (Graph &graph,
         const Array<int> &vertices, const Array<int> &edges, void *context)
 {
    MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
+
+   if(self->cancellation && self->cancellation->isCancelled())
+      throw Error("Fingerprint calculation timed out");
+
    self->_handleSubgraph(graph, vertices, edges);
    return true;
 }
@@ -125,6 +132,10 @@ void MoleculeFingerprintBuilder::_handleTree (Graph &graph,
         const Array<int> &vertices, const Array<int> &edges, void *context)
 {
    MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
+
+   if(self->cancellation && self->cancellation->isCancelled())
+      throw Error("Fingerprint calculation timed out");
+
    self->_handleSubgraph(graph, vertices, edges);
 }
 

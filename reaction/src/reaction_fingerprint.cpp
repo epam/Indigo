@@ -23,6 +23,7 @@ IMPL_ERROR(ReactionFingerprintBuilder, "fingerprint builder");
 
 ReactionFingerprintBuilder::ReactionFingerprintBuilder (BaseReaction &reaction,
         const MoleculeFingerprintParameters &parameters) :
+cancellation(0),
 _reaction(reaction),
 _parameters(parameters),
 TL_CP_GET(_fingerprint)
@@ -44,6 +45,8 @@ void ReactionFingerprintBuilder::process ()
    {
       MoleculeFingerprintBuilder builder(_reaction.getBaseMolecule(i), _parameters);
 
+      builder.cancellation = cancellation;
+
       builder.query = query;
       builder.skip_tau = true;
       builder.skip_sim = skip_sim;
@@ -59,6 +62,8 @@ void ReactionFingerprintBuilder::process ()
    for (i = _reaction.productBegin(); i < _reaction.productEnd(); i = _reaction.productNext(i))
    {
       MoleculeFingerprintBuilder builder(_reaction.getBaseMolecule(i), _parameters);
+
+      builder.cancellation = cancellation;
 
       builder.query = query;
       builder.skip_tau = true;

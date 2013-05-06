@@ -17,6 +17,7 @@
 
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
+#include "base_cpp/cancellation_handler.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -90,7 +91,10 @@ public:
 
    void parseFingerprintType(const char *type, bool query);
 
+   CancellationHandler* cancellation;
+
    DECL_ERROR;
+
 protected:
 
    static void _handleTree     (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);

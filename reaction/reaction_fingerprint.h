@@ -16,6 +16,7 @@
 #define __reaction_fingerprint__
 
 #include "base_cpp/tlscont.h"
+#include "base_cpp/cancellation_handler.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -43,6 +44,8 @@ public:
    byte * getSim ();
 
    void parseFingerprintType(const char *type, bool query);
+
+   CancellationHandler* cancellation;
 
    DECL_ERROR;
 

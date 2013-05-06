@@ -16,6 +16,9 @@
 using namespace indigo;
 using namespace bingo;
 
+
+static const int _fp_calc_timeout = 10000;
+
 BaseMoleculeQuery::BaseMoleculeQuery (BaseMolecule &mol) : _base_mol(mol)
 {
 }
@@ -23,6 +26,9 @@ BaseMoleculeQuery::BaseMoleculeQuery (BaseMolecule &mol) : _base_mol(mol)
 bool BaseMoleculeQuery::buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp)// const
 {
    MoleculeFingerprintBuilder fp_builder(_base_mol, fp_params);
+   TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
+
+   fp_builder.cancellation = &canc_handler;
 
    fp_builder.process();
 
@@ -56,6 +62,9 @@ BaseReactionQuery::BaseReactionQuery (BaseReaction &rxn) : _base_rxn(rxn)
 bool BaseReactionQuery::buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) // const
 {
    ReactionFingerprintBuilder fp_builder(_base_rxn, fp_params);
+   TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
+
+   fp_builder.cancellation = &canc_handler;
 
    fp_builder.process();
 
@@ -90,6 +99,9 @@ IndexMolecule::IndexMolecule (/* const */ Molecule &mol)
 bool IndexMolecule::buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) // const
 {
    MoleculeFingerprintBuilder fp_builder(_mol, fp_params);
+   TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
+
+   fp_builder.cancellation = &canc_handler;
 
    fp_builder.process();
 
@@ -119,6 +131,9 @@ IndexReaction::IndexReaction (/* const */ Reaction &rxn)
 bool IndexReaction::buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) // const
 {
    ReactionFingerprintBuilder fp_builder(_rxn, fp_params);
+   TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
+
+   fp_builder.cancellation = &canc_handler;
 
    fp_builder.process();
 
