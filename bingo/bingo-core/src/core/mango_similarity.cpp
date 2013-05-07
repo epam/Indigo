@@ -116,7 +116,7 @@ void MangoSimilarity::loadQuery (const char *str)
 
 void MangoSimilarity::_initQuery (Molecule &query)
 {
-   MoleculeAromatizer::aromatizeBonds(query);
+   MoleculeAromatizer::aromatizeBonds(query, AromaticityOptions::BASIC);
 }
 
 float MangoSimilarity::_similarity (int ones1, int ones2, int ones_common, 
@@ -252,7 +252,7 @@ float MangoSimilarity::calc (Scanner &scanner)
            _context.ignore_closing_bond_direction_mismatch;
    loader.loadMolecule(target);
    
-   MoleculeAromatizer::aromatizeBonds(target);
+   MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
 
    QS_DEF(Array<byte>, target_fp);
    

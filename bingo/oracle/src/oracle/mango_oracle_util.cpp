@@ -52,7 +52,7 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
    profTimerStop(tload);
 
    if (canonical)
-      MoleculeAromatizer::aromatizeBonds(target);
+      MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
 
    QS_DEF(Array<char>, smiles);
 

@@ -44,7 +44,7 @@ void RingoIndex::prepare (Scanner &rxnfile, Output &output, OsLock *lock_for_exc
    ReactionAutomapper ram(reaction);
    ram.correctReactingCenters(true);
 
-   reaction.aromatize();
+   reaction.aromatize(AromaticityOptions::BASIC);
 
    _hash = RingoExact::calculateHash(reaction);
    {

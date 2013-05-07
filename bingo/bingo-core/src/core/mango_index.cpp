@@ -49,7 +49,7 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
    Molecule::checkForConsistency(mol);
 
    // Make aromatic molecule
-   MoleculeAromatizer::aromatizeBonds(mol);
+   MoleculeAromatizer::aromatizeBonds(mol, AromaticityOptions::BASIC);
 
    MangoExact::calculateHash(mol, _hash);
 
