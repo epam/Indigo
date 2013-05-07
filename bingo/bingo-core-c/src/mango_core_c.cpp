@@ -528,7 +528,7 @@ CEXPORT const char * mangoSMILES (const char *target_buf, int target_buf_len, in
       loader.loadMolecule(target);
 
       if (canonical)
-         MoleculeAromatizer::aromatizeBonds(target);
+         MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
 
       ArrayOutput out(self.buffer);
 
