@@ -107,10 +107,14 @@ class Indigo(object):
       self.dispatcher._setSID()
       Indigo._lib.indigoClose(self.id)
     def __del__ (self):
-      if getattr(Indigo, "_lib", None) is not None:
-        self.dispatcher._setSID()
-        Indigo._lib.indigoFree(self.id)
+      self.dispose()
 
+    def dispose(self):
+      if self.id >= 0:
+        if getattr(Indigo, "_lib", None) is not None:
+          self.dispatcher._setSID()
+          Indigo._lib.indigoFree(self.id)
+          self.id = -1
     def __iter__ (self):
       return self
     def __next__ (self):

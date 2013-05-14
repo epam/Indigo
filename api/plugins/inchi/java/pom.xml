@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.ggasoftware.indigo</groupId>
     <artifactId>indigo-inchi</artifactId>
-    <version>1.1.11dev-SNAPSHOT</version>
+    <version>1.1.11dev</version>
     <packaging>jar</packaging>
 
     <name>Indigo InChI</name>

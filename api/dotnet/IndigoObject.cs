@@ -62,6 +62,11 @@ namespace com.ggasoftware.indigo
             }
         }
 
+        public void dispose()
+        {
+            Dispose();
+        }
+
         public IndigoObject clone()
         {
             dispatcher.setSessionID();

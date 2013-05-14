@@ -582,7 +582,11 @@ public class Indigo {
 
     public IndigoObject iterateSDFile(String filename) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, _lib.indigoIterateSDFile(filename)));
+        int result = checkResult(this, _lib.indigoIterateSDFile(filename));
+        if (result == 0)
+            return null;
+
+        return new IndigoObject(this, result);
     }
 
     public IndigoObject iterateRDFile(String filename) {
