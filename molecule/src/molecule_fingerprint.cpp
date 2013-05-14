@@ -59,8 +59,6 @@ MoleculeFingerprintBuilder::~MoleculeFingerprintBuilder ()
 
 void MoleculeFingerprintBuilder::process ()
 {
-   AutoCancellationHandler canc_wrapper(*cancellation);
-
    _total_fingerprint.zerofill();
    _makeFingerprint(_mol);
 }
@@ -121,9 +119,6 @@ bool MoleculeFingerprintBuilder::_handleCycle (Graph &graph,
 {
    MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
 
-   if(self->cancellation && self->cancellation->isCancelled())
-      throw Error("Fingerprint calculation timed out");
-
    self->_handleSubgraph(graph, vertices, edges);
    return true;
 }
@@ -132,9 +127,6 @@ void MoleculeFingerprintBuilder::_handleTree (Graph &graph,
         const Array<int> &vertices, const Array<int> &edges, void *context)
 {
    MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
-
-   if(self->cancellation && self->cancellation->isCancelled())
-      throw Error("Fingerprint calculation timed out");
 
    self->_handleSubgraph(graph, vertices, edges);
 }
@@ -322,6 +314,9 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
 void MoleculeFingerprintBuilder::_handleSubgraph (Graph &graph,
         const Array<int> &vertices, const Array<int> &edges)
 {
+   if(cancellation && cancellation->isCancelled())
+      throw Error("Fingerprint calculation has been cancelled: %s", cancellation->cancelledRequestMessage());
+
    BaseMolecule &mol = (BaseMolecule &)graph;
    int i;
 
