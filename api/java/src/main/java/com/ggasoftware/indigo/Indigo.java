@@ -57,7 +57,6 @@ public class Indigo {
     public static final int OS_MACOS = 2;
     public static final int OS_LINUX = 3;
     public static final int OS_SOLARIS = 4;
-    static LibraryRemover _library_remover = new Indigo.LibraryRemover();
     private static boolean _library_unloaded = false;
     private static int _os = 0;
     private static String _dllpath = "";
@@ -225,9 +224,6 @@ public class Indigo {
         }
 
         final String fullpath = p;
-
-        // To remove the temporary file and the directory on program's exit.
-        _library_remover.addLibrary(tmpdir_path, fullpath);
 
         return fullpath;
     }
@@ -735,90 +731,12 @@ public class Indigo {
     }
 
     @Override
-    @SuppressWarnings("FinalizeDeclaration")
     protected void finalize() throws Throwable {
-        if (!libraryUnloaded())
+        if (!libraryUnloaded()) {
             _lib.indigoReleaseSessionId(_sid);
+            _lib = null;
+            _library_unloaded = true;
+        }
         super.finalize();
-    }
-
-    public static class LibraryRemover {
-        ArrayList<String> files = new ArrayList<String>();
-        ArrayList<String> directories = new ArrayList<String>();
-
-        public LibraryRemover() {
-            final LibraryRemover self = this;
-
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    // Set signal to Indigo that all libraries were unloaded
-                    _library_unloaded = true;
-
-                    // Remove all dependent files
-                    self.removeLibraries();
-                }
-            });
-        }
-
-        public synchronized void addLibrary(String directory, String fullpath) {
-            files.add(fullpath);
-            directories.add(directory);
-
-            if (_os == OS_WINDOWS) {
-                // The caller can load our DLL file with System.load() OR with
-                // Native.loadLibrary(). To get the mess below working in the second
-                // case, we call System.load() by ourselves. This makes the library
-                // listed in the hidden ClassLoader.nativeLibraries field.
-                System.load(fullpath);
-            }
-        }
-
-        @SuppressWarnings("CallToThreadDumpStack")
-        public synchronized void removeLibraries() {
-            return;
-            /*
-            for (int idx = files.size() - 1; idx >= 0; idx--) {
-                String fullpath = files.get(idx);
-
-                if (_os == OS_WINDOWS) {
-                    // In Windows, we can not remove the DLL file until we unload
-                    // it from the process. Nobody cares that the DLL files are
-                    // usually read into memory and the process does not need them
-                    // on the disk.
-                    try {
-                        ClassLoader cl = Indigo.class.getClassLoader();
-                        Field f = ClassLoader.class.getDeclaredField("nativeLibraries");
-                        f.setAccessible(true);
-                        List libs = (List) f.get(cl);
-                        for (Iterator i = libs.iterator(); i.hasNext(); ) {
-                            Object lib = i.next();
-                            f = lib.getClass().getDeclaredField("name");
-                            f.setAccessible(true);
-                            String name = (String) f.get(lib);
-                            if (name.equals(fullpath)) {
-                                Method m = lib.getClass().getDeclaredMethod("finalize", new Class[0]);
-                                m.setAccessible(true);
-                                // Here comes the trick: we call the finalizer twice,
-                                // first time to undo our own System.load() above, and
-                                // the second time to undo
-                                // Native.loadLibrary/System.load() done by the caller.
-                                // Each finalize() call decrements the "reference
-                                // counter" of the process for the DLL file. After the
-                                // counter is zero, the deletion of the file becomes
-                                // possible.
-                                m.invoke(lib, new Object[0]);
-                                m.invoke(lib, new Object[0]);
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                (new File(fullpath)).delete();
-                (new File(directories.get(idx))).delete();
-            }
-            */
-        }
     }
 }
