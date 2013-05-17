@@ -21,7 +21,7 @@ namespace bingo
 
       int getBlockSize( void );
 
-      virtual ~Storage() {};
+      virtual ~Storage() {}
 
    protected:
       int _block_size;
@@ -38,8 +38,7 @@ namespace bingo
 
       virtual ~FileStorage ();
    private:
-      FileOutput *_file_output;
-      FileScanner *_file_scanner;
+      std::fstream _file;
    };
 
    class RamStorage : public Storage

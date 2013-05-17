@@ -15,45 +15,52 @@ using namespace indigo;
 
 namespace bingo
 {
-   class CfStorage
+   class FlatStorage
    {
    public:
-      CfStorage( void );
+      FlatStorage (int block_size) : _block_size(block_size) {}
 
-      void create (const char *cf_filename, const char *offset_filename);
+      virtual void create (const char *buf_filename, const char *offset_filename) = 0;
+      virtual void load (const char *buf_filename, const char *offset_filename) = 0;
+      virtual const byte * get (int idx, int &len) = 0;
+      virtual void add (const byte *data, int len, int idx) = 0;
+      virtual void remove (int idx) = 0;
 
-      void load (const char *cf_filename, const char *offset_filename);
+      virtual ~FlatStorage() {}
 
-      const char * get (int idx, int &len);
+   protected:
+      int _block_size;
+   };
 
-      void add (const char *data, int len, int idx);
 
-      void remove (int idx);
+   class ByteBufferStorage : public FlatStorage
+   {
+   public:
+      ByteBufferStorage (int block_size);
+
+      virtual void create (const char *buf_filename, const char *offset_filename);
+      virtual void load (const char *buf_filename, const char *offset_filename);
+      virtual const byte * get (int idx, int &len);
+      virtual void add (const byte *data, int len, int idx);
+      virtual void remove (int idx);
+      virtual ~ByteBufferStorage();
 
    private:
-      static const int _max_cf_len = 8192;
-   
+
       struct _Addr
       {
+         unsigned long block_idx;
          unsigned long offset;
          long len;
       };
 
-      int _cf_count;
+      int _free_pos;
+      Array<byte *> _blocks;
+      Array<_Addr> _addresses;
 
-      
-      struct _CfBuf
-      {
-         AutoPtr<char> buf;
-         long len;
-      };
-
-      ObjArray<_CfBuf> _cf_strings;
-
-      char _cf_buf[_max_cf_len];
-      std::fstream _cf_file;
+      std::fstream _buf_file;
       std::fstream _offset_file;
-      std::string _cf_filename;
+      std::string _buf_filename;
       std::string _offset_filename;
    };
 };

@@ -36,7 +36,7 @@ namespace bingo
 
       virtual ~Index () {};
    };
-   
+
    class BaseIndex : public Index
    {
    public:
@@ -58,7 +58,7 @@ namespace bingo
 
       const Array<int> & getBackIdMapping () const;
 
-      CfStorage & getCfStorage ();
+      FlatStorage & getCfStorage ();
 
       int getObjectsCount () const;
 
@@ -88,7 +88,7 @@ namespace bingo
       TranspFpStorage _sub_fp_storage;
       RowFpStorage _sim_fp_storage;
       MoleculeFingerprintParameters _fp_params;
-      CfStorage _cf_storage;
+      AutoPtr<FlatStorage> _cf_storage;
       AutoPtr<StorageManager> _storage_manager;
       Properties _properties;
       std::string _location;
@@ -100,7 +100,7 @@ namespace bingo
 
       void _parseOptions (const char *options);
 
-      void _saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size);
+      void _saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size, int cf_block_size);
 
       bool _prepareIndexData (IndexObject &obj);
 

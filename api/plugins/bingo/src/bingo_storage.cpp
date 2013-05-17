@@ -20,43 +20,39 @@ int Storage::getBlockSize( void )
 FileStorage::FileStorage (const char *filename, int block_size, bool create) : Storage(block_size)
 {
    if (create)
-   {
-      _file_output = new FileOutput(filename);
-      _file_scanner = new FileScanner(filename);
-   }
+      _file.open(filename, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
    else
-   {
-      _file_output = new FileOutput(true, filename);
-      _file_scanner = new FileScanner(filename);
-
-      if (_file_output == 0 || _file_scanner == 0)
-         throw Exception("Fingerprint storage file missed");
-   }
+      _file.open(filename, std::ios::in | std::ios::out | std::ios::binary);
 }
 
 void FileStorage::readBlock (int block_id, byte *data)
 {
-   _file_scanner->seek(block_id * _block_size, SEEK_SET);
-   _file_scanner->read(_block_size, data);
+   size_t offset = block_id;
+   offset *=  _block_size;
+
+   _file.seekg(offset);
+   _file.read((char *)data, _block_size);
 }
 
 void FileStorage::writeBlock (int block_id, const byte *data)
 {
-   _file_output->seek(block_id * _block_size, SEEK_SET);
-   _file_output->write(data, _block_size);
-   _file_output->flush();
+
+   size_t offset = block_id;
+   offset *=  _block_size;
+
+   _file.seekp(offset);
+   _file.write((const char *)data, _block_size);
+   _file.flush();
 }
 
 FileStorage::~FileStorage ()
 {
-   delete _file_output;
-   delete _file_scanner;
 }
 
 RamStorage::RamStorage (const char *filename, int block_size, bool create) : Storage(block_size)
 {
    if (create)
-      _file.open(filename, std::ios::out | std::ios::binary);
+      _file.open(filename, std::ios::out | std::ios::binary | std::ios::trunc);
    else
    {
       std::ifstream ifile;
@@ -72,6 +68,7 @@ RamStorage::RamStorage (const char *filename, int block_size, bool create) : Sto
          new_block.reset(block.release());
       }
 
+      ifile.close();
       _file.open(filename, std::ios::out | std::ios::app | std::ios::binary);
    }
 

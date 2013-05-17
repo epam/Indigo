@@ -12,7 +12,7 @@ namespace bingo
       virtual Storage * create ( const char *name, int block_size ) = 0;
       virtual Storage * load ( const char *name ) = 0;
 
-      virtual ~StorageManager () {};
+      virtual ~StorageManager () {}
    protected:
       static const char *_prop_filename;
    };

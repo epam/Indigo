@@ -2,107 +2,119 @@
 
 using namespace bingo;
 
-CfStorage::CfStorage (void)
+ByteBufferStorage::ByteBufferStorage (int block_size) : FlatStorage(block_size)
 {
-   _cf_count = 0;
+   _free_pos = 0;
 }
 
-void CfStorage::create (const char *cf_filename, const char *offset_filename)
+void ByteBufferStorage::create (const char *buf_filename, const char *offset_filename)
 {
-   _cf_filename = cf_filename;
+   _buf_filename = _buf_filename;
    _offset_filename = offset_filename;
 
-   _cf_file.open(cf_filename, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
+   _buf_file.open(buf_filename, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
    _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
 }
 
-void CfStorage::load (const char *cf_filename, const char *offset_filename)
+void ByteBufferStorage::load (const char *buf_filename, const char *offset_filename)
 {
-   _cf_filename = cf_filename;
+   _buf_filename = _buf_filename;
    _offset_filename = offset_filename;
 
-   _cf_file.open(cf_filename, std::ios::in | std::ios::out | std::ios::binary);
+   _buf_file.open(buf_filename, std::ios::in | std::ios::out | std::ios::binary);
    _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::binary);
 
-   if (!_cf_file.is_open())
-      throw Exception("cf storage file missed");
+   if (!_buf_file.is_open())
+      throw Exception("ByteBufferStorage: buffer file missed");
 
    if (!_offset_file.is_open())
-      throw Exception("cf storage offset file missed");
+      throw Exception("ByteBufferStorage: offset file missed");
 
    _Addr addr;
-   int i = 0;
    while (_offset_file.read((char *)(&addr), sizeof(addr)))
    {
-      char *buf = NULL;
-      
-      if (addr.len != -1)
-      {
-         buf = new char[addr.len];
-
-         _cf_file.seekg(addr.offset);
-         _cf_file.read(buf, addr.len);
-      }
-
-      _CfBuf &cf_buf = _cf_strings.push();
-      
-      cf_buf.buf.reset(buf);
-      cf_buf.len = addr.len;
-
-      i++;
+      _addresses.push(addr);
    }
 
-   _cf_file.close();
+   _blocks.resize(_addresses.top().block_idx + 1);
+
+
+   for (int i = 0; i < _blocks.size(); i++)
+   {
+      size_t block_len = _block_size;
+      if (i == (_blocks.size() - 1))
+      {
+         _buf_file.seekg(0, std::ios_base::end);
+         block_len = (size_t)_buf_file.tellg() - i * _block_size;
+      }
+
+      _blocks[i] = new byte[_block_size];
+      _buf_file.seekg(i * _block_size);
+      _buf_file.read((char *)_blocks[i], block_len);
+   }
+
+   _free_pos = _addresses.top().offset + _addresses.top().len;
+
+   _buf_file.close();
    _offset_file.close();
-   _cf_file.open(cf_filename, std::ios::in | std::ios::out | std::ios::binary);
+   _buf_file.open(buf_filename, std::ios::in | std::ios::out | std::ios::binary);
    _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::binary);
 }
 
-const char * CfStorage::get (int idx, int &len)
+const byte * ByteBufferStorage::get (int idx, int &len)
 {
-   if (_cf_strings[idx].len == 0)
+   if (_addresses.size() <= idx)
+      throw Exception("ByteBufferStorage: incorrect buffer id");
+
+   if (_addresses[idx].len < 0)
    {
       len = -1;
       return 0;
    }
 
-   len = (int)_cf_strings[idx].len;
-   return _cf_strings[idx].buf.get();
+   len = _addresses[idx].len;
+   return _blocks[_addresses[idx].block_idx] + _addresses[idx].offset;
 }
 
-void CfStorage::add (const char *data, int len, int idx)
+void ByteBufferStorage::add (const byte *data, int len, int idx) 
 {
-   _Addr addr;
-   addr.len = len;
+   if ((_blocks.size() == 0) || (_block_size - _free_pos < len))
+   {
+      _blocks.push(new byte[_block_size]);
+      _free_pos = 0;
+   }
 
-   if (idx >= _cf_strings.size())
-      _cf_strings.resize(idx + 1);
+   if (_addresses.size() <= idx)
+      _addresses.resize(idx + 1);
 
-   _cf_strings[idx].buf.reset(new char[len]);
-   memcpy(_cf_strings[idx].buf.get(), data, len);
-   _cf_strings[idx].len = len;
+   _addresses[idx].block_idx = _blocks.size() - 1;
+   _addresses[idx].len = len;
+   _addresses[idx].offset = _free_pos;
 
-   _cf_file.seekp(0, std::ios::end);
-   addr.offset = (int)_cf_file.tellp();
+   memcpy(_blocks.top() + _free_pos, data, len);
 
-   _cf_file.write(data, len);
+   _buf_file.seekp(_addresses[idx].block_idx * _block_size + _addresses[idx].offset);
+   _buf_file.write((const char *)data, _addresses[idx].len);
 
-   _offset_file.seekp(idx * sizeof(addr));
-   _offset_file.write((char *)&addr, sizeof(addr));
-   _offset_file.flush();
+   _offset_file.seekp(idx * sizeof(_addresses[idx]));
+   _offset_file.write((char *)&_addresses[idx], sizeof(_addresses[idx]));
 
-   _cf_file.flush();
+   _free_pos += len;
 }
 
-void CfStorage::remove (int idx)
+void ByteBufferStorage::remove (int idx)
 {
-   _cf_strings[idx].buf.release();
-   _cf_strings[idx].len = -1;
+   if (_addresses.size() <= idx)
+      throw Exception("ByteBufferStorage: incorrect buffer id");
 
-   _Addr addr;
-   addr.len = -1;
+   _addresses[idx].len = -1;
 
-   _offset_file.seekp(idx * sizeof(addr) + sizeof(addr.offset));
-   _offset_file.write((char *)&addr.len, sizeof(addr.len));
-   _offset_file.flush();
+   _offset_file.seekp(idx * sizeof(_addresses[idx]));
+   _offset_file.write((char *)&_addresses[idx], sizeof(_addresses[idx]));
+}
+
+ByteBufferStorage::~ByteBufferStorage()
+{
+   for (int i = 0; i < _blocks.size(); i++)
+      delete[] _blocks[i];
 }

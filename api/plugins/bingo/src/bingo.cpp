@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <string>
 
+#include "base_cpp/profiling.h"
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/exception.h"
@@ -75,14 +76,20 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
 
 static int _insertObjectToDatabase ( Indigo &self, bingo::Index &bingo_index, IndigoObject &indigo_obj, int obj_id)
 {
+   profTimerStart(t, "_insertObjectToDatabase");
    if (bingo_index.getType() == bingo::Index::MOLECULE)
    {
+      
+      profTimerStart(t1, "_preadd");
       if (!IndigoMolecule::is(indigo_obj))
          throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
 
       indigo_obj.getBaseMolecule().aromatize(self.arom_options);
          
       bingo::IndexMolecule ind_mol(indigo_obj.getMolecule());
+      profTimerStop(t1);
+      
+
       int id = bingo_index.add(ind_mol, obj_id);
       return id;
    }
@@ -246,7 +253,7 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
          AutoPtr<bingo::MoleculeSimilarityQueryData> query_data(new bingo::MoleculeSimilarityQueryData(obj.getMolecule(), min, max));
 
          bingo::MoleculeIndex &bingo_index = dynamic_cast<bingo::MoleculeIndex &>(_bingo_instances.ref(db));
-         bingo::SimMatcher *matcher = dynamic_cast<bingo::SimMatcher *>(bingo_index.createMatcher("sim", query_data.release()));
+         bingo::MoleculeSimMatcher *matcher = dynamic_cast<bingo::MoleculeSimMatcher *>(bingo_index.createMatcher("sim", query_data.release()));
          return _searches.add(matcher);
       }
       else if (IndigoReaction::is(obj))
@@ -256,7 +263,7 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
          AutoPtr<bingo::ReactionSimilarityQueryData> query_data(new bingo::ReactionSimilarityQueryData(obj.getReaction(), min, max));
 
          bingo::ReactionIndex &bingo_index = dynamic_cast<bingo::ReactionIndex &>(_bingo_instances.ref(db));
-         bingo::SimMatcher *matcher = dynamic_cast<bingo::SimMatcher *>(bingo_index.createMatcher("sim", query_data.release()));
+         bingo::ReactionSimMatcher *matcher = dynamic_cast<bingo::ReactionSimMatcher *>(bingo_index.createMatcher("sim", query_data.release()));
 
          return _searches.add(matcher);
       }
@@ -310,42 +317,11 @@ CEXPORT int bingoGetObject (int search_obj)
       if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
          throw BingoException("Incorrect search object");
 
+      
       bingo::Matcher &matcher = _searches.ref(search_obj);
       const bingo::Index &bingo_index = matcher.getIndex();
       
-      int cf_len = -1;
-      const char *cf_buf = matcher.currentCf(cf_len);
-      BufferScanner buf_scn(cf_buf, cf_len);
-      
-      if (cf_len == -1)
-         throw BingoException("Can't load object");
-
-      if (bingo_index.getType() == bingo::Index::MOLECULE)
-      {
-         AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
-
-         Molecule &mol = molptr->mol;
-
-         CmfLoader cmf_loader(buf_scn);
-
-         cmf_loader.loadMolecule(mol);
-
-         return self.addObject(molptr.release());
-      }
-      else if (bingo_index.getType() == bingo::Index::REACTION)
-      {
-         AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
-
-         Reaction &rxn = rxnptr->rxn;
-
-         CrfLoader crf_loader(buf_scn);
-
-         crf_loader.loadReaction(rxn);
-
-         return self.addObject(rxnptr.release());
-      }
-      else
-         throw BingoException("bingoGetObject: Incorrect database");
+      return self.addObject(matcher.currentObject());
    }
    INDIGO_END(-1);
 }

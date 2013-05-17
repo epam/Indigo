@@ -9,26 +9,6 @@ using namespace indigo;
 
 using namespace bingo;
 
-BaseMatcher::BaseMatcher(BaseIndex &index) : _index(index)
-{
-   _current_id = 0;
-}
-
-int BaseMatcher::currentId ()
-{
-   const Array<int> &id_mapping = _index.getIdMapping();
-   return id_mapping[_current_id];
-}
-
-const char * BaseMatcher::currentCf ( int &len )
-{
-   return _index.getCfStorage().get(_current_id, len);
-}
-
-const Index & BaseMatcher::getIndex ()
-{
-   return _index;
-}
 
 MoleculeSimilarityQueryData::MoleculeSimilarityQueryData (/* const */ Molecule &qmol, float min_coef, float max_coef) : 
    _obj(qmol), _min(min_coef), _max(max_coef)
@@ -78,8 +58,7 @@ MoleculeSubstructureQueryData::MoleculeSubstructureQueryData (/* const */ QueryM
 {
    return _obj;
 }
-   
-   
+
 ReactionSubstructureQueryData::ReactionSubstructureQueryData (/* const */ QueryReaction &qrxn) : _obj(qrxn)
 {
 }
@@ -88,9 +67,109 @@ ReactionSubstructureQueryData::ReactionSubstructureQueryData (/* const */ QueryR
 {
    return _obj;
 }
+
+
+
+
+IndexCurrentMolecule::IndexCurrentMolecule ( IndexCurrentMolecule *& ptr ) : _ptr(ptr)
+{
+   matcher_exist = true;
+}
+
+IndexCurrentMolecule::~IndexCurrentMolecule ()
+{
+   if (matcher_exist)
+      _ptr = 0;
+}
+
+IndexCurrentReaction::IndexCurrentReaction ( IndexCurrentReaction *& ptr ) : _ptr(ptr)
+{
+   matcher_exist = true;
+}
+
+IndexCurrentReaction::~IndexCurrentReaction ()
+{
+   if (matcher_exist)
+      _ptr = 0;
+}
+
+
+BaseMatcher::BaseMatcher(BaseIndex &index, IndigoObject *& current_obj) : _index(index), _current_obj(current_obj)
+{
+   _current_obj_used = false;
+   _current_id = 0;
+}
+
+BaseMatcher::~BaseMatcher ()
+{
+   if (_current_obj && IndigoMolecule::is(*_current_obj))
+      ((IndexCurrentMolecule *)_current_obj)->matcher_exist = false;
+   else if (_current_obj && IndigoReaction::is(*_current_obj))
+      ((IndexCurrentReaction *)_current_obj)->matcher_exist = false;
+
+   if (!_current_obj_used)
+      delete _current_obj;
+}
+
+int BaseMatcher::currentId ()
+{
+   const Array<int> &id_mapping = _index.getIdMapping();
+   return id_mapping[_current_id];
+}
+
+IndigoObject * BaseMatcher::currentObject ()
+{
+   if (_current_obj_used)
+      throw Exception("BaseMatcher: Object has been already gotten");
+
+   _current_obj_used = true;
+
+   return _current_obj;
+}
+
+const Index & BaseMatcher::getIndex ()
+{
+   return _index;
+}
+
+bool BaseMatcher::_loadCurrentObject()
+{
+   if (_current_obj == 0)
+      throw Exception("BaseMatcher: Matcher's current object was destroyed");
+
+   FlatStorage &cf_storage = _index.getCfStorage();
+
+   int cf_len;
+   const char *cf_str = (const char *)cf_storage.get(_current_id, cf_len);
+
+   if (cf_len == -1)
+      return false;
+
+   BufferScanner buf_scn(cf_str, cf_len);
+      
+   if (IndigoMolecule::is(*_current_obj))
+   {
+      Molecule &mol = _current_obj->getMolecule();
    
+      CmfLoader cmf_loader(buf_scn);
+
+      cmf_loader.loadMolecule(mol);
+   }
+   else if (IndigoReaction::is(*_current_obj))
+   {
+      Reaction &rxn = _current_obj->getReaction();
    
-BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index) : BaseMatcher(index), _fp_storage(_index.getSubStorage())
+      CrfLoader crf_loader(buf_scn);
+
+      crf_loader.loadReaction(rxn);
+   }
+   else
+      throw Exception("BaseMatcher::unknown current object type");
+
+   return true;
+}
+
+BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index, IndigoObject *& current_obj) : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage())
 {
    _fp_size = _index.getFingerprintParams().fingerprintSize();
    
@@ -251,7 +330,7 @@ void BaseSubstructureMatcher::_findIncCandidates ()
 }
 
 
-MoleculeSubMatcher::MoleculeSubMatcher (/*const */ BaseIndex &index) : BaseSubstructureMatcher(index)
+MoleculeSubMatcher::MoleculeSubMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseSubstructureMatcher(index, (IndigoObject *&)_current_mol)
 {
    _mapping.clear();
 }
@@ -265,23 +344,14 @@ bool MoleculeSubMatcher::_tryCurrent ()// const
 {
    SubstructureMoleculeQuery &query = (SubstructureMoleculeQuery &)(_query_data->getQueryObject());
    QueryMolecule &query_mol = (QueryMolecule &)(query.getMolecule());
-   Molecule target_mol;
-   CfStorage &cf_storage = _index.getCfStorage();
 
-   int cf_len;
-   profTimerStart(tr_gr, "sub_try_get_cmf");
-   const char *cf_str = cf_storage.get(_current_id, cf_len);
-   profTimerStop(tr_gr);
-
-   profTimerStart(tr_g, "sub_try_load_from_cmf");
-   BufferScanner buf_scn(cf_str, cf_len);
-   CmfLoader cmf_loader(buf_scn);
-
-   if (cf_len == -1)
+   if (!_loadCurrentObject())
       return false;
 
-   cmf_loader.loadMolecule(target_mol);
-   profTimerStop(tr_g);
+   if (_current_obj == 0)
+      throw Exception("MoleculeSubMatcher: Matcher's current object was destroyed");
+
+   Molecule &target_mol = _current_obj->getMolecule();
 
    profTimerStart(tr_m, "sub_try_matching");
    MoleculeSubstructureMatcher msm(target_mol);
@@ -301,8 +371,7 @@ bool MoleculeSubMatcher::_tryCurrent ()// const
    return false;
 }
    
-   
-ReactionSubMatcher::ReactionSubMatcher (/*const */ BaseIndex &index) : BaseSubstructureMatcher(index)
+ReactionSubMatcher::ReactionSubMatcher (/*const */ BaseIndex &index) : _current_rxn(new IndexCurrentReaction(_current_rxn)), BaseSubstructureMatcher(index, (IndigoObject *&)_current_rxn)
 {
    _mapping.clear();
 }
@@ -316,19 +385,14 @@ bool ReactionSubMatcher::_tryCurrent ()// const
 {
    SubstructureReactionQuery &query = (SubstructureReactionQuery &)_query_data->getQueryObject();
    QueryReaction &query_rxn = (QueryReaction &)(query.getReaction());
-   Reaction target_rxn;
-   CfStorage &cf_storage = _index.getCfStorage();
 
-   int cf_len;
-   const char *cf_str = cf_storage.get(_current_id, cf_len);
+   if (_current_obj == 0)
+      throw Exception("ReactionSubMatcher: Matcher's current object was destroyed");
 
-   if (cf_len == -1)
+   Reaction &target_rxn = _current_obj->getReaction();
+
+   if (!_loadCurrentObject())
       return false;
-
-   BufferScanner buf_scn(cf_str, cf_len);
-   CrfLoader crf_loader(buf_scn);
-
-   crf_loader.loadReaction(target_rxn);
 
    ReactionSubstructureMatcher rsm(target_rxn);
 
@@ -353,28 +417,27 @@ bool ReactionSubMatcher::_tryCurrent ()// const
    return false;
 }
 
-
-SimMatcher::SimMatcher (/*const */ BaseIndex &index ) : BaseMatcher(index)
+BaseSimilarityMatcher::BaseSimilarityMatcher (/*const */ BaseIndex &index, IndigoObject *& current_obj ) : BaseMatcher(index, current_obj)
 {
    _current_id = -1;
    _current_block = new byte[_index.getSimStorage().getBlockSize()];
    _fp_size = _index.getFingerprintParams().fingerprintSizeSim();
 }
 
-bool SimMatcher::next ()
+bool BaseSimilarityMatcher::next ()
 {
    _current_id++;
    const RowFpStorage &fp_storage = _index.getSimStorage();
    int stor_fp_count = fp_storage.getBlockCount() * fp_storage.getFpPerBlockCount() + fp_storage.getIncrementSize();
-   CfStorage &cf_storage = _index.getCfStorage();
+   FlatStorage &cf_storage = _index.getCfStorage();
 
    while (_current_id < stor_fp_count)
    {
-      int cf_len;
-      const char *cf_str = cf_storage.get(_current_id, cf_len);
-      if (cf_len == -1)
-         return false;
-
+      if (!_loadCurrentObject())
+      {
+         _current_id++;
+         continue;
+      }
 
       int fp_per_block = fp_storage.getBlockSize() / _fp_size;
       int block_idx = _current_id / fp_per_block;
@@ -404,7 +467,7 @@ bool SimMatcher::next ()
    return false;
 }
 
-void SimMatcher::setQueryData (SimilarityQueryData *query_data)
+void BaseSimilarityMatcher::setQueryData (SimilarityQueryData *query_data)
 {
    _query_data.reset(query_data);
 
@@ -412,15 +475,23 @@ void SimMatcher::setQueryData (SimilarityQueryData *query_data)
    _query_data->getQueryObject().buildFingerprint(fp_params, 0, &_query_fp);
 }
 
-SimMatcher::~SimMatcher ()
+BaseSimilarityMatcher::~BaseSimilarityMatcher ()
 {
    delete _current_block;
 }
 
-float SimMatcher::_calcTanimoto (const byte *fp)
+float BaseSimilarityMatcher::_calcTanimoto (const byte *fp)
 {
    int common_bits = bitCommonOnes(fp, _query_fp.ptr(), _fp_size);
    int unique_bits = bitUniqueOnes(fp, _query_fp.ptr(), _fp_size);
       
    return (float)common_bits / (common_bits + unique_bits);
+}
+
+MoleculeSimMatcher::MoleculeSimMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseSimilarityMatcher(index, (IndigoObject *&)_current_mol)
+{
+}
+
+ReactionSimMatcher::ReactionSimMatcher (/*const */ BaseIndex &index) : _current_rxn(new IndexCurrentReaction(_current_rxn)), BaseSimilarityMatcher(index, (IndigoObject *&)_current_rxn)
+{
 }

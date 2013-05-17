@@ -19,7 +19,7 @@ Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query
    }
    else if (strcmp(type, "sim") == 0)
    {
-      AutoPtr<SimMatcher> matcher(new SimMatcher(*this));
+      AutoPtr<MoleculeSimMatcher> matcher(new MoleculeSimMatcher(*this));
       matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
       return matcher.release();
    }
@@ -43,7 +43,7 @@ Matcher* ReactionIndex::createMatcher (const char *type, MatcherQueryData *query
    }
    else if (strcmp(type, "sim") == 0)
    {
-      AutoPtr<SimMatcher> matcher(new SimMatcher(*this));
+      AutoPtr<ReactionSimMatcher> matcher(new ReactionSimMatcher(*this));
       matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
       return matcher.release();
    }

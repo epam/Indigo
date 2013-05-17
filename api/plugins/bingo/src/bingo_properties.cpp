@@ -1,6 +1,7 @@
 #include "bingo_properties.h"
 
 #include "base_cpp/exception.h"
+#include "base_cpp/profiling.h"
 
 #include <iostream>
 #include <fstream>
@@ -50,6 +51,7 @@ void Properties::load (const char *filename)
 
 void Properties::add (const char *prop_name, const char *value)
 {
+   profTimerStart(t, "prop_add");
    if (_filename.empty())
       throw Exception("Property file's name wasn't initialized");
 
@@ -91,11 +93,13 @@ unsigned long Properties::getULong (const char *prop_name)
 
 void Properties::_rewritePropFile ()
 {
+   profTimerStart(t, "rewrite_prop");
    std::map<const std::string, std::string>::iterator it;
    
    std::ofstream property_file;
    property_file.open(_filename.c_str(), std::ios::out);
 
+   profTimerStart(t2, "rewrite_prop_writing");
    for (it = _props.begin(); it != _props.end(); it++)
    {
       property_file << it->first << '=' << it->second << std::endl;

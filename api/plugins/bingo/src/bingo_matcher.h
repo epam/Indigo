@@ -4,40 +4,18 @@
 #include "bingo_object.h"
 #include "bingo_base_index.h"
 
+#include "indigo_molecule.h"
+#include "indigo_reaction.h"
+
 #include "molecule/molecule_substructure_matcher.h"
 
 using namespace indigo;
 
 namespace bingo
 {
-   class Matcher
-   {
-   public:
-      virtual bool next () = 0;
-      virtual int currentId () = 0;
-      virtual const char * currentCf ( int &len ) = 0;
-      virtual const Index & getIndex () = 0;
-
-      virtual ~Matcher () {};
-   };
-   
-   class BaseMatcher : public Matcher
-   {
-   public:
-      BaseMatcher(BaseIndex &index);
-
-      virtual int currentId ();
-
-      virtual const char * currentCf ( int &len );
-
-      virtual const Index & getIndex ();
-
-   protected:
-      BaseIndex &_index;
-      int _current_id;
-
-      virtual ~BaseMatcher () {};
-   };
+   ///////////////////////////////////////
+   // Query data classes
+   ///////////////////////////////////////
 
    class MatcherQueryData
    {
@@ -114,10 +92,71 @@ namespace bingo
       SubstructureReactionQuery _obj;
    };
 
+   ///////////////////////////////////////
+   // Matcher classes
+   ///////////////////////////////////////
+
+   class IndexCurrentMolecule : public IndigoMolecule
+   {
+   public:
+      IndexCurrentMolecule ( IndexCurrentMolecule *& ptr );
+      ~IndexCurrentMolecule ();
+
+      bool matcher_exist;
+
+   private:
+      IndexCurrentMolecule *& _ptr;
+   };
+
+   class IndexCurrentReaction : public IndigoReaction
+   {
+   public:
+      IndexCurrentReaction ( IndexCurrentReaction *& ptr );
+      ~IndexCurrentReaction ();
+      
+      bool matcher_exist;
+
+   private:
+      IndexCurrentReaction *& _ptr;
+   };
+
+   class Matcher
+   {
+   public:
+      virtual bool next () = 0;
+      virtual int currentId () = 0;
+      virtual IndigoObject * currentObject () = 0;
+      virtual const Index & getIndex () = 0;
+
+      virtual ~Matcher () {};
+   };
+   
+   class BaseMatcher : public Matcher
+   {
+   public:
+      BaseMatcher(BaseIndex &index, IndigoObject *& current_obj);
+
+      virtual int currentId ();
+
+      virtual IndigoObject * currentObject ();
+
+      virtual const Index & getIndex ();
+
+   protected:
+      BaseIndex &_index;
+      IndigoObject *& _current_obj;
+      bool _current_obj_used;
+      int _current_id;
+
+      bool _loadCurrentObject();
+
+      ~BaseMatcher ();
+   };
+
    class BaseSubstructureMatcher : public BaseMatcher
    {
    public:
-      BaseSubstructureMatcher (/*const */ BaseIndex &index);
+      BaseSubstructureMatcher (/*const */ BaseIndex &index, IndigoObject *& current_obj);
    
       virtual bool next ();
 
@@ -148,11 +187,12 @@ namespace bingo
       MoleculeSubMatcher (/*const */ BaseIndex &index);
 
       const Array<int> & currentMapping ();
-
    private:
       Array<int> _mapping;
 
       virtual bool _tryCurrent () /*const*/;
+
+      IndexCurrentMolecule *_current_mol;
    };
    
    class ReactionSubMatcher : public BaseSubstructureMatcher
@@ -161,23 +201,24 @@ namespace bingo
       ReactionSubMatcher(/*const */ BaseIndex &index);
 
       const ObjArray<Array<int> > & currentMapping ();
-
    private:
       ObjArray<Array<int> > _mapping;
 
       virtual bool _tryCurrent () /*const*/;
+
+      IndexCurrentReaction *_current_rxn;
    };
-   
-   class SimMatcher : public BaseMatcher
+
+   class BaseSimilarityMatcher : public BaseMatcher
    {
    public:
-      SimMatcher (BaseIndex &index);
+      BaseSimilarityMatcher (BaseIndex &index, IndigoObject *& current_obj);
 
       virtual bool next ();
       
       void setQueryData (SimilarityQueryData *query_data);
 
-      ~SimMatcher();
+      ~BaseSimilarityMatcher();
 
    private:
       /* const */ AutoPtr<SimilarityQueryData> _query_data;
@@ -188,6 +229,24 @@ namespace bingo
       Array<byte> _query_fp;
 
       float _calcTanimoto (const byte *fp);
+   };
+
+
+   class MoleculeSimMatcher : public BaseSimilarityMatcher
+   {
+   public:
+      MoleculeSimMatcher (/*const */ BaseIndex &index);
+   private:
+      IndexCurrentMolecule *_current_mol;
+   };
+
+
+   class ReactionSimMatcher : public BaseSimilarityMatcher
+   {
+   public:
+      ReactionSimMatcher(/*const */ BaseIndex &index);
+   private:
+      IndexCurrentReaction *_current_rxn;
    };
 };
 

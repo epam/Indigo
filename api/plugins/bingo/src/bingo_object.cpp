@@ -16,7 +16,6 @@
 using namespace indigo;
 using namespace bingo;
 
-
 static const int _fp_calc_timeout = 10000;
 
 BaseMoleculeQuery::BaseMoleculeQuery (BaseMolecule &mol) : _base_mol(mol)

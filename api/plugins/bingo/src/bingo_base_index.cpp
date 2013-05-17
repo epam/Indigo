@@ -37,6 +37,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    int sub_block_size = 8192;
    int sim_block_size = 8192;
+   int cf_block_size = 1048576;
 
    osDirCreate(location);
 
@@ -55,7 +56,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    _parseOptions(options);
 
-   _saveProperties(fp_params, sub_block_size, sim_block_size);
+   _saveProperties(fp_params, sub_block_size, sim_block_size, cf_block_size);
 
    if ((_properties.get("storage") == 0) || strcmp(_properties.get("storage"), _ram_storage_type) == 0)
       _storage_manager.reset(new RamStorageManager(location, true));
@@ -68,11 +69,12 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    AutoPtr<Storage> sub_stor(_storage_manager->create(_sub_filename, sub_block_size));
    AutoPtr<Storage> sim_stor(_storage_manager->create(_sim_filename, sim_block_size));
+   _cf_storage.reset(new ByteBufferStorage(cf_block_size));
 
    _sub_fp_storage.create(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
    _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), sim_stor.release(), sim_info_path.c_str());
    
-   _cf_storage.create(_cf_data_path.c_str(), _cf_offset_path.c_str());
+   _cf_storage->create(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }
 
 void BaseIndex::load (const char *location, const char *options)
@@ -104,7 +106,8 @@ void BaseIndex::load (const char *location, const char *options)
    _fp_params.tau_qwords = _properties.getULong("fp_tau");
    _fp_params.sim_qwords = _properties.getULong("fp_sim");
 
-   _object_count = _properties.getULong("size");
+   unsigned long cf_block_size = _properties.getULong("cf_block_size");
+   //_object_count = _properties.getULong("size"); 
 
    _mappingLoad(_mapping_path.c_str());
 
@@ -119,11 +122,12 @@ void BaseIndex::load (const char *location, const char *options)
 
    AutoPtr<Storage> sub_stor(_storage_manager->load(_sub_filename));
    AutoPtr<Storage> sim_stor(_storage_manager->load(_sim_filename));
+   _cf_storage.reset(new ByteBufferStorage(cf_block_size));
 
    _sub_fp_storage.load(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
    _sim_fp_storage.load(_fp_params.fingerprintSizeSim(), sim_stor.release(), sim_info_path.c_str());
 
-   _cf_storage.load(_cf_data_path.c_str(), _cf_offset_path.c_str());
+   _cf_storage->load(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }
 
 int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
@@ -138,38 +142,43 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
       _insertIndexData();
    }
 
-   if (obj_id == -1)
    {
-      int i;
-      for (i = _first_free_id; i < _back_id_mapping.size(); i++)
+      profTimerStart(t_in, "mapping_changing_1");      
+      if (obj_id == -1)
       {
-         if (_back_id_mapping[i] == -1)
+         int i;
+         for (i = _first_free_id; i < _back_id_mapping.size(); i++)
          {
-            _first_free_id = i;
-            break;
+            if (_back_id_mapping[i] == -1)
+            {
+               _first_free_id = i;
+               break;
+            }
          }
+
+         if (i == _back_id_mapping.size())
+            _first_free_id = _back_id_mapping.size();
+
+         obj_id = _first_free_id;
       }
-
-      if (i == _back_id_mapping.size())
-         _first_free_id = _back_id_mapping.size();
-
-      obj_id = _first_free_id;
    }
 
-   _mappingAdd(obj_id, _object_count);
-   
+   int base_id = _object_count;
    _object_count++;
-   _properties.add("size", _object_count);
+   {
+      profTimerStart(t_in, "mapping_changing_2");    
+      _mappingAdd(obj_id, base_id);
+   }
    
    return obj_id;
 }
 
 void BaseIndex::remove (int obj_id)
 {
-   if (obj_id < 0 || obj_id >= _back_id_mapping.size())
+   if (obj_id < 0 || obj_id >= _back_id_mapping.size() || _back_id_mapping[obj_id] == -1)
       throw Exception("There is no object with this id");
 
-   _cf_storage.remove(_back_id_mapping[obj_id]);
+   _cf_storage->remove(_back_id_mapping[obj_id]);
    _mappingRemove(obj_id);
 }
 
@@ -198,9 +207,9 @@ const Array<int> & BaseIndex::getBackIdMapping () const
    return _back_id_mapping;
 }
 
-/*const */CfStorage & BaseIndex::getCfStorage ()// const
+/*const */FlatStorage & BaseIndex::getCfStorage ()// const
 {
-   return _cf_storage;
+   return _cf_storage.ref();
 }
 
 int BaseIndex::getObjectsCount () const
@@ -259,7 +268,8 @@ void BaseIndex::_parseOptions (const char *options)
    }
 }
 
-void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size)
+void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, 
+                                 int sim_block_size, int cf_block_size)
 {
    _properties.add("base_type", (_type == MOLECULE ? _molecule_type : _reaction_type));
 
@@ -269,7 +279,7 @@ void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params,
    _properties.add("fp_tau", _fp_params.tau_qwords);
    _properties.add("fp_sim", _fp_params.sim_qwords);
 
-   _properties.add("size", _object_count);
+   _properties.add("cf_block_size", cf_block_size);
 }
 
 bool BaseIndex::_prepareIndexData (IndexObject &obj)
@@ -287,7 +297,7 @@ void BaseIndex::_insertIndexData ()
 {
    _sub_fp_storage.add(_object_index_data.sub_fp.ptr());
    _sim_fp_storage.add(_object_index_data.sim_fp.ptr());
-   _cf_storage.add(_object_index_data.cf_str.ptr(), _object_index_data.cf_str.size(), _object_count);
+   _cf_storage->add((byte *)_object_index_data.cf_str.ptr(), _object_index_data.cf_str.size(), _object_count);
 }
 
 void BaseIndex::_mappingLoad (const char * mapping_path)
@@ -300,14 +310,16 @@ void BaseIndex::_mappingLoad (const char * mapping_path)
    int obj_id = -1;
    int base_id = 0;
 
-   mapping_file.seekg(0);
+   mapping_file.seekg(std::ios::beg);
+   mapping_file.read((char *)&_object_count, sizeof(_object_count));
+   mapping_file.seekg(sizeof(_object_count));
    mapping_file.read((char *)&obj_id, sizeof(obj_id));
 
    while (mapping_file.good())
    {
       _mappingAssign(obj_id, base_id);
       base_id++;
-      mapping_file.seekg(base_id * sizeof(obj_id));
+      mapping_file.seekg((size_t)sizeof(_object_count) + base_id * sizeof(obj_id));
       mapping_file.read((char *)&obj_id, sizeof(obj_id));
    }
 
@@ -336,7 +348,9 @@ void BaseIndex::_mappingAdd (int obj_id, int base_id)
 {
    _mappingAssign(obj_id, base_id);
 
-   _mapping_outfile.seekp(base_id * sizeof(obj_id));
+   _mapping_outfile.seekp(std::ios::beg);
+   _mapping_outfile.write((char *)&_object_count, sizeof(obj_id));
+   _mapping_outfile.seekp((size_t)sizeof(_object_count) + base_id * sizeof(obj_id));
    _mapping_outfile.write((char *)&obj_id, sizeof(obj_id));
    _mapping_outfile.flush();
 }
@@ -346,12 +360,11 @@ void BaseIndex::_mappingRemove (int obj_id)
    if (_back_id_mapping[obj_id] != -1)
    {
       int new_id = -1;
-      _mapping_outfile.seekp(_back_id_mapping[obj_id] * sizeof(obj_id));
+      _mapping_outfile.seekp((size_t)sizeof(_object_count) + _back_id_mapping[obj_id] * sizeof(obj_id));
       _mapping_outfile.write((char *)&new_id, sizeof(new_id));
       _mapping_outfile.flush();
 
       _id_mapping[_back_id_mapping[obj_id]] = -1;
       _back_id_mapping[obj_id] = -1;
    }
-
 }
