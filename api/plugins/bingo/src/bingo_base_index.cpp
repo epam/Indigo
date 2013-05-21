@@ -107,7 +107,6 @@ void BaseIndex::load (const char *location, const char *options)
    _fp_params.sim_qwords = _properties.getULong("fp_sim");
 
    unsigned long cf_block_size = _properties.getULong("cf_block_size");
-   //_object_count = _properties.getULong("size"); 
 
    _mappingLoad(_mapping_path.c_str());
 
@@ -308,20 +307,25 @@ void BaseIndex::_mappingLoad (const char * mapping_path)
       throw Exception("mapping file missed");
 
    int obj_id = -1;
-   int base_id = 0;
+   
+   mapping_file.seekg(0, std::ios::end);
+   size_t file_len = mapping_file.tellg();
+   size_t mapping_size = (file_len - sizeof(_object_count)) / sizeof(obj_id);
 
    mapping_file.seekg(std::ios::beg);
    mapping_file.read((char *)&_object_count, sizeof(_object_count));
-   mapping_file.seekg(sizeof(_object_count));
-   mapping_file.read((char *)&obj_id, sizeof(obj_id));
+   
+   int *mapping_buf = new int[mapping_size];
 
-   while (mapping_file.good())
+   mapping_file.read((char *)mapping_buf, sizeof(obj_id) * mapping_size);
+
+   for (int base_id = 0; base_id < mapping_size; base_id++)
    {
+      obj_id = mapping_buf[base_id];
       _mappingAssign(obj_id, base_id);
-      base_id++;
-      mapping_file.seekg((size_t)sizeof(_object_count) + base_id * sizeof(obj_id));
-      mapping_file.read((char *)&obj_id, sizeof(obj_id));
    }
+
+   delete[] mapping_buf;
 
    return;
 }

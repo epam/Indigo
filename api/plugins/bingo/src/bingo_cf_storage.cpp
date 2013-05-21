@@ -30,14 +30,21 @@ void ByteBufferStorage::load (const char *buf_filename, const char *offset_filen
    if (!_offset_file.is_open())
       throw Exception("ByteBufferStorage: offset file missed");
 
-   _Addr addr;
-   while (_offset_file.read((char *)(&addr), sizeof(addr)))
-   {
-      _addresses.push(addr);
-   }
+   _offset_file.seekg(0, std::ios::end);
+   size_t file_len = _offset_file.tellg();
+
+   _offset_file.seekg(std::ios::beg);
+   
+   size_t addr_count = file_len / sizeof(_Addr);
+   _Addr *addr_buf = new _Addr[addr_count];
+   _offset_file.read((char *)addr_buf, sizeof(_Addr) * addr_count);
+   
+   for (int i = 0; i < addr_count; i++)
+      _addresses.push(addr_buf[i]);
+
+   delete[] addr_buf;
 
    _blocks.resize(_addresses.top().block_idx + 1);
-
 
    for (int i = 0; i < _blocks.size(); i++)
    {
@@ -45,11 +52,11 @@ void ByteBufferStorage::load (const char *buf_filename, const char *offset_filen
       if (i == (_blocks.size() - 1))
       {
          _buf_file.seekg(0, std::ios_base::end);
-         block_len = (size_t)_buf_file.tellg() - i * _block_size;
+         block_len = (size_t)_buf_file.tellg() - (size_t)i * _block_size;
       }
 
       _blocks[i] = new byte[_block_size];
-      _buf_file.seekg(i * _block_size);
+      _buf_file.seekg((size_t)i * _block_size);
       _buf_file.read((char *)_blocks[i], block_len);
    }
 
