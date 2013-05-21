@@ -1,6 +1,6 @@
 # GGA Indigo projects #
 
-Copyright (c) 2009-2012 GGA Software Services LLC
+Copyright (c) 2009-2013 GGA Software Services LLC
 GNU General Public License version 3
 
 ## Introduction ##

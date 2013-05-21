@@ -11,7 +11,7 @@ using System.Data.Sql;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("GGA Software Services LLC")]
 [assembly: AssemblyProduct("Bingo")]
-[assembly: AssemblyCopyright("Copyright © GGA Software Services LLC 2010-2012")]
+[assembly: AssemblyCopyright("Copyright © GGA Software Services LLC 2010-2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
