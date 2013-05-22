@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.3)
 
 project(Indigo)
 
@@ -34,13 +34,13 @@ if (NOT NO_STATIC)
 endif()
 
 # Indigo shared
-add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers})
+add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers} $<TARGET_OBJECTS:moleculeObj>)
 SET_TARGET_PROPERTIES(indigo-shared PROPERTIES OUTPUT_NAME "indigo")
 set_target_properties(indigo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 if (MSVC OR MINGW)
 	set_target_properties(indigo-shared PROPERTIES PREFIX "")
 endif()
-target_link_libraries(indigo-shared molecule reaction layout tinyxml)
+target_link_libraries(indigo-shared reaction layout tinyxml)
 set_property(TARGET indigo-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
 set_property(TARGET indigo-shared PROPERTY FOLDER "indigo")
 if (NOT PACK_INDIGO_NOT)
