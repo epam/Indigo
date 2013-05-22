@@ -39,6 +39,7 @@
 #include "render_item_factory.h"
 #include "render_single.h"
 #include "render_grid.h"
+#include "render_cdxml.h"
 
 using namespace indigo;
 
@@ -224,6 +225,14 @@ void RenderParamInterface::render (RenderParams& params)
       comment = factory.addItemAuxiliary();
       factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_COMMENT;
       factory.getItemAuxiliary(comment).text.copy(params.cnvOpt.comment);
+   }
+
+   // Render into other formats after objects has been prepared (layout, etc.)
+   if (params.rOpt.mode == MODE_CDXML)
+   {
+      // Render into CDXML format
+      RenderParamCdxmlInterface::render(params);
+      return;
    }
 
    if (obj >= 0) {

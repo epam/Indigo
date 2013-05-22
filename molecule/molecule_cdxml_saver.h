@@ -15,24 +15,38 @@
 #ifndef __molecule_cdxml_saver_h__
 #define __molecule_cdxml_saver_h__
 
+#include "math/algebra.h"
+
 namespace indigo {
 
 class Molecule;
 class Output;
 
-class MoleculeCdxmlSaver
+class DLLEXPORT MoleculeCdxmlSaver
 {
 public:
    explicit MoleculeCdxmlSaver (Output &output);
 
    void saveMolecule (Molecule &mol);
-   bool skip_main_tag; // skips <?xml> and <cml> tags
+
+   struct Bounds
+   {
+      Vec2f min, max;
+   };
+
+   void beginDocument ();
+   void beginPage (Bounds *bounds);
+   void saveMoleculeFragment (Molecule &mol, const Vec2f &offset);
+   void addText (const Vec2f &pos, const char *text);
+   void endPage ();
+   void endDocument ();
 
    DECL_ERROR;
 
 protected:
-   Molecule *_mol;
    Output   &_output;
+
+   float bondLength;
 
 private:
    MoleculeCdxmlSaver (const MoleculeCdxmlSaver &); // no implicit copy

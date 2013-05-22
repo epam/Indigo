@@ -94,6 +94,7 @@ DINGO_MODE indigoRenderMapOutputFormat (const char *format)
       outFmtMap.insert("png", MODE_PNG);
       outFmtMap.insert("svg", MODE_SVG);
       outFmtMap.insert("emf", MODE_EMF);
+      outFmtMap.insert("cdxml", MODE_CDXML);
    }
    return outFmtMap.find(format) ? (DINGO_MODE)outFmtMap.at(format) : MODE_NONE;
 }
@@ -469,10 +470,11 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
 
 DINGO_MODE indigoRenderGuessOutputFormat(const char* filename)
 {
-   int len = strlen(filename);
-   if (len < 4 || filename[len-4] != '.')
+   const char *ext = strrchr(filename, '.');
+   if (ext == NULL)
       return MODE_NONE;
-   return indigoRenderMapOutputFormat(filename + len - 3);
+
+   return indigoRenderMapOutputFormat(ext + 1);
 }
 
 CEXPORT int indigoRenderToFile (int object, const char *filename)
