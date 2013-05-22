@@ -20,6 +20,22 @@
 
 using namespace indigo;
 
+// Molecule position on the page
+struct Pos
+{
+   // Structure min and max coordinates
+   Vec2f str_min, str_max;
+
+   // Offset and size on the page
+   Vec2f page_offset;
+   Vec2f size;
+
+   // Final offset for the coordinates
+   Vec2f offset, title_offset;
+};
+
+
+
 void RenderParamCdxmlInterface::getBounds (Molecule &mol, Vec2f &min, Vec2f &max)
 {
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
@@ -78,19 +94,6 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
 
    saver.beginDocument();
 
-   struct Pos
-   {
-      // Structure min and max coordinates
-      Vec2f str_min, str_max;
-
-      // Offset and size on the page
-      Vec2f page_offset;
-      Vec2f size;
-
-      // Final offset for the coordinates
-      Vec2f offset, title_offset;
-   };
-
    Array<Pos> positions;
    positions.resize(mols.size());
 
@@ -141,7 +144,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    {
       int lines = params.cnvOpt.comment.count('\n') + 1;
       float comment_height = lines * 0.3f;
-      max_y += 0.3;
+      max_y += 0.3f;
       title_y = max_y;
       max_y += comment_height;
    }
