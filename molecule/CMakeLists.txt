@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8.8)
+
 PROJECT(Molecule)
 
 file (GLOB Molecule_src src/*.c src/*.cpp)
