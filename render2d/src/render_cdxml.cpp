@@ -84,11 +84,11 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
 
    Array<float> column_offset;
    column_offset.resize(params.cnvOpt.gridColumnNumber);
-   column_offset[0] = params.cnvOpt.marginX + x_margins_base;
+   column_offset[0] = params.cnvOpt.marginX / 10.0f + x_margins_base;
    for (int i = 1; i < params.cnvOpt.gridColumnNumber; i++)
       column_offset[i] = column_offset[i - 1] + column_widths[i - 1] + x_grid_base;
 
-   float row_y_offset = params.cnvOpt.marginY + y_margins_base;
+   float row_y_offset = params.cnvOpt.marginY / 10.0f + y_margins_base;
    int last_row = 0;
    float max_y = 0;
 
@@ -153,8 +153,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    b.min.set(0, 0);
 
    float w = column_offset[params.cnvOpt.gridColumnNumber - 1] + column_widths[params.cnvOpt.gridColumnNumber - 1];
-   if (params.cnvOpt.gridColumnNumber > 1)
-      w += x_margins_base;
+   w += x_margins_base + params.cnvOpt.marginX / 10.0f;
 
    b.max.set(w, max_y + y_margins_base);
    saver.beginPage(&b);
