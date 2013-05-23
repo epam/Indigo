@@ -624,7 +624,7 @@ class IndigoObject(object):
 
     def resetAtom(self, symbol):
         self.dispatcher._setSessionId()
-        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoResetAtom(self.id, symbol)))
+        self.dispatcher._checkResult(Indigo._lib.indigoResetAtom(self.id, symbol))
 
     def addRSite(self, name):
         self.dispatcher._setSessionId()
@@ -1696,12 +1696,12 @@ class Indigo(object):
     def writeBuffer (self):
         self._setSessionId()
         id = self._checkResult(Indigo._lib.indigoWriteBuffer())
-        return IndigoObject(self, id)
+        return self.IndigoObject(self, id)
 
     def writeFile (self, filename):
         self._setSessionId()
         id = self._checkResult(Indigo._lib.indigoWriteFile(filename))
-        return IndigoObject(self, id)
+        return self.IndigoObject(self, id)
 
     def unserialize(self, arr):
         self._setSessionId()
@@ -1709,7 +1709,7 @@ class Indigo(object):
         for i in xrange(len(arr)):
             values[i] = arr[i]
         res = Indigo._lib.indigoUnserialize(values, len(arr))
-        return IndigoObject(self, self._checkResult(res))
+        return self.IndigoObject(self, self._checkResult(res))
 
     def setOption (self, option, value1, value2=None, value3=None):
         self._setSessionId()
