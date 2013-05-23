@@ -730,6 +730,52 @@ public class Indigo {
         return _sid;
     }
 
+    public IndigoObject loadBuffer(byte[] buf) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, _lib.indigoLoadBuffer(buf, buf.length)));
+    }
+
+    public IndigoObject loadString(String string) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, _lib.indigoLoadString(string)));
+    }
+
+    public IndigoObject iterateSDF(IndigoObject iterator) {
+        setSessionID();
+        int result = checkResult(this, _lib.indigoIterateSDF(iterator.self));
+        if (result == 0)
+            return null;
+
+        return new IndigoObject(this, result);
+    }
+
+    public IndigoObject iterateRDF(IndigoObject iterator) {
+        setSessionID();
+        int result = checkResult(this, _lib.indigoIterateRDF(iterator.self));
+        if (result == 0)
+            return null;
+
+        return new IndigoObject(this, result);
+    }
+
+    public IndigoObject iterateCML(IndigoObject iterator) {
+        setSessionID();
+        int result = checkResult(this, _lib.indigoIterateCML(iterator.self));
+        if (result == 0)
+            return null;
+
+        return new IndigoObject(this, result);
+    }
+
+    public IndigoObject iterateSmiles(IndigoObject iterator) {
+        setSessionID();
+        int result = checkResult(this, _lib.indigoIterateSmiles(iterator.self));
+        if (result == 0)
+            return null;
+
+        return new IndigoObject(this, result);
+    }
+
     @Override
     protected void finalize() throws Throwable {
         if (!libraryUnloaded()) {
