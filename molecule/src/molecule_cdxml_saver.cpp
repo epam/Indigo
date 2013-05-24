@@ -74,12 +74,13 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
             _output.printf(" Isotope=\"%d\"", mol.getAtomIsotope(i));
          }
 
-         if (mol.getAtomCharge(i) != 0)
-            _output.printf(" Charge=\"%d\"", mol.getAtomCharge(i));
+         int charge = mol.getAtomCharge(i);
+         if (charge != 0)
+            _output.printf(" Charge=\"%d\"", charge);
 
-         if (mol.getAtomRadical_NoThrow(i, 0) != 0)
+         int radical = mol.getAtomRadical_NoThrow(i, 0);
+         if (radical != 0)
          {
-            int radical = mol.getAtomRadical(i);
             const char *radical_str = NULL;
             if (radical == RADICAL_DOUBLET)
                radical_str = "Doublet";
@@ -108,16 +109,13 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
                _output.printf(" NumHydrogens=\"%d\"", hcount);
          }
 
+         Vec3f pos3 = mol.getAtomXyz(i);
+         Vec2f pos(pos3.x, pos3.y);
+
+         pos.add(offset);
+         pos.scale(bondLength);
          if (have_hyz)
-         {
-            Vec3f pos3 = mol.getAtomXyz(i);
-            Vec2f pos(pos3.x, pos3.y);
-
-            pos.add(offset);
-            pos.scale(bondLength);
-
             _output.printf("\n         p=\"%f %f\"", pos.x, -pos.y);
-         }
          else
          {
             if (mol.stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
@@ -135,7 +133,18 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
          {
             throw Error("Pseudoatoms are not supported yet");
          }
-         _output.printf("/>\n");
+
+         if (mol.getVertex(i).degree() == 0 && atom_number == ELEM_C && charge == 0 && radical == 0)
+         {
+            _output.printf(">\n");
+            // Add explicit text label
+            _output.printf("<t p=\"%f %f\" Justification=\"Center\"><s font=\"3\" size=\"10\" face=\"96\">CH4</s></t>\n", pos.x, -pos.y);
+            _output.printf("</n>\n");
+         }
+         else
+         {
+            _output.printf("/>\n");
+         }
       }
    }
 
