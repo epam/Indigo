@@ -101,7 +101,7 @@ class IndigoObject(object):
         if len(atom_ids) * 3 != len(desired_xyz):
             raise IndigoException("alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]")
         atoms = (c_int * len(atom_ids))()
-        for i in xrange(len(atoms)):
+        for i in range(len(atoms)):
             atoms[i] = atom_ids[i]
         xyz = (c_float * len(desired_xyz))()
         for i in xrange(len(desired_xyz)):
@@ -1170,10 +1170,10 @@ class Indigo(object):
         Indigo._lib.indigoSetOptionXY.argtypes = [c_char_p, c_int, c_int]
         Indigo._lib.indigoReadFile.restype = c_int
         Indigo._lib.indigoReadFile.argtypes = [c_char_p]
-        Indigo._lib.indigoReadString.restype = c_int
-        Indigo._lib.indigoReadString.argtypes = [c_char_p]
-        Indigo._lib.indigoReadBuffer.restype = c_int
-        Indigo._lib.indigoReadBuffer.argtypes = [c_char_p, c_int]
+        Indigo._lib.indigoLoadString.restype = c_int
+        Indigo._lib.indigoLoadString.argtypes = [c_char_p]
+        Indigo._lib.indigoLoadBuffer.restype = c_int
+        Indigo._lib.indigoLoadBuffer.argtypes = [POINTER(c_byte), c_int]
         Indigo._lib.indigoWriteFile.restype = c_int
         Indigo._lib.indigoWriteFile.argtypes = [c_char_p]
         Indigo._lib.indigoWriteBuffer.restype = c_int
@@ -1934,3 +1934,42 @@ class Indigo(object):
     def transform(self, reaction, monomers):
         self._setSessionId()
         return self._checkResult(Indigo._lib.indigoTransform(reaction.id, monomers.id))
+
+    def loadBuffer(self, buf):
+        self._setSessionId()
+        values = (c_byte * len(buf))()
+        for i in range(len(buf)):
+            values[i] = buf[i]
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadBuffer(values, len(buf))))
+
+    def loadString(self, string):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadString(string)))
+
+    def iterateSDF(self, reader):
+        self._setSessionId()
+        result = self._checkResult(Indigo._lib.indigoIterateSDF(reader.id))
+        if not result:
+            return None
+        return self.IndigoObject(self, result, reader)
+
+    def iterateSmiles(self, reader):
+        self._setSessionId()
+        result = self._checkResult(Indigo._lib.indigoIterateSmiles(reader.id))
+        if not result:
+            return None
+        return self.IndigoObject(self, result, reader)
+
+    def iterateCML(self, reader):
+        self._setSessionId()
+        result = self._checkResult(Indigo._lib.indigoIterateCML(reader.id))
+        if not result:
+            return None
+        return self.IndigoObject(self, result, reader)
+
+    def iterateRDF(self, reader):
+        self._setSessionId()
+        result = self._checkResult(Indigo._lib.indigoIterateRDF(reader.id))
+        if not result:
+            return None
+        return self.IndigoObject(self, result, reader)

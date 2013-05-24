@@ -25,8 +25,8 @@ namespace com.ggasoftware.indigo
         int indigoReadFile(string filename);
         int indigoReadString(string str);
         int indigoLoadString(string str);
-        int indigoReadBuffer(string buffer, int size);
-        int indigoLoadBuffer(string buffer, int size);
+        int indigoReadBuffer(byte[] buffer, int size);
+        int indigoLoadBuffer(byte[] buffer, int size);
         int indigoWriteFile(string filename);
         int indigoWriteBuffer();
         int indigoClose(int item);

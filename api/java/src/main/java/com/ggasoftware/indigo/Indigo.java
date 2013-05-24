@@ -526,7 +526,7 @@ public class Indigo {
         if (match == 0)
             return null;
 
-        return new IndigoObject(this, parent, match);
+        return new IndigoObject(this, match, parent);
     }
 
     public IndigoObject exactMatch(IndigoObject obj1, IndigoObject obj2) {
@@ -602,8 +602,7 @@ public class Indigo {
 
     public IndigoObject substructureMatcher(IndigoObject target, String mode) {
         setSessionID();
-        return new IndigoObject(this, target, checkResult(this, target,
-                _lib.indigoSubstructureMatcher(target.self, mode)));
+        return new IndigoObject(this, checkResult(this, target, _lib.indigoSubstructureMatcher(target.self, mode)), target);
     }
 
     public IndigoObject substructureMatcher(IndigoObject target) {
@@ -698,8 +697,7 @@ public class Indigo {
 
     public IndigoObject createSaver(IndigoObject output, String format) {
         setSessionID();
-        return new IndigoObject(this, output, checkResult(this, output,
-                _lib.indigoCreateSaver(output.self, format)));
+        return new IndigoObject(this, checkResult(this, output, _lib.indigoCreateSaver(output.self, format)), output);
     }
 
     public IndigoObject createFileSaver(String filename, String format) {
@@ -740,40 +738,40 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, _lib.indigoLoadString(string)));
     }
 
-    public IndigoObject iterateSDF(IndigoObject iterator) {
+    public IndigoObject iterateSDF(IndigoObject reader) {
         setSessionID();
-        int result = checkResult(this, _lib.indigoIterateSDF(iterator.self));
+        int result = checkResult(this, _lib.indigoIterateSDF(reader.self));
         if (result == 0)
             return null;
 
-        return new IndigoObject(this, result);
+        return new IndigoObject(this, result, reader);
     }
 
-    public IndigoObject iterateRDF(IndigoObject iterator) {
+    public IndigoObject iterateRDF(IndigoObject reader) {
         setSessionID();
-        int result = checkResult(this, _lib.indigoIterateRDF(iterator.self));
+        int result = checkResult(this, _lib.indigoIterateRDF(reader.self));
         if (result == 0)
             return null;
 
-        return new IndigoObject(this, result);
+        return new IndigoObject(this, result, reader);
     }
 
-    public IndigoObject iterateCML(IndigoObject iterator) {
+    public IndigoObject iterateCML(IndigoObject reader) {
         setSessionID();
-        int result = checkResult(this, _lib.indigoIterateCML(iterator.self));
+        int result = checkResult(this, _lib.indigoIterateCML(reader.self));
         if (result == 0)
             return null;
 
-        return new IndigoObject(this, result);
+        return new IndigoObject(this, result, reader);
     }
 
-    public IndigoObject iterateSmiles(IndigoObject iterator) {
+    public IndigoObject iterateSmiles(IndigoObject reader) {
         setSessionID();
-        int result = checkResult(this, _lib.indigoIterateSmiles(iterator.self));
+        int result = checkResult(this, _lib.indigoIterateSmiles(reader.self));
         if (result == 0)
             return null;
 
-        return new IndigoObject(this, result);
+        return new IndigoObject(this, result, reader);
     }
 
     @Override
