@@ -145,6 +145,8 @@ struct AtomDesc {
    Vec2f pos;
    Vec2f boundBoxMin;
    Vec2f boundBoxMax;
+   Vec3f hcolor;
+   bool hcolorSet;
    int label;
    int queryLabel;
    int color;
@@ -398,6 +400,7 @@ public:
    bool showCycles; // for diagnostic purposes
    bool agentsBelowArrow;
    bool collapseSuperatoms;
+   Array<char> atomColorProp;
 private:
    RenderOptions (const RenderOptions& );
 };

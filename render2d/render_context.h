@@ -52,6 +52,7 @@ public:
    void drawRectangle (const Vec2f& p, const Vec2f& sz);
    void drawItemBackground (const RenderItem& item);
    void drawTextItemText (const TextItem& ti);
+   void drawTextItemText (const TextItem& ti, const Vec3f& color);
    void drawTextItemText (const TextItem& ti, const Vec3f& color, bool bold);
    void drawBracket (RenderItemBracket& bracket);
    void drawAttachmentPoint (RenderItemAttachmentPoint& ri);
@@ -79,6 +80,8 @@ public:
    void getColorVec (Vec3f& v, int color);
    void setSingleSource (int color);
    void setSingleSource (const Vec3f& color);
+   void setGradientSource (const Vec3f& color1, const Vec3f& color2, const Vec2f& pos1, const Vec2f& pos2);
+   void clearPattern ();
    float _getDashedLineAlignmentOffset (float length);
    void setDash (const Array<double>& dash, float offset = 0);
    void resetDash ();
@@ -135,6 +138,7 @@ private:
    Vec3f _backColor;
    Vec3f _baseColor;
    float _currentLineWidth;
+   cairo_pattern_t* _pattern;
 
    class TextLock {
    public:

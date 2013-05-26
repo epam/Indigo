@@ -73,7 +73,7 @@ float Render::_getScale (int w, int h)
 {
    float scale = _getMaxScale(w, h);
    if (_bondLength > 0 && _bondLength < scale)
-      return _bondLength;
+      return (float)_bondLength;
    return scale;
 }
 

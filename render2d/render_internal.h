@@ -134,6 +134,7 @@ private:
    void _bondAromatic (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
    void _bondTriple (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
    void _bondAny (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
+   int _parseColorString (Scanner& str, float& r, float& g, float& b);
 
    // local
    void* _hdc;

@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "base_cpp/output.h"
+#include "base_cpp/scanner.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
@@ -176,6 +177,7 @@ void RenderOptions::clear()
    showCycles = false;
    agentsBelowArrow = true;
    collapseSuperatoms = false;
+   atomColorProp.clear();
 }
 
 IMPL_ERROR(MoleculeRenderInternal, "molecule render internal");
@@ -550,12 +552,49 @@ void MoleculeRenderInternal::_initRGroups()
    }
 }
 
+int MoleculeRenderInternal::_parseColorString (Scanner& scanner, float& r, float& g, float& b)
+{
+   if (!scanner.tryReadFloat(r))
+      return -1;
+   scanner.skipSpace();
+   if (scanner.isEOF())
+      return -1;
+   if (scanner.readChar() != ',')
+      return -1;
+   scanner.skipSpace();
+   if (!scanner.tryReadFloat(g))
+      return -1;
+   scanner.skipSpace();
+   if (scanner.isEOF())
+      return -1;
+   if (scanner.readChar() != ',')
+      return -1;
+   scanner.skipSpace();
+   if (!scanner.tryReadFloat(b))
+      return -1;
+   return 1;
+}
+
 void MoleculeRenderInternal::_initDataSGroups()
 {
    BaseMolecule& bm = *_mol;
+   const char* atomColorProp = _opt.atomColorProp.size() > 0 ? _opt.atomColorProp.ptr() : NULL;
    for (int i = bm.data_sgroups.begin(); i < bm.data_sgroups.end(); i = bm.data_sgroups.next(i)) {
-      SGroup& sg = _data.sgroups.push();
       const BaseMolecule::DataSGroup& group = bm.data_sgroups[i];
+      if (atomColorProp != NULL && strcmp(atomColorProp, group.description.ptr()) == 0) {
+         Vec3f color;
+         if (_parseColorString(BufferScanner(group.data), color.x, color.y, color.z) < 0)
+            throw new Error("Color value format invalid");
+         for (int j = 0; j < group.atoms.size(); ++j) {
+            AtomDesc& ad = _ad(group.atoms[j]);
+            if (ad.hcolorSet)
+               throw new Error("An atom belongs to more then one color group");
+            ad.hcolor.copy(color);
+            ad.hcolorSet = true;
+         }
+         continue;
+      }
+      SGroup& sg = _data.sgroups.push();
       int tii = _pushTextItem(sg, RenderItem::RIT_DATASGROUP);
       TextItem& ti = _data.textitems[tii];
       ti.text.copy(group.data);
@@ -2125,8 +2164,12 @@ void MoleculeRenderInternal::_drawAtom (const AtomDesc& desc)
 #endif
 
    _cw.setSingleSource(desc.color);
-   for (int i = 0; i < desc.ticount; ++i)
-      _cw.drawTextItemText(_data.textitems[i + desc.tibegin]);
+   for (int i = 0; i < desc.ticount; ++i) {
+      if (desc.hcolorSet)
+         _cw.drawTextItemText(_data.textitems[i + desc.tibegin], desc.hcolor);
+      else
+         _cw.drawTextItemText(_data.textitems[i + desc.tibegin]);
+   }
    for (int i = 0; i < desc.attachmentPointCount; ++i)
       _cw.drawAttachmentPoint(_data.attachmentPoints[desc.attachmentPointBegin + i]);
    for (int i = 0; i < desc.rSiteAttachmentIndexCount; ++i)
@@ -3191,12 +3234,27 @@ void MoleculeRenderInternal::_drawBond (int b)
    BondDescr& bd = _bd(b);
    const BondEnd& be1 = _be(bd.be1);
    const BondEnd& be2 = _be(bd.be2);
+   const AtomDesc& ad1 = _ad(be1.aid);
+   const AtomDesc& ad2 = _ad(be2.aid);
 
    _cw.setLineWidth(_settings.bondLineWidth);
 
    _cw.setSingleSource(CWC_BASE);
    if (_edgeIsHighlighted(b))
       _cw.setHighlight();
+   else if (ad1.hcolorSet || ad2.hcolorSet) {
+      Vec3f color1, color2;
+      _cw.getColorVec(color1, CWC_BASE);
+      _cw.getColorVec(color2, CWC_BASE);
+      if (ad1.hcolorSet)
+         color1.copy(ad1.hcolor);
+      if (ad2.hcolorSet)
+         color2.copy(ad2.hcolor);
+      if (color1.x == color2.x && color1.y == color2.y && color1.z == color2.z)
+         _cw.setSingleSource(color1);
+      else
+         _cw.setGradientSource(color1, color2, ad1.pos, ad2.pos);
+   }
 
    switch (bd.type)
    {
@@ -3253,6 +3311,7 @@ void MoleculeRenderInternal::_drawBond (int b)
    }
 
    _cw.resetHighlight();
+   _cw.clearPattern(); // destroy the linear gradient pattern if one was used
 
    if (bd.topology > 0)
       _drawTopology(bd);

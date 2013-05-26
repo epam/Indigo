@@ -301,6 +301,13 @@ void indigoRenderSetComment (const char* comment)
    rp.cnvOpt.comment.appendString(comment, true);
 }
 
+void indigoRenderSetAtomColorProperty (const char* prop)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.atomColorProp.clear();
+   rp.rOpt.atomColorProp.appendString(prop, true);
+}
+
 void indigoRenderSetCommentFontSize (float fontSize)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -555,6 +562,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle);
    mgr.setOptionHandlerString("render-catalysts-placement", indigoRenderSetCatalystsPlacement);
    mgr.setOptionHandlerString("render-superatom-mode", indigoRenderSetSuperatomMode);
+   mgr.setOptionHandlerString("render-atom-color-property", indigoRenderSetAtomColorProperty);
 
    mgr.setOptionHandlerBool("render-coloring", indigoRenderSetColoring);
    mgr.setOptionHandlerBool("render-valences-visible", indigoRenderSetValencesVisible);

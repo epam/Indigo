@@ -114,6 +114,7 @@ void AtomDesc::clear ()
       stereoGroupNumber = -1;
    isRGroupAttachmentPoint = false;
    pseudoAtomStringVerbose = false;
+   hcolorSet = false;
    fixed = false;
    exactChange = false;
    color = CWC_BASE;
