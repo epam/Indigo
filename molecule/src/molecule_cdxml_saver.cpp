@@ -27,20 +27,29 @@ MoleculeCdxmlSaver::MoleculeCdxmlSaver (Output &output) : _output(output)
    bondLength = 30;
 }
 
-void MoleculeCdxmlSaver::beginDocument ()
+void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
 {
    _output.printf("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
    _output.printf("<!DOCTYPE CDXML SYSTEM \"http://www.cambridgesoft.com/xml/cdxml.dtd\" >\n");
       
-   _output.printf("<CDXML BondLength=\"%f\">\n", bondLength);
+   _output.printf("<CDXML BondLength=\"%f\"", bondLength);
+   if (bounds != NULL)
+   {
+      _output.printf(" BoundingBox=\"%d %d %d %d\"", 
+         (int)(bounds->min.x * bondLength),
+         (int)(bounds->min.y * bondLength),
+         (int)(bounds->max.x * bondLength),
+         (int)(bounds->max.y * bondLength));
+   }
+   _output.printf(">\n");
 }
 
 void MoleculeCdxmlSaver::beginPage (Bounds *bounds)
 {
-   _output.printf("<page ");
+   _output.printf("<page");
    if (bounds != NULL)
    {
-      _output.printf("BoundingBox=\"%d %d %d %d\"", 
+      _output.printf(" BoundingBox=\"%d %d %d %d\"", 
          (int)(bounds->min.x * bondLength),
          (int)(bounds->min.y * bondLength),
          (int)(bounds->max.x * bondLength),
@@ -212,9 +221,6 @@ void MoleculeCdxmlSaver::endDocument ()
 
 void MoleculeCdxmlSaver::saveMolecule (Molecule &mol)
 {
-   beginDocument();
-   beginPage(NULL);
-
    Vec3f min_coord, max_coord;
    if (mol.have_xyz)
    {
@@ -239,6 +245,9 @@ void MoleculeCdxmlSaver::saveMolecule (Molecule &mol)
       min_coord.set(0, 0, 0);
       max_coord.set(0, 0, 0);
    }
+
+   beginDocument(NULL);
+   beginPage(NULL);
 
    Vec2f offset(-min_coord.x, -max_coord.y);
 

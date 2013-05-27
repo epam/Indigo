@@ -34,7 +34,7 @@ public:
       Vec2f min, max;
    };
 
-   void beginDocument ();
+   void beginDocument (Bounds *bounds);
    void beginPage (Bounds *bounds);
    void saveMoleculeFragment (Molecule &mol, const Vec2f &offset);
    void addText (const Vec2f &pos, const char *text);

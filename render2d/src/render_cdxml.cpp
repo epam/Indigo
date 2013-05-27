@@ -92,8 +92,6 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    int last_row = 0;
    float max_y = 0;
 
-   saver.beginDocument();
-
    Array<Pos> positions;
    positions.resize(mols.size());
 
@@ -156,6 +154,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    w += x_margins_base + params.cnvOpt.marginX / 10.0f;
 
    b.max.set(w, max_y + y_margins_base);
+   saver.beginDocument(&b);
    saver.beginPage(&b);
 
    for (int i = 0; i < mols.size(); ++i)
