@@ -584,11 +584,11 @@ void MoleculeRenderInternal::_initDataSGroups()
       if (atomColorProp != NULL && strcmp(atomColorProp, group.description.ptr()) == 0) {
          Vec3f color;
          if (_parseColorString(BufferScanner(group.data), color.x, color.y, color.z) < 0)
-            throw new Error("Color value format invalid");
+            throw Error("Color value format invalid");
          for (int j = 0; j < group.atoms.size(); ++j) {
             AtomDesc& ad = _ad(group.atoms[j]);
             if (ad.hcolorSet)
-               throw new Error("An atom belongs to more then one color group");
+               throw Error("An atom belongs to more then one color group");
             ad.hcolor.copy(color);
             ad.hcolorSet = true;
          }
