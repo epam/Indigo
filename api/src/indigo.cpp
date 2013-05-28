@@ -83,6 +83,7 @@ void Indigo::init ()
 
 Indigo::Indigo ()
 {
+   init();
 }
 
 void Indigo::removeAllObjects ()
