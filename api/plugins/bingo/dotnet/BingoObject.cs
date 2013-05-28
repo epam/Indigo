@@ -11,6 +11,7 @@ namespace com.ggasoftware.indigo
         private int _id;
         private Indigo _indigo;
         private BingoLib _bingoLib;
+        private IDisposable _reference;
 
         internal BingoObject(int id, Indigo indigo, BingoLib bingo_lib)
         {
@@ -75,7 +76,9 @@ namespace com.ggasoftware.indigo
         /// <returns>Shared Indigo object for the current search operation</returns>
         public IndigoObject getIndigoObject()
         {
-            return new IndigoObject(_indigo, Bingo.checkResult(_indigo, _bingoLib.bingoGetObject(_id)));
+            IndigoObject res = new IndigoObject(_indigo, Bingo.checkResult(_indigo, _bingoLib.bingoGetObject(_id)));
+            _reference = res;
+            return res;
         }
     }
 }
