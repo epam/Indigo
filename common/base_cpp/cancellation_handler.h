@@ -36,7 +36,7 @@ public:
 class DLLEXPORT TimeoutCancellationHandler : public CancellationHandler
 {
 public:
-   TimeoutCancellationHandler(int mseconds);
+   TimeoutCancellationHandler(int mseconds = 0);
    virtual ~TimeoutCancellationHandler();
 
    virtual bool isCancelled();

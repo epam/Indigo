@@ -29,8 +29,10 @@ CEXPORT const char * indigoVersion ()
    return INDIGO_VERSION;
 }
 
-Indigo::Indigo () : timeout_cancellation_handler(0)
+void Indigo::init ()
 {
+   timeout_cancellation_handler = 0;
+
    error_handler = 0;
    error_handler_context = 0;
    _next_id = 1001;
@@ -67,6 +69,20 @@ Indigo::Indigo () : timeout_cancellation_handler(0)
    preserve_ordering_in_serialize = false;
 
    unique_dearomatization = false;
+
+   // Update global index
+   static ThreadSafeStaticObj<OsLock> lock;
+   {
+      OsLocker locker(lock.ref());
+      static int global_id;
+
+      _indigo_id = global_id++;
+   }
+}
+
+
+Indigo::Indigo ()
+{
 }
 
 void Indigo::removeAllObjects ()
@@ -105,8 +121,18 @@ Indigo::~Indigo ()
    removeAllObjects();
 }
 
+int Indigo::getId () const
+{
+   return _indigo_id;
+}
+
+
 CEXPORT qword indigoAllocSessionId ()
 {
+   qword id = TL_ALLOC_SESSION_ID();
+   Indigo &indigo = indigo_self.getLocalCopy(id);
+   indigo.init();
+
    return TL_ALLOC_SESSION_ID();
 }
 
@@ -225,6 +251,25 @@ IndigoError::IndigoError (const IndigoError &other) : Exception()
 {
    other._cloneTo(this);
 }
+
+//
+// IndigoPluginContext
+//
+IndigoPluginContext::IndigoPluginContext ()
+{
+   indigo_id = -1;
+}
+
+void IndigoPluginContext::validate ()
+{
+   Indigo &indigo = indigoGetInstance();
+   if (indigo.getId() != indigo_id)
+   {
+      init();
+      indigo_id = indigo.getId();
+   }
+}
+
 
 //
 // Options registrator
