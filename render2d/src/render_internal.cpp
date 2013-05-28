@@ -583,7 +583,8 @@ void MoleculeRenderInternal::_initDataSGroups()
       const BaseMolecule::DataSGroup& group = bm.data_sgroups[i];
       if (atomColorProp != NULL && strcmp(atomColorProp, group.description.ptr()) == 0) {
          Vec3f color;
-         if (_parseColorString(BufferScanner(group.data), color.x, color.y, color.z) < 0)
+         BufferScanner scanner(group.data);
+         if (_parseColorString(scanner, color.x, color.y, color.z) < 0)
             throw Error("Color value format invalid");
          for (int j = 0; j < group.atoms.size(); ++j) {
             AtomDesc& ad = _ad(group.atoms[j]);
