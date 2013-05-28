@@ -2385,7 +2385,15 @@ void MolfileLoader::_readCtab3000 ()
                else if (n == 3)
                   _bmol->setBondDirection(i, BOND_DOWN);
                else if (n == 2)
-                  _bmol->setBondDirection(i, BOND_EITHER);
+               {
+                  int bond_order = _bmol->getBondOrder(i);
+                  if (bond_order == BOND_SINGLE)
+                     _bmol->setBondDirection(i, BOND_EITHER);
+                  else if (bond_order == BOND_DOUBLE)
+                     _ignore_cistrans[i] = 1;
+                  else
+                     throw Error("unknown bond CFG=%d for thebond order %d", n, bond_order);
+               }
                else
                   throw Error("unknown bond CFG=%d", n);
             }
