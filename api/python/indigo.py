@@ -1692,6 +1692,7 @@ class Indigo(object):
 
     def __del__ (self):
         if hasattr(self, '_lib'):
+            sys.__stdout__.write('releaseSessionId ' + str(self._sid))
             Indigo._lib.indigoReleaseSessionId(self._sid)
 
     def writeBuffer (self):
@@ -1795,6 +1796,7 @@ class Indigo(object):
 
     def loadMolecule(self, string):
         self._setSessionId()
+        #sys.__stdout__.write(string)
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadMoleculeFromString(string.encode('ascii'))))
 
     def loadMoleculeFromFile(self, filename):
