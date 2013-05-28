@@ -35,28 +35,50 @@ void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
    _output.printf("<CDXML BondLength=\"%f\"", bondLength);
    if (bounds != NULL)
    {
-      _output.printf(" BoundingBox=\"%d %d %d %d\"", 
-         (int)(bounds->min.x * bondLength),
-         (int)(bounds->min.y * bondLength),
-         (int)(bounds->max.x * bondLength),
-         (int)(bounds->max.y * bondLength));
+      // Generate MacPrintInfo according to the size
+      // http://www.cambridgesoft.com/services/documentation/sdk/chemdraw/cdx/properties/MacPrintInfo.htm
+
+      int dpi_logical = 72;
+      int dpi_print = 600;
+
+      float x_inch = bounds->max.x * bondLength / dpi_logical + 1;
+      float y_inch = bounds->max.y * bondLength / dpi_logical + 1;
+
+      int width = (int)(x_inch * dpi_print);
+      int height = (int)(y_inch * dpi_print);
+
+      signed short mac_print_info[60] = {0};
+      mac_print_info[0] = 3;  // magic number
+      mac_print_info[2] = dpi_print;
+      mac_print_info[3] = dpi_print;
+
+      mac_print_info[6] = height;
+      mac_print_info[7] = width;
+
+      mac_print_info[10] = height;
+      mac_print_info[11] = width;
+
+      mac_print_info[12] = 871; // magic number
+
+      mac_print_info[13] = height / 5; // magic scaling coeffient
+      mac_print_info[14] = width / 5;
+
+      mac_print_info[24] = 100; // horizontal scale, in percent
+      mac_print_info[25] = 100; // Vertical scale, in percent
+
+    _output.printf(" PrintMargins=\"36 36 36 36\"\n");
+    _output.printf(" MacPrintInfo=\"");
+      for (int i = 0; i < NELEM(mac_print_info); i++)
+         _output.printf("%04x", mac_print_info[i]);
+      
+      _output.printf("\"\n");
    }
    _output.printf(">\n");
 }
 
 void MoleculeCdxmlSaver::beginPage (Bounds *bounds)
 {
-   _output.printf("<page");
-   if (bounds != NULL)
-   {
-      _output.printf(" BoundingBox=\"%d %d %d %d\"", 
-         (int)(bounds->min.x * bondLength),
-         (int)(bounds->min.y * bondLength),
-         (int)(bounds->max.x * bondLength),
-         (int)(bounds->max.y * bondLength));
-   }
-      
-   _output.printf(">\n");
+   _output.printf("<page>\n");
 }
 
 void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset)
