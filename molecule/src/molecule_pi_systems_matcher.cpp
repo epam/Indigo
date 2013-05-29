@@ -22,8 +22,11 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculePiSystemsMatcher, "Pi-system matcher");
 
+CP_DEF(MoleculePiSystemsMatcher);
+
 MoleculePiSystemsMatcher::MoleculePiSystemsMatcher (Molecule &target) 
    : _target(target),
+   CP_INIT,
    TL_CP_GET(_atom_pi_system_idx),
    TL_CP_GET(_pi_systems),
    TL_CP_GET(_connectivity)

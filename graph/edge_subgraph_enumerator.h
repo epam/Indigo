@@ -42,6 +42,7 @@ protected:
 
    Graph &_graph;
 
+   CP_DECL;
    TL_CP_DECL(Graph,      _subgraph);
 
    TL_CP_DECL(Array<int>, _mapping);          // subgraph -> graph

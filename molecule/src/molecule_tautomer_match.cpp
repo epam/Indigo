@@ -24,6 +24,8 @@ using namespace indigo;
 
 class PathRulesChecker;
 
+CP_DEF(TautomerSearchContext);
+
 TautomerSearchContext::TautomerSearchContext (BaseMolecule &g1_, BaseMolecule &g2_, GraphDecomposer &decomposer1_,
                                               GraphDecomposer &decomposer2_, const PtrArray<TautomerRule> &rules_list_, 
                                               const AromaticityOptions &arom_options) :
@@ -31,6 +33,7 @@ g1(g1_),
 g2(g2_),
 decomposer1(decomposer1_),
 decomposer2(decomposer2_),
+CP_INIT,
 TL_CP_GET(h_rep_count_1),
 TL_CP_GET(h_rep_count_2),
 rules_list(rules_list_),

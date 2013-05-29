@@ -96,6 +96,7 @@ protected:
    void _updateSGroupsXyzMinMax (Molecule &mol, Vec3f &min, Vec3f &max);
    void _updateBaseSGroupXyzMinMax (BaseMolecule::SGroup &sgroup, Vec3f &min, Vec3f &max);
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _atom_sequence);
 
    Output     *_output;

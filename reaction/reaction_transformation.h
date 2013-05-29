@@ -40,6 +40,7 @@ namespace indigo
       AromaticityOptions arom_options;
 
    private:
+      CP_DECL;
       TL_CP_DECL(QueryReaction, _merged_reaction);
       TL_CP_DECL(Molecule, _cur_monomer);
 

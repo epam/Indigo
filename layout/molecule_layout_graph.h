@@ -144,6 +144,7 @@ protected:
 
    protected:
 
+      CP_DECL;
       TL_CP_DECL(Array<int>, _vertices);
       TL_CP_DECL(Array<int>, _edges);
       int _max_idx;

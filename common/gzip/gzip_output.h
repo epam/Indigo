@@ -44,6 +44,7 @@ protected:
 
    int _deflate (int flush);
 
+   CP_DECL;
    TL_CP_DECL(Array<Bytef>, _outbuf);
    TL_CP_DECL(Array<Bytef>, _inbuf);
 };

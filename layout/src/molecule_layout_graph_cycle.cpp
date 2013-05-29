@@ -16,7 +16,10 @@
 
 using namespace indigo;
 
+CP_DEF(MoleculeLayoutGraph::Cycle);
+
 MoleculeLayoutGraph::Cycle::Cycle () :
+CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges)
 {
@@ -26,6 +29,7 @@ TL_CP_GET(_edges)
 }
 
 MoleculeLayoutGraph::Cycle::Cycle (const List<int> &edges, const MoleculeLayoutGraph &graph) :
+CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges)
 {
@@ -33,6 +37,7 @@ TL_CP_GET(_edges)
 }
 
 MoleculeLayoutGraph::Cycle::Cycle (const Array<int> &vertices, const Array<int> &edges) :
+CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges)
 {

@@ -19,7 +19,10 @@ using namespace indigo;
 
 IMPL_ERROR(MultipleCmlLoader, "multiple CML loader");
 
+CP_DEF(MultipleCmlLoader);
+
 MultipleCmlLoader::MultipleCmlLoader (Scanner &scanner) :
+CP_INIT,
 TL_CP_GET(data),
 TL_CP_GET(_tags),
 TL_CP_GET(_offsets),

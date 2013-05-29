@@ -514,8 +514,11 @@ void Molecule3dConstraints::removeAtoms (const int *mapping)
 
 IMPL_ERROR(Molecule3dConstraintsChecker, "molecule 3d constraints checker");
 
+CP_DEF(Molecule3dConstraintsChecker);
+
 Molecule3dConstraintsChecker::Molecule3dConstraintsChecker (const Molecule3dConstraints &constraints) :
 _constraints(constraints),
+CP_INIT,
 TL_CP_GET(_cache_v),
 TL_CP_GET(_cache_l),
 TL_CP_GET(_cache_p),

@@ -49,6 +49,7 @@ private:
 
    void _dbgCheckConsistency ();
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _arc_values);
    TL_CP_DECL(Array<int>, _arc_sym);
 

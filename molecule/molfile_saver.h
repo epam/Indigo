@@ -89,6 +89,7 @@ protected:
    Output &_output;
    bool    _v2000;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _atom_mapping);
    TL_CP_DECL(Array<int>, _bond_mapping);
 

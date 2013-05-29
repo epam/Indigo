@@ -41,8 +41,11 @@ IMPL_EXCEPTION2(indigo, NonUniqueDearomatizationException,
 
 static int _dearomatizationParams = Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION;
 
+CP_DEF(Dearomatizer);
+
 Dearomatizer::Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn, const AromaticityOptions &options) :
    _graphMatching(molecule), _molecule(molecule), _aromaticGroups(molecule), _options(options),
+   CP_INIT,
    TL_CP_GET(_aromaticGroupData),
    //TL_CP_GET(_edgesFixed),
    //TL_CP_GET(_verticesFixed),
@@ -567,9 +570,11 @@ DearomatizationsStorage::DearomatizationsStorage (void)
 //
 
 IMPL_ERROR2(DearomatizationsGroups, DearomatizationException, "Dearomatization groups");
+CP_DEF(DearomatizationsGroups);
 
 DearomatizationsGroups::DearomatizationsGroups (BaseMolecule &molecule) :
    _molecule(molecule),
+   CP_INIT,
    TL_CP_GET(_vertexAromaticGroupIndex),
    TL_CP_GET(_vertexIsAcceptDoubleEdge),
    TL_CP_GET(_vertexIsAcceptSingleEdge),
@@ -968,11 +973,14 @@ bool DearomatizationsGroups::isAcceptDoubleBond (int atom)
 
 IMPL_ERROR2(DearomatizationMatcher, DearomatizationException, "Dearomatization matcher");
 
+CP_DEF(DearomatizationMatcher);
+
 DearomatizationMatcher::DearomatizationMatcher (DearomatizationsStorage &dearomatizations, 
    BaseMolecule &molecule, const int *atom_external_conn) 
    : 
    _molecule(molecule), _dearomatizations(dearomatizations),
    _graphMatchingFixedEdges(molecule), _aromaticGroups(molecule),
+   CP_INIT,
    TL_CP_GET(_matchedEdges),
    TL_CP_GET(_matchedEdgesState),
    TL_CP_GET(_groupExInfo),
@@ -1414,8 +1422,11 @@ DearomatizationMatcher::GraphMatchingVerticesFixed::GraphMatchingVerticesFixed
 //
 // MoleculeDearomatizer
 //
+
+CP_DEF(MoleculeDearomatizer);
+
 MoleculeDearomatizer::MoleculeDearomatizer (Molecule &mol, DearomatizationsStorage &dearom) :
-   _dearomatizations(dearom), _mol(mol), TL_CP_GET(vertex_connectivity)
+   _dearomatizations(dearom), _mol(mol), CP_INIT, TL_CP_GET(vertex_connectivity)
 {
 }
 

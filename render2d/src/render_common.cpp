@@ -228,7 +228,10 @@ void MoleculeRenderData::clear ()
    sgroups.clear();
 }
 
+CP_DEF(RenderSettings);
+
 RenderSettings::RenderSettings () :
+CP_INIT,
 TL_CP_GET(bondDashAromatic),
 TL_CP_GET(bondDashAny),
 TL_CP_GET(bondDashSingleOrAromatic),

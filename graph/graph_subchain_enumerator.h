@@ -47,6 +47,7 @@ protected:
    int _min_edges;
    int _mode;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _vertex_states);
    TL_CP_DECL(Array<int>, _chain_vertices);
    TL_CP_DECL(Array<int>, _chain_edges);

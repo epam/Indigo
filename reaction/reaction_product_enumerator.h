@@ -60,6 +60,7 @@ private:
    int _product_count;
    QueryReaction &_reaction;
    ReactionEnumeratorState::ReactionMonomers _reaction_monomers;
+   CP_DECL;
    TL_CP_DECL(Array<int>, _product_aam_array);
    TL_CP_DECL(RedBlackStringMap<int>, _smiles_array);
    TL_CP_DECL(ObjArray< Array<int> >, _tubes_monomers);

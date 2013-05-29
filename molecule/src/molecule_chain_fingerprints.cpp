@@ -23,10 +23,12 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeChainFingerprintBuilder, "chain fingerprint builder");
 
+CP_DEF(MoleculeChainFingerprintBuilder);
+
 MoleculeChainFingerprintBuilder::MoleculeChainFingerprintBuilder
         (Molecule &mol, const MoleculeChainFingerprintParameters &parameters) :
 _mol(mol), _parameters(parameters),
-TL_CP_GET(_fingerprint)
+CP_INIT, TL_CP_GET(_fingerprint)
 {
 }
 

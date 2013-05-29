@@ -30,7 +30,10 @@ using namespace indigo;
 
 IMPL_ERROR(SmilesSaver, "SMILES saver");
 
+CP_DEF(SmilesSaver);
+
 SmilesSaver::SmilesSaver (Output &output) : _output(output),
+CP_INIT,
 TL_CP_GET(_neipool),
 TL_CP_GET(_atoms),
 TL_CP_GET(_hcount),

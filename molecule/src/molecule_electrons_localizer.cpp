@@ -24,8 +24,11 @@ enum { BOND_SINGLE_OR_DOUBLE = -100 };
 
 IMPL_ERROR(MoleculeElectronsLocalizer, "Electron localizer");
 
+CP_DEF(MoleculeElectronsLocalizer);
+
 MoleculeElectronsLocalizer::MoleculeElectronsLocalizer (Molecule &skeleton) :
    _skeleton(skeleton),
+   CP_INIT,
    TL_CP_GET(_extended_skeleton),
    TL_CP_GET(_edge_mapping),
    TL_CP_GET(_atom_info),

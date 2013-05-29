@@ -34,8 +34,10 @@ using namespace indigo;
 // Atoms can't have any other double/triple bonds
 // Let's say thet C can emit bond and G with H can accept bond
 
+CP_DEF(TautomerSuperStructure);
 
 TautomerSuperStructure::TautomerSuperStructure (Molecule &mol) :
+CP_INIT,
 TL_CP_GET(_atomsEmitBond),
 TL_CP_GET(_atomsAcceptBond),
 TL_CP_GET(_isBondAttachedArray),

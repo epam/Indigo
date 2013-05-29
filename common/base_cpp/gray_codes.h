@@ -38,6 +38,7 @@ public:
    const byte* getCode (void);
 
 private:
+   CP_DECL;
    TL_CP_DECL(Array<int>,  _indices);
    TL_CP_DECL(Array<byte>, _code);
    bool _needFullCode;

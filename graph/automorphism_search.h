@@ -98,6 +98,8 @@ protected:
       int place; // _INITIAL, _FIRST_TO_FIRST, etc.
    };
 
+   CP_DECL;
+
    TL_CP_DECL(Array<_Call>, _call_stack);
 
    TL_CP_DECL(Array<int>, _lab);

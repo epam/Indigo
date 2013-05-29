@@ -64,6 +64,7 @@ struct TautomerSearchContext
    GraphDecomposer &decomposer2;
 
    // amount of metal bonds
+   CP_DECL;
    TL_CP_DECL(Array<int>, h_rep_count_1);
    TL_CP_DECL(Array<int>, h_rep_count_2);
 
@@ -285,6 +286,7 @@ protected:
    
    bool  _inside_ctor;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>,  _atomsEmitBond);
    TL_CP_DECL(Array<int>,  _atomsAcceptBond);
    TL_CP_DECL(Array<bool>, _isBondAttachedArray);

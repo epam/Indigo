@@ -146,6 +146,7 @@ private:
    bool isRFragment;
    const RenderSettings& _settings;
    const RenderOptions& _opt;
+   CP_DECL;
    TL_CP_DECL(MoleculeRenderData, _data);
    TL_CP_DECL(Array<int>, _atomMapping);
    TL_CP_DECL(Array<int>, _atomMappingInv);

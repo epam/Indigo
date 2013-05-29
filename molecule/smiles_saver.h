@@ -117,6 +117,7 @@ protected:
       int saved; // 0 -- not saved; 1 -- goes 'up' from begin to end; 2 -- goes 'down'
    };
 
+   CP_DECL;
    TL_CP_DECL(Pool<List<int>::Elem>, _neipool);
    TL_CP_DECL(ObjArray<_Atom>, _atoms);
    TL_CP_DECL(Array<int>, _hcount);

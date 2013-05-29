@@ -22,7 +22,10 @@ using namespace indigo;
 
 IMPL_ERROR(CmfLoader, "CMF loader");
 
+CP_DEF(CmfLoader);
+
 CmfLoader::CmfLoader (LzwDict &dict, Scanner &scanner) :
+CP_INIT,
 TL_CP_GET(_atoms),
 TL_CP_GET(_bonds),
 TL_CP_GET(_pseudo_labels),
@@ -40,6 +43,7 @@ TL_CP_GET(inv_bond_mapping_to_restore)
 }
 
 CmfLoader::CmfLoader (Scanner &scanner) :
+CP_INIT,
 TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order),
 TL_CP_GET(atom_mapping_to_restore),
 TL_CP_GET(inv_atom_mapping_to_restore),
@@ -51,6 +55,7 @@ TL_CP_GET(inv_bond_mapping_to_restore)
 }
 
 CmfLoader::CmfLoader (LzwDecoder &decoder) :
+CP_INIT,
 TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order),
 TL_CP_GET(atom_mapping_to_restore),
 TL_CP_GET(inv_atom_mapping_to_restore),

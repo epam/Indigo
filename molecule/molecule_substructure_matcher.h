@@ -161,6 +161,7 @@ protected:
    {
       explicit MarkushContext (QueryMolecule &query_, BaseMolecule &target_);
 
+      CP_DECL;
       TL_CP_DECL(QueryMolecule, query);
       TL_CP_DECL(Array<int>, query_marking);
       TL_CP_DECL(Array<int>, sites);
@@ -220,6 +221,7 @@ protected:
 
    bool _h_unfold; // implicit target hydrogens unfolded
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _3d_constrained_atoms);
    TL_CP_DECL(Array<int>, _unfolded_target_h);
    TL_CP_DECL(Array<int>, _used_target_h);

@@ -108,6 +108,7 @@ private:
 
    bool _modified;
 
+   CP_DECL;
    TL_CP_DECL(Array<_DictElement>, _storage);       /* Dictionary */
 
    TL_CP_DECL(Array<int>, _nextPointers);

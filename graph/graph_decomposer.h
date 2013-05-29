@@ -51,6 +51,7 @@ protected:
    const Graph &_graph;
    int n_comp;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _component_ids);
    TL_CP_DECL(Array<int>, _component_vertices_count);
    TL_CP_DECL(Array<int>, _component_edges_count);

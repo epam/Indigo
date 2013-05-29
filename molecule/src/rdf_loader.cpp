@@ -21,7 +21,10 @@ using namespace indigo;
 
 IMPL_ERROR(RdfLoader, "RDF loader");
 
+CP_DEF(RdfLoader);
+
 RdfLoader::RdfLoader(Scanner &scanner) :
+CP_INIT,
 TL_CP_GET(data),
 TL_CP_GET(properties),
 TL_CP_GET(_innerBuffer),

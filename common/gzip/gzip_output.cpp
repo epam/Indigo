@@ -18,8 +18,11 @@ using namespace indigo;
 
 IMPL_ERROR(GZipOutput, "GZip output");
 
+CP_DEF(GZipOutput);
+
 GZipOutput::GZipOutput (Output &dest, int level) :
 _dest(dest),
+CP_INIT,
 TL_CP_GET(_outbuf),
 TL_CP_GET(_inbuf)
 {

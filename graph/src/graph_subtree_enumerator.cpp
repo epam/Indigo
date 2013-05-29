@@ -18,8 +18,11 @@
 
 using namespace indigo;
 
+CP_DEF(GraphSubtreeEnumerator);
+
 GraphSubtreeEnumerator::GraphSubtreeEnumerator (Graph &graph) :
 _graph(graph),
+CP_INIT,
 TL_CP_GET(_front),
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),

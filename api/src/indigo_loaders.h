@@ -167,6 +167,7 @@ protected:
 
    void _advance ();
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _offsets);
    int _current_number;
    int _max_offset;

@@ -64,6 +64,7 @@ protected:
       void reset () { v = e = parent = -1; }
    };
 
+   CP_DECL;
    TL_CP_DECL(Array<VertexEdgeParent>, _front); // array with current front
 
    TL_CP_DECL(Array<int>, _vertices); // array with subgraph vertices

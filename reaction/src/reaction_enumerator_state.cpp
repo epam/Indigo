@@ -36,7 +36,9 @@ using namespace indigo;
 
 IMPL_ERROR(ReactionEnumeratorState::ReactionMonomers, "Reaction product enumerator");
 
-ReactionEnumeratorState::ReactionMonomers::ReactionMonomers() : TL_CP_GET(_monomers), 
+CP_DEF(ReactionEnumeratorState::ReactionMonomers);
+
+ReactionEnumeratorState::ReactionMonomers::ReactionMonomers() : CP_INIT, TL_CP_GET(_monomers), 
     TL_CP_GET(_reactant_indexes), TL_CP_GET(_deep_levels), TL_CP_GET(_tube_indexes)
 {
    _monomers.clear();
@@ -108,6 +110,8 @@ void ReactionEnumeratorState::ReactionMonomers::removeMonomer( int idx )
 
 IMPL_ERROR(ReactionEnumeratorState, "Reaction product enumerator state");
 
+CP_DEF(ReactionEnumeratorState);
+
 ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext &context,
     QueryReaction &cur_reaction,
     QueryMolecule &cur_full_product, Array<int> &cur_product_aam_array, 
@@ -120,6 +124,7 @@ ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext &cont
     _smiles_array(cur_smiles_array),
     _reaction_monomers(cur_reaction_monomers),
     _context(context),
+    CP_INIT,
     TL_CP_GET(_fragments_aam_array), TL_CP_GET(_full_product), 
     TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
@@ -182,6 +187,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
     _product_aam_array(cur_rpe_state._product_aam_array),
     _smiles_array(cur_rpe_state._smiles_array), 
     _reaction_monomers(cur_rpe_state._reaction_monomers),
+    CP_INIT,
     TL_CP_GET(_fragments_aam_array), TL_CP_GET(_full_product),
     TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 

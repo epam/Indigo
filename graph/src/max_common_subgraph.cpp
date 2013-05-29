@@ -1500,8 +1500,10 @@ int MaxCommonSubgraph::Greedy::_matchedEdges(){
 
 //Refinement stage: random discrete descent method
 //-------------------------------------------------------------------------------------------------------------------
+CP_DEF(MaxCommonSubgraph::RandomDisDec);
+
 MaxCommonSubgraph::RandomDisDec::RandomDisDec(AdjMatricesStore &aj):
-_adjMstore(aj),TL_CP_GET(_errorList),TL_CP_GET(_listErrVertices),_maxIteration(MAX_ITERATION){
+_adjMstore(aj),CP_INIT,TL_CP_GET(_errorList),TL_CP_GET(_listErrVertices),_maxIteration(MAX_ITERATION){
    setIterationNumber(aj._context.parametersForApproximate.maxIteration);
    cancellation_handler = getCancellationHandler();
 }

@@ -28,12 +28,15 @@ using namespace indigo;
 
 IMPL_ERROR(MolfileSaver, "molfile saver");
 
+CP_DEF(MolfileSaver);
+
 MolfileSaver::MolfileSaver (Output &output) :
 reactionAtomMapping(0),
 reactionAtomInversion(0),
 reactionAtomExactChange(0),
 reactionBondReactingCenter(0),
  _output(output),
+ CP_INIT,
 TL_CP_GET(_atom_mapping),
 TL_CP_GET(_bond_mapping)
 {

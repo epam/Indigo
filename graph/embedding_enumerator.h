@@ -106,6 +106,8 @@ protected:
 
    GraphVertexEquivalence *_equivalence_handler;
 
+   CP_DECL;
+
    TL_CP_DECL(Array<int>, _core_1);
    TL_CP_DECL(Array<int>, _core_2);
 

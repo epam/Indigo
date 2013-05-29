@@ -60,6 +60,7 @@ public:
    Array<int> *bond_flags;
 
    bool has_mapping;
+   CP_DECL;
    TL_CP_DECL(Array<int>, atom_mapping_to_restore);
    TL_CP_DECL(Array<int>, inv_atom_mapping_to_restore);
    TL_CP_DECL(Array<int>, bond_mapping_to_restore);

@@ -26,8 +26,11 @@ using namespace indigo;
 
 IMPL_ERROR(BaseReactionSubstructureMatcher, "reaction substructure matcher");
 
+CP_DEF(BaseReactionSubstructureMatcher);
+
 BaseReactionSubstructureMatcher::BaseReactionSubstructureMatcher (Reaction &target) :
 _target(target),
+CP_INIT,
 TL_CP_GET(_matchers),
 TL_CP_GET(_aam_to_second_side_1),
 TL_CP_GET(_aam_to_second_side_2),
@@ -233,7 +236,10 @@ void BaseReactionSubstructureMatcher::_highlight ()
          _query->getBaseMolecule(_matchers[i]->_current_molecule_1), _matchers[i]->_current_core_1.ptr(), true);
 }
 
+CP_DEF(BaseReactionSubstructureMatcher::_Matcher);
+
 BaseReactionSubstructureMatcher::_Matcher::_Matcher (BaseReactionSubstructureMatcher &context) :
+CP_INIT,
 TL_CP_GET(_current_core_1),
 TL_CP_GET(_current_core_2),
 _context(context),
@@ -251,6 +257,7 @@ TL_CP_GET(_mapped_aams)
 }
 
 BaseReactionSubstructureMatcher::_Matcher::_Matcher (const BaseReactionSubstructureMatcher::_Matcher &other) :
+CP_INIT,
 TL_CP_GET(_current_core_1),
 TL_CP_GET(_current_core_2),
 _context(other._context),

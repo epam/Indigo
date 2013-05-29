@@ -284,6 +284,7 @@ public:
    RenderSettings ();
    void init (float sf);
 
+   CP_DECL;
    TL_CP_DECL(Array<double>, bondDashAromatic);
    TL_CP_DECL(Array<double>, bondDashAny);
    TL_CP_DECL(Array<double>, bondDashSingleOrAromatic);
