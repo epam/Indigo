@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -31,7 +31,7 @@ namespace indigo
 
    FILE *openFile( Encoding filename_encoding, const char *filename, const char *mode);
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
    _locale_t getCLocale ();
 
    class CLocale

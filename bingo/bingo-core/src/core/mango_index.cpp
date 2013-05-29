@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -49,7 +49,7 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
    Molecule::checkForConsistency(mol);
 
    // Make aromatic molecule
-   MoleculeAromatizer::aromatizeBonds(mol);
+   MoleculeAromatizer::aromatizeBonds(mol, AromaticityOptions::BASIC);
 
    MangoExact::calculateHash(mol, _hash);
 

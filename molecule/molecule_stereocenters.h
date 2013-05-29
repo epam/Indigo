@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -69,9 +69,11 @@ public:
 
    int getType  (int idx) const;
    int getGroup (int idx) const;
+   void setGroup (int idx, int group);
    const int * getPyramid (int idx) const;
    int * getPyramid (int idx);
    void setType (int idx, int type, int group);
+   void setType (int idx, int type);
    void invertPyramid (int idx);
 
    bool sameGroup (int idx1, int idx2);
@@ -82,6 +84,7 @@ public:
    void getOrGroup   (int number, Array<int> &indices);
    void getAndGroup  (int number, Array<int> &indices);
 
+   bool haveAbs ();
    bool haveAllAbs ();
    bool haveAllAbsAny ();
    bool haveAllAndAny ();

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2010-2012 GGA Software Services LLC
+# Copyright (C) 2010-2013 GGA Software Services LLC
 # 
 # This file is part of Indigo toolkit.
 # 
@@ -11,12 +11,11 @@
 # This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 # WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-import indigo
 from indigo import *
 
-class IndigoInchi(object):
 
-    def __init__ (self, indigo):
+class IndigoInchi(object):
+    def __init__(self, indigo):
         self.indigo = indigo
 
         if os.name == 'posix' and not platform.mac_ver()[0]:
@@ -27,7 +26,7 @@ class IndigoInchi(object):
             self._lib = CDLL(indigo.dllpath + "/libindigo-inchi.dylib")
         else:
             raise IndigoException("unsupported OS: " + os.name)
-            
+
         self._lib.indigoInchiVersion.restype = c_char_p
         self._lib.indigoInchiVersion.argtypes = []
         self._lib.indigoInchiResetOptions.restype = c_int
@@ -44,38 +43,38 @@ class IndigoInchi(object):
         self._lib.indigoInchiGetLog.argtypes = []
         self._lib.indigoInchiGetAuxInfo.restype = c_char_p
         self._lib.indigoInchiGetAuxInfo.argtypes = []
-        
-    def resetOptions (self):
-        self.indigo._setSID()
+
+    def resetOptions(self):
+        self.indigo._setSessionId()
         self.indigo._checkResult(self._lib.indigoInchiResetOptions())
-    
-    def loadMolecule (self, inchi):
-        self.indigo._setSID()
+
+    def loadMolecule(self, inchi):
+        self.indigo._setSessionId()
         res = self.indigo._checkResult(self._lib.indigoInchiLoadMolecule(inchi))
         if res == 0:
             return None
-        return Indigo.IndigoObject(self.indigo, res)
+        return self.indigo.IndigoObject(self.indigo, res)
 
-    def version (self):
-        self.indigo._setSID()
+    def version(self):
+        self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiVersion())
-        
-    def getInchi (self, molecule):
-        self.indigo._setSID()
+
+    def getInchi(self, molecule):
+        self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetInchi(molecule.id))
 
-    def getInchiKey (self, inchi):
-        self.indigo._setSID()
+    def getInchiKey(self, inchi):
+        self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetInchiKey(inchi))
-                
-    def getWarning (self):
-        self.indigo._setSID()
+
+    def getWarning(self):
+        self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetWarning())
-                                
-    def getLog (self):
-        self.indigo._setSID()
+
+    def getLog(self):
+        self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetLog())
-            
-    def getAuxInfo (self):
-        self.indigo._setSID()
+
+    def getAuxInfo(self):
+        self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetAuxInfo())

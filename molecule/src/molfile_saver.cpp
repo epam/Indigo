@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -308,10 +308,10 @@ bool MolfileSaver::_getSubstitutionCountFlagValue (QueryMolecule &qmol, int idx,
             value = -1;
          return true;
       }
-      int values[1] = { 4 };
+      int values[1] = { 6 };
       if (atom.sureValueBelongs(QueryMolecule::ATOM_SUBSTITUENTS, values, 1))
       {
-         value = 4;
+         value = 6;
          return true;
       }
    }

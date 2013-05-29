@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -101,7 +101,7 @@ void MangoTautomer::_validateQueryData ()
       QS_DEF(QueryMolecule, aromatized_query);
 
       aromatized_query.clone(_query.ref(), 0, 0);
-      QueryMoleculeAromatizer::aromatizeBonds(aromatized_query);
+      QueryMoleculeAromatizer::aromatizeBonds(aromatized_query, AromaticityOptions::BASIC);
       
       MoleculeFingerprintBuilder builder(aromatized_query, _context.fp_parameters);
       builder.query = true;
@@ -192,7 +192,7 @@ void MangoTautomer::_initTarget (bool from_database)
       Molecule::saveBondOrders(_target, _target_bond_types);
 
    if (!from_database)
-      MoleculeAromatizer::aromatizeBonds(_target);
+      MoleculeAromatizer::aromatizeBonds(_target, AromaticityOptions::BASIC);
 }
 
 bool MangoTautomer::matchBinary (const Array<char> &target_buf)

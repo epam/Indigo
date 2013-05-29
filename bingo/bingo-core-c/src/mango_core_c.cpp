@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -528,7 +528,7 @@ CEXPORT const char * mangoSMILES (const char *target_buf, int target_buf_len, in
       loader.loadMolecule(target);
 
       if (canonical)
-         MoleculeAromatizer::aromatizeBonds(target);
+         MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
 
       ArrayOutput out(self.buffer);
 

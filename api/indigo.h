@@ -15,7 +15,7 @@
 #ifndef __indigo__
 #define __indigo__
 
-#ifdef _WIN32
+#if defined(_WIN32)  && !defined(__MINGW32__)
 #define qword unsigned _int64
 #else
 #define qword unsigned long long
@@ -318,6 +318,9 @@ CEXPORT int indigoIsRSite (int atom);
 CEXPORT int indigoStereocenterType (int atom);
 CEXPORT int indigoChangeStereocenterType (int atom, int type);
 
+CEXPORT int indigoStereocenterGroup (int atom);
+CEXPORT int indigoSetStereocenterGroup (int atom, int group);
+
 // returns 4 integers with atom indices that defines stereocenter pyramid
 CEXPORT const int* indigoStereocenterPyramid (int atom);
 
@@ -445,6 +448,8 @@ CEXPORT int indigoResetSymmetricCisTrans (int handle);
 CEXPORT int indigoResetSymmetricStereocenters (int handle);
 CEXPORT int indigoMarkEitherCisTrans (int handle);
 CEXPORT int indigoMarkStereobonds (int handle);
+
+CEXPORT int indigoValidateChirality (int handle);
 
 // Accepts a symbol from the periodic table (like "C" or "Br"),
 // or a pseudoatom symbol, like "Pol". Returns the added atom.

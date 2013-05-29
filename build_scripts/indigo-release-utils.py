@@ -19,6 +19,7 @@ presets = {
     "win64" : ("Visual Studio 10 Win64", ""),
     "win32-2012" : ("Visual Studio 11", ""),
     "win64-2012" : ("Visual Studio 11 Win64", ""),
+    "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
@@ -91,6 +92,8 @@ elif args.generator.find("Xcode") != -1:
     subprocess.check_call("cmake --build . --target package --config %s" % (args.config), shell=True)
 elif args.generator.find("Visual Studio") != -1:
     subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config), shell=True)
+elif args.generator.find("MinGW Makefiles") != -1:
+    subprocess.check_call("mingw32-make package", shell=True)
 else:
     print("Do not know how to run package and install target")
 

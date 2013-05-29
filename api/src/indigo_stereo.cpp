@@ -16,6 +16,7 @@
 #include "indigo_reaction.h"
 #include "reaction/reaction.h"
 #include "molecule/molecule_automorphism_search.h"
+#include "molecule/molecule_exact_matcher.h"
 
 CEXPORT int indigoStereocenterType (int atom)
 {
@@ -50,6 +51,35 @@ static int mapStereocenterType (int api_stereocenter_type)
    }
 }
 
+CEXPORT int indigoStereocenterGroup (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      if (ia.mol.stereocenters.getType(ia.idx) == 0)
+         throw IndigoError("Atom is not a stereocenter");
+
+      return ia.mol.stereocenters.getGroup(ia.idx);
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoSetStereocenterGroup (int atom, int group)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      if (ia.mol.stereocenters.getType(ia.idx) == 0)
+         throw IndigoError("Atom is not a stereocenter");
+
+      ia.mol.stereocenters.setGroup(ia.idx, group);
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int indigoChangeStereocenterType (int atom, int type)
 {
    INDIGO_BEGIN
@@ -61,7 +91,8 @@ CEXPORT int indigoChangeStereocenterType (int atom, int type)
 
       int group = ia.mol.stereocenters.getGroup(ia.idx);
       ia.mol.stereocenters.setType(ia.idx, mapStereocenterType(type), group);
-      ia.mol.stereocenters.markBond(ia.idx);
+      if (ia.mol.have_xyz)
+         ia.mol.stereocenters.markBond(ia.idx);
 
       return 0;
    }
@@ -454,6 +485,66 @@ CEXPORT int indigoMarkStereobonds (int handle)
          Reaction &rxn = obj.getReaction();
          for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
             rxn.getMolecule(i).stereocenters.markBonds();
+      }
+      else
+         throw IndigoError("only molecules and reactions have stereocenters");
+      return 0;
+   }
+   INDIGO_END(-1)
+}
+
+static void _indigoValidateMoleculeChirality (Molecule &mol)
+{
+   if (mol.stereocenters.size() == 0)
+      return;
+   if (!mol.stereocenters.haveAbs())
+      return;
+
+   QS_DEF(Molecule, mirror);
+   mirror.clone(mol, 0, 0);
+
+   for (int s = mirror.stereocenters.begin();
+      s != mirror.stereocenters.end();
+      s = mirror.stereocenters.next(s))
+   {
+      int atom = mirror.stereocenters.getAtomIndex(s);
+      if (mirror.stereocenters.getType(atom) == MoleculeStereocenters::ATOM_ABS)
+         mirror.stereocenters.invertPyramid(atom);
+   }
+
+   // Check exact matching
+   MoleculeExactMatcher matcher(mol, mirror);
+   matcher.flags = MoleculeExactMatcher::CONDITION_ALL;
+
+   if (!matcher.find())
+      return;
+         
+   for (int s = mol.stereocenters.begin();
+      s != mol.stereocenters.end();
+      s = mol.stereocenters.next(s))
+   {
+      int atom = mol.stereocenters.getAtomIndex(s);
+      if (mol.stereocenters.getType(atom) == MoleculeStereocenters::ATOM_ABS)
+         mol.stereocenters.setType(atom, MoleculeStereocenters::ATOM_AND);
+   }
+}
+
+CEXPORT int indigoValidateChirality (int handle)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
+
+      if (IndigoBaseMolecule::is(obj))
+      {
+         Molecule &mol = obj.getMolecule();
+         _indigoValidateMoleculeChirality(mol);
+      }
+      else if (IndigoBaseReaction::is(obj))
+      {
+         Reaction &rxn = obj.getReaction();
+         for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            _indigoValidateMoleculeChirality(rxn.getMolecule(i));
       }
       else
          throw IndigoError("only molecules and reactions have stereocenters");

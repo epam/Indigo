@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (C) 2009-2012 GGA Software Services LLC
+* Copyright (C) 2009-2013 GGA Software Services LLC
 *
 * This file is part of Indigo toolkit.
 *
@@ -112,7 +112,7 @@ void RenderContext::storeAndDestroyMetafile (bool discard)
 #endif
 
 RenderContext::RenderContext (const RenderOptions& ropt, float sf): TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
-metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt)
+metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt), _pattern(NULL)
 {
    _settings.init(sf);
    bprintf(_fontfamily, "Arial");
@@ -414,8 +414,6 @@ void RenderContext::drawItemBackground (const RenderItem& item)
 
 void RenderContext::drawTextItemText (const TextItem& ti)
 {
-   bool bold = ti.highlighted && opt.highlightThicknessEnable;
-
    Vec3f color;
    if (ti.ritype == RenderItem::RIT_AAM)
       color.copy(opt.aamColor);
@@ -431,6 +429,12 @@ void RenderContext::drawTextItemText (const TextItem& ti)
       if (ti.highlighted && opt.highlightColorEnable)
          color.copy(opt.highlightColor);
    }
+   drawTextItemText (ti, color);
+}
+
+void RenderContext::drawTextItemText (const TextItem& ti, const Vec3f& color)
+{
+   bool bold = ti.highlighted && opt.highlightThicknessEnable;
    drawTextItemText (ti, color, bold);
 }
 
@@ -897,6 +901,29 @@ void RenderContext::setSingleSource (const Vec3f& color)
 {
    cairo_set_source_rgb(_cr, color.x, color.y, color.z);
    cairoCheckStatus();
+}
+
+void RenderContext::setGradientSource (const Vec3f& color1, const Vec3f& color2, const Vec2f& pos1, const Vec2f& pos2)
+{
+   if (_pattern != NULL) {
+      throw new Error("Pattern already initialized");
+   }
+
+   _pattern = cairo_pattern_create_linear (pos1.x, pos1.y, pos2.x, pos2.y);
+   cairo_pattern_add_color_stop_rgb (_pattern, 0, color1.x, color1.y, color1.z);
+   cairo_pattern_add_color_stop_rgb (_pattern, 1, color2.x, color2.y, color2.z);
+   cairo_set_source (_cr, _pattern);
+
+   cairoCheckStatus();
+}
+
+void RenderContext::clearPattern ()
+{
+   if (_pattern != NULL) {
+      cairo_pattern_destroy (_pattern);
+      _pattern = NULL;
+      cairoCheckStatus();
+   }
 }
 
 float RenderContext::_getDashedLineAlignmentOffset (float length)

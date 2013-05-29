@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -52,7 +52,7 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
    profTimerStop(tload);
 
    if (canonical)
-      MoleculeAromatizer::aromatizeBonds(target);
+      MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
 
    QS_DEF(Array<char>, smiles);
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -134,6 +134,7 @@ private:
    void _bondAromatic (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
    void _bondTriple (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
    void _bondAny (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
+   int _parseColorString (Scanner& str, float& r, float& g, float& b);
 
    // local
    void* _hdc;

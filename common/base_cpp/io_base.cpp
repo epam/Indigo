@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,7 +16,7 @@
 
 #include "base_cpp/io_base.h"
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 #include <windows.h>
 #include <io.h>
 #include <fcntl.h>
@@ -27,7 +27,7 @@ using namespace indigo;
 FILE *indigo::openFile( Encoding filename_encoding, const char *filename, const char *mode )
 {
    FILE *file = 0;
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
    if (filename_encoding == ENCODING_UTF8)
    {
       wchar_t w_filename[1024];
@@ -48,7 +48,7 @@ FILE *indigo::openFile( Encoding filename_encoding, const char *filename, const 
    return file;
 }
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 CLocale CLocale::instance;
 
 _locale_t indigo::getCLocale ()

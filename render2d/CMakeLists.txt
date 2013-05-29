@@ -20,3 +20,4 @@ endif()
 set_target_properties(render2d PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 target_link_libraries(render2d cairo)
 pack_static(render2d)
+

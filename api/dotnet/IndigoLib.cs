@@ -25,8 +25,8 @@ namespace com.ggasoftware.indigo
         int indigoReadFile(string filename);
         int indigoReadString(string str);
         int indigoLoadString(string str);
-        int indigoReadBuffer(string buffer, int size);
-        int indigoLoadBuffer(string buffer, int size);
+        int indigoReadBuffer(byte[] buffer, int size);
+        int indigoLoadBuffer(byte[] buffer, int size);
         int indigoWriteFile(string filename);
         int indigoWriteBuffer();
         int indigoClose(int item);
@@ -110,6 +110,9 @@ namespace com.ggasoftware.indigo
         int indigoChangeStereocenterType(int atom, int type);
         int indigoAddStereocenter(int atom, int type, int v1, int v2, int v3, int v4);
 
+        int indigoStereocenterGroup(int atom);
+        int indigoSetStereocenterGroup(int atom, int group);
+
         sbyte* indigoSymbol(int atom);
         int indigoDegree(int atom);
         int indigoGetCharge(int atom, int* charge);
@@ -181,6 +184,8 @@ namespace com.ggasoftware.indigo
         int indigoResetSymmetricCisTrans(int handle);
         int indigoResetSymmetricStereocenters(int handle);
         int indigoMarkEitherCisTrans(int handle);
+        int indigoMarkStereobonds(int handle);
+        int indigoValidateChirality(int handle);
 
         int indigoAddAtom(int molecule, string symbol);
         int indigoResetAtom(int atom, string symbol);

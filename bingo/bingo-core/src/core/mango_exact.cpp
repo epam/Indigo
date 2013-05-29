@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -165,7 +165,7 @@ bool MangoExact::matchLoadedTarget ()
 void MangoExact::_initQuery (Molecule &query)
 {
    int i;
-   MoleculeAromatizer::aromatizeBonds(query);
+   MoleculeAromatizer::aromatizeBonds(query, AromaticityOptions::BASIC);
 
    if (_flags & MoleculeExactMatcher::CONDITION_STEREO)
    {
@@ -178,7 +178,7 @@ void MangoExact::_initQuery (Molecule &query)
 void MangoExact::_initTarget (Molecule &target, bool from_database)
 {
    if (!from_database)
-      MoleculeAromatizer::aromatizeBonds(target);
+      MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
 }
 
 bool MangoExact::matchBinary (Scanner &scanner, Scanner *xyz_scanner)

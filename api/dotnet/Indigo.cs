@@ -320,7 +320,7 @@ namespace com.ggasoftware.indigo
 
             if (match == 0)
                 return null;
-            return new IndigoObject(this, new IndigoObject[] { obj1, obj2 }, match);
+            return new IndigoObject(this, match, new IndigoObject[] { obj1, obj2 });
         }
 
         public IndigoObject exactMatch(IndigoObject obj1, IndigoObject obj2)
@@ -398,7 +398,7 @@ namespace com.ggasoftware.indigo
         public IndigoObject substructureMatcher(IndigoObject target, string mode)
         {
             setSessionID();
-            return new IndigoObject(this, target, checkResult(_indigo_lib.indigoSubstructureMatcher(target.self, mode)));
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoSubstructureMatcher(target.self, mode)), target);
         }
 
         public IndigoObject substructureMatcher(IndigoObject target)
@@ -499,7 +499,7 @@ namespace com.ggasoftware.indigo
         public IndigoObject createSaver(IndigoObject output, string format)
         {
             setSessionID();
-            return new IndigoObject(this, output, checkResult(_indigo_lib.indigoCreateSaver(output.self, format)));
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoCreateSaver(output.self, format)), output);
         }
 
         public IndigoObject createFileSaver(string filename, string format)
@@ -512,6 +512,62 @@ namespace com.ggasoftware.indigo
         {
             setSessionID();
             checkResult(_indigo_lib.indigoTransform(reaction.self, monomer.self));
+        }
+
+        public IndigoObject loadBuffer(byte[] buf)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadBuffer(buf, buf.Length)));
+        }
+
+        public IndigoObject loadString(string s)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadString(s)));
+        }
+
+        public IndigoObject iterateSDF(IndigoObject reader)
+        {
+            setSessionID();
+            int result = checkResult(_indigo_lib.indigoIterateSDF(reader.self));
+            if (result == 0)
+            {
+                return null;
+            }
+            return new IndigoObject(this, result, reader);
+        }
+
+        public IndigoObject iterateRDF(IndigoObject reader)
+        {
+            setSessionID();
+            int result = checkResult(_indigo_lib.indigoIterateRDF(reader.self));
+            if (result == 0)
+            {
+                return null;
+            }
+            return new IndigoObject(this, result, reader);
+        }
+
+        public IndigoObject iterateCML(IndigoObject reader)
+        {
+            setSessionID();
+            int result = checkResult(_indigo_lib.indigoIterateCML(reader.self));
+            if (result == 0)
+            {
+                return null;
+            }
+            return new IndigoObject(this, result, reader);
+        }
+
+        public IndigoObject iterateSmiles(IndigoObject reader)
+        {
+            setSessionID();
+            int result = checkResult(_indigo_lib.indigoIterateSmiles(reader.self));
+            if (result == 0)
+            {
+                return null;
+            }
+            return new IndigoObject(this, result, reader);
         }
 
         public void free(int id)
@@ -591,7 +647,7 @@ namespace com.ggasoftware.indigo
         {
             _indigo_lib.indigoSetSessionId(_sid);
         }
-        
+
         private long _sid = -1;
         private String _dllpath;
         private int _dll_loader_id;

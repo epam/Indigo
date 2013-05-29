@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -1429,6 +1429,8 @@ bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<i
             mcs.findApproximateMCS();
         }
     } catch (Exception& e) {
+		if(strstr(e.message(), "input mapping incorrect") != 0)
+			throw e;
         return false;
     }
 

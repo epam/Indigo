@@ -3200,15 +3200,14 @@ IndigoSubtreesIter::~IndigoSubtreesIter ()
 {
 }
 
-void IndigoSubtreesIter::_handleTree (Graph &graph, const int *v_mapping, const int *e_mapping, void *context)
+void IndigoSubtreesIter::_handleTree (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
 {
    IndigoSubtreesIter *self = (IndigoSubtreesIter *)context;
 
-   Array<int> &vertices = self->_vertices.push();
-   Array<int> &edges = self->_edges.push();
-
-   Graph::filterVertices(graph, v_mapping, FILTER_NEQ, -1, vertices);
-   Graph::filterEdges(graph, e_mapping, FILTER_NEQ, -1, edges);
+   Array<int> &self_vertices = self->_vertices.push();
+   Array<int> &self_edges = self->_edges.push();
+   self_vertices.copy(vertices);
+   self_edges.copy(edges);
 }
 
 bool IndigoSubtreesIter::hasNext ()

@@ -220,7 +220,7 @@ bool RingoExact::matchLoadedTarget ()
 void RingoExact::_initQuery (Reaction &query)
 {
    int i, j;
-   query.aromatize();
+   query.aromatize(AromaticityOptions::BASIC);
 
    if (_flags & MoleculeExactMatcher::CONDITION_STEREO)
    {
@@ -237,7 +237,7 @@ void RingoExact::_initQuery (Reaction &query)
 void RingoExact::_initTarget (Reaction &target, bool from_database)
 {
    if (!from_database)
-      target.aromatize();
+      target.aromatize(AromaticityOptions::BASIC);
 }
 
 bool RingoExact::matchBinary (Scanner &scanner)

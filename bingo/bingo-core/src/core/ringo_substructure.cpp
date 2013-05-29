@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -113,7 +113,7 @@ void RingoSubstructure::_initQuery (QueryReaction &query_in, QueryReaction &quer
    ReactionAutomapper ram(query_out);
    ram.correctReactingCenters(true);
 
-   query_out.aromatize();
+   query_out.aromatize(AromaticityOptions::BASIC);
 
    _nei_query_counters.calculate(query_out);
 } 
@@ -153,7 +153,7 @@ void RingoSubstructure::_initTarget (bool from_database)
    {
       ReactionAutomapper ram(_target_reaction);
       ram.correctReactingCenters(true);
-      _target_reaction.aromatize();
+      _target_reaction.aromatize(AromaticityOptions::BASIC);
    }
    _nei_target_counters.calculate(_target_reaction);
 } 

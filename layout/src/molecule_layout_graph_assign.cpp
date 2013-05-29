@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -773,7 +773,11 @@ void MoleculeLayoutGraph::_assignFinalCoordinates (float bond_length, const Arra
          int last = first;
          for (i = first; i != vertexEnd(); i = vertexNext(i))
             last = i;
-         if (_layout_vertices[first].pos.x > _layout_vertices[last].pos.x)
+
+         const float EPS = 0.0001f;
+         float diff = _layout_vertices[first].pos.x - _layout_vertices[last].pos.x;
+
+         if (diff > EPS)
             for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
                _layout_vertices[i].pos.x *= -1;
       }

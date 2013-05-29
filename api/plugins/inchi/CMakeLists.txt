@@ -40,6 +40,9 @@ endif()
 # Indigo InChI shared
 add_library(indigo-inchi-shared SHARED ${IndigoInchi_src} ${IndigoInchi_headers})
 SET_TARGET_PROPERTIES(indigo-inchi-shared PROPERTIES OUTPUT_NAME "indigo-inchi")
+if (MSVC OR MINGW)
+	set_target_properties(indigo-inchi-shared PROPERTIES PREFIX "")
+endif()
 if(UNIX AND NOT APPLE)
 	SET_TARGET_PROPERTIES(indigo-inchi-shared PROPERTIES
 		LINK_FLAGS -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/indigo_inchi.so.map)

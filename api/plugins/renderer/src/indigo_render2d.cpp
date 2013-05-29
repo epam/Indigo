@@ -94,6 +94,7 @@ DINGO_MODE indigoRenderMapOutputFormat (const char *format)
       outFmtMap.insert("png", MODE_PNG);
       outFmtMap.insert("svg", MODE_SVG);
       outFmtMap.insert("emf", MODE_EMF);
+      outFmtMap.insert("cdxml", MODE_CDXML);
    }
    return outFmtMap.find(format) ? (DINGO_MODE)outFmtMap.at(format) : MODE_NONE;
 }
@@ -300,6 +301,13 @@ void indigoRenderSetComment (const char* comment)
    rp.cnvOpt.comment.appendString(comment, true);
 }
 
+void indigoRenderSetAtomColorProperty (const char* prop)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.atomColorProp.clear();
+   rp.rOpt.atomColorProp.appendString(prop, true);
+}
+
 void indigoRenderSetCommentFontSize (float fontSize)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -469,10 +477,11 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
 
 DINGO_MODE indigoRenderGuessOutputFormat(const char* filename)
 {
-   int len = strlen(filename);
-   if (len < 4 || filename[len-4] != '.')
+   const char *ext = strrchr(filename, '.');
+   if (ext == NULL)
       return MODE_NONE;
-   return indigoRenderMapOutputFormat(filename + len - 3);
+
+   return indigoRenderMapOutputFormat(ext + 1);
 }
 
 CEXPORT int indigoRenderToFile (int object, const char *filename)
@@ -553,6 +562,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle);
    mgr.setOptionHandlerString("render-catalysts-placement", indigoRenderSetCatalystsPlacement);
    mgr.setOptionHandlerString("render-superatom-mode", indigoRenderSetSuperatomMode);
+   mgr.setOptionHandlerString("render-atom-color-property", indigoRenderSetAtomColorProperty);
 
    mgr.setOptionHandlerBool("render-coloring", indigoRenderSetColoring);
    mgr.setOptionHandlerBool("render-valences-visible", indigoRenderSetValencesVisible);

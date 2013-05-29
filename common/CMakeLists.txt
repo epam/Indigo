@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 project(Common C CXX)
 # Collect file list for BaseC
 file (GLOB BaseC_src base_c/*.c*)
-if (MSVC)
+if (MSVC OR MINGW)
     file (GLOB BaseC_src_excl base_c/*_posix.c*)
 else()
     file (GLOB BaseC_src_excl base_c/*_win.c* base_c/*_win32.c*)
@@ -12,7 +12,7 @@ file (GLOB BaseC_headers base_c/*.h*)
 
 # Collect file list for BaseCpp
 file (GLOB BaseCpp_src base_cpp/*.c*)
-if (MSVC)
+if (MSVC OR MINGW)
     file (GLOB BaseCpp_src_excl base_cpp/*_posix.c*)
 else()
     file (GLOB BaseCpp_src_excl base_cpp/*_win.c* base_cpp/*_win32.c*)

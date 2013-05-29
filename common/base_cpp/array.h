@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -218,6 +218,21 @@ public:
             return i;
 
        return -1;
+   }
+
+   int count (const T &value) const
+   {
+      return count(0, _length, value);
+   }
+
+   int count (int from, int to, const T &value) const
+   {
+      int cnt = 0;
+      for (int i = from; i < to; i++)
+         if (_array[i] == value)
+            cnt++;
+
+       return cnt;
    }
 
    void swap (int idx1, int idx2)

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -35,7 +35,7 @@ class QueryMolecule;
 class QueryReaction;
 class Output;
 
-enum DINGO_MODE {MODE_NONE, MODE_PDF, MODE_PNG, MODE_SVG, MODE_EMF, MODE_HDC, MODE_PRN};
+enum DINGO_MODE {MODE_NONE, MODE_PDF, MODE_PNG, MODE_SVG, MODE_EMF, MODE_HDC, MODE_PRN, MODE_CDXML};
 enum LABEL_MODE {LABEL_MODE_NONE, LABEL_MODE_HETERO, LABEL_MODE_TERMINAL_HETERO, LABEL_MODE_ALL};
 enum STEREO_STYLE {STEREO_STYLE_EXT, STEREO_STYLE_OLD, STEREO_STYLE_NONE};
 enum {CWC_BASE = -2, CWC_WHITE=0, CWC_BLACK, CWC_RED, CWC_GREEN, CWC_BLUE, CWC_DARKGREEN, CWC_COUNT};
@@ -145,6 +145,8 @@ struct AtomDesc {
    Vec2f pos;
    Vec2f boundBoxMin;
    Vec2f boundBoxMax;
+   Vec3f hcolor;
+   bool hcolorSet;
    int label;
    int queryLabel;
    int color;
@@ -398,6 +400,7 @@ public:
    bool showCycles; // for diagnostic purposes
    bool agentsBelowArrow;
    bool collapseSuperatoms;
+   Array<char> atomColorProp;
 private:
    RenderOptions (const RenderOptions& );
 };

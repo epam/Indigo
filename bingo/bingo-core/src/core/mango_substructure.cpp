@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2012 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -270,7 +270,7 @@ void MangoSubstructure::_initQuery (QueryMolecule &query_in, QueryMolecule &quer
 {
    _correctQueryStereo(query_in);
 
-   QueryMoleculeAromatizer::aromatizeBonds(query_in);
+   QueryMoleculeAromatizer::aromatizeBonds(query_in, AromaticityOptions::BASIC);
    _nei_query_counters.calculate(query_in);
 
    QS_DEF(Array<int>, transposition);
@@ -297,7 +297,7 @@ void MangoSubstructure::_initTarget (bool from_database)
       Molecule::saveBondOrders(_target, _target_bond_types);
 
    if (!from_database)
-      MoleculeAromatizer::aromatizeBonds(_target);
+      MoleculeAromatizer::aromatizeBonds(_target, AromaticityOptions::BASIC);
 
    _nei_target_counters.calculate(_target);
 } 
