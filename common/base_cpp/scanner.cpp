@@ -142,7 +142,7 @@ bool Scanner::_readDouble (double &res, int max)
    bool minus = false;
    bool digit = false;
    bool e = false;
-   int denom = 1;
+   double denom = 0;
    int cnt = 0;
 
    while (1)
