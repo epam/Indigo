@@ -30,3 +30,4 @@ SET_TARGET_PROPERTIES(bingo-oracle-shared PROPERTIES OUTPUT_NAME "bingo-oracle")
 set_property(TARGET bingo-oracle-shared PROPERTY FOLDER "bingo-oracle")
 
 pack_bingo(bingo-oracle-shared)
+

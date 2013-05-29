@@ -26,8 +26,10 @@
 
 IMPL_ERROR(BingoFingerprints, "screening");
 
+CP_DEF(BingoFingerprints);
+
 BingoFingerprints::BingoFingerprints (int context_id) :
-TL_CP_GET(_table_name)
+CP_INIT, TL_CP_GET(_table_name)
 {
    ArrayOutput output(_table_name);
 
@@ -831,4 +833,20 @@ void BingoFingerprints::_optimizePendingBlock ()
       }
    }
    _pending_bits.swap(_pending_bits_2);
+}
+
+//
+// BingoFingerprints::Screening
+//
+
+CP_DEF(BingoFingerprints::Screening);
+
+BingoFingerprints::Screening::Screening () :
+CP_INIT,
+TL_CP_GET(query_ones),
+TL_CP_GET(passed),
+TL_CP_GET(one_counters),
+TL_CP_GET(passed_pre),
+TL_CP_GET(fp_final)
+{
 }
