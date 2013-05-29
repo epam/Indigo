@@ -19,6 +19,11 @@
 #include "base_cpp/scanner.h"
 #include "lzw/lzw_dictionary.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class DLLEXPORT LzwDecoder
@@ -66,5 +71,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

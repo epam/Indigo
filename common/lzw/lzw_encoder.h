@@ -19,6 +19,11 @@
 #include "base_cpp/output.h"
 #include "lzw/lzw_dictionary.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class DLLEXPORT LzwEncoder
@@ -69,6 +74,10 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif 
 
