@@ -44,6 +44,7 @@ public:
    public:
       DECL_ERROR;
 
+      CP_DECL;
       TL_CP_DECL(ReusableObjArray<Molecule>, _monomers);
       TL_CP_DECL(Array<int>, _reactant_indexes);
       TL_CP_DECL(Array<int>, _deep_levels);
@@ -100,6 +101,7 @@ private:
    RedBlackStringMap<int> &_smiles_array;
    ReactionMonomers &_reaction_monomers;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _fragments_aam_array);
    TL_CP_DECL(QueryMolecule, _full_product);
    TL_CP_DECL(Array<int>, _product_monomers);

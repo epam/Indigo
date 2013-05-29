@@ -80,6 +80,7 @@ protected:
 protected:
    const Graph &_graph;
 
+   CP_DECL;
    TL_CP_DECL(Array<byte>,            _matchingEdgesLocal);
    TL_CP_DECL(Array<VertexExtInfo>,   _verticesInfo);
    // Path has the following format: (v0, localEdge0, localEdge1, ...)

@@ -18,8 +18,11 @@ using namespace indigo;
 
 IMPL_ERROR(GZipScanner, "GZip scanner");
 
+CP_DEF(GZipScanner);
+
 GZipScanner::GZipScanner (Scanner &source) :
 _source(source),
+CP_INIT,
 TL_CP_GET(_inbuf),
 TL_CP_GET(_outbuf)
 {

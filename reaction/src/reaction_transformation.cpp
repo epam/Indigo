@@ -21,7 +21,9 @@ using namespace indigo;
 
 IMPL_ERROR(ReactionTransformation, "Reaction transformation");
 
-ReactionTransformation::ReactionTransformation( void ) : TL_CP_GET(_merged_reaction), TL_CP_GET(_cur_monomer)
+CP_DEF(ReactionTransformation);
+
+ReactionTransformation::ReactionTransformation( void ) : CP_INIT, TL_CP_GET(_merged_reaction), TL_CP_GET(_cur_monomer)
 {
    _merged_reaction.clear();
    _cur_monomer.clear();

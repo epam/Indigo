@@ -50,6 +50,7 @@ public:
    bool skip_3d_chirality;
 
    // Loaded properties
+   CP_DECL;
    TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
 
    DECL_ERROR;

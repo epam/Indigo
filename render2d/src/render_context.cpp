@@ -111,7 +111,9 @@ void RenderContext::storeAndDestroyMetafile (bool discard)
 
 #endif
 
-RenderContext::RenderContext (const RenderOptions& ropt, float sf): TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
+CP_DEF(RenderContext);
+
+RenderContext::RenderContext (const RenderOptions& ropt, float sf): CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
 metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt), _pattern(NULL)
 {
    _settings.init(sf);

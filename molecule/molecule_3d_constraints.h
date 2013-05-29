@@ -301,6 +301,7 @@ protected:
    typedef RedBlackMap<int, Line3f>  MapL;
    typedef RedBlackMap<int, Plane3f> MapP;
 
+   CP_DECL;
    TL_CP_DECL(MapV, _cache_v);
    TL_CP_DECL(MapL, _cache_l);
    TL_CP_DECL(MapP, _cache_p);

@@ -58,6 +58,7 @@ protected:
    Molecule &_mol;
    const MoleculeChainFingerprintParameters &_parameters;
 
+   CP_DECL;
    TL_CP_DECL(Array<byte>, _fingerprint);
 
 private:

@@ -124,6 +124,7 @@ protected:
    TautomerSuperStructure *_tau_super_structure;
    bool _is_cycle;
 
+   CP_DECL;
    TL_CP_DECL(Array<byte>, _total_fingerprint);
 
 private:

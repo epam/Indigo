@@ -59,6 +59,7 @@ protected:
 
    Output &_output;
 
+   CP_DECL;
    TL_CP_DECL(Array<_Idx>, _written_atoms);
    TL_CP_DECL(Array<_Idx>, _written_bonds);
    TL_CP_DECL(Array<int>, _ncomp);

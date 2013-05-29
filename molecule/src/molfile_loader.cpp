@@ -30,8 +30,11 @@ using namespace indigo;
 
 IMPL_ERROR(MolfileLoader, "molfile loader");
 
+CP_DEF(MolfileLoader);
+
 MolfileLoader::MolfileLoader (Scanner &scanner) : 
 _scanner(scanner),
+CP_INIT,
 TL_CP_GET(_stereo_care_atoms),
 TL_CP_GET(_stereo_care_bonds),
 TL_CP_GET(_stereocenter_types),

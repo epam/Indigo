@@ -185,6 +185,7 @@ private:
       _constrained_primary_atoms, _constrained_secondary_atoms,
       _constrained_saturated_atoms;
 
+   CP_DECL;
    // Molecule skeleton with orbitals nodes attached
    TL_CP_DECL(Graph, _extended_skeleton);
    // Edge mapping between skeleton and extended skeleton

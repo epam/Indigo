@@ -24,8 +24,11 @@ using namespace indigo;
 
 IMPL_ERROR(AromaticityMatcher, "AromaticityMatcher");
 
+CP_DEF(AromaticityMatcher);
+
 AromaticityMatcher::AromaticityMatcher (QueryMolecule &query, BaseMolecule &base, const AromaticityOptions &arom_options) :
    _query(query), _base(base),
+   CP_INIT,
    TL_CP_GET(_matching_edges_state)
 {
    _submolecule.reset(base.neu());

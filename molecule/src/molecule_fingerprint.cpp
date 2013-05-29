@@ -30,10 +30,13 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeFingerprintBuilder, "fingerprint builder");
 
+CP_DEF(MoleculeFingerprintBuilder);
+
 MoleculeFingerprintBuilder::MoleculeFingerprintBuilder (BaseMolecule &mol,
                      const MoleculeFingerprintParameters &parameters):
 _mol(mol),
 _parameters(parameters),
+CP_INIT,
 TL_CP_GET(_total_fingerprint)
 {
    _total_fingerprint.resize(_parameters.fingerprintSize());

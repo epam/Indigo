@@ -28,8 +28,10 @@ using namespace indigo;
 
 IMPL_ERROR(CmfSaver, "CMF saver");
 
+CP_DEF(CmfSaver);
+
 CmfSaver::CmfSaver (LzwDict &dict, Output &output) :
-TL_CP_GET(_atom_sequence)
+CP_INIT, TL_CP_GET(_atom_sequence)
 {
    _init();
 
@@ -42,7 +44,7 @@ TL_CP_GET(_atom_sequence)
 }
 
 CmfSaver::CmfSaver (LzwEncoder &encoder) :
-TL_CP_GET(_atom_sequence)
+CP_INIT, TL_CP_GET(_atom_sequence)
 {
    _init();
    _ext_encoder = &encoder;
@@ -51,7 +53,7 @@ TL_CP_GET(_atom_sequence)
 }
 
 CmfSaver::CmfSaver (Output &output) :
-TL_CP_GET(_atom_sequence)
+CP_INIT, TL_CP_GET(_atom_sequence)
 {
    _init();
    _output = &output;

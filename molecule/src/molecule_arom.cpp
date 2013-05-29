@@ -29,7 +29,10 @@ using namespace indigo;
 
 IMPL_ERROR(AromatizerBase, "aromatizer");
 
+CP_DEF(AromatizerBase);
+
 AromatizerBase::AromatizerBase (BaseMolecule &molecule) : _basemol(molecule),
+   CP_INIT,
    TL_CP_GET(_bonds_arom),
    TL_CP_GET(_bonds_arom_count),
    TL_CP_GET(_unsure_cycles)

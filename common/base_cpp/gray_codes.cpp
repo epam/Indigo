@@ -21,8 +21,10 @@
 
 using namespace indigo;
 
+CP_DEF(GrayCodesEnumerator);
+
 GrayCodesEnumerator::GrayCodesEnumerator (int length, bool needFullCode) :
-   TL_CP_GET(_indices), TL_CP_GET(_code)
+   CP_INIT, TL_CP_GET(_indices), TL_CP_GET(_code)
 
 {
    _bitChangeIndex = START;

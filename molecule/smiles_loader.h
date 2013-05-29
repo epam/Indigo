@@ -128,6 +128,7 @@ protected:
 
    Scanner &_scanner;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _atom_stack);
    TL_CP_DECL(Array<_CycleDesc>, _cycles);
    TL_CP_DECL(StringPool, _pending_bonds_pool);

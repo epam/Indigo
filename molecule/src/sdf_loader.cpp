@@ -21,7 +21,10 @@ using namespace indigo;
 
 IMPL_ERROR(SdfLoader, "SDF loader");
 
+CP_DEF(SdfLoader);
+
 SdfLoader::SdfLoader (Scanner &scanner) :
+CP_INIT,
 TL_CP_GET(data),
 TL_CP_GET(properties),
 TL_CP_GET(_offsets),

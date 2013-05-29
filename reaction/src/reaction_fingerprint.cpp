@@ -21,10 +21,13 @@ using namespace indigo;
 
 IMPL_ERROR(ReactionFingerprintBuilder, "fingerprint builder");
 
+CP_DEF(ReactionFingerprintBuilder);
+
 ReactionFingerprintBuilder::ReactionFingerprintBuilder (BaseReaction &reaction,
         const MoleculeFingerprintParameters &parameters) :
 _reaction(reaction),
 _parameters(parameters),
+CP_INIT,
 TL_CP_GET(_fingerprint)
 {
    query = false;

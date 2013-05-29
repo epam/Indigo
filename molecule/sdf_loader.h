@@ -41,6 +41,7 @@ public:
 
    void readAt (int index);
 
+   CP_DECL;
    TL_CP_DECL(Array<char>, data);
    TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
 

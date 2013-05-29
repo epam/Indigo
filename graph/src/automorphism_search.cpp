@@ -18,7 +18,10 @@ using namespace indigo;
 
 IMPL_ERROR(AutomorphismSearch, "automorphism search");
 
+CP_DEF(AutomorphismSearch);
+
 AutomorphismSearch::AutomorphismSearch () :
+CP_INIT,
 TL_CP_GET(_call_stack),
 TL_CP_GET(_lab),
 TL_CP_GET(_ptn),

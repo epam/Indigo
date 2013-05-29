@@ -93,6 +93,7 @@ private:
 
    const Graph &_g;
 
+   CP_DECL;
    TL_CP_DECL(SkewSymmetricNetwork, _network);
    // Edges mapping between graph and network
    TL_CP_DECL(Array<int>, _edges_graph_to_net);

@@ -31,11 +31,13 @@ using namespace indigo;
 
 IMPL_ERROR(ReactionProductEnumerator, "Reaction product enumerator");
 
+CP_DEF(ReactionProductEnumerator);
+
 ReactionProductEnumerator::ReactionProductEnumerator( QueryReaction &reaction ) : 
         is_multistep_reaction(false), is_self_react(false),
         is_one_tube(false), max_product_count(1000), max_deep_level(2),
         _reaction(reaction),
-        TL_CP_GET(_product_aam_array), TL_CP_GET(_smiles_array), TL_CP_GET(_tubes_monomers)
+        CP_INIT, TL_CP_GET(_product_aam_array), TL_CP_GET(_smiles_array), TL_CP_GET(_tubes_monomers)
 {
    _product_aam_array.clear();
    _smiles_array.clear();

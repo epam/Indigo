@@ -20,7 +20,10 @@ using namespace indigo;
 
 IMPL_ERROR(SmartTableOutput, "smart table output");
 
+CP_DEF(SmartTableOutput);
+
 SmartTableOutput::SmartTableOutput (Output &output, bool use_smart_printing) :
+   CP_INIT,
    TL_CP_GET(_lines),
    TL_CP_GET(_line_formats),
    TL_CP_GET(_line_format_index),

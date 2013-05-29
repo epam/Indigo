@@ -46,6 +46,7 @@ protected:
 
    bool _read (int length, void *res);
    
+   CP_DECL;
    TL_CP_DECL(Array<Bytef>, _inbuf);
    TL_CP_DECL(Array<Bytef>, _outbuf);
    int  _outbuf_start;

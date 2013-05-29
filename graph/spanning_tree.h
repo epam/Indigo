@@ -83,6 +83,7 @@ protected:
    const Filter *_edge_filter;
 
    // these members made static for saving time of memory allocations
+   CP_DECL;
    TL_CP_DECL(Array<ExtEdge>, _edges_list);
    TL_CP_DECL(Array<int>, _depth_counters);
    TL_CP_DECL(Graph, _tree);

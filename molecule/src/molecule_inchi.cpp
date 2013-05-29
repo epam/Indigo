@@ -26,8 +26,11 @@ using namespace MoleculeInChILayers;
 
 IMPL_ERROR(MoleculeInChI, "InChI canonicalizer");
 
+CP_DEF(MoleculeInChI);
+
 MoleculeInChI::MoleculeInChI (Output &output) :
    _output(output),
+   CP_INIT,
    TL_CP_GET(_components),
    TL_CP_GET(_component_indices)
 {

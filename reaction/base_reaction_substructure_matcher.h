@@ -109,6 +109,7 @@ protected:
 
       int _current_molecule_1, _current_molecule_2;
 
+      CP_DECL;
       TL_CP_DECL(Array<int>, _current_core_1);
       TL_CP_DECL(Array<int>, _current_core_2);
 
@@ -135,6 +136,7 @@ protected:
 
    Reaction &_target;
 
+   CP_DECL;
    TL_CP_DECL(PtrArray<_Matcher>, _matchers);
    TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_1);
    TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_2);

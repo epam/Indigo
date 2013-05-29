@@ -182,8 +182,10 @@ void RenderOptions::clear()
 
 IMPL_ERROR(MoleculeRenderInternal, "molecule render internal");
 
+CP_DEF(MoleculeRenderInternal);
+
 MoleculeRenderInternal::MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw) :
-_mol(NULL), _cw(cw), _settings(settings), _opt(opt), TL_CP_GET(_data), TL_CP_GET(_atomMapping), TL_CP_GET(_atomMappingInv), TL_CP_GET(_bondMappingInv), isRFragment(false)
+_mol(NULL), _cw(cw), _settings(settings), _opt(opt), CP_INIT, TL_CP_GET(_data), TL_CP_GET(_atomMapping), TL_CP_GET(_atomMappingInv), TL_CP_GET(_bondMappingInv), isRFragment(false)
 {
    _data.clear();
    _atomMapping.clear();

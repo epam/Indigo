@@ -75,6 +75,7 @@ private:
    Molecule &_target;
    Obj<GraphDecomposer> _decomposer;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _atom_pi_system_idx);
 
    struct _Pi_System

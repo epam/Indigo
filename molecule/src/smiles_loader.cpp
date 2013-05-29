@@ -28,7 +28,10 @@ using namespace indigo;
 
 IMPL_ERROR(SmilesLoader, "SMILES loader");
 
+CP_DEF(SmilesLoader);
+
 SmilesLoader::SmilesLoader (Scanner &scanner) : _scanner(scanner),
+CP_INIT,
 TL_CP_GET(_atom_stack),
 TL_CP_GET(_cycles),
 TL_CP_GET(_pending_bonds_pool),

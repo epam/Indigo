@@ -38,21 +38,23 @@ void MoleculeAutoLoader::_init ()
 
 IMPL_ERROR(MoleculeAutoLoader, "molecule auto loader");
 
-MoleculeAutoLoader::MoleculeAutoLoader (Scanner &scanner) : TL_CP_GET(properties)
+CP_DEF(MoleculeAutoLoader);
+
+MoleculeAutoLoader::MoleculeAutoLoader (Scanner &scanner) : CP_INIT, TL_CP_GET(properties)
 {
    _scanner = &scanner;
    _own_scanner = false;
    _init();
 }
 
-MoleculeAutoLoader::MoleculeAutoLoader (const Array<char> &arr) : TL_CP_GET(properties)
+MoleculeAutoLoader::MoleculeAutoLoader (const Array<char> &arr) : CP_INIT, TL_CP_GET(properties)
 {
    _scanner = new BufferScanner(arr);
    _own_scanner = true;
    _init();
 }
 
-MoleculeAutoLoader::MoleculeAutoLoader (const char *str) : TL_CP_GET(properties)
+MoleculeAutoLoader::MoleculeAutoLoader (const char *str) : CP_INIT, TL_CP_GET(properties)
 {
    _scanner = new BufferScanner(str);
    _own_scanner = true;

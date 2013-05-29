@@ -20,8 +20,11 @@ using namespace indigo;
 
 IMPL_ERROR(BiconnectedDecomposer, "biconnected_decomposer");
 
+CP_DEF(BiconnectedDecomposer);
+
 BiconnectedDecomposer::BiconnectedDecomposer (const Graph &graph) :
 _graph(graph),
+CP_INIT,
 TL_CP_GET(_components),
 TL_CP_GET(_dfs_order),
 TL_CP_GET(_lowest_order),

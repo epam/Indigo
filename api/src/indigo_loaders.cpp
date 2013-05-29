@@ -385,9 +385,11 @@ IndigoObject * IndigoSmilesReaction::clone ()
    return IndigoReaction::cloneFrom(*this);
 }
 
+CP_DEF(IndigoMultilineSmilesLoader);
+
 IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (Scanner &scanner) :
 IndigoObject(MULTILINE_SMILES_LOADER),
-TL_CP_GET(_offsets)
+CP_INIT, TL_CP_GET(_offsets)
 {
    _own_scanner = false;
    _scanner = &scanner;
@@ -399,7 +401,7 @@ TL_CP_GET(_offsets)
 
 IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (const char *filename) :
 IndigoObject(MULTILINE_SMILES_LOADER),
-TL_CP_GET(_offsets)
+CP_INIT, TL_CP_GET(_offsets)
 {
    _scanner = 0;
    _scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);

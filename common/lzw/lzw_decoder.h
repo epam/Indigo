@@ -38,6 +38,7 @@ private:
 
    BitInWorker _bitin;
 
+   CP_DECL;
    TL_CP_DECL(Array<byte>, _symbolsBuf);
 
    // no implicit copy

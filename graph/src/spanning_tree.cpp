@@ -20,7 +20,10 @@ using namespace indigo;
 
 IMPL_ERROR(SpanningTree, "spanning tree");
 
+CP_DEF(SpanningTree);
+
 SpanningTree::SpanningTree (Graph &graph, const Filter *vertex_filter, const Filter *edge_filter) : _graph(graph),
+CP_INIT,
 TL_CP_GET(_edges_list),
 TL_CP_GET(_depth_counters),
 TL_CP_GET(_tree),

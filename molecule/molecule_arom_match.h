@@ -74,6 +74,7 @@ protected:
    enum {
       ANY = 0, AROMATIC, NONAROMATIC
    };
+   CP_DECL;
    TL_CP_DECL(Array<int>, _matching_edges_state);
    AutoPtr<BaseMolecule> _submolecule;
 };

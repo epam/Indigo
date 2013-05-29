@@ -52,6 +52,7 @@ protected:
    void _processIfNotPushed (Array<int> &dfs_stack, int w);
 
    const Graph &_graph;
+   CP_DECL;
    TL_CP_DECL(PtrArray<Array<int> >, _components);
    TL_CP_DECL(Array<int>, _dfs_order);
    TL_CP_DECL(Array<int>, _lowest_order);

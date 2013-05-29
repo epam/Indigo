@@ -45,6 +45,7 @@ public:
    int currentNumber ();
    int count ();
 
+   CP_DECL;
    /*
     * Data buffer with reaction or molecule for current record
     */

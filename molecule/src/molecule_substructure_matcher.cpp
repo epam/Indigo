@@ -31,7 +31,10 @@
 
 using namespace indigo;
 
+CP_DEF(MoleculeSubstructureMatcher::MarkushContext);
+
 MoleculeSubstructureMatcher::MarkushContext::MarkushContext (QueryMolecule &query_, BaseMolecule &target_) :
+CP_INIT,
 TL_CP_GET(query),
 TL_CP_GET(query_marking),
 TL_CP_GET(sites),
@@ -55,8 +58,11 @@ depth(0)
 
 IMPL_ERROR(MoleculeSubstructureMatcher, "molecule substructure matcher");
 
+CP_DEF(MoleculeSubstructureMatcher);
+
 MoleculeSubstructureMatcher::MoleculeSubstructureMatcher (BaseMolecule &target) :
 _target(target),
+CP_INIT,
 TL_CP_GET(_3d_constrained_atoms),
 TL_CP_GET(_unfolded_target_h),
 TL_CP_GET(_used_target_h)

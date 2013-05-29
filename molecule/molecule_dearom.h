@@ -137,6 +137,7 @@ protected:
    int _aromaticGroups;
 
    // Additional data stored here to prevent reallocatoins
+   CP_DECL;
    TL_CP_DECL(Array<int>,  _vertexAromaticGroupIndex);
    TL_CP_DECL(Array<bool>, _vertexIsAcceptDoubleEdge);
    TL_CP_DECL(Array<bool>, _vertexIsAcceptSingleEdge);
@@ -193,6 +194,7 @@ protected:
    DearomatizationsGroups              _aromaticGroups;
    DearomatizationsStorage            *_dearomatizations;
 
+   CP_DECL;
    TL_CP_DECL(DearomatizationsGroups::GROUP_DATA, _aromaticGroupData);
    /*TL_CP_DECL(*/Dbitset/*,    */_edgesFixed/*)*/;
    /*TL_CP_DECL(*/Dbitset/*,    */_verticesFixed/*)*/;
@@ -277,6 +279,7 @@ protected:
    GraphMatchingEdgeFixed   _graphMatchingFixedEdges;
    DearomatizationsGroups   _aromaticGroups;
 
+   CP_DECL;
    TL_CP_DECL(Array<byte>,        _matchedEdges);      // Edges that have already been matched
    TL_CP_DECL(Array<byte>,        _matchedEdgesState); // State of such edges
    TL_CP_DECL(Array<GroupExData>, _groupExInfo);       // Additional data for group
@@ -310,6 +313,7 @@ private:
    DearomatizationsStorage &_dearomatizations;
    Molecule &_mol;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, vertex_connectivity);
 };
 

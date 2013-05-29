@@ -135,6 +135,11 @@ public:
       _vacant_indices.push(idx);
    }
 
+   T& getByIndex (int idx)
+   {
+      return *_objects[idx];
+   }
+
 private:
    OsLock _lock;
    bool is_valid;
@@ -164,10 +169,117 @@ public:
       if (_var_pool->isValid())
          _var_pool->release(_idx);
    }
-private:
+protected:
    int _idx;
    _ReusableVariablesPool< T >* _var_pool;
+};
+
+// Abstract proxy class to call a destructor for an allocated data
+class Destructor
+{
+public:
+   virtual void callDestructor (void *data) = 0;
+
+   virtual ~Destructor() {};
+};
+
+// Proxy destructor class for a type T
+template <typename T>
+class DestructorT : public Destructor
+{
+public:
+   virtual void callDestructor (void *data)
+   {
+      ((T*)data)->~T();
+   }
+};
+
+// Template function to create proxy destructor
+template <typename T>
+Destructor *createDestructor (T *t)
+{
+   return new DestructorT<T>();
+}
+
+// Variables pool that can reuse objects allocations that are initialized in the same order
+class _LocalVariablesPool
+{
+public:
+   _LocalVariablesPool ()
+   {
+      reset();
+   }
+
+   ~_LocalVariablesPool ()
+   {
+      for (int i = 0; i < data.size(); i++)
+      {
+         destructors[i]->callDestructor(data[i]);
+         free(data[i]);
+      }
+   }
+
+   template <typename T>
+   size_t hash ()
+   {
+      // Use simple and fast class size as a class hash to check that initialization order is the same
+      return sizeof(T);
+   }
+
+   template <typename T>
+   T& getVacant ()
+   {
+      data.expandFill(index + 1, 0);
+      destructors.expand(index + 1);
+      type_hash.expandFill(index + 1, 0);
+
+      if (data[index] == 0)
+      {
+         // Allocate data and destructor
+         data[index] = malloc(sizeof(T));
+         T *t = new (data[index]) T();
+         destructors[index] = createDestructor(t);
+
+         type_hash[index] = hash<T>();
+      }
+         
+      // Class hash check to verify initialization order
+      if (type_hash[index] != hash<T>())
+         throw Exception("VariablesPool: invalid initialization order");
+
+      T *t = (T*)data[index];
+      index++;
+      return *t;
+   }
+
+   void reset ()
+   {
+      index = 0;
+   }
+
+private:
+   Array<void *> data;
+   Array<size_t> type_hash;
+   PtrArray<Destructor> destructors;
+   int index;
+};
+
+// Auto release class that additionally calls reset method for LocalVariablesPool 
+class _LocalVariablesPoolAutoRelease : public _ReusableVariablesAutoRelease<_LocalVariablesPool>
+{
+public:
+   ~_LocalVariablesPoolAutoRelease ()
+   {
+      if (_var_pool == 0)
+         return;
+      if (_var_pool->isValid())
+      {
+         _LocalVariablesPool &local_pool = _var_pool->getByIndex(_idx);
+         local_pool.reset();
+      }
+   }
 };                   
+
 
 }
 
@@ -182,24 +294,37 @@ private:
 //
 // Reusable class members definition
 // By tradition this macros start with TL_, but should start with SL_
+// To work with them you should first define commom pool with CP_DECL,
+// then define it in the source class with CP_DEF(cls), and initialize
+// in the constructor via CP_INIT before any TL_CP_ initializations
 //
 
 // Add this to class definition  
 #define TL_CP_DECL(TYPE, name) \
-   static TYPE& _GET_##name##_REF (_ReusableVariablesAutoRelease< TYPE > &auto_release) \
-   {                                                                          \
-      static ThreadSafeStaticObj< _ReusableVariablesPool< TYPE > > pool;      \
-      int idx;                                                                \
-      TYPE &var = pool->getVacant(idx);                                        \
-      auto_release.init(idx, pool.ptr());                                          \
-      return var;                                                             \
-   }                                                                          \
-   _ReusableVariablesAutoRelease< TYPE > _POOL_##name##_auto_release;         \
-   TYPE& name
+   typedef TYPE _##name##_TYPE; \
+   TYPE &name
 
 // Add this to constructor initialization list
 #define TL_CP_GET(name) \
-   name(_GET_##name##_REF(_POOL_##name##_auto_release))
+   name(_local_pool.getVacant<_##name##_TYPE>())
+
+#define CP_DECL \
+   _LocalVariablesPoolAutoRelease _local_pool_autorelease;                                      \
+   static _LocalVariablesPool& _getLocalPool (_LocalVariablesPoolAutoRelease &auto_release);    \
+   _LocalVariablesPool &_local_pool                                                             \
+
+#define CP_INIT _local_pool(_getLocalPool(_local_pool_autorelease))
+
+#define CP_DEF(cls) \
+   _LocalVariablesPool& cls::_getLocalPool (_LocalVariablesPoolAutoRelease &auto_release)       \
+   {                                                                                            \
+      static ThreadSafeStaticObj< _ReusableVariablesPool< _LocalVariablesPool > > _shared_pool; \
+                                                                                                \
+      int idx;                                                                                  \
+      _LocalVariablesPool &var = _shared_pool->getVacant(idx);                                  \
+      auto_release.init(idx, _shared_pool.ptr());                                               \
+      return var;                                                                               \
+   }                                                                                            \
 
 #ifdef _WIN32
 #pragma warning(pop)

@@ -16,11 +16,14 @@
 
 using namespace indigo;
 
+CP_DEF(AttachmentLayout);
+
 AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer &bc_decom,
                                    const ObjArray<MoleculeLayoutGraph> &bc_components,
                                    const Array<int> &bc_tree,
                                    MoleculeLayoutGraph &graph, int src_vertex) :
 _src_vertex(src_vertex),
+CP_INIT,
 TL_CP_GET(_src_vertex_map),
 TL_CP_GET(_attached_bc),
 TL_CP_GET(_bc_angles),
@@ -194,9 +197,12 @@ void AttachmentLayout::markDrawnVertices()
    }
 }
 
+CP_DEF(LayoutChooser);
+
 LayoutChooser::LayoutChooser(AttachmentLayout &layout) :
 _n_components(layout._attached_bc.size() - 1),
 _cur_energy(1E+20f),
+CP_INIT,
 TL_CP_GET(_comp_permutation),
 TL_CP_GET(_rest_numbers),
 _layout(layout)

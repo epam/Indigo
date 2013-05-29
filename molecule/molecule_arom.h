@@ -82,6 +82,7 @@ protected:
 
    BaseMolecule &_basemol;
 
+   CP_DECL;
    TL_CP_DECL(Array<byte>,      _bonds_arom);
    TL_CP_DECL(Array<int>,       _bonds_arom_count);
    TL_CP_DECL(Array<CycleDef>,  _unsure_cycles);
