@@ -36,9 +36,13 @@ MoleculeFingerprintBuilder::MoleculeFingerprintBuilder (BaseMolecule &mol,
                      const MoleculeFingerprintParameters &parameters):
 cancellation(0),
 _mol(mol),
-_parameters(parameters),
+_parameters(parameters), 
 CP_INIT,
-TL_CP_GET(_total_fingerprint)
+TL_CP_GET(_total_fingerprint),
+TL_CP_GET(_atom_codes),
+TL_CP_GET(_bond_codes),
+TL_CP_GET(_atom_codes_empty),
+TL_CP_GET(_bond_codes_empty)
 {
    _total_fingerprint.resize(_parameters.fingerprintSize());
    cb_fragment = 0;
@@ -55,6 +59,27 @@ TL_CP_GET(_total_fingerprint)
    skip_any_bonds = false;
    skip_any_atoms_bonds = false;
 }
+
+void MoleculeFingerprintBuilder::_initHashCalculations (BaseMolecule &mol)
+{
+   subgraph_hash.create(mol);
+
+   _atom_codes.clear_resize(mol.vertexEnd());
+   _atom_codes_empty.clear_resize(mol.vertexEnd());
+   _bond_codes.clear_resize(mol.edgeEnd());
+   _bond_codes_empty.clear_resize(mol.edgeEnd());
+   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      _atom_codes[i] = _atomCode(mol, i);
+      _atom_codes_empty[i] = 0;
+   }
+   for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   {
+      _bond_codes[i] = _bondCode(mol, i);
+      _bond_codes_empty[i] = 0;
+   }
+}
+
 
 MoleculeFingerprintBuilder::~MoleculeFingerprintBuilder ()
 {
@@ -173,20 +198,16 @@ int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue (Graph &graph,
    return ret;
 }
 
-int MoleculeFingerprintBuilder::_vertex_code (Graph &graph, int vertex_idx, void *context)
+int MoleculeFingerprintBuilder::_atomCode (BaseMolecule &mol, int vertex_idx)
 {
-   BaseMolecule &mol = (BaseMolecule &)graph;
-
    if (mol.isPseudoAtom(vertex_idx))
       return CRC32::get(mol.getPseudoAtom(vertex_idx));
 
    return mol.getAtomNumber(vertex_idx);
 }
 
-int MoleculeFingerprintBuilder::_edge_code (Graph &graph, int edge_idx, void *context)
+int MoleculeFingerprintBuilder::_bondCode (BaseMolecule &mol, int edge_idx)
 {
-   BaseMolecule &mol = (BaseMolecule &)graph;
-   
    //MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
    //if (self->query && mol.asQueryMolecule().aromaticity.canBeAromatic(edge_idx))
    //  throw Error("internal: _edge_code for possibly aromatic bond");
@@ -197,20 +218,23 @@ int MoleculeFingerprintBuilder::_edge_code (Graph &graph, int edge_idx, void *co
 dword MoleculeFingerprintBuilder::_canonicalizeFragment (BaseMolecule &mol, const Array<int> &vertices,
          const Array<int> &edges, bool use_atoms, bool use_bonds, int *different_vertex_count)
 {
-   SubgraphHash subgraph_hash(mol);
-
-   subgraph_hash.context = this;
-
    if (use_bonds)
-      subgraph_hash.cb_edge_code = _edge_code; 
-   if (use_atoms)
-      subgraph_hash.cb_vertex_code = _vertex_code; 
-   subgraph_hash.max_iterations = (edges.size() + 1) / 2;
-   subgraph_hash.calc_different_codes_count = true;
+      subgraph_hash->edge_codes = &_bond_codes; 
+   else
+      subgraph_hash->edge_codes = &_bond_codes_empty; 
 
-   dword ret = subgraph_hash.getHash(vertices, edges);
+   if (use_atoms)
+      subgraph_hash->vertex_codes = &_atom_codes; 
+   else
+      subgraph_hash->vertex_codes = &_atom_codes_empty; 
+
+   subgraph_hash->max_iterations = (edges.size() + 1) / 2;
+   subgraph_hash->calc_different_codes_count = true;
+
+   dword ret = subgraph_hash->getHash(vertices, edges);
    if (different_vertex_count != 0)
-      *different_vertex_count = subgraph_hash.getDifferentCodesCount();
+      *different_vertex_count = subgraph_hash->getDifferentCodesCount();
+
    return ret;
 }
 
@@ -394,6 +418,8 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
    if (!skip_ord || !skip_any_atoms || !skip_any_atoms_bonds ||
        !skip_any_bonds || !skip_tau || !skip_sim)
    {
+      _initHashCalculations(*mol_for_enumeration);
+
       CycleEnumerator ce(*mol_for_enumeration);
       GraphSubtreeEnumerator se(*mol_for_enumeration);
 
@@ -408,7 +434,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       ce.max_length = sim_only ? 6 : 8;
       ce.cb_handle_cycle = _handleCycle;
       ce.process();
-
+   
       _is_cycle = false;
       se.context = this;
       se.min_vertices = 1;

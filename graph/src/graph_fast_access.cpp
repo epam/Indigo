@@ -21,6 +21,7 @@ using namespace indigo;
 void GraphFastAccess::setGraph (Graph &g)
 {
    _g = &g;
+
    _vertices.clear();
 
    _vertices_nei.resize(g.vertexEnd());
@@ -101,6 +102,24 @@ int GraphFastAccess::findEdgeIndex (int v1, int v2)
          return edges[i];
    return -1;
 }
+
+void GraphFastAccess::prepareEdges ()
+{
+   _edges.clear_resize(_g->edgeEnd());
+   for (int e = _g->edgeBegin(); e != _g->edgeEnd(); e = _g->edgeNext(e))
+      _edges[e] = _g->getEdge(e);
+}
+
+const Edge& GraphFastAccess::getEdge (int e)
+{
+   return _edges[e];
+}
+
+const Edge* GraphFastAccess::getEdges ()
+{
+   return _edges.ptr();
+}
+
 
 int GraphFastAccess::prepareVertexNeiVertices (int v, int &count)
 {
