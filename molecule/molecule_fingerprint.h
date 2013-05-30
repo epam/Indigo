@@ -16,7 +16,10 @@
 #define __molecule_fingerprint__
 
 #include "base_cpp/tlscont.h"
+#include "base_cpp/obj.h"
 #include "molecule/base_molecule.h"
+#include "base_cpp/cancellation_handler.h"
+#include "graph/subgraph_hash.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -90,14 +93,18 @@ public:
 
    void parseFingerprintType(const char *type, bool query);
 
+   CancellationHandler* cancellation;
+
    DECL_ERROR;
+
 protected:
+   void _initHashCalculations (BaseMolecule &mol);
 
    static void _handleTree     (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _handleCycle    (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
-   static int _vertex_code (Graph &graph, int vertex_idx, void *context);
-   static int _edge_code (Graph &graph, int edge_idx, void *context);
+   int _atomCode (BaseMolecule &mol, int vertex_idx);
+   int _bondCode (BaseMolecule &mol, int edge_idx);
 
    static int _maximalSubgraphCriteriaValue (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
@@ -124,8 +131,14 @@ protected:
    TautomerSuperStructure *_tau_super_structure;
    bool _is_cycle;
 
+   Obj<SubgraphHash> subgraph_hash;
+
    CP_DECL;
    TL_CP_DECL(Array<byte>, _total_fingerprint);
+   TL_CP_DECL(Array<int>, _atom_codes);
+   TL_CP_DECL(Array<int>, _bond_codes);
+   TL_CP_DECL(Array<int>, _atom_codes_empty);
+   TL_CP_DECL(Array<int>, _bond_codes_empty);
 
 private:
    MoleculeFingerprintBuilder (const MoleculeFingerprintBuilder &); // no implicit copy

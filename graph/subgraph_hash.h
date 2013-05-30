@@ -17,6 +17,7 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
+#include "graph/graph_fast_access.h"
 
 namespace indigo {
 
@@ -30,14 +31,12 @@ public:
    int max_iterations;
    bool calc_different_codes_count;
 
-   void *context;
-   int (*cb_vertex_code) (Graph &g, int vertex_idx, void *context);
-   int (*cb_edge_code)   (Graph &g, int edge_idx, void *context);
-
    dword getHash ();
    dword getHash (const Array<int> &vertices, const Array<int> &edges);
 
    int getDifferentCodesCount ();
+
+   const Array<int> *vertex_codes, *edge_codes;
 
 private:
    int _getVertexCode (int vertex);
@@ -47,6 +46,11 @@ private:
 
    Graph &_g;
    int _different_codes_count;
+
+   CP_DECL;
+   TL_CP_DECL(Array<dword>, _codes);
+   TL_CP_DECL(Array<dword>, _oldcodes);
+   TL_CP_DECL(GraphFastAccess, _gf);
 };
 
 }

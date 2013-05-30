@@ -16,6 +16,7 @@
 #define __graph_fast_access_h__
 
 #include "base_cpp/array.h"
+#include "graph/graph.h"
 
 namespace indigo {
 
@@ -48,6 +49,10 @@ public:
 
    int findEdgeIndex (int v1, int v2);
 
+   void prepareEdges ();
+   const Edge& getEdge (int e);
+   const Edge* getEdges ();
+
 private:
    Graph *_g;
    
@@ -60,6 +65,8 @@ private:
    };
    Array<VertexNeiBlock> _vertices_nei;
    Array<int> _nei_vertices_data, _nei_edges_data;
+
+   Array<Edge> _edges;
 };
 
 }
