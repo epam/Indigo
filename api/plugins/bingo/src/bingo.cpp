@@ -38,8 +38,8 @@ using namespace bingo;
 // TODO: warning C4273: 'indigo::BingoException::BingoException' : inconsistent dll linkage 
 IMPL_EXCEPTION(indigo, BingoException, "bingo");
 
-static PtrPool<bingo::Index> _bingo_instances;
-static PtrPool<bingo::Matcher> _searches;
+static PtrPool<Index> _bingo_instances;
+static PtrPool<Matcher> _searches;
 
 static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *type, const char *options, bool create)
 {
@@ -51,16 +51,16 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
    fp_params.tau_qwords = 0;
    fp_params.sim_qwords = 8;
    
-   AutoPtr<bingo::Index> context;
+   AutoPtr<Index> context;
    std::string loc_dir(location);
 
    if (loc_dir.find_last_of('/') != loc_dir.length() - 1)
       loc_dir += '/';
 
    if (strcmp(type, "molecule") == 0)
-      context.reset(new bingo::MoleculeIndex());
+      context.reset(new MoleculeIndex());
    else if (strcmp(type, "reaction") == 0)
-      context.reset(new bingo::ReactionIndex());
+      context.reset(new ReactionIndex());
    else
       throw BingoException("wrong database type option");
 
@@ -75,10 +75,10 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
 }
 
 
-static int _insertObjectToDatabase ( Indigo &self, bingo::Index &bingo_index, IndigoObject &indigo_obj, int obj_id)
+static int _insertObjectToDatabase ( Indigo &self, Index &bingo_index, IndigoObject &indigo_obj, int obj_id)
 {
    profTimerStart(t, "_insertObjectToDatabase");
-   if (bingo_index.getType() == bingo::Index::MOLECULE)
+   if (bingo_index.getType() == Index::MOLECULE)
    {
       
       profTimerStart(t1, "_preadd");
@@ -87,21 +87,21 @@ static int _insertObjectToDatabase ( Indigo &self, bingo::Index &bingo_index, In
 
       indigo_obj.getBaseMolecule().aromatize(self.arom_options);
          
-      bingo::IndexMolecule ind_mol(indigo_obj.getMolecule());
+      IndexMolecule ind_mol(indigo_obj.getMolecule());
       profTimerStop(t1);
       
 
       int id = bingo_index.add(ind_mol, obj_id);
       return id;
    }
-   else if (bingo_index.getType() == bingo::Index::REACTION)
+   else if (bingo_index.getType() == Index::REACTION)
    {
       if (!IndigoReaction::is(indigo_obj))
          throw BingoException("bingoInsertRecordObj: Only reaction objects can be added to reaction index");
 
       indigo_obj.getBaseReaction().aromatize(self.arom_options);
 
-      bingo::IndexReaction ind_rxn(indigo_obj.getReaction());
+      IndexReaction ind_rxn(indigo_obj.getReaction());
       int id = bingo_index.add(ind_rxn, obj_id);
       return id;
    }
@@ -157,7 +157,7 @@ CEXPORT int bingoInsertRecordObj (int db, int obj)
          throw BingoException("Incorrect database object");
 
       IndigoObject &indigo_obj = self.getObject(obj);
-      bingo::Index &bingo_index = _bingo_instances.ref(db);
+      Index &bingo_index = _bingo_instances.ref(db);
 
       long obj_id = -1;
       RedBlackStringObjMap< Array<char> > *properties = indigo_obj.getProperties();
@@ -186,7 +186,7 @@ CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id)
          throw BingoException("Incorrect database object");
 
       IndigoObject &indigo_obj = self.getObject(obj);
-      bingo::Index &bingo_index = _bingo_instances.ref(db);
+      Index &bingo_index = _bingo_instances.ref(db);
 
       return _insertObjectToDatabase (self, bingo_index, indigo_obj, id);
    }
@@ -200,7 +200,7 @@ CEXPORT int bingoDeleteRecord (int db, int id)
       if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
          throw BingoException("Incorrect database object");
 
-      bingo::Index &bingo_index = _bingo_instances.ref(db);
+      Index &bingo_index = _bingo_instances.ref(db);
 
       bingo_index.remove(id);
 
@@ -222,20 +222,20 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
       {
          obj.getBaseMolecule().aromatize(self.arom_options);
 
-         AutoPtr<bingo::MoleculeSubstructureQueryData> query_data(new bingo::MoleculeSubstructureQueryData(obj.getQueryMolecule()));
+         AutoPtr<MoleculeSubstructureQueryData> query_data(new MoleculeSubstructureQueryData(obj.getQueryMolecule()));
 
-         bingo::MoleculeIndex &bingo_index = dynamic_cast<bingo::MoleculeIndex &>(_bingo_instances.ref(db));
-         bingo::MoleculeSubMatcher *matcher = dynamic_cast<bingo::MoleculeSubMatcher *>(bingo_index.createMatcher("sub", query_data.release()));
+         MoleculeIndex &bingo_index = dynamic_cast<MoleculeIndex &>(_bingo_instances.ref(db));
+         MoleculeSubMatcher *matcher = dynamic_cast<MoleculeSubMatcher *>(bingo_index.createMatcher("sub", query_data.release()));
          return _searches.add(matcher);
       }
       else if (IndigoQueryReaction::is(obj))
       {
          obj.getBaseReaction().aromatize(self.arom_options);
 
-         AutoPtr<bingo::ReactionSubstructureQueryData> query_data(new bingo::ReactionSubstructureQueryData(obj.getQueryReaction()));
+         AutoPtr<ReactionSubstructureQueryData> query_data(new ReactionSubstructureQueryData(obj.getQueryReaction()));
 
-         bingo::ReactionIndex &bingo_index = dynamic_cast<bingo::ReactionIndex &>(_bingo_instances.ref(db));
-         bingo::ReactionSubMatcher *matcher = dynamic_cast<bingo::ReactionSubMatcher *>(bingo_index.createMatcher("sub", query_data.release()));
+         ReactionIndex &bingo_index = dynamic_cast<ReactionIndex &>(_bingo_instances.ref(db));
+         ReactionSubMatcher *matcher = dynamic_cast<ReactionSubMatcher *>(bingo_index.createMatcher("sub", query_data.release()));
          return _searches.add(matcher);
       }
       else
@@ -257,20 +257,20 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
       {
          obj.getBaseMolecule().aromatize(self.arom_options);
 
-         AutoPtr<bingo::MoleculeSimilarityQueryData> query_data(new bingo::MoleculeSimilarityQueryData(obj.getMolecule(), min, max));
+         AutoPtr<MoleculeSimilarityQueryData> query_data(new MoleculeSimilarityQueryData(obj.getMolecule(), min, max));
 
-         bingo::MoleculeIndex &bingo_index = dynamic_cast<bingo::MoleculeIndex &>(_bingo_instances.ref(db));
-         bingo::MoleculeSimMatcher *matcher = dynamic_cast<bingo::MoleculeSimMatcher *>(bingo_index.createMatcher("sim", query_data.release()));
+         MoleculeIndex &bingo_index = dynamic_cast<MoleculeIndex &>(_bingo_instances.ref(db));
+         MoleculeSimMatcher *matcher = dynamic_cast<MoleculeSimMatcher *>(bingo_index.createMatcher("sim", query_data.release()));
          return _searches.add(matcher);
       }
       else if (IndigoReaction::is(obj))
       {
          obj.getBaseReaction().aromatize(self.arom_options);
 
-         AutoPtr<bingo::ReactionSimilarityQueryData> query_data(new bingo::ReactionSimilarityQueryData(obj.getReaction(), min, max));
+         AutoPtr<ReactionSimilarityQueryData> query_data(new ReactionSimilarityQueryData(obj.getReaction(), min, max));
 
-         bingo::ReactionIndex &bingo_index = dynamic_cast<bingo::ReactionIndex &>(_bingo_instances.ref(db));
-         bingo::ReactionSimMatcher *matcher = dynamic_cast<bingo::ReactionSimMatcher *>(bingo_index.createMatcher("sim", query_data.release()));
+         ReactionIndex &bingo_index = dynamic_cast<ReactionIndex &>(_bingo_instances.ref(db));
+         ReactionSimMatcher *matcher = dynamic_cast<ReactionSimMatcher *>(bingo_index.createMatcher("sim", query_data.release()));
 
          return _searches.add(matcher);
       }
