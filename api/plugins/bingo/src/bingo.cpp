@@ -33,6 +33,7 @@
 #include "base_cpp/exception.h"
 
 using namespace indigo;
+using namespace bingo;
 
 // TODO: warning C4273: 'indigo::BingoException::BingoException' : inconsistent dll linkage 
 IMPL_EXCEPTION(indigo, BingoException, "bingo");
@@ -110,6 +111,12 @@ static int _insertObjectToDatabase ( Indigo &self, bingo::Index &bingo_index, In
    return -1;
 }
 
+Matcher& getMatcher (int id)
+{
+   if (id < _searches.begin() || id >= _searches.end() || !_searches.hasElement(id))
+      throw BingoException("Incorrect search object id=%d", id);
+   return *_searches[id];
+}
 
 CEXPORT int bingoCreateDatabaseFile (const char *location, const char *type, const char *options)
 {
@@ -277,8 +284,8 @@ CEXPORT int bingoEndSearch (int search_obj)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw BingoException("Incorrect search object");
+      // Ensure that such matcher exists
+      getMatcher(search_obj);
 
       _searches.remove(search_obj);
       return 1;
@@ -290,10 +297,7 @@ CEXPORT int bingoNext (int search_obj)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw BingoException("Incorrect search object");
-
-      return _searches[search_obj]->next();
+      return getMatcher(search_obj).next();
    }
    INDIGO_END(-1);
 }
@@ -302,10 +306,7 @@ CEXPORT int bingoGetCurrentId (int search_obj)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw BingoException("Incorrect search object");
-
-      return _searches.ref(search_obj).currentId();
+      return getMatcher(search_obj).currentId();
    }
    INDIGO_END(-1);
 }
@@ -314,11 +315,8 @@ CEXPORT int bingoEstimateRemainingResultsCount (int search_obj)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw BingoException("Incorrect search object");
-
       int delta;
-      return _searches.ref(search_obj).esimateRemainingResultsCount(delta);
+      return getMatcher(search_obj).esimateRemainingResultsCount(delta);
    }
    INDIGO_END(-1);
 }
@@ -327,11 +325,8 @@ CEXPORT int bingoEstimateRemainingResultsCountError (int search_obj)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw BingoException("Incorrect search object");
-
       int delta;
-      _searches.ref(search_obj).esimateRemainingResultsCount(delta);
+      getMatcher(search_obj).esimateRemainingResultsCount(delta);
       return delta;
    }
    INDIGO_END(-1);
@@ -341,11 +336,8 @@ CEXPORT int bingoEstimateRemainingTime (int search_obj, float *time_sec)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw BingoException("Incorrect search object");
-
       float delta;
-      *time_sec = _searches.ref(search_obj).esimateRemainingTime(delta);
+      *time_sec = getMatcher(search_obj).esimateRemainingTime(delta);
       return 1;
    }
    INDIGO_END(-1);
@@ -356,12 +348,8 @@ CEXPORT int bingoGetObject (int search_obj)
 {
    INDIGO_BEGIN
    {
-      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
-         throw BingoException("Incorrect search object");
-
-      
-      bingo::Matcher &matcher = _searches.ref(search_obj);
-      const bingo::Index &bingo_index = matcher.getIndex();
+      Matcher &matcher = getMatcher(search_obj);
+      const Index &bingo_index = matcher.getIndex();
       
       return self.addObject(matcher.currentObject());
    }
