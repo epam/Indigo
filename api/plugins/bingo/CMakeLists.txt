@@ -7,12 +7,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../../
 file (GLOB Bingo_src src/*.c*)
 file (GLOB Bingo_headers *.h src/*.h*)
 
-if (MSVC)
-   list (APPEND Bingo_src ${Common_SOURCE_DIR}/base_c/os_dir_win32.c) 
-else()
-   list (APPEND Bingo_src ${Common_SOURCE_DIR}/base_c/os_dir_posix.c) 
-endif() 
-
 include_directories(${Bingo_SOURCE_DIR}
 	${Indigo_SOURCE_DIR}
 	${Indigo_SOURCE_DIR}/src

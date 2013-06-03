@@ -34,7 +34,7 @@ if (NOT NO_STATIC)
 endif()
 
 # Indigo shared
-add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers} $<TARGET_OBJECTS:moleculeObj>)
+add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers} $<TARGET_OBJECTS:moleculeObj> $<TARGET_OBJECTS:commonObj>)
 SET_TARGET_PROPERTIES(indigo-shared PROPERTIES OUTPUT_NAME "indigo")
 set_target_properties(indigo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 if (MSVC OR MINGW)

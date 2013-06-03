@@ -43,6 +43,7 @@ if(APPLE)
 endif()
 
 add_library(common ${BaseC_src} ${BaseC_headers} ${BaseCpp_src} ${BaseCpp_headers} ${LZW_src} ${LZW_headers} ${Math_src} ${Math_headers})
+add_library(commonObj OBJECT ${BaseC_src} ${BaseC_headers} ${BaseCpp_src} ${BaseCpp_headers} ${LZW_src} ${LZW_headers} ${Math_src} ${Math_headers})
 
 if(VISIBILITY_HIDDEN)
     SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
@@ -52,8 +53,8 @@ if(UNIX OR APPLE)
 endif()
 
 set_target_properties(common PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+set_target_properties(commonObj PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 if(UNIX)
 	TARGET_LINK_LIBRARIES(common "-lpthread")
 endif()
 pack_static(common)
-
