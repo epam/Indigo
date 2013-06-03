@@ -8,6 +8,7 @@
 #include "indigo_reaction.h"
 
 #include "molecule/molecule_substructure_matcher.h"
+#include "math/statistics.h"
 
 using namespace indigo;
 
@@ -128,6 +129,9 @@ namespace bingo
       virtual IndigoObject * currentObject () = 0;
       virtual const Index & getIndex () = 0;
 
+      virtual int esimateRemainingResultsCount (int &delta) = 0;
+      virtual float esimateRemainingTime (float &delta) = 0;
+
       virtual ~Matcher () {};
    };
    
@@ -142,11 +146,17 @@ namespace bingo
 
       virtual const Index & getIndex ();
 
+      virtual int esimateRemainingResultsCount (int &delta);
+      virtual float esimateRemainingTime (float &delta);
+
    protected:
       BaseIndex &_index;
       IndigoObject *& _current_obj;
       bool _current_obj_used;
       int _current_id;
+
+      // Variables used for estimation
+      MeanEstimator _match_probability_esimate, _match_time_esimate;
 
       bool _loadCurrentObject();
 

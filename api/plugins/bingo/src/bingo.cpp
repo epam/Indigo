@@ -310,6 +310,48 @@ CEXPORT int bingoGetCurrentId (int search_obj)
    INDIGO_END(-1);
 }
 
+CEXPORT int bingoEstimateRemainingResultsCount (int search_obj)
+{
+   INDIGO_BEGIN
+   {
+      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
+         throw BingoException("Incorrect search object");
+
+      int delta;
+      return _searches.ref(search_obj).esimateRemainingResultsCount(delta);
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int bingoEstimateRemainingResultsCountError (int search_obj)
+{
+   INDIGO_BEGIN
+   {
+      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
+         throw BingoException("Incorrect search object");
+
+      int delta;
+      _searches.ref(search_obj).esimateRemainingResultsCount(delta);
+      return delta;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int bingoEstimateRemainingTime (int search_obj, float *time_sec)
+{
+   INDIGO_BEGIN
+   {
+      if (search_obj < _searches.begin() || search_obj >= _searches.end() || !_searches.hasElement(search_obj))
+         throw BingoException("Incorrect search object");
+
+      float delta;
+      *time_sec = _searches.ref(search_obj).esimateRemainingTime(delta);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+
 CEXPORT int bingoGetObject (int search_obj)
 {
    INDIGO_BEGIN

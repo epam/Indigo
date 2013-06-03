@@ -283,11 +283,17 @@ void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params,
 
 bool BaseIndex::_prepareIndexData (IndexObject &obj)
 {
-   if (!obj.buildCfString(_object_index_data.cf_str))
-      return false;
+   {
+      profTimerStart(t, "prepare_cf");
+      if (!obj.buildCfString(_object_index_data.cf_str))
+         return false;
+   }
 
-   if (!obj.buildFingerprint(_fp_params, &_object_index_data.sub_fp, &_object_index_data.sim_fp))
-      return false;
+   {
+      profTimerStart(t, "prepare_fp");
+      if (!obj.buildFingerprint(_fp_params, &_object_index_data.sub_fp, &_object_index_data.sim_fp))
+         return false;
+   }
 
    return true;
 }

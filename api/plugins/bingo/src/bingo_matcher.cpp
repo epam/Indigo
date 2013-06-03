@@ -2,6 +2,7 @@
 
 #include "molecule/molecule_substructure_matcher.h"
 
+#include "base_c/nano.h"
 #include "base_c/bitarray.h"
 #include "base_cpp/profiling.h"
 
@@ -169,6 +170,34 @@ bool BaseMatcher::_loadCurrentObject()
    return true;
 }
 
+int BaseMatcher::esimateRemainingResultsCount (int &delta)
+{
+   _match_probability_esimate.setCount(_current_id + 1);
+
+   float p = _match_probability_esimate.mean();
+   float error = _match_probability_esimate.meanEsimationError();
+
+   int left_obj_count = _index.getObjectsCount() - _match_time_esimate.getCount();
+   delta = (int)(error * left_obj_count);
+   return (int)(left_obj_count * p);
+}
+
+float BaseMatcher::esimateRemainingTime (float &delta)
+{
+   _match_time_esimate.setCount(_current_id + 1);
+
+   float mean_time = _match_time_esimate.mean();
+   float error = _match_time_esimate.meanEsimationError();
+
+   int left_obj_count = _index.getObjectsCount() - _match_time_esimate.getCount();
+   delta = error * left_obj_count;
+   return left_obj_count * mean_time;
+}
+
+//
+// BaseSubstructureMatcher
+//
+
 BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index, IndigoObject *& current_obj) : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage())
 {
    _fp_size = _index.getFingerprintParams().fingerprintSize();
@@ -187,6 +216,8 @@ bool BaseSubstructureMatcher::next ()
    _current_cand_id++;
    while (!((_current_pack == _fp_storage.getPackCount()) && (_current_cand_id == _candidates.size())))
    {
+      profTimerStart(tsingle, "sub_single");
+
       if (_current_cand_id == _candidates.size())
       {
          profTimerStart(tf, "sub_find_cand");
@@ -212,9 +243,14 @@ bool BaseSubstructureMatcher::next ()
       _current_id = _candidates[_current_cand_id];
 
       profTimerStart(tt, "sub_try");
-      if (_tryCurrent())
-         return true;
+      bool status = _tryCurrent();
       profTimerStop(tt);
+
+      _match_probability_esimate.addValue((float)status);
+      _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
+
+      if (status)
+         return true;
 
       _current_cand_id++;
    }
@@ -433,9 +469,13 @@ bool BaseSimilarityMatcher::next ()
 
    while (_current_id < stor_fp_count)
    {
+      profTimerStart(tsingle, "sim_single");
+
       if (!_loadCurrentObject())
       {
          _current_id++;
+         _match_probability_esimate.addValue(0);
+         _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
          continue;
       }
 
@@ -458,9 +498,13 @@ bool BaseSimilarityMatcher::next ()
       if (tan_coef < _query_data->getMin() || tan_coef > _query_data->getMax())
       {
          _current_id++;
+         _match_probability_esimate.addValue(0);
+         _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
          continue;
       }
 
+      _match_probability_esimate.addValue(1);
+      _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
       return true;
    }
 

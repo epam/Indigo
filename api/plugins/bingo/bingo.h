@@ -40,9 +40,16 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
 CEXPORT int bingoNext (int search_obj);
 CEXPORT int bingoGetCurrentId (int search_obj);
 
+// Estimation methods
+CEXPORT int bingoEstimateRemainingResultsCount (int search_obj);
+CEXPORT int bingoEstimateRemainingResultsCountError (int search_obj);
+CEXPORT int bingoEstimateRemainingTime (int search_obj, float *time_sec);
+
+
 // This method return IndigoObject that represents current object.
 // After calling bingoNext this object automatically points to the next found result
 CEXPORT int bingoGetObject (int search_obj);
+
 CEXPORT int bingoEndSearch (int search_obj);
 
 #endif // __indigo_bingo__
