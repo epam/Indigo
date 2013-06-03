@@ -27,9 +27,11 @@ if (NOT NO_STATIC)
 	set_target_properties(indigo-renderer PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL=")
 	pack_static(indigo-renderer)
 	
-	DEFINE_TEST(indigo-renderer-c-test-static "tests/c/indigo-renderer-test.c" indigo-renderer)
+	DEFINE_TEST(indigo-renderer-c-test-static "tests/c/indigo-renderer-test.c;${Common_SOURCE_DIR}/hacks/memcpy.c" indigo-renderer)
 	# Add stdc++ library required by indigo
 	SET_TARGET_PROPERTIES(indigo-renderer-c-test-static PROPERTIES LINKER_LANGUAGE CXX)
+	set_target_properties(indigo-renderer-c-test-static PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
+
 	if(APPLE)
 		INCLUDE(GetSystemVersion)
 		INCLUDE(MacFrameworks)
@@ -39,7 +41,7 @@ if (NOT NO_STATIC)
 endif()
 	
 # Indigo Renderer shared
-add_library(indigo-renderer-shared SHARED ${IndigoRenderer_src} ${IndigoRenderer_headers})
+add_library(indigo-renderer-shared SHARED ${IndigoRenderer_src} ${IndigoRenderer_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c)
 SET_TARGET_PROPERTIES(indigo-renderer-shared PROPERTIES OUTPUT_NAME "indigo-renderer")
 if (MSVC OR MINGW)
 	set_target_properties(indigo-renderer-shared PROPERTIES PREFIX "")
@@ -52,6 +54,8 @@ if(APPLE)
 endif()
 
 set_target_properties(indigo-renderer-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+set_target_properties(indigo-renderer-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
+
 if (NOT APPLE)
     target_link_libraries(indigo-renderer-shared cairo render2d indigo-shared)
 else()

@@ -12,7 +12,6 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-/* Old
 /* http://rjpower.org/wordpress/fun-with-shared-libraries-version-glibc_2-14-not-found/ */
 
 #ifndef  __gcc_preinclude_h__
