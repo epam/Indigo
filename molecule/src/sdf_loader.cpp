@@ -132,8 +132,10 @@ void SdfLoader::readNext ()
 
    bool pending_emptyline = false;
 
+   int last_offset = -1;
    while (!_scanner->isEOF())
    {
+      last_offset = _scanner->tell();
       _scanner->readLine(str, true);
       if (str.size() > 0 && str[0] == '>')
          break;
@@ -153,10 +155,15 @@ void SdfLoader::readNext ()
          throw Error("data size exceeded the acceptable size %d bytes, Please check for correct file format", MAX_DATA_SIZE);
    }
    
+   int properties_offset = last_offset;
+
+   int properties_end_offset = -1;
    while (1)
    {
       if (strncmp(str.ptr(), "$$$$", 4) == 0)
          break;
+
+      properties_end_offset = _scanner->tell();
 
       BufferScanner ws(str.ptr());
 
@@ -205,11 +212,22 @@ void SdfLoader::readNext ()
          } while (str.size() > 1);
       }
 
+      properties_end_offset = _scanner->tell();
       if (_scanner->isEOF())
          break;
 
       _scanner->readLine(str, true);
    }
+
+   int final_offset = _scanner->tell();
+
+   QS_DEF(Array<char>, properties_data);
+   _scanner->seek(properties_offset, SEEK_SET);
+   _scanner->read(properties_end_offset - properties_offset, properties_data);
+   properties_data.push(0);
+   data.appendString(properties_data.ptr(), true);
+
+   _scanner->seek(final_offset, SEEK_SET);
 
    if (_scanner->tell() > _max_offset)
       _max_offset = _scanner->tell();
