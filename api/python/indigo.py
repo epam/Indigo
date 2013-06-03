@@ -1692,7 +1692,7 @@ class Indigo(object):
 
     def __del__ (self):
         if hasattr(self, '_lib'):
-            sys.__stdout__.write('releaseSessionId ' + str(self._sid))
+            #sys.__stdout__.write('releaseSessionId ' + str(self._sid))
             Indigo._lib.indigoReleaseSessionId(self._sid)
 
     def writeBuffer (self):
