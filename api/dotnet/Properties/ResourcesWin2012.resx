@@ -125,15 +125,15 @@
     <value>..\Resource\Win\x64\indigo.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Win/x64/msvcr110.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Win\x64\msvcr100.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resource\Win\x64\msvcr110.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Win/x86/msvcr110.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Win\x86\msvcr100.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resource\Win\x86\msvcr110.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Win/x64/msvcp110.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Win\x64\msvcp100.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resource\Win\x64\msvcp110.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Win/x86/msvcp110.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Win\x86\msvcp100.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resource\Win\x86\msvcp110.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
