@@ -6,7 +6,7 @@ namespace com.ggasoftware.indigo
     /// <summary>
     /// Bingo search object
     /// </summary>
-    public class BingoObject : IDisposable
+    public unsafe class BingoObject : IDisposable
     {
         private int _id;
         private Indigo _indigo;
@@ -71,7 +71,7 @@ namespace com.ggasoftware.indigo
         }
 
         /// <summary>
-        /// *Not implemented yet*
+        /// Returns a shared IndigoObject for the matched target
         /// </summary>
         /// <returns>Shared Indigo object for the current search operation</returns>
         public IndigoObject getIndigoObject()
@@ -79,6 +79,35 @@ namespace com.ggasoftware.indigo
             IndigoObject res = new IndigoObject(_indigo, Bingo.checkResult(_indigo, _bingoLib.bingoGetObject(_id)));
             _reference = res;
             return res;
+        }
+        
+        /// <summary>
+        /// Method to estimate remaining hits count
+        /// </summary>
+        /// <returns>Estimated hits count</returns>
+        public int estimateRemainingResultsCount ()
+        {
+            return Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingResultsCount(_id));
+        }
+        
+        /// <summary>
+        /// Method to estimate remaining hits count error
+        /// </summary>
+        /// <returns>Estimated hits count error</returns>
+        public int estimateRemainingResultsCountError ()
+        {
+            return Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingResultsCountError(_id));
+        }
+        
+        /// <summary>
+        /// Method to estimate remaining search time
+        /// </summary>
+        /// <returns>Estimated remainin search time</returns>
+        public float estimateRemainingTime ()
+        {
+            float esimated_time;
+            Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingTime(_id, &esimated_time));
+            return esimated_time;
         }
     }
 }
