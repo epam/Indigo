@@ -40,6 +40,7 @@ if os.path.exists("dotnet"):
     shutil.rmtree("dotnet")
 os.mkdir('dotnet')
 
+libraryPath = join(api_dir, 'libs', 'shared')
 # Build Indigo-dotnet
 indigoDotNetPath = join(api_dir, "dotnet")
 if os.path.exists(join(indigoDotNetPath, "Resource")):
@@ -48,9 +49,18 @@ if os.path.exists(join(indigoDotNetPath, "Resource")):
 if 'win' in wrappers:
     os.makedirs(join(indigoDotNetPath, "Resource", 'Win', 'x64'))
     os.makedirs(join(indigoDotNetPath, "Resource", 'Win', 'x86'))
-    win = 1
+    if os.path.exists(join(libraryPath, 'msvcr100.dll')):
+        win2010 = 1
+        win2012 = 0
+    elif os.path.exists(join(libraryPath, 'msvcr110.dll')):
+        win2010 = 0
+        win2012 = 1
+    else:
+        win2010 = 0
+        win2012 = 0
 else:
-    win = 0
+    win2010 = 0
+    win2012 = 0
 
 if 'linux' in wrappers:
     os.makedirs(join(indigoDotNetPath, "Resource", 'Linux', 'x64'))
@@ -67,7 +77,7 @@ else:
     mac = 0
 
 os.chdir(indigoDotNetPath)
-command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+command = '%s /property:LibraryPath=%s /property:Win2010=%s /property:Win2012=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, libraryPath, win2010, win2012, linux, mac, 'copy' if os.name == 'nt' else 'cp')
 print command
 subprocess.check_call(command, shell=True)
 
@@ -97,7 +107,7 @@ else:
     mac = 0
 
 os.chdir(indigoRendererDotNetPath)
-command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+command = '%s /property:LibraryPath=%s /property:Win2010=%s /property:Win2012=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win2010, win2012, linux, mac, 'copy' if os.name == 'nt' else 'cp')
 print command
 subprocess.check_call(command, shell=True)
 
@@ -127,7 +137,7 @@ else:
     mac = 0
 
 os.chdir(indigoInchiDotNetPath)
-command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+command = '%s /property:LibraryPath=%s /property:Win2010=%s /property:Win2012=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win2010, win2012, linux, mac, 'copy' if os.name == 'nt' else 'cp')
 print command
 subprocess.check_call(command, shell=True)
 
