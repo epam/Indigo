@@ -53,6 +53,16 @@ void ByteBufferStorage::load (const char *buf_filename, const char *offset_filen
       {
          _buf_file.seekg(0, std::ios_base::end);
          block_len = (size_t)_buf_file.tellg() - (size_t)i * _block_size;
+
+#ifdef _MSC_VER
+#if _MSC_VER <= 1600
+
+         // VS2010 has a bug in tellg method and doesn't work with file more than 2Gb
+         // http://connect.microsoft.com/VisualStudio/feedback/details/627639/std-fstream-use-32-bit-int-as-pos-type-even-on-x64-platform
+#error Compile is not supported due to a bug in tellg method: http://connect.microsoft.com/VisualStudio/feedback/details/627639/std-fstream-use-32-bit-int-as-pos-type-even-on-x64-platform
+
+#endif
+#endif
       }
 
       _blocks[i] = new byte[_block_size];
