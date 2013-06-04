@@ -594,9 +594,19 @@ namespace com.ggasoftware.indigo
             {
                 case PlatformID.Win32NT:
                     libraryName = "indigo.dll";
-                    dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin", false);
-                    dll_loader.loadLibrary(lib_path, "msvcp100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin", false);
-                    dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin", false);
+                    try
+                    {
+                       dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
+                       dll_loader.loadLibrary(lib_path, "msvcp100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
+                       dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
+                    }
+                    catch
+                    {
+                       dll_loader.loadLibrary(lib_path, "msvcr110.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
+                       dll_loader.loadLibrary(lib_path, "msvcp110.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
+                       dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
+                    }
+
                     break;
                 case PlatformID.Unix:
                     if (IndigoDllLoader.isMac())
