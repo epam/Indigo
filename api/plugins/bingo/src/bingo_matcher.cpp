@@ -289,6 +289,8 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
    fit_bits.clear_resize(fp_storage.getBlockSize());
    fit_bits.fill(255);
 
+   // TODO: Sort query bits
+
    profTimerStart(tgs, "sub_find_cand_pack_get_search");
    int left = 0, right = fp_storage.getBlockSize() - 1;
    for (int j = 0; j < fp_size_in_bits; j++)
@@ -309,6 +311,8 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
          left++;
       while(fit_bits[right] == 0 && (left != right))
          right--;
+
+      // TODO: Check if all the bits are zero and do not do further reading
 
       profTimerStop(tgu);
    }
