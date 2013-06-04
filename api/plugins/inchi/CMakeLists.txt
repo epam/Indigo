@@ -32,13 +32,14 @@ if (NOT NO_STATIC)
 	set_target_properties(indigo-inchi PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL=")
 	PACK_STATIC(indigo-inchi)
 
-	DEFINE_TEST(indigo-inchi-c-test-static "tests/c/indigo-inchi-test.c" indigo-inchi)
+	DEFINE_TEST(indigo-inchi-c-test-static "tests/c/indigo-inchi-test.c;${Common_SOURCE_DIR}/hacks/memcpy.c" indigo-inchi)
 	# Add stdc++ library required by indigo
 	SET_TARGET_PROPERTIES(indigo-inchi-c-test-static PROPERTIES LINKER_LANGUAGE CXX)
+	set_target_properties(indigo-inchi-c-test-static PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
 endif()
 
 # Indigo InChI shared
-add_library(indigo-inchi-shared SHARED ${IndigoInchi_src} ${IndigoInchi_headers})
+add_library(indigo-inchi-shared SHARED ${IndigoInchi_src} ${IndigoInchi_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c)
 SET_TARGET_PROPERTIES(indigo-inchi-shared PROPERTIES OUTPUT_NAME "indigo-inchi")
 if (MSVC OR MINGW)
 	set_target_properties(indigo-inchi-shared PROPERTIES PREFIX "")
@@ -51,6 +52,8 @@ if(APPLE)
 	SET_TARGET_PROPERTIES(indigo-inchi-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup  -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/indigo_inchi.explist")
 endif()
 set_target_properties(indigo-inchi-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+set_target_properties(indigo-inchi-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
+
 
 if(MSVC)
     # This should be set only for a shared library to avoid warnings

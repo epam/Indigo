@@ -28,15 +28,18 @@ if (NOT NO_STATIC)
 	set_target_properties(indigo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL= ")
 	pack_static(indigo)
 	
-	DEFINE_TEST(indigo-c-test-static "tests/c/indigo-test.c" indigo)
+	DEFINE_TEST(indigo-c-test-static "tests/c/indigo-test.c;${Common_SOURCE_DIR}/hacks/memcpy.c" indigo)
 	# Add stdc++ library required by indigo
 	SET_TARGET_PROPERTIES(indigo-c-test-static PROPERTIES LINKER_LANGUAGE CXX)
+	set_target_properties(indigo-c-test-static PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
+
 endif()
 
 # Indigo shared
-add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers} $<TARGET_OBJECTS:moleculeObj> $<TARGET_OBJECTS:commonObj>)
+add_library(indigo-shared SHARED ${Indigo_src} ${Indigo_headers} $<TARGET_OBJECTS:moleculeObj> $<TARGET_OBJECTS:commonObj> ${Common_SOURCE_DIR}/hacks/memcpy.c)
 SET_TARGET_PROPERTIES(indigo-shared PROPERTIES OUTPUT_NAME "indigo")
 set_target_properties(indigo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+set_target_properties(indigo-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
 if (MSVC OR MINGW)
 	set_target_properties(indigo-shared PROPERTIES PREFIX "")
 endif()
@@ -50,7 +53,7 @@ DEFINE_TEST(indigo-c-test-shared "tests/c/indigo-test.c" indigo-shared)
 
 add_executable(dlopen-test ${Indigo_SOURCE_DIR}/tests/c/dlopen-test.c)
 if (UNIX)
-    set_target_properties(dlopen-test PROPERTIES LINK_FLAGS "-rdynamic -ldl -pthread")
+    set_target_properties(dlopen-test PROPERTIES LINK_FLAGS "-rdynamic -ldl -pthread -Wl,--wrap=memcpy")
     TARGET_LINK_LIBRARIES(dlopen-test "-rdynamic -ldl -pthread")
 endif()
 set_property(TARGET dlopen-test PROPERTY FOLDER "tests")
