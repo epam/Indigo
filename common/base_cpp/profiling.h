@@ -51,23 +51,23 @@
    var_name##_timer.getTimeSec()
 
 #define profIncTimer(name, dt) \
-   {                               \
+   do {                               \
       _PROF_GET_NAME_INDEX(var_name, name)   \
-      ProfilingSystem &inst = ProfilingSystem::getInstance(); \
+      indigo::ProfilingSystem &inst = indigo::ProfilingSystem::getInstance(); \
       inst.addTimer(var_name##_name_index, dt); \
-   }
+   } while (false)
 
 #define profIncCounter(name, count) \
-   {                                       \
+   do {                                       \
       _PROF_GET_NAME_INDEX(var_name, name)   \
-      ProfilingSystem &inst = ProfilingSystem::getInstance(); \
+      indigo::ProfilingSystem &inst = indigo::ProfilingSystem::getInstance(); \
       inst.addCounter(var_name##_name_index, count); \
-   }
+   } while (false)
 
-#define profTimersReset()        ProfilingSystem::getInstance().reset(false)
-#define profTimersResetSession() ProfilingSystem::getInstance().reset(true)
+#define profTimersReset()        indigo::ProfilingSystem::getInstance().reset(false)
+#define profTimersResetSession() indigo::ProfilingSystem::getInstance().reset(true)
 
-#define profGetStatistics(output, all) ProfilingSystem::getInstance().getStatistics(output, all)
+#define profGetStatistics(output, all) indigo::ProfilingSystem::getInstance().getStatistics(output, all)
 
 namespace indigo {
 class Output;

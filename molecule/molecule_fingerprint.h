@@ -21,6 +21,8 @@
 #include "base_cpp/cancellation_handler.h"
 #include "graph/subgraph_hash.h"
 
+#include <unordered_map>
+
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable:4251)
@@ -131,6 +133,21 @@ protected:
    TautomerSuperStructure *_tau_super_structure;
    bool _is_cycle;
 
+   struct HashBits
+   {
+      HashBits (dword hash, int bits_per_fragment);
+      bool operator== (const HashBits &right) const;
+
+      dword hash;
+      int bits_per_fragment;
+   };
+   struct Hasher
+   {
+      size_t operator () (const HashBits &input) const;
+   };
+
+   void _addOrdHashBits (dword hash, int bits_per_fragment);
+
    Obj<SubgraphHash> subgraph_hash;
 
    CP_DECL;
@@ -139,6 +156,10 @@ protected:
    TL_CP_DECL(Array<int>, _bond_codes);
    TL_CP_DECL(Array<int>, _atom_codes_empty);
    TL_CP_DECL(Array<int>, _bond_codes_empty);
+   TL_CP_DECL(Array<int>, _atom_hydrogens);
+
+   typedef std::unordered_map<HashBits, int, Hasher> HashesMap;
+   TL_CP_DECL(HashesMap, _ord_hashes);
 
 private:
    MoleculeFingerprintBuilder (const MoleculeFingerprintBuilder &); // no implicit copy

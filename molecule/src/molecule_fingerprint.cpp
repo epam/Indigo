@@ -42,7 +42,9 @@ TL_CP_GET(_total_fingerprint),
 TL_CP_GET(_atom_codes),
 TL_CP_GET(_bond_codes),
 TL_CP_GET(_atom_codes_empty),
-TL_CP_GET(_bond_codes_empty)
+TL_CP_GET(_bond_codes_empty),
+TL_CP_GET(_atom_hydrogens),
+TL_CP_GET(_ord_hashes)
 {
    _total_fingerprint.resize(_parameters.fingerprintSize());
    cb_fragment = 0;
@@ -58,6 +60,8 @@ TL_CP_GET(_bond_codes_empty)
    skip_any_atoms = false;
    skip_any_bonds = false;
    skip_any_atoms_bonds = false;
+
+   _ord_hashes.clear();
 }
 
 void MoleculeFingerprintBuilder::_initHashCalculations (BaseMolecule &mol)
@@ -78,8 +82,12 @@ void MoleculeFingerprintBuilder::_initHashCalculations (BaseMolecule &mol)
       _bond_codes[i] = _bondCode(mol, i);
       _bond_codes_empty[i] = 0;
    }
-}
 
+   // Count number of hydrogens and find non-carbon atoms
+   _atom_hydrogens.clear_resize(mol.vertexEnd());
+   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+      _atom_hydrogens[i] = mol.getAtomMinH(i);
+}
 
 MoleculeFingerprintBuilder::~MoleculeFingerprintBuilder ()
 {
@@ -238,6 +246,17 @@ dword MoleculeFingerprintBuilder::_canonicalizeFragment (BaseMolecule &mol, cons
    return ret;
 }
 
+void MoleculeFingerprintBuilder::_addOrdHashBits (dword hash, int bits_per_fragment)
+{
+   HashBits hash_bits(hash, bits_per_fragment);
+
+   auto it = _ord_hashes.find(hash_bits);
+   if (it == _ord_hashes.end())
+      _ord_hashes.emplace(hash_bits, 1);
+   else
+      _ord_hashes.at(hash_bits)++;
+}
+
 void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &mol, const Array<int> &vertices,
          const Array<int> &edges, bool use_atoms, bool use_bonds, int subgraph_type, dword &bits_set)
 {
@@ -318,7 +337,27 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
 
    if (set_ord && !(bits_set_src & 0x02))
    {
-      _setBits(hash, getOrd(), _parameters.fingerprintSizeOrd(), bits_per_fragment);
+      _addOrdHashBits(hash, bits_per_fragment);
+
+      // Set additional bits for hydrogens
+      int hcount = 0;
+      for (int i = 0; i < vertices.size(); i++)
+      {
+         int v = vertices[i];
+         hcount += _atom_hydrogens[v];
+      }
+
+      int bits = bitLog2Dword(hcount) - 2;
+      if (bits < 0)
+         bits = 0;
+
+      int hmin_bits = 0;
+      if (query)
+         hmin_bits = bits;
+
+      for (int i = hmin_bits; i < bits; i++)
+         _addOrdHashBits(hash + i + 3, 1);
+
       bits_set |= 0x02;
    }
 
@@ -443,6 +482,17 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       se.maximal_critera_value_callback = _maximalSubgraphCriteriaValue;
       se.callback = _handleTree;
       se.process();
+
+      // Set hash bits
+      for (auto it : _ord_hashes)
+      {
+         int bits_per_fragment = it.first.bits_per_fragment + (bitLog2Dword(it.second) - 1);
+         // Heuristic: if a fragment has high frequency and they are close to each other (like in substructure query)
+         // then there should be larger fragment with lower frequency
+         if (bits_per_fragment > 8)
+            bits_per_fragment = 8;
+         _setBits(it.first.hash, getOrd(), _parameters.fingerprintSizeOrd(), bits_per_fragment);
+      }
    }
    
    if (!skip_ext && _parameters.ext)
@@ -567,4 +617,26 @@ byte * MoleculeFingerprintBuilder::getAny ()
 int MoleculeFingerprintBuilder::countBits_Sim ()
 {
    return bitGetOnesCount(getSim(), _parameters.fingerprintSizeSim());
+}
+
+//
+// MoleculeFingerprintBuilder::HashBits
+//
+
+MoleculeFingerprintBuilder::HashBits::HashBits (dword hash, int bits_per_fragment) : 
+   hash(hash), bits_per_fragment(bits_per_fragment)
+{
+}
+
+bool MoleculeFingerprintBuilder::HashBits::operator== (const HashBits &right) const
+{
+   return right.bits_per_fragment == bits_per_fragment && right.hash == hash;
+}
+
+//
+// MoleculeFingerprintBuilder::Hasher
+//
+size_t MoleculeFingerprintBuilder::Hasher::operator () (const HashBits &input) const
+{
+   return (input.bits_per_fragment << 10) + input.hash;
 }
