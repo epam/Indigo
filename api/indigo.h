@@ -835,4 +835,7 @@ CEXPORT const char * indigoDbgInternalType (int object);
 // Internal breakpoint
 CEXPORT void indigoDbgBreakpoint (void);
 
+// Methods that returns profiling infromation in a human readable format
+CEXPORT const char * indigoDbgProfiling (void);
+
 #endif

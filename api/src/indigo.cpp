@@ -13,6 +13,9 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+
+#include "base_cpp/output.h"
+#include "base_cpp/profiling.h"
 #include "molecule/molecule_fingerprint.h"
 #include "reaction/rxnfile_saver.h"
 #include "molecule/molfile_saver.h"
@@ -305,4 +308,17 @@ CEXPORT void indigoDbgBreakpoint (void)
    }
 #else
 #endif
+}
+
+CEXPORT const char * indigoDbgProfiling (void)
+{
+   INDIGO_BEGIN
+   {
+      ArrayOutput out(self.tmp_string);
+      profGetStatistics(out, false);
+
+      self.tmp_string.push(0);
+      return self.tmp_string.ptr();
+   }
+   INDIGO_END(0);
 }
