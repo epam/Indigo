@@ -310,15 +310,29 @@ CEXPORT void indigoDbgBreakpoint (void)
 #endif
 }
 
-CEXPORT const char * indigoDbgProfiling (void)
+CEXPORT const char * indigoDbgProfiling (int whole_session)
 {
    INDIGO_BEGIN
    {
       ArrayOutput out(self.tmp_string);
-      profGetStatistics(out, false);
+      profGetStatistics(out, whole_session != 0);
 
       self.tmp_string.push(0);
       return self.tmp_string.ptr();
    }
    INDIGO_END(0);
+}
+
+CEXPORT int indigoDbgResetProfiling (int whole_session)
+{
+   INDIGO_BEGIN
+   {
+      if (whole_session)
+         profTimersResetSession();
+      else
+         profTimersReset();
+
+      return 1;
+   }
+   INDIGO_END(-1);
 }
