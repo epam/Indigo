@@ -246,6 +246,9 @@ bool BaseSubstructureMatcher::next ()
       bool status = _tryCurrent();
       profTimerStop(tt);
 
+      if (status)
+         profIncCounter("sub_found", 1);
+
       _match_probability_esimate.addValue((float)status);
       _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
 
