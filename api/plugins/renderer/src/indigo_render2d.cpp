@@ -33,7 +33,14 @@ _SessionLocalContainer<IndigoRenderer> indigo_renderer_self;
 
 IndigoRenderer &indigoRendererGetInstance ()
 {
-   return indigo_renderer_self.getLocalCopy();
+   IndigoRenderer &inst = indigo_renderer_self.getLocalCopy();
+   inst.validate();
+   return inst;
+}
+
+void IndigoRenderer::init ()
+{
+   renderParams.clear();
 }
 
 #define CHECKRGB(r, g, b) \
@@ -71,6 +78,7 @@ void indigoRenderSetImageHeight (int v)
 void indigoRenderSetImageMaxWidth (int v)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
+ 
    rp.cnvOpt.maxWidth = v;
 }
 
@@ -522,8 +530,8 @@ CEXPORT int indigoRenderReset ()
 {
    INDIGO_BEGIN
    {
-      RenderParams& rp = indigoRendererGetInstance().renderParams;
-      rp.clear();
+      IndigoRenderer& rp = indigoRendererGetInstance();
+      rp.init();
       return 1;
    }
    INDIGO_END(-1)

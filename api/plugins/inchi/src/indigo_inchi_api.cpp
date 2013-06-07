@@ -31,12 +31,24 @@ CEXPORT const char* indigoInchiVersion ()
 //
 // Session Inchi instance
 //
-
-_SessionLocalContainer<IndigoInchi> indigo_inchi_self;
-
-IndigoInchi &indigoInchiGetInstance ()
+class IndigoInchiContext : public IndigoPluginContext
 {
-   return indigo_inchi_self.getLocalCopy();
+public:
+   IndigoInchi inchi;
+
+   virtual void init ()
+   {
+      inchi.clear();
+   }
+};
+
+_SessionLocalContainer<IndigoInchiContext> indigo_inchi_self;
+
+IndigoInchiContext &indigoInchiGetInstance ()
+{
+   IndigoInchiContext &inst = indigo_inchi_self.getLocalCopy();
+   inst.validate();
+   return inst;
 }
 
 // 
@@ -45,8 +57,8 @@ IndigoInchi &indigoInchiGetInstance ()
 
 CEXPORT int indigoInchiResetOptions (void)
 {
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance();
-   indigo_inchi.clear();
+   IndigoInchiContext &indigo_inchi = indigoInchiGetInstance();
+   indigo_inchi.init();
    return 0;
 }
 
@@ -54,7 +66,7 @@ CEXPORT int indigoInchiLoadMolecule (const char *inchi_string)
 {
    INDIGO_BEGIN
    {
-      IndigoInchi &indigo_inchi = indigoInchiGetInstance();
+      IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
 
       AutoPtr<IndigoMolecule> mol_obj(new IndigoMolecule());
 
@@ -72,7 +84,7 @@ CEXPORT const char* indigoInchiGetInchi (int molecule)
 {
    INDIGO_BEGIN
    {
-      IndigoInchi &indigo_inchi = indigoInchiGetInstance();
+      IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
       IndigoObject &obj = self.getObject(molecule);
 
       indigo_inchi.saveMoleculeIntoInchi(obj.getMolecule(), self.tmp_string);
@@ -93,7 +105,7 @@ CEXPORT const char* indigoInchiGetInchiKey (const char *inchi_string)
 
 CEXPORT const char* indigoInchiGetWarning ()
 {
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance();
+   IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
    if (indigo_inchi.warning.size() != 0)
       return indigo_inchi.warning.ptr();
    return "";
@@ -101,7 +113,7 @@ CEXPORT const char* indigoInchiGetWarning ()
 
 CEXPORT const char* indigoInchiGetLog ()
 {
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance();
+   IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
    if (indigo_inchi.log.size() != 0)
       return indigo_inchi.log.ptr();
    return "";
@@ -109,7 +121,7 @@ CEXPORT const char* indigoInchiGetLog ()
 
 CEXPORT const char* indigoInchiGetAuxInfo ()
 {
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance();
+   IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
    if (indigo_inchi.auxInfo.size() != 0)
       return indigo_inchi.auxInfo.ptr();
    return "";
@@ -121,7 +133,7 @@ CEXPORT const char* indigoInchiGetAuxInfo ()
 
 void indigoInchiSetInchiOptions (const char *options)
 {
-   IndigoInchi &inchi = indigoInchiGetInstance();
+   IndigoInchi &inchi = indigoInchiGetInstance().inchi;
    inchi.setOptions(options);
 }
 

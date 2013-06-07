@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <errno.h>
 #include <ctype.h>
 
 #include "base_c/defs.h"
@@ -504,7 +505,7 @@ void FileScanner::_init (Encoding filename_encoding, const char *filename)
    _file = openFile(filename_encoding, filename, "rb");
 
    if (_file == NULL)
-      throw Error("can't open file %s", filename);
+      throw Error("can't open file %s. Error: %s", filename, strerror(errno));
 
    fseek(_file, 0, SEEK_END);
    _file_len = ftell(_file);

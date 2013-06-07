@@ -12,6 +12,7 @@
 # This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 # WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
+import sys
 import os
 import platform
 from array import array
@@ -23,7 +24,7 @@ class IndigoException (Exception):
         self.value = value
 
     def __str__(self):
-        return repr(self.value)
+        return repr(self.value.decode('ascii')) if sys.version_info > (3, 0) else repr(self.value)
 
 
 class IndigoObject(object):
@@ -104,7 +105,7 @@ class IndigoObject(object):
         for i in range(len(atoms)):
             atoms[i] = atom_ids[i]
         xyz = (c_float * len(desired_xyz))()
-        for i in xrange(len(desired_xyz)):
+        for i in range(len(desired_xyz)):
             xyz[i] = desired_xyz[i]
         return self.dispatcher._checkResultFloat(
             self.dispatcher._lib.indigoAlignAtoms(self.id, len(atoms), atoms, xyz))
@@ -143,7 +144,7 @@ class IndigoObject(object):
 
     def saveMolfile(self, filename):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoSaveMolfileToFile(self.id, filename))
+        return self.dispatcher._checkResult(Indigo._lib.indigoSaveMolfileToFile(self.id, filename.encode('ascii')))
 
     def molfile(self):
         self.dispatcher._setSessionId()
@@ -151,7 +152,7 @@ class IndigoObject(object):
 
     def saveCml(self, filename):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoSaveCmlToFile(self.id, filename))
+        return self.dispatcher._checkResult(Indigo._lib.indigoSaveCmlToFile(self.id, filename.encode('ascii')))
 
     def cml(self):
         self.dispatcher._setSessionId()
@@ -211,7 +212,7 @@ class IndigoObject(object):
 
     def saveRxnfile(self, filename):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoSaveRxnfileToFile(self.id, filename))
+        return self.dispatcher._checkResult(Indigo._lib.indigoSaveRxnfileToFile(self.id, filename.encode('ascii')))
 
     def rxnfile(self):
         self.dispatcher._setSessionId()
@@ -220,17 +221,17 @@ class IndigoObject(object):
     def optimize(self, options=''):
         self.dispatcher._setSessionId()
         options = '' if options is None else options
-        return self.dispatcher._checkResult(Indigo._lib.indigoOptimize(self.id, options))
+        return self.dispatcher._checkResult(Indigo._lib.indigoOptimize(self.id, options.encode('ascii')))
 
     def normalize(self, options=''):
         self.dispatcher._setSessionId()
         options = '' if options is None else options
-        return bool(self.dispatcher._checkResult(Indigo._lib.indigoNormalize(self.id, options)))
+        return bool(self.dispatcher._checkResult(Indigo._lib.indigoNormalize(self.id, options.encode('ascii'))))
 
     def automap(self, mode=''):
         self.dispatcher._setSessionId()
         mode = '' if mode is None else mode
-        return self.dispatcher._checkResult(Indigo._lib.indigoAutomap(self.id, mode))
+        return self.dispatcher._checkResult(Indigo._lib.indigoAutomap(self.id, mode.encode('ascii')))
 
     def atomMappingNumber(self, reaction_atom):
         self.dispatcher._setSessionId()
@@ -464,19 +465,19 @@ class IndigoObject(object):
         arr4 = (c_int * len(bonds))()
         for i in range(len(bonds)):
             arr4[i] = bonds[i]
-        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoAddDataSGroup(self.id, len(arr2), arr2, len(arr4), arr4, description, data)))
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoAddDataSGroup(self.id, len(arr2), arr2, len(arr4), arr4, description.encode('ascii'), data.encode('ascii'))))
 
     def addSuperatom(self, atoms, name):
         self.dispatcher._setSessionId()
         arr2 = (c_int * len(atoms))()
         for i in range(len(atoms)):
             arr2[i] = atoms[i]
-        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoAddSuperatom(self.id, len(arr2), arr2, name)))
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoAddSuperatom(self.id, len(arr2), arr2, name.encode('ascii'))))
 
     def setDataSGroupXY(self, x, y, options=''):
         self.dispatcher._setSessionId()
         options = '' if options is None else options
-        return self.dispatcher._checkResult(Indigo._lib.indigoSetDataSGroupXY(self.id, x, y, options))
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetDataSGroupXY(self.id, x, y, options.encode('ascii')))
 
     def resetCharge(self):
         self.dispatcher._setSessionId()
@@ -504,19 +505,19 @@ class IndigoObject(object):
 
     def removeConstraints(self, type):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoRemoveConstraints(self.id, type))
+        return self.dispatcher._checkResult(Indigo._lib.indigoRemoveConstraints(self.id, type.encode('ascii')))
 
     def addConstraint(self, type, value):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoAddConstraint(self.id, type, value))
+        return self.dispatcher._checkResult(Indigo._lib.indigoAddConstraint(self.id, type.encode('ascii'), value.encode('ascii')))
 
     def addConstraintNot(self, type, value):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoAddConstraintNot(self.id, type, value))
+        return self.dispatcher._checkResult(Indigo._lib.indigoAddConstraintNot(self.id, type.encode('ascii'), value.encode('ascii')))
 
     def addConstraintOr(self, type, value):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoAddConstraintOr(self.id, type, value))
+        return self.dispatcher._checkResult(Indigo._lib.indigoAddConstraintOr(self.id, type.encode('ascii'), value.encode('ascii')))
 
     def resetStereo(self):
         self.dispatcher._setSessionId()
@@ -620,19 +621,19 @@ class IndigoObject(object):
 
     def addAtom(self, symbol):
         self.dispatcher._setSessionId()
-        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoAddAtom(self.id, symbol)))
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoAddAtom(self.id, symbol.encode('ascii'))))
 
     def resetAtom(self, symbol):
         self.dispatcher._setSessionId()
-        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoResetAtom(self.id, symbol)))
+        self.dispatcher._checkResult(Indigo._lib.indigoResetAtom(self.id, symbol.encode('ascii')))
 
     def addRSite(self, name):
         self.dispatcher._setSessionId()
-        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoAddRSite(self.id, name)))
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoAddRSite(self.id, name.encode('ascii'))))
 
     def setRSite(self, name):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoSetRSite(self.id, name))
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetRSite(self.id, name.encode('ascii')))
 
     def setCharge(self, charge):
         self.dispatcher._setSessionId()
@@ -734,9 +735,9 @@ class IndigoObject(object):
     def symmetryClasses(self):
         self.dispatcher._setSessionId()
         c_size = c_int()
-        c_buf = self.dispatcher._checkResult(Indigo._lib.indigoSymmetryClasses(self.id, pointer(c_size)))
+        c_buf = self.dispatcher._checkResultPtr(Indigo._lib.indigoSymmetryClasses(self.id, pointer(c_size)))
         res = array("i")
-        for i in xrange(c_size.value):
+        for i in range(c_size.value):
             res.append(c_buf[i])
         return res
 
@@ -814,7 +815,7 @@ class IndigoObject(object):
 
     def setName(self, name):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoSetName(self.id, name))
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetName(self.id, name.encode('ascii')))
 
     def serialize(self):
         self.dispatcher._setSessionId()
@@ -822,7 +823,7 @@ class IndigoObject(object):
         c_buf = POINTER(c_byte)()
         self.dispatcher._checkResult(Indigo._lib.indigoSerialize(self.id, pointer(c_buf), pointer(c_size)))
         res = array('b')
-        for i in xrange(c_size.value):
+        for i in range(c_size.value):
             res.append(c_buf[i])
         return res
 
@@ -836,7 +837,7 @@ class IndigoObject(object):
 
     def setProperty(self, prop, value):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoSetProperty(self.id, prop, value))
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetProperty(self.id, prop.encode('ascii'), value.encode('ascii')))
 
     def removeProperty(self, prop):
         self.dispatcher._setSessionId()
@@ -860,7 +861,7 @@ class IndigoObject(object):
 
     def fingerprint(self, type):
         self.dispatcher._setSessionId()
-        newobj = self.dispatcher._checkResult(Indigo._lib.indigoFingerprint(self.id, type))
+        newobj = self.dispatcher._checkResult(Indigo._lib.indigoFingerprint(self.id, type.encode('ascii')))
         if newobj == 0:
             return None
         return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
@@ -1035,14 +1036,14 @@ class IndigoObject(object):
         c_buf = POINTER(c_byte)()
         self.dispatcher._checkResult(Indigo._lib.indigoToBuffer(self.id, pointer(c_buf), pointer(c_size)))
         res = array("b")
-        for i in xrange(c_size.value):
+        for i in range(c_size.value):
             res.append(c_buf[i])
         return res
 
     def stereocenterPyramid(self):
         ptr = self.dispatcher._checkResultPtr(Indigo._lib.indigoStereocenterPyramid(self.id))
         res = [0] * 4
-        for i in xrange(4):
+        for i in range(4):
             res[i] = ptr[i]
         return res
 
@@ -1691,46 +1692,47 @@ class Indigo(object):
 
     def __del__ (self):
         if hasattr(self, '_lib'):
+            #sys.__stdout__.write('releaseSessionId ' + str(self._sid))
             Indigo._lib.indigoReleaseSessionId(self._sid)
 
     def writeBuffer (self):
         self._setSessionId()
         id = self._checkResult(Indigo._lib.indigoWriteBuffer())
-        return IndigoObject(self, id)
+        return self.IndigoObject(self, id)
 
     def writeFile (self, filename):
         self._setSessionId()
-        id = self._checkResult(Indigo._lib.indigoWriteFile(filename))
-        return IndigoObject(self, id)
+        id = self._checkResult(Indigo._lib.indigoWriteFile(filename.encode('ascii')))
+        return self.IndigoObject(self, id)
 
     def unserialize(self, arr):
         self._setSessionId()
         values = (c_byte * len(arr))()
-        for i in xrange(len(arr)):
+        for i in range(len(arr)):
             values[i] = arr[i]
         res = Indigo._lib.indigoUnserialize(values, len(arr))
-        return IndigoObject(self, self._checkResult(res))
+        return self.IndigoObject(self, self._checkResult(res))
 
     def setOption (self, option, value1, value2=None, value3=None):
         self._setSessionId()
         if type(value1).__name__ == 'str' and value2 is None and value3 is None:
-            self._checkResult(Indigo._lib.indigoSetOption(option, value1))
+            self._checkResult(Indigo._lib.indigoSetOption(option.encode('ascii'), value1.encode('ascii')))
         elif type(value1).__name__ == 'int' and value2 is None and value3 is None:
-            self._checkResult(Indigo._lib.indigoSetOptionInt(option, value1))
+            self._checkResult(Indigo._lib.indigoSetOptionInt(option.encode('ascii'), value1))
         elif type(value1).__name__ == 'float' and value2 is None and value3 is None:
-            self._checkResult(Indigo._lib.indigoSetOptionFloat(option, value1))
+            self._checkResult(Indigo._lib.indigoSetOptionFloat(option.encode('ascii'), value1))
         elif type(value1).__name__ == 'bool' and value2 is None and value3 is None:
             value1_b = 0
             if value1:
                 value1_b = 1
-            self._checkResult(Indigo._lib.indigoSetOptionBool(option, value1_b))
+            self._checkResult(Indigo._lib.indigoSetOptionBool(option.encode('ascii'), value1_b))
         elif type(value1).__name__ == 'int' and value2 and \
                  type(value2).__name__ == 'int' and value3 is None:
-            self._checkResult(Indigo._lib.indigoSetOptionXY(option, value1, value2))
+            self._checkResult(Indigo._lib.indigoSetOptionXY(option.encode('ascii'), value1, value2))
         elif type(value1).__name__ == 'float' and value2 and \
                  type(value2).__name__ == 'float' and value3 and \
                  type(value3).__name__ == 'float':
-            self._checkResult(Indigo._lib.indigoSetOptionColor(option, value1, value2, value3))
+            self._checkResult(Indigo._lib.indigoSetOptionColor(option.encode('ascii'), value1, value2, value3))
         else:
             raise IndigoException("bad option")
 
@@ -1750,7 +1752,7 @@ class Indigo(object):
         return result
 
     def _checkResultString (self, result):
-        return self._checkResultPtr(result)
+        return self._checkResultPtr(result).decode('ascii')
 
     def convertToArray (self, iteratable):
         if isinstance(iteratable, IndigoObject):
@@ -1778,7 +1780,7 @@ class Indigo(object):
 
     def writeFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoWriteFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoWriteFile(filename.encode('ascii'))))
 
     def writeBuffer(self):
         self._setSessionId()
@@ -1794,51 +1796,52 @@ class Indigo(object):
 
     def loadMolecule(self, string):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadMoleculeFromString(string)))
+        #sys.__stdout__.write(string)
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadMoleculeFromString(string.encode('ascii'))))
 
     def loadMoleculeFromFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadMoleculeFromFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadMoleculeFromFile(filename.encode('ascii'))))
 
     def loadQueryMolecule(self, string):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadQueryMoleculeFromString(string)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadQueryMoleculeFromString(string.encode('ascii'))))
 
     def loadQueryMoleculeFromFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadQueryMoleculeFromFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadQueryMoleculeFromFile(filename.encode('ascii'))))
 
     def loadSmarts(self, string):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadSmartsFromString(string)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadSmartsFromString(string.encode('ascii'))))
 
     def loadSmartsFromFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadSmartsFromFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadSmartsFromFile(filename.encode('ascii'))))
 
     def loadReaction(self, string):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadReactionFromString(string)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadReactionFromString(string.encode('ascii'))))
 
     def loadReactionFromFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadReactionFromFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadReactionFromFile(filename.encode('ascii'))))
 
     def loadQueryReaction(self, string):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadQueryReactionFromString(string)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadQueryReactionFromString(string.encode('ascii'))))
 
     def loadQueryReactionFromFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadQueryReactionFromFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadQueryReactionFromFile(filename.encode('ascii'))))
 
     def loadReactionSmarts(self, string):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadReactionSmartsFromString(string)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadReactionSmartsFromString(string.encode('ascii'))))
 
     def loadReactionSmartsFromFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadReactionSmartsFromFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadReactionSmartsFromFile(filename.encode('ascii'))))
 
     def createReaction(self):
         self._setSessionId()
@@ -1851,7 +1854,7 @@ class Indigo(object):
     def exactMatch(self, item1, item2, flags=''):
         self._setSessionId()
         flags = '' if flags is None else flags
-        newobj = self._checkResult(Indigo._lib.indigoExactMatch(item1.id, item2.id, flags))
+        newobj = self._checkResult(Indigo._lib.indigoExactMatch(item1.id, item2.id, flags.encode('ascii')))
         if newobj == 0:
             return None
         else:
@@ -1859,7 +1862,7 @@ class Indigo(object):
 
     def setTautomerRule(self, id, beg, end):
         self._setSessionId()
-        return self._checkResult(Indigo._lib.indigoSetTautomerRule(id, beg, end))
+        return self._checkResult(Indigo._lib.indigoSetTautomerRule(id, beg.encode('ascii'), end.encode('ascii')))
 
     def removeTautomerRule(self, id):
         self._setSessionId()
@@ -1876,27 +1879,27 @@ class Indigo(object):
     def similarity(self, item1, item2, metrics=''):
         self._setSessionId()
         metrics = '' if metrics is None else metrics
-        return self._checkResultFloat(Indigo._lib.indigoSimilarity(item1.id, item2.id, metrics))
+        return self._checkResultFloat(Indigo._lib.indigoSimilarity(item1.id, item2.id, metrics.encode('ascii')))
 
     def iterateSDFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateSDFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateSDFile(filename.encode('ascii'))))
 
     def iterateRDFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateRDFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateRDFile(filename.encode('ascii'))))
 
     def iterateSmilesFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateSmilesFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateSmilesFile(filename.encode('ascii'))))
 
     def iterateCMLFile(self, filename):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateCMLFile(filename)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateCMLFile(filename.encode('ascii'))))
 
     def createFileSaver(self, filename, format):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateFileSaver(filename, format)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateFileSaver(filename.encode('ascii'), format.encode('ascii'))))
 
     def createArray(self):
         self._setSessionId()
@@ -1905,13 +1908,13 @@ class Indigo(object):
     def substructureMatcher(self, target, mode=''):
         self._setSessionId()
         mode = '' if mode is None else mode
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoSubstructureMatcher(target.id, mode)), target)
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoSubstructureMatcher(target.id, mode.encode('ascii'))), target)
 
     def extractCommonScaffold(self, structures, options=''):
         self._setSessionId()
         structures = self.convertToArray(structures)
         options = '' if options is None else options
-        newobj = self._checkResult(Indigo._lib.indigoExtractCommonScaffold(structures.id, options))
+        newobj = self._checkResult(Indigo._lib.indigoExtractCommonScaffold(structures.id, options.encode('ascii')))
         if newobj == 0:
             return None
         else:

@@ -224,6 +224,10 @@ public:
 
    void removeAllObjects ();
 
+   void init ();
+
+   int getId () const;
+
    Array<char> tmp_string;
    float tmp_xyz[3];
 
@@ -275,9 +279,23 @@ protected:
 
    int    _next_id;
    OsLock _objects_lock;
+
+   int _indigo_id;
 };
 
+class DLLEXPORT IndigoPluginContext
+{
+public:
+   IndigoPluginContext ();
 
+   void validate ();
+
+protected:
+   virtual void init () = 0;
+
+private:
+   int indigo_id;
+};
 
 #define INDIGO_BEGIN { Indigo &self = indigoGetInstance(); \
       try { self.error_message.clear(); self.resetCancellationHandler(); 

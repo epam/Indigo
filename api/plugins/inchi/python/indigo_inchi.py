@@ -50,7 +50,7 @@ class IndigoInchi(object):
 
     def loadMolecule(self, inchi):
         self.indigo._setSessionId()
-        res = self.indigo._checkResult(self._lib.indigoInchiLoadMolecule(inchi))
+        res = self.indigo._checkResult(self._lib.indigoInchiLoadMolecule(inchi.encode('ascii')))
         if res == 0:
             return None
         return self.indigo.IndigoObject(self.indigo, res)
@@ -65,7 +65,7 @@ class IndigoInchi(object):
 
     def getInchiKey(self, inchi):
         self.indigo._setSessionId()
-        return self.indigo._checkResultString(self._lib.indigoInchiGetInchiKey(inchi))
+        return self.indigo._checkResultString(self._lib.indigoInchiGetInchiKey(inchi.encode('ascii')))
 
     def getWarning(self):
         self.indigo._setSessionId()
