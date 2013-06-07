@@ -581,6 +581,18 @@ namespace com.ggasoftware.indigo
             return _dllpath;
         }
 
+        public String dbgProfiling (bool whole_session)
+        {
+            setSessionID();
+            return new String(checkResult(_indigo_lib.indigoDbgProfiling(whole_session ? 1 : 0)));
+        }
+        
+        public void dbgResetProfiling (bool whole_session)
+        {
+            setSessionID();
+            checkResult(_indigo_lib.indigoDbgResetProfiling(whole_session ? 1 : 0));
+        }
+        
         private static void _handleError(sbyte* message, Indigo self)
         {
             throw new IndigoException(new String(message));

@@ -328,5 +328,7 @@ namespace com.ggasoftware.indigo
         int indigoExpandAbbreviations (int structure);
 
         sbyte* indigoDbgInternalType(int item);
+        sbyte* indigoDbgProfiling (int whole_sessoin);
+        int indigoDbgResetProfiling (int whole_sessoin);
     }
 }
