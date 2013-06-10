@@ -177,6 +177,7 @@ namespace bingo
       int _cand_count;
       /*const*/ AutoPtr<SubstructureQueryData> _query_data;
       Array<byte> _query_fp;
+      Array<int> _query_fp_bits_used;
 
       void _findPackCandidates (int pack_idx);
 

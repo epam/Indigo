@@ -51,6 +51,8 @@ namespace  bingo
    private:
       void _loadInfo( const char *info_filename );
 
+      void _writeInfoCounts ();
+
    protected:
       int _fp_size;
       int _block_count;
@@ -79,8 +81,11 @@ namespace  bingo
 
       int getPackCount( void ) const;
 
+      const Array<int> &getFpBitUsageCounts () const;
+
    private:
       int _pack_count;
+      Array<int> fp_bit_usage_counts;
 
       void _addIncToStorage();
    };

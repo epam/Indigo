@@ -6,6 +6,8 @@
 #include "base_c/bitarray.h"
 #include "base_cpp/profiling.h"
 
+#include <algorithm>
+
 using namespace indigo;
 
 using namespace bingo;
@@ -272,6 +274,19 @@ void BaseSubstructureMatcher::setQueryData (SubstructureQueryData *query_data)
    int bit_cnt = bitGetOnesCount(_query_fp.ptr(), _fp_size);
 
    profIncCounter("query_bit_count", bit_cnt);
+
+   _query_fp_bits_used.clear();
+   for (int i = 0; i < _fp_size * 8; i++)
+      if (bitGetBit(_query_fp.ptr(), i))
+         _query_fp_bits_used.push(i);
+
+   // Sort bits accoring to the bits frequency
+   const Array<int> &fp_bit_usage = _index.getSubStorage().getFpBitUsageCounts();
+   std::sort(_query_fp_bits_used.ptr(), _query_fp_bits_used.ptr() + _query_fp_bits_used.size(), 
+      [&](int i1, int i2) 
+      { 
+         return fp_bit_usage[i1] < fp_bit_usage[i2];
+      });
 }
 
 void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
@@ -292,46 +307,39 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
    fit_bits.clear_resize(fp_storage.getBlockSize());
    fit_bits.fill(255);
 
-   // TODO: Sort query bits
-
    profTimerStart(tgs, "sub_find_cand_pack_get_search");
    int left = 0, right = fp_storage.getBlockSize() - 1;
-   for (int j = 0; j < fp_size_in_bits; j++)
-   {
-      byte query_bit = query_fp[j / 8] & (0x80 >> (j % 8));
 
-      if (!query_bit)
-         continue;
+   // Filter only based on the first 10 bits
+   // TODO: collect time infromation about the reading and matching measurements and
+   // and balance between reading new block or check filtered items without reading new block
+   for (int i = 0; i < _query_fp_bits_used.size() && i < 10; i++)
+   {
+      int j = _query_fp_bits_used[i];
       
       profTimerStart(tgb, "sub_find_cand_pack_get_block");
       fp_storage.getBlock(pack_idx * fp_size_in_bits + j, block);
       profTimerStop(tgb);
 
       profTimerStart(tgu, "sub_find_cand_pack_fit_update");
-      bitAnd(fit_bits.ptr() + left, block + left, right - left);
+      bitAnd(fit_bits.ptr() + left, block + left, right - left + 1);
 
-      while(fit_bits[left] == 0 && (left != right))
+      while(left <= right && fit_bits[left] == 0)
          left++;
-      while(fit_bits[right] == 0 && (left != right))
+      while(left <= right && fit_bits[right] == 0)
          right--;
 
-      // TODO: Check if all the bits are zero and do not do further reading
+      if (left > right)
+         // Not more results
+         break;
 
       profTimerStop(tgu);
    }
    profTimerStop(tgs);
    
-
-   for (int k = 0; k < fp_storage.getBlockSize(); k++)
-   {
-      for (int bit_cnt  = 0; bit_cnt < 8; bit_cnt++)
-      {
-         byte fp_flag = fit_bits[k] & (0x80 >> bit_cnt);
-            
-         if (fp_flag)
-            _candidates.push(k * 8 + bit_cnt + pack_idx * fp_storage.getBlockSize() * 8);
-      }
-   }
+   for (int k = 0; k < 8 * fp_storage.getBlockSize(); k++)
+      if (bitGetBit(fit_bits.ptr(), k))
+         _candidates.push(k + pack_idx * fp_storage.getBlockSize() * 8);
 
    delete block;
 }
@@ -340,36 +348,17 @@ void BaseSubstructureMatcher::_findIncCandidates ()
 {
    profTimerStart(t, "sub_find_cand_inc");
    _candidates.clear();
-   Array<bool> is_candidate;
 
    const TranspFpStorage &fp_storage = _index.getSubStorage();
 
-   const byte *query_fp = _query_fp.ptr();
-
-   is_candidate.clear_resize(fp_storage.getIncrementSize());
-   is_candidate.fill(true);
-
+   int inc_block_id_offset = fp_storage.getPackCount() * fp_storage.getBlockSize() * 8;
    const byte *inc = fp_storage.getIncrement();
    for (int i = 0; i < fp_storage.getIncrementSize(); i++)
    {
       const byte *fp = inc + i * _fp_size;
-      bool cand_flag = true;
-
-      for (int j = 0; j < _fp_size; j++)
-      {
-         if ((fp[j] & query_fp[j]) != query_fp[j])
-         {
-            cand_flag = false;
-            break;
-         }
-      }
-
-      is_candidate[i] = cand_flag;
+      if (bitTestOnes(_query_fp.ptr(), fp, _fp_size))
+         _candidates.push(i + inc_block_id_offset);
    }
-
-   for (int i = 0; i < is_candidate.size(); i++)
-      if (is_candidate[i])
-         _candidates.push(i + fp_storage.getPackCount() * fp_storage.getBlockSize() * 8);
 }
 
 

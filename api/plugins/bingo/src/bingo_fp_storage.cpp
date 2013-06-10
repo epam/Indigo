@@ -1,4 +1,8 @@
 #include "bingo_fp_storage.h"
+
+#include "base_c/bitarray.h"
+#include "base_cpp/tlscont.h"
+#include "base_cpp/profiling.h"
 #include <iostream>
 #include <fstream>
 
@@ -34,11 +38,14 @@ void BaseFpStorage::_createFpStorage (int fp_size, Storage *storage, int inc_fp_
    _inc_count = 0;
    _inc_max_count = inc_fp_capacity;
    _inc_file.open(info_filename, std::ios::out | std::ios::binary | std::ios::trunc);
+   _writeInfoCounts();
+}
 
+void BaseFpStorage::_writeInfoCounts ()
+{
    _inc_file.seekp(0);
-   _inc_file.write((char *)&(_block_count), sizeof(_block_count));
-   _inc_file.write((char *)&(_inc_count), sizeof(_inc_count));
-   
+   _inc_file.write((char *)&_block_count, sizeof(_block_count));
+   _inc_file.write((char *)&_inc_count, sizeof(_inc_count));
    _inc_file.flush();
 }
 
@@ -65,17 +72,13 @@ void BaseFpStorage::add (const byte *fp)
    _inc_file.write((char *)fp, _fp_size);
    
    _inc_count++;
-   _inc_file.seekp(0, std::ios::beg);
-   _inc_file.write(reinterpret_cast<const char *>(&_block_count), sizeof(_block_count));
-   _inc_file.seekp(sizeof(_block_count), std::ios::beg);
-   _inc_file.write(reinterpret_cast<const char *>(&_inc_count), sizeof(_inc_count));
-
-   _inc_file.flush();
+   _writeInfoCounts();
 
    if (_inc_count == _inc_max_count)
    {
       _addIncToStorage();
       _inc_count = 0;
+      _writeInfoCounts();
    }
 }
 
@@ -117,33 +120,31 @@ BaseFpStorage::~BaseFpStorage ()
 
 void TranspFpStorage::_addIncToStorage ()
 {
+   profTimerStart(t0, "fp_inc_to_transp");
+   if (_pack_count == 0)
+   {
+      // Resize bit usage counts information for the all bits
+      fp_bit_usage_counts.resize(_fp_size * 8);
+   }
+
    byte *block_buf = new byte[_storage->getBlockSize()];
    byte block_b = 0;
                
    byte inc_mask = 0x80;
-   for (int bit_cnt = 0; bit_cnt < 8; bit_cnt++)
+   for (int bit_idx = 0; bit_idx < 8 * _fp_size; bit_idx++)
    {
-      for (int byte_cnt = 0; byte_cnt < _fp_size; byte_cnt++)
-      {
-         for (int fp_cnt = 0; fp_cnt < _inc_count; fp_cnt++)
-         {
-            byte inc_b = _inc_buffer[fp_cnt * _fp_size + byte_cnt];
-            int block_bit_pos = fp_cnt % 8;
-            byte block_bit = (byte)((inc_mask & inc_b) != 0) << (7 - block_bit_pos);
-            
-            block_b |= block_bit;
-            if (block_bit_pos == 7)
-            {
-               block_buf[fp_cnt / 8] = block_b;
-               block_b = 0;
-            }
-         }
+      memset(block_buf, 0, _storage->getBlockSize());
+      for (int fp_idx = 0; fp_idx < _inc_count; fp_idx++)
+         bitSetBit(block_buf, fp_idx, bitGetBit(_inc_buffer + fp_idx * _fp_size, bit_idx));
 
-         _storage->writeBlock((_pack_count *  _fp_size * 8) + byte_cnt * 8 + bit_cnt, block_buf);
-         _block_count++;
+      if (_pack_count == 0)
+      {
+         // Update bit usage count
+         fp_bit_usage_counts[bit_idx] = bitGetOnesCount(block_buf, _storage->getBlockSize());
       }
 
-      inc_mask >>= 1;
+      _storage->writeBlock((_pack_count * _fp_size * 8) + bit_idx, block_buf);
+      _block_count++;
    }
 
    _pack_count++;
@@ -158,12 +159,35 @@ TranspFpStorage::TranspFpStorage()
 void TranspFpStorage::create (int fp_size, Storage *storage, const char *info_filename)
 {
    _createFpStorage(fp_size, storage, storage->getBlockSize() * 8, info_filename);
+
+   fp_bit_usage_counts.resize(fp_size * 8);
+   fp_bit_usage_counts.zerofill();
 }
 
 void TranspFpStorage::load (int fp_size, Storage *storage, const char *info_filename)
 {
    _loadFpStorage(fp_size, storage, storage->getBlockSize() * 8, info_filename);
    _pack_count = _block_count / (fp_size * 8);
+
+   fp_bit_usage_counts.resize(fp_size * 8);
+   if (_pack_count > 0)
+   {
+      // Calculate fingerprints frequencies from the first block
+      QS_DEF(Array<byte>, _items_mask);
+      _items_mask.resize(storage->getBlockSize());
+      for (int i = 0; i < fp_size * 8; i++)
+      {
+         getBlock(i, _items_mask.ptr());
+         fp_bit_usage_counts[i] = bitGetOnesCount(_items_mask.ptr(), _items_mask.size());
+      }
+   }
+   else
+      fp_bit_usage_counts.zerofill();
+}
+
+const Array<int>& TranspFpStorage::getFpBitUsageCounts () const
+{
+   return fp_bit_usage_counts;
 }
 
 int TranspFpStorage::getPackCount () const
