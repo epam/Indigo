@@ -28,13 +28,11 @@ struct Pos
 
    // Offset and size on the page
    Vec2f page_offset;
-   Vec2f size;
+   Vec2f size, all_size;
 
    // Final offset for the coordinates
    Vec2f offset, title_offset;
 };
-
-
 
 void RenderParamCdxmlInterface::getBounds (Molecule &mol, Vec2f &min, Vec2f &max)
 {
@@ -88,7 +86,8 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    for (int i = 1; i < params.cnvOpt.gridColumnNumber; i++)
       column_offset[i] = column_offset[i - 1] + column_widths[i - 1] + x_grid_base;
 
-   float row_y_offset = params.cnvOpt.marginY / 10.0f + y_margins_base;
+   float page_y_offset_base = params.cnvOpt.marginY / 10.0f + y_margins_base;
+   float row_y_offset = page_y_offset_base;
    int last_row = 0;
    float max_y = 0;
 
@@ -98,11 +97,13 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    float title_y = 0;
 
    // Get each structure bounds 
+   int row_moved = 0;
    for (int i = 0; i < mols.size(); ++i)
    {
       Pos &p = positions[i];
 
       int column = i % params.cnvOpt.gridColumnNumber;
+      int row = i / params.cnvOpt.gridColumnNumber;
 
       getBounds(mols[i]->asMolecule(), p.str_min, p.str_max);
 
@@ -110,25 +111,39 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       p.page_offset.y = row_y_offset;
 
       p.size.diff(p.str_max, p.str_min);
+      p.all_size = p.size;
       
-      p.offset.x = p.page_offset.x - p.str_min.x + (column_widths[column] - p.size.x) / 2;
-      p.offset.y = -p.page_offset.y - p.str_max.y;
-
-      p.title_offset.x = p.page_offset.x + p.size.x / 2 + (column_widths[column] - p.size.x) / 2;
-      p.title_offset.y = -p.page_offset.y - p.size.y - 1.0f;
-
       if (i < params.titles.size())
       {
          const Array<char> &title = params.titles[i];
          if (title.size() > 0)
          {
             int lines = title.count('\n') + 1;
-            float title_height = lines * 0.3f;
-            max_y = __max(max_y, row_y_offset + p.size.y + title_height + 1.0f);
+            float title_height = lines * 0.31f;
+            p.all_size.y += title_height + 1.0f;
          }
       }
 
-      max_y = __max(max_y, row_y_offset + p.size.y);
+      // Check that the structure is fully on a single page
+      int pbegin = (int)(p.page_offset.y / saver.pageHeight());
+      int pend = (int)((p.page_offset.y + p.all_size.y) / saver.pageHeight());
+      // Additional check that we didn't moved this row before
+      if (pbegin != pend && row_moved != row)
+      {
+         // Update starting row_y_offset for the whole row and start this row again
+         row_y_offset = (pbegin + 1) * saver.pageHeight() + page_y_offset_base;
+         i = row * params.cnvOpt.gridColumnNumber - 1;
+         row_moved = row;
+         continue;
+      }
+
+      p.offset.x = p.page_offset.x - p.str_min.x + (column_widths[column] - p.size.x) / 2;
+      p.offset.y = -p.page_offset.y - p.str_max.y;
+
+      p.title_offset.x = p.page_offset.x + p.size.x / 2 + (column_widths[column] - p.size.x) / 2;
+      p.title_offset.y = -p.page_offset.y - p.size.y - 1.0f;
+
+      max_y = __max(max_y, p.page_offset.y + p.all_size.y);
 
       int next_row = (i + 1) / params.cnvOpt.gridColumnNumber;
       if (last_row != next_row)

@@ -41,14 +41,17 @@ public:
    void endPage ();
    void endDocument ();
 
+   float pageHeight () const;
+
    DECL_ERROR;
 
-protected:
+private:
    Output   &_output;
 
-   float bondLength;
+   float _bond_length;
+   int _pages_height;
+   float _max_page_height;
 
-private:
    MoleculeCdxmlSaver (const MoleculeCdxmlSaver &); // no implicit copy
 };
 
