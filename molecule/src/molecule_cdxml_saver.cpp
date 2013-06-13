@@ -108,6 +108,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
 
    bool have_hyz = mol.have_xyz;
 
+   Vec2f min_coord, max_coord;
+
    if (mol.vertexCount() > 0)
    {
       for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
@@ -163,9 +165,19 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
          Vec2f pos(pos3.x, pos3.y);
 
          pos.add(offset);
+         if (i == mol.vertexBegin())
+            min_coord = max_coord = pos;
+         else
+         {
+            min_coord.min(pos);
+            max_coord.max(pos);
+         }
+
          pos.scale(_bond_length);
          if (have_hyz)
+         {
             _output.printf("\n         p=\"%f %f\"", pos.x, -pos.y);
+         }
          else
          {
             if (mol.stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
@@ -239,6 +251,16 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
 
          _output.printf("/>\n");
       }
+   }
+
+   if (mol.isChrial())
+   {
+      Vec2f chiral_pos(max_coord.x, max_coord.y);
+      Vec2f bbox(_bond_length * chiral_pos.x, -_bond_length * chiral_pos.y);
+      _output.printf("<graphic BoundingBox=\"%f %f %f %f\" GraphicType=\"Symbol\" SymbolType=\"Absolute\" FrameType=\"None\">\n", 
+         bbox.x, bbox.y, bbox.x, bbox.y);
+      addText(chiral_pos, "Chiral");
+      _output.printf("</graphic>\n");
    }
 
    _output.printf("</fragment>\n");
