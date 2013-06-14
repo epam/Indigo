@@ -39,11 +39,6 @@ public:
    const Array<int> *vertex_codes, *edge_codes;
 
 private:
-   int _getVertexCode (int vertex);
-   int _getEdgeCode (int edge);
-
-   static int _cmp_int (int a, int b, void *context);
-
    Graph &_g;
    int _different_codes_count;
 
@@ -51,6 +46,9 @@ private:
    TL_CP_DECL(Array<dword>, _codes);
    TL_CP_DECL(Array<dword>, _oldcodes);
    TL_CP_DECL(GraphFastAccess, _gf);
+
+   TL_CP_DECL(Array<int>, _default_vertex_codes);
+   TL_CP_DECL(Array<int>, _default_edge_codes);
 };
 
 }

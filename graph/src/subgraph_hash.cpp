@@ -23,16 +23,25 @@ SubgraphHash::SubgraphHash (Graph &g) : _g(g),
    CP_INIT,
    TL_CP_GET(_codes),
    TL_CP_GET(_oldcodes),
-   TL_CP_GET(_gf)
+   TL_CP_GET(_gf),
+   TL_CP_GET(_default_vertex_codes),
+   TL_CP_GET(_default_edge_codes)
 {
    max_iterations = _g.vertexEnd();
-   vertex_codes = 0;
-   edge_codes = 0;
    _different_codes_count = 0;
    calc_different_codes_count = false;
 
    _codes.clear_resize(_g.vertexEnd());
    _oldcodes.clear_resize(_g.vertexEnd());
+
+   _default_vertex_codes.clear_resize(_g.vertexEnd());
+   _default_edge_codes.clear_resize(_g.edgeEnd());
+   _default_vertex_codes.fill(1);
+   _default_edge_codes.fill(1);
+
+   vertex_codes = &_default_vertex_codes;
+   edge_codes = &_default_edge_codes;
+
 
    _gf.setGraph(g);
    _gf.prepareEdges();
@@ -131,9 +140,4 @@ dword SubgraphHash::getHash (const Array<int> &vertices, const Array<int> &edges
 int SubgraphHash::getDifferentCodesCount ()
 {
    return _different_codes_count;
-}
-
-int SubgraphHash::_cmp_int (int a, int b, void *context)
-{
-   return a - b;
 }
