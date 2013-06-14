@@ -69,6 +69,7 @@ void MangoExact::calculateHash (Molecule &mol, Hash &hash)
    // Decompose into connected components
    int n_comp = mol_without_h.countComponents();
    QS_DEF(Molecule, component);
+   QS_DEF(Array<int>, vertex_codes);
 
    for (int i = 0; i < n_comp; i++)
    {
@@ -77,7 +78,10 @@ void MangoExact::calculateHash (Molecule &mol, Hash &hash)
 
       SubgraphHash hh(component);
 
-      hh.cb_vertex_code = _vertex_code;
+      vertex_codes.clear_resize(component.vertexEnd());
+      for (int v = component.vertexBegin(); v != component.vertexEnd(); v = component.vertexNext(v))
+         vertex_codes[v] = vertexCode(component, v);
+      hh.vertex_codes = &vertex_codes;
       hh.max_iterations = (component.edgeCount() + 1) / 2;
 
       dword component_hash = hh.getHash();
@@ -244,10 +248,8 @@ bool MangoExact::parse (const char *params)
    return true;
 }
 
-int MangoExact::_vertex_code (Graph &graph, int vertex_idx, void *context)
+int MangoExact::vertexCode (Molecule &mol, int vertex_idx)
 {
-   Molecule &mol = (Molecule &)graph;
-
    if (mol.isPseudoAtom(vertex_idx))
       return CRC32::get(mol.getPseudoAtom(vertex_idx));
 
@@ -255,10 +257,4 @@ int MangoExact::_vertex_code (Graph &graph, int vertex_idx, void *context)
       return ELEM_RSITE;
 
    return mol.getAtomNumber(vertex_idx);
-}
-
-int MangoExact::_edge_code (Graph &graph, int edge_idx, void *context)
-{
-   Molecule &mol = (Molecule &)graph;
-   return mol.getBondOrder(edge_idx);
 }
