@@ -319,12 +319,23 @@ namespace com.ggasoftware.indigo
             else
                 new_dll_name = name;
 
+            // This temporary file is used to avoid inter-process
+            // race condition when concurrently stating many processes
+            // on the same machine for the first time.
+            String tmp_filename = Path.GetTempFileName();
             String new_full_path = Path.Combine(dir, new_dll_name);
             FileInfo file = new FileInfo(new_full_path);
             file.Directory.Create();
             // Check if file already exists
-            if (!file.Exists || file.Length == 0)
-                File.WriteAllBytes(file.FullName, (byte[])file_data);
+            if (!file.Exists || file.Length == 0) {
+                File.WriteAllBytes(tmp_filename, (byte[]) file_data);
+                // file is ready to be moved.. lets check again
+                if (!file.Exists || file.Length == 0) {
+                    File.Move(tmp_filename, file.FullName);
+                } else {
+                    File.Delete(tmp_filename);
+                }
+            }
             return file.FullName;
         }
 
