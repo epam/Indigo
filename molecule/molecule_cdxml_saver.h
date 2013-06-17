@@ -36,12 +36,13 @@ public:
 
    void beginDocument (Bounds *bounds);
    void beginPage (Bounds *bounds);
-   void saveMoleculeFragment (Molecule &mol, const Vec2f &offset);
+   void saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float scale);
    void addText (const Vec2f &pos, const char *text);
    void endPage ();
    void endDocument ();
 
    float pageHeight () const;
+   float textLineHeight () const;
 
    DECL_ERROR;
 

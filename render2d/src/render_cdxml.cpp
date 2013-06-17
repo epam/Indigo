@@ -32,10 +32,30 @@ struct Pos
 
    // Final offset for the coordinates
    Vec2f offset, title_offset;
+
+   // Structure scaling coefficient
+   float scale;
 };
 
-void RenderParamCdxmlInterface::getBounds (Molecule &mol, Vec2f &min, Vec2f &max)
+void _getBounds (BaseMolecule &mol, Vec2f &min, Vec2f &max, float &scale)
 {
+   // Compute average bond length
+   float avg_bond_length = 1;
+   if (mol.edgeCount() > 0)
+   {
+      float bond_length_sum = 0;
+      for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+      {
+         const Edge& edge = mol.getEdge(i);
+         const Vec3f &p1 = mol.getAtomXyz(edge.beg);
+         const Vec3f &p2 = mol.getAtomXyz(edge.end);
+         bond_length_sum += Vec3f::dist(p1, p2);
+      }
+      avg_bond_length = bond_length_sum / mol.edgeCount();
+   }
+
+   scale = 1 / avg_bond_length;
+
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
       Vec3f &p = mol.getAtomXyz(i);
@@ -49,6 +69,9 @@ void RenderParamCdxmlInterface::getBounds (Molecule &mol, Vec2f &min, Vec2f &max
          max.max(p2);
       }
    }
+
+   min.scale(scale);
+   max.scale(scale);
 }
 
 void RenderParamCdxmlInterface::render (RenderParams& params)
@@ -67,13 +90,17 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    column_widths.resize(params.cnvOpt.gridColumnNumber);
    column_widths.fill(0);
 
+   Array<Pos> positions;
+   positions.resize(mols.size());
+
    for (int i = 0; i < mols.size(); ++i)
    {
       int column = i % params.cnvOpt.gridColumnNumber;
-      Vec2f min, max;
-      getBounds(mols[i]->asMolecule(), min, max);
 
-      float width = max.x - min.x;
+      Pos &p = positions[i];
+      _getBounds(mols[i]->asMolecule(), p.str_min, p.str_max, p.scale);
+
+      float width = p.str_max.x - p.str_min.x;
       column_widths[column] = __max(width, column_widths[column]);
    }
 
@@ -91,9 +118,6 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    int last_row = 0;
    float max_y = 0;
 
-   Array<Pos> positions;
-   positions.resize(mols.size());
-
    float title_y = 0;
 
    // Get each structure bounds 
@@ -104,8 +128,6 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
 
       int column = i % params.cnvOpt.gridColumnNumber;
       int row = i / params.cnvOpt.gridColumnNumber;
-
-      getBounds(mols[i]->asMolecule(), p.str_min, p.str_max);
 
       p.page_offset.x = column_offset[column];
       p.page_offset.y = row_y_offset;
@@ -119,8 +141,8 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
          if (title.size() > 0)
          {
             int lines = title.count('\n') + 1;
-            float title_height = lines * 0.31f;
-            p.all_size.y += title_height + 1.0f;
+            float title_height = lines * saver.textLineHeight();
+            p.all_size.y += title_height + saver.textLineHeight(); // Add blank line
          }
       }
 
@@ -175,7 +197,9 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    for (int i = 0; i < mols.size(); ++i)
    {
       Pos &p = positions[i];
-      saver.saveMoleculeFragment(mols[i]->asMolecule(), p.offset);
+      Vec2f offset = p.offset;
+      offset.scale(1 / p.scale);
+      saver.saveMoleculeFragment(mols[i]->asMolecule(), offset, p.scale);
       
       if (i < params.titles.size())
       {

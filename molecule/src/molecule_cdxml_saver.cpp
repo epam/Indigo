@@ -34,6 +34,11 @@ float MoleculeCdxmlSaver::pageHeight () const
    return _max_page_height;
 }
 
+float MoleculeCdxmlSaver::textLineHeight () const
+{
+   return 12.75f / _bond_length;
+}
+
 void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
 {
    _output.printf("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
@@ -100,8 +105,10 @@ void MoleculeCdxmlSaver::beginPage (Bounds *bounds)
    _output.printf(">\n");
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset)
+void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float structure_scale)
 {
+   float scale = structure_scale * _bond_length;
+
    LocaleGuard locale_guard;
 
    _output.printf("<fragment>\n");
@@ -173,7 +180,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
             max_coord.max(pos);
          }
 
-         pos.scale(_bond_length);
+         pos.scale(scale);
          if (have_hyz)
          {
             _output.printf("\n         p=\"%f %f\"", pos.x, -pos.y);
@@ -256,7 +263,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
    if (mol.isChrial())
    {
       Vec2f chiral_pos(max_coord.x, max_coord.y);
-      Vec2f bbox(_bond_length * chiral_pos.x, -_bond_length * chiral_pos.y);
+      Vec2f bbox(scale * chiral_pos.x, -scale * chiral_pos.y);
       _output.printf("<graphic BoundingBox=\"%f %f %f %f\" GraphicType=\"Symbol\" SymbolType=\"Absolute\" FrameType=\"None\">\n", 
          bbox.x, bbox.y, bbox.x, bbox.y);
       addText(chiral_pos, "Chiral");
@@ -314,7 +321,7 @@ void MoleculeCdxmlSaver::saveMolecule (Molecule &mol)
 
    Vec2f offset(-min_coord.x, -max_coord.y);
 
-   saveMoleculeFragment(mol, offset);
+   saveMoleculeFragment(mol, offset, 1);
    endPage();
    endDocument();
 }
