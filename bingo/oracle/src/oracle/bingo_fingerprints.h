@@ -50,6 +50,8 @@ public:
    class Screening
    {
    public:
+      Screening ();
+
       int part;
       int items_read;
       int items_passed;
