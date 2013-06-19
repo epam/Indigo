@@ -2467,6 +2467,36 @@ CEXPORT int indigoGetDataSGroup (int molecule, int index)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoGetGenericSGroup (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoGenericSGroup(mol, index));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoGetMultipleGroup (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoMultipleGroup(mol, index));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoGetRepeatingUnit (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoRepeatingUnit(mol, index));
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT const char * indigoDescription (int data_sgroup)
 {
    INDIGO_BEGIN
@@ -2475,6 +2505,18 @@ CEXPORT const char * indigoDescription (int data_sgroup)
       if (dsg.get().description.size() < 1)
          return "";
       return dsg.get().description.ptr();
+   }
+   INDIGO_END(0)
+}
+
+CEXPORT const char * indigoData (int data_sgroup)
+{
+   INDIGO_BEGIN
+   {
+      IndigoDataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(data_sgroup));
+      if (dsg.get().data.size() < 1)
+         return "";
+      return dsg.get().data.ptr();
    }
    INDIGO_END(0)
 }
