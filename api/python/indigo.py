@@ -1741,7 +1741,7 @@ class Indigo(object):
 
     def setOption (self, option, value1, value2=None, value3=None):
         self._setSessionId()
-        if type(value1).__name__ == 'str' and value2 is None and value3 is None:
+        if (type(value1).__name__ == 'str' or type(value1).__name__ == 'unicode') and value2 is None and value3 is None:
             self._checkResult(Indigo._lib.indigoSetOption(option.encode('ascii'), value1.encode('ascii')))
         elif type(value1).__name__ == 'int' and value2 is None and value3 is None:
             self._checkResult(Indigo._lib.indigoSetOptionInt(option.encode('ascii'), value1))
