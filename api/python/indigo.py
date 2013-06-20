@@ -1155,6 +1155,9 @@ class Indigo(object):
         if Indigo._lib is None:
             self._initStatic(path)
         self._sid = Indigo._lib.indigoAllocSessionId()
+        # Capture a reference to the _lib to access it in the __del__ method because
+        # at interpreter shutdown, the module's global variables are set to None 
+        self._lib = Indigo._lib
         self._setSessionId()
         self.IndigoObject = IndigoObject
         Indigo._lib.indigoVersion.restype = c_char_p
@@ -1716,8 +1719,7 @@ class Indigo(object):
 
     def __del__ (self):
         if hasattr(self, '_lib'):
-            #sys.__stdout__.write('releaseSessionId ' + str(self._sid))
-            Indigo._lib.indigoReleaseSessionId(self._sid)
+            self._lib.indigoReleaseSessionId(self._sid)
 
     def writeBuffer (self):
         self._setSessionId()
