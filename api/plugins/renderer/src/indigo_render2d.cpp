@@ -155,6 +155,14 @@ void indigoRenderSetRelativeThickness (float rt)
    rp.relativeThickness = rt;
 }
 
+void indigoRenderSetBondLineWidth (float w)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   if (w <= 0.0f)
+      throw IndigoError("bond line width factor must be positive");
+   rp.bondLineWidthFactor = w;
+}
+
 void indigoRenderSetBackgroundColor (float r, float g, float b)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -585,6 +593,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
 
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);
+   mgr.setOptionHandlerFloat("render-bond-line-width", indigoRenderSetBondLineWidth);
    mgr.setOptionHandlerFloat("render-comment-font-size", indigoRenderSetCommentFontSize);
    mgr.setOptionHandlerFloat("render-comment-alignment", indigoRenderSetCommentAlignment);
 

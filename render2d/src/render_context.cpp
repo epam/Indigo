@@ -113,10 +113,10 @@ void RenderContext::storeAndDestroyMetafile (bool discard)
 
 CP_DEF(RenderContext);
 
-RenderContext::RenderContext (const RenderOptions& ropt, float sf): CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
+RenderContext::RenderContext (const RenderOptions& ropt, float sf, float lwf): CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
 metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt), _pattern(NULL)
 {
-   _settings.init(sf);
+   _settings.init(sf, lwf);
    bprintf(_fontfamily, "Arial");
    bbmin.x = bbmin.y = 1;
    bbmax.x = bbmax.y = -1;
@@ -655,7 +655,7 @@ void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
    setSingleSource(ri.color);
    if (ri.highlighted && opt.highlightColorEnable)
       setSingleSource(opt.highlightColor);
-   setLineWidth(_settings.bondLineWidth);
+   setLineWidth(_settings.unit);
    moveTo(ri.p0);
    lineTo(ri.p1);
    checkPathNonEmpty();
@@ -695,8 +695,8 @@ void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
       ti.fontsize = FONT_SIZE_ATTACHMENT_POINT_INDEX;
       setTextItemSize(ti, ri.p1);
       float sz = ti.bbsz.length();
-      ti.bbp.addScaled(n, -(sz/2 + _settings.bondLineWidth));
-      ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + _settings.bondLineWidth));
+      ti.bbp.addScaled(n, -(sz/2 + _settings.unit));
+      ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + _settings.unit));
       drawTextItemText(ti);
    }
 }
@@ -704,7 +704,7 @@ void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
 void RenderContext::drawRSiteAttachmentIndex (RenderItemRSiteAttachmentIndex& ri)
 {
    setSingleSource(ri.color);
-   setLineWidth(_settings.bondLineWidth/2);
+   setLineWidth(_settings.unit/2);
    drawCircle(ri.bbp, ri.radius);
 }
 
@@ -765,7 +765,7 @@ void RenderContext::drawGraphItem (GraphItem& gi)
 void RenderContext::drawBracket (RenderItemBracket& bracket)
 {
    setSingleSource(bracket.color);
-   setLineWidth(_settings.bondLineWidth);
+   setLineWidth(_settings.unit);
 
    Vec2f p;
    moveTo(bracket.q0);

@@ -36,6 +36,7 @@ public:
    void clearArrays ();
 
    float relativeThickness;
+   float bondLineWidthFactor;
    RENDER_MODE rmode;
 
    AutoPtr<BaseMolecule> mol;
