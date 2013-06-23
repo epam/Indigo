@@ -43,6 +43,8 @@ void usage (void)
            "   Horizontal and vertical margins, in pixels. No margins by default\n"
            "-thickness <number>\n"
            "   Set relative thickness factor. Default is 1.0\n"
+           "-linewidth <number>\n"
+           "   Set bond line width factor. Default is 1.0\n"
            "-label <none|hetero|terminal-hetero|all>\n"
            "   Set atom label display mode (default is terminal-hetero)\n"
            "-hydro <on|off>\n"
@@ -425,6 +427,23 @@ int parseParams (Params* p, int argc, char *argv[]) {
             return -1;
          }
          indigoSetOptionFloat("render-relative-thickness", rt);
+      }
+      else if (strcmp(argv[i], "-linewidth") == 0)
+      {
+         float rt;
+
+         if (++i == argc)
+         {
+            fprintf(stderr, "expecting number after -linewidth\n");
+            return -1;
+         }
+
+         if (sscanf(argv[i], "%f", &rt) != 1 || rt < 0)
+         {
+            fprintf(stderr, "%s is not a valid line width value\n", argv[i]);
+            return -1;
+         }
+         indigoSetOptionFloat("render-bond-line-width", rt);
       }
       else if (strcmp(argv[i], "-bond") == 0)
       {
