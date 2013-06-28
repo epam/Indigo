@@ -10,32 +10,18 @@ from zipfile import *
 from os.path import *
 from optparse import OptionParser
 
-parser = OptionParser(description='Indigo libraries repacking')
-parser.add_option('--libonlyname', help='extract only the library into api/lib')
-parser.add_option('--config', default="Release", help='project configuration')
-parser.add_option('--type', default=None, help='wrapper (dotnet, java, python)')
+def make_doc():
+    curdir = abspath(os.curdir)
+    os.chdir('api/python')
+    os.system('python copy-libs.py')
+    os.chdir('../../doc')
+    os.system('python builder.py')
+    os.chdir(curdir)
 
-(args, left_args) = parser.parse_args()
-if len(left_args) > 0:
-    print("Unexpected arguments: %s" % (str(left_args)))
-    exit()
+def copy_doc(destname):
+    shutil.copytree('../doc/build/html', join(curdir, destname, 'doc'))
 
-suffix = ""
-if args.config.lower() != "release":  
-    suffix = "-" + args.config.lower()
-    
-need_join_achieves = (args.libonlyname == None)
-need_gen_wrappers = (args.libonlyname == None)
-    
-# find indigo version
-version = ""
-cur_dir = split(__file__)[0]
-for line in open(join(cur_dir, "..", "api", "indigo-version.cmake")):
-    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
-    if m:
-        version = m.group(1)
-
-def flatten_directory (dir):
+def flatten_directory(dir):
     todelete = []
     for f in os.listdir(dir):
         dir2 = join(dir, f)
@@ -46,7 +32,8 @@ def flatten_directory (dir):
             todelete.append(dir2)
             os.rmdir(dir2)
 
-def move_dir_content (src_dir, dest_dir):
+
+def move_dir_content(src_dir, dest_dir):
     for f in os.listdir(src_dir):
         f2 = join(src_dir, f)
         destf2 = join(dest_dir, f)
@@ -54,9 +41,9 @@ def move_dir_content (src_dir, dest_dir):
             move_dir_content(f2, destf2)
         elif not exists(destf2):
             shutil.move(f2, destf2)
-        
-    
-def join_archives (names, destname):
+
+
+def join_archives(names, destname):
     for name in names:
         if not exists(name + ".zip"):
             return
@@ -67,17 +54,14 @@ def join_archives (names, destname):
         move_dir_content(name, destname)
     if exists(destname + ".zip"):
         os.remove(destname + ".zip")
+    copy_doc(destname)
     subprocess.check_call("zip -r -9 -m %s.zip %s" % (destname, destname), shell=True)
     for name in names:
         shutil.rmtree(name)
-        os.remove("%s.zip" % (name))
-    
-os.chdir(join(cur_dir, "../dist"))
-#dist = abspath(join("..", "dist"))
-if need_join_achieves:
-    flatten_directory(".")
+        os.remove("%s.zip" % name)
 
-def join_archives_by_pattern (pattern, destname):
+
+def join_archives_by_pattern(pattern, destname):
     archives = []
     for f in os.listdir("."):
         if re.match(pattern, f):
@@ -86,7 +70,58 @@ def join_archives_by_pattern (pattern, destname):
         return
     print(archives)
     join_archives(archives, destname)
-    
+
+
+def clearLibs():
+    for f in os.listdir(libs_dir):
+        if f == "readme.txt":
+            continue
+        ffull = join(libs_dir, f)
+        if isdir(ffull):
+            shutil.rmtree(ffull)
+        else:
+            os.remove(ffull)
+
+
+def unpackToLibs(name):
+    if exists("tmp"):
+        shutil.rmtree("tmp")
+    subprocess.check_call("unzip %s.zip -d tmp" % (name), shell=True)
+    move_dir_content(join("tmp", name), libs_dir)
+    shutil.rmtree("tmp")
+
+
+parser = OptionParser(description='Indigo libraries repacking')
+parser.add_option('--libonlyname', help='extract only the library into api/lib')
+parser.add_option('--config', default="Release", help='project configuration')
+parser.add_option('--type', default=None, help='wrapper (dotnet, java, python)')
+
+make_doc()
+
+(args, left_args) = parser.parse_args()
+if len(left_args) > 0:
+    print("Unexpected arguments: %s" % (str(left_args)))
+    exit()
+
+suffix = ""
+if args.config.lower() != "release":
+    suffix = "-" + args.config.lower()
+
+need_join_archieves = (args.libonlyname == None)
+need_gen_wrappers = (args.libonlyname == None)
+
+# find indigo version
+version = ""
+cur_dir = split(__file__)[0]
+for line in open(join(cur_dir, "..", "api", "indigo-version.cmake")):
+    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
+    if m:
+        version = m.group(1)
+
+os.chdir(join(cur_dir, "../dist"))
+#dist = abspath(join("..", "dist"))
+if need_join_archieves:
+    flatten_directory(".")
 
 arc_joins = [
     ("indigo-libs-%ver%-linux-shared", "indigo-libs-%ver%-linux.+-shared" ),
@@ -97,42 +132,25 @@ arc_joins = [
     ("indigo-libs-%ver%-mac-static", "indigo-libs-%ver%-mac.+-static" ),
 ]
 
-if need_join_achieves:
+if need_join_archieves:
     for dest, pattern in arc_joins:
         p = pattern.replace("%ver%", version) + "\.zip"
         d = dest.replace("%ver%", version) + suffix
         join_archives_by_pattern(p, d)
 
-    
-print("*** Making wrappers *** ")    
+print("*** Making wrappers *** ")
 
 api_dir = abspath("../api")
 libs_dir = join(api_dir, "libs")
-def clearLibs ():
-    for f in os.listdir(libs_dir):
-        if f == "readme.txt":
-            continue
-        ffull = join(libs_dir, f)
-        if isdir(ffull):
-            shutil.rmtree(ffull)
-        else:
-            os.remove(ffull)
 
-def unpackToLibs (name):
-    if exists("tmp"):
-        shutil.rmtree("tmp")
-    subprocess.check_call("unzip %s.zip -d tmp" % (name), shell=True)
-    move_dir_content(join("tmp", name), libs_dir)
-    shutil.rmtree("tmp")
-
-wrappers =  [ 
+wrappers = [
     ("win", ["win"]),
     ("linux", ["linux"]),
     ("mac", ["mac"]),
     ("universal", ["win", "linux", "mac"]),
 ]
 
-wrappers_gen = [ "make-java-wrappers.py", "make-python-wrappers.py", 'make-dotnet-wrappers.py']
+wrappers_gen = ["make-java-wrappers.py", "make-python-wrappers.py", 'make-dotnet-wrappers.py']
 
 for w, libs in wrappers:
     clearLibs()
@@ -153,4 +171,3 @@ for w, libs in wrappers:
             if args.type is not None and gen.find(args.type) == -1:
                 continue
             subprocess.check_call('%s %s -s "-%s"' % (sys.executable, join(api_dir, gen), w), shell=True)
-    

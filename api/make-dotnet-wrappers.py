@@ -149,11 +149,13 @@ print command
 subprocess.check_call(command, shell=True)
 
 # Zip results
+doc_dir = join(api_dir, '..', 'doc')
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "dotnet")
 shutil.copy(join(indigoDotNetPath, 'bin', 'Release', 'indigo-dotnet.dll'), "dotnet")
 shutil.copy(join(indigoRendererDotNetPath, 'bin', 'Release', 'indigo-renderer-dotnet.dll'), "dotnet")
 shutil.copy(join(indigoInchiDotNetPath, 'bin', 'Release', 'indigo-inchi-dotnet.dll'), "dotnet")
+shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join('dotnet', 'doc'))
 
 archive_name = "indigo-dotnet-%s" % (version + args.suffix)
 os.rename("dotnet", archive_name)
