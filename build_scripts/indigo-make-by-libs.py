@@ -6,13 +6,18 @@ import shutil
 import sys
 import re
 import subprocess
+import inspect
 from zipfile import *
 from os.path import *
 from optparse import OptionParser
 
 def make_doc():
     curdir = abspath(os.curdir)
-    os.chdir('api/python')
+    
+    script_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    root_dir = os.path.join(script_dir, "..")
+    
+    os.chdir(os.path.join(root_dir, 'api/python'))
     os.system('python copy-libs.py')
     os.chdir('../../doc')
     os.system('python builder.py')
