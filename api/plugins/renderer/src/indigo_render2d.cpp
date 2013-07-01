@@ -383,7 +383,7 @@ CEXPORT int indigoRender (int object, int output)
             rp.mol.reset(new QueryMolecule());
          else
             rp.mol.reset(new Molecule());
-         rp.mol->clone(self.getObject(object).getBaseMolecule(), 0, 0);
+         rp.mol->clone_KeepIndices(self.getObject(object).getBaseMolecule());
          rp.rmode = RENDER_MOL;
       }
       else if (IndigoBaseReaction::is(obj))
@@ -433,7 +433,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
 
-            rp.mols.top()->clone(objs[i]->getBaseMolecule(), 0, 0, 0);
+            rp.mols.top()->clone_KeepIndices(objs[i]->getBaseMolecule());
             rp.rmode = RENDER_MOL;
          }
       }
