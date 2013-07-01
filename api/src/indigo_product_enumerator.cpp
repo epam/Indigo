@@ -137,7 +137,18 @@ CEXPORT int indigoTransform (int reaction, int monomers)
       ReactionTransformation rt;
       rt.arom_options = self.arom_options;
 
-      if (monomers_object.type == IndigoObject::MOLECULE)
+      // Try to work with molecule first
+      bool is_mol = false;
+      try 
+      {
+         monomers_object.getMolecule();
+         is_mol = true;
+      }
+      catch (IndigoError)
+      {
+      }
+
+      if (is_mol)
       {
          Molecule &mol = monomers_object.getMolecule();
          rt.transform(mol, query_rxn);
