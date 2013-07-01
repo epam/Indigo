@@ -1780,6 +1780,21 @@ CEXPORT int indigoRemoveAtoms (int molecule, int nvertices, int *vertices)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoRemoveBonds (int molecule, int nbonds, int *bonds)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      QS_DEF(Array<int>, indices);
+
+      indices.copy(bonds, nbonds);
+
+      mol.removeBonds(indices);
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 IndigoObject * IndigoMolecule::clone ()
 {
    return cloneFrom(*this);

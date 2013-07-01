@@ -800,6 +800,12 @@ class IndigoObject(object):
             arr2[i] = vertices[i]
         return self.dispatcher._checkResult(Indigo._lib.indigoRemoveAtoms(self.id, len(arr2), arr2))
 
+    def removeBonds(self, bonds):
+        self.dispatcher._setSessionId()
+        arr2 = (c_int * len(bonds))()
+        for i in range(len(bonds)):
+            arr2[i] = bonds[i]
+        return self.dispatcher._checkResult(Indigo._lib.indigoRemoveBonds(self.id, len(arr2), arr2))
 
     def aromatize(self):
         self.dispatcher._setSessionId()
@@ -1596,6 +1602,8 @@ class Indigo(object):
         Indigo._lib.indigoGetSubmolecule.argtypes = [c_int, c_int, POINTER(c_int)]
         Indigo._lib.indigoRemoveAtoms.restype = c_int
         Indigo._lib.indigoRemoveAtoms.argtypes = [c_int, c_int, POINTER(c_int)]
+        Indigo._lib.indigoRemoveBonds.restype = c_int
+        Indigo._lib.indigoRemoveBonds.argtypes = [c_int, c_int, POINTER(c_int)]
         Indigo._lib.indigoAlignAtoms.restype = c_float
         Indigo._lib.indigoAlignAtoms.argtypes = [c_int, c_int, POINTER(c_int), POINTER(c_float)]
         Indigo._lib.indigoAromatize.restype = c_int

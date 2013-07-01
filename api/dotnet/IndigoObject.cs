@@ -1106,6 +1106,17 @@ namespace com.ggasoftware.indigo
             removeAtoms(Indigo.toIntArray(vertices));
         }
 
+        public void removeBonds(int[] bonds)
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(_indigo_lib.indigoRemoveBonds(self, bonds.Length, bonds));
+        }
+
+        public void removeBonds(ICollection bonds)
+        {
+            removeBonds(Indigo.toIntArray(bonds));
+        }
+
         public float alignAtoms(int[] atom_ids, float[] desired_xyz)
         {
             dispatcher.setSessionID();

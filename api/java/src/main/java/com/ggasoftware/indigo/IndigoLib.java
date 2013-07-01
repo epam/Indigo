@@ -285,6 +285,7 @@ public interface IndigoLib extends Library
    int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int vertices[], int nedges, int edges[]);
 
    int indigoRemoveAtoms (int molecule, int nvertices, int vertices[]);
+   int indigoRemoveBonds (int molecule, int nbonds, int bonds[]);
    float indigoAlignAtoms (int molecule, int natoms, int atom_ids[], float desired_xyz[]);
 
    int indigoAromatize (int item);

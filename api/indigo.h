@@ -543,6 +543,7 @@ CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *verti
 CEXPORT int indigoGetSubmolecule (int molecule, int nvertices, int *vertices);
 
 CEXPORT int indigoRemoveAtoms (int molecule, int nvertices, int *vertices);
+CEXPORT int indigoRemoveBonds (int molecule, int nbonds, int *bonds);
 
 // Determines and applies the best transformation to the given molecule
 // so that the specified atoms move as close as possible to the desired
