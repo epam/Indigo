@@ -2177,8 +2177,12 @@ void MoleculeRenderInternal::_drawAtom (const AtomDesc& desc)
       _cw.drawAttachmentPoint(_data.attachmentPoints[desc.attachmentPointBegin + i]);
    for (int i = 0; i < desc.rSiteAttachmentIndexCount; ++i)
       _cw.drawRSiteAttachmentIndex(_data.rSiteAttachmentIndices[desc.rSiteAttachmentIndexBegin + i]);
-   for (int i = 0; i < desc.gicount; ++i)
-      _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
+   for (int i = 0; i < desc.gicount; ++i) {
+      if (desc.hcolorSet)
+         _cw.drawGraphItem(_data.graphitems[i + desc.gibegin], desc.hcolor);
+      else
+         _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
+   }
 }
 
 void MoleculeRenderInternal::_writeQueryAtomToString (Output& output, int aid)

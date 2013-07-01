@@ -713,7 +713,17 @@ void RenderContext::drawGraphItem (GraphItem& gi)
    setSingleSource(gi.color);
    if (gi.highlighted && opt.highlightColorEnable)
       setSingleSource(opt.highlightColor);
+   _drawGraphItem(gi);
+}
 
+void RenderContext::drawGraphItem (GraphItem& gi, const Vec3f& color)
+{
+   setSingleSource(color);
+   _drawGraphItem(gi);
+}
+
+void RenderContext::_drawGraphItem (GraphItem& gi)
+{
    Vec2f v0;
    v0.sum(gi.bbp, gi.relpos);
    switch (gi.type)

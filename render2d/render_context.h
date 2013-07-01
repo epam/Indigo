@@ -74,6 +74,7 @@ public:
    void setGraphItemSizeCap (GraphItem& gi);
    void setGraphItemSizeSign (GraphItem& gi, GraphItem::TYPE type);
    void drawGraphItem (GraphItem& gi);
+   void drawGraphItem (GraphItem& gi, const Vec3f& color);
    void fillRect (double x, double y, double w, double h);
    void getColor (float& r, float& g, float& b, int c);
    int getElementColor (int label);
@@ -125,6 +126,7 @@ public:
 private:
    static cairo_status_t writer (void *closure, const unsigned char *data, unsigned int length);
 
+   void _drawGraphItem (GraphItem& gi);
    void lineTo (const Vec2f& v);
    void lineToRel (float x, float y);
    void lineToRel (const Vec2f& v);
