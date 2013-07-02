@@ -4,6 +4,7 @@
 #include "bingo_storage.h"
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 namespace  bingo
 {
@@ -59,7 +60,7 @@ namespace  bingo
       Storage *_storage;
 
       std::ofstream _inc_file;
-      byte *_inc_buffer;
+      std::vector<byte> _inc_buffer;
       int _inc_count;
       int _inc_max_count;
    

@@ -158,6 +158,9 @@ namespace bingo
       // Variables used for estimation
       MeanEstimator _match_probability_esimate, _match_time_esimate;
 
+      
+      bool _isCurrentObjectExist();
+
       bool _loadCurrentObject();
 
       ~BaseMatcher ();
@@ -235,7 +238,7 @@ namespace bingo
       /* const */ AutoPtr<SimilarityQueryData> _query_data;
       int _fp_size;
 
-      byte *_current_block;
+      Array<byte> _current_block;
       const byte *_cur_loc;
       Array<byte> _query_fp;
 

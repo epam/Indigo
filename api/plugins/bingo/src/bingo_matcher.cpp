@@ -7,6 +7,7 @@
 #include "base_cpp/profiling.h"
 
 #include <algorithm>
+#include <vector>
 
 using namespace indigo;
 
@@ -135,21 +136,36 @@ const Index & BaseMatcher::getIndex ()
    return _index;
 }
 
+
+bool BaseMatcher::_isCurrentObjectExist()
+{
+   int cf_len;
+   _index.getCfStorage().get(_current_id, cf_len);
+
+   if (cf_len == -1)
+      return false;
+
+   return true;
+}
+
 bool BaseMatcher::_loadCurrentObject()
 {
    if (_current_obj == 0)
       throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
+   profTimerStart(t_get_cmf, "loadCurObj_get_cf");
    FlatStorage &cf_storage = _index.getCfStorage();
-
+   
    int cf_len;
    const char *cf_str = (const char *)cf_storage.get(_current_id, cf_len);
 
    if (cf_len == -1)
       return false;
-
+   profTimerStop(t_get_cmf);
+   
+   profTimerStart(t_load_cmf, "loadCurObj_load_cf");
    BufferScanner buf_scn(cf_str, cf_len);
-      
+   
    if (IndigoMolecule::is(*_current_obj))
    {
       Molecule &mol = _current_obj->getMolecule();
@@ -168,6 +184,8 @@ bool BaseMatcher::_loadCurrentObject()
    }
    else
       throw Exception("BaseMatcher::unknown current object type");
+
+   profTimerStop(t_load_cmf);
 
    return true;
 }
@@ -299,7 +317,8 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
 
    const byte *query_fp = _query_fp.ptr();
 
-   byte *block = new byte[fp_storage.getBlockSize()];
+   std::vector<byte> block;
+   block.resize(fp_storage.getBlockSize());
 
    int fp_size_in_bits = _fp_size * 8;
 
@@ -318,11 +337,11 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
       int j = _query_fp_bits_used[i];
       
       profTimerStart(tgb, "sub_find_cand_pack_get_block");
-      fp_storage.getBlock(pack_idx * fp_size_in_bits + j, block);
+      fp_storage.getBlock(pack_idx * fp_size_in_bits + j, &block[0]);
       profTimerStop(tgb);
 
       profTimerStart(tgu, "sub_find_cand_pack_fit_update");
-      bitAnd(fit_bits.ptr() + left, block + left, right - left + 1);
+      bitAnd(fit_bits.ptr() + left, &block[0] + left, right - left + 1);
 
       while(left <= right && fit_bits[left] == 0)
          left++;
@@ -340,8 +359,6 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
    for (int k = 0; k < 8 * fp_storage.getBlockSize(); k++)
       if (bitGetBit(fit_bits.ptr(), k))
          _candidates.push(k + pack_idx * fp_storage.getBlockSize() * 8);
-
-   delete block;
 }
 
 void BaseSubstructureMatcher::_findIncCandidates ()
@@ -452,7 +469,7 @@ bool ReactionSubMatcher::_tryCurrent ()// const
 BaseSimilarityMatcher::BaseSimilarityMatcher (/*const */ BaseIndex &index, IndigoObject *& current_obj ) : BaseMatcher(index, current_obj)
 {
    _current_id = -1;
-   _current_block = new byte[_index.getSimStorage().getBlockSize()];
+   _current_block.clear_resize(_index.getSimStorage().getBlockSize());
    _fp_size = _index.getFingerprintParams().fingerprintSizeSim();
 }
 
@@ -467,7 +484,9 @@ bool BaseSimilarityMatcher::next ()
    {
       profTimerStart(tsingle, "sim_single");
 
-      if (!_loadCurrentObject())
+      bool is_obj_exist = _isCurrentObjectExist();
+
+      if (!is_obj_exist)
       {
          _current_id++;
          _match_probability_esimate.addValue(0);
@@ -482,15 +501,18 @@ bool BaseSimilarityMatcher::next ()
       {
          if (block_idx < fp_storage.getBlockCount())
          {
-            fp_storage.getBlock(block_idx, _current_block);
-            _cur_loc = _current_block;
+            fp_storage.getBlock(block_idx, _current_block.ptr());
+            _cur_loc = _current_block.ptr();
          }
          else
+         {
             _cur_loc = fp_storage.getIncrement();
+         }
       }
+
       int fp_idx_in_block = _current_id - block_idx * fp_per_block;
       float tan_coef = _calcTanimoto(_cur_loc + fp_idx_in_block * _fp_size);
-
+      
       if (tan_coef < _query_data->getMin() || tan_coef > _query_data->getMax())
       {
          _current_id++;
@@ -498,6 +520,8 @@ bool BaseSimilarityMatcher::next ()
          _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
          continue;
       }
+
+      _loadCurrentObject();
 
       _match_probability_esimate.addValue(1);
       _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
@@ -517,7 +541,7 @@ void BaseSimilarityMatcher::setQueryData (SimilarityQueryData *query_data)
 
 BaseSimilarityMatcher::~BaseSimilarityMatcher ()
 {
-   delete _current_block;
+   _current_block.clear();
 }
 
 float BaseSimilarityMatcher::_calcTanimoto (const byte *fp)

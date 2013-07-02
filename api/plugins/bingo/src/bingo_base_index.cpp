@@ -321,17 +321,17 @@ void BaseIndex::_mappingLoad (const char * mapping_path)
    mapping_file.seekg(std::ios::beg);
    mapping_file.read((char *)&_object_count, sizeof(_object_count));
    
-   int *mapping_buf = new int[mapping_size];
 
-   mapping_file.read((char *)mapping_buf, sizeof(obj_id) * mapping_size);
+   std::vector<int> mapping_buf;
+   mapping_buf.resize(mapping_size);
+
+   mapping_file.read((char *)&mapping_buf[0], sizeof(obj_id) * mapping_size);
 
    for (int base_id = 0; base_id < mapping_size; base_id++)
    {
       obj_id = mapping_buf[base_id];
       _mappingAssign(obj_id, base_id);
    }
-
-   delete[] mapping_buf;
 
    return;
 }
