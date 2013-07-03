@@ -20,7 +20,7 @@ endif()
 set_target_properties(render2d PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 target_link_libraries(render2d cairo)
 if (UNIX AND NOT APPLE)
-    target_link_libraries(render2d molecule
+    target_link_libraries(render2d molecule)
 endif()
 pack_static(render2d)
 
