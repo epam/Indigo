@@ -106,4 +106,4 @@ namespace  bingo
       void _addIncToStorage();
    };
 };
-#endif /* __fp_storage__ */
+#endif /* __bingo_fp_storage__ */

@@ -36,9 +36,9 @@ void ByteBufferStorage::load (const char *buf_filename, const char *offset_filen
    _offset_file.seekg(std::ios::beg);
    
    size_t addr_count = file_len / sizeof(_Addr);
-   Array<_Addr> addr_buf;
+   std::vector<_Addr> addr_buf;
    addr_buf.resize((int)addr_count);
-   _offset_file.read((char *)addr_buf.ptr(), sizeof(_Addr) * addr_count);
+   _offset_file.read((char *)&addr_buf[0], sizeof(_Addr) * addr_count);
    
    for (int i = 0; i < addr_count; i++)
       _addresses.push(addr_buf[i]);
