@@ -57,7 +57,7 @@ public:
    void reserve (int to_reserve)
    {
       // Addtional check for unexpectedly large memory allocations (larger than 512 Mb)
-      if (to_reserve * sizeof(T) >= 1 << 29)
+      if (to_reserve * sizeof(T) >= 1 << 30)
          throw Error("memory to reserve (%d x %d) is large than allowed threshold", to_reserve, (int)sizeof(T));
 
       if (to_reserve <= 0)
