@@ -91,6 +91,18 @@ unsigned long Properties::getULong (const char *prop_name)
    return u_dec;
 }
 
+unsigned long Properties::getULongNoThrow (const char *prop_name)
+{
+   try
+   {
+      return getULong(prop_name);
+   }
+   catch (Exception &ex)
+   {
+      return ULONG_MAX;
+   }
+}
+
 void Properties::_rewritePropFile ()
 {
    profTimerStart(t, "rewrite_prop");

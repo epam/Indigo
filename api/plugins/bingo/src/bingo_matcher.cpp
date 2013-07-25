@@ -469,66 +469,55 @@ bool ReactionSubMatcher::_tryCurrent ()// const
 BaseSimilarityMatcher::BaseSimilarityMatcher (/*const */ BaseIndex &index, IndigoObject *& current_obj ) : BaseMatcher(index, current_obj)
 {
    _current_id = -1;
-   _current_block.clear_resize(_index.getSimStorage().getBlockSize());
+   _current_cell = 0;
+   _current_container = -1;
+   _current_portion_id = 0;
+   _current_portion.clear();
    _fp_size = _index.getFingerprintParams().fingerprintSizeSim();
 }
 
 bool BaseSimilarityMatcher::next ()
 {
-   _current_id++;
-   const RowFpStorage &fp_storage = _index.getSimStorage();
-   int stor_fp_count = fp_storage.getBlockCount() * fp_storage.getFpPerBlockCount() + fp_storage.getIncrementSize();
-   FlatStorage &cf_storage = _index.getCfStorage();
+   SimStorage &sim_storage = _index.getSimStorage();
 
-   while (_current_id < stor_fp_count)
+   while (true)
    {
-      profTimerStart(tsingle, "sim_single");
+      TanimotoCoef coef(_fp_size);
+
+      if (_current_portion_id >= _current_portion.size())
+      {
+         _current_portion_id = 0;
+         _current_container++;
+
+         if (_current_container == sim_storage.getCellSize(_current_cell))
+         {
+            _current_cell++;
+
+            if (_current_cell >= sim_storage.getCellCount())
+               return false;
+
+            _current_container = 0;
+         }
+
+         _current_portion.clear();
+         sim_storage.getSimilar(_query_fp.ptr(), coef, _query_data->getMin(), 
+                                _current_portion, _current_cell, _current_container);
+
+         continue;
+      }
+      
+      _current_id = _current_portion[_current_portion_id];
+
+      _current_portion_id++;
 
       bool is_obj_exist = _isCurrentObjectExist();
 
       if (!is_obj_exist)
-      {
-         _current_id++;
-         _match_probability_esimate.addValue(0);
-         _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
          continue;
-      }
-
-      int fp_per_block = fp_storage.getBlockSize() / _fp_size;
-      int block_idx = _current_id / fp_per_block;
-
-      if (_current_id % fp_per_block == 0)
-      {
-         if (block_idx < fp_storage.getBlockCount())
-         {
-            fp_storage.getBlock(block_idx, _current_block.ptr());
-            _cur_loc = _current_block.ptr();
-         }
-         else
-         {
-            _cur_loc = fp_storage.getIncrement();
-         }
-      }
-
-      int fp_idx_in_block = _current_id - block_idx * fp_per_block;
-      float tan_coef = _calcTanimoto(_cur_loc + fp_idx_in_block * _fp_size);
       
-      if (tan_coef < _query_data->getMin() || tan_coef > _query_data->getMax())
-      {
-         _current_id++;
-         _match_probability_esimate.addValue(0);
-         _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
-         continue;
-      }
-
       _loadCurrentObject();
-
-      _match_probability_esimate.addValue(1);
-      _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
       return true;
    }
-
-   return false;
 }
 
 void BaseSimilarityMatcher::setQueryData (SimilarityQueryData *query_data)
@@ -542,14 +531,6 @@ void BaseSimilarityMatcher::setQueryData (SimilarityQueryData *query_data)
 BaseSimilarityMatcher::~BaseSimilarityMatcher ()
 {
    _current_block.clear();
-}
-
-float BaseSimilarityMatcher::_calcTanimoto (const byte *fp)
-{
-   int common_bits = bitCommonOnes(fp, _query_fp.ptr(), _fp_size);
-   int unique_bits = bitUniqueOnes(fp, _query_fp.ptr(), _fp_size);
-      
-   return (float)common_bits / (common_bits + unique_bits);
 }
 
 MoleculeSimMatcher::MoleculeSimMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseSimilarityMatcher(index, (IndigoObject *&)_current_mol)

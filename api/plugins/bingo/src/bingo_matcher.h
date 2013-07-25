@@ -238,6 +238,11 @@ namespace bingo
       /* const */ AutoPtr<SimilarityQueryData> _query_data;
       int _fp_size;
 
+      int _current_cell;
+      int _current_container;
+      Array<int> _current_portion;
+      int _current_portion_id;
+      
       Array<byte> _current_block;
       const byte *_cur_loc;
       Array<byte> _query_fp;

@@ -1,5 +1,6 @@
 #include "bingo_base_index.h"
 #include "bingo_storage.h"
+#include "bingo_mmf.h"
 
 #include <sstream>
 #include <string>
@@ -22,6 +23,9 @@ static const char *_reaction_type = "reaction";
 static const char *_molecule_type = "molecule";
 static const char *_ram_storage_type = "ram";
 static const char *_file_storage_type = "file";
+static const char *_sim_mmf_file = "sim_storage";
+static const size_t _sim_mmf_size = 3221225472;
+static const int _sim_mt_size = 50000;
 
 BaseIndex::BaseIndex (IndexType type)
 {
@@ -49,6 +53,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
    std::string _cf_data_path = _location + _cf_data_filename;
    std::string _cf_offset_path = _location + _cf_offset_filename;
    std::string _mapping_path = _location + _id_mapping_filename;
+   std::string _sim_mmf_path = _location + _sim_mmf_file;
 
    _fp_params = fp_params;
    
@@ -72,7 +77,19 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
    _cf_storage.reset(new ByteBufferStorage(cf_block_size));
 
    _sub_fp_storage.create(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
-   _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), sim_stor.release(), sim_info_path.c_str());
+
+   MMFStorage sim_mmf;
+
+   
+   size_t sim_mmf_size_mb = _properties.getULongNoThrow("sim_mmf_size");
+   size_t sim_mmf_size = (sim_mmf_size_mb != ULONG_MAX ? sim_mmf_size_mb * 1048576 : _sim_mmf_size);
+  
+   unsigned long prop_mt_size =  _properties.getULongNoThrow("mt_size");
+   int mt_size = (prop_mt_size != ULONG_MAX ? prop_mt_size : _sim_mt_size);
+
+   sim_mmf.open(_sim_mmf_path.c_str(), sim_mmf_size);
+
+   _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), sim_mmf.ptr(), sim_mmf_size, mt_size);
    
    _cf_storage->create(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }
@@ -91,6 +108,7 @@ void BaseIndex::load (const char *location, const char *options)
    std::string _cf_data_path = _location + _cf_data_filename;
    std::string _cf_offset_path = _location + _cf_offset_filename;
    std::string _mapping_path = _location + _id_mapping_filename;
+   std::string _sim_mmf_path = _location + _sim_mmf_file;
 
    _properties.load(props_path.c_str());
 
@@ -99,6 +117,7 @@ void BaseIndex::load (const char *location, const char *options)
    const char *type_str = (_type == MOLECULE ? _molecule_type : _reaction_type);
    if (strcmp(_properties.get("base_type"), type_str) != 0)
       throw Exception("Loading databse: wrong type propety");
+   
 
    _fp_params.ext = (_properties.getULong("fp_ext") != 0);
    _fp_params.ord_qwords = _properties.getULong("fp_ord");
@@ -124,8 +143,16 @@ void BaseIndex::load (const char *location, const char *options)
    _cf_storage.reset(new ByteBufferStorage(cf_block_size));
 
    _sub_fp_storage.load(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
-   _sim_fp_storage.load(_fp_params.fingerprintSizeSim(), sim_stor.release(), sim_info_path.c_str());
+   
+   MMFStorage sim_mmf;
 
+   size_t sim_mmf_size_mb = _properties.getULongNoThrow("sim_mmf_size");
+   size_t sim_mmf_size = (sim_mmf_size_mb != _ULLONG_MAX ? sim_mmf_size_mb * 1048576 : _sim_mmf_size);
+  
+   sim_mmf.open(_sim_mmf_path.c_str(), sim_mmf_size);
+
+   _sim_fp_storage.load(_fp_params.fingerprintSizeSim(), sim_mmf.ptr(), sim_mmf_size);
+   
    _cf_storage->load(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }
 
@@ -172,6 +199,11 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
    return obj_id;
 }
 
+void BaseIndex::optimize ()
+{
+   _sim_fp_storage.optimize();
+}
+
 void BaseIndex::remove (int obj_id)
 {
    if (obj_id < 0 || obj_id >= _back_id_mapping.size() || _back_id_mapping[obj_id] == -1)
@@ -191,7 +223,7 @@ const TranspFpStorage & BaseIndex::getSubStorage () const
    return _sub_fp_storage;
 }
 
-const RowFpStorage & BaseIndex::getSimStorage () const
+SimStorage & BaseIndex::getSimStorage ()
 {
    return _sim_fp_storage;
 }
@@ -301,7 +333,7 @@ bool BaseIndex::_prepareIndexData (IndexObject &obj)
 void BaseIndex::_insertIndexData ()
 {
    _sub_fp_storage.add(_object_index_data.sub_fp.ptr());
-   _sim_fp_storage.add(_object_index_data.sim_fp.ptr());
+   _sim_fp_storage.add(_object_index_data.sim_fp.ptr(), _object_count);
    _cf_storage->add((byte *)_object_index_data.cf_str.ptr(), _object_index_data.cf_str.size(), _object_count);
 }
 

@@ -25,6 +25,8 @@ namespace bingo
 
       unsigned long getULong (const char *prop_name);
 
+      unsigned long getULongNoThrow (const char *prop_name);
+
    private:
       typedef std::pair<const std::string, std::string> _PropertyPair;
 

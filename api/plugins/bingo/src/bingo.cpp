@@ -209,6 +209,22 @@ CEXPORT int bingoDeleteRecord (int db, int id)
    INDIGO_END(-1);
 }
 
+CEXPORT int bingoOptimize (int db)
+{
+   INDIGO_BEGIN
+   {
+      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
+         throw BingoException("Incorrect database object");
+
+      Index &bingo_index = _bingo_instances.ref(db);
+
+      bingo_index.optimize();
+
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
 {
    INDIGO_BEGIN

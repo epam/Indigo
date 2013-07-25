@@ -29,6 +29,8 @@ CEXPORT int bingoInsertRecordObj (int db, int obj);
 CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id);
 CEXPORT int bingoDeleteRecord (int db, int id);
 
+CEXPORT int bingoOptimize (int db);
+
 // Search methods that returns search object
 // Search object is an iterator
 CEXPORT int bingoSearchSub (int db, int query_obj, const char *options);
