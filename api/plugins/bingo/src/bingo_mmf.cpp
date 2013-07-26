@@ -19,7 +19,7 @@ void MMFStorage::open( const char *filename, size_t buf_size )
                  hFile,    // use paging file
                  NULL,                    // default security
                  PAGE_READWRITE,          // read/write access
-                 0,                       // maximum object size (high-order DWORD)
+                 buf_size >> 32,          // maximum object size (high-order DWORD)
                  buf_size,                // maximum object size (low-order DWORD)
                  0);                 // name of mapping object
 
