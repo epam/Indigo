@@ -17,6 +17,8 @@ namespace com.ggasoftware.indigo
         int bingoSearchSub (int db, int query_obj, string options);
         int bingoSearchSim (int db, int query_obj, float min, float max, string options);
 
+        int bingoOptimize (int db);
+        
         int bingoNext (int search_obj);
         int bingoGetCurrentId (int search_obj);
         int bingoGetObject (int search_obj);

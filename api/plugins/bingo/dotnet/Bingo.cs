@@ -189,5 +189,13 @@ namespace com.ggasoftware.indigo
             }
             return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSim(_id, query.self, min, max, metric)), _indigo, _lib);
         }
+
+        /// <summary>
+        /// Post-process index optimization
+        /// </summary>
+        public void optimize ()
+        {
+            Bingo.checkResult(_indigo, _lib.bingoOptimize(_id));
+        }
     }
 }
