@@ -1,5 +1,7 @@
 #include "bingo_tanimoto_coef.h"
 
+using namespace bingo;
+
 TanimotoCoef::TanimotoCoef( int fp_size ) : _fp_size(fp_size)
 {
 }
@@ -29,7 +31,7 @@ double TanimotoCoef::calcUpperBound( int f1_bit_count, int min_f2_bit_count, int
    return (double)min / max;
 }
 
-double TanimotoCoef::calcUpperBound1( int f1_bit_count, int min_f2_bit_count, int max_f2_bit_count, int m10, int m01 )
+double TanimotoCoef::calcUpperBound( int f1_bit_count, int min_f2_bit_count, int max_f2_bit_count, int m10, int m01 )
 {
    int a = f1_bit_count - m10;
    int min_b = min_f2_bit_count - m01;

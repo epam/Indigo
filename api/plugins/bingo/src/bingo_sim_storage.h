@@ -25,16 +25,22 @@ namespace bingo
 
       void add( const byte *fingerprint, int id );
 
-      void findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<int> &sim_fp_indices );
+      void findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices );
 
       void optimize();
 
       int getCellCount() const;
 
+      void getCellsInterval( const byte *query, SimCoef &sim_coef, double min_coef, int &min_cell, int &max_cell );
+
+      int firstFitCell(int query_bit_count, int min_cell, int max_cell ) const;
+
+      int nextFitCell( int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx ) const;
+
       int getCellSize( int cell_idx ) const;
 
       int getSimilar( const byte *query, SimCoef &sim_coef, double min_coef, 
-                      Array<int> &sim_fp_indices, int cell_idx, int cont_idx );
+                      Array<SimResult> &sim_fp_indices, int cell_idx, int cont_idx );
 
 
    private:

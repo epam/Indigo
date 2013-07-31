@@ -19,26 +19,26 @@ namespace bingo
    class ContainerSet
    {
    public:
-      ContainerSet();
+      ContainerSet ();
 
-      ContainerSet( int fp_size, int container_size, int min_ones_count, int max_ones_count );
+      ContainerSet (int fp_size, int container_size, int min_ones_count, int max_ones_count);
 
-      void setParams( int fp_size, int container_size, int min_ones_count, int max_ones_count );
+      void setParams (int fp_size, int container_size, int min_ones_count, int max_ones_count);
 
-      int getContCount();
+      int getContCount ();
 
-      int getMinBorder();
+      int getMinBorder ();
 
-      int getMaxBorder();
+      int getMaxBorder ();
 
-      void add( const byte *fingerprint, int id );
+      void add (const byte *fingerprint, int id);
 
-      void findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<int> &sim_indices );
+      void findSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices);
 
-      void optimize();
+      void optimize ();
 
-      int getSimilar( const byte *query, SimCoef &sim_coef, double min_coef, 
-                        Array<int> &sim_fp_indices, int cont_idx );
+      int getSimilar (const byte *query, SimCoef &sim_coef, double min_coef, 
+                        Array<SimResult> &sim_fp_indices, int cont_idx);
 
    private:
       static const int _max_set_size = 128;
@@ -53,7 +53,7 @@ namespace bingo
       int _min_ones_count;
       int _max_ones_count;
 
-      int _findSimilarInc( const byte *query, SimCoef &sim_coef, double min_coef, Array<int> &sim_indices );
+      int _findSimilarInc (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices);
    };
 };
 

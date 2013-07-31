@@ -128,7 +128,8 @@ namespace bingo
       virtual int currentId () = 0;
       virtual IndigoObject * currentObject () = 0;
       virtual const Index & getIndex () = 0;
-
+      virtual float currentSimValue () = 0;
+      
       virtual int esimateRemainingResultsCount (int &delta) = 0;
       virtual float esimateRemainingTime (float &delta) = 0;
 
@@ -146,6 +147,8 @@ namespace bingo
 
       virtual const Index & getIndex ();
 
+      virtual float currentSimValue ();
+      
       virtual int esimateRemainingResultsCount (int &delta);
       virtual float esimateRemainingTime (float &delta);
 
@@ -157,7 +160,6 @@ namespace bingo
 
       // Variables used for estimation
       MeanEstimator _match_probability_esimate, _match_time_esimate;
-
       
       bool _isCurrentObjectExist();
 
@@ -234,14 +236,29 @@ namespace bingo
 
       ~BaseSimilarityMatcher();
 
+      virtual int esimateRemainingResultsCount (int &delta);
+      virtual float esimateRemainingTime (float &delta);
+
+      virtual float currentSimValue ();
+      
    private:
       /* const */ AutoPtr<SimilarityQueryData> _query_data;
       int _fp_size;
 
+      int _min_cell;
+      int _max_cell;
+      int _first_cell;
+      int _containers_count;
+
       int _current_cell;
       int _current_container;
-      Array<int> _current_portion;
+      Array<SimResult> _current_portion;
       int _current_portion_id;
+
+      float _current_sim_value;
+
+
+      AutoPtr<SimCoef> _sim_coef;
       
       Array<byte> _current_block;
       const byte *_cur_loc;

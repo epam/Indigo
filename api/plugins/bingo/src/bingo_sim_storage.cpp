@@ -42,7 +42,7 @@ void SimStorage::add( const byte *fingerprint, int id )
    fp_table->add(fingerprint, id);
 }
 
-void SimStorage::findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<int> &sim_fp_indices )
+void SimStorage::findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices )
 {
    BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
    FingerprintTable *fp_table = (FingerprintTable *)bingo_allocator->get(_table_ptr);
@@ -58,12 +58,36 @@ void SimStorage::optimize()
    fp_table->optimize();
 }
 
+void SimStorage::getCellsInterval( const byte *query, SimCoef &sim_coef, double min_coef, int &min_cell, int &max_cell )
+{
+   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
+   FingerprintTable *fp_table = (FingerprintTable *)bingo_allocator->get(_table_ptr);
+
+   fp_table->getCellsInterval(query, sim_coef, min_coef, min_cell, max_cell);
+}
+
 int SimStorage::getCellCount() const
 {
    BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
    FingerprintTable *fp_table = (FingerprintTable *)bingo_allocator->get(_table_ptr);
 
    return fp_table->getCellCount();
+}
+
+int SimStorage::firstFitCell( int query_bit_count, int min_cell, int max_cell  ) const
+{
+   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
+   FingerprintTable *fp_table = (FingerprintTable *)bingo_allocator->get(_table_ptr);
+
+   return fp_table->firstFitCell(query_bit_count, min_cell, max_cell);
+}
+
+int SimStorage::nextFitCell( int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx ) const
+{
+   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
+   FingerprintTable *fp_table = (FingerprintTable *)bingo_allocator->get(_table_ptr);
+
+   return fp_table->nextFitCell(query_bit_count, first_fit_cell, min_cell, max_cell, idx);
 }
 
 int SimStorage::getCellSize( int cell_idx ) const
@@ -75,7 +99,7 @@ int SimStorage::getCellSize( int cell_idx ) const
 }
 
 int SimStorage::getSimilar( const byte *query, SimCoef &sim_coef, double min_coef, 
-                  Array<int> &sim_fp_indices, int cell_idx, int cont_idx )
+                           Array<SimResult> &sim_fp_indices, int cell_idx, int cont_idx )
 {
    BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
    FingerprintTable *fp_table = (FingerprintTable *)bingo_allocator->get(_table_ptr);

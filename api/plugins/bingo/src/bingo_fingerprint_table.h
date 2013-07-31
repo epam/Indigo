@@ -19,20 +19,26 @@ namespace bingo
    class FingerprintTable
    {
    public:
-      FingerprintTable( int fp_size, const Array<int> &borders, int mt_size );
+      FingerprintTable (int fp_size, const Array<int> &borders, int mt_size);
 
-      void add( const byte *fingerprint, int id );
+      void add (const byte *fingerprint, int id);
 
-      void findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<int> &sim_fp_indices );
+      void findSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices);
 
-      void optimize();
+      void optimize ();
 
-      int getCellCount();
+      int getCellCount ();
 
-      int getCellSize( int cell_idx );
+      int getCellSize (int cell_idx);
+      
+      void getCellsInterval (const byte *query, SimCoef &sim_coef, double min_coef, int &min_cell, int &max_cell);
 
-      int getSimilar( const byte *query, SimCoef &sim_coef, double min_coef, 
-                        Array<int> &sim_fp_indices, int cell_idx, int cont_idx );
+      int firstFitCell (int query_bit_count, int min_cell, int max_cell ) const;
+
+      int nextFitCell (int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx) const;
+
+      int getSimilar (const byte *query, SimCoef &sim_coef, double min_coef, 
+                        Array<SimResult> &sim_fp_indices, int cell_idx, int cont_idx);
 
       ~FingerprintTable();
    

@@ -17,11 +17,11 @@ namespace bingo
    class MultibitTree
    {
    public:
-      MultibitTree( int fp_size );
+      MultibitTree (int fp_size);
 
-      void build( BingoPtr fingerprints, BingoPtr indices, int fp_count, int min_fp_bit_number, int max_fp_bit_number );
+      void build (BingoPtr fingerprints, BingoPtr indices, int fp_count, int min_fp_bit_number, int max_fp_bit_number);
 
-      int findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<int> &sim_fp_indices);
+      int findSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices);
       
    private:
       struct _MatchBit
@@ -35,7 +35,7 @@ namespace bingo
             bool val = 0;
          }
 
-         _MatchBit(int new_idx, bool new_val) : idx(new_idx), val(new_val)
+         _MatchBit (int new_idx, bool new_val) : idx(new_idx), val(new_val)
          {
          }
       };
@@ -77,16 +77,16 @@ namespace bingo
       int _query_bit_number;
       int _max_level;
       
-      static int _compareBitWeights(_DistrWeight &bw1, _DistrWeight &bw2, void *context);
+      static int _compareBitWeights (_DistrWeight &bw1, _DistrWeight &bw2, void *context);
 
-      BingoPtr _buildNode( Array<int> &fit_fp_indices, const Array<bool> &is_parrent_mb, int level);
+      BingoPtr _buildNode (Array<int> &fit_fp_indices, const Array<bool> &is_parrent_mb, int level);
 
-      void _build( void );
+      void _build ();
 
-      void _findLinear( _MultibitNode *node, const byte *query, SimCoef &sim_coef, double min_coef, Array<int> &sim_indices, int fp_bit_number = -1 );
+      void _findLinear (_MultibitNode *node, const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices, int fp_bit_number = -1);
 
-      void _findSimilarInNode( BingoPtr node_ptr, const byte *query, SimCoef &sim_coef, double min_coef, 
-                                Array<int> &sim_indices, int m01, int m10 );
+      void _findSimilarInNode (BingoPtr node_ptr, const byte *query, SimCoef &sim_coef, double min_coef, 
+                                Array<SimResult> &sim_indices, int m01, int m10);
    };
 };
 

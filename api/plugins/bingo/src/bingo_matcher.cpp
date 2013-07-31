@@ -136,6 +136,10 @@ const Index & BaseMatcher::getIndex ()
    return _index;
 }
 
+float BaseMatcher::currentSimValue ()
+{
+   throw Exception("BaseMatcher: Matcher does not support this method");
+}
 
 bool BaseMatcher::_isCurrentObjectExist()
 {
@@ -468,20 +472,29 @@ bool ReactionSubMatcher::_tryCurrent ()// const
 
 BaseSimilarityMatcher::BaseSimilarityMatcher (/*const */ BaseIndex &index, IndigoObject *& current_obj ) : BaseMatcher(index, current_obj)
 {
+   _min_cell = -1;
+   _max_cell = -1;
+   _first_cell = -1;
+   _containers_count = 0;
    _current_id = -1;
    _current_cell = 0;
    _current_container = -1;
    _current_portion_id = 0;
    _current_portion.clear();
+   _current_sim_value = -1;
    _fp_size = _index.getFingerprintParams().fingerprintSizeSim();
+   _sim_coef.reset(new TanimotoCoef(_fp_size));
 }
 
 bool BaseSimilarityMatcher::next ()
 {
    SimStorage &sim_storage = _index.getSimStorage();
+   int query_bit_count = bitGetOnesCount(_query_fp.ptr(), _fp_size);
 
    while (true)
    {
+      profTimerStart(tsingle, "sim_single");
+
       TanimotoCoef coef(_fp_size);
 
       if (_current_portion_id >= _current_portion.size())
@@ -491,9 +504,9 @@ bool BaseSimilarityMatcher::next ()
 
          if (_current_container == sim_storage.getCellSize(_current_cell))
          {
-            _current_cell++;
+            _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
 
-            if (_current_cell >= sim_storage.getCellCount())
+            if (_current_cell == -1)
                return false;
 
             _current_container = 0;
@@ -503,18 +516,26 @@ bool BaseSimilarityMatcher::next ()
          sim_storage.getSimilar(_query_fp.ptr(), coef, _query_data->getMin(), 
                                 _current_portion, _current_cell, _current_container);
 
+         _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
+         _match_probability_esimate.addValue((float)_current_portion.size());
+      
          continue;
       }
       
-      _current_id = _current_portion[_current_portion_id];
+      _current_id = _current_portion[_current_portion_id].id;
+      _current_sim_value = _current_portion[_current_portion_id].sim_value;
 
       _current_portion_id++;
 
       bool is_obj_exist = _isCurrentObjectExist();
 
       if (!is_obj_exist)
+      {
+         _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
          continue;
+      }
       
+      _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
       _loadCurrentObject();
       return true;
    }
@@ -526,6 +547,38 @@ void BaseSimilarityMatcher::setQueryData (SimilarityQueryData *query_data)
 
    const MoleculeFingerprintParameters & fp_params = _index.getFingerprintParams();
    _query_data->getQueryObject().buildFingerprint(fp_params, 0, &_query_fp);
+
+   SimStorage &sim_storage = _index.getSimStorage();
+
+   sim_storage.getCellsInterval(_query_fp.ptr(), *_sim_coef.get(), _query_data->getMin(), _min_cell, _max_cell);
+
+   _first_cell = sim_storage.firstFitCell(bitGetOnesCount(_query_fp.ptr(), _fp_size), _min_cell, _max_cell);
+   _current_cell = _first_cell;
+
+   _containers_count = 0;
+   for (int i = _min_cell; i <= _max_cell; i++)
+      _containers_count += sim_storage.getCellSize(i);
+}
+
+int BaseSimilarityMatcher::esimateRemainingResultsCount (int &delta)
+{
+   int left_cont_count = _containers_count - _match_probability_esimate.getCount();
+
+   return (int)(_match_probability_esimate.mean() * left_cont_count);
+}
+
+float BaseSimilarityMatcher::esimateRemainingTime (float &delta)
+{
+   _match_time_esimate.setCount(_match_probability_esimate.getCount());
+      
+   int left_cont_count = _containers_count - _match_probability_esimate.getCount();
+
+   return _match_time_esimate.mean() * left_cont_count;
+}
+
+float BaseSimilarityMatcher::currentSimValue ()
+{
+   return _current_sim_value;
 }
 
 BaseSimilarityMatcher::~BaseSimilarityMatcher ()

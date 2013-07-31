@@ -41,6 +41,7 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
 //
 CEXPORT int bingoNext (int search_obj);
 CEXPORT int bingoGetCurrentId (int search_obj);
+CEXPORT float bingoGetCurrentSimilarityValue (int search_obj);
 
 // Estimation methods
 CEXPORT int bingoEstimateRemainingResultsCount (int search_obj);

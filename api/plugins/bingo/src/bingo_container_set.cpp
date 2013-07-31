@@ -72,7 +72,7 @@ void ContainerSet::add( const byte *fingerprint, int id )
    }
 }
 
-void ContainerSet::findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<int> &sim_indices )
+void ContainerSet::findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices )
 {
    BingoAllocator *bingo_allocator = BingoAllocator::getInstance();
    sim_indices.clear();
@@ -81,7 +81,7 @@ void ContainerSet::findSimilar( const byte *query, SimCoef &sim_coef, double min
 
    int query_bit_number = bitGetOnesCount(query, _fp_size);
 
-   QS_DEF(Array<int>, cell_sim_indices);
+   QS_DEF(Array<SimResult>, cell_sim_indices);
    for (int i = 0; i < _set_size; i++)
    {
       MultibitTree *container = (MultibitTree *)bingo_allocator->get(_set[i]);
@@ -122,7 +122,7 @@ void ContainerSet::optimize()
 }
 
 int ContainerSet::getSimilar( const byte *query, SimCoef &sim_coef, double min_coef, 
-                  Array<int> &sim_fp_indices, int cont_idx )
+                  Array<SimResult> &sim_fp_indices, int cont_idx )
 {
    profTimerStart(cs_s, "getSimilar");
    
@@ -153,7 +153,7 @@ int ContainerSet::getSimilar( const byte *query, SimCoef &sim_coef, double min_c
    return sim_fp_indices.size();
 }
 
-int ContainerSet::_findSimilarInc( const byte *query, SimCoef &sim_coef, double min_coef, Array<int> &sim_indices )
+int ContainerSet::_findSimilarInc (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices)
 {
    BingoAllocator *bingo_allocator = BingoAllocator::getInstance();
    byte *inc = bingo_allocator->get(_increment);
@@ -168,10 +168,11 @@ int ContainerSet::_findSimilarInc( const byte *query, SimCoef &sim_coef, double 
       byte *fp = inc + i * _fp_size;
       int fp_bit_number = bitGetOnesCount(query, _fp_size);
 
-      if (sim_coef.calcCoef(query, fp, query_bit_number, fp_bit_number) < min_coef)
+      double coef = sim_coef.calcCoef(query, fp, query_bit_number, fp_bit_number);
+      if (coef < min_coef)
          continue;
 
-      sim_indices.push(indices[i]);
+      sim_indices.push(SimResult(indices[i], (float)coef));
    }
 
    return sim_indices.size();

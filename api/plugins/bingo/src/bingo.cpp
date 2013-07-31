@@ -327,6 +327,15 @@ CEXPORT int bingoGetCurrentId (int search_obj)
    INDIGO_END(-1);
 }
 
+CEXPORT float bingoGetCurrentSimilarityValue (int search_obj)
+{
+   INDIGO_BEGIN
+   {
+      return getMatcher(search_obj).currentSimValue();
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int bingoEstimateRemainingResultsCount (int search_obj)
 {
    INDIGO_BEGIN
