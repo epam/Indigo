@@ -21,6 +21,7 @@ namespace com.ggasoftware.indigo
         
         int bingoNext (int search_obj);
         int bingoGetCurrentId (int search_obj);
+        float bingoGetCurrentSimilarityValue(int search_obj);
         int bingoGetObject (int search_obj);
         int bingoEndSearch (int search_obj);
 

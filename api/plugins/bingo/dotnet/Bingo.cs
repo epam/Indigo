@@ -61,6 +61,16 @@ namespace com.ggasoftware.indigo
             return result;
         }
 
+        internal static float checkResult(Indigo indigo, float result)
+        {
+            if (result < 0.0)
+            {
+                throw new BingoException(new String(indigo._indigo_lib.indigoGetLastError()));
+            }
+
+            return result;
+        }
+
         private static BingoLib getLib(Indigo indigo)
         {
             String dllpath = indigo.getDllPath();
@@ -201,7 +211,6 @@ namespace com.ggasoftware.indigo
         /// Execute substructure search operation
         /// </summary>
         /// <param name="query">Indigo query object (molecule or reaction)</param>
-        /// <param name="options">Search options</param>
         /// <returns>Bingo search object instanse</returns>
         public BingoObject searchSub(IndigoObject query)
         {
@@ -231,7 +240,6 @@ namespace com.ggasoftware.indigo
         /// <param name="query">indigo object (molecule or reaction)</param>
         /// <param name="min">Minimum similarity value</param>
         /// <param name="max">Maximum similairy value</param>
-        /// <param name="metric">Default value is "tanimoto"</param>
         /// <returns>Bingo search object instanse</returns>
         public BingoObject searchSim(IndigoObject query, float min, float max)
         {

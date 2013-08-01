@@ -71,6 +71,15 @@ namespace com.ggasoftware.indigo
         }
 
         /// <summary>
+        /// Method to return current similarity value. Should be called after next() method.
+        /// </summary>
+        /// <returns>Similarity value</returns>
+        public float getCurrentSimilarityValue()
+        {
+            return Bingo.checkResult(_indigo, _bingoLib.bingoGetCurrentSimilarityValue(_id));
+        }
+
+        /// <summary>
         /// Returns a shared IndigoObject for the matched target
         /// </summary>
         /// <returns>Shared Indigo object for the current search operation</returns>
