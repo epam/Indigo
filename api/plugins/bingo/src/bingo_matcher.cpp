@@ -73,8 +73,6 @@ ReactionSubstructureQueryData::ReactionSubstructureQueryData (/* const */ QueryR
 }
 
 
-
-
 IndexCurrentMolecule::IndexCurrentMolecule ( IndexCurrentMolecule *& ptr ) : _ptr(ptr)
 {
    matcher_exist = true;
@@ -203,6 +201,7 @@ int BaseMatcher::esimateRemainingResultsCount (int &delta)
 
    int left_obj_count = _index.getObjectsCount() - _match_time_esimate.getCount();
    delta = (int)(error * left_obj_count);
+
    return (int)(left_obj_count * p);
 }
 
@@ -564,6 +563,9 @@ int BaseSimilarityMatcher::esimateRemainingResultsCount (int &delta)
 {
    int left_cont_count = _containers_count - _match_probability_esimate.getCount();
 
+   float error = _match_probability_esimate.meanEsimationError();
+   delta = (int)(error * left_cont_count);
+
    return (int)(_match_probability_esimate.mean() * left_cont_count);
 }
 
@@ -572,6 +574,9 @@ float BaseSimilarityMatcher::esimateRemainingTime (float &delta)
    _match_time_esimate.setCount(_match_probability_esimate.getCount());
       
    int left_cont_count = _containers_count - _match_probability_esimate.getCount();
+   
+   float error = _match_time_esimate.meanEsimationError();
+   delta = error * left_cont_count;
 
    return _match_time_esimate.mean() * left_cont_count;
 }
