@@ -957,7 +957,7 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
                   continue;
                }
 
-               energies[i] += ((norm_a[j] / norm + 0.5) / r);
+               energies[i] += ((norm_a[j] / norm + 0.5) / (r));
             }
       }
 

@@ -129,6 +129,7 @@ void MoleculeLayoutGraph::makeOnGraph (Graph &graph)
    for (int i = graph.vertexBegin(); i < graph.vertexEnd(); i = graph.vertexNext(i))
    {
       new_vertex.ext_idx = i;
+      new_vertex.orig_idx = i;
       registerLayoutVertex(mapping[i], new_vertex);
    }
 
@@ -140,18 +141,27 @@ void MoleculeLayoutGraph::makeOnGraph (Graph &graph)
       int idx = findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
 
       new_edge.ext_idx = i;
+      new_edge.orig_idx = i;
       registerLayoutEdge(idx, new_edge);
    }
 }
 
 void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &filter)
 {
+   _molecule = graph._molecule;
+   _graph = &graph;
+   _molecule_edge_mapping = graph._molecule_edge_mapping;
+
    QS_DEF(Array<int>, vertices);
    QS_DEF(Array<int>, mapping);
 
    clear();
 
    filter.collectGraphVertices(graph, vertices);
+
+   Filter antifilter;
+   antifilter.initAll(graph.vertexCount());
+   for (int i = 0; i < vertices.size(); i++) antifilter.hide(vertices[i]);
 
    makeSubgraph(graph, vertices, &mapping);
 
@@ -163,20 +173,24 @@ void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter
    for (int i = 0; i < vertices.size(); i++)
    {
       new_vertex.ext_idx = vertices[i];
+      new_vertex.orig_idx = graph._layout_vertices[vertices[i]].orig_idx;
       new_vertex.type = graph._layout_vertices[vertices[i]].type;
-	  new_vertex.morgan_code = graph._layout_vertices[vertices[i]].morgan_code;
+	   new_vertex.morgan_code = graph._layout_vertices[vertices[i]].morgan_code;
       registerLayoutVertex(mapping[vertices[i]], new_vertex);
    }
 
+   int index = 0;
    for (int i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
    {
       const Edge &edge = getEdge(i);
       int ext_idx = graph.findEdgeIndex(vertices[edge.beg], vertices[edge.end]);
 
       new_edge.ext_idx = ext_idx;
+      new_edge.orig_idx = graph._layout_edges[ext_idx].orig_idx;
       new_edge.type = graph._layout_edges[ext_idx].type;
       registerLayoutEdge(i, new_edge);
    }
+
 }
 
 void MoleculeLayoutGraph::cloneLayoutGraph (MoleculeLayoutGraph &other, Array<int> *mapping)
@@ -247,6 +261,7 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
    if (fabs(bond_length) < EPSILON)
       throw Error("zero bond length");
 
+   _molecule = &molecule;
    if (n_components > 1)
    {
       const Array<int> &decomposition = getDecomposition();
@@ -257,6 +272,8 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
       for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
          molecule_edge_mapping[i] = getEdgeExtIdx(i);
        
+      _molecule_edge_mapping = molecule_edge_mapping.ptr();
+
       ObjArray<MoleculeLayoutGraph> components;
        
       components.reserve(n_components);
@@ -269,9 +286,6 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
          component.makeLayoutSubgraph(*this, comp_filter);
          component.max_iterations = max_iterations;
 
-         component._molecule = &molecule;
-         component._molecule_edge_mapping = molecule_edge_mapping.ptr();
-         
          src_layout.clear_resize(component.vertexEnd());
 
          if (respect_existing)
@@ -421,7 +435,6 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
       for (i = 0; i < molecule_edge_mapping.size(); i++)
          molecule_edge_mapping[i] = i;
       
-      _molecule = &molecule;
       _molecule_edge_mapping = molecule_edge_mapping.ptr();
       
       src_layout.clear_resize(vertexEnd());

@@ -425,6 +425,7 @@ float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
       p.x += 0.2f * cos(beta);
       p.y += 0.2f * sin(beta);
       on_left[i] = _isPointOutside(p);
+//      on_left[i] = 1;
    }
 
    beta = PI + (angles.top() + angles[0]) / 2;
@@ -432,12 +433,17 @@ float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
    p.x += 0.2f * cos(beta);
    p.y += 0.2f * sin(beta);
    on_left.top() = _isPointOutside(p);
+//   on_left.top() = 1;
 
    float comp_angle;
+   float cur_energy = 0;
 
-   if (vert.degree() == 2)
+/*   if (vert.degree() == 2)
    {
-      if (on_left[0] || (!on_left[1] && angles[1] - angles[0] > PI))
+
+
+//      if (on_left[0] || (!on_left[1] && angles[1] - angles[0] > PI))
+      if (on_left[0] > on_left[1] || (on_left[0] == on_left[1] && angles[1] - angles[0] > PI))
       {
          comp_angle = 2 * PI - (angles[1] - angles[0]);
          v1 = vert.neiVertex(edges[1]);
@@ -448,8 +454,8 @@ float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
          v1 = vert.neiVertex(edges[0]);
          v2 = vert.neiVertex(edges[1]);
       }
-      return  comp_angle;
-   }
+      return comp_angle;
+   }*/
 
    // Find sector outside component
    for (i = 0; i < vert.degree() - 1; i++)
@@ -472,28 +478,68 @@ float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
    }
 
    // TODO: if vertex is internal - choose maximal free angle
-   float max_angle = 0.f;
+   float best_angle = 2 * PI;
 
-   for (i = 0; i < vert.degree() - 1; i++)
+   for (i = 0; i < vert.degree(); i++)
    {
-      comp_angle = 2 * PI - (angles[i + 1] - angles[i]);
-      if (comp_angle > max_angle)
-      {
-         max_angle = comp_angle;
-         v1 = vert.neiVertex(edges[i + 1]);
+      int ii = i + 1;
+      if (ii == vert.degree()) ii = 0;
+
+      beta = (angles[ii] + angles[i]) / 2;
+      if (ii == 0) {
+         beta += PI;
+         if (beta >= 2*PI) beta -= 2*PI;
+      }
+      p = getPos(v);
+      p.x += 1 * cos(beta);
+      p.y += 1 * sin(beta);
+      float energy = _energyOfPoint(p);
+      comp_angle = 2 * PI - (angles[ii] - angles[i]);
+      if (ii == 0) comp_angle -= 2 * PI;
+      float eps = 0.1;
+//      printf("%d: %5.5f %5.5f %d\n", i, energy, comp_angle, on_left[i]);
+      if (i == 0 || 
+          energy + eps < cur_energy || 
+          (abs(energy - cur_energy) < eps && comp_angle < best_angle - eps) ||
+          (abs(energy - cur_energy) < eps && abs(comp_angle - best_angle) < eps && on_left[i])) {
+         cur_energy = energy;
+         best_angle = comp_angle;
+         v1 = vert.neiVertex(edges[ii]);
          v2 = vert.neiVertex(edges[i]);
       }
+
+/*      comp_angle = 2 * PI - (angles[i + 1] - angles[i]);
+      if (comp_angle < best_angle)
+      {
+         best_angle = comp_angle;
+         v1 = vert.neiVertex(edges[i + 1]);
+         v2 = vert.neiVertex(edges[i]);
+      }*/
    }
 
-   comp_angle = angles.top() - angles[0];
-   if (comp_angle > max_angle)
+/*   comp_angle = angles.top() - angles[0];
+   if (comp_angle < best_angle)
    {
-      max_angle = comp_angle;
+      best_angle = comp_angle;
       v1 = vert.neiVertex(edges[0]);
       v2 = vert.neiVertex(edges.top());
-   }
+   }*/
 
-   return max_angle;
+   return best_angle;
+}
+
+const float MoleculeLayoutGraph::_energyOfPoint(Vec2f p) const {
+
+   float energy = 0;
+   for (int i = _graph->vertexBegin(); i < _graph->vertexEnd(); i = _graph->vertexNext(i))
+      if (_graph->getLayoutVertex(i).type != ELEMENT_NOT_DRAWN) {
+         float d = Vec2f::dist(p, _graph->getPos(i));
+         if (d <= 1.5)
+            if (d >= 0.5) energy += 1.0/d;
+            else energy += 2.0;
+      }
+
+   return energy;
 }
 
 // Calculate position by adding one unit with given angle to the segment

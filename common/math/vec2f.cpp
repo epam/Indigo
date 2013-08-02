@@ -186,14 +186,51 @@ float Vec2f::triangleArea (const Vec2f &a, const Vec2f &b, const Vec2f &c) {
 }
 
 bool Vec2f::segmentsIntersect (const Vec2f &a0, const Vec2f &a1, const Vec2f &b0, const Vec2f &b1) {
-   Vec2f ca, cb;
+/*
+Vec2f ca, cb;
    float la = Vec2f::distSqr(a0, a1) / 4, lb = Vec2f::distSqr(b0, b1) / 4;
    ca.lineCombin2(a0, 0.5, a1, 0.5);
    cb.lineCombin2(b0, 0.5, b1, 0.5);
    // preliminary check to exclude the case of non-overlapping segments on the same line
    if (Vec2f::distSqr(ca, b0) > la && Vec2f::distSqr(ca, b1) > la && Vec2f::distSqr(cb, a0) > lb && Vec2f::distSqr(cb, a1) > lb)
-      return false;
+      return false
+*/
+   float maxax = __max(a0.x, a1.x);
+   float maxay = __max(a0.y, a1.y);
+   float maxbx = __max(b0.x, b1.x);
+   float maxby = __max(b0.y, b1.y);
+   float minax = __min(a0.x, a1.x);
+   float minay = __min(a0.y, a1.y);
+   float minbx = __min(b0.x, b1.x);
+   float minby = __min(b0.y, b1.y);
+
+   if (maxax < minbx || maxbx < minax || maxay < minby || maxby < minay) return false;
+
    // regular check
    return triangleArea(a0, a1, b0) * triangleArea(a0, a1, b1) < EPSILON
       && triangleArea(b0, b1, a0) * triangleArea(b0, b1, a1) < EPSILON;
+}
+
+double Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r) {
+   if (dot(p - q, r - q) <= 0) return dist(p, q);
+   if (dot(p - r, q - r) <= 0) return dist(p, r);
+   
+   Vec2f normal = r - q;
+   normal.rotate(PI/2);
+   double c = cross(q, r);
+   double s = normal.length();
+
+   double t = - c - dot(normal, p);
+
+   return abs(t/s);
+}
+
+double Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s) {
+   if (Vec2f::segmentsIntersect(p, q, r, s)) {
+      //printf("%5.5f %5.5f %5.5f %5.5f %5.5f %5.5f %5.5f %5.5f\n", x1, y1, x2, y2, x3, y3, x4, y4);
+      return 0;
+   }
+
+   return __min( __min(distPointSegment(p, r, s), distPointSegment(q, r, s)),
+      __min(distPointSegment(r, p, q), distPointSegment(s, p, q)));
 }

@@ -13,11 +13,13 @@
  ***************************************************************************/
 
 #include "layout/molecule_layout_graph.h"
+#include "layout/molecule_layout_macrocycles.h"
 #include "layout/attachment_layout.h"
 #include "graph/biconnected_decomposer.h"
 #include "graph/cycle_enumerator.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/morgan_code.h"
+#include <random>
 
 using namespace indigo;
 
@@ -367,6 +369,13 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
       // ( 3.i] let k = 0  ( top of the list];;
       while (assigned_list.size() != 0)
       {
+         //int middle = (rand()+1) % assigned_list.size();
+         int middle = assigned_list.size() - 1;
+         int last = assigned_list.size() - 1;
+         int temp = assigned_list[middle];
+         assigned_list[middle] = assigned_list[last];
+         assigned_list[last] = temp;
+
          int k = assigned_list.pop();
          const Vertex &vert_k = getVertex(k);
 
@@ -629,7 +638,41 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       cycles[i].calcMorganCode(*this);
       sorted_cycles.push(i);
    }
+
    sorted_cycles.qsort(Cycle::compare_cb, &cycles);
+
+   Filter filter;
+   filter.initAll(supergraph.vertexCount());
+   Cycle &firstCycle = cycles[sorted_cycles[0]];
+   for (int i = 0; i < firstCycle.vertexCount(); i++) filter.hide(_layout_vertices[firstCycle.getVertex(i)].ext_idx);
+
+   Graph graphOnAnotherVertexes;
+   Array<int> mapping_out, inv_mapping;
+   graphOnAnotherVertexes.makeSubgraph(supergraph, filter, &mapping_out, &inv_mapping);
+
+   int tailsCount = graphOnAnotherVertexes.countComponents();
+
+   Array<int> componentSize;
+   componentSize.clear_resize(tailsCount);
+   componentSize.zerofill();
+
+   for (int i = 0; i < graphOnAnotherVertexes.vertexCount(); i++) componentSize[graphOnAnotherVertexes.getDecomposition()[i]]++;
+
+   Array<int> inv_cycle_mapping;
+   inv_cycle_mapping.clear_resize(supergraph.vertexCount());
+   inv_cycle_mapping.fill(-1);
+   for (int i = 0; i < firstCycle.vertexCount(); i++) inv_cycle_mapping[_layout_vertices[firstCycle.getVertex(i)].ext_idx] = i;
+
+
+
+   for (int i = 0; i < graphOnAnotherVertexes.vertexCount(); i++) {
+      const Vertex &vert = supergraph.getVertex(mapping_out[i]);
+      for (int j = vert.neiBegin(); j != vert.neiEnd(); j = vert.neiNext(j)) {
+         int u = vert.neiVertex(j);
+         if (!filter.valid(u)) 
+             firstCycle.addVertexWeight(inv_cycle_mapping[u], componentSize[graphOnAnotherVertexes.getDecomposition()[i]]);
+      }
+   }
 
    _assignFirstCycle(cycles[sorted_cycles[0]]);
 
@@ -687,6 +730,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       } else
          i++;
    }
+
 
    // Try to attach chains inside with lower edge length
    for (i = 0; i < sorted_cycles.size(); )
@@ -747,6 +791,71 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
 
 void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 {
+ /* */ 
+   const int size = cycle.vertexCount();
+   //printf("%d do layout cycle \n", size);
+
+   MoleculeLayoutMacrocycles layout(size);
+
+   for (int i = 0; i < size; i++) {
+
+      // edge parallels
+
+      int order_next = 0;
+      int edge_number = cycle.getEdge(i);
+      LayoutEdge edge = _layout_edges[edge_number];
+//      int ext_edge_number = _molecule_edge_mapping[edge.ext_idx];
+      int ext_edge_number = edge.orig_idx;
+      int order = _molecule->getBondOrder(ext_edge_number);
+      switch (order) {
+         case BOND_SINGLE : order_next = 1; break;
+         case BOND_DOUBLE : order_next = 2; break;
+         case BOND_TRIPLE : order_next = 3; break;
+         default: order_next = 1;
+      }
+      int order_prev;
+//      int ext_edge_number_prev = _molecule_edge_mapping[_layout_edges[cycle.getEdgeC(i - 1)].ext_idx];
+      int ext_edge_number_prev = _layout_edges[cycle.getEdgeC(i - 1)].orig_idx;
+      switch (_molecule->getBondOrder(ext_edge_number_prev)) {
+         case BOND_SINGLE : order_prev = 1; break;
+         case BOND_DOUBLE : order_prev = 2; break;
+         case BOND_TRIPLE : order_prev = 3; break;
+         default: order_prev = 1;
+
+      }
+
+      layout.setVertexEdgeParallel(i, order_next + order_prev >= 4);
+
+
+      // tras-cis configuration
+      int next_vertex = _layout_vertices[cycle.getEdgeFinish(i + 1)].orig_idx;
+      int prev_vertex = _layout_vertices[cycle.getEdgeStart(i - 1)].orig_idx;
+
+
+      if (_molecule->cis_trans.getParity(ext_edge_number)) {
+         int _sameside = _molecule->cis_trans.sameside(ext_edge_number, prev_vertex, next_vertex);
+         if (_sameside) layout.setEdgeStereo(i, MoleculeCisTrans::CIS);
+         else layout.setEdgeStereo(i, MoleculeCisTrans::TRANS);
+      }
+      
+      // trees sizes
+
+      layout.setVertexOutsideWeight(i, cycle.getVertexWeight(i));
+
+   }
+
+   layout.doLayout();
+
+   for (int i = 0; i < size; i++) _layout_vertices[cycle.getVertex(i)].pos = layout.getPos(i);
+
+   _first_vertex_idx = cycle.getVertex(0);
+   for (int i = 0; i < size; i++)
+   {
+      _layout_vertices[cycle.getVertex(i)].type = ELEMENT_BOUNDARY;
+      _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
+   }
+   /* */
+   /*
    // TODO: Start drawing from vertex with maximum code and continue to the right with one of two which has maximum code
    int i, n;
    float phi;
@@ -773,6 +882,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
       _layout_vertices[cycle.getVertex(i + 1)].pos.rotateAroundSegmentEnd(v1, v2, phi);
    }
+   */
 }
 
 // If vertices are already drawn

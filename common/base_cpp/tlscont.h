@@ -165,6 +165,8 @@ public:
          _var_pool->release(_idx);
    }
 private:
+   _ReusableVariablesAutoRelease (const _ReusableVariablesAutoRelease &other); // no copy constructor
+
    int _idx;
    _ReusableVariablesPool< T >* _var_pool;
 };                   

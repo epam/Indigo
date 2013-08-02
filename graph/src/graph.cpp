@@ -413,6 +413,7 @@ void Graph::_mergeWithSubgraph (const Graph &other, const Array<int> &vertices, 
 
          if (edge_mapping != 0)
             edge_mapping->at(edges->at(i)) = idx;
+
       }
    }
    else for (i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))

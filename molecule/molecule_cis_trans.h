@@ -88,6 +88,8 @@ public:
    static int  sameside (const Vec3f &beg, const Vec3f &end, const Vec3f &nei_beg, const Vec3f &nei_end);
    static bool sameline (const Vec3f &beg, const Vec3f &end, const Vec3f &nei_beg);
 
+   bool sameside (int edge_idx, int v1, int v2);
+
 protected:
 
    BaseMolecule & _getMolecule ();

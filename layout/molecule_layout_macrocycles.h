@@ -16,6 +16,7 @@
 #define __molecule_layout_macrocycles_h__
 
 #include "molecule/molecule.h"
+#include "layout/molecule_layout_graph.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -27,17 +28,35 @@ namespace indigo {
 class DLLEXPORT MoleculeLayoutMacrocycles
 {
 public:
+   MoleculeLayoutMacrocycles (int size);
 
+   void setVertexOutsideWeight (int v, int weight);
+   void setVertexEdgeParallel (int v, bool parallel);
+   void setEdgeStereo (int e, int stereo);
+
+   Vec2f &getPos (int v);
+
+   void doLayout ();
+
+// private:
+public:
    static bool canApply (BaseMolecule &mol);
 
    double layout (BaseMolecule &mol);
 
-   void smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, double *x, double *y, bool profi);
-   double badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, double *x, double *y);
-   double depictionMacrocycleMol(BaseMolecule &mol, bool profi);
-   double depictionCircle(BaseMolecule &mol);
+   void smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi);
+   double badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p);
+   double depictionMacrocycleMol(bool profi);
+   double depictionCircle();
 
    DEF_ERROR("macrocycles");
+
+private:
+   int length;
+   TL_CP_DECL(Array<int>, _vertex_weight);
+   TL_CP_DECL(Array<int>, _vertex_stereo);
+   TL_CP_DECL(Array<int>, _edge_stereo);
+   TL_CP_DECL(Array<Vec2f>, _positions);
 };
 
 }

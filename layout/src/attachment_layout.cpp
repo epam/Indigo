@@ -13,6 +13,8 @@
  ***************************************************************************/
 
 #include "layout/attachment_layout.h"
+#include <vector>
+#include <algorithm>
 
 using namespace indigo;
 
@@ -32,7 +34,7 @@ _energy(0.f),
 _bc_components(bc_components),
 _graph(graph)
 {
-   int i, v1, v2; 
+   int i, j, v1, v2; 
    float sum = 0.f;  
 
    int n_comp = bc_decom.getIncomingCount(_src_vertex);
@@ -49,8 +51,15 @@ _graph(graph)
    _bc_angles.clear_resize(_attached_bc.size());
    _vertices_l.clear_resize(_attached_bc.size());
 
-   for (i = 0; i < _attached_bc.size(); i++)
+   // list of number for shuffling
+   std::vector<int> number;
+   for (i = 0; i < _attached_bc.size(); i++) number.push_back(i);
+   // uncomment next line for shuffling
+   //std::random_shuffle(number.begin(), number.end());
+
+   for (j = 0; j < _attached_bc.size(); j++)
    {
+      i = number[j];
       if (i < n_comp)
          _attached_bc[i] = bc_decom.getIncomingComponents(_src_vertex)[i];
 

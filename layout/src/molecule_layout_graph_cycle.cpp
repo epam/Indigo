@@ -18,25 +18,33 @@ using namespace indigo;
 
 MoleculeLayoutGraph::Cycle::Cycle () :
 TL_CP_GET(_vertices),
-TL_CP_GET(_edges)
+TL_CP_GET(_edges),
+TL_CP_GET(_attached_weight)
 {
    _vertices.clear();
    _edges.clear();
+   _attached_weight.clear();
    _max_idx = 0;
 }
 
 MoleculeLayoutGraph::Cycle::Cycle (const List<int> &edges, const MoleculeLayoutGraph &graph) :
 TL_CP_GET(_vertices),
-TL_CP_GET(_edges)
+TL_CP_GET(_edges),
+TL_CP_GET(_attached_weight)
 {
    copy(edges, graph);
+   _attached_weight.resize(graph.vertexCount());
+   _attached_weight.zerofill();
 }
 
 MoleculeLayoutGraph::Cycle::Cycle (const Array<int> &vertices, const Array<int> &edges) :
 TL_CP_GET(_vertices),
-TL_CP_GET(_edges)
+TL_CP_GET(_edges),
+TL_CP_GET(_attached_weight)
 {
    copy(vertices, edges);
+   _attached_weight.resize(vertices.size());
+   _attached_weight.zerofill();
 }
 
 void MoleculeLayoutGraph::Cycle::copy (const List<int> &edges, const MoleculeLayoutGraph &graph)
@@ -95,7 +103,8 @@ void MoleculeLayoutGraph::Cycle::calcMorganCode (const MoleculeLayoutGraph &pare
 
 void MoleculeLayoutGraph::Cycle::canonize ()
 {
-   // 1. v(0)<v(i), i=1,...,l-1 ; 2. v(1)< v(l-2) => unique representation of cycle
+   // 1. v(0)<v(i), i=1,...,l-1 ; 
+   // 2. v(1)< v(l-2) => unique representation of cycle
    int min_idx = 0, i;
    bool vert_invert = false;
 

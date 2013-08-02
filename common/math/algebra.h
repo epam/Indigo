@@ -127,6 +127,50 @@ struct Vec2f
       return (float)sqrt(lengthSqr());
    }
 
+   // OPERATORS:
+
+   inline Vec2f operator+(const Vec2f& a) const {
+      return Vec2f(x + a.x, y + a.y);
+   }
+
+   inline Vec2f operator-(const Vec2f& a) const {
+      return Vec2f(x - a.x, y - a.y);
+   }
+
+   inline Vec2f operator*(const float t) const {
+      return Vec2f(x * t, y * t);
+   }
+
+   inline Vec2f operator/(const float t) const {
+      return Vec2f(x / t, y / t);
+   }
+
+   inline Vec2f operator+=(const Vec2f& a) {
+      x += a.x;
+      y += a.y;
+      return *this;
+   }
+
+   inline Vec2f operator-=(const Vec2f& a) {
+      x -= a.x;
+      y -= a.y;
+      return *this;
+   }
+
+   inline Vec2f operator*=(const float t) {
+      x *= t;
+      y *= t;
+      return *this;
+   }
+
+   inline Vec2f operator/=(const float t) {
+      x /= t;
+      y /= t;
+      return *this;
+   }
+
+
+
    DLLEXPORT bool normalize ();
 
    DLLEXPORT bool normalization (const Vec2f &v);
@@ -179,6 +223,9 @@ struct Vec2f
    DLLEXPORT static bool intersection (const Vec2f &v1_1, const Vec2f &v1_2, const Vec2f &v2_1, const Vec2f &v2_2, Vec2f &p);
    DLLEXPORT static float triangleArea (const Vec2f &a, const Vec2f &b, const Vec2f &c);
    DLLEXPORT static bool segmentsIntersect (const Vec2f &a0, const Vec2f &a1, const Vec2f &b0, const Vec2f &b1);
+
+   DLLEXPORT static double distPointSegment(Vec2f p, Vec2f q, Vec2f r);
+   DLLEXPORT static double distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s);
 };
 
 struct Vec3f

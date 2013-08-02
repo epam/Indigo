@@ -916,3 +916,30 @@ bool MoleculeCisTrans::isRingTransBond (int i)
    }
    return (parity == MoleculeCisTrans::TRANS);
 }
+
+bool MoleculeCisTrans::sameside (int edge_idx, int v1, int v2)
+{
+   int parity = getParity(edge_idx);
+   if (parity == 0)
+      throw Error("Bond %d is not a cis-trans bond", edge_idx);
+
+   const int *subst = getSubstituents(edge_idx);
+   int v[2] = { v1, v2 };
+   int v_pos[2] = { -1 };
+   for (int j = 0; j < 2; j++)
+   {
+      for (int i = 0; i < 4; i++)
+         if (subst[i] == v[j])
+         {
+            v_pos[j] = i;
+            break;
+         }
+      if (v_pos[j] == -1)
+         throw Error("Vertex %d has not been found near bond %d", v[j], edge_idx);
+   }
+
+   bool same_parity = (v_pos[0] % 2)  == (v_pos[1] % 2);
+   if (parity == TRANS)
+      same_parity = !same_parity;
+   return same_parity;
+}

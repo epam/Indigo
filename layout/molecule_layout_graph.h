@@ -46,20 +46,11 @@ enum
    ELEMENT_IGNORE
 };
 
-struct LayoutCycle
-{
-   int size;
-   double* x;
-   double* y;
-   int* difficulty;
-   int* order;
-   int* cis_trans;
-};
-
 struct LayoutVertex
 {
    LayoutVertex () { memset(this, 0, sizeof(LayoutVertex)); }
 
+   int  orig_idx;
    int  ext_idx;
    long morgan_code;
    bool is_cyclic;
@@ -72,6 +63,7 @@ struct LayoutEdge
 {
    LayoutEdge () { memset(this, 0, sizeof(LayoutEdge)); }
 
+   int  orig_idx;
    int  ext_idx;
    bool is_cyclic;
    int  type;
@@ -142,9 +134,15 @@ protected:
 
       int vertexCount () const { return _vertices.size(); }
       int getVertex  (int idx) const { return _vertices[idx]; }
-      int getVertexC (int idx) const { return _vertices[idx % vertexCount()]; }
+      int getVertexC (int idx) const { return _vertices[(vertexCount() + idx) % vertexCount()]; }
       int getEdge    (int idx) const { return _edges[idx]; }
+      int getEdgeC   (int idx) const { return _edges[(_edges.size() + idx) % _edges.size()]; }
+      int getEdgeStart (int idx) const {return getVertexC(idx); }
+      int getEdgeFinish (int idx) const {return getVertexC(idx + 1); }
       int findVertex (int idx) const { return _vertices.find(idx); }
+      void setVertexWeight(int idx, int w) {_attached_weight[idx] = w;}
+      void addVertexWeight(int idx, int w) {_attached_weight[idx] += w;}
+      int getVertexWeight(int idx) const {return _attached_weight[idx];}
       long morganCode () const { return _morgan_code; }
       void canonize ();
       bool contains (const Cycle &another) const;
@@ -156,8 +154,16 @@ protected:
 
       TL_CP_DECL(Array<int>, _vertices);
       TL_CP_DECL(Array<int>, _edges);
+      TL_CP_DECL(Array<int>, _attached_weight);
+
+//      Array<int> _vertices;
+//      Array<int> _edges;
       int _max_idx;
       long _morgan_code;
+
+   private:
+      Cycle(const Cycle &other); // No copy constructor
+
    };
 
    struct EnumContext
@@ -228,6 +234,7 @@ protected:
    static float _dichotomy1  (float a0, float b0, int L, float s);
    static float _dichotomy2  (float a0, float b0, int L, float s);
    static void _calculatePos (float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v);
+   const float _energyOfPoint (Vec2f p) const;
 
    static bool _border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _edge_check (Graph &graph, int e_idx, void *context);
@@ -249,6 +256,7 @@ protected:
    Obj< Array<Vec2f> > _outline;
 
    BaseMolecule *_molecule;
+   MoleculeLayoutGraph *_graph;
    const int *_molecule_edge_mapping;
    
    bool _flipped; // component was flipped after attaching

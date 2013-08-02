@@ -16,6 +16,7 @@
 #define __cyclic_array_h__
 
 #include "base_cpp/array.h"
+#include "base_cpp/exception.h"
 
 namespace indigo {
 
@@ -32,7 +33,7 @@ public:
    {
       _array.resize(max_size);
    }
-
+   
    void zeroFill (void)
    {
       _array.zerofill();
@@ -44,19 +45,29 @@ public:
    }
 
    const T & operator [] (int index) const
-   {                        
-      return _array[index % _array.size()];
+   {
+      int legnth = _array.size();
+      if (legnth == 0) 
+         throw Error("Zero length");
+      int offset = index % _array.size();
+      return index >= 0 ? _array[offset] : _array[length + offset];
    }
 
    T & operator [] (int index)
    {                        
-      return _array[index % _array.size()];
+      int length = _array.size();
+      if (length == 0) 
+         throw Error("Zero length");
+      int offset = index % _array.size();
+      return index >= 0 ? _array[offset] : _array[length + offset];
    }
 
    void setOffset (int offset)
    {
       _offset = offset;
    }
+
+   DEF_ERROR("cycle array");
 
 protected:
    Array<T> _array;

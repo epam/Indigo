@@ -42,7 +42,7 @@ BiconnectedDecomposer::~BiconnectedDecomposer ()
 }
 
 int BiconnectedDecomposer::decompose ()
-{
+{// recursion? no, not heard...
    QS_DEF(Array<int>, dfs_stack);
    Edge new_edge;
    int i, j, v, w, u;

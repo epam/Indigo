@@ -397,13 +397,6 @@ BaseMolecule& MoleculeLayout::_getMol (int id)
 }
 void MoleculeLayout::make ()
 {
-   if (MoleculeLayoutMacrocycles::canApply(_molecule))
-   {
-      MoleculeLayoutMacrocycles ml;
-      ml.layout(_molecule);
-      return;
-   }
-
    _make();
    
    if (_molecule.rgroups.getRGroupCount() > 0)
