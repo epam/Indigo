@@ -20,6 +20,7 @@
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/obj_array.h"
 #include "graph/filter.h"
+#include "graph/graph_iterators.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -56,6 +57,8 @@ public:
    ~Vertex () {}
 
    List<VertexEdge> neighbors;
+
+   NeighborsAuto neighborsAuto() const;
 
    int neiBegin ()      const { return neighbors.begin(); }
    int neiEnd   ()      const { return neighbors.end(); }
@@ -97,8 +100,12 @@ public:
    explicit Graph ();
    virtual ~Graph ();
 
-   virtual void clear ();
+   VerticesAuto vertices ();
 
+   EdgesAuto edges ();
+
+   virtual void clear ();
+   
    const Vertex & getVertex (int idx) const;
 
    const Edge & getEdge   (int idx) const;

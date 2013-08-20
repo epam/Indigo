@@ -24,6 +24,11 @@
 
 using namespace indigo;
 
+NeighborsAuto Vertex::neighborsAuto() const
+{
+   return NeighborsAuto(*this);
+}
+
 int Vertex::findNeiVertex (int idx) const
 {
    for (int i = neighbors.begin(); i < neighbors.end(); i = neighbors.next(i))
@@ -310,6 +315,16 @@ bool Graph::findPath (int from, int where, Array<int> &path_out) const
    }
 
    return false;
+}
+
+VerticesAuto Graph::vertices ()
+{
+   return VerticesAuto(*this);
+}
+
+EdgesAuto Graph::edges ()
+{
+   return EdgesAuto(*this);
 }
 
 void Graph::clear ()
