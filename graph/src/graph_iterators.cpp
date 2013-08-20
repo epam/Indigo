@@ -3,21 +3,25 @@
 
 using namespace indigo;
 
-VertexIter::VertexIter( Graph &owner, int idx ) : _owner(owner), _idx(idx)
+AutoIterator::AutoIterator( int idx ) : _idx(idx)
 {
 }
 
-int VertexIter::operator*() const
+int AutoIterator::operator*() const
 {
    return _idx;
 }
 
-bool VertexIter::operator!=( const VertexIter &other ) const
+bool AutoIterator::operator!=( const AutoIterator &other ) const
 {
    if (_idx != other._idx)
       return true;
 
    return false;
+}
+
+VertexIter::VertexIter( Graph &owner, int idx ) : _owner(owner), AutoIterator(idx)
+{
 }
 
 VertexIter & VertexIter::operator++()
@@ -41,21 +45,8 @@ VertexIter VerticesAuto::end ()
    return VertexIter(_owner, _owner.vertexEnd());
 }
 
-EdgeIter::EdgeIter( Graph &owner, int idx ) : _owner(owner), _idx(idx)
+EdgeIter::EdgeIter( Graph &owner, int idx ) : _owner(owner), AutoIterator(idx)
 {
-}
-
-int EdgeIter::operator*() const
-{
-   return _idx;
-}
-
-bool EdgeIter::operator!=( const EdgeIter &other ) const
-{
-   if (_idx != other._idx)
-      return true;
-
-   return false;
 }
 
 EdgeIter & EdgeIter::operator++()
@@ -79,21 +70,8 @@ EdgeIter EdgesAuto::end ()
    return EdgeIter(_owner, _owner.vertexEnd());
 }
 
-NeighborIter::NeighborIter(const Vertex &owner, int idx) : _owner(owner), _idx(idx)
+NeighborIter::NeighborIter(const Vertex &owner, int idx) : _owner(owner), AutoIterator(idx)
 {
-}
-
-int NeighborIter::operator* () const
-{
-   return _idx;
-}
-
-bool NeighborIter::operator!= (const NeighborIter &other) const
-{
-   if (_idx != other._idx)
-      return true;
-
-   return false;
 }
 
 NeighborIter & NeighborIter::operator++ ()

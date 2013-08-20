@@ -53,24 +53,24 @@ struct VertexEdge
 class DLLEXPORT Vertex
 {
 public:
-   Vertex (Pool<List<VertexEdge>::Elem> &pool) : neighbors(pool) {}
+   Vertex (Pool<List<VertexEdge>::Elem> &pool) : neighbors_list(pool) {}
    ~Vertex () {}
 
-   List<VertexEdge> neighbors;
+   List<VertexEdge> neighbors_list;
 
-   NeighborsAuto neighborsAuto() const;
+   NeighborsAuto neighbors() const;
 
-   int neiBegin ()      const { return neighbors.begin(); }
-   int neiEnd   ()      const { return neighbors.end(); }
-   int neiNext  (int i) const { return neighbors.next(i); }
+   int neiBegin ()      const { return neighbors_list.begin(); }
+   int neiEnd   ()      const { return neighbors_list.end(); }
+   int neiNext  (int i) const { return neighbors_list.next(i); }
 
-   int neiVertex (int i) const { return neighbors[i].v; }
-   int neiEdge   (int i) const { return neighbors[i].e; }
+   int neiVertex (int i) const { return neighbors_list[i].v; }
+   int neiEdge   (int i) const { return neighbors_list[i].e; }
 
    int findNeiVertex (int idx) const;
    int findNeiEdge   (int idx) const;
 
-   int degree () const {return neighbors.size();}
+   int degree () const {return neighbors_list.size();}
 private:
    Vertex (const Vertex &); // no implicit copy
 };

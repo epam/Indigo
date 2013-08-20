@@ -7,20 +7,30 @@ namespace indigo
    class Vertex;
    struct Edge;
 
-   class VertexIter
+   class AutoIterator
+   {
+   public:
+      AutoIterator( int idx );
+
+      virtual int operator* () const;
+
+      virtual bool operator!= ( const AutoIterator &other ) const;
+
+      virtual AutoIterator & operator++ () = 0;
+
+   protected:
+      int _idx;
+   };
+
+   class VertexIter : public AutoIterator
    {
    public:
       VertexIter (Graph &owner, int idx);
-
-      int operator* () const;
-
-      bool operator!= ( const VertexIter &other ) const;
 
       VertexIter & operator++ ();
 
    private:
       Graph &_owner;
-      int _idx;
    };
 
    class VerticesAuto
@@ -36,20 +46,15 @@ namespace indigo
       Graph &_owner;
    };
 
-   class EdgeIter
+   class EdgeIter : public AutoIterator
    {
    public:
       EdgeIter (Graph &owner, int idx);
-
-      int operator* () const;
-
-      bool operator!= (const EdgeIter &other) const;
 
       EdgeIter & operator++ ();
 
    private:
       Graph &_owner;
-      int _idx;
    };
 
    class EdgesAuto
@@ -65,20 +70,15 @@ namespace indigo
       Graph &_owner;
    };
 
-   class NeighborIter
+   class NeighborIter : public AutoIterator
    {
    public:
       NeighborIter(const Vertex &owner, int idx);
-
-      int operator* () const;
-
-      bool operator!= (const NeighborIter &other) const;
 
       NeighborIter & operator++ ();
 
    private:
       const Vertex &_owner;
-      int _idx;
    };
 
    class NeighborsAuto

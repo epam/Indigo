@@ -24,15 +24,15 @@
 
 using namespace indigo;
 
-NeighborsAuto Vertex::neighborsAuto() const
+NeighborsAuto Vertex::neighbors() const
 {
    return NeighborsAuto(*this);
 }
 
 int Vertex::findNeiVertex (int idx) const
 {
-   for (int i = neighbors.begin(); i < neighbors.end(); i = neighbors.next(i))
-      if (neighbors[i].v == idx)
+   for (int i = neighbors_list.begin(); i < neighbors_list.end(); i = neighbors_list.next(i))
+      if (neighbors_list[i].v == idx)
          return i;
 
    return -1;
@@ -40,8 +40,8 @@ int Vertex::findNeiVertex (int idx) const
 
 int Vertex::findNeiEdge (int idx) const
 {
-   for (int i = neighbors.begin(); i < neighbors.end(); i = neighbors.next(i))
-      if (neighbors[i].e == idx)
+   for (int i = neighbors_list.begin(); i < neighbors_list.end(); i = neighbors_list.next(i))
+      if (neighbors_list[i].e == idx)
          return i;
 
    return -1;
@@ -120,11 +120,11 @@ int Graph::addEdge (int beg, int end)
    Vertex &vbeg = _vertices->at(beg);
    Vertex &vend = _vertices->at(end);
 
-   int ve1_idx = vbeg.neighbors.add();
-   int ve2_idx = vend.neighbors.add();
+   int ve1_idx = vbeg.neighbors_list.add();
+   int ve2_idx = vend.neighbors_list.add();
 
-   VertexEdge &ve1 = vbeg.neighbors[ve1_idx];
-   VertexEdge &ve2 = vend.neighbors[ve2_idx];
+   VertexEdge &ve1 = vbeg.neighbors_list[ve1_idx];
+   VertexEdge &ve2 = vend.neighbors_list[ve2_idx];
 
    ve1.v = end;
    ve2.v = beg;
@@ -157,8 +157,8 @@ void Graph::removeEdge (int idx)
 
    _edges.remove(idx);
 
-   beg.neighbors.remove(beg.findNeiEdge(idx));
-   end.neighbors.remove(end.findNeiEdge(idx));
+   beg.neighbors_list.remove(beg.findNeiEdge(idx));
+   end.neighbors_list.remove(end.findNeiEdge(idx));
 
    _topology_valid = false;
    _sssr_valid = false;
@@ -168,7 +168,7 @@ void Graph::removeEdge (int idx)
 void Graph::removeAllEdges ()
 {
    for (int i = _vertices->begin(); i != _vertices->end(); i = _vertices->next(i))
-      _vertices->at(i).neighbors.clear();
+      _vertices->at(i).neighbors_list.clear();
 
    _edges.clear();
    _topology_valid = false;
@@ -847,11 +847,11 @@ void Graph::_cloneGraph_KeepIndices (const Graph &other)
       Vertex &vbeg = _vertices->at(_edges[i].beg);
       Vertex &vend = _vertices->at(_edges[i].end);
 
-      int ve1_idx = vbeg.neighbors.add();
-      int ve2_idx = vend.neighbors.add();
+      int ve1_idx = vbeg.neighbors_list.add();
+      int ve2_idx = vend.neighbors_list.add();
 
-      VertexEdge &ve1 = vbeg.neighbors[ve1_idx];
-      VertexEdge &ve2 = vend.neighbors[ve2_idx];
+      VertexEdge &ve1 = vbeg.neighbors_list[ve1_idx];
+      VertexEdge &ve2 = vend.neighbors_list[ve2_idx];
 
       ve1.v = _edges[i].end;
       ve2.v = _edges[i].beg;
