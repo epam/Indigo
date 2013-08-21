@@ -49,6 +49,12 @@ PGDLLEXPORT Datum bingo_restrpos(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(getindexstructurescount);
 PGDLLEXPORT Datum getindexstructurescount(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(_get_structures_count);
+PGDLLEXPORT Datum _get_structures_count(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(_get_block_count);
+PGDLLEXPORT Datum _get_block_count(PG_FUNCTION_ARGS);
+
 PG_FUNCTION_INFO_V1(getversion);
 PGDLLEXPORT Datum getversion(PG_FUNCTION_ARGS);
 
@@ -89,20 +95,57 @@ Datum getindexstructurescount(PG_FUNCTION_ARGS){
    Relation rel;
 
    rel = relation_open(relOid, AccessShareLock);
-
-   BingoPgBuffer meta_buffer;
-   meta_buffer.readBuffer(rel, BINGO_METAPAGE, BINGO_PG_READ);
-   BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(meta_buffer.getBuffer()));
-
-   result = meta_page->n_molecules;
-
-//   elog(INFO, "attrs num = %d", rel->rd_att->natts);
+   {
+      BingoPgBuffer meta_buffer;
+      meta_buffer.readBuffer(rel, BINGO_METAPAGE, BINGO_PG_READ);
+      BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(meta_buffer.getBuffer()));
+      result = meta_page->n_molecules;
+   }
 
    relation_close(rel, AccessShareLock);
 
    PG_RETURN_INT32(result);
 }
 
+
+
+Datum _get_structures_count(PG_FUNCTION_ARGS){
+   Oid relOid = PG_GETARG_OID(0);
+
+   int result = 0;
+   Relation rel;
+
+   rel = relation_open(relOid, AccessShareLock);
+   {
+      BingoPgBuffer meta_buffer;
+      meta_buffer.readBuffer(rel, BINGO_METAPAGE, BINGO_PG_READ);
+      BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(meta_buffer.getBuffer()));
+      result = meta_page->n_molecules;
+   }
+
+   relation_close(rel, AccessShareLock);
+
+   PG_RETURN_INT32(result);
+}
+
+Datum _get_block_count(PG_FUNCTION_ARGS){
+   Oid relOid = PG_GETARG_OID(0);
+
+   int result = 0;
+   Relation rel;
+
+   rel = relation_open(relOid, AccessShareLock);
+   {
+      BingoPgBuffer meta_buffer;
+      meta_buffer.readBuffer(rel, BINGO_METAPAGE, BINGO_PG_READ);
+      BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(meta_buffer.getBuffer()));
+      result = meta_page->n_sections;
+   }
+
+   relation_close(rel, AccessShareLock);
+
+   PG_RETURN_INT32(result);
+}
 
 
 //Datum bingo_test(PG_FUNCTION_ARGS) {

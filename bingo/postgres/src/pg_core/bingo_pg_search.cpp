@@ -98,6 +98,7 @@ void BingoPgSearch::_initScanSearch() {
     * Set up search engine
     */
    _bufferIndex.readMetaInfo();
+   _bufferIndex.setStrategy(BingoPgIndex::READING_STRATEGY);
    int index_type = _bufferIndex.getIndexType();
 
    if (index_type == BINGO_INDEX_TYPE_MOLECULE)

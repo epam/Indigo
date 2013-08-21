@@ -164,6 +164,7 @@ void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
          break;
    }
 
+
 }
 
 bool MangoPgSearchEngine::searchNext(PG_OBJECT result_ptr) {
@@ -295,15 +296,20 @@ void MangoPgSearchEngine::_prepareExactTauStrings(indigo::Array<char>& what_clau
 
 void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    IndexScanDesc scan_desc = (IndexScanDesc) scan_desc_ptr;
-   QS_DEF(Array<char>, search_type);
-   int bingo_res;
+   Array<char> search_type;
    Array<char> search_query;
    Array<char> search_options;
+
+   int bingo_res;
    BingoPgFpData& data = _queryFpData.ref();
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, search_query, search_options);
+   /*
+    * Get block parameters and split search options
+    */
+   _getBlockParameters(search_options);
 
    /*
     * Set up matching parameters
@@ -442,7 +448,11 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
    BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, min_bound, max_bound, search_query, search_options);
-            /*
+   /*
+    * Get block parameters and split search options
+    */
+   _getBlockParameters(search_options);
+   /*
     * Set up matching parameters
     */
    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
@@ -578,7 +588,7 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
           return true;
        } else {
           _fetchFound = false;
-          _currentSection = _bufferIndexPtr->readNext(_currentSection);
+          ++_currentSection;
        }
    }
    
@@ -593,11 +603,11 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
     * Read first section
     */
    if(_currentSection < 0)
-      _currentSection = bingo_index.readBegin();
+      _currentSection = _blockBegin;
    /*
     * Iterate through the sections
     */
-   for (; _currentSection < bingo_index.readEnd(); _currentSection = bingo_index.readNext(_currentSection)) {
+   for (; _currentSection < _blockEnd; ++_currentSection) {
       _currentIdx = -1;
       /*
        * Get section existing structures

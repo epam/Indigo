@@ -97,11 +97,16 @@ protected:
    void _setBingoContext();
    bool _fetchForNext();
 
+   void _getBlockParameters(indigo::Array<char>& params);
+
    qword _bingoSession;
 
    bool _fetchFound;
    int _currentSection;
    int _currentIdx;
+
+   int _blockBegin;
+   int _blockEnd;
 
    BingoPgIndex* _bufferIndexPtr;
 
