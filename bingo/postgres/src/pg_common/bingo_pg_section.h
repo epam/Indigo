@@ -62,6 +62,8 @@ public:
 
    void readSectionBitsCount(indigo::Array<int>& bits_count);
 
+   const BingoSectionInfoData& getSectionInfo() const { return _sectionInfo;};
+
    DECL_ERROR;
 
 private:

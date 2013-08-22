@@ -118,8 +118,8 @@ BingoPgSection::~BingoPgSection() {
     * Write meta info
     */
    _sectionInfo.n_blocks_for_bin = _buffersBin.size();
+   _sectionInfo.section_size = getPagesCount();
    if(_idxStrategy == BingoPgIndex::BUILDING_STRATEGY) {
-      _sectionInfo.section_size = getPagesCount();
       _sectionInfoBuffer.changeAccess(BINGO_PG_WRITE);
       _sectionInfoBuffer.formIndexTuple(&_sectionInfo, sizeof(_sectionInfo));
       _sectionInfoBuffer.changeAccess(BINGO_PG_NOLOCK);
