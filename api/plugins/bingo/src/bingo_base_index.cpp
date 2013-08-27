@@ -147,7 +147,7 @@ void BaseIndex::load (const char *location, const char *options)
    MMFStorage sim_mmf;
 
    size_t sim_mmf_size_mb = _properties.getULongNoThrow("sim_mmf_size");
-   size_t sim_mmf_size = (sim_mmf_size_mb != _ULLONG_MAX ? sim_mmf_size_mb * 1048576 : _sim_mmf_size);
+   size_t sim_mmf_size = (sim_mmf_size_mb != ULONG_MAX ? sim_mmf_size_mb * 1048576 : _sim_mmf_size);
   
    sim_mmf.open(_sim_mmf_path.c_str(), sim_mmf_size);
 
