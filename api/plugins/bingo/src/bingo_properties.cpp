@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <map>
+#include <limits.h>
 
 using namespace bingo;
 using namespace indigo;
