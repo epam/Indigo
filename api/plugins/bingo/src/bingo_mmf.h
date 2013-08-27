@@ -2,8 +2,6 @@
 #define __bingo_mmf__
 
 #include <stdio.h>
-#include <conio.h>
-#include <tchar.h>
 #include <new>
 
 #ifdef _WIN32
