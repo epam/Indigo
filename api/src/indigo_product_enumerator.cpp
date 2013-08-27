@@ -136,6 +136,7 @@ CEXPORT int indigoTransform (int reaction, int monomers)
 
       ReactionTransformation rt;
       rt.arom_options = self.arom_options;
+      rt.layout_flag = self.rpe_params.is_layout;
 
       if (monomers_object.type == IndigoObject::MOLECULE)
       {
@@ -192,6 +193,12 @@ void indigoProductEnumeratorSetMaximumProductsCount (int max_pr_cnt)
    self.rpe_params.max_product_count = max_pr_cnt;
 }
 
+void indigoProductEnumeratorSetLayoutFlag (int layout_flag)
+{
+   Indigo &self = indigoGetInstance();
+   self.rpe_params.is_layout = (layout_flag != 0);
+}
+
 
 class _IndigoRPEOptionsHandlersSetter
 {
@@ -210,6 +217,7 @@ _IndigoRPEOptionsHandlersSetter::_IndigoRPEOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("rpe-self-reaction", indigoProductEnumeratorSetSelfReactionFlag);
    mgr.setOptionHandlerInt("rpe-max-depth", indigoProductEnumeratorSetMaximumSearchDepth);
    mgr.setOptionHandlerInt("rpe-max-products-count", indigoProductEnumeratorSetMaximumProductsCount);
+   mgr.setOptionHandlerBool("transform-layout", indigoProductEnumeratorSetLayoutFlag);
 }
 
 _IndigoRPEOptionsHandlersSetter _indigo_rpe_options_handlers_setter;

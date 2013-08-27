@@ -108,6 +108,9 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
 
    while (true) 
    {
+      if(cancellation && cancellation->isCancelled())
+         throw Error("Molecule layout has been cancelled: %s", cancellation->cancelledRequestMessage());
+
       if (!_prepareAssignedList(assigned_list, bc_decom, bc_components, bc_tree))
          return;
 

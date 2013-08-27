@@ -27,6 +27,8 @@ ReactionTransformation::ReactionTransformation( void ) : CP_INIT, TL_CP_GET(_mer
 {
    _merged_reaction.clear();
    _cur_monomer.clear();
+   layout_flag = true;
+   cancellation = 0;
 }
 
 bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &reaction )
@@ -81,16 +83,26 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
          original_hydrogens.push(i);
    }
 
-   while (re_state.performSingleTransformation(_cur_monomer, forbidden_atoms, original_hydrogens))
+   bool need_layout = true;
+   while (re_state.performSingleTransformation(_cur_monomer, forbidden_atoms, original_hydrogens, need_layout))
       ;
 
    molecule.clone(_cur_monomer, NULL, NULL);
 
-   if (has_coord)
+   if (has_coord && layout_flag)
    {
+
       MoleculeLayout ml(molecule);
+      ml.setCancellationHandler(cancellation);
       ml.make();
       molecule.stereocenters.markBonds();
+   }
+   else
+   {
+      if (need_layout)
+         molecule.clearXyz();
+      else
+         molecule.stereocenters.markBonds();
    }
 
    return true;

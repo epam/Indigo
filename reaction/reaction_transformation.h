@@ -23,6 +23,7 @@
 #include "reaction/reaction_enumerator_state.h"
 #include "graph/embedding_enumerator.h"
 #include "base_cpp/reusable_obj_array.h"
+#include "base_cpp/cancellation_handler.h"
 
 namespace indigo
 {
@@ -38,6 +39,10 @@ namespace indigo
       bool transform(ReusableObjArray<Molecule> &molecules, QueryReaction &reaction);
 
       AromaticityOptions arom_options;
+
+      bool layout_flag;
+
+      CancellationHandler *cancellation;
 
    private:
       CP_DECL;

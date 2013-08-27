@@ -19,6 +19,7 @@
 #include "molecule/query_molecule.h"
 #include "layout/molecule_layout_graph.h"
 #include "layout/metalayout.h"
+#include "base_cpp/cancellation_handler.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -34,11 +35,13 @@ public:
 
    void make ();
 
+   void setCancellationHandler (CancellationHandler* cancellation);
+
    float bond_length;
    bool respect_existing_layout;
    Filter *filter;
    int  max_iterations;
-
+   
    DECL_ERROR;
 
 protected:

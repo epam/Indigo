@@ -29,6 +29,7 @@
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_arom_match.h"
+#include "molecule/molfile_saver.h"
 #include "molecule/elements.h"
 #include "graph/dfs_walk.h"
 
@@ -163,6 +164,7 @@ ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext &cont
    is_transform = false;
    _is_frag_search = false;
    _is_rg_exist = false;
+   _is_simple_transform = false;
 
    _tube_idx = -1;
 
@@ -243,6 +245,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
    is_same_keeping = cur_rpe_state.is_same_keeping;
    is_transform = cur_rpe_state.is_transform;
    _is_rg_exist = cur_rpe_state._is_rg_exist;
+   _is_simple_transform = cur_rpe_state._is_simple_transform;
 
    _is_frag_search = false;
 
@@ -453,7 +456,9 @@ void ReactionEnumeratorState::_productProcess( void )
       }
    }
 
-   ready_product.clearXyz();
+   if (!_is_simple_transform)
+      ready_product.clearXyz();
+
    if (product_proc != NULL)
       product_proc(ready_product, _product_monomers, userdata);
 }
@@ -538,9 +543,11 @@ int ReactionEnumeratorState::_calcMaxHCnt( QueryMolecule &molecule )
 }
 
 
-bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms, Array<int> &original_hydrogens )
+bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms, Array<int> &original_hydrogens, bool &need_layout)
 {
    is_transform = true;
+
+   _is_simple_transform = _checkForSimplicity();
 
    if (forbidden_atoms.size() != molecule.vertexEnd())
       throw Error("forbidden atoms array size is incorrect");
@@ -557,6 +564,8 @@ bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, A
 
    original_hydrogens.copy(_original_hydrogens);
    forbidden_atoms.copy(_product_forbidden_atoms);
+
+   need_layout = !_is_simple_transform;
 
    return true;
 }
@@ -1018,7 +1027,7 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
          if (product.isPseudoAtom(i))
             mol_product.setPseudoAtom(i, product.getPseudoAtom(i));
       }
-      
+
       int reactant_atom_charge = CHARGE_UNKNOWN;
       
       if (reactant_atom != 0)
@@ -1079,9 +1088,15 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
          mol_product.setAtomRadical(mol_atom_idx, (pr_radical != -1 ? pr_radical : 0));
       }
 
-      mol_product.setAtomXyz(mol_atom_idx, product.getAtomXyz(i).x,
-                                           product.getAtomXyz(i).y,
-                                           product.getAtomXyz(i).z);
+      if (_is_simple_transform && frags_idx == -1)
+         throw Error("Incorrect AAM");
+
+      if (_is_simple_transform)
+         mol_product.setAtomXyz(mol_atom_idx, uncleaned_fragments.getAtomXyz(frags_idx));
+      else
+         mol_product.setAtomXyz(mol_atom_idx, product.getAtomXyz(i).x,
+                                              product.getAtomXyz(i).y,
+                                              product.getAtomXyz(i).z);
 
       mapping_out[i] = mol_atom_idx;
 
@@ -1509,18 +1524,26 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
             uncleaned_fragments.stereocenters.get(_att_points[i][j], type, group, pyramid);
 
             int new_pyramid[4];
-
+            
+            bool invalid_stereocenter = false;
             for (int k = 0; k < 4; k++)
             {
                if (pyramid[k] == -1)
                   new_pyramid[k] = -1;
                else if (!_is_needless_atom[pyramid[k]])
                   new_pyramid[k] = frags_mapping[pyramid[k]];
-               else
+               else if (_is_rg_exist)
                   new_pyramid[k] = pr_neibours[nv_idx++];
+               else
+               {
+                  invalid_stereocenter = true;
+                  break;
+               }
+
             }
 
-            mol_product.stereocenters.add(frags_mapping[_att_points[i][j]], type, group, new_pyramid);
+            if (!invalid_stereocenter)
+               mol_product.stereocenters.add(frags_mapping[_att_points[i][j]], type, group, new_pyramid);
          }
 
          if (nv_idx == 2)

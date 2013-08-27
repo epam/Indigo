@@ -5,27 +5,32 @@
 #include <conio.h>
 #include <tchar.h>
 #include <new>
-#include <windows.h>
 
-#undef min
-#undef max
+#ifdef _WIN32
+   #include <windows.h>
+   #undef min
+   #undef max
+#elif (defined __GNUC__ || defined __APPLE__)
+   #include <sys/mman.h>
+#endif
 
 namespace bingo
 {
    class MMFStorage
    {
    public:
-      MMFStorage();
+      MMFStorage ();
       
-      void open( const char *filename, size_t buf_size );
+      void open (const char *filename, size_t buf_size);
 
-      void * ptr();
+      void * ptr ();
 
-      void close(  );
+      void close ();
 
-   private:
+   private:   
       void *_h_map_file;
       void *_ptr;
+      size_t _len;
    };
 };
 
