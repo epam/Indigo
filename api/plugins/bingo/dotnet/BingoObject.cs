@@ -89,7 +89,7 @@ namespace com.ggasoftware.indigo
             _reference = res;
             return res;
         }
-        
+
         /// <summary>
         /// Method to estimate remaining hits count
         /// </summary>
@@ -98,7 +98,7 @@ namespace com.ggasoftware.indigo
         {
             return Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingResultsCount(_id));
         }
-        
+
         /// <summary>
         /// Method to estimate remaining hits count error
         /// </summary>
@@ -107,7 +107,7 @@ namespace com.ggasoftware.indigo
         {
             return Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingResultsCountError(_id));
         }
-        
+
         /// <summary>
         /// Method to estimate remaining search time
         /// </summary>

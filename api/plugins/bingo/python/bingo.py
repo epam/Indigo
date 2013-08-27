@@ -51,6 +51,16 @@ class Bingo(object):
         self._lib.bingoGetObject.argtypes = [c_int]
         self._lib.bingoEndSearch.restype = c_int
         self._lib.bingoEndSearch.argtypes = [c_int]
+        self._lib.bingoGetCurrentSimilarityValue.restype = c_float
+        self._lib.bingoGetCurrentSimilarityValue.argtypes = [c_int]
+        self._lib.bingoOptimize.restype = c_int
+        self._lib.bingoOptimize.argtypes = [c_int]
+        self._lib.bingoEstimateRemainingResultsCount.restype = c_int
+        self._lib.bingoEstimateRemainingResultsCount.argtypes = [c_int]
+        self._lib.bingoEstimateRemainingResultsCountError.restype = c_int
+        self._lib.bingoEstimateRemainingResultsCountError.argtypes = [c_int]
+        self._lib.bingoEstimateRemainingTime.restype = c_int
+        self._lib.bingoEstimateRemainingTime.argtypes = [c_int, pointer(c_float)]
 
     def __del__(self):
         self.close()
@@ -119,6 +129,9 @@ class Bingo(object):
             Bingo._checkResult(self._indigo, self._lib.bingoSearchSim(self._id, query.id, minSim, maxSim, metric)),
             self._indigo, self)
 
+    def optimize(self):
+        Bingo._checkResult(self._indigo, self._lib.bingoOptimize(_id))
+
 
 class BingoObject(object):
     def __init__(self, objId, indigo, bingo):
@@ -143,3 +156,17 @@ class BingoObject(object):
     def getIndigoObject(self):
         return Indigo.IndigoObject(self._indigo,
                                    Bingo._checkResult(self._indigo, self._bingo._lib.bingoGetObject(self._id)))
+
+    def getCurrentSimilarityValue(self):
+        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoGetCurrentSimilarityValue(self._id))
+
+    def estimateRemainingResultsCount(self):
+        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoEstimateRemainingResultsCount(self._id))
+
+    def estimateRemainingResultsCountError(self):
+        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoEstimateRemainingResultsCountError(self._id))
+
+    def estimateRemainingTime(self):
+        value = c_float()
+        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoEstimateRemainingTime(self._id, pointer(value)))
+        return value.value
