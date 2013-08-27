@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <string>
+#include <limits.h>
 
 #include "base_cpp/profiling.h"
 #include "base_cpp/output.h"
