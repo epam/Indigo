@@ -7,6 +7,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../../
 file (GLOB Bingo_src src/*.c*)
 file (GLOB Bingo_headers *.h src/*.h*)
 
+include(ConfigureCommon)
+
 include_directories(${Bingo_SOURCE_DIR}
 	${Indigo_SOURCE_DIR}
 	${Indigo_SOURCE_DIR}/src
@@ -36,13 +38,20 @@ if (NOT NO_STATIC)
 endif()
 
 # Bingo shared
-add_library(bingo-shared SHARED ${Bingo_src} ${Bingo_headers})
+add_library(bingo-shared SHARED ${Bingo_src} ${Bingo_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c)
+
+if (UNIX AND NOT APPLE)
+	if(${SUBSYSTEM_NAME} MATCHES "x64")
+		set(LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
+	endif()
+endif()
+
 SET_TARGET_PROPERTIES(bingo-shared PROPERTIES OUTPUT_NAME "bingo")
 if(UNIX AND NOT APPLE)
-	 SET_TARGET_PROPERTIES(bingo-shared PROPERTIES LINK_FLAGS -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/bingo.so.map)
+	 SET_TARGET_PROPERTIES(bingo-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/bingo.so.map")
 endif()
 if(APPLE)
-	SET_TARGET_PROPERTIES(bingo-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup  -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/bingo.explist")
+	SET_TARGET_PROPERTIES(bingo-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -undefined dynamic_lookup  -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/bingo.explist")
 endif()
 set_target_properties(bingo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
