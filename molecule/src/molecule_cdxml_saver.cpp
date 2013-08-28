@@ -24,7 +24,19 @@ IMPL_ERROR(MoleculeCdxmlSaver, "molecule CMXML saver");
 
 MoleculeCdxmlSaver::MoleculeCdxmlSaver (Output &output) : _output(output)
 {
-   bondLength = 30;
+   _bond_length = 30;
+   _max_page_height = 64;
+   _pages_height = 1;
+}
+
+float MoleculeCdxmlSaver::pageHeight () const
+{
+   return _max_page_height;
+}
+
+float MoleculeCdxmlSaver::textLineHeight () const
+{
+   return 12.75f / _bond_length;
 }
 
 void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
@@ -32,7 +44,7 @@ void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
    _output.printf("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
    _output.printf("<!DOCTYPE CDXML SYSTEM \"http://www.cambridgesoft.com/xml/cdxml.dtd\" >\n");
       
-   _output.printf("<CDXML BondLength=\"%f\"", bondLength);
+   _output.printf("<CDXML _bond_length=\"%f\"", _bond_length);
    if (bounds != NULL)
    {
       // Generate MacPrintInfo according to the size
@@ -41,13 +53,21 @@ void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
       int dpi_logical = 72;
       int dpi_print = 600;
 
-      float x_inch = bounds->max.x * bondLength / dpi_logical + 1;
-      float y_inch = bounds->max.y * bondLength / dpi_logical + 1;
+      float x_inch = bounds->max.x * _bond_length / dpi_logical + 1;
+      float y_inch = bounds->max.y * _bond_length / dpi_logical + 1;
 
       int width = (int)(x_inch * dpi_print);
       int height = (int)(y_inch * dpi_print);
 
-      signed short mac_print_info[60] = {0};
+      // Add 1 to compensate margins = 36 points = 0.5 inches
+      int max_height = (int)((_max_page_height * _bond_length / dpi_logical + 1) * dpi_print);
+      if (height > max_height)
+      {
+         _pages_height = (int)ceil((float)height / max_height);
+         height = max_height;
+      }
+
+      int mac_print_info[60] = {0};
       mac_print_info[0] = 3;  // magic number
       mac_print_info[2] = dpi_print;
       mac_print_info[3] = dpi_print;
@@ -66,10 +86,12 @@ void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
       mac_print_info[24] = 100; // horizontal scale, in percent
       mac_print_info[25] = 100; // Vertical scale, in percent
 
-    _output.printf(" PrintMargins=\"36 36 36 36\"\n");
-    _output.printf(" MacPrintInfo=\"");
+      _output.printf(" PrintMargins=\"36 36 36 36\"\n");
+      _output.printf(" MacPrintInfo=\"");
       for (int i = 0; i < NELEM(mac_print_info); i++)
-         _output.printf("%04x", mac_print_info[i]);
+      {
+         _output.printf("%04hx", (unsigned short)mac_print_info[i]);
+      }
       
       _output.printf("\"\n");
    }
@@ -78,16 +100,22 @@ void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
 
 void MoleculeCdxmlSaver::beginPage (Bounds *bounds)
 {
-   _output.printf("<page>\n");
+   _output.printf("<page ");
+   _output.printf("HeightPages=\"%d\" WidthPages=\"1\"", _pages_height);
+   _output.printf(">\n");
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset)
+void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float structure_scale)
 {
+   float scale = structure_scale * _bond_length;
+
    LocaleGuard locale_guard;
 
    _output.printf("<fragment>\n");
 
    bool have_hyz = mol.have_xyz;
+
+   Vec2f min_coord, max_coord;
 
    if (mol.vertexCount() > 0)
    {
@@ -144,9 +172,19 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
          Vec2f pos(pos3.x, pos3.y);
 
          pos.add(offset);
-         pos.scale(bondLength);
+         if (i == mol.vertexBegin())
+            min_coord = max_coord = pos;
+         else
+         {
+            min_coord.min(pos);
+            max_coord.max(pos);
+         }
+
+         pos.scale(scale);
          if (have_hyz)
+         {
             _output.printf("\n         p=\"%f %f\"", pos.x, -pos.y);
+         }
          else
          {
             if (mol.stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
@@ -222,12 +260,22 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
       }
    }
 
+   if (mol.isChrial())
+   {
+      Vec2f chiral_pos(max_coord.x, max_coord.y);
+      Vec2f bbox(scale * chiral_pos.x, -scale * chiral_pos.y);
+      _output.printf("<graphic BoundingBox=\"%f %f %f %f\" GraphicType=\"Symbol\" SymbolType=\"Absolute\" FrameType=\"None\">\n", 
+         bbox.x, bbox.y, bbox.x, bbox.y);
+      addText(chiral_pos, "Chiral");
+      _output.printf("</graphic>\n");
+   }
+
    _output.printf("</fragment>\n");
 }
 
 void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text)
 {
-   _output.printf("<t p=\"%f %f\" Justification=\"Center\"><s>%s</s></t>\n", bondLength * pos.x, -bondLength * pos.y, text);
+   _output.printf("<t p=\"%f %f\" Justification=\"Center\"><s>%s</s></t>\n", _bond_length * pos.x, -_bond_length * pos.y, text);
 }
 
 void MoleculeCdxmlSaver::endPage ()
@@ -273,7 +321,7 @@ void MoleculeCdxmlSaver::saveMolecule (Molecule &mol)
 
    Vec2f offset(-min_coord.x, -max_coord.y);
 
-   saveMoleculeFragment(mol, offset);
+   saveMoleculeFragment(mol, offset, 1);
    endPage();
    endDocument();
 }

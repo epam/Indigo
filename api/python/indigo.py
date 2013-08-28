@@ -453,9 +453,25 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoGetDataSGroup(self.id, index)))
 
+    def getGenericSGroup(self, index):
+        self.dispatcher._setSessionId()
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoGetGenericSGroup(self.id, index)))
+
+    def getMultipleGroup(self, index):
+        self.dispatcher._setSessionId()
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoGetMultipleGroup(self.id, index)))
+
+    def getRepeatingUnit(self, index):
+        self.dispatcher._setSessionId()
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoGetRepeatingUnit(self.id, index)))
+
     def description(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoDescription(self.id))
+
+    def data(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoData(self.id))
 
     def addDataSGroup(self, atoms, bonds, description, data):
         self.dispatcher._setSessionId()
@@ -1417,8 +1433,16 @@ class Indigo(object):
         Indigo._lib.indigoGetSuperatom.argtypes = [c_int, c_int]
         Indigo._lib.indigoGetDataSGroup.restype = c_int
         Indigo._lib.indigoGetDataSGroup.argtypes = [c_int, c_int]
+        Indigo._lib.indigoGetGenericSGroup.restype = c_int
+        Indigo._lib.indigoGetGenericSGroup.argtypes = [c_int, c_int]
+        Indigo._lib.indigoGetMultipleGroup.restype = c_int
+        Indigo._lib.indigoGetMultipleGroup.argtypes = [c_int, c_int]
+        Indigo._lib.indigoGetRepeatingUnit.restype = c_int
+        Indigo._lib.indigoGetRepeatingUnit.argtypes = [c_int, c_int]
         Indigo._lib.indigoDescription.restype = c_char_p
         Indigo._lib.indigoDescription.argtypes = [c_int]
+        Indigo._lib.indigoData.restype = c_char_p
+        Indigo._lib.indigoData.argtypes = [c_int]
         Indigo._lib.indigoAddDataSGroup.restype = c_int
         Indigo._lib.indigoAddDataSGroup.argtypes = [c_int, c_int, POINTER(c_int), c_int, POINTER(c_int), c_char_p, c_char_p]
         Indigo._lib.indigoAddSuperatom.restype = c_int

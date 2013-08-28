@@ -175,7 +175,11 @@ public interface IndigoLib extends Library
    int indigoIterateMultipleGroups (int molecule);
    int indigoGetSuperatom (int molecule, int index);
    int indigoGetDataSGroup (int molecule, int index);
+   int indigoGetGenericSGroup (int molecule, int index);
+   int indigoGetMultipleGroup (int molecule, int index);
+   int indigoGetRepeatingUnit (int molecule, int index);
    Pointer indigoDescription (int data_sgroup);
+   Pointer indigoData (int data_sgroup);
 
    int indigoAddDataSGroup (int molecule, int natoms, int atoms[],
         int nbonds, int bonds[], String description, String data);

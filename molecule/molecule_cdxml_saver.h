@@ -36,19 +36,23 @@ public:
 
    void beginDocument (Bounds *bounds);
    void beginPage (Bounds *bounds);
-   void saveMoleculeFragment (Molecule &mol, const Vec2f &offset);
+   void saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float scale);
    void addText (const Vec2f &pos, const char *text);
    void endPage ();
    void endDocument ();
 
+   float pageHeight () const;
+   float textLineHeight () const;
+
    DECL_ERROR;
 
-protected:
+private:
    Output   &_output;
 
-   float bondLength;
+   float _bond_length;
+   int _pages_height;
+   float _max_page_height;
 
-private:
    MoleculeCdxmlSaver (const MoleculeCdxmlSaver &); // no implicit copy
 };
 

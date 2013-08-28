@@ -28,16 +28,34 @@ struct Pos
 
    // Offset and size on the page
    Vec2f page_offset;
-   Vec2f size;
+   Vec2f size, all_size;
 
    // Final offset for the coordinates
    Vec2f offset, title_offset;
+
+   // Structure scaling coefficient
+   float scale;
 };
 
-
-
-void RenderParamCdxmlInterface::getBounds (Molecule &mol, Vec2f &min, Vec2f &max)
+void _getBounds (BaseMolecule &mol, Vec2f &min, Vec2f &max, float &scale)
 {
+   // Compute average bond length
+   float avg_bond_length = 1;
+   if (mol.edgeCount() > 0)
+   {
+      float bond_length_sum = 0;
+      for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+      {
+         const Edge& edge = mol.getEdge(i);
+         const Vec3f &p1 = mol.getAtomXyz(edge.beg);
+         const Vec3f &p2 = mol.getAtomXyz(edge.end);
+         bond_length_sum += Vec3f::dist(p1, p2);
+      }
+      avg_bond_length = bond_length_sum / mol.edgeCount();
+   }
+
+   scale = 1 / avg_bond_length;
+
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
       Vec3f &p = mol.getAtomXyz(i);
@@ -51,6 +69,9 @@ void RenderParamCdxmlInterface::getBounds (Molecule &mol, Vec2f &min, Vec2f &max
          max.max(p2);
       }
    }
+
+   min.scale(scale);
+   max.scale(scale);
 }
 
 void RenderParamCdxmlInterface::render (RenderParams& params)
@@ -69,13 +90,17 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    column_widths.resize(params.cnvOpt.gridColumnNumber);
    column_widths.fill(0);
 
+   Array<Pos> positions;
+   positions.resize(mols.size());
+
    for (int i = 0; i < mols.size(); ++i)
    {
       int column = i % params.cnvOpt.gridColumnNumber;
-      Vec2f min, max;
-      getBounds(mols[i]->asMolecule(), min, max);
 
-      float width = max.x - min.x;
+      Pos &p = positions[i];
+      _getBounds(mols[i]->asMolecule(), p.str_min, p.str_max, p.scale);
+
+      float width = p.str_max.x - p.str_min.x;
       column_widths[column] = __max(width, column_widths[column]);
    }
 
@@ -88,47 +113,59 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    for (int i = 1; i < params.cnvOpt.gridColumnNumber; i++)
       column_offset[i] = column_offset[i - 1] + column_widths[i - 1] + x_grid_base;
 
-   float row_y_offset = params.cnvOpt.marginY / 10.0f + y_margins_base;
+   float page_y_offset_base = params.cnvOpt.marginY / 10.0f + y_margins_base;
+   float row_y_offset = page_y_offset_base;
    int last_row = 0;
    float max_y = 0;
-
-   Array<Pos> positions;
-   positions.resize(mols.size());
 
    float title_y = 0;
 
    // Get each structure bounds 
+   int row_moved = 0;
    for (int i = 0; i < mols.size(); ++i)
    {
       Pos &p = positions[i];
 
       int column = i % params.cnvOpt.gridColumnNumber;
-
-      getBounds(mols[i]->asMolecule(), p.str_min, p.str_max);
+      int row = i / params.cnvOpt.gridColumnNumber;
 
       p.page_offset.x = column_offset[column];
       p.page_offset.y = row_y_offset;
 
       p.size.diff(p.str_max, p.str_min);
+      p.all_size = p.size;
       
-      p.offset.x = p.page_offset.x - p.str_min.x + (column_widths[column] - p.size.x) / 2;
-      p.offset.y = -p.page_offset.y - p.str_max.y;
-
-      p.title_offset.x = p.page_offset.x + p.size.x / 2 + (column_widths[column] - p.size.x) / 2;
-      p.title_offset.y = -p.page_offset.y - p.size.y - 1.0f;
-
       if (i < params.titles.size())
       {
          const Array<char> &title = params.titles[i];
          if (title.size() > 0)
          {
             int lines = title.count('\n') + 1;
-            float title_height = lines * 0.3f;
-            max_y = __max(max_y, row_y_offset + p.size.y + title_height + 1.0f);
+            float title_height = lines * saver.textLineHeight();
+            p.all_size.y += title_height + saver.textLineHeight(); // Add blank line
          }
       }
 
-      max_y = __max(max_y, row_y_offset + p.size.y);
+      // Check that the structure is fully on a single page
+      int pbegin = (int)(p.page_offset.y / saver.pageHeight());
+      int pend = (int)((p.page_offset.y + p.all_size.y) / saver.pageHeight());
+      // Additional check that we didn't moved this row before
+      if (pbegin != pend && row_moved != row)
+      {
+         // Update starting row_y_offset for the whole row and start this row again
+         row_y_offset = (pbegin + 1) * saver.pageHeight() + page_y_offset_base;
+         i = row * params.cnvOpt.gridColumnNumber - 1;
+         row_moved = row;
+         continue;
+      }
+
+      p.offset.x = p.page_offset.x - p.str_min.x + (column_widths[column] - p.size.x) / 2;
+      p.offset.y = -p.page_offset.y - p.str_max.y;
+
+      p.title_offset.x = p.page_offset.x + p.size.x / 2 + (column_widths[column] - p.size.x) / 2;
+      p.title_offset.y = -p.page_offset.y - p.size.y - 1.0f;
+
+      max_y = __max(max_y, p.page_offset.y + p.all_size.y);
 
       int next_row = (i + 1) / params.cnvOpt.gridColumnNumber;
       if (last_row != next_row)
@@ -160,7 +197,9 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    for (int i = 0; i < mols.size(); ++i)
    {
       Pos &p = positions[i];
-      saver.saveMoleculeFragment(mols[i]->asMolecule(), p.offset);
+      Vec2f offset = p.offset;
+      offset.scale(1 / p.scale);
+      saver.saveMoleculeFragment(mols[i]->asMolecule(), offset, p.scale);
       
       if (i < params.titles.size())
       {

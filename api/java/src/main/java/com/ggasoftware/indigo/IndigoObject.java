@@ -929,10 +929,46 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoIterateGenericSGroups(self)), this);
    }
 
+   public IndigoObject getDataSGroup(int index)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoGetDataSGroup(self, index)), this);
+   }
+
+   public IndigoObject getSuperatom(int index)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoGetSuperatom(self, index)), this);
+   }
+
+   public IndigoObject getGenericSGroup(int index)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoGetGenericSGroup(self, index)), this);
+   }
+
+   public IndigoObject getMultipleGroup(int index)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoGetMultipleGroup(self, index)), this);
+   }
+
+   public IndigoObject getRepeatingUnit(int index)
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoGetRepeatingUnit(self, index)), this);
+   }
+
    public String description()
    {
       dispatcher.setSessionID();
       return Indigo.checkResultString(this, _lib.indigoDescription(self));
+   }
+
+   public String data()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoData(self));
    }
 
    public IndigoObject addDataSGroup (int[] atoms, int[] bonds, String description, String data)

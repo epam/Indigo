@@ -516,10 +516,34 @@ namespace com.ggasoftware.indigo
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoGetSuperatom(self, index)), this);
         }
 
+        public IndigoObject getGenericSGroup(int index)
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoGetGenericSGroup(self, index)), this);
+        }
+
+        public IndigoObject getMultipleGroup(int index)
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoGetMultipleGroup(self, index)), this);
+        }
+
+        public IndigoObject getRepeatingUnit(int index)
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoGetRepeatingUnit(self, index)), this);
+        }
+
         public string description()
         {
             dispatcher.setSessionID();
             return new String(dispatcher.checkResult(_indigo_lib.indigoDescription(self)));
+        }
+
+        public string data()
+        {
+            dispatcher.setSessionID();
+            return new String(dispatcher.checkResult(_indigo_lib.indigoData(self)));
         }
 
         public IndigoObject addDataSGroup(int[] atoms, int[] bonds, String description, String data)

@@ -24,9 +24,6 @@ struct Vec2f;
 class RenderParamCdxmlInterface {
 public:
    static void render (RenderParams& params);
-
-private:
-   static void getBounds (Molecule &mol, Vec2f &min, Vec2f &max);
 };
 
 }

@@ -139,8 +139,12 @@ namespace com.ggasoftware.indigo
 
         int indigoGetDataSGroup(int mol, int idx);
         int indigoGetSuperatom(int mol, int idx);
+        int indigoGetGenericSGroup (int molecule, int index);
+        int indigoGetMultipleGroup (int molecule, int index);
+        int indigoGetRepeatingUnit (int molecule, int index);
 
         sbyte* indigoDescription(int item);
+        sbyte* indigoData(int item);
         int indigoAddDataSGroup(int molecule, int natoms, int[] atoms, int nbonds, int[] bonds, string description, string data);
         int indigoSetDataSGroupXY(int sgroup, float x, float y, string options);
 
