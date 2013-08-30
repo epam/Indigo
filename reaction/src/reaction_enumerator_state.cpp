@@ -1532,7 +1532,7 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
                   new_pyramid[k] = -1;
                else if (!_is_needless_atom[pyramid[k]])
                   new_pyramid[k] = frags_mapping[pyramid[k]];
-               else if (_is_rg_exist)
+               else if (nv_idx < pr_neibours.size())
                   new_pyramid[k] = pr_neibours[nv_idx++];
                else
                {
