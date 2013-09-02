@@ -89,20 +89,18 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
 
    molecule.clone(_cur_monomer, NULL, NULL);
 
-   if (has_coord && layout_flag)
+   if (has_coord)
    {
-
-      MoleculeLayout ml(molecule);
-      ml.setCancellationHandler(cancellation);
-      ml.make();
-      molecule.stereocenters.markBonds();
-   }
-   else
-   {
-      if (need_layout)
-         molecule.clearXyz();
-      else
+      if (layout_flag)
+      {
+         MoleculeLayout ml(molecule);
+         ml.setCancellationHandler(cancellation);
+         ml.make();
+      }
+      if (!need_layout)
          molecule.stereocenters.markBonds();
+      else
+         molecule.clearXyz();
    }
 
    return true;
