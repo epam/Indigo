@@ -404,6 +404,11 @@ void MoleculeLayout::make ()
    }
 }
 
+void MoleculeLayout::setCancellationHandler (CancellationHandler* cancellation)
+{
+   _layout_graph.cancellation = cancellation;
+}
+
 BaseMolecule& MoleculeLayout::cb_getMol (int id, void* context)
 {
    return ((MoleculeLayout*)context)->_getMol(id);

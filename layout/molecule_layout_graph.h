@@ -23,6 +23,7 @@
 #include "molecule/molecule.h"
 #include "layout/layout_pattern.h"
 #include "base_cpp/obj.h"
+#include "base_cpp/cancellation_handler.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -109,6 +110,8 @@ public:
    const BaseMolecule *getMolecule (const int **molecule_edge_mapping) { *molecule_edge_mapping = _molecule_edge_mapping; return _molecule; }
 
    int max_iterations;
+      
+   CancellationHandler* cancellation;
    
    void flipped () { _flipped = true; }
    bool isFlipped () const { return _flipped; }

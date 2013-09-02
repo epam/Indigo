@@ -30,6 +30,7 @@ MoleculeLayoutGraph::MoleculeLayoutGraph ()
    _molecule = 0;
    _molecule_edge_mapping = 0;
    max_iterations = 0;
+   cancellation = 0;
    _flipped = false;
 }
 
