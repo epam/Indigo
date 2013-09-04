@@ -17,6 +17,7 @@
 #include "indigo_array.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
+#include "base_cpp/cancellation_handler.h"
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
 #include "molecule/molecule.h"
@@ -148,6 +149,9 @@ CEXPORT int indigoTransform (int reaction, int monomers)
       catch (IndigoError)
       {
       }
+
+      TimeoutCancellationHandler cancellation(self.cancellation_timeout);
+      rt.cancellation = &cancellation;
 
       if (is_mol)
       {
