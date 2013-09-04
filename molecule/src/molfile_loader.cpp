@@ -1237,6 +1237,8 @@ void MolfileLoader::_readCtab2000 ()
 
          _atom_types[atom_idx] = _ATOM_PSEUDO;
       }
+      else if (c == '\n')
+         continue;
       else
          _scanner.skipLine();
    }
