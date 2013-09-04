@@ -416,6 +416,8 @@ void MoleculeLayoutGraph::_layoutMultipleComponents (BaseMolecule & molecule, bo
    {
       Filter comp_filter(decomposition.ptr(), Filter::EQ, i);
       MoleculeLayoutGraph &component = components.push();
+      
+      component.cancellation = cancellation;
 
       component.makeLayoutSubgraph(*this, comp_filter);
       component.max_iterations = max_iterations;
