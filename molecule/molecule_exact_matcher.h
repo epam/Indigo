@@ -19,11 +19,16 @@
 #include "graph/embedding_enumerator.h"
 #include "graph/graph_decomposer.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Molecule;
 
-class MoleculeExactMatcher
+class DLLEXPORT MoleculeExactMatcher
 {
 public:
    enum

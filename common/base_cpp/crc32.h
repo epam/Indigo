@@ -15,9 +15,16 @@
 #ifndef __crc32_h__
 #define __crc32_h__
 
+#include "base_c/defs.h"
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
-class CRC32  
+class DLLEXPORT CRC32  
 {
 public:
    explicit CRC32 ();
