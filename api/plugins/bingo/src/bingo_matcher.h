@@ -8,6 +8,8 @@
 #include "indigo_reaction.h"
 
 #include "molecule/molecule_substructure_matcher.h"
+#include "molecule/molecule_exact_matcher.h"
+#include "reaction/reaction_exact_matcher.h"
 #include "math/statistics.h"
 
 using namespace indigo;
@@ -34,6 +36,10 @@ namespace bingo
    };
 
    class SubstructureQueryData : public MatcherQueryData
+   {
+   };
+
+   class ExactQueryData : public MatcherQueryData
    {
    };
 
@@ -69,6 +75,28 @@ namespace bingo
       SimilarityReactionQuery _obj;
       float _min;
       float _max;
+   };
+
+   class MoleculeExactQueryData : public ExactQueryData
+   {
+   public:
+      MoleculeExactQueryData (/* const */ Molecule &mol);
+
+      virtual /*const*/ QueryObject &getQueryObject ();
+
+   private:
+      SimilarityMoleculeQuery _obj;
+   };
+   
+   class ReactionExactQueryData : public ExactQueryData
+   {
+   public:
+      ReactionExactQueryData (/* const */ Reaction &rxn);
+
+      virtual /*const*/ QueryObject &getQueryObject () /*const*/;
+
+   private:
+      SimilarityReactionQuery _obj;
    };
 
    class MoleculeSubstructureQueryData : public SubstructureQueryData
@@ -283,6 +311,66 @@ namespace bingo
       ReactionSimMatcher(/*const */ BaseIndex &index);
    private:
       IndexCurrentReaction *_current_rxn;
+   };
+
+
+   class BaseExactMatcher : public BaseMatcher
+   {
+   public:
+      BaseExactMatcher (BaseIndex &index, IndigoObject *& current_obj);
+
+      virtual bool next ();
+      
+      void setQueryData (ExactQueryData *query_data);
+
+      virtual void setParameters (const char *parameters) = 0;
+
+      ~BaseExactMatcher();
+      
+   protected:
+      int _current_cand_id;
+      dword _query_hash;
+      Array<int> _candidates;
+      /* const */ AutoPtr<ExactQueryData> _query_data;
+
+      virtual dword _calcHash () = 0;
+
+      virtual bool _tryCurrent ()/* const */ = 0;
+   };
+
+   
+   class MolExactMatcher : public BaseExactMatcher
+   {
+   public:
+      MolExactMatcher (/*const */ BaseIndex &index);
+      
+      virtual void setParameters (const char *parameters);
+
+   private:
+      IndexCurrentMolecule *_current_mol;
+      int _flags;
+      float _rms_threshold;
+      
+      virtual dword _calcHash ();
+
+      virtual bool _tryCurrent ()/* const */;
+   };
+
+
+   class RxnExactMatcher : public BaseExactMatcher
+   {
+   public:
+      RxnExactMatcher (/*const */ BaseIndex &index);
+
+      virtual void setParameters (const char *flags);
+
+   private:
+      IndexCurrentReaction *_current_rxn;
+      int _flags;
+      
+      virtual dword _calcHash ();
+   
+      virtual bool _tryCurrent ()/* const */;
    };
 };
 

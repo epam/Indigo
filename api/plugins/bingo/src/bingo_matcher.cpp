@@ -53,6 +53,24 @@ float ReactionSimilarityQueryData::getMax () const
 {
    return _max;
 }
+
+MoleculeExactQueryData::MoleculeExactQueryData (/* const */ Molecule &mol) : _obj(mol)
+{
+}
+
+/*const*/ QueryObject & MoleculeExactQueryData::getQueryObject () /*const*/
+{
+   return _obj;
+}
+
+ReactionExactQueryData::ReactionExactQueryData (/* const */ Reaction &rxn) : _obj(rxn)
+{
+}
+
+/*const*/ QueryObject & ReactionExactQueryData::getQueryObject () /*const*/
+{
+   return _obj;
+}
    
 MoleculeSubstructureQueryData::MoleculeSubstructureQueryData (/* const */ QueryMolecule &qmol) : _obj(qmol)
 {
@@ -438,13 +456,13 @@ bool ReactionSubMatcher::_tryCurrent ()// const
    SubstructureReactionQuery &query = (SubstructureReactionQuery &)_query_data->getQueryObject();
    QueryReaction &query_rxn = (QueryReaction &)(query.getReaction());
 
+   if (!_loadCurrentObject())
+      return false;
+
    if (_current_obj == 0)
       throw Exception("ReactionSubMatcher: Matcher's current object was destroyed");
 
    Reaction &target_rxn = _current_obj->getReaction();
-
-   if (!_loadCurrentObject())
-      return false;
 
    ReactionSubstructureMatcher rsm(target_rxn);
 
@@ -597,4 +615,208 @@ MoleculeSimMatcher::MoleculeSimMatcher (/*const */ BaseIndex &index) : _current_
 
 ReactionSimMatcher::ReactionSimMatcher (/*const */ BaseIndex &index) : _current_rxn(new IndexCurrentReaction(_current_rxn)), BaseSimilarityMatcher(index, (IndigoObject *&)_current_rxn)
 {
+}
+
+
+BaseExactMatcher::BaseExactMatcher (BaseIndex &index, IndigoObject *& current_obj) : BaseMatcher(index, current_obj)
+{
+   _candidates.clear();
+   _current_cand_id = 0;
+}
+
+bool BaseExactMatcher::next ()
+{
+   ExactStorage &exact_storage = _index.getExactStorage();
+
+   if (_candidates.size() == 0)
+      exact_storage.findCandidates(_query_hash, _candidates);
+
+   while (_current_cand_id < _candidates.size())
+   {
+      profTimerStart(tsingle, "sub_single");
+
+      _current_id = _candidates[_current_cand_id];
+      _current_cand_id++;
+
+      bool status = _tryCurrent();
+
+      _match_probability_esimate.addValue((float)status);
+      _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
+
+      if (status)
+         return true;
+   }
+
+   return false;
+}
+      
+void BaseExactMatcher::setQueryData (ExactQueryData *query_data)
+{
+   _query_data.reset(query_data);
+
+   _query_hash = _calcHash();
+}
+
+BaseExactMatcher::~BaseExactMatcher()
+{
+}
+
+
+
+MolExactMatcher::MolExactMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseExactMatcher(index, (IndigoObject *&)_current_mol)
+{
+}
+      
+void MolExactMatcher::setParameters (const char *parameters)
+{
+   MoleculeExactMatcher::parseConditions(parameters, _flags, _rms_threshold);
+}
+
+dword MolExactMatcher::_calcHash ()
+{
+   SimilarityMoleculeQuery &query = (SimilarityMoleculeQuery &)(_query_data->getQueryObject());
+   Molecule &query_mol = (Molecule &)(query.getMolecule());
+
+   return ExactStorage::calculateMolHash(query_mol);
+}
+
+bool MolExactMatcher::_tryCurrent ()/* const */
+{
+   SimilarityMoleculeQuery &query = (SimilarityMoleculeQuery &)(_query_data->getQueryObject());
+   Molecule &query_mol = (Molecule &)(query.getMolecule());
+
+   if (!_loadCurrentObject())
+      return false;
+
+   if (_current_obj == 0)
+      throw Exception("MoleculeSubMatcher: Matcher's current object was destroyed");
+
+   Molecule &target_mol = _current_obj->getMolecule();
+
+   MoleculeExactMatcher mem(query_mol, target_mol);
+   mem.flags = _flags;
+   mem.rms_threshold = _rms_threshold; 
+
+   bool find_res = mem.find();
+   
+   if (find_res)
+      return true;
+         
+   return false;
+}
+
+
+RxnExactMatcher::RxnExactMatcher(/*const */ BaseIndex &index) : _current_rxn(new IndexCurrentReaction(_current_rxn)), BaseExactMatcher(index, (IndigoObject *&)_current_rxn)
+{
+}
+
+void RxnExactMatcher::setParameters (const char *flags)
+{
+   // TODO: merge Indigo code into Bingo and stop this endless copy-paste
+   
+   if (flags == 0)
+      flags = "";
+
+   static struct
+   {
+      const char *token;
+      int value;
+   } token_list[] =
+   {
+      {"ELE", MoleculeExactMatcher::CONDITION_ELECTRONS},
+      {"MAS", MoleculeExactMatcher::CONDITION_ISOTOPE},
+      {"STE", MoleculeExactMatcher::CONDITION_STEREO},
+      {"AAM", ReactionExactMatcher::CONDITION_AAM},
+      {"RCT", ReactionExactMatcher::CONDITION_REACTING_CENTERS}
+   };
+
+   int i, res = 0, count = 0;
+   bool had_none = false;
+   bool had_all = false;
+
+   BufferScanner scanner(flags);
+
+   QS_DEF(Array<char>, word);
+   while (1)
+   {
+      scanner.skipSpace();
+      if (scanner.isEOF())
+         break;
+      scanner.readWord(word, 0);
+
+      if (strcasecmp(word.ptr(), "NONE") == 0)
+      {
+         if (had_all)
+            throw Exception("RxnExactMatcher: setParameters: NONE conflicts with ALL");
+         had_none = true;
+         count++;
+         continue;
+      }
+      if (strcasecmp(word.ptr(), "ALL") == 0)
+      {
+         if (had_none)
+            throw Exception("RxnExactMatcher: setParameters: ALL conflicts with NONE");
+         had_all = true;
+         res = MoleculeExactMatcher::CONDITION_ALL | ReactionExactMatcher::CONDITION_ALL;
+         count++;
+         continue;
+      }
+
+      for (i = 0; i < NELEM(token_list); i++)
+      {
+         if (strcasecmp(token_list[i].token, word.ptr()) == 0)
+         {
+            if (had_all)
+               throw Exception("RxnExactMatcher: setParameters: only negative flags are allowed together with ALL");
+            res |= token_list[i].value;
+            break;
+         }
+         if (word[0] == '-' && strcasecmp(token_list[i].token, word.ptr() + 1) == 0)
+         {
+            res &= ~token_list[i].value;
+            break;
+         }
+      }
+      if (i == NELEM(token_list))
+         throw Exception("RxnExactMatcher: setParameters: unknown token %s", word.ptr());
+      count++;
+   }
+
+   if (had_none && count > 1)
+      throw Exception("RxnExactMatcher: setParameters: no flags are allowed together with NONE");
+
+   if (count == 0)
+      res = MoleculeExactMatcher::CONDITION_ALL | ReactionExactMatcher::CONDITION_ALL;
+
+   _flags = res;
+}
+      
+dword RxnExactMatcher::_calcHash ()
+{
+   SimilarityReactionQuery &query = (SimilarityReactionQuery &)_query_data->getQueryObject();
+   Reaction &query_rxn = (Reaction &)(query.getReaction());
+
+   return ExactStorage::calculateRxnHash(query_rxn);
+}
+   
+bool RxnExactMatcher::_tryCurrent ()/* const */
+{
+   SimilarityReactionQuery &query = (SimilarityReactionQuery &)_query_data->getQueryObject();
+   Reaction &query_rxn = (Reaction &)(query.getReaction());
+
+   if (!_loadCurrentObject())
+      return false;
+
+   if (_current_obj == 0)
+      throw Exception("ReactionSubMatcher: Matcher's current object was destroyed");
+
+   Reaction &target_rxn = _current_obj->getReaction();
+
+   ReactionExactMatcher rem(query_rxn, target_rxn);
+   rem.flags = _flags;
+
+   if (rem.find())
+      return true;
+
+   return false;
 }

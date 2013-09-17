@@ -3,31 +3,35 @@
 
 #include <stdio.h>
 #include <new>
-
-#ifdef _WIN32
-   #include <windows.h>
-   #undef min
-   #undef max
-#elif (defined __GNUC__ || defined __APPLE__)
-   #include <sys/mman.h>
-#endif
+#include <string>
 
 namespace bingo
 {
-   class MMFStorage
+   class MMFile
    {
    public:
-      MMFStorage ();
+      MMFile ();
+      
+      ~MMFile ();
       
       void open (const char *filename, size_t buf_size);
 
+      void resize (size_t new_size);
+
       void * ptr ();
+
+      const char * name ();
+
+      size_t size();
 
       void close ();
 
    private:   
       void *_h_map_file;
+      void *_h_file;
       void *_ptr;
+      int _fd;
+      std::string _filename;
       size_t _len;
    };
 };

@@ -5,6 +5,7 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/obj_array.h"
 #include "bingo_cell_container.h"
+#include "bingo_multibit_tree.h"
 
 #include "bingo_ptr.h"
 
@@ -21,15 +22,13 @@ namespace bingo
    public:
       ContainerSet ();
 
-      ContainerSet (int fp_size, int container_size, int min_ones_count, int max_ones_count);
-
       void setParams (int fp_size, int container_size, int min_ones_count, int max_ones_count);
 
-      int getContCount ();
+      int getContCount () const;
 
-      int getMinBorder ();
+      int getMinBorder () const;
 
-      int getMaxBorder ();
+      int getMaxBorder () const;
 
       void add (const byte *fingerprint, int id);
 
@@ -41,14 +40,12 @@ namespace bingo
                         Array<SimResult> &sim_fp_indices, int cont_idx);
 
    private:
-      static const int _max_set_size = 128;
-      BingoPtr _set[_max_set_size];
-      int _set_size;
+      BingoArray<MultibitTree> _set;
       int _fp_size;
       int _container_size;
-      BingoPtr _increment;
-      BingoPtr _indices;
-
+      BingoPtr<byte> _increment;
+      BingoPtr<int> _indices;
+      
       int _inc_count;
       int _min_ones_count;
       int _max_ones_count;

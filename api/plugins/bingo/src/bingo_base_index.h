@@ -8,6 +8,7 @@
 #include "bingo_cf_storage.h"
 #include "bingo_sim_storage.h"
 #include "bingo_properties.h"
+#include "bingo_exact_storage.h"
 
 using namespace indigo;
 
@@ -42,6 +43,13 @@ namespace bingo
 
    class BaseIndex : public Index
    {
+   private:   
+      struct _Header
+      {
+         size_t sim_offset;
+         size_t exact_offset;
+      };
+
    public:
       virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options);
 
@@ -58,6 +66,8 @@ namespace bingo
       const TranspFpStorage & getSubStorage () const;
 
       SimStorage & getSimStorage ();
+
+      ExactStorage & getExactStorage ();
 
       const Array<int> & getIdMapping () const;
 
@@ -85,6 +95,7 @@ namespace bingo
          Array<byte> sub_fp;
          Array<byte> sim_fp;
          Array<char> cf_str;
+         dword hash;
       };
 
       Array<int> _id_mapping;
@@ -92,10 +103,13 @@ namespace bingo
       _ObjectIndexData _object_index_data;
       TranspFpStorage _sub_fp_storage;
       SimStorage _sim_fp_storage;
+      ExactStorage _exact_storage;
+      MMFStorage _mmf_storage;
       MoleculeFingerprintParameters _fp_params;
       AutoPtr<FlatStorage> _cf_storage;
       AutoPtr<StorageManager> _storage_manager;
       Properties _properties;
+      BingoPtr<_Header> _header;
       std::string _location;
       std::ofstream _mapping_outfile;
 

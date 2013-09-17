@@ -6,10 +6,9 @@ using namespace bingo;
 ContainerSet::ContainerSet()
 {
    _inc_count = 0;
-   _set_size = 0;
 }
 
-void ContainerSet::setParams( int fp_size, int container_size, int min_ones_count, int max_ones_count )
+void ContainerSet::setParams( int fp_size, int container_size, int min_ones_count, int max_ones_count)
 {
    profTimerStart(t, "cs_set_params");
    _fp_size = fp_size; 
@@ -17,37 +16,29 @@ void ContainerSet::setParams( int fp_size, int container_size, int min_ones_coun
    _max_ones_count = max_ones_count; 
    _container_size = container_size;
 
-   BingoAllocator *bingo_allocator = BingoAllocator::getInstance();
-   _increment = bingo_allocator->allocate<byte>(_container_size * _fp_size);
-   _indices = bingo_allocator->allocate<int>(_container_size);
-   for (int i = 0; i < _max_set_size; i++)
-   {
-      _set[i] = bingo_allocator->allocate<MultibitTree>(1);
-      byte *cont_ptr = bingo_allocator->get(_set[i]);
-      new(cont_ptr) MultibitTree(_fp_size);
-   }
+   _increment.allocate(_container_size * _fp_size);
+   _indices.allocate(_container_size);
 }
 
-int ContainerSet::getContCount()
+int ContainerSet::getContCount() const
 {
-   return _set_size + 1;
+   return _set.size() + 1;
 }
 
-int ContainerSet::getMinBorder()
+int ContainerSet::getMinBorder() const
 {
    return _min_ones_count;
 }
 
-int ContainerSet::getMaxBorder()
+int ContainerSet::getMaxBorder() const
 {
    return _max_ones_count;
 }
 
 void ContainerSet::add( const byte *fingerprint, int id )
 {
-   BingoAllocator *bingo_allocator = BingoAllocator::getInstance();
-   byte *inc = bingo_allocator->get(_increment);
-   int *indices = (int *)bingo_allocator->get(_indices);
+   byte *inc = _increment.ptr();
+   int *indices = _indices.ptr();
 
    memcpy(inc + _inc_count * _fp_size, fingerprint, _fp_size);
    indices[_inc_count] = id;
@@ -57,16 +48,11 @@ void ContainerSet::add( const byte *fingerprint, int id )
    {
       profIncCounter("trees_count", 1);
       
-      if (_set_size == _max_set_size)
-         throw Exception("Container set: Set overflow");
-
-      _set_size++;
-
-      MultibitTree *cont = (MultibitTree *)bingo_allocator->get(_set[_set_size - 1]);
+      MultibitTree &cont = _set.push<int>(_fp_size);
       
-      cont->build(_increment, _indices, _container_size, _min_ones_count, _max_ones_count);
-      _increment = bingo_allocator->allocate<byte>(_container_size * _fp_size);
-      _indices = bingo_allocator->allocate<int>(_container_size);
+      cont.build(_increment, _indices, _container_size, _min_ones_count, _max_ones_count);
+      _increment.allocate(_container_size * _fp_size);
+      _indices.allocate(_container_size);
    
       _inc_count = 0;
    }
@@ -74,7 +60,6 @@ void ContainerSet::add( const byte *fingerprint, int id )
 
 void ContainerSet::findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices )
 {
-   BingoAllocator *bingo_allocator = BingoAllocator::getInstance();
    sim_indices.clear();
 
    static int idx = 0;
@@ -82,11 +67,11 @@ void ContainerSet::findSimilar( const byte *query, SimCoef &sim_coef, double min
    int query_bit_number = bitGetOnesCount(query, _fp_size);
 
    QS_DEF(Array<SimResult>, cell_sim_indices);
-   for (int i = 0; i < _set_size; i++)
+   for (int i = 0; i < _set.size(); i++)
    {
-      MultibitTree *container = (MultibitTree *)bingo_allocator->get(_set[i]);
+      MultibitTree &container = _set[i];
       cell_sim_indices.clear();
-      container->findSimilar(query, sim_coef, min_coef, cell_sim_indices);
+      container.findSimilar(query, sim_coef, min_coef, cell_sim_indices);
 
       sim_indices.concat(cell_sim_indices);
    }
@@ -100,24 +85,15 @@ void ContainerSet::findSimilar( const byte *query, SimCoef &sim_coef, double min
 
 void ContainerSet::optimize()
 {
-   BingoAllocator *bingo_allocator = BingoAllocator::getInstance();
-   
    if (_inc_count < _container_size / 10)
       return;
-
+   
    profIncCounter("trees_count", 1);   
 
-   if (_set_size == _max_set_size)
-      throw Exception("Container set: Set overflow");
-
-   _set_size++;
-
-   MultibitTree *cont = (MultibitTree *)bingo_allocator->get(_set[_set_size - 1]);
-      
-   cont->build(_increment, _indices, _inc_count, _min_ones_count, _max_ones_count);
-   _increment = bingo_allocator->allocate<byte>(_container_size * _fp_size);
-   _indices = bingo_allocator->allocate<int>(_container_size);
-   
+   MultibitTree &cont = _set.push<int>(_fp_size);
+   cont.build(_increment, _indices, _inc_count, _min_ones_count, _max_ones_count);
+   _increment.allocate(_container_size * _fp_size);
+   _indices.allocate(_container_size);
    _inc_count = 0;
 }
 
@@ -130,24 +106,23 @@ int ContainerSet::getSimilar( const byte *query, SimCoef &sim_coef, double min_c
       throw Exception("ContainerSet: Incorrect container index");
 
 
-   if (cont_idx == _set_size)
+   if (cont_idx == _set.size())
    {
       {
          profTimerStart(cs_s, "inc_findSimilar");
          _findSimilarInc(query, sim_coef, min_coef, sim_fp_indices);
+         profIncCounter("inc_findSimilar_count", sim_fp_indices.size());
       }
 
       return sim_fp_indices.size();
    }
 
-
-   BingoAllocator *bingo_allocator = BingoAllocator::getInstance();
-
-   MultibitTree *container = (MultibitTree *)bingo_allocator->get(_set[cont_idx]);
+   MultibitTree &container = _set[cont_idx];
 
    {
       profTimerStart(cs_s, "set_findSimilar");
-      container->findSimilar(query, sim_coef, min_coef, sim_fp_indices);
+      container.findSimilar(query, sim_coef, min_coef, sim_fp_indices);
+      profIncCounter("set_findSimilar_count", sim_fp_indices.size());
    }
 
    return sim_fp_indices.size();
@@ -155,9 +130,8 @@ int ContainerSet::getSimilar( const byte *query, SimCoef &sim_coef, double min_c
 
 int ContainerSet::_findSimilarInc (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices)
 {
-   BingoAllocator *bingo_allocator = BingoAllocator::getInstance();
-   byte *inc = bingo_allocator->get(_increment);
-   int *indices = (int *)bingo_allocator->get(_indices);
+   byte *inc = _increment.ptr();
+   int *indices = _indices.ptr();
 
    sim_indices.clear();
 

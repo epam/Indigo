@@ -21,7 +21,7 @@ namespace bingo
       {
       }
 
-      virtual void build (BingoPtr fingerprints, int fp_count, int min_fp_bit_number, int max_fp_bit_number) = 0;
+      virtual void build (BingoPtr<byte> fingerprints, int fp_count, int min_fp_bit_number, int max_fp_bit_number) = 0;
       virtual void findSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices) = 0;
    };
 };

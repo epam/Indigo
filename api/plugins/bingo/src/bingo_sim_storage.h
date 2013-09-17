@@ -8,6 +8,7 @@
 #include "bingo_container_set.h"
 #include "bingo_fingerprint_table.h"
 #include "bingo_tanimoto_coef.h"
+#include "bingo_mmf_storage.h"
 
 #include <iostream>
 #include <fstream>
@@ -19,32 +20,33 @@ namespace bingo
    class SimStorage
    {
    public:
-      void create( int fp_size, void *memory_ptr, size_t size, int mt_size );
+      size_t create (int fp_size, int mt_size);
 
-      void load( int fp_size, void *memory_ptr, size_t size );
+      void load (int fp_size, size_t offset);
 
-      void add( const byte *fingerprint, int id );
+      size_t getOffset ();
 
-      void findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices );
+      void add (const byte *fingerprint, int id);
 
-      void optimize();
+      void findSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices);
 
-      int getCellCount() const;
+      void optimize ();
 
-      void getCellsInterval( const byte *query, SimCoef &sim_coef, double min_coef, int &min_cell, int &max_cell );
+      int getCellCount () const;
 
-      int firstFitCell(int query_bit_count, int min_cell, int max_cell ) const;
+      void getCellsInterval (const byte *query, SimCoef &sim_coef, double min_coef, int &min_cell, int &max_cell);
 
-      int nextFitCell( int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx ) const;
+      int firstFitCell (int query_bit_count, int min_cell, int max_cell) const;
 
-      int getCellSize( int cell_idx ) const;
+      int nextFitCell (int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx) const;
 
-      int getSimilar( const byte *query, SimCoef &sim_coef, double min_coef, 
-                      Array<SimResult> &sim_fp_indices, int cell_idx, int cont_idx );
-
+      int getCellSize (int cell_idx) const;
+      
+      int getSimilar (const byte *query, SimCoef &sim_coef, double min_coef, 
+                      Array<SimResult> &sim_fp_indices, int cell_idx, int cont_idx);
 
    private:
-      BingoPtr _table_ptr;
+      BingoPtr<FingerprintTable> _table_ptr;
    };
 };
 

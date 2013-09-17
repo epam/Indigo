@@ -7,21 +7,20 @@ using namespace bingo;
 
 FingerprintTable::FingerprintTable (int fp_size, const Array<int> &borders, int mt_size) : _fp_size(fp_size)
 {
-   int s1 = sizeof(*this);
-   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
-
-   _table_ptr = bingo_allocator->allocate<ContainerSet>(borders.size() - 1);
-   byte *mem_ptr = bingo_allocator->get(_table_ptr);
-
+   _table_ptr.allocate(borders.size() - 1);
+   
    profTimerStart(tfp, "FingerprintTable constructing");
 
-   ContainerSet *table = new(mem_ptr) ContainerSet[borders.size() - 1];
    _cell_count = borders.size() - 1;
+
+   ContainerSet *table = _table_ptr.ptr();
+
    for (int i = 0; i < _cell_count; i++)
    {
       {
          profTimerStart(tfp, "FingerprintTable element pushing");
-        table[i].setParams(_fp_size, mt_size, borders[i],  borders[i + 1] - 1);
+         new(table + i) ContainerSet();
+         table[i].setParams(_fp_size, mt_size, borders[i],  borders[i + 1] - 1);
       }
    }
 }
@@ -30,8 +29,7 @@ void FingerprintTable::add (const byte *fingerprint, int id)
 {
    int fp_bit_count = bitGetOnesCount(fingerprint, _fp_size);
 
-   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
-   ContainerSet *table = (ContainerSet *)bingo_allocator->get(_table_ptr);
+   ContainerSet *table = _table_ptr.ptr();
 
    for (int i = 0; i < _cell_count; i++)
    {
@@ -46,10 +44,9 @@ void FingerprintTable::findSimilar (const byte *query, SimCoef &sim_coef, double
 {
    sim_fp_indices.clear();
    
-   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
-   ContainerSet *table = (ContainerSet *)bingo_allocator->get(_table_ptr);
-
    int query_bit_number = bitGetOnesCount(query, _fp_size);
+
+   ContainerSet *table = _table_ptr.ptr();
 
    QS_DEF(Array<SimResult>, cell_sim_indices);
    for (int i = 0; i < _cell_count; i++)
@@ -66,39 +63,35 @@ void FingerprintTable::findSimilar (const byte *query, SimCoef &sim_coef, double
 
 void FingerprintTable::optimize ()
 {
-   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
-   ContainerSet *table = (ContainerSet *)bingo_allocator->get(_table_ptr);
+   ContainerSet *table = _table_ptr.ptr();
 
    for (int i = 0; i < _cell_count; i++)
-   {
       table[i].optimize();
-   }
 }
 
-int FingerprintTable::getCellCount ()
+int FingerprintTable::getCellCount () const
 {
    return _cell_count;
 }
 
-int FingerprintTable::getCellSize (int cell_idx)
+int FingerprintTable::getCellSize (int cell_idx) const
 {
    if (cell_idx >= _cell_count)
       throw Exception("FingerprintTable: Incorrect cell index");
 
-   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
-   ContainerSet *table = (ContainerSet *)bingo_allocator->get(_table_ptr);
+   const ContainerSet *table = _table_ptr.ptr();
 
    return table[cell_idx].getContCount();
 }
 
 void FingerprintTable::getCellsInterval (const byte *query, SimCoef &sim_coef, double min_coef, int &min_cell, int &max_cell)
 {
-   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
-   ContainerSet *table = (ContainerSet *)bingo_allocator->get(_table_ptr);
-
    min_cell = -1;
    max_cell = -1;
    int query_bit_count = bitGetOnesCount(query, _fp_size);
+
+   ContainerSet *table = _table_ptr.ptr();
+
    for (int i = 0; i < _cell_count; i++)
    {
       if ((min_cell == -1) && 
@@ -114,11 +107,9 @@ void FingerprintTable::getCellsInterval (const byte *query, SimCoef &sim_coef, d
       
 int FingerprintTable::firstFitCell (int query_bit_count, int min_cell, int max_cell) const
 {
-   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
-   ContainerSet *table = (ContainerSet *)bingo_allocator->get(_table_ptr);
-
-
    int first_cell = -1;
+
+   const ContainerSet *table = _table_ptr.ptr();
 
    for (int i = min_cell; i <= max_cell; i++)
    {
@@ -140,9 +131,6 @@ int FingerprintTable::nextFitCell (int query_bit_count, int first_fit_cell, int 
    else
       next_idx = first_fit_cell + (first_fit_cell - idx) + 1;
 
-   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
-   ContainerSet *table = (ContainerSet *)bingo_allocator->get(_table_ptr);
-
    if (next_idx < min_cell || next_idx > max_cell)
    {
       if (idx < min_cell || idx > max_cell)
@@ -160,8 +148,7 @@ int FingerprintTable::getSimilar (const byte *query, SimCoef &sim_coef, double m
    if (cell_idx >= _cell_count)
       throw Exception("FingerprintTable: Incorrect cell index");
 
-   BingoAllocator * bingo_allocator = BingoAllocator::getInstance();
-   ContainerSet *table = (ContainerSet *)bingo_allocator->get(_table_ptr);
+   ContainerSet *table = _table_ptr.ptr();
 
    int query_bit_number = bitGetOnesCount(query, _fp_size);
 

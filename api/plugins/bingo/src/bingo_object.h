@@ -105,6 +105,8 @@ namespace bingo
 
       virtual bool buildCfString (Array<char> &cf)/* const */ = 0;
 
+      virtual bool buildHash (dword &hash)/* const */ = 0;
+
       virtual ~IndexObject () {};
    };
 
@@ -119,6 +121,8 @@ namespace bingo
       virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/;
 
       virtual bool buildCfString (Array<char> &cf) /*const*/;
+
+      virtual bool buildHash (dword &hash)/* const */;
    };
 
    class IndexReaction : public IndexObject
@@ -132,6 +136,8 @@ namespace bingo
       virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/;
 
       virtual bool buildCfString (Array<char> &cf) /*const*/;
+
+      virtual bool buildHash (dword &hash)/* const */;
    };
 };
 

@@ -9,6 +9,7 @@
 #include "time.h"
 #include "new"
 #include "bingo_sim_coef.h"
+#include "bingo_container_set.h"
 #include "bingo_ptr.h"
 
 #include <vector>
@@ -27,9 +28,9 @@ namespace bingo
 
       void optimize ();
 
-      int getCellCount ();
+      int getCellCount () const;
 
-      int getCellSize (int cell_idx);
+      int getCellSize (int cell_idx) const;
       
       void getCellsInterval (const byte *query, SimCoef &sim_coef, double min_coef, int &min_cell, int &max_cell);
 
@@ -38,12 +39,12 @@ namespace bingo
       int nextFitCell (int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx) const;
 
       int getSimilar (const byte *query, SimCoef &sim_coef, double min_coef, 
-                        Array<SimResult> &sim_fp_indices, int cell_idx, int cont_idx);
+                      Array<SimResult> &sim_fp_indices, int cell_idx, int cont_idx);
 
       ~FingerprintTable();
    
    private:
-      BingoPtr _table_ptr;
+      BingoPtr<ContainerSet> _table_ptr;
       int _cell_count;
       int _fp_size;
    };

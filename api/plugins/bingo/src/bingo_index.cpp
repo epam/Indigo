@@ -23,6 +23,12 @@ Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query
       matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
       return matcher.release();
    }
+   else if (strcmp(type, "exact") == 0)
+   {
+      AutoPtr<MolExactMatcher> matcher(new MolExactMatcher(*this));
+      matcher->setQueryData(dynamic_cast<ExactQueryData *>(query_data));
+      return matcher.release();
+   }
    else
       throw Exception("createMatcher: undefined type");
 
@@ -45,6 +51,12 @@ Matcher* ReactionIndex::createMatcher (const char *type, MatcherQueryData *query
    {
       AutoPtr<ReactionSimMatcher> matcher(new ReactionSimMatcher(*this));
       matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
+      return matcher.release();
+   }
+   else if (strcmp(type, "exact") == 0)
+   {
+      AutoPtr<RxnExactMatcher> matcher(new RxnExactMatcher(*this));
+      matcher->setQueryData(dynamic_cast<ExactQueryData *>(query_data));
       return matcher.release();
    }
    else

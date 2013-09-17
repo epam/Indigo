@@ -260,6 +260,43 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
    INDIGO_END(-1);
 }
 
+CEXPORT int bingoSearchExact (int db, int query_obj, const char *options)
+{
+   INDIGO_BEGIN
+   {
+      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
+         throw BingoException("Incorrect database object");
+
+      IndigoObject &obj = self.getObject(query_obj);
+      
+      if (IndigoMolecule::is(obj))
+      {
+         obj.getBaseMolecule().aromatize(self.arom_options);
+
+         AutoPtr<MoleculeExactQueryData> query_data(new MoleculeExactQueryData(obj.getMolecule()));
+
+         MoleculeIndex &bingo_index = dynamic_cast<MoleculeIndex &>(_bingo_instances.ref(db));
+         MolExactMatcher *matcher = dynamic_cast<MolExactMatcher *>(bingo_index.createMatcher("exact", query_data.release()));
+         matcher->setParameters(options);
+         return _searches.add(matcher);
+      }
+      else if (IndigoReaction::is(obj))
+      {
+         obj.getBaseReaction().aromatize(self.arom_options);
+
+         AutoPtr<ReactionExactQueryData> query_data(new ReactionExactQueryData(obj.getReaction()));
+
+         ReactionIndex &bingo_index = dynamic_cast<ReactionIndex &>(_bingo_instances.ref(db));
+         RxnExactMatcher *matcher = dynamic_cast<RxnExactMatcher *>(bingo_index.createMatcher("exact", query_data.release()));
+         matcher->setParameters(options);
+         return _searches.add(matcher);
+      }
+      else
+         throw BingoException("bingoSearchExact: only non-query molecules and reactions can be set as query object");
+   }
+   INDIGO_END(-1);
+}
+
 CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const char *options)
 {
    INDIGO_BEGIN

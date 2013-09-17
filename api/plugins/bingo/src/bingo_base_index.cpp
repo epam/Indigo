@@ -1,6 +1,7 @@
 #include "bingo_base_index.h"
 #include "bingo_storage.h"
 #include "bingo_mmf.h"
+#include "bingo_ptr.h"
 
 #include <sstream>
 #include <string>
@@ -79,19 +80,20 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    _sub_fp_storage.create(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
 
-   MMFStorage sim_mmf;
-
-   
+  
    size_t sim_mmf_size_mb = _properties.getULongNoThrow("sim_mmf_size");
    size_t sim_mmf_size = (sim_mmf_size_mb != ULONG_MAX ? sim_mmf_size_mb * 1048576 : _sim_mmf_size);
   
    unsigned long prop_mt_size =  _properties.getULongNoThrow("mt_size");
    int mt_size = (prop_mt_size != ULONG_MAX ? prop_mt_size : _sim_mt_size);
 
-   sim_mmf.open(_sim_mmf_path.c_str(), sim_mmf_size);
-
-   _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), sim_mmf.ptr(), sim_mmf_size, mt_size);
+   _mmf_storage.create(_sim_mmf_path.c_str(), sim_mmf_size);
    
+   _header.allocate();
+      
+   _header->sim_offset = _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), mt_size);
+   _header->exact_offset = _exact_storage.create();
+
    _cf_storage->create(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }
 
@@ -145,15 +147,16 @@ void BaseIndex::load (const char *location, const char *options)
 
    _sub_fp_storage.load(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
    
-   MMFStorage sim_mmf;
-
    size_t sim_mmf_size_mb = _properties.getULongNoThrow("sim_mmf_size");
    size_t sim_mmf_size = (sim_mmf_size_mb != ULONG_MAX ? sim_mmf_size_mb * 1048576 : _sim_mmf_size);
-  
-   sim_mmf.open(_sim_mmf_path.c_str(), sim_mmf_size);
 
-   _sim_fp_storage.load(_fp_params.fingerprintSizeSim(), sim_mmf.ptr(), sim_mmf_size);
+   _mmf_storage.load(_sim_mmf_path.c_str());
    
+   _header = BingoPtr<_Header>(sizeof(BingoAllocator));
+
+   _sim_fp_storage.load(_fp_params.fingerprintSizeSim(), _header.ptr()->sim_offset);
+   _exact_storage.load(_header.ptr()->exact_offset);
+
    _cf_storage->load(_cf_data_path.c_str(), _cf_offset_path.c_str());
 }
 
@@ -229,6 +232,11 @@ SimStorage & BaseIndex::getSimStorage ()
    return _sim_fp_storage;
 }
 
+ExactStorage & BaseIndex::getExactStorage ()
+{
+   return _exact_storage;
+}
+
 const Array<int> & BaseIndex::getIdMapping () const
 {
    return _id_mapping;
@@ -271,7 +279,7 @@ const char * BaseIndex::determineType (const char *location)
 
 BaseIndex::~BaseIndex()
 {
-
+   _mmf_storage.close();
 }
 
 void BaseIndex::_parseOptions (const char *options)
@@ -328,6 +336,9 @@ bool BaseIndex::_prepareIndexData (IndexObject &obj)
          return false;
    }
 
+   if (!obj.buildHash(_object_index_data.hash))
+      return false;
+
    return true;
 }
 
@@ -336,6 +347,7 @@ void BaseIndex::_insertIndexData ()
    _sub_fp_storage.add(_object_index_data.sub_fp.ptr());
    _sim_fp_storage.add(_object_index_data.sim_fp.ptr(), _object_count);
    _cf_storage->add((byte *)_object_index_data.cf_str.ptr(), _object_index_data.cf_str.size(), _object_count);
+   _exact_storage.add(_object_index_data.hash, _object_count);
 }
 
 void BaseIndex::_mappingLoad (const char * mapping_path)

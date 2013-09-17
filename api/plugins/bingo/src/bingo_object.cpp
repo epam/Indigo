@@ -1,4 +1,5 @@
 #include "bingo_object.h"
+#include "bingo_exact_storage.h"
 
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
@@ -122,6 +123,13 @@ bool IndexMolecule::buildCfString (Array<char> &cf)// const
    return true;
 }
 
+bool IndexMolecule::buildHash (dword &hash)
+{
+   hash = ExactStorage::calculateMolHash(_mol);
+
+   return true;
+}
+
 IndexReaction::IndexReaction (/* const */ Reaction &rxn)
 {
    _rxn.clone(rxn, 0, 0, 0);
@@ -150,6 +158,14 @@ bool IndexReaction::buildCfString (Array<char> &cf)// const
    CrfSaver crf_saver(arr_out);
 
    crf_saver.saveReaction(_rxn);
+
+   return true;
+}
+
+
+bool IndexReaction::buildHash (dword &hash)
+{
+   hash = ExactStorage::calculateRxnHash(_rxn);
 
    return true;
 }
