@@ -34,6 +34,10 @@ parser.add_option('--cairo-gl', dest="cairogl",
     default=False, action="store_true", help='Build Cairo with OpenGL support')
 parser.add_option('--cairo-vg', dest="cairovg", 
     default=False, action="store_true", help='Build Cairo with CairoVG support')
+parser.add_option('--find-cairo', dest="findcairo", 
+    default=False, action="store_true", help='Find and use system Cairo')
+parser.add_option('--find-pixman', dest="findpixman", 
+    default=False, action="store_true", help='Find and use system Pixman')
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
@@ -58,6 +62,12 @@ if args.cairogl:
 
 if args.cairovg:
     args.params += ' -DWITH_CAIRO_VG=TRUE'
+
+if args.findcairo:
+    args.params += ' -DUSE_SYSTEM_CAIRO=TRUE'
+
+if args.findcairo:
+    args.params += ' -DUSE_SYSTEM_PIXMAN=TRUE'
 
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
