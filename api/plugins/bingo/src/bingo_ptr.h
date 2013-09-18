@@ -115,7 +115,7 @@ namespace bingo
          {
             int blocks_count = (_size + _block_size - 1) / _block_size;
             int new_blocks_count = (new_size + _block_size - 1) / _block_size;
-
+            
             if (new_blocks_count > _max_block_count)
                throw Exception("BingoArray: block count limit is exceeded");
             
@@ -134,7 +134,7 @@ namespace bingo
          if (index < 0 || index >= _size)
             throw Exception("BingoArray: incorrect idx");
 
-         return *(_blocks[index / _block_size].ptr() + index);
+         return *(_blocks[index / _block_size].ptr() + index % _block_size);
       }
 
       T & operator [] (int index)
