@@ -99,6 +99,7 @@ private:
    void _findCenteredCase();
    void _initBondData();
    void _initBondEndData();
+   void _initBoldStereoBonds();
    void _extendRenderItems();
    BondEnd& _getBondEnd(int aid, int nei);
    int _getBondEndIdx (int aid, int nei);
@@ -126,6 +127,8 @@ private:
    float _doubleBondShiftValue (const BondEnd& be, bool right, bool centered);
    void _prepareDoubleBondCoords (Vec2f* coord, BondDescr& bd, const BondEnd& be1, const BondEnd& be2, bool allowCentered);
    void _drawStereoCareBox (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
+   void _adjustLeftAngle (Vec2f& l, const BondEnd& be1, const BondEnd& be2, const double w, const double lw, const double len);
+   void _adjustRightAngle (Vec2f& r, const BondEnd& be1, const BondEnd& be2, const double w, const double lw, const double len);
    void _bondSingle (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
    void _bondDouble (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
    void _bondSingleOrAromatic (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);

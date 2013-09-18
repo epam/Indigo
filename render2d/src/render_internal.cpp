@@ -23,6 +23,8 @@
 
 using namespace indigo;
 
+#define BOND_STEREO_BOLD 10001
+
 static bool ElementHygrodenOnLeft[] =
 {
    false,  // filler
@@ -264,6 +266,8 @@ void MoleculeRenderInternal::render ()
    _initBondEndData();
 
    _findNeighbors();
+
+   _initBoldStereoBonds();
 
    _findRings();
 
@@ -2078,6 +2082,27 @@ void MoleculeRenderInternal::_initBondData ()
    }
 }
 
+void MoleculeRenderInternal::_initBoldStereoBonds ()
+{
+   if (!_opt.boldBondDetection)
+      return;
+   for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i)) {
+      BondDescr &d = _bd(i);
+      const Vertex& v1 = _mol->getVertex(d.beg);
+      const Vertex& v2 = _mol->getVertex(d.end);
+      bool hasNeighboringUpBond1 = false;
+      for (int j = v1.neiBegin(); j < v1.neiEnd(); j = v1.neiNext(j))
+         if (v1.neiEdge(j) != i && _bd(v1.neiEdge(j)).stereodir == BOND_UP && _bd(v1.neiEdge(j)).end == d.beg)
+            hasNeighboringUpBond1 = true;
+      bool hasNeighboringUpBond2 = false;
+      for (int j = v2.neiBegin(); j < v2.neiEnd(); j = v2.neiNext(j))
+         if (v2.neiEdge(j) != i && _bd(v2.neiEdge(j)).stereodir == BOND_UP && _bd(v2.neiEdge(j)).end == d.end)
+            hasNeighboringUpBond2 = true;
+      if (hasNeighboringUpBond1 && hasNeighboringUpBond2)
+         d.stereodir = BOND_STEREO_BOLD;
+   }
+}
+
 void MoleculeRenderInternal::_initBondEndData ()
 {
    for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
@@ -3445,6 +3470,48 @@ void MoleculeRenderInternal::_drawReactingCenter (BondDescr& bd, int rc)
    }
 }
 
+void MoleculeRenderInternal::_adjustRightAngle (Vec2f& r, const BondEnd& be1, const BondEnd& be2, const double w, const double lw, const double len) {
+   bool adjustRight = be2.lsin > 0 && be2.lcos < 0.9f && be2.lcos > -0.9f && fabs(be2.lcos) > 0.001f;
+   if (adjustRight && !_bd(_be(be2.lnei).bid).isShort)
+   {
+      float tgb = (w - lw) / len;
+      float csb = sqrt(1 / (1 + tgb * tgb));
+      float snb = tgb * csb;
+      float tga, ttl=0.0, ttr=0.0;
+      tga = be2.lsin / be2.lcos;
+      const BondDescr& nbd = _bd(_be(be2.lnei).bid);
+      if (nbd.type == BOND_DOUBLE && nbd.centered)
+         ttl = (len * be2.lsin - _settings.bondSpace) / (snb * be2.lcos + csb * be2.lsin);
+      else
+         ttl = len * csb * (1 + tgb * (tgb * tga - 1) / (tgb + tga));
+      r.copy(be1.dir);
+      r.scale(ttl);
+      r.rotateL(-snb, csb);
+      r.add(be1.p);
+   }
+}
+
+void MoleculeRenderInternal::_adjustLeftAngle (Vec2f& l, const BondEnd& be1, const BondEnd& be2, const double w, const double lw, const double len) {
+   bool adjustLeft = be2.rsin > 0 && be2.rcos < 0.9f && be2.rcos > -0.9f && fabs(be2.rcos) > 0.001f;
+   if (adjustLeft && !_bd(_be(be2.rnei).bid).isShort)
+   {
+      float tgb = (w - lw) / len;
+      float csb = sqrt(1 / (1 + tgb * tgb));
+      float snb = tgb * csb;
+      float tga, ttl=0.0, ttr=0.0;
+      tga = be2.rsin / be2.rcos;
+      const BondDescr& nbd = _bd(_be(be2.rnei).bid);
+      if (nbd.type == BOND_DOUBLE && nbd.centered)
+         ttr = (len * be2.rsin - _settings.bondSpace) / (snb * be2.rcos + csb * be2.rsin);
+      else
+         ttr = len * csb * (1 + tgb * (tgb * tga - 1) / (tgb + tga));
+      l.copy(be1.dir);
+      l.scale(ttr);
+      l.rotateL(snb, csb);
+      l.add(be1.p);
+   }
+}
+
 void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
 {
    Vec2f l(be2.p), r(be2.p);
@@ -3463,55 +3530,28 @@ void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, con
    l0.addScaled(bd.norm, -lw/2);
    r0.addScaled(bd.norm, lw/2);
 
-   if (bd.stereodir == 0)
-   {
+   if (bd.stereodir == 0) {
       _cw.drawLine(be1.p, be2.p);
       bd.extP = bd.extN = lw / 2;
-   }
-   else if (bd.stereodir == BOND_UP)
-   {
-      if (_ad(be2.aid).showLabel == false && !bd.isShort)
-      {
-         float tgb = (w - lw) / len;
-         float csb = sqrt(1 / (1 + tgb * tgb));
-         float snb = tgb * csb;
-         float tga, ttl=0.0, ttr=0.0;
-         bool adjustRight = be2.lsin > 0 && be2.lcos < 0.9f && be2.lcos > -0.9f && fabs(be2.lcos) > 0.001f,
-            adjustLeft = be2.rsin > 0 && be2.rcos < 0.9f && be2.rcos > -0.9f && fabs(be2.rcos) > 0.001f;
-
-         if (adjustRight && !_bd(_be(be2.lnei).bid).isShort)
-         {
-            tga = be2.lsin / be2.lcos;
-            const BondDescr& nbd = _bd(_be(be2.lnei).bid);
-            if (nbd.type == BOND_DOUBLE && nbd.centered)
-               ttl = (len * be2.lsin - _settings.bondSpace) / (snb * be2.lcos + csb * be2.lsin);
-            else
-               ttl = len * csb * (1 + tgb * (tgb * tga - 1) / (tgb + tga));
-            r.copy(be1.dir);
-            r.scale(ttl);
-            r.rotateL(-snb, csb);
-            r.add(be1.p);
-         }
-
-         if (adjustLeft && !_bd(_be(be2.rnei).bid).isShort)
-         {
-            tga = be2.rsin / be2.rcos;
-            const BondDescr& nbd = _bd(_be(be2.rnei).bid);
-            if (nbd.type == BOND_DOUBLE && nbd.centered)
-               ttr = (len * be2.rsin - _settings.bondSpace) / (snb * be2.rcos + csb * be2.rsin);
-            else
-               ttr = len * csb * (1 + tgb * (tgb * tga - 1) / (tgb + tga));
-            l.copy(be1.dir);
-            l.scale(ttr);
-            l.rotateL(snb, csb);
-            l.add(be1.p);
-         }
+   } else if (bd.stereodir == BOND_UP) {
+      if (_ad(be2.aid).showLabel == false && !bd.isShort) {
+         _adjustLeftAngle(l, be1, be2, w, lw, len);
+         _adjustRightAngle(r, be1, be2, w, lw, len);
          _cw.fillPentagon(r0, r, be2.p, l, l0);
-      }
-      else
-      {
+      } else {
          _cw.fillQuad(r0, r, l, l0);
       }
+   } else if (bd.stereodir == BOND_STEREO_BOLD) {
+      r0.copy(be1.p);
+      l0.copy(be1.p);
+      l0.addScaled(bd.norm, -w);
+      r0.addScaled(bd.norm, w);
+
+      _adjustLeftAngle(l, be1, be2, w, lw, len);
+      _adjustRightAngle(r, be1, be2, w, lw, len);
+      _adjustLeftAngle(r0, be2, be1, w, lw, len);
+      _adjustRightAngle(l0, be2, be1, w, lw, len);
+      _cw.fillQuad(r0, r, l, l0);
    } else if (bd.stereodir == BOND_DOWN) {
       int stripeCnt = __max((int)((len) / lw / 2), 4);
       _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);

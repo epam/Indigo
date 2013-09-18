@@ -385,6 +385,7 @@ public:
    Vec3f dataGroupColor;
    LABEL_MODE labelMode;
    bool highlightedLabelsVisible;
+   bool boldBondDetection;
    bool implHVisible;
    DINGO_MODE mode;
    Output* output;
