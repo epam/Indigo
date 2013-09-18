@@ -59,7 +59,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    @SuppressWarnings("FinalizeDeclaration")
    protected void finalize () throws Throwable
    {
-      if (!Indigo.libraryUnloaded()) {
+      if (!dispatcher.sessionReleased()) {
           dispose();
       }
       super.finalize();

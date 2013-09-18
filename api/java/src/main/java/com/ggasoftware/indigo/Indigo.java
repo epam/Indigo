@@ -18,15 +18,10 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
 import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 public class Indigo {
     public static final int ABS = 1;
@@ -57,7 +52,7 @@ public class Indigo {
     public static final int OS_MACOS = 2;
     public static final int OS_LINUX = 3;
     public static final int OS_SOLARIS = 4;
-    private static boolean _library_unloaded = false;
+    private boolean _session_released = false;
     private static int _os = 0;
     private static String _dllpath = "";
     private static IndigoLib _lib = null;
@@ -253,10 +248,19 @@ public class Indigo {
             _lib = (IndigoLib) Native.loadLibrary(getPathToBinary(path, "libindigo.dylib"), IndigoLib.class);
         else // _os == OS_WINDOWS
         {
-            if ((new File(getPathToBinary(path, "msvcr100.dll"))).exists())
-                System.load(getPathToBinary(path, "msvcr100.dll"));
+            if ((new File(getPathToBinary(path, "msvcr100.dll"))).exists()) {
+                try {
+                    System.load(getPathToBinary(path, "msvcr100.dll"));
+                } catch (UnsatisfiedLinkError e) {
+                    // File could have been already loaded
+                }
+            }
             if ((new File(getPathToBinary(path, "msvcp100.dll"))).exists())
-                System.load(getPathToBinary(path, "msvcp100.dll"));
+                try {
+                    System.load(getPathToBinary(path, "msvcp100.dll"));
+                } catch (UnsatisfiedLinkError e) {
+                    // File could have been already loaded
+                }
             _lib = (IndigoLib) Native.loadLibrary(getPathToBinary(path, "indigo.dll"), IndigoLib.class);
         }
     }
@@ -265,8 +269,8 @@ public class Indigo {
         return _dllpath;
     }
 
-    public static boolean libraryUnloaded() {
-        return _library_unloaded;
+    public boolean sessionReleased() {
+        return _session_released;
     }
 
     public static IndigoLib getLibrary() {
@@ -776,10 +780,9 @@ public class Indigo {
 
     @Override
     protected void finalize() throws Throwable {
-        if (!libraryUnloaded()) {
+        if (!sessionReleased()) {
             _lib.indigoReleaseSessionId(_sid);
-            _lib = null;
-            _library_unloaded = true;
+            _session_released = true;
         }
         super.finalize();
     }
