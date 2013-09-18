@@ -137,7 +137,7 @@ CEXPORT qword indigoAllocSessionId ()
    Indigo &indigo = indigo_self.getLocalCopy(id);
    indigo.init();
 
-   return TL_ALLOC_SESSION_ID();
+   return id;
 }
 
 CEXPORT void indigoSetSessionId (qword id)
