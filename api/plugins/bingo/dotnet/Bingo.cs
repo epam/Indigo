@@ -247,6 +247,32 @@ namespace com.ggasoftware.indigo
         }
 
         /// <summary>
+        /// Perform exact search operation
+        /// </summary>
+        /// <param name="query">indigo object (molecule or reaction)</param>
+        /// <returns>Bingo search object instanse</returns>
+        public BingoObject searchExact(IndigoObject query)
+        {
+           return searchExact(query, null);
+        }
+
+        /// <summary>
+        /// Perform exact search operation
+        /// </summary>
+        /// <param name="query">indigo object (molecule or reaction)</param>
+        /// <param name="options">exact search options</param>
+        /// <returns>Bingo search object instanse</returns>
+        public BingoObject searchExact(IndigoObject query, string options)
+        {
+           if (options == null)
+           {
+              options = "";
+           }
+           return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchExact(_id, query.self, options)), _indigo, _lib);
+        }
+
+
+        /// <summary>
         /// Post-process index optimization
         /// </summary>
         public void optimize ()
