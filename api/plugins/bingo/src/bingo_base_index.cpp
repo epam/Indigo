@@ -162,6 +162,9 @@ void BaseIndex::load (const char *location, const char *options)
 
 int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
 {
+   if (obj_id != -1 && _back_id_mapping.size() > obj_id && _back_id_mapping[obj_id] != -1)
+      throw Exception("insert fail: this id was already used");
+
    {
       profTimerStart(t_in, "prepare_obj_data");      
       _prepareIndexData(obj);

@@ -27,8 +27,6 @@ namespace bingo
    
       T * ptr()
       { 
-         profTimerStart(t, "ptr()");
-
          BingoAllocator *_allocator = BingoAllocator::_getInstance();
 
          return (T *)(_allocator->_get(_offset));

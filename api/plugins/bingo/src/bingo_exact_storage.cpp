@@ -36,13 +36,14 @@ void ExactStorage::add( dword hash, int id )
    BingoArray<dword> &_molecule_hashes = _hashes_ptr.ref();
 
    if (_molecule_hashes.size() <= id)
-      _molecule_hashes.resize((int)(id + 1000));
+      _molecule_hashes.resize(id + 1);
 
    _molecule_hashes[id] = hash;
 }
 
 void ExactStorage::findCandidates( dword query_hash, Array<int> &candidates )
 {
+   profTimerStart(tsingle, "exact_filter");
    BingoArray<dword> &_molecule_hashes = _hashes_ptr.ref();
 
    for (int i = 0; i < _molecule_hashes.size(); i++)

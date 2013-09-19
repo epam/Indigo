@@ -26,11 +26,14 @@ namespace bingo
 
       void close ();
 
-   private:   
+   private:
+#ifdef _WIN32
       void *_h_map_file;
       void *_h_file;
-      void *_ptr;
+#elif (defined __GNUC__ || defined __APPLE__)
       int _fd;
+#endif      
+      void *_ptr;
       std::string _filename;
       size_t _len;
    };

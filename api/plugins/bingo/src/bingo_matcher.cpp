@@ -633,12 +633,14 @@ bool BaseExactMatcher::next ()
 
    while (_current_cand_id < _candidates.size())
    {
-      profTimerStart(tsingle, "sub_single");
+      profTimerStart(tsingle, "exact_single");
 
       _current_id = _candidates[_current_cand_id];
       _current_cand_id++;
 
       bool status = _tryCurrent();
+      if (status)
+         profIncCounter("exact_found", 1);
 
       _match_probability_esimate.addValue((float)status);
       _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));

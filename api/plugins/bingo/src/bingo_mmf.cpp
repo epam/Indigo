@@ -19,8 +19,14 @@
 using namespace bingo;
 using namespace indigo;
 
-MMFile::MMFile() : _h_file(0), _h_map_file(0), _ptr(0), _fd(-1)
+MMFile::MMFile() : _ptr(0)
 {
+#ifdef _WIN32
+      _h_file = 0;
+      _h_map_file = 0;
+#elif (defined __GNUC__ || defined __APPLE__)
+      _fd = -1;
+#endif     
 }
 
 MMFile::~MMFile ()
