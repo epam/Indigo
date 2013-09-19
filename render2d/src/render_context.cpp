@@ -492,6 +492,20 @@ void RenderContext::fillQuad (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2,
    cairoCheckStatus();
 }
 
+void RenderContext::fillHex (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4, const Vec2f& v5)
+{
+   moveTo(v0);
+   lineTo(v1);
+   lineTo(v2);
+   lineTo(v3);
+   lineTo(v4);
+   lineTo(v5);
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
 void RenderContext::fillQuadStripes (const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, int cnt)
 {
    Vec2f r(v0r), dr;

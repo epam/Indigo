@@ -159,6 +159,7 @@ void RenderOptions::clear()
    titleFontFactor = 20;
    labelMode = LABEL_MODE_TERMINAL_HETERO;
    highlightedLabelsVisible = false;
+   boldBondDetection = false;
    implHVisible = true;
    commentColor.set(0,0,0);
    titleColor.set(0,0,0);
@@ -3470,61 +3471,69 @@ void MoleculeRenderInternal::_drawReactingCenter (BondDescr& bd, int rc)
    }
 }
 
-void MoleculeRenderInternal::_adjustRightAngle (Vec2f& r, const BondEnd& be1, const BondEnd& be2, const double w, const double lw, const double len) {
-   bool adjustRight = be2.lsin > 0 && be2.lcos < 0.9f && be2.lcos > -0.9f && fabs(be2.lcos) > 0.001f;
-   if (adjustRight && !_bd(_be(be2.lnei).bid).isShort)
-   {
-      float tgb = (w - lw) / len;
-      float csb = sqrt(1 / (1 + tgb * tgb));
-      float snb = tgb * csb;
-      float tga, ttl=0.0, ttr=0.0;
-      tga = be2.lsin / be2.lcos;
-      const BondDescr& nbd = _bd(_be(be2.lnei).bid);
-      if (nbd.type == BOND_DOUBLE && nbd.centered)
-         ttl = (len * be2.lsin - _settings.bondSpace) / (snb * be2.lcos + csb * be2.lsin);
-      else
-         ttl = len * csb * (1 + tgb * (tgb * tga - 1) / (tgb + tga));
-      r.copy(be1.dir);
-      r.scale(ttl);
-      r.rotateL(-snb, csb);
-      r.add(be1.p);
+double MoleculeRenderInternal::_getAdjustmentFactor (const int aid, const int anei, const double acos, const double asin,
+                                                     const double tgb, const double csb, const double snb,
+                                                     const double len, const double w, double& csg, double& sng) {
+   csg = csb;
+   sng = snb;
+   bool adjustLeft = acos < 0.99 && acos > -0.99;
+   if (!adjustLeft || _bd(_be(anei).bid).isShort)
+      return -1;
+   const BondDescr& nbd = _bd(_be(anei).bid);
+   if (nbd.type == BOND_DOUBLE && nbd.centered) {
+      if (asin <= 0)
+         return -1;
+      return (len * asin - _settings.bondSpace) / (snb * acos + csb * asin);
    }
+   if ((_bd(_be(anei).bid).stereodir == BOND_UP && _bd(_be(anei).bid).end == aid) || _bd(_be(anei).bid).stereodir == BOND_STEREO_BOLD) {
+      if (fabs(asin) < 0.01)
+         return -1;
+      double sna = sqrt((1 - acos)/2); // sin(a/2)
+      double csa = (asin > 0 ? 1 : -1) * sqrt((1 + acos)/2); // cos(a/2)
+      double gamma = w / sna;
+      double x = sqrt(len * len + gamma * gamma - 2 * gamma * len * csa);
+      sng = gamma * sna / x;
+      csg = sqrt(1-sng*sng);
+      return x;
+   }
+   if (asin > 0.01)
+      return len/(acos * snb / asin + csb);
+   return -1;
 }
 
-void MoleculeRenderInternal::_adjustLeftAngle (Vec2f& l, const BondEnd& be1, const BondEnd& be2, const double w, const double lw, const double len) {
-   bool adjustLeft = be2.rsin > 0 && be2.rcos < 0.9f && be2.rcos > -0.9f && fabs(be2.rcos) > 0.001f;
-   if (adjustLeft && !_bd(_be(be2.rnei).bid).isShort)
-   {
-      float tgb = (w - lw) / len;
-      float csb = sqrt(1 / (1 + tgb * tgb));
-      float snb = tgb * csb;
-      float tga, ttl=0.0, ttr=0.0;
-      tga = be2.rsin / be2.rcos;
-      const BondDescr& nbd = _bd(_be(be2.rnei).bid);
-      if (nbd.type == BOND_DOUBLE && nbd.centered)
-         ttr = (len * be2.rsin - _settings.bondSpace) / (snb * be2.rcos + csb * be2.rsin);
-      else
-         ttr = len * csb * (1 + tgb * (tgb * tga - 1) / (tgb + tga));
-      l.copy(be1.dir);
-      l.scale(ttr);
-      l.rotateL(snb, csb);
-      l.add(be1.p);
-   }
+void MoleculeRenderInternal::_adjustAngle (Vec2f& l, const BondEnd& be1, const BondEnd& be2, const double w, const double lw, const double len1, bool left) {
+   const Vec2f& p1 = _ad(be1.aid).pos;
+   const Vec2f& p2 = _ad(be2.aid).pos;
+   const double len = Vec2f::dist(p1, p2);
+   double tgb = w / len;
+   double csb = sqrt(1 / (1 + tgb * tgb));
+   double snb = tgb * csb;
+   double sng = 0, csg = 0;
+   double ttr = left ?
+      _getAdjustmentFactor(be2.aid, be2.rnei, be2.rcos, be2.rsin, tgb, csb, snb, len, w-lw, csg, sng):
+      _getAdjustmentFactor(be2.aid, be2.lnei, be2.lcos, be2.lsin, tgb, csb, snb, len, w-lw, csg, sng);
+   if (ttr < 0)
+      return;
+   l.diff(p2, p1);
+   l.normalize();
+   l.scale(ttr);
+   l.rotateL(left ? sng : -sng, csg);
+   l.add(p1);
 }
 
 void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
 {
    Vec2f l(be2.p), r(be2.p);
-   float w = _settings.bondSpace + _settings.bondLineWidth;
+   double w = _settings.bondSpace + _settings.bondLineWidth;
    l.addScaled(bd.norm, -w);
    r.addScaled(bd.norm, w);
    bd.extP = bd.extN = w;
 
    Vec2f dd;
    dd.diff(be2.p, be1.p);
-   float len = dd.length();
+   double len = dd.length();
 
-   float lw = _cw.currentLineWidth();
+   double lw = _cw.currentLineWidth();
 
    Vec2f r0(be1.p), l0(be1.p);
    l0.addScaled(bd.norm, -lw/2);
@@ -3535,8 +3544,8 @@ void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, con
       bd.extP = bd.extN = lw / 2;
    } else if (bd.stereodir == BOND_UP) {
       if (_ad(be2.aid).showLabel == false && !bd.isShort) {
-         _adjustLeftAngle(l, be1, be2, w, lw, len);
-         _adjustRightAngle(r, be1, be2, w, lw, len);
+         _adjustAngle(l, be1, be2, w, lw, len, true);
+         _adjustAngle(r, be1, be2, w, lw, len, false);
          _cw.fillPentagon(r0, r, be2.p, l, l0);
       } else {
          _cw.fillQuad(r0, r, l, l0);
@@ -3547,11 +3556,11 @@ void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, con
       l0.addScaled(bd.norm, -w);
       r0.addScaled(bd.norm, w);
 
-      _adjustLeftAngle(l, be1, be2, w, lw, len);
-      _adjustRightAngle(r, be1, be2, w, lw, len);
-      _adjustLeftAngle(r0, be2, be1, w, lw, len);
-      _adjustRightAngle(l0, be2, be1, w, lw, len);
-      _cw.fillQuad(r0, r, l, l0);
+      _adjustAngle(l, be1, be2, w, lw, len, true);
+      _adjustAngle(r, be1, be2, w, lw, len, false);
+      _adjustAngle(r0, be2, be1, w, lw, len, true);
+      _adjustAngle(l0, be2, be1, w, lw, len, false);
+      _cw.fillHex(be1.p, r0, r, be2.p, l, l0);
    } else if (bd.stereodir == BOND_DOWN) {
       int stripeCnt = __max((int)((len) / lw / 2), 4);
       _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
