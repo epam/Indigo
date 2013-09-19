@@ -36,7 +36,6 @@ void FileStorage::readBlock (int block_id, byte *data)
 
 void FileStorage::writeBlock (int block_id, const byte *data)
 {
-
    size_t offset = block_id;
    offset *=  _block_size;
 
@@ -88,7 +87,11 @@ void RamStorage::writeBlock (int block_id, const byte *data)
       _blocks[block_id].reset(new byte[_block_size]);
 
    memcpy(_blocks[block_id].get(), data, _block_size);
-   _file.seekp(block_id * _block_size);
+   
+   size_t offset = block_id;
+   offset *=  _block_size;
+
+   _file.seekp(offset);
    _file.write((char *)data, _block_size);
    _file.flush();
 }
