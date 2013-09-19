@@ -26,7 +26,7 @@ static const char *_molecule_type = "molecule";
 static const char *_ram_storage_type = "ram";
 static const char *_file_storage_type = "file";
 static const char *_sim_mmf_file = "sim_storage";
-static const size_t _sim_mmf_size = 3221225472;
+static const size_t _sim_mmf_size = 536870912; // 500Mb
 static const int _sim_mt_size = 50000;
 
 BaseIndex::BaseIndex (IndexType type)
