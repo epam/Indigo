@@ -56,6 +56,7 @@
 
 #include "cairo-boxes-private.h"
 #include "cairo-composite-rectangles-private.h"
+#include "cairo-default-context-private.h"
 #include "cairo-error-private.h"
 #include "cairo-region-private.h"
 #include "cairo-surface-offset-private.h"
@@ -694,10 +695,13 @@ i965_surface_finish (void *abstract_surface)
 }
 
 static cairo_status_t
-i965_surface_flush (void *abstract_surface)
+i965_surface_flush (void *abstract_surface, unsigned flags)
 {
     i965_surface_t *surface = abstract_surface;
     cairo_status_t status = CAIRO_STATUS_SUCCESS;
+
+    if (flags)
+	return CAIRO_STATUS_SUCCESS;
 
     if (surface->intel.drm.fallback != NULL)
 	return intel_surface_flush (abstract_surface);
@@ -1322,7 +1326,7 @@ i965_surface_stroke (void			*abstract_dst,
 	return status;
     }
 
-    if (path->is_rectilinear) {
+    if (_cairo_path_fixed_stroke_is_rectilinear (path)) {
 	cairo_boxes_t boxes;
 
 	_cairo_boxes_init (&boxes);
@@ -1343,8 +1347,7 @@ i965_surface_stroke (void			*abstract_dst,
 	    goto CLEANUP_BOXES;
     }
 
-    _cairo_polygon_init (&info.polygon);
-    _cairo_polygon_limit (&info.polygon, clip_boxes, num_boxes);
+    _cairo_polygon_init (&info.polygon, clip_boxes, num_boxes);
 
     status = _cairo_path_fixed_stroke_to_polygon (path,
 						  stroke_style,
@@ -1429,9 +1432,9 @@ i965_surface_fill (void			*abstract_dst,
 	return status;
     }
 
-    assert (! path->is_empty_fill);
+    assert (! _cairo_path_fixed_fill_is_empty (path));
 
-    if (_cairo_path_fixed_is_rectilinear_fill (path)) {
+    if (_cairo_path_fixed_fill_is_rectilinear (path)) {
 	cairo_boxes_t boxes;
 
 	_cairo_boxes_init (&boxes);
@@ -1451,8 +1454,7 @@ i965_surface_fill (void			*abstract_dst,
 	    goto CLEANUP_BOXES;
     }
 
-    _cairo_polygon_init (&info.polygon);
-    _cairo_polygon_limit (&info.polygon, clip_boxes, num_boxes);
+    _cairo_polygon_init (&info.polygon, clip_boxes, num_boxes);
 
     status = _cairo_path_fixed_fill_to_polygon (path, tolerance, &info.polygon);
     if (unlikely (status))
@@ -1492,9 +1494,12 @@ CLEANUP_BOXES:
 
 static const cairo_surface_backend_t i965_surface_backend = {
     CAIRO_SURFACE_TYPE_DRM,
+    _cairo_default_context_create,
 
     i965_surface_create_similar,
     i965_surface_finish,
+
+    NULL,
     intel_surface_acquire_source_image,
     intel_surface_release_source_image,
 

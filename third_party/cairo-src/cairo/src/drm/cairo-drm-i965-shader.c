@@ -43,11 +43,6 @@
 
 #include "cairo-drm-intel-brw-eu.h"
 
-#if CAIRO_HAS_XCB_SURFACE && CAIRO_HAS_XCB_DRM_FUNCTIONS
-/* for DRI2/DRM interoperability */
-#include "cairo-xcb-private.h"
-#endif
-
 /* Theory of shaders:
  *
  * 3 types of rectangular inputs:
@@ -161,14 +156,14 @@ i965_shader_acquire_linear (i965_shader_t *shader,
     src->base.filter = i965_filter (CAIRO_FILTER_BILINEAR);
     src->base.extend = i965_extend (linear->base.base.extend);
 
-    dx = _cairo_fixed_to_double (linear->p2.x - linear->p1.x);
-    dy = _cairo_fixed_to_double (linear->p2.y - linear->p1.y);
+    dx = linear->pd2.x - linear->pd1.x;
+    dy = linear->pd2.y - linear->pd1.y;
     sf = 1. / (dx * dx + dy * dy);
     dx *= sf;
     dy *= sf;
 
-    x0 = _cairo_fixed_to_double (linear->p1.x);
-    y0 = _cairo_fixed_to_double (linear->p1.y);
+    x0 = linear->pd1.x;
+    y0 = linear->pd1.y;
     offset = dx*x0 + dy*y0;
 
     if (_cairo_matrix_is_identity (&linear->base.base.matrix)) {
@@ -215,24 +210,26 @@ i965_shader_acquire_radial (i965_shader_t *shader,
     src->base.filter = i965_filter (CAIRO_FILTER_BILINEAR);
     src->base.extend = i965_extend (radial->base.base.extend);
 
-    dx = _cairo_fixed_to_double (radial->c2.x - radial->c1.x);
-    dy = _cairo_fixed_to_double (radial->c2.y - radial->c1.y);
-    dr = _cairo_fixed_to_double (radial->r2 - radial->r1);
+    dx = radial->cd2.center.x - radial->cd1.center.x;
+    dy = radial->cd2.center.y - radial->cd1.center.y;
+    dr = radial->cd2.radius   - radial->cd1.radius;
 
-    r1 = _cairo_fixed_to_double (radial->r1);
+    r1 = radial->cd1.radius;
 
-    if (FALSE && radial->c2.x == radial->c1.x && radial->c2.y == radial->c1.y) {
+    if (FALSE && (radial->cd2.center.x == radial->cd1.center.x &&
+		  radial->cd2.center.y == radial->cd1.center.y))
+    {
 	/* XXX dr == 0, meaningless with anything other than PAD */
-	src->base.constants[0] = _cairo_fixed_to_double (radial->c1.x) / dr;
-	src->base.constants[1] = _cairo_fixed_to_double (radial->c1.y) / dr;
+	src->base.constants[0] = radial->cd1.center.x / dr;
+	src->base.constants[1] = radial->cd1.center.y / dr;
 	src->base.constants[2] = 1. / dr;
 	src->base.constants[3] = -r1 / dr;
 
 	src->base.constants_size = 4;
 	src->base.mode = RADIAL_ONE;
     } else {
-	src->base.constants[0] = -_cairo_fixed_to_double (radial->c1.x);
-	src->base.constants[1] = -_cairo_fixed_to_double (radial->c1.y);
+	src->base.constants[0] = -radial->cd1.center.x;
+	src->base.constants[1] = -radial->cd1.center.y;
 	src->base.constants[2] = r1;
 	src->base.constants[3] = -4 * (dx*dx + dy*dy - dr*dr);
 
@@ -398,25 +395,6 @@ i965_shader_acquire_surface (i965_shader_t *shader,
     assert (src->type.fragment == FS_NONE);
     drm = surface = pattern->surface;
 
-#if CAIRO_HAS_XCB_SURFACE && CAIRO_HAS_XCB_DRM_FUNCTIONS
-    if (surface->type == CAIRO_SURFACE_TYPE_XCB) {
-	cairo_surface_t *xcb = surface;
-
-	if (xcb->backend->type == CAIRO_SURFACE_TYPE_SUBSURFACE) {
-	    xcb = ((cairo_surface_subsurface_t *) surface)->target;
-	} else if (xcb->backend->type == CAIRO_INTERNAL_SURFACE_TYPE_SNAPSHOT) {
-	    xcb = ((cairo_surface_snapshot_t *) surface)->target;
-	}
-
-	/* XXX copy windows (IncludeInferiors) to a pixmap/drm surface
-	 * xcb = _cairo_xcb_surface_to_drm (xcb)
-	 */
-	xcb = ((cairo_xcb_surface_t *) xcb)->drm;
-	if (xcb != NULL)
-	    drm = xcb;
-    }
-#endif
-
     if (surface->type == CAIRO_SURFACE_TYPE_DRM) {
 	if (surface->backend->type == CAIRO_SURFACE_TYPE_SUBSURFACE) {
 	    drm = ((cairo_surface_subsurface_t *) surface)->target;
@@ -437,7 +415,7 @@ i965_shader_acquire_surface (i965_shader_t *shader,
 		    int x;
 
 		    if (s->intel.drm.fallback != NULL) {
-			status = intel_surface_flush (s);
+			status = intel_surface_flush (s, 0);
 			if (unlikely (status))
 			    return status;
 		    }
@@ -511,7 +489,7 @@ i965_shader_acquire_surface (i965_shader_t *shader,
 	    if (s->intel.drm.base.device == shader->target->intel.drm.base.device) {
 		if (s != shader->target) {
 		    if (s->intel.drm.fallback != NULL) {
-			status = intel_surface_flush (s);
+			status = intel_surface_flush (s, 0);
 			if (unlikely (status))
 			    return status;
 		    }
@@ -961,7 +939,7 @@ i965_shader_setup_constants (i965_shader_t *shader)
     assert (shader->constants_size < ARRAY_LENGTH (shader->constants));
 }
 
-/**
+/*
  * Highest-valued BLENDFACTOR used in i965_blend_op.
  *
  * This leaves out BRW_BLENDFACTOR_INV_DST_COLOR,
@@ -1652,7 +1630,7 @@ i965_sf_state_equal (const void *A, const void *B)
     return a->hash == b->hash;
 }
 
-/**
+/*
  * Sets up the SF state pointing at an SF kernel.
  *
  * The SF kernel does coord interp: for each attribute,

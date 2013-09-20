@@ -127,7 +127,7 @@ brw_get_program (struct brw_compile *p,
 
 
 
-/**
+/*
  * Subroutine calls require special attention.
  * Mesa instructions may be expanded into multiple hardware instructions
  * so the prog_instruction::BranchTarget field can't be used as an index
@@ -142,29 +142,29 @@ brw_get_program (struct brw_compile *p,
  */
 
 
-/**
+/*
  * For each OPCODE_BGNSUB we create one of these.
  */
 struct brw_glsl_label
 {
-    const char *name; /**< the label string */
-    uint32_t position;  /**< the position of the brw instruction for this label */
-    struct brw_glsl_label *next;  /**< next in linked list */
+    const char *name; /*< the label string */
+    uint32_t position;  /*< the position of the brw instruction for this label */
+    struct brw_glsl_label *next;  /*< next in linked list */
 };
 
 
-/**
+/*
  * For each OPCODE_CAL we create one of these.
  */
 struct brw_glsl_call
 {
-    uint32_t call_inst_pos;  /**< location of the CAL instruction */
-    const char *sub_name;  /**< name of subroutine to call */
-    struct brw_glsl_call *next;  /**< next in linked list */
+    uint32_t call_inst_pos;  /*< location of the CAL instruction */
+    const char *sub_name;  /*< name of subroutine to call */
+    struct brw_glsl_call *next;  /*< next in linked list */
 };
 
 
-/**
+/*
  * Called for each OPCODE_BGNSUB.
  */
     void
@@ -178,7 +178,7 @@ brw_save_label(struct brw_compile *c, const char *name, uint32_t position)
 }
 
 
-/**
+/*
  * Called for each OPCODE_CAL.
  */
     void
@@ -192,7 +192,7 @@ brw_save_call(struct brw_compile *c, const char *name, uint32_t call_pos)
 }
 
 
-/**
+/*
  * Lookup a label, return label's position/offset.
  */
     static uint32_t
@@ -209,7 +209,7 @@ brw_lookup_label(struct brw_compile *c, const char *name)
 }
 
 
-/**
+/*
  * When we're done generating code, this function is called to resolve
  * subroutine calls.
  */

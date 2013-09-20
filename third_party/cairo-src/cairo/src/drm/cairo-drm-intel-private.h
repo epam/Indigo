@@ -67,7 +67,6 @@ typedef struct _intel_bo {
     uint32_t full_size;
     uint16_t stride;
     uint16_t _stride;
-    uint32_t bucket :4;
     uint32_t tiling :4;
     uint32_t _tiling :4;
     uint32_t purgeable :1;
@@ -191,16 +190,7 @@ typedef struct _intel_device {
     size_t gtt_max_size;
     size_t gtt_avail_size;
 
-    cairo_mutex_t bo_mutex;
     cairo_freepool_t bo_pool;
-     struct _intel_bo_cache {
-	cairo_list_t list;
-	uint16_t min_entries;
-	uint16_t num_entries;
-    } bo_cache[INTEL_BO_CACHE_BUCKETS];
-    size_t bo_cache_size;
-    size_t bo_max_cache_size_high;
-    size_t bo_max_cache_size_low;
     cairo_list_t bo_in_flight;
 
     cairo_mutex_t mutex;
@@ -404,7 +394,8 @@ cairo_private cairo_surface_t *
 intel_surface_map_to_image (void *abstract_surface);
 
 cairo_private cairo_status_t
-intel_surface_flush (void *abstract_surface);
+intel_surface_flush (void *abstract_surface,
+		     unsigned flags);
 
 cairo_private cairo_status_t
 intel_surface_finish (void *abstract_surface);

@@ -286,21 +286,6 @@ pot (int v)
     return v;
 }
 
-static void
-intel_bo_cache_remove (intel_device_t *device,
-	               intel_bo_t *bo,
-		       int bucket)
-{
-    _cairo_drm_bo_close (&device->base, &bo->base);
-
-    cairo_list_del (&bo->cache_list);
-
-    device->bo_cache[bucket].num_entries--;
-    device->bo_cache_size -= 4096 * (1 << bucket);
-
-    _cairo_freepool_free (&device->bo_pool, bo);
-}
-
 cairo_bool_t
 intel_bo_madvise (intel_device_t *device,
 		  intel_bo_t *bo,
@@ -342,25 +327,6 @@ intel_bo_set_real_size (intel_device_t *device,
 	}
 
 	bo->base.size = size;
-    }
-}
-
-static void
-intel_bo_cache_purge (intel_device_t *device)
-{
-    int bucket;
-
-    for (bucket = 0; bucket < INTEL_BO_CACHE_BUCKETS; bucket++) {
-	intel_bo_t *bo, *next;
-
-	cairo_list_foreach_entry_safe (bo, next,
-		                       intel_bo_t,
-		                       &device->bo_cache[bucket].list,
-				       cache_list)
-	{
-	    if (! intel_bo_madvise (device, bo, I915_MADV_DONTNEED))
-		intel_bo_cache_remove (device, bo, bucket);
-	}
     }
 }
 
@@ -418,98 +384,10 @@ intel_bo_create (intel_device_t *device,
 	}
     }
 
-    bo = NULL;
-
-    CAIRO_MUTEX_LOCK (device->bo_mutex);
-    if (bucket < INTEL_BO_CACHE_BUCKETS) {
-	int loop = MIN (3, INTEL_BO_CACHE_BUCKETS - bucket);
-	/* Our goal is to avoid clflush which occur on CPU->GPU
-	 * transitions, so we want to minimise reusing CPU
-	 * write buffers. However, by the time a buffer is freed
-	 * it is most likely in the GPU domain anyway (readback is rare!).
-	 */
-	do {
-	    if (gpu_target) {
-		intel_bo_t *next;
-
-		cairo_list_foreach_entry_reverse_safe (bo, next,
-						       intel_bo_t,
-						       &device->bo_cache[bucket].list,
-						       cache_list)
-		{
-		    if (real_size > bo->base.size)
-			continue;
-
-		    /* For a gpu target, by the time our batch fires, the
-		     * GPU will have finished using this buffer. However,
-		     * changing tiling may require a fence deallocation and
-		     * cause serialisation...
-		     */
-
-		    if (tiling && bo->_tiling &&
-			(bo->_tiling != tiling || bo->_stride != stride))
-		    {
-			continue;
-		    }
-
-		    device->bo_cache[bucket].num_entries--;
-		    device->bo_cache_size -= 4096 * (1 << bucket);
-		    cairo_list_del (&bo->cache_list);
-
-		    if (! intel_bo_madvise (device, bo, I915_MADV_WILLNEED)) {
-			_cairo_drm_bo_close (&device->base, &bo->base);
-			_cairo_freepool_free (&device->bo_pool, bo);
-		    } else
-			goto INIT;
-		}
-	    }
-
-	    while (! cairo_list_is_empty (&device->bo_cache[bucket].list)) {
-		bo = cairo_list_first_entry (&device->bo_cache[bucket].list,
-					     intel_bo_t, cache_list);
-		if (intel_bo_is_inactive (device, bo)) {
-		    device->bo_cache[bucket].num_entries--;
-		    device->bo_cache_size -= 4096 * (1 << bucket);
-		    cairo_list_del (&bo->cache_list);
-
-		    if (! intel_bo_madvise (device, bo, I915_MADV_WILLNEED)) {
-			_cairo_drm_bo_close (&device->base, &bo->base);
-			_cairo_freepool_free (&device->bo_pool, bo);
-		    } else
-			goto SIZE;
-		} else
-		    break;
-	    }
-	} while (--loop && ++bucket);
-    }
-
-    if (device->bo_cache_size > device->bo_max_cache_size_high) {
-	cairo_bool_t not_empty;
-
-	intel_bo_cache_purge (device);
-
-	/* trim caches by discarding the most recent buffer in each bucket */
-	do {
-	    not_empty = FALSE;
-	    for (bucket = INTEL_BO_CACHE_BUCKETS; bucket--; ) {
-		if (device->bo_cache[bucket].num_entries >
-		    device->bo_cache[bucket].min_entries)
-		{
-		    bo = cairo_list_last_entry (&device->bo_cache[bucket].list,
-						intel_bo_t, cache_list);
-
-		    intel_bo_cache_remove (device, bo, bucket);
-		    not_empty = TRUE;
-		}
-	    }
-	} while (not_empty && device->bo_cache_size > device->bo_max_cache_size_low);
-    }
-
     /* no cached buffer available, allocate fresh */
     bo = _cairo_freepool_alloc (&device->bo_pool);
     if (unlikely (bo == NULL)) {
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	CAIRO_MUTEX_UNLOCK (device->bo_mutex);
 	return bo;
     }
 
@@ -521,10 +399,6 @@ intel_bo_create (intel_device_t *device,
     bo->virtual = NULL;
     bo->cpu = TRUE;
 
-    bucket = ffs (cache_size / 4096) - 1;
-    if (bucket > INTEL_BO_CACHE_BUCKETS)
-	bucket = INTEL_BO_CACHE_BUCKETS;
-    bo->bucket = bucket;
     bo->_tiling = I915_TILING_NONE;
     bo->_stride = 0;
     bo->purgeable = 0;
@@ -544,18 +418,14 @@ intel_bo_create (intel_device_t *device,
     if (unlikely (ret != 0)) {
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
 	_cairo_freepool_free (&device->bo_pool, bo);
-	CAIRO_MUTEX_UNLOCK (device->bo_mutex);
 	return NULL;
     }
 
     bo->base.handle = create.handle;
     bo->full_size = bo->base.size = create.size;
 
-SIZE:
     intel_bo_set_real_size (device, bo, real_size);
-INIT:
     CAIRO_REFERENCE_COUNT_INIT (&bo->base.ref_count, 1);
-    CAIRO_MUTEX_UNLOCK (device->bo_mutex);
 DONE:
     bo->tiling = tiling;
     bo->stride = stride;
@@ -570,9 +440,7 @@ intel_bo_create_for_name (intel_device_t *device, uint32_t name)
     intel_bo_t *bo;
     int ret;
 
-    CAIRO_MUTEX_LOCK (device->bo_mutex);
     bo = _cairo_freepool_alloc (&device->bo_pool);
-    CAIRO_MUTEX_UNLOCK (device->bo_mutex);
     if (unlikely (bo == NULL)) {
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
 	return NULL;
@@ -591,7 +459,6 @@ intel_bo_create_for_name (intel_device_t *device, uint32_t name)
     bo->purgeable = 0;
     bo->busy = TRUE;
     bo->cpu = FALSE;
-    bo->bucket = INTEL_BO_CACHE_BUCKETS;
 
     bo->opaque0 = 0;
     bo->opaque1 = 0;
@@ -617,9 +484,7 @@ intel_bo_create_for_name (intel_device_t *device, uint32_t name)
     return bo;
 
 FAIL:
-    CAIRO_MUTEX_LOCK (device->bo_mutex);
     _cairo_freepool_free (&device->bo_pool, bo);
-    CAIRO_MUTEX_UNLOCK (device->bo_mutex);
     return NULL;
 }
 
@@ -628,7 +493,6 @@ intel_bo_release (void *_dev, void *_bo)
 {
     intel_device_t *device = _dev;
     intel_bo_t *bo = _bo;
-    int bucket;
 
     if (bo->virtual != NULL)
 	intel_bo_unmap (bo);
@@ -636,27 +500,8 @@ intel_bo_release (void *_dev, void *_bo)
     assert (bo->exec == NULL);
     assert (cairo_list_is_empty (&bo->cache_list));
 
-    bucket = bo->bucket;
-
-    CAIRO_MUTEX_LOCK (device->bo_mutex);
-    if (bo->base.name == 0 &&
-	bucket < INTEL_BO_CACHE_BUCKETS &&
-	intel_bo_madvise (device, bo, I915_MADV_DONTNEED))
-    {
-	device->bo_cache[bucket].num_entries++;
-	device->bo_cache_size += 4096 * (1 << bucket);
-
-	if (bo->busy)
-	    cairo_list_add_tail (&bo->cache_list, &device->bo_cache[bucket].list);
-	else
-	    cairo_list_add (&bo->cache_list, &device->bo_cache[bucket].list);
-    }
-    else
-    {
-	_cairo_drm_bo_close (&device->base, &bo->base);
-	_cairo_freepool_free (&device->bo_pool, bo);
-    }
-    CAIRO_MUTEX_UNLOCK (device->bo_mutex);
+    _cairo_drm_bo_close (&device->base, &bo->base);
+    _cairo_freepool_free (&device->bo_pool, bo);
 }
 
 void
@@ -869,36 +714,6 @@ intel_bo_put_image (intel_device_t *device,
     return CAIRO_STATUS_SUCCESS;
 }
 
-static void
-_intel_device_init_bo_cache (intel_device_t *device)
-{
-    int i;
-
-    CAIRO_MUTEX_INIT (device->bo_mutex);
-    device->bo_cache_size = 0;
-    device->bo_max_cache_size_high = device->gtt_max_size / 2;
-    device->bo_max_cache_size_low = device->gtt_max_size / 4;
-    cairo_list_init (&device->bo_in_flight);
-
-    for (i = 0; i < INTEL_BO_CACHE_BUCKETS; i++) {
-	struct _intel_bo_cache *cache = &device->bo_cache[i];
-
-	cairo_list_init (&cache->list);
-
-	/* 256*4k ... 4*16MiB */
-	if (i <= 6)
-	    cache->min_entries = 1 << (6 - i);
-	else
-	    cache->min_entries = 0;
-	cache->num_entries = 0;
-    }
-
-    _cairo_freepool_init (&device->bo_pool, sizeof (intel_bo_t));
-
-    device->base.surface.flink = _cairo_drm_surface_flink;
-    device->base.surface.map_to_image = intel_surface_map_to_image;
-}
-
 static cairo_bool_t
 _intel_snapshot_cache_entry_can_remove (const void *closure)
 {
@@ -934,8 +749,6 @@ intel_device_init (intel_device_t *device, int fd)
     device->gtt_avail_size = aperture.aper_available_size;
     device->gtt_avail_size -= device->gtt_avail_size >> 5;
 
-    _intel_device_init_bo_cache (device);
-
     size = aperture.aper_size / 8;
     device->snapshot_cache_max_size = size / 4;
     status = _cairo_cache_init (&device->snapshot_cache,
@@ -957,23 +770,6 @@ intel_device_init (intel_device_t *device, int fd)
     device->base.bo.release = intel_bo_release;
 
     return CAIRO_STATUS_SUCCESS;
-}
-
-static void
-_intel_bo_cache_fini (intel_device_t *device)
-{
-    int bucket;
-
-    for (bucket = 0; bucket < INTEL_BO_CACHE_BUCKETS; bucket++) {
-	struct _intel_bo_cache *cache = &device->bo_cache[bucket];
-	intel_bo_t *bo;
-
-	cairo_list_foreach_entry (bo, intel_bo_t, &cache->list, cache_list)
-	    _cairo_drm_bo_close (&device->base, &bo->base);
-    }
-
-    _cairo_freepool_fini (&device->bo_pool);
-    CAIRO_MUTEX_FINI (device->bo_mutex);
 }
 
 static void
@@ -1020,7 +816,7 @@ intel_device_fini (intel_device_t *device)
     _cairo_cache_fini (&device->snapshot_cache);
 
     _intel_gradient_cache_fini (device);
-    _intel_bo_cache_fini (device);
+    _cairo_freepool_fini (&device->bo_pool);
 
     _cairo_drm_device_fini (&device->base);
 }

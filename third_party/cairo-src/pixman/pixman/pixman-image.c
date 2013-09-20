@@ -145,11 +145,8 @@ _pixman_image_fini (pixman_image_t *image)
 
 	pixman_region32_fini (&common->clip_region);
 
-	if (common->transform)
-	    free (common->transform);
-
-	if (common->filter_params)
-	    free (common->filter_params);
+	free (common->transform);
+	free (common->filter_params);
 
 	if (common->alpha_map)
 	    pixman_image_unref ((pixman_image_t *)common->alpha_map);
@@ -302,13 +299,12 @@ compute_image_info (pixman_image_t *image)
 	             image->common.transform->matrix[1][1] == 0)
 	    {
 		pixman_fixed_t m01 = image->common.transform->matrix[0][1];
-		if (m01 == -image->common.transform->matrix[1][0])
-		{
-			if (m01 == -pixman_fixed_1)
-			    flags |= FAST_PATH_ROTATE_90_TRANSFORM;
-			else if (m01 == pixman_fixed_1)
-			    flags |= FAST_PATH_ROTATE_270_TRANSFORM;
-		}
+		pixman_fixed_t m10 = image->common.transform->matrix[1][0];
+
+		if (m01 == -pixman_fixed_1 && m10 == pixman_fixed_1)
+		    flags |= FAST_PATH_ROTATE_90_TRANSFORM;
+		else if (m01 == pixman_fixed_1 && m10 == -pixman_fixed_1)
+		    flags |= FAST_PATH_ROTATE_270_TRANSFORM;
 	    }
 	}
 
@@ -375,6 +371,10 @@ compute_image_info (pixman_image_t *image)
 	break;
 
     case PIXMAN_FILTER_CONVOLUTION:
+	break;
+
+    case PIXMAN_FILTER_SEPARABLE_CONVOLUTION:
+	flags |= FAST_PATH_SEPARABLE_CONVOLUTION_FILTER;
 	break;
 
     default:
@@ -519,8 +519,9 @@ compute_image_info (pixman_image_t *image)
      * if all channels are opaque, so we simply turn it off
      * unconditionally for those images.
      */
-    if (image->common.alpha_map					||
-	image->common.filter == PIXMAN_FILTER_CONVOLUTION	||
+    if (image->common.alpha_map						||
+	image->common.filter == PIXMAN_FILTER_CONVOLUTION		||
+        image->common.filter == PIXMAN_FILTER_SEPARABLE_CONVOLUTION     ||
 	image->common.component_alpha)
     {
 	flags &= ~(FAST_PATH_IS_OPAQUE | FAST_PATH_SAMPLES_OPAQUE);
@@ -634,7 +635,7 @@ pixman_image_set_transform (pixman_image_t *          image,
     }
 
     if (common->transform &&
-	memcmp (common->transform, transform, sizeof (pixman_transform_t) == 0))
+	memcmp (common->transform, transform, sizeof (pixman_transform_t)) == 0)
     {
 	return TRUE;
     }
@@ -683,6 +684,19 @@ pixman_image_set_filter (pixman_image_t *      image,
     if (params == common->filter_params && filter == common->filter)
 	return TRUE;
 
+    if (filter == PIXMAN_FILTER_SEPARABLE_CONVOLUTION)
+    {
+	int width = pixman_fixed_to_int (params[0]);
+	int height = pixman_fixed_to_int (params[1]);
+	int x_phase_bits = pixman_fixed_to_int (params[2]);
+	int y_phase_bits = pixman_fixed_to_int (params[3]);
+	int n_x_phases = (1 << x_phase_bits);
+	int n_y_phases = (1 << y_phase_bits);
+
+	return_val_if_fail (
+	    n_params == 4 + n_x_phases * width + n_y_phases * height, FALSE);
+    }
+    
     new_params = NULL;
     if (params)
     {
@@ -874,7 +888,7 @@ pixman_image_get_format (pixman_image_t *image)
     if (image->type == BITS)
 	return image->bits.format;
 
-    return 0;
+    return PIXMAN_null;
 }
 
 uint32_t
@@ -883,16 +897,38 @@ _pixman_image_get_solid (pixman_implementation_t *imp,
                          pixman_format_code_t     format)
 {
     uint32_t result;
-    pixman_iter_t iter;
 
-    _pixman_implementation_src_iter_init (
-	imp, &iter, image, 0, 0, 1, 1,
-	(uint8_t *)&result, ITER_NARROW);
+    if (image->type == SOLID)
+    {
+	result = image->solid.color_32;
+    }
+    else if (image->type == BITS)
+    {
+	if (image->bits.format == PIXMAN_a8r8g8b8)
+	    result = image->bits.bits[0];
+	else if (image->bits.format == PIXMAN_x8r8g8b8)
+	    result = image->bits.bits[0] | 0xff000000;
+	else if (image->bits.format == PIXMAN_a8)
+	    result = (*(uint8_t *)image->bits.bits) << 24;
+	else
+	    goto otherwise;
+    }
+    else
+    {
+	pixman_iter_t iter;
 
-    result = *iter.get_scanline (&iter, NULL);
+    otherwise:
+	_pixman_implementation_src_iter_init (
+	    imp, &iter, image, 0, 0, 1, 1,
+	    (uint8_t *)&result,
+	    ITER_NARROW, image->common.flags);
+	
+	result = *iter.get_scanline (&iter, NULL);
+    }
 
     /* If necessary, convert RGB <--> BGR. */
-    if (PIXMAN_FORMAT_TYPE (format) != PIXMAN_TYPE_ARGB)
+    if (PIXMAN_FORMAT_TYPE (format) != PIXMAN_TYPE_ARGB
+	&& PIXMAN_FORMAT_TYPE (format) != PIXMAN_TYPE_ARGB_SRGB)
     {
 	result = (((result & 0xff000000) >>  0) |
 	          ((result & 0x00ff0000) >> 16) |

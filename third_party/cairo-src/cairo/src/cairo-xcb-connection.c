@@ -35,15 +35,11 @@
 #include "cairo-xcb-private.h"
 #include "cairo-hash-private.h"
 #include "cairo-freelist-private.h"
-#include "cairo-list-private.h"
+#include "cairo-list-inline.h"
 
 #include <xcb/xcbext.h>
 #include <xcb/bigreq.h>
 #include <errno.h>
-
-#if CAIRO_HAS_XCB_DRM_FUNCTIONS
-#include <xcb/dri2.h>
-#endif
 
 #if CAIRO_HAS_XCB_SHM_FUNCTIONS
 #include <sys/ipc.h>
@@ -78,7 +74,6 @@ typedef struct _cairo_xcb_xid {
 #define XCB_RENDER_HAS_TRIANGLES(surface)		XCB_RENDER_AT_LEAST((surface), 0, 4)
 #define XCB_RENDER_HAS_TRISTRIP(surface)		XCB_RENDER_AT_LEAST((surface), 0, 4)
 #define XCB_RENDER_HAS_TRIFAN(surface)			XCB_RENDER_AT_LEAST((surface), 0, 4)
-#define XCB_RENDER_HAS_SPANS(surface)			XCB_RENDER_AT_LEAST((surface), 0, 12)
 
 #define XCB_RENDER_HAS_PICTURE_TRANSFORM(surface)	XCB_RENDER_AT_LEAST((surface), 0, 6)
 #define XCB_RENDER_HAS_FILTERS(surface)			XCB_RENDER_AT_LEAST((surface), 0, 6)
@@ -317,6 +312,41 @@ has_required_depths (cairo_xcb_connection_t *connection)
     return TRUE;
 }
 
+static xcb_render_query_version_reply_t *
+_render_restrict_env(xcb_render_query_version_reply_t *version)
+{
+    const char *env;
+
+    if (version == NULL)
+	return NULL;
+
+    env = getenv ("CAIRO_DEBUG");
+    if (env != NULL)
+	env = strstr (env, "xrender-version=");
+    if (env != NULL) {
+	int max_render_major, max_render_minor;
+
+	env += sizeof ("xrender-version=") - 1;
+	if (sscanf (env, "%d.%d", &max_render_major, &max_render_minor) != 2)
+	    max_render_major = max_render_minor = -1;
+
+	if (max_render_major < 0 || max_render_minor < 0) {
+	    free (version);
+	    return NULL;
+	}
+
+	if (max_render_major < (int) version->major_version ||
+	    (max_render_major == (int) version->major_version &&
+	     max_render_minor < (int) version->minor_version))
+	{
+	    version->major_version = max_render_major;
+	    version->minor_version = max_render_minor;
+	}
+    }
+
+    return version;
+}
+
 static cairo_status_t
 _cairo_xcb_connection_query_render (cairo_xcb_connection_t *connection)
 {
@@ -328,12 +358,15 @@ _cairo_xcb_connection_query_render (cairo_xcb_connection_t *connection)
     cairo_status_t status;
     cairo_bool_t present;
 
-    version_cookie = xcb_render_query_version (c, 0, 10);
+    version_cookie = xcb_render_query_version (c, XCB_RENDER_MAJOR_VERSION, XCB_RENDER_MINOR_VERSION);
     formats_cookie = xcb_render_query_pict_formats (c);
 
     present = has_required_depths (connection);
     version = xcb_render_query_version_reply (c, version_cookie, 0);
     formats = xcb_render_query_pict_formats_reply (c, formats_cookie, 0);
+
+    version = _render_restrict_env (version);
+
     if (! present || version == NULL || formats == NULL) {
 	free (version);
 	free (formats);
@@ -447,58 +480,24 @@ _cairo_xcb_connection_query_shm (cairo_xcb_connection_t *connection)
 }
 #endif
 
-#if CAIRO_HAS_XCB_DRM_FUNCTIONS
-static void
-_cairo_xcb_connection_query_dri2 (cairo_xcb_connection_t *connection)
-{
-    xcb_connection_t *c = connection->xcb_connection;
-    xcb_dri2_query_version_reply_t *version;
-
-    version = xcb_dri2_query_version_reply (c,
-					    xcb_dri2_query_version (c,
-								    XCB_DRI2_MAJOR_VERSION,
-								    XCB_DRI2_MINOR_VERSION),
-					    0);
-    if (version == NULL)
-	return;
-
-    free (version);
-
-    connection->flags |= CAIRO_XCB_HAS_DRI2;
-}
-#endif
-
 static cairo_status_t
 _device_flush (void *device)
 {
     cairo_xcb_connection_t *connection = device;
-    cairo_xcb_screen_t *screen;
     cairo_status_t status;
 
     status = cairo_device_acquire (&connection->device);
     if (unlikely (status))
 	return status;
 
-    CAIRO_MUTEX_LOCK (connection->screens_mutex);
-    cairo_list_foreach_entry (screen, cairo_xcb_screen_t,
-			      &connection->screens, link)
-    {
-	if (screen->device != NULL)
-	    cairo_device_flush (screen->device);
-    }
-    CAIRO_MUTEX_UNLOCK (connection->screens_mutex);
+#if CAIRO_HAS_XCB_SHM_FUNCTIONS
+    _cairo_xcb_connection_shm_mem_pools_flush (connection);
+#endif
 
     xcb_flush (connection->xcb_connection);
 
     cairo_device_release (&connection->device);
     return CAIRO_STATUS_SUCCESS;
-}
-
-static cairo_bool_t
-_xrender_formats_equal (const void *A, const void *B)
-{
-    const cairo_xcb_xrender_format_t *a = A, *b = B;
-    return a->key.hash == b->key.hash;
 }
 
 static void
@@ -528,7 +527,7 @@ _device_finish (void *device)
 	font = cairo_list_first_entry (&connection->fonts,
 				       cairo_xcb_font_t,
 				       link);
-	_cairo_xcb_font_finish (font);
+	_cairo_xcb_font_close (font);
     }
 
     while (! cairo_list_is_empty (&connection->screens)) {
@@ -540,12 +539,11 @@ _device_finish (void *device)
 	_cairo_xcb_screen_finish (screen);
     }
 
-    if (connection->has_socket) {
-	/* Send a request so that xcb takes the socket from us, preventing
-	 * a later use-after-free on shutdown of the connection.
-	 */
-	xcb_no_operation (connection->xcb_connection);
-    }
+#if CAIRO_HAS_XCB_SHM_FUNCTIONS
+    /* _cairo_xcb_screen_finish finishes surfaces. If any of those surfaces had
+     * a fallback image, we might have done a SHM PutImage. */
+    _cairo_xcb_connection_shm_mem_pools_flush (connection);
+#endif
 
     if (was_cached)
 	cairo_device_destroy (device);
@@ -624,12 +622,11 @@ _cairo_xcb_connection_get (xcb_connection_t *xcb_connection)
     _cairo_device_init (&connection->device, &_cairo_xcb_device_backend);
 
     connection->xcb_connection = xcb_connection;
-    connection->has_socket = FALSE;
 
     cairo_list_init (&connection->fonts);
     cairo_list_init (&connection->screens);
     cairo_list_init (&connection->link);
-    connection->xrender_formats = _cairo_hash_table_create (_xrender_formats_equal);
+    connection->xrender_formats = _cairo_hash_table_create (NULL);
     if (connection->xrender_formats == NULL) {
 	CAIRO_MUTEX_FINI (connection->device.mutex);
 	free (connection);
@@ -637,7 +634,7 @@ _cairo_xcb_connection_get (xcb_connection_t *xcb_connection)
 	goto unlock;
     }
 
-    connection->visual_to_xrender_format = _cairo_hash_table_create (_xrender_formats_equal);
+    connection->visual_to_xrender_format = _cairo_hash_table_create (NULL);
     if (connection->visual_to_xrender_format == NULL) {
 	_cairo_hash_table_destroy (connection->xrender_formats);
 	CAIRO_MUTEX_FINI (connection->device.mutex);
@@ -651,6 +648,7 @@ _cairo_xcb_connection_get (xcb_connection_t *xcb_connection)
 			  sizeof (cairo_xcb_xid_t));
 
     cairo_list_init (&connection->shm_pools);
+    cairo_list_init (&connection->shm_pending);
     _cairo_freepool_init (&connection->shm_info_freelist,
 			  sizeof (cairo_xcb_shm_info_t));
 
@@ -663,6 +661,7 @@ _cairo_xcb_connection_get (xcb_connection_t *xcb_connection)
     CAIRO_MUTEX_LOCK (connection->device.mutex);
 
     connection->flags = 0;
+    connection->force_precision = -1;
 
     xcb_prefetch_extension_data (xcb_connection, &xcb_big_requests_id);
     xcb_prefetch_extension_data (xcb_connection, &xcb_render_id);
@@ -671,9 +670,6 @@ _cairo_xcb_connection_get (xcb_connection_t *xcb_connection)
 #endif
 #if 0
     xcb_prefetch_extension_data (xcb_connection, &xcb_cairo_id);
-#endif
-#if CAIRO_HAS_XCB_DRM_FUNCTIONS
-    xcb_prefetch_extension_data (xcb_connection, &xcb_dri2_id);
 #endif
 
     xcb_prefetch_maximum_request_length (xcb_connection);
@@ -708,14 +704,7 @@ _cairo_xcb_connection_get (xcb_connection_t *xcb_connection)
     }
 #endif
 
-    connection->dri2 = NULL;
-#if CAIRO_HAS_XCB_DRM_FUNCTIONS
-    ext = xcb_get_extension_data (xcb_connection, &xcb_dri2_id);
-    if (ext != NULL && ext->present) {
-	_cairo_xcb_connection_query_dri2 (connection);
-	connection->dri2 = ext;
-    }
-#endif
+    connection->original_flags = connection->flags;
 
     CAIRO_MUTEX_UNLOCK (connection->device.mutex);
 
@@ -787,53 +776,61 @@ _cairo_xcb_connection_get_xid (cairo_xcb_connection_t *connection)
     return xid;
 }
 
-static void
-_cairo_xcb_return_socket (void *closure)
+/**
+ * cairo_xcb_device_get_connection:
+ * @device: a #cairo_device_t for the XCB backend
+ *
+ * Get the connection for the XCB device.
+ *
+ * Returns: the #xcb_connection_t for the connection
+ *
+ * Since: 1.12
+ **/
+xcb_connection_t *
+cairo_xcb_device_get_connection (cairo_device_t *device)
 {
-    cairo_xcb_connection_t *connection = closure;
+    if (device->backend->type != CAIRO_DEVICE_TYPE_XCB)
+	    return NULL;
 
-    CAIRO_MUTEX_LOCK (connection->device.mutex);
-    connection->has_socket = FALSE;
-    CAIRO_MUTEX_UNLOCK (connection->device.mutex);
-}
-
-cairo_status_t
-_cairo_xcb_connection_take_socket (cairo_xcb_connection_t *connection)
-{
-    assert (CAIRO_MUTEX_IS_LOCKED (connection->device.mutex));
-
-    if (unlikely (connection->device.status))
-	return connection->device.status;
-
-    if (! connection->has_socket) {
-	if (! xcb_take_socket (connection->xcb_connection,
-			       _cairo_xcb_return_socket,
-			       connection,
-			       0, &connection->seqno))
-	{
-	    return connection->device.status = _cairo_error (CAIRO_STATUS_WRITE_ERROR);
-	}
-
-	connection->has_socket = TRUE;
-    }
-
-    return CAIRO_STATUS_SUCCESS;
+    return ((cairo_xcb_connection_t *)device)->xcb_connection;
 }
 
 /* public (debug) interface */
 
+/**
+ * cairo_xcb_device_debug_cap_xshm_version:
+ * @device: a #cairo_device_t for the XCB backend
+ * @major_version: major version to restrict to
+ * @minor_version: minor version to restrict to
+ *
+ * Restricts all future XCB surfaces for this devices to the specified version
+ * of the SHM extension. This function exists solely for debugging purpose.
+ * It let's you find out how cairo would behave with an older version of
+ * the SHM extension.
+ *
+ * Use the special values -1 and -1 for disabling the SHM extension.
+ *
+ * Since: 1.12
+ **/
 void
 cairo_xcb_device_debug_cap_xshm_version (cairo_device_t *device,
                                          int major_version,
                                          int minor_version)
 {
     cairo_xcb_connection_t *connection = (cairo_xcb_connection_t *) device;
-    cairo_status_t status;
 
     if (device->backend->type != CAIRO_DEVICE_TYPE_XCB) {
+	cairo_status_t status;
+
 	status = _cairo_device_set_error (device, CAIRO_STATUS_DEVICE_TYPE_MISMATCH);
+	(void) status;
 	return;
     }
+
+    /* First reset all the SHM flags to their original value. This works
+     * because we only ever clear bits after the connection was created.
+     */
+    connection->flags |= (connection->original_flags & CAIRO_XCB_SHM_MASK);
 
     /* clear any flags that are inappropriate for the desired version */
     if (major_version < 0 && minor_version < 0) {
@@ -841,18 +838,40 @@ cairo_xcb_device_debug_cap_xshm_version (cairo_device_t *device,
     }
 }
 
+/**
+ * cairo_xcb_device_debug_cap_xrender_version:
+ * @device: a #cairo_device_t for the XCB backend
+ * @major_version: major version to restrict to
+ * @minor_version: minor version to restrict to
+ *
+ * Restricts all future XCB surfaces for this devices to the specified version
+ * of the RENDER extension. This function exists solely for debugging purpose.
+ * It let's you find out how cairo would behave with an older version of
+ * the RENDER extension.
+ *
+ * Use the special values -1 and -1 for disabling the RENDER extension.
+ *
+ * Since: 1.12
+ **/
 void
 cairo_xcb_device_debug_cap_xrender_version (cairo_device_t *device,
                                             int major_version,
                                             int minor_version)
 {
     cairo_xcb_connection_t *connection = (cairo_xcb_connection_t *) device;
-    cairo_status_t status;
 
     if (device->backend->type != CAIRO_DEVICE_TYPE_XCB) {
+	cairo_status_t status;
+
 	status = _cairo_device_set_error (device, CAIRO_STATUS_DEVICE_TYPE_MISMATCH);
+	(void) status;
 	return;
     }
+
+    /* First reset all the RENDER flags to their original value. This works
+     * because we only ever clear bits after the connection was created.
+     */
+    connection->flags |= (connection->original_flags & CAIRO_XCB_RENDER_MASK);
 
     /* clear any flags that are inappropriate for the desired version */
     if (major_version < 0 && minor_version < 0) {
@@ -894,24 +913,65 @@ cairo_xcb_device_debug_cap_xrender_version (cairo_device_t *device,
 	    connection->flags &= ~CAIRO_XCB_RENDER_HAS_GRADIENTS;
     }
 }
+#if CAIRO_HAS_XLIB_XCB_FUNCTIONS
+slim_hidden_def (cairo_xcb_device_debug_cap_xrender_version);
+#endif
 
-#if 0
+/**
+ * cairo_xcb_device_debug_set_precision:
+ * @device: a #cairo_device_t for the XCB backend
+ * @precision: the precision to use
+ *
+ * Render supports two modes of precision when rendering trapezoids. Set
+ * the precision to the desired mode.
+ *
+ * Since: 1.12
+ **/
 void
-cairo_xcb_device_debug_cap_xcairo_version (cairo_device_t *device,
-                                           int major_version,
-                                           int minor_version)
+cairo_xcb_device_debug_set_precision (cairo_device_t *device,
+				      int precision)
 {
-    cairo_xcb_connection_t *connection = (cairo_xcb_connection_t *) device;
-    cairo_status_t status;
-
+    if (device == NULL || device->status)
+	return;
     if (device->backend->type != CAIRO_DEVICE_TYPE_XCB) {
+	cairo_status_t status;
+
 	status = _cairo_device_set_error (device, CAIRO_STATUS_DEVICE_TYPE_MISMATCH);
+	(void) status;
 	return;
     }
 
-    /* clear any flags that are inappropriate for the desired version */
-    if (major_version < 0 && minor_version < 0) {
-	connection->flags &= ~(CAIRO_XCB_HAS_CAIRO);
-    }
+    ((cairo_xcb_connection_t *) device)->force_precision = precision;
 }
+#if CAIRO_HAS_XLIB_XCB_FUNCTIONS
+slim_hidden_def (cairo_xcb_device_debug_set_precision);
+#endif
+
+/**
+ * cairo_xcb_device_debug_get_precision:
+ * @device: a #cairo_device_t for the XCB backend
+ *
+ * Get the Xrender precision mode.
+ *
+ * Returns: the render precision mode
+ *
+ * Since: 1.12
+ **/
+int
+cairo_xcb_device_debug_get_precision (cairo_device_t *device)
+{
+    if (device == NULL || device->status)
+	return -1;
+    if (device->backend->type != CAIRO_DEVICE_TYPE_XCB) {
+	cairo_status_t status;
+
+	status = _cairo_device_set_error (device, CAIRO_STATUS_DEVICE_TYPE_MISMATCH);
+	(void) status;
+	return -1;
+    }
+
+    return ((cairo_xcb_connection_t *) device)->force_precision;
+}
+#if CAIRO_HAS_XLIB_XCB_FUNCTIONS
+slim_hidden_def (cairo_xcb_device_debug_get_precision);
 #endif

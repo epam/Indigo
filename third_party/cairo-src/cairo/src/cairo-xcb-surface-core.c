@@ -33,6 +33,8 @@
 
 #include "cairo-boxes-private.h"
 #include "cairo-xcb-private.h"
+#include "cairo-image-surface-private.h"
+#include "cairo-surface-backend-private.h"
 
 /* XXX dithering */
 
@@ -64,10 +66,8 @@ _cairo_xcb_pixmap_finish (void *abstract_surface)
 	if (unlikely (status))
 	    return status;
 
-	if (_cairo_xcb_connection_take_socket (surface->connection) == CAIRO_STATUS_SUCCESS) {
-	    _cairo_xcb_connection_free_pixmap (surface->connection,
-					       surface->pixmap);
-	}
+	_cairo_xcb_connection_free_pixmap (surface->connection,
+					   surface->pixmap);
 	_cairo_xcb_connection_release (surface->connection);
     }
 
@@ -76,7 +76,6 @@ _cairo_xcb_pixmap_finish (void *abstract_surface)
 
 static const cairo_surface_backend_t _cairo_xcb_pixmap_backend = {
     CAIRO_SURFACE_TYPE_XCB,
-    NULL,
     _cairo_xcb_pixmap_finish,
 };
 
@@ -142,7 +141,73 @@ _cairo_xcb_pixmap_copy (cairo_xcb_surface_t *target)
     return surface;
 }
 
+#if CAIRO_HAS_XCB_SHM_FUNCTIONS
 static cairo_status_t
+_cairo_xcb_shm_image_create_shm (cairo_xcb_connection_t *connection,
+				 pixman_format_code_t pixman_format,
+				 int width, int height,
+				 cairo_image_surface_t **image_out,
+				 cairo_xcb_shm_info_t **shm_info_out)
+{
+    cairo_surface_t *image = NULL;
+    cairo_xcb_shm_info_t *shm_info = NULL;
+    cairo_status_t status;
+    size_t size, stride;
+
+    if (! (connection->flags & CAIRO_XCB_HAS_SHM))
+	return CAIRO_INT_STATUS_UNSUPPORTED;
+
+    if (unlikely (width > XLIB_COORD_MAX || height > XLIB_COORD_MAX))
+	return CAIRO_INT_STATUS_UNSUPPORTED;
+
+    stride = CAIRO_STRIDE_FOR_WIDTH_BPP (width, PIXMAN_FORMAT_BPP (pixman_format));
+    size = stride * height;
+    if (size <= CAIRO_XCB_SHM_SMALL_IMAGE)
+	return CAIRO_INT_STATUS_UNSUPPORTED;
+
+    status = _cairo_xcb_connection_allocate_shm_info (connection, size,
+						      FALSE, &shm_info);
+    if (unlikely (status))
+	return status;
+
+    image = _cairo_image_surface_create_with_pixman_format (shm_info->mem,
+							    pixman_format,
+							    width, height,
+							    stride);
+    status = image->status;
+    if (unlikely (status)) {
+	_cairo_xcb_shm_info_destroy (shm_info);
+	return status;
+    }
+
+    status = _cairo_user_data_array_set_data (&image->user_data,
+					      (const cairo_user_data_key_t *) connection,
+					      shm_info,
+					      (cairo_destroy_func_t) _cairo_xcb_shm_info_destroy);
+
+    if (unlikely (status)) {
+	cairo_surface_destroy (image);
+	_cairo_xcb_shm_info_destroy (shm_info);
+	return status;
+    }
+
+    *image_out = (cairo_image_surface_t *) image;
+    *shm_info_out = shm_info;
+    return CAIRO_STATUS_SUCCESS;
+}
+#else
+static cairo_status_t
+_cairo_xcb_shm_image_create_shm (cairo_xcb_connection_t *connection,
+				 pixman_format_code_t pixman_format,
+				 int width, int height,
+				 cairo_image_surface_t **image_out,
+				 cairo_xcb_shm_info_t **shm_info_out)
+{
+    return CAIRO_INT_STATUS_UNSUPPORTED;
+}
+#endif
+
+cairo_status_t
 _cairo_xcb_shm_image_create (cairo_xcb_connection_t *connection,
 			     pixman_format_code_t pixman_format,
 			     int width, int height,
@@ -153,42 +218,14 @@ _cairo_xcb_shm_image_create (cairo_xcb_connection_t *connection,
     cairo_xcb_shm_info_t *shm_info = NULL;
     cairo_status_t status;
 
-#if CAIRO_HAS_XCB_SHM_FUNCTIONS
-    if ((connection->flags & CAIRO_XCB_HAS_SHM)) {
-	size_t size, stride;
+    status = _cairo_xcb_shm_image_create_shm (connection,
+					      pixman_format,
+					      width,
+					      height,
+					      image_out,
+					      shm_info_out);
 
-	stride = CAIRO_STRIDE_FOR_WIDTH_BPP (width, PIXMAN_FORMAT_BPP (pixman_format));
-	size = stride * height;
-	if (size > CAIRO_XCB_SHM_SMALL_IMAGE) {
-	    status = _cairo_xcb_connection_allocate_shm_info (connection,
-							      size, &shm_info);
-	    if (unlikely (status))
-		return status;
-
-	    image = _cairo_image_surface_create_with_pixman_format (shm_info->mem,
-								    pixman_format,
-								    width, height,
-								    stride);
-	    status = image->status;
-	    if (unlikely (status)) {
-		_cairo_xcb_shm_info_destroy (shm_info);
-		return status;
-	    }
-
-	    status = _cairo_user_data_array_set_data (&image->user_data,
-						      (const cairo_user_data_key_t *) connection,
-						      shm_info,
-						      (cairo_destroy_func_t) _cairo_xcb_shm_info_destroy);
-	    if (unlikely (status)) {
-		cairo_surface_destroy (image);
-		_cairo_xcb_shm_info_destroy (shm_info);
-		return status;
-	    }
-	}
-    }
-#endif
-
-    if (image == NULL) {
+    if (status != CAIRO_STATUS_SUCCESS) {
 	image = _cairo_image_surface_create_with_pixman_format (NULL,
 								pixman_format,
 								width, height,
@@ -196,11 +233,11 @@ _cairo_xcb_shm_image_create (cairo_xcb_connection_t *connection,
 	status = image->status;
 	if (unlikely (status))
 	    return status;
+
+	*image_out = (cairo_image_surface_t *) image;
+	*shm_info_out = shm_info;
     }
 
-
-    *image_out = (cairo_image_surface_t *) image;
-    *shm_info_out = shm_info;
     return CAIRO_STATUS_SUCCESS;
 }
 
@@ -222,16 +259,15 @@ _pixmap_from_image (cairo_xcb_surface_t *target,
     gc = _cairo_xcb_screen_get_gc (target->screen, pixmap->pixmap, image->depth);
 
     if (shm_info != NULL) {
-	shm_info->seqno =
-	    _cairo_xcb_connection_shm_put_image (target->connection,
-						 pixmap->pixmap, gc,
-						 image->width, image->height,
-						 0, 0,
-						 image->width, image->height,
-						 0, 0,
-						 image->depth,
-						 shm_info->shm,
-						 shm_info->offset);
+	_cairo_xcb_connection_shm_put_image (target->connection,
+					     pixmap->pixmap, gc,
+					     image->width, image->height,
+					     0, 0,
+					     image->width, image->height,
+					     0, 0,
+					     image->depth,
+					     shm_info->shm,
+					     shm_info->offset);
     } else {
 	int len;
 
@@ -448,6 +484,8 @@ _cairo_xcb_pixmap_for_pattern (cairo_xcb_surface_t *target,
 	/* fallthrough */
     case CAIRO_PATTERN_TYPE_LINEAR:
     case CAIRO_PATTERN_TYPE_RADIAL:
+    case CAIRO_PATTERN_TYPE_MESH:
+    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
 	return _render_to_pixmap (target, pattern, extents);
 
     default:
@@ -471,10 +509,6 @@ _cairo_xcb_surface_core_copy_boxes (cairo_xcb_surface_t		*dst,
     status = _cairo_xcb_connection_acquire (dst->connection);
     if (unlikely (status))
 	return status;
-
-    status = _cairo_xcb_connection_take_socket (dst->connection);
-    if (unlikely (status))
-	goto CLEANUP_CONNECTION;
 
     src = _cairo_xcb_pixmap_for_pattern (dst, src_pattern, extents);
     status = src->base.status;
@@ -565,12 +599,6 @@ _cairo_xcb_surface_core_fill_boxes (cairo_xcb_surface_t *dst,
     status = _cairo_xcb_connection_acquire (dst->connection);
     if (unlikely (status))
 	return status;
-
-    status = _cairo_xcb_connection_take_socket (dst->connection);
-    if (unlikely (status)) {
-	_cairo_xcb_connection_release (dst->connection);
-	return status;
-    }
 
     gc = _cairo_xcb_screen_get_gc (dst->screen, dst->drawable, dst->depth);
 
