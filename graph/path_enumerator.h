@@ -18,6 +18,7 @@
 namespace indigo {
 
 #include "base_cpp/array.h"
+#include "base_cpp/exception.h"
 
 class Graph;
 
@@ -36,6 +37,7 @@ public:
 
    void process ();
 
+   DECL_TIMEOUT_EXCEPTION;
 protected:
    bool _pathFinder ();
 
