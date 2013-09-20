@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "base_cpp/cancellation_handler.h"
 #include "layout/reaction_layout.h"
 #include "layout/molecule_layout.h"
 #include "reaction/base_reaction.h"
@@ -31,6 +32,9 @@ CEXPORT int indigoLayout (int object)
          MoleculeLayout ml(mol);
          ml.max_iterations = self.layout_max_iterations;
          ml.bond_length = 1.6f;
+
+         TimeoutCancellationHandler cancellation(self.cancellation_timeout);
+         ml.setCancellationHandler(&cancellation);
 
          Filter f;
          if (obj.type == IndigoObject::SUBMOLECULE)

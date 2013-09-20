@@ -447,12 +447,13 @@ void BingoPgIndex::readTidItem(int section_idx, int mol_idx, PG_OBJECT result_pt
 
 }
 
-void BingoPgIndex::andWithBitset(int section_idx, int mol_idx, BingoPgExternalBitset& ext_bitset) {
+void BingoPgIndex::andWithBitset(int section_idx, int fp_idx, BingoPgExternalBitset& ext_bitset) {
+   profTimerStart(t0, "bingo_pg.read_fp_and_with");
    /*
     * Prepare info for reading
     */
    BingoPgSection& current_section = _jumpToSection(section_idx);
-   BingoPgBufferCacheFp& fp_buffer = current_section.getFpBufferCache(mol_idx);
+   BingoPgBufferCacheFp& fp_buffer = current_section.getFpBufferCache(fp_idx);
    /*
     * And with a bitset
     */
@@ -464,6 +465,12 @@ int BingoPgIndex::getSectionStructuresNumber(int section_idx) {
    BingoPgSection& current_section = _jumpToSection(section_idx);
    return current_section.getStructuresNumber();
 }
+
+const BingoSectionInfoData& BingoPgIndex::getSectionInfo (int section_idx) {
+   BingoPgSection& current_section = _jumpToSection(section_idx);
+   return current_section.getSectionInfo();
+}
+
 
 void BingoPgIndex::getSectionBitset(int section_idx, BingoPgExternalBitset& section_bitset) {
    BingoPgSection& current_section = _jumpToSection(section_idx);

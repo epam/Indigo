@@ -36,7 +36,6 @@ RingoPgSearchEngine::RingoPgSearchEngine(BingoPgConfig& bingo_config, const char
 BingoPgSearchEngine(),
 _searchType(-1) {
    _setBingoContext();
-//   bingoSetErrorHandler(_errorHandler, 0);
    /*
     * Set up bingo configuration
     */
@@ -95,7 +94,6 @@ void RingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
          break;
       default:
          throw Error("unsupported search type");
-         break;
    }
 
 }
@@ -149,6 +147,11 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    BingoPgCommon::getSearchTypeString(_searchType, search_type, false);
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, search_query, search_options);
+
+   /*
+    * Get block parameters and split search options
+    */
+   _getBlockParameters(search_options);
 
    /*
     * Set up matching parameters

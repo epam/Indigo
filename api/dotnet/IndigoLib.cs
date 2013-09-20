@@ -233,6 +233,7 @@ namespace com.ggasoftware.indigo
         int indigoCreateEdgeSubmolecule(int molecule, int nvertices, int[] vertices,
                                            int nedges, int[] edges);
         int indigoRemoveAtoms(int molecule, int nvertices, int[] vertices);
+        int indigoRemoveBonds(int molecule, int nbonds, int[] bonds);
 
         int indigoGetSubmolecule(int molecule, int nvertices, int[] vertices);
 

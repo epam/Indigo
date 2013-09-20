@@ -17,6 +17,7 @@
 #include "indigo_array.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
+#include "base_cpp/cancellation_handler.h"
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
 #include "molecule/molecule.h"
@@ -138,7 +139,21 @@ CEXPORT int indigoTransform (int reaction, int monomers)
       rt.arom_options = self.arom_options;
       rt.layout_flag = self.rpe_params.is_layout;
 
-      if (monomers_object.type == IndigoObject::MOLECULE)
+      // Try to work with molecule first
+      bool is_mol = false;
+      try 
+      {
+         monomers_object.getMolecule();
+         is_mol = true;
+      }
+      catch (IndigoError)
+      {
+      }
+
+      TimeoutCancellationHandler cancellation(self.cancellation_timeout);
+      rt.cancellation = &cancellation;
+
+      if (is_mol)
       {
          Molecule &mol = monomers_object.getMolecule();
          rt.transform(mol, query_rxn);

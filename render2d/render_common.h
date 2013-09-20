@@ -282,7 +282,7 @@ private:
 class RenderSettings {
 public:
    RenderSettings ();
-   void init (float sf);
+   void init (float sf, float lwf);
 
    CP_DECL;
    TL_CP_DECL(Array<double>, bondDashAromatic);
@@ -292,6 +292,7 @@ public:
 
    float labelInternalOffset;
    float lowerIndexShift;
+   float unit;
    float bondLineWidth;
    float bondSpace;
    float boundExtent;
@@ -384,6 +385,7 @@ public:
    Vec3f dataGroupColor;
    LABEL_MODE labelMode;
    bool highlightedLabelsVisible;
+   bool boldBondDetection;
    bool implHVisible;
    DINGO_MODE mode;
    Output* output;

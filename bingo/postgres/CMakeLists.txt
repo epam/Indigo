@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(BingoPostgres)
 
 include(../bingo-version.cmake)
-include(SetBuildParameters)
+include(ConfigureCommon)
 
 message(STATUS "BingoPostgres version is ${BINGO_VERSION_EXT}")
 
@@ -26,7 +26,7 @@ if (MSVC)
 endif()
 
 if (NOT MSVC)                                                                                                                                                            
-	add_library(bingo-postgres-shared SHARED ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers})
+	add_library(bingo-postgres-shared SHARED ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c)
 else()
 	add_library(bingo-postgres-shared SHARED ${PG_AM_src} ${PG_AM_headers} ${PG_COMMON_src} ${PG_COMMON_headers} ${PG_CORE_src} ${PG_CORE_headers} ${POSTGRES_INCLUDE_DIRS}/port/win32.h)
 endif()
@@ -38,6 +38,14 @@ if (APPLE)
 	set_target_properties(bingo-postgres-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -undefined suppress -flat_namespace")
 elseif(UNIX)
 	set_target_properties(bingo-postgres-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -pthread")
+endif()
+
+if (UNIX AND NOT APPLE)
+	message(STATUS "UNIX AND NOT APPLE")
+	if(${SUBSYSTEM_NAME} MATCHES "x64")
+		message(STATUS "SUBSYSTEM_NAME EQUALS x64")
+		set_target_properties(bingo-postgres-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
+	endif()
 endif()
 
 target_link_libraries(bingo-postgres-shared bingo-core-c bingo-core molecule reaction layout)

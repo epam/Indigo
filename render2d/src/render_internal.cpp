@@ -23,6 +23,8 @@
 
 using namespace indigo;
 
+#define BOND_STEREO_BOLD 10001
+
 static bool ElementHygrodenOnLeft[] =
 {
    false,  // filler
@@ -157,6 +159,7 @@ void RenderOptions::clear()
    titleFontFactor = 20;
    labelMode = LABEL_MODE_TERMINAL_HETERO;
    highlightedLabelsVisible = false;
+   boldBondDetection = false;
    implHVisible = true;
    commentColor.set(0,0,0);
    titleColor.set(0,0,0);
@@ -264,6 +267,8 @@ void MoleculeRenderInternal::render ()
    _initBondEndData();
 
    _findNeighbors();
+
+   _initBoldStereoBonds();
 
    _findRings();
 
@@ -607,7 +612,7 @@ void MoleculeRenderInternal::_initDataSGroups()
       const AtomDesc& ad = _ad(group.atoms[0]);
       if (!group.detached) {
          ti.bbp.copy(_ad(group.atoms[0]).pos);
-         ti.bbp.x += ad.boundBoxMax.x + _settings.bondLineWidth * 2;
+         ti.bbp.x += ad.boundBoxMax.x + _settings.unit * 2;
          ti.bbp.y -= ti.bbsz.y/2;
       } else if (group.relative) {
          _objDistTransform(ti.bbp, group.display_pos);
@@ -662,7 +667,7 @@ void MoleculeRenderInternal::_positionIndex(SGroup& sg, int ti, bool lower)
    if (bracket.invertUpperLowerIndex)
       lower = !lower;
    _cw.setTextItemSize(index, lower ? bracket.p1 : bracket.p0);
-   float xShift = (fabs(index.bbsz.x * bracket.n.x) + fabs(index.bbsz.y * bracket.n.y)) / 2 + _settings.bondLineWidth;
+   float xShift = (fabs(index.bbsz.x * bracket.n.x) + fabs(index.bbsz.y * bracket.n.y)) / 2 + _settings.unit;
    float yShift = (fabs(index.bbsz.x * bracket.d.x) + fabs(index.bbsz.y * bracket.d.y)) / 2;
    index.bbp.addScaled(bracket.n, -xShift);
    index.bbp.addScaled(bracket.d, lower ? -yShift : yShift);
@@ -727,7 +732,7 @@ void MoleculeRenderInternal::_placeBrackets(SGroup& sg, const Array<int>& atoms)
          max.max(b);
       }
    }
-   float extent = _settings.bondLineWidth * 3;
+   float extent = _settings.unit * 3;
    min.sub(Vec2f(extent, extent));
    max.add(Vec2f(extent, extent));
    Vec2f* const & left = brackets.push();
@@ -1129,7 +1134,7 @@ void MoleculeRenderInternal::_findRings()
 
       if (_opt.showCycles)
       {
-         float cycleLineOffset = _settings.bondLineWidth * 9;
+         float cycleLineOffset = _settings.unit * 9;
          QS_DEF(Array<Vec2f>, vv);
          vv.clear();
          for (int j = 0; j < ring.bondEnds.size() + 1; ++j)
@@ -1142,7 +1147,7 @@ void MoleculeRenderInternal::_findRings()
             vv.push(v);
          }
          _cw.setSingleSource(CWC_BLUE);
-         _cw.setLineWidth(_settings.bondLineWidth);
+         _cw.setLineWidth(_settings.unit);
          _cw.drawPoly(vv);
       }
    }
@@ -1418,7 +1423,7 @@ int MoleculeRenderInternal::_hydroPosFindConflict(int i) {
       HYDRO_POS orientation = d.x < d.y ? (d.x > -d.y ? HYDRO_POS_DOWN : HYDRO_POS_LEFT) : (d.x > -d.y ? HYDRO_POS_RIGHT : HYDRO_POS_UP);
       float aDist = __max(fabs(d.x), fabs(d.y));
       float bDist = __min(fabs(d.x), fabs(d.y));
-      if (orientation == ad.hydroPos && bDist < _settings.neighboringAtomDistanceTresholdB && (aDist < _settings.neighboringAtomDistanceTresholdA || 
+      if (orientation == ad.hydroPos && bDist < _settings.neighboringAtomDistanceTresholdB && (aDist < _settings.neighboringAtomDistanceTresholdA ||
          (aDist < _settings.neighboringAtomDistanceTresholdA * 2 && _ad(aid).hydroPos == 3 - ad.hydroPos)))
          return orientation;
    }
@@ -1730,7 +1735,7 @@ void MoleculeRenderInternal::_renderBondIds ()
          float a2 = atan2(be2.dir.y, be2.dir.x) - 0.1f;
          float a3 = atan2(be.dir.y, be.dir.x) + 0.1f;
          _cw.setSingleSource(CWC_DARKGREEN);
-         _cw.drawArc(_ad(be.aid).pos, _settings.bondSpace * 3 + _settings.bondLineWidth, a3, a2);
+         _cw.drawArc(_ad(be.aid).pos, _settings.bondSpace * 3 + _settings.unit, a3, a2);
 
       }
    }
@@ -1989,7 +1994,7 @@ float MoleculeRenderInternal::_getBondOffset (int aid, const Vec2f& pos, const V
       if (_clipRayBox(offset, pos, dir, item.bbp, item.bbsz, bondWidth))
          maxOffset = __max(maxOffset, offset);
    }
-   return maxOffset + _settings.bondLineWidth * 2;
+   return maxOffset + _settings.unit * 2;
 }
 
 void MoleculeRenderInternal::_calculateBondOffset ()
@@ -2068,13 +2073,34 @@ void MoleculeRenderInternal::_initBondData ()
       d.length = d.dir.length();
       d.dir.normalize();
       d.norm.set(-d.dir.y, d.dir.x);
-      d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2;
+      d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2; // TODO: check
 
       d.stereodir = _mol->getBondDirection(i);
       d.cistrans = _mol->cis_trans.isIgnored(i);
       int ubid = _bondMappingInv.size() > i ? _bondMappingInv.at(i) : i;
       if (_data.reactingCenters.size() > ubid)
          d.reactingCenter = _data.reactingCenters[ubid];
+   }
+}
+
+void MoleculeRenderInternal::_initBoldStereoBonds ()
+{
+   if (!_opt.boldBondDetection)
+      return;
+   for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i)) {
+      BondDescr &d = _bd(i);
+      const Vertex& v1 = _mol->getVertex(d.beg);
+      const Vertex& v2 = _mol->getVertex(d.end);
+      bool hasNeighboringUpBond1 = false;
+      for (int j = v1.neiBegin(); j < v1.neiEnd(); j = v1.neiNext(j))
+         if (v1.neiEdge(j) != i && _bd(v1.neiEdge(j)).stereodir == BOND_UP && _bd(v1.neiEdge(j)).end == d.beg)
+            hasNeighboringUpBond1 = true;
+      bool hasNeighboringUpBond2 = false;
+      for (int j = v2.neiBegin(); j < v2.neiEnd(); j = v2.neiNext(j))
+         if (v2.neiEdge(j) != i && _bd(v2.neiEdge(j)).stereodir == BOND_UP && _bd(v2.neiEdge(j)).end == d.end)
+            hasNeighboringUpBond2 = true;
+      if (hasNeighboringUpBond1 && hasNeighboringUpBond2)
+         d.stereodir = BOND_STEREO_BOLD;
    }
 }
 
@@ -2177,8 +2203,12 @@ void MoleculeRenderInternal::_drawAtom (const AtomDesc& desc)
       _cw.drawAttachmentPoint(_data.attachmentPoints[desc.attachmentPointBegin + i]);
    for (int i = 0; i < desc.rSiteAttachmentIndexCount; ++i)
       _cw.drawRSiteAttachmentIndex(_data.rSiteAttachmentIndices[desc.rSiteAttachmentIndexBegin + i]);
-   for (int i = 0; i < desc.gicount; ++i)
-      _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
+   for (int i = 0; i < desc.gicount; ++i) {
+      if (desc.hcolorSet)
+         _cw.drawGraphItem(_data.graphitems[i + desc.gibegin], desc.hcolor);
+      else
+         _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
+   }
 }
 
 void MoleculeRenderInternal::_writeQueryAtomToString (Output& output, int aid)
@@ -2552,7 +2582,7 @@ int MoleculeRenderInternal::_findClosestCircle (Vec2f& p, int aid, float radius,
          p.copy(q);
       }
       q.add(ad.pos);
-      //_cw.setLineWidth(_settings.bondLineWidth);
+      //_cw.setLineWidth(_settings.unit);
       //_cw.setSingleSource(CWC_BLUE);
       //_cw.drawCircle(q, radius);
 
@@ -2585,7 +2615,7 @@ void MoleculeRenderInternal::_preparePseudoAtom (int aid, int color, bool highli
    _cw.setTextItemSize(fake, ad.pos);
    float xpos = fake.bbp.x,
       width = fake.bbsz.x,
-      offset = _settings.bondLineWidth/2,
+      offset = _settings.unit/2,
       totalwdt = 0,
       upshift = -0.6f,
       downshift = 0.2f,
@@ -2788,7 +2818,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
                   shift = __min(shift, (item.bbsz.x + label.bbsz.x) / 2 / fabs(be.dir.x));
                if (fabs(be.dir.y) > 1e-3)
                   shift = __min(shift, (item.bbsz.y + label.bbsz.y) / 2 / fabs(be.dir.y));
-               shift += _settings.bondLineWidth;
+               shift += _settings.unit;
                item.bbp.addScaled(be.dir, shift);
                ti.bbp.addScaled(be.dir, shift);
                be.offset = shift + item.radius;
@@ -2860,9 +2890,9 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
                itemHydrogen.bbp.set(ad.rightMargin, ad.ypos);
                ad.rightMargin += hydrogenGroupSz.x;
             } else if (ad.hydroPos == HYDRO_POS_UP) {
-               itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMin.y - hydrogenGroupSz.y - _settings.bondLineWidth;
+               itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMin.y - hydrogenGroupSz.y - _settings.unit;
             } else if (ad.hydroPos == HYDRO_POS_DOWN) {
-               itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMax.y + _settings.bondLineWidth;
+               itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMax.y + _settings.unit;
             } else {
                throw Error("hydrogen position value invalid");
             }
@@ -3037,7 +3067,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
          // label hidden - position stereo group label independently
          Vec2f p;
          bondEndRightToStereoGroupLabel = _findClosestBox(p, aid,
-            itemStereoGroup.bbsz, _settings.bondLineWidth);
+            itemStereoGroup.bbsz, _settings.unit);
 
          p.addScaled(itemStereoGroup.bbsz, -0.5);
          itemStereoGroup.bbp.copy(p);
@@ -3063,7 +3093,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       else
       {
          Vec2f p;
-         _findClosestBox(p, aid, itemAAM.bbsz, _settings.bondLineWidth,
+         _findClosestBox(p, aid, itemAAM.bbsz, _settings.unit,
             bondEndRightToStereoGroupLabel);
 
          p.addScaled(itemAAM.bbsz, -0.5);
@@ -3076,7 +3106,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
    QS_DEF(Array<float>, angles);
    QS_DEF(Array<int>, split);
    QS_DEF(Array<int>, rGroupAttachmentIndices);
-   
+
    if (ad.isRGroupAttachmentPoint) {
       // collect the angles between adjacent bonds
       const Vertex& v = bm.getVertex(aid);
@@ -3148,7 +3178,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       ad.attachmentPointCount = rGroupAttachmentIndices.size();
       for (int j = 0; j < rGroupAttachmentIndices.size(); ++j) {
          RenderItemAttachmentPoint& attachmentPoint = _data.attachmentPoints.push();
-         float offset = __min(__max(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.bondLineWidth),0), 0.4f);
+         float offset = __min(__max(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.unit),0), 0.4f);
          attachmentPoint.dir.copy(attachmentDirection[j]);
          attachmentPoint.p0.lineCombin(ad.pos, attachmentDirection[j], offset);
          attachmentPoint.p1.lineCombin(ad.pos, attachmentDirection[j], 0.8f);
@@ -3335,7 +3365,7 @@ void MoleculeRenderInternal::_drawTopology (BondDescr& bd)
       throw Error("Unknown topology value");
 
    _cw.setTextItemSize(ti);
-   float shift = (fabs(bd.norm.x * ti.bbsz.x)+fabs(bd.norm.y * ti.bbsz.y)) / 2 + _settings.bondLineWidth;
+   float shift = (fabs(bd.norm.x * ti.bbsz.x)+fabs(bd.norm.y * ti.bbsz.y)) / 2 + _settings.unit;
 
    if (bd.extP < bd.extN)
       shift = shift + bd.extP;
@@ -3355,8 +3385,8 @@ void MoleculeRenderInternal::_drawReactingCenter (BondDescr& bd, int rc)
    Vec2f p[rcNumPnts];
    for (int i = 0; i < rcNumPnts; ++i)
       p[i].copy(bd.center);
-   float alongIntRc = _settings.bondLineWidth, // half interval along for RC_CENTER
-      alongIntMadeBroken = 2 * _settings.bondLineWidth, // half interval between along for RC_MADE_OR_BROKEN
+   float alongIntRc = _settings.unit, // half interval along for RC_CENTER
+      alongIntMadeBroken = 2 * _settings.unit, // half interval between along for RC_MADE_OR_BROKEN
       alongSz = 1.5f * _settings.bondSpace, // half size along for RC_CENTER
       acrossInt = 1.5f * _settings.bondSpace, // half interval across for RC_CENTER
       acrossSz = 3.0f * _settings.bondSpace, // half size across for all
@@ -3364,6 +3394,7 @@ void MoleculeRenderInternal::_drawReactingCenter (BondDescr& bd, int rc)
       radius = _settings.bondSpace; // radius of the circle for RC_UNCHANGED
    int numLines = 0;
 
+   _cw.setLineWidth(_settings.unit);
    switch (rc)
    {
    case RC_NOT_CENTER: // X
@@ -3440,80 +3471,103 @@ void MoleculeRenderInternal::_drawReactingCenter (BondDescr& bd, int rc)
    }
 }
 
+double MoleculeRenderInternal::_getAdjustmentFactor (const int aid, const int anei, const double acos, const double asin,
+                                                     const double tgb, const double csb, const double snb,
+                                                     const double len, const double w, double& csg, double& sng) {
+   csg = csb;
+   sng = snb;
+   bool adjustLeft = acos < 0.99 && acos > -0.99;
+   if (!adjustLeft || _bd(_be(anei).bid).isShort)
+      return -1;
+   const BondDescr& nbd = _bd(_be(anei).bid);
+   if (nbd.type == BOND_DOUBLE && nbd.centered) {
+      if (asin <= 0)
+         return -1;
+      return (len * asin - _settings.bondSpace) / (snb * acos + csb * asin);
+   }
+   if ((_bd(_be(anei).bid).stereodir == BOND_UP && _bd(_be(anei).bid).end == aid) || _bd(_be(anei).bid).stereodir == BOND_STEREO_BOLD) {
+      if (fabs(asin) < 0.01)
+         return -1;
+      double sna = sqrt((1 - acos)/2); // sin(a/2)
+      double csa = (asin > 0 ? 1 : -1) * sqrt((1 + acos)/2); // cos(a/2)
+      double gamma = w / sna;
+      double x = sqrt(len * len + gamma * gamma - 2 * gamma * len * csa);
+      sng = gamma * sna / x;
+      csg = sqrt(1-sng*sng);
+      return x;
+   }
+   if (asin > 0.01)
+      return len/(acos * snb / asin + csb);
+   return -1;
+}
+
+void MoleculeRenderInternal::_adjustAngle (Vec2f& l, const BondEnd& be1, const BondEnd& be2, const double w, const double lw, const double len1, bool left) {
+   const Vec2f& p1 = _ad(be1.aid).pos;
+   const Vec2f& p2 = _ad(be2.aid).pos;
+   const double len = Vec2f::dist(p1, p2);
+   double tgb = w / len;
+   double csb = sqrt(1 / (1 + tgb * tgb));
+   double snb = tgb * csb;
+   double sng = 0, csg = 0;
+   double ttr = left ?
+      _getAdjustmentFactor(be2.aid, be2.rnei, be2.rcos, be2.rsin, tgb, csb, snb, len, w-lw, csg, sng):
+      _getAdjustmentFactor(be2.aid, be2.lnei, be2.lcos, be2.lsin, tgb, csb, snb, len, w-lw, csg, sng);
+   if (ttr < 0)
+      return;
+   l.diff(p2, p1);
+   l.normalize();
+   l.scale(ttr);
+   l.rotateL(left ? sng : -sng, csg);
+   l.add(p1);
+}
+
 void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
 {
    Vec2f l(be2.p), r(be2.p);
-   float w = _settings.bondSpace + _settings.bondLineWidth;
+   double w = _settings.bondSpace + _settings.bondLineWidth;
    l.addScaled(bd.norm, -w);
    r.addScaled(bd.norm, w);
    bd.extP = bd.extN = w;
 
    Vec2f dd;
    dd.diff(be2.p, be1.p);
-   float len = dd.length();
+   double len = dd.length();
 
-   float lw = _cw.currentLineWidth();
+   double lw = _cw.currentLineWidth();
 
-   int stripeCnt = (int)((len) / lw / 2);
    Vec2f r0(be1.p), l0(be1.p);
    l0.addScaled(bd.norm, -lw/2);
    r0.addScaled(bd.norm, lw/2);
 
-   if (bd.stereodir == 0)
-   {
+   if (bd.stereodir == 0) {
       _cw.drawLine(be1.p, be2.p);
       bd.extP = bd.extN = lw / 2;
-   }
-   else if (bd.stereodir == BOND_UP)
-   {
-      if (_ad(be2.aid).showLabel == false && !bd.isShort)
-      {
-         float tgb = (w - lw) / len;
-         float csb = sqrt(1 / (1 + tgb * tgb));
-         float snb = tgb * csb;
-         float tga, ttl=0.0, ttr=0.0;
-         bool adjustRight = be2.lsin > 0 && be2.lcos < 0.9f && be2.lcos > -0.9f && fabs(be2.lcos) > 0.001f,
-            adjustLeft = be2.rsin > 0 && be2.rcos < 0.9f && be2.rcos > -0.9f && fabs(be2.rcos) > 0.001f;
-
-         if (adjustRight && !_bd(_be(be2.lnei).bid).isShort)
-         {
-            tga = be2.lsin / be2.lcos;
-            const BondDescr& nbd = _bd(_be(be2.lnei).bid);
-            if (nbd.type == BOND_DOUBLE && nbd.centered)
-               ttl = (len * be2.lsin - _settings.bondSpace) / (snb * be2.lcos + csb * be2.lsin);
-            else
-               ttl = len * csb * (1 + tgb * (tgb * tga - 1) / (tgb + tga));
-            r.copy(be1.dir);
-            r.scale(ttl);
-            r.rotateL(-snb, csb);
-            r.add(be1.p);
-         }
-
-         if (adjustLeft && !_bd(_be(be2.rnei).bid).isShort)
-         {
-            tga = be2.rsin / be2.rcos;
-            const BondDescr& nbd = _bd(_be(be2.rnei).bid);
-            if (nbd.type == BOND_DOUBLE && nbd.centered)
-               ttr = (len * be2.rsin - _settings.bondSpace) / (snb * be2.rcos + csb * be2.rsin);
-            else
-               ttr = len * csb * (1 + tgb * (tgb * tga - 1) / (tgb + tga));
-            l.copy(be1.dir);
-            l.scale(ttr);
-            l.rotateL(snb, csb);
-            l.add(be1.p);
-         }
+   } else if (bd.stereodir == BOND_UP) {
+      if (_ad(be2.aid).showLabel == false && !bd.isShort) {
+         _adjustAngle(l, be1, be2, w, lw, len, true);
+         _adjustAngle(r, be1, be2, w, lw, len, false);
          _cw.fillPentagon(r0, r, be2.p, l, l0);
-      }
-      else
-      {
+      } else {
          _cw.fillQuad(r0, r, l, l0);
       }
-   }
-   else if (bd.stereodir == BOND_DOWN)
+   } else if (bd.stereodir == BOND_STEREO_BOLD) {
+      r0.copy(be1.p);
+      l0.copy(be1.p);
+      l0.addScaled(bd.norm, -w);
+      r0.addScaled(bd.norm, w);
+
+      _adjustAngle(l, be1, be2, w, lw, len, true);
+      _adjustAngle(r, be1, be2, w, lw, len, false);
+      _adjustAngle(r0, be2, be1, w, lw, len, true);
+      _adjustAngle(l0, be2, be1, w, lw, len, false);
+      _cw.fillHex(be1.p, r0, r, be2.p, l, l0);
+   } else if (bd.stereodir == BOND_DOWN) {
+      int stripeCnt = __max((int)((len) / lw / 2), 4);
       _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
-   else if (bd.stereodir == BOND_EITHER)
+   } else if (bd.stereodir == BOND_EITHER) {
+      int stripeCnt = __max((int)((len) / lw / 1.5), 5);
       _cw.drawTriangleZigzag(be1.p, r, l, stripeCnt);
-   else
+   } else
       throw Error("Unknown single bond stereo type");
 }
 
@@ -3630,7 +3684,7 @@ void MoleculeRenderInternal::_drawStereoCareBox (BondDescr& bd, const BondEnd& b
          Vec2f p0, p1, p2, p3;
       p0.lineCombin(be1.p, bd.dir, (bd.length - _settings.stereoCareBoxSize) / 2);
       p0.addScaled(bd.norm, -_settings.stereoCareBoxSize / 2);
-      bd.extP = bd.extN = _settings.stereoCareBoxSize / 2 + _settings.bondLineWidth / 2;
+      bd.extP = bd.extN = _settings.stereoCareBoxSize / 2 + _settings.unit / 2;
       if (!bd.centered)
       {
          float shift = Vec2f::dot(ns,bd.norm);
@@ -3642,6 +3696,7 @@ void MoleculeRenderInternal::_drawStereoCareBox (BondDescr& bd, const BondEnd& b
       p2.lineCombin(p1, bd.norm, _settings.stereoCareBoxSize);
       p3.lineCombin(p0, bd.norm, _settings.stereoCareBoxSize);
 
+      _cw.setLineWidth(_settings.unit);
       _cw.drawQuad(p0, p1, p2, p3);
 
    }

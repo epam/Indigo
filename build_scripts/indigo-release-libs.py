@@ -30,6 +30,14 @@ parser.add_option('--clean', default=False, action="store_true",
     help='delete all the build data', dest="clean")
 parser.add_option('--preset', type="choice", dest="preset", 
     choices=presets.keys(), help='build preset %s' % (str(presets.keys())))
+parser.add_option('--cairo-gl', dest="cairogl", 
+    default=False, action="store_true", help='Build Cairo with OpenGL support')
+parser.add_option('--cairo-vg', dest="cairovg", 
+    default=False, action="store_true", help='Build Cairo with CairoVG support')
+parser.add_option('--find-cairo', dest="findcairo", 
+    default=False, action="store_true", help='Find and use system Cairo')
+parser.add_option('--find-pixman', dest="findpixman", 
+    default=False, action="store_true", help='Find and use system Pixman')
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
@@ -48,7 +56,19 @@ project_dir = join(cur_dir, "indigo-all")
 
 if args.generator.find("Unix Makefiles") != -1:
     args.params += " -DCMAKE_BUILD_TYPE=" + args.config
-    
+
+if args.cairogl:
+    args.params += ' -DWITH_CAIRO_GL=TRUE'
+
+if args.cairovg:
+    args.params += ' -DWITH_CAIRO_VG=TRUE'
+
+if args.findcairo:
+    args.params += ' -DUSE_SYSTEM_CAIRO=TRUE'
+
+if args.findcairo:
+    args.params += ' -DUSE_SYSTEM_PIXMAN=TRUE'
+
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
@@ -60,7 +80,7 @@ if not os.path.exists(full_build_dir):
     os.makedirs(full_build_dir)
 
 os.chdir(full_build_dir)
-command = "cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir)
+command = "cmake -G \"%s\" %s \"%s\"" % (args.generator, args.params, project_dir)
 print(command)
 subprocess.check_call(command, shell=True)
 

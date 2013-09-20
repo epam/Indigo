@@ -30,7 +30,7 @@ public:
 
    void checkPathNonEmpty () const;
 
-   RenderContext (const RenderOptions& opt, float sf);
+   RenderContext (const RenderOptions& opt, float sf, float lwf);
    void setDefaultScale (float scale);
    void setHDC (PVOID hdc);
    int  getMaxPageSize () const;
@@ -58,6 +58,7 @@ public:
    void drawAttachmentPoint (RenderItemAttachmentPoint& ri);
    void drawRSiteAttachmentIndex (RenderItemRSiteAttachmentIndex& ri);
    void drawLine (const Vec2f& v0, const Vec2f& v1);
+   void fillHex (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4, const Vec2f& v5);
    void fillQuad (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3);
    void fillQuadStripes (const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, int cnt);
    void fillPentagon (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4);
@@ -74,6 +75,7 @@ public:
    void setGraphItemSizeCap (GraphItem& gi);
    void setGraphItemSizeSign (GraphItem& gi, GraphItem::TYPE type);
    void drawGraphItem (GraphItem& gi);
+   void drawGraphItem (GraphItem& gi, const Vec3f& color);
    void fillRect (double x, double y, double w, double h);
    void getColor (float& r, float& g, float& b, int c);
    int getElementColor (int label);
@@ -125,6 +127,7 @@ public:
 private:
    static cairo_status_t writer (void *closure, const unsigned char *data, unsigned int length);
 
+   void _drawGraphItem (GraphItem& gi);
    void lineTo (const Vec2f& v);
    void lineToRel (float x, float y);
    void lineToRel (const Vec2f& v);

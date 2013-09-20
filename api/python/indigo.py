@@ -800,6 +800,12 @@ class IndigoObject(object):
             arr2[i] = vertices[i]
         return self.dispatcher._checkResult(Indigo._lib.indigoRemoveAtoms(self.id, len(arr2), arr2))
 
+    def removeBonds(self, bonds):
+        self.dispatcher._setSessionId()
+        arr2 = (c_int * len(bonds))()
+        for i in range(len(bonds)):
+            arr2[i] = bonds[i]
+        return self.dispatcher._checkResult(Indigo._lib.indigoRemoveBonds(self.id, len(arr2), arr2))
 
     def aromatize(self):
         self.dispatcher._setSessionId()
@@ -1155,6 +1161,9 @@ class Indigo(object):
         if Indigo._lib is None:
             self._initStatic(path)
         self._sid = Indigo._lib.indigoAllocSessionId()
+        # Capture a reference to the _lib to access it in the __del__ method because
+        # at interpreter shutdown, the module's global variables are set to None 
+        self._lib = Indigo._lib
         self._setSessionId()
         self.IndigoObject = IndigoObject
         Indigo._lib.indigoVersion.restype = c_char_p
@@ -1593,6 +1602,8 @@ class Indigo(object):
         Indigo._lib.indigoGetSubmolecule.argtypes = [c_int, c_int, POINTER(c_int)]
         Indigo._lib.indigoRemoveAtoms.restype = c_int
         Indigo._lib.indigoRemoveAtoms.argtypes = [c_int, c_int, POINTER(c_int)]
+        Indigo._lib.indigoRemoveBonds.restype = c_int
+        Indigo._lib.indigoRemoveBonds.argtypes = [c_int, c_int, POINTER(c_int)]
         Indigo._lib.indigoAlignAtoms.restype = c_float
         Indigo._lib.indigoAlignAtoms.argtypes = [c_int, c_int, POINTER(c_int), POINTER(c_float)]
         Indigo._lib.indigoAromatize.restype = c_int
@@ -1716,8 +1727,7 @@ class Indigo(object):
 
     def __del__ (self):
         if hasattr(self, '_lib'):
-            #sys.__stdout__.write('releaseSessionId ' + str(self._sid))
-            Indigo._lib.indigoReleaseSessionId(self._sid)
+            self._lib.indigoReleaseSessionId(self._sid)
 
     def writeBuffer (self):
         self._setSessionId()
@@ -1739,7 +1749,7 @@ class Indigo(object):
 
     def setOption (self, option, value1, value2=None, value3=None):
         self._setSessionId()
-        if type(value1).__name__ == 'str' and value2 is None and value3 is None:
+        if (type(value1).__name__ == 'str' or type(value1).__name__ == 'unicode') and value2 is None and value3 is None:
             self._checkResult(Indigo._lib.indigoSetOption(option.encode('ascii'), value1.encode('ascii')))
         elif type(value1).__name__ == 'int' and value2 is None and value3 is None:
             self._checkResult(Indigo._lib.indigoSetOptionInt(option.encode('ascii'), value1))

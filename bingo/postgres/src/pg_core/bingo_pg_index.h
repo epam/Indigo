@@ -60,6 +60,8 @@ public:
    int getPagesCount() const {return _metaInfo.n_pages;}
    int getFpSize() const {return _metaInfo.n_blocks_for_fp;}
    int getMapSize() const {return _metaInfo.n_blocks_for_map;}
+   int getDictCount() const {return _metaInfo.n_blocks_for_dictionary;}
+
    PG_OBJECT getIndexPtr() const {return _index;}
    INDEX_STRATEGY getIndexStrategy() const {return _strategy;}
 
@@ -83,9 +85,11 @@ public:
    void readCmfItem(int section_idx, int mol_idx, indigo::Array<char>& cmf_buf);
    void readXyzItem(int section_idx, int mol_idx, indigo::Array<char>& xyz_buf);
 
-   void andWithBitset(int section_idx, int mol_idx, BingoPgExternalBitset& ext_bitset);
+   void andWithBitset(int section_idx, int fp_idx, BingoPgExternalBitset& ext_bitset);
 
    int getSectionStructuresNumber(int section_idx);
+   const BingoSectionInfoData& getSectionInfo (int section_idx);
+
    void getSectionBitset(int section_idx, BingoPgExternalBitset& section_bitset);
    void getSectionBitsCount(int section_idx, indigo::Array<int>& bits_count);
    

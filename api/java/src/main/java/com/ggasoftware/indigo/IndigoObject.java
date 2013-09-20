@@ -59,7 +59,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    @SuppressWarnings("FinalizeDeclaration")
    protected void finalize () throws Throwable
    {
-      if (!Indigo.libraryUnloaded()) {
+      if (!dispatcher.sessionReleased()) {
           dispose();
       }
       super.finalize();
@@ -1057,6 +1057,17 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public void removeAtoms (Collection<Integer> vertices)
    {
       removeAtoms(Indigo.toIntArray(vertices));
+   }
+   
+   public void removeBonds (int[] bonds)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoRemoveBonds(self, bonds.length, bonds));
+   }
+
+   public void removeBonds (Collection<Integer> bonds)
+   {
+      removeBonds(Indigo.toIntArray(bonds));
    }
    
    public float alignAtoms (int[] atom_ids, float[] desired_xyz)

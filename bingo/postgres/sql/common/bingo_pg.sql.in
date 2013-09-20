@@ -1,3 +1,21 @@
+CREATE OR REPLACE FUNCTION getstructurescount(text) RETURNS int AS $$
+begin
+ return BINGO_SCHEMANAME._get_structures_count($1::regclass::oid);
+end;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION getblockcount(text) RETURNS int AS $$
+begin
+ return BINGO_SCHEMANAME._get_block_count($1::regclass::oid);
+end;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION precachedatabase(text, text) RETURNS text AS $$
+begin
+ return BINGO_SCHEMANAME._precache_database($1::regclass::oid, $2);
+end;
+$$ LANGUAGE 'plpgsql';
+
 CREATE OR REPLACE FUNCTION _internal_func_011(integer, text, text) RETURNS void AS $$
 BEGIN 
 IF NOT BINGO_SCHEMANAME._internal_func_check($1) 

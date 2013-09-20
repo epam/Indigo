@@ -63,6 +63,7 @@ void RenderParams::clearArrays ()
 void RenderParams::clear ()
 {
    relativeThickness = 1.0f;
+   bondLineWidthFactor = 1.0f;
    rmode = RENDER_NONE;
    mol.reset(NULL);
    rxn.reset(NULL);
@@ -161,7 +162,7 @@ void RenderParamInterface::render (RenderParams& params)
    if (params.rmode == RENDER_NONE)
       throw Error("No object to render specified");
 
-   RenderContext rc(params.rOpt, params.relativeThickness);
+   RenderContext rc(params.rOpt, params.relativeThickness, params.bondLineWidthFactor);
 
    bool bondLengthSet = params.cnvOpt.bondLength > 0;
    int bondLength = (int)(bondLengthSet ? params.cnvOpt.bondLength : 100);

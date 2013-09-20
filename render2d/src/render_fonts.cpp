@@ -115,7 +115,7 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool b
    if (opt.mode != MODE_PDF && opt.mode != MODE_SVG && v < 1.5) {
       cairo_rectangle(_cr, ti.bbp.x + ti.bbsz.x / 4, ti.bbp.y + ti.bbsz.y / 4, ti.bbsz.x/2, ti.bbsz.y/2);
       bbIncludePath(false);
-      cairo_set_line_width(_cr, _settings.bondLineWidth / 2);
+      cairo_set_line_width(_cr, _settings.unit / 2);
       cairo_stroke(_cr);
       return;
    }

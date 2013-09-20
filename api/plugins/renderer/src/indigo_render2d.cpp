@@ -155,6 +155,14 @@ void indigoRenderSetRelativeThickness (float rt)
    rp.relativeThickness = rt;
 }
 
+void indigoRenderSetBondLineWidth (float w)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   if (w <= 0.0f)
+      throw IndigoError("bond line width factor must be positive");
+   rp.bondLineWidthFactor = w;
+}
+
 void indigoRenderSetBackgroundColor (float r, float g, float b)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -177,6 +185,12 @@ void indigoRenderSetHighlightedLabelsVisible (int enabled)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.rOpt.highlightedLabelsVisible = enabled != 0;
+}
+
+void indigoRenderSetBoldBondDetection (int enabled)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.boldBondDetection = enabled != 0;
 }
 
 void indigoRenderSetColoring (int enabled)
@@ -375,7 +389,7 @@ CEXPORT int indigoRender (int object, int output)
             rp.mol.reset(new QueryMolecule());
          else
             rp.mol.reset(new Molecule());
-         rp.mol->clone(self.getObject(object).getBaseMolecule(), 0, 0);
+         rp.mol->clone_KeepIndices(self.getObject(object).getBaseMolecule());
          rp.rmode = RENDER_MOL;
       }
       else if (IndigoBaseReaction::is(obj))
@@ -425,7 +439,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
 
-            rp.mols.top()->clone(objs[i]->getBaseMolecule(), 0, 0, 0);
+            rp.mols.top()->clone_KeepIndices(objs[i]->getBaseMolecule());
             rp.rmode = RENDER_MOL;
          }
       }
@@ -582,9 +596,11 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", indigoRenderSetCenterDoubleBondWhenStereoAdjacent);
    mgr.setOptionHandlerBool("render-implicit-hydrogens-visible", indigoRenderSetImplicitHydrogenVisible);
    mgr.setOptionHandlerBool("render-highlighted-labels-visible", indigoRenderSetHighlightedLabelsVisible);
+   mgr.setOptionHandlerBool("render-bold-bond-detection", indigoRenderSetBoldBondDetection);
 
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);
+   mgr.setOptionHandlerFloat("render-bond-line-width", indigoRenderSetBondLineWidth);
    mgr.setOptionHandlerFloat("render-comment-font-size", indigoRenderSetCommentFontSize);
    mgr.setOptionHandlerFloat("render-comment-alignment", indigoRenderSetCommentAlignment);
 

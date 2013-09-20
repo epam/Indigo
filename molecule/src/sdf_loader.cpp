@@ -157,13 +157,13 @@ void SdfLoader::readNext ()
    
    int properties_offset = last_offset;
 
-   int properties_end_offset = -1;
+   int properties_end_offset = _scanner->tell();
    while (1)
    {
-      properties_end_offset = _scanner->tell();
-
       if (strncmp(str.ptr(), "$$$$", 4) == 0)
          break;
+
+      properties_end_offset = _scanner->tell();
 
       BufferScanner ws(str.ptr());
 
