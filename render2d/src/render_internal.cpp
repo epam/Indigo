@@ -3501,17 +3501,18 @@ double MoleculeRenderInternal::_getAdjustmentFactor (const int aid, const int an
    return -1;
 }
 
-void MoleculeRenderInternal::_adjustAngle (Vec2f& l, const BondEnd& be1, const BondEnd& be2, const double w, const double lw, const double len1, bool left) {
+void MoleculeRenderInternal::_adjustAngle (Vec2f& l, const BondEnd& be1, const BondEnd& be2, bool left) {
    const Vec2f& p1 = _ad(be1.aid).pos;
    const Vec2f& p2 = _ad(be2.aid).pos;
    const double len = Vec2f::dist(p1, p2);
+   double w = _settings.bondSpace;
    double tgb = w / len;
    double csb = sqrt(1 / (1 + tgb * tgb));
    double snb = tgb * csb;
    double sng = 0, csg = 0;
    double ttr = left ?
-      _getAdjustmentFactor(be2.aid, be2.rnei, be2.rcos, be2.rsin, tgb, csb, snb, len, w-lw, csg, sng):
-      _getAdjustmentFactor(be2.aid, be2.lnei, be2.lcos, be2.lsin, tgb, csb, snb, len, w-lw, csg, sng);
+      _getAdjustmentFactor(be2.aid, be2.rnei, be2.rcos, be2.rsin, tgb, csb, snb, len, w, csg, sng):
+      _getAdjustmentFactor(be2.aid, be2.lnei, be2.lcos, be2.lsin, tgb, csb, snb, len, w, csg, sng);
    if (ttr < 0)
       return;
    l.diff(p2, p1);
@@ -3521,20 +3522,36 @@ void MoleculeRenderInternal::_adjustAngle (Vec2f& l, const BondEnd& be1, const B
    l.add(p1);
 }
 
+void MoleculeRenderInternal::_bondBoldStereo (BondDescr& bd, const BondEnd& be1, const BondEnd& be2) {
+   Vec2f r0(be1.p), l0(be1.p), r1(be2.p), l1(be2.p);
+   double w = _settings.bondSpace;
+   l0.addScaled(bd.norm, -w);
+   r0.addScaled(bd.norm, w);
+   l1.addScaled(bd.norm, -w);
+   r1.addScaled(bd.norm, w);
+
+   _adjustAngle(l1, be1, be2, true);
+   _adjustAngle(r1, be1, be2, false);
+   _adjustAngle(r0, be2, be1, true);
+   _adjustAngle(l0, be2, be1, false);
+   _cw.fillHex(be1.p, r0, r1, be2.p, l1, l0);
+}
+
 void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
 {
+   double len = Vec2f::dist(be2.p, be1.p);
+
+   if (bd.stereodir == BOND_STEREO_BOLD) {
+      _bondBoldStereo(bd, be1, be2);
+      return;
+   }
    Vec2f l(be2.p), r(be2.p);
-   double w = _settings.bondSpace + _settings.bondLineWidth;
+   double w = _settings.bondSpace;
    l.addScaled(bd.norm, -w);
    r.addScaled(bd.norm, w);
    bd.extP = bd.extN = w;
 
-   Vec2f dd;
-   dd.diff(be2.p, be1.p);
-   double len = dd.length();
-
    double lw = _cw.currentLineWidth();
-
    Vec2f r0(be1.p), l0(be1.p);
    l0.addScaled(bd.norm, -lw/2);
    r0.addScaled(bd.norm, lw/2);
@@ -3544,23 +3561,12 @@ void MoleculeRenderInternal::_bondSingle (BondDescr& bd, const BondEnd& be1, con
       bd.extP = bd.extN = lw / 2;
    } else if (bd.stereodir == BOND_UP) {
       if (_ad(be2.aid).showLabel == false && !bd.isShort) {
-         _adjustAngle(l, be1, be2, w, lw, len, true);
-         _adjustAngle(r, be1, be2, w, lw, len, false);
+         _adjustAngle(l, be1, be2, true);
+         _adjustAngle(r, be1, be2, false);
          _cw.fillPentagon(r0, r, be2.p, l, l0);
       } else {
          _cw.fillQuad(r0, r, l, l0);
       }
-   } else if (bd.stereodir == BOND_STEREO_BOLD) {
-      r0.copy(be1.p);
-      l0.copy(be1.p);
-      l0.addScaled(bd.norm, -w);
-      r0.addScaled(bd.norm, w);
-
-      _adjustAngle(l, be1, be2, w, lw, len, true);
-      _adjustAngle(r, be1, be2, w, lw, len, false);
-      _adjustAngle(r0, be2, be1, w, lw, len, true);
-      _adjustAngle(l0, be2, be1, w, lw, len, false);
-      _cw.fillHex(be1.p, r0, r, be2.p, l, l0);
    } else if (bd.stereodir == BOND_DOWN) {
       int stripeCnt = __max((int)((len) / lw / 2), 4);
       _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
@@ -3607,10 +3613,9 @@ float MoleculeRenderInternal::_doubleBondShiftValue (const BondEnd& be, bool rig
 void MoleculeRenderInternal::_prepareDoubleBondCoords (Vec2f* coord, BondDescr& bd, const BondEnd& be1, const BondEnd& be2, bool allowCentered)
 {
    Vec2f ns, ds;
-   ns.scaled(bd.norm, 2 * _settings.bondSpace);
+   ns.scaled(bd.norm, 2 * _settings.bondSpace + (bd.stereodir == BOND_STEREO_BOLD ? 1 : 0) * _settings.bondLineWidth);
 
-   if ((allowCentered && bd.centered) || bd.cistrans)
-   {
+   if (!bd.stereodir == BOND_STEREO_BOLD && ((allowCentered && bd.centered) || bd.cistrans)) {
       Vec2f p0, p1, q0, q1;
       ns.scale(0.5f);
       p0.sum(be1.p, ns);
@@ -3618,13 +3623,11 @@ void MoleculeRenderInternal::_prepareDoubleBondCoords (Vec2f* coord, BondDescr& 
       q0.diff(be1.p, ns);
       q1.diff(be2.p, ns);
 
-      if (be1.prolong)
-      {
+      if (be1.prolong) {
          p0.addScaled(be1.dir, _doubleBondShiftValue(be1, true, bd.centered));
          q0.addScaled(be1.dir, _doubleBondShiftValue(be1, false, bd.centered));
       }
-      if (be2.prolong)
-      {
+      if (be2.prolong) {
          p1.addScaled(be2.dir, _doubleBondShiftValue(be2, false, bd.centered));
          q1.addScaled(be2.dir, _doubleBondShiftValue(be2, true, bd.centered));
       }
@@ -3634,14 +3637,11 @@ void MoleculeRenderInternal::_prepareDoubleBondCoords (Vec2f* coord, BondDescr& 
       coord[2].copy(q0);
       coord[3].copy(q1);
       bd.extP = bd.extN = _settings.bondSpace + _settings.bondLineWidth / 2;
-   }
-   else
-   {
-      bd.extP = _settings.bondSpace * 2 + _settings.bondLineWidth / 2;
+   } else {
+      bd.extP = ns.length() + _settings.bondLineWidth / 2;
       bd.extN = _settings.bondLineWidth / 2;
 
-      if (!bd.lineOnTheRight)
-      {
+      if (!bd.lineOnTheRight) {
          float t;
          __swap(bd.extP, bd.extN, t);
          ns.negate();
@@ -3652,15 +3652,13 @@ void MoleculeRenderInternal::_prepareDoubleBondCoords (Vec2f* coord, BondDescr& 
       p1.sum(be2.p, ns);
 
       float cs;
-      if (!_ad(be1.aid).showLabel)
-      {
+      if (!_ad(be1.aid).showLabel) {
          cs = bd.lineOnTheRight ? be1.rcos : be1.lcos;
          if (fabs(cs) < _settings.cosineTreshold)
             p0.addScaled(be1.dir, _settings.bondSpace * _ctghalf(cs) * 2);
       }
 
-      if (!_ad(be2.aid).showLabel)
-      {
+      if (!_ad(be2.aid).showLabel) {
          cs = bd.lineOnTheRight ? be2.lcos : be2.rcos;
          if (fabs(cs) < _settings.cosineTreshold)
             p1.addScaled(be2.dir, _settings.bondSpace * _ctghalf(cs) * 2);
@@ -3706,7 +3704,10 @@ void MoleculeRenderInternal::_bondDouble (BondDescr& bd, const BondEnd& be1, con
 {
    Vec2f coord[4];
    _prepareDoubleBondCoords(coord, bd, be1, be2, true);
-   if (bd.cistrans) {
+   if (bd.stereodir == BOND_STEREO_BOLD) {
+      _bondBoldStereo(bd, be1, be2);
+      _cw.drawLine(coord[2], coord[3]);
+   } else if (bd.cistrans) {
       _cw.drawLine(coord[0], coord[3]);
       _cw.drawLine(coord[2], coord[1]);
    } else {
