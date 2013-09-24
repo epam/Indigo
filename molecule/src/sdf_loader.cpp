@@ -157,13 +157,12 @@ void SdfLoader::readNext ()
    
    int properties_offset = last_offset;
 
-   int properties_end_offset = _scanner->tell();
    while (1)
    {
       if (strncmp(str.ptr(), "$$$$", 4) == 0)
          break;
 
-      properties_end_offset = _scanner->tell();
+      output.writeStringCR(str.ptr());
 
       BufferScanner ws(str.ptr());
 
@@ -178,7 +177,6 @@ void SdfLoader::readNext ()
 
       while (!ws.isEOF())
       {
-
          char c = ws.readChar();
 
          if (c == '>')
@@ -195,7 +193,9 @@ void SdfLoader::readNext ()
 
          int idx = properties.findOrInsert(word.ptr());
 
-         _scanner->readLine(properties.value(idx), true);
+         _scanner->readLine(str, true);
+         properties.value(idx).copy(str);
+         output.writeStringCR(str.ptr());
 
          do
          {
@@ -203,6 +203,7 @@ void SdfLoader::readNext ()
                break;
 
             _scanner->readLine(str, true);
+            output.writeStringCR(str.ptr());
             if (str.size() > 1)
             {
                properties.value(idx).pop(); // Remove string end marker (0)
@@ -212,22 +213,11 @@ void SdfLoader::readNext ()
          } while (str.size() > 1);
       }
 
-      properties_end_offset = _scanner->tell();
       if (_scanner->isEOF())
          break;
 
       _scanner->readLine(str, true);
    }
-
-   int final_offset = _scanner->tell();
-
-   QS_DEF(Array<char>, properties_data);
-   _scanner->seek(properties_offset, SEEK_SET);
-   _scanner->read(properties_end_offset - properties_offset, properties_data);
-   properties_data.push(0);
-   data.appendString(properties_data.ptr(), true);
-
-   _scanner->seek(final_offset, SEEK_SET);
 
    if (_scanner->tell() > _max_offset)
       _max_offset = _scanner->tell();
