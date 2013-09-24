@@ -253,7 +253,10 @@ void AromatizerBase::setBondAromaticCount (int e_idx, int count)
 // MoleculeAromatizer
 // 
 
+CP_DEF(MoleculeAromatizer);
+
 MoleculeAromatizer::MoleculeAromatizer (Molecule &molecule, const AromaticityOptions &options) : AromatizerBase(molecule),
+   CP_INIT,
    TL_CP_GET(_pi_labels)
 {
    _pi_labels.clear_resize(molecule.vertexEnd());
@@ -465,8 +468,11 @@ bool MoleculeAromatizer::aromatizeBonds (Molecule &mol, const AromaticityOptions
 // QueryMoleculeAromatizer
 //
 
+CP_DEF(QueryMoleculeAromatizer);
+
 QueryMoleculeAromatizer::QueryMoleculeAromatizer (QueryMolecule &molecule, const AromaticityOptions &options) : 
    AromatizerBase(molecule), 
+   CP_INIT,
    TL_CP_GET(_pi_labels),
    TL_CP_GET(_aromatic_cycles)
 {
