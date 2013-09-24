@@ -26,7 +26,7 @@ if (NOT NO_STATIC)
 	# No exports in case of static library: define empty EXPORT_SYMBOL definition
 	set_target_properties(indigo-renderer PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL=")
 	pack_static(indigo-renderer)
-	
+
 	DEFINE_TEST(indigo-renderer-c-test-static "tests/c/indigo-renderer-test.c;${Common_SOURCE_DIR}/hacks/memcpy.c" indigo-renderer)
 	# Add stdc++ library required by indigo
 	SET_TARGET_PROPERTIES(indigo-renderer-c-test-static PROPERTIES LINKER_LANGUAGE CXX)
@@ -42,7 +42,7 @@ if (NOT NO_STATIC)
 		target_link_libraries(indigo-renderer-c-test-static ${FRAMEWORK_ApplicationServices})
 	endif()
 endif()
-	
+
 # Indigo Renderer shared
 add_library(indigo-renderer-shared SHARED ${IndigoRenderer_src} ${IndigoRenderer_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c)
 SET_TARGET_PROPERTIES(indigo-renderer-shared PROPERTIES OUTPUT_NAME "indigo-renderer")
@@ -86,8 +86,4 @@ if(APPLE)
     target_link_libraries(indigo-renderer-c-test-shared ${FRAMEWORK_ApplicationServices})
 endif()
 
-
-
-# DLOPEN test
-#LIBRARY_NAME(indigo-renderer)
-#add_test(dlopen-indigo-renderer-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-renderer_NAME})
+message(STATUS ${LINK_FLAGS})

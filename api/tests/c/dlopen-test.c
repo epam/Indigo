@@ -164,9 +164,9 @@ int main(int argc, char **argv)
       printf("Bingo address: %lu\n", (unsigned long)bingoHandle);
       bingoCreateDatabaseFile = (INT_RET_STR_STR_STR)DLSYM(bingoHandle, "bingoCreateDatabaseFile");
       bingoCloseDatabase = (INT_RET_INT)DLSYM(bingoHandle, "bingoCloseDatabase");
-      db = bingoCreateDatabaseFile("test.db", "molecule", "");
-      printf("Bingo database ID: %d\n", db);
-      printf("Bingo close database status: %d\n", bingoCloseDatabase(db));
+      //db = bingoCreateDatabaseFile("test.db", "molecule", "");
+      //printf("Bingo database ID: %d\n", db);
+      //printf("Bingo close database status: %d\n", bingoCloseDatabase(db));
    }
    /* Close libraries */
    if (bingoTest)

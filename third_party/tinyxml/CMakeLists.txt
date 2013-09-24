@@ -15,15 +15,11 @@ if (NOT TINYXML_FOUND)
 
     include_directories(${TinyXML_HEADERS_DIR})
 
-    if(APPLE)
-        set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
-    endif()
-
     add_library(tinyxml ${TinyXML_src} ${TinyXML_headers})
-    
+
     if(VISIBILITY_HIDDEN)
         SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
-    endif()    
+    endif()
     if(UNIX OR APPLE)
         SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
     endif()

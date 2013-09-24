@@ -1,4 +1,5 @@
-# Include this file only once
+# Include this file only once)
+
 PROJECT(ZLIB)
 if (USE_SYSTEM_ZLIB)
     find_package(ZLIB)
@@ -8,6 +9,7 @@ if (USE_SYSTEM_ZLIB)
 endif()
 
 if (NOT ZLIB_FOUND)
+    include(ConfigureCommon)
     message(STATUS "Using local ZLib library")
     file (GLOB ZLib_src src/*.c* src/*.def)
     file (GLOB ZLib_headers include/*.h*)
@@ -16,7 +18,7 @@ if (NOT ZLIB_FOUND)
     include_directories(${ZLib_HEADERS_DIR})
 
     add_library(z STATIC ${ZLib_src} ${ZLib_headers})
-        
+
     set_target_properties(z PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 	 set_property(TARGET z PROPERTY FOLDER "third_party")
     pack_static(z)
