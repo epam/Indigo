@@ -119,6 +119,7 @@ protected:
 
    AromaticityOptions _options;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _pi_labels);
 };
 
@@ -160,6 +161,7 @@ protected:
 
    PiValue _getPiLabel           (int v_idx);
 
+   CP_DECL;
    TL_CP_DECL(Array<PiValue>,   _pi_labels);
    TL_CP_DECL(Array<CycleDef>,  _aromatic_cycles);
 
