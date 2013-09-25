@@ -2134,29 +2134,7 @@ _cairo_gstate_transform_glyphs_to_backend (cairo_gstate_t	*gstate,
     double x1 = 0, x2 = 0, y1 = 0, y2 = 0;
     int i, j, k;
 
-    drop = TRUE;
-    if (! _cairo_gstate_int_clip_extents (gstate, &surface_extents)) {
-	drop = FALSE; /* unbounded surface */
-    } else {
-	double scale10 = 10 * _cairo_scaled_font_get_max_scale (gstate->scaled_font);
-	if (surface_extents.width == 0 || surface_extents.height == 0) {
-	  /* No visible area.  Don't draw anything */
-	  *num_transformed_glyphs = 0;
-	  return;
-	}
-	/* XXX We currently drop any glyphs that has its position outside
-	 * of the surface boundaries by a safety margin depending on the
-	 * font scale.  This however can fail in extreme cases where the
-	 * font has really long swashes for example...  We can correctly
-	 * handle that by looking the glyph up and using its device bbox
-	 * to device if it's going to be visible, but I'm not inclined to
-	 * do that now.
-	 */
-	x1 = surface_extents.x - scale10;
-	y1 = surface_extents.y - scale10;
-	x2 = surface_extents.x + (int) surface_extents.width  + scale10;
-	y2 = surface_extents.y + (int) surface_extents.height + scale10;
-    }
+    drop = FALSE;
 
     if (!drop)
 	*num_transformed_glyphs = num_glyphs;
