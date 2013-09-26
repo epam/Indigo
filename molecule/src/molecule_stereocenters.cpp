@@ -1503,10 +1503,9 @@ void MoleculeStereocenters::markBond (int atom_idx)
 
    memcpy(pyramid, atom.pyramid, 4 * sizeof(int));
 
+   const Vertex &vertex = mol.getVertex(atom_idx);
    if (atom.type <= ATOM_ANY)
    {
-      const Vertex &vertex = mol.getVertex(atom_idx);
-
       // fill the pyramid
       for (j = vertex.neiBegin(); j != vertex.neiEnd() && size < 4; j = vertex.neiNext(j))
          pyramid[size++] = vertex.neiVertex(j);
@@ -1514,11 +1513,11 @@ void MoleculeStereocenters::markBond (int atom_idx)
    else
       size = (pyramid[3] == -1 ? 3 : 4);
 
-   for (j = 0; j < size; j++)
-   {
-      int ei = mol.findEdgeIndex(atom_idx, pyramid[j]);
-      mol.setBondDirection(ei, 0);
-   }
+   // clear bond directions that goes to this atom, and not from this atom because they can 
+   // be marked by other sterecenter
+   for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+      if (mol.getBondDirection2(atom_idx, vertex.neiVertex(j)) != 0)
+         mol.setBondDirection(vertex.neiEdge(j), 0);
 
    int edge_idx = -1;
 
