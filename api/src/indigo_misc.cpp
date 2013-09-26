@@ -286,15 +286,28 @@ CEXPORT int indigoUnfoldHydrogens (int item)
 static bool _removeHydrogens (Molecule &mol)
 {
    QS_DEF(Array<int>, to_remove);
+   QS_DEF(Array<int>, sterecenters_to_validate);
    int i;
 
+   sterecenters_to_validate.clear();
    to_remove.clear();
    for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
       if (mol.convertableToImplicitHydrogen(i))
+      {
+         const Vertex &v = mol.getVertex(i);
+         int nei = v.neiBegin();
+         if (nei != v.neiEnd())
+         {
+            if (mol.getBondDirection(v.neiEdge(nei)))
+               sterecenters_to_validate.push(v.neiVertex(nei));
+         }
          to_remove.push(i);
+      }
 
    if (to_remove.size() > 0)
       mol.removeAtoms(to_remove);
+   for (int i = 0; i < sterecenters_to_validate.size(); i++)
+      mol.stereocenters.markBond(sterecenters_to_validate[i]);
    return to_remove.size() > 0;
 }
 
