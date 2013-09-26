@@ -13,6 +13,8 @@ using namespace indigo;
 
 namespace bingo
 {
+   class BingoAllocator;
+
    template<typename T> class BingoPtr
    {
    public:
