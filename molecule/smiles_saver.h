@@ -63,6 +63,8 @@ public:
    bool smarts_mode;
    bool ignore_invalid_hcount;
 
+   const Array<int>& getSavedCisTransParities ();
+
 protected:
 
    void _saveMolecule ();
@@ -105,6 +107,8 @@ protected:
    void _writeHighlighting ();
    bool _shouldWriteAromaticBond (int bond_idx);
 
+   void _filterCisTransParity ();
+
    int _countRBonds ();
 
    void _checkSRU ();
@@ -144,6 +148,9 @@ protected:
    TL_CP_DECL(Array<int>, _complicated_cistrans);
    // single bonds that can not be written as slashes; see item 2 above
    TL_CP_DECL(Array<int>, _ban_slashes);
+   // array with cis-trans parity marks
+   // 0 means ignored
+   TL_CP_DECL(Array<int>, _cis_trans_parity);
 
    // This flag does not necessarily mean "any of _complicated_cistrans == 1".
    // If all _complicated_cistrans are actually ring CIS bonds, then the flag
