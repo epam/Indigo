@@ -73,8 +73,7 @@ if args.findcairo:
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
-
-def build(params=None):
+def build(params=None, install=True):
     full_build_dir = os.path.join(root, "build", build_dir)
     if params:
      full_build_dir += "_" + params['INDIGO_CMAKE_OSX_ARCHITECTURES']
@@ -90,7 +89,10 @@ def build(params=None):
     if params:
         for key, value in params.items():
             paramString += '{0}={1} '.format(key, value)
-    command = "CC=gcc CXX=g++ %s cmake -G \"%s\" %s %s" % (paramString, args.generator, args.params, project_dir)
+    if params:
+        command = "CC=gcc CXX=g++ %s cmake -G \"%s\" %s %s" % (paramString, args.generator, args.params, project_dir)
+    else:
+        command = "%s cmake -G \"%s\" %s %s" % (paramString, args.generator, args.params, project_dir)
     print(command)
     subprocess.check_call(command, shell=True)
 
@@ -132,8 +134,8 @@ def build(params=None):
         return full_build_dir
 
 if args.preset == 'mac10.6-gcc':
-    i386Path = build({'INDIGO_CMAKE_OSX_ARCHITECTURES': 'i386'})
-    amd64Path = build({'INDIGO_CMAKE_OSX_ARCHITECTURES': 'x86_64'})
+    i386Path = build({'INDIGO_CMAKE_OSX_ARCHITECTURES': 'i386'}, install=False)
+    amd64Path = build({'INDIGO_CMAKE_OSX_ARCHITECTURES': 'x86_64'}, install=False)
     full_build_dir = os.path.join(root, "build", build_dir)
     if os.path.exists(full_build_dir) and args.clean:
         print("Removing previous project files")
@@ -150,6 +152,7 @@ if args.preset == 'mac10.6-gcc':
     os.makedirs('static/Mac/10.6/')
     for item in os.listdir(os.path.join(i386Path, 'dist', 'Mac', '10.6', 'lib')):
         if item.endswith('.dylib'):
+            print item
             subprocess.check_call('lipo -create -arch i386 {0}/dist/Mac/10.6/lib/{2} -arch x86_64 {1}/dist/Mac/10.6/lib/{2} -o shared/Mac/10.6/{2}'.format(i386Path, amd64Path, item), shell=True)
         elif item.endswith('.a'):
             subprocess.check_call('lipo -create -arch i386 {0}/dist/Mac/10.6/lib/{2} -arch x86_64 {1}/dist/Mac/10.6/lib/{2} -o static/Mac/10.6/{2}'.format(i386Path, amd64Path, item), shell=True)

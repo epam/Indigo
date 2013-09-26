@@ -28,7 +28,6 @@ if (NOT PNG_FOUND)
     add_library(png STATIC ${PNG_SOURCES})
 
     set_target_properties(png PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-    target_link_libraries(png z)
     set_property(TARGET png PROPERTY FOLDER "third_party")
 	pack_static(png)
 endif()

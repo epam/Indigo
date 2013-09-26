@@ -105,7 +105,6 @@ if (NOT CAIRO_FOUND)
     add_library(cairo STATIC  ${CAIRO_SOURCES})
 
     set_target_properties(cairo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-    target_link_libraries(cairo pixman png z)
     if(UNIX AND NOT APPLE)
         target_link_libraries(cairo freetype fontconfig)
     endif()

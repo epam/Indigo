@@ -15,7 +15,7 @@ if (NOT TINYXML_FOUND)
 
     include_directories(${TinyXML_HEADERS_DIR})
 
-    add_library(tinyxml ${TinyXML_src} ${TinyXML_headers})
+    add_library(tinyxml STATIC ${TinyXML_src} ${TinyXML_headers})
 
     if(VISIBILITY_HIDDEN)
         SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
@@ -24,7 +24,7 @@ if (NOT TINYXML_FOUND)
         SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
     endif()
     set_target_properties(tinyxml PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-	 set_property(TARGET tinyxml PROPERTY FOLDER "third_party")
+	set_property(TARGET tinyxml PROPERTY FOLDER "third_party")
     pack_static(tinyxml)
 else()
     set(TinyXML_HEADERS_DIR ${TINYXML_INCLUDE_DIRS})
