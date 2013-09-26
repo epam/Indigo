@@ -11,6 +11,7 @@ include_directories(${IndigoRenderer_SOURCE_DIR} ${Indigo_SOURCE_DIR} ${Indigo_S
 include(DefineTest)
 
 add_library(indigo-renderer-Obj OBJECT ${IndigoRenderer_src} ${IndigoRenderer_headers})
+set_target_properties(indigo-renderer-Obj PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
 # Indigo Renderer static
 if (NOT NO_STATIC)
@@ -87,4 +88,3 @@ if(APPLE)
     target_link_libraries(indigo-renderer-c-test-shared ${FRAMEWORK_ApplicationServices})
 endif()
 
-message(STATUS ${LINK_FLAGS})
