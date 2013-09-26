@@ -16,6 +16,18 @@
 
 #include "base_cpp/profiling.h"
 #include <limits.h>
+#include <string>
+#include <vector>
+#include <set>
+#include <map>
+#include <stack>
+#include <cmath>
+#include <string>
+#include <sstream>
+#include <map>
+#include <stdio.h>
+#include <math/random.h>
+#include "layout/molecule_layout.h"
 
 using namespace indigo;
 using namespace std;
@@ -24,6 +36,7 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) :
    TL_CP_GET(_vertex_weight), // tree size
    TL_CP_GET(_vertex_stereo), // there is an angle in the vertex
    TL_CP_GET(_edge_stereo), // trans-cis configuration
+   TL_CP_GET(_vertex_drawn), // is each vertex has been drawn earlier
    TL_CP_GET(_positions) // position of vertex
 {
    // Set default values...
@@ -37,6 +50,9 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) :
 
    _edge_stereo.clear_resize(size);
    _edge_stereo.zerofill();
+
+   _vertex_drawn.clear_resize(size);
+   _vertex_drawn.zerofill();
 
    _positions.clear_resize(size);
 
@@ -57,6 +73,10 @@ void MoleculeLayoutMacrocycles::setEdgeStereo (int e, int stereo)
    _edge_stereo[e] = stereo;
 }
 
+void MoleculeLayoutMacrocycles::setVertexDrawn(int v, bool drawn) {
+   _vertex_drawn[v] = drawn;
+}
+
 Vec2f &MoleculeLayoutMacrocycles::getPos (int v)
 {
    return _positions[v];
@@ -65,58 +85,15 @@ Vec2f &MoleculeLayoutMacrocycles::getPos (int v)
 
 void MoleculeLayoutMacrocycles::doLayout ()
 {
-   // ...
-/*   QS_DEF(Array<Vec2f>, positions2);
-
-   //while ()
-   {
-      positions2.swap(_positions);
-      
-   }*/
    profTimerStart(t, "bc.layout");
 
-//   printf("1\n");
+   double b2 = depictionCircle();
    double b = depictionMacrocycleMol(false);
-//   printf("2\n");
-   double b2 = 1e9;
-   //double b2 = depictionMacrocycleMol(true);
-//   printf("3\n");
-   double b3 = depictionCircle();
 
-   if (b <= b2 && b <= b3) {
-      depictionMacrocycleMol(false);
-  //    printf("------------------------------------------------> %d \n", 1);
+   if (b > b2) {
+      depictionCircle();
       return;
    }
-   if (b2 <= b && b2 <= b3) {
-      depictionMacrocycleMol(true);
-    //  printf("------------------------------------------------> %d \n", 2);
-     return;
-   }
-   //printf("------------------------------------------------> %d \n", 3);
-   depictionCircle();
-   return;
-   /*if (b >= 1000000) {
-      profTimerStart(t, "bc.layout #2");
-      b = depictionMacrocycleMol(mol, true);
-   }
-   //if (b >= 1000000)
-   {
-      profTimerStart(t, "bc.layout #3");
-      b = depictionCircle(mol);
-   }*/
-    //  throw Error("Cannot find a layout with all cis-trans constraints");
-   /*
-   for (int e = mol.edgeBegin(); e != mol.edgeEnd(); e = mol.edgeNext(e))
-      if (mol.cis_trans.getParity(e) != 0)
-      {
-         mol.cis_trans.ignore(e);
-         break;
-      }
-   */
-
-   //return b;
-
 }
 
 
@@ -135,74 +112,9 @@ bool MoleculeLayoutMacrocycles::canApply (BaseMolecule &mol)
    return true;
 }
 
-double MoleculeLayoutMacrocycles::layout (BaseMolecule &mol)
-{
-   profTimerStart(t, "bc.layout");
-
-//   printf("1\n");
-//   double b = depictionMacrocycleMol(false);
-//   printf("2\n");
-   //double b2 = depictionMacrocycleMol(true);
-//   printf("3\n");
-   double b3 = depictionCircle();
-//   double b3 = 1e10;
-
-/*   if (b <= b2 && b <= b3) {
-      depictionMacrocycleMol(false);
-      return 1;
-   }
-   if (b2 <= b && b2 <= b3) {
-      depictionMacrocycleMol(true);
-      return 2;
-   }*/
-   //depictionCircle(mol);
-   return 3;
-   /*if (b >= 1000000) {
-      profTimerStart(t, "bc.layout #2");
-      b = depictionMacrocycleMol(mol, true);
-   }
-   //if (b >= 1000000)
-   {
-      profTimerStart(t, "bc.layout #3");
-      b = depictionCircle(mol);
-   }*/
-    //  throw Error("Cannot find a layout with all cis-trans constraints");
-   /*
-   for (int e = mol.edgeBegin(); e != mol.edgeEnd(); e = mol.edgeNext(e))
-      if (mol.cis_trans.getParity(e) != 0)
-      {
-         mol.cis_trans.ignore(e);
-         break;
-      }
-   */
-
-   //return b;
-}
-
-// 
-// Original code
-//
-
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
-#include <stack>
-#include <cmath>
-#include <string>
-#include <sstream>
-#include <map>
-#include <stdio.h>
-#include <math/random.h>
-#include "layout/molecule_layout.h"
-
-
-using namespace std;
-
 double sqr(double x) {return x*x;}
 
-int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, Random* rand, bool profi, double multiplier) {
-   int worstVertex = (*rand).next(ind);
+int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, Random* rand, bool profi, double multiplier, int worstVertex) {
    
    Vec2f p1 = p[(worstVertex - 1 + ind) % ind];
    Vec2f p2 = p[(worstVertex + 1 + ind) % ind];
@@ -231,6 +143,7 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
    //printf("%5.5f %5.5f %5.5f %5.5f\n", len1, len2, len3, r3);
    Vec2f newPoint;
    double eps = 1e-4;
+   double eps2 = eps * eps;
    if (len1 < eps || len2 < eps || len3 < eps) {
       p[worstVertex] = (p1 + p2)/2.0;
    } else {
@@ -283,6 +196,7 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
             }
          }
       } else {
+         float good_distance = 1;
          for (int j = 0; j < ind; j++) {
             int nextj = (j + 1) % ind;
             Vec2f pp = p[j];
@@ -290,11 +204,10 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
 
             for (int t = vertexNumber[j], s = 0; t != vertexNumber[nextj]; t = (t + 1)%molSize, s++) {
                if (t != vertexNumber[worstVertex] && (t + 1)%molSize != vertexNumber[worstVertex] && t != (vertexNumber[worstVertex] + 1) % molSize) {
-                  double dist = 0;
-                  double sqrt2 = 1.4142135623730950488016887242097;
-                  dist = Vec2f::dist(pp, p[worstVertex]);
-                  if (dist < sqrt2 && dist > eps) {
-                     double coef = (sqrt2 - dist)/dist;
+                  double distSqr = Vec2f::distSqr(pp, p[worstVertex]);
+                  if (distSqr < good_distance && distSqr > eps2) {
+                     double dist = sqrt(distSqr);
+                     double coef = (good_distance - dist)/dist;
                      //printf("%5.5f \n", dist);
                      newPoint += (p[worstVertex] - pp)*coef;
                   }
@@ -311,22 +224,31 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
    return worstVertex;
 }
 
-void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi) {
+void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi, int *able_to_move) {
    Random rand(931170240);
-   for (int i = 0; i < 1000; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.1);
-   for (int i = 0; i < 1000; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.01);
+   vector<int> target_vertices;
+   if (able_to_move == 0) {
+      for (int i = 0; i < ind; i++) target_vertices.push_back(i);
+   } else {
+      for (int i = 0; i < ind; i++) 
+         if (able_to_move[i]) target_vertices.push_back(i);
+   }
+   for (int i = 0; i < 50 * molSize; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.1, target_vertices[rand.next(target_vertices.size())]);
+   for (int i = 0; i < 50 * molSize; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.01, target_vertices[rand.next(target_vertices.size())]);
 }
 
 double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p) {
    double eps = 1e-9;
    double result = 0;
    int add = 0;
+   // distances
    for (int i = 0; i < ind; i++) {
       double len = Vec2f::dist(p[i], p[(i + 1)%ind])/edgeLenght[i];
       if (len < eps) add++;
       else if (len < 1) result = max(result, (1/len - 1));
       else result = max(result, len - 1);
    }
+   // angles
    for (int i = 0; i < ind; i++) {
       Vec2f vp1 = p[i] - p[(i + ind - 1) % ind];
       Vec2f vp2 = p[(i + 1) % ind] - p[i];
@@ -394,10 +316,17 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 
    int shift = 0;
    for (int i = 0; i < length; i++) 
-         if (_edge_stereo[i] == 1) {
+      if (_edge_stereo[i] == 1) {
+            shift = i;
+            break;
+      }
+   if (_edge_stereo[shift] != 1) {
+      for (int i = 0; i < length; i++) 
+         if (_edge_stereo[i] == 0) {
                shift = i;
                break;
          }
+   }
    int temporary[max_size];
 
    for (int i = 0; i < length; i++) 
@@ -414,6 +343,15 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    const int init_y = max_size/2;
    const int init_rot = max_size/2 /6*6;
 
+   int dx[6];
+   int dy[6];
+   dx[0] = 1; dy[0] = 0;
+   dx[1] = 0; dy[1] = 1;
+   dx[2] = -1; dy[2] = 1;
+   dx[3] = -1; dy[3] = 0;
+   dx[4] = 0; dy[4] = -1;
+   dx[5] = 1; dy[5] = -1;
+
    for (int i = 0; i <= length; i++)
       for (int j = max(init_rot - length, 0); j < min(max_size, init_rot + length + 1); j++)
          for (int p = 0; p < 2; p++) 
@@ -425,15 +363,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    minRotates[1][init_rot][0][init_x + 1][init_y] = 0;
    minRotates[0][init_rot][1][init_x][init_y] = 0;
    minRotates[1][init_rot][1][init_x + 1][init_y] = 0;
-   int dx[6];
-   int dy[6];
-   dx[0] = 1; dy[0] = 0;
-   dx[1] = 0; dy[1] = 1;
-   dx[2] = -1; dy[2] = 1;
-   dx[3] = -1; dy[3] = 0;
-   dx[4] = 0; dy[4] = -1;
-   dx[5] = 1; dy[5] = -1;
-
    int max_dist = length;
 
    for (int k = 1; k < length; k++) {
@@ -525,7 +454,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                      (_edge_stereo[length - 1] == MoleculeCisTrans::CIS && !p) ||
                         rot > init_rot + 6) minRotates[length][rot][p][k][t] += _vertex_weight[0];
                }
-
 
    //printf("Process finished.\n");
    int best_p = 0;
@@ -741,7 +669,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       }
 
       double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
-      if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi);
+      if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
 
       double newBadness = 0;
       newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
@@ -780,7 +708,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    for (int i = 0; i < length; i++) 
       if (_vertex_weight[i] > 0) _vertex_weight[i]--;
 
-
    //fclose (stdout);
 //   printf("%5.5f\n", bestBadness);
 //   printf("--- %d\n", bestIndex);
@@ -803,99 +730,109 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 double MoleculeLayoutMacrocycles::depictionCircle() {
 
    const int max_size = 100;
-//   const int molSize = mol.size;
-
-   //printf("Process started.\n");
-
-/*   vector<int> vert;
-   vert.push_back(mol.vertexBegin());
-   for (int i = 0; i < molSize - 1; i++) {
-      int index = mol.getVertex(vert[i]).neiBegin();
-      int e = mol.getVertex(vert[i]).neiEdge(index);
-      // to select next vertex not equals to previous
-      if (i != 0 && mol.getVertex(vert[i]).neiVertex(index) == vert[i - 1]) index = mol.getVertex(vert[i]).neiNext(index);
-      // to start chain of atoms not with cis-trans bond
-      if (i == 0 && mol.cis_trans.getParity(e) != 0) index = mol.getVertex(vert[i]).neiNext(index);
-
-      e = mol.getVertex(vert[i]).neiEdge(index);
-
-      vert.push_back(mol.getVertex(e).neiVertex(index));
-   }*/
-
-//   vector<int> order;
-  // for (int i = 0; i < length; i++) order.push_back(mol.order[i]);
-/*   {
-      switch (mol.getBondOrder(mol.findEdgeIndex(vert[i], vert[(i + 1) % molSize]))) {
-         case BOND_SINGLE : order.push_back(1); break;
-         case BOND_DOUBLE : order.push_back(2); break;
-         case BOND_TRIPLE : order.push_back(3); break;
-         case BOND_AROMATIC : order.push_back(1); break;
-      }
-   }*/
-
-//   vector<int> cisTransConf;
-  // for (int i = 0; i < length; i++) cisTransConf.push_back(mol.cis_trans[i]);
-/*   {
-      int e = mol.findEdgeIndex(vert[i], vert[(i + 1) % molSize]);
-      cisTransConf.push_back(mol.cis_trans.getParity(e));
-   }*/
    
    int cisCount = 0;
    for (int i = 0; i < length; i++) if (_edge_stereo[i] == MoleculeCisTrans::CIS) cisCount++;
 
    bool up[100];
-   for (int i = 0; i < length; i++)
-   {
-      if (_edge_stereo[i] == MoleculeCisTrans::CIS) up[i + 1] = up[i];
-      else up[i + 1] = !up[i];
-   }
-   
-   if ((cisCount + length) % 2 == 0)
-   {
-      // if first and last points on the same level
-      int upCisCount = 0;
-      int downCisCount = 0;
+   bool only_up[100];
 
-      for (int i = 0; i < length; i++)
-      {
-         if (_edge_stereo[i] == MoleculeCisTrans::CIS && up[i]) upCisCount++;
-         if (_edge_stereo[i] == MoleculeCisTrans::CIS && !up[i]) downCisCount++;
+   for (int i = 0; i < length; i++)
+      if (_edge_stereo[i] == MoleculeCisTrans::CIS && _edge_stereo[(i + length - 1) % length] == MoleculeCisTrans::CIS) {
+         only_up[(i + 1) % length] = 1;
+         only_up[i] = 1;
+         only_up[(i + length - 1) % length] = 1;
       }
-      if (downCisCount > upCisCount) {
-         for (int i = 0; i <= length; i++) up[i] = !up[i];
+
+   for (int i = 0; i < length; i++) up[i] = only_up[i];
+
+   bool exist_precalc = false;
+   for (int i = 0; i < length; i++) exist_precalc |= only_up[i];
+
+   if (exist_precalc) {
+      int index_start = 0;
+      int index_end = 0;
+      int start = 0;
+      for (int i = 0; i < length; i++) if (!only_up[i] && only_up[(i + length - 1) % length]) {
+         index_start = i;
+         index_end = index_start;
+         while (!only_up[index_end]) index_end = (index_end + 1) % length;
+         
+         for (int j = index_start; j != index_end; j = (j + 1) % length)
+            if (_edge_stereo[(j - 1 + length) % length] == MoleculeCisTrans::CIS) up[j] = up[(j - 1 + length) % length];
+            else up[j] = !up[(j - 1 + length) % length];
+
+         if (up[(index_end - 1 + length) % length]) {
+
+            int index_flip = -1;
+            for (int j = index_start; j != index_end; j = (j + 1) % length) 
+               if (_edge_stereo[j] != MoleculeCisTrans::CIS && _edge_stereo[(j + length - 1) % length] != MoleculeCisTrans::CIS) index_flip = j;
+            if (index_flip == -1) {
+               int free[100];
+               int index_free = 0;
+               for (int j = index_start; j != index_end; j = (j + 1) % length)
+                  if (_edge_stereo[(j - 1 + length) % length] == 0 || _edge_stereo[j] == 0) free[index_free++] = j;
+               if (index_free > 0) index_flip = free[index_free/2];
+               else index_flip = index_start;
+            }
+
+            for (int j = index_flip; j != index_end; j = (j + 1) % length) up[j] = !up[j];
+         }
       }
    } else {
-      // if first and last points on the different levels
-      if (cisCount == 0)
+      for (int i = 0; i < length; i++)
       {
-         int index = 0;
-         if (_edge_stereo[0] != 0 || _edge_stereo[length - 1] != 0 || _vertex_stereo[0] == 0) {
-            for (int i = 1; i < length; i++) if (_edge_stereo[i] != 0 || _edge_stereo[i - 1] != 0 || _vertex_stereo[i] == 1) index = i;
-         }
-         for (int i = index; i <= length; i++) up[i] = !up[i];
-         if (!up[index]) for (int i = 0; i <= length; i++) up[i] = !up[i];
-      } else {
-         int bestIndex = 0;
-         int bestDiff = -1;
-         for (int i = 0; i < length; i++) if (_edge_stereo[i] == MoleculeCisTrans::CIS || _edge_stereo[(i - 2 + length) % length] == MoleculeCisTrans::CIS){
-            int diff = 0;
-            for (int j = 0; j < length; j++) 
-            {
-               if (_edge_stereo[i] == MoleculeCisTrans::CIS && ((up[i] && j < i) || (!up[i] && j >= i))) diff++;
-               if (_edge_stereo[i] == MoleculeCisTrans::CIS && !((up[i] && j < i) || (!up[i] && j >= i))) diff--;
-            }
-            if (up[i]) diff = -diff;
-            if (diff > bestDiff) 
-            {
-               bestDiff = diff;
-               bestIndex = i;
-            }
-         }
+         if (_edge_stereo[i] == MoleculeCisTrans::CIS) up[i + 1] = up[i];
+         else up[i + 1] = !up[i];
+      }
+   
+      if ((cisCount + length) % 2 == 0)
+      {
+         // if first and last points on the same level
+         int upCisCount = 0;
+         int downCisCount = 0;
 
-         for (int i = bestIndex; i <= length; i++) up[i] = !up[i];
-         
-         if (!up[bestIndex]) {
+         for (int i = 0; i < length; i++)
+         {
+            if (_edge_stereo[i] == MoleculeCisTrans::CIS && up[i]) upCisCount++;
+            if (_edge_stereo[i] == MoleculeCisTrans::CIS && !up[i]) downCisCount++;
+         }
+         if (downCisCount > upCisCount) {
             for (int i = 0; i <= length; i++) up[i] = !up[i];
+         }
+      } else {
+         // if first and last points on the different levels
+         if (cisCount == 0)
+         {
+            int index = 0;
+            if (_edge_stereo[0] != 0 || _edge_stereo[length - 1] != 0 || _vertex_stereo[0] == 0) {
+               for (int i = 1; i < length; i++) if (_edge_stereo[i] != 0 || _edge_stereo[i - 1] != 0 || _vertex_stereo[i] == 1) index = i;
+            }
+            for (int i = index; i <= length; i++) up[i] = !up[i];
+            if (!up[index]) for (int i = 0; i <= length; i++) up[i] = !up[i];
+         } else {
+            int bestIndex = 0;
+            int bestDiff = -1;
+            for (int i = 0; i < length; i++) if (_edge_stereo[i] == MoleculeCisTrans::CIS || _edge_stereo[(i - 2 + length) % length] == MoleculeCisTrans::CIS){
+               int diff = 0;
+               for (int j = 0; j < length; j++) 
+               {
+                  if (_edge_stereo[i] == MoleculeCisTrans::CIS && ((up[i] && j < i) || (!up[i] && j >= i))) diff++;
+                  if (_edge_stereo[i] == MoleculeCisTrans::CIS && !((up[i] && j < i) || (!up[i] && j >= i))) diff--;
+               }
+               if (up[i]) diff = -diff;
+               if (diff > bestDiff) 
+               {
+                  bestDiff = diff;
+                  bestIndex = i;
+               }
+            }
+
+            for (int i = bestIndex; i <= length; i++) up[i] = !up[i];
+         
+            if (!up[bestIndex]) {
+               for (int i = 0; i <= length; i++) up[i] = !up[i];
+            }
          }
       }
    }
@@ -916,13 +853,19 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
    }
 
    int rotateAngle[100];
-   for (int i = 0; i < length; i++) rotateAngle[i] = up[i] ? 1 : -1;
+   for (int i = 0; i < length; i++) rotateAngle[i] = -1;
+   int i = 0;
+   while (_edge_stereo[(i - 1 + length) % length] != 0 && _edge_stereo[i] != 0) i++;
+   for (; rotateAngle[i] == -1; i = (i + 1) % length) 
+      if (_edge_stereo[(i - 1 + length) % length] == MoleculeCisTrans::CIS) rotateAngle[i] = rotateAngle[(i - 1 + length) % length];
+      else if (_edge_stereo[(i - 1 + length) % length] == MoleculeCisTrans::TRANS) rotateAngle[i] = -rotateAngle[(i - 1 + length) % length];
+      else rotateAngle[i] = up[i] ? 1 : (up[(i + 1) % length] || up[(i + length - 1) % length]) ? -1 : 1;
 
    int edgeLength[100];
-   for (int i = 0; i < length; i++) edgeLength[i] = 1;
+   for (i = 0; i < length; i++) edgeLength[i] = 1;
 
    int vertexNumber[100];
-   for (int i = 0; i < length; i++) vertexNumber[i] = i;
+   for (i = 0; i < length; i++) vertexNumber[i] = i;
 
    /*double angle = PI * 2 * rand() / RAND_MAX;
    double sn = sin(angle);
@@ -934,10 +877,10 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
       y[i] = yy;
    }*/
 
-   smoothing(length, length, rotateAngle, edgeLength, vertexNumber, p, false);
+   smoothing(length, length, rotateAngle, edgeLength, vertexNumber, p, false, 0);
 
    
-   for (int i = 0; i < length; i++)
+   for (i = 0; i < length; i++)
    {
 /*      Vec3f &pos = mol.getAtomXyz(vert[i]);
       pos.x = x[i];

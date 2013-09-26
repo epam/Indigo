@@ -218,6 +218,7 @@ protected:
 
    // border functions
    void _getBorder (Cycle &border) const;
+   void _getSurroundCycle (Cycle &cycle, Vec2f p) const;
    void _splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const;
    bool _isPointOutside (const Vec2f &p) const;
    bool _isPointOutsideCycle   (const Cycle &cycle, const Vec2f &p) const;
@@ -235,6 +236,7 @@ protected:
    static float _dichotomy2  (float a0, float b0, int L, float s);
    static void _calculatePos (float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v);
    const float _energyOfPoint (Vec2f p) const;
+   int _isCisConfiguratuin (Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4);
 
    static bool _border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _edge_check (Graph &graph, int e_idx, void *context);

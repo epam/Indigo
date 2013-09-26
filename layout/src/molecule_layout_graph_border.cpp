@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "layout/molecule_layout_graph.h"
+#include "stdlib.h"
 
 using namespace indigo;
 
@@ -93,148 +94,33 @@ static bool _isRayIntersect (float a, float b, const Vec2f &p, const Vec2f &v1, 
 // By calculating number of intersections of ray
 bool MoleculeLayoutGraph::_isPointOutside (const Vec2f &p) const
 {
-   int i, count = 0;
-   float a, b;
-   const float eps = 0.01f;
+   QS_DEF(Array<Vec2f>, point);
+   Cycle surround_cycle;
+   _getSurroundCycle(surround_cycle, p);
 
-   bool success = false;
-
-   while (!success)
-   {
-      success = true;
-
-      a = (float)rand();
-      b = (float)rand();
-      a = 2.f * (a / RAND_MAX - 0.5f);
-      b = 2.f * (b / RAND_MAX - 0.5f);
-
-      if (fabs(a) < eps || fabs(b) < eps)
-      {
-         success = false;
-         continue;
-      }
-
-      if (_outline.get() == 0)
-      {
-         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-         {
-            const Vec2f &pos = getPos(i);
-
-            if (_layout_vertices[i].type == ELEMENT_BOUNDARY && fabs((pos.x - p.x) / a - (pos.y - p.y) / b) < 0.1f)
-            {
-               count++;
-
-               if (count > 100)
-                  return false;
-
-               success = false;
-               break;
-            }
-         }
-      } else
-      {
-         const Array<Vec2f> &outline = *_outline.get();
-
-         for (i = 0; i < outline.size(); i++)
-         {
-            if (fabs((outline[i].x - p.x) / a - (outline[i].y - p.y) / b) < 0.1f)
-            {
-               count++;
-
-               if (count > 100)
-                  return false;
-
-               success = false;
-               break;
-            }
-         }
-      }
-   }
-
-   // Calculate
-   count = 0;
-
-   if (_outline.get() == 0)
-   {
-      for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i)) 
-      {
-         if (_layout_edges[i].type == ELEMENT_BOUNDARY)
-         {
-            const Edge &edge = getEdge(i);
-
-            if (_isRayIntersect(a, b, p, getPos(edge.beg), getPos(edge.end)))
-               count++;
-         }
-         
-      }
-   } else
-   {
-      const Array<Vec2f> &outline = *_outline.get();
-
-      for (i = 0; i < outline.size(); i++)
-         if (_isRayIntersect(a, b, p, outline[i], outline[(i + 1) % outline.size()]))
-            count++;
-   }
-
-   if (count & 1)
-      return false;
-   return true;
+   return _isPointOutsideCycle(surround_cycle, p);
 }
 
 // Check if point is outside cycle
 // By calculating number of intersections of ray
 bool MoleculeLayoutGraph::_isPointOutsideCycle (const Cycle &cycle, const Vec2f &p) const
 {
-   int i, count = 0;
-   float a, b;
-   Vec2f v1, v2;
-   const float eps = 0.01f;
-
-   bool success = false;
-
-   while (!success)
-   {
-      success = true;
-
-      a = (float)rand();
-      b = (float)rand();
-      a = 2.f * (a / RAND_MAX - 0.5f);
-      b = 2.f * (b / RAND_MAX - 0.5f);
-
-      if (fabs(a) < eps || fabs(b) < eps)
-      {
-         success = false;
-         continue;
-      }
-
-      for (i = 0; i < cycle.vertexCount(); i++)
-      {
-         const Vec2f &pos = getPos(cycle.getVertex(i));
-
-         if (fabs((pos.x - p.x) / a - (pos.y - p.y) / b) < EPSILON) 
-         {
-            count++;
-
-            if (count > 50)
-               return false;
-
-            success = false;
-            break;
-         }
-      }
+   QS_DEF(Array<Vec2f>, point);
+   float rotate_angle = 0;
+   int size = cycle.vertexCount();
+   point.resize(size + 1);
+   for (int i = 0; i <= size; i++) point[i] = _layout_vertices[cycle.getVertexC(i)].pos - p;
+   for (int i = 0; i < size; i++) {
+      float cs = Vec2f::dot(point[i], point[i + 1])/(point[i].length() * point[i + 1].length());
+      if (cs > 1) cs = 1;
+      if (cs < -1) cs = -1;
+      float angle = acos(cs);
+      if (Vec2f::cross(point[i], point[i + 1]) < 0) angle = -angle;
+      rotate_angle += angle;
    }
 
-   // Calculate
-   count = 0;
-
-   for (i = 0; i < cycle.vertexCount(); i++)
-      if (_isRayIntersect(a, b, p, getPos(cycle.getVertex(i)),
-                                   getPos(cycle.getVertex((i + 1) % cycle.vertexCount()))))
-         count++;
-
-   if (count & 1)
-      return false;
-   return true;
+   // if point is outside, rotate angle is equals to 0. If point is inside rotate angle is equals to 2*PI of -2*PI
+   return abs(rotate_angle) < PI;
 }
 
 // The same but with mapping
@@ -288,9 +174,21 @@ bool MoleculeLayoutGraph::_isPointOutsideCycleEx (const Cycle &cycle, const Vec2
 // Extract component border
 void MoleculeLayoutGraph::_getBorder (Cycle &border) const
 {
+   Vec2f outside_point(0, 0);
+   for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+      if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN) {
+         outside_point.max(_layout_vertices[i].pos);
+      }
+   _getSurroundCycle(border, outside_point);
+}
+
+void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
+{
    QS_DEF(Array<int>, vertices);
    QS_DEF(Array<int>, edges);
+   QS_DEF(Array<Vec2f>, pos);
    int i, n = 0;
+   float eps = 1e-5;
 
    for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
       if  (_layout_edges[i].type == ELEMENT_BOUNDARY)
@@ -301,44 +199,134 @@ void MoleculeLayoutGraph::_getBorder (Cycle &border) const
 
    vertices.clear();
    edges.clear();
+   
+   srand(940);
+   float sn = 0;
+   float cs = 0;
+   while (sn == 0 && cs == 0) {
+      sn = 2.0*rand()/RAND_MAX - 1;
+      cs = 2.0*rand()/RAND_MAX - 1;
+   }
+   float len = sqrt(sn*sn + cs*cs);
+   sn /= len;
+   cs /= len;
 
-   for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
-      if  (_layout_edges[i].type == ELEMENT_BOUNDARY)
-         break;
+   pos.resize(vertexEnd());
+   for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i)) {
+      pos[i] = _layout_vertices[i].pos - p;
+   }
 
-   Edge edge = getEdge(i);
+   for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+      if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN) {
+         float xx = pos[i].x;
+         float yy = pos[i].y;
+         pos[i].x = cs * xx - sn * yy;
+         pos[i].y = sn * xx + cs * yy;
+      }
 
-   vertices.push(edge.beg);
-   edges.push(i);
-
-   while (edge.end != vertices[0])
-   {
-      const Vertex &vert = getVertex(edge.end);
-      bool found = false;
-
-      for (int i = vert.neiBegin(); !found && i < vert.neiEnd(); i = vert.neiNext(i))
-      {
-         int nei_v = vert.neiVertex(i);
-         int nei_e = vert.neiEdge(i);
-
-         if (getEdgeType(nei_e) == ELEMENT_BOUNDARY && nei_v != edge.beg)
-         {
-            edge.beg = edge.end;
-            edge.end = nei_v;
-
-            vertices.push(edge.beg);
-            edges.push(nei_e);
-
-            found = true;
+   int first_edge = -1;
+   float first_edge_x = 1e20;
+   for (int i = edgeBegin(); i != edgeEnd(); i = edgeNext(i)) 
+      if (_layout_edges[i].type != ELEMENT_NOT_DRAWN) {
+         Edge e = getEdge(i);
+         if (pos[e.beg].y * pos[e.end].y <= 0) {
+            float mid_x = (pos[e.beg].x * pos[e.end].y - pos[e.end].x * pos[e.beg].y)/(pos[e.end].y - pos[e.beg].y);
+            if (abs(mid_x) < eps) return;
+            if (mid_x > 0 && (first_edge == -1 || mid_x < first_edge_x)) {
+               first_edge = i;
+               first_edge_x = mid_x;
+            }
          }
       }
 
-      if (!found || vertices.size() > n)
-         throw Error("corrupted border");
+   int firts_vertex = -1;
+   if (first_edge != -1) 
+      if (pos[getEdge(first_edge).beg].y < pos[getEdge(first_edge).end].y) firts_vertex = getEdge(first_edge).beg;
+      else firts_vertex = getEdge(first_edge).end;
+   else {
+      // in this case no edges are intersecs (OX) ray 
+      // and so p is outside point
+      // Then we are looking for border
+      // and we can take the lowest vertex as the start vertex for searching of surround cycle
+      float first_vertex_y;
+      for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+         if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN)
+            if (firts_vertex == -1 || pos[i].y < first_vertex_y) {
+               first_vertex_y = pos[i].y;
+               firts_vertex = i;
+            }
+
+      // and now lets find first edge...
+      
+      int second_vertex = -1;
+      for (int i = getVertex(firts_vertex).neiBegin(); i != getVertex(firts_vertex).neiEnd(); i = getVertex(firts_vertex).neiNext(i)) {
+         int new_vertex = getVertex(firts_vertex).neiVertex(i);
+         if (second_vertex == -1 || Vec2f::cross(pos[second_vertex] - pos[firts_vertex], pos[new_vertex] - pos[firts_vertex]) > 0) {
+            second_vertex = new_vertex;
+            first_edge = getVertex(firts_vertex).neiEdge(i);
+         }
+      }
    }
 
-   border.copy(vertices, edges);
-   border.canonize();
+   vertices.push(firts_vertex);
+   edges.push(first_edge);
+
+   while (true) {
+      int current_vertex = vertices.top();
+      int current_edge = edges.top();
+
+      int next_vertex = getEdge(current_edge).findOtherEnd(current_vertex);
+      int next_edge = -1;
+      int next_vertex2 = current_vertex;
+
+      for (int i = getVertex(next_vertex).neiBegin(); i != getVertex(next_vertex).neiEnd(); i = getVertex(next_vertex).neiNext(i)) {
+         int try_vertex = getVertex(next_vertex).neiVertex(i);
+         if (try_vertex != current_vertex) {
+            bool need_to_update = false;
+            if (next_vertex2 == current_vertex) {
+               need_to_update = true;
+            } else {
+               if (Vec2f::cross(pos[next_vertex2] - pos[next_vertex], pos[current_vertex] - pos[next_vertex]) >= 0) {
+                  need_to_update =  Vec2f::cross(pos[next_vertex2] - pos[next_vertex], pos[try_vertex] - pos[next_vertex]) >= 0 &&
+                                    Vec2f::cross(pos[try_vertex] - pos[next_vertex], pos[current_vertex] - pos[next_vertex]) >= 0;
+               } else {
+                  need_to_update =  Vec2f::cross(pos[next_vertex2] - pos[next_vertex], pos[try_vertex] - pos[next_vertex]) >= 0 ||
+                                    Vec2f::cross(pos[try_vertex] - pos[next_vertex], pos[current_vertex] - pos[next_vertex]) >= 0;
+               }
+            }
+            if (need_to_update) {
+               next_vertex2 = try_vertex;
+               next_edge = getVertex(next_vertex).neiEdge(i);
+            }
+         }
+      }
+      
+
+      if (next_vertex == vertices[0] && next_edge == edges[0]) break;
+      else {
+         vertices.push(next_vertex);
+         edges.push(next_edge);
+
+         if (vertices.size() > 1000) {
+            printf("V: ");
+            for (int i = 0; i < 20; i++) printf("%d ", vertices[i]);
+            printf("\n");
+            printf("V: ");
+            for (int i = 0; i < 20; i++) printf("%d ", edges[i]);
+            printf("\n");
+            printf("V.x: ");
+            for (int i = 0; i < 20; i++) printf("%5.5f ", pos[vertices[i]].x);
+            printf("\n");
+            printf("V.y: ");
+            for (int i = 0; i < 20; i++) printf("%5.5f ", pos[vertices[i]].y);
+            printf("\n");
+
+         }
+      }
+   }
+
+   cycle.copy(vertices, edges);
+   cycle.canonize();
 }
 
 // Split border in two parts by two vertices

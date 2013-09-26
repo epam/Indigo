@@ -641,43 +641,45 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
 
    sorted_cycles.qsort(Cycle::compare_cb, &cycles);
 
-   Filter filter;
-   filter.initAll(supergraph.vertexCount());
-   Cycle &firstCycle = cycles[sorted_cycles[0]];
-   for (int i = 0; i < firstCycle.vertexCount(); i++) filter.hide(_layout_vertices[firstCycle.getVertex(i)].ext_idx);
+   while (cycles.size() != 0) {
+      Filter filter;
+      filter.initAll(supergraph.vertexCount());
+      Cycle &firstCycle = cycles[sorted_cycles[0]];
+      for (int i = 0; i < firstCycle.vertexCount(); i++) filter.hide(_layout_vertices[firstCycle.getVertex(i)].ext_idx);
 
-   Graph graphOnAnotherVertexes;
-   Array<int> mapping_out, inv_mapping;
-   graphOnAnotherVertexes.makeSubgraph(supergraph, filter, &mapping_out, &inv_mapping);
+      Graph graphOnAnotherVertexes;
+      Array<int> mapping_out, inv_mapping;
+      graphOnAnotherVertexes.makeSubgraph(supergraph, filter, &mapping_out, &inv_mapping);
 
-   int tailsCount = graphOnAnotherVertexes.countComponents();
+      int tailsCount = graphOnAnotherVertexes.countComponents();
 
-   Array<int> componentSize;
-   componentSize.clear_resize(tailsCount);
-   componentSize.zerofill();
+      Array<int> componentSize;
+      componentSize.clear_resize(tailsCount);
+      componentSize.zerofill();
 
-   for (int i = 0; i < graphOnAnotherVertexes.vertexCount(); i++) componentSize[graphOnAnotherVertexes.getDecomposition()[i]]++;
+      for (int i = 0; i < graphOnAnotherVertexes.vertexCount(); i++) componentSize[graphOnAnotherVertexes.getDecomposition()[i]]++;
 
-   Array<int> inv_cycle_mapping;
-   inv_cycle_mapping.clear_resize(supergraph.vertexCount());
-   inv_cycle_mapping.fill(-1);
-   for (int i = 0; i < firstCycle.vertexCount(); i++) inv_cycle_mapping[_layout_vertices[firstCycle.getVertex(i)].ext_idx] = i;
+      Array<int> inv_cycle_mapping;
+      inv_cycle_mapping.clear_resize(supergraph.vertexCount());
+      inv_cycle_mapping.fill(-1);
+      for (int i = 0; i < firstCycle.vertexCount(); i++) inv_cycle_mapping[_layout_vertices[firstCycle.getVertex(i)].ext_idx] = i;
 
 
 
-   for (int i = 0; i < graphOnAnotherVertexes.vertexCount(); i++) {
-      const Vertex &vert = supergraph.getVertex(mapping_out[i]);
-      for (int j = vert.neiBegin(); j != vert.neiEnd(); j = vert.neiNext(j)) {
-         int u = vert.neiVertex(j);
-         if (!filter.valid(u)) 
-             firstCycle.addVertexWeight(inv_cycle_mapping[u], componentSize[graphOnAnotherVertexes.getDecomposition()[i]]);
+      for (int i = 0; i < graphOnAnotherVertexes.vertexCount(); i++) {
+         const Vertex &vert = supergraph.getVertex(mapping_out[i]);
+         for (int j = vert.neiBegin(); j != vert.neiEnd(); j = vert.neiNext(j)) {
+            int u = vert.neiVertex(j);
+            if (!filter.valid(u)) 
+                firstCycle.addVertexWeight(inv_cycle_mapping[u], componentSize[graphOnAnotherVertexes.getDecomposition()[i]]);
+         }
       }
+
+      _assignFirstCycle(cycles[sorted_cycles[0]]);
+
+      cycles.remove(sorted_cycles[0]);
+      sorted_cycles.remove(0);
    }
-
-   _assignFirstCycle(cycles[sorted_cycles[0]]);
-
-   cycles.remove(sorted_cycles[0]);
-   sorted_cycles.remove(0);
 
    bool chain_attached;
 
@@ -824,6 +826,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
       }
 
+
       layout.setVertexEdgeParallel(i, order_next + order_prev >= 4);
 
 
@@ -836,8 +839,45 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
          int _sameside = _molecule->cis_trans.sameside(ext_edge_number, prev_vertex, next_vertex);
          if (_sameside) layout.setEdgeStereo(i, MoleculeCisTrans::CIS);
          else layout.setEdgeStereo(i, MoleculeCisTrans::TRANS);
+      } else {
+         if (_layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN &&
+            _layout_vertices[cycle.getVertex((i + 1) % size)].type != ELEMENT_NOT_DRAWN) {
+
+               Vec2f prev_point;
+               for (int j = getVertex(cycle.getVertex(i)).neiBegin(); j != getVertex(cycle.getVertex(i)).neiEnd(); j = getVertex(cycle.getVertex(i)).neiNext(j))
+                  if (_layout_vertices[getVertex(cycle.getVertex(i)).neiVertex(j)].type != ELEMENT_NOT_DRAWN &&
+                     getVertex(cycle.getVertex(i)).neiVertex(j) != cycle.getVertexC(i + 1))
+                     prev_point = _layout_vertices[getVertex(cycle.getVertex(i)).neiVertex(j)].pos;
+
+               Vec2f next_point;
+               for (int j = getVertex(cycle.getVertexC(i + 1)).neiBegin(); j != getVertex(cycle.getVertexC(i + 1)).neiEnd(); j = getVertex(cycle.getVertexC(i + 1)).neiNext(j))
+                  if (_layout_vertices[getVertex(cycle.getVertexC(i + 1)).neiVertex(j)].type != ELEMENT_NOT_DRAWN &&
+                     getVertex(cycle.getVertexC(i + 1)).neiVertex(j) != cycle.getVertex(i))
+                     next_point = _layout_vertices[getVertex(cycle.getVertexC(i + 1)).neiVertex(j)].pos;
+
+
+               int _sameside = _isCisConfiguratuin(prev_point,
+                                                  _layout_vertices[cycle.getVertexC(i)].pos,
+                                                  _layout_vertices[cycle.getVertexC(i + 1)].pos,
+                                                  next_point);
+
+               if (_layout_vertices[cycle.getVertexC(i - 1)].type != ELEMENT_NOT_DRAWN &&
+                  _layout_vertices[cycle.getVertexC(i + 2)].type != ELEMENT_NOT_DRAWN) {
+                  if (_sameside) layout.setEdgeStereo(i, MoleculeCisTrans::CIS);
+                  else layout.setEdgeStereo(i, MoleculeCisTrans::TRANS);
+                     
+               } else {
+                  if ((_layout_vertices[cycle.getVertexC(i - 1)].type != ELEMENT_NOT_DRAWN) ^
+                     (_layout_vertices[cycle.getVertexC(i + 2)].type != ELEMENT_NOT_DRAWN)) {
+                     if (_sameside) layout.setEdgeStereo(i, MoleculeCisTrans::TRANS);
+                     else layout.setEdgeStereo(i, MoleculeCisTrans::CIS);
+                  } else layout.setEdgeStereo(i, MoleculeCisTrans::CIS);
+               }
+         }
       }
       
+      layout.setVertexDrawn(i, _layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN);
+
       // trees sizes
 
       layout.setVertexOutsideWeight(i, cycle.getVertexWeight(i));
@@ -845,8 +885,128 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
    }
 
    layout.doLayout();
+   
+   int start = -1;
+   for (int i = size - 1; i >= 0; i--) if (_layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN) start = i;
+   if (start == 0 && _layout_vertices[cycle.getVertex(size - 1)].type != ELEMENT_NOT_DRAWN) {
+      while (_layout_vertices[cycle.getVertex(start)].type != ELEMENT_NOT_DRAWN) start = (start + 1) % size;
+      while (_layout_vertices[cycle.getVertex(start)].type == ELEMENT_NOT_DRAWN) start = (start + 1) % size;
+   }
 
-   for (int i = 0; i < size; i++) _layout_vertices[cycle.getVertex(i)].pos = layout.getPos(i);
+   if (start >= 0) {
+      int index = start;
+      while (true) {
+         // 1. search of connected component
+         int insideVertex[100];
+         insideVertex[0] = cycle.getVertex(index);
+         bool takenVertex[100];
+         for (int i = 0; i < 100; i++) takenVertex[i] = false;
+         takenVertex[cycle.getVertex(index)] = true;
+         int takenIndex = 1;
+         for (int i = 0; i < takenIndex; i++)
+            for (int j = getVertex(insideVertex[i]).neiBegin(); j != getVertex(insideVertex[i]).neiEnd(); j = getVertex(insideVertex[i]).neiNext(j)) {
+               int vertj = getVertex(insideVertex[i]).neiVertex(j);
+               if (_layout_vertices[vertj].type != ELEMENT_NOT_DRAWN && !takenVertex[vertj]) {
+                  insideVertex[takenIndex++] = vertj;
+                  takenVertex[vertj] = true;
+               }
+            }
+
+         int endIndex = index;
+         while (_layout_vertices[cycle.getVertex(endIndex)].type != ELEMENT_NOT_DRAWN) endIndex = (endIndex + 1) % size;
+
+         // 2. flip
+         bool need_to_flip = false;
+         float rotate1 = Vec2f::cross(layout.getPos((index + 1) % size) - layout.getPos(index), layout.getPos((index + 2) % size) - layout.getPos((index + 1) % size));
+         Vec2f next_point;
+         for (int j = getVertex(cycle.getVertexC(index + 1)).neiBegin(); j != getVertex(cycle.getVertexC(index + 1)).neiEnd(); j = getVertex(cycle.getVertexC(index + 1)).neiNext(j))
+                  if (_layout_vertices[getVertex(cycle.getVertexC(index + 1)).neiVertex(j)].type != ELEMENT_NOT_DRAWN &&
+                     getVertex(cycle.getVertexC(index + 1)).neiVertex(j) != cycle.getVertex(index))
+                     next_point = _layout_vertices[getVertex(cycle.getVertexC(index + 1)).neiVertex(j)].pos;
+
+         float rotate2 = Vec2f::cross(_layout_vertices[cycle.getVertex((index + 1) % size)].pos - _layout_vertices[cycle.getVertex((index + 0) % size)].pos,
+                                    next_point - _layout_vertices[cycle.getVertex((index + 1) % size)].pos);
+
+         if ((index + 2) % size == endIndex) {
+            need_to_flip = rotate1 * rotate2 > 0;
+         }
+         else if ((index + 1) % size != endIndex) need_to_flip = rotate1 * rotate2 < 0;
+
+         if (need_to_flip) {
+            for (int i = 0; i < takenIndex; i++)
+               _layout_vertices[insideVertex[i]].pos.x *= -1;
+         }
+
+           
+         // 3. shift
+         
+         Vec2f middle_host;
+         Vec2f middle_new;
+         int countVertex = 0;
+         for (int i = index; i != endIndex; i = (i + 1) % size) {
+            middle_host += _layout_vertices[cycle.getVertex(i)].pos;
+            middle_new += layout.getPos(i);
+            countVertex++;
+         }
+         middle_host /= countVertex;
+         middle_new /= countVertex;
+
+         for (int i = 0; i < takenIndex; i++)
+            _layout_vertices[insideVertex[i]].pos += middle_new - middle_host;
+
+         // 4. rotate
+
+         Vec2f direction_host;
+         Vec2f direction_new;
+         if (countVertex > 1)  {
+            int currentIndex = 0;
+            for (int i = index; i != endIndex; i = (i + 1) % size) {
+               if (2*currentIndex < countVertex - 1) {
+                  direction_host += _layout_vertices[cycle.getVertex(i)].pos;
+                  direction_new += layout.getPos(i);
+               } else 
+                  if (2*currentIndex > countVertex - 1) {
+                  direction_host -= _layout_vertices[cycle.getVertex(i)].pos;
+                  direction_new -= layout.getPos(i);
+               }
+               currentIndex++;
+            }
+         
+         float angle = acos(Vec2f::dot(direction_host, direction_new)/(direction_host.length()*direction_new.length()));
+         if (Vec2f::cross(direction_host, direction_new) < 0) angle = -angle;
+         for (int i = 0; i < takenIndex; i++)
+            _layout_vertices[insideVertex[i]].pos.rotateAroundSegmentEnd(_layout_vertices[insideVertex[i]].pos, middle_new, angle);
+         }
+
+
+         // move to next precalced block
+         while (_layout_vertices[cycle.getVertex(index)].type != ELEMENT_NOT_DRAWN) index = (index + 1) % size;
+         while (_layout_vertices[cycle.getVertex(index)].type == ELEMENT_NOT_DRAWN) index = (index + 1) % size;
+         if (index == start) break;
+      }
+      // 5. smoothing
+   } 
+   for (int i = 0; i < size; i++)
+      if (_layout_vertices[cycle.getVertex(i)].type == ELEMENT_NOT_DRAWN)
+         _layout_vertices[cycle.getVertex(i)].pos = layout.getPos(i);
+
+   int able_to_move[100];
+   for (int i = 0; i < size; i++)
+      able_to_move[i] = _layout_vertices[cycle.getVertex(i)].type == ELEMENT_NOT_DRAWN;
+
+   Vec2f p[100];
+   for (int i = 0; i < size; i++) p[i] = _layout_vertices[cycle.getVertex(i)].pos;
+   Vec2f edge[100];
+   for (int i = 0; i < size; i++) edge[i] = p[(i + 1) % size] - p[i];
+   int len[100];
+   for (int i = 0; i < size; i++) len[i] = 1;
+   int rotate_angle[100];
+   for (int i = 0; i < size; i++)
+      rotate_angle[i] = Vec2f::cross(edge[(i - 1 + size) % size], edge[i]) > 0 ? 1 : -1;
+   int vertex_number[100];
+   for (int i = 0; i < size; i++) vertex_number[i] = i;
+
+   layout.smoothing(size, size, rotate_angle, len, vertex_number, p, false, able_to_move); 
 
    _first_vertex_idx = cycle.getVertex(0);
    for (int i = 0; i < size; i++)
@@ -854,6 +1014,10 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       _layout_vertices[cycle.getVertex(i)].type = ELEMENT_BOUNDARY;
       _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
    }
+
+   for (int i = 0; i < size; i++) _layout_vertices[cycle.getVertex(i)].pos = p[i];
+
+
    /* */
    /*
    // TODO: Start drawing from vertex with maximum code and continue to the right with one of two which has maximum code

@@ -23,6 +23,7 @@
 #pragma warning(disable:4251)
 #endif
 
+using namespace std;
 namespace indigo {
 
 class DLLEXPORT MoleculeLayoutMacrocycles
@@ -33,6 +34,7 @@ public:
    void setVertexOutsideWeight (int v, int weight);
    void setVertexEdgeParallel (int v, bool parallel);
    void setEdgeStereo (int e, int stereo);
+   void setVertexDrawn(int v, bool drawn);
 
    Vec2f &getPos (int v);
 
@@ -44,7 +46,7 @@ public:
 
    double layout (BaseMolecule &mol);
 
-   void smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi);
+   void smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi, int *able_to_move);
    double badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p);
    double depictionMacrocycleMol(bool profi);
    double depictionCircle();
@@ -56,6 +58,7 @@ private:
    TL_CP_DECL(Array<int>, _vertex_weight);
    TL_CP_DECL(Array<int>, _vertex_stereo);
    TL_CP_DECL(Array<int>, _edge_stereo);
+   TL_CP_DECL(Array<bool>, _vertex_drawn);
    TL_CP_DECL(Array<Vec2f>, _positions);
 };
 

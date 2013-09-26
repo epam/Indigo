@@ -677,3 +677,10 @@ int MoleculeLayoutGraph::_calcIntersection (int edge1_idx, int edge2_idx) const
    }
    return 5;
 }
+
+int MoleculeLayoutGraph::_isCisConfiguratuin (Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4) {
+   int rotateCounterclockwise1 = (p3.x - p2.x) * (p2.y - p1.y) - (p3.y - p2.y) * (p2.x - p1.x) > 0;
+   int rotateCounterclockwise2 = (p4.x - p3.x) * (p3.y - p2.y) - (p4.y - p3.y) * (p3.x - p2.x) > 0;
+
+   return rotateCounterclockwise1 == rotateCounterclockwise2;
+}

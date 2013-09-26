@@ -226,10 +226,7 @@ double Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r) {
 }
 
 double Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s) {
-   if (Vec2f::segmentsIntersect(p, q, r, s)) {
-      //printf("%5.5f %5.5f %5.5f %5.5f %5.5f %5.5f %5.5f %5.5f\n", x1, y1, x2, y2, x3, y3, x4, y4);
-      return 0;
-   }
+   if (Vec2f::segmentsIntersect(p, q, r, s)) return 0;
 
    return __min( __min(distPointSegment(p, r, s), distPointSegment(q, r, s)),
       __min(distPointSegment(r, p, q), distPointSegment(s, p, q)));
