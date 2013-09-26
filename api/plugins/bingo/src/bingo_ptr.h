@@ -18,27 +18,17 @@ namespace bingo
    public:
       BingoPtr ()
       {
-         _offset = (size_t)-1;  
+         _offset = (size_t)-1;
       }
 
       explicit BingoPtr (size_t offset) : _offset(offset)
       {
       }
-   
-      T * ptr()
-      { 
-         BingoAllocator *_allocator = BingoAllocator::_getInstance();
 
-         return (T *)(_allocator->_get(_offset));
-      }
+      T * ptr();
 
-      const T * ptr() const
-      {
-         BingoAllocator *_allocator = BingoAllocator::_getInstance();
+      const T * ptr() const;
 
-         return (T *)(_allocator->_get(_offset));
-      }
-   
       T & ref()
       {
          return *ptr();
@@ -48,7 +38,7 @@ namespace bingo
       {
          return *ptr();
       }
-   
+
       T * operator->()
       {
          return ptr();
@@ -84,15 +74,10 @@ namespace bingo
          return _offset == -1;
       }
 
-      void allocate ( int count = 1 )
-      {
-         BingoAllocator *_allocator = BingoAllocator::_getInstance();
-
-         _offset = _allocator->allocate<T>(count);
-      }
+      void allocate ( int count = 1 );
 
       operator size_t() { return _offset; }
- 
+
    private:
       size_t _offset;
    };
@@ -113,10 +98,10 @@ namespace bingo
          {
             int blocks_count = (_size + _block_size - 1) / _block_size;
             int new_blocks_count = (new_size + _block_size - 1) / _block_size;
-            
+
             if (new_blocks_count > _max_block_count)
                throw Exception("BingoArray: block count limit is exceeded");
-            
+
             for (int i = blocks_count; i < new_blocks_count; i++)
             {
                _blocks[i].allocate(_block_size);
@@ -126,7 +111,7 @@ namespace bingo
 
          _size = new_size;
       }
-   
+
       T & at (int index)
       {
          if (index < 0 || index >= _size)
@@ -177,7 +162,7 @@ namespace bingo
 
          return arr[idx_in_block];
       }
-   
+
       void push (T elem)
       {
          T & new_elem = push();
@@ -194,7 +179,7 @@ namespace bingo
       {
          return _block_count * _block_size;
       }
-   
+
    private:
       static const int _max_block_count = 10000;
 
@@ -218,7 +203,7 @@ namespace bingo
       static void _create (const char *filename, size_t size, ObjArray<MMFile> *mm_files);
 
       static void _load (const char *filename, ObjArray<MMFile> *mm_files);
-      
+
       template<typename T> size_t allocate ( int count = 1 )
       {
          int alloc_size = sizeof(T) * count;
@@ -239,7 +224,7 @@ namespace bingo
       }
 
       static BingoAllocator *_getInstance ();
-      
+
       byte * _get (size_t offset);
 
       BingoAllocator ();
@@ -251,9 +236,33 @@ namespace bingo
       ObjArray<MMFile> *_mm_files;
       size_t _file_size;
       size_t _free_off;
-      
+
       static BingoAllocator * _instance;
    };
+
+   // Implementations for BingoPtr and BingoAllocator are dependent and thus implementation is here
+   template <typename T>
+   T * BingoPtr<T>::ptr()
+   {
+      BingoAllocator *_allocator = BingoAllocator::_getInstance();
+
+      return (T *)(_allocator->_get(_offset));
+   }
+   template <typename T>
+   const T * BingoPtr<T>::ptr() const
+   {
+      BingoAllocator *_allocator = BingoAllocator::_getInstance();
+
+      return (T *)(_allocator->_get(_offset));
+   }
+
+   template <typename T>
+   void BingoPtr<T>::allocate ( int count )
+   {
+      BingoAllocator *_allocator = BingoAllocator::_getInstance();
+
+      _offset = _allocator->allocate<T>(count);
+   }
 };
 
 #endif //__bingo_ptr__

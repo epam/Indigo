@@ -161,7 +161,7 @@ void MMFile::close ()
 
    if (_fd != -1)
    {
-      close(_fd);
+      ::close(_fd);
       _fd = -1;
    }
 #endif
