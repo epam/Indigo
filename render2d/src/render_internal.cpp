@@ -159,7 +159,7 @@ void RenderOptions::clear()
    titleFontFactor = 20;
    labelMode = LABEL_MODE_TERMINAL_HETERO;
    highlightedLabelsVisible = false;
-   boldBondDetection = false;
+   boldBondDetection = true;
    implHVisible = true;
    commentColor.set(0,0,0);
    titleColor.set(0,0,0);
