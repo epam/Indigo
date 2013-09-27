@@ -17,26 +17,30 @@ presets = {
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
-    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),   
+    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
 }
 
 parser = OptionParser(description='Indigo libraries build script')
 parser.add_option('--generator', help='this option is passed as -G option for cmake')
 parser.add_option('--params', default="", help='additional build parameters')
 parser.add_option('--config', default="Release", help='project configuration')
-parser.add_option('--nobuild', default=False, 
+parser.add_option('--nobuild', default=False,
     action="store_true", help='configure without building', dest="nobuild")
-parser.add_option('--clean', default=False, action="store_true", 
+parser.add_option('--clean', default=False, action="store_true",
     help='delete all the build data', dest="clean")
-parser.add_option('--preset', type="choice", dest="preset", 
+parser.add_option('--preset', type="choice", dest="preset",
     choices=presets.keys(), help='build preset %s' % (str(presets.keys())))
-parser.add_option('--cairo-gl', dest="cairogl", 
+parser.add_option('--cairo-gl', dest="cairogl",
     default=False, action="store_true", help='Build Cairo with OpenGL support')
-parser.add_option('--cairo-vg', dest="cairovg", 
+parser.add_option('--cairo-vg', dest="cairovg",
     default=False, action="store_true", help='Build Cairo with CairoVG support')
-parser.add_option('--find-cairo', dest="findcairo", 
+parser.add_option('--cairo-egl', dest="cairo=egl",
+    default=False, action="store_true", help='Build Cairo with EGL support')
+parser.add_option('--cairo-glesv2', dest="cairoglesv2',
+    default=False, action="store_true", help='Build Cairo with GLESv2 support')
+parser.add_option('--find-cairo', dest="findcairo",
     default=False, action="store_true", help='Find and use system Cairo')
-parser.add_option('--find-pixman', dest="findpixman", 
+parser.add_option('--find-pixman', dest="findpixman",
     default=False, action="store_true", help='Find and use system Pixman')
 
 (args, left_args) = parser.parse_args()
@@ -62,6 +66,12 @@ if args.cairogl:
 
 if args.cairovg:
     args.params += ' -DWITH_CAIRO_VG=TRUE'
+
+if args.cairoegl:
+    args.params += ' -DWITH_CAIRO_EGL=TRUE'
+
+if args.cairoglesv2:
+    args.params += ' -DWITH_CAIRO_GLESV2=TRUE'
 
 if args.findcairo:
     args.params += ' -DUSE_SYSTEM_CAIRO=TRUE'

@@ -30,11 +30,11 @@ parser = OptionParser(description='Indigo utilities build script')
 parser.add_option('--generator', help='this option is passed as -G option for cmake')
 parser.add_option('--params', default="", help='additional build parameters')
 parser.add_option('--config', default="Release", help='project configuration')
-parser.add_option('--nobuild', default=False, 
+parser.add_option('--nobuild', default=False,
     action="store_true", help='configure without building', dest="nobuild")
-parser.add_option('--clean', default=False, action="store_true", 
+parser.add_option('--clean', default=False, action="store_true",
     help='delete all the build data', dest="clean")
-parser.add_option('--preset', type="choice", dest="preset", 
+parser.add_option('--preset', type="choice", dest="preset",
     choices=presets.keys(), help='build preset %s' % (str(presets.keys())))
 
 (args, left_args) = parser.parse_args()
